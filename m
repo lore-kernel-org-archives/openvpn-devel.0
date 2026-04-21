@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 21 Apr 2026 14:22:03 +0000
+Date: Tue, 21 Apr 2026 14:22:06 +0000
 In-Reply-To: <gerrit.1776701747000.I92c5f74a27b40fede204f714b042a6cc80b3703e@...2715...>
 References: <gerrit.1776701747000.I92c5f74a27b40fede204f714b042a6cc80b3703e@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, ralf@...2726...
-Message-ID: <b69e7d13bf1ee6bfb9efb6c9b3be5da5ba3797de-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <b69e7d13bf1ee6bfb9efb6c9b3be5da5ba3797de-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="DdbI5TtiEqs="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="Y9m7DFyQ0f4="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[release/2.6]: dco: backport
  immediate notification processing on Linux and FreeBSD
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ralf_lici <ralf@...2726...>, plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: ralf_lici <ralf@...2726...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---DdbI5TtiEqs=
+--Y9m7DFyQ0f4=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#3) to the change originally created by=
- ralf_lici. ( http://gerrit.openvpn.net/c/openvpn/+/1632?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/16=
+32?usp=3Demail )
 
 Change subject: dco: backport immediate notification processing on Linux an=
 d FreeBSD
@@ -90,7 +86,7 @@ M src/openvpn/multi.h
 12 files changed, 299 insertions(+), 242 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/32/1632/3
+
 
 diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h
 index 334d468..3a36ddc 100644
@@ -1109,7 +1105,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1632?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 Gerrit-Project: openvpn
 Gerrit-Branch: release/2.6
 Gerrit-Change-Id: I92c5f74a27b40fede204f714b042a6cc80b3703e
@@ -1120,932 +1116,929 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---DdbI5TtiEqs=
+--Y9m7DFyQ0f4=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #3</strong> to the change originally created by ralf_lici.<=
-/p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1632?usp=3Demail">Vi=
-ew Change</a></p><p>The following approvals got outdated and were removed:
-Code-Review+2 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">dco: backport immediate notificatio=
-n processing on Linux and FreeBSD<br><br>Backport the immediate DCO message=
- processing model from commit 7791f53<br>(&quot;dco: process messages immed=
-iately after read&quot;).<br><br>Change the core DCO API from dco_do_read()=
- to dco_read_and_process(),<br>and make the backend read paths own the pars=
-ing and immediate handling<br>of kernel notifications before handing the re=
-sulting state to<br>process_incoming_dco() or multi_process_incoming_dco().=
-<br><br>On Linux, install a permanent netlink callback and process GET_PEER=
- and<br>DEL_PEER messages as they are received, instead of switching callba=
-cks<br>for each read and deferring handling through shared DCO message stat=
-e.<br>Also add a small guard to avoid requesting peer stats while libnl is<=
-br>still parsing a batch of notifications.<br><br>On FreeBSD, move notifica=
-tion handling into dco_read_and_process() and<br>update peer statistics dir=
-ectly from the backend instead of storing<br>temporary byte counters in dco=
-_context_t.<br><br>This commit is part of a reworked backport of PR #945 or=
-iginally<br>proposed by Nikolai Shelekhov &lt;nickshv13@...2314...&gt;.<br>=
-<br>Github: OpenVPN/openvpn#900<br>Github: OpenVPN/openvpn#918<br>Github: O=
-penVPN/openvpn#931<br>Github: fixes OpenVPN/openvpn#919<br>Github: closes O=
-penVPN/openvpn#945<br><br>Change-Id: I92c5f74a27b40fede204f714b042a6cc80b37=
-03e<br>Signed-off-by: Ralf Lici &lt;ralf@...2726...&gt;<br>Acked-by: Gert D=
-oering &lt;gert@...1296...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/=
-openvpn/+/1632<br>Message-Id: &lt;20260421084906.5720-1-gert@...1296...&gt;=
-<br>URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/m=
-sg36707.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<=
-br>M src/openvpn/dco.h<br>M src/openvpn/dco_freebsd.c<br>M src/openvpn/dco_=
-freebsd.h<br>M src/openvpn/dco_linux.c<br>M src/openvpn/dco_linux.h<br>M sr=
-c/openvpn/dco_win.c<br>M src/openvpn/forward.c<br>M src/openvpn/forward.h<b=
-r>M src/openvpn/mtcp.c<br>M src/openvpn/mudp.c<br>M src/openvpn/multi.c<br>=
-M src/openvpn/multi.h<br>12 files changed, 299 insertions(+), 242 deletions=
-(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,mono=
-space; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/open=
-vpn refs/changes/32/1632/3</pre><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/dco.h b/src/ope=
-nvpn/dco.h</span><br><span>index 334d468..3a36ddc 100644</span><br><span>--=
-- a/src/openvpn/dco.h</span><br><span>+++ b/src/openvpn/dco.h</span><br><sp=
-an>@@ -128,12 +128,13 @@</span><br><span> void close_tun_dco(struct tuntap =
-*tt, openvpn_net_ctx_t *ctx);</span><br><span> </span><br><span> /**</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">- * Read data from the DCO co=
-mmunication channel (i.e. a control packet)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+ * Read and process data from the DCO communication=
- channel</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * (i.e. a =
-control packet)</span><br><span>  *</span><br><span>  * @param dco       th=
-e DCO context</span><br><span>  * @return          0 on success or a negati=
-ve error code otherwise</span><br><span>  */</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-int dco_do_read(dco_context_t *dco);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+int dco_read_and_process(dco_contex=
-t_t *dco);</span><br><span> </span><br><span> /**</span><br><span>  * Insta=
-ll a DCO in the main event loop</span><br><span>@@ -300,7 +301,7 @@</span><=
-br><span> }</span><br><span> </span><br><span> static inline int</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-dco_do_read(dco_context_t *dco)<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_read_and_process=
-(dco_context_t *dco)</span><br><span> {</span><br><span>     ASSERT(false);=
-</span><br><span>     return 0;</span><br><span>diff --git a/src/openvpn/dc=
-o_freebsd.c b/src/openvpn/dco_freebsd.c</span><br><span>index b164bd3..9384=
-bf1 100644</span><br><span>--- a/src/openvpn/dco_freebsd.c</span><br><span>=
-+++ b/src/openvpn/dco_freebsd.c</span><br><span>@@ -560,8 +560,23 @@</span>=
-<br><span>     return ret;</span><br><span> }</span><br><span> </span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+dco_update_peer_stat(struct multi_conte=
-xt *m, uint32_t peerid, const nvlist_t *nvl)</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    if (peerid &gt;=3D m-&gt;max_clients || !m-&gt;instances[peerid]=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        msg(M_WARN, &quot;dco_up=
-date_peer_stat: invalid peer ID %d returned by kernel&quot;, peerid);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        return;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    struct multi_instance *mi =3D m-&gt;instances[peerid];</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    mi-&gt;context.c2.dco_read_bytes =3D=
- nvlist_get_number(nvl, &quot;in&quot;);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    mi-&gt;context.c2.dco_write_bytes =3D nvlist_get_n=
-umber(nvl, &quot;out&quot;);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span> int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-dco_do_re=
-ad(dco_context_t *dco)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+dco_read_and_process(dco_context_t *dco)</span><br><span> {</span><br><s=
-pan>     struct ifdrv drv;</span><br><span>     uint8_t buf[4096];</span><b=
-r><span>@@ -592,9 +607,13 @@</span><br><span>         return -EINVAL;</span=
-><br><span>     }</span><br><span> </span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    dco-&gt;dco_message_peer_id =3D nvlist_get_number(nvl, &q=
-uot;peerid&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   /* dco_message_peer_id is signed int, because other parts of the</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+     * code treat &quot;-1&=
-quot; as &quot;this is a message not specific to one peer&quot;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+     */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    dco-&gt;dco_message_peer_id =3D (int)=
-nvlist_get_number(nvl, &quot;peerid&quot;);</span><br><span> </span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    type =3D nvlist_get_number(nvl,=
- &quot;notification&quot;);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    type =3D (enum ovpn_notif_type)nvlist_get_number(nvl, &quot;not=
-ification&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span>     switch (type)</span><br><span>     {</span><br><span>  =
-       case OVPN_NOTIF_DEL_PEER:</span><br><span>@@ -617,8 +636,15 @@</span=
-><br><span>             {</span><br><span>                 const nvlist_t *=
-bytes =3D nvlist_get_nvlist(nvl, &quot;bytes&quot;);</span><br><span> </spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-                dco-&gt;dc=
-o_read_bytes =3D nvlist_get_number(bytes, &quot;in&quot;);</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-                dco-&gt;dco_write_byte=
-s =3D nvlist_get_number(bytes, &quot;out&quot;);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+                if (dco-&gt;c-&gt;mode =3D=3D =
-CM_TOP)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-      dco_update_peer_stat(dco-&gt;c-&gt;multi, dco-&gt;dco_message_peer_id=
-, bytes);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-      }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-    else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
-     {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
-       dco-&gt;c-&gt;c2.dco_read_bytes =3D nvlist_get_number(bytes, &quot;i=
-n&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-          dco-&gt;c-&gt;c2.dco_write_bytes =3D nvlist_get_number(bytes, &qu=
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1632?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">dco: backport immediate notification processing =
+on Linux and FreeBSD<br><br>Backport the immediate DCO message processing m=
+odel from commit 7791f53<br>(&quot;dco: process messages immediately after =
+read&quot;).<br><br>Change the core DCO API from dco_do_read() to dco_read_=
+and_process(),<br>and make the backend read paths own the parsing and immed=
+iate handling<br>of kernel notifications before handing the resulting state=
+ to<br>process_incoming_dco() or multi_process_incoming_dco().<br><br>On Li=
+nux, install a permanent netlink callback and process GET_PEER and<br>DEL_P=
+EER messages as they are received, instead of switching callbacks<br>for ea=
+ch read and deferring handling through shared DCO message state.<br>Also ad=
+d a small guard to avoid requesting peer stats while libnl is<br>still pars=
+ing a batch of notifications.<br><br>On FreeBSD, move notification handling=
+ into dco_read_and_process() and<br>update peer statistics directly from th=
+e backend instead of storing<br>temporary byte counters in dco_context_t.<b=
+r><br>This commit is part of a reworked backport of PR #945 originally<br>p=
+roposed by Nikolai Shelekhov &lt;nickshv13@...2314...&gt;.<br><br>Github: O=
+penVPN/openvpn#900<br>Github: OpenVPN/openvpn#918<br>Github: OpenVPN/openvp=
+n#931<br>Github: fixes OpenVPN/openvpn#919<br>Github: closes OpenVPN/openvp=
+n#945<br><br>Change-Id: I92c5f74a27b40fede204f714b042a6cc80b3703e<br>Signed=
+-off-by: Ralf Lici &lt;ralf@...2726...&gt;<br>Acked-by: Gert Doering &lt;ge=
+rt@...1296...&gt;<br>Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/163=
+2<br>Message-Id: &lt;20260421084906.5720-1-gert@...1296...&gt;<br>URL: http=
+s://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36707.html<=
+br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/open=
+vpn/dco.h<br>M src/openvpn/dco_freebsd.c<br>M src/openvpn/dco_freebsd.h<br>=
+M src/openvpn/dco_linux.c<br>M src/openvpn/dco_linux.h<br>M src/openvpn/dco=
+_win.c<br>M src/openvpn/forward.c<br>M src/openvpn/forward.h<br>M src/openv=
+pn/mtcp.c<br>M src/openvpn/mudp.c<br>M src/openvpn/multi.c<br>M src/openvpn=
+/multi.h<br>12 files changed, 299 insertions(+), 242 deletions(-)<br><br></=
+pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h</span><br><span>index=
+ 334d468..3a36ddc 100644</span><br><span>--- a/src/openvpn/dco.h</span><br>=
+<span>+++ b/src/openvpn/dco.h</span><br><span>@@ -128,12 +128,13 @@</span><=
+br><span> void close_tun_dco(struct tuntap *tt, openvpn_net_ctx_t *ctx);</s=
+pan><br><span> </span><br><span> /**</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">- * Read data from the DCO communication channel (i.e. a cont=
+rol packet)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Read =
+and process data from the DCO communication channel</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * (i.e. a control packet)</span><br><spa=
+n>  *</span><br><span>  * @param dco       the DCO context</span><br><span>=
+  * @return          0 on success or a negative error code otherwise</span>=
+<br><span>  */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-int dco=
+_do_read(dco_context_t *dco);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+int dco_read_and_process(dco_context_t *dco);</span><br><span> </=
+span><br><span> /**</span><br><span>  * Install a DCO in the main event loo=
+p</span><br><span>@@ -300,7 +301,7 @@</span><br><span> }</span><br><span> <=
+/span><br><span> static inline int</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-dco_do_read(dco_context_t *dco)</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+dco_read_and_process(dco_context_t *dco)</span><br=
+><span> {</span><br><span>     ASSERT(false);</span><br><span>     return 0=
+;</span><br><span>diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_=
+freebsd.c</span><br><span>index b164bd3..9384bf1 100644</span><br><span>---=
+ a/src/openvpn/dco_freebsd.c</span><br><span>+++ b/src/openvpn/dco_freebsd.=
+c</span><br><span>@@ -560,8 +560,23 @@</span><br><span>     return ret;</sp=
+an><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+dco_update_peer_stat(struct multi_context *m, uint32_t peerid, const =
+nvlist_t *nvl)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (peerid &gt;=3D =
+m-&gt;max_clients || !m-&gt;instances[peerid])</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        msg(M_WARN, &quot;dco_update_peer_stat: invalid peer I=
+D %d returned by kernel&quot;, peerid);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        return;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct multi_=
+instance *mi =3D m-&gt;instances[peerid];</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    mi-&gt;context.c2.dco_read_bytes =3D nvlist_get_number(nvl, &quot;in=
+&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    mi-&gt;=
+context.c2.dco_write_bytes =3D nvlist_get_number(nvl, &quot;out&quot;);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span> int</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-dco_do_read(dco_context_t *dco)</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+dco_read_and_process(dco_cont=
+ext_t *dco)</span><br><span> {</span><br><span>     struct ifdrv drv;</span=
+><br><span>     uint8_t buf[4096];</span><br><span>@@ -592,9 +607,13 @@</sp=
+an><br><span>         return -EINVAL;</span><br><span>     }</span><br><spa=
+n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    dco-&gt;dco_me=
+ssage_peer_id =3D nvlist_get_number(nvl, &quot;peerid&quot;);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    /* dco_message_peer_id is sig=
+ned int, because other parts of the</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+     * code treat &quot;-1&quot; as &quot;this is a message=
+ not specific to one peer&quot;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+     */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    dco-&gt;dco_message_peer_id =3D (int)nvlist_get_number(nvl, &quot;peeri=
+d&quot;);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    type =3D nvlist_get_number(nvl, &quot;notification&quot;);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    type =3D (enum ovpn_no=
+tif_type)nvlist_get_number(nvl, &quot;notification&quot;);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     switch (type)<=
+/span><br><span>     {</span><br><span>         case OVPN_NOTIF_DEL_PEER:</=
+span><br><span>@@ -617,8 +636,15 @@</span><br><span>             {</span><b=
+r><span>                 const nvlist_t *bytes =3D nvlist_get_nvlist(nvl, &=
+quot;bytes&quot;);</span><br><span> </span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-                dco-&gt;dco_read_bytes =3D nvlist_get_number=
+(bytes, &quot;in&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-                dco-&gt;dco_write_bytes =3D nvlist_get_number(bytes, &qu=
 ot;out&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-           }</span><br><span>             }</span><br><span> </span><br><sp=
-an>             dco-&gt;dco_message_type =3D OVPN_CMD_DEL_PEER;</span><br><=
-span>@@ -628,7 +654,8 @@</span><br><span>             dco-&gt;dco_message_t=
-ype =3D OVPN_CMD_SWAP_KEYS;</span><br><span>             break;</span><br><=
-span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-        case OV=
-PN_NOTIF_FLOAT: {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      case OVPN_NOTIF_FLOAT:</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        {</span><br><span>             const nvlist_t *address;</s=
-pan><br><span> </span><br><span>             if (!nvlist_exists_nvlist(nvl,=
- &quot;address&quot;))</span><br><span>@@ -649,11 +676,21 @@</span><br><spa=
-n> </span><br><span>         default:</span><br><span>             msg(M_WA=
-RN, &quot;Unknown kernel notification %d&quot;, type);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            dco-&gt;dco_message_type =3D=
- OVPN_CMD_NO_MESSAGE;</span><br><span>             break;</span><br><span> =
-    }</span><br><span> </span><br><span>     nvlist_destroy(nvl);</span><br=
-><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (dco=
--&gt;c-&gt;mode =3D=3D CM_TOP)</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     multi_process_incoming_dco(dco);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        process_incom=
-ing_dco(dco);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>   =
-  return 0;</span><br><span> }</span><br><span> </span><br><span>@@ -773,26=
- +810,9 @@</span><br><span>     nvlist_destroy(nvl);</span><br><span> }</sp=
-an><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-static =
-void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-dco_update_peer_s=
-tat(struct multi_context *m, uint32_t peerid, const nvlist_t *nvl)</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    if (peerid &gt;=3D m-&gt;max_clients || !m-&gt;instances[peerid])</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        msg(M_WARN, &quot;dco_update_pe=
-er_stat: invalid peer ID %d returned by kernel&quot;, peerid);</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-        return;</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  struct multi_instance *mi =3D m-&gt;instances[peerid];</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    mi-&gt;context.c2.dco_read_bytes =3D nvlist_get_number(nv=
-l, &quot;in&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  mi-&gt;context.c2.dco_write_bytes =3D nvlist_get_number(nvl, &quot;out&qu=
-ot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> int</span><br><spa=
-n> dco_get_peer_stats_multi(dco_context_t *dco, struct multi_context *m)</s=
-pan><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
-n><br><span>     struct ifdrv drv;</span><br><span>     uint8_t *buf =3D NU=
-LL;</span><br><span>     size_t buf_size =3D 4096;</span><br><span>diff --g=
-it a/src/openvpn/dco_freebsd.h b/src/openvpn/dco_freebsd.h</span><br><span>=
-index e8f723e..d2cc045 100644</span><br><span>--- a/src/openvpn/dco_freebsd=
-.h</span><br><span>+++ b/src/openvpn/dco_freebsd.h</span><br><span>@@ -33,6=
- +33,8 @@</span><br><span> typedef enum ovpn_key_cipher dco_cipher_t;</span=
-><br><span> </span><br><span> enum ovpn_message_type_t {</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    /* message type #0 is treated as m=
-agic number by process_incoming_dco() */</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    OVPN_CMD_NO_MESSAGE =3D 0,</span><br><span>     OV=
-PN_CMD_DEL_PEER,</span><br><span>     OVPN_CMD_PACKET,</span><br><span>    =
- OVPN_CMD_SWAP_KEYS,</span><br><span>@@ -57,9 +59,8 @@</span><br><span>    =
- int dco_message_peer_id;</span><br><span>     int dco_del_peer_reason;</sp=
-an><br><span>     struct sockaddr_storage dco_float_peer_ss;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     struct conte=
-xt *c;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    uint64_t dc=
-o_read_bytes;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    uint=
-64_t dco_write_bytes;</span><br><span> } dco_context_t;</span><br><span> </=
-span><br><span> #endif /* defined(ENABLE_DCO) &amp;&amp; defined(TARGET_FRE=
-EBSD) */</span><br><span>diff --git a/src/openvpn/dco_linux.c b/src/openvpn=
-/dco_linux.c</span><br><span>index 493fce6..8ce7026 100644</span><br><span>=
---- a/src/openvpn/dco_linux.c</span><br><span>+++ b/src/openvpn/dco_linux.c=
-</span><br><span>@@ -50,6 +50,15 @@</span><br><span> #include &lt;netlink/g=
-enl/family.h&gt;</span><br><span> #include &lt;netlink/genl/ctrl.h&gt;</spa=
-n><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Whe=
-n parsing multiple DEL_PEER notifications, openvpn tries to request stats</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * for each DEL_PEER =
-message (see setenv_stats). This triggers a GET_PEER</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * request-reply while we are still parsi=
-ng the rest of the initial</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+ * notifications, which can lead to NLE_BUSY or even NLE_NOMEM.</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * This basic lock ensures we don&#39;t b=
-ite our own tail by issuing a dco_get_peer</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ * while still busy receiving and parsing other mess=
-ages.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+static bool __is_locked =3D fa=
-lse;</span><br><span> </span><br><span> /* libnl &lt; 3.5.0 does not set th=
-e NLA_F_NESTED on its own, therefore we</span><br><span>  * have to explici=
-tly do it to prevent the kernel from failing upon</span><br><span>@@ -62,8 =
-+71,6 @@</span><br><span> </span><br><span> void dco_check_key_ctx(const st=
-ruct key_ctx_bi *key);</span><br><span> </span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-typedef int (*ovpn_nl_cb)(struct nl_msg *msg, void *arg)=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /*=
-*</span><br><span>  * @brief resolves the netlink ID for ovpn-dco</span><br=
-><span>  *</span><br><span>@@ -131,7 +138,9 @@</span><br><span> static int<=
-/span><br><span> ovpn_nl_recvmsgs(dco_context_t *dco, const char *prefix)</=
-span><br><span> {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  __is_locked =3D true;</span><br><span>     int ret =3D nl_recvmsgs(dco-&g=
-t;nl_sock, dco-&gt;nl_cb);</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    __is_locked =3D false;</span><br><span> </span><br><span>     sw=
-itch (ret)</span><br><span>     {</span><br><span>@@ -167,23 +176,19 @@</sp=
-an><br><span> }</span><br><span> </span><br><span> /**</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">- * Send a prepared netlink message and reg=
-isters cb as callback if non-null.</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+ * Send a prepared netlink message.</span><br><span>  *</spa=
-n><br><span>  * The method will also free nl_msg</span><br><span>  * @param=
- dco       The dco context to use</span><br><span>  * @param nl_msg    the =
-message to use</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @par=
-am cb        An optional callback if the caller expects an answer</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">- * @param cb_arg    An optional=
- param to pass to the callback</span><br><span>  * @param prefix    A prefi=
-x to report in the error message to give the user context</span><br><span> =
- * @return          status of sending the message</span><br><span>  */</spa=
-n><br><span> static int</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-ovpn_nl_msg_send(dco_context_t *dco, struct nl_msg *nl_msg, ovpn_nl_cb cb=
-,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                 voi=
-d *cb_arg, const char *prefix)</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+ovpn_nl_msg_send(dco_context_t *dco, struct nl_msg *nl_msg, cons=
-t char *prefix)</span><br><span> {</span><br><span>     dco-&gt;status =3D =
-1;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   nl_cb_set(dco-&gt;nl_cb, NL_CB_VALID, NL_CB_CUSTOM, cb, cb_arg);</span><=
-br><span>     nl_send_auto(dco-&gt;nl_sock, nl_msg);</span><br><span> </spa=
-n><br><span>     while (dco-&gt;status =3D=3D 1)</span><br><span>@@ -274,7 =
-+279,7 @@</span><br><span>     }</span><br><span>     nla_nest_end(nl_msg, =
-attr);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    ret =3D ovpn_nl_msg_send(dco, nl_msg, NULL, NULL, __func__);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    ret =3D ovpn_nl_msg_sen=
-d(dco, nl_msg, __func__);</span><br><span> </span><br><span> nla_put_failur=
-e:</span><br><span>     nlmsg_free(nl_msg);</span><br><span>@@ -342,6 +347,=
-8 @@</span><br><span>     return NL_STOP;</span><br><span> }</span><br><spa=
-n> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+static int ovpn_=
-handle_msg(struct nl_msg *msg, void *arg);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span> static void</span><br><span> ovpn_=
-dco_init_netlink(dco_context_t *dco)</span><br><span> {</span><br><span>@@ =
--373,11 +380,13 @@</span><br><span> </span><br><span>     nl_socket_set_cb(=
-dco-&gt;nl_sock, dco-&gt;nl_cb);</span><br><span> </span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    dco-&gt;dco_message_peer_id =3D -1;</spa=
-n><br><span>     nl_cb_err(dco-&gt;nl_cb, NL_CB_CUSTOM, ovpn_nl_cb_error, &=
-amp;dco-&gt;status);</span><br><span>     nl_cb_set(dco-&gt;nl_cb, NL_CB_FI=
-NISH, NL_CB_CUSTOM, ovpn_nl_cb_finish,</span><br><span>               &amp;=
-dco-&gt;status);</span><br><span>     nl_cb_set(dco-&gt;nl_cb, NL_CB_ACK, N=
-L_CB_CUSTOM, ovpn_nl_cb_finish,</span><br><span>               &amp;dco-&gt=
-;status);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    nl_cb_=
-set(dco-&gt;nl_cb, NL_CB_VALID, NL_CB_CUSTOM, ovpn_handle_msg, dco);</span>=
-<br><span> </span><br><span>     /* The async PACKET messages confuse libnl=
- and it will drop them with</span><br><span>      * wrong sequence numbers =
-(NLE_SEQ_MISMATCH), so disable libnl&#39;s sequence</span><br><span>@@ -501=
-,7 +510,7 @@</span><br><span>     NLA_PUT_U32(nl_msg, OVPN_SWAP_KEYS_ATTR_P=
-EER_ID, peerid);</span><br><span>     nla_nest_end(nl_msg, attr);</span><br=
-><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ret =3D o=
-vpn_nl_msg_send(dco, nl_msg, NULL, NULL, __func__);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    ret =3D ovpn_nl_msg_send(dco, nl_msg,=
- __func__);</span><br><span> </span><br><span> nla_put_failure:</span><br><=
-span>     nlmsg_free(nl_msg);</span><br><span>@@ -525,7 +534,7 @@</span><br=
-><span>     NLA_PUT_U32(nl_msg, OVPN_DEL_PEER_ATTR_PEER_ID, peerid);</span>=
+           if (dco-&gt;c-&gt;mode =3D=3D CM_TOP)</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+                {</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+                    dco_update_peer_stat(dco-&gt=
+;c-&gt;multi, dco-&gt;dco_message_peer_id, bytes);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+                }</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+                else</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+                {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+                    dco-&gt;c-&gt;c2.dco_read_b=
+ytes =3D nvlist_get_number(bytes, &quot;in&quot;);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+                    dco-&gt;c-&gt;c2.dco_wri=
+te_bytes =3D nvlist_get_number(bytes, &quot;out&quot;);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+                }</span><br><span>     =
+        }</span><br><span> </span><br><span>             dco-&gt;dco_messag=
+e_type =3D OVPN_CMD_DEL_PEER;</span><br><span>@@ -628,7 +654,8 @@</span><br=
+><span>             dco-&gt;dco_message_type =3D OVPN_CMD_SWAP_KEYS;</span>=
+<br><span>             break;</span><br><span> </span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-        case OVPN_NOTIF_FLOAT: {</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        case OVPN_NOTIF_FLOAT:</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span=
+>             const nvlist_t *address;</span><br><span> </span><br><span>  =
+           if (!nvlist_exists_nvlist(nvl, &quot;address&quot;))</span><br><=
+span>@@ -649,11 +676,21 @@</span><br><span> </span><br><span>         defau=
+lt:</span><br><span>             msg(M_WARN, &quot;Unknown kernel notificat=
+ion %d&quot;, type);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++            dco-&gt;dco_message_type =3D OVPN_CMD_NO_MESSAGE;</span><br><s=
+pan>             break;</span><br><span>     }</span><br><span> </span><br>=
+<span>     nvlist_destroy(nvl);</span><br><span> </span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    if (dco-&gt;c-&gt;mode =3D=3D CM_TOP)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        multi_process_incoming_dco(dc=
+o);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        process_incoming_dco(dco);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span>     return 0;</span><br><span> }</sp=
+an><br><span> </span><br><span>@@ -773,26 +810,9 @@</span><br><span>     nv=
+list_destroy(nvl);</span><br><span> }</span><br><span> </span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-static void</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-dco_update_peer_stat(struct multi_context *m, uint3=
+2_t peerid, const nvlist_t *nvl)</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    if (peerid &gt;=3D m-&gt;m=
+ax_clients || !m-&gt;instances[peerid])</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-        msg(M_WARN, &quot;dco_update_peer_stat: invalid peer ID %d return=
+ed by kernel&quot;, peerid);</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        return;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    struct multi_instance *mi =3D m-=
+&gt;instances[peerid];</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    mi-&gt;context.c=
+2.dco_read_bytes =3D nvlist_get_number(nvl, &quot;in&quot;);</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    mi-&gt;context.c2.dco_write_byte=
+s =3D nvlist_get_number(nvl, &quot;out&quot;);</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-</span><br><span> int</span><br><span> dco_get_peer_stats_multi(dco_co=
+ntext_t *dco, struct multi_context *m)</span><br><span> {</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     struct ifdrv drv;=
+</span><br><span>     uint8_t *buf =3D NULL;</span><br><span>     size_t bu=
+f_size =3D 4096;</span><br><span>diff --git a/src/openvpn/dco_freebsd.h b/s=
+rc/openvpn/dco_freebsd.h</span><br><span>index e8f723e..d2cc045 100644</spa=
+n><br><span>--- a/src/openvpn/dco_freebsd.h</span><br><span>+++ b/src/openv=
+pn/dco_freebsd.h</span><br><span>@@ -33,6 +33,8 @@</span><br><span> typedef=
+ enum ovpn_key_cipher dco_cipher_t;</span><br><span> </span><br><span> enum=
+ ovpn_message_type_t {</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    /* message type #0 is treated as magic number by process_incoming_dc=
+o() */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    OVPN_CMD_=
+NO_MESSAGE =3D 0,</span><br><span>     OVPN_CMD_DEL_PEER,</span><br><span> =
+    OVPN_CMD_PACKET,</span><br><span>     OVPN_CMD_SWAP_KEYS,</span><br><sp=
+an>@@ -57,9 +59,8 @@</span><br><span>     int dco_message_peer_id;</span><b=
+r><span>     int dco_del_peer_reason;</span><br><span>     struct sockaddr_=
+storage dco_float_peer_ss;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span>     struct context *c;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    uint64_t dco_read_bytes;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    uint64_t dco_write_bytes;</span><br><s=
+pan> } dco_context_t;</span><br><span> </span><br><span> #endif /* defined(=
+ENABLE_DCO) &amp;&amp; defined(TARGET_FREEBSD) */</span><br><span>diff --gi=
+t a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c</span><br><span>index=
+ 493fce6..8ce7026 100644</span><br><span>--- a/src/openvpn/dco_linux.c</spa=
+n><br><span>+++ b/src/openvpn/dco_linux.c</span><br><span>@@ -50,6 +50,15 @=
+@</span><br><span> #include &lt;netlink/genl/family.h&gt;</span><br><span> =
+#include &lt;netlink/genl/ctrl.h&gt;</span><br><span> </span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+/* When parsing multiple DEL_PEER notifi=
+cations, openvpn tries to request stats</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+ * for each DEL_PEER message (see setenv_stats). This t=
+riggers a GET_PEER</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+* request-reply while we are still parsing the rest of the initial</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ * notifications, which can =
+lead to NLE_BUSY or even NLE_NOMEM.</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+* This basic lock ensures we don&#39;t bite our own tail by issuing a dco_g=
+et_peer</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * while sti=
+ll busy receiving and parsing other messages.</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+static bool __is_locked =3D false;</span><br><span> </span><br><s=
+pan> /* libnl &lt; 3.5.0 does not set the NLA_F_NESTED on its own, therefor=
+e we</span><br><span>  * have to explicitly do it to prevent the kernel fro=
+m failing upon</span><br><span>@@ -62,8 +71,6 @@</span><br><span> </span><b=
+r><span> void dco_check_key_ctx(const struct key_ctx_bi *key);</span><br><s=
+pan> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-typedef int (*ov=
+pn_nl_cb)(struct nl_msg *msg, void *arg);</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-</span><br><span> /**</span><br><span>  * @brief resolv=
+es the netlink ID for ovpn-dco</span><br><span>  *</span><br><span>@@ -131,=
+7 +138,9 @@</span><br><span> static int</span><br><span> ovpn_nl_recvmsgs(d=
+co_context_t *dco, const char *prefix)</span><br><span> {</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    __is_locked =3D true;</span><br><=
+span>     int ret =3D nl_recvmsgs(dco-&gt;nl_sock, dco-&gt;nl_cb);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    __is_locked =3D false;</=
+span><br><span> </span><br><span>     switch (ret)</span><br><span>     {</=
+span><br><span>@@ -167,23 +176,19 @@</span><br><span> }</span><br><span> </=
+span><br><span> /**</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *=
+ Send a prepared netlink message and registers cb as callback if non-null.<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Send a prepared n=
+etlink message.</span><br><span>  *</span><br><span>  * The method will als=
+o free nl_msg</span><br><span>  * @param dco       The dco context to use</=
+span><br><span>  * @param nl_msg    the message to use</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">- * @param cb        An optional callback i=
+f the caller expects an answer</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">- * @param cb_arg    An optional param to pass to the callback</spa=
+n><br><span>  * @param prefix    A prefix to report in the error message to=
+ give the user context</span><br><span>  * @return          status of sendi=
+ng the message</span><br><span>  */</span><br><span> static int</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-ovpn_nl_msg_send(dco_context_t *d=
+co, struct nl_msg *nl_msg, ovpn_nl_cb cb,</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-                 void *cb_arg, const char *prefix)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ovpn_nl_msg_send(dco_con=
+text_t *dco, struct nl_msg *nl_msg, const char *prefix)</span><br><span> {<=
+/span><br><span>     dco-&gt;status =3D 1;</span><br><span> </span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    nl_cb_set(dco-&gt;nl_cb, NL_CB_V=
+ALID, NL_CB_CUSTOM, cb, cb_arg);</span><br><span>     nl_send_auto(dco-&gt;=
+nl_sock, nl_msg);</span><br><span> </span><br><span>     while (dco-&gt;sta=
+tus =3D=3D 1)</span><br><span>@@ -274,7 +279,7 @@</span><br><span>     }</s=
+pan><br><span>     nla_nest_end(nl_msg, attr);</span><br><span> </span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    ret =3D ovpn_nl_msg_send(dco=
+, nl_msg, NULL, NULL, __func__);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    ret =3D ovpn_nl_msg_send(dco, nl_msg, __func__);</span><br=
+><span> </span><br><span> nla_put_failure:</span><br><span>     nlmsg_free(=
+nl_msg);</span><br><span>@@ -342,6 +347,8 @@</span><br><span>     return NL=
+_STOP;</span><br><span> }</span><br><span> </span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+static int ovpn_handle_msg(struct nl_msg *msg, void=
+ *arg);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span> static void</span><br><span> ovpn_dco_init_netlink(dco_context_t *dco=
+)</span><br><span> {</span><br><span>@@ -373,11 +380,13 @@</span><br><span>=
+ </span><br><span>     nl_socket_set_cb(dco-&gt;nl_sock, dco-&gt;nl_cb);</s=
+pan><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+dco-&gt;dco_message_peer_id =3D -1;</span><br><span>     nl_cb_err(dco-&gt;=
+nl_cb, NL_CB_CUSTOM, ovpn_nl_cb_error, &amp;dco-&gt;status);</span><br><spa=
+n>     nl_cb_set(dco-&gt;nl_cb, NL_CB_FINISH, NL_CB_CUSTOM, ovpn_nl_cb_fini=
+sh,</span><br><span>               &amp;dco-&gt;status);</span><br><span>  =
+   nl_cb_set(dco-&gt;nl_cb, NL_CB_ACK, NL_CB_CUSTOM, ovpn_nl_cb_finish,</sp=
+an><br><span>               &amp;dco-&gt;status);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    nl_cb_set(dco-&gt;nl_cb, NL_CB_VALID, NL_=
+CB_CUSTOM, ovpn_handle_msg, dco);</span><br><span> </span><br><span>     /*=
+ The async PACKET messages confuse libnl and it will drop them with</span><=
+br><span>      * wrong sequence numbers (NLE_SEQ_MISMATCH), so disable libn=
+l&#39;s sequence</span><br><span>@@ -501,7 +510,7 @@</span><br><span>     N=
+LA_PUT_U32(nl_msg, OVPN_SWAP_KEYS_ATTR_PEER_ID, peerid);</span><br><span>  =
+   nla_nest_end(nl_msg, attr);</span><br><span> </span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    ret =3D ovpn_nl_msg_send(dco, nl_msg, NULL, =
+NULL, __func__);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ ret =3D ovpn_nl_msg_send(dco, nl_msg, __func__);</span><br><span> </span><=
+br><span> nla_put_failure:</span><br><span>     nlmsg_free(nl_msg);</span><=
+br><span>@@ -525,7 +534,7 @@</span><br><span>     NLA_PUT_U32(nl_msg, OVPN_=
+DEL_PEER_ATTR_PEER_ID, peerid);</span><br><span>     nla_nest_end(nl_msg, a=
+ttr);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    ret =3D ovpn_nl_msg_send(dco, nl_msg, NULL, NULL, __func__);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    ret =3D ovpn_nl_msg_send=
+(dco, nl_msg, __func__);</span><br><span> </span><br><span> nla_put_failure=
+:</span><br><span>     nlmsg_free(nl_msg);</span><br><span>@@ -551,7 +560,7=
+ @@</span><br><span>     NLA_PUT_U8(nl_msg, OVPN_DEL_KEY_ATTR_KEY_SLOT, slo=
+t);</span><br><span>     nla_nest_end(nl_msg, attr);</span><br><span> </spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    ret =3D ovpn_nl_msg_se=
+nd(dco, nl_msg, NULL, NULL, __func__);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    ret =3D ovpn_nl_msg_send(dco, nl_msg, __func__);</sp=
+an><br><span> </span><br><span> nla_put_failure:</span><br><span>     nlmsg=
+_free(nl_msg);</span><br><span>@@ -608,7 +617,7 @@</span><br><span> </span>=
 <br><span>     nla_nest_end(nl_msg, attr);</span><br><span> </span><br><spa=
 n style=3D"color: hsl(0, 100%, 40%);">-    ret =3D ovpn_nl_msg_send(dco, nl=
 _msg, NULL, NULL, __func__);</span><br><span style=3D"color: hsl(120, 100%,=
  40%);">+    ret =3D ovpn_nl_msg_send(dco, nl_msg, __func__);</span><br><sp=
 an> </span><br><span> nla_put_failure:</span><br><span>     nlmsg_free(nl_m=
-sg);</span><br><span>@@ -551,7 +560,7 @@</span><br><span>     NLA_PUT_U8(nl=
-_msg, OVPN_DEL_KEY_ATTR_KEY_SLOT, slot);</span><br><span>     nla_nest_end(=
-nl_msg, attr);</span><br><span> </span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    ret =3D ovpn_nl_msg_send(dco, nl_msg, NULL, NULL, __func__);=
+sg);</span><br><span>@@ -637,7 +646,7 @@</span><br><span>                 k=
+eepalive_timeout);</span><br><span>     nla_nest_end(nl_msg, attr);</span><=
+br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ret =3D=
+ ovpn_nl_msg_send(dco, nl_msg, NULL, NULL, __func__);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    ret =3D ovpn_nl_msg_send(dco, nl_msg,=
+ __func__);</span><br><span> </span><br><span> nla_put_failure:</span><br><=
+span>     nlmsg_free(nl_msg);</span><br><span>@@ -705,7 +714,7 @@</span><br=
+><span> </span><br><span>     /* Even though &#39;nlctrl&#39; is a constant=
+, there seem to be no library</span><br><span>      * provided define for i=
+t */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int ctrlid =
+=3D genl_ctrl_resolve(dco-&gt;nl_sock, &quot;nlctrl&quot;);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    dco-&gt;ctrlid =3D genl_ctrl_re=
+solve(dco-&gt;nl_sock, &quot;nlctrl&quot;);</span><br><span> </span><br><sp=
+an>     struct nl_msg *nl_msg =3D nlmsg_alloc();</span><br><span>     if (!=
+nl_msg)</span><br><span>@@ -713,12 +722,12 @@</span><br><span>         retu=
+rn -ENOMEM;</span><br><span>     }</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    genlmsg_put(nl_msg, 0, 0, ctrlid, 0, 0,=
+ CTRL_CMD_GETFAMILY, 0);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    genlmsg_put(nl_msg, 0, 0, dco-&gt;ctrlid, 0, 0, CTRL_CMD_GETFAMILY=
+, 0);</span><br><span> </span><br><span>     int ret =3D -EMSGSIZE;</span><=
+br><span>     NLA_PUT_STRING(nl_msg, CTRL_ATTR_FAMILY_NAME, OVPN_NL_NAME);<=
+/span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+ret =3D ovpn_nl_msg_send(dco, nl_msg, mcast_family_handler, dco, __func__);=
 </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ret =3D ovpn_nl=
 _msg_send(dco, nl_msg, __func__);</span><br><span> </span><br><span> nla_pu=
-t_failure:</span><br><span>     nlmsg_free(nl_msg);</span><br><span>@@ -608=
-,7 +617,7 @@</span><br><span> </span><br><span>     nla_nest_end(nl_msg, at=
-tr);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    ret =3D ovpn_nl_msg_send(dco, nl_msg, NULL, NULL, __func__);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    ret =3D ovpn_nl_msg_send(=
-dco, nl_msg, __func__);</span><br><span> </span><br><span> nla_put_failure:=
-</span><br><span>     nlmsg_free(nl_msg);</span><br><span>@@ -637,7 +646,7 =
-@@</span><br><span>                 keepalive_timeout);</span><br><span>   =
-  nla_nest_end(nl_msg, attr);</span><br><span> </span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    ret =3D ovpn_nl_msg_send(dco, nl_msg, NULL, N=
-ULL, __func__);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-ret =3D ovpn_nl_msg_send(dco, nl_msg, __func__);</span><br><span> </span><b=
-r><span> nla_put_failure:</span><br><span>     nlmsg_free(nl_msg);</span><b=
-r><span>@@ -705,7 +714,7 @@</span><br><span> </span><br><span>     /* Even =
-though &#39;nlctrl&#39; is a constant, there seem to be no library</span><b=
-r><span>      * provided define for it */</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    int ctrlid =3D genl_ctrl_resolve(dco-&gt;nl_sock, &=
-quot;nlctrl&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    dco-&gt;ctrlid =3D genl_ctrl_resolve(dco-&gt;nl_sock, &quot;nlctrl&quot=
-;);</span><br><span> </span><br><span>     struct nl_msg *nl_msg =3D nlmsg_=
-alloc();</span><br><span>     if (!nl_msg)</span><br><span>@@ -713,12 +722,=
-12 @@</span><br><span>         return -ENOMEM;</span><br><span>     }</span=
-><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    genlm=
-sg_put(nl_msg, 0, 0, ctrlid, 0, 0, CTRL_CMD_GETFAMILY, 0);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    genlmsg_put(nl_msg, 0, 0, dco-&g=
-t;ctrlid, 0, 0, CTRL_CMD_GETFAMILY, 0);</span><br><span> </span><br><span> =
-    int ret =3D -EMSGSIZE;</span><br><span>     NLA_PUT_STRING(nl_msg, CTRL=
-_ATTR_FAMILY_NAME, OVPN_NL_NAME);</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    ret =3D ovpn_nl_msg_send(dco, nl_msg, m=
-cast_family_handler, dco, __func__);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    ret =3D ovpn_nl_msg_send(dco, nl_msg, __func__);</span=
-><br><span> </span><br><span> nla_put_failure:</span><br><span>     nlmsg_f=
-ree(nl_msg);</span><br><span>@@ -726,108 +735,10 @@</span><br><span> }</spa=
-n><br><span> </span><br><span> /* This function parses any netlink message =
-sent by ovpn-dco to userspace */</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-static int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-ovpn_handle_msg(struct nl_msg *msg, void *arg)</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    dco_context_t *dco =3D arg;</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    st=
-ruct genlmsghdr *gnlh =3D nlmsg_data(nlmsg_hdr(msg));</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    struct nlattr *attrs[OVPN_ATTR_MAX + 1]=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct nlmsghdr =
-*nlh =3D nlmsg_hdr(msg);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!genlmsg_v=
-alid_hdr(nlh, 0))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(D_DCO, &=
-quot;ovpn-dco: invalid header&quot;);</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-        return NL_SKIP;</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (nla_parse(a=
-ttrs, OVPN_ATTR_MAX, genlmsg_attrdata(gnlh, 0),</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-                  genlmsg_attrlen(gnlh, 0), NULL)=
-)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-        msg(D_DCO, &quot;received bo=
-gus data from ovpn-dco&quot;);</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-        return NL_SKIP;</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* we must know which =
-interface this message is referring to in order to</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-     * avoid mixing messages for other instanc=
-es</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     */</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    if (!attrs[OVPN_ATTR_IFINDEX]=
-)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-        msg(D_DCO, &quot;ovpn-dco: R=
-eceived message without ifindex&quot;);</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-        return NL_SKIP;</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    uint32_t ifin=
-dex =3D nla_get_u32(attrs[OVPN_ATTR_IFINDEX]);</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    if (ifindex !=3D dco-&gt;ifindex)</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-        msg(D_DCO_DEBUG,</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-            &quot;ovpn-dco: ignoring message (t=
-ype=3D%d) for foreign ifindex %d&quot;,</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-            gnlh-&gt;cmd, ifindex);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        return NL_SKIP;</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- /* based on the message type, we parse the subobject contained in the</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-     * message, that store=
-s the type-specific attributes.</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-     *</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-* the &quot;dco&quot; object is then filled accordingly with the informatio=
-n</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     * retrieved fro=
-m the message, so that the rest of the OpenVPN code can</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-     * react as need be.</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-     */</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    switch (gnlh-&gt;cmd)</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-        case OVPN_CMD_DEL_PEER:</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-            if (!attrs[OVPN_ATTR_DEL_PEER])</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-                msg(D_DCO, &quot;ovpn-dco: no attri=
-butes in OVPN_DEL_PEER message&quot;);</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-                return NL_SKIP;</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-          struct nlattr *dp_attrs[OVPN_DEL_PEER_ATTR_MAX + 1];</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-            if (nla_parse_nested(d=
-p_attrs, OVPN_DEL_PEER_ATTR_MAX,</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-                                 attrs[OVPN_ATTR_DEL_PEER], NULL=
-))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-                msg(D_DCO, =
-&quot;received bogus del peer packet data from ovpn-dco&quot;);</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-                return NL_SKIP;</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-            if (!dp_attrs[OVPN_DEL_PEER_ATTR_REASON]=
-)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-                msg(D_DCO, &=
-quot;ovpn-dco: no reason in DEL_PEER message&quot;);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-                return NL_SKIP;</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-            if (!dp_attrs[OVPN_DEL_PEER_A=
-TTR_PEER_ID])</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                =
-msg(D_DCO, &quot;ovpn-dco: no peer-id in DEL_PEER message&quot;);</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-                return NL_SKIP;=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-            int reason =3D nl=
-a_get_u8(dp_attrs[OVPN_DEL_PEER_ATTR_REASON]);</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-            unsigned int peerid =3D nla_get_u32(dp=
-_attrs[OVPN_DEL_PEER_ATTR_PEER_ID]);</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-      msg(D_DCO_DEBUG, &quot;ovpn-dco: received CMD_DEL_PEER, ifindex: %d, =
-peer-id %d, reason: %d&quot;,</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-                ifindex, peerid, reason);</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-            dco-&gt;dco_message_peer_id =3D pee=
-rid;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            dco-&=
-gt;dco_del_peer_reason =3D reason;</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-            dco-&gt;dco_message_type =3D OVPN_CMD_DEL_PEER;</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            break;</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-    default:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-   msg(D_DCO, &quot;ovpn-dco: received unknown command: %d&quot;, gnlh-&gt;=
-cmd);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            dco-=
-&gt;dco_message_type =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-            return NL_SKIP;</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    return NL_OK;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-</span><br><span> int</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-dco_do_read(dco_context_t *dco)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+dco_read_and_process(dco_context_t *d=
-co)</span><br><span> {</span><br><span>     msg(D_DCO_DEBUG, __func__);</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    nl_cb_set(dco-&gt;nl_=
-cb, NL_CB_VALID, NL_CB_CUSTOM, ovpn_handle_msg, dco);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     return ovpn_nl_recvms=
-gs(dco, __func__);</span><br><span> }</span><br><span> </span><br><span>@@ =
--883,27 +794,21 @@</span><br><span>     }</span><br><span> }</span><br><spa=
-n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-dco_parse_peer_multi(struct nl_msg *=
-msg, void *arg)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+stat=
-ic int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ovpn_handle_p=
-eer(dco_context_t *dco, struct nlattr *attrs[])</span><br><span> {</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    struct nlattr *tb[OVPN_ATT=
-R_MAX + 1];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct=
- genlmsghdr *gnlh =3D nlmsg_data(nlmsg_hdr(msg));</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    struct nlattr *tb_peer[OVPN_GET_PEER_RESP=
-_ATTR_MAX + 1];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-struct context_2 *c2;</span><br><span> </span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    msg(D_DCO_DEBUG, &quot;%s: parsing message...&quot;, =
-__func__);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    nla_parse(tb, OVPN_ATTR_MAX,=
- genlmsg_attrdata(gnlh, 0),</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-              genlmsg_attrlen(gnlh, 0), NULL);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    if (!tb[OVPN_ATTR_GET_PEER])</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    if (!attrs[OVPN_ATTR_GET_PEER])</span><br><span=
->     {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(=
-D_DCO_DEBUG, &quot;%s: malformed reply&quot;, __func__);</span><br><span>  =
-       return NL_SKIP;</span><br><span>     }</span><br><span> </span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    struct nlattr *tb_peer[OVPN_G=
-ET_PEER_RESP_ATTR_MAX + 1];</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-</span><br><span>     nla_parse(tb_peer, OVPN_GET_PEER_RESP_ATTR_MAX,=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              nla_dat=
-a(tb[OVPN_ATTR_GET_PEER]),</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-              nla_len(tb[OVPN_ATTR_GET_PEER]), NULL);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+              nla_data(attrs[OVPN_AT=
-TR_GET_PEER]),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-         nla_len(attrs[OVPN_ATTR_GET_PEER]), NULL);</span><br><span> </span=
-><br><span>     if (!tb_peer[OVPN_GET_PEER_RESP_ATTR_PEER_ID])</span><br><s=
-pan>     {</span><br><span>@@ -911,17 +816,180 @@</span><br><span>         =
-return NL_SKIP;</span><br><span>     }</span><br><span> </span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    struct multi_context *m =3D arg;</sp=
-an><br><span>     uint32_t peer_id =3D nla_get_u32(tb_peer[OVPN_GET_PEER_RE=
-SP_ATTR_PEER_ID]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   msg(D_DCO_DEBUG | M_NOIPREFIX, &quot;%s: parsing message for peer %u...&=
-quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        __fun=
-c__, peer_id);</span><br><span> </span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    if (peer_id &gt;=3D m-&gt;max_clients || !m-&gt;instances[pe=
-er_id])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (dco-=
-&gt;ifmode =3D=3D OVPN_MODE_P2P)</span><br><span>     {</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-        msg(M_WARN, &quot;%s: cannot stor=
-e DCO stats for peer %u&quot;, __func__,</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-            peer_id);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        c2 =3D &amp;dco-&gt;c-&gt;c2;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        if (c2-&gt;tls_multi-&gt;dco=
-_peer_id !=3D (int)peer_id)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-          return NL_SKIP;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        if (peer_id &gt;=3D dco-&gt;c-&gt=
-;multi-&gt;max_clients)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-      msg(M_WARN, &quot;%s: received out of bound peer_id %u (max=3D%u)&quo=
-t;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
-__func__, peer_id, dco-&gt;c-&gt;multi-&gt;max_clients);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+            return NL_SKIP;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        struct multi_instance *mi =3D dco-&gt;c-&gt;multi-&=
-gt;instances[peer_id];</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        if (!mi)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-  msg(M_WARN | M_NOIPREFIX,</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+                &quot;%s: received data for a non-existing peer %u&=
-quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
-   __func__, peer_id);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+            return NL_SKIP;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        c2 =3D &am=
-p;mi-&gt;context.c2;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    dco_update_peer_stat(c2, tb_=
-peer, peer_id);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    return NL_OK;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+static int</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+ovpn_handle_del_peer(dco_context_t *dco, struct nlattr *attrs[])</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (!attrs[OVPN_ATTR_DEL_PEER])</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        msg(D_DCO, &quot;ovpn-dco: no a=
-ttributes in OVPN_DEL_PEER message&quot;);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        return NL_STOP;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    st=
-ruct nlattr *dp_attrs[OVPN_DEL_PEER_ATTR_MAX + 1];</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    if (nla_parse_nested(dp_attrs, OVPN_DEL_=
-PEER_ATTR_MAX,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-                    attrs[OVPN_ATTR_DEL_PEER], NULL))</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        msg(D_DCO, &quot;received bogus del peer packet=
- data from ovpn-dco&quot;);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        return NL_STOP;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!dp_attrs[OVP=
-N_DEL_PEER_ATTR_REASON])</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        m=
-sg(D_DCO, &quot;ovpn-dco: no reason in DEL_PEER message&quot;);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        return NL_STOP;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (!dp_attrs[OVPN_DEL_PEER_ATTR_PEER=
-_ID])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        msg(D_DCO, &quot;ovp=
-n-dco: no peer-id in DEL_PEER message&quot;);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        return NL_STOP;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- int reason =3D nla_get_u8(dp_attrs[OVPN_DEL_PEER_ATTR_REASON]);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    unsigned int peerid =3D nl=
-a_get_u32(dp_attrs[OVPN_DEL_PEER_ATTR_PEER_ID]);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    msg(D_DCO_DEBUG, &quot;ovpn-dco: received CMD_DEL_PEER, ifind=
-ex: %d, peer-id %d, reason: %d&quot;,</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        dco-&gt;ifindex, peerid, reason);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    dco-&gt;dco_message_peer_id =3D=
- peerid;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    dco-&gt=
-;dco_del_peer_reason =3D reason;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    dco-&gt;dco_message_type =3D OVPN_CMD_DEL_PEER;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    return NL_OK;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static int</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ovpn_handle_msg(struct=
- nl_msg *msg, void *arg)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    dco_conte=
-xt_t *dco =3D arg;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct nlmsghdr =
-*nlh =3D nlmsg_hdr(msg);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    struct genlmsghdr *gnlh =3D genlmsg_hdr(nlh);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    struct nlattr *attrs[OVPN_ATTR_MAX +=
- 1];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    msg(D_DCO_DEBUG | M_NOIPREFIX,=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        &quot;ovpn-=
-dco: received netlink message type=3D%u cmd=3D%u flags=3D%#.4x&quot;,</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        nlh-&gt;nlmsg_typ=
-e, gnlh-&gt;cmd, nlh-&gt;nlmsg_flags);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    /* if we get a message from the NLCTRL family, it means</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+     * this is the reply to the mca=
-st ID resolution request</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+     * and we parse it accordingly.</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+     */</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    if (nlh-&gt;nlmsg_type =3D=3D dco-&gt;ctrlid)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        msg(D_DCO_DEBUG, &quot;ovpn-dco: received =
-CTRLID message&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        return mcast_family_handler(msg, dco);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- if (!genlmsg_valid_hdr(nlh, 0))</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       msg(D_DCO, &quot;ovpn-dco: invalid header&quot;);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        return NL_STOP;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    if (nla_parse(attrs, OVPN_ATTR_MAX, genlmsg_attrdata(gnlh, 0),<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                  ge=
-nlmsg_attrlen(gnlh, 0), NULL))</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     msg(D_DCO, &quot;received bogus data from ovpn-dco&quot;);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        return NL_STOP;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    /* we must know which interface this message is referrin=
-g to in order to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-  * avoid mixing messages for other instances</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+     */</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    if (!attrs[OVPN_ATTR_IFINDEX])</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        msg(D_DCO, &quot;ovpn-dco: Received message without =
-ifindex&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    return NL_STOP;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    uint32_t ifindex =3D nla_get_=
-u32(attrs[OVPN_ATTR_IFINDEX]);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    if (ifindex !=3D dco-&gt;ifindex)</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        msg(D_DCO_DEBUG, &quot;ovpn-dco: ignoring message fo=
-r foreign ifindex %d&quot;,</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+            ifindex);</span><br><span>         return NL_SKIP;</spa=
-n><br><span>     }</span><br><span> </span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    dco_update_peer_stat(&amp;m-&gt;instances[peer_id]-&gt;c=
-ontext.c2, tb_peer, peer_id);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    /* based on the message type, we parse the subobject containe=
-d in the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * mess=
-age, that stores the type-specific attributes.</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+     *</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+     * the &quot;dco&quot; object is then filled accordingly =
-with the information</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+     * retrieved from the message, so that *process_incoming_dco can react=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * as need be.<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+     */</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    int ret;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    switch (gnlh-&gt;cmd)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        case OVPN_CMD_GET_PEER:</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            /* return directly, there are no =
-messages to pass to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-             * *process_incoming_dco()</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+             */</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            return ovpn_handle_peer(dco, attrs);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        case OVPN_CMD_DEL_PEER:</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+            ret =3D ovpn_handle_del_peer(dco, attrs);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+            break;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        default:</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            msg(D_DCO, &quot;ovpn-dco: received unknown c=
-ommand: %d&quot;, gnlh-&gt;cmd);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+            dco-&gt;dco_message_type =3D 0;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+            return NL_STOP;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    if (ret !=3D NL_OK)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        return ret;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    if (dco-&gt;c-&gt;mode =3D=
-=3D CM_TOP)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        multi_process_=
-incoming_dco(dco);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        process_incoming_dco(dco);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span> </=
-span><br><span>     return NL_OK;</span><br><span> }</span><br><span>@@ -93=
-1,57 +999,29 @@</span><br><span> {</span><br><span>     msg(D_DCO_DEBUG, &q=
-uot;%s&quot;, __func__);</span><br><span> </span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    if (__is_locked)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        msg(D_DCO_DEBUG, &quot;%s: cannot request peer stats whil=
-e parsing other messages&quot;,</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+            __func__);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        return 0;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(dco-&gt;c=
--&gt;multi =3D=3D m);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span>     struct nl_msg *nl_msg =3D ovpn_dco_nlmsg_create(dco=
-, OVPN_CMD_GET_PEER);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    if (!nl_msg)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return =
--ENOMEM;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span=
-><br><span> </span><br><span>     nlmsg_hdr(nl_msg)-&gt;nlmsg_flags |=3D NL=
-M_F_DUMP;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    int ret =3D ovpn_nl_msg_send(dco, nl_msg, dco_parse_peer_multi, m=
-, __func__);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int=
- ret =3D ovpn_nl_msg_send(dco, nl_msg, __func__);</span><br><span> </span><=
-br><span>     nlmsg_free(nl_msg);</span><br><span>     return ret;</span><b=
-r><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-static int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-dco_=
-parse_peer(struct nl_msg *msg, void *arg)</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    struct context *c =3D arg;</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    struct nlattr *tb[OVPN_ATTR_MAX + 1];</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    struct genlmsghdr *gnlh =3D nlmsg_data(nlm=
-sg_hdr(msg));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(D_DCO_DEBUG, &quot;%s=
-: parsing message...&quot;, __func__);</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-nla_parse(tb, OVPN_ATTR_MAX, genlmsg_attrdata(gnlh, 0),</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-              genlmsg_attrlen(gnlh, 0), N=
-ULL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    if (!tb[OVPN_ATTR_GET_PEER])</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-        msg(D_DCO_DEBUG, &quot;%s: malform=
-ed reply&quot;, __func__);</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-        return NL_SKIP;</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    struct nlattr *tb_peer[OVP=
-N_GET_PEER_RESP_ATTR_MAX + 1];</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    nla_pars=
-e(tb_peer, OVPN_GET_PEER_RESP_ATTR_MAX,</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-              nla_data(tb[OVPN_ATTR_GET_PEER]),</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-              nla_len(tb[OVPN_A=
-TTR_GET_PEER]), NULL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!tb_peer[OVP=
-N_GET_PEER_RESP_ATTR_PEER_ID])</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
- msg(M_WARN, &quot;%s: no peer-id provided in reply&quot;, __func__);</span=
+t_failure:</span><br><span>     nlmsg_free(nl_msg);</span><br><span>@@ -726=
+,108 +735,10 @@</span><br><span> }</span><br><span> </span><br><span> /* Th=
+is function parses any netlink message sent by ovpn-dco to userspace */</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-static int</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-ovpn_handle_msg(struct nl_msg *msg, =
+void *arg)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    dco_context_t *dco =3D arg;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    struct genlmsghdr *gnlh =3D nlmsg_data=
+(nlmsg_hdr(msg));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+struct nlattr *attrs[OVPN_ATTR_MAX + 1];</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    struct nlmsghdr *nlh =3D nlmsg_hdr(msg);</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    if (!genlmsg_valid_hdr(nlh, 0))</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-        msg(D_DCO, &quot;ovpn-dco: invalid header&quot;)=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return NL_SK=
+IP;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    if (nla_parse(attrs, OVPN_ATTR_MAX, genlmsg_attrdat=
+a(gnlh, 0),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
+        genlmsg_attrlen(gnlh, 0), NULL))</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-        msg(D_DCO, &quot;received bogus data from ovpn-dco&quot;);</span=
 ><br><span style=3D"color: hsl(0, 100%, 40%);">-        return NL_SKIP;</sp=
 an><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span sty=
 le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    uint32_t peer_id =3D nla_get_u32(tb_peer[OVPN_GET_PEER_RES=
-P_ATTR_PEER_ID]);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-if (c-&gt;c2.tls_multi-&gt;dco_peer_id !=3D peer_id)</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-        return NL_SKIP;</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    dco_update_peer=
-_stat(&amp;c-&gt;c2, tb_peer, peer_id);</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- return NL_OK;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> int</span=
-><br><span> dco_get_peer_stats(struct context *c)</span><br><span> {</span>=
-<br><span>@@ -993,6 +1033,13 @@</span><br><span>         return 0;</span><b=
-r><span>     }</span><br><span> </span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    if (__is_locked)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        msg(D_DCO_DEBUG, &quot;%s: cannot request peer stats while parsing =
-other messages&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+            __func__);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span>     dco_context_t *dco =3D &amp;c-&gt;c1.tuntap-&gt;dco;</span><br><=
-span>     struct nl_msg *nl_msg =3D ovpn_dco_nlmsg_create(dco, OVPN_CMD_GET=
-_PEER);</span><br><span>     struct nlattr *attr =3D nla_nest_start(nl_msg,=
- OVPN_ATTR_GET_PEER);</span><br><span>@@ -1001,7 +1048,7 @@</span><br><span=
->     NLA_PUT_U32(nl_msg, OVPN_GET_PEER_ATTR_PEER_ID, peer_id);</span><br><=
-span>     nla_nest_end(nl_msg, attr);</span><br><span> </span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    ret =3D ovpn_nl_msg_send(dco, nl_msg,=
- dco_parse_peer, c, __func__);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    ret =3D ovpn_nl_msg_send(dco, nl_msg, __func__);</span><br><=
-span> </span><br><span> nla_put_failure:</span><br><span>     nlmsg_free(nl=
-_msg);</span><br><span>diff --git a/src/openvpn/dco_linux.h b/src/openvpn/d=
-co_linux.h</span><br><span>index cf6bdd4..9209915 100644</span><br><span>--=
-- a/src/openvpn/dco_linux.h</span><br><span>+++ b/src/openvpn/dco_linux.h</=
-span><br><span>@@ -44,6 +44,7 @@</span><br><span>     int status;</span><br=
-><span> </span><br><span>     struct context *c;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    int ctrlid;</span><br><span> </span><br><s=
-pan>     enum ovpn_mode ifmode;</span><br><span> </span><br><span>@@ -55,8 =
-+56,6 @@</span><br><span>     int dco_message_type;</span><br><span>     in=
-t dco_message_peer_id;</span><br><span>     int dco_del_peer_reason;</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    uint64_t dco_read_bytes;=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    uint64_t dco_writ=
-e_bytes;</span><br><span> } dco_context_t;</span><br><span> </span><br><spa=
-n> #endif /* defined(ENABLE_DCO) &amp;&amp; defined(TARGET_LINUX) */</span>=
-<br><span>diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c</span>=
-<br><span>index bc465db..b11d506 100644</span><br><span>--- a/src/openvpn/d=
-co_win.c</span><br><span>+++ b/src/openvpn/dco_win.c</span><br><span>@@ -42=
-3,7 +423,7 @@</span><br><span> }</span><br><span> </span><br><span> int</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-dco_do_read(dco_context_t=
- *dco)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_read_and_=
-process(dco_context_t *dco)</span><br><span> {</span><br><span>     /* no-o=
-p on windows */</span><br><span>     ASSERT(0);</span><br><span>diff --git =
-a/src/openvpn/forward.c b/src/openvpn/forward.c</span><br><span>index 4e9e7=
-39..e43ce28 100644</span><br><span>--- a/src/openvpn/forward.c</span><br><s=
-pan>+++ b/src/openvpn/forward.c</span><br><span>@@ -1269,13 +1269,11 @@</sp=
-an><br><span>     }</span><br><span> }</span><br><span> </span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-static void</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-process_incoming_dco(struct context *c)</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+process_incoming_dco(dco_context_t *dco)</spa=
-n><br><span> {</span><br><span> #if defined(ENABLE_DCO) &amp;&amp; (defined=
-(TARGET_LINUX) || defined(TARGET_FREEBSD))</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    dco_context_t *dco =3D &amp;c-&gt;c1.tuntap-&gt;dc=
-o;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    dco_do_read(dco);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    struct context *c =3D dco-&gt;c;</=
-span><br><span> </span><br><span>     /* FreeBSD currently sends us removal=
- notifcation with the old peer-id in</span><br><span>      * p2p mode with =
-the ping timeout reason, so ignore that one to not shoot</span><br><span>@@=
- -1291,6 +1289,8 @@</span><br><span>     switch (dco-&gt;dco_message_type)<=
-/span><br><span>     {</span><br><span>         case OVPN_CMD_DEL_PEER:</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+            /* peer is =
-gone, unset ID to prevent more kernel calls */</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            c-&gt;c2.tls_multi-&gt;dco_peer_id =
-=3D -1;</span><br><span>             if (dco-&gt;dco_del_peer_reason =3D=3D=
- OVPN_DEL_PEER_REASON_EXPIRED)</span><br><span>             {</span><br><sp=
-an>                 msg(D_DCO_DEBUG, &quot;%s: received peer expired notifi=
-cation of for peer-id &quot;</span><br><span>@@ -2344,7 +2344,7 @@</span><b=
-r><span>     {</span><br><span>         if (!IS_SIG(c))</span><br><span>   =
-      {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            pr=
-ocess_incoming_dco(c);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+            dco_read_and_process(&amp;c-&gt;c1.tuntap-&gt;dco);</span><b=
-r><span>         }</span><br><span>     }</span><br><span> }</span><br><spa=
-n>diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h</span><br><spa=
-n>index 3d0abd5..1de2aa2 100644</span><br><span>--- a/src/openvpn/forward.h=
-</span><br><span>+++ b/src/openvpn/forward.h</span><br><span>@@ -50,6 +50,7=
- @@</span><br><span> #include &quot;openvpn.h&quot;</span><br><span> #inclu=
-de &quot;occ.h&quot;</span><br><span> #include &quot;ping.h&quot;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;dco.h&quot;</s=
-pan><br><span> </span><br><span> #define IOW_TO_TUN          (1&lt;&lt;0)</=
-span><br><span> #define IOW_TO_LINK         (1&lt;&lt;1)</span><br><span>@@=
- -248,6 +249,12 @@</span><br><span>  */</span><br><span> void process_incom=
-ing_tun(struct context *c);</span><br><span> </span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+ * Process an incoming DCO message (from kernel space).</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+ * @param dco - Pointer to the structure repre=
-senting the DCO context.</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void proces=
-s_incoming_dco(dco_context_t *dco);</span><br><span> </span><br><span> /**<=
-/span><br><span>  * Write a packet to the virtual tun/tap network interface=
-.</span><br><span>diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c</spa=
-n><br><span>index 38c938e..b1714c8 100644</span><br><span>--- a/src/openvpn=
-/mtcp.c</span><br><span>+++ b/src/openvpn/mtcp.c</span><br><span>@@ -747,7 =
-+747,7 @@</span><br><span>             /* incoming data on DCO? */</span><b=
-r><span>             else if (e-&gt;arg =3D=3D MTCP_DCO)</span><br><span>  =
-           {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-       multi_process_incoming_dco(m);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+                dco_read_and_process(&amp;m-&gt;top.c1.tu=
-ntap-&gt;dco);</span><br><span>             }</span><br><span> #endif</span=
-><br><span>             /* signal received? */</span><br><span>diff --git a=
-/src/openvpn/mudp.c b/src/openvpn/mudp.c</span><br><span>index 8cc717b..9a7=
-1eeb 100644</span><br><span>--- a/src/openvpn/mudp.c</span><br><span>+++ b/=
-src/openvpn/mudp.c</span><br><span>@@ -409,11 +409,7 @@</span><br><span>   =
-  {</span><br><span>         if (!IS_SIG(&amp;m-&gt;top))</span><br><span> =
-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
-bool ret =3D true;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-         while (ret)</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-           {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-       ret =3D multi_process_incoming_dco(m);</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            dco_read_and_process(&amp;m-&gt;top.c1.tuntap=
--&gt;dco);</span><br><span>         }</span><br><span>     }</span><br><spa=
-n> #endif</span><br><span>diff --git a/src/openvpn/multi.c b/src/openvpn/mu=
-lti.c</span><br><span>index 69497a6..7620065 100644</span><br><span>--- a/s=
-rc/openvpn/multi.c</span><br><span>+++ b/src/openvpn/multi.c</span><br><spa=
-n>@@ -3287,20 +3287,17 @@</span><br><span>      * installed, and we do not =
-need to clean up the state in the kernel */</span><br><span>     mi-&gt;con=
-text.c2.tls_multi-&gt;dco_peer_id =3D -1;</span><br><span>     mi-&gt;conte=
-xt.sig-&gt;signal_text =3D reason;</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    mi-&gt;context.c2.dco_read_bytes =3D dco-&gt;dco_read_byte=
-s;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    mi-&gt;context.=
-c2.dco_write_bytes =3D dco-&gt;dco_write_bytes;</span><br><span>     multi_=
-signal_instance(m, mi, SIGTERM);</span><br><span> }</span><br><span> </span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-bool</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-multi_process_incoming_dco(struct multi_con=
-text *m)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+multi_process_incoming_dco=
-(dco_context_t *dco)</span><br><span> {</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    dco_context_t *dco =3D &amp;m-&gt;top.c1.tuntap-&gt;d=
-co;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(dco-&=
-gt;c-&gt;multi);</span><br><span> </span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    struct multi_context *m =3D dco-&gt;c-&gt;multi;</span><=
-br><span>     struct multi_instance *mi =3D NULL;</span><br><span> </span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    int ret =3D dco_do_read(&=
-amp;m-&gt;top.c1.tuntap-&gt;dco);</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-</span><br><span>     int peer_id =3D dco-&gt;dco_message_peer_=
-id;</span><br><span> </span><br><span>     /* no peer-specific message deli=
-vered -&gt; nothing to process.</span><br><span>@@ -3308,7 +3305,7 @@</span=
-><br><span>      */</span><br><span>     if (peer_id &lt; 0)</span><br><spa=
-n>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        retur=
-n ret &gt; 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  return;</span><br><span>     }</span><br><span> </span><br><span>     if =
-((peer_id &lt; m-&gt;max_clients) &amp;&amp; (m-&gt;instances[peer_id]))</s=
-pan><br><span>@@ -3355,13 +3352,6 @@</span><br><span>             &quot;typ=
-e %d, del_peer_reason %d&quot;, peer_id, dco-&gt;dco_message_type,</span><b=
-r><span>             dco-&gt;dco_del_peer_reason);</span><br><span>     }</=
+00%, 40%);">-    /* we must know which interface this message is referring =
+to in order to</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     * =
+avoid mixing messages for other instances</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-     */</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    if (!attrs[OVPN_ATTR_IFINDEX])</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-        msg(D_DCO, &quot;ovpn-dco: Received message without ifindex&quot=
+;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return NL_=
+SKIP;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    uint32_t ifindex =3D nla_get_u32(attrs[OVPN_ATTR_=
+IFINDEX]);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (ifi=
+ndex !=3D dco-&gt;ifindex)</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg=
+(D_DCO_DEBUG,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+    &quot;ovpn-dco: ignoring message (type=3D%d) for foreign ifindex %d&quo=
+t;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            gnlh-&=
+gt;cmd, ifindex);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    return NL_SKIP;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    /* based on the message type, we pa=
+rse the subobject contained in the</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-     * message, that stores the type-specific attributes.</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-     *</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-     * the &quot;dco&quot; object is then=
+ filled accordingly with the information</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-     * retrieved from the message, so that the rest of t=
+he OpenVPN code can</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+   * react as need be.</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-     */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    switch (g=
+nlh-&gt;cmd)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-        case OVPN_CMD_DEL=
+_PEER:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (!attrs[OVPN=
+_ATTR_DEL_PEER])</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+       {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
+   msg(D_DCO, &quot;ovpn-dco: no attributes in OVPN_DEL_PEER message&quot;)=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                retu=
+rn NL_SKIP;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
+  }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-            struct nlattr *dp_attrs[OVP=
+N_DEL_PEER_ATTR_MAX + 1];</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-            if (nla_parse_nested(dp_attrs, OVPN_DEL_PEER_ATTR_MAX,</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-                          =
+       attrs[OVPN_ATTR_DEL_PEER], NULL))</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-                msg(D_DCO, &quot;received bogus del peer packet =
+data from ovpn-dco&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-                return NL_SKIP;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if=
+ (!dp_attrs[OVPN_DEL_PEER_ATTR_REASON])</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-                msg(D_DCO, &quot;ovpn-dco: no reason in DEL_PEER =
+message&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+          return NL_SKIP;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-            }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+        if (!dp_attrs[OVPN_DEL_PEER_ATTR_PEER_ID])</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-                msg(D_DCO, &quot;ovpn-dco: no peer-id =
+in DEL_PEER message&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-                return NL_SKIP;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-            int reason =3D nla_get_u8(dp_attrs[OVPN_DEL_PEER_ATTR_R=
+EASON]);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            u=
+nsigned int peerid =3D nla_get_u32(dp_attrs[OVPN_DEL_PEER_ATTR_PEER_ID]);</=
 span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    dco-&gt;dco_message_type =3D 0;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    dco-&gt;dco_message_peer_=
-id =3D -1;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    dco-&gt=
-;dco_del_peer_reason =3D -1;</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    dco-&gt;dco_read_bytes =3D 0;</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    dco-&gt;dco_write_bytes =3D 0;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    return ret &gt; 0;</span><br><span> }</=
-span><br><span> #endif /* if defined(ENABLE_DCO) &amp;&amp; defined(TARGET_=
-LINUX) */</span><br><span> </span><br><span>diff --git a/src/openvpn/multi.=
-h b/src/openvpn/multi.h</span><br><span>index 7167639..1b784e1 100644</span=
-><br><span>--- a/src/openvpn/multi.h</span><br><span>+++ b/src/openvpn/mult=
-i.h</span><br><span>@@ -317,13 +317,9 @@</span><br><span> /**</span><br><sp=
-an>  * Process an incoming DCO message (from kernel space).</span><br><span=
->  *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param m      =
-      - The single \c multi_context structur.e</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">- * @return</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *  -=
- True, if the message was received correctly.</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">- *  - False, if there was an error while reading th=
-e message.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param=
- dco - The DCO context containing the parsed message.</span><br><span>  */<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-bool multi_process_inc=
-oming_dco(struct multi_context *m);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+void multi_process_incoming_dco(dco_context_t *dco);</span>=
-<br><span> </span><br><span> /*********************************************=
-*****************************/</span><br><span> /**</span><br><span></span>=
-<br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/=
-+/1632?usp=3Demail">change 1632</a>. To unsubscribe, or for help writing ma=
-il filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail=
-">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessag=
-e"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAct=
-ion"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1=
-632?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></=
-div>
+=3D"color: hsl(0, 100%, 40%);">-            msg(D_DCO_DEBUG, &quot;ovpn-dco=
+: received CMD_DEL_PEER, ifindex: %d, peer-id %d, reason: %d&quot;,</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-                ifindex, peer=
+id, reason);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+   dco-&gt;dco_message_peer_id =3D peerid;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-            dco-&gt;dco_del_peer_reason =3D reason;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            dco-&gt;dco_=
+message_type =3D OVPN_CMD_DEL_PEER;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+     break;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        default:</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-            msg(D_DCO, &quot;ovpn-dco: received =
+unknown command: %d&quot;, gnlh-&gt;cmd);</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-            dco-&gt;dco_message_type =3D 0;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-            return NL_SKIP;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    return NL_OK;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
+pan> int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-dco_do_read(d=
+co_context_t *dco)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+d=
+co_read_and_process(dco_context_t *dco)</span><br><span> {</span><br><span>=
+     msg(D_DCO_DEBUG, __func__);</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    nl_cb_set(dco-&gt;nl_cb, NL_CB_VALID, NL_CB_CUSTOM, ovpn_han=
+dle_msg, dco);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
+<br><span>     return ovpn_nl_recvmsgs(dco, __func__);</span><br><span> }</=
+span><br><span> </span><br><span>@@ -883,27 +794,21 @@</span><br><span>    =
+ }</span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+dco_parse_peer_multi(struct nl_msg *msg, void *arg)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+static int</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ovpn_handle_peer(dco_context_t *dco, struct nlattr=
+ *attrs[])</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    struct nlattr *tb[OVPN_ATTR_MAX + 1];</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    struct genlmsghdr *gnlh =3D nlmsg_data(nlms=
+g_hdr(msg));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    str=
+uct nlattr *tb_peer[OVPN_GET_PEER_RESP_ATTR_MAX + 1];</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    struct context_2 *c2;</span><br><span=
+> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(D_DCO_DEBUG=
+, &quot;%s: parsing message...&quot;, __func__);</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    nla_parse(tb, OVPN_ATTR_MAX, genlmsg_attrdata(gnlh, 0),</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-              genlmsg_attrlen(g=
+nlh, 0), NULL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!tb[OVPN_ATTR_GET_P=
+EER])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!attrs=
+[OVPN_ATTR_GET_PEER])</span><br><span>     {</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        msg(D_DCO_DEBUG, &quot;%s: malformed reply=
+&quot;, __func__);</span><br><span>         return NL_SKIP;</span><br><span=
+>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    struct nlattr *tb_peer[OVPN_GET_PEER_RESP_ATTR_MAX + 1];</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     nla_parse(=
+tb_peer, OVPN_GET_PEER_RESP_ATTR_MAX,</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-              nla_data(tb[OVPN_ATTR_GET_PEER]),</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-              nla_len(tb[OVPN_ATT=
+R_GET_PEER]), NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++              nla_data(attrs[OVPN_ATTR_GET_PEER]),</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+              nla_len(attrs[OVPN_ATTR_GET=
+_PEER]), NULL);</span><br><span> </span><br><span>     if (!tb_peer[OVPN_GE=
+T_PEER_RESP_ATTR_PEER_ID])</span><br><span>     {</span><br><span>@@ -911,1=
+7 +816,180 @@</span><br><span>         return NL_SKIP;</span><br><span>    =
+ }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   struct multi_context *m =3D arg;</span><br><span>     uint32_t peer_id =
+=3D nla_get_u32(tb_peer[OVPN_GET_PEER_RESP_ATTR_PEER_ID]);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    msg(D_DCO_DEBUG | M_NOIPREFIX, &=
+quot;%s: parsing message for peer %u...&quot;,</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        __func__, peer_id);</span><br><span> </s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (peer_id &gt;=3D =
+m-&gt;max_clients || !m-&gt;instances[peer_id])</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    if (dco-&gt;ifmode =3D=3D OVPN_MODE_P2P)</s=
+pan><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       msg(M_WARN, &quot;%s: cannot store DCO stats for peer %u&quot;, __fu=
+nc__,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            peer=
+_id);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        c2 =3D=
+ &amp;dco-&gt;c-&gt;c2;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        if (c2-&gt;tls_multi-&gt;dco_peer_id !=3D (int)peer_id)</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            return NL_SKIP;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    else</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     if (peer_id &gt;=3D dco-&gt;c-&gt;multi-&gt;max_clients)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            msg(M_WARN, &quot;%s: receive=
+d out of bound peer_id %u (max=3D%u)&quot;,</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+                __func__, peer_id, dco-&gt;c-&gt;mu=
+lti-&gt;max_clients);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+            return NL_SKIP;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        struct mult=
+i_instance *mi =3D dco-&gt;c-&gt;multi-&gt;instances[peer_id];</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        if (!mi)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+            msg(M_WARN | M_NOIPREFIX,</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                &quot;%s: r=
+eceived data for a non-existing peer %u&quot;,</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+                __func__, peer_id);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+            return NL_SKIP;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        c2 =3D &amp;mi-&gt;context.c2;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    dco_update_peer_stat(c2, tb_peer, peer_id);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    return NL_OK;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+static int</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+ovpn_handle_del_peer(dco_contex=
+t_t *dco, struct nlattr *attrs[])</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+if (!attrs[OVPN_ATTR_DEL_PEER])</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      msg(D_DCO, &quot;ovpn-dco: no attributes in OVPN_DEL_PEER message&quo=
+t;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return =
+NL_STOP;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    struct nlattr *dp_attrs[OVPN_DEL_PEER_AT=
+TR_MAX + 1];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if =
+(nla_parse_nested(dp_attrs, OVPN_DEL_PEER_ATTR_MAX,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                         attrs[OVPN_ATTR_=
+DEL_PEER], NULL))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(D_DC=
+O, &quot;received bogus del peer packet data from ovpn-dco&quot;);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        return NL_STOP;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    if (!dp_attrs[OVPN_DEL_PEER_ATTR_REASON])</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        msg(D_DCO, &quot;ovpn-dco: no reason =
+in DEL_PEER message&quot;);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        return NL_STOP;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  if (!dp_attrs[OVPN_DEL_PEER_ATTR_PEER_ID])</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        msg(D_DCO, &quot;ovpn-dco: no peer-id in DEL_PEER messag=
+e&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        re=
+turn NL_STOP;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    int reason =3D nla_get_u8(dp_attrs[=
+OVPN_DEL_PEER_ATTR_REASON]);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    unsigned int peerid =3D nla_get_u32(dp_attrs[OVPN_DEL_PEER_ATT=
+R_PEER_ID]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(D_DCO_DEBUG, &quot=
+;ovpn-dco: received CMD_DEL_PEER, ifindex: %d, peer-id %d, reason: %d&quot;=
+,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        dco-&gt;if=
+index, peerid, reason);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    dco-&gt;dco_message_peer_id =3D peerid;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    dco-&gt;dco_del_peer_reason =3D reason;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    dco-&gt;dco_message=
+_type =3D OVPN_CMD_DEL_PEER;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return=
+ NL_OK;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+static int</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ovpn_handle_msg(struct nl_msg *msg, void *arg)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    dco_context_t *dco =3D arg;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    struct nlmsghdr *nlh =3D nlmsg_hdr(msg);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    struct genlmsghdr *gnlh =3D=
+ genlmsg_hdr(nlh);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   struct nlattr *attrs[OVPN_ATTR_MAX + 1];</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    msg(D_DCO_DEBUG | M_NOIPREFIX,</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        &quot;ovpn-dco: received netlink message type=
+=3D%u cmd=3D%u flags=3D%#.4x&quot;,</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        nlh-&gt;nlmsg_type, gnlh-&gt;cmd, nlh-&gt;nlmsg_fla=
+gs);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    /* if we get a message from th=
+e NLCTRL family, it means</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+     * this is the reply to the mcast ID resolution request</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+     * and we parse it accord=
+ingly.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     */</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (nlh-&gt;nlmsg_typ=
+e =3D=3D dco-&gt;ctrlid)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        m=
+sg(D_DCO_DEBUG, &quot;ovpn-dco: received CTRLID message&quot;);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        return mcast_family_han=
+dler(msg, dco);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    if (!genlmsg_valid_hdr(nlh, 0))</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        msg(D_DCO, &quot;ovpn-dco: =
+invalid header&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        return NL_STOP;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    if (nla_parse(attrs, O=
+VPN_ATTR_MAX, genlmsg_attrdata(gnlh, 0),</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                  genlmsg_attrlen(gnlh, 0), NULL))</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        msg(D_DCO, &quot;received bog=
+us data from ovpn-dco&quot;);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        return NL_STOP;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* we must know=
+ which interface this message is referring to in order to</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+     * avoid mixing messages for othe=
+r instances</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     */<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!attrs[OVPN_=
+ATTR_IFINDEX])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(D_DCO, =
+&quot;ovpn-dco: Received message without ifindex&quot;);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        return NL_STOP;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    uint32_t ifindex =3D nla_get_u32(attrs[OVPN_ATTR_IFINDEX]);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (ifindex !=3D dc=
+o-&gt;ifindex)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(D_DCO_D=
+EBUG, &quot;ovpn-dco: ignoring message for foreign ifindex %d&quot;,</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+            ifindex);</spa=
+n><br><span>         return NL_SKIP;</span><br><span>     }</span><br><span=
+> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    dco_update_peer=
+_stat(&amp;m-&gt;instances[peer_id]-&gt;context.c2, tb_peer, peer_id);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* based on the mess=
+age type, we parse the subobject contained in the</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+     * message, that stores the type-specific=
+ attributes.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     *<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * the &quot;dco=
+&quot; object is then filled accordingly with the information</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+     * retrieved from the message=
+, so that *process_incoming_dco can react</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+     * as need be.</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+     */</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    int ret;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    switch (gnlh-&gt;cmd)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  case OVPN_CMD_GET_PEER:</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        /* return directly, there are no messages to pass to</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+             * *process_incoming_d=
+co()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             */=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            return =
+ovpn_handle_peer(dco, attrs);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        case OVPN_C=
+MD_DEL_PEER:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            ret =
+=3D ovpn_handle_del_peer(dco, attrs);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+            break;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        defa=
+ult:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            msg=
+(D_DCO, &quot;ovpn-dco: received unknown command: %d&quot;, gnlh-&gt;cmd);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            dco-&gt;=
+dco_message_type =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+            return NL_STOP;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (ret !=3D NL_O=
+K)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        return ret;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    if (dco-&gt;c-&gt;mode =3D=3D CM_TOP)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        multi_process_incoming_dco(dco);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    else</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        process_incoming_dco(dco);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    }</span><br><span> </span><br><span>     return NL_OK;=
+</span><br><span> }</span><br><span>@@ -931,57 +999,29 @@</span><br><span> =
+{</span><br><span>     msg(D_DCO_DEBUG, &quot;%s&quot;, __func__);</span><b=
+r><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (__=
+is_locked)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(D_DCO_DEBUG=
+, &quot;%s: cannot request peer stats while parsing other messages&quot;,</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            __func__)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return 0;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    ASSERT(dco-&gt;c-&gt;multi =3D=3D m);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     struct nl=
+_msg *nl_msg =3D ovpn_dco_nlmsg_create(dco, OVPN_CMD_GET_PEER);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    if (!nl_msg)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        return -ENOMEM;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    }</span><br><span> </span><br><span>    =
+ nlmsg_hdr(nl_msg)-&gt;nlmsg_flags |=3D NLM_F_DUMP;</span><br><span> </span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    int ret =3D ovpn_nl_msg=
+_send(dco, nl_msg, dco_parse_peer_multi, m, __func__);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    int ret =3D ovpn_nl_msg_send(dco, nl=
+_msg, __func__);</span><br><span> </span><br><span>     nlmsg_free(nl_msg);=
+</span><br><span>     return ret;</span><br><span> }</span><br><span> </spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-static int</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-dco_parse_peer(struct nl_msg *msg, vo=
+id *arg)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    struct context *c =3D arg;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct nlattr *tb[OV=
+PN_ATTR_MAX + 1];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+struct genlmsghdr *gnlh =3D nlmsg_data(nlmsg_hdr(msg));</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    msg(D_DCO_DEBUG, &quot;%s: parsing message...&quot;, __fun=
+c__);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    nla_parse(tb, OVPN_ATTR_MAX, genl=
+msg_attrdata(gnlh, 0),</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-              genlmsg_attrlen(gnlh, 0), NULL);</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    if (!tb[OVPN_ATTR_GET_PEER])</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+        msg(D_DCO_DEBUG, &quot;%s: malformed reply&quot;, __func__);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        return NL_SKIP;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    struct nlattr *tb_peer[OVPN_GET_PEER_RESP_ATTR_MAX + 1];</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    nla_parse(tb_peer, OVPN_GET_PEER_RESP_A=
+TTR_MAX,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
+ nla_data(tb[OVPN_ATTR_GET_PEER]),</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-              nla_len(tb[OVPN_ATTR_GET_PEER]), NULL);</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    if (!tb_peer[OVPN_GET_PEER_RESP_ATTR_PEER_ID])<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-        msg(M_WARN, &quot;%s: no peer-=
+id provided in reply&quot;, __func__);</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-        return NL_SKIP;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    uint32_t peer_=
+id =3D nla_get_u32(tb_peer[OVPN_GET_PEER_RESP_ATTR_PEER_ID]);</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    if (c-&gt;c2.tls_multi-&gt;dco_=
+peer_id !=3D peer_id)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return N=
+L_SKIP;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    dco_update_peer_stat(&amp;c-&gt;c2, tb_peer, pe=
+er_id);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    return NL_OK;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-</span><br><span> int</span><br><span> dco_get_peer_stats(s=
+truct context *c)</span><br><span> {</span><br><span>@@ -993,6 +1033,13 @@<=
+/span><br><span>         return 0;</span><br><span>     }</span><br><span> =
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (__is_locked=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        msg(D_DCO_DEBUG, &quot;%=
+s: cannot request peer stats while parsing other messages&quot;,</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+            __func__);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        return 0;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     dco_context_t *dco =
+=3D &amp;c-&gt;c1.tuntap-&gt;dco;</span><br><span>     struct nl_msg *nl_ms=
+g =3D ovpn_dco_nlmsg_create(dco, OVPN_CMD_GET_PEER);</span><br><span>     s=
+truct nlattr *attr =3D nla_nest_start(nl_msg, OVPN_ATTR_GET_PEER);</span><b=
+r><span>@@ -1001,7 +1048,7 @@</span><br><span>     NLA_PUT_U32(nl_msg, OVPN=
+_GET_PEER_ATTR_PEER_ID, peer_id);</span><br><span>     nla_nest_end(nl_msg,=
+ attr);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    ret =3D ovpn_nl_msg_send(dco, nl_msg, dco_parse_peer, c, __func__);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ret =3D ovpn_nl=
+_msg_send(dco, nl_msg, __func__);</span><br><span> </span><br><span> nla_pu=
+t_failure:</span><br><span>     nlmsg_free(nl_msg);</span><br><span>diff --=
+git a/src/openvpn/dco_linux.h b/src/openvpn/dco_linux.h</span><br><span>ind=
+ex cf6bdd4..9209915 100644</span><br><span>--- a/src/openvpn/dco_linux.h</s=
+pan><br><span>+++ b/src/openvpn/dco_linux.h</span><br><span>@@ -44,6 +44,7 =
+@@</span><br><span>     int status;</span><br><span> </span><br><span>     =
+struct context *c;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   int ctrlid;</span><br><span> </span><br><span>     enum ovpn_mode ifmode=
+;</span><br><span> </span><br><span>@@ -55,8 +56,6 @@</span><br><span>     =
+int dco_message_type;</span><br><span>     int dco_message_peer_id;</span><=
+br><span>     int dco_del_peer_reason;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    uint64_t dco_read_bytes;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    uint64_t dco_write_bytes;</span><br><span> } dc=
+o_context_t;</span><br><span> </span><br><span> #endif /* defined(ENABLE_DC=
+O) &amp;&amp; defined(TARGET_LINUX) */</span><br><span>diff --git a/src/ope=
+nvpn/dco_win.c b/src/openvpn/dco_win.c</span><br><span>index bc465db..b11d5=
+06 100644</span><br><span>--- a/src/openvpn/dco_win.c</span><br><span>+++ b=
+/src/openvpn/dco_win.c</span><br><span>@@ -423,7 +423,7 @@</span><br><span>=
+ }</span><br><span> </span><br><span> int</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-dco_do_read(dco_context_t *dco)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+dco_read_and_process(dco_context_t *dco)<=
+/span><br><span> {</span><br><span>     /* no-op on windows */</span><br><s=
+pan>     ASSERT(0);</span><br><span>diff --git a/src/openvpn/forward.c b/sr=
+c/openvpn/forward.c</span><br><span>index 4e9e739..e43ce28 100644</span><br=
+><span>--- a/src/openvpn/forward.c</span><br><span>+++ b/src/openvpn/forwar=
+d.c</span><br><span>@@ -1269,13 +1269,11 @@</span><br><span>     }</span><b=
+r><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-static void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-pro=
+cess_incoming_dco(struct context *c)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+process_incoming_dco(dco_context_t *dco)</span><br><span> {</span><br><sp=
+an> #if defined(ENABLE_DCO) &amp;&amp; (defined(TARGET_LINUX) || defined(TA=
+RGET_FREEBSD))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    dco=
+_context_t *dco =3D &amp;c-&gt;c1.tuntap-&gt;dco;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    dco_do_read(dco);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    struct context *c =3D dco-&gt;c;</span><br><span> </span><br><=
+span>     /* FreeBSD currently sends us removal notifcation with the old pe=
+er-id in</span><br><span>      * p2p mode with the ping timeout reason, so =
+ignore that one to not shoot</span><br><span>@@ -1291,6 +1289,8 @@</span><b=
+r><span>     switch (dco-&gt;dco_message_type)</span><br><span>     {</span=
+><br><span>         case OVPN_CMD_DEL_PEER:</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            /* peer is gone, unset ID to prevent mo=
+re kernel calls */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           c-&gt;c2.tls_multi-&gt;dco_peer_id =3D -1;</span><br><span>     =
+        if (dco-&gt;dco_del_peer_reason =3D=3D OVPN_DEL_PEER_REASON_EXPIRED=
+)</span><br><span>             {</span><br><span>                 msg(D_DCO=
+_DEBUG, &quot;%s: received peer expired notification of for peer-id &quot;<=
+/span><br><span>@@ -2344,7 +2344,7 @@</span><br><span>     {</span><br><spa=
+n>         if (!IS_SIG(c))</span><br><span>         {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            process_incoming_dco(c);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+            dco_read_and_p=
+rocess(&amp;c-&gt;c1.tuntap-&gt;dco);</span><br><span>         }</span><br>=
+<span>     }</span><br><span> }</span><br><span>diff --git a/src/openvpn/fo=
+rward.h b/src/openvpn/forward.h</span><br><span>index 3d0abd5..1de2aa2 1006=
+44</span><br><span>--- a/src/openvpn/forward.h</span><br><span>+++ b/src/op=
+envpn/forward.h</span><br><span>@@ -50,6 +50,7 @@</span><br><span> #include=
+ &quot;openvpn.h&quot;</span><br><span> #include &quot;occ.h&quot;</span><b=
+r><span> #include &quot;ping.h&quot;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+#include &quot;dco.h&quot;</span><br><span> </span><br><sp=
+an> #define IOW_TO_TUN          (1&lt;&lt;0)</span><br><span> #define IOW_T=
+O_LINK         (1&lt;&lt;1)</span><br><span>@@ -248,6 +249,12 @@</span><br>=
+<span>  */</span><br><span> void process_incoming_tun(struct context *c);</=
+span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Process an incom=
+ing DCO message (from kernel space).</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ * @param dco - Pointer to the structure representing the DCO context.</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+void process_incoming_dco(dco_context_t =
+*dco);</span><br><span> </span><br><span> /**</span><br><span>  * Write a p=
+acket to the virtual tun/tap network interface.</span><br><span>diff --git =
+a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c</span><br><span>index 38c938e..b1=
+714c8 100644</span><br><span>--- a/src/openvpn/mtcp.c</span><br><span>+++ b=
+/src/openvpn/mtcp.c</span><br><span>@@ -747,7 +747,7 @@</span><br><span>   =
+          /* incoming data on DCO? */</span><br><span>             else if =
+(e-&gt;arg =3D=3D MTCP_DCO)</span><br><span>             {</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-                multi_process_incoming=
+_dco(m);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+     dco_read_and_process(&amp;m-&gt;top.c1.tuntap-&gt;dco);</span><br><spa=
+n>             }</span><br><span> #endif</span><br><span>             /* si=
+gnal received? */</span><br><span>diff --git a/src/openvpn/mudp.c b/src/ope=
+nvpn/mudp.c</span><br><span>index 8cc717b..9a71eeb 100644</span><br><span>-=
+-- a/src/openvpn/mudp.c</span><br><span>+++ b/src/openvpn/mudp.c</span><br>=
+<span>@@ -409,11 +409,7 @@</span><br><span>     {</span><br><span>         =
+if (!IS_SIG(&amp;m-&gt;top))</span><br><span>         {</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-            bool ret =3D true;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-            while (ret)</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-                ret =3D multi_process_=
+incoming_dco(m);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+       }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+ dco_read_and_process(&amp;m-&gt;top.c1.tuntap-&gt;dco);</span><br><span>  =
+       }</span><br><span>     }</span><br><span> #endif</span><br><span>dif=
+f --git a/src/openvpn/multi.c b/src/openvpn/multi.c</span><br><span>index 6=
+9497a6..7620065 100644</span><br><span>--- a/src/openvpn/multi.c</span><br>=
+<span>+++ b/src/openvpn/multi.c</span><br><span>@@ -3287,20 +3287,17 @@</sp=
+an><br><span>      * installed, and we do not need to clean up the state in=
+ the kernel */</span><br><span>     mi-&gt;context.c2.tls_multi-&gt;dco_pee=
+r_id =3D -1;</span><br><span>     mi-&gt;context.sig-&gt;signal_text =3D re=
+ason;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    mi-&gt;conte=
+xt.c2.dco_read_bytes =3D dco-&gt;dco_read_bytes;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    mi-&gt;context.c2.dco_write_bytes =3D dco-&g=
+t;dco_write_bytes;</span><br><span>     multi_signal_instance(m, mi, SIGTER=
+M);</span><br><span> }</span><br><span> </span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-bool</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-multi_process_incoming_dco(struct multi_context *m)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+multi_process_incoming_dco(dco_context_t *dco)</span><br=
+><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    dco_cont=
+ext_t *dco =3D &amp;m-&gt;top.c1.tuntap-&gt;dco;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    ASSERT(dco-&gt;c-&gt;multi);</span><br><sp=
+an> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct mult=
+i_context *m =3D dco-&gt;c-&gt;multi;</span><br><span>     struct multi_ins=
+tance *mi =3D NULL;</span><br><span> </span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    int ret =3D dco_do_read(&amp;m-&gt;top.c1.tuntap-&gt;dc=
+o);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> =
+    int peer_id =3D dco-&gt;dco_message_peer_id;</span><br><span> </span><b=
+r><span>     /* no peer-specific message delivered -&gt; nothing to process=
+.</span><br><span>@@ -3308,7 +3305,7 @@</span><br><span>      */</span><br>=
+<span>     if (peer_id &lt; 0)</span><br><span>     {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        return ret &gt; 0;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        return;</span><br><span>    =
+ }</span><br><span> </span><br><span>     if ((peer_id &lt; m-&gt;max_clien=
+ts) &amp;&amp; (m-&gt;instances[peer_id]))</span><br><span>@@ -3355,13 +335=
+2,6 @@</span><br><span>             &quot;type %d, del_peer_reason %d&quot;=
+, peer_id, dco-&gt;dco_message_type,</span><br><span>             dco-&gt;d=
+co_del_peer_reason);</span><br><span>     }</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    dco-&gt;dco_message_type =3D 0;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    dco-&gt;dco_message_peer_id =3D -1;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    dco-&gt;dco_del_peer_reason =3D -1;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    dco-&gt;dco_read_byt=
+es =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    dco-&gt;=
+dco_write_bytes =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    return ret &gt; 0;</span><br><span> }</span><br><span> #endif /* if de=
+fined(ENABLE_DCO) &amp;&amp; defined(TARGET_LINUX) */</span><br><span> </sp=
+an><br><span>diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h</span><=
+br><span>index 7167639..1b784e1 100644</span><br><span>--- a/src/openvpn/mu=
+lti.h</span><br><span>+++ b/src/openvpn/multi.h</span><br><span>@@ -317,13 =
++317,9 @@</span><br><span> /**</span><br><span>  * Process an incoming DCO =
+message (from kernel space).</span><br><span>  *</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">- * @param m            - The single \c multi_con=
+text structur.e</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">- * @return</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">- *  - True, if the message was recei=
+ved correctly.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *  - F=
+alse, if there was an error while reading the message.</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ * @param dco - The DCO context containi=
+ng the parsed message.</span><br><span>  */</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-bool multi_process_incoming_dco(struct multi_context =
+*m);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void multi_proc=
+ess_incoming_dco(dco_context_t *dco);</span><br><span> </span><br><span> /*=
+*************************************************************************/<=
+/span><br><span> /**</span><br><span></span><br></pre><p>To view, visit <a =
+href=3D"http://gerrit.openvpn.net/c/openvpn/+/1632?usp=3Demail">change 1632=
+</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"ht=
+tp://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemsco=
+pe itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"a=
+ction" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hre=
+f=3D"http://gerrit.openvpn.net/c/openvpn/+/1632?usp=3Demail"/><meta itempro=
+p=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I92c5f74a27b40fede204f714b04=
@@ -2063,5 +2056,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---DdbI5TtiEqs=--
+--Y9m7DFyQ0f4=--
 
