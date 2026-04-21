@@ -1,11 +1,9 @@
+Date: Tue, 21 Apr 2026 08:19:13 +0200 (CEST)
+Message-Id: <202604210619.63L6JDKE007037@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Tue, 21 Apr 2026 07:53:50 +0200
-Message-ID: <20260421055357.21708-1-gert@...1296...>
-In-Reply-To: <gerrit.1776718304000.Ica5f37e525c3812609021750ecd3986c1420e2a4@...2715...>
-References: <gerrit.1776718304000.Ica5f37e525c3812609021750ecd3986c1420e2a4@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Mbed TLS: Error out if we have no valid
- tls-groups
+In-Reply-To: <20260420174735.18824-1-gert@...1296...>
+References: <20260420174735.18824-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix copyright line in README
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,47 +14,30 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Max Fillinger <maximilian.fillinger@...2918...>
+Patch has been applied to the master, release/2.7 and release/2.6 branch.
 
-Previously, when no valid groups were specified with the tls-groups
-option, the Mbed TLS build of OpenVPN would start up and run, but fail
-to complete a handshake, while the OpenSSL build would exit with an
-error. This commit changes the behavior of the Mbed TLS build to match
-the OpenSSL version.
+commit 25a3cec98d67ad540ebd2f102485caeeb0450d60 (master)
+commit bac8be07613c0df8b8e2870f2d9d922f7602dac1 (release/2.7)
+commit 219b8b3b306d1ee47bce707c7ff2cbd3f2f3614a (release/2.6)
+Author: Gert Doering
+Date:   Mon Apr 20 19:47:29 2026 +0200
 
-Change-Id: Ica5f37e525c3812609021750ecd3986c1420e2a4
-Signed-off-by: Max Fillinger <maximilian.fillinger@...2918...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1633
----
+     Fix copyright line in README
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Yuriy Darnobyt <yura.uddr@...277...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1629
+     Message-Id: <20260420174735.18824-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36696.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1633
-This mail reflects revision 1 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@...1227...>
+--
+kind regards,
 
-        
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index 85c771a..8a0f7d2 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -450,6 +450,12 @@
-         }
-     }
- 
-+    /* Check if any groups were valid. */
-+    if (i == 0)
-+    {
-+        msg(M_FATAL, "Error: All groups in \"%s\" are invalid or unsupported.", groups);
-+    }
-+
-     /* Recent mbedtls versions state that the list of groups must be terminated
-      * with 0. Older versions state that it must be terminated with MBEDTLS_ECP_DP_NONE
-      * which is also 0, so this works either way. */
+Gert Doering
+
 
