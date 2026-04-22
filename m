@@ -1,16 +1,16 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 22 Apr 2026 07:46:31 +0000
-In-Reply-To: <gerrit.1775421558000.I125cf63f11257d7245ead2f7feafb86b841580a5@...2715...>
-References: <gerrit.1775421558000.I125cf63f11257d7245ead2f7feafb86b841580a5@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <dfc6b73b0df2eeb6cd4cd66b73474002cb44dc12-HTML@...2715...>
+From: "its_Giaan (Code Review)" <gerrit@...515...>
+Date: Wed, 22 Apr 2026 08:26:55 +0000
+In-Reply-To: <gerrit.1776783100000.I6b303805a3688b6f6363140c76853a58badecd8f@...2715...>
+References: <gerrit.1776783100000.I6b303805a3688b6f6363140c76853a58badecd8f@...2715...>
+Reply-To: gianmarco@...2726..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, antonio@...2726...
+Message-ID: <e17bd00f4a650fd8490ab3641f292a502170099c-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="ePUMtnhqXqs="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: dev-tools: Add
- script to run cppcheck against the code-base
+Content-Type: multipart/alternative; boundary="M1fOWKbBl9U="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Multisocket: use
+ event engine rwflags for UDP I/O
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,418 +19,368 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---ePUMtnhqXqs=
+--M1fOWKbBl9U=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/16=
-20?usp=3Demail )
+Attention is currently required from: ordex, plaisthos.
 
-Change subject: dev-tools: Add script to run cppcheck against the code-base
+Hello ordex, plaisthos,
+
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/1635?usp=3Demail
+
+to look at the new patch set (#3).
+
+
+Change subject: Multisocket: use event engine rwflags for UDP I/O
 ......................................................................
 
-dev-tools: Add script to run cppcheck against the code-base
+Multisocket: use event engine rwflags for UDP I/O
 
-Also add a suitable suppressions-list file to
-make it possible to run it without reporting
-errors.
+udp_flags does not guarantee correct association with the socket being
+processed. Use the rwflags delivered by the event engine along with the
+event to ensure proper per-socket I/O handling.
 
-Tested with cppcheck 2.19.0 (Ubuntu 26.04).
+Remove udp_flags entirely.
 
-Change-Id: I125cf63f11257d7245ead2f7feafb86b841580a5
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1620
-Message-Id: <20260419134205.21459-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36=
-664.html
-Signed-off-by: Gert Doering <gert@...1296...>
+This change is based on an investigation triggered by a report from
+Joshua Rogers using ZeroPath.
+
+Change-Id: I6b303805a3688b6f6363140c76853a58badecd8f
+Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
 ---
-M Makefile.am
-A dev-tools/cppcheck-suppression
-A dev-tools/run-cppcheck.sh
-3 files changed, 120 insertions(+), 0 deletions(-)
+M src/openvpn/forward.c
+M src/openvpn/mudp.c
+M src/openvpn/mudp.h
+M src/openvpn/multi_io.c
+M src/openvpn/multi_io.h
+5 files changed, 8 insertions(+), 28 deletions(-)
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/35/1635/3
 
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 27cfd36..36597db 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -2029,8 +2029,7 @@
+ }
 
-diff --git a/Makefile.am b/Makefile.am
-index 362ae96..2df7eea 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -89,3 +89,10 @@
+ static void
+-multi_io_process_flags(struct context *c, struct event_set *es, const unsi=
+gned int flags,
+-                       unsigned int *out_socket, unsigned int *out_tuntap)
++multi_io_process_flags(struct context *c, struct event_set *es, const unsi=
+gned int flags)
+ {
+     unsigned int socket =3D 0;
+     unsigned int tuntap =3D 0;
+@@ -2130,16 +2129,6 @@
+     }
 
- doxygen:
- 	$(MAKE) -C doc/doxygen doxygen
-+
-+.PHONY: cppcheck
-+cppcheck:
-+	BUILD_DIR=3D"$(abs_top_builddir)" \
-+	SOURCE_DIR=3D"$(abs_top_srcdir)" \
-+	INCLUDE_FLAGS=3D"$(LIBNL_GENL_CFLAGS)" \
-+		"$(top_srcdir)/dev-tools/run-cppcheck.sh"
-diff --git a/dev-tools/cppcheck-suppression b/dev-tools/cppcheck-suppression
-new file mode 100644
-index 0000000..1f31edb
---- /dev/null
-+++ b/dev-tools/cppcheck-suppression
-@@ -0,0 +1,87 @@
-+# We start with --enable=3Dall, but then suppress some issues that have to=
-o many
-+# occurences right now. They still should be fixed at some point
-+constParameter
-+constParameterCallback
-+constParameterPointer
-+constVariable
-+constVariablePointer
-+variableScope
-+# We have a lot of library includes, not all of them are really required,
-+# so ignore them
-+missingIncludeSystem
-+# cppcheck doesn't understand about check_malloc_return, so these are
-+# usually misleading
-+nullPointerOutOfMemory
-+nullPointerArithmeticOutOfMemory
-+# These are specific false-positives (FP) or ignored (IGN) issues
-+# We might want to move some of them to inline-suppression to avoid
-+# the static line-numbers
-+# IGN: multi code does weird things with pointers to local variables...
-+autoVariables:src/openvpn/multi.c:4177
-+autoVariables:src/openvpn/multi_io.c:280
-+# IGN: the code header =3D 0 | (OPCODE << P_OPCODE_SHIFT) is used intentio=
-nally
-+badBitmaskCheck:src/openvpn/mudp.c
-+badBitmaskCheck:tests/unit_tests/openvpn/test_pkt.c
-+# IGN: event code uses a pointer to store integers
-+intToPointerCast:src/openvpn/multi_io.c
-+intToPointerCast:src/openvpn/forward.c
-+# FP: crt_error is always true on Unix, but not Windows
-+knownConditionTrueFalse:src/openvpn/error.h:380
-+# FP: code needs to accomodate many different defines
-+knownConditionTrueFalse:src/openvpn/event.c:1148
-+# FP: dco_win support has "false" stubs
-+knownConditionTrueFalse:src/openvpn/forward.c
-+knownConditionTrueFalse:src/openvpn/init.c
-+knownConditionTrueFalse:src/openvpn/multi_io.c:163
-+# FP: cppcheck thinks that management_query_user_pass is always true,
-+# but no idea why
-+knownConditionTrueFalse:src/openvpn/misc.c:97
-+# FP: cert_uri_supported is a wrapper around defines, so it's
-+# always constant but differs depending on OpenSSL version
-+knownConditionTrueFalse:src/openvpn/ssl_openssl.c:1258
-+# FP: cppcheck doesn't understand that the function changes szErrMessage
-+knownConditionTrueFalse:src/tapctl/main.c:704
-+knownConditionTrueFalse:src/openvpnmsica/dllmain.c:164
-+# FP: cppcheck seems to be confused since we cast the pointer to integer
-+memleak:src/plugins/down-root/down-root.c:337
-+# FP: eventmsg.h is not built on Unix
-+missingInclude:src/openvpnserv/common.c:25
-+# IGN: strlen(NULL) is not nice code, but seems to work
-+nullPointerRedundantCheck:src/openvpn/init.c:299
-+# IGN: We reuse the same variable name due to macro usage
-+shadowVariable:src/openvpn/options.c:2580
-+shadowVariable:src/openvpn/options.c:2598
-+# FP: yes, t_prev is unitialized, but t_prev_len is 0, so that's handled
-+uninitvar:src/openvpn/crypto_epoch.c:60
-+# FP: yes, parm is unitialized, but parm_len is 0, so that's handled
-+uninitvar:src/openvpn/options_parse.c:148
-+# FP: uninit is fine when it is a return parameter
-+ctuuninitvar:src/openvpn/crypto_mbedtls_legacy.c:698
-+uninitvar:src/openvpnserv/interactive.c:1935
-+uninitvar:src/tapctl/main.c:566
-+# FP: cppcheck doesn't account for short-circuiting
-+unreadVariable:src/openvpn/manage.c:682
-+unusedFunction:src/openvpn/siphash_reference.c
-+# FP: exported as DLL
-+unusedFunction:src/openvpnmsica/*.c
-+# FP: loaded as plugins
-+unusedFunction:src/plugins/*
-+unusedFunction:sample/sample-plugins/*
-+# FP: wmain
-+unusedFunction:src/tapctl/main.c:613
-+unusedFunction:tests/unit_tests/openvpnserv/test_openvpnserv.c
-+# IGN: keep mocking around for future use
-+unusedFunction:tests/unit_tests/openvpn/mock_msg.c
-+# FP: doesn't account for --wrap
-+unusedFunction:tests/unit_tests/openvpn/test_tls_crypt.c
-+unusedFunction:/usr/include/*
-+# IGN: old code that is difficult to test (MSG_ERRQUEUE), ignore for now
-+unusedStructMember:src/openvpn/mtu.c:281
-+# FP: used implictly by NL macros
-+unusedStructMember:src/openvpn/networking_sitnl.c
-+# IGN: keep explanatory fields in test data
-+unusedStructMember:tests/unit_tests/openvpn/test_pkcs11.c
-+# IGN: nicer to assign generic "arg" early
-+variableScope:src/openvpn/networking_sitnl.c:1390
-+# IGN: nicer to keep the "variable" earlier
-+variableScope:src/openvpnserv/interactive.c:2687
-diff --git a/dev-tools/run-cppcheck.sh b/dev-tools/run-cppcheck.sh
-new file mode 100755
-index 0000000..674fc092
---- /dev/null
-+++ b/dev-tools/run-cppcheck.sh
-@@ -0,0 +1,26 @@
-+#!/bin/bash
-+
-+set -eu
-+
-+SCRIPT_DIR=3D$(dirname $(readlink -e "${BASH_SOURCE[0]}"))
-+: ${SOURCE_DIR:=3D$SCRIPT_DIR/..}
-+: ${BUILD_DIR:=3D$PWD}
-+: ${INCLUDE_FLAGS:=3D}
-+CPPCHECK_DIR=3D"${BUILD_DIR}/cppcheck_build_dir"
-+
-+set -x
-+
-+mkdir -p "$CPPCHECK_DIR"
-+cd "${SOURCE_DIR}"
-+cppcheck -j$(nproc) \
-+	 -DHAVE_CONFIG_H -U_WIN32 \
-+         -DMBEDTLS_SSL_PROTO_TLS1_3 -DMBEDTLS_SSL_KEYING_MATERIAL_EXPORT \
-+	 -I./include/ -I./tests/unit_tests/openvpn/ \
-+	 -I./src/compat/ -I./src/openvpn/ -I./src/openvpnserv/ -I./src/plugins/au=
-th-pam/ \
-+	 -I"${BUILD_DIR}" -I"${BUILD_DIR}/include/" $INCLUDE_FLAGS \
-+	 --enable=3Dall \
-+	 --suppressions-list=3D"${SCRIPT_DIR}/cppcheck-suppression" \
-+	 --cppcheck-build-dir=3D"${CPPCHECK_DIR}" \
-+	 --check-level=3Dexhaustive \
-+	 --error-exitcode=3D1 \
-+	 src/ tests/ sample/
+     tun_set(c->c1.tuntap, es, tuntap, (void *)tun_shift, NULL);
+-
+-    if (out_socket)
+-    {
+-        *out_socket =3D socket;
+-    }
+-
+-    if (out_tuntap)
+-    {
+-        *out_tuntap =3D tuntap;
+-    }
+ }
+
+ /*
+@@ -2150,10 +2139,7 @@
+ void
+ get_io_flags_udp(struct context *c, struct multi_io *multi_io, const unsig=
+ned int flags)
+ {
+-    unsigned int out_socket;
+-
+-    multi_io_process_flags(c, multi_io->es, flags, &out_socket, NULL);
+-    multi_io->udp_flags =3D (out_socket << SOCKET_SHIFT);
++    multi_io_process_flags(c, multi_io->es, flags);
+ }
+
+ /*
+@@ -2163,8 +2149,6 @@
+ void
+ io_wait(struct context *c, const unsigned int flags)
+ {
+-    unsigned int out_socket;
+-    unsigned int out_tuntap;
+     struct event_set_return esr[4];
+
+     /* These shifts all depend on EVENT_READ and EVENT_WRITE */
+@@ -2183,7 +2167,7 @@
+      */
+     event_reset(c->c2.event_set);
+
+-    multi_io_process_flags(c, c->c2.event_set, flags, &out_socket, &out_tu=
+ntap);
++    multi_io_process_flags(c, c->c2.event_set, flags);
+
+ #if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
+     if (c->c1.tuntap)
+diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
+index 432c79a..beec57a 100644
+--- a/src/openvpn/mudp.c
++++ b/src/openvpn/mudp.c
+@@ -336,18 +336,17 @@
+  * Process a UDP socket event.
+  */
+ void
+-multi_process_io_udp(struct multi_context *m, struct link_socket *sock)
++multi_process_io_udp(struct multi_context *m, struct link_socket *sock, un=
+signed int rwflags)
+ {
+-    const unsigned int status =3D m->multi_io->udp_flags;
+     const unsigned int mpp_flags =3D (MPP_PRE_SELECT | MPP_CLOSE_ON_SIGNAL=
+);
+
+     /* UDP port ready to accept write */
+-    if (status & SOCKET_WRITE)
++    if (rwflags & SOCKET_WRITE)
+     {
+         multi_process_outgoing_link(m, mpp_flags);
+     }
+     /* Incoming data on UDP port */
+-    else if (status & SOCKET_READ)
++    else if (rwflags & SOCKET_READ)
+     {
+         read_incoming_link(&m->top, sock);
+         if (!IS_SIG(&m->top))
+@@ -355,8 +354,6 @@
+             multi_process_incoming_link(m, NULL, mpp_flags, sock);
+         }
+     }
+-
+-    m->multi_io->udp_flags =3D ES_ERROR;
+ }
+
+ /*
+diff --git a/src/openvpn/mudp.h b/src/openvpn/mudp.h
+index 005ee10..1417651 100644
+--- a/src/openvpn/mudp.h
++++ b/src/openvpn/mudp.h
+@@ -32,7 +32,7 @@
+
+ unsigned int p2mp_iow_flags(const struct multi_context *m);
+
+-void multi_process_io_udp(struct multi_context *m, struct link_socket *soc=
+k);
++void multi_process_io_udp(struct multi_context *m, struct link_socket *soc=
+k, unsigned int rwflags);
+ /*************************************************************************=
+*/
+ /**
+  * Get, and if necessary create, the multi_instance associated with a
+diff --git a/src/openvpn/multi_io.c b/src/openvpn/multi_io.c
+index e6f4e9c..f9af800 100644
+--- a/src/openvpn/multi_io.c
++++ b/src/openvpn/multi_io.c
+@@ -457,7 +457,7 @@
+                     }
+                     else
+                     {
+-                        multi_process_io_udp(m, ev_arg->u.sock);
++                        multi_process_io_udp(m, ev_arg->u.sock, e->rwflags=
+);
+                         mi =3D m->pending;
+                     }
+                     /* monitor and/or handle events that are
+diff --git a/src/openvpn/multi_io.h b/src/openvpn/multi_io.h
+index 6b2f59a..d6734bd 100644
+--- a/src/openvpn/multi_io.h
++++ b/src/openvpn/multi_io.h
+@@ -55,7 +55,6 @@
+     int n_esr;
+     int maxevents;
+     unsigned int tun_rwflags;
+-    unsigned int udp_flags;
+ #ifdef ENABLE_MANAGEMENT
+     unsigned int management_persist_flags;
+ #endif
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1620?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1635?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I125cf63f11257d7245ead2f7feafb86b841580a5
-Gerrit-Change-Number: 1620
-Gerrit-PatchSet: 6
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Change-Id: I6b303805a3688b6f6363140c76853a58badecd8f
+Gerrit-Change-Number: 1635
+Gerrit-PatchSet: 3
+Gerrit-Owner: its_Giaan <gianmarco@...2726...>
+Gerrit-Reviewer: ordex <antonio@...2726...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: ordex <antonio@...2726...>
 
---ePUMtnhqXqs=
+--M1fOWKbBl9U=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1620?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
--wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">dev-tools: Add script to run cppcheck against th=
-e code-base<br><br>Also add a suitable suppressions-list file to<br>make it=
- possible to run it without reporting<br>errors.<br><br>Tested with cppchec=
-k 2.19.0 (Ubuntu 26.04).<br><br>Change-Id: I125cf63f11257d7245ead2f7feafb86=
-b841580a5<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>A=
-cked-by: Gert Doering &lt;gert@...1296...&gt;<br>Gerrit URL: https://gerrit=
-.openvpn.net/c/openvpn/+/1620<br>Message-Id: &lt;20260419134205.21459-1-ger=
-t@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1096...=
-ourceforge.net/msg36664.html<br>Signed-off-by: Gert Doering &lt;gert@...1826...=
-6...&gt;<br>---<br>M Makefile.am<br>A dev-tools/cppcheck-suppression<br>A d=
-ev-tools/run-cppcheck.sh<br>3 files changed, 120 insertions(+), 0 deletions=
-(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/Makefile.am b/Makefile.am</span><br><span>index 362ae96..2d=
-f7eea 100644</span><br><span>--- a/Makefile.am</span><br><span>+++ b/Makefi=
-le.am</span><br><span>@@ -89,3 +89,10 @@</span><br><span> </span><br><span>=
- doxygen:</span><br><span> 	$(MAKE) -C doc/doxygen doxygen</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+.PHONY: cppcheck</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+cppcheck:</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+	BUILD_DIR=3D&quot;$(abs_top_builddir)&quot; \</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+	SOURCE_DIR=3D&quot;$(abs_top_srcdir)&quo=
-t; \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	INCLUDE_FLAGS=
-=3D&quot;$(LIBNL_GENL_CFLAGS)&quot; \</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+		&quot;$(top_srcdir)/dev-tools/run-cppcheck.sh&quot;</sp=
-an><br><span>diff --git a/dev-tools/cppcheck-suppression b/dev-tools/cppche=
-ck-suppression</span><br><span>new file mode 100644</span><br><span>index 0=
-000000..1f31edb</span><br><span>--- /dev/null</span><br><span>+++ b/dev-too=
-ls/cppcheck-suppression</span><br><span>@@ -0,0 +1,87 @@</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+# We start with --enable=3Dall, but th=
-en suppress some issues that have too many</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+# occurences right now. They still should be fixed a=
-t some point</span><br><span style=3D"color: hsl(120, 100%, 40%);">+constPa=
-rameter</span><br><span style=3D"color: hsl(120, 100%, 40%);">+constParamet=
-erCallback</span><br><span style=3D"color: hsl(120, 100%, 40%);">+constPara=
-meterPointer</span><br><span style=3D"color: hsl(120, 100%, 40%);">+constVa=
-riable</span><br><span style=3D"color: hsl(120, 100%, 40%);">+constVariable=
-Pointer</span><br><span style=3D"color: hsl(120, 100%, 40%);">+variableScop=
-e</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# We have a lot of=
- library includes, not all of them are really required,</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+# so ignore them</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+missingIncludeSystem</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+# cppcheck doesn&#39;t understand about =
-check_malloc_return, so these are</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+# usually misleading</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+nullPointerOutOfMemory</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+nullPointerArithmeticOutOfMemory</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+# These are specific false-positives (FP) or=
- ignored (IGN) issues</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+# We might want to move some of them to inline-suppression to avoid</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+# the static line-numbers=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# IGN: multi code d=
-oes weird things with pointers to local variables...</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+autoVariables:src/openvpn/multi.c:4177</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+autoVariables:src/open=
-vpn/multi_io.c:280</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
- IGN: the code header =3D 0 | (OPCODE &lt;&lt; P_OPCODE_SHIFT) is used inte=
-ntionally</span><br><span style=3D"color: hsl(120, 100%, 40%);">+badBitmask=
-Check:src/openvpn/mudp.c</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+badBitmaskCheck:tests/unit_tests/openvpn/test_pkt.c</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+# IGN: event code uses a pointer to st=
-ore integers</span><br><span style=3D"color: hsl(120, 100%, 40%);">+intToPo=
-interCast:src/openvpn/multi_io.c</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+intToPointerCast:src/openvpn/forward.c</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+# FP: crt_error is always true on Unix, b=
-ut not Windows</span><br><span style=3D"color: hsl(120, 100%, 40%);">+known=
-ConditionTrueFalse:src/openvpn/error.h:380</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+# FP: code needs to accomodate many different define=
-s</span><br><span style=3D"color: hsl(120, 100%, 40%);">+knownConditionTrue=
-False:src/openvpn/event.c:1148</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+# FP: dco_win support has &quot;false&quot; stubs</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+knownConditionTrueFalse:src/openvp=
-n/forward.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+knownCon=
-ditionTrueFalse:src/openvpn/init.c</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+knownConditionTrueFalse:src/openvpn/multi_io.c:163</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+# FP: cppcheck thinks that ma=
-nagement_query_user_pass is always true,</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+# but no idea why</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+knownConditionTrueFalse:src/openvpn/misc.c:97</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+# FP: cert_uri_supported is a =
-wrapper around defines, so it&#39;s</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+# always constant but differs depending on OpenSSL version<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+knownConditionTrueFa=
-lse:src/openvpn/ssl_openssl.c:1258</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+# FP: cppcheck doesn&#39;t understand that the function chan=
-ges szErrMessage</span><br><span style=3D"color: hsl(120, 100%, 40%);">+kno=
-wnConditionTrueFalse:src/tapctl/main.c:704</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+knownConditionTrueFalse:src/openvpnmsica/dllmain.c:1=
-64</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# FP: cppcheck se=
-ems to be confused since we cast the pointer to integer</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+memleak:src/plugins/down-root/down-root=
-.c:337</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# FP: eventms=
-g.h is not built on Unix</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+missingInclude:src/openvpnserv/common.c:25</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+# IGN: strlen(NULL) is not nice code, but seems=
- to work</span><br><span style=3D"color: hsl(120, 100%, 40%);">+nullPointer=
-RedundantCheck:src/openvpn/init.c:299</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+# IGN: We reuse the same variable name due to macro usage=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+shadowVariable:src/=
-openvpn/options.c:2580</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+shadowVariable:src/openvpn/options.c:2598</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+# FP: yes, t_prev is unitialized, but t_prev_len i=
-s 0, so that&#39;s handled</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+uninitvar:src/openvpn/crypto_epoch.c:60</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+# FP: yes, parm is unitialized, but parm_len is =
-0, so that&#39;s handled</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+uninitvar:src/openvpn/options_parse.c:148</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+# FP: uninit is fine when it is a return paramet=
-er</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ctuuninitvar:src/=
-openvpn/crypto_mbedtls_legacy.c:698</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+uninitvar:src/openvpnserv/interactive.c:1935</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+uninitvar:src/tapctl/main.c:566</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+# FP: cppcheck doesn&#=
-39;t account for short-circuiting</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+unreadVariable:src/openvpn/manage.c:682</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+unusedFunction:src/openvpn/siphash_refere=
-nce.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# FP: exported=
- as DLL</span><br><span style=3D"color: hsl(120, 100%, 40%);">+unusedFuncti=
-on:src/openvpnmsica/*.c</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+# FP: loaded as plugins</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+unusedFunction:src/plugins/*</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+unusedFunction:sample/sample-plugins/*</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+# FP: wmain</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+unusedFunction:src/tapctl/main.c:613</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+unusedFunction:tests/unit_test=
-s/openvpnserv/test_openvpnserv.c</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+# IGN: keep mocking around for future use</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+unusedFunction:tests/unit_tests/openvpn/=
-mock_msg.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# FP: doe=
-sn&#39;t account for --wrap</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+unusedFunction:tests/unit_tests/openvpn/test_tls_crypt.c</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+unusedFunction:/usr/include/*<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+# IGN: old code that=
- is difficult to test (MSG_ERRQUEUE), ignore for now</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+unusedStructMember:src/openvpn/mtu.c:281<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+# FP: used implictly=
- by NL macros</span><br><span style=3D"color: hsl(120, 100%, 40%);">+unused=
-StructMember:src/openvpn/networking_sitnl.c</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+# IGN: keep explanatory fields in test data</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+unusedStructMember:tests/un=
-it_tests/openvpn/test_pkcs11.c</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+# IGN: nicer to assign generic &quot;arg&quot; early</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+variableScope:src/openvpn/netwo=
-rking_sitnl.c:1390</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
- IGN: nicer to keep the &quot;variable&quot; earlier</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+variableScope:src/openvpnserv/interactive=
-.c:2687</span><br><span>diff --git a/dev-tools/run-cppcheck.sh b/dev-tools/=
-run-cppcheck.sh</span><br><span>new file mode 100755</span><br><span>index =
-0000000..674fc092</span><br><span>--- /dev/null</span><br><span>+++ b/dev-t=
-ools/run-cppcheck.sh</span><br><span>@@ -0,0 +1,26 @@</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#!/bin/bash</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+set -eu</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+SCRIPT_DIR=3D$(dirname $=
-(readlink -e &quot;${BASH_SOURCE[0]}&quot;))</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+: ${SOURCE_DIR:=3D$SCRIPT_DIR/..}</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+: ${BUILD_DIR:=3D$PWD}</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+: ${INCLUDE_FLAGS:=3D}</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+CPPCHECK_DIR=3D&quot;${BUILD_D=
-IR}/cppcheck_build_dir&quot;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+set -x</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+mkdir -p &quot;$CPPCHECK_DIR&quot;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+cd &quot;${SOURCE_DIR}&quo=
-t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+cppcheck -j$(npro=
-c) \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	 -DHAVE_CONFIG=
-_H -U_WIN32 \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-   -DMBEDTLS_SSL_PROTO_TLS1_3 -DMBEDTLS_SSL_KEYING_MATERIAL_EXPORT \</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+	 -I./include/ -I./tests/u=
-nit_tests/openvpn/ \</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+	 -I./src/compat/ -I./src/openvpn/ -I./src/openvpnserv/ -I./src/plugins/au=
-th-pam/ \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	 -I&quot;=
-${BUILD_DIR}&quot; -I&quot;${BUILD_DIR}/include/&quot; $INCLUDE_FLAGS \</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+	 --enable=3Dall \</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+	 --suppressions-list=3D=
-&quot;${SCRIPT_DIR}/cppcheck-suppression&quot; \</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+	 --cppcheck-build-dir=3D&quot;${CPPCHECK_DIR}=
-&quot; \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	 --check-l=
-evel=3Dexhaustive \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-	 --error-exitcode=3D1 \</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+	 src/ tests/ sample/</span><br><span></span><br></pre><p>To view, vis=
-it <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1620?usp=3Demail">chang=
-e 1620</a>. To unsubscribe, or for help writing mail filters, visit <a href=
-=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div i=
-temscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itempro=
-p=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"ur=
-l" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1620?usp=3Demail"/><meta i=
-temprop=3D"name" content=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: ordex, plaisthos. </p>
+<p>its_Giaan <strong>uploaded patch set #3</strong> to this change.</p><p><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1635?usp=3Demail">View Chan=
+ge</a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; =
+white-space: pre-wrap;">Multisocket: use event engine rwflags for UDP I/O<b=
+r><br>udp_flags does not guarantee correct association with the socket bein=
+g<br>processed. Use the rwflags delivered by the event engine along with th=
+e<br>event to ensure proper per-socket I/O handling.<br><br>Remove udp_flag=
+s entirely.<br><br>This change is based on an investigation triggered by a =
+report from<br>Joshua Rogers using ZeroPath.<br><br>Change-Id: I6b303805a36=
+88b6f6363140c76853a58badecd8f<br>Signed-off-by: Gianmarco De Gregori &lt;gi=
+anmarco@...2726...&gt;<br>---<br>M src/openvpn/forward.c<br>M src/openvpn/m=
+udp.c<br>M src/openvpn/mudp.h<br>M src/openvpn/multi_io.c<br>M src/openvpn/=
+multi_io.h<br>5 files changed, 8 insertions(+), 28 deletions(-)<br><br></pr=
+e><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-sp=
+ace: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/change=
+s/35/1635/3</pre><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;"><span>diff --git a/src/openvpn/forward.c b/src/openvpn/forwar=
+d.c</span><br><span>index 27cfd36..36597db 100644</span><br><span>--- a/src=
+/openvpn/forward.c</span><br><span>+++ b/src/openvpn/forward.c</span><br><s=
+pan>@@ -2029,8 +2029,7 @@</span><br><span> }</span><br><span> </span><br><s=
+pan> static void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-multi=
+_io_process_flags(struct context *c, struct event_set *es, const unsigned i=
+nt flags,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+           unsigned int *out_socket, unsigned int *out_tuntap)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+multi_io_process_flags(struct co=
+ntext *c, struct event_set *es, const unsigned int flags)</span><br><span> =
+{</span><br><span>     unsigned int socket =3D 0;</span><br><span>     unsi=
+gned int tuntap =3D 0;</span><br><span>@@ -2130,16 +2129,6 @@</span><br><sp=
+an>     }</span><br><span> </span><br><span>     tun_set(c-&gt;c1.tuntap, e=
+s, tuntap, (void *)tun_shift, NULL);</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if=
+ (out_socket)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        *out_socket =3D =
+socket;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    if (out_tuntap)</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-        *out_tuntap =3D tuntap;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    }</span><br><span> }</span><br><span> </span><br><span>=
+ /*</span><br><span>@@ -2150,10 +2139,7 @@</span><br><span> void</span><br>=
+<span> get_io_flags_udp(struct context *c, struct multi_io *multi_io, const=
+ unsigned int flags)</span><br><span> {</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    unsigned int out_socket;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    multi_io_process_flags(c, multi_io-&gt;es, flags, &amp;out_socket, =
+NULL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    multi_io-&g=
+t;udp_flags =3D (out_socket &lt;&lt; SOCKET_SHIFT);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    multi_io_process_flags(c, multi_io-&g=
+t;es, flags);</span><br><span> }</span><br><span> </span><br><span> /*</spa=
+n><br><span>@@ -2163,8 +2149,6 @@</span><br><span> void</span><br><span> io=
+_wait(struct context *c, const unsigned int flags)</span><br><span> {</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    unsigned int out_socket=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    unsigned int out=
+_tuntap;</span><br><span>     struct event_set_return esr[4];</span><br><sp=
+an> </span><br><span>     /* These shifts all depend on EVENT_READ and EVEN=
+T_WRITE */</span><br><span>@@ -2183,7 +2167,7 @@</span><br><span>      */</=
+span><br><span>     event_reset(c-&gt;c2.event_set);</span><br><span> </spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    multi_io_process_flags=
+(c, c-&gt;c2.event_set, flags, &amp;out_socket, &amp;out_tuntap);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    multi_io_process_flags(c,=
+ c-&gt;c2.event_set, flags);</span><br><span> </span><br><span> #if defined=
+(TARGET_LINUX) || defined(TARGET_FREEBSD)</span><br><span>     if (c-&gt;c1=
+.tuntap)</span><br><span>diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp=
+.c</span><br><span>index 432c79a..beec57a 100644</span><br><span>--- a/src/=
+openvpn/mudp.c</span><br><span>+++ b/src/openvpn/mudp.c</span><br><span>@@ =
+-336,18 +336,17 @@</span><br><span>  * Process a UDP socket event.</span><b=
+r><span>  */</span><br><span> void</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-multi_process_io_udp(struct multi_context *m, struct link_sock=
+et *sock)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+multi_proc=
+ess_io_udp(struct multi_context *m, struct link_socket *sock, unsigned int =
+rwflags)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    const unsigned int status =3D m-&gt;multi_io-&gt;udp_flags;</span=
+><br><span>     const unsigned int mpp_flags =3D (MPP_PRE_SELECT | MPP_CLOS=
+E_ON_SIGNAL);</span><br><span> </span><br><span>     /* UDP port ready to a=
+ccept write */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if =
+(status &amp; SOCKET_WRITE)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    if (rwflags &amp; SOCKET_WRITE)</span><br><span>     {</span><b=
+r><span>         multi_process_outgoing_link(m, mpp_flags);</span><br><span=
+>     }</span><br><span>     /* Incoming data on UDP port */</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    else if (status &amp; SOCKET_REA=
+D)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (rwfl=
+ags &amp; SOCKET_READ)</span><br><span>     {</span><br><span>         read=
+_incoming_link(&amp;m-&gt;top, sock);</span><br><span>         if (!IS_SIG(=
+&amp;m-&gt;top))</span><br><span>@@ -355,8 +354,6 @@</span><br><span>      =
+       multi_process_incoming_link(m, NULL, mpp_flags, sock);</span><br><sp=
+an>         }</span><br><span>     }</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    m-=
+&gt;multi_io-&gt;udp_flags =3D ES_ERROR;</span><br><span> }</span><br><span=
+> </span><br><span> /*</span><br><span>diff --git a/src/openvpn/mudp.h b/sr=
+c/openvpn/mudp.h</span><br><span>index 005ee10..1417651 100644</span><br><s=
+pan>--- a/src/openvpn/mudp.h</span><br><span>+++ b/src/openvpn/mudp.h</span=
+><br><span>@@ -32,7 +32,7 @@</span><br><span> </span><br><span> unsigned in=
+t p2mp_iow_flags(const struct multi_context *m);</span><br><span> </span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-void multi_process_io_udp(stru=
+ct multi_context *m, struct link_socket *sock);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+void multi_process_io_udp(struct multi_context =
+*m, struct link_socket *sock, unsigned int rwflags);</span><br><span> /****=
+**********************************************************************/</sp=
+an><br><span> /**</span><br><span>  * Get, and if necessary create, the mul=
+ti_instance associated with a</span><br><span>diff --git a/src/openvpn/mult=
+i_io.c b/src/openvpn/multi_io.c</span><br><span>index e6f4e9c..f9af800 1006=
+44</span><br><span>--- a/src/openvpn/multi_io.c</span><br><span>+++ b/src/o=
+penvpn/multi_io.c</span><br><span>@@ -457,7 +457,7 @@</span><br><span>     =
+                }</span><br><span>                     else</span><br><span=
+>                     {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-                        multi_process_io_udp(m, ev_arg-&gt;u.sock);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+                        m=
+ulti_process_io_udp(m, ev_arg-&gt;u.sock, e-&gt;rwflags);</span><br><span> =
+                        mi =3D m-&gt;pending;</span><br><span>             =
+        }</span><br><span>                     /* monitor and/or handle eve=
+nts that are</span><br><span>diff --git a/src/openvpn/multi_io.h b/src/open=
+vpn/multi_io.h</span><br><span>index 6b2f59a..d6734bd 100644</span><br><spa=
+n>--- a/src/openvpn/multi_io.h</span><br><span>+++ b/src/openvpn/multi_io.h=
+</span><br><span>@@ -55,7 +55,6 @@</span><br><span>     int n_esr;</span><b=
+r><span>     int maxevents;</span><br><span>     unsigned int tun_rwflags;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    unsigned int udp_f=
+lags;</span><br><span> #ifdef ENABLE_MANAGEMENT</span><br><span>     unsign=
+ed int management_persist_flags;</span><br><span> #endif</span><br><span></=
+span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/ope=
+nvpn/+/1635?usp=3Demail">change 1635</a>. To unsubscribe, or for help writi=
+ng mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3D=
+email">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailM=
+essage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vi=
+ewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/1635?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></d=
+iv></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I125cf63f11257d7245ead2f7fea=
-fb86b841580a5 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1620 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I6b303805a3688b6f6363140c768=
+53a58badecd8f </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1635 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@...2786...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;antonio@...2726...&=
+gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@...2726...=
+&gt; </div>
 
 </body></html>=
 
---ePUMtnhqXqs=--
+--M1fOWKbBl9U=--
 
