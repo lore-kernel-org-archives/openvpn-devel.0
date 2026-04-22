@@ -1,10 +1,10 @@
-Date: Wed, 22 Apr 2026 09:05:10 +0200 (CEST)
-Message-Id: <202604220705.63M75AvM035005@...2054...>
+Date: Wed, 22 Apr 2026 09:45:51 +0200 (CEST)
+Message-Id: <202604220745.63M7jpWQ035802@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20260422055636.20691-1-gert@...1296...>
-References: <20260422055636.20691-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: dco-linux: enforce ifindex only
- for DEL_PEER notifications
+In-Reply-To: <20260419134205.21459-1-gert@...1296...>
+References: <20260419134205.21459-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: dev-tools: Add script to run
+ cppcheck against the code-base
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,29 +15,28 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Ralf Lici <ralf@...2726...>
+To: Frank Lichtenheld <frank@...2641...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Tested this (on Ubuntu 20.04 with old-DCO) and I can confirm that 
-management "status" is now back to working.  Comparison to 2.7/master
-also clarified what went wrong in the previous backport commit.
+While we do not have all cppcheck-found edges and corners properly sanded,
+it makes sense to have the infrastructure and the exclude lists around
+already.
 
-Didn't test this on other platforms as only dco_linux.c is changed
-(BB did, of course).
+No code changes to "the project", just new devtool + new "make" target.
 
-Your patch has been applied to the release/2.6 branch.
+Your patch has been applied to the master branch.
 
-commit adece45628f78aa8f1f997850095bc9a57caefbe (release/2.6)
-Author: Ralf Lici
-Date:   Wed Apr 22 07:56:30 2026 +0200
+commit 0b7c29535049baec9fe89821cd2a65437094c9b1
+Author: Frank Lichtenheld
+Date:   Sun Apr 19 15:41:57 2026 +0200
 
-     dco-linux: enforce ifindex only for DEL_PEER notifications
+     dev-tools: Add script to run cppcheck against the code-base
 
-     Signed-off-by: Ralf Lici <ralf@...2726...>
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
      Acked-by: Gert Doering <gert@...1296...>
-     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1636
-     Message-Id: <20260422055636.20691-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36721.html
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1620
+     Message-Id: <20260419134205.21459-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36664.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
