@@ -1,16 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 22 Apr 2026 07:05:02 +0000
-In-Reply-To: <gerrit.1776803704000.I9b1f4fd06c8a02d3f51b6a3bdea2f92191669660@...2715...>
-References: <gerrit.1776803704000.I9b1f4fd06c8a02d3f51b6a3bdea2f92191669660@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, ralf@...2726...
-Message-ID: <2ddecfe4811f592fc229523e11ff954ee2d7931d-HTML@...2715...>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="4aKIUG7QozU="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[release/2.6]: dco-linux:
- enforce ifindex only for DEL_PEER notifications
+Date: Wed, 22 Apr 2026 09:05:10 +0200 (CEST)
+Message-Id: <202604220705.63M75AvM035005@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20260422055636.20691-1-gert@...1296...>
+References: <20260422055636.20691-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: dco-linux: enforce ifindex only
+ for DEL_PEER notifications
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,222 +13,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ralf_lici <ralf@...2726...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Ralf Lici <ralf@...2726...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---4aKIUG7QozU=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Tested this (on Ubuntu 20.04 with old-DCO) and I can confirm that 
+management "status" is now back to working.  Comparison to 2.7/master
+also clarified what went wrong in the previous backport commit.
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/16=
-36?usp=3Demail )
+Didn't test this on other platforms as only dco_linux.c is changed
+(BB did, of course).
 
-Change subject: dco-linux: enforce ifindex only for DEL_PEER notifications
-......................................................................
+Your patch has been applied to the release/2.6 branch.
 
-dco-linux: enforce ifindex only for DEL_PEER notifications
+commit adece45628f78aa8f1f997850095bc9a57caefbe (release/2.6)
+Author: Ralf Lici
+Date:   Wed Apr 22 07:56:30 2026 +0200
 
-The unconditional ifindex check introduced by commit e78a8af2f5ce
-rejects legitimate kernel replies, specifically peer stats responses,
-because those messages do not carry OVPN_ATTR_IFINDEX.
+     dco-linux: enforce ifindex only for DEL_PEER notifications
 
-Move the check into ovpn_handle_del_peer() so it applies only to
-spontaneous DEL_PEER notifications from the kernel. This keeps
-response handling working while still filtering foreign-instance
-notifications.
+     Signed-off-by: Ralf Lici <ralf@...2726...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1636
+     Message-Id: <20260422055636.20691-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36721.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Fixes: e78a8af2f5ce ("dco: backport immediate notification processing on Li=
-nux and FreeBSD")
-Github: closes OpenVPN/openvpn#1020
-Change-Id: I9b1f4fd06c8a02d3f51b6a3bdea2f92191669660
-Signed-off-by: Ralf Lici <ralf@...2726...>
-Acked-by: Gert Doering <gert@...1296...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1636
-Message-Id: <20260422055636.20691-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36=
-721.html
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M src/openvpn/dco_linux.c
-1 file changed, 17 insertions(+), 17 deletions(-)
-
-
-
-
-diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
-index 8ce7026..1df56cf 100644
---- a/src/openvpn/dco_linux.c
-+++ b/src/openvpn/dco_linux.c
-@@ -857,6 +857,23 @@
- static int
- ovpn_handle_del_peer(dco_context_t *dco, struct nlattr *attrs[])
- {
-+    /* we must know which interface this message is referring to in order =
-to
-+     * avoid mixing messages for other instances
-+     */
-+    if (!attrs[OVPN_ATTR_IFINDEX])
-+    {
-+        msg(D_DCO, "ovpn-dco: Received message without ifindex");
-+        return NL_STOP;
-+    }
-+
-+    uint32_t ifindex =3D nla_get_u32(attrs[OVPN_ATTR_IFINDEX]);
-+    if (ifindex !=3D dco->ifindex)
-+    {
-+        msg(D_DCO_DEBUG, "ovpn-dco: ignoring message for foreign ifindex %=
-d",
-+            ifindex);
-+        return NL_SKIP;
-+    }
-+
-     if (!attrs[OVPN_ATTR_DEL_PEER])
-     {
-         msg(D_DCO, "ovpn-dco: no attributes in OVPN_DEL_PEER message");
-@@ -930,23 +947,6 @@
-         return NL_STOP;
-     }
-
--    /* we must know which interface this message is referring to in order =
-to
--     * avoid mixing messages for other instances
--     */
--    if (!attrs[OVPN_ATTR_IFINDEX])
--    {
--        msg(D_DCO, "ovpn-dco: Received message without ifindex");
--        return NL_STOP;
--    }
--
--    uint32_t ifindex =3D nla_get_u32(attrs[OVPN_ATTR_IFINDEX]);
--    if (ifindex !=3D dco->ifindex)
--    {
--        msg(D_DCO_DEBUG, "ovpn-dco: ignoring message for foreign ifindex %=
-d",
--            ifindex);
--        return NL_SKIP;
--    }
--
-     /* based on the message type, we parse the subobject contained in the
-      * message, that stores the type-specific attributes.
-      *
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1636?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
+kind regards,
 
-Gerrit-MessageType: merged
-Gerrit-Project: openvpn
-Gerrit-Branch: release/2.6
-Gerrit-Change-Id: I9b1f4fd06c8a02d3f51b6a3bdea2f92191669660
-Gerrit-Change-Number: 1636
-Gerrit-PatchSet: 2
-Gerrit-Owner: ralf_lici <ralf@...2726...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gert Doering
 
---4aKIUG7QozU=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1636?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
--wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">dco-linux: enforce ifindex only for DEL_PEER not=
-ifications<br><br>The unconditional ifindex check introduced by commit e78a=
-8af2f5ce<br>rejects legitimate kernel replies, specifically peer stats resp=
-onses,<br>because those messages do not carry OVPN_ATTR_IFINDEX.<br><br>Mov=
-e the check into ovpn_handle_del_peer() so it applies only to<br>spontaneou=
-s DEL_PEER notifications from the kernel. This keeps<br>response handling w=
-orking while still filtering foreign-instance<br>notifications.<br><br>Fixe=
-s: e78a8af2f5ce (&quot;dco: backport immediate notification processing on L=
-inux and FreeBSD&quot;)<br>Github: closes OpenVPN/openvpn#1020<br>Change-Id=
-: I9b1f4fd06c8a02d3f51b6a3bdea2f92191669660<br>Signed-off-by: Ralf Lici &lt=
-;ralf@...2726...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>G=
-errit URL: https://gerrit.openvpn.net/c/openvpn/+/1636<br>Message-Id: &lt;2=
-0260422055636.20691-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.=
-com/openvpn-devel@lists.sourceforge.net/msg36721.html<br>Signed-off-by: Ger=
-t Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/dco_linux.c<br>1 =
-file changed, 17 insertions(+), 17 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c</span><br=
-><span>index 8ce7026..1df56cf 100644</span><br><span>--- a/src/openvpn/dco_=
-linux.c</span><br><span>+++ b/src/openvpn/dco_linux.c</span><br><span>@@ -8=
-57,6 +857,23 @@</span><br><span> static int</span><br><span> ovpn_handle_de=
-l_peer(dco_context_t *dco, struct nlattr *attrs[])</span><br><span> {</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* we must know which=
- interface this message is referring to in order to</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+     * avoid mixing messages for other in=
-stances</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     */</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!attrs[OVPN_ATTR=
-_IFINDEX])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(D_DCO, &quo=
-t;ovpn-dco: Received message without ifindex&quot;);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        return NL_STOP;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    uint32_t ifindex =3D nla_get_u32(attrs[OVPN_ATTR_IFINDEX]);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    if (ifindex !=3D dco-&=
-gt;ifindex)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(D_DCO_DEBU=
-G, &quot;ovpn-dco: ignoring message for foreign ifindex %d&quot;,</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+            ifindex);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        return NL_SKIP;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     if (!attrs[OVPN=
-_ATTR_DEL_PEER])</span><br><span>     {</span><br><span>         msg(D_DCO,=
- &quot;ovpn-dco: no attributes in OVPN_DEL_PEER message&quot;);</span><br><=
-span>@@ -930,23 +947,6 @@</span><br><span>         return NL_STOP;</span><b=
-r><span>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    /* we must know which interface this message is referring to=
- in order to</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     * av=
-oid mixing messages for other instances</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-     */</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    if (!attrs[OVPN_ATTR_IFINDEX])</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--        msg(D_DCO, &quot;ovpn-dco: Received message without ifindex&quot;)=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return NL_ST=
-OP;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    uint32_t ifindex =3D nla_get_u32(attrs[OVPN_ATTR_IF=
-INDEX]);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (ifind=
-ex !=3D dco-&gt;ifindex)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(D=
-_DCO_DEBUG, &quot;ovpn-dco: ignoring message for foreign ifindex %d&quot;,<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-            ifindex);<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return NL_SKIP=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     /* based on th=
-e message type, we parse the subobject contained in the</span><br><span>   =
-   * message, that stores the type-specific attributes.</span><br><span>   =
-   *</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://g=
-errit.openvpn.net/c/openvpn/+/1636?usp=3Demail">change 1636</a>. To unsubsc=
-ribe, or for help writing mail filters, visit <a href=3D"http://gerrit.open=
-vpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"h=
-ttp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
-=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/1636?usp=3Demail"/><meta itemprop=3D"name" cont=
-ent=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I9b1f4fd06c8a02d3f51b6a3bdea=
-2f92191669660 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1636 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: ralf_lici &lt;ralf@...2726...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-
-</body></html>=
-
---4aKIUG7QozU=--
 
