@@ -1,10 +1,15 @@
-From: Yuriy Darnobyt <yuriy.darnobyt@...2722...>
-Content-Type: multipart/alternative;
- boundary="Apple-Mail=_EE4F78C7-F728-4299-9B8D-A66DADE7D525"
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3864.400.21\))
-Message-Id: <112D94AC-CF5C-4A85-8901-92BDAD8780F8@...2722...>
-Date: Wed, 22 Apr 2026 23:36:23 +0300
-Subject: [Openvpn-devel] OpenVPN 2.6.20 released
+From: "selvanair (Code Review)" <gerrit@...515...>
+Date: Thu, 23 Apr 2026 00:12:29 +0000
+References: <gerrit.1776903146000.I4d46c3672691b159cbd98a17020c4f30782bc202@...2715...>
+Reply-To: selva.nair@...277..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <6255c5d3e20e479530c456341fdb38505064add6-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="S2prT2TVQs0="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fixup: prompting
+ password from management
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,125 +18,128 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-announce@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Apple-Mail=_EE4F78C7-F728-4299-9B8D-A66DADE7D525
-Content-Type: text/plain; charset="us-ascii"
+--S2prT2TVQs0=
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-The OpenVPN community project team is proud to release OpenVPN 2.6.20. This=
- is a bugfix release containing security fixes.
+Attention is currently required from: plaisthos.
 
-For details see [Changes.rst](https://github.com/OpenVPN/openvpn/blob/v2.6.=
-20/Changes.rst)
+Hello plaisthos,
 
-Security fixes:
+I'd like you to do a code review.
+Please visit
 
-* CVE-2026-40215: fix race condition in TLS handshake that could lead to le=
-aking of
-  packet data from a previous handshake under specific circumstances
-* CVE-2026-35058: fix server ASSERT() on receiving a suitably malformed pac=
-ket with
-  a valid tls-crypt-v2 key
-=20=20
-Bugfixes:
+    http://gerrit.openvpn.net/c/openvpn/+/1638?usp=3Demail
 
-* management: stop periodic bytecount output on mgmt client disconnection
-* FreeBSD: make DCO work on systems with no IPv4 support
-* FreeBSD: fix compilation with --enable-async-push on FreeBSD 15
-* Linux: make DCO work on big endian architectures (MIPS, PowerPC)
-* Windows: fix deinstallation progress bar on adapter deletion.
-* Linux: fix problem with DCO kernel notifications getting lost, leading
-  to overcounting of number of connected clients and general confusion
-  between kernel and userland regarding peer status (Github openvpn#900,
-  openvpn#918, openvpn#931, openvpn#919, openvpn#945) - this is a backport =
-of
-  the fixes in 2.7 plus the infrastructural changes around DCO needed to su=
-pport it.
+to review the following change.
 
-Windows MSI changes since 2.6.19-I001:
-* Built against OpenSSL 3.6.2
-* Included openvpn-gui updated to 11.63.0.0
-  * Translation cleanup. Remove obsolete strings related to support for Ope=
-nVPN < 2.0
-  * Translation updates.
 
-More details can be found in the Changes document:
+Change subject: Fixup: prompting password from management
+......................................................................
 
-<https://github.com/OpenVPN/openvpn/blob/v2.6.20/Changes.rst <https://githu=
-b.com/OpenVPN/openvpn/blob/v2./Changes.rst>>
+Fixup: prompting password from management
 
-Source code and Windows installers can be downloaded from our download page:
+Commit b450414 added logic for reading password from management
+when not in file or inline, but it was made conditional on
+`response_from_stdin` which is always true! Fix by explicitly
+checking for `password_from_stdin`.
 
-<https://openvpn.net/community/>
+Change-Id: I4d46c3672691b159cbd98a17020c4f30782bc202
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+M src/openvpn/misc.c
+1 file changed, 1 insertion(+), 0 deletions(-)
 
-Packages for Debian, Ubuntu, Fedora, RHEL, and openSUSE are available in th=
-e various
-official Community repositories:
 
-<https://community.openvpn.net/Pages/OpenVPN%20software%20repos>
 
-Kind regards,
-Yuriy Darnobyt=
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/38/1638/1
 
---Apple-Mail=_EE4F78C7-F728-4299-9B8D-A66DADE7D525
-Content-Type: text/html; charset="us-ascii"
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index 979293f..10bfc35 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -336,6 +336,7 @@
+              */
+             if (management && (flags & GET_USER_PASS_MANAGEMENT)
+                 && management_query_user_pass_enabled(management)
++                && password_from_stdin
+                 && !(flags & GET_USER_PASS_USERNAME_ONLY))
+             {
+                 msg(D_LOW,
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1638?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
+
+Gerrit-MessageType: newchange
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I4d46c3672691b159cbd98a17020c4f30782bc202
+Gerrit-Change-Number: 1638
+Gerrit-PatchSet: 1
+Gerrit-Owner: selvanair <selva.nair@...277...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+
+--S2prT2TVQs0=
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<html aria-label=3D"message body"><head><meta http-equiv=3D"content-type" c=
-ontent=3D"text/html; charset=3Dus-ascii"></head><body style=3D"overflow-wra=
-p: break-word; -webkit-nbsp-mode: space; line-break: after-white-space;"><d=
-iv><div>The OpenVPN community project team is proud to release OpenVPN 2.6.=
-20. This is a bugfix release containing security fixes.</div><div><br></div=
-><div>For details see [Changes.rst](https://github.com/OpenVPN/openvpn/blob=
-/v2.6.20/Changes.rst)</div><div><br></div><div>Security fixes:</div><div><b=
-r></div><div>* CVE-2026-40215: fix race condition in TLS handshake that cou=
-ld lead to leaking of</div><div>&nbsp; packet data from a previous handshak=
-e under specific circumstances</div><div>* CVE-2026-35058: fix server ASSER=
-T() on receiving a suitably malformed packet with</div><div>&nbsp; a valid =
-tls-crypt-v2 key</div><div>&nbsp;&nbsp;</div><div>Bugfixes:</div><div><br><=
-/div><div>* management: stop periodic bytecount output on mgmt client disco=
-nnection</div><div>* FreeBSD: make DCO work on systems with no IPv4 support=
-</div><div>* FreeBSD: fix compilation with --enable-async-push on FreeBSD 1=
-5</div><div>* Linux: make DCO work on big endian architectures (MIPS, Power=
-PC)</div><div>* Windows: fix deinstallation progress bar on adapter deletio=
-n.</div><div>* Linux: fix problem with DCO kernel notifications getting los=
-t, leading</div><div>&nbsp; to overcounting of number of connected clients =
-and general confusion</div><div>&nbsp; between kernel and userland regardin=
-g peer status (Github openvpn#900,</div><div>&nbsp; openvpn#918, openvpn#93=
-1, openvpn#919, openvpn#945) - this is a backport of</div><div>&nbsp; the f=
-ixes in 2.7 plus the infrastructural changes around DCO needed to support i=
-t.</div><div><br></div><div>Windows MSI changes since 2.6.19-I001:</div><di=
-v>* Built against OpenSSL 3.6.2</div><div>* Included openvpn-gui updated to=
- 11.63.0.0</div><div>&nbsp; * Translation cleanup. Remove obsolete strings =
-related to support for OpenVPN &lt; 2.0</div><div>&nbsp; * Translation upda=
-tes.</div></div><br>More details can be found in the Changes document:<br><=
-br>&lt;<a href=3D"https://github.com/OpenVPN/openvpn/blob/v2./Changes.rst">=
-https://github.com/OpenVPN/openvpn/blob/v2.6.20/Changes.rst</a>&gt;<br><br>=
-Source code and Windows installers can be downloaded from our download page=
-:<br><br>&lt;<a href=3D"https://openvpn.net/community/">https://openvpn.net=
-/community/</a>&gt;<br><br>Packages for Debian, Ubuntu, Fedora, RHEL, and o=
-penSUSE are available in the various<br>official Community repositories:<br=
-><br>&lt;<a href=3D"https://community.openvpn.net/Pages/OpenVPN%20software%=
-20repos">https://community.openvpn.net/Pages/OpenVPN%20software%20repos</a>=
-&gt;<div><br></div><div><p style=3D"margin: 0px; font-style: normal; font-v=
-ariant-caps: normal; font-width: normal; line-height: normal; font-size-adj=
-ust: none; font-kerning: auto; font-variant-alternates: normal; font-varian=
-t-ligatures: normal; font-variant-numeric: normal; font-variant-east-asian:=
- normal; font-variant-position: normal; font-variant-emoji: normal; font-fe=
-ature-settings: normal; font-optical-sizing: auto; font-variation-settings:=
- normal; color: rgb(0, 0, 0); -webkit-text-stroke-width: 0px; -webkit-text-=
-stroke-color: rgb(0, 0, 0);"><span style=3D"font-kerning: none">Kind regard=
-s,</span></p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; fon=
-t-width: normal; line-height: normal; font-size-adjust: none; font-kerning:=
- auto; font-variant-alternates: normal; font-variant-ligatures: normal; fon=
-t-variant-numeric: normal; font-variant-east-asian: normal; font-variant-po=
-sition: normal; font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; color: rgb(0, 0=
-, 0); -webkit-text-stroke-width: 0px; -webkit-text-stroke-color: rgb(0, 0, =
-0);"><span style=3D"font-kerning: none">Yuriy Darnobyt</span></p></div></bo=
-dy></html>=
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: plaisthos. </p>
+<p>selvanair would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1638?usp=3Demail">V=
+iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;">Fixup: prompting password from management<b=
+r><br>Commit b450414 added logic for reading password from management<br>wh=
+en not in file or inline, but it was made conditional on<br>`response_from_=
+stdin` which is always true! Fix by explicitly<br>checking for `password_fr=
+om_stdin`.<br><br>Change-Id: I4d46c3672691b159cbd98a17020c4f30782bc202<br>S=
+igned-off-by: Selva Nair &lt;selva.nair@...277...&gt;<br>---<br>M src/openv=
+pn/misc.c<br>1 file changed, 1 insertion(+), 0 deletions(-)<br><br></pre><p=
+re class=3D"blocks" style=3D"font-family: monospace,monospace; white-space:=
+ pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/38=
+/1638/1</pre><pre style=3D"font-family: monospace,monospace; white-space: p=
+re-wrap;"><span>diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c</span>=
+<br><span>index 979293f..10bfc35 100644</span><br><span>--- a/src/openvpn/m=
+isc.c</span><br><span>+++ b/src/openvpn/misc.c</span><br><span>@@ -336,6 +3=
+36,7 @@</span><br><span>              */</span><br><span>             if (m=
+anagement &amp;&amp; (flags &amp; GET_USER_PASS_MANAGEMENT)</span><br><span=
+>                 &amp;&amp; management_query_user_pass_enabled(management)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                &am=
+p;&amp; password_from_stdin</span><br><span>                 &amp;&amp; !(f=
+lags &amp; GET_USER_PASS_USERNAME_ONLY))</span><br><span>             {</sp=
+an><br><span>                 msg(D_LOW,</span><br><span></span><br></pre><=
+p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1638?usp=
+=3Demail">change 1638</a>. To unsubscribe, or for help writing mail filters=
+, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings=
+</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div it=
+emscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link=
+ itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1638?usp=3D=
+email"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
---Apple-Mail=_EE4F78C7-F728-4299-9B8D-A66DADE7D525--
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I4d46c3672691b159cbd98a17020=
+c4f30782bc202 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1638 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+
+</body></html>=
+
+--S2prT2TVQs0=--
 
