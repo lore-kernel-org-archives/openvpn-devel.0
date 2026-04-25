@@ -1,10 +1,16 @@
-Date: Sat, 25 Apr 2026 22:30:46 +0200 (CEST)
-Message-Id: <202604252030.63PKUkiF027033@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20260424161840.5767-1-gert@...1296...>
-References: <20260424161840.5767-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fixup: prompting password from
- management
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Sat, 25 Apr 2026 20:31:26 +0000
+In-Reply-To: <gerrit.1776903146000.I4d46c3672691b159cbd98a17020c4f30782bc202@...2715...>
+References: <gerrit.1776903146000.I4d46c3672691b159cbd98a17020c4f30782bc202@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227..., selva.nair@...277...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <acc53690c3c5937715c21504e771a009b06e7e29-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="g2qSCZhX9vc="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fixup: prompting
+ password from management
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,42 +19,128 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: selvanair <selva.nair@...277...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-I have verified the original problem in GH #1021 (as soon as
---management-query-passwords is active, username+password passed in via
-file or inline is ignored and the mgmt interface is queried instead
-- which can actually be tested from t_client.rc, so I have proper
-regression tests for this now).
+--g2qSCZhX9vc=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-I have *also* tested (this time) that with the patch, all the "credentials
-on file" functionality still works, and also that querying from the
-management interface *also* still works.  We should really stop breaking
-these...
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/16=
+38?usp=3Demail )
 
-Your patch has been applied to the master and release/2.7 branch.
+Change subject: Fixup: prompting password from management
+......................................................................
 
-commit 9ac9a41b82aecdb5cb17a3746a7fa50878ec7ee0 (master)
-commit 8d512db3fcfceed73cd302f27c2c7849764c33f6 (release/2.7)
-Author: Selva Nair
-Date:   Fri Apr 24 18:18:33 2026 +0200
+Fixup: prompting password from management
 
-     Fixup: prompting password from management
+Commit b450414 added logic for reading password from management
+when not in file or inline, but it was made conditional on
+`response_from_stdin` which is always true! Fix by explicitly
+checking for `password_from_stdin`.
 
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1638
-     Message-Id: <20260424161840.5767-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36739.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Github: fixes OpenVPN/openvpn#1021
 
+Change-Id: I4d46c3672691b159cbd98a17020c4f30782bc202
+Signed-off-by: Selva Nair <selva.nair@...277...>
+Acked-by: Gert Doering <gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1638
+Message-Id: <20260424161840.5767-1-gert@...1296...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36=
+739.html
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+M src/openvpn/misc.c
+1 file changed, 1 insertion(+), 0 deletions(-)
+
+
+
+
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index 979293f..10bfc35 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -336,6 +336,7 @@
+              */
+             if (management && (flags & GET_USER_PASS_MANAGEMENT)
+                 && management_query_user_pass_enabled(management)
++                && password_from_stdin
+                 && !(flags & GET_USER_PASS_USERNAME_ONLY))
+             {
+                 msg(D_LOW,
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1638?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
 
-Gert Doering
+Gerrit-MessageType: merged
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I4d46c3672691b159cbd98a17020c4f30782bc202
+Gerrit-Change-Number: 1638
+Gerrit-PatchSet: 2
+Gerrit-Owner: selvanair <selva.nair@...277...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
+--g2qSCZhX9vc=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1638?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">Fixup: prompting password from management<br><br=
+>Commit b450414 added logic for reading password from management<br>when no=
+t in file or inline, but it was made conditional on<br>`response_from_stdin=
+` which is always true! Fix by explicitly<br>checking for `password_from_st=
+din`.<br><br>Github: fixes OpenVPN/openvpn#1021<br><br>Change-Id: I4d46c367=
+2691b159cbd98a17020c4f30782bc202<br>Signed-off-by: Selva Nair &lt;selva.nai=
+r@...277...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Gerrit=
+ URL: https://gerrit.openvpn.net/c/openvpn/+/1638<br>Message-Id: &lt;202604=
+24161840.5767-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/op=
+envpn-devel@lists.sourceforge.net/msg36739.html<br>Signed-off-by: Gert Doer=
+ing &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/misc.c<br>1 file change=
+d, 1 insertion(+), 0 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c</span><br><span>ind=
+ex 979293f..10bfc35 100644</span><br><span>--- a/src/openvpn/misc.c</span><=
+br><span>+++ b/src/openvpn/misc.c</span><br><span>@@ -336,6 +336,7 @@</span=
+><br><span>              */</span><br><span>             if (management &am=
+p;&amp; (flags &amp; GET_USER_PASS_MANAGEMENT)</span><br><span>            =
+     &amp;&amp; management_query_user_pass_enabled(management)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+                &amp;&amp; passw=
+ord_from_stdin</span><br><span>                 &amp;&amp; !(flags &amp; GE=
+T_USER_PASS_USERNAME_ONLY))</span><br><span>             {</span><br><span>=
+                 msg(D_LOW,</span><br><span></span><br></pre><p>To view, vi=
+sit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1638?usp=3Demail">chan=
+ge 1638</a>. To unsubscribe, or for help writing mail filters, visit <a hre=
+f=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div =
+itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itempr=
+op=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"u=
+rl" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1638?usp=3Demail"/><meta =
+itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I4d46c3672691b159cbd98a17020=
+c4f30782bc202 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1638 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+
+</body></html>=
+
+--g2qSCZhX9vc=--
 
