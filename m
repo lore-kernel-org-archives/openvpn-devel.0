@@ -1,10 +1,16 @@
-From: Yuriy Darnobyt <yuriy.darnobyt@...2722...>
-Content-Type: multipart/alternative;
- boundary="Apple-Mail=_CC094994-6BED-4F1A-85A9-47FCAD1D763E"
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3864.400.21\))
-Message-Id: <84ED36C3-980E-45DD-BE5E-67154BF3D22E@...2722...>
-Date: Mon, 27 Apr 2026 21:41:00 +0300
-Subject: [Openvpn-devel] OpenVPN 2.7.3 released
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Mon, 27 Apr 2026 19:27:01 +0000
+In-Reply-To: <gerrit.1777311203000.I9433baee1f5a66d43d4e43e03128ae6a790a7937@...2715...>
+References: <gerrit.1777311203000.I9433baee1f5a66d43d4e43e03128ae6a790a7937@...2715...>
+Reply-To: arne-openvpn@...1227..., selva.nair@...277...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <ecde18e93a4948b7d7f93c9d5c4084f28c8e160e-EmailReviewComments-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="wnRW4YwMXos="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Avoid recursive
+ call of man_read
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,81 +19,83 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-announce@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+To: selvanair <selva.nair@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Apple-Mail=_CC094994-6BED-4F1A-85A9-47FCAD1D763E
-Content-Type: text/plain; charset="us-ascii"
+--wnRW4YwMXos=
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-The OpenVPN community project team is proud to release OpenVPN 2.7.3.
-This is a small bugfix release.
+Attention is currently required from: selvanair.
+
+plaisthos has posted comments on this change by selvanair. ( http://gerrit.=
+openvpn.net/c/openvpn/+/1639?usp=3Demail )
+
+Change subject: Avoid recursive call of man_read
+......................................................................
 
 
-Bugfixes:
-
-* in combination with ``--management-query-passwords``, setups using
-  ``--auth-user-pass file`` or inline ``auth-user-pass`` would no longer
-  use the configured passwords and prompt on the management interface
-  instead (OpenVPN GUI would then provide an empty user/password prompt)
-  (Github: openpvn#1021).
+Patch Set 1: Code-Review+1
 
 
-More details can be found in the Changes document:
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1639?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
 
-<https://github.com/OpenVPN/openvpn/blob/v2.7.3/Changes.rst <https://github=
-.com/OpenVPN/openvpn/blob/v2.7./Changes.rst>>
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I9433baee1f5a66d43d4e43e03128ae6a790a7937
+Gerrit-Change-Number: 1639
+Gerrit-PatchSet: 1
+Gerrit-Owner: selvanair <selva.nair@...277...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: selvanair <selva.nair@...277...>
+Gerrit-Comment-Date: Mon, 27 Apr 2026 19:27:01 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
 
-Source code and Windows installers can be downloaded from our download page:
-
-<https://openvpn.net/community/>
-
-Packages for Debian, Ubuntu, Fedora, RHEL, and openSUSE are available in th=
-e various
-official Community repositories:
-
-<https://community.openvpn.net/Pages/OpenVPN%20software%20repos>
-
-Kind regards,
-Yuriy Darnobyt=
-
---Apple-Mail=_CC094994-6BED-4F1A-85A9-47FCAD1D763E
-Content-Type: text/html; charset="us-ascii"
+--wnRW4YwMXos=
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<html aria-label=3D"message body"><head><meta http-equiv=3D"content-type" c=
-ontent=3D"text/html; charset=3Dus-ascii"></head><body style=3D"overflow-wra=
-p: break-word; -webkit-nbsp-mode: space; line-break: after-white-space;"><d=
-iv>The OpenVPN community project team is proud to release OpenVPN 2.7.3.</d=
-iv><div>This is a small bugfix release.</div><div><br></div><div><br></div>=
-<div>Bugfixes:</div><div><br></div><div><div>* in combination with ``--mana=
-gement-query-passwords``, setups using</div><div>&nbsp; ``--auth-user-pass =
-file`` or inline ``auth-user-pass`` would no longer</div><div>&nbsp; use th=
-e configured passwords and prompt on the management interface</div><div>&nb=
-sp; instead (OpenVPN GUI would then provide an empty user/password prompt)<=
-/div><div>&nbsp; (Github: openpvn#1021).</div></div><div><br></div><br>More=
- details can be found in the Changes document:<br><br>&lt;<a href=3D"https:=
-//github.com/OpenVPN/openvpn/blob/v2.7./Changes.rst">https://github.com/Ope=
-nVPN/openvpn/blob/v2.7.3/Changes.rst</a>&gt;<br><br>Source code and Windows=
- installers can be downloaded from our download page:<br><br>&lt;<a href=3D=
-"https://openvpn.net/community/">https://openvpn.net/community/</a>&gt;<br>=
-<br>Packages for Debian, Ubuntu, Fedora, RHEL, and openSUSE are available i=
-n the various<br>official Community repositories:<br><br>&lt;<a href=3D"htt=
-ps://community.openvpn.net/Pages/OpenVPN%20software%20repos">https://commun=
-ity.openvpn.net/Pages/OpenVPN%20software%20repos</a>&gt;<div><br></div><div=
-><p style=3D"margin: 0px; font-width: normal; line-height: normal; font-siz=
-e-adjust: none; font-kerning: auto; font-variant-alternates: normal; font-v=
-ariant-ligatures: normal; font-variant-numeric: normal; font-variant-east-a=
-sian: normal; font-variant-position: normal; font-feature-settings: normal;=
- font-optical-sizing: auto; font-variation-settings: normal; color: rgb(0, =
-0, 0); -webkit-text-stroke-color: rgb(0, 0, 0);"><span style=3D"font-kernin=
-g: none;">Kind regards,</span></p><p style=3D"margin: 0px; font-width: norm=
-al; line-height: normal; font-size-adjust: none; font-kerning: auto; font-v=
-ariant-alternates: normal; font-variant-ligatures: normal; font-variant-num=
-eric: normal; font-variant-east-asian: normal; font-variant-position: norma=
-l; font-feature-settings: normal; font-optical-sizing: auto; font-variation=
--settings: normal; color: rgb(0, 0, 0); -webkit-text-stroke-color: rgb(0, 0=
-, 0);"><span style=3D"font-kerning: none;">Yuriy Darnobyt</span></p></div><=
-/body></html>=
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: selvanair. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1639?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1639?usp=3Demail=
+">change 1639</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1639?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
---Apple-Mail=_CC094994-6BED-4F1A-85A9-47FCAD1D763E--
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I9433baee1f5a66d43d4e43e0312=
+8ae6a790a7937 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1639 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
+277...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 27 Apr 2026 19:27:01=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>=
+
+--wnRW4YwMXos=--
 
