@@ -1,16 +1,12 @@
-From: "selvanair (Code Review)" <gerrit@...515...>
-Date: Mon, 27 Apr 2026 20:56:36 +0000
-In-Reply-To: <gerrit.1777311203000.I9433baee1f5a66d43d4e43e03128ae6a790a7937@...2715...>
-References: <gerrit.1777311203000.I9433baee1f5a66d43d4e43e03128ae6a790a7937@...2715...>
-Reply-To: selva.nair@...277..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <f3fed4bb9e7c1c60b6b05c0d4eddec6190d865ab-EmailReviewComments-HTML@...2715...>
+Message-ID: <501fb5d6-3247-40aa-aaa5-ce9dacb17255@...3026...>
+Date: Tue, 28 Apr 2026 10:08:00 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="T5btFUPAvew="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Avoid recursive call
- of man_read
+References: <20260427040011.2107748-1-qingfang.deng@...3026...>
+ <101221c8-8e47-4fc1-9791-2ef3a0ae8312@...2181...>
+From: Qingfang Deng <qingfang.deng@...3026...>
+In-Reply-To: <101221c8-8e47-4fc1-9791-2ef3a0ae8312@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH ovpn-net-next] ovpn: reset MAC header
+ before passing skb up
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,103 +15,71 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
+Cc: Minqiang Chen <ptpt52@...277...>, Sabrina Dubroca <sd@...2891...>, netdev@...2909...
 
---T5btFUPAvew=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-Attention is currently required from: plaisthos.
+On 2026/4/27 17:45, Antonio Quartulli wrote:
+> Hi Qingfang,
+>
+> thanks for the patch!
+>
+> On 27/04/2026 06:00, Qingfang Deng wrote:
+>> After decapsulating a packet, the skb->mac_header still points to the
+>> outer transport header. Call skb_reset_mac_header() in
+>> ovpn_netdev_write() to ensure the MAC header points to the beginning of
+>> the inner IP packet.
+>
+> May you elaborate on what this is exactly fixing?
+> Did you encounter a bug triggered by this missing line?
+>
+> I am asking because I wonder what is "expected" as MAC header for a 
+> packet not having one at all (packets delivered to the ovpn interface 
+> are L3 only, as per the interface type itself).
 
-selvanair has posted comments on this change by selvanair. ( http://gerrit.=
-openvpn.net/c/openvpn/+/1639?usp=3Demail )
+For L3-only devices, the net core expects skb->mac_header == 
+skb->network_header.
 
-Change subject: Avoid recursive call of man_read
-......................................................................
+For example, in __netif_receive_skb_core(), skb_reset_mac_len() sets 
+skb->mac_len to (skb->network_header - skb->mac_header).
+If skb->mac_header still has a stale value, this will incorrectly assign 
+a non-zero value to skb->mac_len.
 
+Also, if generic XDP or SOCK_PACKET is used, either will do
+   skb_push(skb, skb->data - skb_mac_header(skb));
 
-Patch Set 2:
+>
+> Thanks!
+>
+> Regards,
+>
+>>
+>> Reported-by: Minqiang Chen <ptpt52@...277...>
+>> Fixes: 8534731dbf2d ("ovpn: implement packet processing")
+>> Signed-off-by: Qingfang Deng <qingfang.deng@...3026...>
+>> ---
+>>   drivers/net/ovpn/io.c | 1 +
+>>   1 file changed, 1 insertion(+)
+>>
+>> diff --git a/drivers/net/ovpn/io.c b/drivers/net/ovpn/io.c
+>> index db43a1f8a07a..d92bb87be2b2 100644
+>> --- a/drivers/net/ovpn/io.c
+>> +++ b/drivers/net/ovpn/io.c
+>> @@ -85,6 +85,7 @@ static void ovpn_netdev_write(struct ovpn_peer 
+>> *peer, struct sk_buff *skb)
+>>       skb_scrub_packet(skb, true);
+>>         /* network header reset in ovpn_decrypt_post() */
+>> +    skb_reset_mac_header(skb);
+>>       skb_reset_transport_header(skb);
+>>       skb_reset_inner_headers(skb);
+>
++Cc: netdev
 
-(1 comment)
+Regards,
 
-Patchset:
+Qingfang
 
-PS1:
-> Although FD_READ is level triggered,MSDN has this: [=E2=80=A6]
-Pushed a new version that calls man_read and clears FD_READ only if recursi=
-on would not happen. This should address the concern above..
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1639?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I9433baee1f5a66d43d4e43e03128ae6a790a7937
-Gerrit-Change-Number: 1639
-Gerrit-PatchSet: 2
-Gerrit-Owner: selvanair <selva.nair@...277...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Mon, 27 Apr 2026 20:56:36 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: selvanair <selva.nair@...277...>
-
---T5btFUPAvew=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1639?usp=3Demail">View =
-Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
-e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
-e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-1639?tab=3Dcomments&amp;usp=3Demail">Patch Set #1:</a> </p><p><blockquote s=
-tyle=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Alth=
-ough FD_READ is level triggered,MSDN has this: [=E2=80=A6]</blockquote></p>=
-<p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;"=
->Pushed a new version that calls man_read and clears FD_READ only if recurs=
-ion would not happen. This should address the concern above..</p></li></ul>=
-</li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/=
-+/1639?usp=3Demail">change 1639</a>. To unsubscribe, or for help writing ma=
-il filters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail=
-">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessag=
-e"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAct=
-ion"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1=
-639?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></=
-div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I9433baee1f5a66d43d4e43e0312=
-8ae6a790a7937 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1639 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 27 Apr 2026 20:56:36=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: selvanair &lt;selva.nair@=
-...277...&gt; </div>
-
-</body></html>=
-
---T5btFUPAvew=--
 
