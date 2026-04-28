@@ -1,15 +1,15 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Tue, 28 Apr 2026 15:35:19 +0000
-References: <gerrit.1777390515000.I43851d96c28af0ebcf0c6beab21659e68919d0c6@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
+From: "selvanair (Code Review)" <gerrit@...515...>
+Date: Tue, 28 Apr 2026 15:49:05 +0000
+References: <gerrit.1777391343000.Id514b06223cb55295c92b1fa6727f03d6e06befe@...2715...>
+Reply-To: selva.nair@...277..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <5b1e101a0302162816f231949540876ad8ea72dc-HTML@...2715...>
+Message-ID: <5f63efc8a1e7e6558a89018dde4bccf5f4e5f97f-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="6xcIpEgVI8Q="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: GHA: Maintenance
- Update April 2026
+Content-Type: multipart/alternative; boundary="Jkyu3Y/OP70="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: dns: correctly
+ handle dnssec settings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---6xcIpEgVI8Q=
+--Jkyu3Y/OP70=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,400 +32,366 @@ Hello plaisthos,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1641?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1643?usp=3Demail
 
 to review the following change.
 
 
-Change subject: GHA: Maintenance Update April 2026
+Change subject: dns: correctly handle dnssec settings
 ......................................................................
 
-GHA: Maintenance Update April 2026
+dns: correctly handle dnssec settings
 
-- Updates GHA actions
-- Switch clang-format job to archive: false supported
-  in new actions/upload-artifact version. This way the
-  file is not encapsulated in a zip
-- Drop macos-14 builds. This runner is considered
-  deprecated and will be removed later this year.
-
-Change-Id: I43851d96c28af0ebcf0c6beab21659e68919d0c6
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Change-Id: Id514b06223cb55295c92b1fa6727f03d6e06befe
+Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
-M .github/workflows/build.yaml
-M .github/workflows/coverity-scan.yml
-M .github/workflows/doxygen.yml
-3 files changed, 20 insertions(+), 20 deletions(-)
+M doc/man-sections/client-options.rst
+M include/openvpn-msg.h
+M src/openvpn/dns.c
+M src/openvpn/dns.h
+M src/openvpnserv/interactive.c
+5 files changed, 29 insertions(+), 14 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/41/1641/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/43/1643/1
 
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index e4cb799..895f469 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -19,9 +19,9 @@
-         run: pre-commit run -a --show-diff-on-failure || true
-       - name: Check for changes
-         run: git diff --output=3Dformat-changes.patch
--      - uses: actions/upload-artifact@...2978... # v6.0.0
-+      - uses: actions/upload-artifact@...3031... # v7.0.1
-         with:
--          name: format-changes.patch
-+          archive: false
-           path: format-changes.patch
-       - name: Set job status
-         run: test ! -s format-changes.patch
-@@ -45,9 +45,9 @@
-     steps:
-       - name: Checkout OpenVPN
-         uses: actions/checkout@...2998... # v6.0.2
--      - uses: lukka/get-cmake@...2999... # v4.2.3
-+      - uses: lukka/get-cmake@...3028... # v4.3.2
-       - name: Install vcpkg
--        uses: lukka/run-vcpkg@...2815... # v11.5
-+        uses: lukka/run-vcpkg@...3029... # v11.6
-         with:
-           vcpkgGitCommitId: e5a1490e1409d175932ef6014519e9ae149ddb7c
-       - name: Install dependencies
-@@ -80,21 +80,21 @@
-       - name: Checkout OpenVPN
-         uses: actions/checkout@...2998... # v6.0.2
+diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/client-=
+options.rst
+index 1664eed..abd5ec7 100644
+--- a/doc/man-sections/client-options.rst
++++ b/doc/man-sections/client-options.rst
+@@ -231,7 +231,7 @@
+   The ``dnssec`` option is used to configure validation of DNSSEC records.
+   While the exact semantics may differ for resolvers on different systems,
+   ``yes`` likely makes validation mandatory, ``no`` disables it, and ``opt=
+ional``
+-  uses it opportunistically.
++  uses it opportunistically. The default is ``optional``.
 
--      - uses: lukka/get-cmake@...2999... # v4.2.3
-+      - uses: lukka/get-cmake@...3028... # v4.3.2
-       - name: Restore from cache and install vcpkg
--        uses: lukka/run-vcpkg@...2815... # v11.5
-+        uses: lukka/run-vcpkg@...3029... # v11.6
-         with:
-           vcpkgGitCommitId: e5a1490e1409d175932ef6014519e9ae149ddb7c
-           vcpkgJsonGlob: '**/mingw/vcpkg.json'
+   The ``transport`` option enables DNS-over-HTTPS (``DoH``) or DNS-over-TL=
+S (``DoT``)
+   for a DNS server. The ``sni`` option can be used with them to specify the
+diff --git a/include/openvpn-msg.h b/include/openvpn-msg.h
+index ca3267e..3e1f99d 100644
+--- a/include/openvpn-msg.h
++++ b/include/openvpn-msg.h
+@@ -110,7 +110,8 @@
 
-       - name: Run CMake with vcpkg.json manifest
--        uses: lukka/run-cmake@...2816... # v10.8
-+        uses: lukka/run-cmake@...3030... # v10.9
-         with:
-           configurePreset: mingw-${{ matrix.arch }}
-           buildPreset: mingw-${{ matrix.arch }}
-           buildPresetAdditionalArgs: "['--config ${{ matrix.build }}']"
+ typedef enum
+ {
+-    nrpt_dnssec =3D 1 << 0,
++    nrpt_dnssec_enabled =3D 1 << 0,
++    nrpt_dnssec_required =3D 1 << 1,
+ } nrpt_flags_t;
 
--      - uses: actions/upload-artifact@...2978... # v6.0.0
-+      - uses: actions/upload-artifact@...3031... # v7.0.1
-         with:
-           name: openvpn-mingw-${{ matrix.arch }}-${{ matrix.build }}
-           path: |
-@@ -102,7 +102,7 @@
-             ${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/**/=
-${{ matrix.build }}/*.dll
-             !${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/**=
-/${{ matrix.build }}/test_*.exe
+ #define NRPT_ADDR_NUM  8  /* Max. number of addresses */
+diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
+index ce23f1f..256aac9 100644
+--- a/src/openvpn/dns.c
++++ b/src/openvpn/dns.c
+@@ -442,8 +442,25 @@
+         .header =3D { (add ? msg_add_nrpt_cfg : msg_del_nrpt_cfg), sizeof(=
+nrpt_dns_cfg_message_t),
+                     0 },
+         .iface =3D { .index =3D tt->adapter_index, .name =3D "" },
+-        .flags =3D server->dnssec =3D=3D DNS_SECURITY_NO ? 0 : nrpt_dnssec,
++        .flags =3D 0,
+     };
++
++    switch (server->dnssec)
++    {
++        case DNS_SECURITY_YES:
++            nrpt.flags |=3D nrpt_dnssec_required;
++            /* fall through */
++        case DNS_SECURITY_OPTIONAL:
++            nrpt.flags |=3D nrpt_dnssec_enabled;
++            break;
++        case DNS_SECURITY_NO:
++            nrpt.flags =3D 0;
++            break;
++        default:
++            ASSERT(0);
++            break;
++    }
++
+     strncpynt(nrpt.iface.name, tt->actual_name, sizeof(nrpt.iface.name));
 
--      - uses: actions/upload-artifact@...2978... # v6.0.0
-+      - uses: actions/upload-artifact@...3031... # v7.0.1
-         with:
-           name: openvpn-mingw-${{ matrix.arch }}-${{ matrix.build }}-tests
-           path: |
-@@ -124,7 +124,7 @@
-       - name: Checkout OpenVPN
-         uses: actions/checkout@...2998... # v6.0.2
-       - name: Retrieve mingw unittest
--        uses: actions/download-artifact@...2980... # v7.0.0
-+        uses: actions/download-artifact@...3032... # v8.0.1
-         with:
-           name: openvpn-mingw-${{ matrix.arch }}-${{ matrix.build }}-tests
-           path: unittests
-@@ -211,7 +211,7 @@
-       matrix:
-         ssllib: [openssl@...1554..., libressl]
-         build: [normal, asan]
--        os: [macos-14, macos-15, macos-26]
-+        os: [macos-15, macos-26]
-         include:
-           - build: asan
-             cflags: "-fsanitize=3Daddress,undefined -fno-sanitize-recover=
-=3Dall  -fno-optimize-sibling-calls -fsanitize-address-use-after-scope -fno=
--omit-frame-pointer -g -O1"
-@@ -266,26 +266,26 @@
-       runs-on: windows-2025
-       steps:
-       - uses: actions/checkout@...2998... # v6.0.2
--      - uses: lukka/get-cmake@...2999... # v4.2.3
-+      - uses: lukka/get-cmake@...3028... # v4.3.2
+     for (size_t i =3D 0; i < NRPT_ADDR_NUM; ++i)
+diff --git a/src/openvpn/dns.h b/src/openvpn/dns.h
+index 51bc2de..7786452 100644
+--- a/src/openvpn/dns.h
++++ b/src/openvpn/dns.h
+@@ -29,10 +29,9 @@
 
-       - name: Install rst2html
-         run: python -m pip install --upgrade pip docutils
+ enum dns_security
+ {
+-    DNS_SECURITY_UNSET,
++    DNS_SECURITY_OPTIONAL,
+     DNS_SECURITY_NO,
+     DNS_SECURITY_YES,
+-    DNS_SECURITY_OPTIONAL
+ };
 
-       - name: Restore artifacts, or setup vcpkg (do not install any packag=
-e)
--        uses: lukka/run-vcpkg@...2815... # v11.5
-+        uses: lukka/run-vcpkg@...3029... # v11.6
-         with:
-           vcpkgGitCommitId: e5a1490e1409d175932ef6014519e9ae149ddb7c
-           vcpkgJsonGlob: '**/windows/vcpkg.json'
+ enum dns_server_transport
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index 473a8d3..f1dd794 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -2463,13 +2463,13 @@
+  * @param  address    name server address string
+  * @param  domains    domains to resolve by this server as MULTI_SZ
+  * @param  dom_size   size of domains in bytes including the terminators
+- * @param  dnssec     boolean to determine if DNSSEC is to be enabled
++ * @param  dnssec     flag to determine DNSSEC setting
+  *
+  * @return NO_ERROR on success, or Windows error code
+  */
+ static DWORD
+ SetNrptRule(HKEY nrpt_key, PCWSTR subkey, PCSTR address, PCWSTR domains, D=
+WORD dom_size,
+-            BOOL dnssec)
++            nrpt_flags_t dnssec)
+ {
+     /* Create rule subkey */
+     DWORD err =3D NO_ERROR;
+@@ -2497,7 +2497,7 @@
 
-       - name: Run CMake with vcpkg.json manifest (NO TESTS)
--        uses: lukka/run-cmake@...2816... # v10.8
-+        uses: lukka/run-cmake@...3030... # v10.9
-         if: ${{ matrix.arch =3D=3D 'arm64' }}
-         with:
-           configurePreset: win-${{ matrix.arch }}-release
-           buildPreset: win-${{ matrix.arch }}-release
+     DWORD reg_val;
+     /* Set DNSSEC if required */
+-    if (dnssec)
++    if (dnssec & nrpt_dnssec_required)
+     {
+         reg_val =3D 1;
+         err =3D RegSetValueExA(rule_key, "DNSSECValidationRequired", 0, RE=
+G_DWORD, (PBYTE)&reg_val,
+@@ -2506,7 +2506,6 @@
+         {
+             goto out;
+         }
+-
+         reg_val =3D 0;
+         err =3D RegSetValueExA(rule_key, "DNSSECQueryIPSECRequired", 0, RE=
+G_DWORD, (PBYTE)&reg_val,
+                              sizeof(reg_val));
+@@ -2525,7 +2524,7 @@
+     }
 
-       - name: Run CMake with vcpkg.json manifest
--        uses: lukka/run-cmake@...2816... # v10.8
-+        uses: lukka/run-cmake@...3030... # v10.9
-         if: ${{ matrix.arch !=3D 'arm64' }}
-         with:
-           configurePreset: win-${{ matrix.arch }}-release
-@@ -293,7 +293,7 @@
-           testPreset: win-${{ matrix.arch }}-release
-           testPresetAdditionalArgs: "['--output-on-failure']"
+     /* Set NRPT config options */
+-    reg_val =3D dnssec ? 0x0000000A : 0x00000008;
++    reg_val =3D (dnssec & nrpt_dnssec_enabled) ? 0x0000000A : 0x00000008;
+     err =3D RegSetValueExA(rule_key, "ConfigOptions", 0, REG_DWORD, (const=
+ PBYTE)&reg_val,
+                          sizeof(reg_val));
+     if (err)
+@@ -2593,14 +2592,14 @@
+  * @param  addresses         name server addresses
+  * @param  domains           optional list of split routing domains
+  * @param  search_domains    optional list of search domains
+- * @param  dnssec            boolean whether DNSSEC is to be used
++ * @param  dnssec            flag to determine DNSSEC setting
+  * @param  ovpn_pid          the PID of the openvpn process
+  *
+  * @return NO_ERROR on success, or a Windows error code
+  */
+ static DWORD
+ SetNrptRules(HKEY nrpt_key, const nrpt_address_t *addresses, const char *d=
+omains,
+-             const char *search_domains, BOOL dnssec, DWORD ovpn_pid)
++             const char *search_domains, nrpt_flags_t dnssec, DWORD ovpn_p=
+id)
+ {
+     DWORD err =3D NO_ERROR;
+     PWSTR wide_domains =3D L".\0"; /* DNS route everything by default */
+@@ -2896,8 +2895,7 @@
+     }
 
--      - uses: actions/upload-artifact@...2978... # v6.0.0
-+      - uses: actions/upload-artifact@...3031... # v7.0.1
-         with:
-           name: openvpn-msvc-${{ matrix.arch }}
-           path: |
-diff --git a/.github/workflows/coverity-scan.yml b/.github/workflows/coveri=
-ty-scan.yml
-index 5554c4d..1eec1ed 100644
---- a/.github/workflows/coverity-scan.yml
-+++ b/.github/workflows/coverity-scan.yml
-@@ -13,7 +13,7 @@
-     steps:
-       - name: Check submission cache
-         id: check_submit
--        uses: actions/cache/restore@...3000... # v5.0.3
-+        uses: actions/cache/restore@...3024... # v5.0.5
-         with:
-           path: |
-             cov-int
-@@ -65,7 +65,7 @@
-
-       - name: Cache submission
-         if: steps.check_submit.outputs.cache-hit !=3D 'true'
--        uses: actions/cache/save@...3000... # v5.0.3
-+        uses: actions/cache/save@...3024... # v5.0.5
-         with:
-           path: |
-             cov-int
-diff --git a/.github/workflows/doxygen.yml b/.github/workflows/doxygen.yml
-index b28dd70..30988b5 100644
---- a/.github/workflows/doxygen.yml
-+++ b/.github/workflows/doxygen.yml
-@@ -35,7 +35,7 @@
-           touch doc/doxygen/html/.nojekyll
-       - name: Upload static files as artifact
-         id: deployment
--        uses: actions/upload-pages-artifact@...2930... # v4.0.0
-+        uses: actions/upload-pages-artifact@...3033... # v5
-         with:
-           path: doxygen/doc/doxygen/html/
-
-@@ -51,4 +51,4 @@
-     steps:
-       - name: Deploy to GitHub Pages
-         id: deployment
--        uses: actions/deploy-pages@...2873... # v4.0.5
-+        uses: actions/deploy-pages@...3034... # v5
+     /* Set NRPT rules */
+-    BOOL dnssec =3D (msg->flags & nrpt_dnssec) !=3D 0;
+-    err =3D SetNrptRules(key, msg->addresses, msg->resolve_domains, msg->s=
+earch_domains, dnssec,
++    err =3D SetNrptRules(key, msg->addresses, msg->resolve_domains, msg->s=
+earch_domains, msg->flags,
+                        ovpn_pid);
+     if (err)
+     {
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1641?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1643?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I43851d96c28af0ebcf0c6beab21659e68919d0c6
-Gerrit-Change-Number: 1641
+Gerrit-Change-Id: Id514b06223cb55295c92b1fa6727f03d6e06befe
+Gerrit-Change-Number: 1643
 Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Owner: selvanair <selva.nair@...277...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---6xcIpEgVI8Q=
+--Jkyu3Y/OP70=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
-<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1641?usp=3Demail">V=
+<p>selvanair would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1643?usp=3Demail">V=
 iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">GHA: Maintenance Update April 2026<br><br>-=
- Updates GHA actions<br>- Switch clang-format job to archive: false support=
-ed<br>  in new actions/upload-artifact version. This way the<br>  file is n=
-ot encapsulated in a zip<br>- Drop macos-14 builds. This runner is consider=
-ed<br>  deprecated and will be removed later this year.<br><br>Change-Id: I=
-43851d96c28af0ebcf0c6beab21659e68919d0c6<br>Signed-off-by: Frank Lichtenhel=
-d &lt;frank@...2641...&gt;<br>---<br>M .github/workflows/build.yaml<br>M .g=
-ithub/workflows/coverity-scan.yml<br>M .github/workflows/doxygen.yml<br>3 f=
-iles changed, 20 insertions(+), 20 deletions(-)<br><br></pre><pre class=3D"=
-blocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
-git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/41/1641/1</pre=
-><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><s=
-pan>diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yam=
-l</span><br><span>index e4cb799..895f469 100644</span><br><span>--- a/.gith=
-ub/workflows/build.yaml</span><br><span>+++ b/.github/workflows/build.yaml<=
-/span><br><span>@@ -19,9 +19,9 @@</span><br><span>         run: pre-commit =
-run -a --show-diff-on-failure || true</span><br><span>       - name: Check =
-for changes</span><br><span>         run: git diff --output=3Dformat-change=
-s.patch</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      - uses: =
-actions/upload-artifact@...2978... # v6.0.0</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+      - uses: actions/upload-artifact@...3031... # =
-v7.0.1</span><br><span>         with:</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-          name: format-changes.patch</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+          archive: false</span><br><span>=
-           path: format-changes.patch</span><br><span>       - name: Set jo=
-b status</span><br><span>         run: test ! -s format-changes.patch</span=
-><br><span>@@ -45,9 +45,9 @@</span><br><span>     steps:</span><br><span>  =
-     - name: Checkout OpenVPN</span><br><span>         uses: actions/checko=
-ut@...2998... # v6.0.2</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--      - uses: lukka/get-cmake@...2999... # v4.2.3</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+      - uses: lukka/get-cmake@...3028... # v=
-4.3.2</span><br><span>       - name: Install vcpkg</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        uses: lukka/run-vcpkg@...2815... # v11=
-.5</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        uses: luk=
-ka/run-vcpkg@...3029... # v11.6</span><br><span>         with:</span><br><s=
-pan>           vcpkgGitCommitId: e5a1490e1409d175932ef6014519e9ae149ddb7c</=
-span><br><span>       - name: Install dependencies</span><br><span>@@ -80,2=
-1 +80,21 @@</span><br><span>       - name: Checkout OpenVPN</span><br><span=
->         uses: actions/checkout@...2998... # v6.0.2</span><br><span> </spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-      - uses: lukka/get-cm=
-ake@...2999... # v4.2.3</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+      - uses: lukka/get-cmake@...3028... # v4.3.2</span><br><span>     =
-  - name: Restore from cache and install vcpkg</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-        uses: lukka/run-vcpkg@...2815... # v11.5</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        uses: lukka/r=
-un-vcpkg@...3029... # v11.6</span><br><span>         with:</span><br><span>=
-           vcpkgGitCommitId: e5a1490e1409d175932ef6014519e9ae149ddb7c</span=
-><br><span>           vcpkgJsonGlob: &#39;**/mingw/vcpkg.json&#39;</span><b=
-r><span> </span><br><span>       - name: Run CMake with vcpkg.json manifest=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        uses: lukka/r=
-un-cmake@...2816... # v10.8</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        uses: lukka/run-cmake@...3030... # v10.9</span><br><span>  =
-       with:</span><br><span>           configurePreset: mingw-${{ matrix.a=
-rch }}</span><br><span>           buildPreset: mingw-${{ matrix.arch }}</sp=
-an><br><span>           buildPresetAdditionalArgs: &quot;[&#39;--config ${{=
- matrix.build }}&#39;]&quot;</span><br><span> </span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-      - uses: actions/upload-artifact@...2978... #=
- v6.0.0</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      - uses=
-: actions/upload-artifact@...3031... # v7.0.1</span><br><span>         with=
-:</span><br><span>           name: openvpn-mingw-${{ matrix.arch }}-${{ mat=
-rix.build }}</span><br><span>           path: |</span><br><span>@@ -102,7 +=
-102,7 @@</span><br><span>             ${{ github.workspace }}/out/build/min=
-gw/${{ matrix.arch }}/**/${{ matrix.build }}/*.dll</span><br><span>        =
-     !${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/**/${{ mat=
-rix.build }}/test_*.exe</span><br><span> </span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-      - uses: actions/upload-artifact@...2978... # v6.0=
-.0</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      - uses: act=
-ions/upload-artifact@...3031... # v7.0.1</span><br><span>         with:</sp=
-an><br><span>           name: openvpn-mingw-${{ matrix.arch }}-${{ matrix.b=
-uild }}-tests</span><br><span>           path: |</span><br><span>@@ -124,7 =
-+124,7 @@</span><br><span>       - name: Checkout OpenVPN</span><br><span> =
-        uses: actions/checkout@...2998... # v6.0.2</span><br><span>       -=
- name: Retrieve mingw unittest</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-        uses: actions/download-artifact@...2980... # v7.0.0</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        uses: actions/down=
-load-artifact@...3032... # v8.0.1</span><br><span>         with:</span><br>=
-<span>           name: openvpn-mingw-${{ matrix.arch }}-${{ matrix.build }}=
--tests</span><br><span>           path: unittests</span><br><span>@@ -211,7=
- +211,7 @@</span><br><span>       matrix:</span><br><span>         ssllib: =
-[openssl@...1554..., libressl]</span><br><span>         build: [normal, asa=
-n]</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        os: [macos-=
-14, macos-15, macos-26]</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        os: [macos-15, macos-26]</span><br><span>         include:</spa=
-n><br><span>           - build: asan</span><br><span>             cflags: &=
-quot;-fsanitize=3Daddress,undefined -fno-sanitize-recover=3Dall  -fno-optim=
-ize-sibling-calls -fsanitize-address-use-after-scope -fno-omit-frame-pointe=
-r -g -O1&quot;</span><br><span>@@ -266,26 +266,26 @@</span><br><span>      =
- runs-on: windows-2025</span><br><span>       steps:</span><br><span>      =
- - uses: actions/checkout@...2998... # v6.0.2</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-      - uses: lukka/get-cmake@...2999... # v4.2.3</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+      - uses: lukka/g=
-et-cmake@...3028... # v4.3.2</span><br><span> </span><br><span>       - nam=
-e: Install rst2html</span><br><span>         run: python -m pip install --u=
-pgrade pip docutils</span><br><span> </span><br><span>       - name: Restor=
-e artifacts, or setup vcpkg (do not install any package)</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-        uses: lukka/run-vcpkg@...2815...=
- # v11.5</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        use=
-s: lukka/run-vcpkg@...3029... # v11.6</span><br><span>         with:</span>=
-<br><span>           vcpkgGitCommitId: e5a1490e1409d175932ef6014519e9ae149d=
-db7c</span><br><span>           vcpkgJsonGlob: &#39;**/windows/vcpkg.json&#=
-39;</span><br><span> </span><br><span>       - name: Run CMake with vcpkg.j=
-son manifest (NO TESTS)</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-        uses: lukka/run-cmake@...2816... # v10.8</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        uses: lukka/run-cmake@...3030... # v=
-10.9</span><br><span>         if: ${{ matrix.arch =3D=3D &#39;arm64&#39; }}=
-</span><br><span>         with:</span><br><span>           configurePreset:=
- win-${{ matrix.arch }}-release</span><br><span>           buildPreset: win=
--${{ matrix.arch }}-release</span><br><span> </span><br><span>       - name=
-: Run CMake with vcpkg.json manifest</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-        uses: lukka/run-cmake@...2816... # v10.8</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        uses: lukka/run-cmake@...220...=
-..3030... # v10.9</span><br><span>         if: ${{ matrix.arch !=3D &#39;ar=
-m64&#39; }}</span><br><span>         with:</span><br><span>           confi=
-gurePreset: win-${{ matrix.arch }}-release</span><br><span>@@ -293,7 +293,7=
- @@</span><br><span>           testPreset: win-${{ matrix.arch }}-release</=
-span><br><span>           testPresetAdditionalArgs: &quot;[&#39;--output-on=
--failure&#39;]&quot;</span><br><span> </span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-      - uses: actions/upload-artifact@...2978... # v6.0.0<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+      - uses: action=
-s/upload-artifact@...3031... # v7.0.1</span><br><span>         with:</span>=
-<br><span>           name: openvpn-msvc-${{ matrix.arch }}</span><br><span>=
-           path: |</span><br><span>diff --git a/.github/workflows/coverity-=
-scan.yml b/.github/workflows/coverity-scan.yml</span><br><span>index 5554c4=
-d..1eec1ed 100644</span><br><span>--- a/.github/workflows/coverity-scan.yml=
-</span><br><span>+++ b/.github/workflows/coverity-scan.yml</span><br><span>=
-@@ -13,7 +13,7 @@</span><br><span>     steps:</span><br><span>       - name=
-: Check submission cache</span><br><span>         id: check_submit</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        uses: actions/cache/re=
-store@...3000... # v5.0.3</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        uses: actions/cache/restore@...3024... # v5.0.5</span><br><sp=
-an>         with:</span><br><span>           path: |</span><br><span>      =
-       cov-int</span><br><span>@@ -65,7 +65,7 @@</span><br><span> </span><b=
-r><span>       - name: Cache submission</span><br><span>         if: steps.=
-check_submit.outputs.cache-hit !=3D &#39;true&#39;</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        uses: actions/cache/save@...3000... # =
-v5.0.3</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        uses:=
- actions/cache/save@...3024... # v5.0.5</span><br><span>         with:</spa=
-n><br><span>           path: |</span><br><span>             cov-int</span><=
-br><span>diff --git a/.github/workflows/doxygen.yml b/.github/workflows/dox=
-ygen.yml</span><br><span>index b28dd70..30988b5 100644</span><br><span>--- =
-a/.github/workflows/doxygen.yml</span><br><span>+++ b/.github/workflows/dox=
-ygen.yml</span><br><span>@@ -35,7 +35,7 @@</span><br><span>           touch=
- doc/doxygen/html/.nojekyll</span><br><span>       - name: Upload static fi=
-les as artifact</span><br><span>         id: deployment</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-        uses: actions/upload-pages-artifa=
-ct@...2930... # v4.0.0</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        uses: actions/upload-pages-artifact@...3033... # v5</span><br><s=
-pan>         with:</span><br><span>           path: doxygen/doc/doxygen/htm=
-l/</span><br><span> </span><br><span>@@ -51,4 +51,4 @@</span><br><span>    =
- steps:</span><br><span>       - name: Deploy to GitHub Pages</span><br><sp=
-an>         id: deployment</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-        uses: actions/deploy-pages@...2873... # v4.0.5</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        uses: actions/deploy-pages@=
-...3034... # v5</span><br><span></span><br></pre><p>To view, visit <a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/1641?usp=3Demail">change 1641</a>=
-. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:/=
-/gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope i=
-temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
-n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
-"http://gerrit.openvpn.net/c/openvpn/+/1641?usp=3Demail"/><meta itemprop=3D=
-"name" content=3D"View Change"/></div></div>
+ospace; white-space: pre-wrap;">dns: correctly handle dnssec settings<br><b=
+r>Change-Id: Id514b06223cb55295c92b1fa6727f03d6e06befe<br>Signed-off-by: Se=
+lva Nair &lt;selva.nair@...277...&gt;<br>---<br>M doc/man-sections/client-o=
+ptions.rst<br>M include/openvpn-msg.h<br>M src/openvpn/dns.c<br>M src/openv=
+pn/dns.h<br>M src/openvpnserv/interactive.c<br>5 files changed, 29 insertio=
+ns(+), 14 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-fam=
+ily: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.ope=
+nvpn.net:29418/openvpn refs/changes/43/1643/1</pre><pre style=3D"font-famil=
+y: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/doc/man-=
+sections/client-options.rst b/doc/man-sections/client-options.rst</span><br=
+><span>index 1664eed..abd5ec7 100644</span><br><span>--- a/doc/man-sections=
+/client-options.rst</span><br><span>+++ b/doc/man-sections/client-options.r=
+st</span><br><span>@@ -231,7 +231,7 @@</span><br><span>   The ``dnssec`` op=
+tion is used to configure validation of DNSSEC records.</span><br><span>   =
+While the exact semantics may differ for resolvers on different systems,</s=
+pan><br><span>   ``yes`` likely makes validation mandatory, ``no`` disables=
+ it, and ``optional``</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+  uses it opportunistically.</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+  uses it opportunistically. The default is ``optional``.</span><b=
+r><span> </span><br><span>   The ``transport`` option enables DNS-over-HTTP=
+S (``DoH``) or DNS-over-TLS (``DoT``)</span><br><span>   for a DNS server. =
+The ``sni`` option can be used with them to specify the</span><br><span>dif=
+f --git a/include/openvpn-msg.h b/include/openvpn-msg.h</span><br><span>ind=
+ex ca3267e..3e1f99d 100644</span><br><span>--- a/include/openvpn-msg.h</spa=
+n><br><span>+++ b/include/openvpn-msg.h</span><br><span>@@ -110,7 +110,8 @@=
+</span><br><span> </span><br><span> typedef enum</span><br><span> {</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    nrpt_dnssec =3D 1 &lt;&lt=
+; 0,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    nrpt_dnssec=
+_enabled =3D 1 &lt;&lt; 0,</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    nrpt_dnssec_required =3D 1 &lt;&lt; 1,</span><br><span> } nrpt_f=
+lags_t;</span><br><span> </span><br><span> #define NRPT_ADDR_NUM  8  /* Max=
+. number of addresses */</span><br><span>diff --git a/src/openvpn/dns.c b/s=
+rc/openvpn/dns.c</span><br><span>index ce23f1f..256aac9 100644</span><br><s=
+pan>--- a/src/openvpn/dns.c</span><br><span>+++ b/src/openvpn/dns.c</span><=
+br><span>@@ -442,8 +442,25 @@</span><br><span>         .header =3D { (add ?=
+ msg_add_nrpt_cfg : msg_del_nrpt_cfg), sizeof(nrpt_dns_cfg_message_t),</spa=
+n><br><span>                     0 },</span><br><span>         .iface =3D {=
+ .index =3D tt-&gt;adapter_index, .name =3D &quot;&quot; },</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-        .flags =3D server-&gt;dnssec =
+=3D=3D DNS_SECURITY_NO ? 0 : nrpt_dnssec,</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        .flags =3D 0,</span><br><span>     };</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    switch (server-&gt;dnssec)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        case DNS_SECURITY_YES:</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            nrpt.flags |=3D nrpt_dnsse=
+c_required;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+    /* fall through */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        case DNS_SECURITY_OPTIONAL:</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            nrpt.flags |=3D nrpt_dnssec_enabled;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+            break;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        case DNS_SECURITY_NO=
+:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            nrpt.f=
+lags =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+    break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        d=
+efault:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+ASSERT(0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     st=
+rncpynt(nrpt.iface.name, tt-&gt;actual_name, sizeof(nrpt.iface.name));</spa=
+n><br><span> </span><br><span>     for (size_t i =3D 0; i &lt; NRPT_ADDR_NU=
+M; ++i)</span><br><span>diff --git a/src/openvpn/dns.h b/src/openvpn/dns.h<=
+/span><br><span>index 51bc2de..7786452 100644</span><br><span>--- a/src/ope=
+nvpn/dns.h</span><br><span>+++ b/src/openvpn/dns.h</span><br><span>@@ -29,1=
+0 +29,9 @@</span><br><span> </span><br><span> enum dns_security</span><br><=
+span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    DNS_SECURI=
+TY_UNSET,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    DNS_SE=
+CURITY_OPTIONAL,</span><br><span>     DNS_SECURITY_NO,</span><br><span>    =
+ DNS_SECURITY_YES,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ DNS_SECURITY_OPTIONAL</span><br><span> };</span><br><span> </span><br><spa=
+n> enum dns_server_transport</span><br><span>diff --git a/src/openvpnserv/i=
+nteractive.c b/src/openvpnserv/interactive.c</span><br><span>index 473a8d3.=
+.f1dd794 100644</span><br><span>--- a/src/openvpnserv/interactive.c</span><=
+br><span>+++ b/src/openvpnserv/interactive.c</span><br><span>@@ -2463,13 +2=
+463,13 @@</span><br><span>  * @param  address    name server address string=
+</span><br><span>  * @param  domains    domains to resolve by this server a=
+s MULTI_SZ</span><br><span>  * @param  dom_size   size of domains in bytes =
+including the terminators</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">- * @param  dnssec     boolean to determine if DNSSEC is to be enabled</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param  dnssec    =
+ flag to determine DNSSEC setting</span><br><span>  *</span><br><span>  * @=
+return NO_ERROR on success, or Windows error code</span><br><span>  */</spa=
+n><br><span> static DWORD</span><br><span> SetNrptRule(HKEY nrpt_key, PCWST=
+R subkey, PCSTR address, PCWSTR domains, DWORD dom_size,</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-            BOOL dnssec)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+            nrpt_flags_t dnssec)</s=
+pan><br><span> {</span><br><span>     /* Create rule subkey */</span><br><s=
+pan>     DWORD err =3D NO_ERROR;</span><br><span>@@ -2497,7 +2497,7 @@</spa=
+n><br><span> </span><br><span>     DWORD reg_val;</span><br><span>     /* S=
+et DNSSEC if required */</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    if (dnssec)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   if (dnssec &amp; nrpt_dnssec_required)</span><br><span>     {</span><br>=
+<span>         reg_val =3D 1;</span><br><span>         err =3D RegSetValueE=
+xA(rule_key, &quot;DNSSECValidationRequired&quot;, 0, REG_DWORD, (PBYTE)&am=
+p;reg_val,</span><br><span>@@ -2506,7 +2506,6 @@</span><br><span>         {=
+</span><br><span>             goto out;</span><br><span>         }</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>         reg_=
+val =3D 0;</span><br><span>         err =3D RegSetValueExA(rule_key, &quot;=
+DNSSECQueryIPSECRequired&quot;, 0, REG_DWORD, (PBYTE)&amp;reg_val,</span><b=
+r><span>                              sizeof(reg_val));</span><br><span>@@ =
+-2525,7 +2524,7 @@</span><br><span>     }</span><br><span> </span><br><span=
+>     /* Set NRPT config options */</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    reg_val =3D dnssec ? 0x0000000A : 0x00000008;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    reg_val =3D (dnssec &amp; n=
+rpt_dnssec_enabled) ? 0x0000000A : 0x00000008;</span><br><span>     err =3D=
+ RegSetValueExA(rule_key, &quot;ConfigOptions&quot;, 0, REG_DWORD, (const P=
+BYTE)&amp;reg_val,</span><br><span>                          sizeof(reg_val=
+));</span><br><span>     if (err)</span><br><span>@@ -2593,14 +2592,14 @@</=
+span><br><span>  * @param  addresses         name server addresses</span><b=
+r><span>  * @param  domains           optional list of split routing domain=
+s</span><br><span>  * @param  search_domains    optional list of search dom=
+ains</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param  dnssec=
+            boolean whether DNSSEC is to be used</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+ * @param  dnssec            flag to determine=
+ DNSSEC setting</span><br><span>  * @param  ovpn_pid          the PID of th=
+e openvpn process</span><br><span>  *</span><br><span>  * @return NO_ERROR =
+on success, or a Windows error code</span><br><span>  */</span><br><span> s=
+tatic DWORD</span><br><span> SetNrptRules(HKEY nrpt_key, const nrpt_address=
+_t *addresses, const char *domains,</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-             const char *search_domains, BOOL dnssec, DWORD o=
+vpn_pid)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+  const char *search_domains, nrpt_flags_t dnssec, DWORD ovpn_pid)</span><b=
+r><span> {</span><br><span>     DWORD err =3D NO_ERROR;</span><br><span>   =
+  PWSTR wide_domains =3D L&quot;.\0&quot;; /* DNS route everything by defau=
+lt */</span><br><span>@@ -2896,8 +2895,7 @@</span><br><span>     }</span><b=
+r><span> </span><br><span>     /* Set NRPT rules */</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    BOOL dnssec =3D (msg-&gt;flags &amp; nr=
+pt_dnssec) !=3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ err =3D SetNrptRules(key, msg-&gt;addresses, msg-&gt;resolve_domains, msg-=
+&gt;search_domains, dnssec,</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    err =3D SetNrptRules(key, msg-&gt;addresses, msg-&gt;resolve_do=
+mains, msg-&gt;search_domains, msg-&gt;flags,</span><br><span>             =
+           ovpn_pid);</span><br><span>     if (err)</span><br><span>     {<=
+/span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/1643?usp=3Demail">change 1643</a>. To unsubscribe,=
+ or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.n=
+et/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http:/=
+/schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"ht=
+tp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.op=
+envpn.net/c/openvpn/+/1643?usp=3Demail"/><meta itemprop=3D"name" content=3D=
+"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I43851d96c28af0ebcf0c6beab21=
-659e68919d0c6 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1641 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Id514b06223cb55295c92b1fa672=
+7f03d6e06befe </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1643 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
+<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
+..&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
@@ -435,5 +401,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---6xcIpEgVI8Q=--
+--Jkyu3Y/OP70=--
 
