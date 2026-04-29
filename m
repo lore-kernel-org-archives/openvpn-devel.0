@@ -1,15 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 29 Apr 2026 13:18:58 +0000
+Date: Wed, 29 Apr 2026 13:18:57 +0000
 In-Reply-To: <gerrit.1777390515000.I933227aa4bc4f05b58d0e754b4330da807504d01@...2715...>
 References: <gerrit.1777390515000.I933227aa4bc4f05b58d0e754b4330da807504d01@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- yura.uddr@...277...
-Message-ID: <afd7887b572ba4ad9c70e17bee305150bb7878ff-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <afd7887b572ba4ad9c70e17bee305150bb7878ff-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="trKCfWLKN2Y="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="FX4yoW6L3nY="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: GHA: Add caching for
  vcpkg builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,15 +19,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: uddr <yura.uddr@...277...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---trKCfWLKN2Y=
+--FX4yoW6L3nY=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/16=
-42?usp=3Demail )
+cron2 has uploaded a new patch set (#2) to the change originally created by=
+ flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1642?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+2 by uddr
+
 
 Change subject: GHA: Add caching for vcpkg builds
 ......................................................................
@@ -55,7 +58,7 @@ M renovate.json
 2 files changed, 40 insertions(+), 8 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/42/1642/2
 
 diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
 index 895f469..b530fcc 100644
@@ -185,7 +188,7 @@ To view, visit http://gerrit.openvpn.net/c/openvpn/+/1642?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I933227aa4bc4f05b58d0e754b4330da807504d01
@@ -196,61 +199,65 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: uddr <yura.uddr@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---trKCfWLKN2Y=
+--FX4yoW6L3nY=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/1642?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
--wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">GHA: Add caching for vcpkg builds<br><br>The nic=
-e automatic caching was removed last year,<br>so go back to manual caching =
-of the binary cache<br>dir.<br><br>While here, also update vcpkg to latest =
-master.<br><br>Change-Id: I933227aa4bc4f05b58d0e754b4330da807504d01<br>Sign=
-ed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Yuriy Da=
-rnobyt &lt;yura.uddr@...277...&gt;<br>Gerrit URL: https://gerrit.openvpn.ne=
-t/c/openvpn/+/1642<br>Message-Id: &lt;20260429093938.23601-1-gert@...2132...=
-.&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...290...=
-net/msg36775.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br=
->---<br>M .github/workflows/build.yaml<br>M renovate.json<br>2 files change=
-d, 40 insertions(+), 8 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml=
-</span><br><span>index 895f469..b530fcc 100644</span><br><span>--- a/.githu=
-b/workflows/build.yaml</span><br><span>+++ b/.github/workflows/build.yaml</=
-span><br><span>@@ -42,14 +42,23 @@</span><br><span>       VCPKG_DEFAULT_TRI=
-PLET: ${{ matrix.vcpkg_triplet }}</span><br><span>       VCPKG_ROOT: ${{ gi=
-thub.workspace }}/vcpkg</span><br><span>       VCPKG_INSTALLED_DIR: ${{ git=
-hub.workspace }}/vcpkg/installed</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+      VCPKG_BINARY_SOURCES: clear;default,readwrite</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+      VCPKG_GIT_COMMIT_ID: 031=
-f4afe03be385aee354f15be6e6b1fe57497c7</span><br><span>     steps:</span><br=
-><span>       - name: Checkout OpenVPN</span><br><span>         uses: actio=
-ns/checkout@...2998... # v6.0.2</span><br><span>       - uses: lukka/get-cm=
-ake@...3028... # v4.3.2</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-      - name: Install vcpkg</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+      - name: Setup vcpkg</span><br><span>         uses: lukka/ru=
-n-vcpkg@...3029... # v11.6</span><br><span>         with:</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-          vcpkgGitCommitId: e5a1490e140=
-9d175932ef6014519e9ae149ddb7c</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+          vcpkgGitCommitId: ${{ env.VCPKG_GIT_COMMIT_ID }}</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+      - name: Set up vcpkg=
- binary cache</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  uses: actions/cache@...3024... # v5.0.5</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        with:</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+          key: android-${=
-{ matrix.abi }}-vcpkg-binary-cache-${{ env.VCPKG_GIT_COMMIT_ID }}</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+          restore-keys: |</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+            android-${{=
- matrix.abi }}-vcpkg-binary-cache-</span><br><span>       - name: Install d=
-ependencies</span><br><span>         run: ${VCPKG_ROOT}/vcpkg install opens=
-sl lz4 cmocka</span><br><span>       - name: configure OpenVPN with cmake</=
-span><br><span>@@ -70,10 +79,12 @@</span><br><span>         arch: [x86, x64=
-]</span><br><span>         build: [Release, Debug]</span><br><span> </span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    name: &quot;gcc-mingw - =
-${{ matrix.arch }} - ${{matrix.build }} - OSSL&quot;</span><br><span style=
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
+oaded patch set #2</strong> to the change originally created by flichtenhel=
+d.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1642?usp=3Demail"=
+>View Change</a></p><p>The following approvals got outdated and were remove=
+d:
+Code-Review+2 by uddr</p><pre class=3D"blocks" style=3D"font-family: monosp=
+ace,monospace; white-space: pre-wrap;">GHA: Add caching for vcpkg builds<br=
+><br>The nice automatic caching was removed last year,<br>so go back to man=
+ual caching of the binary cache<br>dir.<br><br>While here, also update vcpk=
+g to latest master.<br><br>Change-Id: I933227aa4bc4f05b58d0e754b4330da80750=
+4d01<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-=
+by: Yuriy Darnobyt &lt;yura.uddr@...277...&gt;<br>Gerrit URL: https://gerri=
+t.openvpn.net/c/openvpn/+/1642<br>Message-Id: &lt;20260429093938.23601-1-ge=
+rt@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1199...=
+sourceforge.net/msg36775.html<br>Signed-off-by: Gert Doering &lt;gert@...1711...=
+96...&gt;<br>---<br>M .github/workflows/build.yaml<br>M renovate.json<br>2 =
+files changed, 40 insertions(+), 8 deletions(-)<br><br></pre><pre class=3D"=
+blocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
+git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/42/1642/2</pre=
+><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><s=
+pan>diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yam=
+l</span><br><span>index 895f469..b530fcc 100644</span><br><span>--- a/.gith=
+ub/workflows/build.yaml</span><br><span>+++ b/.github/workflows/build.yaml<=
+/span><br><span>@@ -42,14 +42,23 @@</span><br><span>       VCPKG_DEFAULT_TR=
+IPLET: ${{ matrix.vcpkg_triplet }}</span><br><span>       VCPKG_ROOT: ${{ g=
+ithub.workspace }}/vcpkg</span><br><span>       VCPKG_INSTALLED_DIR: ${{ gi=
+thub.workspace }}/vcpkg/installed</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+      VCPKG_BINARY_SOURCES: clear;default,readwrite</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+      VCPKG_GIT_COMMIT_ID: 03=
+1f4afe03be385aee354f15be6e6b1fe57497c7</span><br><span>     steps:</span><b=
+r><span>       - name: Checkout OpenVPN</span><br><span>         uses: acti=
+ons/checkout@...2998... # v6.0.2</span><br><span>       - uses: lukka/get-c=
+make@...3028... # v4.3.2</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-      - name: Install vcpkg</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+      - name: Setup vcpkg</span><br><span>         uses: lukka/r=
+un-vcpkg@...3029... # v11.6</span><br><span>         with:</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-          vcpkgGitCommitId: e5a1490e14=
+09d175932ef6014519e9ae149ddb7c</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+          vcpkgGitCommitId: ${{ env.VCPKG_GIT_COMMIT_ID }}</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+      - name: Set up vcpk=
+g binary cache</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   uses: actions/cache@...3024... # v5.0.5</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        with:</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+          key: android-$=
+{{ matrix.abi }}-vcpkg-binary-cache-${{ env.VCPKG_GIT_COMMIT_ID }}</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+          restore-keys: |</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            android-${=
+{ matrix.abi }}-vcpkg-binary-cache-</span><br><span>       - name: Install =
+dependencies</span><br><span>         run: ${VCPKG_ROOT}/vcpkg install open=
+ssl lz4 cmocka</span><br><span>       - name: configure OpenVPN with cmake<=
+/span><br><span>@@ -70,10 +79,12 @@</span><br><span>         arch: [x86, x6=
+4]</span><br><span>         build: [Release, Debug]</span><br><span> </span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    name: &quot;gcc-mingw -=
+ ${{ matrix.arch }} - ${{matrix.build }} - OSSL&quot;</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+    name: &quot;gcc-mingw - ${{ matrix.ar=
 ch }} - ${{ matrix.build }} - OSSL&quot;</span><br><span>     runs-on: ubun=
 tu-24.04</span><br><span>     env:</span><br><span>       VCPKG_ROOT: ${{ g=
@@ -341,7 +348,7 @@ mprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
 =3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1642?usp=3Demail"/><=
 meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I933227aa4bc4f05b58d0e754b43=
@@ -359,5 +366,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---trKCfWLKN2Y=--
+--FX4yoW6L3nY=--
 
