@@ -1,16 +1,16 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 29 Apr 2026 13:18:57 +0000
-In-Reply-To: <gerrit.1777390515000.I933227aa4bc4f05b58d0e754b4330da807504d01@...2715...>
-References: <gerrit.1777390515000.I933227aa4bc4f05b58d0e754b4330da807504d01@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <afd7887b572ba4ad9c70e17bee305150bb7878ff-EmailReplacePatchSet-HTML@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Wed, 29 Apr 2026 15:01:31 +0000
+In-Reply-To: <gerrit.1777391343000.Id514b06223cb55295c92b1fa6727f03d6e06befe@...2715...>
+References: <gerrit.1777391343000.Id514b06223cb55295c92b1fa6727f03d6e06befe@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227..., heiko@...515...,
+ selva.nair@...277..., openvpn-devel@lists.sourceforge.net
+Message-ID: <0c41d7751d63261fee2f584084d436e911ba7a93-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="FX4yoW6L3nY="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: GHA: Add caching for
- vcpkg builds
+Content-Type: multipart/alternative; boundary="CI4iRLnBVr4="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: dns: correctly
+ handle dnssec settings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,352 +19,125 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: selvanair <selva.nair@...277...>
+Cc: d12fk <heiko@...515...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---FX4yoW6L3nY=
+--CI4iRLnBVr4=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#2) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/1642?usp=3Demail )
+Attention is currently required from: d12fk, plaisthos, selvanair.
 
-The following approvals got outdated and were removed:
-Code-Review+2 by uddr
+flichtenheld has posted comments on this change by selvanair. ( http://gerr=
+it.openvpn.net/c/openvpn/+/1643?usp=3Demail )
 
-
-Change subject: GHA: Add caching for vcpkg builds
+Change subject: dns: correctly handle dnssec settings
 ......................................................................
 
-GHA: Add caching for vcpkg builds
 
-The nice automatic caching was removed last year,
-so go back to manual caching of the binary cache
-dir.
+Patch Set 1:
 
-While here, also update vcpkg to latest master.
+(1 comment)
 
-Change-Id: I933227aa4bc4f05b58d0e754b4330da807504d01
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Yuriy Darnobyt <yura.uddr@...277...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1642
-Message-Id: <20260429093938.23601-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36=
-775.html
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M .github/workflows/build.yaml
-M renovate.json
-2 files changed, 40 insertions(+), 8 deletions(-)
+File include/openvpn-msg.h:
+
+http://gerrit.openvpn.net/c/openvpn/+/1643/comment/8ee219d8_22c9eccb?usp=3D=
+email :
+PS1, Line 127:     nrpt_flags_t flags;
+> We have always wanted to keep openvpn-msg. [=E2=80=A6]
+I was questioning whether it is clean to set a variable of an enum type to =
+a value that is not a named constant in that type. E.g. the new code might =
+set flags to "3", but that is not a named value in nrpt_flags_t. Not sure w=
+hether there are compilers that complain about that. Still feels unclean.
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/42/1642/2
-
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index 895f469..b530fcc 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -42,14 +42,23 @@
-       VCPKG_DEFAULT_TRIPLET: ${{ matrix.vcpkg_triplet }}
-       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
-       VCPKG_INSTALLED_DIR: ${{ github.workspace }}/vcpkg/installed
-+      VCPKG_BINARY_SOURCES: clear;default,readwrite
-+      VCPKG_GIT_COMMIT_ID: 031f4afe03be385aee354f15be6e6b1fe57497c7
-     steps:
-       - name: Checkout OpenVPN
-         uses: actions/checkout@...2998... # v6.0.2
-       - uses: lukka/get-cmake@...3028... # v4.3.2
--      - name: Install vcpkg
-+      - name: Setup vcpkg
-         uses: lukka/run-vcpkg@...3029... # v11.6
-         with:
--          vcpkgGitCommitId: e5a1490e1409d175932ef6014519e9ae149ddb7c
-+          vcpkgGitCommitId: ${{ env.VCPKG_GIT_COMMIT_ID }}
-+      - name: Set up vcpkg binary cache
-+        uses: actions/cache@...3024... # v5.0.5
-+        with:
-+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-+          key: android-${{ matrix.abi }}-vcpkg-binary-cache-${{ env.VCPKG_=
-GIT_COMMIT_ID }}
-+          restore-keys: |
-+            android-${{ matrix.abi }}-vcpkg-binary-cache-
-       - name: Install dependencies
-         run: ${VCPKG_ROOT}/vcpkg install openssl lz4 cmocka
-       - name: configure OpenVPN with cmake
-@@ -70,10 +79,12 @@
-         arch: [x86, x64]
-         build: [Release, Debug]
-
--    name: "gcc-mingw - ${{ matrix.arch }} - ${{matrix.build }} - OSSL"
-+    name: "gcc-mingw - ${{ matrix.arch }} - ${{ matrix.build }} - OSSL"
-     runs-on: ubuntu-24.04
-     env:
-       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
-+      VCPKG_BINARY_SOURCES: clear;default,readwrite
-+      VCPKG_GIT_COMMIT_ID: 031f4afe03be385aee354f15be6e6b1fe57497c7
-     steps:
-       - name: Install dependencies
-         run: sudo apt update && sudo apt install -y mingw-w64 unzip build-=
-essential wget python3-docutils man2html-base
-@@ -81,12 +92,21 @@
-         uses: actions/checkout@...2998... # v6.0.2
-
-       - uses: lukka/get-cmake@...3028... # v4.3.2
--      - name: Restore from cache and install vcpkg
-+      - name: Setup vcpkg
-         uses: lukka/run-vcpkg@...3029... # v11.6
-         with:
--          vcpkgGitCommitId: e5a1490e1409d175932ef6014519e9ae149ddb7c
-+          vcpkgGitCommitId: ${{ env.VCPKG_GIT_COMMIT_ID }}
-           vcpkgJsonGlob: '**/mingw/vcpkg.json'
-
-+      - name: Set up vcpkg binary cache
-+        uses: actions/cache@...3024... # v5.0.5
-+        with:
-+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-+          key: mingw-${{ matrix.arch }}-vcpkg-binary-cache-${{ hashFiles('=
-**/mingw/vcpkg.json') }}-${{ env.VCPKG_GIT_COMMIT_ID }}
-+          restore-keys: |
-+            mingw-${{ matrix.arch }}-vcpkg-binary-cache-${{ hashFiles('**/=
-mingw/vcpkg.json') }}-
-+            mingw-${{ matrix.arch }}-vcpkg-binary-cache-
-+
-       - name: Run CMake with vcpkg.json manifest
-         uses: lukka/run-cmake@...3030... # v10.9
-         with:
-@@ -262,6 +282,8 @@
-       name: "msbuild - ${{ matrix.arch }} - openssl"
-       env:
-         BUILD_CONFIGURATION: Release
-+        VCPKG_BINARY_SOURCES: clear;default,readwrite
-+        VCPKG_GIT_COMMIT_ID: 031f4afe03be385aee354f15be6e6b1fe57497c7
-
-       runs-on: windows-2025
-       steps:
-@@ -271,12 +293,22 @@
-       - name: Install rst2html
-         run: python -m pip install --upgrade pip docutils
-
--      - name: Restore artifacts, or setup vcpkg (do not install any packag=
-e)
-+      - name: Setup vcpkg (do not install any package)
-         uses: lukka/run-vcpkg@...3029... # v11.6
-         with:
--          vcpkgGitCommitId: e5a1490e1409d175932ef6014519e9ae149ddb7c
-+          vcpkgGitCommitId: ${{ env.VCPKG_GIT_COMMIT_ID }}
-           vcpkgJsonGlob: '**/windows/vcpkg.json'
-
-+      - name: Set up vcpkg binary cache
-+        uses: actions/cache@...3024... # v5.0.5
-+        with:
-+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-+          key: msvc-${{ matrix.arch }}-vcpkg-binary-cache-${{ hashFiles('*=
-*/windows/vcpkg.json') }}-${{ env.VCPKG_GIT_COMMIT_ID }}
-+          restore-keys: |
-+            msvc-${{ matrix.arch }}-vcpkg-binary-cache-${{ hashFiles('**/w=
-indows/vcpkg.json') }}-
-+            msvc-${{ matrix.arch }}-vcpkg-binary-cache-
-+
-+
-       - name: Run CMake with vcpkg.json manifest (NO TESTS)
-         uses: lukka/run-cmake@...3030... # v10.9
-         if: ${{ matrix.arch =3D=3D 'arm64' }}
-diff --git a/renovate.json b/renovate.json
-index 809ac3f..3bd0917 100644
---- a/renovate.json
-+++ b/renovate.json
-@@ -27,7 +27,7 @@
-                 "/^\\.github/workflows/.+\\.ya?ml$/"
-             ],
-             "matchStrings": [
--                "vcpkgGitCommitId:\\s*(?<currentDigest>.*?)\\n"
-+                "VCPKG_GIT_COMMIT_ID:\\s*(?<currentDigest>.*?)\\n"
-             ],
-             "currentValueTemplate": "master",
-             "depNameTemplate": "vcpkg",
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1642?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1643?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I933227aa4bc4f05b58d0e754b4330da807504d01
-Gerrit-Change-Number: 1642
-Gerrit-PatchSet: 2
-Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Change-Id: Id514b06223cb55295c92b1fa6727f03d6e06befe
+Gerrit-Change-Number: 1643
+Gerrit-PatchSet: 1
+Gerrit-Owner: selvanair <selva.nair@...277...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: uddr <yura.uddr@...277...>
+Gerrit-CC: d12fk <heiko@...515...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: d12fk <heiko@...515...>
+Gerrit-Attention: selvanair <selva.nair@...277...>
+Gerrit-Comment-Date: Wed, 29 Apr 2026 15:01:31 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: flichtenheld <frank@...2641...>
+Comment-In-Reply-To: selvanair <selva.nair@...277...>
 
---FX4yoW6L3nY=
+--CI4iRLnBVr4=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #2</strong> to the change originally created by flichtenhel=
-d.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1642?usp=3Demail"=
->View Change</a></p><p>The following approvals got outdated and were remove=
-d:
-Code-Review+2 by uddr</p><pre class=3D"blocks" style=3D"font-family: monosp=
-ace,monospace; white-space: pre-wrap;">GHA: Add caching for vcpkg builds<br=
-><br>The nice automatic caching was removed last year,<br>so go back to man=
-ual caching of the binary cache<br>dir.<br><br>While here, also update vcpk=
-g to latest master.<br><br>Change-Id: I933227aa4bc4f05b58d0e754b4330da80750=
-4d01<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-=
-by: Yuriy Darnobyt &lt;yura.uddr@...277...&gt;<br>Gerrit URL: https://gerri=
-t.openvpn.net/c/openvpn/+/1642<br>Message-Id: &lt;20260429093938.23601-1-ge=
-rt@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1199...=
-sourceforge.net/msg36775.html<br>Signed-off-by: Gert Doering &lt;gert@...1711...=
-96...&gt;<br>---<br>M .github/workflows/build.yaml<br>M renovate.json<br>2 =
-files changed, 40 insertions(+), 8 deletions(-)<br><br></pre><pre class=3D"=
-blocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
-git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/42/1642/2</pre=
-><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><s=
-pan>diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yam=
-l</span><br><span>index 895f469..b530fcc 100644</span><br><span>--- a/.gith=
-ub/workflows/build.yaml</span><br><span>+++ b/.github/workflows/build.yaml<=
-/span><br><span>@@ -42,14 +42,23 @@</span><br><span>       VCPKG_DEFAULT_TR=
-IPLET: ${{ matrix.vcpkg_triplet }}</span><br><span>       VCPKG_ROOT: ${{ g=
-ithub.workspace }}/vcpkg</span><br><span>       VCPKG_INSTALLED_DIR: ${{ gi=
-thub.workspace }}/vcpkg/installed</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+      VCPKG_BINARY_SOURCES: clear;default,readwrite</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+      VCPKG_GIT_COMMIT_ID: 03=
-1f4afe03be385aee354f15be6e6b1fe57497c7</span><br><span>     steps:</span><b=
-r><span>       - name: Checkout OpenVPN</span><br><span>         uses: acti=
-ons/checkout@...2998... # v6.0.2</span><br><span>       - uses: lukka/get-c=
-make@...3028... # v4.3.2</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-      - name: Install vcpkg</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+      - name: Setup vcpkg</span><br><span>         uses: lukka/r=
-un-vcpkg@...3029... # v11.6</span><br><span>         with:</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-          vcpkgGitCommitId: e5a1490e14=
-09d175932ef6014519e9ae149ddb7c</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+          vcpkgGitCommitId: ${{ env.VCPKG_GIT_COMMIT_ID }}</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+      - name: Set up vcpk=
-g binary cache</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   uses: actions/cache@...3024... # v5.0.5</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        with:</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+          key: android-$=
-{{ matrix.abi }}-vcpkg-binary-cache-${{ env.VCPKG_GIT_COMMIT_ID }}</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+          restore-keys: |</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            android-${=
-{ matrix.abi }}-vcpkg-binary-cache-</span><br><span>       - name: Install =
-dependencies</span><br><span>         run: ${VCPKG_ROOT}/vcpkg install open=
-ssl lz4 cmocka</span><br><span>       - name: configure OpenVPN with cmake<=
-/span><br><span>@@ -70,10 +79,12 @@</span><br><span>         arch: [x86, x6=
-4]</span><br><span>         build: [Release, Debug]</span><br><span> </span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    name: &quot;gcc-mingw -=
- ${{ matrix.arch }} - ${{matrix.build }} - OSSL&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    name: &quot;gcc-mingw - ${{ matrix.ar=
-ch }} - ${{ matrix.build }} - OSSL&quot;</span><br><span>     runs-on: ubun=
-tu-24.04</span><br><span>     env:</span><br><span>       VCPKG_ROOT: ${{ g=
-ithub.workspace }}/vcpkg</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+      VCPKG_BINARY_SOURCES: clear;default,readwrite</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+      VCPKG_GIT_COMMIT_ID: 031f4afe03b=
-e385aee354f15be6e6b1fe57497c7</span><br><span>     steps:</span><br><span> =
-      - name: Install dependencies</span><br><span>         run: sudo apt u=
-pdate &amp;&amp; sudo apt install -y mingw-w64 unzip build-essential wget p=
-ython3-docutils man2html-base</span><br><span>@@ -81,12 +92,21 @@</span><br=
-><span>         uses: actions/checkout@...2998... # v6.0.2</span><br><span>=
- </span><br><span>       - uses: lukka/get-cmake@...3028... # v4.3.2</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-      - name: Restore from c=
-ache and install vcpkg</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+      - name: Setup vcpkg</span><br><span>         uses: lukka/run-vcpkg=
-@...3029... # v11.6</span><br><span>         with:</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-          vcpkgGitCommitId: e5a1490e1409d17593=
-2ef6014519e9ae149ddb7c</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+          vcpkgGitCommitId: ${{ env.VCPKG_GIT_COMMIT_ID }}</span><br><sp=
-an>           vcpkgJsonGlob: &#39;**/mingw/vcpkg.json&#39;</span><br><span>=
- </span><br><span style=3D"color: hsl(120, 100%, 40%);">+      - name: Set =
-up vcpkg binary cache</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        uses: actions/cache@...3024... # v5.0.5</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        with:</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE =
-}}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          key: mi=
-ngw-${{ matrix.arch }}-vcpkg-binary-cache-${{ hashFiles(&#39;**/mingw/vcpkg=
-.json&#39;) }}-${{ env.VCPKG_GIT_COMMIT_ID }}</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+          restore-keys: |</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            mingw-${{ matrix.arch }}-vcpk=
-g-binary-cache-${{ hashFiles(&#39;**/mingw/vcpkg.json&#39;) }}-</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+            mingw-${{ matrix.ar=
-ch }}-vcpkg-binary-cache-</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span>       - name: Run CMake with vcpkg.json manifest</s=
-pan><br><span>         uses: lukka/run-cmake@...3030... # v10.9</span><br><=
-span>         with:</span><br><span>@@ -262,6 +282,8 @@</span><br><span>   =
-    name: &quot;msbuild - ${{ matrix.arch }} - openssl&quot;</span><br><spa=
-n>       env:</span><br><span>         BUILD_CONFIGURATION: Release</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        VCPKG_BINARY_SOURCE=
-S: clear;default,readwrite</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        VCPKG_GIT_COMMIT_ID: 031f4afe03be385aee354f15be6e6b1fe57497c=
-7</span><br><span> </span><br><span>       runs-on: windows-2025</span><br>=
-<span>       steps:</span><br><span>@@ -271,12 +293,22 @@</span><br><span> =
-      - name: Install rst2html</span><br><span>         run: python -m pip =
-install --upgrade pip docutils</span><br><span> </span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-      - name: Restore artifacts, or setup vcpkg =
-(do not install any package)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+      - name: Setup vcpkg (do not install any package)</span><br><=
-span>         uses: lukka/run-vcpkg@...3029... # v11.6</span><br><span>    =
-     with:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          v=
-cpkgGitCommitId: e5a1490e1409d175932ef6014519e9ae149ddb7c</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+          vcpkgGitCommitId: ${{ env.V=
-CPKG_GIT_COMMIT_ID }}</span><br><span>           vcpkgJsonGlob: &#39;**/win=
-dows/vcpkg.json&#39;</span><br><span> </span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+      - name: Set up vcpkg binary cache</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        uses: actions/cache@...3036...=
-.. # v5.0.5</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-with:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          path=
-: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+          key: msvc-${{ matrix.arch }}-vcpkg-binary-cac=
-he-${{ hashFiles(&#39;**/windows/vcpkg.json&#39;) }}-${{ env.VCPKG_GIT_COMM=
-IT_ID }}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          r=
-estore-keys: |</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-       msvc-${{ matrix.arch }}-vcpkg-binary-cache-${{ hashFiles(&#39;**/win=
-dows/vcpkg.json&#39;) }}-</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+            msvc-${{ matrix.arch }}-vcpkg-binary-cache-</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span>       - name: Run CMake with vcpkg=
-.json manifest (NO TESTS)</span><br><span>         uses: lukka/run-cmake@...1186...=
-.3030... # v10.9</span><br><span>         if: ${{ matrix.arch =3D=3D &#39;a=
-rm64&#39; }}</span><br><span>diff --git a/renovate.json b/renovate.json</sp=
-an><br><span>index 809ac3f..3bd0917 100644</span><br><span>--- a/renovate.j=
-son</span><br><span>+++ b/renovate.json</span><br><span>@@ -27,7 +27,7 @@</=
-span><br><span>                 &quot;/^\\.github/workflows/.+\\.ya?ml$/&qu=
-ot;</span><br><span>             ],</span><br><span>             &quot;matc=
-hStrings&quot;: [</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-            &quot;vcpkgGitCommitId:\\s*(?&lt;currentDigest&gt;.*?)\\n&quot;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                &qu=
-ot;VCPKG_GIT_COMMIT_ID:\\s*(?&lt;currentDigest&gt;.*?)\\n&quot;</span><br><=
-span>             ],</span><br><span>             &quot;currentValueTemplat=
-e&quot;: &quot;master&quot;,</span><br><span>             &quot;depNameTemp=
-late&quot;: &quot;vcpkg&quot;,</span><br><span></span><br></pre><p>To view,=
- visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1642?usp=3Demail">c=
-hange 1642</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><d=
-iv itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope ite=
-mprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
-=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1642?usp=3Demail"/><=
-meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: d12fk, plaisthos, selvanair. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1643?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>File include/openvpn-msg.h:</p><ul =
+style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 =
+0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/1643/comment/8ee219d8_22c9eccb?usp=3Demail">Patch Set #1,=
+ Line 127:</a> <code style=3D"font-family:monospace,monospace">    nrpt_fla=
+gs_t flags;</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; =
+margin: 10px 0; padding: 0 10px;">We have always wanted to keep openvpn-msg=
+. [=E2=80=A6]</blockquote></p><p class=3D"blocks" style=3D"white-space: pre=
+-wrap; word-wrap: break-word;">I was questioning whether it is clean to set=
+ a variable of an enum type to a value that is not a named constant in that=
+ type. E.g. the new code might set flags to &quot;3&quot;, but that is not =
+a named value in nrpt_flags_t. Not sure whether there are compilers that co=
+mplain about that. Still feels unclean.</p></li></ul></li></ul><p>To view, =
+visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1643?usp=3Demail">ch=
+ange 1643</a>. To unsubscribe, or for help writing mail filters, visit <a h=
+ref=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><di=
+v itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope item=
+prop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D=
+"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1643?usp=3Demail"/><met=
+a itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I933227aa4bc4f05b58d0e754b43=
-30da807504d01 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1642 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Id514b06223cb55295c92b1fa672=
+7f03d6e06befe </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1643 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: selvanair &lt;selva.nair@...1354...=
+..&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: uddr &lt;yura.uddr@...277...&=
-gt; </div>
+<div style=3D"display:none"> Gerrit-CC: d12fk &lt;heiko@...515...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
+277...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 29 Apr 2026 15:01:31=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
+.2641...&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: selvanair &lt;selva.nair@=
+...277...&gt; </div>
 
 </body></html>=
 
---FX4yoW6L3nY=--
+--CI4iRLnBVr4=--
 
