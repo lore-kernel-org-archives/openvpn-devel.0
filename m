@@ -1,14 +1,14 @@
-From: "selvanair (Code Review)" <gerrit@...515...>
-Date: Thu, 30 Apr 2026 13:14:08 +0000
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Thu, 30 Apr 2026 13:23:12 +0000
 In-Reply-To: <gerrit.1777391343000.Id514b06223cb55295c92b1fa6727f03d6e06befe@...2715...>
 References: <gerrit.1777391343000.Id514b06223cb55295c92b1fa6727f03d6e06befe@...2715...>
-Reply-To: selva.nair@...277..., arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <6a322048477ca6ec1825466c64c8cb3a9ee3086b-EmailReviewComments-HTML@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227..., heiko@...515...,
+ selva.nair@...277..., openvpn-devel@lists.sourceforge.net
+Message-ID: <42aead777d36a932cbe2959fd4b2913bb34d03ed-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="moZoUbAVFSw="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="cYPeHBYAbTQ="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: dns: correctly
  handle dnssec settings
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,16 +19,17 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: d12fk <heiko@...515...>, flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: selvanair <selva.nair@...277...>
+Cc: d12fk <heiko@...515...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---moZoUbAVFSw=
+--cYPeHBYAbTQ=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: d12fk, flichtenheld, plaisthos.
+Attention is currently required from: d12fk, plaisthos, selvanair.
 
-selvanair has posted comments on this change by selvanair. ( http://gerrit.=
-openvpn.net/c/openvpn/+/1643?usp=3Demail )
+flichtenheld has posted comments on this change by selvanair. ( http://gerr=
+it.openvpn.net/c/openvpn/+/1643?usp=3Demail )
 
 Change subject: dns: correctly handle dnssec settings
 ......................................................................
@@ -40,13 +41,14 @@ Patch Set 1:
 
 File src/openvpn/dns.h:
 
-http://gerrit.openvpn.net/c/openvpn/+/1643/comment/7125ebe8_1117383f?usp=3D=
+http://gerrit.openvpn.net/c/openvpn/+/1643/comment/41584b3e_2dda66f8?usp=3D=
 email :
 PS1, Line 32:     DNS_SECURITY_UNSET,
-> "UNSET is not handled anywhere." I looked into that and this is not true.=
- [=E2=80=A6]
-Well, in that case, UNSET stays, and with the immediate fix in, nothing in =
-this patch may be abandoned isn't it?
+> Well, in that case, UNSET stays, and with the immediate fix in, nothing i=
+n this patch may be abandon [=E2=80=A6]
+I would say so. If someone actually asks for DNS_SECURITY_OPTIONAL support =
+on Windows, we could certainly look into it, but it feels like not worth th=
+e additional complexity to me at this point.
 
 
 
@@ -67,41 +69,42 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: d12fk <heiko@...515...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Thu, 30 Apr 2026 13:14:08 +0000
+Gerrit-Attention: selvanair <selva.nair@...277...>
+Gerrit-Comment-Date: Thu, 30 Apr 2026 13:23:12 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
 Comment-In-Reply-To: flichtenheld <frank@...2641...>
 Comment-In-Reply-To: d12fk <heiko@...515...>
 Comment-In-Reply-To: selvanair <selva.nair@...277...>
 
---moZoUbAVFSw=
+--cYPeHBYAbTQ=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: d12fk, flichtenheld, plaisthos. </p>
+rently required from: d12fk, plaisthos, selvanair. </p>
 <p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1643?usp=3Demail">View =
 Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
 <li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/dns.h:</p><ul styl=
 e=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 =
 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/1643/comment/7125ebe8_1117383f?usp=3Demail">Patch Set #1, Lin=
+t/c/openvpn/+/1643/comment/41584b3e_2dda66f8?usp=3Demail">Patch Set #1, Lin=
 e 32:</a> <code style=3D"font-family:monospace,monospace">    DNS_SECURITY_=
 UNSET,</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margi=
-n: 10px 0; padding: 0 10px;">&quot;UNSET is not handled anywhere.&quot; I l=
-ooked into that and this is not true. [=E2=80=A6]</blockquote></p><p class=
-=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Well, i=
-n that case, UNSET stays, and with the immediate fix in, nothing in this pa=
-tch may be abandoned isn&#39;t it?</p></li></ul></li></ul><p>To view, visit=
- <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1643?usp=3Demail">change =
-1643</a>. To unsubscribe, or for help writing mail filters, visit <a href=
-=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p><div i=
-temscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itempro=
-p=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"ur=
-l" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1643?usp=3Demail"/><meta i=
-temprop=3D"name" content=3D"View Change"/></div></div>
+n: 10px 0; padding: 0 10px;">Well, in that case, UNSET stays, and with the =
+immediate fix in, nothing in this patch may be abandon [=E2=80=A6]</blockqu=
+ote></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: brea=
+k-word;">I would say so. If someone actually asks for DNS_SECURITY_OPTIONAL=
+ support on Windows, we could certainly look into it, but it feels like not=
+ worth the additional complexity to me at this point.</p></li></ul></li></u=
+l><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1643?u=
+sp=3Demail">change 1643</a>. To unsubscribe, or for help writing mail filte=
+rs, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settin=
+gs</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div =
+itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><li=
+nk itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1643?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
@@ -121,11 +124,11 @@ temprop=3D"name" content=3D"View Change"/></div></div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
 ; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 30 Apr 2026 13:14:08=
+<div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
+277...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 30 Apr 2026 13:23:12=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
@@ -138,5 +141,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---moZoUbAVFSw=--
+--cYPeHBYAbTQ=--
 
