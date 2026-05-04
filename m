@@ -1,10 +1,14 @@
-From: Gert Doering <gert@...1296...>
-Date: Thu, 30 Apr 2026 18:32:43 +0200
-Message-ID: <20260430163249.13638-1-gert@...1296...>
-In-Reply-To: <gerrit.1777558352000.I53b3f4c60897a1f4dd5efeb6575d525ffb082402@...2715...>
-References: <gerrit.1777558352000.I53b3f4c60897a1f4dd5efeb6575d525ffb082402@...2715...>
+From: =?UTF-8?B?0JTQvNC40YLRgNC40Lkg0KDQvtC80LDQvdC+0LI=?=
+ <dromanov2002@...450...>
+Reply-To: =?UTF-8?B?0JTQvNC40YLRgNC40Lkg0KDQvtC80LDQvdC+0LI=?=
+ <dromanov2002@...450...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] DNS server documentation update
+Date: Mon, 04 May 2026 10:19:35 +0300
+Message-Id: <1777879175.767918719@...3037...>
+Content-Type: multipart/mixed;
+ boundary="----b3Ad9672d976c9F523E3F8281eD70bA6-cRtGJsJ5rFXyyg0s-1777879175"
+Subject: [Openvpn-devel] =?utf-8?q?=5BPATCH=5D_netcfg=3A_handle_ParseFromS?=
+ =?utf-8?q?tring_result_for_protobuf_34_=28nodiscard=29?=
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,60 +17,72 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: =?UTF-8?B?b3BlbnZwbi1kZXZlbA==?= <openvpn-devel@lists.sourceforge.net>
+
+------b3Ad9672d976c9F523E3F8281eD70bA6-cRtGJsJ5rFXyyg0s-1777879175
+Content-Type: multipart/alternative;
+	boundary="--ALT--b3Ad9672d976c9F523E3F8281eD70bA61777879175"
+
+----ALT--b3Ad9672d976c9F523E3F8281eD70bA61777879175
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: base64
 
-From: Selva Nair <selva.nair@...277...>
+SGksCgpCdWlsZGluZyBvcGVudnBuMy1saW51eCB2MjYgd2l0aCBwcm90b2J1ZiAzNC54IGFuZCBH
+Q0MgMTUgZmFpbHMgaW4KbmV0Y2ZnLWRjby5jcHA6IGdvb2dsZTo6cHJvdG9idWY6Ok1lc3NhZ2VM
+aXRlOjpQYXJzZUZyb21TdHJpbmcgaXMgbm93Cltbbm9kaXNjYXJkXV0sIGFuZCB0aGUgcHJvamVj
+dCBidWlsZHMgd2l0aCAtV2Vycm9yLCBzbyBpZ25vcmluZyB0aGUKcmV0dXJuIHZhbHVlIGJlY29t
+ZXMgYSBoYXJkIGVycm9yICgtV2Vycm9yPXVudXNlZC1yZXN1bHQpLgoKQ2hlY2sgdGhlIHJldHVy
+biB2YWx1ZSBhbmQgdGhyb3cgTmV0Q2ZnRXhjZXB0aW9uIG9uIHBhcnNlIGZhaWx1cmUsCmNvbnNp
+c3RlbnQgd2l0aCBvdGhlciBlcnJvciBoYW5kbGluZyBpbiB0aGlzIGZpbGUuCgpUaGlzIHNob3Vs
+ZCBmaXggZGlzdHJpYnV0aW9ucyB0aGF0IGFscmVhZHkgc2hpcCBwcm90b2J1ZiAzNCAoZS5nLiBB
+cmNoKS4KCklmIHRoZXJlIGlzIGFuIGV4aXN0aW5nIGlzc3VlIG9uIENvZGViZXJnIGZvciB0aGlz
+IChlLmcuIHJlbGF0ZWQgdG8Kbm9kaXNjYXJkIC8gcHJvdG9idWYgMzQpLCBwbGVhc2UgbGluayB0
+aGlzIHBhdGNoIHRoZXJlLgoKU2lnbmVkLW9mZi1ieTogRG1pdHJpeSBSb21hbm92wqA8ZHJvbWFu
+b3YyMDAyQC4uLjQ1MC4uLj4KCkRS
 
-Change-Id: I53b3f4c60897a1f4dd5efeb6575d525ffb082402
-Signed-off-by: Selva Nair <selva.nair@...277...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1646
----
+----ALT--b3Ad9672d976c9F523E3F8281eD70bA61777879175
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: base64
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+CjxIVE1MPjxCT0RZPjxkaXY+Jm5ic3A7PC9kaXY+PGRpdj48ZGl2PkhpLDwvZGl2PjxkaXY+Jm5i
+c3A7PC9kaXY+PGRpdj5CdWlsZGluZyBvcGVudnBuMy1saW51eCB2MjYgd2l0aCBwcm90b2J1ZiAz
+NC54IGFuZCBHQ0MgMTUgZmFpbHMgaW48L2Rpdj48ZGl2Pm5ldGNmZy1kY28uY3BwOiBnb29nbGU6
+OnByb3RvYnVmOjpNZXNzYWdlTGl0ZTo6UGFyc2VGcm9tU3RyaW5nIGlzIG5vdzwvZGl2PjxkaXY+
+W1tub2Rpc2NhcmRdXSwgYW5kIHRoZSBwcm9qZWN0IGJ1aWxkcyB3aXRoIC1XZXJyb3IsIHNvIGln
+bm9yaW5nIHRoZTwvZGl2PjxkaXY+cmV0dXJuIHZhbHVlIGJlY29tZXMgYSBoYXJkIGVycm9yICgt
+V2Vycm9yPXVudXNlZC1yZXN1bHQpLjwvZGl2PjxkaXY+Jm5ic3A7PC9kaXY+PGRpdj5DaGVjayB0
+aGUgcmV0dXJuIHZhbHVlIGFuZCB0aHJvdyBOZXRDZmdFeGNlcHRpb24gb24gcGFyc2UgZmFpbHVy
+ZSw8L2Rpdj48ZGl2PmNvbnNpc3RlbnQgd2l0aCBvdGhlciBlcnJvciBoYW5kbGluZyBpbiB0aGlz
+IGZpbGUuPC9kaXY+PGRpdj4mbmJzcDs8L2Rpdj48ZGl2PlRoaXMgc2hvdWxkIGZpeCBkaXN0cmli
+dXRpb25zIHRoYXQgYWxyZWFkeSBzaGlwIHByb3RvYnVmIDM0IChlLmcuIEFyY2gpLjwvZGl2Pjxk
+aXY+Jm5ic3A7PC9kaXY+PGRpdj5JZiB0aGVyZSBpcyBhbiBleGlzdGluZyBpc3N1ZSBvbiBDb2Rl
+YmVyZyBmb3IgdGhpcyAoZS5nLiByZWxhdGVkIHRvPC9kaXY+PGRpdj5ub2Rpc2NhcmQgLyBwcm90
+b2J1ZiAzNCksIHBsZWFzZSBsaW5rIHRoaXMgcGF0Y2ggdGhlcmUuPC9kaXY+PGRpdj4mbmJzcDs8
+L2Rpdj48ZGl2PlNpZ25lZC1vZmYtYnk6IERtaXRyaXkgUm9tYW5vdiZuYnNwOyZsdDs8YSBocmVm
+PSJtYWlsdG86ZHJvbWFub3YyMDAyQC4uLjQ1MC4uLiI+ZHJvbWFub3YyMDAyQC4uLjQ1MC4uLjwv
+YT4mZ3Q7PC9kaXY+PC9kaXY+PGRpdj4mbmJzcDs8L2Rpdj48ZGl2IGRhdGEtc2lnbmF0dXJlLXdp
+ZGdldD0iY29udGFpbmVyIj48ZGl2IGRhdGEtc2lnbmF0dXJlLXdpZGdldD0iY29udGVudCI+PGRp
+dj5EUjwvZGl2PjwvZGl2PjwvZGl2PjwvQk9EWT48L0hUTUw+Cg==
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1646
-This mail reflects revision 2 of this Change.
+----ALT--b3Ad9672d976c9F523E3F8281eD70bA61777879175--
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
+------b3Ad9672d976c9F523E3F8281eD70bA6-cRtGJsJ5rFXyyg0s-1777879175
+Content-Type: text/x-diff; name="=?UTF-8?B?cGF0Y2guZGlmZg==?="
+Content-Disposition: attachment; filename="=?UTF-8?B?cGF0Y2guZGlmZg==?="
+Content-Transfer-Encoding: base64
 
-        
-diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/client-options.rst
-index 1664eed..3ad9104 100644
---- a/doc/man-sections/client-options.rst
-+++ b/doc/man-sections/client-options.rst
-@@ -216,7 +216,8 @@
-   DNS server options it must be between 0 and 127. The server id is used
-   to group options and also for ordering the list of configured DNS servers;
-   lower numbers come first. DNS servers being pushed to a client replace
--  already configured DNS servers with the same server id.
-+  already configured DNS servers with the same server id. Only the group of
-+  options corresponding to the lowest server id is applied.
- 
-   The ``address`` option configures the IPv4 and / or IPv6 address(es) of
-   the DNS server. Up to eight addresses can be specified per DNS server.
-@@ -249,6 +250,19 @@
-   so that ``--dns`` overrides ``--dhcp-option``. Thus, ``--dns`` can be used today
-   to migrate from ``--dhcp-option``.
- 
-+  Windows only:
-+
-+  #. If tap-windows6 is in use, dns servers are set by DHCP by default.
-+     In this case only ``--dns search-domains`` and ``--dns server n address ..``
-+     with the lowest value of ``n`` are interpreted. All other ``--dns`` options
-+     are ignored. Use of the dco driver is the recommended way to make use of these
-+     new features.
-+
-+  #. If ``--dns server n resolve-domains`` is in use, the DNS server addresses
-+     corresponding to ``n`` are set on the interface only if ``search-domains`` is
-+     also specified.  Otherwise these DNS addresses are used only for NRPT rules for
-+     split-DNS.
-+
- --explicit-exit-notify n
-   In UDP client mode or point-to-point mode, send server/peer an exit
-   notification if tunnel is restarted or OpenVPN process is exited. In
+ZGlmZiAtLWdpdCBhL3NyYy9uZXRjZmcvbmV0Y2ZnLWRjby5jcHAgYi9zcmMvbmV0Y2ZnL25ldGNm
+Zy1kY28uY3BwCmluZGV4IDAwMDAwMDAuLjAwMDAwMDAgMTAwNjQ0Ci0tLSBhL3NyYy9uZXRjZmcv
+bmV0Y2ZnLWRjby5jcHAKKysrIGIvc3JjL25ldGNmZy9uZXRjZmctZGNvLmNwcApAQCAtMjY0LDcg
+KzI2NCwxMSBAQCB2b2lkIE5ldENmZ0RDTzo6bWV0aG9kX25ld19rZXkoR1ZhcmlhbnQgKnBhcmFt
+cykKICAgICBzdGQ6OnN0cmluZyBrZXlfY29uZmlnID0gZ2xpYjI6OlZhbHVlOjpFeHRyYWN0PHN0
+ZDo6c3RyaW5nPihwYXJhbXMsIDEpOwoKICAgICBEY29LZXlDb25maWcgZGNvX2tjOwotICAgIGRj
+b19rYy5QYXJzZUZyb21TdHJpbmcoYmFzZTY0LT5kZWNvZGUoa2V5X2NvbmZpZykpOworICAgIGlm
+ICghZGNvX2tjLlBhcnNlRnJvbVN0cmluZyhiYXNlNjQtPmRlY29kZShrZXlfY29uZmlnKSkpCisg
+ICAgeworICAgICAgICB0aHJvdyBOZXRDZmdFeGNlcHRpb24oIkZhaWxlZCB0byBwYXJzZSBEQ08g
+a2V5IGNvbmZpZ3VyYXRpb24iKTsKKyAgICB9CgogICAgIGF1dG8gY29weUtleURpcmVjdGlvbiA9
+IFtdKGNvbnN0IERjb0tleUNvbmZpZ19LZXlEaXJlY3Rpb24gJnNyYywgS29SZWtleTo6S2V5RGly
+ZWN0aW9uICZkc3QpCiAgICAgewo=
+
+------b3Ad9672d976c9F523E3F8281eD70bA6-cRtGJsJ5rFXyyg0s-1777879175--
 
