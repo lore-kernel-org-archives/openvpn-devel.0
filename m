@@ -1,14 +1,8 @@
-From: =?UTF-8?B?0JTQvNC40YLRgNC40Lkg0KDQvtC80LDQvdC+0LI=?=
- <dromanov2002@...450...>
-Reply-To: =?UTF-8?B?0JTQvNC40YLRgNC40Lkg0KDQvtC80LDQvdC+0LI=?=
- <dromanov2002@...450...>
+Date: Mon, 4 May 2026 13:32:55 +0200
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <afiD5-qkdCP6z_V8@...2685...>
 MIME-Version: 1.0
-Date: Mon, 04 May 2026 10:22:49 +0300
-Message-Id: <1777879369.971087242@...3037...>
-Content-Type: multipart/mixed;
- boundary="----7f7Cc4E0EcF69C27E6e567159f5C685f-ZHSOK5xRoC25nxE4-1777879369"
-Subject: [Openvpn-devel] =?utf-8?q?Fwd=3A_=5BPATCH=5D_netcfg=3A_handle_Par?=
- =?utf-8?q?seFromString_result_for_protobuf_34_=28nodiscard=29?=
+Subject: [Openvpn-devel] OpenVPN 2.7.4 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,93 +11,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: openvpn-announce@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
 
-------7f7Cc4E0EcF69C27E6e567159f5C685f-ZHSOK5xRoC25nxE4-1777879369
-Content-Type: multipart/alternative;
-	boundary="--ALT--7f7Cc4E0EcF69C27E6e567159f5C685f1777879369"
+The OpenVPN community project team is proud to release OpenVPN 2.7.4.
+This is a small bugfix release.
 
-----ALT--7f7Cc4E0EcF69C27E6e567159f5C685f1777879369
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Bugfixes:
 
-LS0tLS0tLS0g0J/QtdGA0LXRgdGL0LvQsNC10LzQvtC1INGB0L7QvtCx0YnQtdC90LjQtSAtLS0t
-LS0tLQrQntGCINC60L7Qs9C+OiDQlNC80LjRgtGA0LjQuSDQoNC+0LzQsNC90L7QsiA8ZHJvbWFu
-b3YyMDAyQC4uLjQ1MC4uLj4K0JrQvtC80YM6IG9wZW52cG4tZGV2ZWwgPG9wZW52cG4tZGV2ZWxA
-bGlzdHMuc291cmNlZm9yZ2UubmV0PgrQlNCw0YLQsDog0J/QvtC90LXQtNC10LvRjNC90LjQuiwg
-NCDQvNCw0Y8gMjAyNiwgMTA6MTkgKzAzOjAwCtCi0LXQvNCwOiBbUEFUQ0hdIG5ldGNmZzogaGFu
-ZGxlIFBhcnNlRnJvbVN0cmluZyByZXN1bHQgZm9yIHByb3RvYnVmIDM0IChub2Rpc2NhcmQpCgpI
-aSwKCkJ1aWxkaW5nIG9wZW52cG4zLWxpbnV4IHYyNiB3aXRoIHByb3RvYnVmIDM0LnggYW5kIEdD
-QyAxNSBmYWlscyBpbgpuZXRjZmctZGNvLmNwcDogZ29vZ2xlOjpwcm90b2J1Zjo6TWVzc2FnZUxp
-dGU6OlBhcnNlRnJvbVN0cmluZyBpcyBub3cKW1tub2Rpc2NhcmRdXSwgYW5kIHRoZSBwcm9qZWN0
-IGJ1aWxkcyB3aXRoIC1XZXJyb3IsIHNvIGlnbm9yaW5nIHRoZQpyZXR1cm4gdmFsdWUgYmVjb21l
-cyBhIGhhcmQgZXJyb3IgKC1XZXJyb3I9dW51c2VkLXJlc3VsdCkuCgpDaGVjayB0aGUgcmV0dXJu
-IHZhbHVlIGFuZCB0aHJvdyBOZXRDZmdFeGNlcHRpb24gb24gcGFyc2UgZmFpbHVyZSwKY29uc2lz
-dGVudCB3aXRoIG90aGVyIGVycm9yIGhhbmRsaW5nIGluIHRoaXMgZmlsZS4KClRoaXMgc2hvdWxk
-IGZpeCBkaXN0cmlidXRpb25zIHRoYXQgYWxyZWFkeSBzaGlwIHByb3RvYnVmIDM0IChlLmcuIEFy
-Y2gpLgoKSWYgdGhlcmUgaXMgYW4gZXhpc3RpbmcgaXNzdWUgb24gQ29kZWJlcmcgZm9yIHRoaXMg
-KGUuZy4gcmVsYXRlZCB0bwpub2Rpc2NhcmQgLyBwcm90b2J1ZiAzNCksIHBsZWFzZSBsaW5rIHRo
-aXMgcGF0Y2ggdGhlcmUuCgpTaWduZWQtb2ZmLWJ5OiBEbWl0cml5IFJvbWFub3bCoDxkcm9tYW5v
-djIwMDJALi4uNDUwLi4uPgoKRFIKRFI=
+* using --dns server ... style configs on Windows with win-dco would lead to 
+  erroneously enabling "DnsSecValidationRequired : True", possibly breaking VPN DNS 
+  resolution. Pushing --dns server ... dnssec no can be used as a workaround until 
+  clients can be updated. (Github: openvpn#1024)
+* correct comments in the --dns-up-down platform scripts relating to 
+  dns_server_..._dnssec values.
+* fix release-only build of pkcs11-helper vcpkg port, do not try to install files 
+  from debug build.
+* mbedTLS builds will now provide a proper error message if a tls-group statement 
+  with no valid groups is encountered (used to run into SSL handshake failure later 
+  on).
+* --enable-strict and --enable-strict-options configure flags have been removed 
+  (because they did not actually do anything anymore)
 
-----ALT--7f7Cc4E0EcF69C27E6e567159f5C685f1777879369
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: base64
 
-CjxIVE1MPjxCT0RZPjxkaXYgY2xhc3M9ImNsLTk2NmhibGZ4ZGEiPjxicj48YnI+PGJyPi0tLS0t
-LS0tINCf0LXRgNC10YHRi9C70LDQtdC80L7QtSDRgdC+0L7QsdGJ0LXQvdC40LUgLS0tLS0tLS08
-YnI+0J7RgiDQutC+0LPQvjog0JTQvNC40YLRgNC40Lkg0KDQvtC80LDQvdC+0LIgJmx0OzxhIGhy
-ZWY9Im1haWx0bzpkcm9tYW5vdjIwMDJALi4uNDUwLi4uIj5kcm9tYW5vdjIwMDJALi4uNDUwLi4u
-PC9hPiZndDs8YnI+0JrQvtC80YM6IG9wZW52cG4tZGV2ZWwgJmx0OzxhIGhyZWY9Im1haWx0bzpv
-cGVudnBuLWRldmVsQGxpc3RzLnNvdXJjZWZvcmdlLm5ldCI+b3BlbnZwbi1kZXZlbEBsaXN0cy5z
-b3VyY2Vmb3JnZS5uZXQ8L2E+Jmd0Ozxicj7QlNCw0YLQsDog0J/QvtC90LXQtNC10LvRjNC90LjQ
-uiwgNCDQvNCw0Y8gMjAyNiwgMTA6MTkgKzAzOjAwPGJyPtCi0LXQvNCwOiBbUEFUQ0hdIG5ldGNm
-ZzogaGFuZGxlIFBhcnNlRnJvbVN0cmluZyByZXN1bHQgZm9yIHByb3RvYnVmIDM0IChub2Rpc2Nh
-cmQpPGJyPiZuYnNwOzxkaXYgY2xhc3M9ImNsLXhweWUyaHk2MWoiPjxkaXYgY2xhc3M9ImpzLWhl
-bHBlcl9tcl9jc3NfYXR0ciBqcy1yZWFkbXNnLW1zZ19tcl9jc3NfYXR0ciI+PGRpdiBpZD0ic3R5
-bGVfMTc3Nzg3OTE3NTE1OTg4MDg2NTRfbXJfY3NzX2F0dHIiPjxkaXYgaWQ9InN0eWxlXzE3Nzc4
-NzkxNzUxNTk4ODA4NjU0X0JPRFlfbXJfY3NzX2F0dHIiPjxkaXY+Jm5ic3A7PC9kaXY+PGRpdj48
-ZGl2PkhpLDwvZGl2PjxkaXY+Jm5ic3A7PC9kaXY+PGRpdj5CdWlsZGluZyBvcGVudnBuMy1saW51
-eCB2MjYgd2l0aCBwcm90b2J1ZiAzNC54IGFuZCBHQ0MgMTUgZmFpbHMgaW48L2Rpdj48ZGl2Pm5l
-dGNmZy1kY28uY3BwOiBnb29nbGU6OnByb3RvYnVmOjpNZXNzYWdlTGl0ZTo6UGFyc2VGcm9tU3Ry
-aW5nIGlzIG5vdzwvZGl2PjxkaXY+W1tub2Rpc2NhcmRdXSwgYW5kIHRoZSBwcm9qZWN0IGJ1aWxk
-cyB3aXRoIC1XZXJyb3IsIHNvIGlnbm9yaW5nIHRoZTwvZGl2PjxkaXY+cmV0dXJuIHZhbHVlIGJl
-Y29tZXMgYSBoYXJkIGVycm9yICgtV2Vycm9yPXVudXNlZC1yZXN1bHQpLjwvZGl2PjxkaXY+Jm5i
-c3A7PC9kaXY+PGRpdj5DaGVjayB0aGUgcmV0dXJuIHZhbHVlIGFuZCB0aHJvdyBOZXRDZmdFeGNl
-cHRpb24gb24gcGFyc2UgZmFpbHVyZSw8L2Rpdj48ZGl2PmNvbnNpc3RlbnQgd2l0aCBvdGhlciBl
-cnJvciBoYW5kbGluZyBpbiB0aGlzIGZpbGUuPC9kaXY+PGRpdj4mbmJzcDs8L2Rpdj48ZGl2PlRo
-aXMgc2hvdWxkIGZpeCBkaXN0cmlidXRpb25zIHRoYXQgYWxyZWFkeSBzaGlwIHByb3RvYnVmIDM0
-IChlLmcuIEFyY2gpLjwvZGl2PjxkaXY+Jm5ic3A7PC9kaXY+PGRpdj5JZiB0aGVyZSBpcyBhbiBl
-eGlzdGluZyBpc3N1ZSBvbiBDb2RlYmVyZyBmb3IgdGhpcyAoZS5nLiByZWxhdGVkIHRvPC9kaXY+
-PGRpdj5ub2Rpc2NhcmQgLyBwcm90b2J1ZiAzNCksIHBsZWFzZSBsaW5rIHRoaXMgcGF0Y2ggdGhl
-cmUuPC9kaXY+PGRpdj4mbmJzcDs8L2Rpdj48ZGl2PlNpZ25lZC1vZmYtYnk6IERtaXRyaXkgUm9t
-YW5vdiZuYnNwOyZsdDs8YSBocmVmPSJtYWlsdG86ZHJvbWFub3YyMDAyQC4uLjQ1MC4uLiI+ZHJv
-bWFub3YyMDAyQC4uLjQ1MC4uLjwvYT4mZ3Q7PC9kaXY+PC9kaXY+PGRpdj4mbmJzcDs8L2Rpdj48
-ZGl2IGRhdGEtc2lnbmF0dXJlLXdpZGdldD0iY29udGFpbmVyIj48ZGl2IGRhdGEtc2lnbmF0dXJl
-LXdpZGdldD0iY29udGVudCI+PGRpdj5EUjwvZGl2PjwvZGl2PjwvZGl2PjwvZGl2PjwvZGl2Pjwv
-ZGl2PjwvZGl2PiZuYnNwOzxocj4mbmJzcDs8ZGl2IGRhdGEtc2lnbmF0dXJlLXdpZGdldD0iY29u
-dGFpbmVyIj48ZGl2IGRhdGEtc2lnbmF0dXJlLXdpZGdldD0iY29udGVudCI+PGRpdj5EUjwvZGl2
-PjwvZGl2PjwvZGl2PjwvZGl2PjwvQk9EWT48L0hUTUw+Cg==
+More details can be found in the Changes document:
 
-----ALT--7f7Cc4E0EcF69C27E6e567159f5C685f1777879369--
+<https://github.com/OpenVPN/openvpn/blob/v2.7.4/Changes.rst>
 
-------7f7Cc4E0EcF69C27E6e567159f5C685f-ZHSOK5xRoC25nxE4-1777879369
-Content-Type: text/x-diff; name="=?UTF-8?B?cGF0Y2guZGlmZg==?="
-Content-Disposition: attachment; filename="=?UTF-8?B?cGF0Y2guZGlmZg==?="
-Content-Transfer-Encoding: base64
+Source code and Windows installers can be downloaded from our download page:
 
-ZGlmZiAtLWdpdCBhL3NyYy9uZXRjZmcvbmV0Y2ZnLWRjby5jcHAgYi9zcmMvbmV0Y2ZnL25ldGNm
-Zy1kY28uY3BwCmluZGV4IDAwMDAwMDAuLjAwMDAwMDAgMTAwNjQ0Ci0tLSBhL3NyYy9uZXRjZmcv
-bmV0Y2ZnLWRjby5jcHAKKysrIGIvc3JjL25ldGNmZy9uZXRjZmctZGNvLmNwcApAQCAtMjY0LDcg
-KzI2NCwxMSBAQCB2b2lkIE5ldENmZ0RDTzo6bWV0aG9kX25ld19rZXkoR1ZhcmlhbnQgKnBhcmFt
-cykKICAgICBzdGQ6OnN0cmluZyBrZXlfY29uZmlnID0gZ2xpYjI6OlZhbHVlOjpFeHRyYWN0PHN0
-ZDo6c3RyaW5nPihwYXJhbXMsIDEpOwoKICAgICBEY29LZXlDb25maWcgZGNvX2tjOwotICAgIGRj
-b19rYy5QYXJzZUZyb21TdHJpbmcoYmFzZTY0LT5kZWNvZGUoa2V5X2NvbmZpZykpOworICAgIGlm
-ICghZGNvX2tjLlBhcnNlRnJvbVN0cmluZyhiYXNlNjQtPmRlY29kZShrZXlfY29uZmlnKSkpCisg
-ICAgeworICAgICAgICB0aHJvdyBOZXRDZmdFeGNlcHRpb24oIkZhaWxlZCB0byBwYXJzZSBEQ08g
-a2V5IGNvbmZpZ3VyYXRpb24iKTsKKyAgICB9CgogICAgIGF1dG8gY29weUtleURpcmVjdGlvbiA9
-IFtdKGNvbnN0IERjb0tleUNvbmZpZ19LZXlEaXJlY3Rpb24gJnNyYywgS29SZWtleTo6S2V5RGly
-ZWN0aW9uICZkc3QpCiAgICAgewo=
+<https://openvpn.net/community/>
 
-------7f7Cc4E0EcF69C27E6e567159f5C685f-ZHSOK5xRoC25nxE4-1777879369--
+Packages for Debian, Ubuntu, Fedora, RHEL, and openSUSE are available in the various
+official Community repositories:
+
+<https://community.openvpn.net/Pages/OpenVPN%20software%20repos>
+
+Kind regards,
+-- 
+  Frank Lichtenheld
 
