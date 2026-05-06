@@ -1,15 +1,11 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 6 May 2026 12:30:28 +0000
-References: <gerrit.1778070626000.I7cf7146c3c4f1a01b0bcb57e03d09b32f8b59780@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <101c5494681bb12c07afd7582ee0444cb613e0a6-HTML@...2715...>
+Content-Type: multipart/alternative;
+ boundary="------------jfvIoUdHRuTfBJkVVPnYOUp3"
+Message-ID: <f5a08e7a-f257-498d-95a4-f96900d03288@...2722...>
+Date: Wed, 6 May 2026 14:32:15 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="+eziZ3vatKU="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: t_client.sh: Do not
- use CA_CERT variable as indicator for good .rc file
+From: Johan Draaisma <johan@...2722...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,137 +14,79 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---+eziZ3vatKU=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------jfvIoUdHRuTfBJkVVPnYOUp3
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Attention is currently required from: plaisthos.
+Meeting summary for 6 May 2026:
 
-Hello plaisthos,
+  *
 
-I'd like you to do a code review.
-Please visit
+    *Updated: OpenVPN 2.7.4 release*
+    A small 2.7.4 release was done on April 30th to address a small DNS
+    issue and some minor fixes and cleanups.
 
-    http://gerrit.openvpn.net/c/openvpn/+/1664?usp=3Demail
+  *
 
-to review the following change.
+    *Updated: t_server and t_client testing framework*
+    The CA for this expired but was renewed - those relying on this for
+    testing can contact djpig for a new cert.
+    We still need to move this to OpenVPN Inc provided AWS Community
+    infrastructure.
 
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 14:00 Central European Time.
 
-Change subject: t_client.sh: Do not use CA_CERT variable as indicator for g=
-ood .rc file
-......................................................................
+Kind regards,
+Johan Draaisma
 
-t_client.sh: Do not use CA_CERT variable as indicator for good .rc file
+--------------jfvIoUdHRuTfBJkVVPnYOUp3
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-t_client.sh doesn't actually care about this variable, and our
-.rc files do not use it anymore. If you really want to dynamically
-skip running t_client.sh just set TEST_RUN_LIST to empty in the .rc
-file.
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 6 May 2026:</p>
+    <ul
+style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            OpenVPN 2.7.4 release</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          A small 2.7.4 release was done on April 30th to address a
+          small DNS issue and some minor fixes and cleanups.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            t_server and t_client testing framework</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          The CA for this expired but was renewed - those relying on
+          this for testing can contact djpig for a new cert.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          We still need to move this to OpenVPN Inc provided AWS
+          Community infrastructure.</p>
+      </li>
+    </ul>
+    As always you're welcome to join at #openvpn-meeting on Libera IRC
+    network every Wednesday at 14:00 Central European Time.
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
 
-Change-Id: I7cf7146c3c4f1a01b0bcb57e03d09b32f8b59780
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
-M tests/t_client.sh.in
-1 file changed, 0 insertions(+), 5 deletions(-)
-
-
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/64/1664/1
-
-diff --git a/tests/t_client.sh.in b/tests/t_client.sh.in
-index a49de40..48e2446 100755
---- a/tests/t_client.sh.in
-+++ b/tests/t_client.sh.in
-@@ -62,11 +62,6 @@
-     exit 1
- fi
-
--if [ -z "$CA_CERT" ] ; then
--    echo "CA_CERT not defined in 't_client.rc'. SKIP test." >&2
--    exit "${TCLIENT_SKIP_RC}"
--fi
--
- if [ -z "$TEST_RUN_LIST" ] ; then
-     echo "TEST_RUN_LIST empty, no tests defined.  SKIP test." >&2
-     exit "${TCLIENT_SKIP_RC}"
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1664?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings?usp=3Demail
-
-Gerrit-MessageType: newchange
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I7cf7146c3c4f1a01b0bcb57e03d09b32f8b59780
-Gerrit-Change-Number: 1664
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-
---+eziZ3vatKU=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos. </p>
-<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1664?usp=3Demail">V=
-iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">t_client.sh: Do not use CA_CERT variable as=
- indicator for good .rc file<br><br>t_client.sh doesn&#39;t actually care a=
-bout this variable, and our<br>.rc files do not use it anymore. If you real=
-ly want to dynamically<br>skip running t_client.sh just set TEST_RUN_LIST t=
-o empty in the .rc<br>file.<br><br>Change-Id: I7cf7146c3c4f1a01b0bcb57e03d0=
-9b32f8b59780<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<b=
-r>---<br>M tests/t_client.sh.in<br>1 file changed, 0 insertions(+), 5 delet=
-ions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,=
-monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/=
-openvpn refs/changes/64/1664/1</pre><pre style=3D"font-family: monospace,mo=
-nospace; white-space: pre-wrap;"><span>diff --git a/tests/t_client.sh.in b/=
-tests/t_client.sh.in</span><br><span>index a49de40..48e2446 100755</span><b=
-r><span>--- a/tests/t_client.sh.in</span><br><span>+++ b/tests/t_client.sh.=
-in</span><br><span>@@ -62,11 +62,6 @@</span><br><span>     exit 1</span><br=
-><span> fi</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-if [ -z &quot;$CA_CERT&quot; ] ; then</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    echo &quot;CA_CERT not defined in &#39;t_client.=
-rc&#39;. SKIP test.&quot; &gt;&amp;2</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    exit &quot;${TCLIENT_SKIP_RC}&quot;</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-fi</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-</span><br><span> if [ -z &quot;$TEST_RUN_LIST&quot; ] ; then=
-</span><br><span>     echo &quot;TEST_RUN_LIST empty, no tests defined.  SK=
-IP test.&quot; &gt;&amp;2</span><br><span>     exit &quot;${TCLIENT_SKIP_RC=
-}&quot;</span><br><span></span><br></pre><p>To view, visit <a href=3D"http:=
-//gerrit.openvpn.net/c/openvpn/+/1664?usp=3Demail">change 1664</a>. To unsu=
-bscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.o=
-penvpn.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=
-=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
-type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/1664?usp=3Demail"/><meta itemprop=3D"name" =
-content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I7cf7146c3c4f1a01b0bcb57e03d=
-09b32f8b59780 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1664 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-
-</body></html>=
-
---+eziZ3vatKU=--
+--------------jfvIoUdHRuTfBJkVVPnYOUp3--
 
