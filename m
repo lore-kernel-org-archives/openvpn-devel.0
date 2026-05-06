@@ -1,10 +1,16 @@
-Date: Wed, 6 May 2026 19:02:03 +0200 (CEST)
-Message-Id: <202605061702.646H231W003080@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20260506145933.22301-1-gert@...1296...>
-References: <20260506145933.22301-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: t_client.sh: Do not use CA_CERT
- variable as indicator for good .rc file
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Wed, 6 May 2026 17:02:36 +0000
+In-Reply-To: <gerrit.1778070626000.I7cf7146c3c4f1a01b0bcb57e03d09b32f8b59780@...2715...>
+References: <gerrit.1778070626000.I7cf7146c3c4f1a01b0bcb57e03d09b32f8b59780@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <36b97b4aa393dfd20fd12ad8c0320003caab1d66-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="nKffppsygCs="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: t_client.sh: Do not
+ use CA_CERT variable as indicator for good .rc file
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,38 +19,134 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-I agree that this check has outlived its usefulness - "back then", the
-assumption was "you always need a CA and Key and Cert", but with inline
-configs & --fingerprint and all this, this no longer holds true.
+--nKffppsygCs=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-I don't think there is a pressing need to backport this to the other
-branches we regularily test (2.6, 2.7) as "as of now" our CI setups have
-already been workarounded ("CA_CERT=1").
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/16=
+64?usp=3Demail )
 
-Your patch has been applied to the master branch.
+Change subject: t_client.sh: Do not use CA_CERT variable as indicator for g=
+ood .rc file
+......................................................................
 
-commit 841ab0b216a424eb0100448362f76a2c12b3a516
-Author: Frank Lichtenheld
-Date:   Wed May 6 16:59:28 2026 +0200
+t_client.sh: Do not use CA_CERT variable as indicator for good .rc file
 
-     t_client.sh: Do not use CA_CERT variable as indicator for good .rc file
+t_client.sh doesn't actually care about this variable, and our
+.rc files do not use it anymore. If you really want to dynamically
+skip running t_client.sh just set TEST_RUN_LIST to empty in the .rc
+file.
 
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1664
-     Message-Id: <20260506145933.22301-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36827.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Change-Id: I7cf7146c3c4f1a01b0bcb57e03d09b32f8b59780
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1664
+Message-Id: <20260506145933.22301-1-gert@...1296...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36=
+827.html
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+M tests/t_client.sh.in
+1 file changed, 0 insertions(+), 5 deletions(-)
 
+
+
+
+diff --git a/tests/t_client.sh.in b/tests/t_client.sh.in
+index a49de40..48e2446 100755
+--- a/tests/t_client.sh.in
++++ b/tests/t_client.sh.in
+@@ -62,11 +62,6 @@
+     exit 1
+ fi
+
+-if [ -z "$CA_CERT" ] ; then
+-    echo "CA_CERT not defined in 't_client.rc'. SKIP test." >&2
+-    exit "${TCLIENT_SKIP_RC}"
+-fi
+-
+ if [ -z "$TEST_RUN_LIST" ] ; then
+     echo "TEST_RUN_LIST empty, no tests defined.  SKIP test." >&2
+     exit "${TCLIENT_SKIP_RC}"
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1664?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings?usp=3Demail
 
-Gert Doering
+Gerrit-MessageType: merged
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I7cf7146c3c4f1a01b0bcb57e03d09b32f8b59780
+Gerrit-Change-Number: 1664
+Gerrit-PatchSet: 2
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
+--nKffppsygCs=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change.</p><p><a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/1664?usp=3Demail">View Change</a></p><div style=3D"white-space:pre=
+-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">t_client.sh: Do not use CA_CERT variable as indi=
+cator for good .rc file<br><br>t_client.sh doesn&#39;t actually care about =
+this variable, and our<br>.rc files do not use it anymore. If you really wa=
+nt to dynamically<br>skip running t_client.sh just set TEST_RUN_LIST to emp=
+ty in the .rc<br>file.<br><br>Change-Id: I7cf7146c3c4f1a01b0bcb57e03d09b32f=
+8b59780<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Ack=
+ed-by: Gert Doering &lt;gert@...1296...&gt;<br>Gerrit URL: https://gerrit.o=
+penvpn.net/c/openvpn/+/1664<br>Message-Id: &lt;20260506145933.22301-1-gert@=
+...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1885...=
+rceforge.net/msg36827.html<br>Signed-off-by: Gert Doering &lt;gert@...1725...=
+..&gt;<br>---<br>M tests/t_client.sh.in<br>1 file changed, 0 insertions(+),=
+ 5 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/tests/t_client.sh.in b/tests/t_client.sh.in</span><br><span=
+>index a49de40..48e2446 100755</span><br><span>--- a/tests/t_client.sh.in</=
+span><br><span>+++ b/tests/t_client.sh.in</span><br><span>@@ -62,11 +62,6 @=
+@</span><br><span>     exit 1</span><br><span> fi</span><br><span> </span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-if [ -z &quot;$CA_CERT&quot; =
+] ; then</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    echo &quo=
+t;CA_CERT not defined in &#39;t_client.rc&#39;. SKIP test.&quot; &gt;&amp;2=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    exit &quot;${TCLI=
+ENT_SKIP_RC}&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-fi<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> if [=
+ -z &quot;$TEST_RUN_LIST&quot; ] ; then</span><br><span>     echo &quot;TES=
+T_RUN_LIST empty, no tests defined.  SKIP test.&quot; &gt;&amp;2</span><br>=
+<span>     exit &quot;${TCLIENT_SKIP_RC}&quot;</span><br><span></span><br><=
+/pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/166=
+4?usp=3Demail">change 1664</a>. To unsubscribe, or for help writing mail fi=
+lters, visit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">set=
+tings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><d=
+iv itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction">=
+<link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1664?u=
+sp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I7cf7146c3c4f1a01b0bcb57e03d=
+09b32f8b59780 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1664 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+
+</body></html>=
+
+--nKffppsygCs=--
 
