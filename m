@@ -1,15 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 8 May 2026 11:27:29 +0000
-References: <gerrit.1778239616000.Ia688ec12e642de699811ced8668b40be9fbb6155@...2715...>
+Date: Fri, 8 May 2026 11:27:26 +0000
+References: <gerrit.1778239616000.I3d391016dcd3c66e58f3f05b356bcd419224acb1@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <7bc71d4689e24a0b405985dca995e8ff15daca69-HTML@...2715...>
+Message-ID: <038d705b9bebad71d215c4cec727d85f437a1e7f-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="ka51XU07Ouc="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix some msg()
- calls with wrong number of arguments in Windows-only code
+Content-Type: multipart/alternative; boundary="XVyQNwuibR4="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: openvpnserv: Use
+ same variant of UuidToString and RpcStringFree
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---ka51XU07Ouc=
+--XVyQNwuibR4=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,137 +32,108 @@ Hello plaisthos,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/1672?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/1671?usp=3Demail
 
 to review the following change.
 
 
-Change subject: Fix some msg() calls with wrong number of arguments in Wind=
-ows-only code
+Change subject: openvpnserv: Use same variant of UuidToString and RpcString=
+Free
 ......................................................................
 
-Fix some msg() calls with wrong number of arguments in Windows-only code
+openvpnserv: Use same variant of UuidToString and RpcStringFree
 
-For some reason neither MSVC nor MinGW complained?
-cppcheck did (once told that msg is a printf-style
-function).
+Probably not a real issue since it should always use the
+W version in our case, but still unclean.
 
-Change-Id: Ia688ec12e642de699811ced8668b40be9fbb6155
+Fixes a cppcheck complaint.
+
+Change-Id: I3d391016dcd3c66e58f3f05b356bcd419224acb1
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpnmsica/msiex.c
-M src/tapctl/tap.c
-2 files changed, 3 insertions(+), 3 deletions(-)
+M src/openvpnserv/interactive.c
+1 file changed, 1 insertion(+), 1 deletion(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/72/1672/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/71/1671/1
 
-diff --git a/src/openvpnmsica/msiex.c b/src/openvpnmsica/msiex.c
-index f8bf6ae..4d48f06 100644
---- a/src/openvpnmsica/msiex.c
-+++ b/src/openvpnmsica/msiex.c
-@@ -51,7 +51,7 @@
-         *pszValue =3D (LPWSTR)malloc(++dwLength * sizeof(WCHAR));
-         if (*pszValue =3D=3D NULL)
-         {
--            msg(M_FATAL, "%s: malloc(%u) failed", dwLength * sizeof(WCHAR)=
-);
-+            msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__, dwLength *=
- sizeof(WCHAR));
-             return ERROR_OUTOFMEMORY;
-         }
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index e25c511..bd310e4 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -3484,7 +3484,7 @@
+     swprintf(ovpn_pipe_name, _countof(ovpn_pipe_name),
+              L"\\\\.\\pipe\\" _L(PACKAGE) L"%ls\\service_%lu_%ls", service=
+_instance,
+              GetCurrentThreadId(), pipe_uuid_str);
+-    RpcStringFree(&pipe_uuid_str);
++    RpcStringFreeW(&pipe_uuid_str);
 
-diff --git a/src/tapctl/tap.c b/src/tapctl/tap.c
-index 6ed395d..cccc0e1 100644
---- a/src/tapctl/tap.c
-+++ b/src/tapctl/tap.c
-@@ -487,8 +487,8 @@
-         }
-
-         default:
--            msg(M_NONFATAL, "%s: \"%ls\" registry value is not string (typ=
-e %u)", __FUNCTION__,
--                dwValueType);
-+            msg(M_NONFATAL, "%s: \"%ls\" registry value is not string (typ=
-e %u)",
-+                __FUNCTION__, szName, dwValueType);
-             return ERROR_UNSUPPORTED_TYPE;
-     }
- }
+     /* make a security descriptor for the named pipe with access
+      * restricted to the user and SYSTEM
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/1672?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/1671?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
 Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ia688ec12e642de699811ced8668b40be9fbb6155
-Gerrit-Change-Number: 1672
+Gerrit-Change-Id: I3d391016dcd3c66e58f3f05b356bcd419224acb1
+Gerrit-Change-Number: 1671
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 
---ka51XU07Ouc=
+--XVyQNwuibR4=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos. </p>
 <p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1672?usp=3Demail">V=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1671?usp=3Demail">V=
 iew Change</a></p><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">Fix some msg() calls with wrong number of a=
-rguments in Windows-only code<br><br>For some reason neither MSVC nor MinGW=
- complained?<br>cppcheck did (once told that msg is a printf-style<br>funct=
-ion).<br><br>Change-Id: Ia688ec12e642de699811ced8668b40be9fbb6155<br>Signed=
--off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpn=
-msica/msiex.c<br>M src/tapctl/tap.c<br>2 files changed, 3 insertions(+), 3 =
-deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:2=
-9418/openvpn refs/changes/72/1672/1</pre><pre style=3D"font-family: monospa=
-ce,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpnmsica/m=
-siex.c b/src/openvpnmsica/msiex.c</span><br><span>index f8bf6ae..4d48f06 10=
-0644</span><br><span>--- a/src/openvpnmsica/msiex.c</span><br><span>+++ b/s=
-rc/openvpnmsica/msiex.c</span><br><span>@@ -51,7 +51,7 @@</span><br><span> =
-        *pszValue =3D (LPWSTR)malloc(++dwLength * sizeof(WCHAR));</span><br=
-><span>         if (*pszValue =3D=3D NULL)</span><br><span>         {</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(M_FATAL, &q=
-uot;%s: malloc(%u) failed&quot;, dwLength * sizeof(WCHAR));</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+            msg(M_FATAL, &quot;%s: =
-malloc(%u) failed&quot;, __FUNCTION__, dwLength * sizeof(WCHAR));</span><br=
-><span>             return ERROR_OUTOFMEMORY;</span><br><span>         }</s=
-pan><br><span> </span><br><span>diff --git a/src/tapctl/tap.c b/src/tapctl/=
-tap.c</span><br><span>index 6ed395d..cccc0e1 100644</span><br><span>--- a/s=
-rc/tapctl/tap.c</span><br><span>+++ b/src/tapctl/tap.c</span><br><span>@@ -=
-487,8 +487,8 @@</span><br><span>         }</span><br><span> </span><br><spa=
-n>         default:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-          msg(M_NONFATAL, &quot;%s: \&quot;%ls\&quot; registry value is not=
- string (type %u)&quot;, __FUNCTION__,</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-                dwValueType);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            msg(M_NONFATAL, &quot;%s: \&quot;%ls=
-\&quot; registry value is not string (type %u)&quot;,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                __FUNCTION__, szName, dwV=
-alueType);</span><br><span>             return ERROR_UNSUPPORTED_TYPE;</spa=
-n><br><span>     }</span><br><span> }</span><br><span></span><br></pre><p>T=
-o view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1672?usp=3De=
-mail">change 1672</a>. To unsubscribe, or for help writing mail filters, vi=
-sit <a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>=
-.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsc=
-ope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link ite=
-mprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1672?usp=3Demai=
-l"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+ospace; white-space: pre-wrap;">openvpnserv: Use same variant of UuidToStri=
+ng and RpcStringFree<br><br>Probably not a real issue since it should alway=
+s use the<br>W version in our case, but still unclean.<br><br>Fixes a cppch=
+eck complaint.<br><br>Change-Id: I3d391016dcd3c66e58f3f05b356bcd419224acb1<=
+br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M sr=
+c/openvpnserv/interactive.c<br>1 file changed, 1 insertion(+), 1 deletion(-=
+)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvp=
+n refs/changes/71/1671/1</pre><pre style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;"><span>diff --git a/src/openvpnserv/interactive.c=
+ b/src/openvpnserv/interactive.c</span><br><span>index e25c511..bd310e4 100=
+644</span><br><span>--- a/src/openvpnserv/interactive.c</span><br><span>+++=
+ b/src/openvpnserv/interactive.c</span><br><span>@@ -3484,7 +3484,7 @@</spa=
+n><br><span>     swprintf(ovpn_pipe_name, _countof(ovpn_pipe_name),</span><=
+br><span>              L&quot;\\\\.\\pipe\\&quot; _L(PACKAGE) L&quot;%ls\\s=
+ervice_%lu_%ls&quot;, service_instance,</span><br><span>              GetCu=
+rrentThreadId(), pipe_uuid_str);</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    RpcStringFree(&amp;pipe_uuid_str);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    RpcStringFreeW(&amp;pipe_uuid_str);</span=
+><br><span> </span><br><span>     /* make a security descriptor for the nam=
+ed pipe with access</span><br><span>      * restricted to the user and SYST=
+EM</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/1671?usp=3Demail">change 1671</a>. To unsubscri=
+be, or for help writing mail filters, visit <a href=3D"http://gerrit.openvp=
+n.net/settings?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"htt=
+p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
+"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/1671?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia688ec12e642de699811ced8668=
-b40be9fbb6155 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1672 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I3d391016dcd3c66e58f3f05b356=
+bcd419224acb1 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1671 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -175,5 +146,5 @@ ts.sourceforge.net&gt; </div>
 
 </body></html>=
 
---ka51XU07Ouc=--
+--XVyQNwuibR4=--
 
