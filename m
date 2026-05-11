@@ -1,14 +1,14 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 11 May 2026 17:44:40 +0000
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Mon, 11 May 2026 20:06:29 +0000
 In-Reply-To: <gerrit.1778102459000.I5c9b54dca0a14688a3bb7798cb086f5bde7311b8@...2715...>
 References: <gerrit.1778102459000.I5c9b54dca0a14688a3bb7798cb086f5bde7311b8@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, gert@...1296...
-Message-ID: <b83e839866f74719f22ac363768b6018c1942609-EmailReplacePatchSet-HTML@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <b4225b52c472c427b559cb92ed6e2dad8ef3faed-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="56HDk4Xqr9o="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="AQvc4B51wDg="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: route: Clarify
  operator precedence in a & b ? c : d
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,78 +19,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---56HDk4Xqr9o=
+--AQvc4B51wDg=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, flichtenheld, plaisthos.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Hello cron2, plaisthos,
-
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/1668?usp=3Demail
-
-to look at the new patch set (#3).
-
-The following approvals got outdated and were removed:
-Code-Review-1 by cron2
-
+cron2 has posted comments on this change by flichtenheld. ( http://gerrit.o=
+penvpn.net/c/openvpn/+/1668?usp=3Demail )
 
 Change subject: route: Clarify operator precedence in a & b ? c : d
 ......................................................................
 
-route: Clarify operator precedence in a & b ? c : d
 
-As suggested by cppcheck.
+Patch Set 3: Code-Review+2
 
-Change-Id: I5c9b54dca0a14688a3bb7798cb086f5bde7311b8
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
-M src/openvpn/route.c
-1 file changed, 2 insertions(+), 2 deletions(-)
-
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/68/1668/3
-
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 3b18f74..81ce867 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -2884,7 +2884,7 @@
-                             .prefix.ipv4.s_addr =3D htonl(r->network),
-                             .gateway.ipv4.s_addr =3D htonl(r->gateway),
-                             .iface =3D { .index =3D if_index, .name =3D ""=
- },
--                            .metric =3D (r->flags & RT_METRIC_DEFINED ? r-=
->metric : -1) };
-+                            .metric =3D (r->flags & RT_METRIC_DEFINED) ? r=
-->metric : -1 };
-
-     netmask_to_netbits(r->network, r->netmask, &msg.prefix_len);
-     if (msg.prefix_len =3D=3D -1)
-@@ -2986,7 +2986,7 @@
-                             .prefix_len =3D r->netbits,
-                             .gateway.ipv6 =3D r->gateway,
-                             .iface =3D { .index =3D tt->adapter_index, .na=
-me =3D "" },
--                            .metric =3D ((r->flags & RT_METRIC_DEFINED) ? =
-r->metric : -1) };
-+                            .metric =3D (r->flags & RT_METRIC_DEFINED) ? r=
-->metric : -1 };
-
-     if (r->adapter_index) /* vpn server special route */
-     {
 
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/1668?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: comment
 Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I5c9b54dca0a14688a3bb7798cb086f5bde7311b8
@@ -101,60 +54,30 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Mon, 11 May 2026 20:06:29 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
 
---56HDk4Xqr9o=
+--AQvc4B51wDg=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: cron2, flichtenheld, plaisthos. </p>
-<p>flichtenheld <strong>uploaded patch set #3</strong> to this change.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1668?usp=3Demail">View C=
-hange</a></p><p>The following approvals got outdated and were removed:
-Code-Review-1 by cron2</p><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">route: Clarify operator precedence =
-in a &amp; b ? c : d<br><br>As suggested by cppcheck.<br><br>Change-Id: I5c=
-9b54dca0a14688a3bb7798cb086f5bde7311b8<br>Signed-off-by: Frank Lichtenheld =
-&lt;frank@...2641...&gt;<br>---<br>M src/openvpn/route.c<br>1 file changed,=
- 2 insertions(+), 2 deletions(-)<br><br></pre><pre class=3D"blocks" style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh:=
-//gerrit.openvpn.net:29418/openvpn refs/changes/68/1668/3</pre><pre style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
-git a/src/openvpn/route.c b/src/openvpn/route.c</span><br><span>index 3b18f=
-74..81ce867 100644</span><br><span>--- a/src/openvpn/route.c</span><br><spa=
-n>+++ b/src/openvpn/route.c</span><br><span>@@ -2884,7 +2884,7 @@</span><br=
-><span>                             .prefix.ipv4.s_addr =3D htonl(r-&gt;net=
-work),</span><br><span>                             .gateway.ipv4.s_addr =
-=3D htonl(r-&gt;gateway),</span><br><span>                             .ifa=
-ce =3D { .index =3D if_index, .name =3D &quot;&quot; },</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-                            .metric =3D (=
-r-&gt;flags &amp; RT_METRIC_DEFINED ? r-&gt;metric : -1) };</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+                            .metric=
- =3D (r-&gt;flags &amp; RT_METRIC_DEFINED) ? r-&gt;metric : -1 };</span><br=
-><span> </span><br><span>     netmask_to_netbits(r-&gt;network, r-&gt;netma=
-sk, &amp;msg.prefix_len);</span><br><span>     if (msg.prefix_len =3D=3D -1=
-)</span><br><span>@@ -2986,7 +2986,7 @@</span><br><span>                   =
-          .prefix_len =3D r-&gt;netbits,</span><br><span>                  =
-           .gateway.ipv6 =3D r-&gt;gateway,</span><br><span>               =
-              .iface =3D { .index =3D tt-&gt;adapter_index, .name =3D &quot=
-;&quot; },</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
-                 .metric =3D ((r-&gt;flags &amp; RT_METRIC_DEFINED) ? r-&gt=
-;metric : -1) };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-                         .metric =3D (r-&gt;flags &amp; RT_METRIC_DEFINED) =
-? r-&gt;metric : -1 };</span><br><span> </span><br><span>     if (r-&gt;ada=
-pter_index) /* vpn server special route */</span><br><span>     {</span><br=
-><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.=
-net/c/openvpn/+/1668?usp=3Demail">change 1668</a>. To unsubscribe, or for h=
-elp writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settin=
-gs?usp=3Demail">settings</a>.</p><div itemscope itemtype=3D"http://schema.o=
-rg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sche=
-ma.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net=
-/c/openvpn/+/1668?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Cha=
-nge"/></div></div>
+rently required from: flichtenheld, plaisthos. </p>
+<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1668?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/1668?usp=3Demail=
+">change 1668</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings?usp=3Demail">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/1668?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I5c9b54dca0a14688a3bb7798cb0=
@@ -171,12 +94,14 @@ nge"/></div></div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 11 May 2026 20:06:29=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>=
 
---56HDk4Xqr9o=--
+--AQvc4B51wDg=--
 
