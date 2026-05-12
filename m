@@ -4,129 +4,80 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3FEDDCD4F24
-	for <openvpn-devel@archiver.kernel.org>; Tue, 12 May 2026 13:51:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8DC30CD4F24
+	for <openvpn-devel@archiver.kernel.org>; Tue, 12 May 2026 14:45:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:List-Subscribe:
-	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:Subject:
-	MIME-Version:Message-ID:References:In-Reply-To:To:Date:From:Sender:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=YarXS5pEuRGEWlDA8O50G7Ypm5pzguaZE7NIsHIS5u8=; b=XfrZdoB+JmxruCVlNExpFUmHHV
-	PVVStSIT+8YTpvFcI4AWMWUOy2Zua4onh1c7Btg+L5ZaVf/qSTfox32Xjzri0gCSRztX4dmWPNaiM
-	/fzUwsmn2D8LgqYh17Eo6nRCsHbTbwHY1HNQ+tcl5OLeFC/uY/khuB9WOC26tYDWBgUs=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:Cc:
+	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
+	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
+	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
+	:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=g+9DvfloI70B8yB89kzSEYPzDvnntSBvKeFXNUSqmTE=; b=OR409V5maOrc78OkOei/H+54aL
+	n8NXu8smhyeVlWd+OKZzV4IUW59owEORN2qIGpNeNpODyauULHl6E9MgXU6Ug3tjAPFGwiDSYSxek
+	vd6BS7GxQmF7m8mLjedT0T2jemTQEjUm2VYCNF8fu1702DXo1Ft5usSRgZlT3zvveVow=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wMnW0-0005sG-81;
-	Tue, 12 May 2026 13:51:16 +0000
+	id 1wMoM6-0003hA-DH;
+	Tue, 12 May 2026 14:45:06 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wMnVy-0005s9-8p
+ (envelope-from <a@unstable.cc>) id 1wMoM3-0003h1-T9
  for openvpn-devel@lists.sourceforge.net;
- Tue, 12 May 2026 13:51:15 +0000
+ Tue, 12 May 2026 14:45:04 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
- :List-Post:List-Owner:List-Archive;
- bh=cH5svqLx8ERi/nA7K1g7OCUpMZuRu42G8nS5JFJiGkQ=; b=kVUECk+ag5jLQe4cYGlFJ4FY+v
- Ylbg/MiQQgEZlMZDg3T59dVb3mp82UIT4SUefRR8/9t38vWd0FcVD+PJMNxKPIB+0GYisRNd1ZQwE
- G81nEwWygYaaxC59d6g+lfyAQF/cd/DJy9wXbJLffWRTxNDnyCG/+TFldSeeFozRUMZw=;
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:Content-Type:MIME-Version
+ :References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=k6biFGtziJaxYwx43ol988YPakFnFkOnBdhJWbeuAVU=; b=BsXKe+OSgX8GC2r+qJF08udUVK
+ zMki6nKBC/PRC3s1X8FPQYtiyA/ykypSWOwEuANK1bxuDOKpHqncbPKV9ZK+jv7lvcsSMpjghsWEf
+ o7093cyvg66V4enVu39xle3lH6y2eqFctQKB9nMfu/UmYCiyoaMRrugROvPXv//Y53zM=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
- Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=cH5svqLx8ERi/nA7K1g7OCUpMZuRu42G8nS5JFJiGkQ=; b=P
- hpXYXb2bWHG/nGX6unWd9YXOEskdgaI5JJfj6JTJbKdn6btQgBJIg6Wzz694dyLYDClTtYU7KyMjr
- 72QlkDr2esuTNv6Sx/0Fe7iajdg7D98kYnUNmQ3XDXYsfzRNpjeQ3RWC76lER4WDX62Fe3vGfp3+W
- GJJssKQvPH42ed/o=;
-Received: from mail-wr1-f52.google.com ([209.85.221.52])
+ h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:
+ In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+ List-Post:List-Owner:List-Archive;
+ bh=k6biFGtziJaxYwx43ol988YPakFnFkOnBdhJWbeuAVU=; b=DCzQZSrFiVfYU+hu1xSC/hfl95
+ 2u+ssAkqM/Y0zb+bCps2GV/RsICge6c0WbpRBJXwHPV6DummZYkz07DCxLncvXkI4NbMfmIYTd9p9
+ xgrC78l09GvCmpF+NU91wGQqspEJKegOzme5z/auz9gBseQlI16QzJRqUHktbYt96cIQ=;
+Received: from mout-p-103.mailbox.org ([80.241.56.161])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wMnVv-0003F2-Kf for openvpn-devel@lists.sourceforge.net;
- Tue, 12 May 2026 13:51:14 +0000
-Received: by mail-wr1-f52.google.com with SMTP id
- ffacd0b85a97d-44b052142e1so3120143f8f.1
- for <openvpn-devel@lists.sourceforge.net>;
- Tue, 12 May 2026 06:51:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1778593860; x=1779198660; darn=lists.sourceforge.net;
- h=user-agent:content-disposition:content-transfer-encoding
- :mime-version:message-id:reply-to:subject:thread-index:references
- :in-reply-to:list-unsubscribe:list-id:auto-submitted:cc:to:date:from
- :from:to:cc:subject:date:message-id:reply-to;
- bh=cH5svqLx8ERi/nA7K1g7OCUpMZuRu42G8nS5JFJiGkQ=;
- b=WGnavg4C4znCYJKATmr3u9coUmiyEAPax5CXgGH+ZFmc8Z0/UOrdGzDMzb5oloRyHg
- WqPWTS/vymJ/dYK8K0bjo6GFYZSPBWAlvsHopXqpZgJ68Ve871UjpMEJRtIO7nUgzPOQ
- Ext7MpAfP7a48wOxHPzyPtiLwHQYkLMb9dPl9UoLylCjdkJVkK87vtlpK2Nci6BBLofW
- A05AwBQRlMgW44KnT5GXci3Jc+4+kXhIVcHnXXjV73CDWyZDaZWYQjeWfXpx9Mv1PPAU
- HtBXd9s1ifMElumWbnhqVsmKdVTrqE0w+qnNiQaDNRroMP/MioPt94FTGppI63cNCELQ
- 9UsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1778593860; x=1779198660;
- h=user-agent:content-disposition:content-transfer-encoding
- :mime-version:message-id:reply-to:subject:thread-index:references
- :in-reply-to:list-unsubscribe:list-id:auto-submitted:cc:to:date:from
- :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
- :reply-to;
- bh=cH5svqLx8ERi/nA7K1g7OCUpMZuRu42G8nS5JFJiGkQ=;
- b=lGo56IzThgT9tD9GhM5ayVmUu5uj2tPJBNXcd1o1GsOz3/koNyVYpxARg9vCwFho+I
- n/3UQacO18pmq2rxDUqjlvLtrxNMYlsJ+bMt5J6NLp2+x9V5GUGkyVtWws/8dbPUqc+2
- oKLwCuzSMlnCKTwuVzYwUeV9nLYCYi8OPXwVVUFse9txu4UWk6+nL0c8iNu1hEQIcCwH
- 4K/dtKc+/+s33TNR2Bv0RzIMzYNcKncJ5mpcIp4kwIlTROJ4AAYy2ajxDLIqvFaus1gI
- q+dQPvEaAsQFEN9zqpbr0NM9Aa8T06ycLhUZ9cQ0fZFQ27MDPH0kv+WzgBewEg2iL7KT
- T7SQ==
-X-Forwarded-Encrypted: i=1;
- AFNElJ/eUovfB2eheTvXmku7YBDBhtKIlFkxYNz7uHxVyzpq05GQ4MlpmIge8UmdyKtsDaF7nKBGpTuhVE/PMKwo@lists.sourceforge.net
-X-Gm-Message-State: AOJu0YwVxp2HNEHm9MxSlbmyC9sCwd0x954sdykoRTt/BZn8p2W+stjl
- CHQn5mD+9Vi7eqAy4wG+7QUwdQ3BTqOk71i/r70oUwnDXO3gzs7Kh9I4Bw73Zf8Gf8eK51O7OEv
- FZiHV41snbwRmxqrLzK/1Ky0CjXfFxac0zK0iaAGXPsP0+cR9VXp5+Lolnw6lbwl0QLP2F6ueQd
- FaROLdXQ==
-X-Gm-Gg: Acq92OH4z8fZdf/oxSco9sODyyXow2U2lKyYvK70RHhNpf/m4QbBDANb4vv8K/p29CC
- 7IgMfWIhZJqDdXsdN00zMHXkE9vQlGkjKaNI0fJqo4M6O0hRxri/d3b1b1gN8ozUCYhlTmKVlqL
- L8WDdjv/iimwjUVaZ5LOdBy1XiV2hAyurMK2GUzKID9rhOqUk9Pg7LCRyM0vgCVqgxgpA27zKZX
- VMv9j7GBmsrL9oSqk7fNKDFW4p9BH5ce+MqCqYBVBzIoZEocVM28dB7VVPX7fBQJgX5cdERmDB3
- o0uKULnu/8CYchXB0oiH2IIvvdwgZn9lVmSzo9QbXYbyqSM8je9OwH9wbp1N+0MCTrSO0RJu0tu
- DxINsGh7xAwxlUe/Z7Coy6LaO90H4Sjs2VgFEZCwL7Hug3DeI9lwxsTyXDGLQjLymmL7X6DQn6a
- dRaAOTm1dWLA/lomhKXsszmGY+4AWMIsDgBW26+xM9b7DOf4QS8lBDNMAIDKbPmAeulPmcjlGUG
- Xh3BMMdatID452Xfy5TFH0D1oENWwTD9POU4TgGpbxEEEo9e/t5EBj1ip6KIUtbFYv3jlQS23jy
- J5pZsmp54U7LorcYWG0Li/l+
-X-Received: by 2002:a05:600c:4e01:b0:489:a4:e578 with SMTP id
- 5b1f17b1804b1-48e706b1f5bmr256138275e9.14.1778593860462; 
- Tue, 12 May 2026 06:51:00 -0700 (PDT)
-Received: from ip-10-18-1-162.eu-central-1.compute.internal
- (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
- by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-48e90536e18sm46331185e9.5.2026.05.12.06.50.59
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 12 May 2026 06:50:59 -0700 (PDT)
-From: "cron2 (Code Review)" <gerrit@openvpn.net>
-X-Google-Original-From: "cron2 (Code Review)"
- <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Tue, 12 May 2026 13:50:59 +0000
-To: flichtenheld <frank@lichtenheld.com>
-Auto-Submitted: auto-generated
-X-Gerrit-MessageType: merged
-X-Gerrit-PatchSet: 4
-X-Gerrit-Change-Id: I5c9b54dca0a14688a3bb7798cb086f5bde7311b8
-X-Gerrit-Change-Number: 1668
-X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1668?usp=email>
-X-Gerrit-Commit: 9beebd0a80663550b187c6e2f54d8b2f6bfaaf25
-In-Reply-To: <gerrit.1778102459000.I5c9b54dca0a14688a3bb7798cb086f5bde7311b8@gerrit.openvpn.net>
-References: <gerrit.1778102459000.I5c9b54dca0a14688a3bb7798cb086f5bde7311b8@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzc4MTAyNDU5MDAwLkk1YzliNTRkY2EwYTE0Njg4YTNiYjc3OThjYjA4NmY1YmRlNzMxMWI4QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <d8338887be90a753eceb33f448a38f6ed413d105-HTML@gerrit.openvpn.net>
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
+ id 1wMoM2-0007IU-7i for openvpn-devel@lists.sourceforge.net;
+ Tue, 12 May 2026 14:45:03 +0000
+Received: from smtp102.mailbox.org (smtp102.mailbox.org [10.196.197.102])
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+ key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+ (No client certificate requested)
+ by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4gFKBH2T3kz9tyS;
+ Tue, 12 May 2026 16:44:55 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=unstable.cc; s=MBO0001;
+ t=1778597095;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=k6biFGtziJaxYwx43ol988YPakFnFkOnBdhJWbeuAVU=;
+ b=0Rghiitf8Rh2auTrkp5PuYWoNAllvc279DTlYwTu9J5vAWipOsmKBwZ5irwfOKdL3T7G99
+ MwqNP/WL8SMdsElpERTnGxTKAkNQu1A/YGDl7bIuraC2U5/E2BXKyNsPtcanvJVmhxrcvd
+ 1Lt2RdP7swmWU6QxG7ySuBKcysViQPVnKIJcADOEG+1lplyVYiwg4wTrDkI8n042h9ZTM9
+ X9mZneTAeRl9RZ+vwUoxQiX6uWKogK7kIdQ7qJ3WTvCzzMgfkKzby9inAbj09soCCWvO+O
+ cFBz3a44c+09hM7jmkrDdyoVfq+FcpHHoO94b1GQ4rEOB/Vgbr6ivjI6zqiKbA==
+From: Antonio Quartulli <a@unstable.cc>
+To: openvpn-devel@lists.sourceforge.net
+Date: Tue, 12 May 2026 16:43:58 +0200
+Message-ID: <20260512144358.419599-5-a@unstable.cc>
+In-Reply-To: <20260512144358.419599-1-a@unstable.cc>
+References: <20260512144358.419599-1-a@unstable.cc>
 MIME-Version: 1.0
-User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wMnVv-0003F2-Kf
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: route: Clarify
- operator precedence in a & b ? c : d
+X-Headers-End: 1wMoM2-0007IU-7i
+Subject: [Openvpn-devel] [PATCH ovpn net-next 5/5] ovpn: add per-peer NAPI
+ for RX decap and reinject
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -138,214 +89,175 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Reply-To: gert@greenie.muc.de, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>,
- plaisthos <arne-openvpn@rfc2549.org>
-Content-Type: multipart/mixed; boundary="===============7840512294241807212=="
+Cc: Antonio Quartulli <antonio@openvpn.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============7840512294241807212==
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="kOlq6rPWeoQ="; charset=UTF-8
-
---kOlq6rPWeoQ=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-cron2 has submitted this change=2E ( http://gerrit=2Eopenvpn=2Enet/c/openvp=
-n/+/1668?usp=3Demail )
-
-Change subject: route: Clarify operator precedence =
-in a & b ? c : d
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E
-
-route: Clarify operator precedence in a & b ? c : d
-
-As suggested by c=
-ppcheck=2E
-
-Change-Id: I5c9b54dca0a14688a3bb7798cb086f5bde7311b8
-Signed-off=
--by: Frank Lichtenheld <frank@lichtenheld=2Ecom>
-Acked-by: Gert Doering <ge=
-rt@greenie=2Emuc=2Ede>
-Gerrit URL: https://gerrit=2Eopenvpn=2Enet/c/openvpn=
-/+/1668
-Message-Id: <20260511200645=2E24711-1-gert@greenie=2Emuc=2Ede>
-URL:=
- https://www=2Email-archive=2Ecom/openvpn-devel@lists=2Esourceforge=2Enet/m=
-sg36880=2Ehtml
-Signed-off-by: Gert Doering <gert@greenie=2Emuc=2Ede>
----
-M =
-src/openvpn/route=2Ec
-1 file changed, 2 insertions(+), 2 deletions(-)
-
-
-
-
-d=
-iff --git a/src/openvpn/route=2Ec b/src/openvpn/route=2Ec
-index 3b18f74=2E=
-=2E81ce867 100644
---- a/src/openvpn/route=2Ec
-+++ b/src/openvpn/route=2Ec
-@=
-@ -2884,7 +2884,7 @@
-                             =2Eprefix=2Eipv4=2Es_addr=
- =3D htonl(r->network),
-                             =2Egateway=2Eipv4=2Es_=
-addr =3D htonl(r->gateway),
-                             =2Eiface =3D { =2E=
-index =3D if_index, =2Ename =3D "" },
--                            =2Emetri=
-c =3D (r->flags & RT_METRIC_DEFINED ? r->metric : -1) };
-+                 =
-           =2Emetric =3D (r->flags & RT_METRIC_DEFINED) ? r->metric : -1 };=
-
- 
-     netmask_to_netbits(r->network, r->netmask, &msg=2Eprefix_len);
-    =
- if (msg=2Eprefix_len =3D=3D -1)
-@@ -2986,7 +2986,7 @@
-                    =
-         =2Eprefix_len =3D r->netbits,
-                             =2Egate=
-way=2Eipv6 =3D r->gateway,
-                             =2Eiface =3D { =2Ei=
-ndex =3D tt->adapter_index, =2Ename =3D "" },
--                            =
-=2Emetric =3D ((r->flags & RT_METRIC_DEFINED) ? r->metric : -1) };
-+       =
-                     =2Emetric =3D (r->flags & RT_METRIC_DEFINED) ? r->metr=
-ic : -1 };
- 
-     if (r->adapter_index) /* vpn server special route */
-    =
- {
-
--- 
-To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1668?usp=
-=3Demail
-To unsubscribe, or for help writing mail filters, visit http://ger=
-rit=2Eopenvpn=2Enet/settings?usp=3Demail
-
-Gerrit-MessageType: merged
-Gerrit=
--Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I5c9b54dca0a14688=
-a3bb7798cb086f5bde7311b8
-Gerrit-Change-Number: 1668
-Gerrit-PatchSet: 4
-Gerr=
-it-Owner: flichtenheld <frank@lichtenheld=2Ecom>
-Gerrit-Reviewer: cron2 <ge=
-rt@greenie=2Emuc=2Ede>
-Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eo=
-rg>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
-
---kOlq6rPWeoQ=
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change=2E</p><p><a href=3D"http://gerrit=2Eopenvpn=2En=
-et/c/openvpn/+/1668?usp=3Demail">View Change</a></p><div style=3D"white-spa=
-ce:pre-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,mo=
-nospace; white-space: pre-wrap;">route: Clarify operator precedence in a &a=
-mp; b ? c : d<br><br>As suggested by cppcheck=2E<br><br>Change-Id: I5c9b54d=
-ca0a14688a3bb7798cb086f5bde7311b8<br>Signed-off-by: Frank Lichtenheld &lt;f=
-rank@lichtenheld=2Ecom&gt;<br>Acked-by: Gert Doering &lt;gert@greenie=2Emuc=
-=2Ede&gt;<br>Gerrit URL: https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1668<br=
->Message-Id: &lt;20260511200645=2E24711-1-gert@greenie=2Emuc=2Ede&gt;<br>UR=
-L: https://www=2Email-archive=2Ecom/openvpn-devel@lists=2Esourceforge=2Enet=
-/msg36880=2Ehtml<br>Signed-off-by: Gert Doering &lt;gert@greenie=2Emuc=2Ede=
-&gt;<br>---<br>M src/openvpn/route=2Ec<br>1 file changed, 2 insertions(+), =
-2 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace=
-; white-space: pre-wrap;"><span>diff --git a/src/openvpn/route=2Ec b/src/op=
-envpn/route=2Ec</span><br><span>index 3b18f74=2E=2E81ce867 100644</span><br=
-><span>--- a/src/openvpn/route=2Ec</span><br><span>+++ b/src/openvpn/route=
-=2Ec</span><br><span>@@ -2884,7 +2884,7 @@</span><br><span>                =
-             =2Eprefix=2Eipv4=2Es_addr =3D htonl(r-&gt;network),</span><br>=
-<span>                             =2Egateway=2Eipv4=2Es_addr =3D htonl(r-&=
-gt;gateway),</span><br><span>                             =2Eiface =3D { =
-=2Eindex =3D if_index, =2Ename =3D &quot;&quot; },</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-                            =2Emetric =3D (r-&=
-gt;flags &amp; RT_METRIC_DEFINED ? r-&gt;metric : -1) };</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+                            =2Emetric =
-=3D (r-&gt;flags &amp; RT_METRIC_DEFINED) ? r-&gt;metric : -1 };</span><br>=
-<span> </span><br><span>     netmask_to_netbits(r-&gt;network, r-&gt;netmas=
-k, &amp;msg=2Eprefix_len);</span><br><span>     if (msg=2Eprefix_len =3D=3D=
- -1)</span><br><span>@@ -2986,7 +2986,7 @@</span><br><span>                =
-             =2Eprefix_len =3D r-&gt;netbits,</span><br><span>             =
-                =2Egateway=2Eipv6 =3D r-&gt;gateway,</span><br><span>      =
-                       =2Eiface =3D { =2Eindex =3D tt-&gt;adapter_index, =
-=2Ename =3D &quot;&quot; },</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-                            =2Emetric =3D ((r-&gt;flags &amp; RT_METR=
-IC_DEFINED) ? r-&gt;metric : -1) };</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+                            =2Emetric =3D (r-&gt;flags &amp=
-; RT_METRIC_DEFINED) ? r-&gt;metric : -1 };</span><br><span> </span><br><sp=
-an>     if (r-&gt;adapter_index) /* vpn server special route */</span><br><=
-span>     {</span><br><span></span><br></pre><p>To view, visit <a href=3D"h=
-ttp://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1668?usp=3Demail">change 1668</a>=
-=2E To unsubscribe, or for help writing mail filters, visit <a href=3D"http=
-://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div ite=
-mscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itempro=
-p=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"=
-url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1668?usp=3Demail"/><=
-meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D=
-"display:none"> Gerrit-MessageType: merged </div>
-<div style=3D"display:non=
-e"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Bran=
-ch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I5c9b54dca=
-0a14688a3bb7798cb086f5bde7311b8 </div>
-<div style=3D"display:none"> Gerrit-=
-Change-Number: 1668 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 =
-</div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@li=
-chtenheld=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cr=
-on2 &lt;gert@greenie=2Emuc=2Ede&gt; </div>
-<div style=3D"display:none"> Ger=
-rit-Reviewer: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div styl=
-e=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esour=
-ceforge=2Enet&gt; </div>
-
-</body></html>
---kOlq6rPWeoQ=--
-
-
---===============7840512294241807212==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============7840512294241807212==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-Openvpn-devel mailing list
-Openvpn-devel@lists.sourceforge.net
-https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
---===============7840512294241807212==--
-
+RnJvbTogUmFsZiBMaWNpIDxyYWxmQG1hbmRlbGJpdC5jb20+CgpDdXJyZW50bHkgb3ZwbiBwcm9j
+ZXNzZXMgcmVjZWl2ZWQgcGFja2V0cyBpbiB0aGUgc2FtZSBzb2Z0aXJxIGNvbnRleHQKdGhhdCBk
+ZWxpdmVycyB0aGUgc2tiLiBJZiB0aGUgcGFja2V0IGlzIHZhbGlkIGFuZCBkZWNhcHN1bGF0ZWQs
+IGl0IGlzCnJlaW5qZWN0ZWQgdmlhIGEgc2luZ2xlIHBlci1pbnRlcmZhY2UgZ3JvX2NlbGxzIGlu
+c3RhbmNlLgoKVG8gaW1wcm92ZSBwYXJhbGxlbGlzbSBhbmQgc2NhbGluZywgYWRkIGEgcGVyLXBl
+ZXIgTkFQSSBhbmQgc2tiIHF1ZXVlCmZvciByZWNlcHRpb24gYW5kIHJlaW5qZWN0aW9uLiBPbiBy
+ZWNlaXZlLCB0aGUgc2tiIGlzIGVucXVldWVkIHRvIHRoZQpwZWVy4oCZcyBxdWV1ZSBhbmQgdGhl
+IHBlZXIgTkFQSSBpcyBzY2hlZHVsZWQuIFRoZSBwb2xsIGZ1bmN0aW9uIGRyYWlucwp0aGUgcXVl
+dWUsIHByb2Nlc3NlcyB0aGUgcGFja2V0LCBhbmQgcmVpbmplY3RzIHRoZSBkZWNhcHN1bGF0ZWQg
+c2tiIGludG8KdGhlIHN0YWNrIHRocm91Z2ggdGhhdCBwZWVyIE5BUEkuCgpUaGlzIGlzIHRoZSBm
+aXJzdCBwYXRjaCBpbnRyb2R1Y2luZyBhIG1vcmUgZWxhYm9yYXRlZCBwYWNrZXQgcHJvY2Vzc2lu
+ZwpwaXBlbGluZSBhaW1lZCBhdCBpbXByb3ZpbmcgcGFyYWxsZWxpc20gYW5kIHNjYWxhYmlsaXR5
+LgoKU2lnbmVkLW9mZi1ieTogUmFsZiBMaWNpIDxyYWxmQG1hbmRlbGJpdC5jb20+ClNpZ25lZC1v
+ZmYtYnk6IEFudG9uaW8gUXVhcnR1bGxpIDxhbnRvbmlvQG9wZW52cG4ubmV0PgotLS0KIGRyaXZl
+cnMvbmV0L292cG4vaW8uYyAgICAgICB8IDIwICsrKysrLS0tLS0tLS0KIGRyaXZlcnMvbmV0L292
+cG4vbWFpbi5jICAgICB8IDIwICstLS0tLS0tLS0tLS0KIGRyaXZlcnMvbmV0L292cG4vb3ZwbnBy
+aXYuaCB8ICAyIC0tCiBkcml2ZXJzL25ldC9vdnBuL3BlZXIuYyAgICAgfCA2MCArKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrCiBkcml2ZXJzL25ldC9vdnBuL3BlZXIuaCAgICAg
+fCAgNiArKysrCiBkcml2ZXJzL25ldC9vdnBuL3RjcC5jICAgICAgfCAgNSArKystCiBkcml2ZXJz
+L25ldC9vdnBuL3VkcC5jICAgICAgfCAgNSArKystCiA3IGZpbGVzIGNoYW5nZWQsIDgyIGluc2Vy
+dGlvbnMoKyksIDM2IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L292cG4v
+aW8uYyBiL2RyaXZlcnMvbmV0L292cG4vaW8uYwppbmRleCAyMmM1NTVkZDk2MmUuLjNlNmMwNmI5
+YTVhZSAxMDA2NDQKLS0tIGEvZHJpdmVycy9uZXQvb3Zwbi9pby5jCisrKyBiL2RyaXZlcnMvbmV0
+L292cG4vaW8uYwpAQCAtNTksOSArNTksNiBAQCBzdGF0aWMgYm9vbCBvdnBuX2lzX2tlZXBhbGl2
+ZShzdHJ1Y3Qgc2tfYnVmZiAqc2tiKQogICovCiBzdGF0aWMgdm9pZCBvdnBuX25ldGRldl93cml0
+ZShzdHJ1Y3Qgb3Zwbl9wZWVyICpwZWVyLCBzdHJ1Y3Qgc2tfYnVmZiAqc2tiKQogewotCXVuc2ln
+bmVkIGludCBwa3RfbGVuOwotCWludCByZXQ7Ci0KIAkvKgogCSAqIEdTTyBzdGF0ZSBmcm9tIHRo
+ZSB0cmFuc3BvcnQgbGF5ZXIgaXMgbm90IHZhbGlkIGZvciB0aGUgdHVubmVsL2RhdGEKIAkgKiBw
+YXRoLiBSZXNldCBhbGwgR1NPIGZpZWxkcyB0byBwcmV2ZW50IGFueSBmdXJ0aGVyIEdTTyBwcm9j
+ZXNzaW5nCkBAIC04OSwyMCArODYsMTcgQEAgc3RhdGljIHZvaWQgb3Zwbl9uZXRkZXZfd3JpdGUo
+c3RydWN0IG92cG5fcGVlciAqcGVlciwgc3RydWN0IHNrX2J1ZmYgKnNrYikKIAlza2JfcmVzZXRf
+dHJhbnNwb3J0X2hlYWRlcihza2IpOwogCXNrYl9yZXNldF9pbm5lcl9oZWFkZXJzKHNrYik7CiAK
+LQkvKiBjYXVzZSBwYWNrZXQgdG8gYmUgInJlY2VpdmVkIiBieSB0aGUgaW50ZXJmYWNlICovCi0J
+cGt0X2xlbiA9IHNrYi0+bGVuOworCS8qIHVwZGF0ZSBSWCBzdGF0cyB3aXRoIHRoZSBzaXplIG9m
+IGRlY3J5cHRlZCBwYWNrZXQgKi8KKwlvdnBuX3BlZXJfc3RhdHNfaW5jcmVtZW50X3J4KCZwZWVy
+LT52cG5fc3RhdHMsIHNrYi0+bGVuKTsKIAkvKiB3ZSBtYXkgZ2V0IGhlcmUgaW4gcHJvY2VzcyBj
+b250ZXh0IGluIGNhc2Ugb2YgVENQIGNvbm5lY3Rpb25zLAotCSAqIHRoZXJlZm9yZSB3ZSBoYXZl
+IHRvIGRpc2FibGUgQkhzIHRvIGVuc3VyZSBncm9fY2VsbHNfcmVjZWl2ZSgpCi0JICogYW5kIGRl
+dl9kc3RhdHNfcnhfYWRkKCkgZG8gbm90IGdldCBjb3JydXB0ZWQgb3IgZW50ZXIgZGVhZGxvY2sK
+KwkgKiB0aGVyZWZvcmUgd2UgaGF2ZSB0byBkaXNhYmxlIEJIcyB0byBlbnN1cmUgZGV2X2RzdGF0
+c19yeF9hZGQoKQorCSAqIGRvZXMgbm90IGdldCBjb3JydXB0ZWQKIAkgKi8KIAlsb2NhbF9iaF9k
+aXNhYmxlKCk7Ci0JcmV0ID0gZ3JvX2NlbGxzX3JlY2VpdmUoJnBlZXItPm92cG4tPmdyb19jZWxs
+cywgc2tiKTsKLQlpZiAobGlrZWx5KHJldCA9PSBORVRfUlhfU1VDQ0VTUykpIHsKLQkJLyogdXBk
+YXRlIFJYIHN0YXRzIHdpdGggdGhlIHNpemUgb2YgZGVjcnlwdGVkIHBhY2tldCAqLwotCQlvdnBu
+X3BlZXJfc3RhdHNfaW5jcmVtZW50X3J4KCZwZWVyLT52cG5fc3RhdHMsIHBrdF9sZW4pOwotCQlk
+ZXZfZHN0YXRzX3J4X2FkZChwZWVyLT5vdnBuLT5kZXYsIHBrdF9sZW4pOwotCX0KKwlkZXZfZHN0
+YXRzX3J4X2FkZChwZWVyLT5vdnBuLT5kZXYsIHNrYi0+bGVuKTsKIAlsb2NhbF9iaF9lbmFibGUo
+KTsKKworCW5hcGlfZ3JvX3JlY2VpdmUoJnBlZXItPm5hcGksIHNrYik7CiB9CiAKIHZvaWQgb3Zw
+bl9kZWNyeXB0X3Bvc3Qodm9pZCAqZGF0YSwgaW50IHJldCkKZGlmZiAtLWdpdCBhL2RyaXZlcnMv
+bmV0L292cG4vbWFpbi5jIGIvZHJpdmVycy9uZXQvb3Zwbi9tYWluLmMKaW5kZXggMmUwNDIwZmVi
+ZGEwLi41N2I3NDNjZWJjNzkgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvbmV0L292cG4vbWFpbi5jCisr
+KyBiL2RyaXZlcnMvbmV0L292cG4vbWFpbi5jCkBAIC03NCwzMCArNzQsMTIgQEAgc3RhdGljIGlu
+dCBvdnBuX21wX2FsbG9jKHN0cnVjdCBvdnBuX3ByaXYgKm92cG4pCiBzdGF0aWMgaW50IG92cG5f
+bmV0X2luaXQoc3RydWN0IG5ldF9kZXZpY2UgKmRldikKIHsKIAlzdHJ1Y3Qgb3Zwbl9wcml2ICpv
+dnBuID0gbmV0ZGV2X3ByaXYoZGV2KTsKLQlpbnQgZXJyID0gZ3JvX2NlbGxzX2luaXQoJm92cG4t
+Pmdyb19jZWxscywgZGV2KTsKIAotCWlmIChlcnIgPCAwKQotCQlyZXR1cm4gZXJyOwotCi0JZXJy
+ID0gb3Zwbl9tcF9hbGxvYyhvdnBuKTsKLQlpZiAoZXJyIDwgMCkgewotCQlncm9fY2VsbHNfZGVz
+dHJveSgmb3Zwbi0+Z3JvX2NlbGxzKTsKLQkJcmV0dXJuIGVycjsKLQl9Ci0KLQlyZXR1cm4gMDsK
+LX0KLQotc3RhdGljIHZvaWQgb3Zwbl9uZXRfdW5pbml0KHN0cnVjdCBuZXRfZGV2aWNlICpkZXYp
+Ci17Ci0Jc3RydWN0IG92cG5fcHJpdiAqb3ZwbiA9IG5ldGRldl9wcml2KGRldik7Ci0KLQlncm9f
+Y2VsbHNfZGVzdHJveSgmb3Zwbi0+Z3JvX2NlbGxzKTsKKwlyZXR1cm4gb3Zwbl9tcF9hbGxvYyhv
+dnBuKTsKIH0KIAogc3RhdGljIGNvbnN0IHN0cnVjdCBuZXRfZGV2aWNlX29wcyBvdnBuX25ldGRl
+dl9vcHMgPSB7CiAJLm5kb19pbml0CQk9IG92cG5fbmV0X2luaXQsCi0JLm5kb191bmluaXQJCT0g
+b3Zwbl9uZXRfdW5pbml0LAogCS5uZG9fc3RhcnRfeG1pdAkJPSBvdnBuX25ldF94bWl0LAogfTsK
+IApkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvb3Zwbi9vdnBucHJpdi5oIGIvZHJpdmVycy9uZXQv
+b3Zwbi9vdnBucHJpdi5oCmluZGV4IDU4OThmNmFkYWRhNy4uNzAzZTkwZDFkYWZjIDEwMDY0NAot
+LS0gYS9kcml2ZXJzL25ldC9vdnBuL292cG5wcml2LmgKKysrIGIvZHJpdmVycy9uZXQvb3Zwbi9v
+dnBucHJpdi5oCkBAIC0zOSw3ICszOSw2IEBAIHN0cnVjdCBvdnBuX3BlZXJfY29sbGVjdGlvbiB7
+CiAgKiBAbG9jazogcHJvdGVjdCB0aGlzIG9iamVjdAogICogQHBlZXJzOiBkYXRhIHN0cnVjdHVy
+ZXMgaG9sZGluZyBtdWx0aS1wZWVyIHJlZmVyZW5jZXMKICAqIEBwZWVyOiBpbiBQMlAgbW9kZSwg
+dGhpcyBpcyB0aGUgb25seSByZW1vdGUgcGVlcgotICogQGdyb19jZWxsczogcG9pbnRlciB0byB0
+aGUgR2VuZXJpYyBSZWNlaXZlIE9mZmxvYWQgY2VsbAogICogQGtlZXBhbGl2ZV93b3JrOiBzdHJ1
+Y3QgdXNlZCB0byBzY2hlZHVsZSBrZWVwYWxpdmUgcGVyaW9kaWMgam9iCiAgKi8KIHN0cnVjdCBv
+dnBuX3ByaXYgewpAQCAtNDgsNyArNDcsNiBAQCBzdHJ1Y3Qgb3Zwbl9wcml2IHsKIAlzcGlubG9j
+a190IGxvY2s7IC8qIHByb3RlY3Qgd3JpdGluZyB0byB0aGUgb3Zwbl9wcml2IG9iamVjdCAqLwog
+CXN0cnVjdCBvdnBuX3BlZXJfY29sbGVjdGlvbiAqcGVlcnM7CiAJc3RydWN0IG92cG5fcGVlciBf
+X3JjdSAqcGVlcjsKLQlzdHJ1Y3QgZ3JvX2NlbGxzIGdyb19jZWxsczsKIAlzdHJ1Y3QgZGVsYXll
+ZF93b3JrIGtlZXBhbGl2ZV93b3JrOwogfTsKIApkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvb3Zw
+bi9wZWVyLmMgYi9kcml2ZXJzL25ldC9vdnBuL3BlZXIuYwppbmRleCBjMDJkZmFiNTFhNmUuLmJi
+MjNkYzRlNDcyMSAxMDA2NDQKLS0tIGEvZHJpdmVycy9uZXQvb3Zwbi9wZWVyLmMKKysrIGIvZHJp
+dmVycy9uZXQvb3Zwbi9wZWVyLmMKQEAgLTEwLDYgKzEwLDcgQEAKICNpbmNsdWRlIDxsaW51eC9z
+a2J1ZmYuaD4KICNpbmNsdWRlIDxsaW51eC9saXN0Lmg+CiAjaW5jbHVkZSA8bGludXgvaGFzaHRh
+YmxlLmg+CisjaW5jbHVkZSA8bmV0L2hvdGRhdGEuaD4KICNpbmNsdWRlIDxuZXQvaXA2X3JvdXRl
+Lmg+CiAKICNpbmNsdWRlICJvdnBucHJpdi5oIgpAQCAtODIsNiArODMsNTMgQEAgc3RhdGljIHZv
+aWQgb3Zwbl9wZWVyX2tlZXBhbGl2ZV9zZW5kKHN0cnVjdCB3b3JrX3N0cnVjdCAqd29yaykKIAls
+b2NhbF9iaF9lbmFibGUoKTsKIH0KIAorYm9vbCBvdnBuX2VucXVldWVfZW5jYXAoc3RydWN0IG92
+cG5fcGVlciAqcGVlciwgc3RydWN0IHNrX2J1ZmYgKnNrYikKK3sKKwlpZiAoc2tiX3F1ZXVlX2xl
+bigmcGVlci0+ZW5jYXBfcSkgPj0KKwkgICAgUkVBRF9PTkNFKG5ldF9ob3RkYXRhLm1heF9iYWNr
+bG9nKSkKKwkJcmV0dXJuIGZhbHNlOworCisJc2tiX3F1ZXVlX3RhaWwoJnBlZXItPmVuY2FwX3Es
+IHNrYik7CisJbmFwaV9zY2hlZHVsZSgmcGVlci0+bmFwaSk7CisJcmV0dXJuIHRydWU7Cit9CisK
+K3N0YXRpYyBpbnQgb3Zwbl9wZWVyX2VuY2FwX3BvbGwoc3RydWN0IG5hcGlfc3RydWN0ICpuYXBp
+LCBpbnQgYnVkZ2V0KQoreworCXN0cnVjdCBvdnBuX3BlZXIgKnBlZXIgPSBjb250YWluZXJfb2Yo
+bmFwaSwgc3RydWN0IG92cG5fcGVlciwgbmFwaSk7CisJc3RydWN0IHNrX2J1ZmYgKnNrYjsKKwlp
+bnQgd29yayA9IDA7CisKKwl3aGlsZSAod29yayA8IGJ1ZGdldCAmJiAoc2tiID0gc2tiX2RlcXVl
+dWUoJnBlZXItPmVuY2FwX3EpKSkgeworCQlvdnBuX3JlY3YocGVlciwgc2tiKTsKKwkJKyt3b3Jr
+OworCX0KKworCWlmICh3b3JrIDwgYnVkZ2V0KQorCQluYXBpX2NvbXBsZXRlX2RvbmUobmFwaSwg
+d29yayk7CisKKwlyZXR1cm4gd29yazsKK30KKworc3RhdGljIGludCBvdnBuX3BlZXJfbmFwaV9p
+bml0KHN0cnVjdCBvdnBuX3BlZXIgKnBlZXIsIHN0cnVjdCBuZXRfZGV2aWNlICpkZXYpCit7CisJ
+c2tiX3F1ZXVlX2hlYWRfaW5pdCgmcGVlci0+ZW5jYXBfcSk7CisKKwlzZXRfYml0KE5BUElfU1RB
+VEVfTk9fQlVTWV9QT0xMLCAmcGVlci0+bmFwaS5zdGF0ZSk7CisJbmV0aWZfbmFwaV9hZGQoZGV2
+LCAmcGVlci0+bmFwaSwgb3Zwbl9wZWVyX2VuY2FwX3BvbGwpOworCW5hcGlfZW5hYmxlKCZwZWVy
+LT5uYXBpKTsKKworCXJldHVybiAwOworfQorCitzdGF0aWMgdm9pZCBvdnBuX3BlZXJfbmFwaV91
+bmluaXQoc3RydWN0IG92cG5fcGVlciAqcGVlcikKK3sKKwluYXBpX2Rpc2FibGUoJnBlZXItPm5h
+cGkpOworCW5ldGlmX25hcGlfZGVsKCZwZWVyLT5uYXBpKTsKKworCV9fc2tiX3F1ZXVlX3B1cmdl
+KCZwZWVyLT5lbmNhcF9xKTsKK30KKwogLyoqCiAgKiBvdnBuX3BlZXJfbmV3IC0gYWxsb2NhdGUg
+YW5kIGluaXRpYWxpemUgYSBuZXcgcGVlciBvYmplY3QKICAqIEBvdnBuOiB0aGUgb3BlbnZwbiBp
+bnN0YW5jZSBpbnNpZGUgd2hpY2ggdGhlIHBlZXIgc2hvdWxkIGJlIGNyZWF0ZWQKQEAgLTEyNiw2
+ICsxNzQsMTcgQEAgc3RydWN0IG92cG5fcGVlciAqb3Zwbl9wZWVyX25ldyhzdHJ1Y3Qgb3Zwbl9w
+cml2ICpvdnBuLCB1MzIgaWQpCiAJCXJldHVybiBFUlJfUFRSKHJldCk7CiAJfQogCisJcmV0ID0g
+b3Zwbl9wZWVyX25hcGlfaW5pdChwZWVyLCBvdnBuLT5kZXYpOworCWlmIChyZXQgPCAwKSB7CisJ
+CW5ldGRldl9lcnIob3Zwbi0+ZGV2LAorCQkJICAgImNhbm5vdCBpbml0aWFsaXplIE5BUEkgZm9y
+IHBlZXIgJXVcbiIsCisJCQkgICBwZWVyLT5pZCk7CisJCW92cG5fcGVlcl9uYXBpX3VuaW5pdChw
+ZWVyKTsKKwkJZHN0X2NhY2hlX2Rlc3Ryb3koJnBlZXItPmRzdF9jYWNoZSk7CisJCWtmcmVlKHBl
+ZXIpOworCQlyZXR1cm4gRVJSX1BUUihyZXQpOworCX0KKwogCW5ldGRldl9ob2xkKG92cG4tPmRl
+diwgJnBlZXItPmRldl90cmFja2VyLCBHRlBfS0VSTkVMKTsKIAogCXJldHVybiBwZWVyOwpAQCAt
+MzU2LDYgKzQxNSw3IEBAIHN0YXRpYyB2b2lkIG92cG5fcGVlcl9yZWxlYXNlX3JjdShzdHJ1Y3Qg
+cmN1X2hlYWQgKmhlYWQpCiAgKi8KIHZvaWQgb3Zwbl9wZWVyX3JlbGVhc2Uoc3RydWN0IG92cG5f
+cGVlciAqcGVlcikKIHsKKwlvdnBuX3BlZXJfbmFwaV91bmluaXQocGVlcik7CiAJb3Zwbl9jcnlw
+dG9fc3RhdGVfcmVsZWFzZSgmcGVlci0+Y3J5cHRvKTsKIAlzcGluX2xvY2tfYmgoJnBlZXItPmxv
+Y2spOwogCW92cG5fYmluZF9yZXNldChwZWVyLCBOVUxMKTsKZGlmZiAtLWdpdCBhL2RyaXZlcnMv
+bmV0L292cG4vcGVlci5oIGIvZHJpdmVycy9uZXQvb3Zwbi9wZWVyLmgKaW5kZXggMzI4NDAxNTcw
+Y2JhLi5lYjBlYzk2MDVjZWQgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvbmV0L292cG4vcGVlci5oCisr
+KyBiL2RyaXZlcnMvbmV0L292cG4vcGVlci5oCkBAIC00Niw2ICs0Niw4IEBACiAgKiBAY3J5cHRv
+OiB0aGUgY3J5cHRvIGNvbmZpZ3VyYXRpb24gKGNpcGhlcnMsIGtleXMsIGV0Yy4uKQogICogQGRz
+dF9jYWNoZTogY2FjaGUgZm9yIGRzdF9lbnRyeSB1c2VkIHRvIHNlbmQgdG8gcGVlcgogICogQGJp
+bmQ6IHJlbW90ZSBwZWVyIGJpbmRpbmcKKyAqIEBlbmNhcF9xOiBxdWV1ZSBvZiBlbmNhcHN1bGF0
+ZWQgcGFja2V0cyBhd2FpdGluZyBwcm9jZXNzaW5nL2RlY2Fwc3VsYXRpb24KKyAqIEBuYXBpOiBO
+QVBJIGNvbnRleHQgZm9yIGhhbmRsaW5nIHBhY2tldCByZWNlcHRpb24KICAqIEBrZWVwYWxpdmVf
+aW50ZXJ2YWw6IHNlY29uZHMgYWZ0ZXIgd2hpY2ggYSBuZXcga2VlcGFsaXZlIHNob3VsZCBiZSBz
+ZW50CiAgKiBAa2VlcGFsaXZlX3htaXRfZXhwOiBmdXR1cmUgdGltZXN0YW1wIHdoZW4gbmV4dCBr
+ZWVwYWxpdmUgc2hvdWxkIGJlIHNlbnQKICAqIEBsYXN0X3NlbnQ6IHRpbWVzdGFtcCBvZiB0aGUg
+bGFzdCBzdWNjZXNzZnVsbHkgc2VudCBwYWNrZXQKQEAgLTEwMCw2ICsxMDIsOCBAQCBzdHJ1Y3Qg
+b3Zwbl9wZWVyIHsKIAlzdHJ1Y3Qgb3Zwbl9jcnlwdG9fc3RhdGUgY3J5cHRvOwogCXN0cnVjdCBk
+c3RfY2FjaGUgZHN0X2NhY2hlOwogCXN0cnVjdCBvdnBuX2JpbmQgX19yY3UgKmJpbmQ7CisJc3Ry
+dWN0IHNrX2J1ZmZfaGVhZCBlbmNhcF9xOworCXN0cnVjdCBuYXBpX3N0cnVjdCBuYXBpOwogCXVu
+c2lnbmVkIGxvbmcga2VlcGFsaXZlX2ludGVydmFsOwogCXVuc2lnbmVkIGxvbmcga2VlcGFsaXZl
+X3htaXRfZXhwOwogCXRpbWU2NF90IGxhc3Rfc2VudDsKQEAgLTE1NCw2ICsxNTgsOCBAQCB2b2lk
+IG92cG5fcGVlcl9oYXNoX3Zwbl9pcChzdHJ1Y3Qgb3Zwbl9wZWVyICpwZWVyKTsKIGJvb2wgb3Zw
+bl9wZWVyX2NoZWNrX2J5X3NyYyhzdHJ1Y3Qgb3Zwbl9wcml2ICpvdnBuLCBzdHJ1Y3Qgc2tfYnVm
+ZiAqc2tiLAogCQkJICAgIHN0cnVjdCBvdnBuX3BlZXIgKnBlZXIpOwogCitib29sIG92cG5fZW5x
+dWV1ZV9lbmNhcChzdHJ1Y3Qgb3Zwbl9wZWVyICpwZWVyLCBzdHJ1Y3Qgc2tfYnVmZiAqc2tiKTsK
+Kwogdm9pZCBvdnBuX3BlZXJfa2VlcGFsaXZlX3NldChzdHJ1Y3Qgb3Zwbl9wZWVyICpwZWVyLCB1
+MzIgaW50ZXJ2YWwsIHUzMiB0aW1lb3V0KTsKIHZvaWQgb3Zwbl9wZWVyX2tlZXBhbGl2ZV93b3Jr
+KHN0cnVjdCB3b3JrX3N0cnVjdCAqd29yayk7CiAKZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L292
+cG4vdGNwLmMgYi9kcml2ZXJzL25ldC9vdnBuL3RjcC5jCmluZGV4IDY1MDU0Y2M4NGJlNS4uODdm
+OWQ3ODVmNDRjIDEwMDY0NAotLS0gYS9kcml2ZXJzL25ldC9vdnBuL3RjcC5jCisrKyBiL2RyaXZl
+cnMvbmV0L292cG4vdGNwLmMKQEAgLTE0NSwxMyArMTQ1LDE2IEBAIHN0YXRpYyB2b2lkIG92cG5f
+dGNwX3JjdihzdHJ1Y3Qgc3RycGFyc2VyICpzdHJwLCBzdHJ1Y3Qgc2tfYnVmZiAqc2tiKQogCWlm
+IChXQVJOX09OKCFvdnBuX3BlZXJfaG9sZChwZWVyKSkpCiAJCWdvdG8gZXJyX25vcGVlcjsKIAot
+CW92cG5fcmVjdihwZWVyLCBza2IpOworCWlmICh1bmxpa2VseSghb3Zwbl9lbnF1ZXVlX2VuY2Fw
+KHBlZXIsIHNrYikpKQorCQlnb3RvIGRyb3A7CisKIAlyZXR1cm47CiBlcnI6CiAJLyogdGFrZSBy
+ZWZlcmVuY2UgZm9yIGRlZmVycmVkIHBlZXIgZGVsZXRpb24uIHNob3VsZCBuZXZlciBmYWlsICov
+CiAJaWYgKFdBUk5fT04oIW92cG5fcGVlcl9ob2xkKHBlZXIpKSkKIAkJZ290byBlcnJfbm9wZWVy
+OwogCXNjaGVkdWxlX3dvcmsoJnBlZXItPnRjcC5kZWZlcl9kZWxfd29yayk7Citkcm9wOgogCWRl
+dl9kc3RhdHNfcnhfZHJvcHBlZChwZWVyLT5vdnBuLT5kZXYpOwogZXJyX25vcGVlcjoKIAlrZnJl
+ZV9za2Ioc2tiKTsKZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L292cG4vdWRwLmMgYi9kcml2ZXJz
+L25ldC9vdnBuL3VkcC5jCmluZGV4IGI1ZDFjYTAxNDczMi4uOGFkZmYwYjkwNDMwIDEwMDY0NAot
+LS0gYS9kcml2ZXJzL25ldC9vdnBuL3VkcC5jCisrKyBiL2RyaXZlcnMvbmV0L292cG4vdWRwLmMK
+QEAgLTEyMSw3ICsxMjEsMTAgQEAgc3RhdGljIGludCBvdnBuX3VkcF9lbmNhcF9yZWN2KHN0cnVj
+dCBzb2NrICpzaywgc3RydWN0IHNrX2J1ZmYgKnNrYikKIAogCS8qIHBvcCBvZmYgb3V0ZXIgVURQ
+IGhlYWRlciAqLwogCV9fc2tiX3B1bGwoc2tiLCBzaXplb2Yoc3RydWN0IHVkcGhkcikpOwotCW92
+cG5fcmVjdihwZWVyLCBza2IpOworCisJaWYgKHVubGlrZWx5KCFvdnBuX2VucXVldWVfZW5jYXAo
+cGVlciwgc2tiKSkpCisJCWdvdG8gZHJvcDsKKwogCXJldHVybiAwOwogCiBkcm9wOgotLSAKMi41
+My4wCgoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCk9w
+ZW52cG4tZGV2ZWwgbWFpbGluZyBsaXN0Ck9wZW52cG4tZGV2ZWxAbGlzdHMuc291cmNlZm9yZ2Uu
+bmV0Cmh0dHBzOi8vbGlzdHMuc291cmNlZm9yZ2UubmV0L2xpc3RzL2xpc3RpbmZvL29wZW52cG4t
+ZGV2ZWwK
