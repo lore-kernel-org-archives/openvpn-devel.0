@@ -4,80 +4,128 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 22670CD4F24
-	for <openvpn-devel@archiver.kernel.org>; Tue, 12 May 2026 14:45:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id BE3B9CD4F24
+	for <openvpn-devel@archiver.kernel.org>; Tue, 12 May 2026 15:22:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:Cc:
-	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
-	:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=I9zfz+/aLLuqlVs9P5EQvqoHYXxLH6RIc9gKXxqPu20=; b=JhyPBLpR+JeX4NPyAw7E5+dnNA
-	BHh6qziWfpB77+5EaJm8+KspMjp6xcP6CaqSfSB1TcexnT2t5v3W5VawNgCsLU2A1Kowa/mLcuvxM
-	B4gJ0c4fYsO0oHCgiXMjNXUBTQBRXYnyEZJuQc7p04fCBG0F/Pq1O65oz62T57dCoUxo=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:Subject:
+	MIME-Version:Message-ID:References:In-Reply-To:To:Date:From:Sender:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=cCssqnOlj7EfMb6Y7h2Jv5GwJV5yV1y60Etr3QtluRs=; b=eWlotFL5LJ3mIVV8v4I+X5viRH
+	DzCDZQUY6j5oqb9oVC3QZxB1+pkM2Tr1nBzPTlKWqCUk7dn5PAco4gpkjt2yA5u/lxNsFlnUL0E0V
+	W7tyO9Ce34YSqCC1EIH8o23SJJwJPJAY+m0WxEigWtL6vY5qZe2qpuq/A0VDLLaFi1OM=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wMoMD-0004Ej-4s;
-	Tue, 12 May 2026 14:45:13 +0000
+	id 1wMow3-0007rf-IW;
+	Tue, 12 May 2026 15:22:16 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <a@unstable.cc>) id 1wMoM9-0004E2-07
+ (envelope-from <gerrit@openvpn.net>) id 1wMow2-0007rX-E8
  for openvpn-devel@lists.sourceforge.net;
- Tue, 12 May 2026 14:45:09 +0000
+ Tue, 12 May 2026 15:22:15 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=h6A47cZNK89OUWp8g+Os3O6Y2qEQPwVAeYCjOb10kPs=; b=YhizFcQZYL2Hz0GXTHv8XSaYdA
- Inwc0XEa5/VyLPbaWy/lr2UlUaPcpmHIJwmHi8S8NQ04svWZ+Mq/b6MzMa3upaUbWnwFVHCRWFX5M
- k7wvi/umLGnmWzVcG0V2kgOa99X1ebc0GQl6o3DXV+Bd6QCmUx+4qknmueRAM6e/aTyQ=;
+ d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
+ :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
+ Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
+ :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
+ :List-Post:List-Owner:List-Archive;
+ bh=oU4wHs91pN9SCy54wdhG6SkYdd7536yroMVr1FXaU9U=; b=nFlZT9yPbq1UgetAd2DouQbywb
+ t/dT0m5kbG/SQOvqGp/W/b5tWUrEUGVqtaBn1T4kjPqrwSi82GzepenEuMS8ZJvV6u4d2S6kXujli
+ 4m00PNt9g7J8+f4ikSY+fxXbJHQ57XrM4Df54+bunpF2d3ZkeGOTl018RvSMc0TaVq74=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=h6A47cZNK89OUWp8g+Os3O6Y2qEQPwVAeYCjOb10kPs=; b=m9cYVo0P1bzAKfgWme8ZP23IcJ
- 5AMvV4xRKm956/+vkAY27397d0oBTSF/gsq3TEhDeXz1Z9BqDDavwhoQdy5HK32oTBgyAyw8zS8xb
- SvViX9jzQRzXrXzJq2vL0sHa792q/HV91uDEh2UoQFZUSzw/QJo4hjIij3atudbeDtLg=;
-Received: from mout-p-102.mailbox.org ([80.241.56.152])
+ h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
+ Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=oU4wHs91pN9SCy54wdhG6SkYdd7536yroMVr1FXaU9U=; b=M
+ fWN/+JGeseZAe36wBATuZoXNU0A+cCvrZzPZz7Y4Z+ngF14oWj6UlvArkueEmRn20GqPJtLe2aMyL
+ zij7icrIU11Fpx3cUU/C44Jfr+6ofPdb6N/KzJXYnVHkdQtk0UvG0L5hgphIh2TXTtlHh8nrccLkf
+ 2o8rPSiWhVpaqLx0=;
+Received: from mail-wm1-f47.google.com ([209.85.128.47])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wMoM6-0007Il-Rs for openvpn-devel@lists.sourceforge.net;
- Tue, 12 May 2026 14:45:09 +0000
-Received: from smtp102.mailbox.org (smtp102.mailbox.org [10.196.197.102])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
- key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
- (No client certificate requested)
- by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4gFKBG32Xyz9vHn;
- Tue, 12 May 2026 16:44:54 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=unstable.cc; s=MBO0001;
- t=1778597094;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=h6A47cZNK89OUWp8g+Os3O6Y2qEQPwVAeYCjOb10kPs=;
- b=AKI7oXtaRKUErLtY766aDBKLKA9tN+Uo02C8LOznCot2my9d/0VwwbB8/ExqMNbCo8ceZS
- 4WO+/vhh0UviWDpcK9p1wM6M/d9YWWZoN8loJLS+TyiGMcHQO9ZQhJDPhfPOviTM34tD/U
- Cx/JspLPR0t8Ohl9mzIK3F3W72U/3dxvIW+3UqYJT+EzyMnRhx74HxKqswJti4xHHneHhe
- 1GXA6QbY0FdxF12V8AiEfx1rmQKhzceQ8Sv67KjwwdkVk/MSBoEqGrl/M6ure3HNRTZegz
- 9t/MgBdlGNWJG4X44nZjBW8pM1Q0pAt3J2ontNh7lWIc7KsIUXyzHf7LgUlarw==
-From: Antonio Quartulli <a@unstable.cc>
-To: openvpn-devel@lists.sourceforge.net
-Date: Tue, 12 May 2026 16:43:57 +0200
-Message-ID: <20260512144358.419599-4-a@unstable.cc>
-In-Reply-To: <20260512144358.419599-1-a@unstable.cc>
-References: <20260512144358.419599-1-a@unstable.cc>
+ (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
+ id 1wMovy-0001ON-2e for openvpn-devel@lists.sourceforge.net;
+ Tue, 12 May 2026 15:22:15 +0000
+Received: by mail-wm1-f47.google.com with SMTP id
+ 5b1f17b1804b1-4891c0620bcso40295805e9.1
+ for <openvpn-devel@lists.sourceforge.net>;
+ Tue, 12 May 2026 08:22:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=openvpn.net; s=google; t=1778599319; x=1779204119; darn=lists.sourceforge.net;
+ h=user-agent:content-disposition:content-transfer-encoding
+ :mime-version:message-id:reply-to:subject:thread-index:references
+ :in-reply-to:list-unsubscribe:list-id:auto-submitted:cc:to:date:from
+ :from:to:cc:subject:date:message-id:reply-to;
+ bh=oU4wHs91pN9SCy54wdhG6SkYdd7536yroMVr1FXaU9U=;
+ b=CzenO/HeoaQbnL7Ih7Tgr+Xwp7uEUaPHgPxLy3cDb/WSUHALIDaloZSlPzHXzGQGC2
+ RmIxh4n7YiS9xdq4Ts06mNX4p/Hz9f+P2Q0mcA/nejn/VtreB55zSdEmCOwZdnSdq9s4
+ +WVVMV7GcCqYneGeeubl9Q5fk+4O6JzSlcwOeAkJAmUG40GFR9iHqIYAGiclld5dwMbc
+ uuRhda6lMtiiMFT546PTcjkHVpc0CwXq91PFoHOup/YYNYMhcOYvSZmPXhFd4ncO6bhp
+ 7hg3Z5AqmuagGyfl0XpuGTL329F2Y5y/mye1HH13tvXiiI+T0vm6FMPN8Yp2iK1PGWnN
+ yOyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20251104; t=1778599319; x=1779204119;
+ h=user-agent:content-disposition:content-transfer-encoding
+ :mime-version:message-id:reply-to:subject:thread-index:references
+ :in-reply-to:list-unsubscribe:list-id:auto-submitted:cc:to:date:from
+ :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+ :reply-to;
+ bh=oU4wHs91pN9SCy54wdhG6SkYdd7536yroMVr1FXaU9U=;
+ b=QmdQLMG6SubhFr8ZpiKrQ6YvfCdHRvVihq5uFbdBCi3wJ1Cm3F5LO+Mi1mmpaQiGdU
+ kNxOG9ZFDEVL/njDfipatZxQru/iHiVGbv6VJC00RySGWCKVQD0Th3oVzSlk0sKVlGZ9
+ bIZ//89rf93oTGWK9xGtukGGaltKwjRUku66w/sdfT1Y0gJsBSumgwtamXJsCUwS+5/m
+ TZJP8iCnSH8+4kp2HDJZAMAWidU27D/kIbZyo67lwuZaBRiEK8JZlL9q50zS8Q4hFcJ7
+ TvFF2sANwcmn4Q+nPw3HkULNl1MmgQu0NBciAcaB1Zpt6J9TMHsaaN6bxLgBiYWgllAa
+ FiiQ==
+X-Forwarded-Encrypted: i=1;
+ AFNElJ95OvDuctlsGYeSxIyLtvK+Ijd34Pq2GIUJmsMOQERrojt2L4T2tY8TsV8OluOqpV4y56upBQ4UI06ahg+z@lists.sourceforge.net
+X-Gm-Message-State: AOJu0Yy5TWTv8ATIr89/jtbfHFuGGGW0nOcD6caCCIXm+GMkxs4lUZ5d
+ TlNcgEp6B7mflYizBa4noYW6cXJLpgju7siB4VC7KFHmdq3nDNZmHMqGJ1/qF3Sw0yhKwvTqaE+
+ asMsDogUYmPHUORLEsxgTO9/iu4NqZxfwFIENYSBAAaDwstkGHIDnueCfORR7uDz3zMtQ
+X-Gm-Gg: Acq92OFrqQRnYTBYurutsqI+eQ2lcfSKDCgV+aRYlC38XrENBU1tHb4d7lLG2eQcUki
+ 4sSW/j3V34UA/BYREJWmCbbiSccTBg4QksNyBoTGtMaJ60t4WYBk8zpnP+q1fjAKtISbA24Iu4p
+ cSQ/RZLkS0H5gxRWo2OhuCPD4STJDnkcBuiMdRPitby6M6znrtzLnhKLtFrIx5MmZD9sqI8trQ3
+ 2XPDxLWKK0XYTeJQ9DH4qX8b8gMXbxHbCGIgr0WMWMXKqt9dAuVOnP9TmKu0m9fMXFJwV8fAe5f
+ RxuaQHPWD7AAJOytRo1/Pr1fxmYg3gPf1SN0tg7546aP8bru3z68X5rqxpp1o1mj2PU7NE+HmxD
+ TNtOD8603eidkBaz+U5nL1+QsTDCswOLiUsSUNNi05OYscMYsPtUrdGIJ7+ihnR46ePa4fCU4A4
+ C6cr/g7M3NiNMuK5S5O9GI1P4MWYMLiZTR5QgrnNttom4cQ2sG4yTbmUBAVK93rSTWkUX+vAcx2
+ OdaF+MLI9/uWM1NP8NMBXbeLs5QltsEOptGoM2ChACDFDrGRixazAcNKA/lXm6CtVkZ2+shqq6B
+ n2LTw2tMeCeJMg==
+X-Received: by 2002:a05:600c:3e0c:b0:489:fec9:a17e with SMTP id
+ 5b1f17b1804b1-48e6768514dmr324389925e9.12.1778599318874; 
+ Tue, 12 May 2026 08:21:58 -0700 (PDT)
+Received: from ip-10-18-1-162.eu-central-1.compute.internal
+ (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
+ by smtp.gmail.com with ESMTPSA id
+ 5b1f17b1804b1-48e8e566bc8sm34281915e9.0.2026.05.12.08.21.56
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 12 May 2026 08:21:57 -0700 (PDT)
+From: "cron2 (Code Review)" <gerrit@openvpn.net>
+X-Google-Original-From: "cron2 (Code Review)"
+ <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
+Date: Tue, 12 May 2026 15:21:54 +0000
+To: flichtenheld <frank@lichtenheld.com>
+Auto-Submitted: auto-generated
+X-Gerrit-MessageType: comment
+X-Gerrit-PatchSet: 3
+X-Gerrit-Change-Id: Ibe7b3c17176c97a1cbb4d9cc87735b05e62c4f43
+X-Gerrit-Change-Number: 1675
+X-Gerrit-Project: openvpn
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1675?usp=email>
+X-Gerrit-Commit: 940954440470a6439e9fdad2c08a7dea68510111
+X-Gerrit-Comment-Date: Tue, 12 May 2026 15:21:54 +0000
+In-Reply-To: <gerrit.1778239616000.Ibe7b3c17176c97a1cbb4d9cc87735b05e62c4f43@gerrit.openvpn.net>
+References: <gerrit.1778239616000.Ibe7b3c17176c97a1cbb4d9cc87735b05e62c4f43@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzc4MjM5NjE2MDAwLkliZTdiM2MxNzE3NmM5N2ExY2JiNGQ5Y2M4NzczNWIwNWU2MmM0ZjQzQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <1097522f101e432bcd6cf2f5172d881b90de6b8c-EmailReviewComments-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
-X-Headers-End: 1wMoM6-0007Il-Rs
-Subject: [Openvpn-devel] [PATCH ovpn net-next 4/5] selftests: ovpn: add test
- for bound address
+User-Agent: Gerrit/3.11.5
+X-Headers-End: 1wMovy-0001ON-2e
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: lladdr: Clean up code
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -89,772 +137,188 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: Antonio Quartulli <antonio@openvpn.net>, Shuah Khan <shuah@kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Reply-To: gert@greenie.muc.de, arne-openvpn@rfc2549.org,
+ openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>,
+ plaisthos <arne-openvpn@rfc2549.org>
+Content-Type: multipart/mixed; boundary="===============4437499394762143472=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Ralf Lici <ralf@mandelbit.com>
+--===============4437499394762143472==
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="lPVF2VTm/n0="; charset=UTF-8
 
-Extend the bound socket selftest to cover UDP sockets bound to a local
-address.
+--lPVF2VTm/n0=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-The address variant verifies that peer1 transmits ovpn data with the
-configured local address as the outer source address, even when routing
-selects the other underlay device. It also checks peer2 receive-side
-binding by accepting packets sent to the configured local address on
-both underlay paths.
+Attention is currently required from: flichtenheld, plaisthos=2E
 
-Cc: Shuah Khan <shuah@kernel.org>
-Signed-off-by: Ralf Lici <ralf@mandelbit.com>
-Signed-off-by: Antonio Quartulli <antonio@openvpn.net>
----
- tools/testing/selftests/net/ovpn/Makefile     |   1 +
- tools/testing/selftests/net/ovpn/common.sh    |   7 +-
- tools/testing/selftests/net/ovpn/ovpn-cli.c   | 212 +++++++++---------
- .../selftests/net/ovpn/test-bind-addr.sh      |  10 +
- tools/testing/selftests/net/ovpn/test-bind.sh | 185 +++++++++++----
- tools/testing/selftests/net/ovpn/test-mark.sh |   2 +-
- 6 files changed, 270 insertions(+), 147 deletions(-)
- create mode 100755 tools/testing/selftests/net/ovpn/test-bind-addr.sh
+cron2 has=
+ posted comments on this change by flichtenheld=2E ( http://gerrit=2Eopenvp=
+n=2Enet/c/openvpn/+/1675?usp=3Demail )
 
-diff --git a/tools/testing/selftests/net/ovpn/Makefile b/tools/testing/selftests/net/ovpn/Makefile
-index 5c70cac0a95b..453bee34ea08 100644
---- a/tools/testing/selftests/net/ovpn/Makefile
-+++ b/tools/testing/selftests/net/ovpn/Makefile
-@@ -33,6 +33,7 @@ TEST_FILES = \
- # end of TEST_FILES
- 
- TEST_PROGS := \
-+	test-bind-addr.sh \
- 	test-bind.sh \
- 	test-chachapoly.sh \
- 	test-close-socket-tcp.sh \
-diff --git a/tools/testing/selftests/net/ovpn/common.sh b/tools/testing/selftests/net/ovpn/common.sh
-index 06ce298b6e0e..a51186cbb1dd 100644
---- a/tools/testing/selftests/net/ovpn/common.sh
-+++ b/tools/testing/selftests/net/ovpn/common.sh
-@@ -214,12 +214,13 @@ ovpn_add_peer() {
- 	local server_ns="ovpn_peer0"
- 	M_ID=${labels[OVPN_SYMMETRIC_ID]}
- 	local dev=${2:-"any"}
-+	local laddr=${3:-"any"}
- 
- 	if [ "${OVPN_PROTO}" == "UDP" ]; then
- 		if [ ${1} -eq 0 ]; then
- 			ip netns exec "${server_ns}" "${OVPN_CLI}" \
--				new_multi_peer tun0 "${dev}" 1 "${M_ID}" \
--				"${OVPN_UDP_PEERS_FILE}"
-+				new_multi_peer tun0 "${dev}" "${laddr}" 1 \
-+				"${M_ID}" "${OVPN_UDP_PEERS_FILE}"
- 
- 			for p in $(seq 1 ${OVPN_NUM_PEERS}); do
- 				ip netns exec "${server_ns}" ${OVPN_CLI} \
-@@ -244,7 +245,7 @@ ovpn_add_peer() {
- 				${OVPN_UDP_PEERS_FILE})
- 			ip netns exec "${peer_ns}" "${OVPN_CLI}" new_peer \
- 				tun"${1}" "${dev}" "${PEER_ID}" "${TX_ID}" \
--				"${LPORT}" "${RADDR}" "${RPORT}"
-+				"${laddr}" "${LPORT}" "${RADDR}" "${RPORT}"
- 			ip netns exec "${peer_ns}" ${OVPN_CLI} new_key tun${1} \
- 				${PEER_ID} 1 0 ${OVPN_ALG} 1 data64.key
- 		fi
-diff --git a/tools/testing/selftests/net/ovpn/ovpn-cli.c b/tools/testing/selftests/net/ovpn/ovpn-cli.c
-index 312822c27909..0ae371bbaeb9 100644
---- a/tools/testing/selftests/net/ovpn/ovpn-cli.c
-+++ b/tools/testing/selftests/net/ovpn/ovpn-cli.c
-@@ -105,7 +105,7 @@ struct ovpn_ctx {
- 	sa_family_t sa_family;
- 
- 	unsigned long peer_id, tx_id;
--	unsigned long lport;
-+	const char *laddr, *lport;
- 
- 	union {
- 		struct sockaddr_in in4;
-@@ -471,59 +471,29 @@ static int ovpn_parse_key_direction(const char *dir, struct ovpn_ctx *ctx)
- 	return 0;
- }
- 
--static int ovpn_socket(struct ovpn_ctx *ctx, sa_family_t family, int proto)
-+static int ovpn_socket(struct ovpn_ctx *ctx, sa_family_t family, int type)
- {
--	struct sockaddr_storage local_sock = { 0 };
--	struct sockaddr_in6 *in6;
--	struct sockaddr_in *in;
--	int ret, s, sock_type;
--	size_t sock_len;
--
--	if (proto == IPPROTO_UDP)
--		sock_type = SOCK_DGRAM;
--	else if (proto == IPPROTO_TCP)
--		sock_type = SOCK_STREAM;
--	else
--		return -EINVAL;
-+	int ret, s;
- 
--	s = socket(family, sock_type, 0);
-+	s = socket(family, type, 0);
- 	if (s < 0) {
- 		perror("cannot create socket");
- 		return -1;
- 	}
- 
--	switch (family) {
--	case AF_INET:
--		in = (struct sockaddr_in *)&local_sock;
--		in->sin_family = family;
--		in->sin_port = htons(ctx->lport);
--		in->sin_addr.s_addr = htonl(INADDR_ANY);
--		sock_len = sizeof(*in);
--		break;
--	case AF_INET6:
--		in6 = (struct sockaddr_in6 *)&local_sock;
--		in6->sin6_family = family;
--		in6->sin6_port = htons(ctx->lport);
--		in6->sin6_addr = in6addr_any;
--		sock_len = sizeof(*in6);
--		break;
--	default:
--		return -1;
--	}
--
- 	int opt = 1;
- 
- 	ret = setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
- 
- 	if (ret < 0) {
- 		perror("setsockopt for SO_REUSEADDR");
--		return ret;
-+		goto close;
- 	}
- 
- 	ret = setsockopt(s, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
- 	if (ret < 0) {
- 		perror("setsockopt for SO_REUSEPORT");
--		return ret;
-+		goto close;
- 	}
- 
- 	if (ctx->mark != 0) {
-@@ -531,16 +501,17 @@ static int ovpn_socket(struct ovpn_ctx *ctx, sa_family_t family, int proto)
- 				 sizeof(ctx->mark));
- 		if (ret < 0) {
- 			perror("setsockopt for SO_MARK");
--			return ret;
-+			goto close;
- 		}
- 	}
- 
- 	if (family == AF_INET6) {
- 		opt = 0;
--		if (setsockopt(s, IPPROTO_IPV6, IPV6_V6ONLY, &opt,
--			       sizeof(opt))) {
-+		ret = setsockopt(s, IPPROTO_IPV6, IPV6_V6ONLY, &opt,
-+				 sizeof(opt));
-+		if (ret < 0) {
- 			perror("failed to set IPV6_V6ONLY");
--			return -1;
-+			goto close;
- 		}
- 	}
- 
-@@ -548,45 +519,87 @@ static int ovpn_socket(struct ovpn_ctx *ctx, sa_family_t family, int proto)
- 		if (setsockopt(s, SOL_SOCKET, SO_BINDTODEVICE, ctx->bind_dev,
- 			       strlen(ctx->bind_dev) + 1) != 0) {
- 			perror("setsockopt for SO_BINDTODEVICE");
--			return -1;
-+			goto close;
- 		}
- 	}
- 
--	ret = bind(s, (struct sockaddr *)&local_sock, sock_len);
--	if (ret < 0) {
--		perror("cannot bind socket");
--		goto err_socket;
-+	return s;
-+close:
-+	close(s);
-+	return ret;
-+}
-+
-+static int ovpn_setup_socket(struct ovpn_ctx *ctx, sa_family_t family,
-+			     int socktype)
-+{
-+	struct addrinfo *list_ai, *curr_ai;
-+	struct addrinfo hints;
-+	int ret, socket;
-+
-+	memset(&hints, 0, sizeof(hints));
-+	hints.ai_flags = AI_NUMERICHOST | AI_NUMERICSERV |
-+			 (socktype == SOCK_STREAM ? 0 : AI_V4MAPPED) |
-+			 (ctx->laddr ? 0 : AI_PASSIVE);
-+	hints.ai_family = family;
-+	hints.ai_socktype = socktype;
-+	ret = getaddrinfo(ctx->laddr, ctx->lport, &hints, &list_ai);
-+	if (ret) {
-+		fprintf(stderr,
-+			"laddr %s, lport %s, getaddrinfo on local address: %s\n",
-+			ctx->laddr, ctx->lport, gai_strerror(ret));
-+		return ret;
- 	}
- 
--	ctx->socket = s;
--	ctx->sa_family = family;
--	return 0;
-+	for (curr_ai = list_ai; curr_ai; curr_ai = curr_ai->ai_next) {
-+		socket = ovpn_socket(ctx, family, socktype);
-+		if (socket < 0)
-+			continue;
- 
--err_socket:
--	close(s);
--	return -1;
-+		ret = bind(socket, curr_ai->ai_addr, curr_ai->ai_addrlen);
-+		if (ret == 0)
-+			break;
-+
-+		close(socket);
-+	}
-+
-+	freeaddrinfo(list_ai);
-+
-+	if (ret < 0) {
-+		perror("cannot setup socket\n");
-+		return ret;
-+	}
-+
-+	return socket;
- }
- 
- static int ovpn_udp_socket(struct ovpn_ctx *ctx, sa_family_t family)
- {
--	return ovpn_socket(ctx, family, IPPROTO_UDP);
-+	int socket = ovpn_setup_socket(ctx, family, SOCK_DGRAM);
-+
-+	if (socket < 0)
-+		return socket;
-+
-+	ctx->sa_family = family;
-+	ctx->socket = socket;
-+	return 0;
- }
- 
- static int ovpn_listen(struct ovpn_ctx *ctx, sa_family_t family)
- {
--	int ret;
-+	int ret, socket = ovpn_setup_socket(ctx, family, SOCK_STREAM);
- 
--	ret = ovpn_socket(ctx, family, IPPROTO_TCP);
--	if (ret < 0)
--		return ret;
-+	if (socket < 0)
-+		return socket;
- 
--	ret = listen(ctx->socket, 10);
-+	ret = listen(socket, 10);
- 	if (ret < 0) {
- 		perror("listen");
--		close(ctx->socket);
-+		close(socket);
- 		return -1;
- 	}
- 
-+	ctx->sa_family = family;
-+	ctx->socket = socket;
- 	return 0;
- }
- 
-@@ -621,18 +634,13 @@ static int ovpn_accept(struct ovpn_ctx *ctx)
- 	return ret;
- }
- 
--static int ovpn_connect(struct ovpn_ctx *ovpn)
-+static int ovpn_connect(struct ovpn_ctx *ctx)
- {
-+	const sa_family_t family = ctx->remote.in4.sin_family;
- 	socklen_t socklen;
--	int s, ret;
-+	int ret, socket;
- 
--	s = socket(ovpn->remote.in4.sin_family, SOCK_STREAM, 0);
--	if (s < 0) {
--		perror("cannot create socket");
--		return -1;
--	}
--
--	switch (ovpn->remote.in4.sin_family) {
-+	switch (family) {
- 	case AF_INET:
- 		socklen = sizeof(struct sockaddr_in);
- 		break;
-@@ -643,20 +651,22 @@ static int ovpn_connect(struct ovpn_ctx *ovpn)
- 		return -EOPNOTSUPP;
- 	}
- 
--	ret = connect(s, (struct sockaddr *)&ovpn->remote, socklen);
-+	socket = ovpn_setup_socket(ctx, family, SOCK_STREAM);
-+	if (socket < 0)
-+		return socket;
-+
-+	ret = connect(socket, (struct sockaddr *)&ctx->remote, socklen);
- 	if (ret < 0) {
- 		perror("connect");
--		goto err;
-+		close(socket);
-+		return ret;
- 	}
- 
- 	fprintf(stderr, "connected\n");
- 
--	ovpn->socket = s;
--
-+	ctx->sa_family = family;
-+	ctx->socket = socket;
- 	return 0;
--err:
--	close(s);
--	return ret;
- }
- 
- static int ovpn_new_peer(struct ovpn_ctx *ovpn, bool is_tcp)
-@@ -1712,7 +1722,7 @@ static void usage(const char *cmd)
- 		"\tkey_file: file containing the symmetric key for encryption\n");
- 
- 	fprintf(stderr,
--		"* new_peer <iface> <dev> <peer_id> <tx_id> <lport> <raddr> <rport> [vpnaddr]: add new peer\n");
-+		"* new_peer <iface> <dev> <peer_id> <tx_id> <laddr> <lport> <raddr> <rport> [vpnaddr]: add new peer\n");
- 	fprintf(stderr, "\tiface: ovpn interface name\n");
- 	fprintf(stderr,
- 		"\tdev: transport interface name to bind to, supports 'any'\n");
-@@ -1720,16 +1730,20 @@ static void usage(const char *cmd)
- 		"\tpeer_id: peer ID found in data packets received from this peer\n");
- 	fprintf(stderr,
- 		"\ttx_id: peer ID to be used when sending to this peer, 'none' for symmetric peer ID\n");
-+	fprintf(stderr,
-+		"\tladdr: local UDP address to bind to, supports 'any'\n");
- 	fprintf(stderr, "\tlport: local UDP port to bind to\n");
- 	fprintf(stderr, "\traddr: peer IP address\n");
- 	fprintf(stderr, "\trport: peer UDP port\n");
- 	fprintf(stderr, "\tvpnaddr: peer VPN IP\n");
- 
- 	fprintf(stderr,
--		"* new_multi_peer <iface> <dev> <lport> <id_type> <peers_file> [mark]: add multiple peers as listed in the file\n");
-+		"* new_multi_peer <iface> <dev> <laddr> <lport> <id_type> <peers_file> [mark]: add multiple peers as listed in the file\n");
- 	fprintf(stderr, "\tiface: ovpn interface name\n");
- 	fprintf(stderr,
- 		"\tdev: transport interface name to bind to, supports 'any'\n");
-+	fprintf(stderr,
-+		"\tladdr: local UDP address to bind to, supports 'any'\n");
- 	fprintf(stderr, "\tlport: local UDP port to bind to\n");
- 	fprintf(stderr, "\tid_type:\n");
- 	fprintf(stderr,
-@@ -2224,11 +2238,8 @@ static int ovpn_parse_cmd_args(struct ovpn_ctx *ovpn, int argc, char *argv[])
- 		if (argc < 6)
- 			return -EINVAL;
- 
--		ovpn->lport = strtoul(argv[3], NULL, 10);
--		if (errno == ERANGE || ovpn->lport > 65535) {
--			fprintf(stderr, "lport value out of range\n");
--			return -1;
--		}
-+		ovpn->laddr = NULL;
-+		ovpn->lport = argv[3];
- 
- 		if (strcmp(argv[4], "SYMM") == 0) {
- 			ovpn->asymm_id = false;
-@@ -2252,6 +2263,9 @@ static int ovpn_parse_cmd_args(struct ovpn_ctx *ovpn, int argc, char *argv[])
- 		ovpn->sa_family = AF_INET;
- 		ovpn->asymm_id = strcmp(argv[4], "none");
- 
-+		ovpn->laddr = NULL;
-+		ovpn->lport = "1";
-+
- 		ret = ovpn_parse_new_peer(ovpn, argv[3], argv[4], argv[5],
- 					  argv[6], NULL);
- 		if (ret < 0) {
-@@ -2271,52 +2285,46 @@ static int ovpn_parse_cmd_args(struct ovpn_ctx *ovpn, int argc, char *argv[])
- 		}
- 		break;
- 	case CMD_NEW_PEER:
--		if (argc < 9)
-+		if (argc < 10)
- 			return -EINVAL;
- 
- 		ovpn->bind_dev = strcmp(argv[3], "any") == 0 ? NULL : argv[3];
- 
- 		ovpn->asymm_id = strcmp(argv[5], "none");
- 
--		ovpn->lport = strtoul(argv[6], NULL, 10);
--		if (errno == ERANGE || ovpn->lport > 65535) {
--			fprintf(stderr, "lport value out of range\n");
--			return -1;
--		}
-+		ovpn->laddr = strcmp(argv[6], "any") == 0 ? NULL : argv[6];
-+		ovpn->lport = argv[7];
- 
--		const char *vpnip = (argc > 9) ? argv[9] : NULL;
-+		const char *vpnip = (argc > 10) ? argv[10] : NULL;
- 
--		ret = ovpn_parse_new_peer(ovpn, argv[4], argv[5], argv[7],
--					  argv[8], vpnip);
-+		ret = ovpn_parse_new_peer(ovpn, argv[4], argv[5], argv[8],
-+					  argv[9], vpnip);
- 		if (ret < 0)
- 			return -1;
- 		break;
- 	case CMD_NEW_MULTI_PEER:
--		if (argc < 7)
-+		if (argc < 8)
- 			return -EINVAL;
- 
- 		ovpn->bind_dev = strcmp(argv[3], "any") == 0 ? NULL : argv[3];
- 
--		ovpn->lport = strtoul(argv[4], NULL, 10);
--		if (errno == ERANGE || ovpn->lport > 65535) {
--			fprintf(stderr, "lport value out of range\n");
--			return -1;
--		}
-+		ovpn->laddr = strcmp(argv[4], "any") == 0 ? NULL : argv[4];
-+		ovpn->lport = argv[5];
- 
--		if (!strcmp(argv[5], "SYMM")) {
-+		if (!strcmp(argv[6], "SYMM")) {
- 			ovpn->asymm_id = false;
--		} else if (!strcmp(argv[5], "ASYMM")) {
-+		} else if (!strcmp(argv[6], "ASYMM")) {
- 			ovpn->asymm_id = true;
- 		} else {
--			fprintf(stderr, "Cannot parse id type: %s\n", argv[5]);
-+			fprintf(stderr, "Cannot parse id type: %s\n", argv[6]);
- 			return -1;
- 		}
- 
--		ovpn->peers_file = argv[6];
-+		ovpn->peers_file = argv[7];
- 
- 		ovpn->mark = 0;
--		if (argc > 7) {
--			ovpn->mark = strtoul(argv[7], NULL, 10);
-+		if (argc > 8) {
-+			ovpn->mark = strtoul(argv[8], NULL, 10);
- 			if (errno == ERANGE || ovpn->mark > UINT32_MAX) {
- 				fprintf(stderr, "mark value out of range\n");
- 				return -1;
-diff --git a/tools/testing/selftests/net/ovpn/test-bind-addr.sh b/tools/testing/selftests/net/ovpn/test-bind-addr.sh
-new file mode 100755
-index 000000000000..e33a433ceb4b
---- /dev/null
-+++ b/tools/testing/selftests/net/ovpn/test-bind-addr.sh
-@@ -0,0 +1,10 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+# Copyright (C) 2020-2025 OpenVPN, Inc.
-+#
-+#	Author:	Ralf Lici <ralf@mandelbit.com>
-+#		Antonio Quartulli <antonio@openvpn.net>
-+
-+BIND_TYPE="ADDR"
-+
-+source test-bind.sh
-diff --git a/tools/testing/selftests/net/ovpn/test-bind.sh b/tools/testing/selftests/net/ovpn/test-bind.sh
-index bc0b8a0b4373..8d83bfef0917 100755
---- a/tools/testing/selftests/net/ovpn/test-bind.sh
-+++ b/tools/testing/selftests/net/ovpn/test-bind.sh
-@@ -10,6 +10,7 @@
- set -eE
- 
- OVPN_PROTO=UDP
-+BIND_TYPE=${BIND_TYPE:-"DEV"}
- 
- source ./common.sh
- 
-@@ -62,8 +63,9 @@ ovpn_bind_prepare_network() {
- 	ovpn_cmd_ok "bring up peer2 second underlay link" \
- 		ip -n ovpn_peer2 link set veth2 up
- 
--	# Some test cases intentionally bind peer1 to a device that does not
--	# match the route-selected underlay, so allow asymmetric underlay paths.
-+	# Some test cases intentionally bind peer1 to a device or address that
-+	# does not match the route-selected underlay, so allow asymmetric
-+	# underlay paths.
- 	ovpn_cmd_ok "disable peer1 global rp_filter" \
- 		ip netns exec ovpn_peer1 sysctl -w \
- 			net.ipv4.conf.all.rp_filter=0
-@@ -110,8 +112,10 @@ ovpn_bind_prepare_network() {
- ovpn_bind_configure_peers() {
- 	local dev1="$1"
- 	local dev2="$2"
--	local raddr4_peer1="$3"
--	local raddr4_peer2="$4"
-+	local laddr4_peer1="$3"
-+	local laddr4_peer2="$4"
-+	local raddr4_peer1="$5"
-+	local raddr4_peer2="$6"
- 
- 	ip netns exec ovpn_peer1 "${OVPN_CLI}" del_peer tun1 1 \
- 		>/dev/null 2>&1 || true
-@@ -121,15 +125,16 @@ ovpn_bind_configure_peers() {
- 	# Close any active userspace socket before installing a new peer pair.
- 	killall "$(basename "${OVPN_CLI}")" 2>/dev/null || true
- 
--	ovpn_cmd_ok "create peer1 bound peer on ${dev1}" \
-+	ovpn_cmd_ok "create peer1 bound peer" \
- 		ip netns exec ovpn_peer1 "${OVPN_CLI}" new_peer tun1 \
--			"${dev1}" 1 10 1 "${raddr4_peer1}" 1
-+			"${dev1}" 1 10 "${laddr4_peer1}" 1 "${raddr4_peer1}" 1
- 	ovpn_cmd_ok "install peer1 key" \
- 		ip netns exec ovpn_peer1 "${OVPN_CLI}" new_key tun1 1 1 0 \
- 			"${OVPN_ALG}" 0 data64.key
--	ovpn_cmd_ok "create peer2 bound peer on ${dev2}" \
-+	ovpn_cmd_ok "create peer2 bound peer" \
- 		ip netns exec ovpn_peer2 "${OVPN_CLI}" new_peer tun2 \
--			"${dev2}" 10 1 1 "${raddr4_peer2}" 1
-+			"${dev2}" 10 1 "${laddr4_peer2}" 1 \
-+			"${raddr4_peer2}" 1
- 	ovpn_cmd_ok "install peer2 key" \
- 		ip netns exec ovpn_peer2 "${OVPN_CLI}" new_key tun2 10 1 0 \
- 			"${OVPN_ALG}" 1 data64.key
-@@ -153,7 +158,7 @@ ovpn_bind_start_capture() {
- 	OVPN_BIND_TCPDUMP_PIDS+=("${pid}")
- }
- 
--ovpn_bind_run_positive_case() {
-+ovpn_bind_run_dev_positive_case() {
- 	local dev1="$1"
- 	local dev2="$2"
- 	local raddr4_peer1="$3"
-@@ -165,8 +170,8 @@ ovpn_bind_run_positive_case() {
- 	local header2="0x4800000a"
- 	local ping_start_delay="0.3"
- 
--	ovpn_bind_configure_peers "${dev1}" "${dev2}" "${raddr4_peer1}" \
--		"${raddr4_peer2}"
-+	ovpn_bind_configure_peers "${dev1}" "${dev2}" any any \
-+		"${raddr4_peer1}" "${raddr4_peer2}"
- 	filter="$(printf '(%s) or (%s)' \
- 		"$(ovpn_build_capture_filter "${header1}" "${raddr4_peer1}")" \
- 		"$(ovpn_build_capture_filter "${header2}" "${raddr4_peer2}")")"
-@@ -192,7 +197,7 @@ ovpn_bind_run_positive_case() {
- 	OVPN_BIND_TCPDUMP_PIDS=("${OVPN_BIND_TCPDUMP_PIDS[@]:1}")
- }
- 
--ovpn_bind_run_sender_negative_case() {
-+ovpn_bind_run_dev_sender_negative_case() {
- 	local dev1="$1"
- 	local raddr4_peer1="$2"
- 	local raddr4_peer2="$3"
-@@ -201,7 +206,7 @@ ovpn_bind_run_sender_negative_case() {
- 	local header="0x4800000a"
- 	local ping_start_delay="0.3"
- 
--	ovpn_bind_configure_peers "${dev1}" any "${raddr4_peer1}" \
-+	ovpn_bind_configure_peers "${dev1}" any any any "${raddr4_peer1}" \
- 		"${raddr4_peer2}"
- 	filter="$(ovpn_build_capture_filter "${header}" "${raddr4_peer1}")"
- 
-@@ -217,7 +222,7 @@ ovpn_bind_run_sender_negative_case() {
- 	OVPN_BIND_TCPDUMP_PIDS=("${OVPN_BIND_TCPDUMP_PIDS[@]:1}")
- }
- 
--ovpn_bind_run_receiver_negative_case() {
-+ovpn_bind_run_dev_receiver_negative_case() {
- 	local dev2="$1"
- 	local raddr4_peer1="$2"
- 	local raddr4_peer2="$3"
-@@ -226,7 +231,7 @@ ovpn_bind_run_receiver_negative_case() {
- 	local header="0x4800000a"
- 	local ping_start_delay="0.3"
- 
--	ovpn_bind_configure_peers any "${dev2}" "${raddr4_peer1}" \
-+	ovpn_bind_configure_peers any "${dev2}" any any "${raddr4_peer1}" \
- 		"${raddr4_peer2}"
- 	filter="$(ovpn_build_capture_filter "${header}" "${raddr4_peer1}")"
- 
-@@ -242,40 +247,138 @@ ovpn_bind_run_receiver_negative_case() {
- 	OVPN_BIND_TCPDUMP_PIDS=("${OVPN_BIND_TCPDUMP_PIDS[@]:1}")
- }
- 
-+ovpn_bind_run_addr_positive_case() {
-+	local laddr4_peer1="$1"
-+	local raddr4_peer1="$2"
-+	local raddr4_peer2="$3"
-+	local expected_dev="$4"
-+	local unexpected_dev="$5"
-+	local filter
-+	local header="0x4800000a"
-+	local ping_start_delay="0.3"
-+
-+	ovpn_bind_configure_peers any any "${laddr4_peer1}" any \
-+		"${raddr4_peer1}" "${raddr4_peer2}"
-+	filter="$(printf '(%s) and src host %s' \
-+		"$(ovpn_build_capture_filter "${header}" "${raddr4_peer1}")" \
-+		"${laddr4_peer1}")"
-+
-+	# The route-selected device must carry peer1 data packets with the
-+	# explicitly bound local address as outer source address.
-+	ovpn_bind_start_capture "${expected_dev}" 1 "${filter}"
-+
-+	# The other underlay device must not carry peer1 data packets with the
-+	# explicitly bound local address.
-+	ovpn_bind_start_capture "${unexpected_dev}" 1 "${filter}"
-+
-+	sleep "${ping_start_delay}"
-+	ovpn_cmd_ok "send tunnel traffic from peer1 to peer2" \
-+		ip netns exec ovpn_peer1 ping -qfc 10 -w 3 5.5.5.2
-+	ovpn_cmd_ok "capture bound source on ${expected_dev}" \
-+		wait "${OVPN_BIND_TCPDUMP_PIDS[0]}"
-+	OVPN_BIND_TCPDUMP_PIDS=("${OVPN_BIND_TCPDUMP_PIDS[@]:1}")
-+
-+	ovpn_cmd_fail "capture bound source on ${unexpected_dev}" \
-+		wait "${OVPN_BIND_TCPDUMP_PIDS[0]}"
-+	OVPN_BIND_TCPDUMP_PIDS=("${OVPN_BIND_TCPDUMP_PIDS[@]:1}")
-+}
-+
-+ovpn_bind_run_addr_receiver_positive_case() {
-+	local laddr4_peer2="$1"
-+	local raddr4_peer1="$2"
-+	local raddr4_peer2="$3"
-+	local expected_dev="$4"
-+	local unexpected_dev="$5"
-+	local filter
-+	local header="0x4800000a"
-+	local ping_start_delay="0.3"
-+
-+	ovpn_bind_configure_peers any any any "${laddr4_peer2}" \
-+		"${raddr4_peer1}" "${raddr4_peer2}"
-+	filter="$(printf '(%s) and dst host %s' \
-+		"$(ovpn_build_capture_filter "${header}" "${raddr4_peer1}")" \
-+		"${raddr4_peer1}")"
-+
-+	# The destination-matching underlay device must carry peer1 data
-+	# packets to the address peer2 is bound to.
-+	ovpn_bind_start_capture "${expected_dev}" 1 "${filter}"
-+
-+	# The other underlay device must not carry those packets.
-+	ovpn_bind_start_capture "${unexpected_dev}" 1 "${filter}"
-+
-+	sleep "${ping_start_delay}"
-+	ovpn_cmd_ok "send tunnel traffic from peer1 to peer2" \
-+		ip netns exec ovpn_peer1 ping -qfc 10 -w 3 5.5.5.2
-+	ovpn_cmd_ok "capture bound destination on ${expected_dev}" \
-+		wait "${OVPN_BIND_TCPDUMP_PIDS[0]}"
-+	OVPN_BIND_TCPDUMP_PIDS=("${OVPN_BIND_TCPDUMP_PIDS[@]:1}")
-+
-+	ovpn_cmd_fail "capture bound destination on ${unexpected_dev}" \
-+		wait "${OVPN_BIND_TCPDUMP_PIDS[0]}"
-+	OVPN_BIND_TCPDUMP_PIDS=("${OVPN_BIND_TCPDUMP_PIDS[@]:1}")
-+}
-+
-+ovpn_bind_run_dev_tests() {
-+	ktap_set_plan 9
-+
-+	ovpn_run_stage "setup network topology" ovpn_bind_prepare_network
-+	ovpn_run_stage "peer1 bind_dev=veth1 routes over veth1" \
-+		ovpn_bind_run_dev_positive_case \
-+		veth1 any 10.10.10.2 10.10.10.1 veth1 veth2
-+	ovpn_run_stage "peer1 bind_dev=veth2 routes over veth2" \
-+		ovpn_bind_run_dev_positive_case \
-+		veth2 any 20.20.20.2 20.20.20.1 veth2 veth1
-+	ovpn_run_stage "peer2 bind_dev=veth1 replies over veth1" \
-+		ovpn_bind_run_dev_positive_case \
-+		any veth1 10.10.10.2 10.10.10.1 veth1 veth2
-+	ovpn_run_stage "peer2 bind_dev=veth2 replies over veth2" \
-+		ovpn_bind_run_dev_positive_case \
-+		any veth2 20.20.20.2 20.20.20.1 veth2 veth1
-+	ovpn_run_stage "peer1 bind_dev=veth1 blocks veth2 egress" \
-+		ovpn_bind_run_dev_sender_negative_case \
-+		veth1 20.20.20.2 20.20.20.1 veth2
-+	ovpn_run_stage "peer1 bind_dev=veth2 blocks veth1 egress" \
-+		ovpn_bind_run_dev_sender_negative_case \
-+		veth2 10.10.10.2 10.10.10.1 veth1
-+	ovpn_run_stage "peer2 bind_dev=veth1 rejects veth2 ingress" \
-+		ovpn_bind_run_dev_receiver_negative_case \
-+		veth1 20.20.20.2 20.20.20.1 veth2
-+	ovpn_run_stage "peer2 bind_dev=veth2 rejects veth1 ingress" \
-+		ovpn_bind_run_dev_receiver_negative_case \
-+		veth2 10.10.10.2 10.10.10.1 veth1
-+}
-+
-+ovpn_bind_run_addr_tests() {
-+	ktap_set_plan 5
-+
-+	ovpn_run_stage "setup network topology" ovpn_bind_prepare_network
-+	ovpn_run_stage "peer1 bind_addr=10.10.10.1 sends from 10.10.10.1 \
-+		via veth2" ovpn_bind_run_addr_positive_case \
-+		10.10.10.1 20.20.20.2 10.10.10.1 veth2 veth1
-+	ovpn_run_stage "peer1 bind_addr=20.20.20.1 sends from 20.20.20.1 \
-+		via veth1" ovpn_bind_run_addr_positive_case \
-+		20.20.20.1 10.10.10.2 20.20.20.1 veth1 veth2
-+	ovpn_run_stage "peer2 bind_addr=10.10.10.2 accepts dst 10.10.10.2 \
-+		via veth1" ovpn_bind_run_addr_receiver_positive_case \
-+		10.10.10.2 10.10.10.2 10.10.10.1 veth1 veth2
-+	ovpn_run_stage "peer2 bind_addr=20.20.20.2 accepts dst 20.20.20.2 \
-+		via veth2" ovpn_bind_run_addr_receiver_positive_case \
-+		20.20.20.2 20.20.20.2 20.20.20.1 veth2 veth1
-+}
-+
- trap ovpn_test_exit EXIT
- trap ovpn_stage_err ERR
- 
- ktap_print_header
--ktap_set_plan 9
- 
- ovpn_cleanup
- modprobe -q ovpn || true
- 
--ovpn_run_stage "setup network topology" ovpn_bind_prepare_network
--ovpn_run_stage "peer1 bind_dev=veth1 routes over veth1" \
--	ovpn_bind_run_positive_case \
--	veth1 any 10.10.10.2 10.10.10.1 veth1 veth2
--ovpn_run_stage "peer1 bind_dev=veth2 routes over veth2" \
--	ovpn_bind_run_positive_case \
--	veth2 any 20.20.20.2 20.20.20.1 veth2 veth1
--ovpn_run_stage "peer2 bind_dev=veth1 replies over veth1" \
--	ovpn_bind_run_positive_case \
--	any veth1 10.10.10.2 10.10.10.1 veth1 veth2
--ovpn_run_stage "peer2 bind_dev=veth2 replies over veth2" \
--	ovpn_bind_run_positive_case \
--	any veth2 20.20.20.2 20.20.20.1 veth2 veth1
--ovpn_run_stage "peer1 bind_dev=veth1 blocks veth2 egress" \
--	ovpn_bind_run_sender_negative_case \
--	veth1 20.20.20.2 20.20.20.1 veth2
--ovpn_run_stage "peer1 bind_dev=veth2 blocks veth1 egress" \
--	ovpn_bind_run_sender_negative_case \
--	veth2 10.10.10.2 10.10.10.1 veth1
--ovpn_run_stage "peer2 bind_dev=veth1 rejects veth2 ingress" \
--	ovpn_bind_run_receiver_negative_case \
--	veth1 20.20.20.2 20.20.20.1 veth2
--ovpn_run_stage "peer2 bind_dev=veth2 rejects veth1 ingress" \
--	ovpn_bind_run_receiver_negative_case \
--	veth2 10.10.10.2 10.10.10.1 veth1
-+if [ "${BIND_TYPE}" = "ADDR" ]; then
-+	ovpn_bind_run_addr_tests
-+else
-+	ovpn_bind_run_dev_tests
-+fi
- 
- ovpn_test_finished=1
- ktap_finished
-diff --git a/tools/testing/selftests/net/ovpn/test-mark.sh b/tools/testing/selftests/net/ovpn/test-mark.sh
-index 010f5b44dbf4..581d208c18ac 100755
---- a/tools/testing/selftests/net/ovpn/test-mark.sh
-+++ b/tools/testing/selftests/net/ovpn/test-mark.sh
-@@ -39,7 +39,7 @@ ovpn_mark_prepare_network() {
- 
- 	ovpn_cmd_ok "create server-side multi-peer with fwmark" \
- 		ip netns exec ovpn_peer0 "${OVPN_CLI}" new_multi_peer tun0 \
--			any 1 ASYMM "${OVPN_UDP_PEERS_FILE}" "${MARK}"
-+			any any 1 ASYMM "${OVPN_UDP_PEERS_FILE}" "${MARK}"
- 	for p in $(seq 1 3); do
- 		ovpn_cmd_ok "install server key for peer ${p}" \
- 			ip netns exec ovpn_peer0 "${OVPN_CLI}" new_key tun0 \
+Change subject: lladdr: Clean up co=
+de
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+
+
+Patch Set=
+ 3: Code-Review-2
+
+(1 comment)
+
+Patchset:
+
+PS3: 
+OpenBSD does not agree wit=
+h the resulting #defines=2E=2E=2E  with the patch, I see
+
+```
+2026-05-12 16=
+:59:43 tun/tap device [tap0] opened
+2026-05-12 16:59:43 
+ifconfig: ether: b=
+ad value
+2026-05-12 16:59:43 ERROR: Unable to set link layer address=2E: ex=
+ternal program exited with error status: 1
+```
+
+in my logs=2E=2E=2E the old=
+ code does
+
+```
+2026-05-12 17:00:54 TUN/TAP device /dev/tap0 opened
+2026-05=
+-12 17:00:54 /sbin/ifconfig tap0 lladdr fe:e1:ba:dd:5d:2e
+2026-05-12 17:00:=
+54 TUN/TAP link layer address set to fe:e1:ba:dd:5d:2e
+```
+
+
+
 -- 
-2.53.0
+To view, =
+visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1675?usp=3Demail
+To unsubsc=
+ribe, or for help writing mail filters, visit http://gerrit=2Eopenvpn=2Enet=
+/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+=
+Gerrit-Branch: master
+Gerrit-Change-Id: Ibe7b3c17176c97a1cbb4d9cc87735b05e6=
+2c4f43
+Gerrit-Change-Number: 1675
+Gerrit-PatchSet: 3
+Gerrit-Owner: flichten=
+held <frank@lichtenheld=2Ecom>
+Gerrit-Reviewer: cron2 <gert@greenie=2Emuc=
+=2Ede>
+Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-CC: o=
+penvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Attention: pl=
+aisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Attention: flichtenheld <frank@=
+lichtenheld=2Ecom>
+Gerrit-Comment-Date: Tue, 12 May 2026 15:21:54 +0000
+Ger=
+rit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+
+--lPVF2VTm/n0=
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos=2E </p>
+<p>Patch set 3:<span =
+style=3D"border-radius: 3px; display: inline-block; margin: 0 2px; padding:=
+ 4px;background-color: #ffd4d4;">Code-Review -2</span></p><p><a href=3D"htt=
+p://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1675?usp=3Demail">View Change</a></p=
+><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"=
+margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style: none; padd=
+ing: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-b=
+ottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1675?tab=
+=3Dcomments&amp;usp=3Demail">Patch Set #3:</a> </p><p class=3D"blocks" styl=
+e=3D"white-space: pre-wrap; word-wrap: break-word;">OpenBSD does not agree =
+with the resulting #defines=2E=2E=2E  with the patch, I see</p><p class=3D"=
+blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">```<br>2026=
+-05-12 16:59:43 tun/tap device [tap0] opened<br>2026-05-12 16:59:43 <br>ifc=
+onfig: ether: bad value<br>2026-05-12 16:59:43 ERROR: Unable to set link la=
+yer address=2E: external program exited with error status: 1<br>```</p><p c=
+lass=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">in =
+my logs=2E=2E=2E the old code does</p><p class=3D"blocks" style=3D"white-sp=
+ace: pre-wrap; word-wrap: break-word;">```<br>2026-05-12 17:00:54 TUN/TAP d=
+evice /dev/tap0 opened<br>2026-05-12 17:00:54 /sbin/ifconfig tap0 lladdr fe=
+:e1:ba:dd:5d:2e<br>2026-05-12 17:00:54 TUN/TAP link layer address set to fe=
+:e1:ba:dd:5d:2e<br>```</p></li></ul></li></ul><p>To view, visit <a href=3D"=
+http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1675?usp=3Demail">change 1675</a>=
+=2E To unsubscribe, or for help writing mail filters, visit <a href=3D"http=
+://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div ite=
+mscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itempro=
+p=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"=
+url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1675?usp=3Demail"/><=
+meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D=
+"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:no=
+ne"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Bra=
+nch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ibe7b3c17=
+176c97a1cbb4d9cc87735b05e62c4f43 </div>
+<div style=3D"display:none"> Gerrit=
+-Change-Number: 1675 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3=
+ </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@l=
+ichtenheld=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: c=
+ron2 &lt;gert@greenie=2Emuc=2Ede&gt; </div>
+<div style=3D"display:none"> Ge=
+rrit-Reviewer: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div sty=
+le=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esou=
+rceforge=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: pl=
+aisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:non=
+e"> Gerrit-Attention: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<=
+div style=3D"display:none"> Gerrit-Comment-Date: Tue, 12 May 2026 15:21:54 =
++0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<d=
+iv style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>
+--lPVF2VTm/n0=--
 
 
+--===============4437499394762143472==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============4437499394762143472==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+--===============4437499394762143472==--
+
