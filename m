@@ -4,93 +4,82 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1F552CD4F25
-	for <openvpn-devel@archiver.kernel.org>; Thu, 14 May 2026 22:35:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C0F69CD4F25
+	for <openvpn-devel@archiver.kernel.org>; Thu, 14 May 2026 23:24:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Content-Transfer-Encoding:Cc:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:Cc:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:In-Reply-To:From:References:To:MIME-Version:Date:Message-ID:Sender:
-	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
-	:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=iNh6ZUipImzt5TqCRrffEqKKJuCZFg5SYMFTnOWG01k=; b=K0Uazfej+aLUpeWZzUV4WIGhp7
-	UYDsudKOJwbBG73yHtQN5MrhTPeHtVUSSCQMy4KwYsIb6LKupcfuFVcGYyI4r8OjgyarWFdFQnei9
-	hg2sIz3tveG0nkkr63ZcvNCIRuR/awNGJLPUmS5fAvRp4q8EBdAyj6APyplUSCtNmCFo=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:Message-ID:Date:To:From:Sender:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Owner;
+	bh=PiPKkgmaoyJkiydostbptZprk9P+wrQ92Kpe0YmK5tQ=; b=NP7Y48Z8cealkAtWxwwWVbDEpc
+	RcNNUcH86Lcq1jeGD9pHo/ZKq3D39V4RVXuhbQjMavZCrVJWxqbS2WjcYXDnnGDRr0f/+YmlxORQY
+	Uf/sTOTYgcfMxBeW8MBRnZIfXV4uXyHvrdbbZmktp2Z+f/sx+DHH487BnIy3qdsf2sRE=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wNeeh-0006zV-3U;
-	Thu, 14 May 2026 22:35:47 +0000
+	id 1wNfPJ-0003sT-HV;
+	Thu, 14 May 2026 23:23:57 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <a@unstable.cc>) id 1wNeeY-0006zH-Bq
+ (envelope-from <a@unstable.cc>) id 1wNfPH-0003sJ-Q7
  for openvpn-devel@lists.sourceforge.net;
- Thu, 14 May 2026 22:35:39 +0000
+ Thu, 14 May 2026 23:23:56 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
- From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:Message-ID:
+ Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=FXH4HpLRc+aPpO17Jzstb7rCb3EfUov9iei6V5kVC8k=; b=TJlB1RAJK1dYa2XC4kdJhe0NXy
- 61KnlngevHc0ESzrEjwxIAc9z24wlskEIdPTl8OZk5KEyeHPW+IHVxudPwoy54Au4XLm28EAOeqWT
- aYEHvlDjbs8oDMAQAum1yi/MXLHviWyN/DG7p1cPYTBw3q6FzIIM0LRqvnHlOzrfXlFY=;
+ bh=/yDB4T864RCIAPAtZan4Cvu1ucuaOrjHc4ek6raz4PM=; b=kzB36lLaG9E7r/qZ+zd8mxb3Gt
+ 5WoyDC3H75kHvB6G/ESYYip9S/fS2UJdZFRaGjGCWDfSaguO6els34c2q5tgzG8wPhSMKkMXt4GIc
+ /6dNXYVJCmT63ii6tQWibGlovf+mSQTlh7eHUzg3JAOtLD9X/G8lFa8aeZvBE6wWrh1Y=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:References:Cc:To:
- Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=FXH4HpLRc+aPpO17Jzstb7rCb3EfUov9iei6V5kVC8k=; b=XGurgHkGxjfLh3VDRs4lPjSGed
- RoUT5vcMkOKMcnlXKlfn/whdmD1Mh5IJo4bOwXHAK54Eb93VA4rG2F3d5jeCyVn/pWya7Nurf9jAL
- UgnyI0UJnHk82Y28HFdRNJMjAXPBXXb2QtjjHRtmPUq+BgtXwDN7yo432iJepfx1KL+8=;
+ h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:Cc:To:From
+ :Sender:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+ References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=/yDB4T864RCIAPAtZan4Cvu1ucuaOrjHc4ek6raz4PM=; b=N
+ V17uYTEeZPFmtf45/xJ7by9R50Ih/aCPiZRFRjapfgd/TZ0fS7RI3pMD/R+kEU0PMZSBtz6mF2WIc
+ aXhJy/B3GlQZb0hoytlQKyI4juOwwyTlDRhQ7N2Fz2V4gDB7mlr9wX8O0Vk6r8M0KSkIpoZ/T2AY1
+ bvTzwnTv8Fat7QUM=;
 Received: from mout-p-101.mailbox.org ([80.241.56.151])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wNeeX-00016W-34 for openvpn-devel@lists.sourceforge.net;
- Thu, 14 May 2026 22:35:39 +0000
-Received: from smtp2.mailbox.org (smtp2.mailbox.org [10.196.197.2])
+ id 1wNfPG-0003Bc-DS for openvpn-devel@lists.sourceforge.net;
+ Thu, 14 May 2026 23:23:55 +0000
+Received: from smtp202.mailbox.org (smtp202.mailbox.org
+ [IPv6:2001:67c:2050:b231:465::202])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
  (No client certificate requested)
- by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4gGlXD0Q69z9v7T;
- Fri, 15 May 2026 00:35:24 +0200 (CEST)
+ by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4gGmc2393yz9v70;
+ Fri, 15 May 2026 01:23:46 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=unstable.cc; s=MBO0001;
- t=1778798124;
+ t=1778801026;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=FXH4HpLRc+aPpO17Jzstb7rCb3EfUov9iei6V5kVC8k=;
- b=XtWh0QMhm1OX7CIMWaO2na95jLzUFkwSzbCPRbwkjY7Y5vOBcu4MEHOAryPK4IHtEa2KBt
- ZLvwIXaaKDtkBR8zXfb4L+Bp26UIz5h9BI9he7hNHB/bcZ0+s52PK5wnjfRIJcM7aRFUPR
- XAoXUaNSMyco8obY7cqknvmSralInDM+NFHhhklvH5mJpHToddqyEF5AYJ7OxVEbOqshNR
- vku7aIK98wQpznkMFoKkMVbyWh9wM6q70g89IwAXQxCbg/mGBBWYV56YTFcRkutRr+T3P3
- lZDvYy2W/KM5ForcYTDlDC+7tC70TVBmznCWKwj4TheEmJDvAJI7TH7uPIS1fA==
-Message-ID: <8551e880-5411-4475-983f-7eefba4b700e@unstable.cc>
-Date: Fri, 15 May 2026 00:35:21 +0200
-MIME-Version: 1.0
-To: Piotr Dobrogost <2026@p.dobrogost.net>
-References: <CAA6tFMtd39GY5m+EjRKMxG9gbGwt4ENUW+oD6Mp=ytV-RuZ48A@mail.gmail.com>
- <749b893d-bb99-45f2-9205-ad5f4383f96e@unstable.cc>
- <CAA6tFMtxUHFtcyDY6hLSHCyZRSvx-BckF3P7_CgY3Q=qkyY0jQ@mail.gmail.com>
- <d7bd1d3d-c9e3-4f4a-ba75-0fdccb5006f5@unstable.cc>
- <agWNa_czBd91yZ47@greenie.muc.de>
- <2f645b45-0de9-4264-a386-1a9541a36478@unstable.cc>
- <CAA6tFMunrvac7ZZHO6ZMnR8Mu2J-OAmP1bur1GsnyS5rCv7arw@mail.gmail.com>
- <59ef0fa8-56da-4f6f-8f1b-360d74203f8a@unstable.cc>
- <CAA6tFMs=-_+-u82rEbfSLoBf6z+6MhZh6JkdMK=ddAXewycnwg@mail.gmail.com>
- <agYtSFxVCjCHwyNk@greenie.muc.de>
- <CAA6tFMs76rT4iHzwy0FSn97RT2Hva3VbTHOVw-FPLV_Qz-00_Q@mail.gmail.com>
- <4e82cb26-201f-4a11-bf02-faa9aaa45c84@unstable.cc>
- <CAA6tFMsXEvMBr8n-x7N2aZwrn-jTfvHozBjHbRKA8tvAEFeayQ@mail.gmail.com>
-Content-Language: en-US
+ to:to:cc:cc:mime-version:mime-version:
+ content-transfer-encoding:content-transfer-encoding;
+ bh=/yDB4T864RCIAPAtZan4Cvu1ucuaOrjHc4ek6raz4PM=;
+ b=HYPRWVh65hJVS3dYdA2ckHwwruUMngoz8Qz7a+yz+jKOmoaGNP5B+XTWoTzx2Z6T68VyUx
+ Wu7ErXpRmfS9PYj5OXvQmJRsMhLXdOW9iPe3ze8f6k/fFdyh3VqmlnA7kGJnx+4BJHTLis
+ F49vhNubsOvLM+bNUJODLU4dRegBqweDjorBXPSOiqsJQvja6wxNerjy9X6hhDvgDfKni9
+ ay+nZh20ovEKA/kBLOgPGlFMh+boGZ5tToUszXKbXhFBmESeDTqj91bd+Xv5W+GzBivaIO
+ ALxfDMh2vhQxKg4tQje6nfXLqoMsE6/45XGAu55uOz07KQ1oAKooOEQwQ9Fc4g==
+Authentication-Results: outgoing_mbo_mout; dkim=none;
+ spf=pass (outgoing_mbo_mout: domain of a@unstable.cc designates
+ 2001:67c:2050:b231:465::202 as permitted sender) smtp.mailfrom=a@unstable.cc
 From: Antonio Quartulli <a@unstable.cc>
-In-Reply-To: <CAA6tFMsXEvMBr8n-x7N2aZwrn-jTfvHozBjHbRKA8tvAEFeayQ@mail.gmail.com>
-X-Headers-End: 1wNeeX-00016W-34
-Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN tunnel stopped working
- (no traffic) after upgrade to OpenVPN 2.7 (Fedora 44)
+To: openvpn-devel@lists.sourceforge.net
+Date: Fri, 15 May 2026 01:23:43 +0200
+Message-ID: <20260514232343.805411-1-a@unstable.cc>
+MIME-Version: 1.0
+X-Rspamd-Queue-Id: 4gGmc2393yz9v70
+X-Headers-End: 1wNfPG-0003Bc-DS
+Subject: [Openvpn-devel] [PATCH ovpn net-next] ovpn: netlink - check
+ CAP_NET_ADMIN in source namespace only
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -102,31 +91,193 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: Gert Doering <gert@greenie.muc.de>, openvpn-devel@lists.sourceforge.net
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Cc: Antonio Quartulli <antonio@openvpn.net>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-T24gMTUvMDUvMjAyNiAwMDozMSwgUGlvdHIgRG9icm9nb3N0IHdyb3RlOgo+IE9uIEZyaSwgTWF5
-IDE1LCAyMDI2IGF0IDEyOjE24oCvQU0gQW50b25pbyBRdWFydHVsbGkgPGFAdW5zdGFibGUuY2M+
-IHdyb3RlOgo+Pgo+Pgo+PiBJbiB0aGlzIGR1bXAgZXZlcnl0aGluZyBzZWVtcyB0byBiZSB3b3Jr
-aW5nIGZpbmUuCj4+IERpZCB5b3UgYXR0ZW1wdCBhIHBpbmcgYWZ0ZXIgdGhlIFZQTiBjb25uZWN0
-aW9uIHdhcyBzdWNjZXNzZnVsPwo+IAo+IEkgZGlkIG5vdCwgYnV0IEkgcmVwZWF0ZWQgdGhlIHN0
-ZXBzIG5vdywgYW5kIHBpbmcgZG9lcyBub3Qgd29yay4KClllYWgsIEkgZ3Vlc3NlZCBzbywgYnV0
-IHdlIG5lZWQgdGhlIGR1bXAgZnJvbSB0aGUgaGFuZHNoYWtlIHVwIHVudGlsIHRoZSAKbm9uLXdv
-cmtpbmcgcGluZy4gU28gd2UgY2FuIGNvbXBhcmUgcGFja2V0cy4KCj4gQnR3LCBJIGZvdW5kIG91
-dCBzb21lb25lIGVsc2UgYSBmZXcgZGF5cyBhZ28gaGFkIHRoZSBzYW1lIHByb2JsZW0gb24KPiBX
-aW5kb3dzIGFuZCBhZGRpbmcgZGlzYWJsZS1kY28gaW4gYSBjb25maWcgYWxzbyBmaXhlZCB0aGUg
-aXNzdWUuCj4gCgoidHVubmVsIGRvZXMgbm90IHdvcmsiIGlzIGEgcHJldHR5IGdlbmVyaWMgImZh
-aWx1cmUiLCB0aGVyZWZvcmUgaXQncyAKcHJldHR5IGRpZmZpY3VsdCB0byBjb3JyZWxhdGUgd2l0
-aG91dCBhZGRpdGlvbmFsIGluZm9ybWF0aW9uLgpPbiB0b3Agb2YgdGhhdCwgRENPIG9uIFdpbmRv
-d3MgaXMgYSB0b3RhbGx5IGRpZmZlcmVudCBpbXBsZW1lbnRhdGlvbiwgc28gCml0J3MgcXVpdGUg
-ZGlmZmljdWx0IHRoYXQgdGhlIHR3byBwcm9ibGVtcyBhcmUgcmVsYXRlZC4KCgpSZWdhcmRzLAoK
-PiBSZWdhcmRzLAo+IFBpb3RyIERvYnJvZ29zdAo+IAo+IAo+IF9fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fCj4gT3BlbnZwbi1kZXZlbCBtYWlsaW5nIGxpc3QK
-PiBPcGVudnBuLWRldmVsQGxpc3RzLnNvdXJjZWZvcmdlLm5ldAo+IGh0dHBzOi8vbGlzdHMuc291
-cmNlZm9yZ2UubmV0L2xpc3RzL2xpc3RpbmZvL29wZW52cG4tZGV2ZWwKCi0tIApBbnRvbmlvIFF1
-YXJ0dWxsaQoKCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-XwpPcGVudnBuLWRldmVsIG1haWxpbmcgbGlzdApPcGVudnBuLWRldmVsQGxpc3RzLnNvdXJjZWZv
-cmdlLm5ldApodHRwczovL2xpc3RzLnNvdXJjZWZvcmdlLm5ldC9saXN0cy9saXN0aW5mby9vcGVu
-dnBuLWRldmVsCg==
+From: Antonio Quartulli <antonio@openvpn.net>
+
+Netlink API calls can be allowed as long as the user has
+CAP_NET_ADMIN in the source namespace.
+
+There is no need to enforce broader capabilities.
+
+Therefore switch to GENL_UNS_ADMIN_PERM for all netlink ops.
+
+Closes: https://github.com/OpenVPN/ovpn-net-next/issues/33
+Signed-off-by: Antonio Quartulli <antonio@openvpn.net>
+---
+ Documentation/netlink/specs/ovpn.yaml | 16 ++++++++--------
+ drivers/net/ovpn/netlink-gen.c        | 18 +++++++++---------
+ 2 files changed, 17 insertions(+), 17 deletions(-)
+
+diff --git a/Documentation/netlink/specs/ovpn.yaml b/Documentation/netlink/specs/ovpn.yaml
+index b0c782e59a32..5d1f71b2ff78 100644
+--- a/Documentation/netlink/specs/ovpn.yaml
++++ b/Documentation/netlink/specs/ovpn.yaml
+@@ -397,7 +397,7 @@ operations:
+     -
+       name: peer-new
+       attribute-set: ovpn-peer-new-input
+-      flags: [admin-perm]
++      flags: [uns-admin-perm]
+       doc: Add a remote peer
+       do:
+         pre: ovpn-nl-pre-doit
+@@ -409,7 +409,7 @@ operations:
+     -
+       name: peer-set
+       attribute-set: ovpn-peer-set-input
+-      flags: [admin-perm]
++      flags: [uns-admin-perm]
+       doc: modify a remote peer
+       do:
+         pre: ovpn-nl-pre-doit
+@@ -421,7 +421,7 @@ operations:
+     -
+       name: peer-get
+       attribute-set: ovpn
+-      flags: [admin-perm]
++      flags: [uns-admin-perm]
+       doc: Retrieve data about existing remote peers (or a specific one)
+       do:
+         pre: ovpn-nl-pre-doit
+@@ -443,7 +443,7 @@ operations:
+     -
+       name: peer-del
+       attribute-set: ovpn-peer-del-input
+-      flags: [admin-perm]
++      flags: [uns-admin-perm]
+       doc: Delete existing remote peer
+       do:
+         pre: ovpn-nl-pre-doit
+@@ -461,7 +461,7 @@ operations:
+     -
+       name: key-new
+       attribute-set: ovpn
+-      flags: [admin-perm]
++      flags: [uns-admin-perm]
+       doc: Add a cipher key for a specific peer
+       do:
+         pre: ovpn-nl-pre-doit
+@@ -473,7 +473,7 @@ operations:
+     -
+       name: key-get
+       attribute-set: ovpn-keyconf-get
+-      flags: [admin-perm]
++      flags: [uns-admin-perm]
+       doc: Retrieve non-sensitive data about peer key and cipher
+       do:
+         pre: ovpn-nl-pre-doit
+@@ -488,7 +488,7 @@ operations:
+     -
+       name: key-swap
+       attribute-set: ovpn-keyconf-swap-input
+-      flags: [admin-perm]
++      flags: [uns-admin-perm]
+       doc: Swap primary and secondary session keys for a specific peer
+       do:
+         pre: ovpn-nl-pre-doit
+@@ -507,7 +507,7 @@ operations:
+     -
+       name: key-del
+       attribute-set: ovpn-keyconf-del-input
+-      flags: [admin-perm]
++      flags: [uns-admin-perm]
+       doc: Delete cipher key for a specific peer
+       do:
+         pre: ovpn-nl-pre-doit
+diff --git a/drivers/net/ovpn/netlink-gen.c b/drivers/net/ovpn/netlink-gen.c
+index 2147cec7c2c5..6f1237f65674 100644
+--- a/drivers/net/ovpn/netlink-gen.c
++++ b/drivers/net/ovpn/netlink-gen.c
+@@ -179,7 +179,7 @@ static const struct genl_split_ops ovpn_nl_ops[] = {
+ 		.post_doit	= ovpn_nl_post_doit,
+ 		.policy		= ovpn_peer_new_nl_policy,
+ 		.maxattr	= OVPN_A_PEER,
+-		.flags		= GENL_ADMIN_PERM | GENL_CMD_CAP_DO,
++		.flags		= GENL_UNS_ADMIN_PERM | GENL_CMD_CAP_DO,
+ 	},
+ 	{
+ 		.cmd		= OVPN_CMD_PEER_SET,
+@@ -188,7 +188,7 @@ static const struct genl_split_ops ovpn_nl_ops[] = {
+ 		.post_doit	= ovpn_nl_post_doit,
+ 		.policy		= ovpn_peer_set_nl_policy,
+ 		.maxattr	= OVPN_A_PEER,
+-		.flags		= GENL_ADMIN_PERM | GENL_CMD_CAP_DO,
++		.flags		= GENL_UNS_ADMIN_PERM | GENL_CMD_CAP_DO,
+ 	},
+ 	{
+ 		.cmd		= OVPN_CMD_PEER_GET,
+@@ -197,14 +197,14 @@ static const struct genl_split_ops ovpn_nl_ops[] = {
+ 		.post_doit	= ovpn_nl_post_doit,
+ 		.policy		= ovpn_peer_get_do_nl_policy,
+ 		.maxattr	= OVPN_A_PEER,
+-		.flags		= GENL_ADMIN_PERM | GENL_CMD_CAP_DO,
++		.flags		= GENL_UNS_ADMIN_PERM | GENL_CMD_CAP_DO,
+ 	},
+ 	{
+ 		.cmd		= OVPN_CMD_PEER_GET,
+ 		.dumpit		= ovpn_nl_peer_get_dumpit,
+ 		.policy		= ovpn_peer_get_dump_nl_policy,
+ 		.maxattr	= OVPN_A_IFINDEX,
+-		.flags		= GENL_ADMIN_PERM | GENL_CMD_CAP_DUMP,
++		.flags		= GENL_UNS_ADMIN_PERM | GENL_CMD_CAP_DUMP,
+ 	},
+ 	{
+ 		.cmd		= OVPN_CMD_PEER_DEL,
+@@ -213,7 +213,7 @@ static const struct genl_split_ops ovpn_nl_ops[] = {
+ 		.post_doit	= ovpn_nl_post_doit,
+ 		.policy		= ovpn_peer_del_nl_policy,
+ 		.maxattr	= OVPN_A_PEER,
+-		.flags		= GENL_ADMIN_PERM | GENL_CMD_CAP_DO,
++		.flags		= GENL_UNS_ADMIN_PERM | GENL_CMD_CAP_DO,
+ 	},
+ 	{
+ 		.cmd		= OVPN_CMD_KEY_NEW,
+@@ -222,7 +222,7 @@ static const struct genl_split_ops ovpn_nl_ops[] = {
+ 		.post_doit	= ovpn_nl_post_doit,
+ 		.policy		= ovpn_key_new_nl_policy,
+ 		.maxattr	= OVPN_A_KEYCONF,
+-		.flags		= GENL_ADMIN_PERM | GENL_CMD_CAP_DO,
++		.flags		= GENL_UNS_ADMIN_PERM | GENL_CMD_CAP_DO,
+ 	},
+ 	{
+ 		.cmd		= OVPN_CMD_KEY_GET,
+@@ -231,7 +231,7 @@ static const struct genl_split_ops ovpn_nl_ops[] = {
+ 		.post_doit	= ovpn_nl_post_doit,
+ 		.policy		= ovpn_key_get_nl_policy,
+ 		.maxattr	= OVPN_A_KEYCONF,
+-		.flags		= GENL_ADMIN_PERM | GENL_CMD_CAP_DO,
++		.flags		= GENL_UNS_ADMIN_PERM | GENL_CMD_CAP_DO,
+ 	},
+ 	{
+ 		.cmd		= OVPN_CMD_KEY_SWAP,
+@@ -240,7 +240,7 @@ static const struct genl_split_ops ovpn_nl_ops[] = {
+ 		.post_doit	= ovpn_nl_post_doit,
+ 		.policy		= ovpn_key_swap_nl_policy,
+ 		.maxattr	= OVPN_A_KEYCONF,
+-		.flags		= GENL_ADMIN_PERM | GENL_CMD_CAP_DO,
++		.flags		= GENL_UNS_ADMIN_PERM | GENL_CMD_CAP_DO,
+ 	},
+ 	{
+ 		.cmd		= OVPN_CMD_KEY_DEL,
+@@ -249,7 +249,7 @@ static const struct genl_split_ops ovpn_nl_ops[] = {
+ 		.post_doit	= ovpn_nl_post_doit,
+ 		.policy		= ovpn_key_del_nl_policy,
+ 		.maxattr	= OVPN_A_KEYCONF,
+-		.flags		= GENL_ADMIN_PERM | GENL_CMD_CAP_DO,
++		.flags		= GENL_UNS_ADMIN_PERM | GENL_CMD_CAP_DO,
+ 	},
+ };
+ 
+-- 
+2.53.0
+
+
+
+_______________________________________________
+Openvpn-devel mailing list
+Openvpn-devel@lists.sourceforge.net
+https://lists.sourceforge.net/lists/listinfo/openvpn-devel
