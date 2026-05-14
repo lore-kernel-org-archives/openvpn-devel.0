@@ -4,98 +4,63 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8EE42CD37AC
-	for <openvpn-devel@archiver.kernel.org>; Thu, 14 May 2026 20:10:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id AF985CD4F39
+	for <openvpn-devel@archiver.kernel.org>; Thu, 14 May 2026 20:10:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:Cc:
-	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:To:Message-ID:Date:From:In-Reply-To:References:MIME-Version:Sender:
-	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
-	:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=AB0AmvIwUTleNh2Viuhv7e2mvnrYzh4PtVO3M3t6jqQ=; b=SS7uxamCcW+dRvSGgpog53505r
-	DOMMGhSFbqiOuPs2LwdRuz3m1lE/Ens0wg8N49h+LYZr9hDqXtGLpXkxBF/BsgJDI0NJm+5Q0rvob
-	PaOx3mxSh09fLho62pHH2Kad4ZMT0M0JpsxeYKA9FaK7hE9Le69xbsyiBg/tqjLQUaTA=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:List-Subscribe:List-Help:
+	List-Post:List-Archive:List-Unsubscribe:List-Id:Subject:In-Reply-To:
+	MIME-Version:References:Message-ID:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=xIu/afAcMwxIG9GjjVmUBtWE2vfHrh8BM7KiMa5cdCA=; b=ieH8KLElVik90J+AWe2dHef9+e
+	Y8vLzx+M+8hl6KzeeVHUBbKgJ1HKoMUYlp8ZWynPfNkGgcP81aAZx+w9NALXbcbEgICQauTbCLQWM
+	mHKe61A1oRByP1C7GXz/jztfTb93LEtbIPJNJ4lWPHxOI6MnmOtbBTWFQEzdJQIEmgC0=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wNcNx-0003Vo-FG;
-	Thu, 14 May 2026 20:10:22 +0000
+	id 1wNcOL-000586-Cr;
+	Thu, 14 May 2026 20:10:46 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <p.dobrogost@gmail.com>) id 1wNcNv-0003VX-Cv
+ (envelope-from <gert@chekov.greenie.muc.de>) id 1wNcOK-00057x-Ix
  for openvpn-devel@lists.sourceforge.net;
- Thu, 14 May 2026 20:10:20 +0000
+ Thu, 14 May 2026 20:10:45 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:Content-Type:Cc:To:
- Subject:Message-ID:Date:From:In-Reply-To:References:MIME-Version:Sender:
- Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
- :Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ d=sourceforge.net; s=x; h=In-Reply-To:Content-Type:MIME-Version:References:
+ Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=iBN3g1G9aHGreYX3eCc7uyhid+yEUIWuXWZQY7GS1ac=; b=FVKf/2loUZrWOA9JkKuVU3GYOM
- QtTdqf9d7eeCgxMss7sqVa31bL0z6EpZ4qofYaAPK0uFGMWzSTDUEUOfESKvuv1elHNPt3DSvo3hH
- hgN+gwkND4fIGaTHchYhg1l4j7JDrJBsvvoXGK+v/k+7TE7TvHs/sUYPC5cu8X3XbUHg=;
+ bh=o4BJXCAvdHedlpkhgXDdFJvsZMC73OfxeaRy8OnrBxA=; b=l6o7QE1R9Cz8G4RkWAz5uWDH9T
+ o0ZUnMCiJWiAWOZDGCPfUohNxcrTSaBHaJ9gI7df39faV9wOFClAzufTSL6zDGlqMphQn0SYSZED4
+ S5MxslkwgNt3h1LakbJrb00RMF3YUoaqCb13wkiJ+Aj4m4KkyBGgyw7GFxV+Nbz7AJHo=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:Content-Type:Cc:To:Subject:Message-ID:Date:From
- :In-Reply-To:References:MIME-Version:Sender:Reply-To:Content-ID:
+ h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To
+ :From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=iBN3g1G9aHGreYX3eCc7uyhid+yEUIWuXWZQY7GS1ac=; b=bFUWdlwP7xdrj944vUWjznhrVJ
- UFRpGuq04+5wGcFG3Aoxxh0R/p+jOz3G41dXDenZRum+Sx5A4SvXiABwRj3QjGa6/f2LWTeVtLEXC
- bOALDnwhhkCoTDKT35+8AeuYlTxQf422RpmG9iKVVWjO62bIwUSR0FPCq1/k1Dehwv+I=;
-Received: from mail-vk1-f182.google.com ([209.85.221.182])
+ bh=o4BJXCAvdHedlpkhgXDdFJvsZMC73OfxeaRy8OnrBxA=; b=LyW4ihpa9FkEfnFPwxmmCorMLw
+ LCSwJZ1Cr8HpssbqCjadniwKzvpLpej4mHRcfUcgdtpubbkHJnq13bs2EJloRMTTExo7VnFgdDg/z
+ L87Et15ppmn6DehVWPUhy/e+enOGA+zvdb1A4xikj+eQWh7ywNeselOvsPAIqWKAmKmo=;
+Received: from chekov.greenie.muc.de ([193.149.48.178])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wNcNk-0000PQ-PO for openvpn-devel@lists.sourceforge.net;
- Thu, 14 May 2026 20:10:10 +0000
-Received: by mail-vk1-f182.google.com with SMTP id
- 71dfb90a1353d-56a86f0a23bso7553302e0c.0
- for <openvpn-devel@lists.sourceforge.net>;
- Thu, 14 May 2026 13:10:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1778789403; x=1779394203;
- h=content-transfer-encoding:cc:to:subject:message-id:date:from
- :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
- :to:cc:subject:date:message-id:reply-to;
- bh=iBN3g1G9aHGreYX3eCc7uyhid+yEUIWuXWZQY7GS1ac=;
- b=D85naYUNvxrs5828cqsOHQNSYZMK6Z33o5q++T4m4AXnjEvB4jzLsbdFzjItZvXrVc
- oL3b8hFaWYCsNiKvaQENzMl5IrlmIiG3G0ZM06ZQmPgc9JNKXOk2IStRUezofGMYAU2n
- 1RdBiiDgD121/SFpHdxEMZUDn0mdQOXcuO1tDoRC1QmEOknqujWKnpfmoBP4JwwORh/V
- fRBBq7BN+gMmFf/JAfyUzPQuh0gU1q9MzqDIhIC5wOcgQdAMnnicfI/L1S2YjCAEdchg
- OkR/nrfutAcJGskTWzDhKiCHVHb49DPZkNcqTGOXgHl8nmkHgD6X84qzo/HFXRLhfT1k
- 3zig==
-X-Forwarded-Encrypted: i=1;
- AFNElJ+XGLRDzeoz4UYpWBzeKqoCT5QwmbaKnbePdD2zMplyL6b/2YSL3p0WtLGiLrgy4FEm4FwqqjBCU5mlsYb4@lists.sourceforge.net
-X-Gm-Message-State: AOJu0Yz3BdYzGJ2wdYVKxdSUhin4QeYBeS1xPXTMINBXTvxVxel5n+3V
- vsvhloNQEO4pjJryFB4rNgqJlmglgnwKvj3KIT+o7sG+jkB9xQRYv2QL/jvt28yQ
-X-Gm-Gg: Acq92OH5MoTPvSbSIEQMAJdBGo6BbKd+ljIqUXrPi7R1vFU2nWBMbl0ouKobT1bw1bS
- ThIK8eslWgyeCh8qHRdqtr3UoTjIIaWLOyv8ddR4fxO6htFokES/m08VcKG2I4MuEjIlufeJyAN
- A2/a1SAclnwdRjGG3FdwqvVd6H3IfXDL1YO3psyE3qKss7u/DgenpXfMARoQMbJtP6Ib1+f+vc1
- /pi4Tcf00/v2hdZj/m4yEm9XALqhSJe3v5RBLK5NvCDE1vc8Eq3FR8BoQFDv70JdOpSbVjnDksb
- XhKiJmZ1pDfVxQyQnFC7gWGUvbaLzvswb1o4Bc648g/sdCepceUjWOL3flNJ2ZAuXqLEUUVCH0S
- p6Mnp2O6i/qFWObP0dNOD0U7pGiROBTBh1Eu7PP0rSBsmw59PwOYJx0kzza6VZaycJ1TVreoNI9
- OY2oc4aJSbynQTo37Bvc//bu9SCGaxpf+SsNbyudl2xyYao8xryLUGK3/WvqPs
-X-Received: by 2002:a05:6122:8b17:b0:575:19a7:ae16 with SMTP id
- 71dfb90a1353d-5760c05016dmr906809e0c.11.1778789403077; 
- Thu, 14 May 2026 13:10:03 -0700 (PDT)
-Received: from mail-vs1-f49.google.com (mail-vs1-f49.google.com.
- [209.85.217.49]) by smtp.gmail.com with ESMTPSA id
- 71dfb90a1353d-575fa772918sm2188038e0c.12.2026.05.14.13.10.02
- for <openvpn-devel@lists.sourceforge.net>
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Thu, 14 May 2026 13:10:02 -0700 (PDT)
-Received: by mail-vs1-f49.google.com with SMTP id
- ada2fe7eead31-628086439b6so6392122137.2
- for <openvpn-devel@lists.sourceforge.net>;
- Thu, 14 May 2026 13:10:02 -0700 (PDT)
-X-Forwarded-Encrypted: i=1;
- AFNElJ/h35XJpeMG6ATLKQ+rsKw4n0iA1XqJNMC+i1udqY59RZhkQaGB8kUwRo9K4oJUybozw+UAFnF5sLiJji1t@lists.sourceforge.net
-X-Received: by 2002:a67:e104:0:b0:62a:1bba:64ee with SMTP id
- ada2fe7eead31-63a3c8016a5mr553957137.6.1778789402757; Thu, 14 May 2026
- 13:10:02 -0700 (PDT)
-MIME-Version: 1.0
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
+ id 1wNcOI-0000R7-0i for openvpn-devel@lists.sourceforge.net;
+ Thu, 14 May 2026 20:10:45 +0000
+Received: from chekov.greenie.muc.de (localhost [IPv6:0:0:0:0:0:0:0:1])
+ by chekov.greenie.muc.de (8.18.2/8.18.1) with ESMTP id 64EKAUZG016366;
+ Thu, 14 May 2026 22:10:30 +0200 (CEST)
+ (envelope-from gert@chekov.greenie.muc.de)
+Received: (from gert@localhost)
+ by chekov.greenie.muc.de (8.18.2/8.18.1/Submit) id 64EKAUJA016365;
+ Thu, 14 May 2026 22:10:30 +0200 (CEST) (envelope-from gert)
+Date: Thu, 14 May 2026 22:10:30 +0200
+From: Gert Doering <gert@greenie.muc.de>
+To: Piotr Dobrogost <2026@p.dobrogost.net>
+Message-ID: <agYsNsV9ZYLmbBDL@greenie.muc.de>
 References: <CAA6tFMtd39GY5m+EjRKMxG9gbGwt4ENUW+oD6Mp=ytV-RuZ48A@mail.gmail.com>
  <749b893d-bb99-45f2-9205-ad5f4383f96e@unstable.cc>
  <CAA6tFMtxUHFtcyDY6hLSHCyZRSvx-BckF3P7_CgY3Q=qkyY0jQ@mail.gmail.com>
@@ -103,15 +68,10 @@ References: <CAA6tFMtd39GY5m+EjRKMxG9gbGwt4ENUW+oD6Mp=ytV-RuZ48A@mail.gmail.com>
  <agWNa_czBd91yZ47@greenie.muc.de>
  <2f645b45-0de9-4264-a386-1a9541a36478@unstable.cc>
  <CAA6tFMunrvac7ZZHO6ZMnR8Mu2J-OAmP1bur1GsnyS5rCv7arw@mail.gmail.com>
- <59ef0fa8-56da-4f6f-8f1b-360d74203f8a@unstable.cc>
-In-Reply-To: <59ef0fa8-56da-4f6f-8f1b-360d74203f8a@unstable.cc>
-From: Piotr Dobrogost <2026@p.dobrogost.net>
-Date: Thu, 14 May 2026 22:09:25 +0200
-X-Gmail-Original-Message-ID: <CAA6tFMs=-_+-u82rEbfSLoBf6z+6MhZh6JkdMK=ddAXewycnwg@mail.gmail.com>
-X-Gm-Features: AVHnY4IhY-eBTokjVN1XgdEThBwWhFbjT-qAIIQiyJawpCt5aaNKBVRuBLML2nA
-Message-ID: <CAA6tFMs=-_+-u82rEbfSLoBf6z+6MhZh6JkdMK=ddAXewycnwg@mail.gmail.com>
-To: Antonio Quartulli <a@unstable.cc>
-X-Headers-End: 1wNcNk-0000PQ-PO
+MIME-Version: 1.0
+In-Reply-To: <CAA6tFMunrvac7ZZHO6ZMnR8Mu2J-OAmP1bur1GsnyS5rCv7arw@mail.gmail.com>
+X-mgetty-docs: http://mgetty.greenie.net/
+X-Headers-End: 1wNcOI-0000R7-0i
 Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN tunnel stopped working
  (no traffic) after upgrade to OpenVPN 2.7 (Fedora 44)
 X-BeenThere: openvpn-devel@lists.sourceforge.net
@@ -125,91 +85,118 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: Gert Doering <gert@greenie.muc.de>, openvpn-devel@lists.sourceforge.net
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Cc: openvpn-devel@lists.sourceforge.net, Gert Doering <gert@greenie.muc.de>,
+ Antonio Quartulli <a@unstable.cc>
+Content-Type: multipart/mixed; boundary="===============4943584075781498281=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-T24gVGh1LCBNYXkgMTQsIDIwMjYgYXQgOTo1OOKAr1BNIEFudG9uaW8gUXVhcnR1bGxpIDxhQHVu
-c3RhYmxlLmNjPiB3cm90ZToKPgo+IFRoaXMgbG9va3MgaW50ZXJlc3RpbmcsIGJ1dCBwbGVhc2Ug
-ZG9uJ3QgZmlsdGVyIGZvciAiaWNtcCIsIGJlY2F1c2Ugb24KPiB0aGUgdXBsaW5rIGludGVyZmFj
-ZSB5b3UgY2FuJ3Qgc2VlIHdoYXQncyBpbnNpZGUgdGhlIE9wZW5WUE4gcGFja2V0cy4KPiBTbyBo
-ZXJlIHlvdSBhcmUgZmlsdGVyaW5nIGZvciAib3V0ZXJuIElDTVBzIi4KPgo+IFBsZWFzZSByYXRo
-ZXIgZmlsdGVyIGZvciAiaG9zdCB4eXouc2Z4LnBsIiBhbmQgZG8gdGhlIHRlc3QgYWdhaW4uCgoK
-W21pbmVyQGhvc3R4IH5dJCBzdWRvIHRjcGR1bXAgLWkgZW5wNXMwIGhvc3QgeHl6LnNmeC5wbApk
-cm9wcGVkIHByaXZzIHRvIHRjcGR1bXAKdGNwZHVtcDogdmVyYm9zZSBvdXRwdXQgc3VwcHJlc3Nl
-ZCwgdXNlIC12W3ZdLi4uIGZvciBmdWxsIHByb3RvY29sIGRlY29kZQpsaXN0ZW5pbmcgb24gZW5w
-NXMwLCBsaW5rLXR5cGUgRU4xME1CIChFdGhlcm5ldCksIHNuYXBzaG90IGxlbmd0aCAyNjIxNDQg
-Ynl0ZXMKMjI6MDM6MzAuNzM4MzE4IElQIGhvc3R4LjQ1MzU2ID4geHl6LnNmeC5wbC5uZXRtYWdp
-YzogVURQLCBsZW5ndGggOTYKMjI6MDM6MzAuNzM4MzU4IElQIGhvc3R4LjQ1MzU2ID4geHl6LnNm
-eC5wbC5uZXRtYWdpYzogVURQLCBsZW5ndGggOTYKMjI6MDM6MzAuNzM4NTA5IElQIGhvc3R4LjQ1
-MzU2ID4geHl6LnNmeC5wbC5uZXRtYWdpYzogVURQLCBsZW5ndGggOTkKMjI6MDM6MzAuNzM4NTQw
-IElQIGhvc3R4LjQ1MzU2ID4geHl6LnNmeC5wbC5uZXRtYWdpYzogVURQLCBsZW5ndGggOTkKMjI6
-MDM6MzAuNzQ3MDE2IElQIHh5ei5zZngucGwubmV0bWFnaWMgPiBob3N0eC41MDEzOTogVURQLCBs
-ZW5ndGggMTM5CjIyOjAzOjMwLjc0NzAxOSBJUCB4eXouc2Z4LnBsLm5ldG1hZ2ljID4gaG9zdHgu
-NTAxMzk6IFVEUCwgbGVuZ3RoIDQ5MwoyMjowMzozMC43NDcwMTkgSVAgeHl6LnNmeC5wbC5uZXRt
-YWdpYyA+IGhvc3R4LjUwMTM5OiBVRFAsIGxlbmd0aCAxNDIKMjI6MDM6MzAuNzQ3MDE5IElQIHh5
-ei5zZngucGwubmV0bWFnaWMgPiBob3N0eC41MDEzOTogVURQLCBsZW5ndGggMTQyCjIyOjAzOjMw
-Ljc0NzE3OCBJUCBob3N0eCA+IHh5ei5zZngucGw6IElDTVAgaG9zdHggdWRwIHBvcnQgNTAxMzkK
-dW5yZWFjaGFibGUsIGxlbmd0aCAxNzUKMjI6MDM6MzAuNzQ3MTk2IElQIGhvc3R4ID4geHl6LnNm
-eC5wbDogSUNNUCBob3N0eCB1ZHAgcG9ydCA1MDEzOQp1bnJlYWNoYWJsZSwgbGVuZ3RoIDUyOQoy
-MjowMzozMC43NDcyMDMgSVAgaG9zdHggPiB4eXouc2Z4LnBsOiBJQ01QIGhvc3R4IHVkcCBwb3J0
-IDUwMTM5CnVucmVhY2hhYmxlLCBsZW5ndGggMTc4CjIyOjAzOjMwLjc0NzIwOSBJUCBob3N0eCA+
-IHh5ei5zZngucGw6IElDTVAgaG9zdHggdWRwIHBvcnQgNTAxMzkKdW5yZWFjaGFibGUsIGxlbmd0
-aCAxNzgKMjI6MDM6MzAuODMyMTM4IElQIGhvc3R4LjQ1MzU2ID4geHl6LnNmeC5wbC5uZXRtYWdp
-YzogVURQLCBsZW5ndGggMTA3CjIyOjAzOjMwLjgzODY2OSBJUCB4eXouc2Z4LnBsLm5ldG1hZ2lj
-ID4gaG9zdHguNTAxMzk6IFVEUCwgbGVuZ3RoIDIwMQoyMjowMzozMC44Mzg3MzQgSVAgaG9zdHgg
-PiB4eXouc2Z4LnBsOiBJQ01QIGhvc3R4IHVkcCBwb3J0IDUwMTM5CnVucmVhY2hhYmxlLCBsZW5n
-dGggMjM3CjIyOjAzOjM1Ljc3MTg4NyBJUCBob3N0eC40NTM1NiA+IHh5ei5zZngucGwubmV0bWFn
-aWM6IFVEUCwgbGVuZ3RoIDk2CjIyOjAzOjM1Ljc3MTk3MiBJUCBob3N0eC40NTM1NiA+IHh5ei5z
-ZngucGwubmV0bWFnaWM6IFVEUCwgbGVuZ3RoIDk2CjIyOjAzOjM1Ljc3MjA4NiBJUCBob3N0eC40
-NTM1NiA+IHh5ei5zZngucGwubmV0bWFnaWM6IFVEUCwgbGVuZ3RoIDg4CjIyOjAzOjM1Ljc3MjA5
-OSBJUCBob3N0eC40NTM1NiA+IHh5ei5zZngucGwubmV0bWFnaWM6IFVEUCwgbGVuZ3RoIDg4CjIy
-OjAzOjM1Ljc3OTYxNyBJUCB4eXouc2Z4LnBsLm5ldG1hZ2ljID4gaG9zdHguNTAxMzk6IFVEUCwg
-bGVuZ3RoIDEzOQoyMjowMzozNS43Nzk2MTggSVAgeHl6LnNmeC5wbC5uZXRtYWdpYyA+IGhvc3R4
-LjUwMTM5OiBVRFAsIGxlbmd0aCAxMzEKMjI6MDM6MzUuNzc5NjU3IElQIGhvc3R4ID4geHl6LnNm
-eC5wbDogSUNNUCBob3N0eCB1ZHAgcG9ydCA1MDEzOQp1bnJlYWNoYWJsZSwgbGVuZ3RoIDE3NQoy
-MjowMzozNS43Nzk2NjUgSVAgaG9zdHggPiB4eXouc2Z4LnBsOiBJQ01QIGhvc3R4IHVkcCBwb3J0
-IDUwMTM5CnVucmVhY2hhYmxlLCBsZW5ndGggMTY3CjIyOjAzOjM1Ljc4Mjc2MCBJUCB4eXouc2Z4
-LnBsLm5ldG1hZ2ljID4gaG9zdHguNTAxMzk6IFVEUCwgbGVuZ3RoIDQ5MwoyMjowMzozNS43ODI3
-NjEgSVAgeHl6LnNmeC5wbC5uZXRtYWdpYyA+IGhvc3R4LjUwMTM5OiBVRFAsIGxlbmd0aCAxMzEK
-MjI6MDM6MzUuNzgyOTE2IElQIGhvc3R4ID4geHl6LnNmeC5wbDogSUNNUCBob3N0eCB1ZHAgcG9y
-dCA1MDEzOQp1bnJlYWNoYWJsZSwgbGVuZ3RoIDUyOQoyMjowMzozNS43ODI5MzkgSVAgaG9zdHgg
-PiB4eXouc2Z4LnBsOiBJQ01QIGhvc3R4IHVkcCBwb3J0IDUwMTM5CnVucmVhY2hhYmxlLCBsZW5n
-dGggMTY3CjIyOjAzOjM2LjAyMTgxMSBJUCBob3N0eC40NTM1NiA+IHh5ei5zZngucGwubmV0bWFn
-aWM6IFVEUCwgbGVuZ3RoIDk2CjIyOjAzOjM2LjAzMTQ5NyBJUCB4eXouc2Z4LnBsLm5ldG1hZ2lj
-ID4gaG9zdHguNTAxMzk6IFVEUCwgbGVuZ3RoIDE5MAoyMjowMzozNi4wMzE1NTAgSVAgaG9zdHgg
-PiB4eXouc2Z4LnBsOiBJQ01QIGhvc3R4IHVkcCBwb3J0IDUwMTM5CnVucmVhY2hhYmxlLCBsZW5n
-dGggMjI2CjIyOjAzOjM3LjU4NTU4NiBJUCB4eXouc2Z4LnBsLm5ldG1hZ2ljID4gaG9zdHguMzU0
-ODc6IFVEUCwgbGVuZ3RoIDM3CjIyOjAzOjM3LjU4NTYzNyBJUCBob3N0eCA+IHh5ei5zZngucGw6
-IElDTVAgaG9zdHggdWRwIHBvcnQgMzU0ODcKdW5yZWFjaGFibGUsIGxlbmd0aCA3MwoyMjowMzoz
-Ny43MDUzNzEgSVAgaG9zdHguNDUzNTYgPiB4eXouc2Z4LnBsLm5ldG1hZ2ljOiBVRFAsIGxlbmd0
-aCAxMDgKMjI6MDM6MzcuNzE0NDE2IElQIHh5ei5zZngucGwubmV0bWFnaWMgPiBob3N0eC41MDEz
-OTogVURQLCBsZW5ndGggMTA1CjIyOjAzOjM3LjcxNDUzMSBJUCBob3N0eCA+IHh5ei5zZngucGw6
-IElDTVAgaG9zdHggdWRwIHBvcnQgNTAxMzkKdW5yZWFjaGFibGUsIGxlbmd0aCAxNDEKMjI6MDM6
-MzguNzM2MDEwIElQIGhvc3R4LjQ1MzU2ID4geHl6LnNmeC5wbC5uZXRtYWdpYzogVURQLCBsZW5n
-dGggMTA4CjIyOjAzOjM4Ljc0MjgwMCBJUCB4eXouc2Z4LnBsLm5ldG1hZ2ljID4gaG9zdHguNTAx
-Mzk6IFVEUCwgbGVuZ3RoIDEwNQoyMjowMzozOC43NDI4MzUgSVAgaG9zdHggPiB4eXouc2Z4LnBs
-OiBJQ01QIGhvc3R4IHVkcCBwb3J0IDUwMTM5CnVucmVhY2hhYmxlLCBsZW5ndGggMTQxCjIyOjAz
-OjM5Ljc2MDAyNSBJUCBob3N0eC40NTM1NiA+IHh5ei5zZngucGwubmV0bWFnaWM6IFVEUCwgbGVu
-Z3RoIDEwOAoyMjowMzozOS43NjY0NzAgSVAgeHl6LnNmeC5wbC5uZXRtYWdpYyA+IGhvc3R4LjQ1
-MzU2OiBVRFAsIGxlbmd0aCAzNwoyMjowMzozOS43NjY0NzEgSVAgeHl6LnNmeC5wbC5uZXRtYWdp
-YyA+IGhvc3R4LjUwMTM5OiBVRFAsIGxlbmd0aCAxMDUKMjI6MDM6MzkuNzY2NDk1IElQIGhvc3R4
-ID4geHl6LnNmeC5wbDogSUNNUCBob3N0eCB1ZHAgcG9ydCA1MDEzOQp1bnJlYWNoYWJsZSwgbGVu
-Z3RoIDE0MQoyMjowMzo0MC43ODQwNTMgSVAgaG9zdHguNDUzNTYgPiB4eXouc2Z4LnBsLm5ldG1h
-Z2ljOiBVRFAsIGxlbmd0aCAxMDgKMjI6MDM6NDAuNzkwNDE0IElQIHh5ei5zZngucGwubmV0bWFn
-aWMgPiBob3N0eC41MDEzOTogVURQLCBsZW5ndGggMTA1CjIyOjAzOjQwLjc5MDQ0MyBJUCBob3N0
-eCA+IHh5ei5zZngucGw6IElDTVAgaG9zdHggdWRwIHBvcnQgNTAxMzkKdW5yZWFjaGFibGUsIGxl
-bmd0aCAxNDEKMjI6MDM6NDEuMDIxNzAyIElQIGhvc3R4LjQ1MzU2ID4geHl6LnNmeC5wbC5uZXRt
-YWdpYzogVURQLCBsZW5ndGggODUKMjI6MDM6NDEuMDIxNzQ2IElQIGhvc3R4LjQ1MzU2ID4geHl6
-LnNmeC5wbC5uZXRtYWdpYzogVURQLCBsZW5ndGggODUKMjI6MDM6NDEuMDIxNzU5IElQIGhvc3R4
-LjQ1MzU2ID4geHl6LnNmeC5wbC5uZXRtYWdpYzogVURQLCBsZW5ndGggODgKMjI6MDM6NDEuMDIx
-NzY5IElQIGhvc3R4LjQ1MzU2ID4geHl6LnNmeC5wbC5uZXRtYWdpYzogVURQLCBsZW5ndGggODgK
-MjI6MDM6NDEuMDIxODgxIElQIGhvc3R4LjQ1MzU2ID4geHl6LnNmeC5wbC5uZXRtYWdpYzogVURQ
-LCBsZW5ndGggODgKMjI6MDM6NDEuMDMwNTI3IElQIHh5ei5zZngucGwubmV0bWFnaWMgPiBob3N0
-eC41MDEzOTogVURQLCBsZW5ndGggNDgyCjIyOjAzOjQxLjAzMDUyNyBJUCB4eXouc2Z4LnBsLm5l
-dG1hZ2ljID4gaG9zdHguNTAxMzk6IFVEUCwgbGVuZ3RoIDEzMQoKClJlZ2FyZHMsClBpb3RyIERv
-YnJvZ29zdAoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-Ck9wZW52cG4tZGV2ZWwgbWFpbGluZyBsaXN0Ck9wZW52cG4tZGV2ZWxAbGlzdHMuc291cmNlZm9y
-Z2UubmV0Cmh0dHBzOi8vbGlzdHMuc291cmNlZm9yZ2UubmV0L2xpc3RzL2xpc3RpbmZvL29wZW52
-cG4tZGV2ZWwK
+
+--===============4943584075781498281==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="jDMSkyO0ppwGtKEX"
+Content-Disposition: inline
+
+
+--jDMSkyO0ppwGtKEX
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Hi,
+
+On Thu, May 14, 2026 at 09:53:42PM +0200, Piotr Dobrogost wrote:
+> > This (and also on the local LAN interface to see if they are actually
+> > getting out).
+>=20
+> [miner@hostx ~]$ sudo tcpdump -i enp5s0 icmp
+
+Well, on the ethernet, you won't see ICMPs, as the ping is encapsulated
+and "the world" only sees UDP packets - so the filter could be something
+like "icmp or udp port 1194".
+
+This said...
+
+> dropped privs to tcpdump
+> tcpdump: verbose output suppressed, use -v[v]... for full protocol decode
+> listening on enp5s0, link-type EN10MB (Ethernet), snapshot length 262144 =
+bytes
+> 21:35:04.694647 IP hostx > xyz.sfx.pl: ICMP hostx udp port 46099
+> unreachable, length 141
+
+=2E.. this looks interesting.  This *might* be a response to an UDP packet
+coming from xyz.sfx.pl towards your local UDP port 46099, which could
+be the UDP source port OpenVPN uses.
+
+If "something in the local firewall setup" does not believe that this
+should be permitted, refusing inbound UDP packet with "ICMP unreach"
+would also explain what you see "no packets coming in via OpenVPN".
+
+Can you please retry that dump, to see if I'm guessing correctly?
+
+[..]
+> > Might there be some new firewalling stuff involved that does not know
+> > how to deal with ovpn interfaces?
+>=20
+> I have the firewall disabled:
+>=20
+> [miner@hostx ~]$ systemctl status firewalld
+> ??? firewalld.service - firewalld - dynamic firewall daemon
+>     Loaded: loaded (/usr/lib/systemd/system/firewalld.service;
+> disabled; preset: enabled)
+
+Mmmh.  What does "nft list ruleset" say about this topic?
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=
+=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@greenie.muc=
+=2Ede
+
+--jDMSkyO0ppwGtKEX
+Content-Type: application/pgp-signature; name=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGzBAEBCAAdFiEEti5qK05WVwt73GvgHYKe/spWKBIFAmoGLDQACgkQHYKe/spW
+KBI8DQv8DnXJyWb2wxaiQ7boBZonfIL9Gg40E45UCunYr8+xNREOXORIeflZpHSV
+F9KhylRQMmxM8mT7lf+EcU632CIY98EDzzoBdu+QggYXFh6MJGCqMYnf0T+hySS0
+v+7kAD6tUqip82UmEg1ribXmkIKt143Y3qRGLvVEBIO+7ZNOvZ57n5x3l4c0p2Qg
+meuwqOcWx2XJwGl/RMWcCk4fSyTkVM9WVqjHMjIp24MiH2RfZ9WXK7T8s+F5NEgJ
+oKumRJvwq3O9ZSL3qmwuuu1PYgH5wB+HSs5090d1S/AdkvtSVitW3zqLUFWgZl+5
+aAeIgWBYs4NsrNeudXuGYbj2ySaLEbNebv2okSl5H/aG/WaXqz85cG+1v8j7BKqP
+80VCSogzChFjs1eal6X2+Wh1U7KaGlR+bV8/DhSgMC8xRy8B7T2rH52jcNQI11Tn
+2DTnFZWUo9wGGtFN9kdoFqt8IlmNKahaCj6gvtRaJZ42CXecwdQZH6F5TBi6u6wM
+LVaNjZZx
+=qcxw
+-----END PGP SIGNATURE-----
+
+--jDMSkyO0ppwGtKEX--
+
+
+--===============4943584075781498281==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============4943584075781498281==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+Openvpn-devel mailing list
+Openvpn-devel@lists.sourceforge.net
+https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+--===============4943584075781498281==--
+
