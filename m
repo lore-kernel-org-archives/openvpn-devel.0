@@ -4,80 +4,77 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 85C6CCD343F
-	for <openvpn-devel@archiver.kernel.org>; Fri, 15 May 2026 08:01:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D90D1CD4F41
+	for <openvpn-devel@archiver.kernel.org>; Fri, 15 May 2026 08:01:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=2Qr2Wu5iq+IHC5bs7pSjh39C+IXfqdIGEtDBrP0yNvc=; b=UnOKge5sQ43PvnLhGj7W4hFcYG
-	nrKSqA+v9L8oMYhVJqLbutD0YakufvObEUIEPDvWLf0vAOg8mEd4wtP1IbmQu9A0nLr3iQ4U4vvAn
-	1DZRjomAPqhqYJsSvwEWh4CDYw+3vwC007ijTGXCOUvrkfyU7UEL10QLMnI7IMSXAMgE=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:Message-ID:Date:To:From:Sender:Reply-To:Cc:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Owner;
+	bh=5U6/gyaIqbdv9PKCR7u8jikUK0ggT/O0DJ+47C3C+NQ=; b=I+WRx1BJz0IpWr4ilMoL+iZ6Wt
+	kHZ9nRA+qiYdlkEQBM8sMRYNCL00OKoTIS9bgConnf8oQi0m6IKlbvjaf6Ok9pMM/6uS5/gTpgnA6
+	sc9EwWZnkkcDKrITMbwyn6q0Zz8klhb7BROE1ST4igPLA8eQaG3QkH+fLeA3+hwIcOns=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wNnTe-0006Vq-Si;
-	Fri, 15 May 2026 08:00:58 +0000
+	id 1wNnTi-0000HW-0I;
+	Fri, 15 May 2026 08:00:59 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <ralf@mandelbit.com>) id 1wNnTa-0006Vb-1e
+ (envelope-from <ralf@mandelbit.com>) id 1wNnTM-0000GB-SW
  for openvpn-devel@lists.sourceforge.net;
- Fri, 15 May 2026 08:00:54 +0000
+ Fri, 15 May 2026 08:00:38 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=40y7XnMkkeXrf07K1VSPgkl2+LDrg9qNQQfiNfet+Rs=; b=QEfkJKOxjsgiG3fO1wGbWaxxyz
- tSGvtuhsM+tkhL1vPwKZzTv0HTCQ+MBNpMCX+UElRwt7dA9Y0Cglv404Z1B1PTwIJ7ijZdbRcTay5
- TMo5h4SfP94K7SoYKLV1pNeiEk1al/GnGp/jJ952lvx37RYXns5d1XA7kNRVmtTPX1Kw=;
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
- ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:Message-ID:
  Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=40y7XnMkkeXrf07K1VSPgkl2+LDrg9qNQQfiNfet+Rs=; b=AQ+z347A+RYqS6v2NwNsd8hnT6
- dVDZ9+am823n8lof4uWSY1SiPR/uME1kxlfFZil8VoFZAaEWZ17DgJ0glX9Oy4ZEpeEPMfU4D/0Rj
- G9qm99SBmw4zJZdMiwSdf9rm+pU9+qGyC5MsSMvywQFcnW6EWUu+Y4paMpSCx2aO6WFk=;
-Received: from mout-b-110.mailbox.org ([195.10.208.55])
+ :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=QglzCGMVmGgxlaaIVm/L7UBnfGZAxuguSjraxxniJAc=; b=i9DSrVRutZ5bY/fkvfJ7RlDxLX
+ j7Mo5enqCNhhb8LYxq95RWTRn13UmPlX10J28MYYQQ7lYfW7Dm/4cNP//JXlB0WTUrvGXrTJYJXrs
+ mXfZiHWmzwtXBcmLqQamhcTYlIWeqgVx6iNoSC1wC5xHX0o6RhHUomGgpPUxFSmTrtxs=;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
+ ;
+ h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:Cc:To:From
+ :Sender:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+ References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=QglzCGMVmGgxlaaIVm/L7UBnfGZAxuguSjraxxniJAc=; b=X
+ Om3OnSJ3g6/ZHi4FubR+cV1qDiowJrXiJTBcEvVY6wQCUSkuu37yNDUvGPeEAPiqo1NB2ZE1qI5pJ
+ 2KdTcYCXp0xBFTJbxqW4rS/1O9q6JqhC1dgjKLIfp7OTWDfF+5jddBTkWVPfhcxZ+rDz4qM4PnfWf
+ Duvn9zm0/JNohnC0=;
+Received: from mout-b-210.mailbox.org ([195.10.208.40])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wNnTT-0004EK-Ij for openvpn-devel@lists.sourceforge.net;
- Fri, 15 May 2026 08:00:53 +0000
+ id 1wNnTB-0004D8-0j for openvpn-devel@lists.sourceforge.net;
+ Fri, 15 May 2026 08:00:31 +0000
 Received: from smtp102.mailbox.org (smtp102.mailbox.org [10.196.197.102])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
  (No client certificate requested)
- by mout-b-110.mailbox.org (Postfix) with ESMTPS id 4gH04K423LzB0bP;
- Fri, 15 May 2026 10:00:33 +0200 (CEST)
+ by mout-b-210.mailbox.org (Postfix) with ESMTPS id 4gH040366SzDx34;
+ Fri, 15 May 2026 10:00:16 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
- s=MBO0001; t=1778832033;
+ s=MBO0001; t=1778832016;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=40y7XnMkkeXrf07K1VSPgkl2+LDrg9qNQQfiNfet+Rs=;
- b=yYxXXkejhpV4DEiPgg0IldCmlTzIsk650IjBkY2DUkucFHWUIaQjIfQ9KzXdOtzDaJJd8A
- Y41dAL0C1M3NJSC6hy4/nzpRWxB2VioRwBt33a7Z7008BxKWZ5JXNpdK1aB9gRYdRLc4ft
- t1pPTdq7rNLsnvFKvBz3cAWr4etYoVu5KnHiEDXV2S4/hXOfMh90c6P53UYShNqH6I7WbC
- cR1OFD7nEPiKOPCXER4a0enkk0X+jt0938qRCSADaUy0989F7X9P/Nfy295SFGok9FAahG
- SzJjEjXp9yDTBJwI0KqpyVAlT2K2thyxnaIS4bbZcupUCFuqmJ45pnqEZlnj/Q==
+ content-transfer-encoding:content-transfer-encoding;
+ bh=QglzCGMVmGgxlaaIVm/L7UBnfGZAxuguSjraxxniJAc=;
+ b=USlR/4dQETeoQ19wTojjDYqkMg9/gTInCqolV/ki8qshhCLQ4KGSzIZOAXu17maz517YM8
+ VuG9xX5GP0DnL281k5Y18+no7KWvAdWF/FHgSMdo8378ovr9MgNRv02cBAb5r8Xmp9bAeN
+ tdtEZtuhJ64JAgtCHMPEzoQLMjXO5EXN52XTyaW3MDX1F12z0LwNsaO0cBatMQlbhkBKJ2
+ A+rz/PQ3B+OTNDKFDWqtxlnPapmzDBdRCEBQi6IhTd0nfQw4pSb9oIon6VYsUAm/KN6oax
+ KnydA+05ZQGRDJqfbJP/jSeSDIF4gYnUoFOPfJbFAsgcHXT2lu4vqpnH/Qykvg==
 From: Ralf Lici <ralf@mandelbit.com>
 To: openvpn-devel@lists.sourceforge.net
-Date: Fri, 15 May 2026 09:59:39 +0200
-Message-ID: <20260515075941.102225-3-ralf@mandelbit.com>
-In-Reply-To: <20260515075941.102225-1-ralf@mandelbit.com>
-References: <20260515075941.102225-1-ralf@mandelbit.com>
+Date: Fri, 15 May 2026 09:59:37 +0200
+Message-ID: <20260515075941.102225-1-ralf@mandelbit.com>
 MIME-Version: 1.0
-X-Headers-End: 1wNnTT-0004EK-Ij
-Subject: [Openvpn-devel] [PATCH ovpn net-next 3/3] selftests: ovpn: add
- mssfix coverage
+X-Headers-End: 1wNnTB-0004D8-0j
+Subject: [Openvpn-devel] [PATCH ovpn net-next 1/3] tcp: factor out TCP MSS
+ option clamping
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -93,262 +90,177 @@ Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-Extend ovpn-cli set_peer to pass the peer mssfix attribute. Use -1 as
-the selftest CLI sentinel for leaving mssfix unchanged, so existing
-timeout-only peer updates can keep omitting the netlink attribute.
+xt_TCPMSS has local logic for scanning TCP options and lowering an
+existing MSS option without increasing it.
 
-Add an ovpn test stage that configures mssfix on each side of a peer
-pair and verifies the MSS advertised on TCP SYN packets seen on the
-tunnel device. This covers both TX-side and RX-side clamping, and also
-checks that an invalid non-zero MSS value is rejected.
+Move that scan-and-clamp logic into a TCP helper so other networking
+code can reuse it without duplicating TCP option parsing. Keep xt_TCPMSS
+responsible for the policy-specific behavior of adding a missing MSS
+option.
+
+The helper returns 0 when an existing MSS option was handled, whether or
+not it had to be lowered. It returns -ENOENT when no MSS option is
+present and -EINVAL when option parsing finds a malformed option block.
+xt_TCPMSS treats both non-zero cases like the previous local scan
+failing to find a clampable MSS option, so the target keeps its existing
+fallback behavior for adding a missing MSS option or accepting the
+packet unchanged.
+
+The helper expects the caller to ensure that the TCP header and options
+are linear and writable.
 
 Signed-off-by: Ralf Lici <ralf@mandelbit.com>
 ---
- tools/testing/selftests/net/ovpn/ovpn-cli.c   | 19 ++++-
- .../selftests/net/ovpn/test-close-socket.sh   |  4 +-
- tools/testing/selftests/net/ovpn/test-mark.sh |  4 +-
- tools/testing/selftests/net/ovpn/test.sh      | 75 +++++++++++++++++--
- 4 files changed, 89 insertions(+), 13 deletions(-)
+ include/net/tcp.h         |  2 ++
+ net/ipv4/tcp.c            | 60 +++++++++++++++++++++++++++++++++++++++
+ net/netfilter/xt_TCPMSS.c | 36 ++---------------------
+ 3 files changed, 64 insertions(+), 34 deletions(-)
 
-diff --git a/tools/testing/selftests/net/ovpn/ovpn-cli.c b/tools/testing/selftests/net/ovpn/ovpn-cli.c
-index d40953375c86..ca992a7cee3d 100644
---- a/tools/testing/selftests/net/ovpn/ovpn-cli.c
-+++ b/tools/testing/selftests/net/ovpn/ovpn-cli.c
-@@ -10,6 +10,7 @@
- #include <stdio.h>
- #include <inttypes.h>
- #include <stdbool.h>
-+#include <stdlib.h>
- #include <string.h>
- #include <errno.h>
- #include <unistd.h>
-@@ -129,6 +130,7 @@ struct ovpn_ctx {
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 3c4e6adb0dbd..e722c7d936bf 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -538,6 +538,8 @@ void tcp_parse_options(const struct net *net, const struct sk_buff *skb,
+ 		       struct tcp_options_received *opt_rx,
+ 		       int estab, struct tcp_fastopen_cookie *foc);
  
- 	__u32 keepalive_interval;
- 	__u32 keepalive_timeout;
-+	int mssfix;
- 
- 	enum ovpn_key_direction key_dir;
- 	enum ovpn_key_slot key_slot;
-@@ -732,6 +734,8 @@ static int ovpn_set_peer(struct ovpn_ctx *ovpn)
- 		    ovpn->keepalive_interval);
- 	NLA_PUT_U32(ctx->nl_msg, OVPN_A_PEER_KEEPALIVE_TIMEOUT,
- 		    ovpn->keepalive_timeout);
-+	if (ovpn->mssfix >= 0)
-+		NLA_PUT_U16(ctx->nl_msg, OVPN_A_PEER_MSSFIX, ovpn->mssfix);
- 	nla_nest_end(ctx->nl_msg, attr);
- 
- 	ret = ovpn_nl_msg_send(ctx, NULL);
-@@ -1730,13 +1734,15 @@ static void usage(const char *cmd)
- 	fprintf(stderr, "\tmark: socket FW mark value\n");
- 
- 	fprintf(stderr,
--		"* set_peer <iface> <peer_id> <keepalive_interval> <keepalive_timeout>: set peer attributes\n");
-+		"* set_peer <iface> <peer_id> <keepalive_interval> <keepalive_timeout> <mssfix>: set peer attributes\n");
- 	fprintf(stderr, "\tiface: ovpn interface name\n");
- 	fprintf(stderr, "\tpeer_id: peer ID of the peer to modify\n");
- 	fprintf(stderr,
- 		"\tkeepalive_interval: interval for sending ping messages\n");
- 	fprintf(stderr,
- 		"\tkeepalive_timeout: time after which a peer is timed out\n");
-+	fprintf(stderr,
-+		"\tmssfix: TCP MSS value to clamp SYN packets to (0 disables, -1 leaves unchanged)\n");
- 
- 	fprintf(stderr, "* del_peer <iface> <peer_id>: delete peer\n");
- 	fprintf(stderr, "\tiface: ovpn interface name\n");
-@@ -2307,7 +2313,7 @@ static int ovpn_parse_cmd_args(struct ovpn_ctx *ovpn, int argc, char *argv[])
- 		}
- 		break;
- 	case CMD_SET_PEER:
--		if (argc < 6)
-+		if (argc < 7)
- 			return -EINVAL;
- 
- 		ovpn->peer_id = strtoul(argv[3], NULL, 10);
-@@ -2329,6 +2335,14 @@ static int ovpn_parse_cmd_args(struct ovpn_ctx *ovpn, int argc, char *argv[])
- 				"keepalive interval value out of range\n");
- 			return -1;
- 		}
++int tcp_clamp_mss_option(struct sk_buff *skb, struct tcphdr *th, u16 maxmss);
 +
-+		errno = 0;
-+		ovpn->mssfix = strtol(argv[6], NULL, 10);
-+		if (errno == ERANGE || ovpn->mssfix < -1 ||
-+		    ovpn->mssfix > UINT16_MAX) {
-+			fprintf(stderr, "mssfix value out of range\n");
-+			return -1;
+ /*
+  *	BPF SKB-less helpers
+  */
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 21ece4c71612..ef10e530a1ad 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -721,6 +721,66 @@ static inline void tcp_mark_urg(struct tcp_sock *tp, int flags)
+ 		tp->snd_up = tp->write_seq;
+ }
+ 
++/**
++ * tcp_clamp_mss_option - clamp an existing TCP MSS option
++ * @skb: skb containing the TCP segment
++ * @th: TCP header in @skb
++ * @maxmss: upper bound for the TCP MSS option value
++ *
++ * Parse the TCP option block and lower an existing MSS option to @maxmss.
++ * The MSS value is never increased. If the MSS value is changed, the TCP
++ * checksum in @th is updated.
++ *
++ * The caller must ensure that @th and the complete TCP option block are
++ * present in the linear data area and writable.
++ *
++ * Return: 0 on success or when no update is needed, -ENOENT when no MSS
++ * option is present, or -EINVAL when the TCP option block is malformed.
++ */
++int tcp_clamp_mss_option(struct sk_buff *skb, struct tcphdr *th, u16 maxmss)
++{
++	int length = th->doff * 4 - sizeof(*th);
++	u8 *ptr = (u8 *)(th + 1);
++	u16 oldmss;
++
++	while (length > 0) {
++		int opcode = *ptr++;
++		int opsize;
++
++		switch (opcode) {
++		case TCPOPT_EOL:
++			return -ENOENT;
++		case TCPOPT_NOP:
++			length--;
++			continue;
++		default:
++			if (length < 2)
++				return -EINVAL;
++
++			opsize = *ptr++;
++			if (opsize < 2 || opsize > length)
++				return -EINVAL;
++
++			if (opcode == TCPOPT_MSS && opsize == TCPOLEN_MSS) {
++				oldmss = get_unaligned_be16(ptr);
++				if (!oldmss || oldmss <= maxmss)
++					return 0;
++
++				put_unaligned_be16(maxmss, ptr);
++				inet_proto_csum_replace2(&th->check, skb,
++							 htons(oldmss),
++							 htons(maxmss), false);
++				return 0;
++			}
++
++			ptr += opsize - 2;
++			length -= opsize;
 +		}
- 		break;
- 	case CMD_DEL_PEER:
- 		if (argc < 4)
-@@ -2442,6 +2456,7 @@ int main(int argc, char *argv[])
- 	memset(&ovpn, 0, sizeof(ovpn));
- 	ovpn.sa_family = AF_UNSPEC;
- 	ovpn.cipher = OVPN_CIPHER_ALG_NONE;
-+	ovpn.mssfix = -1;
- 
- 	ovpn.cmd = ovpn_parse_cmd(argv[1]);
- 	if (ovpn.cmd == CMD_INVALID) {
-diff --git a/tools/testing/selftests/net/ovpn/test-close-socket.sh b/tools/testing/selftests/net/ovpn/test-close-socket.sh
-index af1532b4d2da..091c0103bdba 100755
---- a/tools/testing/selftests/net/ovpn/test-close-socket.sh
-+++ b/tools/testing/selftests/net/ovpn/test-close-socket.sh
-@@ -41,10 +41,10 @@ ovpn_prepare_network() {
- 		peer_ns="ovpn_peer${p}"
- 		ovpn_cmd_ok "set peer0 timeout for peer ${p}" \
- 			ip netns exec ovpn_peer0 ${OVPN_CLI} set_peer tun0 \
--				${p} 60 120
-+				${p} 60 120 -1
- 		ovpn_cmd_ok "set peer${p} timeout for peer ${p}" \
- 			ip netns exec "${peer_ns}" ${OVPN_CLI} set_peer \
--				tun${p} $((p + OVPN_ID_OFFSET)) 60 120
-+				tun${p} $((p + OVPN_ID_OFFSET)) 60 120 -1
- 	done
- }
- 
-diff --git a/tools/testing/selftests/net/ovpn/test-mark.sh b/tools/testing/selftests/net/ovpn/test-mark.sh
-index 5a8f47554286..11af23beea2a 100755
---- a/tools/testing/selftests/net/ovpn/test-mark.sh
-+++ b/tools/testing/selftests/net/ovpn/test-mark.sh
-@@ -54,10 +54,10 @@ ovpn_mark_prepare_network() {
- 		peer_ns="ovpn_peer${p}"
- 		ovpn_cmd_ok "set peer0 timeout for peer ${p}" \
- 			ip netns exec ovpn_peer0 "${OVPN_CLI}" set_peer tun0 \
--				"${p}" 60 120
-+				"${p}" 60 120 -1
- 		ovpn_cmd_ok "set peer${p} timeout for peer ${p}" \
- 			ip netns exec "${peer_ns}" "${OVPN_CLI}" set_peer \
--				tun"${p}" $((p + OVPN_ID_OFFSET)) 60 120
-+				tun"${p}" $((p + OVPN_ID_OFFSET)) 60 120 -1
- 	done
- }
- 
-diff --git a/tools/testing/selftests/net/ovpn/test.sh b/tools/testing/selftests/net/ovpn/test.sh
-index c06e3135fbef..a0630034351a 100755
---- a/tools/testing/selftests/net/ovpn/test.sh
-+++ b/tools/testing/selftests/net/ovpn/test.sh
-@@ -49,10 +49,10 @@ ovpn_prepare_network() {
- 		peer_ns="ovpn_peer${p}"
- 		ovpn_cmd_ok "set peer0 timeout for peer ${p}" \
- 			ip netns exec ovpn_peer0 ${OVPN_CLI} set_peer tun0 \
--				${p} 60 120
-+				${p} 60 120 -1
- 		ovpn_cmd_ok "set peer${p} timeout for peer ${p}" \
- 			ip netns exec "${peer_ns}" ${OVPN_CLI} set_peer \
--				tun${p} $((p + OVPN_ID_OFFSET)) 60 120
-+				tun${p} $((p + OVPN_ID_OFFSET)) 60 120 -1
- 	done
- }
- 
-@@ -142,6 +142,66 @@ ovpn_run_iperf() {
- 	wait "${iperf_pid}" || return 1
- }
- 
-+ovpn_run_mssfix_flow() {
-+	local filter
-+	local iperf_pid
-+	local direction="$1"
-+	local mssfix="$2"
-+	local tcpdump_pid
-+
-+	filter="tcp and src host 5.5.5.1 and dst host 5.5.5.2"
-+	filter="${filter} and tcp[tcpflags] & tcp-syn != 0"
-+
-+	ovpn_run_bg iperf_pid ip netns exec ovpn_peer1 iperf3 -1 -s
-+	sleep 1
-+
-+	timeout 3s ip netns exec ovpn_peer1 tcpdump --immediate-mode -l -p \
-+		-vv -nn -i tun1 -c 1 "${filter}" 2>&1 |
-+		grep -iq "mss ${mssfix}" &
-+	tcpdump_pid=$!
-+	sleep 0.3
-+
-+	ovpn_cmd_ok "run ${direction} mssfix TCP flow" \
-+		ip netns exec ovpn_peer0 iperf3 -t 1 -c 5.5.5.2
-+
-+	ovpn_cmd_ok "capture ${direction} mssfix TCP SYN" wait "${tcpdump_pid}"
-+	ovpn_cmd_ok "finish ${direction} mssfix TCP server" wait "${iperf_pid}"
++	}
++	return -ENOENT;
 +}
++EXPORT_SYMBOL_GPL(tcp_clamp_mss_option);
 +
-+ovpn_run_mssfix() {
-+	local peer0_id=$((1 + OVPN_ID_OFFSET))
-+
-+	# peer0 will clamp MSS for packets exchanged with peer1
-+	ovpn_cmd_ok "set peer0 mssfix for peer 1" \
-+		ip netns exec ovpn_peer0 ${OVPN_CLI} set_peer tun0 1 \
-+			60 120 900
-+
-+	ovpn_cmd_fail "reject invalid peer0 mssfix for peer 1" \
-+		ip netns exec ovpn_peer0 ${OVPN_CLI} set_peer tun0 1 \
-+			60 120 20
-+
-+	ovpn_cmd_ok "clear peer1 mssfix for peer ${peer0_id}" \
-+		ip netns exec ovpn_peer1 ${OVPN_CLI} set_peer tun1 \
-+			"${peer0_id}" 60 120 0
-+
-+	ovpn_run_mssfix_flow "TX" 900
-+
-+	ovpn_cmd_ok "clear peer0 mssfix for peer 1" \
-+		ip netns exec ovpn_peer0 ${OVPN_CLI} set_peer tun0 1 \
-+			60 120 0
-+
-+	# peer1 will clamp MSS for packets exchanged with peer0
-+	ovpn_cmd_ok "set peer1 mssfix for peer ${peer0_id}" \
-+		ip netns exec ovpn_peer1 ${OVPN_CLI} set_peer tun1 \
-+			"${peer0_id}" 60 120 901
-+
-+	ovpn_run_mssfix_flow "RX" 901
-+
-+	ovpn_cmd_ok "clear peer1 mssfix for peer ${peer0_id}" \
-+		ip netns exec ovpn_peer1 ${OVPN_CLI} set_peer tun1 \
-+			"${peer0_id}" 60 120 0
-+}
-+
- ovpn_run_key_rollover() {
- 	local p
- 	local peer_ns
-@@ -259,11 +319,11 @@ ovpn_run_timeouts() {
- 		# Non-fatal: this may fail in some protocol modes.
- 		ovpn_cmd_mayfail "set peer0 timeout for peer ${p} (non-fatal)" \
- 			ip netns exec ovpn_peer0 ${OVPN_CLI} set_peer tun0 \
--				${p} 3 3
-+				${p} 3 3 -1
- 		peer_ns="ovpn_peer${p}"
- 		ovpn_cmd_ok "disable timeout on peer${p} while peer0 adjusts \
- 			state" ip netns exec "${peer_ns}" ${OVPN_CLI} set_peer \
--			tun${p} $((p + OVPN_ID_OFFSET)) 0 0
-+			tun${p} $((p + OVPN_ID_OFFSET)) 0 0 -1
- 	done
- 	# wait for peers to timeout
- 	sleep 5
-@@ -274,7 +334,7 @@ ovpn_run_timeouts() {
- 		peer_ns="ovpn_peer${p}"
- 		ovpn_cmd_ok "set peer${p} P2P timeout" \
- 			ip netns exec "${peer_ns}" ${OVPN_CLI} set_peer \
--				tun${p} $((p + OVPN_ID_OFFSET)) 3 3
-+				tun${p} $((p + OVPN_ID_OFFSET)) 3 3 -1
- 	done
- 	sleep 5
- }
-@@ -293,9 +353,9 @@ trap ovpn_stage_err ERR
+ /* If a not yet filled skb is pushed, do not send it if
+  * we have data packets in Qdisc or NIC queues :
+  * Because TX completion will happen shortly, it gives a chance
+diff --git a/net/netfilter/xt_TCPMSS.c b/net/netfilter/xt_TCPMSS.c
+index 80e1634bc51f..70983b757229 100644
+--- a/net/netfilter/xt_TCPMSS.c
++++ b/net/netfilter/xt_TCPMSS.c
+@@ -30,16 +30,6 @@ MODULE_DESCRIPTION("Xtables: TCP Maximum Segment Size (MSS) adjustment");
+ MODULE_ALIAS("ipt_TCPMSS");
+ MODULE_ALIAS("ip6t_TCPMSS");
  
- ktap_print_header
- if [ "${OVPN_FLOAT}" == "1" ]; then
--	ktap_set_plan 13
-+	ktap_set_plan 14
- else
--	ktap_set_plan 12
-+	ktap_set_plan 13
- fi
+-static inline unsigned int
+-optlen(const u_int8_t *opt, unsigned int offset)
+-{
+-	/* Beware zero-length options: make finite progress */
+-	if (opt[offset] <= TCPOPT_NOP || opt[offset+1] == 0)
+-		return 1;
+-	else
+-		return opt[offset+1];
+-}
+-
+ static u_int32_t tcpmss_reverse_mtu(struct net *net,
+ 				    const struct sk_buff *skb,
+ 				    unsigned int family)
+@@ -77,7 +67,6 @@ tcpmss_mangle_packet(struct sk_buff *skb,
+ 	const struct xt_tcpmss_info *info = par->targinfo;
+ 	struct tcphdr *tcph;
+ 	int len, tcp_hdrlen;
+-	unsigned int i;
+ 	__be16 oldval;
+ 	u16 newmss;
+ 	u8 *opt;
+@@ -113,29 +102,8 @@ tcpmss_mangle_packet(struct sk_buff *skb,
+ 	} else
+ 		newmss = info->mss;
  
- ovpn_cleanup
-@@ -307,6 +367,7 @@ ovpn_run_stage "run LAN traffic behind peer1" ovpn_run_lan_traffic
- [ "${OVPN_FLOAT}" == "1" ] && ovpn_run_stage "run floating peer checks" \
- 	ovpn_run_float_mode
- ovpn_run_stage "run iperf throughput" ovpn_run_iperf
-+ovpn_run_stage "run mssfix TCP SYN clamp" ovpn_run_mssfix
- ovpn_run_stage "run key rollout" ovpn_run_key_rollover
- ovpn_run_stage "query peers" ovpn_run_queries
- ovpn_run_stage "query missing peer fails" ovpn_query_peer_missing
+-	opt = (u_int8_t *)tcph;
+-	for (i = sizeof(struct tcphdr); i <= tcp_hdrlen - TCPOLEN_MSS; i += optlen(opt, i)) {
+-		if (opt[i] == TCPOPT_MSS && opt[i+1] == TCPOLEN_MSS) {
+-			u_int16_t oldmss;
+-
+-			oldmss = (opt[i+2] << 8) | opt[i+3];
+-
+-			/* Never increase MSS, even when setting it, as
+-			 * doing so results in problems for hosts that rely
+-			 * on MSS being set correctly.
+-			 */
+-			if (oldmss <= newmss)
+-				return 0;
+-
+-			opt[i+2] = (newmss & 0xff00) >> 8;
+-			opt[i+3] = newmss & 0x00ff;
+-
+-			inet_proto_csum_replace2(&tcph->check, skb,
+-						 htons(oldmss), htons(newmss),
+-						 false);
+-			return 0;
+-		}
+-	}
++	if (tcp_clamp_mss_option(skb, tcph, newmss) == 0)
++		return 0;
+ 
+ 	/* There is data after the header so the option can't be added
+ 	 * without moving it, and doing so may make the SYN packet
 -- 
 2.54.0
 
