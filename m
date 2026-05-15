@@ -4,37 +4,37 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 878B9CD343F
-	for <openvpn-devel@archiver.kernel.org>; Fri, 15 May 2026 06:23:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D1AAECD343F
+	for <openvpn-devel@archiver.kernel.org>; Fri, 15 May 2026 06:23:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:List-Subscribe:List-Help:
 	List-Post:List-Archive:List-Unsubscribe:List-Id:Subject:In-Reply-To:
 	MIME-Version:References:Message-ID:To:From:Date:Sender:Reply-To:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=vGrMlzs/qGgCLNE6gGVZvKL5C8voulTzLfd2kIgbwzs=; b=ji0/dUvbO7yQi/Oz/89Z9xrlrb
-	kGp/fCZV20mt5H8sS5zC7zn1BRRbD5ApaxABXRR+p6lfy5FupwReM3Aovg7DeJpoAGyFaprwFzEyy
-	xA6QfEYDqdJkbLPboB6IsTH7s+ZqPozbDgVlESB26IUUVSKE8ji+jsFrbbZATwt+Nq/E=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=dB0c8VidIU4xHK00avzyV7PJGITIm5LvA63s4bwd7Lo=; b=Ky2Q/31/MFlZIikRKQLvrWEm+a
+	RnSjJ4YkcX4LUBHcWhg6vHLzV25iIqq1M0XPs+cDRg6DLidfCJL0q6rYxkkiI8J9WQN7m1Fw6g8xi
+	MpkKP27J3XgmvkrVn+9aSXRRF//pM6OLg0CW+nEvF5VvMe7RNp+IapJCif3QOnUl/pRA=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wNlwu-0004M5-Uv;
-	Fri, 15 May 2026 06:23:04 +0000
+	id 1wNlxN-0000EY-Ui;
+	Fri, 15 May 2026 06:23:34 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@chekov.greenie.muc.de>) id 1wNlwd-0004LU-Pt
+ (envelope-from <gert@chekov.greenie.muc.de>) id 1wNlxL-0000EQ-PH
  for openvpn-devel@lists.sourceforge.net;
- Fri, 15 May 2026 06:22:47 +0000
+ Fri, 15 May 2026 06:23:32 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=In-Reply-To:Content-Type:MIME-Version:References:
  Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=O3+gCH9Cezu+TnVBpaHrSe1wjsQdtttAWV8gc7Gp9D8=; b=R13UlHqFYbJeaBjZKfVxx+ZRqz
- llpsD8usLJCwlcW7TihH1qnekBTwa75yunS7nYY3sVijwHgoZOs6qmenFO8Ab55FkHRPgvkFffA5J
- EUM67BkQnK2ra2ZBMJta9NehNGk1Idg1hdC7gOse+pZHWoDrD00KYRLe7D0inWuLxoTQ=;
+ bh=ZxP6zKx1muelCwMjyLLJdy2AmH0nFycecl+lvq6BfA8=; b=dP+7EbCkXjcFD1ICu3Ipl7Rwso
+ E1cSN9B5mQBtMPArS19cPwjRASWPprdtxDuaYHAPI5td6Xdr8MAzQSw++2Sk+zG0yVjF4xoLw8iUo
+ 4XlZ+fa7s2eLRb6MOXlrm7jbx2tu5lDFsJfz59J1rQGctrEJpQfiHGttSIZgmlj0zC1A=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To
@@ -42,25 +42,25 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=O3+gCH9Cezu+TnVBpaHrSe1wjsQdtttAWV8gc7Gp9D8=; b=XRdzp1/6JMz4zC1e+5Ua2P7Ixf
- ZwmgXVao6uWl0J8vR/CKQCWHPNBdCeb8zCTKjRS9Kx/EEsYwi3mQmDcf3gpgyN2HApdSAFfY0Lcwn
- jNOifgjbQo/ZQ+dKhqd8C/AqjgBpsxdHB5gGfSsvFlaS8qCIRVaP2REB43TTV0VSeT1Y=;
+ bh=ZxP6zKx1muelCwMjyLLJdy2AmH0nFycecl+lvq6BfA8=; b=B1A5eY+5kQyv/iHv/kyj1Ckr0C
+ UJ7kdYz8lhPzP1uc0mm6oXlmpbO21gTAon2uszCMNvKRp+IMkBn+hIoBmUaxXN+S6RvTEF0Z9AmEX
+ LejnskrgGdAtNDtRjsUN0DjMiLizLvVAqqm0MtUK2i+7ctbh04lpalvjMqQdu1JqwucU=;
 Received: from chekov.greenie.muc.de ([193.149.48.178])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wNlwR-0007bn-Vx for openvpn-devel@lists.sourceforge.net;
- Fri, 15 May 2026 06:22:39 +0000
+ id 1wNlxK-0007fc-2V for openvpn-devel@lists.sourceforge.net;
+ Fri, 15 May 2026 06:23:32 +0000
 Received: from chekov.greenie.muc.de (localhost [IPv6:0:0:0:0:0:0:0:1])
- by chekov.greenie.muc.de (8.18.2/8.18.1) with ESMTP id 64F6MTGN027563;
- Fri, 15 May 2026 08:22:29 +0200 (CEST)
+ by chekov.greenie.muc.de (8.18.2/8.18.1) with ESMTP id 64F6NIrk027585;
+ Fri, 15 May 2026 08:23:18 +0200 (CEST)
  (envelope-from gert@chekov.greenie.muc.de)
 Received: (from gert@localhost)
- by chekov.greenie.muc.de (8.18.2/8.18.1/Submit) id 64F6MTYL027562;
- Fri, 15 May 2026 08:22:29 +0200 (CEST) (envelope-from gert)
-Date: Fri, 15 May 2026 08:22:29 +0200
+ by chekov.greenie.muc.de (8.18.2/8.18.1/Submit) id 64F6NIYD027584;
+ Fri, 15 May 2026 08:23:18 +0200 (CEST) (envelope-from gert)
+Date: Fri, 15 May 2026 08:23:18 +0200
 From: Gert Doering <gert@greenie.muc.de>
 To: Piotr Dobrogost <2026@p.dobrogost.net>
-Message-ID: <aga7pYz8bJg4UdPZ@greenie.muc.de>
+Message-ID: <aga71mZ3jRgl0TEA@greenie.muc.de>
 References: <d7bd1d3d-c9e3-4f4a-ba75-0fdccb5006f5@unstable.cc>
  <agWNa_czBd91yZ47@greenie.muc.de>
  <2f645b45-0de9-4264-a386-1a9541a36478@unstable.cc>
@@ -74,7 +74,7 @@ References: <d7bd1d3d-c9e3-4f4a-ba75-0fdccb5006f5@unstable.cc>
 MIME-Version: 1.0
 In-Reply-To: <CAA6tFMsXEvMBr8n-x7N2aZwrn-jTfvHozBjHbRKA8tvAEFeayQ@mail.gmail.com>
 X-mgetty-docs: http://mgetty.greenie.net/
-X-Headers-End: 1wNlwR-0007bn-Vx
+X-Headers-End: 1wNlxK-0007fc-2V
 Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN tunnel stopped working
  (no traffic) after upgrade to OpenVPN 2.7 (Fedora 44)
 X-BeenThere: openvpn-devel@lists.sourceforge.net
@@ -90,17 +90,17 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Cc: openvpn-devel@lists.sourceforge.net, Gert Doering <gert@greenie.muc.de>,
  Antonio Quartulli <a@unstable.cc>
-Content-Type: multipart/mixed; boundary="===============1765061454329812342=="
+Content-Type: multipart/mixed; boundary="===============7242183631757245718=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
 
---===============1765061454329812342==
+--===============7242183631757245718==
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="5ssnddUBiq0l5v1V"
+	protocol="application/pgp-signature"; boundary="+d4PQTrtSLbvKIM6"
 Content-Disposition: inline
 
 
---5ssnddUBiq0l5v1V
+--+d4PQTrtSLbvKIM6
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
@@ -109,19 +109,9 @@ Hi,
 
 On Fri, May 15, 2026 at 12:31:33AM +0200, Piotr Dobrogost wrote:
 > I did not, but I repeated the steps now, and ping does not work.
-> Btw, I found out someone else a few days ago had the same problem on
-> Windows and adding disable-dco in a config also fixed the issue.
 
-This is likely a red herring.  There are various reasons why "using DCO"
-might fail (different code paths, options negotiated that are incompatible
-with DCO but not properly caught, bugs) but "windows DCO" is so very
-different from "Linux DCO" that it's close to impossible that it's the
-same cause.
-
-(Windows DCO, for example, uses more modern APIs to configure IP addresses
-and DNS than the old TAP6 driver, and some setups happen to use configs
-that are not really what we expected and "happened to work" with the old
-method... but on Linux, everything is netlink)
+What we need is a dump that shows the handshake, and the ports used,
+and then a ping, showing the ports used *then*.
 
 gert
 --=20
@@ -136,35 +126,35 @@ ss
 Gert Doering - Munich, Germany                             gert@greenie.muc=
 =2Ede
 
---5ssnddUBiq0l5v1V
+--+d4PQTrtSLbvKIM6
 Content-Type: application/pgp-signature; name=signature.asc
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGzBAEBCAAdFiEEti5qK05WVwt73GvgHYKe/spWKBIFAmoGu6MACgkQHYKe/spW
-KBI30gwAotDUNCb/9KkM3fkOHUQn4TBl8l9LPB9L0qyrPWGLOOH3gIOOYsj1zP+0
-g2YpvUjXxZnzLtLPDmEm8DzrO1PhOJ72w0cVR7ra1KulBYxraKtIJHFicau2Ni/z
-3gf2nF+BSyuzyqgQ3+BeBkkRGhuydbfDu4DFuelPPZwX7bWHsdpna5EL2Mx/0YQz
-mWK6TSqSmD65YkuNQ3tMbAu5IcH+jz4FsfQ+FfqrnZGTmZz1IFZqKpNWj9zc7G/l
-ybGpDgdcpOdZHzVQHI6zr/DMswEldoXaHSBsTOMIjR+YvC3wKhteWqXlGuWfQ0FW
-smN2odqHvGk9wN0UndYtA82NFp7dodgvXm958X7Z78cryJ+89IZC0AeDlZsuf39W
-aGOtcgObIuyivoFc425scdKeiujGbwbBRvCJvenILOIsMRe2kGSzxXXBVWC87KC7
-B8FhPswAkBhIxPZII2TclAlh1eYFdbylsHXtxWdAq6uPSridiX4ngi1j5ZPuYI5O
-zkfBfGbN
-=F/SK
+iQGzBAEBCAAdFiEEti5qK05WVwt73GvgHYKe/spWKBIFAmoGu9YACgkQHYKe/spW
+KBJ4KQv/TvTLqFJAj+NeJG/WoPKit6g/PGwXwYZFiazJTg8qnmWD55A3EQEs9J4Q
++dBsCwVzZp5RSFZE5blZHMAvF9ldGalb+tJYE8Pu1LR0w2c9XrWLD1M09w9DRnxs
+Iw/WRUgSB0zT3MigWJnO7kIJ8MOVvtlyTSffguQVsuPoY5ZZmi3xMUg5as3Yke0Q
+A4LFUcwvcNlv0W0QL/ges9jxZEw0EsxxcWIu8UNC/bgTcxL9E914T1sQ/Y0VoBgz
+9F3svoa4CXxJuLcJDNO33LqT3D6mFysH5pF/zoxQYSWGFy3+fL06I0axQY8aELMZ
+MnQKZddZNkSuOXgzw2E1LFQSIVU+23iRYX3Vf1KTnmazyBLowjEd4+s/qVGunz6B
+/5vEdgRcW5kry2YPKHePVGsMDDqS7X5cFL8c+MuojM3cgVUf3qiqZEBdhjGeOqhx
+YHuv62KPiusQr1h6G5SdPrOWC1OEayjtixvmojaQW2UDiUES9PEfs6YXyuNQjWGA
+Wq1YMS11
+=jXBI
 -----END PGP SIGNATURE-----
 
---5ssnddUBiq0l5v1V--
+--+d4PQTrtSLbvKIM6--
 
 
---===============1765061454329812342==
+--===============7242183631757245718==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============1765061454329812342==
+--===============7242183631757245718==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -175,5 +165,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============1765061454329812342==--
+--===============7242183631757245718==--
 
