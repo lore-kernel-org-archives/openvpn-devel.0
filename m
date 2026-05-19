@@ -4,86 +4,126 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E8BC3CD4851
-	for <openvpn-devel@archiver.kernel.org>; Tue, 19 May 2026 08:06:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C8BD4CD4851
+	for <openvpn-devel@archiver.kernel.org>; Tue, 19 May 2026 09:40:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
-	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=Cb7FGyjwbatfZAm89QP9HWu0fHFFFzINuiruOifUIH0=; b=F/p+TD5PEaOmTTgClzYji+58od
-	ITzf2c4FZ+0/E0XfLGiUz77K3/qTuAHNdNkzcfaBATi9j5gN6DqoqjVIpOxM18C7rwuGdez4PikQ0
-	jaeKcmM/pJ8U6gICl2eInd/THzTBRi542GLzWyNKrF5rIXfwgDYvHoUcytBXur8Atg0k=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:Subject:
+	MIME-Version:Message-ID:References:To:Date:From:Sender:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+	List-Owner; bh=G8tQAsxYhqxpGNcL8DsqQrq2N5E7sNmJVQjyAnumF+0=; b=h6LqkYyR+hL0O9
+	4zMftMWdHguiKyTDwh1EP+lQI0pXW0ILqp3M6yjsa/1MWs2GgiXwj51rkPXgw3f2u/Pjnochf4pLu
+	d3bExgDMIyl8H+g1nIiHr5ofamztoFWrNoan7dGgZlKGFI00RpF0qhnK6lJVvWDV9finFURpC8lJp
+	x0o=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wPFT6-0005u1-52;
-	Tue, 19 May 2026 08:06:24 +0000
+	id 1wPGva-0004Uu-Lb;
+	Tue, 19 May 2026 09:39:52 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <ralf@mandelbit.com>) id 1wPFT4-0005ts-VX
+ (envelope-from <gerrit@openvpn.net>) id 1wPGvZ-0004Uo-HN
  for openvpn-devel@lists.sourceforge.net;
- Tue, 19 May 2026 08:06:22 +0000
+ Tue, 19 May 2026 09:39:51 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
+ :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:
+ From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From:
+ Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=HSBrAxgg9TA8Nv4spPH/6U3Nb3eQ/75uJ75ANkxmx9Q=; b=UGfQNNFz0XmBLlK47nmZae2PoV
- aECa+YrdmskzlGSaW4yNq6a6O91Byecxzazndab8A3UR2HOfQ/QWgeUdWADuIExWfoq3IwfwEuwJk
- Z+gbue9q9nuMalMdD+NIl6UOY2F7evlt1DKp2TQSeJUjxfl/3SiY56IPxWX4XXg+2Ul4=;
+ bh=O0YIer+1e83ShC2klfT87kAfFZphjqnScHhTUBnUx+E=; b=lr7ObthhsXKyOswCcDCuhXGe0/
+ L6njmWf3AK7LF31o2ETvQfhrE1pmHvepCCZ3wFcOe2WXxTBmSVICkn1uKUtn4DV7R7s6ijEM6NecT
+ zzEAEIshvtLStOloOY/pSefyA4n/v9UZEc1PHKsdYXhZgM406fGXCGc88xNH/Be2U8fM=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=HSBrAxgg9TA8Nv4spPH/6U3Nb3eQ/75uJ75ANkxmx9Q=; b=mFC3lLp3pbZwF7KUKMDk9OCSdI
- OiJa9FtpYkwEJzsL1PioaBm3RT4x94YbaEzB9mhxlNI+G7pg82s3h2x6Fo3dJiEAruARCamMvjbXL
- Mtgzc5sDHDUtr8k6IwvBUUHYen4ymqX1YzMa4HvLvKyDzpPoObL5SSaHPGJKMoLagvE0=;
-Received: from mout-b-106.mailbox.org ([195.10.208.46])
+ h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
+ Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:From:Sender:Content-ID
+ :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+ Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=O0YIer+1e83ShC2klfT87kAfFZphjqnScHhTUBnUx+E=; b=U
+ hql3qayQEyiszk5OD6iHGxT1Y8cOMhRO13djjrX/lr0MsOb5pifUyvZTIt1EMrs7vf/wP+Mka4FNN
+ pABx/aJDST+97ryNBd6QNM8so3NKX9bNA2oMl49RscZMN8pyQ/tBbZARKvDbS0RNh7Wl8CAbhmICW
+ 7iHSN4MDw9j0yeg0=;
+Received: from mail-wm1-f47.google.com ([209.85.128.47])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wPFT2-0004AP-Or for openvpn-devel@lists.sourceforge.net;
- Tue, 19 May 2026 08:06:22 +0000
-Received: from smtp1.mailbox.org (smtp1.mailbox.org
- [IPv6:2001:67c:2050:b231:465::1])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
- key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
- (No client certificate requested)
- by mout-b-106.mailbox.org (Postfix) with ESMTPS id 4gKS0w2K3SzDsKV;
- Tue, 19 May 2026 10:06:08 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
- s=MBO0001; t=1779177968;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=HSBrAxgg9TA8Nv4spPH/6U3Nb3eQ/75uJ75ANkxmx9Q=;
- b=HtI/DDuMf3MaKaKeEQmyXZ43BMj8WZo4oIggmsMp6U8HlW+hiqA1Qv+9RPGtrdc9pPrSgo
- ivUpkNzC7dILfxEpM5YG76Q0MR1xXBIVWPfw8P8IST2ZkhE0hp1QX6YsPyohx691mhUPdo
- 8rzVJzAT4etEAfoeJcZX0VZ58SZAWdyAL82IsWiurALEQyXtuhYAzg4Cf5Ip57A26RP/RO
- lMOG2S851Z/2VyWXdY0eM9p0DCF7W2wk3bVzwVc0yTDQ3oQoKKm0eBzl8Bo9AM+NX5cLBq
- 4ereHf1xy06u9nzOcHMm/RRruRKvI4jtwPcjfx9CbYJJCutBVsVrK8q+uEbIyQ==
-Authentication-Results: outgoing_mbo_mout; dkim=none;
- spf=pass (outgoing_mbo_mout: domain of ralf@mandelbit.com designates
- 2001:67c:2050:b231:465::1 as permitted sender)
- smtp.mailfrom=ralf@mandelbit.com
-From: Ralf Lici <ralf@mandelbit.com>
-To: openvpn-devel@lists.sourceforge.net
-Date: Tue, 19 May 2026 10:04:44 +0200
-Message-ID: <20260519080500.120724-3-ralf@mandelbit.com>
-In-Reply-To: <20260519080500.120724-1-ralf@mandelbit.com>
-References: <20260519080500.120724-1-ralf@mandelbit.com>
+ (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
+ id 1wPGvU-0000xE-NZ for openvpn-devel@lists.sourceforge.net;
+ Tue, 19 May 2026 09:39:50 +0000
+Received: by mail-wm1-f47.google.com with SMTP id
+ 5b1f17b1804b1-48fe26a177cso23884465e9.1
+ for <openvpn-devel@lists.sourceforge.net>;
+ Tue, 19 May 2026 02:39:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=openvpn.net; s=google; t=1779183577; x=1779788377; darn=lists.sourceforge.net;
+ h=user-agent:content-disposition:content-transfer-encoding
+ :mime-version:message-id:reply-to:subject:thread-index:references
+ :list-unsubscribe:list-id:auto-submitted:cc:to:date:from:from:to:cc
+ :subject:date:message-id:reply-to;
+ bh=O0YIer+1e83ShC2klfT87kAfFZphjqnScHhTUBnUx+E=;
+ b=JYnZx6V8c6pr0JsqBpQOqQ0W0dKwjsQJHNit2hRMpTiVamqIkpyogvZIQ2raB6UGxH
+ chtqQf97+8i7H1VnOE8umjh8kcChxKDMfvoHOHYX4MAdfms1y86aIEikfEI6ekxaZXy1
+ LcrdR7RowsC2yQ4yWwMJKvIx2ZBMkEReVEEKfpIQfhk4xD78z+fy4fjbUp2Zxcp9EX50
+ gbetNn5O5i/QqJy4JXMhoolZIFN9yn+e/cLk6EyKSHuNmXRgHr+f+pUy1H98PzzeWbC7
+ glUKeLTs9GpXvCRtj4diF5mPZmpuFJllZIHMEDXuV1vBFB8oqdlpY7AAWiW+zQM+PkPu
+ T8OA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20251104; t=1779183577; x=1779788377;
+ h=user-agent:content-disposition:content-transfer-encoding
+ :mime-version:message-id:reply-to:subject:thread-index:references
+ :list-unsubscribe:list-id:auto-submitted:cc:to:date:from:x-gm-gg
+ :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+ bh=O0YIer+1e83ShC2klfT87kAfFZphjqnScHhTUBnUx+E=;
+ b=G5yYE4DccMU5pYeBZmtBQyfzM8GhkL+oiwJlhIg7JBoVqQeSRPAffrERD3nsRiKHfy
+ yPGDJUXQd4kznjH1yjX6CfHSi29C8GO3GQI5GgAmHXwIrpJhwFxaLdMtucijSK+VqASe
+ I4pQGGRvT23XCEB7YmKtsRm4Lkd23RMTcgEmfkeqkZXdnzL06gMJ0WX19ACNqnZ/qEMy
+ gZeuDxI6SPD0jBl2moFIgOQVIMSKN6WZyauljBBec2qr53cTiNw7Y/TqZ8XEk5j0bFbx
+ tIvVn4NqAoAryOJrq3I4SWUTlBzPJLr12EjICkmXs9ztnjaGxq5X2kY4XGVAampvEzEH
+ a6VQ==
+X-Gm-Message-State: AOJu0YzEgihyqj0QYQZmf/xHsZg9CEEvxHdDiLnjprAKBQzlhTOkldFv
+ /OdKrv0PXLQHRkpV6RpTNiUc1bcOZeDPysJIRZ8MoWCkPsWExhI9O/uTLH9nFvKV0bKXHvy6BYC
+ NYNbWOCuIKX93eeeSZYxek2gj1Ir8fx/68yEawrUXl9vpxKxf76Q1i9XadiKylbmNz6LfEwdLqv
+ 8SoMeA8Q==
+X-Gm-Gg: Acq92OHLAw9hq9L+DVCwooM4tFD7oeZGlkchjMZV0dYCE54/rJIICkaUKadSkcjfvaW
+ C+px/vGF0IaeYDeogAqJIVzZlC8Yj8vK/d8OAR0SnRhWCEV+mcsyCfdPm1lD8ZT5oK8rP58dCtf
+ nPdIIDpXAhqjeq/D1OMqoMbGFOuhar6FYaNHFoiARpUgq2VSViWrTKIW9wPU7F4evkBP6BdSL9B
+ rw/mAujRMKDcBAHUm+7tDqxImkPV7JhyN+iNlsT05l1cJWEx5PFEjIIirb1cfke3f+XmzJ9YJYe
+ yAzepeG7OP8x1w/73LjbEz8dAgQvhhS+DG9veZvwr2K6VM9dQelrtIFKoPd9FqYOMTs7lu+Jugx
+ f9znTBycC5O6BvDQyD8vt9a+5fiJOlbM23clvMf5KFAzoqw0pH+PGQyvp/iH2I213FEmkq7M1Tp
+ JDMDdZCANCbocgzwWZWrK+ibeoaxYTNzyW8KpaPgpAp3KgA0AAlXF3VidTPKFsGApOwPSJ6XlWu
+ MGY+a6oG+t7n7KxdSAbdyZuPh9roKLdC5OPkEIwd+UqdVT2U8kLrbhHhl8uIpdSmJpcCdGq1SC9
+ VACbw6WHCSx9hHsGqPPnSgpR
+X-Received: by 2002:a05:600c:17d1:b0:48a:54a6:b29f with SMTP id
+ 5b1f17b1804b1-48feea9dda7mr156340675e9.17.1779183577297; 
+ Tue, 19 May 2026 02:39:37 -0700 (PDT)
+Received: from ip-10-18-1-162.eu-central-1.compute.internal
+ (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
+ by smtp.gmail.com with ESMTPSA id
+ 5b1f17b1804b1-48fe4c88495sm306748565e9.4.2026.05.19.02.39.36
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 19 May 2026 02:39:36 -0700 (PDT)
+From: "its_Giaan (Code Review)" <gerrit@openvpn.net>
+X-Google-Original-From: "its_Giaan (Code Review)"
+ <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
+Date: Tue, 19 May 2026 09:39:36 +0000
+To: plaisthos <arne-openvpn@rfc2549.org>
+Auto-Submitted: auto-generated
+X-Gerrit-MessageType: newchange
+X-Gerrit-PatchSet: 1
+X-Gerrit-Change-Id: Id4e21efebbe64b963cf7847ad77bc41339af7a37
+X-Gerrit-Change-Number: 1680
+X-Gerrit-Project: openvpn
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1680?usp=email>
+X-Gerrit-Commit: 1ae98cae9b29e614b124c23055d24cb0271a1b36
+References: <gerrit.1779183573000.Id4e21efebbe64b963cf7847ad77bc41339af7a37@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzc5MTgzNTczMDAwLklkNGUyMWVmZWJiZTY0Yjk2M2NmNzg0N2FkNzdiYzQxMzM5YWY3YTM3QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <b6c519deefd839ce7a6e3f6558df25a66cd55138-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
-X-Rspamd-Queue-Id: 4gKS0w2K3SzDsKV
-X-Headers-End: 1wPFT2-0004AP-Or
-Subject: [Openvpn-devel] [PATCH ovpn net-next v3 3/3] selftests: ovpn: add
- mssfix coverage
+User-Agent: Gerrit/3.11.5
+X-Headers-End: 1wPGvU-0000xE-NZ
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Fix: port-share and
+ multi-socket interaction
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -95,285 +135,213 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Reply-To: gianmarco@mandelbit.com, arne-openvpn@rfc2549.org,
+ openvpn-devel@lists.sourceforge.net
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: multipart/mixed; boundary="===============3704575720520844262=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-Extend ovpn-cli set_peer to pass the peer mssfix attribute. Use -1 as
-the selftest CLI sentinel for leaving mssfix unchanged, so existing
-timeout-only peer updates can keep omitting the netlink attribute.
+--===============3704575720520844262==
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="nlbPt52g1tU="; charset=UTF-8
 
-Add an ovpn test stage that configures mssfix on each side of a peer
-pair and verifies the MSS advertised on TCP SYN packets seen on the
-tunnel device. This covers both TX-side and RX-side clamping, and also
-checks that an invalid non-zero MSS value is rejected.
+--nlbPt52g1tU=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Ralf Lici <ralf@mandelbit.com>
+Attention is currently required from: plaisthos=2E
+
+Hello plaisthos,
+
+I'd l=
+ike you to do a code review=2E
+Please visit
+
+    http://gerrit=2Eopenvpn=2E=
+net/c/openvpn/+/1680?usp=3Demail
+
+to review the following change=2E
+
+
+Chang=
+e subject: Fix: port-share and multi-socket interaction
+=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+
+Fix: port-share and multi-socke=
+t interaction
+
+When port-share is used, enforce the presence
+of a TCP liste=
+ner by checking the local_list
+entries insted of rely on the global
+connect=
+ion_entry proto field=2E
+
+Github: #1027
+
+Change-Id: Id4e21efebbe64b963cf784=
+7ad77bc41339af7a37
+Signed-off-by: Gianmarco De Gregori <gianmarco@mandelbit=
+=2Ecom>
 ---
-No changes since v2 https://lore.kernel.org/openvpn-devel/20260518085908.135570-3-ralf@mandelbit.com/
+M src/openvpn/options=2Ec
+1 file changed, 6 insertions(+), 1 de=
+letion(-)
 
-Changes since v1 https://lore.kernel.org/openvpn-devel/20260515075941.102225-3-ralf@mandelbit.com/
-- parse mssfix into long before narrowing in ovpn-cli
 
- tools/testing/selftests/net/ovpn/ovpn-cli.c   | 20 ++++-
- .../selftests/net/ovpn/test-close-socket.sh   |  4 +-
- tools/testing/selftests/net/ovpn/test-mark.sh |  4 +-
- tools/testing/selftests/net/ovpn/test.sh      | 75 +++++++++++++++++--
- 4 files changed, 90 insertions(+), 13 deletions(-)
 
-diff --git a/tools/testing/selftests/net/ovpn/ovpn-cli.c b/tools/testing/selftests/net/ovpn/ovpn-cli.c
-index d40953375c86..67351f33e7c8 100644
---- a/tools/testing/selftests/net/ovpn/ovpn-cli.c
-+++ b/tools/testing/selftests/net/ovpn/ovpn-cli.c
-@@ -10,6 +10,7 @@
- #include <stdio.h>
- #include <inttypes.h>
- #include <stdbool.h>
-+#include <stdlib.h>
- #include <string.h>
- #include <errno.h>
- #include <unistd.h>
-@@ -129,6 +130,7 @@ struct ovpn_ctx {
- 
- 	__u32 keepalive_interval;
- 	__u32 keepalive_timeout;
-+	int mssfix;
- 
- 	enum ovpn_key_direction key_dir;
- 	enum ovpn_key_slot key_slot;
-@@ -732,6 +734,8 @@ static int ovpn_set_peer(struct ovpn_ctx *ovpn)
- 		    ovpn->keepalive_interval);
- 	NLA_PUT_U32(ctx->nl_msg, OVPN_A_PEER_KEEPALIVE_TIMEOUT,
- 		    ovpn->keepalive_timeout);
-+	if (ovpn->mssfix >= 0)
-+		NLA_PUT_U16(ctx->nl_msg, OVPN_A_PEER_MSSFIX, ovpn->mssfix);
- 	nla_nest_end(ctx->nl_msg, attr);
- 
- 	ret = ovpn_nl_msg_send(ctx, NULL);
-@@ -1730,13 +1734,15 @@ static void usage(const char *cmd)
- 	fprintf(stderr, "\tmark: socket FW mark value\n");
- 
- 	fprintf(stderr,
--		"* set_peer <iface> <peer_id> <keepalive_interval> <keepalive_timeout>: set peer attributes\n");
-+		"* set_peer <iface> <peer_id> <keepalive_interval> <keepalive_timeout> <mssfix>: set peer attributes\n");
- 	fprintf(stderr, "\tiface: ovpn interface name\n");
- 	fprintf(stderr, "\tpeer_id: peer ID of the peer to modify\n");
- 	fprintf(stderr,
- 		"\tkeepalive_interval: interval for sending ping messages\n");
- 	fprintf(stderr,
- 		"\tkeepalive_timeout: time after which a peer is timed out\n");
-+	fprintf(stderr,
-+		"\tmssfix: TCP MSS value to clamp SYN packets to (0 disables, -1 leaves unchanged)\n");
- 
- 	fprintf(stderr, "* del_peer <iface> <peer_id>: delete peer\n");
- 	fprintf(stderr, "\tiface: ovpn interface name\n");
-@@ -2166,6 +2172,7 @@ static int ovpn_run_cmd(struct ovpn_ctx *ovpn)
- 
- static int ovpn_parse_cmd_args(struct ovpn_ctx *ovpn, int argc, char *argv[])
- {
-+	long mssfix;
- 	int ret;
- 
- 	/* no args required for LISTEN_MCAST */
-@@ -2307,7 +2314,7 @@ static int ovpn_parse_cmd_args(struct ovpn_ctx *ovpn, int argc, char *argv[])
- 		}
- 		break;
- 	case CMD_SET_PEER:
--		if (argc < 6)
-+		if (argc < 7)
- 			return -EINVAL;
- 
- 		ovpn->peer_id = strtoul(argv[3], NULL, 10);
-@@ -2329,6 +2336,14 @@ static int ovpn_parse_cmd_args(struct ovpn_ctx *ovpn, int argc, char *argv[])
- 				"keepalive interval value out of range\n");
- 			return -1;
- 		}
-+
-+		errno = 0;
-+		mssfix = strtol(argv[6], NULL, 10);
-+		if (errno == ERANGE || mssfix < -1 || mssfix > UINT16_MAX) {
-+			fprintf(stderr, "mssfix value out of range\n");
-+			return -1;
-+		}
-+		ovpn->mssfix = mssfix;
- 		break;
- 	case CMD_DEL_PEER:
- 		if (argc < 4)
-@@ -2442,6 +2457,7 @@ int main(int argc, char *argv[])
- 	memset(&ovpn, 0, sizeof(ovpn));
- 	ovpn.sa_family = AF_UNSPEC;
- 	ovpn.cipher = OVPN_CIPHER_ALG_NONE;
-+	ovpn.mssfix = -1;
- 
- 	ovpn.cmd = ovpn_parse_cmd(argv[1]);
- 	if (ovpn.cmd == CMD_INVALID) {
-diff --git a/tools/testing/selftests/net/ovpn/test-close-socket.sh b/tools/testing/selftests/net/ovpn/test-close-socket.sh
-index af1532b4d2da..091c0103bdba 100755
---- a/tools/testing/selftests/net/ovpn/test-close-socket.sh
-+++ b/tools/testing/selftests/net/ovpn/test-close-socket.sh
-@@ -41,10 +41,10 @@ ovpn_prepare_network() {
- 		peer_ns="ovpn_peer${p}"
- 		ovpn_cmd_ok "set peer0 timeout for peer ${p}" \
- 			ip netns exec ovpn_peer0 ${OVPN_CLI} set_peer tun0 \
--				${p} 60 120
-+				${p} 60 120 -1
- 		ovpn_cmd_ok "set peer${p} timeout for peer ${p}" \
- 			ip netns exec "${peer_ns}" ${OVPN_CLI} set_peer \
--				tun${p} $((p + OVPN_ID_OFFSET)) 60 120
-+				tun${p} $((p + OVPN_ID_OFFSET)) 60 120 -1
- 	done
- }
- 
-diff --git a/tools/testing/selftests/net/ovpn/test-mark.sh b/tools/testing/selftests/net/ovpn/test-mark.sh
-index 5a8f47554286..11af23beea2a 100755
---- a/tools/testing/selftests/net/ovpn/test-mark.sh
-+++ b/tools/testing/selftests/net/ovpn/test-mark.sh
-@@ -54,10 +54,10 @@ ovpn_mark_prepare_network() {
- 		peer_ns="ovpn_peer${p}"
- 		ovpn_cmd_ok "set peer0 timeout for peer ${p}" \
- 			ip netns exec ovpn_peer0 "${OVPN_CLI}" set_peer tun0 \
--				"${p}" 60 120
-+				"${p}" 60 120 -1
- 		ovpn_cmd_ok "set peer${p} timeout for peer ${p}" \
- 			ip netns exec "${peer_ns}" "${OVPN_CLI}" set_peer \
--				tun"${p}" $((p + OVPN_ID_OFFSET)) 60 120
-+				tun"${p}" $((p + OVPN_ID_OFFSET)) 60 120 -1
- 	done
- }
- 
-diff --git a/tools/testing/selftests/net/ovpn/test.sh b/tools/testing/selftests/net/ovpn/test.sh
-index c06e3135fbef..a0630034351a 100755
---- a/tools/testing/selftests/net/ovpn/test.sh
-+++ b/tools/testing/selftests/net/ovpn/test.sh
-@@ -49,10 +49,10 @@ ovpn_prepare_network() {
- 		peer_ns="ovpn_peer${p}"
- 		ovpn_cmd_ok "set peer0 timeout for peer ${p}" \
- 			ip netns exec ovpn_peer0 ${OVPN_CLI} set_peer tun0 \
--				${p} 60 120
-+				${p} 60 120 -1
- 		ovpn_cmd_ok "set peer${p} timeout for peer ${p}" \
- 			ip netns exec "${peer_ns}" ${OVPN_CLI} set_peer \
--				tun${p} $((p + OVPN_ID_OFFSET)) 60 120
-+				tun${p} $((p + OVPN_ID_OFFSET)) 60 120 -1
- 	done
- }
- 
-@@ -142,6 +142,66 @@ ovpn_run_iperf() {
- 	wait "${iperf_pid}" || return 1
- }
- 
-+ovpn_run_mssfix_flow() {
-+	local filter
-+	local iperf_pid
-+	local direction="$1"
-+	local mssfix="$2"
-+	local tcpdump_pid
-+
-+	filter="tcp and src host 5.5.5.1 and dst host 5.5.5.2"
-+	filter="${filter} and tcp[tcpflags] & tcp-syn != 0"
-+
-+	ovpn_run_bg iperf_pid ip netns exec ovpn_peer1 iperf3 -1 -s
-+	sleep 1
-+
-+	timeout 3s ip netns exec ovpn_peer1 tcpdump --immediate-mode -l -p \
-+		-vv -nn -i tun1 -c 1 "${filter}" 2>&1 |
-+		grep -iq "mss ${mssfix}" &
-+	tcpdump_pid=$!
-+	sleep 0.3
-+
-+	ovpn_cmd_ok "run ${direction} mssfix TCP flow" \
-+		ip netns exec ovpn_peer0 iperf3 -t 1 -c 5.5.5.2
-+
-+	ovpn_cmd_ok "capture ${direction} mssfix TCP SYN" wait "${tcpdump_pid}"
-+	ovpn_cmd_ok "finish ${direction} mssfix TCP server" wait "${iperf_pid}"
-+}
-+
-+ovpn_run_mssfix() {
-+	local peer0_id=$((1 + OVPN_ID_OFFSET))
-+
-+	# peer0 will clamp MSS for packets exchanged with peer1
-+	ovpn_cmd_ok "set peer0 mssfix for peer 1" \
-+		ip netns exec ovpn_peer0 ${OVPN_CLI} set_peer tun0 1 \
-+			60 120 900
-+
-+	ovpn_cmd_fail "reject invalid peer0 mssfix for peer 1" \
-+		ip netns exec ovpn_peer0 ${OVPN_CLI} set_peer tun0 1 \
-+			60 120 20
-+
-+	ovpn_cmd_ok "clear peer1 mssfix for peer ${peer0_id}" \
-+		ip netns exec ovpn_peer1 ${OVPN_CLI} set_peer tun1 \
-+			"${peer0_id}" 60 120 0
-+
-+	ovpn_run_mssfix_flow "TX" 900
-+
-+	ovpn_cmd_ok "clear peer0 mssfix for peer 1" \
-+		ip netns exec ovpn_peer0 ${OVPN_CLI} set_peer tun0 1 \
-+			60 120 0
-+
-+	# peer1 will clamp MSS for packets exchanged with peer0
-+	ovpn_cmd_ok "set peer1 mssfix for peer ${peer0_id}" \
-+		ip netns exec ovpn_peer1 ${OVPN_CLI} set_peer tun1 \
-+			"${peer0_id}" 60 120 901
-+
-+	ovpn_run_mssfix_flow "RX" 901
-+
-+	ovpn_cmd_ok "clear peer1 mssfix for peer ${peer0_id}" \
-+		ip netns exec ovpn_peer1 ${OVPN_CLI} set_peer tun1 \
-+			"${peer0_id}" 60 120 0
-+}
-+
- ovpn_run_key_rollover() {
- 	local p
- 	local peer_ns
-@@ -259,11 +319,11 @@ ovpn_run_timeouts() {
- 		# Non-fatal: this may fail in some protocol modes.
- 		ovpn_cmd_mayfail "set peer0 timeout for peer ${p} (non-fatal)" \
- 			ip netns exec ovpn_peer0 ${OVPN_CLI} set_peer tun0 \
--				${p} 3 3
-+				${p} 3 3 -1
- 		peer_ns="ovpn_peer${p}"
- 		ovpn_cmd_ok "disable timeout on peer${p} while peer0 adjusts \
- 			state" ip netns exec "${peer_ns}" ${OVPN_CLI} set_peer \
--			tun${p} $((p + OVPN_ID_OFFSET)) 0 0
-+			tun${p} $((p + OVPN_ID_OFFSET)) 0 0 -1
- 	done
- 	# wait for peers to timeout
- 	sleep 5
-@@ -274,7 +334,7 @@ ovpn_run_timeouts() {
- 		peer_ns="ovpn_peer${p}"
- 		ovpn_cmd_ok "set peer${p} P2P timeout" \
- 			ip netns exec "${peer_ns}" ${OVPN_CLI} set_peer \
--				tun${p} $((p + OVPN_ID_OFFSET)) 3 3
-+				tun${p} $((p + OVPN_ID_OFFSET)) 3 3 -1
- 	done
- 	sleep 5
- }
-@@ -293,9 +353,9 @@ trap ovpn_stage_err ERR
- 
- ktap_print_header
- if [ "${OVPN_FLOAT}" == "1" ]; then
--	ktap_set_plan 13
-+	ktap_set_plan 14
- else
--	ktap_set_plan 12
-+	ktap_set_plan 13
- fi
- 
- ovpn_cleanup
-@@ -307,6 +367,7 @@ ovpn_run_stage "run LAN traffic behind peer1" ovpn_run_lan_traffic
- [ "${OVPN_FLOAT}" == "1" ] && ovpn_run_stage "run floating peer checks" \
- 	ovpn_run_float_mode
- ovpn_run_stage "run iperf throughput" ovpn_run_iperf
-+ovpn_run_stage "run mssfix TCP SYN clamp" ovpn_run_mssfix
- ovpn_run_stage "run key rollout" ovpn_run_key_rollover
- ovpn_run_stage "query peers" ovpn_run_queries
- ovpn_run_stage "query missing peer fails" ovpn_query_peer_missing
+  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/cha=
+nges/80/1680/1
+
+diff --git a/src/openvpn/options=2Ec b/src/openvpn/options=
+=2Ec
+index 0c2866c=2E=2E0ecb59c 100644
+--- a/src/openvpn/options=2Ec
++++ b/=
+src/openvpn/options=2Ec
+@@ -2490,8 +2490,13 @@
+             msg(M_USAGE, US=
+AGE_VALID_SERVER_PROTOS);
+         }
+ #if PORT_SHARE
++        bool has_tcp =
+=3D false;
++        for (int i =3D 0; i < ce->local_list->len && !has_tcp; =
+i++)
++        {
++            has_tcp =3D (ce->local_list->array[i]->proto =
+=3D=3D PROTO_TCP_SERVER);
++        }
+         if ((options->port_share_host=
+ || options->port_share_port)
+-            && (ce->proto !=3D PROTO_TCP_SER=
+VER))
++            && !has_tcp)
+         {
+             msg(M_USAGE, "--por=
+t-share only works in TCP server mode "
+                          "(--proto=
+ values of tcp-server, tcp4-server, or tcp6-server)");
+
 -- 
-2.54.0
+To view, visit =
+http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1680?usp=3Demail
+To unsubscribe, =
+or for help writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/setti=
+ngs?usp=3Demail
+
+Gerrit-MessageType: newchange
+Gerrit-Project: openvpn
+Gerr=
+it-Branch: master
+Gerrit-Change-Id: Id4e21efebbe64b963cf7847ad77bc41339af7a=
+37
+Gerrit-Change-Number: 1680
+Gerrit-PatchSet: 1
+Gerrit-Owner: its_Giaan <g=
+ianmarco@mandelbit=2Ecom>
+Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=
+=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+=
+Gerrit-Attention: plaisthos <arne-openvpn@rfc2549=2Eorg>
+
+--nlbPt52g1tU=
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: plaisthos=2E </p>
+<p>its_Giaan would like plaisthos t=
+o <strong>review</strong> this change=2E
+</p><p><a href=3D"http://gerrit=2E=
+openvpn=2Enet/c/openvpn/+/1680?usp=3Demail">View Change</a></p><pre class=
+=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
+p;">Fix: port-share and multi-socket interaction<br><br>When port-share is =
+used, enforce the presence<br>of a TCP listener by checking the local_list<=
+br>entries insted of rely on the global<br>connection_entry proto field=2E<=
+br><br>Github: #1027<br><br>Change-Id: Id4e21efebbe64b963cf7847ad77bc41339a=
+f7a37<br>Signed-off-by: Gianmarco De Gregori &lt;gianmarco@mandelbit=2Ecom&=
+gt;<br>---<br>M src/openvpn/options=2Ec<br>1 file changed, 6 insertions(+),=
+ 1 deletion(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: mon=
+ospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=
+=2Enet:29418/openvpn refs/changes/80/1680/1</pre><pre style=3D"font-family:=
+ monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvp=
+n/options=2Ec b/src/openvpn/options=2Ec</span><br><span>index 0c2866c=2E=2E=
+0ecb59c 100644</span><br><span>--- a/src/openvpn/options=2Ec</span><br><spa=
+n>+++ b/src/openvpn/options=2Ec</span><br><span>@@ -2490,8 +2490,13 @@</spa=
+n><br><span>             msg(M_USAGE, USAGE_VALID_SERVER_PROTOS);</span><br=
+><span>         }</span><br><span> #if PORT_SHARE</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        bool has_tcp =3D false;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        for (int i =3D 0; i &lt; =
+ce-&gt;local_list-&gt;len &amp;&amp; !has_tcp; i++)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            has_tcp =3D (ce-&gt;local_list-&gt;arra=
+y[i]-&gt;proto =3D=3D PROTO_TCP_SERVER);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        }</span><br><span>         if ((options-&gt;po=
+rt_share_host || options-&gt;port_share_port)</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-            &amp;&amp; (ce-&gt;proto !=3D PROTO_TCP=
+_SERVER))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+  &amp;&amp; !has_tcp)</span><br><span>         {</span><br><span>         =
+    msg(M_USAGE, &quot;--port-share only works in TCP server mode &quot;</s=
+pan><br><span>                          &quot;(--proto values of tcp-server=
+, tcp4-server, or tcp6-server)&quot;);</span><br><span></span><br></pre><p>=
+To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1680?us=
+p=3Demail">change 1680</a>=2E To unsubscribe, or for help writing mail filt=
+ers, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">s=
+ettings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessa=
+ge"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/View=
+Action"><link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/open=
+vpn/+/1680?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/><=
+/div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: newchange </d=
+iv>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=
+=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"=
+> Gerrit-Change-Id: Id4e21efebbe64b963cf7847ad77bc41339af7a37 </div>
+<div s=
+tyle=3D"display:none"> Gerrit-Change-Number: 1680 </div>
+<div style=3D"disp=
+lay:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Ow=
+ner: its_Giaan &lt;gianmarco@mandelbit=2Ecom&gt; </div>
+<div style=3D"displ=
+ay:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </d=
+iv>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel=
+@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-A=
+ttention: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+
+</body></htm=
+l>
+--nlbPt52g1tU=--
 
 
+--===============3704575720520844262==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============3704575720520844262==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+--===============3704575720520844262==--
+
