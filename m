@@ -4,129 +4,83 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C33A4CD4F3D
-	for <openvpn-devel@archiver.kernel.org>; Thu, 21 May 2026 13:53:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1E6B6CD4F3D
+	for <openvpn-devel@archiver.kernel.org>; Thu, 21 May 2026 15:42:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:List-Subscribe:
-	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:Subject:
-	MIME-Version:Message-ID:References:In-Reply-To:Date:From:Sender:To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=Tt8GyrYGhby2Yb+QGqyzbAZ0kRErCR0R14kTRxF4n8A=; b=mEXMO/wz5obhmhHu0sYlX6G1tG
-	nAaRzNZdL2AfTDuwNZreCJ1MXhv6uFNsNNNatHMBliWPwN825E1KSJzp4oqhOMSytzsmntuNQ4h/5
-	qMwcKzm60ocV4Q42JQdHbsHpKK4ASKn4/ll6aWlT7hkwTrJLHGJ8UW7WqWhdn9wzABXw=;
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
+	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
+	Subject:MIME-Version:Message-ID:Date:To:From:Sender:Reply-To:Cc:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Owner;
+	bh=7r7LQwUJbX9+/LLIxCQ8q7LGY/25pknQTxODkrQSytY=; b=mMlpCAFAX77ymlNC6Y/cqWTMoZ
+	lxuNFLAN4DkcVQEo0Ex7cFWdv/489zy5GRO/Hu5fKOrZbnNR/EIY+QZCxjJwQIO1XoXKMm+vpxP5B
+	Otzjaedz9P2BeTKfay1JdzuUd68dYgJ6FJHlCybHJhRW0HoO3yCJOFvUjwUn9qvUW94k=;
 Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
 	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wQ3qS-0001PW-3p;
-	Thu, 21 May 2026 13:53:49 +0000
+	id 1wQ5Xg-0000C3-AG;
+	Thu, 21 May 2026 15:42:33 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wQ3qJ-0001Kx-3z
+ (envelope-from <marco@mandelbit.com>) id 1wQ5Xd-0000Bp-1M
  for openvpn-devel@lists.sourceforge.net;
- Thu, 21 May 2026 13:53:40 +0000
+ Thu, 21 May 2026 15:42:32 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:Date:From:Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
- :List-Post:List-Owner:List-Archive;
- bh=wBjgQOomYSKzSvib+NAq3aWZay0WwTFtnkZXHZkXNFU=; b=RM6AdkQuVajIFHu/lOjh0G9VJ5
- AN86y0wR11yrexeN2GG9LE1vGOjDxSbnT0AdpMzo67wcSu0BGDZHenljv7XjFg7cllhIMuLigKK+j
- lrvjD2i7SaQRTmLLqdaGiOTQDhY0GEhD6615Q44SIoMnmtmesz62hqv+C9YSSXlTDS9I=;
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:Message-ID:
+ Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=eEDojGMElT0afOyiZIAH3StwMBwNjpfXmxYWkaAG1Rs=; b=SEMe35t9VK1tKfUaYYBzDJL/Y+
+ 4qNFyZxOZh0LuYi0YhIZzTqD9+QD4DuwWeFy/hmMDdtR2rtxSYrRT+rWyq3sh6+rd1AbtOmeRtoFP
+ 904l7ICJosAlGUeUXk7v7Krw7lJ/ZlzKCZygXLbCiEEE57Uw/NRbcrLVKb9OF71nygpw=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:Date:From:Sender:
- To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=wBjgQOomYSKzSvib+NAq3aWZay0WwTFtnkZXHZkXNFU=; b=W
- QSLmKngb0vfM7xiOdJRdHAIQE7dSjnAHVrZhDawJGvmnr9G2UXGT6R+tUlXAWxoiGeKD/OtOs03EE
- e+igD6hEh4Sr1n88wunCbd1h+7AwAWBGEhhTN1/lzxpLsxjawnbxTfHxnBwJFdcP9H1JNKryz6YU2
- VbS/c34gAMXuEXb8=;
-Received: from mail-wm1-f54.google.com ([209.85.128.54])
+ h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:Cc:To:From
+ :Sender:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+ References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=eEDojGMElT0afOyiZIAH3StwMBwNjpfXmxYWkaAG1Rs=; b=V
+ HPXXbLtnkk1v8C9XzYWb8ebXWfs6tVWalKulc2bDjBcA22+eti7qOdFOZXHJS9oTA/BT0oJKNgV5Y
+ tfFUX+czJ1EIO/gCNF+sk/BH2ZD96CqH0bq4IhC3lFoyrebTOmfiJzAKVn5zlqjDX4LvX4jv5C/PZ
+ V5xUxkZxaemjZHDg=;
+Received: from mout-b-106.mailbox.org ([195.10.208.46])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wQ3qE-0005pk-Mp for openvpn-devel@lists.sourceforge.net;
- Thu, 21 May 2026 13:53:40 +0000
-Received: by mail-wm1-f54.google.com with SMTP id
- 5b1f17b1804b1-48e8132c6d0so40273925e9.1
- for <openvpn-devel@lists.sourceforge.net>;
- Thu, 21 May 2026 06:53:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1779371613; x=1779976413; darn=lists.sourceforge.net;
- h=user-agent:content-disposition:content-transfer-encoding
- :mime-version:message-id:reply-to:subject:thread-index:references
- :in-reply-to:list-unsubscribe:list-id:auto-submitted:cc:date:from
- :from:to:cc:subject:date:message-id:reply-to;
- bh=wBjgQOomYSKzSvib+NAq3aWZay0WwTFtnkZXHZkXNFU=;
- b=aSOx8iQR7ZQi483oRMA5ksNit0eMUtP6cPo6/7rnDNoLJBFw/8r7Tk2/vUzNpcPb6g
- QqTTCScuClRPRTkd6th0ZEcdPBuRzT6oIkYbUGxQ9Vi4JtdLfdSsUq7GeyeBF4Fb+pda
- 92M90pm1nuq51Zi2DmOsC6ZKAc2Yf0Ndb9cSR2x4PqhK1RZlyJN4uCiUzjZdMPYv00HN
- e9WlyRRz+RV2oEeRYHYG93I9NHU4Y5ocW8duAtwn2Rhh6GuNZnmrgPvK8zmauWaRe7eb
- Dz0BM/hdYPYdxiOcyM/UvXdizQkXCRwzAuLL9RG4Oav2mWVkhPSsrVPIAQ4khQwIB+Nq
- /kiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1779371613; x=1779976413;
- h=user-agent:content-disposition:content-transfer-encoding
- :mime-version:message-id:reply-to:subject:thread-index:references
- :in-reply-to:list-unsubscribe:list-id:auto-submitted:cc:date:from
- :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
- :reply-to;
- bh=wBjgQOomYSKzSvib+NAq3aWZay0WwTFtnkZXHZkXNFU=;
- b=UwLoeBi2895t4lwwkPGGavRoeEkyFCmQAVAacT9047n4hUzOOUN4RbiB/EW7q+4Xhk
- oqewhnLYFYAp1HIQBQWRICX/In9pr4dRlMPBz3woFGjKmHBoXL15kFHSSI+gxQa8sfzl
- ot/rA8K6fNvEJCYE2Uc102jAVrwP2NMq/Cr4wj+h9cmUghOSPHCZz/0RYv575R4yP8FX
- nlzDncRY7+081LwWaKUKgAAwN/9hb9vbkBGzMGfAAYGaMjAYVueri1Zpf7Sbk2JPg03F
- pq67cUPaCW2Wl+rhg3PfrIn4+FOIuBwKaAshYGnRc2Pfwah0DKFHEy+Ad5UrDuMiEFLI
- iv2Q==
-X-Forwarded-Encrypted: i=1;
- AFNElJ/38aTuOqIVqDtY0adpD/XBfR8VPWBvDSSvaamVZFxJxGisdvzpaNlAthreODSzuuVaa4XoQ+cv4PA+q0nn@lists.sourceforge.net
-X-Gm-Message-State: AOJu0YxgVKfnRkuRIZbNws0zkYWocCnNWULB30NF5vazvYhtw8tGknJJ
- Cylf8QEHuxzl7pvewvqg4H/y70ko59pPTir8OVUKwSBx/KF4s1mNm+01e1TGkWnix7ROR7AqI2h
- OvTcplCKh70hUcNzynfE4zEkpJPqv1pDSYzqOwBfaKDLJyWN7qZD9G0saR6KrEm3659umgoiqw3
- S2rnPLOg==
-X-Gm-Gg: Acq92OEBxzgLvYhP8iS21QA2nSiHmJ6xdlh3vyhG9dBby8mHoXILSf2+7qGrnzB53yu
- MPlBEp1ZzGQfJsz6XJZpjxKvAABX66VFJPBOKwaDNCOWa/447Gl4zsYYm7I7DqmR62CaYs/Pntx
- b0YE8+hdMEIGvNbBu1nDxvdgAF5unz7tTWWyJDjVrYBOPgr4mFl4LyOLS8WnbLz1ZAJpVKjlPya
- p74hrXoywXmC+mErYOf282P6RNb+BhAfxbEDKaQf2SVqpUodGAzAWlop90DEszpFLS6ardflkS5
- KgG8H1+3fV3q9FSJLhNpg3s0qom+kzHlJCz8IVRiZwo6k+mge+p9AlLDjwY/1cr4YATM+7noaGp
- P1tSBnAaiAN0qE0TEGD0GJ9ZlTDbecCdGCANlRFxiZKKZYAjw1zYpGmYxi4o0KneJ+wN+j3wKXw
- nqo2z/6Kj7DmkD+HC4wFLBgH3DzPmkWqUSiJje8Z/paVUoSRszw89s5+/80o6Eyplb17LbS3pJ9
- 9na6HTa4AwlrbrjiQwr6iUO8eddmN7o5BFs3zZjdFnA5g98Ar+MzHcsPLZAp3INDrb4OHO940Ub
- 6xDDp+7vtsSwO/JTKWk5oB8t
-X-Received: by 2002:a05:600c:26cb:b0:48e:6db3:ff33 with SMTP id
- 5b1f17b1804b1-4903605d502mr28684575e9.14.1779371611901; 
- Thu, 21 May 2026 06:53:31 -0700 (PDT)
-Received: from ip-10-18-1-162.eu-central-1.compute.internal
- (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
- by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-4903c99cb43sm27886955e9.4.2026.05.21.06.53.31
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 21 May 2026 06:53:31 -0700 (PDT)
-From: "ordex (Code Review)" <gerrit@openvpn.net>
-X-Google-Original-From: "ordex (Code Review)"
- <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Thu, 21 May 2026 13:53:30 +0000
-Auto-Submitted: auto-generated
-X-Gerrit-MessageType: comment
-X-Gerrit-PatchSet: 4
-X-Gerrit-Change-Id: I0ba723d12d433e6e020588b7b0c3ba10bcf8c44f
-X-Gerrit-Change-Number: 1683
-X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1683?usp=email>
-X-Gerrit-Commit: 6ba94fe192fc58331f740bae631c15ab08827439
-X-Gerrit-Comment-Date: Thu, 21 May 2026 13:53:30 +0000
-In-Reply-To: <gerrit.1779265416000.I0ba723d12d433e6e020588b7b0c3ba10bcf8c44f@gerrit.openvpn.net>
-References: <gerrit.1779265416000.I0ba723d12d433e6e020588b7b0c3ba10bcf8c44f@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzc5MjY1NDE2MDAwLkkwYmE3MjNkMTJkNDMzZTZlMDIwNTg4YjdiMGMzYmExMGJjZjhjNDRmQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <b184619179cb0400f7508b19a4b84ac4f5c11100-EmailReviewComments-HTML@gerrit.openvpn.net>
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
+ id 1wQ5XX-0004ZG-LL for openvpn-devel@lists.sourceforge.net;
+ Thu, 21 May 2026 15:42:30 +0000
+Received: from smtp102.mailbox.org (smtp102.mailbox.org
+ [IPv6:2001:67c:2050:b231:465::102])
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+ key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+ (No client certificate requested)
+ by mout-b-106.mailbox.org (Postfix) with ESMTPS id 4gLt2G6SVnzDsB2;
+ Thu, 21 May 2026 17:42:14 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
+ s=MBO0001; t=1779378135;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:
+ content-transfer-encoding:content-transfer-encoding;
+ bh=eEDojGMElT0afOyiZIAH3StwMBwNjpfXmxYWkaAG1Rs=;
+ b=b+v5FVX42YawtedPISmNBcA75gZ+sPYcov4Jxyozcw6Pekq3ErIg0Sig0r0Ff9H6tNBclc
+ 2gILExRSlMqSqPjpQtMKqkECOmN1K4YB8HfSMTadeDzum97ssliyZBSRKtY2rGGp+amEVS
+ e+tPyh7n1cQlU4Cdm+ifrMHq2gkQYUfTo22Q7x2rNxVn36CzsFhjTEGktGnDy1EuKyCd6L
+ oXX2CWAvNNs+pN4rtb///Sa5d08zbqOGzxmUTdDvvEEKDO15Rorkr0o0aXTAARd09kMtfO
+ 67b/xqsXlQI2LO3n7Kg8KXVnGKEE6DxyQBHE7Hv8KOZ6DnZ0lrqMJVQ4QVQjjQ==
+Authentication-Results: outgoing_mbo_mout; dkim=none;
+ spf=pass (outgoing_mbo_mout: domain of marco@mandelbit.com designates
+ 2001:67c:2050:b231:465::102 as permitted sender)
+ smtp.mailfrom=marco@mandelbit.com
+From: Marco Baffo <marco@mandelbit.com>
+To: openvpn-devel@lists.sourceforge.net
+Date: Thu, 21 May 2026 17:42:10 +0200
+Message-ID: <20260521154210.1698977-1-marco@mandelbit.com>
 MIME-Version: 1.0
-User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wQ3qE-0005pk-Mp
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: dco: remove iroute
- at client exit time instead of delayed exit
+X-Rspamd-Queue-Id: 4gLt2G6SVnzDsB2
+X-Headers-End: 1wQ5XX-0004ZG-LL
+Subject: [Openvpn-devel] [RFC ovpn net-next v4] ovpn: add
+ multicast/broadcast packet transmission support
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -138,205 +92,486 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Reply-To: antonio@mandelbit.com, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>,
- plaisthos <arne-openvpn@rfc2549.org>
-Content-Type: multipart/mixed; boundary="===============0391856399405797021=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============0391856399405797021==
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="UWmHh4mi/ZE="; charset=UTF-8
+The ovpn DCO driver currently drops all multicast/broadcast packets
+because it does not set IFF_MULTICAST and IFF_BROADCAST on the
+netdevice and always performs a unicast peer lookup in ovpn_net_xmit().
+This prevents multicast routing daemons such as smcroute from using an
+ovpn interface as a multicast VIF and makes it impossible to
+forward multicast and broadcast traffic to VPN clients.
 
---UWmHh4mi/ZE=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Add the minimal infrastructure needed to get multicast/broadcast working:
 
-Attention is currently required from: flichtenheld, plaisthos=2E
+- Set IFF_MULTICAST and IFF_BROADCAST in ovpn_setup().
 
-ordex has=
- posted comments on this change by ordex=2E ( http://gerrit=2Eopenvpn=2Enet=
-/c/openvpn/+/1683?usp=3Demail )
+- Detect multicast and broadcast destinations in ovpn_peer_get_by_dst()
+  and set the bcast flag to true.
 
-Change subject: dco: remove iroute at clie=
-nt exit time instead of delayed exit
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E
+- Introduce ovpn_bcast_work() to transmit enqueued broadcast messages.
 
+- Allow all IGMP/MLD packets to bypass the RPF check in the RX path.
 
-Patch Set 4:
+Multicast traffic is treated as broadcast and flooded to all peers.
 
-(3 comments)
+Signed-off-by: Marco Baffo <marco@mandelbit.com>
+---
 
-Patchset:
+Changes in v4:
+- Extend the v3 bh-protection for dev_dstats_tx_dropped() to the ovpn_send()
+  failure path.
+- Refactor ovpn_mcast_mld_offset() and ovpn_mcast_is_control() to use
+  skb_header_pointer() instead of pskb_may_pull() + direct pointer
+  access, avoiding to mutate the skb during read-only inspection.
 
-PS4: 
-Thi=
-s new version is a bit reworked as we STILL need to delete iroutes also whe=
-n no delay exit is used=2E
+Changes in v3:
+- Guard dev_dstats_tx_dropped() in ovpn_bcast_work() with local_bh_disable()
+  to avoid seqcount races with softirq updates to dev->dstats, matching
+  ovpn_netdev_write().
 
+Changes in v2:
+- Replace broadcast path with a deferred workqueue, avoiding GFP_ATOMIC:
+  introduce struct ovpn_bcast (queue, work, wq) embedded in ovpn_priv.
+- Add struct llist_node bcast_entry to ovpn_peer to build a lockless
+  peer snapshot under RCU without allocating peer list nodes.
+- Process broadcast packets in an ordered workqueue so the entire
+  send path runs in process context and can use GFP_KERNEL.
+- Queue broadcast skbs directly to bcast.queue inside the main
+  ovpn_net_xmit() loop instead of building a temporary skb_list.
 
-Commit Message:
+ drivers/net/ovpn/io.c       | 181 +++++++++++++++++++++++++++++++++++-
+ drivers/net/ovpn/io.h       |   3 +
+ drivers/net/ovpn/main.c     |   8 +-
+ drivers/net/ovpn/ovpnpriv.h |  10 ++
+ drivers/net/ovpn/peer.c     |  21 ++++-
+ drivers/net/ovpn/peer.h     |   6 +-
+ 6 files changed, 218 insertions(+), 11 deletions(-)
 
-http://gerrit=2Eopenvpn=2Enet=
-/c/openvpn/+/1683/comment/fc47ad2c_78e4b20f?usp=3Demail :
-PS4, Line 28: 
-> =
-ok, I'll add a brief explanation in the commit message
-Done
-
-
-File src/open=
-vpn/forward=2Ec:
-
-http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1683/comment/36=
-ce7acf_672f4596?usp=3Demail :
-PS4, Line 537:     /* DCO iroutes must be rem=
-oved now, because the delay introduced by this
-> yap, will replicate the ex=
-planation here too
-Done
-
-
-
+diff --git a/drivers/net/ovpn/io.c b/drivers/net/ovpn/io.c
+index 22c555dd962e..3fee5b3f4eb9 100644
+--- a/drivers/net/ovpn/io.c
++++ b/drivers/net/ovpn/io.c
+@@ -105,6 +105,80 @@ static void ovpn_netdev_write(struct ovpn_peer *peer, struct sk_buff *skb)
+ 	local_bh_enable();
+ }
+ 
++/**
++ * ovpn_mcast_mld_offset - compute the offset to the MLD payload in an IPv6 packet
++ * @skb: the packet to inspect
++ * @offsetp: pointer to store the computed offset
++ *
++ * MLD packets may be preceded by a Hop-by-Hop options header containing
++ * the Router Alert option. Calculate the actual payload offset and
++ * verify that the next header is ICMPv6.
++ *
++ * Caller must ensure that the IPv6 header is linearized.
++ *
++ * Return: true if the offset was computed successfully, false otherwise
++ */
++static bool ovpn_mcast_mld_offset(const struct sk_buff *skb, unsigned int *offsetp)
++{
++	unsigned int offset = sizeof(struct ipv6hdr);
++	u8 nexthdr = ipv6_hdr(skb)->nexthdr;
++	struct ipv6_opt_hdr _hopopt, *hopopt;
++
++	if (nexthdr != IPPROTO_HOPOPTS)
++		goto check_icmpv6;
++
++	hopopt = skb_header_pointer(skb, offset, sizeof(_hopopt), &_hopopt);
++	if (!hopopt)
++		return false;
++
++	nexthdr = hopopt->nexthdr;
++	offset += ipv6_optlen(hopopt);
++
++check_icmpv6:
++	if (nexthdr != IPPROTO_ICMPV6)
++		return false;
++
++	*offsetp = offset;
++	return true;
++}
++
++/**
++ * ovpn_mcast_is_control - determine whether an skb is multicast control traffic
++ * @skb: the packet to inspect
++ *
++ * Caller must ensure that IP/IPv6 headers are linearized.
++ *
++ * Return: true if the skb contains IGMP or MLD control traffic,
++ *         false otherwise
++ */
++static bool ovpn_mcast_is_control(const struct sk_buff *skb)
++{
++	unsigned int offset;
++	struct icmp6hdr _ih, *ih;
++
++	if (skb->protocol == htons(ETH_P_IP))
++		return ip_hdr(skb)->protocol == IPPROTO_IGMP;
++
++	if (skb->protocol != htons(ETH_P_IPV6))
++		return false;
++
++	if (!ovpn_mcast_mld_offset(skb, &offset))
++		return false;
++
++	ih = skb_header_pointer(skb, offset, sizeof(_ih), &_ih);
++	if (!ih)
++		return false;
++	switch (ih->icmp6_type) {
++	case ICMPV6_MGM_QUERY:
++	case ICMPV6_MGM_REPORT:
++	case ICMPV6_MGM_REDUCTION:
++	case ICMPV6_MLD2_REPORT:
++		return true;
++	}
++
++	return false;
++}
++
+ void ovpn_decrypt_post(void *data, int ret)
+ {
+ 	struct ovpn_crypto_key_slot *ks;
+@@ -183,8 +257,13 @@ void ovpn_decrypt_post(void *data, int ret)
+ 	}
+ 	skb->protocol = proto;
+ 
+-	/* perform Reverse Path Filtering (RPF) */
+-	if (unlikely(!ovpn_peer_check_by_src(peer->ovpn, skb, peer))) {
++	/* perform Reverse Path Filtering (RPF).
++	 * IGMP/MLD protocols may use source addresses
++	 * that differ from the peer's VPN address
++	 * so we bypass RPF in that case
++	 */
++	if (unlikely(!ovpn_mcast_is_control(skb) &&
++		     !ovpn_peer_check_by_src(peer->ovpn, skb, peer))) {
+ 		if (skb->protocol == htons(ETH_P_IPV6))
+ 			net_dbg_ratelimited("%s: RPF dropped packet from peer %u, src: %pI6c\n",
+ 					    netdev_name(peer->ovpn->dev),
+@@ -343,7 +422,9 @@ static void ovpn_send(struct ovpn_priv *ovpn, struct sk_buff *skb,
+ 	 */
+ 	skb_list_walk_safe(skb, curr, next) {
+ 		if (unlikely(!ovpn_encrypt_one(peer, curr))) {
++			local_bh_disable();
+ 			dev_dstats_tx_dropped(ovpn->dev);
++			local_bh_enable();
+ 			kfree_skb(curr);
+ 		}
+ 	}
+@@ -351,6 +432,74 @@ static void ovpn_send(struct ovpn_priv *ovpn, struct sk_buff *skb,
+ 	ovpn_peer_put(peer);
+ }
+ 
++static void ovpn_bcast_work(struct work_struct *work)
++{
++	struct ovpn_priv *ovpn = container_of_const(work, struct ovpn_priv, bcast.work);
++	struct sk_buff *skb, *to_send;
++	struct llist_head peer_list;
++	struct llist_node *node, *n;
++	struct ovpn_peer *peer;
++	int bkt;
++
++	while ((skb = skb_dequeue(&ovpn->bcast.queue))) {
++		skb_mark_not_on_list(skb);
++		init_llist_head(&peer_list);
++
++		rcu_read_lock();
++		hash_for_each_rcu(ovpn->peers->by_id, bkt, peer, hash_entry_id) {
++			if (likely(ovpn_peer_hold(peer)))
++				llist_add(&peer->bcast_entry, &peer_list);
++		}
++		rcu_read_unlock();
++
++		if (unlikely(llist_empty(&peer_list))) {
++			local_bh_disable();
++			dev_dstats_tx_dropped(ovpn->dev);
++			local_bh_enable();
++			skb_tx_error(skb);
++			kfree_skb(skb);
++			continue;
++		}
++
++		llist_for_each_safe(node, n, peer_list.first) {
++			peer = llist_entry(node, struct ovpn_peer, bcast_entry);
++
++			if (likely(n))
++				to_send = skb_clone(skb, GFP_KERNEL);
++			else
++				to_send = skb;
++
++			if (likely(to_send)) {
++				ovpn_peer_stats_increment_tx(&peer->vpn_stats, skb->len);
++				ovpn_send(ovpn, to_send, peer);
++				continue;
++			}
++			local_bh_disable();
++			dev_dstats_tx_dropped(ovpn->dev);
++			local_bh_enable();
++			ovpn_peer_put(peer);
++		}
++	}
++}
++
++int ovpn_bcast_init(struct ovpn_priv *ovpn)
++{
++	skb_queue_head_init(&ovpn->bcast.queue);
++	INIT_WORK(&ovpn->bcast.work, ovpn_bcast_work);
++	ovpn->bcast.wq = alloc_ordered_workqueue("ovpn-bcast-%s", WQ_MEM_RECLAIM,
++						 netdev_name(ovpn->dev));
++	if (!ovpn->bcast.wq)
++		return -ENOMEM;
++
++	return 0;
++}
++
++void ovpn_bcast_exit(struct ovpn_priv *ovpn)
++{
++	cancel_work_sync(&ovpn->bcast.work);
++	skb_queue_purge(&ovpn->bcast.queue);
++}
++
+ /* Send user data to the network
+  */
+ netdev_tx_t ovpn_net_xmit(struct sk_buff *skb, struct net_device *dev)
+@@ -362,6 +511,7 @@ netdev_tx_t ovpn_net_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	struct ovpn_peer *peer;
+ 	__be16 proto;
+ 	int ret;
++	bool bcast = false;
+ 
+ 	/* reset netfilter state */
+ 	nf_reset_ct(skb);
+@@ -372,8 +522,8 @@ netdev_tx_t ovpn_net_xmit(struct sk_buff *skb, struct net_device *dev)
+ 		goto drop_no_peer;
+ 
+ 	/* retrieve peer serving the destination IP of this packet */
+-	peer = ovpn_peer_get_by_dst(ovpn, skb);
+-	if (unlikely(!peer)) {
++	peer = ovpn_peer_get_by_dst(ovpn, skb, &bcast);
++	if (unlikely(!peer && !bcast)) {
+ 		switch (skb->protocol) {
+ 		case htons(ETH_P_IP):
+ 			net_dbg_ratelimited("%s: no peer to send data to dst=%pI4\n",
+@@ -418,11 +568,31 @@ netdev_tx_t ovpn_net_xmit(struct sk_buff *skb, struct net_device *dev)
+ 			continue;
+ 		}
+ 
++		if (unlikely(bcast)) {
++			spin_lock_bh(&ovpn->bcast.queue.lock);
++			if (unlikely(skb_queue_len(&ovpn->bcast.queue) >= OVPN_BCAST_MAX_QLEN)) {
++				spin_unlock_bh(&ovpn->bcast.queue.lock);
++				dev_dstats_tx_dropped(ovpn->dev);
++				skb_tx_error(curr);
++				kfree_skb(curr);
++				continue;
++			}
++			__skb_queue_tail(&ovpn->bcast.queue, curr);
++			spin_unlock_bh(&ovpn->bcast.queue.lock);
++			continue;
++		}
++
+ 		/* only count what we actually send */
+ 		tx_bytes += curr->len;
+ 		__skb_queue_tail(&skb_list, curr);
+ 	}
+ 
++	if (unlikely(bcast)) {
++		if (!skb_queue_empty(&ovpn->bcast.queue))
++			queue_work(ovpn->bcast.wq, &ovpn->bcast.work);
++		return NETDEV_TX_OK;
++	}
++
+ 	/* no segments survived: don't jump to 'drop' because we already
+ 	 * incremented the counter for each failure in the loop
+ 	 */
+@@ -438,7 +608,8 @@ netdev_tx_t ovpn_net_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	return NETDEV_TX_OK;
+ 
+ drop:
+-	ovpn_peer_put(peer);
++	if (peer)
++		ovpn_peer_put(peer);
+ drop_no_peer:
+ 	dev_dstats_tx_dropped(ovpn->dev);
+ 	skb_tx_error(skb);
+diff --git a/drivers/net/ovpn/io.h b/drivers/net/ovpn/io.h
+index db9e10f9077c..9519b9a08030 100644
+--- a/drivers/net/ovpn/io.h
++++ b/drivers/net/ovpn/io.h
+@@ -31,4 +31,7 @@ void ovpn_xmit_special(struct ovpn_peer *peer, const void *data,
+ void ovpn_encrypt_post(void *data, int ret);
+ void ovpn_decrypt_post(void *data, int ret);
+ 
++int ovpn_bcast_init(struct ovpn_priv *ovpn);
++void ovpn_bcast_exit(struct ovpn_priv *ovpn);
++
+ #endif /* _NET_OVPN_OVPN_H_ */
+diff --git a/drivers/net/ovpn/main.c b/drivers/net/ovpn/main.c
+index 2e0420febda0..0537b3d22cf6 100644
+--- a/drivers/net/ovpn/main.c
++++ b/drivers/net/ovpn/main.c
+@@ -30,6 +30,8 @@ static void ovpn_priv_free(struct net_device *net)
+ {
+ 	struct ovpn_priv *ovpn = netdev_priv(net);
+ 
++	if (ovpn->bcast.wq)
++		destroy_workqueue(ovpn->bcast.wq);
+ 	kfree(ovpn->peers);
+ }
+ 
+@@ -155,7 +157,7 @@ static void ovpn_setup(struct net_device *dev)
+ 	dev->max_mtu = IP_MAX_MTU - OVPN_HEAD_ROOM;
+ 
+ 	dev->type = ARPHRD_NONE;
+-	dev->flags = IFF_POINTOPOINT | IFF_NOARP;
++	dev->flags = IFF_POINTOPOINT | IFF_NOARP | IFF_MULTICAST | IFF_BROADCAST;
+ 	dev->priv_flags |= IFF_NO_QUEUE;
+ 	/* when routing packets to a LAN behind a client, we rely on the
+ 	 * route entry that originally brought the packet into ovpn, so
+@@ -192,6 +194,9 @@ static int ovpn_newlink(struct net_device *dev,
+ 	spin_lock_init(&ovpn->lock);
+ 	INIT_DELAYED_WORK(&ovpn->keepalive_work, ovpn_peer_keepalive_work);
+ 
++	if (ovpn_bcast_init(ovpn))
++		return -ENOMEM;
++
+ 	/* Set carrier explicitly after registration, this way state is
+ 	 * clearly defined.
+ 	 *
+@@ -212,6 +217,7 @@ static void ovpn_dellink(struct net_device *dev, struct list_head *head)
+ {
+ 	struct ovpn_priv *ovpn = netdev_priv(dev);
+ 
++	ovpn_bcast_exit(ovpn);
+ 	cancel_delayed_work_sync(&ovpn->keepalive_work);
+ 	ovpn_peers_free(ovpn, NULL, OVPN_DEL_PEER_REASON_TEARDOWN);
+ 	unregister_netdevice_queue(dev, head);
+diff --git a/drivers/net/ovpn/ovpnpriv.h b/drivers/net/ovpn/ovpnpriv.h
+index 5898f6adada7..5c86b239527b 100644
+--- a/drivers/net/ovpn/ovpnpriv.h
++++ b/drivers/net/ovpn/ovpnpriv.h
+@@ -32,6 +32,14 @@ struct ovpn_peer_collection {
+ 	struct hlist_nulls_head by_transp_addr[1 << 12];
+ };
+ 
++#define OVPN_BCAST_MAX_QLEN 1000
++
++struct ovpn_bcast {
++	struct sk_buff_head queue;
++	struct work_struct work;
++	struct workqueue_struct *wq;
++};
++
+ /**
+  * struct ovpn_priv - per ovpn interface state
+  * @dev: the actual netdev representing the tunnel
+@@ -41,6 +49,7 @@ struct ovpn_peer_collection {
+  * @peer: in P2P mode, this is the only remote peer
+  * @gro_cells: pointer to the Generic Receive Offload cell
+  * @keepalive_work: struct used to schedule keepalive periodic job
++ * @bcast: struct used to queue and transmit broadcast messages
+  */
+ struct ovpn_priv {
+ 	struct net_device *dev;
+@@ -50,6 +59,7 @@ struct ovpn_priv {
+ 	struct ovpn_peer __rcu *peer;
+ 	struct gro_cells gro_cells;
+ 	struct delayed_work keepalive_work;
++	struct ovpn_bcast bcast;
+ };
+ 
+ #endif /* _NET_OVPN_OVPNSTRUCT_H_ */
+diff --git a/drivers/net/ovpn/peer.c b/drivers/net/ovpn/peer.c
+index c02dfab51a6e..d1616e04c0ad 100644
+--- a/drivers/net/ovpn/peer.c
++++ b/drivers/net/ovpn/peer.c
+@@ -722,6 +722,8 @@ static void ovpn_peer_remove(struct ovpn_peer *peer,
+  * ovpn_peer_get_by_dst - Lookup peer to send skb to
+  * @ovpn: the private data representing the current VPN session
+  * @skb: the skb to extract the destination address from
++ * @bcast: a pointer to a bool. It's set to true if the packet is a
++ *         broadcast or a multicast.
+  *
+  * This function takes a tunnel packet and looks up the peer to send it to
+  * after encapsulation. The skb is expected to be the in-tunnel packet, without
+@@ -731,10 +733,11 @@ static void ovpn_peer_remove(struct ovpn_peer *peer,
+  *
+  * Return: the peer if found or NULL otherwise.
+  */
+-struct ovpn_peer *ovpn_peer_get_by_dst(struct ovpn_priv *ovpn,
+-				       struct sk_buff *skb)
++struct ovpn_peer *ovpn_peer_get_by_dst(struct ovpn_priv *ovpn, struct sk_buff *skb,
++				       bool *bcast)
+ {
+ 	struct ovpn_peer *peer = NULL;
++	unsigned int addr_type;
+ 	struct in6_addr addr6;
+ 	__be32 addr4;
+ 
+@@ -755,11 +758,23 @@ struct ovpn_peer *ovpn_peer_get_by_dst(struct ovpn_priv *ovpn,
+ 	case htons(ETH_P_IP):
+ 		addr4 = ovpn_nexthop_from_skb4(skb);
+ 		peer = ovpn_peer_get_by_vpn_addr4(ovpn, addr4);
++
++		if (peer)
++			break;
++
++		addr_type = inet_dev_addr_type(dev_net(ovpn->dev), ovpn->dev, addr4);
++		if (addr_type == RTN_MULTICAST || addr_type == RTN_BROADCAST)
++			*bcast = true;
+ 		break;
+ 	case htons(ETH_P_IPV6):
+ 		addr6 = ovpn_nexthop_from_skb6(skb);
+ 		peer = ovpn_peer_get_by_vpn_addr6(ovpn, &addr6);
+-		break;
++
++		if (peer)
++			break;
++
++		if (ipv6_addr_is_multicast(&addr6))
++			*bcast = true;
+ 	}
+ 
+ 	if (unlikely(peer && !ovpn_peer_hold(peer)))
+diff --git a/drivers/net/ovpn/peer.h b/drivers/net/ovpn/peer.h
+index 328401570cba..2b5027d0ad01 100644
+--- a/drivers/net/ovpn/peer.h
++++ b/drivers/net/ovpn/peer.h
+@@ -59,6 +59,7 @@
+  * @refcount: reference counter
+  * @rcu: used to free peer in an RCU safe way
+  * @release_entry: entry for the socket release list
++ * @bcast_entry: entry for the broadcast peers list
+  * @keepalive_work: used to schedule keepalive sending
+  */
+ struct ovpn_peer {
+@@ -113,6 +114,7 @@ struct ovpn_peer {
+ 	struct kref refcount;
+ 	struct rcu_head rcu;
+ 	struct llist_node release_entry;
++	struct llist_node bcast_entry;
+ 	struct work_struct keepalive_work;
+ };
+ 
+@@ -148,8 +150,8 @@ void ovpn_peers_free(struct ovpn_priv *ovpn, struct sock *sock,
+ struct ovpn_peer *ovpn_peer_get_by_transp_addr(struct ovpn_priv *ovpn,
+ 					       struct sk_buff *skb);
+ struct ovpn_peer *ovpn_peer_get_by_id(struct ovpn_priv *ovpn, u32 peer_id);
+-struct ovpn_peer *ovpn_peer_get_by_dst(struct ovpn_priv *ovpn,
+-				       struct sk_buff *skb);
++struct ovpn_peer *ovpn_peer_get_by_dst(struct ovpn_priv *ovpn, struct sk_buff *skb,
++				       bool *bcast);
+ void ovpn_peer_hash_vpn_ip(struct ovpn_peer *peer);
+ bool ovpn_peer_check_by_src(struct ovpn_priv *ovpn, struct sk_buff *skb,
+ 			    struct ovpn_peer *peer);
 -- 
-To view, visit http://gerrit=2Eopenvpn=2Enet=
-/c/openvpn/+/1683?usp=3Demail
-To unsubscribe, or for help writing mail filt=
-ers, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
-
-Gerrit-Messa=
-geType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change=
--Id: I0ba723d12d433e6e020588b7b0c3ba10bcf8c44f
-Gerrit-Change-Number: 1683
-G=
-errit-PatchSet: 4
-Gerrit-Owner: ordex <antonio@mandelbit=2Ecom>
-Gerrit-Revi=
-ewer: flichtenheld <frank@lichtenheld=2Ecom>
-Gerrit-Reviewer: plaisthos <ar=
-ne-openvpn@rfc2549=2Eorg>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Es=
-ourceforge=2Enet>
-Gerrit-Attention: plaisthos <arne-openvpn@rfc2549=2Eorg>
-=
-Gerrit-Attention: flichtenheld <frank@lichtenheld=2Ecom>
-Gerrit-Comment-Dat=
-e: Thu, 21 May 2026 13:53:30 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Label=
-s: No
-Comment-In-Reply-To: flichtenheld <frank@lichtenheld=2Ecom>
-Comment-I=
-n-Reply-To: ordex <antonio@mandelbit=2Ecom>
-
---UWmHh4mi/ZE=
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos=2E </p>
-<p><a href=3D"http://=
-gerrit=2Eopenvpn=2Enet/c/openvpn/+/1683?usp=3Demail">View Change</a></p><p>=
-3 comments:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"mar=
-gin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style: none; padding=
-: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bott=
-om: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1683?tab=3Dc=
-omments&amp;usp=3Demail">Patch Set #4:</a> </p><p class=3D"blocks" style=3D=
-"white-space: pre-wrap; word-wrap: break-word;">This new version is a bit r=
-eworked as we STILL need to delete iroutes also when no delay exit is used=
-=2E</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>Commit Messag=
-e:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; p=
-adding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://ger=
-rit=2Eopenvpn=2Enet/c/openvpn/+/1683/comment/fc47ad2c_78e4b20f?usp=3Demail"=
->Patch Set #4, Line 28:</a> <code style=3D"font-family:monospace,monospace"=
-></code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10=
-px 0; padding: 0 10px;">ok, I&#39;ll add a brief explanation in the commit =
-message</blockquote></p><p class=3D"blocks" style=3D"white-space: pre-wrap;=
- word-wrap: break-word;">Done</p></li></ul></li><li style=3D"margin: 0; pad=
-ding: 0;"><p>File src/openvpn/forward=2Ec:</p><ul style=3D"list-style: none=
-; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"ma=
-rgin-bottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/168=
-3/comment/36ce7acf_672f4596?usp=3Demail">Patch Set #4, Line 537:</a> <code =
-style=3D"font-family:monospace,monospace">    /* DCO iroutes must be remove=
-d now, because the delay introduced by this</code></p><p><blockquote style=
-=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">yap, wil=
-l replicate the explanation here too</blockquote></p><p class=3D"blocks" st=
-yle=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul></l=
-i></ul><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn=
-/+/1683?usp=3Demail">change 1683</a>=2E To unsubscribe, or for help writing=
- mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=
-=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg=
-/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=
-=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1683?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
-ew Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: =
-comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-=
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"dis=
-play:none"> Gerrit-Change-Id: I0ba723d12d433e6e020588b7b0c3ba10bcf8c44f </d=
-iv>
-<div style=3D"display:none"> Gerrit-Change-Number: 1683 </div>
-<div sty=
-le=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none">=
- Gerrit-Owner: ordex &lt;antonio@mandelbit=2Ecom&gt; </div>
-<div style=3D"d=
-isplay:none"> Gerrit-Reviewer: flichtenheld &lt;frank@lichtenheld=2Ecom&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-op=
-envpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: open=
-vpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
-<div style=
-=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@rfc2549=2Eo=
-rg&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &=
-lt;frank@lichtenheld=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-C=
-omment-Date: Thu, 21 May 2026 13:53:30 +0000 </div>
-<div style=3D"display:n=
-one"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Ha=
-s-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flich=
-tenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
-<div style=3D"display:none">=
- Comment-In-Reply-To: ordex &lt;antonio@mandelbit=2Ecom&gt; </div>
-
-</body>=
-</html>
---UWmHh4mi/ZE=--
+2.43.0
 
 
---===============0391856399405797021==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============0391856399405797021==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
---===============0391856399405797021==--
-
