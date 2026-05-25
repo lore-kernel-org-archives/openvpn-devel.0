@@ -4,77 +4,80 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 178E3CD5BC9
-	for <openvpn-devel@archiver.kernel.org>; Mon, 25 May 2026 14:36:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A9361CD5BD5
+	for <openvpn-devel@archiver.kernel.org>; Mon, 25 May 2026 14:36:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:Cc:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:Date:To:From:Sender:Reply-To:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:In-Reply-To:References:List-Owner;
-	bh=bjc4evmBYcdtZ3E4X28Jl6mzjpVicz6yHdnGyVQvQGc=; b=Us5TebFHf04YCAZ4nDkQlCe4I4
-	y3WQC5a77sQfgzTijTr7LeIlH05Vmvbls8wdjSKtZFHu+GvQJDEGIO7iOf1rvPdCalp3DSIqwlPKf
-	2jWTdO8HbzOvMuTH0KMRpaf0iXr130g0iCjJyPfANGpVhsopaInkYf/1x2x2O8Thzipg=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
+	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
+	:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=1s0W5+KSDT8fh8DlDW/PDkMbvvigyXTsSDNp3IeXmQ4=; b=QpEyHlCaqzSO6mJIohNOVZZ6+u
+	SKYiSA49RVx8E83/nEa6pNuCsdv8a6GPYtF4Auei9c8oxi5t+o4ZH+VIjvQGyW2IMyzO49q0bi6Uk
+	xLab1ML1GqHX5GY9kH8CNnZnS7NV3hvt9M8kSqUchGhbg/RpGHd9cN97+Ji7GB3a0xm8=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wRWPw-0005FJ-9I;
-	Mon, 25 May 2026 14:36:32 +0000
+	id 1wRWPu-0001Cc-LB;
+	Mon, 25 May 2026 14:36:31 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <a@unstable.cc>) id 1wRWPh-0005Eq-Vl
+ (envelope-from <a@unstable.cc>) id 1wRWPt-0001C0-2y
  for openvpn-devel@lists.sourceforge.net;
- Mon, 25 May 2026 14:36:22 +0000
+ Mon, 25 May 2026 14:36:29 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:Message-ID:
- Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
+ In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=Yn5lMf+dtMIp74+rxo4pjLI51f9UJ8t9jKKiigAjqwY=; b=d6Krpd1WMx+vTI6hTKIOyeTRvJ
- ds/VQFWInPod0a6/DDumPPQZFBuqULs0ZR9X9vdwJIx66XEhkywZTI/nRZ/+0Mw2izIu+hOWKoZos
- 5w2xFGtjgmYMS9En457z3TxxMHc1Lg1vrYbsM3mfzlOlPqQDwRReouRajyWtxISdP/Wo=;
+ bh=3RJEfaEDNJg6717gaUTwcgxYlg32mZHgUWqZMEtXJOw=; b=crxvxFLloHk7FNrg9AwPbSjF0U
+ iiq/w12yAJAwbvBZZPQtMWgf0+GEh6LUMz9yUSemKfUEsRds0EPLrpp77lTSTSV9s9qdpZewZRmF4
+ JQZBq63G+X9Yww+GyqwzzvIcIxo7glVmorub81wHaGaWK4vmLxODINgiijr6j2THwTTo=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:Cc:To:From
- :Sender:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:
- Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
- References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=Yn5lMf+dtMIp74+rxo4pjLI51f9UJ8t9jKKiigAjqwY=; b=d
- JcCK/m6USw9LgDL+JHgfG0qDqxU2HhGOirN3KxNTDf1zNkBh35ZL0a7XzumTvdWyQZNxtcuDs5M15
- Oq++Pbj0+P0PDoqg4Dn6Drg42FHdxPKytKYgt3wlepYfPHIRI/s7o8ebRxBsvPVT2oLl4/3VCAYsf
- H0K/QcLfPUvnUUnA=;
-Received: from mout-p-102.mailbox.org ([80.241.56.152])
+ h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
+ Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+ List-Post:List-Owner:List-Archive;
+ bh=3RJEfaEDNJg6717gaUTwcgxYlg32mZHgUWqZMEtXJOw=; b=X6MlQ/lUYnaxju6ZC4Gxc+6KPV
+ ogoys7N+BOSD5xFQTZamCIymf2PIy4+ex3eeks8h78rGwcRhDaJI6PrxjRM4d+pbybsEguBQ/lWYu
+ 1BIbLAWNMACZml9w78E8/pITQRd363mwa4+1wILImF/bIOOj/dYfOnfXIZWMWkJVmv74=;
+Received: from mout-p-202.mailbox.org ([80.241.56.172])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wRWPg-0003ox-3e for openvpn-devel@lists.sourceforge.net;
- Mon, 25 May 2026 14:36:17 +0000
+ id 1wRWPm-0003pQ-8a for openvpn-devel@lists.sourceforge.net;
+ Mon, 25 May 2026 14:36:26 +0000
 Received: from smtp102.mailbox.org (smtp102.mailbox.org [10.196.197.102])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
  (No client certificate requested)
- by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4gPJN84ysmz9vH3;
- Mon, 25 May 2026 16:36:08 +0200 (CEST)
+ by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4gPJN96HxTz9t9S;
+ Mon, 25 May 2026 16:36:09 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=unstable.cc; s=MBO0001;
- t=1779719768;
+ t=1779719769;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:
- content-transfer-encoding:content-transfer-encoding;
- bh=Yn5lMf+dtMIp74+rxo4pjLI51f9UJ8t9jKKiigAjqwY=;
- b=zM1HEkBPUBrEinoL1e94ldct0LV09tEC1YP0QQ5zQtp0x4S61APPoqQimsQanASed1pHpg
- S3JiyWqOqycd3AE5XQ/yrJIhE8l33h8N156ZeTJT8F0ZHS3aEufcKZYjHGK5ogAMaIpSot
- Ul4DwCUQGHHMRqVOlMv1yxMZjKWTR63qFpgM6fNJWweFG/VmtGtnCQiofKmn5xxB8XSwR/
- YdmeZ3/XOuPGYhOHqOsAqySNyVSUZ6wyFBEEJr7W992AAjDVOsjzdpKRWAiO4DALkiO3WP
- N92ovH3b8HydARoEkKSppJTSYhMd37UDxvUbKXtTqk56geCPyONoKpoixDY0bg==
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=3RJEfaEDNJg6717gaUTwcgxYlg32mZHgUWqZMEtXJOw=;
+ b=GD5IwS7TlFnyudd9JW12QYSa4CTFKKgH8werKZ5E8ga4ovlVj+D79mGadOMHZhL4qyh2LM
+ i1Th7/Fxr877hq4lDskYD9mTUghw/towGGWa62is5XySyFfBHeY6Y6wXdVkibUg+LrGTDg
+ FVo/AiuWs+0E5JdMHSL8LqovFV38DHv2ZoJHQBJl/FjVcpUkEU+EUbH6H5DIdpR3LgoHp/
+ z289lnBhdPgKJ/IlsLSPXP9KYDzRU+xSyMTol/pwZZ3+HyTynPuEt0mYjSt+dML3fDjt5t
+ /OT0QLNdi9QCYlI0yt5uXmJzyixAhSzSKhav92hS6Ar0ZykAxfBkufOVSrreWg==
 From: Antonio Quartulli <a@unstable.cc>
 To: openvpn-devel@lists.sourceforge.net
-Date: Mon, 25 May 2026 16:36:03 +0200
-Message-ID: <20260525143606.1532168-1-a@unstable.cc>
+Date: Mon, 25 May 2026 16:36:05 +0200
+Message-ID: <20260525143606.1532168-3-a@unstable.cc>
+In-Reply-To: <20260525143606.1532168-1-a@unstable.cc>
+References: <20260525143606.1532168-1-a@unstable.cc>
 MIME-Version: 1.0
-X-Headers-End: 1wRWPg-0003ox-3e
-Subject: [Openvpn-devel] [PATCH 1/4] ovpn: account user-triggered
- allocations to memcg
+X-Headers-End: 1wRWPm-0003pQ-8a
+Subject: [Openvpn-devel] [PATCH 3/4] ovpn: cap number of ovpn devices per
+ netns
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -93,228 +96,178 @@ Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
 From: Antonio Quartulli <antonio@openvpn.net>
 
-Since commit 64f5f0062d77 ("ovpn: netlink - check CAP_NET_ADMIN in
-source namespace only") an unprivileged userns owner can drive every
-ovpn genetlink op and, without further mitigation, pin arbitrary
-amounts of kernel memory by creating interfaces, peers and key slots
-in a loop.
+The previous patches bound resource use within a single ovpn
+interface, but a userns owner can still spin many MP-mode devices,
+each costing ~128 KiB just for its peer hashtables.
 
-Tag the affected allocations with __GFP_ACCOUNT so they are charged
-to the caller's cgroup and capped by memory.max: ovpn_peer,
-ovpn_socket, the ~128 KiB MP peer hashtable, the crypto key slot,
-the per-peer dst_cache and netdev trackers, and ovpn_bind when
-allocated from process context.
+Cap the number of ovpn netdevs per netns with a compile-time
+constant (OVPN_MAX_DEVS, 256). The counter lives in a per-netns
+struct registered via register_pernet_subsys() - the framework
+zero-allocates and frees the storage, so no init/exit callbacks are
+needed. ovpn_net_init() increments and rejects with -ENOSPC past
+the cap; ovpn_net_uninit() decrements, keeping the counter balanced
+across both ndo_init failure and normal teardown.
 
-ovpn_bind_from_sockaddr() and ovpn_peer_reset_sockaddr() now take an
-explicit gfp_t. The RX float path runs in softirq, where 'current'
-is unrelated to the userns owner, so it passes plain GFP_ATOMIC and
-accepts that those binds go unaccounted. Per-packet datapath
-allocations are out of scope: short-lived and traffic-driven.
+Also set dev->netns_immutable in ovpn_setup() to forbid moving an
+ovpn device between netns. Without it, ndo_uninit would decrement
+a different netns' counter than ndo_init incremented, eventually
+wrapping the atomic_t and defeating the cap - a userns owner with
+multiple child netns could trigger this on purpose.
+
+A sysctl was rejected: net.* sysctls in a non-init netns are
+writable by anyone with CAP_NET_ADMIN in that netns, i.e. the exact
+actor this cap constrains. A compile-time constant cannot be raised
+by an attacker; 256 is generous for any realistic deployment.
 
 Signed-off-by: Antonio Quartulli <antonio@openvpn.net>
 ---
- drivers/net/ovpn/bind.c        | 12 ++++++++++--
- drivers/net/ovpn/bind.h        |  3 ++-
- drivers/net/ovpn/crypto_aead.c |  2 +-
- drivers/net/ovpn/main.c        |  2 +-
- drivers/net/ovpn/netlink.c     |  3 ++-
- drivers/net/ovpn/peer.c        | 18 ++++++++++++------
- drivers/net/ovpn/peer.h        |  2 +-
- drivers/net/ovpn/socket.c      |  4 ++--
- 8 files changed, 31 insertions(+), 15 deletions(-)
+ drivers/net/ovpn/main.c | 71 ++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 63 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ovpn/bind.c b/drivers/net/ovpn/bind.c
-index e42b60cd04a9..a8e9a417e2bf 100644
---- a/drivers/net/ovpn/bind.c
-+++ b/drivers/net/ovpn/bind.c
-@@ -17,10 +17,18 @@
- /**
-  * ovpn_bind_from_sockaddr - retrieve binding matching sockaddr
-  * @ss: the sockaddr to match
-+ * @gfp: GFP flags for the allocation. All callers reach this function with
-+ *	 peer->lock (a spinlock) held, so the GFP must be atomic regardless of
-+ *	 the outer context. Callers in process context (e.g. netlink handlers)
-+ *	 should additionally OR in __GFP_ACCOUNT so the charge lands on the
-+ *	 caller's memcg; callers on the RX float path (softirq, where current
-+ *	 is unrelated to the userns owner) must pass plain GFP_ATOMIC to avoid
-+ *	 mis-accounting to a random cgroup.
-  *
-  * Return: the bind matching the passed sockaddr if found, NULL otherwise
-  */
--struct ovpn_bind *ovpn_bind_from_sockaddr(const struct sockaddr_storage *ss)
-+struct ovpn_bind *ovpn_bind_from_sockaddr(const struct sockaddr_storage *ss,
-+					  gfp_t gfp)
- {
- 	struct ovpn_bind *bind;
- 	size_t sa_len;
-@@ -32,7 +40,7 @@ struct ovpn_bind *ovpn_bind_from_sockaddr(const struct sockaddr_storage *ss)
- 	else
- 		return ERR_PTR(-EAFNOSUPPORT);
- 
--	bind = kzalloc_obj(*bind, GFP_ATOMIC);
-+	bind = kzalloc_obj(*bind, gfp);
- 	if (unlikely(!bind))
- 		return ERR_PTR(-ENOMEM);
- 
-diff --git a/drivers/net/ovpn/bind.h b/drivers/net/ovpn/bind.h
-index 4e0b8398bfd9..cda8c4888a35 100644
---- a/drivers/net/ovpn/bind.h
-+++ b/drivers/net/ovpn/bind.h
-@@ -95,7 +95,8 @@ static inline bool ovpn_bind_skb_src_match(const struct ovpn_bind *bind,
- 	return true;
- }
- 
--struct ovpn_bind *ovpn_bind_from_sockaddr(const struct sockaddr_storage *sa);
-+struct ovpn_bind *ovpn_bind_from_sockaddr(const struct sockaddr_storage *sa,
-+					  gfp_t gfp);
- void ovpn_bind_reset(struct ovpn_peer *peer, struct ovpn_bind *bind);
- 
- #endif /* _NET_OVPN_OVPNBIND_H_ */
-diff --git a/drivers/net/ovpn/crypto_aead.c b/drivers/net/ovpn/crypto_aead.c
-index 8f07c418622b..0a3c93d198fe 100644
---- a/drivers/net/ovpn/crypto_aead.c
-+++ b/drivers/net/ovpn/crypto_aead.c
-@@ -414,7 +414,7 @@ ovpn_aead_crypto_key_slot_new(const struct ovpn_key_config *kc)
- 		return ERR_PTR(-EINVAL);
- 
- 	/* build the key slot */
--	ks = kmalloc_obj(*ks);
-+	ks = kmalloc_obj(*ks, GFP_KERNEL_ACCOUNT);
- 	if (!ks)
- 		return ERR_PTR(-ENOMEM);
- 
 diff --git a/drivers/net/ovpn/main.c b/drivers/net/ovpn/main.c
-index 9993c1dfe471..425f4367f0ab 100644
+index 425f4367f0ab..540ba89d81b7 100644
 --- a/drivers/net/ovpn/main.c
 +++ b/drivers/net/ovpn/main.c
-@@ -57,7 +57,7 @@ static int ovpn_mp_alloc(struct ovpn_priv *ovpn)
- 	/* the peer container is fairly large, therefore we allocate it only in
- 	 * MP mode
- 	 */
--	ovpn->peers = kzalloc_obj(*ovpn->peers);
-+	ovpn->peers = kzalloc_obj(*ovpn->peers, GFP_KERNEL_ACCOUNT);
- 	if (!ovpn->peers)
- 		return -ENOMEM;
+@@ -14,6 +14,8 @@
+ #include <linux/inetdevice.h>
+ #include <net/gro_cells.h>
+ #include <net/ip.h>
++#include <net/net_namespace.h>
++#include <net/netns/generic.h>
+ #include <net/rtnetlink.h>
+ #include <uapi/linux/if_arp.h>
  
-diff --git a/drivers/net/ovpn/netlink.c b/drivers/net/ovpn/netlink.c
-index 4c66c1ec497e..893dccdfaf64 100644
---- a/drivers/net/ovpn/netlink.c
-+++ b/drivers/net/ovpn/netlink.c
-@@ -295,7 +295,8 @@ static int ovpn_nl_peer_modify(struct ovpn_peer *peer, struct genl_info *info,
- 		local_ip = ovpn_nl_attr_local_ip(attrs);
+@@ -26,6 +28,29 @@
+ #include "tcp.h"
+ #include "udp.h"
  
- 		/* set peer sockaddr */
--		ret = ovpn_peer_reset_sockaddr(peer, &ss, local_ip);
-+		ret = ovpn_peer_reset_sockaddr(peer, &ss, local_ip,
-+					       GFP_ATOMIC | __GFP_ACCOUNT);
- 		if (ret < 0) {
- 			NL_SET_ERR_MSG_FMT_MOD(info->extack,
- 					       "cannot set peer sockaddr: %d",
-diff --git a/drivers/net/ovpn/peer.c b/drivers/net/ovpn/peer.c
-index a09d61296425..511a7ce9b32b 100644
---- a/drivers/net/ovpn/peer.c
-+++ b/drivers/net/ovpn/peer.c
-@@ -95,7 +95,7 @@ struct ovpn_peer *ovpn_peer_new(struct ovpn_priv *ovpn, u32 id)
- 	int ret;
- 
- 	/* alloc and init peer object */
--	peer = kzalloc_obj(*peer);
-+	peer = kzalloc_obj(*peer, GFP_KERNEL_ACCOUNT);
- 	if (!peer)
- 		return ERR_PTR(-ENOMEM);
- 
-@@ -117,7 +117,7 @@ struct ovpn_peer *ovpn_peer_new(struct ovpn_priv *ovpn, u32 id)
- 	ovpn_peer_stats_init(&peer->link_stats);
- 	INIT_WORK(&peer->keepalive_work, ovpn_peer_keepalive_send);
- 
--	ret = dst_cache_init(&peer->dst_cache, GFP_KERNEL);
-+	ret = dst_cache_init(&peer->dst_cache, GFP_KERNEL_ACCOUNT);
- 	if (ret < 0) {
- 		netdev_err(ovpn->dev,
- 			   "cannot initialize dst cache for peer %u\n",
-@@ -126,7 +126,7 @@ struct ovpn_peer *ovpn_peer_new(struct ovpn_priv *ovpn, u32 id)
- 		return ERR_PTR(ret);
- 	}
- 
--	netdev_hold(ovpn->dev, &peer->dev_tracker, GFP_KERNEL);
-+	netdev_hold(ovpn->dev, &peer->dev_tracker, GFP_KERNEL_ACCOUNT);
- 
- 	return peer;
- }
-@@ -136,12 +136,14 @@ struct ovpn_peer *ovpn_peer_new(struct ovpn_priv *ovpn, u32 id)
-  * @peer: peer to recreate the binding for
-  * @ss: sockaddr to use as remote endpoint for the binding
-  * @local_ip: local IP for the binding
-+ * @gfp: GFP flags for the bind allocation. See ovpn_bind_from_sockaddr() for
-+ *	 the accounting trade-off between process-context and softirq callers.
-  *
-  * Return: 0 on success or a negative error code otherwise
-  */
- int ovpn_peer_reset_sockaddr(struct ovpn_peer *peer,
- 			     const struct sockaddr_storage *ss,
--			     const void *local_ip)
-+			     const void *local_ip, gfp_t gfp)
++/* Hard cap on number of ovpn netdevs per network namespace. Pairs with the
++ * per-MP-instance OVPN_MAX_PEERS cap to bound total kernel memory an
++ * unprivileged userns owner can pin via repeated `ip link add ... type ovpn`
++ * calls (each MP-mode device costs ~128 KiB just for its peer hashtables).
++ *
++ * This is a compile-time constant on purpose: a sysctl in net.* would be
++ * writable by anyone with CAP_NET_ADMIN in the namespace - i.e. exactly the
++ * unprivileged userns owner this cap is meant to constrain - which would
++ * defeat the defence. 256 is generous for any realistic deployment.
++ */
++#define OVPN_MAX_DEVS 256
++
++struct ovpn_net {
++	atomic_t n_devs;
++};
++
++static unsigned int ovpn_net_id __read_mostly;
++
++static struct pernet_operations ovpn_pernet_ops = {
++	.id	= &ovpn_net_id,
++	.size	= sizeof(struct ovpn_net),
++};
++
+ static void ovpn_priv_free(struct net_device *net)
  {
- 	struct ovpn_bind *bind;
- 	size_t ip_len;
-@@ -149,7 +151,7 @@ int ovpn_peer_reset_sockaddr(struct ovpn_peer *peer,
- 	lockdep_assert_held(&peer->lock);
+ 	struct ovpn_priv *ovpn = netdev_priv(net);
+@@ -74,27 +99,40 @@ static int ovpn_mp_alloc(struct ovpn_priv *ovpn)
+ static int ovpn_net_init(struct net_device *dev)
+ {
+ 	struct ovpn_priv *ovpn = netdev_priv(dev);
+-	int err = gro_cells_init(&ovpn->gro_cells, dev);
++	struct ovpn_net *on = net_generic(dev_net(dev), ovpn_net_id);
++	int err;
++
++	if (atomic_fetch_inc(&on->n_devs) >= OVPN_MAX_DEVS) {
++		atomic_dec(&on->n_devs);
++		return -ENOSPC;
++	}
  
- 	/* create new ovpn_bind object */
--	bind = ovpn_bind_from_sockaddr(ss);
-+	bind = ovpn_bind_from_sockaddr(ss, gfp);
- 	if (IS_ERR(bind))
- 		return PTR_ERR(bind);
++	err = gro_cells_init(&ovpn->gro_cells, dev);
+ 	if (err < 0)
+-		return err;
++		goto err_dec;
  
-@@ -281,9 +283,13 @@ void ovpn_peer_endpoints_update(struct ovpn_peer *peer, struct sk_buff *skb)
- 	if (likely(!salen))
- 		goto unlock;
+ 	err = ovpn_mp_alloc(ovpn);
+-	if (err < 0) {
+-		gro_cells_destroy(&ovpn->gro_cells);
+-		return err;
+-	}
++	if (err < 0)
++		goto err_gro;
  
-+	/* RX float path runs in softirq context: __GFP_ACCOUNT would charge
-+	 * whatever cgroup is on-CPU when the packet arrives, not the userns
-+	 * owner, so pass plain GFP_ATOMIC and skip accounting on this path.
+ 	return 0;
++
++err_gro:
++	gro_cells_destroy(&ovpn->gro_cells);
++err_dec:
++	atomic_dec(&on->n_devs);
++	return err;
+ }
+ 
+ static void ovpn_net_uninit(struct net_device *dev)
+ {
+ 	struct ovpn_priv *ovpn = netdev_priv(dev);
++	struct ovpn_net *on = net_generic(dev_net(dev), ovpn_net_id);
+ 
+ 	disable_delayed_work_sync(&ovpn->keepalive_work);
+ 	ovpn_peers_free(ovpn, NULL, OVPN_DEL_PEER_REASON_TEARDOWN);
+ 	gro_cells_destroy(&ovpn->gro_cells);
++	atomic_dec(&on->n_devs);
+ }
+ 
+ static const struct net_device_ops ovpn_netdev_ops = {
+@@ -173,6 +211,14 @@ static void ovpn_setup(struct net_device *dev)
+ 	dev->needed_headroom = ALIGN(OVPN_HEAD_ROOM, 4);
+ 	dev->needed_tailroom = OVPN_MAX_PADDING;
+ 
++	/* forbid moving the device between network namespaces: ndo_init and
++	 * ndo_uninit are called in the originating and current netns
++	 * respectively, so a migrated device would dec a different netns'
++	 * n_devs counter than the one it incremented, eventually wrapping it
++	 * and defeating the per-netns cap.
 +	 */
- 	if (unlikely(ovpn_peer_reset_sockaddr(peer,
- 					      (struct sockaddr_storage *)&ss,
--					      local_ip) < 0))
-+					      local_ip, GFP_ATOMIC) < 0))
- 		goto unlock;
++	dev->netns_immutable = true;
++
+ 	SET_NETDEV_DEVTYPE(dev, &ovpn_type);
+ }
  
- 	net_dbg_ratelimited("%s: peer %d floated to %pIScp",
-diff --git a/drivers/net/ovpn/peer.h b/drivers/net/ovpn/peer.h
-index 86c8cffada6d..1bfc66821739 100644
---- a/drivers/net/ovpn/peer.h
-+++ b/drivers/net/ovpn/peer.h
-@@ -159,6 +159,6 @@ void ovpn_peer_keepalive_work(struct work_struct *work);
- void ovpn_peer_endpoints_update(struct ovpn_peer *peer, struct sk_buff *skb);
- int ovpn_peer_reset_sockaddr(struct ovpn_peer *peer,
- 			     const struct sockaddr_storage *ss,
--			     const void *local_ip);
-+			     const void *local_ip, gfp_t gfp);
+@@ -233,13 +279,19 @@ static struct rtnl_link_ops ovpn_link_ops = {
  
- #endif /* _NET_OVPN_OVPNPEER_H_ */
-diff --git a/drivers/net/ovpn/socket.c b/drivers/net/ovpn/socket.c
-index 517caa64a4fe..45d6a497bffb 100644
---- a/drivers/net/ovpn/socket.c
-+++ b/drivers/net/ovpn/socket.c
-@@ -191,7 +191,7 @@ struct ovpn_socket *ovpn_socket_new(struct socket *sock, struct ovpn_peer *peer)
+ static int __init ovpn_init(void)
+ {
+-	int err = rtnl_link_register(&ovpn_link_ops);
++	int err = register_pernet_subsys(&ovpn_pernet_ops);
  
- 	/* socket is not owned: attach to this ovpn instance */
- 
--	ovpn_sock = kzalloc_obj(*ovpn_sock);
-+	ovpn_sock = kzalloc_obj(*ovpn_sock, GFP_KERNEL_ACCOUNT);
- 	if (!ovpn_sock) {
- 		ovpn_sock = ERR_PTR(-ENOMEM);
- 		goto sock_release;
-@@ -213,7 +213,7 @@ struct ovpn_socket *ovpn_socket_new(struct socket *sock, struct ovpn_peer *peer)
- 		 */
- 		ovpn_sock->ovpn = peer->ovpn;
- 		netdev_hold(peer->ovpn->dev, &ovpn_sock->dev_tracker,
--			    GFP_KERNEL);
-+			    GFP_KERNEL_ACCOUNT);
+ 	if (err) {
+-		pr_err("ovpn: can't register rtnl link ops: %d\n", err);
++		pr_err("ovpn: can't register pernet ops: %d\n", err);
+ 		return err;
  	}
  
- 	/* the newly created ovpn_socket is holding reference to sk,
++	err = rtnl_link_register(&ovpn_link_ops);
++	if (err) {
++		pr_err("ovpn: can't register rtnl link ops: %d\n", err);
++		goto unreg_pernet;
++	}
++
+ 	err = ovpn_nl_register();
+ 	if (err) {
+ 		pr_err("ovpn: can't register netlink family: %d\n", err);
+@@ -252,6 +304,8 @@ static int __init ovpn_init(void)
+ 
+ unreg_rtnl:
+ 	rtnl_link_unregister(&ovpn_link_ops);
++unreg_pernet:
++	unregister_pernet_subsys(&ovpn_pernet_ops);
+ 	return err;
+ }
+ 
+@@ -259,6 +313,7 @@ static __exit void ovpn_cleanup(void)
+ {
+ 	ovpn_nl_unregister();
+ 	rtnl_link_unregister(&ovpn_link_ops);
++	unregister_pernet_subsys(&ovpn_pernet_ops);
+ 
+ 	rcu_barrier();
+ }
 -- 
 2.53.0
 
