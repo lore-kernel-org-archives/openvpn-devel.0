@@ -4,26 +4,26 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A9361CD5BD5
-	for <openvpn-devel@archiver.kernel.org>; Mon, 25 May 2026 14:36:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id BFCDCCD5BB1
+	for <openvpn-devel@archiver.kernel.org>; Mon, 25 May 2026 14:36:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:Cc:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
 	:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=1s0W5+KSDT8fh8DlDW/PDkMbvvigyXTsSDNp3IeXmQ4=; b=QpEyHlCaqzSO6mJIohNOVZZ6+u
-	SKYiSA49RVx8E83/nEa6pNuCsdv8a6GPYtF4Auei9c8oxi5t+o4ZH+VIjvQGyW2IMyzO49q0bi6Uk
-	xLab1ML1GqHX5GY9kH8CNnZnS7NV3hvt9M8kSqUchGhbg/RpGHd9cN97+Ji7GB3a0xm8=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=4YY8qdS0xyfdYOH+ZYd9HzFqgCWz0e5RbBdw2BAZljw=; b=mNrB/15KL7UAXGPD8ASdkSsvFE
+	qXlC8qWRFiP89WzS2/JKTMusEFLS4fL1PC1kAzzFIiPL+2ViJumavH5j3OF63eWOcPlKJEbHyjMIB
+	JQ8taMOyZneZdpbGJS1hvORlfdF2b9HMPKYgxwk0EfFZRqlC25WeBoV1fg94d0Va11C4=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wRWPu-0001Cc-LB;
+	id 1wRWPx-0006PE-Rt;
 	Mon, 25 May 2026 14:36:31 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <a@unstable.cc>) id 1wRWPt-0001C0-2y
+ (envelope-from <a@unstable.cc>) id 1wRWPw-0006JH-B8
  for openvpn-devel@lists.sourceforge.net;
  Mon, 25 May 2026 14:36:29 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
@@ -32,9 +32,9 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=3RJEfaEDNJg6717gaUTwcgxYlg32mZHgUWqZMEtXJOw=; b=crxvxFLloHk7FNrg9AwPbSjF0U
- iiq/w12yAJAwbvBZZPQtMWgf0+GEh6LUMz9yUSemKfUEsRds0EPLrpp77lTSTSV9s9qdpZewZRmF4
- JQZBq63G+X9Yww+GyqwzzvIcIxo7glVmorub81wHaGaWK4vmLxODINgiijr6j2THwTTo=;
+ bh=tHRadf2QJQEdsGXYAW31WSywdtNO+52smVfJINAQskw=; b=iO4DJCgBgE2HHkKd4lWcgzyLJa
+ x8YVVnrJsDdCgLMQKvDipeN15tLMy0+Z/AdtFlLRG3XEPpB0kISWfHYypWB63m2OkCYp0dvaOxMlm
+ JKOyYgxY1NFP4EvOUtVeuCe15KSoHD5Qe1xT0GNe/dtOBqq6FeImuALslNwlk4VYm8Eg=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -42,19 +42,19 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=3RJEfaEDNJg6717gaUTwcgxYlg32mZHgUWqZMEtXJOw=; b=X6MlQ/lUYnaxju6ZC4Gxc+6KPV
- ogoys7N+BOSD5xFQTZamCIymf2PIy4+ex3eeks8h78rGwcRhDaJI6PrxjRM4d+pbybsEguBQ/lWYu
- 1BIbLAWNMACZml9w78E8/pITQRd363mwa4+1wILImF/bIOOj/dYfOnfXIZWMWkJVmv74=;
-Received: from mout-p-202.mailbox.org ([80.241.56.172])
+ bh=tHRadf2QJQEdsGXYAW31WSywdtNO+52smVfJINAQskw=; b=bz7TkJYn9OmUkQvO5Wvda1t6hB
+ e6LNH7vzQapKwYahQN1XF5LtVDb9mA5ZrujZPWX0IyRCBqPBVNOcFMSrsrZhq7AuCgR84bqDKcPLq
+ RNw/yLdKmDc0tLTOPqC9HmW2zfvHvb6PbvffGxX/LnfDqagd8dUFI2/UXp+l/u2kGj1s=;
+Received: from mout-p-201.mailbox.org ([80.241.56.171])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wRWPm-0003pQ-8a for openvpn-devel@lists.sourceforge.net;
- Mon, 25 May 2026 14:36:26 +0000
+ id 1wRWPl-0003pN-OY for openvpn-devel@lists.sourceforge.net;
+ Mon, 25 May 2026 14:36:23 +0000
 Received: from smtp102.mailbox.org (smtp102.mailbox.org [10.196.197.102])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
  (No client certificate requested)
- by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4gPJN96HxTz9t9S;
+ by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4gPJN92KxCz9sX2;
  Mon, 25 May 2026 16:36:09 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=unstable.cc; s=MBO0001;
  t=1779719769;
@@ -62,22 +62,22 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=unstable.cc; s=MBO0001;
  to:to:cc:cc:mime-version:mime-version:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=3RJEfaEDNJg6717gaUTwcgxYlg32mZHgUWqZMEtXJOw=;
- b=GD5IwS7TlFnyudd9JW12QYSa4CTFKKgH8werKZ5E8ga4ovlVj+D79mGadOMHZhL4qyh2LM
- i1Th7/Fxr877hq4lDskYD9mTUghw/towGGWa62is5XySyFfBHeY6Y6wXdVkibUg+LrGTDg
- FVo/AiuWs+0E5JdMHSL8LqovFV38DHv2ZoJHQBJl/FjVcpUkEU+EUbH6H5DIdpR3LgoHp/
- z289lnBhdPgKJ/IlsLSPXP9KYDzRU+xSyMTol/pwZZ3+HyTynPuEt0mYjSt+dML3fDjt5t
- /OT0QLNdi9QCYlI0yt5uXmJzyixAhSzSKhav92hS6Ar0ZykAxfBkufOVSrreWg==
+ bh=tHRadf2QJQEdsGXYAW31WSywdtNO+52smVfJINAQskw=;
+ b=lc5dvxMy+AL7fAj/3Tb3u0thOHJgjWI3X/vbmM7dAinpx7Vw/OaeklNKV2avX6SMTEAgWL
+ 4kopmWt7VYMQPw6KxaliNDJXOPQKZaS8l3MFew4cgGKDkq4r58hWk8E6XFrwdKoU9VOd1l
+ eGBoCRl533amMgzBP+GPGfyq14a/yCX22cTZTURA22yodSU+fh/4LQo9v05o+Gi/N04/aC
+ yWQ7g8pPNytqwt3oaDVvjqxTWQTKNeWrovc/64aODThcvH4bHLjsVULoDKDUNJy4t4s9aI
+ +WBQOCFMqZPWPYJLPGjGv9WHL/owmGMhlRTDk4jSsW7m9ZugHlWbRDjhtQ8MZQ==
 From: Antonio Quartulli <a@unstable.cc>
 To: openvpn-devel@lists.sourceforge.net
-Date: Mon, 25 May 2026 16:36:05 +0200
-Message-ID: <20260525143606.1532168-3-a@unstable.cc>
+Date: Mon, 25 May 2026 16:36:04 +0200
+Message-ID: <20260525143606.1532168-2-a@unstable.cc>
 In-Reply-To: <20260525143606.1532168-1-a@unstable.cc>
 References: <20260525143606.1532168-1-a@unstable.cc>
 MIME-Version: 1.0
-X-Headers-End: 1wRWPm-0003pQ-8a
-Subject: [Openvpn-devel] [PATCH 3/4] ovpn: cap number of ovpn devices per
- netns
+X-Headers-End: 1wRWPl-0003pN-OY
+Subject: [Openvpn-devel] [PATCH 2/4] ovpn: cap number of peers per
+ multi-peer interface
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -96,178 +96,105 @@ Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
 From: Antonio Quartulli <antonio@openvpn.net>
 
-The previous patches bound resource use within a single ovpn
-interface, but a userns owner can still spin many MP-mode devices,
-each costing ~128 KiB just for its peer hashtables.
+Memcg accounting bounds user-driven peer creation only when the
+calling cgroup has memory.max set; on unconstrained hosts it isn't
+a hard limit.
 
-Cap the number of ovpn netdevs per netns with a compile-time
-constant (OVPN_MAX_DEVS, 256). The counter lives in a per-netns
-struct registered via register_pernet_subsys() - the framework
-zero-allocates and frees the storage, so no init/exit callbacks are
-needed. ovpn_net_init() increments and rejects with -ENOSPC past
-the cap; ovpn_net_uninit() decrements, keeping the counter balanced
-across both ndo_init failure and normal teardown.
+Track the live peer count in ovpn_peer_collection::n_peers under the
+existing ovpn->lock and reject OVPN_CMD_PEER_NEW with -ENOSPC once
+OVPN_MAX_PEERS (65535) is reached. 65535 matches what userspace
+OpenVPN servers configure via --max-clients. P2P mode is unaffected.
 
-Also set dev->netns_immutable in ovpn_setup() to forbid moving an
-ovpn device between netns. Without it, ndo_uninit would decrement
-a different netns' counter than ndo_init incremented, eventually
-wrapping the atomic_t and defeating the cap - a userns owner with
-multiple child netns could trigger this on purpose.
-
-A sysctl was rejected: net.* sysctls in a non-init netns are
-writable by anyone with CAP_NET_ADMIN in that netns, i.e. the exact
-actor this cap constrains. A compile-time constant cannot be raised
-by an attacker; 256 is generous for any realistic deployment.
+The same cap also bounds the unaccounted RX-float bind allocations,
+since binds are owned by peers.
 
 Signed-off-by: Antonio Quartulli <antonio@openvpn.net>
 ---
- drivers/net/ovpn/main.c | 71 ++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 63 insertions(+), 8 deletions(-)
+ drivers/net/ovpn/ovpnpriv.h | 3 +++
+ drivers/net/ovpn/peer.c     | 9 +++++++++
+ drivers/net/ovpn/peer.h     | 8 ++++++++
+ 3 files changed, 20 insertions(+)
 
-diff --git a/drivers/net/ovpn/main.c b/drivers/net/ovpn/main.c
-index 425f4367f0ab..540ba89d81b7 100644
---- a/drivers/net/ovpn/main.c
-+++ b/drivers/net/ovpn/main.c
-@@ -14,6 +14,8 @@
- #include <linux/inetdevice.h>
- #include <net/gro_cells.h>
- #include <net/ip.h>
-+#include <net/net_namespace.h>
-+#include <net/netns/generic.h>
- #include <net/rtnetlink.h>
- #include <uapi/linux/if_arp.h>
+diff --git a/drivers/net/ovpn/ovpnpriv.h b/drivers/net/ovpn/ovpnpriv.h
+index 5898f6adada7..113f5f493575 100644
+--- a/drivers/net/ovpn/ovpnpriv.h
++++ b/drivers/net/ovpn/ovpnpriv.h
+@@ -24,12 +24,15 @@
+  *		  rehashed on the fly due to peer IP change)
+  * @by_transp_addr: table of peers indexed by transport address (items can be
+  *		    rehashed on the fly due to peer IP change)
++ * @n_peers: number of peers currently in the collection, protected by
++ *	     ovpn_priv->lock
+  */
+ struct ovpn_peer_collection {
+ 	DECLARE_HASHTABLE(by_id, 12);
+ 	struct hlist_nulls_head by_vpn_addr4[1 << 12];
+ 	struct hlist_nulls_head by_vpn_addr6[1 << 12];
+ 	struct hlist_nulls_head by_transp_addr[1 << 12];
++	u32 n_peers;
+ };
  
-@@ -26,6 +28,29 @@
- #include "tcp.h"
- #include "udp.h"
- 
-+/* Hard cap on number of ovpn netdevs per network namespace. Pairs with the
-+ * per-MP-instance OVPN_MAX_PEERS cap to bound total kernel memory an
-+ * unprivileged userns owner can pin via repeated `ip link add ... type ovpn`
-+ * calls (each MP-mode device costs ~128 KiB just for its peer hashtables).
-+ *
-+ * This is a compile-time constant on purpose: a sysctl in net.* would be
-+ * writable by anyone with CAP_NET_ADMIN in the namespace - i.e. exactly the
-+ * unprivileged userns owner this cap is meant to constrain - which would
-+ * defeat the defence. 256 is generous for any realistic deployment.
-+ */
-+#define OVPN_MAX_DEVS 256
-+
-+struct ovpn_net {
-+	atomic_t n_devs;
-+};
-+
-+static unsigned int ovpn_net_id __read_mostly;
-+
-+static struct pernet_operations ovpn_pernet_ops = {
-+	.id	= &ovpn_net_id,
-+	.size	= sizeof(struct ovpn_net),
-+};
-+
- static void ovpn_priv_free(struct net_device *net)
- {
- 	struct ovpn_priv *ovpn = netdev_priv(net);
-@@ -74,27 +99,40 @@ static int ovpn_mp_alloc(struct ovpn_priv *ovpn)
- static int ovpn_net_init(struct net_device *dev)
- {
- 	struct ovpn_priv *ovpn = netdev_priv(dev);
--	int err = gro_cells_init(&ovpn->gro_cells, dev);
-+	struct ovpn_net *on = net_generic(dev_net(dev), ovpn_net_id);
-+	int err;
-+
-+	if (atomic_fetch_inc(&on->n_devs) >= OVPN_MAX_DEVS) {
-+		atomic_dec(&on->n_devs);
-+		return -ENOSPC;
-+	}
- 
-+	err = gro_cells_init(&ovpn->gro_cells, dev);
- 	if (err < 0)
--		return err;
-+		goto err_dec;
- 
- 	err = ovpn_mp_alloc(ovpn);
--	if (err < 0) {
--		gro_cells_destroy(&ovpn->gro_cells);
--		return err;
--	}
-+	if (err < 0)
-+		goto err_gro;
- 
- 	return 0;
-+
-+err_gro:
-+	gro_cells_destroy(&ovpn->gro_cells);
-+err_dec:
-+	atomic_dec(&on->n_devs);
-+	return err;
- }
- 
- static void ovpn_net_uninit(struct net_device *dev)
- {
- 	struct ovpn_priv *ovpn = netdev_priv(dev);
-+	struct ovpn_net *on = net_generic(dev_net(dev), ovpn_net_id);
- 
- 	disable_delayed_work_sync(&ovpn->keepalive_work);
- 	ovpn_peers_free(ovpn, NULL, OVPN_DEL_PEER_REASON_TEARDOWN);
- 	gro_cells_destroy(&ovpn->gro_cells);
-+	atomic_dec(&on->n_devs);
- }
- 
- static const struct net_device_ops ovpn_netdev_ops = {
-@@ -173,6 +211,14 @@ static void ovpn_setup(struct net_device *dev)
- 	dev->needed_headroom = ALIGN(OVPN_HEAD_ROOM, 4);
- 	dev->needed_tailroom = OVPN_MAX_PADDING;
- 
-+	/* forbid moving the device between network namespaces: ndo_init and
-+	 * ndo_uninit are called in the originating and current netns
-+	 * respectively, so a migrated device would dec a different netns'
-+	 * n_devs counter than the one it incremented, eventually wrapping it
-+	 * and defeating the per-netns cap.
-+	 */
-+	dev->netns_immutable = true;
-+
- 	SET_NETDEV_DEVTYPE(dev, &ovpn_type);
- }
- 
-@@ -233,13 +279,19 @@ static struct rtnl_link_ops ovpn_link_ops = {
- 
- static int __init ovpn_init(void)
- {
--	int err = rtnl_link_register(&ovpn_link_ops);
-+	int err = register_pernet_subsys(&ovpn_pernet_ops);
- 
- 	if (err) {
--		pr_err("ovpn: can't register rtnl link ops: %d\n", err);
-+		pr_err("ovpn: can't register pernet ops: %d\n", err);
- 		return err;
+ /**
+diff --git a/drivers/net/ovpn/peer.c b/drivers/net/ovpn/peer.c
+index 511a7ce9b32b..1d564888479a 100644
+--- a/drivers/net/ovpn/peer.c
++++ b/drivers/net/ovpn/peer.c
+@@ -286,6 +286,8 @@ void ovpn_peer_endpoints_update(struct ovpn_peer *peer, struct sk_buff *skb)
+ 	/* RX float path runs in softirq context: __GFP_ACCOUNT would charge
+ 	 * whatever cgroup is on-CPU when the packet arrives, not the userns
+ 	 * owner, so pass plain GFP_ATOMIC and skip accounting on this path.
++	 * The number of bind objects that can accumulate via float events is
++	 * bounded by the per-MP peer cap, since binds are owned by peers.
+ 	 */
+ 	if (unlikely(ovpn_peer_reset_sockaddr(peer,
+ 					      (struct sockaddr_storage *)&ss,
+@@ -703,6 +705,7 @@ static void ovpn_peer_remove(struct ovpn_peer *peer,
+ 		hlist_nulls_del_init_rcu(&peer->hash_entry_addr4);
+ 		hlist_nulls_del_init_rcu(&peer->hash_entry_addr6);
+ 		hlist_nulls_del_init_rcu(&peer->hash_entry_transp_addr);
++		peer->ovpn->peers->n_peers--;
+ 		break;
+ 	case OVPN_MODE_P2P:
+ 		/* prevent double remove */
+@@ -959,6 +962,11 @@ static int ovpn_peer_add_mp(struct ovpn_priv *ovpn, struct ovpn_peer *peer)
+ 		goto out;
  	}
  
-+	err = rtnl_link_register(&ovpn_link_ops);
-+	if (err) {
-+		pr_err("ovpn: can't register rtnl link ops: %d\n", err);
-+		goto unreg_pernet;
++	if (ovpn->peers->n_peers >= OVPN_MAX_PEERS) {
++		ret = -ENOSPC;
++		goto out;
 +	}
 +
- 	err = ovpn_nl_register();
- 	if (err) {
- 		pr_err("ovpn: can't register netlink family: %d\n", err);
-@@ -252,6 +304,8 @@ static int __init ovpn_init(void)
+ 	bind = rcu_dereference_protected(peer->bind, true);
+ 	/* peers connected via TCP have bind == NULL */
+ 	if (bind) {
+@@ -994,6 +1002,7 @@ static int ovpn_peer_add_mp(struct ovpn_priv *ovpn, struct ovpn_peer *peer)
+ 					      sizeof(peer->id)));
  
- unreg_rtnl:
- 	rtnl_link_unregister(&ovpn_link_ops);
-+unreg_pernet:
-+	unregister_pernet_subsys(&ovpn_pernet_ops);
- 	return err;
- }
+ 	ovpn_peer_hash_vpn_ip(peer);
++	ovpn->peers->n_peers++;
+ out:
+ 	spin_unlock_bh(&ovpn->lock);
+ 	return ret;
+diff --git a/drivers/net/ovpn/peer.h b/drivers/net/ovpn/peer.h
+index 1bfc66821739..2efc782130f3 100644
+--- a/drivers/net/ovpn/peer.h
++++ b/drivers/net/ovpn/peer.h
+@@ -17,6 +17,14 @@
+ #include "socket.h"
+ #include "stats.h"
  
-@@ -259,6 +313,7 @@ static __exit void ovpn_cleanup(void)
- {
- 	ovpn_nl_unregister();
- 	rtnl_link_unregister(&ovpn_link_ops);
-+	unregister_pernet_subsys(&ovpn_pernet_ops);
- 
- 	rcu_barrier();
- }
++/* Hard cap on number of peers per MP-mode interface. Caps the worst-case
++ * kernel memory an unprivileged userns owner driving OVPN_CMD_PEER_NEW can
++ * pin even when memcg accounting is unconstrained. 65535 matches what
++ * mainstream userspace OpenVPN servers configure via --max-clients, so
++ * legitimate deployments never hit this.
++ */
++#define OVPN_MAX_PEERS 65535
++
+ /**
+  * struct ovpn_peer - the main remote peer object
+  * @ovpn: main openvpn instance this peer belongs to
 -- 
 2.53.0
 
