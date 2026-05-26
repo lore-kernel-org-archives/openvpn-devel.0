@@ -4,26 +4,26 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9283BCD6E45
-	for <openvpn-devel@archiver.kernel.org>; Tue, 26 May 2026 23:19:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B12DFCD6E47
+	for <openvpn-devel@archiver.kernel.org>; Tue, 26 May 2026 23:19:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:Cc:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
 	:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=IjR3EQ4MOgcdBCc/jvQ3IfkQ5/9CmcCNgtH3/P8ejFk=; b=W7EZ3/fsyr9j5w9/ykvbUg+b2F
-	Jsu2CD+JfxkppxZXbPQL4AAmGajQ/jdhKLqd8OSmooFwLXLNoP9cIZq84eoIuEV40YXfYdaKsH/jV
-	ZKxCU5QZdbFNoAwFOFsibkxVGqs5w4C6PBpnPx2etXQCHvgRFBga5PXbK+Pgxh8anMlY=;
+	bh=UTkIbI1E04lskLsBXunMbL3Xv0LPBTy6lJP7j1DZymg=; b=YLL+n1xuN7ZyJJ+qepA7+Ph00Z
+	JArGJ8IWcXnhjZhotq6yWM41ap8297lUKyg6rIU17xlsQRMSwiCa5dIFvO6k0fRILJr0PEnu9Hu16
+	OL5+e9kXIZz+JmaD12qEydS2FThgC4PkzBF6KoZ6dk+Nkno0ii5cjqDmFQfmZEI6yw3g=;
 Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
 	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wS13g-0003ZZ-3j;
-	Tue, 26 May 2026 23:19:33 +0000
+	id 1wS13g-0003Zk-L9;
+	Tue, 26 May 2026 23:19:34 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <a@unstable.cc>) id 1wS13a-0003Yu-3D
+ (envelope-from <a@unstable.cc>) id 1wS13a-0003Yx-3V
  for openvpn-devel@lists.sourceforge.net;
  Tue, 26 May 2026 23:19:27 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
@@ -32,9 +32,9 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=5Bi8Y3AoE6yWOm2646Prxg31B8siXiLLLFGLfLD3gK4=; b=VYejRFwZcHk3+rEuVkbQHt6bV6
- OqbZHwA/ZN6rdtY2UJXPmdMe2mwOy5wxTpwk+aZV1MGkbO/zMTL+xjxrWhBRhvFR+4z4+f32Awx6F
- yvoo6L79TjWv2e+4rcA7Pud0KYTNYLn+Mosm8JRIqG00/KYWz4OpGIzb9imVHut1h87o=;
+ bh=RZO0MsyPEb4YuJFfZGfEawSIvMhZNfVfpHKfPA+WUMg=; b=g6tC+7amSw3H/Tx56GBtnEagJZ
+ eEeDhSzX/dMLJU79NUbl9y824677TutdjYwaG1wdfcyzZP2YbXRa5wOCZ//MMLzNdwkjXmTrV4e/t
+ wEQd4T2WhL760x9lWzs6FMW8f0YzegPhv1WU3/07rzglCf9Ycu1E4R5CTFQX/qkUQjgI=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -42,42 +42,42 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=5Bi8Y3AoE6yWOm2646Prxg31B8siXiLLLFGLfLD3gK4=; b=NTnmYnl5cCDqVg2YyLYYA77UE7
- g9uiX7kxCgXGtF+tXLSfnU6KH4y8ya0zBExsiyhqTc/7QY5iFrozBdYeo6iB4fWAX9rQUtnJS04mJ
- vi1uCRNrKwDk4oDL3zSip628XpTQduvcOsIrSCFsS5ubDdkjrdyH2pL+d0LBQv6mVgFQ=;
-Received: from mout-p-101.mailbox.org ([80.241.56.151])
+ bh=RZO0MsyPEb4YuJFfZGfEawSIvMhZNfVfpHKfPA+WUMg=; b=DsTcroppUj2A6d3JdizYfiaSMi
+ 4+twEUrLoHBgICMn+nVhKfaocSM9kAcfXYkmRqbpbfZBx0iXvn5SPmlUQEuy+gM90yeXVfQ7oaIdP
+ z4s52Y5R2CHO88uyILJ/1+r1arId2wu3LxqWJsXk9t43R4wYYGxSbGBJayyV6P3KEUhU=;
+Received: from mout-p-202.mailbox.org ([80.241.56.172])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wS13F-0000Ss-Ob for openvpn-devel@lists.sourceforge.net;
- Tue, 26 May 2026 23:19:11 +0000
+ id 1wS13I-0000Tz-8i for openvpn-devel@lists.sourceforge.net;
+ Tue, 26 May 2026 23:19:13 +0000
 Received: from smtp102.mailbox.org (smtp102.mailbox.org [10.196.197.102])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
  (No client certificate requested)
- by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4gQ7wx1WCqz9tg3;
- Wed, 27 May 2026 01:18:57 +0200 (CEST)
+ by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4gQ7wz6Ld3z9tW1;
+ Wed, 27 May 2026 01:18:59 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=unstable.cc; s=MBO0001;
- t=1779837537;
+ t=1779837539;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=5Bi8Y3AoE6yWOm2646Prxg31B8siXiLLLFGLfLD3gK4=;
- b=ezxMoY51Jj/IQ92LZ/t8WAIOaRPDfHs2ulex8sH/hl81EgnUb64tOxhpO6etFWpus+Hmdh
- EBN3g3YtZgXWkyHcces0VRVKbMk4vAXC1tqsoN9NIZp1jOVAw5S+c1YNmnhea9rwBf63zb
- 6XuvSwiCKA5LAOtS0zioUevhoN9Cs0gTMJHNjU75EU2Z51lAhKmHqre3U3VPqsVI+bp0Gm
- wuGOxcqg9jE/R/zTTEN6EZad7NT2ronaP1MOU4Nrlv+888VGzmC4KUXPim+YVLHZhUK0D8
- ELBLVJREjNwv/lt+R5qGk89Frh3AZqStU6jzmm53KcMaFnwvtMR+UWSdhB663A==
+ bh=RZO0MsyPEb4YuJFfZGfEawSIvMhZNfVfpHKfPA+WUMg=;
+ b=XtaRS8vKN/4CRSQKi09/Goy6/Ps1XES5e1Ak1OC7D6EGWX47BEO1fBmhiKfUaYD5nH5o56
+ mrMjw1Ltr4uhHNa4Q34fkaANCXxZxMG9sAwKXVLAv0LjGfGYuFjMBZ2VD0wZ02HHubQD1e
+ x4N9y6Hmew5LAcMK7LVUqyQvEYpfnSdnl7l4TJPWHC7xT6ThBu4UsbA3UUQnBcETxYg3VN
+ rbW3vphPI3aOcjkvhJ0Pj5fdjhVPg/oe6i2PI2x4+xaRCwznYNbtqb9qkw1POPXAemc2xb
+ sMgqGNz9WJ3vTEhO3Rvp2TAlL6f6GwfJzefstvr85oUDD0KooAzXbRKYQxpi5g==
 From: Antonio Quartulli <a@unstable.cc>
 To: openvpn-devel@lists.sourceforge.net
-Date: Wed, 27 May 2026 01:18:43 +0200
-Message-ID: <20260526231850.2511369-2-a@unstable.cc>
+Date: Wed, 27 May 2026 01:18:48 +0200
+Message-ID: <20260526231850.2511369-7-a@unstable.cc>
 In-Reply-To: <20260526231850.2511369-1-a@unstable.cc>
 References: <20260526231850.2511369-1-a@unstable.cc>
 MIME-Version: 1.0
-X-Headers-End: 1wS13F-0000Ss-Ob
-Subject: [Openvpn-devel] [PATCH ovpn net 2/9] ovpn: rehash peer in
- by_transp_addr table on CMD_PEER_SET
+X-Headers-End: 1wS13I-0000Tz-8i
+Subject: [Openvpn-devel] [PATCH ovpn net 7/9] ovpn: hash floated peer by
+ transport identity only
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -96,206 +96,86 @@ Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
 From: Antonio Quartulli <antonio@openvpn.net>
 
-When userspace updates a peer's remote endpoint via OVPN_CMD_PEER_SET,
-ovpn_nl_peer_modify() installs a new ovpn_bind through
-ovpn_peer_reset_sockaddr(), but ovpn_nl_peer_set_doit() only calls
-ovpn_peer_hash_vpn_ip() to refresh the VPN-IP hashtables. The peer is
-left in the bucket of peers->by_transp_addr corresponding to its old
-remote address.
+The by_transp_addr table is keyed on the peer's remote transport
+address, but the float rehash hashed bind->remote directly, while the
+two other sites that touch the table build a clean key first:
+ovpn_peer_add_mp() and the lookup in ovpn_peer_get_by_transp_addr()
+both hash a sockaddr holding only family/address/port.
 
-As a consequence, datagrams arriving at the UDP RX path from the newly
-configured remote hash to a different slot and the lockless lookup in
-ovpn_peer_get_by_transp_addr() (called from ovpn_udp_encap_recv()) does
-not find the peer, until either a float event or a peer re-add fixes
-the bucket.
+For a link-local IPv6 peer, bind->remote carries sin6_scope_id (set
+from ipv6_iface_scope_id() when the endpoint is learned), and that
+field is folded into the jhash() over sizeof(struct sockaddr_in6).
+The lookup never sets sin6_scope_id, so after such a peer floats it is
+rehashed into a scope_id-dependent bucket that lookups (scope_id 0)
+never visit, making the peer unreachable through the by_transp_addr
+fallback. ovpn_peer_transp_match() only compares address and port, so
+the hash was keying on a field the match ignores.
 
-Introduce ovpn_peer_hash_transp_addr() (modeled after
-ovpn_peer_hash_vpn_ip()) and invoke it from ovpn_nl_peer_set_doit()
-whenever the request carried a new remote address. The helper bails
-out in P2P mode and on peers without a bind (TCP), and relies on
-hlist_nulls_del_init_rcu()'s pprev==NULL short-circuit to handle the
-case of an entry not currently linked in the table.
+sin6_scope_id must stay in bind->remote because the TX path uses it as
+flowi6_oif, so it cannot just be cleared there. Instead build the hash
+key from family/address/port only, exactly like ovpn_peer_add_mp() and
+the lookup, so all three sites agree on the bucket.
 
-Fixes: 1d36a36f6d53 ("ovpn: implement peer add/get/dump/delete via netlink")
+Fixes: f0281c1d3732 ("ovpn: add support for updating local or remote UDP endpoint")
 Signed-off-by: Antonio Quartulli <antonio@openvpn.net>
 ---
- drivers/net/ovpn/netlink.c |   6 +++
- drivers/net/ovpn/peer.c    | 106 ++++++++++++++++++++++++-------------
- drivers/net/ovpn/peer.h    |   1 +
- 3 files changed, 75 insertions(+), 38 deletions(-)
+ drivers/net/ovpn/peer.c | 25 +++++++++++++++++++++----
+ 1 file changed, 21 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ovpn/netlink.c b/drivers/net/ovpn/netlink.c
-index 4c66c1ec497e..4dad85294198 100644
---- a/drivers/net/ovpn/netlink.c
-+++ b/drivers/net/ovpn/netlink.c
-@@ -534,6 +534,12 @@ int ovpn_nl_peer_set_doit(struct sk_buff *skb, struct genl_info *info)
- 	 */
- 	if (ret > 0)
- 		ovpn_peer_hash_vpn_ip(peer);
-+	/* if the remote endpoint was updated, the by_transp_addr hash bucket
-+	 * also needs to be refreshed, otherwise incoming packets from the new
-+	 * remote address would fail the lockless lookup
-+	 */
-+	if (attrs[OVPN_A_PEER_REMOTE_IPV4] || attrs[OVPN_A_PEER_REMOTE_IPV6])
-+		ovpn_peer_hash_transp_addr(peer);
- 	spin_unlock_bh(&ovpn->lock);
- 	ovpn_peer_put(peer);
- 
 diff --git a/drivers/net/ovpn/peer.c b/drivers/net/ovpn/peer.c
-index a472ffe3016b..8aa07560bb30 100644
+index 1d878c3e1514..fdf6262704c1 100644
 --- a/drivers/net/ovpn/peer.c
 +++ b/drivers/net/ovpn/peer.c
-@@ -188,6 +188,9 @@ int ovpn_peer_reset_sockaddr(struct ovpn_peer *peer,
- 	&(*__tbl1)[ovpn_get_hash_slot(*__tbl1, _key, _key_len)];\
- })
- 
-+static void __ovpn_peer_hash_transp_addr(struct ovpn_peer *peer,
-+					 const struct ovpn_bind *bind);
-+
- /**
-  * ovpn_peer_endpoints_update - update remote or local endpoint for peer
-  * @peer: peer to update the remote endpoint for
-@@ -195,7 +198,6 @@ int ovpn_peer_reset_sockaddr(struct ovpn_peer *peer,
-  */
- void ovpn_peer_endpoints_update(struct ovpn_peer *peer, struct sk_buff *skb)
+@@ -907,7 +907,10 @@ bool ovpn_peer_check_by_src(struct ovpn_priv *ovpn, struct sk_buff *skb,
+ static void __ovpn_peer_hash_transp_addr(struct ovpn_peer *peer,
+ 					 const struct ovpn_bind *bind)
  {
--	struct hlist_nulls_head *nhead;
- 	struct sockaddr_storage ss;
- 	struct sockaddr_in6 *sa6;
- 	bool reset_cache = false;
-@@ -294,49 +296,17 @@ void ovpn_peer_endpoints_update(struct ovpn_peer *peer, struct sk_buff *skb)
- 	ovpn_nl_peer_float_notify(peer, &ss);
- 
- 	/* rehashing is required only in MP mode as P2P has one peer
--	 * only and thus there is no hashtable
-+	 * only and thus there is no hashtable.
-+	 *
-+	 * This function may be invoked concurrently, so re-read peer->bind
-+	 * under the proper locks and rehash against its current value.
- 	 */
- 	if (peer->ovpn->mode == OVPN_MODE_MP) {
- 		spin_lock_bh(&peer->ovpn->lock);
- 		spin_lock_bh(&peer->lock);
- 		bind = rcu_dereference_protected(peer->bind,
- 						 lockdep_is_held(&peer->lock));
--		if (unlikely(!bind)) {
--			spin_unlock_bh(&peer->lock);
--			spin_unlock_bh(&peer->ovpn->lock);
--			return;
--		}
--
--		/* peer may have been concurrently removed between the caller's
--		 * initial lookup and our acquisition of ovpn->lock; skip the
--		 * rehash so we don't re-insert a removed peer
--		 */
--		if (unlikely(hlist_unhashed(&peer->hash_entry_id))) {
--			spin_unlock_bh(&peer->lock);
--			spin_unlock_bh(&peer->ovpn->lock);
--			return;
--		}
--
--		/* This function may be invoked concurrently, therefore another
--		 * float may have happened in parallel: perform rehashing
--		 * using the peer->bind->remote directly as key
--		 */
--
--		switch (bind->remote.in4.sin_family) {
--		case AF_INET:
--			salen = sizeof(*sa);
--			break;
--		case AF_INET6:
--			salen = sizeof(*sa6);
--			break;
--		}
--
--		/* remove old hashing */
--		hlist_nulls_del_init_rcu(&peer->hash_entry_transp_addr);
--		/* re-add with new transport address */
--		nhead = ovpn_get_hash_head(peer->ovpn->peers->by_transp_addr,
--					   &bind->remote, salen);
--		hlist_nulls_add_head_rcu(&peer->hash_entry_transp_addr, nhead);
-+		__ovpn_peer_hash_transp_addr(peer, bind);
- 		spin_unlock_bh(&peer->lock);
- 		spin_unlock_bh(&peer->ovpn->lock);
- 	}
-@@ -905,6 +875,66 @@ bool ovpn_peer_check_by_src(struct ovpn_priv *ovpn, struct sk_buff *skb,
- 	return match;
- }
- 
-+/* Move @peer to the by_transp_addr bucket matching its current bind.
-+ *
-+ * Caller must hold both peer->ovpn->lock and peer->lock, and must have
-+ * already dereferenced a valid (non-NULL) peer->bind, passed in as @bind.
-+ */
-+static void __ovpn_peer_hash_transp_addr(struct ovpn_peer *peer,
-+					 const struct ovpn_bind *bind)
-+{
-+	struct hlist_nulls_head *nhead;
-+	size_t salen;
-+
-+	lockdep_assert_held(&peer->ovpn->lock);
-+	lockdep_assert_held(&peer->lock);
-+
-+	if (WARN_ON_ONCE(!bind))
-+		return;
-+
-+	/* peer may have been concurrently removed between the caller's
-+	 * initial lookup and our acquisition of ovpn->lock; skip the
-+	 * rehash so we don't re-insert a removed peer
-+	 */
-+	if (unlikely(hlist_unhashed(&peer->hash_entry_id)))
-+		return;
-+
-+	switch (bind->remote.in4.sin_family) {
-+	case AF_INET:
-+		salen = sizeof(struct sockaddr_in);
-+		break;
-+	case AF_INET6:
-+		salen = sizeof(struct sockaddr_in6);
-+		break;
-+	default:
-+		return;
-+	}
-+
-+	/* remove old hashing (no-op if entry is not currently linked) */
-+	hlist_nulls_del_init_rcu(&peer->hash_entry_transp_addr);
-+	/* re-add with current transport address */
-+	nhead = ovpn_get_hash_head(peer->ovpn->peers->by_transp_addr,
-+				   &bind->remote, salen);
-+	hlist_nulls_add_head_rcu(&peer->hash_entry_transp_addr, nhead);
-+}
-+
-+void ovpn_peer_hash_transp_addr(struct ovpn_peer *peer)
-+{
-+	struct ovpn_bind *bind;
-+
-+	lockdep_assert_held(&peer->ovpn->lock);
-+
-+	/* rehashing makes sense only in multipeer mode */
-+	if (peer->ovpn->mode != OVPN_MODE_MP)
-+		return;
-+
-+	spin_lock_bh(&peer->lock);
-+	bind = rcu_dereference_protected(peer->bind,
-+					 lockdep_is_held(&peer->lock));
-+	__ovpn_peer_hash_transp_addr(peer, bind);
-+	spin_unlock_bh(&peer->lock);
-+}
-+
- void ovpn_peer_hash_vpn_ip(struct ovpn_peer *peer)
- {
++	struct sockaddr_storage sa = {};
  	struct hlist_nulls_head *nhead;
-diff --git a/drivers/net/ovpn/peer.h b/drivers/net/ovpn/peer.h
-index 86c8cffada6d..dfa5c0037e02 100644
---- a/drivers/net/ovpn/peer.h
-+++ b/drivers/net/ovpn/peer.h
-@@ -150,6 +150,7 @@ struct ovpn_peer *ovpn_peer_get_by_id(struct ovpn_priv *ovpn, u32 peer_id);
- struct ovpn_peer *ovpn_peer_get_by_dst(struct ovpn_priv *ovpn,
- 				       struct sk_buff *skb);
- void ovpn_peer_hash_vpn_ip(struct ovpn_peer *peer);
-+void ovpn_peer_hash_transp_addr(struct ovpn_peer *peer);
- bool ovpn_peer_check_by_src(struct ovpn_priv *ovpn, struct sk_buff *skb,
- 			    struct ovpn_peer *peer);
++	struct sockaddr_in6 *sa6;
++	struct sockaddr_in *sa4;
+ 	size_t salen;
+ 
+ 	lockdep_assert_held(&peer->ovpn->lock);
+@@ -923,12 +926,26 @@ static void __ovpn_peer_hash_transp_addr(struct ovpn_peer *peer,
+ 	if (unlikely(hlist_unhashed(&peer->hash_entry_id)))
+ 		return;
+ 
++	/* Build the hash key from the transport identity only
++	 * (family/address/port), matching ovpn_peer_add_mp() and the lookup
++	 * in ovpn_peer_get_by_transp_addr(). Hashing bind->remote directly
++	 * would fold in sin6_scope_id (set on the float path but never by the
++	 * lookup), scattering the peer into a bucket lookups cannot reach.
++	 */
+ 	switch (bind->remote.in4.sin_family) {
+ 	case AF_INET:
+-		salen = sizeof(struct sockaddr_in);
++		sa4 = (struct sockaddr_in *)&sa;
++		sa4->sin_family = AF_INET;
++		sa4->sin_addr.s_addr = bind->remote.in4.sin_addr.s_addr;
++		sa4->sin_port = bind->remote.in4.sin_port;
++		salen = sizeof(*sa4);
+ 		break;
+ 	case AF_INET6:
+-		salen = sizeof(struct sockaddr_in6);
++		sa6 = (struct sockaddr_in6 *)&sa;
++		sa6->sin6_family = AF_INET6;
++		sa6->sin6_addr = bind->remote.in6.sin6_addr;
++		sa6->sin6_port = bind->remote.in6.sin6_port;
++		salen = sizeof(*sa6);
+ 		break;
+ 	default:
+ 		return;
+@@ -937,8 +954,8 @@ static void __ovpn_peer_hash_transp_addr(struct ovpn_peer *peer,
+ 	/* remove old hashing (no-op if entry is not currently linked) */
+ 	hlist_nulls_del_init_rcu(&peer->hash_entry_transp_addr);
+ 	/* re-add with current transport address */
+-	nhead = ovpn_get_hash_head(peer->ovpn->peers->by_transp_addr,
+-				   &bind->remote, salen);
++	nhead = ovpn_get_hash_head(peer->ovpn->peers->by_transp_addr, &sa,
++				   salen);
+ 	hlist_nulls_add_head_rcu(&peer->hash_entry_transp_addr, nhead);
+ }
  
 -- 
 2.53.0
