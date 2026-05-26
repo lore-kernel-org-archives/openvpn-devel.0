@@ -4,80 +4,82 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B12DFCD6E47
-	for <openvpn-devel@archiver.kernel.org>; Tue, 26 May 2026 23:19:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0F76DCD6E48
+	for <openvpn-devel@archiver.kernel.org>; Tue, 26 May 2026 23:19:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:Cc:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
-	:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=UTkIbI1E04lskLsBXunMbL3Xv0LPBTy6lJP7j1DZymg=; b=YLL+n1xuN7ZyJJ+qepA7+Ph00Z
-	JArGJ8IWcXnhjZhotq6yWM41ap8297lUKyg6rIU17xlsQRMSwiCa5dIFvO6k0fRILJr0PEnu9Hu16
-	OL5+e9kXIZz+JmaD12qEydS2FThgC4PkzBF6KoZ6dk+Nkno0ii5cjqDmFQfmZEI6yw3g=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:Message-ID:Date:To:From:Sender:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Owner;
+	bh=guU1ZAwMNqS6m0tYrMyJgYIExjRVa0Vc8UjnOX0tCAw=; b=cP4SOjE3anTzHixkBqC4PYF9K+
+	Fe0/xxI/xYRwqlNVNv2Wx0mrvdZPJp6W25jJ1w8Bdm8BooS5VwG1VsMv5YduV5Oc0KL5JzFXjY1Vc
+	RTsq8fMA+8oElzpD5THd27PP5w6J4V+YZTXLA3Y7oGyxWvjfOhwctJGxxNz9bJZsEn3s=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wS13g-0003Zk-L9;
-	Tue, 26 May 2026 23:19:34 +0000
+	id 1wS13X-0007KB-Ev;
+	Tue, 26 May 2026 23:19:27 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <a@unstable.cc>) id 1wS13a-0003Yx-3V
+ (envelope-from <a@unstable.cc>) id 1wS13E-0007Jk-RO
  for openvpn-devel@lists.sourceforge.net;
- Tue, 26 May 2026 23:19:27 +0000
+ Tue, 26 May 2026 23:19:09 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=RZO0MsyPEb4YuJFfZGfEawSIvMhZNfVfpHKfPA+WUMg=; b=g6tC+7amSw3H/Tx56GBtnEagJZ
- eEeDhSzX/dMLJU79NUbl9y824677TutdjYwaG1wdfcyzZP2YbXRa5wOCZ//MMLzNdwkjXmTrV4e/t
- wEQd4T2WhL760x9lWzs6FMW8f0YzegPhv1WU3/07rzglCf9Ycu1E4R5CTFQX/qkUQjgI=;
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
- ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:Message-ID:
  Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=RZO0MsyPEb4YuJFfZGfEawSIvMhZNfVfpHKfPA+WUMg=; b=DsTcroppUj2A6d3JdizYfiaSMi
- 4+twEUrLoHBgICMn+nVhKfaocSM9kAcfXYkmRqbpbfZBx0iXvn5SPmlUQEuy+gM90yeXVfQ7oaIdP
- z4s52Y5R2CHO88uyILJ/1+r1arId2wu3LxqWJsXk9t43R4wYYGxSbGBJayyV6P3KEUhU=;
-Received: from mout-p-202.mailbox.org ([80.241.56.172])
+ :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=uzV/iSWxOWFbwHNn28LZgHA+TgsJ5nTKq8WYlRFnFyA=; b=ce/58vtzFFgUBvPeCRFf7Qkkmi
+ I8h/O4ImBZTcfz6rNzTnTaDWTgRmlT+bV+kKHFsZMuU/cmhtCPdzPqlB1P0WQ9X87Uptf14fnEK86
+ mkhnRGWkQsE6fAFELttxhAj3B/wK0Pvuq1EbCrm5SC0QNn7+lJwWR5hQxWWMHzkd+7cI=;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
+ ;
+ h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:Cc:To:From
+ :Sender:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+ References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=uzV/iSWxOWFbwHNn28LZgHA+TgsJ5nTKq8WYlRFnFyA=; b=i
+ Cg5MsPcQULFizKh+letS8PTRqACpDAI7y1KANPftpTyvgzgvFC7tbsKTe9FE+skxVjyA+eAbVCTTN
+ AfkofmRm/6Y6CKscmAoY3+0QYpmqGd+YhGEZm3TjcJPJ6j13bN0p+nimRaULtw0zBB+He6ckn0BIp
+ dYbYM3nQ8BxvAmBY=;
+Received: from mout-p-103.mailbox.org ([80.241.56.161])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wS13I-0000Tz-8i for openvpn-devel@lists.sourceforge.net;
- Tue, 26 May 2026 23:19:13 +0000
-Received: from smtp102.mailbox.org (smtp102.mailbox.org [10.196.197.102])
+ id 1wS13A-0000Q2-6h for openvpn-devel@lists.sourceforge.net;
+ Tue, 26 May 2026 23:19:07 +0000
+Received: from smtp102.mailbox.org (smtp102.mailbox.org
+ [IPv6:2001:67c:2050:b231:465::102])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
  (No client certificate requested)
- by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4gQ7wz6Ld3z9tW1;
- Wed, 27 May 2026 01:18:59 +0200 (CEST)
+ by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4gQ7ww4Wdxz9tL7;
+ Wed, 27 May 2026 01:18:56 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=unstable.cc; s=MBO0001;
- t=1779837539;
+ t=1779837536;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=RZO0MsyPEb4YuJFfZGfEawSIvMhZNfVfpHKfPA+WUMg=;
- b=XtaRS8vKN/4CRSQKi09/Goy6/Ps1XES5e1Ak1OC7D6EGWX47BEO1fBmhiKfUaYD5nH5o56
- mrMjw1Ltr4uhHNa4Q34fkaANCXxZxMG9sAwKXVLAv0LjGfGYuFjMBZ2VD0wZ02HHubQD1e
- x4N9y6Hmew5LAcMK7LVUqyQvEYpfnSdnl7l4TJPWHC7xT6ThBu4UsbA3UUQnBcETxYg3VN
- rbW3vphPI3aOcjkvhJ0Pj5fdjhVPg/oe6i2PI2x4+xaRCwznYNbtqb9qkw1POPXAemc2xb
- sMgqGNz9WJ3vTEhO3Rvp2TAlL6f6GwfJzefstvr85oUDD0KooAzXbRKYQxpi5g==
+ content-transfer-encoding:content-transfer-encoding;
+ bh=uzV/iSWxOWFbwHNn28LZgHA+TgsJ5nTKq8WYlRFnFyA=;
+ b=Aq339GGERrnOGes8ZZX5pa1ELStZJKC+qA4vv4MROjEtLeh9eZB7BE/bot8tGPhCIZ5anW
+ gciEDVvpr1XsM4chvKKAd/NYPVpa0Q8MWwIF0wOlbEQCaq+0NK0gSt0AOVDyRMRuePIjqA
+ QqUodKKiHoPes3xbKLEBAjDcS8TAvB8ti2MtELnX9euULlBRw/xk2J0GTvFikOPcsxUgze
+ Mtc+YAgBImqJamODeQAewWZOUVp1W7fPTB5fro8oXW+OwjPbF/dLNndaYQ7gVHVzfg07yc
+ VYjopLPO87YSFWhM2DRGQP+FTB8C4SYNwXhxXyr2bAwFYYjQPrc+aYRSu35Dlg==
+Authentication-Results: outgoing_mbo_mout; dkim=none;
+ spf=pass (outgoing_mbo_mout: domain of a@unstable.cc designates
+ 2001:67c:2050:b231:465::102 as permitted sender) smtp.mailfrom=a@unstable.cc
 From: Antonio Quartulli <a@unstable.cc>
 To: openvpn-devel@lists.sourceforge.net
-Date: Wed, 27 May 2026 01:18:48 +0200
-Message-ID: <20260526231850.2511369-7-a@unstable.cc>
-In-Reply-To: <20260526231850.2511369-1-a@unstable.cc>
-References: <20260526231850.2511369-1-a@unstable.cc>
+Date: Wed, 27 May 2026 01:18:42 +0200
+Message-ID: <20260526231850.2511369-1-a@unstable.cc>
 MIME-Version: 1.0
-X-Headers-End: 1wS13I-0000Tz-8i
-Subject: [Openvpn-devel] [PATCH ovpn net 7/9] ovpn: hash floated peer by
- transport identity only
+X-Rspamd-Queue-Id: 4gQ7ww4Wdxz9tL7
+X-Headers-End: 1wS13A-0000Q2-6h
+Subject: [Openvpn-devel] [PATCH ovpn net 1/9] ovpn: skip rehash for peers
+ already removed from by_id
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -96,87 +98,75 @@ Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
 From: Antonio Quartulli <antonio@openvpn.net>
 
-The by_transp_addr table is keyed on the peer's remote transport
-address, but the float rehash hashed bind->remote directly, while the
-two other sites that touch the table build a clean key first:
-ovpn_peer_add_mp() and the lookup in ovpn_peer_get_by_transp_addr()
-both hash a sockaddr holding only family/address/port.
+ovpn_nl_peer_set_doit() resolves the target peer via
+ovpn_peer_get_by_id() before taking ovpn->lock. In the window between
+the lookup (which only takes a refcount) and the subsequent
+spin_lock_bh(&ovpn->lock), a concurrent OVPN_CMD_PEER_DEL, keepalive
+expiry, or socket teardown can take ovpn->lock first, run
+ovpn_peer_remove() to unhash the peer from all four tables (by_id,
+by_vpn_addr4/6, by_transp_addr) and release the lock. set_doit then
+acquires ovpn->lock and calls ovpn_peer_hash_vpn_ip(), which
+re-inserts the now-removed peer back into the rehashing tables.
 
-For a link-local IPv6 peer, bind->remote carries sin6_scope_id (set
-from ipv6_iface_scope_id() when the endpoint is learned), and that
-field is folded into the jhash() over sizeof(struct sockaddr_in6).
-The lookup never sets sin6_scope_id, so after such a peer floats it is
-rehashed into a scope_id-dependent bucket that lookups (scope_id 0)
-never visit, making the peer unreachable through the by_transp_addr
-fallback. ovpn_peer_transp_match() only compares address and port, so
-the hash was keying on a field the match ignores.
+The same race affects the float path: ovpn_peer_endpoints_update()
+holds only a refcount and acquires ovpn->lock very late (after async
+AEAD decrypt and a netlink notification), then rehashes the peer
+in the by_transp_addr table.
 
-sin6_scope_id must stay in bind->remote because the TX path uses it as
-flowi6_oif, so it cannot just be cleared there. Instead build the hash
-key from family/address/port only, exactly like ovpn_peer_add_mp() and
-the lookup, so all three sites agree on the bucket.
+The resurrected peer becomes reachable again from the RX lookup
+(ovpn_peer_get_by_transp_addr) and the TX VPN-IP lookup, even though
+userspace believes it is gone. Once the data-path refcount drops the
+peer is freed via call_rcu while the hash entries embedded in it
+remain linked, opening a UAF window.
 
-Fixes: f0281c1d3732 ("ovpn: add support for updating local or remote UDP endpoint")
+Bail out of the rehash when hash_entry_id is unhashed, mirroring
+the sentinel already used by ovpn_peer_remove() to detect the
+already-removed state. The check is safe under ovpn->lock, which
+serializes every mutation of hash_entry_id, and is a no-op for the
+add path because ovpn_peer_add_mp() inserts hash_entry_id before
+calling ovpn_peer_hash_vpn_ip().
+
+Fixes: 1d36a36f6d53 ("ovpn: implement peer add/get/dump/delete via netlink")
 Signed-off-by: Antonio Quartulli <antonio@openvpn.net>
 ---
- drivers/net/ovpn/peer.c | 25 +++++++++++++++++++++----
- 1 file changed, 21 insertions(+), 4 deletions(-)
+ drivers/net/ovpn/peer.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
 diff --git a/drivers/net/ovpn/peer.c b/drivers/net/ovpn/peer.c
-index 1d878c3e1514..fdf6262704c1 100644
+index a09d61296425..a472ffe3016b 100644
 --- a/drivers/net/ovpn/peer.c
 +++ b/drivers/net/ovpn/peer.c
-@@ -907,7 +907,10 @@ bool ovpn_peer_check_by_src(struct ovpn_priv *ovpn, struct sk_buff *skb,
- static void __ovpn_peer_hash_transp_addr(struct ovpn_peer *peer,
- 					 const struct ovpn_bind *bind)
- {
-+	struct sockaddr_storage sa = {};
- 	struct hlist_nulls_head *nhead;
-+	struct sockaddr_in6 *sa6;
-+	struct sockaddr_in *sa4;
- 	size_t salen;
+@@ -307,6 +307,16 @@ void ovpn_peer_endpoints_update(struct ovpn_peer *peer, struct sk_buff *skb)
+ 			return;
+ 		}
  
- 	lockdep_assert_held(&peer->ovpn->lock);
-@@ -923,12 +926,26 @@ static void __ovpn_peer_hash_transp_addr(struct ovpn_peer *peer,
- 	if (unlikely(hlist_unhashed(&peer->hash_entry_id)))
++		/* peer may have been concurrently removed between the caller's
++		 * initial lookup and our acquisition of ovpn->lock; skip the
++		 * rehash so we don't re-insert a removed peer
++		 */
++		if (unlikely(hlist_unhashed(&peer->hash_entry_id))) {
++			spin_unlock_bh(&peer->lock);
++			spin_unlock_bh(&peer->ovpn->lock);
++			return;
++		}
++
+ 		/* This function may be invoked concurrently, therefore another
+ 		 * float may have happened in parallel: perform rehashing
+ 		 * using the peer->bind->remote directly as key
+@@ -905,6 +915,13 @@ void ovpn_peer_hash_vpn_ip(struct ovpn_peer *peer)
+ 	if (peer->ovpn->mode != OVPN_MODE_MP)
  		return;
  
-+	/* Build the hash key from the transport identity only
-+	 * (family/address/port), matching ovpn_peer_add_mp() and the lookup
-+	 * in ovpn_peer_get_by_transp_addr(). Hashing bind->remote directly
-+	 * would fold in sin6_scope_id (set on the float path but never by the
-+	 * lookup), scattering the peer into a bucket lookups cannot reach.
++	/* peer may have been concurrently removed between the caller's
++	 * initial lookup and our acquisition of ovpn->lock; skip the
++	 * rehash so we don't re-insert a removed peer
 +	 */
- 	switch (bind->remote.in4.sin_family) {
- 	case AF_INET:
--		salen = sizeof(struct sockaddr_in);
-+		sa4 = (struct sockaddr_in *)&sa;
-+		sa4->sin_family = AF_INET;
-+		sa4->sin_addr.s_addr = bind->remote.in4.sin_addr.s_addr;
-+		sa4->sin_port = bind->remote.in4.sin_port;
-+		salen = sizeof(*sa4);
- 		break;
- 	case AF_INET6:
--		salen = sizeof(struct sockaddr_in6);
-+		sa6 = (struct sockaddr_in6 *)&sa;
-+		sa6->sin6_family = AF_INET6;
-+		sa6->sin6_addr = bind->remote.in6.sin6_addr;
-+		sa6->sin6_port = bind->remote.in6.sin6_port;
-+		salen = sizeof(*sa6);
- 		break;
- 	default:
- 		return;
-@@ -937,8 +954,8 @@ static void __ovpn_peer_hash_transp_addr(struct ovpn_peer *peer,
- 	/* remove old hashing (no-op if entry is not currently linked) */
- 	hlist_nulls_del_init_rcu(&peer->hash_entry_transp_addr);
- 	/* re-add with current transport address */
--	nhead = ovpn_get_hash_head(peer->ovpn->peers->by_transp_addr,
--				   &bind->remote, salen);
-+	nhead = ovpn_get_hash_head(peer->ovpn->peers->by_transp_addr, &sa,
-+				   salen);
- 	hlist_nulls_add_head_rcu(&peer->hash_entry_transp_addr, nhead);
- }
- 
++	if (hlist_unhashed(&peer->hash_entry_id))
++		return;
++
+ 	if (peer->vpn_addrs.ipv4.s_addr != htonl(INADDR_ANY)) {
+ 		/* remove potential old hashing */
+ 		hlist_nulls_del_init_rcu(&peer->hash_entry_addr4);
 -- 
 2.53.0
 
