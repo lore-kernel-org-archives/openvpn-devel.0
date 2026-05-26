@@ -4,26 +4,26 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 215B7CD6E46
-	for <openvpn-devel@archiver.kernel.org>; Tue, 26 May 2026 23:19:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9283BCD6E45
+	for <openvpn-devel@archiver.kernel.org>; Tue, 26 May 2026 23:19:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:Cc:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
 	:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=mL4bJ+LSxd0VnrN4IeDEMjQG0xGPmibO1kB+/h5XxZQ=; b=DYk3n9rBbp049ZMs15DliaK4k2
-	+tnRc9iiY9AHFjxiUWeSZCbKlecZ/E6fpvSqVLCsS12+Dait708Go+XoIHR0Work5bIboAyISoNS5
-	Hc051cTGdBieWsiEQyZWNCa8++jrAfMKKH1Axk9M0oDF8+vquYFOOVFpN7dKVR2AKeNY=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=IjR3EQ4MOgcdBCc/jvQ3IfkQ5/9CmcCNgtH3/P8ejFk=; b=W7EZ3/fsyr9j5w9/ykvbUg+b2F
+	Jsu2CD+JfxkppxZXbPQL4AAmGajQ/jdhKLqd8OSmooFwLXLNoP9cIZq84eoIuEV40YXfYdaKsH/jV
+	ZKxCU5QZdbFNoAwFOFsibkxVGqs5w4C6PBpnPx2etXQCHvgRFBga5PXbK+Pgxh8anMlY=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wS13Z-0007KZ-Sf;
-	Tue, 26 May 2026 23:19:29 +0000
+	id 1wS13g-0003ZZ-3j;
+	Tue, 26 May 2026 23:19:33 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <a@unstable.cc>) id 1wS13X-0007Jv-Do
+ (envelope-from <a@unstable.cc>) id 1wS13a-0003Yu-3D
  for openvpn-devel@lists.sourceforge.net;
  Tue, 26 May 2026 23:19:27 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
@@ -32,9 +32,9 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=3SO51xGxkJt8zJ1G/O5z8R+QSQzRGqAq8QHjtl6WKcA=; b=hsSH4ftghTETr7bw1nzK0kSjOF
- dUhn/SckAFupubDzbsVY+3HEt0MGfHrrthe+QceiSnkbvl/UV/6jN4LIySAlG3OH7AuO2ZOF+1W+G
- eCxXQ6yacOCX/BEsZ4tVtel0E3EVq/1tbPxWy5PgnOzDdwpqFGKT8t7SFD05KDSqocfI=;
+ bh=5Bi8Y3AoE6yWOm2646Prxg31B8siXiLLLFGLfLD3gK4=; b=VYejRFwZcHk3+rEuVkbQHt6bV6
+ OqbZHwA/ZN6rdtY2UJXPmdMe2mwOy5wxTpwk+aZV1MGkbO/zMTL+xjxrWhBRhvFR+4z4+f32Awx6F
+ yvoo6L79TjWv2e+4rcA7Pud0KYTNYLn+Mosm8JRIqG00/KYWz4OpGIzb9imVHut1h87o=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -42,42 +42,42 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=3SO51xGxkJt8zJ1G/O5z8R+QSQzRGqAq8QHjtl6WKcA=; b=b6YhAkiPXi1YjvmZw+1+YnuXY7
- SMtUowefuqHm2+2Y3jNe7PMwhRenap8U0rOYuUPrFR9EqF1nUeT2v2X417itQ0MwFi1mtxuM7354z
- qyx139SDjdAbN3h4bYmLstZnI7yv1EX78DMbToqWv6Vg+Mul6Y/azMN029dW/ML+6Vec=;
+ bh=5Bi8Y3AoE6yWOm2646Prxg31B8siXiLLLFGLfLD3gK4=; b=NTnmYnl5cCDqVg2YyLYYA77UE7
+ g9uiX7kxCgXGtF+tXLSfnU6KH4y8ya0zBExsiyhqTc/7QY5iFrozBdYeo6iB4fWAX9rQUtnJS04mJ
+ vi1uCRNrKwDk4oDL3zSip628XpTQduvcOsIrSCFsS5ubDdkjrdyH2pL+d0LBQv6mVgFQ=;
 Received: from mout-p-101.mailbox.org ([80.241.56.151])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wS13H-0000TX-0X for openvpn-devel@lists.sourceforge.net;
- Tue, 26 May 2026 23:19:12 +0000
+ id 1wS13F-0000Ss-Ob for openvpn-devel@lists.sourceforge.net;
+ Tue, 26 May 2026 23:19:11 +0000
 Received: from smtp102.mailbox.org (smtp102.mailbox.org [10.196.197.102])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
  (No client certificate requested)
- by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4gQ7wy5k5vz9tht;
- Wed, 27 May 2026 01:18:58 +0200 (CEST)
+ by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4gQ7wx1WCqz9tg3;
+ Wed, 27 May 2026 01:18:57 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=unstable.cc; s=MBO0001;
- t=1779837538;
+ t=1779837537;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=3SO51xGxkJt8zJ1G/O5z8R+QSQzRGqAq8QHjtl6WKcA=;
- b=bsVIT0PgSIPUvJH6JjKkahUJWaJxVevIVr2l3LK9TzBpa9cB2BBzpQVF8j4wiaNSpN+Zsq
- H0dDnQlkg5b3BSv9bCdjMZDzBCawHv4krn9S2CeG+U0qWm/nbccyRTYoPiew3EV6FKnRTF
- Fyixb25ZMMzjWwHNdjM/Xf1zJCEgAFig96Dg6T7wBvt87bMgqtFTQAy5je8DOIGEjV/R1C
- NaLa/N0uUKK4s8NxRBO0SqInT3SqQxgHYSc3KZ9UXMHk9z6klQ8Pw7NKL75FzqCjYTaat8
- ZYR3DL8n7kaGh1bsEauCZCYezmtXlp0JJWPOE/JiVpVlTFlzk2tfNf+psGRi9Q==
+ bh=5Bi8Y3AoE6yWOm2646Prxg31B8siXiLLLFGLfLD3gK4=;
+ b=ezxMoY51Jj/IQ92LZ/t8WAIOaRPDfHs2ulex8sH/hl81EgnUb64tOxhpO6etFWpus+Hmdh
+ EBN3g3YtZgXWkyHcces0VRVKbMk4vAXC1tqsoN9NIZp1jOVAw5S+c1YNmnhea9rwBf63zb
+ 6XuvSwiCKA5LAOtS0zioUevhoN9Cs0gTMJHNjU75EU2Z51lAhKmHqre3U3VPqsVI+bp0Gm
+ wuGOxcqg9jE/R/zTTEN6EZad7NT2ronaP1MOU4Nrlv+888VGzmC4KUXPim+YVLHZhUK0D8
+ ELBLVJREjNwv/lt+R5qGk89Frh3AZqStU6jzmm53KcMaFnwvtMR+UWSdhB663A==
 From: Antonio Quartulli <a@unstable.cc>
 To: openvpn-devel@lists.sourceforge.net
-Date: Wed, 27 May 2026 01:18:46 +0200
-Message-ID: <20260526231850.2511369-5-a@unstable.cc>
+Date: Wed, 27 May 2026 01:18:43 +0200
+Message-ID: <20260526231850.2511369-2-a@unstable.cc>
 In-Reply-To: <20260526231850.2511369-1-a@unstable.cc>
 References: <20260526231850.2511369-1-a@unstable.cc>
 MIME-Version: 1.0
-X-Headers-End: 1wS13H-0000TX-0X
-Subject: [Openvpn-devel] [PATCH ovpn net 5/9] ovpn: tcp - fix peer reference
- leak on deferred deletion
+X-Headers-End: 1wS13F-0000Ss-Ob
+Subject: [Openvpn-devel] [PATCH ovpn net 2/9] ovpn: rehash peer in
+ by_transp_addr table on CMD_PEER_SET
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -96,91 +96,207 @@ Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
 From: Antonio Quartulli <antonio@openvpn.net>
 
-The TCP error paths in ovpn_tcp_rcv() and ovpn_tcp_send_sock() take a
-peer reference and then schedule the deferred-delete work:
+When userspace updates a peer's remote endpoint via OVPN_CMD_PEER_SET,
+ovpn_nl_peer_modify() installs a new ovpn_bind through
+ovpn_peer_reset_sockaddr(), but ovpn_nl_peer_set_doit() only calls
+ovpn_peer_hash_vpn_ip() to refresh the VPN-IP hashtables. The peer is
+left in the bucket of peers->by_transp_addr corresponding to its old
+remote address.
 
-	ovpn_peer_hold(peer);
-	schedule_work(&peer->tcp.defer_del_work);
+As a consequence, datagrams arriving at the UDP RX path from the newly
+configured remote hash to a different slot and the lockless lookup in
+ovpn_peer_get_by_transp_addr() (called from ovpn_udp_encap_recv()) does
+not find the peer, until either a float event or a peer re-add fixes
+the bucket.
 
-ovpn_tcp_peer_del_work() drops exactly one reference per run, but
-schedule_work() returns false and does not re-queue when the work is
-already pending. The reference, however, was taken unconditionally, so
-every hold+schedule that lands on an already-pending work leaks one peer
-reference.
+Introduce ovpn_peer_hash_transp_addr() (modeled after
+ovpn_peer_hash_vpn_ip()) and invoke it from ovpn_nl_peer_set_doit()
+whenever the request carried a new remote address. The helper bails
+out in P2P mode and on peers without a bind (TCP), and relies on
+hlist_nulls_del_init_rcu()'s pprev==NULL short-circuit to handle the
+case of an entry not currently linked in the table.
 
-ovpn_tcp_rcv() is the strparser receive callback and has no guard against
-this: a TCP segment packed with packets whose length header is valid for
-the stream parser but whose payload is smaller than the opcode size
-passes ovpn_tcp_parse() and hits the error path. strparser delivers all
-complete messages in a loop, so many error invocations run before the
-scheduled work executes, leaking one reference each. A remote peer can
-exploit this to pin the peer (and the netdev reference it holds) forever,
-preventing interface teardown - a denial of service.
-
-Take the reference only when schedule_work() actually queues the work.
-schedule_work() flips the work pending bit atomically, so exactly one
-caller - even across the concurrent RX and TX paths - observes the
-idle->pending transition and acquires the single reference that the lone
-ovpn_peer_put() in the worker balances. ovpn_peer_del() is idempotent
-(ovpn_peer_remove() bails on an already-unhashed peer), so a work item
-re-queued while running stays refcount-balanced.
-
-Fixes: 11851cbd60ea ("ovpn: implement TCP transport")
+Fixes: 1d36a36f6d53 ("ovpn: implement peer add/get/dump/delete via netlink")
 Signed-off-by: Antonio Quartulli <antonio@openvpn.net>
 ---
- drivers/net/ovpn/tcp.c | 29 +++++++++++++++++++----------
- 1 file changed, 19 insertions(+), 10 deletions(-)
+ drivers/net/ovpn/netlink.c |   6 +++
+ drivers/net/ovpn/peer.c    | 106 ++++++++++++++++++++++++-------------
+ drivers/net/ovpn/peer.h    |   1 +
+ 3 files changed, 75 insertions(+), 38 deletions(-)
 
-diff --git a/drivers/net/ovpn/tcp.c b/drivers/net/ovpn/tcp.c
-index 433bd07a4f1b..6cf684699ada 100644
---- a/drivers/net/ovpn/tcp.c
-+++ b/drivers/net/ovpn/tcp.c
-@@ -148,10 +148,14 @@ static void ovpn_tcp_rcv(struct strparser *strp, struct sk_buff *skb)
- 	ovpn_recv(peer, skb);
- 	return;
- err:
--	/* take reference for deferred peer deletion. should never fail */
--	if (WARN_ON(!ovpn_peer_hold(peer)))
--		goto err_nopeer;
--	schedule_work(&peer->tcp.defer_del_work);
-+	/* schedule deferred peer deletion and take a reference only if the
-+	 * work was actually queued: the matching ovpn_peer_put() in
-+	 * ovpn_tcp_peer_del_work() runs once per queued work, so re-arming an
-+	 * already-pending work must not take another reference (it would be
-+	 * leaked, e.g. on a flood of invalid packets)
+diff --git a/drivers/net/ovpn/netlink.c b/drivers/net/ovpn/netlink.c
+index 4c66c1ec497e..4dad85294198 100644
+--- a/drivers/net/ovpn/netlink.c
++++ b/drivers/net/ovpn/netlink.c
+@@ -534,6 +534,12 @@ int ovpn_nl_peer_set_doit(struct sk_buff *skb, struct genl_info *info)
+ 	 */
+ 	if (ret > 0)
+ 		ovpn_peer_hash_vpn_ip(peer);
++	/* if the remote endpoint was updated, the by_transp_addr hash bucket
++	 * also needs to be refreshed, otherwise incoming packets from the new
++	 * remote address would fail the lockless lookup
 +	 */
-+	if (schedule_work(&peer->tcp.defer_del_work))
-+		ovpn_peer_hold(peer);
- 	ovpn_dev_dstats_rx_dropped(peer->ovpn->dev);
- err_nopeer:
- 	kfree_skb(skb);
-@@ -280,15 +284,20 @@ static void ovpn_tcp_send_sock(struct ovpn_peer *peer, struct sock *sk)
- 					     peer->id, ret);
++	if (attrs[OVPN_A_PEER_REMOTE_IPV4] || attrs[OVPN_A_PEER_REMOTE_IPV6])
++		ovpn_peer_hash_transp_addr(peer);
+ 	spin_unlock_bh(&ovpn->lock);
+ 	ovpn_peer_put(peer);
  
- 			/* in case of TCP error we can't recover the VPN
--			 * stream therefore we abort the connection
-+			 * stream therefore we abort the connection.
-+			 *
-+			 * Take a reference only if the work was actually
-+			 * queued: ovpn_tcp_peer_del_work() drops exactly one
-+			 * reference per run, so re-arming an already-pending
-+			 * work (e.g. already scheduled from the RX path) must
-+			 * not take another reference (it would be leaked).
- 			 */
--			ovpn_peer_hold(peer);
--			schedule_work(&peer->tcp.defer_del_work);
-+			if (schedule_work(&peer->tcp.defer_del_work))
-+				ovpn_peer_hold(peer);
+diff --git a/drivers/net/ovpn/peer.c b/drivers/net/ovpn/peer.c
+index a472ffe3016b..8aa07560bb30 100644
+--- a/drivers/net/ovpn/peer.c
++++ b/drivers/net/ovpn/peer.c
+@@ -188,6 +188,9 @@ int ovpn_peer_reset_sockaddr(struct ovpn_peer *peer,
+ 	&(*__tbl1)[ovpn_get_hash_slot(*__tbl1, _key, _key_len)];\
+ })
  
- 			/* we bail out immediately and keep tx_in_progress set
--			 * to true. This way we prevent more TX attempts
--			 * which would lead to more invocations of
--			 * schedule_work()
-+			 * to true, so that no further TX is attempted on the
-+			 * aborted stream
- 			 */
- 			return;
- 		}
++static void __ovpn_peer_hash_transp_addr(struct ovpn_peer *peer,
++					 const struct ovpn_bind *bind);
++
+ /**
+  * ovpn_peer_endpoints_update - update remote or local endpoint for peer
+  * @peer: peer to update the remote endpoint for
+@@ -195,7 +198,6 @@ int ovpn_peer_reset_sockaddr(struct ovpn_peer *peer,
+  */
+ void ovpn_peer_endpoints_update(struct ovpn_peer *peer, struct sk_buff *skb)
+ {
+-	struct hlist_nulls_head *nhead;
+ 	struct sockaddr_storage ss;
+ 	struct sockaddr_in6 *sa6;
+ 	bool reset_cache = false;
+@@ -294,49 +296,17 @@ void ovpn_peer_endpoints_update(struct ovpn_peer *peer, struct sk_buff *skb)
+ 	ovpn_nl_peer_float_notify(peer, &ss);
+ 
+ 	/* rehashing is required only in MP mode as P2P has one peer
+-	 * only and thus there is no hashtable
++	 * only and thus there is no hashtable.
++	 *
++	 * This function may be invoked concurrently, so re-read peer->bind
++	 * under the proper locks and rehash against its current value.
+ 	 */
+ 	if (peer->ovpn->mode == OVPN_MODE_MP) {
+ 		spin_lock_bh(&peer->ovpn->lock);
+ 		spin_lock_bh(&peer->lock);
+ 		bind = rcu_dereference_protected(peer->bind,
+ 						 lockdep_is_held(&peer->lock));
+-		if (unlikely(!bind)) {
+-			spin_unlock_bh(&peer->lock);
+-			spin_unlock_bh(&peer->ovpn->lock);
+-			return;
+-		}
+-
+-		/* peer may have been concurrently removed between the caller's
+-		 * initial lookup and our acquisition of ovpn->lock; skip the
+-		 * rehash so we don't re-insert a removed peer
+-		 */
+-		if (unlikely(hlist_unhashed(&peer->hash_entry_id))) {
+-			spin_unlock_bh(&peer->lock);
+-			spin_unlock_bh(&peer->ovpn->lock);
+-			return;
+-		}
+-
+-		/* This function may be invoked concurrently, therefore another
+-		 * float may have happened in parallel: perform rehashing
+-		 * using the peer->bind->remote directly as key
+-		 */
+-
+-		switch (bind->remote.in4.sin_family) {
+-		case AF_INET:
+-			salen = sizeof(*sa);
+-			break;
+-		case AF_INET6:
+-			salen = sizeof(*sa6);
+-			break;
+-		}
+-
+-		/* remove old hashing */
+-		hlist_nulls_del_init_rcu(&peer->hash_entry_transp_addr);
+-		/* re-add with new transport address */
+-		nhead = ovpn_get_hash_head(peer->ovpn->peers->by_transp_addr,
+-					   &bind->remote, salen);
+-		hlist_nulls_add_head_rcu(&peer->hash_entry_transp_addr, nhead);
++		__ovpn_peer_hash_transp_addr(peer, bind);
+ 		spin_unlock_bh(&peer->lock);
+ 		spin_unlock_bh(&peer->ovpn->lock);
+ 	}
+@@ -905,6 +875,66 @@ bool ovpn_peer_check_by_src(struct ovpn_priv *ovpn, struct sk_buff *skb,
+ 	return match;
+ }
+ 
++/* Move @peer to the by_transp_addr bucket matching its current bind.
++ *
++ * Caller must hold both peer->ovpn->lock and peer->lock, and must have
++ * already dereferenced a valid (non-NULL) peer->bind, passed in as @bind.
++ */
++static void __ovpn_peer_hash_transp_addr(struct ovpn_peer *peer,
++					 const struct ovpn_bind *bind)
++{
++	struct hlist_nulls_head *nhead;
++	size_t salen;
++
++	lockdep_assert_held(&peer->ovpn->lock);
++	lockdep_assert_held(&peer->lock);
++
++	if (WARN_ON_ONCE(!bind))
++		return;
++
++	/* peer may have been concurrently removed between the caller's
++	 * initial lookup and our acquisition of ovpn->lock; skip the
++	 * rehash so we don't re-insert a removed peer
++	 */
++	if (unlikely(hlist_unhashed(&peer->hash_entry_id)))
++		return;
++
++	switch (bind->remote.in4.sin_family) {
++	case AF_INET:
++		salen = sizeof(struct sockaddr_in);
++		break;
++	case AF_INET6:
++		salen = sizeof(struct sockaddr_in6);
++		break;
++	default:
++		return;
++	}
++
++	/* remove old hashing (no-op if entry is not currently linked) */
++	hlist_nulls_del_init_rcu(&peer->hash_entry_transp_addr);
++	/* re-add with current transport address */
++	nhead = ovpn_get_hash_head(peer->ovpn->peers->by_transp_addr,
++				   &bind->remote, salen);
++	hlist_nulls_add_head_rcu(&peer->hash_entry_transp_addr, nhead);
++}
++
++void ovpn_peer_hash_transp_addr(struct ovpn_peer *peer)
++{
++	struct ovpn_bind *bind;
++
++	lockdep_assert_held(&peer->ovpn->lock);
++
++	/* rehashing makes sense only in multipeer mode */
++	if (peer->ovpn->mode != OVPN_MODE_MP)
++		return;
++
++	spin_lock_bh(&peer->lock);
++	bind = rcu_dereference_protected(peer->bind,
++					 lockdep_is_held(&peer->lock));
++	__ovpn_peer_hash_transp_addr(peer, bind);
++	spin_unlock_bh(&peer->lock);
++}
++
+ void ovpn_peer_hash_vpn_ip(struct ovpn_peer *peer)
+ {
+ 	struct hlist_nulls_head *nhead;
+diff --git a/drivers/net/ovpn/peer.h b/drivers/net/ovpn/peer.h
+index 86c8cffada6d..dfa5c0037e02 100644
+--- a/drivers/net/ovpn/peer.h
++++ b/drivers/net/ovpn/peer.h
+@@ -150,6 +150,7 @@ struct ovpn_peer *ovpn_peer_get_by_id(struct ovpn_priv *ovpn, u32 peer_id);
+ struct ovpn_peer *ovpn_peer_get_by_dst(struct ovpn_priv *ovpn,
+ 				       struct sk_buff *skb);
+ void ovpn_peer_hash_vpn_ip(struct ovpn_peer *peer);
++void ovpn_peer_hash_transp_addr(struct ovpn_peer *peer);
+ bool ovpn_peer_check_by_src(struct ovpn_priv *ovpn, struct sk_buff *skb,
+ 			    struct ovpn_peer *peer);
+ 
 -- 
 2.53.0
 
