@@ -4,126 +4,77 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 69B08CD4F54
-	for <openvpn-devel@archiver.kernel.org>; Wed, 27 May 2026 15:44:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E93AECD5BD0
+	for <openvpn-devel@archiver.kernel.org>; Wed, 27 May 2026 16:56:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:List-Subscribe:
-	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:Subject:
-	MIME-Version:Message-ID:References:To:Date:From:Sender:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
-	List-Owner; bh=aS0pkYuJFXV91Q1f98BspLHIjDwnDj3ZAjT2JfCoaLM=; b=GRH4/VEQOZHuKS
-	BFhUfSkImJxSqL8/wDRAC2nKYDfVHH1mT/f1tohvy4MJwAYxXjvAkF5mjsr3qyQEoa6QJYzpZg/p7
-	lowSbNW8Vb++UCjqQNxFlAio5RxoXaHSBm5bUV0+c8/f1GGWCZuzP/StYwY68gs3n/f3ijfYxrEr7
-	l+E=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
+	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
+	Subject:MIME-Version:Message-ID:Date:To:From:Sender:Reply-To:Cc:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Owner;
+	bh=4rDUoo83ECJoRVY+uGzCy2Hr7RxZUJt2wggWwuOiei0=; b=LzSzY/6YOlsdWwQT6JFWAQty4Q
+	gNmfAuQf2kVqbr3/GQxXz//l6BKah1+oZ52ySOVVofhRR2V1KY2KFKhIED50EZxI4o8CiCX1MBUL8
+	AxJClJWNHxeJUio0bpcmQ4ecdtcJWs1jGNB5dFBJxc4M7k1aGvpg+XpEqtxmz6/GHpuU=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wSGQe-0001Pr-AI;
-	Wed, 27 May 2026 15:44:21 +0000
+	id 1wSHXz-0008Dq-7u;
+	Wed, 27 May 2026 16:55:56 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wSGQM-0001PU-NX
+ (envelope-from <ralf@mandelbit.com>) id 1wSHXw-0008Di-R7
  for openvpn-devel@lists.sourceforge.net;
- Wed, 27 May 2026 15:44:03 +0000
+ Wed, 27 May 2026 16:55:55 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:
- From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From:
- Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:Message-ID:
+ Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=nZKecH/ZiOHuhMEG+4cQKVMNqQCVL9ociXPBhaGMOlc=; b=f2KbJN2xRgPug0y4IeT8mk7ojG
- P6ETdjUvasfHxbGfsji7c4/Llpl2GpV/CYZa+x6cKjrESa5o+8p8auGlad+hdIcMExaFNjq8cuFCP
- wqzf3S3CgiylK33ddfOWBwJQCJ7UB9jwh8wedWdLBfasV9cl1Ne13kOEh65qMro2llAs=;
+ bh=MksbH5Dles64ehaI6w+cKa4fiGvt9dtvlvueQiVwB5U=; b=k1k04dPwRBSMEpP7WjulYZ8sDd
+ WJLJff3ijWWN1pJjdfyGvavzSEd1FKe9lFIBEuITGcpx0u584tDT4Ad6SKSsyCT6MlqPwhwbdR6A7
+ 7wAG8QcEXVg80677nrcLrFWO+V7cm/I9GBNm3yRby1CN/O1qb3DTRRm25deLyp8zgNQA=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:From:Sender:Content-ID
- :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
- Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=nZKecH/ZiOHuhMEG+4cQKVMNqQCVL9ociXPBhaGMOlc=; b=U
- p8DT3wVcnBcHFBgBP1aCNYwuD5XzEe8w6KcxbJF8nokjaUuCisxnzVRRInY3cIuMt0TawTB6OQpnx
- nC0CF51su814UD7KJb0yl64Fer5fDPnRhv+XYvE6+gIEMTXqTWC8WOv84ZDBfDgUNiW772QxHRABS
- 5k92Ai5GnnJXu9Zg=;
-Received: from mail-wm1-f42.google.com ([209.85.128.42])
+ h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:Cc:To:From
+ :Sender:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+ References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=MksbH5Dles64ehaI6w+cKa4fiGvt9dtvlvueQiVwB5U=; b=Z
+ Jc0lBlIYKfCM8Y6ObBrirQFac6GK6qMO2Fgq8ClnH/+lM6WuceUGBLQgURNGJCKA5NWw6SRFKYRsG
+ o2fbPRrOhR9zIDlTwhPPF3Hp/q/6+Fxzg6f++6VQR8NnMBjxo632+pe7TNzTH8pAWyCIeLv13dC6p
+ So4PvFiLBWnz5OZg=;
+Received: from mout-b-201.mailbox.org ([195.10.208.61])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wSGQJ-0000Xa-9j for openvpn-devel@lists.sourceforge.net;
- Wed, 27 May 2026 15:44:03 +0000
-Received: by mail-wm1-f42.google.com with SMTP id
- 5b1f17b1804b1-49042aeeb75so70530415e9.1
- for <openvpn-devel@lists.sourceforge.net>;
- Wed, 27 May 2026 08:43:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1779896628; x=1780501428; darn=lists.sourceforge.net;
- h=user-agent:content-disposition:content-transfer-encoding
- :mime-version:message-id:reply-to:subject:thread-index:references
- :list-unsubscribe:list-id:auto-submitted:cc:to:date:from:from:to:cc
- :subject:date:message-id:reply-to;
- bh=nZKecH/ZiOHuhMEG+4cQKVMNqQCVL9ociXPBhaGMOlc=;
- b=BtdyfswUV1BtpkeBvlXOtKFYFzanqn4HcucVEpVGBRBiZ6bATMCUUoQV+DvWlSg5a6
- MQNvR5wvrpRjRqhkn1MbRHV4nPv87rMoyBYBN2sS14kw03qrOkzuV1I5edJ/vRr/Ug3q
- u+mVBUgRBFvTdaYvtxKNF8KaEDHr2c6YGUP0fGUDteguYLOROqbYUYsoWSvVKx7kMX3s
- pKOCOI+AsqlUuQPw9EhGMT4JC1OZIvqspLmT+cReYd2e+xXnJ6ZEbP9chE1VsTGjdtdB
- 7HnGrLHraVXES4V8MAfP7oB+Mm2WvYyahkl99FLc4a7GLUTNekox10/GVhf7Z1jTTPDF
- L7hQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1779896628; x=1780501428;
- h=user-agent:content-disposition:content-transfer-encoding
- :mime-version:message-id:reply-to:subject:thread-index:references
- :list-unsubscribe:list-id:auto-submitted:cc:to:date:from:x-gm-gg
- :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
- bh=nZKecH/ZiOHuhMEG+4cQKVMNqQCVL9ociXPBhaGMOlc=;
- b=POFIqSwqzRTjG0ozJB++/4cLvxp9p5Gq9diZGmKSB7sGJT4B0lwwlDnQrwW8bx/VRL
- SuCLViNTd1rychNAFk7DZFT+z5ICwzgXrGAWfrg/ec5qKyOMl9o30RAMtJSx93F6btQF
- UwJGaPvaCA2FsS5CCq169N5oXQHgQErlOVqvKzLaaK6Rxb/A2jlJmvichjoZO7CpJNeA
- jL5Vd4p5pdQXUTA3JyBNFEFbeOTUBDNd21Q3GuVt/9qcig+m1CZdx24UfWBxRYUEEu92
- E19mCIqMEyOv9zyUizmLOHTZ5hJZcANomZNBy4iNa73mtD5e9BfyLyhP98vF5bCJmx7p
- JDQQ==
-X-Gm-Message-State: AOJu0YyKItipSm+RaBv/c+aXuAAywhQOHICcYsRd3TV8UfHciheUsu2V
- FA389xUg8NgdV0zjUgbI6J7GXpl0yGeS2tnAiyexrhTS5fEbns5NdOggv2LwAgZDLks5XnbivoE
- HyMefVL2u5XunjKijdcDIm3GowJoTebNSCKNToUgemWl+bavVCk3pllMebmxCE/JlQhr4icy55o
- jcP4Kfww==
-X-Gm-Gg: Acq92OGYunDqctxWkxG4bMd4aeC0Nf0jeOa0QO+mK6nb02PXryzBdeZ2d1uXIosv4or
- BE2nwBC8qpzV8ni5eZLu6HKyIZ4nmDO4mkThQvOxwyPTFnM4Wo/fhLb7FhofhpX7pllELLCp6+M
- srkFPbU8JTpeq5dquAOCyE9CUkzB7lLxjNKhLJ0bmWClFQEHcq/4f048fUMAdiM3/A7H43a2SL3
- wZYBjc3YD3HTGs/S2ekdYbiek1MuoUoHtYy9x2BQTvvElhntfGtsZqQDXv1V/kATkYWUN6CAc0I
- DKNUzmY59T3xUSeixhVwmsqaOCs+hM7KOwfmfAM6RLxe+2AxxQpvAlWjQ+UUB2Q/iTcwQ8Uw+nW
- +zw8x2pPQy2Fj+z/iufIjRwcJXt+V07bhdNlKP/F6EcG2e1kO/PAAl/d6ZTOv0HTVF+fbDV6kdZ
- MMLZNn5M36RwRX/r9upwwe0IuCqaD7O+tBxAhy/EyA9e4QI2kyU/IkuzhR1NTnJUryFoabJovQs
- y5pbCkb7Xjk15z45U4GglQpNKEbfbC5yOmG5GqeQlAe25nLq28Idz++kecGlFMwgLvvrHAhANqC
- RFTOh0Z9u2lScnMYXLNpH178
-X-Received: by 2002:a05:600d:6450:10b0:48a:7a10:4f17 with SMTP id
- 5b1f17b1804b1-4904249d125mr282179755e9.6.1779896628122; 
- Wed, 27 May 2026 08:43:48 -0700 (PDT)
-Received: from ip-10-18-1-162.eu-central-1.compute.internal
- (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
- by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-490454ac676sm438822845e9.13.2026.05.27.08.43.47
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 27 May 2026 08:43:47 -0700 (PDT)
-From: "mrbff (Code Review)" <gerrit@openvpn.net>
-X-Google-Original-From: "mrbff (Code Review)"
- <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Wed, 27 May 2026 15:43:47 +0000
-To: plaisthos <arne-openvpn@rfc2549.org>
-Auto-Submitted: auto-generated
-X-Gerrit-MessageType: newchange
-X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: Ib56fb53ec1c0c30c9aecbd0ca440de2affad04b5
-X-Gerrit-Change-Number: 1705
-X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1705?usp=email>
-X-Gerrit-Commit: 62a69f3f1b48950d3ae9c825946cb448c4206908
-References: <gerrit.1779896625000.Ib56fb53ec1c0c30c9aecbd0ca440de2affad04b5@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzc5ODk2NjI1MDAwLkliNTZmYjUzZWMxYzBjMzBjOWFlY2JkMGNhNDQwZGUyYWZmYWQwNGI1QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <1df2c459320bc660999e4f2e0a00a34e33123ac9-HTML@gerrit.openvpn.net>
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
+ id 1wSHXs-0006gF-HV for openvpn-devel@lists.sourceforge.net;
+ Wed, 27 May 2026 16:55:54 +0000
+Received: from smtp202.mailbox.org (smtp202.mailbox.org [10.196.197.202])
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+ key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+ (No client certificate requested)
+ by mout-b-201.mailbox.org (Postfix) with ESMTPS id 4gQbNK0q3QzDs1F;
+ Wed, 27 May 2026 18:55:45 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
+ s=MBO0001; t=1779900945;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:
+ content-transfer-encoding:content-transfer-encoding;
+ bh=MksbH5Dles64ehaI6w+cKa4fiGvt9dtvlvueQiVwB5U=;
+ b=fiqwCHcUZw8PNZld5ShNxkMrHwvKp5jddwgccrZs9UuT2s9sXSrJFfZkRpKz2mlmhaqYPy
+ /GohUPsDecqWMumjZJ4eziqgG+yVuJlrBV+BwWjhMEh3REleKWdclQ/Y7wpDEQsgkyE9GG
+ mvjMl52LGGdX0Kk/j7qgo+TaKQXYMbbjTQ9G64SWyMP+fwzSdI+BEetnKnvLh8KFX3RkNn
+ Xu2qitmpfTyXWSYFIykrElXSJJDVciNx+DEQWurtQv223aUNJf7XQfNlUae52Uq0x0gcb9
+ nbrWBsPcMcj2aXAw/0aFo1gLlRQPFtNhwGCMSwAoCwJK+5+vaZUZuS+H2B8H1w==
+From: Ralf Lici <ralf@mandelbit.com>
+To: openvpn-devel@lists.sourceforge.net
+Date: Wed, 27 May 2026 18:55:23 +0200
+Message-ID: <20260527165527.24035-1-ralf@mandelbit.com>
 MIME-Version: 1.0
-User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wSGQJ-0000Xa-9j
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: dco_linux: allow
- passing KEEPALIVE_TIMEOUT without KEEPALIVE_INTERVAL
+X-Headers-End: 1wSHXs-0006gF-HV
+Subject: [Openvpn-devel] [PATCH ovpn net-next 1/2] rtnetlink: pass sender
+ portid to newlink callbacks
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -135,207 +86,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Reply-To: marco@mandelbit.com, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============1773531910224572690=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============1773531910224572690==
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="l2t8n2RHvBs="; charset=UTF-8
+A newlink callback may need to identify the rtnetlink endpoint that
+requested device creation. The source net namespace is already available
+through struct rtnl_newlink_params, but the sender port ID is not.
 
---l2t8n2RHvBs=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Add the sender port ID to struct rtnl_newlink_params and populate it
+from NETLINK_CB(skb).portid in rtnl_newlink_create.
 
-Attention is currently required from: plaisthos=2E
-
-Hello plaisthos,
-
-I'd l=
-ike you to do a code review=2E
-Please visit
-
-    http://gerrit=2Eopenvpn=2E=
-net/c/openvpn/+/1705?usp=3Demail
-
-to review the following change=2E
-
-
-Chang=
-e subject: dco_linux: allow passing KEEPALIVE_TIMEOUT without KEEPALIVE_INT=
-ERVAL
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
-
-dco_lin=
-ux: allow passing KEEPALIVE_TIMEOUT without KEEPALIVE_INTERVAL
-
-Depends on:=
- https://github=2Ecom/OpenVPN/ovpn-net-next/commit/67f453e3146a646ef5f811e5=
-a85c610537d80521
-
-Closes: https://github=2Ecom/OpenVPN/openvpn/issues/911
-
-=
-Change-Id: Ib56fb53ec1c0c30c9aecbd0ca440de2affad04b5
-Signed-off-by: Marco B=
-affo <marco@mandelbit=2Ecom>
+Signed-off-by: Ralf Lici <ralf@mandelbit.com>
 ---
-M src/openvpn/ssl=2Ec
-1 file changed, 3 in=
-sertions(+), 3 deletions(-)
+ include/net/rtnetlink.h | 2 ++
+ net/core/rtnetlink.c    | 1 +
+ 2 files changed, 3 insertions(+)
 
-
-
-  git pull ssh://gerrit=2Eopenvpn=2Enet:2941=
-8/openvpn refs/changes/05/1705/1
-
-diff --git a/src/openvpn/ssl=2Ec b/src/op=
-envpn/ssl=2Ec
-index d332359c=2E=2E0998bd6 100644
---- a/src/openvpn/ssl=2Ec
-=
-+++ b/src/openvpn/ssl=2Ec
-@@ -1623,9 +1623,9 @@
- 
-     if (dco_enabled(opti=
-ons))
-     {
--        /* dco_set_peer() must be called if either keepalive =
-or
--         * mssfix are set to update in-kernel config */
--        if (op=
-tions->ping_send_timeout || frame->mss_fix)
-+        /* dco_set_peer() must=
- be called if either keepalive, ping, ping-restart,
-+         * ping-exit o=
-r mssfix are set to update in-kernel config */
-+        if (options->ping_s=
-end_timeout || options->ping_rec_timeout || frame->mss_fix)
-         {
-    =
-         int ret =3D dco_set_peer(dco, multi->dco_peer_id, options->ping_se=
-nd_timeout,
-                                    options->ping_rec_timeout, =
-frame->mss_fix);
-
+diff --git a/include/net/rtnetlink.h b/include/net/rtnetlink.h
+index ec65a8cebb99..d6844c5593e8 100644
+--- a/include/net/rtnetlink.h
++++ b/include/net/rtnetlink.h
+@@ -75,6 +75,7 @@ static inline int rtnl_msg_family(const struct nlmsghdr *nlh)
+  * @src_net: Source netns of rtnetlink socket
+  * @link_net: Link netns by IFLA_LINK_NETNSID, NULL if not specified
+  * @peer_net: Peer netns
++ * @portid: Netlink port ID of the message sender
+  * @tb: IFLA_* attributes
+  * @data: IFLA_INFO_DATA attributes
+  */
+@@ -82,6 +83,7 @@ struct rtnl_newlink_params {
+ 	struct net *src_net;
+ 	struct net *link_net;
+ 	struct net *peer_net;
++	u32 portid;
+ 	struct nlattr **tb;
+ 	struct nlattr **data;
+ };
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 6a5e9ace55a0..ed4918a1fc03 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -3846,6 +3846,7 @@ static int rtnl_newlink_create(struct sk_buff *skb, struct ifinfomsg *ifm,
+ 		.src_net = sock_net(skb->sk),
+ 		.link_net = link_net,
+ 		.peer_net = peer_net,
++		.portid = NETLINK_CB(skb).portid,
+ 		.tb = tb,
+ 		.data = data,
+ 	};
 -- 
-To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvp=
-n/+/1705?usp=3Demail
-To unsubscribe, or for help writing mail filters, visi=
-t http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
-
-Gerrit-MessageType: n=
-ewchange
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ib=
-56fb53ec1c0c30c9aecbd0ca440de2affad04b5
-Gerrit-Change-Number: 1705
-Gerrit-P=
-atchSet: 1
-Gerrit-Owner: mrbff <marco@mandelbit=2Ecom>
-Gerrit-Reviewer: pla=
-isthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-CC: openvpn-devel <openvpn-devel=
-@lists=2Esourceforge=2Enet>
-Gerrit-Attention: plaisthos <arne-openvpn@rfc25=
-49=2Eorg>
-
---l2t8n2RHvBs=
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos=2E </p>
-<p>mrbff would like plaisthos to <s=
-trong>review</strong> this change=2E
-</p><p><a href=3D"http://gerrit=2Eopen=
-vpn=2Enet/c/openvpn/+/1705?usp=3Demail">View Change</a></p><pre class=3D"bl=
-ocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">dc=
-o_linux: allow passing KEEPALIVE_TIMEOUT without KEEPALIVE_INTERVAL<br><br>=
-Depends on: https://github=2Ecom/OpenVPN/ovpn-net-next/commit/67f453e3146a6=
-46ef5f811e5a85c610537d80521<br><br>Closes: https://github=2Ecom/OpenVPN/ope=
-nvpn/issues/911<br><br>Change-Id: Ib56fb53ec1c0c30c9aecbd0ca440de2affad04b5=
-<br>Signed-off-by: Marco Baffo &lt;marco@mandelbit=2Ecom&gt;<br>---<br>M sr=
-c/openvpn/ssl=2Ec<br>1 file changed, 3 insertions(+), 3 deletions(-)<br><br=
-></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; whi=
-te-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn re=
-fs/changes/05/1705/1</pre><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;"><span>diff --git a/src/openvpn/ssl=2Ec b/src/openvpn=
-/ssl=2Ec</span><br><span>index d332359c=2E=2E0998bd6 100644</span><br><span=
->--- a/src/openvpn/ssl=2Ec</span><br><span>+++ b/src/openvpn/ssl=2Ec</span>=
-<br><span>@@ -1623,9 +1623,9 @@</span><br><span> </span><br><span>     if (=
-dco_enabled(options))</span><br><span>     {</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-        /* dco_set_peer() must be called if either k=
-eepalive or</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         *=
- mssfix are set to update in-kernel config */</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-        if (options-&gt;ping_send_timeout || frame-=
-&gt;mss_fix)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- /* dco_set_peer() must be called if either keepalive, ping, ping-restart,<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+         * ping-exit=
- or mssfix are set to update in-kernel config */</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        if (options-&gt;ping_send_timeout || o=
-ptions-&gt;ping_rec_timeout || frame-&gt;mss_fix)</span><br><span>         =
-{</span><br><span>             int ret =3D dco_set_peer(dco, multi-&gt;dco_=
-peer_id, options-&gt;ping_send_timeout,</span><br><span>                   =
-                 options-&gt;ping_rec_timeout, frame-&gt;mss_fix);</span><b=
-r><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit=2Eopenv=
-pn=2Enet/c/openvpn/+/1705?usp=3Demail">change 1705</a>=2E To unsubscribe, o=
-r for help writing mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=
-=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"=
-http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemty=
-pe=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http:/=
-/gerrit=2Eopenvpn=2Enet/c/openvpn/+/1705?usp=3Demail"/><meta itemprop=3D"na=
-me" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Ger=
-rit-MessageType: newchange </div>
-<div style=3D"display:none"> Gerrit-Proje=
-ct: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div=
->
-<div style=3D"display:none"> Gerrit-Change-Id: Ib56fb53ec1c0c30c9aecbd0ca=
-440de2affad04b5 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1=
-705 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div styl=
-e=3D"display:none"> Gerrit-Owner: mrbff &lt;marco@mandelbit=2Ecom&gt; </div=
->
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@=
-rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-de=
-vel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
-<div style=3D"di=
-splay:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt;=
- </div>
-
-</body></html>
---l2t8n2RHvBs=--
+2.54.0
 
 
---===============1773531910224572690==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============1773531910224572690==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
---===============1773531910224572690==--
-
