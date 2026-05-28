@@ -4,37 +4,37 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 95618CD5BD5
-	for <openvpn-devel@archiver.kernel.org>; Thu, 28 May 2026 17:31:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C9331CD4F54
+	for <openvpn-devel@archiver.kernel.org>; Thu, 28 May 2026 18:50:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:Cc:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:In-Reply-To:MIME-Version:References:Message-ID:To:From:Date:Sender:
 	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
 	:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=L+7rbol04LOa+AN0/pZAY2PrzacNjaKMViPRBwLeFPI=; b=M8EsjCFFDUEXnv6dQbdMm17s/B
-	SFIDH3UoY7wMlSYD1DLrJ1JyB6ZvHrG6L5tdu7XlOfoxUHgNGpBM2MFYr7zUaAg5YruI8ORYAw5MO
-	I8MmlvCYA1XKN/AHlJ0i7MrMSg8K7w0h2sErN001bx+XtUwbdvD1R/v0E5dVFDKktBew=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=Mli7ysmyI2OfAU9pvqqjANu4pO7TzKCydIzYBkkmtY0=; b=b80gSv+4kma0DiVNuhkG3Y/cKL
+	fdt4X1BwXmVwoHpxv5LJs8C1XGEuDq94njRyaTZmnGHXSs8higvQS8KYBu+zdumNcXGUCRksI6fJ7
+	9DbOHcdGWDDyq8H2198/8xkBcrnGwyuDjahsTx++SIYe9ZlSfxg1UdjS3meS7F8LWE9Q=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wSeZk-0002BZ-JL;
-	Thu, 28 May 2026 17:31:21 +0000
+	id 1wSfnw-0006x9-Pi;
+	Thu, 28 May 2026 18:50:04 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <sd@queasysnail.net>) id 1wSeZi-0002BQ-04
+ (envelope-from <sd@queasysnail.net>) id 1wSfnu-0006wz-Lo
  for openvpn-devel@lists.sourceforge.net;
- Thu, 28 May 2026 17:31:19 +0000
+ Thu, 28 May 2026 18:50:03 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=In-Reply-To:Content-Type:MIME-Version:References:
  Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=8CMBR7/6oepI5C3keyozqOS7X99qRY/U6Cbd4qstMv8=; b=PWEkFicyNn2Fc4kp+aBJWobIye
- Hq5k6+5h7Dh6IyYrfNKKqwiKUndY7p0CwMX8ICdaUT3jGzf61pCZt+t+3L/x2QluZKtwAC5CQzDgz
- bUDSMNKzzWSzNiutPtdV8CAPIGzbLAZibhQJLDciqzgDTB6lAZOKb/+7+qWo5YVbLOAs=;
+ bh=DOOxEZ1SBaqmMtL6KJZIbaKJqB6H1Q/oynk5CXCATEw=; b=hKUN23YR/VwWNzLfllQVyeIKcP
+ 1x1UutWYjcg2f4mNJPRJ44uB2tjwLqOuEsbvjvCYfmm94n32AwUvXHSR59OZH5CBw+Ad8MXKD1hIO
+ 3JJIXi7OnOdEsfNYM7RKpdtKAlKVuo0ClUQCZTTmdTXgKitVwJguUGpU0xiocpLGBn7Q=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To
@@ -42,76 +42,75 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=8CMBR7/6oepI5C3keyozqOS7X99qRY/U6Cbd4qstMv8=; b=XTnTxHlw3XQEK+dAz1lbqh28Bm
- LBRfdpimvJ/5LsYFCet/hba7vq0Vd1ymwdwhah2oEEtCyVSgEb1KQp0fx77QBldMThPnjFdxn1/X8
- O6jNXpmJfRw02RAJmcln4h6ETzlSYP8IFEwxkx5U9W9U6XgjzJwWM6/pbNqOUf8BGFFI=;
-Received: from fout-a3-smtp.messagingengine.com ([103.168.172.146])
+ bh=DOOxEZ1SBaqmMtL6KJZIbaKJqB6H1Q/oynk5CXCATEw=; b=YaRNcb+hHNkLuJIcdtSsAQKEuU
+ +YoASyz44cIC6XGGu/bhWp3s03naNKcK9w6CYQOOXmJr5vs+B0u2hiaKhmphWKk9tjwnKyBEyYk0z
+ VPZ9FUQw+wwF0smZVUzzOyVdh/sIzgIoYw2Dmfw5M98TZ9PwmHB0TCzX8rkoKqp4Q3iU=;
+Received: from fhigh-b6-smtp.messagingengine.com ([202.12.124.157])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wSeZg-00050o-8I for openvpn-devel@lists.sourceforge.net;
- Thu, 28 May 2026 17:31:18 +0000
-Received: from phl-compute-02.internal (phl-compute-02.internal [10.202.2.42])
- by mailfout.phl.internal (Postfix) with ESMTP id DCFB8EC0104;
- Thu, 28 May 2026 13:15:27 -0400 (EDT)
+ id 1wSfnq-0005cX-IM for openvpn-devel@lists.sourceforge.net;
+ Thu, 28 May 2026 18:50:01 +0000
+Received: from phl-compute-05.internal (phl-compute-05.internal [10.202.2.45])
+ by mailfhigh.stl.internal (Postfix) with ESMTP id E415F7A00E7;
+ Thu, 28 May 2026 14:24:40 -0400 (EDT)
 Received: from phl-frontend-03 ([10.202.2.162])
- by phl-compute-02.internal (MEProxy); Thu, 28 May 2026 13:15:27 -0400
+ by phl-compute-05.internal (MEProxy); Thu, 28 May 2026 14:24:41 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=queasysnail.net;
  h=cc:cc:content-type:content-type:date:date:from:from
  :in-reply-to:in-reply-to:message-id:mime-version:references
- :reply-to:subject:subject:to:to; s=fm1; t=1779988527; x=
- 1780074927; bh=8CMBR7/6oepI5C3keyozqOS7X99qRY/U6Cbd4qstMv8=; b=S
- MTqHix2+0u+uYjY1xNFlFD/isLX5F3yXEBrWCAjPYRYJuELuN58oXhCaWEOlpU6J
- QDG3+YPulS9b1/EAcy14b4T5Am8CLk74+uMIloPLdHwfMigPDhEzZ4K43ekYLaoi
- UA3JYi+7s/o3pyDOzIm7ZrpKZnDTsmx1NCvtf683iw5E0NfjS1UqGGgAJzzL0EUc
- 91Ph5r+nr63Uz90FqUhW/JeDv61OkPU6005Wobc2Aaa+M668nUmIuMTF3/gGNgi7
- V6XwQhDbCxtg4uO5vm6X+lNhY2Npb4CGQIUPKKDkxbYzjtbOs/RPGwVisw+DOTj2
- 0i8+tQX1PqeDeeJ4HQBFQ==
+ :reply-to:subject:subject:to:to; s=fm1; t=1779992680; x=
+ 1780079080; bh=DOOxEZ1SBaqmMtL6KJZIbaKJqB6H1Q/oynk5CXCATEw=; b=M
+ MRAPaQCCZS2x8v4kXugfDcx8t1zFgFfJ6g8o5dW0nTAfTaFWhFaltcHK8o7ET8ib
+ w+HfKBkkDPTeQzehpLkBzNTadQ6/Tsi4jqPvudvjXngut4mc9Qxnd/qqSiMCtALS
+ tKBcSQNO8P2KeawfMY8jYIRSeXgJfJFQaV3VvmGfR0gIOP/BfOJea1xk5a/C69iK
+ GDQYoyWnSnh0g39V3mPNOuCoB4MRJd4+fwy+XR63jlOfn7B+8bxO69KJPp7CK+eB
+ 5m8/oPN0khu/n0jIGVOlqgdmb3Qyj/Rke1Y8ydX8cfiB5Y0MXv7mGI0p6ysf4W1q
+ A3b1iRpBzQ/aQiYPy8Ccw==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
  messagingengine.com; h=cc:cc:content-type:content-type:date:date
  :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
  :message-id:mime-version:references:reply-to:subject:subject:to
  :to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
- 1779988527; x=1780074927; bh=8CMBR7/6oepI5C3keyozqOS7X99qRY/U6Cb
- d4qstMv8=; b=Dds3YSXZ/XrEcLj+GDmPYA24yFoaj7JOVXdn/KjvNklOj59G0gx
- jfwAtIjYsRLkKqvSN7cXyubghrCtGAIkDRAGi34SfjV1mLmupGSpKP3pJtOtJmn2
- Ls0lY7jyWYTypYxEiLaJpwxjt2mzWHSUHabq/ctnVJU2izLLrggO96HlvZ0Eem6A
- cnrJfefXd6f1Y/neLKSImfvrTOWyfGJPfUaIRvHSHSfs0QUPr4XQhiXo2e1YtVj3
- WrzDGPhJsTK8ggcj8va6BMFOSVcf6hFeDRFmXe3snsmSlrkKEUrsI2M4fz+TC1YP
- /9Epb4bfo4pyOkElQyI6XN+ZxsVXB805KBA==
-X-ME-Sender: <xms:L3gYakFO1uYPJ-FEG0T5RE0qd71UP_WlbuBY7i5buPl8QVwrlhUHoA>
- <xme:L3gYajVXDS4j_aOkWEjGUlVyDRkFIPx7yh188GE2k0LZ7gjpPOUSAEQ6U4Ahcfy2A
- YaLE8b7fpAqRUz-6QzlKhKFJwvCXRcI4JKeHPrmArQNM3xeP3ukxw>
-X-ME-Received: <xmr:L3gYary1LCdq1knQ4QQH3dDUMPZ1tssQow5Z7HaWrWIe6umruB2mFtYcT2VMYS-JJxE27xAtqfjnaQxrl69oIe4>
-X-ME-Proxy-Cause: dmFkZTE75QTxmi5IolPxbT8mTZNXmadhMFIlnvqQlaNehciBjRCyljQXbzvHFbNilbeJcc
- ZnZrQycVkEYfYnNHU9PA+B/o1hFVpfsxzJjm7/CVX2p6rgjbERubwZupjDeHHiAB0xoau1
- QwLMwxVRQ9qU79DyY5N7ahJWo34hNOV6F6XeJ+cWr1Mkroas/5xHEnBrHctzj9m1LRM+X8
- rgqj0IU3Z1WFf7R2M8gUi0JQEtMdXUFTpIuLtsceXiuUlzNfe8Gxvrp9YVEYcQMdu01229
- 2T7qT43AURYWik5Fs65gVZQ9+64KF6aSg+Jj+9oGHQ3JljwNOY4Mu+zmnPeE+kbaXcr8m8
- +JlA3WNkiem9a07yGn3in3Aie8TgGFZzxuwEPDmXbQn+HKfj4yw+xY2xRlFsCKVm7saobT
- SmNNpp5bwk7uJl9qnz7ORoM3Ex9VAKsI/idueDf822mRe9tgPkBZ+Wcym2JMjrTikGleec
- Nbe8q8CAsU50TqdFt4imp8yN50/AGIQhV0y3cJWOEfGNGdb2TUT5jomQ3mucdjWW0azBP1
- fw7ccWyHu+tmXEWQpfXsuWjC6c4sa48q+yEIrlISMAWAudGeSTCpEc9Tl+FArvBjMtpojI
- PNvk68dKbROPzfpT9wN1OJwoZn7ehrE7cPRipucW3XM/4XtfvcW9HQyxnPVw
-X-ME-Proxy: <xmx:L3gYahOSepJoGz3uvO0sAV8aadIOGlvvgkmvix2fi-jxDkJtnbyJ1Q>
- <xmx:L3gYas7Bt4pownYvwRILtD4YjGzmI6GFTZd6Qi0VWkH6IOEsnJrWkA>
- <xmx:L3gYaiOE3BMjGXNlbMUCiKPlsqhpbPflTf-RSRKpUjebitPqGDIX_Q>
- <xmx:L3gYaqlndJkvga8ysNpjYlX1X8Tim0MCBcwUnJFbfCtE2-7hb7C4Kg>
- <xmx:L3gYahoJiVrnzLUnnT_NxvfW5D_qjgYkeUz-b5kR7XnZUwb7zYBWp-1l>
+ 1779992680; x=1780079080; bh=DOOxEZ1SBaqmMtL6KJZIbaKJqB6H1Q/oynk
+ 5CXCATEw=; b=LmdCUGOabTJ+6VT3k4eXKBgMLQDiqKsuqxDdkFnB9dwZo/En1rC
+ q9nWonajdHnJGJQ5i2jTctMyQvdgMRMFAhByOcs3K7pqgxJykTUbALOxhY/+qP52
+ 6ibgaeoh5sIg7JkHQAjCE92wdHBJJCqGneMxjC2m/DkYWonMYzzK4sDsiaRSTqFc
+ Y3MGXkbv/S1KWUV01n3RvVvJauoXYl4oa8TecXrbIvWs7H3CW+rRCm6kkfaFTfpH
+ aMH+AbHCklGvzRWaTHEkLoc8Q6J/zXF/wPe0E8x+RL377v9yRe7nipk/w3Ua5y6J
+ hKk2gDNkxIn6tbmbW/xxwtIy48RZSFfnPaQ==
+X-ME-Sender: <xms:aIgYaoGWC2IrwzrOHr_QlgSgzSYQ5ZRl1-30ql7p4e9ayVRofgDc8w>
+ <xme:aIgYaozy5HZ6_JnkE9sYYNRzYTMJHRJ9M5k7DF5D7KCsIRJRIXc2NL6t4WuEOcsjG
+ VfehgP0IdwsA-9WSn8xvkOBVctt0Svh6cAzlmucUEbieeSYW8cWEno>
+X-ME-Received: <xmr:aIgYavgV84Y3CAdjg4pbg1EfR1ts6JRz38MPucV7omN3atlIdI40QIESCppix9hXpVESdCKkbAXiq6ke11afN6s>
+X-ME-Proxy-Cause: dmFkZTFPsS8Qe9KOGUQfS1JXEx0dR1Qk/cCOHFXntoKfR9xdfp58E1hY/6/f++gybiLetf
+ Di6g+2kok45uGrveHMicVmezAHZEO8WmV5Rz+xCFuU+yfjU0rBp1iJ4lhhmWyCY5q5gE4u
+ vz4TT7Au4X/I2IVsmHD6gkpfpDsuQ/XmD3kPHMIDMhZGPWWEmnZYavMiE6lRGeih4Xz3M5
+ Ic7Jglfl4CizSib7/S4Cj41mJvwCtsjpC+nXQqDj540mSTWC8HvANC5amvpE5/6VYgP5Xd
+ oHqYwDBSU5X+/R7lkDXhduDbqvWVQtmAurvc9n3E7mF6TbTxSwSSgx3Lk66KSAbGVAxkla
+ QWwZ+EX8RUrNkO8cZJKHhg5B8qlyyCc/2ErBorb7NVzQAyMxLQYG32puVimRC36i62uFwu
+ qk/ljGtaMtivX0n35AHsWwM77WR/gFWtyuKWOQzHpfRxkG9teB56rc2iy5LtAqpsuRi08t
+ rWS2F/mKM4VeeqLGS2/7AcjOOGsAxNxoDxtPSaWMG/4AY1CiOj9uLj+ijlLQefhDFfIc8P
+ Ses9u/toGRh7kARvuSaedrD/zvsA0dhdxogXf1REmfU1kDAYGFJtQbqTIP+oCV+WMDCr8E
+ 1aKUBZQQrsi1cd3nSQ1/t0G6ZOES6u4LWxyy9wDUCKF/1b57OMkgjj7ZflLA
+X-ME-Proxy: <xmx:aIgYajyupxS39Lst2jnPvy3AzfJhGBW2uxMWMEMtaOwHHHq_ojjoeQ>
+ <xmx:aIgYaiKToIN4PAfJCb18lKD-M3GULI-nINHWmiYtaLN-HX2b2Swkng>
+ <xmx:aIgYaqSyeHntusE6GkrmnIHtkquHoW-aM_blLz-wocaZtI--EmkMnQ>
+ <xmx:aIgYaqpx5n0DjbUg9Nri1XcKxvGe7d6OaeXF-rtD3IyE_UrntWAiqQ>
+ <xmx:aIgYamRizwbK2e-dev0zgjtXrmzITS_nPlknm6ZsG3h1XhYgu0khrr1t>
 Feedback-ID: i934648bf:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 28 May 2026 13:15:26 -0400 (EDT)
-Date: Thu, 28 May 2026 19:15:24 +0200
+ 28 May 2026 14:24:39 -0400 (EDT)
+Date: Thu, 28 May 2026 20:24:37 +0200
 From: Sabrina Dubroca <sd@queasysnail.net>
-To: Ralf Lici <ralf@mandelbit.com>
-Message-ID: <ahh4LBUUkQQLCGtI@krikkit>
-References: <20260526124544.425791-1-ralf@mandelbit.com>
- <20260526124544.425791-3-ralf@mandelbit.com>
+To: Antonio Quartulli <a@unstable.cc>
+Message-ID: <ahiIZX6iG6HjnsiS@krikkit>
+References: <20260526231850.2511369-1-a@unstable.cc>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20260526124544.425791-3-ralf@mandelbit.com>
-X-Headers-End: 1wSeZg-00050o-8I
-Subject: Re: [Openvpn-devel] [PATCH ovpn net 3/4] ovpn: reject UDP remotes
- incompatible with socket family
+In-Reply-To: <20260526231850.2511369-1-a@unstable.cc>
+X-Headers-End: 1wSfnq-0005cX-IM
+Subject: Re: [Openvpn-devel] [PATCH ovpn net 1/9] ovpn: skip rehash for
+ peers already removed from by_id
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -123,38 +122,73 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <antonio@openvpn.net>,
+ openvpn-devel@lists.sourceforge.net
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-Hi Ralf,
-
-2026-05-26, 14:45:40 +0200, Ralf Lici wrote:
-> ovpn accepts a userspace-provided socket and a peer remote endpoint
-> through netlink. For UDP peers, the remote endpoint family selects the
-> transmit path used later by ovpn_udp_output.
+2026-05-27, 01:18:42 +0200, Antonio Quartulli wrote:
+> From: Antonio Quartulli <antonio@openvpn.net>
 > 
-> An IPv4 UDP socket cannot be used with an IPv6 remote endpoint. If
-> accepted, the transmit path may reach IPv6 routing and UDP tunnel
-> helpers with an IPv4 socket. Similarly, an IPv6-only UDP socket cannot
-> be used with an IPv4 remote endpoint. Otherwise ovpn may enter the IPv4
-> UDP transmit path, where IPv4 routing treats the unspecified source as a
-> normal source-selection request and may choose an IPv4 source address,
-> bypassing the check that udpv6_sendmsg would normally enforce.
+> ovpn_nl_peer_set_doit() resolves the target peer via
+> ovpn_peer_get_by_id() before taking ovpn->lock. In the window between
+> the lookup (which only takes a refcount) and the subsequent
+> spin_lock_bh(&ovpn->lock), a concurrent OVPN_CMD_PEER_DEL, keepalive
+> expiry, or socket teardown can take ovpn->lock first, run
+> ovpn_peer_remove() to unhash the peer from all four tables (by_id,
+> by_vpn_addr4/6, by_transp_addr) and release the lock. set_doit then
+> acquires ovpn->lock and calls ovpn_peer_hash_vpn_ip(), which
+> re-inserts the now-removed peer back into the rehashing tables.
 > 
-> Parse the remote endpoint once in the peer new/set paths and reject UDP
-> remotes when the provided socket cannot send to them. Pass the parsed
-> endpoint into the common peer modify helper so the validation and the
-> stored endpoint use the same normalized sockaddr.
+> The same race affects the float path: ovpn_peer_endpoints_update()
+> holds only a refcount and acquires ovpn->lock very late (after async
+> AEAD decrypt and a netlink notification), then rehashes the peer
+> in the by_transp_addr table.
+> 
+> The resurrected peer becomes reachable again from the RX lookup
+> (ovpn_peer_get_by_transp_addr) and the TX VPN-IP lookup, even though
+> userspace believes it is gone. Once the data-path refcount drops the
+> peer is freed via call_rcu while the hash entries embedded in it
+> remain linked, opening a UAF window.
+> 
+> Bail out of the rehash when hash_entry_id is unhashed, mirroring
+> the sentinel already used by ovpn_peer_remove() to detect the
+> already-removed state. The check is safe under ovpn->lock, which
+> serializes every mutation of hash_entry_id, and is a no-op for the
+> add path because ovpn_peer_add_mp() inserts hash_entry_id before
+> calling ovpn_peer_hash_vpn_ip().
+> 
+> Fixes: 1d36a36f6d53 ("ovpn: implement peer add/get/dump/delete via netlink")
+> Signed-off-by: Antonio Quartulli <antonio@openvpn.net>
+> ---
+>  drivers/net/ovpn/peer.c | 17 +++++++++++++++++
+>  1 file changed, 17 insertions(+)
 
-Since this can be changed at any time by userspace, I'm not convinced
-checking it at setup time is very useful.
+This looks correct to me, just one small thing:
 
-AFAIU, the next patch fixes the actual issue. This one seems to mainly
-help userspace avoid drops in case they incorrectly set up their
-socket (as long as they do that in the "right order", ie all
-setsockopt before passing the socket to ovpn).
+> diff --git a/drivers/net/ovpn/peer.c b/drivers/net/ovpn/peer.c
+> index a09d61296425..a472ffe3016b 100644
+> --- a/drivers/net/ovpn/peer.c
+> +++ b/drivers/net/ovpn/peer.c
+> @@ -307,6 +307,16 @@ void ovpn_peer_endpoints_update(struct ovpn_peer *peer, struct sk_buff *skb)
+>  			return;
+>  		}
+>  
+> +		/* peer may have been concurrently removed between the caller's
+> +		 * initial lookup and our acquisition of ovpn->lock; skip the
+> +		 * rehash so we don't re-insert a removed peer
+> +		 */
+> +		if (unlikely(hlist_unhashed(&peer->hash_entry_id))) {
+> +			spin_unlock_bh(&peer->lock);
+> +			spin_unlock_bh(&peer->ovpn->lock);
+> +			return;
+> +		}
+
+I'd add an "unlock2" label (or "unlock_both") to unlock both (maybe
+just after the "hlist_nulls_add_head_rcu", before the existing
+unlock). The unlock/return is a bit verbose and we have it 3 times
+after this patch.
 
 -- 
 Sabrina
