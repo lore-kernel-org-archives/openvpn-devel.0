@@ -4,126 +4,127 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E67F3CD6E4A
-	for <openvpn-devel@archiver.kernel.org>; Tue,  2 Jun 2026 12:52:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 569A0CD6E4A
+	for <openvpn-devel@archiver.kernel.org>; Wed,  3 Jun 2026 13:43:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:List-Subscribe:
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Reply-To:List-Subscribe:
 	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:Subject:
-	MIME-Version:Message-ID:References:To:Date:From:Sender:
+	MIME-Version:Message-ID:References:Cc:Date:From:Sender:To:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
-	List-Owner; bh=8Wazk/D1oV29a1h7b2d1qGpm4S7lbOaKUkrQt4vYcvY=; b=GLtEmD8MZvZFMR
-	JLcfQd9FVJN8bqO/QBKI9+E58ajlJel9A58gs4gX8ocOzdWInQJ2xBYXCbYn8IxfJJAf1kQok8xi/
-	EfSR2fM5odW/56IFNES+nx0gedv5/GUU0u970lnFYL7ZPBGycF0LkcO3q6pgg3l3ZeRKBKD+acLby
-	Er4=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	List-Owner; bh=qHmw33VkQKOWqNWQDjn5yLAxOM50Wy+s6pMOde/krQ8=; b=S8+CbQi7yPeG/L
+	+0BEzb7YuaVxqCGdN1ejPV1YhqCzATdF0auhri3RlLXg5ugRFWWmhrlUpSoXUXTRoa/mmzQFxlncH
+	SS5Fd5LDfbv4cjyzWn3ZgkLO9BeWsqKaGrWdYuzFJD33zyK1TWm8P/pK5hpn3M3Uhi4is3sWivKAZ
+	TYI=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wUObV-0008TV-TR;
-	Tue, 02 Jun 2026 12:52:22 +0000
+	id 1wUlry-0005ua-Ez;
+	Wed, 03 Jun 2026 13:42:55 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wUObV-0008TP-9N
+ (envelope-from <gerrit@openvpn.net>) id 1wUlrx-0005uN-Aj
  for openvpn-devel@lists.sourceforge.net;
- Tue, 02 Jun 2026 12:52:22 +0000
+ Wed, 03 Jun 2026 13:42:54 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:
- From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From:
+ :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:Date:From
+ :Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From:
  Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=oq+hTK5deXFK8PgUdhKnbJbZSDl1nRfTBMwnd4rIgE4=; b=KWd+PJZSLCTQKTEN2HtZmBhLtI
- O+dFN05UHprDOb5dT3aKyPS4Jc15MmD+taDWF8GTnomkq4touTob6YbfMAIqnh9h55Yn9eK2MgS0x
- 5r5KlbyTut+5hGynTVsna41rGXh1jeMFJDBbpqhZUXQgrosW/Yj3wIYoIqGFk5/NJ6Ao=;
+ bh=M68Xzyta0wQtpI9BA2KFRbi5OtTPHNkeLtnWiWbebB8=; b=DLFj9p1w4J0+kEDTAWIjjo5Z67
+ C3VvocxCEgJQP+tRsDSKBM0zHpn5JZwVCNUowlfXu1eY65Ux22KEEFamySHFHYL3l0wDnhTBYuheY
+ iJp8hdzzdjH4rcvnha/V7NSS1q/rLCEOyWI0BvjCLwiQUhOoi7+xVhAx03cPuiRu8Qw0=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:From:Sender:Content-ID
+ Subject:References:List-Unsubscribe:List-Id:Cc:Date:From:Sender:To:Content-ID
  :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
  Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=oq+hTK5deXFK8PgUdhKnbJbZSDl1nRfTBMwnd4rIgE4=; b=V
- RPDAaJzq+vKxt/eh/W/MwdXlW1sgLqvRU7bzLfQe1NWrpSTckR4AkjQqvmTR50Ouohw0TeRkYSHhj
- pJ2XNvdC3tOAsyKN9XNQk8iXbYWMzLfJIvDEiHbGJbUODVMug1B+ZsxumnEclP8PHT+g7RFKJALpJ
- fHh9KO13916ivkZ8=;
-Received: from mail-wm1-f42.google.com ([209.85.128.42])
+ List-Owner:List-Archive; bh=M68Xzyta0wQtpI9BA2KFRbi5OtTPHNkeLtnWiWbebB8=; b=H
+ dIm4oX4ce2y+oQoky40nbYJ768VwCnyWwOkeDId9K7Uo0ZVWK8oC/5s5GTE9dnqcifg2bQ1ZSGTuf
+ TVRdQfrO6o3TUBxhizlCf1YeFGoD0L9GQhfPANnmEYq/n3ATvZvYX2hgr3TD6fXlvBcEtxWR2B+UJ
+ sbDcg6eZXghi+B9I=;
+Received: from mail-wm1-f43.google.com ([209.85.128.43])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wUObS-0007Vi-5v for openvpn-devel@lists.sourceforge.net;
- Tue, 02 Jun 2026 12:52:21 +0000
-Received: by mail-wm1-f42.google.com with SMTP id
- 5b1f17b1804b1-490b3e03939so3231745e9.1
+ id 1wUlrv-0002af-Hh for openvpn-devel@lists.sourceforge.net;
+ Wed, 03 Jun 2026 13:42:53 +0000
+Received: by mail-wm1-f43.google.com with SMTP id
+ 5b1f17b1804b1-490bb83a3f6so838545e9.0
  for <openvpn-devel@lists.sourceforge.net>;
- Tue, 02 Jun 2026 05:52:18 -0700 (PDT)
+ Wed, 03 Jun 2026 06:42:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1780404727; x=1781009527; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1780494165; x=1781098965; darn=lists.sourceforge.net;
  h=user-agent:content-disposition:content-transfer-encoding
  :mime-version:message-id:reply-to:subject:thread-index:references
- :list-unsubscribe:list-id:auto-submitted:cc:to:date:from:from:to:cc
+ :list-unsubscribe:list-id:auto-submitted:cc:date:from:from:to:cc
  :subject:date:message-id:reply-to;
- bh=oq+hTK5deXFK8PgUdhKnbJbZSDl1nRfTBMwnd4rIgE4=;
- b=LxS5sIea4ox9lo6gLJj17RY88DoLCB0buourAZPhMgy/GOITbyxwnpCn47rDP8/JZF
- 1ZD94JWdhJ0xxkw+ubILLDTRvr3ESiQ6fvX8W0yyLTNDPTIUONGPd9txnRWihu1vqjLP
- YrlAQwIaZomKp2uenikMktqOU8ox9rrIWJ6wMO5yxnDSBRjwqluaJcFcgshLl1pmUCE5
- xMVsraG9ALBbV9KO0QmC8ddEe753adnE48Z8iazwM9UtjZUWtQQubxKtah7ogH1FdMlj
- b5yER9FmkABDmA45xnK++V/1OMpNkDKQu/HEwkFYHb8tst7EJJsF7EHUnYkNXs3upHar
- D6qA==
+ bh=M68Xzyta0wQtpI9BA2KFRbi5OtTPHNkeLtnWiWbebB8=;
+ b=AdHUdSTJPlpJ0451NtM2LiNH7CjftPL4ajEhO79QvGGlrfES+plZFvZqhaXqupN6hq
+ 7N/vHjVSJFS/qa3SoUy7Jb8Huc+5h6Owx8tLb3GR4y6dcefjsGTMkQgPidiKFmabIxTZ
+ RG7I19+nqIsA8zSInKXhLCdg+7FFhjkVCyLLgfgVBb/1oY+2rgR5F7a8fcq6G25BeUoB
+ sXijIetWMvPqxYBa1EjpBKT3kKt3gxmOOtPe2cSBkS4R2Zj/WR0L0P/jBk//9dy9xHdg
+ yBdD/17/PwsApyjaCaIKtQchFXpXjHbVVfkpODYn5b/Tf4yZrgehiU0BVXlNjDie2p+g
+ gaDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1780404727; x=1781009527;
+ d=1e100.net; s=20251104; t=1780494165; x=1781098965;
  h=user-agent:content-disposition:content-transfer-encoding
  :mime-version:message-id:reply-to:subject:thread-index:references
- :list-unsubscribe:list-id:auto-submitted:cc:to:date:from:x-gm-gg
+ :list-unsubscribe:list-id:auto-submitted:cc:date:from:x-gm-gg
  :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
- bh=oq+hTK5deXFK8PgUdhKnbJbZSDl1nRfTBMwnd4rIgE4=;
- b=Qo41Z9Ph61zx5sOPLiqL1P6IQf4m+ViX6o6BwVSmD5MQ3aHg5hEgFRJcoNMwE9rzhF
- HRqof4JgxJ/zmtpcoLfWV/9Tgi0uWClDFVjhird6iYj10qpzGxs930IF27rlnfordcKJ
- Szsf016hdMfAxmb4z0wo4BwUlkM/wa4VcBdcgJc4dvfaSATRQpuCcWCyOFQZUay3RNVz
- JjsDgBFAHkt9BxvnD4P7wWHKNr7TfW0AqL2ZqcRR7psUsESzKacbU+qn16/fopHGY7yg
- 6YIJv1QhWUqhtNOntTGovZMG4dUK2gHrJLuVrLjjZ06aYvtYOOwtEYbe/uofWc3Sj3m9
- mfOg==
-X-Gm-Message-State: AOJu0Yz4T4D/6C41d8VL1Eq8OhmQ0UzThYeWTg+qlA/NSdUmN5bZ/13N
- +UMrzbQDd77F6js9kXGavBEY9v6PvFKO2PpqQELLY+ovZr1myuxnv0wAMT7fDXNKyG7zdnG0JUY
- SjGuPY1LWrpcggN04616HBExOaYrWzOM2QVhLqC3qZ/0XSPHbRQk30ynYLeACeRdWWyJC9vYGTu
- PcJglAdQ==
-X-Gm-Gg: Acq92OG/e4J0w6XIGU40FEYL0KW7zAGb4WIVgBoX0jPFz+D7JfKLdsY4Xg7yoPBG80O
- 62iD55+dXqRGazqQdS7VegOjNsSsLRLLRvpU8MOHFyX9EKX6rnbAZ+sbw44Jx7zqML83loqG+U9
- cRWQRus3nGwxZJ6gAbzHBbnh0JPydp7aFIbB54keVwbRPr22kTtqo5jOeSENa7CJ/gAfybUIScD
- dhyI1VbicNOdHAaleX+hLJe4XxYuxr5fDnR9xlPEZ8sCmeQnTu8j4n/VXfK6dDt+lBdNDY07ZJX
- XFTGZaiS47DHAOHA0WlMi3ts7x9LLOXz31Kzb+3khC5PdvIywt8TcycT6P6VELt9F7Wn0HbeE1Q
- gvwVinCQc9J5tdLnOo/mICS4Y5WjCBByppSz++Z7EDDhzkoHudmpD5cJ85Sv8hdrPwy4P0NRKmF
- KgkOpDeonfZlEcHmw9UVxBrq+D4Qz6HlW6ZTTyC6f8HNR2hQvCpUiZZTfm94zbe27hgNXBjCkQu
- B0gnfcc0kTapBGRgn0B0ncaXwwNB9J9btA/IOa4gOUbGoEv234W4fc5+Vm5mk25yf/sHUpq880f
- cgeeuBoQ1bDjHGBADW1nHlkg
-X-Received: by 2002:a05:600c:1546:b0:490:7df7:9190 with SMTP id
- 5b1f17b1804b1-490b0e70060mr61221535e9.8.1780404726741; 
- Tue, 02 Jun 2026 05:52:06 -0700 (PDT)
+ bh=M68Xzyta0wQtpI9BA2KFRbi5OtTPHNkeLtnWiWbebB8=;
+ b=QNLPWpqprnAHRCNp+YBpXne01Xy8MLfCHd1r2iHgQ9ZyZagUCdPvcrY/n9UD5FszSi
+ /f557nmD15NyebV+wiiazjNaIceOYQwaDjC9Yi93qEgXY8On0sW/iZW05/1gltazjxct
+ 10bmsXT6WkUEIx06yzYE4nXGPAqoNH0bpRVfS4M0Ru9siERIu4eoTs0KpMPZGN7IVJIv
+ eLdsSZdHLXCWXW3LSk4ULOKUioN5IDouAlQL0rvb8N4mBJXRqUX3OR2wugr2ZMp4q/27
+ LNTyULTxvfCGUTXNS4kB56R8tESJX1q6M9NySU7vgN+idHKkeU6kCQBYSyOzkHEJCDSD
+ GcSQ==
+X-Gm-Message-State: AOJu0YxmAd5Njm/ql+99K8xHe7mI24H8YZ0UGHteebY5jf41JvE5oEnc
+ 5N4tqVEceM2pvLn/uegSu0eOV8HvFETdyYTlpzeSrCxYrRA12trkmUoUagAHuNBgNh6NZycIyWp
+ +QAUMTkPbsnG4xXrVBq6oBvG3uoOaccUvCpZT9AQtI6nnv36BY5ekIrptcOXi3yptXgVTNw8tWb
+ nrsSp16A==
+X-Gm-Gg: Acq92OGQRFxKDzeQWwOdGWRT5t9PZSOqG+fau8SrJ7UUp9AjyU1msqSdtHbYYEL5WYH
+ xvI8S3EfOrvCeq1tm09gILzpQfMIuhi0ow0IQKMqvYTAKbAArxW48qi86eyQkxc5E2bz57U6Iv4
+ Nrbh6X1MWOVDVRS/QQR1b/NzMEfNFmehA0ywvc//bst9El+CsDmoKOEYJZKWpn12gdb1CleJw7H
+ jCBiEyRoc+v0m+BqLcTh3J5Erzc/YwksQoEAswsmx8PSmXl7Ajjio/tOrFaz3zXjSHLcddnLsym
+ 0xfEcbE7F7k422FgAfkzh8OLSaoMWIPVoCB92JBU80BxHTcd3RpCJ1WitXxCLhW0i9911e3ueLI
+ +uySqY9N41J6k7Tjgycwse74CMUkOiUuHVxTwK/U6ajEPQy9KJappL0HMOEYjhqSzglqndEz0VF
+ SC7PVOF3CBOoIuMB/3UsCT1E6LKfd6Ihlj9uKXSlJKI9b07EP4T3fIOT0gNZQr6RtDlpJftz4Ay
+ NzEstJ+Ie3ZU5YZYGxUbe9Hd05zDPxr3WwCYEKfHNWM/beXYyz8YG0b0IJPRzZuNw6Ucm/5ntVT
+ LLC70xqtLYX1UYeloIR7ZkN6
+X-Received: by 2002:a05:600c:648:b0:48e:5d91:cfe3 with SMTP id
+ 5b1f17b1804b1-490b5e79899mr32159085e9.1.1780494165291; 
+ Wed, 03 Jun 2026 06:42:45 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-490b27e0ee3sm20581465e9.3.2026.06.02.05.52.05
+ 5b1f17b1804b1-490b0e13eefsm145851535e9.2.2026.06.03.06.42.44
+ for <openvpn-devel@lists.sourceforge.net>
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 02 Jun 2026 05:52:05 -0700 (PDT)
-From: "stipa (Code Review)" <gerrit@openvpn.net>
-X-Google-Original-From: "stipa (Code Review)"
+ Wed, 03 Jun 2026 06:42:44 -0700 (PDT)
+From: "plaisthos (Code Review)" <gerrit@openvpn.net>
+X-Google-Original-From: "plaisthos (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Tue, 2 Jun 2026 12:52:05 +0000
-To: plaisthos <arne-openvpn@rfc2549.org>
+Date: Wed, 3 Jun 2026 13:42:44 +0000
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newchange
 X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: I2ce954aa5b74002be5e38d53783435736625bb2f
-X-Gerrit-Change-Number: 1706
+X-Gerrit-Change-Id: Iff8b336126a5dff9871213664b1e8585fb70d21e
+X-Gerrit-Change-Number: 1707
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1706?usp=email>
-X-Gerrit-Commit: 85c28b13f51ba2d226daacf7e6f9d5dda3cddd07
-References: <gerrit.1780404721000.I2ce954aa5b74002be5e38d53783435736625bb2f@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzgwNDA0NzIxMDAwLkkyY2U5NTRhYTViNzQwMDJiZTVlMzhkNTM3ODM0MzU3MzY2MjViYjJmQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <204ec4a06a5e5a1c031c16a307700bd6cc48dc46-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1707?usp=email>
+X-Gerrit-Commit: 282b65e1563fd55637872dda9c18cb9a5bbfe6ac
+References: <gerrit.1780494160000.Iff8b336126a5dff9871213664b1e8585fb70d21e@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzgwNDk0MTYwMDAwLklmZjhiMzM2MTI2YTVkZmY5ODcxMjEzNjY0YjFlODU4NWZiNzBkMjFlQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <5bcf930839064c0cb24c9eb9e03c56af238fc4bb-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wUObS-0007Vi-5v
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: socket: assert
- buffer length before reading prepended sockaddr family
+X-Headers-End: 1wUlrv-0002af-Hh
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Ensure pushed
+ tun-mtu is no lower than TUN_MTU_MIN
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -135,299 +136,340 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Reply-To: lstipakov@gmail.com, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============1380207668285001054=="
+Reply-To: arne-openvpn@rfc2549.org, openvpn-devel@lists.sourceforge.net
+Content-Type: multipart/mixed; boundary="===============4011353818590196564=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============1380207668285001054==
+--===============4011353818590196564==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="9mx07fS6aBI="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="TXw03fvqGpY="; charset=UTF-8
 
---9mx07fS6aBI=
+--TXw03fvqGpY=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos=2E
-
-Hello plaisthos,
-
-I'd l=
-ike you to do a code review=2E
-Please visit
-
-    http://gerrit=2Eopenvpn=2E=
-net/c/openvpn/+/1706?usp=3Demail
-
-to review the following change=2E
+plaisthos has uploaded this change for review=2E ( http://gerrit=2Eopenvpn=
+=2Enet/c/openvpn/+/1707?usp=3Demail )
 
 
-Chang=
-e subject: socket: assert buffer length before reading prepended sockaddr f=
-amily
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+Change subject: Ensure pushed tun-m=
+tu is no lower than TUN_MTU_MIN
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E
 
-socket:=
- assert buffer length before reading prepended sockaddr family
+Ensure pushed tun-mtu is no lower than TUN_MTU_MIN
 
-read_sockad=
-dr_from_packet() inspected sa->sa_family before any check
-on buf->len, so a=
- short delivery from the dco-win driver would have
-produced a garbage peer =
-address from uninitialized buffer memory=2E
-The driver always prepends a fu=
-ll sockaddr and validates the family
-before writing, so reaching any of the=
- size/family checks would mean
-something is severely wrong on the driver si=
-de - assert the three
-preconditions instead of M_FATAL'ing on them=2E
+The=
+ normal path ensure that the minimum tun mtu is set to at least
+TUN_MTU_MIN=
+=2E However, the pushed options path does not have this
+restriction=2E
 
-GitH=
-ub: https://github=2Ecom/OpenVPN/openvpn-private-issues/issues/105
+Che=
+ck that the tun-mtu is within the limits of min/max mtu
+in options=2Ec=2E T=
+his ensure that the check is also correctly done
+on the pushed variant=2E
 
-Change-=
-Id: I2ce954aa5b74002be5e38d53783435736625bb2f
-Signed-off-by: Lev Stipakov <=
-lev@openvpn=2Enet>
+=
+Also add an extra check to keep the allowed payload for icmp6 packets
+to be=
+ at least 64 bytes in the the block-ipv6 code path
+(ipv6_send_icmp_unreacha=
+ble) as extra layer of defence=2E
+
+Pushing a low mtu like 1 and also block-=
+ipv6 could trigger an
+assertion in the ipv6_send_icmp_unreachable code path=
+=2E
+
+Reported-By: Haiyang Huang <huanghaiyang83@gmail=2Ecom>
+Change-Id: Iff=
+8b336126a5dff9871213664b1e8585fb70d21e
 ---
-M src/openvpn/socket=2Ec
-1 file changed, 11 insertio=
-ns(+), 18 deletions(-)
+M src/openvpn/forward=2Ec
+M src/=
+openvpn/mtu=2Eh
+M src/openvpn/options=2Ec
+3 files changed, 20 insertions(+)=
+, 11 deletions(-)
 
 
 
-  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/ope=
-nvpn refs/changes/06/1706/1
+  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn =
+refs/changes/07/1707/1
 
-diff --git a/src/openvpn/socket=2Ec b/src/open=
-vpn/socket=2Ec
-index 624ce4f=2E=2Edf2cc9e 100644
---- a/src/openvpn/socket=
-=2Ec
-+++ b/src/openvpn/socket=2Ec
-@@ -2813,38 +2813,31 @@
- {
-     int sa_le=
-n =3D 0;
- 
-+    /* In dco-win multipeer mode the kernel driver always prepe=
-nds a full
-+     * sockaddr_in or sockaddr_in6 in front of the control-pack=
-et payload,
-+     * so the buffer must hold at least sizeof(struct sockaddr=
-_in) bytes
-+     * before we may inspect sa_family=2E */
-+    ASSERT(buf_le=
-n(buf) >=3D (int)sizeof(struct sockaddr_in));
-+
-     const struct sockaddr =
-*sa =3D (const struct sockaddr *)BPTR(buf);
-     switch (sa->sa_family)
+diff --git a/src/openvpn/forward=2Ec b/src/openvpn/=
+forward=2Ec
+index 27cfd36=2E=2Ed24f534 100644
+--- a/src/openvpn/forward=2Ec=
+
++++ b/src/openvpn/forward=2Ec
+@@ -1598,7 +1598,9 @@
+      * frame should b=
+e <=3D 1280 and have as much as possible of the original
+      * packet
    =
-  {
-         case AF_INET:
-             sa_len =3D sizeof(struct sockaddr_i=
-n);
--            if (buf_len(buf) < sa_len)
--            {
--               =
- msg(M_FATAL,
--                    "ERROR: received incoming packet with to=
-o short length of %d -- must be at least %d=2E",
--                    buf_l=
-en(buf), sa_len);
--            }
--            memcpy(dst, sa, sa_len);
--   =
-         buf_advance(buf, sa_len);
-             break;
+   */
+-    const int max_payload_size =3D min_int(MAX_ICMPV6LEN, c->c2=2Efr=
+ame=2Etun_mtu - icmpheader_len);
++    int max_payload_size =3D min_int(MAX_=
+ICMPV6LEN, c->c2=2Eframe=2Etun_mtu - icmpheader_len);
++    /* Ensure that m=
+inimum payload size is at least 64 bytes as extra safety layer */
++    max_=
+payload_size =3D max_int(max_payload_size, 64);
+     const int payload_len =
+=3D min_int(max_payload_size, BLEN(&inputipbuf));
+     const uint16_t icmp_=
+len =3D (uint16_t)(sizeof(struct openvpn_icmp6hdr) + payload_len);
  
-         case AF_I=
-NET6:
-             sa_len =3D sizeof(struct sockaddr_in6);
--            if =
-(buf_len(buf) < sa_len)
--            {
--                msg(M_FATAL,
--     =
-               "ERROR: received incoming packet with too short length of %d=
- -- must be at least %d=2E",
--                    buf_len(buf), sa_len);
-- =
-           }
--            memcpy(dst, sa, sa_len);
--            buf_advance=
-(buf, sa_len);
-+            ASSERT(buf_len(buf) >=3D sa_len);
-             =
-break;
+diff -=
+-git a/src/openvpn/mtu=2Eh b/src/openvpn/mtu=2Eh
+index ca8109c=2E=2E8f07e75=
+ 100644
+--- a/src/openvpn/mtu=2Eh
++++ b/src/openvpn/mtu=2Eh
+@@ -68,6 +68,11=
+ @@
+  */
+ #define TUN_MTU_DEFAULT 1500
  
-         default:
--            msg(M_FATAL, "ERROR: received incom=
-ing packet with invalid address family %d=2E",
--                sa->sa_fami=
-ly);
-+            ASSERT(0); /* driver validates the family before writing =
-*/
-     }
- 
-+    memcpy(dst, sa, sa_len);
-+    buf_advance(buf, sa_len);
++/**
++ * Maximum MTU we accept for=
+ MTU related options
++ */
++#define TUN_MTU_MAX 65536
 +
+ /*
+  * Minimum maxi=
+mum MTU
+  */
+diff --git a/src/openvpn/options=2Ec b/src/openvpn/options=2Ec=
+
+index 0c2866c=2E=2E128d1e5 100644
+--- a/src/openvpn/options=2Ec
++++ b/src/=
+openvpn/options=2Ec
+@@ -6409,26 +6409,28 @@
+     else if (streq(p[0], "tun-=
+mtu") && p[1] && !p[3])
+     {
+         VERIFY_PERMISSION(OPT_P_PUSH_MTU | =
+OPT_P_CONNECTION);
+-        options->ce=2Etun_mtu =3D positive_atoi(p[1], m=
+sglevel);
+-        options->ce=2Etun_mtu_defined =3D true;
+-        if (p[2=
+])
++        if (atoi_constrained(p[1], &options->ce=2Etun_mtu, "tun-mtu", T=
+UN_MTU_MIN, TUN_MTU_MAX, msglevel))
+         {
+-            options->ce=2Eo=
+cc_mtu =3D positive_atoi(p[2], msglevel);
+-        }
+-        else
+-       =
+ {
+-            options->ce=2Eocc_mtu =3D 0;
++            options->ce=2Etun=
+_mtu_defined =3D true;
++            if (p[2])
++            {
++             =
+   atoi_constrained(p[2], &options->ce=2Eocc_mtu, "tun-mtu occ-mtu", TUN_MT=
+U_MIN, TUN_MTU_MAX, msglevel);
++            }
++            else
++          =
+  {
++                options->ce=2Eocc_mtu =3D 0;
++            }
+         }=
+
+     }
+     else if (streq(p[0], "tun-mtu-max") && p[1] && !p[2])
+     {
+ =
+        VERIFY_PERMISSION(OPT_P_MTU | OPT_P_CONNECTION);
+-        atoi_cons=
+trained(p[1], &options->ce=2Etun_mtu_max, p[0], TUN_MTU_MAX_MIN, 65536, msg=
+level);
++        atoi_constrained(p[1], &options->ce=2Etun_mtu_max, p[0], T=
+UN_MTU_MAX_MIN, TUN_MTU_MAX, msglevel);
+     }
+     else if (streq(p[0], "t=
+un-mtu-extra") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_MT=
+U | OPT_P_CONNECTION);
+-        if (atoi_constrained(p[1], &options->ce=2Et=
+un_mtu_extra, p[0], 0, 65536, msglevel))
++        if (atoi_constrained(p[1]=
+, &options->ce=2Etun_mtu_extra, p[0], 0, TUN_MTU_MAX, msglevel))
+         {=
+
+             options->ce=2Etun_mtu_extra_defined =3D true;
+         }
+
+-- =
+
+To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1707?usp=3Demail
 =
-     return sa_len;
- }
- 
+To unsubscribe, or for help writing mail filters, visit http://gerrit=2Eope=
+nvpn=2Enet/settings?usp=3Demail
 
--- 
-To view, visit http://gerrit=2Eopenvpn=2Enet/=
-c/openvpn/+/1706?usp=3Demail
-To unsubscribe, or for help writing mail filte=
-rs, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
-
-Gerrit-Messag=
-eType: newchange
-Gerrit-Project: openvpn
+Gerrit-MessageType: newchange
+Gerrit-Proje=
+ct: openvpn
 Gerrit-Branch: master
-Gerrit-Chang=
-e-Id: I2ce954aa5b74002be5e38d53783435736625bb2f
-Gerrit-Change-Number: 1706
-=
+Gerrit-Change-Id: Iff8b336126a5dff9871213=
+664b1e8585fb70d21e
+Gerrit-Change-Number: 1707
 Gerrit-PatchSet: 1
-Gerrit-Owner: stipa <lstipakov@gmail=2Ecom>
-Gerrit-Revie=
-wer: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-CC: openvpn-devel <openv=
-pn-devel@lists=2Esourceforge=2Enet>
-Gerrit-Attention: plaisthos <arne-openv=
-pn@rfc2549=2Eorg>
+Gerrit-Own=
+er: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-CC: openvpn-devel <openvp=
+n-devel@lists=2Esourceforge=2Enet>
 
---9mx07fS6aBI=
+--TXw03fvqGpY=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos=2E </p>
-<p>stipa would like plaisthos to <s=
-trong>review</strong> this change=2E
-</p><p><a href=3D"http://gerrit=2Eopen=
-vpn=2Enet/c/openvpn/+/1706?usp=3Demail">View Change</a></p><pre class=3D"bl=
-ocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">so=
-cket: assert buffer length before reading prepended sockaddr family<br><br>=
-read_sockaddr_from_packet() inspected sa-&gt;sa_family before any check<br>=
-on buf-&gt;len, so a short delivery from the dco-win driver would have<br>p=
-roduced a garbage peer address from uninitialized buffer memory=2E<br>The d=
-river always prepends a full sockaddr and validates the family<br>before wr=
-iting, so reaching any of the size/family checks would mean<br>something is=
- severely wrong on the driver side - assert the three<br>preconditions inst=
-ead of M_FATAL&#39;ing on them=2E<br><br>GitHub: https://github=2Ecom/OpenV=
-PN/openvpn-private-issues/issues/105<br><br>Change-Id: I2ce954aa5b74002be5e=
-38d53783435736625bb2f<br>Signed-off-by: Lev Stipakov &lt;lev@openvpn=2Enet&=
-gt;<br>---<br>M src/openvpn/socket=2Ec<br>1 file changed, 11 insertions(+),=
- 18 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: m=
-onospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=
-=2Enet:29418/openvpn refs/changes/06/1706/1</pre><pre style=3D"font-family:=
- monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvp=
-n/socket=2Ec b/src/openvpn/socket=2Ec</span><br><span>index 624ce4f=2E=2Edf=
-2cc9e 100644</span><br><span>--- a/src/openvpn/socket=2Ec</span><br><span>+=
-++ b/src/openvpn/socket=2Ec</span><br><span>@@ -2813,38 +2813,31 @@</span><=
-br><span> {</span><br><span>     int sa_len =3D 0;</span><br><span> </span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    /* In dco-win multipee=
-r mode the kernel driver always prepends a full</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+     * sockaddr_in or sockaddr_in6 in front of =
-the control-packet payload,</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+     * so the buffer must hold at least sizeof(struct sockaddr_in) =
-bytes</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * before =
-we may inspect sa_family=2E */</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    ASSERT(buf_len(buf) &gt;=3D (int)sizeof(struct sockaddr_in))=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> =
-    const struct sockaddr *sa =3D (const struct sockaddr *)BPTR(buf);</span=
-><br><span>     switch (sa-&gt;sa_family)</span><br><span>     {</span><br>=
-<span>         case AF_INET:</span><br><span>             sa_len =3D sizeof=
-(struct sockaddr_in);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-            if (buf_len(buf) &lt; sa_len)</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-                msg(M_FATAL,</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-                    &quot;ERROR: received incoming packe=
-t with too short length of %d -- must be at least %d=2E&quot;,</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-                    buf_len(buf), =
-sa_len);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            memcpy(ds=
-t, sa, sa_len);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-      buf_advance(buf, sa_len);</span><br><span>             break;</span><=
-br><span> </span><br><span>         case AF_INET6:</span><br><span>        =
-     sa_len =3D sizeof(struct sockaddr_in6);</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-            if (buf_len(buf) &lt; sa_len)</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-                msg(M_FATAL,</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-                    &quot;ERROR: =
-received incoming packet with too short length of %d -- must be at least %d=
-=2E&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
-         buf_len(buf), sa_len);</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-            memcpy(dst, sa, sa_len);</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-            buf_advance(buf, sa_len);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            ASSERT(buf_len(buf) &gt;=3D =
-sa_len);</span><br><span>             break;</span><br><span> </span><br><s=
-pan>         default:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-            msg(M_FATAL, &quot;ERROR: received incoming packet with invalid=
- address family %d=2E&quot;,</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-                sa-&gt;sa_family);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+            ASSERT(0); /* driver validates the family=
- before writing */</span><br><span>     }</span><br><span> </span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    memcpy(dst, sa, sa_len);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    buf_advance(buf, sa_le=
-n);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
->     return sa_len;</span><br><span> }</span><br><span> </span><br><span><=
-/span><br></pre><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/=
-c/openvpn/+/1706?usp=3Demail">change 1706</a>=2E To unsubscribe, or for hel=
-p writing mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/sett=
-ings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://sche=
-ma=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:=
-//schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=2Eo=
-penvpn=2Enet/c/openvpn/+/1706?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p>plaisthos has upl=
+oaded this change for <strong>review</strong>=2E</p><p><a href=3D"http://ge=
+rrit=2Eopenvpn=2Enet/c/openvpn/+/1707?usp=3Demail">View Change</a></p><pre =
+class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pr=
+e-wrap;">Ensure pushed tun-mtu is no lower than TUN_MTU_MIN<br><br>The norm=
+al path ensure that the minimum tun mtu is set to at least<br>TUN_MTU_MIN=
+=2E However, the pushed options path does not have this<br>restriction=2E<b=
+r><br>Check that the tun-mtu is within the limits of min/max mtu<br>in opti=
+ons=2Ec=2E This ensure that the check is also correctly done<br>on the push=
+ed variant=2E<br><br>Also add an extra check to keep the allowed payload fo=
+r icmp6 packets<br>to be at least 64 bytes in the the block-ipv6 code path<=
+br>(ipv6_send_icmp_unreachable) as extra layer of defence=2E<br><br>Pushing=
+ a low mtu like 1 and also block-ipv6 could trigger an<br>assertion in the =
+ipv6_send_icmp_unreachable code path=2E<br><br>Reported-By: Haiyang Huang &=
+lt;huanghaiyang83@gmail=2Ecom&gt;<br>Change-Id: Iff8b336126a5dff9871213664b=
+1e8585fb70d21e<br>---<br>M src/openvpn/forward=2Ec<br>M src/openvpn/mtu=2Eh=
+<br>M src/openvpn/options=2Ec<br>3 files changed, 20 insertions(+), 11 dele=
+tions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace=
+,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:2=
+9418/openvpn refs/changes/07/1707/1</pre><pre style=3D"font-family: monospa=
+ce,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/forwar=
+d=2Ec b/src/openvpn/forward=2Ec</span><br><span>index 27cfd36=2E=2Ed24f534 =
+100644</span><br><span>--- a/src/openvpn/forward=2Ec</span><br><span>+++ b/=
+src/openvpn/forward=2Ec</span><br><span>@@ -1598,7 +1598,9 @@</span><br><sp=
+an>      * frame should be &lt;=3D 1280 and have as much as possible of the=
+ original</span><br><span>      * packet</span><br><span>      */</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    const int max_payload_size =
+=3D min_int(MAX_ICMPV6LEN, c-&gt;c2=2Eframe=2Etun_mtu - icmpheader_len);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    int max_payload_si=
+ze =3D min_int(MAX_ICMPV6LEN, c-&gt;c2=2Eframe=2Etun_mtu - icmpheader_len);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Ensure that =
+minimum payload size is at least 64 bytes as extra safety layer */</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    max_payload_size =3D max=
+_int(max_payload_size, 64);</span><br><span>     const int payload_len =3D =
+min_int(max_payload_size, BLEN(&amp;inputipbuf));</span><br><span>     cons=
+t uint16_t icmp_len =3D (uint16_t)(sizeof(struct openvpn_icmp6hdr) + payloa=
+d_len);</span><br><span> </span><br><span>diff --git a/src/openvpn/mtu=2Eh =
+b/src/openvpn/mtu=2Eh</span><br><span>index ca8109c=2E=2E8f07e75 100644</sp=
+an><br><span>--- a/src/openvpn/mtu=2Eh</span><br><span>+++ b/src/openvpn/mt=
+u=2Eh</span><br><span>@@ -68,6 +68,11 @@</span><br><span>  */</span><br><sp=
+an> #define TUN_MTU_DEFAULT 1500</span><br><span> </span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ * Maximum MTU we accept for MTU related options</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#define TUN_MTU_MAX 65536</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /*</span><br><span>  * =
+Minimum maximum MTU</span><br><span>  */</span><br><span>diff --git a/src/o=
+penvpn/options=2Ec b/src/openvpn/options=2Ec</span><br><span>index 0c2866c=
+=2E=2E128d1e5 100644</span><br><span>--- a/src/openvpn/options=2Ec</span><b=
+r><span>+++ b/src/openvpn/options=2Ec</span><br><span>@@ -6409,26 +6409,28 =
+@@</span><br><span>     else if (streq(p[0], &quot;tun-mtu&quot;) &amp;&amp=
+; p[1] &amp;&amp; !p[3])</span><br><span>     {</span><br><span>         VE=
+RIFY_PERMISSION(OPT_P_PUSH_MTU | OPT_P_CONNECTION);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        options-&gt;ce=2Etun_mtu =3D positi=
+ve_atoi(p[1], msglevel);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-        options-&gt;ce=2Etun_mtu_defined =3D true;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        if (p[2])</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        if (atoi_constrained(p[1], &amp;optio=
+ns-&gt;ce=2Etun_mtu, &quot;tun-mtu&quot;, TUN_MTU_MIN, TUN_MTU_MAX, msgleve=
+l))</span><br><span>         {</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-            options-&gt;ce=2Eocc_mtu =3D positive_atoi(p[2], msgle=
+vel);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        else</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-            options-&gt;ce=2Eocc_mtu =3D 0;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            options-&gt;c=
+e=2Etun_mtu_defined =3D true;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+            if (p[2])</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+                atoi_constrained(p[2], &amp;options-&gt;ce=2Eocc_mtu,=
+ &quot;tun-mtu occ-mtu&quot;, TUN_MTU_MIN, TUN_MTU_MAX, msglevel);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+            else</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                options-&gt;ce=2Eocc_mtu =
+=3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }=
+</span><br><span>         }</span><br><span>     }</span><br><span>     els=
+e if (streq(p[0], &quot;tun-mtu-max&quot;) &amp;&amp; p[1] &amp;&amp; !p[2]=
+)</span><br><span>     {</span><br><span>         VERIFY_PERMISSION(OPT_P_M=
+TU | OPT_P_CONNECTION);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-        atoi_constrained(p[1], &amp;options-&gt;ce=2Etun_mtu_max, p[0], T=
+UN_MTU_MAX_MIN, 65536, msglevel);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        atoi_constrained(p[1], &amp;options-&gt;ce=2Etun_mtu_=
+max, p[0], TUN_MTU_MAX_MIN, TUN_MTU_MAX, msglevel);</span><br><span>     }<=
+/span><br><span>     else if (streq(p[0], &quot;tun-mtu-extra&quot;) &amp;&=
+amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>        =
+ VERIFY_PERMISSION(OPT_P_MTU | OPT_P_CONNECTION);</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-        if (atoi_constrained(p[1], &amp;options=
+-&gt;ce=2Etun_mtu_extra, p[0], 0, 65536, msglevel))</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        if (atoi_constrained(p[1], &amp;o=
+ptions-&gt;ce=2Etun_mtu_extra, p[0], 0, TUN_MTU_MAX, msglevel))</span><br><=
+span>         {</span><br><span>             options-&gt;ce=2Etun_mtu_extra=
+_defined =3D true;</span><br><span>         }</span><br><span></span><br></=
+pre><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/=
+1707?usp=3Demail">change 1707</a>=2E To unsubscribe, or for help writing ma=
+il filters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3De=
+mail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/Ema=
+ilMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eo=
+rg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet=
+/c/openvpn/+/1707?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Cha=
+nge"/></div></div>
 
-<div style=3D"display:none"> Gerrit-Message=
-Type: newchange </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn=
- </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div styl=
-e=3D"display:none"> Gerrit-Change-Id: I2ce954aa5b74002be5e38d53783435736625=
-bb2f </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1706 </div>
+<div style=3D"display:none"> Gerrit-MessageType: newcha=
+nge </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div=
+ style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display=
+:none"> Gerrit-Change-Id: Iff8b336126a5dff9871213664b1e8585fb70d21e </div>
 =
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"displa=
-y:none"> Gerrit-Owner: stipa &lt;lstipakov@gmail=2Ecom&gt; </div>
-<div styl=
-e=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@rfc2549=2Eo=
-rg&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;ope=
-nvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
-<div style=3D"display:none"=
-> Gerrit-Attention: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1707 </div>
+<div style=
+=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> G=
+errit-Owner: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=
+=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourc=
+eforge=2Enet&gt; </div>
 
-</=
-body></html>
---9mx07fS6aBI=--
+</body></html>
+--TXw03fvqGpY=--
 
 
---===============1380207668285001054==
+--===============4011353818590196564==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============1380207668285001054==
+--===============4011353818590196564==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -438,5 +480,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============1380207668285001054==--
+--===============4011353818590196564==--
 
