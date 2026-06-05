@@ -4,86 +4,77 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 039A3CD6E7C
-	for <openvpn-devel@archiver.kernel.org>; Fri,  5 Jun 2026 13:14:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 12983CD8C81
+	for <openvpn-devel@archiver.kernel.org>; Fri,  5 Jun 2026 13:14:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=9whYV3I2D9sncm0YSwPmLsw37+1QF2SCrCak4Zfrrpc=; b=JC7pyrQ8d1OVVkEVazh4pCv15u
-	8VmvtyIVzPLDfgPefXA8RBRdhIYwNNu6lmzTp8T2ttGJqBNMKuqzTcpePGC0//w8WjUg2zJbkeRtS
-	ilBITElLJEtLHkOHrTcWszD+oYrpHa2Czgoo0srmgeULB4t9RJll6CP3w21R4Y43FRb0=;
+	Subject:MIME-Version:Message-ID:Date:To:From:Sender:Reply-To:Cc:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Owner;
+	bh=0x2fvMR+B7s39Ep9hyaUkEUtQaS1LBTliAylM71lrwc=; b=QxcO8Gd6A+dw2tB6KGTuLqdZI1
+	C68uZmOgFoa95Ym4lllodMSPPu1CEyXzUrPMWyPSqNt3yblol2S6yfrveajEoViDB56IN3MZG42BW
+	SBYGaOC4QTZdh8k4zTRuzmZnQ3+/HvA5Hp7yT9nKRnhFYGeW2LabO4pKNtXUZeTwdW8M=;
 Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
 	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wVUN5-0008W5-Q3;
-	Fri, 05 Jun 2026 13:14:00 +0000
+	id 1wVUN1-0008VN-8I;
+	Fri, 05 Jun 2026 13:13:56 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <ralf@mandelbit.com>) id 1wVUN4-0008Vo-0D
+ (envelope-from <ralf@mandelbit.com>) id 1wVUMx-0008Uz-Q8
  for openvpn-devel@lists.sourceforge.net;
- Fri, 05 Jun 2026 13:13:58 +0000
+ Fri, 05 Jun 2026 13:13:53 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=j9uEFeB5lXZ9wK9WAegMcuNlQwrvbaZtYgW0H+0x8PU=; b=Q3CSiP5vIulkKPILOP/NMaRumZ
- nq3LI/e/KFwYxbGCKg5UvsiNev2SqFTxSlQQ25CABZBWqHr7KAzh9zwE3GrpMeE19O6RcAfWYX5UW
- PQUdoxSRfliAsg38158Bb5+Hag5sSNvU8Pp6dTCCg6axnWspiVvF4nPmvhgyjdAT1ua4=;
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
- ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:Message-ID:
  Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=j9uEFeB5lXZ9wK9WAegMcuNlQwrvbaZtYgW0H+0x8PU=; b=CFD+GIf7DsRJpLHGzGeXHfQ+Pn
- OycjS6EJcca6q0Dc1WyVKUMp5htdbCP68UkeMLFZl5BW62Vf+fFjf4Q6duSBmj2HcK3rRzIvd1xB6
- p5m4RySnB5gpIZQrnLSwYKrSPR0CIMqBxjV92xUdAv6B8qfsCKQDTGMnq5JoHw3gTilQ=;
-Received: from mout-b-206.mailbox.org ([195.10.208.51])
+ :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=6eZ9HnErO8SQMdn4QNJxUd7AjK2FRNQoImFn8yEW9Nw=; b=S5RpIUTVPTTVz9CXsXkNJFApFY
+ zosQ4va3TkXX2OhrevtPIosBCoCiXvAu5yKLTJj53+rvycYvcLOkItKtQUDPkMRZFHursLxhkEIo/
+ 2D1QWXLTU4Bw6+o1Rm8FPXJ+L+nDt7akIrkh+qwmC6P1BARTgfS/9YSXYZ2WQiGvvgDQ=;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
+ ;
+ h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:Cc:To:From
+ :Sender:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+ References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=6eZ9HnErO8SQMdn4QNJxUd7AjK2FRNQoImFn8yEW9Nw=; b=f
+ HmYo2cP2s7GZOsi5TEGXNOS0KKNskGRpIsqd/+e9g+XhYGO/1/GzvxL7y4OZOGHALUygg1fD1LT+a
+ n+qAdh1sReQLWNvMpcxsMXAFBPeaVf/zuwxQiOonVw2ybBIASx7ZYW1RJrxnAtZmxFwfk8ZDvVc0r
+ JY+M4hDdHcpb5828=;
+Received: from mout-b-107.mailbox.org ([195.10.208.47])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wVUN1-0006td-IL for openvpn-devel@lists.sourceforge.net;
- Fri, 05 Jun 2026 13:13:58 +0000
-Received: from smtp2.mailbox.org (smtp2.mailbox.org
- [IPv6:2001:67c:2050:b231:465::2])
+ id 1wVUMx-0006tV-C5 for openvpn-devel@lists.sourceforge.net;
+ Fri, 05 Jun 2026 13:13:52 +0000
+Received: from smtp2.mailbox.org (smtp2.mailbox.org [10.196.197.2])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
  (No client certificate requested)
- by mout-b-206.mailbox.org (Postfix) with ESMTPS id 4gX21z2TrRz9xds;
- Fri,  5 Jun 2026 15:13:43 +0200 (CEST)
+ by mout-b-107.mailbox.org (Postfix) with ESMTPS id 4gX21t2xQ9zDs54;
+ Fri,  5 Jun 2026 15:13:38 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
- s=MBO0001; t=1780665223;
+ s=MBO0001; t=1780665218;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=j9uEFeB5lXZ9wK9WAegMcuNlQwrvbaZtYgW0H+0x8PU=;
- b=eErxqmZwNlJmNeuEu5JXGmso3k2v5MQ7jj7W6vLYYOmZbx+jtgzbkrY6GOS/s6iexn+N+Y
- fQFabZKiSTEbf7ekU9spBluGf+tgoZnPWilJ85ec7QtXYn1ETRnp70ot8ATfLyqIWQ1S9K
- JjxFatupfqrxJjmdat4e988hN4fyICQ+jhXwyc70tsXOlcMOcmg/3yMrY0r/F3lfxmaxQz
- M+K2WDPrDEsddihl/9Ib5doheT2gxytr+neX3htz2akFvIcB0qRCzi/sd2rPeC3hoOewwX
- jk/mkKusrSHfiOJl2HlhzTWToLiA8hy9tvYAp2mDrJjeeZcZZb9bo8ueDgr7OA==
-Authentication-Results: outgoing_mbo_mout; dkim=none;
- spf=pass (outgoing_mbo_mout: domain of ralf@mandelbit.com designates
- 2001:67c:2050:b231:465::2 as permitted sender)
- smtp.mailfrom=ralf@mandelbit.com
+ content-transfer-encoding:content-transfer-encoding;
+ bh=6eZ9HnErO8SQMdn4QNJxUd7AjK2FRNQoImFn8yEW9Nw=;
+ b=zYIp1mBtTgZlq06Q7BaSeplu7ec29RKC63H35DXB8NzXb4a3wniHGqLWtbYJo9eukyrfDC
+ zkQWpggJQcMDgWUtkqurU9/NJTklGLYwe5lTec3dH0oBdOTyXu0sjUEQpYv6ziB33zEkzK
+ 6DrxzYL4nRa6HJPuElfy0lpLNWx2g41a6mucyKbmU3xVj81F9KQXJbjZ/lXE60xpL88y3K
+ tyaj3xD0Iy6SeCkeY6Ei1Tdqqt1RdnH1vqJeS3tevFxx2aS3XbBYPpGHmN+0zpTE38G1Of
+ P+8oh0hi7eRSR9Ph9mUQRo0K/ZYz2P2++Y/zyORiYrwL8LnySh3BcZWl7Xnduw==
 From: Ralf Lici <ralf@mandelbit.com>
 To: openvpn-devel@lists.sourceforge.net
-Date: Fri,  5 Jun 2026 15:13:10 +0200
-Message-ID: <b871663007ed51e7a64a94ed2a85aca6ba9aaa17.1780663425.git.ralf@mandelbit.com>
-In-Reply-To: <cover.1780663425.git.ralf@mandelbit.com>
-References: <cover.1780663425.git.ralf@mandelbit.com>
+Date: Fri,  5 Jun 2026 15:13:07 +0200
+Message-ID: <cover.1780663425.git.ralf@mandelbit.com>
 MIME-Version: 1.0
-X-Rspamd-Queue-Id: 4gX21z2TrRz9xds
-X-Headers-End: 1wVUN1-0006td-IL
-Subject: [Openvpn-devel] [PATCH ovpn net v2 3/4] ovpn: reject UDP remotes
- incompatible with socket family
+X-Headers-End: 1wVUMx-0006tV-C5
+Subject: [Openvpn-devel] [PATCH ovpn net v2 0/4] ovpn: harden UDP TX against
+ mutable socket state
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -99,256 +90,61 @@ Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-ovpn accepts a userspace-provided socket and a peer remote endpoint
-through netlink. For UDP peers, the remote endpoint family selects the
-transmit path used later by ovpn_udp_output.
+Hi,
 
-Reject UDP peer remotes that are incompatible with the socket state when
-they are configured through netlink. An IPv4 UDP socket cannot be used
-with an IPv6 remote endpoint, and an IPv6-only UDP socket cannot send to
-an IPv4 remote endpoint. Reporting this at setup time gives userspace a
-clear extack and avoids installing a peer that would immediately be
-unable to transmit.
+v1 added setup-time validation for userspace-provided sockets and TX-time
+checks for socket state that can still change after the socket is attached
+to ovpn.
 
-This validation only covers the socket state visible while the netlink
-request is handled. The socket remains owned by userspace after it is
-attached to ovpn, so userspace can later change properties such as
-IPV6_V6ONLY or IPV6_ADDRFORM. The transmit path therefore still has to
-re-check socket/remote compatibility before sending.
+In v1, ovpn_udp_send_skb consumed the error internally, so
+ovpn_encrypt_post could still update link TX stats and last_sent for a
+packet that was dropped before transmit. v2 propagates those errors back
+to the common TX completion path, so TX-side checks are handled as local
+transmit failures, not as successful handoff to the UDP stack.
 
-Parse the remote endpoint once in the peer new/set paths and reject UDP
-remotes when the provided socket cannot send to them. Pass the parsed
-endpoint into the common peer modify helper so the validation and the
-stored endpoint use the same normalized sockaddr.
+v2 also makes socket/remote address-family mismatches fatal for the peer.
+Those mismatches mean the peer can no longer transmit with the socket it
+was configured with, so keeping it around would just keep dropping packets.
+The peer deletion is deferred through a common transport-error work item,
+which is also reused by the TCP transport-error paths.
 
-Fixes: 1d36a36f6d53 ("ovpn: implement peer add/get/dump/delete via netlink")
-Signed-off-by: Ralf Lici <ralf@mandelbit.com>
+The source-port-zero case is kept as drop+warning for now. It is still a
+broken socket state for ovpn TX, but it is not treated as a peer-fatal
+address-family mismatch in this series.
+
+Thanks,
+Ralf
+
 ---
-Changes since v1 https://lore.kernel.org/openvpn-devel/20260526124544.425791-3-ralf@mandelbit.com/
-- Reword the commit message to clarify that netlink validation is only
-  setup-time diagnostics.
-- Use a single READ_ONCE snapshot of sk->sk_family in
-  ovpn_nl_udp_remote_compatible.
+Changes since v1 https://lore.kernel.org/openvpn-devel/20260526124544.425791-1-ralf@mandelbit.com/T/
+- Add ratelimited warnings for TX-side socket state failures.
+- Propagate local UDP TX errors to ovpn_encrypt_post, so local drops do
+  not update link TX stats or last_sent.
+- Delete peers with TRANSPORT_ERROR on UDP socket/remote address-family
+  mismatches.
+- Add a common deferred transport-error deletion helper shared by TCP and
+  UDP.
+- Clarify that netlink socket/remote validation is setup-time diagnostics;
+  the TX path remains the runtime gate for mutable socket state.
+- Use a single READ_ONCE() snapshot of sk->sk_family in the netlink helper.
+- Fix the IPV6_V6ONLY typo.
 
- drivers/net/ovpn/netlink.c | 132 ++++++++++++++++++++++++++-----------
- 1 file changed, 94 insertions(+), 38 deletions(-)
+Ralf Lici (4):
+  ovpn: avoid sending UDP packets with source port 0
+  ovpn: validate sockets before attaching peer transports
+  ovpn: reject UDP remotes incompatible with socket family
+  ovpn: recheck UDP socket family before transmit
 
-diff --git a/drivers/net/ovpn/netlink.c b/drivers/net/ovpn/netlink.c
-index 01ae5a40e31d..bcef99534294 100644
---- a/drivers/net/ovpn/netlink.c
-+++ b/drivers/net/ovpn/netlink.c
-@@ -271,15 +271,17 @@ static int ovpn_nl_peer_precheck(struct ovpn_priv *ovpn,
-  * @peer: the peer to modify
-  * @info: generic netlink info from the user request
-  * @attrs: the attributes from the user request
-+ * @remote: remote address, if provided
-  *
-  * Return: a negative error code in case of failure, 0 on success or 1 on
-  *	   success and the VPN IPs have been modified (requires rehashing in MP
-  *	   mode)
-  */
- static int ovpn_nl_peer_modify(struct ovpn_peer *peer, struct genl_info *info,
--			       struct nlattr **attrs)
-+			       struct nlattr **attrs,
-+			       const struct sockaddr_storage *remote)
- {
--	struct sockaddr_storage ss = {};
-+	struct sockaddr_storage empty_remote = {};
- 	void *local_ip = NULL;
- 	u32 interv, timeout;
- 	bool rehash = false;
-@@ -287,15 +289,15 @@ static int ovpn_nl_peer_modify(struct ovpn_peer *peer, struct genl_info *info,
- 
- 	spin_lock_bh(&peer->lock);
- 
--	if (ovpn_nl_attr_sockaddr_remote(attrs, &ss)) {
-+	if (remote) {
- 		/* we carry the local IP in a generic container.
- 		 * ovpn_peer_reset_sockaddr() will properly interpret it
--		 * based on ss.ss_family
-+		 * based on remote->ss_family
- 		 */
- 		local_ip = ovpn_nl_attr_local_ip(attrs);
- 
- 		/* set peer sockaddr */
--		ret = ovpn_peer_reset_sockaddr(peer, &ss, local_ip);
-+		ret = ovpn_peer_reset_sockaddr(peer, remote, local_ip);
- 		if (ret < 0) {
- 			NL_SET_ERR_MSG_FMT_MOD(info->extack,
- 					       "cannot set peer sockaddr: %d",
-@@ -333,7 +335,7 @@ static int ovpn_nl_peer_modify(struct ovpn_peer *peer, struct genl_info *info,
- 
- 	netdev_dbg(peer->ovpn->dev,
- 		   "modify peer id=%u tx_id=%u endpoint=%pIScp VPN-IPv4=%pI4 VPN-IPv6=%pI6c\n",
--		   peer->id, peer->tx_id, &ss,
-+		   peer->id, peer->tx_id, remote ?: &empty_remote,
- 		   &peer->vpn_addrs.ipv4.s_addr, &peer->vpn_addrs.ipv6);
- 
- 	spin_unlock_bh(&peer->lock);
-@@ -344,10 +346,43 @@ static int ovpn_nl_peer_modify(struct ovpn_peer *peer, struct genl_info *info,
- 	return ret;
- }
- 
-+/**
-+ * ovpn_nl_udp_remote_compatible - check if a UDP socket can use a remote
-+ * @sk: UDP socket to validate
-+ * @remote: remote endpoint to validate against the socket
-+ * @extack: netlink extended ACK for reporting validation errors
-+ *
-+ * Return: 0 if the remote endpoint is compatible with the socket or a negative
-+ * error code otherwise.
-+ */
-+static int ovpn_nl_udp_remote_compatible(const struct sock *sk,
-+					 const struct sockaddr_storage *remote,
-+					 struct netlink_ext_ack *extack)
-+{
-+	const unsigned short sock_family = READ_ONCE(sk->sk_family);
-+
-+	if (sock_family == AF_INET && remote->ss_family == AF_INET6) {
-+		NL_SET_ERR_MSG_FMT_MOD(extack,
-+				       "UDP socket is IPv4 but remote is IPv6");
-+		return -EAFNOSUPPORT;
-+	}
-+
-+	if (sock_family == AF_INET6 && ipv6_only_sock(sk) &&
-+	    remote->ss_family == AF_INET) {
-+		NL_SET_ERR_MSG_FMT_MOD(extack,
-+				       "UDP socket is IPv6-only but remote is IPv4");
-+		return -EAFNOSUPPORT;
-+	}
-+
-+	return 0;
-+}
-+
- int ovpn_nl_peer_new_doit(struct sk_buff *skb, struct genl_info *info)
- {
--	struct nlattr *attrs[OVPN_A_PEER_MAX + 1];
-+	const struct sockaddr_storage *remote = NULL;
- 	struct ovpn_priv *ovpn = info->user_ptr[0];
-+	struct nlattr *attrs[OVPN_A_PEER_MAX + 1];
-+	struct sockaddr_storage ss = {};
- 	struct ovpn_socket *ovpn_sock;
- 	struct socket *sock = NULL;
- 	struct ovpn_peer *peer;
-@@ -411,26 +446,34 @@ int ovpn_nl_peer_new_doit(struct sk_buff *skb, struct genl_info *info)
- 		goto peer_release;
- 	}
- 
--	/* Only when using UDP as transport protocol the remote endpoint
--	 * can be configured so that ovpn knows where to send packets to.
--	 */
--	if (sk_is_udp(sock->sk) &&
--	    !attrs[OVPN_A_PEER_REMOTE_IPV4] &&
--	    !attrs[OVPN_A_PEER_REMOTE_IPV6]) {
--		NL_SET_ERR_MSG_FMT_MOD(info->extack,
--				       "missing remote IP address for UDP socket");
--		sockfd_put(sock);
--		ret = -EINVAL;
--		goto peer_release;
--	}
-+	if (ovpn_nl_attr_sockaddr_remote(attrs, &ss))
-+		remote = &ss;
- 
--	/* In case of TCP, the socket is connected to the peer and ovpn
--	 * will just send bytes over it, without the need to specify a
--	 * destination.
--	 */
--	if (sk_is_tcp(sock->sk) &&
--	    (attrs[OVPN_A_PEER_REMOTE_IPV4] ||
--	     attrs[OVPN_A_PEER_REMOTE_IPV6])) {
-+	if (sk_is_udp(sock->sk)) {
-+		/* Only when using UDP as transport protocol the remote
-+		 * endpoint can be configured so that ovpn knows where to send
-+		 * packets to.
-+		 */
-+		if (!remote) {
-+			NL_SET_ERR_MSG_FMT_MOD(info->extack,
-+					       "missing remote IP address for UDP socket");
-+			sockfd_put(sock);
-+			ret = -EINVAL;
-+			goto peer_release;
-+		}
-+
-+		/* can the socket be used with this remote? */
-+		ret = ovpn_nl_udp_remote_compatible(sock->sk, remote,
-+						    info->extack);
-+		if (ret < 0) {
-+			sockfd_put(sock);
-+			goto peer_release;
-+		}
-+	} else if (remote) {
-+		/* In case of TCP, the socket is connected to the peer and ovpn
-+		 * will just send bytes over it, without the need to specify a
-+		 * destination.
-+		 */
- 		NL_SET_ERR_MSG_FMT_MOD(info->extack,
- 				       "unexpected remote IP address with TCP socket");
- 		sockfd_put(sock);
-@@ -456,7 +499,7 @@ int ovpn_nl_peer_new_doit(struct sk_buff *skb, struct genl_info *info)
- 
- 	rcu_assign_pointer(peer->sock, ovpn_sock);
- 
--	ret = ovpn_nl_peer_modify(peer, info, attrs);
-+	ret = ovpn_nl_peer_modify(peer, info, attrs, remote);
- 	if (ret < 0)
- 		goto sock_release;
- 
-@@ -483,8 +526,10 @@ int ovpn_nl_peer_new_doit(struct sk_buff *skb, struct genl_info *info)
- 
- int ovpn_nl_peer_set_doit(struct sk_buff *skb, struct genl_info *info)
- {
--	struct nlattr *attrs[OVPN_A_PEER_MAX + 1];
-+	const struct sockaddr_storage *remote = NULL;
- 	struct ovpn_priv *ovpn = info->user_ptr[0];
-+	struct nlattr *attrs[OVPN_A_PEER_MAX + 1];
-+	struct sockaddr_storage ss = {};
- 	struct ovpn_socket *sock;
- 	struct ovpn_peer *peer;
- 	u32 peer_id;
-@@ -516,22 +561,33 @@ int ovpn_nl_peer_set_doit(struct sk_buff *skb, struct genl_info *info)
- 		return -ENOENT;
- 	}
- 
--	/* when using a TCP socket the remote IP is not expected */
-+	if (ovpn_nl_attr_sockaddr_remote(attrs, &ss))
-+		remote = &ss;
-+
- 	rcu_read_lock();
- 	sock = rcu_dereference(peer->sock);
--	if (sock && sock->sk->sk_protocol == IPPROTO_TCP &&
--	    (attrs[OVPN_A_PEER_REMOTE_IPV4] ||
--	     attrs[OVPN_A_PEER_REMOTE_IPV6])) {
--		rcu_read_unlock();
--		NL_SET_ERR_MSG_FMT_MOD(info->extack,
--				       "unexpected remote IP address with TCP socket");
--		ovpn_peer_put(peer);
--		return -EINVAL;
-+	if (sock && remote) {
-+		if (sk_is_udp(sock->sk)) {
-+			ret = ovpn_nl_udp_remote_compatible(sock->sk, remote,
-+							    info->extack);
-+			if (ret < 0) {
-+				rcu_read_unlock();
-+				ovpn_peer_put(peer);
-+				return ret;
-+			}
-+		} else if (sk_is_tcp(sock->sk)) {
-+			/* when using a TCP socket remote IP is not expected */
-+			NL_SET_ERR_MSG_FMT_MOD(info->extack,
-+					       "unexpected remote IP address with TCP socket");
-+			rcu_read_unlock();
-+			ovpn_peer_put(peer);
-+			return -EINVAL;
-+		}
- 	}
- 	rcu_read_unlock();
- 
- 	spin_lock_bh(&ovpn->lock);
--	ret = ovpn_nl_peer_modify(peer, info, attrs);
-+	ret = ovpn_nl_peer_modify(peer, info, attrs, remote);
- 	if (ret < 0) {
- 		spin_unlock_bh(&ovpn->lock);
- 		ovpn_peer_put(peer);
+ drivers/net/ovpn/io.c      |   4 +-
+ drivers/net/ovpn/netlink.c | 133 ++++++++++++++++++++++++++++---------
+ drivers/net/ovpn/peer.c    |  19 ++++++
+ drivers/net/ovpn/peer.h    |   5 +-
+ drivers/net/ovpn/socket.c  |  16 +++--
+ drivers/net/ovpn/tcp.c     |  21 +-----
+ drivers/net/ovpn/udp.c     |  57 ++++++++++++----
+ drivers/net/ovpn/udp.h     |   4 +-
+ 8 files changed, 183 insertions(+), 76 deletions(-)
+
 -- 
 2.54.0
 
