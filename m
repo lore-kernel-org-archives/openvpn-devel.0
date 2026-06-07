@@ -4,68 +4,68 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id CC522CD6E7B
-	for <openvpn-devel@archiver.kernel.org>; Fri,  5 Jun 2026 18:11:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id F0DE0CD8C89
+	for <openvpn-devel@archiver.kernel.org>; Sun,  7 Jun 2026 16:50:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
-	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	MIME-Version:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
+	List-Unsubscribe:List-Id:Subject:References:In-Reply-To:To:From:Message-Id:
+	Date:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=bfY5nPUyyg646QHAr9MbT6jmUDdgvU0MHVyGgMp+lB4=; b=Dxx8PBobx4Glhs/pv1XU/Jh2s3
-	gYx5n7VfrxAT2FKSvQ7nWJeHe/2KqnwJ1Hy9jtDznJuFLUVxXpw3F2Q4zPTn0HdBWKIA0GkIjc96F
-	alSLf4MBpUX8BeH62Wj4+wRUn0NK3jY2OkkRn1Vd9K0VOAObuZK7pc1dvmnhfYzTv6GA=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=tDS8sG26hbN65jwwKiGeqxvDqXPHt0/mMSyin1vCw+c=; b=IdY9ye5oaagVBNAaBxpI7aml9k
+	9S948Tw55PQALDqfT7XGUDz/LwsmWV0UqTPsQkqthZSTCv5NJvKxQM1NDYfOJPPFnsfmT8dZ73dNp
+	K6NPpgAzR8hSc/0DUUP47r1+k+oEKyiujDtu4VtM9hCGf1BzvKVamyqHpQn66aQpF+PQ=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wVZ0Z-0001XT-KJ;
-	Fri, 05 Jun 2026 18:11:03 +0000
+	id 1wWGhP-0001zl-7T;
+	Sun, 07 Jun 2026 16:50:11 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1wVZ0Y-0001XM-0Y
+ (envelope-from <gert@chekov.greenie.muc.de>) id 1wWGhN-0001zd-5K
  for openvpn-devel@lists.sourceforge.net;
- Fri, 05 Jun 2026 18:11:02 +0000
+ Sun, 07 Jun 2026 16:50:09 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=6Mm/2HnpmTe7Z6wTub6r20O8ge+OD8RHXVbl1CpO0ZU=; b=T5ulTHVC26+HPj2saHVbDIKizZ
- 7rI9itmztzqEVc1XoOviyPYl/b/TkZzRnirYFN3h45ttLzIf9A+Ax3By11GYXe3OtuD0/xwgXmbMo
- IuQTkUZOCgH0Ve2FuyXaDPm89b6ZkVkhL8aIf6yhmpXiPaEa1WzO3FPGxlDuoJ1iJGuA=;
+ d=sourceforge.net; s=x; h=References:In-Reply-To:Subject:Cc:To:From:
+ Message-Id:Date:Sender:Reply-To:MIME-Version:Content-Type:
+ Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+ List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=MrssfShXwMi3qOVA06r49ywkOL15MsTTsYQlKtBwNZY=; b=aTDfXvJMF+VV/V2DYdCVEHRLfP
+ Y1TfqAXJp+M5W4lrM3JCzWYLC+10rpG2xY9MxRTj0Ha6LtgE3FseRORXggxZ9bisq1ISTgmUwgp3Z
+ KodySFLLnBKz7+LFLusuZGZRO/ZWNIlC+CpUO05G5R1SobJqTjz5X9dpe4ZlbSOsc6w8=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ h=References:In-Reply-To:Subject:Cc:To:From:Message-Id:Date:Sender:Reply-To
+ :MIME-Version:Content-Type:Content-Transfer-Encoding:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=6Mm/2HnpmTe7Z6wTub6r20O8ge+OD8RHXVbl1CpO0ZU=; b=Gv0gz4mvLH+iFTO0hfH5VA5MJo
- N5EFihIwqHrtnnVgdmst+tebnVJdD7MXyONwoBDAtvo70HcAc6ulUxiP4Z+mscn5TyVtLFVJwIzK/
- aY0IixtwSL5zGJUaWCp08p1J+Zln1m0t5huxvH28NJCRD1q65Pui+4CjrDeAYqvM23m8=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ bh=MrssfShXwMi3qOVA06r49ywkOL15MsTTsYQlKtBwNZY=; b=PeJn1mHyjkNTqiGIHReYAYdZue
+ ujoX8UlcfTWCqdxvbnPURKZ/CyusLVmNxJyvmnks442/ya++ElOU5G6rj8TyFQWhV06WfGHsPhuU7
+ CPuWE4FO53vkJHQVI9E2V5hxCp+Kvt9lDGjtMtWYGJCzaFq6lOCbIucBJaSvENt7Z6Ko=;
+Received: from chekov.greenie.muc.de ([193.149.48.178])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wVZ0V-0002cW-L9 for openvpn-devel@lists.sourceforge.net;
- Fri, 05 Jun 2026 18:11:01 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 655IArOb003793
- for <openvpn-devel@lists.sourceforge.net>; Fri, 5 Jun 2026 20:10:53 +0200
+ id 1wWGhL-0008U8-OM for openvpn-devel@lists.sourceforge.net;
+ Sun, 07 Jun 2026 16:50:09 +0000
+Received: from chekov.greenie.muc.de (localhost [IPv6:0:0:0:0:0:0:0:1])
+ by chekov.greenie.muc.de (8.18.2/8.18.1) with ESMTP id 657Go1ob004319;
+ Sun, 7 Jun 2026 18:50:01 +0200 (CEST)
+ (envelope-from gert@chekov.greenie.muc.de)
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 655IArcr003792
- for openvpn-devel@lists.sourceforge.net; Fri, 5 Jun 2026 20:10:53 +0200
+ by chekov.greenie.muc.de (8.18.2/8.18.1/Submit) id 657Go0dg004318;
+ Sun, 7 Jun 2026 18:50:00 +0200 (CEST) (envelope-from gert)
+Date: Sun, 7 Jun 2026 18:50:00 +0200 (CEST)
+Message-Id: <202606071650.657Go0dg004318@chekov.greenie.muc.de>
 From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Fri,  5 Jun 2026 20:10:46 +0200
-Message-ID: <20260605181053.3774-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1779896625000.Ib56fb53ec1c0c30c9aecbd0ca440de2affad04b5@gerrit.openvpn.net>
-References: <gerrit.1779896625000.Ib56fb53ec1c0c30c9aecbd0ca440de2affad04b5@gerrit.openvpn.net>
-MIME-Version: 1.0
-X-Headers-End: 1wVZ0V-0002cW-L9
-Subject: [Openvpn-devel] [PATCH v1] dco_linux: allow passing
+To: Marco Baffo <marco@mandelbit.com>
+X-Patchwork-State: Accepted
+In-Reply-To: <20260605181053.3774-1-gert@greenie.muc.de>
+References: <20260605181053.3774-1-gert@greenie.muc.de>
+X-Headers-End: 1wWGhL-0008U8-OM
+Subject: [Openvpn-devel] [PATCH applied] Re: dco_linux: allow passing
  KEEPALIVE_TIMEOUT without KEEPALIVE_INTERVAL
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
@@ -78,49 +78,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Cc: openvpn-devel@lists.sourceforge.net
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Marco Baffo <marco@mandelbit.com>
+On the userland side, this is fairly trivial and straightforward - when
+deciding whether to call dco_set_peer(), take "ping_rec_timeout" into
+account (which gets set by "ping-restart" and "ping-exit").  The more
+interesting change is kernel-side, to decouple "ping" and "ping-restart"
+settings (but that's a different patch for different people to review).
 
-Depends on: https://github.com/OpenVPN/ovpn-net-next/commit/67f453e3146a646ef5f811e5a85c610537d80521
+Stared-at-code, test compiled on Linux.
 
-Closes: https://github.com/OpenVPN/openvpn/issues/911
+Applying this to release/2.7 as well, because it is very much non-intrusive,
+and people have stumbled across this (so "mini bugfix").
 
-Change-Id: Ib56fb53ec1c0c30c9aecbd0ca440de2affad04b5
-Signed-off-by: Marco Baffo <marco@mandelbit.com>
-Acked-by: Gert Doering <gert@greenie.muc.de>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1705
----
+Your patch has been applied to the master and release/2.7 branch.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+commit d66de4e0a461c8cc5fff5a00ec14b41dd27fc365 (master)
+commit 4b49192f980a7a8fb63c74b30c2be631aaa2eb38 (release/2.7)
+Author: Marco Baffo
+Date:   Fri Jun 5 20:10:46 2026 +0200
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1705
-This mail reflects revision 1 of this Change.
+     dco_linux: allow passing KEEPALIVE_TIMEOUT without KEEPALIVE_INTERVAL
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@greenie.muc.de>
+     Signed-off-by: Marco Baffo <marco@mandelbit.com>
+     Acked-by: Gert Doering <gert@greenie.muc.de>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1705
+     Message-Id: <20260605181053.3774-1-gert@greenie.muc.de>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg37070.html
+     Signed-off-by: Gert Doering <gert@greenie.muc.de>
 
-        
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index d332359c..0998bd6 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1623,9 +1623,9 @@
- 
-     if (dco_enabled(options))
-     {
--        /* dco_set_peer() must be called if either keepalive or
--         * mssfix are set to update in-kernel config */
--        if (options->ping_send_timeout || frame->mss_fix)
-+        /* dco_set_peer() must be called if either keepalive, ping, ping-restart,
-+         * ping-exit or mssfix are set to update in-kernel config */
-+        if (options->ping_send_timeout || options->ping_rec_timeout || frame->mss_fix)
-         {
-             int ret = dco_set_peer(dco, multi->dco_peer_id, options->ping_send_timeout,
-                                    options->ping_rec_timeout, frame->mss_fix);
+
+--
+kind regards,
+
+Gert Doering
+
 
 
 _______________________________________________
