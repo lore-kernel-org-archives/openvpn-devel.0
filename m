@@ -4,68 +4,125 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id AFA78CD8C9D
-	for <openvpn-devel@archiver.kernel.org>; Mon,  8 Jun 2026 06:02:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id DC6C1CD8C9D
+	for <openvpn-devel@archiver.kernel.org>; Mon,  8 Jun 2026 11:52:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=5fTNtRtrEu2vtseOD0EpGI3H1j56jNqlyFMAsq2zGiI=; b=KFRcfSOFWWR6kU7mmXTJqyaElb
-	MvnxghjAiEetelH3XPrM7dewzHc1HAmiQrKddaZlbiLCEjTWZWq5+n88jFWnwVILg6gUZsyfv1fs1
-	lcLjh/ecEAmOEacyQOf3mzGjzThmWR7UD3opg9EZ5JrnIaWHo9yYq/zUucfq183x/nPU=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:Message-ID:References:Date:Sender:To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+	List-Owner; bh=UmjI3f7Brg8nyQTalKutG2kjpSF1/2yNrGfFP02gAU8=; b=Qzt2f84gzbPgnr
+	eWaLJeSIKxJ1eol3bv2I3OF0t/yiTn5VuwzU0Wq36n1zVzRvMuYan2Qd1hDuXZy+mfeoQMQRT/G3B
+	dTZTjGRssyYag7hgXVy3EkSQ2Vtl2P7BfFIpYtfeujRGaooYq+/pXTapF1K9Dlq9cNEzS7m5mFitZ
+	mJY=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wWT4P-0002Yc-04;
-	Mon, 08 Jun 2026 06:02:45 +0000
+	id 1wWYXI-0004pH-1g;
+	Mon, 08 Jun 2026 11:52:53 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1wWT4G-0002YS-Pc
+ (envelope-from <gerrit@openvpn.net>) id 1wWYXH-0004pA-1W
  for openvpn-devel@lists.sourceforge.net;
- Mon, 08 Jun 2026 06:02:36 +0000
+ Mon, 08 Jun 2026 11:52:52 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
+ :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:Date:From
+ :Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From:
+ Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=S363IwMrXt33tmfNv4KWE4zAWEaLI2DBTZTDjXf5Xlw=; b=eYI7SXVFr3UlqoONyOw07b5BOV
- L8SuSMSv4tBPuCvNd3AX/mJvEUfZ5MOZX4RWXf/+kF4mzs4P3jvtpmx7N1Zwg7Ay/uerzNutqIj4F
- yWu3R7U7ZkaPcum2HSW++um98gbZuVuvGrHJzqrOv33nBnfRfLMr6vQ1ZS6ztF2LOEHM=;
+ bh=cDXrEuzZlXxVDTJ6al/eUoVIPEEMkR78+06gro5Ugaw=; b=hPKdcHXvlbIvDF/BnV+Q3yz73Z
+ absAPnRH7rTGLxsZptuooIkS8cU3vMWQFrWwWm5VvWMFM+rAlc3lzKaiybQjahqBpwn2PTHkj2Mdm
+ a/bba8zDsjrObTD0weuVk2xAIQ46MSgEtVLJGO6yv3uVXJCOVA/MfHkuUwUnh+CjvE0o=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=S363IwMrXt33tmfNv4KWE4zAWEaLI2DBTZTDjXf5Xlw=; b=j1gFBHADt16dZKsOLnHkiImmRd
- f6i4eJTYG19+1x4QCRsNigVI8/k2pxkKr1ubRSUlGZWcL5UTcz4nY/tWuGSpJ4op2Z6gs9qaUEbdZ
- sBqb78sSdnCdFWmOJ3g/ISVr6SUgieQ7Z47boJIdvM5gnZkooijtUMYcc99QFCcReEjQ=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
+ Subject:References:List-Unsubscribe:List-Id:Cc:Date:From:Sender:To:Content-ID
+ :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+ Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=cDXrEuzZlXxVDTJ6al/eUoVIPEEMkR78+06gro5Ugaw=; b=l
+ AdIZR3RZR5tHZW6foZYqcooFC7cujMLYx59bIvwMDw9XUZxzIW2UHo5fioBYImHsGcMqn8RSP6yKw
+ VgOOQM/9p74afg8h34Mn8Sgeagd83omKJTvFKRNFTG8HoXMEzjTmJiFUUAlYkV6zyjhyZV/xUORSy
+ uXiA1rKZJIgAidJU=;
+Received: from mail-wr1-f46.google.com ([209.85.221.46])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wWT4E-0006tQ-6G for openvpn-devel@lists.sourceforge.net;
- Mon, 08 Jun 2026 06:02:36 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 65862RqC009906
- for <openvpn-devel@lists.sourceforge.net>; Mon, 8 Jun 2026 08:02:27 +0200
-Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 65862ReU009904
- for openvpn-devel@lists.sourceforge.net; Mon, 8 Jun 2026 08:02:27 +0200
-From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Mon,  8 Jun 2026 08:02:20 +0200
-Message-ID: <20260608060227.9892-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1779455880000.I2df0fec786184b9fcf9b7c56c74816325cdb6942@gerrit.openvpn.net>
-References: <gerrit.1779455880000.I2df0fec786184b9fcf9b7c56c74816325cdb6942@gerrit.openvpn.net>
+ (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
+ id 1wWYXC-0002lt-TC for openvpn-devel@lists.sourceforge.net;
+ Mon, 08 Jun 2026 11:52:52 +0000
+Received: by mail-wr1-f46.google.com with SMTP id
+ ffacd0b85a97d-45eea68dd6fso2117408f8f.2
+ for <openvpn-devel@lists.sourceforge.net>;
+ Mon, 08 Jun 2026 04:52:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=openvpn.net; s=google; t=1780919560; x=1781524360; darn=lists.sourceforge.net;
+ h=user-agent:content-disposition:content-transfer-encoding
+ :mime-version:message-id:reply-to:subject:thread-index:references
+ :list-unsubscribe:list-id:auto-submitted:cc:date:from:from:to:cc
+ :subject:date:message-id:reply-to;
+ bh=cDXrEuzZlXxVDTJ6al/eUoVIPEEMkR78+06gro5Ugaw=;
+ b=NPC/RGHfui6566AkV2WjoBdvwMGudrNdFqv7F+3XIl47WzWnlVZKr9cSnXL1CdF5Er
+ I6kglbsRPpEoY+/BxZnUYEWn3tH1CbKiMwn99sg7S67IFVcjGnqFykw+U0unchEc65Mq
+ wY0NOo+PQoonF/Chvnpwy1gwwg+MOtX+uP/lQGzFiibRwH3VMnBdODjt1Phq0ly7drle
+ TbkGZmnBc6PHg1lVOOZ4CKrLKPV/F6N6psYM4nm/5B0l3uBITNCEi2ocyeTUNy5DHuLH
+ DDhVy9ywKZ3y3uagDF1QytG7TypBG9sPkb3mbGoYVndCQSymbfgrKFV4HxdmIcl/oKyC
+ 4jTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20251104; t=1780919560; x=1781524360;
+ h=user-agent:content-disposition:content-transfer-encoding
+ :mime-version:message-id:reply-to:subject:thread-index:references
+ :list-unsubscribe:list-id:auto-submitted:cc:date:from:x-gm-gg
+ :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+ bh=cDXrEuzZlXxVDTJ6al/eUoVIPEEMkR78+06gro5Ugaw=;
+ b=L1IfNZRNJ/1T/lEvkc+qYveJkSCg8sFXEMnLNZfYBsG1nrnZDRYcMZGYQCaeBFSwCn
+ LYx/LB1L7kDWPRIMEPH/qBPWGS5QIf8oFVf2mYoPTreFOojpZq+9xIuFsLw/ZEEUc9yR
+ 8dd7bGLISoMRKitc/zsiuOnjudorFk/ss3u+Pt0a+Quo6cxtpMgP63+GLMok5L/rf3Gj
+ CUopq1szaRCtZ7Jdk7L9svxok3JvRwdQvTUIbRplLZS2Pa2Q88SpqjWMxP5v5PcdaDdl
+ p2K2TQxD3GI+hUyrNYiLINSfPCJNuAI9/csBFb18zKhcr4MSWmzAPM8j3xN0otabjDH7
+ Ss2A==
+X-Gm-Message-State: AOJu0Yz9g62Eh6SixnYOry6xRiFKn0SOToE1njazd+cZMRzIYCtTXLVc
+ jrG+KtlL/5/NkcCH6rqVGAzKXERYqCGbGYnJ53l8Sbu8xwTuZosZmLTa3r0RxWAjG1vETn1E+A7
+ BYzhPkiCmeCvAzkyrqoLFQ0Ot52rvN1GbMS7+lQr3V7/5FMFB14BriWBJGO6uQDNRx8JEiAbCKr
+ dWphPP+A==
+X-Gm-Gg: Acq92OGiJjXxlV1s1hVkmd/CFvGPO44qIuo34/qsfxi2itWGMZYhwRVG5x9P4TjwcXe
+ H5/PdyvAwQNu7YO7ej7UO4ZHJiE3eWQ6YDswgpO+vzx+o5DtiD395Sx2YOwVB8oIupmtSPyk/Ks
+ OtODzGCmx6vFBnmlXBbvw0v9WcKYZpNPVGo/zvKm6vccgLZ33lXgY76Jj7DOTLhVJTtKAQJKwGe
+ Kgtd3pckt+VcYKOgYRs7zTYlAk27kixahHzxvG2ZN87nN1gYcbU5n8HX4188hEWjFObZtdV7LME
+ mQ+yjxfroCIaMJY55hnqG1R62gN2dMMeLsUAqywsHRAIvZj5h5blChQ69OpS4Bb5R5kfB1y9wP4
+ 2trYtmbLnl05W5q2WAken0p4K2jC8SYR5hlOsDB5rEkW82nTOs6ePxF7y4NMEK9qHWusMWAP23J
+ 0QPYE4cKxhXWfYzcoHGVIsUMiyO96mx8bAZDsYNfNrpGk7v3BYPKwEtqdgu/+hA0w99nywXu6kG
+ bCvD/mhpjFfu5O5EudjWDlIsYfNdogDoUkw8rrJUqzJG9fYfpsK8Nk4bCE29zAhF/Gj68enMqOE
+ aXxl3gK/7Z3+UWxDBddtcimZRtIbz4H6+q0=
+X-Received: by 2002:a05:6000:12c9:b0:45e:73eb:1ff7 with SMTP id
+ ffacd0b85a97d-460302dccd4mr16885572f8f.3.1780919559467; 
+ Mon, 08 Jun 2026 04:52:39 -0700 (PDT)
+Received: from ip-10-18-1-162.eu-central-1.compute.internal
+ (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
+ by smtp.gmail.com with ESMTPSA id
+ ffacd0b85a97d-4602cda3651sm40249015f8f.32.2026.06.08.04.52.39
+ for <openvpn-devel@lists.sourceforge.net>
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 08 Jun 2026 04:52:39 -0700 (PDT)
+X-Google-Original-From: "plaisthos (Code Review)"
+ <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
+Date: Mon, 8 Jun 2026 11:52:38 +0000
+Auto-Submitted: auto-generated
+X-Gerrit-MessageType: newchange
+X-Gerrit-PatchSet: 1
+X-Gerrit-Change-Id: Iff8b336126a5dff9871213664b1e8585fb70d21e
+X-Gerrit-Change-Number: 1708
+X-Gerrit-Project: openvpn
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1708?usp=email>
+X-Gerrit-Commit: 8a9c342fce957230cde794d24e61d3fb791a4f70
+References: <gerrit.1780919555000.Iff8b336126a5dff9871213664b1e8585fb70d21e@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzgwOTE5NTU1MDAwLklmZjhiMzM2MTI2YTVkZmY5ODcxMjEzNjY0YjFlODU4NWZiNzBkMjFlQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <765d726197370910b0ae775c38dd94cac5350976-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
-X-Headers-End: 1wWT4E-0006tQ-6G
-Subject: [Openvpn-devel] [PATCH v1] mudp: send HMAC reset reply synchronously
+User-Agent: Gerrit/3.11.5
+X-Headers-End: 1wWYXC-0002lt-TC
+Subject: [Openvpn-devel] [S] Change in openvpn[release/2.6]: Ensure pushed
+ tun-mtu is no lower than TUN_MTU_MIN
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -77,186 +134,283 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+From: "plaisthos \(Code Review\) via Openvpn-devel"
+ <openvpn-devel@lists.sourceforge.net>
+Reply-To: arne-openvpn@rfc2549.org, openvpn-devel@lists.sourceforge.net
+Cc: "plaisthos \(Code Review\)" <gerrit@openvpn.net>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: multipart/mixed; boundary="===============3516374912805775857=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Antonio Quartulli <antonio@mandelbit.com>
+--===============3516374912805775857==
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="nPbjURDEUvY="; charset=UTF-8
 
-Building a HARD_RESET reply was queueing the result into three
-multi_context fields and deferring the send to the next event-loop
-iteration, where multi_process_outgoing_link() flushed it:
+--nPbjURDEUvY=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-  struct buffer hmac_reply;
-  struct link_socket_actual *hmac_reply_dest;  /* aliased &m->top.c2.from */
-  struct link_socket *hmac_reply_ls;
+plaisthos has uploaded this change for review=2E ( http://gerrit=2Eopenvpn=
+=2Enet/c/openvpn/+/1708?usp=3Demail )
 
-The mechanism had three latent issues:
 
-1. hmac_reply_dest = &m->top.c2.from stored a pointer alias into
-   shared mutable state.  Any subsequent read into m->top.c2.from
-   silently retargeted the pending reply to a different peer.
-2. m->hmac_reply_ls = sock; at the top of multi_get_create_instance_udp()
-   was executed unconditionally for every UDP packet, including packets
-   that did not queue a reply.  A stale queued reply could thus be sent
-   on the wrong listening socket.
-3. hmac_reply.data pointed into m->top.c2.buffers->aux_buf (the only
-   slot).  A second send_hmac_reset_packet() before the first flush
-   would overwrite the first reply's bytes.
+Change subject: Ensure pushed tun-m=
+tu is no lower than TUN_MTU_MIN
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E
 
-These were latent on master because m->multi_io->udp_flags was consumed
-and zeroed by the first event in each multi_io_process_io() loop, so at
-most one UDP read ran per outer iteration.
+Ensure pushed tun-mtu is no lower than TUN_MTU_MIN
 
-Send the reply synchronously from within send_hmac_reset_packet() using
-the sock that the read fired on (threaded through do_pre_decrypt_check).
-The reply is small, stateless, and rate-limited by the existing
-reflect_filter_rate_limit_check(); dropping on EAGAIN is acceptable
-because the client retransmits its HARD_RESET.  The three multi_context
-fields and the deferred-flush block in multi_process_outgoing_link() are
-gone; p2mp_iow_flags() no longer needs an IOW_TO_LINK branch for hmac
-state.
+The=
+ normal path ensure that the minimum tun mtu is set to at least
+TUN_MTU_MIN=
+=2E However, the pushed options path does not have this
+restriction=2E
 
-Change-Id: I2df0fec786184b9fcf9b7c56c74816325cdb6942
-Signed-off-by: Antonio Quartulli <antonio@mandelbit.com>
-Acked-by: Arne Schwabe <arne-openvpn@rfc2549.org>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1702
+Che=
+ck that the tun-mtu is within the limits of min/max mtu
+in options=2Ec=2E T=
+his ensure that the check is also correctly done
+on the pushed variant=2E
+
+=
+Also add an extra check to keep the allowed payload for icmp6 packets
+to be=
+ at least 64 bytes in the the block-ipv6 code path
+(ipv6_send_icmp_unreacha=
+ble) as extra layer of defence=2E
+
+Pushing a low mtu like 1 and also block-=
+ipv6 could trigger an
+assertion in the ipv6_send_icmp_unreachable code path=
+=2E
+
+Reported-By: Haiyang Huang <huanghaiyang83@gmail=2Ecom>
+Change-Id: Iff=
+8b336126a5dff9871213664b1e8585fb70d21e
 ---
+M src/openvpn/forward=2Ec
+M src/=
+openvpn/mtu=2Eh
+M src/openvpn/options=2Ec
+3 files changed, 16 insertions(+)=
+, 1 deletion(-)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1702
-This mail reflects revision 1 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@rfc2549.org>
+  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn re=
+fs/changes/08/1708/1
 
-        
-diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
-index 432c79a..874736e 100644
---- a/src/openvpn/mudp.c
-+++ b/src/openvpn/mudp.c
-@@ -40,7 +40,7 @@
- static void
- send_hmac_reset_packet(struct multi_context *m, struct tls_pre_decrypt_state *state,
-                        struct tls_auth_standalone *tas, struct session_id *sid,
--                       bool request_resend_wkc)
-+                       bool request_resend_wkc, struct link_socket *sock)
- {
-     reset_packet_id_send(&state->tls_wrap_tmp.opt.packet_id.send);
-     state->tls_wrap_tmp.opt.packet_id.rec.initialized = true;
-@@ -54,8 +54,19 @@
-     ASSERT(buf_init(&c->c2.buffers->aux_buf, buf.offset));
- 
-     buf_copy(&c->c2.buffers->aux_buf, &buf);
--    m->hmac_reply = c->c2.buffers->aux_buf;
--    m->hmac_reply_dest = &m->top.c2.from;
-+
-+    /* Send synchronously: queueing across event-loop iterations would alias
-+     * m->top.c2.from and aux_buf into cross-socket race territory.  The reply
-+     * is small, stateless, and rate-limited by reflect_filter_rate_limit_check();
-+     * dropping on EAGAIN is acceptable as the client retransmits its HARD_RESET. */
-+    msg_set_prefix("Connection Attempt");
-+    c->c2.to_link = c->c2.buffers->aux_buf;
-+    c->c2.to_link_addr = &c->c2.from;
-+    process_outgoing_link(c, sock);
-+    c->c2.to_link.len = 0;
-+    c->c2.to_link_addr = NULL;
-+    msg_set_prefix(NULL);
-+
-     msg(D_MULTI_DEBUG, "Reset packet from client, sending HMAC based reset challenge");
- }
- 
-@@ -63,7 +74,7 @@
- /* Returns true if this packet should create a new session */
- static bool
- do_pre_decrypt_check(struct multi_context *m, struct tls_pre_decrypt_state *state,
--                     struct mroute_addr addr)
-+                     struct mroute_addr addr, struct link_socket *sock)
- {
-     ASSERT(m->top.c2.tls_auth_standalone);
- 
-@@ -106,7 +117,7 @@
-             /* Calculate the session ID HMAC for our reply and create reset packet */
-             struct session_id sid =
-                 calculate_session_id_hmac(state->peer_session_id, from, hmac, handwindow, 0);
--            send_hmac_reset_packet(m, state, tas, &sid, true);
-+            send_hmac_reset_packet(m, state, tas, &sid, true, sock);
- 
-             return false;
-         }
-@@ -139,7 +150,7 @@
-         struct session_id sid =
-             calculate_session_id_hmac(state->peer_session_id, from, hmac, handwindow, 0);
- 
--        send_hmac_reset_packet(m, state, tas, &sid, false);
-+        send_hmac_reset_packet(m, state, tas, &sid, false, sock);
- 
-         /* We have a reply do not create a new session */
-         return false;
-@@ -194,7 +205,6 @@
-     struct multi_instance *mi = NULL;
-     struct hash *hash = m->hash;
-     real.proto = sock->info.proto;
--    m->hmac_reply_ls = sock;
- 
-     if (mroute_extract_openvpn_sockaddr(&real, &m->top.c2.from.dest, true) && m->top.c2.buf.len > 0)
-     {
-@@ -253,7 +263,7 @@
-                     "shutting down",
-                     mroute_addr_print(&real, &gc));
-             }
--            else if (do_pre_decrypt_check(m, &state, real))
-+            else if (do_pre_decrypt_check(m, &state, real, sock))
-             {
-                 /* This is an unknown session but with valid tls-auth/tls-crypt
-                  * (or no auth at all).  If this is the initial packet of a
-@@ -321,15 +331,6 @@
-     {
-         multi_process_outgoing_link_dowork(m, mi, mpp_flags);
-     }
--    if (m->hmac_reply_dest && m->hmac_reply.len > 0)
--    {
--        msg_set_prefix("Connection Attempt");
--        m->top.c2.to_link = m->hmac_reply;
--        m->top.c2.to_link_addr = m->hmac_reply_dest;
--        process_outgoing_link(&m->top, m->hmac_reply_ls);
--        m->hmac_reply_ls = NULL;
--        m->hmac_reply_dest = NULL;
--    }
- }
- 
- /*
-@@ -382,10 +383,6 @@
-     {
-         flags |= IOW_MBUF;
-     }
--    else if (m->hmac_reply_dest)
--    {
--        flags |= IOW_TO_LINK;
--    }
-     else
-     {
-         flags |= IOW_READ;
-diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
-index 3ed08d4..8b837fa 100644
---- a/src/openvpn/multi.h
-+++ b/src/openvpn/multi.h
-@@ -201,10 +201,6 @@
-     struct context top; /**< Storage structure for process-wide
-                          *   configuration. */
- 
--    struct buffer hmac_reply;
--    struct link_socket_actual *hmac_reply_dest;
--    struct link_socket *hmac_reply_ls;
--
-     /*
-      * Timer object for stale route check
+diff --git a/src/openvpn/forward=2Ec b/src/openvpn/fo=
+rward=2Ec
+index e43ce28=2E=2E2255951 100644
+--- a/src/openvpn/forward=2Ec
++=
+++ b/src/openvpn/forward=2Ec
+@@ -1610,6 +1610,8 @@
       */
+     int max_pa=
+yload_size =3D min_int(MAX_ICMPV6LEN,
+                                    c=
+->c2=2Eframe=2Etun_mtu - icmpheader_len);
++    /* Ensure that minimum paylo=
+ad size is at least 64 bytes as extra safety layer */
++    max_payload_size=
+ =3D max_int(max_payload_size, 64);
+     int payload_len =3D min_int(max_pa=
+yload_size, BLEN(&inputipbuf));
+ 
+     pip6out=2Epayload_len =3D htons(size=
+of(struct openvpn_icmp6hdr) + payload_len);
+diff --git a/src/openvpn/mtu=2E=
+h b/src/openvpn/mtu=2Eh
+index d3df5b2=2E=2E70ec43d 100644
+--- a/src/openvpn=
+/mtu=2Eh
++++ b/src/openvpn/mtu=2Eh
+@@ -69,6 +69,11 @@
+  */
+ #define TUN_MTU=
+_DEFAULT    1500
+ 
++/**
++ * Maximum MTU we accept for MTU related options
++=
+ */
++#define TUN_MTU_MAX 65536
++
+ /*
+  * MTU Defaults for TAP devices
+  */
+=
+diff --git a/src/openvpn/options=2Ec b/src/openvpn/options=2Ec
+index 044aab=
+3=2E=2Eea640da 100644
+--- a/src/openvpn/options=2Ec
++++ b/src/openvpn/optio=
+ns=2Ec
+@@ -6552,7 +6552,15 @@
+     else if (streq(p[0], "tun-mtu") && p[1] =
+&& !p[3])
+     {
+         VERIFY_PERMISSION(OPT_P_PUSH_MTU|OPT_P_CONNECTION=
+);
+-        options->ce=2Etun_mtu =3D positive_atoi(p[1]);
++        int mtu=
+ =3D positive_atoi(p[1]);
++        if (mtu < TUN_MTU_MIN || mtu > TUN_MTU_M=
+AX)
++        {
++            msg(msglevel, "--mtu parm must be between %d an=
+d %d=2E", TUN_MTU_MIN,
++                TUN_MTU_MAX);
++            goto err=
+;
++        }
++
++        options->ce=2Etun_mtu =3D mtu;
+         options->ce=
+=2Etun_mtu_defined =3D true;
+         if (p[2])
+         {
 
+-- 
+To view, vi=
+sit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1708?usp=3Demail
+To unsubscri=
+be, or for help writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/s=
+ettings?usp=3Demail
+
+Gerrit-MessageType: newchange
+Gerrit-Project: openvpn
+=
+Gerrit-Branch: release/2=2E6
+Gerrit-Change-Id: Iff8b336126a5dff9871213664b1=
+e8585fb70d21e
+Gerrit-Change-Number: 1708
+Gerrit-PatchSet: 1
+Gerrit-Owner: p=
+laisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-dev=
+el@lists=2Esourceforge=2Enet>
+
+--nPbjURDEUvY=
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p>plaisthos has upl=
+oaded this change for <strong>review</strong>=2E</p><p><a href=3D"http://ge=
+rrit=2Eopenvpn=2Enet/c/openvpn/+/1708?usp=3Demail">View Change</a></p><pre =
+class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pr=
+e-wrap;">Ensure pushed tun-mtu is no lower than TUN_MTU_MIN<br><br>The norm=
+al path ensure that the minimum tun mtu is set to at least<br>TUN_MTU_MIN=
+=2E However, the pushed options path does not have this<br>restriction=2E<b=
+r><br>Check that the tun-mtu is within the limits of min/max mtu<br>in opti=
+ons=2Ec=2E This ensure that the check is also correctly done<br>on the push=
+ed variant=2E<br><br>Also add an extra check to keep the allowed payload fo=
+r icmp6 packets<br>to be at least 64 bytes in the the block-ipv6 code path<=
+br>(ipv6_send_icmp_unreachable) as extra layer of defence=2E<br><br>Pushing=
+ a low mtu like 1 and also block-ipv6 could trigger an<br>assertion in the =
+ipv6_send_icmp_unreachable code path=2E<br><br>Reported-By: Haiyang Huang &=
+lt;huanghaiyang83@gmail=2Ecom&gt;<br>Change-Id: Iff8b336126a5dff9871213664b=
+1e8585fb70d21e<br>---<br>M src/openvpn/forward=2Ec<br>M src/openvpn/mtu=2Eh=
+<br>M src/openvpn/options=2Ec<br>3 files changed, 16 insertions(+), 1 delet=
+ion(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,m=
+onospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:294=
+18/openvpn refs/changes/08/1708/1</pre><pre style=3D"font-family: monospace=
+,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/forward=
+=2Ec b/src/openvpn/forward=2Ec</span><br><span>index e43ce28=2E=2E2255951 1=
+00644</span><br><span>--- a/src/openvpn/forward=2Ec</span><br><span>+++ b/s=
+rc/openvpn/forward=2Ec</span><br><span>@@ -1610,6 +1610,8 @@</span><br><spa=
+n>      */</span><br><span>     int max_payload_size =3D min_int(MAX_ICMPV6=
+LEN,</span><br><span>                                    c-&gt;c2=2Eframe=
+=2Etun_mtu - icmpheader_len);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    /* Ensure that minimum payload size is at least 64 bytes as e=
+xtra safety layer */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    max_payload_size =3D max_int(max_payload_size, 64);</span><br><span>  =
+   int payload_len =3D min_int(max_payload_size, BLEN(&amp;inputipbuf));</s=
+pan><br><span> </span><br><span>     pip6out=2Epayload_len =3D htons(sizeof=
+(struct openvpn_icmp6hdr) + payload_len);</span><br><span>diff --git a/src/=
+openvpn/mtu=2Eh b/src/openvpn/mtu=2Eh</span><br><span>index d3df5b2=2E=2E70=
+ec43d 100644</span><br><span>--- a/src/openvpn/mtu=2Eh</span><br><span>+++ =
+b/src/openvpn/mtu=2Eh</span><br><span>@@ -69,6 +69,11 @@</span><br><span>  =
+*/</span><br><span> #define TUN_MTU_DEFAULT    1500</span><br><span> </span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * Maximum MTU we accept for MTU related =
+options</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+#define TUN_MTU_MAX 65536</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /*</=
+span><br><span>  * MTU Defaults for TAP devices</span><br><span>  */</span>=
+<br><span>diff --git a/src/openvpn/options=2Ec b/src/openvpn/options=2Ec</s=
+pan><br><span>index 044aab3=2E=2Eea640da 100644</span><br><span>--- a/src/o=
+penvpn/options=2Ec</span><br><span>+++ b/src/openvpn/options=2Ec</span><br>=
+<span>@@ -6552,7 +6552,15 @@</span><br><span>     else if (streq(p[0], &quo=
+t;tun-mtu&quot;) &amp;&amp; p[1] &amp;&amp; !p[3])</span><br><span>     {</=
+span><br><span>         VERIFY_PERMISSION(OPT_P_PUSH_MTU|OPT_P_CONNECTION);=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        options-&gt;c=
+e=2Etun_mtu =3D positive_atoi(p[1]);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        int mtu =3D positive_atoi(p[1]);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        if (mtu &lt; TUN_MTU_MIN || m=
+tu &gt; TUN_MTU_MAX)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   msg(msglevel, &quot;--mtu parm must be between %d and %d=2E&quot;, TUN_M=
+TU_MIN,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+    TUN_MTU_MAX);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+          goto err;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;ce=2Etun_=
+mtu =3D mtu;</span><br><span>         options-&gt;ce=2Etun_mtu_defined =3D =
+true;</span><br><span>         if (p[2])</span><br><span>         {</span><=
+br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit=2Eopen=
+vpn=2Enet/c/openvpn/+/1708?usp=3Demail">change 1708</a>=2E To unsubscribe, =
+or for help writing mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=
+=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"=
+http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemty=
+pe=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http:/=
+/gerrit=2Eopenvpn=2Enet/c/openvpn/+/1708?usp=3Demail"/><meta itemprop=3D"na=
+me" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Ger=
+rit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Proje=
+ct: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: release/2=2E=
+6 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Iff8b336126a5dff987=
+1213664b1e8585fb70d21e </div>
+<div style=3D"display:none"> Gerrit-Change-Nu=
+mber: 1708 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<d=
+iv style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@rfc2549=
+=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt=
+;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+
+</body></html>
+--nPbjURDEUvY=--
+
+
+--===============3516374912805775857==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============3516374912805775857==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+--===============3516374912805775857==--
+
