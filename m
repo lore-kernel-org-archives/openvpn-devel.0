@@ -4,37 +4,37 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E581BCD8CA4
-	for <openvpn-devel@archiver.kernel.org>; Tue,  9 Jun 2026 14:20:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0B191CD8CAA
+	for <openvpn-devel@archiver.kernel.org>; Tue,  9 Jun 2026 14:20:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	MIME-Version:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
 	List-Unsubscribe:List-Id:Subject:References:In-Reply-To:To:From:Message-Id:
 	Date:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=MTnA4WlS5tTyefKiacJztgxLDRFSEOD1nEMbHGBfLUQ=; b=JNsDuX1bLDs4aaeKZf0smTLHEM
-	FWq7O4vVy+scj6cNbazG3Owo729dyuDyB8od367tEi25fj3QvN76/6p4k1RQ0yTTf9KjLT/DhexGC
-	/Euon6HZUgyYh9L/ns2BUHqcyMxL2aeGF91XMmAmvTbryhwsahM1s5f+XjH7UKA/A8oo=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=96LKhBt62Unr8ST7fHc3udVMPkW8TXKIYxrnqjr5ws8=; b=hJCOtkPDz7YYPpHvTNFaB3otl0
+	nty+AseZ9rwFOe3mkqq5O5QkZ0vk3j0V57PIeVXPyjllk3TIy0CM5n1CF8wzXDiDWuNtWZ+8XEgMh
+	LTFIFtlwECW4DD2RVlic64BUzlA0L3pIiZEr2xwB8rhpk8ouDDr93U71qUWmwPpcT5Kg=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wWxJK-0003BX-4q;
-	Tue, 09 Jun 2026 14:20:07 +0000
+	id 1wWxJn-00056C-P5;
+	Tue, 09 Jun 2026 14:20:39 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@chekov.greenie.muc.de>) id 1wWxJI-0003BL-Tp
+ (envelope-from <gert@chekov.greenie.muc.de>) id 1wWxJm-00054t-Cd
  for openvpn-devel@lists.sourceforge.net;
- Tue, 09 Jun 2026 14:20:06 +0000
+ Tue, 09 Jun 2026 14:20:38 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=References:In-Reply-To:Subject:Cc:To:From:
  Message-Id:Date:Sender:Reply-To:MIME-Version:Content-Type:
  Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
  Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
  List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=gWRd6mN55ppSInlhGSmACaNObs8RAiW8SfTvw2JStXs=; b=lt1xmC42XtD1HytO0nsC/Saa1C
- 0aGYPLfG7H0sSu+odtIhNODW7m7NtUkgw9ey6UFSLuIElGY2HJAEVBjjQLjw0HGgjccEiZSu3VObl
- ka7Nth6aBv9/JlYCis8UUv53w9u8fRR09iYe5Zy0mq3BX+w7b5SvyyVzmM2KYdb3gnG4=;
+ bh=+pAfJaMSxRJNCesSNg0bZTjULNBDwVBugX/lu7TPwLQ=; b=LDah3s09cYXCcannTkAEpK68kN
+ UEU9dFQXkDhVe7rT6OHAuFZshzH8oWbfEm6v7G13LiA2GEthRZAt2y8hOqtQY+vvE3r9ielJdD/vc
+ XOFv4DQlVD/6oUKH3ohfTBETO+e8nV+M0gZURM3ehVNid1nrp63jnGy4VDOmhWJ2GQzU=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=References:In-Reply-To:Subject:Cc:To:From:Message-Id:Date:Sender:Reply-To
@@ -42,31 +42,31 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=gWRd6mN55ppSInlhGSmACaNObs8RAiW8SfTvw2JStXs=; b=i/W7l3XLju86ZFXJsAJfCc5D7X
- 3b/pOZfi/CvnK57DCvLi8yVM7qz98sPQoiM+FnL0BjkVdrlavKrThk87mag/IymMVA9hFfmP3wnVB
- ZOeShcA7crNm184wIq6HXrDj1PUrKPq2ZzZ+mi2ty5vCso0/upVIQcmk0m6cLiNpf7TM=;
+ bh=+pAfJaMSxRJNCesSNg0bZTjULNBDwVBugX/lu7TPwLQ=; b=JUob7VVgRMSBU/Ls/N+RtPVyMt
+ W8gfSul5oHKtoFm0H7q+PSyb/GtEDb/lIVoBZIWkIfK1xcCcP5rKHY3fdxzFVrEoioevKxWngGBgB
+ pIvTrQF+W+SDcPIZAD2BowuESnLotdBzlm94i2G9hKMxHJ5pPfjrp2hHI6yQYhbR+qNA=;
 Received: from chekov.greenie.muc.de ([193.149.48.178])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wWxJE-0001CE-4p for openvpn-devel@lists.sourceforge.net;
- Tue, 09 Jun 2026 14:20:06 +0000
+ id 1wWxJG-0001CE-Fn for openvpn-devel@lists.sourceforge.net;
+ Tue, 09 Jun 2026 14:20:10 +0000
 Received: from chekov.greenie.muc.de (localhost [IPv6:0:0:0:0:0:0:0:1])
- by chekov.greenie.muc.de (8.18.2/8.18.1) with ESMTP id 6598i8o8049703;
- Tue, 9 Jun 2026 10:44:08 +0200 (CEST)
+ by chekov.greenie.muc.de (8.18.2/8.18.1) with ESMTP id 6597B5ua047828;
+ Tue, 9 Jun 2026 09:11:05 +0200 (CEST)
  (envelope-from gert@chekov.greenie.muc.de)
 Received: (from gert@localhost)
- by chekov.greenie.muc.de (8.18.2/8.18.1/Submit) id 6598i7a8049702;
- Tue, 9 Jun 2026 10:44:07 +0200 (CEST) (envelope-from gert)
-Date: Tue, 9 Jun 2026 10:44:07 +0200 (CEST)
-Message-Id: <202606090844.6598i7a8049702@chekov.greenie.muc.de>
+ by chekov.greenie.muc.de (8.18.2/8.18.1/Submit) id 6597B51Z047827;
+ Tue, 9 Jun 2026 09:11:05 +0200 (CEST) (envelope-from gert)
+Date: Tue, 9 Jun 2026 09:11:05 +0200 (CEST)
+Message-Id: <202606090711.6597B51Z047827@chekov.greenie.muc.de>
 From: Gert Doering <gert@greenie.muc.de>
-To: Gianmarco De Gregori <gianmarco@mandelbit.com>
+To: Frank Lichtenheld <frank@lichtenheld.com>
 X-Patchwork-State: Accepted
-In-Reply-To: <20260520101152.17453-1-gert@greenie.muc.de>
-References: <20260520101152.17453-1-gert@greenie.muc.de>
-X-Headers-End: 1wWxJE-0001CE-4p
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix: port-share and
- multi-socket interaction
+In-Reply-To: <20260607170713.4980-1-gert@greenie.muc.de>
+References: <20260607170713.4980-1-gert@greenie.muc.de>
+X-Headers-End: 1wWxJG-0001CE-Fn
+Subject: [Openvpn-devel] [PATCH applied] Re: dev-tools: Fix run-cppcheck to
+ cover more code
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -84,36 +84,23 @@ Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-Tested this on master without the patch.  A config with two "local"
-statements, one UDP, one TCP, and "port-share" will always fail with
+This is not directly code affecting, just dev-tools and providing info
+on "how can you run cppcheck on this code base?" to other contributors,
+and as such, useful addition.  Have not actually run it yet, though :-)
 
-   Jun  9 10:26:19 gentoo tun-tcp-p2mp[19994]: Options error: --port-share only works in TCP server mode (--proto values of tcp-server, tcp4-server, or tcp6-server)
+Your patch has been applied to the master branch.
 
-(the order of "local" statements does not matter).  With the patch, it
-will happily bind both ports and portshare works...
+commit a71e8508f93f6ea19841779e42b9d60561613195
+Author: Frank Lichtenheld
+Date:   Sun Jun 7 19:07:07 2026 +0200
 
-   2026-06-09 10:36:17 us=623614 tcp6-server:[2001:608:4:0:62e9:965e:fba9:3fef]:50046 Non-OpenVPN client protocol detected
+     dev-tools: Fix run-cppcheck to cover more code
 
-The code change is also quite straightforward - instead of checking only
-"ce->proto" (which might be anything here), we need to walk list of
-sockets and see if there is "any tcp socket".  I also tested "2 TCP 
-sockets", and port-share works on either of them.  Good :-)
-
-
-Your patch has been applied to the master and release/2.7 branch (bugfix).
-
-commit 0d7ea983e4c92d4c2caf5077ed8e868744c72512 (master)
-commit 06e71f0c5fb3e8bc5980ca10e062b0c571b9b071 (release/2.7)
-Author: Gianmarco De Gregori
-Date:   Wed May 20 12:11:44 2026 +0200
-
-     Fix: port-share and multi-socket interaction
-
-     Signed-off-by: Gianmarco De Gregori <gianmarco@mandelbit.com>
-     Acked-by: Frank Lichtenheld <frank@lichtenheld.com>
-     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1680
-     Message-Id: <20260520101152.17453-1-gert@greenie.muc.de>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg36986.html
+     Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
+     Acked-by: Gert Doering <gert@greenie.muc.de>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1665
+     Message-Id: <20260607170713.4980-1-gert@greenie.muc.de>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg37078.html
      Signed-off-by: Gert Doering <gert@greenie.muc.de>
 
 
