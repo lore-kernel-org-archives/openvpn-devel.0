@@ -4,37 +4,37 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B0C53CD8CB9
-	for <openvpn-devel@archiver.kernel.org>; Tue,  9 Jun 2026 15:52:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B80CDCD98C5
+	for <openvpn-devel@archiver.kernel.org>; Tue,  9 Jun 2026 15:52:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=NPsle3D8E52zDdHGVcKyvlY1Ji4ed3DYvIfkUMf+4PE=; b=adYq3BlHf6Gds2Yzuc23qfdnQy
-	FeQ4o1PZIfZ3QvXMhGeW7RaBJ+WPXNcU9Tf+zvk3+1drwSj7BZQ7kwuv/BVi8wMejUnUE22xEyzWI
-	GuGsDMtBwHbLEwgZXLxQxWGYlQwXIl2+r3cY4Gyu2iUVk5LG2Qe/JPA6o10RCN6xaphE=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=FYdZz4zLHqdiFyq2F5rkY2eRXmDbvXH6fLkvAT7pMho=; b=IdJOjns7zCKvges3j3BVtCX9OS
+	hMVVEcrYJBG2g6YJyXifXLoxt2uiP1D4tgTtAfIinmd4gq1+lnITHcTzXknWufvA9zv7cqVc90scy
+	pkb9WM8velsTQUfRloGph2kP67L/5Hh/rq3jr9Vq/1BcFtNbkhapEFFWBuf6jXa34iYs=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wWykp-0007ke-Qc;
-	Tue, 09 Jun 2026 15:52:39 +0000
+	id 1wWykt-0000er-Vo;
+	Tue, 09 Jun 2026 15:52:41 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1wWykc-0007kJ-B7
+ (envelope-from <gert@blue4.greenie.muc.de>) id 1wWyks-0000ek-IA
  for openvpn-devel@lists.sourceforge.net;
- Tue, 09 Jun 2026 15:52:26 +0000
+ Tue, 09 Jun 2026 15:52:40 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
  In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=YgrFEfyY1Ydy8r95ra2hD1EEEFHWOTbi85qnW4PxiiM=; b=XFYGV5mzmQ+3XXKI0RCkS+0Lb6
- nHcJmCsuzhSD10QDAcgVtcxv3WRzJX0j3Y/dsHOy3JShMi17FgsQ7hgU11qTSvUek98sbs4WtZj1d
- 1c0AF5VqOQfKpAXZyjx6FgNetndwtw09uUgmSZkA8f5Nik7HnFa2lbl/gf4sbAEDWAJI=;
+ bh=2AI/+NTKrlSTZCIZKKLQAtY/dSwRKAqcDbwVplVyOqk=; b=fPTMrg9Ap+Cx36Pu3/yeod1fcS
+ IVLOo37k0SiUqDMav0mYl2DWz/DzfmZwnN2PGfJWMv5hDCtj6+X1z8WEheWnDNnF+j2DY4na3RzBm
+ /jvW9lb5VjWDAFktapfRoTlkRoKUlS+Ot/xxBHlstGQ3rk+F5oqLrMnD2zi9GOH5uwBk=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -42,31 +42,31 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=YgrFEfyY1Ydy8r95ra2hD1EEEFHWOTbi85qnW4PxiiM=; b=BpWeqsxS5h7zYnuXXQ89LnJLjD
- ZMCH10dDaQIFVeZf50/ow/irc3CnubOZbXtRp3kTqWohaOmW6Env7KfMoJeDNDmtVrGwv/y06IByk
- Ol0kKQpA8pwI6KxQAmShJMsBqLccwANRlw7R6PdO4x0HzpVjKgTvfbneB6hLOgavtvC0=;
+ bh=2AI/+NTKrlSTZCIZKKLQAtY/dSwRKAqcDbwVplVyOqk=; b=mWbbxGY+oYjBrKC64YFqtntLyf
+ TtJhcItkYW/wySplLeHdHLaxScw+x567iI8uixom+AVVliyERuPuV3fyW2AHnILQ2WavViOHIknNL
+ x/Y0OVd3WgDSB6rw9ajLoctYsvf4zNP3zg2Mof2mihuqi75V4XV+yfEn5h2OLjc8h89k=;
 Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wWykZ-00088b-KM for openvpn-devel@lists.sourceforge.net;
- Tue, 09 Jun 2026 15:52:26 +0000
+ id 1wWykn-0008Bc-Pl for openvpn-devel@lists.sourceforge.net;
+ Tue, 09 Jun 2026 15:52:39 +0000
 Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 659FqCDQ030798
- for <openvpn-devel@lists.sourceforge.net>; Tue, 9 Jun 2026 17:52:12 +0200
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 659FqQET030841
+ for <openvpn-devel@lists.sourceforge.net>; Tue, 9 Jun 2026 17:52:26 +0200
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 659FqCk7030797
- for openvpn-devel@lists.sourceforge.net; Tue, 9 Jun 2026 17:52:12 +0200
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 659FqQKK030840
+ for openvpn-devel@lists.sourceforge.net; Tue, 9 Jun 2026 17:52:26 +0200
 From: Gert Doering <gert@greenie.muc.de>
 To: openvpn-devel@lists.sourceforge.net
-Date: Tue,  9 Jun 2026 17:52:06 +0200
-Message-ID: <20260609155211.30747-1-gert@greenie.muc.de>
+Date: Tue,  9 Jun 2026 17:52:21 +0200
+Message-ID: <20260609155226.30827-1-gert@greenie.muc.de>
 X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1776168708000.Ifd29485524674c64d56fc5f7ef8bdd1e00215fc9@gerrit.openvpn.net>
-References: <gerrit.1776168708000.Ifd29485524674c64d56fc5f7ef8bdd1e00215fc9@gerrit.openvpn.net>
+In-Reply-To: <gerrit.1776864065000.I88254e985d67234d827b92908079795df23daf20@gerrit.openvpn.net>
+References: <gerrit.1776864065000.I88254e985d67234d827b92908079795df23daf20@gerrit.openvpn.net>
 MIME-Version: 1.0
-X-Headers-End: 1wWykZ-00088b-KM
-Subject: [Openvpn-devel] [PATCH v2] AWS-LC: Use openssl_stack_size_t for
- declaring stack size
+X-Headers-End: 1wWykn-0008Bc-Pl
+Subject: [Openvpn-devel] [PATCH v1] AWS-LC: Add casts and openssl_opt_t
+ typdef to allow AWS-LC with -Werror
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -84,164 +84,164 @@ Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
 From: Arne Schwabe <arne@rfc2549.org>
 
-OpenSSL and AWS-LC disagree on the type that they use for
-stack size. Instead of doing a lot of various casts, use
-a typedef to avoid these casts and use the right type for
-each library.
-
-Change-Id: Ifd29485524674c64d56fc5f7ef8bdd1e00215fc9
-Signed-off-by: Arne Schwabe <arne@rfc2549.org>
+Change-Id: I88254e985d67234d827b92908079795df23daf20
+Signed-off-by: Arne Schwabe <arne-openvpn@rfc2549.org>
 Acked-by: Frank Lichtenheld <frank@lichtenheld.com>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1627
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1637
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1627
-This mail reflects revision 2 of this Change.
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1637
+This mail reflects revision 1 of this Change.
+
+Signed-off-by line for the author was added as per our policy.
 
 Acked-by according to Gerrit (reflected above):
 Frank Lichtenheld <frank@lichtenheld.com>
 
         
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index e4cb799..5cc1a7d 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -347,6 +347,4 @@
+       gitref: v1.70.0
+       libconfigure: cmake -B build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$LIBPREFIX" -DBUILD_SHARED_LIBS=1
+       libmake: cmake --build build
+-      libinstall: sudo cmake --install build
+-      # not ready for --enable-werror
+-      ovpnconfigureflags:
++      libinstall: sudo cmake --install build
+\ No newline at end of file
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index c11cfd8..fa9eb67 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -425,7 +425,7 @@
+ print_digest(EVP_MD *digest, void *unused)
+ {
+     printf("%s %d bit digest size\n", md_kt_name(EVP_MD_get0_name(digest)),
+-           EVP_MD_size(digest) * 8);
++           (int)EVP_MD_size(digest) * 8);
+ }
+ 
+ void
+@@ -1025,7 +1025,7 @@
+                    "Message hash algorithm '%s' uses a default hash "
+                    "size (%d bytes) which is larger than " PACKAGE_NAME "'s current "
+                    "maximum hash size (%d bytes)",
+-                   digest, EVP_MD_size(md), MAX_HMAC_KEY_LENGTH);
++                   digest, (int)EVP_MD_size(md), MAX_HMAC_KEY_LENGTH);
+     }
+     return md;
+ }
+@@ -1144,7 +1144,7 @@
+ int
+ md_ctx_size(const EVP_MD_CTX *ctx)
+ {
+-    return EVP_MD_CTX_size(ctx);
++    return (int)EVP_MD_CTX_size(ctx);
+ }
+ 
+ void
+@@ -1188,7 +1188,7 @@
+     evp_md_type *kt = md_get(mdname);
+     ASSERT(NULL != kt && NULL != ctx);
+ 
+-    int key_len = EVP_MD_size(kt);
++    int key_len = (int)EVP_MD_size(kt);
+     HMAC_CTX_reset(ctx);
+     if (!HMAC_Init_ex(ctx, key, key_len, kt, NULL))
+     {
 diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-index 3494ce6..ec059ac 100644
+index ec059ac..b61bcbf 100644
 --- a/src/openvpn/openssl_compat.h
 +++ b/src/openvpn/openssl_compat.h
-@@ -49,8 +49,12 @@
-  * intrusive than casts everywhere */
- #if defined(OPENSSL_IS_AWSLC)
+@@ -51,10 +51,14 @@
  typedef uint32_t openssl_err_t;
-+typedef size_t openssl_stack_size_t;
-+#define PRI_OPENSSL_STACK "zu"
+ typedef size_t openssl_stack_size_t;
+ #define PRI_OPENSSL_STACK "zu"
++typedef uint32_t openssl_opt_t;
  #else
  typedef unsigned long openssl_err_t;
-+typedef int openssl_stack_size_t;
-+#define PRI_OPENSSL_STACK "d"
+ typedef int openssl_stack_size_t;
+ #define PRI_OPENSSL_STACK "d"
++/* OpenSSL 4.0 actually uses bits in the upper half of the uint64_t (e.g.
++ * SSL_OP_PREFER_NO_DHE_KEX), so we really should use an uint64_t here */
++typedef uint64_t openssl_opt_t;
  #endif
  
  
 diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index 6130dc3..6ce5f3f 100644
+index 6ce5f3f..ef99b22 100644
 --- a/src/openvpn/ssl_openssl.c
 +++ b/src/openvpn/ssl_openssl.c
-@@ -981,7 +981,6 @@
-     X509 *cert;
-     STACK_OF(X509) *ca = NULL;
-     PKCS12 *p12;
--    int i;
-     char password[256];
- 
-     ASSERT(NULL != ctx);
-@@ -1065,7 +1064,7 @@
-          */
-         if (ca && sk_X509_num(ca))
-         {
--            for (i = 0; i < sk_X509_num(ca); i++)
-+            for (openssl_stack_size_t i = 0; i < sk_X509_num(ca); i++)
-             {
-                 X509_STORE *cert_store = SSL_CTX_get_cert_store(ctx->ctx);
-                 if (!X509_STORE_add_cert(cert_store, sk_X509_value(ca, i)))
-@@ -1090,7 +1089,7 @@
-          */
-         if (ca && sk_X509_num(ca))
-         {
--            for (i = 0; i < sk_X509_num(ca); i++)
-+            for (openssl_stack_size_t i = 0; i < sk_X509_num(ca); i++)
-             {
-                 if (!SSL_CTX_add_extra_chain_cert(ctx->ctx, sk_X509_value(ca, i)))
-                 {
-@@ -1855,7 +1854,7 @@
-     X509_LOOKUP *lookup = NULL;
-     X509_STORE *store = NULL;
-     BIO *in = NULL;
--    int i, added = 0, prev = 0;
-+    openssl_stack_size_t added = 0, prev = 0;
- 
+@@ -328,7 +328,7 @@
      ASSERT(NULL != ctx);
  
-@@ -1884,7 +1883,7 @@
- 
-         if (info_stack)
-         {
--            for (i = 0; i < sk_X509_INFO_num(info_stack); i++)
-+            for (openssl_stack_size_t i = 0; i < sk_X509_INFO_num(info_stack); i++)
-             {
-                 X509_INFO *info = sk_X509_INFO_value(info_stack, i);
-                 if (info->crl)
-@@ -1942,11 +1941,11 @@
- 
-                 if (tls_server)
-                 {
--                    int cnum = sk_X509_NAME_num(cert_names);
-+                    openssl_stack_size_t cnum = sk_X509_NAME_num(cert_names);
-                     if (cnum != (prev + 1))
-                     {
-                         crypto_msg(M_WARN,
--                                   "Cannot load CA certificate file %s (entry %d did not validate)",
-+                                   "Cannot load CA certificate file %s (entry %" PRI_OPENSSL_STACK " did not validate)",
-                                    print_key_filename(ca_file, ca_file_inline), added);
-                     }
-                     prev = cnum;
-@@ -1954,7 +1953,7 @@
-             }
-             sk_X509_INFO_pop_free(info_stack, X509_INFO_free);
-         }
--        int cnum;
-+        openssl_stack_size_t cnum;
-         if (tls_server)
-         {
-             cnum = sk_X509_NAME_num(cert_names);
-@@ -1972,8 +1971,8 @@
-             if (cnum != added)
-             {
-                 crypto_msg(M_FATAL,
--                           "Cannot load CA certificate file %s (only %d "
--                           "of %d entries were valid X509 names)",
-+                           "Cannot load CA certificate file %s (only %" PRI_OPENSSL_STACK
-+                           "of %" PRI_OPENSSL_STACK "entries were valid X509 names)",
-                            print_key_filename(ca_file, ca_file_inline), cnum, added);
-             }
-         }
-@@ -2622,7 +2621,7 @@
- #else
-     STACK_OF(SSL_CIPHER) *sk = SSL_get1_supported_ciphers(ssl);
+     /* process SSL options */
+-    uint64_t sslopt = SSL_OP_SINGLE_DH_USE | SSL_OP_NO_TICKET;
++    openssl_opt_t sslopt = SSL_OP_SINGLE_DH_USE | SSL_OP_NO_TICKET;
+ #ifdef SSL_OP_CIPHER_SERVER_PREFERENCE
+     sslopt |= SSL_OP_CIPHER_SERVER_PREFERENCE;
  #endif
--    for (int i = 0; i < sk_SSL_CIPHER_num(sk); i++)
-+    for (openssl_stack_size_t i = 0; i < sk_SSL_CIPHER_num(sk); i++)
-     {
-         const SSL_CIPHER *c = sk_SSL_CIPHER_value(sk, i);
+@@ -1656,7 +1656,7 @@
+ ecdsa_sign(int type, const unsigned char *dgst, int dgstlen, unsigned char *sig,
+            unsigned int *siglen, const BIGNUM *kinv, const BIGNUM *r, EC_KEY *ec)
+ {
+-    int capacity = ECDSA_size(ec);
++    int capacity = (int)ECDSA_size(ec);
+     /*
+      * ECDSA does not seem to have proper constants for paddings since
+      * there are only signatures without padding at the moment, use
+@@ -1672,12 +1672,14 @@
+     return 0;
+ }
  
++#ifndef OPENSSL_IS_AWSLC
+ /* EC_KEY_METHOD callback: sign_setup(). We do no precomputations */
+ static int
+ ecdsa_sign_setup(EC_KEY *ec, BN_CTX *ctx_in, BIGNUM **kinvp, BIGNUM **rp)
+ {
+     return 1;
+ }
++#endif
+ 
+ /* EC_KEY_METHOD callback: sign_sig().
+  * Sign the hash and return the result as a newly allocated ECDS_SIG
+@@ -1688,7 +1690,7 @@
+                EC_KEY *ec)
+ {
+     ECDSA_SIG *ecsig = NULL;
+-    unsigned int len = ECDSA_size(ec);
++    unsigned int len = (unsigned int)ECDSA_size(ec);
+     struct gc_arena gc = gc_new();
+ 
+     unsigned char *buf = gc_malloc(len, false, &gc);
 diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
-index a30099d..6bb61b6 100644
+index 6bb61b6..b8648fd 100644
 --- a/src/openvpn/ssl_verify_openssl.c
 +++ b/src/openvpn/ssl_verify_openssl.c
-@@ -138,10 +138,10 @@
-          * one, but we don't depend on it...
-          */
+@@ -357,7 +357,7 @@
+     const EVP_MD *sha1 = EVP_sha1();
+     struct buffer hash = alloc_buf_gc((size_t)EVP_MD_size(sha1), gc);
+     X509_digest(cert, EVP_sha1(), BPTR(&hash), NULL);
+-    ASSERT(buf_inc_len(&hash, EVP_MD_size(sha1)));
++    ASSERT(buf_inc_len(&hash, (int)EVP_MD_size(sha1)));
+     return hash;
+ }
  
--        int numalts = sk_GENERAL_NAME_num(extensions);
-+        openssl_stack_size_t numalts = sk_GENERAL_NAME_num(extensions);
+@@ -367,7 +367,7 @@
+     const EVP_MD *sha256 = EVP_sha256();
+     struct buffer hash = alloc_buf_gc((size_t)EVP_MD_size(sha256), gc);
+     X509_digest(cert, EVP_sha256(), BPTR(&hash), NULL);
+-    ASSERT(buf_inc_len(&hash, EVP_MD_size(sha256)));
++    ASSERT(buf_inc_len(&hash, (int)EVP_MD_size(sha256)));
+     return hash;
+ }
  
-         /* loop through all alternatives */
--        for (int i = 0; i < numalts; i++)
-+        for (openssl_stack_size_t i = 0; i < numalts; i++)
-         {
-             /* get a handle to alternative name number i */
-             const GENERAL_NAME *name = sk_GENERAL_NAME_value(extensions, i);
-@@ -763,10 +763,8 @@
-     }
-     else
-     {
--        int i;
--
-         msg(D_HANDSHAKE, "Validating certificate extended key usage");
--        for (i = 0; SUCCESS != fFound && i < sk_ASN1_OBJECT_num(eku); i++)
-+        for (openssl_stack_size_t i = 0; SUCCESS != fFound && i < sk_ASN1_OBJECT_num(eku); i++)
-         {
-             ASN1_OBJECT *oid = sk_ASN1_OBJECT_value(eku, i);
-             char szOid[1024];
 
 
 _______________________________________________
