@@ -4,126 +4,125 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4222DCD98C5
-	for <openvpn-devel@archiver.kernel.org>; Tue,  9 Jun 2026 16:09:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id BD57BCD98C7
+	for <openvpn-devel@archiver.kernel.org>; Wed, 10 Jun 2026 11:35:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=M2XpktYB1i4Si0S8C1H3xWAQrWJM5fh2Wmp7Ajc5qT4=; b=EyWe7xijnVyiKTYK9cIMxcY4ng
-	hcNWuR2EwlwTQ/aObYqpJmz2nci7+sLo8rSchYyBZogo3/r3cb0NtSs2v+EkF1W+qqRmXsV4txDb+
-	pI/D9hjLcY7IMQ1iX1hnM+EBUOjQr2OfidVyQ6d7PYwmgG+tnpezxz4vk/Kk+gclCJ1o=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=oFFfWwljupilFRopioVe+inIUsGAT8w/7mqgpPiMMHU=; b=GuutTsS05vQ7NGv3dEAbsAPgYB
+	ojCvPM1Zd5Mb3qms1ydcYsSXY3sgR/Z2QrYQ/Pn+sAOUW7mKrD7gkB4LiYf0wLFJHCztazikv3RZp
+	0o0BB4bno8dYCL1TFYkvOQAkpFK5oyLue/GtUaHCxV5MIF8TAlT0y+gNoPgi9fydJvWg=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wWz1R-00085X-2S;
-	Tue, 09 Jun 2026 16:09:49 +0000
+	id 1wXHDj-0002R0-0Y;
+	Wed, 10 Jun 2026 11:35:43 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wWz1P-00085R-Au
+ (envelope-from <gerrit@openvpn.net>) id 1wXHDK-0002Oz-Sk
  for openvpn-devel@lists.sourceforge.net;
- Tue, 09 Jun 2026 16:09:47 +0000
+ Wed, 10 Jun 2026 11:35:19 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
  :List-Post:List-Owner:List-Archive;
- bh=MRnFr28RYBMKcTOLCNHUYflVVPPwL8lvcGp4kmJw/Es=; b=bKZm2CyImtl9AxHPX+w8vjgLed
- HYoY2lvHeEoC7VRC6o6wxKlLetDfMBg4YFg8dBpTvpdpNo+RAyVjlU+nS54kLBvE05hX2UHq2ZUR3
- fkd8OGRTRgPVIfSoNSVoyioCnIZlPsv2tSu3KCguJc+VBhXgkbqdwFOoEQS360Hf4iQ8=;
+ bh=upZkkSiLJFn7CyWKcxL2GDgauqsi0PL0oMCKgxM7VRg=; b=PBquiUSx0EcZhAb5QJLL27bxg6
+ vZamRXS4CKRP4aNvgBGqv05ZZIT6NwxXkZoA7IqmkdteGGakTIHbPJXHHI5KkxB2v3Iohj94cZw5i
+ tr/HuiaGNUP8Frj4+QVo4dBKwQfXJqzsJ3kQpLA0gXaIe9qnhL5yQZuUxHbYZkItHH1U=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
  Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=MRnFr28RYBMKcTOLCNHUYflVVPPwL8lvcGp4kmJw/Es=; b=O
- Zr6ZNrRmGn2Hi7sRwGd6WYAULIXDDGLcMkCH5AM0KpZbWQJ9IMrIRrJqB5h02XB9HbK926ajExMIw
- UlFh2lwH1ChdjGroVIIqtzLqyNsU+BMmQqqQOdk0D65FGrFyFCzoqwGb3JkJX3HNjO+odTnYsyKCR
- GXE/Hf9nCPReuts0=;
-Received: from mail-ed1-f48.google.com ([209.85.208.48])
+ List-Owner:List-Archive; bh=upZkkSiLJFn7CyWKcxL2GDgauqsi0PL0oMCKgxM7VRg=; b=T
+ vbsIveHqB03zvVFPbDQIc7eTBgXXhi/TplDGZvCOlJbXu+eaeDQedBDwBbcw17u/K4Ve0GEtlxZgG
+ ZjI8DQ/y8eFqaObGLqZuuSGfMzUBIFv42vXhvoUdLyBBbO9wAzZXFw2LuzhwBENsUeZWN6jutFB6H
+ jRtjS1mcaieuw9Dw=;
+Received: from mail-wr1-f42.google.com ([209.85.221.42])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wWz1N-0003s6-8I for openvpn-devel@lists.sourceforge.net;
- Tue, 09 Jun 2026 16:09:47 +0000
-Received: by mail-ed1-f48.google.com with SMTP id
- 4fb4d7f45d1cf-68bd9fce347so10467440a12.2
+ id 1wXHD6-0000gg-I5 for openvpn-devel@lists.sourceforge.net;
+ Wed, 10 Jun 2026 11:35:08 +0000
+Received: by mail-wr1-f42.google.com with SMTP id
+ ffacd0b85a97d-4600cbb06deso3656337f8f.1
  for <openvpn-devel@lists.sourceforge.net>;
- Tue, 09 Jun 2026 09:09:45 -0700 (PDT)
+ Wed, 10 Jun 2026 04:35:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1781021374; x=1781626174; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1781091298; x=1781696098; darn=lists.sourceforge.net;
  h=user-agent:content-disposition:content-transfer-encoding
  :mime-version:message-id:reply-to:subject:thread-index:references
  :in-reply-to:list-unsubscribe:list-id:auto-submitted:cc:to:date:from
  :from:to:cc:subject:date:message-id:reply-to;
- bh=MRnFr28RYBMKcTOLCNHUYflVVPPwL8lvcGp4kmJw/Es=;
- b=Y9au+H59ZhS6JzvFih2I2kLBNnS/DDvoguf/yOEWmmpl0HZg4X8n/Fr8alMGs9/mD+
- MfqFePK3OinbIIq/q3NOllc17+RCgzYLzh06VzSNDMa3GXpXRR5/0uCq4mKLzRFEe1h+
- kc3FBdF4GwZk4NH9EHT2DD1BJSijgN+aWJJl1gk2FKLx0g7Xc3GPmE1Jwa2F6/0/hdP+
- dN9LTXnDd7M9yECLTEOtndwYi6l13806Y++yHJdGL3ZBURkO+fgxrMRhG3rZMWMeLkGh
- fw2Cfgp4yaHsyij727MEGy+HTZ8G+xzFk+bVYrFJk5OoYgw9OJTzM1Syhx3JXu12aQP7
- 6aow==
+ bh=upZkkSiLJFn7CyWKcxL2GDgauqsi0PL0oMCKgxM7VRg=;
+ b=QSKyJHd6wJ5gC9bSpxonxhJFJn81ygTPmQeXd46/mUuiwwObPE226W5m4YqL7Hvrcp
+ 0f+97sZ/HIIVOX1GwQZZ7OMKxxIcBVVFZUhvBjzBzROml9BX6NpnBwnzeawAJd9Qz1wx
+ f8prur3qWZckYOMSiK4ifaBcM+jGN05jTioYrxU/9imZ+eczbSht9e3InDjVHKK5jyuI
+ vetHvq5WPX2WA3PNhhVP8aRSfRM0N37d7T5zOZgMaTGoRL9vGWXX24w1ysPzAzoSb2B0
+ RdqbIr+I1sCbUGvbi57BhIG9lPK1x4bV47y20CU2mld3ysbAvBaou1ZyF02ghb4XYmvu
+ NJnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1781021374; x=1781626174;
+ d=1e100.net; s=20251104; t=1781091298; x=1781696098;
  h=user-agent:content-disposition:content-transfer-encoding
  :mime-version:message-id:reply-to:subject:thread-index:references
  :in-reply-to:list-unsubscribe:list-id:auto-submitted:cc:to:date:from
  :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
  :reply-to;
- bh=MRnFr28RYBMKcTOLCNHUYflVVPPwL8lvcGp4kmJw/Es=;
- b=VCnoAH5q6cS3dZETSNURHhqnBzIFBLfcZMLVSYqlwIpToBSQFfXHw8jzuXqs4vbcoH
- 3U7PfcUprh2U4DLwIcH/5Sit3PfvgTrfL9sWUCWqX+zdfApsg87TBCwd5KNcdTMTYhh0
- 2Px/+J4wQ1FQlBUDNFxo+FdWjp71NsVTcYR7Yy5Q5KEEMIgV+XJ6oTNgrzMJphc4CaYY
- AKunEzLntzYhT93NROejpCSNJREueBv5RPJDRa5N6IDYyUPo+PUr/SYfqo8JC2G/iEjw
- p6wwTFLH2xP3nZLYZgdSwg09yvdfKIo/PaVvBGreQkEFzkWPm/IGwRX4131hWuhhjmci
- VDnA==
-X-Gm-Message-State: AOJu0YymuUiNAV4eJ0puAXwnFvSf8JBqqNqyuIoF1jgiFohDT0G/NOww
- oD4rutAyYI4rGU30XTDeKjghqJq6raAJlDB/9T/ZR9Pr48Y3K5w/BcfZJrLfExVxhrIchWC1t7e
- 1M6d9s+YGRbrFFWOhiDXj08rs0nwyrNE8TT7WM0AJA+qIVdYIIcPMrTEdGbPsq9cfHiceTkQTyc
- 9ABcYf4A==
-X-Gm-Gg: Acq92OHFlAD0C7pzMlh+2TUvVM1d8G9EgulUZhlpnp4oThfDGeBaorK0LA9tcYElPwr
- WN+ieTHsPj5Z36zkfE++fPGNKdYM8q9qFhe7bIf5Loz6pFac9JR2LzPvQEyPYSroB7gn0XHO6nf
- 6Pz2PKiHWMaoOVM3WVW/IJoDEkTRZjKxF6YBGc9L8qRKhAuk8hBfrGRNsVf1+nytdoiYwij+Mjm
- WqptV/YuhylDcTmKkojt2koLzR9rPwufopiizgrERr0sGnFOlRYcCDHyEV4ptP5/kJM7KYcpDel
- Zx4Zcbm9/J2kHNrlP3Ga25BkB5vY2lU058qOJS6QI4yZbM3bRjkzToNwp4KOJjicfwgCOKv12Ho
- hGtzYizpxaqHfAa+5pn7J4Seez9Jfo5I38kvFo+oMiyMj73aXAtB88twZs7bSwso/cdF5ybz+sK
- kShVTfXgTHMd+yRkYObAEvdiStQUvwB/lQYoHV7yMPBE/ZRjoBl8CV43Z8hMvwUvvyGPZpf2wuw
- uvqAK271ftkkLAvewSV5GeA6M/W+76WU1sq5mCsdBMCQdJoFVgjfodzxW7LnP7Qyo85wITuXIII
- SN5/v89iVrn3UbDHk+x+mr1r
-X-Received: by 2002:a05:6000:4a09:b0:45e:779a:302c with SMTP id
- ffacd0b85a97d-460566c94ddmr1704401f8f.29.1780990957118; 
- Tue, 09 Jun 2026 00:42:37 -0700 (PDT)
+ bh=upZkkSiLJFn7CyWKcxL2GDgauqsi0PL0oMCKgxM7VRg=;
+ b=tSkj1Qd4f8JIQz7yeM60v2vFDJInpdWV+Gd316PGX17xFdST4LoRQ7KYuEJg7x56CI
+ 5SD3OCeML1LV/bo9YsjGwIYJB1A6obyjnqSxG63pF5/OsVY7QKC8kko2Ouf7dteQZHxP
+ T6435r3luYCXkttB8DKq3x09u0nAIKaON8yHTWz9WAkGZnGsiCQaazSqUcZE61mgUIBy
+ 9uoYCKyzVqrFEjumK0sqicCTJgdu+60wf0eHYrEjIac+rNm8vwLYhIxLHfb8vVDviqgt
+ ns+oUpNo8td3X/mDxycETC6y8oDp0mWsufJ3N3YiFrPdQAoFz3RMIykkedb9stAUI2CT
+ 6upg==
+X-Gm-Message-State: AOJu0YygEErk3zwntWAoiKJyS+7/Dqy1vCwxRN3GM/EuCmHBbyrBPUOW
+ s2SY7yTt3LV1LDabLtDuvE5eq2Hi5SJtwf8Dy25sHjsYZWHLvQQPLjU5YGvgERYwYbdiYAy3pBN
+ +ooGfqQt0xgXvoAl9FVGJyvcqZKKAS52ge+GO0s+6BejZ4hAbyIrw2VRJiuo/GJl8WNFT
+X-Gm-Gg: Acq92OFZQaYBmDcUvLLVjcgflBN0Dr5NfOI7YZz3FocCwYSbjP00ulRGwDfjxtRSwSf
+ MNDb+0uVEFuqdE6jTlj33vAfLDYWtmfrG+D4QYVbfnPE3Sl+dUDUtKLdyT1DQMW7yvNTfKuKoyH
+ eSG0rhsEQTc18lPayKYVsxZ2dUKxkB1YaVFA4KMA/MWpl3VbMCIL1jom7QEKPqLcml8jqV4HAHI
+ GTzSAa9/gkqKf4PJXDEK+uAU8AqYvfCqoDGeL0epxZiXkGfqZ/hilpuYyWGgzHlFqoA8wqHgdTS
+ UFU/evkhXvPwcuF1XNNF2IlA+15N9Zy3MiGxWwuNAgbsUfsJoAdpbq3pGlpv1yrAydsAV56dCvs
+ DgQvyINe6/ciwKQ3pJ2iFtY8K38jc0KxMMsIc62fD1bsJ51tIV/bNI1kCL7Ny94fFhPvRntHrBC
+ 00Xre1h+Imr18tE/kZ9hYJWp/3gGanDpT0GCivT1dRsnHsEL2izaGBHCmHzRsNUv5TCB/MUlPmU
+ DQ8eIIbx0P05DNCcHm81Yu3Nbzn7XuTIzH7QdYwfyB9KhSgxRVetXU2auTW18Jusou46Cg5PDKv
+ 5IA963dKVgI+gqPTKAX9FPQk
+X-Received: by 2002:a05:6000:4b07:b0:460:21e7:330e with SMTP id
+ ffacd0b85a97d-46032b8164fmr31537864f8f.10.1781091298319; 
+ Wed, 10 Jun 2026 04:34:58 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-4601f351d69sm107927991f8f.29.2026.06.09.00.42.36
+ ffacd0b85a97d-4602cda363bsm58812909f8f.31.2026.06.10.04.34.57
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 09 Jun 2026 00:42:36 -0700 (PDT)
+ Wed, 10 Jun 2026 04:34:57 -0700 (PDT)
 X-Google-Original-From: "its_Giaan (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Tue, 9 Jun 2026 07:42:34 +0000
-To: plaisthos <arne-openvpn@rfc2549.org>
+Date: Wed, 10 Jun 2026 11:34:52 +0000
+To: plaisthos <arne-openvpn@rfc2549.org>, flichtenheld <frank@lichtenheld.com>
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newpatchset
 X-Gerrit-PatchSet: 2
-X-Gerrit-Change-Id: I2df0fec786184b9fcf9b7c56c74816325cdb6942
-X-Gerrit-Change-Number: 1702
+X-Gerrit-Change-Id: I115a17a2c61c65f48aea41d94150f34ea31f82da
+X-Gerrit-Change-Number: 1703
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1702?usp=email>
-X-Gerrit-Commit: 9bb6c3cf8378bba2bd4c7ae2495f6882de92cd95
-In-Reply-To: <gerrit.1779455880000.I2df0fec786184b9fcf9b7c56c74816325cdb6942@gerrit.openvpn.net>
-References: <gerrit.1779455880000.I2df0fec786184b9fcf9b7c56c74816325cdb6942@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzc5NDU1ODgwMDAwLkkyZGYwZmVjNzg2MTg0YjlmY2Y5YjdjNTZjNzQ4MTYzMjVjZGI2OTQyQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <b646c3cf056be032df9ea68f161a986f03890f1c-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1703?usp=email>
+X-Gerrit-Commit: dcb3bbe0ad6d29ae420af36f86b911f284a8bf06
+In-Reply-To: <gerrit.1779797980000.I115a17a2c61c65f48aea41d94150f34ea31f82da@gerrit.openvpn.net>
+References: <gerrit.1779797980000.I115a17a2c61c65f48aea41d94150f34ea31f82da@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzc5Nzk3OTgwMDAwLkkxMTVhMTdhMmM2MWM2NWY0OGFlYTQxZDk0MTUwZjM0ZWEzMWY4MmRhQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <9cd17c4dd3b425ca83c6cae827e84c6c0b80f7c8-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wWz1N-0003s6-8I
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: mudp: send HMAC
- reset reply synchronously
+X-Headers-End: 1wXHD6-0000gg-I5
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Add support for user
+ defined L3 master devices
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -138,546 +137,671 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 From: "its_Giaan \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
 Reply-To: gianmarco@mandelbit.com, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net, antonio@mandelbit.com,
- gert@greenie.muc.de
+ openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com
 Cc: "its_Giaan \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============9058560078795217623=="
+Content-Type: multipart/mixed; boundary="===============3095748586859423468=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============9058560078795217623==
+--===============3095748586859423468==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="TEpm8K51uRE="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="oIxIKY4Fiec="; charset=UTF-8
 
---TEpm8K51uRE=
+--oIxIKY4Fiec=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, its_Giaan, plaisthos=2E
+Attention is currently required from: its_Giaan, plaisthos=2E
 
-Hello=
- cron2, ordex, plaisthos, 
+Hello flicht=
+enheld, plaisthos, 
 
-I'd like you to reexamine a change=2E Please vi=
-sit
+I'd like you to reexamine a change=2E Please visit
 
-    http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1702?usp=3Demail
+  =
+  http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1703?usp=3Demail
 
-to loo=
-k at the new patch set (#2)=2E
-
-The following approvals got outdated and we=
-re removed:
-Code-Review+2 by plaisthos, Code-Review-1 by cron2
+to look at th=
+e new patch set (#2)=2E
 
 
-Change sub=
-ject: mudp: send HMAC reset reply synchronously
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+Change subject: Add support for user defined L3 m=
+aster devices
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-mudp: send HMAC reset reply synchronousl=
-y
 
-Building a HARD_RESET reply was queueing the result into three
-multi_con=
-text fields and deferring the send to the next event-loop
-iteration, where =
-multi_process_outgoing_link() flushed it:
+Add support for user defined L3 master devices
 
-  struct buffer hmac_reply;
-  st=
-ruct link_socket_actual *hmac_reply_dest;  /* aliased &m->top=2Ec2=2Efrom *=
-/
-  struct link_socket *hmac_reply_ls;
+Introduce the --l3mdev op=
+tion to allow associating OpenVPN
+tun interfaces with a user-defined L3 mas=
+ter device (VRF)=2E
 
-The mechanism had three latent issu=
-es:
+When configured, the tun interface is automatically bo=
+und
+to the specified l3mdev during interface initialization=2E
 
-1=2E hmac_reply_dest =3D &m->top=2Ec2=2Efrom stored a pointer alias in=
-to
-   shared mutable state=2E  Any subsequent read into m->top=2Ec2=2Efrom
-=
-   silently retargeted the pending reply to a different peer=2E
-2=2E m->hma=
-c_reply_ls =3D sock; at the top of multi_get_create_instance_udp()
-   was e=
-xecuted unconditionally for every UDP packet, including packets
-   that did=
- not queue a reply=2E  A stale queued reply could thus be sent
-   on the wr=
-ong listening socket=2E
-3=2E hmac_reply=2Edata pointed into m->top=2Ec2=2Eb=
-uffers->aux_buf (the only
-   slot)=2E  A second send_hmac_reset_packet() be=
-fore the first flush
-   would overwrite the first reply's bytes=2E
+This allows=
+ VPN traffic to operate within a VRF domain,
+enabling network isolation and=
+ policy-based routing at L3 level=2E
 
-These w=
-ere latent on master because m->multi_io->udp_flags was consumed
-and zeroed=
- by the first event in each multi_io_process_io() loop, so at
-most one UDP =
-read ran per outer iteration=2E
+Note: This feature is Linux-only and =
+relies on SITNL backend=2E
 
-Send the reply synchronously from within s=
-end_hmac_reset_packet() using
-the sock that the read fired on (threaded thr=
-ough do_pre_decrypt_check)=2E
-The reply is small, stateless, and rate-limit=
-ed by the existing
-reflect_filter_rate_limit_check(); dropping on EAGAIN is=
- acceptable
-because the client retransmits its HARD_RESET=2E  The three mul=
-ti_context
-fields and the deferred-flush block in multi_process_outgoing_li=
-nk() are
-gone; p2mp_iow_flags() no longer needs an IOW_TO_LINK branch for h=
-mac
-state=2E
-
-Change-Id: I2df0fec786184b9fcf9b7c56c74816325cdb6942
-Signed-o=
-ff-by: Antonio Quartulli <antonio@mandelbit=2Ecom>
+Change-Id: I115a17a2c61c65f48aea41d94150f34ea31=
+f82da
+Signed-off-by: Gianmarco De Gregori <gianmarco@mandelbit=2Ecom>
 ---
-M src/openvpn/mudp=
-=2Ec
-M src/openvpn/multi=2Eh
-2 files changed, 21 insertions(+), 25 deletion=
-s(-)
+M=
+ doc/man-sections/vpn-network-options=2Erst
+M src/openvpn/networking=2Eh
+M =
+src/openvpn/networking_sitnl=2Ec
+M src/openvpn/networking_sitnl=2Eh
+M src/o=
+penvpn/options=2Ec
+M src/openvpn/options=2Eh
+M src/openvpn/tun=2Ec
+7 files =
+changed, 104 insertions(+), 0 deletions(-)
 
 
-  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/0=
-2/1702/2
+  git pull ssh://gerrit=2Eopen=
+vpn=2Enet:29418/openvpn refs/changes/03/1703/2
 
-diff --git a/src/openvpn/mudp=2Ec b/src/openvpn/mudp=2Ec
-index 43=
-2c79a=2E=2Edded1ee 100644
---- a/src/openvpn/mudp=2Ec
-+++ b/src/openvpn/mudp=
-=2Ec
-@@ -40,7 +40,7 @@
- static void
- send_hmac_reset_packet(struct multi_co=
-ntext *m, struct tls_pre_decrypt_state *state,
-                        stru=
-ct tls_auth_standalone *tas, struct session_id *sid,
--                     =
-  bool request_resend_wkc)
-+                       bool request_resend_wkc,=
- struct link_socket *sock)
- {
-     reset_packet_id_send(&state->tls_wrap_tm=
-p=2Eopt=2Epacket_id=2Esend);
-     state->tls_wrap_tmp=2Eopt=2Epacket_id=2Er=
-ec=2Einitialized =3D true;
-@@ -54,16 +54,30 @@
-     ASSERT(buf_init(&c->c2=
-=2Ebuffers->aux_buf, buf=2Eoffset));
+diff --git a/doc/man-sectio=
+ns/vpn-network-options=2Erst b/doc/man-sections/vpn-network-options=2Erst
+i=
+ndex 181c990=2E=2E3853066 100644
+--- a/doc/man-sections/vpn-network-options=
+=2Erst
++++ b/doc/man-sections/vpn-network-options=2Erst
+@@ -304,6 +304,19 @=
+@
+   Specify the link layer address, more commonly known as the MAC address=
+=2E
+   Only applied to TAP devices=2E
  
-     buf_copy(&c->c2=2Ebuffers->aux_=
-buf, &buf);
--    m->hmac_reply =3D c->c2=2Ebuffers->aux_buf;
--    m->hmac_r=
-eply_dest =3D &m->top=2Ec2=2Efrom;
++--l3mdev name
++   Specify the L3 m=
+aster device (such as VRF) to which the tunnel
++   interface will be bound=
+=2E The specified device must already exist=2E
 +
-+    /*
-+     * We do not want to keep=
- any state here, so we send the reply to the
-+     * initial packet synchro=
-nously without queueing anything=2E
-+     *
-+     * If we hit EAGAIN on a b=
-usy socket, the packet will be lost and the
-+     * client will have to ret=
-ransmit its HARD_RESET=2E This is considered an
-+     * acceptable compromi=
-se to avoid consuming server resources under attack=2E
-+     */
-+    msg_se=
-t_prefix("Connection Attempt");
-+    c->c2=2Eto_link =3D c->c2=2Ebuffers->a=
-ux_buf;
-+    c->c2=2Eto_link_addr =3D &c->c2=2Efrom;
-     msg(D_MULTI_DEBUG=
-, "Reset packet from client, sending HMAC based reset challenge");
-+    pro=
-cess_outgoing_link(c, sock);
-+    c->c2=2Eto_link=2Elen =3D 0;
-+    c->c2=
-=2Eto_link_addr =3D NULL;
-+    msg_set_prefix(NULL);
++   Unlike ``--bind-dev``,=
+ which affects only the transport traffic
++   (the encrypted packets exchan=
+ged between peers),
++   ``--l3mdev`` associates tun0 with an L3 master devi=
+ce,
++   causing the data traffic traversing the tunnel
++   (in its unencryp=
+ted form within the local networking stack)
++   to follow the routing polic=
+y associated with that L3 domain=2E
++
++  (Supported on Linux only, on other=
+ platforms this is a no-op)=2E
++
+ --netns name
+   Specify the network names=
+pace in which the tunnel interface will be created=2E
+   The namespace must=
+ already exist=2E
+diff --git a/src/openvpn/networking=2Eh b/src/openvpn/net=
+working=2Eh
+index fab6bbf=2E=2E3b4ac9f 100644
+--- a/src/openvpn/networking=
+=2Eh
++++ b/src/openvpn/networking=2Eh
+@@ -125,6 +125,16 @@
+ int net_iface_d=
+el(openvpn_net_ctx_t *ctx, const openvpn_net_iface_t *iface);
+ 
+ /**
++ * Bi=
+nd a network interface to an L3 master device=2E
++ *
++ * @param ctx       O=
+penVPN network context=2E
++ * @param iface     Interface to bind=2E
++ *
++ *=
+ @return 0 on success, -1 on error=2E
++ */
++int net_iface_l3mdev_bind(openv=
+pn_net_ctx_t *ctx, const char *iface);
++
++/**
+  * Bring interface up or dow=
+n=2E
+  *
+  * @param ctx       the implementation specific context
+diff --gi=
+t a/src/openvpn/networking_sitnl=2Ec b/src/openvpn/networking_sitnl=2Ec
+ind=
+ex b60131f=2E=2Ea1d6086 100644
+--- a/src/openvpn/networking_sitnl=2Ec
++++ b=
+/src/openvpn/networking_sitnl=2Ec
+@@ -187,6 +187,7 @@
+     char path[PATH_M=
+AX];
+ 
+     ctx->netns =3D NULL;
++    ctx->l3mdev =3D NULL;
+ 
+     if (c &&=
+ c->options=2Enetns)
+     {
+@@ -200,6 +201,16 @@
+         ctx->netns =3D c-=
+>options=2Enetns;
+     }
+ 
++    if (c && c->options=2El3mdev)
++    {
++     =
+   if (!if_nametoindex(c->options=2El3mdev))
++        {
++            msg(M_=
+ERR, "%s: L3 master device %s does not exist", __func__, c->options=2El3mde=
+v);
++        }
++
++        ctx->l3mdev =3D c->options=2El3mdev;
++    }
++
+   =
+  ctx->gc =3D gc_new();
+     return 0;
  }
+@@ -1046,6 +1057,44 @@
+ #ifdef EN=
+ABLE_SITNL
  
- 
- /* Returns tru=
-e if this packet should create a new session */
- static bool
- do_pre_decryp=
-t_check(struct multi_context *m, struct tls_pre_decrypt_state *state,
--    =
-                 struct mroute_addr addr)
-+                     struct mrou=
-te_addr addr, struct link_socket *sock)
+ int
++net_iface_l3mdev_bind(openvpn_net_ctx_t *ctx, const char=
+ *iface)
++{
++    struct sitnl_link_req req;
++    int ret =3D -1;
++
++    CLE=
+AR(req);
++
++    int ifindex =3D if_nametoindex(iface);
++    int l3mdev_inde=
+x =3D if_nametoindex(ctx->l3mdev);
++
++    if (ifindex =3D=3D 0)
++    {
++   =
+     msg(M_WARN | M_ERRNO, "%s: rtnl: cannot get ifindex for %s", __func__,=
+ iface);
++        return ret;
++    }
++    if (l3mdev_index =3D=3D 0)
++    {=
+
++        msg(M_WARN | M_ERRNO, "%s: rtnl: cannot get ifindex for %s", __fu=
+nc__, ctx->l3mdev);
++        return ret;
++    }
++
++    req=2En=2Enlmsg_len =
+=3D NLMSG_LENGTH(sizeof(req=2Ei));
++    req=2En=2Enlmsg_flags =3D NLM_F_REQ=
+UEST | NLM_F_ACK;
++    req=2En=2Enlmsg_type =3D RTM_NEWLINK;
++
++    req=2Ei=
+=2Eifi_family =3D AF_PACKET;
++    req=2Ei=2Eifi_index =3D ifindex;
++
++    S=
+ITNL_ADDATTR(&req=2En, sizeof(req), IFLA_MASTER, &l3mdev_index, sizeof(int)=
+);
++
++    msg(M_INFO, "Binding %s to %s", iface, ctx->l3mdev);
++
++    ret =
+=3D sitnl_send(&req=2En, 0, 0, NULL, NULL);
++err:
++    return ret;
++}
++
++in=
+t
+ net_iface_up(openvpn_net_ctx_t *ctx, const char *iface, bool up)
  {
-     ASSERT(m->top=2Ec2=2Etls_au=
-th_standalone);
+    =
+ struct sitnl_link_req req;
+diff --git a/src/openvpn/networking_sitnl=2Eh b=
+/src/openvpn/networking_sitnl=2Eh
+index 7e723fe=2E=2E6dff698 100644
+--- a/s=
+rc/openvpn/networking_sitnl=2Eh
++++ b/src/openvpn/networking_sitnl=2Eh
+@@ -=
+28,6 +28,7 @@
+ struct openvpn_net_ctx
+ {
+     const char *netns;
++    const=
+ char *l3mdev;
+     struct gc_arena gc;
+ };
  
-@@ -106,7 +120,7 @@
-             /* Calculate the session=
- ID HMAC for our reply and create reset packet */
-             struct sessi=
-on_id sid =3D
-                 calculate_session_id_hmac(state->peer_sessio=
-n_id, from, hmac, handwindow, 0);
--            send_hmac_reset_packet(m, st=
-ate, tas, &sid, true);
-+            send_hmac_reset_packet(m, state, tas, &=
-sid, true, sock);
- 
-             return false;
-         }
-@@ -139,7 +153,7 =
-@@
-         struct session_id sid =3D
-             calculate_session_id_hma=
-c(state->peer_session_id, from, hmac, handwindow, 0);
- 
--        send_hmac_=
-reset_packet(m, state, tas, &sid, false);
-+        send_hmac_reset_packet(m=
-, state, tas, &sid, false, sock);
- 
-         /* We have a reply do not crea=
-te a new session */
-         return false;
-@@ -194,7 +208,6 @@
-     struct =
-multi_instance *mi =3D NULL;
-     struct hash *hash =3D m->hash;
-     real=
-=2Eproto =3D sock->info=2Eproto;
--    m->hmac_reply_ls =3D sock;
- 
-     if =
-(mroute_extract_openvpn_sockaddr(&real, &m->top=2Ec2=2Efrom=2Edest, true) &=
-& m->top=2Ec2=2Ebuf=2Elen > 0)
+diff --git a/src/openvpn/opti=
+ons=2Ec b/src/openvpn/options=2Ec
+index b602dcc=2E=2Ebfc13e2 100644
+--- a/s=
+rc/openvpn/options=2Ec
++++ b/src/openvpn/options=2Ec
+@@ -320,6 +320,9 @@
+  =
+   "--bind-dev dev  : Bind to the given device when making connection to a =
+peer or\n"
+     "                  listening for connections=2E This allows=
+ sending encrypted packets\n"
+     "                  via a VRF present on =
+the system=2E\n"
++    "--l3mdev        : Enslave the tunnel interface to a =
+layer 3 master device causing\n"
++    "                  the data traffic t=
+raversing the tunnel to follow the routing policy\n"
++    "                =
+  associated with that layer 3 domain=2E\n"
+ #endif
+     "--txqueuelen n  :=
+ Set the tun/tap TX queue length to n (Linux only)=2E\n"
+     "--mlock     =
+    : Disable Paging -- ensures key material and tunnel\n"
+@@ -6503,6 +6506=
+,14 @@
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+         options->netns =
+=3D p[1];
+     }
++    else if (streq(p[0], "l3mdev") && p[1] && !p[2])
++   =
+ {
++#ifndef ENABLE_SITNL
++        msg(M_WARN, "NOTE: --l3mdev is supported =
+only on Linux when compiled with SITNL");
++#endif
++        VERIFY_PERMISSIO=
+N(OPT_P_GENERAL);
++        options->l3mdev =3D p[1];
++    }
+     else if (s=
+treq(p[0], "nice") && p[1] && !p[2])
      {
-@@ -253,7 +266,7 @@
-                 =
-    "shutting down",
-                     mroute_addr_print(&real, &gc));
+         VERIFY_PERMISSION(OPT_=
+P_NICE);
+diff --git a/src/openvpn/options=2Eh b/src/openvpn/options=2Eh
+ind=
+ex 88a6dfa=2E=2E1afd41b 100644
+--- a/src/openvpn/options=2Eh
++++ b/src/open=
+vpn/options=2Eh
+@@ -316,6 +316,7 @@
+     struct dns_options dns_options;
+ 
+=
+     const char *netns;
++    const char *l3mdev;
+     bool remote_random;
  =
-            }
--            else if (do_pre_decrypt_check(m, &state, real))
-=
-+            else if (do_pre_decrypt_check(m, &state, real, sock))
-        =
+    const char *ipchange;
+     const char *dev;
+diff --git a/src/openvpn/tu=
+n=2Ec b/src/openvpn/tun=2Ec
+index 51d9bed=2E=2E250ce50 100644
+--- a/src/ope=
+nvpn/tun=2Ec
++++ b/src/openvpn/tun=2Ec
+@@ -1059,6 +1059,15 @@
      {
-                 /* This is an unknown session but with valid tls-au=
-th/tls-crypt
-                  * (or no auth at all)=2E  If this is the ini=
-tial packet of a
-@@ -321,15 +334,6 @@
-     {
-         multi_process_outgoin=
-g_link_dowork(m, mi, mpp_flags);
+      =
+   msg(M_FATAL, "Linux can't set mtu (%d) on %s", tun_mtu, ifname);
      }
--    if (m->hmac_reply_dest && m->h=
-mac_reply=2Elen > 0)
--    {
--        msg_set_prefix("Connection Attempt");
 =
--        m->top=2Ec2=2Eto_link =3D m->hmac_reply;
--        m->top=2Ec2=2Eto=
-_link_addr =3D m->hmac_reply_dest;
--        process_outgoing_link(&m->top, =
-m->hmac_reply_ls);
--        m->hmac_reply_ls =3D NULL;
--        m->hmac_rep=
-ly_dest =3D NULL;
--    }
- }
++#if defined(ENABLE_SITNL)
++    if (ctx->l3mdev)
++    {
++        if (net_if=
+ace_l3mdev_bind(ctx, ifname) < 0)
++        {
++            msg(M_NONFATAL, "=
+Linux can't bind %s to %s", ifname, ctx->l3mdev);
++        }
++    }
++#endif=
+
  
- /*
-@@ -382,10 +386,6 @@
+     if (net_iface_up(ctx, ifname, true) < 0)
      {
-         flag=
-s |=3D IOW_MBUF;
+@@ -1265,6 +1274,16=
+ @@
+         msg(M_FATAL, "Linux can't set mtu (%d) on %s", tun_mtu, ifname=
+);
      }
--    else if (m->hmac_reply_dest)
--    {
--        f=
-lags |=3D IOW_TO_LINK;
--    }
-     else
-     {
-         flags |=3D IOW_READ=
-;
-diff --git a/src/openvpn/multi=2Eh b/src/openvpn/multi=2Eh
-index 3ed08d4=
-=2E=2E8b837fa 100644
---- a/src/openvpn/multi=2Eh
-+++ b/src/openvpn/multi=2E=
-h
-@@ -201,10 +201,6 @@
-     struct context top; /**< Storage structure for =
-process-wide
-                          *   configuration=2E */
  
--    struc=
-t buffer hmac_reply;
--    struct link_socket_actual *hmac_reply_dest;
--    =
-struct link_socket *hmac_reply_ls;
--
-     /*
-      * Timer object for stale=
- route check
-      */
++#if defined(ENABLE_SITNL)
++    if (ctx->l3mdev)
++    {
++      =
+  if (net_iface_l3mdev_bind(ctx, ifname) < 0)
++        {
++            msg(M=
+_NONFATAL, "Linux can't bind %s to %s", ifname, ctx->l3mdev);
++        }
++ =
+   }
++#endif
++
+     if (net_iface_up(ctx, ifname, true) < 0)
+     {
+       =
+  msg(M_FATAL, "Linux can't bring %s up", ifname);
 
 -- 
-To view, visit http://gerrit=2Eopenvpn=2Enet/c/o=
-penvpn/+/1702?usp=3Demail
-To unsubscribe, or for help writing mail filters,=
- visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+To view, visit http=
+://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1703?usp=3Demail
+To unsubscribe, or f=
+or help writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?=
+usp=3Demail
 
-Gerrit-MessageTy=
-pe: newpatchset
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change=
--Id: I2df0fec786184b9fcf9b7c56c74816325cdb6942
-Gerrit-Change-Number: 1702
-G=
-errit-PatchSet: 2
-Gerrit-Owner: its_Giaan <gianmarco@mandelbit=2Ecom>
-Gerri=
-t-Reviewer: cron2 <gert@greenie=2Emuc=2Ede>
-Gerrit-Reviewer: plaisthos <arn=
-e-openvpn@rfc2549=2Eorg>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Eso=
-urceforge=2Enet>
-Gerrit-CC: ordex <antonio@mandelbit=2Ecom>
-Gerrit-Attentio=
-n: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Attention: cron2 <gert@gre=
-enie=2Emuc=2Ede>
-Gerrit-Attention: its_Giaan <gianmarco@mandelbit=2Ecom>
+Gerrit=
+-Branch: master
+Gerrit-Change-Id: I115a17a2c61c65f48aea41d94150f34ea31f82da=
 
---TEpm8K51uRE=
+Gerrit-Change-Number: 1703
+Gerrit-PatchSet: 2
+Gerrit-Owner: its_Giaan <gia=
+nmarco@mandelbit=2Ecom>
+Gerrit-Reviewer: flichtenheld <frank@lichtenheld=2E=
+com>
+Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-CC: ope=
+nvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Attention: plai=
+sthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Attention: its_Giaan <gianmarco@m=
+andelbit=2Ecom>
+
+--oIxIKY4Fiec=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: cron2, its_Giaan, plaisthos=2E </p>
-<p>its_Giaan <str=
-ong>uploaded patch set #2</strong> to this change=2E</p><p><a href=3D"http:=
-//gerrit=2Eopenvpn=2Enet/c/openvpn/+/1702?usp=3Demail">View Change</a></p><=
-p>The following approvals got outdated and were removed:
-Code-Review+2 by p=
-laisthos, Code-Review-1 by cron2</p><pre class=3D"blocks" style=3D"font-fam=
-ily: monospace,monospace; white-space: pre-wrap;">mudp: send HMAC reset rep=
-ly synchronously<br><br>Building a HARD_RESET reply was queueing the result=
- into three<br>multi_context fields and deferring the send to the next even=
-t-loop<br>iteration, where multi_process_outgoing_link() flushed it:<br><br=
->  struct buffer hmac_reply;<br>  struct link_socket_actual *hmac_reply_des=
-t;  /* aliased &amp;m-&gt;top=2Ec2=2Efrom */<br>  struct link_socket *hmac_=
-reply_ls;<br><br>The mechanism had three latent issues:<br><br>1=2E hmac_re=
-ply_dest =3D &amp;m-&gt;top=2Ec2=2Efrom stored a pointer alias into<br>   s=
-hared mutable state=2E  Any subsequent read into m-&gt;top=2Ec2=2Efrom<br> =
-  silently retargeted the pending reply to a different peer=2E<br>2=2E m-&g=
-t;hmac_reply_ls =3D sock; at the top of multi_get_create_instance_udp()<br>=
-   was executed unconditionally for every UDP packet, including packets<br>=
-   that did not queue a reply=2E  A stale queued reply could thus be sent<b=
-r>   on the wrong listening socket=2E<br>3=2E hmac_reply=2Edata pointed int=
-o m-&gt;top=2Ec2=2Ebuffers-&gt;aux_buf (the only<br>   slot)=2E  A second s=
-end_hmac_reset_packet() before the first flush<br>   would overwrite the fi=
-rst reply&#39;s bytes=2E<br><br>These were latent on master because m-&gt;m=
-ulti_io-&gt;udp_flags was consumed<br>and zeroed by the first event in each=
- multi_io_process_io() loop, so at<br>most one UDP read ran per outer itera=
-tion=2E<br><br>Send the reply synchronously from within send_hmac_reset_pac=
-ket() using<br>the sock that the read fired on (threaded through do_pre_dec=
-rypt_check)=2E<br>The reply is small, stateless, and rate-limited by the ex=
-isting<br>reflect_filter_rate_limit_check(); dropping on EAGAIN is acceptab=
-le<br>because the client retransmits its HARD_RESET=2E  The three multi_con=
-text<br>fields and the deferred-flush block in multi_process_outgoing_link(=
-) are<br>gone; p2mp_iow_flags() no longer needs an IOW_TO_LINK branch for h=
-mac<br>state=2E<br><br>Change-Id: I2df0fec786184b9fcf9b7c56c74816325cdb6942=
-<br>Signed-off-by: Antonio Quartulli &lt;antonio@mandelbit=2Ecom&gt;<br>---=
-<br>M src/openvpn/mudp=2Ec<br>M src/openvpn/multi=2Eh<br>2 files changed, 2=
-1 insertions(+), 25 deletions(-)<br><br></pre><pre class=3D"blocks" style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh:=
-//gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/02/1702/2</pre><pre sty=
-le=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff =
---git a/src/openvpn/mudp=2Ec b/src/openvpn/mudp=2Ec</span><br><span>index 4=
-32c79a=2E=2Edded1ee 100644</span><br><span>--- a/src/openvpn/mudp=2Ec</span=
-><br><span>+++ b/src/openvpn/mudp=2Ec</span><br><span>@@ -40,7 +40,7 @@</sp=
-an><br><span> static void</span><br><span> send_hmac_reset_packet(struct mu=
-lti_context *m, struct tls_pre_decrypt_state *state,</span><br><span>      =
-                  struct tls_auth_standalone *tas, struct session_id *sid,<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-                      =
- bool request_resend_wkc)</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+                       bool request_resend_wkc, struct link_socket *s=
-ock)</span><br><span> {</span><br><span>     reset_packet_id_send(&amp;stat=
-e-&gt;tls_wrap_tmp=2Eopt=2Epacket_id=2Esend);</span><br><span>     state-&g=
-t;tls_wrap_tmp=2Eopt=2Epacket_id=2Erec=2Einitialized =3D true;</span><br><s=
-pan>@@ -54,16 +54,30 @@</span><br><span>     ASSERT(buf_init(&amp;c-&gt;c2=
-=2Ebuffers-&gt;aux_buf, buf=2Eoffset));</span><br><span> </span><br><span> =
-    buf_copy(&amp;c-&gt;c2=2Ebuffers-&gt;aux_buf, &amp;buf);</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    m-&gt;hmac_reply =3D c-&gt;c2=2E=
-buffers-&gt;aux_buf;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   m-&gt;hmac_reply_dest =3D &amp;m-&gt;top=2Ec2=2Efrom;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    /*</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+     * We do not want to keep any state here, so we send the reply to =
-the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * initial p=
-acket synchronously without queueing anything=2E</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+     *</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+     * If we hit EAGAIN on a busy socket, the packet will b=
-e lost and the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-* client will have to retransmit its HARD_RESET=2E This is considered an</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+     * acceptable comp=
-romise to avoid consuming server resources under attack=2E</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+     */</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    msg_set_prefix(&quot;Connection Attempt&quot=
-;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    c-&gt;c2=2Et=
-o_link =3D c-&gt;c2=2Ebuffers-&gt;aux_buf;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    c-&gt;c2=2Eto_link_addr =3D &amp;c-&gt;c2=2Efrom=
-;</span><br><span>     msg(D_MULTI_DEBUG, &quot;Reset packet from client, s=
-ending HMAC based reset challenge&quot;);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    process_outgoing_link(c, sock);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    c-&gt;c2=2Eto_link=2Elen =3D 0;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    c-&gt;c2=2Eto_lin=
-k_addr =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- msg_set_prefix(NULL);</span><br><span> }</span><br><span> </span><br><span=
-> </span><br><span> /* Returns true if this packet should create a new sess=
-ion */</span><br><span> static bool</span><br><span> do_pre_decrypt_check(s=
-truct multi_context *m, struct tls_pre_decrypt_state *state,</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-                     struct mroute_a=
-ddr addr)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-           struct mroute_addr addr, struct link_socket *sock)</span><br><sp=
-an> {</span><br><span>     ASSERT(m-&gt;top=2Ec2=2Etls_auth_standalone);</s=
-pan><br><span> </span><br><span>@@ -106,7 +120,7 @@</span><br><span>       =
-      /* Calculate the session ID HMAC for our reply and create reset packe=
-t */</span><br><span>             struct session_id sid =3D</span><br><span=
->                 calculate_session_id_hmac(state-&gt;peer_session_id, from=
-, hmac, handwindow, 0);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-            send_hmac_reset_packet(m, state, tas, &amp;sid, true);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+            send_hmac_rese=
-t_packet(m, state, tas, &amp;sid, true, sock);</span><br><span> </span><br>=
-<span>             return false;</span><br><span>         }</span><br><span=
->@@ -139,7 +153,7 @@</span><br><span>         struct session_id sid =3D</sp=
-an><br><span>             calculate_session_id_hmac(state-&gt;peer_session_=
-id, from, hmac, handwindow, 0);</span><br><span> </span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        send_hmac_reset_packet(m, state, tas, &=
-amp;sid, false);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     send_hmac_reset_packet(m, state, tas, &amp;sid, false, sock);</span><b=
-r><span> </span><br><span>         /* We have a reply do not create a new s=
-ession */</span><br><span>         return false;</span><br><span>@@ -194,7 =
-+208,6 @@</span><br><span>     struct multi_instance *mi =3D NULL;</span><b=
-r><span>     struct hash *hash =3D m-&gt;hash;</span><br><span>     real=2E=
-proto =3D sock-&gt;info=2Eproto;</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    m-&gt;hmac_reply_ls =3D sock;</span><br><span> </span><br><s=
-pan>     if (mroute_extract_openvpn_sockaddr(&amp;real, &amp;m-&gt;top=2Ec2=
-=2Efrom=2Edest, true) &amp;&amp; m-&gt;top=2Ec2=2Ebuf=2Elen &gt; 0)</span><=
-br><span>     {</span><br><span>@@ -253,7 +266,7 @@</span><br><span>       =
-              &quot;shutting down&quot;,</span><br><span>                  =
-   mroute_addr_print(&amp;real, &amp;gc));</span><br><span>             }</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-            else if (do=
-_pre_decrypt_check(m, &amp;state, real))</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+            else if (do_pre_decrypt_check(m, &amp;stat=
-e, real, sock))</span><br><span>             {</span><br><span>            =
-     /* This is an unknown session but with valid tls-auth/tls-crypt</span>=
-<br><span>                  * (or no auth at all)=2E  If this is the initia=
-l packet of a</span><br><span>@@ -321,15 +334,6 @@</span><br><span>     {</=
-span><br><span>         multi_process_outgoing_link_dowork(m, mi, mpp_flags=
-);</span><br><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    if (m-&gt;hmac_reply_dest &amp;&amp; m-&gt;hmac_reply=2Elen &gt; 0)=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-        msg_set_prefix(&quot;Connecti=
-on Attempt&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-     m-&gt;top=2Ec2=2Eto_link =3D m-&gt;hmac_reply;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        m-&gt;top=2Ec2=2Eto_link_addr =3D m=
--&gt;hmac_reply_dest;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        process_outgoing_link(&amp;m-&gt;top, m-&gt;hmac_reply_ls);</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-        m-&gt;hmac_reply_ls =
-=3D NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        m-&g=
-t;hmac_reply_dest =3D NULL;</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    }</span><br><span> }</span><br><span> </span><br><span> /*</span>=
-<br><span>@@ -382,10 +386,6 @@</span><br><span>     {</span><br><span>     =
-    flags |=3D IOW_MBUF;</span><br><span>     }</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    else if (m-&gt;hmac_reply_dest)</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-        flags |=3D IOW_TO_LINK;</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span>     else</span><br=
-><span>     {</span><br><span>         flags |=3D IOW_READ;</span><br><span=
->diff --git a/src/openvpn/multi=2Eh b/src/openvpn/multi=2Eh</span><br><span=
->index 3ed08d4=2E=2E8b837fa 100644</span><br><span>--- a/src/openvpn/multi=
-=2Eh</span><br><span>+++ b/src/openvpn/multi=2Eh</span><br><span>@@ -201,10=
- +201,6 @@</span><br><span>     struct context top; /**&lt; Storage structu=
-re for process-wide</span><br><span>                          *   configura=
-tion=2E */</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    struct buffer hmac_reply;</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    struct link_socket_actual *hmac_reply_dest;</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    struct link_socket *hmac_reply=
-_ls;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>=
-     /*</span><br><span>      * Timer object for stale route check</span><b=
-r><span>      */</span><br><span></span><br></pre><p>To view, visit <a href=
-=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1702?usp=3Demail">change 1702=
-</a>=2E To unsubscribe, or for help writing mail filters, visit <a href=3D"=
-http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div=
- itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope ite=
-mprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=
-=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1702?usp=3Demail=
-"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+rently required from: its_Giaan, plaisthos=2E </p>
+<p>its_Giaan <strong>upl=
+oaded patch set #2</strong> to this change=2E</p><p><a href=3D"http://gerri=
+t=2Eopenvpn=2Enet/c/openvpn/+/1703?usp=3Demail">View Change</a></p><pre cla=
+ss=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-w=
+rap;">Add support for user defined L3 master devices<br><br>Introduce the -=
+-l3mdev option to allow associating OpenVPN<br>tun interfaces with a user-d=
+efined L3 master device (VRF)=2E<br><br>When configured, the tun interface =
+is automatically bound<br>to the specified l3mdev during interface initiali=
+zation=2E<br><br>This allows VPN traffic to operate within a VRF domain,<br=
+>enabling network isolation and policy-based routing at L3 level=2E<br><br>=
+Note: This feature is Linux-only and relies on SITNL backend=2E<br><br>Chan=
+ge-Id: I115a17a2c61c65f48aea41d94150f34ea31f82da<br>Signed-off-by: Gianmarc=
+o De Gregori &lt;gianmarco@mandelbit=2Ecom&gt;<br>---<br>M doc/man-sections=
+/vpn-network-options=2Erst<br>M src/openvpn/networking=2Eh<br>M src/openvpn=
+/networking_sitnl=2Ec<br>M src/openvpn/networking_sitnl=2Eh<br>M src/openvp=
+n/options=2Ec<br>M src/openvpn/options=2Eh<br>M src/openvpn/tun=2Ec<br>7 fi=
+les changed, 104 insertions(+), 0 deletions(-)<br><br></pre><pre class=3D"b=
+locks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">g=
+it pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/03/1703/2</=
+pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"=
+><span>diff --git a/doc/man-sections/vpn-network-options=2Erst b/doc/man-se=
+ctions/vpn-network-options=2Erst</span><br><span>index 181c990=2E=2E3853066=
+ 100644</span><br><span>--- a/doc/man-sections/vpn-network-options=2Erst</s=
+pan><br><span>+++ b/doc/man-sections/vpn-network-options=2Erst</span><br><s=
+pan>@@ -304,6 +304,19 @@</span><br><span>   Specify the link layer address,=
+ more commonly known as the MAC address=2E</span><br><span>   Only applied =
+to TAP devices=2E</span><br><span> </span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+--l3mdev name</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+   Specify the L3 master device (such as VRF) to which the tunnel=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   interface will b=
+e bound=2E The specified device must already exist=2E</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+   Unlike ``--bind-dev``, which affects only the transport t=
+raffic</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   (the encry=
+pted packets exchanged between peers),</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+   ``--l3mdev`` associates tun0 with an L3 master device=
+,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   causing the dat=
+a traffic traversing the tunnel</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+   (in its unencrypted form within the local networking stack)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+   to follow the rou=
+ting policy associated with that L3 domain=2E</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+  (Supported on Linux only, on other platforms this is a no-op)=2E</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> --n=
+etns name</span><br><span>   Specify the network namespace in which the tun=
+nel interface will be created=2E</span><br><span>   The namespace must alre=
+ady exist=2E</span><br><span>diff --git a/src/openvpn/networking=2Eh b/src/=
+openvpn/networking=2Eh</span><br><span>index fab6bbf=2E=2E3b4ac9f 100644</s=
+pan><br><span>--- a/src/openvpn/networking=2Eh</span><br><span>+++ b/src/op=
+envpn/networking=2Eh</span><br><span>@@ -125,6 +125,16 @@</span><br><span> =
+int net_iface_del(openvpn_net_ctx_t *ctx, const openvpn_net_iface_t *iface)=
+;</span><br><span> </span><br><span> /**</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ * Bind a network interface to an L3 master device=2E<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ * @param ctx       OpenVPN network c=
+ontext=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param =
+iface     Interface to bind=2E</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @re=
+turn 0 on success, -1 on error=2E</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+in=
+t net_iface_l3mdev_bind(openvpn_net_ctx_t *ctx, const char *iface);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+/**</span><br><span>  * Bring interface up or =
+down=2E</span><br><span>  *</span><br><span>  * @param ctx       the implem=
+entation specific context</span><br><span>diff --git a/src/openvpn/networki=
+ng_sitnl=2Ec b/src/openvpn/networking_sitnl=2Ec</span><br><span>index b6013=
+1f=2E=2Ea1d6086 100644</span><br><span>--- a/src/openvpn/networking_sitnl=
+=2Ec</span><br><span>+++ b/src/openvpn/networking_sitnl=2Ec</span><br><span=
+>@@ -187,6 +187,7 @@</span><br><span>     char path[PATH_MAX];</span><br><s=
+pan> </span><br><span>     ctx-&gt;netns =3D NULL;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    ctx-&gt;l3mdev =3D NULL;</span><br><span=
+> </span><br><span>     if (c &amp;&amp; c-&gt;options=2Enetns)</span><br><=
+span>     {</span><br><span>@@ -200,6 +201,16 @@</span><br><span>         c=
+tx-&gt;netns =3D c-&gt;options=2Enetns;</span><br><span>     }</span><br><s=
+pan> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (c &amp=
+;&amp; c-&gt;options=2El3mdev)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     if (!if_nametoindex(c-&gt;options=2El3mdev))</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+            msg(M_ERR, &quot;%s: L3 master device %s do=
+es not exist&quot;, __func__, c-&gt;options=2El3mdev);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        ctx-&gt;l3mdev =3D c-&gt;options=2El3mdev;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span>     ctx-&gt;gc =3D gc_new();</span=
+><br><span>     return 0;</span><br><span> }</span><br><span>@@ -1046,6 +10=
+57,44 @@</span><br><span> #ifdef ENABLE_SITNL</span><br><span> </span><br><=
+span> int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+net_iface_=
+l3mdev_bind(openvpn_net_ctx_t *ctx, const char *iface)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    struct sitnl_link_req req;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    int ret =3D -1;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    CLEAR(req);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int ifinde=
+x =3D if_nametoindex(iface);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    int l3mdev_index =3D if_nametoindex(ctx-&gt;l3mdev);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    if (ifindex =3D=3D 0)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        msg(M_WARN | M_ERRNO, &quot;%s: rtnl: cannot ge=
+t ifindex for %s&quot;, __func__, iface);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        return ret;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    if (l3mdev_index =3D=3D 0)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        msg(M_WARN | M_ERRNO, &quot;%s: rtnl: cannot get ifindex for %=
+s&quot;, __func__, ctx-&gt;l3mdev);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        return ret;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    req=2En=2Enlm=
+sg_len =3D NLMSG_LENGTH(sizeof(req=2Ei));</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    req=2En=2Enlmsg_flags =3D NLM_F_REQUEST | NLM_F_A=
+CK;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    req=2En=2Enl=
+msg_type =3D RTM_NEWLINK;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    req=2Ei=
+=2Eifi_family =3D AF_PACKET;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    req=2Ei=2Eifi_index =3D ifindex;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    SITNL_ADDATTR(&amp;req=2En, sizeof(req), IFLA_MASTER, &amp;l3mde=
+v_index, sizeof(int));</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(M_INFO, =
+&quot;Binding %s to %s&quot;, iface, ctx-&gt;l3mdev);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    ret =3D sitnl_send(&amp;req=2En, 0, 0, NULL, NULL);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+err:</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    return ret;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int=
+</span><br><span> net_iface_up(openvpn_net_ctx_t *ctx, const char *iface, b=
+ool up)</span><br><span> {</span><br><span>     struct sitnl_link_req req;<=
+/span><br><span>diff --git a/src/openvpn/networking_sitnl=2Eh b/src/openvpn=
+/networking_sitnl=2Eh</span><br><span>index 7e723fe=2E=2E6dff698 100644</sp=
+an><br><span>--- a/src/openvpn/networking_sitnl=2Eh</span><br><span>+++ b/s=
+rc/openvpn/networking_sitnl=2Eh</span><br><span>@@ -28,6 +28,7 @@</span><br=
+><span> struct openvpn_net_ctx</span><br><span> {</span><br><span>     cons=
+t char *netns;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    c=
+onst char *l3mdev;</span><br><span>     struct gc_arena gc;</span><br><span=
+> };</span><br><span> </span><br><span>diff --git a/src/openvpn/options=2Ec=
+ b/src/openvpn/options=2Ec</span><br><span>index b602dcc=2E=2Ebfc13e2 10064=
+4</span><br><span>--- a/src/openvpn/options=2Ec</span><br><span>+++ b/src/o=
+penvpn/options=2Ec</span><br><span>@@ -320,6 +320,9 @@</span><br><span>    =
+ &quot;--bind-dev dev  : Bind to the given device when making connection to=
+ a peer or\n&quot;</span><br><span>     &quot;                  listening f=
+or connections=2E This allows sending encrypted packets\n&quot;</span><br><=
+span>     &quot;                  via a VRF present on the system=2E\n&quot=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;--l3mdev=
+        : Enslave the tunnel interface to a layer 3 master device causing\n=
+&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;   =
+               the data traffic traversing the tunnel to follow the routing=
+ policy\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+&quot;                  associated with that layer 3 domain=2E\n&quot;</spa=
+n><br><span> #endif</span><br><span>     &quot;--txqueuelen n  : Set the tu=
+n/tap TX queue length to n (Linux only)=2E\n&quot;</span><br><span>     &qu=
+ot;--mlock         : Disable Paging -- ensures key material and tunnel\n&qu=
+ot;</span><br><span>@@ -6503,6 +6506,14 @@</span><br><span>         VERIFY_=
+PERMISSION(OPT_P_GENERAL);</span><br><span>         options-&gt;netns =3D p=
+[1];</span><br><span>     }</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    else if (streq(p[0], &quot;l3mdev&quot;) &amp;&amp; p[1] &amp;&=
+amp; !p[2])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifndef ENABLE_SITNL</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_WARN, &=
+quot;NOTE: --l3mdev is supported only on Linux when compiled with SITNL&quo=
+t;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        VERIFY_PERMISSION(OP=
+T_P_GENERAL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  options-&gt;l3mdev =3D p[1];</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    }</span><br><span>     else if (streq(p[0], &quot;nice&quot;=
+) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>=
+         VERIFY_PERMISSION(OPT_P_NICE);</span><br><span>diff --git a/src/op=
+envpn/options=2Eh b/src/openvpn/options=2Eh</span><br><span>index 88a6dfa=
+=2E=2E1afd41b 100644</span><br><span>--- a/src/openvpn/options=2Eh</span><b=
+r><span>+++ b/src/openvpn/options=2Eh</span><br><span>@@ -316,6 +316,7 @@</=
+span><br><span>     struct dns_options dns_options;</span><br><span> </span=
+><br><span>     const char *netns;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    const char *l3mdev;</span><br><span>     bool remote_ran=
+dom;</span><br><span>     const char *ipchange;</span><br><span>     const =
+char *dev;</span><br><span>diff --git a/src/openvpn/tun=2Ec b/src/openvpn/t=
+un=2Ec</span><br><span>index 51d9bed=2E=2E250ce50 100644</span><br><span>--=
+- a/src/openvpn/tun=2Ec</span><br><span>+++ b/src/openvpn/tun=2Ec</span><br=
+><span>@@ -1059,6 +1059,15 @@</span><br><span>     {</span><br><span>      =
+   msg(M_FATAL, &quot;Linux can&#39;t set mtu (%d) on %s&quot;, tun_mtu, if=
+name);</span><br><span>     }</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+#if defined(ENABLE_SITNL)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    if (ctx-&gt;l3mdev)</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        if (net_iface_l3mdev_bind(ctx, ifname) &lt; 0)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+            msg(M_NONFATAL, &quot;Linux can&=
+#39;t bind %s to %s&quot;, ifname, ctx-&gt;l3mdev);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+#endif</span><br><span> </span><br><span>     if (net_iface_up(ct=
+x, ifname, true) &lt; 0)</span><br><span>     {</span><br><span>@@ -1265,6 =
++1274,16 @@</span><br><span>         msg(M_FATAL, &quot;Linux can&#39;t set=
+ mtu (%d) on %s&quot;, tun_mtu, ifname);</span><br><span>     }</span><br><=
+span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(E=
+NABLE_SITNL)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if =
+(ctx-&gt;l3mdev)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (net_i=
+face_l3mdev_bind(ctx, ifname) &lt; 0)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            msg(M_NONFATAL, &quot;Linux can&#39;t bind %s to %s&quo=
+t;, ifname, ctx-&gt;l3mdev);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     if (ne=
+t_iface_up(ctx, ifname, true) &lt; 0)</span><br><span>     {</span><br><spa=
+n>         msg(M_FATAL, &quot;Linux can&#39;t bring %s up&quot;, ifname);</=
+span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit=
+=2Eopenvpn=2Enet/c/openvpn/+/1703?usp=3Demail">change 1703</a>=2E To unsubs=
+cribe, or for help writing mail filters, visit <a href=3D"http://gerrit=2Eo=
+penvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemty=
+pe=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" =
+itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"=
+http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1703?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
 
-<div styl=
-e=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-<div style=3D"di=
-splay:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Ge=
-rrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I=
-2df0fec786184b9fcf9b7c56c74816325cdb6942 </div>
-<div style=3D"display:none"=
-> Gerrit-Change-Number: 1702 </div>
-<div style=3D"display:none"> Gerrit-Pat=
-chSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gi=
-anmarco@mandelbit=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Revi=
-ewer: cron2 &lt;gert@greenie=2Emuc=2Ede&gt; </div>
-<div style=3D"display:no=
-ne"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none=
+"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerr=
+it-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: mast=
+er </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I115a17a2c61c65f48=
+aea41d94150f34ea31f82da </div>
+<div style=3D"display:none"> Gerrit-Change-N=
+umber: 1703 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <=
-div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@list=
-s=2Esourceforge=2Enet&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: or=
-dex &lt;antonio@mandelbit=2Ecom&gt; </div>
-<div style=3D"display:none"> Ger=
-rit-Attention: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div sty=
-le=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@greenie=2Emuc=2Ede&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gianm=
-arco@mandelbit=2Ecom&gt; </div>
+div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@mandelbit=
+=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenhel=
+d &lt;frank@lichtenheld=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerri=
+t-Reviewer: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=
+=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourc=
+eforge=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plai=
+sthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"=
+> Gerrit-Attention: its_Giaan &lt;gianmarco@mandelbit=2Ecom&gt; </div>
 
-</body></html>
---TEpm8K51uRE=--
+</b=
+ody></html>
+--oIxIKY4Fiec=--
 
 
---===============9058560078795217623==
+--===============3095748586859423468==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============9058560078795217623==
+--===============3095748586859423468==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -688,5 +812,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============9058560078795217623==--
+--===============3095748586859423468==--
 
