@@ -4,69 +4,69 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8944ACD8CA8
-	for <openvpn-devel@archiver.kernel.org>; Fri, 12 Jun 2026 11:33:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 665DDCD8CA8
+	for <openvpn-devel@archiver.kernel.org>; Fri, 12 Jun 2026 13:49:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
-	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	MIME-Version:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
+	List-Unsubscribe:List-Id:Subject:References:In-Reply-To:To:From:Message-Id:
+	Date:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=MtI2gPCY/x1aos8t4yxqEFg8DiInf278A0mswhhm0uk=; b=U3kTNiRoinxXQou4BtmZ3XmMCg
-	yHXy7uo/N8xhevTRWHirpy2r6NFWGsQUm/NWb+3jR2v/Q0epA9wJZubd5vcE67/joyOqUfg0xmgu6
-	TxYQv6QVD2E21LGMA0uMu4RIHjRCYLz3ceKG8ZZP8xHFjJy8sUy2N1v3mPqbECFUWXB8=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=5JzFl7sNFYIGiBZhfFeXccCSkCOT87Qm3li5n1aNcq4=; b=UbZktpk1Y34s8atLe37AiK1U96
+	UMBjhlWFgyHLdhsalGeH31LnyQqKCtyzzWIckbtnNS16twxEk/C4mG6W09piY/LhQTRmZcPdk3W/i
+	6RHlgBnPa3rnRACOCkdOrtmtQDpoAtbAEVuTqrYi2+qjZz3LHqY0OK3OndFumFTYQuGw=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wY08a-0004n0-CO;
-	Fri, 12 Jun 2026 11:33:24 +0000
+	id 1wY2Ga-0007Nr-3p;
+	Fri, 12 Jun 2026 13:49:45 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1wY08Z-0004mt-3v
+ (envelope-from <gert@chekov.greenie.muc.de>) id 1wY2GZ-0007NJ-6V
  for openvpn-devel@lists.sourceforge.net;
- Fri, 12 Jun 2026 11:33:23 +0000
+ Fri, 12 Jun 2026 13:49:44 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=PcZm2482skWE6XCcc1J9OAgBV3v+JWkSDHCiwc11Rm8=; b=CzXWvHO61yvj8plV9R+RYQbswy
- Qk0krrhB4cB/c8ZNcChailOHTq+LTBA91BrhiWbIBJwRNpveBONHZWLVHaisiHPnjdbUD8lxbrdBu
- 7M21l0Q+qxzUTZDMADPeIN4LFk4r5PACtStrFK5fV0Q3ju/XCN7E03ZfYvh07H0CfA1A=;
+ d=sourceforge.net; s=x; h=References:In-Reply-To:Subject:Cc:To:From:
+ Message-Id:Date:Sender:Reply-To:MIME-Version:Content-Type:
+ Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+ List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=Qj9Sj3rJALZlzdC7wkgiFuVp5F58Y8bYaxIK2VTdCRg=; b=id6j0i34ZBUK73izs7iCX6hoVY
+ dTZ/GQ8AUCyvLu44v1/IQ/PuWWZZVFf71SGnRW4qCAvoaSXWvwossi9XzmSx38+E0CTDVUxMyc18n
+ 2X7DuH8JJBnAg1+NckR7T20MS//509Rw+dXjqE9nkLLQJorkZCV5S+xvO59FMJZXL1FA=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ h=References:In-Reply-To:Subject:Cc:To:From:Message-Id:Date:Sender:Reply-To
+ :MIME-Version:Content-Type:Content-Transfer-Encoding:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=PcZm2482skWE6XCcc1J9OAgBV3v+JWkSDHCiwc11Rm8=; b=RhDdk8XMizzk/waguUEAjYsGGt
- Z3OHOAfvpK0aGK1o1IPnm+YF/HLBh00YDdCUP63lJnushf7JJluLPeXEipFBnDAuC5emsAo6Vx/W7
- Fgyr+4eULOEG6sIFRzk86G4il+YKgmeP30wtodFCNMKM/aFzmebhExa3MIoTpFrx9N1U=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ bh=Qj9Sj3rJALZlzdC7wkgiFuVp5F58Y8bYaxIK2VTdCRg=; b=GVJ3CPjm63VLhFgitnvcanuUV+
+ QVraz2a9VH6UyR5fxQoJtmgnS+W9vic1K0RiSR9X6MD8BMYS0+cRdDu/iBQ/mG/4sUMzjXXl44FL1
+ G7odPufPAKlTzC8C+rppqvxSwxtdoxOfhh4C+y4Ooq4T9/kEWWRDoSq+Tw5u2KHEpDl4=;
+Received: from chekov.greenie.muc.de ([193.149.48.178])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wY08W-0000X0-UT for openvpn-devel@lists.sourceforge.net;
- Fri, 12 Jun 2026 11:33:23 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 65CBX91F029927
- for <openvpn-devel@lists.sourceforge.net>; Fri, 12 Jun 2026 13:33:09 +0200
+ id 1wY2GU-00004z-12 for openvpn-devel@lists.sourceforge.net;
+ Fri, 12 Jun 2026 13:49:44 +0000
+Received: from chekov.greenie.muc.de (localhost [IPv6:0:0:0:0:0:0:0:1])
+ by chekov.greenie.muc.de (8.18.2/8.18.1) with ESMTP id 65CDnSgt076597;
+ Fri, 12 Jun 2026 15:49:28 +0200 (CEST)
+ (envelope-from gert@chekov.greenie.muc.de)
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 65CBX9lO029926
- for openvpn-devel@lists.sourceforge.net; Fri, 12 Jun 2026 13:33:09 +0200
+ by chekov.greenie.muc.de (8.18.2/8.18.1/Submit) id 65CDnSE3076596;
+ Fri, 12 Jun 2026 15:49:28 +0200 (CEST) (envelope-from gert)
+Date: Fri, 12 Jun 2026 15:49:28 +0200 (CEST)
+Message-Id: <202606121349.65CDnSE3076596@chekov.greenie.muc.de>
 From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Fri, 12 Jun 2026 13:33:02 +0200
-Message-ID: <20260612113309.29903-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1761063820000.Icc31b7fa0da86220df45552aecc15dc6c769cd54@gerrit.openvpn.net>
-References: <gerrit.1761063820000.Icc31b7fa0da86220df45552aecc15dc6c769cd54@gerrit.openvpn.net>
-MIME-Version: 1.0
-X-Headers-End: 1wY08W-0000X0-UT
-Subject: [Openvpn-devel] [PATCH v12] push: Fix conversion issues related to
- timeout in send_auth_pending_messages
+To: Frank Lichtenheld <frank@lichtenheld.com>
+X-Patchwork-State: Accepted
+In-Reply-To: <20260612110424.27033-1-gert@greenie.muc.de>
+References: <20260612110424.27033-1-gert@greenie.muc.de>
+X-Headers-End: 1wY2GU-00004z-12
+Subject: [Openvpn-devel] [PATCH applied] Re: mbuf: Fix conversion warnings
+ in mbuf and related code
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -78,88 +78,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Cc: openvpn-devel@lists.sourceforge.net
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@lichtenheld.com>
+I like patches that actually remove casts ;-)  (this takes one, and
+adds one, so evening out...) - changes make sense, remove #pragma, 
+onwards we go.
 
-Add additional checking to make sure that the required
-casts are safe.
+Your patch has been applied to the master branch.
 
-Change-Id: Icc31b7fa0da86220df45552aecc15dc6c769cd54
-Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
-Acked-by: Arne Schwabe <arne-openvpn@rfc2549.org>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1293
----
+commit 334938d4aba45bf4dde063f8f8d2c6022edf2a13
+Author: Frank Lichtenheld
+Date:   Fri Jun 12 13:04:17 2026 +0200
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+     mbuf: Fix conversion warnings in mbuf and related code
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1293
-This mail reflects revision 12 of this Change.
+     Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
+     Acked-by: Gert Doering <gert@greenie.muc.de>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1433
+     Message-Id: <20260612110424.27033-1-gert@greenie.muc.de>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg37182.html
+     Signed-off-by: Gert Doering <gert@greenie.muc.de>
 
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@rfc2549.org>
 
-        
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index 564ce86..e391147 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -429,11 +429,6 @@
-     gc_free(&gc);
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
--
- bool
- send_auth_pending_messages(struct tls_multi *tls_multi, struct tls_session *session,
-                            const char *extra, unsigned int timeout)
-@@ -449,7 +444,12 @@
-     /* Calculate the maximum timeout and subtract the time we already waited */
-     unsigned int max_timeout =
-         max_uint(tls_multi->opt.renegotiate_seconds / 2, tls_multi->opt.handshake_window);
--    max_timeout = max_timeout - (now - ks->initial);
-+    time_t time_elapsed = now - ks->initial;
-+    if (time_elapsed < 0 || time_elapsed >= (time_t)max_timeout)
-+    {
-+        return false;
-+    }
-+    max_timeout -= (unsigned int)time_elapsed;
-     timeout = min_uint(max_timeout, timeout);
- 
-     struct gc_arena gc = gc_new();
-@@ -734,6 +734,11 @@
-     }
- }
- 
-+#if defined(__GNUC__) || defined(__clang__)
-+#pragma GCC diagnostic push
-+#pragma GCC diagnostic ignored "-Wconversion"
-+#endif
-+
- static bool
- send_push_options(struct context *c, struct buffer *buf, struct push_list *push_list, int safe_cap,
-                   bool *push_sent, bool *multi_push)
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index 0804d2d..31ecf13 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -922,8 +922,9 @@
-             buf_chomp(iv_buf);
-             buf_chomp(extra_buf);
- 
-+            errno = 0;
-             long timeout = strtol(BSTR(timeout_buf), NULL, 10);
--            if (timeout <= 0)
-+            if (timeout <= 0 || (unsigned long)timeout > UINT_MAX || errno)
-             {
-                 msg(M_WARN, "could not parse auth pending file timeout");
-                 buffer_list_free(lines);
+--
+kind regards,
+
+Gert Doering
+
 
 
 _______________________________________________
