@@ -4,68 +4,68 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 99ADECD98DE
-	for <openvpn-devel@archiver.kernel.org>; Thu, 18 Jun 2026 06:19:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 167FACD98ED
+	for <openvpn-devel@archiver.kernel.org>; Thu, 18 Jun 2026 08:37:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
-	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	MIME-Version:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
+	List-Unsubscribe:List-Id:Subject:References:In-Reply-To:To:From:Message-Id:
+	Date:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=56HKXxVefj6m0BBuPrXM+vKDZV3pWBLJUS0O3doLtjI=; b=lF6r3DthWqndD5BcOTBQsr7ipB
-	i5sOD0LKVn591WJUTZULXeGlFQk63+raHRzYgIEHLN1A1zCNOQc9Eyk8clyf3tNupflP/yB+BTa8r
-	ez/Mv+DV0ib5ucpmbZaseR/SnJca/4QrqS9AvsSiR9EkHuX4RBSl9RK8I3ER1nnA7Pzg=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=m0pIGZvO9pEuohvSaCVwj61Gvp2kNrEO5CERYsP35nM=; b=cghlQNKnlOwu25eFFz8t6SMrJ2
+	fqZ9L69qnJ+N2Ylw5ijo+zC9jCHORsdgKKCJEdJLuYSVtJNtUm4Yzq7QXLXKbeaszmL6mOdo3Pzb0
+	dkdjFuEM2j3y1GoL3hRPJUsjzH9+XQWMuDIOeSIAYbkIC1XcazzwuqnHcCWn1VdEZKN0=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wa65V-0004r4-LW;
-	Thu, 18 Jun 2026 06:18:53 +0000
+	id 1wa8Fb-0004Ri-7F;
+	Thu, 18 Jun 2026 08:37:24 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1wa65T-0004qv-KT
+ (envelope-from <gert@chekov.greenie.muc.de>) id 1wa8FT-0004NC-S9
  for openvpn-devel@lists.sourceforge.net;
- Thu, 18 Jun 2026 06:18:51 +0000
+ Thu, 18 Jun 2026 08:37:17 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=VYj+b6z3x+oQVS8urJIiABGYBZ1wCYn7iZWAOuz5bgw=; b=Vcf844BNFSEKc71nw1kJcNeI4F
- CF0Cf3y3mEDaUYUQR8PDiQpUbBq+tzxXH94YqjxSCT4xkFQDLGl5V5Uf3+afYutIzKExXkTzJCCBV
- HOmHGwCVVK35BaZRgP7J+lhkUp/qIox0/yqxNoY2C2bGMdStOCL1lqIfbMiHz736qZa4=;
+ d=sourceforge.net; s=x; h=References:In-Reply-To:Subject:Cc:To:From:
+ Message-Id:Date:Sender:Reply-To:MIME-Version:Content-Type:
+ Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+ List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=OiOTjmAI8i0+JNYDdhRNMo7/3WcuUlHMWz2z84q9bLo=; b=MrIGXGZAZMIZw2m0ks1Y7auj8/
+ s+SUswrwjMQhJRR+4Ro7K/QGZyubbJBaKhrx5JFnQMkqk1NSbdpx4sd4L1Zo5++q8Y6cl5MAxCxDp
+ mH14Jc6R7q6AHityjW5ZMZsBiFToQyG3vVK3rCXtFpDuQ/ugCUvHj75GCKGWui2i0aF8=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ h=References:In-Reply-To:Subject:Cc:To:From:Message-Id:Date:Sender:Reply-To
+ :MIME-Version:Content-Type:Content-Transfer-Encoding:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=VYj+b6z3x+oQVS8urJIiABGYBZ1wCYn7iZWAOuz5bgw=; b=Vx2n+xu6vZc6y07IlQI/NUY2Ld
- +mhPUrpTm6YJt5LDNMQ9tBXmKhNp7dUApRzcQoGlZbdkwB0xjSFAbYnR3NbsQDtvEXataYSpYmQuy
- 17+Tdme4p/VBib+TT7K7lzkWOdGHpwfXvje+a7yjzB7QDSzz6Bd0yH8dlIE8DTRgkMAA=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ bh=OiOTjmAI8i0+JNYDdhRNMo7/3WcuUlHMWz2z84q9bLo=; b=iufgJbnSiMAZzbLvcY7aq4iTTd
+ LvFLVmAGlQkS6ig8xc8dznzT2XJZ+qpAj7ykhvZliM7NzUSmQ9dO+/H/wT7amLHOQ3wvCGn3huWSs
+ FxsJ943LZtPxMDju4u8MNmTa5tAsnLYpov/FIxeQLQ7v3hTjLClQH3lurEoEb3yOoAWQ=;
+Received: from chekov.greenie.muc.de ([193.149.48.178])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wa65R-0002Cx-Ct for openvpn-devel@lists.sourceforge.net;
- Thu, 18 Jun 2026 06:18:51 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 65I6IbWv016491
- for <openvpn-devel@lists.sourceforge.net>; Thu, 18 Jun 2026 08:18:37 +0200
+ id 1wa8FN-0005LW-DI for openvpn-devel@lists.sourceforge.net;
+ Thu, 18 Jun 2026 08:37:17 +0000
+Received: from chekov.greenie.muc.de (localhost [IPv6:0:0:0:0:0:0:0:1])
+ by chekov.greenie.muc.de (8.18.2/8.18.1) with ESMTP id 65I8b1ed092485;
+ Thu, 18 Jun 2026 10:37:01 +0200 (CEST)
+ (envelope-from gert@chekov.greenie.muc.de)
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 65I6IaxC016490
- for openvpn-devel@lists.sourceforge.net; Thu, 18 Jun 2026 08:18:36 +0200
+ by chekov.greenie.muc.de (8.18.2/8.18.1/Submit) id 65I8b1hX092484;
+ Thu, 18 Jun 2026 10:37:01 +0200 (CEST) (envelope-from gert)
+Date: Thu, 18 Jun 2026 10:37:01 +0200 (CEST)
+Message-Id: <202606180837.65I8b1hX092484@chekov.greenie.muc.de>
 From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Thu, 18 Jun 2026 08:18:28 +0200
-Message-ID: <20260618061835.16448-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1781714533000.I7ec318c86af994284d1c6272e3bbe2b1ede160fd@gerrit.openvpn.net>
-References: <gerrit.1781714533000.I7ec318c86af994284d1c6272e3bbe2b1ede160fd@gerrit.openvpn.net>
-MIME-Version: 1.0
-X-Headers-End: 1wa65R-0002Cx-Ct
-Subject: [Openvpn-devel] [PATCH v2] dns: Fix memory leak in
+To: saddamr3e <saddamr3e@gmail.com>
+X-Patchwork-State: Accepted
+In-Reply-To: <20260618061835.16448-1-gert@greenie.muc.de>
+References: <20260618061835.16448-1-gert@greenie.muc.de>
+X-Headers-End: 1wa8FN-0005LW-DI
+Subject: [Openvpn-devel] [PATCH applied] Re: dns: Fix memory leak in
  dns_server_addr_parse
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
@@ -78,55 +78,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Cc: openvpn-devel@lists.sourceforge.net
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: saddamr3e <saddamr3e@gmail.com>
+Thanks for the report and the patch.  Heiko has formally reviewed it, and
+our buildbot framework has tested that all --dns using tests still work.
 
-When the DNS server's address count is already full (exceeds the
-limit of 8), the function returned early without freeing the
-successfully resolved addrinfo struct. Fix this by checking the
-limit before executing the DNS lookup.
+Antonio remarked that the "overflow" test could be moved further to the
+start of the function - no need for all the address arithmetics if we
+already know we're full.  But that's an optimization / beautification
+we can do independently of this mem-leak fix.
 
-Github: OpenVPN/openvpn#1055
-Change-Id: I7ec318c86af994284d1c6272e3bbe2b1ede160fd
-Signed-off-by: saddamr3e <saddamr3e@gmail.com>
-Acked-by: Heiko Hund <heiko@openvpn.net>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1712
----
+Your patch has been applied to the master and release/2.7 branch (bugfix).
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+commit 154e8a520b3bd639fb137c1ba73ce8a80818d08d (master)
+commit 7f1d68ae651b0dece0044b19376bf8ed8213e764 (release/2.7)
+Author: saddamr3e
+Date:   Thu Jun 18 08:18:28 2026 +0200
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1712
-This mail reflects revision 2 of this Change.
+     dns: Fix memory leak in dns_server_addr_parse
 
-Acked-by according to Gerrit (reflected above):
-Heiko Hund <heiko@openvpn.net>
+     Signed-off-by: saddamr3e <saddamr3e@gmail.com>
+     Acked-by: Heiko Hund <heiko@openvpn.net>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1712
+     Message-Id: <20260618061835.16448-1-gert@greenie.muc.de>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg37209.html
+     Signed-off-by: Gert Doering <gert@greenie.muc.de>
 
-        
-diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
-index 954ed52..1465cdf 100644
---- a/src/openvpn/dns.c
-+++ b/src/openvpn/dns.c
-@@ -114,13 +114,13 @@
-         addr = addrcopy;
-     }
- 
--    struct addrinfo *ai = NULL;
--    if (openvpn_getaddrinfo(0, addr, NULL, 0, NULL, af, &ai) != 0)
-+    if (server->addr_count >= SIZE(server->addr))
-     {
-         return false;
-     }
- 
--    if (server->addr_count >= SIZE(server->addr))
-+    struct addrinfo *ai = NULL;
-+    if (openvpn_getaddrinfo(0, addr, NULL, 0, NULL, af, &ai) != 0)
-     {
-         return false;
-     }
+
+--
+kind regards,
+
+Gert Doering
+
 
 
 _______________________________________________
