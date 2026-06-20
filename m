@@ -4,105 +4,69 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 74F06CD98F8
-	for <openvpn-devel@archiver.kernel.org>; Thu, 18 Jun 2026 15:38:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2C100CDB46B
+	for <openvpn-devel@archiver.kernel.org>; Sat, 20 Jun 2026 10:29:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
-	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:Date:To:From:Sender:Reply-To:Cc:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:In-Reply-To:References:List-Owner;
-	bh=nIVPx+Mv2rv9kPCPNu1/Stk51J9e4/iZqTrlGfGHnKk=; b=bDrWY9VKbkMpc2BvFYGn7EY0lO
-	eSgMN8XBWxKxd3yPONN0tj3cKNQrVGQbCc2sanAjr7cT/XocU2oICkqtVYRCA/VfD8POuxv4sHbjg
-	2wp/66Z/5tpgGyBlufEPHCliR9H1bIce1ELomjovPmu7ctepwdcsrMUZU21NqMQOrJbY=;
+	MIME-Version:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
+	List-Unsubscribe:List-Id:Subject:References:In-Reply-To:To:From:Message-Id:
+	Date:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=GIMWddaA+H1QxlOgRfXQy6nUrwPYHrlSeheyNIse0tk=; b=QX7k3Ce3juO+tr7WZRUy54FaGf
+	kWJLxpnTg1TG8472VXopVbni4SZDp8VvTsgWF4YQgnDnIUwoz43o3fI4QMoaTvFm7ySHhy4dDWNcm
+	fkYNQA6EfUYWMu4HFcqce+wEFZFdiSG6coRLerbH62nrx5MwbILIabCqBadwPD2cLBr0=;
 Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
 	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1waEoU-0007xu-6W;
-	Thu, 18 Jun 2026 15:37:54 +0000
+	id 1waswj-0001Ra-4L;
+	Sat, 20 Jun 2026 10:29:05 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <luancamara@gmail.com>) id 1waEoT-0007xm-Fd
+ (envelope-from <gert@chekov.greenie.muc.de>) id 1waswg-0001RG-0x
  for openvpn-devel@lists.sourceforge.net;
- Thu, 18 Jun 2026 15:37:54 +0000
+ Sat, 20 Jun 2026 10:29:03 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:Message-ID:
- Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=zdgiyz8PA/tsUELSohjsnVhKNHkRVt2k3RriAI7MeM0=; b=kHHc7DEOcBATebTJLxGmTwmZpv
- /urotU2075L4k9Z735Jx0r+1yn1O+JW2ogl2LPHEi3LRq5ia0njv6kz6n5wSa0DlbDZIxOmTf3+MS
- KWOi7AT2EBGhX55UdEJ74StipyccORq96hDtHKaz/dPvSvomabmuB0hYIyRx1OmfVtdM=;
+ d=sourceforge.net; s=x; h=References:In-Reply-To:Subject:Cc:To:From:
+ Message-Id:Date:Sender:Reply-To:MIME-Version:Content-Type:
+ Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+ List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=JIujS9CIO05Q/KzsKhcDmpCMXD1LBuQnpT6TepVSZ+k=; b=lSpEF2p13F+6sHlmemWzT+XTKe
+ YRxVIVe62D1zro4kusvUcFIvsE9V39NjtWbtnf3eCnffUSRDPOGc4iAlH12Eof2/FFYShLgE/BP+S
+ EeR6rGBuF5Mwy/RrtJgHwxTeDMaZA2PMP+EjRmTbxvvd0dWJbOY8um9HRMwrQBNgKRoU=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:Cc:To:From
- :Sender:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:
- Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
- References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=zdgiyz8PA/tsUELSohjsnVhKNHkRVt2k3RriAI7MeM0=; b=J
- bsBvHYXYviDF1ZhTeYctobdHXRAtQHARRqYbCdV4aic/JiysZ6Wb3HbbqIecZvxWaCRNgnEioqQnw
- OZF2OUJYvIjq6C2ezZUDcfvML86kU0W93hGsn9nyLpgvzW9FOf5CaYMRaWD1uxR46ei7FQ7Oo4JBi
- sA8ZhmyEslHUSliQ=;
-Received: from mail-yw1-f177.google.com ([209.85.128.177])
+ h=References:In-Reply-To:Subject:Cc:To:From:Message-Id:Date:Sender:Reply-To
+ :MIME-Version:Content-Type:Content-Transfer-Encoding:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+ List-Post:List-Owner:List-Archive;
+ bh=JIujS9CIO05Q/KzsKhcDmpCMXD1LBuQnpT6TepVSZ+k=; b=K+UD9b9gEql+mZvkg+DTgnp7G8
+ ARsdjG2PiLWq6gzveF8OMZpI1n/2J/d5Fcgi5rM+ljDjxN8+Jsm3fr52jfjjj6az70ZWeAFIR/5A8
+ +62PVbRr55rCSUI9a15VbPGTibNci7ReSCWoUTf6cpKtFSvQ5l3puSKgK8X0JAhFJGMI=;
+Received: from chekov.greenie.muc.de ([193.149.48.178])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1waEoP-00049K-JA for openvpn-devel@lists.sourceforge.net;
- Thu, 18 Jun 2026 15:37:54 +0000
-Received: by mail-yw1-f177.google.com with SMTP id
- 00721157ae682-7ff05e5d009so13530767b3.1
- for <openvpn-devel@lists.sourceforge.net>;
- Thu, 18 Jun 2026 08:37:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=gmail.com; s=20251104; t=1781797059; x=1782401859; darn=lists.sourceforge.net;
- h=content-transfer-encoding:mime-version:message-id:date:subject:cc
- :to:from:from:to:cc:subject:date:message-id:reply-to;
- bh=zdgiyz8PA/tsUELSohjsnVhKNHkRVt2k3RriAI7MeM0=;
- b=QjT3TO9Nxd2I3w81yWVeCrbEaqWU8rGjET6eW1ByrRDg7guB5wCWREhel5jOGBNtt8
- soCNho3vlwhf7bPDxqbth8f3PnkcOcsCzvalAAAdCGFMtjnTV8/Lw7Nh4xxRp7YC5+bN
- VIxBKnqLgOC9sxMG5/lACjrV+yWxjeY5LYVG5T4CwNh+wSWeYUMYj4l0D2qLnpAr05DS
- nj4Kav1BEu471GIBpOu6Xuko1HKkm1Z+kHWP/T8ONE6aGbHMaWPcU4ts3HsWxfqYeWeQ
- M86DULsnJoIpmUnSmWLLrriP3G7VLdRcf2G/g5LGxrMeHbIje+mIGHiKG19p4v6CEAZH
- 0YmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1781797059; x=1782401859;
- h=content-transfer-encoding:mime-version:message-id:date:subject:cc
- :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
- :message-id:reply-to;
- bh=zdgiyz8PA/tsUELSohjsnVhKNHkRVt2k3RriAI7MeM0=;
- b=AYxylrZxwnXeN/igrja5CAf0RZbaBT+ZGla3WQNVaae5X00hjAh70XdEcVeH8m6t47
- F24oPwruhAdwi2ZcWbrY22WFJ0BBpvj1J94vJ8TkRIMdrLmjEA5pVXeAzbe1zVjYicq3
- 7AJOmwCXBZp/9a0UH+8DyGVBOor6h+dcjzIPfXl9dLWYNu/Thu8s3ANZi0mWIJJrsGLR
- tWDiAqn3Uoken+J9TvnccA1rSj48y1D63kBEV78ei49wPRJElhfrYdHCrzevOyDOCWhW
- 4S77OmdVzwm9kxcLT9XWSMmqlEXXcPzio85Flubi0ajC4f4lXrekCYuy/tlduBzFx544
- 5uew==
-X-Gm-Message-State: AOJu0YzdpmS/wI03S0g5xJTq3rpYBJ1dad80ONL2aS/5+6mkc6lzCkfx
- 1piPmGpwtU+dc0ioFN/0qYteTDpxyTdz0B9ce9W+CjFRT/upie7Y8erpYp/LPZi6pxTIfw==
-X-Gm-Gg: AfdE7ckZsluTgrXKuBI81GUrvPPClaQavE2YNv5BCVIN3JVnYp8Xu5MJ8kWw+Pwz8VP
- saFDlhN5OebN+gdzxzuIGpu60tgL1rxqQOB4InMp8XG0qw0JtnF6pJ4cHZg25Wuq1v94LK1VOCM
- PIWLIRBvl+jf1N4WeAcwcwjoHT7Ub36y/HObI3JARuikvWpvukqKdLS9EklVnTWrtyGP3TsxHHK
- RQ33Fyb6DzCtW5znhKtoWWqcaKWfWzrhZscfQbO29PaeK/y/fKm95nlchizv12VB0Uw9r5Pk5dP
- UmDoKr+nxy+1oRPUEO1J2ZzNJuXcMdQJsyE7+Ayy1ocIA+Bgh/psjGeho/662d/4dIYuXOjIgSY
- dH9AWUClw2fH9jG/P1P/FOxNsq/gG3JBEphjLRdVCcu5AdoS3R4qIDRjZIqPRVhM+QxnKnUsHtd
- ZHXrdBWQjdfl463J4pw+yoYcMsQSKAdgkkK8yp2A==
-X-Received: by 2002:a05:690c:4512:b0:800:3647:10af with SMTP id
- 00721157ae682-800364710d5mr27392197b3.15.1781797059013; 
- Thu, 18 Jun 2026 08:37:39 -0700 (PDT)
-Received: from localhost.localdomain ([177.70.14.5])
- by smtp.gmail.com with ESMTPSA id
- 00721157ae682-7fcd00d9db6sm75095287b3.6.2026.06.18.08.37.37
- (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
- Thu, 18 Jun 2026 08:37:38 -0700 (PDT)
-From: Luan Camara <luancamara@gmail.com>
-To: openvpn-devel@lists.sourceforge.net
-Date: Thu, 18 Jun 2026 12:37:28 -0300
-Message-ID: <20260618153730.58864-1-luancamara@gmail.com>
-X-Mailer: git-send-email 2.50.1
-MIME-Version: 1.0
-X-Headers-End: 1waEoP-00049K-JA
-Subject: [Openvpn-devel] [PATCH OpenVPN3] tun/mac: make server bypass route
- idempotent to avoid orphaned route
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
+ id 1waswe-0001Hx-Di for openvpn-devel@lists.sourceforge.net;
+ Sat, 20 Jun 2026 10:29:02 +0000
+Received: from chekov.greenie.muc.de (localhost [IPv6:0:0:0:0:0:0:0:1])
+ by chekov.greenie.muc.de (8.18.2/8.18.1) with ESMTP id 65KASrao046784;
+ Sat, 20 Jun 2026 12:28:53 +0200 (CEST)
+ (envelope-from gert@chekov.greenie.muc.de)
+Received: (from gert@localhost)
+ by chekov.greenie.muc.de (8.18.2/8.18.1/Submit) id 65KASr58046783;
+ Sat, 20 Jun 2026 12:28:53 +0200 (CEST) (envelope-from gert)
+Date: Sat, 20 Jun 2026 12:28:53 +0200 (CEST)
+Message-Id: <202606201028.65KASr58046783@chekov.greenie.muc.de>
+From: Gert Doering <gert@greenie.muc.de>
+To: Gert Doering <gert@greenie.muc.de>
+X-Patchwork-State: Accepted
+In-Reply-To: <20260618123729.18337-1-gert@greenie.muc.de>
+References: <20260618123729.18337-1-gert@greenie.muc.de>
+X-Headers-End: 1waswe-0001Hx-Di
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix 1-byte buffer overrun on
+ NTLMv2 proxy responses.
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -114,68 +78,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Cc: openvpn-devel@lists.sourceforge.net
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-On macOS the server bypass host route (remote /32 via the physical default
-gateway, installed when redirect-gateway is active) is added with a plain
-"route add". If a previous session terminated uncleanly (sleep, network
-change or process crash) the teardown ActionList never runs and a stale copy
-of this route survives in the routing table.
+Patch has been applied to the release/2.7 and release/2.6 branch (bugfix).
 
-On the next connection the "route add" fails because the route already
-exists. Command::execute() detects "File exists" and throws; ActionList::
-execute() records the route's mark as failed and remove_marked() then drops
-the *paired delete* from the teardown list (tunsetup.hpp: "since we should
-not undo failed actions, remove them"). The route is therefore never cleaned
-up, and because the stale entry still points at the previous network's
-gateway, once that gateway is no longer on-link every datagram to the server
-fails with EADDRNOTAVAIL:
+The NTLM code in release/2.6 is different enough (NTLMv1 not removed yet)
+that it a straightforward "git cherry-pick" does not work, but the offending
+line is there and fixed just the same (">" -> ">=").
 
-    UDP send exception: send: Can't assign requested address
+commit 04309bfe0313c09edd02c29945893b9d7e2ca920 (release/2.7)
+commit e1bf48ab80a22598000a7ab83d3688f07d139cc7 (release/2.6)
+Author: Gert Doering
+Date:   Thu Jun 18 14:37:24 2026 +0200
 
-The client then loops RECONNECTING/RESOLVE until it times out, while the
-server and all other users are unaffected.
+     Fix 1-byte buffer overrun on NTLMv2 proxy responses.
 
-Make the bypass route installation idempotent by issuing a best-effort
-"route delete" immediately before the "route add". Deleting a non-existent
-route is harmless ("not in table", non-fatal), while a stale orphan is
-removed so the add always installs a fresh route bound to the current
-gateway and stays managed for teardown. This mirrors the REPLACE semantics
-already used by the Linux sitnl backend on EEXIST.
+     Signed-off-by: Gert Doering <gert@greenie.muc.de>
+     Acked-by: Arne Schwabe <arne-openvpn@rfc2549.org>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1713
+     Message-Id: <20260618123729.18337-1-gert@greenie.muc.de>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg37218.html
+     Signed-off-by: Gert Doering <gert@greenie.muc.de>
 
-Signed-off-by: Luan Camara <luancamara@gmail.com>
----
- openvpn/tun/mac/client/tunsetup.hpp | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
 
-diff --git a/openvpn/tun/mac/client/tunsetup.hpp b/openvpn/tun/mac/client/tunsetup.hpp
-index dfe34d6..b14e6e3 100644
---- a/openvpn/tun/mac/client/tunsetup.hpp
-+++ b/openvpn/tun/mac/client/tunsetup.hpp
-@@ -414,6 +414,19 @@ class Setup : public TunBuilderSetup::Base
-                     {
-                         Action::Ptr c, d;
-                         add_del_route(pull.remote_address.address, 32, gw4.gateway_addr_str(), gw4.iface(), 0, c, d);
-+                        // Make the server bypass route idempotent. This host route must
-+                        // point at the *current* physical default gateway. If a previous
-+                        // session ended uncleanly (sleep, network change or crash) a stale
-+                        // copy of this route can survive with an outdated gateway. A plain
-+                        // "route add" then fails with "File exists"; execute() flags the add
-+                        // as failed and remove_marked() drops the paired delete from the
-+                        // teardown list, so the stale route is never cleaned up. Once the old
-+                        // gateway is no longer on-link it produces a permanent
-+                        // "UDP send: Can't assign requested address" and the client can only
-+                        // time out. Issue a best-effort delete first (a no-op "not in table"
-+                        // when absent, non-fatal) so the add always installs a fresh route
-+                        // bound to the current gateway and stays managed for teardown.
-+                        create.add(d); // pre-delete any stale/orphaned copy, then add
-                         create.add(c);
-                         destroy.add(d);
-                     }
--- 
-2.50.1 (Apple Git-155)
+--
+kind regards,
+
+Gert Doering
 
 
 
