@@ -4,125 +4,125 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E60FFCD98F2
-	for <openvpn-devel@archiver.kernel.org>; Mon, 22 Jun 2026 15:31:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6F051CDB475
+	for <openvpn-devel@archiver.kernel.org>; Mon, 22 Jun 2026 15:31:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:Message-ID:References:In-Reply-To:Date:Sender:To:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=TWvihXWbWvRDYBgwcaDd7Y1yoW3eFCfEBvgdg5SLcWg=; b=jmabyT4rmWKGv0RfOHG77WjL1G
-	itVfbLnhoLuUT4CKaAKrvZff/NycBlYHwPsWprqyT9lSM+ALMxbNR1z4t364HPL5RbQxzG+S7wryU
-	4fD+sFzBDxq7QELdnym1eGqiaJAY07pkvBFlIeuSDIG30CBOfV9QmgsYuw+Cio7MiEvs=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=bNgOB4CZlqbrki2RyLPlh9ThVKQ8LHTqfD5v1A8CCHQ=; b=R0NOjujvYUDwog8YX6JvRDe0SS
+	sNCP4dxmfAOBlUll+D5pZhJv9cvk1tFwSr9pe4TEbOPuTT4I0i6hAusAKrsdriRSFG4OoTiBA363o
+	SuQJ/FPIM2RbsO/XVk70YBPG3rf0AOpxEtisDZoaw2o8yRzt6KfQgnqweQ0mHbe1dSE0=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wbgcZ-0007lw-KD;
+	id 1wbgca-0002uE-2v;
 	Mon, 22 Jun 2026 15:31:36 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wbgcX-0007ln-VB
+ (envelope-from <gerrit@openvpn.net>) id 1wbgcW-0002tq-Mf
  for openvpn-devel@lists.sourceforge.net;
- Mon, 22 Jun 2026 15:31:34 +0000
+ Mon, 22 Jun 2026 15:31:33 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
  Cc:Date:From:Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
  :List-Post:List-Owner:List-Archive;
- bh=Kn6rJxBtAHHto5QznEh14FqOZC+EyjAjguo6BkyBHtI=; b=XJwv3wJ0yUkMtZqQrFiuVkzGZM
- htp29FCXeXjA+OoDQCZXZnzt+qL4SOGqlZYe97h1LncvUoSG6LYjIlRXY4T3YTx5RsQWVHCZrHbn0
- PoBQG0zPyUTVGFraKkP/rTEnEPMCDX8Oc2CKdCqff1eqGUXew2vHI3Q+khdCuw+heNMY=;
+ bh=D6oZyMehzGC4ZdM6GS3cVG0ZeZv4fwXHADzBKngRSo0=; b=HE4KSgdoLaKJ9A0D8MzMpuYeKb
+ drUsU5tMjgIy7kleJnQ1iFCg0swd338RBO0/9Z1aPNCL7XfsBADlYqYp1qy2SUc8EdRf7gWcxNPWY
+ f2b2okgzdF7OyljYL8T/05e3irjPhzfRt9GvCy+w6F9RDKIXlJVGj72m4ggi94PLvmFU=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
  Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:Date:From:Sender:
  To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=Kn6rJxBtAHHto5QznEh14FqOZC+EyjAjguo6BkyBHtI=; b=P
- cELAvkG3Bn3FxTLEOeGEtRduzKAttLf3WTJNzhB6p8cU4hqEpEh7tvzjePle27GvXvaeqMas96Ikk
- YAbhrcNfS8P4Tn9Ahk1TJPDJyhFZzjltVpdCSoycaTMoEtDK4sDR/Yns/xZw0jSylXSnr2vs0yGl9
- Cj71vt00MEBIH2iM=;
-Received: from mail-wr1-f46.google.com ([209.85.221.46])
+ List-Owner:List-Archive; bh=D6oZyMehzGC4ZdM6GS3cVG0ZeZv4fwXHADzBKngRSo0=; b=W
+ m5denPFYat8rZbR6guHCw5aDzpqBkKvdzYmmadP0Xt4R+8FkfRDIWwGD2J2snpVvoM5DK+8CDSGdW
+ xA4Hie4y2Txq9ieI8NMBy/T/YKF4l4pSvT3sDd7wxIfaUxAbrlZgppu/fhlj222xXSLO2AZGA2IUG
+ sMheTYhd459IjG0E=;
+Received: from mail-ej1-f41.google.com ([209.85.218.41])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wbgcW-0007nd-DX for openvpn-devel@lists.sourceforge.net;
- Mon, 22 Jun 2026 15:31:34 +0000
-Received: by mail-wr1-f46.google.com with SMTP id
- ffacd0b85a97d-4633193af19so3172062f8f.2
+ id 1wbgcV-0007nY-Bd for openvpn-devel@lists.sourceforge.net;
+ Mon, 22 Jun 2026 15:31:33 +0000
+Received: by mail-ej1-f41.google.com with SMTP id
+ a640c23a62f3a-c074142cf6dso966866b.0
  for <openvpn-devel@lists.sourceforge.net>;
- Mon, 22 Jun 2026 08:31:32 -0700 (PDT)
+ Mon, 22 Jun 2026 08:31:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1782142281; x=1782747081; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1782142280; x=1782747080; darn=lists.sourceforge.net;
  h=user-agent:content-disposition:content-transfer-encoding
  :mime-version:message-id:reply-to:subject:thread-index:references
  :in-reply-to:list-unsubscribe:list-id:auto-submitted:cc:date:from
  :from:to:cc:subject:date:message-id:reply-to;
- bh=Kn6rJxBtAHHto5QznEh14FqOZC+EyjAjguo6BkyBHtI=;
- b=dWr7xDRs2NKTqF6GpX5VmpVoy0iwrG+NWTy12PlpPWHXrN0Hy8SaRThrKJ7k7d3czy
- HkabejKu6x+kA9QD7ZUfPWpTT5odNkpkB7xRpVNXIc4CLAujGcsHRw76EkEDF9RPIGwc
- xogpOREuEvEbhbDabG+e3AMsJ70Qc247K/JWuEE1Ut1gdiFWofLKvravboWK6HwSxqSs
- DH6tY8UxNYHuzo0cfnZvAuCTuz2axvl6Sg65i6+qTXqATbxMOGPypsXoL7BVcuVZUsC5
- 7nid5GN5EbUV7tSYlSKAlgsBXU1BdevqxdwnBZrOl2BB7WTQjxvz6JieGLZkWY26XL9w
- pcTg==
+ bh=D6oZyMehzGC4ZdM6GS3cVG0ZeZv4fwXHADzBKngRSo0=;
+ b=Qzve/eCkBzM4M71gJqxZ4+MsYRMXy223RayZtdD6tKiCaZG5rD2jGUpXzH7QcA4px6
+ yMOPHRLdUtOxQ4l+7VALypW6qvIFA3uV8kx3KX9sV5zSbTkWpM9I9CDJQ4NR0kxfCgXp
+ TDMhEDFhbww3BVSUUvItQyCfXYSzFXgmD6c7i0C3gCpPB2nB2jlnxHt95/LRl9tC5kPm
+ 1KIId2e8rrlGVoFEIwas/s0Y/O5pqHzJokc8URlRy3nyZNNN0QFX1R3dw2gX5WwCw8rk
+ RK9OcMAmTTG25+wZ0wd7RWNXsuppEna8QQCYOpU16yG69NKmYwEPokxD25QNnMr1VWH2
+ xHMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1782142281; x=1782747081;
+ d=1e100.net; s=20251104; t=1782142280; x=1782747080;
  h=user-agent:content-disposition:content-transfer-encoding
  :mime-version:message-id:reply-to:subject:thread-index:references
  :in-reply-to:list-unsubscribe:list-id:auto-submitted:cc:date:from
  :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
  :reply-to;
- bh=Kn6rJxBtAHHto5QznEh14FqOZC+EyjAjguo6BkyBHtI=;
- b=GryhKiweNILFdyHIEK0c6PpQROQCh82tm4az1xGZB54ljag7h5CNK//3X8A00vBZR+
- +r0Vq0QK/ymWCxu99rvsQ9Gan0+y6I/z+WNg9L7I0DdXCMIMFOJ8Nfk77wSBzh0Ovhx+
- rlIs87YKPSLSgsCebsmKf7+ZbZVS+uhLDxZ7FiGgGXqvr1cV3FclYiugh95EM2W1EmPM
- D2FKQT1rBa4YFQkrY7orPoFhtKJULa0O3/FjwmqDFY2cB4NejxZg+kswR9jJpy0+tjuG
- r3ad821IneJ5RaidQTmLB6Fr+ADTr316pVvakkhzGrP3O7tYvz2xrhHofaOkeYenURyE
- ewdw==
-X-Gm-Message-State: AOJu0YyCxDq9XnuF792t6pk7nCzj62bPSsUV0lThIO3Oi8VxjJxzZVWh
- 8jXtfsS+y5qU9x3DhQJS7RfwL7JqGpbSMjYLAS+Kg601/iC4Ddx6BsDIoHPPH22ZIMyo4onkwu2
- QUwUK8Gj8U90oqBhELnUM2KHwbf9bmuG4YHaRKXRoCa5khVOzOVDVhSh3lAGTxAQHc5XR5sHVQ0
- B4enH4Jw==
-X-Gm-Gg: AfdE7cmo8qpg1Byd8C5/68wjWd3PxB4fuK5eqpvX+gQJQnWjZ7cXT2MclHBc3N9ZtON
- 6OKgSvqOZiCxxR3W653OlyV+ztd6TSscS9e3O0LNhwqkR5s485NYtK1F54UErHyAZaSS63QjJBY
- adq3eZ4U2RlwqQe5RY8yex8XrKRZLF4cWIykNgx2y9v+Ubs3PfbGtTovkdyLYLlih3yBFlNW+FH
- 9hhQyUbwaTnUZ1oPlhBheUjcgpvCRXkQd/SWnoTs49TYwNONekUQ31TxW0/egpCwQki1CXvStPq
- sVCssQIyqP91d672a9wOalPbZeiei/6TU0Z0zZLRzrqOtW81SJHoouI7Lbz3mx7AjzaDyG4uwFB
- V8TeJWE/BOUtDnWEoWVyN81cgwBc0BGgfRdAzmucoyidwLpZJHwS/zAWhO3UIQYs7EmRg+O0Tjw
- Q1OHmriRVBIaez+Ug0OEOzV36fhxZzpyb796bfu3UMe/NSORHLZGz7YdOygfqWzOqtVXFrvgofY
- ku9nGQBPNE+kKwdSIzKsNzJpbzJrCeIdgTZhcLrW9xmD3EHqc2S4ojuQG+yBDvmV8aXnGwLKs3G
- VH/BPQFmodM1Gw==
-X-Received: by 2002:adf:fec5:0:b0:461:b44c:a7a6 with SMTP id
- ffacd0b85a97d-46662dcdd1fmr12933108f8f.34.1782142281175; 
- Mon, 22 Jun 2026 08:31:21 -0700 (PDT)
+ bh=D6oZyMehzGC4ZdM6GS3cVG0ZeZv4fwXHADzBKngRSo0=;
+ b=Jnl5+P/JogMlFjJgCoXk7bId+yC54EFuGdzOB6j9W5EBsbCk62cxipzBLUfMH2UyRK
+ M1wLfoVkiStBFWwYYF5PPVeji35M7Z9x2dsb9+1pwlDmC0UiPOxFFUkpDLFJnFUhmZ0A
+ ZmUY5cmU+XuheWmZGZsFlbEnuK/IZBFPycOreMZGjt/bdUsVy0IySWhPqtiu8KvuB6+B
+ F35MWULID0mAwvvVwIxIJ5PGHObvu7cmZwp1co+3mkzca01j9Erq6Wh/PQdChuGURsqD
+ Z8PxqGlDOffrfy18Ae2x2+f/f9C1ZJTQWLUMv00aHv9l4edNjr6s35YpGJzORgql0hRC
+ aMuQ==
+X-Gm-Message-State: AOJu0YyUKRVKyJn6d+Gifkt4pC5Os8bTewlzWI1BbXjY4GTh4E2nZwIy
+ NDvDstrLv435Pm3VPeoKa9ekv6JXHX9HjmzwXBfV50ZWb/9+rMJOromhCp50vr0DSTdA8oI9c+Q
+ E24OF91VpHI1lIR+jBEQfmIdSLujL4VkmxAm8kz3LYErV3h3o1i9yex+PbOzsH94Ye1YJJo7luu
+ EWhqLABw==
+X-Gm-Gg: AfdE7cmdeZcBH55bTyiy4fZyAiByPuLMl5lQTfGhushx3qNjBk64YPzHI5l2BkiuZmf
+ RUflQ51KXjhcyntJQWDw9VxkbzeC0M2WtKD2srl6tUPozOWL1Pfm1B84kFHT3cybywjx/VihVvc
+ t/mHNxez9ijr+T6qFfHKOfySsuTKf/MGGuSkkdPL+2kG80Jvw5UY5Huqz9fi1wgbbt6EF3db/SL
+ NUb6QpLUoLsjE/vCjpgdnj51o6MfTNX/jt+vE72ULAarS5S3GGC1aOo268KIaNwTEAaFamCH/Rj
+ HSsJZQePCVDiV+p8yuSJi2XOOGwFLAUQ8NZb71dugpJk9rqY69fVj3wy4REgzsgXquRH4o3UfuC
+ 0CIQDWahWt4ahrV3bmKktyiajOwQfzF4XldD41P1FpNV++nLDxmNZh4x9pP2c6szEy2VdowSqif
+ kTmOcJk128WiqAZ1Mdt3MxkhSxU2CpVOpvFqZ3dvBFlQVbebUWtgP5dSHoWDd4g1/2G+9s0OeuI
+ H1UCyVPLD8eOsJ6QrrO2pheQ9aOcU6jFj6P9T3ucCzTd5a5jL0Q9IZHId/0Uircb1jGDEtSznuO
+ Q3s=
+X-Received: by 2002:a17:906:2091:b0:bec:5264:e527 with SMTP id
+ a640c23a62f3a-c09b9681a69mr410885866b.26.1782142278851; 
+ Mon, 22 Jun 2026 08:31:18 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-46667221de7sm26374802f8f.33.2026.06.22.08.31.20
+ ffacd0b85a97d-466643f56aasm26863882f8f.6.2026.06.22.08.31.18
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 22 Jun 2026 08:31:20 -0700 (PDT)
+ Mon, 22 Jun 2026 08:31:18 -0700 (PDT)
 X-Google-Original-From: "plaisthos (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
 Date: Mon, 22 Jun 2026 15:31:08 +0000
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newpatchset
-X-Gerrit-PatchSet: 2
-X-Gerrit-Change-Id: I8f3545f703126dbe96f809e69ad351749b14b1e1
-X-Gerrit-Change-Number: 1719
+X-Gerrit-PatchSet: 6
+X-Gerrit-Change-Id: If47c7d920b2fa4047b7db03fcde821899839324d
+X-Gerrit-Change-Number: 1571
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1719?usp=email>
-X-Gerrit-Commit: c0541eaa980ef834b0c33d23aa466d7582ea877b
-In-Reply-To: <gerrit.1782134588000.I8f3545f703126dbe96f809e69ad351749b14b1e1@gerrit.openvpn.net>
-References: <gerrit.1782134588000.I8f3545f703126dbe96f809e69ad351749b14b1e1@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzgyMTM0NTg4MDAwLkk4ZjM1NDVmNzAzMTI2ZGJlOTZmODA5ZTY5YWQzNTE3NDliMTRiMWUxQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <e9a0261af972605654500c183af06c15c0a8c431-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1571?usp=email>
+X-Gerrit-Commit: 2d8cf123844fdee5854b3d0fe82abd0747dc3662
+In-Reply-To: <gerrit.1773251317000.If47c7d920b2fa4047b7db03fcde821899839324d@gerrit.openvpn.net>
+References: <gerrit.1773251317000.If47c7d920b2fa4047b7db03fcde821899839324d@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzczMjUxMzE3MDAwLklmNDdjN2Q5MjBiMmZhNDA0N2I3ZGIwM2ZjZGU4MjE4OTk4MzkzMjRkQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <7435e3cd6ea86b18c1ecc4748c5a592ce51c0cad-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wbgcW-0007nd-DX
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Support p2p NCP
- negotiation in p2mp mode
+X-Headers-End: 1wbgcV-0007nY-Bd
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Change hash iv to a
+ dynamically allocated ctx
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -139,409 +139,626 @@ From: "plaisthos \(Code Review\) via Openvpn-devel"
 Reply-To: arne-openvpn@rfc2549.org, openvpn-devel@lists.sourceforge.net
 Cc: "plaisthos \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============9053460314006279878=="
+Content-Type: multipart/mixed; boundary="===============5422056581226935025=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============9053460314006279878==
+--===============5422056581226935025==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="PLvlpBuw+8E="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="j8yPtYV2LlQ="; charset=UTF-8
 
---PLvlpBuw+8E=
+--j8yPtYV2LlQ=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-plaisthos has uploaded a new patch set (#2)=2E ( http://gerrit=2Eopenvpn=2E=
-net/c/openvpn/+/1719?usp=3Demail )
+plaisthos has uploaded a new patch set (#6)=2E ( http://gerrit=2Eopenvpn=2E=
+net/c/openvpn/+/1571?usp=3Demail )
 
 
-Change subject: Support p2p NCP negoti=
-ation in p2mp mode
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+Change subject: Change hash iv to a dy=
+namically allocated ctx
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E
+=2E=2E=2E
 
-Support p2p NCP negotiation in p2mp mode
+Change hash iv to a dynamically allocated ctx
 
-This sends the peer info =
-of the server to a p2p mode client if it is
-detected=2E This is currently m=
-ake little difference as peer-id/DATAv2 does
-not work without asymmetric pe=
-er-id support of the p2p mode client but
-prepares for mesh/multipeer suppor=
-t=2E
+While for our own=
+ hash function, always using an uint32_t works well, it does
+not work very =
+well if we move to another hash function=2E Move the context of
+a hardcoded=
+ uint32_t iv to a void pointer to a real ctx=2E
 
-Change-Id: I8f3545f703126dbe96f809e69ad351749b14b1e1
-Signed-off-by: A=
-rne Schwabe <arne@rfc2549=2Eorg>
+Change-Id: If47c7d920b2fa4=
+047b7db03fcde821899839324d
+Signed-off-by: Arne Schwabe <arne@rfc2549=2Eorg>=
+
 ---
+M src/openvpn/list=2Ec
+M src/openvpn/list=2Eh
+M src/openvpn/mroute=2Ec=
+
+M src/openvpn/mroute=2Eh
 M src/openvpn/multi=2Ec
-M src/openvpn/=
-ssl=2Ec
-M src/openvpn/ssl_ncp=2Ec
-3 files changed, 51 insertions(+), 7 dele=
-tions(-)
+M tests/unit_tests/openvp=
+n/test_misc=2Ec
+6 files changed, 42 insertions(+), 23 deletions(-)
 
 
-  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/chang=
-es/19/1719/2
+  git =
+pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/71/1571/6
 
-diff --git a/src/openvpn/multi=2Ec b/src/openvpn/multi=2Ec
-in=
-dex e72066f=2E=2Ef853669 100644
---- a/src/openvpn/multi=2Ec
-+++ b/src/openv=
-pn/multi=2Ec
-@@ -1707,6 +1707,43 @@
-     gc_free(&gc);
- }
+dif=
+f --git a/src/openvpn/list=2Ec b/src/openvpn/list=2Ec
+index c07e764=2E=2E36=
+d8ede 100644
+--- a/src/openvpn/list=2Ec
++++ b/src/openvpn/list=2Ec
+@@ -29,1=
+3 +29,16 @@
  
+ #include "integer=2Eh"
+ #include "list=2Eh"
 +
-+/**
-+ * Gene=
-rates warning for p2p mode peers=2E
-+ */
-+static void
-+multi_client_set_pro=
-tocol_warnings_p2p(struct context *c)
-+{
-+    struct tls_multi *multi =3D c=
-->c2=2Etls_multi;
-+    const struct tls_session *session =3D &multi->sessio=
-n[TM_ACTIVE];
-+
-+    /* we can support p2p clients but only if we and the o=
-ther side
-+     * support asymmetric peer-id */
-+    msg(D_TLS_DEBUG_LOW, "=
-Note: peer reports running in P2P mode "
-+                         "(no --p=
-ull/--client option)=2E This will "
-+                         "probably not=
- work as expected=2E");
-+
-+    /* Figure out which side is lacking asymmetr=
-ic peer-id support and
-+     * print appropriate warnings */
-+    if (!mult=
-i->use_asymmetric_peer_id)
-+    {
-+        if (session->opt->dco_enabled)
-+=
-        {
-+            msg(D_TLS_DEBUG_LOW, "Note: Supporting P2P mode peer=
-s requires "
-+                                 "support of asymmetric peer-=
-id which the "
-+                                 "current DCO module does n=
-ot support=2E Disable "
-+                                 "DCO or upgrade t=
-o a version of OpenVPN and "
-+                                 "DCO that su=
-pport asymmetric peer-id=2E");
-+        }
-+        if (extract_asymmetric_p=
-eer_id(multi->peer_info) =3D=3D MAX_PEER_ID)
-+        {
-+            msg(D_=
-TLS_DEBUG_LOW, "Note: Supporting P2P mode peers requires "
-+               =
-                  "support of asymmetric peer-id=2E The peer does not "
-+  =
-                               "indicate it supports this=2E");
-+        }
-=
-+    }
-+}
-+
- /**
-  * Calculates the options that depend on the client capab=
-ilities
-  * based on local options and available peer info
-@@ -1737,13 +177=
-4,11 @@
-         return false;
-     }
++#include "cry=
+pto=2Eh"
+ #include "misc=2Eh"
  
--    /* Print a warning if we detec=
-t the client being in P2P mode and will
--     * not accept our pushed ciphe=
-rs */
-+    /* Print a warning if we detect the client being in P2P mode=2E =
-The
-+     * negotiations will be otherwise compatible */
-     if (proto & I=
-V_PROTO_NCP_P2P)
+ #include "memdbg=2Eh"
+ 
+ struct hash *
+-ha=
+sh_init(const uint32_t n_buckets, const uint32_t iv,
+-          uint64_t (*=
+hash_function)(const void *key, uint32_t iv),
++hash_init(const uint32_t n_b=
+uckets, void *ctx,
++          void (*free_hash_ctx)(void *ctx),
++          =
+uint64_t (*hash_function)(const void *key, void *ctx),
+           bool (*co=
+mpare_function)(const void *key1, const void *key2))
+ {
+     struct hash *h=
+;
+@@ -46,7 +49,8 @@
+     h->mask =3D h->n_buckets - 1;
+     h->hash_functio=
+n =3D hash_function;
+     h->compare_function =3D compare_function;
+-    h-=
+>iv =3D iv;
++    h->free_ctx =3D free_hash_ctx;
++    h->ctx =3D ctx;
+     A=
+LLOC_ARRAY(h->buckets, struct hash_bucket, h->n_buckets);
+     for (uint32_=
+t i =3D 0; i < h->n_buckets; ++i)
      {
--        msg(M_WARN, "Note: peer reports running in=
- P2P mode (no --pull/--client "
--                    "option)=2E It will no=
-t negotiate ciphers with this server=2E "
--                    "Expect this=
- connection to fail=2E");
-+        multi_client_set_protocol_warnings_p2p(c=
-);
-     }
- 
-     if (proto & IV_PROTO_REQUEST_PUSH)
-diff --git a/src/openvp=
-n/ssl=2Ec b/src/openvpn/ssl=2Ec
-index c97d479=2E=2E6d58a3d 100644
---- a/src=
-/openvpn/ssl=2Ec
-+++ b/src/openvpn/ssl=2Ec
-@@ -1883,7 +1883,8 @@
- 
-     /* =
-In server mode we only add this when the client has announced its
-      * s=
-upport for the feature */
--    if (session->opt->mode !=3D MODE_SERVER || m=
-ulti->use_asymmetric_peer_id)
-+    if (session->opt->mode !=3D MODE_SERVER =
-|| multi->use_asymmetric_peer_id
-+        || !session->opt->server)
-     {
-=
-         return buf_printf(out, "ID=3D%x\n", multi->rx_peer_id);
-     }
-@@ =
--2331,6 +2332,14 @@
-                 /* With DCO we don't need the tx_peer_=
-id atm */
-                 multi->tx_peer_id =3D multi->rx_peer_id;
-       =
-      }
-+            unsigned int iv_proto =3D extract_iv_proto(multi->peer=
-_info);
-+
-+            if (iv_proto & IV_PROTO_NCP_P2P && multi->session->o=
-pt->push_peer_info_detail < 1)
-+            {
-+                /* If the pe=
-er is using NCP P2P we also use p2p to make connecting
-+                 * =
-with p2p peers easier */
-+                multi->session->opt->push_peer_in=
-fo_detail =3D 1;
-+            }
+@@ -71,6 +75,7 @@
+             he =
+=3D next;
          }
      }
-     else
-diff --git a/sr=
-c/openvpn/ssl_ncp=2Ec b/src/openvpn/ssl_ncp=2Ec
-index e860f6d=2E=2E003b77e =
-100644
---- a/src/openvpn/ssl_ncp=2Ec
-+++ b/src/openvpn/ssl_ncp=2Ec
-@@ -515,=
-7 +515,7 @@
++    hash->free_ctx(hash->ctx);
+     free(hash-=
+>buckets);
+     free(hash);
+ }
+@@ -412,6 +417,14 @@
+         c ^=3D (b >> 1=
+5); \
      }
  
-     msg(D_TLS_DEBUG_LOW, "P2P mode NCP negotiation re=
-sult: "
--                         "TLS_export=3D%d, DATA_v2=3D%d, rx-peer-i=
-d %d, tx-peer-id %d, epoch=3D%d, cipher=3D%s",
-+                         "T=
-LS_EKM=3D%d, DATA_v2=3D%d, rx-peer-id %d, tx-peer-id %d, epoch=3D%d, cipher=
-=3D%s",
-         (bool)(session->opt->crypto_flags & CO_USE_TLS_KEY_MATERIA=
-L_EXPORT),
-         multi->use_peer_id,
-         multi->rx_peer_id,
++void *
++hash_func_new_ctx(void)
++{
++    uint32_t *ctx =3D m=
+alloc(sizeof(uint32_t));
++    *ctx =3D (uint32_t)get_random();
++    return =
+ctx;
++}
++
+ uint64_t
+ hash_func(const uint8_t *k, uint32_t length, uint32_t =
+initval)
+ {
+diff --git a/src/openvpn/list=2Eh b/src/openvpn/list=2Eh
+index =
+06377c6=2E=2Eea6f47a 100644
+--- a/src/openvpn/list=2Eh
++++ b/src/openvpn/li=
+st=2Eh
+@@ -54,14 +54,17 @@
+     uint32_t n_buckets;
+     uint32_t n_element=
+s;
+     uint32_t mask;
+-    uint32_t iv;
+-    uint64_t (*hash_function)(con=
+st void *key, uint32_t iv);
++    void *ctx;
++    uint64_t (*hash_function)(=
+const void *key, void *ctx);
+     bool (*compare_function)(const void *key1=
+, const void *key2); /* return true if equal */
++    void (*free_ctx)(void =
+*ctx);
++    void *free_ctx_arg;
+     struct hash_bucket *buckets;
+ };
+ 
+-st=
+ruct hash *hash_init(const uint32_t n_buckets, const uint32_t iv,
+-        =
+               uint64_t (*hash_function)(const void *key, uint32_t iv),
++st=
+ruct hash *hash_init(const uint32_t n_buckets, void *ctx,
++                =
+       void (*free_hash_ctx)(void *ctx),
++                       uint64_t (=
+*hash_function)(const void *key, void *ctx),
+                        bool (=
+*compare_function)(const void *key1, const void *key2));
+ 
+ void hash_free(=
+struct hash *hash);
+@@ -100,10 +103,12 @@
+ 
+ uint64_t hash_func(const uint8=
+_t *k, uint32_t length, uint32_t initval);
+ 
++void *hash_func_new_ctx(void)=
+;
++
+ static inline uint64_t
+ hash_value(const struct hash *hash, const void=
+ *key)
+ {
+-    return (*hash->hash_function)(key, hash->iv);
++    return (*=
+hash->hash_function)(key, hash->ctx);
+ }
+ 
+ static inline uint32_t
+diff --g=
+it a/src/openvpn/mroute=2Ec b/src/openvpn/mroute=2Ec
+index 78c689e=2E=2E89b=
+3ecc 100644
+--- a/src/openvpn/mroute=2Ec
++++ b/src/openvpn/mroute=2Ec
+@@ -3=
+55,10 +355,11 @@
+  * and the actual address=2E
+  */
+ uint64_t
+-mroute_addr_=
+hash_function(const void *key, uint32_t iv)
++mroute_addr_hash_function(cons=
+t void *key, void *ctx)
+ {
++    uint32_t *iv =3D ctx;
+     return hash_func=
+(mroute_addr_hash_ptr((const struct mroute_addr *)key),
+-                  =
+   mroute_addr_hash_len((const struct mroute_addr *)key), iv);
++           =
+          mroute_addr_hash_len((const struct mroute_addr *)key), *iv);
+ }
+ =
+
+ bool
+diff --git a/src/openvpn/mroute=2Eh b/src/openvpn/mroute=2Eh
+index 2=
+f5d019=2E=2E51b62d2 100644
+--- a/src/openvpn/mroute=2Eh
++++ b/src/openvpn/m=
+route=2Eh
+@@ -144,7 +144,7 @@
+ 
+ bool mroute_learnable_address(const struct=
+ mroute_addr *addr, struct gc_arena *gc);
+ 
+-uint64_t mroute_addr_hash_func=
+tion(const void *key, uint32_t iv);
++uint64_t mroute_addr_hash_function(con=
+st void *key, void *ctx);
+ 
+ bool mroute_addr_compare_function(const void *=
+key1, const void *key2);
+ 
+diff --git a/src/openvpn/multi=2Ec b/src/openvpn=
+/multi=2Ec
+index e1c9c80=2E=2Eda19183 100644
+--- a/src/openvpn/multi=2Ec
+++=
++ b/src/openvpn/multi=2Ec
+@@ -229,7 +229,7 @@
+ #ifdef ENABLE_MANAGEMENT
+ 
+ =
+static uint64_t
+-cid_hash_function(const void *key, uint32_t iv)
++cid_hash_=
+function(const void *key, void *ctx)
+ {
+     const unsigned long *k =3D (co=
+nst unsigned long *)key;
+     return (uint64_t)*k;
+@@ -250,7 +250,7 @@
+ /*
+=
+  * inotify watcher descriptors are used as hash value
+  */
+-int_hash_funct=
+ion(const void *key, uint32_t iv)
++int_hash_function(const void *key, void =
+*ctx)
+ {
+     return (uintptr_t)key;
+ }
+@@ -290,18 +290,18 @@
+      * to de=
+termine which client sent an incoming packet
+      * which is seen on the T=
+CP/UDP socket=2E
+      */
+-    m->hash =3D hash_init(t->options=2Ereal_hash=
+_size, (uint32_t)get_random(),
++    m->hash =3D hash_init(t->options=2Ereal=
+_hash_size, hash_func_new_ctx(), free,
+                         mroute_addr=
+_hash_function, mroute_addr_compare_function);
+ 
+     /*
+      * Virtual ad=
+dress hash table=2E  Used to determine
+      * which client to route a pack=
+et to=2E
+      */
+-    m->vhash =3D hash_init(t->options=2Evirtual_hash_siz=
+e, (uint32_t)get_random(),
++    m->vhash =3D hash_init(t->options=2Evirtual=
+_hash_size, hash_func_new_ctx(), free,
+                          mroute_add=
+r_hash_function, mroute_addr_compare_function);
+ 
+ #ifdef ENABLE_MANAGEMENT=
+
+-    m->cid_hash =3D hash_init(t->options=2Ereal_hash_size, 0, cid_hash_fu=
+nction, cid_compare_function);
++    m->cid_hash =3D hash_init(t->options=2E=
+real_hash_size, NULL, free, cid_hash_function, cid_compare_function);
+ #end=
+if
+ 
+ #ifdef ENABLE_ASYNC_PUSH
+@@ -309,8 +309,8 @@
+      * Mapping between =
+inotify watch descriptors and
+      * multi_instances=2E
+      */
+-    m->i=
+notify_watchers =3D hash_init(t->options=2Ereal_hash_size, (uint32_t)get_ra=
+ndom(),
+-                                    int_hash_function, int_compare=
+_function);
++    m->inotify_watchers =3D
++        hash_init(t->options=2Ere=
+al_hash_size, NULL, free, int_hash_function, int_compare_function);
+ #endif=
+
+ 
+     /*
+diff --git a/tests/unit_tests/openvpn/test_misc=2Ec b/tests/unit=
+_tests/openvpn/test_misc=2Ec
+index ccdfdee=2E=2E24bf22d 100644
+--- a/tests/=
+unit_tests/openvpn/test_misc=2Ec
++++ b/tests/unit_tests/openvpn/test_misc=
+=2Ec
+@@ -125,11 +125,12 @@
+ 
+ 
+ static uint64_t
+-word_hash_function(const v=
+oid *key, uint32_t iv)
++word_hash_function(const void *key, void *ctx)
+ {
++=
+    uint32_t *iv =3D (uint32_t *)ctx;
+     const char *str =3D (const char =
+*)key;
+     const uint32_t len =3D (uint32_t)strlen(str);
+-    return hash_=
+func((const uint8_t *)str, len, iv);
++    return hash_func((const uint8_t *=
+)str, len, *iv);
+ }
+ 
+ static bool
+@@ -171,10 +172,9 @@
+      * Test the ha=
+sh code by implementing a simple
+      * word frequency algorithm=2E
+      =
+*/
+-
+     struct gc_arena gc =3D gc_new();
+-    struct hash *hash =3D hash_=
+init(10000, get_random(), word_hash_function, word_compare_function);
+-    =
+struct hash *nhash =3D hash_init(256, get_random(), word_hash_function, wor=
+d_compare_function);
++    struct hash *hash =3D hash_init(10000, hash_func_=
+new_ctx(), free, word_hash_function, word_compare_function);
++    struct ha=
+sh *nhash =3D hash_init(256, hash_func_new_ctx(), free, word_hash_function,=
+ word_compare_function);
+ 
+     printf("hash_init n_buckets=3D%u mask=3D0x%=
+08x\n", hash->n_buckets, hash->mask);
+ 
 
 -- 
-To=
- view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1719?usp=3Demail
-To =
-unsubscribe, or for help writing mail filters, visit http://gerrit=2Eopenvp=
-n=2Enet/settings?usp=3Demail
+To view, visit http://gerrit=
+=2Eopenvpn=2Enet/c/openvpn/+/1571?usp=3Demail
+To unsubscribe, or for help w=
+riting mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Dema=
+il
 
 Gerrit-MessageType: newpatchset
-Gerrit-Projec=
-t: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I8f3545f703126dbe96f809e=
-69ad351749b14b1e1
-Gerrit-Change-Number: 1719
-Gerrit-PatchSet: 2
-Gerrit-Owne=
-r: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-CC: openvpn-devel <openvpn=
--devel@lists=2Esourceforge=2Enet>
+Gerrit-Project: openvpn
+Gerrit-Branch: =
+master
+Gerrit-Change-Id: If47c7d920b2fa4047b7db03fcde821899839324d
+Gerrit-C=
+hange-Number: 1571
+Gerrit-PatchSet: 6
+Gerrit-Owner: plaisthos <arne-openvpn=
+@rfc2549=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=
+=2Enet>
 
---PLvlpBuw+8E=
+--j8yPtYV2LlQ=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p>plaisthos <strong=
->uploaded patch set #2</strong> to this change=2E</p><p><a href=3D"http://g=
-errit=2Eopenvpn=2Enet/c/openvpn/+/1719?usp=3Demail">View Change</a></p><pre=
+>uploaded patch set #6</strong> to this change=2E</p><p><a href=3D"http://g=
+errit=2Eopenvpn=2Enet/c/openvpn/+/1571?usp=3Demail">View Change</a></p><pre=
  class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: p=
-re-wrap;">Support p2p NCP negotiation in p2mp mode<br><br>This sends the pe=
-er info of the server to a p2p mode client if it is<br>detected=2E This is =
-currently make little difference as peer-id/DATAv2 does<br>not work without=
- asymmetric peer-id support of the p2p mode client but<br>prepares for mesh=
-/multipeer support=2E<br><br>Change-Id: I8f3545f703126dbe96f809e69ad351749b=
-14b1e1<br>Signed-off-by: Arne Schwabe &lt;arne@rfc2549=2Eorg&gt;<br>---<br>=
-M src/openvpn/multi=2Ec<br>M src/openvpn/ssl=2Ec<br>M src/openvpn/ssl_ncp=
-=2Ec<br>3 files changed, 51 insertions(+), 7 deletions(-)<br><br></pre><pre=
- class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: p=
-re-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/=
-19/1719/2</pre><pre style=3D"font-family: monospace,monospace; white-space:=
- pre-wrap;"><span>diff --git a/src/openvpn/multi=2Ec b/src/openvpn/multi=2E=
-c</span><br><span>index e72066f=2E=2Ef853669 100644</span><br><span>--- a/s=
-rc/openvpn/multi=2Ec</span><br><span>+++ b/src/openvpn/multi=2Ec</span><br>=
-<span>@@ -1707,6 +1707,43 @@</span><br><span>     gc_free(&amp;gc);</span><=
-br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Generates warning for =
-p2p mode peers=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
-/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+multi_client_set_protocol_=
-warnings_p2p(struct context *c)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    st=
-ruct tls_multi *multi =3D c-&gt;c2=2Etls_multi;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    const struct tls_session *session =3D &amp;=
-multi-&gt;session[TM_ACTIVE];</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* we=
- can support p2p clients but only if we and the other side</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+     * support asymmetric peer-id */=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(D_TLS_DEBUG=
-_LOW, &quot;Note: peer reports running in P2P mode &quot;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+                         &quot;(no --=
-pull/--client option)=2E This will &quot;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+                         &quot;probably not work as e=
-xpected=2E&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Figure out wh=
-ich side is lacking asymmetric peer-id support and</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+     * print appropriate warnings */</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!multi-&gt;use_asym=
-metric_peer_id)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (sessio=
-n-&gt;opt-&gt;dco_enabled)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         msg(D_TLS_DEBUG_LOW, &quot;Note: Supporting P2P mode peers require=
-s &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
-                      &quot;support of asymmetric peer-id which the &quot;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
-             &quot;current DCO module does not support=2E Disable &quot;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                      =
-           &quot;DCO or upgrade to a version of OpenVPN and &quot;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+                            =
-     &quot;DCO that support asymmetric peer-id=2E&quot;);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        if (extract_asymmetric_peer_id(multi-&g=
-t;peer_info) =3D=3D MAX_PEER_ID)</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+            msg(D_TLS_DEBUG_LOW, &quot;Note: Supporting P2P mode peers r=
-equires &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-                            &quot;support of asymmetric peer-id=2E The peer=
- does not &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-                              &quot;indicate it supports this=2E&quot;);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span> /**</span><br><span>  * Calculates the options=
- that depend on the client capabilities</span><br><span>  * based on local =
-options and available peer info</span><br><span>@@ -1737,13 +1774,11 @@</sp=
-an><br><span>         return false;</span><br><span>     }</span><br><span>=
- </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* Print a warni=
-ng if we detect the client being in P2P mode and will</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-     * not accept our pushed ciphers */</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Print a warning =
-if we detect the client being in P2P mode=2E The</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+     * negotiations will be otherwise compatib=
-le */</span><br><span>     if (proto &amp; IV_PROTO_NCP_P2P)</span><br><spa=
-n>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(M=
-_WARN, &quot;Note: peer reports running in P2P mode (no --pull/--client &qu=
-ot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                  =
-  &quot;option)=2E It will not negotiate ciphers with this server=2E &quot;=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    &=
-quot;Expect this connection to fail=2E&quot;);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        multi_client_set_protocol_warnings_p2p(c=
-);</span><br><span>     }</span><br><span> </span><br><span>     if (proto =
-&amp; IV_PROTO_REQUEST_PUSH)</span><br><span>diff --git a/src/openvpn/ssl=
-=2Ec b/src/openvpn/ssl=2Ec</span><br><span>index c97d479=2E=2E6d58a3d 10064=
-4</span><br><span>--- a/src/openvpn/ssl=2Ec</span><br><span>+++ b/src/openv=
-pn/ssl=2Ec</span><br><span>@@ -1883,7 +1883,8 @@</span><br><span> </span><b=
-r><span>     /* In server mode we only add this when the client has announc=
-ed its</span><br><span>      * support for the feature */</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    if (session-&gt;opt-&gt;mode !=3D M=
-ODE_SERVER || multi-&gt;use_asymmetric_peer_id)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    if (session-&gt;opt-&gt;mode !=3D MODE_SERV=
-ER || multi-&gt;use_asymmetric_peer_id</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        || !session-&gt;opt-&gt;server)</span><br><span>=
-     {</span><br><span>         return buf_printf(out, &quot;ID=3D%x\n&quot=
-;, multi-&gt;rx_peer_id);</span><br><span>     }</span><br><span>@@ -2331,6=
- +2332,14 @@</span><br><span>                 /* With DCO we don&#39;t need=
- the tx_peer_id atm */</span><br><span>                 multi-&gt;tx_peer_i=
-d =3D multi-&gt;rx_peer_id;</span><br><span>             }</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+            unsigned int iv_proto =
-=3D extract_iv_proto(multi-&gt;peer_info);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            if (iv_proto &amp; IV_PROTO_NCP_P2P &amp;&amp; multi-&gt;se=
-ssion-&gt;opt-&gt;push_peer_info_detail &lt; 1)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+                /* If the peer is using NCP P2P we al=
-so use p2p to make connecting</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+                 * with p2p peers easier */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                multi-&gt;session-&gt;opt=
--&gt;push_peer_info_detail =3D 1;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+            }</span><br><span>         }</span><br><span>    =
- }</span><br><span>     else</span><br><span>diff --git a/src/openvpn/ssl_n=
-cp=2Ec b/src/openvpn/ssl_ncp=2Ec</span><br><span>index e860f6d=2E=2E003b77e=
- 100644</span><br><span>--- a/src/openvpn/ssl_ncp=2Ec</span><br><span>+++ b=
-/src/openvpn/ssl_ncp=2Ec</span><br><span>@@ -515,7 +515,7 @@</span><br><spa=
-n>     }</span><br><span> </span><br><span>     msg(D_TLS_DEBUG_LOW, &quot;=
-P2P mode NCP negotiation result: &quot;</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-                         &quot;TLS_export=3D%d, DATA_v2=
-=3D%d, rx-peer-id %d, tx-peer-id %d, epoch=3D%d, cipher=3D%s&quot;,</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+                         &q=
-uot;TLS_EKM=3D%d, DATA_v2=3D%d, rx-peer-id %d, tx-peer-id %d, epoch=3D%d, c=
-ipher=3D%s&quot;,</span><br><span>         (bool)(session-&gt;opt-&gt;crypt=
-o_flags &amp; CO_USE_TLS_KEY_MATERIAL_EXPORT),</span><br><span>         mul=
-ti-&gt;use_peer_id,</span><br><span>         multi-&gt;rx_peer_id,</span><b=
-r><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit=2Eopenv=
-pn=2Enet/c/openvpn/+/1719?usp=3Demail">change 1719</a>=2E To unsubscribe, o=
-r for help writing mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=
-=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"=
-http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemty=
-pe=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http:/=
-/gerrit=2Eopenvpn=2Enet/c/openvpn/+/1719?usp=3Demail"/><meta itemprop=3D"na=
-me" content=3D"View Change"/></div></div>
+re-wrap;">Change hash iv to a dynamically allocated ctx<br><br>While for ou=
+r own hash function, always using an uint32_t works well, it does<br>not wo=
+rk very well if we move to another hash function=2E Move the context of<br>=
+a hardcoded uint32_t iv to a void pointer to a real ctx=2E<br><br>Change-Id=
+: If47c7d920b2fa4047b7db03fcde821899839324d<br>Signed-off-by: Arne Schwabe =
+&lt;arne@rfc2549=2Eorg&gt;<br>---<br>M src/openvpn/list=2Ec<br>M src/openvp=
+n/list=2Eh<br>M src/openvpn/mroute=2Ec<br>M src/openvpn/mroute=2Eh<br>M src=
+/openvpn/multi=2Ec<br>M tests/unit_tests/openvpn/test_misc=2Ec<br>6 files c=
+hanged, 42 insertions(+), 23 deletions(-)<br><br></pre><pre class=3D"blocks=
+" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pu=
+ll ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/71/1571/6</pre><=
+pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><spa=
+n>diff --git a/src/openvpn/list=2Ec b/src/openvpn/list=2Ec</span><br><span>=
+index c07e764=2E=2E36d8ede 100644</span><br><span>--- a/src/openvpn/list=2E=
+c</span><br><span>+++ b/src/openvpn/list=2Ec</span><br><span>@@ -29,13 +29,=
+16 @@</span><br><span> </span><br><span> #include &quot;integer=2Eh&quot;</=
+span><br><span> #include &quot;list=2Eh&quot;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+#include &quot;crypto=2Eh&quot;</span><br><span> #include &quot;misc=
+=2Eh&quot;</span><br><span> </span><br><span> #include &quot;memdbg=2Eh&quo=
+t;</span><br><span> </span><br><span> struct hash *</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-hash_init(const uint32_t n_buckets, const u=
+int32_t iv,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
+uint64_t (*hash_function)(const void *key, uint32_t iv),</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+hash_init(const uint32_t n_buckets, vo=
+id *ctx,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          v=
+oid (*free_hash_ctx)(void *ctx),</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+          uint64_t (*hash_function)(const void *key, void *ctx=
+),</span><br><span>           bool (*compare_function)(const void *key1, co=
+nst void *key2))</span><br><span> {</span><br><span>     struct hash *h;</s=
+pan><br><span>@@ -46,7 +49,8 @@</span><br><span>     h-&gt;mask =3D h-&gt;n=
+_buckets - 1;</span><br><span>     h-&gt;hash_function =3D hash_function;</=
+span><br><span>     h-&gt;compare_function =3D compare_function;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    h-&gt;iv =3D iv;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    h-&gt;free_ctx =3D free_has=
+h_ctx;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    h-&gt;ctx=
+ =3D ctx;</span><br><span>     ALLOC_ARRAY(h-&gt;buckets, struct hash_bucke=
+t, h-&gt;n_buckets);</span><br><span>     for (uint32_t i =3D 0; i &lt; h-&=
+gt;n_buckets; ++i)</span><br><span>     {</span><br><span>@@ -71,6 +75,7 @@=
+</span><br><span>             he =3D next;</span><br><span>         }</span=
+><br><span>     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  hash-&gt;free_ctx(hash-&gt;ctx);</span><br><span>     free(hash-&gt;bucke=
+ts);</span><br><span>     free(hash);</span><br><span> }</span><br><span>@@=
+ -412,6 +417,14 @@</span><br><span>         c ^=3D (b &gt;&gt; 15); \</span=
+><br><span>     }</span><br><span> </span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+void *</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+hash_func_new_ctx(void)</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint32_=
+t *ctx =3D malloc(sizeof(uint32_t));</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    *ctx =3D (uint32_t)get_random();</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    return ctx;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span> uint64_t</span><br><span> hash_func(const uin=
+t8_t *k, uint32_t length, uint32_t initval)</span><br><span> {</span><br><s=
+pan>diff --git a/src/openvpn/list=2Eh b/src/openvpn/list=2Eh</span><br><spa=
+n>index 06377c6=2E=2Eea6f47a 100644</span><br><span>--- a/src/openvpn/list=
+=2Eh</span><br><span>+++ b/src/openvpn/list=2Eh</span><br><span>@@ -54,14 +=
+54,17 @@</span><br><span>     uint32_t n_buckets;</span><br><span>     uint=
+32_t n_elements;</span><br><span>     uint32_t mask;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    uint32_t iv;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    uint64_t (*hash_function)(const void *key, u=
+int32_t iv);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    voi=
+d *ctx;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint64_t=
+ (*hash_function)(const void *key, void *ctx);</span><br><span>     bool (*=
+compare_function)(const void *key1, const void *key2); /* return true if eq=
+ual */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    void (*fr=
+ee_ctx)(void *ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    void *free_ctx_arg;</span><br><span>     struct hash_bucket *buckets;</=
+span><br><span> };</span><br><span> </span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-struct hash *hash_init(const uint32_t n_buckets, const uint3=
+2_t iv,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
+         uint64_t (*hash_function)(const void *key, uint32_t iv),</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+struct hash *hash_init(const =
+uint32_t n_buckets, void *ctx,</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+                       void (*free_hash_ctx)(void *ctx),</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                       uint=
+64_t (*hash_function)(const void *key, void *ctx),</span><br><span>        =
+                bool (*compare_function)(const void *key1, const void *key2=
+));</span><br><span> </span><br><span> void hash_free(struct hash *hash);</=
+span><br><span>@@ -100,10 +103,12 @@</span><br><span> </span><br><span> uin=
+t64_t hash_func(const uint8_t *k, uint32_t length, uint32_t initval);</span=
+><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+void *h=
+ash_func_new_ctx(void);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span> static inline uint64_t</span><br><span> hash_value(co=
+nst struct hash *hash, const void *key)</span><br><span> {</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    return (*hash-&gt;hash_function)(k=
+ey, hash-&gt;iv);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  return (*hash-&gt;hash_function)(key, hash-&gt;ctx);</span><br><span> }</=
+span><br><span> </span><br><span> static inline uint32_t</span><br><span>di=
+ff --git a/src/openvpn/mroute=2Ec b/src/openvpn/mroute=2Ec</span><br><span>=
+index 78c689e=2E=2E89b3ecc 100644</span><br><span>--- a/src/openvpn/mroute=
+=2Ec</span><br><span>+++ b/src/openvpn/mroute=2Ec</span><br><span>@@ -355,1=
+0 +355,11 @@</span><br><span>  * and the actual address=2E</span><br><span>=
+  */</span><br><span> uint64_t</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-mroute_addr_hash_function(const void *key, uint32_t iv)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+mroute_addr_hash_function(cons=
+t void *key, void *ctx)</span><br><span> {</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    uint32_t *iv =3D ctx;</span><br><span>     retur=
+n hash_func(mroute_addr_hash_ptr((const struct mroute_addr *)key),</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-                     mroute_ad=
+dr_hash_len((const struct mroute_addr *)key), iv);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+                     mroute_addr_hash_len((c=
+onst struct mroute_addr *)key), *iv);</span><br><span> }</span><br><span> <=
+/span><br><span> bool</span><br><span>diff --git a/src/openvpn/mroute=2Eh b=
+/src/openvpn/mroute=2Eh</span><br><span>index 2f5d019=2E=2E51b62d2 100644</=
+span><br><span>--- a/src/openvpn/mroute=2Eh</span><br><span>+++ b/src/openv=
+pn/mroute=2Eh</span><br><span>@@ -144,7 +144,7 @@</span><br><span> </span><=
+br><span> bool mroute_learnable_address(const struct mroute_addr *addr, str=
+uct gc_arena *gc);</span><br><span> </span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-uint64_t mroute_addr_hash_function(const void *key, uint32_t=
+ iv);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+uint64_t mrout=
+e_addr_hash_function(const void *key, void *ctx);</span><br><span> </span><=
+br><span> bool mroute_addr_compare_function(const void *key1, const void *k=
+ey2);</span><br><span> </span><br><span>diff --git a/src/openvpn/multi=2Ec =
+b/src/openvpn/multi=2Ec</span><br><span>index e1c9c80=2E=2Eda19183 100644</=
+span><br><span>--- a/src/openvpn/multi=2Ec</span><br><span>+++ b/src/openvp=
+n/multi=2Ec</span><br><span>@@ -229,7 +229,7 @@</span><br><span> #ifdef ENA=
+BLE_MANAGEMENT</span><br><span> </span><br><span> static uint64_t</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-cid_hash_function(const void *k=
+ey, uint32_t iv)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+cid=
+_hash_function(const void *key, void *ctx)</span><br><span> {</span><br><sp=
+an>     const unsigned long *k =3D (const unsigned long *)key;</span><br><s=
+pan>     return (uint64_t)*k;</span><br><span>@@ -250,7 +250,7 @@</span><br=
+><span> /*</span><br><span>  * inotify watcher descriptors are used as hash=
+ value</span><br><span>  */</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-int_hash_function(const void *key, uint32_t iv)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+int_hash_function(const void *key, void *=
+ctx)</span><br><span> {</span><br><span>     return (uintptr_t)key;</span><=
+br><span> }</span><br><span>@@ -290,18 +290,18 @@</span><br><span>      * t=
+o determine which client sent an incoming packet</span><br><span>      * wh=
+ich is seen on the TCP/UDP socket=2E</span><br><span>      */</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    m-&gt;hash =3D hash_init(t-&gt;=
+options=2Ereal_hash_size, (uint32_t)get_random(),</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    m-&gt;hash =3D hash_init(t-&gt;options=2E=
+real_hash_size, hash_func_new_ctx(), free,</span><br><span>                =
+         mroute_addr_hash_function, mroute_addr_compare_function);</span><b=
+r><span> </span><br><span>     /*</span><br><span>      * Virtual address h=
+ash table=2E  Used to determine</span><br><span>      * which client to rou=
+te a packet to=2E</span><br><span>      */</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    m-&gt;vhash =3D hash_init(t-&gt;options=2Evirtual_=
+hash_size, (uint32_t)get_random(),</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    m-&gt;vhash =3D hash_init(t-&gt;options=2Evirtual_hash_s=
+ize, hash_func_new_ctx(), free,</span><br><span>                          m=
+route_addr_hash_function, mroute_addr_compare_function);</span><br><span> <=
+/span><br><span> #ifdef ENABLE_MANAGEMENT</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    m-&gt;cid_hash =3D hash_init(t-&gt;options=2Ereal_h=
+ash_size, 0, cid_hash_function, cid_compare_function);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    m-&gt;cid_hash =3D hash_init(t-&gt;o=
+ptions=2Ereal_hash_size, NULL, free, cid_hash_function, cid_compare_functio=
+n);</span><br><span> #endif</span><br><span> </span><br><span> #ifdef ENABL=
+E_ASYNC_PUSH</span><br><span>@@ -309,8 +309,8 @@</span><br><span>      * Ma=
+pping between inotify watch descriptors and</span><br><span>      * multi_i=
+nstances=2E</span><br><span>      */</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    m-&gt;inotify_watchers =3D hash_init(t-&gt;options=2Erea=
+l_hash_size, (uint32_t)get_random(),</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-                                    int_hash_function, int_c=
+ompare_function);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  m-&gt;inotify_watchers =3D</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        hash_init(t-&gt;options=2Ereal_hash_size, NULL, free, int_=
+hash_function, int_compare_function);</span><br><span> #endif</span><br><sp=
+an> </span><br><span>     /*</span><br><span>diff --git a/tests/unit_tests/=
+openvpn/test_misc=2Ec b/tests/unit_tests/openvpn/test_misc=2Ec</span><br><s=
+pan>index ccdfdee=2E=2E24bf22d 100644</span><br><span>--- a/tests/unit_test=
+s/openvpn/test_misc=2Ec</span><br><span>+++ b/tests/unit_tests/openvpn/test=
+_misc=2Ec</span><br><span>@@ -125,11 +125,12 @@</span><br><span> </span><br=
+><span> </span><br><span> static uint64_t</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-word_hash_function(const void *key, uint32_t iv)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+word_hash_function(const v=
+oid *key, void *ctx)</span><br><span> {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    uint32_t *iv =3D (uint32_t *)ctx;</span><br><span> =
+    const char *str =3D (const char *)key;</span><br><span>     const uint3=
+2_t len =3D (uint32_t)strlen(str);</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    return hash_func((const uint8_t *)str, len, iv);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    return hash_func((const u=
+int8_t *)str, len, *iv);</span><br><span> }</span><br><span> </span><br><sp=
+an> static bool</span><br><span>@@ -171,10 +172,9 @@</span><br><span>      =
+* Test the hash code by implementing a simple</span><br><span>      * word =
+frequency algorithm=2E</span><br><span>      */</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-</span><br><span>     struct gc_arena gc =3D gc_n=
+ew();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct hash =
+*hash =3D hash_init(10000, get_random(), word_hash_function, word_compare_f=
+unction);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct h=
+ash *nhash =3D hash_init(256, get_random(), word_hash_function, word_compar=
+e_function);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    str=
+uct hash *hash =3D hash_init(10000, hash_func_new_ctx(), free, word_hash_fu=
+nction, word_compare_function);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    struct hash *nhash =3D hash_init(256, hash_func_new_ctx(), =
+free, word_hash_function, word_compare_function);</span><br><span> </span><=
+br><span>     printf(&quot;hash_init n_buckets=3D%u mask=3D0x%08x\n&quot;, =
+hash-&gt;n_buckets, hash-&gt;mask);</span><br><span> </span><br><span></spa=
+n><br></pre><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/op=
+envpn/+/1571?usp=3Demail">change 1571</a>=2E To unsubscribe, or for help wr=
+iting mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings=
+?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=
+=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://=
+schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=2Eope=
+nvpn=2Enet/c/openvpn/+/1571?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Ger=
-rit-MessageType: newpatchset </div>
-<div style=3D"display:none"> Gerrit-Pro=
-ject: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </d=
-iv>
-<div style=3D"display:none"> Gerrit-Change-Id: I8f3545f703126dbe96f809e=
-69ad351749b14b1e1 </div>
-<div style=3D"display:none"> Gerrit-Change-Number:=
- 1719 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Message=
+Type: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Project: openv=
+pn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
 <div st=
-yle=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@rfc2549=2Eor=
-g&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;open=
-vpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+yle=3D"display:none"> Gerrit-Change-Id: If47c7d920b2fa4047b7db03fcde8218998=
+39324d </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1571 </div=
+>
+<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
+<div style=3D"disp=
+lay:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div=
+>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@l=
+ists=2Esourceforge=2Enet&gt; </div>
 
 </body></html>
---PLvlpBuw+8E=--
+--j8yPtYV2LlQ=--
 
 
---===============9053460314006279878==
+--===============5422056581226935025==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============9053460314006279878==
+--===============5422056581226935025==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -552,5 +769,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============9053460314006279878==--
+--===============5422056581226935025==--
 
