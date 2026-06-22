@@ -4,27 +4,27 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1EE38CDB477
-	for <openvpn-devel@archiver.kernel.org>; Mon, 22 Jun 2026 13:23:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D0501CDB470
+	for <openvpn-devel@archiver.kernel.org>; Mon, 22 Jun 2026 13:23:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:Message-ID:References:Date:Sender:To:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
-	List-Owner; bh=/QmvYURvdcCwOpYlBIYdALsodrBoWnjg2Cd1ga/7eRk=; b=RLbxktmDRaSfA7
-	E4OSlnm2O9nvwlF8nLdzR+s2yRahnSOTPphCHqyn2fN7dwuHdYVLcH1mgeXRO3j5lPZmdfd+dYIDf
-	U9NdvmQpTR69gXB48GzVPYOH4ePawaxiBokggmhEDZR1rKFo9Ht9/w1iVeXU8bo8ZnSwRqecXBn7q
-	GUo=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	List-Owner; bh=Bd2lXI58ykhFauolbHc/5B3nE6ztVO2yzSxHE1shYxM=; b=GnZJOP8BE+eQC9
+	cvlSZtFXe62ryH22RFCW6WNTq/PzfuiSj+meeMr58LZOuFkcvVKxAbpM96PjeOQN/EoAWcC3kMrsW
+	BS2rrS9AptOJWATSg7OocVzQ5dEvtLwkHO7xpPz6piF8Y1EDxAXjSBh/ieG8enRH0EErLYNVPGL0X
+	6eE=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wbecu-0000f9-QI;
+	id 1wbecx-0001X3-L0;
 	Mon, 22 Jun 2026 13:23:49 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wbecs-0000eo-Um
+ (envelope-from <gerrit@openvpn.net>) id 1wbecv-0001Wt-JL
  for openvpn-devel@lists.sourceforge.net;
  Mon, 22 Jun 2026 13:23:47 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
@@ -33,26 +33,26 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  :Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From:
  Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=Ytoq+3GjOn96p9zyq2vTJufxfNQorq5LmHd2UQrOpGk=; b=LxIQLOXoZLGQ6c+rboPVCTFCWc
- RILtSq5wiSPg+kLF0RpIP2+s7IzbK1uFlbEtmAswn2I1iRqkWBRqfcguql1N5ihG1VarLCvEcjALF
- 6hWWYBK5kLfXrDaJXQcd+HKZeNo7fjDxn6Zk6dwCC7L5Y7QwPtWm084k+pCiI0xIwAu4=;
+ bh=aXeLQMWev/rQKbBmaoQinkNaMi8QzK2IKc1Lh4YeDWQ=; b=OdQlpwmte9miX81W8BvTM8vSdj
+ UdCu3G9Vwue9feFoVGTrBVxLylK/COjE0SUMTO2BUhzoNmdYB4sbhvlChctpptQL7jHybfdyYTVFC
+ i7+sqH++llPgolkpO1bDXtakrJl1F1vpsbebqzpm1TW7AZJsnui5NomernqJMdXk372A=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
  Subject:References:List-Unsubscribe:List-Id:Cc:Date:From:Sender:To:Content-ID
  :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
  Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=Ytoq+3GjOn96p9zyq2vTJufxfNQorq5LmHd2UQrOpGk=; b=O
- Qyyoeww8xDEz8BdTHjzDnBVd8XtxRlhp7eKg1byfu6BjSbO+uJ8l3lO8aMuANl0Q9w+2EskRBYXg0
- n4wdDC+xNH/f1BZf4OfUfI7Mlh7ITDdUTa/87kNTgb8oQbSXlkiWkgx18yC6pTxPyP0Gf8Tv+XyfK
- P2ng5Oj6Hbsno/5I=;
-Received: from mail-wm1-f47.google.com ([209.85.128.47])
+ List-Owner:List-Archive; bh=aXeLQMWev/rQKbBmaoQinkNaMi8QzK2IKc1Lh4YeDWQ=; b=O
+ g63BvmM3gWfCLTizA+uOGaydKtmSBms/3W5GmqyPDmdA9ka34h9CbU7F3EmffIH/EEJtM5EI02IuM
+ HFJGtsYCF/eZvGljxaLLOd0KuEo3h6an1P60gJakXoTFrnslQ5zxnpVL3/KtbNYJEm19xl9xevTJf
+ +mDissA1skmzQJiI=;
+Received: from mail-wr1-f42.google.com ([209.85.221.42])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wbecr-0000aC-Dn for openvpn-devel@lists.sourceforge.net;
+ id 1wbecq-0000a9-Ly for openvpn-devel@lists.sourceforge.net;
  Mon, 22 Jun 2026 13:23:47 +0000
-Received: by mail-wm1-f47.google.com with SMTP id
- 5b1f17b1804b1-490aaeabdb4so25883215e9.1
+Received: by mail-wr1-f42.google.com with SMTP id
+ ffacd0b85a97d-4627adcf4d6so2816070f8f.3
  for <openvpn-devel@lists.sourceforge.net>;
  Mon, 22 Jun 2026 06:23:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
@@ -61,68 +61,68 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  :mime-version:message-id:reply-to:subject:thread-index:references
  :list-unsubscribe:list-id:auto-submitted:cc:date:from:from:to:cc
  :subject:date:message-id:reply-to;
- bh=Ytoq+3GjOn96p9zyq2vTJufxfNQorq5LmHd2UQrOpGk=;
- b=epeywGOST0Ct+GWH2Tuqc84xbthExf1l94q6veqs+1tJIyZPDPvtiENGL6X9EvsU0Z
- YF8SjZ8Pfqvr4qZ4943/OI1hjMNNF9bUV21H2WASmUdBeO2zTZuax0DcOZjl3GPGgy5N
- sLedlzVCsTH6kNgMDMTxc1RKix8LcucD7OwikyRWRykAnLfmVDrkXr+0GchGCk05Pf7U
- s9NNkSm7d2uEtIqJm6knCodg890099X1bfRwgJyj/bGH0geJQFWcZm2MTS1E+AvdoULC
- S6fMY0ipPKRM1jsgbOGaq7aHBbe6TcSpN1JHF8MESWvUiXpdNf56/qFape9PVcI4Da5P
- 3xEA==
+ bh=aXeLQMWev/rQKbBmaoQinkNaMi8QzK2IKc1Lh4YeDWQ=;
+ b=JjMiAYMZg41vhurxFH5ZnfPF0WwTQ3u8pQ9/PhF92psX5dk6BbJsZS0L8PQAhYXdmV
+ efKDZ94LEjMkther27+AkMnWP5NlSUJPktj022WBE8l84fkdMkDiXRUZyUmNHJFk3LyL
+ DG8yyj1jXFsyaL+6S5im2PXdppNO6neeRW1Z5Zd3ZudfFwB4Zmus39S1K4a8Dzcnel3H
+ wPdN+c7ztyk/6jyhGiGPXfPOEphHDGaJkG2DCqZ2a5ht5ND0mDaewFg5sdsqn6npYdSG
+ d+bKN7+h8LEJ7Gv+3+6oSEmph0hSJrq5Lv+CoPgrkI3d/tcaymfwIwT4lTV4J9atG7vE
+ MyBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20251104; t=1782134619; x=1782739419;
  h=user-agent:content-disposition:content-transfer-encoding
  :mime-version:message-id:reply-to:subject:thread-index:references
  :list-unsubscribe:list-id:auto-submitted:cc:date:from:x-gm-gg
  :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
- bh=Ytoq+3GjOn96p9zyq2vTJufxfNQorq5LmHd2UQrOpGk=;
- b=b1ls36nWup+aOAArABp4Q8DiluSUENNwNsTomlHz5ei2C0o4jfUZaE+zHCAqp6jw86
- owI+KkugQe5uG0FE0x9um0gpnGI4TjVx8sWjvYvpPU8Tz1yAhm24fe74rC3PNHX15IBa
- 5kLyMSxQkOCJCOF1DSonJlXpSine+7kOEQ/S+RM4Pqi8XQsRJtWH7u/432VQh6QRcoJX
- 2g2i/f5/Vpa06uZL0lca/QQDZCQ+80z30ERXpO/Y/GdAHOthRUkoVU6PYuhKX6n920yG
- NwAArQ2fFcjeQkDGXPG+Km7Iwz6/YPdHJoxCQDHf4gqGc8Ho/48yGFD5U+7hlGXZ45wc
- zZDA==
-X-Gm-Message-State: AOJu0Yz/Q/VvKM66ZqvSg069syQEcQGY+TJ+/PNJ60XbDIlTY00py6qY
- /fWIE+L/dNcWiGl1/n4ElAnEIHHWEJPWZ4PiAu0icAtgEOZ30RcAFOijHO7vOUMuRpg2I/G3/tT
- pYwIWCLj/3cOqfbLsIX5nGuykgS/Xwx2ubliY75FSHkZ09p+t62uk/YFsdd/IWa2lWPKQlpmxV4
- j2gEg+NQ==
-X-Gm-Gg: AfdE7cnK00cyG4vE44Y2c+XHiE8MMHZQEt5Pwlt1M7A4OctAN4EP5RWZqMb0GX39g0B
- CvXhDr+8pfVS7iv/yQSXg6m3Sw05sSBJzfuBXUcb9R6Yt5fPi0jPdy+7kaC+5mrAXe468ZFzy2/
- DwIvzWPYr6eyODiT9YvpDpnhCOF8Y60m7xG0s99h+n3GDccOkHnpixwl68UNsTSX8RedfrPSais
- EAUzGri4CuxcYXDuBge6cxaGOXs+5/Dn+wdmBj093OIk+tktH8h8bq6aVJhd4eZaKMS3IpE9FMS
- hw+AXZMh4oe7miq2Jl+4qcyQF616DdhUFy6BmDq4ueOlEg4RfPCLMJOg4szE65wNjY2Fd/RdWQ0
- 9/6e1bLFJmOTqgHDnl7cAXc2buNnzX+ex0UrVuSpsoaVF4OozQooCYSYKg7Hx/p73LVCWT97sVH
- 3uxoFZ4Fmh1R1pAawF9QhwPxPW8aeL2cWPxZocdxKzosyfn1Bb9FpW9aWubTxivXkJrE/Wn/Bwx
- msvs9rSrDwSw/75c3C1ctWLQQLoBZ8mt8BHW9dOidMRg7Ci6999/m2NCZMxFQu7g6CWsUyBozin
- ii8=
-X-Received: by 2002:a05:600d:6451:10b0:492:37b7:607a with SMTP id
- 5b1f17b1804b1-4923fc7760emr181422505e9.31.1782134618048; 
- Mon, 22 Jun 2026 06:23:38 -0700 (PDT)
+ bh=aXeLQMWev/rQKbBmaoQinkNaMi8QzK2IKc1Lh4YeDWQ=;
+ b=H1W/eA6Lt4Ogg0S8+eagnPQu6kWrRSc/kAQpzaI90X8tGVvontMJilbgU82njq5bXe
+ zPFsL6FqYzwomuHD0ggq5gaaPG9TRHiA6cmn9IwZx49OFe41pPeIL0811hy7lCUT7aQo
+ 42J7gjM82TDuEcup76eU7k2sneBLdZvcbnLQaOe1cuqmMFVQkabgVqn2MNFdc4il3cUv
+ CR0CYw+q+Bki923/ncMwGMmPjNbGIFk0fhsmMwCHHDPCoZmetvTlOTfcnk4MwHAAiEep
+ P6BLYuUrXK/Zbz8PiAVQQ0C7o92w0AADOBVBj67KBGybYEiLG04I+IRXh2hJfTCMUXIL
+ k/kw==
+X-Gm-Message-State: AOJu0YxLLHpXsq6I3/RnqWOnxjRs3Hofih3zrEzHUJm1HoSG1PnBIOpQ
+ D0lO9A6KrIQ9wkkBWL99jyWvAw8PQ6Ky6adAMIuZhmmWO8CXhzMK27g4Lo2YhoEGTsnz6CEDzfy
+ qgqql6B9fTdk1JfT25ieRVGFILtlgnUDQY3XkJITynvTRwEfNOzSPPIixQC36UOkxRQvTScYdXC
+ IuiiofBA==
+X-Gm-Gg: AfdE7cnEDrSDUDjqVHiC0WWfLpt1UjJpNHpDtN3lsei8NWtjdNHLIR5kkgDm/PAG2RA
+ GnYh/jFsU/FhryjxFuLCo3I57pdEc9x5YaVfmQ5Sws/7mcHLq4SwBoQj73f73JYnzf6TWYbxtVL
+ Smk6ydi7tdBIly+rhANGbQKzLxh1qaqljk3aKhn79tOylU9fIdfjbJjwTCtvpH4k730HmGaEuiC
+ aWc+nfWhG3Lw8UqvpFxckcy/swATFCfexmM+UwqzyFzi8HkANHwJFDJjNc2xIKPXTYwuIQgPTWQ
+ QdONpNcJz+02U3GXWs4m0nM+etIBFNFNRtfGuOSLocc/CS/6AScl4vXK+DJLS4J8vf+aKkwMsVi
+ K3Owlble3qNN4TjTdqfny+tQW+qRMVIfA6c22KUhwT/za/tk9lrZZUGI5Aw/JaF4OxiAGPabBoZ
+ rqqam0IGyRCBGJ349IITYAIWfQZFSycDkL0KD+vZT6We1F307fTXqxsnZiXpmBxG4yk+x3ddZtn
+ doW+1YJtH5JLVY8AwRlLOr7KnHbxx/cFUruQkYZr3ZxaxrqQ7dWOW2YwmS2XjdBfeHh/8/KCjKt
+ jgg=
+X-Received: by 2002:a5d:5246:0:b0:460:e4d:bd46 with SMTP id
+ ffacd0b85a97d-465097867f3mr19134918f8f.21.1782134617290; 
+ Mon, 22 Jun 2026 06:23:37 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-4666712cceesm25609380f8f.35.2026.06.22.06.23.37
+ ffacd0b85a97d-46666c57b95sm23773546f8f.30.2026.06.22.06.23.36
  for <openvpn-devel@lists.sourceforge.net>
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 22 Jun 2026 06:23:37 -0700 (PDT)
+ Mon, 22 Jun 2026 06:23:36 -0700 (PDT)
 X-Google-Original-From: "plaisthos (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Mon, 22 Jun 2026 13:23:37 +0000
+Date: Mon, 22 Jun 2026 13:23:36 +0000
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newchange
 X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: I3d52c6d008502293c3ec57ad22d1c613dcd1a94e
-X-Gerrit-Change-Number: 1723
+X-Gerrit-Change-Id: I9f10d91407347faf32397535c95e2d80a1575bd5
+X-Gerrit-Change-Number: 1722
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1723?usp=email>
-X-Gerrit-Commit: 516b6556e193aeb3a43c85599605d77fb38e68bb
-References: <gerrit.1782134588000.I3d52c6d008502293c3ec57ad22d1c613dcd1a94e@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzgyMTM0NTg4MDAwLkkzZDUyYzZkMDA4NTAyMjkzYzNlYzU3YWQyMmQxYzYxM2RjZDFhOTRlQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <00acf64745c33f2a591d4a76aba0a5b3730de46e-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1722?usp=email>
+X-Gerrit-Commit: fb66b7e90f6a20cf6cc399708e3ec9f8232411c3
+References: <gerrit.1782134588000.I9f10d91407347faf32397535c95e2d80a1575bd5@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzgyMTM0NTg4MDAwLkk5ZjEwZDkxNDA3MzQ3ZmFmMzIzOTc1MzVjOTVlMmQ4MGExNTc1YmQ1QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <b2f7ba1c3166c4e6167f83608e182b21c3866cdf-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wbecr-0000aC-Dn
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Extract
- multi_check_dest_addr_allowed from multi_process_float
+X-Headers-End: 1wbecq-0000a9-Ly
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Move incoming data
+ processing in its own method
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -139,494 +139,961 @@ From: "plaisthos \(Code Review\) via Openvpn-devel"
 Reply-To: arne-openvpn@rfc2549.org, openvpn-devel@lists.sourceforge.net
 Cc: "plaisthos \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============7558578451351280032=="
+Content-Type: multipart/mixed; boundary="===============8691104218797806573=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============7558578451351280032==
+--===============8691104218797806573==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Oi06cKWRjQQ="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="2tSoCM0hgqg="; charset=UTF-8
 
---Oi06cKWRjQQ=
+--2tSoCM0hgqg=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 plaisthos has uploaded this change for review=2E ( http://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1723?usp=3Demail )
+=2Enet/c/openvpn/+/1722?usp=3Demail )
 
 
-Change subject: Extract multi_check=
-_dest_addr_allowed from multi_process_float
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+Change subject: Move incoming data =
+processing in its own method
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E
 
-Extract multi_check_dest_addr_allowed from =
-multi_process_float
+Move incoming data processing in its own method
 
-Change-Id: I3d52c6d008502293c3ec57ad22d1c613dcd1a94e
-S=
-igned-off-by: Arne Schwabe <arne@rfc2549=2Eorg>
+This extr=
+act a large chunk from multi_process_incoming_link into its
+own method mult=
+i_process_incoming_link_data
+
+This reduces the complexity of multi_process_=
+incoming_link further=2E
+
+A few declarations were moved into a more logical=
+ place but otherwise
+this is just a simple move=2E
+
+Change-Id: I9f10d914073=
+47faf32397535c95e2d80a1575bd5
+Signed-off-by: Arne Schwabe <arne@rfc2549=2Eo=
+rg>
 ---
-M src/openvpn/multi=2Ec=
+M src/openvpn/multi=2Ec
+1 file changed, 146 insertions(+), 138 dele=
+tions(-)
 
-1 file changed, 67 insertions(+), 45 deletions(-)
 
 
+  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/chan=
+ges/22/1722/1
 
-  git pull ssh://gerr=
-it=2Eopenvpn=2Enet:29418/openvpn refs/changes/23/1723/1
-
-diff --git a/src/o=
-penvpn/multi=2Ec b/src/openvpn/multi=2Ec
-index dd339dc=2E=2Ee2c0405 100644
-=
+diff --git a/src/openvpn/multi=2Ec b/src/openvpn/multi=2Ec
+i=
+ndex 7e2f0dd=2E=2Edd339dc 100644
 --- a/src/openvpn/multi=2Ec
-+++ b/src/openvpn/multi=2Ec
-@@ -3104,6 +3104,68=
- @@
-     return ret;
++++ b/src/open=
+vpn/multi=2Ec
+@@ -3335,6 +3335,151 @@
  }
+ #endif /* if defined(ENABLE_DCO) =
+*/
  
-+static bool
-+multi_check_dest_addr_allowed(struc=
-t multi_context *m, struct multi_instance *mi, struct mroute_addr *real)
-+{=
-
-+    struct hash *hash =3D m->hash;
-+    struct gc_arena gc =3D gc_new();
-=
++static void
++multi_process_incoming_link_data(struct multi_context *m=
+, bool floated, struct link_socket *sock)
++{
++    struct link_socket_info *=
+lsi;
++    const uint8_t *orig_buf;
 +
-+    const uint64_t hv =3D hash_value(hash, real);
-+    struct hash_bucke=
-t *bucket =3D hash_bucket(hash, hv);
 +
-+    /* make sure that we don't assi=
-gn the client to an address taken by
-+     * another client */
-+    struct =
-hash_element *he =3D hash_lookup_fast(hash, bucket, real, hv);
-+    if (!he=
++    /* decrypt in instance context =
+*/
++    lsi =3D &sock->info;
++    struct context *c =3D &m->pending->contex=
+t;
++
++    orig_buf =3D c->c2=2Ebuf=2Edata;
++    if (process_incoming_link_p=
+art1(c, lsi, floated))
++    {
++        /* nonzero length means that we have=
+ a valid, decrypted packed */
++        if (floated && c->c2=2Ebuf=2Elen > 0=
 )
-+    {
-+        /* Address is not taken, everything is fine=2E */
++        {
++            multi_process_float(m, m->pending, sock);
 +      =
-  return true;
+  }
++
++        process_incoming_link_part2(c, lsi, orig_buf);
 +    }
 +
-+    struct multi_instance *ex_mi =3D he->value;
-+
-=
-+    struct tls_multi *m1 =3D mi->context=2Ec2=2Etls_multi;
-+    struct tls=
-_multi *m2 =3D ex_mi->context=2Ec2=2Etls_multi;
-+
-+    struct gc_arena gc =
-=3D gc_new();
-+    int ret =3D false;
-+
-+    /* do not allow if target addr=
-ess is taken by client with another cert */
-+    if (!cert_hash_compare(m1-=
->locked_cert_hash_set, m2->locked_cert_hash_set))
++   =
+ if (TUNNEL_TYPE(m->top=2Ec1=2Etuntap) =3D=3D DEV_TYPE_TUN)
 +    {
-+        msg(D_MUL=
-TI_LOW, "Disallow float to an address taken by another client %s",
 +       =
-     multi_instance_string(ex_mi, false, &gc));
+ struct mroute_addr src, dest;
++        /* extract packet source and dest a=
+ddresses */
++        unsigned int mroute_flags =3D
++            mroute_extr=
+act_addr_from_packet(&src, &dest, 0, &c->c2=2Eto_tun, DEV_TYPE_TUN);
 +
-+        mi->context=2Ec2=
-=2Ebuf=2Elen =3D 0;
-+        goto done;
++   =
+     /* drop packet if extract failed */
++        if (!(mroute_flags & MROU=
+TE_EXTRACT_SUCCEEDED))
++        {
++            c->c2=2Eto_tun=2Elen =3D 0;
+=
++        }
++        /* make sure that source address is associated with thi=
+s client */
++        else if (multi_get_instance_by_virtual_addr(m, &src, t=
+rue) !=3D m->pending)
++        {
++            /* IPv6 link-local address (f=
+e80::xxx)? */
++            if ((src=2Etype & MR_ADDR_MASK) =3D=3D MR_ADDR_I=
+PV6
++                && IN6_IS_ADDR_LINKLOCAL(&src=2Ev6=2Eaddr))
++         =
+   {
++                /* do nothing, for now=2E  TODO: add address learning=
+ */
++            }
++            else
++            {
++                struct=
+ gc_arena gc =3D gc_new();
++                msg(D_MULTI_DROPPED,
++         =
+           "MULTI: bad source address from client [%s], packet dropped",
++ =
+                   mroute_addr_print(&src, &gc));
++                gc_free(=
+&gc);
++            }
++            c->c2=2Eto_tun=2Elen =3D 0;
++        }
++ =
+       /* client-to-client communication enabled? */
++        else if (m->e=
+nable_c2c)
++        {
++            /* multicast? */
++            if (mroute=
+_flags & MROUTE_EXTRACT_MCAST)
++            {
++                /* for now, =
+treat multicast as broadcast */
++                multi_bcast(m, &c->c2=2Eto=
+_tun, m->pending, 0);
++            }
++            else /* possible client t=
+o client routing */
++            {
++                ASSERT(!(mroute_flags &=
+ MROUTE_EXTRACT_BCAST));
++                struct multi_instance *mi =3D mul=
+ti_get_instance_by_virtual_addr(m, &dest, true);
++
++                /* if d=
+est addr is a known client, route to it */
++                if (mi)
++      =
+          {
++                    {
++                        multi_unicast(m=
+, &c->c2=2Eto_tun, mi);
++                        register_activity(c, BLEN(=
+&c->c2=2Eto_tun));
++                    }
++                    c->c2=2Eto_t=
+un=2Elen =3D 0;
++                }
++            }
++        }
 +    }
-+
-+    /* It doesn't make se=
-nse to let a peer float to the address it already
-+     * has, so we disall=
-ow it=2E This can happen if a DCO netlink notification
-+     * gets lost an=
-d we miss a floating step=2E
-+     */
-+    if (m1->rx_peer_id =3D=3D m2->rx=
-_peer_id)
++    el=
+se if (TUNNEL_TYPE(m->top=2Ec1=2Etuntap) =3D=3D DEV_TYPE_TAP)
 +    {
-+        msg(M_WARN,
-+            "disallowing peer %" PRI=
-u32 " (%s) from floating to "
-+            "its own address (%s)",
++     =
+   uint16_t vid =3D 0;
++
++        if (m->top=2Eoptions=2Evlan_tagging)
++   =
+     {
++            if (vlan_is_tagged(&c->c2=2Eto_tun))
++            {
++  =
+              /* Drop VLAN-tagged frame=2E */
++                msg(D_VLAN_D=
+EBUG, "dropping incoming VLAN-tagged frame");
++                c->c2=2Eto_t=
+un=2Elen =3D 0;
++            }
++            else
++            {
++          =
+      vid =3D c->options=2Evlan_pvid;
++            }
++        }
++        /*=
+ extract packet source and dest addresses */
++        struct mroute_addr sr=
+c, dest;
++        /* extract packet source and dest addresses */
++        u=
+nsigned int mroute_flags =3D
++            mroute_extract_addr_from_packet(&=
+src, &dest, vid, &c->c2=2Eto_tun, DEV_TYPE_TAP);
++
++        if (mroute_flag=
+s & MROUTE_EXTRACT_SUCCEEDED)
++        {
++            if (multi_learn_addr(=
+m, m->pending, &src, 0) =3D=3D m->pending)
++            {
++                =
+/* check for broadcast */
++                if (m->enable_c2c)
++            =
+    {
++                    if (mroute_flags & (MROUTE_EXTRACT_BCAST | MROUT=
+E_EXTRACT_MCAST))
++                    {
++                        multi_bca=
+st(m, &c->c2=2Eto_tun, m->pending, vid);
++                    }
++          =
+          else /* try client-to-client routing */
++                    {
++ =
+                       struct multi_instance *mi =3D multi_get_instance_by_=
+virtual_addr(m, &dest, false);
++
++                        /* if dest addr i=
+s a known client, route to it */
++                        if (mi)
++        =
+                {
++                            multi_unicast(m, &c->c2=2Eto=
+_tun, mi);
++                            register_activity(c, BLEN(&c->c2=2E=
+to_tun));
++                            c->c2=2Eto_tun=2Elen =3D 0;
 +       =
-     m1->rx_peer_id, tls_common_name(mi->context=2Ec2=2Etls_multi, false),
-=
-+            mroute_addr_print(&mi->real, &gc));
-+        goto done;
-+    }=
+                 }
++                    }
++                }
++            }=
 
-+
-+    msg(D_MULTI_LOW,
-+        "closing instance %s due to float collisi=
-on with %s "
-+        "using the same certificate",
-+        multi_instance=
-_string(ex_mi, false, &gc), multi_instance_string(mi, false, &gc));
-+    mu=
-lti_close_instance(m, ex_mi, false);
-+    return true;
-+
-+done:
-+    gc_fre=
-e(&gc);
-+    return ret;
++            else
++            {
++                struct gc_arena gc =3D g=
+c_new();
++                msg(D_MULTI_DROPPED,
++                    "MULTI:=
+ bad source address from client [%s], packet dropped",
++                   =
+ mroute_addr_print(&src, &gc));
++                c->c2=2Eto_tun=2Elen =3D 0=
+;
++                gc_free(&gc);
++            }
++        }
++        else
++ =
+       {
++            c->c2=2Eto_tun=2Elen =3D 0;
++        }
++    }
 +}
 +
- /**
-  * Handles peer floating=2E
-  *
-@@ -311=
-6,8 +3178,6 @@
- multi_process_float(struct multi_context *m, struct multi_i=
-nstance *mi, struct link_socket *sock)
+ /=
+*
+  * Process packets in the TCP/UDP socket -> TUN/TAP interface direction,=
+
+  * i=2Ee=2E client -> server direction=2E
+@@ -3344,9 +3489,6 @@
+         =
+                    const unsigned int mpp_flags, struct link_socket *sock)=
+
  {
-     struct mroute_addr real =3D =
-{ 0 };
--    struct hash *hash =3D m->hash;
--    struct gc_arena gc =3D gc_n=
-ew();
+     struct context *c;
+-    struct mroute_addr src, dest;
+-    unsigne=
+d int mroute_flags;
+-    struct multi_instance *mi;
+     bool ret =3D true;=
+
+     bool floated =3D false;
  
-     if (mi->real=2Etype & MR_WITH_PROTO)
-     {
-@@ -3127,53 +3187,=
-16 @@
+@@ -3390,141 +3532,7 @@
  
-     if (!mroute_extract_openvpn_sockaddr(&real, &m->top=2Ec2=2Efro=
-m=2Edest, true))
+     if (BLEN(&c-=
+>c2=2Ebuf) > 0)
      {
--        goto done;
-+        return;
+-        struct link_socket_info *lsi;
+-        cons=
+t uint8_t *orig_buf;
+-
+-        /* decrypt in instance context */
+-
+-      =
+  lsi =3D &sock->info;
+-        orig_buf =3D c->c2=2Ebuf=2Edata;
+-        i=
+f (process_incoming_link_part1(c, lsi, floated))
+-        {
+-            /*=
+ nonzero length means that we have a valid, decrypted packed */
+-          =
+  if (floated && c->c2=2Ebuf=2Elen > 0)
+-            {
+-                mul=
+ti_process_float(m, m->pending, sock);
+-            }
+-
+-            proces=
+s_incoming_link_part2(c, lsi, orig_buf);
+-        }
+-
+-        if (TUNNEL_T=
+YPE(m->top=2Ec1=2Etuntap) =3D=3D DEV_TYPE_TUN)
+-        {
+-            /* e=
+xtract packet source and dest addresses */
+-            mroute_flags =3D
+- =
+               mroute_extract_addr_from_packet(&src, &dest, 0, &c->c2=2Eto_=
+tun, DEV_TYPE_TUN);
+-
+-            /* drop packet if extract failed */
+-   =
+         if (!(mroute_flags & MROUTE_EXTRACT_SUCCEEDED))
+-            {
+-  =
+              c->c2=2Eto_tun=2Elen =3D 0;
+-            }
+-            /* ma=
+ke sure that source address is associated with this client */
+-            =
+else if (multi_get_instance_by_virtual_addr(m, &src, true) !=3D m->pending)=
+
+-            {
+-                /* IPv6 link-local address (fe80::xxx)? */=
+
+-                if ((src=2Etype & MR_ADDR_MASK) =3D=3D MR_ADDR_IPV6
+-    =
+                && IN6_IS_ADDR_LINKLOCAL(&src=2Ev6=2Eaddr))
+-              =
+  {
+-                    /* do nothing, for now=2E  TODO: add address learn=
+ing */
+-                }
+-                else
+-                {
+-       =
+             struct gc_arena gc =3D gc_new();
+-                    msg(D_MU=
+LTI_DROPPED,
+-                        "MULTI: bad source address from clien=
+t [%s], packet dropped",
+-                        mroute_addr_print(&src, &=
+gc));
+-                    gc_free(&gc);
+-                }
+-              =
+  c->c2=2Eto_tun=2Elen =3D 0;
+-            }
+-            /* client-to-clie=
+nt communication enabled? */
+-            else if (m->enable_c2c)
+-        =
+    {
+-                /* multicast? */
+-                if (mroute_flags &=
+ MROUTE_EXTRACT_MCAST)
+-                {
+-                    /* for now, =
+treat multicast as broadcast */
+-                    multi_bcast(m, &c->c2=
+=2Eto_tun, m->pending, 0);
+-                }
+-                else /* poss=
+ible client to client routing */
+-                {
+-                    AS=
+SERT(!(mroute_flags & MROUTE_EXTRACT_BCAST));
+-                    mi =3D m=
+ulti_get_instance_by_virtual_addr(m, &dest, true);
+-
+-                    /=
+* if dest addr is a known client, route to it */
+-                    if (m=
+i)
+-                    {
+-                        {
+-                     =
+       multi_unicast(m, &c->c2=2Eto_tun, mi);
+-                            =
+register_activity(c, BLEN(&c->c2=2Eto_tun));
+-                        }
+-  =
+                      c->c2=2Eto_tun=2Elen =3D 0;
+-                    }
+- =
+               }
+-            }
+-        }
+-        else if (TUNNEL_TYPE(m-=
+>top=2Ec1=2Etuntap) =3D=3D DEV_TYPE_TAP)
+-        {
+-            uint16_t v=
+id =3D 0;
+-
+-            if (m->top=2Eoptions=2Evlan_tagging)
+-            =
+{
+-                if (vlan_is_tagged(&c->c2=2Eto_tun))
+-                {
+=
+-                    /* Drop VLAN-tagged frame=2E */
+-                    m=
+sg(D_VLAN_DEBUG, "dropping incoming VLAN-tagged frame");
+-                 =
+   c->c2=2Eto_tun=2Elen =3D 0;
+-                }
+-                else
+-  =
+              {
+-                    vid =3D c->options=2Evlan_pvid;
+-     =
+           }
+-            }
+-            /* extract packet source and dest =
+addresses */
+-            mroute_flags =3D
+-                mroute_extract_=
+addr_from_packet(&src, &dest, vid, &c->c2=2Eto_tun, DEV_TYPE_TAP);
+-
+-     =
+       if (mroute_flags & MROUTE_EXTRACT_SUCCEEDED)
+-            {
+-       =
+         if (multi_learn_addr(m, m->pending, &src, 0) =3D=3D m->pending)
+- =
+               {
+-                    /* check for broadcast */
+-          =
+          if (m->enable_c2c)
+-                    {
+-                      =
+  if (mroute_flags & (MROUTE_EXTRACT_BCAST | MROUTE_EXTRACT_MCAST))
+-      =
+                  {
+-                            multi_bcast(m, &c->c2=2Eto=
+_tun, m->pending, vid);
+-                        }
+-                       =
+ else /* try client-to-client routing */
+-                        {
+-      =
+                      mi =3D multi_get_instance_by_virtual_addr(m, &dest, f=
+alse);
+-
+-                            /* if dest addr is a known client, ro=
+ute to it */
+-                            if (mi)
+-                        =
+    {
+-                                multi_unicast(m, &c->c2=2Eto_tun, mi=
+);
+-                                register_activity(c, BLEN(&c->c2=2Eto_t=
+un));
+-                                c->c2=2Eto_tun=2Elen =3D 0;
+-       =
+                     }
+-                        }
+-                    }
+- =
+               }
+-                else
+-                {
+-                =
+    struct gc_arena gc =3D gc_new();
+-                    msg(D_MULTI_DROPP=
+ED,
+-                        "MULTI: bad source address from client [%s], p=
+acket dropped",
+-                        mroute_addr_print(&src, &gc));
+-  =
+                  c->c2=2Eto_tun=2Elen =3D 0;
+-                    gc_free(=
+&gc);
+-                }
+-            }
+-            else
+-            {
+- =
+               c->c2=2Eto_tun=2Elen =3D 0;
+-            }
+-        }
++     =
+   multi_process_incoming_link_data(m, floated, sock);
      }
  
--    =
-const uint64_t hv =3D hash_value(hash, &real);
--    struct hash_bucket *buc=
-ket =3D hash_bucket(hash, hv);
--
--    /* make sure that we don't float to a=
-n address taken by another client */
--    struct hash_element *he =3D hash_=
-lookup_fast(hash, bucket, &real, hv);
--    if (he)
-+    if (!multi_check_de=
-st_addr_allowed(m, mi, &real))
-     {
--        struct multi_instance *ex_mi=
- =3D (struct multi_instance *)he->value;
--
--        struct tls_multi *m1 =
-=3D mi->context=2Ec2=2Etls_multi;
--        struct tls_multi *m2 =3D ex_mi->=
-context=2Ec2=2Etls_multi;
--
--        /* do not float if target address is t=
-aken by client with another cert */
--        if (!cert_hash_compare(m1->loc=
-ked_cert_hash_set, m2->locked_cert_hash_set))
--        {
--            msg(D=
-_MULTI_LOW, "Disallow float to an address taken by another client %s",
--   =
-             multi_instance_string(ex_mi, false, &gc));
--
--            mi->=
-context=2Ec2=2Ebuf=2Elen =3D 0;
--
--            goto done;
--        }
--
--   =
-     /* It doesn't make sense to let a peer float to the address it already=
-
--         * has, so we disallow it=2E This can happen if a DCO netlink not=
-ification
--         * gets lost and we miss a floating step=2E
--         */=
-
--        if (m1->rx_peer_id =3D=3D m2->rx_peer_id)
--        {
--           =
- msg(M_WARN,
--                "disallowing peer %" PRIu32 " (%s) from float=
-ing to "
--                "its own address (%s)",
--                m1->rx_p=
-eer_id, tls_common_name(mi->context=2Ec2=2Etls_multi, false),
--            =
-    mroute_addr_print(&mi->real, &gc));
--            goto done;
--        }
-=
--
--        msg(D_MULTI_LOW,
--            "closing instance %s due to float =
-collision with %s "
--            "using the same certificate",
--           =
- multi_instance_string(ex_mi, false, &gc), multi_instance_string(mi, false,=
- &gc));
--        multi_close_instance(m, ex_mi, false);
-+        return;
-  =
-   }
- 
-+    struct gc_arena gc =3D gc_new();
-+
-     msg(D_MULTI_MEDIUM, "pe=
-er %" PRIu32 " (%s) floated from %s to %s",
-         mi->context=2Ec2=2Etls=
-_multi->rx_peer_id,
-         tls_common_name(mi->context=2Ec2=2Etls_multi, =
-false),
-@@ -3202,7 +3225,6 @@
-     ASSERT(hash_add(m->cid_hash, &mi->contex=
-t=2Ec2=2Emda_context=2Ecid, mi, true));
- #endif
- 
--done:
-     gc_free(&gc);=
-
- }
- 
+     /* pos=
+tprocess and set wakeup */
 
 -- 
-To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1723?us=
-p=3Demail
-To unsubscribe, or for help writing mail filters, visit http://ge=
-rrit=2Eopenvpn=2Enet/settings?usp=3Demail
+To view, visit http://gerrit=2Eopenvpn=2Ene=
+t/c/openvpn/+/1722?usp=3Demail
+To unsubscribe, or for help writing mail fil=
+ters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Gerrit-MessageType: newchange
-Ge=
-rrit-Project: openvpn
+Gerrit-Mess=
+ageType: newchange
+Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I3d52c6d00850=
-2293c3ec57ad22d1c613dcd1a94e
-Gerrit-Change-Number: 1723
+Gerrit-Cha=
+nge-Id: I9f10d91407347faf32397535c95e2d80a1575bd5
+Gerrit-Change-Number: 172=
+2
 Gerrit-PatchSet: 1
-=
 Gerrit-Owner: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-CC: openvpn-dev=
-el <openvpn-devel@lists=2Esourceforge=2Enet>
+G=
+errit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
 
---Oi06cKWRjQQ=
+--2tSoCM0hgqg=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p>plaisthos has upl=
 oaded this change for <strong>review</strong>=2E</p><p><a href=3D"http://ge=
-rrit=2Eopenvpn=2Enet/c/openvpn/+/1723?usp=3Demail">View Change</a></p><pre =
+rrit=2Eopenvpn=2Enet/c/openvpn/+/1722?usp=3Demail">View Change</a></p><pre =
 class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pr=
-e-wrap;">Extract multi_check_dest_addr_allowed from multi_process_float<br>=
-<br>Change-Id: I3d52c6d008502293c3ec57ad22d1c613dcd1a94e<br>Signed-off-by: =
-Arne Schwabe &lt;arne@rfc2549=2Eorg&gt;<br>---<br>M src/openvpn/multi=2Ec<b=
-r>1 file changed, 67 insertions(+), 45 deletions(-)<br><br></pre><pre class=
-=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
-p;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/23/172=
-3/1</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
-rap;"><span>diff --git a/src/openvpn/multi=2Ec b/src/openvpn/multi=2Ec</spa=
-n><br><span>index dd339dc=2E=2Ee2c0405 100644</span><br><span>--- a/src/ope=
-nvpn/multi=2Ec</span><br><span>+++ b/src/openvpn/multi=2Ec</span><br><span>=
-@@ -3104,6 +3104,68 @@</span><br><span>     return ret;</span><br><span> }<=
-/span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+st=
-atic bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+multi_chec=
-k_dest_addr_allowed(struct multi_context *m, struct multi_instance *mi, str=
-uct mroute_addr *real)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct hash=
- *hash =3D m-&gt;hash;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    struct gc_arena gc =3D gc_new();</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    const uint64_t hv =3D hash_value(hash, real);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    struct hash_bucket *bucket =3D hash_buck=
-et(hash, hv);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* make sure that we =
-don&#39;t assign the client to an address taken by</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+     * another client */</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    struct hash_element *he =3D hash_lo=
-okup_fast(hash, bucket, real, hv);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    if (!he)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  /* Address is not taken, everything is fine=2E */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        return true;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    struct multi_instance *ex_mi =3D he-&gt;value;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    struct tls_multi *m1 =3D mi-&gt;context=2Ec2=2Etls_multi=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct tls_mul=
-ti *m2 =3D ex_mi-&gt;context=2Ec2=2Etls_multi;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    struct gc_arena gc =3D gc_new();</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    int ret =3D false;</span><br><span style=3D"co=
+e-wrap;">Move incoming data processing in its own method<br><br>This extrac=
+t a large chunk from multi_process_incoming_link into its<br>own method mul=
+ti_process_incoming_link_data<br><br>This reduces the complexity of multi_p=
+rocess_incoming_link further=2E<br><br>A few declarations were moved into a=
+ more logical place but otherwise<br>this is just a simple move=2E<br><br>C=
+hange-Id: I9f10d91407347faf32397535c95e2d80a1575bd5<br>Signed-off-by: Arne =
+Schwabe &lt;arne@rfc2549=2Eorg&gt;<br>---<br>M src/openvpn/multi=2Ec<br>1 f=
+ile changed, 146 insertions(+), 138 deletions(-)<br><br></pre><pre class=3D=
+"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;"=
+>git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/22/1722/1=
+</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
+;"><span>diff --git a/src/openvpn/multi=2Ec b/src/openvpn/multi=2Ec</span><=
+br><span>index 7e2f0dd=2E=2Edd339dc 100644</span><br><span>--- a/src/openvp=
+n/multi=2Ec</span><br><span>+++ b/src/openvpn/multi=2Ec</span><br><span>@@ =
+-3335,6 +3335,151 @@</span><br><span> }</span><br><span> #endif /* if defin=
+ed(ENABLE_DCO) */</span><br><span> </span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+multi_process_incoming_link_data(struct multi_context *m, bool floa=
+ted, struct link_socket *sock)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    str=
+uct link_socket_info *lsi;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    const uint8_t *orig_buf;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* decrypt in inst=
+ance context */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+lsi =3D &amp;sock-&gt;info;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    struct context *c =3D &amp;m-&gt;pending-&gt;context;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    orig_buf =3D c-&gt;c2=2Ebuf=2Edata;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    if (process_incoming_lin=
+k_part1(c, lsi, floated))</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+/* nonzero length means that we have a valid, decrypted packed */</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        if (floated &amp;&amp=
+; c-&gt;c2=2Ebuf=2Elen &gt; 0)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++            multi_process_float(m, m-&gt;pending, sock);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"co=
 lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    /* do not allow if target address is taken by client with anot=
-her cert */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (=
-!cert_hash_compare(m1-&gt;locked_cert_hash_set, m2-&gt;locked_cert_hash_set=
-))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        msg(D_MULTI_LOW, &quot;=
-Disallow float to an address taken by another client %s&quot;,</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            multi_instance_strin=
-g(ex_mi, false, &amp;gc));</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        mi-&=
-gt;context=2Ec2=2Ebuf=2Elen =3D 0;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        goto done;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* It doesn&#39=
-;t make sense to let a peer float to the address it already</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+     * has, so we disallow it=2E Th=
-is can happen if a DCO netlink notification</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+     * gets lost and we miss a floating step=2E</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+     */</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    if (m1-&gt;rx_peer_id =3D=3D m2=
--&gt;rx_peer_id)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_WAR=
-N,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot=
-;disallowing peer %&quot; PRIu32 &quot; (%s) from floating to &quot;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;its own =
-address (%s)&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-            m1-&gt;rx_peer_id, tls_common_name(mi-&gt;context=2Ec2=2Etls_mu=
-lti, false),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     mroute_addr_print(&amp;mi-&gt;real, &amp;gc));</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        goto done;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    msg(D_MULTI_LOW,</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        &quot;closing instance %s due to float collision with %s &quot;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        &quot;using t=
-he same certificate&quot;,</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        multi_instance_string(ex_mi, false, &amp;gc), multi_instance=
-_string(mi, false, &amp;gc));</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    multi_close_instance(m, ex_mi, false);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    return true;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+done:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  gc_free(&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    return ret;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /**<=
-/span><br><span>  * Handles peer floating=2E</span><br><span>  *</span><br>=
-<span>@@ -3116,8 +3178,6 @@</span><br><span> multi_process_float(struct mul=
-ti_context *m, struct multi_instance *mi, struct link_socket *sock)</span><=
-br><span> {</span><br><span>     struct mroute_addr real =3D { 0 };</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    struct hash *hash =3D m-&=
-gt;hash;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct gc=
-_arena gc =3D gc_new();</span><br><span> </span><br><span>     if (mi-&gt;r=
-eal=2Etype &amp; MR_WITH_PROTO)</span><br><span>     {</span><br><span>@@ -=
-3127,53 +3187,16 @@</span><br><span> </span><br><span>     if (!mroute_extr=
-act_openvpn_sockaddr(&amp;real, &amp;m-&gt;top=2Ec2=2Efrom=2Edest, true))</=
-span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        goto done;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       return;</span><br><span>     }</span><br><span> </span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    const uint64_t hv =3D hash_value(hash=
-, &amp;real);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    stru=
-ct hash_bucket *bucket =3D hash_bucket(hash, hv);</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    /* make sure that we don&#39;t float to an address taken by anot=
-her client */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    stru=
-ct hash_element *he =3D hash_lookup_fast(hash, bucket, &amp;real, hv);</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (he)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    if (!multi_check_dest_addr_all=
-owed(m, mi, &amp;real))</span><br><span>     {</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-        struct multi_instance *ex_mi =3D (struct m=
-ulti_instance *)he-&gt;value;</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        struc=
-t tls_multi *m1 =3D mi-&gt;context=2Ec2=2Etls_multi;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        struct tls_multi *m2 =3D ex_mi-&gt;=
-context=2Ec2=2Etls_multi;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        /* do not=
- float if target address is taken by client with another cert */</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-        if (!cert_hash_compare(m=
-1-&gt;locked_cert_hash_set, m2-&gt;locked_cert_hash_set))</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-            msg(D_MULTI_LOW, &quot;Disallow float t=
-o an address taken by another client %s&quot;,</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-                multi_instance_string(ex_mi, false=
-, &amp;gc));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-            mi-&gt;context=2Ec=
-2=2Ebuf=2Elen =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-            goto done;=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-        /* It doesn&#39;t make sense to let a peer flo=
-at to the address it already</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-         * has, so we disallow it=2E This can happen if a DCO netlin=
-k notification</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-  * gets lost and we miss a floating step=2E</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-         */</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        if (m1-&gt;rx_peer_id =3D=3D m2-&gt;rx_peer_id)</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-            msg(M_WARN,</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-                &quot;disallowing peer=
- %&quot; PRIu32 &quot; (%s) from floating to &quot;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-                &quot;its own address (%s)&=
-quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-               =
- m1-&gt;rx_peer_id, tls_common_name(mi-&gt;context=2Ec2=2Etls_multi, false)=
-,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                mrou=
-te_addr_print(&amp;mi-&gt;real, &amp;gc));</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-            goto done;</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg=
-(D_MULTI_LOW,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-    &quot;closing instance %s due to float collision with %s &quot;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-            &quot;using the s=
-ame certificate&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--            multi_instance_string(ex_mi, false, &amp;gc), multi_instance_s=
-tring(mi, false, &amp;gc));</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        multi_close_instance(m, ex_mi, false);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        return;</span><br><span>     }</s=
-pan><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-struct gc_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span>     msg(D_MULTI_MEDIUM, &quot;peer %&quot; P=
-RIu32 &quot; (%s) floated from %s to %s&quot;,</span><br><span>         mi-=
-&gt;context=2Ec2=2Etls_multi-&gt;rx_peer_id,</span><br><span>         tls_c=
-ommon_name(mi-&gt;context=2Ec2=2Etls_multi, false),</span><br><span>@@ -320=
-2,7 +3225,6 @@</span><br><span>     ASSERT(hash_add(m-&gt;cid_hash, &amp;mi=
--&gt;context=2Ec2=2Emda_context=2Ecid, mi, true));</span><br><span> #endif<=
-/span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-done=
-:</span><br><span>     gc_free(&amp;gc);</span><br><span> }</span><br><span=
-> </span><br><span></span><br></pre><p>To view, visit <a href=3D"http://ger=
-rit=2Eopenvpn=2Enet/c/openvpn/+/1723?usp=3Demail">change 1723</a>=2E To uns=
-ubscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
-=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope it=
-emtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"acti=
-on" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1723?usp=3Demail"/><meta item=
-prop=3D"name" content=3D"View Change"/></div></div>
+ 40%);">+        process_incoming_link_part2(c, lsi, orig_buf);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    if (TUNNEL_TYPE(m-&gt;top=2Ec1=2Etuntap) =3D=3D DEV_TYPE_TUN=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        struct mroute_addr src, =
+dest;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* ext=
+ract packet source and dest addresses */</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        unsigned int mroute_flags =3D</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+            mroute_extract_addr_from=
+_packet(&amp;src, &amp;dest, 0, &amp;c-&gt;c2=2Eto_tun, DEV_TYPE_TUN);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        /* drop packet if extract failed =
+*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!(mro=
+ute_flags &amp; MROUTE_EXTRACT_SUCCEEDED))</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+            c-&gt;c2=2Eto_tun=2Elen =3D 0;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        /* make sure that source address is assoc=
+iated with this client */</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        else if (multi_get_instance_by_virtual_addr(m, &amp;src, true=
+) !=3D m-&gt;pending)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+    /* IPv6 link-local address (fe80::xxx)? */</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+            if ((src=2Etype &amp; MR_ADDR_MASK) =
+=3D=3D MR_ADDR_IPV6</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+                &amp;&amp; IN6_IS_ADDR_LINKLOCAL(&amp;src=2Ev6=2Eaddr))</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                /* do nothing=
+, for now=2E  TODO: add address learning */</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+            else</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                struct gc_arena gc =3D gc_new();</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+                msg(D_MULTI_DROPPED,<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
+&quot;MULTI: bad source address from client [%s], packet dropped&quot;,</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+                    mro=
+ute_addr_print(&amp;src, &amp;gc));</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+                gc_free(&amp;gc);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            c-&gt;c2=2Eto_tun=2Elen =3D 0;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        /* client-to-client communicat=
+ion enabled? */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    else if (m-&gt;enable_c2c)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++            /* multicast? */</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+            if (mroute_flags &amp; MROUTE_EXTRACT_MCAST)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+                /* for now, treat =
+multicast as broadcast */</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+                multi_bcast(m, &amp;c-&gt;c2=2Eto_tun, m-&gt;pending,=
+ 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            else /* p=
+ossible client to client routing */</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                ASSERT(!(mroute_flags &amp; MROUTE_EXTRACT_BCAST)=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                s=
+truct multi_instance *mi =3D multi_get_instance_by_virtual_addr(m, &amp;des=
+t, true);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                /* if dest ad=
+dr is a known client, route to it */</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+                if (mi)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                {</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+                    {</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                        multi_unicast(m, &amp;c-&gt;c2=
+=2Eto_tun, mi);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+                    register_activity(c, BLEN(&amp;c-&gt;c2=2Eto_tun));</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+                    }</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    c=
+-&gt;c2=2Eto_tun=2Elen =3D 0;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                }</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (TUNNEL_TY=
+PE(m-&gt;top=2Ec1=2Etuntap) =3D=3D DEV_TYPE_TAP)</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        uint16_t vid =3D 0;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        if (m-&gt;top=2Eoptions=2Evlan_tagging)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            if (vlan_is_tagged(&amp;c-&gt;c2=2Eto_t=
+un))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                /* Dr=
+op VLAN-tagged frame=2E */</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+                msg(D_VLAN_DEBUG, &quot;dropping incoming VLAN-tagge=
+d frame&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+            c-&gt;c2=2Eto_tun=2Elen =3D 0;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+            else</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+                vid =3D c-&gt;options=2Evlan_pvid;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        /* extract packet source and dest addresses=
+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        struct m=
+route_addr src, dest;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        /* extract packet source and dest addresses */</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        unsigned int mroute_flags =3D<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            mroute_e=
+xtract_addr_from_packet(&amp;src, &amp;dest, vid, &amp;c-&gt;c2=2Eto_tun, D=
+EV_TYPE_TAP);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (mroute_flags =
+&amp; MROUTE_EXTRACT_SUCCEEDED)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+            if (multi_learn_addr(m, m-&gt;pending, &amp;src, 0) =3D=3D m-=
+&gt;pending)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+     {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
+   /* check for broadcast */</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                if (m-&gt;enable_c2c)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+                {</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+                    if (mroute_flags &amp; (MROUTE=
+_EXTRACT_BCAST | MROUTE_EXTRACT_MCAST))</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+                    {</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+                        multi_bcast(m, &amp;c-&gt;c2=
+=2Eto_tun, m-&gt;pending, vid);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+                    }</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+                    else /* try client-to-client routing */</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    {=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                   =
+     struct multi_instance *mi =3D multi_get_instance_by_virtual_addr(m, &a=
+mp;dest, false);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                      =
+  /* if dest addr is a known client, route to it */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                        if (mi)</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                        {</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+                       =
+     multi_unicast(m, &amp;c-&gt;c2=2Eto_tun, mi);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+                            register_activit=
+y(c, BLEN(&amp;c-&gt;c2=2Eto_tun));</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+                            c-&gt;c2=2Eto_tun=2Elen =3D 0;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
+      }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            else</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                struct gc_are=
+na gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+                msg(D_MULTI_DROPPED,</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+                    &quot;MULTI: bad source address from c=
+lient [%s], packet dropped&quot;,</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+                    mroute_addr_print(&amp;src, &amp;gc));</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                c-&gt;=
+c2=2Eto_tun=2Elen =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+                gc_free(&amp;gc);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            c-=
+&gt;c2=2Eto_tun=2Elen =3D 0;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /*</span><br><s=
+pan>  * Process packets in the TCP/UDP socket -&gt; TUN/TAP interface direc=
+tion,</span><br><span>  * i=2Ee=2E client -&gt; server direction=2E</span><=
+br><span>@@ -3344,9 +3489,6 @@</span><br><span>                            =
+ const unsigned int mpp_flags, struct link_socket *sock)</span><br><span> {=
+</span><br><span>     struct context *c;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    struct mroute_addr src, dest;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    unsigned int mroute_flags;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    struct multi_instance *mi;</sp=
+an><br><span>     bool ret =3D true;</span><br><span>     bool floated =3D =
+false;</span><br><span> </span><br><span>@@ -3390,141 +3532,7 @@</span><br>=
+<span> </span><br><span>     if (BLEN(&amp;c-&gt;c2=2Ebuf) &gt; 0)</span><b=
+r><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+ struct link_socket_info *lsi;</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-        const uint8_t *orig_buf;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       /* decrypt in instance context */</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+      lsi =3D &amp;sock-&gt;info;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-        orig_buf =3D c-&gt;c2=2Ebuf=2Edata;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-        if (process_incoming_link_part1(c=
+, lsi, floated))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            /* no=
+nzero length means that we have a valid, decrypted packed */</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-            if (floated &amp;&amp; c=
+-&gt;c2=2Ebuf=2Elen &gt; 0)</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+              multi_process_float(m, m-&gt;pending, sock);</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-            process_incoming_link_part2(c, lsi, orig_buf);</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-        if (TUNNEL_TYPE(m-&gt;top=2Ec1=2Etuntap) =3D=3D DEV_TYP=
+E_TUN)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-            /* extract pack=
+et source and dest addresses */</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-            mroute_flags =3D</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-                mroute_extract_addr_from_packet(&amp;src, =
+&amp;dest, 0, &amp;c-&gt;c2=2Eto_tun, DEV_TYPE_TUN);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-            /* drop packet if extract failed */</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-            if (!(mroute_flags &amp; M=
+ROUTE_EXTRACT_SUCCEEDED))</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+            c-&gt;c2=2Eto_tun=2Elen =3D 0;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-            /* make sure that source address is associated wit=
+h this client */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+       else if (multi_get_instance_by_virtual_addr(m, &amp;src, true) !=3D =
+m-&gt;pending)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-               =
+ /* IPv6 link-local address (fe80::xxx)? */</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-                if ((src=2Etype &amp; MR_ADDR_MASK) =
+=3D=3D MR_ADDR_IPV6</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+                  &amp;&amp; IN6_IS_ADDR_LINKLOCAL(&amp;src=2Ev6=2Eaddr))</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-                {</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-                    /* do n=
+othing, for now=2E  TODO: add address learning */</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-                }</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-                else</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-                {</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-                    struct gc_arena gc =3D gc_new();</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-                    msg(D=
+_MULTI_DROPPED,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+                  &quot;MULTI: bad source address from client [%s], packet =
+dropped&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+                 mroute_addr_print(&amp;src, &amp;gc));</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-                    gc_free(&amp;gc);</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-                }</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-                c-&gt;c2=2Eto=
+_tun=2Elen =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+/* client-to-client communication enabled? */</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-            else if (m-&gt;enable_c2c)</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-                /* multicast? */</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-                if (mroute_flag=
+s &amp; MROUTE_EXTRACT_MCAST)</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-                {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-                    /* for now, treat multicast as broadcast */</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-                    multi_bca=
+st(m, &amp;c-&gt;c2=2Eto_tun, m-&gt;pending, 0);</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-                }</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-                else /* possible client to client ro=
+uting */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
+   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                 =
+   ASSERT(!(mroute_flags &amp; MROUTE_EXTRACT_BCAST));</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-                    mi =3D multi_get_insta=
+nce_by_virtual_addr(m, &amp;dest, true);</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+                  /* if dest addr is a known client, route to it */</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-                    if (mi)</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    {</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-                       =
+ {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                   =
+         multi_unicast(m, &amp;c-&gt;c2=2Eto_tun, mi);</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-                            register_activ=
+ity(c, BLEN(&amp;c-&gt;c2=2Eto_tun));</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-                        }</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-                        c-&gt;c2=2Eto_tun=2Elen =3D 0;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    }<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-                }</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-        else if (TUNNEL_TYPE(m-&gt;top=2Ec1=2E=
+tuntap) =3D=3D DEV_TYPE_TAP)</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+       uint16_t vid =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (=
+m-&gt;top=2Eoptions=2Evlan_tagging)</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-                if (vlan_is_tagged(&amp;c-&gt;c2=2Eto_tun))</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-                {</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-                    /* Drop VLAN-ta=
+gged frame=2E */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+               msg(D_VLAN_DEBUG, &quot;dropping incoming VLAN-tagged frame&=
+quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
+      c-&gt;c2=2Eto_tun=2Elen =3D 0;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-                }</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-                else</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-                {</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-                    vid =3D c-&gt;options=2Evlan_pvid;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-                }</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-            /* extract packet source and dest ad=
+dresses */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+ mroute_flags =3D</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+            mroute_extract_addr_from_packet(&amp;src, &amp;dest, vid, &amp;=
+c-&gt;c2=2Eto_tun, DEV_TYPE_TAP);</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+   if (mroute_flags &amp; MROUTE_EXTRACT_SUCCEEDED)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-                if (multi_learn_addr(m, m-&gt;pendi=
+ng, &amp;src, 0) =3D=3D m-&gt;pending)</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-                {</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-                    /* check for broadcast */</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-                    if (m-&gt;enable_c=
+2c)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                  =
+  {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                  =
+      if (mroute_flags &amp; (MROUTE_EXTRACT_BCAST | MROUTE_EXTRACT_MCAST))=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                     =
+   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                 =
+           multi_bcast(m, &amp;c-&gt;c2=2Eto_tun, m-&gt;pending, vid);</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-                        }<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-                      =
+  else /* try client-to-client routing */</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-                        {</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-                            mi =3D multi_get_instan=
+ce_by_virtual_addr(m, &amp;dest, false);</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+                          /* if dest addr is a known client, route to it */=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                     =
+       if (mi)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+                     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-                                multi_unicast(m, &amp;c-&gt;c2=2Eto_tun, m=
+i);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                  =
+              register_activity(c, BLEN(&amp;c-&gt;c2=2Eto_tun));</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-                               =
+ c-&gt;c2=2Eto_tun=2Elen =3D 0;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-                            }</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-                        }</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-                    }</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-                }</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-                else</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-                {</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-                    struct gc_arena gc =3D gc_new();</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-                    msg(D_MULTI=
+_DROPPED,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+            &quot;MULTI: bad source address from client [%s], packet droppe=
+d&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
+           mroute_addr_print(&amp;src, &amp;gc));</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-                    c-&gt;c2=2Eto_tun=2Elen =3D=
+ 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                  =
+  gc_free(&amp;gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+              }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+      }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            el=
+se</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-                c-&gt;c2=2E=
+to_tun=2Elen =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+          }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        multi_proces=
+s_incoming_link_data(m, floated, sock);</span><br><span>     }</span><br><s=
+pan> </span><br><span>     /* postprocess and set wakeup */</span><br><span=
+></span><br></pre><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Ene=
+t/c/openvpn/+/1722?usp=3Demail">change 1722</a>=2E To unsubscribe, or for h=
+elp writing mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/se=
+ttings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://sc=
+hema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"htt=
+p://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
+=2Eopenvpn=2Enet/c/openvpn/+/1722?usp=3Demail"/><meta itemprop=3D"name" con=
+tent=3D"View Change"/></div></div>
 
-<div style=3D"display:=
-none"> Gerrit-MessageType: newchange </div>
-<div style=3D"display:none"> Ge=
-rrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: ma=
-ster </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I3d52c6d00850229=
-3c3ec57ad22d1c613dcd1a94e </div>
-<div style=3D"display:none"> Gerrit-Change=
--Number: 1723 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>=
-
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@rfc2=
-549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel =
-&lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-Mes=
+sageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Project: ope=
+nvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div =
+style=3D"display:none"> Gerrit-Change-Id: I9f10d91407347faf32397535c95e2d80=
+a1575bd5 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1722 </d=
+iv>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"di=
+splay:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </d=
+iv>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel=
+@lists=2Esourceforge=2Enet&gt; </div>
 
 </body></html>
---Oi06cKWRjQQ=--
+--2tSoCM0hgqg=--
 
 
---===============7558578451351280032==
+--===============8691104218797806573==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============7558578451351280032==
+--===============8691104218797806573==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -637,5 +1104,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============7558578451351280032==--
+--===============8691104218797806573==--
 
