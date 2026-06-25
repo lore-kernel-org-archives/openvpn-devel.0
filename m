@@ -4,126 +4,126 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4B4DFCDE000
-	for <openvpn-devel@archiver.kernel.org>; Thu, 25 Jun 2026 13:37:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 836A2CDE007
+	for <openvpn-devel@archiver.kernel.org>; Thu, 25 Jun 2026 13:37:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=h+1y3gI6rtH3HoXPy1x669sFDCcTxfSZaTrJIYqBDgs=; b=Wo1abLwZ2HLz54cgX/3Mx0pAXs
-	WkTYikk4Mhx5UTsvdaFd66xkCIj0TcHNKB0WbzLZDN0f7W7EgM8ocgXHKRBvBv29+yLW2SjzwQsuA
-	J1NX/oYFZZnJG/ToXp1YBZCLdHqNEn97JkGWTUuq0vnoBQ0IyfxlK9MGKetqqoXobp7c=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=vSNoUa6jZcTSZ8vGoFqbBxFqBoEjquDdKZw4xp3SuaU=; b=G5FEMmSuysSyLPb8LwLSZ9XdlK
+	G/XdRkTazq1rY5V4zC5/rfwz8HKf6DqmD+8AnoSIWm0VzSN/qsPRTOLilaVQXciWQCmechJ0MyIYG
+	YY6XnOgTR26S+vuOoWsAIfTSkxc4VAgxeTOQNh8GpK+ohycSq6Df705CzEWdKjtFuiHI=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wckGm-0001JD-CE;
-	Thu, 25 Jun 2026 13:37:28 +0000
+	id 1wckGr-0007ZV-LS;
+	Thu, 25 Jun 2026 13:37:31 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wckGk-0001J6-2j
+ (envelope-from <gerrit@openvpn.net>) id 1wckGo-0007ZM-5B
  for openvpn-devel@lists.sourceforge.net;
- Thu, 25 Jun 2026 13:37:26 +0000
+ Thu, 25 Jun 2026 13:37:27 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
  :List-Post:List-Owner:List-Archive;
- bh=UWN/iwJU618zlaXnXp9kiRPezhlBXaLMQmxNct1ZLrg=; b=PohyX48Pen8AcLx782FcESvEzk
- Kxcz/4t6Pf1JggrlV4mOnNwv/v5WDAsfrRfTcb6s/o9DJipGd11n8pkb3l3ToDbreGEseOyUD3hmm
- neDg5FgL2fILztF8v8AQk6sTNbL6aA7xPkw98WyneT26CZyyFrF+zUaNTCvBqEcvCyfk=;
+ bh=qDlmKz0ZZKly2vQY4SWiN9JsWY98w9thwJjyzrXhR6g=; b=Um5MoUwo/qB2bdraF/mITG7WFi
+ jCOQ23BBLtWUZm4xrMoooZe7WoCgf/HzDHX/fk8BfoWQQ9t/l6aSLWpRwB+UglGwDh//okccMryKt
+ vxBcxnhw98fgTrf08r7DwTKrZlzKtsjlG8lxWoifRDQBvqqWJUIwZJI0jpsRxs9CA95M=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
  Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=UWN/iwJU618zlaXnXp9kiRPezhlBXaLMQmxNct1ZLrg=; b=Q
- zNoeiIHZcnDYDUGCDWxurytNe0/k0fY1mjpdTtrYYg211dYrpND87/tTQm8Kz1+yxNh+Jk4P4CGl1
- qGX0dYuphbkElqD8pQKaUdDz9t7xGYSJDIN9ssne25NXIun8HWwptOIisg0o9W4qiouiBPiJzjK82
- PQRMipQOAz3pQS6Q=;
-Received: from mail-wr1-f48.google.com ([209.85.221.48])
+ List-Owner:List-Archive; bh=qDlmKz0ZZKly2vQY4SWiN9JsWY98w9thwJjyzrXhR6g=; b=b
+ qH5MYWgk0dii3Rx4EgmBwzG/IH8/PwMMVD4IjiwxhSmLZIJXjfLuOl/BqORILViTY8IHZVypwaQhe
+ cvA2JWdAJShzho3fHASGh6/KEpWlBW/RJp4W3zV4R4+KUS2a/m77ivvh+hDrKmjELioXk1QBFHg4B
+ u8xayhsI/Z+fwvYg=;
+Received: from mail-wm1-f41.google.com ([209.85.128.41])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wckGf-0001Ha-Ln for openvpn-devel@lists.sourceforge.net;
- Thu, 25 Jun 2026 13:37:25 +0000
-Received: by mail-wr1-f48.google.com with SMTP id
- ffacd0b85a97d-4626fdc829aso1801951f8f.3
+ id 1wckGi-0001Hl-7A for openvpn-devel@lists.sourceforge.net;
+ Thu, 25 Jun 2026 13:37:27 +0000
+Received: by mail-wm1-f41.google.com with SMTP id
+ 5b1f17b1804b1-490b9318997so13075715e9.2
  for <openvpn-devel@lists.sourceforge.net>;
- Thu, 25 Jun 2026 06:37:22 -0700 (PDT)
+ Thu, 25 Jun 2026 06:37:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1782394636; x=1782999436; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1782394638; x=1782999438; darn=lists.sourceforge.net;
  h=user-agent:content-disposition:content-transfer-encoding
  :mime-version:message-id:reply-to:subject:thread-index:references
  :in-reply-to:list-unsubscribe:list-id:auto-submitted:cc:to:date:from
  :from:to:cc:subject:date:message-id:reply-to;
- bh=UWN/iwJU618zlaXnXp9kiRPezhlBXaLMQmxNct1ZLrg=;
- b=BNoGc0OU+7YlUIZ3KHDlaL8uTF+M4JPAVXpG4e2R2UWAuMGdso5kWm9AxZYZOCAx8W
- SRaFeEhYdg/pxp6WOT5uQG1Mtala0hm+q1KOoD/aiw4nGteWUYVvfVYurHq+waU6Uhzs
- pR3tCjhC9LMjwe+rjyaPWmxzdNfQtvhpOwI2bXapKjnKfJTnh/vbetTJb15uxLybqQ3H
- y4/AOj6qCfe2SUmvVUuAVJp71QUrYmDvTlr/lZOo4rg4JkHcdXK7HM6Y99glXu5IW7cq
- 8VunC1ECdyaghBdYtvQkl9xjdVnQOBgQRcN0oTlkoTlp6Feq6c/Ubhn3d7tL8uPH9w/I
- AlOw==
+ bh=qDlmKz0ZZKly2vQY4SWiN9JsWY98w9thwJjyzrXhR6g=;
+ b=D6SiUMeqirHVm5gm5ef6sJ3LYdbTkZ1yZWaIa7ppvlvx4qYJlcesvVqgij+K9Dk/XT
+ Y67k0Gq84akmiIJUPhvY96bL/izxLC5PPO1CsHQDTw7sJyWyVuhwuj/80TmRJ7qBk2Yd
+ C5F6+BV3ryGTPNTOM7ynXHjS7FzUsCNk66EMHXNFy6BWoSU2Sb/75xytOejPzPdxtypm
+ TcjxMpxodFaaY2NQ43n3lYBHYZz5sv2LSNx0PHgGlbum17i0bOSjlpJC6YGFpzZhmWPL
+ 7cT1U9PHIEp4FSewmF2mUJ+k4B2u8b4lKRf1hE4WYmiHO8XARKxwspXsK50H3krenNZN
+ vsyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1782394636; x=1782999436;
+ d=1e100.net; s=20251104; t=1782394638; x=1782999438;
  h=user-agent:content-disposition:content-transfer-encoding
  :mime-version:message-id:reply-to:subject:thread-index:references
  :in-reply-to:list-unsubscribe:list-id:auto-submitted:cc:to:date:from
  :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
  :reply-to;
- bh=UWN/iwJU618zlaXnXp9kiRPezhlBXaLMQmxNct1ZLrg=;
- b=rYKNY2c1EtzdWvPZYc/8U001Joecy4ib0EO1O9FbAq2IHqahLNVi5zYRfr0lxpyMvg
- aSJcOsdAVGXjJjxPDvY2Jo3g8pHLHOUyY2FQOg4Qqh4YzyaDxPhx09Bpx9dCSCvoXsHW
- PrZTOHjd9WZPDtHiQHLZoNmM72kDeVCsKbffSQyl4xuYpArn2k0lLLbzbw1vYGF0e5CZ
- Dcku1qGlj2echWYDGElUf/OtDL5X6DW6nlpj3bzsjG+DaJO0vOIdBsP6fnIEJej5CngJ
- MlI2FIygJu7HZpd1FFKUwWzJWZ5HF0T8s8HMdKvOXXr2JnsRge2pL95fzNodZMS3MXGD
- SieQ==
-X-Gm-Message-State: AOJu0YxBm4St1CocXjlgtfLM/2Qr+PPZhIFzOlq5jHkH++s7o1sHVRgB
- ynIxuFb4Xp9wWxFYYQkuqLld+QhZT5khRmS8ibH16aMoq1trBHkKVHr3Aq3SC2k9L2R8/YHArRl
- 8ZUfK0a0/CedqXmh6fJO8BC9vr6EUA7SN2Zl2tXG/gDJT47nSZS2gCf+B0tN0m8gCl+xGhBLR5b
- G/QB/ilg==
-X-Gm-Gg: AfdE7cnkV8Noyob/8QQ1G6OiPu5HEY7OqHkOHL7atO0FegZP7snHUdd+YXwALLhiPg8
- ouqR+P+22I1737PvDuWYxhubSMcvK7r8TN33VPGOBgpwNPARK4MhA3s+NZ11xBrNPRX2602cLz2
- uK5jn+MnXR6lUQ+JMbAcrE3Oj+7ehKsrdrCgCInpLhpaFJT7krDuhXbA66UXLGvTWWwyGzYPYmD
- H/eXW7Z05gT3A2C+C44YjEJkxQLN0H2T8yD9agosuR8kIzEVAR7GnERr7zBwE0WhbN72WaxORlK
- M4W+sDk/0vNQJTLIPSbnCNVn7lPelwwbfxGlTkRjzH6AZbfwr9HgjO2etGM2e7AimvvhX3TqYgb
- 5fQzWJ5FbMIF9AVre9EYEs4H5/ISr2G4fghgCaCpiB86URDiUh1yFObr/AC0OvPeUnsEUz/u5jC
- oQDadkGIW6o7YUX6J4mmPgPo9+rx4BaG4z3fdXSeCz1TjubNi4XG5c7ht6CoX+WkxCE4L0iVIuv
- 8aRSez2oQdRfi9SkYcRXSRpqpzmSV8v6HnBMB1VJt81/Z2xBjkYTXhSlPDYluFjqazP2Dowdg8Z
- y2o=
-X-Received: by 2002:a05:6000:2410:b0:463:f455:57d6 with SMTP id
- ffacd0b85a97d-46dbfe8cd13mr4359986f8f.5.1782394635167; 
- Thu, 25 Jun 2026 06:37:15 -0700 (PDT)
+ bh=qDlmKz0ZZKly2vQY4SWiN9JsWY98w9thwJjyzrXhR6g=;
+ b=TshZnGRyfaLee+GOAwTTsc3OKByFvgbv52ZhI6aYVhZL4y+8eZqgmvkcbc+K6XzaF3
+ eIuHrTtoAsop1TOaez9WH5f55QSjUW1pdMi+cUTZiRX2FtWOY452AzdP8RCSWUVf5UhX
+ vihNQwWKP8uT7LZKY5PefmTVPfdgUbzrVn1XbNByMWHpUI/R3vcptwZVKBkw2Kb+hHdI
+ /yXadoviRQtFZ0S35uoHe+nXpRfUzgB/r8iHgqk7ZRw7AUU2QTvjzV/PptN0tFOzz+3v
+ OOKuG1nTIcH6UeC295qj/WmbdKdMx7DTCE6/ZKycu080yUiP4PQ9nv0dZVsNBd3Qto7e
+ idUA==
+X-Gm-Message-State: AOJu0YzzC7rUttJ0hy+ZRVhWwaJifQ5bf/QRg22gQGcTNJ4Sc4z/Gk/K
+ CB1mVnlhuOCGTRH+QOHXvohuLm4laJac0IlEeyXl5vJG7gaWQp3liKs2mc02z9PkMWs9O+OQKy9
+ 7r19IZzUxxuvj6BaC9pTu3/G7UJf65w76wyM6/FK5WoUEcaZp3Lx4K4XTvwDiAISY0j+MHFVRBO
+ 2LW0whFg==
+X-Gm-Gg: AfdE7cmv1YpEKFUz66gv5dDMsEopucxahLKIrZ41IyRsNwawowYcqIxDQHMiLu9aKhp
+ he8nSphUWLD1muz3gjENyN69breJfMdhK9hMuEoO+adE6Dn9+DakiibGApFvd3PDeqyEd/ODtaf
+ 1/jtQ3vVq43c9bHwYw2pI4hFBuTKiAlMgzKPo9y81d777tqAamGUedv6Ss9n8D/4hTGuGn66OZ6
+ 1HNEfq/mFGnfhj2vuhF8yo823hbzvN/+Szu2100URenY/XlyCUT2VpUsu3rzsPB2rs82Kio0W59
+ mbveg17ung0EUQ28Pva33et+K0KL+zMeyGbqBs/gcwkI0c6csubumymyxqbVlJXL3zQPGkubUn+
+ LwTeo6zoNavQeO2SsBpfcmrUb6QOY0i66Zrp5toD60r6TQ7rQiQBglAiz+AYErK8QlkxlWtmm1m
+ 3ZF6igy5rYfFoMqgGjJ55D1QVi3/DcuNkDI02iDro47oHDVsdRZ6cQnhcelC+Rv9jF95lsNc6K6
+ fG5b1bxAOxDU1/2/6p2kcxslG0nnvtDyLx3NDb17oEWTUxZFOQYRKwvn3qiVYDAxtpKCuw7lcLm
+ Rl0=
+X-Received: by 2002:a05:600c:c059:10b0:492:5ec1:4e14 with SMTP id
+ 5b1f17b1804b1-49266885964mr28181825e9.24.1782394637904; 
+ Thu, 25 Jun 2026 06:37:17 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-46c2279b83fsm16021761f8f.29.2026.06.25.06.37.14
+ ffacd0b85a97d-46de7effe5bsm4195557f8f.5.2026.06.25.06.37.17
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 25 Jun 2026 06:37:14 -0700 (PDT)
+ Thu, 25 Jun 2026 06:37:17 -0700 (PDT)
 X-Google-Original-From: "plaisthos (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
 Date: Thu, 25 Jun 2026 13:37:02 +0000
 To: flichtenheld <frank@lichtenheld.com>
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newpatchset
-X-Gerrit-PatchSet: 6
-X-Gerrit-Change-Id: I807f398903ac2047530800c29949793c6f4f0ec9
-X-Gerrit-Change-Number: 1573
+X-Gerrit-PatchSet: 3
+X-Gerrit-Change-Id: I9f10d91407347faf32397535c95e2d80a1575bd5
+X-Gerrit-Change-Number: 1722
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1573?usp=email>
-X-Gerrit-Commit: f3cb575b1f97e1a49f67cf2d4249da9f723d910f
-In-Reply-To: <gerrit.1773255066000.I807f398903ac2047530800c29949793c6f4f0ec9@gerrit.openvpn.net>
-References: <gerrit.1773255066000.I807f398903ac2047530800c29949793c6f4f0ec9@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzczMjU1MDY2MDAwLkk4MDdmMzk4OTAzYWMyMDQ3NTMwODAwYzI5OTQ5NzkzYzZmNGYwZWM5QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <b31fae04844f9a82225cb16fa03c7088b512ad16-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1722?usp=email>
+X-Gerrit-Commit: 3f2f6171c104d6725e08d3889206a373f041a627
+In-Reply-To: <gerrit.1782134588000.I9f10d91407347faf32397535c95e2d80a1575bd5@gerrit.openvpn.net>
+References: <gerrit.1782134588000.I9f10d91407347faf32397535c95e2d80a1575bd5@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzgyMTM0NTg4MDAwLkk5ZjEwZDkxNDA3MzQ3ZmFmMzIzOTc1MzVjOTVlMmQ4MGExNTc1YmQ1QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <4bcc16cd21c21c12673c8a70af04b2fc89f7388e-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wckGf-0001Ha-Ln
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Replace custom
- hash_func with siphash
+X-Headers-End: 1wckGi-0001Hl-7A
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Move incoming data
+ processing in its own method
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -141,15 +141,15 @@ Reply-To: arne-openvpn@rfc2549.org, openvpn-devel@lists.sourceforge.net,
  frank@lichtenheld.com
 Cc: "plaisthos \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============4048614524496565568=="
+Content-Type: multipart/mixed; boundary="===============4892367972622372130=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============4048614524496565568==
+--===============4892367972622372130==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="YMm+7Ng1iZs="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="HFBCaYAzrD0="; charset=UTF-8
 
---YMm+7Ng1iZs=
+--HFBCaYAzrD0=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
@@ -161,9 +161,9 @@ Hello flichtenheld, =
 I'd like you to reexamine a change=2E Please visit
 
     http://gerrit=2Eo=
-penvpn=2Enet/c/openvpn/+/1573?usp=3Demail
+penvpn=2Enet/c/openvpn/+/1722?usp=3Demail
 
-to look at the new patch set (#6=
+to look at the new patch set (#3=
 )=2E
 
 The following approvals got outdated and were removed:
@@ -171,1404 +171,975 @@ Code-Review-1 =
 by flichtenheld
 
 
-Change subject: Replace custom hash_func with siphash
-=2E=
+Change subject: Move incoming data processing in its own =
+method
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-Replace custom h=
-ash_func with siphash
+Move=
+ incoming data processing in its own method
 
-Change-Id: I807f398903ac2047530800c29949793c6f4f0ec9=
+This extract a large chunk fro=
+m multi_process_incoming_link into its
+own method multi_process_incoming_li=
+nk_data
 
+This reduces the complexity of multi_process_incoming_link further=
+=2E
+
+A few declarations were moved into a more logical place but otherwise
+=
+this is just a simple move=2E
+
+Change-Id: I9f10d91407347faf32397535c95e2d80=
+a1575bd5
 Signed-off-by: Arne Schwabe <arne@rfc2549=2Eorg>
 ---
-M CMakeLists=2Etxt
-M =
-src/openvpn/Makefile=2Eam
-M src/openvpn/list=2Ec
-M src/openvpn/list=2Eh
-M s=
-rc/openvpn/mroute=2Ec
-M src/openvpn/multi=2Ec
-A src/openvpn/siphash=2Ec
-M s=
-rc/openvpn/siphash=2Eh
-M tests/unit_tests/openvpn/Makefile=2Eam
-M tests/uni=
-t_tests/openvpn/test_misc=2Ec
-10 files changed, 140 insertions(+), 208 dele=
-tions(-)
+M src/openvpn=
+/multi=2Ec
+1 file changed, 154 insertions(+), 138 deletions(-)
 
 
-  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/chang=
-es/73/1573/6
+  git pull=
+ ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/22/1722/3
 
-diff --git a/CMakeLists=2Etxt b/CMakeLists=2Etxt
-index db0507=
-3=2E=2E412fa06 100644
---- a/CMakeLists=2Etxt
-+++ b/CMakeLists=2Etxt
-@@ -563=
-,6 +563,7 @@
-     src/openvpn/sig=2Ec
-     src/openvpn/sig=2Eh
-     src/ope=
-nvpn/siphash=2Eh
-+    src/openvpn/siphash=2Ec
-     src/openvpn/siphash_open=
-ssl=2Ec
-     src/openvpn/siphash_reference=2Ec
-     src/openvpn/socket=2Ec
-=
-@@ -827,7 +828,11 @@
-         src/openvpn/options_util=2Ec
-         src/ope=
-nvpn/ssl_util=2Ec
-         src/openvpn/list=2Ec
--        )
-+        src/ope=
-nvpn/siphash=2Eh
-+        src/openvpn/siphash=2Ec
-+        src/openvpn/siph=
-ash_reference=2Ec
-+        src/openvpn/siphash_openssl=2Ec
-+    )
- 
-     ta=
-rget_sources(test_ncp PRIVATE
-         src/openvpn/crypto_epoch=2Ec
 diff --=
-git a/src/openvpn/Makefile=2Eam b/src/openvpn/Makefile=2Eam
-index 08c8250=
-=2E=2E4cb93e9 100644
---- a/src/openvpn/Makefile=2Eam
-+++ b/src/openvpn/Make=
-file=2Eam
-@@ -128,7 +128,8 @@
- 	session_id=2Ec session_id=2Eh \
- 	shaper=2E=
-c shaper=2Eh \
- 	sig=2Ec sig=2Eh \
--	siphash_reference=2Ec siphash=2Eh \
-+	=
-siphash=2Ec siphash=2Eh \
-+	siphash_reference=2Ec \
- 	siphash_openssl=2Ec \=
-
- 	socket=2Ec socket=2Eh \
- 	socket_util=2Ec socket_util=2Eh \
-diff --git a=
-/src/openvpn/list=2Ec b/src/openvpn/list=2Ec
-index 36d8ede=2E=2E1a7dd25 100=
-644
---- a/src/openvpn/list=2Ec
-+++ b/src/openvpn/list=2Ec
-@@ -31,9 +31,6 @@=
-
- #include "list=2Eh"
- 
- #include "crypto=2Eh"
--#include "misc=2Eh"
--
--#inc=
-lude "memdbg=2Eh"
- 
- struct hash *
- hash_init(const uint32_t n_buckets, voi=
-d *ctx,
-@@ -315,187 +312,4 @@
-     ASSERT(hi->last);
-     hi->last->key =3D=
- NULL;
-     hi->bucket_marked =3D true;
--}
--
--
--/*
-- * --------------------=
-------------------------------------------------
-- * hash() -- hash a varia=
-ble-length key into a 32-bit value
-- * k     : the key (the unaligned varia=
-ble-length array of bytes)
-- * len   : the length of the key, counting by b=
-ytes
-- * level : can be any 4-byte value
-- * Returns a 32-bit value=2E  Eve=
-ry bit of the key affects every bit of
-- * the return value=2E  Every 1-bit=
- and 2-bit delta achieves avalanche=2E
-- * About 36+6len instructions=2E
-- =
-*
-- * #define hashsize(n) ((uint32_t)1<<(n))
-- * #define hashmask(n) (hashs=
-ize(n)-1)
-- *
-- * The best hash table sizes are powers of 2=2E  There is no=
- need to do
-- * mod a prime (mod is sooo slow!)=2E  If you need less than 3=
-2 bits,
-- * use a bitmask=2E  For example, if you need only 10 bits, do
-- *=
- h =3D (h & hashmask(10));
-- * In which case, the hash table should have ha=
-shsize(10) elements=2E
-- *
-- * If you are hashing n strings (uint8_t **)k, =
-do it like this:
-- * for (i=3D0, h=3D0; i<n; ++i) h =3D hash( k[i], len[i],=
- h);
-- *
-- * By Bob Jenkins, 1996=2E  bob_jenkins@burtleburtle=2Enet=2E  Yo=
-u may use this
-- * code any way you wish, private, educational, or commerci=
-al=2E  It's free=2E
-- *
-- * See https://burtleburtle=2Enet/bob/hash/evahash=
-=2Ehtml
-- * Use for hash table lookup, or anything where one collision in 2=
-^32 is
-- * acceptable=2E  Do NOT use for cryptographic purposes=2E
-- *
-- * =
---------------------------------------------------------------------
-- *
-- =
-* mix -- mix 3 32-bit values reversibly=2E
-- * For every delta with one or =
-two bit set, and the deltas of all three
-- * high bits or all three low bit=
-s, whether the original value of a,b,c
-- * is almost all zero or is uniform=
-ly distributed,
-- * If mix() is run forward or backward, at least 32 bits i=
-n a,b,c
-- * have at least 1/4 probability of changing=2E
-- * If mix() is ru=
-n forward, every bit of c will change between 1/3 and
-- * 2/3 of the time=
-=2E  (Well, 22/100 and 78/100 for some 2-bit deltas=2E)
-- * mix() was built=
- out of 36 single-cycle latency instructions in a
-- * structure that could =
-supported 2x parallelism, like so:
-- *    a -=3D b;
-- *    a -=3D c; x =3D =
-(c>>13);
-- *    b -=3D c; a ^=3D x;
-- *    b -=3D a; x =3D (a<<8);
-- *    c=
- -=3D a; b ^=3D x;
-- *    c -=3D b; x =3D (b>>13);
-- *    =2E=2E=2E
-- * Unf=
-ortunately, superscalar Pentiums and Sparcs can't take advantage
-- * of tha=
-t parallelism=2E  They've also turned some of those single-cycle
-- * latenc=
-y instructions into multi-cycle latency instructions=2E  Still,
-- * this is=
- the fastest good hash I could find=2E  There were about 2^^68
-- * to choos=
-e from=2E  I only looked at a billion or so=2E
-- *
-- * James Yonan Notes:
--=
- *
-- * This function is faster than it looks, and appears to be
-- * appropr=
-iate for our usage in OpenVPN which is primarily
-- * for hash-table based a=
-ddress lookup (IPv4, IPv6, and Ethernet MAC)=2E
-- * NOTE: This function is =
-never used for cryptographic purposes, only
-- * to produce evenly-distribut=
-ed indexes into hash tables=2E
-- *
-- * Benchmark results: 11=2E39 machine c=
-ycles per byte on a P2 266Mhz,
-- *                   and 12=2E1 machine cyc=
-les per byte on a
-- *                   2=2E2 Ghz P4 when hashing a 6 byte =
-string=2E
-- * -------------------------------------------------------------=
--------
-- */
--
--#define mix(a, b, c)    \
--    {                   \
--     =
-   a -=3D b;         \
--        a -=3D c;         \
--        a ^=3D (c >> 1=
-3); \
--        b -=3D c;         \
--        b -=3D a;         \
--        b =
-^=3D (a << 8);  \
--        c -=3D a;         \
--        c -=3D b;         \=
-
--        c ^=3D (b >> 13); \
--        a -=3D b;         \
--        a -=3D =
-c;         \
--        a ^=3D (c >> 12); \
--        b -=3D c;         \
--   =
-     b -=3D a;         \
--        b ^=3D (a << 16); \
--        c -=3D a;   =
-      \
--        c -=3D b;         \
--        c ^=3D (b >> 5);  \
--        =
-a -=3D b;         \
--        a -=3D c;         \
--        a ^=3D (c >> 3); =
- \
--        b -=3D c;         \
--        b -=3D a;         \
--        b ^=
-=3D (a << 10); \
--        c -=3D a;         \
--        c -=3D b;         \
-=
--        c ^=3D (b >> 15); \
--    }
--
--void *
--hash_func_new_ctx(void)
--{
--=
-    uint32_t *ctx =3D malloc(sizeof(uint32_t));
--    *ctx =3D (uint32_t)get=
-_random();
--    return ctx;
--}
--
--uint64_t
--hash_func(const uint8_t *k, uin=
-t32_t length, uint32_t initval)
--{
--    uint32_t a, b, c, len;
--
--    /* Se=
-t up the internal state */
--    len =3D length;
--    a =3D b =3D 0x9e3779b9=
-; /* the golden ratio; an arbitrary value */
--    c =3D initval;        /* =
-the previous hash value */
--
--    /*---------------------------------------=
-- handle most of the key */
--    while (len >=3D 12)
--    {
--        a +=3D=
- (k[0] + ((uint32_t)k[1] << 8) + ((uint32_t)k[2] << 16) + ((uint32_t)k[3] <=
-< 24));
--        b +=3D (k[4] + ((uint32_t)k[5] << 8) + ((uint32_t)k[6] << =
-16) + ((uint32_t)k[7] << 24));
--        c +=3D (k[8] + ((uint32_t)k[9] << 8=
-) + ((uint32_t)k[10] << 16) + ((uint32_t)k[11] << 24));
--        mix(a, b, =
-c);
--        k +=3D 12;
--        len -=3D 12;
--    }
--
--    /*-------------=
------------------------- handle the last 11 bytes */
--    c +=3D length;
-- =
-   switch (len) /* all the case statements fall through */
--    {
--        =
-case 11:
--            c +=3D ((uint32_t)k[10] << 24);
--            /* Inten=
-tional [[fallthrough]]; */
--
--        case 10:
--            c +=3D ((uint32=
-_t)k[9] << 16);
--            /* Intentional [[fallthrough]]; */
--
--        =
-case 9:
--            c +=3D ((uint32_t)k[8] << 8);
--        /* Intentional =
-[[fallthrough]]; */
--
--        /* the first byte of c is reserved for the l=
-ength */
--        case 8:
--            b +=3D ((uint32_t)k[7] << 24);
--    =
-        /* Intentional [[fallthrough]]; */
--
--        case 7:
--            =
-b +=3D ((uint32_t)k[6] << 16);
--            /* Intentional [[fallthrough]];=
- */
--
--        case 6:
--            b +=3D ((uint32_t)k[5] << 8);
--        =
-    /* Intentional [[fallthrough]]; */
--
--        case 5:
--            b +=
-=3D k[4];
--            /* Intentional [[fallthrough]]; */
--
--        case 4=
-:
--            a +=3D ((uint32_t)k[3] << 24);
--            /* Intentional [=
-[fallthrough]]; */
--
--        case 3:
--            a +=3D ((uint32_t)k[2] <=
-< 16);
--            /* Intentional [[fallthrough]]; */
--
--        case 2:
--=
-            a +=3D ((uint32_t)k[1] << 8);
--            /* Intentional [[fal=
-lthrough]]; */
--
--        case 1:
--            a +=3D k[0];
--            /*=
- case 0: nothing left to add */
--    }
--    mix(a, b, c);
--    /*----------=
----------------------------- report the result */
--    return c;
--}
-+}
-\ No=
- newline at end of file
-diff --git a/src/openvpn/list=2Eh b/src/openvpn/lis=
-t=2Eh
-index ea6f47a=2E=2E160bb5d 100644
---- a/src/openvpn/list=2Eh
-+++ b/sr=
-c/openvpn/list=2Eh
-@@ -101,10 +101,6 @@
- 
- void hash_iterator_free(struct h=
-ash_iterator *hi);
- 
--uint64_t hash_func(const uint8_t *k, uint32_t length,=
- uint32_t initval);
--
--void *hash_func_new_ctx(void);
--
- static inline uint=
-64_t
- hash_value(const struct hash *hash, const void *key)
- {
-diff --git a/=
-src/openvpn/mroute=2Ec b/src/openvpn/mroute=2Ec
-index 89b3ecc=2E=2Ee32894b =
-100644
---- a/src/openvpn/mroute=2Ec
-+++ b/src/openvpn/mroute=2Ec
-@@ -33,6 +=
-33,7 @@
- #include "socket_util=2Eh"
- 
- #include "memdbg=2Eh"
-+#include "sip=
-hash=2Eh"
- 
- void
- mroute_addr_init(struct mroute_addr *addr)
-@@ -357,9 +35=
-8,8 @@
- uint64_t
- mroute_addr_hash_function(const void *key, void *ctx)
- {
-=
--    uint32_t *iv =3D ctx;
--    return hash_func(mroute_addr_hash_ptr((cons=
-t struct mroute_addr *)key),
--                     mroute_addr_hash_len((co=
-nst struct mroute_addr *)key), *iv);
-+    return siphash_hash_func(mroute_a=
-ddr_hash_ptr((const struct mroute_addr *)key),
-+                           =
-  mroute_addr_hash_len((const struct mroute_addr *)key), ctx);
- }
- 
- bool
-d=
-iff --git a/src/openvpn/multi=2Ec b/src/openvpn/multi=2Ec
-index 8052100=2E=
-=2Eb4dc13d 100644
+git a/src/openvpn/multi=2Ec b/src/openvpn/multi=2Ec
+index f19433b=2E=2E625f=
+87d 100644
 --- a/src/openvpn/multi=2Ec
 +++ b/src/openvpn/multi=2Ec
-@=
-@ -23,6 +23,7 @@
- #ifdef HAVE_CONFIG_H
- #include "config=2Eh"
- #endif
-+#inc=
-lude "siphash=2Eh"
+@@ -3303=
+,6 +3303,159 @@
+ }
+ #endif /* if defined(ENABLE_DCO) */
  
- #ifdef HAVE_SYS_INOTIFY_H
- #include <sys/inotify=2Eh>=
-
-@@ -290,14 +291,14 @@
-      * to determine which client sent an incoming p=
-acket
-      * which is seen on the TCP/UDP socket=2E
-      */
--    m->hash =
-=3D hash_init(t->options=2Ereal_hash_size, hash_func_new_ctx(), free,
++/**
++ * Process =
+incoming data packet from clients=2E
++ *
++ * This tries to decrypt and then=
+ forward incoming
++ * data packets, so the be be forwarded=2E
++ *
++ * @para=
+m m P
++ * @param floated
++ * @param sock
++ */
++static void
++multi_process_i=
+ncoming_link_data(struct multi_context *m, bool floated, struct link_socket=
+ *sock)
++{
++    struct link_socket_info *lsi =3D &sock->info;
++    const ui=
+nt8_t *orig_buf;
++
++    /* decrypt in instance context */
++    struct conte=
+xt *c =3D &m->pending->context;
++
++    orig_buf =3D c->c2=2Ebuf=2Edata;
++  =
+  if (process_incoming_link_part1(c, lsi, floated))
++    {
++        /* nonz=
+ero length means that we have a valid, decrypted packed */
++        if (flo=
+ated && c->c2=2Ebuf=2Elen > 0)
++        {
++            multi_process_float(=
+m, m->pending, sock);
++        }
++
++        process_incoming_link_part2(c, =
+lsi, orig_buf);
++    }
++
++    if (TUNNEL_TYPE(m->top=2Ec1=2Etuntap) =3D=3D =
+DEV_TYPE_TUN)
++    {
++        struct mroute_addr src, dest;
++        /* ext=
+ract packet source and dest addresses */
++        unsigned int mroute_flags=
+ =3D
++            mroute_extract_addr_from_packet(&src, &dest, 0, &c->c2=2E=
+to_tun, DEV_TYPE_TUN);
++
++        /* drop packet if extract failed */
 +    =
-m->hash =3D hash_init(t->options=2Ereal_hash_size, siphash_new_context(), s=
-iphash_free_context,
-                         mroute_addr_hash_function, mr=
-oute_addr_compare_function);
- 
-     /*
-      * Virtual address hash table=
-=2E  Used to determine
-      * which client to route a packet to=2E
-      *=
+    if (!(mroute_flags & MROUTE_EXTRACT_SUCCEEDED))
++        {
++           =
+ c->c2=2Eto_tun=2Elen =3D 0;
++        }
++        /* make sure that source a=
+ddress is associated with this client */
++        else if (multi_get_instan=
+ce_by_virtual_addr(m, &src, true) !=3D m->pending)
++        {
++            =
+/* IPv6 link-local address (fe80::xxx)? */
++            if ((src=2Etype & M=
+R_ADDR_MASK) =3D=3D MR_ADDR_IPV6
++                && IN6_IS_ADDR_LINKLOCAL(=
+&src=2Ev6=2Eaddr))
++            {
++                /* do nothing, for now=
+=2E  TODO: add address learning */
++            }
++            else
++      =
+      {
++                struct gc_arena gc =3D gc_new();
++                =
+msg(D_MULTI_DROPPED,
++                    "MULTI: bad source address from c=
+lient [%s], packet dropped",
++                    mroute_addr_print(&src, &=
+gc));
++                gc_free(&gc);
++            }
++            c->c2=2Eto=
+_tun=2Elen =3D 0;
++        }
++        /* client-to-client communication ena=
+bled? */
++        else if (m->enable_c2c)
++        {
++            /* multic=
+ast? */
++            if (mroute_flags & MROUTE_EXTRACT_MCAST)
++            =
+{
++                /* for now, treat multicast as broadcast */
++           =
+     multi_bcast(m, &c->c2=2Eto_tun, m->pending, 0);
++            }
++      =
+      else /* possible client to client routing */
++            {
++        =
+        ASSERT(!(mroute_flags & MROUTE_EXTRACT_BCAST));
++                st=
+ruct multi_instance *mi =3D multi_get_instance_by_virtual_addr(m, &dest, tr=
+ue);
++
++                /* if dest addr is a known client, route to it */
++=
+                if (mi)
++                {
++                    {
++        =
+                multi_unicast(m, &c->c2=2Eto_tun, mi);
++                   =
+     register_activity(c, BLEN(&c->c2=2Eto_tun));
++                    }
++ =
+                   c->c2=2Eto_tun=2Elen =3D 0;
++                }
++        =
+    }
++        }
++    }
++    else if (TUNNEL_TYPE(m->top=2Ec1=2Etuntap) =3D=
+=3D DEV_TYPE_TAP)
++    {
++        uint16_t vid =3D 0;
++
++        if (m->top=
+=2Eoptions=2Evlan_tagging)
++        {
++            if (vlan_is_tagged(&c->c=
+2=2Eto_tun))
++            {
++                /* Drop VLAN-tagged frame=2E *=
 /
--    m->vhash =3D hash_init(t->options=2Evirtual_hash_size, hash_func_new=
-_ctx(), free,
-+    m->vhash =3D hash_init(t->options=2Evirtual_hash_size, s=
-iphash_new_context(), siphash_free_context,
-                          mrout=
-e_addr_hash_function, mroute_addr_compare_function);
++                msg(D_VLAN_DEBUG, "dropping incoming VLAN-tagged frame")=
+;
++                c->c2=2Eto_tun=2Elen =3D 0;
++            }
++            =
+else
++            {
++                vid =3D c->options=2Evlan_pvid;
++     =
+       }
++        }
++        /* extract packet source and dest addresses */=
+
++        struct mroute_addr src, dest;
++        /* extract packet source a=
+nd dest addresses */
++        unsigned int mroute_flags =3D
++            mr=
+oute_extract_addr_from_packet(&src, &dest, vid, &c->c2=2Eto_tun, DEV_TYPE_T=
+AP);
++
++        if (mroute_flags & MROUTE_EXTRACT_SUCCEEDED)
++        {
++  =
+          if (multi_learn_addr(m, m->pending, &src, 0) =3D=3D m->pending)
++=
+            {
++                /* check for broadcast */
++                i=
+f (m->enable_c2c)
++                {
++                    if (mroute_flags =
+& (MROUTE_EXTRACT_BCAST | MROUTE_EXTRACT_MCAST))
++                    {
++  =
+                      multi_bcast(m, &c->c2=2Eto_tun, m->pending, vid);
++  =
+                  }
++                    else /* try client-to-client routi=
+ng */
++                    {
++                        struct multi_instance=
+ *mi =3D multi_get_instance_by_virtual_addr(m, &dest, false);
++
++          =
+              /* if dest addr is a known client, route to it */
++          =
+              if (mi)
++                        {
++                         =
+   multi_unicast(m, &c->c2=2Eto_tun, mi);
++                            regi=
+ster_activity(c, BLEN(&c->c2=2Eto_tun));
++                            c->c2=
+=2Eto_tun=2Elen =3D 0;
++                        }
++                    }
++ =
+               }
++            }
++            else
++            {
++         =
+       struct gc_arena gc =3D gc_new();
++                msg(D_MULTI_DROPPE=
+D,
++                    "MULTI: bad source address from client [%s], packet=
+ dropped",
++                    mroute_addr_print(&src, &gc));
++           =
+     c->c2=2Eto_tun=2Elen =3D 0;
++                gc_free(&gc);
++          =
+  }
++        }
++        else
++        {
++            c->c2=2Eto_tun=2Elen =
+=3D 0;
++        }
++    }
++}
++
+ /*
+  * Process packets in the TCP/UDP socket=
+ -> TUN/TAP interface direction,
+  * i=2Ee=2E client -> server direction=2E=
+
+@@ -3312,9 +3465,6 @@
+                             const unsigned int mpp_=
+flags, struct link_socket *sock)
+ {
+     struct context *c;
+-    struct mro=
+ute_addr src, dest;
+-    unsigned int mroute_flags;
+-    struct multi_insta=
+nce *mi;
+     bool ret =3D true;
+     bool floated =3D false;
  
- #ifdef ENABLE_MANAG=
-EMENT
-diff --git a/src/openvpn/siphash=2Ec b/src/openvpn/siphash=2Ec
-new fi=
-le mode 100644
-index 0000000=2E=2Edac7750
---- /dev/null
-+++ b/src/openvpn/s=
-iphash=2Ec
-@@ -0,0 +1,77 @@
-+/*
-+ *  OpenVPN -- An application to securely =
-tunnel IP networks
-+ *             over a single TCP/UDP port, with support=
- for SSL/TLS-based
-+ *             session authentication and key exchange,=
-
-+ *             packet encryption, packet authentication, and
-+ *         =
-    packet compression=2E
-+ *
-+ *  Copyright (C) 2025 OpenVPN Inc <sales@op=
-envpn=2Enet>
-+ *  Copyright (C) 2025 Arne Schwabe <arne@rfc2549=2Eorg>
-+ *
+@@ -3358,14=
+1 +3508,7 @@
+ 
+     if (BLEN(&c->c2=2Ebuf) > 0)
+     {
+-        struct link=
+_socket_info *lsi;
+-        const uint8_t *orig_buf;
+-
+-        /* decrypt =
+in instance context */
+-
+-        lsi =3D &sock->info;
+-        orig_buf =
+=3D c->c2=2Ebuf=2Edata;
+-        if (process_incoming_link_part1(c, lsi, fl=
+oated))
+-        {
+-            /* nonzero length means that we have a vali=
+d, decrypted packed */
+-            if (floated && c->c2=2Ebuf=2Elen > 0)
+-=
+            {
+-                multi_process_float(m, m->pending, sock);
+- =
+           }
+-
+-            process_incoming_link_part2(c, lsi, orig_buf);
 =
-+ *
-+ *  This program is free software; you can redistribute it and/or modi=
-fy
-+ *  it under the terms of the GNU General Public License version 2
-+ * =
- as published by the Free Software Foundation=2E
-+ *
-+ *  This program is d=
-istributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANT=
-Y; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR=
- A PARTICULAR PURPOSE=2E  See the
-+ *  GNU General Public License for more =
-details=2E
-+ *
-+ *  You should have received a copy of the GNU General Publ=
-ic License along
-+ *  with this program; if not, write to the Free Software=
- Foundation, Inc=2E,
-+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110=
--1301 USA=2E
-+ */
-+
-+#ifdef HAVE_CONFIG_H
-+#include "config=2Eh"
-+#elif def=
-ined(_MSC_VER)
-+#include "config-msvc=2Eh"
-+#endif
-+
-+#include <stdlib=2Eh>=
+-        }
+-
+-        if (TUNNEL_TYPE(m->top=2Ec1=2Etuntap) =3D=3D DEV_TYPE=
+_TUN)
+-        {
+-            /* extract packet source and dest addresses *=
+/
+-            mroute_flags =3D
+-                mroute_extract_addr_from_p=
+acket(&src, &dest, 0, &c->c2=2Eto_tun, DEV_TYPE_TUN);
+-
+-            /* dro=
+p packet if extract failed */
+-            if (!(mroute_flags & MROUTE_EXTR=
+ACT_SUCCEEDED))
+-            {
+-                c->c2=2Eto_tun=2Elen =3D 0;=
 
-+#include "syshead=2Eh"
-+#include "siphash=2Eh"
-+#include "buffer=2Eh"
-+#i=
-nclude "crypto=2Eh"
-+
-+void *
-+siphash_new_context(void)
-+{
-+    struct sip=
-hash_ctx *ctx;
-+    ALLOC_OBJ_CLEAR(ctx, struct siphash_ctx);
-+
-+    prng_b=
-ytes(ctx->key, SIPHASH_KEY_SIZE);
-+
-+    if (siphash_cryptolib_available(ct=
-x) && false)
-+    {
-+        ctx->cryptlib_ctx =3D siphash_cryptolib_init(8=
+-            }
+-            /* make sure that source address is associated=
+ with this client */
+-            else if (multi_get_instance_by_virtual_ad=
+dr(m, &src, true) !=3D m->pending)
+-            {
+-                /* IPv6 =
+link-local address (fe80::xxx)? */
+-                if ((src=2Etype & MR_AD=
+DR_MASK) =3D=3D MR_ADDR_IPV6
+-                    && IN6_IS_ADDR_LINKLOCAL(=
+&src=2Ev6=2Eaddr))
+-                {
+-                    /* do nothing, f=
+or now=2E  TODO: add address learning */
+-                }
+-              =
+  else
+-                {
+-                    struct gc_arena gc =3D gc_ne=
+w();
+-                    msg(D_MULTI_DROPPED,
+-                        "MU=
+LTI: bad source address from client [%s], packet dropped",
+-               =
+         mroute_addr_print(&src, &gc));
+-                    gc_free(&gc);
+=
+-                }
+-                c->c2=2Eto_tun=2Elen =3D 0;
+-          =
+  }
+-            /* client-to-client communication enabled? */
+-           =
+ else if (m->enable_c2c)
+-            {
+-                /* multicast? */
+-=
+                if (mroute_flags & MROUTE_EXTRACT_MCAST)
+-                {=
+
+-                    /* for now, treat multicast as broadcast */
+-        =
+            multi_bcast(m, &c->c2=2Eto_tun, m->pending, 0);
+-              =
+  }
+-                else /* possible client to client routing */
+-        =
+        {
+-                    ASSERT(!(mroute_flags & MROUTE_EXTRACT_BCAST=
+));
+-                    mi =3D multi_get_instance_by_virtual_addr(m, &dest=
+, true);
+-
+-                    /* if dest addr is a known client, route to=
+ it */
+-                    if (mi)
+-                    {
+-               =
+         {
+-                            multi_unicast(m, &c->c2=2Eto_tun, m=
+i);
+-                            register_activity(c, BLEN(&c->c2=2Eto_tun)=
 );
-+    }
-+    return ctx;
-+}
-+
-+void
-+siphash_free_context(void *ctx)
-+{
-+=
-    struct siphash_ctx *sctx =3D ctx;
-+
-+    if (sctx->cryptlib_ctx)
-+    {=
+-                        }
+-                        c->c2=2Eto_tun=2Elen=
+ =3D 0;
+-                    }
+-                }
+-            }
+-        }=
 
-+        siphash_cryptolib_uninit(sctx->cryptlib_ctx);
-+    }
-+    free(ct=
-x);
-+}
-+
-+uint64_t
-+siphash_hash_func(const uint8_t *k, uint32_t length, vo=
-id *ctx)
-+{
-+    struct siphash_ctx *sctx =3D ctx;
-+
-+    union
-+    {
-+   =
-     uint8_t out[8];
-+        uint64_t hash;
-+    } ret;
-+    siphash(sctx,=
- k, length, ret=2Eout, sizeof(ret=2Eout));
-+    return ret=2Ehash;
-+}
-\ No =
-newline at end of file
-diff --git a/src/openvpn/siphash=2Eh b/src/openvpn/s=
-iphash=2Eh
-index 973596b=2E=2Ee20ba5e 100644
---- a/src/openvpn/siphash=2Eh
+-        else if (TUNNEL_TYPE(m->top=2Ec1=2Etuntap) =3D=3D DEV_TYPE_TAP)
+-=
+        {
+-            uint16_t vid =3D 0;
+-
+-            if (m->top=2Eopti=
+ons=2Evlan_tagging)
+-            {
+-                if (vlan_is_tagged(&c->=
+c2=2Eto_tun))
+-                {
+-                    /* Drop VLAN-tagged f=
+rame=2E */
+-                    msg(D_VLAN_DEBUG, "dropping incoming VLAN-t=
+agged frame");
+-                    c->c2=2Eto_tun=2Elen =3D 0;
+-          =
+      }
+-                else
+-                {
+-                    vid =
+=3D c->options=2Evlan_pvid;
+-                }
+-            }
+-            =
+/* extract packet source and dest addresses */
+-            mroute_flags =
+=3D
+-                mroute_extract_addr_from_packet(&src, &dest, vid, &c->=
+c2=2Eto_tun, DEV_TYPE_TAP);
+-
+-            if (mroute_flags & MROUTE_EXTRAC=
+T_SUCCEEDED)
+-            {
+-                if (multi_learn_addr(m, m->pen=
+ding, &src, 0) =3D=3D m->pending)
+-                {
+-                    /=
+* check for broadcast */
+-                    if (m->enable_c2c)
+-         =
+           {
+-                        if (mroute_flags & (MROUTE_EXTRACT_BC=
+AST | MROUTE_EXTRACT_MCAST))
+-                        {
+-                  =
+          multi_bcast(m, &c->c2=2Eto_tun, m->pending, vid);
+-              =
+          }
+-                        else /* try client-to-client routing *=
+/
+-                        {
+-                            mi =3D multi_get_=
+instance_by_virtual_addr(m, &dest, false);
+-
+-                            /=
+* if dest addr is a known client, route to it */
+-                         =
+   if (mi)
+-                            {
+-                                =
+multi_unicast(m, &c->c2=2Eto_tun, mi);
+-                                reg=
+ister_activity(c, BLEN(&c->c2=2Eto_tun));
+-                                =
+c->c2=2Eto_tun=2Elen =3D 0;
+-                            }
+-               =
+         }
+-                    }
+-                }
+-                else
 =
-+++ b/src/openvpn/siphash=2Eh
-@@ -25,8 +25,15 @@
- /* siphash always uses 12=
-8-bit keys */
- #define SIPHASH_KEY_SIZE 16
- 
-+struct siphash_ctx
-+{
-+    ui=
-nt8_t key[SIPHASH_KEY_SIZE];
-+    void *cryptlib_ctx;
-+};
-+
- /* Prototypes =
-for an implementation of SIPHASH in a crypto library */
- 
-+
- /**
-  * Calcul=
-ates SIPHASH using the crypto library function=2E
-  */
-@@ -56,17 +63,44 @@
-=
- siphash_cryptolib_available(void *sip_context);
- 
- static inline int
--siph=
-ash(void *ctx, const void *in, size_t inlen, const void *k,
--        uint8_=
-t *out, size_t outlen)
-+siphash(void *ctx, const void *in, size_t inlen, ui=
-nt8_t *out, size_t outlen)
- {
--    if (siphash_cryptolib_available(ctx) && =
-false)
-+    struct siphash_ctx *sctx =3D ctx;
-+    if (siphash_cryptolib_av=
-ailable(sctx->cryptlib_ctx))
-     {
--        return siphash_cryptolib(ctx, =
-in, inlen, k, out, outlen);
-+        return siphash_cryptolib(ctx, in, inle=
-n, sctx->key, out, outlen);
+-                {
+-                    struct gc_arena gc =3D gc_new();
+- =
+                   msg(D_MULTI_DROPPED,
+-                        "MULTI: ba=
+d source address from client [%s], packet dropped",
+-                      =
+  mroute_addr_print(&src, &gc));
+-                    c->c2=2Eto_tun=2Elen =
+=3D 0;
+-                    gc_free(&gc);
+-                }
+-            }=
+
+-            else
+-            {
+-                c->c2=2Eto_tun=2Elen =3D=
+ 0;
+-            }
+-        }
++        multi_process_incoming_link_data(m, =
+floated, sock);
      }
-     else
-     {
--        return siphash=
-_reference(in, inlen, k, out, outlen);
-+        return siphash_reference(in=
-, inlen, sctx->key, out, outlen);
-     }
- }
  
-+/**
-+ * Allocates the resour=
-ces for a siphash context and returns a pointer to
-+ * this context=2E The =
-context must be freed with siphash_free_context
-+ */
-+void *
-+siphash_new_c=
-ontext(void);
-+
-+/**
-+ *  Releases the resources assigned to a siphash cont=
-ext
-+ * @param ctx the context previously allocated by siphash_new_context
-=
-+ */
-+void
-+siphash_free_context(void *ctx);
-+
-+/**
-+ * Wrapper of the siph=
-ash function to easily use it in the
-+ * hash map=2E
-+ *
-+ * @param k the d=
-ata to hash
-+ * @param length length of the data to hash
-+ * @param ctx   t=
-he siphash context
-+ * @return a unit64_t containing the result of the hash=
-ing
-+ */
-+uint64_t
-+siphash_hash_func(const uint8_t *k, uint32_t length, vo=
-id *ctx);
-+
-+
- #endif /* ifndef SIPHASH_H */
-\ No newline at end of file
-di=
-ff --git a/tests/unit_tests/openvpn/Makefile=2Eam b/tests/unit_tests/openvp=
-n/Makefile=2Eam
-index 4ed113a=2E=2E5f7f692 100644
---- a/tests/unit_tests/op=
-envpn/Makefile=2Eam
-+++ b/tests/unit_tests/openvpn/Makefile=2Eam
-@@ -85,6 +=
-85,7 @@
- 	$(top_srcdir)/src/openvpn/mtu=2Ec \
- 	$(top_srcdir)/src/openvpn/w=
-in32-util=2Ec \
- 	$(top_srcdir)/src/openvpn/mss=2Ec \
-+	$(top_srcdir)/src/o=
-penvpn/siphash=2Ec \
- 	$(top_srcdir)/src/openvpn/siphash_openssl=2Ec \
- 	$(=
-top_srcdir)/src/openvpn/siphash_reference=2Ec
- 
-@@ -378,7 +379,10 @@
- 	$(to=
-p_srcdir)/src/openvpn/ssl_util=2Ec \
- 	$(top_srcdir)/src/openvpn/win32-util=
-=2Ec \
- 	$(top_srcdir)/src/openvpn/platform=2Ec \
--	$(top_srcdir)/src/openv=
-pn/list=2Ec
-+	$(top_srcdir)/src/openvpn/list=2Ec \
-+	$(top_srcdir)/src/open=
-vpn/siphash=2Ec \
-+	$(top_srcdir)/src/openvpn/siphash_openssl=2Ec \
-+	$(top=
-_srcdir)/src/openvpn/siphash_reference=2Ec
- 
- push_update_msg_testdriver_CF=
-LAGS =3D -I$(top_srcdir)/src/openvpn \
- 	-I$(top_srcdir)/src/compat \
-diff =
---git a/tests/unit_tests/openvpn/test_misc=2Ec b/tests/unit_tests/openvpn/t=
-est_misc=2Ec
-index 24bf22d=2E=2E576630d 100644
---- a/tests/unit_tests/openv=
-pn/test_misc=2Ec
-+++ b/tests/unit_tests/openvpn/test_misc=2Ec
-@@ -32,6 +32,=
-7 @@
- #include <string=2Eh>
- #include <setjmp=2Eh>
- #include <cmocka=2Eh>
-+=
-#include <siphash=2Eh>
- 
- #include "ssl_util=2Eh"
- #include "options_util=
-=2Eh"
-@@ -127,10 +128,9 @@
- static uint64_t
- word_hash_function(const void =
-*key, void *ctx)
- {
--    uint32_t *iv =3D (uint32_t *)ctx;
-     const char =
-*str =3D (const char *)key;
-     const uint32_t len =3D (uint32_t)strlen(st=
-r);
--    return hash_func((const uint8_t *)str, len, *iv);
-+    return siph=
-ash_hash_func((const uint8_t *)str, len, ctx);
- }
- 
- static bool
-@@ -173,8 =
-+173,8 @@
-      * word frequency algorithm=2E
-      */
-     struct gc_arena=
- gc =3D gc_new();
--    struct hash *hash =3D hash_init(10000, hash_func_new=
-_ctx(), free, word_hash_function, word_compare_function);
--    struct hash =
-*nhash =3D hash_init(256, hash_func_new_ctx(), free, word_hash_function, wo=
-rd_compare_function);
-+    struct hash *hash =3D hash_init(10000, siphash_n=
-ew_context(), siphash_free_context, word_hash_function, word_compare_functi=
-on);
-+    struct hash *nhash =3D hash_init(256, siphash_new_context(), siph=
-ash_free_context, word_hash_function, word_compare_function);
- 
-     printf=
-("hash_init n_buckets=3D%u mask=3D0x%08x\n", hash->n_buckets, hash->mask);
-=
- 
+     /* postprocess and set wakeup */
 
 -- 
-To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1573?usp=3D=
-email
-To unsubscribe, or for help writing mail filters, visit http://gerrit=
-=2Eopenvpn=2Enet/settings?usp=3Demail
+To view=
+, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1722?usp=3Demail
+To unsub=
+scribe, or for help writing mail filters, visit http://gerrit=2Eopenvpn=2En=
+et/settings?usp=3Demail
 
 Gerrit-MessageType: newpatchset
-Gerr=
-it-Project: openvpn
+Gerrit-Project: op=
+envpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I807f398903ac20=
-47530800c29949793c6f4f0ec9
-Gerrit-Change-Number: 1573
-Gerrit-PatchSet: 6
-Ge=
-rrit-Owner: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Reviewer: flichte=
-nheld <frank@lichtenheld=2Ecom>
-Gerrit-CC: openvpn-devel <openvpn-devel@lis=
-ts=2Esourceforge=2Enet>
-Gerrit-Attention: flichtenheld <frank@lichtenheld=
-=2Ecom>
+Gerrit-Change-Id: I9f10d91407347faf32397535c95e=
+2d80a1575bd5
+Gerrit-Change-Number: 1722
+Gerrit-PatchSet: 3
+Gerrit-Owner: pl=
+aisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Reviewer: flichtenheld <frank@l=
+ichtenheld=2Ecom>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourcefor=
+ge=2Enet>
+Gerrit-Attention: flichtenheld <frank@lichtenheld=2Ecom>
 
---YMm+7Ng1iZs=
+--HFBCaYAzrD0=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: flichtenheld=2E </p>
 <p>plaisthos <strong>uploaded pa=
-tch set #6</strong> to this change=2E</p><p><a href=3D"http://gerrit=2Eopen=
-vpn=2Enet/c/openvpn/+/1573?usp=3Demail">View Change</a></p><p>The following=
+tch set #3</strong> to this change=2E</p><p><a href=3D"http://gerrit=2Eopen=
+vpn=2Enet/c/openvpn/+/1722?usp=3Demail">View Change</a></p><p>The following=
  approvals got outdated and were removed:
 Code-Review-1 by flichtenheld</p>=
 <pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">Replace custom hash_func with siphash<br><br>Change-Id: I807f=
-398903ac2047530800c29949793c6f4f0ec9<br>Signed-off-by: Arne Schwabe &lt;arn=
-e@rfc2549=2Eorg&gt;<br>---<br>M CMakeLists=2Etxt<br>M src/openvpn/Makefile=
-=2Eam<br>M src/openvpn/list=2Ec<br>M src/openvpn/list=2Eh<br>M src/openvpn/=
-mroute=2Ec<br>M src/openvpn/multi=2Ec<br>A src/openvpn/siphash=2Ec<br>M src=
-/openvpn/siphash=2Eh<br>M tests/unit_tests/openvpn/Makefile=2Eam<br>M tests=
-/unit_tests/openvpn/test_misc=2Ec<br>10 files changed, 140 insertions(+), 2=
-08 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: mo=
-nospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=
-=2Enet:29418/openvpn refs/changes/73/1573/6</pre><pre style=3D"font-family:=
- monospace,monospace; white-space: pre-wrap;"><span>diff --git a/CMakeLists=
-=2Etxt b/CMakeLists=2Etxt</span><br><span>index db05073=2E=2E412fa06 100644=
-</span><br><span>--- a/CMakeLists=2Etxt</span><br><span>+++ b/CMakeLists=2E=
-txt</span><br><span>@@ -563,6 +563,7 @@</span><br><span>     src/openvpn/si=
-g=2Ec</span><br><span>     src/openvpn/sig=2Eh</span><br><span>     src/ope=
-nvpn/siphash=2Eh</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- src/openvpn/siphash=2Ec</span><br><span>     src/openvpn/siphash_openssl=
-=2Ec</span><br><span>     src/openvpn/siphash_reference=2Ec</span><br><span=
->     src/openvpn/socket=2Ec</span><br><span>@@ -827,7 +828,11 @@</span><br=
-><span>         src/openvpn/options_util=2Ec</span><br><span>         src/o=
-penvpn/ssl_util=2Ec</span><br><span>         src/openvpn/list=2Ec</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-        )</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        src/openvpn/siphash=2Eh</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        src/openvpn/siphash=
-=2Ec</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        src/ope=
-nvpn/siphash_reference=2Ec</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        src/openvpn/siphash_openssl=2Ec</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    )</span><br><span> </span><br><span>     tar=
-get_sources(test_ncp PRIVATE</span><br><span>         src/openvpn/crypto_ep=
-och=2Ec</span><br><span>diff --git a/src/openvpn/Makefile=2Eam b/src/openvp=
-n/Makefile=2Eam</span><br><span>index 08c8250=2E=2E4cb93e9 100644</span><br=
-><span>--- a/src/openvpn/Makefile=2Eam</span><br><span>+++ b/src/openvpn/Ma=
-kefile=2Eam</span><br><span>@@ -128,7 +128,8 @@</span><br><span> 	session_i=
-d=2Ec session_id=2Eh \</span><br><span> 	shaper=2Ec shaper=2Eh \</span><br>=
-<span> 	sig=2Ec sig=2Eh \</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-	siphash_reference=2Ec siphash=2Eh \</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+	siphash=2Ec siphash=2Eh \</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+	siphash_reference=2Ec \</span><br><span> 	siph=
-ash_openssl=2Ec \</span><br><span> 	socket=2Ec socket=2Eh \</span><br><span=
-> 	socket_util=2Ec socket_util=2Eh \</span><br><span>diff --git a/src/openv=
-pn/list=2Ec b/src/openvpn/list=2Ec</span><br><span>index 36d8ede=2E=2E1a7dd=
-25 100644</span><br><span>--- a/src/openvpn/list=2Ec</span><br><span>+++ b/=
-src/openvpn/list=2Ec</span><br><span>@@ -31,9 +31,6 @@</span><br><span> #in=
-clude &quot;list=2Eh&quot;</span><br><span> </span><br><span> #include &quo=
-t;crypto=2Eh&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#in=
-clude &quot;misc=2Eh&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;m=
-emdbg=2Eh&quot;</span><br><span> </span><br><span> struct hash *</span><br>=
-<span> hash_init(const uint32_t n_buckets, void *ctx,</span><br><span>@@ -3=
-15,187 +312,4 @@</span><br><span>     ASSERT(hi-&gt;last);</span><br><span>=
-     hi-&gt;last-&gt;key =3D NULL;</span><br><span>     hi-&gt;bucket_marke=
-d =3D true;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-/*</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * -------------=
--------------------------------------------------------</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">- * hash() -- hash a variable-length key i=
-nto a 32-bit value</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * =
-k     : the key (the unaligned variable-length array of bytes)</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">- * len   : the length of the key, =
-counting by bytes</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * l=
-evel : can be any 4-byte value</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">- * Returns a 32-bit value=2E  Every bit of the key affects every b=
-it of</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * the return va=
-lue=2E  Every 1-bit and 2-bit delta achieves avalanche=2E</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">- * About 36+6len instructions=2E</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">- * #define hashsize(n) ((uint32_t)1&lt;&lt;(n))=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * #define hashmask(n=
-) (hashsize(n)-1)</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">- * The best hash table =
-sizes are powers of 2=2E  There is no need to do</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">- * mod a prime (mod is sooo slow!)=2E  If you ne=
-ed less than 32 bits,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
- * use a bitmask=2E  For example, if you need only 10 bits, do</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">- * h =3D (h &amp; hashmask(10));</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">- * In which case, the h=
-ash table should have hashsize(10) elements=2E</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">- * If you are hashing n strings (uint8_t **)k, do it like this:</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">- * for (i=3D0, h=3D0; i&lt;=
-n; ++i) h =3D hash( k[i], len[i], h);</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * =
-By Bob Jenkins, 1996=2E  bob_jenkins@burtleburtle=2Enet=2E  You may use thi=
-s</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * code any way you =
-wish, private, educational, or commercial=2E  It&#39;s free=2E</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">- * See https://burtleburtle=2Enet/bob/hash/evahash=2E=
-html</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Use for hash t=
-able lookup, or anything where one collision in 2^32 is</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">- * acceptable=2E  Do NOT use for cryptogr=
-aphic purposes=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">- * --------------------=
-------------------------------------------------</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">- * mix -- mix 3 32-bit values reversibly=2E</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">- * For every delta with one or two bit set,=
- and the deltas of all three</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">- * high bits or all three low bits, whether the original value of a,=
-b,c</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * is almost all z=
-ero or is uniformly distributed,</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">- * If mix() is run forward or backward, at least 32 bits in a,b,=
-c</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * have at least 1/4=
- probability of changing=2E</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">- * If mix() is run forward, every bit of c will change between 1/3 an=
-d</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * 2/3 of the time=
-=2E  (Well, 22/100 and 78/100 for some 2-bit deltas=2E)</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">- * mix() was built out of 36 single-cycle=
- latency instructions in a</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">- * structure that could supported 2x parallelism, like so:</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">- *    a -=3D b;</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">- *    a -=3D c; x =3D (c&gt;&gt;13);</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">- *    b -=3D c; a ^=3D x=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *    b -=3D a; x =
-=3D (a&lt;&lt;8);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *  =
-  c -=3D a; b ^=3D x;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
- *    c -=3D b; x =3D (b&gt;&gt;13);</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">- *    =2E=2E=2E</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">- * Unfortunately, superscalar Pentiums and Sparcs can&#39;t take a=
-dvantage</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * of that pa=
-rallelism=2E  They&#39;ve also turned some of those single-cycle</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">- * latency instructions into mul=
-ti-cycle latency instructions=2E  Still,</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">- * this is the fastest good hash I could find=2E  There =
-were about 2^^68</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * to=
- choose from=2E  I only looked at a billion or so=2E</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">- * James Yonan Notes:</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Thi=
-s function is faster than it looks, and appears to be</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">- * appropriate for our usage in OpenVPN whi=
-ch is primarily</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * for=
- hash-table based address lookup (IPv4, IPv6, and Ethernet MAC)=2E</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">- * NOTE: This function is neve=
-r used for cryptographic purposes, only</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">- * to produce evenly-distributed indexes into hash tables=
-=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">- * Benchmark results: 11=2E39 machine=
- cycles per byte on a P2 266Mhz,</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">- *                   and 12=2E1 machine cycles per byte on a</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">- *                   2=2E=
-2 Ghz P4 when hashing a 6 byte string=2E</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">- * -----------------------------------------------------=
----------------</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#define mix(a, b, c)    \</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    {                   \</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-        a -=3D b;         \</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-        a -=3D c;         \</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-        a ^=3D (c &gt;&=
-gt; 13); \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        b -=
-=3D c;         \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   b -=3D a;         \</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--        b ^=3D (a &lt;&lt; 8);  \</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        c -=3D a;         \</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-        c -=3D b;         \</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-        c ^=3D (b &gt;&gt; 13); \</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        a -=3D b;         \</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-        a -=3D c;         \</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        a ^=3D (c &gt;&gt;=
- 12); \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        b -=3D=
- c;         \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-b -=3D a;         \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-      b ^=3D (a &lt;&lt; 16); \</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-        c -=3D a;         \</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-        c -=3D b;         \</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-        c ^=3D (b &gt;&gt; 5);  \</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-        a -=3D b;         \</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-        a -=3D c;         \</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-        a ^=3D (c &gt;&gt; 3)=
-;  \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        b -=3D c;=
-         \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        b -=
-=3D a;         \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   b ^=3D (a &lt;&lt; 10); \</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        c -=3D a;         \</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        c -=3D b;         \</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-        c ^=3D (b &gt;&gt; 15); \</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-void =
-*</span><br><span style=3D"color: hsl(0, 100%, 40%);">-hash_func_new_ctx(vo=
-id)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    uint32_t *ctx =3D malloc(sizeof(ui=
-nt32_t));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    *ctx =3D=
- (uint32_t)get_random();</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    return ctx;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-uint64_t</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-hash_func(const uint8_t *k, uint32_t length, uint32_t in=
-itval)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    uint32_t a, b, c, len;</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    /* Set up the internal state */</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    len =3D length;</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    a =3D b =3D 0x9e3779b9; /* the gold=
-en ratio; an arbitrary value */</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    c =3D initval;        /* the previous hash value */</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    /*---------------------------------------- handl=
-e most of the key */</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   while (len &gt;=3D 12)</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        a +=
-=3D (k[0] + ((uint32_t)k[1] &lt;&lt; 8) + ((uint32_t)k[2] &lt;&lt; 16) + ((=
-uint32_t)k[3] &lt;&lt; 24));</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        b +=3D (k[4] + ((uint32_t)k[5] &lt;&lt; 8) + ((uint32_t)k[6]=
- &lt;&lt; 16) + ((uint32_t)k[7] &lt;&lt; 24));</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-        c +=3D (k[8] + ((uint32_t)k[9] &lt;&lt; 8)=
- + ((uint32_t)k[10] &lt;&lt; 16) + ((uint32_t)k[11] &lt;&lt; 24));</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        mix(a, b, c);</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        k +=3D 12;</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        len -=3D 12;</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    /*------------------------------------- handle the last 11 bytes */=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    c +=3D length;</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    switch (len) /* all =
-the case statements fall through */</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-      case 11:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-     c +=3D ((uint32_t)k[10] &lt;&lt; 24);</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-            /* Intentional [[fallthrough]]; */</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-        case 10:</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-            c +=3D ((uint32_t)k[9] &lt;&lt; 16);</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-            /* Intentional [=
-[fallthrough]]; */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        case 9:</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-            c +=3D ((uint32_t)=
-k[8] &lt;&lt; 8);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-    /* Intentional [[fallthrough]]; */</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-    /* the first byte of c is reserved for the length */</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-        case 8:</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-            b +=3D ((uint32_t)k[7] &lt;&lt; 24=
-);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            /* Inte=
-ntional [[fallthrough]]; */</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        case 7:=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            b +=3D ((=
-uint32_t)k[6] &lt;&lt; 16);</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-            /* Intentional [[fallthrough]]; */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-        case 6:</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-            b +=3D ((uint32_t)k[5] &lt;&lt; 8);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            /* Intentional [[fallthrough]];=
- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        case 5:</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            b +=3D k[4];</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-            /* Intentional [[fallthrough=
-]]; */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-        case 4:</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-            a +=3D ((uint32_t)k[3] &lt;&lt=
-; 24);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            /* =
-Intentional [[fallthrough]]; */</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        cas=
-e 3:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            a +=
-=3D ((uint32_t)k[2] &lt;&lt; 16);</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-            /* Intentional [[fallthrough]]; */</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-        case 2:</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-            a +=3D ((uint32_t)k[1] &lt;&lt; 8);</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-            /* Intentional [[fallthroug=
-h]]; */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-        case 1:</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-            a +=3D k[0];</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-            /* case 0: nothing left to=
- add */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    mix(a, b, c);</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    /*----------------------------=
----------- report the result */</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    return c;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><spa=
-n>\ No newline at end of file</span><br><span>diff --git a/src/openvpn/list=
-=2Eh b/src/openvpn/list=2Eh</span><br><span>index ea6f47a=2E=2E160bb5d 1006=
-44</span><br><span>--- a/src/openvpn/list=2Eh</span><br><span>+++ b/src/ope=
-nvpn/list=2Eh</span><br><span>@@ -101,10 +101,6 @@</span><br><span> </span>=
-<br><span> void hash_iterator_free(struct hash_iterator *hi);</span><br><sp=
-an> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-uint64_t hash_fun=
-c(const uint8_t *k, uint32_t length, uint32_t initval);</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-void *hash_func_new_ctx(void);</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-</span><br><span> static inline uint64_t</span><br><s=
-pan> hash_value(const struct hash *hash, const void *key)</span><br><span> =
-{</span><br><span>diff --git a/src/openvpn/mroute=2Ec b/src/openvpn/mroute=
-=2Ec</span><br><span>index 89b3ecc=2E=2Ee32894b 100644</span><br><span>--- =
-a/src/openvpn/mroute=2Ec</span><br><span>+++ b/src/openvpn/mroute=2Ec</span=
-><br><span>@@ -33,6 +33,7 @@</span><br><span> #include &quot;socket_util=2E=
-h&quot;</span><br><span> </span><br><span> #include &quot;memdbg=2Eh&quot;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;sipha=
-sh=2Eh&quot;</span><br><span> </span><br><span> void</span><br><span> mrout=
-e_addr_init(struct mroute_addr *addr)</span><br><span>@@ -357,9 +358,8 @@</=
-span><br><span> uint64_t</span><br><span> mroute_addr_hash_function(const v=
-oid *key, void *ctx)</span><br><span> {</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    uint32_t *iv =3D ctx;</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    return hash_func(mroute_addr_hash_ptr((const stru=
-ct mroute_addr *)key),</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--                     mroute_addr_hash_len((const struct mroute_addr *)key)=
-, *iv);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return s=
-iphash_hash_func(mroute_addr_hash_ptr((const struct mroute_addr *)key),</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+                       =
-      mroute_addr_hash_len((const struct mroute_addr *)key), ctx);</span><b=
-r><span> }</span><br><span> </span><br><span> bool</span><br><span>diff --g=
-it a/src/openvpn/multi=2Ec b/src/openvpn/multi=2Ec</span><br><span>index 80=
-52100=2E=2Eb4dc13d 100644</span><br><span>--- a/src/openvpn/multi=2Ec</span=
-><br><span>+++ b/src/openvpn/multi=2Ec</span><br><span>@@ -23,6 +23,7 @@</s=
-pan><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;config=
-=2Eh&quot;</span><br><span> #endif</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#include &quot;siphash=2Eh&quot;</span><br><span> </span><br=
-><span> #ifdef HAVE_SYS_INOTIFY_H</span><br><span> #include &lt;sys/inotify=
-=2Eh&gt;</span><br><span>@@ -290,14 +291,14 @@</span><br><span>      * to d=
-etermine which client sent an incoming packet</span><br><span>      * which=
- is seen on the TCP/UDP socket=2E</span><br><span>      */</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    m-&gt;hash =3D hash_init(t-&gt;opt=
-ions=2Ereal_hash_size, hash_func_new_ctx(), free,</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    m-&gt;hash =3D hash_init(t-&gt;options=2E=
-real_hash_size, siphash_new_context(), siphash_free_context,</span><br><spa=
-n>                         mroute_addr_hash_function, mroute_addr_compare_f=
-unction);</span><br><span> </span><br><span>     /*</span><br><span>      *=
- Virtual address hash table=2E  Used to determine</span><br><span>      * w=
-hich client to route a packet to=2E</span><br><span>      */</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    m-&gt;vhash =3D hash_init(t-&gt;=
-options=2Evirtual_hash_size, hash_func_new_ctx(), free,</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    m-&gt;vhash =3D hash_init(t-&gt;opt=
-ions=2Evirtual_hash_size, siphash_new_context(), siphash_free_context,</spa=
-n><br><span>                          mroute_addr_hash_function, mroute_add=
-r_compare_function);</span><br><span> </span><br><span> #ifdef ENABLE_MANAG=
-EMENT</span><br><span>diff --git a/src/openvpn/siphash=2Ec b/src/openvpn/si=
-phash=2Ec</span><br><span>new file mode 100644</span><br><span>index 000000=
-0=2E=2Edac7750</span><br><span>--- /dev/null</span><br><span>+++ b/src/open=
-vpn/siphash=2Ec</span><br><span>@@ -0,0 +1,77 @@</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+ *  OpenVPN -- An application to securely tunnel IP networks</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             over a =
-single TCP/UDP port, with support for SSL/TLS-based</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *             session authentication and=
- key exchange,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *   =
-          packet encryption, packet authentication, and</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+ *             packet compression=2E</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+ *  Copyright (C) 2025 OpenVPN Inc &lt;=
-sales@openvpn=2Enet&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+ *  Copyright (C) 2025 Arne Schwabe &lt;arne@rfc2549=2Eorg&gt;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+ *  This program is free software; you can redistribute it and=
-/or modify</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  it un=
-der the terms of the GNU General Public License version 2</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+ *  as published by the Free Software=
- Foundation=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This program is di=
-stributed in the hope that it will be useful,</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY; without even the im=
-plied warranty of</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE=2E  See the</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+ *  GNU General Public Licens=
-e for more details=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  You should =
-have received a copy of the GNU General Public License along</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+ *  with this program; if not, wri=
-te to the Free Software Foundation, Inc=2E,</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+ *  51 Franklin Street, Fifth Floor, Boston, MA 021=
-10-1301 USA=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+#ifdef HAVE_CONFIG_H</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+#include &quot;config=2Eh&quot;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+#elif defined(_MSC_VER)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;config-m=
-svc=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+#include &lt;stdlib=2Eh&gt;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;syshead=2Eh&quo=
-t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;si=
-phash=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#inc=
-lude &quot;buffer=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#include &quot;crypto=2Eh&quot;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+void *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+siphash_new_=
-context(void)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct siphash_ctx *=
-ctx;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ALLOC_OBJ_C=
-LEAR(ctx, struct siphash_ctx);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    prng=
-_bytes(ctx-&gt;key, SIPHASH_KEY_SIZE);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    if (siphash_cryptolib_available(ctx) &amp;&amp; false)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        ctx-&gt;cryptlib_ctx =3D siphash_cryptolib=
-_init(8);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    return ctx;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+sipha=
-sh_free_context(void *ctx)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct =
-siphash_ctx *sctx =3D ctx;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (sctx=
--&gt;cryptlib_ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        siphash=
-_cryptolib_uninit(sctx-&gt;cryptlib_ctx);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    free(ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+uint64_t</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+siphash_hash_func(const uint8_t *k, uint32_t =
-length, void *ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct siphash_=
-ctx *sctx =3D ctx;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    union</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        uint8_t out[8];</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        uint64_t hash;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    } ret;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    siphash(sctx, k, length, ret=2Eout, sizeof=
-(ret=2Eout));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    re=
-turn ret=2Ehash;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</=
-span><br><span>\ No newline at end of file</span><br><span>diff --git a/src=
-/openvpn/siphash=2Eh b/src/openvpn/siphash=2Eh</span><br><span>index 973596=
-b=2E=2Ee20ba5e 100644</span><br><span>--- a/src/openvpn/siphash=2Eh</span><=
-br><span>+++ b/src/openvpn/siphash=2Eh</span><br><span>@@ -25,8 +25,15 @@</=
-span><br><span> /* siphash always uses 128-bit keys */</span><br><span> #de=
-fine SIPHASH_KEY_SIZE 16</span><br><span> </span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+struct siphash_ctx</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    uint8_t key[SIPHASH_KEY_SIZE];</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    void *cryptlib_ctx;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+};</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span> /* Prototypes for an implementation of SIPHASH in a=
- crypto library */</span><br><span> </span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span> /**</span><br><span>  * Calculates SIPHA=
-SH using the crypto library function=2E</span><br><span>  */</span><br><spa=
-n>@@ -56,17 +63,44 @@</span><br><span> siphash_cryptolib_available(void *si=
-p_context);</span><br><span> </span><br><span> static inline int</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-siphash(void *ctx, const void *i=
-n, size_t inlen, const void *k,</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-        uint8_t *out, size_t outlen)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+siphash(void *ctx, const void *in, size_t inlen,=
- uint8_t *out, size_t outlen)</span><br><span> {</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    if (siphash_cryptolib_available(ctx) &amp;&a=
-mp; false)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struc=
-t siphash_ctx *sctx =3D ctx;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    if (siphash_cryptolib_available(sctx-&gt;cryptlib_ctx))</span>=
-<br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   return siphash_cryptolib(ctx, in, inlen, k, out, outlen);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        return siphash_cryptolib(c=
-tx, in, inlen, sctx-&gt;key, out, outlen);</span><br><span>     }</span><br=
-><span>     else</span><br><span>     {</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-        return siphash_reference(in, inlen, k, out, outle=
-n);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return s=
-iphash_reference(in, inlen, sctx-&gt;key, out, outlen);</span><br><span>   =
-  }</span><br><span> }</span><br><span> </span><br><span style=3D"color: hs=
+e: pre-wrap;">Move incoming data processing in its own method<br><br>This e=
+xtract a large chunk from multi_process_incoming_link into its<br>own metho=
+d multi_process_incoming_link_data<br><br>This reduces the complexity of mu=
+lti_process_incoming_link further=2E<br><br>A few declarations were moved i=
+nto a more logical place but otherwise<br>this is just a simple move=2E<br>=
+<br>Change-Id: I9f10d91407347faf32397535c95e2d80a1575bd5<br>Signed-off-by: =
+Arne Schwabe &lt;arne@rfc2549=2Eorg&gt;<br>---<br>M src/openvpn/multi=2Ec<b=
+r>1 file changed, 154 insertions(+), 138 deletions(-)<br><br></pre><pre cla=
+ss=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-w=
+rap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/22/1=
+722/3</pre><pre style=3D"font-family: monospace,monospace; white-space: pre=
+-wrap;"><span>diff --git a/src/openvpn/multi=2Ec b/src/openvpn/multi=2Ec</s=
+pan><br><span>index f19433b=2E=2E625f87d 100644</span><br><span>--- a/src/o=
+penvpn/multi=2Ec</span><br><span>+++ b/src/openvpn/multi=2Ec</span><br><spa=
+n>@@ -3303,6 +3303,159 @@</span><br><span> }</span><br><span> #endif /* if =
+defined(ENABLE_DCO) */</span><br><span> </span><br><span style=3D"color: hs=
 l(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+ * Allocates the resources for a siphash context and returns a pointer=
- to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * this context=
-=2E The context must be freed with siphash_free_context</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+void *</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+siphash_new_context(void);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  Releases the reso=
-urces assigned to a siphash context</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+ * @param ctx the context previously allocated by siphash_n=
-ew_context</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+siphash_free_context(void *ctx);</span><=
+);">+ * Process incoming data packet from clients=2E</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ * This tries to decrypt and then forward incoming</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+ * data packets, so the be =
+be forwarded=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param m P</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param floated</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ * @param sock</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+multi_process_incoming_link_data(struct multi_context *m, =
+bool floated, struct link_socket *sock)</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    struct link_socket_info *lsi =3D &amp;sock-&gt;info;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    const uint8_t *orig_buf;</span><=
 br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+ * Wrapper of the siphash function to easily use it in the</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+ * hash map=2E</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+ * @param k the data to hash</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+ * @param length length of the data =
-to hash</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param ct=
-x   the siphash context</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+ * @return a unit64_t containing the result of the hashing</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+uint64_t</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+siphash_hash_func(const uint8_t *k, uint32_t length, void *=
-ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #endif /* ifnde=
-f SIPHASH_H */</span><br><span>\ No newline at end of file</span><br><span>=
-diff --git a/tests/unit_tests/openvpn/Makefile=2Eam b/tests/unit_tests/open=
-vpn/Makefile=2Eam</span><br><span>index 4ed113a=2E=2E5f7f692 100644</span><=
-br><span>--- a/tests/unit_tests/openvpn/Makefile=2Eam</span><br><span>+++ b=
-/tests/unit_tests/openvpn/Makefile=2Eam</span><br><span>@@ -85,6 +85,7 @@</=
-span><br><span> 	$(top_srcdir)/src/openvpn/mtu=2Ec \</span><br><span> 	$(to=
-p_srcdir)/src/openvpn/win32-util=2Ec \</span><br><span> 	$(top_srcdir)/src/=
-openvpn/mss=2Ec \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$=
-(top_srcdir)/src/openvpn/siphash=2Ec \</span><br><span> 	$(top_srcdir)/src/=
-openvpn/siphash_openssl=2Ec \</span><br><span> 	$(top_srcdir)/src/openvpn/s=
-iphash_reference=2Ec</span><br><span> </span><br><span>@@ -378,7 +379,10 @@=
-</span><br><span> 	$(top_srcdir)/src/openvpn/ssl_util=2Ec \</span><br><span=
-> 	$(top_srcdir)/src/openvpn/win32-util=2Ec \</span><br><span> 	$(top_srcdi=
-r)/src/openvpn/platform=2Ec \</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-	$(top_srcdir)/src/openvpn/list=2Ec</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/list=2Ec \</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/siphas=
-h=2Ec \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdi=
-r)/src/openvpn/siphash_openssl=2Ec \</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+	$(top_srcdir)/src/openvpn/siphash_reference=2Ec</span><br=
-><span> </span><br><span> push_update_msg_testdriver_CFLAGS =3D -I$(top_src=
-dir)/src/openvpn \</span><br><span> 	-I$(top_srcdir)/src/compat \</span><br=
-><span>diff --git a/tests/unit_tests/openvpn/test_misc=2Ec b/tests/unit_tes=
-ts/openvpn/test_misc=2Ec</span><br><span>index 24bf22d=2E=2E576630d 100644<=
-/span><br><span>--- a/tests/unit_tests/openvpn/test_misc=2Ec</span><br><spa=
-n>+++ b/tests/unit_tests/openvpn/test_misc=2Ec</span><br><span>@@ -32,6 +32=
-,7 @@</span><br><span> #include &lt;string=2Eh&gt;</span><br><span> #includ=
-e &lt;setjmp=2Eh&gt;</span><br><span> #include &lt;cmocka=2Eh&gt;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;siphash=2Eh&gt;<=
-/span><br><span> </span><br><span> #include &quot;ssl_util=2Eh&quot;</span>=
-<br><span> #include &quot;options_util=2Eh&quot;</span><br><span>@@ -127,10=
- +128,9 @@</span><br><span> static uint64_t</span><br><span> word_hash_func=
-tion(const void *key, void *ctx)</span><br><span> {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    uint32_t *iv =3D (uint32_t *)ctx;</span=
-><br><span>     const char *str =3D (const char *)key;</span><br><span>    =
- const uint32_t len =3D (uint32_t)strlen(str);</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    return hash_func((const uint8_t *)str, len, *i=
-v);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return sipha=
-sh_hash_func((const uint8_t *)str, len, ctx);</span><br><span> }</span><br>=
-<span> </span><br><span> static bool</span><br><span>@@ -173,8 +173,8 @@</s=
-pan><br><span>      * word frequency algorithm=2E</span><br><span>      */<=
-/span><br><span>     struct gc_arena gc =3D gc_new();</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    struct hash *hash =3D hash_init(10000, =
-hash_func_new_ctx(), free, word_hash_function, word_compare_function);</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct hash *nhash =3D=
- hash_init(256, hash_func_new_ctx(), free, word_hash_function, word_compare=
-_function);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    stru=
-ct hash *hash =3D hash_init(10000, siphash_new_context(), siphash_free_cont=
-ext, word_hash_function, word_compare_function);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    struct hash *nhash =3D hash_init(256, siph=
-ash_new_context(), siphash_free_context, word_hash_function, word_compare_f=
-unction);</span><br><span> </span><br><span>     printf(&quot;hash_init n_b=
-uckets=3D%u mask=3D0x%08x\n&quot;, hash-&gt;n_buckets, hash-&gt;mask);</spa=
-n><br><span> </span><br><span></span><br></pre><p>To view, visit <a href=3D=
-"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1573?usp=3Demail">change 1573</a=
->=2E To unsubscribe, or for help writing mail filters, visit <a href=3D"htt=
-p://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div it=
-emscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itempr=
-op=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D=
-"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1573?usp=3Demail"/>=
-<meta itemprop=3D"name" content=3D"View Change"/></div></div>
+olor: hsl(120, 100%, 40%);">+    /* decrypt in instance context */</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    struct context *c =3D &a=
+mp;m-&gt;pending-&gt;context;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    orig_=
+buf =3D c-&gt;c2=2Ebuf=2Edata;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    if (process_incoming_link_part1(c, lsi, floated))</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        /* nonzero length means that we have=
+ a valid, decrypted packed */</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        if (floated &amp;&amp; c-&gt;c2=2Ebuf=2Elen &gt; 0)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+            multi_process_float(m, =
+m-&gt;pending, sock);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        process_incoming_li=
+nk_part2(c, lsi, orig_buf);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (TUNNEL_TYPE(m-&gt=
+;top=2Ec1=2Etuntap) =3D=3D DEV_TYPE_TUN)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        struct mroute_addr src, dest;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        /* extract packet source and dest addresse=
+s */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        unsigne=
+d int mroute_flags =3D</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+            mroute_extract_addr_from_packet(&amp;src, &amp;dest, 0, &amp=
+;c-&gt;c2=2Eto_tun, DEV_TYPE_TUN);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    /* drop packet if extract failed */</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        if (!(mroute_flags &amp; MROUTE_EXTRACT_SUCCEED=
+ED))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            c-&gt;c2=2Eto=
+_tun=2Elen =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* m=
+ake sure that source address is associated with this client */</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        else if (multi_get_insta=
+nce_by_virtual_addr(m, &amp;src, true) !=3D m-&gt;pending)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+            /* IPv6 link-local address (fe80::=
+xxx)? */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+ if ((src=2Etype &amp; MR_ADDR_MASK) =3D=3D MR_ADDR_IPV6</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+                &amp;&amp; IN6_IS_ADDR=
+_LINKLOCAL(&amp;src=2Ev6=2Eaddr))</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+                /* do nothing, for now=2E  TODO: add address learni=
+ng */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            else</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                struct gc_are=
+na gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+                msg(D_MULTI_DROPPED,</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+                    &quot;MULTI: bad source address from c=
+lient [%s], packet dropped&quot;,</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+                    mroute_addr_print(&amp;src, &amp;gc));</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                gc_fre=
+e(&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            c-=
+&gt;c2=2Eto_tun=2Elen =3D 0;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       /* client-to-client communication enabled? */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        else if (m-&gt;enable_c2c)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+            /* multicast? */</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+            if (mroute_flag=
+s &amp; MROUTE_EXTRACT_MCAST)</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                /* for now, treat multicast as broadcast */</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                multi_bcast(m, =
+&amp;c-&gt;c2=2Eto_tun, m-&gt;pending, 0);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+            else /* possible client to client routing */</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                ASSERT(!(mr=
+oute_flags &amp; MROUTE_EXTRACT_BCAST));</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                struct multi_instance *mi =3D multi_ge=
+t_instance_by_virtual_addr(m, &amp;dest, true);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                /* if dest addr is a known client, route to it */<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                if (=
+mi)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                  =
+  {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
+        multi_unicast(m, &amp;c-&gt;c2=2Eto_tun, mi);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                        register_activity=
+(c, BLEN(&amp;c-&gt;c2=2Eto_tun));</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+                    }</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+                    c-&gt;c2=2Eto_tun=2Elen =3D 0;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                }</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    else if (TUNNEL_TYPE(m-&gt;top=2Ec1=2Etuntap) =3D=3D DE=
+V_TYPE_TAP)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        uint16_t vid =
+=3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        if (m-&gt;top=2Eoptions=
+=2Evlan_tagging)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            i=
+f (vlan_is_tagged(&amp;c-&gt;c2=2Eto_tun))</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+                /* Drop VLAN-tagged frame=2E */</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+                msg(D_VLAN_DEB=
+UG, &quot;dropping incoming VLAN-tagged frame&quot;);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                c-&gt;c2=2Eto_tun=2Elen =
+=3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            else</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+                vid =3D c-&g=
+t;options=2Evlan_pvid;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+            }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* ex=
+tract packet source and dest addresses */</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        struct mroute_addr src, dest;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        /* extract packet source an=
+d dest addresses */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        unsigned int mroute_flags =3D</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+            mroute_extract_addr_from_packet(&amp;src, &am=
+p;dest, vid, &amp;c-&gt;c2=2Eto_tun, DEV_TYPE_TAP);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        if (mroute_flags &amp; MROUTE_EXTRACT_SUCCEEDED)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+            if (multi_learn_addr(=
+m, m-&gt;pending, &amp;src, 0) =3D=3D m-&gt;pending)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+                /* check for broadcast */</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+                if (m-&gt=
+;enable_c2c)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+         {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+           if (mroute_flags &amp; (MROUTE_EXTRACT_BCAST | MROUTE_EXTRACT_MC=
+AST))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
+      {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+            multi_bcast(m, &amp;c-&gt;c2=2Eto_tun, m-&gt;pending, vid);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+                    }</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    e=
+lse /* try client-to-client routing */</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+                    {</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                        struct multi_instance *mi =3D =
+multi_get_instance_by_virtual_addr(m, &amp;dest, false);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+                        /* if dest addr is a known client=
+, route to it */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+                     if (mi)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                        {</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+                            multi_unicast(m, &amp;c-&gt;c2=
+=2Eto_tun, mi);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+                        register_activity(c, BLEN(&amp;c-&gt;c2=2Eto_tun));=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                   =
+         c-&gt;c2=2Eto_tun=2Elen =3D 0;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+                        }</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+                    }</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+                }</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+            else</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+                struct gc_arena gc =3D gc_new();</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+                msg(D_MULTI_DROPPED=
+,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                  =
+  &quot;MULTI: bad source address from client [%s], packet dropped&quot;,</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    m=
+route_addr_print(&amp;src, &amp;gc));</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+                c-&gt;c2=2Eto_tun=2Elen =3D 0;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+                gc_free(&amp;g=
+c);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        else</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            c-&gt;c2=2Eto_tun=2Elen =3D 0;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span> /*</span><br><span>  * Process packets in the TCP/=
+UDP socket -&gt; TUN/TAP interface direction,</span><br><span>  * i=2Ee=2E =
+client -&gt; server direction=2E</span><br><span>@@ -3312,9 +3465,6 @@</spa=
+n><br><span>                             const unsigned int mpp_flags, stru=
+ct link_socket *sock)</span><br><span> {</span><br><span>     struct contex=
+t *c;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct mrout=
+e_addr src, dest;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+unsigned int mroute_flags;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    struct multi_instance *mi;</span><br><span>     bool ret =3D true;=
+</span><br><span>     bool floated =3D false;</span><br><span> </span><br><=
+span>@@ -3358,141 +3508,7 @@</span><br><span> </span><br><span>     if (BLE=
+N(&amp;c-&gt;c2=2Ebuf) &gt; 0)</span><br><span>     {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        struct link_socket_info *lsi;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        const uint8_t *orig=
+_buf;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-        /* decrypt in instance contex=
+t */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-        lsi =3D &amp;sock-&gt;info;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        orig_buf =3D c-&=
+gt;c2=2Ebuf=2Edata;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+      if (process_incoming_link_part1(c, lsi, floated))</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-            /* nonzero length means that we have a va=
+lid, decrypted packed */</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-            if (floated &amp;&amp; c-&gt;c2=2Ebuf=2Elen &gt; 0)</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-                multi_process_float(m,=
+ m-&gt;pending, sock);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-            }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-            process_incoming=
+_link_part2(c, lsi, orig_buf);</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (TUNNEL_TYPE(=
+m-&gt;top=2Ec1=2Etuntap) =3D=3D DEV_TYPE_TUN)</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-            /* extract packet source and dest addresses */</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-            mroute_flags =
+=3D</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                mr=
+oute_extract_addr_from_packet(&amp;src, &amp;dest, 0, &amp;c-&gt;c2=2Eto_tu=
+n, DEV_TYPE_TUN);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-            /* drop packe=
+t if extract failed */</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-            if (!(mroute_flags &amp; MROUTE_EXTRACT_SUCCEEDED))</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-                c-&gt;c2=2Eto_tun=2Elen =
+=3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-            /* make sur=
+e that source address is associated with this client */</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-            else if (multi_get_instance_b=
+y_virtual_addr(m, &amp;src, true) !=3D m-&gt;pending)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-                /* IPv6 link-local address (fe80::x=
+xx)? */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
+  if ((src=2Etype &amp; MR_ADDR_MASK) =3D=3D MR_ADDR_IPV6</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-                    &amp;&amp; IN6_IS_A=
+DDR_LINKLOCAL(&amp;src=2Ev6=2Eaddr))</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-                {</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-                    /* do nothing, for now=2E  TODO: add address=
+ learning */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+       }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
+   else</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
+  {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                  =
+  struct gc_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-                    msg(D_MULTI_DROPPED,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                        &quot;MULTI: bad so=
+urce address from client [%s], packet dropped&quot;,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                        mroute_addr_print(&=
+amp;src, &amp;gc));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+                  gc_free(&amp;gc);</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-                }</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-                c-&gt;c2=2Eto_tun=2Elen =3D 0;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-            /* client-to-client communication en=
+abled? */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+else if (m-&gt;enable_c2c)</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+             /* multicast? */</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-                if (mroute_flags &amp; MROUTE_EXTRACT_MCAST)</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-                {</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-                    /* for now, =
+treat multicast as broadcast */</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-                    multi_bcast(m, &amp;c-&gt;c2=2Eto_tun, m-&gt;=
+pending, 0);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+       }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
+   else /* possible client to client routing */</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-                {</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-                    ASSERT(!(mroute_flags &amp; MROUT=
+E_EXTRACT_BCAST));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+                 mi =3D multi_get_instance_by_virtual_addr(m, &amp;dest, tr=
+ue);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-                    /* if dest addr is=
+ a known client, route to it */</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-                    if (mi)</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-                    {</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-                        {</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-                            multi_unicast(m, &amp;c-&gt=
+;c2=2Eto_tun, mi);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+                         register_activity(c, BLEN(&amp;c-&gt;c2=2Eto_tun))=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    =
+    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                =
+        c-&gt;c2=2Eto_tun=2Elen =3D 0;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-                    }</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-                }</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+ else if (TUNNEL_TYPE(m-&gt;top=2Ec1=2Etuntap) =3D=3D DEV_TYPE_TAP)</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-            uint16_t vid =3D 0;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-            if (m-&gt;top=2Eoptions=2Evlan_tagging)<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-                if (vlan_is_ta=
+gged(&amp;c-&gt;c2=2Eto_tun))</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-                {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-                    /* Drop VLAN-tagged frame=2E */</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-                    msg(D_VLAN_DEBUG, &qu=
+ot;dropping incoming VLAN-tagged frame&quot;);</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-                    c-&gt;c2=2Eto_tun=2Elen =3D 0;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                }</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-                else</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-                {</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-                    vid =3D c-=
+&gt;options=2Evlan_pvid;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-                }</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+           }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+   /* extract packet source and dest addresses */</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-            mroute_flags =3D</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-                mroute_extract_addr_from=
+_packet(&amp;src, &amp;dest, vid, &amp;c-&gt;c2=2Eto_tun, DEV_TYPE_TAP);</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            if (mroute_flags &amp; MROUTE_E=
+XTRACT_SUCCEEDED)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+    if (multi_learn_addr(m, m-&gt;pending, &amp;src, 0) =3D=3D m-&gt;pendin=
+g)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                {</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    /* =
+check for broadcast */</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-                    if (m-&gt;enable_c2c)</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-                    {</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-                        if (mroute_flags &amp; (MROUTE=
+_EXTRACT_BCAST | MROUTE_EXTRACT_MCAST))</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-                        {</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-                            multi_bcast(m, &amp;c-&gt=
+;c2=2Eto_tun, m-&gt;pending, vid);</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-                        }</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-                        else /* try client-to-client routi=
+ng */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                =
+        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+                mi =3D multi_get_instance_by_virtual_addr(m, &amp;dest, fal=
+se);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-                            /* if dest=
+ addr is a known client, route to it */</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-                            if (mi)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                            {</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-                                mul=
+ti_unicast(m, &amp;c-&gt;c2=2Eto_tun, mi);</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-                                register_activity(c, B=
+LEN(&amp;c-&gt;c2=2Eto_tun));</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-                                c-&gt;c2=2Eto_tun=2Elen =3D 0;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-                          =
+  }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                  =
+      }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
+      }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
+  }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                el=
+se</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                {</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    str=
+uct gc_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-                    msg(D_MULTI_DROPPED,</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-                        &quot;MULTI: bad source =
+address from client [%s], packet dropped&quot;,</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-                        mroute_addr_print(&amp;sr=
+c, &amp;gc));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+            c-&gt;c2=2Eto_tun=2Elen =3D 0;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-                    gc_free(&amp;gc);</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-                }</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-            else</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-                c-&gt;c2=2Eto_tun=2Elen =3D 0;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        multi_process_incoming_link_data(m, floated, soc=
+k);</span><br><span>     }</span><br><span> </span><br><span>     /* postpr=
+ocess and set wakeup */</span><br><span></span><br></pre><p>To view, visit =
+<a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1722?usp=3Demail">chan=
+ge 1722</a>=2E To unsubscribe, or for help writing mail filters, visit <a h=
+ref=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E<=
+/p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemsc=
+ope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link i=
+temprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1722?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=
-=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-<div style=3D"dis=
-play:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Ger=
-rit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I8=
-07f398903ac2047530800c29949793c6f4f0ec9 </div>
-<div style=3D"display:none">=
- Gerrit-Change-Number: 1573 </div>
-<div style=3D"display:none"> Gerrit-Patc=
-hSet: 6 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arn=
-e-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Revi=
-ewer: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
-<div style=3D"dis=
-play:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=
-=2Enet&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenhe=
-ld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<=
+div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div sty=
+le=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:n=
+one"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Chan=
+ge-Id: I9f10d91407347faf32397535c95e2d80a1575bd5 </div>
+<div style=3D"displ=
+ay:none"> Gerrit-Change-Number: 1722 </div>
+<div style=3D"display:none"> Ge=
+rrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaistho=
+s &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Ge=
+rrit-Reviewer: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<div sty=
+le=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esou=
+rceforge=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: fl=
+ichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
 
 </body></html>
---YMm+7Ng1iZs=--
+--HFBCaYAzrD0=--
 
 
---===============4048614524496565568==
+--===============4892367972622372130==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============4048614524496565568==
+--===============4892367972622372130==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -1579,5 +1150,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============4048614524496565568==--
+--===============4892367972622372130==--
 
