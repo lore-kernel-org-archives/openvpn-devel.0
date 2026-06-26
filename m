@@ -4,69 +4,69 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9FBF3C43458
-	for <openvpn-devel@archiver.kernel.org>; Fri, 26 Jun 2026 15:30:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3F9C1C43211
+	for <openvpn-devel@archiver.kernel.org>; Fri, 26 Jun 2026 16:14:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
-	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	MIME-Version:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
+	List-Unsubscribe:List-Id:Subject:References:In-Reply-To:To:From:Message-Id:
+	Date:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=1mup4dMEPdIln5KXdCzq4XHDRjsrQKNO5Zm+FmxNUPA=; b=XUCPvvuzltYYK/RbRDQgGN60u0
-	IqV9Z6xKtmPoZDulhBFdGC3tizTHQgzGGrjbYOz5RHJvGeBspGr/xfVbku7tUc83ZBAZtTKuy70hS
-	T8Ax3RcP6LroBU8crWsVqcEdUd1DBkXj7yRdExdqyNKhCdofJeBPHbK4GwkWe6hzhkwM=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=kLdZL1/UNrQr4Q6rr4B2BQOqwbTBL0YzMB6PxywhoKc=; b=fMaPmU7P83J9+VKC311NNcVgUX
+	8t1yqX0EMCyUASzQqfoNhBnKj2mkIT9pW4GFPt4G0JSpQ3qAdNuO8fHq6IU5oWj6hrPUfg91WX/nX
+	Td+3425bgqlgddX7okXCTt88cSlgf5zpslZCA+HZb7Hb7zwNmQ2M6A353OXzki0InFNc=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wd8Vs-0007WH-CI;
-	Fri, 26 Jun 2026 15:30:37 +0000
+	id 1wd9CL-00066p-HW;
+	Fri, 26 Jun 2026 16:14:33 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1wd8VY-0007Vq-Li
+ (envelope-from <gert@chekov.greenie.muc.de>) id 1wd9C1-00066V-UJ
  for openvpn-devel@lists.sourceforge.net;
- Fri, 26 Jun 2026 15:30:23 +0000
+ Fri, 26 Jun 2026 16:14:13 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=V9vSu3C/sIYSvdNowAdX9Ev6DaW/6HC+v+QvsfN0bcQ=; b=YbdRtlvsqmT6LHAx/0x4OmyA42
- YjWjJyfoecczLjPMZxPpTALrRd3o7Fm97DXNicQPBXiy+ALtM64X0wPs+s69Kx+y3l6Mt8wMXegnI
- sS47bE/VRSDE8aGUKbX9erC4Rj2X/9cXuk/4GyaZBB6eJRJjGP8IUB98ZeEA663HfuAU=;
+ d=sourceforge.net; s=x; h=References:In-Reply-To:Subject:Cc:To:From:
+ Message-Id:Date:Sender:Reply-To:MIME-Version:Content-Type:
+ Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+ List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=Su96yoZ/jyyV2Pt4wdVuVMi1kyGQwHy2Ja63xrGM0bs=; b=Hl9usGEfkZ+/PIvTKuqUJcMc/T
+ hPgkbtU9x0PhH19sZIXWCbb1jqEkQZ7Q5EP8AMiKELkHUg+0yOZMuKJ2FTbUDk9MVaqdbOTjEqOmZ
+ zW04JR3m/F0ABMgq9gI7R1CNN86SmnAhwp3cWiiboGiYo/k21Fi5u8PIp5WPa8Udi1LQ=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ h=References:In-Reply-To:Subject:Cc:To:From:Message-Id:Date:Sender:Reply-To
+ :MIME-Version:Content-Type:Content-Transfer-Encoding:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=V9vSu3C/sIYSvdNowAdX9Ev6DaW/6HC+v+QvsfN0bcQ=; b=LurtpiDrYf9IOlNeFPZjVvhmTV
- 2vMbGvWAKwFWEj8tvyCrOQz65+740Roc5ylO2ZWNnZ118d1qG/YQJ8P0ihIvLnTUoo32eL3YuVmuh
- +0L1dFP8/tCepNqbizSKU2mo/wOXKq96GB/no8qTDwOkBBhrJeCNuvMMRA8SA889mCVE=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ bh=Su96yoZ/jyyV2Pt4wdVuVMi1kyGQwHy2Ja63xrGM0bs=; b=Eohk0MTCFDB9aepZMCBO9rJAPs
+ JoQ6i4YHb/npm8+CTX6pU4QUxJ3/+mIKuEzHlYyZ0miOaLD1Piswos42Fc2e1zpejDw1ttzDfSJqO
+ kEVN8K7ZdkTX2EYVmj/mMlb/VNTt5tE+AmPHkUKCR9Fv2tZdpBsxBdU36AntDynCbdoI=;
+Received: from chekov.greenie.muc.de ([193.149.48.178])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wd8VH-0008Hn-91 for openvpn-devel@lists.sourceforge.net;
- Fri, 26 Jun 2026 15:30:05 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 65QFTpXF029229
- for <openvpn-devel@lists.sourceforge.net>; Fri, 26 Jun 2026 17:29:51 +0200
+ id 1wd9By-0003ea-CL for openvpn-devel@lists.sourceforge.net;
+ Fri, 26 Jun 2026 16:14:12 +0000
+Received: from chekov.greenie.muc.de (localhost [IPv6:0:0:0:0:0:0:0:1])
+ by chekov.greenie.muc.de (8.18.2/8.18.1) with ESMTP id 65QGDxFW016962;
+ Fri, 26 Jun 2026 18:13:59 +0200 (CEST)
+ (envelope-from gert@chekov.greenie.muc.de)
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 65QFTp1w029227
- for openvpn-devel@lists.sourceforge.net; Fri, 26 Jun 2026 17:29:51 +0200
+ by chekov.greenie.muc.de (8.18.2/8.18.1/Submit) id 65QGDxC8016961;
+ Fri, 26 Jun 2026 18:13:59 +0200 (CEST) (envelope-from gert)
+Date: Fri, 26 Jun 2026 18:13:59 +0200 (CEST)
+Message-Id: <202606261613.65QGDxC8016961@chekov.greenie.muc.de>
 From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Fri, 26 Jun 2026 17:29:46 +0200
-Message-ID: <20260626152951.29207-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1782486295000.Ifefb3ad204c0c16cb4952dd6e8661fdc9136b125@gerrit.openvpn.net>
-References: <gerrit.1782486295000.Ifefb3ad204c0c16cb4952dd6e8661fdc9136b125@gerrit.openvpn.net>
-MIME-Version: 1.0
-X-Headers-End: 1wd8VH-0008Hn-91
-Subject: [Openvpn-devel] [PATCH v2] Make get_random return int64 instead of
- long
+To: Arne Schwabe <arne@rfc2549.org>
+X-Patchwork-State: Accepted
+In-Reply-To: <20260626152951.29207-1-gert@greenie.muc.de>
+References: <20260626152951.29207-1-gert@greenie.muc.de>
+X-Headers-End: 1wd9By-0003ea-CL
+Subject: [Openvpn-devel] [PATCH applied] Re: Make get_random return int64
+ instead of long
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -78,94 +78,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Cc: openvpn-devel@lists.sourceforge.net
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Arne Schwabe <arne@rfc2549.org>
+This needs a bit of explanation - on a 64 bit platform, this changes
+exactly nothing.  On 32 bit platforms (which we still support and test)
+this ensures that the file names follow the same format and have the
+same amount of randomness as on 64 bit platforms.  This in itself 
+is an "improvement", not a "bugfix" - but there is a CVE bugfix coming,
+which brings a unit test with it that verifies "will generated file
+names be what we expect here?" - and that test fails on 32 bit
+platforms, because, different filenames.
 
-This avoids having get_ranomd being different on 32bit/Windows vs
-64 bit Unix platform. Also adjust platform_create_temp_file to
-create the same files on all platforms.
+One could have adjusted the unit test ("#ifdef 32BIT"), but we decided
+to go for "consistent file names across all platforms" - and since the
+bugfix has to go back to 2.5 :-( this one also goes back all the way.
 
-Change-Id: Ifefb3ad204c0c16cb4952dd6e8661fdc9136b125
-Signed-off-by: Arne Schwabe <arne@rfc2549.org>
-Acked-by: Gert Doering <gert@greenie.muc.de>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1732
----
+Tested on the offending 32 bit platform (NetBSD) with the offending
+unit test, and BB + GHA tested all the rest.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Your patch has been applied to the master, release/2.7, release/2.6
+and release/2.5 branch.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1732
-This mail reflects revision 2 of this Change.
+commit 712f3d61488a47e80577112489e9e9f98a32aac6 (master)
+commit 4558e23156b67ccad389b0594b8d7097c03db999 (release/2.7)
+commit bab5ee23e06a5ae1c266ddcd74f8ac09b91eed17 (release/2.6)
+commit 8d590a16da67b26971109471ed1aa8afcbfc71c1 (release/2.5)
+Author: Arne Schwabe
+Date:   Fri Jun 26 17:29:46 2026 +0200
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@greenie.muc.de>
+     Make get_random return int64 instead of long
 
-        
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index 7954e8a..3d79fe5 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -1731,11 +1731,12 @@
-     ASSERT(rand_bytes(output, len));
- }
- 
--/* an analogue to the random() function, but use prng_bytes */
--long int
-+/* an analogue to the random() function, but use prng_bytes and
-+ * also int64_t instead of long to avoid LLP64 vs LP64 */
-+int64_t
- get_random(void)
- {
--    long int l;
-+    int64_t l;
-     prng_bytes((unsigned char *)&l, sizeof(l));
-     if (l < 0)
-     {
-diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
-index fbca2a0..ee5b50f 100644
---- a/src/openvpn/crypto.h
-+++ b/src/openvpn/crypto.h
-@@ -603,8 +603,13 @@
-  */
- void prng_bytes(uint8_t *output, int len);
- 
--/* an analogue to the random() function, but use prng_bytes */
--long int get_random(void);
-+/**
-+ * an analogue to the random() function, but use prng_bytes and
-+ * also int64_t instead of long to avoid LLP64 vs LP64
-+ *
-+ * @return Returns a random positive 63 bit integer
-+ */
-+int64_t get_random(void);
- 
- /** Print a cipher list entry */
- void print_cipher(const char *cipher);
-diff --git a/src/openvpn/platform.c b/src/openvpn/platform.c
-index 9fa9363..85b6408 100644
---- a/src/openvpn/platform.c
-+++ b/src/openvpn/platform.c
-@@ -543,7 +543,7 @@
-     const char *retfname = NULL;
-     unsigned int attempts = 0;
-     char fname[256] = { 0 };
--    const char *fname_fmt = PACKAGE "_%.*s_%08lx%08lx.tmp";
-+    const char *fname_fmt = PACKAGE "_%.*s_%08" PRIx64 "%08" PRIx64 ".tmp";
-     const int max_prefix_len = sizeof(fname) - (sizeof(PACKAGE) + 7 + (2 * 8));
- 
-     while (attempts < 6)
-@@ -551,7 +551,7 @@
-         ++attempts;
- 
-         if (!checked_snprintf(fname, sizeof(fname), fname_fmt, max_prefix_len, prefix,
--                              (unsigned long)get_random(), (unsigned long)get_random()))
-+                              get_random(), get_random()))
-         {
-             msg(M_WARN, "ERROR: temporary filename too long");
-             return NULL;
+     Signed-off-by: Arne Schwabe <arne@rfc2549.org>
+     Acked-by: Gert Doering <gert@greenie.muc.de>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1732
+     Message-Id: <20260626152951.29207-1-gert@greenie.muc.de>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg37322.html
+     Signed-off-by: Gert Doering <gert@greenie.muc.de>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
 
 _______________________________________________
