@@ -4,68 +4,68 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 199B3C43458
-	for <openvpn-devel@archiver.kernel.org>; Sun, 28 Jun 2026 15:03:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E0D20C43458
+	for <openvpn-devel@archiver.kernel.org>; Sun, 28 Jun 2026 20:33:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
-	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	MIME-Version:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
+	List-Unsubscribe:List-Id:Subject:References:In-Reply-To:To:From:Message-Id:
+	Date:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=pKLuTtEWzMPAwtckPm+Cy0OzoXPmCPaxI7XYvfBgJag=; b=XBeWlUwxYSK/dSQtnr1AcUMXyE
-	KsqXUUIyH4ftdLfmLSv9hPeUiZy7SAwTBXqRd0UpmKERRq+lzWK0qfn6exg6QSq8hNFvQXR5hdkgY
-	SdV41kf3ofutT7TI6OcfQ39CrxhNlo0hvfXyFE6+8rMEHJiZbuLFcB8KMU2uWbX7bcVA=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=6Pex9xL5WB2Hq9Vobq3/qmaFh+XGs1PqBqPEhI8TS0o=; b=Dew6fDzWpA4jAPtWyykYfOnzCr
+	NjuTg9WrrkNjg1GjTEFnahGia4KZexGrcKDuvBtGRc1nwLwd+XL85jWTJxNOp5Rdwe3fDhhaTpVGZ
+	2bYyfoQPqZ32P65taJ/zwxpAFUkXpTporzydL/1g2jebXI6ROo6M+IHi5uisa5YmwdWo=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wdr2j-0002Tw-3V;
-	Sun, 28 Jun 2026 15:03:33 +0000
+	id 1wdwC5-0002ti-3f;
+	Sun, 28 Jun 2026 20:33:30 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1wdr2i-0002Tp-BU
+ (envelope-from <gert@chekov.greenie.muc.de>) id 1wdwC3-0002tc-FD
  for openvpn-devel@lists.sourceforge.net;
- Sun, 28 Jun 2026 15:03:33 +0000
+ Sun, 28 Jun 2026 20:33:29 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=gYpL7gylVKE/3eRwKAiBpll7TNeuoPIsn/dgwR8kxoA=; b=VlinJxSAKSIosWqLV5WETWwqIt
- ES3gykAil6PVfTUdu5zKksAyQvTgoLwtDXFExMWtJn/C3mzbqe/tY8R79b9K1JgJFnmyOQ+XZ7A2D
- KU8ZIesPp0JDqFXNSBPSUeVhmslMad+4Ccqw4/Nc6MOHR0kujG//CVLptoLtII31wr1I=;
+ d=sourceforge.net; s=x; h=References:In-Reply-To:Subject:Cc:To:From:
+ Message-Id:Date:Sender:Reply-To:MIME-Version:Content-Type:
+ Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+ List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=xeA+LGPhovCwRIYz5OZf12zg3rdXmGu9c59dIFK+RHM=; b=eAPex0gi3JVvjL34vZ+DlvNuea
+ fJrxQy3pHIWohKWrJkLxEjIz94tz47CfwhD5C0ugdiSM+kaWHXkk3nDV6VE9yYaG5YWQst5LDlKb5
+ h/ysqanPAJdpqKewv4dy8Nke7eXE6mTnf3r44bd6urntL8AnexIRcoWnmUOUZ640S2jk=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ h=References:In-Reply-To:Subject:Cc:To:From:Message-Id:Date:Sender:Reply-To
+ :MIME-Version:Content-Type:Content-Transfer-Encoding:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=gYpL7gylVKE/3eRwKAiBpll7TNeuoPIsn/dgwR8kxoA=; b=BD/zl2PxGOcj3yELfZWyAWycSp
- tJHYRycOh2ZtjJajQwIoDJ0urirCGjqE6IRtN7eiyUD55RHOLyto/GIsD0ssKoUNE665QNBT12Fgl
- M9ntQ/TFnz3tXaTIwtHGlbGU5GDro/Kea6V6wAIXEAaX5kxZdhtATpJbBDdcrbEdteLg=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ bh=xeA+LGPhovCwRIYz5OZf12zg3rdXmGu9c59dIFK+RHM=; b=GKq0VBHVsUoogpkuDXXQZyAmH3
+ 71qLwKmBzufQ2vjI0Vq7NwcZFZtmlu4F+XrgonzQAQsWmUWJA30DbA97t2hONxRpOBkdYJOtzVkYy
+ KWGnkJh/BWobX1LJ7vPD8lZb0YKlaRDwcFnEouxdUpHWqYgngMXGj38qOIgajZ9wi7EI=;
+Received: from chekov.greenie.muc.de ([193.149.48.178])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wdr2h-0006w2-KV for openvpn-devel@lists.sourceforge.net;
- Sun, 28 Jun 2026 15:03:32 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 65SF3KlB013267
- for <openvpn-devel@lists.sourceforge.net>; Sun, 28 Jun 2026 17:03:20 +0200
+ id 1wdwBy-0003P5-Db for openvpn-devel@lists.sourceforge.net;
+ Sun, 28 Jun 2026 20:33:28 +0000
+Received: from chekov.greenie.muc.de (localhost [IPv6:0:0:0:0:0:0:0:1])
+ by chekov.greenie.muc.de (8.18.2/8.18.1) with ESMTP id 65SKXFTH017671;
+ Sun, 28 Jun 2026 22:33:15 +0200 (CEST)
+ (envelope-from gert@chekov.greenie.muc.de)
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 65SF3KVD013266
- for openvpn-devel@lists.sourceforge.net; Sun, 28 Jun 2026 17:03:20 +0200
+ by chekov.greenie.muc.de (8.18.2/8.18.1/Submit) id 65SKXFGT017670;
+ Sun, 28 Jun 2026 22:33:15 +0200 (CEST) (envelope-from gert)
+Date: Sun, 28 Jun 2026 22:33:15 +0200 (CEST)
+Message-Id: <202606282033.65SKXFGT017670@chekov.greenie.muc.de>
 From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Sun, 28 Jun 2026 17:03:15 +0200
-Message-ID: <20260628150320.13244-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1775130235000.I355760e43c3e2da0dda0cdec6e4253c028cefe38@gerrit.openvpn.net>
-References: <gerrit.1775130235000.I355760e43c3e2da0dda0cdec6e4253c028cefe38@gerrit.openvpn.net>
-MIME-Version: 1.0
-X-Headers-End: 1wdr2h-0006w2-KV
-Subject: [Openvpn-devel] [PATCH v6] Fix building wolfSSL with CMake
+To: Arne Schwabe <arne@rfc2549.org>
+X-Patchwork-State: Accepted
+In-Reply-To: <20260628150320.13244-1-gert@greenie.muc.de>
+References: <20260628150320.13244-1-gert@greenie.muc.de>
+X-Headers-End: 1wdwBy-0003P5-Db
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix building wolfSSL with CMake
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -77,60 +77,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Cc: openvpn-devel@lists.sourceforge.net
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Arne Schwabe <arne@rfc2549.org>
+CMake build system only, ACK from Frank, buildbot is happy with it
+(= it does not break anything - we do not have WolfSSL buildbots
+today to actually test this).
 
-Change-Id: I355760e43c3e2da0dda0cdec6e4253c028cefe38
-Signed-off-by: Arne Schwabe <arne@rfc2549.org>
-Acked-by: Frank Lichtenheld <frank@lichtenheld.com>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1604
----
+Your patch has been applied to the master branch.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+commit 9e2f3843df1cdacffb20f7ca4e6aba6a784acb05
+Author: Arne Schwabe
+Date:   Sun Jun 28 17:03:15 2026 +0200
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1604
-This mail reflects revision 6 of this Change.
+     Fix building wolfSSL with CMake
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@lichtenheld.com>
+     Signed-off-by: Arne Schwabe <arne@rfc2549.org>
+     Acked-by: Frank Lichtenheld <frank@lichtenheld.com>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1604
+     Message-Id: <20260628150320.13244-1-gert@greenie.muc.de>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg37342.html
+     Signed-off-by: Gert Doering <gert@greenie.muc.de>
 
-        
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 715d02c..4779d69 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -327,6 +327,7 @@
-     elseif (${WOLFSSL})
-         pkg_search_module(wolfssl wolfssl REQUIRED)
-         target_link_libraries(${target} PUBLIC ${wolfssl_LINK_LIBRARIES})
-+        target_include_directories(${target} PRIVATE ${wolfssl_INCLUDE_DIRS})
-         target_include_directories(${target} PRIVATE ${wolfssl_INCLUDE_DIRS}/wolfssl)
-     else ()
-         find_package(OpenSSL REQUIRED)
-@@ -367,6 +368,7 @@
- elseif (${WOLFSSL})
-     set(ENABLE_CRYPTO_OPENSSL YES)
-     set(ENABLE_CRYPTO_WOLFSSL YES)
-+    set(EXTERNAL_OPTS_OPENVPN YES)
- else ()
-     set(ENABLE_CRYPTO_OPENSSL YES)
- endif ()
-diff --git a/config.h.cmake.in b/config.h.cmake.in
-index ae1d264..34f289d 100644
---- a/config.h.cmake.in
-+++ b/config.h.cmake.in
-@@ -13,6 +13,7 @@
- 
- /* Use wolfSSL crypto library */
- #cmakedefine ENABLE_CRYPTO_WOLFSSL
-+#cmakedefine EXTERNAL_OPTS_OPENVPN
- 
- /* Enable shared data channel offload */
- #cmakedefine ENABLE_DCO
+
+--
+kind regards,
+
+Gert Doering
+
 
 
 _______________________________________________
