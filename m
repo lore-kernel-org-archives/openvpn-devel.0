@@ -4,37 +4,37 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id AB92CC43458
-	for <openvpn-devel@archiver.kernel.org>; Sun, 28 Jun 2026 13:03:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 43E6BC43458
+	for <openvpn-devel@archiver.kernel.org>; Sun, 28 Jun 2026 13:05:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=eNRYkIgdjUg4oNCxi9bKIuEwVKNlKy2nmm794TN146o=; b=lJn2cLdEA5bJdJEqQGppzJa4gp
-	4D7SVajGbPDXQNa4ycVd9FpodI6FnQcg80tJdfXX2r0RG374ks2V4ekQGk5XNAgtOm2do6oYoRIhk
-	Zst9HGlIA7ZJ6EnjHqmW9RQKlui0fmhNYDX9LGVTxcvjDfLugdxqDRLrgKQR2Ox0KuKg=;
+	bh=Ok5hu2BloZep3Cav6THpnZ9GiubDcBGR1HIMvCaCV0I=; b=msv0zTqTa7odeCwXeraknECRcw
+	J8/fT/gXt1iMN8va1VKKXTw9/N9s3raaQAQbvlZYpdoHaDEtLSX38Bi65tpo7uCMOMJ4uOwMPpmgV
+	em3zB0cRKxtWmbuinK38A3LLN9fdm0jMXmH6iE5UqFkQ3DpwZviSKtxG344wJFncG7m0=;
 Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
 	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wdpAC-0000jB-Tl;
-	Sun, 28 Jun 2026 13:03:06 +0000
+	id 1wdpCd-0000pb-Du;
+	Sun, 28 Jun 2026 13:05:36 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1wdpAB-0000j5-HX
+ (envelope-from <gert@blue4.greenie.muc.de>) id 1wdpCK-0000pG-62
  for openvpn-devel@lists.sourceforge.net;
- Sun, 28 Jun 2026 13:03:05 +0000
+ Sun, 28 Jun 2026 13:05:17 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
  In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=y25TNpAxfnCsX62zXDqlzuG1G6KtZ+sk6GMJbdAmtS8=; b=CHOZ+OmgQkO2D6PYw99Erzawwi
- nsbjdFFS7HD0ffV3FZEnsjGFmCMSVqXj29Z7erBz0GlNEl32ZYQb81ao6COrFdvi8Bnk1Es7jS9lA
- PDpfTiF+iuEuQNfDfsOYq4LLomF1aBA+UH13NsG7zoYZl7a1I/1tKiXw5X5N8nK75Htw=;
+ bh=IhKSop+rVYaBkmFqISxExgB9YjnWo+SBviaaODoXeqY=; b=PtcTrxO5bDzs1s8H0Sap787Kn3
+ ICp415GWbME8zPZytyDQlXae5c8FoqOV78UHu6vHAgYbb03Bj2KlfuCXvITo3BokF0IT19sdQEzVO
+ tj1f8y7KhH6pOgciqJIgjSqR305X79AGArtHVm+fQYsahPqZRkBeS1kdidbO3Lqbdyi0=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -42,31 +42,31 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=y25TNpAxfnCsX62zXDqlzuG1G6KtZ+sk6GMJbdAmtS8=; b=D6pZigRJR/GcK/bQ8cGFZaBpLj
- lg7GKXuiRnDsoKb2heo6WXybbTyq4cIZx6vO2A9icdKoGj+CI8nCHvR7pTHsV0tmY6+6VihNnwC9B
- PHnlP0IMv1wqhJEEDjgKvefESAacTBblxskMosL/txqqZycLpNTOtz/anO59oCPc3iRQ=;
+ bh=IhKSop+rVYaBkmFqISxExgB9YjnWo+SBviaaODoXeqY=; b=YASqISFcxAeSLkGEITj5GafWHS
+ gixZm4MmSSQWP593MXBsssQ3OzFNhq1mYuGgoJi0Wzw1VtvuAisCGxVmjMvUe6HhdBosJQvW836mF
+ y2hPwRQb4GIQXOQNj+6Q7EzMuGJx5PAIQs5gbQDTZVWhBaqik3zp8D0IgqBQrKEvQl9s=;
 Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wdpA6-0007GG-KB for openvpn-devel@lists.sourceforge.net;
- Sun, 28 Jun 2026 13:03:05 +0000
+ id 1wdpCD-0007SH-J4 for openvpn-devel@lists.sourceforge.net;
+ Sun, 28 Jun 2026 13:05:15 +0000
 Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 65SD2tCP025472
- for <openvpn-devel@lists.sourceforge.net>; Sun, 28 Jun 2026 15:02:55 +0200
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 65SD52Si026117
+ for <openvpn-devel@lists.sourceforge.net>; Sun, 28 Jun 2026 15:05:02 +0200
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 65SD2tSP025471
- for openvpn-devel@lists.sourceforge.net; Sun, 28 Jun 2026 15:02:55 +0200
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 65SD52pO026116
+ for openvpn-devel@lists.sourceforge.net; Sun, 28 Jun 2026 15:05:02 +0200
 From: Gert Doering <gert@greenie.muc.de>
 To: openvpn-devel@lists.sourceforge.net
-Date: Sun, 28 Jun 2026 15:02:50 +0200
-Message-ID: <20260628130255.25452-1-gert@greenie.muc.de>
+Date: Sun, 28 Jun 2026 15:04:55 +0200
+Message-ID: <20260628130500.26086-1-gert@greenie.muc.de>
 X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1782264341000.I8c67633ed3d82a6dc50fbd8fa1af2c50fc45d938@gerrit.openvpn.net>
-References: <gerrit.1782264341000.I8c67633ed3d82a6dc50fbd8fa1af2c50fc45d938@gerrit.openvpn.net>
+In-Reply-To: <gerrit.1782134588000.I6a032465e66b49ab0ce8b1a84ead8d9acef918de@gerrit.openvpn.net>
+References: <gerrit.1782134588000.I6a032465e66b49ab0ce8b1a84ead8d9acef918de@gerrit.openvpn.net>
 MIME-Version: 1.0
-X-Headers-End: 1wdpA6-0007GG-KB
-Subject: [Openvpn-devel] [PATCH v5] openvpnserv: rework ConvertItfDnsDomains
- and tests
+X-Headers-End: 1wdpCD-0007SH-J4
+Subject: [Openvpn-devel] [PATCH v3] Extract handle_connection_attempt from
+ multi_get_create_instance_udp
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -82,376 +82,171 @@ Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Heiko Hund <heiko@ist.eigentlich.net>
+From: Arne Schwabe <arne@rfc2549.org>
 
-Since there were issues with in-place modification of the buffer
-repeatedly, re-implement ConvertItfDnsDomains() to use a internal
-temporary buffer to prevent use of memmove and the length calculations
-that come with it. Code should be easier to grasp since we're dealing
-with one set of lengths (WCHARs) instead of two (WCHARs + octets) now.
+The multi_get_create_instance_udp is quite large. This factors out the
+one branch that handles and creates new connection attempts.
 
-The unit tests did not actually test the MULTI_SZs correctly, fixed
-that and also added some more tests to cover more scenarios.
-
-Change-Id: I8c67633ed3d82a6dc50fbd8fa1af2c50fc45d938
-Signed-off-by: Heiko Hund <heiko@ist.eigentlich.net>
-Acked-by: Lev Stipakov <lstipakov@gmail.com>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1730
+Change-Id: I6a032465e66b49ab0ce8b1a84ead8d9acef918de
+Signed-off-by: Arne Schwabe <arne@rfc2549.org>
+Acked-by: Frank Lichtenheld <frank@lichtenheld.com>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1720
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1730
-This mail reflects revision 5 of this Change.
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1720
+This mail reflects revision 3 of this Change.
 
 Acked-by according to Gerrit (reflected above):
-Lev Stipakov <lstipakov@gmail.com>
+Frank Lichtenheld <frank@lichtenheld.com>
 
         
-diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index 788a578..516a469 100644
---- a/src/openvpnserv/interactive.c
-+++ b/src/openvpnserv/interactive.c
-@@ -33,6 +33,7 @@
- #include <shellapi.h>
- #include <mstcpip.h>
- #include <inttypes.h>
-+#include <malloc.h>
+diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
+index b1de446..7d4fee1 100644
+--- a/src/openvpn/mudp.c
++++ b/src/openvpn/mudp.c
+@@ -194,12 +194,81 @@
+     return false;
+ }
  
- #include <versionhelpers.h>
- 
-@@ -2130,22 +2131,20 @@
- static BOOL
- ListContainsDomain(PCWSTR list, PCWSTR domain, size_t len)
- {
--    PCWSTR match = list;
--    while (match)
-+    PCWSTR entry = list;
-+    while (entry && *entry)
-     {
--        match = wcsstr(match, domain);
--        if (!match)
-+        PCWSTR comma = wcschr(entry, L',');
-+        size_t entry_len = comma ? (size_t)(comma - entry) : wcslen(entry);
-+        if (entry_len == len && wcsncmp(entry, domain, len) == 0)
-         {
--            /* Domain has not matched */
--            break;
--        }
--        if ((match == list || *(match - 1) == ',')
--            && (*(match + len) == ',' || *(match + len) == '\0'))
--        {
--            /* Domain has matched fully */
-             return TRUE;
-         }
--        match += len;
-+        if (!comma)
+-/*
++/**
++ * Handles a packet if no existing session exists for this incoming packet.
++ *
++ * It will either send a reply with a hmac cookie if this is the first
++ * packet of a three-way handshake or create a multi_instance if it is a
++ * packet that completes the three-way handshake.
++ */
++static struct multi_instance *
++handle_connection_attempt(struct multi_context *m,
++                          struct link_socket *sock,
++                          struct mroute_addr *real,
++                          const uint64_t hv,
++                          struct hash_bucket *bucket)
++{
++    struct hash *hash = m->hash;
++    struct tls_pre_decrypt_state state = { 0 };
++    struct multi_instance *mi = NULL;
++    struct gc_arena gc = gc_new();
++
++    if (m->deferred_shutdown_signal.signal_received)
++    {
++        msg(D_MULTI_ERRORS,
++            "MULTI: Connection attempt from %s ignored while server is "
++            "shutting down",
++            mroute_addr_print(real, &gc));
++    }
++    else if (do_pre_decrypt_check(m, &state, *real, sock))
++    {
++        /* This is an unknown session but with valid tls-auth/tls-crypt
++         * (or no auth at all).  If this is the initial packet of a
++         * session, we just send a reply with a HMAC session id and
++         * do not generate a session slot */
++
++        if (frequency_limit_event_allowed(m->new_connection_limiter))
 +        {
-+            break;
-+        }
-+        entry = comma + 1;
-     }
-     return FALSE;
- }
-@@ -2159,95 +2158,94 @@
-  * are invalid.
-  * Note that domains are deleted from the string if they match a search domain.
-  *
-- * @param[in]     search_domains  optional list of search domains
-+ * @param[in]     search_domains  optional string of comma separated search domains
-  * @param[in,out] domains         buffer that contains the input comma-separated
-  *                                string and will contain the MULTI_SZ output string
-  * @param[in,out] size            pointer to size of the input string in bytes. Will be
-  *                                set to the size of the string returned, including
-  *                                the terminating zeros or 0.
-- * @param[in]     buf_size        size of the \p domains buffer
-+ * @param[in]     capacity        capacity of the \p domains buffer in bytes
-  *
-- * @return LSTATUS NO_ERROR if the domain suffix(es) were read successfully,
-- *         ERROR_FILE_NOT_FOUND if no domain was found for the interface,
-- *         ERROR_MORE_DATA if the list did not fit into the buffer
-+ * @return LSTATUS NO_ERROR if all domain suffix(es) were converted successfully,
-+ *         ERROR_FILE_NOT_FOUND if no domain was left after the conversion,
-+ *         ERROR_MORE_DATA if not all converted domains did fit into the buffer.
-+ *         ERROR_OUTOFMEMORY if the temporary buffer could not be allocated.
-  */
- static LSTATUS
--ConvertItfDnsDomains(PCWSTR search_domains, PWSTR domains, PDWORD size, const DWORD buf_size)
-+ConvertItfDnsDomains(PCWSTR search_domains, PWSTR domains, PDWORD size, const DWORD capacity)
- {
--    const DWORD glyph_size = sizeof(*domains);
--    const DWORD buf_len = buf_size / glyph_size;
-+    const size_t glyph_size = sizeof(*domains);
-+    const size_t max_len = (size_t)capacity / glyph_size;
- 
--    /*
--     * Found domain(s), now convert them:
--     *   - prefix each domain with a dot
--     *   - convert comma separated list to MULTI_SZ
--     */
--    PWCHAR pos = domains;
--    while (TRUE)
-+    /* Space required for leading dot and two terminating zeros */
-+    const size_t dot_len = 1;
-+    const size_t term_len = 2;
++            /* a successful three-way handshake only counts against
++             * connect-freq but not against connect-freq-initial */
++            reflect_filter_rate_limit_decrease(m->initial_rate_limiter);
 +
-+    LSTATUS ret = NO_ERROR;
-+    size_t tmp_len = 0;
-+    WCHAR *tmp = malloc(capacity);
-+    if (tmp == NULL)
-     {
--        /* Terminate the domain at the next comma */
--        PWCHAR comma = wcschr(pos, ',');
--        if (comma)
-+        ret = ERROR_OUTOFMEMORY;
-+        goto done;
-+    }
-+
-+    PWCHAR tmp_pos = tmp;
-+    PCWCHAR domain = domains;
-+
-+    while (domain && *domain)
-+    {
-+        PWCHAR comma = wcschr(domain, L',');
-+        size_t domain_len = comma ? (size_t)(comma - domain) : wcslen(domain);
-+
-+        if (ListContainsDomain(search_domains, domain, domain_len))
-         {
--            *comma = '\0';
-+            /* Skip this domain */
-+            domain = comma ? comma + 1 : domain + domain_len;
-+            continue;
-         }
- 
--        DWORD domain_len = (DWORD)wcslen(pos);
--        DWORD domain_size = domain_len * glyph_size;
--        DWORD converted_size = (DWORD)(pos - domains) * glyph_size;
--
--        /* Ignore itf domains which match a pushed search domain */
--        if (ListContainsDomain(search_domains, pos, domain_len))
--        {
--            if (comma)
--            {
--                /* Overwrite the ignored domain with remaining one(s) */
--                memmove(pos, comma + 1, buf_size - converted_size);
--                *size -= domain_size + glyph_size;
--                continue;
--            }
--            else
--            {
--                /* This was the last domain */
--                *pos = '\0';
--                *size -= domain_size;
--                return wcslen(domains) ? NO_ERROR : ERROR_FILE_NOT_FOUND;
--            }
--        }
--
--        /* Add space for the leading dot */
--        domain_len += 1;
--        domain_size += glyph_size;
--
--        /* Space for the terminating zeros */
--        const DWORD extra_size = 2 * glyph_size;
--
-         /* Check for enough space to convert this domain */
--        if (converted_size + domain_size + extra_size > buf_size)
-+        if (tmp_len + dot_len + domain_len + term_len > max_len)
-         {
-             /* Domain doesn't fit, bad luck if it's the first one */
--            *pos = '\0';
--            *size = converted_size == 0 ? 0 : converted_size + glyph_size;
--            return ERROR_MORE_DATA;
-+            *tmp_pos = L'\0';
-+            if (tmp_len > 0)
++            mi = multi_create_instance(m, real, sock);
++            if (mi)
 +            {
-+                tmp_len += 1;
++                hash_add_fast(hash, bucket, &mi->real, hv, mi);
++                mi->did_real_hash = true;
++                multi_assign_peer_id(m, mi);
++
++                /* If we have a session id already, ensure that the
++                 * state is using the same */
++                if (session_id_defined(&state.server_session_id)
++                    && session_id_defined((&state.peer_session_id)))
++                {
++                    mi->context.c2.tls_multi->n_sessions++;
++                    struct tls_session *session =
++                        &mi->context.c2.tls_multi->session[TM_INITIAL];
++                    session_skip_to_pre_start(session, &state, &m->top.c2.from);
++                }
 +            }
-+            ret = ERROR_MORE_DATA;
-+            goto done;
++        }
++        else
++        {
++            msg(D_MULTI_ERRORS,
++                "MULTI: Connection from %s would exceed new connection frequency limit as controlled by --connect-freq",
++                mroute_addr_print(real, &gc));
++        }
++    }
++    free_tls_pre_decrypt_state(&state);
++    gc_free(&gc);
++    return mi;
++}
++
++/**
+  * Get a client instance based on real address.  If
+  * the instance doesn't exist, create it while
+  * maintaining real address hash table atomicity.
+  */
+-
+ struct multi_instance *
+ multi_get_create_instance_udp(struct multi_context *m, bool *floated, struct link_socket *sock)
+ {
+@@ -258,54 +327,7 @@
+         /* we have no existing multi instance for this connection */
+         if (!mi)
+         {
+-            struct tls_pre_decrypt_state state = { 0 };
+-            if (m->deferred_shutdown_signal.signal_received)
+-            {
+-                msg(D_MULTI_ERRORS,
+-                    "MULTI: Connection attempt from %s ignored while server is "
+-                    "shutting down",
+-                    mroute_addr_print(&real, &gc));
+-            }
+-            else if (do_pre_decrypt_check(m, &state, real, sock))
+-            {
+-                /* This is an unknown session but with valid tls-auth/tls-crypt
+-                 * (or no auth at all).  If this is the initial packet of a
+-                 * session, we just send a reply with a HMAC session id and
+-                 * do not generate a session slot */
+-
+-                if (frequency_limit_event_allowed(m->new_connection_limiter))
+-                {
+-                    /* a successful three-way handshake only counts against
+-                     * connect-freq but not against connect-freq-initial */
+-                    reflect_filter_rate_limit_decrease(m->initial_rate_limiter);
+-
+-                    mi = multi_create_instance(m, &real, sock);
+-                    if (mi)
+-                    {
+-                        hash_add_fast(hash, bucket, &mi->real, hv, mi);
+-                        mi->did_real_hash = true;
+-                        multi_assign_peer_id(m, mi);
+-
+-                        /* If we have a session id already, ensure that the
+-                         * state is using the same */
+-                        if (session_id_defined(&state.server_session_id)
+-                            && session_id_defined((&state.peer_session_id)))
+-                        {
+-                            mi->context.c2.tls_multi->n_sessions++;
+-                            struct tls_session *session =
+-                                &mi->context.c2.tls_multi->session[TM_INITIAL];
+-                            session_skip_to_pre_start(session, &state, &m->top.c2.from);
+-                        }
+-                    }
+-                }
+-                else
+-                {
+-                    msg(D_MULTI_ERRORS,
+-                        "MULTI: Connection from %s would exceed new connection frequency limit as controlled by --connect-freq",
+-                        mroute_addr_print(&real, &gc));
+-                }
+-            }
+-            free_tls_pre_decrypt_state(&state);
++            mi = handle_connection_attempt(m, sock, &real, hv, bucket);
          }
  
--        /* Prefix domain at pos with the dot */
--        memmove(pos + 1, pos, buf_size - converted_size - glyph_size);
--        domains[buf_len - 1] = '\0';
--        *pos = '.';
--        *size += glyph_size;
-+        /* Write leading dot and domain into tmp buffer */
-+        *tmp_pos++ = L'.';
-+        wcsncpy(tmp_pos, domain, domain_len);
-+        tmp_pos += domain_len;
-+        *tmp_pos++ = L'\0';
-+        tmp_len += dot_len + domain_len + 1;
- 
--        if (!comma)
--        {
--            /* Conversion is done */
--            *(pos + domain_len) = '\0';
--            *size += glyph_size;
--            return NO_ERROR;
--        }
--
--        /* Comma pos is now +1 after adding leading dot */
--        pos = comma + 2;
-+        domain = comma ? comma + 1 : domain + domain_len;
-     }
-+
-+    if (tmp_len == 0)
-+    {
-+        ret = ERROR_FILE_NOT_FOUND;
-+        goto done;
-+    }
-+
-+    /* REG_MULTI_SZ second zero terminator */
-+    *tmp_pos = L'\0';
-+    tmp_len += 1;
-+
-+done:
-+    if (tmp)
-+    {
-+        wmemcpy(domains, tmp, tmp_len);
-+        free(tmp);
-+    }
-+    *size = (DWORD)(tmp_len * glyph_size);
-+    return ret;
- }
- 
- /**
-diff --git a/tests/unit_tests/openvpnserv/test_openvpnserv.c b/tests/unit_tests/openvpnserv/test_openvpnserv.c
-index 45096a1..e432f44 100644
---- a/tests/unit_tests/openvpnserv/test_openvpnserv.c
-+++ b/tests/unit_tests/openvpnserv/test_openvpnserv.c
-@@ -48,58 +48,109 @@
-     assert_true(ListContainsDomain(domain, domain, domain_len));
-     assert_true(ListContainsDomain(L"openvpn.com,openvpn.net", domain, domain_len));
-     assert_true(ListContainsDomain(L"openvpn.net,openvpn.com", domain, domain_len));
-+    assert_true(ListContainsDomain(L"openvpn.org,openvpn.net,openvpn.com", domain, domain_len));
- 
-     assert_false(ListContainsDomain(L"openvpn.com", domain, domain_len));
-     assert_false(ListContainsDomain(L"internal.openvpn.net", domain, domain_len));
-+    assert_false(ListContainsDomain(L"openvpn.com,internal.openvpn.net", domain, domain_len));
-+    assert_false(ListContainsDomain(L"internal.openvpn.net,openvpn.com", domain, domain_len));
- }
- 
- #define BUF_SIZE 64
- static void
- test_convert_itf_dns_domains(void **state)
- {
--    DWORD size, orig_size, len, res_len;
-+    DWORD size, len;
-     LSTATUS err;
-     const DWORD glyph_size = sizeof(wchar_t);
- 
-+    /* Remove the domain from a single-entry list */
-+    wchar_t domains_0[BUF_SIZE] = L"openvpn.com";
-+    len = (DWORD)wcslen(domains_0) + 1;
-+    size = len * glyph_size;
-+    err = ConvertItfDnsDomains(L"openvpn.com", domains_0, &size, sizeof(domains_0));
-+    assert_int_equal(size, 0);
-+    assert_int_equal(err, ERROR_FILE_NOT_FOUND);
-+
-+    /* Remove no domain from a single-entry list */
-     wchar_t domains_1[BUF_SIZE] = L"openvpn.com";
-     len = (DWORD)wcslen(domains_1) + 1;
--    size = orig_size = len * glyph_size;
--    wchar_t domains_1_res[BUF_SIZE] = L".openvpn.com";
--    res_len = len + 2; /* adds . and \0 */
--    err = ConvertItfDnsDomains(L"openvpn.net", domains_1, &size, BUF_SIZE);
-+    size = len * glyph_size;
-+    wchar_t domains_1_res[] = L".openvpn.com\0";
-+    err = ConvertItfDnsDomains(L"openvpn.net", domains_1, &size, sizeof(domains_1));
-     assert_memory_equal(domains_1, domains_1_res, size);
--    assert_int_equal(size, res_len * glyph_size);
-+    assert_int_equal(size, sizeof(domains_1_res));
-     assert_int_equal(err, NO_ERROR);
- 
-+    /* Remove the second domain from a two-entry list */
-     wchar_t domains_2[BUF_SIZE] = L"openvpn.com,openvpn.net";
-     len = (DWORD)wcslen(domains_2) + 1;
--    size = orig_size = len * glyph_size;
--    wchar_t domains_2_res[BUF_SIZE] = L".openvpn.com";
--    res_len = (DWORD)wcslen(domains_2_res) + 2;
--    err = ConvertItfDnsDomains(L"openvpn.net", domains_2, &size, BUF_SIZE);
-+    size = len * glyph_size;
-+    wchar_t domains_2_res[] = L".openvpn.com\0";
-+    err = ConvertItfDnsDomains(L"openvpn.net", domains_2, &size, sizeof(domains_2));
-     assert_memory_equal(domains_2, domains_2_res, size);
--    assert_int_equal(size, res_len * glyph_size);
-+    assert_int_equal(size, sizeof(domains_2_res));
-     assert_int_equal(err, NO_ERROR);
- 
-+    /* Remove the first domain from a two-entry list */
-     wchar_t domains_3[BUF_SIZE] = L"openvpn.com,openvpn.net";
-     len = (DWORD)wcslen(domains_3) + 1;
--    size = orig_size = len * glyph_size;
--    wchar_t domains_3_res[BUF_SIZE] = L".openvpn.net";
--    res_len = (DWORD)wcslen(domains_3_res) + 2;
--    err = ConvertItfDnsDomains(L"openvpn.com", domains_3, &size, BUF_SIZE);
-+    size = len * glyph_size;
-+    wchar_t domains_3_res[] = L".openvpn.net\0";
-+    err = ConvertItfDnsDomains(L"openvpn.com", domains_3, &size, sizeof(domains_3));
-     assert_memory_equal(domains_3, domains_3_res, size);
--    assert_int_equal(size, res_len * glyph_size);
-+    assert_int_equal(size, sizeof(domains_3_res));
-     assert_int_equal(err, NO_ERROR);
- 
-+    /* Remove no domain from a two-entry list */
-     wchar_t domains_4[BUF_SIZE] = L"openvpn.com,openvpn.net";
-     len = (DWORD)wcslen(domains_4) + 1;
--    size = orig_size = len * glyph_size;
--    wchar_t domains_4_res[BUF_SIZE] = L".openvpn.com\0.openvpn.net";
--    res_len = len + 3; /* adds two . and one \0 */
--    err = ConvertItfDnsDomains(NULL, domains_4, &size, BUF_SIZE);
-+    size = len * glyph_size;
-+    wchar_t domains_4_res[] = L".openvpn.com\0.openvpn.net\0";
-+    err = ConvertItfDnsDomains(NULL, domains_4, &size, sizeof(domains_4));
-     assert_memory_equal(domains_4, domains_4_res, size);
--    assert_int_equal(size, res_len * glyph_size);
-+    assert_int_equal(size, sizeof(domains_4_res));
-     assert_int_equal(err, NO_ERROR);
-+
-+    /* Remove the first domain from a three-entry list */
-+    wchar_t domains_5[BUF_SIZE] = L"openvpn.com,openvpn.net,openvpn.org";
-+    len = (DWORD)wcslen(domains_5) + 1;
-+    size = len * glyph_size;
-+    wchar_t domains_5_res[] = L".openvpn.net\0.openvpn.org\0";
-+    err = ConvertItfDnsDomains(L"openvpn.com", domains_5, &size, sizeof(domains_5));
-+    assert_memory_equal(domains_5, domains_5_res, size);
-+    assert_int_equal(size, sizeof(domains_5_res));
-+    assert_int_equal(err, NO_ERROR);
-+
-+    /* Remove the middle domain from a three-entry list */
-+    wchar_t domains_6[BUF_SIZE] = L"openvpn.com,openvpn.net,openvpn.org";
-+    len = (DWORD)wcslen(domains_6) + 1;
-+    size = len * glyph_size;
-+    wchar_t domains_6_res[] = L".openvpn.com\0.openvpn.org\0";
-+    err = ConvertItfDnsDomains(L"openvpn.net", domains_6, &size, sizeof(domains_6));
-+    assert_memory_equal(domains_6, domains_6_res, size);
-+    assert_int_equal(size, sizeof(domains_6_res));
-+    assert_int_equal(err, NO_ERROR);
-+
-+    /* Remove the last domain from a three-entry list */
-+    wchar_t domains_7[BUF_SIZE] = L"openvpn.com,openvpn.net,openvpn.org";
-+    len = (DWORD)wcslen(domains_7) + 1;
-+    size = len * glyph_size;
-+    wchar_t domains_7_res[] = L".openvpn.com\0.openvpn.net\0";
-+    err = ConvertItfDnsDomains(L"openvpn.org", domains_7, &size, sizeof(domains_7));
-+    assert_memory_equal(domains_7, domains_7_res, size);
-+    assert_int_equal(size, sizeof(domains_7_res));
-+    assert_int_equal(err, NO_ERROR);
-+
-+    /* Remove the last domain from a four-entry list because of size constraints*/
-+    wchar_t domains_8[BUF_SIZE] = L"openvpn.com,openvpn.net,openvpn.org,am-ende-noch-eine-lange.de";
-+    len = (DWORD)wcslen(domains_8) + 1;
-+    size = len * glyph_size;
-+    wchar_t domains_8_res[] = L".openvpn.com\0.openvpn.net\0.openvpn.org\0";
-+    err = ConvertItfDnsDomains(NULL, domains_8, &size, sizeof(domains_8));
-+    assert_memory_equal(domains_8, domains_8_res, size);
-+    assert_int_equal(size, sizeof(domains_8_res));
-+    assert_int_equal(err, ERROR_MORE_DATA);
- }
- 
- int
+ #ifdef ENABLE_DEBUG
 
 
 _______________________________________________
