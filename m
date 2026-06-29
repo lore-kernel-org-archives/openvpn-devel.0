@@ -4,7 +4,7 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id F0267C44501
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id F01ADC43638
 	for <openvpn-devel@archiver.kernel.org>; Mon, 29 Jun 2026 07:59:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
@@ -12,97 +12,97 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	Subject:MIME-Version:Message-ID:References:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
-	List-Owner; bh=u6xQ6w2wYtK8tVwwR4zKhYLmW70b80H7GEg868tH764=; b=YvfhvQOrx27UOF
-	jRSNFrsU/9GFTrDsodck+nlRpe9wMyODrx0+UM7jCwxViVvf5ZCztVoA7JbmRzRB1ubDrgVnODQor
-	ND+o9+60ybK3xlyZtDyveENo7gG8OYNrungfQKnyBd7jZ5CaUACemO4zjO+nRU4e2G+x0YhU6PIcp
-	cpg=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	List-Owner; bh=ycOZnDLkO2mioIknBv2lJbnBtorJ2B6LX6BEO/kxmGI=; b=H9CDNi89yfIOY6
+	zpqEM5X39KAPcNzijpQ2DmU4n1ZmVxzbF64HkxHcY2SbaQm/ZngWGDrukr80rVmTM/12lMt68Weyo
+	J7+M53Rym7pfv2qRTn1drv2bHaiJPanEhcBVQQuNK/XYpgYolLOqs34gJ5FD5hlWGn54TAnolkcoY
+	SnE=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1we6ti-0001EX-2j;
-	Mon, 29 Jun 2026 07:59:18 +0000
+	id 1we6tk-0006Xa-8c;
+	Mon, 29 Jun 2026 07:59:17 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1we6tg-0001EK-UU
+ (envelope-from <gerrit@openvpn.net>) id 1we6th-0006XE-Q4
  for openvpn-devel@lists.sourceforge.net;
- Mon, 29 Jun 2026 07:59:16 +0000
+ Mon, 29 Jun 2026 07:59:15 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:
  From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From:
  Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=o4ZIKPVEDRwkLcgaLPhPluv6itjtyqjnmraYAornivM=; b=hOuZkQAcQpRGVZwC+WbtWR6Vlz
- yMCZ+i5g9Z8cQ9Xk16RfydChM59G/PYuM1AKbrNYp6Hv3nbiS1ip2Q4EiwY5dfb47PCt3JX0o3IZR
- Onf9tIDM0akN9A8CEwsPAZrrr0C4R79fLt/NdZoZEc3J5Lh4gg+uO/0HaQmJIuloR8Uw=;
+ bh=w2rtnbaJNq6yKQKTmD0SLgZFXs1UuVsVEi9FOp6Hgv4=; b=XpsLEvBRknzBZPJK4k+8doap3B
+ V1NM3pfMawcj2QVBkKCQvWdGsRDsOVeriJeEtX79o3kSPtFh/eCUaR0exBNHh0+BlC6j15neYczj9
+ zpTjZtByBYzGcLVZYlgWj7/yP+WRWuNx4vqAlFl4XJY7DB1isGUicijUVNBeJlsAaDGE=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
  Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:From:Sender:Content-ID
  :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
  Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=o4ZIKPVEDRwkLcgaLPhPluv6itjtyqjnmraYAornivM=; b=Y
- gvn52q0s/KompKf6WHqyh1rxX+DvAdaGknpkngsz4Eo5kWkxPeaV3zyjzH7WcmcM6XOPt3l7UdViV
- Ewb/BAUiJCZ6oPj+eP4+FTzKA7I4QDDm3bRZ5MxyTvi7w/sG8HA0tugafYuC98Ml7nbYLGkAye2EJ
- iVK+DSSeYGV5nJjw=;
-Received: from mail-wr1-f48.google.com ([209.85.221.48])
+ List-Owner:List-Archive; bh=w2rtnbaJNq6yKQKTmD0SLgZFXs1UuVsVEi9FOp6Hgv4=; b=m
+ PVF5iXsoYa6CmrpZxRHrbdOd2+tAlaIfJvvSmYF4xKCOEya6mAJb0Iyn3oyAoQUxqhTxGijZ1JQ3u
+ jYNW7LxMdiMgUl61ZzddAcO6Nbzf2BfsAJ35jMWTI1E6UpY4yjOonDlsITcc+pK9hbfBztoRyobRu
+ YGsToBFaMI9aqiz4=;
+Received: from mail-wr1-f44.google.com ([209.85.221.44])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1we6tb-0008Na-1X for openvpn-devel@lists.sourceforge.net;
- Mon, 29 Jun 2026 07:59:16 +0000
-Received: by mail-wr1-f48.google.com with SMTP id
- ffacd0b85a97d-472055b0efaso1148522f8f.2
+ id 1we6tb-0008Nm-VE for openvpn-devel@lists.sourceforge.net;
+ Mon, 29 Jun 2026 07:59:15 +0000
+Received: by mail-wr1-f44.google.com with SMTP id
+ ffacd0b85a97d-461edb387ddso2835270f8f.3
  for <openvpn-devel@lists.sourceforge.net>;
- Mon, 29 Jun 2026 00:59:11 -0700 (PDT)
+ Mon, 29 Jun 2026 00:59:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1782719940; x=1783324740; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1782719941; x=1783324741; darn=lists.sourceforge.net;
  h=user-agent:content-disposition:content-transfer-encoding
  :mime-version:message-id:reply-to:subject:thread-index:references
  :list-unsubscribe:list-id:auto-submitted:cc:to:date:from:from:to:cc
  :subject:date:message-id:reply-to;
- bh=o4ZIKPVEDRwkLcgaLPhPluv6itjtyqjnmraYAornivM=;
- b=HQUuxgNf5h3Fn66ocMEcb+dt0Oi7XN25h3YY5VkLjyvnlgtCQbE/CYKXN46UjA0N3s
- 5pOq/es7MF4ZiU92CptL04gBY75GNV7iOekMvfJEP6gPNF3GuUbcBAV4SC+CMk5n8tkg
- YEnvdcNGPiiTZ/P0oZK23D2WytyedKI38IaIgGYMYQE9LCzmi/DVdheK6XV6fzTf7lTP
- CYvQYeupHGwvZiv7UPlOVMFPgc5yXc+TzzA80cxkCl5c1fLLtSLYHFmYC5b5iDD9MRn2
- SlGOA5m8h37x93N5UfEcPsTBhB9NctPyDKzexJgwbEANXz+KELdxTKTFeTUDjcpBv8Lv
- mYsA==
+ bh=w2rtnbaJNq6yKQKTmD0SLgZFXs1UuVsVEi9FOp6Hgv4=;
+ b=TlLIuT2QYDyaUmpTr+HXRH//LLvfhMJfVGLkricT2ejmXC8hyVJgxYUn0tym9zlkIF
+ GE7SIUk56QCzU8l+D9kWcirERsYnfkBvukXUHN6Y70Cfr/tFzwEEvg6NfOaF1/BYQW8H
+ 33PfQW31D/BLV3nNjg+NBx4pmu/CBgVrwcTfAXR011DXPB55xpQ55aIFhup7kzGJ+gcW
+ anAlK6quus6jcnEWaxmHnacriN01tHYIJySOEpllAEDLrsXeeSzkk6yEkEbmXzoZaSyT
+ jh0QYHepWOtN+ZwdEaV55/2/A50jQqGJ9v/gxvycba4NjmQGwuJdRjpSWeeD+/j0JaGj
+ KgcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1782719940; x=1783324740;
+ d=1e100.net; s=20251104; t=1782719941; x=1783324741;
  h=user-agent:content-disposition:content-transfer-encoding
  :mime-version:message-id:reply-to:subject:thread-index:references
  :list-unsubscribe:list-id:auto-submitted:cc:to:date:from:x-gm-gg
  :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
- bh=o4ZIKPVEDRwkLcgaLPhPluv6itjtyqjnmraYAornivM=;
- b=JDdA2H5zk5YeYJlpEK0iYr4CYxWJkkLgzOa/6tCtdUsaM9DBEs9FwHq0lPyYYVqHff
- IlamEZTUEhAYwhziIZs2Nqt7U7rEhp0dAapNr1aP8enS/S0SKlVictWnRyreFTHKgoTD
- 9Ubuvl3ErfnEsOyRxddyprWW7WHK16IA0gExTbahK8A6glDXcSo3qQ6763fXRoCXCH4C
- b0Smx6Lz9MFWwlpc2MbjRmIWyiFduWe/e+rJseUgJYeK9QVaLSSInlxl1arS53TEflle
- IHBSOsgXI300rKYYGw9DRPf2aSv67hxuCZPTOQHNF69q+4ARTbk0RJamW23dKHj7vcmw
- oTGw==
-X-Gm-Message-State: AOJu0YwyfQlD4m9sc438ccjE/HIdl301O43ADuoWUmrgx1MDP6AvhH5k
- +zwGo4nHyXBdZ28UKyB7hXqQZ1EdkNNMsNeVW7TnvcveVQNgrE91YThkkayK0ffMSWJuBTuAR4g
- IDsYAClKRPJhAvVlBuFSUERxHwEgcskzaXn/qPB4Cww0OtuQoUx9+Fp6lzHDP710OwHky70NAQd
- jvwfHkdQ==
-X-Gm-Gg: AfdE7ckjuDG3reKgK2MI9YniLa8SRautEr8QaB/WfCKcIDpCiMx9qIzAWJpRQDueTqR
- H+DIjWVxlnNkdIb6xgT8OaV+ORF9eDMnpJw84QMZK88/4v1tLJTU3ODnlyup2PQKGzuIhMxrVmQ
- SAF89FQbCqqhQIz8G1h1Wwf7UD9S1VViPilzqge4tEL/2fpDa14lniLCkWotpxRKe7w3Sahc+FT
- kSFMcLKU/rfMurJp6kMLG2Gno0l7CvD7f+ULb2RXHzZ3+3ZM6YKvjSFV7IWwtJK3ZPDMp7BJTus
- 34NJ9ZglkupcNW+uRBTUnw9R7xCmWwogJVxNuP05iPODcYkLSkkTBQCu18pyIUmgvfYrSS3cvHH
- rNs+//pSJqq2EadPIAAfLKNetYWGpxStyOojEyW+nLgEOQgfYkTff1zeimc5VuRAiAiTKwOv9RM
- RwkvUgBkjRoG3+k4p1/Hcc5U8gA3ocBsIXwLnpq+VuC2LNRnFH+4j8JWm2cbnPbAMG3cWXmWXcO
- YjwhOtkZdSucFD3vKlfsnI8EUFE1hmlw17+1oRVmJjhZUWMmzOBYrk3V+qmfFYAJIYQSs4SQPkH
- JAs=
-X-Received: by 2002:a05:6000:250e:b0:473:a376:815e with SMTP id
- ffacd0b85a97d-473a37681edmr3896752f8f.33.1782719939773; 
- Mon, 29 Jun 2026 00:58:59 -0700 (PDT)
+ bh=w2rtnbaJNq6yKQKTmD0SLgZFXs1UuVsVEi9FOp6Hgv4=;
+ b=idSJxLPOjf3ZJrXmHSyQ5DjSsssbePoe7qQlaq1cebO61+yJ5omv2oMOJazLdqDXR3
+ KJRTtsp0ilZPtgMkUlWWrI/zSA428yoIX07wQ/OyV6kvq02iLV2LkhYpn6dwFlSfuysV
+ kwGdWGEfldPHMA2p/w+GmkbglrxnpHno9HBAKOO3koKtnwA2r4+f7lpc137jQvLPd7gE
+ uDMNUYj2Rl4JxmCdislQsUMged8UdxpMdEZc9jiFIDkJWuW1wVbOptLLp4QRLFFDjXfj
+ G2MnHMGby3vN/NC/yBuE8nXdWWi71vPmPTYeYPLDAQhIqL/HoC+t8SawM6i9+HBMhHte
+ GJLg==
+X-Gm-Message-State: AOJu0Yzg83GO2QaXz74V4z0GfyXZiOAynT2jdzlBSxcyKdKKtXw3N590
+ s034JLEl315bVSfIv8+VIVESFZnwM0oe5+TWBOcY6UDa4nrWhA3edZHjelleJRngHqQwEn6dyCD
+ mtGy5pax51NYKAg8K1IaVX2IMnQV/Or6U6VN0mqcT8umNhhvSJ9uW9yJFXgKK2U4iwHu21LfAxc
+ qYSEVm7A==
+X-Gm-Gg: AfdE7ckesFPIB0vl9vvdH0zDUorHutpTcOzDKbWLys1TgSOxAzIGsbQvcuyKzIbCNfg
+ 1ESEnhj5qEUXQLQSwZ+yQK6nnRtWeKGeOtWEUCWK77Lba5Cl5dVdRpHGQGlhrcsvE9kq60BfHha
+ T6vKkIMd4nezAXJ6MpQsr6NhTLQShkk2OKRYya/K9LPI2bHqOgavRmQ9qrGWFCs9W/uBbC+qqOu
+ /ZJtZsiYMgMteVax2zGVPaQtkgLONzh9SiNk9ZNeRcRopXsYH5S1vJSq2KiEQ0xxdnNWQUVGB2A
+ TM08eRnevlvI0M2zAQ2LS09jPCkqeIgWiaC70FIPdvVR5Da/y+SuHul7hYBouVxNEEEgqrHw/2o
+ 38ST6njK1F4qh5jbYOAj0+92UT3VUjcxPc+ZkMqBzLMnTNimCPvfGCsFlimnU264o3AjR5EdBmO
+ Ep2GhpHb82Xc+Og9JhYsQD2B6IqJED3edhoMT5h564+o9gHQDppHIAmdutKPZYqMkwAcUTCffsy
+ HglWMlBRivCpjLhwMtgl/1SW1d9wuSPyGFrNcyO46h/RyaR+UH2sIhPHpduGSDDF4OlLCmEIqlv
+ 0vc=
+X-Received: by 2002:a05:6000:41f9:b0:472:4861:5d4d with SMTP id
+ ffacd0b85a97d-47248615f74mr8444423f8f.23.1782719940588; 
+ Mon, 29 Jun 2026 00:59:00 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-4701835b625sm25619657f8f.36.2026.06.29.00.58.59
+ ffacd0b85a97d-473dddcb295sm7022422f8f.35.2026.06.29.00.59.00
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 29 Jun 2026 00:58:59 -0700 (PDT)
+ Mon, 29 Jun 2026 00:59:00 -0700 (PDT)
 X-Google-Original-From: "stipa (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
 Date: Mon, 29 Jun 2026 07:58:59 +0000
@@ -110,19 +110,19 @@ To: plaisthos <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newchange
 X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: If04ce09d4c353f5384c0c48f48f63e05869a373f
-X-Gerrit-Change-Number: 1745
+X-Gerrit-Change-Id: I55da68cc341bcfc707fd34ca2f84ff9b6a55501f
+X-Gerrit-Change-Number: 1746
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1745?usp=email>
-X-Gerrit-Commit: 37dc5fef7fc916feb3d6c8b3ed6576111ddcc2f4
-References: <gerrit.1782719911000.If04ce09d4c353f5384c0c48f48f63e05869a373f@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzgyNzE5OTExMDAwLklmMDRjZTA5ZDRjMzUzZjUzODRjMGM0OGY0OGY2M2UwNTg2OWEzNzNmQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <2c8e59c48c6f3aa081eb36757515bd21f5f753eb-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1746?usp=email>
+X-Gerrit-Commit: 07fcd8df66eb54dcfd0265176bfd9831304905b8
+References: <gerrit.1782719911000.I55da68cc341bcfc707fd34ca2f84ff9b6a55501f@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzgyNzE5OTExMDAwLkk1NWRhNjhjYzM0MWJjZmM3MDdmZDM0Y2EyZjg0ZmY5YjZhNTU1MDFmQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <9c562f7821bade0aebd429769b399700980315d4-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1we6tb-0008Na-1X
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: oob: Add client
- PROBE_REPLY parser
+X-Headers-End: 1we6tb-0008Nm-VE
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: oob: Add
+ probe-result ranking for server selection
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -140,15 +140,15 @@ Reply-To: lstipakov@gmail.com, arne-openvpn@rfc2549.org,
  openvpn-devel@lists.sourceforge.net
 Cc: "stipa \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============7358202814060382212=="
+Content-Type: multipart/mixed; boundary="===============6103127095243849514=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============7358202814060382212==
+--===============6103127095243849514==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="+RpeiVA35+4="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="ywD4Iu1UKjw="; charset=UTF-8
 
---+RpeiVA35+4=
+--ywD4Iu1UKjw=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
@@ -161,381 +161,668 @@ ike you to do a code review=2E
 Please visit
 
     http://gerrit=2Eopenvpn=2E=
-net/c/openvpn/+/1745?usp=3Demail
+net/c/openvpn/+/1746?usp=3Demail
 
 to review the following change=2E
 
 
 Chang=
-e subject: oob: Add client PROBE_REPLY parser
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+e subject: oob: Add probe-result ranking for server selection
+=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-oob: Add client PROBE_REPLY parser
+oob: Add probe-result ran=
+king for server selection
 
-Add =
-oob_client_reply_read(), the client-side counterpart of
-oob_server_probe_re=
-ad(): it scans the TLV payload of a received PROBE_REPLY
-for the probe_repl=
-y TLV, skipping other/future TLV types=2E
+Add oob_rank_probe_results(), which orders remot=
+es best-first from their probe
+results, following the DNS-SRV (RFC 2782) se=
+mantics of the probe_reply TLV:
 
-Factor the shared TLV scan used =
-by both into a static oob_find_tlv() helper
-so the two readers no longer du=
-plicate the loop=2E
+  - remotes that answered rank before thos=
+e that did not (non-responders keep
+    their original relative order, last=
+);
+  - responders are grouped by priority, lowest value first (an absolute
+=
+    ordering, never overridden by latency or weight);
+  - within a priority=
+ group the "candidates" are the responders whose RTT is
+    within a margin=
+ of the fastest (see oob_effective_margin()); candidates
+    rank ahead of =
+non-candidates;
+  - candidates are ordered by RFC-2782 weighted-random sele=
+ction by weight, so
+    a server is chosen first with probability proportio=
+nal to its weight (load
+    distribution); non-candidates follow, ordered b=
+y RTT=2E
 
-Change-Id: If04ce09d4c353f5384c0c48f48f63e05869a373f
-S=
-igned-off-by: Lev Stipakov <lev@openvpn=2Enet>
+The RNG is injected as a function pointer so this module stays fr=
+ee of the
+crypto layer and the weighted ordering is deterministically unit-=
+testable
+(production passes get_random; the tests pass stubs)=2E
+
+RTT is on=
+ly populated once the client measures it (a later commit); until then
+every=
+ responder sits in the band and selection is purely weighted-random=2E
+
+Cha=
+nge-Id: I55da68cc341bcfc707fd34ca2f84ff9b6a55501f
+Signed-off-by: Lev Stipak=
+ov <lev@openvpn=2Enet>
 ---
 M src/openvpn/oob=2Ec
-M =
-src/openvpn/oob=2Eh
-M tests/unit_tests/openvpn/test_oob=2Ec
-3 files changed=
-, 130 insertions(+), 15 deletions(-)
+M src/openvpn/oob=2Eh
+M te=
+sts/unit_tests/openvpn/test_oob=2Ec
+3 files changed, 343 insertions(+), 0 d=
+eletions(-)
 
 
 
-  git pull ssh://gerrit=2Eopenvpn=
-=2Enet:29418/openvpn refs/changes/45/1745/1
+  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/c=
+hanges/46/1746/1
 
-diff --git a/src/openvpn/oob=
-=2Ec b/src/openvpn/oob=2Ec
-index f7af0ef=2E=2E9cc7c42 100644
---- a/src/open=
-vpn/oob=2Ec
-+++ b/src/openvpn/oob=2Ec
-@@ -160,31 +160,28 @@
-            && =
-oob_probe_parameter_write(buf, param);
+diff --git a/src/openvpn/oob=2Ec b/src/openvpn/oob=2Ec
+in=
+dex 9cc7c42=2E=2E9b359dd 100644
+--- a/src/openvpn/oob=2Ec
++++ b/src/openvpn=
+/oob=2Ec
+@@ -241,3 +241,151 @@
+     /* priority/weight/connect_lifetime/fla=
+gs left at 0 for now */
+     return true;
  }
- 
--bool
--oob_server_probe_read(st=
-ruct buffer *payload, struct oob_probe_parameter *param)
-+/* Scan @p payloa=
-d for the first TLV of type @p wanted_type, skipping any other
-+ * (e=2Eg=
-=2E future) TLV types=2E On success @p payload is left positioned at that
-+=
- * TLV's value and *value_len is its declared length=2E Returns false if th=
-e TLV
-+ * is not found or a header/length is malformed=2E */
-+static bool
-+=
-oob_find_tlv(struct buffer *payload, uint16_t wanted_type, uint16_t *value_=
-len)
- {
--    if (!oob_msg_read_header(payload, OOB_MSG_SERVER_PROBE))
--    =
-{
--        return false;
--    }
--
--    /* A TLV header is 4 bytes (type + l=
-ength)=2E Loop until we either find the
--     * probe_parameter or run out =
-of well-formed TLVs=2E */
-+    /* A TLV header is 4 bytes (type + length)=
-=2E */
-     while (BLEN(payload) >=3D 4)
-     {
-         uint16_t type;
-   =
-      bool optional;
--        uint16_t value_len;
--        if (!oob_tlv_rea=
-d_header(payload, &type, &optional, &value_len))
-+        if (!oob_tlv_read=
-_header(payload, &type, &optional, value_len))
-         {
-             retu=
-rn false;
-         }
--        if (type =3D=3D OOB_TLV_PROBE_PARAMETER)
-+   =
-     if (type =3D=3D wanted_type)
-         {
--            return oob_probe_=
-parameter_read(payload, param, value_len);
-+            return true;
-      =
-   }
--        /* not the TLV we are looking for: skip its value and keep sc=
-anning */
--        if (!buf_advance(payload, value_len))
-+        /* not th=
-e TLV we want: skip its value and keep scanning */
-+        if (!buf_advanc=
-e(payload, *value_len))
-         {
-             return false;
-         }
-@@=
- -193,12 +190,30 @@
- }
- 
- bool
-+oob_server_probe_read(struct buffer *payloa=
-d, struct oob_probe_parameter *param)
-+{
-+    uint16_t value_len;
-+    retu=
-rn oob_msg_read_header(payload, OOB_MSG_SERVER_PROBE)
-+           && oob_fi=
-nd_tlv(payload, OOB_TLV_PROBE_PARAMETER, &value_len)
-+           && oob_pro=
-be_parameter_read(payload, param, value_len);
-+}
 +
-+bool
- oob_client_reply_=
-write(struct buffer *buf, const struct oob_probe_reply *reply)
- {
-     retu=
-rn oob_msg_write_header(buf, OOB_MSG_PROBE_REPLY) && oob_probe_reply_write(=
-buf, reply);
- }
- 
- bool
-+oob_client_reply_read(struct buffer *payload, stru=
-ct oob_probe_reply *reply)
-+{
-+    uint16_t value_len;
-+    return oob_msg_=
-read_header(payload, OOB_MSG_PROBE_REPLY)
-+           && oob_find_tlv(paylo=
-ad, OOB_TLV_PROBE_REPLY, &value_len)
-+           && oob_probe_reply_read(pa=
-yload, reply, value_len);
-+}
-+
-+bool
- oob_timestamp_in_window(uint64_t prob=
-e_ts, uint64_t now, uint64_t window_secs)
- {
-     uint64_t diff =3D (now > =
-probe_ts) ? (now - probe_ts) : (probe_ts - now);
-diff --git a/src/openvpn/o=
-ob=2Eh b/src/openvpn/oob=2Eh
-index 93c44b0=2E=2E9040416 100644
---- a/src/op=
-envpn/oob=2Eh
-+++ b/src/openvpn/oob=2Eh
-@@ -170,6 +170,19 @@
- bool oob_clie=
-nt_reply_write(struct buffer *buf, const struct oob_probe_reply *reply);
- 
++/* Base ordering: responder=
+s before non-responders, then by priority (lower
++ * first), then by RTT (l=
+ower first), then by original index for determinism=2E
++ * This groups resp=
+onders into priority runs pre-sorted by RTT, which the
++ * candidate-band s=
+tep below relies on (run[0] is the fastest in its group)=2E */
++static int
 =
- /**
-+ * Read a received OOB PROBE_REPLY: verify its message-type header, t=
-hen scan
-+ * for the probe_reply TLV; the client-side counterpart of
-+ * oo=
-b_server_probe_read()=2E TLV types other than probe_reply are skipped=2E
++oob_probe_result_compare(const void *a, const void *b)
++{
++    const struc=
+t oob_probe_result *ra =3D a;
++    const struct oob_probe_result *rb =3D b;=
+
++
++    if (ra->responded !=3D rb->responded)
++    {
++        return ra->re=
+sponded ? -1 : 1;
++    }
++    if (ra->responded)
++    {
++        if (ra->pr=
+iority !=3D rb->priority)
++        {
++            return ra->priority < rb-=
+>priority ? -1 : 1;
++        }
++        if (ra->rtt_ms !=3D rb->rtt_ms)
++  =
+      {
++            return ra->rtt_ms < rb->rtt_ms ? -1 : 1;
++        }
 + =
-* @p payload is consumed as it is read=2E
-+ *
-+ * @param payload  buffer po=
-sitioned at the start of the OOB message payload
-+ * @param reply    filled=
- with the parsed probe_reply on success
-+ * @return true if the header matc=
-hed and a well-formed probe_reply was found,
-+ *         false otherwise
+   }
++    return ra->index - rb->index;
++}
++
++int
++oob_effective_margin(con=
+st struct oob_probe_result *r, int client_margin)
++{
++    if (client_margin=
+ >=3D 0)
++    {
++        return client_margin; /* the client's own setting =
+is authoritative */
++    }
++    if (r->max_latency_diff > 0)
++    {
++      =
+  return (int)r->max_latency_diff; /* else the server's advertised value */=
+
++    }
++    return OOB_DEFAULT_LATENCY_MARGIN_MS;
++}
++
++/* Reorder the ind=
+ex list @p idx[0=2E=2Em) into DNS-SRV (RFC 2782) weighted-random
++ * order =
+by results[idx[k]]=2Eweight: each position is filled by a remaining entry
++=
+ * chosen with probability proportional to its weight=2E When all remaining=
+
++ * weights are 0 the current (RTT-sorted) order is kept=2E */
++static voi=
+d
++oob_weighted_order(const struct oob_probe_result *results, int *idx, int=
+ m, long (*rng)(void))
++{
++    for (int pos =3D 0; pos < m; pos++)
++    {
++=
+        long sum =3D 0;
++        for (int k =3D pos; k < m; k++)
++        {=
+
++            sum +=3D results[idx[k]]=2Eweight;
++        }
++        int ch=
+osen =3D pos;
++        if (sum > 0)
++        {
++            long r =3D rng(=
+) % sum; /* uniform in [0, sum) */
++            long acc =3D 0;
++          =
+  for (int k =3D pos; k < m; k++)
++            {
++                acc +=3D =
+results[idx[k]]=2Eweight;
++                if (acc > r)
++                {
+=
++                    chosen =3D k;
++                    break;
++           =
+     }
++            }
++        }
++        int t =3D idx[pos];
++        idx[=
+pos] =3D idx[chosen];
++        idx[chosen] =3D t;
++    }
++}
++
++/* Reorder o=
+ne priority run (@p run[0=2E=2Em), already RTT-sorted) in place:
++ * candid=
+ates (RTT within the band of the fastest) first, ordered by weighted
++ * ra=
+ndom; then non-candidates in RTT order=2E */
++static void
++oob_order_priori=
+ty_run(struct oob_probe_result *run, int m, int client_margin, long (*rng)(=
+void),
++                       struct gc_arena *gc)
++{
++    if (m <=3D 1)
++=
+    {
++        return;
++    }
++
++    unsigned int best_rtt =3D run[0]=2Ertt=
+_ms; /* run is RTT-sorted: [0] is fastest */
++
++    int *cand =3D gc_malloc=
+(sizeof(int) * m, false, gc);
++    int *non =3D gc_malloc(sizeof(int) * m, =
+false, gc);
++    int nc =3D 0;
++    int nn =3D 0;
++    for (int k =3D 0; k =
+< m; k++)
++    {
++        if (run[k]=2Ertt_ms - best_rtt < (unsigned int)oo=
+b_effective_margin(&run[k], client_margin))
++        {
++            cand[nc=
+++] =3D k;
++        }
++        else
++        {
++            non[nn++] =3D k=
+;
++        }
++    }
++
++    oob_weighted_order(run, cand, nc, rng);
++
++    s=
+truct oob_probe_result *tmp =3D gc_malloc(sizeof(*tmp) * m, false, gc);
++  =
+  int t =3D 0;
++    for (int k =3D 0; k < nc; k++)
++    {
++        tmp[t++]=
+ =3D run[cand[k]];
++    }
++    for (int k =3D 0; k < nn; k++)
++    {
++     =
+   tmp[t++] =3D run[non[k]];
++    }
++    memcpy(run, tmp, sizeof(*run) * m)=
+;
++}
++
++void
++oob_rank_probe_results(struct oob_probe_result *results, int =
+n, int client_margin,
++                       long (*rng)(void), struct gc_=
+arena *gc)
++{
++    if (n <=3D 1)
++    {
++        return;
++    }
++
++    /* B=
+ase order: responders first, grouped by priority, RTT-sorted within=2E */
++=
+    qsort(results, (size_t)n, sizeof(*results), oob_probe_result_compare);
+=
++
++    /* Reorder each priority run of responders by candidate-band + weigh=
+t=2E */
++    int i =3D 0;
++    while (i < n && results[i]=2Eresponded)
++   =
+ {
++        int j =3D i;
++        while (j < n && results[j]=2Eresponded &&=
+ results[j]=2Epriority =3D=3D results[i]=2Epriority)
++        {
++          =
+  j++;
++        }
++        oob_order_priority_run(results + i, j - i, clien=
+t_margin, rng, gc);
++        i =3D j;
++    }
++}
+diff --git a/src/openvpn/oo=
+b=2Eh b/src/openvpn/oob=2Eh
+index 9040416=2E=2E65e84bd 100644
+--- a/src/ope=
+nvpn/oob=2Eh
++++ b/src/openvpn/oob=2Eh
+@@ -215,4 +215,55 @@
+ bool oob_build=
+_probe_reply(struct buffer *probe_payload, uint64_t now, uint64_t window_se=
+cs,
+                            const struct session_id *peer_sid, struct o=
+ob_probe_reply *reply);
+ 
++/* Candidate-band margin (ms) used when neither =
+the client nor the server
++ * specifies one=2E */
++#define OOB_DEFAULT_LATE=
+NCY_MARGIN_MS 10
++
++/* Outcome of probing one remote, used to order remotes=
+ best-first=2E @index is
++ * the caller's identifier for the remote (e=2Eg=
+=2E its position in the connection
++ * list); priority/weight are only mean=
+ingful when @responded is true=2E */
++struct oob_probe_result
++{
++    int i=
+ndex;
++    bool responded;
++    uint16_t priority;
++    uint16_t weight;
 + =
-*/
-+bool oob_client_reply_read(struct buffer *payload, struct oob_probe_rep=
-ly *reply);
+   uint16_t max_latency_diff; /* margin advertised by this server (ms); 0 =
+=3D use client default */
++    unsigned int rtt_ms;       /* probe round-tr=
+ip time in ms (responders only) */
++};
 +
 +/**
-  * Check whether a probe timestamp is within an accepta=
-ble window around the
-  * current time=2E Used to cheaply drop replayed or =
-implausibly-timed probes
-  * before doing any further work (see the probe_p=
-arameter timestamp rationale
-diff --git a/tests/unit_tests/openvpn/test_oob=
-=2Ec b/tests/unit_tests/openvpn/test_oob=2Ec
-index a9998d2=2E=2E1029399 100=
-644
++ * Order @p results best-fir=
+st, in place, per the server-probe selection policy:
++ *   - remotes that r=
+esponded rank before those that did not (non-responders keep
++ *     their =
+original relative order, last);
++ *   - responders are grouped by priority,=
+ lowest priority value first (an
++ *     absolute ordering, never overridde=
+n by latency or weight);
++ *   - within a priority group, the "candidates" =
+are the responders whose RTT is
++ *     within a margin of the fastest in t=
+he group (see oob_effective_margin())=2E
++ *     Candidates are ordered ahe=
+ad of non-candidates;
++ *   - candidates are ordered by DNS-SRV (RFC 2782) =
+weighted-random selection by
++ *     weight, so a server is chosen first wi=
+th probability proportional to its
++ *     weight (load distribution)=2E No=
+n-candidates follow, ordered by RTT=2E
++ *
++ * @param results        result=
+s to reorder in place
++ * @param n              number of results
++ * @para=
+m client_margin  client's candidate-band margin in ms, or < 0 if the
++ *   =
+                     client did not set one (see oob_effective_margin())
++ =
+* @param rng            returns a non-negative random value (e=2Eg=2E get_r=
+andom);
++ *                       injected so this module stays free of the=
+ crypto layer
++ *                       and the weighted ordering is determ=
+inistically testable
++ * @param gc             arena for scratch allocation=
+
++ */
++void oob_rank_probe_results(struct oob_probe_result *results, int n,=
+ int client_margin,
++                            long (*rng)(void), struct =
+gc_arena *gc);
++
++/**
++ * The candidate-band margin (ms) that applies to on=
+e probed remote=2E The client's
++ * own setting is authoritative: when @p c=
+lient_margin >=3D 0 (the client set
++ * --server-probe with a value) it is =
+used for every remote=2E Otherwise the
++ * server's advertised @c max_laten=
+cy_diff is used when non-zero, falling back to
++ * OOB_DEFAULT_LATENCY_MARG=
+IN_MS=2E
++ */
++int oob_effective_margin(const struct oob_probe_result *r, i=
+nt client_margin);
++
+ #endif /* OOB_H */
+diff --git a/tests/unit_tests/open=
+vpn/test_oob=2Ec b/tests/unit_tests/openvpn/test_oob=2Ec
+index 1029399=2E=
+=2Eb66ade2 100644
 --- a/tests/unit_tests/openvpn/test_oob=2Ec
-+++ b/tests/unit_tests/open=
-vpn/test_oob=2Ec
-@@ -346,6 +346,89 @@
++++ b/tests/u=
+nit_tests/openvpn/test_oob=2Ec
+@@ -429,6 +429,144 @@
      gc_free(&gc);
  }
+=
  
-+/* A PROBE_R=
-EPLY carrying a probe_reply is found by the client scan, with all
-+ * field=
-s surviving=2E */
++/* Deterministic RNG stubs for the weighted-selection ordering=2E rank_r=
+ng_zero
++ * makes the weighted draw always pick the first remaining candida=
+te, preserving
++ * order; rank_rng_fixed returns a value we set to land in =
+a chosen weight slice=2E */
++static long
++rank_rng_zero(void)
++{
++    retur=
+n 0;
++}
++
++static long rank_rng_value;
++static long
++rank_rng_fixed(void)
++=
+{
++    return rank_rng_value;
++}
++
++/* Responders rank ahead of non-respond=
+ers regardless of index order=2E */
 +static void
-+test_client_reply_read_finds_reply(void **s=
-tate)
++test_rank_responder_befor=
+e_nonresponder(void **state)
 +{
 +    struct gc_arena gc =3D gc_new();
-+    struct buffer buf =3D a=
-lloc_buf_gc(128, &gc);
-+
-+    struct oob_probe_reply in =3D {
-+        =2Ep=
-riority =3D 5,
-+        =2Eweight =3D 50,
-+        =2Econnect_lifetime =3D =
-120,
-+        =2Eflags =3D 1,
++    =
+struct oob_probe_result r[] =3D {
++        { =2Eindex =3D 0, =2Eresponded =
+=3D false },
++        { =2Eindex =3D 1, =2Eresponded =3D true, =2Epriority =
+=3D 100, =2Eweight =3D 50 },
 +    };
-+    memcpy(in=2Epeer_session_id=2Eid=
-, "SRVREPLY", SID_SIZE);
-+    assert_true(oob_client_reply_write(&buf, &in)=
-);
++    oob_rank_probe_results(r, 2, 10, =
+rank_rng_zero, &gc);
++    assert_int_equal(r[0]=2Eindex, 1);
++    assert_in=
+t_equal(r[1]=2Eindex, 0);
++    gc_free(&gc);
++}
 +
-+    struct oob_probe_reply out =3D { 0 };
-+    assert_true(oob_client=
-_reply_read(&buf, &out));
-+    assert_memory_equal(out=2Epeer_session_id=2E=
-id, in=2Epeer_session_id=2Eid, SID_SIZE);
-+    assert_int_equal(out=2Eprior=
-ity, in=2Epriority);
-+    assert_int_equal(out=2Eweight, in=2Eweight);
++/* Among responders, the=
+ lowest priority value wins (an absolute ordering)=2E */
++static void
++test=
+_rank_by_priority(void **state)
++{
++    struct gc_arena gc =3D gc_new();
++ =
+   struct oob_probe_result r[] =3D {
++        { =2Eindex =3D 0, =2Eresponde=
+d =3D true, =2Epriority =3D 20, =2Eweight =3D 50 },
++        { =2Eindex =3D=
+ 1, =2Eresponded =3D true, =2Epriority =3D 5, =2Eweight =3D 50 },
++        =
+{ =2Eindex =3D 2, =2Eresponded =3D true, =2Epriority =3D 10, =2Eweight =3D =
+50 },
++    };
++    oob_rank_probe_results(r, 3, 10, rank_rng_zero, &gc);
++ =
+   assert_int_equal(r[0]=2Eindex, 1); /* priority 5 */
++    assert_int_equa=
+l(r[1]=2Eindex, 2); /* priority 10 */
++    assert_int_equal(r[2]=2Eindex, 0=
+); /* priority 20 */
++    gc_free(&gc);
++}
++
++/* Within a priority, only se=
+rvers within the latency margin of the fastest are
++ * candidates; a slower=
+ (out-of-band) server ranks behind a faster one no matter
++ * how large its=
+ weight=2E */
++static void
++test_rank_candidate_band(void **state)
++{
++    =
+struct gc_arena gc =3D gc_new();
++    struct oob_probe_result r[] =3D {
++  =
+      { =2Eindex =3D 0, =2Eresponded =3D true, =2Epriority =3D 10, =2Eweigh=
+t =3D 1000, =2Ertt_ms =3D 100 },
++        { =2Eindex =3D 1, =2Eresponded =
+=3D true, =2Epriority =3D 10, =2Eweight =3D 1, =2Ertt_ms =3D 20 },
++    };
+=
++    /* margin 10ms: 20ms is fastest; 100ms is 80ms slower -> out of band *=
+/
++    oob_rank_probe_results(r, 2, 10, rank_rng_zero, &gc);
++    assert_in=
+t_equal(r[0]=2Eindex, 1); /* fast, in-band, despite tiny weight */
++    ass=
+ert_int_equal(r[1]=2Eindex, 0); /* slow, out-of-band, despite huge weight *=
+/
++    gc_free(&gc);
++}
++
++/* A server widens its own band via the advertis=
+ed max_latency_diff, joining the
++ * candidate set even when it is well beh=
+ind the fastest; it then participates in
++ * the weighted selection=2E */
++=
+static void
++test_rank_advertised_margin(void **state)
++{
++    struct gc_ar=
+ena gc =3D gc_new();
++    struct oob_probe_result r[] =3D {
++        { =2Ei=
+ndex =3D 0, =2Eresponded =3D true, =2Epriority =3D 10, =2Eweight =3D 1, =2E=
+rtt_ms =3D 20 },
++        { =2Eindex =3D 1,
++          =2Eresponded =3D tru=
+e,
++          =2Epriority =3D 10,
++          =2Eweight =3D 1000,
++         =
+ =2Ertt_ms =3D 100,
++          =2Emax_latency_diff =3D 200 },
++    };
++    =
+/* Client did not set a margin (-1), so each server's advertised value
 +   =
- assert_int_equal(out=2Econnect_lifetime, in=2Econnect_lifetime);
-+    asse=
-rt_int_equal(out=2Eflags, in=2Eflags);
+  * applies: the 100ms server advertises 200 -> it is a candidate (the
++   =
+  * default 10 would have excluded it); with weight 1000 (slice [1,1001)) a=
+
++     * draw of 500 selects it first=2E */
++    rank_rng_value =3D 500;
++ =
+   oob_rank_probe_results(r, 2, -1, rank_rng_fixed, &gc);
++    assert_int_e=
+qual(r[0]=2Eindex, 1);
++    gc_free(&gc);
++}
++
++/* Among candidates, weight=
+ drives RFC-2782 proportional selection: a draw is
++ * mapped to the server=
+ whose cumulative weight slice it falls in=2E */
++static void
++test_rank_we=
+ighted_selection(void **state)
++{
++    struct gc_arena gc =3D gc_new();
++  =
+  /* equal priority and RTT -> both in band; weights 30 and 70, sum 100:
++ =
+    * index 0 owns [0,30), index 1 owns [30,100)=2E */
++    const struct oo=
+b_probe_result base[] =3D {
++        { =2Eindex =3D 0, =2Eresponded =3D tru=
+e, =2Epriority =3D 10, =2Eweight =3D 30, =2Ertt_ms =3D 20 },
++        { =2E=
+index =3D 1, =2Eresponded =3D true, =2Epriority =3D 10, =2Eweight =3D 70, =
+=2Ertt_ms =3D 20 },
++    };
++    struct oob_probe_result r[2];
++
++    memcp=
+y(r, base, sizeof(base));
++    rank_rng_value =3D 10; /* falls in index 0's=
+ slice */
++    oob_rank_probe_results(r, 2, 50, rank_rng_fixed, &gc);
++    =
+assert_int_equal(r[0]=2Eindex, 0);
++
++    memcpy(r, base, sizeof(base));
++ =
+   rank_rng_value =3D 50; /* falls in index 1's slice */
++    oob_rank_prob=
+e_results(r, 2, 50, rank_rng_fixed, &gc);
++    assert_int_equal(r[0]=2Einde=
+x, 1);
 +
 +    gc_free(&gc);
 +}
 +
-+/* TLVs o=
-ther than probe_reply are skipped=2E */
++/* Non-responders are placed last, keepin=
+g their original relative order=2E */
 +static void
-+test_client_reply_rea=
-d_skips_unknown(void **state)
++test_rank_nonresponders=
+_last(void **state)
 +{
 +    struct gc_arena gc =3D gc_new();
-+   =
- struct buffer buf =3D alloc_buf_gc(128, &gc);
-+
-+    assert_true(oob_msg_w=
-rite_header(&buf, OOB_MSG_PROBE_REPLY));
-+    assert_true(oob_tlv_write_hea=
-der(&buf, 0x7ff, false, 4));
-+    assert_true(buf_write_u32(&buf, 0xabad1de=
-a));
-+    struct oob_probe_reply in =3D { =2Epriority =3D 7 };
-+    assert_=
-true(oob_probe_reply_write(&buf, &in));
-+
-+    struct oob_probe_reply out =
-=3D { 0 };
-+    assert_true(oob_client_reply_read(&buf, &out));
-+    assert=
-_int_equal(out=2Epriority, 7);
-+
-+    gc_free(&gc);
-+}
-+
-+/* A payload with=
- no probe_reply is rejected=2E */
-+static void
-+test_client_reply_read_miss=
-ing(void **state)
-+{
-+    struct gc_arena gc =3D gc_new();
-+    struct buff=
-er buf =3D alloc_buf_gc(128, &gc);
-+
-+    assert_true(oob_msg_write_header(=
-&buf, OOB_MSG_PROBE_REPLY));
-+    assert_true(oob_tlv_write_header(&buf, 0x=
-7ff, false, 4));
-+    assert_true(buf_write_u32(&buf, 0));
-+
 +    struct oo=
-b_probe_reply out =3D { 0 };
-+    assert_false(oob_client_reply_read(&buf, =
-&out));
-+
-+    gc_free(&gc);
-+}
-+
-+/* Likewise, a PROBE_REPLY reader reject=
-s a payload with the wrong message
-+ * type even when a valid probe_reply T=
-LV follows=2E */
-+static void
-+test_client_reply_read_wrong_msg_type(void *=
-*state)
-+{
-+    struct gc_arena gc =3D gc_new();
-+    struct buffer buf =3D=
- alloc_buf_gc(128, &gc);
-+
-+    assert_true(oob_msg_write_header(&buf, OOB_=
-MSG_SERVER_PROBE));
-+    struct oob_probe_reply in =3D { =2Epriority =3D 7 =
-};
-+    assert_true(oob_probe_reply_write(&buf, &in));
-+
-+    struct oob_pr=
-obe_reply out =3D { 0 };
-+    assert_false(oob_client_reply_read(&buf, &out=
-));
-+
-+    gc_free(&gc);
+b_probe_result r[] =3D {
++        { =2Eindex =3D 0, =2Eresponded =3D false =
+},
++        { =2Eindex =3D 1, =2Eresponded =3D true, =2Epriority =3D 10, =
+=2Eweight =3D 50, =2Ertt_ms =3D 20 },
++        { =2Eindex =3D 2, =2Erespond=
+ed =3D false },
++        { =2Eindex =3D 3, =2Eresponded =3D true, =2Epriori=
+ty =3D 10, =2Eweight =3D 50, =2Ertt_ms =3D 20 },
++    };
++    oob_rank_prob=
+e_results(r, 4, 10, rank_rng_zero, &gc);
++    assert_int_equal(r[0]=2Eindex=
+, 1); /* responder (rng_zero keeps order) */
++    assert_int_equal(r[1]=2Ei=
+ndex, 3); /* responder */
++    assert_int_equal(r[2]=2Eindex, 0); /* non-re=
+sponder, original order kept */
++    assert_int_equal(r[3]=2Eindex, 2);
++  =
+  gc_free(&gc);
 +}
 +
  int
  main(void)
  {
-@@ -365,6 +448,10 @@
-    =
-     cmocka_unit_test(test_build_probe_reply_valid),
-         cmocka_unit_t=
-est(test_build_probe_reply_stale),
-         cmocka_unit_test(test_build_pro=
-be_reply_no_parameter),
-+        cmocka_unit_test(test_client_reply_read_fi=
-nds_reply),
-+        cmocka_unit_test(test_client_reply_read_skips_unknown)=
-,
-+        cmocka_unit_test(test_client_reply_read_missing),
-+        cmock=
-a_unit_test(test_client_reply_read_wrong_msg_type),
-     };
+@@ -452,6 +590,12 @@
+         cmoc=
+ka_unit_test(test_client_reply_read_skips_unknown),
+         cmocka_unit_te=
+st(test_client_reply_read_missing),
+         cmocka_unit_test(test_client_r=
+eply_read_wrong_msg_type),
++        cmocka_unit_test(test_rank_responder_be=
+fore_nonresponder),
++        cmocka_unit_test(test_rank_by_priority),
++    =
+    cmocka_unit_test(test_rank_candidate_band),
++        cmocka_unit_test(t=
+est_rank_advertised_margin),
++        cmocka_unit_test(test_rank_weighted_s=
+election),
++        cmocka_unit_test(test_rank_nonresponders_last),
+     };=
+
  
-     return c=
-mocka_run_group_tests_name("oob tests", tests, NULL, NULL);
+     return cmocka_run_group_tests_name("oob tests", tests, NULL, NULL);=
+
 
 -- 
-To view, v=
-isit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1745?usp=3Demail
-To unsubscr=
-ibe, or for help writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/=
-settings?usp=3Demail
+To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1746?usp=3De=
+mail
+To unsubscribe, or for help writing mail filters, visit http://gerrit=
+=2Eopenvpn=2Enet/settings?usp=3Demail
 
 Gerrit-MessageType: newchange
-Gerrit-Project: openvpn=
-
+Gerrit=
+-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: If04ce09d4c353f5384c0c48f48f63e058=
-69a373f
-Gerrit-Change-Number: 1745
+Gerrit-Change-Id: I55da68cc341bcfc7=
+07fd34ca2f84ff9b6a55501f
+Gerrit-Change-Number: 1746
 Gerrit-PatchSet: 1
-Gerrit-Owner: stipa <=
-lstipakov@gmail=2Ecom>
-Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eo=
-rg>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
 Gerr=
-it-Attention: plaisthos <arne-openvpn@rfc2549=2Eorg>
+it-Owner: stipa <lstipakov@gmail=2Ecom>
+Gerrit-Reviewer: plaisthos <arne-op=
+envpn@rfc2549=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esource=
+forge=2Enet>
+Gerrit-Attention: plaisthos <arne-openvpn@rfc2549=2Eorg>
 
---+RpeiVA35+4=
+--ywD4Iu1UKjw=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
@@ -544,284 +831,525 @@ rently required from: plaisthos=2E </p>
 <p>stipa would like plaisthos to <s=
 trong>review</strong> this change=2E
 </p><p><a href=3D"http://gerrit=2Eopen=
-vpn=2Enet/c/openvpn/+/1745?usp=3Demail">View Change</a></p><pre class=3D"bl=
+vpn=2Enet/c/openvpn/+/1746?usp=3Demail">View Change</a></p><pre class=3D"bl=
 ocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">oo=
-b: Add client PROBE_REPLY parser<br><br>Add oob_client_reply_read(), the cl=
-ient-side counterpart of<br>oob_server_probe_read(): it scans the TLV paylo=
-ad of a received PROBE_REPLY<br>for the probe_reply TLV, skipping other/fut=
-ure TLV types=2E<br><br>Factor the shared TLV scan used by both into a stat=
-ic oob_find_tlv() helper<br>so the two readers no longer duplicate the loop=
-=2E<br><br>Change-Id: If04ce09d4c353f5384c0c48f48f63e05869a373f<br>Signed-o=
-ff-by: Lev Stipakov &lt;lev@openvpn=2Enet&gt;<br>---<br>M src/openvpn/oob=
-=2Ec<br>M src/openvpn/oob=2Eh<br>M tests/unit_tests/openvpn/test_oob=2Ec<br=
->3 files changed, 130 insertions(+), 15 deletions(-)<br><br></pre><pre clas=
-s=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wr=
-ap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/45/17=
-45/1</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-=
-wrap;"><span>diff --git a/src/openvpn/oob=2Ec b/src/openvpn/oob=2Ec</span><=
-br><span>index f7af0ef=2E=2E9cc7c42 100644</span><br><span>--- a/src/openvp=
-n/oob=2Ec</span><br><span>+++ b/src/openvpn/oob=2Ec</span><br><span>@@ -160=
-,31 +160,28 @@</span><br><span>            &amp;&amp; oob_probe_parameter_w=
-rite(buf, param);</span><br><span> }</span><br><span> </span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-bool</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-oob_server_probe_read(struct buffer *payload, struct oob_pr=
-obe_parameter *param)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+/* Scan @p payload for the first TLV of type @p wanted_type, skipping any=
- other</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * (e=2Eg=2E =
-future) TLV types=2E On success @p payload is left positioned at that</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ * TLV&#39;s value and *v=
-alue_len is its declared length=2E Returns false if the TLV</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+ * is not found or a header/length =
-is malformed=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+s=
-tatic bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+oob_find_=
-tlv(struct buffer *payload, uint16_t wanted_type, uint16_t *value_len)</spa=
-n><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if =
-(!oob_msg_read_header(payload, OOB_MSG_SERVER_PROBE))</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-        return false;</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* A TLV header i=
-s 4 bytes (type + length)=2E Loop until we either find the</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-     * probe_parameter or run out of w=
-ell-formed TLVs=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    /* A TLV header is 4 bytes (type + length)=2E */</span><br><span>    =
- while (BLEN(payload) &gt;=3D 4)</span><br><span>     {</span><br><span>   =
-      uint16_t type;</span><br><span>         bool optional;</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-        uint16_t value_len;</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        if (!oob_tlv_read_head=
-er(payload, &amp;type, &amp;optional, &amp;value_len))</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        if (!oob_tlv_read_header(payload=
-, &amp;type, &amp;optional, value_len))</span><br><span>         {</span><b=
-r><span>             return false;</span><br><span>         }</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-        if (type =3D=3D OOB_TLV_PRO=
-BE_PARAMETER)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  if (type =3D=3D wanted_type)</span><br><span>         {</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-            return oob_probe_parameter_=
-read(payload, param, value_len);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+            return true;</span><br><span>         }</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-        /* not the TLV we are lo=
-oking for: skip its value and keep scanning */</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-        if (!buf_advance(payload, value_len))</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* not the TLV w=
-e want: skip its value and keep scanning */</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        if (!buf_advance(payload, *value_len))</spa=
-n><br><span>         {</span><br><span>             return false;</span><br=
-><span>         }</span><br><span>@@ -193,12 +190,30 @@</span><br><span> }<=
-/span><br><span> </span><br><span> bool</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+oob_server_probe_read(struct buffer *payload, struct oo=
-b_probe_parameter *param)</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint16_t=
- value_len;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    retu=
-rn oob_msg_read_header(payload, OOB_MSG_SERVER_PROBE)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+           &amp;&amp; oob_find_tlv(payloa=
-d, OOB_TLV_PROBE_PARAMETER, &amp;value_len)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+           &amp;&amp; oob_probe_parameter_read(payl=
-oad, param, value_len);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+b: Add probe-result ranking for server selection<br><br>Add oob_rank_probe_=
+results(), which orders remotes best-first from their probe<br>results, fol=
+lowing the DNS-SRV (RFC 2782) semantics of the probe_reply TLV:<br><br>  - =
+remotes that answered rank before those that did not (non-responders keep<b=
+r>    their original relative order, last);<br>  - responders are grouped b=
+y priority, lowest value first (an absolute<br>    ordering, never overridd=
+en by latency or weight);<br>  - within a priority group the &quot;candidat=
+es&quot; are the responders whose RTT is<br>    within a margin of the fast=
+est (see oob_effective_margin()); candidates<br>    rank ahead of non-candi=
+dates;<br>  - candidates are ordered by RFC-2782 weighted-random selection =
+by weight, so<br>    a server is chosen first with probability proportional=
+ to its weight (load<br>    distribution); non-candidates follow, ordered b=
+y RTT=2E<br><br>The RNG is injected as a function pointer so this module st=
+ays free of the<br>crypto layer and the weighted ordering is deterministica=
+lly unit-testable<br>(production passes get_random; the tests pass stubs)=
+=2E<br><br>RTT is only populated once the client measures it (a later commi=
+t); until then<br>every responder sits in the band and selection is purely =
+weighted-random=2E<br><br>Change-Id: I55da68cc341bcfc707fd34ca2f84ff9b6a555=
+01f<br>Signed-off-by: Lev Stipakov &lt;lev@openvpn=2Enet&gt;<br>---<br>M sr=
+c/openvpn/oob=2Ec<br>M src/openvpn/oob=2Eh<br>M tests/unit_tests/openvpn/te=
+st_oob=2Ec<br>3 files changed, 343 insertions(+), 0 deletions(-)<br><br></p=
+re><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-s=
+pace: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/c=
+hanges/46/1746/1</pre><pre style=3D"font-family: monospace,monospace; white=
+-space: pre-wrap;"><span>diff --git a/src/openvpn/oob=2Ec b/src/openvpn/oob=
+=2Ec</span><br><span>index 9cc7c42=2E=2E9b359dd 100644</span><br><span>--- =
+a/src/openvpn/oob=2Ec</span><br><span>+++ b/src/openvpn/oob=2Ec</span><br><=
+span>@@ -241,3 +241,151 @@</span><br><span>     /* priority/weight/connect_=
+lifetime/flags left at 0 for now */</span><br><span>     return true;</span=
+><br><span> }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Base ordering: respond=
+ers before non-responders, then by priority (lower</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ * first), then by RTT (lower first), then b=
+y original index for determinism=2E</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+ * This groups responders into priority runs pre-sorted by =
+RTT, which the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * ca=
+ndidate-band step below relies on (run[0] is the fastest in its group)=2E *=
+/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static int</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+oob_probe_result_compare(co=
+nst void *a, const void *b)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const =
+struct oob_probe_result *ra =3D a;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    const struct oob_probe_result *rb =3D b;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    if (ra-&gt;responded !=3D rb-&gt;responded)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        return ra-&gt;responded ? -1 : 1=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    if (ra-&gt;responded)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        if (ra-&gt;priority !=3D rb-&gt;=
+priority)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            return r=
+a-&gt;priority &lt; rb-&gt;priority ? -1 : 1;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        if (ra-&gt;rtt_ms !=3D rb-&gt;rtt_ms)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            return ra-&gt;rtt_ms &lt; rb-=
+&gt;rtt_ms ? -1 : 1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    return ra-&gt;index=
+ - rb-&gt;index;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+int</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+oob_effective_margin(const struct oob_probe_result *r, i=
+nt client_margin)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (client_margi=
+n &gt;=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return client=
+_margin; /* the client&#39;s own setting is authoritative */</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    if (r-&gt;max_latency_diff &gt; 0)</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        return (int)r-&gt;max_latency_dif=
+f; /* else the server&#39;s advertised value */</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    return OOB_DEFAULT_LATENCY_MARGIN_MS;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/=
+* Reorder the index list @p idx[0=2E=2Em) into DNS-SRV (RFC 2782) weighted-=
+random</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * order by r=
+esults[idx[k]]=2Eweight: each position is filled by a remaining entry</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ * chosen with probabilit=
+y proportional to its weight=2E When all remaining</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ * weights are 0 the current (RTT-sorted) or=
+der is kept=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+st=
+atic void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+oob_weight=
+ed_order(const struct oob_probe_result *results, int *idx, int m, long (*rn=
+g)(void))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    for (int pos =3D 0; pos =
+&lt; m; pos++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        long sum =
+=3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        for (=
+int k =3D pos; k &lt; m; k++)</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+            sum +=3D results[idx[k]]=2Eweight;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        int chosen =3D pos;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        if (sum &gt; 0)</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            long r =3D rng() % sum; /* uniform in [0, su=
+m) */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            lo=
+ng acc =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      for (int k =3D pos; k &lt; m; k++)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+                acc +=3D results[idx[k]]=2Eweight;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                if (acc &gt; =
+r)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                {=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                   =
+ chosen =3D k;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+               break;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+                }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+            }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        int t =
+=3D idx[pos];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  idx[pos] =3D idx[chosen];</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        idx[chosen] =3D t;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+/* Reorder one priority run (@p run[=
+0=2E=2Em), already RTT-sorted) in place:</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ * candidates (RTT within the band of the fastest) fir=
+st, ordered by weighted</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ * random; then non-candidates in RTT order=2E */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+oob_order_priority_run(struct oob_probe_result *r=
+un, int m, int client_margin, long (*rng)(void),</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+                       struct gc_arena *gc)</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    if (m &lt;=3D 1)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        return;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    unsigned in=
+t best_rtt =3D run[0]=2Ertt_ms; /* run is RTT-sorted: [0] is fastest */</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    int *cand =3D gc_malloc(sizeof(int) *=
+ m, false, gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+int *non =3D gc_malloc(sizeof(int) * m, false, gc);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    int nc =3D 0;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    int nn =3D 0;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    for (int k =3D 0; k &lt; m; k++)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        if (run[k]=2Ertt_ms - best_rtt=
+ &lt; (unsigned int)oob_effective_margin(&amp;run[k], client_margin))</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+            cand[nc++] =3D k;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        else</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            non[nn++] =3D k;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    oob_w=
+eighted_order(run, cand, nc, rng);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+struct oob_probe_result *tmp =3D gc_malloc(sizeof(*tmp) * m, false, gc);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    int t =3D 0;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (int k =3D 0; k &=
+lt; nc; k++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        tmp[t++] =3D =
+run[cand[k]];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (int k =3D 0=
+; k &lt; nn; k++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        tmp[t++]=
+ =3D run[non[k]];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    memcpy(run, =
+tmp, sizeof(*run) * m);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
 ;">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span> oob_client_=
-reply_write(struct buffer *buf, const struct oob_probe_reply *reply)</span>=
-<br><span> {</span><br><span>     return oob_msg_write_header(buf, OOB_MSG_=
-PROBE_REPLY) &amp;&amp; oob_probe_reply_write(buf, reply);</span><br><span>=
- }</span><br><span> </span><br><span> bool</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+oob_client_reply_read(struct buffer *payload, struct=
- oob_probe_reply *reply)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint16_t =
-value_len;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    retur=
-n oob_msg_read_header(payload, OOB_MSG_PROBE_REPLY)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+           &amp;&amp; oob_find_tlv(payloa=
-d, OOB_TLV_PROBE_REPLY, &amp;value_len)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+           &amp;&amp; oob_probe_reply_read(payload, rep=
-ly, value_len);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span> oob_timestamp_in_wi=
-ndow(uint64_t probe_ts, uint64_t now, uint64_t window_secs)</span><br><span=
-> {</span><br><span>     uint64_t diff =3D (now &gt; probe_ts) ? (now - pro=
-be_ts) : (probe_ts - now);</span><br><span>diff --git a/src/openvpn/oob=2Eh=
- b/src/openvpn/oob=2Eh</span><br><span>index 93c44b0=2E=2E9040416 100644</s=
-pan><br><span>--- a/src/openvpn/oob=2Eh</span><br><span>+++ b/src/openvpn/o=
-ob=2Eh</span><br><span>@@ -170,6 +170,19 @@</span><br><span> bool oob_clien=
-t_reply_write(struct buffer *buf, const struct oob_probe_reply *reply);</sp=
-an><br><span> </span><br><span> /**</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+ * Read a received OOB PROBE_REPLY: verify its message-type=
- header, then scan</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-* for the probe_reply TLV; the client-side counterpart of</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+ * oob_server_probe_read()=2E TLV typ=
-es other than probe_reply are skipped=2E</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+ * @p payload is consumed as it is read=2E</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+ * @param payload  buffer positioned at the star=
-t of the OOB message payload</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+ * @param reply    filled with the parsed probe_reply on success</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return true if th=
-e header matched and a well-formed probe_reply was found,</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+ *         false otherwise</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+bool oob_client_reply_read(struct buffer *payl=
-oad, struct oob_probe_reply *reply);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*=
-*</span><br><span>  * Check whether a probe timestamp is within an acceptab=
-le window around the</span><br><span>  * current time=2E Used to cheaply dr=
-op replayed or implausibly-timed probes</span><br><span>  * before doing an=
-y further work (see the probe_parameter timestamp rationale</span><br><span=
->diff --git a/tests/unit_tests/openvpn/test_oob=2Ec b/tests/unit_tests/open=
-vpn/test_oob=2Ec</span><br><span>index a9998d2=2E=2E1029399 100644</span><b=
-r><span>--- a/tests/unit_tests/openvpn/test_oob=2Ec</span><br><span>+++ b/t=
-ests/unit_tests/openvpn/test_oob=2Ec</span><br><span>@@ -346,6 +346,89 @@</=
-span><br><span>     gc_free(&amp;gc);</span><br><span> }</span><br><span> <=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* A PROBE_REPLY car=
-rying a probe_reply is found by the client scan, with all</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+ * fields surviving=2E */</span><br><=
+an style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+oob_rank_probe_results(struct oob_probe_result *=
+results, int n, int client_margin,</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+                       long (*rng)(void), struct gc_arena *g=
+c)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    if (n &lt;=3D 1)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        return;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Bas=
+e order: responders first, grouped by priority, RTT-sorted within=2E */</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    qsort(results, (siz=
+e_t)n, sizeof(*results), oob_probe_result_compare);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    /* Reorder each priority run of responders by candidate-=
+band + weight=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    int i =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ while (i &lt; n &amp;&amp; results[i]=2Eresponded)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        int j =3D i;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        while (j &lt; n &amp;&amp; results[j]=2Erespon=
+ded &amp;&amp; results[j]=2Epriority =3D=3D results[i]=2Epriority)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            j++;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        oob_order_priority_run(results + i, j - i, =
+client_margin, rng, gc);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        i =3D j;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br>=
+<span>diff --git a/src/openvpn/oob=2Eh b/src/openvpn/oob=2Eh</span><br><spa=
+n>index 9040416=2E=2E65e84bd 100644</span><br><span>--- a/src/openvpn/oob=
+=2Eh</span><br><span>+++ b/src/openvpn/oob=2Eh</span><br><span>@@ -215,4 +2=
+15,55 @@</span><br><span> bool oob_build_probe_reply(struct buffer *probe_p=
+ayload, uint64_t now, uint64_t window_secs,</span><br><span>               =
+             const struct session_id *peer_sid, struct oob_probe_reply *rep=
+ly);</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+/* Candidate-band margin (ms) used when neither the client nor the serve=
+r</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * specifies one=
+=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define OOB_D=
+EFAULT_LATENCY_MARGIN_MS 10</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Outcome =
+of probing one remote, used to order remotes best-first=2E @index is</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ * the caller&#39;s identi=
+fier for the remote (e=2Eg=2E its position in the connection</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+ * list); priority/weight are only=
+ meaningful when @responded is true=2E */</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+struct oob_probe_result</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    int index;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    bool responded;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    uint16_t priority;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    uint16_t weight;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    uint16_t max_latency_diff; /* margin advertised by this server (=
+ms); 0 =3D use client default */</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    unsigned int rtt_ms;       /* probe round-trip time in ms =
+(responders only) */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++};</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+ * Order @p results best-first, in place, per the s=
+erver-probe selection policy:</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ *   - remotes that responded rank before those that did not (non=
+-responders keep</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
+    their original relative order, last);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+ *   - responders are grouped by priority, lowest pri=
+ority value first (an</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ *     absolute ordering, never overridden by latency or weight);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+ *   - within a priority gr=
+oup, the &quot;candidates&quot; are the responders whose RTT is</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+ *     within a margin of the f=
+astest in the group (see oob_effective_margin())=2E</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *     Candidates are ordered ahead of no=
+n-candidates;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *   -=
+ candidates are ordered by DNS-SRV (RFC 2782) weighted-random selection by<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *     weight, so a =
+server is chosen first with probability proportional to its</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+ *     weight (load distribution)=
+=2E Non-candidates follow, ordered by RTT=2E</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ * @param results        results to reorder in place</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+ * @param n              number of=
+ results</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param c=
+lient_margin  client&#39;s candidate-band margin in ms, or &lt; 0 if the</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ *                    =
+    client did not set one (see oob_effective_margin())</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+ * @param rng            returns a non-=
+negative random value (e=2Eg=2E get_random);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ *                       injected so this module s=
+tays free of the crypto layer</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ *                       and the weighted ordering is determinist=
+ically testable</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @=
+param gc             arena for scratch allocation</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+void oob_rank_probe_results(struct oob_probe_result *results,=
+ int n, int client_margin,</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+                            long (*rng)(void), struct gc_arena *gc);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ * The candidate-band margin (ms) that applies to one =
+probed remote=2E The client&#39;s</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ * own setting is authoritative: when @p client_margin &gt;=
+=3D 0 (the client set</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ * --server-probe with a value) it is used for every remote=2E Otherwise =
+the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * server&#39;s =
+advertised @c max_latency_diff is used when non-zero, falling back to</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ * OOB_DEFAULT_LATENCY_MA=
+RGIN_MS=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+int oob_effective_margin(=
+const struct oob_probe_result *r, int client_margin);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #endif /* OOB_H */</spa=
+n><br><span>diff --git a/tests/unit_tests/openvpn/test_oob=2Ec b/tests/unit=
+_tests/openvpn/test_oob=2Ec</span><br><span>index 1029399=2E=2Eb66ade2 1006=
+44</span><br><span>--- a/tests/unit_tests/openvpn/test_oob=2Ec</span><br><s=
+pan>+++ b/tests/unit_tests/openvpn/test_oob=2Ec</span><br><span>@@ -429,6 +=
+429,144 @@</span><br><span>     gc_free(&amp;gc);</span><br><span> }</span>=
+<br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Deter=
+ministic RNG stubs for the weighted-selection ordering=2E rank_rng_zero</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ * makes the weighted d=
+raw always pick the first remaining candidate, preserving</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ * order; rank_rng_fixed returns a va=
+lue we set to land in a chosen weight slice=2E */</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+static long</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+rank_rng_zero(void)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+static long rank_rng_value;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+static long</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+rank_rng_fixed(void)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    return rank_rng_value;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Responde=
+rs rank ahead of non-responders regardless of index order=2E */</span><br><=
 span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+test_client_reply_read_finds_reply(void=
- **state)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena gc =3D g=
-c_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct =
-buffer buf =3D alloc_buf_gc(128, &amp;gc);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    struct oob_probe_reply in =3D {</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        =2Epriority =3D 5,</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        =2Eweight =3D 50,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        =2Econnect_lifetime =3D 120,</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        =2Eflags =3D 1,<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    };</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    memcpy(in=2Epeer_session_id=
-=2Eid, &quot;SRVREPLY&quot;, SID_SIZE);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    assert_true(oob_client_reply_write(&amp;buf, &amp;i=
-n));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    struct oob_probe_reply out =3D=
- { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_t=
-rue(oob_client_reply_read(&amp;buf, &amp;out));</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    assert_memory_equal(out=2Epeer_session_id=
-=2Eid, in=2Epeer_session_id=2Eid, SID_SIZE);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    assert_int_equal(out=2Epriority, in=2Epriority=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_eq=
-ual(out=2Eweight, in=2Eweight);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    assert_int_equal(out=2Econnect_lifetime, in=2Econnect_lifet=
-ime);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int=
-_equal(out=2Eflags, in=2Eflags);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    gc=
-_free(&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+/* TLVs other than probe_reply are skippe=
-d=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_client_reply_re=
-ad_skips_unknown(void **state)</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    str=
-uct gc_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    struct buffer buf =3D alloc_buf_gc(128, &amp;gc);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    assert_true(oob_msg_write_header(&amp;buf, OOB=
-_MSG_PROBE_REPLY));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    assert_true(oob_tlv_write_header(&amp;buf, 0x7ff, false, 4));</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(buf_write_u32=
-(&amp;buf, 0xabad1dea));</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    struct oob_probe_reply in =3D { =2Epriority =3D 7 };</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    assert_true(oob_probe_reply_w=
-rite(&amp;buf, &amp;in));</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct oo=
-b_probe_reply out =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    assert_true(oob_client_reply_read(&amp;buf, &amp;out));</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(out=
-=2Epriority, 7);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+/* A payload with no probe_reply is rejected=2E */</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+test_client_reply_read_missing(voi=
+le=3D"color: hsl(120, 100%, 40%);">+test_rank_responder_before_nonresponder=
+(void **state)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena gc =
+=3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    st=
+ruct oob_probe_result r[] =3D {</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        { =2Eindex =3D 0, =2Eresponded =3D false },</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        { =2Eindex =3D 1, =2Ere=
+sponded =3D true, =2Epriority =3D 100, =2Eweight =3D 50 },</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    };</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    oob_rank_probe_results(r, 2, 10, rank_rng_zer=
+o, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ass=
+ert_int_equal(r[0]=2Eindex, 1);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    assert_int_equal(r[1]=2Eindex, 0);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* =
+Among responders, the lowest priority value wins (an absolute ordering)=2E =
+*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+test_rank_by_priority(voi=
 d **state)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><=
 br><span style=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena gc =3D =
 gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct=
- buffer buf =3D alloc_buf_gc(128, &amp;gc);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    assert_true(oob_msg_write_header(&amp;buf, OOB_MSG_PROBE_REPLY));<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(oob_=
-tlv_write_header(&amp;buf, 0x7ff, false, 4));</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    assert_true(buf_write_u32(&amp;buf, 0));</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    struct oob_probe_reply out =3D { 0 };=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_false(oo=
-b_client_reply_read(&amp;buf, &amp;out));</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    gc_free(&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+/* Likewise, a PROBE_REPLY reade=
-r rejects a payload with the wrong message</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ * type even when a valid probe_reply TLV follows=2E=
- */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+test_client_reply_read_w=
-rong_msg_type(void **state)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct=
- gc_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    struct buffer buf =3D alloc_buf_gc(128, &amp;gc);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    assert_true(oob_msg_write_header(&amp;buf, OOB_MS=
-G_SERVER_PROBE));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  struct oob_probe_reply in =3D { =2Epriority =3D 7 };</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    assert_true(oob_probe_reply_write(&a=
-mp;buf, &amp;in));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct oob_probe=
-_reply out =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    assert_false(oob_client_reply_read(&amp;buf, &amp;out));</span><br><s=
+ oob_probe_result r[] =3D {</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        { =2Eindex =3D 0, =2Eresponded =3D true, =2Epriority =3D 20=
+, =2Eweight =3D 50 },</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        { =2Eindex =3D 1, =2Eresponded =3D true, =2Epriority =3D 5, =2Ewe=
+ight =3D 50 },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   { =2Eindex =3D 2, =2Eresponded =3D true, =2Epriority =3D 10, =2Eweight =
+=3D 50 },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    };</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    oob_rank_probe_resu=
+lts(r, 3, 10, rank_rng_zero, &amp;gc);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    assert_int_equal(r[0]=2Eindex, 1); /* priority 5 */<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal=
+(r[1]=2Eindex, 2); /* priority 10 */</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    assert_int_equal(r[2]=2Eindex, 0); /* priority 20 */</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+/* Within a priority, only servers within the latency ma=
+rgin of the fastest are</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ * candidates; a slower (out-of-band) server ranks behind a faster one =
+no matter</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * how lar=
+ge its weight=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_ran=
+k_candidate_band(void **state)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    str=
+uct gc_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    struct oob_probe_result r[] =3D {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        { =2Eindex =3D 0, =2Eresponded =3D true=
+, =2Epriority =3D 10, =2Eweight =3D 1000, =2Ertt_ms =3D 100 },</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        { =2Eindex =3D 1, =2Eres=
+ponded =3D true, =2Epriority =3D 10, =2Eweight =3D 1, =2Ertt_ms =3D 20 },</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    };</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    /* margin 10ms: 20ms is fastes=
+t; 100ms is 80ms slower -&gt; out of band */</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    oob_rank_probe_results(r, 2, 10, rank_rng_zero=
+, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    asse=
+rt_int_equal(r[0]=2Eindex, 1); /* fast, in-band, despite tiny weight */</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(r[=
+1]=2Eindex, 0); /* slow, out-of-band, despite huge weight */</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+/* A server widens its own band via the advertised max_latency_diff, =
+joining the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * candi=
+date set even when it is well behind the fastest; it then participates in</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * the weighted selec=
+tion=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static vo=
+id</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_rank_adverti=
+sed_margin(void **state)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct gc=
+_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    struct oob_probe_result r[] =3D {</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        { =2Eindex =3D 0, =2Eresponded =3D true, =2Ep=
+riority =3D 10, =2Eweight =3D 1, =2Ertt_ms =3D 20 },</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        { =2Eindex =3D 1,</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+          =2Eresponded =3D true,</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+          =2Epriority =
+=3D 10,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+=2Eweight =3D 1000,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+          =2Ertt_ms =3D 100,</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+          =2Emax_latency_diff =3D 200 },</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    };</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    /* Client did not set a margin (-1), so each server&#3=
+9;s advertised value</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++     * applies: the 100ms server advertises 200 -&gt; it is a candidate (t=
+he</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * default 10=
+ would have excluded it); with weight 1000 (slice [1,1001)) a</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+     * draw of 500 selects it fir=
+st=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    rank_rn=
+g_value =3D 500;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ oob_rank_probe_results(r, 2, -1, rank_rng_fixed, &amp;gc);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(r[0]=2Eindex, =
+1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp=
+;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><s=
 pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span> int</span><br><span> main(void)</span><br><span> =
-{</span><br><span>@@ -365,6 +448,10 @@</span><br><span>         cmocka_unit=
-_test(test_build_probe_reply_valid),</span><br><span>         cmocka_unit_t=
-est(test_build_probe_reply_stale),</span><br><span>         cmocka_unit_tes=
-t(test_build_probe_reply_no_parameter),</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        cmocka_unit_test(test_client_reply_read_finds_r=
-eply),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        cmock=
-a_unit_test(test_client_reply_read_skips_unknown),</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(test_client_reply_r=
-ead_missing),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  cmocka_unit_test(test_client_reply_read_wrong_msg_type),</span><br><span>=
-     };</span><br><span> </span><br><span>     return cmocka_run_group_test=
-s_name(&quot;oob tests&quot;, tests, NULL, NULL);</span><br><span></span><b=
-r></pre><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvp=
-n/+/1745?usp=3Demail">change 1745</a>=2E To unsubscribe, or for help writin=
-g mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=
-=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg=
-/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=
-=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1745?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
-ew Change"/></div></div>
+ hsl(120, 100%, 40%);">+/* Among candidates, weight drives RFC-2782 proport=
+ional selection: a draw is</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ * mapped to the server whose cumulative weight slice it falls in=2E=
+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+test_rank_weighted_selec=
+tion(void **state)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena=
+ gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  /* equal priority and RTT -&gt; both in band; weights 30 and 70, sum 100:=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * index 0 owns=
+ [0,30), index 1 owns [30,100)=2E */</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    const struct oob_probe_result base[] =3D {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        { =2Eindex =3D 0, =2Ere=
+sponded =3D true, =2Epriority =3D 10, =2Eweight =3D 30, =2Ertt_ms =3D 20 },=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        { =2Eindex =
+=3D 1, =2Eresponded =3D true, =2Epriority =3D 10, =2Eweight =3D 70, =2Ertt_=
+ms =3D 20 },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    };<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct oob_probe=
+_result r[2];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    memcpy(r, base, sizeo=
+f(base));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    rank_r=
+ng_value =3D 10; /* falls in index 0&#39;s slice */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    oob_rank_probe_results(r, 2, 50, rank=
+_rng_fixed, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    assert_int_equal(r[0]=2Eindex, 0);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    memcpy(r, base, sizeof(base));</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    rank_rng_value =3D 50; /* falls in index 1&#39;s slice=
+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    oob_rank_pro=
+be_results(r, 2, 50, rank_rng_fixed, &amp;gc);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    assert_int_equal(r[0]=2Eindex, 1);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Non-r=
+esponders are placed last, keeping their original relative order=2E */</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+test_rank_nonresponders_last(voi=
+d **state)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena gc =3D =
+gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct=
+ oob_probe_result r[] =3D {</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        { =2Eindex =3D 0, =2Eresponded =3D false },</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        { =2Eindex =3D 1, =2Erespon=
+ded =3D true, =2Epriority =3D 10, =2Eweight =3D 50, =2Ertt_ms =3D 20 },</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        { =2Eindex =3D =
+2, =2Eresponded =3D false },</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        { =2Eindex =3D 3, =2Eresponded =3D true, =2Epriority =3D 1=
+0, =2Eweight =3D 50, =2Ertt_ms =3D 20 },</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    };</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    oob_rank_probe_results(r, 4, 10, rank_rng_zero, &amp;gc);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(r[0]=
+=2Eindex, 1); /* responder (rng_zero keeps order) */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(r[1]=2Eindex, 3); /*=
+ responder */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    as=
+sert_int_equal(r[2]=2Eindex, 0); /* non-responder, original order kept */</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(=
+r[3]=2Eindex, 2);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  gc_free(&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> =
+int</span><br><span> main(void)</span><br><span> {</span><br><span>@@ -452,=
+6 +590,12 @@</span><br><span>         cmocka_unit_test(test_client_reply_re=
+ad_skips_unknown),</span><br><span>         cmocka_unit_test(test_client_re=
+ply_read_missing),</span><br><span>         cmocka_unit_test(test_client_re=
+ply_read_wrong_msg_type),</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        cmocka_unit_test(test_rank_responder_before_nonresponder),</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_te=
+st(test_rank_by_priority),</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        cmocka_unit_test(test_rank_candidate_band),</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(test_rank_a=
+dvertised_margin),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       cmocka_unit_test(test_rank_weighted_selection),</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(test_rank_nonre=
+sponders_last),</span><br><span>     };</span><br><span> </span><br><span> =
+    return cmocka_run_group_tests_name(&quot;oob tests&quot;, tests, NULL, =
+NULL);</span><br><span></span><br></pre><p>To view, visit <a href=3D"http:/=
+/gerrit=2Eopenvpn=2Enet/c/openvpn/+/1746?usp=3Demail">change 1746</a>=2E To=
+ unsubscribe, or for help writing mail filters, visit <a href=3D"http://ger=
+rit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope=
+ itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"a=
+ction" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" h=
+ref=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1746?usp=3Demail"/><meta i=
+temprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: =
-newchange </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div=
->
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"d=
-isplay:none"> Gerrit-Change-Id: If04ce09d4c353f5384c0c48f48f63e05869a373f <=
-/div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1745 </div>
-<div s=
-tyle=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none=
-"> Gerrit-Owner: stipa &lt;lstipakov@gmail=2Ecom&gt; </div>
-<div style=3D"d=
-isplay:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-d=
-evel@lists=2Esourceforge=2Enet&gt; </div>
-<div style=3D"display:none"> Gerr=
-it-Attention: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"displ=
+ay:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none">=
+ Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch:=
+ master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I55da68cc341b=
+cfc707fd34ca2f84ff9b6a55501f </div>
+<div style=3D"display:none"> Gerrit-Cha=
+nge-Number: 1746 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </d=
+iv>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@gmail=2E=
+com&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;=
+arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-C=
+C: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<di=
+v style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@rfc2=
+549=2Eorg&gt; </div>
 
-</body><=
-/html>
---+RpeiVA35+4=--
+</body></html>
+--ywD4Iu1UKjw=--
 
 
---===============7358202814060382212==
+--===============6103127095243849514==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============7358202814060382212==
+--===============6103127095243849514==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -832,5 +1360,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============7358202814060382212==--
+--===============6103127095243849514==--
 
