@@ -4,69 +4,72 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8D533C43458
-	for <openvpn-devel@archiver.kernel.org>; Mon, 29 Jun 2026 18:15:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D69FFC43458
+	for <openvpn-devel@archiver.kernel.org>; Mon, 29 Jun 2026 19:50:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
-	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=aBi4jVR8cGup7Th8sbglyQhIDdnETDQjWnTrYqGuo3c=; b=Dv9WNd8v/x/PlOHWiRNzpB1L7Q
-	iLcz0oUO8PQ16Mn7K4FVyFY78GQl2OqXdNKHl/j/o1PnvlWCI2WHDHS0GmwPjS3KtgYQk3G4Gm+Qi
-	ZSBvWrk42F02g+IOLmvIi4Ksze2R5tSw/feBzMkxt+tL+evimQ6uovU5nsrv/Je3cAPM=;
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Reply-To:From:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:Subject:
+	MIME-Version:Message-ID:To:Date:Sender:Cc:Content-Transfer-Encoding:
+	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+	Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Owner;
+	bh=qxV5XS+Kxbr4/TyJt6dM27u2etP1NmUEcHiN4rWVcwI=; b=Vs3w8tPkinhoPvkbAmSYdjndI2
+	4KfECaM5nvoWb3Z4nZ8hZsgjtVthEu97ZtpBcnXlzHptm+T6FbZ1P2YQI7A+zHLGwwj01c8Svmdau
+	d8r2s2YQykusb2j96wwUCwmK2UjXkwMDkHyf30QPmmcwjGCIJdBEKIuGfhqwGxmKKB+U=;
 Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
 	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1weGVq-0001uU-Kt;
-	Mon, 29 Jun 2026 18:15:19 +0000
+	id 1weHzi-0003mm-A8;
+	Mon, 29 Jun 2026 19:50:15 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1weGVo-0001uN-Om
+ (envelope-from <samgithub@pm.me>) id 1weHzg-0003mf-PQ
  for openvpn-devel@lists.sourceforge.net;
- Mon, 29 Jun 2026 18:15:17 +0000
+ Mon, 29 Jun 2026 19:50:13 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ d=sourceforge.net; s=x; h=Content-Type:MIME-Version:Message-ID:Subject:From:
+ To:Date:Sender:Reply-To:Cc:Content-Transfer-Encoding:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=uIQggEUSV8w5QGVZa/d0kRcb43QaUXbl7VldWIGMYDY=; b=Y/Z+2kvZIoAZi5wvumXLPzm8rF
- dmxyG5NPeQuKQ38PGNu//WCLml2wNLPSr8DIlWdjZYm9d4RBtzp9mGPbkeUjqnJhcB+8ig+nfIxIn
- Icr3UgNQ/O+JkFOH/zdL4NCs8QDvoNsWxvbMXhaFQrEs5n+ElQNxynDxhBOFs7Rl2O5E=;
+ bh=Q9Byg77w1LNGFtubX/zGHs0OsdsyzNTxtjGj/JsyMnQ=; b=mK68uxLKvMR981WY9TCqAst9Nf
+ jX4wRfMixB7RAsvA6yPREHW+oTi7iq2nP+Bzr37Q1WNgdLajt0TPDNdNdHNUF9hVdqDz0CL+jpA1y
+ /+DVfGOe3wmqAeNN+fuGHnFOImXdEIBDkxbt/Hz/M9gDhwooFrS7orFmKd/sW52csvzA=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=uIQggEUSV8w5QGVZa/d0kRcb43QaUXbl7VldWIGMYDY=; b=B3G2Ure2NyPHrCmD36QKNlE3te
- lk7RFxRsAEtPpGG2Wsr3E1KPlZDLQX39y07GKa89bMzGcBdK4UbRZ1N+FmoB4qL//ye8q56BipKY1
- 8Tj7df31ic/pGwema35qVdbDGUNlRil7OfFkAPpCSmsCbur4lLsbCFD1w4gGMz7bEBZ0=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ h=Content-Type:MIME-Version:Message-ID:Subject:From:To:Date:Sender:Reply-To
+ :Cc:Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+ References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=Q9Byg77w1LNGFtubX/zGHs0OsdsyzNTxtjGj/JsyMnQ=; b=A
+ fSb75EXyAcBV4ILURb35H7X+VycXIBABrpWZQa5juw8t4bZafs1CQJ8oVZB/fUP4wwn2ADDb2rosv
+ 5vMFwvSwnsEv5w8O3jD+lJXE5vIu+KBSXDGPawhUZFJDo5xD+9sdl77SgwgqgX7MaSSCSBjLfvWN8
+ UwEncW40R5gQdIaw=;
+Received: from mail-10629.protonmail.ch ([79.135.106.29])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1weGVl-0005cp-MP for openvpn-devel@lists.sourceforge.net;
- Mon, 29 Jun 2026 18:15:17 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 65TIF5ki020064
- for <openvpn-devel@lists.sourceforge.net>; Mon, 29 Jun 2026 20:15:05 +0200
-Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 65TIF5k8020063
- for openvpn-devel@lists.sourceforge.net; Mon, 29 Jun 2026 20:15:05 +0200
-From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Mon, 29 Jun 2026 20:15:00 +0200
-Message-ID: <20260629181505.20031-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1782740317000.Icbcf4c79d577d9cf089a92378be9253b1e94825d@gerrit.openvpn.net>
-References: <gerrit.1782740317000.Icbcf4c79d577d9cf089a92378be9253b1e94825d@gerrit.openvpn.net>
+ id 1weHzf-0004OE-B0 for openvpn-devel@lists.sourceforge.net;
+ Mon, 29 Jun 2026 19:50:13 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me;
+ s=protonmail3; t=1782762604; x=1783021804;
+ bh=Q9Byg77w1LNGFtubX/zGHs0OsdsyzNTxtjGj/JsyMnQ=;
+ h=Date:To:From:Subject:Message-ID:Feedback-ID:From:To:Cc:Date:
+ Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
+ b=oMBnbgYeoRQfDM5CC2atCQEjrBcRyNc8jzn5ASfDNrO6T6uPSiS0wYErL92F2xm/T
+ Ce3PPN8o4EpgFWDzBVtgQLzh8bzacG3d1e/zOpQNMj4ztftSH595Ca/WMrlsoGWXCR
+ 5tCIbLaZnkxecMGomAH/tZA8JxuVlYkejXRYHSe1S46unIjIYXUaCXuDxzlXGRTDTi
+ Tc4T+UsE8X7HM9Eo67WG7Y5DnKY1rnSyptTy9kf2VmtxJ50EsGToNe7cWps+4J6HLF
+ GXq+7MZu+FaV0Tm6jv2EsroL2nD3DxZYggPvtgcuqxoSsDbo9a78T7MwcdmHB3SYIC
+ 4nnw+f/VqC5fQ==
+Date: Mon, 29 Jun 2026 19:50:00 +0000
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Message-ID: <_bJ1zZXmxAD6YHGNM2W5HBm8iTr9nSYO-a3PUY6guDPKD9ZNfmri_8fPnlnLBA984ahSqoMAdAcQeF4Xf_P5Ljk0mexlvZHXSOPGxGD5AEU=@pm.me>
+Feedback-ID: 192537181:user:proton
+X-Pm-Message-ID: bbe9c1e2a3185952b61b59f2a43b024162280cc6
 MIME-Version: 1.0
-X-Headers-End: 1weGVl-0005cp-MP
-Subject: [Openvpn-devel] [PATCH v1] GHA: Cherry-pick changes from master to
- keep working
+X-Headers-End: 1weHzf-0004OE-B0
+Subject: [Openvpn-devel] [PATCH] doc: clarify that --float only applies to
+ UDP
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -78,296 +81,162 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+From: Sami Rusani via Openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Reply-To: Sami Rusani <samgithub@pm.me>
+Content-Type: multipart/mixed; boundary="===============3461527620226005025=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@lichtenheld.com>
+--===============3461527620226005025==
+Content-Type: multipart/alternative;
+ boundary="b1=_X9Vun6sjR76n3REXB2I4cvJzwAW1H9RYapcHkEDT2Ko"
 
-Cherry-pick applicable changes from the following commits:
+--b1=_X9Vun6sjR76n3REXB2I4cvJzwAW1H9RYapcHkEDT2Ko
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
 
-- GHA: Switch to using VS 2026
-(cherry picked from commit 90499e51237cd11f813206371b7ba5176d8eb5ef)
-- GHA: Add caching for vcpkg builds
-(cherry picked from commit 157087736427059316ecff7dd21e16b54077221a)
-- GHA: Maintenance Update April 2026
-  - Updates GHA actions
-  - Switch uncrustify job to archive: false
-  - Drop macos-14 builds
-(cherry picked from commit cc2926fd5d09fd501b51520ed5a0b69399db85da)
-GHA: Maintenance update June 2026
-  - chore(deps): update github actions
-  - chore(deps): update vcpkg digest to 75672db
-(cherry picked from commit f9e6d5d724851a938a0c064307db513df469eb62)
+VGhlIC0tZmxvYXQgb3B0aW9uIGxldHMgT3BlblZQTiBhY2NlcHQgYXV0aGVudGljYXRlZCBwYWNr
+ZXRzIGZyb20gYQpjaGFuZ2VkIHBlZXIgYWRkcmVzcy4gVGhhdCBvbmx5IGFwcGxpZXMgdG8gVURQ
+IHRyYW5zcG9ydHM7IFRDUCBuZWVkcyBhCm5ldyBjb25uZWN0aW9uIHdoZW4gdGhlIHBlZXIgYWRk
+cmVzcyBjaGFuZ2VzLgoKRG9jdW1lbnQgdGhlIHRyYW5zcG9ydCBsaW1pdGF0aW9uIGluIHRoZSBt
+YW4gcGFnZSBhbmQgdXNhZ2UgdGV4dC4KCkdpdGh1YjogZml4ZXMgT3BlblZQTi9vcGVudnBuIzM1
+OAotLS0KZG9jL21hbi1zZWN0aW9ucy9saW5rLW9wdGlvbnMucnN0IHwgNCArKysrCnNyYy9vcGVu
+dnBuL29wdGlvbnMuYyB8IDUgKysrLS0KMiBmaWxlcyBjaGFuZ2VkLCA3IGluc2VydGlvbnMoKyks
+IDIgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZG9jL21hbi1zZWN0aW9ucy9saW5rLW9wdGlv
+bnMucnN0IGIvZG9jL21hbi1zZWN0aW9ucy9saW5rLW9wdGlvbnMucnN0CmluZGV4IGVkZGExY2Eu
+LjYwZjA5OGMgMTAwNjQ0Ci0tLSBhL2RvYy9tYW4tc2VjdGlvbnMvbGluay1vcHRpb25zLnJzdAor
+KysgYi9kb2MvbWFuLXNlY3Rpb25zL2xpbmstb3B0aW9ucy5yc3QKQEAgLTEzLDYgKzEzLDEwIEBA
+IHRoZSBsb2NhbCBhbmQgdGhlIHJlbW90ZSBob3N0LgotLWZsb2F0CkFsbG93IHJlbW90ZSBwZWVy
+IHRvIGNoYW5nZSBpdHMgSVAgYWRkcmVzcyBhbmQvb3IgcG9ydCBudW1iZXIsIHN1Y2ggYXMKZHVl
+IHRvIERIQ1AgKHRoaXMgaXMgdGhlIGRlZmF1bHQgaWYgYGAtLXJlbW90ZWBgIGlzIG5vdCB1c2Vk
+KS4KKyBUaGlzIG9wdGlvbiBvbmx5IGFwcGxpZXMgdG8gVURQIHRyYW5zcG9ydHMgKGZvciBleGFt
+cGxlLAorIGBgLS1wcm90byB1ZHBgYCkuIFRDUCBjb25uZWN0aW9ucyBjYW5ub3QgZmxvYXQgdG8g
+YSBkaWZmZXJlbnQgcGVlcgorIGFkZHJlc3MgYmVjYXVzZSB0aGF0IHJlcXVpcmVzIGVzdGFibGlz
+aGluZyBhIG5ldyBUQ1AgY29ubmVjdGlvbi4KKwpgYC0tZmxvYXRgYCB3aGVuIHNwZWNpZmllZCB3
+aXRoIGBgLS1yZW1vdGVgYCBhbGxvd3MgYW4gT3BlblZQTiBzZXNzaW9uCnRvIGluaXRpYWxseSBj
+b25uZWN0IHRvIGEgcGVlciBhdCBhIGtub3duIGFkZHJlc3MsIGhvd2V2ZXIgaWYgcGFja2V0cwph
+cnJpdmUgZnJvbSBhIG5ldyBhZGRyZXNzIGFuZCBwYXNzIGFsbCBhdXRoZW50aWNhdGlvbiB0ZXN0
+cywgdGhlIG5ldwpkaWZmIC0tZ2l0IGEvc3JjL29wZW52cG4vb3B0aW9ucy5jIGIvc3JjL29wZW52
+cG4vb3B0aW9ucy5jCmluZGV4IGY0MTQwMjQuLjBhOTVhODEgMTAwNjQ0Ci0tLSBhL3NyYy9vcGVu
+dnBuL29wdGlvbnMuYworKysgYi9zcmMvb3BlbnZwbi9vcHRpb25zLmMKQEAgLTE3NSw4ICsxNzUs
+OSBAQCBzdGF0aWMgY29uc3QgY2hhciB1c2FnZV9tZXNzYWdlW10gPQoiLS1yZXNvbHYtcmV0cnkg
+bjogSWYgaG9zdG5hbWUgcmVzb2x2ZSBmYWlscyBmb3IgLS1yZW1vdGUsIHJldHJ5XG4iCiIgcmVz
+b2x2ZSBmb3IgbiBzZWNvbmRzIGJlZm9yZSBmYWlsaW5nIChkaXNhYmxlZCBieSBkZWZhdWx0KS5c
+biIKIiBTZXQgbj1cImluZmluaXRlXCIgdG8gcmV0cnkgaW5kZWZpbml0ZWx5LlxuIgotICItLWZs
+b2F0IDogQWxsb3cgcmVtb3RlIHRvIGNoYW5nZSBpdHMgSVAgYWRkcmVzcy9wb3J0LCBzdWNoIGFz
+IHRocm91Z2hcbiIKLSAiIERIQ1AgKHRoaXMgaXMgdGhlIGRlZmF1bHQgaWYgLS1yZW1vdGUgaXMg
+bm90IHVzZWQpLlxuIgorICItLWZsb2F0IDogQWxsb3cgcmVtb3RlIFVEUCBwZWVyIHRvIGNoYW5n
+ZSBpdHMgSVAgYWRkcmVzcy9wb3J0LFxuIgorICIgc3VjaCBhcyB0aHJvdWdoIERIQ1AgKGRlZmF1
+bHQgaWYgLS1yZW1vdGUgaXMgbm90IHVzZWQpLlxuIgorICIgT25seSBhcHBsaWVzIHRvIFVEUCB0
+cmFuc3BvcnRzLlxuIgoiLS1pcGNoYW5nZSBjbWQgOiBSdW4gY29tbWFuZCBjbWQgb24gcmVtb3Rl
+IGlwIGFkZHJlc3MgaW5pdGlhbFxuIgoiIHNldHRpbmcgb3IgY2hhbmdlIC0tIGV4ZWN1dGUgYXM6
+IGNtZCBpcC1hZGRyZXNzIHBvcnQjXG4iCiItLXBvcnQgcG9ydCA6IFRDUC9VRFAgcG9ydCAjIGZv
+ciBib3RoIGxvY2FsIGFuZCByZW1vdGUuXG4iCi0tCjIuNTMuMA==
 
-Further changes:
-  - Drop macos-13 builds
-  - Add macos-26 builds
-  - Drop openssl@1.1 from macOS, not available in all versions anymore
+--b1=_X9Vun6sjR76n3REXB2I4cvJzwAW1H9RYapcHkEDT2Ko
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: base64
 
-Change-Id: Icbcf4c79d577d9cf089a92378be9253b1e94825d
-Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
-Acked-by: Arne Schwabe <arne-openvpn@rfc2549.org>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1754
----
+PGRpdiBzdHlsZT0iZm9udC1mYW1pbHk6IEFyaWFsLCBzYW5zLXNlcmlmOyBmb250LXNpemU6IDE0
+cHg7Ij48c3Bhbj5UaGUgLS1mbG9hdCBvcHRpb24gbGV0cyBPcGVuVlBOIGFjY2VwdCBhdXRoZW50
+aWNhdGVkIHBhY2tldHMgZnJvbSBhPC9zcGFuPjxkaXY+PHNwYW4+Y2hhbmdlZCBwZWVyIGFkZHJl
+c3MuIFRoYXQgb25seSBhcHBsaWVzIHRvIFVEUCB0cmFuc3BvcnRzOyBUQ1AgbmVlZHMgYTwvc3Bh
+bj48L2Rpdj48ZGl2PjxzcGFuPm5ldyBjb25uZWN0aW9uIHdoZW4gdGhlIHBlZXIgYWRkcmVzcyBj
+aGFuZ2VzLjwvc3Bhbj48L2Rpdj48ZGl2Pjxicj48L2Rpdj48ZGl2PjxzcGFuPkRvY3VtZW50IHRo
+ZSB0cmFuc3BvcnQgbGltaXRhdGlvbiBpbiB0aGUgbWFuIHBhZ2UgYW5kIHVzYWdlIHRleHQuPC9z
+cGFuPjwvZGl2PjxkaXY+PGJyPjwvZGl2PjxkaXY+PHNwYW4+R2l0aHViOiBmaXhlcyBPcGVuVlBO
+L29wZW52cG4jMzU4PC9zcGFuPjwvZGl2PjxkaXY+PHNwYW4+LS0tPC9zcGFuPjwvZGl2PjxkaXY+
+PHNwYW4+Jm5ic3A7ZG9jL21hbi1zZWN0aW9ucy9saW5rLW9wdGlvbnMucnN0IHwgNCArKysrPC9z
+cGFuPjwvZGl2PjxkaXY+PHNwYW4+Jm5ic3A7c3JjL29wZW52cG4vb3B0aW9ucy5jICZuYnNwOyAm
+bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7IHwgNSArKystLTwvc3Bhbj48L2Rpdj48
+ZGl2PjxzcGFuPiZuYnNwOzIgZmlsZXMgY2hhbmdlZCwgNyBpbnNlcnRpb25zKCspLCAyIGRlbGV0
+aW9ucygtKTwvc3Bhbj48L2Rpdj48ZGl2Pjxicj48L2Rpdj48ZGl2PjxzcGFuPmRpZmYgLS1naXQg
+YS9kb2MvbWFuLXNlY3Rpb25zL2xpbmstb3B0aW9ucy5yc3QgYi9kb2MvbWFuLXNlY3Rpb25zL2xp
+bmstb3B0aW9ucy5yc3Q8L3NwYW4+PC9kaXY+PGRpdj48c3Bhbj5pbmRleCBlZGRhMWNhLi42MGYw
+OThjIDEwMDY0NDwvc3Bhbj48L2Rpdj48ZGl2PjxzcGFuPi0tLSBhL2RvYy9tYW4tc2VjdGlvbnMv
+bGluay1vcHRpb25zLnJzdDwvc3Bhbj48L2Rpdj48ZGl2PjxzcGFuPisrKyBiL2RvYy9tYW4tc2Vj
+dGlvbnMvbGluay1vcHRpb25zLnJzdDwvc3Bhbj48L2Rpdj48ZGl2PjxzcGFuPkBAIC0xMyw2ICsx
+MywxMCBAQCB0aGUgbG9jYWwgYW5kIHRoZSByZW1vdGUgaG9zdC48L3NwYW4+PC9kaXY+PGRpdj48
+c3Bhbj4mbmJzcDstLWZsb2F0PC9zcGFuPjwvZGl2PjxkaXY+PHNwYW4+Jm5ic3A7ICZuYnNwO0Fs
+bG93IHJlbW90ZSBwZWVyIHRvIGNoYW5nZSBpdHMgSVAgYWRkcmVzcyBhbmQvb3IgcG9ydCBudW1i
+ZXIsIHN1Y2ggYXM8L3NwYW4+PC9kaXY+PGRpdj48c3Bhbj4mbmJzcDsgJm5ic3A7ZHVlIHRvIERI
+Q1AgKHRoaXMgaXMgdGhlIGRlZmF1bHQgaWYgYGAtLXJlbW90ZWBgIGlzIG5vdCB1c2VkKS48L3Nw
+YW4+PC9kaXY+PGRpdj48c3Bhbj4rICZuYnNwO1RoaXMgb3B0aW9uIG9ubHkgYXBwbGllcyB0byBV
+RFAgdHJhbnNwb3J0cyAoZm9yIGV4YW1wbGUsPC9zcGFuPjwvZGl2PjxkaXY+PHNwYW4+KyAmbmJz
+cDtgYC0tcHJvdG8gdWRwYGApLiBUQ1AgY29ubmVjdGlvbnMgY2Fubm90IGZsb2F0IHRvIGEgZGlm
+ZmVyZW50IHBlZXI8L3NwYW4+PC9kaXY+PGRpdj48c3Bhbj4rICZuYnNwO2FkZHJlc3MgYmVjYXVz
+ZSB0aGF0IHJlcXVpcmVzIGVzdGFibGlzaGluZyBhIG5ldyBUQ1AgY29ubmVjdGlvbi48L3NwYW4+
+PC9kaXY+PGRpdj48c3Bhbj4rPC9zcGFuPjwvZGl2PjxkaXY+PHNwYW4+Jm5ic3A7ICZuYnNwO2Bg
+LS1mbG9hdGBgIHdoZW4gc3BlY2lmaWVkIHdpdGggYGAtLXJlbW90ZWBgIGFsbG93cyBhbiBPcGVu
+VlBOIHNlc3Npb248L3NwYW4+PC9kaXY+PGRpdj48c3Bhbj4mbmJzcDsgJm5ic3A7dG8gaW5pdGlh
+bGx5IGNvbm5lY3QgdG8gYSBwZWVyIGF0IGEga25vd24gYWRkcmVzcywgaG93ZXZlciBpZiBwYWNr
+ZXRzPC9zcGFuPjwvZGl2PjxkaXY+PHNwYW4+Jm5ic3A7ICZuYnNwO2Fycml2ZSBmcm9tIGEgbmV3
+IGFkZHJlc3MgYW5kIHBhc3MgYWxsIGF1dGhlbnRpY2F0aW9uIHRlc3RzLCB0aGUgbmV3PC9zcGFu
+PjwvZGl2PjxkaXY+PHNwYW4+ZGlmZiAtLWdpdCBhL3NyYy9vcGVudnBuL29wdGlvbnMuYyBiL3Ny
+Yy9vcGVudnBuL29wdGlvbnMuYzwvc3Bhbj48L2Rpdj48ZGl2PjxzcGFuPmluZGV4IGY0MTQwMjQu
+LjBhOTVhODEgMTAwNjQ0PC9zcGFuPjwvZGl2PjxkaXY+PHNwYW4+LS0tIGEvc3JjL29wZW52cG4v
+b3B0aW9ucy5jPC9zcGFuPjwvZGl2PjxkaXY+PHNwYW4+KysrIGIvc3JjL29wZW52cG4vb3B0aW9u
+cy5jPC9zcGFuPjwvZGl2PjxkaXY+PHNwYW4+QEAgLTE3NSw4ICsxNzUsOSBAQCBzdGF0aWMgY29u
+c3QgY2hhciB1c2FnZV9tZXNzYWdlW10gPTwvc3Bhbj48L2Rpdj48ZGl2PjxzcGFuPiZuYnNwOyAm
+bmJzcDsgJm5ic3A7Ii0tcmVzb2x2LXJldHJ5IG46IElmIGhvc3RuYW1lIHJlc29sdmUgZmFpbHMg
+Zm9yIC0tcmVtb3RlLCByZXRyeVxuIjwvc3Bhbj48L2Rpdj48ZGl2PjxzcGFuPiZuYnNwOyAmbmJz
+cDsgJm5ic3A7IiAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwO3Jlc29sdmUgZm9yIG4gc2Vjb25kcyBiZWZvcmUgZmFpbGluZyAoZGlz
+YWJsZWQgYnkgZGVmYXVsdCkuXG4iPC9zcGFuPjwvZGl2PjxkaXY+PHNwYW4+Jm5ic3A7ICZuYnNw
+OyAmbmJzcDsiICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNw
+OyAmbmJzcDsgJm5ic3A7U2V0IG49XCJpbmZpbml0ZVwiIHRvIHJldHJ5IGluZGVmaW5pdGVseS5c
+biI8L3NwYW4+PC9kaXY+PGRpdj48c3Bhbj4tICZuYnNwOyAmbmJzcDsiLS1mbG9hdCAmbmJzcDsg
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgOiBBbGxvdyByZW1vdGUgdG8gY2hhbmdlIGl0cyBJUCBhZGRy
+ZXNzL3BvcnQsIHN1Y2ggYXMgdGhyb3VnaFxuIjwvc3Bhbj48L2Rpdj48ZGl2PjxzcGFuPi0gJm5i
+c3A7ICZuYnNwOyIgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDtESENQICh0aGlzIGlzIHRoZSBkZWZhdWx0IGlmIC0tcmVtb3RlIGlz
+IG5vdCB1c2VkKS5cbiI8L3NwYW4+PC9kaXY+PGRpdj48c3Bhbj4rICZuYnNwOyAmbmJzcDsiLS1m
+bG9hdCAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgOiBBbGxvdyByZW1vdGUgVURQIHBlZXIg
+dG8gY2hhbmdlIGl0cyBJUCBhZGRyZXNzL3BvcnQsXG4iPC9zcGFuPjwvZGl2PjxkaXY+PHNwYW4+
+KyAmbmJzcDsgJm5ic3A7IiAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNw
+OyAmbmJzcDsgJm5ic3A7ICZuYnNwO3N1Y2ggYXMgdGhyb3VnaCBESENQIChkZWZhdWx0IGlmIC0t
+cmVtb3RlIGlzIG5vdCB1c2VkKS5cbiI8L3NwYW4+PC9kaXY+PGRpdj48c3Bhbj4rICZuYnNwOyAm
+bmJzcDsiICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAm
+bmJzcDsgJm5ic3A7T25seSBhcHBsaWVzIHRvIFVEUCB0cmFuc3BvcnRzLlxuIjwvc3Bhbj48L2Rp
+dj48ZGl2PjxzcGFuPiZuYnNwOyAmbmJzcDsgJm5ic3A7Ii0taXBjaGFuZ2UgY21kICZuYnNwOzog
+UnVuIGNvbW1hbmQgY21kIG9uIHJlbW90ZSBpcCBhZGRyZXNzIGluaXRpYWxcbiI8L3NwYW4+PC9k
+aXY+PGRpdj48c3Bhbj4mbmJzcDsgJm5ic3A7ICZuYnNwOyIgJm5ic3A7ICZuYnNwOyAmbmJzcDsg
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDtzZXR0aW5nIG9yIGNoYW5n
+ZSAtLSBleGVjdXRlIGFzOiBjbWQgaXAtYWRkcmVzcyBwb3J0I1xuIjwvc3Bhbj48L2Rpdj48ZGl2
+PjxzcGFuPiZuYnNwOyAmbmJzcDsgJm5ic3A7Ii0tcG9ydCBwb3J0ICZuYnNwOyAmbmJzcDsgOiBU
+Q1AvVURQIHBvcnQgIyBmb3IgYm90aCBsb2NhbCBhbmQgcmVtb3RlLlxuIjwvc3Bhbj48L2Rpdj48
+ZGl2PjxzcGFuPi0tIDwvc3Bhbj48L2Rpdj48ZGl2PjxzcGFuPjIuNTMuMDwvc3Bhbj48L2Rpdj48
+c3Bhbj48L3NwYW4+PGJyPjwvZGl2PjxkaXYgc3R5bGU9ImZvbnQtZmFtaWx5OiBBcmlhbCwgc2Fu
+cy1zZXJpZjsgZm9udC1zaXplOiAxNHB4OyI+PGJyPjwvZGl2Pg0KPGRpdiBzdHlsZT0iZm9udC1m
+YW1pbHk6IEFyaWFsLCBzYW5zLXNlcmlmOyBmb250LXNpemU6IDE0cHg7IiBjbGFzcz0icHJvdG9u
+bWFpbF9zaWduYXR1cmVfYmxvY2sgcHJvdG9ubWFpbF9zaWduYXR1cmVfYmxvY2stZW1wdHkiPg0K
+ICAgIDxkaXYgY2xhc3M9InByb3Rvbm1haWxfc2lnbmF0dXJlX2Jsb2NrLXVzZXIgcHJvdG9ubWFp
+bF9zaWduYXR1cmVfYmxvY2stZW1wdHkiPjwvZGl2Pg0KICAgIA0KICAgICAgICAgICAgPGRpdiBj
+bGFzcz0icHJvdG9ubWFpbF9zaWduYXR1cmVfYmxvY2stcHJvdG9uIHByb3Rvbm1haWxfc2lnbmF0
+dXJlX2Jsb2NrLWVtcHR5Ij4NCiAgICAgICAgDQogICAgICAgICAgICA8L2Rpdj4NCjwvZGl2Pg0K
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to release/2.6.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1754
-This mail reflects revision 1 of this Change.
+--b1=_X9Vun6sjR76n3REXB2I4cvJzwAW1H9RYapcHkEDT2Ko--
 
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@rfc2549.org>
 
-        
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index 1abc178..883e2dc 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -13,7 +13,7 @@
-       - name: Install dependencies
-         run: sudo apt update && sudo apt install -y uncrustify
-       - name: Checkout OpenVPN
--        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-         with:
-           path: openvpn
-       - name: Show uncrustify version
-@@ -27,9 +27,9 @@
-       - name: Show changes on standard output
-         run: git diff
-         working-directory: openvpn
--      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-         with:
--          name: uncrustify-changes.patch
-+          archive: false
-           path: 'openvpn/uncrustify-changes.patch'
-       - name: Set job status
-         run: test ! -s uncrustify-changes.patch
-@@ -45,27 +45,38 @@
-     runs-on: ubuntu-24.04
-     env:
-       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
-+      VCPKG_BINARY_SOURCES: clear;default,readwrite
-+      VCPKG_GIT_COMMIT_ID: 75672db6bd812b060482b0f00b5a16b18a0c0f07
-     steps:
-       - name: Install dependencies
-         run: sudo apt update && sudo apt install -y mingw-w64 unzip build-essential wget python3-docutils man2html-base
-       - name: Checkout OpenVPN
--        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
- 
--      - uses: lukka/get-cmake@6b3e96a9bc9976b8b546346fdd102effedae0ca8 # v4.0.3
--      - name: Restore from cache and install vcpkg
--        uses: lukka/run-vcpkg@5e0cab206a5ea620130caf672fce3e4a6b5666a1 # v11.5
-+      - uses: lukka/get-cmake@591817e96fcad43505fb4eae36172462abb3a42e # v4.3.3
-+      - name: Setup vcpkg
-+        uses: lukka/run-vcpkg@b1a0dd252f06b9e25b3c022a9a03bd7a427fb6a2 # v11.6
-         with:
--          vcpkgGitCommitId: f33cc491c85a7d643c5ab6da1667c1458e6d7abf
-+          vcpkgGitCommitId: ${{ env.VCPKG_GIT_COMMIT_ID }}
-           vcpkgJsonGlob: '**/mingw/vcpkg.json'
- 
-+      - name: Set up vcpkg binary cache
-+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
-+        with:
-+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-+          key: mingw-${{ matrix.arch }}-vcpkg-binary-cache-${{ hashFiles('**/mingw/vcpkg.json') }}-${{ env.VCPKG_GIT_COMMIT_ID }}
-+          restore-keys: |
-+            mingw-${{ matrix.arch }}-vcpkg-binary-cache-${{ hashFiles('**/mingw/vcpkg.json') }}-
-+            mingw-${{ matrix.arch }}-vcpkg-binary-cache-
-+
-       - name: Run CMake with vcpkg.json manifest
--        uses: lukka/run-cmake@af1be47fd7c933593f687731bc6fdbee024d3ff4 # v10.8
-+        uses: lukka/run-cmake@5d55ea7949e25f69f0ecb516d8d572297e03a956 # v10.9
-         with:
-           configurePreset: mingw-${{ matrix.arch }}
-           buildPreset: mingw-${{ matrix.arch }}
-           buildPresetAdditionalArgs: "['--config Debug']"
- 
--      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-         with:
-           name: openvpn-mingw-${{ matrix.arch }}
-           path: |
-@@ -73,7 +84,7 @@
-             ${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/**/Debug/*.dll
-             !${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/Debug/test_*.exe
- 
--      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-         with:
-           name: openvpn-mingw-${{ matrix.arch }}-tests
-           path: |
-@@ -88,11 +99,11 @@
-         arch: [x86, x64]
-         test: [argv, auth_token, buffer, cryptoapi, crypto, misc, ncp, packet_id, pkt, provider, tls_crypt]
- 
--    runs-on: windows-latest
-+    runs-on: windows-2025-vs2026
-     name: "mingw unittest ${{ matrix.test }} - ${{ matrix.arch }} - OSSL"
-     steps:
-       - name: Retrieve mingw unittest
--        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
-+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-         with:
-           name: openvpn-mingw-${{ matrix.arch }}-tests
-           path: unittests
-@@ -131,7 +142,7 @@
-       - name: Install dependencies
-         run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev libcap-ng-dev libnl-genl-3-dev linux-libc-dev man2html libcmocka-dev python3-docutils libtool automake autoconf ${SSLPKG} ${PKCS11PKG}
-       - name: Checkout OpenVPN
--        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-       - name: autoconf
-         run: autoreconf -fvi
-       - name: configure
-@@ -158,7 +169,7 @@
-       - name: Install dependencies
-         run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev libcap-ng-dev libnl-genl-3-dev linux-libc-dev man2html clang libcmocka-dev python3-docutils libtool automake autoconf libmbedtls-dev
-       - name: Checkout OpenVPN
--        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-       - name: autoconf
-         run: autoreconf -fvi
-       - name: configure
-@@ -172,9 +183,9 @@
-     strategy:
-       fail-fast: false
-       matrix:
--        ssllib: [openssl@1.1, openssl@3, libressl]
-+        ssllib: [openssl@3, libressl]
-         build: [normal, asan]
--        os: [macos-13, macos-14, macos-15]
-+        os: [macos-15, macos-26]
-         include:
-           - build: asan
-             cflags: "-fsanitize=address,undefined -fno-sanitize-recover=all -fno-optimize-sibling-calls -fsanitize-address-use-after-scope -fno-omit-frame-pointer -g -O1"
-@@ -196,7 +207,7 @@
-       - name: Install dependencies
-         run: brew install ${{matrix.ssllib}} lzo lz4 man2html cmocka libtool automake autoconf
-       - name: Checkout OpenVPN
--        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-       - name: Set environment
-         run: |
-           cat >>$GITHUB_ENV <<EOF;
-@@ -223,38 +234,52 @@
-       name: "msbuild - ${{ matrix.arch }} - openssl"
-       env:
-         BUILD_CONFIGURATION: Release
-+        VCPKG_BINARY_SOURCES: clear;default,readwrite
-+        VCPKG_GIT_COMMIT_ID: 75672db6bd812b060482b0f00b5a16b18a0c0f07
- 
--      runs-on: windows-latest
-+      runs-on: windows-2025-vs2026
-       steps:
--      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
--      - uses: lukka/get-cmake@6b3e96a9bc9976b8b546346fdd102effedae0ca8 # v4.0.3
-+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-+      - uses: lukka/get-cmake@591817e96fcad43505fb4eae36172462abb3a42e # v4.3.3
- 
-       - name: Install rst2html
-         run: python -m pip install --upgrade pip docutils
- 
--      - name: Restore artifacts, or setup vcpkg (do not install any package)
--        uses: lukka/run-vcpkg@5e0cab206a5ea620130caf672fce3e4a6b5666a1 # v11.5
-+      - name: Setup vcpkg (do not install any package)
-+        uses: lukka/run-vcpkg@b1a0dd252f06b9e25b3c022a9a03bd7a427fb6a2 # v11.6
-         with:
--          vcpkgGitCommitId: f33cc491c85a7d643c5ab6da1667c1458e6d7abf
-+          vcpkgGitCommitId: ${{ env.VCPKG_GIT_COMMIT_ID }}
-           vcpkgJsonGlob: '**/windows/vcpkg.json'
- 
-+      - name: Set up vcpkg binary cache
-+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
-+        with:
-+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-+          key: msvc-${{ matrix.arch }}-vcpkg-binary-cache-${{ hashFiles('**/windows/vcpkg.json') }}-${{ env.VCPKG_GIT_COMMIT_ID }}
-+          restore-keys: |
-+            msvc-${{ matrix.arch }}-vcpkg-binary-cache-${{ hashFiles('**/windows/vcpkg.json') }}-
-+            msvc-${{ matrix.arch }}-vcpkg-binary-cache-
-+
-+
-       - name: Run CMake with vcpkg.json manifest (NO TESTS)
--        uses: lukka/run-cmake@af1be47fd7c933593f687731bc6fdbee024d3ff4 # v10.8
-+        uses: lukka/run-cmake@5d55ea7949e25f69f0ecb516d8d572297e03a956 # v10.9
-         if: ${{ matrix.arch == 'arm64' }}
-         with:
-           configurePreset: win-${{ matrix.arch }}-release
-           buildPreset: win-${{ matrix.arch }}-release
-+          configurePresetAdditionalArgs: "['-GVisual Studio 18 2026']"
- 
-       - name: Run CMake with vcpkg.json manifest
--        uses: lukka/run-cmake@af1be47fd7c933593f687731bc6fdbee024d3ff4 # v10.8
-+        uses: lukka/run-cmake@5d55ea7949e25f69f0ecb516d8d572297e03a956 # v10.9
-         if: ${{ matrix.arch != 'arm64' }}
-         with:
-           configurePreset: win-${{ matrix.arch }}-release
-           buildPreset: win-${{ matrix.arch }}-release
-           testPreset: win-${{ matrix.arch }}-release
-+          configurePresetAdditionalArgs: "['-GVisual Studio 18 2026']"
-           testPresetAdditionalArgs: "['--output-on-failure']"
- 
--      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-         with:
-           name: openvpn-msvc-${{ matrix.arch }}
-           path: |
-@@ -294,7 +319,7 @@
-       - name: Install dependencies
-         run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev linux-libc-dev man2html clang libcmocka-dev python3-docutils libtool automake autoconf pkg-config libcap-ng-dev libnl-genl-3-dev
-       - name: "libressl: checkout"
--        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-         with:
-           path: libressl
-           repository: libressl/portable
-@@ -316,7 +341,7 @@
-       - name: "ldconfig"
-         run: sudo ldconfig
-       - name: Checkout OpenVPN
--        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-       - name: autoconf
-         run: autoreconf -fvi
-       - name: configure
-diff --git a/.github/workflows/coverity-scan.yml b/.github/workflows/coverity-scan.yml
-index 1a9e5a3..105f23e 100644
---- a/.github/workflows/coverity-scan.yml
-+++ b/.github/workflows/coverity-scan.yml
-@@ -13,7 +13,7 @@
-     steps:
-       - name: Check submission cache
-         id: check_submit
--        uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
-+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
-         with:
-           path: |
-             cov-int
-@@ -25,7 +25,7 @@
- 
-       - name: Checkout OpenVPN
-         if: steps.check_submit.outputs.cache-hit != 'true'
--        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
- 
-       - name: Download Coverity Build Tool
-         if: steps.check_submit.outputs.cache-hit != 'true'
-@@ -65,7 +65,7 @@
- 
-       - name: Cache submission
-         if: steps.check_submit.outputs.cache-hit != 'true'
--        uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
-+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
-         with:
-           path: |
-             cov-int
 
+--===============3461527620226005025==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============3461527620226005025==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+--===============3461527620226005025==--
+
+
