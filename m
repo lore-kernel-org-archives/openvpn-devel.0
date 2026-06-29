@@ -4,72 +4,70 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D69FFC43458
-	for <openvpn-devel@archiver.kernel.org>; Mon, 29 Jun 2026 19:50:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id AEA72C43458
+	for <openvpn-devel@archiver.kernel.org>; Mon, 29 Jun 2026 21:19:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Reply-To:From:List-Subscribe:
-	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:Subject:
-	MIME-Version:Message-ID:To:Date:Sender:Cc:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-	Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Owner;
-	bh=qxV5XS+Kxbr4/TyJt6dM27u2etP1NmUEcHiN4rWVcwI=; b=Vs3w8tPkinhoPvkbAmSYdjndI2
-	4KfECaM5nvoWb3Z4nZ8hZsgjtVthEu97ZtpBcnXlzHptm+T6FbZ1P2YQI7A+zHLGwwj01c8Svmdau
-	d8r2s2YQykusb2j96wwUCwmK2UjXkwMDkHyf30QPmmcwjGCIJdBEKIuGfhqwGxmKKB+U=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:List-Subscribe:List-Help:
+	List-Post:List-Archive:List-Unsubscribe:List-Id:Subject:In-Reply-To:
+	MIME-Version:References:Message-ID:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=EO7GdbsdLRb4c7jU/+kCBD8B/1raHS6PmlAoVNzl3HI=; b=Wz76NOUxToFUZQiJyIqkU8KtMX
+	R0KDaR1A4ihed8ej3LTTPTBG++unCZHHXPCxHgLXJLKfbwAYy6oWRV9eyIZCONbBPse+okIkRhYg4
+	G2g7CSLp7CsGC5HWSpO1E2eIfhBVAhEXog7cjksQBZ6M/RxksJNAIuju/d0y548/GjnA=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1weHzi-0003mm-A8;
-	Mon, 29 Jun 2026 19:50:15 +0000
+	id 1weJOW-0002Eh-Bz;
+	Mon, 29 Jun 2026 21:19:53 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <samgithub@pm.me>) id 1weHzg-0003mf-PQ
+ (envelope-from <gert@chekov.greenie.muc.de>) id 1weJOU-0002EZ-Uu
  for openvpn-devel@lists.sourceforge.net;
- Mon, 29 Jun 2026 19:50:13 +0000
+ Mon, 29 Jun 2026 21:19:52 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:MIME-Version:Message-ID:Subject:From:
- To:Date:Sender:Reply-To:Cc:Content-Transfer-Encoding:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+ d=sourceforge.net; s=x; h=In-Reply-To:Content-Type:MIME-Version:References:
+ Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=Q9Byg77w1LNGFtubX/zGHs0OsdsyzNTxtjGj/JsyMnQ=; b=mK68uxLKvMR981WY9TCqAst9Nf
- jX4wRfMixB7RAsvA6yPREHW+oTi7iq2nP+Bzr37Q1WNgdLajt0TPDNdNdHNUF9hVdqDz0CL+jpA1y
- /+DVfGOe3wmqAeNN+fuGHnFOImXdEIBDkxbt/Hz/M9gDhwooFrS7orFmKd/sW52csvzA=;
+ bh=GvoAJ6zvPvq1q+/N+GSSxLOipvJIG4uu453FbUTxj9M=; b=JhJWNiU0K05hhElG5D4dCwA/Uq
+ pesv4zA/+3UlxXDHcb+BAYGeUin3Bat6E3/4SV5MmGtzFec7xIIilwNpR8i8iQ8lq7q+6PbvJaRuy
+ ziP0Dv2Zd7kjf+2ZhrllV1V+LEsjVPg370OShM2j9aumSLxNrW31MshqK8xceKEW0ip8=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:MIME-Version:Message-ID:Subject:From:To:Date:Sender:Reply-To
- :Cc:Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
- Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
- References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=Q9Byg77w1LNGFtubX/zGHs0OsdsyzNTxtjGj/JsyMnQ=; b=A
- fSb75EXyAcBV4ILURb35H7X+VycXIBABrpWZQa5juw8t4bZafs1CQJ8oVZB/fUP4wwn2ADDb2rosv
- 5vMFwvSwnsEv5w8O3jD+lJXE5vIu+KBSXDGPawhUZFJDo5xD+9sdl77SgwgqgX7MaSSCSBjLfvWN8
- UwEncW40R5gQdIaw=;
-Received: from mail-10629.protonmail.ch ([79.135.106.29])
+ h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To
+ :From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+ List-Post:List-Owner:List-Archive;
+ bh=GvoAJ6zvPvq1q+/N+GSSxLOipvJIG4uu453FbUTxj9M=; b=lQgNfsMmqUYvKtH+p0BjJJJvDH
+ zYkRaLgjjQMhEPaouKppQApAtJv5C2ziHlXdlNlFFb/p2QuVouY84mR0s8ofFG+LOeCO7Rx/1FR5h
+ L17+n8HWrkirDuUQKlSLCFzfCROz6cMWSASQcLs4LW1Xntod+wEA+yWSdJk/dLn7L20Y=;
+Received: from chekov.greenie.muc.de ([193.149.48.178])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1weHzf-0004OE-B0 for openvpn-devel@lists.sourceforge.net;
- Mon, 29 Jun 2026 19:50:13 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me;
- s=protonmail3; t=1782762604; x=1783021804;
- bh=Q9Byg77w1LNGFtubX/zGHs0OsdsyzNTxtjGj/JsyMnQ=;
- h=Date:To:From:Subject:Message-ID:Feedback-ID:From:To:Cc:Date:
- Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
- b=oMBnbgYeoRQfDM5CC2atCQEjrBcRyNc8jzn5ASfDNrO6T6uPSiS0wYErL92F2xm/T
- Ce3PPN8o4EpgFWDzBVtgQLzh8bzacG3d1e/zOpQNMj4ztftSH595Ca/WMrlsoGWXCR
- 5tCIbLaZnkxecMGomAH/tZA8JxuVlYkejXRYHSe1S46unIjIYXUaCXuDxzlXGRTDTi
- Tc4T+UsE8X7HM9Eo67WG7Y5DnKY1rnSyptTy9kf2VmtxJ50EsGToNe7cWps+4J6HLF
- GXq+7MZu+FaV0Tm6jv2EsroL2nD3DxZYggPvtgcuqxoSsDbo9a78T7MwcdmHB3SYIC
- 4nnw+f/VqC5fQ==
-Date: Mon, 29 Jun 2026 19:50:00 +0000
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-Message-ID: <_bJ1zZXmxAD6YHGNM2W5HBm8iTr9nSYO-a3PUY6guDPKD9ZNfmri_8fPnlnLBA984ahSqoMAdAcQeF4Xf_P5Ljk0mexlvZHXSOPGxGD5AEU=@pm.me>
-Feedback-ID: 192537181:user:proton
-X-Pm-Message-ID: bbe9c1e2a3185952b61b59f2a43b024162280cc6
+ id 1weJOQ-0004M1-DE for openvpn-devel@lists.sourceforge.net;
+ Mon, 29 Jun 2026 21:19:52 +0000
+Received: from chekov.greenie.muc.de (localhost [IPv6:0:0:0:0:0:0:0:1])
+ by chekov.greenie.muc.de (8.18.2/8.18.1) with ESMTP id 65TLJdId074251;
+ Mon, 29 Jun 2026 23:19:39 +0200 (CEST)
+ (envelope-from gert@chekov.greenie.muc.de)
+Received: (from gert@localhost)
+ by chekov.greenie.muc.de (8.18.2/8.18.1/Submit) id 65TLJcRh074250;
+ Mon, 29 Jun 2026 23:19:38 +0200 (CEST) (envelope-from gert)
+Date: Mon, 29 Jun 2026 23:19:38 +0200
+From: Gert Doering <gert@greenie.muc.de>
+To: Sami Rusani <samgithub@pm.me>
+Message-ID: <akLhalx5QQtBOBRb@greenie.muc.de>
+References: <_bJ1zZXmxAD6YHGNM2W5HBm8iTr9nSYO-a3PUY6guDPKD9ZNfmri_8fPnlnLBA984ahSqoMAdAcQeF4Xf_P5Ljk0mexlvZHXSOPGxGD5AEU=@pm.me>
 MIME-Version: 1.0
-X-Headers-End: 1weHzf-0004OE-B0
-Subject: [Openvpn-devel] [PATCH] doc: clarify that --float only applies to
- UDP
+In-Reply-To: <_bJ1zZXmxAD6YHGNM2W5HBm8iTr9nSYO-a3PUY6guDPKD9ZNfmri_8fPnlnLBA984ahSqoMAdAcQeF4Xf_P5Ljk0mexlvZHXSOPGxGD5AEU=@pm.me>
+X-mgetty-docs: http://mgetty.greenie.net/
+X-Headers-End: 1weJOQ-0004M1-DE
+Subject: Re: [Openvpn-devel] [PATCH] doc: clarify that --float only applies
+ to UDP
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -81,152 +79,127 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: Sami Rusani via Openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Reply-To: Sami Rusani <samgithub@pm.me>
-Content-Type: multipart/mixed; boundary="===============3461527620226005025=="
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: multipart/mixed; boundary="===============0945702521592925918=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============3461527620226005025==
-Content-Type: multipart/alternative;
- boundary="b1=_X9Vun6sjR76n3REXB2I4cvJzwAW1H9RYapcHkEDT2Ko"
 
---b1=_X9Vun6sjR76n3REXB2I4cvJzwAW1H9RYapcHkEDT2Ko
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
-
-VGhlIC0tZmxvYXQgb3B0aW9uIGxldHMgT3BlblZQTiBhY2NlcHQgYXV0aGVudGljYXRlZCBwYWNr
-ZXRzIGZyb20gYQpjaGFuZ2VkIHBlZXIgYWRkcmVzcy4gVGhhdCBvbmx5IGFwcGxpZXMgdG8gVURQ
-IHRyYW5zcG9ydHM7IFRDUCBuZWVkcyBhCm5ldyBjb25uZWN0aW9uIHdoZW4gdGhlIHBlZXIgYWRk
-cmVzcyBjaGFuZ2VzLgoKRG9jdW1lbnQgdGhlIHRyYW5zcG9ydCBsaW1pdGF0aW9uIGluIHRoZSBt
-YW4gcGFnZSBhbmQgdXNhZ2UgdGV4dC4KCkdpdGh1YjogZml4ZXMgT3BlblZQTi9vcGVudnBuIzM1
-OAotLS0KZG9jL21hbi1zZWN0aW9ucy9saW5rLW9wdGlvbnMucnN0IHwgNCArKysrCnNyYy9vcGVu
-dnBuL29wdGlvbnMuYyB8IDUgKysrLS0KMiBmaWxlcyBjaGFuZ2VkLCA3IGluc2VydGlvbnMoKyks
-IDIgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZG9jL21hbi1zZWN0aW9ucy9saW5rLW9wdGlv
-bnMucnN0IGIvZG9jL21hbi1zZWN0aW9ucy9saW5rLW9wdGlvbnMucnN0CmluZGV4IGVkZGExY2Eu
-LjYwZjA5OGMgMTAwNjQ0Ci0tLSBhL2RvYy9tYW4tc2VjdGlvbnMvbGluay1vcHRpb25zLnJzdAor
-KysgYi9kb2MvbWFuLXNlY3Rpb25zL2xpbmstb3B0aW9ucy5yc3QKQEAgLTEzLDYgKzEzLDEwIEBA
-IHRoZSBsb2NhbCBhbmQgdGhlIHJlbW90ZSBob3N0LgotLWZsb2F0CkFsbG93IHJlbW90ZSBwZWVy
-IHRvIGNoYW5nZSBpdHMgSVAgYWRkcmVzcyBhbmQvb3IgcG9ydCBudW1iZXIsIHN1Y2ggYXMKZHVl
-IHRvIERIQ1AgKHRoaXMgaXMgdGhlIGRlZmF1bHQgaWYgYGAtLXJlbW90ZWBgIGlzIG5vdCB1c2Vk
-KS4KKyBUaGlzIG9wdGlvbiBvbmx5IGFwcGxpZXMgdG8gVURQIHRyYW5zcG9ydHMgKGZvciBleGFt
-cGxlLAorIGBgLS1wcm90byB1ZHBgYCkuIFRDUCBjb25uZWN0aW9ucyBjYW5ub3QgZmxvYXQgdG8g
-YSBkaWZmZXJlbnQgcGVlcgorIGFkZHJlc3MgYmVjYXVzZSB0aGF0IHJlcXVpcmVzIGVzdGFibGlz
-aGluZyBhIG5ldyBUQ1AgY29ubmVjdGlvbi4KKwpgYC0tZmxvYXRgYCB3aGVuIHNwZWNpZmllZCB3
-aXRoIGBgLS1yZW1vdGVgYCBhbGxvd3MgYW4gT3BlblZQTiBzZXNzaW9uCnRvIGluaXRpYWxseSBj
-b25uZWN0IHRvIGEgcGVlciBhdCBhIGtub3duIGFkZHJlc3MsIGhvd2V2ZXIgaWYgcGFja2V0cwph
-cnJpdmUgZnJvbSBhIG5ldyBhZGRyZXNzIGFuZCBwYXNzIGFsbCBhdXRoZW50aWNhdGlvbiB0ZXN0
-cywgdGhlIG5ldwpkaWZmIC0tZ2l0IGEvc3JjL29wZW52cG4vb3B0aW9ucy5jIGIvc3JjL29wZW52
-cG4vb3B0aW9ucy5jCmluZGV4IGY0MTQwMjQuLjBhOTVhODEgMTAwNjQ0Ci0tLSBhL3NyYy9vcGVu
-dnBuL29wdGlvbnMuYworKysgYi9zcmMvb3BlbnZwbi9vcHRpb25zLmMKQEAgLTE3NSw4ICsxNzUs
-OSBAQCBzdGF0aWMgY29uc3QgY2hhciB1c2FnZV9tZXNzYWdlW10gPQoiLS1yZXNvbHYtcmV0cnkg
-bjogSWYgaG9zdG5hbWUgcmVzb2x2ZSBmYWlscyBmb3IgLS1yZW1vdGUsIHJldHJ5XG4iCiIgcmVz
-b2x2ZSBmb3IgbiBzZWNvbmRzIGJlZm9yZSBmYWlsaW5nIChkaXNhYmxlZCBieSBkZWZhdWx0KS5c
-biIKIiBTZXQgbj1cImluZmluaXRlXCIgdG8gcmV0cnkgaW5kZWZpbml0ZWx5LlxuIgotICItLWZs
-b2F0IDogQWxsb3cgcmVtb3RlIHRvIGNoYW5nZSBpdHMgSVAgYWRkcmVzcy9wb3J0LCBzdWNoIGFz
-IHRocm91Z2hcbiIKLSAiIERIQ1AgKHRoaXMgaXMgdGhlIGRlZmF1bHQgaWYgLS1yZW1vdGUgaXMg
-bm90IHVzZWQpLlxuIgorICItLWZsb2F0IDogQWxsb3cgcmVtb3RlIFVEUCBwZWVyIHRvIGNoYW5n
-ZSBpdHMgSVAgYWRkcmVzcy9wb3J0LFxuIgorICIgc3VjaCBhcyB0aHJvdWdoIERIQ1AgKGRlZmF1
-bHQgaWYgLS1yZW1vdGUgaXMgbm90IHVzZWQpLlxuIgorICIgT25seSBhcHBsaWVzIHRvIFVEUCB0
-cmFuc3BvcnRzLlxuIgoiLS1pcGNoYW5nZSBjbWQgOiBSdW4gY29tbWFuZCBjbWQgb24gcmVtb3Rl
-IGlwIGFkZHJlc3MgaW5pdGlhbFxuIgoiIHNldHRpbmcgb3IgY2hhbmdlIC0tIGV4ZWN1dGUgYXM6
-IGNtZCBpcC1hZGRyZXNzIHBvcnQjXG4iCiItLXBvcnQgcG9ydCA6IFRDUC9VRFAgcG9ydCAjIGZv
-ciBib3RoIGxvY2FsIGFuZCByZW1vdGUuXG4iCi0tCjIuNTMuMA==
-
---b1=_X9Vun6sjR76n3REXB2I4cvJzwAW1H9RYapcHkEDT2Ko
-Content-Type: text/html; charset=utf-8
-Content-Transfer-Encoding: base64
-
-PGRpdiBzdHlsZT0iZm9udC1mYW1pbHk6IEFyaWFsLCBzYW5zLXNlcmlmOyBmb250LXNpemU6IDE0
-cHg7Ij48c3Bhbj5UaGUgLS1mbG9hdCBvcHRpb24gbGV0cyBPcGVuVlBOIGFjY2VwdCBhdXRoZW50
-aWNhdGVkIHBhY2tldHMgZnJvbSBhPC9zcGFuPjxkaXY+PHNwYW4+Y2hhbmdlZCBwZWVyIGFkZHJl
-c3MuIFRoYXQgb25seSBhcHBsaWVzIHRvIFVEUCB0cmFuc3BvcnRzOyBUQ1AgbmVlZHMgYTwvc3Bh
-bj48L2Rpdj48ZGl2PjxzcGFuPm5ldyBjb25uZWN0aW9uIHdoZW4gdGhlIHBlZXIgYWRkcmVzcyBj
-aGFuZ2VzLjwvc3Bhbj48L2Rpdj48ZGl2Pjxicj48L2Rpdj48ZGl2PjxzcGFuPkRvY3VtZW50IHRo
-ZSB0cmFuc3BvcnQgbGltaXRhdGlvbiBpbiB0aGUgbWFuIHBhZ2UgYW5kIHVzYWdlIHRleHQuPC9z
-cGFuPjwvZGl2PjxkaXY+PGJyPjwvZGl2PjxkaXY+PHNwYW4+R2l0aHViOiBmaXhlcyBPcGVuVlBO
-L29wZW52cG4jMzU4PC9zcGFuPjwvZGl2PjxkaXY+PHNwYW4+LS0tPC9zcGFuPjwvZGl2PjxkaXY+
-PHNwYW4+Jm5ic3A7ZG9jL21hbi1zZWN0aW9ucy9saW5rLW9wdGlvbnMucnN0IHwgNCArKysrPC9z
-cGFuPjwvZGl2PjxkaXY+PHNwYW4+Jm5ic3A7c3JjL29wZW52cG4vb3B0aW9ucy5jICZuYnNwOyAm
-bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7IHwgNSArKystLTwvc3Bhbj48L2Rpdj48
-ZGl2PjxzcGFuPiZuYnNwOzIgZmlsZXMgY2hhbmdlZCwgNyBpbnNlcnRpb25zKCspLCAyIGRlbGV0
-aW9ucygtKTwvc3Bhbj48L2Rpdj48ZGl2Pjxicj48L2Rpdj48ZGl2PjxzcGFuPmRpZmYgLS1naXQg
-YS9kb2MvbWFuLXNlY3Rpb25zL2xpbmstb3B0aW9ucy5yc3QgYi9kb2MvbWFuLXNlY3Rpb25zL2xp
-bmstb3B0aW9ucy5yc3Q8L3NwYW4+PC9kaXY+PGRpdj48c3Bhbj5pbmRleCBlZGRhMWNhLi42MGYw
-OThjIDEwMDY0NDwvc3Bhbj48L2Rpdj48ZGl2PjxzcGFuPi0tLSBhL2RvYy9tYW4tc2VjdGlvbnMv
-bGluay1vcHRpb25zLnJzdDwvc3Bhbj48L2Rpdj48ZGl2PjxzcGFuPisrKyBiL2RvYy9tYW4tc2Vj
-dGlvbnMvbGluay1vcHRpb25zLnJzdDwvc3Bhbj48L2Rpdj48ZGl2PjxzcGFuPkBAIC0xMyw2ICsx
-MywxMCBAQCB0aGUgbG9jYWwgYW5kIHRoZSByZW1vdGUgaG9zdC48L3NwYW4+PC9kaXY+PGRpdj48
-c3Bhbj4mbmJzcDstLWZsb2F0PC9zcGFuPjwvZGl2PjxkaXY+PHNwYW4+Jm5ic3A7ICZuYnNwO0Fs
-bG93IHJlbW90ZSBwZWVyIHRvIGNoYW5nZSBpdHMgSVAgYWRkcmVzcyBhbmQvb3IgcG9ydCBudW1i
-ZXIsIHN1Y2ggYXM8L3NwYW4+PC9kaXY+PGRpdj48c3Bhbj4mbmJzcDsgJm5ic3A7ZHVlIHRvIERI
-Q1AgKHRoaXMgaXMgdGhlIGRlZmF1bHQgaWYgYGAtLXJlbW90ZWBgIGlzIG5vdCB1c2VkKS48L3Nw
-YW4+PC9kaXY+PGRpdj48c3Bhbj4rICZuYnNwO1RoaXMgb3B0aW9uIG9ubHkgYXBwbGllcyB0byBV
-RFAgdHJhbnNwb3J0cyAoZm9yIGV4YW1wbGUsPC9zcGFuPjwvZGl2PjxkaXY+PHNwYW4+KyAmbmJz
-cDtgYC0tcHJvdG8gdWRwYGApLiBUQ1AgY29ubmVjdGlvbnMgY2Fubm90IGZsb2F0IHRvIGEgZGlm
-ZmVyZW50IHBlZXI8L3NwYW4+PC9kaXY+PGRpdj48c3Bhbj4rICZuYnNwO2FkZHJlc3MgYmVjYXVz
-ZSB0aGF0IHJlcXVpcmVzIGVzdGFibGlzaGluZyBhIG5ldyBUQ1AgY29ubmVjdGlvbi48L3NwYW4+
-PC9kaXY+PGRpdj48c3Bhbj4rPC9zcGFuPjwvZGl2PjxkaXY+PHNwYW4+Jm5ic3A7ICZuYnNwO2Bg
-LS1mbG9hdGBgIHdoZW4gc3BlY2lmaWVkIHdpdGggYGAtLXJlbW90ZWBgIGFsbG93cyBhbiBPcGVu
-VlBOIHNlc3Npb248L3NwYW4+PC9kaXY+PGRpdj48c3Bhbj4mbmJzcDsgJm5ic3A7dG8gaW5pdGlh
-bGx5IGNvbm5lY3QgdG8gYSBwZWVyIGF0IGEga25vd24gYWRkcmVzcywgaG93ZXZlciBpZiBwYWNr
-ZXRzPC9zcGFuPjwvZGl2PjxkaXY+PHNwYW4+Jm5ic3A7ICZuYnNwO2Fycml2ZSBmcm9tIGEgbmV3
-IGFkZHJlc3MgYW5kIHBhc3MgYWxsIGF1dGhlbnRpY2F0aW9uIHRlc3RzLCB0aGUgbmV3PC9zcGFu
-PjwvZGl2PjxkaXY+PHNwYW4+ZGlmZiAtLWdpdCBhL3NyYy9vcGVudnBuL29wdGlvbnMuYyBiL3Ny
-Yy9vcGVudnBuL29wdGlvbnMuYzwvc3Bhbj48L2Rpdj48ZGl2PjxzcGFuPmluZGV4IGY0MTQwMjQu
-LjBhOTVhODEgMTAwNjQ0PC9zcGFuPjwvZGl2PjxkaXY+PHNwYW4+LS0tIGEvc3JjL29wZW52cG4v
-b3B0aW9ucy5jPC9zcGFuPjwvZGl2PjxkaXY+PHNwYW4+KysrIGIvc3JjL29wZW52cG4vb3B0aW9u
-cy5jPC9zcGFuPjwvZGl2PjxkaXY+PHNwYW4+QEAgLTE3NSw4ICsxNzUsOSBAQCBzdGF0aWMgY29u
-c3QgY2hhciB1c2FnZV9tZXNzYWdlW10gPTwvc3Bhbj48L2Rpdj48ZGl2PjxzcGFuPiZuYnNwOyAm
-bmJzcDsgJm5ic3A7Ii0tcmVzb2x2LXJldHJ5IG46IElmIGhvc3RuYW1lIHJlc29sdmUgZmFpbHMg
-Zm9yIC0tcmVtb3RlLCByZXRyeVxuIjwvc3Bhbj48L2Rpdj48ZGl2PjxzcGFuPiZuYnNwOyAmbmJz
-cDsgJm5ic3A7IiAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJz
-cDsgJm5ic3A7ICZuYnNwO3Jlc29sdmUgZm9yIG4gc2Vjb25kcyBiZWZvcmUgZmFpbGluZyAoZGlz
-YWJsZWQgYnkgZGVmYXVsdCkuXG4iPC9zcGFuPjwvZGl2PjxkaXY+PHNwYW4+Jm5ic3A7ICZuYnNw
-OyAmbmJzcDsiICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNw
-OyAmbmJzcDsgJm5ic3A7U2V0IG49XCJpbmZpbml0ZVwiIHRvIHJldHJ5IGluZGVmaW5pdGVseS5c
-biI8L3NwYW4+PC9kaXY+PGRpdj48c3Bhbj4tICZuYnNwOyAmbmJzcDsiLS1mbG9hdCAmbmJzcDsg
-Jm5ic3A7ICZuYnNwOyAmbmJzcDsgOiBBbGxvdyByZW1vdGUgdG8gY2hhbmdlIGl0cyBJUCBhZGRy
-ZXNzL3BvcnQsIHN1Y2ggYXMgdGhyb3VnaFxuIjwvc3Bhbj48L2Rpdj48ZGl2PjxzcGFuPi0gJm5i
-c3A7ICZuYnNwOyIgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5i
-c3A7ICZuYnNwOyAmbmJzcDtESENQICh0aGlzIGlzIHRoZSBkZWZhdWx0IGlmIC0tcmVtb3RlIGlz
-IG5vdCB1c2VkKS5cbiI8L3NwYW4+PC9kaXY+PGRpdj48c3Bhbj4rICZuYnNwOyAmbmJzcDsiLS1m
-bG9hdCAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgOiBBbGxvdyByZW1vdGUgVURQIHBlZXIg
-dG8gY2hhbmdlIGl0cyBJUCBhZGRyZXNzL3BvcnQsXG4iPC9zcGFuPjwvZGl2PjxkaXY+PHNwYW4+
-KyAmbmJzcDsgJm5ic3A7IiAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNw
-OyAmbmJzcDsgJm5ic3A7ICZuYnNwO3N1Y2ggYXMgdGhyb3VnaCBESENQIChkZWZhdWx0IGlmIC0t
-cmVtb3RlIGlzIG5vdCB1c2VkKS5cbiI8L3NwYW4+PC9kaXY+PGRpdj48c3Bhbj4rICZuYnNwOyAm
-bmJzcDsiICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAm
-bmJzcDsgJm5ic3A7T25seSBhcHBsaWVzIHRvIFVEUCB0cmFuc3BvcnRzLlxuIjwvc3Bhbj48L2Rp
-dj48ZGl2PjxzcGFuPiZuYnNwOyAmbmJzcDsgJm5ic3A7Ii0taXBjaGFuZ2UgY21kICZuYnNwOzog
-UnVuIGNvbW1hbmQgY21kIG9uIHJlbW90ZSBpcCBhZGRyZXNzIGluaXRpYWxcbiI8L3NwYW4+PC9k
-aXY+PGRpdj48c3Bhbj4mbmJzcDsgJm5ic3A7ICZuYnNwOyIgJm5ic3A7ICZuYnNwOyAmbmJzcDsg
-Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDtzZXR0aW5nIG9yIGNoYW5n
-ZSAtLSBleGVjdXRlIGFzOiBjbWQgaXAtYWRkcmVzcyBwb3J0I1xuIjwvc3Bhbj48L2Rpdj48ZGl2
-PjxzcGFuPiZuYnNwOyAmbmJzcDsgJm5ic3A7Ii0tcG9ydCBwb3J0ICZuYnNwOyAmbmJzcDsgOiBU
-Q1AvVURQIHBvcnQgIyBmb3IgYm90aCBsb2NhbCBhbmQgcmVtb3RlLlxuIjwvc3Bhbj48L2Rpdj48
-ZGl2PjxzcGFuPi0tIDwvc3Bhbj48L2Rpdj48ZGl2PjxzcGFuPjIuNTMuMDwvc3Bhbj48L2Rpdj48
-c3Bhbj48L3NwYW4+PGJyPjwvZGl2PjxkaXYgc3R5bGU9ImZvbnQtZmFtaWx5OiBBcmlhbCwgc2Fu
-cy1zZXJpZjsgZm9udC1zaXplOiAxNHB4OyI+PGJyPjwvZGl2Pg0KPGRpdiBzdHlsZT0iZm9udC1m
-YW1pbHk6IEFyaWFsLCBzYW5zLXNlcmlmOyBmb250LXNpemU6IDE0cHg7IiBjbGFzcz0icHJvdG9u
-bWFpbF9zaWduYXR1cmVfYmxvY2sgcHJvdG9ubWFpbF9zaWduYXR1cmVfYmxvY2stZW1wdHkiPg0K
-ICAgIDxkaXYgY2xhc3M9InByb3Rvbm1haWxfc2lnbmF0dXJlX2Jsb2NrLXVzZXIgcHJvdG9ubWFp
-bF9zaWduYXR1cmVfYmxvY2stZW1wdHkiPjwvZGl2Pg0KICAgIA0KICAgICAgICAgICAgPGRpdiBj
-bGFzcz0icHJvdG9ubWFpbF9zaWduYXR1cmVfYmxvY2stcHJvdG9uIHByb3Rvbm1haWxfc2lnbmF0
-dXJlX2Jsb2NrLWVtcHR5Ij4NCiAgICAgICAgDQogICAgICAgICAgICA8L2Rpdj4NCjwvZGl2Pg0K
+--===============0945702521592925918==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="P0HvG6P4gWUJSu+o"
+Content-Disposition: inline
 
 
---b1=_X9Vun6sjR76n3REXB2I4cvJzwAW1H9RYapcHkEDT2Ko--
+--P0HvG6P4gWUJSu+o
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Hi,
+
+On Mon, Jun 29, 2026 at 07:50:00PM +0000, Sami Rusani via Openvpn-devel wro=
+te:
+> The --float option lets OpenVPN accept authenticated packets from a
+> changed peer address. That only applies to UDP transports; TCP needs a
+> new connection when the peer address changes.
+>=20
+> Document the transport limitation in the man page and usage text.
+>=20
+> Github: fixes OpenVPN/openvpn#358
+> ---
+> doc/man-sections/link-options.rst | 4 ++++
+> src/openvpn/options.c | 5 +++--
+> 2 files changed, 7 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/doc/man-sections/link-options.rst b/doc/man-sections/link-op=
+tions.rst
+> index edda1ca..60f098c 100644
+> --- a/doc/man-sections/link-options.rst
+> +++ b/doc/man-sections/link-options.rst
+> @@ -13,6 +13,10 @@ the local and the remote host.
+> --float
+> Allow remote peer to change its IP address and/or port number, such as
+> due to DHCP (this is the default if ``--remote`` is not used).
+> + This option only applies to UDP transports (for example,
+> + ``--proto udp``). TCP connections cannot float to a different peer
+> + address because that requires establishing a new TCP connection.
+> +
+> ``--float`` when specified with ``--remote`` allows an OpenVPN session
+> to initially connect to a peer at a known address, however if packets
+> arrive from a new address and pass all authentication tests, the new
+
+This feels a bit verbose.  Maybe something like
+
+  ... such as due to DHCP or NAT mappings changing.  ``--float`` only=20
+  works when using UDP transport.
+
+(and remove the part about "(... if --remote is not used)" because
+the next paragraph explains that distinction anyway)
 
 
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index f414024..0a95a81 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -175,8 +175,9 @@ static const char usage_message[] =3D
+> "--resolv-retry n: If hostname resolve fails for --remote, retry\n"
+> " resolve for n seconds before failing (disabled by default).\n"
+> " Set n=3D\"infinite\" to retry indefinitely.\n"
+> - "--float : Allow remote to change its IP address/port, such as through\=
+n"
+> - " DHCP (this is the default if --remote is not used).\n"
+> + "--float : Allow remote UDP peer to change its IP address/port,\n"
+> + " such as through DHCP (default if --remote is not used).\n"
+> + " Only applies to UDP transports.\n"
+> "--ipchange cmd : Run command cmd on remote ip address initial\n"
+> " setting or change -- execute as: cmd ip-address port#\n"
+> "--port port : TCP/UDP port # for both local and remote.\n"
 
---===============3461527620226005025==
+The usage message is not a full reference manual, so I would not put it
+here.
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=
+=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@greenie.muc=
+=2Ede
+
+--P0HvG6P4gWUJSu+o
+Content-Type: application/pgp-signature; name=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGzBAEBCAAdFiEEti5qK05WVwt73GvgHYKe/spWKBIFAmpC4WkACgkQHYKe/spW
+KBKo6QwAmXSqpWgTjG6gEVJjkljloO+qYB7H/eHPnEIBo70HLUGZ6KxbfVq0mIjk
+Aew8/KQt1buyoZFqYA98KMX0odoDkPEJGM6TcRJrpo0YajczESpcyuI0ytRDM+KT
+cUo8Cl1NR5QExSVIqy60DFHz1LHdCjbjF/TZplqnRXL80VnZEhHukJ00i7KUTBgB
+j2FzKRSoCWe2TRBSbZIeC5FI0Q+WPKqPxfD2op8NGa1Yw5exb1TWvcA82EDTb4Q+
+tT+FFIWYrg3CeBbGr0+UlauauiW9Lq9WI2fVpWbVcB96Ceurfp4kbPFx8BTRaVI7
+sK2iW5eOPIwGF0m1htrmMwkRv9zJ4nQwT+AqvAo0uPHqm2OVyHz02j7FYIqlug2r
+LRx/LIY4G2X9ZTce4Dc5u4AbLxJjxvEg/8NXW8R5JlMlg8C5OosIConSKvhGGIgN
+d7BMSCsCNvDORlxJXQ7Fxo0wLlSkyiNLJgUSWLFRHLRgOob3gDwxiiKGD9xomnvE
+clLN8N/A
+=16sM
+-----END PGP SIGNATURE-----
+
+--P0HvG6P4gWUJSu+o--
+
+
+--===============0945702521592925918==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============3461527620226005025==
+--===============0945702521592925918==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -237,6 +210,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============3461527620226005025==--
-
+--===============0945702521592925918==--
 
