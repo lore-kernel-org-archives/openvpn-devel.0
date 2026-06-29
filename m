@@ -4,127 +4,69 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2E17CC43327
-	for <openvpn-devel@archiver.kernel.org>; Mon, 29 Jun 2026 12:38:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id CBFBFC43602
+	for <openvpn-devel@archiver.kernel.org>; Mon, 29 Jun 2026 12:48:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:Date:Sender:To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=4Q00Y/sh6O1fCxCQVTvUo4qHjj6S4Q8yLR/X/XCwQ0w=; b=jXQpmc4xJoDW0rXLPW4fcQhihx
-	5V795BO6fxdc2qaTsnJP1Jkz7++8NGAYrEWn9xGInL+BQxupbydGkcwtW0JI+1qpSLW/VzQcjsmKZ
-	sEnZZo69EvbGBZXWvKQVKJt9Vo+u4IheJ1/E2VmoMVBSwWe3NHfnprumf1KpSFIiRy6o=;
+	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
+	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=SvHBQAVmQXmvFxq3mto7giY5m9xN7B6IUURA++0PdYA=; b=Wzbins9eJf7SLuuQsH9pkO/18J
+	GERprg9TMmoE+wQZhsxHZ3VTMyH6WmZRYnN58JN8/zdP1jn4Ljva5CpUGb8TFZUZG+DE22FqS+c36
+	yBeNtaS2615abbWRtfQG5icblqKlMr35n4znIrEMEzsPIKpE/HR3x8NiKKZ9WL7os0yU=;
 Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
 	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1weBG3-0003Ml-Aw;
-	Mon, 29 Jun 2026 12:38:37 +0000
+	id 1weBQ1-0003bc-EM;
+	Mon, 29 Jun 2026 12:48:54 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1weBFz-0003MT-Gl
+ (envelope-from <gert@blue4.greenie.muc.de>) id 1weBPz-0003bV-Gu
  for openvpn-devel@lists.sourceforge.net;
- Mon, 29 Jun 2026 12:38:33 +0000
+ Mon, 29 Jun 2026 12:48:53 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:Date:From:Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
- :List-Post:List-Owner:List-Archive;
- bh=JcvGwtBsihPrDebpLUWJMDfK6+je1oqm2u4vCGhjN6g=; b=ZzQimjjL+6kTazCDInC6FY6Q6b
- T6pqt3ZT3hKdlCtQ4NbWN0vTvMJ/E6U3uIM9F73mjIusanquT99n475T4wEb8nZHQYYyh0XpAqUPl
- zSnzwOa8BtMq8ZgUdfX3X21OgpqJ6kLu6GMt33lkr3KXrBOaqmaeBE7q2XH/lyJnQZH4=;
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
+ In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=744jOQAYI6IEOlSewyqWF3X7ipksS5+FMrXXbnARLC4=; b=ZkkxawGKKXanIH5SgiA4c8Hpl1
+ FIB2jggKialUNSpgTTGWrKoM+4cyYit8ggI2OGE87ksqPxDNN/Rewb+UQgWlqwYI2ycYA6I4mrPNg
+ KoiBr5ayXOlBs3b05raDI0dLPBinw5NPn8XaDGdkNeKFSsjDI2Ij2CAZMqRomdf5NmJM=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:Date:From:Sender:
- To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=JcvGwtBsihPrDebpLUWJMDfK6+je1oqm2u4vCGhjN6g=; b=L
- wj71dIJpwzsgeKCU3bJZmv2zdxy8E7Lkk8eAQkVhYPoXSvI6IoiQwGFjfAdyYlXZCsfyPdJN+wD/j
- 0ag6bv1/pK5xMdHuddRm4ta9JtnUOMuEbglrmGZCNiKifXccFZYWECmgkGapD2QQ5H+7IcQlSPriW
- KvHl/JFYdgWL901Q=;
-Received: from mail-wm1-f47.google.com ([209.85.128.47])
+ h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
+ Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+ List-Post:List-Owner:List-Archive;
+ bh=744jOQAYI6IEOlSewyqWF3X7ipksS5+FMrXXbnARLC4=; b=czk6ValBC/EC5FeY+NYDeFki3S
+ dAV3rsz9elpPoqZQ+Ca0B6xrC0Y/DEbG0DAwh7MMLvmiQjOiLTAwG9IyPbfhHVXB6ox8GkhDGrTIo
+ iZ8Twv2P/qXsQkx9yk7zRUKiNaTo8lluws6x6n+krFDeCnSeEths0lX0WApXzeX39WEY=;
+Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1weBFh-0003Oe-1t for openvpn-devel@lists.sourceforge.net;
- Mon, 29 Jun 2026 12:38:18 +0000
-Received: by mail-wm1-f47.google.com with SMTP id
- 5b1f17b1804b1-493ad116e05so6196175e9.3
- for <openvpn-devel@lists.sourceforge.net>;
- Mon, 29 Jun 2026 05:38:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1782736691; x=1783341491; darn=lists.sourceforge.net;
- h=user-agent:content-disposition:content-transfer-encoding
- :mime-version:message-id:reply-to:subject:thread-index:references
- :in-reply-to:list-unsubscribe:list-id:auto-submitted:cc:date:from
- :from:to:cc:subject:date:message-id:reply-to;
- bh=JcvGwtBsihPrDebpLUWJMDfK6+je1oqm2u4vCGhjN6g=;
- b=C0tiS+t++s3zDc2VcL1pLeolU7xsKNsuvzlA4dM6hoOWkatgc3jqHqcu7hnJZJLkV2
- a0EEE6yIT1A/xOntEs8nuKAJ/LhqF7J144cLnhfQxQgj4adE+dOo6eEy8gfCD/u+Kvr0
- Vii16+RSTI6eKWFaEJWG3hMg+c/MgowPYC4EV6paworJYPoP1pJNYAZ0J/Q3k+Bv0/zj
- NoNJ9YCwFeNV6EbV4mErstCdUiHqVqGgAJRuPkGM+tZfQJAKAqC6YvCKhs7fevvuQfv4
- LlqeVexwzItFjGHwwwJa2XxwFADGxGmZvxZE4xOxvWHaWWzJ2a17QHmgPOZ0fCTvCE83
- YtDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1782736691; x=1783341491;
- h=user-agent:content-disposition:content-transfer-encoding
- :mime-version:message-id:reply-to:subject:thread-index:references
- :in-reply-to:list-unsubscribe:list-id:auto-submitted:cc:date:from
- :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
- :reply-to;
- bh=JcvGwtBsihPrDebpLUWJMDfK6+je1oqm2u4vCGhjN6g=;
- b=FtJ2et0qk6AcGcxBQHNE7TZg5dhkqqUTh5Cwayp7yh0OSdyaP4ptG4K2eITzE1DtsN
- Iq59eioHsdS5pr2paCN4LRGo8H7TpeShCJkj3Hp4bPDpqwroeh38HUTjZu6dQ8abyDgT
- 5C2XHwbFvvJRcz6hD+ByLXvwLRmuyNy2gU5y2aWng56iWY9yssMlM3X0B+WTMy9yyXdD
- Enx3lKGoiAUlb+lRb7VXS+3rNv9drxAa7NIJdpZxB/smd242T3znzmXav9//4wopihXz
- U165fv0CILK2SinJqUJK25997B7Qs04rYgsfRbCa/lvLghetxozyWWRYIN2Ihjhd+BeO
- nL9Q==
-X-Forwarded-Encrypted: i=1;
- AFNElJ/DDuTNIKqSJKmnBjyOmoSvqw7lXN1NM/COTAcMmBM2Rt38S9anBaKak973qRIVNCvubdxdNvIG1gK7B4tT@lists.sourceforge.net
-X-Gm-Message-State: AOJu0YxjDRAYj2tWmfOELp/sSqZcN1D5f+jdXs6Lr3IPwwBbo9YP0IBn
- RATk+8VwfKkDYT7oqVCeg7xlGZgzRIO3+xglB10fsDTa1LRpo3e49DXHxrrTSKmiQdCCEhxtMsd
- iRT8PyvzZY5WzjxNyaAQ6dOaERxUPH4PcjwCZzABZA0QlrP1g4G9A5jVSmjSttwqr898g
-X-Gm-Gg: AfdE7cmNJo6+Aq34YArjEfkJmAF33YTKtigSInaNJgYKwfmydmkPZO6NbT7rG/S3wiF
- GDQAaZWyjOpfLbiMbTpjn1IY+V/cb8hFBElkPUM2nkf+6s2OUqBCz0Ydc0FcdC8h5LFouwcYkb8
- C0THwDuZFCmukJ3DLcsqgSKt6QC7GLUfgywKqIKWI7BXlnaoMleshkPrzEFs6n7Vg6YSVtA2OnT
- 7kDhpFDiNa1SnEqS9JTUmENk4235b4j1134H9/bsIA64WjFd7FgtjhENQXdo6mreEPLra+XPuxH
- XlAvvOSQfsLJQvHFQ6FOgAT3KLDmSdBc/85TFHT3VhS3jmJPT75DJS3+RnKWoGTMlqR5IsUrro4
- tiBGjGbkAaCv5BMCGxyTqgso17bXFycay0Os0VaBFg1tq0tXHOixtm6xzSQ/Ri7E1r8d1D0KTQY
- 2aFbWcAGFR0nQiVnbgYn9LchsXS2PTUm2jVAoSacsSisBYC4LOjm5+dsyhcTGdxr14scGjKvsAR
- BkFR9paYHm5KFKX0qgDcbheFzWv6G9TjHZvcOmrs7H62TBhOocOb78J5eNCAQHYePnHM3QpLr2d
- UUvWlzEwGY4OCg==
-X-Received: by 2002:a05:600c:4703:b0:492:1e36:1fe9 with SMTP id
- 5b1f17b1804b1-4926689296fmr232018095e9.37.1782736690705; 
- Mon, 29 Jun 2026 05:38:10 -0700 (PDT)
-Received: from ip-10-18-1-162.eu-central-1.compute.internal
- (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
- by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-492690a1a85sm544519685e9.15.2026.06.29.05.38.10
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 29 Jun 2026 05:38:10 -0700 (PDT)
-X-Google-Original-From: "stipa (Code Review)"
- <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Mon, 29 Jun 2026 12:38:09 +0000
-Auto-Submitted: auto-generated
-X-Gerrit-MessageType: comment
-X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: Ic677f43fc3eb0052f8e80d9a7f098d34ad03dfe1
-X-Gerrit-Change-Number: 1740
-X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1740?usp=email>
-X-Gerrit-Commit: 4c1d09e3bb0b5db506178a6d091fc08dc8a456ee
-X-Gerrit-Comment-Date: Mon, 29 Jun 2026 12:38:09 +0000
-In-Reply-To: <gerrit.1782719911000.Ic677f43fc3eb0052f8e80d9a7f098d34ad03dfe1@gerrit.openvpn.net>
-References: <gerrit.1782719911000.Ic677f43fc3eb0052f8e80d9a7f098d34ad03dfe1@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzgyNzE5OTExMDAwLkljNjc3ZjQzZmMzZWIwMDUyZjhlODBkOWE3ZjA5OGQzNGFkMDNkZmUxQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <3a32f32039cb799ffc2ed2ac6805f66bb7c08f6b-EmailReviewComments-HTML@gerrit.openvpn.net>
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
+ id 1weBPv-0004FE-54 for openvpn-devel@lists.sourceforge.net;
+ Mon, 29 Jun 2026 12:48:52 +0000
+Received: from blue.greenie.muc.de (localhost [127.0.0.1])
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 65TCmdPd032471
+ for <openvpn-devel@lists.sourceforge.net>; Mon, 29 Jun 2026 14:48:39 +0200
+Received: (from gert@localhost)
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 65TCmduq032470
+ for openvpn-devel@lists.sourceforge.net; Mon, 29 Jun 2026 14:48:39 +0200
+From: Gert Doering <gert@greenie.muc.de>
+To: openvpn-devel@lists.sourceforge.net
+Date: Mon, 29 Jun 2026 14:48:34 +0200
+Message-ID: <20260629124839.32433-1-gert@greenie.muc.de>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <gerrit.1782556099000.Ib7f9c9ce5ed778190445cc4cfaa8f3cd5d1110bc@gerrit.openvpn.net>
+References: <gerrit.1782556099000.Ib7f9c9ce5ed778190445cc4cfaa8f3cd5d1110bc@gerrit.openvpn.net>
 MIME-Version: 1.0
-User-Agent: Gerrit/3.11.5
-X-Headers-End: 1weBFh-0003Oe-1t
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: buffer: Add
- buf_read_u64() and buf_write_u64()
+X-Headers-End: 1weBPv-0004FE-54
+Subject: [Openvpn-devel] [PATCH v2] win32: fix plugin trusted-dir check
+ prefix bypass
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -136,157 +78,191 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "stipa \(Code Review\) via Openvpn-devel"
- <openvpn-devel@lists.sourceforge.net>
-Reply-To: lstipakov@gmail.com, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net
-Cc: "stipa \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>,
- plaisthos <arne-openvpn@rfc2549.org>
-Content-Type: multipart/mixed; boundary="===============1478696321253330708=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============1478696321253330708==
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="XVsgYe3Svzc="; charset=UTF-8
+From: Lev Stipakov <lev@openvpn.net>
 
---XVsgYe3Svzc=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+plugin_in_trusted_dir() validated the plugin path against the trusted
+plugin/install directory (and the system directory fallback) using a raw
+string prefix match via wcsnicmp(). When the trusted directory path does
+not end in a separator (e.g. the plugin_dir registry value is set to
+"C:\openvpn_plugins"), a sibling directory sharing the same prefix
+("C:\openvpn_plugins_evil") also passes the check, allowing a plugin to
+be loaded from outside the allow-listed directory.
 
-Attention is currently required from: plaisthos=2E
+Introduce win_path_in_dir() in win32-util.c which performs the prefix
+match but additionally requires the match to end on a path-component
+boundary, and use it for both the plugin/install directory and the
+system directory checks. Add unit tests in test_misc.c.
 
-stipa has posted commen=
-ts on this change by stipa=2E ( http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1=
-740?usp=3Demail )
+Change-Id: Ib7f9c9ce5ed778190445cc4cfaa8f3cd5d1110bc
+Signed-off-by: Lev Stipakov <lev@openvpn.net>
+Acked-by: Arne Schwabe <arne-openvpn@rfc2549.org>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1736
+---
 
-Change subject: buffer: Add buf_read_u64() and buf_write=
-_u64()
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1736
+This mail reflects revision 2 of this Change.
 
-Pat=
-ch Set 1:
+Acked-by according to Gerrit (reflected above):
+Arne Schwabe <arne-openvpn@rfc2549.org>
 
-(1 comment)
+        
+diff --git a/src/openvpn/win32-util.c b/src/openvpn/win32-util.c
+index 6fc3be4..209e34e 100644
+--- a/src/openvpn/win32-util.c
++++ b/src/openvpn/win32-util.c
+@@ -175,4 +175,30 @@
+     return tmpdir;
+ }
+ 
++bool
++win_path_in_dir(const WCHAR *path, const WCHAR *dir)
++{
++    size_t dir_len = wcslen(dir);
++    /* dir_len <= 1 guards the dir[dir_len - 1] access below and rejects a
++     * degenerate single-character directory (a normalized absolute path is
++     * always longer). */
++    if (dir_len <= 1 || wcsnicmp(dir, path, dir_len) != 0)
++    {
++        return false;
++    }
++
++    /* A plain prefix match is not sufficient: if dir is "C:\foo" then
++     * "C:\foo_evil\bar.dll" shares the prefix but is not inside "C:\foo".
++     * Require that the matched prefix ends on a path separator, i.e. either
++     * dir already ends with a separator or the character following the prefix
++     * in path is one. */
++    if (dir[dir_len - 1] == L'\\' || dir[dir_len - 1] == L'/')
++    {
++        return true;
++    }
++
++    WCHAR next = path[dir_len];
++    return next == L'\\' || next == L'/';
++}
++
+ #endif /* _WIN32 */
+diff --git a/src/openvpn/win32-util.h b/src/openvpn/win32-util.h
+index 6636cf3..4849ea9 100644
+--- a/src/openvpn/win32-util.h
++++ b/src/openvpn/win32-util.h
+@@ -42,5 +42,17 @@
+ /* Find temporary directory */
+ const char *win_get_tempdir(void);
+ 
++/**
++ * Check whether @p path resides within directory @p dir.
++ *
++ * Unlike a plain string prefix match, this requires the match to end on a
++ * path-component boundary, so that "C:\\foo_evil\\bar" is not considered to be
++ * inside "C:\\foo". Both arguments are expected to be normalized absolute
++ * paths. The comparison is case-insensitive.
++ *
++ * @return true if @p path is inside @p dir, false otherwise.
++ */
++bool win_path_in_dir(const WCHAR *path, const WCHAR *dir);
++
+ #endif /* OPENVPN_WIN32_UTIL_H */
+ #endif /* ifdef _WIN32 */
+diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
+index b2a7331..ca08ead 100644
+--- a/src/openvpn/win32.c
++++ b/src/openvpn/win32.c
+@@ -1587,14 +1587,13 @@
+     }
+ 
+     /* Check if the plugin path resides within the plugin/install directory */
+-    if ((wcslen(normalized_plugin_dir) > 0)
+-        && (wcsnicmp(normalized_plugin_dir, plugin_path, wcslen(normalized_plugin_dir)) == 0))
++    if (win_path_in_dir(plugin_path, normalized_plugin_dir))
+     {
+         return true;
+     }
+ 
+     /* Fallback to the system directory */
+-    return wcsnicmp(system_dir, plugin_path, wcslen(system_dir)) == 0;
++    return win_path_in_dir(plugin_path, system_dir);
+ }
+ 
+ bool
+diff --git a/tests/unit_tests/openvpn/test_misc.c b/tests/unit_tests/openvpn/test_misc.c
+index ccdfdee..fc9840a 100644
+--- a/tests/unit_tests/openvpn/test_misc.c
++++ b/tests/unit_tests/openvpn/test_misc.c
+@@ -38,6 +38,9 @@
+ #include "test_common.h"
+ #include "list.h"
+ #include "mock_msg.h"
++#ifdef _WIN32
++#include "win32-util.h"
++#endif
+ 
+ static void
+ test_compat_lzo_string(void **state)
+@@ -445,12 +448,48 @@
+     mock_set_debug_level(saved_log_level);
+ }
+ 
+-const struct CMUnitTest misc_tests[] = { cmocka_unit_test(test_compat_lzo_string),
+-                                         cmocka_unit_test(test_auth_fail_temp_no_flags),
+-                                         cmocka_unit_test(test_auth_fail_temp_flags),
+-                                         cmocka_unit_test(test_auth_fail_temp_flags_msg),
+-                                         cmocka_unit_test(test_list),
+-                                         cmocka_unit_test(test_atoi_variants) };
++#ifdef _WIN32
++static void
++test_win_path_in_dir(void **state)
++{
++    /* plugin/install dir without trailing separator */
++    assert_true(win_path_in_dir(L"C:\\openvpn_plugins\\foo.dll", L"C:\\openvpn_plugins"));
++
++    /* the bug being fixed: a sibling dir sharing the prefix must NOT match */
++    assert_false(win_path_in_dir(L"C:\\openvpn_plugins_evil\\foo.dll", L"C:\\openvpn_plugins"));
++
++    /* trusted dir with trailing separator */
++    assert_true(win_path_in_dir(L"C:\\openvpn_plugins\\foo.dll", L"C:\\openvpn_plugins\\"));
++    assert_false(win_path_in_dir(L"C:\\openvpn_plugins_evil\\foo.dll", L"C:\\openvpn_plugins\\"));
++
++    /* forward slash separator in the candidate path is accepted */
++    assert_true(win_path_in_dir(L"C:\\openvpn_plugins/foo.dll", L"C:\\openvpn_plugins"));
++
++    /* comparison is case-insensitive */
++    assert_true(win_path_in_dir(L"c:\\OPENVPN_PLUGINS\\foo.dll", L"C:\\openvpn_plugins"));
++
++    /* the directory itself (no trailing component) is not "in" the directory */
++    assert_false(win_path_in_dir(L"C:\\openvpn_plugins", L"C:\\openvpn_plugins"));
++
++    /* nested subdirectories are still inside */
++    assert_true(win_path_in_dir(L"C:\\openvpn_plugins\\sub\\foo.dll", L"C:\\openvpn_plugins"));
++
++    /* an empty trusted dir never matches */
++    assert_false(win_path_in_dir(L"C:\\openvpn_plugins\\foo.dll", L""));
++}
++#endif /* _WIN32 */
++
++const struct CMUnitTest misc_tests[] = {
++#ifdef _WIN32
++    cmocka_unit_test(test_win_path_in_dir),
++#endif
++    cmocka_unit_test(test_compat_lzo_string),
++    cmocka_unit_test(test_auth_fail_temp_no_flags),
++    cmocka_unit_test(test_auth_fail_temp_flags),
++    cmocka_unit_test(test_auth_fail_temp_flags_msg),
++    cmocka_unit_test(test_list),
++    cmocka_unit_test(test_atoi_variants)
++};
+ 
+ int
+ main(void)
 
-Patchset:
-
-PS1: 
-> We have htonll that we use every=
-where else=2E  I think you should also that here=2E
-Agreed, fixed=2E
-
-
-
--- =
-
-To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1740?usp=3Demail
-=
-To unsubscribe, or for help writing mail filters, visit http://gerrit=2Eope=
-nvpn=2Enet/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project=
-: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ic677f43fc3eb0052f8e80d9a=
-7f098d34ad03dfe1
-Gerrit-Change-Number: 1740
-Gerrit-PatchSet: 1
-Gerrit-Owner=
-: stipa <lstipakov@gmail=2Ecom>
-Gerrit-Reviewer: plaisthos <arne-openvpn@rf=
-c2549=2Eorg>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2E=
-net>
-Gerrit-Attention: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Commen=
-t-Date: Mon, 29 Jun 2026 12:38:09 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-=
-Labels: No
-Comment-In-Reply-To: plaisthos <arne-openvpn@rfc2549=2Eorg>
-
---XVsgYe3Svzc=
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos=2E </p>
-<p><a href=3D"http://gerrit=2Eopenv=
-pn=2Enet/c/openvpn/+/1740?usp=3Demail">View Change</a></p><p>1 comment:</p>=
-<ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding=
-: 0;"><p>Patchset:</p><ul style=3D"list-style: none; padding: 0;"><li style=
-=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a hr=
-ef=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1740?tab=3Dcomments&amp;usp=
-=3Demail">Patch Set #1:</a> </p><p><blockquote style=3D"border-left: 1px so=
-lid #aaa; margin: 10px 0; padding: 0 10px;">We have htonll that we use ever=
-ywhere else=2E  I think you should also that here=2E</blockquote></p><p cla=
-ss=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Agree=
-d, fixed=2E</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerr=
-it=2Eopenvpn=2Enet/c/openvpn/+/1740?usp=3Demail">change 1740</a>=2E To unsu=
-bscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
-=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope it=
-emtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"acti=
-on" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1740?usp=3Demail"/><meta item=
-prop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:=
-none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerr=
-it-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: mast=
-er </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ic677f43fc3eb0052f=
-8e80d9a7f098d34ad03dfe1 </div>
-<div style=3D"display:none"> Gerrit-Change-N=
-umber: 1740 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<=
-div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@gmail=2Ecom&g=
-t; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-=
-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: op=
-envpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
-<div sty=
-le=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@rfc2549=
-=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 29=
- Jun 2026 12:38:09 +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComm=
-ents: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-=
-<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
-n@rfc2549=2Eorg&gt; </div>
-
-</body></html>
---XVsgYe3Svzc=--
-
-
---===============1478696321253330708==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============1478696321253330708==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
---===============1478696321253330708==--
-
