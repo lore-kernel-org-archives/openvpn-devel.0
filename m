@@ -4,109 +4,109 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D97B1C43458
-	for <openvpn-devel@archiver.kernel.org>; Mon, 29 Jun 2026 13:44:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B25C4C43458
+	for <openvpn-devel@archiver.kernel.org>; Mon, 29 Jun 2026 13:46:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:Date:Sender:To:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=va0XwUF02aIgOQU+jMyqooSSIPelw+ob6fTyCmROzCw=; b=efd00pyacBoMDDipmFb2u5+Hn+
-	oBNvyhwHyvgJDzkq4cVeTJjainqzv/GxHfOXjPbrVIFG2uGX+XdUpB764vX6/nGTABazi2kfLtAjA
-	hCNtTre2/1iAF523UOk17Q996c4Ir167UOaFn2WLcWet6VI45vqhotBFNtwiW9Kpp8VI=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=wxJxW/ShKNfSjZAM12m67ls2T6QMjUNBvGOwR7ZfghU=; b=nR/TD2cJ0rLTRr1+tVRoLa/9o8
+	u9qKvwcVHun78WntdA1dfugPOqE5XUICvi+/tKjqB3eyw97ebx465UYitplCiNcTtHSinQYZJQ5ND
+	DbXTyGaQCm4LTcx1Pj4otpbaeub1rA0bJRPMOILi6fazX1rr5Q4cf5vI0eMnkkpVO/po=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1weCHL-0000uw-4c;
-	Mon, 29 Jun 2026 13:44:03 +0000
+	id 1weCJK-0004mP-Kk;
+	Mon, 29 Jun 2026 13:46:07 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1weCHJ-0000un-94
+ (envelope-from <gerrit@openvpn.net>) id 1weCJJ-0004mH-Kt
  for openvpn-devel@lists.sourceforge.net;
- Mon, 29 Jun 2026 13:44:01 +0000
+ Mon, 29 Jun 2026 13:46:06 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
+ Cc:Date:From:Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
  :List-Post:List-Owner:List-Archive;
- bh=gHjY6jnXxou7yb/FX0L1AymkbNE+mMNBx9pF2Zts68Q=; b=dAYzJflpB0rQAza2dE1pb4O6mA
- UM2dJFLZasE3gr/kHzFxv9mr/dnIyHhS1ocXAb3302nZsEeZrbueGGsnToXKVHdcJhnQ2rOpEHZZS
- YWI1qt21VoBRSN6NgEMS/jdBYIIO+HPblLE7r7iEmKBVZIArqnOczoD7spPVjdplftV8=;
+ bh=37rd1JL768L01DbUpLaRkBkgl26UMErlaytwmAa5dyg=; b=IXg8MB0RPCHg+48HbV3ES6498c
+ 13rxnoDY/asgyres+QDos0GJcvc8yj6CTMwneyQ0VUHaWXr0Nv6xcKeI6K0hcc+/7RJbrHJE1eeEs
+ G3GiW2KylTgKWdwKDB5fXCEBVgu+xIb+EDU47+nogmFlefhZgZMj6D7KuCL9GnWxonCI=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
- Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:Date:From:Sender:
+ To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=gHjY6jnXxou7yb/FX0L1AymkbNE+mMNBx9pF2Zts68Q=; b=a
- EZ/AZtyGGWlwwW2xXQrHpTRgpCQ9hngEKxjXHen8fsoeE/ZF3rNl9RIZCotGMN70A4HEiALBXmyuB
- gTKGnY95BNHq9RZR8kffMLJrxMDIrguDc3bBx4OEn99k04wfgs2m0s08zrr361AOBfTKEdwuTM9AW
- /2gLPjqGW8qmIF4U=;
-Received: from mail-wm1-f44.google.com ([209.85.128.44])
+ List-Owner:List-Archive; bh=37rd1JL768L01DbUpLaRkBkgl26UMErlaytwmAa5dyg=; b=d
+ zZ7wTe3BWcbnbXmOihuCsqXYDZrA6qlvfuetvJr7HnNZ4hatnFX9D37Eyx0yJlct5srtB1VLOpPTo
+ D6OV1y6GDIBrXqap0Ks7jR1n6fIeaZ6sa+2TWoXg89uWWdOPNBcP5X7jwUYLwvd/4OFBmqy2+NcCs
+ xFI+EQNbSPHsvTmk=;
+Received: from mail-wm1-f46.google.com ([209.85.128.46])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1weCHG-0000Ay-62 for openvpn-devel@lists.sourceforge.net;
- Mon, 29 Jun 2026 13:44:01 +0000
-Received: by mail-wm1-f44.google.com with SMTP id
- 5b1f17b1804b1-493ae59eca6so5247165e9.1
+ id 1weCJG-0000Ui-Ne for openvpn-devel@lists.sourceforge.net;
+ Mon, 29 Jun 2026 13:46:04 +0000
+Received: by mail-wm1-f46.google.com with SMTP id
+ 5b1f17b1804b1-493a54b80a5so22099485e9.2
  for <openvpn-devel@lists.sourceforge.net>;
- Mon, 29 Jun 2026 06:43:58 -0700 (PDT)
+ Mon, 29 Jun 2026 06:46:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1782740632; x=1783345432; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1782740756; x=1783345556; darn=lists.sourceforge.net;
  h=user-agent:content-disposition:content-transfer-encoding
  :mime-version:message-id:reply-to:subject:thread-index:references
- :in-reply-to:list-unsubscribe:list-id:auto-submitted:cc:to:date:from
+ :in-reply-to:list-unsubscribe:list-id:auto-submitted:cc:date:from
  :from:to:cc:subject:date:message-id:reply-to;
- bh=gHjY6jnXxou7yb/FX0L1AymkbNE+mMNBx9pF2Zts68Q=;
- b=UCxv+HKGkM9VqgxvW8DgyYK2appsZohI2LOPOmfSvGtn+GZJu44v/o9xQv4hu90ULP
- RebQN6n89COg7YgVw6ISPYBVvbKBfC938WIYz2dMv8hqC4FvKb3hB8Z8yk+fnHT3MhHA
- gVr/PAOL2DyYWC/SHifZqOto9AMhuPtKQMGHKs6GvgjR+Knw682EHCPs6F5tAZxRTsux
- YZoBWnNpSesj5J18A16mhs+KXmdLgCzsDqmlRxZOo77vG+jvBl4k9eqoGZNuONteSAIq
- 5y25B+9VbZm3LL07rEHqPyqZERnEXtqUp1Kw+16yTL89l8fYRmlH65mxbUYoPSE7lySS
- KSAg==
+ bh=37rd1JL768L01DbUpLaRkBkgl26UMErlaytwmAa5dyg=;
+ b=hPj6Kz0vsSpf1NzEt0PxRTgrcyMlFWvvBBKSQhwL/FDVFW8dGG0sR0fPPyo/N+fpeA
+ YxT1o+wuVCXaghhcIUPf2XLS0qxttf5AZsEn4Vu98k5pIxYjYyapqz0+smhZY2c53ODV
+ hjv0o5Mw9aGq1auL6k+bEje+lb7dLGKQ4EsgVy3dASLymNUqGf5e6v+sZyKVAkOgKV9j
+ hXGNXFocbv3GeAJfz/so9fg84kbF2zAqh3HWi6dhZtCNEdDFaZ2tR2FyGYQpN1G99OQS
+ PDe+qiFfxH9+XPmmnxeSo7n9bS6+es3amyU7wqP5TIwTy8w3+Cmjg6Es2an3ync0UZdD
+ A1TQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1782740632; x=1783345432;
+ d=1e100.net; s=20251104; t=1782740756; x=1783345556;
  h=user-agent:content-disposition:content-transfer-encoding
  :mime-version:message-id:reply-to:subject:thread-index:references
- :in-reply-to:list-unsubscribe:list-id:auto-submitted:cc:to:date:from
+ :in-reply-to:list-unsubscribe:list-id:auto-submitted:cc:date:from
  :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
  :reply-to;
- bh=gHjY6jnXxou7yb/FX0L1AymkbNE+mMNBx9pF2Zts68Q=;
- b=d6/Xmlb91UAH3X7XHeO4+Qf3kjgcBIHxTgT97Fq3U1ZvxuHSzbOmEj+khjH2Vlu2ev
- YYMLSeRER0Df1UFfIUq4yEqqxSnosiubUcTQLdYv2j/534YtOwZHbS1kWmCqzWNAFNjQ
- qgBDJUNpikAD1mgaVVCgbe7wTST33nMOr51JzN0jmgD/KSHSz9SwqaZBDHxNhQ2XpxHm
- tVP//2V69bieu/qnnoj1IeiRtOsi/VAEBu7d959zEF8TNE4OusP8a2vC83WAPrPVE8sL
- ft6oTDn9CPssoH3xcW4rAw/YM7fov39MYm759Rm8CYxGrA9G2w5LlxrFIeuoQlM0E40u
- XpwA==
-X-Gm-Message-State: AOJu0Ywr8ULkvFtgcBT36nwn7Cq2vlJSplj13++ueey5WXxU3Jyqk9/A
- EqGT8WlRcEgtllrbmYqJErCnoudWAPdrqb62mheOCYWRqvv2qFXiDj2gJH9yEHuRcbphhjLnGEw
- /KDWFGWtq6ZfIvpetkfrgcsvhPKnepXWsaklZt73hoAgGse7PWyZxBdst43BUNjETEv1NmsP4p0
- /NOI+0xA==
-X-Gm-Gg: AfdE7cnv6V/NdTd4ipSj/2oJ/D8oKKnsNN3gReBZ3WWfcvhR/673ISn/vCQXLTVg+ON
- i0/ECKavyPjpUQeEYQrbVX5GpK+vLyey0rQE3/zznPMq6athGVpQM8YuQMviWBsGNen3AUOhZkM
- 5qd9flZjf2fgQ/1Ljfco11XvOoHdJLanCjqqbal+aXoJR+dkyzxPXF33YfoTDwYyNXbz7JtxdCn
- IlZVjKplIum5Gg8+2rV2rErRZEeh+C3MtyU6JUIDZFxA7u9NaL0n98M6goHlePChWeTRm6EeuOH
- IMtQtBJONQeOVXT9J4Ny0MLlyhK0z8hVlBbZkLOKyjfUhSqAgP1s8cuK9xlmQ4Pn6y8VqxU1Q9D
- 5knovpAIr2dA7qNTO82y8ZKj75R6Eo2+KZdiLsXvHml9gJgCHsz2KZ8ZhtULCvWjKaBHu6LNetx
- GEKJGOcQSvdkBjr4qITc/rnJ+GCZhs2jgku+C1prS3wHrI7m8vr6MV4zUGezGUqkNIS4B86qikq
- S0uC/rHm3+6r3ZoHU/E2DTYTlJcfVsQ5ArH+RNtjHdM3Eme5DmVC+9bqePUzcFuQRi3KxS7p/5i
- kP4=
-X-Received: by 2002:a05:600c:e54a:10b0:490:b8ee:d6a5 with SMTP id
- 5b1f17b1804b1-4926683b8ebmr172465605e9.6.1782740631753; 
- Mon, 29 Jun 2026 06:43:51 -0700 (PDT)
+ bh=37rd1JL768L01DbUpLaRkBkgl26UMErlaytwmAa5dyg=;
+ b=J9dEDqJtPQC2VD0z/YpQkBiZg/NgNdEKG6qyCUGJpWDyRyeGmskSSXT3ZK8GaS7tdQ
+ 1/BowlFV+NZJVwIK8z1wREpwuUmmEjQ8kSQr6kvrDerpMzRY7yhYk+J4Yhe2rtnpaTaK
+ nnqB86nszuLYtkRfz/FyDmPr8TSUGhOmOxKR+0wNGjs2VGSxbL8Rnbcp9V6viuzenNTG
+ WZ+9JaXrLJh+aLX2aujGItJsoWsNOUIiuAoWVwPFj6Uw6yAI9bdC9637veYdiB3PKkj0
+ MznIESxqeR3X/WeGjVMU6jWoHR6vs9Wx7U9Bk2r43I3WnltI2N/8BKORJc1968w7kZwj
+ WZrQ==
+X-Forwarded-Encrypted: i=1;
+ AFNElJ/6S81rsMa9YsOQ77aSz2nSeMH9mU7gcwlF8CFUcBgSPvTuaVeqhaUhnjsXk3JjbpwTjSNYwj+q9yWV8dbm@lists.sourceforge.net
+X-Gm-Message-State: AOJu0Yx2rG3Yb454ilYFMD/LA71RKNxWSVS9D4HBHlB2ly9JibxX3b2H
+ 9eqOz7W4MCGXLXzy3ZF6f39sa+XOY7kRGuclQcDfJlMTfbmw/CDQZk1PBimuriXOeIZU6TYLMv1
+ Rr8xm45uv7VyIIWL1HJSuiou6HHss0CCWwPzDmYNXWA2ldFUz9sHBJ0fGQlKk/Rf+M3wK
+X-Gm-Gg: AfdE7ckpEoBsPQy47Zhv8RRzYx4lQQa357DbsGg3PI1l/cYMIitsfAZjZiSHgXrrpAt
+ r3rFBVB6uHK6f3H9FbViLUUFGeoYLOPpqk3/XPMwgwrQX8Wj4zjeUTLAoXUtc7ytBZrBttucPDA
+ SkCyYV7cQEKNGoY6jBc+nDyTsdPRl87IyJZddeuTwudMrYBUMIoIjx9r1vLTWt+8SSrVzWqr6cd
+ A1c6axzu00gfehOW+Yr8YH0x3iE+jwSzXbuCsFMNj0ElISMfVcqyvY6WREF2YVFXQO04ae3yWKn
+ cnHk9dzNCMLucA1itM3nrn3JpN/FdfLL+EubCMoggmi4oEEJq6rzGiS0N6TzQPtKa6on+4+xnlR
+ yg1JA6IiLf85xz+k6uDwfqA4XhMs7RceA00z4lrbpE/Pe9jqAjzVdHUeqEILKCEshh/r3JRfWsc
+ c8x0jb8mOMthEAEwNUGD2EbD6UstupBv2eOsLRbf3fsN0ZFWxEBlVEst/m7ANbBuGvyCM7ErTGo
+ /hy/kbipjbKx8qeJ5rKeXV4Qh0GlewbvswvlqPemqOicshicRqNw9WP9sELiBGEpJX3LSTXAnUW
+ TXV337dF2BiZeg==
+X-Received: by 2002:a05:600c:3e88:b0:492:523f:a3df with SMTP id
+ 5b1f17b1804b1-493b7191900mr12068465e9.5.1782740755529; 
+ Mon, 29 Jun 2026 06:45:55 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-49268ffe204sm323137825e9.7.2026.06.29.06.43.51
+ ffacd0b85a97d-46f978dc0a9sm26157727f8f.15.2026.06.29.06.45.54
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 29 Jun 2026 06:43:51 -0700 (PDT)
-X-Google-Original-From: "plaisthos (Code Review)"
+ Mon, 29 Jun 2026 06:45:55 -0700 (PDT)
+X-Google-Original-From: "flichtenheld (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Mon, 29 Jun 2026 13:43:50 +0000
-To: flichtenheld <frank@lichtenheld.com>
+Date: Mon, 29 Jun 2026 13:45:52 +0000
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: comment
 X-Gerrit-PatchSet: 1
@@ -115,14 +115,14 @@ X-Gerrit-Change-Number: 1754
 X-Gerrit-Project: openvpn
 X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1754?usp=email>
 X-Gerrit-Commit: 438ec4d558136e24dad22269dc2421e55c47dafb
-X-Gerrit-Comment-Date: Mon, 29 Jun 2026 13:43:50 +0000
+X-Gerrit-Comment-Date: Mon, 29 Jun 2026 13:45:52 +0000
 In-Reply-To: <gerrit.1782740317000.Icbcf4c79d577d9cf089a92378be9253b1e94825d@gerrit.openvpn.net>
 References: <gerrit.1782740317000.Icbcf4c79d577d9cf089a92378be9253b1e94825d@gerrit.openvpn.net>
 Thread-Index: PGdlcnJpdC4xNzgyNzQwMzE3MDAwLkljYmNmNGM3OWQ1NzdkOWNmMDg5YTkyMzc4YmU5MjUzYjFlOTQ4MjVkQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <1d0afeadd4f970516f68fb4b525e841d16ee293f-EmailReviewComments-HTML@gerrit.openvpn.net>
+Message-ID: <7cee0c7e8220deaa2111d6a064d3af5da692d8ea-EmailReviewComments-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1weCHG-0000Ay-62
+X-Headers-End: 1weCJG-0000Ui-Ne
 Subject: [Openvpn-devel] [M] Change in openvpn[release/2.6]: GHA:
  Cherry-pick changes from master to keep working
 X-BeenThere: openvpn-devel@lists.sourceforge.net
@@ -136,27 +136,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "plaisthos \(Code Review\) via Openvpn-devel"
+From: "flichtenheld \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
-Reply-To: arne-openvpn@rfc2549.org, openvpn-devel@lists.sourceforge.net,
- frank@lichtenheld.com
-Cc: "plaisthos \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============1504900991990507061=="
+Reply-To: frank@lichtenheld.com, arne-openvpn@rfc2549.org,
+ openvpn-devel@lists.sourceforge.net
+Cc: "flichtenheld \(Code Review\)" <gerrit@openvpn.net>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>,
+ plaisthos <arne-openvpn@rfc2549.org>
+Content-Type: multipart/mixed; boundary="===============3177731087403524330=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============1504900991990507061==
+--===============3177731087403524330==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="j1C3QlWjklk="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="K5Snwh00fgk="; charset=UTF-8
 
---j1C3QlWjklk=
+--K5Snwh00fgk=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld=2E
+Attention is currently required from: plaisthos=2E
 
-plaisthos has posted=
+flichtenheld has posted=
  comments on this change by flichtenheld=2E ( http://gerrit=2Eopenvpn=2Enet=
 /c/openvpn/+/1754?usp=3Demail )
 
@@ -175,101 +176,110 @@ Patch Set 1:
 Patchset:
 
 PS1: 
-Do you have gith=
-ub run link so I can see that this works?
+> Do you have gi=
+thub run link so I can see that this works?
+https://github=2Ecom/flichtenhe=
+ld/openvpn/actions/runs/28373610163
 
 
 
 -- 
-To view, visit http://gerr=
-it=2Eopenvpn=2Enet/c/openvpn/+/1754?usp=3Demail
-To unsubscribe, or for help=
- writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3De=
-mail
+To view, visit http://gerrit=2Eo=
+penvpn=2Enet/c/openvpn/+/1754?usp=3Demail
+To unsubscribe, or for help writi=
+ng mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
+=
 Gerrit-MessageType: comment
 Gerrit-Project: openvpn
-Gerrit-Branch: re=
-lease/2=2E6
+Gerrit-Branch: release/=
+2=2E6
 Gerrit-Change-Id: Icbcf4c79d577d9cf089a92378be9253b1e94825d
-Ger=
-rit-Change-Number: 1754
+Gerrit-Ch=
+ange-Number: 1754
 Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <fran=
-k@lichtenheld=2Ecom>
-Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eorg=
->
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
-Gerrit=
--Attention: flichtenheld <frank@lichtenheld=2Ecom>
-Gerrit-Comment-Date: Mon=
-, 29 Jun 2026 13:43:50 +0000
+Gerrit-Owner: flichtenheld <frank@lich=
+tenheld=2Ecom>
+Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Gerr=
+it-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Atten=
+tion: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Comment-Date: Mon, 29 J=
+un 2026 13:45:52 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
+Commen=
+t-In-Reply-To: plaisthos <arne-openvpn@rfc2549=2Eorg>
 
---j1C3QlWjklk=
+--K5Snwh00fgk=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld=2E </p>
-<p><a href=3D"http://gerrit=2Eop=
-envpn=2Enet/c/openvpn/+/1754?usp=3Demail">View Change</a></p><p>1 comment:<=
-/p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padd=
-ing: 0;"><p>Patchset:</p><ul style=3D"list-style: none; padding: 0;"><li st=
-yle=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a=
- href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1754?tab=3Dcomments&amp;=
-usp=3Demail">Patch Set #1:</a> </p><p class=3D"blocks" style=3D"white-space=
-: pre-wrap; word-wrap: break-word;">Do you have github run link so I can se=
-e that this works?</p></li></ul></li></ul><p>To view, visit <a href=3D"http=
-://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1754?usp=3Demail">change 1754</a>=2E =
-To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
-errit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemsco=
-pe itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D=
-"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url"=
- href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1754?usp=3Demail"/><meta=
- itemprop=3D"name" content=3D"View Change"/></div></div>
+rently required from: plaisthos=2E </p>
+<p><a href=3D"http://gerrit=2Eopenv=
+pn=2Enet/c/openvpn/+/1754?usp=3Demail">View Change</a></p><p>1 comment:</p>=
+<ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding=
+: 0;"><p>Patchset:</p><ul style=3D"list-style: none; padding: 0;"><li style=
+=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a hr=
+ef=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1754?tab=3Dcomments&amp;usp=
+=3Demail">Patch Set #1:</a> </p><p><blockquote style=3D"border-left: 1px so=
+lid #aaa; margin: 10px 0; padding: 0 10px;">Do you have github run link so =
+I can see that this works?</blockquote></p><p class=3D"blocks" style=3D"whi=
+te-space: pre-wrap; word-wrap: break-word;">https://github=2Ecom/flichtenhe=
+ld/openvpn/actions/runs/28373610163</p></li></ul></li></ul><p>To view, visi=
+t <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1754?usp=3Demail">ch=
+ange 1754</a>=2E To unsubscribe, or for help writing mail filters, visit <a=
+ href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=
+=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div it=
+emscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><li=
+nk itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1754?=
+usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>=
 
-<div style=3D"dis=
-play:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none">=
- Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch:=
- release/2=2E6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Icbcf4=
-c79d577d9cf089a92378be9253b1e94825d </div>
-<div style=3D"display:none"> Ger=
-rit-Change-Number: 1754 </div>
-<div style=3D"display:none"> Gerrit-PatchSet=
-: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;fran=
-k@lichtenheld=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer=
-: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display=
-:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Ene=
-t&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &l=
-t;frank@lichtenheld=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Co=
-mment-Date: Mon, 29 Jun 2026 13:43:50 +0000 </div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div styl=
+e=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:no=
-ne"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has=
--Labels: No </div>
+ne"> Gerrit-Branch: release/2=2E6 </div>
+<div style=3D"display:none"> Gerri=
+t-Change-Id: Icbcf4c79d577d9cf089a92378be9253b1e94825d </div>
+<div style=3D=
+"display:none"> Gerrit-Change-Number: 1754 </div>
+<div style=3D"display:non=
+e"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: fl=
+ichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<div style=3D"display:non=
+e"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<d=
+iv style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=
+=2Esourceforge=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-Attenti=
+on: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"displ=
+ay:none"> Gerrit-Comment-Date: Mon, 29 Jun 2026 13:45:52 +0000 </div>
+<div =
+style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"displa=
+y:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-=
+In-Reply-To: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
 
-</body></html>
---j1C3QlWjklk=--
+</body></=
+html>
+--K5Snwh00fgk=--
 
 
---===============1504900991990507061==
+--===============3177731087403524330==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============1504900991990507061==
+--===============3177731087403524330==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -280,5 +290,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============1504900991990507061==--
+--===============3177731087403524330==--
 
