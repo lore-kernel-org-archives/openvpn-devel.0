@@ -4,79 +4,78 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5A121C43327
-	for <openvpn-devel@archiver.kernel.org>; Mon, 29 Jun 2026 13:28:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E43A7C43458
+	for <openvpn-devel@archiver.kernel.org>; Mon, 29 Jun 2026 13:29:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Content-Transfer-Encoding:Cc:
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Content-Transfer-Encoding:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:In-Reply-To:From:References:To:MIME-Version:Date:Message-ID:Sender:
-	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
-	:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=B5efuPl103HCgPIidm1pOUnIMVqefHP7nFgur6t/mM0=; b=Yi4Fzmhue6CCL06RbHVEPira0V
-	0GBuSxqtvFA428R45CPz88ZsuzukOP+cQVbeo8SpftxgiGHyYl4ODY/pJMyUhpP9WO9+9QNPyhjeM
-	Au4n0TOWpICvSrmogihovZfv8mhbJ1TwSwiIKh2MyvZY42cWGdj8opGch//Jj6oX/tao=;
+	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=2ud7Od0cp6Tz7V8hGDTRcolxIDbmBK58ZiF2M5olBfE=; b=ixtq8JFmdSTohxyDqVShpz2+6T
+	0cab3ThiWf4EIBIbK0PoK2JKCqb4C3RBtk/oHjxTuyvgKMqQ6WtVW6uZmEASwnUTucv0ljLk4utd7
+	ggj5xrpKBAwc2qEdKkntdtrMgIJwnsSLsohD+sNAXmhYbLQQISUezY7CFpejW0ONLMZk=;
 Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
 	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1weC2G-0004Lj-6m;
-	Mon, 29 Jun 2026 13:28:28 +0000
+	id 1weC2s-0004OE-8Z;
+	Mon, 29 Jun 2026 13:29:06 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <arne@rfc2549.org>) id 1weC23-0004LW-5s
+ (envelope-from <arne@rfc2549.org>) id 1weC2q-0004O4-RK
  for openvpn-devel@lists.sourceforge.net;
- Mon, 29 Jun 2026 13:28:16 +0000
+ Mon, 29 Jun 2026 13:29:05 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
- From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+ From:References:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:Cc:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=shbGhahEUhew/JmEnLu6eyZlUD2g4EaTz266DpdrizA=; b=KwSk4gTjaLGJacaiarLffqnggt
- D+S2LV4y/0YwJAh0C8vZS1DldzpM3gpBSNWwRBi36SBN2KFqx70jImZ+Cphqi/HJtNT3XaiU0f7A8
- QRjOf+0oggvVFMqKC9CQpqWp/1PVKNfyJw36LPMnrTP/q9RcV0/l0SGFpb20kBzPpM58=;
+ bh=P7Bkq1Xp5ogg/0xndzvYy0rR7X/fg4S5kzNKksizslA=; b=ggXZO6iLNlqluTQs6Xyhom358D
+ rSSvkMTKyyf/UdPL83OLXs0je2oKj7y+WZyiUhieK587bukAVCSbIkDGOkndarvHVZWcswlWd5eqU
+ ojvETAodsufq181afcoaQhNKCPvJP75SZgvz/GQsvj7eea3tZvc1zSNQHc5+eaaIN8xM=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:References:Cc:To:
- Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:Content-ID:
+ h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:References:To:
+ Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:Cc:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=shbGhahEUhew/JmEnLu6eyZlUD2g4EaTz266DpdrizA=; b=BVWCEhvlTJ+pKpn0ZK2VeDD82z
- Nt0XEyLG/iuBvqqFej1DAqh2maOz/+w4EbBrisx9Npisrs8gxyGSipgKLknldv56EBHkB6F1huDJ/
- kZnxrfaJGPKnQvjrFHDwEG9xZlkvuZ0rXLYmEbVcuPqQfdar5agBLD/ZDFgW52onPBMI=;
+ bh=P7Bkq1Xp5ogg/0xndzvYy0rR7X/fg4S5kzNKksizslA=; b=Az79NR2W/QifileqyRycguhajI
+ Jz2XWjrO822MLDoi+BwCPCOW8116mbopCUMDCoZa6e3qCeOdAdAcBD8Xfd5S6WVLgiuysSaEoWDo2
+ MKD2UM1iGKP4ZRJoL4UoXOAWhKCCq83ReI8eiHigweTLV3O9crbzsmkJIcsgxMT8Kmcs=;
 Received: from mail.blinkt.de ([192.26.174.232])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1weC20-0007Z7-GH for openvpn-devel@lists.sourceforge.net;
- Mon, 29 Jun 2026 13:28:15 +0000
+ id 1weC2q-0007dF-JD for openvpn-devel@lists.sourceforge.net;
+ Mon, 29 Jun 2026 13:29:05 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=rfc2549.org
  ; s=rsa-green;
  h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
- References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To;
- bh=shbGhahEUhew/JmEnLu6eyZlUD2g4EaTz266DpdrizA=; b=fO5zMguv3mDBQw0KlpkE8TIQkH
- AW8vwGoh/w1ArqwaGnDg4Ajl9BQNZ2btDrf/UPj0lLZQM7IYjukvo18LoAzaVMlWOPBqvKmAisS+R
- aCULZ3tZRQt4HtZiK+4zO+tn9fAESTc45lKYUp0aUfuZWO6V0otX10q7eZhgCOo5CM22k1z+4BlkU
- C1kVo1YODMATFgz/u+IeCqDCnCaoApx39fVZR84VY5/thdmhAZZpda9IHewfL+deCVjqHz/ozXisj
- QayCw5afzziWhb0vPN9iLbhQ9DWDkKkqFIVYFxuAgSutUQ043Tbd0YCD2eCzeDjX+EoAftoOA2S0Q
- AUq8uf8g==;
+ References:To:Subject:MIME-Version:Date:Message-ID:Cc:Sender:Reply-To;
+ bh=P7Bkq1Xp5ogg/0xndzvYy0rR7X/fg4S5kzNKksizslA=; b=EksY2eU383EhdxBOKqS01cInxp
+ MNnXGoBiZuFgewRjptY4MxTby/LDaWkgFQs7HRtXmHNbM9rdjyqnyBkAeLZzXogwpN7oLrSWLYOH8
+ qSrivc51t0yDI813DQ6yAWvJf5irCIIDn4m4DujymKBwS1uLGWg33ktXoP3Y8C4yBi94LYyV7ncD9
+ kzGuOSqzjNCWF2kcrLrIkSMsOxfpp3E1roOih5dIfDvhE+YXKsfCJ9SuKSPbzdTW0n06BsoN2Latz
+ G/dmV40HEIDiY9/ciDIRIug6Rjxw+pxa4dNAolJh2jqChWoL1Y1R/lW/QxmYmOHJpUNUosksUZlDo
+ 2uUmSwRw==;
 DKIM-Signature: v=1; a=ed25519-sha256; q=dns/txt; c=relaxed/relaxed;
  d=rfc2549.org; s=ed-green; h=Content-Transfer-Encoding:Content-Type:
- In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
- :Reply-To; bh=shbGhahEUhew/JmEnLu6eyZlUD2g4EaTz266DpdrizA=; b=ilcYfNcH/Cf1YWR
- o3HsI8iTffPRiQWP6PvpUG6PWNEDqqYQdU2cKrnZy0pyLszAna91yEUZMBfR6t6DH0nnKBg==;
+ In-Reply-To:From:References:To:Subject:MIME-Version:Date:Message-ID:Cc:Sender
+ :Reply-To; bh=P7Bkq1Xp5ogg/0xndzvYy0rR7X/fg4S5kzNKksizslA=; b=zkCO0t9DXm+QXwJ
+ uv8OGJXiA90KdR4o0boUSn0DXhstFljbNuastV6wmYs8+ZmqzMPoEzdW2/9izoxNOvK9lDg==;
 Received: from [2a02:908:2220:a200:97a:3044:2b98:e70f]
  by mail.blinkt.de with esmtpsa  (TLS1.3) tls TLS_AES_128_GCM_SHA256
  (Exim 4.99.3 (FreeBSD)) (envelope-from <arne@rfc2549.org>)
- id 1weC1p-00000000534-23C2; Mon, 29 Jun 2026 15:28:01 +0200
-Message-ID: <aa684693-7e53-4528-b67a-a413972f3f8a@rfc2549.org>
-Date: Mon, 29 Jun 2026 15:28:01 +0200
+ id 1weBiX-000000004oW-37X9; Mon, 29 Jun 2026 15:08:05 +0200
+Message-ID: <c6e935be-f655-47c6-b968-6962a3cfc58c@rfc2549.org>
+Date: Mon, 29 Jun 2026 15:08:05 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-To: Sami Rusani <samgithub@pm.me>
+To: Sami Rusani <samgithub@pm.me>,
+ "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 References: <q2D43uJoozPKtfJvLVuPcngp0-9sjp_HkGFBfdR3bpOTXmPGoi5Fz__jvpLGvsEWHXC5lBnqny8sXX-kkN3zXoRTJmTLjA0mzKb9yG5A4K4=@pm.me>
- <c6e935be-f655-47c6-b968-6962a3cfc58c@rfc2549.org>
- <_5bQ5LvkEmn_vaE7Ng8xPAcHJFWfy7td0Yvim0iLc3YVoer2RM1-PoBKAGPzHZKx1rsZP7Ht7kM_2eIUSidNkMW34yS7eT549_fSvcb-dl0=@pm.me>
 Content-Language: en-GB
 From: Arne Schwabe <arne@rfc2549.org>
 Autocrypt: addr=arne@rfc2549.org; keydata=
@@ -122,9 +121,9 @@ Autocrypt: addr=arne@rfc2549.org; keydata=
  NaYmgD04Jjgth0YKGZxd3Mf3ngg+hSU+B6ngLd0wkLsjzDwU9OJpuW9kTPrx0iwNZfnTU87k
  YuJAJRfZmG36ySM8JSPXjnkLiHTGc4vtwbS+FGrS6D7nV69+40JbvkKFfHWTyXLjE6+jkOvw
  ThNCJSdPKjl0MMk2QmY6TGjjrlR+yewhQ2VZfzflJwuAQ2SVog==
-In-Reply-To: <_5bQ5LvkEmn_vaE7Ng8xPAcHJFWfy7td0Yvim0iLc3YVoer2RM1-PoBKAGPzHZKx1rsZP7Ht7kM_2eIUSidNkMW34yS7eT549_fSvcb-dl0=@pm.me>
-X-Headers-End: 1weC20-0007Z7-GH
-Subject: Re: [Openvpn-devel] [PATCH v2] Document --preresolve option
+In-Reply-To: <q2D43uJoozPKtfJvLVuPcngp0-9sjp_HkGFBfdR3bpOTXmPGoi5Fz__jvpLGvsEWHXC5lBnqny8sXX-kkN3zXoRTJmTLjA0mzKb9yG5A4K4=@pm.me>
+X-Headers-End: 1weC2q-0007dF-JD
+Subject: Re: [Openvpn-devel] [PATCH] Document --preresolve option
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -136,23 +135,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 Content-Transfer-Encoding: 7bit
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-Am 29.06.26 um 15:22 schrieb Sami Rusani:
+Am 27.06.26 um 22:37 schrieb Sami Rusani via Openvpn-devel:
 > 
-> Thanks, addressed in v2.
+> Hi,
 > 
-> This version documents that --preresolve reuses resolved addresses on reconnects, and mentions the trade-off for dynamic DNS names and
-> DNS64/NAT64 roaming.
-> 
+> Please find attached a small documentation patch for OpenVPN/openvpn#532.
 
-Thanks for the quick change.
+Thanks. This is a good start but I think we can improve this to give a 
+bit more context:
 
-Acked-By: Arne Schwabe <arne@rfc2549.org>
++--preresolve
++  Resolve configured ``--remote``, ``--local``, ``--http-proxy``, and
++  ``--socks-proxy`` hostnames at startup before opening the connection.
++
 
+
+I think we should mention that this also causes OpenVPN to never 
+reresolve the hostnames on reconnect. Which is a good thing if you use 
+something like persist-tun and DNS will not work while the VPN is down 
+but maybe is counter-productive if you have a dyndns name for your VPN 
+server or roaming to/from DNS64/NAT64 network where the IP address might 
+change.
+
+Arne
 
 
 _______________________________________________
