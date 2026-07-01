@@ -4,158 +4,160 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6697BC43458
-	for <openvpn-devel@archiver.kernel.org>; Wed,  1 Jul 2026 18:31:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id EDD56C43458
+	for <openvpn-devel@archiver.kernel.org>; Wed,  1 Jul 2026 18:37:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Content-Transfer-Encoding:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:Cc:
 	Reply-To:From:List-Subscribe:List-Help:List-Post:List-Archive:
-	List-Unsubscribe:List-Id:Subject:To:MIME-Version:Date:Message-ID:Sender:Cc:
+	List-Unsubscribe:List-Id:Subject:MIME-Version:Message-ID:Date:To:Sender:
 	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
 	Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Owner;
-	bh=wWfTJHvOUOvcgKzMibnL2dVEoqxfT8xc8ZJyls5yh00=; b=hUBDih6gS1kqOxTWM1cDhpdFhJ
-	9RTFzto562Ex5/vUhqgGCzp4ej3/v1MIRC0SNwypOGRn9rQGZzV2ysLRwiEQk1+uugvVj/bsDyBx6
-	p+1a5o2S4V8jXHGy+DJoDg8oD6AERBtRVT2UdOBT4vU8u5HIZtkRSWYT9OtdJhYrzxYw=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=L8Tr3akkNNzpnrf8NOOB6LZ5pGOnQhmO/WZB4dLnX/A=; b=ipRcnUS2uX/Kiyr/JaqkJKJIUB
+	RrmHxNuoGGuFDvs/i5c5hYm4biONOStjvx6z5wLjFojJ+vgnbRk0ediz3HOVac+49K1ryEVt4Z5hw
+	D74Sw/5t0+SlwfHUx8toeerC3ivTrhZwlnt+3mYpm2azq6EPuMQ3qaBpNZ8MlIyxNLgs=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wezio-0007ev-16;
-	Wed, 01 Jul 2026 18:31:42 +0000
+	id 1wezoC-0002ck-2o;
+	Wed, 01 Jul 2026 18:37:16 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <matthias.andree@gmx.de>) id 1weziZ-0007dp-9t
+ (envelope-from <matthias.andree@gmx.de>) id 1wezo6-0002cb-4r
  for openvpn-devel@lists.sourceforge.net;
- Wed, 01 Jul 2026 18:31:28 +0000
+ Wed, 01 Jul 2026 18:37:10 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:Content-Type:Subject:From
- :To:MIME-Version:Date:Message-ID:Sender:Reply-To:Cc:Content-ID:
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:Message-ID:
+ Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=5b4vUiHCH8vkp324ae15nfurnPF0RkVw2sz/y86iaUc=; b=iC0plu/UKcKkq5JdpK5bK1S8pJ
- io6PuE7V4GzaVd1gGN6vInR/GZjUWt9r+Ih5B5tdKMKSdUEYhM0R72M/IxNgI0PM6/TuyxItlEGxj
- lajZ1vbElfYjHO0boYw25zpctF6/uLfaTiVL1bGpKR9xGkJvJKt3FxtHQhfCQJ3FBSTY=;
+ bh=ny944puhnjyK8Y0mBI8Fd0DwH5v18QQixGuW8M/da4U=; b=CBJOtQUxOE+f1lN+bUIufU/atx
+ V+D6d63k6Ac8xq1tMUgJmo2RCXndBequy6s9cEwOpzuSvLHCl10i4GRfFibaXxF5sTWpx8w89wRZT
+ 9VNGFiWyRal7c36fUJg5A/KssNFhoNKoypZv04INAbIGHiQFNeSkWYktCPbqjK+rYvBE=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:Content-Type:Subject:From:To:MIME-Version:Date:
- Message-ID:Sender:Reply-To:Cc:Content-ID:Content-Description:Resent-Date:
+ h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:Cc:To:From
+ :Sender:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:
  Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
  References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=5b4vUiHCH8vkp324ae15nfurnPF0RkVw2sz/y86iaUc=; b=g
- szIGhdANN6mi6R/XSeY53ft1gjpKw6SCJsjBfzVQvMDumqpFCL+zZjloW10U2stli6l/AYy5+vwaI
- KxqClQUFmpAa0uU0Dq4nHvO3WfvoqcnsQA5WXdA9EwsJE+ml2hrVs7YJs1aI2bDJQvWACFToVSKvZ
- SyTNX2bkPPE99sSQ=;
-Received: from mout.gmx.net ([212.227.15.18])
+ List-Owner:List-Archive; bh=ny944puhnjyK8Y0mBI8Fd0DwH5v18QQixGuW8M/da4U=; b=m
+ UsidzS+cTa7ik1gEbIfjq24un2q62B8fHkCHXEV7YoGCp93A+Mqzby6Dw7vJergDLJmTui2N7lvm4
+ vvN+xorsRG/oIA0j8bsInGMLy57b49q7YuqKkKCATj9glH/VvJ1DbI5yaPViWVcXgxI7p41epmQJK
+ svsOjI8Kxx407eQU=;
+Received: from mout.gmx.net ([212.227.15.19])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1weziS-0004ZJ-Ph for openvpn-devel@lists.sourceforge.net;
- Wed, 01 Jul 2026 18:31:22 +0000
+ id 1wezo4-0004z7-0u for openvpn-devel@lists.sourceforge.net;
+ Wed, 01 Jul 2026 18:37:10 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.de;
- s=s31663417; t=1782930674; x=1783535474; i=matthias.andree@gmx.de;
- bh=5b4vUiHCH8vkp324ae15nfurnPF0RkVw2sz/y86iaUc=;
- h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:To:From:Subject:
- Content-Type:Content-Transfer-Encoding:cc:
+ s=s31663417; t=1782931017; x=1783535817; i=matthias.andree@gmx.de;
+ bh=ny944puhnjyK8Y0mBI8Fd0DwH5v18QQixGuW8M/da4U=;
+ h=X-UI-Sender-Class:From:To:Cc:Subject:Date:Message-ID:
+ MIME-Version:Content-Transfer-Encoding:cc:
  content-transfer-encoding:content-type:date:from:message-id:
  mime-version:reply-to:subject:to;
- b=b+CYNEyWUINtktDOj2Q3rXCCYQajLoxsHE0O1nK9qfIgIGvREpBLCWddVXA/0lxh
- Xz0FSIpuegnIv7AwJsIyReSvOrQu5UQ8+cR2OhNXkQwhK7QS2QIP9AuunYxAbjk2F
- ewVwfn+6xE3ceUmqUNxtpfjqY1FvvnagLdu1yW3v3zwNrkMbv/84BEKRFoK8qFZW0
- E7RNkgyOmuaD/7EcckIkXg0ac4zj0evoD7EyS0h2sWDPnWTWr8rVa2Vl0DXrLfXeC
- VKIqjuLCrUK8D1wBWGX2Xo552J83CYDBQkFB4O79cLhJGymdkKsMKrqZsLKFYh6SL
- lF9J4iadgWvNIaHNqA==
+ b=lrOT15Vdp76zBEYGCL6rQf3/fhnCksIPFLYuWHx2jK8B/rxTb+musITGDMm8rtBc
+ k3GU6OXlaLb2fDMZ62pwV2mb5GzADXj5d83w2jFxxZvfGLuUA5Z5lkD/0wDJGrsqH
+ ikK+v5I+cYH4ti2dbzTjuCrt0CxCRMqnj13P8NrKLWwIsEvrXZX0wPOPP8+OkP+dh
+ QGBW3CqaiSMi7X1Wy2f/j/oi3I0A5pyS+1yfaGh0r6hPMWo+pBEp0w0xpDLYslBhr
+ c0VjEa8FAonw+C84ju7hIKS8GUYgsf5zrWJDW1nA5jdKkMf2q3sU+GoKwXbcjtlPR
+ Ok4To+9hw4A249obQg==
 X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from client.hidden.invalid by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MNKhs-1wUS6q3TSs-00WZC1 for
- <openvpn-devel@lists.sourceforge.net>; Wed, 01 Jul 2026 20:31:14 +0200
-Message-ID: <4fc05e83-ba18-49e7-904c-cc3182980652@gmx.de>
-Date: Wed, 1 Jul 2026 20:31:14 +0200
-MIME-Version: 1.0
-User-Agent: Betterbird (Linux)
-Content-Language: en-US, de-DE, en-GB
+Received: from client.hidden.invalid by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MdvqW-1xDm7q3e46-00kwF8; Wed, 01
+ Jul 2026 20:36:56 +0200
+Received: by ryzen.an3e.de (Postfix, from userid 1000)
+ id F3FAA4680F2C; Wed, 01 Jul 2026 20:36:55 +0200 (CEST)
 To: openvpn-devel@lists.sourceforge.net
-X-Provags-ID: V03:K1:UdSKX0wbjfU8T86Mm0nxzfqXYHPW/xS1uv5ASC04ft4933dCmov
- y3gdZSQoToru+51VjpimFplTdzPjpKc0XxBVFif1GPTsNrpwCkjTmdJoZFKZwE33poDuvlV
- MejqlgZJRvBwuZSHQajV+JxWMK1CivONqBuYIuIu3HEi8opygj4qVBZ7zG1vMG1rdsDhxmf
- 068++t40A0KSo+f7u0zow==
-UI-OutboundReport: notjunk:1;M01:P0:cSSqE3ea4p8=;/a0tsD14fiaRs/UWa5CSDf8u+dI
- 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
- Nihk1r3WwVFonYow+rr6ddVygvbGKZI/3B9E=
-X-Headers-End: 1weziS-0004ZJ-Ph
+Date: Wed,  1 Jul 2026 20:36:50 +0200
+Message-ID: <20260701183650.29936-1-matthias.andree@gmx.de>
+X-Mailer: git-send-email 2.54.0
+MIME-Version: 1.0
+X-Provags-ID: V03:K1:TJxOU+fJIS5prUPgY72xbc8li5qXIscCgNAotiX059WcZ8nr4jD
+ zhd7Dux6JRuhDkp/vLIgZ7sNTXjgJaQgJajNG1Iq5XpoA4g7Ab1UWdShWn/mVtJR/zRBx5r
+ HrPWfX7svw0q+XsQpKnmjvnGwuIqwtIezfez2PhB5zkxl+M/4F8UzFk5S6XncnPQoE1LYZt
+ K301VZ72LEjYJKSdFtk0Q==
+UI-OutboundReport: notjunk:1;M01:P0:9R9hmTkbjr8=;TtMTBw+9zwn5DIYywThwK9I0/NU
+ 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
+ hdBLbQ==
+X-Headers-End: 1wezo4-0004z7-0u
 Subject: [Openvpn-devel] [PATCH] Limit file size assignment to safe size_t
  range.
 X-BeenThere: openvpn-devel@lists.sourceforge.net
@@ -171,34 +173,50 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 From: Matthias Andree via Openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Reply-To: Matthias Andree <matthias.andree@gmx.de>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Cc: Matthias Andree <matthias.andree@gmx.de>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-U29tZSBvcGVyYXRpbmcgc3lzdGVtcyAoRnJlZUJTRCAxNCBvbiBpMzg2KSBoYXZlCnNpemVvZihz
-aXplX3QpID09IDQgKHdoaWNoIGlzIHVzZWQgZm9yIG9iamVjdCBzaXplcykKc2l6ZW9mKG9mZl90
-KcKgID09IDggKHdoaWNoIGlzIHVzZWQgZm9yIGZpbGUgc2l6ZXMpLApzbyBhc3NpZ25pbmcgYSBm
-aWxlIHNpemUgb2J0YWluZWQgZnJvbSBzdGF0IHRvIGEgc2l6ZV90CmNhdXNlcyBqdXN0aWZpZWQg
-Y29tcGlsZXIgd2FybmluZ3MgYWJvdXQgYSBuYXJyb3dpbmcKY29udmVyc2lvbi4KCkl0IGlzIHNh
-ZmUgdG8gYXNzdW1lIGEgMzItYml0IHBsYXRmb3JtIHdpbGwgbm90IHdhbnQKdG8gbG9hZCBhID49
-IDQgR0IgZmlsZSB0aGVyZSwgc28gbGV0J3MganVzdCBBU1NFUlQoKQp0aGF0IHRoZSBvZmZfdCB3
-ZSBhcmUgYWJvdXQgdG8gYXNzaWduIGZpdHMgaW50bwphIHNpemVfdCBvYmplY3QuCgpTaWduZWQt
-b2ZmLWJ5OiBNYXR0aGlhcyBBbmRyZWUgPG1hdHRoaWFzLmFuZHJlZUBnbXguZGU+Ci0tLQogwqBz
-cmMvb3BlbnZwbi9idWZmZXIuYyB8IDUgKysrKy0KIMKgMSBmaWxlIGNoYW5nZWQsIDQgaW5zZXJ0
-aW9ucygrKSwgMSBkZWxldGlvbigtKQoKZGlmZiAtLWdpdCBhL3NyYy9vcGVudnBuL2J1ZmZlci5j
-IGIvc3JjL29wZW52cG4vYnVmZmVyLmMKaW5kZXggNWYyYjIzMzguLjRiNmFjYjM2IDEwMDY0NAot
-LS0gYS9zcmMvb3BlbnZwbi9idWZmZXIuYworKysgYi9zcmMvb3BlbnZwbi9idWZmZXIuYwpAQCAt
-MTM5MSw3ICsxMzkxLDEwIEBAIGJ1ZmZlcl9yZWFkX2Zyb21fZmlsZShjb25zdCBjaGFyICpmaWxl
-bmFtZSwgCnN0cnVjdCBnY19hcmVuYSAqZ2MpCiDCoCDCoCDCoCDCoCDCoHJldHVybiByZXQ7CiDC
-oCDCoCDCoH0KCi3CoCDCoCBjb25zdCBzaXplX3Qgc2l6ZSA9IGZpbGVfc3RhdC5zdF9zaXplOwor
-wqAgwqAgLyogZm9yIHNvbWUgc3lzdGVtcywgb2ZmX3QgaXMgNjMgYml0cyB3aWRlICsgc2lnbiBi
-aXQgYW5kIHNpemVfdCBpcyAKMzIgYml0cworwqAgwqAgwqAqIHdpZGUsIGFuZCB3ZSBuZWVkIHRv
-IGF2b2lkIG5lZ2F0aXZlIGdhcmJhZ2Ugd3JhcHBpbmcgYXJvdW5kICovCivCoCDCoCBBU1NFUlQo
-ZmlsZV9zdGF0LnN0X3NpemUgPj0gMCAmJiBmaWxlX3N0YXQuc3Rfc2l6ZSA8PSBTSVpFX01BWCk7
-CivCoCDCoCBjb25zdCBzaXplX3Qgc2l6ZSA9IChzaXplX3QpZmlsZV9zdGF0LnN0X3NpemU7CiDC
-oCDCoCDCoHJldCA9IGFsbG9jX2J1Zl9nYyhzaXplICsgMSwgZ2MpOyAvKiBzcGFjZSBmb3IgdHJh
-aWxpbmcgXDAgKi8KIMKgIMKgIMKgc2l6ZV90IHJlYWRfc2l6ZSA9IGZyZWFkKEJQVFIoJnJldCks
-IDEsIHNpemUsIGZwKTsKIMKgIMKgIMKgaWYgKHJlYWRfc2l6ZSA9PSAwKQotLSAKMi41NC4wCgoK
-Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCk9wZW52cG4t
-ZGV2ZWwgbWFpbGluZyBsaXN0Ck9wZW52cG4tZGV2ZWxAbGlzdHMuc291cmNlZm9yZ2UubmV0Cmh0
-dHBzOi8vbGlzdHMuc291cmNlZm9yZ2UubmV0L2xpc3RzL2xpc3RpbmZvL29wZW52cG4tZGV2ZWwK
+Some operating systems (FreeBSD 14 on i386) have
+sizeof(size_t) == 4 (which is used for object sizes)
+sizeof(off_t)  == 8 (which is used for file sizes),
+so assigning a file size obtained from stat to a size_t
+causes justified compiler warnings about a narrowing
+conversion.
+
+It is safe to assume a 32-bit platform will not want
+to load a >= 4 GB file there, so let's just ASSERT()
+that the off_t we are about to assign fits into
+a size_t object.
+
+Signed-off-by: Matthias Andree <matthias.andree@gmx.de>
+---
+ src/openvpn/buffer.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
+index 5f2b2338..4b6acb36 100644
+--- a/src/openvpn/buffer.c
++++ b/src/openvpn/buffer.c
+@@ -1391,7 +1391,10 @@ buffer_read_from_file(const char *filename, struct gc_arena *gc)
+         return ret;
+     }
+ 
+-    const size_t size = file_stat.st_size;
++    /* for some systems, off_t is 63 bits wide + sign bit and size_t is 32 bits
++     * wide, and we need to avoid negative garbage wrapping around */
++    ASSERT(file_stat.st_size >= 0 && file_stat.st_size <= SIZE_MAX);
++    const size_t size = (size_t)file_stat.st_size;
+     ret = alloc_buf_gc(size + 1, gc); /* space for trailing \0 */
+     size_t read_size = fread(BPTR(&ret), 1, size, fp);
+     if (read_size == 0)
+-- 
+2.54.0
+
+
+
+_______________________________________________
+Openvpn-devel mailing list
+Openvpn-devel@lists.sourceforge.net
+https://lists.sourceforge.net/lists/listinfo/openvpn-devel
