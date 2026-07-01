@@ -4,7 +4,7 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B1E38C43327
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id AFF93C43458
 	for <openvpn-devel@archiver.kernel.org>; Wed,  1 Jul 2026 19:24:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
@@ -12,117 +12,117 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	Subject:MIME-Version:Message-ID:References:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
-	List-Owner; bh=0lTuYeb9Q6IpqbXTfsdEyalSjgx5VYPhE03Gx5XMxt8=; b=W/DL0M5aKNFOW3
-	tOzfRZiCysu290AvFt4kB1gSiIEvg/CwM4fH4qB+UEYr8pmRsQFTVo1ExbhJVCCrc8tbi0f2/E3JI
-	CW3yLKR8D6NxiuhpDU+RtTEGPchoZXA3yjgDcTV/bf9c1E7g/H4C5K0/nfxWtBY7bcYJ8//5tzrP1
-	Wfw=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	List-Owner; bh=j+gz2coPx+cbKv+5FSdujRQkWWhUoEEWV3owkU0LukM=; b=UyUrQDlUfCR6e0
+	FZftqYzzOoVcr59qurhT6JIRhT1Je8UzQ25SBKRo3c2kLpvWrrAVdXcKftPi+GbyOcQ6XZmkT/m9a
+	sDs5Epq9ReVhY0NC0vfCC5+WqGCgzM+5weP3Jab5VlXwY5D9eMoBocOPvsvDhTaKZSR4X+2Ga/x72
+	8IM=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wf0Xu-0002tv-U6;
-	Wed, 01 Jul 2026 19:24:31 +0000
+	id 1wf0Xw-0007nq-J7;
+	Wed, 01 Jul 2026 19:24:33 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wf0Xt-0002td-2l
+ (envelope-from <gerrit@openvpn.net>) id 1wf0Xu-0007ni-Si
  for openvpn-devel@lists.sourceforge.net;
- Wed, 01 Jul 2026 19:24:29 +0000
+ Wed, 01 Jul 2026 19:24:31 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:
  From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From:
  Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=6VyuoeCvC4/wQr6Ep9RuvX60AtAnvIW2djmEI1rIY2A=; b=Iqton8Ou0rGDL/5jU8LbYGztdb
- ZAe/yr8NP56bE/bLz2gC7ff8Qj58MfzuLC0WLOawRf1D+5jV76dynsnAAEgxPDvr79KN+9glqqOHg
- spBhJPkzRCJyCIV4vGpHfO3EhgQVYwA5i2JzawBl0kDc9pRo6MpqKOTwEHTLG0gzZj+o=;
+ bh=h+UgkcTzqV5h3Jj3lqnRQr1YNUNes72S9XichDUD/Ao=; b=DkdM9LvaT2dRcCDCBme1o6O8ze
+ tUAVtYkSLLOp+7g1fJYRwnkCwQ1+dt/DDDJjtBwQaZ5SnexbMtmFkuboXhQ9luSm4NZqqZbFXPZPH
+ UgHXFnNcRr5QCoJOqTUhuSyKVcWfusrHD7kSboj2dEfVvW+Y21l4Y+Y1bhStO7/aecFE=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
  Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:From:Sender:Content-ID
  :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
  Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=6VyuoeCvC4/wQr6Ep9RuvX60AtAnvIW2djmEI1rIY2A=; b=m
- k7RcD3RLJvOTUFtqICQzPIjuwOV/gPIrth/Xqp+uE2e2jTIO9uCLrkKYd5DlR5HZ89Vn/6P1wEhfX
- w1XdbuV0UN/eBYviKN2u4GYSjyNMv79Nso2oBbmuwyXzOwXjD4Z+/Tu+sfW+XOLL3TPYWPdHW7wlj
- wF3QfDlrxEABhZZY=;
-Received: from mail-wr1-f47.google.com ([209.85.221.47])
+ List-Owner:List-Archive; bh=h+UgkcTzqV5h3Jj3lqnRQr1YNUNes72S9XichDUD/Ao=; b=M
+ jOAGjxI/ExZQLeHjpQjLhHlfOvWrgLld7RnjKCPYA8TIaPckHfI0qtkgMgbjFKPKJ6dmkHkYrmldz
+ ukNgE0Lt9JlvHToXP30UF4ziOLwjGxh/taZYOZzKGi9xgCvXOzZeSodayvht7tSyIQC1e5+8wxMKG
+ 5PmD4IG2FDrdlTO4=;
+Received: from mail-wm1-f46.google.com ([209.85.128.46])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wf0Xr-000065-Ou for openvpn-devel@lists.sourceforge.net;
- Wed, 01 Jul 2026 19:24:29 +0000
-Received: by mail-wr1-f47.google.com with SMTP id
- ffacd0b85a97d-472326ca506so801940f8f.2
+ id 1wf0Xq-000062-Pb for openvpn-devel@lists.sourceforge.net;
+ Wed, 01 Jul 2026 19:24:31 +0000
+Received: by mail-wm1-f46.google.com with SMTP id
+ 5b1f17b1804b1-493b61b52b6so6904255e9.1
  for <openvpn-devel@lists.sourceforge.net>;
- Wed, 01 Jul 2026 12:24:28 -0700 (PDT)
+ Wed, 01 Jul 2026 12:24:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1782933857; x=1783538657; darn=lists.sourceforge.net;
- h=user-agent:content-disposition:content-transfer-encoding
- :mime-version:message-id:reply-to:subject:thread-index:references
- :list-unsubscribe:list-id:auto-submitted:cc:to:date:from:from:to:cc
- :subject:date:message-id:reply-to;
- bh=6VyuoeCvC4/wQr6Ep9RuvX60AtAnvIW2djmEI1rIY2A=;
- b=fX86vVCRS4xAzJIOq7VzWq8mynq0vp7paB3J2HiioTekfb8uRt1MAD/FXGhF5qb0ZP
- dy2ZZs/+eBEaYptQyktm8ySRoL6+rngsaNyOIZO+dbccxiAQW+nwQSeG8ZLlTO7z0X2D
- NeVXSOwEACY53Fgvsm2oINfTu1zReqKehtTbI8fFr7J4996eigRJ8KusrEhYwz5Y0UE3
- xyrFeTWgAjzWskcOjUIHGikQDScx3DJvtKPuulkJfwGK10nVheZJd4T8NDXYIed3Okhj
- HHBGKnXfd1yQyWEc2dFh/7SrFiCUtsl7fd0PAVlzYCc+L17WCpHYrlBCkOGDSGTTca8S
- /eng==
+ d=openvpn.net; s=google; t=1782933856; x=1783538656; darn=lists.sourceforge.net;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
+ :to:date:from:from:to:cc:subject:date:message-id:reply-to
+ :content-type; bh=h+UgkcTzqV5h3Jj3lqnRQr1YNUNes72S9XichDUD/Ao=;
+ b=KzqZ5lwfDU9LhXGeNRBdvzhV3ec8V8L899bO4aMzvLd8D4P5znd4U0iVbwNGra83kA
+ 0m4jetGVFEKtp33L8frDWwmcPuRceZ4rnWr7GdodDlYb9W38OV+50nf4ANfd/2aYSt9S
+ 4MRl7nKjSX9UNeW9v2qMg/520TM7+pAIhI6pgOons7XjEikMyC6o3sNPcS8Mjeq0Fe+u
+ t2tuOAmKQnhIyaakjBdoSY/oo29kTc1RfoRFFvE9W5eOW+Lp5Nfe+0vDm7lfqvJUmfYX
+ qALo/MEkEdLeGy5+tHRZMYwCy+9TOZK2cs/r883c5KcVGiQY0P1nLQHieKQnsXIng71E
+ cyNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1782933857; x=1783538657;
- h=user-agent:content-disposition:content-transfer-encoding
- :mime-version:message-id:reply-to:subject:thread-index:references
- :list-unsubscribe:list-id:auto-submitted:cc:to:date:from:x-gm-gg
- :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
- bh=6VyuoeCvC4/wQr6Ep9RuvX60AtAnvIW2djmEI1rIY2A=;
- b=Jj8G+bClQQEUmkvn6C76Kgb4qBTXK23hVR3rNnXkwWgUaXP0RD+2SCH8Vz+LR5UB/s
- g3yr5fEBC1WVLCG6ed5Y82cybWQ/ZzYLKSFkeu4pkSA3Zugd5KAgJ/tIEwQfaZI29NCH
- JLF6qRhKB9fmkxqqzOEbXkErrQ4lzhmWld/mXqOnHo4fa32MlfAWQpOJFeLGn6i1dRmG
- ijIZzZhLUCAfeNhtW7TnT17u+gG4Hbv32GARd6ecqsuKuBG00csK59bMkBbWqydtSfHu
- ddohPBfDiPB8yoYe4D7/5i2bJ1Now4J4mlO5XQtaV5+pXehsufTvakITArlsFBa88i/H
- GFiQ==
-X-Gm-Message-State: AOJu0YygCI/biKYRHKdltgLod1zORU2yDQP+dmPpIid9h8XGSr6phNSU
- /O8mq3lKV3TaClc1ZXw31mvM/ZsDs3tyOTL6k7M0siZGPzVf6rVje+gC+5WiqE8xWRNGWfCKEHz
- OR4eUCU1US7O2npem3gkShm8zNOEDNK0o52aNoNdfzs1KpdCrqBJsEFC7Cre+20dHvDp0UudMIG
- hKSkDfsA==
-X-Gm-Gg: AfdE7cl4VLuW0KLSIypX8dJ6sDj4p4W2146GDAqM4EL54Q56eG99w8rmDJINZ2XlXsU
- tAz5pMPHwJOd8G6glqHfYLB8jid+Vum4IYLiFjvLDHH4KSHeN+fymiEdoqT2torpUkWkBY/iKGN
- yMogiBFEOiY4pcVx/Jo2oqOr7q/me/8u/PMuUKjPFr41jhBqOdOdKF98SzB7XJTx3A6oWEcm6rI
- L6zSSPiZTwMm74hPmcXwYXVdA4I0lFepp07hgJVbtusNft5UhrQsAoLzNBnV6Hu5BkPkcA4a1Rm
- Ha+ddmsE6kK8EZQuVZo0pKV/IvZHbgDLcRL6IVpK6N6MsniM6uJTYDA0b+UiCsoRUdTALYWfl7M
- jfE3AmpCC76ttmWKFOGJnKOgoH0khAFfnmaMulVNH9TN8NwRLTHMnne59/+kQeLNyCv0wVJm2pv
- i9Hkbh1Q5t1BaF5lj00w3co13W70uYG2xm8RulBhrxktls4flMlDam58WAU3dW2jSPt7kgbq6jw
- s/fI/selb9ijhuvrDbTGM8h8dF+vd9VVpg52WUPW+Nc9+7DDHCS8+5Qun4UXsg0Wt5A9PGEekYp
- n7mJfjldjljutg==
-X-Received: by 2002:a05:6000:29c6:b0:476:504f:7a1 with SMTP id
- ffacd0b85a97d-47757e57eeamr3222531f8f.7.1782933856546; 
- Wed, 01 Jul 2026 12:24:16 -0700 (PDT)
+ d=1e100.net; s=20251104; t=1782933856; x=1783538656;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
+ :to:date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+ :message-id:reply-to:content-type;
+ bh=h+UgkcTzqV5h3Jj3lqnRQr1YNUNes72S9XichDUD/Ao=;
+ b=YbgMDlrMIBO+A1SKslXWBr6vYzry0yk6osttoPRu4pC2Z9Z+q6NcMCJ5eaCT7J2QfT
+ 9J08fbBfRWzzQTDCgl48c7XPyRZmTihgYWpQvD9GtWiDapLYj8tmKCP3KDTkQu9SLMjc
+ 4OulmK0GQCsWBl7I0h3XJQ0T4/NDsILqWO68gp2thFO599eKWnzv6nyzCyTBb1f6QdmZ
+ aFNDW4Pb1FWkH1l4RuAr3UwAhkYiDyyawhSJ3rWDH4udrobs9W+mtNiGS7Cnb7xQ5kut
+ 61K0FgCsizo7veIVuQW3RfYIa+wKcl64c3ZHMYpkZnp7+Nt9NLUDH/mK7EgHsQIGIXjf
+ 1gwQ==
+X-Gm-Message-State: AOJu0Yx/7hHr2mkB5ldX0MrD9PD7Czk8dC6mhh+kS8A55mEWAG4O1l6a
+ CMfz1R++q7dh6oWAE46ymfEwgyxF4IBDyqRJXa5NrwPnman7f8efT/GhkZyCPgPGtC9Br3watVW
+ 5qWRuNZaU1pYVp4gyT2Tp9QW+ikKAWgXqUhbuHUNGp94YRyP2Q5aXqU71ZbTlr2adstC8
+X-Gm-Gg: AfdE7cm2JndXLejAyFqJT0sWr0Ada7nlxiu4VyCnnAIO9fgeyymO/kTUSx5UyjIHqYJ
+ yASqmPHRp4Ry5tcmripMG2yKIANiY6m+dmK8veyLk6BZq/riD1CotF33HQDBBdApUkX0PUoO5Pr
+ Xtqn4DQD1UCphN4FoyWMxtRQJyPjQC62N5boLqlq+5Vo4/ezvl4ROVaoMTWZ22OCPJgb3vzVzbm
+ 8Wy6SoxkgdOK/JFY6E9LEoaelpVmbHJ12PtsUIiOcpp/BQ86QqIDi+RTCtTqndhtuocDxaACFBi
+ fGkL5ILjVDlw9iSAiU4WkYrMcUV836fskYGETXReBhRLk4n7O3DJ2vONVttkLOg9pkFQdVOElkb
+ pRie9I5dNYd9Rl5U5yfROMOSa1xr1kFgKLIAgIfTrQzMZl5ELrZ5RnI6fBEFxwoYImBfkpMmy70
+ ktE8NqjS5ceVoTWrPrztSVCFh6YxZ22FMHTdcjojKNw8pK93Dmn+9VhNnJpGL7JnjTreKg4w/xw
+ 7nh1Q7CTyys9KnouOqB/gv0ZWyLaDE4/kdySdny9U2XjjJfOX1Ta5quZRJIyxe9z+gNZGdmJ2w9
+ aEc=
+X-Received: by 2002:a05:600c:34c8:b0:493:a5f9:d345 with SMTP id
+ 5b1f17b1804b1-493c3cf0a35mr28253655e9.26.1782933855665; 
+ Wed, 01 Jul 2026 12:24:15 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-477db8a4b83sm2433392f8f.12.2026.07.01.12.24.15
+ 5b1f17b1804b1-493be493c24sm64792915e9.0.2026.07.01.12.24.15
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 01 Jul 2026 12:24:16 -0700 (PDT)
+ Wed, 01 Jul 2026 12:24:15 -0700 (PDT)
 X-Google-Original-From: "flichtenheld (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Wed, 1 Jul 2026 19:24:15 +0000
+Date: Wed, 1 Jul 2026 19:24:14 +0000
 To: plaisthos <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newchange
 X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: I1905d9494336da4e91f1946d2ffd875720605b41
-X-Gerrit-Change-Number: 1763
+X-Gerrit-Change-Id: I752e03eabec085e47e8d74a9b4fa99e9ff267efb
+X-Gerrit-Change-Number: 1764
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1763?usp=email>
-X-Gerrit-Commit: 5640441194916a0981eb3c51757444f96418bde8
-References: <gerrit.1782933852000.I1905d9494336da4e91f1946d2ffd875720605b41@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzgyOTMzODUyMDAwLkkxOTA1ZDk0OTQzMzZkYTRlOTFmMTk0NmQyZmZkODc1NzIwNjA1YjQxQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <944542f8740991583e57c1a2f7e5a114777bf47e-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1764?usp=email>
+X-Gerrit-Commit: e9a83808369172092f8f25b19a9deb8f638776fe
+References: <gerrit.1782933852000.I752e03eabec085e47e8d74a9b4fa99e9ff267efb@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzgyOTMzODUyMDAwLkk3NTJlMDNlYWJlYzA4NWU0N2U4ZDc0YTliNGZhOTllOWZmMjY3ZWZiQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <c6f4e4cbae095719366f76eaf8a62a64b673719c-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wf0Xr-000065-Ou
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: t_client.sh.in: Add
- utility function needs_openvpn()
+X-Headers-End: 1wf0Xq-000062-Pb
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: t_client.sh.in: Do
+ not try to guess the absolute path to LOGDIR
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -140,15 +140,15 @@ Reply-To: frank@lichtenheld.com, arne-openvpn@rfc2549.org,
  openvpn-devel@lists.sourceforge.net
 Cc: "flichtenheld \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============7229878582012714557=="
+Content-Type: multipart/mixed; boundary="===============8588288251886961039=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============7229878582012714557==
+--===============8588288251886961039==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Ap8TLG/cpc8="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="0/ST35YxaKU="; charset=UTF-8
 
---Ap8TLG/cpc8=
+--0/ST35YxaKU=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
@@ -161,134 +161,94 @@ ike you to do a code review=2E
 Please visit
 
     http://gerrit=2Eopenvpn=2E=
-net/c/openvpn/+/1763?usp=3Demail
+net/c/openvpn/+/1764?usp=3Demail
 
 to review the following change=2E
 
 
 Chang=
-e subject: t_client=2Esh=2Ein: Add utility function needs_openvpn()
-=2E=2E=
+e subject: t_client=2Esh=2Ein: Do not try to guess the absolute path to LOG=
+DIR
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-t_client=2Esh=2Ein:=
- Add utility function needs_openvpn()
+t_clien=
+t=2Esh=2Ein: Do not try to guess the absolute path to LOGDIR
 
-This allows to skip tests on old ver=
-sions of openvpn=2E
-Makes it much easier to maintain a t_client=2Erc across=
+We know it, w=
+e do not need to guess it=2E Makes it easier
+to move LOGDIR around=2E
 
-multiple versions=2E
-
-Change-Id: I1905d9494336da4e91f1946d2ffd875720605b41=
-
-Signed-off-by: Frank Lichtenheld <frank@lichtenheld=2Ecom>
+Chan=
+ge-Id: I752e03eabec085e47e8d74a9b4fa99e9ff267efb
+Signed-off-by: Frank Licht=
+enheld <frank@lichtenheld=2Ecom>
 ---
-M tests/t_c=
-lient=2Esh=2Ein
-1 file changed, 21 insertions(+), 8 deletions(-)
+M tests/t_client=2Esh=2Ein
+1 file chan=
+ged, 2 insertions(+), 1 deletion(-)
 
 
 
-  git p=
-ull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/63/1763/1
+  git pull ssh://gerrit=2Eopenvpn=2E=
+net:29418/openvpn refs/changes/64/1764/1
 
-diff=
- --git a/tests/t_client=2Esh=2Ein b/tests/t_client=2Esh=2Ein
-index 2459c08=
-=2E=2E78c8bca 100755
---- a/tests/t_client=2Esh=2Ein
-+++ b/tests/t_client=2E=
-sh=2Ein
-@@ -22,14 +22,16 @@
- t_client_ips_rc=3D"${t_client_ips_rc:-${top_bu=
-ilddir}/t_client_ips=2Erc}"
- update_t_client_ips=3D"${update_t_client_ips:-=
-${srcdir}/update_t_client_ips=2Esh}"
+diff --git a/tests/t_client=2Esh=
+=2Ein b/tests/t_client=2Esh=2Ein
+index 78c8bca=2E=2E1234215 100755
+--- a/te=
+sts/t_client=2Esh=2Ein
++++ b/tests/t_client=2Esh=2Ein
+@@ -126,6 +126,7 @@
+ =
+fi
  
--if [ -r "${top_builddir}"/t_client=
-=2Erc ] ; then
--    =2E "${top_builddir}"/t_client=2Erc
--elif [ -r "${srcdi=
-r}"/t_client=2Erc ] ; then
--    =2E "${srcdir}"/t_client=2Erc
--else
--    ec=
-ho "$0: cannot find 't_client=2Erc' in build dir ('${top_builddir}')" >&2
--=
-    echo "$0: or source directory ('${srcdir}')=2E SKIPPING TEST=2E" >&2
-- =
-   exit "${TCLIENT_SKIP_RC}"
-+if [ -z "${t_client_rc}" ]; then
-+    if [ -r=
- "${top_builddir}"/t_client=2Erc ] ; then
-+        t_client_rc=3D"${top_bui=
-lddir}"/t_client=2Erc
-+    elif [ -r "${srcdir}"/t_client=2Erc ] ; then
-+  =
-      t_client_rc=3D"${srcdir}"/t_client=2Erc
-+    else
-+        echo "$0: =
-cannot find 't_client=2Erc' in build dir ('${top_builddir}')" >&2
-+        =
-echo "$0: or source directory ('${srcdir}')=2E SKIPPING TEST=2E" >&2
-+     =
-   exit "${TCLIENT_SKIP_RC}"
-+    fi
- fi
+ LOGDIR=3Dt_client-`hostname`-`date +%Y%m%d-%H%M%S`
++LOGDIR_ABS=3D"$PW=
+D/$LOGDIR"
+ if mkdir $LOGDIR
+ then :
+ else
+@@ -383,7 +384,7 @@
+ 	printf "$o=
+utbuf" ; continue
+     fi
  
- # Check for external dependenci=
-es
-@@ -65,6 +67,17 @@
-     exit 1
- fi
- 
-+openvpn_version=3D`${openvpn} --ve=
-rsion | head -n 1 | cut -f2 -d" " | sed -e 's/^2\=2E\([0123456789]\+\)=2E*$=
-/2\1/'`
-+
-+needs_openvpn() {
-+    needs_version=3D$1
-+
-+    [ "$openvpn_ver=
-sion" -ge "$needs_version" ]
-+    return $?
-+}
-+
-+=2E "${t_client_rc}"
-+
- i=
-f [ -z "$TEST_RUN_LIST" ] ; then
-     echo "TEST_RUN_LIST empty, no tests d=
-efined=2E  SKIP test=2E" >&2
-     exit "${TCLIENT_SKIP_RC}"
+-    pidfile=3D"${top_builddir}/tests/$LOGDIR/o=
+penvpn-$SUF=2Epid"
++    pidfile=3D"$LOGDIR_ABS/openvpn-$SUF=2Epid"
+     ope=
+nvpn_conf=3D"$openvpn_conf --writepid $pidfile $up"
+     output " run openv=
+pn $openvpn_conf"
+     echo "# ${openvpn} $openvpn_conf" >$LOGDIR/$SUF:open=
+vpn=2Elog
 
 -- 
-To view, v=
-isit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1763?usp=3Demail
-To unsubscr=
-ibe, or for help writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/=
-settings?usp=3Demail
+To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/176=
+4?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http:=
+//gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Gerrit-MessageType: newchange
-Gerrit-Project: openvpn=
-
+Gerrit-MessageType: newchang=
+e
+Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I1905d9494336da4e91f1946d2ffd87572=
-0605b41
-Gerrit-Change-Number: 1763
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichte=
-nheld <frank@lichtenheld=2Ecom>
-Gerrit-Reviewer: plaisthos <arne-openvpn@rf=
-c2549=2Eorg>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2E=
-net>
-Gerrit-Attention: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Change-Id: I752e03ea=
+bec085e47e8d74a9b4fa99e9ff267efb
+Gerrit-Change-Number: 1764
+Gerrit-PatchSet=
+: 1
+Gerrit-Owner: flichtenheld <frank@lichtenheld=2Ecom>
+Gerrit-Reviewer: p=
+laisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-dev=
+el@lists=2Esourceforge=2Enet>
+Gerrit-Attention: plaisthos <arne-openvpn@rfc=
+2549=2Eorg>
 
---Ap8TLG/cpc8=
+--0/ST35YxaKU=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
@@ -297,111 +257,75 @@ rently required from: plaisthos=2E </p>
 <p>flichtenheld would like plaistho=
 s to <strong>review</strong> this change=2E
 </p><p><a href=3D"http://gerrit=
-=2Eopenvpn=2Enet/c/openvpn/+/1763?usp=3Demail">View Change</a></p><pre clas=
+=2Eopenvpn=2Enet/c/openvpn/+/1764?usp=3Demail">View Change</a></p><pre clas=
 s=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wr=
-ap;">t_client=2Esh=2Ein: Add utility function needs_openvpn()<br><br>This a=
-llows to skip tests on old versions of openvpn=2E<br>Makes it much easier t=
-o maintain a t_client=2Erc across<br>multiple versions=2E<br><br>Change-Id:=
- I1905d9494336da4e91f1946d2ffd875720605b41<br>Signed-off-by: Frank Lichtenh=
-eld &lt;frank@lichtenheld=2Ecom&gt;<br>---<br>M tests/t_client=2Esh=2Ein<br=
->1 file changed, 21 insertions(+), 8 deletions(-)<br><br></pre><pre class=
-=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
-p;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/63/176=
-3/1</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
-rap;"><span>diff --git a/tests/t_client=2Esh=2Ein b/tests/t_client=2Esh=2Ei=
-n</span><br><span>index 2459c08=2E=2E78c8bca 100755</span><br><span>--- a/t=
-ests/t_client=2Esh=2Ein</span><br><span>+++ b/tests/t_client=2Esh=2Ein</spa=
-n><br><span>@@ -22,14 +22,16 @@</span><br><span> t_client_ips_rc=3D&quot;${=
-t_client_ips_rc:-${top_builddir}/t_client_ips=2Erc}&quot;</span><br><span> =
-update_t_client_ips=3D&quot;${update_t_client_ips:-${srcdir}/update_t_clien=
-t_ips=2Esh}&quot;</span><br><span> </span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-if [ -r &quot;${top_builddir}&quot;/t_client=2Erc ] ; then</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    =2E &quot;${top_buil=
-ddir}&quot;/t_client=2Erc</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-elif [ -r &quot;${srcdir}&quot;/t_client=2Erc ] ; then</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    =2E &quot;${srcdir}&quot;/t_client=
-=2Erc</span><br><span style=3D"color: hsl(0, 100%, 40%);">-else</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    echo &quot;$0: cannot find &#=
-39;t_client=2Erc&#39; in build dir (&#39;${top_builddir}&#39;)&quot; &gt;&a=
-mp;2</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    echo &quot;$0=
-: or source directory (&#39;${srcdir}&#39;)=2E SKIPPING TEST=2E&quot; &gt;&=
-amp;2</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    exit &quot;$=
-{TCLIENT_SKIP_RC}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+if [ -z &quot;${t_client_rc}&quot; ]; then</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    if [ -r &quot;${top_builddir}&quot;/t_client=
-=2Erc ] ; then</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   t_client_rc=3D&quot;${top_builddir}&quot;/t_client=2Erc</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    elif [ -r &quot;${srcdir}&quot;/=
-t_client=2Erc ] ; then</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        t_client_rc=3D&quot;${srcdir}&quot;/t_client=2Erc</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        echo &quot;$0: cannot find &#39;t_cli=
-ent=2Erc&#39; in build dir (&#39;${top_builddir}&#39;)&quot; &gt;&amp;2</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        echo &quot;$0: =
-or source directory (&#39;${srcdir}&#39;)=2E SKIPPING TEST=2E&quot; &gt;&am=
-p;2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        exit &qu=
-ot;${TCLIENT_SKIP_RC}&quot;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    fi</span><br><span> fi</span><br><span> </span><br><span> # Che=
-ck for external dependencies</span><br><span>@@ -65,6 +67,17 @@</span><br><=
-span>     exit 1</span><br><span> fi</span><br><span> </span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+openvpn_version=3D`${openvpn} --version =
-| head -n 1 | cut -f2 -d&quot; &quot; | sed -e &#39;s/^2\=2E\([0123456789]\=
-+\)=2E*$/2\1/&#39;`</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+needs_openvpn() {</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    needs_version=3D$=
-1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    [ &quot;$openvpn_version&quot; -g=
-e &quot;$needs_version&quot; ]</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    return $?</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+=2E &quot;${t_client_rc}&quot;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> if =
-[ -z &quot;$TEST_RUN_LIST&quot; ] ; then</span><br><span>     echo &quot;TE=
-ST_RUN_LIST empty, no tests defined=2E  SKIP test=2E&quot; &gt;&amp;2</span=
-><br><span>     exit &quot;${TCLIENT_SKIP_RC}&quot;</span><br><span></span>=
-<br></pre><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/open=
-vpn/+/1763?usp=3Demail">change 1763</a>=2E To unsubscribe, or for help writ=
-ing mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?u=
-sp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eo=
-rg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sche=
-ma=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1763?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
-ew Change"/></div></div>
+ap;">t_client=2Esh=2Ein: Do not try to guess the absolute path to LOGDIR<br=
+><br>We know it, we do not need to guess it=2E Makes it easier<br>to move L=
+OGDIR around=2E<br><br>Change-Id: I752e03eabec085e47e8d74a9b4fa99e9ff267efb=
+<br>Signed-off-by: Frank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt;<br>---=
+<br>M tests/t_client=2Esh=2Ein<br>1 file changed, 2 insertions(+), 1 deleti=
+on(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,mo=
+nospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:2941=
+8/openvpn refs/changes/64/1764/1</pre><pre style=3D"font-family: monospace,=
+monospace; white-space: pre-wrap;"><span>diff --git a/tests/t_client=2Esh=
+=2Ein b/tests/t_client=2Esh=2Ein</span><br><span>index 78c8bca=2E=2E1234215=
+ 100755</span><br><span>--- a/tests/t_client=2Esh=2Ein</span><br><span>+++ =
+b/tests/t_client=2Esh=2Ein</span><br><span>@@ -126,6 +126,7 @@</span><br><s=
+pan> fi</span><br><span> </span><br><span> LOGDIR=3Dt_client-`hostname`-`da=
+te +%Y%m%d-%H%M%S`</span><br><span style=3D"color: hsl(120, 100%, 40%);">+L=
+OGDIR_ABS=3D&quot;$PWD/$LOGDIR&quot;</span><br><span> if mkdir $LOGDIR</spa=
+n><br><span> then :</span><br><span> else</span><br><span>@@ -383,7 +384,7 =
+@@</span><br><span> 	printf &quot;$outbuf&quot; ; continue</span><br><span>=
+     fi</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    pidfile=3D&quot;${top_builddir}/tests/$LOGDIR/openvpn-$SUF=2Epid&qu=
+ot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    pidfile=3D&q=
+uot;$LOGDIR_ABS/openvpn-$SUF=2Epid&quot;</span><br><span>     openvpn_conf=
+=3D&quot;$openvpn_conf --writepid $pidfile $up&quot;</span><br><span>     o=
+utput &quot; run openvpn $openvpn_conf&quot;</span><br><span>     echo &quo=
+t;# ${openvpn} $openvpn_conf&quot; &gt;$LOGDIR/$SUF:openvpn=2Elog</span><br=
+><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit=2Eopenvp=
+n=2Enet/c/openvpn/+/1764?usp=3Demail">change 1764</a>=2E To unsubscribe, or=
+ for help writing mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=2E=
+net/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"htt=
+p://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
+=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http://g=
+errit=2Eopenvpn=2Enet/c/openvpn/+/1764?usp=3Demail"/><meta itemprop=3D"name=
+" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: =
-newchange </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div=
->
+<div style=3D"display:none"> Gerri=
+t-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Project=
+: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"d=
-isplay:none"> Gerrit-Change-Id: I1905d9494336da4e91f1946d2ffd875720605b41 <=
-/div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1763 </div>
-<div s=
-tyle=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none=
-"> Gerrit-Owner: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
-<div s=
-tyle=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@rfc2549=
+=
+<div style=3D"display:none"> Gerrit-Change-Id: I752e03eabec085e47e8d74a9b4f=
+a99e9ff267efb </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 176=
+4 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=
+=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@lichtenheld=2Ecom&g=
+t; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-=
+openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: op=
+envpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div sty=
+le=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@rfc2549=
 =2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt=
-;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
-<div style=3D"display:n=
-one"> Gerrit-Attention: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>=
-
 
 </body></html>
---Ap8TLG/cpc8=--
+--0/ST35YxaKU=--
 
 
---===============7229878582012714557==
+--===============8588288251886961039==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============7229878582012714557==
+--===============8588288251886961039==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -412,5 +336,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============7229878582012714557==--
+--===============8588288251886961039==--
 
