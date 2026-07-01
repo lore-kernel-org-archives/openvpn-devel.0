@@ -4,37 +4,37 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 32E18C43458
-	for <openvpn-devel@archiver.kernel.org>; Wed,  1 Jul 2026 15:44:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8A34AC43602
+	for <openvpn-devel@archiver.kernel.org>; Wed,  1 Jul 2026 15:44:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=xTmx8zzXfLTn+0C90+m26IqXfIsuqitx0XfWpmBotrI=; b=GQlL+JSWCHiNQ9AcO6sgOeKaWW
-	zs/XacpF5T45wCcvkhMRmHzGDUTh55ypdRDcgMByFvsgMjHXtZ23Rh5JGoIEQG7rgM5zDrwVcYJvG
-	+AZRYc+k1CQDm6q/oSbENciPCvtB7n7/yKRcdUtKhZ7WKO/lgU/TudHJ+Nr4P4MnIcQI=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=n+Y1NaYpwBLOvpNDE91d3srZaGz4MTnk3NRSYdBjKF4=; b=hw/xhHJI62D0vBxUCM0pH9HMEK
+	BONlONwmM4Cri7Lt9ZPgUIUqAczh71NJa8i4jXT19XcRrTs4NUn4HT7dWzfXlhbSDl6VZ6v/tHCjQ
+	wZJJGvJCLACH0qOqHRATq8P2pO5kdm3NREggM0LnQ6ox7k/BcbAuB9IFvY1v2+nbmQAU=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wex6p-0003mu-6t;
-	Wed, 01 Jul 2026 15:44:20 +0000
+	id 1wex6s-0007ik-J4;
+	Wed, 01 Jul 2026 15:44:22 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <ralf@mandelbit.com>) id 1wex6m-0003mC-8i
+ (envelope-from <ralf@mandelbit.com>) id 1wex6p-0007iO-Rn
  for openvpn-devel@lists.sourceforge.net;
- Wed, 01 Jul 2026 15:44:17 +0000
+ Wed, 01 Jul 2026 15:44:19 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
  In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=bUJN8BybUkmsecHdC6/M1i2LQj0Lx1eVyDGYfUtnZN8=; b=Cj3tWZtGXcR3EXucBmExNSSPsi
- iZvQmH86p6yvRpjHYeExeTuOAAhdJ2uaEtRrC7qWj9Z5RgET9kYywEzbBamzeT3Gjfnehx3jCQSra
- /yl0KTX1xhRHBLGCR/LMdgxMKGiBkZGIRR+OajZXnKbJ/3mZBFwXx2cMer2R68EwQTP8=;
+ bh=1xgMd0lCWAnlzoh4FGvPJA3/hB9p/9I2EyfjuCFl4hs=; b=V073L/5VZJ923Z8HkVTM9N028g
+ a9PeieHtTPFXx+pyCRI0S6Y8SGBcrUDmbOlG2LBiAPKM/YX9UOwV2QbOlkl6AtevHXwBkT0KyjVJb
+ MweVrHyOiWLXhb8c/JSgoR8wa8eHpbf2rbRrWKcX6ZvFjHDirjPwpUR4bc94vvyFimZw=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -42,42 +42,42 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=bUJN8BybUkmsecHdC6/M1i2LQj0Lx1eVyDGYfUtnZN8=; b=BJirelnIQWBeagV3KU6sd8sOGu
- 33Q5Op55SEQ739OeO73Mvrfrx3TcudW6BKtCao9YDxsNk5/MzufSugsFAGEeqVYu+L44/Z6uQJrm9
- j+OyMk0RMqyNhvxSPs/c8qJLKNSmo59Tk0hgptTIggPmwCcTq3xAABwDEesjNscQ2cSU=;
-Received: from mout-b-112.mailbox.org ([195.10.208.42])
+ bh=1xgMd0lCWAnlzoh4FGvPJA3/hB9p/9I2EyfjuCFl4hs=; b=TItlvd3ekmubNQYNOcQOwMhvQQ
+ OhW1mj9U2p2+6VF9z4QR2wkCma7q7X8K6+04Do9vymkGF3TovvREUzQlvzVBVuycw0bUU74L3xnRX
+ 6d23y/qcj+D0A2O0gto3QBxqjkzaf12vMRlyiDuG4PGP/RXxPfErd+ljaJIiKNqHFiUs=;
+Received: from mout-b-106.mailbox.org ([195.10.208.46])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wex6l-0002A7-5z for openvpn-devel@lists.sourceforge.net;
- Wed, 01 Jul 2026 15:44:16 +0000
+ id 1wex6l-0002AE-GE for openvpn-devel@lists.sourceforge.net;
+ Wed, 01 Jul 2026 15:44:19 +0000
 Received: from smtp202.mailbox.org (smtp202.mailbox.org [10.196.197.202])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
  (No client certificate requested)
- by mout-b-112.mailbox.org (Postfix) with ESMTPS id 4gr47Q3XdpzDwRT;
- Wed,  1 Jul 2026 17:44:02 +0200 (CEST)
+ by mout-b-106.mailbox.org (Postfix) with ESMTPS id 4gr47X48YgzDsWl;
+ Wed,  1 Jul 2026 17:44:08 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
- s=MBO0001; t=1782920642;
+ s=MBO0001; t=1782920648;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=bUJN8BybUkmsecHdC6/M1i2LQj0Lx1eVyDGYfUtnZN8=;
- b=iluh6XFWO8KC2FrIWg0UDIUUABXLhxkl2hEaVsryqDNr85XdJ2JvBPAw5VOV6Fn9QUnjae
- 3IHQRUp9Ao1W1/8zWAKFdX5cRlcZ+M9niVfm2afOUOfrvX+VY/PX3jfb32wIQS2mX09qzC
- RqzqFvqGgp7jDZZEW3GojFs6tvPCQ+kTPll5476WZrP7kkml1J/6QlrFaNontRPLWShYoS
- ywVjtojbCzPteVFVn5mFTGJCIYrS8pHkhrMFWyeJV4SQhxuLQpO79N07sRFgERx+97/C7f
- gd4UzK2LshQK0f73rhW5rPD/oBH024w+XjYz/AGZbtfNPVlU6qLJCylxSIvqiw==
+ bh=1xgMd0lCWAnlzoh4FGvPJA3/hB9p/9I2EyfjuCFl4hs=;
+ b=f/WM1x5HiOFAVAs6hewp/9xn2VhYZVIaGH9MHh3an7liTJP6CYRwDcE3wf1GRnkMtQWSS5
+ 7W/dTvF4t7fiyT7hM4EJrObVFIkUnO0rR3Hmf8s0+RJ9Hf8VPDh2gRMKqUkPvu7A/LV8BS
+ +a8D4j7qUDv+dcynsE07KWoMBHnHyTNbCg7DE0gj9Ylzx71+iyE7imJDoBiV+ncPKwGGfg
+ eWm2eW4UlCqvbX822CaVS9vM8fWDOxdq3W1DxHX83r0JE3nVS7hwxqO1G3NonIyWKwukSX
+ 8n3+Tpzn03pnS0ut6LhPbmFu9ARVVNc/1cPn8ZGRvXI/GKYUCivcjI0di+ajfQ==
 From: Ralf Lici <ralf@mandelbit.com>
 To: openvpn-devel@lists.sourceforge.net
-Date: Wed,  1 Jul 2026 17:43:25 +0200
-Message-ID: <d0034ab911faf74ba4bb658f9f13fa97dd7a274c.1782919654.git.ralf@mandelbit.com>
+Date: Wed,  1 Jul 2026 17:43:29 +0200
+Message-ID: <d6fa57646d97b24e60613f8b28665610244846e8.1782919654.git.ralf@mandelbit.com>
 In-Reply-To: <cover.1782919654.git.ralf@mandelbit.com>
 References: <cover.1782919654.git.ralf@mandelbit.com>
 MIME-Version: 1.0
-X-Headers-End: 1wex6l-0002A7-5z
-Subject: [Openvpn-devel] [RFC ovpn net-next 10/14] ovpn: add epoch key slot
- state
+X-Headers-End: 1wex6l-0002AE-GE
+Subject: [Openvpn-devel] [RFC ovpn net-next 14/14] selftests: ovpn: exercise
+ epoch keys
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -93,569 +93,434 @@ Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-Epoch keys do not import concrete AEAD keys for direct packet
-processing. Userspace provides per-direction PRKs, and the kernel
-derives the concrete AEAD key context and implicit IV for each epoch.
+Extend ovpn-cli's key installation command with an explicit key type so
+that the tests can install either direct keys or epoch keys. Use the
+same selector for the TCP connect helper when it auto-installs a key.
 
-Add the slot state needed to keep TX and RX epoch derivation separate,
-track the current encrypt/decrypt key contexts, and prederive future key
-rings for both directions. The future rings let the data path advance to
-a new epoch without deriving keys in the fast path.
+Add epoch wrappers around the existing UDP and TCP data-path tests. The
+packet capture filter also checks epoch 1 in DATA_V2 packet IDs, so the
+tests verify netlink key installation and the epoch packet layout
+without adding a separate topology.
 
-Direct keys continue to create one concrete AEAD context per direction.
-Name that constructor explicitly as the direct-key path so the later
-epoch constructor can share the same key-context boundary without hiding
-which key format is being installed.
-
-Packet layout handling and promotion between epoch keys are added by
-later patches.
+This intentionally does not cover epoch rotation or future-key refill:
+the selftests use normal production limits, so the short traffic run
+does not consume enough packet-ID or AEAD budget to advance epochs.
 
 Signed-off-by: Ralf Lici <ralf@mandelbit.com>
 ---
- drivers/net/ovpn/crypto.h     |  52 +++++-
- drivers/net/ovpn/crypto_key.c | 325 ++++++++++++++++++++++++++++++++--
- drivers/net/ovpn/netlink.c    |   8 +-
- 3 files changed, 362 insertions(+), 23 deletions(-)
+ tools/testing/selftests/net/ovpn/Makefile     |   2 +
+ tools/testing/selftests/net/ovpn/common.sh    |  30 +++--
+ tools/testing/selftests/net/ovpn/ovpn-cli.c   | 116 +++++++++++++++---
+ .../selftests/net/ovpn/test-epoch-tcp.sh      |  11 ++
+ .../testing/selftests/net/ovpn/test-epoch.sh  |  10 ++
+ tools/testing/selftests/net/ovpn/test-mark.sh |   3 +-
+ tools/testing/selftests/net/ovpn/test.sh      |  12 +-
+ 7 files changed, 154 insertions(+), 30 deletions(-)
+ create mode 100755 tools/testing/selftests/net/ovpn/test-epoch-tcp.sh
+ create mode 100755 tools/testing/selftests/net/ovpn/test-epoch.sh
 
-diff --git a/drivers/net/ovpn/crypto.h b/drivers/net/ovpn/crypto.h
-index 8e7235f41960..2127fe4c454c 100644
---- a/drivers/net/ovpn/crypto.h
-+++ b/drivers/net/ovpn/crypto.h
-@@ -12,7 +12,9 @@
+diff --git a/tools/testing/selftests/net/ovpn/Makefile b/tools/testing/selftests/net/ovpn/Makefile
+index 169f0464ac3a..515aeac945a4 100644
+--- a/tools/testing/selftests/net/ovpn/Makefile
++++ b/tools/testing/selftests/net/ovpn/Makefile
+@@ -36,6 +36,8 @@ TEST_PROGS := \
+ 	test-chachapoly.sh \
+ 	test-close-socket-tcp.sh \
+ 	test-close-socket.sh \
++	test-epoch-tcp.sh \
++	test-epoch.sh \
+ 	test-float.sh \
+ 	test-large-mtu.sh \
+ 	test-mark.sh \
+diff --git a/tools/testing/selftests/net/ovpn/common.sh b/tools/testing/selftests/net/ovpn/common.sh
+index 2d844eb3aa6e..de5ff9a9e97a 100644
+--- a/tools/testing/selftests/net/ovpn/common.sh
++++ b/tools/testing/selftests/net/ovpn/common.sh
+@@ -12,6 +12,7 @@ OVPN_TCP_PEERS_FILE=${OVPN_TCP_PEERS_FILE:-tcp_peers.txt}
+ OVPN_CLI=${OVPN_CLI:-${OVPN_COMMON_DIR}/ovpn-cli}
+ OVPN_YNL=${OVPN_YNL:-${OVPN_COMMON_DIR}/../../../../net/ynl/pyynl/cli.py}
+ OVPN_ALG=${OVPN_ALG:-aes}
++OVPN_KEY_TYPE=${OVPN_KEY_TYPE:-direct}
+ OVPN_PROTO=${OVPN_PROTO:-UDP}
+ OVPN_FLOAT=${OVPN_FLOAT:-0}
+ OVPN_SYMMETRIC_ID=${OVPN_SYMMETRIC_ID:-0}
+@@ -184,14 +185,26 @@ ovpn_build_capture_filter() {
+ 		# address. The IPv6 branch assumes there are no extension
+ 		# headers in the outer packet.
+ 		if [[ "${2}" == *:* ]]; then
+-			printf "ip6 and ip6[6] = 17 and ip6[48:4] = %s" "${1}"
++			printf "ip6 and ip6[6] = 17 and ip6[48:4] = %s" \
++				"${1}"
++			if [ "${OVPN_KEY_TYPE}" == "epoch" ]; then
++				printf " and ip6[52:2] = 0x0001"
++			fi
+ 		else
+ 			printf "ip and udp[8:4] = %s" "${1}"
++			if [ "${OVPN_KEY_TYPE}" == "epoch" ]; then
++				printf " and udp[12:2] = 0x0001"
++			fi
+ 		fi
+ 	else
+ 		# openvpn over TCP prepends a 2-byte packet length ahead of the
+ 		# DATA_V2 opcode, so skip it before matching the payload header
+-		printf "ip and tcp[(((tcp[12] & 0xf0) >> 2) + 2):4] = %s" "${1}"
++		printf "ip and tcp[(((tcp[12] & 0xf0) >> 2) + 2):4] = %s" \
++			"${1}"
++		if [ "${OVPN_KEY_TYPE}" == "epoch" ]; then
++			printf " and tcp[(((tcp[12] & 0xf0) >> 2) + 6):2] = "
++			printf "0x0001"
++		fi
+ 	fi
+ }
  
- #include <linux/kref.h>
- #include <linux/rcupdate.h>
-+#include <linux/workqueue_types.h>
+@@ -222,8 +235,8 @@ ovpn_add_peer() {
  
-+#include "crypto_epoch.h"
- #include "crypto_limits.h"
- #include "pktid.h"
- #include "proto.h"
-@@ -25,12 +27,28 @@ struct ovpn_key_direction {
- 	size_t nonce_tail_size; /* only needed for GCM modes */
+ 			for p in $(seq 1 ${OVPN_NUM_PEERS}); do
+ 				ip netns exec "${server_ns}" ${OVPN_CLI} \
+-					new_key tun0 ${p} 1 0 ${OVPN_ALG} 0 \
+-					data64.key
++					new_key tun0 ${p} 1 0 ${OVPN_ALG} \
++					${OVPN_KEY_TYPE} 0 data64.key
+ 			done
+ 		else
+ 			peer_ns="ovpn_peer${1}"
+@@ -245,7 +258,8 @@ ovpn_add_peer() {
+ 				tun${1} ${PEER_ID} ${TX_ID} ${LPORT} ${RADDR} \
+ 				${RPORT}
+ 			ip netns exec "${peer_ns}" ${OVPN_CLI} new_key tun${1} \
+-				${PEER_ID} 1 0 ${OVPN_ALG} 1 data64.key
++				${PEER_ID} 1 0 ${OVPN_ALG} ${OVPN_KEY_TYPE} \
++				1 data64.key
+ 		fi
+ 	else
+ 		if [ ${1} -eq 0 ]; then
+@@ -254,7 +268,8 @@ ovpn_add_peer() {
+ 				for p in $(seq 1 ${OVPN_NUM_PEERS}); do
+ 					ip netns exec "${server_ns}" \
+ 						${OVPN_CLI} new_key tun0 ${p} \
+-						1 0 ${OVPN_ALG} 0 data64.key
++						1 0 ${OVPN_ALG} \
++						${OVPN_KEY_TYPE} 0 data64.key
+ 				done
+ 			}) &
+ 			sleep 5
+@@ -269,7 +284,8 @@ ovpn_add_peer() {
+ 				TX_ID=${1}
+ 			fi
+ 			ip netns exec "${peer_ns}" ${OVPN_CLI} connect tun${1} \
+-				${PEER_ID} ${TX_ID} 10.10.${1}.1 1 data64.key
++				${PEER_ID} ${TX_ID} 10.10.${1}.1 1 \
++				${OVPN_KEY_TYPE} data64.key
+ 		fi
+ 	fi
+ }
+diff --git a/tools/testing/selftests/net/ovpn/ovpn-cli.c b/tools/testing/selftests/net/ovpn/ovpn-cli.c
+index d40953375c86..90bfcb6d39e2 100644
+--- a/tools/testing/selftests/net/ovpn/ovpn-cli.c
++++ b/tools/testing/selftests/net/ovpn/ovpn-cli.c
+@@ -61,6 +61,11 @@ enum ovpn_key_direction {
+ 	KEY_DIR_OUT,
  };
  
--/* direct-key material for a primary or secondary slot */
-+/* PRK material imported from userspace to derive epoch data keys */
-+struct ovpn_epoch_prk {
-+	const u8 *key;
-+	size_t key_size;
-+	unsigned int cipher_key_len;
++enum ovpn_key_type {
++	KEY_TYPE_DIRECT = 0,
++	KEY_TYPE_EPOCH,
 +};
 +
-+/* key material for a primary or secondary slot */
- struct ovpn_key_config {
- 	enum ovpn_cipher_alg cipher_alg;
- 	u8 key_id;
--	struct ovpn_key_direction encrypt;
--	struct ovpn_key_direction decrypt;
-+	bool use_epoch_keys;
-+	union {
-+		struct {
-+			struct ovpn_key_direction encrypt;
-+			struct ovpn_key_direction decrypt;
-+		} direct;
-+		struct {
-+			struct ovpn_epoch_prk encrypt;
-+			struct ovpn_epoch_prk decrypt;
-+		} epoch;
-+	};
- };
+ #define KEY_LEN (256 / 8)
+ #define NONCE_LEN 8
  
- /* used to pass settings from netlink to the crypto engine */
-@@ -41,6 +59,7 @@ struct ovpn_peer_key_reset {
+@@ -130,6 +135,7 @@ struct ovpn_ctx {
+ 	__u32 keepalive_interval;
+ 	__u32 keepalive_timeout;
  
- /* state for one concrete AEAD key direction */
- struct ovpn_key_ctx {
-+	u16 epoch;
- 	struct crypto_aead *tfm;
- 	u8 implicit_iv[OVPN_NONCE_SIZE];
- 	union {
-@@ -58,12 +77,29 @@ struct ovpn_crypto_key_slot {
- 	u8 key_id;
- 	enum ovpn_cipher_alg cipher_alg;
- 	struct ovpn_limit usage_limit;
-+	const char *alg_name;
- 	bool epoch_format;
- 	unsigned int aad_size;
- 	unsigned int pktid_size;
- 
-+	struct ovpn_epoch_key epoch_key_send;
-+	struct ovpn_epoch_key epoch_key_recv;
-+
- 	struct ovpn_key_ctx __rcu *encrypt;
- 	struct ovpn_key_ctx __rcu *decrypt;
-+	struct ovpn_key_ctx __rcu *retiring_key;
-+
-+	struct ovpn_future_keys future_tx_keys;
-+	struct ovpn_future_keys future_rx_keys;
-+
-+	struct work_struct tx_refill;
-+	struct work_struct rx_refill;
-+
-+	/* protects encrypt and future_tx_keys */
-+	spinlock_t tx_lock;
-+	/* protects decrypt, retiring_key and future_rx_keys */
-+	spinlock_t rx_lock;
-+
- 	struct kref refcount;
- 	struct rcu_head rcu;
- };
-@@ -193,4 +229,14 @@ int ovpn_crypto_config_get(struct ovpn_crypto_state *cs,
- 
- bool ovpn_crypto_kill_key(struct ovpn_crypto_state *cs, u8 key_id);
- 
-+void ovpn_schedule_refill(struct ovpn_crypto_key_slot *ks, bool encrypt);
-+
-+struct ovpn_key_ctx *
-+ovpn_key_ctx_create_direct(bool encrypt, const char *alg_name,
-+			   const struct ovpn_key_direction *dir);
-+
-+struct ovpn_key_ctx *
-+ovpn_key_ctx_create_epoch(bool encrypt, const char *alg_name,
-+			  struct ovpn_epoch_key *epoch_key);
-+
- #endif /* _NET_OVPN_OVPNCRYPTO_H_ */
-diff --git a/drivers/net/ovpn/crypto_key.c b/drivers/net/ovpn/crypto_key.c
-index 8ac13a3485fe..6b193c5fd7e4 100644
---- a/drivers/net/ovpn/crypto_key.c
-+++ b/drivers/net/ovpn/crypto_key.c
-@@ -8,9 +8,12 @@
-  */
- 
- #include <crypto/aead.h>
-+#include <crypto/hash.h>
-+#include <linux/workqueue.h>
- 
- #include "ovpnpriv.h"
- #include "crypto.h"
-+#include "crypto_epoch.h"
- #include "pktid.h"
- #include "proto.h"
- 
-@@ -100,11 +103,11 @@ void ovpn_key_ctx_release(struct kref *kref)
- 
- static struct ovpn_key_ctx *
- ovpn_key_ctx_new(const char *title, const char *alg_name,
--		 const struct ovpn_key_direction *dir, bool encrypt)
-+		 const u8 *cipher_key, unsigned int cipher_key_len,
-+		 const u8 *implicit_iv, u16 epoch, bool encrypt)
- {
- 	struct ovpn_limit pktid_limit;
- 	struct ovpn_key_ctx *key;
--	size_t tail_offset;
- 	int ret;
- 
- 	key = kmalloc_obj(*key);
-@@ -112,8 +115,7 @@ ovpn_key_ctx_new(const char *title, const char *alg_name,
- 		return ERR_PTR(-ENOMEM);
- 
- 	/* create the concrete AEAD transform first */
--	key->tfm = ovpn_aead_init(title, alg_name, dir->cipher_key,
--				  dir->cipher_key_size);
-+	key->tfm = ovpn_aead_init(title, alg_name, cipher_key, cipher_key_len);
- 	if (IS_ERR(key->tfm)) {
- 		ret = PTR_ERR(key->tfm);
- 		key->tfm = NULL;
-@@ -122,10 +124,8 @@ ovpn_key_ctx_new(const char *title, const char *alg_name,
- 	}
- 
- 	/* store the implicit IV in a full nonce-sized buffer */
--	tail_offset = OVPN_NONCE_SIZE - dir->nonce_tail_size;
--	memset(key->implicit_iv, 0, sizeof(key->implicit_iv));
--	memcpy(key->implicit_iv + tail_offset, dir->nonce_tail,
--	       dir->nonce_tail_size);
-+	key->epoch = epoch;
-+	memcpy(key->implicit_iv, implicit_iv, sizeof(key->implicit_iv));
- 
- 	ovpn_key_usage_init(&key->usage);
- 	atomic64_set(&key->decrypt_failures, 0);
-@@ -143,16 +143,253 @@ ovpn_key_ctx_new(const char *title, const char *alg_name,
- 	return key;
++	enum ovpn_key_type key_type;
+ 	enum ovpn_key_direction key_dir;
+ 	enum ovpn_key_slot key_slot;
+ 	int key_id;
+@@ -451,6 +457,18 @@ static int ovpn_parse_cipher(const char *cipher, struct ovpn_ctx *ctx)
+ 	return 0;
  }
  
-+struct ovpn_key_ctx *
-+ovpn_key_ctx_create_direct(bool encrypt, const char *alg_name,
-+			   const struct ovpn_key_direction *dir)
++static int ovpn_parse_key_type(const char *type, struct ovpn_ctx *ctx)
 +{
-+	u8 implicit_iv[OVPN_NONCE_SIZE];
-+	struct ovpn_key_ctx *key;
-+	size_t tail_offset;
-+
-+	tail_offset = OVPN_NONCE_SIZE - dir->nonce_tail_size;
-+	memset(implicit_iv, 0, sizeof(implicit_iv));
-+	memcpy(implicit_iv + tail_offset, dir->nonce_tail,
-+	       dir->nonce_tail_size);
-+
-+	key = ovpn_key_ctx_new(encrypt ? "encrypt" : "decrypt", alg_name,
-+			       dir->cipher_key, dir->cipher_key_size,
-+			       implicit_iv, 0, encrypt);
-+	memzero_explicit(implicit_iv, sizeof(implicit_iv));
-+
-+	return key;
-+}
-+
-+struct ovpn_key_ctx *
-+ovpn_key_ctx_create_epoch(bool encrypt, const char *alg_name,
-+			  struct ovpn_epoch_key *epoch_key)
-+{
-+	u8 cipher_key[OVPN_EPOCH_PRK_SIZE];
-+	u8 implicit_iv[OVPN_NONCE_SIZE];
-+	struct ovpn_key_ctx *key;
-+	int ret;
-+
-+	ret = ovpn_epoch_derive_key(epoch_key, cipher_key, implicit_iv);
-+	if (ret)
-+		return ERR_PTR(ret);
-+
-+	key = ovpn_key_ctx_new(encrypt ? "encrypt" : "decrypt", alg_name,
-+			       cipher_key, epoch_key->cipher_key_len,
-+			       implicit_iv, epoch_key->epoch, encrypt);
-+	memzero_explicit(cipher_key, sizeof(cipher_key));
-+	memzero_explicit(implicit_iv, sizeof(implicit_iv));
-+
-+	return key;
-+}
-+
-+static int
-+ovpn_epoch_init_future_keys(bool encrypt, const char *alg_name,
-+			    struct ovpn_epoch_key *epoch_key,
-+			    struct ovpn_future_keys *future_keys)
-+{
-+	struct ovpn_key_ctx *key;
-+	int ret;
-+	u16 i;
-+
-+	future_keys->head = 0;
-+	future_keys->tail = 0;
-+	future_keys->full = false;
-+
-+	/* each generated key advances the PRK and stores the next epoch */
-+	for (i = 0; i < OVPN_EPOCH_FUTURE_KEYS_COUNT; i++) {
-+		ret = ovpn_epoch_iterate(epoch_key);
-+		if (ret)
-+			goto err;
-+
-+		key = ovpn_key_ctx_create_epoch(encrypt, alg_name, epoch_key);
-+		if (IS_ERR(key)) {
-+			ret = PTR_ERR(key);
-+			goto err;
-+		}
-+
-+		RCU_INIT_POINTER(future_keys->keys[future_keys->head], key);
-+		future_keys->head = (future_keys->head + 1) %
-+				    OVPN_EPOCH_FUTURE_KEYS_COUNT;
-+	}
-+
-+	future_keys->full = true;
-+	return 0;
-+
-+err:
-+	for (i = 0; i < OVPN_EPOCH_FUTURE_KEYS_COUNT; i++) {
-+		ovpn_key_ctx_put(rcu_access_pointer(future_keys->keys[i]));
-+		RCU_INIT_POINTER(future_keys->keys[i], NULL);
-+	}
-+	future_keys->head = 0;
-+	future_keys->tail = 0;
-+	future_keys->full = false;
-+
-+	return ret;
-+}
-+
-+void ovpn_schedule_refill(struct ovpn_crypto_key_slot *ks, bool encrypt)
-+{
-+	struct work_struct *work = encrypt ? &ks->tx_refill : &ks->rx_refill;
-+
-+	if (!ovpn_crypto_key_slot_hold(ks))
-+		return;
-+
-+	if (!schedule_work(work))
-+		ovpn_crypto_key_slot_put(ks);
-+}
-+
-+static void ovpn_refill_future_buffer(struct ovpn_crypto_key_slot *ks,
-+				      bool encrypt)
-+{
-+	struct ovpn_key_ctx *new_futures[OVPN_EPOCH_FUTURE_KEYS_COUNT];
-+	struct ovpn_key_ctx *old_futures[OVPN_EPOCH_FUTURE_KEYS_COUNT];
-+	spinlock_t *lock; /* selected tx/rx future-key ring lock */
-+	u16 replaced = 0, created = 0, free_slots;
-+	struct ovpn_future_keys *future_keys;
-+	struct ovpn_epoch_key *epoch_key;
-+	bool full;
-+	int ret;
-+	u16 i;
-+
-+	if (encrypt) {
-+		future_keys = &ks->future_tx_keys;
-+		epoch_key = &ks->epoch_key_send;
-+		lock = &ks->tx_lock;
-+	} else {
-+		future_keys = &ks->future_rx_keys;
-+		epoch_key = &ks->epoch_key_recv;
-+		lock = &ks->rx_lock;
-+	}
-+
-+	/* calculate how many keys are needed to refill the ring */
-+	spin_lock_bh(lock);
-+	free_slots = OVPN_EPOCH_FUTURE_KEYS_COUNT -
-+		     ovpn_epoch_future_keys_count(future_keys);
-+	spin_unlock_bh(lock);
-+
-+	if (!free_slots)
-+		return;
-+
-+	/* derive new keys without holding the ring lock */
-+	for (created = 0; created < free_slots; created++) {
-+		ret = ovpn_epoch_iterate(epoch_key);
-+		if (ret)
-+			goto err;
-+
-+		new_futures[created] =
-+			ovpn_key_ctx_create_epoch(encrypt, ks->alg_name,
-+						  epoch_key);
-+		if (IS_ERR(new_futures[created])) {
-+			ret = PTR_ERR(new_futures[created]);
-+			goto err;
-+		}
-+	}
-+
-+	/* insert generated keys under the selected ring lock */
-+	spin_lock_bh(lock);
-+	for (replaced = 0; replaced < created; replaced++) {
-+		struct ovpn_key_ctx __rcu **slot;
-+
-+		if (WARN_ON_ONCE(future_keys->full))
-+			break;
-+
-+		/* the ring remains monotonic and consecutive */
-+		slot = &future_keys->keys[future_keys->head];
-+		old_futures[replaced] =
-+			rcu_dereference_protected(*slot, lockdep_is_held(lock));
-+		rcu_assign_pointer(*slot, new_futures[replaced]);
-+		future_keys->head = (future_keys->head + 1) %
-+				    OVPN_EPOCH_FUTURE_KEYS_COUNT;
-+		if (future_keys->head == future_keys->tail)
-+			future_keys->full = true;
-+	}
-+	full = future_keys->full;
-+	spin_unlock_bh(lock);
-+
-+	for (i = 0; i < replaced; i++)
-+		ovpn_key_ctx_put(old_futures[i]);
-+	for (i = replaced; i < created; i++)
-+		ovpn_key_ctx_put(new_futures[i]);
-+
-+	/* keep refilling until the ring is full */
-+	if (!full)
-+		ovpn_schedule_refill(ks, encrypt);
-+
-+	return;
-+
-+err:
-+	for (i = 0; i < created; i++)
-+		ovpn_key_ctx_put(new_futures[i]);
-+}
-+
-+static void ovpn_refill_future_buffer_tx(struct work_struct *work)
-+{
-+	struct ovpn_crypto_key_slot *ks;
-+
-+	ks = container_of(work, struct ovpn_crypto_key_slot, tx_refill);
-+	ovpn_refill_future_buffer(ks, true);
-+	ovpn_crypto_key_slot_put(ks);
-+}
-+
-+static void ovpn_refill_future_buffer_rx(struct work_struct *work)
-+{
-+	struct ovpn_crypto_key_slot *ks;
-+
-+	ks = container_of(work, struct ovpn_crypto_key_slot, rx_refill);
-+	ovpn_refill_future_buffer(ks, false);
-+	ovpn_crypto_key_slot_put(ks);
-+}
-+
- void ovpn_crypto_key_slot_destroy(struct ovpn_crypto_key_slot *ks)
- {
-+	struct ovpn_key_ctx *future;
-+	u8 i;
-+
- 	if (!ks)
- 		return;
- 
- 	ovpn_key_ctx_put(rcu_access_pointer(ks->encrypt));
- 	ovpn_key_ctx_put(rcu_access_pointer(ks->decrypt));
-+
-+	if (ks->epoch_format) {
-+		if (ks->epoch_key_send.shash)
-+			crypto_free_shash(ks->epoch_key_send.shash);
-+		if (ks->epoch_key_recv.shash)
-+			crypto_free_shash(ks->epoch_key_recv.shash);
-+		ovpn_key_ctx_put(rcu_access_pointer(ks->retiring_key));
-+		for (i = 0; i < OVPN_EPOCH_FUTURE_KEYS_COUNT; i++) {
-+			future = rcu_access_pointer(ks->future_tx_keys.keys[i]);
-+			ovpn_key_ctx_put(future);
-+			future = rcu_access_pointer(ks->future_rx_keys.keys[i]);
-+			ovpn_key_ctx_put(future);
-+		}
-+	}
-+
- 	kfree(ks);
- }
- 
-+static int ovpn_epoch_key_init(struct ovpn_epoch_key *epoch_key,
-+			       const struct ovpn_epoch_prk *prk)
-+{
-+	epoch_key->shash = ovpn_epoch_init_key(prk->key, prk->key_size);
-+	if (IS_ERR(epoch_key->shash)) {
-+		int ret = PTR_ERR(epoch_key->shash);
-+
-+		epoch_key->shash = NULL;
-+		return ret;
-+	}
-+
-+	/* epoch 0 is reserved for direct keys, so epoch keys start at 1 */
-+	epoch_key->epoch = 1;
-+	epoch_key->cipher_key_len = prk->cipher_key_len;
++	if (strcmp(type, "direct") == 0)
++		ctx->key_type = KEY_TYPE_DIRECT;
++	else if (strcmp(type, "epoch") == 0)
++		ctx->key_type = KEY_TYPE_EPOCH;
++	else
++		return -ENOTSUP;
 +
 +	return 0;
 +}
 +
- struct ovpn_crypto_key_slot *
- ovpn_crypto_key_slot_new(const struct ovpn_key_config *kc)
+ static int ovpn_parse_key_direction(const char *dir, struct ovpn_ctx *ctx)
  {
-@@ -173,12 +410,20 @@ ovpn_crypto_key_slot_new(const struct ovpn_key_config *kc)
- 		return ERR_PTR(-EOPNOTSUPP);
- 	}
+ 	int in_dir;
+@@ -921,9 +939,38 @@ static int ovpn_get_peer(struct ovpn_ctx *ovpn)
+ 	return ret;
+ }
  
--	if (kc->encrypt.nonce_tail_size != OVPN_NONCE_TAIL_SIZE ||
--	    kc->decrypt.nonce_tail_size != OVPN_NONCE_TAIL_SIZE)
-+	if (!kc->use_epoch_keys) {
-+		if (kc->direct.encrypt.nonce_tail_size !=
-+		    OVPN_NONCE_TAIL_SIZE ||
-+		    kc->direct.decrypt.nonce_tail_size !=
-+		    OVPN_NONCE_TAIL_SIZE)
-+			return ERR_PTR(-EINVAL);
-+	} else if (!kc->epoch.encrypt.cipher_key_len ||
-+		   kc->epoch.encrypt.cipher_key_len > OVPN_EPOCH_PRK_SIZE ||
-+		   kc->epoch.decrypt.cipher_key_len !=
-+		   kc->epoch.encrypt.cipher_key_len) {
- 		return ERR_PTR(-EINVAL);
--
-+	}
- 	/* build the key slot */
--	ks = kmalloc_obj(*ks);
-+	ks = kzalloc(sizeof(*ks), GFP_KERNEL);
- 	if (!ks)
- 		return ERR_PTR(-ENOMEM);
- 
-@@ -187,25 +432,71 @@ ovpn_crypto_key_slot_new(const struct ovpn_key_config *kc)
- 	kref_init(&ks->refcount);
- 	ks->key_id = kc->key_id;
- 	ks->cipher_alg = kc->cipher_alg;
--	ks->epoch_format = false;
--	ks->aad_size = OVPN_AEAD_DIRECT_AAD_SIZE;
--	ks->pktid_size = OVPN_NONCE_WIRE_SIZE;
-+	ks->alg_name = alg_name;
-+	ks->epoch_format = kc->use_epoch_keys;
-+	ks->aad_size = kc->use_epoch_keys ? OVPN_AEAD_EPOCH_AAD_SIZE :
-+					     OVPN_AEAD_DIRECT_AAD_SIZE;
-+	ks->pktid_size = kc->use_epoch_keys ? OVPN_EPOCH_NONCE_WIRE_SIZE :
-+					       OVPN_NONCE_WIRE_SIZE;
- 	ovpn_key_usage_limit_init(&ks->usage_limit, kc->cipher_alg);
- 
--	key = ovpn_key_ctx_new("encrypt", alg_name, &kc->encrypt, true);
-+	if (kc->use_epoch_keys) {
-+		/* tx and rx PRKs advance independently */
-+		ret = ovpn_epoch_key_init(&ks->epoch_key_send,
-+					  &kc->epoch.encrypt);
-+		if (ret)
-+			goto destroy_ks;
++static int ovpn_put_direct_key(struct nl_msg *msg, int attr, const __u8 *key,
++			       const __u8 *nonce)
++{
++	struct nlattr *key_dir;
 +
-+		INIT_WORK(&ks->tx_refill, ovpn_refill_future_buffer_tx);
-+		spin_lock_init(&ks->tx_lock);
-+		key = ovpn_key_ctx_create_epoch(true, alg_name,
-+						&ks->epoch_key_send);
-+	} else {
-+		key = ovpn_key_ctx_create_direct(true, alg_name,
-+						 &kc->direct.encrypt);
-+	}
- 	if (IS_ERR(key)) {
- 		ret = PTR_ERR(key);
- 		goto destroy_ks;
- 	}
- 	RCU_INIT_POINTER(ks->encrypt, key);
- 
--	key = ovpn_key_ctx_new("decrypt", alg_name, &kc->decrypt, false);
-+	if (kc->use_epoch_keys) {
-+		ret = ovpn_epoch_key_init(&ks->epoch_key_recv,
-+					  &kc->epoch.decrypt);
-+		if (ret)
-+			goto destroy_ks;
++	key_dir = nla_nest_start(msg, attr);
++	NLA_PUT(msg, OVPN_A_KEYDIR_CIPHER_KEY, KEY_LEN, key);
++	NLA_PUT(msg, OVPN_A_KEYDIR_NONCE_TAIL, NONCE_LEN, nonce);
++	nla_nest_end(msg, key_dir);
 +
-+		INIT_WORK(&ks->rx_refill, ovpn_refill_future_buffer_rx);
-+		spin_lock_init(&ks->rx_lock);
-+		key = ovpn_key_ctx_create_epoch(false, alg_name,
-+						&ks->epoch_key_recv);
-+	} else {
-+		key = ovpn_key_ctx_create_direct(false, alg_name,
-+						 &kc->direct.decrypt);
-+	}
- 	if (IS_ERR(key)) {
- 		ret = PTR_ERR(key);
- 		goto destroy_ks;
- 	}
- 	RCU_INIT_POINTER(ks->decrypt, key);
- 
-+	RCU_INIT_POINTER(ks->retiring_key, NULL);
-+	if (kc->use_epoch_keys) {
-+		/* prederive future keys outside the fast path */
-+		ret = ovpn_epoch_init_future_keys(true, alg_name,
-+						  &ks->epoch_key_send,
-+						  &ks->future_tx_keys);
-+		if (ret)
-+			goto destroy_ks;
++	return 0;
++nla_put_failure:
++	return -1;
++}
 +
-+		ret = ovpn_epoch_init_future_keys(false, alg_name,
-+						  &ks->epoch_key_recv,
-+						  &ks->future_rx_keys);
-+		if (ret)
-+			goto destroy_ks;
-+	}
++static int ovpn_put_epoch_key(struct nl_msg *msg, int attr, const __u8 *key)
++{
++	struct nlattr *epoch;
 +
- 	return ks;
- 
- destroy_ks:
-diff --git a/drivers/net/ovpn/netlink.c b/drivers/net/ovpn/netlink.c
-index 83d81a468b5a..910e4e67a68a 100644
---- a/drivers/net/ovpn/netlink.c
-+++ b/drivers/net/ovpn/netlink.c
-@@ -888,7 +888,7 @@ int ovpn_nl_key_new_doit(struct sk_buff *skb, struct genl_info *info)
++	epoch = nla_nest_start(msg, attr);
++	NLA_PUT(msg, OVPN_A_EPOCH_KEY, KEY_LEN, key);
++	NLA_PUT_U32(msg, OVPN_A_EPOCH_CIPHER_KEY_LEN, KEY_LEN);
++	nla_nest_end(msg, epoch);
++
++	return 0;
++nla_put_failure:
++	return -1;
++}
++
+ static int ovpn_new_key(struct ovpn_ctx *ovpn)
  {
- 	struct nlattr *attrs[OVPN_A_KEYCONF_MAX + 1];
- 	struct ovpn_priv *ovpn = info->user_ptr[0];
--	struct ovpn_peer_key_reset pkr;
-+	struct ovpn_peer_key_reset pkr = {};
- 	struct ovpn_peer *peer;
- 	u32 peer_id;
- 	int ret;
-@@ -923,12 +923,14 @@ int ovpn_nl_key_new_doit(struct sk_buff *skb, struct genl_info *info)
- 	pkr.key.cipher_alg = nla_get_u32(attrs[OVPN_A_KEYCONF_CIPHER_ALG]);
+-	struct nlattr *keyconf, *key_dir;
++	struct nlattr *keyconf;
+ 	struct nl_ctx *ctx;
+ 	int ret = -1;
  
- 	ret = ovpn_nl_get_key_dir(info, attrs[OVPN_A_KEYCONF_ENCRYPT_DIR],
--				  pkr.key.cipher_alg, &pkr.key.encrypt);
-+				  pkr.key.cipher_alg,
-+				  &pkr.key.direct.encrypt);
- 	if (ret < 0)
- 		return ret;
+@@ -937,15 +984,37 @@ static int ovpn_new_key(struct ovpn_ctx *ovpn)
+ 	NLA_PUT_U32(ctx->nl_msg, OVPN_A_KEYCONF_KEY_ID, ovpn->key_id);
+ 	NLA_PUT_U32(ctx->nl_msg, OVPN_A_KEYCONF_CIPHER_ALG, ovpn->cipher);
  
- 	ret = ovpn_nl_get_key_dir(info, attrs[OVPN_A_KEYCONF_DECRYPT_DIR],
--				  pkr.key.cipher_alg, &pkr.key.decrypt);
-+				  pkr.key.cipher_alg,
-+				  &pkr.key.direct.decrypt);
- 	if (ret < 0)
- 		return ret;
+-	key_dir = nla_nest_start(ctx->nl_msg, OVPN_A_KEYCONF_ENCRYPT_DIR);
+-	NLA_PUT(ctx->nl_msg, OVPN_A_KEYDIR_CIPHER_KEY, KEY_LEN, ovpn->key_enc);
+-	NLA_PUT(ctx->nl_msg, OVPN_A_KEYDIR_NONCE_TAIL, NONCE_LEN, ovpn->nonce);
+-	nla_nest_end(ctx->nl_msg, key_dir);
++	switch (ovpn->key_type) {
++	case KEY_TYPE_DIRECT:
++		ret = ovpn_put_direct_key(ctx->nl_msg,
++					  OVPN_A_KEYCONF_ENCRYPT_DIR,
++					  ovpn->key_enc, ovpn->nonce);
++		if (ret)
++			goto nla_put_failure;
  
+-	key_dir = nla_nest_start(ctx->nl_msg, OVPN_A_KEYCONF_DECRYPT_DIR);
+-	NLA_PUT(ctx->nl_msg, OVPN_A_KEYDIR_CIPHER_KEY, KEY_LEN, ovpn->key_dec);
+-	NLA_PUT(ctx->nl_msg, OVPN_A_KEYDIR_NONCE_TAIL, NONCE_LEN, ovpn->nonce);
+-	nla_nest_end(ctx->nl_msg, key_dir);
++		ret = ovpn_put_direct_key(ctx->nl_msg,
++					  OVPN_A_KEYCONF_DECRYPT_DIR,
++					  ovpn->key_dec, ovpn->nonce);
++		if (ret)
++			goto nla_put_failure;
++		break;
++	case KEY_TYPE_EPOCH:
++		ret = ovpn_put_epoch_key(ctx->nl_msg,
++					 OVPN_A_KEYCONF_ENCRYPT_EPOCH,
++					 ovpn->key_enc);
++		if (ret)
++			goto nla_put_failure;
++
++		ret = ovpn_put_epoch_key(ctx->nl_msg,
++					 OVPN_A_KEYCONF_DECRYPT_EPOCH,
++					 ovpn->key_dec);
++		if (ret)
++			goto nla_put_failure;
++		break;
++	default:
++		ret = -EINVAL;
++		goto nla_put_failure;
++	}
+ 
+ 	nla_nest_end(ctx->nl_msg, keyconf);
+ 
+@@ -1691,7 +1760,7 @@ static void usage(const char *cmd)
+ 		"\tipv6: whether the socket should listen to the IPv6 wildcard address\n");
+ 
+ 	fprintf(stderr,
+-		"* connect <iface> <peer_id> <tx_id> <raddr> <rport> [key_file]: start connecting peer of TCP-based VPN session\n");
++		"* connect <iface> <peer_id> <tx_id> <raddr> <rport> [key_type key_file]: start connecting peer of TCP-based VPN session\n");
+ 	fprintf(stderr, "\tiface: ovpn interface name\n");
+ 	fprintf(stderr,
+ 		"\tpeer_id: peer ID found in data packets received from this peer\n");
+@@ -1699,8 +1768,8 @@ static void usage(const char *cmd)
+ 		"\ttx_id: peer ID to be used when sending to this peer, 'none' for symmetric peer ID\n");
+ 	fprintf(stderr, "\traddr: peer IP address to connect to\n");
+ 	fprintf(stderr, "\trport: peer TCP port to connect to\n");
+-	fprintf(stderr,
+-		"\tkey_file: file containing the symmetric key for encryption\n");
++	fprintf(stderr, "\tkey_type: key type, supported: direct, epoch\n");
++	fprintf(stderr, "\tkey_file: file containing the pre-shared key\n");
+ 
+ 	fprintf(stderr,
+ 		"* new_peer <iface> <peer_id> <tx_id> <lport> <raddr> <rport> [vpnaddr]: add new peer\n");
+@@ -1748,7 +1817,7 @@ static void usage(const char *cmd)
+ 		"\tpeer_id: peer ID of the peer to query. All peers are returned if omitted\n");
+ 
+ 	fprintf(stderr,
+-		"* new_key <iface> <peer_id> <slot> <key_id> <cipher> <key_dir> <key_file>: set data channel key\n");
++		"* new_key <iface> <peer_id> <slot> <key_id> <cipher> <key_type> <key_dir> <key_file>: set data channel key\n");
+ 	fprintf(stderr, "\tiface: ovpn interface name\n");
+ 	fprintf(stderr,
+ 		"\tpeer_id: peer ID of the peer to configure the key for\n");
+@@ -1756,6 +1825,7 @@ static void usage(const char *cmd)
+ 	fprintf(stderr, "\tkey_id: an ID from 0 to 7\n");
+ 	fprintf(stderr,
+ 		"\tcipher: cipher to use, supported: aes (AES-GCM), chachapoly (CHACHA20POLY1305)\n");
++	fprintf(stderr, "\tkey_type: key type, supported: direct, epoch\n");
+ 	fprintf(stderr,
+ 		"\tkey_dir: key direction, must 0 on one host and 1 on the other\n");
+ 	fprintf(stderr, "\tkey_file: file containing the pre-shared key\n");
+@@ -2247,12 +2317,19 @@ static int ovpn_parse_cmd_args(struct ovpn_ctx *ovpn, int argc, char *argv[])
+ 		}
+ 
+ 		if (argc > 7) {
++			if (argc < 9)
++				return -EINVAL;
++
+ 			ovpn->key_slot = OVPN_KEY_SLOT_PRIMARY;
+ 			ovpn->key_id = 0;
+ 			ovpn->cipher = OVPN_CIPHER_ALG_AES_GCM;
+ 			ovpn->key_dir = KEY_DIR_OUT;
+ 
+-			ret = ovpn_parse_key(argv[7], ovpn);
++			ret = ovpn_parse_key_type(argv[7], ovpn);
++			if (ret < 0)
++				return -1;
++
++			ret = ovpn_parse_key(argv[8], ovpn);
+ 			if (ret)
+ 				return -1;
+ 		}
+@@ -2351,7 +2428,7 @@ static int ovpn_parse_cmd_args(struct ovpn_ctx *ovpn, int argc, char *argv[])
+ 		}
+ 		break;
+ 	case CMD_NEW_KEY:
+-		if (argc < 9)
++		if (argc < 10)
+ 			return -EINVAL;
+ 
+ 		ovpn->peer_id = strtoul(argv[3], NULL, 10);
+@@ -2374,11 +2451,15 @@ static int ovpn_parse_cmd_args(struct ovpn_ctx *ovpn, int argc, char *argv[])
+ 		if (ret < 0)
+ 			return -1;
+ 
+-		ret = ovpn_parse_key_direction(argv[7], ovpn);
++		ret = ovpn_parse_key_type(argv[7], ovpn);
++		if (ret < 0)
++			return -1;
++
++		ret = ovpn_parse_key_direction(argv[8], ovpn);
+ 		if (ret < 0)
+ 			return -1;
+ 
+-		ret = ovpn_parse_key(argv[8], ovpn);
++		ret = ovpn_parse_key(argv[9], ovpn);
+ 		if (ret)
+ 			return -1;
+ 		break;
+@@ -2442,6 +2523,7 @@ int main(int argc, char *argv[])
+ 	memset(&ovpn, 0, sizeof(ovpn));
+ 	ovpn.sa_family = AF_UNSPEC;
+ 	ovpn.cipher = OVPN_CIPHER_ALG_NONE;
++	ovpn.key_type = KEY_TYPE_DIRECT;
+ 
+ 	ovpn.cmd = ovpn_parse_cmd(argv[1]);
+ 	if (ovpn.cmd == CMD_INVALID) {
+diff --git a/tools/testing/selftests/net/ovpn/test-epoch-tcp.sh b/tools/testing/selftests/net/ovpn/test-epoch-tcp.sh
+new file mode 100755
+index 000000000000..ec7b243d1923
+--- /dev/null
++++ b/tools/testing/selftests/net/ovpn/test-epoch-tcp.sh
+@@ -0,0 +1,11 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++# Copyright (C) 2026 OpenVPN, Inc.
++#
++#	Author:	Ralf Lici <ralf@mandelbit.com>
++#		Antonio Quartulli <antonio@openvpn.net>
++
++OVPN_KEY_TYPE="epoch"
++OVPN_PROTO="TCP"
++
++source test.sh
+diff --git a/tools/testing/selftests/net/ovpn/test-epoch.sh b/tools/testing/selftests/net/ovpn/test-epoch.sh
+new file mode 100755
+index 000000000000..17641dad87c4
+--- /dev/null
++++ b/tools/testing/selftests/net/ovpn/test-epoch.sh
+@@ -0,0 +1,10 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++# Copyright (C) 2026 OpenVPN, Inc.
++#
++#	Author:	Ralf Lici <ralf@mandelbit.com>
++#		Antonio Quartulli <antonio@openvpn.net>
++
++OVPN_KEY_TYPE="epoch"
++
++source test.sh
+diff --git a/tools/testing/selftests/net/ovpn/test-mark.sh b/tools/testing/selftests/net/ovpn/test-mark.sh
+index 7c1d56e9c525..43b4798fefde 100755
+--- a/tools/testing/selftests/net/ovpn/test-mark.sh
++++ b/tools/testing/selftests/net/ovpn/test-mark.sh
+@@ -43,7 +43,8 @@ ovpn_mark_prepare_network() {
+ 	for p in $(seq 1 3); do
+ 		ovpn_cmd_ok "install server key for peer ${p}" \
+ 			ip netns exec ovpn_peer0 "${OVPN_CLI}" new_key tun0 \
+-				"${p}" 1 0 "${OVPN_ALG}" 0 data64.key
++				"${p}" 1 0 "${OVPN_ALG}" "${OVPN_KEY_TYPE}" \
++				0 data64.key
+ 	done
+ 
+ 	for p in $(seq 1 3); do
+diff --git a/tools/testing/selftests/net/ovpn/test.sh b/tools/testing/selftests/net/ovpn/test.sh
+index 9b5610837032..a30842903fdb 100755
+--- a/tools/testing/selftests/net/ovpn/test.sh
++++ b/tools/testing/selftests/net/ovpn/test.sh
+@@ -67,14 +67,15 @@ ovpn_run_basic_traffic() {
+ 	local tcpdump_timeout="1.5s"
+ 
+ 	for p in $(seq 1 ${OVPN_NUM_PEERS}); do
+-		# The first part of the data packet header consists of:
++		# The tcpdump filters match the cleartext data packet prefix:
+ 		# - TCP only: 2 bytes for the packet length
+ 		# - 5 bits for opcode ("9" for DATA_V2)
+ 		# - 3 bits for key-id ("0" at this point)
+-		# - 12 bytes for peer-id:
++		# - 24 bits for peer-id:
+ 		#     - with asymmetric ID: "${p}" one way and "${p} + 9" the
+ 		#	other way
+ 		#     - with symmetric ID: "${p}" both ways
++		# - epoch keys only: 2 bytes for epoch ("1" at this point)
+ 		header1=$(printf "0x4800000%x" ${p})
+ 		header2=$(printf "0x4800000%x" $((p + OVPN_ID_OFFSET)))
+ 		raddr=""
+@@ -152,11 +153,12 @@ ovpn_run_key_rollover() {
+ 		peer_ns="ovpn_peer${p}"
+ 		ovpn_cmd_ok "add secondary key on peer0 for peer ${p}" \
+ 			ip netns exec ovpn_peer0 ${OVPN_CLI} new_key tun0 \
+-				${p} 2 1 ${OVPN_ALG} 0 data64.key
++				${p} 2 1 ${OVPN_ALG} ${OVPN_KEY_TYPE} \
++				0 data64.key
+ 		ovpn_cmd_ok "add secondary key on peer${p} for peer ${p}" \
+ 			ip netns exec "${peer_ns}" ${OVPN_CLI} new_key tun${p} \
+-				$((p + OVPN_ID_OFFSET)) 2 1 ${OVPN_ALG} 1 \
+-				data64.key
++				$((p + OVPN_ID_OFFSET)) 2 1 ${OVPN_ALG} \
++				${OVPN_KEY_TYPE} 1 data64.key
+ 		ovpn_cmd_ok "swap keys on peer${p}" \
+ 			ip netns exec "${peer_ns}" ${OVPN_CLI} swap_keys \
+ 				tun${p} $((p + OVPN_ID_OFFSET))
 -- 
 2.54.0
 
