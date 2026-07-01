@@ -4,68 +4,68 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3EC52C43458
-	for <openvpn-devel@archiver.kernel.org>; Wed,  1 Jul 2026 07:42:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5092DC43458
+	for <openvpn-devel@archiver.kernel.org>; Wed,  1 Jul 2026 07:54:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
-	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	MIME-Version:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
+	List-Unsubscribe:List-Id:Subject:References:In-Reply-To:To:From:Message-Id:
+	Date:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=VReNDh5bVA0McQZLyMTt75RieNyYS/krZvdBdUJL6nk=; b=PjIT9LZCAdNwtZCPBzMjqPLDMh
-	6vpMBmbtEeXpaE8i4+h44/IdeL0n4+LQxvpnTyAmPbltJlnHkHuUStxHr90qVEVnKy0fXHeOrBydU
-	77jvb+RxoB11UhZ+mDzHK7hEFe1AfmDRq3DKi6rILQHqIzDaJkTrzUXywaYLU7Ig6pFc=;
+	bh=SlHEhtl/2TD6tz3nJVpdl31Y1ApmV83xjM7uYobE/Wo=; b=hb1EzmEhEdc01X8pU5ub20gFoC
+	yXP8RRRFksJ00pT0KTekkOVC++Z99906wWuGiqXCxYsdOhz0h7CoH2mLqNR30wtlYiFSAIFQbUoAb
+	jSMomKojBw5WvyIe6Cs0pZGsB6sIPZuqw/lCQIzYoaKQ5/utPvnqetcBjVTHvFWJAwBY=;
 Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
 	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wepaM-0007dS-Jn;
-	Wed, 01 Jul 2026 07:42:19 +0000
+	id 1weplh-0000Dv-Bk;
+	Wed, 01 Jul 2026 07:54:02 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1wepZt-0007bK-QW
+ (envelope-from <gert@chekov.greenie.muc.de>) id 1weplQ-0000CB-EH
  for openvpn-devel@lists.sourceforge.net;
- Wed, 01 Jul 2026 07:41:50 +0000
+ Wed, 01 Jul 2026 07:53:45 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=lo421tLPWdxh6dj39ps5w03lmAJhltqMVNqKioTQeBk=; b=bhTQjMF5wzvxvV2yFzvTNw1irb
- KCnQxQFpK7LhOBc/pbrmMTRv/UVxKedr6+OphOUFUbd3uaU3XfPiD8YfM2fZnggy7fQfPFsepMIjl
- vcknLQYxkquo4po80jsfTZlLsrGut6Q8wV9edsVyQTvJYJEXh02a6mMdXyYrQdGCOsb8=;
+ d=sourceforge.net; s=x; h=References:In-Reply-To:Subject:Cc:To:From:
+ Message-Id:Date:Sender:Reply-To:MIME-Version:Content-Type:
+ Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+ List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=CF3R3C3cg3+EE2hx7v5AkyBiic8UuNOEom6cUiQi/Gg=; b=OHn11vHbHS04xs+zK5wgXUm7LL
+ Y+DvoOi944U7fhc+tkxqBc+IV/vjHe54Z97RorKbFMRSfpSmsa5TQIFVE12HCnrQ7REjkg6glKKyQ
+ QLgQnKCZ1OBsiXXqVJnJzGT6h0aLZIXKOhM6AOsdpexdAuckZvDJSg/pvl+zcVA4TbTo=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ h=References:In-Reply-To:Subject:Cc:To:From:Message-Id:Date:Sender:Reply-To
+ :MIME-Version:Content-Type:Content-Transfer-Encoding:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=lo421tLPWdxh6dj39ps5w03lmAJhltqMVNqKioTQeBk=; b=F6k+X6iGLAIl5EzenK013YXk4q
- 21NI4ff2qeVjiMWT03uIeCmaY55gAuEwdz336a3juUWecWiR9wqCkMGJfXA3gQmjjZrY3OZM0IUiN
- at7kGTjrpqsQ/tN5osUeSsRM0ragFdMQnrNwzfAE0aTjavbqucqgaXjTnVIDADkuL4OQ=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ bh=CF3R3C3cg3+EE2hx7v5AkyBiic8UuNOEom6cUiQi/Gg=; b=GV0WQlzWPb88cXv0T9LzIq6rrg
+ kzHkRIrwAMNM5G9/ZQWW6qoDUs/P1dYISwPF9IJ9TbCjRqDTu/NntaTMcGe5bEa+RDcO56k/C8OwT
+ QBjT9ljlbqVQlLaY/zZwiDXcgGDv6DV/9NoX/62mnFVoOPOdAJZ363YmZD+gFOQsZ9bo=;
+Received: from chekov.greenie.muc.de ([193.149.48.178])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wepZl-0003tu-B7 for openvpn-devel@lists.sourceforge.net;
- Wed, 01 Jul 2026 07:41:46 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 6617fMvv028824
- for <openvpn-devel@lists.sourceforge.net>; Wed, 1 Jul 2026 09:41:22 +0200
+ id 1weplF-0004Tm-Iw for openvpn-devel@lists.sourceforge.net;
+ Wed, 01 Jul 2026 07:53:34 +0000
+Received: from chekov.greenie.muc.de (localhost [IPv6:0:0:0:0:0:0:0:1])
+ by chekov.greenie.muc.de (8.18.2/8.18.1) with ESMTP id 6617rMM1070398;
+ Wed, 1 Jul 2026 09:53:22 +0200 (CEST)
+ (envelope-from gert@chekov.greenie.muc.de)
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 6617fMTF028823
- for openvpn-devel@lists.sourceforge.net; Wed, 1 Jul 2026 09:41:22 +0200
+ by chekov.greenie.muc.de (8.18.2/8.18.1/Submit) id 6617rMeo070397;
+ Wed, 1 Jul 2026 09:53:22 +0200 (CEST) (envelope-from gert)
+Date: Wed, 1 Jul 2026 09:53:22 +0200 (CEST)
+Message-Id: <202607010753.6617rMeo070397@chekov.greenie.muc.de>
 From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Wed,  1 Jul 2026 09:41:15 +0200
-Message-ID: <20260701074122.28795-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1782883869000.Id8945dce437da11e6fecae9550c3be52e393d4cf@gerrit.openvpn.net>
-References: <gerrit.1782883869000.Id8945dce437da11e6fecae9550c3be52e393d4cf@gerrit.openvpn.net>
-MIME-Version: 1.0
-X-Headers-End: 1wepZl-0003tu-B7
-Subject: [Openvpn-devel] [PATCH v1] dco.c: fix argument order in
+To: Ralf Lici <ralf@mandelbit.com>
+X-Patchwork-State: Accepted
+In-Reply-To: <20260701074122.28795-1-gert@greenie.muc.de>
+References: <20260701074122.28795-1-gert@greenie.muc.de>
+X-Headers-End: 1weplF-0004Tm-Iw
+Subject: [Openvpn-devel] [PATCH applied] Re: dco.c: fix argument order in
  dco_install_key() log string
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
@@ -78,49 +78,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Cc: openvpn-devel@lists.sourceforge.net
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Ralf Lici <ralf@mandelbit.com>
+"Obviously correct".  Fascinating oversight on the original change...
 
-The debug log in dco_install_key() has the epoch and dco_keys_installed
-arguments swapped. So a line like epoch=1, currently 0 keys installed
-actually means dco_keys_installed == 1 and epoch == false.
+Your patch has been applied to the master and release/2.7 branch.
 
-Use the correct argument ordering in the log string.
+commit cda2f2533c27f37cfe7a741c9e042a54740e377f (master)
+commit 097d259e3702a5b621399eee9b83e79fc9a577bc (release/2.7)
+Author: Ralf Lici
+Date:   Wed Jul 1 09:41:15 2026 +0200
 
-Change-Id: Id8945dce437da11e6fecae9550c3be52e393d4cf
-Signed-off-by: Ralf Lici <ralf@mandelbit.com>
-Acked-by: Gert Doering <gert@greenie.muc.de>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1760
----
+     dco.c: fix argument order in dco_install_key() log string
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+     Signed-off-by: Ralf Lici <ralf@mandelbit.com>
+     Acked-by: Gert Doering <gert@greenie.muc.de>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1760
+     Message-Id: <20260701074122.28795-1-gert@greenie.muc.de>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg37418.html
+     Signed-off-by: Gert Doering <gert@greenie.muc.de>
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1760
-This mail reflects revision 1 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@greenie.muc.de>
+--
+kind regards,
 
-        
-diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-index f5b7081..e944547 100644
---- a/src/openvpn/dco.c
-+++ b/src/openvpn/dco.c
-@@ -57,8 +57,8 @@
- 
- {
-     bool epoch = ks->crypto_options.flags & CO_EPOCH_DATA_KEY_FORMAT;
--    msg(D_DCO_DEBUG, "%s: peer_id=%d keyid=%d epoch=%d, currently %d keys installed", __func__,
--        multi->dco_peer_id, ks->key_id, multi->dco_keys_installed, epoch);
-+    msg(D_DCO_DEBUG, "%s: peer_id=%d keyid=%d epoch=%d, currently %d keys installed",
-+        __func__, multi->dco_peer_id, ks->key_id, epoch, multi->dco_keys_installed);
- 
-     /* Install a key in the PRIMARY slot only when no other key exist.
-      * From that moment on, any new key will be installed in the SECONDARY
+Gert Doering
+
 
 
 _______________________________________________
