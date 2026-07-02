@@ -4,80 +4,83 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 398D4C43458
-	for <openvpn-devel@archiver.kernel.org>; Thu,  2 Jul 2026 11:53:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6E8D5C43602
+	for <openvpn-devel@archiver.kernel.org>; Thu,  2 Jul 2026 11:53:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=HE1EzEDVyOgkbHZbpYVDh1peytTj8PcbaQeOJPa/8cM=; b=PnSvxLYUSa3LTAE2fwAyHYMN6j
-	Xjh7pVdFu7YvhdZ2XklkE0CTi0hoLOme3NA0WYuy5eJTbx9DWwAx9EF2xAfg7HJU+zdzEouVba7rh
-	XylSZ+7Q5t7lG6vhe0YsTqSW8Dc99TmC+caSlWBcvDkhFUQHECyY52hF4jrjzAdKbO6I=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:Message-ID:Date:To:From:Sender:Reply-To:Cc:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Owner;
+	bh=XnSyhfsLXRr1uSCHVcfoTMmFUWjdGsJLW/kYe9XGA9w=; b=EnJYSj4edLl65P2g8MrjkRO4D+
+	0C+vN2XdsGIPCsCUv5FLJVnTvSFIAmoMpVEIAA+IvTheoIP+AEiJ9FnEdiGymM+mGMP0cjR8UnR2J
+	PBtTcrAvMoAKEnsXnJ2MfA9Yc4a9YmRecIWOGunG6QriJ4xlnYssjxB+9qJvQ6BiWwCM=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wfFyy-0007tM-Ee;
-	Thu, 02 Jul 2026 11:53:25 +0000
+	id 1wfFys-0001gd-BA;
+	Thu, 02 Jul 2026 11:53:23 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <ralf@mandelbit.com>) id 1wfFyx-0007tF-UR
+ (envelope-from <ralf@mandelbit.com>) id 1wfFyr-0001gU-B4
  for openvpn-devel@lists.sourceforge.net;
- Thu, 02 Jul 2026 11:53:25 +0000
+ Thu, 02 Jul 2026 11:53:22 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=sedkrn1igrLYS2D5wNpQ2omlJGdpqGF+DCO29pv2lVE=; b=PLOXfu1iaYqQHsCnmzF33iZ/3V
- brDAVdvRoX/q2cCopvSRrIZNA+v6BVupZANu5SLNesLGiYzkz6yQ+TuDjM017cDfw9wrJbK16Tu8i
- p9gY6CILqeKEDVERudlb2q7LQy8TJiSNPc9cKqjcwad2CvKQ/ZyCIKMokKJm13QdoHS0=;
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
- ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:Message-ID:
  Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=sedkrn1igrLYS2D5wNpQ2omlJGdpqGF+DCO29pv2lVE=; b=TkWCe2H8gLxXUKxwvdggPRhgNF
- OsJIsvk7LK+4oQJ2ioEz+Sw8U4DNK7gg7bh04fh4SRd/eBxfA3/9J1nMW3G3snyfzekY08VdnA9W8
- 3tTvTaW21QXFGRbrFeYcaoj63s06EXKpIEaOcaNG/Uj0G5WO7SZJMSJ1qJcVMAIOmyXI=;
-Received: from mout-b-201.mailbox.org ([195.10.208.61])
+ :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=LzPkj0AgUZs1Pum16f8QFcc3ijPISLYlHYdqhZAkqCA=; b=M7zu9XxmBUSvNtffjG7K0AmQXm
+ irN1SZE2pk6F+zpl3V1qshYcw/I7CTiRSoKyTACJiYEECUXVXyKYR4nsQTgNc8e8xAoP5uRkrGaPM
+ UeqPrBO5qduqIW7UmBLOEqSD6D5PoAYuszXSzO9qeQ3rNFQ2TYxcrUyKzxut7drQFyXA=;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
+ ;
+ h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:Cc:To:From
+ :Sender:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+ References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=LzPkj0AgUZs1Pum16f8QFcc3ijPISLYlHYdqhZAkqCA=; b=X
+ eEBPXiwzRy9YNk/eHRm7SouQDqz462oTLbBrh4kv8N8TURmezwFcPA2FzvbytCZCOi8jVfeI9P0EF
+ 6gFI5xyYt1EBzveFbCYZUy3XC2XQGNdi4BArxhvflv+GrRIIZprSXjLAsYQxwStylwr2fyob6zCb9
+ C35Vafzn6YKYwMmQ=;
+Received: from mout-b-206.mailbox.org ([195.10.208.51])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wfFyt-0004Jn-G7 for openvpn-devel@lists.sourceforge.net;
- Thu, 02 Jul 2026 11:53:25 +0000
-Received: from smtp2.mailbox.org (smtp2.mailbox.org [10.196.197.2])
+ id 1wfFyo-0004JO-9n for openvpn-devel@lists.sourceforge.net;
+ Thu, 02 Jul 2026 11:53:21 +0000
+Received: from smtp2.mailbox.org (smtp2.mailbox.org
+ [IPv6:2001:67c:2050:b231:465::2])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
  (No client certificate requested)
- by mout-b-201.mailbox.org (Postfix) with ESMTPS id 4grZyZ53CnzDs9r;
- Thu,  2 Jul 2026 13:53:10 +0200 (CEST)
+ by mout-b-206.mailbox.org (Postfix) with ESMTPS id 4grZyT3MByz9xvn;
+ Thu,  2 Jul 2026 13:53:05 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
- s=MBO0001; t=1782993190;
+ s=MBO0001; t=1782993185;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=sedkrn1igrLYS2D5wNpQ2omlJGdpqGF+DCO29pv2lVE=;
- b=wcRZJXgVhcCk21iwxmx4EGkIvun76rUT1hX6u7h5fSXYNoKCGsOdrKl1ar3x4J2P2N11+d
- mX7ULbFY2Jv0+fxrwgiZqyyojUZcc4o2yZuJM8KCYAdeE1Yy0fHPY6HJ/NiVyTF+f8VjXI
- hla+TzJuydT+mOr/ethLsIpV5siWM///nW9L8MuNsUVDiwybYzy/julKQkfpn+A4qkeoGv
- 6JX8ycMXDnUFq2QPetUF8HEr5G+bKolf6Qi19uLL36I/yUoGvebGMsS8OO8CrnWLC/cCKr
- wAI8y40zzvXBzVKCRIrpYOx/xb2aFnhE05Hj3OIKgCHudZDWtmbMJtYjPFMqDA==
+ content-transfer-encoding:content-transfer-encoding;
+ bh=LzPkj0AgUZs1Pum16f8QFcc3ijPISLYlHYdqhZAkqCA=;
+ b=pmPwexwnRhjpA/umIEPxIQoCMrhNkTq01VbW170ZwNinXQWcKiAaF/lHXnnQ0hwhF9/2ff
+ IlFpAEkTWvmSTbH1GW75Vhsck8JlEEWrE3y+J1JaviNHodUxIB8LZPF7JfP2+quDFrOWNY
+ uNv/Eph6nwMU6OcXvHIniiMZQ/EMoQpM7WvVgNpQjSUj6XVMypS0Z+IdQUsfr39UUoHXr5
+ fsQmionCxQKs27neEFM6jciPWBW/93Iz3ZJicLBG2PA50rPdhtvfKhR6x0IKn1yHoC+CRx
+ /2fCAHI/jzY4zGlmT4W/itGct+gielLoLv0uB9zl8lPRX3BiVZUYJfsplYG75w==
+Authentication-Results: outgoing_mbo_mout; dkim=none;
+ spf=pass (outgoing_mbo_mout: domain of ralf@mandelbit.com designates
+ 2001:67c:2050:b231:465::2 as permitted sender)
+ smtp.mailfrom=ralf@mandelbit.com
 From: Ralf Lici <ralf@mandelbit.com>
 To: openvpn-devel@lists.sourceforge.net
-Date: Thu,  2 Jul 2026 13:52:18 +0200
-Message-ID: <9ddcecb7c766c02e48f3bbe7c88eba4e195df68f.1782986577.git.ralf@mandelbit.com>
-In-Reply-To: <cover.1782986577.git.ralf@mandelbit.com>
-References: <cover.1782986577.git.ralf@mandelbit.com>
+Date: Thu,  2 Jul 2026 13:52:15 +0200
+Message-ID: <cover.1782986577.git.ralf@mandelbit.com>
 MIME-Version: 1.0
-X-Headers-End: 1wfFyt-0004Jn-G7
-Subject: [Openvpn-devel] [RFC ovpn net-next v2 03/14] ovpn: limit AEAD
- decrypt verification failures
+X-Rspamd-Queue-Id: 4grZyT3MByz9xvn
+X-Headers-End: 1wfFyo-0004JO-9n
+Subject: [Openvpn-devel] [RFC ovpn net-next v2 00/14] ovpn: add epoch data
+ channel keys
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -93,119 +96,140 @@ Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-OpenVPN userspace tracks AEAD tag verification failures per decrypt key.
-It asks for a new key after more than 2^35 failures and stops attempting
-AEAD decryption with that key after more than 2^36 failures.
+Hi,
 
-Mirror that behavior in ovpn. Count only crypto_aead_decrypt
-authentication failures, reported by the crypto API as -EBADMSG, and
-notify userspace once when the soft threshold is crossed. Once the hard
-threshold is exceeded, reject new decrypt attempts with the same key
-before submitting more crypto work.
+This is a respin of the series that adds support for OpenVPN epoch data
+channel keys to the ovpn kernel module.
 
-This applies to all ovpn AEAD ciphers, not only AES-GCM, and is
-independent from the AES-GCM packet/block usage limits.
+Epoch keys are described in the OpenVPN wire protocol draft:
 
-Signed-off-by: Ralf Lici <ralf@mandelbit.com>
+  https://openvpn.github.io/openvpn-rfc/openvpn-wire-protocol.html#section-7.2
+  https://openvpn.github.io/openvpn-rfc/openvpn-wire-protocol.html#section-7.5
+
+At a high level, epoch keys allow OpenVPN to rotate data-channel AEAD
+keys without requiring a full userspace renegotiation whenever a
+data-channel key reaches a usage or packet-ID limit. Instead of
+installing one concrete AEAD key and nonce tail per direction, userspace
+installs per-direction epoch PRKs. The kernel derives the concrete AEAD
+key and implicit IV for each epoch using the OpenVPN HKDF-Expand-Label
+construction, and can then move between pre-derived epochs in the data
+path.
+
+This is conceptually the same mechanism (D)TLS 1.3 already uses:
+OVPN-Expand-Label is TLS 1.3's HKDF-Expand-Label with an "ovpn " prefix
+instead of "tls13 ", and advancing an epoch is the data-channel analogue
+of a TLS 1.3 key update / DTLS 1.3 epoch increment.
+
+The DATA_V2 opcode is still used, but epoch packets use the extended
+packet ID layout defined by the draft: a 64-bit packet ID carrying a
+16-bit epoch and a 48-bit sequence number, an XOR-based IV construction,
+and the AEAD tag at the end of the packet. Carrying the tag after the
+ciphertext, rather than prepending it as the direct-key format does,
+matches how AEAD implementations stream their output and lets the data
+path map payload and tag as a single contiguous scatterlist.
+
+The series is structured in three parts. The first adds packet-ID and
+AES-GCM usage-limit accounting. TX now notifies userspace before
+packet-ID wrap or AES-GCM hard exhaustion, and stops before the hard
+limit. RX accounts authenticated packets and reports threshold crossings
+without dropping packets solely because the peer crossed a local usage
+threshold. The series also limits AEAD decrypt verification failures.
+
+The middle part moves per-direction key state into explicit key
+contexts, makes those contexts refcounted for async crypto completion,
+and makes packet layout handling explicit. This keeps the epoch
+implementation from adding more special cases to the direct-key path.
+
+The epoch implementation keeps current TX/RX key contexts, one retiring
+RX key for reordered packets, and bounded rings of future TX/RX keys. TX
+rotates to a future key before hard packet-ID or AEAD usage exhaustion,
+and also rotates on the soft AEAD threshold. RX authenticates a packet
+with a future key before promoting that key to current, then refills
+consumed future-key slots from workqueue context.
+
+Selftest coverage is intentionally limited: the tests install epoch keys
+and verify steady-state UDP/TCP packet layout, including the epoch field
+in captured DATA_V2 packets. They do not exercise rotation or future-key
+refill because the production thresholds are cryptographic safety
+limits, so reaching them needs an enormous packet-ID/AEAD budget and
+lowering them would mean test-only knobs in security-sensitive data-path
+policy.
+
+The HKDF-Expand implementation added here (crypto_epoch.c) overlaps with
+the open-coded HKDF-Expand already carried by fscrypt and nvme. We
+intend to unify all three into a single shared helper in a follow-up
+series, rather than block this work on that refactor.
+
+Thanks,
+
+Ralf Lici
+Mandelbit Srl
+
 ---
-No changes since v1 https://lore.kernel.org/openvpn-devel/ff21c6997ad080e4b23541fccba120730de8e96d.1782919654.git.ralf@mandelbit.com/
+Changes since v1 https://lore.kernel.org/openvpn-devel/cover.1782919654.git.ralf@mandelbit.com/
+- Address review findings by avoiding PRK advancement on failed
+  future-key refill, zeroing derived key material on all epoch key
+  creation paths, fixing epoch scatterlist sizing/termination, and
+  preventing refill work from outliving module text.
+- Expand the cover letter based on Arne's suggestion.
+- Mention in the cover letter that we're aiming for a unified
+  HKDF-Expand implementation as follow-up work.
 
- drivers/net/ovpn/crypto.h      |  2 ++
- drivers/net/ovpn/crypto_aead.c | 24 ++++++++++++++++++++++++
- drivers/net/ovpn/crypto_aead.h |  1 +
- drivers/net/ovpn/io.c          |  6 ++++++
- 4 files changed, 33 insertions(+)
+Ralf Lici (14):
+  ovpn: prepare packet ID state for usage limits
+  ovpn: enforce AES-GCM usage limits
+  ovpn: limit AEAD decrypt verification failures
+  ovpn: make direct-key AEAD layout explicit
+  ovpn: move key slot lifecycle out of AEAD
+  ovpn: move direct key state into key contexts
+  ovpn: make key contexts refcounted
+  ovpn: generalize AEAD packet ID handling
+  ovpn: add epoch key derivation support
+  ovpn: add epoch key slot state
+  ovpn: handle epoch AEAD packet format
+  ovpn: rotate epoch data keys
+  ovpn: accept epoch keys from netlink
+  selftests: ovpn: exercise epoch keys
 
-diff --git a/drivers/net/ovpn/crypto.h b/drivers/net/ovpn/crypto.h
-index 09d3a945c5d9..2be7ff54fc40 100644
---- a/drivers/net/ovpn/crypto.h
-+++ b/drivers/net/ovpn/crypto.h
-@@ -43,6 +43,8 @@ struct ovpn_crypto_key_slot {
- 
- 	struct crypto_aead *encrypt;
- 	struct crypto_aead *decrypt;
-+	atomic64_t decrypt_failures;
-+	unsigned long decrypt_failure_flags;
- 	u8 nonce_tail_xmit[OVPN_NONCE_TAIL_SIZE];
- 	u8 nonce_tail_recv[OVPN_NONCE_TAIL_SIZE];
- 
-diff --git a/drivers/net/ovpn/crypto_aead.c b/drivers/net/ovpn/crypto_aead.c
-index 9b10ae6f6002..9e34a553f59a 100644
---- a/drivers/net/ovpn/crypto_aead.c
-+++ b/drivers/net/ovpn/crypto_aead.c
-@@ -29,6 +29,25 @@
- 
- #define ALG_NAME_AES		"gcm(aes)"
- #define ALG_NAME_CHACHAPOLY	"rfc7539(chacha20,poly1305)"
-+#define OVPN_AEAD_DECRYPT_FAILURE_NOTIFY	BIT_ULL(35)
-+#define OVPN_AEAD_DECRYPT_FAILURE_LIMIT		BIT_ULL(36)
-+#define OVPN_AEAD_DECRYPT_FAILURE_NOTIFY_BIT	0
-+
-+static bool
-+ovpn_aead_decrypt_failure_exceeded(const struct ovpn_crypto_key_slot *ks)
-+{
-+	return atomic64_read(&ks->decrypt_failures) >
-+	       OVPN_AEAD_DECRYPT_FAILURE_LIMIT;
-+}
-+
-+bool ovpn_aead_decrypt_failure_record(struct ovpn_crypto_key_slot *ks)
-+{
-+	u64 failures = atomic64_inc_return(&ks->decrypt_failures);
-+
-+	return failures > OVPN_AEAD_DECRYPT_FAILURE_NOTIFY &&
-+	       !test_and_set_bit(OVPN_AEAD_DECRYPT_FAILURE_NOTIFY_BIT,
-+				 &ks->decrypt_failure_flags);
-+}
- 
- static int ovpn_aead_encap_overhead(const struct ovpn_crypto_key_slot *ks)
- {
-@@ -270,6 +289,9 @@ int ovpn_aead_decrypt(struct ovpn_peer *peer, struct ovpn_crypto_key_slot *ks,
- 	if (unlikely(payload_len < 0))
- 		return -EINVAL;
- 
-+	if (unlikely(ovpn_aead_decrypt_failure_exceeded(ks)))
-+		return -EKEYREJECTED;
-+
- 	/* Prepare the skb data buffer to be accessed up until the auth tag.
- 	 * This is required because this area is directly mapped into the sg
- 	 * list.
-@@ -436,6 +458,8 @@ ovpn_aead_crypto_key_slot_new(const struct ovpn_key_config *kc)
- 	ovpn_key_usage_limit_init(&ks->usage_limit, kc->cipher_alg);
- 	ovpn_key_usage_init(&ks->usage_xmit);
- 	ovpn_key_usage_init(&ks->usage_recv);
-+	atomic64_set(&ks->decrypt_failures, 0);
-+	ks->decrypt_failure_flags = 0;
- 
- 	ks->encrypt = ovpn_aead_init("encrypt", alg_name,
- 				     kc->encrypt.cipher_key,
-diff --git a/drivers/net/ovpn/crypto_aead.h b/drivers/net/ovpn/crypto_aead.h
-index 65a2ff307898..e5ff0b9b5ee3 100644
---- a/drivers/net/ovpn/crypto_aead.h
-+++ b/drivers/net/ovpn/crypto_aead.h
-@@ -25,5 +25,6 @@ ovpn_aead_crypto_key_slot_new(const struct ovpn_key_config *kc);
- void ovpn_aead_crypto_key_slot_destroy(struct ovpn_crypto_key_slot *ks);
- 
- enum ovpn_cipher_alg ovpn_aead_crypto_alg(struct ovpn_crypto_key_slot *ks);
-+bool ovpn_aead_decrypt_failure_record(struct ovpn_crypto_key_slot *ks);
- 
- #endif /* _NET_OVPN_OVPNAEAD_H_ */
-diff --git a/drivers/net/ovpn/io.c b/drivers/net/ovpn/io.c
-index 31c750b9481a..8085cc345c59 100644
---- a/drivers/net/ovpn/io.c
-+++ b/drivers/net/ovpn/io.c
-@@ -129,6 +129,12 @@ void ovpn_decrypt_post(void *data, int ret)
- 	/* crypto is done, cleanup skb CB and its members */
- 	kfree(ovpn_skb_cb(skb)->crypto_tmp);
- 
-+	if (unlikely(ret == -EBADMSG)) {
-+		if (unlikely(ovpn_aead_decrypt_failure_record(ks)))
-+			ovpn_nl_key_swap_notify(peer, ks->key_id);
-+		goto drop;
-+	}
-+
- 	if (unlikely(ret < 0))
- 		goto drop;
- 
+ Documentation/netlink/specs/ovpn.yaml         |  31 +
+ drivers/net/Kconfig                           |   2 +
+ drivers/net/ovpn/Makefile                     |   2 +
+ drivers/net/ovpn/crypto.c                     |   7 +-
+ drivers/net/ovpn/crypto.h                     | 125 +++-
+ drivers/net/ovpn/crypto_aead.c                | 609 +++++++++++-------
+ drivers/net/ovpn/crypto_aead.h                |   9 +-
+ drivers/net/ovpn/crypto_epoch.c               | 223 +++++++
+ drivers/net/ovpn/crypto_epoch.h               |  58 ++
+ drivers/net/ovpn/crypto_key.c                 | 575 +++++++++++++++++
+ drivers/net/ovpn/crypto_limits.h              | 125 ++++
+ drivers/net/ovpn/io.c                         | 246 ++++++-
+ drivers/net/ovpn/io.h                         |   8 +-
+ drivers/net/ovpn/main.c                       |  15 +-
+ drivers/net/ovpn/netlink-gen.c                |   9 +-
+ drivers/net/ovpn/netlink-gen.h                |   3 +-
+ drivers/net/ovpn/netlink.c                    | 111 +++-
+ drivers/net/ovpn/pktid.c                      |  13 +-
+ drivers/net/ovpn/pktid.h                      | 164 ++++-
+ drivers/net/ovpn/proto.h                      |  38 ++
+ drivers/net/ovpn/skb.h                        |   2 +
+ include/uapi/linux/ovpn.h                     |  11 +
+ tools/testing/selftests/net/ovpn/Makefile     |   2 +
+ tools/testing/selftests/net/ovpn/common.sh    |  30 +-
+ tools/testing/selftests/net/ovpn/ovpn-cli.c   | 116 +++-
+ .../selftests/net/ovpn/test-epoch-tcp.sh      |  11 +
+ .../testing/selftests/net/ovpn/test-epoch.sh  |  10 +
+ tools/testing/selftests/net/ovpn/test-mark.sh |   3 +-
+ tools/testing/selftests/net/ovpn/test.sh      |  12 +-
+ 29 files changed, 2241 insertions(+), 329 deletions(-)
+ create mode 100644 drivers/net/ovpn/crypto_epoch.c
+ create mode 100644 drivers/net/ovpn/crypto_epoch.h
+ create mode 100644 drivers/net/ovpn/crypto_key.c
+ create mode 100644 drivers/net/ovpn/crypto_limits.h
+ create mode 100755 tools/testing/selftests/net/ovpn/test-epoch-tcp.sh
+ create mode 100755 tools/testing/selftests/net/ovpn/test-epoch.sh
+
+
+base-commit: 903db046d5579bef0ea699eae4b279dd6455fc9f
 -- 
 2.54.0
 
