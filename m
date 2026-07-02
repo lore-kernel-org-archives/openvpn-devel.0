@@ -4,37 +4,37 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9729BC43458
-	for <openvpn-devel@archiver.kernel.org>; Thu,  2 Jul 2026 11:53:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id BC68CC43327
+	for <openvpn-devel@archiver.kernel.org>; Thu,  2 Jul 2026 11:53:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=NKnTRjUp9nmZDUjoVExQebeck3sJQXME4WWZ12a7x+Y=; b=jxo9+6vWSAq0IKniVbdB6JbmbM
-	GTXg274AT1wlG9XD9UxFQr2uLGweeeT7WoLd9r0yKGU4OCgGYYjci6YlQAwv4PpPU6bDJZ+4QAHSA
-	fcEjveHbUR6X4Z/xLW9FavN1NDGEd07mII0ktTVtWbth8GEsk5vZKjg8dMGlYN+VtH0s=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=6utUc6mLIbCaW82/X5/VH9qLD085ippgo+bKfuK8CMk=; b=OZU7ToAzgDOC3v8PYaPv2L6Sc1
+	mkZl+JpS7EkOPblZBOnoQbmovx51wYbtIL1PlRDyMdWNXT42fnngv+AZZIWf0TNSAQbB/lPrLivya
+	u2oZZ1lBonbuKJszJ6W8Ktd0qgY3qlHQ/zsrromC8LXHw+xggKX+JfMloh2AuJX/mS6k=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wfFz8-00008j-Vp;
-	Thu, 02 Jul 2026 11:53:39 +0000
+	id 1wfFzA-0005ac-Va;
+	Thu, 02 Jul 2026 11:53:40 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <ralf@mandelbit.com>) id 1wfFz7-00008J-NE
+ (envelope-from <ralf@mandelbit.com>) id 1wfFz6-0005a9-Py
  for openvpn-devel@lists.sourceforge.net;
- Thu, 02 Jul 2026 11:53:38 +0000
+ Thu, 02 Jul 2026 11:53:36 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
  In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=as/bVIBWU0CDkor9k5JTEI3Q9zOtkGjeBHz21GZqZBY=; b=hiYA5vTz34VOxMbhFJpOyl0Ibs
- ftU4a41XH7vOyZYIbMZLlTtnyTBE39AImS0TPgSZm207W/1hs13QOiN3RkUuNz37tEIDfuJhJE9Ej
- jMO/x7WOkw9HySVUHpxWYxk36OxGdVkqvTYh8BulaHn2qg6vyFJGGNBL5GpgEydmMq/c=;
+ bh=xzq4l84BNWvqqfDvi0egvAEZVwydU6Mab9PEzREbc/4=; b=j7Si5/zlbIlhKLogGsFqe+3A6J
+ GI+1c4AWnxZQnLIqrvVKVG+CfyF5/ASe+5wQCqxEMNV9GX6e93eclXXW5zeMsW2H9vkbIFLjo5wTS
+ yTji8SJ2stxN5yrqMG171qXmRjVsu3GpqY9Tj5Kcn3omKgmkdYY4q4P3K3EKe8+zrDpw=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -42,48 +42,48 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=as/bVIBWU0CDkor9k5JTEI3Q9zOtkGjeBHz21GZqZBY=; b=QGow85iy8QTA3OA0yBnoxtKzHV
- N+gslWFzke6X1tolhe+9eJ9jRDuYfozJ66aMLF8BAsK8dhGBVvYg+Q+pyXkfDjf2jVO1jctbRl4R3
- sIccEuPmACBVFR8xhmK5EiMBpbwmbo9zCkw/2lIruyoNz1PNdNf/5Zug0MRHg3twP49s=;
-Received: from mout-b-105.mailbox.org ([195.10.208.50])
+ bh=xzq4l84BNWvqqfDvi0egvAEZVwydU6Mab9PEzREbc/4=; b=RoumQDKmryvd4jZN2hnGBfjfSu
+ J+xRYNeyTSGKgKxvH4iWz3A1qsC+7y22cteHhZwZfDDudpa2eywNY1+4RoyQxVz9f44BvcxfCcZwc
+ Nb3ymyXMcj+d0Pqi8pyc9SjHq5xf/QE1rvU0TEZuzNI04Bnc1i1LiqfA3Qs60O+rrKCE=;
+Received: from mout-b-202.mailbox.org ([195.10.208.62])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wfFz5-0004Kk-Kp for openvpn-devel@lists.sourceforge.net;
- Thu, 02 Jul 2026 11:53:37 +0000
+ id 1wfFz4-0004Ka-5S for openvpn-devel@lists.sourceforge.net;
+ Thu, 02 Jul 2026 11:53:36 +0000
 Received: from smtp2.mailbox.org (smtp2.mailbox.org
  [IPv6:2001:67c:2050:b231:465::2])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
  (No client certificate requested)
- by mout-b-105.mailbox.org (Postfix) with ESMTPS id 4grZyq2nrkz9yTm;
- Thu,  2 Jul 2026 13:53:23 +0200 (CEST)
+ by mout-b-202.mailbox.org (Postfix) with ESMTPS id 4grZyn5xVbzDs8p;
+ Thu,  2 Jul 2026 13:53:21 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
- s=MBO0001; t=1782993203;
+ s=MBO0001; t=1782993201;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=as/bVIBWU0CDkor9k5JTEI3Q9zOtkGjeBHz21GZqZBY=;
- b=npBh7qnRdj3dNXsPIaAfH9zqn502KgOP6hqITElxm1PeYJ19Ksmk2E00M6fIu2pWVIzIgC
- zQ9oiRUimOgWJlmjq3A90nLQ3wJVuYbBnJtWQRt9vPGVm7s2B75tc0HhgzC3WFB3G4RTkO
- gR8S4ftqma/q6cYcMDJp63uhVeobG/DSjmVxvnoR1HJ6lDyQecv5ic01KA2J78b1Rk1pqI
- 6n7CcI6kGo68wt8T573pHEBpMdfVeGRYIAVO4w7vg3tc0nFZopo+fk2eHeNeSS3SuTPqsZ
- fjc2RGOxyAl9Crit4NMU17ClzBuzDo6GxkjsX3Aw5BNezYvG6GsR5WAIWxV7Bg==
+ bh=xzq4l84BNWvqqfDvi0egvAEZVwydU6Mab9PEzREbc/4=;
+ b=nsov0TQVSy91vDr9bOVm0abilowTfwxdrzs08bNYS1Z2RJo8gJ+qHzBKr+4WO/t54INb7/
+ CZZLo+tcMzK5hVLmyydZcnhJdwRFpWet/M8tU3Y1fCpE4/dcDo2Mf3HBJfRZaaSCHE+z0E
+ MShHXhtfMU1TGSgxXLpDa05yaJ/JNieUJsociCTeqQyYPVUGZlSgPkXxrT8iP47g2s5n/F
+ Z6sUt2gigTT4LuQFeVqK8+0KumUc8cJ6w23gtWwL9vFHOGkZ3qa2V+gL87RkEBdEaOeiFt
+ A5xQIQlyrM74enAvaFm1KJxpHimBEoADV2sdXv8+dsa77FIRQnplNAYsmfBVqw==
 Authentication-Results: outgoing_mbo_mout; dkim=none;
  spf=pass (outgoing_mbo_mout: domain of ralf@mandelbit.com designates
  2001:67c:2050:b231:465::2 as permitted sender)
  smtp.mailfrom=ralf@mandelbit.com
 From: Ralf Lici <ralf@mandelbit.com>
 To: openvpn-devel@lists.sourceforge.net
-Date: Thu,  2 Jul 2026 13:52:26 +0200
-Message-ID: <2cc52c1ed08c310a554f800f4bf1bf0b3d78712f.1782986577.git.ralf@mandelbit.com>
+Date: Thu,  2 Jul 2026 13:52:25 +0200
+Message-ID: <89168cc93435b0d954e136a9bea55460813fd6a4.1782986577.git.ralf@mandelbit.com>
 In-Reply-To: <cover.1782986577.git.ralf@mandelbit.com>
 References: <cover.1782986577.git.ralf@mandelbit.com>
 MIME-Version: 1.0
-X-Rspamd-Queue-Id: 4grZyq2nrkz9yTm
-X-Headers-End: 1wfFz5-0004Kk-Kp
-Subject: [Openvpn-devel] [RFC ovpn net-next v2 11/14] ovpn: handle epoch
- AEAD packet format
+X-Rspamd-Queue-Id: 4grZyn5xVbzDs8p
+X-Headers-End: 1wfFz4-0004Ka-5S
+Subject: [Openvpn-devel] [RFC ovpn net-next v2 10/14] ovpn: add epoch key
+ slot state
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -99,562 +99,703 @@ Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-Teach the AEAD path to build and parse the epoch packet layout. Epoch
-packets carry the authentication tag at the tail and use the epoch-aware
-packet ID encoding.
+Epoch keys do not import concrete AEAD keys for direct packet
+processing. Userspace provides per-direction PRKs, and the kernel
+derives the concrete AEAD key context and implicit IV for each epoch.
 
-Direct packets keep the existing layout. Epoch keys are still not
-accepted through netlink, and key promotion is added separately.
+Add the slot state needed to keep TX and RX epoch derivation separate,
+track the current encrypt/decrypt key contexts, and prederive future key
+rings for both directions. The future rings let the data path advance to
+a new epoch without deriving keys in the fast path.
+
+Refill work items hold a key-slot reference, which protects the slot
+object but not module text. Queue them on a module-owned workqueue that
+is drained and destroyed in module_exit, so no refill work can outlive
+the module.
+
+Direct keys continue to create one concrete AEAD context per direction.
+Name that constructor explicitly as the direct-key path so the later
+epoch constructor can share the same key-context boundary without hiding
+which key format is being installed.
+
+Packet layout handling and promotion between epoch keys are added by
+later patches.
 
 Signed-off-by: Ralf Lici <ralf@mandelbit.com>
 ---
-Changes since v1 https://lore.kernel.org/openvpn-devel/6536c6ad31267534d8daefb08b44f904ba7112da.1782919654.git.ralf@mandelbit.com/
-- Size AEAD scatterlists from the actual direct/epoch entry count and
-  mark the end on the last populated entry, avoiding an empty trailing
-  SG entry for the epoch tail-tag layout.
+Changes since v1 https://lore.kernel.org/openvpn-devel/d0034ab911faf74ba4bb658f9f13fa97dd7a274c.1782919654.git.ralf@mandelbit.com/
+- Derive future keys from scratch PRK state and only commit the slot PRK
+  after all future keys are created, keeping failed refills retryable.
+- Zero temporary epoch key material on all key-context creation paths,
+  including failures.
+- Queue refill work on an ovpn-owned workqueue that is drained during
+  module exit, so refill workers cannot outlive module text.
 
- drivers/net/ovpn/crypto.h      |   2 +
- drivers/net/ovpn/crypto_aead.c | 275 +++++++++++++++++++++++----------
- drivers/net/ovpn/crypto_key.c  |   8 +
- drivers/net/ovpn/io.c          |  28 +++-
- 4 files changed, 224 insertions(+), 89 deletions(-)
+ drivers/net/ovpn/crypto.h     |  56 ++++-
+ drivers/net/ovpn/crypto_key.c | 378 ++++++++++++++++++++++++++++++++--
+ drivers/net/ovpn/main.c       |  15 +-
+ drivers/net/ovpn/netlink.c    |   8 +-
+ 4 files changed, 432 insertions(+), 25 deletions(-)
 
 diff --git a/drivers/net/ovpn/crypto.h b/drivers/net/ovpn/crypto.h
-index d7b7e115c339..dba393ee7cde 100644
+index 8e7235f41960..d7b7e115c339 100644
 --- a/drivers/net/ovpn/crypto.h
 +++ b/drivers/net/ovpn/crypto.h
-@@ -81,6 +81,8 @@ struct ovpn_crypto_key_slot {
+@@ -12,7 +12,9 @@
+ 
+ #include <linux/kref.h>
+ #include <linux/rcupdate.h>
++#include <linux/workqueue_types.h>
+ 
++#include "crypto_epoch.h"
+ #include "crypto_limits.h"
+ #include "pktid.h"
+ #include "proto.h"
+@@ -25,12 +27,28 @@ struct ovpn_key_direction {
+ 	size_t nonce_tail_size; /* only needed for GCM modes */
+ };
+ 
+-/* direct-key material for a primary or secondary slot */
++/* PRK material imported from userspace to derive epoch data keys */
++struct ovpn_epoch_prk {
++	const u8 *key;
++	size_t key_size;
++	unsigned int cipher_key_len;
++};
++
++/* key material for a primary or secondary slot */
+ struct ovpn_key_config {
+ 	enum ovpn_cipher_alg cipher_alg;
+ 	u8 key_id;
+-	struct ovpn_key_direction encrypt;
+-	struct ovpn_key_direction decrypt;
++	bool use_epoch_keys;
++	union {
++		struct {
++			struct ovpn_key_direction encrypt;
++			struct ovpn_key_direction decrypt;
++		} direct;
++		struct {
++			struct ovpn_epoch_prk encrypt;
++			struct ovpn_epoch_prk decrypt;
++		} epoch;
++	};
+ };
+ 
+ /* used to pass settings from netlink to the crypto engine */
+@@ -41,6 +59,7 @@ struct ovpn_peer_key_reset {
+ 
+ /* state for one concrete AEAD key direction */
+ struct ovpn_key_ctx {
++	u16 epoch;
+ 	struct crypto_aead *tfm;
+ 	u8 implicit_iv[OVPN_NONCE_SIZE];
+ 	union {
+@@ -58,12 +77,29 @@ struct ovpn_crypto_key_slot {
+ 	u8 key_id;
+ 	enum ovpn_cipher_alg cipher_alg;
+ 	struct ovpn_limit usage_limit;
++	const char *alg_name;
  	bool epoch_format;
  	unsigned int aad_size;
  	unsigned int pktid_size;
-+	unsigned int payload_offset;
-+	unsigned int tail_tag_size;
  
- 	struct ovpn_epoch_key epoch_key_send;
- 	struct ovpn_epoch_key epoch_key_recv;
-diff --git a/drivers/net/ovpn/crypto_aead.c b/drivers/net/ovpn/crypto_aead.c
-index cf0a3d861eb9..a1cf4c1f70c7 100644
---- a/drivers/net/ovpn/crypto_aead.c
-+++ b/drivers/net/ovpn/crypto_aead.c
-@@ -44,17 +44,12 @@ bool ovpn_aead_decrypt_failure_record(struct ovpn_key_ctx *key)
- 				 &key->decrypt_failure_flags);
- }
++	struct ovpn_epoch_key epoch_key_send;
++	struct ovpn_epoch_key epoch_key_recv;
++
+ 	struct ovpn_key_ctx __rcu *encrypt;
+ 	struct ovpn_key_ctx __rcu *decrypt;
++	struct ovpn_key_ctx __rcu *retiring_key;
++
++	struct ovpn_future_keys future_tx_keys;
++	struct ovpn_future_keys future_rx_keys;
++
++	struct work_struct tx_refill;
++	struct work_struct rx_refill;
++
++	/* protects encrypt and future_tx_keys */
++	spinlock_t tx_lock;
++	/* protects decrypt, retiring_key and future_rx_keys */
++	spinlock_t rx_lock;
++
+ 	struct kref refcount;
+ 	struct rcu_head rcu;
+ };
+@@ -187,10 +223,24 @@ void ovpn_crypto_state_release(struct ovpn_crypto_state *cs);
  
--static int ovpn_aead_encap_overhead(const struct ovpn_key_ctx *key)
--{
--	return OVPN_AEAD_DIRECT_AAD_SIZE + crypto_aead_authsize(key->tfm);
--}
--
- /**
-  * ovpn_aead_crypto_tmp_size - compute the size of a temporary object containing
-  *			       an AEAD request structure with extra space for SG
-  *			       and IV.
-  * @tfm: the AEAD cipher handle
-- * @nfrags: the number of fragments in the skb
-+ * @sg_nents: the number of scatterlist entries
-  *
-  * This function calculates the size of a contiguous memory block that includes
-  * the initialization vector (IV), the AEAD request, and an array of scatterlist
-@@ -66,7 +61,7 @@ static int ovpn_aead_encap_overhead(const struct ovpn_key_ctx *key)
-  * Return: the size of the temporary memory that needs to be allocated
+ void ovpn_crypto_key_slots_swap(struct ovpn_crypto_state *cs);
+ 
++int ovpn_crypto_workqueue_init(void);
++
++void ovpn_crypto_workqueue_destroy(void);
++
+ int ovpn_crypto_config_get(struct ovpn_crypto_state *cs,
+ 			   enum ovpn_key_slot slot,
+ 			   struct ovpn_key_config *keyconf);
+ 
+ bool ovpn_crypto_kill_key(struct ovpn_crypto_state *cs, u8 key_id);
+ 
++void ovpn_schedule_refill(struct ovpn_crypto_key_slot *ks, bool encrypt);
++
++struct ovpn_key_ctx *
++ovpn_key_ctx_create_direct(bool encrypt, const char *alg_name,
++			   const struct ovpn_key_direction *dir);
++
++struct ovpn_key_ctx *
++ovpn_key_ctx_create_epoch(bool encrypt, const char *alg_name,
++			  struct ovpn_epoch_key *epoch_key);
++
+ #endif /* _NET_OVPN_OVPNCRYPTO_H_ */
+diff --git a/drivers/net/ovpn/crypto_key.c b/drivers/net/ovpn/crypto_key.c
+index 8ac13a3485fe..8626c4e2db60 100644
+--- a/drivers/net/ovpn/crypto_key.c
++++ b/drivers/net/ovpn/crypto_key.c
+@@ -8,15 +8,35 @@
   */
- static unsigned int ovpn_aead_crypto_tmp_size(struct crypto_aead *tfm,
--					      const unsigned int nfrags)
-+					      const unsigned int sg_nents)
+ 
+ #include <crypto/aead.h>
++#include <crypto/hash.h>
++#include <linux/workqueue.h>
+ 
+ #include "ovpnpriv.h"
+ #include "crypto.h"
++#include "crypto_epoch.h"
+ #include "pktid.h"
+ #include "proto.h"
+ 
+ #define ALG_NAME_AES		"gcm(aes)"
+ #define ALG_NAME_CHACHAPOLY	"rfc7539(chacha20,poly1305)"
+ 
++static struct workqueue_struct *ovpn_wq;
++
++int ovpn_crypto_workqueue_init(void)
++{
++	ovpn_wq = alloc_workqueue("ovpn", 0, 0);
++	if (!ovpn_wq)
++		return -ENOMEM;
++
++	return 0;
++}
++
++void ovpn_crypto_workqueue_destroy(void)
++{
++	destroy_workqueue(ovpn_wq);
++	ovpn_wq = NULL;
++}
++
+ /* initialize a struct crypto_aead object */
+ static struct crypto_aead *ovpn_aead_init(const char *title,
+ 					  const char *alg_name,
+@@ -100,11 +120,11 @@ void ovpn_key_ctx_release(struct kref *kref)
+ 
+ static struct ovpn_key_ctx *
+ ovpn_key_ctx_new(const char *title, const char *alg_name,
+-		 const struct ovpn_key_direction *dir, bool encrypt)
++		 const u8 *cipher_key, unsigned int cipher_key_len,
++		 const u8 *implicit_iv, u16 epoch, bool encrypt)
  {
- 	unsigned int len = OVPN_NONCE_SIZE;
+ 	struct ovpn_limit pktid_limit;
+ 	struct ovpn_key_ctx *key;
+-	size_t tail_offset;
+ 	int ret;
  
-@@ -82,8 +77,8 @@ static unsigned int ovpn_aead_crypto_tmp_size(struct crypto_aead *tfm,
- 	/* round up to the next multiple of the scatterlist alignment */
- 	len = ALIGN(len, __alignof__(struct scatterlist));
+ 	key = kmalloc_obj(*key);
+@@ -112,8 +132,7 @@ ovpn_key_ctx_new(const char *title, const char *alg_name,
+ 		return ERR_PTR(-ENOMEM);
  
--	/* add enough space for nfrags + 2 scatterlist entries */
--	len += array_size(sizeof(struct scatterlist), nfrags + 2);
-+	/* add enough space for the scatterlist entries */
-+	len += array_size(sizeof(struct scatterlist), sg_nents);
- 	return len;
- }
- 
-@@ -150,11 +145,11 @@ static struct scatterlist *ovpn_aead_crypto_req_sg(struct crypto_aead *aead,
- int ovpn_aead_encrypt(struct ovpn_peer *peer, struct ovpn_crypto_key_slot *ks,
- 		      struct sk_buff *skb)
- {
--	unsigned int plaintext_len, tag_size;
-+	unsigned int plaintext_len, payload_sg_len, sg_nents, tag_size;
- 	struct ovpn_key_ctx *key = NULL;
-+	u64 aead_blocks, pktid, seq;
- 	struct aead_request *req;
- 	struct sk_buff *trailer;
--	u64 aead_blocks, pktid;
- 	struct scatterlist *sg;
- 	bool pktid_notify;
- 	int nfrags, ret;
-@@ -166,6 +161,18 @@ int ovpn_aead_encrypt(struct ovpn_peer *peer, struct ovpn_crypto_key_slot *ks,
- 	ovpn_skb_cb(skb)->ks = ks;
- 	plaintext_len = skb->len;
- 
-+	/* direct-key DATA_V2 wire format:
-+	 * 48000001 00000005 7e7046bd 444a7e28 cc6387b1 64a4d6c1 380275a...
-+	 * [ OP32 ] [seq # ] [             auth tag            ] [ payload ... ]
-+	 *          [4-byte
-+	 *          IV head]
-+	 *
-+	 * epoch-key DATA_V2 wire format:
-+	 * 48000001 0001 000000000005 380275a... 7e7046bd 444a7e28 cc6387b1 64a4d6c1
-+	 * [ OP32 ] [ epoch ][  seq #   ] [ payload ... ] [             auth tag            ]
-+	 *          [        8-byte packet ID          ]
-+	 */
-+
- 	ret = ovpn_key_ctx_get(&key, &ks->encrypt);
- 	if (unlikely(ret))
- 		return ret;
-@@ -173,12 +180,19 @@ int ovpn_aead_encrypt(struct ovpn_peer *peer, struct ovpn_crypto_key_slot *ks,
- 
- 	tag_size = crypto_aead_authsize(key->tfm);
- 
--	/* Sample AEAD header format:
--	 * 48000001 00000005 7e7046bd 444a7e28 cc6387b1 64a4d6c1 380275a...
--	 * [ OP32 ] [seq # ] [             auth tag            ] [ payload ... ]
--	 *          [4-byte
--	 *          IV head]
--	 */
-+	ret = ovpn_pktid_xmit_next(&key->pid.xmit, &seq);
-+	if (unlikely(ret < 0))
-+		return ret;
-+	pktid_notify = ret > 0;
-+
-+	aead_blocks = ovpn_aead_limit_blocks(ks->cipher_alg, ks->aad_size,
-+					     plaintext_len);
-+	ret = ovpn_key_usage_xmit(&key->usage, &ks->usage_limit, seq,
-+				  aead_blocks, pktid_notify);
-+	if (unlikely(ret < 0))
-+		return ret;
-+	if (unlikely(ret > 0 && !ks->epoch_format))
-+		ovpn_nl_key_swap_notify(peer, ks->key_id);
- 
- 	/* check that there's enough headroom in the skb for packet
- 	 * encapsulation
-@@ -186,16 +200,22 @@ int ovpn_aead_encrypt(struct ovpn_peer *peer, struct ovpn_crypto_key_slot *ks,
- 	if (unlikely(skb_cow_head(skb, OVPN_HEAD_ROOM)))
- 		return -ENOBUFS;
- 
--	/* get number of skb frags and ensure that packet data is writable */
--	nfrags = skb_cow_data(skb, 0, &trailer);
-+	/* ensure packet data is writable and epoch tag tailroom exists */
-+	nfrags = skb_cow_data(skb, ks->tail_tag_size, &trailer);
- 	if (unlikely(nfrags < 0))
- 		return nfrags;
- 
--	if (unlikely(nfrags + 2 > (MAX_SKB_FRAGS + 2)))
-+	sg_nents = nfrags + 1 + !ks->tail_tag_size;
-+	if (unlikely(sg_nents > MAX_SKB_FRAGS + 2))
- 		return -ENOSPC;
- 
-+	/* epoch packets place the authentication tag after payload */
-+	if (unlikely(ks->tail_tag_size))
-+		pskb_put(skb, trailer, ks->tail_tag_size);
-+	payload_sg_len = plaintext_len + ks->tail_tag_size;
-+
- 	/* allocate temporary memory for iv, sg and req */
--	tmp = kmalloc(ovpn_aead_crypto_tmp_size(key->tfm, nfrags),
-+	tmp = kmalloc(ovpn_aead_crypto_tmp_size(key->tfm, sg_nents),
- 		      GFP_ATOMIC);
- 	if (unlikely(!tmp))
- 		return -ENOMEM;
-@@ -207,49 +227,34 @@ int ovpn_aead_encrypt(struct ovpn_peer *peer, struct ovpn_crypto_key_slot *ks,
- 	sg = ovpn_aead_crypto_req_sg(key->tfm, req);
- 
- 	/* sg table:
--	 * 0: op, wire nonce (AD, len=OVPN_AEAD_DIRECT_AAD_SIZE),
--	 * 1, 2, 3, ..., n: payload,
--	 * n+1: auth_tag (len=tag_size)
-+	 * 0: op, packet ID (AD, len=ks->aad_size),
-+	 * 1, 2, 3, ..., n: payload and epoch auth_tag,
-+	 * n+1: direct auth_tag (len=tag_size)
- 	 */
--	sg_init_table(sg, nfrags + 2);
-+	sg_init_table(sg, sg_nents);
- 
- 	/* build scatterlist to encrypt packet payload */
--	ret = skb_to_sgvec_nomark(skb, sg + 1, 0, skb->len);
-+	ret = skb_to_sgvec_nomark(skb, sg + 1, 0, payload_sg_len);
- 	if (unlikely(ret < 0)) {
- 		netdev_err(peer->ovpn->dev,
- 			   "encrypt: cannot map skb to sg: %d\n", ret);
- 		return ret;
+ 	/* create the concrete AEAD transform first */
+-	key->tfm = ovpn_aead_init(title, alg_name, dir->cipher_key,
+-				  dir->cipher_key_size);
++	key->tfm = ovpn_aead_init(title, alg_name, cipher_key, cipher_key_len);
+ 	if (IS_ERR(key->tfm)) {
+ 		ret = PTR_ERR(key->tfm);
+ 		key->tfm = NULL;
+@@ -122,10 +141,8 @@ ovpn_key_ctx_new(const char *title, const char *alg_name,
  	}
  
--	/* append auth_tag onto scatterlist */
--	__skb_push(skb, tag_size);
--	sg_set_buf(sg + ret + 1, skb->data, tag_size);
--
--	/* obtain packet ID, which is used both as a first
--	 * 4 bytes of nonce and last 4 bytes of associated data.
--	 */
--	ret = ovpn_pktid_xmit_next(&key->pid.xmit, &pktid);
--	if (unlikely(ret < 0))
--		return ret;
--	pktid_notify = ret > 0;
--
--	aead_blocks = ovpn_aead_limit_blocks(ks->cipher_alg, ks->aad_size,
--					     plaintext_len);
--	ret = ovpn_key_usage_xmit(&key->usage, &ks->usage_limit, pktid,
--				  aead_blocks, pktid_notify);
--	if (unlikely(ret < 0))
--		return ret;
--	if (unlikely(ret > 0))
--		ovpn_nl_key_swap_notify(peer, ks->key_id);
-+	if (likely(!ks->tail_tag_size)) {
-+		/* direct packets prepend the tag before payload */
-+		__skb_push(skb, tag_size);
-+		sg_set_buf(sg + ret + 1, skb->data, tag_size);
-+	}
-+	sg_mark_end(sg + ret + !ks->tail_tag_size);
+ 	/* store the implicit IV in a full nonce-sized buffer */
+-	tail_offset = OVPN_NONCE_SIZE - dir->nonce_tail_size;
+-	memset(key->implicit_iv, 0, sizeof(key->implicit_iv));
+-	memcpy(key->implicit_iv + tail_offset, dir->nonce_tail,
+-	       dir->nonce_tail_size);
++	key->epoch = epoch;
++	memcpy(key->implicit_iv, implicit_iv, sizeof(key->implicit_iv));
  
--	/* concat 4 bytes packet id and 8 bytes nonce tail into 12 bytes
--	 * nonce
--	 */
--	pktid = ovpn_pktid_aead_write(0, pktid, key->implicit_iv, iv);
-+	/* create the AEAD IV from packet ID and implicit IV */
-+	pktid = ovpn_pktid_aead_write(key->epoch, seq, key->implicit_iv, iv);
- 
- 	/* make space for packet id and push it to the front */
- 	__skb_push(skb, ks->pktid_size);
--	ovpn_pktid_wire_write(skb->data, false, pktid);
-+	/* packet ID is 64 bits for epoch packets and 32 bits otherwise */
-+	ovpn_pktid_wire_write(skb->data, ks->epoch_format, pktid);
- 
- 	/* add packet op as head of additional data */
- 	op = ovpn_opcode_compose(OVPN_DATA_V2, ks->key_id, peer->tx_id);
-@@ -263,64 +268,163 @@ int ovpn_aead_encrypt(struct ovpn_peer *peer, struct ovpn_crypto_key_slot *ks,
- 	/* setup async crypto operation */
- 	aead_request_set_tfm(req, key->tfm);
- 	aead_request_set_callback(req, 0, ovpn_encrypt_post, skb);
--	aead_request_set_crypt(req, sg, sg,
--			       skb->len - ovpn_aead_encap_overhead(key), iv);
-+	aead_request_set_crypt(req, sg, sg, plaintext_len, iv);
- 	aead_request_set_ad(req, ks->aad_size);
- 
- 	/* encrypt it */
- 	return crypto_aead_encrypt(req);
+ 	ovpn_key_usage_init(&key->usage);
+ 	atomic64_set(&key->decrypt_failures, 0);
+@@ -143,16 +160,289 @@ ovpn_key_ctx_new(const char *title, const char *alg_name,
+ 	return key;
  }
  
-+/**
-+ * ovpn_aead_decrypt_key - get the decrypt key matching a packet epoch
-+ * @ks: key slot containing RX epoch state
-+ * @pkt_epoch: epoch decoded from the packet ID
-+ *
-+ * Direct-key packets must carry epoch 0. Epoch RX first tries the current key,
-+ * then the retiring key for reordered packets, and finally the future ring. A
-+ * future key is returned only for authentication; promotion happens after the
-+ * packet has authenticated.
-+ *
-+ * Return: referenced key context or an error pointer.
-+ */
-+static struct ovpn_key_ctx *
-+ovpn_aead_decrypt_key(struct ovpn_crypto_key_slot *ks, u16 pkt_epoch)
++struct ovpn_key_ctx *
++ovpn_key_ctx_create_direct(bool encrypt, const char *alg_name,
++			   const struct ovpn_key_direction *dir)
 +{
-+	u16 current_epoch, epoch_diff, index;
++	u8 implicit_iv[OVPN_NONCE_SIZE];
 +	struct ovpn_key_ctx *key;
++	size_t tail_offset;
 +
-+	if (likely(!ks->epoch_format)) {
-+		if (unlikely(pkt_epoch))
-+			return ERR_PTR(-EINVAL);
-+		if (unlikely(ovpn_key_ctx_get(&key, &ks->decrypt)))
-+			return ERR_PTR(-ENOKEY);
-+		return key;
-+	}
++	tail_offset = OVPN_NONCE_SIZE - dir->nonce_tail_size;
++	memset(implicit_iv, 0, sizeof(implicit_iv));
++	memcpy(implicit_iv + tail_offset, dir->nonce_tail,
++	       dir->nonce_tail_size);
 +
-+	spin_lock_bh(&ks->rx_lock);
-+
-+	key = rcu_dereference_protected(ks->decrypt,
-+					lockdep_is_held(&ks->rx_lock));
-+	if (unlikely(!key)) {
-+		key = ERR_PTR(-ENOKEY);
-+		goto out;
-+	}
-+	/* current key is the expected rx path */
-+	if (likely(key->epoch == pkt_epoch)) {
-+		if (kref_get_unless_zero(&key->refcount))
-+			goto out;
-+		key = ERR_PTR(-ENOKEY);
-+		goto out;
-+	}
-+	current_epoch = key->epoch;
-+
-+	key = rcu_dereference_protected(ks->retiring_key,
-+					lockdep_is_held(&ks->rx_lock));
-+	/* retiring key accepts late packets from the previous epoch */
-+	if (unlikely(key && key->epoch == pkt_epoch)) {
-+		if (kref_get_unless_zero(&key->refcount))
-+			goto out;
-+		key = ERR_PTR(-ENOKEY);
-+		goto out;
-+	}
-+
-+	if (unlikely(pkt_epoch < current_epoch)) {
-+		key = ERR_PTR(-ERANGE);
-+		goto out;
-+	}
-+	/* stay away from the epoch range where future refill would wrap */
-+	if (unlikely(pkt_epoch >
-+		     OVPN_MAX_EPOCH - OVPN_EPOCH_FUTURE_KEYS_COUNT - 1)) {
-+		key = ERR_PTR(-ERANGE);
-+		goto out;
-+	}
-+
-+	epoch_diff = pkt_epoch - current_epoch;
-+	if (unlikely(!epoch_diff ||
-+		     epoch_diff > OVPN_EPOCH_FUTURE_KEYS_COUNT)) {
-+		key = ERR_PTR(-ERANGE);
-+		goto out;
-+	}
-+
-+	/* future keys are consecutive starting at tail/current_epoch + 1 */
-+	index = (ks->future_rx_keys.tail + epoch_diff - 1) %
-+		OVPN_EPOCH_FUTURE_KEYS_COUNT;
-+	key = rcu_dereference_protected(ks->future_rx_keys.keys[index],
-+					lockdep_is_held(&ks->rx_lock));
-+	if (unlikely(!key || key->epoch != pkt_epoch ||
-+		     !kref_get_unless_zero(&key->refcount))) {
-+		key = ERR_PTR(-ENOKEY);
-+		goto out;
-+	}
-+
-+out:
-+	spin_unlock_bh(&ks->rx_lock);
++	key = ovpn_key_ctx_new(encrypt ? "encrypt" : "decrypt", alg_name,
++			       dir->cipher_key, dir->cipher_key_size,
++			       implicit_iv, 0, encrypt);
++	memzero_explicit(implicit_iv, sizeof(implicit_iv));
 +
 +	return key;
 +}
 +
- int ovpn_aead_decrypt(struct ovpn_peer *peer, struct ovpn_crypto_key_slot *ks,
- 		      struct sk_buff *skb)
- {
--	unsigned int payload_offset, tag_size;
--	struct ovpn_key_ctx *key = NULL;
-+	unsigned int payload_offset, payload_sg_len, sg_nents, tag_size;
- 	int ret, payload_len, nfrags;
++struct ovpn_key_ctx *
++ovpn_key_ctx_create_epoch(bool encrypt, const char *alg_name,
++			  struct ovpn_epoch_key *epoch_key)
++{
++	u8 cipher_key[OVPN_EPOCH_PRK_SIZE], implicit_iv[OVPN_NONCE_SIZE];
 +	struct ovpn_key_ctx *key;
- 	struct aead_request *req;
- 	struct sk_buff *trailer;
- 	struct scatterlist *sg;
-+	u16 pkt_epoch;
-+	u64 pkt_seq;
- 	void *tmp;
- 	u8 *iv;
- 
-+	payload_offset = ks->payload_offset;
-+	ovpn_skb_cb(skb)->payload_offset = payload_offset;
- 	ovpn_skb_cb(skb)->peer = peer;
- 	ovpn_skb_cb(skb)->ks = ks;
- 
--	ret = ovpn_key_ctx_get(&key, &ks->decrypt);
--	if (unlikely(ret))
--		return ret;
--	ovpn_skb_cb(skb)->key = key;
--
--	tag_size = crypto_aead_authsize(key->tfm);
--	payload_offset = ovpn_aead_direct_payload_offset(tag_size);
-+	if (unlikely(skb->len < payload_offset))
-+		return -EINVAL;
- 	payload_len = skb->len - payload_offset;
--
--	ovpn_skb_cb(skb)->payload_offset = payload_offset;
-+	if (unlikely(ks->tail_tag_size)) {
-+		if (unlikely(payload_len < ks->tail_tag_size))
-+			return -EINVAL;
-+		payload_len -= ks->tail_tag_size;
-+	}
- 
- 	/* sanity check on packet size, payload size must be >= 0 */
- 	if (unlikely(payload_len < 0))
- 		return -EINVAL;
- 
-+	/* make additional data contiguous for sg[0] */
-+	if (unlikely(!pskb_may_pull(skb, payload_offset)))
-+		return -ENODATA;
++	int ret;
 +
-+	/* epoch packet ID includes both epoch and per-epoch counter */
-+	pkt_seq = ovpn_pktid_read(skb->data + OVPN_OPCODE_SIZE,
-+				  ks->epoch_format, &pkt_epoch);
-+	key = ovpn_aead_decrypt_key(ks, pkt_epoch);
-+	if (IS_ERR(key))
-+		return PTR_ERR(key);
-+	ovpn_skb_cb(skb)->key = key;
-+
- 	if (unlikely(ovpn_aead_decrypt_failure_exceeded(key)))
- 		return -EKEYREJECTED;
- 
--	/* Prepare the skb data buffer to be accessed up until the auth tag.
--	 * This is required because this area is directly mapped into the sg
--	 * list.
--	 */
--	if (unlikely(!pskb_may_pull(skb, payload_offset)))
--		return -ENODATA;
-+	tag_size = crypto_aead_authsize(key->tfm);
-+	/* epoch tag is at the tail and remains in the crypto input */
-+	payload_sg_len = payload_len + ks->tail_tag_size;
- 
- 	/* get number of skb frags and ensure that packet data is writable */
- 	nfrags = skb_cow_data(skb, 0, &trailer);
- 	if (unlikely(nfrags < 0))
- 		return nfrags;
- 
--	if (unlikely(nfrags + 2 > (MAX_SKB_FRAGS + 2)))
-+	sg_nents = nfrags + 1 + !ks->tail_tag_size;
-+	if (unlikely(sg_nents > MAX_SKB_FRAGS + 2))
- 		return -ENOSPC;
- 
- 	/* allocate temporary memory for iv, sg and req */
--	tmp = kmalloc(ovpn_aead_crypto_tmp_size(key->tfm, nfrags),
-+	tmp = kmalloc(ovpn_aead_crypto_tmp_size(key->tfm, sg_nents),
- 		      GFP_ATOMIC);
- 	if (unlikely(!tmp))
- 		return -ENOMEM;
-@@ -332,31 +436,34 @@ int ovpn_aead_decrypt(struct ovpn_peer *peer, struct ovpn_crypto_key_slot *ks,
- 	sg = ovpn_aead_crypto_req_sg(key->tfm, req);
- 
- 	/* sg table:
--	 * 0: op, wire nonce (AD, len=OVPN_AEAD_DIRECT_AAD_SIZE),
--	 * 1, 2, 3, ..., n: payload,
--	 * n+1: auth_tag (len=tag_size)
-+	 * 0: op, packet ID (AD, len=ks->aad_size),
-+	 * 1, 2, 3, ..., n: payload and epoch auth_tag,
-+	 * n+1: direct auth_tag (len=tag_size)
- 	 */
--	sg_init_table(sg, nfrags + 2);
-+	sg_init_table(sg, sg_nents);
- 
- 	/* packet op is head of additional data */
- 	sg_set_buf(sg, skb->data, ks->aad_size);
- 
- 	/* build scatterlist to decrypt packet payload */
--	ret = skb_to_sgvec_nomark(skb, sg + 1, payload_offset, payload_len);
-+	ret = skb_to_sgvec_nomark(skb, sg + 1, payload_offset,
-+				  payload_sg_len);
- 	if (unlikely(ret < 0)) {
- 		netdev_err(peer->ovpn->dev,
- 			   "decrypt: cannot map skb to sg: %d\n", ret);
- 		return ret;
- 	}
- 
--	/* append auth_tag onto scatterlist */
--	sg_set_buf(sg + ret + 1, skb->data + OVPN_AEAD_DIRECT_TAG_OFFSET,
--		   tag_size);
-+	if (likely(!ks->tail_tag_size)) {
-+		/* direct tag is prepended; epoch tag is in payload sg */
-+		sg_set_buf(sg + ret + 1,
-+			   skb->data + OVPN_AEAD_DIRECT_TAG_OFFSET,
-+			   tag_size);
++	ret = ovpn_epoch_derive_key(epoch_key, cipher_key, implicit_iv);
++	if (ret) {
++		key = ERR_PTR(ret);
++		goto out;
 +	}
-+	sg_mark_end(sg + ret + !ks->tail_tag_size);
++
++	key = ovpn_key_ctx_new(encrypt ? "encrypt" : "decrypt", alg_name,
++			       cipher_key, epoch_key->cipher_key_len,
++			       implicit_iv, epoch_key->epoch, encrypt);
++
++out:
++	memzero_explicit(cipher_key, sizeof(cipher_key));
++	memzero_explicit(implicit_iv, sizeof(implicit_iv));
++
++	return key;
++}
++
++static int
++ovpn_epoch_init_future_keys(bool encrypt, const char *alg_name,
++			    struct ovpn_epoch_key *epoch_key,
++			    struct ovpn_future_keys *future_keys)
++{
++	struct ovpn_key_ctx *key;
++	int ret;
++	u16 i;
++
++	future_keys->head = 0;
++	future_keys->tail = 0;
++	future_keys->full = false;
++
++	/* each generated key advances the PRK and stores the next epoch */
++	for (i = 0; i < OVPN_EPOCH_FUTURE_KEYS_COUNT; i++) {
++		ret = ovpn_epoch_iterate(epoch_key);
++		if (ret)
++			goto err;
++
++		key = ovpn_key_ctx_create_epoch(encrypt, alg_name, epoch_key);
++		if (IS_ERR(key)) {
++			ret = PTR_ERR(key);
++			goto err;
++		}
++
++		RCU_INIT_POINTER(future_keys->keys[future_keys->head], key);
++		future_keys->head = (future_keys->head + 1) %
++				    OVPN_EPOCH_FUTURE_KEYS_COUNT;
++	}
++
++	future_keys->full = true;
++	return 0;
++
++err:
++	for (i = 0; i < OVPN_EPOCH_FUTURE_KEYS_COUNT; i++) {
++		ovpn_key_ctx_put(rcu_access_pointer(future_keys->keys[i]));
++		RCU_INIT_POINTER(future_keys->keys[i], NULL);
++	}
++	future_keys->head = 0;
++	future_keys->tail = 0;
++	future_keys->full = false;
++
++	return ret;
++}
++
++void ovpn_schedule_refill(struct ovpn_crypto_key_slot *ks, bool encrypt)
++{
++	struct work_struct *work = encrypt ? &ks->tx_refill : &ks->rx_refill;
++
++	if (!ovpn_crypto_key_slot_hold(ks))
++		return;
++
++	if (!queue_work(ovpn_wq, work))
++		ovpn_crypto_key_slot_put(ks);
++}
++
++static void ovpn_refill_future_buffer(struct ovpn_crypto_key_slot *ks,
++				      bool encrypt)
++{
++	struct ovpn_key_ctx *new_futures[OVPN_EPOCH_FUTURE_KEYS_COUNT];
++	struct ovpn_key_ctx *old_futures[OVPN_EPOCH_FUTURE_KEYS_COUNT];
++	u16 replaced = 0, created = 0, free_slots, i;
++	const struct ovpn_epoch_key *source_key;
++	struct ovpn_epoch_key scratch_key = {};
++	size_t prk_size = OVPN_EPOCH_PRK_SIZE;
++	struct ovpn_future_keys *future_keys;
++	struct ovpn_epoch_key *epoch_key;
++	struct ovpn_key_ctx __rcu **slot;
++	u8 next_prk[OVPN_EPOCH_PRK_SIZE];
++	/* selected tx/rx future-key ring lock */
++	spinlock_t *lock;
++	bool full;
++	int ret;
++
++	/* select the tx or rx future-key state */
++	if (encrypt) {
++		future_keys = &ks->future_tx_keys;
++		epoch_key = &ks->epoch_key_send;
++		lock = &ks->tx_lock;
++	} else {
++		future_keys = &ks->future_rx_keys;
++		epoch_key = &ks->epoch_key_recv;
++		lock = &ks->rx_lock;
++	}
++
++	/* calculate how many keys are needed to refill the ring */
++	spin_lock_bh(lock);
++	free_slots = OVPN_EPOCH_FUTURE_KEYS_COUNT -
++		     ovpn_epoch_future_keys_count(future_keys);
++	spin_unlock_bh(lock);
++
++	if (!free_slots)
++		return;
++
++	/* derive new keys without holding the ring lock */
++	scratch_key.cipher_key_len = epoch_key->cipher_key_len;
++	for (created = 0; created < free_slots; created++) {
++		source_key = scratch_key.shash ? &scratch_key : epoch_key;
++		ret = ovpn_epoch_derive_next_prk(source_key, next_prk);
++		if (ret)
++			goto err;
++
++		if (!scratch_key.shash) {
++			scratch_key.shash = ovpn_epoch_init_key(next_prk,
++								prk_size);
++			if (IS_ERR(scratch_key.shash)) {
++				ret = PTR_ERR(scratch_key.shash);
++				scratch_key.shash = NULL;
++				goto err;
++			}
++			scratch_key.epoch = epoch_key->epoch + 1;
++		} else {
++			ret = ovpn_epoch_set_prk(&scratch_key, next_prk,
++						 scratch_key.epoch + 1);
++			if (ret)
++				goto err;
++		}
++
++		new_futures[created] =
++			ovpn_key_ctx_create_epoch(encrypt, ks->alg_name,
++						  &scratch_key);
++		if (IS_ERR(new_futures[created])) {
++			ret = PTR_ERR(new_futures[created]);
++			goto err;
++		}
++	}
++
++	ret = ovpn_epoch_set_prk(epoch_key, next_prk, scratch_key.epoch);
++	if (ret)
++		goto err;
++
++	/* insert generated keys under the selected ring lock */
++	spin_lock_bh(lock);
++	for (replaced = 0; replaced < created; replaced++) {
++		if (WARN_ON_ONCE(future_keys->full))
++			break;
++
++		/* the ring remains monotonic and consecutive */
++		slot = &future_keys->keys[future_keys->head];
++		old_futures[replaced] =
++			rcu_dereference_protected(*slot, lockdep_is_held(lock));
++		rcu_assign_pointer(*slot, new_futures[replaced]);
++		future_keys->head = (future_keys->head + 1) %
++				    OVPN_EPOCH_FUTURE_KEYS_COUNT;
++		if (future_keys->head == future_keys->tail)
++			future_keys->full = true;
++	}
++	full = future_keys->full;
++	spin_unlock_bh(lock);
++
++	for (i = 0; i < replaced; i++)
++		ovpn_key_ctx_put(old_futures[i]);
++	for (i = replaced; i < created; i++)
++		ovpn_key_ctx_put(new_futures[i]);
++
++	crypto_free_shash(scratch_key.shash);
++	memzero_explicit(next_prk, sizeof(next_prk));
++
++	/* keep refilling until the ring is full */
++	if (!full)
++		ovpn_schedule_refill(ks, encrypt);
++
++	return;
++
++err:
++	for (i = 0; i < created; i++)
++		ovpn_key_ctx_put(new_futures[i]);
++	if (scratch_key.shash)
++		crypto_free_shash(scratch_key.shash);
++	memzero_explicit(next_prk, sizeof(next_prk));
++}
++
++static void ovpn_refill_future_buffer_tx(struct work_struct *work)
++{
++	struct ovpn_crypto_key_slot *ks;
++
++	ks = container_of(work, struct ovpn_crypto_key_slot, tx_refill);
++	ovpn_refill_future_buffer(ks, true);
++	ovpn_crypto_key_slot_put(ks);
++}
++
++static void ovpn_refill_future_buffer_rx(struct work_struct *work)
++{
++	struct ovpn_crypto_key_slot *ks;
++
++	ks = container_of(work, struct ovpn_crypto_key_slot, rx_refill);
++	ovpn_refill_future_buffer(ks, false);
++	ovpn_crypto_key_slot_put(ks);
++}
++
+ void ovpn_crypto_key_slot_destroy(struct ovpn_crypto_key_slot *ks)
+ {
++	struct ovpn_key_ctx *future;
++	u8 i;
++
+ 	if (!ks)
+ 		return;
  
--	/* copy nonce into IV buffer */
--	memcpy(iv, ovpn_aead_direct_wire_nonce(skb), OVPN_NONCE_WIRE_SIZE);
--	memcpy(iv + OVPN_NONCE_WIRE_SIZE,
--	       key->implicit_iv + OVPN_NONCE_WIRE_SIZE, OVPN_NONCE_TAIL_SIZE);
-+	/* rebuild the AEAD IV from packet ID and implicit IV */
-+	ovpn_pktid_aead_write(pkt_epoch, pkt_seq, key->implicit_iv, iv);
+ 	ovpn_key_ctx_put(rcu_access_pointer(ks->encrypt));
+ 	ovpn_key_ctx_put(rcu_access_pointer(ks->decrypt));
++
++	if (ks->epoch_format) {
++		if (ks->epoch_key_send.shash)
++			crypto_free_shash(ks->epoch_key_send.shash);
++		if (ks->epoch_key_recv.shash)
++			crypto_free_shash(ks->epoch_key_recv.shash);
++		ovpn_key_ctx_put(rcu_access_pointer(ks->retiring_key));
++		for (i = 0; i < OVPN_EPOCH_FUTURE_KEYS_COUNT; i++) {
++			future = rcu_access_pointer(ks->future_tx_keys.keys[i]);
++			ovpn_key_ctx_put(future);
++			future = rcu_access_pointer(ks->future_rx_keys.keys[i]);
++			ovpn_key_ctx_put(future);
++		}
++	}
++
+ 	kfree(ks);
+ }
  
- 	/* setup async crypto operation */
- 	aead_request_set_tfm(req, key->tfm);
-diff --git a/drivers/net/ovpn/crypto_key.c b/drivers/net/ovpn/crypto_key.c
-index 8626c4e2db60..a501b7e54962 100644
---- a/drivers/net/ovpn/crypto_key.c
-+++ b/drivers/net/ovpn/crypto_key.c
-@@ -447,6 +447,7 @@ struct ovpn_crypto_key_slot *
++static int ovpn_epoch_key_init(struct ovpn_epoch_key *epoch_key,
++			       const struct ovpn_epoch_prk *prk)
++{
++	int ret;
++
++	epoch_key->shash = ovpn_epoch_init_key(prk->key, prk->key_size);
++	if (IS_ERR(epoch_key->shash)) {
++		ret = PTR_ERR(epoch_key->shash);
++		epoch_key->shash = NULL;
++		return ret;
++	}
++
++	/* epoch 0 is reserved for direct keys, so epoch keys start at 1 */
++	epoch_key->epoch = 1;
++	epoch_key->cipher_key_len = prk->cipher_key_len;
++
++	return 0;
++}
++
+ struct ovpn_crypto_key_slot *
  ovpn_crypto_key_slot_new(const struct ovpn_key_config *kc)
  {
- 	struct ovpn_crypto_key_slot *ks = NULL;
-+	unsigned int direct_payload_offset;
- 	struct ovpn_key_ctx *key;
- 	const char *alg_name;
- 	int ret;
-@@ -480,6 +481,9 @@ ovpn_crypto_key_slot_new(const struct ovpn_key_config *kc)
+@@ -173,12 +463,20 @@ ovpn_crypto_key_slot_new(const struct ovpn_key_config *kc)
+ 		return ERR_PTR(-EOPNOTSUPP);
+ 	}
+ 
+-	if (kc->encrypt.nonce_tail_size != OVPN_NONCE_TAIL_SIZE ||
+-	    kc->decrypt.nonce_tail_size != OVPN_NONCE_TAIL_SIZE)
++	if (!kc->use_epoch_keys) {
++		if (kc->direct.encrypt.nonce_tail_size !=
++		    OVPN_NONCE_TAIL_SIZE ||
++		    kc->direct.decrypt.nonce_tail_size !=
++		    OVPN_NONCE_TAIL_SIZE)
++			return ERR_PTR(-EINVAL);
++	} else if (!kc->epoch.encrypt.cipher_key_len ||
++		   kc->epoch.encrypt.cipher_key_len > OVPN_EPOCH_PRK_SIZE ||
++		   kc->epoch.decrypt.cipher_key_len !=
++		   kc->epoch.encrypt.cipher_key_len) {
+ 		return ERR_PTR(-EINVAL);
+-
++	}
+ 	/* build the key slot */
+-	ks = kmalloc_obj(*ks);
++	ks = kzalloc(sizeof(*ks), GFP_KERNEL);
  	if (!ks)
  		return ERR_PTR(-ENOMEM);
  
-+	direct_payload_offset =
-+		ovpn_aead_direct_payload_offset(OVPN_AEAD_TAG_SIZE);
-+
- 	ks->encrypt = NULL;
- 	ks->decrypt = NULL;
+@@ -187,25 +485,71 @@ ovpn_crypto_key_slot_new(const struct ovpn_key_config *kc)
  	kref_init(&ks->refcount);
-@@ -491,6 +495,10 @@ ovpn_crypto_key_slot_new(const struct ovpn_key_config *kc)
- 					     OVPN_AEAD_DIRECT_AAD_SIZE;
- 	ks->pktid_size = kc->use_epoch_keys ? OVPN_EPOCH_NONCE_WIRE_SIZE :
- 					       OVPN_NONCE_WIRE_SIZE;
-+	ks->payload_offset = kc->use_epoch_keys ?
-+			     OVPN_AEAD_EPOCH_AAD_SIZE :
-+			     direct_payload_offset;
-+	ks->tail_tag_size = kc->use_epoch_keys ? OVPN_AEAD_TAG_SIZE : 0;
+ 	ks->key_id = kc->key_id;
+ 	ks->cipher_alg = kc->cipher_alg;
+-	ks->epoch_format = false;
+-	ks->aad_size = OVPN_AEAD_DIRECT_AAD_SIZE;
+-	ks->pktid_size = OVPN_NONCE_WIRE_SIZE;
++	ks->alg_name = alg_name;
++	ks->epoch_format = kc->use_epoch_keys;
++	ks->aad_size = kc->use_epoch_keys ? OVPN_AEAD_EPOCH_AAD_SIZE :
++					     OVPN_AEAD_DIRECT_AAD_SIZE;
++	ks->pktid_size = kc->use_epoch_keys ? OVPN_EPOCH_NONCE_WIRE_SIZE :
++					       OVPN_NONCE_WIRE_SIZE;
  	ovpn_key_usage_limit_init(&ks->usage_limit, kc->cipher_alg);
  
- 	if (kc->use_epoch_keys) {
-diff --git a/drivers/net/ovpn/io.c b/drivers/net/ovpn/io.c
-index f5198d5bf104..925d3798d95d 100644
---- a/drivers/net/ovpn/io.c
-+++ b/drivers/net/ovpn/io.c
-@@ -114,6 +114,7 @@ void ovpn_decrypt_post(void *data, int ret)
- 	struct ovpn_key_ctx *key;
- 	u64 aead_blocks, pktid;
- 	struct ovpn_peer *peer;
-+	int payload_len;
- 	u16 pkt_epoch;
- 	__be16 proto;
- 
-@@ -132,7 +133,8 @@ void ovpn_decrypt_post(void *data, int ret)
- 	kfree(ovpn_skb_cb(skb)->crypto_tmp);
- 
- 	if (unlikely(ret == -EBADMSG)) {
--		if (key && unlikely(ovpn_aead_decrypt_failure_record(key)))
-+		if (key && unlikely(ovpn_aead_decrypt_failure_record(key)) &&
-+		    likely(!ks->epoch_format))
- 			ovpn_nl_key_swap_notify(peer, ks->key_id);
- 		goto drop;
- 	}
-@@ -140,8 +142,8 @@ void ovpn_decrypt_post(void *data, int ret)
- 	if (unlikely(ret < 0))
- 		goto drop;
- 
--	pktid = ovpn_pktid_read(skb->data + OVPN_OPCODE_SIZE, false,
--				&pkt_epoch);
-+	pktid = ovpn_pktid_read(skb->data + OVPN_OPCODE_SIZE,
-+				ks->epoch_format, &pkt_epoch);
- 	ret = ovpn_pktid_recv(&key->pid.recv, pktid, 0);
- 	if (unlikely(ret < 0)) {
- 		net_err_ratelimited("%s: PKT ID RX error for peer %u: %d\n",
-@@ -150,13 +152,29 @@ void ovpn_decrypt_post(void *data, int ret)
- 		goto drop;
- 	}
- 
-+	if (unlikely(skb->len < payload_offset))
-+		goto drop;
-+	payload_len = skb->len - payload_offset;
-+	if (unlikely(ks->tail_tag_size)) {
-+		if (unlikely(payload_len < ks->tail_tag_size))
-+			goto drop;
-+		payload_len -= ks->tail_tag_size;
+-	key = ovpn_key_ctx_new("encrypt", alg_name, &kc->encrypt, true);
++	if (kc->use_epoch_keys) {
++		/* tx and rx PRKs advance independently */
++		ret = ovpn_epoch_key_init(&ks->epoch_key_send,
++					  &kc->epoch.encrypt);
++		if (ret)
++			goto destroy_ks;
++
++		INIT_WORK(&ks->tx_refill, ovpn_refill_future_buffer_tx);
++		spin_lock_init(&ks->tx_lock);
++		key = ovpn_key_ctx_create_epoch(true, alg_name,
++						&ks->epoch_key_send);
++	} else {
++		key = ovpn_key_ctx_create_direct(true, alg_name,
++						 &kc->direct.encrypt);
 +	}
-+	if (unlikely(payload_len < 0))
-+		goto drop;
-+
- 	aead_blocks = ovpn_aead_limit_blocks(ks->cipher_alg, ks->aad_size,
--					     skb->len - payload_offset);
-+					     payload_len);
- 	if (unlikely(ovpn_pktid_recv_update_aead(&key->pid.recv, &key->usage,
- 						 &ks->usage_limit,
--						 aead_blocks)))
-+						 aead_blocks) &&
-+		     !ks->epoch_format))
- 		ovpn_nl_key_swap_notify(peer, ks->key_id);
+ 	if (IS_ERR(key)) {
+ 		ret = PTR_ERR(key);
+ 		goto destroy_ks;
+ 	}
+ 	RCU_INIT_POINTER(ks->encrypt, key);
  
-+	if (unlikely(ks->tail_tag_size &&
-+		     pskb_trim(skb, skb->len - ks->tail_tag_size)))
-+		goto drop;
+-	key = ovpn_key_ctx_new("decrypt", alg_name, &kc->decrypt, false);
++	if (kc->use_epoch_keys) {
++		ret = ovpn_epoch_key_init(&ks->epoch_key_recv,
++					  &kc->epoch.decrypt);
++		if (ret)
++			goto destroy_ks;
 +
- 	/* keep track of last received authenticated packet for keepalive */
- 	WRITE_ONCE(peer->last_recv, ktime_get_real_seconds());
++		INIT_WORK(&ks->rx_refill, ovpn_refill_future_buffer_rx);
++		spin_lock_init(&ks->rx_lock);
++		key = ovpn_key_ctx_create_epoch(false, alg_name,
++						&ks->epoch_key_recv);
++	} else {
++		key = ovpn_key_ctx_create_direct(false, alg_name,
++						 &kc->direct.decrypt);
++	}
+ 	if (IS_ERR(key)) {
+ 		ret = PTR_ERR(key);
+ 		goto destroy_ks;
+ 	}
+ 	RCU_INIT_POINTER(ks->decrypt, key);
+ 
++	RCU_INIT_POINTER(ks->retiring_key, NULL);
++	if (kc->use_epoch_keys) {
++		/* prederive future keys outside the fast path */
++		ret = ovpn_epoch_init_future_keys(true, alg_name,
++						  &ks->epoch_key_send,
++						  &ks->future_tx_keys);
++		if (ret)
++			goto destroy_ks;
++
++		ret = ovpn_epoch_init_future_keys(false, alg_name,
++						  &ks->epoch_key_recv,
++						  &ks->future_rx_keys);
++		if (ret)
++			goto destroy_ks;
++	}
++
+ 	return ks;
+ 
+ destroy_ks:
+diff --git a/drivers/net/ovpn/main.c b/drivers/net/ovpn/main.c
+index 9993c1dfe471..10f61377bd54 100644
+--- a/drivers/net/ovpn/main.c
++++ b/drivers/net/ovpn/main.c
+@@ -18,6 +18,7 @@
+ #include <uapi/linux/if_arp.h>
+ 
+ #include "ovpnpriv.h"
++#include "crypto.h"
+ #include "main.h"
+ #include "netlink.h"
+ #include "io.h"
+@@ -233,13 +234,20 @@ static struct rtnl_link_ops ovpn_link_ops = {
+ 
+ static int __init ovpn_init(void)
+ {
+-	int err = rtnl_link_register(&ovpn_link_ops);
++	int err;
+ 
++	err = ovpn_crypto_workqueue_init();
+ 	if (err) {
+-		pr_err("ovpn: can't register rtnl link ops: %d\n", err);
++		pr_err("ovpn: can't allocate workqueue: %d\n", err);
+ 		return err;
+ 	}
+ 
++	err = rtnl_link_register(&ovpn_link_ops);
++	if (err) {
++		pr_err("ovpn: can't register rtnl link ops: %d\n", err);
++		goto destroy_wq;
++	}
++
+ 	err = ovpn_nl_register();
+ 	if (err) {
+ 		pr_err("ovpn: can't register netlink family: %d\n", err);
+@@ -252,6 +260,8 @@ static int __init ovpn_init(void)
+ 
+ unreg_rtnl:
+ 	rtnl_link_unregister(&ovpn_link_ops);
++destroy_wq:
++	ovpn_crypto_workqueue_destroy();
+ 	return err;
+ }
+ 
+@@ -259,6 +269,7 @@ static __exit void ovpn_cleanup(void)
+ {
+ 	ovpn_nl_unregister();
+ 	rtnl_link_unregister(&ovpn_link_ops);
++	ovpn_crypto_workqueue_destroy();
+ 
+ 	rcu_barrier();
+ }
+diff --git a/drivers/net/ovpn/netlink.c b/drivers/net/ovpn/netlink.c
+index 83d81a468b5a..910e4e67a68a 100644
+--- a/drivers/net/ovpn/netlink.c
++++ b/drivers/net/ovpn/netlink.c
+@@ -888,7 +888,7 @@ int ovpn_nl_key_new_doit(struct sk_buff *skb, struct genl_info *info)
+ {
+ 	struct nlattr *attrs[OVPN_A_KEYCONF_MAX + 1];
+ 	struct ovpn_priv *ovpn = info->user_ptr[0];
+-	struct ovpn_peer_key_reset pkr;
++	struct ovpn_peer_key_reset pkr = {};
+ 	struct ovpn_peer *peer;
+ 	u32 peer_id;
+ 	int ret;
+@@ -923,12 +923,14 @@ int ovpn_nl_key_new_doit(struct sk_buff *skb, struct genl_info *info)
+ 	pkr.key.cipher_alg = nla_get_u32(attrs[OVPN_A_KEYCONF_CIPHER_ALG]);
+ 
+ 	ret = ovpn_nl_get_key_dir(info, attrs[OVPN_A_KEYCONF_ENCRYPT_DIR],
+-				  pkr.key.cipher_alg, &pkr.key.encrypt);
++				  pkr.key.cipher_alg,
++				  &pkr.key.direct.encrypt);
+ 	if (ret < 0)
+ 		return ret;
+ 
+ 	ret = ovpn_nl_get_key_dir(info, attrs[OVPN_A_KEYCONF_DECRYPT_DIR],
+-				  pkr.key.cipher_alg, &pkr.key.decrypt);
++				  pkr.key.cipher_alg,
++				  &pkr.key.direct.decrypt);
+ 	if (ret < 0)
+ 		return ret;
  
 -- 
 2.54.0
