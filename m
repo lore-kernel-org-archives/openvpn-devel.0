@@ -4,69 +4,82 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5C041C43458
-	for <openvpn-devel@archiver.kernel.org>; Thu,  2 Jul 2026 10:07:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D1BC4C43458
+	for <openvpn-devel@archiver.kernel.org>; Thu,  2 Jul 2026 10:35:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=AOoRqp8c5JkU9AX4ATOW05Lz+pIPHUtf5/1F02Rk1dY=; b=KZR5VMoI4p9lGRbePusAuOvFCc
-	BvH/TyWxsklqam2qmX1IinOd8Cu3B8hAEZZtDcWgE2X3htgXPqTufs1m4eNfBZVWN/vebe/CxygkN
-	js71wyZ4JvuAfNJ31EQgP0fd2u+Q79Ho4naC3od829e7yEtE5j9+DIbddWgcW/7t4Pp4=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:Message-ID:To:From:Date:Sender:Reply-To:Cc:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Owner;
+	bh=h3kze93x6PhlOFgrOaGrfTErBHkNsxuUbeAO+iqN9/Y=; b=FYTR97DdXhd1lrbTbVJIDacUV/
+	iVJfBsOd3Rvkq2rbs4emTQnczKndF2cc6zlGIICF2E4HAEb3EvW++lnBaPq+8KUkdqGM5jfQ18rJi
+	XCYGG1+ur3+nEXVwTZoMSbtfSuPXAbfESuMxvSWxB7mPenDvxP3E1qjHwnz7NEJWHSZM=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wfEKJ-0007lx-A5;
-	Thu, 02 Jul 2026 10:07:20 +0000
+	id 1wfElD-0002g0-LO;
+	Thu, 02 Jul 2026 10:35:12 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1wfEKG-0007lk-Ic
- for openvpn-devel@lists.sourceforge.net;
- Thu, 02 Jul 2026 10:07:18 +0000
+ (envelope-from <frank@lichtenheld.com>) id 1wfElA-0002fa-Gk;
+ Thu, 02 Jul 2026 10:35:10 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:Content-Type:MIME-Version
+ :Message-ID:Subject:To:From:Date:Sender:Reply-To:Cc:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=oZmlQnOyZi3zaUwJ9q6uTYcVxzfqyaWQJ/klbpHfS5o=; b=C+8lt96Hl40gciEXfFu67oI9xD
- RNE7D+VlCDesyozGoO5xBZiFGxTbI4y/dCD9rxBV97tzIgI4DnbVsf+8WeIOw1qyxwjGmaUOsAA9H
- cLUy4DGYI/MoLruu0qf/KHhIat6mxoJX1MckrzcFM7iib7snd8RyBWydxTjJr8RVD2QA=;
+ bh=NdZ9saUAXatezricaRS+gkJkrJyIhO/usGmDqTGZhBE=; b=Dx4zC+x3oXZZuMcTN7lyTao2Pl
+ j8Mhe4LKakdWNS917x3j/KWNekVCJyWkIT3hcbdbkckgrnb0OtWg0crhhob2AY8+fMGGyrvEC6WoY
+ QpMEMhqi6SD5Qw1y0Em9nCBznnb2kc3o6fCkrfxLcCMH/8eWWfxxqE/ufPujY0RUu3Hw=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=oZmlQnOyZi3zaUwJ9q6uTYcVxzfqyaWQJ/klbpHfS5o=; b=icGsF9PJCqT85UEhZkN7GYLarH
- STLtcPRr6asSU/xDvIEAHujpwa17QxJcgIMCcRc8JQFzP9hkWTV7d0+EryCOOS7r5lcdMAY9jXAEE
- qDOl2DrzcRNQPkUw37PzE/sn0sVe9XyrDvbGVhjz7jWIzAjp8rOHrnmkZNtE2g3JsDR4=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ h=Content-Transfer-Encoding:Content-Type:MIME-Version:Message-ID:Subject:To
+ :From:Date:Sender:Reply-To:Cc:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+ References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=NdZ9saUAXatezricaRS+gkJkrJyIhO/usGmDqTGZhBE=; b=N
+ L5mkOPUiat3p3Xiz+WjogAOVbT6WuME4mOVlo/N4aMQoazex/N6C9LLykz6p7pDij3nPtLgW15rCA
+ nm1Eu3S6ecj38JYch3n0s2uMbdWWL+RpM7ixKqq21GLjEw4308WYeozSYfjW4NxvCMdn9W6rmP0Yq
+ use6bYrrKLYlTSQE=;
+Received: from mout-p-101.mailbox.org ([80.241.56.151])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wfEKC-00076N-HU for openvpn-devel@lists.sourceforge.net;
- Thu, 02 Jul 2026 10:07:18 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 662A75pS024730
- for <openvpn-devel@lists.sourceforge.net>; Thu, 2 Jul 2026 12:07:05 +0200
-Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 662A75ig024729
- for openvpn-devel@lists.sourceforge.net; Thu, 2 Jul 2026 12:07:05 +0200
-From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Thu,  2 Jul 2026 12:06:59 +0200
-Message-ID: <20260702100704.24692-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1782986182000.I20cc89a546b69aceadcd1630828de407d530d7c7@gerrit.openvpn.net>
-References: <gerrit.1782986182000.I20cc89a546b69aceadcd1630828de407d530d7c7@gerrit.openvpn.net>
+ id 1wfEl8-0000Ln-BB; Thu, 02 Jul 2026 10:35:09 +0000
+Received: from smtp102.mailbox.org (smtp102.mailbox.org
+ [IPv6:2001:67c:2050:b231:465::102])
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+ key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA512)
+ (No client certificate requested)
+ by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4grXqL5nYYz8v0G;
+ Thu, 02 Jul 2026 12:16:46 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lichtenheld.com;
+ s=MBO0001; t=1782987406;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding;
+ bh=NdZ9saUAXatezricaRS+gkJkrJyIhO/usGmDqTGZhBE=;
+ b=rQ71Jhhqj4ssbvSyfGL8snunMkd1KbvfzW54EuhpAip6AXu2uuYFx26Cj9T99pRq116M9S
+ /z1+w7KN3AUvDjAloSzuiEATSHUHOS8yHHiiI+E99lIpSPsQUeIRB6gsg3VaaJp8ayrFHT
+ aqu8zGaRfJtqBpwHgZk2JbV4WDDoedSDWNvqlBLQWGPyAkXQyWUg4mnkIu55htKCzUTcBq
+ QED8m1B34uNpb1pYodY62xEoBJzqXIjqFx8fgOTaKLZqUuVx99qj3JKMj5lolMlJW1pvUy
+ sh8ISqqtbaZgFRZqe6I0WeSJ/PoUgAsIHXKDzGiY5yI82ersMe4N+VuYjdwrzg==
+Authentication-Results: outgoing_mbo_mout; dkim=none;
+ spf=pass (outgoing_mbo_mout: domain of frank@lichtenheld.com designates
+ 2001:67c:2050:b231:465::102 as permitted sender)
+ smtp.mailfrom=frank@lichtenheld.com
+Date: Thu, 2 Jul 2026 12:16:38 +0200
+From: Frank Lichtenheld <frank@lichtenheld.com>
+To: openvpn-announce@lists.sourceforge.net,
+ openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+Message-ID: <akY6hoElrQoZPUK_@flichtenheld-TUXEDO-InfinityBook-S-15-17-Gen7>
 MIME-Version: 1.0
-X-Headers-End: 1wfEKC-00076N-HU
-Subject: [Openvpn-devel] [PATCH v1] ssl_pkt: Fix doxygen warning about
- read_control_auth
+Content-Disposition: inline
+X-Rspamd-Queue-Id: 4grXqL5nYYz8v0G
+X-Headers-End: 1wfEl8-0000Ln-BB
+Subject: [Openvpn-devel] OpenVPN 2.7.5 released
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -78,48 +91,99 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@lichtenheld.com>
-
-Commit 01ee1693f960a696a613e7b83f9960002264a379
-("Ensure tls-crypt keys are not setup twice") removed
-the argument but did not delete it from the doxygen
-documentation, leading to warnings.
-
-Change-Id: I20cc89a546b69aceadcd1630828de407d530d7c7
-Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
-Acked-by: Gert Doering <gert@greenie.muc.de>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1765
----
-
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
-
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1765
-This mail reflects revision 1 of this Change.
-
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@greenie.muc.de>
-
-        
-diff --git a/src/openvpn/ssl_pkt.h b/src/openvpn/ssl_pkt.h
-index 640885e..82cb5b1 100644
---- a/src/openvpn/ssl_pkt.h
-+++ b/src/openvpn/ssl_pkt.h
-@@ -207,7 +207,6 @@
-  * @param ctx               control channel security context
-  * @param from              incoming link socket address
-  * @param opt               tls options struct for the session
-- * @param initial_packet    whether this is the initial packet for the connection
-  * @return                  if the packet was successfully processed
-  */
- bool read_control_auth(struct buffer *buf, struct tls_wrap_ctx *ctx,
-
-
-_______________________________________________
-Openvpn-devel mailing list
-Openvpn-devel@lists.sourceforge.net
-https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+VGhlIE9wZW5WUE4gY29tbXVuaXR5IHByb2plY3QgdGVhbSBpcyBwcm91ZCB0byByZWxlYXNlIE9w
+ZW5WUE4gMi43LjUuClRoaXMgaXMgYSBidWdmaXggcmVsZWFzZSBmaXhpbmcgc2V2ZXJhbCBzZWN1
+cml0eSBpc3N1ZXMuCgpTZWN1cml0eSBmaXhlczoKCiogV2luZG93czogb3BlbnZwbnNlcnY6IGZp
+eCBETlMgU2VhcmNoTGlzdCBzdGF0ZSBwb2xsdXRpb24gb24gKGRpcyljb25uZWN0LiBzcGVjaWZp
+YyBjb21iaW5hdGlvbnMgb2YgLS1kbnMgCiAgY29uZmlnIGVudHJpZXMgcGx1cyBsb2NhbCBETlMg
+Y29uZmlnIGNvdWxkIGxlYWQgdG8gY29ycnVwdGlvbiBvZiBwcmUtb3BlbnZwbiBETlMgY29uZmln
+IChDVkUtMjAyNi0xMzM3OSkKICBCdWcgZm91bmQgYnkg56ug6bG85ZOlICh3d3cuYWlweWFpcHku
+Y29tKS4KKiBGaXggdXNlLWFmdGVyLWZyZWUgYnVnIGluIGFja193cml0ZV9idWYoKSwgdHJpZ2dl
+cmFibGUgYnkgYSB3ZWxsLXRpbWVkIHNlcXVlbmNlIG9mIGNvbnRyb2wgY2hhbm5lbCArIAogIGF1
+dGhlbnRpY2F0aW9uIHBhY2tldHMgKENWRS0yMDI2LTEyOTk2KQogIEJ1ZyBmb3VuZCBieSBtdWx0
+aXBsZSByZXNlYXJjaGVyczoKICAgICog56ug6bG85ZOlICh3d3cuYWlweWFpcHkuY29tKQogICAg
+KiBIYWl5YW5nIEh1YW5nCiAgICAqIEhhcnVraSBPeWFtYSAoV2FzZWRhIFVuaXZlcnNpdHkpCiog
+Rml4IHVzZS1hZnRlci1mcmVlIGJ1ZyBpbiB0bHNfd3JhcF9yZW5lZygpLCB0cmlnZ2VyYWJsZSBi
+eSBzdWl0YWJsZSBzZXF1ZW5jZSBvZiBkeW5hbWljIHRscy1jcnlwdCAKICBjb250cm9sLWNoYW5u
+ZWwgcGFja2V0cyAoQ1ZFLTIwMjYtMTMxMTcpCiAgQnVnIGZvdW5kIGJ5IG11bHRpcGxlIHJlc2Vh
+cmNoZXJzOgogICAgKiBUcmFjZTM3IExhYnMgKGdpdGh1Yi5jb20vdHJhY2UzN2xhYnMpCiAgICAq
+IEhhaXlhbmcgSHVhbmcKKiBGaXggc2VydmVyIGNyYXNoIG9uIHJlY2VwdGlvbiBvZiBzdWl0YWJs
+eSBtYWxmb3JtZWQgYXV0aC10b2tlbiwgaWYgLS1hdXRoLWdlbi10b2tlbiBleHRlcm5hbC1hdXRo
+IGlzIAogIGFjdGl2ZSAoQ1ZFLTIwMjYtMTMxMjIpCiAgQnVnIGZvdW5kIGJ5IEhhaXlhbmcgSHVh
+bmcuCiogRml4IG1lbW9yeS1sZWFrIGluIHRscy1jcnlwdC12MiBjbGllbnQga2V5IGhhbmRsaW5n
+IHRoYXQgY291bGQgbGVhZCB0byBvdXQtb2YtbWVtb3J5IHNpdHVhdGlvbnMgYW5kIAogIHN1YnNl
+cXVlbnQgc2VydmVyIGNyYXNoZXMgKENWRS0yMDI2LTEyOTMyKQogIEJ1ZyBmb3VuZCBieSBWYWx0
+b24gVGFoaXJpLgoqIEZpeCBwb3NzaWJsZSAxLWJ5dGUgYnVmZmVyIG92ZXJydW4gb24gTlRMTXYy
+IHByb3h5IHJlc3BvbnNlcy4gKENWRS0yMDI2LTExNzcxKQogIEJ1ZyBmb3VuZCBieSBUcmlzdGFu
+IE1hZGFuaSAoQFRyaXN0YW5JblNlYykuCiogRml4IGFub3RoZXIgbWVtb3J5IGxlYWsgb24gcmVj
+ZXB0aW9uIG9mIHN1aXRhYmxlIHRscy1jcnlwdC12MiBwYWNrZXRzIHRoYXQgY291bGQgbGVhZCB0
+byBhbiBvdXQgb2YgbWVtb3J5IAogIHNpdHVhdGlvbiBhbmQgc2VydmVyIGNyYXNoIChDVkUtMjAy
+Ni0xMzY5OCkKICBCdWcgZm91bmQgYnkgTWF4IEZpbGxpbmdlci4gT3ZlcmxhcHMgd2l0aCBhIHJl
+cG9ydCBmcm9tIFZhbHRvbiBUYWhpcmkgdGhhdCB3ZSBiZWxpZXZlIHRvIGJlIGZpeGVkIGJ5IHRo
+aXMgCiAgYnVnZml4IGFzIHdlbGwuCgpCdWdmaXhlczoKCiogV2luZG93czogZml4IHBsdWdpbiB0
+cnVzdGVkLWRpciBjaGVjayBwcmVmaXggYnlwYXNzICh0aGlzIGZpeGVzIGEgYnVnIGluIHRoZSBw
+YXRoIGNoZWNraW5nIGxvZ2ljIHdlIGRvIG9uIAogIFdpbmRvd3MgZm9yICJpcyBsb2FkaW5nIGEg
+cGx1Z2luIGZyb20gdGhpcyBwYXRoIGFsbG93ZWQ/IiwgYnV0IHNpbmNlIHdlIGNvdWxkIG5vdCBm
+aW5kIGEgd2F5IHRvIGV4cGxvaXQgCiAgdGhpcyB1bmxlc3Mgc3RhcnRpbmcgd2l0aCBhZG1pbiBw
+cml2cyBvciBhIHNvY2lhbCBlbmdpbmVlcmluZyBhdHRhY2ssIG5vdCBjbGFzc2lmaWVkIGFzIGEg
+c2VjdXJpdHkgZml4KQoqIFdpbmRvd3M6IG9wZW52cG5zZXJ2OiByZXdvcmsgQ29udmVydEl0ZkRu
+c0RvbWFpbnMgYW5kIHRlc3RzICh0aGlzIGZpeGVzIGEgYnVmZmVyIG92ZXJyZWFkIHRoYXQgaXMg
+bm90IAogIGV4cGxvaXRhYmxlIGFuZCBhcyBzdWNoIG5vdCBjbGFzc2lmaWVkIGFzIHNlY3VyaXR5
+IGZpeCkKKiBvcHRpb25zOiBmaXggdXNlLWFmdGVyLWZyZWUgb2YgRE5TIG9wdGlvbnMgb24gY2xp
+ZW50IGNvbm5lY3QgKHVzaW5nIHN1aXRhYmxlIC0tZG5zIG9yIC0tZGhjcC1vcHRpb24gRE5TIAog
+IG9wdGlvbnMgaW4gYSBzZXJ2ZXIgY29uZmlnIC0gbm90IHB1c2hlZCwgYnV0IGFwcGx5aW5nIHRv
+IHRoZSBzZXJ2ZXIgaXRzZWxmIC0gdHJpZ2dlcnMgYSBkb3VibGUgZnJlZSgpIGFuZCAKICB1c2Ut
+YWZ0ZXItZnJlZSBjb25kaXRpb24sIHBvc3NpYmx5IGNyYXNoaW5nIHRoZSBzZXJ2ZXIpIChHaXRo
+dWI6IE9wZW5WUE4vb3BlbnZwbiMxMDYwKQoqIGRuczogRml4IG1lbW9yeSBsZWFrIGluIGRuc19z
+ZXJ2ZXJfYWRkcl9wYXJzZSwgaWYgdG9vIG1hbnkgc2VydmVyIGFkZHJlc3NlcyBhcmUgY29uZmln
+dXJlZCAoR2l0aHViOiAKICBPcGVuVlBOL29wZW52cG4jMTA1NSkKKiBJbXByb3ZlIG11bHRpLXNv
+Y2tldCBldmVudCBoYW5kbGluZyBmdXJ0aGVyIC0gbXVsdGlwbGUgb3BlbiBVRFAgc29ja2V0cyB3
+aXRoIGNvbmN1cnJlbnQgdHJhZmZpYyBjb3VsZCAKICBsZWFkIHRvIGluZWZmaWNpZW50IHByb2Nl
+c3NpbmcsIGFuZCB0aGUgb2xkIGNvZGUgd2FzIGFsc28gdmVyeSBoYXJkIHRvIGZvbGxvdy4KICAo
+VGhpcyB3YXMgaW5pdGlhbGx5IHRyaWdnZXJlZCBieSBhIHJlcG9ydCBmcm9tIEpvc2h1YSBSb2dl
+cnMgdXNpbmcgWmVyb1BhdGgsIGJ1dCB0dXJuZWQgb3V0IHRvIGJlICJqdXN0IAogIGJhZCBjb2Rl
+IiBub3QgYSBzZWN1cml0eSB2dWxuZXJhYmlsaXR5KQoqIE51bGwtdGVybWluYXRlIHRscy1jcnlw
+dCBjbGllbnQga2V5cyB3aGVuIHRlc3RpbmcgLSBub24tZXhwbG9pdGFibGUgc3RybGVuKCkgb24g
+YSBidWZmZXIgdGhhdCBpcyBub3QgCiAgbnVsbC10ZXJtaW5hdGVkCiogbXVkcDogc2VuZCBITUFD
+IHJlc2V0IHJlcGx5IHN5bmNocm9ub3VzbHkgdGhpcyBmaXhlcyBhIGJ1ZyB3aGVyZSBtdWx0aXBs
+ZSBpbmNvbWluZyB0bHMtY3J5cHQtdjIgUkVTRVQgCiAgcGFja2V0cyBvbiBkaWZmZXJlbnQgc29j
+a2V0cyBjb3VsZCBlbmQgdXAgb3ZlcndyaXRpbmcgZWFjaCBvdGhlcidzIGNvbnRyb2wgc3RydWN0
+dXJlcywgbGVhZGluZyB0byBpbml0aWFsIAogIGhhbmRzaGFrZSBwYWNrZXRzIChITUFDIHJlc2V0
+IHJlcGx5KSBiZWluZyBzZW50IHRvIHRoZSB3cm9uZyBjbGllbnQgSVAsIG9yIG9uIGEgbm9uLXN1
+aXRhYmxlIHNvY2tldCAoInY0IAogIHBhY2tldCBvbiBhIHY2IHNvY2tldCIpLiBTaW5jZSB0aGUg
+b3ZlcmFsbCBmbG93IGhlcmUgaXMgc3RhdGVsZXNzIGJ5IG5hdHVyZSwgZG8gbm90IGFydGlmaWNp
+YWxseSBjcmVhdGUgCiAgc3RhdGUgYnkgY3JlYXRpbmcgZWxhYm9yYXRlIHF1ZXVlcywganVzdCBz
+ZW5kLW9yLWRyb3AuCiogRml4IHBvcnQtc2hhcmUgYW5kIG11bHRpLXNvY2tldCBpbnRlcmFjdGlv
+biAtIHBvcnQtc2hhcmUgbmVlZHMgVENQIGxpc3RlbmVycywgYnV0IHRoZSBjaGVjayB3YXMgd3Jv
+bmcuIFNvIAogICJhcyBsb25nIGFzIGFueSBvZiB0aGUgbGlzdGVuaW5nIHNvY2tldHMgaXMgVENQ
+LCBwb3J0LXNoYXJlIGNhbiBiZSB1c2VkIiAoR2l0aHViOiBPcGVuVlBOL29wZW52cG4jMTAyNykK
+KiBFbnN1cmUgcHVzaGVkIHR1bi1tdHUgaXMgbm8gbG93ZXIgdGhhbiBUVU5fTVRVX01JTiAtIHRo
+aXMgZml4ZXMgYSBidWcgd2hlcmUgYSBzZXJ2ZXIgY2FuIHB1c2ggYSBzdWl0YWJsZSAKICBjb21i
+aW5hdGlvbiBvZiBvcHRpb25zIGFuZCBtYWtlIHRoZSBjbGllbnQgQVNTRVJUKCkuCiAgKFJlcG9y
+dGVkIGFzIHNlY3VyaXR5IGlzc3VlIGJ5IEhhaXlhbmcgSHVhbmcsIGJ1dCBpdCB3YXMgZGVjaWRl
+ZCB0aGF0IHRoZSBzZXJ2ZXIgYWx3YXlzIGhhcyBtZWFucyB0byBtYWtlIAogIHRoZSBjbGllbnQg
+Im5vdCBmdW5jdGlvbiBwcm9wZXJseSIsIGFuZCBpdCBjYW4gbm90IGJlIGV4cGxvaXRlZCBiZXlv
+bmQgdGhhdCkKKiBXaW5kb3dzOiBzb2NrZXQ6IGFzc2VydCBidWZmZXIgbGVuZ3RoIGJlZm9yZSBy
+ZWFkaW5nIHByZXBlbmRlZCBzb2NrYWRkciBmYW1pbHkgLSBhIG1pc2JlaGF2aW91ciBpbiB0aGUg
+CiAgd2luZG93cyBEQ08gZHJpdmVyIGNvdWxkIHRyaWdnZXIgYW4gb3ZlcnJlYWQgaW4gdGhlIHVz
+ZXJsYW5kIGNsaWVudC4gTm8gc3VjaCBidWcgZXhpc3RzLCB3aGljaCB0aGlzIHdhcyBub3QgCiAg
+dHJlYXRlZCBhcyBhIHNlY3VyaXR5IHZ1bG5lcmFiaWxpdHkKCkRvY3VtZW50YXRpb24gaW1wcm92
+ZW1lbnRzOgoKKiBpbXByb3ZlIGRvY3VtZW50YXRpb24gZm9yIC0tZmxvYXQgKEdpdGh1YjogT3Bl
+blZQTi9vcGVudnBuIzM1OCkKKiBhZGQgZG9jdW1lbnRhdGlvbiBmb3IgLS1wcmVyZXNvbHZlIChH
+aXRodWI6IE9wZW5WUE4vb3BlbnZwbiM1MzIpCiogaW1wb3ZlIGRvY3VtZW50YXRpb24gYXJvdW5k
+IEROUyBjb25maWcgKEdpdGh1YjogT3BlblZQTi9vcGVudnBuIzkzNykKCk1vcmUgZGV0YWlscyBj
+YW4gYmUgZm91bmQgaW4gdGhlIENoYW5nZXMgZG9jdW1lbnQ6Cgo8aHR0cHM6Ly9naXRodWIuY29t
+L09wZW5WUE4vb3BlbnZwbi9ibG9iL3YyLjcuNS9DaGFuZ2VzLnJzdD4KClNvdXJjZSBjb2RlIGFu
+ZCBXaW5kb3dzIGluc3RhbGxlcnMgY2FuIGJlIGRvd25sb2FkZWQgZnJvbSBvdXIgZG93bmxvYWQg
+cGFnZToKCjxodHRwczovL2NvbW11bml0eS5vcGVudnBuLm5ldC9Eb3dubG9hZHM+CgpQYWNrYWdl
+cyBmb3IgRGViaWFuLCBVYnVudHUsIEZlZG9yYSwgUkhFTCwgYW5kIG9wZW5TVVNFIGFyZSBhdmFp
+bGFibGUgaW4gdGhlIHZhcmlvdXMKb2ZmaWNpYWwgQ29tbXVuaXR5IHJlcG9zaXRvcmllczoKCjxo
+dHRwczovL2NvbW11bml0eS5vcGVudnBuLm5ldC9QYWdlcy9PcGVuVlBOJTIwc29mdHdhcmUlMjBy
+ZXBvcz4KCktpbmQgcmVnYXJkcywKLS0gCiAgRnJhbmsgTGljaHRlbmhlbGQKCgpfX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpPcGVudnBuLWRldmVsIG1haWxp
+bmcgbGlzdApPcGVudnBuLWRldmVsQGxpc3RzLnNvdXJjZWZvcmdlLm5ldApodHRwczovL2xpc3Rz
+LnNvdXJjZWZvcmdlLm5ldC9saXN0cy9saXN0aW5mby9vcGVudnBuLWRldmVsCg==
