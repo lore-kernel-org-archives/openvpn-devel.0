@@ -4,86 +4,83 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 46D74C43458
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id EB12EC43602
 	for <openvpn-devel@archiver.kernel.org>; Fri,  3 Jul 2026 17:35:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=LKwHAwHtmvsCye6DR/czDK1wKfzOpyqDyTZqMZV8ORQ=; b=ASm5o38cqMOL4dcdBW1yKS39E6
-	rx5abeDZ0oBN8f6eOo5LCgaG2cXChRq4eb/ZsQgRgmaSC2QbTG/pKs+cUJiC2m414bh39VdC6l4sX
-	AmDu7jdHesMtYjjEaH8v6nqbDPnjRGvvFUBOLLyxsIqwI881elcCJGRpyxmOOsHhTUEM=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:Message-ID:Date:To:From:Sender:Reply-To:Cc:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Owner;
+	bh=JM0C4cbOx1NZNdRpih+i+8Vi/1qF61ziEHmu0ARQW1I=; b=B5sN+2CzMwAQM1gFn11k4hq13f
+	/A+ud22w1lobOaqYfPWFUY8+CMdeu8JFHtNX1VqQ/d4Ts/ri2Xlww6hFakTIDgl1dZzSwBH37ba60
+	hgxgGbKy3mlbndLU8B1tuYThq4yK/j6M63tqmYOBc70p7g0QAHZ73pMJLpKKMfJHuD9M=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wfhnd-0001yw-Nz;
-	Fri, 03 Jul 2026 17:35:38 +0000
+	id 1wfhnb-0003rQ-FA;
+	Fri, 03 Jul 2026 17:35:36 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <ralf@mandelbit.com>) id 1wfhnb-0001yl-PH
+ (envelope-from <ralf@mandelbit.com>) id 1wfhnU-0003qb-Hd
  for openvpn-devel@lists.sourceforge.net;
- Fri, 03 Jul 2026 17:35:36 +0000
+ Fri, 03 Jul 2026 17:35:30 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=SXbWfecXPFHVGMvXgqIb/ZHORrJiGaLCkiYspXYormc=; b=Y1zXr0DAjhBOLl/cz0weENh2/F
- Ncmfl96B1Y9qXQBIBYgHjdsrEp3IqoAxiHlz176sP90MBitSBaCSD5B1p5KioZ3NeUL1CQGskV7+w
- M8VdvppSSAnaPFblrWFPHiuqQ1e0GdnUev+i5tiwMX8dCtO+DO1RMC5JUcvJyak9VJ70=;
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
- ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:Message-ID:
  Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=SXbWfecXPFHVGMvXgqIb/ZHORrJiGaLCkiYspXYormc=; b=hukpvvMfA1bKp4ruXJGJsZrByo
- Fa4TQVOtvhJE3bYpmph+PQTOTFrDf0i4VNiQVOG9qgICr89J1/3cTU02/2cNkiF0W5I28Vnhjbzlm
- RUblX9FxaSa2BGEvt7ObdtpKtqAw5bxxkGUDplA7yc9IEKdIk8KyQb51+3q7wjI5davc=;
+ :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=v41xdGIv7vutWRJ1QpWGGIOWO4aqmbLe4+0FDd/YstQ=; b=b3jz+1qdsdoNFI/Su8WA5v9WqA
+ hqMeuLv5z+Q1dqWUHfL5NEnPNnNM0xARa3vFsfxS215DjPRho4I5GI2bBarp+DKadB3jM3SnHNVeU
+ 6r4JHFfZizb6FCvaOlcG4KPQoP9wDd6wUY4I3T94RkJF8/l+FGV3daobjmIM1CNJxVKQ=;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
+ ;
+ h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:Cc:To:From
+ :Sender:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+ References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=v41xdGIv7vutWRJ1QpWGGIOWO4aqmbLe4+0FDd/YstQ=; b=U
+ V9DDTWWcW/F9ZWi8ofq4GbX053St3KzXFpGdq91HAYXVywNcB9i5PaFyJVhVfFDLFc37dQWTpF9pN
+ yfXF+THRp3XvTUiPcGEhfrMpWXJ7vPIKUowCdN+rLNIZKvVr0eZs2khMf2BuRdnCUC4iZO6cHG7qC
+ E3Dh02nSU/zJ3eLY=;
 Received: from mout-b-112.mailbox.org ([195.10.208.42])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wfhnW-00072g-HF for openvpn-devel@lists.sourceforge.net;
- Fri, 03 Jul 2026 17:35:31 +0000
+ id 1wfhnS-00071m-Ek for openvpn-devel@lists.sourceforge.net;
+ Fri, 03 Jul 2026 17:35:29 +0000
 Received: from smtp102.mailbox.org (smtp102.mailbox.org
  [IPv6:2001:67c:2050:b231:465::102])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
  (No client certificate requested)
- by mout-b-112.mailbox.org (Postfix) with ESMTPS id 4gsLVq70BXzDx6b;
- Fri,  3 Jul 2026 19:35:15 +0200 (CEST)
+ by mout-b-112.mailbox.org (Postfix) with ESMTPS id 4gsLVm4tjCzDx6P;
+ Fri,  3 Jul 2026 19:35:12 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
- s=MBO0001; t=1783100116;
+ s=MBO0001; t=1783100112;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=SXbWfecXPFHVGMvXgqIb/ZHORrJiGaLCkiYspXYormc=;
- b=IAoPUpEpTN9m85qs2CXRNgW4EWaMrqTA1xZUc9z9vcba9MucZsqvNGRjXmQV6mgnKy6wJv
- 9q6uGCL148G8mPg/if08lMJYpUAUP/J0vLahhcZx+bhPuvXbafp3sp2JnmbD6ZC9d7bIoZ
- D+iqImdIJm9EJ6EBcJEZ5RcXrvVeJQtHnHq8ssiQB+X+FEng9iZyUq0qHS2Z+Tfzq7RZBh
- aGr/Yu7D3xnGtdIDzpT1Mu4tKp8phUE0Gr+ct2t/CfMmv99UZEWkb6TGRmUS+Boybkq80o
- W4RHLEfZIGJnK6b4XjOseFXhx8DmK5dUQnRFTMO6iAGZHWAC7sUEQLPMzym6Cg==
+ content-transfer-encoding:content-transfer-encoding;
+ bh=v41xdGIv7vutWRJ1QpWGGIOWO4aqmbLe4+0FDd/YstQ=;
+ b=iRMYTRvTUVaEfKKnGQNuZ9rsACcV4KR74XiIivAOF5/5/0XqU91QZjAAipOp5O24wIFBTe
+ IAyXeKVE7lignDYCY1iwVgAO+4hVo+VvxpAWh6OJ7iQFKExL99sh42UDa4HiIq7f3/wBHi
+ oKZ4c/683DMvFnmluzSfLwHT/plRofkYHmstJRMHl4JSV4592F476JAvYi3IwQ0Ro6d3dY
+ CkR8QTwJk4oDEJcxI8HMRkqjhmQhxtFbEFXDptUlpvOmuJ86wElVadjnfKMsqMV/Ja1CC9
+ QJChZ7sZzRJMR3kdijUygQVaAlXb8vPyKPfmzYTy36AXZdC1d8WgB0KeP2/5MQ==
 Authentication-Results: outgoing_mbo_mout; dkim=none;
  spf=pass (outgoing_mbo_mout: domain of ralf@mandelbit.com designates
  2001:67c:2050:b231:465::102 as permitted sender)
  smtp.mailfrom=ralf@mandelbit.com
 From: Ralf Lici <ralf@mandelbit.com>
 To: openvpn-devel@lists.sourceforge.net
-Date: Fri,  3 Jul 2026 19:35:01 +0200
-Message-ID: <b53ae1a9714bae7081c71bdab7b30623ce3cb77b.1783099626.git.ralf@mandelbit.com>
-In-Reply-To: <981d2ea51cca45138210aa52c6e5a0e55c0da7a0.1783099626.git.ralf@mandelbit.com>
-References: <981d2ea51cca45138210aa52c6e5a0e55c0da7a0.1783099626.git.ralf@mandelbit.com>
+Date: Fri,  3 Jul 2026 19:34:59 +0200
+Message-ID: <981d2ea51cca45138210aa52c6e5a0e55c0da7a0.1783099626.git.ralf@mandelbit.com>
 MIME-Version: 1.0
-X-Rspamd-Queue-Id: 4gsLVq70BXzDx6b
-X-Headers-End: 1wfhnW-00072g-HF
-Subject: [Openvpn-devel] [PATCH ovpn net v4 3/3] ovpn: defer key slot crypto
- freeing to workqueue
+X-Rspamd-Queue-Id: 4gsLVm4tjCzDx6P
+X-Headers-End: 1wfhnS-00071m-Ek
+Subject: [Openvpn-devel] [PATCH ovpn net v4 1/3] ovpn: finish crypto
+ callback cleanup before peer release
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -99,177 +96,67 @@ Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-Key slots are released through a kref and the existing release path frees
-the AEAD transforms from an RCU callback. That is not safe for all crypto
-implementations: crypto_free_aead can sleep, for example when an async or
-hardware implementation has teardown work to complete.
+Crypto completion callbacks hold both key-slot and peer references. The
+peer reference pins the netdev, and dropping the last peer reference can
+let netdev unregistration and module removal make progress.
 
-The AEAD transforms are only used while a key-slot reference is held, so
-the final kref put is enough to prove that no transform user remains.
-Queue the final crypto teardown on the ovpn workqueue, where sleeping is
-allowed, and keep the slot memory itself RCU-freed after the transforms
-have been released.
+Do not release that peer reference before the callback has finished its
+own cleanup. If ovpn_crypto_key_slot_put runs after ovpn_peer_put, it can
+schedule an RCU callback backed by module text after ovpn_cleanup
+rcu_barrier has already run. The TX error path also freed the remaining
+skb after ovpn_peer_put, leaving callback cleanup outside the peer/netdev
+lifetime window.
 
-ovpn_crypto_config_get was the remaining lockless reader of transform
-state through ovpn_aead_crypto_alg. Make it take a key-slot reference
-before reading that state, so the transform lifetime is consistently tied
-to key-slot references. The previous patch drains ovpn_wq during module
-exit, so queued key-slot teardown work cannot outlive module text.
+Release the key slot and free any remaining skb first, then drop the peer
+reference as the last callback action.
 
 Fixes: 8534731dbf2d ("ovpn: implement packet processing")
 Signed-off-by: Ralf Lici <ralf@mandelbit.com>
 ---
-Changes since v3 https://lore.kernel.org/openvpn-devel/ac2842c8e759849c51447126343376dcc793c7ae.1783080055.git.ralf@mandelbit.com/
-- Reuse the module-owned ovpn workqueue introduced by patch 2 instead
-  of allocating a crypto-specific workqueue for key-slot teardown.
+No changes since v3 https://lore.kernel.org/openvpn-devel/f367b736f2597edb1677794173997d5a0f9f599c.1783080055.git.ralf@mandelbit.com/
 
-Changes since v2 https://lore.kernel.org/openvpn-devel/b5dfebec718f230783ff47aa354c3b3fa1aa2ed7.1783068961.git.ralf@mandelbit.com/
-- Reword the message to note the dependency on patch 1.
+Changes since v2 https://lore.kernel.org/openvpn-devel/567de7a9371ce72b0632158799dd11bb543cae08.1783068961.git.ralf@mandelbit.com/
+- Also free the remaining TX skb before dropping the peer reference, so
+  crypto callbacks do not continue cleanup after peer release.
 
-Changes since v1 https://lore.kernel.org/openvpn-devel/350f6b48c363dde5a8d0bdf7a1b9fd2abb8b1034.1783057762.git.ralf@mandelbit.com/
-- Fix a potential AEAD transform UAF in ovpn_crypto_config_get by
-  holding a slot kref while reading the cipher algorithm.
+ drivers/net/ovpn/io.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
- drivers/net/ovpn/crypto.c      | 15 ++++-----------
- drivers/net/ovpn/crypto.h      |  3 +++
- drivers/net/ovpn/crypto_aead.c | 20 ++++++++++++++------
- drivers/net/ovpn/crypto_aead.h |  1 -
- 4 files changed, 21 insertions(+), 18 deletions(-)
-
-diff --git a/drivers/net/ovpn/crypto.c b/drivers/net/ovpn/crypto.c
-index 8cb7078a1d93..63efbca64eab 100644
---- a/drivers/net/ovpn/crypto.c
-+++ b/drivers/net/ovpn/crypto.c
-@@ -18,20 +18,12 @@
- #include "crypto_aead.h"
- #include "crypto.h"
- 
--static void ovpn_ks_destroy_rcu(struct rcu_head *head)
--{
--	struct ovpn_crypto_key_slot *ks;
--
--	ks = container_of(head, struct ovpn_crypto_key_slot, rcu);
--	ovpn_aead_crypto_key_slot_destroy(ks);
--}
--
- void ovpn_crypto_key_slot_release(struct kref *kref)
- {
- 	struct ovpn_crypto_key_slot *ks;
- 
- 	ks = container_of(kref, struct ovpn_crypto_key_slot, refcount);
--	call_rcu(&ks->rcu, ovpn_ks_destroy_rcu);
-+	queue_work(ovpn_wq, &ks->free_work);
+diff --git a/drivers/net/ovpn/io.c b/drivers/net/ovpn/io.c
+index a6b777a9c2d9..e5f2775392d7 100644
+--- a/drivers/net/ovpn/io.c
++++ b/drivers/net/ovpn/io.c
+@@ -204,10 +204,10 @@ void ovpn_decrypt_post(void *data, int ret)
+ 		ovpn_dev_dstats_rx_dropped(peer->ovpn->dev);
+ 	kfree_skb(skb);
+ drop_nocount:
+-	if (likely(peer))
+-		ovpn_peer_put(peer);
+ 	if (likely(ks))
+ 		ovpn_crypto_key_slot_put(ks);
++	if (likely(peer))
++		ovpn_peer_put(peer);
  }
  
- /* can only be invoked when all peer references have been dropped (i.e. RCU
-@@ -201,14 +193,15 @@ int ovpn_crypto_config_get(struct ovpn_crypto_state *cs,
- 
- 	rcu_read_lock();
- 	ks = rcu_dereference(cs->slots[idx]);
--	if (!ks) {
-+	if (!ks || !ovpn_crypto_key_slot_hold(ks)) {
- 		rcu_read_unlock();
- 		return -ENOENT;
- 	}
-+	rcu_read_unlock();
- 
- 	keyconf->cipher_alg = ovpn_aead_crypto_alg(ks);
- 	keyconf->key_id = ks->key_id;
--	rcu_read_unlock();
-+	ovpn_crypto_key_slot_put(ks);
- 
- 	return 0;
- }
-diff --git a/drivers/net/ovpn/crypto.h b/drivers/net/ovpn/crypto.h
-index 0e284fec3a75..85834bbd3ec9 100644
---- a/drivers/net/ovpn/crypto.h
-+++ b/drivers/net/ovpn/crypto.h
-@@ -10,6 +10,8 @@
- #ifndef _NET_OVPN_OVPNCRYPTO_H_
- #define _NET_OVPN_OVPNCRYPTO_H_
- 
-+#include <linux/workqueue_types.h>
-+
- #include "pktid.h"
- #include "proto.h"
- 
-@@ -45,6 +47,7 @@ struct ovpn_crypto_key_slot {
- 
- 	struct ovpn_pktid_recv pid_recv ____cacheline_aligned_in_smp;
- 	struct ovpn_pktid_xmit pid_xmit ____cacheline_aligned_in_smp;
-+	struct work_struct free_work;
- 	struct kref refcount;
- 	struct rcu_head rcu;
- };
-diff --git a/drivers/net/ovpn/crypto_aead.c b/drivers/net/ovpn/crypto_aead.c
-index 8f07c418622b..332975527734 100644
---- a/drivers/net/ovpn/crypto_aead.c
-+++ b/drivers/net/ovpn/crypto_aead.c
-@@ -9,6 +9,7 @@
- 
- #include <crypto/aead.h>
- #include <linux/skbuff.h>
-+#include <linux/workqueue.h>
- #include <net/ip.h>
- #include <net/ipv6.h>
- #include <net/udp.h>
-@@ -380,14 +381,19 @@ static struct crypto_aead *ovpn_aead_init(const char *title,
- 	return ERR_PTR(ret);
+ /* RX path entry point: decrypt packet and forward it to the device */
+@@ -302,11 +302,11 @@ void ovpn_encrypt_post(void *data, int ret)
+ err:
+ 	if (unlikely(skb))
+ 		ovpn_dev_dstats_tx_dropped(peer->ovpn->dev);
+-	if (likely(peer))
+-		ovpn_peer_put(peer);
++	kfree_skb(skb);
+ 	if (likely(ks))
+ 		ovpn_crypto_key_slot_put(ks);
+-	kfree_skb(skb);
++	if (likely(peer))
++		ovpn_peer_put(peer);
  }
  
--void ovpn_aead_crypto_key_slot_destroy(struct ovpn_crypto_key_slot *ks)
-+static void ovpn_aead_crypto_key_slot_free(struct ovpn_crypto_key_slot *ks)
- {
--	if (!ks)
--		return;
--
- 	crypto_free_aead(ks->encrypt);
- 	crypto_free_aead(ks->decrypt);
--	kfree(ks);
-+}
-+
-+static void ovpn_aead_crypto_key_slot_free_work(struct work_struct *work)
-+{
-+	struct ovpn_crypto_key_slot *ks;
-+
-+	ks = container_of(work, struct ovpn_crypto_key_slot, free_work);
-+	ovpn_aead_crypto_key_slot_free(ks);
-+	kfree_rcu(ks, rcu);
- }
- 
- struct ovpn_crypto_key_slot *
-@@ -420,6 +426,7 @@ ovpn_aead_crypto_key_slot_new(const struct ovpn_key_config *kc)
- 
- 	ks->encrypt = NULL;
- 	ks->decrypt = NULL;
-+	INIT_WORK(&ks->free_work, ovpn_aead_crypto_key_slot_free_work);
- 	kref_init(&ks->refcount);
- 	ks->key_id = kc->key_id;
- 
-@@ -453,7 +460,8 @@ ovpn_aead_crypto_key_slot_new(const struct ovpn_key_config *kc)
- 	return ks;
- 
- destroy_ks:
--	ovpn_aead_crypto_key_slot_destroy(ks);
-+	ovpn_aead_crypto_key_slot_free(ks);
-+	kfree(ks);
- 	return ERR_PTR(ret);
- }
- 
-diff --git a/drivers/net/ovpn/crypto_aead.h b/drivers/net/ovpn/crypto_aead.h
-index 65a2ff307898..fae3b585a43b 100644
---- a/drivers/net/ovpn/crypto_aead.h
-+++ b/drivers/net/ovpn/crypto_aead.h
-@@ -22,7 +22,6 @@ int ovpn_aead_decrypt(struct ovpn_peer *peer, struct ovpn_crypto_key_slot *ks,
- 
- struct ovpn_crypto_key_slot *
- ovpn_aead_crypto_key_slot_new(const struct ovpn_key_config *kc);
--void ovpn_aead_crypto_key_slot_destroy(struct ovpn_crypto_key_slot *ks);
- 
- enum ovpn_cipher_alg ovpn_aead_crypto_alg(struct ovpn_crypto_key_slot *ks);
- 
+ static bool ovpn_encrypt_one(struct ovpn_peer *peer, struct sk_buff *skb)
 -- 
 2.54.0
+
 
 
 _______________________________________________
