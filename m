@@ -4,37 +4,37 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D544AC44502
-	for <openvpn-devel@archiver.kernel.org>; Mon,  6 Jul 2026 11:34:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 13CFDC44503
+	for <openvpn-devel@archiver.kernel.org>; Mon,  6 Jul 2026 11:34:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=Iz9cSUrze07kmfKjdizFhKXXHOjXXG7k6B+mmBsozxU=; b=ZFhswOT4buA4u3VL/gKBYWwk0d
-	0Ek6dJd/Gtkl+wnZ374nk73LinCrr6+B1BEihqhv6/SHDFKp4pMiKQcO+6wfJ1tveHDghFngwCJ8J
-	seTkn49dCHDSKEn4GQ+oj64OcihcHY//8H1SRPAjZOAsiUhZ9LopkBRjmaaj3C4yGGwI=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=snf86ACK7pR/66YC38aPi3X1DEvpWi3gjafw99J7Jq4=; b=aiDRlPanEB2sIxpKVLgTEp8OrU
+	IJRfgDwEDu3Wr71MLsuV5cURoIQaHMis9ORaTedWJc0iqoIctcsgs2YLTr7h8zx0lu2N2gB3sd4N5
+	x0O4z9rgj2QWt6acFEkzjY6Dt5EdQUJBF9Ue6OMc1R+5bofWOgJcoi2+2w410c5umYDw=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wghau-000760-Na;
-	Mon, 06 Jul 2026 11:34:37 +0000
+	id 1wghaz-0000Qf-4z;
+	Mon, 06 Jul 2026 11:34:38 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <ralf@mandelbit.com>) id 1wghas-00075t-Jl
+ (envelope-from <ralf@mandelbit.com>) id 1wghax-0000QR-4u
  for openvpn-devel@lists.sourceforge.net;
- Mon, 06 Jul 2026 11:34:35 +0000
+ Mon, 06 Jul 2026 11:34:36 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
  In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=I/IM/VXEJG9KlWBRsVE5e0A1T0rtTNLzXdNuW8PthK4=; b=e+cEyqi8UU9hB+io8dF7rwNTBG
- dWSF8jYi7X3B7oPmVm8griiHGognnwE55tSmPcgr/LpIT3hjFJVfgn/gWLUNCvFufcpURoTOphLmQ
- lCHDT/+JCgFPCIbBbVMgXP5Q8OxtMxX4qOEHYGfP0vBZnEngVZzMGXCRQBAlhMtBk3d8=;
+ bh=3ZkA9c6PszFdxD78qgW/7qFDfcs1CN1vNs0EKzltPtk=; b=hljvTr/a+qjpb5L+EGNjVHyQwK
+ XEzfc3bO7Gm09o4QpJmXRDxFdpKtmD69/e0Xl7c23wpxF73FrPlg7yIfcf4A1YRIXFYqpU8ORnx3Q
+ YXRdjE2A8ByWB5BodixJMxc03gxJoN4xELeKVsWN3E6E6ImIBF57wgjY55xKrtvd/6NE=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -42,48 +42,48 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=I/IM/VXEJG9KlWBRsVE5e0A1T0rtTNLzXdNuW8PthK4=; b=Co9EiSJo1r2Fd2rlZdZFaa5dqG
- C8cr5tTc+pcIYfEIE8nr5iBcD2kAWrJJnYhIPkNEdd36b/Y/Js62/QLRpfwqg6SNHfSPZVshC5gdz
- jpchE5ysq3bN06xx6sVZ2+ngTjYKpzMjljlWPAxV3lqBIfxYwwGQNXsVfWQv9bOFlvk8=;
-Received: from mout-b-107.mailbox.org ([195.10.208.47])
+ bh=3ZkA9c6PszFdxD78qgW/7qFDfcs1CN1vNs0EKzltPtk=; b=fOofZ4zcwueEJEvG186rvwPi16
+ PuIp7McOmFV1PJru1TIw7zKWIkKzyxK9vpOQZl3wVR5qI8bZ2wVkSJhTud79ka93cotV6jNfW3bgV
+ RIpJ+pHx7seGEfCHWJxP7b3KpW/kFVGRvcJix53NX9h7KA2QPMqJrrQgl7gY5UA/lhFM=;
+Received: from mout-b-112.mailbox.org ([195.10.208.42])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wghaq-0006lY-II for openvpn-devel@lists.sourceforge.net;
- Mon, 06 Jul 2026 11:34:35 +0000
+ id 1wghar-0006lt-F1 for openvpn-devel@lists.sourceforge.net;
+ Mon, 06 Jul 2026 11:34:36 +0000
 Received: from smtp1.mailbox.org (smtp1.mailbox.org
  [IPv6:2001:67c:2050:b231:465::1])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
  (No client certificate requested)
- by mout-b-107.mailbox.org (Postfix) with ESMTPS id 4gv2M50nQpzDs4h;
- Mon,  6 Jul 2026 13:34:25 +0200 (CEST)
+ by mout-b-112.mailbox.org (Postfix) with ESMTPS id 4gv2M03kSlzDvmW;
+ Mon,  6 Jul 2026 13:34:20 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
- s=MBO0001; t=1783337665;
+ s=MBO0001; t=1783337660;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=I/IM/VXEJG9KlWBRsVE5e0A1T0rtTNLzXdNuW8PthK4=;
- b=0S1Omcw1sWpb9vEANO1721gm9v818QyJMt4KoECpCDqf04TWhM+WqRJGaiqW2USVcAfmJ6
- 6fSYwelSBeEf1DAV3laqdxmYSecyR+FZUCY9Kn7PWLEb59hXHClW4DwnjX++TU+0RyVpOV
- tWQ5sN8yHxciCC2C0W+uZq41Dv+4XNPQV13VcabUWvR9DsTwAnB9jdjlurlb0SEKuyozh+
- E7UV2jqg3n1L8TJ7Xva6sNPV8UQLzBEmDtepua8gt9O4ycT5pZ7y+H/daEuzr8ACVRk0pg
- HB6iUDtinGZWORyvXcLLsH8LteOgF3eNRb5g8BXywQadi8NcToUDfd8elhGj5g==
+ bh=3ZkA9c6PszFdxD78qgW/7qFDfcs1CN1vNs0EKzltPtk=;
+ b=Y5PqyC+nhRhHUklfTbgKiGAHmWTG5gwjqaN/0UD3hSSzRQDxLQjdnH7e5N2pBZ0LkFIkZR
+ r9kHxkM2Mzm1QyssqOOHLAdpZzGn1lJDjfAsDLUwbvSWCEXABptmnHVQNFbI4En18fxGDq
+ A1KI+e2OM/+BlvHt4sAuYeJrI0USid7ASPwVSWFw4hB7SbugNgvxPb258nSYu/xFHKYIni
+ 32tx5nxpp/XG6b4t7rmSV9MvqJaLDoU5peBoMaru+2LGv+kSe7AWAhkcuBaALPAKCy7eXp
+ iC5yp6l1Er+SgZFWMM9FF0ZawgLNBEDPnmihINI336nNJ6y171bPb6Vd+bXC0g==
 Authentication-Results: outgoing_mbo_mout; dkim=none;
  spf=pass (outgoing_mbo_mout: domain of ralf@mandelbit.com designates
  2001:67c:2050:b231:465::1 as permitted sender)
  smtp.mailfrom=ralf@mandelbit.com
 From: Ralf Lici <ralf@mandelbit.com>
 To: openvpn-devel@lists.sourceforge.net
-Date: Mon,  6 Jul 2026 13:34:03 +0200
-Message-ID: <d530ecfc3719845075fbddd0cd7c34752bc2ce16.1783336121.git.ralf@mandelbit.com>
+Date: Mon,  6 Jul 2026 13:34:00 +0200
+Message-ID: <6e44855f0fcd704da43dd83b42a1236cb804c76e.1783336121.git.ralf@mandelbit.com>
 In-Reply-To: <cover.1783336121.git.ralf@mandelbit.com>
 References: <cover.1783336121.git.ralf@mandelbit.com>
 MIME-Version: 1.0
-X-Rspamd-Queue-Id: 4gv2M50nQpzDs4h
-X-Headers-End: 1wghaq-0006lY-II
-Subject: [Openvpn-devel] [PATCH ovpn net v5 5/6] ovpn: run deferred work on
- a module-owned workqueue
+X-Rspamd-Queue-Id: 4gv2M03kSlzDvmW
+X-Headers-End: 1wghar-0006lt-F1
+Subject: [Openvpn-devel] [PATCH ovpn net v5 2/6] ovpn: use nla_put_u32 for
+ the key ID attribute in ovpn_nl_key_swap_notify
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -99,189 +99,37 @@ Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-ovpn queues several work items whose callbacks execute module text.
-These works currently run on the global system workqueues, so module
-exit has no driver-owned drain point that guarantees the callbacks have
-fully returned before the module text can be freed.
+Currently, in ovpn_nl_key_swap_notify, the OVPN_A_KEYCONF_KEY_ID
+attribute is packed as a 16-bit value despite being defined as a 32-bit
+u32 attribute in the YAML policy.
 
-Object references protect the objects used by the callbacks, but they do
-not prove that a workqueue function has returned. In particular, a
-worker can drop the final reference that unblocks device teardown while
-it is still executing ovpn code.
+Fix this inconsistency by using nla_put_u32.
 
-Add a module-owned workqueue and queue all ovpn work items on it.
-Destroy the workqueue during module exit, after unregistering the rtnl
-link ops and netlink family and before the final RCU barrier, so no ovpn
-work item can outlive the module text. The per-device delayed keepalive
-work remains explicitly disabled during netdev teardown
-(disable_delayed_work_sync in ndo_uninit), since destroy_workqueue does
-not flush delayed work that is still only pending on its timer.
-
-Fixes: 3ecfd9349f40 ("ovpn: implement keepalive mechanism")
-Fixes: 11851cbd60ea ("ovpn: implement TCP transport")
+Fixes: 89d3c0e4612a ("ovpn: kill key and notify userspace in case of IV exhaustion")
 Signed-off-by: Ralf Lici <ralf@mandelbit.com>
 ---
-Changes since v4 https://lore.kernel.org/openvpn-devel/6edfcc51e0855bfd34286b86d4e7f26bb3bcd3f7.1783099626.git.ralf@mandelbit.com/
-- Rebase on the pending keepalive and TCP deferred-work refcount fixes,
-  preserving their hold-before-queue and queue-failure put handling when
-  converting schedule_work to queue_work.
+Changes since v4 of this series https://lore.kernel.org/openvpn-devel/981d2ea51cca45138210aa52c6e5a0e55c0da7a0.1783099626.git.ralf@mandelbit.com/
+- Add this previously posted standalone fix to the series so the whole
+  set can be picked in order.
+- No changes since v1 of the original single patch
+  https://lore.kernel.org/openvpn-devel/8577555cc95646d0bd58a5b78e59c7e6a9b1a0c6.1783058844.git.ralf@mandelbit.com/
 
-Changes since v3 https://lore.kernel.org/openvpn-devel/49f38f89340e18ed30543d3990a7a7e20595b6af.1783080055.git.ralf@mandelbit.com/
-- Replace the RCU-deferred peer netdev reference release with a
-  module-owned workqueue that drains all ovpn work callbacks before
-  module text can be freed.
+ drivers/net/ovpn/netlink.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- drivers/net/ovpn/main.c     | 17 ++++++++++++++++-
- drivers/net/ovpn/ovpnpriv.h |  4 ++++
- drivers/net/ovpn/peer.c     |  8 ++++----
- drivers/net/ovpn/tcp.c      |  9 ++++-----
- 4 files changed, 28 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/net/ovpn/main.c b/drivers/net/ovpn/main.c
-index c2c3af0c3c55..0714a53133b7 100644
---- a/drivers/net/ovpn/main.c
-+++ b/drivers/net/ovpn/main.c
-@@ -12,6 +12,7 @@
- #include <linux/module.h>
- #include <linux/netdevice.h>
- #include <linux/inetdevice.h>
-+#include <linux/workqueue.h>
- #include <net/gro_cells.h>
- #include <net/ip.h>
- #include <net/rtnetlink.h>
-@@ -26,6 +27,9 @@
- #include "tcp.h"
- #include "udp.h"
+diff --git a/drivers/net/ovpn/netlink.c b/drivers/net/ovpn/netlink.c
+index 4c66c1ec497e..abf038206a62 100644
+--- a/drivers/net/ovpn/netlink.c
++++ b/drivers/net/ovpn/netlink.c
+@@ -1335,7 +1335,7 @@ int ovpn_nl_key_swap_notify(struct ovpn_peer *peer, u8 key_id)
+ 	if (nla_put_u32(msg, OVPN_A_KEYCONF_PEER_ID, peer->id))
+ 		goto err_cancel_msg;
  
-+/* module-owned workqueue on which all ovpn-specific work is queued */
-+struct workqueue_struct *ovpn_wq;
-+
- static void ovpn_priv_free(struct net_device *net)
- {
- 	struct ovpn_priv *ovpn = netdev_priv(net);
-@@ -240,10 +244,16 @@ static int __init ovpn_init(void)
- 	 */
- 	ovpn_tcp_init();
+-	if (nla_put_u16(msg, OVPN_A_KEYCONF_KEY_ID, key_id))
++	if (nla_put_u32(msg, OVPN_A_KEYCONF_KEY_ID, key_id))
+ 		goto err_cancel_msg;
  
-+	ovpn_wq = alloc_workqueue("ovpn", 0, 0);
-+	if (!ovpn_wq) {
-+		pr_err("ovpn: cannot allocate workqueue\n");
-+		return -ENOMEM;
-+	}
-+
- 	err = rtnl_link_register(&ovpn_link_ops);
- 	if (err) {
- 		pr_err("ovpn: can't register rtnl link ops: %d\n", err);
--		return err;
-+		goto destroy_wq;
- 	}
- 
- 	err = ovpn_nl_register();
-@@ -256,6 +266,9 @@ static int __init ovpn_init(void)
- 
- unreg_rtnl:
- 	rtnl_link_unregister(&ovpn_link_ops);
-+destroy_wq:
-+	destroy_workqueue(ovpn_wq);
-+	ovpn_wq = NULL;
- 	return err;
- }
- 
-@@ -263,6 +276,8 @@ static __exit void ovpn_cleanup(void)
- {
- 	ovpn_nl_unregister();
- 	rtnl_link_unregister(&ovpn_link_ops);
-+	destroy_workqueue(ovpn_wq);
-+	ovpn_wq = NULL;
- 
- 	rcu_barrier();
- }
-diff --git a/drivers/net/ovpn/ovpnpriv.h b/drivers/net/ovpn/ovpnpriv.h
-index 5898f6adada7..84499140e4bd 100644
---- a/drivers/net/ovpn/ovpnpriv.h
-+++ b/drivers/net/ovpn/ovpnpriv.h
-@@ -15,6 +15,10 @@
- #include <uapi/linux/if_link.h>
- #include <uapi/linux/ovpn.h>
- 
-+struct workqueue_struct;
-+
-+extern struct workqueue_struct *ovpn_wq;
-+
- /**
-  * struct ovpn_peer_collection - container of peers for MultiPeer mode
-  * @by_id: table of peers index by ID
-diff --git a/drivers/net/ovpn/peer.c b/drivers/net/ovpn/peer.c
-index 4e6cd2b69f57..29d03d96fd33 100644
---- a/drivers/net/ovpn/peer.c
-+++ b/drivers/net/ovpn/peer.c
-@@ -61,7 +61,7 @@ void ovpn_peer_keepalive_set(struct ovpn_peer *peer, u32 interval, u32 timeout)
- 	/* now that interval and timeout have been changed, kick
- 	 * off the worker so that the next delay can be recomputed
- 	 */
--	mod_delayed_work(system_percpu_wq, &peer->ovpn->keepalive_work, 0);
-+	mod_delayed_work(ovpn_wq, &peer->ovpn->keepalive_work, 0);
- }
- 
- /**
-@@ -1287,7 +1287,7 @@ static time64_t ovpn_peer_keepalive_work_single(struct ovpn_peer *peer,
- 			   peer->id);
- 		if (WARN_ON(!ovpn_peer_hold(peer)))
- 			return 0;
--		if (!schedule_work(&peer->keepalive_work))
-+		if (!queue_work(ovpn_wq, &peer->keepalive_work))
- 			ovpn_peer_put(peer);
- 	}
- 
-@@ -1379,8 +1379,8 @@ void ovpn_peer_keepalive_work(struct work_struct *work)
- 		netdev_dbg(ovpn->dev,
- 			   "scheduling keepalive work: now=%llu next_run=%llu delta=%llu\n",
- 			   next_run, now, next_run - now);
--		schedule_delayed_work(&ovpn->keepalive_work,
--				      (next_run - now) * HZ);
-+		queue_delayed_work(ovpn_wq, &ovpn->keepalive_work,
-+				   (next_run - now) * HZ);
- 	}
- 	unlock_ovpn(ovpn, &release_list);
- }
-diff --git a/drivers/net/ovpn/tcp.c b/drivers/net/ovpn/tcp.c
-index 0af14055c39a..8fe8a8e750a4 100644
---- a/drivers/net/ovpn/tcp.c
-+++ b/drivers/net/ovpn/tcp.c
-@@ -151,7 +151,7 @@ static void ovpn_tcp_rcv(struct strparser *strp, struct sk_buff *skb)
- 	/* take reference for deferred peer deletion. should never fail */
- 	if (WARN_ON(!ovpn_peer_hold(peer)))
- 		goto err_nopeer;
--	if (!schedule_work(&peer->tcp.defer_del_work))
-+	if (!queue_work(ovpn_wq, &peer->tcp.defer_del_work))
- 		ovpn_peer_put(peer);
- 	ovpn_dev_dstats_rx_dropped(peer->ovpn->dev);
- err_nopeer:
-@@ -284,13 +284,12 @@ static void ovpn_tcp_send_sock(struct ovpn_peer *peer, struct sock *sk)
- 			 * stream therefore we abort the connection
- 			 */
- 			ovpn_peer_hold(peer);
--			if (!schedule_work(&peer->tcp.defer_del_work))
-+			if (!queue_work(ovpn_wq, &peer->tcp.defer_del_work))
- 				ovpn_peer_put(peer);
- 
- 			/* we bail out immediately and keep tx_in_progress set
- 			 * to true. This way we prevent more TX attempts
--			 * which would lead to more invocations of
--			 * schedule_work()
-+			 * which would lead to more invocations of queue_work()
- 			 */
- 			return;
- 		}
-@@ -487,7 +486,7 @@ static void ovpn_tcp_write_space(struct sock *sk)
- 	rcu_read_lock();
- 	sock = rcu_dereference_sk_user_data(sk);
- 	if (likely(sock && sock->peer)) {
--		schedule_work(&sock->tcp_tx_work);
-+		queue_work(ovpn_wq, &sock->tcp_tx_work);
- 		sock->peer->tcp.sk_cb.sk_write_space(sk);
- 	}
- 	rcu_read_unlock();
+ 	nla_nest_end(msg, k_attr);
 -- 
 2.55.0
 
