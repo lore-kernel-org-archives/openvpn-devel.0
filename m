@@ -4,114 +4,108 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4D5FBC43458
-	for <openvpn-devel@archiver.kernel.org>; Wed,  8 Jul 2026 10:14:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 73D3FC43458
+	for <openvpn-devel@archiver.kernel.org>; Wed,  8 Jul 2026 14:41:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:Cc:
-	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:In-Reply-To:MIME-Version:References:Message-ID:To:From:Date:Sender:
-	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
-	:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=ZZ4pLGN6s0C+WbdZLfCe/FD9OBdUm+WiadmlmEcOZzs=; b=TebrLOC0r1wKJgHo8puiDySpv1
-	G9nNNddrhfFievgms7v4mUKuoWAGDYV3ZIL4GtVAIwStjU8d2fGq8V56IVhA1Nww3ZQGpdQtT60RU
-	G1u6jRFm7uAfT8HSeRooazsrKb6HImZB1hlkQCf1F8Ap4koCCIpRKD4oyuV1iASlwmvo=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Reply-To:From:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:Subject:To:
+	MIME-Version:Date:Message-ID:Sender:Cc:Content-Transfer-Encoding:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Owner;
+	bh=H4Mh1DspGvoTEW/GsZXK/SB95eZBxPz6m2kYMEH4DDU=; b=MBbOyJsBvjgG2KaILa4IFFmZjK
+	2TjJKIu932cJ7FlNeGNSeghvsBAj0W9VW5sKTcMSkJt2gQFhuknZYOxQONXRsgt8l+QCR+QKuzjif
+	p1LV5BLvVDaA2UFvt1TZfKcHyD3mDOD4IQluFw6EXjlv16Wgi3YRLEzDubAnB9nUz4+w=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1whPIk-0000Wi-QX;
-	Wed, 08 Jul 2026 10:14:47 +0000
+	id 1whTTA-00021L-M9;
+	Wed, 08 Jul 2026 14:41:48 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <sd@queasysnail.net>) id 1whPIO-0000WM-98
+ (envelope-from <johan@openvpn.com>) id 1whTT9-00021E-F2
  for openvpn-devel@lists.sourceforge.net;
- Wed, 08 Jul 2026 10:14:25 +0000
+ Wed, 08 Jul 2026 14:41:47 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=In-Reply-To:Content-Type:MIME-Version:References:
- Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ d=sourceforge.net; s=x; h=To:Subject:From:MIME-Version:Date:Message-ID:
+ Content-Type:Sender:Reply-To:Cc:Content-Transfer-Encoding:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=tW6HOpsyIFchM8puA52poCQoI5e9gAgGwTbK1+AxXoc=; b=W1fYAgXucbu1RipTEOFdQ05mRg
- +MVvVmhBls13pDKCA/w8uvH5hgH+X2Zvwm6MwkabEOsFnpWWeSDGZs58A3AeAeBjAwY9GyHSoMKL8
- sPuge13jTdHAYCmKoOHBch0Gmy3JroFtl9ir++7GIe7+qpRJWyMB/TUCuOtR/FS8BkR8=;
+ bh=5/qSjXO9NszlHxFaKML1e8Zh4oqwZpS6XqCwfpRuCCo=; b=ByIRDXZnmkMkX4npHYOmpP+pfn
+ V8HaGNFQYRkidIcd+ibj6VzbyLNthc8Uev+lWKC7YEevYFZhvONganxw/NULFD8uiQdsdckJmBlj6
+ DQ8G+ou5+BhI0oqAAC0eeYfoUWSG/O/bumavXw6nnFfz4oQkn8HJkcsJErXNvh/eWScg=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To
- :From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=tW6HOpsyIFchM8puA52poCQoI5e9gAgGwTbK1+AxXoc=; b=nWZX+C0o4K3cKeHUlcmsRWi3ir
- T9OT0/FlXjhaKQiesKt/bG56/gKMohGkDzw4O+TBodj8I9wF2WoIDr18Ku5cxxaIk8wmfvV6oRbF7
- VRR3Dh62tkSHELfHNgGo9/6Mh5yMVo29V338pZyqi09WabNIhm6pTllYqDi2zZ7Epsjk=;
-Received: from fout-b5-smtp.messagingengine.com ([202.12.124.148])
+ h=To:Subject:From:MIME-Version:Date:Message-ID:Content-Type:Sender:Reply-To
+ :Cc:Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+ References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=5/qSjXO9NszlHxFaKML1e8Zh4oqwZpS6XqCwfpRuCCo=; b=V
+ gaGDsv+mcQ+AVnizHeU9tDUcHEKXi2D+dvLcREXPkvo4qcdUB68WUDQn+dHfRSyiU89Xp1e3b3d11
+ neJG7/2VNjh+0i2X3VGkR2IGDTVB71pIJR/HYJPZD4wQdf1aah42yKD4+8IzWattQHBGtVZ6mBxpu
+ s78I4BxaYbOoGAyc=;
+Received: from mail-oo1-f49.google.com ([209.85.161.49])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1whPIM-00075Z-Ni for openvpn-devel@lists.sourceforge.net;
- Wed, 08 Jul 2026 10:14:24 +0000
-Received: from phl-compute-06.internal (phl-compute-06.internal [10.202.2.46])
- by mailfout.stl.internal (Postfix) with ESMTP id 1235D1D00183;
- Wed,  8 Jul 2026 06:14:12 -0400 (EDT)
-Received: from phl-frontend-04 ([10.202.2.163])
- by phl-compute-06.internal (MEProxy); Wed, 08 Jul 2026 06:14:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=queasysnail.net;
- h=cc:cc:content-type:content-type:date:date:from:from
- :in-reply-to:in-reply-to:message-id:mime-version:references
- :reply-to:subject:subject:to:to; s=fm3; t=1783505651; x=
- 1783592051; bh=tW6HOpsyIFchM8puA52poCQoI5e9gAgGwTbK1+AxXoc=; b=J
- xziIMR038R2mVW6Pt4tyybbxS4rb3npvy4kA/bxaxaniQUK8wWMS4g8ZTlvxkE1O
- vZk1OpGJSNFeNux1hrz9xSBoEuUzf7plLrWKtOoj2rIfGAUQhDykDMEa6i45ZebN
- w8egcizbP6nlyEIsbHdiJBtn8I0UzvFfLzZ1zjZtWCgB0Bo2bpJXQQUGWHm+HaG+
- Cjp3IcTXmQKu1T70qMpDS2HaAGzFUD6J5uumWhhAbgfnNUG8Dc19M7nJB//p56tr
- mp5/d2fR1cCuG132R0CyDJXUkY/QQ6Z+qE9OawdmzBhPTnKNGQ4J0AwNaGzmAiOq
- 3qy/MIFwHJcMc2jd0cSGA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
- messagingengine.com; h=cc:cc:content-type:content-type:date:date
- :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
- :message-id:mime-version:references:reply-to:subject:subject:to
- :to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
- 1783505651; x=1783592051; bh=tW6HOpsyIFchM8puA52poCQoI5e9gAgGwTb
- K1+AxXoc=; b=Nn+CzCoeCbhlPHyESfd+CBdLBa5k2Uq8K16UX74KdOzp73SVAlb
- PEX/+aLjo19aY2DrXBuZ2PW3o+LqBrknn8qKz94QCYnDoSZjVNaf2KYRRSyZcQ6M
- fUw3o2oufVtnKcaRUphjDyAimZf7NZChFxnJJvpYWzFiUl+p/eSG/zTGCE1HnxAS
- jcr0vQpCtnICpHEjNu+/VJ77dAFLX+Vi5YngploY67j6uugtZ+zJVYQsEalTJLS1
- m8hkMdBis6lNI3ngnPPovf2eF5+D3scM8ROi1cb5fp+Iy0qs8D5FwTmwTp3a7MZ/
- +99m1RlYM0HDtVeCg+LAU+t7qaY/GH3ferQ==
-X-ME-Sender: <xms:8yJOav7pxreWs9E8WLuejiy9niWUHeYGrFKVC4uN-lIV13oQ5GSMzA>
- <xme:8yJOaq50p8gPhzmw1kV6OKbrE3YSZkjQoVbOphA7b2Sl0qipdwAn5h_eOTkhifhFI
- opQv3TUv7SJZIoPZPEZPR_UgdqfZEfzFLEL2QPt52V3b3pFjNtP5Q>
-X-ME-Received: <xmr:8yJOakH40YpsV2KnH-ZJVb5IsLhs6TqNsIUyYCQBVPMw_2njTuJvza8VRH4>
-X-ME-Proxy-Cause: dmFkZTEqG2Fg5c8hvLUAN7uAfOohbmujnSeTiWodWRfUwtv57RFX6cMkhylq5PV9PRXOBT
- Eu9UMkd4p+xHnb/Yk6wZWmz6BZC+WUKPfXkZ3aHDNYGPe1t2f+5ji7mwlVA9gfzATz0aWM
- CqJJwUkI7scBphudw9okJzMYO+R5Dfw/d40Z/PDTMI3+YouXn8m+puwgoqIxB7ITdbSfrR
- DgyoC5JEsqNp3GK/Vsqyef3YceesmQyeXwm0/ySmT1k2Ni3GB2QJDPAUdlMNEmaQ/IBn5g
- xCUQa8AjaKL1jLS/fHk3UcTqpuu9lgb4fNkzwxuED4Js9pIQZAaVHT5zOkqpVizb+r4ymi
- QCb9mF0E7tYMiYuEATn396mnk5O/7FwmqAZgCEqEpkCW1w1v9oQazJddBMXR4XxhYyY1Jj
- l5kp2qVPz2gDZ7xp2YIfrnUiCZpxkv+ei4bPzwj1BBztTPZ/pAEtcEo/Q567aiDehcOU/a
- gehXfzGcY7gicKPkk9NJSXBqZxs6RscYXcxvO0+79P+jfXah6/rfCOiadCe+p+y7wbGUrq
- vviWaUA3lCQ1N+QMX3AXKs9VOq2XkpcrawPw/lvntMU4Z8LxX3IinnTFqT1UH48cVjPnFv
- w2bizTOgMoIdOz7wBQV9ac7nWlCMsBaOHsyIg5QU8pUV0WCBqGMNwx9qGnVQ
-X-ME-Proxy: <xmx:8yJOarRiNyKNDNz_jxzbS5WgkMuAN8XupkOcNaQ2YrZ1GIlLiNI_eA>
- <xmx:8yJOals8-VOyZM0JYrcYKACdtSaKIztP6LsWOQaHzq2uBB4mqjdiTw>
- <xmx:8yJOaixg1Ni14M3J6cWp1TWIJcsc44QKEmugn6ZtSOFOaP-Os6GqGQ>
- <xmx:8yJOan4t-cx3PNS_7RFdkk1M8yjwhMROYHUKzPv-2M5PzmMxMgbhrQ>
- <xmx:8yJOaoIZwhG7IhxXEjUHc0AJynLxMBq1mx-UKG4SjciWabMxcUpzEpvV>
-Feedback-ID: i934648bf:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 8 Jul 2026 06:14:10 -0400 (EDT)
-Date: Wed, 8 Jul 2026 12:14:08 +0200
-From: Sabrina Dubroca <sd@queasysnail.net>
-To: Ralf Lici <ralf@mandelbit.com>
-Message-ID: <ak4i8LmnbeStiufT@krikkit>
-References: <ak0KZ8XIkWh8e6AI@krikkit>
- <20260708070443.62591-1-ralf@mandelbit.com>
+ (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
+ id 1whTT4-0004Ci-34 for openvpn-devel@lists.sourceforge.net;
+ Wed, 08 Jul 2026 14:41:47 +0000
+Received: by mail-oo1-f49.google.com with SMTP id
+ 006d021491bc7-6a31efdda0bso906341eaf.0
+ for <openvpn-devel@lists.sourceforge.net>;
+ Wed, 08 Jul 2026 07:41:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=openvpn.com; s=google; t=1783521696; x=1784126496; darn=lists.sourceforge.net;
+ h=content-language:to:subject:from:user-agent:mime-version:date
+ :message-id:from:to:cc:subject:date:message-id:reply-to;
+ bh=5/qSjXO9NszlHxFaKML1e8Zh4oqwZpS6XqCwfpRuCCo=;
+ b=r+ZQBckc/oxuPLwmNv/5dqI2WEJxY+rIOvV8obGMxV2jrii3IqwnwdWCzI8ntBjoZ1
+ lmKIGkThnOPoiD56NiRAl7bnZmrfbHmUWw0a+4Oat7yOYWf/FW9vdufd2QJm8cySkyxD
+ n/g9drBpFDRaeFZRG2YsicdBj9eGa3eF3IRN5Cu4c6k1DptDlUpS5LSYKUrbrx7nqwhp
+ F1Qi4j6VAlgJYW2IHUYbBIvwPWjudKIxFC9fURZPK1jMEmOan2aON81bY3gUtVELvO29
+ p5BthavR0tHX3Luvt55PFDHUwm946PU407K8V/UXUscKJc30g+Uer/txotOr+0MX4F1b
+ bYAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20251104; t=1783521696; x=1784126496;
+ h=content-language:to:subject:from:user-agent:mime-version:date
+ :message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+ :message-id:reply-to;
+ bh=5/qSjXO9NszlHxFaKML1e8Zh4oqwZpS6XqCwfpRuCCo=;
+ b=jiMvmmf3ASVU3sQSWXzrjfJLHNER9U2FEVOpJ7DFlEe/mQdfU1+SKQEEO4ZeDFJdgj
+ m3K5DWrPbrns5G341BIAbKhZ10/RH+fZPkuDkbTAnn0xUzJgWsjXsrCgcJpjzMKasjCi
+ EO5oLvQYKJO744BT9wClwKSySZiUELMvYpeEJ8IeJN+lNs+UMwOHHGUvWM/RAVW/hRNM
+ NI5HEyHhwRMTd/y7sJ+VoddvzjxWHgPPKyx2YlhAIgiXn0XvCTJobJOR5zcgl6r1uZ3X
+ bxkYRHKlvRpTGYeJ1zxeKagOjDE3NmbVyZ3RjaTVa9fLxxOO570+7etQN36r2KuKtFEh
+ jqqQ==
+X-Gm-Message-State: AOJu0YzQ6F37zc2T+ZBEaezKwUyotX1pwo7VXstcbj1Cmwj4sv1sDDEG
+ l/nKyFtZl/mNdHRoDA4V2r20s77VlCgQbgRJ9jgbxtEb5gRhWLgPHvKJoiw4kfs1yMprwjlbP9s
+ vS9j74+fkN6wtjNgRze9U5FbvsEnRNM/j4J8ZVno6Zs59LaSohiEHky8SyZuuznJ7xzKKzp5qBn
+ d37Fp+4w==
+X-Gm-Gg: AfdE7cmcGSErZSclDwFinj6IglkJmj70XyAVFjFazQng3aZAyvROJ+Myeyq9opna4XG
+ T7Jk9pGY4CO2IVKBLqRR+bqlm+sLWl9Xo98/pBRcpgi1ez2epH+3ZDeCyLxWPQOF6uhheCCAUax
+ rH30MFL9HN67IuTJ+UJrgn8/yUqy9GPkhk/ardWfdJGpcJzSbdZOFCD3fpV/1tiWYFqEty72yLj
+ vl2zSZjCzOnjndoyuJvU3w06GzhcTmtMydOkeEZJLTDg4Bzjrk7TvEaxDZvuYTWgFdpHu57eXv+
+ f7B8beEUbjFHHfEKAXvi40/CbVmZJ3gMWgx1zkOlzmgKfxD1l333IRCrS1T/zhGa3N0e5ByU5nd
+ GWIKn2o+Xq+SSEPXnn7onTdv8uD0W1nikNOSdc0S2/B4ieE+AleH8N3cdLAlUSMZCLIMGDnDy83
+ iR5kJxk+owvEiW3UkywdJclHoTUM/YUxDxGQeNRYQL1v3bK6N/h58Yo+TTCw==
+X-Received: by 2002:a17:90b:2787:b0:37f:9e21:91d7 with SMTP id
+ 98e67ed59e1d1-3892f2f7d4dmr2676569a91.14.1783520126955; 
+ Wed, 08 Jul 2026 07:15:26 -0700 (PDT)
+Received: from ?IPV6:2001:ee0:4f83:3c70:9e0b:5f3a:2804:9224?
+ ([2001:ee0:4f83:3c70:9e0b:5f3a:2804:9224])
+ by smtp.gmail.com with ESMTPSA id
+ 98e67ed59e1d1-387d3a65609sm2818423a91.14.2026.07.08.07.15.25
+ for <openvpn-devel@lists.sourceforge.net>
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Wed, 08 Jul 2026 07:15:26 -0700 (PDT)
+Message-ID: <1b8acd46-75bd-4929-ad35-5b196cd43b3c@openvpn.com>
+Date: Wed, 8 Jul 2026 21:15:23 +0700
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20260708070443.62591-1-ralf@mandelbit.com>
-X-Headers-End: 1whPIM-00075Z-Ni
-Subject: Re: [Openvpn-devel] [PATCH ovpn net v5 6/6] ovpn: defer key slot
- crypto freeing to workqueue
+User-Agent: Mozilla Thunderbird
+To: openvpn-devel@lists.sourceforge.net
+Content-Language: en-US
+X-Headers-End: 1whTT4-0004Ci-34
+Subject: [Openvpn-devel]  IRC community meeting summary
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -123,119 +117,127 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: openvpn-devel@lists.sourceforge.net
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+From: Johan Draaisma via Openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Reply-To: Johan Draaisma <johan@openvpn.com>
+Content-Type: multipart/mixed; boundary="===============5527455667252004928=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-2026-07-08, 09:04:42 +0200, Ralf Lici wrote:
-> On Tue, 07 Jul 2026 16:17:11 +0200, Sabrina Dubroca <sd@queasysnail.net> wrote:
-> > 2026-07-06, 13:34:04 +0200, Ralf Lici wrote:
-> > > Key slots are released through a kref and the existing release path frees
-> > > the AEAD transforms from an RCU callback. That is not safe for all crypto
-> > > implementations: crypto_free_aead can sleep, for example when an async or
-> > > hardware implementation has teardown work to complete.
-> > > 
-> > > The AEAD transforms are only used while a key-slot reference is held, so
-> > > the final kref put is enough to prove that no transform user remains.
-> > > Queue the final crypto teardown on the ovpn workqueue, where sleeping is
-> > > allowed, and keep the slot memory itself RCU-freed after the transforms
-> > > have been released.
-> > > 
-> > > ovpn_crypto_config_get was the remaining lockless reader of transform
-> >
-> > nit: encrypt/decrypt is also lockless, the difference is only the
-> > refcount, no?
-> >
-> 
-> Correct, I meant the remaining reader of transform state without holding
-> a key-slot reference. I'll reword that.
-> 
-> > > state through ovpn_aead_crypto_alg. Make it take a key-slot reference
-> > > before reading that state, so the transform lifetime is consistently tied
-> > > to key-slot references. The previous patch drains ovpn_wq during module
-> >
-> > Using rcu_work/queue_rcu_work (see commit 6624bba469a3 ("macsec: use
-> > rcu_work to defer RX SA crypto cleanup out of softirq")) would avoid
-> > some of the refactoring of the destroy helpers, and the (kind of weird
-> > and ugly IMO) refcount dance in ovpn_crypto_config_get (with a fairly
-> > big risk of "well it's dumb to take a refcount here, we could just do
-> > everything under RCU").
-> >
-> 
-> One thing I am not fully sure about in this case is the module-exit
-> ordering. If key-slot release uses queue_rcu_work, the work item is not
-> queued immediately. The final put first schedules an RCU callback, and
-> that callback later queues the actual work on ovpn_wq, right?
+This is a multi-part message in MIME format.
+--===============5527455667252004928==
+Content-Type: multipart/alternative;
+ boundary="------------nc5R7G7xW2jDmnLyysDtAb0w"
+Content-Language: en-US
 
-AFAIU, yes.
+This is a multi-part message in MIME format.
+--------------nc5R7G7xW2jDmnLyysDtAb0w
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-> Does that mean ovpn_cleanup would need a different ordering from the
-> current destroy_workqueue; rcu_barrier shape?
-> 
-> In particular, with this series ovpn_wq also runs ordinary ovpn work
-> items, such as the TCP deferred-delete worker and keepalive work. Those
-> can drop peer references, and the final peer put can release the crypto
-> state and queue a key-slot rcu_work. So if we only move rcu_barrier
-> before destroy_workqueue, maybe an already pending/running ovpn worker
-> could still queue a new rcu_work after the barrier has returned.
+Meeting summary for 8 July 2026:
 
-Right, that's... a bit hairy.
+  *
 
-> Would the safe shape be something like:
-> 
->     drain_workqueue(ovpn_wq);
->     rcu_barrier();
->     destroy_workqueue(ovpn_wq);
-> 
-> so that ordinary ovpn work is drained first, including chained work
-> queued by already running ovpn workers, then pending rcu_work callbacks
-> are forced to queue their actual work, and finally the workqueue drains
-> that cleanup work before being destroyed?
+    *Updated: DCO testing*
+    ralf implemented a test system for DCO kernel module. He added RHEL
+    platforms as per discussion.
+    This currently tests both ovpn-dco-v2 (for 2.6 and older openvpn)
+    and ovpn-backports (for 2.7 and above).
+    We recently had an issue where Debian12 broke something for us in a
+    small kernel update, we will now be able to spot this quickly.
+    More
+    details:https://community.openvpn.net/DataChannelOffload/CI%20for%20DCO%20Linux
 
-I'm not sure. The comment for drain_workqueue() says:
+  *
 
- * Wait until the workqueue becomes empty.  While draining is in progress,
- * only chain queueing is allowed.  IOW, only currently pending or running
- * work items on @wq can queue further work items on it.  [...]
+    *New: CVE handling during holidays*
+    Due to holidays, temporarily evaluation of CVE and assigning IDs is
+    postponed. This will be for approximately 3 weeks.
+    Reports will still be able to come in but determining if it's an
+    actual CVE or not and assigning an ID will have to wait.
 
-So any attempt to queue from other contexts will fail (and actually
-trigger a WARN it seems, __queue_work -> __WQ_DRAINING), for example
-from TCP. Even without the warning, for things like keepalive or
-tcp_tx, it shouldn't matter, since we're already cleaning up. Maybe
-also defer_del_work, since the peer should already be going away with
-its netdevice. But it we can't queue key slot freeing, it's going to
-leak.
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 14:00 Central European Time.
+
+Kind regards,
+Johan Draaisma
+
+--------------nc5R7G7xW2jDmnLyysDtAb0w
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 8 July 2026:</p>
+    <ul
+style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            DCO testing</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          ralf implemented a test system for DCO kernel module. He added
+          RHEL platforms as per discussion.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          This currently tests both ovpn-dco-v2 (for 2.6 and older
+          openvpn) and ovpn-backports (for 2.7 and above).<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          We recently had an issue where Debian12 broke something for us
+          in a small kernel update, we will now be able to spot this
+          quickly.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          More details:<span> </span><a
+href="https://community.openvpn.net/DataChannelOffload/CI%20for%20DCO%20Linux"
+style="box-sizing: inherit; background-color: transparent; color: rgb(24, 144, 255); text-decoration: none; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"
+            class="moz-txt-link-freetext">https://community.openvpn.net/DataChannelOffload/CI%20for%20DCO%20Linux</a></p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">New:
+            CVE handling during holidays</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Due to holidays, temporarily evaluation of CVE and assigning
+          IDs is postponed. This will be for approximately 3 weeks.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Reports will still be able to come in but determining if it's
+          an actual CVE or not and assigning an ID will have to wait.</p>
+      </li>
+    </ul>
+    As always you're welcome to join at #openvpn-meeting on Libera IRC
+    network every Wednesday at 14:00 Central European Time.
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
+
+--------------nc5R7G7xW2jDmnLyysDtAb0w--
 
 
-Would flush_workqueue() be enough? By the time rtnl_link_unregister()
-returns, ndo_uninit() has been called for all ovpn devices
-(__rtnl_kill_links() -> unregister_netdevice_many_notify() ->
-->ndo_uninit()) so ovpn_peers_free() has removed all the peers from
-the hashtable/p2p slot.
+--===============5527455667252004928==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-ovpn_peer_keepalive_work_{p2p,mp} should probably copy the "prevent
-double remove" check from ovpn_peer_remove() as "don't do anything for
-already deleted peers". tcp_tx_work can queue defer_del_work but the
-same check could be used. With this, after rtnl_link_unregister()
-returns, there should be no work capable of requeueing work on
-ovpn_wq, so no more keepalive_work or defer_del_work running once
-flush_workqueue() returns, or maybe only "empty" ones that will just
-return immediately without doing anything.
 
-The final destroy_workqueue() will take care of any keyslot
-cleanup that has been queued after flush_workqueue() started (whether
-it was while flush_workqueue() was running, or during the
-rcu_barrier()).
-
-Am I making any sense? (it's quite possible I need another 3 cups of
-coffee for this type of reasoning :))
-
--- 
-Sabrina
-
+--===============5527455667252004928==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+--===============5527455667252004928==--
+
