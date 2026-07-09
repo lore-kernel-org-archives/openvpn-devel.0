@@ -4,127 +4,126 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 32D47C43458
-	for <openvpn-devel@archiver.kernel.org>; Thu,  9 Jul 2026 15:43:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A843BC43458
+	for <openvpn-devel@archiver.kernel.org>; Thu,  9 Jul 2026 15:45:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
+	Subject:MIME-Version:Message-ID:References:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=8cmGUFhLpDdTgleo99irZ+AmrnmUTqPEel5z0F2ug+E=; b=E7biOLpvao3gCINr2WfvCXwCM3
-	bNMN100CvQkSdHySxrpgc3FvEjKt/c7MOWi5QDMTkF89d42ma8y1qx+OsTp3hheQqv0GiyDwnGeEE
-	uAYDE7KcC2qu/X9vtEvRkQ2FoJ2A+R5o4SiBW7G+6S37TGMqzjFOdDYL16dnHQWQ2A/k=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+	List-Owner; bh=vFwkAkD4jXRGmv7sdUd9I0/VTVN3CcbuYnVzKs5LCCk=; b=Yk2Nx5lw2j5mzV
+	p0W/7uLidSfyMqbIUfPsRSpxnHKcPxBG3iuFEq53j4vC7TjvT7BaNNvWZO+t37bExSJPOVN0LHx5B
+	f11F+e4ndTddZ52C3nDU6JSQPUD5zpKkpx8pRuemEOJvOvDV3BzNe8XcXDQIMV6qPEP03L4oNVhT6
+	Vec=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1whquc-0006iC-Na;
-	Thu, 09 Jul 2026 15:43:43 +0000
+	id 1whqwd-0007xA-VU;
+	Thu, 09 Jul 2026 15:45:48 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1whqub-0006hy-CU
+ (envelope-from <gerrit@openvpn.net>) id 1whqwc-0007x3-97
  for openvpn-devel@lists.sourceforge.net;
- Thu, 09 Jul 2026 15:43:42 +0000
+ Thu, 09 Jul 2026 15:45:47 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
- :List-Post:List-Owner:List-Archive;
- bh=ZPD6S8SmcXLfxG//hMUt/IKnnZI4HyqDkaqVdo2Focw=; b=FpEibla0NEDFwFI0389HeYonbf
- MxYYJIfp3GcSUjlIwdF4YUFD+77XzIztCLAt1lRR3zReSG0oLpKHIJDcgKU5aTXN2GmEIRp++bqqI
- WE9fVfCpCoE/KRwq8Rq+s3hbi2s8O3v/Kvm2HcgT1ePDTn2ymnuUhDhGK+fQ3MNrrrCE=;
+ :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:
+ From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From:
+ Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=BCwv0dtn4+xJnh73YxQ9sd8CJte5HrLloJa4JMOnf3Y=; b=QZdop1YpJ1O0z2qHlD6u0x1R1z
+ q237ltmfgEL7YapmTO/YPe5Db4nh/eJjfmdNBSQdTPqab8/pXPr+Zkbks28c2e6ALXNaaw3LkgoXi
+ RY7mGMZwHr/pSJKxHDy7xgRfF3mdam89AeQUA/VYnNsjnMqb4ADzulsvmnQz4Yu0lVsQ=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
- Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=ZPD6S8SmcXLfxG//hMUt/IKnnZI4HyqDkaqVdo2Focw=; b=V
- /5Oq0tEEJiVwnYnK7OAbnN18WffDRdsYU5P5eGl05BtRZJDyDK33kxJ8SQi+VFnnzxl/RNJXbb6kL
- q1QEYaKp5CTomr4eSv4zbqwdlyKZ0bWSaFCQiAp8CzmRzp26PVfSmJwkKoaU+m3bvjW8U4bl7rtxA
- ARy3/rKUhJgvpdB4=;
-Received: from mail-ed1-f54.google.com ([209.85.208.54])
+ Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:From:Sender:Content-ID
+ :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+ Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=BCwv0dtn4+xJnh73YxQ9sd8CJte5HrLloJa4JMOnf3Y=; b=h
+ 5lKO+pGdSLeSPVsSIywNkzHf3YgnbOC4NFjA15Qdi1eLYJz24OJhEfCw6UWtmkXUz5A8XPFFCWVJq
+ oPM6UwFyOQJMjl5t2DYbMufRfa8XEOu4FCFYEV4ArLviL1gmIvIHp41SSX08Uyh/RF+wEDnMntEqj
+ Tt5bLgdqrq6ZAOU4=;
+Received: from mail-wr1-f52.google.com ([209.85.221.52])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1whqua-0000m4-KW for openvpn-devel@lists.sourceforge.net;
- Thu, 09 Jul 2026 15:43:42 +0000
-Received: by mail-ed1-f54.google.com with SMTP id
- 4fb4d7f45d1cf-6986287534eso3774365a12.3
+ id 1whqwX-0000tO-2q for openvpn-devel@lists.sourceforge.net;
+ Thu, 09 Jul 2026 15:45:46 +0000
+Received: by mail-wr1-f52.google.com with SMTP id
+ ffacd0b85a97d-47dec32798aso47695f8f.1
  for <openvpn-devel@lists.sourceforge.net>;
- Thu, 09 Jul 2026 08:43:40 -0700 (PDT)
+ Thu, 09 Jul 2026 08:45:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1783611814; x=1784216614; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1783611929; x=1784216729; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
- :reply-to:content-type;
- bh=ZPD6S8SmcXLfxG//hMUt/IKnnZI4HyqDkaqVdo2Focw=;
- b=NPPhXlqCO4EcvboFx9xs22GePwGMA1g9yqMY3HoiaUBW74BUQRggHSFClwVp+wn9qm
- kRhdSCF9FYIK24sRISgu9bsHTIzv2TlpjawAxxk/0IkY7fwMkd09jz8zYtth5mLD2IOG
- EzQriNaKry4qUq+JQDvq7IXfRRvMszcpxtwlPcFJTx/RhXXriC7puQ3Ftz5vVGV1DemJ
- yTVic/8zH5lxsPTrrybEH6TD4KjmGQ+f2aKEP3Iq6bhwOSEonPgcL+mxdpdezS3p43sG
- 3sOMNWP6QTSbylVWiPK56YqWSz2e2uK9wMYAbktUoqFeJHRz2P4372EAvbK8lHB5li+d
- qADA==
+ :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
+ :to:date:from:from:to:cc:subject:date:message-id:reply-to
+ :content-type; bh=BCwv0dtn4+xJnh73YxQ9sd8CJte5HrLloJa4JMOnf3Y=;
+ b=ShedQ/udEKiCzd8QhLmVCmY6xbAitZ9KOBHVpJAn0+8rIfn1TIyNK9UehHHcoIYk+L
+ CbKblvroWkNYwB1g3H2lKb9CEVEtpmx6PXZ72kNCVlOHysDQ1X5AZa3aDrx/lcX57APr
+ weVMCJtHex3XRHDEfaKnDh5Q5ujoX9IyChibCfdLUcNDcWPh4k20ebYLZnXtx/ISWBHx
+ N5QT43TU1Q7S9sS4YoVuU45or11e09Y1qzOP9mMdt12QuHDrC67kmdLbB4kiniGh4LU2
+ MuhEU5Xde93ty51Bisrdhzne5TTpSkLVZO4XjEtFLLfiEf6hbqL7os5Cnvpu8mRkyxX7
+ Jhtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1783611814; x=1784216614;
+ d=1e100.net; s=20251104; t=1783611929; x=1784216729;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
- :cc:subject:date:message-id:reply-to:content-type;
- bh=ZPD6S8SmcXLfxG//hMUt/IKnnZI4HyqDkaqVdo2Focw=;
- b=dF7YqjtH9HBAWlVy8VQKLRWpTCk4FlyfvENgP1T/s8vSp/6CBCKSKVJT9CGDFQEOvS
- a9Q9ZL7STs0KaoSJbLFI656yCWX8qJ1m5KA0ti/5WSdwkQYFhECzdEPNcrZyTTx6i6yr
- MYXFgcBZjdNEhFZZmaFRljwDqcDp2S77KKHW0bXno4PlgXf0yXjMHjnBVNuaP3BoOdIT
- GIsjXkNSMHTimlFMpF0MM3BF8soag6/jMxZQBV8WRwTd3vTv8+EydQaJ5V1VPc4GCGVK
- P/EWU6KsjZyT7HVFELK7DmpzJoHC/C2LtyynpFV3F3y6x5oFEjiaxJC2lNkPAU9bw8Yn
- ZBvw==
-X-Gm-Message-State: AOJu0YzyAnNIgDXWVf9HaFTI51DrAr6TUHvebrSsOf2y+NLFLjpjOCxd
- 7liBcpj2cgxPkFqKPi1z5NXXsXFvLiVIZxEHpEEfeCq8Du7YBWpWAksMtPWx7xfIMKux/zYq3AQ
- oqmCNrwbhY7NX0ifd/BxeM5njw67giCJ3ibVlwjfc6OxucLCVP2gJAJTCVtcyr9F/WFaiFCm6KW
- uB/nwRmQ==
-X-Gm-Gg: AfdE7ckP9m54xM8hk+/9/IBxPaehNaBdoULID6TgLGhA7zACVYnPLAMMROUdZlxsAij
- YwdQyLy+Ym0D8SeftjfbTZwT07FruCFIqySRn+jFJhjTlVMPmaqKl1L7CmdFF6y+l/ibZQik07p
- IqCWQ6GLpsEQ1gr0ohG0man7Cv5T+wHQOvQsKIqs15dwD1hPqs/KYuotgVl1jLgCK8G1LrC+58z
- KBWdqfYpcO6tTzGst6JkHposj5xVVp7SsiFOlQvwjfLDAYRep2E+4iK9k8dllbIZIWy+jxZpwxH
- HphVBRChiXanEyRNa66rL6vbB+kLtNXrTn7Y7UYwIu0jnD0H7PNVZufwVZRouVecTF3VRJeX3xd
- 0vT77aLntMShmDaPgfsGdoQjpsRXSHDMEehGY9halWi0NX/WV7lWBzJX9zbf+zNTVMnSvD1F22T
- HR6MUB5y/3fpL8G45PWFbeNRmpoFWIZPa7hEgvltVD77es/GeK8UW+JQFowlQq6m1M9Qp+KlLxD
- wMBoyWytWX9Fhe407Hyn+RmTmGKSbjt0WE8IeDqoaGiLoRtprHvskac8ONdUXvah1AGqK76S1JH
- qezFWyTTdB01Dg==
-X-Received: by 2002:a05:6000:26d3:b0:474:3b3b:5e5f with SMTP id
- ffacd0b85a97d-47df072b06bmr7711911f8f.16.1783604853474; 
- Thu, 09 Jul 2026 06:47:33 -0700 (PDT)
+ :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
+ :to:date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+ :message-id:reply-to:content-type;
+ bh=BCwv0dtn4+xJnh73YxQ9sd8CJte5HrLloJa4JMOnf3Y=;
+ b=cEzugr0G86zEvcTk6JZb9K3G8m41cek5GQ7effZT0+09RpOzDZ0KUEZtqIf1tN6Ndy
+ Dfe/JX/P2ggEBET6CSRppwqcId4UhSYb7RxuahdkS8O24Fw0aI9iZzPLMLHMsHuYQjL3
+ 73w77EAxKidoLhugXXOrv9Cg5EZhSpS0cwGMvzGIDrCg8ngN8jVKzJubpRG7qsNqnATB
+ RKYamGEhYDXADlrgsrGNV6e13g+RkjB1kWWkrYX38L0DbSSexGBn16OCt0HiE0C3HSQD
+ 30SSv6aT+pU3iHXR71bgRn6P29MajNo3WUIi34pPz7fgsaxLrOJ4AgBm+foQ9XdJLSV/
+ QSjg==
+X-Gm-Message-State: AOJu0YwFFOa7oqdXruAYPKrPns0BCWxEoGH5chMhxbUnjGYgioetRoCp
+ BC+MQEobiu7AKLIjwDaDnMadvbCtGip1QUzXCULz478tNgV+FFOrQUBsRlpt9vKn2jpyMrP8PbD
+ r45edOJkgtJnHywr4hZ4wbWjZnTIbyy8CUZhjHAChtlxw5TFY5iGJ9Ar6ZJ/RnCAYWD0GFRhn75
+ GYGs6b9g==
+X-Gm-Gg: AfdE7cn0hlxJrS9osyvEtJh0DdUEhCigfQlJbpyHPZp13J5ZIOQo2Gem8wVI8CLTGft
+ +gd1cnUN8I5ZBl8gmavinF5HMXV/G1Xm/qRmNaLwTb87HLWujaL00RichmjfcE90t7sdYoYw9hn
+ fay+ZwTDFstXEO18gTktKJFWZlsNdUh7GF3mx4LOvpylbKPca+e+QXxlcjInqRzYoqJdnqVjmeb
+ /NMiQA4HgQTySw+Vihh6fM1aKZAKD9XHTHw31oV+EtVBEFbQqTENKoWmJNTBO1quE/UYhIgpw7G
+ 23KwGNKN4IVmYJfwnO5+pPW0GYVd9DePtaVe3Fa3Ukr8kyi1URGWZxsKHekRvdYQWPXUoCStC0h
+ Sp+ATXLWbWO069N77JReyxNDQPZEr6KIm5/MDq13ryfbWRiFi240LIiMQnVGNd+LphL56h+Kpon
+ BfBAguM3KLYihm+cJHhMRPNhhuBe984qZNGjTqQxm69pFIAZWgyNTcsu/kAEAhuZg+1DSpoYJPt
+ YDJqSzfMYZi0ab+uze4dVL9/YlHc6rc1eswEvX+vedUEBaXvVdMzdKgVXLCRM1QhVZglLoAW7Ag
+ YVY=
+X-Received: by 2002:a05:600d:8496:10b0:493:ad1b:b38d with SMTP id
+ 5b1f17b1804b1-493e68ef1bcmr51237455e9.37.1783600913201; 
+ Thu, 09 Jul 2026 05:41:53 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-47a9e4d843csm50843000f8f.14.2026.07.09.06.47.33
+ 5b1f17b1804b1-493eb742d0esm59018345e9.13.2026.07.09.05.41.52
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 09 Jul 2026 06:47:33 -0700 (PDT)
-X-Google-Original-From: "stipa (Code Review)"
+ Thu, 09 Jul 2026 05:41:52 -0700 (PDT)
+X-Google-Original-From: "flichtenheld (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Thu, 9 Jul 2026 13:47:21 +0000
-To: plaisthos <arne-openvpn@rfc2549.org>, flichtenheld <frank@lichtenheld.com>
+Date: Thu, 9 Jul 2026 12:41:51 +0000
+To: plaisthos <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: newpatchset
-X-Gerrit-PatchSet: 4
-X-Gerrit-Change-Id: Ic75ca2ee9b59a4e11f37cd9653df268bba33889c
-X-Gerrit-Change-Number: 1743
+X-Gerrit-MessageType: newchange
+X-Gerrit-PatchSet: 1
+X-Gerrit-Change-Id: I61762374c141662d596bbf88b64ca7f7472b5149
+X-Gerrit-Change-Number: 1772
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1743?usp=email>
-X-Gerrit-Commit: a42fcc7cb35546e3b6e785928aa11e08365b68bc
-In-Reply-To: <gerrit.1782719911000.Ic75ca2ee9b59a4e11f37cd9653df268bba33889c@gerrit.openvpn.net>
-References: <gerrit.1782719911000.Ic75ca2ee9b59a4e11f37cd9653df268bba33889c@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzgyNzE5OTExMDAwLkljNzVjYTJlZTliNTlhNGUxMWYzN2NkOTY1M2RmMjY4YmJhMzM4ODljQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <40444f7611d8d12bbda654ebb21be550135099d1-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1772?usp=email>
+X-Gerrit-Commit: b32f32168666b8b8436c3cc76b81c64135e217a5
+References: <gerrit.1783600902000.I61762374c141662d596bbf88b64ca7f7472b5149@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzgzNjAwOTAyMDAwLkk2MTc2MjM3NGMxNDE2NjJkNTk2YmJmODhiNjRjYTdmNzQ3MmI1MTQ5QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <038b2f9c9610ede88e5276be19fc3dd4d6977dfe-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1whqua-0000m4-KW
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: mudp: extract
- send_standalone_reply() helper
+X-Headers-End: 1whqwX-0000tO-2q
+Subject: [Openvpn-devel] [XL] Change in openvpn[master]: options: Factor out
+ options display code from options.c
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -136,391 +135,3603 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "stipa \(Code Review\) via Openvpn-devel"
+From: "flichtenheld \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
-Reply-To: lstipakov@gmail.com, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com
-Cc: "stipa \(Code Review\)" <gerrit@openvpn.net>,
+Reply-To: frank@lichtenheld.com, arne-openvpn@rfc2549.org,
+ openvpn-devel@lists.sourceforge.net
+Cc: "flichtenheld \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============7604003261085951833=="
+Content-Type: multipart/mixed; boundary="===============6894858630025033086=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============7604003261085951833==
+--===============6894858630025033086==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="8M1lHH6VAsY="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="cNZUOFZszP0="; charset=UTF-8
 
---8M1lHH6VAsY=
+--cNZUOFZszP0=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos, stipa=2E
+Attention is currently required from: plaisthos=2E
 
-He=
-llo flichtenheld, plaisthos, 
+Hello plaisthos,
 
-I'd like you to reexamine a change=2E Please=
- visit
+I'd l=
+ike you to do a code review=2E
+Please visit
 
-    http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1743?usp=3Demail
+    http://gerrit=2Eopenvpn=2E=
+net/c/openvpn/+/1772?usp=3Demail
 
-to =
-look at the new patch set (#4)=2E
-
-The following approvals got outdated and=
- were removed:
-Code-Review-1 by flichtenheld
+to review the following change=2E
 
 
-Change subject: mudp: extrac=
-t send_standalone_reply() helper
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+Chang=
+e subject: options: Factor out options display code from options=2Ec
+=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-mudp: extract send_standalone_reply() helper
+options: Factor out=
+ options display code from options=2Ec
 
-Factor th=
-e synchronous, stateless "send a standalone control packet back to the
-peer=
- that just contacted us" sequence out of send_hmac_reset_packet() into a
-re=
-usable helper=2E No behavioural change=2E
+options=2Ec is a huge, unwieldly fi=
+le=2E So remove some
+closely related code that has no direct dependencies
+w=
+ith the other functions in the file=2E
 
-This lets a following commit reu=
-se it for the out-of-band probe reply instead of
-duplicating the aux_buf / =
-to_link / process_outgoing_link sequence=2E
+In this case it is the code that pr=
+ints out the current
+configuration=2E
 
-Change-Id: Ic75ca2ee9b59a4e11f=
-37cd9653df268bba33889c
-Signed-off-by: Lev Stipakov <lev@openvpn=2Enet>
+Change-Id: I61762374c141662d596bbf88=
+b64ca7f7472b5149
+Signed-off-by: Frank Lichtenheld <frank@lichtenheld=2Ecom>=
+
 ---
-=
-M src/openvpn/mudp=2Ec
-1 file changed, 37 insertions(+), 23 deletions(-)
+M CMakeLists=2Etxt
+M src/openvpn/Makefile=2Eam
+M src/openvpn/openvpn=
+=2Ec
+M src/openvpn/options=2Ec
+M src/openvpn/options=2Eh
+A src/openvpn/opti=
+ons_show=2Ec
+A src/openvpn/options_show=2Eh
+7 files changed, 677 insertions=
+(+), 619 deletions(-)
 
 
-=
-  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/43/1743/=
-4
 
-diff --git a/src/openvpn/mudp=2Ec b/src/openvpn/mudp=2Ec
-index 9acf297=
-=2E=2E2be085f 100644
---- a/src/openvpn/mudp=2Ec
-+++ b/src/openvpn/mudp=2Ec
+  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/open=
+vpn refs/changes/72/1772/1
+
+diff --git a/CMakeLists=2Etxt b/CMakeLists=2Etx=
+t
+index 4779d69=2E=2Eb6054d6 100644
+--- a/CMakeLists=2Etxt
++++ b/CMakeLists=
+=2Etxt
+@@ -518,6 +518,8 @@
+     src/openvpn/options_util=2Ec
+     src/openv=
+pn/options_util=2Eh
+     src/openvpn/options_parse=2Ec
++    src/openvpn/opt=
+ions_show=2Ec
++    src/openvpn/options_show=2Eh
+     src/openvpn/otime=2Ec
 =
-@@ -37,6 +37,41 @@
- #include <sys/inotify=2Eh>
- #endif
+     src/openvpn/otime=2Eh
+     src/openvpn/ovpn_dco_win=2Eh
+diff --git a/s=
+rc/openvpn/Makefile=2Eam b/src/openvpn/Makefile=2Eam
+index ff8cc54=2E=2E0fb=
+d006 100644
+--- a/src/openvpn/Makefile=2Eam
++++ b/src/openvpn/Makefile=2Eam=
+
+@@ -108,6 +108,7 @@
+ 	pkcs11_mbedtls=2Ec \
+ 	openvpn=2Ec openvpn=2Eh \
+ 	o=
+ptions=2Ec options=2Eh \
++	options_show=2Ec options_show=2Eh \
+ 	options_ut=
+il=2Ec options_util=2Eh \
+ 	options_parse=2Ec \
+ 	otime=2Ec otime=2Eh \
+dif=
+f --git a/src/openvpn/openvpn=2Ec b/src/openvpn/openvpn=2Ec
+index 5e1f680=
+=2E=2E24d6bb6 100644
+--- a/src/openvpn/openvpn=2Ec
++++ b/src/openvpn/openvp=
+n=2Ec
+@@ -30,6 +30,7 @@
+ #include "forward=2Eh"
+ #include "multi=2Eh"
+ #inc=
+lude "win32=2Eh"
++#include "options_show=2Eh"
+ #include "platform=2Eh"
  
-+/**
-+ * Send an a=
-lready-built standalone control packet back to the peer that just
-+ * conta=
-cted us (c2=2Efrom), synchronously and without keeping any state=2E
-+ *
-+ *=
- We do not want to keep state for a reply to an initial/out-of-band packet,=
- so
-+ * we send it without queueing=2E If we hit EAGAIN on a busy socket th=
-e packet is
-+ * lost and the client simply retries -- an acceptable comprom=
-ise that avoids
-+ * consuming server resources under attack=2E
-+ *
-+ * @par=
-am m       the server's multi_context
-+ * @param buf     the packet to send=
- (built by a tls_*_standalone() helper)
-+ * @param prefix  msg() prefix to =
-set for the duration of the send
-+ * @param detail  D_MULTI_DEBUG message d=
-escribing the reply
-+ * @param sock    the socket to send the reply on
-+ */=
-
-+static void
-+send_standalone_reply(struct multi_context *m, struct buffer=
- *buf, const char *prefix,
-+                      const char *detail, struc=
-t link_socket *sock)
-+{
-+    struct context *c =3D &m->top;
-+
-+    /* dco-w=
-in server requires prepend with sockaddr, so preserve offset */
-+    ASSERT=
-(buf_init(&c->c2=2Ebuffers->aux_buf, buf->offset));
-+    buf_copy(&c->c2=2E=
-buffers->aux_buf, buf);
-+
-+    msg_set_prefix(prefix);
-+    c->c2=2Eto_link=
- =3D c->c2=2Ebuffers->aux_buf;
-+    c->c2=2Eto_link_addr =3D &c->c2=2Efrom;=
-
-+    msg(D_MULTI_DEBUG, "%s", detail);
-+    process_outgoing_link(c, sock)=
-;
-+    c->c2=2Eto_link=2Elen =3D 0;
-+    c->c2=2Eto_link_addr =3D NULL;
-+  =
-  msg_set_prefix(NULL);
-+}
-+
- static void
- send_hmac_reset_packet(struct mu=
-lti_context *m, struct tls_pre_decrypt_state *state,
-                      =
-  struct tls_auth_standalone *tas, struct session_id *sid,
-@@ -48,29 +83,8 =
-@@
-     struct buffer buf =3D tls_reset_standalone(&state->tls_wrap_tmp, ta=
-s, sid,
-                                              &state->peer_session_=
-id, header, request_resend_wkc);
- 
--    struct context *c =3D &m->top;
--
-- =
-   /* dco-win server requires prepend with sockaddr, so preserve offset */
-=
--    ASSERT(buf_init(&c->c2=2Ebuffers->aux_buf, buf=2Eoffset));
--
--    buf_=
-copy(&c->c2=2Ebuffers->aux_buf, &buf);
--
--    /*
--     * We do not want to =
-keep any state here, so we send the reply to the
--     * initial packet syn=
-chronously without queueing anything=2E
--     *
--     * If we hit EAGAIN on=
- a busy socket, the packet will be lost and the
--     * client will have to=
- retransmit its HARD_RESET=2E This is considered an
--     * acceptable comp=
-romise to avoid consuming server resources under attack=2E
--     */
--    ms=
-g_set_prefix("Connection Attempt");
--    c->c2=2Eto_link =3D c->c2=2Ebuffer=
-s->aux_buf;
--    c->c2=2Eto_link_addr =3D &c->c2=2Efrom;
--    msg(D_MULTI_D=
-EBUG, "Reset packet from client, sending HMAC based reset challenge");
--   =
- process_outgoing_link(c, sock);
--    c->c2=2Eto_link=2Elen =3D 0;
--    c->=
-c2=2Eto_link_addr =3D NULL;
--    msg_set_prefix(NULL);
-+    send_standalone=
-_reply(m, &buf, "Connection Attempt",
-+                          "Reset pac=
-ket from client, sending HMAC based reset challenge", sock);
+ #=
+include "memdbg=2Eh"
+diff --git a/src/openvpn/options=2Ec b/src/openvpn/opt=
+ions=2Ec
+index 2dcb707=2E=2E8f5bc2a 100644
+--- a/src/openvpn/options=2Ec
+++=
++ b/src/openvpn/options=2Ec
+@@ -927,40 +927,6 @@
+     gc_free(&o->dns_optio=
+ns=2Egc);
  }
  
+-#ifndef ENABLE_SMALL
+-
+-static const char *
+-pull_filter_ty=
+pe_name(int type)
+-{
+-    if (type =3D=3D PUF_TYPE_ACCEPT)
+-    {
+-        =
+return "accept";
+-    }
+-    if (type =3D=3D PUF_TYPE_IGNORE)
+-    {
+-     =
+   return "ignore";
+-    }
+-    if (type =3D=3D PUF_TYPE_REJECT)
+-    {
+-  =
+      return "reject";
+-    }
+-    else
+-    {
+-        return "???";
+-    =
+}
+-}
+-
+-#define SHOW_PARM(name, value, format) msg(D_SHOW_PARMS, "  " #name=
+ " =3D " format, (value))
+-#define SHOW_STR(var)                  SHOW_PARM=
+(var, (o->var ? o->var : "[UNDEF]"), "'%s'")
+-#define SHOW_STR_INLINE(var) =
+\
+-    SHOW_PARM(var, o->var##_inline ? "[INLINE]" : (o->var ? o->var : "[U=
+NDEF]"), "'%s'")
+-#define SHOW_INT(var)      SHOW_PARM(var, o->var, "%d")
+-=
+#define SHOW_UINT(var)     SHOW_PARM(var, o->var, "%u")
+-#define SHOW_INT64=
+(var)    SHOW_PARM(var, o->var, "%" PRIi64)
+-#define SHOW_UNSIGNED(var) SHO=
+W_PARM(var, o->var, "0x%08x")
+-#define SHOW_BOOL(var)     SHOW_PARM(var, (o=
+->var ? "ENABLED" : "DISABLED"), "%s");
+-
+-#endif /* ifndef ENABLE_SMALL */=
+
  
+ static void
+ setenv_connection_entry(struct env_set *es, const struct c=
+onnection_entry *e, const int i)
+@@ -1253,55 +1219,6 @@
+ 
+     return ret;
+=
+ }
+-#ifdef _WIN32
+-
+-#ifndef ENABLE_SMALL
+-
+-static void
+-show_dhcp_option_=
+list(const char *name, const char *const *array, unsigned int len)
+-{
+-    =
+for (unsigned int i =3D 0; i < len; ++i)
+-    {
+-        msg(D_SHOW_PARMS, =
+"  %s[%u] =3D %s", name, i, array[i]);
+-    }
+-}
+-
+-static void
+-show_dhcp_=
+option_addrs(const char *name, const in_addr_t *array, unsigned int len)
+-{=
+
+-    struct gc_arena gc =3D gc_new();
+-    for (unsigned int i =3D 0; i < =
+len; ++i)
+-    {
+-        msg(D_SHOW_PARMS, "  %s[%u] =3D %s", name, i, pri=
+nt_in_addr_t(array[i], 0, &gc));
+-    }
+-    gc_free(&gc);
+-}
+-
+-static voi=
+d
+-show_tuntap_options(const struct tuntap_options *o)
+-{
+-    SHOW_BOOL(ip=
+_win32_defined);
+-    SHOW_INT(ip_win32_type);
+-    SHOW_INT(dhcp_masq_offs=
+et);
+-    SHOW_INT(dhcp_lease_time);
+-    SHOW_INT(tap_sleep);
+-    SHOW_UN=
+SIGNED(dhcp_options);
+-    SHOW_BOOL(dhcp_renew);
+-    SHOW_BOOL(dhcp_pre_r=
+elease);
+-    SHOW_STR(domain);
+-    SHOW_STR(netbios_scope);
+-    SHOW_UNS=
+IGNED(netbios_node_type);
+-    SHOW_BOOL(disable_nbt);
+-
+-    show_dhcp_opt=
+ion_addrs("DNS", o->dns, o->dns_len);
+-    show_dhcp_option_addrs("WINS", o=
+->wins, o->wins_len);
+-    show_dhcp_option_addrs("NTP", o->ntp, o->ntp_len=
+);
+-    show_dhcp_option_addrs("NBDD", o->nbdd, o->nbdd_len);
+-    show_dhc=
+p_option_list("DOMAIN-SEARCH", o->domain_search_list, o->domain_search_list=
+_len);
+-}
+-
+-#endif /* ifndef ENABLE_SMALL */
+-#endif /* ifdef _WIN32 */
+ 
+=
+ static void
+ dhcp_option_dns6_parse(const char *parm, struct in6_addr *dns=
+6_list, unsigned int *len, msglvl_t msglevel)
+@@ -1344,116 +1261,6 @@
+     =
+}
+ }
+ 
+-#ifndef ENABLE_SMALL
+-static const char *
+-print_vlan_accept(enum v=
+lan_acceptable_frames mode)
+-{
+-    switch (mode)
+-    {
+-        case VLAN=
+_ONLY_TAGGED:
+-            return "tagged";
+-
+-        case VLAN_ONLY_UNTAG=
+GED_OR_PRIORITY:
+-            return "untagged";
+-
+-        case VLAN_ALL:
+=
+-            return "all";
+-    }
+-    return NULL;
+-}
+-
+-static void
+-show=
+_p2mp_parms(const struct options *o)
+-{
+-    struct gc_arena gc =3D gc_new(=
+);
+-
+-    msg(D_SHOW_PARMS, "  server_network =3D %s", print_in_addr_t(o->s=
+erver_network, 0, &gc));
+-    msg(D_SHOW_PARMS, "  server_netmask =3D %s", =
+print_in_addr_t(o->server_netmask, 0, &gc));
+-    msg(D_SHOW_PARMS, "  serv=
+er_network_ipv6 =3D %s", print_in6_addr(o->server_network_ipv6, 0, &gc));
+-=
+    SHOW_INT(server_netbits_ipv6);
+-    msg(D_SHOW_PARMS, "  server_bridge_=
+ip =3D %s", print_in_addr_t(o->server_bridge_ip, 0, &gc));
+-    msg(D_SHOW_=
+PARMS, "  server_bridge_netmask =3D %s",
+-        print_in_addr_t(o->server=
+_bridge_netmask, 0, &gc));
+-    msg(D_SHOW_PARMS, "  server_bridge_pool_sta=
+rt =3D %s",
+-        print_in_addr_t(o->server_bridge_pool_start, 0, &gc));=
+
+-    msg(D_SHOW_PARMS, "  server_bridge_pool_end =3D %s",
+-        print_i=
+n_addr_t(o->server_bridge_pool_end, 0, &gc));
+-    if (o->push_list=2Ehead)=
+
+-    {
+-        const struct push_entry *e =3D o->push_list=2Ehead;
+-     =
+   while (e)
+-        {
+-            if (e->enable)
+-            {
+-       =
+         msg(D_SHOW_PARMS, "  push_entry =3D '%s'", e->option);
+-          =
+  }
+-            e =3D e->next;
+-        }
+-    }
+-    SHOW_BOOL(ifconfig_p=
+ool_defined);
+-    msg(D_SHOW_PARMS, "  ifconfig_pool_start =3D %s",
+-     =
+   print_in_addr_t(o->ifconfig_pool_start, 0, &gc));
+-    msg(D_SHOW_PARMS,=
+ "  ifconfig_pool_end =3D %s", print_in_addr_t(o->ifconfig_pool_end, 0, &gc=
+));
+-    msg(D_SHOW_PARMS, "  ifconfig_pool_netmask =3D %s",
+-        print=
+_in_addr_t(o->ifconfig_pool_netmask, 0, &gc));
+-    SHOW_STR(ifconfig_pool_=
+persist_filename);
+-    SHOW_INT(ifconfig_pool_persist_refresh_freq);
+-    =
+SHOW_BOOL(ifconfig_ipv6_pool_defined);
+-    msg(D_SHOW_PARMS, "  ifconfig_i=
+pv6_pool_base =3D %s",
+-        print_in6_addr(o->ifconfig_ipv6_pool_base, =
+0, &gc));
+-    SHOW_INT(ifconfig_ipv6_pool_netbits);
+-    SHOW_INT(n_bcast_=
+buf);
+-    SHOW_INT(tcp_queue_limit);
+-    SHOW_INT(real_hash_size);
+-    S=
+HOW_INT(virtual_hash_size);
+-    SHOW_STR(client_connect_script);
+-    SHOW=
+_STR(learn_address_script);
+-    SHOW_STR(client_disconnect_script);
+-    S=
+HOW_STR(client_crresponse_script);
+-    SHOW_STR(client_config_dir);
+-    S=
+HOW_BOOL(ccd_exclusive);
+-    SHOW_STR(tmp_dir);
+-    SHOW_BOOL(push_ifconf=
+ig_defined);
+-    msg(D_SHOW_PARMS, "  push_ifconfig_local =3D %s",
+-      =
+  print_in_addr_t(o->push_ifconfig_local, 0, &gc));
+-    msg(D_SHOW_PARMS, =
+"  push_ifconfig_remote_netmask =3D %s",
+-        print_in_addr_t(o->push_i=
+fconfig_remote_netmask, 0, &gc));
+-    SHOW_BOOL(push_ifconfig_ipv6_defined=
+);
+-    msg(D_SHOW_PARMS, "  push_ifconfig_ipv6_local =3D %s/%d",
+-        =
+print_in6_addr(o->push_ifconfig_ipv6_local, 0, &gc), o->push_ifconfig_ipv6_=
+netbits);
+-    msg(D_SHOW_PARMS, "  push_ifconfig_ipv6_remote =3D %s",
+-   =
+     print_in6_addr(o->push_ifconfig_ipv6_remote, 0, &gc));
+-    SHOW_BOOL(=
+enable_c2c);
+-    SHOW_BOOL(duplicate_cn);
+-    SHOW_INT(cf_max);
+-    SHOW=
+_INT(cf_per);
+-    SHOW_INT(cf_initial_max);
+-    SHOW_INT(cf_initial_per);=
+
+-    SHOW_UINT(max_clients);
+-    SHOW_INT(max_routes_per_client);
+-    SH=
+OW_STR(auth_user_pass_verify_script);
+-    SHOW_BOOL(auth_user_pass_verify_=
+script_via_file);
+-    SHOW_BOOL(auth_token_generate);
+-    SHOW_BOOL(force=
+_key_material_export);
+-    SHOW_INT(auth_token_lifetime);
+-    SHOW_STR_IN=
+LINE(auth_token_secret_file);
+-#if PORT_SHARE
+-    SHOW_STR(port_share_host=
+);
+-    SHOW_STR(port_share_port);
+-#endif
+-    SHOW_BOOL(vlan_tagging);
+- =
+   msg(D_SHOW_PARMS, "  vlan_accept =3D %s", print_vlan_accept(o->vlan_acce=
+pt));
+-    SHOW_INT(vlan_pvid);
+-
+-    SHOW_BOOL(client);
+-    SHOW_BOOL(pu=
+ll);
+-    SHOW_STR_INLINE(auth_user_pass_file);
+-
+-    gc_free(&gc);
+-}
+-
+-=
+#endif /* ! ENABLE_SMALL */
+-
+ static void
+ option_iroute(struct options *o=
+, const char *network_str, const char *netmask_str,
+               msglvl_t=
+ msglevel)
+@@ -1498,37 +1305,6 @@
+     o->iroutes_ipv6 =3D ir;
+ }
+ 
+-#ifnde=
+f ENABLE_SMALL
+-static void
+-show_http_proxy_options(const struct http_prox=
+y_options *o)
+-{
+-    int i;
+-    msg(D_SHOW_PARMS, "BEGIN http_proxy");
+- =
+   SHOW_STR(server);
+-    SHOW_STR(port);
+-    SHOW_STR(auth_method_string)=
+;
+-    SHOW_STR(auth_file);
+-    SHOW_STR(auth_file_up);
+-    SHOW_BOOL(inl=
+ine_creds);
+-    SHOW_BOOL(nocache);
+-    SHOW_STR(http_version);
+-    SHOW=
+_STR(user_agent);
+-    for (i =3D 0; i < MAX_CUSTOM_HTTP_HEADER && o->custo=
+m_headers[i]=2Ename; i++)
+-    {
+-        if (o->custom_headers[i]=2Econten=
+t)
+-        {
+-            msg(D_SHOW_PARMS, "  custom_header[%d] =3D %s: %=
+s", i, o->custom_headers[i]=2Ename,
+-                o->custom_headers[i]=
+=2Econtent);
+-        }
+-        else
+-        {
+-            msg(D_SHOW_PA=
+RMS, "  custom_header[%d] =3D %s", i, o->custom_headers[i]=2Ename);
+-      =
+  }
+-    }
+-    msg(D_SHOW_PARMS, "END http_proxy");
+-}
+-#endif /* ifndef E=
+NABLE_SMALL */
+-
+ void
+ options_detach(struct options *o)
+ {
+@@ -1576,399 +=
+1352,6 @@
+     }
+ }
+ 
+-#ifndef ENABLE_SMALL
+-static void
+-show_connection_e=
+ntry(const struct connection_entry *o)
+-{
+-    /* Display the global proto =
+only in client mode or with no '--local'*/
+-    if (o->local_list->len =3D=
+=3D 1)
+-    {
+-        msg(D_SHOW_PARMS, "  proto =3D %s", proto2ascii(o->p=
+roto, o->af, false));
+-    }
+-
+-    msg(D_SHOW_PARMS, "  Local Sockets:");
+=
+-    for (int i =3D 0; i < o->local_list->len; i++)
+-    {
+-        msg(D_S=
+HOW_PARMS, "    [%s]:%s-%s", o->local_list->array[i]->local,
+-            o=
+->local_list->array[i]->port,
+-            proto2ascii(o->local_list->array=
+[i]->proto, o->af, false));
+-    }
+-    SHOW_STR(remote);
+-    SHOW_STR(rem=
+ote_port);
+-    SHOW_BOOL(remote_float);
+-    SHOW_BOOL(bind_defined);
+-   =
+ SHOW_BOOL(bind_local);
+-    SHOW_BOOL(bind_ipv6_only);
+-    SHOW_INT(conne=
+ct_retry_seconds);
+-    SHOW_INT(connect_timeout);
+-
+-    if (o->http_proxy=
+_options)
+-    {
+-        show_http_proxy_options(o->http_proxy_options);
+-=
+    }
+-    SHOW_STR(socks_proxy_server);
+-    SHOW_STR(socks_proxy_port);
+-=
+    SHOW_INT(tun_mtu);
+-    SHOW_BOOL(tun_mtu_defined);
+-    SHOW_INT(link_=
+mtu);
+-    SHOW_BOOL(link_mtu_defined);
+-    SHOW_INT(tun_mtu_extra);
+-    =
+SHOW_BOOL(tun_mtu_extra_defined);
+-    SHOW_INT(tls_mtu);
+-
+-    SHOW_INT(m=
+tu_discover_type);
+-
+-#ifdef ENABLE_FRAGMENT
+-    SHOW_INT(fragment);
+-#end=
+if
+-    SHOW_INT(mssfix);
+-    SHOW_BOOL(mssfix_encap);
+-    SHOW_BOOL(mssf=
+ix_fixed);
+-
+-    SHOW_INT(explicit_exit_notification);
+-
+-    SHOW_STR_INL=
+INE(tls_auth_file);
+-    SHOW_PARM(key_direction, keydirection2ascii(o->key=
+_direction, false, true), "%s");
+-    SHOW_STR_INLINE(tls_crypt_file);
+-   =
+ SHOW_STR_INLINE(tls_crypt_v2_file);
+-}
+-
+-
+-static void
+-show_connection_e=
+ntries(const struct options *o)
+-{
+-    if (o->connection_list)
+-    {
+-   =
+     const struct connection_list *l =3D o->connection_list;
+-        int i=
+;
+-        for (i =3D 0; i < l->len; ++i)
+-        {
+-            msg(D_SHO=
+W_PARMS, "Connection profiles [%d]:", i);
+-            show_connection_entr=
+y(l->array[i]);
+-        }
+-    }
+-    else
+-    {
+-        msg(D_SHOW_PARM=
+S, "Connection profiles [default]:");
+-        show_connection_entry(&o->ce=
+);
+-    }
+-    msg(D_SHOW_PARMS, "Connection profiles END");
+-}
+-
+-static v=
+oid
+-show_pull_filter_list(const struct pull_filter_list *l)
+-{
+-    struct=
+ pull_filter *f;
+-    if (!l)
+-    {
+-        return;
+-    }
+-
+-    msg(D_S=
+HOW_PARMS, "  Pull filters:");
+-    for (f =3D l->head; f; f =3D f->next)
+-=
+    {
+-        msg(D_SHOW_PARMS, "    %s \"%s\"", pull_filter_type_name(f->=
+type), f->pattern);
+-    }
+-}
+-
+-#endif /* ifndef ENABLE_SMALL */
+-
+-void
+-=
+show_settings(const struct options *o)
+-{
+-#ifndef ENABLE_SMALL
+-    msg(D_=
+SHOW_PARMS, "Current Parameter Settings:");
+-
+-    SHOW_STR(config);
+-
+-   =
+ SHOW_INT(mode);
+-
+-#ifdef ENABLE_FEATURE_TUN_PERSIST
+-    SHOW_BOOL(persis=
+t_config);
+-    SHOW_INT(persist_mode);
+-#endif
+-
+-    SHOW_BOOL(show_ciphe=
+rs);
+-    SHOW_BOOL(show_digests);
+-    SHOW_BOOL(show_engines);
+-    SHOW_=
+BOOL(genkey);
+-    SHOW_STR(genkey_filename);
+-    SHOW_STR(key_pass_file);=
+
+-    SHOW_BOOL(show_tls_ciphers);
+-
+-    SHOW_INT(connect_retry_max);
+-   =
+ show_connection_entries(o);
+-
+-    SHOW_BOOL(remote_random);
+-
+-    SHOW_S=
+TR(ipchange);
+-    SHOW_STR(dev);
+-    SHOW_STR(dev_type);
+-    SHOW_STR(de=
+v_node);
+-#if defined(ENABLE_DCO)
+-    SHOW_BOOL(disable_dco);
+-#endif
+-   =
+ SHOW_STR(lladdr);
+-    SHOW_INT(topology);
+-    SHOW_STR(ifconfig_local);
+=
+-    SHOW_STR(ifconfig_remote_netmask);
+-    SHOW_BOOL(ifconfig_noexec);
+- =
+   SHOW_BOOL(ifconfig_nowarn);
+-    SHOW_STR(ifconfig_ipv6_local);
+-    SHO=
+W_INT(ifconfig_ipv6_netbits);
+-    SHOW_STR(ifconfig_ipv6_remote);
+-
+-    S=
+HOW_INT(shaper);
+-    SHOW_INT(mtu_test);
+-
+-    SHOW_BOOL(mlock);
+-
+-    S=
+HOW_INT(keepalive_ping);
+-    SHOW_INT(keepalive_timeout);
+-    SHOW_INT(in=
+activity_timeout);
+-    SHOW_INT(session_timeout);
+-    SHOW_INT64(inactivi=
+ty_minimum_bytes);
+-    SHOW_INT(ping_send_timeout);
+-    SHOW_INT(ping_rec=
+_timeout);
+-    SHOW_INT(ping_rec_timeout_action);
+-    SHOW_BOOL(ping_time=
+r_remote);
+-    SHOW_INT(remap_sigusr1);
+-    SHOW_BOOL(persist_tun);
+-    =
+SHOW_BOOL(persist_local_ip);
+-    SHOW_BOOL(persist_remote_ip);
+-
+-#if PASS=
+TOS_CAPABILITY
+-    SHOW_BOOL(passtos);
+-#endif
+-
+-    SHOW_INT(resolve_ret=
+ry_seconds);
+-    SHOW_BOOL(resolve_in_advance);
+-
+-    SHOW_STR(username);=
+
+-    SHOW_STR(groupname);
+-    SHOW_STR(chroot_dir);
+-    SHOW_STR(cd_dir)=
+;
+-#ifdef ENABLE_SELINUX
+-    SHOW_STR(selinux_context);
+-#endif
+-    SHOW_=
+STR(writepid);
+-    SHOW_STR(up_script);
+-    SHOW_STR(down_script);
+-    S=
+HOW_BOOL(down_pre);
+-    SHOW_BOOL(up_restart);
+-    SHOW_BOOL(up_delay);
+-=
+    SHOW_BOOL(daemon);
+-    SHOW_BOOL(log);
+-    SHOW_BOOL(suppress_timesta=
+mps);
+-    SHOW_BOOL(machine_readable_output);
+-    SHOW_INT(nice);
+-    SH=
+OW_INT(verbosity);
+-    SHOW_INT(mute);
+-#ifdef ENABLE_DEBUG
+-    SHOW_INT(=
+gremlin);
+-#endif
+-    SHOW_STR(status_file);
+-    SHOW_INT(status_file_ver=
+sion);
+-    SHOW_INT(status_file_update_freq);
+-
+-    SHOW_BOOL(occ);
+-    =
+SHOW_INT(rcvbuf);
+-    SHOW_INT(sndbuf);
+-#if defined(TARGET_LINUX)
+-    SH=
+OW_INT(mark);
+-#endif
+-    SHOW_INT(sockflags);
+-
+-    SHOW_INT(comp=2Ealg)=
+;
+-    SHOW_INT(comp=2Eflags);
+-
+-    SHOW_STR(route_script);
+-    SHOW_STR=
+(route_default_gateway);
+-    SHOW_INT(route_default_metric);
+-    SHOW_INT=
+(route_default_table_id);
+-    SHOW_BOOL(route_noexec);
+-    SHOW_INT(route=
+_delay);
+-    SHOW_INT(route_delay_window);
+-    SHOW_BOOL(route_delay_defi=
+ned);
+-    SHOW_BOOL(route_nopull);
+-    SHOW_BOOL(route_gateway_via_dhcp);=
+
+-    SHOW_BOOL(allow_pull_fqdn);
+-    show_pull_filter_list(o->pull_filter=
+_list);
+-
+-    if (o->routes)
+-    {
+-        print_route_options(o->routes=
+, D_SHOW_PARMS);
+-    }
+-
+-    if (o->client_nat)
+-    {
+-        print_cli=
+ent_nat_list(o->client_nat, D_SHOW_PARMS);
+-    }
+-
+-    show_dns_options(&=
+o->dns_options);
+-
+-#ifdef ENABLE_MANAGEMENT
+-    SHOW_STR(management_addr)=
+;
+-    SHOW_STR(management_port);
+-    SHOW_STR(management_user_pass);
+-   =
+ SHOW_INT(management_log_history_cache);
+-    SHOW_INT(management_echo_buff=
+er_size);
+-    SHOW_STR(management_client_user);
+-    SHOW_STR(management_c=
+lient_group);
+-    SHOW_INT(management_flags);
+-#endif
+-#ifdef ENABLE_PLUGI=
+N
+-    if (o->plugin_list)
+-    {
+-        plugin_option_list_print(o->plug=
+in_list, D_SHOW_PARMS);
+-    }
+-#endif
+-
+-    SHOW_STR_INLINE(shared_secret=
+_file);
+-    SHOW_PARM(key_direction, keydirection2ascii(o->key_direction, =
+false, true), "%s");
+-    SHOW_STR(ciphername);
+-    SHOW_STR(ncp_ciphers);=
+
+-    SHOW_STR(authname);
+-#ifndef ENABLE_CRYPTO_MBEDTLS
+-    SHOW_BOOL(eng=
+ine);
+-#endif /* ENABLE_CRYPTO_MBEDTLS */
+-    SHOW_BOOL(mute_replay_warnin=
+gs);
+-    SHOW_INT(replay_window);
+-    SHOW_INT(replay_time);
+-    SHOW_ST=
+R(packet_id_file);
+-    SHOW_BOOL(test_crypto);
+-
+-    SHOW_BOOL(tls_server=
+);
+-    SHOW_BOOL(tls_client);
+-    SHOW_STR_INLINE(ca_file);
+-    SHOW_STR=
+(ca_path);
+-    SHOW_STR_INLINE(dh_file);
+-    if ((o->management_flags & M=
+F_EXTERNAL_CERT))
+-    {
+-        SHOW_PARM("cert_file", "EXTERNAL_CERT", "=
+%s");
+-    }
+-    else
+-    {
+-        SHOW_STR_INLINE(cert_file);
+-    }
+-=
+    SHOW_STR_INLINE(extra_certs_file);
+-
+-    if ((o->management_flags & MF=
+_EXTERNAL_KEY))
+-    {
+-        SHOW_PARM("priv_key_file", "EXTERNAL_PRIVAT=
+E_KEY", "%s");
+-    }
+-    else
+-    {
+-        SHOW_STR_INLINE(priv_key_fi=
+le);
+-    }
+-#ifndef ENABLE_CRYPTO_MBEDTLS
+-    SHOW_STR_INLINE(pkcs12_file=
+);
+-#endif
+-#ifdef ENABLE_CRYPTOAPI
+-    SHOW_STR(cryptoapi_cert);
+-#endif
+=
+-    SHOW_STR(cipher_list);
+-    SHOW_STR(cipher_list_tls13);
+-    SHOW_STR=
+(tls_cert_profile);
+-    SHOW_STR(tls_verify);
+-    SHOW_STR(tls_export_pee=
+r_cert_dir);
+-    SHOW_INT(verify_x509_type);
+-    SHOW_STR(verify_x509_nam=
+e);
+-    SHOW_STR_INLINE(crl_file);
+-    SHOW_INT(ns_cert_type);
+-    {
+-  =
+      int i;
+-        for (i =3D 0; i < MAX_PARMS; i++)
+-        {
+-       =
+     SHOW_INT(remote_cert_ku[i]);
+-        }
+-    }
+-    SHOW_STR(remote_ce=
+rt_eku);
+-    if (o->verify_hash)
+-    {
+-        SHOW_INT(verify_hash_algo=
+);
+-        SHOW_INT(verify_hash_depth);
+-        struct gc_arena gc =3D gc=
+_new();
+-        const struct verify_hash_list *hl =3D o->verify_hash;
+-   =
+     int digest_len =3D
+-            (o->verify_hash_algo =3D=3D MD_SHA1) ?=
+ SHA_DIGEST_LENGTH : SHA256_DIGEST_LENGTH;
+-        while (hl)
+-        {
+-=
+            char *s =3D format_hex_ex(hl->hash, digest_len, 0, 1, ":", &gc)=
+;
+-            SHOW_PARM(verify_hash, s, "%s");
+-            hl =3D hl->nex=
+t;
+-        }
+-        gc_free(&gc);
+-    }
+-    SHOW_INT(ssl_flags);
+-
+-  =
+  SHOW_INT(tls_timeout);
+-
+-    SHOW_INT64(renegotiate_bytes);
+-    SHOW_IN=
+T64(renegotiate_packets);
+-    SHOW_INT(renegotiate_seconds);
+-
+-    SHOW_I=
+NT(handshake_window);
+-    SHOW_INT(transition_window);
+-
+-    SHOW_BOOL(si=
+ngle_session);
+-    SHOW_BOOL(push_peer_info);
+-    SHOW_BOOL(tls_exit);
+-
+=
+-    SHOW_STR(tls_crypt_v2_metadata);
+-
+-#ifdef ENABLE_PKCS11
+-    {
+-     =
+   int i;
+-        for (i =3D 0; i < MAX_PARMS && o->pkcs11_providers[i] !=
+=3D NULL; i++)
+-        {
+-            SHOW_PARM(pkcs11_providers, o->pkcs1=
+1_providers[i], "%s");
+-        }
+-    }
+-    {
+-        int i;
+-        fo=
+r (i =3D 0; i < MAX_PARMS; i++)
+-        {
+-            SHOW_PARM(pkcs11_pr=
+otected_authentication,
+-                      o->pkcs11_protected_authenti=
+cation[i] ? "ENABLED" : "DISABLED", "%s");
+-        }
+-    }
+-    {
+-      =
+  int i;
+-        for (i =3D 0; i < MAX_PARMS; i++)
+-        {
+-           =
+ SHOW_PARM(pkcs11_private_mode, o->pkcs11_private_mode[i], "%08x");
+-      =
+  }
+-    }
+-    {
+-        int i;
+-        for (i =3D 0; i < MAX_PARMS; i++=
+)
+-        {
+-            SHOW_PARM(pkcs11_cert_private, o->pkcs11_cert_pri=
+vate[i] ? "ENABLED" : "DISABLED",
+-                      "%s");
+-        }
+=
+-    }
+-    SHOW_INT(pkcs11_pin_cache_period);
+-    SHOW_STR(pkcs11_id);
+- =
+   SHOW_BOOL(pkcs11_id_management);
+-#endif /* ENABLE_PKCS11 */
+-
+-    show=
+_p2mp_parms(o);
+-
+-#ifdef _WIN32
+-    SHOW_BOOL(show_net_up);
+-    SHOW_INT=
+(route_method);
+-    SHOW_BOOL(block_outside_dns);
+-    show_tuntap_options=
+(&o->tuntap_options);
+-#endif
+-#endif /* ifndef ENABLE_SMALL */
+-}
+-
+-#unde=
+f SHOW_PARM
+-#undef SHOW_STR
+-#undef SHOW_INT
+-#undef SHOW_BOOL
+-
+ #ifdef E=
+NABLE_MANAGEMENT
+ 
+ static struct http_proxy_options *
+diff --git a/src/ope=
+nvpn/options=2Eh b/src/openvpn/options=2Eh
+index a111cf8=2E=2E85d16f9 10064=
+4
+--- a/src/openvpn/options=2Eh
++++ b/src/openvpn/options=2Eh
+@@ -896,8 +89=
+6,6 @@
+ 
+ void setenv_settings(struct env_set *es, const struct options *o)=
+;
+ 
+-void show_settings(const struct options *o);
+-
+ bool string_defined_eq=
+ual(const char *s1, const char *s2);
+ 
+ const char *options_string_version(=
+const char *s, struct gc_arena *gc);
+diff --git a/src/openvpn/options_show=
+=2Ec b/src/openvpn/options_show=2Ec
+new file mode 100644
+index 0000000=2E=
+=2E4ff4659
+--- /dev/null
++++ b/src/openvpn/options_show=2Ec
+@@ -0,0 +1,631 =
+@@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *   =
+          over a single UDP port, with support for SSL/TLS-based
++ *       =
+      session authentication and key exchange,
++ *             packet encry=
+ption, packet authentication, and
++ *             packet compression=2E
++ *=
+
++ *  Copyright (C) 2002-2026 OpenVPN Inc <sales@openvpn=2Enet>
++ *
++ *  Th=
+is program is free software; you can redistribute it and/or modify
++ *  it =
+under the terms of the GNU General Public License version 2
++ *  as publish=
+ed by the Free Software Foundation=2E
++ *
++ *  This program is distributed =
+in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without =
+even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICUL=
+AR PURPOSE=2E  See the
++ *  GNU General Public License for more details=2E
+=
++ *
++ *  You should have received a copy of the GNU General Public License =
+along
++ *  with this program; if not, see <https://www=2Egnu=2Eorg/licenses=
+/>=2E
++ */
++
++#ifndef ENABLE_SMALL
++
++#ifdef HAVE_CONFIG_H
++#include "confi=
+g=2Eh"
++#endif
++
++#include "syshead=2Eh"
++
++#include "crypto=2Eh"
++#include=
+ "error=2Eh"
++#include "options=2Eh"
++
++static const char *
++pull_filter_ty=
+pe_name(int type)
++{
++    if (type =3D=3D PUF_TYPE_ACCEPT)
++    {
++        =
+return "accept";
++    }
++    if (type =3D=3D PUF_TYPE_IGNORE)
++    {
++     =
+   return "ignore";
++    }
++    if (type =3D=3D PUF_TYPE_REJECT)
++    {
++  =
+      return "reject";
++    }
++    else
++    {
++        return "???";
++    =
+}
++}
++
++#define SHOW_PARM(name, value, format) msg(D_SHOW_PARMS, "  " #name=
+ " =3D " format, (value))
++#define SHOW_STR(var)                  SHOW_PARM=
+(var, (o->var ? o->var : "[UNDEF]"), "'%s'")
++#define SHOW_STR_INLINE(var) =
+\
++    SHOW_PARM(var, o->var##_inline ? "[INLINE]" : (o->var ? o->var : "[U=
+NDEF]"), "'%s'")
++#define SHOW_INT(var)      SHOW_PARM(var, o->var, "%d")
++=
+#define SHOW_UINT(var)     SHOW_PARM(var, o->var, "%u")
++#define SHOW_INT64=
+(var)    SHOW_PARM(var, o->var, "%" PRIi64)
++#define SHOW_UNSIGNED(var) SHO=
+W_PARM(var, o->var, "0x%08x")
++#define SHOW_BOOL(var)     SHOW_PARM(var, (o=
+->var ? "ENABLED" : "DISABLED"), "%s");
++
++#ifdef _WIN32
++
++static void
++sh=
+ow_dhcp_option_list(const char *name, const char *const *array, unsigned in=
+t len)
++{
++    for (unsigned int i =3D 0; i < len; ++i)
++    {
++        msg=
+(D_SHOW_PARMS, "  %s[%u] =3D %s", name, i, array[i]);
++    }
++}
++
++static v=
+oid
++show_dhcp_option_addrs(const char *name, const in_addr_t *array, unsig=
+ned int len)
++{
++    struct gc_arena gc =3D gc_new();
++    for (unsigned in=
+t i =3D 0; i < len; ++i)
++    {
++        msg(D_SHOW_PARMS, "  %s[%u] =3D %s=
+", name, i, print_in_addr_t(array[i], 0, &gc));
++    }
++    gc_free(&gc);
++=
+}
++
++static void
++show_tuntap_options(const struct tuntap_options *o)
++{
++ =
+   SHOW_BOOL(ip_win32_defined);
++    SHOW_INT(ip_win32_type);
++    SHOW_INT=
+(dhcp_masq_offset);
++    SHOW_INT(dhcp_lease_time);
++    SHOW_INT(tap_sleep=
+);
++    SHOW_UNSIGNED(dhcp_options);
++    SHOW_BOOL(dhcp_renew);
++    SHOW_=
+BOOL(dhcp_pre_release);
++    SHOW_STR(domain);
++    SHOW_STR(netbios_scope)=
+;
++    SHOW_UNSIGNED(netbios_node_type);
++    SHOW_BOOL(disable_nbt);
++
++  =
+  show_dhcp_option_addrs("DNS", o->dns, o->dns_len);
++    show_dhcp_option_=
+addrs("WINS", o->wins, o->wins_len);
++    show_dhcp_option_addrs("NTP", o->=
+ntp, o->ntp_len);
++    show_dhcp_option_addrs("NBDD", o->nbdd, o->nbdd_len)=
+;
++    show_dhcp_option_list("DOMAIN-SEARCH", o->domain_search_list, o->dom=
+ain_search_list_len);
++}
++#endif /* ifdef _WIN32 */
++
++static const char *
+=
++print_vlan_accept(enum vlan_acceptable_frames mode)
++{
++    switch (mode)
+=
++    {
++        case VLAN_ONLY_TAGGED:
++            return "tagged";
++
++   =
+     case VLAN_ONLY_UNTAGGED_OR_PRIORITY:
++            return "untagged";
++=
+
++        case VLAN_ALL:
++            return "all";
++    }
++    return NULL=
+;
++}
++
++static void
++show_p2mp_parms(const struct options *o)
++{
++    struc=
+t gc_arena gc =3D gc_new();
++
++    msg(D_SHOW_PARMS, "  server_network =3D =
+%s", print_in_addr_t(o->server_network, 0, &gc));
++    msg(D_SHOW_PARMS, " =
+ server_netmask =3D %s", print_in_addr_t(o->server_netmask, 0, &gc));
++    =
+msg(D_SHOW_PARMS, "  server_network_ipv6 =3D %s", print_in6_addr(o->server_=
+network_ipv6, 0, &gc));
++    SHOW_INT(server_netbits_ipv6);
++    msg(D_SHOW=
+_PARMS, "  server_bridge_ip =3D %s", print_in_addr_t(o->server_bridge_ip, 0=
+, &gc));
++    msg(D_SHOW_PARMS, "  server_bridge_netmask =3D %s",
++        =
+print_in_addr_t(o->server_bridge_netmask, 0, &gc));
++    msg(D_SHOW_PARMS, =
+"  server_bridge_pool_start =3D %s",
++        print_in_addr_t(o->server_bri=
+dge_pool_start, 0, &gc));
++    msg(D_SHOW_PARMS, "  server_bridge_pool_end =
+=3D %s",
++        print_in_addr_t(o->server_bridge_pool_end, 0, &gc));
++   =
+ if (o->push_list=2Ehead)
++    {
++        const struct push_entry *e =3D o-=
+>push_list=2Ehead;
++        while (e)
++        {
++            if (e->enable=
+)
++            {
++                msg(D_SHOW_PARMS, "  push_entry =3D '%s'"=
+, e->option);
++            }
++            e =3D e->next;
++        }
++    }
+=
++    SHOW_BOOL(ifconfig_pool_defined);
++    msg(D_SHOW_PARMS, "  ifconfig_p=
+ool_start =3D %s",
++        print_in_addr_t(o->ifconfig_pool_start, 0, &gc)=
+);
++    msg(D_SHOW_PARMS, "  ifconfig_pool_end =3D %s", print_in_addr_t(o->=
+ifconfig_pool_end, 0, &gc));
++    msg(D_SHOW_PARMS, "  ifconfig_pool_netmas=
+k =3D %s",
++        print_in_addr_t(o->ifconfig_pool_netmask, 0, &gc));
++  =
+  SHOW_STR(ifconfig_pool_persist_filename);
++    SHOW_INT(ifconfig_pool_per=
+sist_refresh_freq);
++    SHOW_BOOL(ifconfig_ipv6_pool_defined);
++    msg(D_=
+SHOW_PARMS, "  ifconfig_ipv6_pool_base =3D %s",
++        print_in6_addr(o->=
+ifconfig_ipv6_pool_base, 0, &gc));
++    SHOW_INT(ifconfig_ipv6_pool_netbits=
+);
++    SHOW_INT(n_bcast_buf);
++    SHOW_INT(tcp_queue_limit);
++    SHOW_IN=
+T(real_hash_size);
++    SHOW_INT(virtual_hash_size);
++    SHOW_STR(client_c=
+onnect_script);
++    SHOW_STR(learn_address_script);
++    SHOW_STR(client_d=
+isconnect_script);
++    SHOW_STR(client_crresponse_script);
++    SHOW_STR(c=
+lient_config_dir);
++    SHOW_BOOL(ccd_exclusive);
++    SHOW_STR(tmp_dir);
++=
+    SHOW_BOOL(push_ifconfig_defined);
++    msg(D_SHOW_PARMS, "  push_ifconf=
+ig_local =3D %s",
++        print_in_addr_t(o->push_ifconfig_local, 0, &gc))=
+;
++    msg(D_SHOW_PARMS, "  push_ifconfig_remote_netmask =3D %s",
++        =
+print_in_addr_t(o->push_ifconfig_remote_netmask, 0, &gc));
++    SHOW_BOOL(p=
+ush_ifconfig_ipv6_defined);
++    msg(D_SHOW_PARMS, "  push_ifconfig_ipv6_lo=
+cal =3D %s/%d",
++        print_in6_addr(o->push_ifconfig_ipv6_local, 0, &gc=
+), o->push_ifconfig_ipv6_netbits);
++    msg(D_SHOW_PARMS, "  push_ifconfig_=
+ipv6_remote =3D %s",
++        print_in6_addr(o->push_ifconfig_ipv6_remote, =
+0, &gc));
++    SHOW_BOOL(enable_c2c);
++    SHOW_BOOL(duplicate_cn);
++    SH=
+OW_INT(cf_max);
++    SHOW_INT(cf_per);
++    SHOW_INT(cf_initial_max);
++    =
+SHOW_INT(cf_initial_per);
++    SHOW_UINT(max_clients);
++    SHOW_INT(max_ro=
+utes_per_client);
++    SHOW_STR(auth_user_pass_verify_script);
++    SHOW_BO=
+OL(auth_user_pass_verify_script_via_file);
++    SHOW_BOOL(auth_token_genera=
+te);
++    SHOW_BOOL(force_key_material_export);
++    SHOW_INT(auth_token_li=
+fetime);
++    SHOW_STR_INLINE(auth_token_secret_file);
++#if PORT_SHARE
++   =
+ SHOW_STR(port_share_host);
++    SHOW_STR(port_share_port);
++#endif
++    SH=
+OW_BOOL(vlan_tagging);
++    msg(D_SHOW_PARMS, "  vlan_accept =3D %s", print=
+_vlan_accept(o->vlan_accept));
++    SHOW_INT(vlan_pvid);
++
++    SHOW_BOOL(c=
+lient);
++    SHOW_BOOL(pull);
++    SHOW_STR_INLINE(auth_user_pass_file);
++
+=
++    gc_free(&gc);
++}
++
++static void
++show_http_proxy_options(const struct =
+http_proxy_options *o)
++{
++    int i;
++    msg(D_SHOW_PARMS, "BEGIN http_pr=
+oxy");
++    SHOW_STR(server);
++    SHOW_STR(port);
++    SHOW_STR(auth_metho=
+d_string);
++    SHOW_STR(auth_file);
++    SHOW_STR(auth_file_up);
++    SHOW=
+_BOOL(inline_creds);
++    SHOW_BOOL(nocache);
++    SHOW_STR(http_version);
+=
++    SHOW_STR(user_agent);
++    for (i =3D 0; i < MAX_CUSTOM_HTTP_HEADER &&=
+ o->custom_headers[i]=2Ename; i++)
++    {
++        if (o->custom_headers[i]=
+=2Econtent)
++        {
++            msg(D_SHOW_PARMS, "  custom_header[%d] =
+=3D %s: %s", i, o->custom_headers[i]=2Ename,
++                o->custom_hea=
+ders[i]=2Econtent);
++        }
++        else
++        {
++            msg(D_=
+SHOW_PARMS, "  custom_header[%d] =3D %s", i, o->custom_headers[i]=2Ename);
+=
++        }
++    }
++    msg(D_SHOW_PARMS, "END http_proxy");
++}
++
++static vo=
+id
++show_connection_entry(const struct connection_entry *o)
++{
++    /* Disp=
+lay the global proto only in client mode or with no '--local'*/
++    if (o-=
+>local_list->len =3D=3D 1)
++    {
++        msg(D_SHOW_PARMS, "  proto =3D %=
+s", proto2ascii(o->proto, o->af, false));
++    }
++
++    msg(D_SHOW_PARMS, "=
+  Local Sockets:");
++    for (int i =3D 0; i < o->local_list->len; i++)
++  =
+  {
++        msg(D_SHOW_PARMS, "    [%s]:%s-%s", o->local_list->array[i]->l=
+ocal,
++            o->local_list->array[i]->port,
++            proto2ascii(=
+o->local_list->array[i]->proto, o->af, false));
++    }
++    SHOW_STR(remote=
+);
++    SHOW_STR(remote_port);
++    SHOW_BOOL(remote_float);
++    SHOW_BOOL=
+(bind_defined);
++    SHOW_BOOL(bind_local);
++    SHOW_BOOL(bind_ipv6_only);=
+
++    SHOW_INT(connect_retry_seconds);
++    SHOW_INT(connect_timeout);
++
++ =
+   if (o->http_proxy_options)
++    {
++        show_http_proxy_options(o->ht=
+tp_proxy_options);
++    }
++    SHOW_STR(socks_proxy_server);
++    SHOW_STR(=
+socks_proxy_port);
++    SHOW_INT(tun_mtu);
++    SHOW_BOOL(tun_mtu_defined);=
+
++    SHOW_INT(link_mtu);
++    SHOW_BOOL(link_mtu_defined);
++    SHOW_INT(t=
+un_mtu_extra);
++    SHOW_BOOL(tun_mtu_extra_defined);
++    SHOW_INT(tls_mtu=
+);
++
++    SHOW_INT(mtu_discover_type);
++
++#ifdef ENABLE_FRAGMENT
++    SHOW_=
+INT(fragment);
++#endif
++    SHOW_INT(mssfix);
++    SHOW_BOOL(mssfix_encap);=
+
++    SHOW_BOOL(mssfix_fixed);
++
++    SHOW_INT(explicit_exit_notification);=
+
++
++    SHOW_STR_INLINE(tls_auth_file);
++    SHOW_PARM(key_direction, keydi=
+rection2ascii(o->key_direction, false, true), "%s");
++    SHOW_STR_INLINE(t=
+ls_crypt_file);
++    SHOW_STR_INLINE(tls_crypt_v2_file);
++}
++
++
++static voi=
+d
++show_connection_entries(const struct options *o)
++{
++    if (o->connecti=
+on_list)
++    {
++        const struct connection_list *l =3D o->connection_=
+list;
++        int i;
++        for (i =3D 0; i < l->len; ++i)
++        {
++ =
+           msg(D_SHOW_PARMS, "Connection profiles [%d]:", i);
++            =
+show_connection_entry(l->array[i]);
++        }
++    }
++    else
++    {
++   =
+     msg(D_SHOW_PARMS, "Connection profiles [default]:");
++        show_con=
+nection_entry(&o->ce);
++    }
++    msg(D_SHOW_PARMS, "Connection profiles E=
+ND");
++}
++
++static void
++show_pull_filter_list(const struct pull_filter_lis=
+t *l)
++{
++    struct pull_filter *f;
++    if (!l)
++    {
++        return;
++=
+    }
++
++    msg(D_SHOW_PARMS, "  Pull filters:");
++    for (f =3D l->head;=
+ f; f =3D f->next)
++    {
++        msg(D_SHOW_PARMS, "    %s \"%s\"", pull_=
+filter_type_name(f->type), f->pattern);
++    }
++}
++
++void
++show_settings(co=
+nst struct options *o)
++{
++    msg(D_SHOW_PARMS, "Current Parameter Setting=
+s:");
++
++    SHOW_STR(config);
++
++    SHOW_INT(mode);
++
++#ifdef ENABLE_FEAT=
+URE_TUN_PERSIST
++    SHOW_BOOL(persist_config);
++    SHOW_INT(persist_mode)=
+;
++#endif
++
++    SHOW_BOOL(show_ciphers);
++    SHOW_BOOL(show_digests);
++  =
+  SHOW_BOOL(show_engines);
++    SHOW_BOOL(genkey);
++    SHOW_STR(genkey_fil=
+ename);
++    SHOW_STR(key_pass_file);
++    SHOW_BOOL(show_tls_ciphers);
++
++=
+    SHOW_INT(connect_retry_max);
++    show_connection_entries(o);
++
++    SH=
+OW_BOOL(remote_random);
++
++    SHOW_STR(ipchange);
++    SHOW_STR(dev);
++   =
+ SHOW_STR(dev_type);
++    SHOW_STR(dev_node);
++#if defined(ENABLE_DCO)
++   =
+ SHOW_BOOL(disable_dco);
++#endif
++    SHOW_STR(lladdr);
++    SHOW_INT(topol=
+ogy);
++    SHOW_STR(ifconfig_local);
++    SHOW_STR(ifconfig_remote_netmask)=
+;
++    SHOW_BOOL(ifconfig_noexec);
++    SHOW_BOOL(ifconfig_nowarn);
++    SH=
+OW_STR(ifconfig_ipv6_local);
++    SHOW_INT(ifconfig_ipv6_netbits);
++    SHO=
+W_STR(ifconfig_ipv6_remote);
++
++    SHOW_INT(shaper);
++    SHOW_INT(mtu_tes=
+t);
++
++    SHOW_BOOL(mlock);
++
++    SHOW_INT(keepalive_ping);
++    SHOW_INT=
+(keepalive_timeout);
++    SHOW_INT(inactivity_timeout);
++    SHOW_INT(sessi=
+on_timeout);
++    SHOW_INT64(inactivity_minimum_bytes);
++    SHOW_INT(ping_=
+send_timeout);
++    SHOW_INT(ping_rec_timeout);
++    SHOW_INT(ping_rec_time=
+out_action);
++    SHOW_BOOL(ping_timer_remote);
++    SHOW_INT(remap_sigusr1=
+);
++    SHOW_BOOL(persist_tun);
++    SHOW_BOOL(persist_local_ip);
++    SHOW=
+_BOOL(persist_remote_ip);
++
++#if PASSTOS_CAPABILITY
++    SHOW_BOOL(passtos)=
+;
++#endif
++
++    SHOW_INT(resolve_retry_seconds);
++    SHOW_BOOL(resolve_in=
+_advance);
++
++    SHOW_STR(username);
++    SHOW_STR(groupname);
++    SHOW_S=
+TR(chroot_dir);
++    SHOW_STR(cd_dir);
++#ifdef ENABLE_SELINUX
++    SHOW_STR=
+(selinux_context);
++#endif
++    SHOW_STR(writepid);
++    SHOW_STR(up_script=
+);
++    SHOW_STR(down_script);
++    SHOW_BOOL(down_pre);
++    SHOW_BOOL(up_=
+restart);
++    SHOW_BOOL(up_delay);
++    SHOW_BOOL(daemon);
++    SHOW_BOOL(=
+log);
++    SHOW_BOOL(suppress_timestamps);
++    SHOW_BOOL(machine_readable_=
+output);
++    SHOW_INT(nice);
++    SHOW_INT(verbosity);
++    SHOW_INT(mute)=
+;
++#ifdef ENABLE_DEBUG
++    SHOW_INT(gremlin);
++#endif
++    SHOW_STR(status=
+_file);
++    SHOW_INT(status_file_version);
++    SHOW_INT(status_file_updat=
+e_freq);
++
++    SHOW_BOOL(occ);
++    SHOW_INT(rcvbuf);
++    SHOW_INT(sndbuf=
+);
++#if defined(TARGET_LINUX)
++    SHOW_INT(mark);
++#endif
++    SHOW_INT(so=
+ckflags);
++
++    SHOW_INT(comp=2Ealg);
++    SHOW_INT(comp=2Eflags);
++
++    =
+SHOW_STR(route_script);
++    SHOW_STR(route_default_gateway);
++    SHOW_INT=
+(route_default_metric);
++    SHOW_INT(route_default_table_id);
++    SHOW_BO=
+OL(route_noexec);
++    SHOW_INT(route_delay);
++    SHOW_INT(route_delay_win=
+dow);
++    SHOW_BOOL(route_delay_defined);
++    SHOW_BOOL(route_nopull);
++ =
+   SHOW_BOOL(route_gateway_via_dhcp);
++    SHOW_BOOL(allow_pull_fqdn);
++   =
+ show_pull_filter_list(o->pull_filter_list);
++
++    if (o->routes)
++    {
++=
+        print_route_options(o->routes, D_SHOW_PARMS);
++    }
++
++    if (o->=
+client_nat)
++    {
++        print_client_nat_list(o->client_nat, D_SHOW_PAR=
+MS);
++    }
++
++    show_dns_options(&o->dns_options);
++
++#ifdef ENABLE_MANA=
+GEMENT
++    SHOW_STR(management_addr);
++    SHOW_STR(management_port);
++   =
+ SHOW_STR(management_user_pass);
++    SHOW_INT(management_log_history_cache=
+);
++    SHOW_INT(management_echo_buffer_size);
++    SHOW_STR(management_cli=
+ent_user);
++    SHOW_STR(management_client_group);
++    SHOW_INT(management=
+_flags);
++#endif
++#ifdef ENABLE_PLUGIN
++    if (o->plugin_list)
++    {
++   =
+     plugin_option_list_print(o->plugin_list, D_SHOW_PARMS);
++    }
++#endif=
+
++
++    SHOW_STR_INLINE(shared_secret_file);
++    SHOW_PARM(key_direction, =
+keydirection2ascii(o->key_direction, false, true), "%s");
++    SHOW_STR(cip=
+hername);
++    SHOW_STR(ncp_ciphers);
++    SHOW_STR(authname);
++#ifndef ENA=
+BLE_CRYPTO_MBEDTLS
++    SHOW_BOOL(engine);
++#endif /* ENABLE_CRYPTO_MBEDTLS=
+ */
++    SHOW_BOOL(mute_replay_warnings);
++    SHOW_INT(replay_window);
++  =
+  SHOW_INT(replay_time);
++    SHOW_STR(packet_id_file);
++    SHOW_BOOL(test=
+_crypto);
++
++    SHOW_BOOL(tls_server);
++    SHOW_BOOL(tls_client);
++    SH=
+OW_STR_INLINE(ca_file);
++    SHOW_STR(ca_path);
++    SHOW_STR_INLINE(dh_fil=
+e);
++    if ((o->management_flags & MF_EXTERNAL_CERT))
++    {
++        SHOW=
+_PARM("cert_file", "EXTERNAL_CERT", "%s");
++    }
++    else
++    {
++       =
+ SHOW_STR_INLINE(cert_file);
++    }
++    SHOW_STR_INLINE(extra_certs_file);=
+
++
++    if ((o->management_flags & MF_EXTERNAL_KEY))
++    {
++        SHOW_P=
+ARM("priv_key_file", "EXTERNAL_PRIVATE_KEY", "%s");
++    }
++    else
++    {=
+
++        SHOW_STR_INLINE(priv_key_file);
++    }
++#ifndef ENABLE_CRYPTO_MBE=
+DTLS
++    SHOW_STR_INLINE(pkcs12_file);
++#endif
++#ifdef ENABLE_CRYPTOAPI
++ =
+   SHOW_STR(cryptoapi_cert);
++#endif
++    SHOW_STR(cipher_list);
++    SHOW_=
+STR(cipher_list_tls13);
++    SHOW_STR(tls_cert_profile);
++    SHOW_STR(tls_=
+verify);
++    SHOW_STR(tls_export_peer_cert_dir);
++    SHOW_INT(verify_x509=
+_type);
++    SHOW_STR(verify_x509_name);
++    SHOW_STR_INLINE(crl_file);
++ =
+   SHOW_INT(ns_cert_type);
++    {
++        int i;
++        for (i =3D 0; i =
+< MAX_PARMS; i++)
++        {
++            SHOW_INT(remote_cert_ku[i]);
++   =
+     }
++    }
++    SHOW_STR(remote_cert_eku);
++    if (o->verify_hash)
++   =
+ {
++        SHOW_INT(verify_hash_algo);
++        SHOW_INT(verify_hash_depth=
+);
++        struct gc_arena gc =3D gc_new();
++        const struct verify_h=
+ash_list *hl =3D o->verify_hash;
++        int digest_len =3D
++            (=
+o->verify_hash_algo =3D=3D MD_SHA1) ? SHA_DIGEST_LENGTH : SHA256_DIGEST_LEN=
+GTH;
++        while (hl)
++        {
++            char *s =3D format_hex_ex(=
+hl->hash, digest_len, 0, 1, ":", &gc);
++            SHOW_PARM(verify_hash, =
+s, "%s");
++            hl =3D hl->next;
++        }
++        gc_free(&gc);
++=
+    }
++    SHOW_INT(ssl_flags);
++
++    SHOW_INT(tls_timeout);
++
++    SHOW_I=
+NT64(renegotiate_bytes);
++    SHOW_INT64(renegotiate_packets);
++    SHOW_IN=
+T(renegotiate_seconds);
++
++    SHOW_INT(handshake_window);
++    SHOW_INT(tr=
+ansition_window);
++
++    SHOW_BOOL(single_session);
++    SHOW_BOOL(push_pee=
+r_info);
++    SHOW_BOOL(tls_exit);
++
++    SHOW_STR(tls_crypt_v2_metadata);
+=
++
++#ifdef ENABLE_PKCS11
++    {
++        int i;
++        for (i =3D 0; i < M=
+AX_PARMS && o->pkcs11_providers[i] !=3D NULL; i++)
++        {
++            =
+SHOW_PARM(pkcs11_providers, o->pkcs11_providers[i], "%s");
++        }
++    =
+}
++    {
++        int i;
++        for (i =3D 0; i < MAX_PARMS; i++)
++      =
+  {
++            SHOW_PARM(pkcs11_protected_authentication,
++              =
+        o->pkcs11_protected_authentication[i] ? "ENABLED" : "DISABLED", "%s=
+");
++        }
++    }
++    {
++        int i;
++        for (i =3D 0; i < MAX=
+_PARMS; i++)
++        {
++            SHOW_PARM(pkcs11_private_mode, o->pkcs=
+11_private_mode[i], "%08x");
++        }
++    }
++    {
++        int i;
++    =
+    for (i =3D 0; i < MAX_PARMS; i++)
++        {
++            SHOW_PARM(pkc=
+s11_cert_private, o->pkcs11_cert_private[i] ? "ENABLED" : "DISABLED",
++    =
+                  "%s");
++        }
++    }
++    SHOW_INT(pkcs11_pin_cache_p=
+eriod);
++    SHOW_STR(pkcs11_id);
++    SHOW_BOOL(pkcs11_id_management);
++#e=
+ndif /* ENABLE_PKCS11 */
++
++    show_p2mp_parms(o);
++
++#ifdef _WIN32
++    S=
+HOW_BOOL(show_net_up);
++    SHOW_INT(route_method);
++    SHOW_BOOL(block_ou=
+tside_dns);
++    show_tuntap_options(&o->tuntap_options);
++#endif
++}
++
++#en=
+dif /* ifndef ENABLE_SMALL */
+diff --git a/src/openvpn/options_show=2Eh b/s=
+rc/openvpn/options_show=2Eh
+new file mode 100644
+index 0000000=2E=2E54a1998=
+
+--- /dev/null
++++ b/src/openvpn/options_show=2Eh
+@@ -0,0 +1,42 @@
++/*
++ * =
+ OpenVPN -- An application to securely tunnel IP networks
++ *             o=
+ver a single UDP port, with support for SSL/TLS-based
++ *             sessi=
+on authentication and key exchange,
++ *             packet encryption, pack=
+et authentication, and
++ *             packet compression=2E
++ *
++ *  Copyr=
+ight (C) 2002-2026 OpenVPN Inc <sales@openvpn=2Enet>
++ *
++ *  This program =
+is free software; you can redistribute it and/or modify
++ *  it under the t=
+erms of the GNU General Public License version 2
++ *  as published by the F=
+ree Software Foundation=2E
++ *
++ *  This program is distributed in the hope=
+ that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the im=
+plied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE=
+=2E  See the
++ *  GNU General Public License for more details=2E
++ *
++ *  Y=
+ou should have received a copy of the GNU General Public License along
++ * =
+ with this program; if not, see <https://www=2Egnu=2Eorg/licenses/>=2E
++ */=
+
++
++#ifndef OPTIONS_SHOW_H
++#define OPTIONS_SHOW_H
++
++#include "options=2Eh=
+"
++
++#ifdef ENABLE_SMALL
++
++static inline void
++show_settings(const struct =
+options *o)
++{
++    (void)o;
++}
++
++#else
++
++void show_settings(const struct=
+ options *o);
++
++#endif /* ENABLE_SMALL */
++
++#endif
 
 -- 
-To=
- view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1743?usp=3Demail
-To =
-unsubscribe, or for help writing mail filters, visit http://gerrit=2Eopenvp=
-n=2Enet/settings?usp=3Demail
+To view, visit ht=
+tp://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1772?usp=3Demail
+To unsubscribe, or=
+ for help writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/setting=
+s?usp=3Demail
 
-Gerrit-MessageType: newpatchset
-Gerrit-Projec=
-t: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ic75ca2ee9b59a4e11f37cd9=
-653df268bba33889c
-Gerrit-Change-Number: 1743
-Gerrit-PatchSet: 4
-Gerrit-Owne=
-r: stipa <lstipakov@gmail=2Ecom>
-Gerrit-Reviewer: flichtenheld <frank@licht=
-enheld=2Ecom>
-Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerri=
-t-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
-Gerrit-Attent=
-ion: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Attention: flichtenheld =
-<frank@lichtenheld=2Ecom>
-Gerrit-Attention: stipa <lstipakov@gmail=2Ecom>
+Gerrit-MessageType: newchange
+Gerrit-Project: openvpn
+Gerrit=
+-Branch: master
+Gerrit-Change-Id: I61762374c141662d596bbf88b64ca7f7472b5149=
 
---8M1lHH6VAsY=
+Gerrit-Change-Number: 1772
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <=
+frank@lichtenheld=2Ecom>
+Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=
+=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+=
+Gerrit-Attention: plaisthos <arne-openvpn@rfc2549=2Eorg>
+
+--cNZUOFZszP0=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos, stipa=2E </p>
-<p>stipa <stro=
-ng>uploaded patch set #4</strong> to this change=2E</p><p><a href=3D"http:/=
-/gerrit=2Eopenvpn=2Enet/c/openvpn/+/1743?usp=3Demail">View Change</a></p><p=
->The following approvals got outdated and were removed:
-Code-Review-1 by fl=
-ichtenheld</p><pre class=3D"blocks" style=3D"font-family: monospace,monospa=
-ce; white-space: pre-wrap;">mudp: extract send_standalone_reply() helper<br=
-><br>Factor the synchronous, stateless &quot;send a standalone control pack=
-et back to the<br>peer that just contacted us&quot; sequence out of send_hm=
-ac_reset_packet() into a<br>reusable helper=2E No behavioural change=2E<br>=
-<br>This lets a following commit reuse it for the out-of-band probe reply i=
-nstead of<br>duplicating the aux_buf / to_link / process_outgoing_link sequ=
-ence=2E<br><br>Change-Id: Ic75ca2ee9b59a4e11f37cd9653df268bba33889c<br>Sign=
-ed-off-by: Lev Stipakov &lt;lev@openvpn=2Enet&gt;<br>---<br>M src/openvpn/m=
-udp=2Ec<br>1 file changed, 37 insertions(+), 23 deletions(-)<br><br></pre><=
-pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-space=
-: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/chang=
-es/43/1743/4</pre><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;"><span>diff --git a/src/openvpn/mudp=2Ec b/src/openvpn/mudp=
-=2Ec</span><br><span>index 9acf297=2E=2E2be085f 100644</span><br><span>--- =
-a/src/openvpn/mudp=2Ec</span><br><span>+++ b/src/openvpn/mudp=2Ec</span><br=
-><span>@@ -37,6 +37,41 @@</span><br><span> #include &lt;sys/inotify=2Eh&gt;=
-</span><br><span> #endif</span><br><span> </span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+ * Send an already-built standalone control packet back to the peer =
-that just</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * contact=
-ed us (c2=2Efrom), synchronously and without keeping any state=2E</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+ * We do not want to keep state for a reply to=
- an initial/out-of-band packet, so</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+ * we send it without queueing=2E If we hit EAGAIN on a busy=
- socket the packet is</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ * lost and the client simply retries -- an acceptable compromise that av=
-oids</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * consuming se=
-rver resources under attack=2E</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @pa=
-ram m       the server&#39;s multi_context</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ * @param buf     the packet to send (built by a tls=
-_*_standalone() helper)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+ * @param prefix  msg() prefix to set for the duration of the send</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param detail  D_MULT=
-I_DEBUG message describing the reply</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ * @param sock    the socket to send the reply on</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+send_standalone_reply(struct multi_context *m, struc=
-t buffer *buf, const char *prefix,</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+                      const char *detail, struct link_socket=
- *sock)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    struct context *c =3D &amp=
-;m-&gt;top;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    /* dco-win server requi=
-res prepend with sockaddr, so preserve offset */</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    ASSERT(buf_init(&amp;c-&gt;c2=2Ebuffers-&g=
-t;aux_buf, buf-&gt;offset));</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    buf_copy(&amp;c-&gt;c2=2Ebuffers-&gt;aux_buf, buf);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    msg_set_prefix(prefix);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    c-&gt;c2=2Eto_link =3D c-&gt;c2=2Ebuf=
-fers-&gt;aux_buf;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  c-&gt;c2=2Eto_link_addr =3D &amp;c-&gt;c2=2Efrom;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    msg(D_MULTI_DEBUG, &quot;%s&quot;, de=
-tail);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    process_o=
-utgoing_link(c, sock);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    c-&gt;c2=2Eto_link=2Elen =3D 0;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    c-&gt;c2=2Eto_link_addr =3D NULL;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    msg_set_prefix(NULL);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+</span><br><span> static void</span><br><span> sen=
-d_hmac_reset_packet(struct multi_context *m, struct tls_pre_decrypt_state *=
-state,</span><br><span>                        struct tls_auth_standalone *=
-tas, struct session_id *sid,</span><br><span>@@ -48,29 +83,8 @@</span><br><=
-span>     struct buffer buf =3D tls_reset_standalone(&amp;state-&gt;tls_wra=
-p_tmp, tas, sid,</span><br><span>                                          =
-    &amp;state-&gt;peer_session_id, header, request_resend_wkc);</span><br>=
-<span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct con=
-text *c =3D &amp;m-&gt;top;</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* dco-win =
-server requires prepend with sockaddr, so preserve offset */</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(buf_init(&amp;c-&gt;c2=2E=
-buffers-&gt;aux_buf, buf=2Eoffset));</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    bu=
-f_copy(&amp;c-&gt;c2=2Ebuffers-&gt;aux_buf, &amp;buf);</span><br><span styl=
+rently required from: plaisthos=2E </p>
+<p>flichtenheld would like plaistho=
+s to <strong>review</strong> this change=2E
+</p><p><a href=3D"http://gerrit=
+=2Eopenvpn=2Enet/c/openvpn/+/1772?usp=3Demail">View Change</a></p><pre clas=
+s=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wr=
+ap;">options: Factor out options display code from options=2Ec<br><br>optio=
+ns=2Ec is a huge, unwieldly file=2E So remove some<br>closely related code =
+that has no direct dependencies<br>with the other functions in the file=2E<=
+br><br>In this case it is the code that prints out the current<br>configura=
+tion=2E<br><br>Change-Id: I61762374c141662d596bbf88b64ca7f7472b5149<br>Sign=
+ed-off-by: Frank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt;<br>---<br>M CM=
+akeLists=2Etxt<br>M src/openvpn/Makefile=2Eam<br>M src/openvpn/openvpn=2Ec<=
+br>M src/openvpn/options=2Ec<br>M src/openvpn/options=2Eh<br>A src/openvpn/=
+options_show=2Ec<br>A src/openvpn/options_show=2Eh<br>7 files changed, 677 =
+insertions(+), 619 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D=
+"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://g=
+errit=2Eopenvpn=2Enet:29418/openvpn refs/changes/72/1772/1</pre><pre style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
+git a/CMakeLists=2Etxt b/CMakeLists=2Etxt</span><br><span>index 4779d69=2E=
+=2Eb6054d6 100644</span><br><span>--- a/CMakeLists=2Etxt</span><br><span>++=
++ b/CMakeLists=2Etxt</span><br><span>@@ -518,6 +518,8 @@</span><br><span>  =
+   src/openvpn/options_util=2Ec</span><br><span>     src/openvpn/options_ut=
+il=2Eh</span><br><span>     src/openvpn/options_parse=2Ec</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/options_show=2Ec</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/options_=
+show=2Eh</span><br><span>     src/openvpn/otime=2Ec</span><br><span>     sr=
+c/openvpn/otime=2Eh</span><br><span>     src/openvpn/ovpn_dco_win=2Eh</span=
+><br><span>diff --git a/src/openvpn/Makefile=2Eam b/src/openvpn/Makefile=2E=
+am</span><br><span>index ff8cc54=2E=2E0fbd006 100644</span><br><span>--- a/=
+src/openvpn/Makefile=2Eam</span><br><span>+++ b/src/openvpn/Makefile=2Eam</=
+span><br><span>@@ -108,6 +108,7 @@</span><br><span> 	pkcs11_mbedtls=2Ec \</=
+span><br><span> 	openvpn=2Ec openvpn=2Eh \</span><br><span> 	options=2Ec op=
+tions=2Eh \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	options=
+_show=2Ec options_show=2Eh \</span><br><span> 	options_util=2Ec options_uti=
+l=2Eh \</span><br><span> 	options_parse=2Ec \</span><br><span> 	otime=2Ec o=
+time=2Eh \</span><br><span>diff --git a/src/openvpn/openvpn=2Ec b/src/openv=
+pn/openvpn=2Ec</span><br><span>index 5e1f680=2E=2E24d6bb6 100644</span><br>=
+<span>--- a/src/openvpn/openvpn=2Ec</span><br><span>+++ b/src/openvpn/openv=
+pn=2Ec</span><br><span>@@ -30,6 +30,7 @@</span><br><span> #include &quot;fo=
+rward=2Eh&quot;</span><br><span> #include &quot;multi=2Eh&quot;</span><br><=
+span> #include &quot;win32=2Eh&quot;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+#include &quot;options_show=2Eh&quot;</span><br><span> #in=
+clude &quot;platform=2Eh&quot;</span><br><span> </span><br><span> #include =
+&quot;memdbg=2Eh&quot;</span><br><span>diff --git a/src/openvpn/options=2Ec=
+ b/src/openvpn/options=2Ec</span><br><span>index 2dcb707=2E=2E8f5bc2a 10064=
+4</span><br><span>--- a/src/openvpn/options=2Ec</span><br><span>+++ b/src/o=
+penvpn/options=2Ec</span><br><span>@@ -927,40 +927,6 @@</span><br><span>   =
+  gc_free(&amp;o-&gt;dns_options=2Egc);</span><br><span> }</span><br><span>=
+ </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifndef ENABLE_SMALL=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-static const char *</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-pull_filter_type_name(int type)</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    if (type =3D=3D PUF_TYPE_ACCEPT)</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-        return &quot;accept&quot;;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    if (type =3D=3D PUF_TYPE_IGNORE)</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-        return &quot;ignore&quot;;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    if (type =3D=3D PUF_TYPE_REJECT)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        return &quot;reject&quot;;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    else</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return &=
+quot;???&quot;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span styl=
 e=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    /*</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-  * We do not want to keep any state here, so we send the reply to the</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-     * initial packet sync=
-hronously without queueing anything=2E</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-     *</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-     * If we hit EAGAIN on a busy socket, the packet will be lost and the=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     * client will ha=
-ve to retransmit its HARD_RESET=2E This is considered an</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-     * acceptable compromise to avoid co=
-nsuming server resources under attack=2E</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-     */</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    msg_set_prefix(&quot;Connection Attempt&quot;);</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    c-&gt;c2=2Eto_link =3D c-&gt;c2=2Ebu=
-ffers-&gt;aux_buf;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- c-&gt;c2=2Eto_link_addr =3D &amp;c-&gt;c2=2Efrom;</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    msg(D_MULTI_DEBUG, &quot;Reset packet from=
- client, sending HMAC based reset challenge&quot;);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    process_outgoing_link(c, sock);</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    c-&gt;c2=2Eto_link=2Elen =
-=3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    c-&gt;c2=2E=
-to_link_addr =3D NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    msg_set_prefix(NULL);</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    send_standalone_reply(m, &amp;buf, &quot;Connection Attempt&quot=
-;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                 =
-         &quot;Reset packet from client, sending HMAC based reset challenge=
-&quot;, sock);</span><br><span> }</span><br><span> </span><br><span> </span=
-><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit=2Eop=
-envpn=2Enet/c/openvpn/+/1743?usp=3Demail">change 1743</a>=2E To unsubscribe=
-, or for help writing mail filters, visit <a href=3D"http://gerrit=2Eopenvp=
-n=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D=
-"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemt=
-ype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http:=
-//gerrit=2Eopenvpn=2Enet/c/openvpn/+/1743?usp=3Demail"/><meta itemprop=3D"n=
-ame" content=3D"View Change"/></div></div>
+0%, 40%);">-#define SHOW_PARM(name, value, format) msg(D_SHOW_PARMS, &quot;=
+  &quot; #name &quot; =3D &quot; format, (value))</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-#define SHOW_STR(var)                  SHOW_PAR=
+M(var, (o-&gt;var ? o-&gt;var : &quot;[UNDEF]&quot;), &quot;&#39;%s&#39;&qu=
+ot;)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define SHOW_STR_=
+INLINE(var) \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW=
+_PARM(var, o-&gt;var##_inline ? &quot;[INLINE]&quot; : (o-&gt;var ? o-&gt;v=
+ar : &quot;[UNDEF]&quot;), &quot;&#39;%s&#39;&quot;)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#define SHOW_INT(var)      SHOW_PARM(var, o=
+-&gt;var, &quot;%d&quot;)</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-#define SHOW_UINT(var)     SHOW_PARM(var, o-&gt;var, &quot;%u&quot;)</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#define SHOW_INT64(var) =
+   SHOW_PARM(var, o-&gt;var, &quot;%&quot; PRIi64)</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-#define SHOW_UNSIGNED(var) SHOW_PARM(var, o-&g=
+t;var, &quot;0x%08x&quot;)</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-#define SHOW_BOOL(var)     SHOW_PARM(var, (o-&gt;var ? &quot;ENABLED&q=
+uot; : &quot;DISABLED&quot;), &quot;%s&quot;);</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-#endif /* ifndef ENABLE_SMALL */</span><br><span> </span><br><span> sta=
+tic void</span><br><span> setenv_connection_entry(struct env_set *es, const=
+ struct connection_entry *e, const int i)</span><br><span>@@ -1253,55 +1219=
+,6 @@</span><br><span> </span><br><span>     return ret;</span><br><span> }=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef _WIN32</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-#ifndef ENABLE_SMALL</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-static void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-show_dh=
+cp_option_list(const char *name, const char *const *array, unsigned int len=
+)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    for (unsigned int i =3D 0; i &lt; le=
+n; ++i)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-        msg(D_SHOW_PARMS, &quo=
+t;  %s[%u] =3D %s&quot;, name, i, array[i]);</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-static void</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-show_dhcp_option_addrs(const char *name, co=
+nst in_addr_t *array, unsigned int len)</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  struct gc_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    for (unsigned int i =3D 0; i &lt; len; ++i)</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-        msg(D_SHOW_PARMS, &quot;  %s[%u] =3D %s&quot=
+;, name, i, print_in_addr_t(array[i], 0, &amp;gc));</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    gc_free(&amp;gc);</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-static void</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-show_tuntap_options(const struct tu=
+ntap_options *o)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(ip_win32_de=
+fined);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(i=
+p_win32_type);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHO=
+W_INT(dhcp_masq_offset);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    SHOW_INT(dhcp_lease_time);</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    SHOW_INT(tap_sleep);</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    SHOW_UNSIGNED(dhcp_options);</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    SHOW_BOOL(dhcp_renew);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(dhcp_pre_release);</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR(domain);</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR(netbios_scope);</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_UNSIGNED(netbios=
+_node_type);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_=
+BOOL(disable_nbt);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    show_dhcp_option_add=
+rs(&quot;DNS&quot;, o-&gt;dns, o-&gt;dns_len);</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    show_dhcp_option_addrs(&quot;WINS&quot;, o-&gt=
+;wins, o-&gt;wins_len);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    show_dhcp_option_addrs(&quot;NTP&quot;, o-&gt;ntp, o-&gt;ntp_len);</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    show_dhcp_option_add=
+rs(&quot;NBDD&quot;, o-&gt;nbdd, o-&gt;nbdd_len);</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    show_dhcp_option_list(&quot;DOMAIN-SEARCH&q=
+uot;, o-&gt;domain_search_list, o-&gt;domain_search_list_len);</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+#endif /* ifndef ENABLE_SMALL */</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-#endif /* ifdef _WIN32 */</span><br><span> </span><br><span> sta=
+tic void</span><br><span> dhcp_option_dns6_parse(const char *parm, struct i=
+n6_addr *dns6_list, unsigned int *len, msglvl_t msglevel)</span><br><span>@=
+@ -1344,116 +1261,6 @@</span><br><span>     }</span><br><span> }</span><br>=
+<span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifndef ENABLE=
+_SMALL</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static const ch=
+ar *</span><br><span style=3D"color: hsl(0, 100%, 40%);">-print_vlan_accept=
+(enum vlan_acceptable_frames mode)</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    swi=
+tch (mode)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        case VLAN_ONLY_TAGG=
+ED:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            return=
+ &quot;tagged&quot;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        case VLAN_ONLY=
+_UNTAGGED_OR_PRIORITY:</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-            return &quot;untagged&quot;;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       case VLAN_ALL:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+            return &quot;all&quot;;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  return NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-static void</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-show_p2mp_parms(const struct options *o)</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    struct gc_arena gc =3D gc_new();</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    msg(D_SHOW_PARMS, &quot;  server_network =3D %s&quot;, print=
+_in_addr_t(o-&gt;server_network, 0, &amp;gc));</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    msg(D_SHOW_PARMS, &quot;  server_netmask =3D %=
+s&quot;, print_in_addr_t(o-&gt;server_netmask, 0, &amp;gc));</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    msg(D_SHOW_PARMS, &quot;  server=
+_network_ipv6 =3D %s&quot;, print_in6_addr(o-&gt;server_network_ipv6, 0, &a=
+mp;gc));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(=
+server_netbits_ipv6);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    msg(D_SHOW_PARMS, &quot;  server_bridge_ip =3D %s&quot;, print_in_addr_=
+t(o-&gt;server_bridge_ip, 0, &amp;gc));</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    msg(D_SHOW_PARMS, &quot;  server_bridge_netmask =3D %=
+s&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        print=
+_in_addr_t(o-&gt;server_bridge_netmask, 0, &amp;gc));</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    msg(D_SHOW_PARMS, &quot;  server_bridge=
+_pool_start =3D %s&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-        print_in_addr_t(o-&gt;server_bridge_pool_start, 0, &amp;gc));</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(D_SHOW_PARMS, &=
+quot;  server_bridge_pool_end =3D %s&quot;,</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-        print_in_addr_t(o-&gt;server_bridge_pool_end,=
+ 0, &amp;gc));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if =
+(o-&gt;push_list=2Ehead)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        const=
+ struct push_entry *e =3D o-&gt;push_list=2Ehead;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-        while (e)</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-            if (e-&gt;enable)</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-                msg(D_SHOW_PARMS, &quot;  push_entry =3D &#39;%=
+s&#39;&quot;, e-&gt;option);</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-            }</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+           e =3D e-&gt;next;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(ifconfi=
+g_pool_defined);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    m=
+sg(D_SHOW_PARMS, &quot;  ifconfig_pool_start =3D %s&quot;,</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-        print_in_addr_t(o-&gt;ifconfig=
+_pool_start, 0, &amp;gc));</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    msg(D_SHOW_PARMS, &quot;  ifconfig_pool_end =3D %s&quot;, print_in=
+_addr_t(o-&gt;ifconfig_pool_end, 0, &amp;gc));</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    msg(D_SHOW_PARMS, &quot;  ifconfig_pool_netmas=
+k =3D %s&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+  print_in_addr_t(o-&gt;ifconfig_pool_netmask, 0, &amp;gc));</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR(ifconfig_pool_persist_f=
+ilename);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT=
+(ifconfig_pool_persist_refresh_freq);</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    SHOW_BOOL(ifconfig_ipv6_pool_defined);</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    msg(D_SHOW_PARMS, &quot;  ifconfig=
+_ipv6_pool_base =3D %s&quot;,</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-        print_in6_addr(o-&gt;ifconfig_ipv6_pool_base, 0, &amp;gc));=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(ifconfig=
+_ipv6_pool_netbits);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   SHOW_INT(n_bcast_buf);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    SHOW_INT(tcp_queue_limit);</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    SHOW_INT(real_hash_size);</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    SHOW_INT(virtual_hash_size);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR(client_connect_script);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR(learn_address_s=
+cript);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR(c=
+lient_disconnect_script);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    SHOW_STR(client_crresponse_script);</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    SHOW_STR(client_config_dir);</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(ccd_exclusive);</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR(tmp_dir);</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(push_ifconfig_defin=
+ed);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(D_SHOW_PA=
+RMS, &quot;  push_ifconfig_local =3D %s&quot;,</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-        print_in_addr_t(o-&gt;push_ifconfig_local,=
+ 0, &amp;gc));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    msg=
+(D_SHOW_PARMS, &quot;  push_ifconfig_remote_netmask =3D %s&quot;,</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-        print_in_addr_t(o-&gt;p=
+ush_ifconfig_remote_netmask, 0, &amp;gc));</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    SHOW_BOOL(push_ifconfig_ipv6_defined);</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    msg(D_SHOW_PARMS, &quot;  pus=
+h_ifconfig_ipv6_local =3D %s/%d&quot;,</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-        print_in6_addr(o-&gt;push_ifconfig_ipv6_local, 0, =
+&amp;gc), o-&gt;push_ifconfig_ipv6_netbits);</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    msg(D_SHOW_PARMS, &quot;  push_ifconfig_ipv6_rem=
+ote =3D %s&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    print_in6_addr(o-&gt;push_ifconfig_ipv6_remote, 0, &amp;gc));</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(enable_c2c);</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(duplicate_cn=
+);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(cf_max=
+);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(cf_per=
+);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(cf_ini=
+tial_max);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_IN=
+T(cf_initial_per);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ SHOW_UINT(max_clients);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    SHOW_INT(max_routes_per_client);</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    SHOW_STR(auth_user_pass_verify_script);</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(auth_user_pass_verify=
+_script_via_file);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ SHOW_BOOL(auth_token_generate);</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    SHOW_BOOL(force_key_material_export);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(auth_token_lifetime);</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR_INLINE(auth_token=
+_secret_file);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if POR=
+T_SHARE</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR(p=
+ort_share_host);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    S=
+HOW_STR(port_share_port);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_BO=
+OL(vlan_tagging);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+msg(D_SHOW_PARMS, &quot;  vlan_accept =3D %s&quot;, print_vlan_accept(o-&gt=
+;vlan_accept));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SH=
+OW_INT(vlan_pvid);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(client);</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(pull);</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR_INLINE(auth=
+_user_pass_file);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    gc_free(&amp;gc);</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-#endif /* ! ENABLE_SMALL */</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-</span><br><span> static void</span><br><span> option_irou=
+te(struct options *o, const char *network_str, const char *netmask_str,</sp=
+an><br><span>               msglvl_t msglevel)</span><br><span>@@ -1498,37 =
++1305,6 @@</span><br><span>     o-&gt;iroutes_ipv6 =3D ir;</span><br><span>=
+ }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
+ifndef ENABLE_SMALL</span><br><span style=3D"color: hsl(0, 100%, 40%);">-st=
+atic void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-show_http_pr=
+oxy_options(const struct http_proxy_options *o)</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    int i;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    m=
+sg(D_SHOW_PARMS, &quot;BEGIN http_proxy&quot;);</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    SHOW_STR(server);</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    SHOW_STR(port);</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    SHOW_STR(auth_method_string);</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR(auth_file);</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR(auth_file_up);</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(inline_creds);</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(nocache);=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR(http_ver=
+sion);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR(us=
+er_agent);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    for (i =
+=3D 0; i &lt; MAX_CUSTOM_HTTP_HEADER &amp;&amp; o-&gt;custom_headers[i]=2En=
+ame; i++)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        if (o-&gt;custom_hea=
+ders[i]=2Econtent)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg=
+(D_SHOW_PARMS, &quot;  custom_header[%d] =3D %s: %s&quot;, i, o-&gt;custom_=
+headers[i]=2Ename,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+             o-&gt;custom_headers[i]=2Econtent);</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-        else</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+      msg(D_SHOW_PARMS, &quot;  custom_header[%d] =3D %s&quot;, i, o-&gt;cu=
+stom_headers[i]=2Ename);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(D_SHOW_PARMS, &qu=
+ot;END http_proxy&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif /* ifndef=
+ ENABLE_SMALL */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
+n><br><span> void</span><br><span> options_detach(struct options *o)</span>=
+<br><span> {</span><br><span>@@ -1576,399 +1352,6 @@</span><br><span>     }=
+</span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-#ifndef ENABLE_SMALL</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-static void</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-show_connection_entry(const struct connection_entry *o)</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    /* Display the global proto only in client mode or w=
+ith no &#39;--local&#39;*/</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    if (o-&gt;local_list-&gt;len =3D=3D 1)</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-        msg(D_SHOW_PARMS, &quot;  proto =3D %s&quot;, proto2ascii=
+(o-&gt;proto, o-&gt;af, false));</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(D_SHOW_PARMS, &quo=
+t;  Local Sockets:&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    for (int i =3D 0; i &lt; o-&gt;local_list-&gt;len; i++)</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-        msg(D_SHOW_PARMS, &quot;    [%s]:%s-%s&q=
+uot;, o-&gt;local_list-&gt;array[i]-&gt;local,</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-            o-&gt;local_list-&gt;array[i]-&gt;port=
+,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            proto2as=
+cii(o-&gt;local_list-&gt;array[i]-&gt;proto, o-&gt;af, false));</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    SHOW_STR(remote);</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    SHOW_STR(remote_port);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(remote_float);</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(bind_defined);</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(bind_local);</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(bind_ipv6_=
+only);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(co=
+nnect_retry_seconds);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    SHOW_INT(connect_timeout);</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (o-&g=
+t;http_proxy_options)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        show_htt=
+p_proxy_options(o-&gt;http_proxy_options);</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    SHOW_STR(socks_proxy_server);</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    SHOW_STR(socks_proxy_port);</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    SHOW_INT(tun_mtu);</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    SHOW_BOOL(tun_mtu_defined);</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(link_mtu);</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(link_mtu_defined);</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(tun_mtu_ext=
+ra);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(tun=
+_mtu_extra_defined);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   SHOW_INT(tls_mtu);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(mtu_disc=
+over_type);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef ENABLE_FRAGMENT</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(fragment);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(mssfix);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(mssfix_encap);</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(mssfix_fixed);</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    SHOW_INT(explicit_exit_notification);</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    SHOW_STR_INLINE(tls_auth_file);</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    SHOW_PARM(key_direction, keydirec=
+tion2ascii(o-&gt;key_direction, false, true), &quot;%s&quot;);</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR_INLINE(tls_crypt_file=
+);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR_INLINE=
+(tls_crypt_v2_file);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-static void</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-show_connection_entries(const struct options *o)</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    if (o-&gt;connection_list)</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-        const struct connection_list *l =3D o-&gt;connection_list;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        int i;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        for (i =3D 0; i &lt; l-&gt;=
+len; ++i)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(D_SHOW_P=
+ARMS, &quot;Connection profiles [%d]:&quot;, i);</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-            show_connection_entry(l-&gt;array[i]=
+);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    else</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       msg(D_SHOW_PARMS, &quot;Connection profiles [default]:&quot;);</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        show_connection_ent=
+ry(&amp;o-&gt;ce);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(D_SHOW_PARM=
+S, &quot;Connection profiles END&quot;);</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-static void</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-show_pull_filter_list(const stru=
+ct pull_filter_list *l)</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct pull_fi=
+lter *f;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!l)</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-        return;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    m=
+sg(D_SHOW_PARMS, &quot;  Pull filters:&quot;);</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    for (f =3D l-&gt;head; f; f =3D f-&gt;next)</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-        msg(D_SHOW_PARMS, &quot;    %s \=
+&quot;%s\&quot;&quot;, pull_filter_type_name(f-&gt;type), f-&gt;pattern);</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endi=
+f /* ifndef ENABLE_SMALL */</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-void</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-show_settings(const struct optio=
+ns *o)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-#ifndef ENABLE_SMALL</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    msg(D_SHOW_PARMS, &quot;Current =
+Parameter Settings:&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR(co=
+nfig);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(mode);</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-#ifdef ENABLE_FEATURE_TUN_PERSIST</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    SHOW_BOOL(persist_config);</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(persist_mode);</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    SHOW_BOOL(show_ciphers);</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    SHOW_BOOL(show_digests);</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    SHOW_BOOL(show_engines);</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    SHOW_BOOL(genkey);</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    SHOW_STR(genkey_filename);</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR(key_pass_file);</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(show_tls_ciphers=
+);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(connect_retry_max);</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    show_connection_entries(o=
+);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(remote_random);</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    SHOW_STR(ipchange);</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    SHOW_STR(dev);</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    SHOW_STR(dev_type);</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    SHOW_STR(dev_node);</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-#if defined(ENABLE_DCO)</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    SHOW_BOOL(disable_dco);</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    SHOW_STR(lladdr);</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    SHOW_INT(topology);</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    SHOW_STR(ifconfig_local);</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    SHOW_STR(ifconfig_remote_netmask);</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(ifconfig_noexec)=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(ifconf=
+ig_nowarn);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_S=
+TR(ifconfig_ipv6_local);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    SHOW_INT(ifconfig_ipv6_netbits);</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    SHOW_STR(ifconfig_ipv6_remote);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    SHOW_INT(shaper);</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    SHOW_INT(mtu_test);</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW=
+_BOOL(mlock);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(keepalive_ping);=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(keepaliv=
+e_timeout);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_I=
+NT(inactivity_timeout);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    SHOW_INT(session_timeout);</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    SHOW_INT64(inactivity_minimum_bytes);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(ping_send_timeout);</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(ping_rec_timeout);<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(ping_rec_=
+timeout_action);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    S=
+HOW_BOOL(ping_timer_remote);</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    SHOW_INT(remap_sigusr1);</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    SHOW_BOOL(persist_tun);</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    SHOW_BOOL(persist_local_ip);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(persist_remote_ip);</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-#if PASSTOS_CAPABILITY</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    SHOW_BOOL(passtos);</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_I=
+NT(resolve_retry_seconds);</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    SHOW_BOOL(resolve_in_advance);</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ SHOW_STR(username);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   SHOW_STR(groupname);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    SHOW_STR(chroot_dir);</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    SHOW_STR(cd_dir);</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-#ifdef ENABLE_SELINUX</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    SHOW_STR(selinux_context);</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    SHOW_STR(writepid);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    SHOW_STR(up_script);</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    SHOW_STR(down_script);</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    SHOW_BOOL(down_pre);</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    SHOW_BOOL(up_restart);</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    SHOW_BOOL(up_delay);</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    SHOW_BOOL(daemon);</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    SHOW_BOOL(log);</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    SHOW_BOOL(suppress_timestamps);</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(machine_readable_output);</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(nice);</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(verbosity);<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(mute);</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef ENABLE_DEBUG</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(gremlin);</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR(status_file);</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(status_file_version);<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(status_fi=
+le_update_freq);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(occ);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(rcvbuf);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(sndbuf);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(TARGET_LINUX)</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(mark);</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(sockflags);</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    SHOW_INT(comp=2Ealg);</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    SHOW_INT(comp=2Eflags);</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    SHOW_STR(route_script);</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    SHOW_STR(route_default_gateway);</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    SHOW_INT(route_default_metric);</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(route_default_table_id=
+);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(route=
+_noexec);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT=
+(route_delay);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHO=
+W_INT(route_delay_window);</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    SHOW_BOOL(route_delay_defined);</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    SHOW_BOOL(route_nopull);</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    SHOW_BOOL(route_gateway_via_dhcp);</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(allow_pull_fqdn);<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    show_pull_filter_l=
+ist(o-&gt;pull_filter_list);</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (o-&gt;=
+routes)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-        print_route_options(o-=
+&gt;routes, D_SHOW_PARMS);</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    if (o-&gt;client_nat)</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        print_client_nat_list(o-&gt;client_=
+nat, D_SHOW_PARMS);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    show_dns_options(&amp;o-&gt;dns_opt=
+ions);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-#ifdef ENABLE_MANAGEMENT</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR(management_addr);</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR(management_=
+port);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR(ma=
+nagement_user_pass);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   SHOW_INT(management_log_history_cache);</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    SHOW_INT(management_echo_buffer_size);</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR(management_client_us=
+er);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR(mana=
+gement_client_group);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    SHOW_INT(management_flags);</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifde=
+f ENABLE_PLUGIN</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if=
+ (o-&gt;plugin_list)</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        plugin_op=
+tion_list_print(o-&gt;plugin_list, D_SHOW_PARMS);</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR_INLINE(shar=
+ed_secret_file);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    S=
+HOW_PARM(key_direction, keydirection2ascii(o-&gt;key_direction, false, true=
+), &quot;%s&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  SHOW_STR(ciphername);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    SHOW_STR(ncp_ciphers);</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    SHOW_STR(authname);</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-#ifndef ENABLE_CRYPTO_MBEDTLS</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    SHOW_BOOL(engine);</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-#endif /* ENABLE_CRYPTO_MBEDTLS */</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(mute_replay_warnings);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(replay_window);=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(replay_t=
+ime);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR(pac=
+ket_id_file);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW=
+_BOOL(test_crypto);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(tls_serve=
+r);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(tls_=
+client);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR_=
+INLINE(ca_file);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    S=
+HOW_STR(ca_path);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+SHOW_STR_INLINE(dh_file);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    if ((o-&gt;management_flags &amp; MF_EXTERNAL_CERT))</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-        SHOW_PARM(&quot;cert_file&quot;, &quot;EXTER=
+NAL_CERT&quot;, &quot;%s&quot;);</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    e=
+lse</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-        SHOW_STR_INLINE(cert_file)=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR_INLINE(extra_certs_file=
+);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    if ((o-&gt;management_flags &amp; MF=
+_EXTERNAL_KEY))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        SHOW_PARM(&quo=
+t;priv_key_file&quot;, &quot;EXTERNAL_PRIVATE_KEY&quot;, &quot;%s&quot;);</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    else</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        SHOW_STR_INLINE(priv_key_file);</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-#ifndef ENABLE_CRYPTO_MBEDTLS</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    SHOW_STR_INLINE(pkcs12_file);</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-#ifdef ENABLE_CRYPTOAPI</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    SHOW_STR(cryptoapi_cert);</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    SHOW_STR(cipher_list);</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    SHOW_STR(cipher_list_tls13);</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    SHOW_STR(tls_cert_profile);</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR(tls_verify);</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR(tls_export_peer_cert_di=
+r);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(verif=
+y_x509_type);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW=
+_STR(verify_x509_name);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    SHOW_STR_INLINE(crl_file);</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    SHOW_INT(ns_cert_type);</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-        int i;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+  for (i =3D 0; i &lt; MAX_PARMS; i++)</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-            SHOW_INT(remote_cert_ku[i]);</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+SHOW_STR(remote_cert_eku);</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    if (o-&gt;verify_hash)</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+  SHOW_INT(verify_hash_algo);</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-        SHOW_INT(verify_hash_depth);</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-        struct gc_arena gc =3D gc_new();</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        const struct verify_hash_=
+list *hl =3D o-&gt;verify_hash;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-        int digest_len =3D</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-            (o-&gt;verify_hash_algo =3D=3D MD_SHA1) ? SHA_DI=
+GEST_LENGTH : SHA256_DIGEST_LENGTH;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        while (hl)</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+           char *s =3D format_hex_ex(hl-&gt;hash, digest_len, 0, 1, &quot;:=
+&quot;, &amp;gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+        SHOW_PARM(verify_hash, s, &quot;%s&quot;);</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-            hl =3D hl-&gt;next;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-        gc_free(&amp;gc);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    SHOW_INT(ssl_flags);</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  SHOW_INT(tls_timeout);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT64(ren=
+egotiate_bytes);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    S=
+HOW_INT64(renegotiate_packets);</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    SHOW_INT(renegotiate_seconds);</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    SHOW_INT(handshake_window);</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    SHOW_INT(transition_window);</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    SHOW_BOOL(single_session);</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    SHOW_BOOL(push_peer_info);</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    SHOW_BOOL(tls_exit);</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    SHOW_STR(tls_crypt_v2_metadata);</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifd=
+ef ENABLE_PKCS11</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        int i;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        for (i =3D 0; i &lt;=
+ MAX_PARMS &amp;&amp; o-&gt;pkcs11_providers[i] !=3D NULL; i++)</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            SHOW_PARM(pkcs11_providers, o-&=
+gt;pkcs11_providers[i], &quot;%s&quot;);</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-        int i;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-        for (i =3D 0; i &lt; MAX=
+_PARMS; i++)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            SHOW_PARM=
+(pkcs11_protected_authentication,</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-                      o-&gt;pkcs11_protected_authentication[i] =
+? &quot;ENABLED&quot; : &quot;DISABLED&quot;, &quot;%s&quot;);</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     int i;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        fo=
+r (i =3D 0; i &lt; MAX_PARMS; i++)</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-            SHOW_PARM(pkcs11_private_mode, o-&gt;pkcs11_private_mode[i], &=
+quot;%08x&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-        int i;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-        for (i =3D 0; i &lt; MAX_PARMS; i++)</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            SHOW_PARM(pkcs11_cert_private, =
+o-&gt;pkcs11_cert_private[i] ? &quot;ENABLED&quot; : &quot;DISABLED&quot;,<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-                      =
+&quot;%s&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+   }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(pkcs11_pin_cache_per=
+iod);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR(pkc=
+s11_id);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL=
+(pkcs11_id_management);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-#endif /* ENABLE_PKCS11 */</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    show_p2mp_=
+parms(o);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-#ifdef _WIN32</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(show_net_up);</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    SHOW_INT(route_method);</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_BOOL(block_outside_d=
+ns);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    show_tuntap_o=
+ptions(&amp;o-&gt;tuntap_options);</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#e=
+ndif /* ifndef ENABLE_SMALL */</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-#undef SHOW_PARM</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-#undef SHOW_STR</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#undef SHOW_INT</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-#undef SHOW_BOOL</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-</span><br><span> #ifdef ENABLE_MANAGEMENT</span><br><=
+span> </span><br><span> static struct http_proxy_options *</span><br><span>=
+diff --git a/src/openvpn/options=2Eh b/src/openvpn/options=2Eh</span><br><s=
+pan>index a111cf8=2E=2E85d16f9 100644</span><br><span>--- a/src/openvpn/opt=
+ions=2Eh</span><br><span>+++ b/src/openvpn/options=2Eh</span><br><span>@@ -=
+896,8 +896,6 @@</span><br><span> </span><br><span> void setenv_settings(str=
+uct env_set *es, const struct options *o);</span><br><span> </span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-void show_settings(const struct opti=
+ons *o);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
+pan> bool string_defined_equal(const char *s1, const char *s2);</span><br><=
+span> </span><br><span> const char *options_string_version(const char *s, s=
+truct gc_arena *gc);</span><br><span>diff --git a/src/openvpn/options_show=
+=2Ec b/src/openvpn/options_show=2Ec</span><br><span>new file mode 100644</s=
+pan><br><span>index 0000000=2E=2E4ff4659</span><br><span>--- /dev/null</spa=
+n><br><span>+++ b/src/openvpn/options_show=2Ec</span><br><span>@@ -0,0 +1,6=
+31 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+ *  OpenVPN -- An application t=
+o securely tunnel IP networks</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ *             over a single UDP port, with support for SSL/TLS-b=
+ased</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             =
+session authentication and key exchange,</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ *             packet encryption, packet authenticatio=
+n, and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *           =
+  packet compression=2E</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  Copyright=
+ (C) 2002-2026 OpenVPN Inc &lt;sales@openvpn=2Enet&gt;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ *  This program is free software; you can redistribute i=
+t and/or modify</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  =
+it under the terms of the GNU General Public License version 2</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ *  as published by the Free Sof=
+tware Foundation=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This program =
+is distributed in the hope that it will be useful,</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY; without even t=
+he implied warranty of</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE=2E  See the</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  GNU General Public L=
+icense for more details=2E</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  You sh=
+ould have received a copy of the GNU General Public License along</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ *  with this program; if not=
+, see &lt;https://www=2Egnu=2Eorg/licenses/&gt;=2E</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifn=
+def ENABLE_SMALL</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef HAVE_CONFIG_H</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;config=
+=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#include &quot;syshead=2Eh&quot;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#include &quot;crypto=2Eh&quot;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+#include &quot;error=2Eh&quot;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;options=
+=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+static const char *</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+pull_filter_type_name(int ty=
+pe)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    if (type =3D=3D PUF_TYPE_ACCEP=
+T)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        return &quot;accept&quo=
+t;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    if (type =3D=3D PUF_TYPE_I=
+GNORE)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        return &quot;ignore=
+&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    if (type =3D=3D PUF_TY=
+PE_REJECT)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        return &quot;re=
+ject&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        return &quot;???&quot;;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define SHO=
+W_PARM(name, value, format) msg(D_SHOW_PARMS, &quot;  &quot; #name &quot; =
+=3D &quot; format, (value))</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+#define SHOW_STR(var)                  SHOW_PARM(var, (o-&gt;var ? =
+o-&gt;var : &quot;[UNDEF]&quot;), &quot;&#39;%s&#39;&quot;)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+#define SHOW_STR_INLINE(var) \</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_PARM(var, o-&gt=
+;var##_inline ? &quot;[INLINE]&quot; : (o-&gt;var ? o-&gt;var : &quot;[UNDE=
+F]&quot;), &quot;&#39;%s&#39;&quot;)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+#define SHOW_INT(var)      SHOW_PARM(var, o-&gt;var, &quot=
+;%d&quot;)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define S=
+HOW_UINT(var)     SHOW_PARM(var, o-&gt;var, &quot;%u&quot;)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+#define SHOW_INT64(var)    SHOW_PAR=
+M(var, o-&gt;var, &quot;%&quot; PRIi64)</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+#define SHOW_UNSIGNED(var) SHOW_PARM(var, o-&gt;var, &q=
+uot;0x%08x&quot;)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#d=
+efine SHOW_BOOL(var)     SHOW_PARM(var, (o-&gt;var ? &quot;ENABLED&quot; : =
+&quot;DISABLED&quot;), &quot;%s&quot;);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++#ifdef _WIN32</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+show_dhcp_option_list(const char=
+ *name, const char *const *array, unsigned int len)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    for (unsigned int i =3D 0; i &lt; len; ++i)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        msg(D_SHOW_PARMS, &quot;  %s[%u] =3D =
+%s&quot;, name, i, array[i]);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+show_dhcp_option_addrs(const char *name, const in=
+_addr_t *array, unsigned int len)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+struct gc_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    for (unsigned int i =3D 0; i &lt; len; ++i)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        msg(D_SHOW_PARMS, &quot;  %s[%u] =3D %s&=
+quot;, name, i, print_in_addr_t(array[i], 0, &amp;gc));</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+show_tuntap_options(c=
+onst struct tuntap_options *o)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHO=
+W_BOOL(ip_win32_defined);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    SHOW_INT(ip_win32_type);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    SHOW_INT(dhcp_masq_offset);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    SHOW_INT(dhcp_lease_time);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    SHOW_INT(tap_sleep);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    SHOW_UNSIGNED(dhcp_options);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_BOOL(dhcp_=
+renew);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_BOO=
+L(dhcp_pre_release);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    SHOW_STR(domain);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    SHOW_STR(netbios_scope);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    SHOW_UNSIGNED(netbios_node_type);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    SHOW_BOOL(disable_nbt);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    show_dhcp_option_addrs(&quot;DNS&quot;, o-&gt;dns, o=
+-&gt;dns_len);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    s=
+how_dhcp_option_addrs(&quot;WINS&quot;, o-&gt;wins, o-&gt;wins_len);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    show_dhcp_option_addrs=
+(&quot;NTP&quot;, o-&gt;ntp, o-&gt;ntp_len);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    show_dhcp_option_addrs(&quot;NBDD&quot;, o-&gt=
+;nbdd, o-&gt;nbdd_len);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    show_dhcp_option_list(&quot;DOMAIN-SEARCH&quot;, o-&gt;domain_searc=
+h_list, o-&gt;domain_search_list_len);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++#endif /* ifdef _WIN32 */</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static const=
+ char *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+print_vlan_a=
+ccept(enum vlan_acceptable_frames mode)</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    switch (mode)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        case V=
+LAN_ONLY_TAGGED:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         return &quot;tagged&quot;;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     case VLAN_ONLY_UNTAGGED_OR_PRIORITY:</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+            return &quot;untagged&quot;;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        case VLAN_ALL:</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+            return &quot;all&quot;;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    return NULL;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+show_p2mp_parms(con=
+st struct options *o)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct gc_ar=
+ena gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(D_SHOW_PAR=
+MS, &quot;  server_network =3D %s&quot;, print_in_addr_t(o-&gt;server_netwo=
+rk, 0, &amp;gc));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  msg(D_SHOW_PARMS, &quot;  server_netmask =3D %s&quot;, print_in_addr_t(o-=
+&gt;server_netmask, 0, &amp;gc));</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    msg(D_SHOW_PARMS, &quot;  server_network_ipv6 =3D %s&quot=
+;, print_in6_addr(o-&gt;server_network_ipv6, 0, &amp;gc));</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    SHOW_INT(server_netbits_ipv6);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(D_SHOW_PARMS,=
+ &quot;  server_bridge_ip =3D %s&quot;, print_in_addr_t(o-&gt;server_bridge=
+_ip, 0, &amp;gc));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   msg(D_SHOW_PARMS, &quot;  server_bridge_netmask =3D %s&quot;,</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        print_in_addr_t(o-&gt;=
+server_bridge_netmask, 0, &amp;gc));</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    msg(D_SHOW_PARMS, &quot;  server_bridge_pool_start =3D=
+ %s&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        p=
+rint_in_addr_t(o-&gt;server_bridge_pool_start, 0, &amp;gc));</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    msg(D_SHOW_PARMS, &quot;  serv=
+er_bridge_pool_end =3D %s&quot;,</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        print_in_addr_t(o-&gt;server_bridge_pool_end, 0, &amp;=
+gc));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (o-&gt;=
+push_list=2Ehead)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        const st=
+ruct push_entry *e =3D o-&gt;push_list=2Ehead;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        while (e)</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+            if (e-&gt;enable)</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+                msg(D_SHOW_PARMS, &quot;  push_entry =3D=
+ &#39;%s&#39;&quot;, e-&gt;option);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+            e =3D e-&gt;next;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+SHOW_BOOL(ifconfig_pool_defined);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    msg(D_SHOW_PARMS, &quot;  ifconfig_pool_start =3D %s&quot=
+;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        print_in_=
+addr_t(o-&gt;ifconfig_pool_start, 0, &amp;gc));</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    msg(D_SHOW_PARMS, &quot;  ifconfig_pool_end=
+ =3D %s&quot;, print_in_addr_t(o-&gt;ifconfig_pool_end, 0, &amp;gc));</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(D_SHOW_PARMS, &qu=
+ot;  ifconfig_pool_netmask =3D %s&quot;,</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        print_in_addr_t(o-&gt;ifconfig_pool_netmask, 0=
+, &amp;gc));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHO=
+W_STR(ifconfig_pool_persist_filename);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    SHOW_INT(ifconfig_pool_persist_refresh_freq);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_BOOL(ifconfig_ipv=
+6_pool_defined);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ msg(D_SHOW_PARMS, &quot;  ifconfig_ipv6_pool_base =3D %s&quot;,</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        print_in6_addr(o-&gt;i=
+fconfig_ipv6_pool_base, 0, &amp;gc));</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    SHOW_INT(ifconfig_ipv6_pool_netbits);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    SHOW_INT(n_bcast_buf);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_INT(tcp_queue_limit=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_INT(real=
+_hash_size);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHO=
+W_INT(virtual_hash_size);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    SHOW_STR(client_connect_script);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    SHOW_STR(learn_address_script);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    SHOW_STR(client_disconnect_scrip=
+t);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_STR(cli=
+ent_crresponse_script);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    SHOW_STR(client_config_dir);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    SHOW_BOOL(ccd_exclusive);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    SHOW_STR(tmp_dir);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    SHOW_BOOL(push_ifconfig_defined);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(D_SHOW_PARMS, &quot=
+;  push_ifconfig_local =3D %s&quot;,</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        print_in_addr_t(o-&gt;push_ifconfig_local, 0, &amp=
+;gc));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(D_SHO=
+W_PARMS, &quot;  push_ifconfig_remote_netmask =3D %s&quot;,</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        print_in_addr_t(o-&gt;push_=
+ifconfig_remote_netmask, 0, &amp;gc));</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    SHOW_BOOL(push_ifconfig_ipv6_defined);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    msg(D_SHOW_PARMS, &quot;  pus=
+h_ifconfig_ipv6_local =3D %s/%d&quot;,</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        print_in6_addr(o-&gt;push_ifconfig_ipv6_local, 0=
+, &amp;gc), o-&gt;push_ifconfig_ipv6_netbits);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    msg(D_SHOW_PARMS, &quot;  push_ifconfig_ipv6=
+_remote =3D %s&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        print_in6_addr(o-&gt;push_ifconfig_ipv6_remote, 0, &amp;gc));</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_BOOL(enable_c2=
+c);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_BOOL(du=
+plicate_cn);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHO=
+W_INT(cf_max);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    S=
+HOW_INT(cf_per);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ SHOW_INT(cf_initial_max);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    SHOW_INT(cf_initial_per);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    SHOW_UINT(max_clients);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    SHOW_INT(max_routes_per_client);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    SHOW_STR(auth_user_pass_verif=
+y_script);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_=
+BOOL(auth_user_pass_verify_script_via_file);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    SHOW_BOOL(auth_token_generate);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    SHOW_BOOL(force_key_material_e=
+xport);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_INT=
+(auth_token_lifetime);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    SHOW_STR_INLINE(auth_token_secret_file);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#if PORT_SHARE</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    SHOW_STR(port_share_host);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    SHOW_STR(port_share_port);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    SHOW_BOOL(vlan_tagging);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    msg(D_SHOW_PARMS, &quot;  vl=
+an_accept =3D %s&quot;, print_vlan_accept(o-&gt;vlan_accept));</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    SHOW_INT(vlan_pvid);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    SHOW_BOOL(client);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    SHOW_BOOL(pull);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    SHOW_STR_INLINE(auth_user_pass_file)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+show_=
+http_proxy_options(const struct http_proxy_options *o)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    int i;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    msg(D_SHOW_PARMS, &quot;BEGIN http_proxy&quot;);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    SHOW_STR(server);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    SHOW_STR(port);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    SHOW_STR(auth_method_string)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_STR(auth_=
+file);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_STR(=
+auth_file_up);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    S=
+HOW_BOOL(inline_creds);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    SHOW_BOOL(nocache);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    SHOW_STR(http_version);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    SHOW_STR(user_agent);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    for (i =3D 0; i &lt; MAX_CUSTOM_HTTP_HEADER &amp;=
+&amp; o-&gt;custom_headers[i]=2Ename; i++)</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        if (o-&gt;custom_headers[i]=2Econtent)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            msg(D_SHOW_PARMS, &quot;  custom_head=
+er[%d] =3D %s: %s&quot;, i, o-&gt;custom_headers[i]=2Ename,</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+                o-&gt;custom_header=
+s[i]=2Econtent);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        else<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+            msg(D_SHOW_PARMS, =
+&quot;  custom_header[%d] =3D %s&quot;, i, o-&gt;custom_headers[i]=2Ename);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    msg(D_SHOW_PARMS, &quot;END http_prox=
+y&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+show_connection_entry(const struct connection_entry *o)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    /* Display the global proto only =
+in client mode or with no &#39;--local&#39;*/</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    if (o-&gt;local_list-&gt;len =3D=3D 1)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        msg(D_SHOW_PARMS, &quot;  proto =
+=3D %s&quot;, proto2ascii(o-&gt;proto, o-&gt;af, false));</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    msg(D_SHOW_PARMS, &quot;  Local Sockets:&quot;);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    for (int i =3D 0; i &lt; o-&gt;lo=
+cal_list-&gt;len; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg=
+(D_SHOW_PARMS, &quot;    [%s]:%s-%s&quot;, o-&gt;local_list-&gt;array[i]-&g=
+t;local,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+ o-&gt;local_list-&gt;array[i]-&gt;port,</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+            proto2ascii(o-&gt;local_list-&gt;array[i]-=
+&gt;proto, o-&gt;af, false));</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+SHOW_STR(remote);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  SHOW_STR(remote_port);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    SHOW_BOOL(remote_float);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    SHOW_BOOL(bind_defined);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    SHOW_BOOL(bind_local);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    SHOW_BOOL(bind_ipv6_only);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    SHOW_INT(connect_retry_seconds=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_INT(conn=
+ect_timeout);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (o-&gt;http_proxy_=
+options)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        show_http_proxy_o=
+ptions(o-&gt;http_proxy_options);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    SHOW_STR(socks_proxy_server);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    SHOW_STR(socks_proxy_port);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    SHOW_INT(tun_mtu);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    SHOW_BOOL(tun_mtu_defined);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    SHOW_INT(link_mtu);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_BOOL(link_mtu_defined=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_INT(tun_=
+mtu_extra);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW=
+_BOOL(tun_mtu_extra_defined);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    SHOW_INT(tls_mtu);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SH=
+OW_INT(mtu_discover_type);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef ENABL=
+E_FRAGMENT</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_=
+INT(fragment);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endi=
+f</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_INT(mssfi=
+x);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_BOOL(ms=
+sfix_encap);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHO=
+W_BOOL(mssfix_fixed);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_INT(expl=
+icit_exit_notification);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_STR_I=
+NLINE(tls_auth_file);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    SHOW_PARM(key_direction, keydirection2ascii(o-&gt;key_direction, fals=
+e, true), &quot;%s&quot;);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    SHOW_STR_INLINE(tls_crypt_file);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    SHOW_STR_INLINE(tls_crypt_v2_file);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+show_connection_entr=
+ies(const struct options *o)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (o=
+-&gt;connection_list)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        cons=
+t struct connection_list *l =3D o-&gt;connection_list;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        int i;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        for (i =3D 0; i &lt; l-&gt;len; ++i)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+            msg(D_SHOW_PARMS, =
+&quot;Connection profiles [%d]:&quot;, i);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+            show_connection_entry(l-&gt;array[i]);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    else</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        msg(D_SHOW_PARMS, &quot;Connection profiles [default]:&quot;);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        show_connec=
+tion_entry(&amp;o-&gt;ce);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg=
+(D_SHOW_PARMS, &quot;Connection profiles END&quot;);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+sta=
+tic void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+show_pull_f=
+ilter_list(const struct pull_filter_list *l)</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    struct pull_filter *f;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    if (!l)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+return;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    msg(D_SHOW_PARMS, &quot;  Pull filters:&q=
+uot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (f =
+=3D l-&gt;head; f; f =3D f-&gt;next)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        msg(D_SHOW_PARMS, &quot;    %s \&quot;%s\&quot;&quot;, pull_filt=
+er_type_name(f-&gt;type), f-&gt;pattern);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+show_settings(const struct options *o)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    msg(D_SHOW_PARMS, &quot;Current Param=
+eter Settings:&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_STR(con=
+fig);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    SHOW_INT(mode);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+#ifdef ENABLE_FEATURE_TUN_PERSIST</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    SHOW_BOOL(persist_config);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_INT(persist_mode);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    SHOW_BOOL(show_ciphers);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    SHOW_BOOL(show_digests);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    SHOW_BOOL(show_engines);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_BOOL(genkey);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_STR(genkey_=
+filename);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_=
+STR(key_pass_file);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    SHOW_BOOL(show_tls_ciphers);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SH=
+OW_INT(connect_retry_max);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    show_connection_entries(o);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    SHOW_BOOL(remote_random);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_=
+STR(ipchange);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    S=
+HOW_STR(dev);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SH=
+OW_STR(dev_type);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  SHOW_STR(dev_node);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+#if defined(ENABLE_DCO)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    SHOW_BOOL(disable_dco);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    SHOW_STR(lladdr);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    SHOW_INT(topology);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    SHOW_STR(ifconfig_local);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    SHOW_STR(ifconfig_remote_netmask);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    SHOW_BOOL(ifconfig_noexec);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_BOOL(ifconfig_nowa=
+rn);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_STR(if=
+config_ipv6_local);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    SHOW_INT(ifconfig_ipv6_netbits);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    SHOW_STR(ifconfig_ipv6_remote);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    SHOW_INT(shaper);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    SHOW_INT(mtu_test);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    SHOW_BOOL(mlock);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_INT(ke=
+epalive_ping);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    S=
+HOW_INT(keepalive_timeout);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    SHOW_INT(inactivity_timeout);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    SHOW_INT(session_timeout);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    SHOW_INT64(inactivity_minimum_bytes);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_INT(ping_s=
+end_timeout);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SH=
+OW_INT(ping_rec_timeout);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    SHOW_INT(ping_rec_timeout_action);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    SHOW_BOOL(ping_timer_remote);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    SHOW_INT(remap_sigusr1);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_BOOL(persist_tun);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_BOOL(persi=
+st_local_ip);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SH=
+OW_BOOL(persist_remote_ip);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if PASSTOS=
+_CAPABILITY</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW=
+_BOOL(passtos);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#end=
+if</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    SHOW_INT(resolve_retry_seconds);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_BOOL(resol=
+ve_in_advance);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_STR(username);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_STR(groupn=
+ame);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_STR(c=
+hroot_dir);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW=
+_STR(cd_dir);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef=
+ ENABLE_SELINUX</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+SHOW_STR(selinux_context);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SH=
+OW_STR(writepid);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  SHOW_STR(up_script);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    SHOW_STR(down_script);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    SHOW_BOOL(down_pre);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    SHOW_BOOL(up_restart);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    SHOW_BOOL(up_delay);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    SHOW_BOOL(daemon);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    SHOW_BOOL(log);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    SHOW_BOOL(suppress_timestamps);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_BOOL(machine_readabl=
+e_output);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_=
+INT(nice);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_=
+INT(verbosity);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+SHOW_INT(mute);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifd=
+ef ENABLE_DEBUG</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+SHOW_INT(gremlin);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
+endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_STR(s=
+tatus_file);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHO=
+W_INT(status_file_version);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    SHOW_INT(status_file_update_freq);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    SHOW_BOOL(occ);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    SHOW_INT(rcvbuf);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    SHOW_INT(sndbuf);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+#if defined(TARGET_LINUX)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    SHOW_INT(mark);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    SHOW_INT(sockflags);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_=
+INT(comp=2Ealg);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ SHOW_INT(comp=2Eflags);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_STR(r=
+oute_script);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SH=
+OW_STR(route_default_gateway);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    SHOW_INT(route_default_metric);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    SHOW_INT(route_default_table_id);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_BOOL(route_noexec);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_INT(route_de=
+lay);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_INT(r=
+oute_delay_window);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    SHOW_BOOL(route_delay_defined);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    SHOW_BOOL(route_nopull);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    SHOW_BOOL(route_gateway_via_dhcp);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_BOOL(allow_pull_fqdn);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    show_pull_filte=
+r_list(o-&gt;pull_filter_list);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if =
+(o-&gt;routes)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        print_route=
+_options(o-&gt;routes, D_SHOW_PARMS);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (o-&gt;c=
+lient_nat)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        print_client_na=
+t_list(o-&gt;client_nat, D_SHOW_PARMS);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    show_dns_=
+options(&amp;o-&gt;dns_options);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef=
+ ENABLE_MANAGEMENT</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   SHOW_STR(management_addr);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    SHOW_STR(management_port);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    SHOW_STR(management_user_pass);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    SHOW_INT(management_log_history_ca=
+che);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_INT(m=
+anagement_echo_buffer_size);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    SHOW_STR(management_client_user);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    SHOW_STR(management_client_group);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_INT(management_flags=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+#ifdef ENABLE_PLUGIN</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    if (o-&gt;plugin_list)</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        plugin_option_list_print(o-&=
+gt;plugin_list, D_SHOW_PARMS);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#en=
+dif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    SHOW_STR_INLINE(shared_secret_f=
+ile);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_PARM(=
+key_direction, keydirection2ascii(o-&gt;key_direction, false, true), &quot;=
+%s&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_=
+STR(ciphername);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ SHOW_STR(ncp_ciphers);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    SHOW_STR(authname);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+#ifndef ENABLE_CRYPTO_MBEDTLS</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    SHOW_BOOL(engine);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+#endif /* ENABLE_CRYPTO_MBEDTLS */</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    SHOW_BOOL(mute_replay_warnings);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_INT(replay_wi=
+ndow);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_INT(=
+replay_time);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SH=
+OW_STR(packet_id_file);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    SHOW_BOOL(test_crypto);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHO=
+W_BOOL(tls_server);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    SHOW_BOOL(tls_client);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    SHOW_STR_INLINE(ca_file);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    SHOW_STR(ca_path);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    SHOW_STR_INLINE(dh_file);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    if ((o-&gt;management_flags &amp; MF_EXTE=
+RNAL_CERT))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        SHOW_PARM(&quo=
+t;cert_file&quot;, &quot;EXTERNAL_CERT&quot;, &quot;%s&quot;);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    else</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        SHOW_STR_INLINE(cert_file);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    SHOW_STR_INLINE(extra_certs_file);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    if ((o-&gt;management_flags &amp; MF_EXTERNAL_KEY))</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        SHOW_PARM(&quot;priv_key_file&quot;, &q=
+uot;EXTERNAL_PRIVATE_KEY&quot;, &quot;%s&quot;);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    else</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        SH=
+OW_STR_INLINE(priv_key_file);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifn=
+def ENABLE_CRYPTO_MBEDTLS</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    SHOW_STR_INLINE(pkcs12_file);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+#ifdef ENABLE_CRYPTOAPI</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    SHOW_STR(cryptoapi_cert);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    SHOW_STR(cipher_list);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    SHOW_STR(cipher_list_tls13);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    SHOW_STR(tls_cert_profile);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    SHOW_STR(tls_verify);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_STR(tls_export_peer_=
+cert_dir);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_=
+INT(verify_x509_type);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    SHOW_STR(verify_x509_name);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    SHOW_STR_INLINE(crl_file);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    SHOW_INT(ns_cert_type);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        int i;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        for (i =3D 0; i &lt; MAX_PARMS; i++)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+            SHOW_INT(remote_cert_ku[i]);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    SHOW_STR(remote_cert_eku);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    if (o-&gt;verify_hash)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        SHOW_INT(verify_hash_algo);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        SHOW_INT(verify_hash=
+_depth);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        str=
+uct gc_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        const struct verify_hash_list *hl =3D o-&gt;verify_hash;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        int digest_l=
+en =3D</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            (=
+o-&gt;verify_hash_algo =3D=3D MD_SHA1) ? SHA_DIGEST_LENGTH : SHA256_DIGEST_=
+LENGTH;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        whil=
+e (hl)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+            char *s =3D=
+ format_hex_ex(hl-&gt;hash, digest_len, 0, 1, &quot;:&quot;, &amp;gc);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+            SHOW_PARM(ve=
+rify_hash, s, &quot;%s&quot;);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+            hl =3D hl-&gt;next;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        gc_free(&amp;gc);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    SHOW_INT(ssl_flags);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_=
+INT(tls_timeout);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_INT64(renego=
+tiate_bytes);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SH=
+OW_INT64(renegotiate_packets);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    SHOW_INT(renegotiate_seconds);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    SHOW_INT(handshake_window);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    SHOW_INT(transition_window);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    SHOW_BOOL(single_session);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    SHOW_BOOL(push_peer_info);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    SHOW_BOOL(tls_exit);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    SHOW_STR(tls_crypt_v2_metadata);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+#ifdef ENABLE_PKCS11</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        int i;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        for (i =3D 0; i &lt; MAX_PARMS &amp;&amp; o-&gt;pkcs11_providers=
+[i] !=3D NULL; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+  SHOW_PARM(pkcs11_providers, o-&gt;pkcs11_providers[i], &quot;%s&quot;);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        int i;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        for (i =3D 0; i &lt; MAX_PARMS; i++)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            SHOW_PARM(pkcs11_protected_authentica=
+tion,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
+        o-&gt;pkcs11_protected_authentication[i] ? &quot;ENABLED&quot; : &q=
+uot;DISABLED&quot;, &quot;%s&quot;);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        int i;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        for (i =3D 0; i &l=
+t; MAX_PARMS; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+ SHOW_PARM(pkcs11_private_mode, o-&gt;pkcs11_private_mode[i], &quot;%08x&qu=
+ot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        int i;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        for (i =3D 0; i &lt; MAX_PARMS; i++)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            SHOW_PARM(pkcs11_cert_private=
+, o-&gt;pkcs11_cert_private[i] ? &quot;ENABLED&quot; : &quot;DISABLED&quot;=
+,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                  =
+    &quot;%s&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_INT(pkcs11_pin=
+_cache_period);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+SHOW_STR(pkcs11_id);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    SHOW_BOOL(pkcs11_id_management);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+#endif /* ENABLE_PKCS11 */</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    show_p2mp_parms(o);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef _W=
+IN32</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHOW_BOOL(s=
+how_net_up);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    SHO=
+W_INT(route_method);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    SHOW_BOOL(block_outside_dns);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    show_tuntap_options(&amp;o-&gt;tuntap_options);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#en=
+dif /* ifndef ENABLE_SMALL */</span><br><span>diff --git a/src/openvpn/opti=
+ons_show=2Eh b/src/openvpn/options_show=2Eh</span><br><span>new file mode 1=
+00644</span><br><span>index 0000000=2E=2E54a1998</span><br><span>--- /dev/n=
+ull</span><br><span>+++ b/src/openvpn/options_show=2Eh</span><br><span>@@ -=
+0,0 +1,42 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  OpenVPN -- An applic=
+ation to securely tunnel IP networks</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ *             over a single UDP port, with support for SS=
+L/TLS-based</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *      =
+       session authentication and key exchange,</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+ *             packet encryption, packet authen=
+tication, and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *    =
+         packet compression=2E</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  Co=
+pyright (C) 2002-2026 OpenVPN Inc &lt;sales@openvpn=2Enet&gt;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ *  This program is free software; you can redistr=
+ibute it and/or modify</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ *  it under the terms of the GNU General Public License version 2</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  as published by the F=
+ree Software Foundation=2E</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This p=
+rogram is distributed in the hope that it will be useful,</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY; without=
+ even the implied warranty of</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE=2E  See t=
+he</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  GNU General P=
+ublic License for more details=2E</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
+ You should have received a copy of the GNU General Public License along</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  with this program;=
+ if not, see &lt;https://www=2Egnu=2Eorg/licenses/&gt;=2E</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+#ifndef OPTIONS_SHOW_H</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+#define OPTIONS_SHOW_H</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &=
+quot;options=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef ENABLE_SM=
+ALL</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+static inline void</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+show_settings(const struct options *=
+o)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    (void)o;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#el=
+se</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+void show_settings(const struct opti=
+ons *o);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+#endif /* ENABLE_SMALL */</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span></span><br></pre><=
+p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1772?=
+usp=3Demail">change 1772</a>=2E To unsubscribe, or for help writing mail fi=
+lters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail"=
+>settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMes=
+sage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/Vi=
+ewAction"><link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/op=
+envpn/+/1772?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/=
+></div></div>
 
-<div style=3D"display:none"> Ge=
-rrit-MessageType: newpatchset </div>
-<div style=3D"display:none"> Gerrit-Pr=
-oject: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </=
-div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ic75ca2ee9b59a4e11f37cd=
-9653df268bba33889c </div>
-<div style=3D"display:none"> Gerrit-Change-Number=
-: 1743 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div s=
-tyle=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@gmail=2Ecom&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@l=
-ichtenheld=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: p=
-laisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:no=
-ne"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&g=
-t; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne=
--openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Atten=
-tion: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange <=
+/div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div styl=
+e=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none=
+"> Gerrit-Change-Id: I61762374c141662d596bbf88b64ca7f7472b5149 </div>
+<div =
+style=3D"display:none"> Gerrit-Change-Number: 1772 </div>
 <div style=3D"dis=
-play:none"> Gerrit-Attention: stipa &lt;lstipakov@gmail=2Ecom&gt; </div>
+play:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-O=
+wner: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<div style=3D"dis=
+play:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-dev=
+el@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit=
+-Attention: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
 
-<=
-/body></html>
---8M1lHH6VAsY=--
+</body></h=
+tml>
+--cNZUOFZszP0=--
 
 
---===============7604003261085951833==
+--===============6894858630025033086==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============7604003261085951833==
+--===============6894858630025033086==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -531,5 +3742,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============7604003261085951833==--
+--===============6894858630025033086==--
 
