@@ -4,68 +4,129 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A331CC43458
-	for <openvpn-devel@archiver.kernel.org>; Tue, 14 Jul 2026 10:59:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C1D1BC43458
+	for <openvpn-devel@archiver.kernel.org>; Tue, 14 Jul 2026 11:02:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=CSwcHfOx8PldEEqB0hUAVyXaf9TZZJOTcG1cJwhMwTY=; b=lKPtZCiSlETmb3zEf4rVGuIave
-	kUSAG5GeEnhNb261JD6PkIe31tWxtuOZJ84O2cwIFYC5Fn/WIMrd4oPMW4MqFjOLOk+TOlM5ie7wr
-	kKmqC93eUltEBJRdHNn8NHLNwtA66T1qnnWqC7rDyVo1iSt+DE5riBqxAUfUWs43duuc=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:Date:Sender:To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=v27/2GYROTVem8EzaGRb4jNzgSyb3z9QDCT/Xe5w22k=; b=Y7UCswIgdSdJ1feFBIWOtGnU3y
+	NmUGdgkn8QVv4ImXVldhyj2TamVD77Aliq59nT9TQ/IxKpPGJx2MvufcGlmOkM6PXjIQIiQhqwS8Y
+	8jdDGZpBXTys5ia7TutIWQt4WqAxKzjfqK0W0kK7gF8Qu/ectPtMNyCkXMmLey7/zvHY=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wjarX-00070U-7N;
-	Tue, 14 Jul 2026 10:59:43 +0000
+	id 1wjau5-0002Wu-Bi;
+	Tue, 14 Jul 2026 11:02:22 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1wjarW-00070O-3A
+ (envelope-from <gerrit@openvpn.net>) id 1wjau4-0002Wh-8n
  for openvpn-devel@lists.sourceforge.net;
- Tue, 14 Jul 2026 10:59:42 +0000
+ Tue, 14 Jul 2026 11:02:21 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=G573bpMZkIbQYCELHK83QL7P+Or0k1KsJP8usk8dkjo=; b=OLyV8YUdIOZvcWD3WQ4N5Vsb1X
- V3GSJINEClO0Uo84Q4LulCOf5cqXBDoYkCrJjlFvjNm2cccppWbNv+/iyuA47s93qGxZ08hO22l+v
- Mtp2m9wjksPx9N+wk8tLxIKf7q0m70wgI1UEpOnygABK3RWkBPlDLFxqUHKly18P24SA=;
+ d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
+ :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
+ Cc:Date:From:Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From
+ :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
+ :List-Post:List-Owner:List-Archive;
+ bh=pwxZuzzPXu6MdJaSW9t/e4o+pQzBa9KJiOwvDQ79kfA=; b=WUHxSJY8vg3E0Ta0NXr9CghwGZ
+ dQKCjomJRRM+cJiZqzVwm7jwKfcfk/6BWjg+6qWUoG6seJduZ1EQXborPt7EzS/CCHwE0Eh5CtpE3
+ 6fBIXHhY5P9i/KRkyu0hkUI34V9sgDFv5dKn9OqV1or/2uqIT+7qkfj+7ZU/IrD7run0=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=G573bpMZkIbQYCELHK83QL7P+Or0k1KsJP8usk8dkjo=; b=Kl4QNrUysq/tDU029wD4ZyzTHO
- 5tFF2gmD7d+Nyesp3AwNYpuhe65biMkDshKxeff61vd1mvf8BAhyen4Qhetsf1D6vrIFAHcgaj6I3
- vvmrgpAxeaLkGJB6og15ds1MAzA4RUkFDbAtCx0SC3KWCEh3ABM3anoAnvXWHn1aChKI=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:Date:From:Sender:
+ To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=pwxZuzzPXu6MdJaSW9t/e4o+pQzBa9KJiOwvDQ79kfA=; b=J
+ qgxprQPQ7FIMC8VIEx8GJQDk89JD6SESglqjaBdQZmxlXu3DllQkIuvMYIY8W0qMY1Sp1iWbO/lyQ
+ rmX6AyK9liFZosJYxZ6UyVkprM3iZOK8+qH+hAPh+QMYA3r3iMktXt3hHPRxR2cVsb2jZvm+lpmSN
+ eA94kBMmah/tfhXY=;
+Received: from mail-wm1-f41.google.com ([209.85.128.41])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wjarS-00021X-WA for openvpn-devel@lists.sourceforge.net;
- Tue, 14 Jul 2026 10:59:42 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 66EAxWWH002787
- for <openvpn-devel@lists.sourceforge.net>; Tue, 14 Jul 2026 12:59:32 +0200
-Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 66EAxWE8002786
- for openvpn-devel@lists.sourceforge.net; Tue, 14 Jul 2026 12:59:32 +0200
-From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Tue, 14 Jul 2026 12:59:25 +0200
-Message-ID: <20260714105931.2763-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1752743854000.I0a13ee90b6706acf20eabcee3bab3f2dff639bf9@gerrit.openvpn.net>
-References: <gerrit.1752743854000.I0a13ee90b6706acf20eabcee3bab3f2dff639bf9@gerrit.openvpn.net>
+ (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
+ id 1wjau4-0002BR-FX for openvpn-devel@lists.sourceforge.net;
+ Tue, 14 Jul 2026 11:02:20 +0000
+Received: by mail-wm1-f41.google.com with SMTP id
+ 5b1f17b1804b1-493c7902f47so37465085e9.1
+ for <openvpn-devel@lists.sourceforge.net>;
+ Tue, 14 Jul 2026 04:02:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=openvpn.net; s=google; t=1784026929; x=1784631729; darn=lists.sourceforge.net;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:date:from:from:to:cc:subject:date:message-id
+ :reply-to:content-type;
+ bh=pwxZuzzPXu6MdJaSW9t/e4o+pQzBa9KJiOwvDQ79kfA=;
+ b=QcY6tYzgaByYYdx+raw7laxt7DgpFCIyK7G1uSXswfnYwQ/EkW7WurW+/dEYcMiseM
+ VU9f6wL26UYTIV7MwPYQwhPloJaNDEmzzam/3ph4SNI6Ew4Csg/ca2x58aniSx4C0Xac
+ 89IAhuqSXgwwa+yWYl1b6P6AI5mTpKsVvpJlh2cCTQbugdRxwbR0h+VX7RcNfIcvokCm
+ bJiU/imRYzWwlGoInbDe9AanyLzYhxYHZFJwuAHCUN2ZOhdQ5/ZS7XWNEqmMblX/Z49C
+ /PVB1UrvRG5aWZkv6vm9CHCcUg4LcVIrgX/loiulVp5J9UnKYh/fl7ibwYWUpR6mV4eW
+ 8Wjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20251104; t=1784026929; x=1784631729;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:date:from:x-gm-gg:x-gm-message-state:from:to:cc
+ :subject:date:message-id:reply-to:content-type;
+ bh=pwxZuzzPXu6MdJaSW9t/e4o+pQzBa9KJiOwvDQ79kfA=;
+ b=CBtgOSWHKU4WSJ4xTZm0adWa39RFaa/znAYovVpJzx2w5R3a//8Js3BI736vbFJ3DO
+ lBI5glvcyCnXHf3AXwU7PyUbljVAwKAi/RXLNXPKGz1u7gEUN4TBFOc1/f7djRY8Z5BW
+ mv9HS9rVg6rq6PPh1QLwedf+JdnImGzPUtOirYo5pyn6hQx5Ykp4ITOmV6YBZ6UGPsWL
+ HKXUEGYHRTvpuU+NXbllzCeLzIBM6rB5PQXRbp/Sb3nuRjRnxkR4vdTO2J3Xt5kFevZS
+ tZrcAfZ0gT2DvVsB7vqPZfVjt5AHZTOqbZOgRIsbRQSxmqlcC6SbMvar6ZNvlWV8zEoK
+ MUlg==
+X-Forwarded-Encrypted: i=1;
+ AHgh+RrAn4VGqn2vP6KkPZqKAWOI05La007NvxS96F0WtPKIdfWPr6bqf+GpLWyo9K5SVq5yLok+abLtP/J2GEgB@lists.sourceforge.net
+X-Gm-Message-State: AOJu0YwIqvfSmiDPKRreHjM9iRBEZensn81k40Q2fHC42WuqzfAp0xCD
+ vl7OSatEUerZY4ryizKnuyyq/lUGeEJ1Fr3lLisa3YvCvhBCycGS+VkGfLHwaINniIr8VHN3ahH
+ 3aq3Mf7BCLGnu7HuNzcg3k0V7olSujeng9/tXouOaVdh4pFw2MDvwRm+fVAQpjfpqD8PP2Qi3gA
+ kGQ674tA==
+X-Gm-Gg: AfdE7ckBC2ZYRkHul/g3S+jhKKu2BCtHmrzx7QnPv/FEMG4QeLNFiocbJaIXtpFkgWR
+ nKWm7mC1DDrQFrNAA2rivyzgf0/YkKZ7nu6+Br4a+BS/ycvehEvj6A5e0+hhIzPFOtq9gZH5HBq
+ juT9bIyXDEN4NDfzXxmj+ltnTZVrzH84D1/Wg6cBZfSRBIjcYiuyC1jUqtp05uN6O++r5b6WdG7
+ SN5x3fakpafav7hRmea2ZDGx+iwczI2U4JluzTpQfn1CBOVSUEX2m+gmQeV+AqQUyqEYOW5qGkj
+ eeE/i+1syi6eKX3bbAexsmyoXcelWLAIWmMjkV/s7UFY5k+8RrNcsbRX3T9Xv0qboOlRlkreWJS
+ o3UKTzZR+vAVexeCE3cn0YLsRHPu1dZW8E/MDgf9WbH2PPMtUd/g5BAqrI2rH6+rzlqpXlbS6pm
+ lDQ6frkUWDSjKSzhNBoGK8CclGN1zDohZJXZ92Ym4bXT+Zt5MC4dBPhlo3Ayqc4kdDBuswhlmqQ
+ IrxIofk+DfP0aBx0/UDX2LE/I/QoJ+S345uLsRAWphxA8MbcfsS9euewStE75BrTGwFlwkMnJnR
+ irY=
+X-Received: by 2002:a05:600c:8b88:b0:494:e456:4596 with SMTP id
+ 5b1f17b1804b1-494e45645ccmr43281895e9.21.1784026928572; 
+ Tue, 14 Jul 2026 04:02:08 -0700 (PDT)
+Received: from ip-10-18-1-162.eu-central-1.compute.internal
+ (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
+ by smtp.gmail.com with ESMTPSA id
+ ffacd0b85a97d-47f464b7f09sm7155497f8f.26.2026.07.14.04.02.07
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 14 Jul 2026 04:02:07 -0700 (PDT)
+X-Google-Original-From: "plaisthos (Code Review)"
+ <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
+Date: Tue, 14 Jul 2026 11:02:06 +0000
+Auto-Submitted: auto-generated
+X-Gerrit-MessageType: comment
+X-Gerrit-PatchSet: 9
+X-Gerrit-Change-Id: If47c7d920b2fa4047b7db03fcde821899839324d
+X-Gerrit-Change-Number: 1571
+X-Gerrit-Project: openvpn
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1571?usp=email>
+X-Gerrit-Commit: 3d5e28f0683c691004b7b18966fc4a8caf35d50b
+X-Gerrit-Comment-Date: Tue, 14 Jul 2026 11:02:06 +0000
+In-Reply-To: <gerrit.1773251317000.If47c7d920b2fa4047b7db03fcde821899839324d@gerrit.openvpn.net>
+References: <gerrit.1773251317000.If47c7d920b2fa4047b7db03fcde821899839324d@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzczMjUxMzE3MDAwLklmNDdjN2Q5MjBiMmZhNDA0N2I3ZGIwM2ZjZGU4MjE4OTk4MzkzMjRkQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <f49bce0d089ae54162317260096175fa81253fee-EmailReviewComments-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
-X-Headers-End: 1wjarS-00021X-WA
-Subject: [Openvpn-devel] [PATCH v18] multipeer: introduce asymmetric peer-id
+User-Agent: Gerrit/3.11.5
+X-Headers-End: 1wjau4-0002BR-FX
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Change hash iv to a
+ dynamically allocated ctx
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -77,601 +138,167 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+From: "plaisthos \(Code Review\) via Openvpn-devel"
+ <openvpn-devel@lists.sourceforge.net>
+Reply-To: arne-openvpn@rfc2549.org, openvpn-devel@lists.sourceforge.net,
+ frank@lichtenheld.com
+Cc: "plaisthos \(Code Review\)" <gerrit@openvpn.net>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: multipart/mixed; boundary="===============2035843043536042143=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Gianmarco De Gregori <gianmarco@mandelbit.com>
+--===============2035843043536042143==
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="oyPhjbEqi/Y="; charset=UTF-8
 
-In order to achieve a multipeer functionality, peers now
-use separate IDs for sending (tx_peer_id) and receiving
-(rx_peer_id).
+--oyPhjbEqi/Y=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Each peer announces its own ID through pushing peer-info
-using 'ID=7f1' hex format so identification can still
-happen even if IP/port changes.
+Attention is currently required from: flichtenheld=2E
 
-In P2P mode, peer switch to using the announced IDs after
-mutual exchange.
-In P2MP mode, clients always announce their ID, and servers
-can optionally respond with their own to enable the same
-behavior.
+plaisthos has posted=
+ comments on this change by plaisthos=2E ( http://gerrit=2Eopenvpn=2Enet/c/=
+openvpn/+/1571?usp=3Demail )
 
-Change-Id: I0a13ee90b6706acf20eabcee3bab3f2dff639bf9
-Signed-off-by: Gianmarco De Gregori <gianmarco@mandelbit.com>
-Acked-by: Arne Schwabe <arne-openvpn@rfc2549.org>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1089
----
+Change subject: Change hash iv to a dynamical=
+ly allocated ctx
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1089
-This mail reflects revision 18 of this Change.
+Patch Set 9:
 
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@rfc2549.org>
+(1 comment)
 
-        
-diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-index f5b7081..901b9bd 100644
---- a/src/openvpn/dco.c
-+++ b/src/openvpn/dco.c
-@@ -528,14 +528,15 @@
-         c->c2.tls_multi->dco_peer_id = -1;
-     }
- #endif
--    int ret = dco_new_peer(&c->c1.tuntap->dco, multi->peer_id, sock->sd, NULL,
--                           proto_is_dgram(sock->info.proto) ? remoteaddr : NULL, NULL, NULL);
-+    int ret = dco_new_peer(&c->c1.tuntap->dco, multi->rx_peer_id, sock->sd, NULL,
-+                           proto_is_dgram(sock->info.proto) ? remoteaddr : NULL,
-+                           NULL, NULL);
-     if (ret < 0)
-     {
-         return ret;
-     }
- 
--    c->c2.tls_multi->dco_peer_id = multi->peer_id;
-+    c->c2.tls_multi->dco_peer_id = multi->rx_peer_id;
- 
-     return 0;
- }
-@@ -610,7 +611,7 @@
- {
-     struct context *c = &mi->context;
- 
--    int peer_id = c->c2.tls_multi->peer_id;
-+    int peer_id = c->c2.tls_multi->rx_peer_id;
-     struct sockaddr *remoteaddr, *localaddr = NULL;
-     struct sockaddr_storage local = { 0 };
-     const socket_descriptor_t sd = c->c2.link_sockets[0]->sd;
-@@ -689,8 +690,7 @@
-     if (addrtype == MR_ADDR_IPV6)
-     {
- #if defined(_WIN32)
--        dco_win_add_iroute_ipv6(&c->c1.tuntap->dco, addr->v6.addr, addr->netbits,
--                                c->c2.tls_multi->peer_id);
-+        dco_win_add_iroute_ipv6(&c->c1.tuntap->dco, addr->v6.addr, addr->netbits, c->c2.tls_multi->rx_peer_id);
- #else
-         const struct in6_addr *gateway = &mi->context.c2.push_ifconfig_ipv6_local;
-         if (addr->type & MR_ONLINK_DCO_ADDR)
-@@ -706,8 +706,7 @@
-     else if (addrtype == MR_ADDR_IPV4)
-     {
- #if defined(_WIN32)
--        dco_win_add_iroute_ipv4(&c->c1.tuntap->dco, addr->v4.addr, addr->netbits,
--                                c->c2.tls_multi->peer_id);
-+        dco_win_add_iroute_ipv4(&c->c1.tuntap->dco, addr->v4.addr, addr->netbits, c->c2.tls_multi->rx_peer_id);
- #else
-         in_addr_t dest = htonl(addr->v4.addr);
-         const in_addr_t *gateway = &mi->context.c2.push_ifconfig_local;
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index caaa769..468c260 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2209,7 +2209,7 @@
- 
-     if (o->use_peer_id)
-     {
--        buf_printf(&out, ", peer-id: %d", o->peer_id);
-+        buf_printf(&out, ", rx-peer-id: %u, tx-peer-id: %u", c->c2.tls_multi->rx_peer_id, c->c2.tls_multi->tx_peer_id);
-     }
- 
- #ifdef USE_COMP
-@@ -2688,7 +2688,12 @@
-     {
-         msg(D_PUSH_DEBUG, "OPTIONS IMPORT: peer-id set");
-         c->c2.tls_multi->use_peer_id = true;
--        c->c2.tls_multi->peer_id = c->options.peer_id;
-+        c->c2.tls_multi->tx_peer_id = c->options.peer_id;
-+        if (!c->c2.tls_multi->use_asymmetric_peer_id)
-+        {
-+            c->c2.tls_multi->rx_peer_id = c->options.peer_id;
-+            c->c2.tls_multi->tx_peer_id = c->options.peer_id;
-+        }
-     }
- 
-     /* process (potentially) pushed options */
-@@ -3485,6 +3490,10 @@
-     if (c->c2.tls_multi)
-     {
-         tls_multi_init_finalize(c->c2.tls_multi, c->options.ce.tls_mtu);
-+        if (c->c2.tls_multi->rx_peer_id != MAX_PEER_ID)
-+        {
-+            c->options.use_peer_id = true;
-+        }
-         ASSERT(c->c2.tls_multi->opt.frame.buf.payload_size <= c->c2.frame.buf.payload_size);
-         frame_print(&c->c2.tls_multi->opt.frame, D_MTU_INFO, "Control Channel MTU parms");
- 
-diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index 10bfc35..a8c88c9 100644
---- a/src/openvpn/misc.c
-+++ b/src/openvpn/misc.c
-@@ -765,14 +765,15 @@
-     {
-         chomp(line);
-         if (validate_peer_info_line(line)
--            && (strncmp(line, "IV_", 3) == 0 || strncmp(line, "UV_", 3) == 0))
-+            && (strncmp(line, "IV_", 3) == 0 || strncmp(line, "UV_", 3) == 0
-+                || strncmp(line, "ID", 2) == 0))
-         {
-             msg(M_INFO, "peer info: %s", line);
-             env_set_add(es, line);
-         }
-         else
-         {
--            msg(M_WARN, "validation failed on peer_info line received from client");
-+            msg(M_WARN, "validation failed on peer_info line received");
-         }
-     }
- }
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index c4293a7..841affe 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -430,7 +430,7 @@
-         if (mi->context.c2.tls_multi && check_debug_level(D_DCO_DEBUG)
-             && dco_enabled(&mi->context.options))
-         {
--            buf_printf(&out, " peer-id=%d", mi->context.c2.tls_multi->peer_id);
-+            buf_printf(&out, " rx-peer-id=%d", mi->context.c2.tls_multi->rx_peer_id);
-         }
-         return BSTR(&out);
-     }
-@@ -598,9 +598,9 @@
-         }
- #endif
- 
--        if (mi->context.c2.tls_multi->peer_id != MAX_PEER_ID)
-+        if (mi->context.c2.tls_multi->rx_peer_id != MAX_PEER_ID)
-         {
--            m->instances[mi->context.c2.tls_multi->peer_id] = NULL;
-+            m->instances[mi->context.c2.tls_multi->rx_peer_id] = NULL;
- 
-             /* Adjust the max_peerid as this might have been the highest
-              * peer id instance */
-@@ -908,8 +908,7 @@
- #else
-                         sep,
- #endif
--                        sep,
--                        mi->context.c2.tls_multi ? mi->context.c2.tls_multi->peer_id : UINT32_MAX,
-+                        sep, mi->context.c2.tls_multi ? mi->context.c2.tls_multi->rx_peer_id : MAX_PEER_ID,
-                         sep, translate_cipher_name_to_openvpn(mi->context.options.ciphername));
-                 }
-                 gc_free(&gc);
-@@ -3121,12 +3120,12 @@
-          * has, so we disallow it. This can happen if a DCO netlink notification
-          * gets lost and we miss a floating step.
-          */
--        if (m1->peer_id == m2->peer_id)
-+        if (m1->rx_peer_id == m2->rx_peer_id)
-         {
-             msg(M_WARN,
-                 "disallowing peer %" PRIu32 " (%s) from floating to "
-                 "its own address (%s)",
--                m1->peer_id, tls_common_name(mi->context.c2.tls_multi, false),
-+                m1->rx_peer_id, tls_common_name(mi->context.c2.tls_multi, false),
-                 mroute_addr_print(&mi->real, &gc));
-             goto done;
-         }
-@@ -3139,9 +3138,10 @@
-     }
- 
-     msg(D_MULTI_MEDIUM, "peer %" PRIu32 " (%s) floated from %s to %s",
--        mi->context.c2.tls_multi->peer_id, tls_common_name(mi->context.c2.tls_multi, false),
--        mroute_addr_print_ex(&mi->real, MAPF_SHOW_FAMILY, &gc),
--        mroute_addr_print_ex(&real, MAPF_SHOW_FAMILY, &gc));
-+        mi->context.c2.tls_multi->rx_peer_id,
-+        tls_common_name(mi->context.c2.tls_multi, false),
-+        mroute_addr_print(&mi->real, &gc),
-+        print_link_socket_actual(&m->top.c2.from, &gc));
- 
-     /* remove old address from hash table before changing address */
-     ASSERT(hash_remove(m->hash, &mi->real));
-@@ -4087,7 +4087,7 @@
-     {
-         if (!m->instances[i])
-         {
--            mi->context.c2.tls_multi->peer_id = i;
-+            mi->context.c2.tls_multi->rx_peer_id = i;
-             m->instances[i] = mi;
-             break;
-         }
-@@ -4096,11 +4096,11 @@
-     /* should not really end up here, since multi_create_instance returns null
-      * if amount of clients exceeds max_clients and this method would then
-      * also not have been called */
--    ASSERT(mi->context.c2.tls_multi->peer_id < m->max_clients);
-+    ASSERT(mi->context.c2.tls_multi->rx_peer_id < m->max_clients);
- 
--    if (mi->context.c2.tls_multi->peer_id > m->max_peerid)
-+    if (mi->context.c2.tls_multi->rx_peer_id > m->max_peerid)
-     {
--        m->max_peerid = mi->context.c2.tls_multi->peer_id;
-+        m->max_peerid = mi->context.c2.tls_multi->rx_peer_id;
-     }
- }
- 
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index e391147..ee52638 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -661,9 +661,10 @@
-                         print_in_addr_t(c->c2.push_ifconfig_remote_netmask, 0, gc));
-     }
- 
--    if (tls_multi->use_peer_id)
-+    if (!tls_multi->use_asymmetric_peer_id)
-     {
--        push_option_fmt(gc, push_list, M_USAGE, "peer-id %d", tls_multi->peer_id);
-+        push_option_fmt(gc, push_list, M_USAGE, "peer-id %d",
-+                        tls_multi->rx_peer_id);
-     }
-     /*
-      * If server uses --auth-gen-token and we have an auth token
-diff --git a/src/openvpn/push_util.c b/src/openvpn/push_util.c
-index f57f54d..c927f26 100644
---- a/src/openvpn/push_util.c
-+++ b/src/openvpn/push_util.c
-@@ -188,7 +188,7 @@
-         unsigned int permission_mask = pull_permission_mask(c);
-         if (process_push_update(c, &o, permission_mask, &option_types_found, &tmp_msg, true) == PUSH_MSG_ERROR)
-         {
--            msg(M_WARN, "Failed to process push update message sent to client ID: %u", c->c2.tls_multi->peer_id);
-+            msg(M_WARN, "Failed to process push update message sent to client ID: %u", c->c2.tls_multi->rx_peer_id);
-         }
-         e = e->next;
-     }
-@@ -294,7 +294,7 @@
- 
-         if (!support_push_update(mi))
-         {
--            msg(M_CLIENT, "PUSH_UPDATE: not sending message to unsupported peer with ID: %u", mi->context.c2.tls_multi->peer_id);
-+            msg(M_CLIENT, "PUSH_UPDATE: not sending message to unsupported peer with ID: %u", mi->context.c2.tls_multi->rx_peer_id);
-             buffer_list_free(msgs);
-             gc_free(&gc);
-             return 0;
-@@ -329,7 +329,7 @@
-         /* Type is UPT_BROADCAST so we update every client */
-         if (!send_single_push_update(m, curr_mi, msgs))
-         {
--            msg(M_CLIENT, "ERROR: Peer ID: %u has not been updated", curr_mi->context.c2.tls_multi->peer_id);
-+            msg(M_CLIENT, "ERROR: Peer ID: %u has not been updated", curr_mi->context.c2.tls_multi->rx_peer_id);
-             continue;
-         }
-         count++;
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 0998bd6..bd43724 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1168,7 +1168,10 @@
-     /* get command line derived options */
-     ret->opt = *tls_options;
-     ret->dco_peer_id = -1;
--    ret->peer_id = MAX_PEER_ID;
-+    ret->use_asymmetric_peer_id = false;
-+    /* The rx_peer_id is also used to identify DCO clients */
-+    ret->rx_peer_id = MAX_PEER_ID;
-+    ret->tx_peer_id = MAX_PEER_ID;
- 
-     return ret;
- }
-@@ -1181,6 +1184,24 @@
- 
-     tls_session_init(multi, &multi->session[TM_ACTIVE]);
-     tls_session_init(multi, &multi->session[TM_INITIAL]);
-+
-+    if (!multi->opt.dco_enabled)
-+    {
-+        /* Calculate the asymmetric peer-id */
-+        if (multi->rx_peer_id == MAX_PEER_ID && multi->session[TM_INITIAL].opt->mode != MODE_SERVER)
-+        {
-+            uint8_t peerid[3];
-+
-+            if (rand_bytes(peerid, sizeof(peerid)) != 1)
-+            {
-+                msg(M_FATAL, "rand_bytes() failed");
-+            }
-+
-+            multi->rx_peer_id = ((uint32_t)peerid[0] << 16)
-+                                | ((uint32_t)peerid[1] << 8)
-+                                | (uint32_t)peerid[2];
-+        }
-+    }
- }
- 
- /*
-@@ -1858,6 +1879,25 @@
-     return str;
- }
- 
-+static bool
-+push_peer_info_peerid(struct buffer *out, struct tls_multi *multi, struct tls_session *session)
-+{
-+    if (multi->rx_peer_id == MAX_PEER_ID || session->opt->dco_enabled)
-+    {
-+        /* No valid peer id or DCO is enabled. Cannot use this feature */
-+        return true;
-+    }
-+
-+    /* In server mode we only add this when the client has announced its
-+     * support for the feature */
-+    if (session->opt->mode != MODE_SERVER || multi->use_asymmetric_peer_id)
-+    {
-+        return buf_printf(out, "ID=%x\n", multi->rx_peer_id);
-+    }
-+
-+    return true;
-+}
-+
- /**
-  * Prepares the IV_ and UV_ variables that are part of the
-  * exchange to signal the peer's capabilities. The amount
-@@ -1871,15 +1911,22 @@
-  *
-  * @param buf       the buffer to write these variables to
-  * @param session   the TLS session object
-+ * @param multi     the TLS multi object
-  * @return          true if no error was encountered
-  */
- static bool
--push_peer_info(struct buffer *buf, struct tls_session *session)
-+push_peer_info(struct buffer *buf, struct tls_multi *multi, struct tls_session *session)
- {
-     struct gc_arena gc = gc_new();
-     bool ret = false;
-     struct buffer out = alloc_buf_gc(512 * 3, &gc);
- 
-+    /* The asymmetric peer-id is always written when enabled */
-+    if (!push_peer_info_peerid(&out, multi, session))
-+    {
-+        goto error;
-+    }
-+
-     if (session->opt->push_peer_info_detail > 1)
-     {
-         /* push version */
-@@ -2027,7 +2074,9 @@
-     }
-     else
-     {
--        if (!write_empty_string(buf)) /* no peer info */
-+        if (!(session->opt->mode == MODE_SERVER && multi->use_asymmetric_peer_id
-+                  ? write_string(buf, BSTR(&out), -1)
-+                  : write_empty_string(buf)))
-         {
-             goto error;
-         }
-@@ -2156,7 +2205,7 @@
-         }
-     }
- 
--    if (!push_peer_info(buf, session))
-+    if (!push_peer_info(buf, multi, session))
-     {
-         goto error;
-     }
-@@ -2269,6 +2318,39 @@
-     if (multi->peer_info)
-     {
-         output_peer_info_env(session->opt->es, multi->peer_info);
-+        if (session->opt->mode == MODE_SERVER)
-+        {
-+            if (!session->opt->dco_enabled)
-+            {
-+                uint32_t peer_id = extract_asymmetric_peer_id(multi->peer_info);
-+                if (peer_id != MAX_PEER_ID)
-+                {
-+                    multi->tx_peer_id = peer_id;
-+                    multi->use_asymmetric_peer_id = true;
-+                    multi->use_peer_id = true;
-+                }
-+                else
-+                {
-+                    /* Client has no asymmetric peer-id capability */
-+                    multi->tx_peer_id = multi->rx_peer_id;
-+                }
-+            }
-+            else
-+            {
-+                /* With DCO we don't need the tx_peer_id atm */
-+                multi->tx_peer_id = multi->rx_peer_id;
-+            }
-+        }
-+        if (session->opt->mode == MODE_POINT_TO_POINT && !session->opt->dco_enabled)
-+        {
-+            uint32_t peer_id = extract_asymmetric_peer_id(multi->peer_info);
-+            if (peer_id != MAX_PEER_ID)
-+            {
-+                multi->tx_peer_id = peer_id;
-+                multi->use_asymmetric_peer_id = true;
-+                multi->use_peer_id = true;
-+            }
-+        }
-     }
- 
-     free(multi->remote_ciphername);
-@@ -4005,8 +4087,8 @@
-     msg(D_TLS_DEBUG, __func__);
- 
-     ASSERT(ks);
--
--    peer = htonl(((P_DATA_V2 << P_OPCODE_SHIFT) | ks->key_id) << 24 | (multi->peer_id & 0xFFFFFF));
-+    peer = htonl(((P_DATA_V2 << P_OPCODE_SHIFT) | ks->key_id) << 24
-+                 | (multi->tx_peer_id & 0xFFFFFF));
-     ASSERT(buf_write_prepend(buf, &peer, 4));
- }
- 
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 6f310a5..9a36fcf 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -697,8 +697,10 @@
- #define AUTH_TOKEN_VALID_EMPTYUSER (1 << 2)
- 
-     /* For P_DATA_V2 */
--    uint32_t peer_id;
-+    uint32_t rx_peer_id;
-+    uint32_t tx_peer_id;
-     bool use_peer_id;
-+    bool use_asymmetric_peer_id;
- 
-     char *remote_ciphername; /**< cipher specified in peer's config file */
-     bool remote_usescomp;    /**< remote announced comp-lzo in OCC string */
-diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
-index 649665a..e860f6d 100644
---- a/src/openvpn/ssl_ncp.c
-+++ b/src/openvpn/ssl_ncp.c
-@@ -406,6 +406,7 @@
- {
-     /* will return 0 if peer_info is null */
-     const unsigned int iv_proto_peer = extract_iv_proto(multi->peer_info);
-+    const unsigned int tx_peer_id = extract_asymmetric_peer_id(multi->peer_info);
- 
-     /* The other peer does not support P2P NCP */
-     if (!(iv_proto_peer & IV_PROTO_NCP_P2P))
-@@ -416,7 +417,11 @@
-     if (iv_proto_peer & IV_PROTO_DATA_V2)
-     {
-         multi->use_peer_id = true;
--        multi->peer_id = 0x76706e; /* 'v' 'p' 'n' */
-+        if (tx_peer_id == MAX_PEER_ID)
-+        {
-+            multi->rx_peer_id = 0x76706e; /* 'v' 'p' 'n' */
-+            multi->tx_peer_id = 0x76706e; /* 'v' 'p' 'n' */
-+        }
-     }
- 
-     if (iv_proto_peer & IV_PROTO_CC_EXIT_NOTIFY)
-@@ -440,8 +445,16 @@
-     {
-         session->opt->crypto_flags |= CO_USE_TLS_KEY_MATERIAL_EXPORT;
- 
--        if (multi->use_peer_id)
-+        /* The asymmetric peer-id trumps on the EKM generated ones */
-+        if ((tx_peer_id != MAX_PEER_ID) && (!multi->opt.dco_enabled))
-         {
-+            multi->tx_peer_id = tx_peer_id;
-+            multi->use_asymmetric_peer_id = true;
-+        }
-+        else
-+        {
-+            multi->rx_peer_id = 0x76706e; /* 'v' 'p' 'n' */
-+            multi->tx_peer_id = 0x76706e; /* 'v' 'p' 'n' */
-             /* Using a non hardcoded peer-id makes a tiny bit harder to
-              * fingerprint packets and also gives each connection a unique
-              * peer-id that can be useful for NAT tracking etc. */
-@@ -458,7 +471,8 @@
-             }
-             else
-             {
--                multi->peer_id = (peerid[0] << 16) + (peerid[1] << 8) + peerid[2];
-+                multi->rx_peer_id = (peerid[0] << 16) + (peerid[1] << 8) + peerid[2];
-+                multi->tx_peer_id = multi->rx_peer_id;
-             }
-         }
-     }
-@@ -500,11 +514,13 @@
-         common_cipher = BSTR(&out);
-     }
- 
--    msg(D_TLS_DEBUG_LOW,
--        "P2P mode NCP negotiation result: "
--        "TLS_export=%d, DATA_v2=%d, peer-id %d, epoch=%d, cipher=%s",
--        (bool)(session->opt->crypto_flags & CO_USE_TLS_KEY_MATERIAL_EXPORT), multi->use_peer_id,
--        multi->peer_id, (bool)(session->opt->crypto_flags & CO_EPOCH_DATA_KEY_FORMAT),
-+    msg(D_TLS_DEBUG_LOW, "P2P mode NCP negotiation result: "
-+                         "TLS_export=%d, DATA_v2=%d, rx-peer-id %d, tx-peer-id %d, epoch=%d, cipher=%s",
-+        (bool)(session->opt->crypto_flags & CO_USE_TLS_KEY_MATERIAL_EXPORT),
-+        multi->use_peer_id,
-+        multi->rx_peer_id,
-+        multi->tx_peer_id,
-+        (bool)(session->opt->crypto_flags & CO_EPOCH_DATA_KEY_FORMAT),
-         common_cipher);
- 
-     gc_free(&gc);
-diff --git a/src/openvpn/ssl_util.c b/src/openvpn/ssl_util.c
-index 71fbc9e..6561c48 100644
---- a/src/openvpn/ssl_util.c
-+++ b/src/openvpn/ssl_util.c
-@@ -24,7 +24,7 @@
- #endif
- 
- #include "syshead.h"
--
-+#include "openvpn.h"
- #include "ssl_util.h"
- 
- char *
-@@ -72,6 +72,24 @@
-     return 0;
- }
- 
-+uint32_t
-+extract_asymmetric_peer_id(const char *peer_info)
-+{
-+    const char *optstr = peer_info ? strstr(peer_info, "ID=") : NULL;
-+    if (optstr)
-+    {
-+        uint32_t peer_id = 0;
-+        int r = sscanf(optstr, "ID=%x", &peer_id);
-+        {
-+            if (r == 1 && peer_id < MAX_PEER_ID)
-+            {
-+                return peer_id;
-+            }
-+        }
-+    }
-+    return MAX_PEER_ID;
-+}
-+
- const char *
- options_string_compat_lzo(const char *options, struct gc_arena *gc)
- {
-diff --git a/src/openvpn/ssl_util.h b/src/openvpn/ssl_util.h
-index 2177d94..1a69e6f 100644
---- a/src/openvpn/ssl_util.h
-+++ b/src/openvpn/ssl_util.h
-@@ -53,6 +53,15 @@
-  */
- unsigned int extract_iv_proto(const char *peer_info);
- 
-+
-+/**
-+ * Extracts the ID variable and returns its value or
-+ * MAX_PEER_ID if it cannot be extracted.
-+ *
-+ * @param peer_info     peer info string to search for ID
-+ */
-+uint32_t extract_asymmetric_peer_id(const char *peer_info);
-+
- /**
-  * Takes a locally produced OCC string for TLS server mode and modifies as
-  * if the option comp-lzo was enabled. This is to send a client in
+File src/openvpn/multi=2Ec:
 
+http://gerrit=
+=2Eopenvpn=2Enet/c/openvpn/+/1571/comment/3f2398b2_dda35ea1?usp=3Demail :
+P=
+S5, Line 313:         hash_init(t->options=2Ereal_hash_size, NULL, free, in=
+t_hash_function, int_compare_function);
+> Since this is not using the norma=
+l hash function=2E I added a comment to explain that=2E
+Done
+
+
+
+-- 
+To view=
+, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1571?usp=3Demail
+To unsub=
+scribe, or for help writing mail filters, visit http://gerrit=2Eopenvpn=2En=
+et/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvp=
+n
+Gerrit-Branch: master
+Gerrit-Change-Id: If47c7d920b2fa4047b7db03fcde82189=
+9839324d
+Gerrit-Change-Number: 1571
+Gerrit-PatchSet: 9
+Gerrit-Owner: plaist=
+hos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Reviewer: flichtenheld <frank@licht=
+enheld=2Ecom>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=
+=2Enet>
+Gerrit-Attention: flichtenheld <frank@lichtenheld=2Ecom>
+Gerrit-Com=
+ment-Date: Tue, 14 Jul 2026 11:02:06 +0000
+Gerrit-HasComments: Yes
+Gerrit-H=
+as-Labels: No
+Comment-In-Reply-To: plaisthos <arne-openvpn@rfc2549=2Eorg>
+C=
+omment-In-Reply-To: flichtenheld <frank@lichtenheld=2Ecom>
+
+--oyPhjbEqi/Y=
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld=2E </p>
+<p><a href=3D"http://gerrit=2Eop=
+envpn=2Enet/c/openvpn/+/1571?usp=3Demail">View Change</a></p><p>1 comment:<=
+/p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padd=
+ing: 0;"><p>File src/openvpn/multi=2Ec:</p><ul style=3D"list-style: none; p=
+adding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margi=
+n-bottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1571/c=
+omment/3f2398b2_dda35ea1?usp=3Demail">Patch Set #5, Line 313:</a> <code sty=
+le=3D"font-family:monospace,monospace">        hash_init(t-&gt;options=2Ere=
+al_hash_size, NULL, free, int_hash_function, int_compare_function);</code><=
+/p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; pad=
+ding: 0 10px;">Since this is not using the normal hash function=2E I added =
+a comment to explain that=2E</blockquote></p><p class=3D"blocks" style=3D"w=
+hite-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul></li></ul><=
+p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1571?=
+usp=3Demail">change 1571</a>=2E To unsubscribe, or for help writing mail fi=
+lters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail"=
+>settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMes=
+sage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/Vi=
+ewAction"><link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/op=
+envpn/+/1571?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/=
+></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </d=
+iv>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=
+=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"=
+> Gerrit-Change-Id: If47c7d920b2fa4047b7db03fcde821899839324d </div>
+<div s=
+tyle=3D"display:none"> Gerrit-Change-Number: 1571 </div>
+<div style=3D"disp=
+lay:none"> Gerrit-PatchSet: 9 </div>
+<div style=3D"display:none"> Gerrit-Ow=
+ner: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"disp=
+lay:none"> Gerrit-Reviewer: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-deve=
+l@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-=
+Attention: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<div style=
+=3D"display:none"> Gerrit-Comment-Date: Tue, 14 Jul 2026 11:02:06 +0000 </d=
+iv>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=
+=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"=
+> Comment-In-Reply-To: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+=
+<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@li=
+chtenheld=2Ecom&gt; </div>
+
+</body></html>
+--oyPhjbEqi/Y=--
+
+
+--===============2035843043536042143==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============2035843043536042143==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+--===============2035843043536042143==--
+
