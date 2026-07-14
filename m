@@ -4,125 +4,128 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 01766C44501
-	for <openvpn-devel@archiver.kernel.org>; Tue, 14 Jul 2026 22:18:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 806B9C44501
+	for <openvpn-devel@archiver.kernel.org>; Tue, 14 Jul 2026 22:32:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:To:Date:Sender:
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:Date:Sender:To:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
-	List-Owner; bh=BPBZ7mIm+/QWWDFYRI8OqjHhhWD4ZACjK426RT/JArM=; b=EGguoJbbBnsw3b
-	HLobwRjnadgNO65yc3XqODi8RuOLyQEyMRcZoCrHB3aK3HAqWBlKcRLGxD11EXrZSbSjq1zekgLSQ
-	Pc6gJl1NZhlUtBQdbo7IxjN1t24mv+3JvSrABQGdgm4haB7SatbI0UKAf5Z0OvQ8HcGVV87Rh/yYt
-	mNs=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=kqLf/vwzskRfoe3llgMfS+g0y6hcxz1xzz8Fpe6Et88=; b=FIZ7jBbbAx6fe6zL0YIXxIxY98
+	j4ww3pvam1HUoWwvxDLFAjkUu5Mf2CmW19t5KBC3MRyh3GQkmMQJMH9o0p5gFfgu6tpiX5Ow3eucX
+	qebm7OTBVWZM1bDm1JjdONhnoxdJzUCaodY1PpjwB3ioZd8qFZVnbmr7eh6CodhCTiI0=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wjlRy-0003a6-3X;
-	Tue, 14 Jul 2026 22:17:59 +0000
+	id 1wjlfm-0007Mw-4V;
+	Tue, 14 Jul 2026 22:32:18 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wjlRs-0003Zm-Ib
+ (envelope-from <gerrit@openvpn.net>) id 1wjlfl-0007Ml-9l
  for openvpn-devel@lists.sourceforge.net;
- Tue, 14 Jul 2026 22:17:54 +0000
+ Tue, 14 Jul 2026 22:32:18 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:
- From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From:
- Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=NTBO78EPFqmQiSu7G6GL01O+Ca13RF7OYfqJjj8Yvpg=; b=ZHCcs9xrZ+bWFtpfVrVWNQVMJi
- mvA+0Ow7z4mKdck3FwoVy+5KlOvCypi+BTuC0osYEuMoe0+7KHraQKYxMQDrEpSAgT81px4AqlVDh
- /6A6V/e+bEep72/b5y6xM2GFozB3Ae7sm9FXU0RrdgqIwMq/eMQ24b0DAivxSFkkGh3Y=;
+ :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
+ Cc:Date:From:Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From
+ :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
+ :List-Post:List-Owner:List-Archive;
+ bh=A7OlI5LQC8+JdbiBu5uGzln456GJQ5+pqAEMllnRHLI=; b=CWTGUd1+5QlPt7v6JZmiuRgx1q
+ AH9nG6L1INAPutzJk1qDClz5P9ZNyVET3ly8TNSwvUIBESCql0ubp18manAOxCOl/gM7ImfNmeX0r
+ +4pk0LG/p9KgD/KYvSZW0HuDiymKADfyd+FEzaA7Yw1bLFIri+JtIf7JWtuoP2cK2T4A=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:From:Sender:Content-ID
- :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
- Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=NTBO78EPFqmQiSu7G6GL01O+Ca13RF7OYfqJjj8Yvpg=; b=F
- gPtJoZ8pg9xfDR8N4Kwk4hwyPbeVJrEsuXgvL98MQud8xSqBFRGqIDQs8uqZiA0ecDX5/fXp8WVTn
- MN7VrzhaCeJ/4esNs7UnDFayKbsSXA8XgWms0eVT5PlOw/LuIMrPl7CvrGsfg3RHoNo39hBw3I9IP
- NfE5/h2wOBR8JdFA=;
-Received: from mail-wr1-f44.google.com ([209.85.221.44])
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:Date:From:Sender:
+ To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=A7OlI5LQC8+JdbiBu5uGzln456GJQ5+pqAEMllnRHLI=; b=U
+ 5RZOrg+befZAfywST5oHfmeJL69xykGwPD00JqUCZExkGMV5A0Z+aAYbaAqnRGID9UagjD/mTcWcs
+ JW1nZ0jAl3vJG3wCO6Fj8clYj9N4eOawmFB97Uh+8lDiLhJRzsbg4JeJZ0KIOMg6Ky3rMvs5Gwfmg
+ lHceHjgIuzu4OQiU=;
+Received: from mail-wr1-f45.google.com ([209.85.221.45])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wjlRo-0002eR-LF for openvpn-devel@lists.sourceforge.net;
- Tue, 14 Jul 2026 22:17:54 +0000
-Received: by mail-wr1-f44.google.com with SMTP id
- ffacd0b85a97d-47640541585so2316326f8f.1
+ id 1wjlfk-0003Ql-AV for openvpn-devel@lists.sourceforge.net;
+ Tue, 14 Jul 2026 22:32:18 +0000
+Received: by mail-wr1-f45.google.com with SMTP id
+ ffacd0b85a97d-4720f3bf164so23346f8f.1
  for <openvpn-devel@lists.sourceforge.net>;
- Tue, 14 Jul 2026 15:17:52 -0700 (PDT)
+ Tue, 14 Jul 2026 15:32:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1784067461; x=1784672261; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1784068325; x=1784673125; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
- :to:date:from:from:to:cc:subject:date:message-id:reply-to
- :content-type; bh=NTBO78EPFqmQiSu7G6GL01O+Ca13RF7OYfqJjj8Yvpg=;
- b=c65Clnt0qsL9vTrt2fce/IlR9rSKNF99x8l0yfmrj0NY0AVHT6nfQTkBkOw8vvBrf4
- ZpMbv0ycQSBQ8CCsH5wFrYyaFDIrm1BDSiZUiGIpU6R+guYFsh0+VeDkBmFsukWAJ9zw
- +7/R9wzadcARk2aqiQHc44o37CaUf7278cByMotAyMkSZx30GbPJrwCsPQR9gSSBUeWw
- csrm4MnwQDtlxroJpgZz1BsdBDTE3nPV4W17tirSi+l7o0yLC5mPPD9QIUtKF2q0iwWi
- O6zT+Cpj3kvRYdrkJ8sAcCfPLkq/QCiFbOQUFOYVIhIs1ImymV+LZ5FBuXIUKKZjJMDh
- SHCw==
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:date:from:from:to:cc:subject:date:message-id
+ :reply-to:content-type;
+ bh=A7OlI5LQC8+JdbiBu5uGzln456GJQ5+pqAEMllnRHLI=;
+ b=IVVtOEijBxuVyjzntYsqAMLdfkB4eKb4vO7K2k2u/v5EyDo45ly3dF9Y8EX5XLeTMt
+ jdvgA3ipfuzuCB0CotjfhWR9ON+45XCaayTvALpRsVQG62DCxGJJ+wAaqRCluzMjM8CD
+ jNa7kCQV2z8uRJfXbzFADbUOQl8R1tHSXUMDEelsRS0W7tn0tOB3T2jw1j5rZwPL+Bjt
+ +AA+u5s5oDYQybzGBW9GSK977yAanB8hu2HF4xCPSNPP7OEBvzgLoJKGeY+tpadav4kA
+ BYol07WyDt2oejAgk01esjBdFFodIonjwejyrF00asM/31qualEPvhkWu1nzNhdAt8ow
+ uTFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1784067461; x=1784672261;
+ d=1e100.net; s=20251104; t=1784068325; x=1784673125;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
- :to:date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
- :message-id:reply-to:content-type;
- bh=NTBO78EPFqmQiSu7G6GL01O+Ca13RF7OYfqJjj8Yvpg=;
- b=kvkSnrCBmtQmw9wq2Bjn5h1e+lQxHcEB1Jc1sjp/24kVibpnsdBDe1f37zVuym+Qu3
- oHiRoj9TNQlXAXEaFA/W5zMQGDCuJ48k1Nu2R6dG6uzrU5UWtnvWqGCJZmAIj/BFSAfo
- Bf6G27mq31ngIFg4oaKXLf8kFqfy4JA+nNHC7gvVpMRD+kvHDZxjVVrYMFfugwSL7vMW
- HPwG12sIc6/xYlbKB0nCgYgtyUCgq3E6TLM3QzIYXdnL1QWTkq/L7eu2UXMhl7a+5ee5
- xue3D0gKCsaZXNBUpxhAVgRKlNQF7Q3nV1q8L07YuIyTiEvw5yr/hyA5IUsx0LjYwA8i
- 4JRw==
-X-Gm-Message-State: AOJu0YxW6ReGwxPzttRU3HU9mfHpmdzHwQBNk+eT28ZEZDojDIvVgmJd
- nYq9BIW7wkbAZ8IsewABRNqE151AZJ30EmmkCyrgtBoQorXsQM/dvQ/k4SyaIhL3D1+hpOn6oS+
- /1yTFF8/nS+Pl9Yt/79q6WtWHmZb4Sx2+8Il0G8fbXV1nDZ2+PFxJpeHOkHu6q0ZVn9A8
-X-Gm-Gg: AfdE7cnN4abyRLYIJeaKPZhYVh8jtEFbM1PfWJrbVMj8bjpH0ZNHf9fjryqWo/iOyK6
- ypLY3Wi4+3yIv0D2BMVi2/WeuS6lP7USdsC/Fu29g7oTD8mJJ7WAvk1QYdcdsxFytE+lAp3GS26
- YuvDldn8fTiasQbodGzbpTCBPEPkxTS4yyB2CXQbTPGWy9ya0ufTyQFB+LiNo2HN30KFNSsWBSB
- GtrwixoYNck8N/5cx2qNrFsNBzNi4BZP0oIBuYSq9MyWGdXozyTJGmM2dB17Kd9Zq5qecxso8zj
- 2wd3kPykXKFTh6WDhCEggLcZThoV9dE4E/1WJKXyOSBIkz9qngDucsTx+lrJGwvH+OQwtarrcXq
- 8BxLzW7VMf/421lpm/PlFHwxDfi+T619pKarAVdwL1rRqYDtz5HhsMw9b55NYo6Y7CXLuTEb5wz
- BrG1ri/W1EQ5UlvWeOeiyW9xxedp7dgvz14LZQrwjhiphC/tIZ3sUK0FRbNC4ZWfDmXFw+iXslq
- EkNl48utF2Sy6hfduDqO9zDMuajteiwWwqIesyDzrUzi+hCshzNnLUoUhoP3q7EeMznaOg0BODd
- rko=
-X-Received: by 2002:a05:6000:3104:b0:475:f0f0:9f05 with SMTP id
- ffacd0b85a97d-47f4fcfe902mr236070f8f.60.1784067460934; 
- Tue, 14 Jul 2026 15:17:40 -0700 (PDT)
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:date:from:x-gm-gg:x-gm-message-state:from:to:cc
+ :subject:date:message-id:reply-to:content-type;
+ bh=A7OlI5LQC8+JdbiBu5uGzln456GJQ5+pqAEMllnRHLI=;
+ b=ItHOhiPMXjDDoKclfjnBqiSz2oD5MUsHYHBxsWZIv5E1vSYWHocEQlpP4jAiBcG+cT
+ V+2z2aYNUJa5YGlt/lST9YnTIi4sa+/NhJnXhBs7tCHIDxiefVBXqvBiLbkSooQxT6VQ
+ Lzdsk9X8qDPdrRr6ppWhXDCoZ2tLJxxb9reIaf2h3gHJHblecbLZJoqXTU3WatX+nmrm
+ aBfdr4ZKuzZWol/T5D9ZvgtezhiDHPQ3PmFznzZMf9tQlOgltQEyx032F1MB6e6Z5J6A
+ 5Ir6uCMgvz4e387Lurzyjio+77TYwF4nuuru8RRKfe4A8hn3C3qcisqd/WOOXCniky/h
+ Qbhg==
+X-Forwarded-Encrypted: i=1;
+ AHgh+RpVKNxWwzyh4L7TE7xZnA5RKgqA7Rhpe8vxwAvoOYXa2AouTP+FpeUOQiyoDmRsvdZD3LcrZfB8H/SGALCj@lists.sourceforge.net
+X-Gm-Message-State: AOJu0YxrVQb1d6+TZtKZZkyCwyndNV/SANy7J2+PGQ82/cumYr4NM4ag
+ sR7K2oWVGd0j48IcjHnH53y6dKcNgMFI7/m0luIcQZ8gdihbjbodW7KnN8JoGse/cARGGg/lZfC
+ yUB2P141+ACbBGjxjqtCLNG76SeTy440yXNJ/dYMB7a8zPjNUIJkzAA6OpFmNRGDp+gOF
+X-Gm-Gg: AfdE7cnu6wxT9PXSPpd37s8e6TMh6sFVzlpjNRMrFoLutpBzYcK/kEOW1GDWnDSgIK8
+ whZZXRqCVQ/1y7JkXYfKaPn/Akxk61bp0MCZ1SQe1dTTRfg/8IrNdCt548hMNXAAQt1Ht0zF7Zx
+ QCIPA8OwBZU9G5mpLjDCoeS5719XE9Bj/fePc6XYFHtkdNnmRsJlub/u+SHVReuS1uS4gsRBBoa
+ cO3VzVbqK0jqCAnFellwe0TdJ4AhUjuS/Et0Jo3aRl0Bk50/DbelHN7hYE8vId1cYBVpk1+DlX6
+ Tj+rEqPfJYEm0npQ8CjaIFFEpLZghC9lTX2GH58KoG/UuDLuaKW5bua34twQ0vlnx0jESO8nxf6
+ X6TsYJUS06Nk+tjIuoyvCeU3PwvQhlj68W+w7NXjy8C/0AvZYbzTdmxKaiuUDFNevGU7n7mFcEs
+ ygVEENblhKZP0SEaRbb/b3ltcA7PIm0Bp3TmvV1okBDwhto7jCSdCPajRnhFF4CvrmjzXLEip8c
+ vkTO7t7I59b2G9Ln+cOGgv63aEHOTM+feKiSwHMuFHnLVSDZCYBDHEz7RX5aM6OUSggtOBBVSuX
+ tE829ipvKDFefw==
+X-Received: by 2002:a05:6000:2305:b0:475:f0c2:75b0 with SMTP id
+ ffacd0b85a97d-47f2dcd7854mr18082875f8f.27.1784068324654; 
+ Tue, 14 Jul 2026 15:32:04 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-47f464a96fdsm11994137f8f.24.2026.07.14.15.17.40
+ ffacd0b85a97d-47f464d6fa7sm11041710f8f.37.2026.07.14.15.32.03
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 14 Jul 2026 15:17:40 -0700 (PDT)
-X-Google-Original-From: "ordex (Code Review)"
+ Tue, 14 Jul 2026 15:32:04 -0700 (PDT)
+X-Google-Original-From: "flichtenheld (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Tue, 14 Jul 2026 22:17:40 +0000
-To: plaisthos <arne-openvpn@rfc2549.org>
+Date: Tue, 14 Jul 2026 22:32:02 +0000
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: newchange
+X-Gerrit-MessageType: comment
 X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: I7c0ff48fb019ac7c2d1d981b7b7e4578ff5dce48
-X-Gerrit-Change-Number: 1787
+X-Gerrit-Change-Id: Ia1e7db95615d99ef9687de7c4e996dc8033e2631
+X-Gerrit-Change-Number: 1783
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1787?usp=email>
-X-Gerrit-Commit: e67cbb49c4a262fdf4f7af4eff5495f0146eacd3
-References: <gerrit.1784067448000.I7c0ff48fb019ac7c2d1d981b7b7e4578ff5dce48@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzg0MDY3NDQ4MDAwLkk3YzBmZjQ4ZmIwMTlhYzdjMmQxZDk4MWI3YjdlNDU3OGZmNWRjZTQ4QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <326c63c06aba4d7244484b8d2059778600f9597b-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1783?usp=email>
+X-Gerrit-Commit: 4786ae8ca577fea293664e3d0ece8dbabf8d91b0
+X-Gerrit-Comment-Date: Tue, 14 Jul 2026 22:32:02 +0000
+In-Reply-To: <gerrit.1784067448000.Ia1e7db95615d99ef9687de7c4e996dc8033e2631@gerrit.openvpn.net>
+References: <gerrit.1784067448000.Ia1e7db95615d99ef9687de7c4e996dc8033e2631@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzg0MDY3NDQ4MDAwLklhMWU3ZGI5NTYxNWQ5OWVmOTY4N2RlN2M0ZTk5NmRjODAzM2UyNjMxQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <169701a2dc07852ec1702c7ed12c3ce3f7c86d7b-EmailReviewComments-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wjlRo-0002eR-LF
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: push: push
- route-gateway(s) and server route(s) for subnet-pool clients
+X-Headers-End: 1wjlfk-0003Ql-AV
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: multi: assign
+ clients from a named, tagged subnet-pool
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -134,307 +137,157 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "ordex \(Code Review\) via Openvpn-devel"
+From: "flichtenheld \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
-Reply-To: antonio@mandelbit.com, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net
-Cc: "ordex \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============7429325948033196405=="
+Reply-To: frank@lichtenheld.com, arne-openvpn@rfc2549.org,
+ openvpn-devel@lists.sourceforge.net, antonio@mandelbit.com
+Cc: "flichtenheld \(Code Review\)" <gerrit@openvpn.net>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>,
+ plaisthos <arne-openvpn@rfc2549.org>
+Content-Type: multipart/mixed; boundary="===============8724046609145931709=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============7429325948033196405==
+--===============8724046609145931709==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="xBk90H/TdLk="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="BKLLfoHGa9A="; charset=UTF-8
 
---xBk90H/TdLk=
+--BKLLfoHGa9A=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos=2E
+Attention is currently required from: ordex, plaisthos=2E
 
-Hello plaisthos,
+flichtenheld has=
+ posted comments on this change by ordex=2E ( http://gerrit=2Eopenvpn=2Enet=
+/c/openvpn/+/1783?usp=3Demail )
 
-I'd l=
-ike you to do a code review=2E
-Please visit
-
-    http://gerrit=2Eopenvpn=2E=
-net/c/openvpn/+/1787?usp=3Demail
-
-to review the following change=2E
-
-
-Chang=
-e subject: push: push route-gateway(s) and server route(s) for subnet-pool =
-clients
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+Change subject: multi: assign clients from=
+ a named, tagged subnet-pool
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
-
-push=
-: push route-gateway(s) and server route(s) for subnet-pool clients
-
-A subn=
-et-pool client sits outside the --server / --server-ipv6 network,
-so the gl=
-obal route-gateway (the server's own VPN IP) is off-link for
-it=2E Push a r=
-oute-gateway, and for IPv6 a route-ipv6-gateway, inside the
-client's own su=
-bnet, plus a host route back to the server's VPN IPv4 and
-IPv6, so the clie=
-nt's pushed routes install and the server stays
-reachable=2E
-
-Change-Id: I7=
-c0ff48fb019ac7c2d1d981b7b7e4578ff5dce48
-GitHub: closes openvpn/OpenVPN#987
-=
-Signed-off-by: Antonio Quartulli <antonio@mandelbit=2Ecom>
----
-M src/openvp=
-n/push=2Ec
-1 file changed, 30 insertions(+), 0 deletions(-)
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E
 
 
+Patch Set 1: Code-Review-1
 
-  git pull s=
-sh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/87/1787/1
+(1 comment)
 
-diff --gi=
-t a/src/openvpn/push=2Ec b/src/openvpn/push=2Ec
-index e391147=2E=2E7e26c79 =
-100644
---- a/src/openvpn/push=2Ec
-+++ b/src/openvpn/push=2Ec
-@@ -645,6 +645=
-,20 @@
-                         print_in6_addr(c->c2=2Epush_ifconfig_ipv6_l=
-ocal, 0, gc),
-                         c->c2=2Epush_ifconfig_ipv6_netbits,
-=
-                         print_in6_addr(c->c2=2Epush_ifconfig_ipv6_remote, =
-0, gc));
-+
-+        /* subnet-pool-ipv6 counterpart of the IPv4 push below:=
- a route-ipv6-
-+         * gateway inside the client's own subnet and a hos=
-t route back to the
-+         * server's VPN IPv6, so pushed routes install=
- and it stays reachable=2E */
-+        if (o->subnet_pool_ipv6_defined && c=
-->c1=2Etuntap)
-+        {
-+            /* drop any global route-ipv6-gatewa=
-y: it is off-link for this
-+             * client, so replace rather than m=
-erely override it */
-+            push_remove_option(o, "route-ipv6-gateway=
-");
-+            push_option_fmt(gc, push_list, M_USAGE, "route-ipv6-gatewa=
-y %s",
-+                            print_in6_addr(o->subnet_pool_ipv6_gate=
-way, 0, gc));
-+            push_option_fmt(gc, push_list, M_USAGE, "route-i=
-pv6 %s/128",
-+                            print_in6_addr(c->c1=2Etuntap->lo=
-cal_ipv6, 0, gc));
-+        }
-     }
- 
-     /* ipv4 */
-@@ -659,6 +673,22 @@=
+File src/openvpn=
+/options=2Ec:
 
-         push_option_fmt(gc, push_list, M_USAGE, "ifconfig %s %s",
-       =
-                  print_in_addr_t(ifconfig_local, 0, gc),
-                 =
-        print_in_addr_t(c->c2=2Epush_ifconfig_remote_netmask, 0, gc));
-+
-+ =
-       /* A subnet-pool client sits outside the --server network: push a
-+ =
-        * route-gateway inside its own subnet and a host route back to the
-=
-+         * server's VPN IP, so pushed routes install on-link and the serve=
-r
-+         * stays reachable=2E */
-+        if (o->subnet_pool_defined && =
-c->c1=2Etuntap)
-+        {
-+            /* drop the global route-gateway (t=
-he server's own VPN IP): it is
-+             * off-link for this client, so=
- replace rather than merely override
-+             * it in the push string =
-*/
-+            push_remove_option(o, "route-gateway");
-+            push_o=
-ption_fmt(gc, push_list, M_USAGE, "route-gateway %s",
-+                    =
-        print_in_addr_t(o->subnet_pool_gateway, 0, gc));
-+            push_=
-option_fmt(gc, push_list, M_USAGE, "route %s 255=2E255=2E255=2E255",
-+     =
-                       print_in_addr_t(c->c1=2Etuntap->local, 0, gc));
-+   =
-     }
-     }
- 
-     if (tls_multi->use_peer_id)
+http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1783/comment/109eb=
+09a_94d45d09?usp=3Demail :
+PS1, Line 7634:     else if (streq(p[0], "subnet=
+-pool") && p[1] && p[2] && p[3] && !p[5])
+Please add new options also to us=
+age string
+
+
 
 -- 
-To view, visit http:/=
-/gerrit=2Eopenvpn=2Enet/c/openvpn/+/1787?usp=3Demail
-To unsubscribe, or for=
- help writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?us=
-p=3Demail
+To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/=
+1783?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit ht=
+tp://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Gerrit-MessageType: newchange
+Gerrit-MessageType: comme=
+nt
 Gerrit-Project: openvpn
-Gerrit-Bra=
-nch: master
-Gerrit-Change-Id: I7c0ff48fb019ac7c2d1d981b7b7e4578ff5dce48
-Ger=
-rit-Change-Number: 1787
-Gerrit-PatchSet: 1
-Gerrit-Owner: ordex <antonio@man=
-delbit=2Ecom>
-Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerri=
-t-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Branch: master
+Gerrit-Change-Id: Ia1e7db9=
+5615d99ef9687de7c4e996dc8033e2631
+Gerrit-Change-Number: 1783
+Gerrit-PatchSe=
+t: 1
+Gerrit-Owner: ordex <antonio@mandelbit=2Ecom>
+Gerrit-Reviewer: flichte=
+nheld <frank@lichtenheld=2Ecom>
+Gerrit-Reviewer: plaisthos <arne-openvpn@rf=
+c2549=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2E=
+net>
+Gerrit-Attention: plaisthos <arne-openvpn@rfc2549=2Eorg>
 Gerrit-Attent=
-ion: plaisthos <arne-openvpn@rfc2549=2Eorg>
+ion: ordex <antonio@mandelbit=2Ecom>
+Gerrit-Comment-Date: Tue, 14 Jul 2026 =
+22:32:02 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
 
---xBk90H/TdLk=
+--BKLLfoHGa9A=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos=2E </p>
-<p>ordex would like plaisthos to <s=
-trong>review</strong> this change=2E
-</p><p><a href=3D"http://gerrit=2Eopen=
-vpn=2Enet/c/openvpn/+/1787?usp=3Demail">View Change</a></p><pre class=3D"bl=
-ocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">pu=
-sh: push route-gateway(s) and server route(s) for subnet-pool clients<br><b=
-r>A subnet-pool client sits outside the --server / --server-ipv6 network,<b=
-r>so the global route-gateway (the server&#39;s own VPN IP) is off-link for=
-<br>it=2E Push a route-gateway, and for IPv6 a route-ipv6-gateway, inside t=
-he<br>client&#39;s own subnet, plus a host route back to the server&#39;s V=
-PN IPv4 and<br>IPv6, so the client&#39;s pushed routes install and the serv=
-er stays<br>reachable=2E<br><br>Change-Id: I7c0ff48fb019ac7c2d1d981b7b7e457=
-8ff5dce48<br>GitHub: closes openvpn/OpenVPN#987<br>Signed-off-by: Antonio Q=
-uartulli &lt;antonio@mandelbit=2Ecom&gt;<br>---<br>M src/openvpn/push=2Ec<b=
-r>1 file changed, 30 insertions(+), 0 deletions(-)<br><br></pre><pre class=
-=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
-p;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/87/178=
-7/1</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
-rap;"><span>diff --git a/src/openvpn/push=2Ec b/src/openvpn/push=2Ec</span>=
-<br><span>index e391147=2E=2E7e26c79 100644</span><br><span>--- a/src/openv=
-pn/push=2Ec</span><br><span>+++ b/src/openvpn/push=2Ec</span><br><span>@@ -=
-645,6 +645,20 @@</span><br><span>                         print_in6_addr(c-=
-&gt;c2=2Epush_ifconfig_ipv6_local, 0, gc),</span><br><span>                =
-         c-&gt;c2=2Epush_ifconfig_ipv6_netbits,</span><br><span>           =
-              print_in6_addr(c-&gt;c2=2Epush_ifconfig_ipv6_remote, 0, gc));=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        /* subnet-pool-ipv6 counterpar=
-t of the IPv4 push below: a route-ipv6-</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+         * gateway inside the client&#39;s own subnet a=
-nd a host route back to the</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+         * server&#39;s VPN IPv6, so pushed routes install and it s=
-tays reachable=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        if (o-&gt;subnet_pool_ipv6_defined &amp;&amp; c-&gt;c1=2Etuntap)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+            /* drop any global =
-route-ipv6-gateway: it is off-link for this</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+             * client, so replace rather than merel=
-y override it */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         push_remove_option(o, &quot;route-ipv6-gateway&quot;);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+            push_option_fmt(gc,=
- push_list, M_USAGE, &quot;route-ipv6-gateway %s&quot;,</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+                            print_in6_a=
-ddr(o-&gt;subnet_pool_ipv6_gateway, 0, gc));</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+            push_option_fmt(gc, push_list, M_USAGE=
-, &quot;route-ipv6 %s/128&quot;,</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+                            print_in6_addr(c-&gt;c1=2Etuntap-&=
-gt;local_ipv6, 0, gc));</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        }</span><br><span>     }</span><br><span> </span><br><span>    =
- /* ipv4 */</span><br><span>@@ -659,6 +673,22 @@</span><br><span>         p=
-ush_option_fmt(gc, push_list, M_USAGE, &quot;ifconfig %s %s&quot;,</span><b=
-r><span>                         print_in_addr_t(ifconfig_local, 0, gc),</s=
-pan><br><span>                         print_in_addr_t(c-&gt;c2=2Epush_ifco=
-nfig_remote_netmask, 0, gc));</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /=
-* A subnet-pool client sits outside the --server network: push a</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+         * route-gateway insid=
-e its own subnet and a host route back to the</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+         * server&#39;s VPN IP, so pushed routes =
-install on-link and the server</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+         * stays reachable=2E */</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        if (o-&gt;subnet_pool_defined &amp;&amp; c-=
-&gt;c1=2Etuntap)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            /=
-* drop the global route-gateway (the server&#39;s own VPN IP): it is</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+             * off-link fo=
-r this client, so replace rather than merely override</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+             * it in the push string */</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+            push_remo=
-ve_option(o, &quot;route-gateway&quot;);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+            push_option_fmt(gc, push_list, M_USAGE, &q=
-uot;route-gateway %s&quot;,</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+                            print_in_addr_t(o-&gt;subnet_pool_gatew=
-ay, 0, gc));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     push_option_fmt(gc, push_list, M_USAGE, &quot;route %s 255=2E255=2E255=
-=2E255&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-                      print_in_addr_t(c-&gt;c1=2Etuntap-&gt;local, 0, gc));=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br=
-><span>     }</span><br><span> </span><br><span>     if (tls_multi-&gt;use_=
-peer_id)</span><br><span></span><br></pre><p>To view, visit <a href=3D"http=
-://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1787?usp=3Demail">change 1787</a>=2E =
-To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
-errit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemsco=
-pe itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D=
-"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url"=
- href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1787?usp=3Demail"/><meta=
- itemprop=3D"name" content=3D"View Change"/></div></div>
+rently required from: ordex, plaisthos=2E </p>
+<p>Patch set 1:<span style=
+=3D"border-radius: 3px; display: inline-block; margin: 0 2px; padding: 4px;=
+background-color: #ffd4d4;">Code-Review -1</span></p><p><a href=3D"http://g=
+errit=2Eopenvpn=2Enet/c/openvpn/+/1783?usp=3Demail">View Change</a></p><p>1=
+ comment:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margi=
+n: 0; padding: 0;"><p>File src/openvpn/options=2Ec:</p><ul style=3D"list-st=
+yle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p st=
+yle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/open=
+vpn/+/1783/comment/109eb09a_94d45d09?usp=3Demail">Patch Set #1, Line 7634:<=
+/a> <code style=3D"font-family:monospace,monospace">    else if (streq(p[0]=
+, &quot;subnet-pool&quot;) &amp;&amp; p[1] &amp;&amp; p[2] &amp;&amp; p[3] =
+&amp;&amp; !p[5])</code></p><p class=3D"blocks" style=3D"white-space: pre-w=
+rap; word-wrap: break-word;">Please add new options also to usage string</p=
+></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=
+=2Enet/c/openvpn/+/1783?usp=3Demail">change 1783</a>=2E To unsubscribe, or =
+for help writing mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=2En=
+et/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http=
+://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
+=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http://g=
+errit=2Eopenvpn=2Enet/c/openvpn/+/1783?usp=3Demail"/><meta itemprop=3D"name=
+" content=3D"View Change"/></div></div>
 
-<div style=3D"dis=
-play:none"> Gerrit-MessageType: newchange </div>
-<div style=3D"display:none=
-"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branc=
-h: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I7c0ff48fb0=
-19ac7c2d1d981b7b7e4578ff5dce48 </div>
-<div style=3D"display:none"> Gerrit-C=
-hange-Number: 1787 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 <=
-/div>
-<div style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@mandelbi=
-t=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos =
-&lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerr=
-it-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>=
-
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@=
-rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerri=
+t-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project: =
+openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<d=
+iv style=3D"display:none"> Gerrit-Change-Id: Ia1e7db95615d99ef9687de7c4e996=
+dc8033e2631 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1783 =
+</div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D=
+"display:none"> Gerrit-Owner: ordex &lt;antonio@mandelbit=2Ecom&gt; </div>
+=
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@lichte=
+nheld=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaist=
+hos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> =
+Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-open=
+vpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention:=
+ ordex &lt;antonio@mandelbit=2Ecom&gt; </div>
+<div style=3D"display:none"> =
+Gerrit-Comment-Date: Tue, 14 Jul 2026 22:32:02 +0000 </div>
+<div style=3D"d=
+isplay:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> G=
+errit-Has-Labels: Yes </div>
 
 </body></html>
---xBk90H/TdLk=--
+--BKLLfoHGa9A=--
 
 
---===============7429325948033196405==
+--===============8724046609145931709==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============7429325948033196405==
+--===============8724046609145931709==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -445,5 +298,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============7429325948033196405==--
+--===============8724046609145931709==--
 
