@@ -4,129 +4,75 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7274CC44501
-	for <openvpn-devel@archiver.kernel.org>; Wed, 15 Jul 2026 15:40:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C8AD3C44508
+	for <openvpn-devel@archiver.kernel.org>; Wed, 15 Jul 2026 15:46:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:Date:Sender:To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=9F4xZnUPHvWWhFpckUdPDQfvhwoDHfOK0nBsZrvDn+w=; b=RZPgt4taW5jjdxm/CN89CAiiQp
-	WEiCtwdrl/yhDF7Z0de4J4j3t9U5N0sESD/UOoWoGx0IvVQni3pDtuDTXhVH/nrIx1VvdYzK3rGf/
-	OxJB54mFXkCSeF3VLxXJO/ngElVzGK8hB3KwArHpLiGdEM98gBYg1fo3M464k1XYN1aM=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:Message-ID:To:From:Date:Sender:Reply-To:Cc:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Owner;
+	bh=xZq6DjM1p3zk9Na/mAhPqlKa9Rqjrp/aCV5sL+5CMuo=; b=YQM5Se2ZSnqSLBt/kVvmS6Wkiz
+	po2jMB+NNgQkapzGoNv0L8bQxtOkE9zhVCb7ZaiPtbPeXCEXM0o5Kj23eCdWlz9tojuVwHXhSOnuX
+	4XPtX2114s57msRRajGz0Wqyp4yGzXOWbO4bekkQMsAYDAkuSh0NSnpFOjbSGvsSNeMo=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wk1iu-00060R-3x;
-	Wed, 15 Jul 2026 15:40:36 +0000
+	id 1wk1oG-0000XX-6v;
+	Wed, 15 Jul 2026 15:46:08 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wk1is-00060K-Lf
- for openvpn-devel@lists.sourceforge.net;
- Wed, 15 Jul 2026 15:40:34 +0000
+ (envelope-from <frank@lichtenheld.com>) id 1wk1oD-0000XJ-Cz;
+ Wed, 15 Jul 2026 15:46:07 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:Date:From:Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
- :List-Post:List-Owner:List-Archive;
- bh=P9nC3eVknYegKP1GWYxknzSdZBToxUTImSLZWoPnb2k=; b=hA00JsOspIbVjWT2SV95rKdqMu
- 86MuSDKHrGCx9Ufk9JPmvHg9Gbsf5K1iHewTAXEqNaiW9MidgIOzwATCUhYZg6X8f8dxVmC59r3PH
- 8z8FB+e6Lk87hfIiEGSFpXNZKfduZH0O3lKvlFgVXz2p/V89sKM2YIz/PXLHpIAVmnQ8=;
+ d=sourceforge.net; s=x; h=Content-Type:MIME-Version:Message-ID:Subject:To:
+ From:Date:Sender:Reply-To:Cc:Content-Transfer-Encoding:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=tMKXa9fi57oZFewA+5UpVqsgrUlr94c4lmAw18lDmYE=; b=ZGPqtvQBd8MYOXyv/jmEM7uhRi
+ E2aZMIYlMIApXjVHq3kqrez0Gnn99LIzJOWRR7eEFOF9KmLkVXP9KKt85nUBxTof1I1Xlv7SNcN0n
+ h3TY/p60crprK4VbAFMMcOqTXN6jcuhNpDtc36qKuOKW5OsabIzfmmTBsA0wOgdofLZc=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:Date:From:Sender:
- To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=P9nC3eVknYegKP1GWYxknzSdZBToxUTImSLZWoPnb2k=; b=W
- 8Vj9PAvOKCQ//jfGkCMASVZEjNpjFDkUhyQKdexuS2guTBCGm2wah8oY6Dpz9rN4Q6P+LXONyfF8i
- bjljWU6GIbO/iDIWHB5KA2I8VKG8l5mh/hkJUTY2rv+Od0H3G8dJqb9okpvSxmTqqjZv+9bDD8aFG
- e+o4Np8nNIeqT+kw=;
-Received: from mail-wr1-f49.google.com ([209.85.221.49])
+ h=Content-Type:MIME-Version:Message-ID:Subject:To:From:Date:Sender:Reply-To
+ :Cc:Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+ References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=tMKXa9fi57oZFewA+5UpVqsgrUlr94c4lmAw18lDmYE=; b=P
+ CBdxigcNih3SUASK/UNwts3NHQkAKwisjh7w6/UYRwqVNRrFfHqgDWx3P/Ypq4eO/I7tTCGyvOEa9
+ rWNZC+PIp14K5zoEddnuzX5oJJaaW4LF7AtumV0WqZfoWUHdNcTmz0JqLhOV1biqiDWcY6Tv95Xc1
+ APFok9fQR1LY2d7g=;
+Received: from mout-p-101.mailbox.org ([80.241.56.151])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wk1ir-0000lo-7a for openvpn-devel@lists.sourceforge.net;
- Wed, 15 Jul 2026 15:40:34 +0000
-Received: by mail-wr1-f49.google.com with SMTP id
- ffacd0b85a97d-4798bea72f9so3054779f8f.1
- for <openvpn-devel@lists.sourceforge.net>;
- Wed, 15 Jul 2026 08:40:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1784130027; x=1784734827; darn=lists.sourceforge.net;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:date:from:from:to:cc:subject:date:message-id
- :reply-to:content-type;
- bh=P9nC3eVknYegKP1GWYxknzSdZBToxUTImSLZWoPnb2k=;
- b=G+GStDnYac15hqehtMJP9pmlT4FlBIOTVt9qnsvj9n87GcUt1B7Gxq0CjFINsoq9Ty
- McM+uVuZORnEbp/JayVsd/+D7cXYaM8sNxoAr62nev7YvNLTCBA8dsjiLouqIqLXzD6A
- PFc/uSJbCr3Vx/+vmmglakT/gaamM3YWKf+danF5jVHvW8NH8bt5zsP4Bth72nFu9A7R
- ioZ3SDcgISXs7y1ucl/ixQNnjlA1QcM9fL5srNYHCKLU87JcdauHmYNiawzrtWSoO4q9
- XaFVslb3YS6NY2bl+nSiQWW53UVZ/m4/xhdgZn9IylC6Gnq+2zUvdZoWMppZMwnLTJVm
- hxQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1784130027; x=1784734827;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:date:from:x-gm-gg:x-gm-message-state:from:to:cc
- :subject:date:message-id:reply-to:content-type;
- bh=P9nC3eVknYegKP1GWYxknzSdZBToxUTImSLZWoPnb2k=;
- b=DyGrPIgU0TQ3xwFYKStDc9UJVAuZA4gmvB6FCnmNBzr/FHNmGEk8FfBgcKqCLQKAs+
- dnCRHTOKnlFAUyOqu9olqn2aQjJN7DQahpnCaFTvb9n+MqK4WXAIe1p/XeyK8Np9itjO
- 4YqMKJYcSYu9OPIhcXvuD1NaDJaSnpOeRPvhtWVdL3I5n9XsUi8DhJY4Bmqj5My40Vic
- 4vVhv0x8lR5ExOcYOdxTS3pGzjDrf6X/a4Rc57h4Ja7a0tH3ogxNvgmN91HlEt9Tl9+o
- PrIGXxVVY0DHJsMz4UI30OIOU6f5ZnVQ1r8j6XPWClLmWhKrsBNa9SxF4dDugaSAJTZU
- B1JQ==
-X-Forwarded-Encrypted: i=1;
- AHgh+Rpi+k9SeXkl08DiZFwVk1wzvUUIQHFJEyZTc2pcPPt4W9e7D7h+9m8AtJOC8qs4nRwln8qR6jsuCAx4FNDo@lists.sourceforge.net
-X-Gm-Message-State: AOJu0Yzqwfyk0isLVUCBY0vzN0I/M9AWeBNu63w2lyzpdjyyaCk6mVHV
- OJ3C0EIP2a9BgAh7dp1ORTWxX1rxRjQ3y12z0E7ej/YcnBLpDiE/ii+KxC8jFfZNwl66wyrBlE/
- /D01bfSuaFv+1q0rNaG9XlnOeQanfmLf1VQA3d/xXCk4o1bQZo6/BvO4rAIzqq6kd4chf7mY4b4
- 9T1o4Kfw==
-X-Gm-Gg: AfdE7cn/O+qxLTvqL5yw9EuCjmKkffS3bHNOKTu6LDoWclGOoKN6GjDE0cirQyTbfZx
- 973RJYFJPKYfxDcmAQ9wt1hRpr38WrAsELE02hAH8qvn600ujv/5Tbg3v3CB78Be8TJQ3ZbsEHw
- R/Omq3qZJ5jntw1+HKSznsjJuPB10AH72DxxoX9bu083Lg4lONSCEnhlq5w8qsApd9i0282+54s
- UEcZjPGjpBFE5pO0Ec/1GtDjFzrBG+npQhab0wM6yp8PTWkBvF64ik1Ha9CmZoDuvIvBk+B716K
- TFKFm6Xwh+TCAGBtpvDOfGvqeNpAmcxsLd/tciT5lEW0sXriiOb++PwO7W2bExK2oHyO2HYI/Ac
- yj2MOxoFMpypc9ZIGNwlM7Q6GGzY848o9tdzkbdGy8yu0IT6HJdlrKSyCxW2/X8zkdIz3jf5sm5
- Y7qY7Y58fXm+W8O5aiWl82WZte3UhI6Vj7z43+7Onah2QJT03Te5SK6w5hMmA4q3tASpkdkcXgO
- unN5m3EF5Gy13f9yfdMYFxzTNo0iBF/+r4njbyS/Bp+481FmtyOHU/plcm0NX63VSGm7/p3paY+
- TBU1idNW0vmWgw==
-X-Received: by 2002:a5d:59a4:0:b0:472:67de:27ca with SMTP id
- ffacd0b85a97d-47f488bf7afmr8819870f8f.41.1784130026529; 
- Wed, 15 Jul 2026 08:40:26 -0700 (PDT)
-Received: from ip-10-18-1-162.eu-central-1.compute.internal
- (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
- by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-47f4634e0e4sm18495867f8f.4.2026.07.15.08.40.25
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 15 Jul 2026 08:40:26 -0700 (PDT)
-X-Google-Original-From: "cron2 (Code Review)"
- <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Wed, 15 Jul 2026 15:40:24 +0000
-Auto-Submitted: auto-generated
-X-Gerrit-MessageType: comment
-X-Gerrit-PatchSet: 2
-X-Gerrit-Change-Id: I8219c6295acf28ff10ddb2fcc285f813c42fa8fe
-X-Gerrit-Change-Number: 1789
-X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1789?usp=email>
-X-Gerrit-Commit: 08e75f6ea182acd2c9b6d4ca06b5bb35b7b7addd
-X-Gerrit-Comment-Date: Wed, 15 Jul 2026 15:40:24 +0000
-In-Reply-To: <gerrit.1784126523000.I8219c6295acf28ff10ddb2fcc285f813c42fa8fe@gerrit.openvpn.net>
-References: <gerrit.1784126523000.I8219c6295acf28ff10ddb2fcc285f813c42fa8fe@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzg0MTI2NTIzMDAwLkk4MjE5YzYyOTVhY2YyOGZmMTBkZGIyZmNjMjg1ZjgxM2M0MmZhOGZlQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <5c39b0b2beba08a1d5123f7a640a44b4cb22c8d8-EmailReviewComments-HTML@gerrit.openvpn.net>
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
+ id 1wk1oC-00012z-53; Wed, 15 Jul 2026 15:46:06 +0000
+Received: from smtp102.mailbox.org (smtp102.mailbox.org [10.196.197.102])
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+ key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA512)
+ (No client certificate requested)
+ by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4h0gW24sT5z8txk;
+ Wed, 15 Jul 2026 17:45:50 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lichtenheld.com;
+ s=MBO0001; t=1784130350;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:mime-version:mime-version:content-type:content-type;
+ bh=tMKXa9fi57oZFewA+5UpVqsgrUlr94c4lmAw18lDmYE=;
+ b=e6z5r1GJ9uc1LNNQxnWqfCQjLlnoaQpbT6I9wfOscmcIhRID5RSi0Z1k5U/aCO8vWXE01b
+ hPUJknCeJPrE1uw3rx0tJnhAJ4UxRuQOqVODB4P/5u9T2qgOAAafW1XnCp7bBG8VFQdTAQ
+ sk4KC1UP5Qxl8S0IxwZ7r8BtROhYWlLs7lhyVxPK5JlZZ0avXfkusMjMowjAw/gICbU+tB
+ SxNzSho7dGRNRopBPhmUHImLBhDxK1Pski1gJLD3hmawpKOmuexILvVC02Tzk1LWrHdlze
+ 9Gbuaya4knU3Xt3FxuC18LOtjoShpCqGUhuMNDVQ3jqjQ8FTeh43Zh42ON5+Tg==
+Date: Wed, 15 Jul 2026 17:45:47 +0200
+From: Frank Lichtenheld <frank@lichtenheld.com>
+To: openvpn-users@lists.sourceforge.net,
+ openvpn-announce@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
+Message-ID: <alerK-Jp_er1T3fW@flichtenheld-TUXEDO-InfinityBook-S-15-17-Gen7>
 MIME-Version: 1.0
-User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wk1ir-0000lo-7a
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: proto: correct
- 802.1Q length check in is_ipv_X
+Content-Disposition: inline
+X-Headers-End: 1wk1oC-00012z-53
+Subject: [Openvpn-devel] OpenVPN 3 Linux v27.1 released
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -138,170 +84,263 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "cron2 \(Code Review\) via Openvpn-devel"
- <openvpn-devel@lists.sourceforge.net>
-Reply-To: gert@greenie.muc.de, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com
-Cc: "cron2 \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>,
- plaisthos <arne-openvpn@rfc2549.org>
-Content-Type: multipart/mixed; boundary="===============7130908152753508279=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============7130908152753508279==
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="RWR4MplUHOI="; charset=UTF-8
+OpenVPN 3 Linux v27.1 (Stable release)
 
---RWR4MplUHOI=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+The v27.1 release is purely a bug fix release
 
-Attention is currently required from: flichtenheld, plaisthos=2E
+* FEATURE DEPRECATION: openvpn3-autoload
 
-cron2 has=
- posted comments on this change by cron2=2E ( http://gerrit=2Eopenvpn=2Enet=
-/c/openvpn/+/1789?usp=3Demail )
+  ** THIS IS THE LAST RELEASE SHIPPING THIS UTILITY - MIGRATE NOW **
 
-Change subject: proto: correct 802=2E1Q le=
-ngth check in is_ipv_X
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E
+  The openvpn3-autoload feature was deprecated already in the
+  v20 release.  This feature will be removed in the next major
+  release.
+
+  The replacement is the openvpn3-session@.service systemd unit.
+  Please see the openvpn3-systemd man page [1] for more details.
+
+  If you depend on openvpn3-autoload today, please migrate ASAP
+  to the systemd approach.
+
+  [1] <https://codeberg.org/OpenVPN/openvpn3-linux/src/branch/master/docs/man/openvpn3-systemd.8.rst>
 
 
-Patch Set 2:
+* Regression: File descriptor leaks with reconnects
 
-(1 comment)
+  The v27 release attempted to fix a file descriptor leak which
+  happens when the VPN session is triggered to do a full reconnect
+  to the server.   It turned out that this change caused a lot more
+  issues and resulted in a large regression when the server-side
+  sent a PUSH_UPDATE event to update routing tables.
 
-Commit Message:
+  This file descriptor leak fix has been reverted in the v27.1
+  release, as the investigation revealed that this requires a more
+  careful change inside the OpenVPN 3 Core Library in addition.
 
-http://gerrit=2Eope=
-nvpn=2Enet/c/openvpn/+/1789/comment/04b7c223_1da50ca5?usp=3Demail :
-PS1, Li=
-ne 10: Signed-off-by: rootvector2 <dxbnaveed=2Ek@gmail=2Ecom>
-> I would mov=
-e the Signed-off-by to its usual place at the end=2E [=E2=80=A6]
-Acknowledg=
-ed
+  The file descriptor leak can be an issue for users on unstable
+  Internet connections, where the client is triggered to do a full
+  in-session restart.
+
+  The only workaround is to stop the session completely before
+  starting it again.  Using the openvpn3-session@.service unit file,
+  this is done with a single
+
+      # systemctl restart openvpn3-session@CONFIG_NAME.service
+
+  command.  This is planned to be fixed in the next major release,
+  where it will upgrade to OpenVPN 3 Core Library v3.12.
 
 
+* Bugfix: VPN sessions using DCO interfaces misbehave with PUSH_UPDATE
+
+  When the server pushed a PUSH_UPDATE event to the client with updates
+  to the network configuration, this would cause the DCO-based VPN tunnel
+  to freeze and become dysfunctional.  This has been resolved and the
+  DCO interface is fully capable of reconfiguring the network when
+  requested by the server.
+
+
+* Bugfix: Retrieve tunnel statistics for DCO interfaces
+
+  It has been a long outstanding bug where the session traffic details
+  were not updated when DCO interfaces were used.  This is now fixed and
+  the openvpn3 session-stats command will now report up-to-date
+  statistics.
+
+
+* Build: Fixed issues building with GCC-16.1
+
+  Several new compiler warnings appeared, especially in environments
+  enabling hardened builds, when the GCC compiler was upgraded to
+  version 16.1.  This should be resolved.
+
+  Fixing these issues was a requirement to make Fedora 44 builds
+  available.
+
+
+* OpenVPN 3 Core Library update
+
+  The OpenVPN 3 Core Library has been updated to version 3.11.7. This
+  resolves several bugs related to the ovpn-dco-v2 kernel module
+  integration, fixes issues with large wire packets when the
+  --tls-crypt-v2 feature is used and provides additional fixes for
+  GCC-16.1 related compiler warnings.
+
+
+Known issues:
+
+  - The openvpn3-service-netcfg service does not differentiate between
+    --dns server X resolve-domains and --dns search-domains when using
+    the --resolv-conf mode, which is not the intended behaviour.  This
+    was discovered in the v24 release and is scheduled to be
+    fixed in the next releases.  When this gets fixed, only
+    --dns search-domains will be considered as search domains and
+    --dns server X resolve-domains will enable split-DNS when using
+    --systemd-resolved and otherwise ignored when using
+    --resolv-conf with openvpn3-service-netcfg.
+
+
+Supported Linux distributions
+-----------------------------
+
+  - Debian: 12, 13
+  - Fedora: 43, 44
+  - Red Hat Enterprise Linux 8, 9, 10[*]
+  - Ubuntu: 22.04, 24.04, 26.04
+
+Installation and getting started instructions can be found here:
+
+  <https://community.openvpn.net/openvpn/wiki/OpenVPN3Linux>
+
+The OpenVPN Inc. provided repositories will be updated in the coming
+days.  The community provided repositories on Fedora Copr and
+openSUSE Build Service are already published.
+
+There are in addition other Linux distributions now providing
+OpenVPN 3 Linux packages.  These distributions are primarily
+supported by their respective distribution communities.  We will
+naturally review and apply fixes deemed needed for any
+distributions as they occur.
+
+NOTE: Red Hat Enterprise Linux 10
+  It is necessary to use the 'rhel+epel-10-x86_64' chroot when running
+  the 'dnf copr enable' command on RHEL-10.
+
+      # dnf copr enable dsommers/openvpn3 rhel+epel-10-x86_64
+
+  The stable repositories provided by OpenVPN Inc should not
+  have this issue.
+
+
+Experimental Builds
+-------------------
+
+With this release we have enabled building packages via the
+openSUSE Build Service for the following SUSE/openSUSE
+distributions
+
+ - openSUSE Factory (x86_64, aarch64)
+ - openSUSE Leap 16.0 (x86_64, aarch64)
+ - openSUSE Tumbleweed (x86_64, aarch64)
+
+
+Source forge hosting
+--------------------
+
+OpenVPN 3 Linux and GDBus++ are being pushed to several forge hosting
+services: Codeberg (main), GitLab (mirror) and GitHub (mirror).  In
+addition from v27, the Radicle Network was added.
+
+Codeberg will for now be the main repository for bug/issue tracking.
+For patch ("pull request") submissions, it is preferred to use the
+openvpn-devel@lists.sourceforge.net mailing list.  In addition the
+Radicle Network can now be used.
+
+The Radicle Network is a fully distributed network for hosting
+projects.  This satisfies one big reason why the mailing list approach
+has been the preferred way for submitting patches - it is decentralised
+and it does not require a single hosting service to be available at
+all times.  In addition to Radicle being fully decentralised, it also
+provides a pretty solid integrity check to any changes in a project,
+which also includes changes to the patch submission tracking as well
+as the git repository changes (and issue tracking, which we will not
+make use of at the moment).
+
+For more information on Radicle, visit <https://radicle.dev/>
+
+For a quick-start guide to use Radicle, see <https://radicle.dev/guides/quick-start>
+
+
+--
+kind regards,
+
+David Sommerseth
+OpenVPN Inc
+
+
+---- Source tarballs ---------------------------------------------------
+* OpenVPN 3 Linux v27.1
+
+  <https://swupdate.openvpn.net/community/releases/openvpn3-linux-27.1.tar.xz>
+  <https://swupdate.openvpn.net/community/releases/openvpn3-linux-27.1.tar.xz.asc>
+
+* GDBus++ v3
+
+  <https://swupdate.openvpn.net/community/releases/gdbuspp-3.tar.xz>
+  <https://swupdate.openvpn.net/community/releases/gdbuspp-3.tar.xz.asc>
+
+---- SHA256 Checksums --------------------------------------------------
+
+842162e48f7fc756a517b9f5807fb993152e210e996df4a267c3ff2ab40142d6  openvpn3-linux-27.1.tar.xz
+960bd3d315a07953b354e9c398c9c97ebaf3cab70f5a4c6442e259800e675b42  openvpn3-linux-27.1.tar.xz.asc
+c7a053a13c4eb5811a542b747d5fcdb3a8e58a4a42c7237cc5e2e2ca72e0c94e  gdbuspp-3.tar.xz
+b9cf732d7a347f324d6a5532dc48f80c2815dbf6704c169b4ee97a411506a99b  gdbuspp-3.tar.xz.asc
+
+---- git references ----------------------------------------------------
+
+git repositories:
+
+ - OpenVPN 3 Linux
+
+   git tag: v27.1
+   git commit: 4aff60fe2bfd2fd41b0d373228f746905fbe76d4
+
+   Radicle (PRIMARY, code + patches): rad:zN58oopqzrAkTregNZaRQpgg7x3c
+   <https://radicle.network/nodes/bndcrepos.radicle.garden/rad:zN58oopqzrAkTregNZaRQpgg7x3c>
+
+   Codeberg (PRIMARY, code + issue/bugs reports)
+   <https://codeberg.org/OpenVPN/openvpn3-linux>
+
+   Code mirrors:
+   <https://gitlab.com/openvpn/openvpn3-linux>
+   <https://github.com/OpenVPN/openvpn3-linux>
+
+ - GDBus++
+
+   git tag: v3
+   git commit: 96f7fb688ed2dea3f192c63c5fe283dbe4900f16
+
+   Radicle (PRIMARY, code + patches): rad:z2Tpg8xVSDgTpoU4Q5FN1aPGqf6mG
+   <https://radicle.network/nodes/bndcrepos.radicle.garden/rad:z2Tpg8xVSDgTpoU4Q5FN1aPGqf6mG>
+
+   Codeberg (PRIMARY, code + issue/bugs reports)
+   <https://codeberg.org/OpenVPN/gdbuspp/>
+
+   Code mirrors:
+   <https://gitlab.com/openvpn/gdbuspp/>
+   <https://github.com/openvpn/gdbuspp/>
+
+
+---- Changes from v27 to v27.1 -------------------------------------
+
+Antonio Quartulli (2):
+      dco: retrieve peer stats from kernel module
+      netcfg: Make tun_builder_new() DCO-aware for PUSH_UPDATE reconfiguration
+
+David Sommerseth (11):
+      common: Fix dhcp-option and dns handling of multiple occurrences
+      Revert "client: Plug a file descriptor leak with virtual tun interfaces"
+      ovpn3cli/init-config: Show the compiled-in username for the openvpn user
+      build/selinux: Refactor the building setup for SELinux policies
+      common: Fix missing static declarations in ExclusiveOptionError and ConfigFileException
+      policy: Add needed D-Bus policy to access net.openvpn.v3.netcfg.GetPeer
+      docs: Remove the "tech-preview" label from DCO functionality
+      scripts: Fix get-version extracting wrong git commit for openvpn3-core
+      vendor: Upgrade to ASIO 1.38.0
+      build: Fix the systemd requirement dependecy again
+      core: Update to OpenVPN 3 Core Library v3.11.7
+
+--------------------------------------------------------------------
 
 -- 
-To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1789?usp=
-=3Demail
-To unsubscribe, or for help writing mail filters, visit http://ger=
-rit=2Eopenvpn=2Enet/settings?usp=3Demail
+  Frank Lichtenheld
 
-Gerrit-MessageType: comment
-Gerri=
-t-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I8219c6295acf28f=
-f10ddb2fcc285f813c42fa8fe
-Gerrit-Change-Number: 1789
-Gerrit-PatchSet: 2
-Ger=
-rit-Owner: cron2 <gert@greenie=2Emuc=2Ede>
-Gerrit-Reviewer: plaisthos <arne=
--openvpn@rfc2549=2Eorg>
-Gerrit-CC: flichtenheld <frank@lichtenheld=2Ecom>
-G=
-errit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
-Gerrit-At=
-tention: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Attention: flichtenh=
-eld <frank@lichtenheld=2Ecom>
-Gerrit-Comment-Date: Wed, 15 Jul 2026 15:40:2=
-4 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: =
-flichtenheld <frank@lichtenheld=2Ecom>
-
---RWR4MplUHOI=
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos=2E </p>
-<p><a href=3D"http://=
-gerrit=2Eopenvpn=2Enet/c/openvpn/+/1789?usp=3Demail">View Change</a></p><p>=
-1 comment:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"marg=
-in: 0; padding: 0;"><p>Commit Message:</p><ul style=3D"list-style: none; pa=
-dding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin=
--bottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1789/co=
-mment/04b7c223_1da50ca5?usp=3Demail">Patch Set #1, Line 10:</a> <code style=
-=3D"font-family:monospace,monospace">Signed-off-by: rootvector2 &lt;dxbnave=
-ed=2Ek@gmail=2Ecom&gt;</code></p><p><blockquote style=3D"border-left: 1px s=
-olid #aaa; margin: 10px 0; padding: 0 10px;">I would move the Signed-off-by=
- to its usual place at the end=2E [=E2=80=A6]</blockquote></p><p class=3D"b=
-locks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Acknowledged=
-</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit=2Eopenvp=
-n=2Enet/c/openvpn/+/1789?usp=3Demail">change 1789</a>=2E To unsubscribe, or=
- for help writing mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=2E=
-net/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"htt=
-p://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
-=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http://g=
-errit=2Eopenvpn=2Enet/c/openvpn/+/1789?usp=3Demail"/><meta itemprop=3D"name=
-" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerri=
-t-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: =
-openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<d=
-iv style=3D"display:none"> Gerrit-Change-Id: I8219c6295acf28ff10ddb2fcc285f=
-813c42fa8fe </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1789 =
-</div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D=
-"display:none"> Gerrit-Owner: cron2 &lt;gert@greenie=2Emuc=2Ede&gt; </div>
-=
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@rf=
-c2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: flichtenheld=
- &lt;frank@lichtenheld=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit=
--CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
-<=
-div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@rf=
-c2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flich=
-tenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
-<div style=3D"display:none">=
- Gerrit-Comment-Date: Wed, 15 Jul 2026 15:40:24 +0000 </div>
-<div style=3D"=
-display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> =
-Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-=
-To: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
-
-</body></html>
---RWR4MplUHOI=--
-
-
---===============7130908152753508279==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============7130908152753508279==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
---===============7130908152753508279==--
-
