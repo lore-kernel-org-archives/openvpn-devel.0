@@ -4,37 +4,37 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 203F1C4451B
-	for <openvpn-devel@archiver.kernel.org>; Fri, 17 Jul 2026 14:15:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7F160C4451B
+	for <openvpn-devel@archiver.kernel.org>; Fri, 17 Jul 2026 14:15:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=7mAPv8WbXFynFwKrUyFPM7CwPrX9A/9iFwVYglXzT2I=; b=jj1rza/6sSnYKk638+LDJb+Smy
-	ikOBMDK3BzIR4JxYqSyty3DKL/nlfeDok5jbhJj42juVfC2BIEt++ZD6tUvDDu9E+j83aGNKN9Yrn
-	m3LIywk/7tE7Ae/kqcc6U7+entQ5+FrG8X6BATCbD4qnkYdX8o59PEH74uidqbNNibvw=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=nLItzGD5l02ywfq9RtPIxYkTTy5P/85ktH6PEmwjT4Q=; b=dnzeJO0CzW7CqDVRZpaqSGkCbq
+	LPMq8NnApDQFPUIbHqrSTUYefYfs+eDexMmI0lt1HoArU7NEU91ixzg0NpK71TMkpr4YXzCCXBGMI
+	/5/ILC1Lup9w1WcNQ3CWhlDpwU0qYI7aRMKxkUbN8fw6Ej401kTL1wZLa6i4yfafKsnc=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wkjLA-0006xQ-8Z;
-	Fri, 17 Jul 2026 14:14:57 +0000
+	id 1wkjLH-00019a-QT;
+	Fri, 17 Jul 2026 14:15:08 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1wkjL9-0006xJ-09
+ (envelope-from <gert@blue4.greenie.muc.de>) id 1wkjLG-00019L-7F
  for openvpn-devel@lists.sourceforge.net;
- Fri, 17 Jul 2026 14:14:56 +0000
+ Fri, 17 Jul 2026 14:15:07 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
  In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=IjkiiJ81c0qC2mODC3DUHFtKeUbYL/E5flQwdqk84fY=; b=mFdmGVRua3hE3AjeZcmz7O+HiX
- S7UuTJq9xHErhsgWcBCj+zdFt1wx9u8q6hV+/2h6u6ag1Ii5lPYhpE5dQin4g+zIAz2ydYHbu0tb0
- WQVCN92yoYCes4WxcZQteKF7JzhFJmqcPKIoBMC+VIFEgeCfKKUDKvJyXKFv+FuvSAIc=;
+ bh=tM8dm/KPzaFdOoQ9WVvJCK8V7AfobE8JckjwB1TDdmY=; b=MjtzDaYg17Y/RZRQWfijU8xPsr
+ lPUFTzxbz7XNkfBE26vfnE9hgsNioi4RzXSYnssnr0rhT/EM7i+PvwGBBJpZUMhYxAxGAyy7gLK63
+ h3uOwlO0tUc4uuReW7fB23L+PxopUD1Grgu9mOS9QsSE1qnShL+YSqpCryK4nApTTO54=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -42,31 +42,31 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=IjkiiJ81c0qC2mODC3DUHFtKeUbYL/E5flQwdqk84fY=; b=K0iAxopeWFEWChAszTG51EWQsE
- qI6J/30MQVawUsJS+GRgAcMWUMYNXDSvCjM6CMI/rQJ6C67VY0wfM+wp1viLRu8e0jU0ehzPtcVgv
- gQR0P0rxCuSBSPPWFAf5t8UaP+129alEbHnQd2JelcNia+3LhE0+V6cSeax810nyhBCc=;
+ bh=tM8dm/KPzaFdOoQ9WVvJCK8V7AfobE8JckjwB1TDdmY=; b=IBXn9wEbvN4ncIw3QeGMgwNzoj
+ OHZL2gCzDUWRTrpW8cdM+2f+qsM/w1vnOschfJjfSltiH7CxJ5oNkUXz8xJs0weDtV3j3EyxZIglu
+ NRFs+GSAYvSCtarIm1KPhkaETXRXQ9FrgZJOm1HYt3cOH1G9w3wtmOBb5deO0uK6mvNk=;
 Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wkjL4-0004PR-Rt for openvpn-devel@lists.sourceforge.net;
- Fri, 17 Jul 2026 14:14:56 +0000
+ id 1wkjLF-0004Pr-78 for openvpn-devel@lists.sourceforge.net;
+ Fri, 17 Jul 2026 14:15:06 +0000
 Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 66HEEgGf022966
- for <openvpn-devel@lists.sourceforge.net>; Fri, 17 Jul 2026 16:14:42 +0200
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 66HEErMp023012
+ for <openvpn-devel@lists.sourceforge.net>; Fri, 17 Jul 2026 16:14:53 +0200
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 66HEEgdn022965
- for openvpn-devel@lists.sourceforge.net; Fri, 17 Jul 2026 16:14:42 +0200
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 66HEEr72023011
+ for openvpn-devel@lists.sourceforge.net; Fri, 17 Jul 2026 16:14:53 +0200
 From: Gert Doering <gert@greenie.muc.de>
 To: openvpn-devel@lists.sourceforge.net
-Date: Fri, 17 Jul 2026 16:14:37 +0200
-Message-ID: <20260717141442.22943-1-gert@greenie.muc.de>
+Date: Fri, 17 Jul 2026 16:14:47 +0200
+Message-ID: <20260717141453.22980-1-gert@greenie.muc.de>
 X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1782134588000.I9f10d91407347faf32397535c95e2d80a1575bd5@gerrit.openvpn.net>
-References: <gerrit.1782134588000.I9f10d91407347faf32397535c95e2d80a1575bd5@gerrit.openvpn.net>
+In-Reply-To: <gerrit.1782134588000.I3d52c6d008502293c3ec57ad22d1c613dcd1a94e@gerrit.openvpn.net>
+References: <gerrit.1782134588000.I3d52c6d008502293c3ec57ad22d1c613dcd1a94e@gerrit.openvpn.net>
 MIME-Version: 1.0
-X-Headers-End: 1wkjL4-0004PR-Rt
-Subject: [Openvpn-devel] [PATCH v4] Move incoming data processing in its own
- method
+X-Headers-End: 1wkjLF-0004Pr-78
+Subject: [Openvpn-devel] [PATCH v4] Extract multi_check_dest_addr_allowed
+ from multi_process_float
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -84,24 +84,16 @@ Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
 From: Arne Schwabe <arne@rfc2549.org>
 
-This extract a large chunk from multi_process_incoming_link into its
-own method multi_process_incoming_link_data
-
-This reduces the complexity of multi_process_incoming_link further.
-
-A few declarations were moved into a more logical place but otherwise
-this is just a simple move.
-
-Change-Id: I9f10d91407347faf32397535c95e2d80a1575bd5
+Change-Id: I3d52c6d008502293c3ec57ad22d1c613dcd1a94e
 Signed-off-by: Arne Schwabe <arne@rfc2549.org>
 Acked-by: Frank Lichtenheld <frank@lichtenheld.com>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1722
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1723
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1722
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1723
 This mail reflects revision 4 of this Change.
 
 Acked-by according to Gerrit (reflected above):
@@ -109,318 +101,162 @@ Frank Lichtenheld <frank@lichtenheld.com>
 
         
 diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index d70245f..7535797 100644
+index 7535797..c40ebe4 100644
 --- a/src/openvpn/multi.c
 +++ b/src/openvpn/multi.c
-@@ -3302,6 +3302,155 @@
+@@ -3072,6 +3072,76 @@
  }
- #endif /* if defined(ENABLE_DCO) */
  
-+/**
-+ * Process incoming data packet from clients.
+ /**
++ * This methods checks if a client instance is allowed to use an address
 + *
-+ * This tries to decrypt and then forward incoming
-+ * data packets.
++ * Reasons for disallowing a specific address are that a client might be
++ * already using that address. In that case the method needs to decide
++ * if this instance can kick out the other instance.
++ *
++ * The method will then terminate the other instance if that check was
++ * positive.
 + */
-+static void
-+multi_process_incoming_link_data(struct multi_context *m, bool floated, struct link_socket *sock)
++static bool
++multi_check_dest_addr_allowed(struct multi_context *m, struct multi_instance *mi, struct mroute_addr *real)
 +{
-+    struct link_socket_info *lsi = &sock->info;
-+    const uint8_t *orig_buf;
++    struct hash *hash = m->hash;
++    const uint64_t hv = hash_value(hash, real);
++    struct hash_bucket *bucket = hash_bucket(hash, hv);
 +
-+    /* decrypt in instance context */
-+    struct context *c = &m->pending->context;
-+
-+    orig_buf = c->c2.buf.data;
-+    if (process_incoming_link_part1(c, lsi, floated))
++    /* make sure that we don't assign the client to an address taken by
++     * another client */
++    struct hash_element *he = hash_lookup_fast(hash, bucket, real, hv);
++    if (!he)
 +    {
-+        /* nonzero length means that we have a valid, decrypted packed */
-+        if (floated && c->c2.buf.len > 0)
-+        {
-+            multi_process_float(m, m->pending, sock);
-+        }
-+
-+        process_incoming_link_part2(c, lsi, orig_buf);
++        /* Address is not taken, everything is fine. */
++        return true;
 +    }
 +
-+    if (TUNNEL_TYPE(m->top.c1.tuntap) == DEV_TYPE_TUN)
++    struct multi_instance *ex_mi = he->value;
++
++    struct tls_multi *m1 = mi->context.c2.tls_multi;
++    struct tls_multi *m2 = ex_mi->context.c2.tls_multi;
++
++    struct gc_arena gc = gc_new();
++    int ret = false;
++
++    /* do not allow if target address is taken by client with another cert */
++    if (!cert_hash_compare(m1->locked_cert_hash_set, m2->locked_cert_hash_set))
 +    {
-+        struct mroute_addr src, dest;
-+        /* extract packet source and dest addresses */
-+        unsigned int mroute_flags =
-+            mroute_extract_addr_from_packet(&src, &dest, 0, &c->c2.to_tun, DEV_TYPE_TUN);
++        msg(D_MULTI_LOW, "Disallow float to an address taken by another client %s",
++            multi_instance_string(ex_mi, false, &gc));
 +
-+        /* drop packet if extract failed */
-+        if (!(mroute_flags & MROUTE_EXTRACT_SUCCEEDED))
-+        {
-+            c->c2.to_tun.len = 0;
-+        }
-+        /* make sure that source address is associated with this client */
-+        else if (multi_get_instance_by_virtual_addr(m, &src, true) != m->pending)
-+        {
-+            /* IPv6 link-local address (fe80::xxx)? */
-+            if ((src.type & MR_ADDR_MASK) == MR_ADDR_IPV6
-+                && IN6_IS_ADDR_LINKLOCAL(&src.v6.addr))
-+            {
-+                /* do nothing, for now.  TODO: add address learning */
-+            }
-+            else
-+            {
-+                struct gc_arena gc = gc_new();
-+                msg(D_MULTI_DROPPED,
-+                    "MULTI: bad source address from client [%s], packet dropped",
-+                    mroute_addr_print(&src, &gc));
-+                gc_free(&gc);
-+            }
-+            c->c2.to_tun.len = 0;
-+        }
-+        /* client-to-client communication enabled? */
-+        else if (m->enable_c2c)
-+        {
-+            /* multicast? */
-+            if (mroute_flags & MROUTE_EXTRACT_MCAST)
-+            {
-+                /* for now, treat multicast as broadcast */
-+                multi_bcast(m, &c->c2.to_tun, m->pending, 0);
-+            }
-+            else /* possible client to client routing */
-+            {
-+                ASSERT(!(mroute_flags & MROUTE_EXTRACT_BCAST));
-+                struct multi_instance *mi = multi_get_instance_by_virtual_addr(m, &dest, true);
-+
-+                /* if dest addr is a known client, route to it */
-+                if (mi)
-+                {
-+                    {
-+                        multi_unicast(m, &c->c2.to_tun, mi);
-+                        register_activity(c, BLEN(&c->c2.to_tun));
-+                    }
-+                    c->c2.to_tun.len = 0;
-+                }
-+            }
-+        }
++        mi->context.c2.buf.len = 0;
++        goto done;
 +    }
-+    else if (TUNNEL_TYPE(m->top.c1.tuntap) == DEV_TYPE_TAP)
++
++    /* It doesn't make sense to let a peer float to the address it already
++     * has, so we disallow it. This can happen if a DCO netlink notification
++     * gets lost and we miss a floating step.
++     */
++    if (m1->rx_peer_id == m2->rx_peer_id)
 +    {
-+        uint16_t vid = 0;
-+
-+        if (m->top.options.vlan_tagging)
-+        {
-+            if (vlan_is_tagged(&c->c2.to_tun))
-+            {
-+                /* Drop VLAN-tagged frame. */
-+                msg(D_VLAN_DEBUG, "dropping incoming VLAN-tagged frame");
-+                c->c2.to_tun.len = 0;
-+            }
-+            else
-+            {
-+                vid = c->options.vlan_pvid;
-+            }
-+        }
-+        /* extract packet source and dest addresses */
-+        struct mroute_addr src, dest;
-+        /* extract packet source and dest addresses */
-+        unsigned int mroute_flags =
-+            mroute_extract_addr_from_packet(&src, &dest, vid, &c->c2.to_tun, DEV_TYPE_TAP);
-+
-+        if (mroute_flags & MROUTE_EXTRACT_SUCCEEDED)
-+        {
-+            if (multi_learn_addr(m, m->pending, &src, 0) == m->pending)
-+            {
-+                /* check for broadcast */
-+                if (m->enable_c2c)
-+                {
-+                    if (mroute_flags & (MROUTE_EXTRACT_BCAST | MROUTE_EXTRACT_MCAST))
-+                    {
-+                        multi_bcast(m, &c->c2.to_tun, m->pending, vid);
-+                    }
-+                    else /* try client-to-client routing */
-+                    {
-+                        struct multi_instance *mi = multi_get_instance_by_virtual_addr(m, &dest, false);
-+
-+                        /* if dest addr is a known client, route to it */
-+                        if (mi)
-+                        {
-+                            multi_unicast(m, &c->c2.to_tun, mi);
-+                            register_activity(c, BLEN(&c->c2.to_tun));
-+                            c->c2.to_tun.len = 0;
-+                        }
-+                    }
-+                }
-+            }
-+            else
-+            {
-+                struct gc_arena gc = gc_new();
-+                msg(D_MULTI_DROPPED,
-+                    "MULTI: bad source address from client [%s], packet dropped",
-+                    mroute_addr_print(&src, &gc));
-+                c->c2.to_tun.len = 0;
-+                gc_free(&gc);
-+            }
-+        }
-+        else
-+        {
-+            c->c2.to_tun.len = 0;
-+        }
++        msg(M_WARN,
++            "disallowing peer %" PRIu32 " (%s) from floating to "
++            "its own address (%s)",
++            m1->rx_peer_id, tls_common_name(mi->context.c2.tls_multi, false),
++            mroute_addr_print(&mi->real, &gc));
++        goto done;
 +    }
++
++    msg(D_MULTI_LOW,
++        "closing instance %s due to float collision with %s "
++        "using the same certificate",
++        multi_instance_string(ex_mi, false, &gc), multi_instance_string(mi, false, &gc));
++    multi_close_instance(m, ex_mi, false);
++    ret = true;
++
++done:
++    gc_free(&gc);
++    return ret;
 +}
 +
- /*
-  * Process packets in the TCP/UDP socket -> TUN/TAP interface direction,
-  * i.e. client -> server direction.
-@@ -3311,9 +3460,6 @@
-                             const unsigned int mpp_flags, struct link_socket *sock)
++/**
+  * Handles peer floating.
+  *
+  * If peer is floated to a taken address, either drops packet
+@@ -3083,8 +3153,6 @@
+ multi_process_float(struct multi_context *m, struct multi_instance *mi, struct link_socket *sock)
  {
-     struct context *c;
--    struct mroute_addr src, dest;
--    unsigned int mroute_flags;
--    struct multi_instance *mi;
-     bool ret = true;
-     bool floated = false;
+     struct mroute_addr real = { 0 };
+-    struct hash *hash = m->hash;
+-    struct gc_arena gc = gc_new();
  
-@@ -3357,141 +3503,7 @@
- 
-     if (BLEN(&c->c2.buf) > 0)
+     if (mi->real.type & MR_WITH_PROTO)
      {
--        struct link_socket_info *lsi;
--        const uint8_t *orig_buf;
--
--        /* decrypt in instance context */
--
--        lsi = &sock->info;
--        orig_buf = c->c2.buf.data;
--        if (process_incoming_link_part1(c, lsi, floated))
--        {
--            /* nonzero length means that we have a valid, decrypted packed */
--            if (floated && c->c2.buf.len > 0)
--            {
--                multi_process_float(m, m->pending, sock);
--            }
--
--            process_incoming_link_part2(c, lsi, orig_buf);
--        }
--
--        if (TUNNEL_TYPE(m->top.c1.tuntap) == DEV_TYPE_TUN)
--        {
--            /* extract packet source and dest addresses */
--            mroute_flags =
--                mroute_extract_addr_from_packet(&src, &dest, 0, &c->c2.to_tun, DEV_TYPE_TUN);
--
--            /* drop packet if extract failed */
--            if (!(mroute_flags & MROUTE_EXTRACT_SUCCEEDED))
--            {
--                c->c2.to_tun.len = 0;
--            }
--            /* make sure that source address is associated with this client */
--            else if (multi_get_instance_by_virtual_addr(m, &src, true) != m->pending)
--            {
--                /* IPv6 link-local address (fe80::xxx)? */
--                if ((src.type & MR_ADDR_MASK) == MR_ADDR_IPV6
--                    && IN6_IS_ADDR_LINKLOCAL(&src.v6.addr))
--                {
--                    /* do nothing, for now.  TODO: add address learning */
--                }
--                else
--                {
--                    struct gc_arena gc = gc_new();
--                    msg(D_MULTI_DROPPED,
--                        "MULTI: bad source address from client [%s], packet dropped",
--                        mroute_addr_print(&src, &gc));
--                    gc_free(&gc);
--                }
--                c->c2.to_tun.len = 0;
--            }
--            /* client-to-client communication enabled? */
--            else if (m->enable_c2c)
--            {
--                /* multicast? */
--                if (mroute_flags & MROUTE_EXTRACT_MCAST)
--                {
--                    /* for now, treat multicast as broadcast */
--                    multi_bcast(m, &c->c2.to_tun, m->pending, 0);
--                }
--                else /* possible client to client routing */
--                {
--                    ASSERT(!(mroute_flags & MROUTE_EXTRACT_BCAST));
--                    mi = multi_get_instance_by_virtual_addr(m, &dest, true);
--
--                    /* if dest addr is a known client, route to it */
--                    if (mi)
--                    {
--                        {
--                            multi_unicast(m, &c->c2.to_tun, mi);
--                            register_activity(c, BLEN(&c->c2.to_tun));
--                        }
--                        c->c2.to_tun.len = 0;
--                    }
--                }
--            }
--        }
--        else if (TUNNEL_TYPE(m->top.c1.tuntap) == DEV_TYPE_TAP)
--        {
--            uint16_t vid = 0;
--
--            if (m->top.options.vlan_tagging)
--            {
--                if (vlan_is_tagged(&c->c2.to_tun))
--                {
--                    /* Drop VLAN-tagged frame. */
--                    msg(D_VLAN_DEBUG, "dropping incoming VLAN-tagged frame");
--                    c->c2.to_tun.len = 0;
--                }
--                else
--                {
--                    vid = c->options.vlan_pvid;
--                }
--            }
--            /* extract packet source and dest addresses */
--            mroute_flags =
--                mroute_extract_addr_from_packet(&src, &dest, vid, &c->c2.to_tun, DEV_TYPE_TAP);
--
--            if (mroute_flags & MROUTE_EXTRACT_SUCCEEDED)
--            {
--                if (multi_learn_addr(m, m->pending, &src, 0) == m->pending)
--                {
--                    /* check for broadcast */
--                    if (m->enable_c2c)
--                    {
--                        if (mroute_flags & (MROUTE_EXTRACT_BCAST | MROUTE_EXTRACT_MCAST))
--                        {
--                            multi_bcast(m, &c->c2.to_tun, m->pending, vid);
--                        }
--                        else /* try client-to-client routing */
--                        {
--                            mi = multi_get_instance_by_virtual_addr(m, &dest, false);
--
--                            /* if dest addr is a known client, route to it */
--                            if (mi)
--                            {
--                                multi_unicast(m, &c->c2.to_tun, mi);
--                                register_activity(c, BLEN(&c->c2.to_tun));
--                                c->c2.to_tun.len = 0;
--                            }
--                        }
--                    }
--                }
--                else
--                {
--                    struct gc_arena gc = gc_new();
--                    msg(D_MULTI_DROPPED,
--                        "MULTI: bad source address from client [%s], packet dropped",
--                        mroute_addr_print(&src, &gc));
--                    c->c2.to_tun.len = 0;
--                    gc_free(&gc);
--                }
--            }
--            else
--            {
--                c->c2.to_tun.len = 0;
--            }
--        }
-+        multi_process_incoming_link_data(m, floated, sock);
+@@ -3094,53 +3162,16 @@
+ 
+     if (!mroute_extract_openvpn_sockaddr(&real, &m->top.c2.from.dest, true))
+     {
+-        goto done;
++        return;
      }
  
-     /* postprocess and set wakeup */
+-    const uint64_t hv = hash_value(hash, &real);
+-    struct hash_bucket *bucket = hash_bucket(hash, hv);
+-
+-    /* make sure that we don't float to an address taken by another client */
+-    struct hash_element *he = hash_lookup_fast(hash, bucket, &real, hv);
+-    if (he)
++    if (!multi_check_dest_addr_allowed(m, mi, &real))
+     {
+-        struct multi_instance *ex_mi = (struct multi_instance *)he->value;
+-
+-        struct tls_multi *m1 = mi->context.c2.tls_multi;
+-        struct tls_multi *m2 = ex_mi->context.c2.tls_multi;
+-
+-        /* do not float if target address is taken by client with another cert */
+-        if (!cert_hash_compare(m1->locked_cert_hash_set, m2->locked_cert_hash_set))
+-        {
+-            msg(D_MULTI_LOW, "Disallow float to an address taken by another client %s",
+-                multi_instance_string(ex_mi, false, &gc));
+-
+-            mi->context.c2.buf.len = 0;
+-
+-            goto done;
+-        }
+-
+-        /* It doesn't make sense to let a peer float to the address it already
+-         * has, so we disallow it. This can happen if a DCO netlink notification
+-         * gets lost and we miss a floating step.
+-         */
+-        if (m1->rx_peer_id == m2->rx_peer_id)
+-        {
+-            msg(M_WARN,
+-                "disallowing peer %" PRIu32 " (%s) from floating to "
+-                "its own address (%s)",
+-                m1->rx_peer_id, tls_common_name(mi->context.c2.tls_multi, false),
+-                mroute_addr_print(&mi->real, &gc));
+-            goto done;
+-        }
+-
+-        msg(D_MULTI_LOW,
+-            "closing instance %s due to float collision with %s "
+-            "using the same certificate",
+-            multi_instance_string(ex_mi, false, &gc), multi_instance_string(mi, false, &gc));
+-        multi_close_instance(m, ex_mi, false);
++        return;
+     }
+ 
++    struct gc_arena gc = gc_new();
++
+     msg(D_MULTI_MEDIUM, "peer %" PRIu32 " (%s) floated from %s to %s",
+         mi->context.c2.tls_multi->rx_peer_id,
+         tls_common_name(mi->context.c2.tls_multi, false),
+@@ -3169,7 +3200,6 @@
+     ASSERT(hash_add(m->cid_hash, &mi->context.c2.mda_context.cid, mi, true));
+ #endif
+ 
+-done:
+     gc_free(&gc);
+ }
+ 
 
 
 _______________________________________________
