@@ -4,69 +4,127 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 68B7EC44529
-	for <openvpn-devel@archiver.kernel.org>; Tue, 21 Jul 2026 08:34:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B0A9DC44529
+	for <openvpn-devel@archiver.kernel.org>; Tue, 21 Jul 2026 09:20:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=kcyG56/jruwyvuLwo+CXpTXs20cCQf7R0ddrnMIwqys=; b=Ttzhf17An5FITebTJJ7T4IHB6T
-	ivOf7jENgwAzdrJ/ewVClg8NLttZqhLO/L7leJK60HMcMcqAFsW/cZFn5fL+yH/NINod2E375zSvf
-	EfpaCekkT6VjCsINLPyMjIincbHbl8HC6PUMcja1jMCSObDupEyQHiT3ZaOzsiK2EzEk=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:Date:Sender:To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=/qo0WeSgtOe6TP+EtrizBM+UGEKWzrDFROhp+66Z/Kg=; b=gi3ywrh2YfaeDU/cL/5RukpuL+
+	WyGselp6CQYo/+idDs49MdbBGRkfx3cQ41qZA0k5yzoMUMR/PbexufLykE+sFk+7/HxrpB69hBnLm
+	HVfgbfks/j8P1sKZzwjOF+Mvje998PmKpNSTSWGkSIrvO7QS/vSPE8VmpGDJ5FugXN9E=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wm5vn-00048E-Bc;
-	Tue, 21 Jul 2026 08:34:28 +0000
+	id 1wm6eX-0007mo-4O;
+	Tue, 21 Jul 2026 09:20:41 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1wm5vl-000486-4m
+ (envelope-from <gerrit@openvpn.net>) id 1wm6eV-0007mg-LZ
  for openvpn-devel@lists.sourceforge.net;
- Tue, 21 Jul 2026 08:34:25 +0000
+ Tue, 21 Jul 2026 09:20:39 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=W3lYfoa9GPJ9NUFyHEreZLJ4Xe4QzpWK7Gchh/vVWqE=; b=h7ZNWh6vR/GiMa18i1WmII3v4x
- MJqs5gf6aYrg3TESJejw/J0mB7GqwFOeWOKXpGu18Jn938VWVFvkxgkUGttFcRj87Gi1VpGMJ9Lph
- OIWTOV9vGgCRK1CZrVzoKjgs4TIgD4yDjDCKem9JIRzhLLsKSouEQ89tDbPZIE6dkUxg=;
+ d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
+ :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
+ Cc:Date:From:Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From
+ :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
+ :List-Post:List-Owner:List-Archive;
+ bh=tvJwaF7sLI0BjZLmU2+XRuIJenv2J6NctVhdOVdiV7k=; b=ReYRcu223FjhP47TYygyo4I92h
+ LBSBC/yfLZQJ4f+jw9GvN2DQqoBBi2OT4/gwvrEb4C0P9KWNeEIkFAtQFwNaxbGthP03Hj3/GrjRv
+ b1FOs/6IpuR+zowI++kPMakFYCWZg4z85fui2BoDq+SxGMW5SCzjuLwZiEPor+J6ssN8=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=W3lYfoa9GPJ9NUFyHEreZLJ4Xe4QzpWK7Gchh/vVWqE=; b=hbGzdP0sNI883CgZUt78u6s4ly
- O2X2A1NBZ/7nZE8bSDzXU3kpQa19J0eTgTGf9Wr4rXR7M/HWYnFqll69MGcQw/Ukd2i4MTLdMKzTG
- Iux3Lypqbb7n0rmDVBmjrXv2jZenruWjV6tL5/kTW9dBhjzLehte1WNXEtbix3DMu6v0=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:Date:From:Sender:
+ To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=tvJwaF7sLI0BjZLmU2+XRuIJenv2J6NctVhdOVdiV7k=; b=T
+ r+C8+V1e6smw3Vm23T2iqjRPn3kBQDnc3jQOlLQt1Zux+EXY4ZnuuIFitro25XrNwXYldniTAu4Sp
+ HN/xT8fHEwkRp1rGZcnSb+raTSIXrl7xuAXLcVl4KrErZ4c6Fhh3LJRS32lXnncg1Wo/kaV03PxKT
+ 1oQWQLKSpUwHMHDc=;
+Received: from mail-wr1-f54.google.com ([209.85.221.54])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wm5vj-0005yr-NX for openvpn-devel@lists.sourceforge.net;
- Tue, 21 Jul 2026 08:34:25 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 66L8YBff019720
- for <openvpn-devel@lists.sourceforge.net>; Tue, 21 Jul 2026 10:34:11 +0200
-Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 66L8YB1Q019719
- for openvpn-devel@lists.sourceforge.net; Tue, 21 Jul 2026 10:34:11 +0200
-From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Tue, 21 Jul 2026 10:34:04 +0200
-Message-ID: <20260721083411.19683-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.53.0
+ (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
+ id 1wm6eS-0001Hs-Bj for openvpn-devel@lists.sourceforge.net;
+ Tue, 21 Jul 2026 09:20:39 +0000
+Received: by mail-wr1-f54.google.com with SMTP id
+ ffacd0b85a97d-47ddf7b09e5so7184832f8f.1
+ for <openvpn-devel@lists.sourceforge.net>;
+ Tue, 21 Jul 2026 02:20:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=openvpn.net; s=google; t=1784625630; x=1785230430; darn=lists.sourceforge.net;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:date:from:from:to:cc:subject:date:message-id
+ :reply-to:content-type;
+ bh=tvJwaF7sLI0BjZLmU2+XRuIJenv2J6NctVhdOVdiV7k=;
+ b=BpIOb0b8uDtv45ANPfF47032kZ2gf7C9qqPx4zaAL5+wMQ/X6P5aSmMQiXfRUmnnKO
+ fNbCYWeDR465L6qVyfmtwaOvTm21rJd99Lqzlf16wYj8HNU80+jVynviEjeeZPXUnXNM
+ 96NduAoKstJysEmFvSoeoTNRGI6ralLxE7ZclmN1Xc+L1Xq2JXFVsIPe6y3GQxziWfGT
+ 5HiVnFNwBo8yKW4kGIDSXwS4M+CdCJ9ksuctR+f0+wJIAL8WepXCZzudw4tlW/xQKrtm
+ sX9x3HSCWtH46l4ij/zRYLSdJ66vzGpqCMyjlBz6W5Mmkva3oUvE//SBTzFIxiW0q4JS
+ mxdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20251104; t=1784625630; x=1785230430;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:date:from:x-gm-gg:x-gm-message-state:from:to:cc
+ :subject:date:message-id:reply-to:content-type;
+ bh=tvJwaF7sLI0BjZLmU2+XRuIJenv2J6NctVhdOVdiV7k=;
+ b=IlqMAgGOu3MpP/DH1oQIvy0oU4NtUvj+zygMkorT7oVx40xj1/d+7sbeGxmvaBgZW3
+ eV7LuFz5/VAuxhg2TTrHNrLfVl2NQGACCYlfGf9FShhTIQtYKebJtNbEqBJpgI8gMxgV
+ lQG0RB+2AvfpXTOSIB2ySugKQDbCJbvdKfFpULyetY62TocRBmGasX+q8tD+tp/RLTOi
+ 8QjRbYMTlAV7ACHBAOk8AthsT2l8wtuAgFA8o6Vp7auY6/2loypb1Zp3J4/Z1b07RKlB
+ 8CPzegR6/GUFD1hIstmAdMj0zq933PnyaF+edRrcCVOvRSg63eLg4zY934rQo8n9gaF5
+ p0QA==
+X-Forwarded-Encrypted: i=1;
+ AHgh+Rr77Z64K2gznZxob7rg17CwXR0KiDwBeWV5LFy5A/5o++wQN/11rnjiUit/4MFFUjRipv08ZMeDteou/NH0@lists.sourceforge.net
+X-Gm-Message-State: AOJu0YySHAUZ2460wHZ1YHO9FNKrVECCp6f1bQ1zLZ6wRjPMNRtDesBa
+ SKcHMYGQCaQ+PQXOEKUxt2NZAE1dQpdBbT90brgIsD2klSH5s/uNGsYdFK4c0wY/p4RH96/xn46
+ Lx3KwvJrAs/SL0C1LcsYnn5vvjo2So3BhT3/PAdNnjPGM0WCJkqtKW0GV9I0yoM562i2e
+X-Gm-Gg: AR+sD13qtyd/DPyqSeVz8Y6B8KIi/ywaNV25KsnWZb4+p0c08IPxUE0vDkOQ8wphUcd
+ GxUlAWYkyvI8fQ4ar33Z5dNH1I7xgK3p7eHiUsEnHV6aCd2Bbf5b3C+2Njcyg42iBVpN0lgqX/M
+ HL0Y+2b8En4pVMQA9Pn6aGZdBZOU3tQvuZLhAlX50Hvq1CNeV7BPTUn6ZRtd6uhOKEIldBeqLvj
+ uJTDltSciL9pnHxCaVaQe6CeCDQRqnV0HnzcHNAXz8J0Ye907f81x3u4DWbsRnaxdTalWwVRP+k
+ eTuB9rYt30is1PWViHwRJBoNVtFyYTpgR6GSHoB0x7TXXslouTiCwFYzrttHqCPaFve9nQAZydp
+ kAJTQ65/n1RdJWRZ+we6fis9MRcHEPYWaZiQozRoaPSa4VIFePWppJH0n2zq7LS7CCH8E1DSMLz
+ Gb8CMZo97gjrnE1daJPp7ZiNCUCUTGzlJKZ/ZDRk9SB04Xi2WEM/VjRdKLs7jmDSS+ohCbj30eo
+ TIPSMj8OZ8udOs3c9KK7UOxhW/rpGpvkW6YIlOuaJRcqH6cbZKQVKqa+v9wrdytb8I7
+X-Received: by 2002:a05:6000:22c2:b0:47f:71a6:970e with SMTP id
+ ffacd0b85a97d-47f71a69d15mr12890897f8f.2.1784625629589; 
+ Tue, 21 Jul 2026 02:20:29 -0700 (PDT)
+Received: from ip-10-18-1-162.eu-central-1.compute.internal
+ (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
+ by smtp.gmail.com with ESMTPSA id
+ ffacd0b85a97d-47f63e49469sm38997630f8f.7.2026.07.21.02.20.28
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 21 Jul 2026 02:20:29 -0700 (PDT)
+X-Google-Original-From: "cron2 (Code Review)"
+ <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
+Date: Tue, 21 Jul 2026 09:20:25 +0000
+Auto-Submitted: auto-generated
+X-Gerrit-MessageType: comment
+X-Gerrit-PatchSet: 2
+X-Gerrit-Change-Id: I434a5373f77b0f7570a6a2aafe0eaf970e2eabe7
+X-Gerrit-Change-Number: 1797
+X-Gerrit-Project: openvpn
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1797?usp=email>
+X-Gerrit-Commit: 3f3d4b30df229e59ffa72bd725fcc167d64284de
+X-Gerrit-Comment-Date: Tue, 21 Jul 2026 09:20:25 +0000
 In-Reply-To: <gerrit.1784586066000.I434a5373f77b0f7570a6a2aafe0eaf970e2eabe7@gerrit.openvpn.net>
 References: <gerrit.1784586066000.I434a5373f77b0f7570a6a2aafe0eaf970e2eabe7@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzg0NTg2MDY2MDAwLkk0MzRhNTM3M2Y3N2IwZjc1NzBhNmEyYWFmZTBlYWY5NzBlMmVhYmU3QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <ff7cd8b2bb7e61b28f9a5ead7559faf3ed2a8c52-EmailReviewComments-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
-X-Headers-End: 1wm5vj-0005yr-NX
-Subject: [Openvpn-devel] [PATCH v2] Enable TCP_NODELAY by default and
- deprecate --tcp-nodelay
+User-Agent: Gerrit/3.11.5
+X-Headers-End: 1wm6eS-0001Hs-Bj
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Enable TCP_NODELAY
+ by default and deprecate --tcp-nodelay
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -78,328 +136,179 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+From: "cron2 \(Code Review\) via Openvpn-devel"
+ <openvpn-devel@lists.sourceforge.net>
+Reply-To: gert@greenie.muc.de, arne-openvpn@rfc2549.org,
+ openvpn-devel@lists.sourceforge.net, antonio@mandelbit.com
+Cc: "cron2 \(Code Review\)" <gerrit@openvpn.net>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>,
+ plaisthos <arne-openvpn@rfc2549.org>
+Content-Type: multipart/mixed; boundary="===============0891088453971049826=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Antonio Quartulli <antonio@mandelbit.com>
+--===============0891088453971049826==
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="8+CP9zcNSFg="; charset=UTF-8
 
-TCP_NODELAY disables Nagle's algorithm, which is
-beneficial for tunnelled traffic and has long been
-recommended for OpenVPN over TCP. Until now it had
-to be requested explicitly via --tcp-nodelay or
-"socket-flags TCP_NODELAY".
+--8+CP9zcNSFg=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Enable it unconditionally on every TCP socket (dco-win
-is skipped as it manages its own socket) and drop the
-socket_set_flags()/link_socket_update_flags() plumbing
-that only ever applied it; the SF_TCP_NODELAY sockflag
-is now unused but kept reserved.
+Attention is currently required from: ordex=2E
 
---tcp-nodelay and "socket-flags TCP_NODELAY" become
-no-ops, kept for backwards compatibility; the
---tcp-nodelay helper, its SF_TCP_NODELAY_HELPER flag
-and the client-side warning are dropped as well.
+cron2 has posted comments o=
+n this change by ordex=2E ( http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1797?=
+usp=3Demail )
 
-Measured over a p2p TCP tunnel: bulk throughput is
-unchanged (~1.7 Gbit/s, within 0.4%), while
-small-packet interactive latency improves sharply
-where Nagle bites: a request/response turn that
-spans several packets drops from ~82 ms to ~0.03 ms
-round-trip. A turn of a single packet stays fast
-with or without TCP_NODELAY, as Nagle cannot delay
-a lone packet.
+Change subject: Enable TCP_NODELAY by default and deprecate =
+--tcp-nodelay
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 
-Change-Id: I434a5373f77b0f7570a6a2aafe0eaf970e2eabe7
-Signed-off-by: Antonio Quartulli <antonio@mandelbit.com>
-Acked-by: Arne Schwabe <arne-openvpn@rfc2549.org>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1797
----
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1797
-This mail reflects revision 2 of this Change.
+Patch Set 2: Code-Review-2
 
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@rfc2549.org>
+(1 comment)
 
-        
-diff --git a/doc/man-sections/link-options.rst b/doc/man-sections/link-options.rst
-index df8c917..ce7200f 100644
---- a/doc/man-sections/link-options.rst
-+++ b/doc/man-sections/link-options.rst
-@@ -465,24 +465,19 @@
-   trying to group several smaller packets into a larger packet.  This can
-   result in a considerably improvement in latency.
- 
--  This option is pushable from server to client, and should be used on
--  both client and server for maximum effect.
-+  Since OpenVPN 2.7 :code:`TCP_NODELAY` is enabled by default on every TCP
-+  socket, so specifying it here is no longer necessary.
- 
- --tcp-nodelay
--  This macro sets the :code:`TCP_NODELAY` socket flag on the server as well
--  as pushes it to connecting clients. The :code:`TCP_NODELAY` flag disables
--  the Nagle algorithm on TCP sockets causing packets to be transmitted
--  immediately with low latency, rather than waiting a short period of time
--  in order to aggregate several packets into a larger containing packet.
--  In VPN applications over TCP, :code:`TCP_NODELAY` is generally a good
--  latency optimization.
-+  (DEPRECATED) The :code:`TCP_NODELAY` socket flag is now enabled by default
-+  on every TCP socket, so this option no longer has any effect and is
-+  ignored.
- 
--  The macro expands as follows:
--  ::
--
--     if mode server:
--         socket-flags TCP_NODELAY
--         push "socket-flags TCP_NODELAY"
-+  :code:`TCP_NODELAY` disables the Nagle algorithm on TCP sockets, causing
-+  packets to be transmitted immediately with low latency, rather than
-+  waiting a short period of time in order to aggregate several packets into
-+  a larger containing packet. In VPN applications over TCP this is generally
-+  a good latency optimization.
- 
- --max-packet-size size
-   This option will instruct OpenVPN to try to limit the maximum on-write packet
-diff --git a/src/openvpn/helper.c b/src/openvpn/helper.c
-index 4c540a6..be2e246 100644
---- a/src/openvpn/helper.c
-+++ b/src/openvpn/helper.c
-@@ -99,14 +99,6 @@
-     return BSTR(&out);
- }
- 
--static const char *
--print_str(const char *str, struct gc_arena *gc)
--{
--    struct buffer out = alloc_buf_gc(128, gc);
--    buf_printf(&out, "%s", str);
--    return BSTR(&out);
--}
--
- static void
- helper_add_route(const in_addr_t network, const in_addr_t netmask, struct options *o)
- {
-@@ -587,32 +579,3 @@
-         }
-     }
- }
--
--/*
-- *
-- * HELPER DIRECTIVE:
-- *
-- * tcp-nodelay
-- *
-- * EXPANDS TO:
-- *
-- * if mode server:
-- *   socket-flags TCP_NODELAY
-- *   push "socket-flags TCP_NODELAY"
-- */
--void
--helper_tcp_nodelay(struct options *o)
--{
--    if (o->server_flags & SF_TCP_NODELAY_HELPER)
--    {
--        if (o->mode == MODE_SERVER)
--        {
--            o->sockflags |= SF_TCP_NODELAY;
--            push_option(o, print_str("socket-flags TCP_NODELAY", &o->gc), M_USAGE);
--        }
--        else
--        {
--            o->sockflags |= SF_TCP_NODELAY;
--        }
--    }
--}
-diff --git a/src/openvpn/helper.h b/src/openvpn/helper.h
-index d29257c..d4e7015 100644
---- a/src/openvpn/helper.h
-+++ b/src/openvpn/helper.h
-@@ -35,6 +35,4 @@
- 
- void helper_client_server(struct options *o);
- 
--void helper_tcp_nodelay(struct options *o);
--
- #endif
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index caaa769..914d191 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2650,15 +2650,6 @@
-         }
-     }
- 
--    if (found & OPT_P_SOCKFLAGS)
--    {
--        msg(D_PUSH, "OPTIONS IMPORT: --socket-flags option modified");
--        for (int i = 0; i < c->c1.link_sockets_num; i++)
--        {
--            link_socket_update_flags(c->c2.link_sockets[i], c->options.sockflags);
--        }
--    }
--
-     if (found & OPT_P_PERSIST)
-     {
-         msg(D_PUSH, "OPTIONS IMPORT: --persist options modified");
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 87218d4..f3af379 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -486,8 +486,7 @@
-     "                  virtual address table to v.\n"
-     "--bcast-buffers n : Allocate n broadcast buffers.\n"
-     "--tcp-queue-limit n : Maximum number of queued TCP output packets.\n"
--    "--tcp-nodelay   : Macro that sets TCP_NODELAY socket flag on the server\n"
--    "                  as well as pushes it to connecting clients.\n"
-+    "--tcp-nodelay   : (DEPRECATED) TCP_NODELAY is now enabled by default.\n"
-     "--learn-address cmd : Run command cmd to validate client virtual addresses.\n"
-     "--connect-freq n s : Allow a maximum of n new connections per s seconds.\n"
-     "--connect-freq-initial n s : Allow a maximum of n replies for initial connections attempts per s seconds.\n"
-@@ -2644,12 +2643,6 @@
-                       "verify-client-cert");
-         MUST_BE_FALSE(options->ssl_flags & SSLF_USERNAME_AS_COMMON_NAME, "username-as-common-name");
-         MUST_BE_FALSE(options->ssl_flags & SSLF_AUTH_USER_PASS_OPTIONAL, "auth-user-pass-optional");
--        if (options->server_flags & SF_TCP_NODELAY_HELPER)
--        {
--            msg(M_WARN, "WARNING: setting tcp-nodelay on the client side will not "
--                        "affect the server. To have TCP_NODELAY in both direction use "
--                        "tcp-nodelay in the server configuration instead.");
--        }
-         MUST_BE_UNDEF(auth_user_pass_verify_script, "auth-user-pass-verify");
-         MUST_BE_UNDEF(auth_token_generate, "auth-gen-token");
- #if PORT_SHARE
-@@ -3769,7 +3762,6 @@
-     /* must be called after helpers that might set --mode */
-     helper_setdefault_topology(o);
-     helper_keepalive(o);
--    helper_tcp_nodelay(o);
- 
-     if (o->mode == MODE_SERVER)
-     {
-@@ -6535,11 +6527,9 @@
-         VERIFY_PERMISSION(OPT_P_SOCKFLAGS);
-         for (j = 1; j < MAX_PARMS && p[j]; ++j)
-         {
--            if (streq(p[j], "TCP_NODELAY"))
--            {
--                options->sockflags |= SF_TCP_NODELAY;
--            }
--            else
-+            /* TCP_NODELAY is enabled by default; the flag is still accepted
-+             * for backwards compatibility but no longer has any effect */
-+            if (!streq(p[j], "TCP_NODELAY"))
-             {
-                 msg(msglevel, "unknown socket flag: %s", p[j]);
-             }
-@@ -7715,7 +7705,7 @@
-     else if (streq(p[0], "tcp-nodelay") && !p[1])
-     {
-         VERIFY_PERMISSION(OPT_P_GENERAL);
--        options->server_flags |= SF_TCP_NODELAY_HELPER;
-+        msg(M_WARN, "DEPRECATED OPTION: --tcp-nodelay is ignored, it is now enabled by default.");
-     }
-     else if (streq(p[0], "stale-routes-check") && p[1] && !p[3])
-     {
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index a111cf8..7aa7928 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -470,8 +470,7 @@
-     unsigned int server_netbits_ipv6;    /* IPv6 */
- 
- #define SF_NOPOOL                (1 << 0)
--#define SF_TCP_NODELAY_HELPER    (1 << 1)
--#define SF_NO_PUSH_ROUTE_GATEWAY (1 << 2)
-+#define SF_NO_PUSH_ROUTE_GATEWAY (1 << 1)
-     unsigned int server_flags;
- 
-     bool server_bridge_proxy_dhcp;
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index df2cc9e..b73a5df 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -516,34 +516,6 @@
- #endif
- }
- 
--static bool
--socket_set_flags(socket_descriptor_t sd, unsigned int sockflags)
--{
--    /* SF_TCP_NODELAY doesn't make sense for dco-win */
--    if ((sockflags & SF_TCP_NODELAY) && (!(sockflags & SF_DCO_WIN)))
--    {
--        return socket_set_tcp_nodelay(sd, 1);
--    }
--    else
--    {
--        return true;
--    }
--}
--
--bool
--link_socket_update_flags(struct link_socket *sock, unsigned int sockflags)
--{
--    if (sock && socket_defined(sock->sd))
--    {
--        sock->sockflags |= sockflags;
--        return socket_set_flags(sock->sd, sock->sockflags);
--    }
--    else
--    {
--        return false;
--    }
--}
--
- void
- link_socket_update_buffer_sizes(struct link_socket *sock, int rcvbuf, int sndbuf)
- {
-@@ -1485,8 +1457,12 @@
- static void
- phase2_set_socket_flags(struct link_socket *sock)
- {
--    /* set misc socket parameters */
--    socket_set_flags(sock->sd, sock->sockflags);
-+    /* TCP_NODELAY is enabled by default on every TCP socket; dco-win is
-+     * skipped as it manages its own socket */
-+    if (proto_is_tcp(sock->info.proto) && !(sock->sockflags & SF_DCO_WIN))
-+    {
-+        socket_set_tcp_nodelay(sock->sd, 1);
-+    }
- 
-     /* set socket to non-blocking mode */
-     set_nonblock(sock->sd);
-diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
-index cd4e8ed..5883592 100644
---- a/src/openvpn/socket.h
-+++ b/src/openvpn/socket.h
-@@ -207,7 +207,7 @@
-     int mtu; /* OS discovered MTU, or 0 if unknown */
- 
- #define SF_USE_IP_PKTINFO    (1 << 0)
--#define SF_TCP_NODELAY       (1 << 1)
-+#define SF_TCP_NODELAY       (1 << 1) /* unused: flag always enabled */
- #define SF_PORT_SHARE        (1 << 2)
- #define SF_HOST_RANDOMIZE    (1 << 3)
- #define SF_GETADDRINFO_DGRAM (1 << 4)
-@@ -390,8 +390,6 @@
- 
- void setenv_trusted(struct env_set *es, const struct link_socket_info *info);
- 
--bool link_socket_update_flags(struct link_socket *sock, unsigned int sockflags);
--
- void link_socket_update_buffer_sizes(struct link_socket *sock, int rcvbuf, int sndbuf);
- 
- /*
+Patchset:
 
+PS2: 
+The documentat=
+ion reads as if this is intended for 2=2E7, but the way it is coded (removi=
+ng the `push` bits) will turn TCP_NODELAY *off* on clients where this is to=
+day pushed from the server (server config with `tcp-nodelay` -> `helper_tcp=
+_nodelay()` -> `push socket-flags TCP_NODELAY`)=2E
+
+So for a 2=2E7 patch, "=
+turn it on" is likely acceptable, but "turn off the pushing functionality" =
+it is not=2E  For a master patch, it's still arguable if that is a good ide=
+a=2E
+
+That said, the documentation also spends quite a few (new!) words on =
+explaining what `TCP_NODELAY` does - which is a bit weird to add this if it=
+'s no longer configurable=2E  So this needs more work overall=2E
+
+
+
+-- 
+To =
+view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1797?usp=3Demail
+To u=
+nsubscribe, or for help writing mail filters, visit http://gerrit=2Eopenvpn=
+=2Enet/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: op=
+envpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I434a5373f77b0f7570a6a2aafe0e=
+af970e2eabe7
+Gerrit-Change-Number: 1797
+Gerrit-PatchSet: 2
+Gerrit-Owner: or=
+dex <antonio@mandelbit=2Ecom>
+Gerrit-Reviewer: cron2 <gert@greenie=2Emuc=2E=
+de>
+Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-CC: open=
+vpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Attention: ordex=
+ <antonio@mandelbit=2Ecom>
+Gerrit-Comment-Date: Tue, 21 Jul 2026 09:20:25 +=
+0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+
+--8+CP9zcNSFg=
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: ordex=2E </p>
+<p>Patch set 2:<span style=3D"border-ra=
+dius: 3px; display: inline-block; margin: 0 2px; padding: 4px;background-co=
+lor: #ffd4d4;">Code-Review -2</span></p><p><a href=3D"http://gerrit=2Eopenv=
+pn=2Enet/c/openvpn/+/1797?usp=3Demail">View Change</a></p><p>1 comment:</p>=
+<ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding=
+: 0;"><p>Patchset:</p><ul style=3D"list-style: none; padding: 0;"><li style=
+=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a hr=
+ef=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1797?tab=3Dcomments&amp;usp=
+=3Demail">Patch Set #2:</a> </p><p class=3D"blocks" style=3D"white-space: p=
+re-wrap; word-wrap: break-word;">The documentation reads as if this is inte=
+nded for 2=2E7, but the way it is coded (removing the `push` bits) will tur=
+n TCP_NODELAY *off* on clients where this is today pushed from the server (=
+server config with `tcp-nodelay` -&gt; `helper_tcp_nodelay()` -&gt; `push s=
+ocket-flags TCP_NODELAY`)=2E</p><p class=3D"blocks" style=3D"white-space: p=
+re-wrap; word-wrap: break-word;">So for a 2=2E7 patch, &quot;turn it on&quo=
+t; is likely acceptable, but &quot;turn off the pushing functionality&quot;=
+ it is not=2E  For a master patch, it&#39;s still arguable if that is a goo=
+d idea=2E</p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap:=
+ break-word;">That said, the documentation also spends quite a few (new!) w=
+ords on explaining what `TCP_NODELAY` does - which is a bit weird to add th=
+is if it&#39;s no longer configurable=2E  So this needs more work overall=
+=2E</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit=2Eope=
+nvpn=2Enet/c/openvpn/+/1797?usp=3Demail">change 1797</a>=2E To unsubscribe,=
+ or for help writing mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=
+=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"=
+http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemty=
+pe=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http:/=
+/gerrit=2Eopenvpn=2Enet/c/openvpn/+/1797?usp=3Demail"/><meta itemprop=3D"na=
+me" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Ger=
+rit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-Project=
+: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+=
+<div style=3D"display:none"> Gerrit-Change-Id: I434a5373f77b0f7570a6a2aafe0=
+eaf970e2eabe7 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 179=
+7 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=
+=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@mandelbit=2Ecom&gt; </di=
+v>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@greenie=2Em=
+uc=2Ede&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos =
+&lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerr=
+it-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>=
+
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@mandelbit=
+=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 21=
+ Jul 2026 09:20:25 +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComm=
+ents: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>=
+
+
+</body></html>
+--8+CP9zcNSFg=--
+
+
+--===============0891088453971049826==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============0891088453971049826==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+--===============0891088453971049826==--
+
