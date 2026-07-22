@@ -4,125 +4,128 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3E752C44536
-	for <openvpn-devel@archiver.kernel.org>; Wed, 22 Jul 2026 12:19:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C6E53C44536
+	for <openvpn-devel@archiver.kernel.org>; Wed, 22 Jul 2026 12:20:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:Date:Sender:To:
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
-	List-Owner; bh=VYgNf04RJDTjdInC3pqZRBvPkRnLwjbHhrDjs1OZzEU=; b=EusfSieS5Y2RW6
-	nG8kuKXBrDptibc2CIqm9wlJTtZs8pQeAmgRtIhUgt0RRrlpc91D5wdtp8lTv16tRVqbvJ2xBGXDu
-	S65fBTc9cr1QZ/fjDbE33XWRrIGQgbZEFYR03xH5z1v9XswLgHPos/76I1eZXOcDvF7+pOOys4ekQ
-	6R0=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=90ZC1wiPa4IvwPMLX9K8nuMNpxqtea+9Q23lEASdMCQ=; b=YgwL2s5ezODrzFYA8Evv4OvX9H
+	T526l3t1o0SkoOKk0S+v5d7cFfYfQqDTzrCgjkY2NWTuesROQ0M+pLf11lOcgR/3bw+nIJA7sYtjK
+	L09krFFHJmZgD2pwuec2WEIyqkjWZrwVvqHYiZLtANdNF7r1Df5snrVpc7OIJ37mIu8c=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wmVv1-0006fD-Vm;
-	Wed, 22 Jul 2026 12:19:23 +0000
+	id 1wmVwG-0006U1-5a;
+	Wed, 22 Jul 2026 12:20:37 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wmVv0-0006f7-IJ
+ (envelope-from <gerrit@openvpn.net>) id 1wmVwF-0006Tu-6W
  for openvpn-devel@lists.sourceforge.net;
- Wed, 22 Jul 2026 12:19:22 +0000
+ Wed, 22 Jul 2026 12:20:36 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:Date:From
- :Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From:
- Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=qoGeewKw5OzFTiDf2Y2fGvP1y09LhlDE2JqxYQjU9mI=; b=IVSgX4hLvnjAlhyfrnBf4pGrXy
- cB5awdxf76N/ejA5az1IiffACgz0I989UBO7a9+lwTgscHcff9f7hh5b/2xzwLc5SkmUcND/JIcon
- fy6/UOLgkhpZsyJfEtXzLj4QgbysvvqRuwNKdR9xs+h05fBFEj994qBD7swYikFb+1xQ=;
+ :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
+ Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
+ :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
+ :List-Post:List-Owner:List-Archive;
+ bh=8gcPeMYiqm+//8Ield8Ym8ZtNH3+kJL4Mgp8Z1ExWY8=; b=KUAfC4WmFuKV//FUlOQxxGS8Ml
+ 26whA9S9NsHmQLDhN0dK1i8XrOByou+S54hcMM4WSTrRsP797pjEpGdd+7F8nzNT3MXQxQlH8br/o
+ vwGi9PmSupDI8a4x1fptGzvvuk6ak3Rb6YPkyC4mmyGooavUCAPwzInBIoEnqQE5hkaU=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:List-Unsubscribe:List-Id:Cc:Date:From:Sender:To:Content-ID
- :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
- Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=qoGeewKw5OzFTiDf2Y2fGvP1y09LhlDE2JqxYQjU9mI=; b=j
- MgD4ioCf82oGQjfuaIPjic784um13NKatB0roSCdZpvbcDOy/Sz0Fipp3A8sOKJQHmUFkX+S+jfiC
- KEveHiIWnIzYv3Z+txgxCmG6SbSdT2OK5Rb9g3ChgcA0MNvLv5IeXxM1X5D5vVi/xANceSmDnHMID
- leOA/S5DkLIlb0+U=;
-Received: from mail-wm1-f46.google.com ([209.85.128.46])
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
+ Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=8gcPeMYiqm+//8Ield8Ym8ZtNH3+kJL4Mgp8Z1ExWY8=; b=d
+ zEPY9h59pkKFlEnBzacHyQs89kEMG8t0cq5V4tuSWLVowv2fJEe3P2NhfPpBQs9YHB0TQHenZs9C9
+ Hc/xJ6LtyJYM0EOXucfTMlNE7eAyHW/vmX56oHNbz30WCkSabqZrrfgNzfXQjqkjI1JNXmhqP/JAm
+ J6nz/erVTv8Ep448=;
+Received: from mail-wr1-f45.google.com ([209.85.221.45])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wmVuy-00044i-K3 for openvpn-devel@lists.sourceforge.net;
- Wed, 22 Jul 2026 12:19:22 +0000
-Received: by mail-wm1-f46.google.com with SMTP id
- 5b1f17b1804b1-493f6de72faso41749795e9.0
+ id 1wmVwA-00049e-OO for openvpn-devel@lists.sourceforge.net;
+ Wed, 22 Jul 2026 12:20:36 +0000
+Received: by mail-wr1-f45.google.com with SMTP id
+ ffacd0b85a97d-47f7854678bso1041781f8f.3
  for <openvpn-devel@lists.sourceforge.net>;
- Wed, 22 Jul 2026 05:19:20 -0700 (PDT)
+ Wed, 22 Jul 2026 05:20:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1784722749; x=1785327549; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1784722823; x=1785327623; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
- :date:from:from:to:cc:subject:date:message-id:reply-to:content-type;
- bh=qoGeewKw5OzFTiDf2Y2fGvP1y09LhlDE2JqxYQjU9mI=;
- b=bl0BUJFZF1Ym3/ZOIf8eIyLBF/ZWZ29g1W85DOY5Zg6aEG51vYWQM+aVp3ONES2YYa
- TftTEjGUweboBV9Sb+oNZOoLs8vIcbX8dtLhkKkLnxZY/f4or3k+DiaJPrMscWMl/8K9
- 2Pf4aPZ/rVBau2iDqjYQ1GpdCg5TvTNdAl9lFO4gGYVAHOli9EHCoeySxO8/gSlPa6VB
- 2SR8X46foc+K/HwE6QwbWYuqYpfJvFQCjUMK4BsnNvBUXC5SI0uiPuc8mMk8mhFBYKzh
- rUCroe+ZSAcoMnH4AqJ7EDcfGytFPi3luXtk6YgUeeMW4cDFN6yF1/EISrUOmajYAgV1
- wK3A==
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
+ :reply-to:content-type;
+ bh=8gcPeMYiqm+//8Ield8Ym8ZtNH3+kJL4Mgp8Z1ExWY8=;
+ b=G+z8dUeaFNAlp02mpUmuYWQKz3ErK79hIS7m2fYWMl1HK5tXCnVMT/j2lHy4hc/pnr
+ NgWPvrqEJYGCYB9N8Io2ZH+cM73dd/WblPXMjjU4uVJ5J5giPTOnNqmV+/Q1aEXYfp7W
+ /StxMBR5TQDDlVMCYCJ5+hAvfCfheuzfbXjMUduPugZYYC2o8nT5yvoqguzM65SaxGvb
+ Vz2jfhzoHK8TyyX+4vJX3Per94zhQX2Pr12wd3UJSQucOu0hX5oyT5vs+ms8iZlU9t0p
+ vM0nkey54wmyUa+1je37r/YZQtGYw3UXQNeGQUKFBY3MwhI+6gATVKMmVbKZjzaUGNYE
+ 5lSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1784722749; x=1785327549;
+ d=1e100.net; s=20251104; t=1784722823; x=1785327623;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
- :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
- :message-id:reply-to:content-type;
- bh=qoGeewKw5OzFTiDf2Y2fGvP1y09LhlDE2JqxYQjU9mI=;
- b=eRzzHF+mLf2YNXIX04319f0MHDTWds0c8tW9eC0trkexMbPZkM10gXbXrBsgLGnc1Z
- FhYD4J09wujJyyq5n407PYe1t1DWKnFzmXch5qgDbCPCeogWqN1dW9qOt0/3pLiNTuUJ
- Flrn4qe5oY1MDiDn75K6zflgoF+LzKitSNUXGNorsyPV7JU2TEkPQCyOIC2LtlOkltPs
- fF1fojAI4pCj3cRvEkWNrhqgBsA9p/CRkPmtp0APovzT6EPOH9h0taFOoVyiEvHA54bv
- TxzqngdQd+hYsL9+TBVqDTOuwsCUka8LjIfk1wMfP8/ydcV+xNbT7J1lOVFEWTlYDqI/
- wGow==
-X-Gm-Message-State: AOJu0YzBFqZy3pVGoyU9lMCJx8b2UnB/mvKuCBtoeqHCTqF/XfTseqzV
- z+6roj869dJp2gO5yBqlc5oiQDIiTxT6sqKHURn9emArAHK5gmDeSuMAvHMoX/EaAjV8bZOQSWS
- c55gFwt+KjTeFJES7HJSCU0k2JChP9z+edrsZhYMNFev+Y3UHWLVvQB9p6uHVfJ/+iUhYBy+PdP
- SLowi+fQ==
-X-Gm-Gg: AR+sD10AlvXPjgI1rxDBILbH42yk7P2bL6lFBbU11+IoXD8FsPY6Xx3C+oWOLT1EMc6
- LS6JRy+Mlf8wEnH+nlJxWnD1NCjG49eV6Ys99Pbfd9qvjVDBnGfS+AB+8EkMmNvshkUUBUQuCke
- q6drRAM80xFnyVfFQZSQDYx1+2Qu54GzIMdAPspPN8E7bfclivRygPu9lkjuiJSvMyG+UNuukpd
- Mt5D0VkqxqzghN6T72jejg17MvqUqDJTwbaBL8E1/OOq3CN9g6PYPD9gt0TTE/Tvoh9LieOnxHF
- rDCfKt4P4W+5uCbtzBNTnxLdzUKRWE1QwYAWsuDO2yCvVnnAeaYx3ID/GQAvZImjwUI0vk3Sr9V
- yehouQXyETcI3rnM38Qj4ZHGwJJojzDK+Vt8ys6o/jclzAjlJrgr2QEZfNTNBpVCUknaCfpsEUT
- V5gSsEy97BdMLtquRh6HcRkxhZJmUVcpDzTmfW0g7HwlPfSPw/B8cFFmV1tAfsZ7oAKMEdpfKCJ
- taqzg7gx4gK82xA/BMeiHjtH6E7+NaPg6OzXSHhtPBOoqCalooKHodm1fEO3SpwyusF
-X-Received: by 2002:a05:600c:6cf:b0:495:41ea:f6e with SMTP id
- 5b1f17b1804b1-4956a4f5ed1mr27716215e9.8.1784722748678; 
- Wed, 22 Jul 2026 05:19:08 -0700 (PDT)
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
+ :cc:subject:date:message-id:reply-to:content-type;
+ bh=8gcPeMYiqm+//8Ield8Ym8ZtNH3+kJL4Mgp8Z1ExWY8=;
+ b=CdhjpDAUo3FzNoB4AmL9uEHc4E4PH6X+MPI910QsFWuDtMFaeisjyA2KVohEZHIh+J
+ Q7msnvawGXoeUJkZ64STYBnIK5BMSQ7MSGKkW3GBFv0qR7tMFKvpqIBotrzr7CukJqP0
+ IBbsd18eAzGu4x2q2mq7Fx67IVemyG3PwzrQX10G0YFr+pE7PuZxnk2gAmSy+gXIS9Sw
+ sOCYsLo1Xu9KcoslgU2VT7gZE8egoYHw87E3roprQzZGXSjCsxSnu+r0NpRD7kMFBhoH
+ gngQJrpbfmlmNJ+qW4OL17Tbn4NcxkNSIx0DFcBXyVjcoB9/UFMPtWzX0ZLI1gMfA+K0
+ EmWg==
+X-Forwarded-Encrypted: i=1;
+ AHgh+RpNJ4LJc4HLYgHTHyLxBuXlbwh3378nXRtSF/sf3lhd9OECkiqDOERInYvGLhF+6zhzK6hEzznMOojvuZeg@lists.sourceforge.net
+X-Gm-Message-State: AOJu0YxqiEHEpNjlTVNQWXfElyb/wUqolVS5bOwhQRjE2WQKLwlI/KWm
+ CJSXFH0aFJ2jdMLrbILM0mRgY+MjgKJC7obJ2i7j9skgjJCpc0buQO4dJoIDwqq0ZBhNs3HwRoS
+ 2gKZXltHK6CG0GJMDsVcbSZeEniFaGaOalnBw6E9D0PLxxzcSr/Cb6gjcY1tB9yz0ab7/
+X-Gm-Gg: AR+sD11+a3AQlXiilWYj3FWVseUoPQQ1FDlQoaq9tXfzE875hiJMANXiUAZtrL0koTL
+ MxCV73o/Mn5+6J4cSn455dZGHn7IzptugR2/WSEPXOSSj2iZ+jMqODw9LVafoVfUE3W4Tc0Gih/
+ LzeU/GWyPlYMNrmnRGSajGhRLz1TyL86IgG9itfNbhAWS5f2k+rZnwEx+BE9qawnEw+4zbIpiJR
+ 1vNJqEbBcI7J0YOf5BNkEZUMuqlJ6zN3hx8r/6MeQhTXvnJeY2b31tK6Nqx1tFWTv9kjTPyGLFj
+ GVCKxDQFQ4F6tKReX7CcfEi5PkTi+jyMiSQOopXulLw0H7Jl0zPC705iS3Bx9L4b96O8ENEoH34
+ qjWWRH/qJCEyySLr+20Z0XsGkM90A+pHyUJbbT9PDkVOZg/8OHkPUV0aQOLeUZSLNRbCuv9kmvr
+ BTmA44SjM2dguFaQyo4lKgPvkGkfSixkqSD3/P1CSVxAdmabktK7/ziWn+qaXhLMbcqd9dQ7FMV
+ qBLojZsmhlyA1UkB2L+zQu+4dz8coFyyKxk0ZI9h9okhOn3cfWcfx8xdpYwCAJ31KcV
+X-Received: by 2002:a05:6000:2011:b0:47f:763e:e03a with SMTP id
+ ffacd0b85a97d-47f763ee07cmr17001559f8f.34.1784722823002; 
+ Wed, 22 Jul 2026 05:20:23 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-47f85b9a60asm5762419f8f.3.2026.07.22.05.19.08
- for <openvpn-devel@lists.sourceforge.net>
+ ffacd0b85a97d-47f85c6d277sm5911239f8f.32.2026.07.22.05.20.22
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 22 Jul 2026 05:19:08 -0700 (PDT)
+ Wed, 22 Jul 2026 05:20:22 -0700 (PDT)
 X-Google-Original-From: "plaisthos (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Wed, 22 Jul 2026 12:19:07 +0000
+Date: Wed, 22 Jul 2026 12:20:20 +0000
+To: its_Giaan <gianmarco@mandelbit.com>
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: newchange
-X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: Iad94e7a9d0b3be8a8db09e9a20eaac6041470ab6
-X-Gerrit-Change-Number: 1800
+X-Gerrit-MessageType: comment
+X-Gerrit-PatchSet: 20
+X-Gerrit-Change-Id: I0a13ee90b6706acf20eabcee3bab3f2dff639bf9
+X-Gerrit-Change-Number: 1089
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1800?usp=email>
-X-Gerrit-Commit: 29046e3d59e3bd38020a0136eb6858f1fce4a2c9
-References: <gerrit.1784722744000.Iad94e7a9d0b3be8a8db09e9a20eaac6041470ab6@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzg0NzIyNzQ0MDAwLklhZDk0ZTdhOWQwYjNiZThhOGRiMDllOWEyMGVhYWM2MDQxNDcwYWI2QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <3ef75450b908586ffe8e5ecb1c41b7539164747e-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1089?usp=email>
+X-Gerrit-Commit: 54a201ed40362a8b76d2b2c5f323057b556c9080
+X-Gerrit-Comment-Date: Wed, 22 Jul 2026 12:20:20 +0000
+In-Reply-To: <gerrit.1752743854000.I0a13ee90b6706acf20eabcee3bab3f2dff639bf9@gerrit.openvpn.net>
+References: <gerrit.1752743854000.I0a13ee90b6706acf20eabcee3bab3f2dff639bf9@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzUyNzQzODU0MDAwLkkwYTEzZWU5MGI2NzA2YWNmMjBlYWJjZWUzYmFiM2YyZGZmNjM5YmY5QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <5bfb5e10b37bd13a979f9502b2eb13f23947ad72-EmailReviewComments-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wmVuy-00044i-K3
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Allow extracing
- other integers from peer info and add a unit test for it
+X-Headers-End: 1wmVwA-00049e-OO
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: multipeer: introduce
+ asymmetric peer-id
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -136,944 +139,186 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 From: "plaisthos \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
-Reply-To: arne-openvpn@rfc2549.org, openvpn-devel@lists.sourceforge.net
+Reply-To: arne-openvpn@rfc2549.org, gianmarco@mandelbit.com,
+ openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com,
+ antonio@mandelbit.com, gert@greenie.muc.de
 Cc: "plaisthos \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============8321652576785227609=="
+Content-Type: multipart/mixed; boundary="===============2656700486216001068=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============8321652576785227609==
+--===============2656700486216001068==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="G9dvotOrcnw="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="h6atIMwsTlQ="; charset=UTF-8
 
---G9dvotOrcnw=
+--h6atIMwsTlQ=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-plaisthos has uploaded this change for review=2E ( http://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1800?usp=3Demail )
+Attention is currently required from: cron2, flichtenheld, its_Giaan, ordex=
+=2E
 
+plaisthos has posted comments on this change by its_Giaan=2E ( http://=
+gerrit=2Eopenvpn=2Enet/c/openvpn/+/1089?usp=3Demail )
 
-Change subject: Allow extracing oth=
-er integers from peer info and add a unit test for it
-=2E=2E=2E=2E=2E=2E=2E=
+Change subject: mult=
+ipeer: introduce asymmetric peer-id
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
-
-Allow extracing other integers fro=
-m peer info and add a unit test for it
-
-This also ensure that we only reall=
-y extract the variable we are looking
-for=2E The old code would also consid=
-er UV_IV_NCP to be IV_NCP=2E
-
-Change-Id: Iad94e7a9d0b3be8a8db09e9a20eaac604=
-1470ab6
-Signed-off-by: Arne Schwabe <arne@rfc2549=2Eorg>
----
-M CMakeLists=
-=2Etxt
-M src/openvpn/push=2Ec
-M src/openvpn/ssl_ncp=2Ec
-M src/openvpn/ssl_u=
-til=2Ec
-M src/openvpn/ssl_util=2Eh
-M src/openvpn/ssl_verify=2Ec
-M tests/uni=
-t_tests/openvpn/test_push_update_msg=2Ec
-M tests/unit_tests/openvpn/test_ss=
-l=2Ec
-8 files changed, 124 insertions(+), 41 deletions(-)
+=2E=2E=2E=2E=2E=2E=2E
 
 
+Patch Set 20:
 
-  git pull ssh=
-://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/00/1800/1
+(1 comment)
 
-diff --git =
-a/CMakeLists=2Etxt b/CMakeLists=2Etxt
-index 7473f15=2E=2Eb886414 100644
----=
- a/CMakeLists=2Etxt
-+++ b/CMakeLists=2Etxt
-@@ -906,6 +906,7 @@
-         tes=
-ts/unit_tests/openvpn/mock_msg=2Ec
-         tests/unit_tests/openvpn/mock_g=
-et_random=2Ec
-         src/openvpn/options_util=2Ec
-+        src/openvpn/ss=
-l_util=2Ec
-         src/openvpn/otime=2Ec
-         src/openvpn/list=2Ec
-   =
-      )
-diff --git a/src/openvpn/push=2Ec b/src/openvpn/push=2Ec
-index 633c=
-007d=2E=2E88b499f 100644
---- a/src/openvpn/push=2Ec
-+++ b/src/openvpn/push=
-=2Ec
-@@ -718,7 +718,7 @@
- 
-     /* Push our mtu to the peer if it supports =
-pushable MTUs */
-     int client_max_mtu =3D 0;
--    const char *iv_mtu =3D=
- extract_var_peer_info(tls_multi->peer_info, "IV_MTU=3D", gc);
-+    const c=
-har *iv_mtu =3D extract_var_peer_info(tls_multi->peer_info, "IV_MTU", gc);
-=
- 
-     if (iv_mtu && sscanf(iv_mtu, "%d", &client_max_mtu) =3D=3D 1)
-     {=
+File src/openvpn/ssl_ut=
+il=2Ec:
 
-diff --git a/src/openvpn/ssl_ncp=2Ec b/src/openvpn/ssl_ncp=2Ec
-index b450d=
-e8=2E=2E8148396 100644
---- a/src/openvpn/ssl_ncp=2Ec
-+++ b/src/openvpn/ssl_=
-ncp=2Ec
-@@ -55,20 +55,10 @@
-  * Return the Negotiable Crypto Parameters ver=
-sion advertised in the peer info
-  * string, or 0 if none specified=2E
-  */=
+http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1089/comment/6b579e61_ac=
+56b5e3?usp=3Demail :
+PS19, Line 78:     const char *optstr =3D peer_info ? =
+strstr(peer_info, "ID=3D") : NULL;
+> It can, yes=2E peer_info also carries =
+the client's UV_* vars, so something like UV_ID=3D=2E=2E=2E (or GUID=3D=2E=
+=2E=2E [=E2=80=A6]
+I noticed this issue and already prepared a patch for th=
+at=2E That also fixes that for all the other peer info extraction: https://=
+gerrit=2Eopenvpn=2Enet/c/openvpn/+/1800
 
--static int
-+static unsigned int
- tls_peer_info_ncp_ver(const char *peer_i=
-nfo)
- {
--    const char *ncpstr =3D peer_info ? strstr(peer_info, "IV_NCP=
-=3D") : NULL;
--    if (ncpstr)
--    {
--        int ncp =3D 0;
--        int =
-r =3D sscanf(ncpstr, "IV_NCP=3D%d", &ncp);
--        if (r =3D=3D 1)
--      =
-  {
--            return ncp;
--        }
--    }
--    return 0;
-+    return p=
-eer_info_extract_uint(peer_info, "IV_NCP", 0);
- }
- 
- /**
-@@ -227,7 +217,7 @=
-@
- tls_peer_ncp_list(const char *peer_info, struct gc_arena *gc)
- {
-     /*=
- Check if the peer sends the IV_CIPHERS list */
--    const char *iv_ciphers=
- =3D extract_var_peer_info(peer_info, "IV_CIPHERS=3D", gc);
-+    const char=
- *iv_ciphers =3D extract_var_peer_info(peer_info, "IV_CIPHERS", gc);
-     i=
-f (iv_ciphers)
-     {
-         return iv_ciphers;
-@@ -358,7 +348,7 @@
- {
-  =
-   /* we use a local gc arena to keep the temporary strings needed by strse=
-p */
-     struct gc_arena gc_local =3D gc_new();
--    const char *peer_ciph=
-ers =3D extract_var_peer_info(peer_info, "IV_CIPHERS=3D", &gc_local);
-+    =
-const char *peer_ciphers =3D extract_var_peer_info(peer_info, "IV_CIPHERS",=
- &gc_local);
- 
-     if (!peer_ciphers)
-     {
-diff --git a/src/openvpn/ssl_=
-util=2Ec b/src/openvpn/ssl_util=2Ec
-index 2f01f8a=2E=2Ea4c2910 100644
---- a=
-/src/openvpn/ssl_util=2Ec
-+++ b/src/openvpn/ssl_util=2Ec
-@@ -27,6 +27,32 @@=
 
- #include "openvpn=2Eh"
- #include "ssl_util=2Eh"
- 
-+static const char *
-+p=
-eer_info_extract_varstr(const char *peer_info, const char *field)
-+{
-+    c=
-har buf[32];
-+    snprintf(buf, sizeof(buf), "%s=3D", field);
-+
-+    const =
-char *optstr =3D NULL;
-+
-+    /* peer info starts with this field */
-+    i=
-f (peer_info && strncmp(peer_info, buf, strlen(buf)) =3D=3D 0)
-+    {
-+    =
-    optstr =3D peer_info;
-+    }
-+    else
-+    {
-+        snprintf(buf, si=
-zeof(buf), "\n%s=3D", field);
-+        optstr =3D peer_info ? strstr(peer_i=
-nfo, buf) : NULL;
-+        if (optstr)
-+        {
-+            /* skip the =
-\n */
-+            optstr++;
-+        }
-+    }
-+    return optstr;
-+}
-+
- ch=
-ar *
- extract_var_peer_info(const char *peer_info, const char *var, struct =
-gc_arena *gc)
- {
-@@ -35,14 +61,15 @@
-         return NULL;
-     }
- 
--    co=
-nst char *var_start =3D strstr(peer_info, var);
-+    const char *var_start =
-=3D peer_info_extract_varstr(peer_info, var);
-     if (!var_start)
-     {
- =
-        /* variable not found in peer info */
-         return NULL;
-     }
-=
- 
--    var_start +=3D strlen(var);
-+    /* one extra byte forward for the =
-=3D */
-+    var_start +=3D strlen(var) + 1;
-     const char *var_end =3D st=
-rstr(var_start, "\n");
-     if (!var_end)
-     {
-@@ -56,36 +83,35 @@
-     r=
-eturn var_value;
- }
- 
-+
- unsigned int
--extract_iv_proto(const char *peer_in=
-fo)
-+peer_info_extract_uint(const char *peer_info, const char *field, unsig=
-ned int default_value)
- {
--    const char *optstr =3D peer_info ? strstr(pe=
-er_info, "IV_PROTO=3D") : NULL;
-+    const char *optstr =3D peer_info_extra=
-ct_varstr(peer_info, field);
-     if (optstr)
-     {
-+        char buf[32];=
-
-+        snprintf(buf, sizeof(buf), "%s=3D%%d", field);
-         int proto=
- =3D 0;
--        int r =3D sscanf(optstr, "IV_PROTO=3D%d", &proto);
-+      =
-  int r =3D sscanf(optstr, buf, &proto);
-         if (r =3D=3D 1 && proto >=
- 0)
-         {
-             return proto;
-         }
-     }
--    return 0;
-=
-+    return default_value;
- }
- 
- uint32_t
- extract_asymmetric_peer_id(const=
- char *peer_info)
- {
--    for (const char *p =3D peer_info; p && (p =3D str=
-str(p, "ID=3D")); p +=3D 3)
-+    const char *optstr =3D peer_info_extract_v=
-arstr(peer_info, "ID");
-+    if (optstr)
-     {
--        /* only accept "ID=
-=3D" at the start of a line, so it does not match
--         * substrings li=
-ke "UV_ID=3D" or "GUID=3D" */
--        if (p =3D=3D peer_info || p[-1] =3D=
-=3D '\n')
-+        uint32_t peer_id =3D 0;
-+        if (sscanf(optstr, "ID=
-=3D%x", &peer_id) =3D=3D 1 && peer_id < MAX_PEER_ID)
-         {
--          =
-  uint32_t peer_id =3D 0;
--            if (sscanf(p, "ID=3D%x", &peer_id) =
-=3D=3D 1 && peer_id < MAX_PEER_ID)
--            {
--                return p=
-eer_id;
--            }
-+            return peer_id;
-         }
-     }
-     =
-return MAX_PEER_ID;
-diff --git a/src/openvpn/ssl_util=2Eh b/src/openvpn/ssl=
-_util=2Eh
-index 1a69e6f=2E=2E49faefa 100644
---- a/src/openvpn/ssl_util=2Eh
-=
-+++ b/src/openvpn/ssl_util=2Eh
-@@ -33,11 +33,22 @@
- #include "buffer=2Eh"
- =
-
- /**
-+ * Extracts the named variable and returns its value or default_valu=
-e
-+ * if it cannot be extracted=2E
-+ *
-+ * @param peer_info     peer info s=
-tring to search in
-+ * @parm field          name of the field to be extract=
-ed
-+ * @parm default_value  value to return if not found or cannot be extra=
-cted
-+ */
-+unsigned int
-+peer_info_extract_uint(const char *peer_info, cons=
-t char *field, unsigned int default_value);
-+
-+/**
-  * Extracts a variable =
-from peer info, the returned string will be allocated
-  * using the supplie=
-d gc_arena
-  *
-  * @param peer_info     The peer's peer_info
-- * @param var=
-           The variable *including* =3D, e=2Eg=2E IV_CIPHERS=3D
-+ * @param =
-var           The variable *excluding* =3D, e=2Eg=2E IV_CIPHERS
-  * @param =
-gc            GC arena to allocate return value in
-  *
-  * @return  The con=
-tent of the variable as NULL terminated string or NULL if the
-@@ -51,8 +62,=
-11 @@
-  *
-  * @param peer_info     peer info string to search for IV_PROTO
-=
-  */
--unsigned int extract_iv_proto(const char *peer_info);
--
-+static inlin=
-e unsigned int
-+extract_iv_proto(const char *peer_info)
-+{
-+    return peer=
-_info_extract_uint(peer_info, "IV_PROTO", 0);
-+}
- 
- /**
-  * Extracts the ID=
- variable and returns its value or
-diff --git a/src/openvpn/ssl_verify=2Ec =
-b/src/openvpn/ssl_verify=2Ec
-index 162f68f=2E=2E3317380 100644
---- a/src/op=
-envpn/ssl_verify=2Ec
-+++ b/src/openvpn/ssl_verify=2Ec
-@@ -861,7 +861,7 @@
- =
-{
-     struct gc_arena gc =3D gc_new();
- 
--    char *iv_sso =3D extract_var=
-_peer_info(peer_info, "IV_SSO=3D", &gc);
-+    char *iv_sso =3D extract_var_=
-peer_info(peer_info, "IV_SSO", &gc);
-     if (!iv_sso)
-     {
-         gc_f=
-ree(&gc);
-diff --git a/tests/unit_tests/openvpn/test_push_update_msg=2Ec b/=
-tests/unit_tests/openvpn/test_push_update_msg=2Ec
-index 219b476=2E=2E8f4248=
-3 100644
---- a/tests/unit_tests/openvpn/test_push_update_msg=2Ec
-+++ b/test=
-s/unit_tests/openvpn/test_push_update_msg=2Ec
-@@ -188,12 +188,6 @@
- {
-     =
-return true;
- }
--
--unsigned int
--extract_iv_proto(const char *peer_info)
--{=
-
--    return IV_PROTO_PUSH_UPDATE;
--}
- #endif /* ifdef ENABLE_MANAGEMENT */=
-
- 
- /* tests */
-diff --git a/tests/unit_tests/openvpn/test_ssl=2Ec b/tests/=
-unit_tests/openvpn/test_ssl=2Ec
-index 0e9cecf=2E=2E9c2a99d 100644
---- a/tes=
-ts/unit_tests/openvpn/test_ssl=2Ec
-+++ b/tests/unit_tests/openvpn/test_ssl=
-=2Ec
-@@ -48,7 +48,9 @@
- #include "buffer=2Eh"
- #include "cert_data=2Eh"
- #i=
-nclude "packet_id=2Eh"
-+#include "ssl_util=2Eh"
- #include "ssl_verify=2Eh"
-=
-+#include "openvpn=2Eh"
- 
- /* Mock function to be allowed to include win32=
-=2Ec which is required for
-  * getting the temp directory */
-@@ -829,6 +831=
-,61 @@
-     free_certificate(cert);
- }
- 
-+void
-+ssl_test_extract_peer_info(=
-void **state)
-+{
-+    const char *peer_info_normal =3D
-+        "IV_VER=3D2=
-=2E6_git\nIV_PLAT=3Dmac\nIV_TCPNL=3D1\nIV_NCP=3D2\n"
-+        "IV_CIPHERS=
-=3DAES-256-GCM:AES-128-GCM:CHACHA20-POLY1305\n"
-+        "IV_PROTO=3D94\nIV=
-_LZO_STUB=3D1\nIV_COMP_STUB=3D1\nP=3D78\nIV_COMP_STUBv2=3D1\n"
-+        "IV=
-_SSL=3DOpenSSL_3=2E0=2E5_5_Jul_2022\nIV_LZ4v2=3D1";
-+
-+    const char *empt=
-y =3D "";
-+    const char *invalid_proto =3D "IV_PROTO=3Dseven\nIV_SSL=3D7\=
-nP=3D300\nID=3Dxyz";
-+    const char *test_prefix =3D "UV_IV_PROTO=3D773\nN=
-P=3D112\nPD=3D8\n";
-+
-+
-+    assert_int_equal(extract_iv_proto(peer_info_no=
-rmal), 94);
-+    assert_int_equal(extract_iv_proto(empty), 0);
-+    assert_=
-int_equal(extract_iv_proto(invalid_proto), 0);
-+    /* This should not pick=
- up the UV_IV_PROTO that has the extra prefix */
-+    assert_int_equal(extr=
-act_iv_proto(test_prefix), 0);
-+
-+    assert_int_equal(peer_info_extract_ui=
-nt(peer_info_normal, "IV_COMP_STUB", 0), 1);
-+    assert_int_equal(peer_inf=
-o_extract_uint(empty, "IV_COMP_STUB", 0xfe0d0d), 0xfe0d0d);
-+    assert_int=
-_equal(peer_info_extract_uint(invalid_proto, "IV_COMP_STUB", 5), 5);
-+
-+   =
- assert_int_equal(peer_info_extract_uint(test_prefix, "NP", 23), 112);
-+   =
- assert_int_equal(peer_info_extract_uint(test_prefix, "PD", 23), 8);
-+    a=
-ssert_int_equal(peer_info_extract_uint(test_prefix, "P", 0xfe0d0d), 0xfe0d0=
-d);
-+    assert_int_equal(peer_info_extract_uint(peer_info_normal, "P", 23)=
-, 78);
-+    assert_int_equal(peer_info_extract_uint(test_prefix, "UV_IV_PRO=
-TO", 23), 773);
-+
-+    struct gc_arena gc =3D gc_new();
-+
-+    const char *=
-peer_ciphers =3D extract_var_peer_info(peer_info_normal, "IV_CIPHERS", &gc)=
-;
-+    assert_string_equal(peer_ciphers, "AES-256-GCM:AES-128-GCM:CHACHA20-=
-POLY1305");
-+
-+    /* with the extra =3D this should not extract anything *=
-/
-+    const char *proto =3D extract_var_peer_info(peer_info_normal, "IV_PR=
-OTO=3D", &gc);
-+    assert_null(proto);
-+
-+    const char *double_eq_info =
-=3D "FOO=3D7\nFOO=3D=3Dnew";
-+    const char *foo_eq =3D extract_var_peer_i=
-nfo(double_eq_info, "FOO=3D", &gc);
-+    const char *foo =3D extract_var_pe=
-er_info(double_eq_info, "FOO", &gc);
-+    assert_string_equal(foo, "7");
-+ =
-   assert_string_equal(foo_eq, "new");
-+
-+    assert_int_equal(extract_asym=
-metric_peer_id(double_eq_info), MAX_PEER_ID);
-+    assert_int_equal(extract=
-_asymmetric_peer_id(peer_info_normal), MAX_PEER_ID);
-+    assert_int_equal(=
-extract_asymmetric_peer_id(invalid_proto), MAX_PEER_ID);
-+    assert_int_eq=
-ual(extract_asymmetric_peer_id("ID=3Df7"), 0xf7);
-+    assert_int_equal(ext=
-ract_asymmetric_peer_id("X=3Dfoo\nID=3D12ab"), 0x12ab);
-+    assert_int_equ=
-al(extract_asymmetric_peer_id("X=3Dfoo\nID=3D34dd\nY=3Dbar"), 0x34dd);
-+   =
- assert_int_equal(extract_asymmetric_peer_id("X=3Dfoo\nID=3D12345678"), MAX=
-_PEER_ID);
-+
-+    gc_free(&gc);
-+}
- 
- int
- main(void)
-@@ -853,7 +910,8 @@
- =
-        cmocka_unit_test(test_data_channel_roundtrip_bf_cbc),
-         cmoc=
-ka_unit_test(test_data_channel_known_vectors_epoch),
-         cmocka_unit_t=
-est(test_data_channel_known_vectors_shortpktid),
--        cmocka_unit_test(=
-crypto_test_print_cert_details)
-+        cmocka_unit_test(crypto_test_print=
-_cert_details),
-+        cmocka_unit_test(ssl_test_extract_peer_info)
- 
-   =
-  };
- 
 
 -- 
-To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1800?u=
-sp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://g=
-errit=2Eopenvpn=2Enet/settings?usp=3Demail
+To view, visit http://gerrit=
+=2Eopenvpn=2Enet/c/openvpn/+/1089?usp=3Demail
+To unsubscribe, or for help w=
+riting mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Dema=
+il
 
-Gerrit-MessageType: newchange
-G=
-errit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Iad94e7a9d0b=
-3be8a8db09e9a20eaac6041470ab6
-Gerrit-Change-Number: 1800
-Gerrit-PatchSet: 1=
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: mast=
+er
+Gerrit-Change-Id: I0a13ee90b6706acf20eabcee3bab3f2dff639bf9
+Gerrit-Chang=
+e-Number: 1089
+Gerrit-PatchSet: 20
+Gerrit-Owner: its_Giaan <gianmarco@mande=
+lbit=2Ecom>
+Gerrit-Reviewer: cron2 <gert@greenie=2Emuc=2Ede>
+Gerrit-Reviewe=
+r: flichtenheld <frank@lichtenheld=2Ecom>
+Gerrit-Reviewer: plaisthos <arne-=
+openvpn@rfc2549=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esour=
+ceforge=2Enet>
+Gerrit-CC: ordex <antonio@mandelbit=2Ecom>
+Gerrit-Attention:=
+ its_Giaan <gianmarco@mandelbit=2Ecom>
+Gerrit-Attention: cron2 <gert@greeni=
+e=2Emuc=2Ede>
+Gerrit-Attention: flichtenheld <frank@lichtenheld=2Ecom>
+Gerr=
+it-Attention: ordex <antonio@mandelbit=2Ecom>
+Gerrit-Comment-Date: Wed, 22 =
+Jul 2026 12:20:20 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comme=
+nt-In-Reply-To: its_Giaan <gianmarco@mandelbit=2Ecom>
+Comment-In-Reply-To: =
+ordex <antonio@mandelbit=2Ecom>
 
-Gerrit-Owner: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-CC: openvpn-de=
-vel <openvpn-devel@lists=2Esourceforge=2Enet>
-
---G9dvotOrcnw=
+--h6atIMwsTlQ=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>plaisthos has upl=
-oaded this change for <strong>review</strong>=2E</p><p><a href=3D"http://ge=
-rrit=2Eopenvpn=2Enet/c/openvpn/+/1800?usp=3Demail">View Change</a></p><pre =
-class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pr=
-e-wrap;">Allow extracing other integers from peer info and add a unit test =
-for it<br><br>This also ensure that we only really extract the variable we =
-are looking<br>for=2E The old code would also consider UV_IV_NCP to be IV_N=
-CP=2E<br><br>Change-Id: Iad94e7a9d0b3be8a8db09e9a20eaac6041470ab6<br>Signed=
--off-by: Arne Schwabe &lt;arne@rfc2549=2Eorg&gt;<br>---<br>M CMakeLists=2Et=
-xt<br>M src/openvpn/push=2Ec<br>M src/openvpn/ssl_ncp=2Ec<br>M src/openvpn/=
-ssl_util=2Ec<br>M src/openvpn/ssl_util=2Eh<br>M src/openvpn/ssl_verify=2Ec<=
-br>M tests/unit_tests/openvpn/test_push_update_msg=2Ec<br>M tests/unit_test=
-s/openvpn/test_ssl=2Ec<br>8 files changed, 124 insertions(+), 41 deletions(=
--)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/o=
-penvpn refs/changes/00/1800/1</pre><pre style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;"><span>diff --git a/CMakeLists=2Etxt b/CMake=
-Lists=2Etxt</span><br><span>index 7473f15=2E=2Eb886414 100644</span><br><sp=
-an>--- a/CMakeLists=2Etxt</span><br><span>+++ b/CMakeLists=2Etxt</span><br>=
-<span>@@ -906,6 +906,7 @@</span><br><span>         tests/unit_tests/openvpn=
-/mock_msg=2Ec</span><br><span>         tests/unit_tests/openvpn/mock_get_ra=
-ndom=2Ec</span><br><span>         src/openvpn/options_util=2Ec</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        src/openvpn/ssl_util=2Ec=
-</span><br><span>         src/openvpn/otime=2Ec</span><br><span>         sr=
-c/openvpn/list=2Ec</span><br><span>         )</span><br><span>diff --git a/=
-src/openvpn/push=2Ec b/src/openvpn/push=2Ec</span><br><span>index 633c007d=
-=2E=2E88b499f 100644</span><br><span>--- a/src/openvpn/push=2Ec</span><br><=
-span>+++ b/src/openvpn/push=2Ec</span><br><span>@@ -718,7 +718,7 @@</span><=
-br><span> </span><br><span>     /* Push our mtu to the peer if it supports =
-pushable MTUs */</span><br><span>     int client_max_mtu =3D 0;</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    const char *iv_mtu =3D extrac=
-t_var_peer_info(tls_multi-&gt;peer_info, &quot;IV_MTU=3D&quot;, gc);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    const char *iv_mtu =3D=
- extract_var_peer_info(tls_multi-&gt;peer_info, &quot;IV_MTU&quot;, gc);</s=
-pan><br><span> </span><br><span>     if (iv_mtu &amp;&amp; sscanf(iv_mtu, &=
-quot;%d&quot;, &amp;client_max_mtu) =3D=3D 1)</span><br><span>     {</span>=
-<br><span>diff --git a/src/openvpn/ssl_ncp=2Ec b/src/openvpn/ssl_ncp=2Ec</s=
-pan><br><span>index b450de8=2E=2E8148396 100644</span><br><span>--- a/src/o=
-penvpn/ssl_ncp=2Ec</span><br><span>+++ b/src/openvpn/ssl_ncp=2Ec</span><br>=
-<span>@@ -55,20 +55,10 @@</span><br><span>  * Return the Negotiable Crypto =
-Parameters version advertised in the peer info</span><br><span>  * string, =
-or 0 if none specified=2E</span><br><span>  */</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-static int</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+static unsigned int</span><br><span> tls_peer_info_ncp_ver(=
-const char *peer_info)</span><br><span> {</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    const char *ncpstr =3D peer_info ? strstr(peer_info=
-, &quot;IV_NCP=3D&quot;) : NULL;</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    if (ncpstr)</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        int=
- ncp =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        in=
-t r =3D sscanf(ncpstr, &quot;IV_NCP=3D%d&quot;, &amp;ncp);</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        if (r =3D=3D 1)</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-            return ncp;</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    r=
-eturn peer_info_extract_uint(peer_info, &quot;IV_NCP&quot;, 0);</span><br><=
-span> }</span><br><span> </span><br><span> /**</span><br><span>@@ -227,7 +2=
-17,7 @@</span><br><span> tls_peer_ncp_list(const char *peer_info, struct gc=
-_arena *gc)</span><br><span> {</span><br><span>     /* Check if the peer se=
-nds the IV_CIPHERS list */</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    const char *iv_ciphers =3D extract_var_peer_info(peer_info, &quot;=
-IV_CIPHERS=3D&quot;, gc);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    const char *iv_ciphers =3D extract_var_peer_info(peer_info, &quot=
-;IV_CIPHERS&quot;, gc);</span><br><span>     if (iv_ciphers)</span><br><spa=
-n>     {</span><br><span>         return iv_ciphers;</span><br><span>@@ -35=
-8,7 +348,7 @@</span><br><span> {</span><br><span>     /* we use a local gc =
-arena to keep the temporary strings needed by strsep */</span><br><span>   =
-  struct gc_arena gc_local =3D gc_new();</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    const char *peer_ciphers =3D extract_var_peer_info(p=
-eer_info, &quot;IV_CIPHERS=3D&quot;, &amp;gc_local);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    const char *peer_ciphers =3D extract_=
-var_peer_info(peer_info, &quot;IV_CIPHERS&quot;, &amp;gc_local);</span><br>=
-<span> </span><br><span>     if (!peer_ciphers)</span><br><span>     {</spa=
-n><br><span>diff --git a/src/openvpn/ssl_util=2Ec b/src/openvpn/ssl_util=2E=
-c</span><br><span>index 2f01f8a=2E=2Ea4c2910 100644</span><br><span>--- a/s=
-rc/openvpn/ssl_util=2Ec</span><br><span>+++ b/src/openvpn/ssl_util=2Ec</spa=
-n><br><span>@@ -27,6 +27,32 @@</span><br><span> #include &quot;openvpn=2Eh&=
-quot;</span><br><span> #include &quot;ssl_util=2Eh&quot;</span><br><span> <=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+static const char *<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+peer_info_extract_va=
-rstr(const char *peer_info, const char *field)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    char buf[32];</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    snprintf(buf, sizeof(buf), &quot;%s=3D&quot;, field);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    const char *optstr =3D NULL;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    /* peer info starts with this field */</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    if (peer_info &amp;&amp; str=
-ncmp(peer_info, buf, strlen(buf)) =3D=3D 0)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        optstr =3D peer_info;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        snprintf(bu=
-f, sizeof(buf), &quot;\n%s=3D&quot;, field);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        optstr =3D peer_info ? strstr(peer_info, b=
-uf) : NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-if (optstr)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            /* ski=
-p the \n */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-    optstr++;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    return optstr;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span> char *</span><br><span> extract=
-_var_peer_info(const char *peer_info, const char *var, struct gc_arena *gc)=
-</span><br><span> {</span><br><span>@@ -35,14 +61,15 @@</span><br><span>   =
-      return NULL;</span><br><span>     }</span><br><span> </span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    const char *var_start =3D strstr(=
-peer_info, var);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- const char *var_start =3D peer_info_extract_varstr(peer_info, var);</span>=
-<br><span>     if (!var_start)</span><br><span>     {</span><br><span>     =
-    /* variable not found in peer info */</span><br><span>         return N=
-ULL;</span><br><span>     }</span><br><span> </span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    var_start +=3D strlen(var);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    /* one extra byte forward for the =
-=3D */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    var_start=
- +=3D strlen(var) + 1;</span><br><span>     const char *var_end =3D strstr(=
-var_start, &quot;\n&quot;);</span><br><span>     if (!var_end)</span><br><s=
-pan>     {</span><br><span>@@ -56,36 +83,35 @@</span><br><span>     return =
-var_value;</span><br><span> }</span><br><span> </span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span> unsigned int</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-extract_iv_proto(const char *peer_info=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+peer_info_extract_=
-uint(const char *peer_info, const char *field, unsigned int default_value)<=
-/span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- const char *optstr =3D peer_info ? strstr(peer_info, &quot;IV_PROTO=3D&quo=
-t;) : NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cons=
-t char *optstr =3D peer_info_extract_varstr(peer_info, field);</span><br><s=
-pan>     if (optstr)</span><br><span>     {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        char buf[32];</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        snprintf(buf, sizeof(buf), &quot;%s=3D%%d=
-&quot;, field);</span><br><span>         int proto =3D 0;</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        int r =3D sscanf(optstr, &quot;=
-IV_PROTO=3D%d&quot;, &amp;proto);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        int r =3D sscanf(optstr, buf, &amp;proto);</span><br>=
-<span>         if (r =3D=3D 1 &amp;&amp; proto &gt; 0)</span><br><span>    =
-     {</span><br><span>             return proto;</span><br><span>         =
-}</span><br><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- return default_value;</span><br><span> }</span><br><span> </span><br><span=
-> uint32_t</span><br><span> extract_asymmetric_peer_id(const char *peer_inf=
-o)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    for (const char *p =3D peer_info; p &amp;&amp; (p =3D strstr(p, &quot;I=
-D=3D&quot;)); p +=3D 3)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    const char *optstr =3D peer_info_extract_varstr(peer_info, &quot;ID=
-&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (opt=
-str)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        /* only accept &quot;ID=3D&quot; at the start of a line, so i=
-t does not match</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-    * substrings like &quot;UV_ID=3D&quot; or &quot;GUID=3D&quot; */</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-        if (p =3D=3D peer_in=
-fo || p[-1] =3D=3D &#39;\n&#39;)</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        uint32_t peer_id =3D 0;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        if (sscanf(optstr, &quot;ID=3D%x&quot;, &a=
-mp;peer_id) =3D=3D 1 &amp;&amp; peer_id &lt; MAX_PEER_ID)</span><br><span> =
-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
-uint32_t peer_id =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-            if (sscanf(p, &quot;ID=3D%x&quot;, &amp;peer_id) =3D=3D 1 &am=
-p;&amp; peer_id &lt; MAX_PEER_ID)</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-                return peer_id;</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-            }</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+            return peer_id;</span><br><span>         }</span><br><s=
-pan>     }</span><br><span>     return MAX_PEER_ID;</span><br><span>diff --=
-git a/src/openvpn/ssl_util=2Eh b/src/openvpn/ssl_util=2Eh</span><br><span>i=
-ndex 1a69e6f=2E=2E49faefa 100644</span><br><span>--- a/src/openvpn/ssl_util=
-=2Eh</span><br><span>+++ b/src/openvpn/ssl_util=2Eh</span><br><span>@@ -33,=
-11 +33,22 @@</span><br><span> #include &quot;buffer=2Eh&quot;</span><br><sp=
-an> </span><br><span> /**</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+ * Extracts the named variable and returns its value or default_value=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * if it cannot be =
-extracted=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param peer_info     =
-peer info string to search in</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+ * @parm field          name of the field to be extracted</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ * @parm default_value  val=
-ue to return if not found or cannot be extracted</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+unsigned int</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+peer_info_extract_uint(const char *peer_info, const char *field, unsi=
-gned int default_value);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br>=
-<span>  * Extracts a variable from peer info, the returned string will be a=
-llocated</span><br><span>  * using the supplied gc_arena</span><br><span>  =
-*</span><br><span>  * @param peer_info     The peer&#39;s peer_info</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">- * @param var           The v=
-ariable *including* =3D, e=2Eg=2E IV_CIPHERS=3D</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+ * @param var           The variable *excluding=
-* =3D, e=2Eg=2E IV_CIPHERS</span><br><span>  * @param gc            GC aren=
-a to allocate return value in</span><br><span>  *</span><br><span>  * @retu=
-rn  The content of the variable as NULL terminated string or NULL if the</s=
-pan><br><span>@@ -51,8 +62,11 @@</span><br><span>  *</span><br><span>  * @p=
-aram peer_info     peer info string to search for IV_PROTO</span><br><span>=
-  */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-unsigned int extr=
-act_iv_proto(const char *peer_info);</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+stat=
-ic inline unsigned int</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+extract_iv_proto(const char *peer_info)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    return peer_info_extract_uint(peer_info, &quot;IV_PROTO&quot;, 0);=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span> =
-</span><br><span> /**</span><br><span>  * Extracts the ID variable and retu=
-rns its value or</span><br><span>diff --git a/src/openvpn/ssl_verify=2Ec b/=
-src/openvpn/ssl_verify=2Ec</span><br><span>index 162f68f=2E=2E3317380 10064=
-4</span><br><span>--- a/src/openvpn/ssl_verify=2Ec</span><br><span>+++ b/sr=
-c/openvpn/ssl_verify=2Ec</span><br><span>@@ -861,7 +861,7 @@</span><br><spa=
-n> {</span><br><span>     struct gc_arena gc =3D gc_new();</span><br><span>=
- </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    char *iv_sso =3D=
- extract_var_peer_info(peer_info, &quot;IV_SSO=3D&quot;, &amp;gc);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    char *iv_sso =3D extract=
-_var_peer_info(peer_info, &quot;IV_SSO&quot;, &amp;gc);</span><br><span>   =
-  if (!iv_sso)</span><br><span>     {</span><br><span>         gc_free(&amp=
-;gc);</span><br><span>diff --git a/tests/unit_tests/openvpn/test_push_updat=
-e_msg=2Ec b/tests/unit_tests/openvpn/test_push_update_msg=2Ec</span><br><sp=
-an>index 219b476=2E=2E8f42483 100644</span><br><span>--- a/tests/unit_tests=
-/openvpn/test_push_update_msg=2Ec</span><br><span>+++ b/tests/unit_tests/op=
-envpn/test_push_update_msg=2Ec</span><br><span>@@ -188,12 +188,6 @@</span><=
-br><span> {</span><br><span>     return true;</span><br><span> }</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-unsigned int</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-extract_iv_proto(const char *peer_info)</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    return IV_PROTO_PUSH_UPDATE;</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-}</span><br><span> #endif /* ifdef ENABLE_MANAGEMENT=
- */</span><br><span> </span><br><span> /* tests */</span><br><span>diff --g=
-it a/tests/unit_tests/openvpn/test_ssl=2Ec b/tests/unit_tests/openvpn/test_=
-ssl=2Ec</span><br><span>index 0e9cecf=2E=2E9c2a99d 100644</span><br><span>-=
--- a/tests/unit_tests/openvpn/test_ssl=2Ec</span><br><span>+++ b/tests/unit=
-_tests/openvpn/test_ssl=2Ec</span><br><span>@@ -48,7 +48,9 @@</span><br><sp=
-an> #include &quot;buffer=2Eh&quot;</span><br><span> #include &quot;cert_da=
-ta=2Eh&quot;</span><br><span> #include &quot;packet_id=2Eh&quot;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;ssl_util=2Eh&qu=
-ot;</span><br><span> #include &quot;ssl_verify=2Eh&quot;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+#include &quot;openvpn=2Eh&quot;</span=
-><br><span> </span><br><span> /* Mock function to be allowed to include win=
-32=2Ec which is required for</span><br><span>  * getting the temp directory=
- */</span><br><span>@@ -829,6 +831,61 @@</span><br><span>     free_certific=
-ate(cert);</span><br><span> }</span><br><span> </span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+ssl_test_extract_peer_info(void **state)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    const char *peer_info_normal =3D</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        &quot;IV_VER=3D2=2E6_git\nIV_PLAT=
-=3Dmac\nIV_TCPNL=3D1\nIV_NCP=3D2\n&quot;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        &quot;IV_CIPHERS=3DAES-256-GCM:AES-128-GCM:CHA=
-CHA20-POLY1305\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        &quot;IV_PROTO=3D94\nIV_LZO_STUB=3D1\nIV_COMP_STUB=3D1\nP=3D78\n=
-IV_COMP_STUBv2=3D1\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        &quot;IV_SSL=3DOpenSSL_3=2E0=2E5_5_Jul_2022\nIV_LZ4v2=3D1&qu=
-ot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    const char *empty =3D &quot;&q=
-uot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const char=
- *invalid_proto =3D &quot;IV_PROTO=3Dseven\nIV_SSL=3D7\nP=3D300\nID=3Dxyz&q=
-uot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const char=
- *test_prefix =3D &quot;UV_IV_PROTO=3D773\nNP=3D112\nPD=3D8\n&quot;;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    assert_int_equal(extract_iv_proto(peer_info_normal), 94);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(e=
-xtract_iv_proto(empty), 0);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    assert_int_equal(extract_iv_proto(invalid_proto), 0);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    /* This should not pick u=
-p the UV_IV_PROTO that has the extra prefix */</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    assert_int_equal(extract_iv_proto(test_prefi=
-x), 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(peer_info_=
-extract_uint(peer_info_normal, &quot;IV_COMP_STUB&quot;, 0), 1);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(peer_info=
-_extract_uint(empty, &quot;IV_COMP_STUB&quot;, 0xfe0d0d), 0xfe0d0d);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(peer_=
-info_extract_uint(invalid_proto, &quot;IV_COMP_STUB&quot;, 5), 5);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    assert_int_equal(peer_info_extract_uint(tes=
-t_prefix, &quot;NP&quot;, 23), 112);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    assert_int_equal(peer_info_extract_uint(test_prefix, &=
-quot;PD&quot;, 23), 8);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    assert_int_equal(peer_info_extract_uint(test_prefix, &quot;P&quot;,=
- 0xfe0d0d), 0xfe0d0d);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    assert_int_equal(peer_info_extract_uint(peer_info_normal, &quot;P&qu=
-ot;, 23), 78);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    a=
-ssert_int_equal(peer_info_extract_uint(test_prefix, &quot;UV_IV_PROTO&quot;=
-, 23), 773);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena gc =3D=
- gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    const char *peer_ciphers=
- =3D extract_var_peer_info(peer_info_normal, &quot;IV_CIPHERS&quot;, &amp;g=
-c);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_strin=
-g_equal(peer_ciphers, &quot;AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305&quot;=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    /* with the extra =3D this shoul=
-d not extract anything */</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    const char *proto =3D extract_var_peer_info(peer_info_normal, &qu=
-ot;IV_PROTO=3D&quot;, &amp;gc);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    assert_null(proto);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- const char *double_eq_info =3D &quot;FOO=3D7\nFOO=3D=3Dnew&quot;;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    const char *foo_eq =3D e=
-xtract_var_peer_info(double_eq_info, &quot;FOO=3D&quot;, &amp;gc);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    const char *foo =3D extr=
-act_var_peer_info(double_eq_info, &quot;FOO&quot;, &amp;gc);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(foo, &quot=
-;7&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    asser=
-t_string_equal(foo_eq, &quot;new&quot;);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    assert_int_equal(extract_asymmetric_peer_id(double_eq_info), MAX_PEER=
-_ID);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int=
-_equal(extract_asymmetric_peer_id(peer_info_normal), MAX_PEER_ID);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(extract=
-_asymmetric_peer_id(invalid_proto), MAX_PEER_ID);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    assert_int_equal(extract_asymmetric_peer_=
-id(&quot;ID=3Df7&quot;), 0xf7);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    assert_int_equal(extract_asymmetric_peer_id(&quot;X=3Dfoo\n=
-ID=3D12ab&quot;), 0x12ab);</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    assert_int_equal(extract_asymmetric_peer_id(&quot;X=3Dfoo\nID=3D=
-34dd\nY=3Dbar&quot;), 0x34dd);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    assert_int_equal(extract_asymmetric_peer_id(&quot;X=3Dfoo\nI=
-D=3D12345678&quot;), MAX_PEER_ID);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-gc_free(&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}<=
-/span><br><span> </span><br><span> int</span><br><span> main(void)</span><b=
-r><span>@@ -853,7 +910,8 @@</span><br><span>         cmocka_unit_test(test_=
-data_channel_roundtrip_bf_cbc),</span><br><span>         cmocka_unit_test(t=
-est_data_channel_known_vectors_epoch),</span><br><span>         cmocka_unit=
-_test(test_data_channel_known_vectors_shortpktid),</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        cmocka_unit_test(crypto_test_print_cer=
-t_details)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        c=
-mocka_unit_test(crypto_test_print_cert_details),</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        cmocka_unit_test(ssl_test_extract_peer=
-_info)</span><br><span> </span><br><span>     };</span><br><span> </span><b=
-r><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit=2Eopenv=
-pn=2Enet/c/openvpn/+/1800?usp=3Demail">change 1800</a>=2E To unsubscribe, o=
-r for help writing mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=
-=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"=
-http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemty=
-pe=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http:/=
-/gerrit=2Eopenvpn=2Enet/c/openvpn/+/1800?usp=3Demail"/><meta itemprop=3D"na=
-me" content=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: cron2, flichtenheld, its_Giaan, ordex=2E </p>
+<p><a h=
+ref=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1089?usp=3Demail">View Cha=
+nge</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><li=
+ style=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl_util=2Ec:</p><ul =
+style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 =
+0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=2Eopen=
+vpn=2Enet/c/openvpn/+/1089/comment/6b579e61_ac56b5e3?usp=3Demail">Patch Set=
+ #19, Line 78:</a> <code style=3D"font-family:monospace,monospace">    cons=
+t char *optstr =3D peer_info ? strstr(peer_info, &quot;ID=3D&quot;) : NULL;=
+</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10p=
+x 0; padding: 0 10px;">It can, yes=2E peer_info also carries the client&#39=
+;s UV_* vars, so something like UV_ID=3D=2E=2E=2E (or GUID=3D=2E=2E=2E [=E2=
+=80=A6]</blockquote></p><p class=3D"blocks" style=3D"white-space: pre-wrap;=
+ word-wrap: break-word;">I noticed this issue and already prepared a patch =
+for that=2E That also fixes that for all the other peer info extraction: ht=
+tps://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1800</p></li></ul></li></ul><p>To =
+view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1089?usp=
+=3Demail">change 1089</a>=2E To unsubscribe, or for help writing mail filte=
+rs, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">se=
+ttings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessag=
+e"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewA=
+ction"><link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openv=
+pn/+/1089?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></=
+div></div>
 
-<div style=3D"display:none"> Ger=
-rit-MessageType: newchange </div>
-<div style=3D"display:none"> Gerrit-Proje=
-ct: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div=
->
-<div style=3D"display:none"> Gerrit-Change-Id: Iad94e7a9d0b3be8a8db09e9a2=
-0eaac6041470ab6 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1=
-800 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div styl=
-e=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&=
-gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvp=
-n-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>=
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"=
+display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Ge=
+rrit-Change-Id: I0a13ee90b6706acf20eabcee3bab3f2dff639bf9 </div>
+<div style=
+=3D"display:none"> Gerrit-Change-Number: 1089 </div>
+<div style=3D"display:=
+none"> Gerrit-PatchSet: 20 </div>
+<div style=3D"display:none"> Gerrit-Owner=
+: its_Giaan &lt;gianmarco@mandelbit=2Ecom&gt; </div>
+<div style=3D"display:=
+none"> Gerrit-Reviewer: cron2 &lt;gert@greenie=2Emuc=2Ede&gt; </div>
+<div s=
+tyle=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@lichtenheld=
+=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &=
+lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerri=
+t-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+=
+<div style=3D"display:none"> Gerrit-CC: ordex &lt;antonio@mandelbit=2Ecom&g=
+t; </div>
+<div style=3D"display:none"> Gerrit-Attention: its_Giaan &lt;gian=
+marco@mandelbit=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Attent=
+ion: cron2 &lt;gert@greenie=2Emuc=2Ede&gt; </div>
+<div style=3D"display:non=
+e"> Gerrit-Attention: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<=
+div style=3D"display:none"> Gerrit-Attention: ordex &lt;antonio@mandelbit=
+=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 22=
+ Jul 2026 12:20:20 +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComm=
+ents: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+=
+<div style=3D"display:none"> Comment-In-Reply-To: its_Giaan &lt;gianmarco@m=
+andelbit=2Ecom&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To:=
+ ordex &lt;antonio@mandelbit=2Ecom&gt; </div>
 
 </body></html>
---G9dvotOrcnw=--
+--h6atIMwsTlQ=--
 
 
---===============8321652576785227609==
+--===============2656700486216001068==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============8321652576785227609==
+--===============2656700486216001068==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -1084,5 +329,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============8321652576785227609==--
+--===============2656700486216001068==--
 
