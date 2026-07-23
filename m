@@ -4,124 +4,125 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E118EC531CB
-	for <openvpn-devel@archiver.kernel.org>; Thu, 23 Jul 2026 12:59:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 647F2C531CF
+	for <openvpn-devel@archiver.kernel.org>; Thu, 23 Jul 2026 13:28:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=zYlKeJUyd860x7/fcC9UnshwOThvevaS15r4/3Qrv6E=; b=Ik/1i5Z1Y2VBGCQaRJOIQegADc
-	HJ0S89QTXxlE4hBwG2rtW1KMxEzn1cCiU36VsoSKWbOjgvjQSvcaPXuJZ864DVG5sRD8HaOd8ZHOD
-	xMnn+R97eKV6xGzJKEd+fxL4EcHdEU7ItQN6I/KBHNYSkZLJF/WYri5ukZARWqLWx9Fw=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=LJQuaYS5JWwO2FlwI21fUTuhCvKahvbw+dpjTdM2tTA=; b=QiPOCFHtdMltQTpLqV5D5ANP40
+	plNrEH7bDIdpIXzYCNdTxUevxpF47EAGr4ovfHDmhP8Xie2lZY2W0cbYdv0U9y7HgJtqisl1PwIhD
+	JArtcZ0JnQpUwo9hhu09ZXFQYoFNg7SYjmjOmPBKCHiwHOigL8nLTVN+3tMCyua2DjBE=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wmt0q-0000ql-O5;
-	Thu, 23 Jul 2026 12:58:57 +0000
+	id 1wmtT9-0003ni-Rm;
+	Thu, 23 Jul 2026 13:28:11 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wmt0o-0000qR-MX
+ (envelope-from <gerrit@openvpn.net>) id 1wmtT8-0003nc-HI
  for openvpn-devel@lists.sourceforge.net;
- Thu, 23 Jul 2026 12:58:55 +0000
+ Thu, 23 Jul 2026 13:28:10 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
  :List-Post:List-Owner:List-Archive;
- bh=Ya2WVcX9MtaxRrXRw5yyUPLLNNQTy80NdhvPw5LtW40=; b=L2fcMusM4rZlhYA2m9bGwZRnvi
- STCeidf/SlfyvJB8YJ3yYGgkxKfORnG+DxUFF0jWr/uZ8vSZ6sZ1z6SS/0zc2C90GyH+5DsTtmHwY
- CyioNhLR7UrEiG+P8OgvwaWWYGoa14xrIceKuTJMFIGsKHb/hY2HsVdfAQ6gw8oI7NYo=;
+ bh=sblM34mCDcs7ye/K+wdPiUEJGlTuAUegIJOmKzHerC0=; b=dm9LyfEsP7gPcU6q+kDu+zbzxx
+ 3sKBvvSkG98wa0XJ/kxgBaZyoG81Yemgr3zhFxjiBNY8TRkd915gGNa5nCgfUa8gcFtTk19PTiwek
+ cTq8cTqBz7at3ZH3mDJ30o7nSrwFJu7wCmBUQs+CWQFCnMRljFB3x61T+vGxqI4sL6Co=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
  Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=Ya2WVcX9MtaxRrXRw5yyUPLLNNQTy80NdhvPw5LtW40=; b=B
- yNVDwYJwqRsR31U5r+KKfBxzBZbLr7z4ezLxCSExgPyDNKvfvcNyAtiCUX4yvs9KtLaP+W1qkiP6P
- 75PUVBmNMVE5pSfkhydV2Q2Lmg7lcEFTfgn86jHOp2c0tNqwl77/yfq35YKqTT3rsJL/0fQCc1B9p
- 10hPTYA1NjhUpEOM=;
-Received: from mail-wr1-f53.google.com ([209.85.221.53])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ List-Owner:List-Archive; bh=sblM34mCDcs7ye/K+wdPiUEJGlTuAUegIJOmKzHerC0=; b=H
+ fi/9wN6IiEN59w/SSM5dmUBue01B0eG/HtfA7czAiGWJIJ38rztTci/E5Yjc6/mu9eeaeLpkGwQlP
+ 5c1p97JoCweLEXp4rGvUw4MsGbba3BVX9dlKD/rXPMhcqKcuKbqD12i2RkWfNzXDgkSXEBNLJhtyZ
+ ISHNjPHKmz3KDhJU=;
+Received: from mail-wr1-f45.google.com ([209.85.221.45])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wmt0m-0005ef-2Z for openvpn-devel@lists.sourceforge.net;
- Thu, 23 Jul 2026 12:58:55 +0000
-Received: by mail-wr1-f53.google.com with SMTP id
- ffacd0b85a97d-47f703a9e5dso263806f8f.0
+ id 1wmtT7-0003y9-Jh for openvpn-devel@lists.sourceforge.net;
+ Thu, 23 Jul 2026 13:28:10 +0000
+Received: by mail-wr1-f45.google.com with SMTP id
+ ffacd0b85a97d-47ddf7b09aaso432506f8f.3
  for <openvpn-devel@lists.sourceforge.net>;
- Thu, 23 Jul 2026 05:58:51 -0700 (PDT)
+ Thu, 23 Jul 2026 06:28:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1784811525; x=1785416325; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1784813279; x=1785418079; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=Ya2WVcX9MtaxRrXRw5yyUPLLNNQTy80NdhvPw5LtW40=;
- b=O75PPoiXGolregyj+YUPLsh2UaCD7EoMLSpznCnGO02tuSWT+8t+55MxKixOMNWQ9P
- 2QPAxMqTvFdHpfL4qrNXKu73V5uUl8144sT0gOydpbT8uPT1VtgtxRwLpJvmumGBlbuu
- 3xuaOFvp46zDtsVWxW33EpwOf7ZIx4NaSZ9MlQQs8cE8smlb8B1zLWM8guu3tklC6agE
- iDRdJ2aljdsPQSAEs0GcUvS2emQ8GcNgGHeGSyZjNRd++P24ZV8l3uDcJEREv+dNVLcO
- 0IDiVNQkCjfZHN5dfDQmjft/v3hlg9UvDCwqZMzU4zfwhFmInzz5p9oyorqMxvW/xB1N
- cxIQ==
+ bh=sblM34mCDcs7ye/K+wdPiUEJGlTuAUegIJOmKzHerC0=;
+ b=T4ktQlou8p2VnTDZmWkWz3wUtbSpugSSU+gkBLHERfhyhHrknVTAy/YHefFZbad982
+ sJLfPhsj6J/4v1PYjrnvmoe6m5kAPUOwnReEX7Fni+VxwS7gceZvebWR5nAzqC1XUQqM
+ CoxBBEBXGks5IiXKjYz9t/s5exB7eiHIQV5vvcfRgG+HXm59NgZKMi0/pi94NlvIFQIe
+ bPzAh2PKhOeP8hnfg16uZdd7fbdz35F8pegtZPd0p+BnXsJ+CLIdGy+txezH2tMZ3JKI
+ 9eqawLJvkfK53rxwv+EgUb1iwY2lwght08M/I6oRm3fpfkdgpTYhX1d/2p72eWCtMO5B
+ AMuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1784811525; x=1785416325;
+ d=1e100.net; s=20251104; t=1784813279; x=1785418079;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=Ya2WVcX9MtaxRrXRw5yyUPLLNNQTy80NdhvPw5LtW40=;
- b=jmrC5AiboP6QBEQL7wLoiQ812Il7/aJJpwb9nzvgLpE9pgmJT7K6Pstec5D4LoXNdy
- ulss4rFkFe7Lz4uwYymPXNYp/TO8mUKxH5bkcS8kUFiJV2RyTo1d5bRdv2LsuTv/Zo4m
- Si+aZQuLweanum/03+suXnG2E2Y2/Z/Nmx7KqFYqCbvmYg2LrjdeF0GoWc0VvE/m4aVu
- VfA26UmH3sV5AxaxfiwtAW/NuvXiqS2uGAspYmWkukoShj3ZAyYT6Ajh5oK1nfJ8TPNA
- wS9Z60dh/W4d6WmSmpIRsW6nkPnxXIPHON2flwYlkiB2NQuShSujOH2fyaCzB3KbRitD
- VW3w==
-X-Gm-Message-State: AOJu0YxuvMSYK0Yd7bWoi9RxXg9GA2b9oRrpgZHWVFoEiTtHVOB8NRtt
- teDMHivZmeP0hDpFSIpp3AcBPLj4aL4NjjOcKQoYgy2s+vsSYN8hPhWHx3Gl13DuWaOj9+NxwIN
- NKx0PfPyoHQVWVG0glSJHZ3rAhocGK718TEqw4Q3cwhXqWRZyGmbTKvcUGH3tQAOpfxajW3RMLp
- c+WA+8QA==
-X-Gm-Gg: AR+sD11yxwE869ohc9FWiTJ+BKI5BrhgvK7UgxT0YC39lQUhvuSDFs+jal1NGQioDtS
- ODbSdLqNC3xv32BWQXgM2uP/88kmHFPcmuGRMPD+UgyKW/i5BQTXElR0pKnKg6YWTQzWmqCuRDj
- bLROG9PdCG7yfTdQDiqWBlGwNdLD3jeXG+Am7Ni/G2SThmNpJrIyUW43G9Y/w3syr5eEyDZMA4o
- /+mRNxdlK2aHmbkWRqgo0+az03vD+traaqOKp8HCTKNwLKUiRTQ69KsN6QaWJQqdCvByisJoLFa
- Zzel38y4d78MtWsvXSl3/vmLk5lgrbWmRpLs/i0EdyyWHEskDQv6utfmaewYAcfXuShWooxwqzb
- 3weR2tUxLeA+gQ+rtUdIB5XPaEpVNeTqy/Ex3Z5AjARfQfA9dYPQ9ARm2xLueLwjVkGFnTQyzHf
- whcLE0a77POnVSupo6XSpM9i0uBUsuYT0fmoyuiITf0vhSw7y52LHBT0qPKl2gZcXi72LA+K0CK
- s736m+/veFuQbeA4SqWXxUl6r23hUh9QNFI1oaA54mSyrCC5GE1PGdXG3EQ0YvJ77tC
-X-Received: by 2002:a5d:5f50:0:b0:476:6bd4:82d0 with SMTP id
- ffacd0b85a97d-47f8d61a1d0mr3884088f8f.2.1784811525091; 
- Thu, 23 Jul 2026 05:58:45 -0700 (PDT)
+ bh=sblM34mCDcs7ye/K+wdPiUEJGlTuAUegIJOmKzHerC0=;
+ b=Ok2YoXAA59Xhf0saTjJvAUFQnO2V7wqcHJnYnkKRTOa6Hg3Fnz9lw4YIN0ec1Wl6BV
+ 0GmPbK+QWOCfUqm/l3KMRViBJR3kh0wMoKA/LiRftp75V82GlZjfe918T78MPp6xm/yM
+ AY/QmNYjmu5vRIKiBCNLz+Ej3Y2AWDm7tHVtFLuBxRCbkYuKMpFCUz/lVhWf2U6szc7b
+ TdBmRdbleNxO2sh7/kFPDSpyj28/GSepmTV9FdQNU1TsCzhAJNcUZE0ynOPs8BuMUm/+
+ IYx8M1a0eO+5rU65A2VCAaAguX/vqIAbBBd+Gh5YHw+7qRe+lLp+2fjz0ctI5xZehMIN
+ HSuw==
+X-Gm-Message-State: AOJu0YyLzJ+kD0WNraLUCiO38GKOWJiyGW8orW0uaGVuZc2229+VuaBK
+ d2FDDt/NoxYaaRovgC1/+MSn4+5E7+LtDrkUL7aAxj5Vbi9gwlRlyWNsTK2bMsjOp0yEq3cilZl
+ Gq2vMZH+NP+WhPmPYDR3vk8gnZh78xWrImP2ta7Uy4WbS+lIBvlogrnIO2u9cjJunZ+xcetLlZY
+ +/tQEwWQ==
+X-Gm-Gg: AR+sD13AQUn8uAPzDmARagw4Ali59z97vGDeeMhIsuMX3JXkczBnrs/E3vm+LOXboDu
+ ZG4CV47k/RLl51SkCPs5CWzhm2AoIsJCqH1qMKltFzo7hSmeMbi1dyWM9yNmUlShBw7RvBPLhp1
+ TUgEUQhJW0RoZTb/nVeaF7t0B2BPuCBmPAp8cUOFkzKUxaOrcWAOyR1Iyae68jUQ+Ty04I8oxyW
+ LSdKarUVr++4Qjnt0i9K8cGLtAjM8tyrmNl7CFl+e4/4Wg90yLIV0ziI1kgkN1o1IEJ1LO8vAT0
+ EjOEiBXhbkEAvfeSoHtpS05W+44EeIRb6GvPR42kJ1ea+gycAClOuOIblXvkN/ccyb+gEPIatCe
+ EqfnxmOObE0o+9PC/c41deXV2p4lsVnH7dfdL3vit6lZqtqUpfDu+hZ1dqxiRa9uSyeWxD8ujdC
+ SxWXfd7xhvrp5VnL9Ec0bAkbQa5d3DSX4LLckowGlKIEtGWJnR0j+18ZVdp7Bmd4M7EL4M626vT
+ r2Kxx9mFXzF/5GdbWu+PG12Vb8J8bDpXl0AVc4tmSwrWSBsPsXaqr+x++7yAf6+gY/BDEqg9anf
+ Rh0=
+X-Received: by 2002:a05:6000:3107:b0:47f:6b9a:9d54 with SMTP id
+ ffacd0b85a97d-47f8d61a4b5mr4021922f8f.7.1784813279039; 
+ Thu, 23 Jul 2026 06:27:59 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-47f85b9a6d7sm16821468f8f.2.2026.07.23.05.58.44
+ ffacd0b85a97d-47f85b9a659sm16103905f8f.6.2026.07.23.06.27.58
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 23 Jul 2026 05:58:44 -0700 (PDT)
+ Thu, 23 Jul 2026 06:27:58 -0700 (PDT)
 X-Google-Original-From: "plaisthos (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Thu, 23 Jul 2026 12:58:42 +0000
+Date: Thu, 23 Jul 2026 13:27:56 +0000
 To: flichtenheld <frank@lichtenheld.com>
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newpatchset
-X-Gerrit-PatchSet: 10
+X-Gerrit-PatchSet: 11
 X-Gerrit-Change-Id: Idb59ecd119331b198792ad1379bec8600211651b
 X-Gerrit-Change-Number: 1727
 X-Gerrit-Project: openvpn
 X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1727?usp=email>
-X-Gerrit-Commit: ac19d4729d3bec678125c6ea0ecc926148f3b23e
+X-Gerrit-Commit: fa465621a14140c1d1cffb65114be695d50831dc
 In-Reply-To: <gerrit.1782134588000.Idb59ecd119331b198792ad1379bec8600211651b@gerrit.openvpn.net>
 References: <gerrit.1782134588000.Idb59ecd119331b198792ad1379bec8600211651b@gerrit.openvpn.net>
 Thread-Index: PGdlcnJpdC4xNzgyMTM0NTg4MDAwLklkYjU5ZWNkMTE5MzMxYjE5ODc5MmFkMTM3OWJlYzg2MDAyMTE2NTFiQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <c075231f32ee24a1f6c92a1bd7ec358c46fac991-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+Message-ID: <4d55f9ddc77b03f47251fae6cdc8d187220e305b-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wmt0m-0005ef-2Z
+X-Headers-End: 1wmtT7-0003y9-Jh
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: Add lookup of multi
  session by session id
 X-BeenThere: openvpn-devel@lists.sourceforge.net
@@ -141,15 +142,15 @@ Reply-To: arne-openvpn@rfc2549.org, openvpn-devel@lists.sourceforge.net,
  frank@lichtenheld.com
 Cc: "plaisthos \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============8353880518693866764=="
+Content-Type: multipart/mixed; boundary="===============4222779966883822016=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============8353880518693866764==
+--===============4222779966883822016==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="+J/TvVJB9Qo="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="eEY12hg0pbE="; charset=UTF-8
 
---+J/TvVJB9Qo=
+--eEY12hg0pbE=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
@@ -164,7 +165,7 @@ I'd like you to reexamine a change=2E Please visit
 penvpn=2Enet/c/openvpn/+/1727?usp=3Demail
 
 to look at the new patch set (#1=
-0)=2E
+1)=2E
 
 
 Change subject: Add lookup of multi session by session id
@@ -258,11 +259,11 @@ M tests/u=
 nit_tests/openvpn/Makefile=2Eam
 M tests/unit_tests/openvpn/test_misc=2Ec
 11=
- files changed, 262 insertions(+), 60 deletions(-)
+ files changed, 270 insertions(+), 60 deletions(-)
 
 
   git pull ssh://gerri=
-t=2Eopenvpn=2Enet:29418/openvpn refs/changes/27/1727/10
+t=2Eopenvpn=2Enet:29418/openvpn refs/changes/27/1727/11
 
 diff --git a/CMake=
 Lists=2Etxt b/CMakeLists=2Etxt
@@ -1033,7 +1034,7 @@ FLAGS =3D -I$(top_srcdir)/src/openvpn \
 diff=
  --git a/tests/unit_tests/openvpn/test_misc=2Ec b/tests/unit_tests/openvpn/=
 test_misc=2Ec
-index 7df13506=2E=2Ef52f42a 100644
+index 7df13506=2E=2Ec250d92 100644
 --- a/tests/unit_tests/ope=
 nvpn/test_misc=2Ec
 +++ b/tests/unit_tests/openvpn/test_misc=2Ec
@@ -1079,7 +1080,7 @@ et_random() % 3) + 1;
  
         =
      while ((he =3D hash_iterator_next(&hi)))
-@@ -479,6 +473,57 @@
+@@ -479,6 +473,65 @@
  }
  #end=
 if /* _WIN32 */
@@ -1089,123 +1090,134 @@ if /* _WIN32 */
 +test_sid_hash_list(void **state)
 +{
 +    =
-/* very simple tests to ensure the basic hash functions work */
+struct gc_arena gc =3D gc_new();
++    /* very simple tests to ensure the ba=
+sic hash functions work */
 +
-+    stru=
-ct multi_context m =3D { 0 };
-+    m=2Esid_hash =3D hash_init(2048, siphash=
-_new_context(), siphash_free_context, session_id_hash_function, session_id_=
-hash_equal);
++    struct multi_context m =3D { 0 };
++    m=
+=2Esid_hash =3D hash_init(2048, siphash_new_context(), siphash_free_context=
+, session_id_hash_function, session_id_hash_equal);
 +
-+    struct session_id sid1;
++    struct session_i=
+d sid1;
 +    struct session_id sid2;
-+ =
-   struct session_id sid3;
++    struct session_id sid3;
 +
-+    struct multi_instance *m1, *m3;
++    st=
+ruct multi_instance *m1, *m3;
 +
-+    /*=
- multi_hash_sid_remove will call gc_free on the gc of a mi and
-+     * free=
- on the mi itself */
-+    ALLOC_OBJ_CLEAR(m1, struct multi_instance);
-+    =
-ALLOC_OBJ_CLEAR(m3, struct multi_instance);
++    /* multi_hash_sid_remove will call gc_=
+free on the gc of a mi and
++     * free on the mi itself */
++    ALLOC_OBJ_=
+CLEAR(m1, struct multi_instance);
++    ALLOC_OBJ_CLEAR(m3, struct multi_ins=
+tance);
 +
 +    m1->gc =3D gc_new();
++    m3->gc =3D gc_new();
++
++    sessio=
+n_id_random(&sid1);
++    session_id_random(&sid2);
++    session_id_random(&=
+sid3);
++
++    multi_hash_sid_add(&m, &sid1, m1);
++    multi_hash_sid_add(&m=
+, &sid3, m3);
++
++
++    /* sid2 is not added and should not be returned */
++=
+    struct hash_element *he_sid =3D multi_hash_sid_lookup(&m, &sid2);
++    =
+assert_null(he_sid);
++
++    he_sid =3D multi_hash_sid_lookup(&m, &sid1);
++ =
+   assert_non_null(he_sid);
++    assert_ptr_equal(he_sid->value, m1);
++
 +  =
-  m3->gc =3D gc_new();
+  /* Try removing elements, only that are in the map should return true */
+=
++    assert_true(multi_hash_sid_remove(&m, &sid1));
++    assert_false(multi=
+_hash_sid_remove(&m, &sid2));
++    assert_false(multi_hash_sid_remove(&m, &=
+sid1));
 +
-+    session_id_random(&sid1);
-+    session_id_ran=
-dom(&sid2);
-+    session_id_random(&sid3);
-+
-+    multi_hash_sid_add(&m, &s=
-id1, m1);
-+    multi_hash_sid_add(&m, &sid3, m3);
-+
-+
-+    /* sid2 is not a=
-dded and should not be returned */
-+    struct hash_element *he_sid =3D mul=
-ti_hash_sid_lookup(&m, &sid2);
++    /* should no longer find the element */
++    he_sid =3D mult=
+i_hash_sid_lookup(&m, &sid1);
 +    assert_null(he_sid);
 +
-+    he_sid =3D =
-multi_hash_sid_lookup(&m, &sid1);
-+    assert_non_null(he_sid);
-+    assert=
-_ptr_equal(he_sid->value, m1);
++    /* this elem=
+ent should still be in the hash table */
++    he_sid =3D multi_hash_sid_loo=
+kup(&m, &sid3);
++    assert_ptr_equal(he_sid->value, m3);
 +
-+    /* Try removing elements, only that a=
-re in the map should return true */
-+    assert_true(multi_hash_sid_remove(=
-&m, &sid1));
-+    assert_false(multi_hash_sid_remove(&m, &sid2));
-+    asse=
-rt_false(multi_hash_sid_remove(&m, &sid1));
-+
-+    /* should no longer find=
- the element */
-+    he_sid =3D multi_hash_sid_lookup(&m, &sid1);
-+    asse=
-rt_null(he_sid);
++    assert_tru=
+e(multi_hash_sid_remove(&m, &sid3));
 +
 +    hash_free(m=2Esid_hash);
++    g=
+c_free(&gc);
 +}
 +
- const struct CMUnitT=
-est misc_tests[] =3D {
- #ifdef _WIN32
-     cmocka_unit_test(test_win_path_i=
-n_dir),
-@@ -488,7 +533,8 @@
-     cmocka_unit_test(test_auth_fail_temp_flags=
-),
-     cmocka_unit_test(test_auth_fail_temp_flags_msg),
-     cmocka_unit_t=
-est(test_list),
--    cmocka_unit_test(test_atoi_variants)
-+    cmocka_unit_=
-test(test_atoi_variants),
-+    cmocka_unit_test(test_sid_hash_list)
+ const struct CMUnitTest misc_tests[] =3D {
+ #ifdef _WIN3=
+2
+     cmocka_unit_test(test_win_path_in_dir),
+@@ -488,7 +541,8 @@
+     cmo=
+cka_unit_test(test_auth_fail_temp_flags),
+     cmocka_unit_test(test_auth_f=
+ail_temp_flags_msg),
+     cmocka_unit_test(test_list),
+-    cmocka_unit_tes=
+t(test_atoi_variants)
++    cmocka_unit_test(test_atoi_variants),
++    cmock=
+a_unit_test(test_sid_hash_list)
  };
  
- =
-int
+ int
 
 -- 
-To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1727?usp=
-=3Demail
-To unsubscribe, or for help writing mail filters, visit http://ger=
-rit=2Eopenvpn=2Enet/settings?usp=3Demail
+To view, visit http://gerri=
+t=2Eopenvpn=2Enet/c/openvpn/+/1727?usp=3Demail
+To unsubscribe, or for help =
+writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Dem=
+ail
 
 Gerrit-MessageType: newpatchset
+Gerrit-Project: openvpn
+Gerrit-Branch:=
+ master
+Gerrit-Change-Id: Idb59ecd119331b198792ad1379bec8600211651b
+Gerrit-=
+Change-Number: 1727
+Gerrit-PatchSet: 11
+Gerrit-Owner: plaisthos <arne-openv=
+pn@rfc2549=2Eorg>
+Gerrit-Reviewer: flichtenheld <frank@lichtenheld=2Ecom>
 G=
-errit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Idb59ecd1193=
-31b198792ad1379bec8600211651b
-Gerrit-Change-Number: 1727
-Gerrit-PatchSet: 1=
-0
-Gerrit-Owner: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Reviewer: fli=
-chtenheld <frank@lichtenheld=2Ecom>
-Gerrit-CC: openvpn-devel <openvpn-devel=
-@lists=2Esourceforge=2Enet>
-Gerrit-Attention: flichtenheld <frank@lichtenhe=
-ld=2Ecom>
+errit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-At=
+tention: flichtenheld <frank@lichtenheld=2Ecom>
 
---+J/TvVJB9Qo=
+--eEY12hg0pbE=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: flichtenheld=2E </p>
 <p>plaisthos <strong>uploaded pa=
-tch set #10</strong> to this change=2E</p><p><a href=3D"http://gerrit=2Eope=
+tch set #11</strong> to this change=2E</p><p><a href=3D"http://gerrit=2Eope=
 nvpn=2Enet/c/openvpn/+/1727?usp=3Demail">View Change</a></p><pre class=3D"b=
 locks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">A=
 dd lookup of multi session by session id<br><br>This refactors the way that=
@@ -1239,10 +1251,10 @@ keLists=2Etxt<br>M doc/man-sections/advanced-options=2Erst<br>M src/openvpn=
 /mtcp=2Ec<br>M src/openvpn/mudp=2Ec<br>M src/openvpn/multi=2Ec<br>M src/ope=
 nvpn/multi=2Eh<br>M src/openvpn/options=2Ec<br>M src/openvpn/options=2Eh<br=
 >A src/openvpn/sid_hash=2Eh<br>M tests/unit_tests/openvpn/Makefile=2Eam<br>=
-M tests/unit_tests/openvpn/test_misc=2Ec<br>11 files changed, 262 insertion=
+M tests/unit_tests/openvpn/test_misc=2Ec<br>11 files changed, 270 insertion=
 s(+), 60 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-fami=
 ly: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eop=
-envpn=2Enet:29418/openvpn refs/changes/27/1727/10</pre><pre style=3D"font-f=
+envpn=2Enet:29418/openvpn refs/changes/27/1727/11</pre><pre style=3D"font-f=
 amily: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/CMak=
 eLists=2Etxt b/CMakeLists=2Etxt</span><br><span>index 412fa06=2E=2E0a04fcb =
 100644</span><br><span>--- a/CMakeLists=2Etxt</span><br><span>+++ b/CMakeLi=
@@ -1743,7 +1755,7 @@ color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/session_id=2Ec</sp=
 an><br><span> </span><br><span> push_update_msg_testdriver_CFLAGS =3D -I$(t=
 op_srcdir)/src/openvpn \</span><br><span> 	-I$(top_srcdir)/src/compat \</sp=
 an><br><span>diff --git a/tests/unit_tests/openvpn/test_misc=2Ec b/tests/un=
-it_tests/openvpn/test_misc=2Ec</span><br><span>index 7df13506=2E=2Ef52f42a =
+it_tests/openvpn/test_misc=2Ec</span><br><span>index 7df13506=2E=2Ec250d92 =
 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_misc=2Ec</span><=
 br><span>+++ b/tests/unit_tests/openvpn/test_misc=2Ec</span><br><span>@@ -4=
 2,6 +42,7 @@</span><br><span> #ifdef _WIN32</span><br><span> #include &quot=
@@ -1768,119 +1780,128 @@ uct hash_element *he;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
  hsl(120, 100%, 40%);">+            inc =3D ((int)get_random() % 3) + 1;</s=
 pan><br><span>             hash_iterator_init_range(hash, &amp;hi, base, ba=
 se + inc);</span><br><span> </span><br><span>             while ((he =3D ha=
-sh_iterator_next(&amp;hi)))</span><br><span>@@ -479,6 +473,57 @@</span><br>=
+sh_iterator_next(&amp;hi)))</span><br><span>@@ -479,6 +473,65 @@</span><br>=
 <span> }</span><br><span> #endif /* _WIN32 */</span><br><span> </span><br><=
 span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
 : hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(12=
 0, 100%, 40%);">+test_sid_hash_list(void **state)</span><br><span style=3D"=
 color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    /* very simple tests to ensure the basic hash functions wor=
-k */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    struct multi_context m =3D { 0=
- };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    m=2Esid_hash=
- =3D hash_init(2048, siphash_new_context(), siphash_free_context, session_i=
-d_hash_function, session_id_hash_equal);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    struct session_id sid1;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    struct session_id sid2;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    struct session_id sid3;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    struct multi_instance *m1, *m3;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    /* multi_hash_sid_remove will call gc_free on the gc of a mi and</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+     * free on the mi =
-itself */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ALLOC_=
-OBJ_CLEAR(m1, struct multi_instance);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    ALLOC_OBJ_CLEAR(m3, struct multi_instance);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    m1-&gt;gc =3D gc_new();</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    m3-&gt;gc =3D gc_new();</span><br><s=
+0%, 40%);">+    struct gc_arena gc =3D gc_new();</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    /* very simple tests to ensure the basic h=
+ash functions work */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct multi_=
+context m =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    m=2Esid_hash =3D hash_init(2048, siphash_new_context(), siphash_free_c=
+ontext, session_id_hash_function, session_id_hash_equal);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    struct session_id sid1;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    struct session_id sid2;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    struct session_id sid3;</span><br><s=
 pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    session_id_random(&amp;sid1);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    session_id_random(&amp;sid2);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    session_id_random(&=
-amp;sid3);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    multi_hash_sid_add(&amp;=
-m, &amp;sid1, m1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   multi_hash_sid_add(&amp;m, &amp;sid3, m3);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* sid2 =
-is not added and should not be returned */</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    struct hash_element *he_sid =3D multi_hash_sid_l=
-ookup(&amp;m, &amp;sid2);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    assert_null(he_sid);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    he_s=
-id =3D multi_hash_sid_lookup(&amp;m, &amp;sid1);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    assert_non_null(he_sid);</span><br><span s=
+ hsl(120, 100%, 40%);">+    struct multi_instance *m1, *m3;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    /* multi_hash_sid_remove will call gc_free on the =
+gc of a mi and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+* free on the mi itself */</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    ALLOC_OBJ_CLEAR(m1, struct multi_instance);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    ALLOC_OBJ_CLEAR(m3, struct multi_ins=
+tance);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    m1-&gt;gc =3D gc_new();</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    m3-&gt;gc =3D gc_ne=
+w();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    session_id_random(&amp;sid1);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    session_id_rando=
+m(&amp;sid2);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    se=
+ssion_id_random(&amp;sid3);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    multi_h=
+ash_sid_add(&amp;m, &amp;sid1, m1);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    multi_hash_sid_add(&amp;m, &amp;sid3, m3);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    /* sid2 is not added and should not be returned */</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    struct hash_element *he_sid =3D=
+ multi_hash_sid_lookup(&amp;m, &amp;sid2);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    assert_null(he_sid);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    he_sid =3D multi_hash_sid_lookup(&amp;m, &amp;sid1);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    assert_non_null(he_sid);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_ptr_equal=
+(he_sid-&gt;value, m1);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Try remo=
+ving elements, only that are in the map should return true */</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    assert_true(multi_hash_sid_re=
+move(&amp;m, &amp;sid1));</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    assert_false(multi_hash_sid_remove(&amp;m, &amp;sid2));</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    assert_false(multi_hash_s=
+id_remove(&amp;m, &amp;sid1));</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* s=
+hould no longer find the element */</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    he_sid =3D multi_hash_sid_lookup(&amp;m, &amp;sid1);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_null(he_sid=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    /* this element should still be =
+in the hash table */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    he_sid =3D multi_hash_sid_lookup(&amp;m, &amp;sid3);</span><br><span s=
 tyle=3D"color: hsl(120, 100%, 40%);">+    assert_ptr_equal(he_sid-&gt;value=
-, m1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    /* Try removing elements, on=
-ly that are in the map should return true */</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    assert_true(multi_hash_sid_remove(&amp;m, &amp=
-;sid1));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_=
-false(multi_hash_sid_remove(&amp;m, &amp;sid2));</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    assert_false(multi_hash_sid_remove(&amp;m,=
- &amp;sid1));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* should no longer f=
-ind the element */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   he_sid =3D multi_hash_sid_lookup(&amp;m, &amp;sid1);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    assert_null(he_sid);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    hash_free(m=2Esid_hash);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span> const struct CMUnitTest misc_tests[] =3D {</=
-span><br><span> #ifdef _WIN32</span><br><span>     cmocka_unit_test(test_wi=
-n_path_in_dir),</span><br><span>@@ -488,7 +533,8 @@</span><br><span>     cm=
-ocka_unit_test(test_auth_fail_temp_flags),</span><br><span>     cmocka_unit=
-_test(test_auth_fail_temp_flags_msg),</span><br><span>     cmocka_unit_test=
-(test_list),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    cmock=
-a_unit_test(test_atoi_variants)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    cmocka_unit_test(test_atoi_variants),</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    cmocka_unit_test(test_sid_hash_list)<=
-/span><br><span> };</span><br><span> </span><br><span> int</span><br><span>=
-</span><br></pre><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet=
-/c/openvpn/+/1727?usp=3Demail">change 1727</a>=2E To unsubscribe, or for he=
-lp writing mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/set=
-tings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://sch=
-ema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http=
-://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=2E=
-openvpn=2Enet/c/openvpn/+/1727?usp=3Demail"/><meta itemprop=3D"name" conten=
-t=3D"View Change"/></div></div>
+, m3);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    assert_true(multi_hash_sid_r=
+emove(&amp;m, &amp;sid3));</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    hash_fre=
+e(m=2Esid_hash);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ gc_free(&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> c=
+onst struct CMUnitTest misc_tests[] =3D {</span><br><span> #ifdef _WIN32</s=
+pan><br><span>     cmocka_unit_test(test_win_path_in_dir),</span><br><span>=
+@@ -488,7 +541,8 @@</span><br><span>     cmocka_unit_test(test_auth_fail_te=
+mp_flags),</span><br><span>     cmocka_unit_test(test_auth_fail_temp_flags_=
+msg),</span><br><span>     cmocka_unit_test(test_list),</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    cmocka_unit_test(test_atoi_variants)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cmocka_unit_test=
+(test_atoi_variants),</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    cmocka_unit_test(test_sid_hash_list)</span><br><span> };</span><br><s=
+pan> </span><br><span> int</span><br><span></span><br></pre><p>To view, vis=
+it <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1727?usp=3Demail">c=
+hange 1727</a>=2E To unsubscribe, or for help writing mail filters, visit <=
+a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=
+=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div it=
+emscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><li=
+nk itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1727?=
+usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>=
 
-<div style=3D"display:none"> Gerrit-Messag=
-eType: newpatchset </div>
-<div style=3D"display:none"> Gerrit-Project: open=
-vpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div s=
-tyle=3D"display:none"> Gerrit-Change-Id: Idb59ecd119331b198792ad1379bec8600=
-211651b </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1727 </di=
-v>
-<div style=3D"display:none"> Gerrit-PatchSet: 10 </div>
+
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div =
+style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"displa=
+y:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-C=
+hange-Id: Idb59ecd119331b198792ad1379bec8600211651b </div>
 <div style=3D"di=
-splay:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </d=
-iv>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@li=
-chtenheld=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-=
-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
-<div style=3D"=
-display:none"> Gerrit-Attention: flichtenheld &lt;frank@lichtenheld=2Ecom&g=
-t; </div>
+splay:none"> Gerrit-Change-Number: 1727 </div>
+<div style=3D"display:none">=
+ Gerrit-PatchSet: 11 </div>
+<div style=3D"display:none"> Gerrit-Owner: plai=
+sthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"=
+> Gerrit-Reviewer: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<div=
+ style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=
+=2Esourceforge=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-Attenti=
+on: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
 
 </body></html>
---+J/TvVJB9Qo=--
+--eEY12hg0pbE=--
 
 
---===============8353880518693866764==
+--===============4222779966883822016==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============8353880518693866764==
+--===============4222779966883822016==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -1891,5 +1912,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============8353880518693866764==--
+--===============4222779966883822016==--
 
