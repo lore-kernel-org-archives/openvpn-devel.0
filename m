@@ -4,73 +4,69 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 89B6AC531D0
-	for <openvpn-devel@archiver.kernel.org>; Fri, 24 Jul 2026 01:50:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3A062C531C9
+	for <openvpn-devel@archiver.kernel.org>; Fri, 24 Jul 2026 05:55:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:Cc:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:Date:To:From:Sender:Reply-To:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:In-Reply-To:References:List-Owner;
-	bh=XZYt3GYxOULJXu4Rtc6oi7cxjQ+1zVMIPhXM8JC11WI=; b=YWM2W76xPnU9jC4MNr+NBuWCNM
-	oB7SU7NvR6HYYie0CM+XAHINde0Zf6H2+R9GnqFyJw6ZNwRokSaMya+7g2YW2o7xgihUOpGllSyi/
-	tRFMqeCqUAYp0I0UHa6FEMSGIeF0MkbtwkpNhylMJ2laeJluj01/o8aleuF25Rd4GszM=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
+	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=6J//GGDYWzgh9mPsLVpD27DZ2xQF79qZRtu7Zt6Q+s0=; b=A4tKUbB48+24NRImR5krXaV7uB
+	kd5DDieBp6dC2r7UVCl8G0HMfrSRcmapzXafV/YwomTLOiLAnY8kegqJR/eldPHQ1HWxFOdEVcyfX
+	4OcrAGnkoAqAd1cTXPER8VD/t/0283mVEhrUnQlfrFP68P9/fM6KS8r2ug6fQ6BJB+lI=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wn53G-0006fD-4Q;
-	Fri, 24 Jul 2026 01:50:11 +0000
+	id 1wn8sl-0005S3-Hj;
+	Fri, 24 Jul 2026 05:55:40 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <qingfang.deng@linux.dev>) id 1wn53E-0006cV-Fm
+ (envelope-from <gert@blue4.greenie.muc.de>) id 1wn8sk-0005Rv-00
  for openvpn-devel@lists.sourceforge.net;
- Fri, 24 Jul 2026 01:50:10 +0000
+ Fri, 24 Jul 2026 05:55:38 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:Message-ID:
- Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
+ In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=5c4OvNGaZtH3rIpGU3wmibiDmqCdeKwggxfAKQdCr9s=; b=m1r+2BVL69C/3nbSABomqM55dy
- Lx7rgOYD19rvn2NYA98KVlloQ7kpHQKjY3R+4MoD1lZjLJM+8x0fhBg3uinp61KVbb+kdkP6tIA0W
- A3T7xWpANZsP36X5dRz4rDAHVrxhHG5d8hC4s+qyB5/y+WamhWhZcT5KJOMxkUFsnGe0=;
+ bh=3ZZmOfDTL1fGlk1r2Fr21fYHQsyD+0OXUlJBThBKIn4=; b=dY8YLUZuKwGDUVkMYXEX0kt0bW
+ CuiZBnYevQF/m9EBNHgejSmvfaVoiftUZHxNjM3H/SEq4ZImqeBS5NFyx8S0WHoUrBALw4H5VYBI4
+ 8TH+2RrWpgxxuU/CDjGMKpw4ie7bs8x5ytmb8WRLvTUgnL996wnLTbwFHTqFCtyjPyFw=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:Cc:To:From
- :Sender:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:
- Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
- References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=5c4OvNGaZtH3rIpGU3wmibiDmqCdeKwggxfAKQdCr9s=; b=k
- NZ9twn+gygoLb3n7EIMNNeTwcTehLheW7GNTs+SCIQCu/dPA1MSyku23+nE4/ILpEfwUoWnfel6wv
- mbVR0m4Uo4N/y97ih4g/Ggvave5IuTLYhpeRARYAoffienc9z9rWRc8lw4FtWt3gqRbURPhCIvcL+
- DTW6UGYjSXEbWGeQ=;
-Received: from out-171.mta1.migadu.com ([95.215.58.171])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
+ Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+ List-Post:List-Owner:List-Archive;
+ bh=3ZZmOfDTL1fGlk1r2Fr21fYHQsyD+0OXUlJBThBKIn4=; b=OigNfz00WFfMUfRPJa0CHSunHb
+ Jk8s682zYCfwHk4SFIfXcQOkbjzK+t+wHVw7wtzAc9q1jgSVeQ6fVADGtwDYX7GD6zhNy5mwmmKWg
+ fMN3Dhbsj0A/jCujI0Grfer74TCy/RnILgSozjlqxKh9iBEb5f16rAluubVIFMoPEwNg=;
+Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wn53A-0004ed-Ew for openvpn-devel@lists.sourceforge.net;
- Fri, 24 Jul 2026 01:50:09 +0000
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and
- include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
- t=1784857801;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:
- content-transfer-encoding:content-transfer-encoding;
- bh=5c4OvNGaZtH3rIpGU3wmibiDmqCdeKwggxfAKQdCr9s=;
- b=GxBxNr9sAmuE6LVrekGG+pw79IdExSIJKZ6r8eXhbgAyBcqtpWjR+adbLC62U8XUiEGTvt
- 2Itbtj2lSnTXEqHvDiLhQCGDdC2LuFAIipY1PFy9PfkdNGuFokSfuC94bHTidoPzTs3IBx
- 086wzQ12OxV5ZqtQCywYOrI+mpSbBns=
-From: Qingfang Deng <qingfang.deng@linux.dev>
-To: openvpn-devel@lists.sourceforge.net,
- Antonio Quartulli <antonio@openvpn.net>
-Date: Fri, 24 Jul 2026 09:49:26 +0800
-Message-ID: <20260724014926.102443-1-qingfang.deng@linux.dev>
+ id 1wn8sm-0002c5-O2 for openvpn-devel@lists.sourceforge.net;
+ Fri, 24 Jul 2026 05:55:38 +0000
+Received: from blue.greenie.muc.de (localhost [127.0.0.1])
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 66O5tUFM001401
+ for <openvpn-devel@lists.sourceforge.net>; Fri, 24 Jul 2026 07:55:30 +0200
+Received: (from gert@localhost)
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 66O5tUBG001395
+ for openvpn-devel@lists.sourceforge.net; Fri, 24 Jul 2026 07:55:30 +0200
+From: Gert Doering <gert@greenie.muc.de>
+To: openvpn-devel@lists.sourceforge.net
+Date: Fri, 24 Jul 2026 07:55:23 +0200
+Message-ID: <20260724055529.1376-1-gert@greenie.muc.de>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <gerrit.1771284291000.I0ca7b5b7ec1a01acaad222c99db137c94c88555a@gerrit.openvpn.net>
+References: <gerrit.1771284291000.I0ca7b5b7ec1a01acaad222c99db137c94c88555a@gerrit.openvpn.net>
 MIME-Version: 1.0
-X-Migadu-Flow: FLOW_OUT
-X-Headers-End: 1wn53A-0004ed-Ew
-Subject: [Openvpn-devel] [PATCH ovpn-net v2] ovpn: fix incorrect use of
- rcu_access_pointer()
+X-Headers-End: 1wn8sm-0002c5-O2
+Subject: [Openvpn-devel] [PATCH v3] options: make `tun` the default for
+ `--dev`
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -82,39 +78,112 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: Qingfang Deng <qingfang.deng@linux.dev>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-rcu_access_pointer() should only be used to test the value of a pointer,
-not to dereference it. As it's in a spin_lock_bh() critical section, use
-rcu_dereference_bh() instead, avoiding an extra rcu_read_lock().
+From: Antonio Quartulli <antonio@mandelbit.com>
 
-Fixes: f6226ae7a0cd ("ovpn: introduce the ovpn_socket object")
-Signed-off-by: Qingfang Deng <qingfang.deng@linux.dev>
+With this change, OpenVPN can be launched without specifying
+any --dev option and it will start a `tun` (L3) tunnel with the
+interface named `tunX`.
+As before, this behaviour can be changed using --dev or --dev-type.
+
+Existing configs won't see any behavioural change as they all
+had to contain at least one --dev directive.
+
+Change-Id: I0ca7b5b7ec1a01acaad222c99db137c94c88555a
+Signed-off-by: Antonio Quartulli <antonio@mandelbit.com>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1537
 ---
-v2: use rcu_dereference_bh() to make lockdep happy
 
- drivers/net/ovpn/peer.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-diff --git a/drivers/net/ovpn/peer.c b/drivers/net/ovpn/peer.c
-index a21d02ac715e..bb3d409b9f1c 100644
---- a/drivers/net/ovpn/peer.c
-+++ b/drivers/net/ovpn/peer.c
-@@ -1165,7 +1165,7 @@ static void ovpn_peer_release_p2p(struct ovpn_priv *ovpn, struct sock *sk,
- 	}
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1537
+This mail reflects revision 3 of this Change.
+
+Acked-by according to Gerrit (reflected above):
+
+        
+diff --git a/doc/man-sections/examples.rst b/doc/man-sections/examples.rst
+index 80ef2df..416e576 100644
+--- a/doc/man-sections/examples.rst
++++ b/doc/man-sections/examples.rst
+@@ -63,6 +63,10 @@
+ Example 1: A simple tunnel without security (not recommended)
+ -------------------------------------------------------------
  
- 	if (sk) {
--		ovpn_sock = rcu_access_pointer(peer->sock);
-+		ovpn_sock = rcu_dereference_bh(peer->sock);
- 		if (!ovpn_sock || ovpn_sock->sk != sk) {
- 			spin_unlock_bh(&ovpn->lock);
- 			return;
--- 
-2.43.0
-
++Since :code:`tun` is the default device type, ``--dev`` is optional; when it
++is omitted OpenVPN creates a dynamically-named ``tunX`` device. The examples
++below still name the device (``--dev tun1``) explicitly for clarity.
++
+ On bob::
+ 
+    openvpn --remote alice.example.com --dev tun1 \
+diff --git a/doc/man-sections/vpn-network-options.rst b/doc/man-sections/vpn-network-options.rst
+index 33ebedb..960c6ad 100644
+--- a/doc/man-sections/vpn-network-options.rst
++++ b/doc/man-sections/vpn-network-options.rst
+@@ -50,6 +50,10 @@
+   :code:`null` or an arbitrary name string (:code:`X` can be omitted for
+   a dynamic device.)
+ 
++  If neither ``--dev`` nor ``--dev-type`` is specified, OpenVPN defaults to
++  :code:`tun`, i.e. it creates a dynamically-named :code:`tunX` device and
++  runs a layer-3 tunnel.
++
+   See examples section below for an example on setting up a TUN device.
+ 
+   You must use either tun devices on both ends of the connection or tap
+diff --git a/sample/sample-config-files/client.conf b/sample/sample-config-files/client.conf
+index 53b8027..1806b24 100644
+--- a/sample/sample-config-files/client.conf
++++ b/sample/sample-config-files/client.conf
+@@ -20,6 +20,8 @@
+ # On most systems, the VPN will not function
+ # unless you partially or fully disable
+ # the firewall for the TUN/TAP interface.
++# "tun" is the default device type, so the
++# "dev tun" line below is optional.
+ ;dev tap
+ dev tun
+ 
+diff --git a/sample/sample-config-files/server.conf b/sample/sample-config-files/server.conf
+index 8943c34..924fb96 100644
+--- a/sample/sample-config-files/server.conf
++++ b/sample/sample-config-files/server.conf
+@@ -49,6 +49,8 @@
+ # On most systems, the VPN will not function
+ # unless you partially or fully disable/open
+ # the firewall for the TUN/TAP interface.
++# "tun" is the default device type, so the
++# "dev tun" line below is optional.
+ ;dev tap
+ dev tun
+ 
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 87218d4..d4cc158 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -189,7 +189,8 @@
+     " or --socks-proxy"
+     " is used).\n"
+     "--nobind        : Do not bind to local address and port.\n"
+-    "--dev tunX|tapX : tun/tap device (X can be omitted for dynamic device.\n"
++    "--dev tunX|tapX : tun/tap device (X can be omitted for dynamic device).\n"
++    "                  Defaults to \"tun\" if neither --dev nor --dev-type is given.\n"
+     "--dev-type dt   : Which device type are we using? (dt = tun or tap) Use\n"
+     "                  this option only if the tun/tap device used with --dev\n"
+     "                  does not begin with \"tun\" or \"tap\".\n"
+@@ -801,6 +802,7 @@
+     gc_init(&o->dns_options.gc);
+ 
+     o->mode = MODE_POINT_TO_POINT;
++    o->dev = "tun";
+     o->topology = TOP_UNDEF;
+     o->ce.proto = PROTO_UDP;
+     o->ce.af = AF_UNSPEC;
 
 
 _______________________________________________
