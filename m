@@ -4,126 +4,127 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 10B5EC531C9
-	for <openvpn-devel@archiver.kernel.org>; Fri, 24 Jul 2026 16:04:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1AACFC531C9
+	for <openvpn-devel@archiver.kernel.org>; Fri, 24 Jul 2026 16:04:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=Fq4kuUyPYjIcCtAksPq3YNOvGlmI9gFmdlx55TaLzXA=; b=jeSYph90VnJ9pGAhlyXsRkDrS9
-	vMG8xpuo2FMahpqa0UWUUHS03mrpA8btYD8lpPtDAguTqEEigQusUqTPqGzfhb8ru47oqDj6RW/wg
-	I+HaSd97vzGsdu8c5CZg6E5mFdUTYGQFg7VbInOINegni9UkLxRM8pnAAdTiHzpEMh4c=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=hujH4ZaxZr1RynjAqYZRdiZumxpdgf+5RAxYt5N/gZ4=; b=nI5zhJYP1FwLrC6Ox8FhnxYQNK
+	zDGW6acnsWwiaWxQiB2fFx5FhmN/cIBGxUCxqU8ANQnoTyAEeAFI34huvGR0MLh6WazNNW3uTu/J7
+	SHVt6rViQd4KO88S7zsrd6o01IJllbTXEzgO26c5Dv0O/44pJhcts6XGBGPtiI9iSRQA=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wnINr-00069B-Un;
-	Fri, 24 Jul 2026 16:04:21 +0000
+	id 1wnINs-0007Nr-MC;
+	Fri, 24 Jul 2026 16:04:25 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wnINq-000694-Lc
+ (envelope-from <gerrit@openvpn.net>) id 1wnINq-0007Nj-Am
  for openvpn-devel@lists.sourceforge.net;
- Fri, 24 Jul 2026 16:04:20 +0000
+ Fri, 24 Jul 2026 16:04:23 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
  :List-Post:List-Owner:List-Archive;
- bh=nafhy0U9Lr/VXPqaudWi27e1MumjY6/xo+Rs7d3csTs=; b=fRn+w6AngjKkd5o6JKHZHFwj9H
- t9ot8flzi22K1rVABLvtBioxKCs/CFiLIUZxbsHAVXBmNNpsBuQENNtdJthklUglhOIrDTQaz1nfP
- HZTdoQr/hTavQtCRMChLled4r+/55B9szkW0lUfU3Fl7JetjqsUlzsmNSGIyupbkoqnU=;
+ bh=MPb+hvsLZRvxAHCRP5I2QjF7GZ1iikNywPuRpJFgJuo=; b=DlJT7hEmo3IEsEbvqBI33/dUoa
+ RkKqYSH4OM/4K+FF8DSkZwiLTN6+8aS9nYmz3b76CNU7BwEDSgWidjP7zQ8Kur3NvUxzGKnA0vc3R
+ 6n98OXbtDGHOrbpWQC3pETlO4bJwkpYUsSPQ/+6Kpdx1A80u2zb/PLX6eQ5HV85Dx7Ug=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
  Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=nafhy0U9Lr/VXPqaudWi27e1MumjY6/xo+Rs7d3csTs=; b=I
- fzns43vmBHoLWaRkjs/6t9rPFyuQEXfeVdn5gtN3fba8GJx0PbQ3WWnC852Kf1ZarTZyPTjTfAED6
- j9uNHpejQnFOvRcdUI59TBiqgyVivkB++DumrSFfKL6S9W/yhZPxEltPRfw/v5m9/smwRRsenCN9r
- VWV83iyIDIuIwIpY=;
-Received: from mail-wm1-f43.google.com ([209.85.128.43])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ List-Owner:List-Archive; bh=MPb+hvsLZRvxAHCRP5I2QjF7GZ1iikNywPuRpJFgJuo=; b=E
+ N01JieuYKQcBOXi0xbZSnj0WjnsmCTz6iPu2u4T7PevCXfRXIpGBOFN6Lwh0wUNFEON9OYRd5p9M7
+ 8kWGCfewUt5use++uKTtWMfpGw17lS0rkAcNvYUcOoyyeInI8Jy0gqF8W9OsoqSvovNxTHRqILtfM
+ QUpKf4XS7ihlEjGI=;
+Received: from mail-wr1-f48.google.com ([209.85.221.48])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wnINm-0000kw-Jb for openvpn-devel@lists.sourceforge.net;
- Fri, 24 Jul 2026 16:04:20 +0000
-Received: by mail-wm1-f43.google.com with SMTP id
- 5b1f17b1804b1-493f75f7172so5611235e9.1
+ id 1wnINs-0005hu-Na for openvpn-devel@lists.sourceforge.net;
+ Fri, 24 Jul 2026 16:04:22 +0000
+Received: by mail-wr1-f48.google.com with SMTP id
+ ffacd0b85a97d-47f93b2fe4cso546185f8f.0
  for <openvpn-devel@lists.sourceforge.net>;
- Fri, 24 Jul 2026 09:04:18 -0700 (PDT)
+ Fri, 24 Jul 2026 09:04:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1784909052; x=1785513852; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1784909055; x=1785513855; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=nafhy0U9Lr/VXPqaudWi27e1MumjY6/xo+Rs7d3csTs=;
- b=eUC90Z+vEkgcYgW3mfbQ6npxhs1GqmhoGwlyXkFn2qQilgljA8YmkLXIg/3rl42j6T
- jP6FZOmSf+GS2f7HeYN25BnmRv29ZfRuH3biUnIz42Nis09HUIJKODzC6os7ZdOY71X5
- 6dw0Tnmr9b4gzHHwnh9TVdeLmHYregqfmdei0/7jHlwR891ED5utqvhIMK30TMDyiftN
- PXJlgJUgXiCxtqo5lQxmv51e/2GIdJbN8GiEZ3zwF34kAyimC2HzLajwYRb43xfFd9Cr
- zTUAN2YZ839nQrHpMqbR0m32V7xD09kmherGg17KQWlzyzHQvCbC0hwc3jV63pfeoWIP
- axuw==
+ bh=MPb+hvsLZRvxAHCRP5I2QjF7GZ1iikNywPuRpJFgJuo=;
+ b=Jt6cauFJvbY4KvOjewD7ptC3PEaMQ/pXMjc6KCrXvMq66K6NQfrPgmamtjcsdMXfoF
+ kGZR81sR3b2aJRalAmHu5Naxvw/FAzzvZriJDRUceWX2WefwYY5dC8LBo8QtGeQ856Th
+ ksWKRVdlcdQ2kYgQssgDOKxBVq6MoBTg0ngzrPungs4JqMQGvuWkWqReVOu5y5ovZhmn
+ Zg/0khRHca0/QTHnrr/5brUl5/0o2go3+/pH7yP0F5gwiAz8ST1A+QRJb5N7lbwocL/G
+ ry11u4gYLKh9TWaC+W8P84UKmkh/+7LwJoSd+5JNzdME5qDLqJ9fuYrptRgReHEIcada
+ ooyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1784909052; x=1785513852;
+ d=1e100.net; s=20251104; t=1784909055; x=1785513855;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=nafhy0U9Lr/VXPqaudWi27e1MumjY6/xo+Rs7d3csTs=;
- b=FMcnG2abvVeqUOUFp6VOgnqotEzPAEZgvwXtD6lq8o+4M6TYUKoKPuFv/S+h+Og4KK
- HzsQy3nZWdWR3PkDsR6lYiHXStEfC8Ss880MJVaAnExpAPNIGkSQS9aD5YHActmTKBPG
- UDxV82V/ZfQlTAZAR2SEhXLDkJI1y4YZUXwplepIMOE3jh/dnZkP4zxy98mt1BmWiFbj
- RGh6N/gAFvKVyNZ2FKweuZXVHOTk0SwFVpRSMV0P8fQmxKEX5jhoPRIpVucRYzM1CBfM
- 6v6dp1xr33x5Gb35FFnxs8EajReBnqAp8i1/U9pyk3TY3AaKIC32Qz9RYw/5SJHtC1h+
- XtmA==
-X-Gm-Message-State: AOJu0YzD35NJBezlCgNK+fTOzQwmjA/Q6VgJZw0Lll1BRFkmxr/zZryr
- oUewb6lx9l4o3Lyq+8s325URHeQCl4CNxnIzqs56+J3COqJtY4/vtILmkn77CXO1F+SqxzdRwNw
- sXRc+utaUbbTjTG8a8UMG46DslMdmPX60Gr6W2KIsoNQ9jmorfaPnOmBgUtNeqGJzu3B5jt+RPv
- UcmgNjQA==
-X-Gm-Gg: AR+sD100IrwupDRz2nb4hmHC75xrAxPk6eDFktw+VrtpOEMR5058TYjInJDAdmPv7AZ
- ZInV6mxBzvnJ3Zr0eVuRBW4zPoWgfPOvb1lmOHYjk1M5NlLETGbDpwp8bQAwg2TMyLUKqIbblxj
- vs49Kcj4ZNjm2t3euS5DbQtDXMYYc6t+cHIAnbsf1fZ7eHGBdkTWHpRlVTFirWkh0AouLA6QYX5
- VQL4kZSt6ucV0moIG+k5nG80dS5g8uvP7LRJDNWxb+wbY4HuDz3K8BngdCho9zjIuSSlxWnEt/J
- Rn4P1uYA3PHsCdqS4xSdKmNtfNK2QbHY+uoWeomCntTXbK4WQTvu3aKyAgkqrSwZeyk4utSf1Pe
- hQpD4nHcMJcSxogJlp6fW6/ge+yZTMj0rGUXiAIpngGR0cOXocu3gOJQ8wPjiNTHklxvdLi0d2R
- 0lTEcQSwfYGQbynityd1InOKHrYj1snh2hD7zpDUWN/P3gDsZAHBXzKDL1JkqB25T+UnuNDrKKT
- y987gzPxtIlWdrIG8As5c1Zx8E/gMJ1Le1mo2gU+3GlRIZdoVPu7rotbZQEpWEf6Kj8
-X-Received: by 2002:a05:600c:350f:b0:495:6f6b:127 with SMTP id
- 5b1f17b1804b1-49573cb9f95mr94487835e9.6.1784909051810; 
- Fri, 24 Jul 2026 09:04:11 -0700 (PDT)
+ bh=MPb+hvsLZRvxAHCRP5I2QjF7GZ1iikNywPuRpJFgJuo=;
+ b=KOBFE8TZZGqfUR8W05Bx7Ttyvf9xzeV9FGJNFxTzK+hqSpTT2NCtsabR3FggmzW0SG
+ LyRhg8HnY5ovEsanTMAFnAPdDWjPWM8+25G2Ls9KaphQNfPPZ7p+VjGTfAOzg21hBCDk
+ YknCXQIcByTqQvA3casncvrcWPvD+Xk2glK7scNXl2Thq+W+qzgruiKjgWidSa28TGjT
+ GG4r7TAAwbkKaV6pmyYYbOkgK+pqJh44OZWV+Vw67m1n7uiPBs67j+66KzNerpb/dM7j
+ 4d8r8pVrJVWZ34rGwv/pw3jKpl1T4vDaeVckXdCwayVwon6XRhzgbPVfdMoRe8i2RMU+
+ FDGA==
+X-Gm-Message-State: AOJu0Yxo8KZuHt7Wct030N2PP23agI0OzGXG3wU9liQztIlhO/M7TKH9
+ S8CSAN27cOhGZW0/sTG6HHU81zxsq30HWUtnkFmDxiRJ/h1QQe3vM9loAb6kObwoafPBG6GKTkT
+ WBYdju5Jt9aq+/bHVIqLHZofvV7fayUWM5mMfGfwREYV7pq3c41iClpEV7EPjTeS4NXb1TVpNqh
+ sav0n0WQ==
+X-Gm-Gg: AR+sD11pQm7kJ0vIZnnfby6KgoOjpzRoZdJPcqi9soaMn0Dx3g6sANaapqK+IHdaHwJ
+ Fxy9uzeXjmTivQ5dgu8CgQNM8ZPRRWeBefaSs5AMsz2pgrVSpkE43Is9L2NtTKZrXRdA0QJn5ST
+ j1oe/Wi9gnFRSSlf101Xki495dh0jA9ASW+rdP0QzPmj35msKfbmLhqeg6PdI+LdhvuAHyik4cB
+ M53uPIG4Y84gChYh1V4612yxys0onVwxudRs9ctoLRt0BDBWZEy8JLPAvB8ZbuOLNlyBY6/Rn+7
+ ms9CxDJnh4rEGPVDKBkhJ9AXSB5cFbgG+09gGcUBo8bgxI9y+SUEpjOCa71ax2pDhETZhh0VKhc
+ bDa6r+ctUOBgY3/UPlrvy95D5LT93ZRWnFfgbQ4nOV+s3g7QP8M5u1nBRGxRb3m/9OdmJlidkdB
+ 3PRmObRImU8VQkzbDFyhwSR+0bS6OBpUwGusUXbAAM/+Qf6Z0Gq3sQN5/NO7885yjj0gukPY2Xa
+ RTPRQudhrUeHZMBZ4RkAqM8IxxgvquvbOMBnvotCB51iH95xUKYFKjnQ89azulVQf7+EAJsAMhD
+ OFc=
+X-Received: by 2002:a05:6000:4a1b:b0:472:7dce:d8c7 with SMTP id
+ ffacd0b85a97d-47f8dc9739fmr10133750f8f.36.1784909053970; 
+ Fri, 24 Jul 2026 09:04:13 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-496b487a3f0sm615355e9.13.2026.07.24.09.04.11
+ ffacd0b85a97d-47f85bdac28sm23821516f8f.16.2026.07.24.09.04.13
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 24 Jul 2026 09:04:11 -0700 (PDT)
+ Fri, 24 Jul 2026 09:04:13 -0700 (PDT)
 X-Google-Original-From: "plaisthos (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
 Date: Fri, 24 Jul 2026 16:04:03 +0000
 To: flichtenheld <frank@lichtenheld.com>
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newpatchset
-X-Gerrit-PatchSet: 8
-X-Gerrit-Change-Id: I3d52c6d008502293c3ec57ad22d1c613dcd1a94e
-X-Gerrit-Change-Number: 1723
+X-Gerrit-PatchSet: 9
+X-Gerrit-Change-Id: I8e9923b51b77f184c7d49d697004cb02d2b5cfc3
+X-Gerrit-Change-Number: 1726
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1723?usp=email>
-X-Gerrit-Commit: 2d3736eddf9723f62fefaffe0853c35e97efe297
-In-Reply-To: <gerrit.1782134588000.I3d52c6d008502293c3ec57ad22d1c613dcd1a94e@gerrit.openvpn.net>
-References: <gerrit.1782134588000.I3d52c6d008502293c3ec57ad22d1c613dcd1a94e@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzgyMTM0NTg4MDAwLkkzZDUyYzZkMDA4NTAyMjkzYzNlYzU3YWQyMmQxYzYxM2RjZDFhOTRlQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <0524d037b1b3d2091354550a7f69f32552c520f4-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1726?usp=email>
+X-Gerrit-Commit: 6a4d86dc51bebf4f52ae01b0cec91f5fb0c37e01
+In-Reply-To: <gerrit.1782134588000.I8e9923b51b77f184c7d49d697004cb02d2b5cfc3@gerrit.openvpn.net>
+References: <gerrit.1782134588000.I8e9923b51b77f184c7d49d697004cb02d2b5cfc3@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzgyMTM0NTg4MDAwLkk4ZTk5MjNiNTFiNzdmMTg0YzdkNDlkNjk3MDA0Y2IwMmQyYjVjZmMzQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <2664a89cbed6bc16903bb398b242a4d2abb40ba3-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wnINm-0000kw-Jb
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Extract
- multi_check_dest_addr_allowed from multi_process_float
+X-Headers-End: 1wnINs-0005hu-Na
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Split
+ multi_get_create_instance_udp into data and control parts
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -141,15 +142,15 @@ Reply-To: arne-openvpn@rfc2549.org, openvpn-devel@lists.sourceforge.net,
  frank@lichtenheld.com
 Cc: "plaisthos \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============6179467405476240835=="
+Content-Type: multipart/mixed; boundary="===============0555181113895928766=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============6179467405476240835==
+--===============0555181113895928766==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Ow+wHPskki8="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="afq2uaz/ea8="; charset=UTF-8
 
---Ow+wHPskki8=
+--afq2uaz/ea8=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
@@ -161,270 +162,345 @@ I=
 'd like you to reexamine a change=2E Please visit
 
     http://gerrit=2Eopen=
-vpn=2Enet/c/openvpn/+/1723?usp=3Demail
+vpn=2Enet/c/openvpn/+/1726?usp=3Demail
 
-to look at the new patch set (#8)=
+to look at the new patch set (#9)=
 =2E
 
 The change is no longer submittable: checks~ChecksSubmitRule is unsati=
 sfied now=2E
 
 
-Change subject: Extract multi_check_dest_addr_allowed from m=
-ulti_process_float
+Change subject: Split multi_get_create_instance_udp into dat=
+a and control parts
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E
 
-Extract multi_check_dest_addr_allowed from multi_process_float
+Split multi_get_create_instance_udp into data and control parts
 
-Cha=
-nge-Id: I3d52c6d008502293c3ec57ad22d1c613dcd1a94e
-Signed-off-by: Arne Schwa=
-be <arne@rfc2549=2Eorg>
+Th=
+is currently leads to a bit of code duplication but this refactoring
+will m=
+ake the follow up patches cleaner and better to understand when
+the control=
+ channel lookup will be changed to use session ids instead of
+IP addresses=
+=2E
+
+Change-Id: I8e9923b51b77f184c7d49d697004cb02d2b5cfc3
+Signed-off-by: Ar=
+ne Schwabe <arne@rfc2549=2Eorg>
 ---
-M src/openvpn/multi=2Ec
-1 file changed, 75 inse=
-rtions(+), 45 deletions(-)
+M src/openvpn/mudp=2Ec
+1 file changed, =
+97 insertions(+), 54 deletions(-)
 
 
-  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/=
-openvpn refs/changes/23/1723/8
+  git pull ssh://gerrit=2Eopenvpn=2Enet=
+:29418/openvpn refs/changes/26/1726/9
 
-diff --git a/src/openvpn/multi=2Ec b/src/op=
-envpn/multi=2Ec
-index 925431b=2E=2Eaf2b1c5 100644
---- a/src/openvpn/multi=
-=2Ec
-+++ b/src/openvpn/multi=2Ec
-@@ -3072,6 +3072,76 @@
+diff --git a/src/openvpn/mudp=2Ec b/=
+src/openvpn/mudp=2Ec
+index d22c53b=2E=2E9658b18 100644
+--- a/src/openvpn/mu=
+dp=2Ec
++++ b/src/openvpn/mudp=2Ec
+@@ -204,8 +204,7 @@
+ static struct multi_=
+instance *
+ handle_connection_attempt(struct multi_context *m,
+            =
+               struct link_socket *sock,
+-                          struct =
+mroute_addr *real,
+-                          struct hash_bucket *bucket)
++=
+                          struct mroute_addr *real)
+ {
+     struct hash *ha=
+sh =3D m->hash;
+     struct tls_pre_decrypt_state state =3D { 0 };
+@@ -236,=
+7 +235,9 @@
+             if (mi)
+             {
+                 const uint=
+64_t hv =3D hash_value(hash, real);
++                struct hash_bucket *bu=
+cket =3D hash_bucket(hash, hv);
+                 hash_add_fast(hash, bucket=
+, &mi->real, hv, mi);
++
+                 mi->did_real_hash =3D true;
+      =
+           multi_assign_peer_id(m, mi);
+ 
+@@ -285,6 +286,19 @@
+     return =
+NULL;
  }
+ 
++struct multi_instance *
++multi_get_instance_udp_control(struct =
+multi_context *m, struct link_socket *sock)
++{
++    struct mroute_addr real=
+ =3D { 0 };
++    real=2Eproto =3D sock->info=2Eproto;
++
++    if (mroute_ext=
+ract_openvpn_sockaddr(&real, &m->top=2Ec2=2Efrom=2Edest, true) && m->top=2E=
+c2=2Ebuf=2Elen > 0)
++    {
++        return multi_get_instance_udp_real(m, &=
+real);
++    }
++
++    return NULL;
++}
  
  /**
-+ * This =
-methods checks if a client instance is allowed to use an address
-+ *
-+ * Re=
-asons for disallowing a specific address are that a client might be
-+ * alr=
-eady using that address=2E In that case the method needs to decide
-+ * if t=
-his instance can kick out the other instance=2E
-+ *
-+ * The method will the=
-n terminate the other instance if that check was
-+ * positive=2E
-+ */
-+stat=
-ic bool
-+multi_check_dest_addr_allowed(struct multi_context *m, struct mult=
-i_instance *mi, struct mroute_addr *real)
-+{
-+    struct hash *hash =3D m->=
-hash;
-+    const uint64_t hv =3D hash_value(hash, real);
-+    struct hash_b=
-ucket *bucket =3D hash_bucket(hash, hv);
-+
-+    /* make sure that we don't =
-assign the client to an address taken by
-+     * another client */
-+    str=
-uct hash_element *he =3D hash_lookup_fast(hash, bucket, real, hv);
-+    if =
-(!he)
-+    {
-+        /* Address is not taken, everything is fine=2E */
-+  =
-      return true;
-+    }
-+
-+    struct multi_instance *ex_mi =3D he->value=
-;
-+
-+    struct tls_multi *m1 =3D mi->context=2Ec2=2Etls_multi;
-+    struct=
- tls_multi *m2 =3D ex_mi->context=2Ec2=2Etls_multi;
-+
-+    struct gc_arena =
-gc =3D gc_new();
-+    int ret =3D false;
-+
-+    /* do not allow if target a=
-ddress is taken by client with another cert */
-+    if (!cert_hash_compare(=
-m1->locked_cert_hash_set, m2->locked_cert_hash_set))
-+    {
-+        msg(D_=
-MULTI_LOW, "Disallow float to an address taken by another client %s",
-+    =
-        multi_instance_string(ex_mi, false, &gc));
-+
-+        mi->context=
-=2Ec2=2Ebuf=2Elen =3D 0;
-+        goto done;
-+    }
-+
-+    /* It doesn't ma=
-ke sense to let a peer float to the address it already
-+     * has, so we d=
-isallow it=2E This can happen if a DCO netlink notification
-+     * gets lo=
-st and we miss a floating step=2E
-+     */
-+    if (m1->rx_peer_id =3D=3D m=
-2->rx_peer_id)
-+    {
-+        msg(M_WARN,
-+            "disallowing peer %=
-" PRIu32 " (%s) from floating to "
-+            "its own address (%s)",
-+  =
-          m1->rx_peer_id, tls_common_name(mi->context=2Ec2=2Etls_multi, fal=
-se),
-+            mroute_addr_print(&mi->real, &gc));
-+        goto done;
-+=
-    }
-+
-+    msg(D_MULTI_LOW,
-+        "closing instance %s due to float co=
-llision with %s "
-+        "using the same certificate",
-+        multi_ins=
-tance_string(ex_mi, false, &gc), multi_instance_string(mi, false, &gc));
-+ =
-   multi_close_instance(m, ex_mi, false);
-+    ret =3D true;
-+
-+done:
-+    =
-gc_free(&gc);
-+    return ret;
-+}
-+
-+/**
-  * Handles peer floating=2E
-  *
- =
- * If peer is floated to a taken address, either drops packet
-@@ -3083,8 +3=
-153,6 @@
- multi_process_float(struct multi_context *m, struct multi_instanc=
-e *mi, struct link_socket *sock)
+  * Get a client instance based=
+ on real address=2E  If
+@@ -292,72 +306,101 @@
+  * maintaining real address=
+ hash table atomicity=2E
+  */
+ struct multi_instance *
+-multi_get_create_in=
+stance_udp(struct multi_context *m, bool *floated, struct link_socket *sock=
+)
++multi_get_instance_udp_data(struct multi_context *m, bool *floated, stru=
+ct mroute_addr *real, struct link_socket *sock)
  {
-     struct mroute_addr real =3D { 0 };=
-
+-    struct gc_arena gc =
+=3D gc_new();
+-    struct mroute_addr real =3D { 0 };
+     struct multi_ins=
+tance *mi =3D NULL;
 -    struct hash *hash =3D m->hash;
--    struct gc_arena gc =3D gc_new();
-=
+-    real=2Eproto =
+=3D sock->info=2Eproto;
  
-     if (mi->real=2Etype & MR_WITH_PROTO)
-     {
-@@ -3094,53 +3162,16 @@
-=
- 
-     if (!mroute_extract_openvpn_sockaddr(&real, &m->top=2Ec2=2Efrom=2Ede=
-st, true))
-     {
--        goto done;
-+        return;
-     }
- 
--    const =
-uint64_t hv =3D hash_value(hash, &real);
--    struct hash_bucket *bucket =
-=3D hash_bucket(hash, hv);
--
--    /* make sure that we don't float to an ad=
-dress taken by another client */
--    struct hash_element *he =3D hash_look=
-up_fast(hash, bucket, &real, hv);
--    if (he)
-+    if (!multi_check_dest_a=
-ddr_allowed(m, mi, &real))
-     {
--        struct multi_instance *ex_mi =3D=
- (struct multi_instance *)he->value;
--
--        struct tls_multi *m1 =3D mi=
-->context=2Ec2=2Etls_multi;
--        struct tls_multi *m2 =3D ex_mi->contex=
-t=2Ec2=2Etls_multi;
--
--        /* do not float if target address is taken b=
-y client with another cert */
--        if (!cert_hash_compare(m1->locked_ce=
-rt_hash_set, m2->locked_cert_hash_set))
--        {
--            msg(D_MULTI=
-_LOW, "Disallow float to an address taken by another client %s",
--         =
-       multi_instance_string(ex_mi, false, &gc));
--
--            mi->contex=
-t=2Ec2=2Ebuf=2Elen =3D 0;
--
--            goto done;
--        }
--
--        /=
-* It doesn't make sense to let a peer float to the address it already
--    =
-     * has, so we disallow it=2E This can happen if a DCO netlink notificat=
-ion
--         * gets lost and we miss a floating step=2E
--         */
--    =
-    if (m1->rx_peer_id =3D=3D m2->rx_peer_id)
--        {
--            msg(M=
-_WARN,
--                "disallowing peer %" PRIu32 " (%s) from floating to=
- "
--                "its own address (%s)",
--                m1->rx_peer_id=
-, tls_common_name(mi->context=2Ec2=2Etls_multi, false),
--                mr=
-oute_addr_print(&mi->real, &gc));
--            goto done;
--        }
--
--   =
-     msg(D_MULTI_LOW,
--            "closing instance %s due to float collis=
-ion with %s "
--            "using the same certificate",
--            multi=
-_instance_string(ex_mi, false, &gc), multi_instance_string(mi, false, &gc))=
-;
--        multi_close_instance(m, ex_mi, false);
-+        return;
-     }
- =
-
-+    struct gc_arena gc =3D gc_new();
+-    if (mroute_extract_openvpn_sockaddr(&real, &=
+m->top=2Ec2=2Efrom=2Edest, true) && m->top=2Ec2=2Ebuf=2Elen > 0)
++    uint8=
+_t *ptr =3D BPTR(&m->top=2Ec2=2Ebuf);
++    uint8_t op =3D ptr[0] >> P_OPCOD=
+E_SHIFT;
++    bool v2 =3D (op =3D=3D P_DATA_V2) && (m->top=2Ec2=2Ebuf=2Elen=
+ >=3D (1 + 3));
++    bool peer_id_disabled =3D false;
 +
-     msg(D_MULTI_MEDIUM, "peer %" =
-PRIu32 " (%s) floated from %s to %s",
-         mi->context=2Ec2=2Etls_multi=
-->rx_peer_id,
-         tls_common_name(mi->context=2Ec2=2Etls_multi, false)=
-,
-@@ -3169,7 +3200,6 @@
-     ASSERT(hash_add(m->cid_hash, &mi->context=2Ec2=
-=2Emda_context=2Ecid, mi, true));
- #endif
++    /* make sure b=
+uffer has enough length to read opcode (1 byte) and peer-id (3 bytes) */
++ =
+   if (v2)
+     {
+-        const uint64_t hv =3D hash_value(hash, &real);
+-=
+        struct hash_bucket *bucket =3D hash_bucket(hash, hv);
+-        uint=
+8_t *ptr =3D BPTR(&m->top=2Ec2=2Ebuf);
+-        uint8_t op =3D ptr[0] >> P_=
+OPCODE_SHIFT;
+-        bool v2 =3D (op =3D=3D P_DATA_V2) && (m->top=2Ec2=2E=
+buf=2Elen >=3D (1 + 3));
+-        bool peer_id_disabled =3D false;
++       =
+ uint32_t peer_id =3D ((uint32_t)ptr[1] << 16) | ((uint32_t)ptr[2] << 8) | =
+((uint32_t)ptr[3]);
++        peer_id_disabled =3D (peer_id =3D=3D MAX_PEER_=
+ID);
  
--done:
-     gc_free(&gc);
+-        /* make sure buffer has enough length to read opcode (1 byt=
+e) and peer-id (3 bytes) */
+-        if (v2)
++        if (!peer_id_disabled=
+ && (peer_id < m->max_clients) && (m->instances[peer_id]))
+         {
+-    =
+        uint32_t peer_id =3D ((uint32_t)ptr[1] << 16) | ((uint32_t)ptr[2] <=
+< 8) | ((uint32_t)ptr[3]);
+-            peer_id_disabled =3D (peer_id =3D=
+=3D MAX_PEER_ID);
+-
+-            if (!peer_id_disabled && (peer_id < m->max=
+_clients) && m->instances[peer_id])
++            /* Floating on TCP will ne=
+ver be possible, so ensure we only process
++             * UDP clients */
++=
+            if (m->instances[peer_id]->context=2Ec2=2Elink_sockets[0]->info=
+=2Eproto
++                =3D=3D sock->info=2Eproto)
+             {
+-      =
+          /* Floating on TCP will never be possible, so ensure we only proc=
+ess
+-                 * UDP clients */
+-                if (m->instances[pe=
+er_id]->context=2Ec2=2Elink_sockets[0]->info=2Eproto
+-                    =
+=3D=3D sock->info=2Eproto)
+-                {
+-                    mi =3D m=
+->instances[peer_id];
+-                    *floated =3D !link_socket_actual=
+_match(&mi->context=2Ec2=2Efrom, &m->top=2Ec2=2Efrom);
++                mi =
+=3D m->instances[peer_id];
++                *floated =3D !link_socket_actua=
+l_match(&mi->context=2Ec2=2Efrom, &m->top=2Ec2=2Efrom);
+ 
+-                =
+    if (*floated)
+-                    {
+-                        /* reset =
+prefix, since here we are not sure peer is the one it claims to be
+-       =
+                  */
+-                        ungenerate_prefix(mi);
+-     =
+                   msg(D_MULTI_MEDIUM, "Float requested for peer %" PRIu32 =
+" to %s", peer_id,
+-                            mroute_addr_print(&real, &g=
+c));
+-                    }
++                if (*floated)
++               =
+ {
++                    /* reset prefix, since here we are not sure peer is=
+ the one it claims to be
++                     */
++                    unge=
+nerate_prefix(mi);
++                    struct gc_arena gc =3D gc_new();
++ =
+                   msg(D_MULTI_MEDIUM, "Float requested for peer %" PRIu32 =
+" to %s", peer_id,
++                        mroute_addr_print(real, &gc));
+=
++                    gc_free(&gc);
+                 }
++                retu=
+rn mi;
+             }
+         }
+-        if (!v2 || peer_id_disabled)
+-   =
+     {
+-            mi =3D multi_get_instance_udp_real(m, &real);
+-        =
+}
++    }
++    if (!v2 || peer_id_disabled)
++    {
++        return multi_get=
+_instance_udp_real(m, real);
++    }
++    return NULL;
++}
+ 
+-        /* we h=
+ave no existing multi instance for this connection */
+-        if (!mi)
+-  =
+      {
+-            mi =3D handle_connection_attempt(m, sock, &real, bucke=
+t);
+-        }
+-
+-#ifdef ENABLE_DEBUG
+-        if (check_debug_level(D_MULT=
+I_DEBUG))
+-        {
+-            const char *status =3D mi ? "[ok]" : "[fa=
+iled]";
+-
+-            dmsg(D_MULTI_DEBUG, "GET INST BY REAL: %s %s", mrout=
+e_addr_print(&real, &gc), status);
+-        }
+-#endif
++struct multi_instanc=
+e *
++multi_get_create_instance_udp(struct multi_context *m, bool *floated, =
+struct link_socket *sock)
++{
++    /* If the buffer is empty, the packet has=
+ no op code and can be neither
++     * a (valid) data nor control packet */=
+
++    if (m->top=2Ec2=2Ebuf=2Elen <=3D 0)
++    {
++        return NULL;
+    =
  }
  
+-    gc_free(&gc);
++    uint8_t *ptr =3D BPTR(&m->top=2Ec2=2Ebuf);
++  =
+  uint8_t op =3D ptr[0] >> P_OPCODE_SHIFT;
++
++    struct mroute_addr real =
+=3D { 0 };
++    real=2Eproto =3D sock->info=2Eproto;
++
++    if (!mroute_ext=
+ract_openvpn_sockaddr(&real, &m->top=2Ec2=2Efrom=2Edest, true))
++    {
++   =
+     return NULL;
++    }
++
++    struct multi_instance *mi =3D NULL;
++    if=
+ (op =3D=3D P_DATA_V1 || op =3D=3D P_DATA_V2)
++    {
++        mi =3D multi_=
+get_instance_udp_data(m, floated, &real, sock);
++    }
++    else
++    {
++  =
+      mi =3D multi_get_instance_udp_control(m, sock);
++
++        /* we have=
+ no existing multi instance for this connection, control
++         * packet=
+s can create a session=2E Data packets cannot */
++        if (!mi)
++       =
+ {
++            mi =3D handle_connection_attempt(m, sock, &real);
++        =
+}
++    }
++
++#ifdef ENABLE_DEBUG
++    if (check_debug_level(D_MULTI_DEBUG))
+=
++    {
++        struct gc_arena gc =3D gc_new();
++        const char *statu=
+s =3D mi ? "[ok]" : "[failed]";
++
++        dmsg(D_MULTI_DEBUG, "GET INST BY=
+ REAL/SID: %s %s", mroute_addr_print(&real, &gc), status);
++        gc_free=
+(&gc);
++    }
++#endif
++
+     ASSERT(!(mi && mi->halt));
+     return mi;
+ }
 =
 
 -- 
-To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1723?usp=3Dem=
+To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1726?usp=3Dem=
 ail
 To unsubscribe, or for help writing mail filters, visit http://gerrit=
 =2Eopenvpn=2Enet/settings?usp=3Demail
@@ -433,10 +509,10 @@ Gerrit-MessageType: newpatchset
 Gerr=
 it-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I3d52c6d0085022=
-93c3ec57ad22d1c613dcd1a94e
-Gerrit-Change-Number: 1723
-Gerrit-PatchSet: 8
+Gerrit-Change-Id: I8e9923b51b77f1=
+84c7d49d697004cb02d2b5cfc3
+Gerrit-Change-Number: 1726
+Gerrit-PatchSet: 9
 Ge=
 rrit-Owner: plaisthos <arne-openvpn@rfc2549=2Eorg>
 Gerrit-Reviewer: flichte=
@@ -446,237 +522,292 @@ ts=2Esourceforge=2Enet>
 Gerrit-Attention: plaisthos <arne-openvpn@rfc2549=
 =2Eorg>
 
---Ow+wHPskki8=
+--afq2uaz/ea8=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos=2E </p>
 <p>plaisthos <strong>uploaded patch=
- set #8</strong> to this change=2E</p><p><a href=3D"http://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1723?usp=3Demail">View Change</a></p><p>The change is no=
+ set #9</strong> to this change=2E</p><p><a href=3D"http://gerrit=2Eopenvpn=
+=2Enet/c/openvpn/+/1726?usp=3Demail">View Change</a></p><p>The change is no=
  longer submittable: checks~ChecksSubmitRule is unsatisfied now=2E</p><pre =
 class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pr=
-e-wrap;">Extract multi_check_dest_addr_allowed from multi_process_float<br>=
-<br>Change-Id: I3d52c6d008502293c3ec57ad22d1c613dcd1a94e<br>Signed-off-by: =
-Arne Schwabe &lt;arne@rfc2549=2Eorg&gt;<br>---<br>M src/openvpn/multi=2Ec<b=
-r>1 file changed, 75 insertions(+), 45 deletions(-)<br><br></pre><pre class=
-=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
-p;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/23/172=
-3/8</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
-rap;"><span>diff --git a/src/openvpn/multi=2Ec b/src/openvpn/multi=2Ec</spa=
-n><br><span>index 925431b=2E=2Eaf2b1c5 100644</span><br><span>--- a/src/ope=
-nvpn/multi=2Ec</span><br><span>+++ b/src/openvpn/multi=2Ec</span><br><span>=
-@@ -3072,6 +3072,76 @@</span><br><span> }</span><br><span> </span><br><span=
-> /**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * This method=
-s checks if a client instance is allowed to use an address</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+ * Reasons for disallowing a specific address are tha=
-t a client might be</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- * already using that address=2E In that case the method needs to decide</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ * if this instance ca=
-n kick out the other instance=2E</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * T=
-he method will then terminate the other instance if that check was</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+ * positive=2E</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+static bool</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+multi_check_dest_addr_allowed(struct multi_context *m, st=
-ruct multi_instance *mi, struct mroute_addr *real)</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    struct hash *hash =3D m-&gt;hash;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    const uint64_t hv =3D hash_value(hash, r=
-eal);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct has=
-h_bucket *bucket =3D hash_bucket(hash, hv);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    /* make sure that we don&#39;t assign the client to an address tak=
-en by</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * another=
- client */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struc=
-t hash_element *he =3D hash_lookup_fast(hash, bucket, real, hv);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    if (!he)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        /* Address is not taken, everything is fine=
-=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        retur=
-n true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    struct multi_instance *ex_mi =3D he-&gt;v=
-alue;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    struct tls_multi *m1 =3D mi-&=
-gt;context=2Ec2=2Etls_multi;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    struct tls_multi *m2 =3D ex_mi-&gt;context=2Ec2=2Etls_multi;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena gc =3D gc_new();</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    int ret =3D false;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    /* do not allow if target address i=
-s taken by client with another cert */</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    if (!cert_hash_compare(m1-&gt;locked_cert_hash_set, =
-m2-&gt;locked_cert_hash_set))</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    msg(D_MULTI_LOW, &quot;Disallow float to an address taken by another cl=
-ient %s&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-       multi_instance_string(ex_mi, false, &amp;gc));</span><br><span style=
+e-wrap;">Split multi_get_create_instance_udp into data and control parts<br=
+><br>This currently leads to a bit of code duplication but this refactoring=
+<br>will make the follow up patches cleaner and better to understand when<b=
+r>the control channel lookup will be changed to use session ids instead of<=
+br>IP addresses=2E<br><br>Change-Id: I8e9923b51b77f184c7d49d697004cb02d2b5c=
+fc3<br>Signed-off-by: Arne Schwabe &lt;arne@rfc2549=2Eorg&gt;<br>---<br>M s=
+rc/openvpn/mudp=2Ec<br>1 file changed, 97 insertions(+), 54 deletions(-)<br=
+><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace;=
+ white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvp=
+n refs/changes/26/1726/9</pre><pre style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;"><span>diff --git a/src/openvpn/mudp=2Ec b/src/op=
+envpn/mudp=2Ec</span><br><span>index d22c53b=2E=2E9658b18 100644</span><br>=
+<span>--- a/src/openvpn/mudp=2Ec</span><br><span>+++ b/src/openvpn/mudp=2Ec=
+</span><br><span>@@ -204,8 +204,7 @@</span><br><span> static struct multi_i=
+nstance *</span><br><span> handle_connection_attempt(struct multi_context *=
+m,</span><br><span>                           struct link_socket *sock,</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-                         =
+ struct mroute_addr *real,</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-                          struct hash_bucket *bucket)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+                          struct mro=
+ute_addr *real)</span><br><span> {</span><br><span>     struct hash *hash =
+=3D m-&gt;hash;</span><br><span>     struct tls_pre_decrypt_state state =3D=
+ { 0 };</span><br><span>@@ -236,7 +235,9 @@</span><br><span>             if=
+ (mi)</span><br><span>             {</span><br><span>                 const=
+ uint64_t hv =3D hash_value(hash, real);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                struct hash_bucket *bucket =3D hash_bu=
+cket(hash, hv);</span><br><span>                 hash_add_fast(hash, bucket=
+, &amp;mi-&gt;real, hv, mi);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span>                 mi-&gt;did_real_hash =3D true;</=
+span><br><span>                 multi_assign_peer_id(m, mi);</span><br><spa=
+n> </span><br><span>@@ -285,6 +286,19 @@</span><br><span>     return NULL;<=
+/span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+struct multi_instance *</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+multi_get_instance_udp_control(struct multi_context *m=
+, struct link_socket *sock)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct=
+ mroute_addr real =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    real=2Eproto =3D sock-&gt;info=2Eproto;</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        mi-&gt;context=2Ec2=2Ebuf=2Elen =3D 0;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        goto done;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    /* It doesn&#39;t make sense to let a peer float to the address=
- it already</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * h=
-as, so we disallow it=2E This can happen if a DCO netlink notification</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+     * gets lost and we =
-miss a floating step=2E</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+     */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (=
-m1-&gt;rx_peer_id =3D=3D m2-&gt;rx_peer_id)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        msg(M_WARN,</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+            &quot;disallowing peer %&quot; PRIu32 &quot; (%s) fro=
-m floating to &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+            &quot;its own address (%s)&quot;,</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            m1-&gt;rx_peer_id, tls_common_name(m=
-i-&gt;context=2Ec2=2Etls_multi, false),</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+            mroute_addr_print(&amp;mi-&gt;real, &amp;gc=
-));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        goto don=
-e;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    msg(D_MULTI_LOW,</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        &quot;closing instance %s due to float co=
-llision with %s &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        &quot;using the same certificate&quot;,</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        multi_instance_string(ex_mi, false, =
-&amp;gc), multi_instance_string(mi, false, &amp;gc));</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    multi_close_instance(m, ex_mi, false)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ret =3D true;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+done:</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    return ret;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><sp=
-an>  * Handles peer floating=2E</span><br><span>  *</span><br><span>  * If =
-peer is floated to a taken address, either drops packet</span><br><span>@@ =
--3083,8 +3153,6 @@</span><br><span> multi_process_float(struct multi_contex=
-t *m, struct multi_instance *mi, struct link_socket *sock)</span><br><span>=
- {</span><br><span>     struct mroute_addr real =3D { 0 };</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    struct hash *hash =3D m-&gt;hash;<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct gc_arena gc=
- =3D gc_new();</span><br><span> </span><br><span>     if (mi-&gt;real=2Etyp=
-e &amp; MR_WITH_PROTO)</span><br><span>     {</span><br><span>@@ -3094,53 +=
-3162,16 @@</span><br><span> </span><br><span>     if (!mroute_extract_openv=
-pn_sockaddr(&amp;real, &amp;m-&gt;top=2Ec2=2Efrom=2Edest, true))</span><br>=
-<span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        g=
-oto done;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        re=
-turn;</span><br><span>     }</span><br><span> </span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    const uint64_t hv =3D hash_value(hash, &amp;re=
-al);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct hash_b=
-ucket *bucket =3D hash_bucket(hash, hv);</span><br><span style=3D"color: hs=
+ 100%, 40%);">+    if (mroute_extract_openvpn_sockaddr(&amp;real, &amp;m-&g=
+t;top=2Ec2=2Efrom=2Edest, true) &amp;&amp; m-&gt;top=2Ec2=2Ebuf=2Elen &gt; =
+0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        return multi_get_instan=
+ce_udp_real(m, &amp;real);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    return NULL;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span> </span><br=
+><span> /**</span><br><span>  * Get a client instance based on real address=
+=2E  If</span><br><span>@@ -292,72 +306,101 @@</span><br><span>  * maintain=
+ing real address hash table atomicity=2E</span><br><span>  */</span><br><sp=
+an> struct multi_instance *</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-multi_get_create_instance_udp(struct multi_context *m, bool *floated,=
+ struct link_socket *sock)</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+multi_get_instance_udp_data(struct multi_context *m, bool *floated, =
+struct mroute_addr *real, struct link_socket *sock)</span><br><span> {</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct gc_arena gc =3D=
+ gc_new();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct =
+mroute_addr real =3D { 0 };</span><br><span>     struct multi_instance *mi =
+=3D NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct h=
+ash *hash =3D m-&gt;hash;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    real=2Eproto =3D sock-&gt;info=2Eproto;</span><br><span> </span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    if (mroute_extract_openvpn_=
+sockaddr(&amp;real, &amp;m-&gt;top=2Ec2=2Efrom=2Edest, true) &amp;&amp; m-&=
+gt;top=2Ec2=2Ebuf=2Elen &gt; 0)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    uint8_t *ptr =3D BPTR(&amp;m-&gt;top=2Ec2=2Ebuf);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    uint8_t op =3D ptr[0] &gt=
+;&gt; P_OPCODE_SHIFT;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    bool v2 =3D (op =3D=3D P_DATA_V2) &amp;&amp; (m-&gt;top=2Ec2=2Ebuf=2E=
+len &gt;=3D (1 + 3));</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    bool peer_id_disabled =3D false;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    /* make sure buffer has enough length to read opcode (1 byte) and peer-=
+id (3 bytes) */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+if (v2)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-        const uint64_t hv =3D hash_value(hash, &amp;real);</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        struct hash_bucket *b=
+ucket =3D hash_bucket(hash, hv);</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-        uint8_t *ptr =3D BPTR(&amp;m-&gt;top=2Ec2=2Ebuf);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        uint8_t op =3D ptr[0=
+] &gt;&gt; P_OPCODE_SHIFT;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-        bool v2 =3D (op =3D=3D P_DATA_V2) &amp;&amp; (m-&gt;top=2Ec2=
+=2Ebuf=2Elen &gt;=3D (1 + 3));</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-        bool peer_id_disabled =3D false;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        uint32_t peer_id =3D ((uint32_t)ptr[1=
+] &lt;&lt; 16) | ((uint32_t)ptr[2] &lt;&lt; 8) | ((uint32_t)ptr[3]);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        peer_id_disabled =
+=3D (peer_id =3D=3D MAX_PEER_ID);</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        /* make sure buffer has enough leng=
+th to read opcode (1 byte) and peer-id (3 bytes) */</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        if (v2)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        if (!peer_id_disabled &amp;&amp; (peer_=
+id &lt; m-&gt;max_clients) &amp;&amp; (m-&gt;instances[peer_id]))</span><br=
+><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+        uint32_t peer_id =3D ((uint32_t)ptr[1] &lt;&lt; 16) | ((uint32_t)pt=
+r[2] &lt;&lt; 8) | ((uint32_t)ptr[3]);</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-            peer_id_disabled =3D (peer_id =3D=3D MAX_PEER_=
+ID);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-            if (!peer_id_disabled &amp=
+;&amp; (peer_id &lt; m-&gt;max_clients) &amp;&amp; m-&gt;instances[peer_id]=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            /* Flo=
+ating on TCP will never be possible, so ensure we only process</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+             * UDP clients */</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (m-&gt;=
+instances[peer_id]-&gt;context=2Ec2=2Elink_sockets[0]-&gt;info=2Eproto</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+                =3D=3D s=
+ock-&gt;info=2Eproto)</span><br><span>             {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                /* Floating on TCP will nev=
+er be possible, so ensure we only process</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-                 * UDP clients */</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                if (m-&gt;instances[peer_id=
+]-&gt;context=2Ec2=2Elink_sockets[0]-&gt;info=2Eproto</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                    =3D=3D sock-&gt;info=2E=
+proto)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-               =
+ {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                   =
+ mi =3D m-&gt;instances[peer_id];</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-                    *floated =3D !link_socket_actual_match(&amp=
+;mi-&gt;context=2Ec2=2Efrom, &amp;m-&gt;top=2Ec2=2Efrom);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+                mi =3D m-&gt;instance=
+s[peer_id];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+        *floated =3D !link_socket_actual_match(&amp;mi-&gt;context=2Ec2=2Ef=
+rom, &amp;m-&gt;top=2Ec2=2Efrom);</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                    if (*floated)</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-                    {</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-                        /* rese=
+t prefix, since here we are not sure peer is the one it claims to be</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-                         */<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-                      =
+  ungenerate_prefix(mi);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-                        msg(D_MULTI_MEDIUM, &quot;Float requested for pe=
+er %&quot; PRIu32 &quot; to %s&quot;, peer_id,</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-                            mroute_addr_print(&amp=
+;real, &amp;gc));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+                }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+              if (*floated)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+                {</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+                    /* reset prefix, since here we are not sure peer =
+is the one it claims to be</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+                     */</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+                    ungenerate_prefix(mi);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                    struct gc_arena gc =
+=3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+              msg(D_MULTI_MEDIUM, &quot;Float requested for peer %&quot; PR=
+Iu32 &quot; to %s&quot;, peer_id,</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+                        mroute_addr_print(real, &amp;gc));</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                    gc=
+_free(&amp;gc);</span><br><span>                 }</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+                return mi;</span><br><span> =
+            }</span><br><span>         }</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-        if (!v2 || peer_id_disabled)</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-            mi =3D multi_get_instance_udp_real(m, &am=
+p;real);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    if (!v2 || peer_id_disabled)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        return multi_get_instance_udp_=
+real(m, real);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return NULL;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span> </s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        /* we have no ex=
+isting multi instance for this connection */</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-        if (!mi)</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-            mi =3D handle_connection_attempt(m, sock, &amp;real, buck=
+et);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-#ifdef ENABLE_DEBUG</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-        if (check_debug_level(D_MULTI_DEBUG))</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-            const char *status =3D mi ? =
+&quot;[ok]&quot; : &quot;[failed]&quot;;</span><br><span style=3D"color: hs=
 l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  /* make sure that we don&#39;t float to an address taken by another clien=
-t */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct hash_e=
-lement *he =3D hash_lookup_fast(hash, bucket, &amp;real, hv);</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    if (he)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (!multi_check_dest_addr_allowed(m,=
- mi, &amp;real))</span><br><span>     {</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-        struct multi_instance *ex_mi =3D (struct multi_in=
-stance *)he-&gt;value;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        struct tls_m=
-ulti *m1 =3D mi-&gt;context=2Ec2=2Etls_multi;</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-        struct tls_multi *m2 =3D ex_mi-&gt;context=
-=2Ec2=2Etls_multi;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        /* do not float =
-if target address is taken by client with another cert */</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        if (!cert_hash_compare(m1-&gt;l=
-ocked_cert_hash_set, m2-&gt;locked_cert_hash_set))</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-            msg(D_MULTI_LOW, &quot;Disallow float to an ad=
-dress taken by another client %s&quot;,</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-                multi_instance_string(ex_mi, false, &amp;=
-gc));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-            mi-&gt;context=2Ec2=2Ebuf=
-=2Elen =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-            goto done;</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-        /* It doesn&#39;t make sense to let a peer float to t=
-he address it already</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-         * has, so we disallow it=2E This can happen if a DCO netlink notif=
-ication</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         * get=
-s lost and we miss a floating step=2E</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-         */</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        if (m1-&gt;rx_peer_id =3D=3D m2-&gt;rx_peer_id)</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-            msg(M_WARN,</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-                &quot;disallowing peer %&qu=
-ot; PRIu32 &quot; (%s) from floating to &quot;</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-                &quot;its own address (%s)&quot;,<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-                m1-&gt=
-;rx_peer_id, tls_common_name(mi-&gt;context=2Ec2=2Etls_multi, false),</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-                mroute_addr=
-_print(&amp;mi-&gt;real, &amp;gc));</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-            goto done;</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(D_MULT=
-I_LOW,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            &qu=
-ot;closing instance %s due to float collision with %s &quot;</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-            &quot;using the same cer=
-tificate&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-      multi_instance_string(ex_mi, false, &amp;gc), multi_instance_string(m=
-i, false, &amp;gc));</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-       multi_close_instance(m, ex_mi, false);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        return;</span><br><span>     }</span><br>=
-<span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct g=
-c_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span>     msg(D_MULTI_MEDIUM, &quot;peer %&quot; PRIu32 &q=
-uot; (%s) floated from %s to %s&quot;,</span><br><span>         mi-&gt;cont=
-ext=2Ec2=2Etls_multi-&gt;rx_peer_id,</span><br><span>         tls_common_na=
-me(mi-&gt;context=2Ec2=2Etls_multi, false),</span><br><span>@@ -3169,7 +320=
-0,6 @@</span><br><span>     ASSERT(hash_add(m-&gt;cid_hash, &amp;mi-&gt;con=
-text=2Ec2=2Emda_context=2Ecid, mi, true));</span><br><span> #endif</span><b=
-r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-done:</span>=
-<br><span>     gc_free(&amp;gc);</span><br><span> }</span><br><span> </span=
-><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit=2Eop=
-envpn=2Enet/c/openvpn/+/1723?usp=3Demail">change 1723</a>=2E To unsubscribe=
-, or for help writing mail filters, visit <a href=3D"http://gerrit=2Eopenvp=
-n=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D=
-"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemt=
-ype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http:=
-//gerrit=2Eopenvpn=2Enet/c/openvpn/+/1723?usp=3Demail"/><meta itemprop=3D"n=
-ame" content=3D"View Change"/></div></div>
+          dmsg(D_MULTI_DEBUG, &quot;GET INST BY REAL: %s %s&quot;, mroute_a=
+ddr_print(&amp;real, &amp;gc), status);</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+struct =
+multi_instance *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+mul=
+ti_get_create_instance_udp(struct multi_context *m, bool *floated, struct l=
+ink_socket *sock)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* If the buffer=
+ is empty, the packet has no op code and can be neither</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+     * a (valid) data nor control packe=
+t */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (m-&gt;t=
+op=2Ec2=2Ebuf=2Elen &lt;=3D 0)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     return NULL;</span><br><span>     }</span><br><span> </span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    gc_free(&amp;gc);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    uint8_t *ptr =3D BPTR(&amp;m-&gt=
+;top=2Ec2=2Ebuf);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  uint8_t op =3D ptr[0] &gt;&gt; P_OPCODE_SHIFT;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    struct mroute_addr real =3D { 0 };</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    real=2Eproto =3D sock-&gt;info=2Eproto;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (!mroute_extract_openvpn_sockaddr(=
+&amp;real, &amp;m-&gt;top=2Ec2=2Efrom=2Edest, true))</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        return NULL;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct m=
+ulti_instance *mi =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    if (op =3D=3D P_DATA_V1 || op =3D=3D P_DATA_V2)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        mi =3D multi_get_instance_udp_data(m, flo=
+ated, &amp;real, sock);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        mi =3D multi_get_instance_u=
+dp_control(m, sock);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* we have=
+ no existing multi instance for this connection, control</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+         * packets can create a sessio=
+n=2E Data packets cannot */</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        if (!mi)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+       mi =3D handle_connection_attempt(m, sock, &amp;real);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#i=
+fdef ENABLE_DEBUG</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  if (check_debug_level(D_MULTI_DEBUG))</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        struct gc_arena gc =3D gc_new();</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        const char *status =3D mi ? &quot;[ok]&q=
+uot; : &quot;[failed]&quot;;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        dm=
+sg(D_MULTI_DEBUG, &quot;GET INST BY REAL/SID: %s %s&quot;, mroute_addr_prin=
+t(&amp;real, &amp;gc), status);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        gc_free(&amp;gc);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span>     ASSERT(!(mi &amp;&amp; mi-&gt;halt));</span><br><span>     ret=
+urn mi;</span><br><span> }</span><br><span></span><br></pre><p>To view, vis=
+it <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1726?usp=3Demail">c=
+hange 1726</a>=2E To unsubscribe, or for help writing mail filters, visit <=
+a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=
+=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div it=
+emscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><li=
+nk itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1726?=
+usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>=
 
-<div style=3D"display:none"> Ge=
-rrit-MessageType: newpatchset </div>
-<div style=3D"display:none"> Gerrit-Pr=
-oject: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </=
-div>
-<div style=3D"display:none"> Gerrit-Change-Id: I3d52c6d008502293c3ec57=
-ad22d1c613dcd1a94e </div>
-<div style=3D"display:none"> Gerrit-Change-Number=
-: 1723 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 8 </div>
-<div s=
-tyle=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@rfc2549=2Eo=
-rg&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &l=
-t;frank@lichtenheld=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-CC=
-: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
-<div=
- style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@rfc25=
-49=2Eorg&gt; </div>
+
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div =
+style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"displa=
+y:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-C=
+hange-Id: I8e9923b51b77f184c7d49d697004cb02d2b5cfc3 </div>
+<div style=3D"di=
+splay:none"> Gerrit-Change-Number: 1726 </div>
+<div style=3D"display:none">=
+ Gerrit-PatchSet: 9 </div>
+<div style=3D"display:none"> Gerrit-Owner: plais=
+thos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none">=
+ Gerrit-Reviewer: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<div =
+style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2E=
+sourceforge=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention:=
+ plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
 
 </body></html>
---Ow+wHPskki8=--
+--afq2uaz/ea8=--
 
 
---===============6179467405476240835==
+--===============0555181113895928766==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============6179467405476240835==
+--===============0555181113895928766==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -687,5 +818,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============6179467405476240835==--
+--===============0555181113895928766==--
 
