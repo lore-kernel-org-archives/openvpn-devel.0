@@ -4,129 +4,126 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 10A65C531C9
-	for <openvpn-devel@archiver.kernel.org>; Sat, 25 Jul 2026 21:57:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id BECB9C531C9
+	for <openvpn-devel@archiver.kernel.org>; Sat, 25 Jul 2026 22:06:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:Date:Sender:To:
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=I7JoWWoWXyvNZ3bPdt3jdprdsN/W3XFX0SFoOgQwetU=; b=CLnrx48XNJaKn3RY6CVrUvfLwe
-	zsx56c0IbwrUtJLx/WsQop7GeWPTzyytQQesxn8HMGFbg+UhgwQOojGAgUlKvbAleikrTyTCumGSy
-	42Fus5sHlQymXujhym1uV5KUoHEOOXMkDP3n6W7DFZLof6B9LoeKWmThHprk/hy2TQgU=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=0lYmA7GcBBUsgV3Hxkw6bY9wWyRjhNoKUOorRDzu0uY=; b=KGQQz5WEFR0tIqnQtqjnuY6oNK
+	kdIGR24tz2VmLiIkRK6DOFAxI/aW/XoAl8yiy+2Pbrcqi5SyZeskX5qujZ7XOd0SiLj9ZtsDK8sUv
+	k2pkIF1h1hf5i7NCq9gLnBDy8/fkFl1KOkx+zfptMk1czDF7ssqlEDsNIGEjN+Uz2mOI=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wnkN4-0002j7-4j;
-	Sat, 25 Jul 2026 21:57:26 +0000
+	id 1wnkW6-00057E-BA;
+	Sat, 25 Jul 2026 22:06:46 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wnkN2-0002iq-AZ
+ (envelope-from <gerrit@openvpn.net>) id 1wnkW4-000577-VU
  for openvpn-devel@lists.sourceforge.net;
- Sat, 25 Jul 2026 21:57:25 +0000
+ Sat, 25 Jul 2026 22:06:44 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:Date:From:Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From
+ Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
  :List-Post:List-Owner:List-Archive;
- bh=YwZ6yoINB1JhyDCRxOEMyf2wBTjNe3lhifHl3ngrWKY=; b=ZDhCBk0yk7jCkjqfNx90N7dVNR
- DeY3cyMo01QI6iWbNj6u6RKc9emawCKD7UT8OG2p1AjggiW+q/w+rELkYqFNfu3KcLUBM1JMG1TW7
- EnI2Bx6zuet/nhQU4b1g6IVqznmqC8xwSvqyBKikRs4x94xQAzt4WYI9QI5vhY1+Cdt4=;
+ bh=OFK2N9jp/fMSJr9+zON99V1JcoQYUU9pQBUqP63Y9Co=; b=G+2c/mxVCOEyxT6viHcVwn7XdN
+ Yd0aXTdGTGD/Xyo5WAYQOQFKdIjQ8vDT5dbCNgGME4PB1r6cLc96UnRQ2aR2IxRlEcyA7w8BWrWCM
+ qgfQwM+C32YZIuS0nNzwezKWEMnRbWshnAKgMbCo9yU2zu8KBPtiSoH5A1EsUU0JCTAM=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:Date:From:Sender:
- To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
+ Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=YwZ6yoINB1JhyDCRxOEMyf2wBTjNe3lhifHl3ngrWKY=; b=m
- 3TIv38VTkAwxjVm+gHs97gcDrtEUgggK6dZuAZ8u1DkaS2+XZSqr8gS4NW3DKxuCFtudLUB4B1EXQ
- 7yvsH9ii4iof5wbkGgQr0dp5QMrHYYc8P0jJ9F1gnpiZOn7b2cQKluqzSfAeVPr4msCMW+MhLwKDk
- DuinwnIuZDxn/UFc=;
-Received: from mail-wm1-f52.google.com ([209.85.128.52])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ List-Owner:List-Archive; bh=OFK2N9jp/fMSJr9+zON99V1JcoQYUU9pQBUqP63Y9Co=; b=O
+ 6+R0lkIhDI6QBDafcAN1esEPbMIEvQlcGHTJ5lhryuQlmIgXW5bd0fZ6lQozDy6BkWH/SPbQDJR2C
+ PnsUfTHFUT1E0iSEuE/iYKo070/FL3kjBQiCV5jBZqDqTgfFKrXB9G0OHhBUc2CsvBrOU6mmqJwJi
+ fDH6/uzgaJayeMu4=;
+Received: from mail-wr1-f50.google.com ([209.85.221.50])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wnkN5-0002Vr-G4 for openvpn-devel@lists.sourceforge.net;
- Sat, 25 Jul 2026 21:57:25 +0000
-Received: by mail-wm1-f52.google.com with SMTP id
- 5b1f17b1804b1-490cf322ed0so10292745e9.1
+ id 1wnkW2-0004rx-97 for openvpn-devel@lists.sourceforge.net;
+ Sat, 25 Jul 2026 22:06:44 +0000
+Received: by mail-wr1-f50.google.com with SMTP id
+ ffacd0b85a97d-47f703a9d05so918773f8f.0
  for <openvpn-devel@lists.sourceforge.net>;
- Sat, 25 Jul 2026 14:57:23 -0700 (PDT)
+ Sat, 25 Jul 2026 15:06:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1785016637; x=1785621437; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1785017196; x=1785621996; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:date:from:from:to:cc:subject:date:message-id
+ :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=YwZ6yoINB1JhyDCRxOEMyf2wBTjNe3lhifHl3ngrWKY=;
- b=ao+EMOSUOsb4d3sEab1NkE/aL/DrzGLtDGbkxj8nusQseV4oDNhi0NDKL7GcxERf2i
- dligNo3SMcnQEFZTA1XQdL4ap5ZayrqvggdWn+eUM5HsbAZa3zpniBkVfRW4wnuYwBVm
- rOXAzttaUosmntA/yUSzQjV0lsrHihFBlvSq0CMvVUlar+dWuHsqp9xzPfgnNRR0SLP9
- YzV7jj3VDLGhs3dmkKIx/B+js/OlMyNzlUhnsF4iSmFISaEKZsaR2K7KMBnSK9ICO4M6
- DQ/R8wUuAgcqplUet0tahWghmPw5xBTak6cxZMjpJmlinEzpC/d6qMwuEUDN7CC6CzQq
- XFLA==
+ bh=OFK2N9jp/fMSJr9+zON99V1JcoQYUU9pQBUqP63Y9Co=;
+ b=gEQgQ86W74kWhURMUTOo/9KEncmAxLeZoI4dTez0o1z5uUAlM5NN+aUdX4LhRRXZM5
+ lhU2Awbf0MqOscPEIAoQwt0GsBfx0g/OtSwI2c49XYC3nUwi9A0LkC6oBdGs54gnNUZx
+ H3SrsnXW1K6R4+/7Ozv5k1PKPmp5nl/g8cBEjqmArr1NYT8+9dsfS67UnIw3LUuks5KZ
+ ft/MXvmzlwxk9PPOgqIKfv11oTog29YGomN11CKcUEY+mmPZHsBm2RovvYASznMQjiDj
+ 9i95kDKbxwAEmySVsw1DR8LcE4E7V+6yqwb+3Xt70oh/K7fV8u9ZlnPT/ZybOhgZ4SHi
+ 32Wg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1785016637; x=1785621437;
+ d=1e100.net; s=20251104; t=1785017196; x=1785621996;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:date:from:x-gm-gg:x-gm-message-state:from:to:cc
- :subject:date:message-id:reply-to:content-type;
- bh=YwZ6yoINB1JhyDCRxOEMyf2wBTjNe3lhifHl3ngrWKY=;
- b=IAI5sDdUIQ1LHlixpc3dTvmTky1Vm1xlVbkeIevM/BfrotW9p1QvOUN6YUpMf2HBn6
- cbW95rsheXDjyLa5DV/7aXJhsU/mLLMt6PzkSCUjXlvOHcGrpIv+qWTejXOSKohJHZAx
- jAFEnIoSbnW9bOOIjVllOcNzKG6oSqX/eEEM8PG33JyjbVEar/w0RrwMa/VSwUENgIAS
- JapifNjVm4HMOMzzmYpYLZtpWSz5RFw4BKhqnBfs5OJHz7shovgHQWORZv3ruiKXKmP5
- CYquO8NOZN73DFpfoFVdzylIPw9MJq3x5qkI+54SN/S2Yb1Kj1GvEfyUEs6G267xF7C6
- 7klg==
-X-Forwarded-Encrypted: i=1;
- AHgh+RqZr9/l28QupZYPHAQeA1zukHo1mOcI0txIHyDB6WmMdd25Xk71KmatBnbXIcoqHgcrBL9EoW6K3NYRRkM6@lists.sourceforge.net
-X-Gm-Message-State: AOJu0YwfyR9Yd6k7MFwfeJa5qXL4jWsXLc8yv0PvdXALD5W/hKCD+f3e
- rb1avnDNznqop1JDJ2Vq0sjmfsw2C7ECu9B+d0c1jzvyKCXfzn1BBoLbr8E5EtmHHIQjTM0avfM
- nWMXDxz9sCxC3Cg2Tp87/tt08LNADgPbmKZCtPvoPZI/bSE3GWRFpE7uKCB+oMc2uBWBwoLXBrs
- SrsDuiXQ==
-X-Gm-Gg: AR+sD11qoObPRd5pNfLapQy9HPbYQEd3ZZxHw9AuIWHUzrM3N4yqfOD6G0Ii2APmipe
- Dwm+V5elv4fGrNnvybYuyL9jkSzDdCuCcedTEgg0LO92o6SCkw6mU/NR39Tk9LfEIOplAOQQBsm
- wNFWi/6s6Ev4JUNAp8QDtLObYytNZZADCUZxzIOtLAPFivqFCfT9xoLaEYT0ajGCVDDme5hMwmP
- NCJh0R8qs+bIoR1ibCt50cSfNAcU2BtF4d4vrBG8Zdq3tZfAArh9JzbMTLfxgrsSWCPCLCjoAzL
- oddhj4m4zosczGtLl1iA+76Aq4T9MSKfoJnwG1qyuO4WAw7EH/lQ0KeNbtCKNjoAfbbTfjoz8Ur
- 5niAhbFhw1J52mvXQS5hnHgXOh7yYlDMTix8XqRW+LXa1UtHv2kg4CaZnui356daca6xPmhNYgP
- 9J1xLxcmq451BjX3/Axo/ssajzbv67uzbL0yWTP7tMmLldGNbkxzValZgGT5PtSpBEb7t7un1E4
- 0W0MTCjVHaCTXkvIbU3alenXCI9u/8gaGToBEf+kVcChBP0HZLcLrEKnQNn2j7fF7r2Itm+XvxF
- roY=
-X-Received: by 2002:a05:600c:c87:b0:495:4b00:1bab with SMTP id
- 5b1f17b1804b1-496b5747e1cmr42753435e9.21.1785016636848; 
- Sat, 25 Jul 2026 14:57:16 -0700 (PDT)
+ :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
+ :cc:subject:date:message-id:reply-to:content-type;
+ bh=OFK2N9jp/fMSJr9+zON99V1JcoQYUU9pQBUqP63Y9Co=;
+ b=mDSoPUj9JVSlSKPudtmtwdGiL2iTeoJ8ho2hvuhmNL/ZUBYBCp7wDtU42hXofHRZmz
+ gDoMMUB3CiUMC5D9bqIGBfVQaU9fyjVFU7mvbgzNuf/g+cr41ZOdFuvsjhAK2LaL2qY6
+ ie1ZtA3wRudSjzXXQWR0C4v9ChVzbnnO+FMRiLuMWMb1XQYcoNj4QyZwpZBaI6HDKQwN
+ 4OYxEqCa/KezVzgMahOzeqA9phDUMeYkvGXQBMPOasIWzi7iwPFf0+cAQq0Lzb8+izrT
+ T/M8l0x44fQslUJ00B8Fu4cxIHhlQC0x+qBWvtLiE12lv0fOr+TMLiqugQuERiHLSDpV
+ XT8g==
+X-Gm-Message-State: AOJu0Yzkfs0OOAwvNgOOo8J6HDhtXgZUxWADbLUGAlk17tRBxW2vFtFm
+ kfbOIc5ah3OGLdnPpy/neaE6O7rKR8B3fpXxMRXje8LSMzQV4xJwdBGbwor75/nTU/mlHD07OM2
+ xm2QqOgZIFG1CNBSDqs+siBX05jZEgQXMCWErSQOA7wu+Clkcr1+WweXF+QwiQ96lS27yScQ0Fj
+ 6RR67eWg==
+X-Gm-Gg: AR+sD135odT1ZHuIAPL6gv0kDNugQNFAm7CIncI0i/u2GfEtbezxlhopiM5dxCfBZju
+ pqVuoDQVEyjvL4gxx9A2KUmvqKfs+8DqQik00H+McHz+p+skT5Esbwnw/7b2yGp1dfD5k7FR31k
+ RHT7QoaQ8ydMnKRXaO+JCnZWhMFMJq4bdfnQsQVDudSqTrG0im4H5oW5B68FjZg/6tIBi32bgpF
+ G2SY8Ehkq8Y0MeZwtt+jbnHQ6OaHnsecXywXXUxDg4Gv8h0Q1ZC3NFTcocnjL3e6IJRldQYkEJG
+ vidV8kZSpYO3WHonF7TJ4Hxy2qs+RfjY64GDGkG3HbiYX9r+qnizLT57cd1jczog0ZNTJ33IAJV
+ Sg3Pr+EIKSGGGRVZCvmUF1iiX5CvFnWfRm8kycHSa3x/4muYWcJIJ44zqF2XEo5L/fFZn070ndH
+ ljKnZ8izBF9+m5K+q/4P3Soil5ebt68XWUi4eR3U58YNHSQLJAAvsK4FEBPbA4Do/bwSi6MLl6I
+ SN8SeAEjq4vZaaTn9mwHOOswbgtLDIgmF46Ek9227sEJYbuX3NyGMNqGMjZRX1VpJfW
+X-Received: by 2002:a05:6000:26c9:b0:47f:71dc:d848 with SMTP id
+ ffacd0b85a97d-47f9fc8be81mr4214694f8f.12.1785017195418; 
+ Sat, 25 Jul 2026 15:06:35 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-4957b842691sm141904745e9.1.2026.07.25.14.57.16
+ ffacd0b85a97d-47f85c67339sm36988273f8f.31.2026.07.25.15.06.34
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sat, 25 Jul 2026 14:57:16 -0700 (PDT)
+ Sat, 25 Jul 2026 15:06:34 -0700 (PDT)
 X-Google-Original-From: "plaisthos (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Sat, 25 Jul 2026 21:57:14 +0000
+Date: Sat, 25 Jul 2026 22:06:28 +0000
+To: flichtenheld <frank@lichtenheld.com>
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: comment
-X-Gerrit-PatchSet: 15
-X-Gerrit-Change-Id: I807f398903ac2047530800c29949793c6f4f0ec9
-X-Gerrit-Change-Number: 1573
+X-Gerrit-MessageType: newpatchset
+X-Gerrit-PatchSet: 25
+X-Gerrit-Change-Id: I09aa27caa1a3aab0d1be6118b26d54a1c1bf7aa0
+X-Gerrit-Change-Number: 31
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1573?usp=email>
-X-Gerrit-Commit: 8e2633f6f324e1c67abbb65d329706d86d74ee96
-X-Gerrit-Comment-Date: Sat, 25 Jul 2026 21:57:14 +0000
-In-Reply-To: <gerrit.1773255066000.I807f398903ac2047530800c29949793c6f4f0ec9@gerrit.openvpn.net>
-References: <gerrit.1773255066000.I807f398903ac2047530800c29949793c6f4f0ec9@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzczMjU1MDY2MDAwLkk4MDdmMzk4OTAzYWMyMDQ3NTMwODAwYzI5OTQ5NzkzYzZmNGYwZWM5QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <6dee96a985f66b717a7f7ce4c0945790fa77ae7e-EmailReviewComments-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/31?usp=email>
+X-Gerrit-Commit: 785ca5c6cd3b3d5f3176b9e7b9be23b72aa40a17
+In-Reply-To: <gerrit.1677175662000.I09aa27caa1a3aab0d1be6118b26d54a1c1bf7aa0@gerrit.openvpn.net>
+References: <gerrit.1677175662000.I09aa27caa1a3aab0d1be6118b26d54a1c1bf7aa0@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNjc3MTc1NjYyMDAwLkkwOWFhMjdjYWExYTNhYWIwZDFiZTYxMThiMjZkNTRhMWMxYmY3YWEwQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <4194c1f616a300bfb5262c3ac6b759bf54eb07f3-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wnkN5-0002Vr-G4
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Replace custom
- hash_func with siphash
+X-Headers-End: 1wnkW2-0004rx-97
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Use OpenSSL's
+ SIPHASH implementation to double check our implementation
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -144,180 +141,1271 @@ Reply-To: arne-openvpn@rfc2549.org, openvpn-devel@lists.sourceforge.net,
  frank@lichtenheld.com
 Cc: "plaisthos \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============6904024265279091770=="
+Content-Type: multipart/mixed; boundary="===============3958368405634869593=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============6904024265279091770==
+--===============3958368405634869593==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="K0WqHqv01nY="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="pY5e1P6TOQI="; charset=UTF-8
 
---K0WqHqv01nY=
+--pY5e1P6TOQI=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld=2E
+Attention is currently required from: plaisthos=2E
 
-plaisthos has posted=
- comments on this change by plaisthos=2E ( http://gerrit=2Eopenvpn=2Enet/c/=
-openvpn/+/1573?usp=3Demail )
+Hello flichtenheld, 
 
-Change subject: Replace custom hash_func with=
- siphash
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+I=
+'d like you to reexamine a change=2E Please visit
+
+    http://gerrit=2Eopen=
+vpn=2Enet/c/openvpn/+/31?usp=3Demail
+
+to look at the new patch set (#25)=2E=
+
+
+
+Change subject: Use OpenSSL's SIPHASH implementation to double check our=
+ implementation
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E
+
+Use OpenSSL's SIPHASH implementation to double check our implementatio=
+n
+
+OpenSSL library is currently slower than the reference implementation
+(a=
+bout 1=2E5x to 2x depending of the compiler)=2E
+
+The OpenSSL API for using =
+the SIPHASH MAC is different enough from using
+normal HMAC or Digest that w=
+e already implement that combining them into
+one API does not make sense=2E=
 
 
-Pat=
-ch Set 15:
+SIPHASH is only available on OpenSSL 3=2E1 and later=2E We still check fo=
+r
+support on 3=2E0 and later as the whole API to allow using the SIPHASH al=
+rady
+exists in OpenSSL 3=2E0=2E Some of the later OpenSSL 3=2E0=2Ex might g=
+et support
+for it=2E Theoretically, a provider can be loaded in OpenSSL 3=
+=2E0 that
+implements SIPHASH=2E
 
-(3 comments)
+With OpenSSL's implementation being slower=
+, we currently only use it to
+check that our reference implementation and t=
+he OpenSSL implementation
+yield the same result in unit tests
 
-File src/openvpn/siphash=2Eh:
-
-http://gerrit=2Eop=
-envpn=2Enet/c/openvpn/+/1573/comment/b8accde5_d7e6251e?usp=3Demail :
-PS11, =
-Line 112:  * @return a unit64_t containing the result of the hashing
-> "uin=
-t64_t"
-Done
-
-
-File src/openvpn/siphash=2Ec:
-
-http://gerrit=2Eopenvpn=2Enet/=
-c/openvpn/+/1573/comment/bab31858_9e3d1955?usp=3Demail :
-PS11, Line 29: #in=
-clude "config-msvc=2Eh"
-> config-msvc=2E [=E2=80=A6]
-Done
-
-
-http://gerrit=
-=2Eopenvpn=2Enet/c/openvpn/+/1573/comment/d3b4f90e_c8ce2852?usp=3Demail :
-P=
-S11, Line 46:     siphash_cryptolib_init(8);
-> Doesn't that need to check w=
-ith `siphash_cryptolib_available`? [=E2=80=A6]
-Done
+Change-Id: I=
+09aa27caa1a3aab0d1be6118b26d54a1c1bf7aa0
+Signed-off-by: Arne Schwabe <arne@=
+rfc2549=2Eorg>
+---
+M CMakeLists=2Etxt
+M src/openvpn/Makefile=2Eam
+M src/ope=
+nvpn/siphash=2Eh
+M src/openvpn/siphash_reference=2Ec
+M tests/unit_tests/ope=
+nvpn/Makefile=2Eam
+A tests/unit_tests/openvpn/siphash_openssl=2Ec
+A tests/u=
+nit_tests/openvpn/siphash_openssl=2Eh
+M tests/unit_tests/openvpn/test_crypt=
+o=2Ec
+8 files changed, 304 insertions(+), 8 deletions(-)
 
 
+  git pull ssh:/=
+/gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/31/31/25
+
+diff --git a/C=
+MakeLists=2Etxt b/CMakeLists=2Etxt
+index 7473f15=2E=2Ef113207 100644
+--- a/=
+CMakeLists=2Etxt
++++ b/CMakeLists=2Etxt
+@@ -572,6 +572,8 @@
+     src/openvp=
+n/shaper=2Eh
+     src/openvpn/sig=2Ec
+     src/openvpn/sig=2Eh
++    src/ope=
+nvpn/siphash=2Eh
++    src/openvpn/siphash_reference=2Ec
+     src/openvpn/so=
+cket=2Ec
+     src/openvpn/socket=2Eh
+     src/openvpn/socket_util=2Ec
+@@ -7=
+84,6 +786,7 @@
+         )
+ 
+     target_sources(test_crypto PRIVATE
++      =
+  tests/unit_tests/openvpn//siphash_openssl=2Ec
+         src/openvpn/crypto=
+_mbedtls=2Ec
+         src/openvpn/crypto_openssl=2Ec
+         src/openvpn/c=
+rypto_epoch=2Ec
+@@ -792,8 +795,11 @@
+         src/openvpn/packet_id=2Ec
+   =
+      src/openvpn/mtu=2Ec
+         src/openvpn/mss=2Ec
++        src/openvpn=
+/siphash_reference=2Ec
+         )
+ 
++    target_compile_definitions(test_cr=
+ypto PRIVATE PREFER_OPENSSL_SIPHASH)
++
+     target_sources(test_ssl PRIVATE=
+
+             tests/unit_tests/openvpn/mock_management=2Ec
+             tes=
+ts/unit_tests/openvpn/mock_ssl_dependencies=2Ec
+diff --git a/src/openvpn/Ma=
+kefile=2Eam b/src/openvpn/Makefile=2Eam
+index ff8cc54=2E=2E1f77384 100644
+-=
+-- a/src/openvpn/Makefile=2Eam
++++ b/src/openvpn/Makefile=2Eam
+@@ -128,6 +1=
+28,7 @@
+ 	session_id=2Ec session_id=2Eh \
+ 	shaper=2Ec shaper=2Eh \
+ 	sig=
+=2Ec sig=2Eh \
++	siphash_reference=2Ec siphash=2Eh \
+ 	socket=2Ec socket=2E=
+h \
+ 	socket_util=2Ec socket_util=2Eh \
+ 	socks=2Ec socks=2Eh \
+diff --git =
+a/src/openvpn/siphash=2Eh b/src/openvpn/siphash=2Eh
+index ef61110=2E=2Ebddd=
+dc3 100644
+--- a/src/openvpn/siphash=2Eh
++++ b/src/openvpn/siphash=2Eh
+@@ -=
+18,12 +18,26 @@
+ #ifndef SIPHASH_H
+ #define SIPHASH_H
+ 
+-#include <inttypes=
+=2Eh>
++#include <stdint=2Eh>
++#include <stdio=2Eh>
++#include <stdbool=2Eh>
+=
+ 
+ /* siphash always uses 128-bit keys */
+ #define SIPHASH_KEY_SIZE 16
+ 
+-i=
+nt siphash(const void *in, size_t inlen, const void *k, uint8_t *out,
+-    =
+        size_t outlen);
++/**
++ * Calculates SIPHASH using the reference imp=
+lementation
++ */
++int
++siphash_reference(const void *in, size_t inlen, cons=
+t void *k,
++                  uint8_t *out, size_t outlen);
+ 
+-#endif
++
++st=
+atic inline int
++siphash(const void *in, size_t inlen, const void *k,
++    =
+    uint8_t *out, size_t outlen)
++{
++    return siphash_reference(in, inlen=
+, k, out, outlen);
++}
++
++#endif /* ifndef SIPHASH_H */
+\ No newline at end =
+of file
+diff --git a/src/openvpn/siphash_reference=2Ec b/src/openvpn/siphas=
+h_reference=2Ec
+index b21a86e=2E=2Ead19a51 100644
+--- a/src/openvpn/siphash=
+_reference=2Ec
++++ b/src/openvpn/siphash_reference=2Ec
+@@ -100,8 +100,8 @@
+=
+  *  outlen: length of the output in bytes, must be 8 or 16
+  */
+ int
+-siph=
+ash(const void *in, const size_t inlen, const void *k, uint8_t *out,
+-     =
+   const size_t outlen)
++siphash_reference(const void *in, const size_t inl=
+en, const void *k, uint8_t *out,
++                  const size_t outlen)
+ {=
+
+     const unsigned char *ni =3D (const unsigned char *)in;
+     const uns=
+igned char *kk =3D (const unsigned char *)k;
+diff --git a/tests/unit_tests/=
+openvpn/Makefile=2Eam b/tests/unit_tests/openvpn/Makefile=2Eam
+index d861ef=
+9=2E=2E287e0ae 100644
+--- a/tests/unit_tests/openvpn/Makefile=2Eam
++++ b/te=
+sts/unit_tests/openvpn/Makefile=2Eam
+@@ -73,6 +73,7 @@
+ crypto_testdriver_L=
+DFLAGS =3D @TEST_LDFLAGS@
+ crypto_testdriver_SOURCES =3D test_crypto=2Ec \
+=
+ 	mock_msg=2Ec mock_msg=2Eh test_common=2Eh \
++	siphash_openssl=2Ec siphash=
+_openssl=2Eh \
+ 	$(top_srcdir)/src/openvpn/buffer=2Ec \
+ 	$(top_srcdir)/src=
+/openvpn/crypto=2Ec \
+ 	$(top_srcdir)/src/openvpn/crypto_mbedtls=2Ec \
+@@ -=
+84,7 +85,8 @@
+ 	$(top_srcdir)/src/openvpn/platform=2Ec \
+ 	$(top_srcdir)/sr=
+c/openvpn/mtu=2Ec \
+ 	$(top_srcdir)/src/openvpn/win32-util=2Ec \
+-	$(top_sr=
+cdir)/src/openvpn/mss=2Ec
++	$(top_srcdir)/src/openvpn/mss=2Ec \
++	$(top_src=
+dir)/src/openvpn/siphash_reference=2Ec
+ 
+ dhcp_testdriver_CFLAGS  =3D -I$(t=
+op_srcdir)/src/openvpn -I$(top_srcdir)/src/compat @TEST_CFLAGS@ -DDHCP_UNIT=
+_TEST
+ dhcp_testdriver_LDFLAGS =3D @TEST_LDFLAGS@ -L$(top_srcdir)/src/openv=
+pn
+@@ -97,6 +99,7 @@
+ 
+ ssl_testdriver_CFLAGS  =3D \
+ 	-I$(top_srcdir)/incl=
+ude -I$(top_srcdir)/src/compat -I$(top_srcdir)/src/openvpn \
++	-DPREFER_OPE=
+NSSL_SIPHASH \
+ 	@TEST_CFLAGS@
+ ssl_testdriver_LDFLAGS =3D @TEST_LDFLAGS@  =
+$(OPTIONAL_CRYPTO_LIBS)
+ ssl_testdriver_SOURCES =3D test_ssl=2Ec \
+diff --g=
+it a/tests/unit_tests/openvpn/siphash_openssl=2Ec b/tests/unit_tests/openvp=
+n/siphash_openssl=2Ec
+new file mode 100644
+index 0000000=2E=2E90d248a
+--- /=
+dev/null
++++ b/tests/unit_tests/openvpn/siphash_openssl=2Ec
+@@ -0,0 +1,144 =
+@@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *   =
+          over a single TCP/UDP port, with support for SSL/TLS-based
++ *   =
+          session authentication and key exchange,
++ *             packet e=
+ncryption, packet authentication, and
++ *             packet compression=2E=
+
++ *
++ *  Copyright (C) 2002-2026 OpenVPN Inc <sales@openvpn=2Enet>
++ *  Co=
+pyright (C) 2026 Arne Schwabe <arne@rfc2549=2Eorg>
++ *
++ *  This program is=
+ free software; you can redistribute it and/or modify
++ *  it under the ter=
+ms of the GNU General Public License version 2
++ *  as published by the Fre=
+e Software Foundation=2E
++ *
++ *  This program is distributed in the hope t=
+hat it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the impl=
+ied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE=2E=
+  See the
++ *  GNU General Public License for more details=2E
++ *
++ *  You =
+should have received a copy of the GNU General Public License along
++ *  wi=
+th this program; if not, see <https://www=2Egnu=2Eorg/licenses/>=2E
++ */
++
+=
++#ifdef HAVE_CONFIG_H
++#include "config=2Eh"
++#endif
++
++#include "siphash=
+=2Eh"
++
++#ifdef ENABLE_CRYPTO_OPENSSL
++#include <openssl/opensslv=2Eh>
++#en=
+dif
++
++/* OpenSSL siphash is currently 2-3 times slower than the reference
+=
++ * implementation, so we only use for unit testing that our impelmentation=
+
++ * and OpenSSL agree*/
++#if defined(ENABLE_CRYPTO_OPENSSL) && OPENSSL_VER=
+SION_NUMBER >=3D 0x30000000L
++#include <openssl/evp=2Eh>
++#include "crypto_=
+openssl=2Eh"
++#include "crypto_backend=2Eh"
++#include "buffer=2Eh"
++
++struc=
+t siphash_context
++{
++    EVP_MAC *mac;
++    EVP_MAC_CTX *ctx;
++    size_t =
+size;
++    OSSL_PARAM params[3];
++};
++
++/*
++ *  Computes a SipHash value
++ =
+* in: pointer to input data (read-only)
++ *  inlen: input data length in by=
+tes (any size_t value)
++ * k: pointer to the key data (read-only), must be =
+16 bytes
++ * out: pointer to output data (write-only), outlen bytes must be=
+ allocated
++ *  outlen: length of the output in bytes, must be 8 or 16
++ */=
+
++int
++siphash_openssl(void *sip_context, const void *in, const size_t inle=
+n,
++                const void *k, uint8_t *out, const size_t outlen)
++{
++ =
+   struct siphash_context *sip =3D sip_context;
++
++
++    sip->params[1] =3D=
+ OSSL_PARAM_construct_octet_string("key", (void *)k,
++                     =
+                                  SIPHASH_KEY_SIZE);
++    if (!EVP_MAC_init=
+(sip->ctx, NULL, 0, sip->params))
++    {
++        crypto_msg(M_FATAL, "EVP_=
+MAC_init failed");
++    }
++    EVP_MAC_update(sip->ctx, in, inlen);
++
++    =
+size_t outl =3D 0;
++    EVP_MAC_final(sip->ctx, out, &outl, outlen);
++    r=
+eturn 0;
++}
++
++void *
++siphash_openssl_init(size_t hash_size)
++{
++    struc=
+t siphash_context *sip;
++    ALLOC_OBJ(sip, struct siphash_context);
++
++   =
+ sip->mac =3D EVP_MAC_fetch(NULL, "SIPHASH", NULL);
++    if (!sip->mac)
++  =
+  {
++        /* Our OpenSSL library does not support SIPHASH */
++        re=
+turn sip;
++    }
++    sip->ctx =3D EVP_MAC_CTX_new(sip->mac);
++
++    /* Ope=
+nSSL will truly hold a pointer to an int in that parameter */
++    sip->siz=
+e =3D hash_size;
++    sip->params[0] =3D OSSL_PARAM_construct_size_t("size"=
+, &sip->size);
++    /* params[1] will hold the key that changes which each =
+invocation */
++    sip->params[2] =3D OSSL_PARAM_construct_end();
++    retu=
+rn sip;
++}
++
++bool
++siphash_openssl_available(void *sip_context)
++{
++    st=
+ruct siphash_context *sip =3D sip_context;
++
++    return (bool)(sip->mac);
+=
++}
++
++void
++siphash_openssl_uninit(void *sip_context)
++{
++    struct siphas=
+h_context *sip =3D sip_context;
++    EVP_MAC_CTX_free(sip->ctx);
++    EVP_M=
+AC_free(sip->mac);
++    free(sip_context);
++}
++#else
++/* Do avoid a lot mor=
+e ifdefs in the test we put dummy functions here */
++int
++siphash_openssl(v=
+oid *sip_context, const void *in, const size_t inlen,
++                cons=
+t void *k, uint8_t *out, const size_t outlen)
++{
++    return -1;
++}
++
++bool=
+
++siphash_openssl_available(void *sip_context)
++{
++    return false;
++}
++
++=
+void *
++siphash_openssl_init(size_t hash_size)
++{
++    return NULL;
++}
++
++v=
+oid
++siphash_openssl_uninit(void *sip_context)
++{
++}
++
++
++#endif /* if defi=
+ned(ENABLE_CRYPTO_OPENSSL) && OPENSSL_VERSION_NUMBER >=3D 0x30000000L */
+di=
+ff --git a/tests/unit_tests/openvpn/siphash_openssl=2Eh b/tests/unit_tests/=
+openvpn/siphash_openssl=2Eh
+new file mode 100644
+index 0000000=2E=2E9d9757d=
+
+--- /dev/null
++++ b/tests/unit_tests/openvpn/siphash_openssl=2Eh
+@@ -0,0 +=
+1,60 @@
++/*
++ * SipHash reference C implementation
++ *
++ * Copyright (c) 20=
+12-2021 Jean-Philippe Aumasson
++ * <jeanphilippe=2Eaumasson@gmail=2Ecom>
++ =
+* Copyright (c) 2012-2014 Daniel J=2E Bernstein <djb@cr=2Eyp=2Eto>
++ *
++ * =
+To the extent possible under law, the author(s) have dedicated all copyrigh=
+t
++ * and related and neighboring rights to this software to the public dom=
+ain
++ * worldwide=2E This software is distributed without any warranty=2E
++=
+ *
++ * You should have received a copy of the CC0 Public Domain Dedication =
+along
++ * with
++ * this software=2E If not, see
++ * <http://creativecommons=
+=2Eorg/publicdomain/zero/1=2E0/>=2E
++ */
++
++#ifndef SIPHASH_OPENSSL_H
++#def=
+ine SIPHASH_OPENSSL_H
++
++#include <stdint=2Eh>
++#include <stdio=2Eh>
++#incl=
+ude <stdbool=2Eh>
++
++
++/* Prototypes for an implementation of SIPHASH in a =
+crypto library */
++/**
++ *
++ * @param hash_size the size of the output hash=
+ size
++ * @return initialised context for siphash
++ */
++void *
++siphash_ope=
+nssl_init(size_t hash_size);
++
++
++/**
++ * Calculates SIPHASH using the cryp=
+to library function=2E
++ */
++int
++siphash_openssl(void *sip_context, const =
+void *in, size_t inlen,
++                const void *k, uint8_t *out, size_=
+t outlen);
++
++/**
++ * Free the siphash context used for the crypto library
+=
++ * @param sip_context
++ */
++void
++siphash_openssl_uninit(void *sip_context=
+);
++
++/**
++ * Returns if the crypto library is available (and should be use=
+d)
++ *
++ * This returns if there is a crypto library version of Siphash24 i=
+s
++ * available and should be used (OpenSSL 3/4 version is quite slow, so
++=
+ * we prefer the reference implementation)
++ *
++ */
++bool
++siphash_openssl_=
+available(void *sip_context);
++#endif /* ifndef SIPHASH_OPENSSL_H */
+\ No n=
+ewline at end of file
+diff --git a/tests/unit_tests/openvpn/test_crypto=2Ec=
+ b/tests/unit_tests/openvpn/test_crypto=2Ec
+index cb4eaa2=2E=2E9338527 1006=
+44
+--- a/tests/unit_tests/openvpn/test_crypto=2Ec
++++ b/tests/unit_tests/op=
+envpn/test_crypto=2Ec
+@@ -31,12 +31,15 @@
+ #include <stdarg=2Eh>
+ #include =
+<string=2Eh>
+ #include <setjmp=2Eh>
++#include <inttypes=2Eh>
+ #include <cmo=
+cka=2Eh>
+ 
+ #include "crypto=2Eh"
+ #include "crypto_epoch=2Eh"
+ #include "o=
+ptions=2Eh"
+ #include "ssl_backend=2Eh"
++#include "siphash=2Eh"
++#include "=
+siphash_openssl=2Eh"
+ 
+ #include "mss=2Eh"
+ #include "test_common=2Eh"
+@@ -=
+923,6 +926,69 @@
+     assert_memory_equal(key_parameters=2Ehmac, exp_impl_i=
+v, sizeof(exp_impl_iv));
+ }
+ 
++/* Use a define here since some c compilers =
+don't like array initialisation
++ * with an integer */
++#define UT_SIPHASH_=
+HASH_SIZE 16
++
++static const char *ut_message =3D "Look behind you, a Three=
+-Headed Monkey!";
++static const uint8_t ut_key[SIPHASH_KEY_SIZE] =3D { 0x11=
+, 0x22, 0x33, 0x44, 0x55, 0x66 };
++const uint8_t expected_hash[UT_SIPHASH_H=
+ASH_SIZE] =3D { 0x3e, 0xea, 0x95, 0xb2, 0x6d, 0x5c, 0x4e, 0xfa,
++          =
+                                            0x20, 0x47, 0x65, 0x7e, 0xdd, 0=
+xcd, 0x62, 0x51 };
++
++static void
++test_siphash(void **state)
++{
++    uint8=
+_t out[UT_SIPHASH_HASH_SIZE] =3D { 0 };
++    siphash_reference(ut_message, =
+strlen(ut_message), ut_key, out, UT_SIPHASH_HASH_SIZE);
++    assert_memory_=
+equal(out, expected_hash, UT_SIPHASH_HASH_SIZE);
++}
++
++static void
++test_si=
+phash_openssl(void **state)
++{
++    void *sipctx =3D siphash_openssl_init(U=
+T_SIPHASH_HASH_SIZE);
++
++    if (!siphash_openssl_available(sipctx))
++    {=
+
++        siphash_openssl_uninit(sipctx);
++        skip();
++    }
++
++    ui=
+nt8_t out[UT_SIPHASH_HASH_SIZE] =3D { 0 };
++
++    siphash_openssl(sipctx, u=
+t_message, strlen(ut_message), ut_key, out,
++                    UT_SIPHASH=
+_HASH_SIZE);
++    assert_memory_equal(out, expected_hash, UT_SIPHASH_HASH_S=
+IZE);
++
++    /* check that calling the function twice is safe */
++    sipha=
+sh_openssl(sipctx, ut_message, strlen(ut_message), ut_key, out,
++          =
+          UT_SIPHASH_HASH_SIZE);
++    assert_memory_equal(out, expected_has=
+h, UT_SIPHASH_HASH_SIZE);
++
++    /* Test a few random strings and ensure th=
+at our implementation behave the
++     * same */
++    for (int i =3D 0; i <=
+ 1000; i++)
++    {
++        int len =3D random() % 1000;
++        uint8_t b=
+uf[1024] =3D { 0 };
++        uint8_t key[SIPHASH_KEY_SIZE] =3D { 0 };
++
++  =
+      assert_true(rand_bytes(buf, len));
++        assert_true(rand_bytes(ke=
+y, sizeof(key)));
++
++
++        siphash_openssl(sipctx, buf, len, key, out, =
+UT_SIPHASH_HASH_SIZE);
++
++        uint8_t outref[UT_SIPHASH_HASH_SIZE] =3D =
+{ 0 };
++        siphash_reference(buf, len, key, outref, UT_SIPHASH_HASH_SI=
+ZE);
++
++        assert_memory_equal(out, outref, UT_SIPHASH_HASH_SIZE);
++  =
+  }
++
++    siphash_openssl_uninit(sipctx);
++}
++
++
+ int
+ main(void)
+ {
+@@ -9=
+60,7 +1026,9 @@
+         cmocka_unit_test_prestate_setup_teardown(crypto_te=
+st_epoch_edge,
+                                                  crypto_tes=
+t_epoch_setup,
+                                                  crypto_tes=
+t_epoch_teardown, &prestate_num13),
+-        cmocka_unit_test(epoch_test_de=
+rive_data_key)
++        cmocka_unit_test(epoch_test_derive_data_key),
++    =
+    cmocka_unit_test(test_siphash),
++        cmocka_unit_test(test_siphash_=
+openssl)
+     };
+ 
+     return cmocka_run_group_tests_name("crypto tests", =
+tests, NULL, NULL);
 
 -- 
-To view, visit h=
-ttp://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1573?usp=3Demail
-To unsubscribe, o=
-r for help writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/settin=
-gs?usp=3Demail
+To view, visit http://gerrit=2Eopenvpn=2Enet/c/ope=
+nvpn/+/31?usp=3Demail
+To unsubscribe, or for help writing mail filters, vis=
+it http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Gerrit-MessageType: comment
+Gerrit-MessageType: =
+newpatchset
 Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id:=
+ I09aa27caa1a3aab0d1be6118b26d54a1c1bf7aa0
+Gerrit-Change-Number: 31
 Gerrit-=
-Branch: master
-Gerrit-Change-Id: I807f398903ac2047530800c29949793c6f4f0ec9
-=
-Gerrit-Change-Number: 1573
-Gerrit-PatchSet: 15
-Gerrit-Owner: plaisthos <arn=
-e-openvpn@rfc2549=2Eorg>
-Gerrit-Reviewer: flichtenheld <frank@lichtenheld=
-=2Ecom>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
-=
-Gerrit-Attention: flichtenheld <frank@lichtenheld=2Ecom>
-Gerrit-Comment-Dat=
-e: Sat, 25 Jul 2026 21:57:14 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Label=
-s: No
-Comment-In-Reply-To: flichtenheld <frank@lichtenheld=2Ecom>
+PatchSet: 25
+Gerrit-Owner: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Re=
+viewer: flichtenheld <frank@lichtenheld=2Ecom>
+Gerrit-CC: openvpn-devel <op=
+envpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Attention: plaisthos <arne-op=
+envpn@rfc2549=2Eorg>
 
---K0WqHqv01nY=
+--pY5e1P6TOQI=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld=2E </p>
-<p><a href=3D"http://gerrit=2Eop=
-envpn=2Enet/c/openvpn/+/1573?usp=3Demail">View Change</a></p><p>3 comments:=
-</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; pad=
-ding: 0;"><p>File src/openvpn/siphash=2Eh:</p><ul style=3D"list-style: none=
-; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"ma=
-rgin-bottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/157=
-3/comment/b8accde5_d7e6251e?usp=3Demail">Patch Set #11, Line 112:</a> <code=
- style=3D"font-family:monospace,monospace"> * @return a unit64_t containing=
- the result of the hashing</code></p><p><blockquote style=3D"border-left: 1=
-px solid #aaa; margin: 10px 0; padding: 0 10px;">&quot;uint64_t&quot;</bloc=
-kquote></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: b=
-reak-word;">Done</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>=
-File src/openvpn/siphash=2Ec:</p><ul style=3D"list-style: none; padding: 0;=
-"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: =
-4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1573/comment/bab=
-31858_9e3d1955?usp=3Demail">Patch Set #11, Line 29:</a> <code style=3D"font=
--family:monospace,monospace">#include &quot;config-msvc=2Eh&quot;</code></p=
-><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; paddi=
-ng: 0 10px;">config-msvc=2E [=E2=80=A6]</blockquote></p><p class=3D"blocks"=
- style=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li><li s=
-tyle=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><=
-a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1573/comment/d3b4f90e_c=
-8ce2852?usp=3Demail">Patch Set #11, Line 46:</a> <code style=3D"font-family=
-:monospace,monospace">    siphash_cryptolib_init(8);</code></p><p><blockquo=
-te style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">=
-Doesn&#39;t that need to check with `siphash_cryptolib_available`? [=E2=80=
-=A6]</blockquote></p><p class=3D"blocks" style=3D"white-space: pre-wrap; wo=
-rd-wrap: break-word;">Done</p></li></ul></li></ul><p>To view, visit <a href=
-=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1573?usp=3Demail">change 1573=
-</a>=2E To unsubscribe, or for help writing mail filters, visit <a href=3D"=
-http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div=
- itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope ite=
-mprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=
-=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1573?usp=3Demail=
-"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+rently required from: plaisthos=2E </p>
+<p>plaisthos <strong>uploaded patch=
+ set #25</strong> to this change=2E</p><p><a href=3D"http://gerrit=2Eopenvp=
+n=2Enet/c/openvpn/+/31?usp=3Demail">View Change</a></p><pre class=3D"blocks=
+" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">Use Op=
+enSSL&#39;s SIPHASH implementation to double check our implementation<br><b=
+r>OpenSSL library is currently slower than the reference implementation<br>=
+(about 1=2E5x to 2x depending of the compiler)=2E<br><br>The OpenSSL API fo=
+r using the SIPHASH MAC is different enough from using<br>normal HMAC or Di=
+gest that we already implement that combining them into<br>one API does not=
+ make sense=2E<br><br>SIPHASH is only available on OpenSSL 3=2E1 and later=
+=2E We still check for<br>support on 3=2E0 and later as the whole API to al=
+low using the SIPHASH alrady<br>exists in OpenSSL 3=2E0=2E Some of the late=
+r OpenSSL 3=2E0=2Ex might get support<br>for it=2E Theoretically, a provide=
+r can be loaded in OpenSSL 3=2E0 that<br>implements SIPHASH=2E<br><br>With =
+OpenSSL&#39;s implementation being slower, we currently only use it to<br>c=
+heck that our reference implementation and the OpenSSL implementation<br>yi=
+eld the same result in unit tests<br><br>Change-Id: I09aa27caa1a3aab0d1be61=
+18b26d54a1c1bf7aa0<br>Signed-off-by: Arne Schwabe &lt;arne@rfc2549=2Eorg&gt=
+;<br>---<br>M CMakeLists=2Etxt<br>M src/openvpn/Makefile=2Eam<br>M src/open=
+vpn/siphash=2Eh<br>M src/openvpn/siphash_reference=2Ec<br>M tests/unit_test=
+s/openvpn/Makefile=2Eam<br>A tests/unit_tests/openvpn/siphash_openssl=2Ec<b=
+r>A tests/unit_tests/openvpn/siphash_openssl=2Eh<br>M tests/unit_tests/open=
+vpn/test_crypto=2Ec<br>8 files changed, 304 insertions(+), 8 deletions(-)<b=
+r><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace=
+; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openv=
+pn refs/changes/31/31/25</pre><pre style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;"><span>diff --git a/CMakeLists=2Etxt b/CMakeLists=
+=2Etxt</span><br><span>index 7473f15=2E=2Ef113207 100644</span><br><span>--=
+- a/CMakeLists=2Etxt</span><br><span>+++ b/CMakeLists=2Etxt</span><br><span=
+>@@ -572,6 +572,8 @@</span><br><span>     src/openvpn/shaper=2Eh</span><br>=
+<span>     src/openvpn/sig=2Ec</span><br><span>     src/openvpn/sig=2Eh</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/siphash=
+=2Eh</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn=
+/siphash_reference=2Ec</span><br><span>     src/openvpn/socket=2Ec</span><b=
+r><span>     src/openvpn/socket=2Eh</span><br><span>     src/openvpn/socket=
+_util=2Ec</span><br><span>@@ -784,6 +786,7 @@</span><br><span>         )</s=
+pan><br><span> </span><br><span>     target_sources(test_crypto PRIVATE</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        tests/unit_test=
+s/openvpn//siphash_openssl=2Ec</span><br><span>         src/openvpn/crypto_=
+mbedtls=2Ec</span><br><span>         src/openvpn/crypto_openssl=2Ec</span><=
+br><span>         src/openvpn/crypto_epoch=2Ec</span><br><span>@@ -792,8 +7=
+95,11 @@</span><br><span>         src/openvpn/packet_id=2Ec</span><br><span=
+>         src/openvpn/mtu=2Ec</span><br><span>         src/openvpn/mss=2Ec<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        src/openvpn/=
+siphash_reference=2Ec</span><br><span>         )</span><br><span> </span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    target_compile_definitio=
+ns(test_crypto PRIVATE PREFER_OPENSSL_SIPHASH)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span>     target_sources(test_ssl PR=
+IVATE</span><br><span>             tests/unit_tests/openvpn/mock_management=
+=2Ec</span><br><span>             tests/unit_tests/openvpn/mock_ssl_depende=
+ncies=2Ec</span><br><span>diff --git a/src/openvpn/Makefile=2Eam b/src/open=
+vpn/Makefile=2Eam</span><br><span>index ff8cc54=2E=2E1f77384 100644</span><=
+br><span>--- a/src/openvpn/Makefile=2Eam</span><br><span>+++ b/src/openvpn/=
+Makefile=2Eam</span><br><span>@@ -128,6 +128,7 @@</span><br><span> 	session=
+_id=2Ec session_id=2Eh \</span><br><span> 	shaper=2Ec shaper=2Eh \</span><b=
+r><span> 	sig=2Ec sig=2Eh \</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+	siphash_reference=2Ec siphash=2Eh \</span><br><span> 	socket=2Ec s=
+ocket=2Eh \</span><br><span> 	socket_util=2Ec socket_util=2Eh \</span><br><=
+span> 	socks=2Ec socks=2Eh \</span><br><span>diff --git a/src/openvpn/sipha=
+sh=2Eh b/src/openvpn/siphash=2Eh</span><br><span>index ef61110=2E=2Ebddddc3=
+ 100644</span><br><span>--- a/src/openvpn/siphash=2Eh</span><br><span>+++ b=
+/src/openvpn/siphash=2Eh</span><br><span>@@ -18,12 +18,26 @@</span><br><spa=
+n> #ifndef SIPHASH_H</span><br><span> #define SIPHASH_H</span><br><span> </=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &lt;inttypes=
+=2Eh&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &l=
+t;stdint=2Eh&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#in=
+clude &lt;stdio=2Eh&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+#include &lt;stdbool=2Eh&gt;</span><br><span> </span><br><span> /* siph=
+ash always uses 128-bit keys */</span><br><span> #define SIPHASH_KEY_SIZE 1=
+6</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-in=
+t siphash(const void *in, size_t inlen, const void *k, uint8_t *out,</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-            size_t outlen);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ * Calculates SIPHASH using the refe=
+rence implementation</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+siphash_reference(const void *i=
+n, size_t inlen, const void *k,</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+                  uint8_t *out, size_t outlen);</span><br><span=
+> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+static inline int</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+siphash(const void *in, size_t inlen, const void *k,<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        uint8_t *out=
+, size_t outlen)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return siphash_re=
+ference(in, inlen, k, out, outlen);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* ifndef SIPH=
+ASH_H */</span><br><span>\ No newline at end of file</span><br><span>diff -=
+-git a/src/openvpn/siphash_reference=2Ec b/src/openvpn/siphash_reference=2E=
+c</span><br><span>index b21a86e=2E=2Ead19a51 100644</span><br><span>--- a/s=
+rc/openvpn/siphash_reference=2Ec</span><br><span>+++ b/src/openvpn/siphash_=
+reference=2Ec</span><br><span>@@ -100,8 +100,8 @@</span><br><span>  *  outl=
+en: length of the output in bytes, must be 8 or 16</span><br><span>  */</sp=
+an><br><span> int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-siph=
+ash(const void *in, const size_t inlen, const void *k, uint8_t *out,</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        const size_t outlen)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+siphash_reference(c=
+onst void *in, const size_t inlen, const void *k, uint8_t *out,</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                  const size_t =
+outlen)</span><br><span> {</span><br><span>     const unsigned char *ni =3D=
+ (const unsigned char *)in;</span><br><span>     const unsigned char *kk =
+=3D (const unsigned char *)k;</span><br><span>diff --git a/tests/unit_tests=
+/openvpn/Makefile=2Eam b/tests/unit_tests/openvpn/Makefile=2Eam</span><br><=
+span>index d861ef9=2E=2E287e0ae 100644</span><br><span>--- a/tests/unit_tes=
+ts/openvpn/Makefile=2Eam</span><br><span>+++ b/tests/unit_tests/openvpn/Mak=
+efile=2Eam</span><br><span>@@ -73,6 +73,7 @@</span><br><span> crypto_testdr=
+iver_LDFLAGS =3D @TEST_LDFLAGS@</span><br><span> crypto_testdriver_SOURCES =
+=3D test_crypto=2Ec \</span><br><span> 	mock_msg=2Ec mock_msg=2Eh test_comm=
+on=2Eh \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	siphash_op=
+enssl=2Ec siphash_openssl=2Eh \</span><br><span> 	$(top_srcdir)/src/openvpn=
+/buffer=2Ec \</span><br><span> 	$(top_srcdir)/src/openvpn/crypto=2Ec \</spa=
+n><br><span> 	$(top_srcdir)/src/openvpn/crypto_mbedtls=2Ec \</span><br><spa=
+n>@@ -84,7 +85,8 @@</span><br><span> 	$(top_srcdir)/src/openvpn/platform=2E=
+c \</span><br><span> 	$(top_srcdir)/src/openvpn/mtu=2Ec \</span><br><span> =
+	$(top_srcdir)/src/openvpn/win32-util=2Ec \</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-	$(top_srcdir)/src/openvpn/mss=2Ec</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/mss=2Ec \</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/op=
+envpn/siphash_reference=2Ec</span><br><span> </span><br><span> dhcp_testdri=
+ver_CFLAGS  =3D -I$(top_srcdir)/src/openvpn -I$(top_srcdir)/src/compat @TES=
+T_CFLAGS@ -DDHCP_UNIT_TEST</span><br><span> dhcp_testdriver_LDFLAGS =3D @TE=
+ST_LDFLAGS@ -L$(top_srcdir)/src/openvpn</span><br><span>@@ -97,6 +99,7 @@</=
+span><br><span> </span><br><span> ssl_testdriver_CFLAGS  =3D \</span><br><s=
+pan> 	-I$(top_srcdir)/include -I$(top_srcdir)/src/compat -I$(top_srcdir)/sr=
+c/openvpn \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	-DPREFE=
+R_OPENSSL_SIPHASH \</span><br><span> 	@TEST_CFLAGS@</span><br><span> ssl_te=
+stdriver_LDFLAGS =3D @TEST_LDFLAGS@  $(OPTIONAL_CRYPTO_LIBS)</span><br><spa=
+n> ssl_testdriver_SOURCES =3D test_ssl=2Ec \</span><br><span>diff --git a/t=
+ests/unit_tests/openvpn/siphash_openssl=2Ec b/tests/unit_tests/openvpn/siph=
+ash_openssl=2Ec</span><br><span>new file mode 100644</span><br><span>index =
+0000000=2E=2E90d248a</span><br><span>--- /dev/null</span><br><span>+++ b/te=
+sts/unit_tests/openvpn/siphash_openssl=2Ec</span><br><span>@@ -0,0 +1,144 @=
+@</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+ *  OpenVPN -- An application to se=
+curely tunnel IP networks</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+ *             over a single TCP/UDP port, with support for SSL/TLS-b=
+ased</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             =
+session authentication and key exchange,</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ *             packet encryption, packet authenticatio=
+n, and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *           =
+  packet compression=2E</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  Copyright=
+ (C) 2002-2026 OpenVPN Inc &lt;sales@openvpn=2Enet&gt;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ *  Copyright (C) 2026 Arne Schwabe &lt;=
+arne@rfc2549=2Eorg&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This progr=
+am is free software; you can redistribute it and/or modify</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ *  it under the terms of the GNU Ge=
+neral Public License version 2</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ *  as published by the Free Software Foundation=2E</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+ *  This program is distributed in the hope that =
+it will be useful,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+*  but WITHOUT ANY WARRANTY; without even the implied warranty of</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ *  MERCHANTABILITY or FITNES=
+S FOR A PARTICULAR PURPOSE=2E  See the</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ *  GNU General Public License for more details=2E</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *  You should have received a copy of th=
+e GNU General Public License along</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ *  with this program; if not, see &lt;https://www=2Egnu=2Eo=
+rg/licenses/&gt;=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+#ifdef HAVE_CONFIG_H</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+#include &quot;config=2Eh&quot;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+#include &quot;siphash=2Eh&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+#ifdef ENABLE_CRYPTO_OPENSSL</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+#include &lt;openssl/opensslv=2Eh&gt;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+/* OpenSSL siphash is currently 2-3 times slower than the referen=
+ce</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * implementation=
+, so we only use for unit testing that our impelmentation</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ * and OpenSSL agree*/</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+#if defined(ENABLE_CRYPTO_OPENSSL)=
+ &amp;&amp; OPENSSL_VERSION_NUMBER &gt;=3D 0x30000000L</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+#include &lt;openssl/evp=2Eh&gt;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;crypto_opens=
+sl=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#includ=
+e &quot;crypto_backend=2Eh&quot;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+#include &quot;buffer=2Eh&quot;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+struct siphash_context</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    EVP_M=
+AC *mac;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    EVP_MAC=
+_CTX *ctx;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    size_=
+t size;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    OSSL_PAR=
+AM params[3];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+};</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ *  Computes a SipHash value</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+ * in: pointer to input data (read-only)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ *  inlen: input data length=
+ in bytes (any size_t value)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+ * k: pointer to the key data (read-only), must be 16 bytes</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ * out: pointer to output =
+data (write-only), outlen bytes must be allocated</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ *  outlen: length of the output in bytes, mu=
+st be 8 or 16</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+siphash_openssl(void *sip_context, con=
+st void *in, const size_t inlen,</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+                const void *k, uint8_t *out, const size_t outl=
+en)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    struct siphash_context *sip =
+=3D sip_context;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    sip-&gt;params[1] =3D OSSL_PARAM_cons=
+truct_octet_string(&quot;key&quot;, (void *)k,</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+                                                =
+       SIPHASH_KEY_SIZE);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    if (!EVP_MAC_init(sip-&gt;ctx, NULL, 0, sip-&gt;params))</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        crypto_msg(M_FATAL, &quot;EVP_MAC=
+_init failed&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    EVP_MAC_u=
+pdate(sip-&gt;ctx, in, inlen);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    size=
+_t outl =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    E=
+VP_MAC_final(sip-&gt;ctx, out, &amp;outl, outlen);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    return 0;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void *</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+siphash_openssl_init(size=
+_t hash_size)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct siphash_conte=
+xt *sip;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ALLOC_O=
+BJ(sip, struct siphash_context);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    si=
+p-&gt;mac =3D EVP_MAC_fetch(NULL, &quot;SIPHASH&quot;, NULL);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    if (!sip-&gt;mac)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        /* Our OpenSSL library does not suppo=
+rt SIPHASH */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  return sip;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    sip-&gt;ctx =3D =
+EVP_MAC_CTX_new(sip-&gt;mac);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Op=
+enSSL will truly hold a pointer to an int in that parameter */</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    sip-&gt;size =3D hash_size;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    sip-&gt;params[0=
+] =3D OSSL_PARAM_construct_size_t(&quot;size&quot;, &amp;sip-&gt;size);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* params[1] will h=
+old the key that changes which each invocation */</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    sip-&gt;params[2] =3D OSSL_PARAM_construc=
+t_end();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return =
+sip;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+siphash_openssl_available(void *sip_context)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    struct siphash_context *sip =3D sip_context;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    return (bool)(sip-&gt;mac);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+siphash_openss=
+l_uninit(void *sip_context)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct=
+ siphash_context *sip =3D sip_context;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    EVP_MAC_CTX_free(sip-&gt;ctx);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    EVP_MAC_free(sip-&gt;mac);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    free(sip_context);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+#else</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+/* Do avoid a lot more ifdefs in the test we put dummy func=
+tions here */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+siphash_openssl(void *=
+sip_context, const void *in, const size_t inlen,</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+                const void *k, uint8_t *out, c=
+onst size_t outlen)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return -1;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+siphash_openssl_available(void *sip_context)</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    return false;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+void *</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+siphash_openssl_init(size_t hash_size)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    return NULL;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+siphash_openssl_uninit(v=
+oid *sip_context)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
+endif /* if defined(ENABLE_CRYPTO_OPENSSL) &amp;&amp; OPENSSL_VERSION_NUMBE=
+R &gt;=3D 0x30000000L */</span><br><span>diff --git a/tests/unit_tests/open=
+vpn/siphash_openssl=2Eh b/tests/unit_tests/openvpn/siphash_openssl=2Eh</spa=
+n><br><span>new file mode 100644</span><br><span>index 0000000=2E=2E9d9757d=
+</span><br><span>--- /dev/null</span><br><span>+++ b/tests/unit_tests/openv=
+pn/siphash_openssl=2Eh</span><br><span>@@ -0,0 +1,60 @@</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ * SipHash reference C implementation</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+ * Copyright (c) 2012-2021 Jean-Philippe Aumasson</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ * &lt;jeanphilippe=2Eaum=
+asson@gmail=2Ecom&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ * Copyright (c) 2012-2014 Daniel J=2E Bernstein &lt;djb@cr=2Eyp=2Eto&gt;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ * To the extent possible under law,=
+ the author(s) have dedicated all copyright</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+ * and related and neighboring rights to this softw=
+are to the public domain</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+ * worldwide=2E This software is distributed without any warranty=2E</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ * You should have received a copy of =
+the CC0 Public Domain Dedication along</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ * with</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ * this software=2E If not, see</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ * &lt;http://creativecommons=2Eorg/publicdomain/zero/1=
+=2E0/&gt;=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#ifndef SIPHASH_OPENSSL_H</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+#define SIPHASH_OPENSSL_H</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+#include &lt;stdint=2Eh&gt;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+#include &lt;stdio=2Eh&gt;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+#include &lt;stdbool=2Eh&gt;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+/* Prototypes for an implementation of SIPHASH in a crypto l=
+ibrary */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * @param hash_size the size of the outpu=
+t hash size</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @retu=
+rn initialised context for siphash</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+v=
+oid *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+siphash_openss=
+l_init(size_t hash_size);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ * Calculates SIPHASH using the crypto library f=
+unction=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+siphash_openssl(void *sip_context, const =
+void *in, size_t inlen,</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                const void *k, uint8_t *out, size_t outlen);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ * Free the siphash context used for the crypto library</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ * @param sip_context</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+siphash_openssl_uninit(void *sip_context);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ * Returns if the crypto library is available (and should be used)</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ * This returns if there is a crypto l=
+ibrary version of Siphash24 is</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ * available and should be used (OpenSSL 3/4 version is quite sl=
+ow, so</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * we prefer =
+the reference implementation)</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+siphash_openssl_available(void *sip_co=
+ntext);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* if=
+ndef SIPHASH_OPENSSL_H */</span><br><span>\ No newline at end of file</span=
+><br><span>diff --git a/tests/unit_tests/openvpn/test_crypto=2Ec b/tests/un=
+it_tests/openvpn/test_crypto=2Ec</span><br><span>index cb4eaa2=2E=2E9338527=
+ 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_crypto=2Ec</spa=
+n><br><span>+++ b/tests/unit_tests/openvpn/test_crypto=2Ec</span><br><span>=
+@@ -31,12 +31,15 @@</span><br><span> #include &lt;stdarg=2Eh&gt;</span><br>=
+<span> #include &lt;string=2Eh&gt;</span><br><span> #include &lt;setjmp=2Eh=
+&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;in=
+ttypes=2Eh&gt;</span><br><span> #include &lt;cmocka=2Eh&gt;</span><br><span=
+> </span><br><span> #include &quot;crypto=2Eh&quot;</span><br><span> #inclu=
+de &quot;crypto_epoch=2Eh&quot;</span><br><span> #include &quot;options=2Eh=
+&quot;</span><br><span> #include &quot;ssl_backend=2Eh&quot;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+#include &quot;siphash=2Eh&quot;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;siphas=
+h_openssl=2Eh&quot;</span><br><span> </span><br><span> #include &quot;mss=
+=2Eh&quot;</span><br><span> #include &quot;test_common=2Eh&quot;</span><br>=
+<span>@@ -923,6 +926,69 @@</span><br><span>     assert_memory_equal(key_par=
+ameters=2Ehmac, exp_impl_iv, sizeof(exp_impl_iv));</span><br><span> }</span=
+><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Use =
+a define here since some c compilers don&#39;t like array initialisation</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ * with an integer */<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define UT_SIPHASH_H=
+ASH_SIZE 16</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+static const char *ut_messa=
+ge =3D &quot;Look behind you, a Three-Headed Monkey!&quot;;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+static const uint8_t ut_key[SIPHASH=
+_KEY_SIZE] =3D { 0x11, 0x22, 0x33, 0x44, 0x55, 0x66 };</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+const uint8_t expected_hash[UT_SIPHASH_H=
+ASH_SIZE] =3D { 0x3e, 0xea, 0x95, 0xb2, 0x6d, 0x5c, 0x4e, 0xfa,</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                               =
+                       0x20, 0x47, 0x65, 0x7e, 0xdd, 0xcd, 0x62, 0x51 };</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+test_siphash(void **state)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    uint8_t out[UT_SIPHASH_HASH_SIZE] =3D { 0 };</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    siphash_reference(ut_messa=
+ge, strlen(ut_message), ut_key, out, UT_SIPHASH_HASH_SIZE);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    assert_memory_equal(out, expect=
+ed_hash, UT_SIPHASH_HASH_SIZE);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+test_siphash_openssl(void **state=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    void *sipctx =3D siphash_openssl=
+_init(UT_SIPHASH_HASH_SIZE);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!s=
+iphash_openssl_available(sipctx))</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        siphash_openssl_uninit(sipctx);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        skip();</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint8_t out[U=
+T_SIPHASH_HASH_SIZE] =3D { 0 };</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    sip=
+hash_openssl(sipctx, ut_message, strlen(ut_message), ut_key, out,</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                    UT_SIPHAS=
+H_HASH_SIZE);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    as=
+sert_memory_equal(out, expected_hash, UT_SIPHASH_HASH_SIZE);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    /* check that calling the function twice is safe =
+*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    siphash_opens=
+sl(sipctx, ut_message, strlen(ut_message), ut_key, out,</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+                    UT_SIPHASH_HASH_SIZ=
+E);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_memor=
+y_equal(out, expected_hash, UT_SIPHASH_HASH_SIZE);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    /* Test a few random strings and ensure that our implementa=
+tion behave the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+ * same */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (=
+int i =3D 0; i &lt; 1000; i++)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     int len =3D random() % 1000;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        uint8_t buf[1024] =3D { 0 };</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        uint8_t key[SIPHASH_KEY_SIZE] =3D { =
+0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        assert_true(rand_bytes(buf=
+, len));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ass=
+ert_true(rand_bytes(key, sizeof(key)));</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        siphash_op=
+enssl(sipctx, buf, len, key, out, UT_SIPHASH_HASH_SIZE);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        uint8_t outref[UT_SIPHASH_HASH_SIZE] =3D { 0 };</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        siphash_refer=
+ence(buf, len, key, outref, UT_SIPHASH_HASH_SIZE);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        assert_memory_equal(out, outref, UT_SIPHASH_HASH_SIZE);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    siphash_openssl_uninit(sipctx);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span> int</span><br><span> main(void)</span><br><span> {</spa=
+n><br><span>@@ -960,7 +1026,9 @@</span><br><span>         cmocka_unit_test_=
+prestate_setup_teardown(crypto_test_epoch_edge,</span><br><span>           =
+                                       crypto_test_epoch_setup,</span><br><=
+span>                                                  crypto_test_epoch_te=
+ardown, &amp;prestate_num13),</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-        cmocka_unit_test(epoch_test_derive_data_key)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(epoch_tes=
+t_derive_data_key),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        cmocka_unit_test(test_siphash),</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        cmocka_unit_test(test_siphash_openssl)</span><b=
+r><span>     };</span><br><span> </span><br><span>     return cmocka_run_gr=
+oup_tests_name(&quot;crypto tests&quot;, tests, NULL, NULL);</span><br><spa=
+n></span><br></pre><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2En=
+et/c/openvpn/+/31?usp=3Demail">change 31</a>=2E To unsubscribe, or for help=
+ writing mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/setti=
+ngs?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schem=
+a=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:/=
+/schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=2Eop=
+envpn=2Enet/c/openvpn/+/31?usp=3Demail"/><meta itemprop=3D"name" content=3D=
+"View Change"/></div></div>
 
-<div styl=
-e=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"displa=
-y:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit=
--Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I807f=
-398903ac2047530800c29949793c6f4f0ec9 </div>
-<div style=3D"display:none"> Ge=
-rrit-Change-Number: 1573 </div>
-<div style=3D"display:none"> Gerrit-PatchSe=
-t: 15 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-=
-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Review=
-er: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
-<div style=3D"displ=
-ay:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2E=
-net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld =
-&lt;frank@lichtenheld=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-=
-Comment-Date: Sat, 25 Jul 2026 21:57:14 +0000 </div>
+<div style=3D"display:none"> Gerrit-MessageTyp=
+e: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn =
+</div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=
+=3D"display:none"> Gerrit-Change-Id: I09aa27caa1a3aab0d1be6118b26d54a1c1bf7=
+aa0 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 31 </div>
+<di=
+v style=3D"display:none"> Gerrit-PatchSet: 25 </div>
 <div style=3D"display:=
-none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-H=
-as-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flic=
-htenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<d=
+iv style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@lichtenh=
+eld=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel =
+&lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"displa=
+y:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </d=
+iv>
 
 </body></html>
---K0WqHqv01nY=--
+--pY5e1P6TOQI=--
 
 
---===============6904024265279091770==
+--===============3958368405634869593==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============6904024265279091770==
+--===============3958368405634869593==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -328,5 +1416,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============6904024265279091770==--
+--===============3958368405634869593==--
 
