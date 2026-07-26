@@ -4,7 +4,7 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 66A68C53200
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D7564C5321C
 	for <openvpn-devel@archiver.kernel.org>; Sun, 26 Jul 2026 00:07:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
@@ -12,118 +12,118 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	Subject:MIME-Version:Message-ID:References:Date:Sender:To:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
-	List-Owner; bh=trTuv+zqW8k9llrU7zKDCwAbrxA7fUXepLKimx+TcI8=; b=QpJFTQWdSbvWxY
-	EHLhDFv6deud6Dd1CHRj0BtaWUq2cF98417HNt5KsTZ4EaV6ED63AyME5scE2LDo7AJbPKRVC7SnC
-	0U+ePyWZ2zXnQmGSfEn/TRrAnMV9rOaMgvQcCS7lcmSJpjNSgkITavIXX8QHjgU5Bo6Ll/liUaUqq
-	TXU=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	List-Owner; bh=BxrJs4lB1ZmLRhYQhiSzspZAox3Mbcnl4+XUNOX1i7o=; b=Me73oHo/ml5/HY
+	8890bz5SuBhvMP10IDKk68ghHppVbNf8EePsRkaJEpl4dYvuPOc4/TQ7AVFcGSPfO3YFlz2CRAjpG
+	RCzCArtks9fUVwyHnetsqER835C09iOY6Sq1K3LHWAfMOQjI7pIfunrj+2fVdt9HgLVBA/rCeYJFf
+	zHk=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wnmOd-0008Ib-F8;
+	id 1wnmOb-0007SY-Bm;
 	Sun, 26 Jul 2026 00:07:09 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wnmOV-0008I8-2L
+ (envelope-from <gerrit@openvpn.net>) id 1wnmOU-0007SO-Sq
  for openvpn-devel@lists.sourceforge.net;
- Sun, 26 Jul 2026 00:07:00 +0000
+ Sun, 26 Jul 2026 00:07:02 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:Date:From
  :Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From:
  Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=i5ZaCcbnwcMwbEksYsORhRDEwITcz9GQZO4OE4tJr3g=; b=fP7CblQRWPSNawnsAwLCr3zST5
- cKRZ+Pw/mO0EImPn1v2qGRNaTf+W94OesGmcIknK+20CizuWxotXRneqQonK9TqN5RmdL3bqScAqe
- uhUv0WCcmfKvITbeSXOJ2d10yn5/2cw5qaVEGfmPNL+uKW3whjDZW98wpr7c/ZcuLEjo=;
+ bh=MUsLI23cSQgv9QRPk2P4pKljfcuoHUkRLDT1TO2EeTE=; b=KHz6IiiXLX0+ZEIUdxkTmfTjZs
+ kCKQ+MmpKtpNxx+1sn63DY757yYwNLe0aLkBKZternuNqVPVB0CZovilcHgC4h1+vZcDPtK49QTJ+
+ URj/7AkSyuly7nf1Ctk/ZE7nTXjFycWahHYLP9KoTwzKrIyqaRwnq0ZkhqaDV4HvAAkU=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
  Subject:References:List-Unsubscribe:List-Id:Cc:Date:From:Sender:To:Content-ID
  :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
  Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=i5ZaCcbnwcMwbEksYsORhRDEwITcz9GQZO4OE4tJr3g=; b=H
- 7PBGGHScsay4nfYElGqrPUZAjzy1HRj4wtTuO4gw4DwcDpKBwtCyj08on5jvN6pv59MefBdev5k3G
- DCPgt/7P+6ao7qW7HCTfmkUlTi9WCc5mJb5Io6hgfVcoRCwBw7+ChVR7ZkEYx4GA6txXvgbPIESQf
- SJ8tKTiDe3AJPFSM=;
+ List-Owner:List-Archive; bh=MUsLI23cSQgv9QRPk2P4pKljfcuoHUkRLDT1TO2EeTE=; b=e
+ eIitmwbtJniFkE46Uv2bEq3zLGKloeBe3z2b8jUhcRFJTwF73zNnhT90l3o5psYwHlZoWtRcwsDNE
+ W6QxD5SkY/Savq6T9vJfwQbttpu6D2qdQn+hLi3L1FexifLwbKEihJ0LOL08H2EdZKrMa4gnlQrwU
+ HbiY17mp257WVqMk=;
 Received: from mail-wm1-f48.google.com ([209.85.128.48])
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wnmOS-0005yt-7P for openvpn-devel@lists.sourceforge.net;
- Sun, 26 Jul 2026 00:06:59 +0000
+ id 1wnmOV-0005yy-2R for openvpn-devel@lists.sourceforge.net;
+ Sun, 26 Jul 2026 00:07:02 +0000
 Received: by mail-wm1-f48.google.com with SMTP id
- 5b1f17b1804b1-4954d29264cso7891485e9.2
+ 5b1f17b1804b1-49554ebb87dso14962705e9.3
  for <openvpn-devel@lists.sourceforge.net>;
- Sat, 25 Jul 2026 17:06:56 -0700 (PDT)
+ Sat, 25 Jul 2026 17:06:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1785024410; x=1785629210; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1785024413; x=1785629213; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
  :date:from:from:to:cc:subject:date:message-id:reply-to:content-type;
- bh=i5ZaCcbnwcMwbEksYsORhRDEwITcz9GQZO4OE4tJr3g=;
- b=WYVqQMUwDcl0QdZv65s8JMoUnh56gnPW7JbC1JI3JPhg1z6NjbV8n6NLDX4MOMz8hL
- i4sW+4ZDoBdWk2hNAucIjraZUxZWf9oSTzc5m4iQrG2XgB+VCLBe31Sas7bBC7toywTO
- rQzxx1VPlMyJXQRyss1mVszunh5srhXv5it/SJY0x/+Y1hAwlWJ1vZnB1OBf3z/I+Q6p
- Q7d/1TPxe5qaimYdvRIu/N9TA0hnz05yZgvUcIUjhaZcdG+9QO39FYymN0k+yl6Dq5oZ
- FAscBIS1NGI6KE/gipVejcHgPaSmq/y6czp6YLrTcU6M6imAU0I3GSNLiIaH8rs4fNhu
- 3MDw==
+ bh=MUsLI23cSQgv9QRPk2P4pKljfcuoHUkRLDT1TO2EeTE=;
+ b=b93sLN4VlWUNyXC0EylF0IqnYPToitqXzoRywX1wjwIboKpkF9fpq8gEh1c3NMlgde
+ I4GNEQkVq3gjSXTNGmTBGItXGDrs0YpcrOuAzEzaKJO0tkmbig2S0JiRUfJ/eJRTcDWe
+ E4HCOotQ/uSQhG/BDNGEwv3wo16jvppYUGMZc6FlkkRzdkRTDp4MZRuFMtDG1QDTWyTv
+ Xs4v1dMo6ppl/xkG+fidAuBiv3TaK/9hwe0PbjoAHdWAK8bfgsD2n0Q++kLU0rgHO8Wu
+ JVbuAe/Vjqyul4IBB2P+XdZ9lZ7IzFjQ7MExsyjRQnD9yeBagI859sgCqM2CdkuLovRL
+ JaYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1785024410; x=1785629210;
+ d=1e100.net; s=20251104; t=1785024413; x=1785629213;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
  :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
  :message-id:reply-to:content-type;
- bh=i5ZaCcbnwcMwbEksYsORhRDEwITcz9GQZO4OE4tJr3g=;
- b=kpQjAzdcLyAECQGlRUeB4xi9sDxZpEZpD0oHAyqkXTYvKpZPZ5qyL98M9Rl0g3HERz
- 7JXQPTWWRXuyUYm5IgNIA0KF8Pj9d7J48AgP/ddJXLDv0ou2oeT/V07O1QcNyfis0+08
- 8uFWaIJmbeIpQCFjtHELvrCEj6MffYU3ZKBT7NrmA2JesDRFMMtPhZ1E6snTllD14cbY
- 2FuNN0JebA9MuRRCBofyufyp7P63gbhwxCP92pmfGNeBgSH2dIyZ8vdOGiBEGZPVsFXP
- AlBnrtRsrTP3CQrGWnHbSm5ZEZJubgAQtwYzSUgBRRgxUhu/0jPhl3oLAqpUUfFlihAi
- W+LQ==
-X-Gm-Message-State: AOJu0YxkU+qujcA2X8GMvT22CjYgo8rMNDKoW3g5hZIFZSK9YY6vMR6m
- IlGEnw4aHNZ2FTurgvxMmyRG0mWyCX74MAmbhhYfHM09R5SbE1t60D2IBK9M1WFgP5i5+mRCezV
- 3gceQ++s9cc4rsTJUBX+GfC8d0hPU0vbZmLa4+zuUs6/B3edyRvr+tDLufOZ+rxpEWe0JdqG8ti
- zypglBrw==
-X-Gm-Gg: AR+sD10j4Q0dNFA780Jy3xkUluGroeLDBCukqmHwXWGKx2haAtyIUWnYOr+GWEYGizX
- oVphxokvY/Jsje2P0XBMTLPaz3CqMdu75w4cXQVVhyBg3XmcHm/lo4q+rY30+nBKEsKYTonbD+h
- GSoOGvP3VOlHDqE+Y0DYwuSIoLdWYVgKvp9Xog8nlq9dytC1UZbly49CN2SQ5I79HOtEfsWvWt+
- iEhrk+B/jB0ifvCz7X3YilTTVC9wSgTDPxIoiHoQMXgSLLwnHQBoUdbmpZtSaYfi+KcMLUIwBc1
- SBh0s0/UyOyFmV34sU4NHTC8+8jaWVArgZ4DfSkYFaXlW8xXRs2txwI3X8CHbm8FT2vcha/gC29
- 8E3VI260KAk2RuJ/4hw+jve+j+VCgqQ0HrOD+Epbqz5dmh2i/ajtI6oinJobMdoW2VYLPrbRwmq
- 5GbkSHmYl3vAKjg6+2trYyTfgNcwV0hXIdfMuhD+HvX99IYyENzI0y2La9LTp6aS6jTvRC243QX
- 4CShkoV0HtIa/basvI91Oc6xyLvyQsC+nABb7JkM9MdWACSLBbk9O/a4bIITSfcysuFtuQW+2ni
- n2s=
-X-Received: by 2002:a05:600c:1d07:b0:495:3b8a:bf11 with SMTP id
- 5b1f17b1804b1-496b57258b8mr49489075e9.26.1785024409871; 
- Sat, 25 Jul 2026 17:06:49 -0700 (PDT)
+ bh=MUsLI23cSQgv9QRPk2P4pKljfcuoHUkRLDT1TO2EeTE=;
+ b=bCfyK16uX4NUbrF/07e9PGjwqT+9uHInkEHhMmBfb8LDE2RV5cqDxXxmR8BOY58GW6
+ u4p68LGo2/ISCbTzMkkMGz8QvedQvgYfze2mvVs2XembO+uF3pacxF9XNqNXbj/wBTf6
+ Tpzbk+RhTf8ZcbrRcDN5FAUeZ4SUCJ9AXdQiu8bQFgeKa3m5CEW1pWh1rUiGHW833lzS
+ Ep6Q1ChxeUiRXapbGIfKDflq8zSslHK0EXioWOHoHXCYOTvEpe0Kk7gb1ZhuBJuIi+HT
+ iiS/rsv/Q8cdGm4wbDW1CkZHVMs3GRXETfVFx84vc/2i8AOITgGgpSh495fkyFDMi4u/
+ ERCw==
+X-Gm-Message-State: AOJu0YzI4rHK5+h8qZ5dhyM/zoacdGW1VW8fZCqU8cnZ/KNy/nkohURz
+ NIytpf7P4dH1vYGKJ+rZjRhUVcJiV7h6BEHlmKIMCmnamNuqQ2e8OZpv5NKNlI+EKUg8TgoyMeQ
+ /YLqWwxIyNRvzNyenQ0q2tzmzKEYOiQpRF0/nyTkKQMBJ0sjkT/GnAR/z9YGgs6Ajk5Y37/YlO0
+ H5N9DU1Q==
+X-Gm-Gg: AR+sD13oj7VH8qpbJ0HrdDVR7VeyOpIPI5lxSv7wOxvmJzkox3/JPcIDxRr0i4w5GWd
+ CCLiHvaHLlHlD5NSehzFCDvA2Cd6A080YkgZgqqQ1sZcrg9KmPylXf+wg8sB830f9AxSGNwrOBI
+ MOE/p9N9XydfyohqDtkWe4JsOmTEM06zDxGjraqiRRtwaUpoasrO/YvL/JN2paeIZfbwvCCv1eA
+ +sk53GfIFTGM9l4E9UVMpVnBSl4wA3VD2a3iJUHL/O6KjaoqtiA4apQkK9rukSCOh6Q7mlJroQX
+ W0s5Ak01INn3BNMJWhAbB0iuXutGBt8M/NZcjd/6UnGTGAUS3vkcZrzhGIPQfKIRPWKBZl40vaX
+ AYSPrSBwZuWjQiDimeL+SfAN5OsbTgmkPzbhaOc+FlJBckCsm2FlkS2agFrvEo17FM6Nb4oxqOw
+ 2RKvzI1jowHPnilPlRZ1GC3x4jAPQM7pECMz8Ue/l2iFZqXiDJzZaRqig2QBhHhpsOTuTKcdqfn
+ fHClpLkzMNlLjmmGAcsxS5T5kKF+L7EzfcBXOcgclENQui2nbvfKCSLm7VD4YZkXDL/13M5b81l
+ x4U=
+X-Received: by 2002:a05:6000:4029:b0:47f:84b2:2671 with SMTP id
+ ffacd0b85a97d-47f9fc8d144mr3856065f8f.7.1785024412375; 
+ Sat, 25 Jul 2026 17:06:52 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-47f85bb5a46sm34902116f8f.9.2026.07.25.17.06.49
+ ffacd0b85a97d-47f85c7880dsm37175776f8f.37.2026.07.25.17.06.51
  for <openvpn-devel@lists.sourceforge.net>
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sat, 25 Jul 2026 17:06:49 -0700 (PDT)
+ Sat, 25 Jul 2026 17:06:51 -0700 (PDT)
 X-Google-Original-From: "plaisthos (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Sun, 26 Jul 2026 00:06:48 +0000
+Date: Sun, 26 Jul 2026 00:06:51 +0000
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newchange
 X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: I2dd3bad7acbf6a70b3b7f4aa0b0f6b902797f46d
-X-Gerrit-Change-Number: 1822
+X-Gerrit-Change-Id: Ic3a0809191addea024ff8bd69600f4dbad9c37a6
+X-Gerrit-Change-Number: 1824
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1822?usp=email>
-X-Gerrit-Commit: d27bd060c32a5857317c0c395c93be4e5bd5f9f0
-References: <gerrit.1785024389000.I2dd3bad7acbf6a70b3b7f4aa0b0f6b902797f46d@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzg1MDI0Mzg5MDAwLkkyZGQzYmFkN2FjYmY2YTcwYjNiN2Y0YWEwYjBmNmI5MDI3OTdmNDZkQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <e641be3ecdd1f61f3b7b1235341150fff2953fe7-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1824?usp=email>
+X-Gerrit-Commit: 0e8a55d24a15c0df7ee0517b4873208ab4708c3a
+References: <gerrit.1785024389000.Ic3a0809191addea024ff8bd69600f4dbad9c37a6@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzg1MDI0Mzg5MDAwLkljM2EwODA5MTkxYWRkZWEwMjRmZjhiZDY5NjAwZjRkYmFkOWMzN2E2QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <33515dd1ec069811085f84e4802c39419c2fb533-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wnmOS-0005yt-7P
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Introduce
- CM_PEER_TCP and CM_PEER_UDP
+X-Headers-End: 1wnmOV-0005yy-2R
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Implement basic
+ multipeer support.
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -140,829 +140,1645 @@ From: "plaisthos \(Code Review\) via Openvpn-devel"
 Reply-To: arne-openvpn@rfc2549.org, openvpn-devel@lists.sourceforge.net
 Cc: "plaisthos \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============3904870729333901422=="
+Content-Type: multipart/mixed; boundary="===============1963206915996810538=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============3904870729333901422==
+--===============1963206915996810538==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="wxzzG+BSOGE="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="ZRteESgjDvk="; charset=UTF-8
 
---wxzzG+BSOGE=
+--ZRteESgjDvk=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 plaisthos has uploaded this change for review=2E ( http://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1822?usp=3Demail )
+=2Enet/c/openvpn/+/1824?usp=3Demail )
 
 
-Change subject: Introduce CM_PEER_T=
-CP and CM_PEER_UDP
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+Change subject: Implement basic mul=
+tipeer support=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E
+=2E
 
-Introduce CM_PEER_TCP and CM_PEER_UDP
+Implement basic multipeer support=2E
 
-These new context modes will=
- be used by the peer connections initiated
-in the multipeer context=2E Curr=
-ently these are not yet used=2E
+Current restriction:
+- no tls-cr=
+ypt-v2 support
+- no TCP support
+- no retry logic ( only one attempt at esta=
+blishing a connection)
+- only literal IP:port support for peer
 
-This also adds inline functions to make th=
-e checks better readable
-instead of having long list of x =3D=3D CM_a || x =
-=3D=3D CM_b in all the
-statements=2E
-
-Change-Id: I2dd3bad7acbf6a70b3b7f4aa0=
-b0f6b902797f46d
-Signed-off-by: Arne Schwabe <arne@rfc2549=2Eorg>
+Change-Id: =
+Ic3a0809191addea024ff8bd69600f4dbad9c37a6
+Signed-off-by: Arne Schwabe <arne=
+@rfc2549=2Eorg>
 ---
-M doc/=
-doxygen/doc_tunnel_state=2Eh
 M src/openvpn/dco=2Ec
 M src/openvpn/init=2Ec
-M=
- src/openvpn/openvpn=2Eh
-M src/openvpn/socket=2Ec
-5 files changed, 69 inser=
-tions(+), 35 deletions(-)
+M src/open=
+vpn/init=2Eh
+M src/openvpn/mtcp=2Ec
+M src/openvpn/mudp=2Ec
+M src/openvpn/mu=
+lti=2Ec
+M src/openvpn/multi=2Eh
+M src/openvpn/options=2Eh
+M src/openvpn/soc=
+ket_util=2Ec
+M src/openvpn/socket_util=2Eh
+M src/openvpn/ssl=2Ec
+11 files c=
+hanged, 342 insertions(+), 21 deletions(-)
 
 
 
-  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/=
-openvpn refs/changes/22/1822/1
+  git pull ssh://gerrit=2Eope=
+nvpn=2Enet:29418/openvpn refs/changes/24/1824/1
 
-diff --git a/doc/doxygen/doc_tunnel_state=
-=2Eh b/doc/doxygen/doc_tunnel_state=2Eh
-index 296e804=2E=2E4a8b91e 100644
--=
--- a/doc/doxygen/doc_tunnel_state=2Eh
-+++ b/doc/doxygen/doc_tunnel_state=2E=
-h
-@@ -127,8 +127,9 @@
-  * To distinguish this object from other instances o=
-f the same type, its
-  * \c context=2Emode value is set to \c CM_TOP=2E  Ot=
-her \c context objects,
-  * which do represent active VPN tunnels, have a \=
-c context=2Emode set to \c
-- * CM_CHILD_UDP or \c CM_CHILD_TCP, depending o=
-n the external transport
-- * protocol=2E
-+ * CM_CHILD_UDP, \c CM_CHILD_TCP,=
- \C CM_PEER_UDP, or \c CM_PEER_TCP,
-+ * depending on the external transport=
- protocol and which side initiated
-+ * the tunnel=2E
-  *
-  * Both \c tunnel=
-_server_udp_single_threaded() and \c tunnel_server_tcp()
-  * perform simila=
-r initialization=2E  In either case, a \c multi_context
-diff --git a/src/op=
-envpn/dco=2Ec b/src/openvpn/dco=2Ec
-index ce73701=2E=2Ed4beb04 100644
---- a=
-/src/openvpn/dco=2Ec
+diff --git a/src/openvpn/d=
+co=2Ec b/src/openvpn/dco=2Ec
+index d4beb04=2E=2E9c3e71d 100644
+--- a/src/op=
+envpn/dco=2Ec
 +++ b/src/openvpn/dco=2Ec
-@@ -633,7 +633,7 @@
-     con=
-st socket_descriptor_t sd =3D c->c2=2Elink_sockets[0]->sd;
+@@ -365,6 +365,13 @@
+         }
+   =
+  }
  
- 
--    if (c->=
-mode =3D=3D CM_CHILD_TCP)
-+    if (cm_mode_child_tcp(c->mode))
-     {
-     =
-    /* the remote address will be inferred from the TCP socket endpoint */
-=
-         remoteaddr =3D NULL;
-diff --git a/src/openvpn/init=2Ec b/src/openv=
-pn/init=2Ec
-index e300af1=2E=2E0e649f8 100644
---- a/src/openvpn/init=2Ec
-++=
-+ b/src/openvpn/init=2Ec
-@@ -2770,16 +2770,13 @@
-     int sec =3D 2;
-     i=
-nt backoff =3D 0;
- 
--    switch (c->mode)
-+    if (c->mode =3D=3D CM_TOP)
++    if (o->peer_list)
++    {
++        msg(msglevel, "Note: peer conn=
+ections require asymmetric peer-id, "
++                      "disabling dat=
+a channel offload");
++        return false;
++    }
++
+ #if defined(_WIN32)
  =
-    {
--        case CM_TOP:
--            sec =3D 1;
--            break;
--
--=
-        case CM_CHILD_UDP:
--        case CM_CHILD_TCP:
--            sec =3D=
- c->options=2Ece=2Econnect_retry_seconds;
--            break;
-+        sec =
-=3D 1;
-+    }
-+    else if (cm_mode_child(c->mode))
-+    {
-+        sec =3D=
- c->options=2Ece=2Econnect_retry_seconds;
-     }
- 
- #ifdef ENABLE_DEBUG
-@@ =
--2795,7 +2792,7 @@
-     }
- 
-     /* Slow down reconnection after 5 retries =
-per remote -- for TCP client or UDP tls-client only */
--    if (c->mode =3D=
-=3D CM_CHILD_TCP || (c->options=2Ece=2Eproto =3D=3D PROTO_UDP && c->options=
-=2Etls_client))
-+    if (cm_mode_child_tcp(c->mode) || (c->options=2Ece=2Ep=
-roto =3D=3D PROTO_UDP && c->options=2Etls_client))
-     {
-         backoff =
-=3D (c->options=2Eunsuccessful_attempts / c->options=2Econnection_list->len=
-) - 4;
-         if (backoff > 0)
-@@ -3317,6 +3314,11 @@
-     {
-         to=
-=2Epush_peer_info_detail =3D 2;
-     }
-+    else if (c->mode =3D=3D CM_PEER=
-_TCP || c->mode =3D=3D CM_PEER_UDP)
-+    {
-+        /* connection initiated=
- by us that requires pushing some information */
-+        to=2Epush_peer_in=
-fo_detail =3D 1;
-+    }
-     else if (options->mode =3D=3D MODE_SERVER) /* =
-server: no peer info at all */
-     {
-         to=2Epush_peer_info_detail =
-=3D 0;
-@@ -4438,7 +4440,6 @@
- init_instance(struct context *c, const struct=
- env_set *env, const unsigned int flags)
+    if ((o->mode =3D=3D MODE_SERVER) && !dco_win_supports_multipeer())
+    =
  {
-     const struct options *opti=
-ons =3D &c->options;
--    const bool child =3D (c->mode =3D=3D CM_CHILD_TCP=
- || c->mode =3D=3D CM_CHILD_UDP);
- 
-     /* init garbage collection level *=
-/
-     gc_init(&c->c2=2Egc);
-@@ -4530,7 +4531,7 @@
-     }
- 
-     /* reset O=
-CC state */
--    if (c->mode =3D=3D CM_P2P || child)
-+    if (c->mode =3D=
-=3D CM_P2P || cm_mode_child(c->mode))
-     {
-         c->c2=2Eocc_op =3D oc=
-c_reset_op();
-     }
-@@ -4540,7 +4541,7 @@
-     {
-         do_event_set_ini=
-t(c, SHAPER_DEFINED(&c->options));
-     }
--    else if (c->mode =3D=3D CM_C=
-HILD_TCP)
-+    else if (cm_mode_child_tcp(c->mode))
-     {
-         do_even=
-t_set_init(c, false);
-     }
-@@ -4549,14 +4550,14 @@
-     init_proxy(c);
- 
+diff --git a/src/openvpn/init=2Ec b/src/openvpn/init=2Ec
+index 0e649f8=
+=2E=2Ee8644f4 100644
+--- a/src/openvpn/init=2Ec
++++ b/src/openvpn/init=2Ec
 =
-     /* allocate our socket object */
--    if (c->mode =3D=3D CM_P2P || c->=
-mode =3D=3D CM_TOP || c->mode =3D=3D CM_CHILD_TCP)
-+    if (c->mode =3D=3D =
-CM_P2P || c->mode =3D=3D CM_TOP || cm_mode_child_tcp(c->mode))
-     {
-     =
-    do_link_socket_new(c);
-     }
+@@ -4818,12 +4818,19 @@
+ }
  
- #ifdef ENABLE_FRAGMENT
-     /* initial=
-ize internal fragmentation object */
--    if (options->ce=2Efragment && (c-=
->mode =3D=3D CM_P2P || child))
-+    if (options->ce=2Efragment && (c->mode =
-=3D=3D CM_P2P || cm_mode_child(c->mode)))
-     {
-         c->c2=2Efragment =
-=3D fragment_init(&c->c2=2Eframe);
-     }
-@@ -4573,12 +4574,12 @@
-         =
-{
-             crypto_flags =3D CF_LOAD_PERSISTED_PACKET_ID | CF_INIT_TLS_M=
-ULTI;
-         }
--        else if (child)
-+        else if (cm_mode_child(c=
-->mode))
-         {
-             crypto_flags =3D CF_INIT_TLS_MULTI;
-      =
-   }
-         do_init_crypto(c, crypto_flags);
--        if (IS_SIG(c) && !c=
-hild)
-+        if (IS_SIG(c) && !cm_mode_child(c->mode))
-         {
-       =
-      goto sig;
-         }
-@@ -4586,7 +4587,7 @@
+ void
+-inherit_context_child(struct context *d=
+est, const struct context *src, struct link_socket *sock)
++inherit_context_=
+child(struct context *dest, const struct context *src, struct link_socket *=
+sock, bool peer_connection)
+ {
+     CLEAR(*dest);
  
- #ifdef USE_COMP
-     /*=
- initialize compression library=2E */
--    if (comp_enabled(&options->comp)=
- && (c->mode =3D=3D CM_P2P || child))
-+    if (comp_enabled(&options->comp)=
- && (c->mode =3D=3D CM_P2P || cm_mode_child(c->mode)))
-     {
-         c->c=
-2=2Ecomp_context =3D comp_init(&options->comp);
-     }
-@@ -4599,21 +4600,21=
- @@
-     do_init_frame_tls(c);
+     /* proto_is_dgram =
+will ASSERT(0) if proto is invalid */
+-    dest->mode =3D proto_is_dgram(so=
+ck->info=2Eproto) ? CM_CHILD_UDP : CM_CHILD_TCP;
++    if (peer_connection)
+=
++    {
++        dest->mode =3D proto_is_dgram(sock->info=2Eproto) ? CM_PEER=
+_UDP : CM_PEER_TCP;
++    }
++    else
++    {
++        dest->mode =3D proto_i=
+s_dgram(sock->info=2Eproto) ? CM_CHILD_UDP : CM_CHILD_TCP;
++    }
  
-     /* init workspace buffers whose size =
-is derived from frame size */
--    if (c->mode =3D=3D CM_P2P || c->mode =3D=
-=3D CM_CHILD_TCP)
-+    if (c->mode =3D=3D CM_P2P || cm_mode_child_tcp(c->mo=
-de))
-     {
-         do_init_buffers(c);
-     }
+     de=
+st->gc =3D gc_new();
  
- #ifdef ENABLE_FRAGMENT
- =
-    /* initialize internal fragmentation capability with known frame size *=
-/
--    if (options->ce=2Efragment && (c->mode =3D=3D CM_P2P || child))
-+   =
- if (options->ce=2Efragment && (c->mode =3D=3D CM_P2P || cm_mode_child(c->m=
-ode)))
-     {
-         do_init_fragment(c);
-     }
- #endif
+@@ -4854,6 +4861,12 @@
  
-     /* bind t=
-he TCP/UDP socket */
--    if (c->mode =3D=3D CM_P2P || c->mode =3D=3D CM_TO=
-P || c->mode =3D=3D CM_CHILD_TCP)
-+    if (c->mode =3D=3D CM_P2P || c->mode=
- =3D=3D CM_TOP || cm_mode_child_tcp(c->mode))
-     {
-         do_init_socke=
-t_phase1(c);
-     }
-@@ -4630,7 +4631,7 @@
-     do_print_data_channel_mtu_pa=
-rms(c);
+     dest->c2=2Eevent_set =
+=3D src->c2=2Eevent_set;
  
-     /* get local and remote options compatibility strings */
--  =
-  if (c->mode =3D=3D CM_P2P || child)
-+    if (c->mode =3D=3D CM_P2P || cm_=
-mode_child(c->mode))
-     {
-         do_compute_occ_strings(c);
-     }
-@@ -=
-4656,7 +4657,7 @@
-     do_init_server_poll_timeout(c);
- 
-     /* finalize t=
-he TCP/UDP socket */
--    if (c->mode =3D=3D CM_P2P || c->mode =3D=3D CM_TO=
-P || c->mode =3D=3D CM_CHILD_TCP)
-+    if (c->mode =3D=3D CM_P2P || c->mode=
- =3D=3D CM_TOP || cm_mode_child_tcp(c->mode))
-     {
-         do_init_socke=
-t_phase2(c);
- 
-@@ -4679,7 +4680,7 @@
-     do_uid_gid_chroot(c, c->c2=2Edid_=
-open_tun);
- 
-     /* initialize timers */
--    if (c->mode =3D=3D CM_P2P ||=
- child)
-+    if (c->mode =3D=3D CM_P2P || cm_mode_child(c->mode))
-     {
-  =
-       do_init_timers(c, false);
-     }
-@@ -4749,7 +4750,7 @@
-     /* close=
- event objects */
-     do_close_event_set(c);
- 
--    if (c->mode =3D=3D CM_=
-P2P || c->mode =3D=3D CM_CHILD_TCP || c->mode =3D=3D CM_CHILD_UDP
-+    if (=
-c->mode =3D=3D CM_P2P || cm_mode_child(c->mode)
-         || c->mode =3D=3D =
-CM_TOP)
-     {
- #ifdef USE_COMP
-@@ -4875,7 +4876,7 @@
-     dest->c1=2Etunta=
-p =3D src->c1=2Etuntap;
- 
-     /* UDP inherits some extra things which TCP =
-does not */
--    if (dest->mode =3D=3D CM_CHILD_UDP)
-+    if (cm_mode_child=
-_udp(dest->mode))
-     {
-         ASSERT(!dest->c2=2Elink_sockets);
-       =
-  ASSERT(dest->options=2Ece=2Elocal_list);
-diff --git a/src/openvpn/openvpn=
-=2Eh b/src/openvpn/openvpn=2Eh
-index fa00822=2E=2Ed5a9bea 100644
---- a/src/=
-openvpn/openvpn=2Eh
-+++ b/src/openvpn/openvpn=2Eh
-@@ -479,12 +479,16 @@
- #d=
-efine CM_P2P       0           /* standalone point-to-point session or clie=
-nt */
- #define CM_TOP       1           /* top level of a multi-client or p=
-oint-to-multipoint server */
- #define CM_TOP_CLONE 2           /* clone of =
-a CM_TOP context for one thread */
--#define CM_CHILD_UDP 3           /* chi=
-ld context of a CM_TOP or CM_THREAD */
--#define CM_CHILD_TCP 4           /*=
- child context of a CM_TOP or CM_THREAD */
-+#define CM_CHILD_UDP 3         =
-  /* child context of a CM_TOP */
-+#define CM_CHILD_TCP 4           /* chil=
-d context of a CM_TOP  */
-+#define CM_PEER_UDP  5           /* child contex=
-t of a CM_TOP initiated by us */
-+#define CM_PEER_TCP  6           /* child=
- context of a CM_TOP initiated by us */
++    if (peer_connection)
++    {
++        dest->=
+options=2Etls_client =3D true;
++        dest->options=2Etls_server =3D fals=
+e;
++    }
 +
-     int mode;                   =
- /**< Role of this context within the
-                                   * =
-  OpenVPN process=2E  Valid values are \c
-                                 =
-  *   CM_P2P, \c CM_TOP, \c CM_TOP_CLONE,
--                                =
-  *   \c CM_CHILD_UDP, and \c CM_CHILD_TCP=2E */
-+                         =
-         *   \c CM_CHILD_UDP, \c CM_CHILD_TCP=2E
-+                         =
-         *   \c CM_PEER_UDP, \c CM_PEER_TCP=2E */
+     if (dest->mode =3D=3D CM_CHILD_TCP)
+     {
+         /*
+@@ =
+-4893,7 +4906,7 @@
+         ALLOC_OBJ_GC(dest->c2=2Elink_socket_infos[0], s=
+truct link_socket_info, &dest->gc);
+         *dest->c2=2Elink_socket_infos[=
+0] =3D sock->info;
  
-     struct multi_conte=
-xt *multi; /**< Pointer to the main P2MP context=2E
-                       =
-            *   Non-NULL only when mode =3D=3D CM_TOP=2E */
-@@ -514,6 +518,=
-34 @@
-     struct context_2 c2;  /**< Level 2 %context=2E */
- };
+-        /* locally override some link_socket_info fie=
+lds */
++        /* locally override some link_socket_info fields=2E FIXME: =
+copy from right socket?! */
+         dest->c2=2Elink_socket_infos[0]->lsa =
+=3D &dest->c1=2Elink_socket_addrs[0];
+         dest->c2=2Elink_socket_infos=
+[0]->connection_established =3D false;
+     }
+diff --git a/src/openvpn/init=
+=2Eh b/src/openvpn/init=2Eh
+index 9d5050d=2E=2Ecc2f90a 100644
+--- a/src/ope=
+nvpn/init=2Eh
++++ b/src/openvpn/init=2Eh
+@@ -102,7 +102,7 @@
+ bool do_defer=
+red_options(struct context *c, const uint64_t found, const bool is_update);=
+
  
-+static =
-inline bool
-+cm_mode_child_tcp(int mode)
+ void inherit_context_child(struct context *dest, const struct context *=
+src,
+-                           struct link_socket *sock);
++              =
+             struct link_socket *sock, bool peer_connection);
+ 
+ void inher=
+it_context_top(struct context *dest, const struct context *src);
+ 
+diff --g=
+it a/src/openvpn/mtcp=2Ec b/src/openvpn/mtcp=2Ec
+index eb4e944=2E=2Edde38b7=
+ 100644
+--- a/src/openvpn/mtcp=2Ec
++++ b/src/openvpn/mtcp=2Ec
+@@ -43,7 +43,=
+7 @@
+     struct gc_arena gc =3D gc_new();
+     struct multi_instance *mi =
+=3D NULL;
+ 
+-    mi =3D multi_create_instance(m, NULL, sock);
++    mi =3D m=
+ulti_create_instance(m, NULL, sock, false);
+     if (mi)
+     {
+         mi=
+->real=2Eproto =3D sock->info=2Eproto;
+diff --git a/src/openvpn/mudp=2Ec b/=
+src/openvpn/mudp=2Ec
+index 657055c=2E=2Ef74e74c 100644
+--- a/src/openvpn/mu=
+dp=2Ec
++++ b/src/openvpn/mudp=2Ec
+@@ -231,7 +231,7 @@
+              * conne=
+ct-freq but not against connect-freq-initial */
+             reflect_filter=
+_rate_limit_decrease(m->initial_rate_limiter);
+ 
+-            mi =3D multi_=
+create_instance(m, real, sock);
++            mi =3D multi_create_instance(m=
+, real, sock, false);
+             if (mi)
+             {
+                 =
+multi_assign_peer_id(m, mi);
+@@ -283,11 +283,9 @@
+ }
+ 
+ 
+-static struct mul=
+ti_instance *
+-multi_get_instance_udp_control(struct multi_context *m)
++sta=
+tic inline struct session_id
++multi_get_extract_sesison_id(struct multi_con=
+text *m)
+ {
+-    /* Copy buffer, to a tmp buffer, so that reading the sesis=
+on does not
+-     * modify the internal pointers */
+     struct buffer tmp =
+=3D m->top=2Ec2=2Ebuf;
+ 
+     /* op code */
+@@ -296,7 +294,17 @@
+ 
+     str=
+uct session_id sid =3D { 0 };
+     session_id_read(&sid, &tmp);
++    return=
+ sid;
++}
+ 
++static struct multi_instance *
++multi_get_instance_udp_control(=
+struct multi_context *m)
 +{
-+    return mode =3D=3D CM_CHIL=
-D_TCP || mode =3D=3D CM_PEER_TCP;
++    /* Copy buffer, to a tmp buffer, so that r=
+eading the sesison does not
++     * modify the internal pointers */
++
++
++  =
+  struct session_id sid =3D multi_get_extract_sesison_id(m);
+     struct ha=
+sh_element *he_sid =3D multi_hash_sid_lookup(m, &sid);
+ 
+     if (he_sid)
+@=
+@ -336,7 +344,16 @@
+                 =3D=3D sock->info=2Eproto)
+           =
+  {
+                 mi =3D m->instances[peer_id];
+-                *floate=
+d =3D !link_socket_actual_match(&mi->context=2Ec2=2Efrom, &m->top=2Ec2=2Efr=
+om);
++
++                /* FIXME:figure out if we want to setup from at the=
+ right place */
++                if (mi->context=2Ec2=2Efrom=2Edest=2Eaddr=
+=2Esa=2Esa_family =3D=3D 0)
++                {
++                    *floate=
+d =3D true;
++                }
++                else
++                {
++  =
+                  *floated =3D !link_socket_actual_match(&mi->context=2Ec2=
+=2Efrom, &m->top=2Ec2=2Efrom);
++                }
+ 
+                 if (*f=
+loated)
+                 {
+@@ -359,6 +376,44 @@
+     return NULL;
+ }
+ 
++sta=
+tic struct multi_instance *
++multi_get_instance_udp_peer(struct multi_conte=
+xt *m, struct mroute_addr *real)
++{
++    /* If we have an outgoing connecti=
+on we need to look it
++     * up some way=2E Since this might be a tls-cryp=
+t-v2 session,
++     * we would need the tls-crypt-v2 key before decrypting
+=
++     * the packet, so we fall back to a simple lookup by address
++     * h=
+ere */
++    struct multi_instance *mi =3D multi_get_instance_udp_real(m, re=
+al);
++    if (!mi)
++    {
++        return NULL;
++    }
++
++    const struct =
+key_state *ks =3D get_primary_key(mi->context=2Ec2=2Etls_multi);
++    ASSER=
+T(ks);
++    if (session_id_defined(&ks->session_id_remote))
++    {
++       =
+ struct gc_arena gc =3D gc_new();
++        msg(D_MULTI_MEDIUM, "Peer connec=
+tion: Peer already has established "
++                            "session =
+id %s=2E",
++            mroute_addr_print(real, &gc));
++        gc_free(&gc=
+);
++        return NULL;
++    }
++    /* we now just assume that this a poss=
+ible session id for the session
++     * and therefore add the hash of the r=
+emote session id to the hash map */
++
++    /* We might have had another res=
+et packet before */
++    if (session_id_defined(&mi->sid_hashed_value))
++  =
+  {
++        multi_hash_sid_remove(m, &mi->sid_hashed_value);
++    }
++    s=
+truct session_id sid =3D multi_get_extract_sesison_id(m);
++    multi_hash_s=
+id_add(m, &sid, mi);
++    return mi;
 +}
 +
-+static inline bool
-+cm_mode_child_u=
-dp(int mode)
-+{
-+    return mode =3D=3D CM_CHILD_UDP || mode =3D=3D CM_PEER=
-_UDP;
-+}
+ struct multi_instance *
+ multi_g=
+et_create_instance_udp(struct multi_context *m, bool *floated, struct link_=
+socket *sock)
+ {
+@@ -400,7 +455,14 @@
+          * packets can create a sess=
+ion=2E Data packets cannot */
+         if (!mi)
+         {
+-            mi =
+=3D handle_connection_attempt(m, sock, &real);
++            if (op !=3D P_C=
+ONTROL_HARD_RESET_SERVER_V2)
++            {
++                mi =3D handle_=
+connection_attempt(m, sock, &real);
++            }
++            else
++     =
+       {
++                mi =3D multi_get_instance_udp_peer(m, &real);
++  =
+          }
+         }
+     }
+ 
+diff --git a/src/openvpn/multi=2Ec b/src/op=
+envpn/multi=2Ec
+index ff9121d=2E=2E0b7dd02 100644
+--- a/src/openvpn/multi=
+=2Ec
++++ b/src/openvpn/multi=2Ec
+@@ -422,6 +422,13 @@
+         event_timeou=
+t_init(&m->stale_routes_check_et, t->options=2Estale_routes_check_interval,=
+ 0);
+     }
+ 
++    if (t->options=2Econnection_list)
++    {
++        /* For=
+ now we will check every 7s=2E Might later add an option
++         * to cha=
+nge the interval as a user */
++        event_timeout_init(&m->peer_connecti=
+on_et, 7, now);
++    }
 +
-+static inline bool
-+cm_mode_child(int mode)
+     m->deferred_shutdown_signal=2Esignal_received=
+ =3D 0;
+ }
+ 
+@@ -717,7 +724,7 @@
+  */
+ struct multi_instance *
+ multi_creat=
+e_instance(struct multi_context *m, const struct mroute_addr *real,
+-      =
+                struct link_socket *sock)
++                      struct lin=
+k_socket *sock, bool peer_connection)
+ {
+     struct gc_arena gc =3D gc_new=
+();
+     struct multi_instance *mi;
+@@ -738,7 +745,7 @@
+         generate_p=
+refix(mi);
+     }
+ 
+-    inherit_context_child(&mi->context, &m->top, sock)=
+;
++    inherit_context_child(&mi->context, &m->top, sock, peer_connection);=
+
+     if (IS_SIG(&mi->context))
+     {
+         goto err;
+@@ -749,7 +756,7 =
+@@
+     if (hash_n_elements(m->hash) >=3D m->max_clients)
+     {
+         m=
+sg(D_MULTI_ERRORS,
+-            "MULTI: new incoming connection would excee=
+d maximum number of clients (%d)",
++            "MULTI: new connection woul=
+d exceed maximum number of clients (%d)",
+             m->max_clients);
+   =
+      goto err;
+     }
+@@ -1791,7 +1798,7 @@
+ 
+     /* Print a warning if w=
+e detect the client being in P2P mode=2E The
+      * negotiations will be o=
+therwise compatible */
+-    if (proto & IV_PROTO_NCP_P2P)
++    if (proto & =
+IV_PROTO_NCP_P2P && !cm_mode_peer(c->mode))
+     {
+         multi_client_se=
+t_protocol_warnings_p2p(c);
+     }
+@@ -2520,6 +2527,19 @@
+ multi_client_con=
+nect_real_addr(struct multi_context *m, struct multi_instance *mi,
+        =
+                        bool deferred, uint64_t *option_types_found)
+ {
++  =
+  if (cm_mode_peer(mi->context=2Emode))
++    {
++        /* If we have a mul=
+ti client instance it should already be assigned
++         * to its address=
+ in its creation */
++        bool address_assigned =3D hash_lookup(m->hash,=
+ &mi->real) =3D=3D mi;
++        if (!address_assigned)
++        {
++        =
+    msg(D_MULTI_ERRORS, "MULTI: Address for client connection is "
++       =
+                         "not correctly set up=2E Terminating connection");=
+
++        }
++        return address_assigned ? CC_RET_SUCCEEDED : CC_RET_FA=
+ILED;
++    }
++
+     /* If the address is already taken up by another client=
+ we fail the new
+      * connection */
+     if (!multi_check_dest_addr_allo=
+wed(m, mi, &mi->real))
+@@ -2537,6 +2557,30 @@
+ }
+ 
+ /**
++ * This checks if =
+all the conditions of an outgoing peer connection are met=2E
++ */
++static e=
+num client_connect_return
++multi_client_connect_peer(struct multi_context *=
+m, struct multi_instance *mi,
++                          bool deferred, uin=
+t64_t *option_types_found)
 +{
-+    return cm_m=
-ode_child_udp(mode) || cm_mode_child_tcp(mode);
++    if (!cm_mode_peer(mi->context=2Emode))
++=
+    {
++        return CC_RET_SUCCEEDED;
++    }
++
++    struct tls_multi *mul=
+ti =3D mi->context=2Ec2=2Etls_multi;
++    if (!multi->use_asymmetric_peer_i=
+d)
++    {
++        msg(D_MULTI_ERRORS, "Connecting to another server/peer r=
+equires "
++                            "asymmetric peer-id support=2E The p=
+eer lacks this "
++                            "support=2E Terminating conne=
+ction=2E");
++        return CC_RET_FAILED;
++    }
++
++    return CC_RET_SUCC=
+EEDED;
 +}
 +
 +/**
-+ * Return true i=
-f the mode context is a connection initiated by this
-+ * server (peer)
-+ */=
-
-+static inline bool
-+cm_mode_peer(int mode)
+  *  Do the necessary modification for doing the compress =
+migrate=2E This is
+  *  implemented as a connect handler as it fits the mod=
+ify config for a client
+  *  paradigm and also is early enough in the chain=
+ to be overwritten by another
+@@ -2630,6 +2674,7 @@
+     uint64_t *option_t=
+ypes_found);
+ 
+ static const multi_client_connect_handler client_connect_ha=
+ndlers[] =3D {
++    multi_client_connect_peer,
+     multi_client_connect_re=
+al_addr,
+     multi_client_connect_compress_migrate,
+     multi_client_conn=
+ect_source_ccd,
+@@ -3873,6 +3918,186 @@
+     return event_timeout_trigger(&=
+m->stale_routes_check_et, &null, ETT_DEFAULT);
+ }
+ 
++static bool
++peer_conn=
+ection_trigger(struct multi_context *m)
 +{
-+    return mode =3D=3D CM_=
-PEER_UDP || mode =3D=3D CM_PEER_TCP;
++    struct timeval null;
++    C=
+LEAR(null);
++    return event_timeout_trigger(&m->peer_connection_et, &null=
+, ETT_DEFAULT);
++}
++
++static bool
++multi_resolve_peer_addr(struct connectio=
+n_entry *ce, struct mroute_addr *real, struct openvpn_sockaddr *sa,
++      =
+                  bool have_udp4, bool have_udp6)
++{
++    unsigned int flag=
+s =3D GETADDR_RESOLVE | GETADDR_WARN_ON_SIGNAL;
++    if (proto_is_dgram(ce-=
+>proto))
++    {
++        if (!have_udp6 && !have_udp4)
++        {
++        =
+    msg(M_INFO, "Cannot connect to %s:%s: no UDP sockets available", ce->re=
+mote, ce->remote_port);
++            return false;
++        }
++        flag=
+s |=3D GETADDR_DATAGRAM;
++    }
++
++    if (have_udp6 && !have_udp4)
++    {
+=
++        /* The address family needs to match the socket address family=2E =
+If we only
++         * have IPv6 sockets, we force IPv6 mapped IPv4 address=
+ with this=2E For
++         * TCP client, we create new sockets and don't h=
+ave to worry about this */
++        flags |=3D GETADDR_FORCE_FAMILY;
++    }=
+
++
++    struct addrinfo *ai;
++    int status =3D openvpn_getaddrinfo(flags,=
+ ce->remote, ce->remote_port, 0,
++                                     NULL=
+, AF_INET6, &ai);
++
++    bool ret =3D false;
++    if (status !=3D 0)
++    {=
+
++        msg(M_INFO, "Failure to resolve %s:%s as peer address=2E Currentl=
+y only "
++                    "literal IP/IPv6 addresses are supported",
++ =
+           ce->remote, ce->remote_port);
++        goto error;
++    }
++
++   =
+ mroute_addr_init(real);
++    real->proto =3D proto_is_dgram(ce->proto) ? P=
+ROTO_UDP : PROTO_TCP;
++
++    if (ai->ai_family =3D=3D AF_INET)
++    {
++    =
+    struct sockaddr_in *sin =3D (struct sockaddr_in *)ai->ai_addr;
++       =
+ sa->addr=2Ein4 =3D *sin;
++    }
++    else if (ai->ai_family =3D=3D AF_INET=
+6)
++    {
++        struct sockaddr_in6 *sin6 =3D (struct sockaddr_in6 *)ai-=
+>ai_addr;
++        sa->addr=2Ein6 =3D *sin6;
++    }
++    else
++    {
++     =
+   ASSERT(0);
++    }
++
++    if (!mroute_extract_openvpn_sockaddr(real, sa, =
+true))
++    {
++        msg(M_INFO, "Failure to convert resolve result for  =
+%s:%s", ce->remote, ce->remote_port);
++        goto error;
++    }
++
++    re=
+t =3D true;
++
++error:
++    freeaddrinfo(ai);
++    return ret;
++}
++
++static =
+void
++multi_create_peer_instance(struct multi_context *m, struct connection=
+_entry *ce)
++{
++    struct mroute_addr real;
++    struct openvpn_sockaddr s=
+a =3D { 0 };
++
++    /* Remember if we have a udp4 and udp6 link sockets */
+=
++    struct link_socket *udp4_link_sock =3D NULL;
++    struct link_socket *=
+udp6_link_sock =3D NULL;
++
++    /* Check what kind of UDP sockets we have=
+=2E Currently this takes the first
++     * UDP socket with AF_INET and firs=
+t AF_INET6=2E We might later consider
++     * giving the user a finer contr=
+ol about the outgoing socket selection=2E
++     */
++    for (int i =3D 0; i=
+ < m->top=2Ec1=2Elink_sockets_num; i++)
++    {
++        struct addrinfo *bi=
+ndlocal =3D m->top=2Ec1=2Elink_socket_addrs[i]=2Ebind_local;
++        if (!=
+udp6_link_sock && bindlocal->ai_family =3D=3D AF_INET6 && bindlocal->ai_soc=
+ktype =3D=3D SOCK_DGRAM)
++        {
++            udp6_link_sock =3D m->top=
+=2Ec2=2Elink_sockets[i];
++        }
++        if (!udp4_link_sock && bindloc=
+al->ai_family =3D=3D AF_INET && bindlocal->ai_socktype =3D=3D SOCK_DGRAM)
++=
+        {
++            udp4_link_sock =3D m->top=2Ec2=2Elink_sockets[i];
++ =
+       }
++    }
++
++    /* Check if we can resolve the remote address=2E Thi=
+s method will already
++     * print warnings if it cannot resolve, so just =
+return here when it fails */
++    if (!multi_resolve_peer_addr(ce, &real, &=
+sa, (udp4_link_sock !=3D NULL), (udp6_link_sock !=3D NULL)))
++    {
++      =
+  return;
++    }
++
++    struct multi_instance *existing_mi =3D hash_lookup(=
+m->hash, &real);
++    if (existing_mi)
++    {
++        msg(D_MULTI_LOW, "Ca=
+nnot establish connection to %s:%s=2E Client or peer "
++                   =
+      "instance with this IP and port already exists",
++            ce->rem=
+ote, ce->remote_port);
++        return;
++    }
++
++    struct link_socket *l=
+ink_sock =3D NULL;
++
++    if (proto_is_dgram(ce->proto) && (real=2Etype & M=
+R_ADDR_MASK) =3D=3D MR_ADDR_IPV4)
++    {
++        link_sock =3D udp4_link_s=
+ock;
++    }
++    else if (proto_is_dgram(ce->proto) && (real=2Etype & MR_AD=
+DR_MASK) =3D=3D MR_ADDR_IPV6)
++    {
++        link_sock =3D udp6_link_sock;=
+
++    }
++
++    if (!link_sock)
++    {
++        msg(D_MULTI_LOW, "Cannot det=
+ermine outgoing socket for %s:%s %s=2E",
++            ce->remote, ce->remot=
+e_port, proto2ascii(ce->proto, sa=2Eaddr=2Esa=2Esa_family, true));
++       =
+ return;
++    }
++
++    struct multi_instance *mi =3D multi_create_instance(=
+m, &real, link_sock, true);
++
++    if (!mi)
++    {
++        msg(D_MULTI_LOW=
+, "Cannot create multi instance for %s:%s %s=2E",
++            ce->remote, =
+ce->remote_port, proto2ascii(ce->proto, sa=2Eaddr=2Esa=2Esa_family, true));=
+
++        return;
++    }
++
++    multi_assign_peer_id(m, mi);
++
++    /* todo=
+ check */
++    mi->did_real_hash =3D true;
++    ASSERT(hash_add(m->hash, &m=
+i->real, mi, false));
++
++
++    /* This should be probably handled by settin=
+g link_socket_info while
++     * creating the multi_instance */
++    struct=
+ key_state *ks =3D &mi->context=2Ec2=2Etls_multi->session[TM_INITIAL]=2Ekey=
+[KS_PRIMARY];
++    ks->remote_addr=2Edest =3D sa;
++
++    mi->context=2Ec2=
+=2Etls_multi->n_sessions++;
++    ce->peer_connection_initiated =3D true;
++}=
+
++
++static void
++check_peer_connections(struct multi_context *m)
++{
++    /*=
+ If no peers are configured, there is nothing to do */
++    if (!m->top=2Eo=
+ptions=2Epeer_list)
++    {
++        return;
++    }
++
++    for (int i =3D 0;=
+ i < m->top=2Eoptions=2Epeer_list->len; i++)
++    {
++        struct connect=
+ion_entry *ce =3D m->top=2Eoptions=2Epeer_list->array[i];
++        if (!ce-=
+>peer_connection_initiated)
++        {
++            multi_create_peer_insta=
+nce(m, ce);
++        }
++    }
 +}
 +
  /*
-  * Check for a signal when i=
-nside an event loop
+  * Process timers in the top-level =
+context
   */
-diff --git a/src/openvpn/socket=2Ec b/src/openvpn/=
-socket=2Ec
-index b73a5df=2E=2E6f49d1b 100644
---- a/src/openvpn/socket=2Ec
-+=
-++ b/src/openvpn/socket=2Ec
-@@ -1336,14 +1336,14 @@
-         port =3D o->ce=
-=2Elocal_port;
+@@ -3903,6 +4128,12 @@
+     {
+         check_stale_routes(m);
+=
+     }
++
++    /* Should we check for mesh peers that need to connect? */
++ =
+   if (m->top=2Eoptions=2Econnection_list && peer_connection_trigger(m))
++ =
+   {
++        check_peer_connections(m);
++    }
+ }
+ 
+ static void
+diff --gi=
+t a/src/openvpn/multi=2Eh b/src/openvpn/multi=2Eh
+index 98547b0=2E=2Ea5c4ce=
+5 100644
+--- a/src/openvpn/multi=2Eh
++++ b/src/openvpn/multi=2Eh
+@@ -220,6 =
++220,9 @@
+      */
+     struct event_timeout stale_routes_check_et;
+ 
++    =
+/** Timer object for peer connection check */
++    struct event_timeout pee=
+r_connection_et;
++
+ #ifdef ENABLE_ASYNC_PUSH
+     /* mapping between inotif=
+y watch descriptors and multi_instances */
+     struct hash *inotify_watche=
+rs;
+@@ -274,7 +277,8 @@
+ 
+ struct multi_instance *multi_create_instance(str=
+uct multi_context *m,
+                                              const s=
+truct mroute_addr *real,
+-                                             stru=
+ct link_socket *sock);
++                                             struct=
+ link_socket *sock,
++                                             bool peer=
+_connection);
+ 
+ void multi_close_instance(struct multi_context *m, struct =
+multi_instance *mi, bool shutdown);
+ 
+diff --git a/src/openvpn/options=2Eh =
+b/src/openvpn/options=2Eh
+index 353a9a4=2E=2Ea7fa9fc 100644
+--- a/src/openv=
+pn/options=2Eh
++++ b/src/openvpn/options=2Eh
+@@ -107,6 +107,8 @@
+ 
+ struct =
+connection_entry
+ {
++    /* TODO: actually check */
++    bool peer_connecti=
+on_initiated;
+     struct local_list *local_list;
+     int proto;
+     sa_f=
+amily_t af;
+@@ -759,9 +761,10 @@
+ #define OPT_P_INLINE          (1u << 29)
+=
+ #define OPT_P_PUSH_MTU        (1u << 30)
+ #define OPT_P_ROUTE_TABLE     (1=
+u << 31)
+-#define OPT_P_PEER            (1u << 32)
++#define OPT_P_PEER     =
+       (1uLL << 32)
+ 
+-#define OPT_P_DEFAULT (~(OPT_P_INSTANCE | OPT_P_PULL=
+_MODE))
++/* Use 0uLL to force 64-bit here */
++#define OPT_P_DEFAULT (~(0uLL=
+ | OPT_P_INSTANCE | OPT_P_PULL_MODE))
+ 
+ #define PULL_DEFINED(opt) ((opt)->=
+pull)
+ 
+diff --git a/src/openvpn/socket_util=2Ec b/src/openvpn/socket_util=
+=2Ec
+index 0194f38=2E=2Eb0ccfcf 100644
+--- a/src/openvpn/socket_util=2Ec
+++=
++ b/src/openvpn/socket_util=2Ec
+@@ -590,7 +590,7 @@
+ 
+     /* if hostname i=
+s not set, we want to bind to 'ANY', with
+      * the correct address famil=
+y - v4-only or v6/v6-dual-stack */
+-    if (!hostname)
++    if (!hostname |=
+| (flags & GETADDR_FORCE_FAMILY))
+     {
+         hints=2Eai_family =3D ai_=
+family;
+     }
+diff --git a/src/openvpn/socket_util=2Eh b/src/openvpn/socke=
+t_util=2Eh
+index 13deeaa=2E=2Ecb4f9ab 100644
+--- a/src/openvpn/socket_util=
+=2Eh
++++ b/src/openvpn/socket_util=2Eh
+@@ -126,6 +126,7 @@
+ #define GETADDR=
+_RANDOMIZE               (1u << 9)
+ #define GETADDR_PASSIVE                =
+ (1u << 10)
+ #define GETADDR_DATAGRAM                (1u << 11)
++#define GE=
+TADDR_FORCE_FAMILY            (1u << 12)
+ 
+ #define GETADDR_CACHE_MASK (GET=
+ADDR_DATAGRAM | GETADDR_PASSIVE)
+ 
+diff --git a/src/openvpn/ssl=2Ec b/src/o=
+penvpn/ssl=2Ec
+index 22b3f48=2E=2E245f937 100644
+--- a/src/openvpn/ssl=2Ec
+=
++++ b/src/openvpn/ssl=2Ec
+@@ -2458,7 +2458,7 @@
+         setenv_del(session=
+->opt->es, "exported_keying_material");
      }
  
--    if (c->mode =3D=3D CM_CHILD_TCP || c->mode =3D=
-=3D CM_CHILD_UDP)
-+    if (cm_mode_child(c->mode))
+-    if (!session->opt->se=
+rver && !session->opt->pull && ks->key_id =3D=3D 0)
++    if (!session->opt-=
+>server && !session->opt->pull && ks->key_id =3D=3D 0 && session->opt->mode=
+ !=3D MODE_SERVER)
      {
-         struct l=
-ink_socket *tmp_sock =3D NULL;
--        if (c->mode =3D=3D CM_CHILD_TCP)
-+ =
-       if (cm_mode_child_tcp(c->mode))
-         {
-             tmp_sock =3D=
- (struct link_socket *)c->c2=2Eaccept_from;
-         }
--        else if (c-=
->mode =3D=3D CM_CHILD_UDP)
-+        else if (cm_mode_child_udp(c->mode))
-  =
-       {
-             tmp_sock =3D c->c2=2Elink_sockets[0];
-         }
+         /* We are a p2p tls-client without pull,=
+ enable common
+          * protocol options */
 
--- =
-
-To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1822?usp=3Demail
-=
-To unsubscribe, or for help writing mail filters, visit http://gerrit=2Eope=
-nvpn=2Enet/settings?usp=3Demail
+-- 
+To view, visit http://g=
+errit=2Eopenvpn=2Enet/c/openvpn/+/1824?usp=3Demail
+To unsubscribe, or for h=
+elp writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=
+=3Demail
 
 Gerrit-MessageType: newchange
-Gerrit-Proje=
-ct: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I2dd3bad7acbf6a70b3b7f4=
-aa0b0f6b902797f46d
-Gerrit-Change-Number: 1822
+Gerrit-Project: openvpn
+Gerrit-Bran=
+ch: master
+Gerrit-Change-Id: Ic3a0809191addea024ff8bd69600f4dbad9c37a6
+Gerr=
+it-Change-Number: 1824
 Gerrit-PatchSet: 1
-Gerrit-Own=
-er: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-CC: openvpn-devel <openvp=
-n-devel@lists=2Esourceforge=2Enet>
+Gerrit-Owner: plaisthos <arne-ope=
+nvpn@rfc2549=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourcef=
+orge=2Enet>
 
---wxzzG+BSOGE=
+--ZRteESgjDvk=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p>plaisthos has upl=
 oaded this change for <strong>review</strong>=2E</p><p><a href=3D"http://ge=
-rrit=2Eopenvpn=2Enet/c/openvpn/+/1822?usp=3Demail">View Change</a></p><pre =
+rrit=2Eopenvpn=2Enet/c/openvpn/+/1824?usp=3Demail">View Change</a></p><pre =
 class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pr=
-e-wrap;">Introduce CM_PEER_TCP and CM_PEER_UDP<br><br>These new context mod=
-es will be used by the peer connections initiated<br>in the multipeer conte=
-xt=2E Currently these are not yet used=2E<br><br>This also adds inline func=
-tions to make the checks better readable<br>instead of having long list of =
-x =3D=3D CM_a || x =3D=3D CM_b in all the<br>statements=2E<br><br>Change-Id=
-: I2dd3bad7acbf6a70b3b7f4aa0b0f6b902797f46d<br>Signed-off-by: Arne Schwabe =
-&lt;arne@rfc2549=2Eorg&gt;<br>---<br>M doc/doxygen/doc_tunnel_state=2Eh<br>=
-M src/openvpn/dco=2Ec<br>M src/openvpn/init=2Ec<br>M src/openvpn/openvpn=2E=
-h<br>M src/openvpn/socket=2Ec<br>5 files changed, 69 insertions(+), 35 dele=
-tions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace=
-,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:2=
-9418/openvpn refs/changes/22/1822/1</pre><pre style=3D"font-family: monospa=
-ce,monospace; white-space: pre-wrap;"><span>diff --git a/doc/doxygen/doc_tu=
-nnel_state=2Eh b/doc/doxygen/doc_tunnel_state=2Eh</span><br><span>index 296=
-e804=2E=2E4a8b91e 100644</span><br><span>--- a/doc/doxygen/doc_tunnel_state=
-=2Eh</span><br><span>+++ b/doc/doxygen/doc_tunnel_state=2Eh</span><br><span=
->@@ -127,8 +127,9 @@</span><br><span>  * To distinguish this object from ot=
-her instances of the same type, its</span><br><span>  * \c context=2Emode v=
-alue is set to \c CM_TOP=2E  Other \c context objects,</span><br><span>  * =
-which do represent active VPN tunnels, have a \c context=2Emode set to \c</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">- * CM_CHILD_UDP or \c C=
-M_CHILD_TCP, depending on the external transport</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">- * protocol=2E</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+ * CM_CHILD_UDP, \c CM_CHILD_TCP, \C CM_PEER_UDP, or =
-\c CM_PEER_TCP,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * d=
-epending on the external transport protocol and which side initiated</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+ * the tunnel=2E</span><br=
-><span>  *</span><br><span>  * Both \c tunnel_server_udp_single_threaded() =
-and \c tunnel_server_tcp()</span><br><span>  * perform similar initializati=
-on=2E  In either case, a \c multi_context</span><br><span>diff --git a/src/=
-openvpn/dco=2Ec b/src/openvpn/dco=2Ec</span><br><span>index ce73701=2E=2Ed4=
-beb04 100644</span><br><span>--- a/src/openvpn/dco=2Ec</span><br><span>+++ =
-b/src/openvpn/dco=2Ec</span><br><span>@@ -633,7 +633,7 @@</span><br><span> =
-    const socket_descriptor_t sd =3D c-&gt;c2=2Elink_sockets[0]-&gt;sd;</sp=
-an><br><span> </span><br><span> </span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    if (c-&gt;mode =3D=3D CM_CHILD_TCP)</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    if (cm_mode_child_tcp(c-&gt;mode))</span=
-><br><span>     {</span><br><span>         /* the remote address will be in=
-ferred from the TCP socket endpoint */</span><br><span>         remoteaddr =
-=3D NULL;</span><br><span>diff --git a/src/openvpn/init=2Ec b/src/openvpn/i=
-nit=2Ec</span><br><span>index e300af1=2E=2E0e649f8 100644</span><br><span>-=
--- a/src/openvpn/init=2Ec</span><br><span>+++ b/src/openvpn/init=2Ec</span>=
-<br><span>@@ -2770,16 +2770,13 @@</span><br><span>     int sec =3D 2;</span=
-><br><span>     int backoff =3D 0;</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    switch (c-&gt;mode)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    if (c-&gt;mode =3D=3D CM_TOP)</span=
-><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-    case CM_TOP:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-       sec =3D 1;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-        break;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-        case CM_CHILD_UDP:</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-        case CM_CHILD_T=
-CP:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            sec =
-=3D c-&gt;options=2Ece=2Econnect_retry_seconds;</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-            break;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        sec =3D 1;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    else if (cm_mode_child(c-&gt;mode))</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        sec =3D c-&gt;options=2Ece=2Econnect_retry_seconds;=
-</span><br><span>     }</span><br><span> </span><br><span> #ifdef ENABLE_DE=
-BUG</span><br><span>@@ -2795,7 +2792,7 @@</span><br><span>     }</span><br>=
-<span> </span><br><span>     /* Slow down reconnection after 5 retries per =
-remote -- for TCP client or UDP tls-client only */</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    if (c-&gt;mode =3D=3D CM_CHILD_TCP || (c-&=
-gt;options=2Ece=2Eproto =3D=3D PROTO_UDP &amp;&amp; c-&gt;options=2Etls_cli=
-ent))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (cm_mod=
-e_child_tcp(c-&gt;mode) || (c-&gt;options=2Ece=2Eproto =3D=3D PROTO_UDP &am=
-p;&amp; c-&gt;options=2Etls_client))</span><br><span>     {</span><br><span=
->         backoff =3D (c-&gt;options=2Eunsuccessful_attempts / c-&gt;option=
-s=2Econnection_list-&gt;len) - 4;</span><br><span>         if (backoff &gt;=
- 0)</span><br><span>@@ -3317,6 +3314,11 @@</span><br><span>     {</span><br=
-><span>         to=2Epush_peer_info_detail =3D 2;</span><br><span>     }</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (c-&gt;mod=
-e =3D=3D CM_PEER_TCP || c-&gt;mode =3D=3D CM_PEER_UDP)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        /* connection initiated by us that requires pu=
-shing some information */</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        to=2Epush_peer_info_detail =3D 1;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    }</span><br><span>     else if (options-&gt=
-;mode =3D=3D MODE_SERVER) /* server: no peer info at all */</span><br><span=
->     {</span><br><span>         to=2Epush_peer_info_detail =3D 0;</span><b=
-r><span>@@ -4438,7 +4440,6 @@</span><br><span> init_instance(struct context=
- *c, const struct env_set *env, const unsigned int flags)</span><br><span> =
-{</span><br><span>     const struct options *options =3D &amp;c-&gt;options=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const bool child=
- =3D (c-&gt;mode =3D=3D CM_CHILD_TCP || c-&gt;mode =3D=3D CM_CHILD_UDP);</s=
-pan><br><span> </span><br><span>     /* init garbage collection level */</s=
-pan><br><span>     gc_init(&amp;c-&gt;c2=2Egc);</span><br><span>@@ -4530,7 =
-+4531,7 @@</span><br><span>     }</span><br><span> </span><br><span>     /*=
- reset OCC state */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  if (c-&gt;mode =3D=3D CM_P2P || child)</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    if (c-&gt;mode =3D=3D CM_P2P || cm_mode_child(c-&g=
-t;mode))</span><br><span>     {</span><br><span>         c-&gt;c2=2Eocc_op =
-=3D occ_reset_op();</span><br><span>     }</span><br><span>@@ -4540,7 +4541=
-,7 @@</span><br><span>     {</span><br><span>         do_event_set_init(c, =
-SHAPER_DEFINED(&amp;c-&gt;options));</span><br><span>     }</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    else if (c-&gt;mode =3D=3D CM_CHI=
-LD_TCP)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if =
-(cm_mode_child_tcp(c-&gt;mode))</span><br><span>     {</span><br><span>    =
-     do_event_set_init(c, false);</span><br><span>     }</span><br><span>@@=
- -4549,14 +4550,14 @@</span><br><span>     init_proxy(c);</span><br><span> =
-</span><br><span>     /* allocate our socket object */</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    if (c-&gt;mode =3D=3D CM_P2P || c-&gt;=
-mode =3D=3D CM_TOP || c-&gt;mode =3D=3D CM_CHILD_TCP)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (c-&gt;mode =3D=3D CM_P2P || c-&gt=
-;mode =3D=3D CM_TOP || cm_mode_child_tcp(c-&gt;mode))</span><br><span>     =
-{</span><br><span>         do_link_socket_new(c);</span><br><span>     }</s=
-pan><br><span> </span><br><span> #ifdef ENABLE_FRAGMENT</span><br><span>   =
-  /* initialize internal fragmentation object */</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    if (options-&gt;ce=2Efragment &amp;&amp; (c-=
-&gt;mode =3D=3D CM_P2P || child))</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    if (options-&gt;ce=2Efragment &amp;&amp; (c-&gt;mode =3D=
-=3D CM_P2P || cm_mode_child(c-&gt;mode)))</span><br><span>     {</span><br>=
-<span>         c-&gt;c2=2Efragment =3D fragment_init(&amp;c-&gt;c2=2Eframe)=
-;</span><br><span>     }</span><br><span>@@ -4573,12 +4574,12 @@</span><br>=
-<span>         {</span><br><span>             crypto_flags =3D CF_LOAD_PERS=
-ISTED_PACKET_ID | CF_INIT_TLS_MULTI;</span><br><span>         }</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        else if (child)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        else if (cm_mode_chil=
-d(c-&gt;mode))</span><br><span>         {</span><br><span>             cryp=
-to_flags =3D CF_INIT_TLS_MULTI;</span><br><span>         }</span><br><span>=
-         do_init_crypto(c, crypto_flags);</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        if (IS_SIG(c) &amp;&amp; !child)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        if (IS_SIG(c) &amp;&amp; !=
-cm_mode_child(c-&gt;mode))</span><br><span>         {</span><br><span>     =
-        goto sig;</span><br><span>         }</span><br><span>@@ -4586,7 +45=
-87,7 @@</span><br><span> </span><br><span> #ifdef USE_COMP</span><br><span>=
-     /* initialize compression library=2E */</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    if (comp_enabled(&amp;options-&gt;comp) &amp;&am=
-p; (c-&gt;mode =3D=3D CM_P2P || child))</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    if (comp_enabled(&amp;options-&gt;comp) &amp;&amp; =
-(c-&gt;mode =3D=3D CM_P2P || cm_mode_child(c-&gt;mode)))</span><br><span>  =
-   {</span><br><span>         c-&gt;c2=2Ecomp_context =3D comp_init(&amp;op=
-tions-&gt;comp);</span><br><span>     }</span><br><span>@@ -4599,21 +4600,2=
-1 @@</span><br><span>     do_init_frame_tls(c);</span><br><span> </span><br=
-><span>     /* init workspace buffers whose size is derived from frame size=
- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (c-&gt;mode=
- =3D=3D CM_P2P || c-&gt;mode =3D=3D CM_CHILD_TCP)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    if (c-&gt;mode =3D=3D CM_P2P || cm_mode_c=
-hild_tcp(c-&gt;mode))</span><br><span>     {</span><br><span>         do_in=
-it_buffers(c);</span><br><span>     }</span><br><span> </span><br><span> #i=
-fdef ENABLE_FRAGMENT</span><br><span>     /* initialize internal fragmentat=
-ion capability with known frame size */</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    if (options-&gt;ce=2Efragment &amp;&amp; (c-&gt;mode =
-=3D=3D CM_P2P || child))</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    if (options-&gt;ce=2Efragment &amp;&amp; (c-&gt;mode =3D=3D CM_P2P=
- || cm_mode_child(c-&gt;mode)))</span><br><span>     {</span><br><span>    =
-     do_init_fragment(c);</span><br><span>     }</span><br><span> #endif</s=
-pan><br><span> </span><br><span>     /* bind the TCP/UDP socket */</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    if (c-&gt;mode =3D=3D CM_P=
-2P || c-&gt;mode =3D=3D CM_TOP || c-&gt;mode =3D=3D CM_CHILD_TCP)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    if (c-&gt;mode =3D=3D CM_=
-P2P || c-&gt;mode =3D=3D CM_TOP || cm_mode_child_tcp(c-&gt;mode))</span><br=
-><span>     {</span><br><span>         do_init_socket_phase1(c);</span><br>=
-<span>     }</span><br><span>@@ -4630,7 +4631,7 @@</span><br><span>     do_=
-print_data_channel_mtu_parms(c);</span><br><span> </span><br><span>     /* =
-get local and remote options compatibility strings */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    if (c-&gt;mode =3D=3D CM_P2P || child)<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (c-&gt;mode =
-=3D=3D CM_P2P || cm_mode_child(c-&gt;mode))</span><br><span>     {</span><b=
-r><span>         do_compute_occ_strings(c);</span><br><span>     }</span><b=
-r><span>@@ -4656,7 +4657,7 @@</span><br><span>     do_init_server_poll_time=
-out(c);</span><br><span> </span><br><span>     /* finalize the TCP/UDP sock=
-et */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (c-&gt;mo=
-de =3D=3D CM_P2P || c-&gt;mode =3D=3D CM_TOP || c-&gt;mode =3D=3D CM_CHILD_=
-TCP)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (c-&gt;m=
-ode =3D=3D CM_P2P || c-&gt;mode =3D=3D CM_TOP || cm_mode_child_tcp(c-&gt;mo=
-de))</span><br><span>     {</span><br><span>         do_init_socket_phase2(=
-c);</span><br><span> </span><br><span>@@ -4679,7 +4680,7 @@</span><br><span=
->     do_uid_gid_chroot(c, c-&gt;c2=2Edid_open_tun);</span><br><span> </spa=
-n><br><span>     /* initialize timers */</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    if (c-&gt;mode =3D=3D CM_P2P || child)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    if (c-&gt;mode =3D=3D CM_P2P =
-|| cm_mode_child(c-&gt;mode))</span><br><span>     {</span><br><span>      =
-   do_init_timers(c, false);</span><br><span>     }</span><br><span>@@ -474=
-9,7 +4750,7 @@</span><br><span>     /* close event objects */</span><br><sp=
-an>     do_close_event_set(c);</span><br><span> </span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    if (c-&gt;mode =3D=3D CM_P2P || c-&gt;mode =
-=3D=3D CM_CHILD_TCP || c-&gt;mode =3D=3D CM_CHILD_UDP</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (c-&gt;mode =3D=3D CM_P2P || cm_mo=
-de_child(c-&gt;mode)</span><br><span>         || c-&gt;mode =3D=3D CM_TOP)<=
-/span><br><span>     {</span><br><span> #ifdef USE_COMP</span><br><span>@@ =
--4875,7 +4876,7 @@</span><br><span>     dest-&gt;c1=2Etuntap =3D src-&gt;c1=
-=2Etuntap;</span><br><span> </span><br><span>     /* UDP inherits some extr=
-a things which TCP does not */</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    if (dest-&gt;mode =3D=3D CM_CHILD_UDP)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (cm_mode_child_udp(dest-&gt;mode))=
-</span><br><span>     {</span><br><span>         ASSERT(!dest-&gt;c2=2Elink=
-_sockets);</span><br><span>         ASSERT(dest-&gt;options=2Ece=2Elocal_li=
-st);</span><br><span>diff --git a/src/openvpn/openvpn=2Eh b/src/openvpn/ope=
-nvpn=2Eh</span><br><span>index fa00822=2E=2Ed5a9bea 100644</span><br><span>=
---- a/src/openvpn/openvpn=2Eh</span><br><span>+++ b/src/openvpn/openvpn=2Eh=
-</span><br><span>@@ -479,12 +479,16 @@</span><br><span> #define CM_P2P     =
-  0           /* standalone point-to-point session or client */</span><br><=
-span> #define CM_TOP       1           /* top level of a multi-client or po=
-int-to-multipoint server */</span><br><span> #define CM_TOP_CLONE 2        =
-   /* clone of a CM_TOP context for one thread */</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-#define CM_CHILD_UDP 3           /* child conte=
-xt of a CM_TOP or CM_THREAD */</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-#define CM_CHILD_TCP 4           /* child context of a CM_TOP or C=
-M_THREAD */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define =
-CM_CHILD_UDP 3           /* child context of a CM_TOP */</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+#define CM_CHILD_TCP 4           /* ch=
-ild context of a CM_TOP  */</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#define CM_PEER_UDP  5           /* child context of a CM_TOP initi=
-ated by us */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#defin=
-e CM_PEER_TCP  6           /* child context of a CM_TOP initiated by us */<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>   =
-  int mode;                    /**&lt; Role of this context within the</spa=
-n><br><span>                                   *   OpenVPN process=2E  Vali=
-d values are \c</span><br><span>                                   *   CM_P=
-2P, \c CM_TOP, \c CM_TOP_CLONE,</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-                                  *   \c CM_CHILD_UDP, and \c CM_=
-CHILD_TCP=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-                              *   \c CM_CHILD_UDP, \c CM_CHILD_TCP=2E</span=
+e-wrap;">Implement basic multipeer support=2E<br><br>Current restriction:<b=
+r>- no tls-crypt-v2 support<br>- no TCP support<br>- no retry logic ( only =
+one attempt at establishing a connection)<br>- only literal IP:port support=
+ for peer<br><br>Change-Id: Ic3a0809191addea024ff8bd69600f4dbad9c37a6<br>Si=
+gned-off-by: Arne Schwabe &lt;arne@rfc2549=2Eorg&gt;<br>---<br>M src/openvp=
+n/dco=2Ec<br>M src/openvpn/init=2Ec<br>M src/openvpn/init=2Eh<br>M src/open=
+vpn/mtcp=2Ec<br>M src/openvpn/mudp=2Ec<br>M src/openvpn/multi=2Ec<br>M src/=
+openvpn/multi=2Eh<br>M src/openvpn/options=2Eh<br>M src/openvpn/socket_util=
+=2Ec<br>M src/openvpn/socket_util=2Eh<br>M src/openvpn/ssl=2Ec<br>11 files =
+changed, 342 insertions(+), 21 deletions(-)<br><br></pre><pre class=3D"bloc=
+ks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git =
+pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/24/1824/1</pre=
+><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><s=
+pan>diff --git a/src/openvpn/dco=2Ec b/src/openvpn/dco=2Ec</span><br><span>=
+index d4beb04=2E=2E9c3e71d 100644</span><br><span>--- a/src/openvpn/dco=2Ec=
+</span><br><span>+++ b/src/openvpn/dco=2Ec</span><br><span>@@ -365,6 +365,1=
+3 @@</span><br><span>         }</span><br><span>     }</span><br><span> </s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (o-&gt;peer_lis=
+t)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        msg(msglevel, &quot;Not=
+e: peer connections require asymmetric peer-id, &quot;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+                      &quot;disabling da=
+ta channel offload&quot;);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        return false;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span> #if defined(_WIN32)</span><br><span>     if ((o-&gt;mode =3D=
+=3D MODE_SERVER) &amp;&amp; !dco_win_supports_multipeer())</span><br><span>=
+     {</span><br><span>diff --git a/src/openvpn/init=2Ec b/src/openvpn/init=
+=2Ec</span><br><span>index 0e649f8=2E=2Ee8644f4 100644</span><br><span>--- =
+a/src/openvpn/init=2Ec</span><br><span>+++ b/src/openvpn/init=2Ec</span><br=
+><span>@@ -4818,12 +4818,19 @@</span><br><span> }</span><br><span> </span><=
+br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-inherit=
+_context_child(struct context *dest, const struct context *src, struct link=
+_socket *sock)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+inher=
+it_context_child(struct context *dest, const struct context *src, struct li=
+nk_socket *sock, bool peer_connection)</span><br><span> {</span><br><span> =
+    CLEAR(*dest);</span><br><span> </span><br><span>     /* proto_is_dgram =
+will ASSERT(0) if proto is invalid */</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    dest-&gt;mode =3D proto_is_dgram(sock-&gt;info=2Eproto)=
+ ? CM_CHILD_UDP : CM_CHILD_TCP;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    if (peer_connection)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        dest-&gt;mode =3D proto_is_dgram(sock-&gt;info=2Eproto) ? CM_PEE=
+R_UDP : CM_PEER_TCP;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        dest-&gt;mode =3D proto_is_dgr=
+am(sock-&gt;info=2Eproto) ? CM_CHILD_UDP : CM_CHILD_TCP;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span> </span><br><spa=
+n>     dest-&gt;gc =3D gc_new();</span><br><span> </span><br><span>@@ -4854=
+,6 +4861,12 @@</span><br><span> </span><br><span>     dest-&gt;c2=2Eevent_s=
+et =3D src-&gt;c2=2Eevent_set;</span><br><span> </span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    if (peer_connection)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        dest-&gt;options=2Etls_client =3D true;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        dest-&gt;options=2E=
+tls_server =3D false;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span>     if (dest-&gt;mode =3D=3D CM_CHILD_TCP)</span><br><span>     {</sp=
+an><br><span>         /*</span><br><span>@@ -4893,7 +4906,7 @@</span><br><s=
+pan>         ALLOC_OBJ_GC(dest-&gt;c2=2Elink_socket_infos[0], struct link_s=
+ocket_info, &amp;dest-&gt;gc);</span><br><span>         *dest-&gt;c2=2Elink=
+_socket_infos[0] =3D sock-&gt;info;</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        /* locally override some link_socke=
+t_info fields */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     /* locally override some link_socket_info fields=2E FIXME: copy from r=
+ight socket?! */</span><br><span>         dest-&gt;c2=2Elink_socket_infos[0=
+]-&gt;lsa =3D &amp;dest-&gt;c1=2Elink_socket_addrs[0];</span><br><span>    =
+     dest-&gt;c2=2Elink_socket_infos[0]-&gt;connection_established =3D fals=
+e;</span><br><span>     }</span><br><span>diff --git a/src/openvpn/init=2Eh=
+ b/src/openvpn/init=2Eh</span><br><span>index 9d5050d=2E=2Ecc2f90a 100644</=
+span><br><span>--- a/src/openvpn/init=2Eh</span><br><span>+++ b/src/openvpn=
+/init=2Eh</span><br><span>@@ -102,7 +102,7 @@</span><br><span> bool do_defe=
+rred_options(struct context *c, const uint64_t found, const bool is_update)=
+;</span><br><span> </span><br><span> void inherit_context_child(struct cont=
+ext *dest, const struct context *src,</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-                           struct link_socket *sock);</span=
 ><br><span style=3D"color: hsl(120, 100%, 40%);">+                         =
-         *   \c CM_PEER_UDP, \c CM_PEER_TCP=2E */</span><br><span> </span><=
-br><span>     struct multi_context *multi; /**&lt; Pointer to the main P2MP=
- context=2E</span><br><span>                                   *   Non-NULL=
- only when mode =3D=3D CM_TOP=2E */</span><br><span>@@ -514,6 +518,34 @@</s=
-pan><br><span>     struct context_2 c2;  /**&lt; Level 2 %context=2E */</sp=
-an><br><span> };</span><br><span> </span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+static inline bool</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+cm_mode_child_tcp(int mode)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    return mode =3D=3D CM_CHILD_TCP || mode =3D=3D CM_PEER_TCP;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+static inline bool</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+cm_mode_child_udp(int mode)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    return mode =3D=3D CM_CHILD_UDP || mode =3D=3D CM_PEER_UDP;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+static inline bool</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+cm_mode_child(int mode)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    retu=
-rn cm_mode_child_udp(mode) || cm_mode_child_tcp(mode);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*=
-*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Return true if =
-the mode context is a connection initiated by this</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+ * server (peer)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+static inline bool</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+cm_mode_peer(int mode)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-return mode =3D=3D CM_PEER_UDP || mode =3D=3D CM_PEER_TCP;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span> /*</span><br><span>  * Check for a s=
-ignal when inside an event loop</span><br><span>  */</span><br><span>diff -=
--git a/src/openvpn/socket=2Ec b/src/openvpn/socket=2Ec</span><br><span>inde=
-x b73a5df=2E=2E6f49d1b 100644</span><br><span>--- a/src/openvpn/socket=2Ec<=
-/span><br><span>+++ b/src/openvpn/socket=2Ec</span><br><span>@@ -1336,14 +1=
-336,14 @@</span><br><span>         port =3D o-&gt;ce=2Elocal_port;</span><b=
-r><span>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    if (c-&gt;mode =3D=3D CM_CHILD_TCP || c-&gt;mode =3D=3D CM_C=
-HILD_UDP)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (cm=
-_mode_child(c-&gt;mode))</span><br><span>     {</span><br><span>         st=
-ruct link_socket *tmp_sock =3D NULL;</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-        if (c-&gt;mode =3D=3D CM_CHILD_TCP)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        if (cm_mode_child_tcp(c-&gt;=
-mode))</span><br><span>         {</span><br><span>             tmp_sock =3D=
- (struct link_socket *)c-&gt;c2=2Eaccept_from;</span><br><span>         }</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-        else if (c-&gt;=
-mode =3D=3D CM_CHILD_UDP)</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        else if (cm_mode_child_udp(c-&gt;mode))</span><br><span>     =
-    {</span><br><span>             tmp_sock =3D c-&gt;c2=2Elink_sockets[0];=
-</span><br><span>         }</span><br><span></span><br></pre><p>To view, vi=
-sit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1822?usp=3Demail">=
-change 1822</a>=2E To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=
-=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div it=
-emscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><li=
-nk itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1822?=
-usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>=
+  struct link_socket *sock, bool peer_connection);</span><br><span> </span>=
+<br><span> void inherit_context_top(struct context *dest, const struct cont=
+ext *src);</span><br><span> </span><br><span>diff --git a/src/openvpn/mtcp=
+=2Ec b/src/openvpn/mtcp=2Ec</span><br><span>index eb4e944=2E=2Edde38b7 1006=
+44</span><br><span>--- a/src/openvpn/mtcp=2Ec</span><br><span>+++ b/src/ope=
+nvpn/mtcp=2Ec</span><br><span>@@ -43,7 +43,7 @@</span><br><span>     struct=
+ gc_arena gc =3D gc_new();</span><br><span>     struct multi_instance *mi =
+=3D NULL;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    mi =3D multi_create_instance(m, NULL, sock);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    mi =3D multi_create_instance(m, NULL=
+, sock, false);</span><br><span>     if (mi)</span><br><span>     {</span><=
+br><span>         mi-&gt;real=2Eproto =3D sock-&gt;info=2Eproto;</span><br>=
+<span>diff --git a/src/openvpn/mudp=2Ec b/src/openvpn/mudp=2Ec</span><br><s=
+pan>index 657055c=2E=2Ef74e74c 100644</span><br><span>--- a/src/openvpn/mud=
+p=2Ec</span><br><span>+++ b/src/openvpn/mudp=2Ec</span><br><span>@@ -231,7 =
++231,7 @@</span><br><span>              * connect-freq but not against conn=
+ect-freq-initial */</span><br><span>             reflect_filter_rate_limit_=
+decrease(m-&gt;initial_rate_limiter);</span><br><span> </span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-            mi =3D multi_create_instance(=
+m, real, sock);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        mi =3D multi_create_instance(m, real, sock, false);</span><br><span=
+>             if (mi)</span><br><span>             {</span><br><span>      =
+           multi_assign_peer_id(m, mi);</span><br><span>@@ -283,11 +283,9 @=
+@</span><br><span> }</span><br><span> </span><br><span> </span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-static struct multi_instance *</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-multi_get_instance_udp_control(=
+struct multi_context *m)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+static inline struct session_id</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+multi_get_extract_sesison_id(struct multi_context *m)</spa=
+n><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* =
+Copy buffer, to a tmp buffer, so that reading the sesison does not</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-     * modify the internal poi=
+nters */</span><br><span>     struct buffer tmp =3D m-&gt;top=2Ec2=2Ebuf;</=
+span><br><span> </span><br><span>     /* op code */</span><br><span>@@ -296=
+,7 +294,17 @@</span><br><span> </span><br><span>     struct session_id sid =
+=3D { 0 };</span><br><span>     session_id_read(&amp;sid, &amp;tmp);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    return sid;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span> </span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+static struct multi_instance *=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+multi_get_instance_=
+udp_control(struct multi_context *m)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   /* Copy buffer, to a tmp buffer, so that reading the sesison does not</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+     * modify the inte=
+rnal pointers */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    struct session_id sid =3D multi_get_e=
+xtract_sesison_id(m);</span><br><span>     struct hash_element *he_sid =3D =
+multi_hash_sid_lookup(m, &amp;sid);</span><br><span> </span><br><span>     =
+if (he_sid)</span><br><span>@@ -336,7 +344,16 @@</span><br><span>          =
+       =3D=3D sock-&gt;info=2Eproto)</span><br><span>             {</span><=
+br><span>                 mi =3D m-&gt;instances[peer_id];</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-                *floated =3D !link_soc=
+ket_actual_match(&amp;mi-&gt;context=2Ec2=2Efrom, &amp;m-&gt;top=2Ec2=2Efro=
+m);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+                /* FIXME:figure out=
+ if we want to setup from at the right place */</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+                if (mi-&gt;context=2Ec2=2Efrom=
+=2Edest=2Eaddr=2Esa=2Esa_family =3D=3D 0)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+                {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+                    *floated =3D true;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+                }</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+                else</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+                {</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+                    *floated =3D !link_=
+socket_actual_match(&amp;mi-&gt;context=2Ec2=2Efrom, &amp;m-&gt;top=2Ec2=2E=
+from);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
+   }</span><br><span> </span><br><span>                 if (*floated)</span=
+><br><span>                 {</span><br><span>@@ -359,6 +376,44 @@</span><b=
+r><span>     return NULL;</span><br><span> }</span><br><span> </span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+static struct multi_instance *</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+multi_get_instance_ud=
+p_peer(struct multi_context *m, struct mroute_addr *real)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    /* If we have an outgoing connection we need to loo=
+k it</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * up some =
+way=2E Since this might be a tls-crypt-v2 session,</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+     * we would need the tls-crypt-v2 key be=
+fore decrypting</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+ * the packet, so we fall back to a simple lookup by address</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+     * here */</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    struct multi_instance *mi =3D multi=
+_get_instance_udp_real(m, real);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    if (!mi)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+return NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    const struct key_state *ks =3D get_p=
+rimary_key(mi-&gt;context=2Ec2=2Etls_multi);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    ASSERT(ks);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    if (session_id_defined(&amp;ks-&gt;session_id_remo=
+te))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        struct gc_arena gc =
+=3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  msg(D_MULTI_MEDIUM, &quot;Peer connection: Peer already has established &=
+quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
+              &quot;session id %s=2E&quot;,</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            mroute_addr_print(real, &amp;gc));</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        gc_free(&amp;gc)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return NUL=
+L;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    /* we now just assume that =
+this a possible session id for the session</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+     * and therefore add the hash of the remote sess=
+ion id to the hash map */</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* We mig=
+ht have had another reset packet before */</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    if (session_id_defined(&amp;mi-&gt;sid_hashed_va=
+lue))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        multi_hash_sid_remov=
+e(m, &amp;mi-&gt;sid_hashed_value);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    struct session_id sid =3D multi_get_extract_sesison_id(m);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    multi_hash_sid_add(m, &amp=
+;sid, mi);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    retur=
+n mi;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> struct multi_i=
+nstance *</span><br><span> multi_get_create_instance_udp(struct multi_conte=
+xt *m, bool *floated, struct link_socket *sock)</span><br><span> {</span><b=
+r><span>@@ -400,7 +455,14 @@</span><br><span>          * packets can create=
+ a session=2E Data packets cannot */</span><br><span>         if (!mi)</spa=
+n><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-            mi =3D handle_connection_attempt(m, sock, &amp;real);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+            if (op !=3D P_CO=
+NTROL_HARD_RESET_SERVER_V2)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+                mi =3D handle_connection_attempt(m, sock, &amp;real);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+            else</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+                mi =3D multi_get_insta=
+nce_udp_peer(m, &amp;real);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            }</span><br><span>         }</span><br><span>     }</sp=
+an><br><span> </span><br><span>diff --git a/src/openvpn/multi=2Ec b/src/ope=
+nvpn/multi=2Ec</span><br><span>index ff9121d=2E=2E0b7dd02 100644</span><br>=
+<span>--- a/src/openvpn/multi=2Ec</span><br><span>+++ b/src/openvpn/multi=
+=2Ec</span><br><span>@@ -422,6 +422,13 @@</span><br><span>         event_ti=
+meout_init(&amp;m-&gt;stale_routes_check_et, t-&gt;options=2Estale_routes_c=
+heck_interval, 0);</span><br><span>     }</span><br><span> </span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    if (t-&gt;options=2Econnection_=
+list)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        /* For now we will c=
+heck every 7s=2E Might later add an option</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+         * to change the interval as a user */</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        event_timeout_ini=
+t(&amp;m-&gt;peer_connection_et, 7, now);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span>     m-&gt;deferred_shutdown_signal=2Esignal_recei=
+ved =3D 0;</span><br><span> }</span><br><span> </span><br><span>@@ -717,7 +=
+724,7 @@</span><br><span>  */</span><br><span> struct multi_instance *</spa=
+n><br><span> multi_create_instance(struct multi_context *m, const struct mr=
+oute_addr *real,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+                 struct link_socket *sock)</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                      struct link_socket *sock, bool=
+ peer_connection)</span><br><span> {</span><br><span>     struct gc_arena g=
+c =3D gc_new();</span><br><span>     struct multi_instance *mi;</span><br><=
+span>@@ -738,7 +745,7 @@</span><br><span>         generate_prefix(mi);</spa=
+n><br><span>     }</span><br><span> </span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    inherit_context_child(&amp;mi-&gt;context, &amp;m-&gt;to=
+p, sock);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    inheri=
+t_context_child(&amp;mi-&gt;context, &amp;m-&gt;top, sock, peer_connection)=
+;</span><br><span>     if (IS_SIG(&amp;mi-&gt;context))</span><br><span>   =
+  {</span><br><span>         goto err;</span><br><span>@@ -749,7 +756,7 @@<=
+/span><br><span>     if (hash_n_elements(m-&gt;hash) &gt;=3D m-&gt;max_clie=
+nts)</span><br><span>     {</span><br><span>         msg(D_MULTI_ERRORS,</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            &quot;MULTI:=
+ new incoming connection would exceed maximum number of clients (%d)&quot;,=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;M=
+ULTI: new connection would exceed maximum number of clients (%d)&quot;,</sp=
+an><br><span>             m-&gt;max_clients);</span><br><span>         goto=
+ err;</span><br><span>     }</span><br><span>@@ -1791,7 +1798,7 @@</span><b=
+r><span> </span><br><span>     /* Print a warning if we detect the client b=
+eing in P2P mode=2E The</span><br><span>      * negotiations will be otherw=
+ise compatible */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+if (proto &amp; IV_PROTO_NCP_P2P)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    if (proto &amp; IV_PROTO_NCP_P2P &amp;&amp; !cm_mode_peer=
+(c-&gt;mode))</span><br><span>     {</span><br><span>         multi_client_=
+set_protocol_warnings_p2p(c);</span><br><span>     }</span><br><span>@@ -25=
+20,6 +2527,19 @@</span><br><span> multi_client_connect_real_addr(struct mul=
+ti_context *m, struct multi_instance *mi,</span><br><span>                 =
+               bool deferred, uint64_t *option_types_found)</span><br><span=
+> {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (cm_mode_=
+peer(mi-&gt;context=2Emode))</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   /* If we have a multi client instance it should already be assigned</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+         * to its addres=
+s in its creation */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        bool address_assigned =3D hash_lookup(m-&gt;hash, &amp;mi-&gt;real=
+) =3D=3D mi;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ if (!address_assigned)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      msg(D_MULTI_ERRORS, &quot;MULTI: Address for client connection is &qu=
+ot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
+                &quot;not correctly set up=2E Terminating connection&quot;)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        return address_assig=
+ned ? CC_RET_SUCCEEDED : CC_RET_FAILED;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span>     /* If the address is already taken up by anothe=
+r client we fail the new</span><br><span>      * connection */</span><br><s=
+pan>     if (!multi_check_dest_addr_allowed(m, mi, &amp;mi-&gt;real))</span=
+><br><span>@@ -2537,6 +2557,30 @@</span><br><span> }</span><br><span> </spa=
+n><br><span> /**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
+This checks if all the conditions of an outgoing peer connection are met=2E=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+static enum client_connect_return</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+multi_client_connect_=
+peer(struct multi_context *m, struct multi_instance *mi,</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+                          bool deferre=
+d, uint64_t *option_types_found)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i=
+f (!cm_mode_peer(mi-&gt;context=2Emode))</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        return CC_RET_SUCCEEDED;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct tl=
+s_multi *multi =3D mi-&gt;context=2Ec2=2Etls_multi;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (!multi-&gt;use_asymmetric_peer_id=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        msg(D_MULTI_ERRORS, &quo=
+t;Connecting to another server/peer requires &quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                            &quot;asymmet=
+ric peer-id support=2E The peer lacks this &quot;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+                            &quot;support=2E =
+Terminating connection=2E&quot;);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        return CC_RET_FAILED;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    retur=
+n CC_RET_SUCCEEDED;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span>  *  Do the neces=
+sary modification for doing the compress migrate=2E This is</span><br><span=
+>  *  implemented as a connect handler as it fits the modify config for a c=
+lient</span><br><span>  *  paradigm and also is early enough in the chain t=
+o be overwritten by another</span><br><span>@@ -2630,6 +2674,7 @@</span><br=
+><span>     uint64_t *option_types_found);</span><br><span> </span><br><spa=
+n> static const multi_client_connect_handler client_connect_handlers[] =3D =
+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    multi_client_c=
+onnect_peer,</span><br><span>     multi_client_connect_real_addr,</span><br=
+><span>     multi_client_connect_compress_migrate,</span><br><span>     mul=
+ti_client_connect_source_ccd,</span><br><span>@@ -3873,6 +3918,186 @@</span=
+><br><span>     return event_timeout_trigger(&amp;m-&gt;stale_routes_check_=
+et, &amp;null, ETT_DEFAULT);</span><br><span> }</span><br><span> </span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+static bool</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+peer_connection_trigger(struct multi_=
+context *m)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    struct timeval null;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(null);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    return event_timeout=
+_trigger(&amp;m-&gt;peer_connection_et, &amp;null, ETT_DEFAULT);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+static bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+multi_resolve_peer_addr(struct connection_entry *ce, struct mroute_addr *re=
+al, struct openvpn_sockaddr *sa,</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+                        bool have_udp4, bool have_udp6)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    unsigned int flags =3D GETADDR_RESOLVE |=
+ GETADDR_WARN_ON_SIGNAL;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    if (proto_is_dgram(ce-&gt;proto))</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        if (!have_udp6 &amp;&amp; !have_udp4)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+            msg(M_INFO, &quot;Cannot connect to %s=
+:%s: no UDP sockets available&quot;, ce-&gt;remote, ce-&gt;remote_port);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            return fal=
+se;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        flags |=3D GETADDR=
+_DATAGRAM;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (have_udp6 &amp;&amp; !have_udp4)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        /* The address family need=
+s to match the socket address family=2E If we only</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+         * have IPv6 sockets, we force IPv6 =
+mapped IPv4 address with this=2E For</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+         * TCP client, we create new sockets and don&#39;t=
+ have to worry about this */</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        flags |=3D GETADDR_FORCE_FAMILY;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ struct addrinfo *ai;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    int status =3D openvpn_getaddrinfo(flags, ce-&gt;remote, ce-&gt;remot=
+e_port, 0,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+                            NULL, AF_INET6, &amp;ai);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    bool ret =3D false;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    if (status !=3D 0)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        msg(M_INFO, &quot;Failure to resolve %s:%s as peer address=
+=2E Currently only &quot;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+                    &quot;literal IP/IPv6 addresses are supported&quo=
+t;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            ce-&=
+gt;remote, ce-&gt;remote_port);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        goto error;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    mroute_addr_init(=
+real);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    real-&gt;=
+proto =3D proto_is_dgram(ce-&gt;proto) ? PROTO_UDP : PROTO_TCP;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    if (ai-&gt;ai_family =3D=3D AF_INET)</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        struct sockaddr_in *sin =3D (stru=
+ct sockaddr_in *)ai-&gt;ai_addr;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        sa-&gt;addr=2Ein4 =3D *sin;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    else if (ai-&gt;ai_family =3D=3D AF_INET6)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        struct sockaddr_in6 *sin6 =3D (struct s=
+ockaddr_in6 *)ai-&gt;ai_addr;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        sa-&gt;addr=2Ein6 =3D *sin6;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    else</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ASSE=
+RT(0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    if (!mroute_extract_openvpn_sockaddr(real,=
+ sa, true))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_INFO, &q=
+uot;Failure to convert resolve result for  %s:%s&quot;, ce-&gt;remote, ce-&=
+gt;remote_port);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     goto error;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    ret =3D true;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+error:</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    freeaddrinfo(ai);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    return ret;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+multi_create_peer_instance(struct multi_c=
+ontext *m, struct connection_entry *ce)</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    struct mroute_addr real;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    struct openvpn_sockaddr sa =3D { 0 };</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    /* Remember if we have a udp4 and udp6 link sockets */</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct link_socke=
+t *udp4_link_sock =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    struct link_socket *udp6_link_sock =3D NULL;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    /* Check what kind of UDP sockets we have=2E Currentl=
+y this takes the first</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+     * UDP socket with AF_INET and first AF_INET6=2E We might later cons=
+ider</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * giving t=
+he user a finer control about the outgoing socket selection=2E</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+     */</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    for (int i =3D 0; i &lt; m-&gt;top=2Ec1=
+=2Elink_sockets_num; i++)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+struct addrinfo *bindlocal =3D m-&gt;top=2Ec1=2Elink_socket_addrs[i]=2Ebind=
+_local;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (=
+!udp6_link_sock &amp;&amp; bindlocal-&gt;ai_family =3D=3D AF_INET6 &amp;&am=
+p; bindlocal-&gt;ai_socktype =3D=3D SOCK_DGRAM)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+            udp6_link_sock =3D m-&gt;top=2Ec2=2Elink_sock=
+ets[i];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!udp4_link=
+_sock &amp;&amp; bindlocal-&gt;ai_family =3D=3D AF_INET &amp;&amp; bindloca=
+l-&gt;ai_socktype =3D=3D SOCK_DGRAM)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+            udp4_link_sock =3D m-&gt;top=2Ec2=2Elink_sockets[i];</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    /* Check if we can resolve the remote address=2E This method w=
+ill already</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * p=
+rint warnings if it cannot resolve, so just return here when it fails */</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!multi_resolve=
+_peer_addr(ce, &amp;real, &amp;sa, (udp4_link_sock !=3D NULL), (udp6_link_s=
+ock !=3D NULL)))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    struct multi_instance *existing_mi =3D hash_lookup=
+(m-&gt;hash, &amp;real);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    if (existing_mi)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+msg(D_MULTI_LOW, &quot;Cannot establish connection to %s:%s=2E Client or pe=
+er &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+               &quot;instance with this IP and port already exists&quot;,</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            ce-&gt;re=
+mote, ce-&gt;remote_port);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        return;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    struct link_socket *link_s=
+ock =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (proto_is_dgram(ce=
+-&gt;proto) &amp;&amp; (real=2Etype &amp; MR_ADDR_MASK) =3D=3D MR_ADDR_IPV4=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        link_sock =3D udp4_link_=
+sock;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    else if (proto_is_dgram(=
+ce-&gt;proto) &amp;&amp; (real=2Etype &amp; MR_ADDR_MASK) =3D=3D MR_ADDR_IP=
+V6)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        link_sock =3D udp6_lin=
+k_sock;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    if (!link_sock)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        msg(D_MULTI_LOW, &quot;Cannot determine outgoing so=
+cket for %s:%s %s=2E&quot;,</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            ce-&gt;remote, ce-&gt;remote_port, proto2ascii(ce-&gt;p=
+roto, sa=2Eaddr=2Esa=2Esa_family, true));</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        return;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct mult=
+i_instance *mi =3D multi_create_instance(m, &amp;real, link_sock, true);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (!mi)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        msg(D_MULTI_LOW, &quot;Cannot create multi instance fo=
+r %s:%s %s=2E&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++            ce-&gt;remote, ce-&gt;remote_port, proto2ascii(ce-&gt;proto, s=
+a=2Eaddr=2Esa=2Esa_family, true));</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        return;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    multi_assign_peer_=
+id(m, mi);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    /* todo check */</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    mi-&gt;did_real_hash =
+=3D true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT=
+(hash_add(m-&gt;hash, &amp;mi-&gt;real, mi, false));</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+/* This should be probably handled by setting link_socket_info while</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+     * creating the multi_=
+instance */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    stru=
+ct key_state *ks =3D &amp;mi-&gt;context=2Ec2=2Etls_multi-&gt;session[TM_IN=
+ITIAL]=2Ekey[KS_PRIMARY];</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    ks-&gt;remote_addr=2Edest =3D sa;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    mi-&gt;context=2Ec2=2Etls_multi-&gt;n_sessions++;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    ce-&gt;peer_connection_initiated=
+ =3D true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+check_peer_connections(struct multi_context *m)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    /* If no peers are configured, there is =
+nothing to do */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ if (!m-&gt;top=2Eoptions=2Epeer_list)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        return;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    for (int i =3D 0; i &lt; m-&=
+gt;top=2Eoptions=2Epeer_list-&gt;len; i++)</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        struct connection_entry *ce =3D m-&gt;top=2Eoptions=2Epeer=
+_list-&gt;array[i];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        if (!ce-&gt;peer_connection_initiated)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+            multi_create_peer_instance(m, ce);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span> /*</span><br><span>  * Process timers in the top-level =
+context</span><br><span>  */</span><br><span>@@ -3903,6 +4128,12 @@</span><=
+br><span>     {</span><br><span>         check_stale_routes(m);</span><br><=
+span>     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Should we check for =
+mesh peers that need to connect? */</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    if (m-&gt;top=2Eoptions=2Econnection_list &amp;&amp; pe=
+er_connection_trigger(m))</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+check_peer_connections(m);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    }</span><br><span> }</span><br><span> </span><br><span> static v=
+oid</span><br><span>diff --git a/src/openvpn/multi=2Eh b/src/openvpn/multi=
+=2Eh</span><br><span>index 98547b0=2E=2Ea5c4ce5 100644</span><br><span>--- =
+a/src/openvpn/multi=2Eh</span><br><span>+++ b/src/openvpn/multi=2Eh</span><=
+br><span>@@ -220,6 +220,9 @@</span><br><span>      */</span><br><span>     =
+struct event_timeout stale_routes_check_et;</span><br><span> </span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    /** Timer object for peer con=
+nection check */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ struct event_timeout peer_connection_et;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span> #ifdef ENABLE_ASYNC_PUSH</span><br>=
+<span>     /* mapping between inotify watch descriptors and multi_instances=
+ */</span><br><span>     struct hash *inotify_watchers;</span><br><span>@@ =
+-274,7 +277,8 @@</span><br><span> </span><br><span> struct multi_instance *=
+multi_create_instance(struct multi_context *m,</span><br><span>            =
+                                  const struct mroute_addr *real,</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-                               =
+              struct link_socket *sock);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                                             struct li=
+nk_socket *sock,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+                                          bool peer_connection);</span><br>=
+<span> </span><br><span> void multi_close_instance(struct multi_context *m,=
+ struct multi_instance *mi, bool shutdown);</span><br><span> </span><br><sp=
+an>diff --git a/src/openvpn/options=2Eh b/src/openvpn/options=2Eh</span><br=
+><span>index 353a9a4=2E=2Ea7fa9fc 100644</span><br><span>--- a/src/openvpn/=
+options=2Eh</span><br><span>+++ b/src/openvpn/options=2Eh</span><br><span>@=
+@ -107,6 +107,8 @@</span><br><span> </span><br><span> struct connection_ent=
+ry</span><br><span> {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    /* TODO: actually check */</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    bool peer_connection_initiated;</span><br><span>     struc=
+t local_list *local_list;</span><br><span>     int proto;</span><br><span> =
+    sa_family_t af;</span><br><span>@@ -759,9 +761,10 @@</span><br><span> #=
+define OPT_P_INLINE          (1u &lt;&lt; 29)</span><br><span> #define OPT_=
+P_PUSH_MTU        (1u &lt;&lt; 30)</span><br><span> #define OPT_P_ROUTE_TAB=
+LE     (1u &lt;&lt; 31)</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-#define OPT_P_PEER            (1u &lt;&lt; 32)</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+#define OPT_P_PEER            (1uLL &lt;&lt; 3=
+2)</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
+define OPT_P_DEFAULT (~(OPT_P_INSTANCE | OPT_P_PULL_MODE))</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+/* Use 0uLL to force 64-bit here */<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define OPT_P_DEFAUL=
+T (~(0uLL | OPT_P_INSTANCE | OPT_P_PULL_MODE))</span><br><span> </span><br>=
+<span> #define PULL_DEFINED(opt) ((opt)-&gt;pull)</span><br><span> </span><=
+br><span>diff --git a/src/openvpn/socket_util=2Ec b/src/openvpn/socket_util=
+=2Ec</span><br><span>index 0194f38=2E=2Eb0ccfcf 100644</span><br><span>--- =
+a/src/openvpn/socket_util=2Ec</span><br><span>+++ b/src/openvpn/socket_util=
+=2Ec</span><br><span>@@ -590,7 +590,7 @@</span><br><span> </span><br><span>=
+     /* if hostname is not set, we want to bind to &#39;ANY&#39;, with</spa=
+n><br><span>      * the correct address family - v4-only or v6/v6-dual-stac=
+k */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!hostname=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!hostname =
+|| (flags &amp; GETADDR_FORCE_FAMILY))</span><br><span>     {</span><br><sp=
+an>         hints=2Eai_family =3D ai_family;</span><br><span>     }</span><=
+br><span>diff --git a/src/openvpn/socket_util=2Eh b/src/openvpn/socket_util=
+=2Eh</span><br><span>index 13deeaa=2E=2Ecb4f9ab 100644</span><br><span>--- =
+a/src/openvpn/socket_util=2Eh</span><br><span>+++ b/src/openvpn/socket_util=
+=2Eh</span><br><span>@@ -126,6 +126,7 @@</span><br><span> #define GETADDR_R=
+ANDOMIZE               (1u &lt;&lt; 9)</span><br><span> #define GETADDR_PAS=
+SIVE                 (1u &lt;&lt; 10)</span><br><span> #define GETADDR_DATA=
+GRAM                (1u &lt;&lt; 11)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+#define GETADDR_FORCE_FAMILY            (1u &lt;&lt; 12)</=
+span><br><span> </span><br><span> #define GETADDR_CACHE_MASK (GETADDR_DATAG=
+RAM | GETADDR_PASSIVE)</span><br><span> </span><br><span>diff --git a/src/o=
+penvpn/ssl=2Ec b/src/openvpn/ssl=2Ec</span><br><span>index 22b3f48=2E=2E245=
+f937 100644</span><br><span>--- a/src/openvpn/ssl=2Ec</span><br><span>+++ b=
+/src/openvpn/ssl=2Ec</span><br><span>@@ -2458,7 +2458,7 @@</span><br><span>=
+         setenv_del(session-&gt;opt-&gt;es, &quot;exported_keying_material&=
+quot;);</span><br><span>     }</span><br><span> </span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    if (!session-&gt;opt-&gt;server &amp;&amp; !=
+session-&gt;opt-&gt;pull &amp;&amp; ks-&gt;key_id =3D=3D 0)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    if (!session-&gt;opt-&gt;server=
+ &amp;&amp; !session-&gt;opt-&gt;pull &amp;&amp; ks-&gt;key_id =3D=3D 0 &am=
+p;&amp; session-&gt;opt-&gt;mode !=3D MODE_SERVER)</span><br><span>     {</=
+span><br><span>         /* We are a p2p tls-client without pull, enable com=
+mon</span><br><span>          * protocol options */</span><br><span></span>=
+<br></pre><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/open=
+vpn/+/1824?usp=3Demail">change 1824</a>=2E To unsubscribe, or for help writ=
+ing mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?u=
+sp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eo=
+rg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sche=
+ma=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=
+=2Enet/c/openvpn/+/1824?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
+ew Change"/></div></div>
 
-
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
-<div st=
-yle=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:=
-none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Cha=
-nge-Id: I2dd3bad7acbf6a70b3b7f4aa0b0f6b902797f46d </div>
-<div style=3D"disp=
-lay:none"> Gerrit-Change-Number: 1822 </div>
-<div style=3D"display:none"> G=
-errit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisth=
-os &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> G=
-errit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </d=
-iv>
+<div style=3D"display:none"> Gerrit-MessageType: =
+newchange </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div=
+>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"d=
+isplay:none"> Gerrit-Change-Id: Ic3a0809191addea024ff8bd69600f4dbad9c37a6 <=
+/div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1824 </div>
+<div s=
+tyle=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none=
+"> Gerrit-Owner: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div s=
+tyle=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Es=
+ourceforge=2Enet&gt; </div>
 
 </body></html>
---wxzzG+BSOGE=--
+--ZRteESgjDvk=--
 
 
---===============3904870729333901422==
+--===============1963206915996810538==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============3904870729333901422==
+--===============1963206915996810538==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -973,5 +1789,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============3904870729333901422==--
+--===============1963206915996810538==--
 
