@@ -4,37 +4,37 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 02091C54F54
-	for <openvpn-devel@archiver.kernel.org>; Tue, 28 Jul 2026 11:49:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5EBDBC54F55
+	for <openvpn-devel@archiver.kernel.org>; Tue, 28 Jul 2026 11:49:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:Cc:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
 	:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=LO4FpBapn/kWixcblzlYC0Q9G/fM1QaDvR/ssXqDM0s=; b=AD6MjVZp66Ob3RTHZ6xXlIqZp7
-	RP6GjBn5ed8a7uCYx+f2Bh8kAEBqu9ozxqzv7nTSbOBqp4MNtlvQdY4GRzuSLZQSVNOMvJ9ozvm9+
-	CMShUyeOD1H0nw8VUTYw60MCShMO53F0R9BrKq4KCtrrLMJQmj3wsULgUOXmXAtc+BH4=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=MwQgd9got00wHlhrV53CT4w4al0uuUpnTo79rg8BRDw=; b=CYTi3rBuXu/0pK2FTQYA2uYif7
+	lrKg6tukfXvfWUEKqykqYtlzv8I6jR2dQYhhgTUAC1sDNik9vZtBIrjre71sNlXt0snOdFAhLCo5m
+	lVsu3l/nJVsnRLi3BeqgVvw3QGVoUX6uf8+XEark5yh5LJhq2FWKYHHnqZJVhFUdgjCM=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wogJ8-000663-T7;
+	id 1wogJC-0005td-C9;
 	Tue, 28 Jul 2026 11:49:15 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <a@unstable.cc>) id 1wogJ6-00065p-1W
+ (envelope-from <a@unstable.cc>) id 1wogJA-0005tQ-LV
  for openvpn-devel@lists.sourceforge.net;
- Tue, 28 Jul 2026 11:49:12 +0000
+ Tue, 28 Jul 2026 11:49:14 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
  In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=OB1wJIkO3dO6uhO/DiOC9lTI+DvWuIBap7OwdXV6sls=; b=bDvHygDWhEXS6TGKB0mr6ZeJJg
- uqMXxB7Y5CM0+YXzGZ5JBzPB7MLnW/QcsRomeE3biHU0SBVRhC42SuQMiriMSRGowpfVJHWMTPFP9
- cBBl6Qoc7nHfqhENw6h7GS7qh07YTIPpKDO2Sseb5VBijG8f0W3EcQ2Yc854ZEEOpx/o=;
+ bh=j4K0CryDDnvcfv4cinY40LKzzK/Yzm1HDYN5nMvZdnA=; b=Iwtaj1ej5ZXhMy6nmNfwp2qPii
+ zpL5w4YVPCncQNri3IU2pj8KglZSr589sMFwmXTBhji0QQPBC5pNzO/eqtueML3Q9bfGJCe6SEiYb
+ /KQN7g7qmvOU/mRfUq3yVKyG5miBlVsTOkjWcuHm3oPQmskO0zmjAVjYNe7mdDaCXOr4=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -42,42 +42,47 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=OB1wJIkO3dO6uhO/DiOC9lTI+DvWuIBap7OwdXV6sls=; b=Z6AbPy8iXtNmNF5aIEyVSmCWpx
- yVLGC7taDX/mDDOKeR19AWkHC+bpyFzWQcXAULCKpd8tTKojru7zqB66V/FsEskiUjVYrL/0MLMc5
- fl8IVCOQxv5bj28QR9dbyHHzp4K7cCyltIfC1J0TLPriWuhwkmwX8YCJ15MVX9M9H3E0=;
+ bh=j4K0CryDDnvcfv4cinY40LKzzK/Yzm1HDYN5nMvZdnA=; b=B5W/Xr433YQK+UdKEHA4CFmmmm
+ VdtkGGsKlchaPJYl4BtWesgVmO4nTfJVT42qwy4Kjzk8SwetHNZT3Fn5ZvKoEcc4yBvOqATQs29Oe
+ Pg7Kmvc6+OyKlx3QTtuo+H0GnDH3N3LLJN72ybJAAnFU4pqbWBTC3JSjYeaZZ/TZAkIA=;
 Received: from mout-p-202.mailbox.org ([80.241.56.172])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wogJ9-0003Bo-Lg for openvpn-devel@lists.sourceforge.net;
- Tue, 28 Jul 2026 11:49:12 +0000
-Received: from smtp1.mailbox.org (unknown [10.196.197.1])
+ id 1wogJ7-0002v1-Jj for openvpn-devel@lists.sourceforge.net;
+ Tue, 28 Jul 2026 11:49:14 +0000
+Received: from smtp1.mailbox.org (smtp1.mailbox.org
+ [IPv6:2001:67c:2050:b231:465::1])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
  (No client certificate requested)
- by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4h8Ydr1ry5zMlHV;
- Tue, 28 Jul 2026 13:49:04 +0200 (CEST)
+ by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4h8Yds6wRwzMlK5;
+ Tue, 28 Jul 2026 13:49:05 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=unstable.cc; s=MBO0001;
- t=1785239344;
+ t=1785239345;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=OB1wJIkO3dO6uhO/DiOC9lTI+DvWuIBap7OwdXV6sls=;
- b=zOfUB+psEc+MJbKKKU8ikmPhfeug5oDd1yxrlZYp92x/+Ij9hEsa5iui6VWQhT9K+M6s5X
- sRwq3hgqPv+0mVvJ/ujGWP/+SfHENRzFquzvD2Y/CHML8KR2ZTak55iUjENWwsLdYM+zEF
- 4EffhKKa4KZ9UA3BIZTtfHg36VRwhQdC6tAOUz1hB7AutOrmSxz6SIY8pn9d6AgSCL4aLQ
- lAhgoX8ty2Lv2crOoFzMvuWGs0pv7KIMJFJo/c5oMoHzjydXKr5xTQ9oTmwznIR3M5KjzF
- 1M9hDw/+F4lBoU/RzdsFuC//Qf0DyvBMFAmYUeqmW77OQqE2VHFyp9WMBID+WQ==
+ bh=j4K0CryDDnvcfv4cinY40LKzzK/Yzm1HDYN5nMvZdnA=;
+ b=C+d8hzx2amUKvJC+3mCNuzpbl81zptRIlteIlerx011raepKGqYsPsZJhaoHymh15aeXRv
+ KywapRm4PVW/LHiEqU3ompG9qQkxIEAxn9zEgK8b0KCgvjJLXKWNQwEGyo0+lBRp5GkS1N
+ YQKYu5J7RsaN6HMk6AlKLfi0sYS6ywL0JMMYI34wJwbYoVrkZ9GW8nkdsF3aq3VzrcNvlX
+ xKGTOJfOVjM0nzzK0GU2Q8F6aatqHMHBUTAIRusT2j5+9Lp2W/6XrpVVG1MpSmliupkJ1E
+ 8FFAOKCWvJhZ/Y9O4jY3PdeJLLpgpVLxBv4d1fLuZn6b9r2S7DzQYmeW1qBy6Q==
+Authentication-Results: outgoing_mbo_mout; dkim=none;
+ spf=pass (outgoing_mbo_mout: domain of a@unstable.cc designates
+ 2001:67c:2050:b231:465::1 as permitted sender) smtp.mailfrom=a@unstable.cc
 From: Antonio Quartulli <a@unstable.cc>
 To: openvpn-devel@lists.sourceforge.net
-Date: Tue, 28 Jul 2026 13:48:51 +0200
-Message-ID: <20260728114855.1323861-6-a@unstable.cc>
+Date: Tue, 28 Jul 2026 13:48:54 +0200
+Message-ID: <20260728114855.1323861-9-a@unstable.cc>
 In-Reply-To: <20260728114855.1323861-1-a@unstable.cc>
 References: <20260728114855.1323861-1-a@unstable.cc>
 MIME-Version: 1.0
-X-Headers-End: 1wogJ9-0003Bo-Lg
-Subject: [Openvpn-devel] [PATCH ovpn net v4 5/9] ovpn: zero-initialize
- sockaddr before learning a floated endpoint
+X-Rspamd-Queue-Id: 4h8Yds6wRwzMlK5
+X-Headers-End: 1wogJ7-0002v1-Jj
+Subject: [Openvpn-devel] [PATCH ovpn net v4 8/9] ovpn: ensure TCP vars are
+ initialized first
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -96,84 +101,48 @@ Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
 From: Antonio Quartulli <antonio@openvpn.net>
 
-ovpn_peer_endpoints_update() builds the new remote endpoint in an
-on-stack struct sockaddr_storage that is left uninitialized. For IPv4
-only sin_family/sin_addr/sin_port are written, leaving the 8-byte
-sin_zero padding as stack garbage (for IPv6, sin6_flowinfo is left
-uninitialized likewise).
+Netlink calls may access TCP global vars (i.e. when attaching
+a TCP socket), therefore we need to make sure the
+latters are initialized beforehand.
 
-ovpn_peer_reset_sockaddr() -> ovpn_bind_from_sockaddr() then memcpy()s
-sizeof(struct sockaddr_in)/sizeof(struct sockaddr_in6) bytes - padding
-included - into bind->remote. That buffer is later hashed with jhash()
-over the same length to place the peer in the by_transp_addr table, so
-the garbage padding lands the floated peer in an essentially random
-bucket. Lockless lookups in ovpn_peer_get_by_transp_addr() build their
-key from a zero-initialized sockaddr_storage, compute a different bucket
-and fail to find the peer.
+For this reason move the global TCP initialization at the top
+of the module init function.
 
-This is also a plain use of uninitialized stack memory in jhash().
-
-Build the floated endpoint with a designated initializer so the
-padding (sin_zero for IPv4, sin6_flowinfo for IPv6) is zeroed as part
-of the assignment. This keeps the padding out of the by_transp_addr
-hash key without memset-ing the whole sockaddr_storage on every
-received packet.
-
-Fixes: f0281c1d3732 ("ovpn: add support for updating local or remote UDP endpoint")
+Fixes: 11851cbd60ea ("ovpn: implement TCP transport")
 Signed-off-by: Antonio Quartulli <antonio@openvpn.net>
 ---
- drivers/net/ovpn/peer.c | 31 +++++++++++++++++++++++--------
- 1 file changed, 23 insertions(+), 8 deletions(-)
+ drivers/net/ovpn/main.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ovpn/peer.c b/drivers/net/ovpn/peer.c
-index 3554da01e406..00971bbd3dcf 100644
---- a/drivers/net/ovpn/peer.c
-+++ b/drivers/net/ovpn/peer.c
-@@ -244,9 +244,16 @@ void ovpn_peer_endpoints_update(struct ovpn_peer *peer, struct sk_buff *skb)
- 			 */
- 			local_ip = &ip_hdr(skb)->daddr;
- 			sa = (struct sockaddr_in *)&ss;
--			sa->sin_family = AF_INET;
--			sa->sin_addr.s_addr = ip_hdr(skb)->saddr;
--			sa->sin_port = udp_hdr(skb)->source;
-+			/* use a designated initializer so the sin_zero padding
-+			 * is zeroed (it ends up in the by_transp_addr hash key)
-+			 * without memset-ing the whole sockaddr_storage on the
-+			 * RX fast path
-+			 */
-+			*sa = (struct sockaddr_in) {
-+				.sin_family = AF_INET,
-+				.sin_addr.s_addr = ip_hdr(skb)->saddr,
-+				.sin_port = udp_hdr(skb)->source,
-+			};
- 			salen = sizeof(*sa);
- 			reset_cache = true;
- 			break;
-@@ -272,11 +279,19 @@ void ovpn_peer_endpoints_update(struct ovpn_peer *peer, struct sk_buff *skb)
- 			 */
- 			local_ip = &ipv6_hdr(skb)->daddr;
- 			sa6 = (struct sockaddr_in6 *)&ss;
--			sa6->sin6_family = AF_INET6;
--			sa6->sin6_addr = ipv6_hdr(skb)->saddr;
--			sa6->sin6_port = udp_hdr(skb)->source;
--			sa6->sin6_scope_id = ipv6_iface_scope_id(&ipv6_hdr(skb)->saddr,
--								 skb->skb_iif);
-+			/* use a designated initializer so the sin6_flowinfo
-+			 * padding is zeroed (it ends up in the by_transp_addr
-+			 * hash key) without memset-ing the whole
-+			 * sockaddr_storage on the RX fast path
-+			 */
-+			*sa6 = (struct sockaddr_in6) {
-+				.sin6_family = AF_INET6,
-+				.sin6_addr = ipv6_hdr(skb)->saddr,
-+				.sin6_port = udp_hdr(skb)->source,
-+				.sin6_scope_id =
-+					ipv6_iface_scope_id(&ipv6_hdr(skb)->saddr,
-+							    skb->skb_iif),
-+			};
- 			salen = sizeof(*sa6);
- 			reset_cache = true;
- 			break;
+diff --git a/drivers/net/ovpn/main.c b/drivers/net/ovpn/main.c
+index c4e775250727..f8ae64612951 100644
+--- a/drivers/net/ovpn/main.c
++++ b/drivers/net/ovpn/main.c
+@@ -253,8 +253,14 @@ static struct rtnl_link_ops ovpn_link_ops = {
+ 
+ static int __init ovpn_init(void)
+ {
+-	int err = rtnl_link_register(&ovpn_link_ops);
++	int err;
+ 
++	/* init TCP first so that any subsequent netlink operation
++	 * is ensured to access initialized TCP global vars
++	 */
++	ovpn_tcp_init();
++
++	err = rtnl_link_register(&ovpn_link_ops);
+ 	if (err) {
+ 		pr_err("ovpn: can't register rtnl link ops: %d\n", err);
+ 		return err;
+@@ -266,8 +272,6 @@ static int __init ovpn_init(void)
+ 		goto unreg_rtnl;
+ 	}
+ 
+-	ovpn_tcp_init();
+-
+ 	return 0;
+ 
+ unreg_rtnl:
 -- 
 2.54.0
 
