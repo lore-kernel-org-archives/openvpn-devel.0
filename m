@@ -4,126 +4,127 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 64502C54F54
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 11B2AC54F4C
 	for <openvpn-devel@archiver.kernel.org>; Tue, 28 Jul 2026 15:04:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:Date:Sender:To:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=VLG4RdkRlVmuHhyhOCe5zMjXGmiJ1ERoZQ4or6pRZis=; b=jF0UMw1jIu4tuMP/NLd821qDPR
-	mZ+O8LOZjVOvqFYrsAI0O4gKGIihPJNzW8L/Gv2wCe13Ci3ufs/pFpeTpRrUEDG5N8oU+Z/mXaZSA
-	IgJBEgNhHeVZqe5u4GOsPcs8oAx1/oaIklNVhrH4ELpN2hjKiijUen8RQZ72Htanx9Rg=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=QGoNeZjB/fR1j8zJ4NCOe94zd2KdAl08B/5C104VSq4=; b=QapIGGp8XFa2uRgaABKyxkgzr5
+	7AmP/wUkU4E7GkvGiXBPYy0LifekgmrrNzhM2QYxoSP0ryI1+jZe1lgVoe5MpJJKa10HKrvp6OO5w
+	6V4BCo5tDl4hZ/cj5dPoJte34xsVYc+c+zTmSFywOxYViqO+U6Uaw/6BbI4pwkTwY3DI=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wojMO-00022Y-0D;
+	id 1wojMO-0001oU-5V;
 	Tue, 28 Jul 2026 15:04:48 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wojM5-0001yK-FQ
+ (envelope-from <gerrit@openvpn.net>) id 1wojM5-0001lp-H2
  for openvpn-devel@lists.sourceforge.net;
  Tue, 28 Jul 2026 15:04:30 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
+ Cc:Date:From:Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
  :List-Post:List-Owner:List-Archive;
- bh=rURDohhSrGzELyeUfTdnBZch6GG7OXH/bJnt3BBhigA=; b=I+cB+eclXK2LZz7g88Sii0zjrA
- m/ONef8e42QgnI5fqsvF3lk67ciEY5DBVMH81X4qt8HzJjXY/5xO7plQwm1FCvIB1Hd4Y96kHU+eL
- EfWia1+jkSaUPUFwCptSBKUgHjXV1CMsCjJ06WHx5l9UA2ARSMz+e2uRADG2i2WMMaKs=;
+ bh=lR0XyJCAWbzLpcEwEC4Af1blbakUEeu7b6EMbd0Eagw=; b=QVN1AV83wxElrf1cMWLGYNLZNM
+ UrKgoMNNK30YBrFdM1on8jWTSrDa+Ik5gGmhWfKMpaiFq1osVr8IztAxGOUpLQUg2mNSnAwMJ51hc
+ KfmxJFyvfyOpusQucSdySLYMpwS5Y7JvO4iM0wFMju2HiLDG4iv0pj27A77wGEVTyKGk=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
- Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:Date:From:Sender:
+ To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=rURDohhSrGzELyeUfTdnBZch6GG7OXH/bJnt3BBhigA=; b=f
- SzKyUWI2Qpoyua6LyoyOlPQAgF+jrJFw2XGrIBTkzM8dToSda7fCAHFFBHUuFAWIVWDhFvl5srt2t
- UBlc4IsupvgG2Wgk/qUT0DatqPgdGG8Brl6JUT3whx0P0vc4qqgJiipGq++w7GDixuv7CzAoXSHiy
- zeeSAWCb5DumJDU4=;
-Received: from mail-wm1-f41.google.com ([209.85.128.41])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ List-Owner:List-Archive; bh=lR0XyJCAWbzLpcEwEC4Af1blbakUEeu7b6EMbd0Eagw=; b=J
+ bnaKhkAQAcWmiHXWhBhbonHWA3Qolr9TBXWlK4M6gNAAZ4Jjn84FXBkCOD2A8QG+wxWh7JFVaS2mV
+ xlI+Iqgl6JGj9iOuw2KijGd1k2z2uMtrfbbk3KNDSJF41D315Vxdq9yh4hX8REI5rP0ekUCx9SNbl
+ yz7q7yoK1bVz3/Uk=;
+Received: from mail-wr1-f41.google.com ([209.85.221.41])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wojLr-0000Rp-MH for openvpn-devel@lists.sourceforge.net;
- Tue, 28 Jul 2026 15:04:16 +0000
-Received: by mail-wm1-f41.google.com with SMTP id
- 5b1f17b1804b1-4954d383e64so24406135e9.1
+ id 1wojLw-0000QH-IM for openvpn-devel@lists.sourceforge.net;
+ Tue, 28 Jul 2026 15:04:21 +0000
+Received: by mail-wr1-f41.google.com with SMTP id
+ ffacd0b85a97d-47c2b362ee2so3318635f8f.1
  for <openvpn-devel@lists.sourceforge.net>;
- Tue, 28 Jul 2026 08:04:12 -0700 (PDT)
+ Tue, 28 Jul 2026 08:04:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1785251046; x=1785855846; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1785251054; x=1785855854; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
+ :auto-submitted:cc:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=rURDohhSrGzELyeUfTdnBZch6GG7OXH/bJnt3BBhigA=;
- b=G6dpkkvYNzk8BBLTokzpcH+T59RBm0SmeZEiK+ZgqvudFs7Xs0BCxD6rYeRr2j9noO
- oZRQIcUQgjbPMThjlN7jsxqJjBVh5nA89f1caRj/i2kOQolSr0pWx8W0n0zjRSuqFHFc
- UWKcOg2GIWxixEJ4VCUogf5WacuQlVNMhMtnoiMlYqUSnKC75I5yiiGlglecIp5neHk0
- J6DLe9NpgYXXrqqyXFNmrQb4bc/y05ZJzJu04C+R1DbVnqv+3IqulC9sTmrfpWfNuxz1
- IgY8Et430mrMYQL5s7tX+VVMatiCHchChHSO2H6BhlVSJxJa+XZ30LIOesomdLEl7Xl1
- JJ+Q==
+ bh=lR0XyJCAWbzLpcEwEC4Af1blbakUEeu7b6EMbd0Eagw=;
+ b=ewqC/nKSRKdMhzSrByXflCpuzLde+OaI8rw9NDyTG2cl7OsTrDiZ2J9NoMucm7N/aQ
+ 7wrsQlEujMaNTm+VOlfPJUi6qBCI48hU7BidIWaJhZ+pQ4A2qxBmjUsU7mszcjKokolC
+ 4xASNpT7ff0riotFb0B45/BkzVt8WRmJAfsKxTGhyh3m3+SPY47RnemIJWJ4wCQ3jzm4
+ SchD89P0GTSnqg83i/Lug6LMoYilQrNW8VI6eu/bCGan2axRmqhYVEqFSPkFDpc/H86W
+ Tmg98OGLVvH4BVksHpEORjuW+CVN0adR2VaopKnzC2Gnctl3cDSH9Py75Gs0BKroslb9
+ J48Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1785251046; x=1785855846;
+ d=1e100.net; s=20251104; t=1785251054; x=1785855854;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
- :cc:subject:date:message-id:reply-to:content-type;
- bh=rURDohhSrGzELyeUfTdnBZch6GG7OXH/bJnt3BBhigA=;
- b=IQ2t52iHpiKGAOfNS0Oy0gRj5dFyvr0bYLpVjinS0oe649c2NWfbKfc9MXs6XPb2v6
- Bd6P8gonnCLbLleuplrNdax1NLJGIOZneyTdn5O0QUU2/QiXmk6ElDN+cT1/nPqH5xFp
- GILPEBXApkAoQUDaxzLteNyBKhEEn74leYFTcNn9OOHiEWrrGQ/zzQWkwT3WyRuA/Sw3
- WXFwGGHhBwscs9MBU7Jq4v0nawxjh3nRtP3ZJbDjeBxMVuW/bbWwafKUq8IxgahnbCgn
- AtEnt+aDT510Q9xJ4ao6munj8RFvPZoPGh2Bd97bkp6+euYlSVVLA7Ze7h+eidEVwPRk
- NztA==
-X-Gm-Message-State: AOJu0Yzzg1octOQykhN3XNEf/3u0rL/hubz1vHcbJugj5OoQaLxOPhlI
- /JWER6D8FBT2B5bh+j852o/jLLfTkU/nugfnybOV9XceYEzKYYxUUfrTVugVtatyORNtorCYGzv
- 02EXYzmJXmafdJIBtE1PDqEi02hYmPT3f+r2ri5lQMsz1cC9Ny/C2zvVFEF5uppfhZ95sdqszhl
- LB3mkuBw==
-X-Gm-Gg: AR+sD12fYwBfKOxVd4ww0cu8b0acROHMTlU5lSe4051rFqRL5mmyXuQnaX6HDnjiKVf
- lrsUPInDI4ff7fa3OOR8PlVQw5bmtA3MA+B3HnXTLKgSBtgYKvJWmtPRu4h1xm6jVhGvWLllynf
- 2485O3n71EROgLA2VZRn6sr78tMB+34Xd0wxVb/4kUqWgGYIBVNMuSUjxTtTdjXHiUp2ZV2Ttfz
- UvAvloLzB5QhAR+ERl/ToI2B5Y9oWntQUd7cq0ibnR+z2KB4fcV64k1CKF7J9YQrsLlvIGLIJIU
- Byodf3MaZepPoTZsLMrx8iF6sslm4MwWvQan8nCBbSRA4/O/8ugQJjldZ/eB/V8smsiV5uQ2Wve
- ZTKkL9U0H7iBzqLtv0H06dhGOzBBDO0UFUiG0n1sPeqwkv/p6atJKoJBDBkdLPUUVTjmM4Zh/l1
- JrpcfL66Mnr7glGdAqxoYedJAe7Y6Zw9/FUc0pixFTS6TbtBaP2d64Mkc0hEw2L8hcUWbtyvjoz
- BanlifrRT+yFHsimyBje1F1/WDP5yPGATJ0XbWBvhucaaoWWhDLJhV2UHftA5gBUDIo
-X-Received: by 2002:a05:600c:630d:b0:495:4572:21af with SMTP id
- 5b1f17b1804b1-496c65458e1mr36570975e9.9.1785251045405; 
- Tue, 28 Jul 2026 08:04:05 -0700 (PDT)
+ :auto-submitted:cc:date:from:x-gm-gg:x-gm-message-state:from:to:cc
+ :subject:date:message-id:reply-to:content-type;
+ bh=lR0XyJCAWbzLpcEwEC4Af1blbakUEeu7b6EMbd0Eagw=;
+ b=GFEczzOroOuxZE6FwHL+0qao/bvH7F9xe/MkITyGZQU6TI0Sxvi28+mXFz9Q0ZL8jn
+ aikXLXLCQRVXTPjex+BSIm8sU4rgFz7DV2pUtd/IgNEpQG/Spd2NUdITRTaXE2sKLouJ
+ vXQxKCZRaDUlNwuL+qgKxIzV/8Lr7awgmUJ7+YpHxuRi2dlnzQ4nIbTu0DBepU9fSxHk
+ aCP0+ureSJHOdlC3YDf7GZebI4KULGqFFpdFhyGl9ZqfGjzn8gCjwCHRM4MuIWjxgPVC
+ 6zDhn9d5wVTUBXDXCKS/sTQt6CqXr4hrI4NsstPHeMPOrdXxbcUd0suSLDDDZeCKRJtw
+ wOsw==
+X-Forwarded-Encrypted: i=1;
+ AHgh+RogBw9rCYNNFHRRhoBm/TFkkqFqiiW5eNpn7OYmzv6OCT3akzti3PfjLulBuyOgc8qnvG/OpFwuZCVurUbZ@lists.sourceforge.net
+X-Gm-Message-State: AOJu0YzoJch33mncayqhYEq6wxdnMbKbInFz9Ih5hdSIxy29sv4ELV5t
+ CohGX/eSrzLOxjdjCJlkpjkAEJu7OwZmI4kHBlA135zK5qn2ttcdy2htQowzy1kHHfmdSsBiaSG
+ JEmi5abUdlQUFyfirGTJtNJy0enssFXf2ldAZGLq19CiaGqa2QChMQtZK30o620DJvYXL
+X-Gm-Gg: AR+sD13L21DLOLYvmgbYxCiKyPsKF8HZwsyJ09fqWjFFqZEO8LnNo9Zv5x8AcBFM3xC
+ kGfElq0WlWEx5rmQdJ/SzMJV06psqhrEFpjyrr89S1LHw3zCdDIP5pFY5qMA+lBZz+NYaQSx0AQ
+ OaSsOph5P19NecC5VQ/zX3Vve0TpF4gvNARqQTJ2baNC7SUkPcDY5kJqSF1AkSAy6AlaCzLACb7
+ +gRFKB6KmBgRVHov7oDm8LD1KOvDinZC5b96TS2YPMism2HfKUH5KLbIUPShsP+1G14MuwlQape
+ cN1Ud8Tun/7jPBWefqLdEMY5DLA5e+j0eB5C0yQruo59wRWEZUCn4AhYPPmPw8/GihClKZQq06t
+ an58GN0FDpeeI5XcU+RM7KCQNqiNbgWVtMPQZvQOHvTdXYHnpWBh7iYxKHIBmFsIbEOlV0YnRun
+ BKbMzfUiTTYIrGSXwEI7qEsmvlQkZUM1MLL9eQLx4yKNPw29kR1tZIGDfGqG1PH44JFo4sRJ8ON
+ UyR7RBcMrRY03rCjzUp4pImNma6mNNBatjaGxVDoHe3zomX6WCGH5HqHec0MElw06ey
+X-Received: by 2002:a05:6000:2408:b0:47f:80e5:b98c with SMTP id
+ ffacd0b85a97d-47fb1f149c7mr3092794f8f.36.1785251053732; 
+ Tue, 28 Jul 2026 08:04:13 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-496c45ba4b0sm86974925e9.6.2026.07.28.08.04.04
+ ffacd0b85a97d-47f85c67339sm62206322f8f.31.2026.07.28.08.04.12
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 28 Jul 2026 08:04:04 -0700 (PDT)
+ Tue, 28 Jul 2026 08:04:13 -0700 (PDT)
 X-Google-Original-From: "stipa (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Tue, 28 Jul 2026 15:03:23 +0000
-To: plaisthos <arne-openvpn@rfc2549.org>
+Date: Tue, 28 Jul 2026 15:04:11 +0000
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: newpatchset
+X-Gerrit-MessageType: comment
 X-Gerrit-PatchSet: 9
-X-Gerrit-Change-Id: Icec4696ff263ab39ebab06e8d478395a5ddfaab9
-X-Gerrit-Change-Number: 1771
+X-Gerrit-Change-Id: I1c8d302ac57c5603d622a7be14be369437388268
+X-Gerrit-Change-Number: 1741
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1771?usp=email>
-X-Gerrit-Commit: 13f2ecd12d67d13d841ab9140da2f55a373e79d6
-In-Reply-To: <gerrit.1783320647000.Icec4696ff263ab39ebab06e8d478395a5ddfaab9@gerrit.openvpn.net>
-References: <gerrit.1783320647000.Icec4696ff263ab39ebab06e8d478395a5ddfaab9@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzgzMzIwNjQ3MDAwLkljZWM0Njk2ZmYyNjNhYjM5ZWJhYjA2ZThkNDc4Mzk1YTVkZGZhYWI5QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <51f65b3717e94e3ab6e4349655e3d6059dd0c768-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1741?usp=email>
+X-Gerrit-Commit: a86807f8ff487d67889bf8747327e6311aeba99f
+X-Gerrit-Comment-Date: Tue, 28 Jul 2026 15:04:11 +0000
+In-Reply-To: <gerrit.1782719911000.I1c8d302ac57c5603d622a7be14be369437388268@gerrit.openvpn.net>
+References: <gerrit.1782719911000.I1c8d302ac57c5603d622a7be14be369437388268@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzgyNzE5OTExMDAwLkkxYzhkMzAyYWM1N2M1NjAzZDYyMmE3YmUxNGJlMzY5NDM3Mzg4MjY4QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <c9cbf54fed4709bec4742be56b97b0e0a06f7d0c-EmailReviewComments-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wojLr-0000Rp-MH
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: oob: fall back
- quickly when a probe-started handshake is ignored
+X-Headers-End: 1wojLw-0000QH-IM
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: oob: Add control
+ message TLV encoding (P_CONTROL_OOB_V1)
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -138,381 +139,417 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 From: "stipa \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
 Reply-To: lstipakov@gmail.com, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net
+ openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com
 Cc: "stipa \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============8086827472528459292=="
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>,
+ plaisthos <arne-openvpn@rfc2549.org>
+Content-Type: multipart/mixed; boundary="===============5321430363707910013=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============8086827472528459292==
+--===============5321430363707910013==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="TF2YZQx5qFI="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="2RogCbXj+4o="; charset=UTF-8
 
---TF2YZQx5qFI=
+--2RogCbXj+4o=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: stipa=2E
+Attention is currently required from: flichtenheld, plaisthos=2E
 
-Hello plaisthos, 
+stipa has=
+ posted comments on this change by stipa=2E ( http://gerrit=2Eopenvpn=2Enet=
+/c/openvpn/+/1741?usp=3Demail )
 
-I'd like=
- you to reexamine a change=2E Please visit
-
-    http://gerrit=2Eopenvpn=2En=
-et/c/openvpn/+/1771?usp=3Demail
-
-to look at the new patch set (#9)=2E
-
-
-Cha=
-nge subject: oob: fall back quickly when a probe-started handshake is ignor=
-ed
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+Change subject: oob: Add control message T=
+LV encoding (P_CONTROL_OOB_V1)
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
-
-oob: fall =
-back quickly when a probe-started handshake is ignored
-
-If the server does =
-not accept the third packet of a handshake started from a
-probe reply, the =
-client previously stalled for the full handshake_window (~60s)
-before recov=
-ering=2E
-
-In a normal handshake, no answer could mean the server is down, s=
-o waiting is
-right=2E Here we know it is up, since it answered a probe a mo=
-ment ago -- so no
-answer means it did not accept the reply as a reset, and =
-waiting 60s is pointless=2E
-That happens when a load balancer sends the pro=
-be and the handshake to different
-instances, when NAT changes the source po=
-rt the cookie is bound to, or when the
-server restarted and rotated its ses=
-sion-id HMAC key=2E
-
-Give such a session a short first-response deadline
-(m=
-in(handshake_window, 5s)); once the server answers, tls_pre_decrypt()
-resto=
-res the full window so a slow-but-working handshake is not cut off=2E If no=
-
-response arrives, the session times out quickly and the normal handshake
-r=
-ecovery kicks in, so a rejected reply costs a few seconds instead of ~60=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E
 
 
-Change-Id: Icec4696ff263ab39ebab06e8d478395a5ddfaab9
-Signed-off-by: Lev S=
-tipakov <lev@openvpn=2Enet>
----
-M src/openvpn/ssl=2Ec
-M src/openvpn/ssl_com=
-mon=2Eh
-2 files changed, 29 insertions(+), 1 deletion(-)
+Patch Set 9:
+
+(9 comments)
+
+Patchset:
+
+PS8: 
+> The spe=
+c I wrote cover both out of band and also inband MTU check packets that hav=
+e the same format=2E [=E2=80=A6]
+I will move the code which touches both OO=
+B and future inband into control_msg=2Ec/h and leave only OOB-specific code=
+ in oob=2Ec/oob_client=2Ec
 
 
-  git pull ssh:/=
-/gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/71/1771/9
+File CMakeLists=2Etxt:
 
-diff --git a/=
-src/openvpn/ssl=2Ec b/src/openvpn/ssl=2Ec
-index ee8c5bf=2E=2Eba0a89e 100644=
+http://gerrit=2Eopenvp=
+n=2Enet/c/openvpn/+/1741/comment/c99a69f9_76cadbc8?usp=3Demail :
+PS8, Line =
+868:         )
+> Do we really need an extra unit test for this? Can we inst=
+ead just add this as extra compilation fil [=E2=80=A6]
+I would keep it sepa=
+rate=2E There are already 19 test drivers here, many for smaller modules, s=
+o per module seemed to be the pattern=2E Also test_pkt links the crypto bac=
+kends, tls_crypt and reliable, while oob_testdriver only needs a few files,=
+ so I would not link crypto stack to it=2E
 
---- a/src/openvpn/ssl=2Ec
-+++ b/src/openvpn/ssl=2Ec
-@@ -2516,6 +2516,11 @@=
 
-     return session_move_pre_start(session, ks, true);
- }
- 
-+/* Seconds to=
- wait for the server's first response to a probe-started handshake
-+ * befo=
-re giving up and falling back to a normal handshake=2E A couple of
-+ * cont=
-rol-channel retransmits; capped at handshake_window by the caller=2E */
-+#d=
-efine OOB_PROBE_START_FALLBACK_SECS 5
-+
- bool
- session_skip_to_pre_start_cl=
-ient(struct tls_session *session, const struct session_id *client_sid,
-    =
-                              const struct session_id *server_sid,
-@@ -2566=
-,6 +2571,12 @@
-         return false;
-     }
-     ks->state =3D S_PRE_START=
-;
-+
-+    /* Fail fast if the server ignores it: wait seconds, not handshake=
-_window=2E
-+     * tls_pre_decrypt() restores the full window once the serv=
-er answers=2E */
-+    ks->oob_probe_start =3D true;
-+    ks->must_negotiate=
- =3D
-+        now + min_int(session->opt->handshake_window, OOB_PROBE_START=
-_FALLBACK_SECS);
-     return true;
- }
- 
-@@ -2807,9 +2818,15 @@
-     /* Are =
-we timed out on receive? */
-     if (now >=3D ks->must_negotiate && ks->sta=
-te >=3D S_UNDEF && ks->state < S_ACTIVE)
-     {
-+        /* Report the wind=
-ow that actually applied: an unanswered probe-started
-+         * handshake=
- times out on the short fallback deadline, not
-+         * handshake_window=
-=2E */
-+        int window =3D ks->oob_probe_start
-+                       =
-  ? min_int(session->opt->handshake_window, OOB_PROBE_START_FALLBACK_SECS)
+File src/openvpn/oob=2Ec:
+
+htt=
+p://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741/comment/e5bb0109_e5122bc3?usp=
+=3Demail :
+PS8, Line 32:  * Consume @p value_len bytes of TLV value, of whi=
+ch @p consumed have already
+> What is @p? That is not used anywhere else=2E=
+
+We do use it together with param name in doxygen in other files (init=2Eh =
+for example), but somewhat inconsistently=2E Let me remove it and use only =
+@param and bare parameter names=2E
+
+
+http://gerrit=2Eopenvpn=2Enet/c/openvp=
+n/+/1741/comment/b28e0c8b_70ef40c7?usp=3Demail :
+PS8, Line 37:  * @param va=
+lue_len  the TLV's declared value length
+> declared as in the length in the=
+ header or declared as in the spec or as in expected=2E
+Will replace with "=
+the value length from the TLV header"
+
+
+http://gerrit=2Eopenvpn=2Enet/c/ope=
+nvpn/+/1741/comment/6c0b4a64_7b69b0a2?usp=3Demail :
+PS8, Line 38:  * @param=
+ consumed   number of value bytes already read from @p buf
+> We normally do=
+ this by buf_advance instead of this way=2E
+Yep, will call buf_advance() di=
+rectly=2E
+
+
+http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741/comment/b4561618=
+_b5c30c7a?usp=3Demail :
+PS8, Line 52: bool
+> Why just have a method that wr=
+aps buf_write_u16? That seems uncessary=2E
+agreed, will remove the wrapper =
+and call buf_write_u16 directly=2E
+
+
+http://gerrit=2Eopenvpn=2Enet/c/openvp=
+n/+/1741/comment/1537b583_56bd7781?usp=3Demail :
+PS8, Line 91:     *value_l=
+en =3D (uint16_t)len;
+> I feel instead of passing the same values with poin=
+ters again and again we should instead use proper [=E2=80=A6]
+Yep, will add=
+ struct oob_tlv_header struct=2E
+
+
+http://gerrit=2Eopenvpn=2Enet/c/openvpn/=
++/1741/comment/9db80515_ad07ed38?usp=3Demail :
+PS8, Line 168: }
+> The forma=
+tting of this method is not really great=2E
+yep agreed, will fix=2E
+
+
+File =
+src/openvpn/ssl_pkt=2Eh:
+
+http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741/co=
+mment/23c27391_45a5ff38?usp=3Demail :
+PS8, Line 70: #define P_CONTROL_OOB_V=
+1 12
+> That feels like a very hacky way of doing this and also will already=
+ create problem with the spec th [=E2=80=A6]
+The root cause is that P_LAST_=
+OPCODE has 2 different meanings:
+
+ - could this opcode appear on an establi=
+shed session
+ - highest opcode that exists
+
+At the moment the last opcode w=
+hich could appear on a session is 11 and 12/13 are
+OOB=2E When 14 (inband) =
+appears, this will indeed break=2E
+
+Let me change it in the following way:
 =
-+                         : session->opt->handshake_window;
-         msg(D_=
-TLS_ERRORS,
-             "TLS Error: TLS key negotiation failed to occur wi=
-thin %d seconds (check your network connectivity)",
--            session->o=
-pt->handshake_window);
-+            window);
-         goto error;
-     }
- 
+
+ - P_LAST_OPCODE will be the highest opcode that exists (in/outband)
+ - ne=
+w static inlines to gate session-valid opcodes:
+
+static inline bool
+opcode_=
+is_oob(int op)
+{
+    return op =3D=3D P_CONTROL_OOB_V1 || op =3D=3D P_CONTR=
+OL_OOB_WKC_V1;
+}
+
+/* true if op may occur on an established control-channel=
+ session */
+static inline bool
+opcode_valid_in_session(int op)
+{
+    return=
+ op >=3D P_FIRST_OPCODE && op <=3D P_LAST_OPCODE && !opcode_is_oob(op);
+}
+
 =
-@@ -3890,6 +3907,15 @@
-     /* Let our caller know we processed a control c=
-hannel packet */
-     ret =3D true;
- 
-+    /* First valid response to a pro=
-be-started handshake: the server accepted it,
-+     * so restore the normal=
- negotiation window (it was shortened to fail fast if
-+     * the probe rep=
-ly had been ignored)=2E */
-+    if (ks->oob_probe_start)
-+    {
-+        ks=
-->oob_probe_start =3D false;
-+        ks->must_negotiate =3D now + session-=
->opt->handshake_window;
-+    }
-+
-     /*
-      * Set our remote address and=
- remote session_id
-      */
-diff --git a/src/openvpn/ssl_common=2Eh b/src/o=
-penvpn/ssl_common=2Eh
-index 9c90242=2E=2Ed7696c0 100644
---- a/src/openvpn/s=
-sl_common=2Eh
-+++ b/src/openvpn/ssl_common=2Eh
-@@ -227,6 +227,8 @@
-     tim=
-e_t initial;                        /* when we created this session */
-    =
- time_t established;                    /* when our state went S_ACTIVE */
-=
-     time_t must_negotiate;                 /* key negotiation times out if=
- not finished before this time */
-+    bool oob_probe_start;               =
-   /* probe-started handshake: must_negotiate is a short
-+                 =
-                           * first-response deadline, not the full window *=
-/
-     time_t must_die;                       /* this object is destroyed a=
-t this time */
-     time_t peer_last_packet;               /* Last time we =
-received a packet in this control session */
- 
+What harm in answering OOB packets inside the session?
+
+No real harm today =
+- a probe on a live session is dropped anyway, but
+incidentally: OOB carrie=
+s no ACK fields, so the session path reads SERVER_PROBE's
+0x0100 as an ACK =
+count of 1 and then TLV bytes as a packet-id and session id,
+which mismatch=
+es=2E The payload is attacker-chosen and session ids are plaintext,
+so it c=
+an be crafted into a valid ACK array - forged ACKs stall a handshake or
+rek=
+ey=2E
+
+Answering in-session: yes, but as a follow-up=2E Today's behaviour i=
+s worse than
+rejected - the stateless path only runs when the address has n=
+o instance, so a
+connected peer's probe is dropped, not answered (rare in p=
+ractice: probe sockets
+are unbound, so reconnects arrive on a fresh port)=
+=2E It needs dispatch before
+reliable_ack_read(), a per-instance rate limit=
+ etc=2E I'd do it with
+CONTROL_DATA_V1=2E
+
+
 
 -- 
-To view, visit http://g=
-errit=2Eopenvpn=2Enet/c/openvpn/+/1771?usp=3Demail
-To unsubscribe, or for h=
-elp writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=
-=3Demail
+To view, visit http://gerr=
+it=2Eopenvpn=2Enet/c/openvpn/+/1741?usp=3Demail
+To unsubscribe, or for help=
+ writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3De=
+mail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: comment
 Gerrit-Project: openvpn
-Gerrit-Br=
-anch: master
-Gerrit-Change-Id: Icec4696ff263ab39ebab06e8d478395a5ddfaab9
-Ge=
-rrit-Change-Number: 1771
+Gerrit-Branch: ma=
+ster
+Gerrit-Change-Id: I1c8d302ac57c5603d622a7be14be369437388268
+Gerrit-Cha=
+nge-Number: 1741
 Gerrit-PatchSet: 9
-Gerrit-Owner: stipa <lstipakov@=
-gmail=2Ecom>
-Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit=
--CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
-Gerrit-Attenti=
-on: stipa <lstipakov@gmail=2Ecom>
+Gerrit-Owner: stipa <lstipakov@gmail=2E=
+com>
+Gerrit-Reviewer: flichtenheld <frank@lichtenheld=2Ecom>
+Gerrit-Reviewe=
+r: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn=
+-devel@lists=2Esourceforge=2Enet>
+Gerrit-Attention: plaisthos <arne-openvpn=
+@rfc2549=2Eorg>
+Gerrit-Attention: flichtenheld <frank@lichtenheld=2Ecom>
+Ge=
+rrit-Comment-Date: Tue, 28 Jul 2026 15:04:11 +0000
+Gerrit-HasComments: Yes
+=
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: plaisthos <arne-openvpn@rfc2549=
+=2Eorg>
 
---TF2YZQx5qFI=
+--2RogCbXj+4o=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: stipa=2E </p>
-<p>stipa <strong>uploaded patch set #9<=
-/strong> to this change=2E</p><p><a href=3D"http://gerrit=2Eopenvpn=2Enet/c=
-/openvpn/+/1771?usp=3Demail">View Change</a></p><pre class=3D"blocks" style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;">oob: fall bac=
-k quickly when a probe-started handshake is ignored<br><br>If the server do=
-es not accept the third packet of a handshake started from a<br>probe reply=
-, the client previously stalled for the full handshake_window (~60s)<br>bef=
-ore recovering=2E<br><br>In a normal handshake, no answer could mean the se=
-rver is down, so waiting is<br>right=2E Here we know it is up, since it ans=
-wered a probe a moment ago -- so no<br>answer means it did not accept the r=
-eply as a reset, and waiting 60s is pointless=2E<br>That happens when a loa=
-d balancer sends the probe and the handshake to different<br>instances, whe=
-n NAT changes the source port the cookie is bound to, or when the<br>server=
- restarted and rotated its session-id HMAC key=2E<br><br>Give such a sessio=
-n a short first-response deadline<br>(min(handshake_window, 5s)); once the =
-server answers, tls_pre_decrypt()<br>restores the full window so a slow-but=
--working handshake is not cut off=2E If no<br>response arrives, the session=
- times out quickly and the normal handshake<br>recovery kicks in, so a reje=
-cted reply costs a few seconds instead of ~60=2E<br><br>Change-Id: Icec4696=
-ff263ab39ebab06e8d478395a5ddfaab9<br>Signed-off-by: Lev Stipakov &lt;lev@op=
-envpn=2Enet&gt;<br>---<br>M src/openvpn/ssl=2Ec<br>M src/openvpn/ssl_common=
-=2Eh<br>2 files changed, 29 insertions(+), 1 deletion(-)<br><br></pre><pre =
-class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pr=
-e-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/7=
-1/1771/9</pre><pre style=3D"font-family: monospace,monospace; white-space: =
-pre-wrap;"><span>diff --git a/src/openvpn/ssl=2Ec b/src/openvpn/ssl=2Ec</sp=
-an><br><span>index ee8c5bf=2E=2Eba0a89e 100644</span><br><span>--- a/src/op=
-envpn/ssl=2Ec</span><br><span>+++ b/src/openvpn/ssl=2Ec</span><br><span>@@ =
--2516,6 +2516,11 @@</span><br><span>     return session_move_pre_start(sess=
-ion, ks, true);</span><br><span> }</span><br><span> </span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+/* Seconds to wait for the server&#39;s f=
-irst response to a probe-started handshake</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ * before giving up and falling back to a normal han=
-dshake=2E A couple of</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ * control-channel retransmits; capped at handshake_window by the caller=
-=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define OOB_P=
-ROBE_START_FALLBACK_SECS 5</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span> bool</span><br><span> session_skip_to_pre_start_cl=
-ient(struct tls_session *session, const struct session_id *client_sid,</spa=
-n><br><span>                                  const struct session_id *serv=
-er_sid,</span><br><span>@@ -2566,6 +2571,12 @@</span><br><span>         ret=
-urn false;</span><br><span>     }</span><br><span>     ks-&gt;state =3D S_P=
-RE_START;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    /* Fail fast if the serve=
-r ignores it: wait seconds, not handshake_window=2E</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+     * tls_pre_decrypt() restores the ful=
-l window once the server answers=2E */</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    ks-&gt;oob_probe_start =3D true;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    ks-&gt;must_negotiate =3D</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        now + min_int(session=
--&gt;opt-&gt;handshake_window, OOB_PROBE_START_FALLBACK_SECS);</span><br><s=
-pan>     return true;</span><br><span> }</span><br><span> </span><br><span>=
-@@ -2807,9 +2818,15 @@</span><br><span>     /* Are we timed out on receive?=
- */</span><br><span>     if (now &gt;=3D ks-&gt;must_negotiate &amp;&amp; k=
-s-&gt;state &gt;=3D S_UNDEF &amp;&amp; ks-&gt;state &lt; S_ACTIVE)</span><b=
-r><span>     {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   /* Report the window that actually applied: an unanswered probe-started<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+         * handshake=
- times out on the short fallback deadline, not</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+         * handshake_window=2E */</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        int window =3D ks-&gt;oob_=
-probe_start</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-                 ? min_int(session-&gt;opt-&gt;handshake_window, OOB_PROBE_=
-START_FALLBACK_SECS)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+                         : session-&gt;opt-&gt;handshake_window;</span><br=
-><span>         msg(D_TLS_ERRORS,</span><br><span>             &quot;TLS Er=
-ror: TLS key negotiation failed to occur within %d seconds (check your netw=
-ork connectivity)&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-            session-&gt;opt-&gt;handshake_window);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            window);</span><br><span>    =
-     goto error;</span><br><span>     }</span><br><span> </span><br><span>@=
-@ -3890,6 +3907,15 @@</span><br><span>     /* Let our caller know we proces=
-sed a control channel packet */</span><br><span>     ret =3D true;</span><b=
-r><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Fir=
-st valid response to a probe-started handshake: the server accepted it,</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+     * so restore the n=
-ormal negotiation window (it was shortened to fail fast if</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+     * the probe reply had been igno=
-red)=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (k=
-s-&gt;oob_probe_start)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ks-=
-&gt;oob_probe_start =3D false;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        ks-&gt;must_negotiate =3D now + session-&gt;opt-&gt;hand=
-shake_window;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>   =
-  /*</span><br><span>      * Set our remote address and remote session_id</=
-span><br><span>      */</span><br><span>diff --git a/src/openvpn/ssl_common=
-=2Eh b/src/openvpn/ssl_common=2Eh</span><br><span>index 9c90242=2E=2Ed7696c=
-0 100644</span><br><span>--- a/src/openvpn/ssl_common=2Eh</span><br><span>+=
-++ b/src/openvpn/ssl_common=2Eh</span><br><span>@@ -227,6 +227,8 @@</span><=
-br><span>     time_t initial;                        /* when we created thi=
-s session */</span><br><span>     time_t established;                    /*=
- when our state went S_ACTIVE */</span><br><span>     time_t must_negotiate=
-;                 /* key negotiation times out if not finished before this =
-time */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    bool oob=
-_probe_start;                  /* probe-started handshake: must_negotiate i=
-s a short</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-                                  * first-response deadline, not the full w=
-indow */</span><br><span>     time_t must_die;                       /* thi=
-s object is destroyed at this time */</span><br><span>     time_t peer_last=
-_packet;               /* Last time we received a packet in this control se=
-ssion */</span><br><span> </span><br><span></span><br></pre><p>To view, vis=
-it <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1771?usp=3Demail">c=
-hange 1771</a>=2E To unsubscribe, or for help writing mail filters, visit <=
-a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=
-=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div it=
-emscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><li=
-nk itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1771?=
-usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>=
+rently required from: flichtenheld, plaisthos=2E </p>
+<p><a href=3D"http://=
+gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741?usp=3Demail">View Change</a></p><p>=
+9 comments:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"mar=
+gin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style: none; padding=
+: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bott=
+om: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741?tab=3Dc=
+omments&amp;usp=3Demail">Patch Set #8:</a> </p><p><blockquote style=3D"bord=
+er-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">The spec I wrote=
+ cover both out of band and also inband MTU check packets that have the sam=
+e format=2E [=E2=80=A6]</blockquote></p><p class=3D"blocks" style=3D"white-=
+space: pre-wrap; word-wrap: break-word;">I will move the code which touches=
+ both OOB and future inband into control_msg=2Ec/h and leave only OOB-speci=
+fic code in oob=2Ec/oob_client=2Ec</p></li></ul></li><li style=3D"margin: 0=
+; padding: 0;"><p>File CMakeLists=2Etxt:</p><ul style=3D"list-style: none; =
+padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"marg=
+in-bottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741/=
+comment/c99a69f9_76cadbc8?usp=3Demail">Patch Set #8, Line 868:</a> <code st=
+yle=3D"font-family:monospace,monospace">        )</code></p><p><blockquote =
+style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Do =
+we really need an extra unit test for this? Can we instead just add this as=
+ extra compilation fil [=E2=80=A6]</blockquote></p><p class=3D"blocks" styl=
+e=3D"white-space: pre-wrap; word-wrap: break-word;">I would keep it separat=
+e=2E There are already 19 test drivers here, many for smaller modules, so p=
+er module seemed to be the pattern=2E Also test_pkt links the crypto backen=
+ds, tls_crypt and reliable, while oob_testdriver only needs a few files, so=
+ I would not link crypto stack to it=2E</p></li></ul></li><li style=3D"marg=
+in: 0; padding: 0;"><p>File src/openvpn/oob=2Ec:</p><ul style=3D"list-style=
+: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
+=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn=
+/+/1741/comment/e5bb0109_e5122bc3?usp=3Demail">Patch Set #8, Line 32:</a> <=
+code style=3D"font-family:monospace,monospace"> * Consume @p value_len byte=
+s of TLV value, of which @p consumed have already</code></p><p><blockquote =
+style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Wha=
+t is @p? That is not used anywhere else=2E</blockquote></p><p class=3D"bloc=
+ks" style=3D"white-space: pre-wrap; word-wrap: break-word;">We do use it to=
+gether with param name in doxygen in other files (init=2Eh for example), bu=
+t somewhat inconsistently=2E Let me remove it and use only @param and bare =
+parameter names=2E</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
+ style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/o=
+penvpn/+/1741/comment/b28e0c8b_70ef40c7?usp=3Demail">Patch Set #8, Line 37:=
+</a> <code style=3D"font-family:monospace,monospace"> * @param value_len  t=
+he TLV&#39;s declared value length</code></p><p><blockquote style=3D"border=
+-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">declared as in the=
+ length in the header or declared as in the spec or as in expected=2E</bloc=
+kquote></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: b=
+reak-word;">Will replace with &quot;the value length from the TLV header&qu=
+ot;</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margi=
+n-bottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741/c=
+omment/6c0b4a64_7b69b0a2?usp=3Demail">Patch Set #8, Line 38:</a> <code styl=
+e=3D"font-family:monospace,monospace"> * @param consumed   number of value =
+bytes already read from @p buf</code></p><p><blockquote style=3D"border-lef=
+t: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">We normally do this by=
+ buf_advance instead of this way=2E</blockquote></p><p class=3D"blocks" sty=
+le=3D"white-space: pre-wrap; word-wrap: break-word;">Yep, will call buf_adv=
+ance() directly=2E</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
+ style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/o=
+penvpn/+/1741/comment/b4561618_b5c30c7a?usp=3Demail">Patch Set #8, Line 52:=
+</a> <code style=3D"font-family:monospace,monospace">bool</code></p><p><blo=
+ckquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10=
+px;">Why just have a method that wraps buf_write_u16? That seems uncessary=
+=2E</blockquote></p><p class=3D"blocks" style=3D"white-space: pre-wrap; wor=
+d-wrap: break-word;">agreed, will remove the wrapper and call buf_write_u16=
+ directly=2E</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
+=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn=
+/+/1741/comment/1537b583_56bd7781?usp=3Demail">Patch Set #8, Line 91:</a> <=
+code style=3D"font-family:monospace,monospace">    *value_len =3D (uint16_t=
+)len;</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin=
+: 10px 0; padding: 0 10px;">I feel instead of passing the same values with =
+pointers again and again we should instead use proper [=E2=80=A6]</blockquo=
+te></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break=
+-word;">Yep, will add struct oob_tlv_header struct=2E</p></li><li style=3D"=
+margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=
+=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741/comment/9db80515_ad07ed3=
+8?usp=3Demail">Patch Set #8, Line 168:</a> <code style=3D"font-family:monos=
+pace,monospace">}</code></p><p><blockquote style=3D"border-left: 1px solid =
+#aaa; margin: 10px 0; padding: 0 10px;">The formatting of this method is no=
+t really great=2E</blockquote></p><p class=3D"blocks" style=3D"white-space:=
+ pre-wrap; word-wrap: break-word;">yep agreed, will fix=2E</p></li></ul></l=
+i><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl_pkt=2Eh:</p>=
+<ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding=
+: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=2E=
+openvpn=2Enet/c/openvpn/+/1741/comment/23c27391_45a5ff38?usp=3Demail">Patch=
+ Set #8, Line 70:</a> <code style=3D"font-family:monospace,monospace">#defi=
+ne P_CONTROL_OOB_V1 12</code></p><p><blockquote style=3D"border-left: 1px s=
+olid #aaa; margin: 10px 0; padding: 0 10px;">That feels like a very hacky w=
+ay of doing this and also will already create problem with the spec th [=E2=
+=80=A6]</blockquote></p><p class=3D"blocks" style=3D"white-space: pre-wrap;=
+ word-wrap: break-word;">The root cause is that P_LAST_OPCODE has 2 differe=
+nt meanings:</p><pre class=3D"blocks" style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;"> - could this opcode appear on an established=
+ session<br> - highest opcode that exists</pre><p class=3D"blocks" style=3D=
+"white-space: pre-wrap; word-wrap: break-word;">At the moment the last opco=
+de which could appear on a session is 11 and 12/13 are<br>OOB=2E When 14 (i=
+nband) appears, this will indeed break=2E</p><p class=3D"blocks" style=3D"w=
+hite-space: pre-wrap; word-wrap: break-word;">Let me change it in the follo=
+wing way:</p><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;"> - P_LAST_OPCODE will be the highest opcode that=
+ exists (in/outband)<br> - new static inlines to gate session-valid opcodes=
+:</pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; whi=
+te-space: pre-wrap;">static inline bool<br>opcode_is_oob(int op)<br>{<br>  =
+  return op =3D=3D P_CONTROL_OOB_V1 || op =3D=3D P_CONTROL_OOB_WKC_V1;<br>}=
+</pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; whit=
+e-space: pre-wrap;">/* true if op may occur on an established control-chann=
+el session */<br>static inline bool<br>opcode_valid_in_session(int op)<br>{=
+<br>    return op &gt;=3D P_FIRST_OPCODE &amp;&amp; op &lt;=3D P_LAST_OPCOD=
+E &amp;&amp; !opcode_is_oob(op);<br>}</pre><p class=3D"blocks" style=3D"whi=
+te-space: pre-wrap; word-wrap: break-word;">What harm in answering OOB pack=
+ets inside the session?</p><p class=3D"blocks" style=3D"white-space: pre-wr=
+ap; word-wrap: break-word;">No real harm today - a probe on a live session =
+is dropped anyway, but<br>incidentally: OOB carries no ACK fields, so the s=
+ession path reads SERVER_PROBE&#39;s<br>0x0100 as an ACK count of 1 and the=
+n TLV bytes as a packet-id and session id,<br>which mismatches=2E The paylo=
+ad is attacker-chosen and session ids are plaintext,<br>so it can be crafte=
+d into a valid ACK array - forged ACKs stall a handshake or<br>rekey=2E</p>=
+<p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;"=
+>Answering in-session: yes, but as a follow-up=2E Today&#39;s behaviour is =
+worse than<br>rejected - the stateless path only runs when the address has =
+no instance, so a<br>connected peer&#39;s probe is dropped, not answered (r=
+are in practice: probe sockets<br>are unbound, so reconnects arrive on a fr=
+esh port)=2E It needs dispatch before<br>reliable_ack_read(), a per-instanc=
+e rate limit etc=2E I&#39;d do it with<br>CONTROL_DATA_V1=2E</p></li></ul><=
+/li></ul><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openv=
+pn/+/1741?usp=3Demail">change 1741</a>=2E To unsubscribe, or for help writi=
+ng mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?us=
+p=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eor=
+g/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schem=
+a=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=
+=2Enet/c/openvpn/+/1741?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
+ew Change"/></div></div>
 
-
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-<div =
-style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"displa=
-y:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-C=
-hange-Id: Icec4696ff263ab39ebab06e8d478395a5ddfaab9 </div>
-<div style=3D"di=
-splay:none"> Gerrit-Change-Number: 1771 </div>
+<div style=3D"display:none"> Gerrit-MessageType: =
+comment </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+=
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"dis=
+play:none"> Gerrit-Change-Id: I1c8d302ac57c5603d622a7be14be369437388268 </d=
+iv>
+<div style=3D"display:none"> Gerrit-Change-Number: 1741 </div>
+<div sty=
+le=3D"display:none"> Gerrit-PatchSet: 9 </div>
 <div style=3D"display:none">=
- Gerrit-PatchSet: 9 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa=
- &lt;lstipakov@gmail=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-R=
-eviewer: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"=
-display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourcefor=
-ge=2Enet&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &l=
-t;lstipakov@gmail=2Ecom&gt; </div>
+ Gerrit-Owner: stipa &lt;lstipakov@gmail=2Ecom&gt; </div>
+<div style=3D"dis=
+play:none"> Gerrit-Reviewer: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-open=
+vpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvp=
+n-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div style=
+=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@rfc2549=2Eo=
+rg&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &=
+lt;frank@lichtenheld=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-C=
+omment-Date: Tue, 28 Jul 2026 15:04:11 +0000 </div>
+<div style=3D"display:n=
+one"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Ha=
+s-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: plais=
+thos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
 
 </body></html>
---TF2YZQx5qFI=--
+--2RogCbXj+4o=--
 
 
---===============8086827472528459292==
+--===============5321430363707910013==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============8086827472528459292==
+--===============5321430363707910013==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -523,5 +560,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============8086827472528459292==--
+--===============5321430363707910013==--
 
