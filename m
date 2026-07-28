@@ -4,26 +4,26 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8EC3CC54F54
-	for <openvpn-devel@archiver.kernel.org>; Tue, 28 Jul 2026 15:04:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 137AAC54F56
+	for <openvpn-devel@archiver.kernel.org>; Tue, 28 Jul 2026 15:04:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=bOagR0UvemweZJeMAdZ9cQ9t+eHdsqe8x8xA7VELzlY=; b=WGKOXDZ02SD0zL24omNbv14NbE
-	pkxTY3A4ZXea7XnnzTPLgWOD3A+ickyAJ3IArChnuR7g6eodvjdce7XqmP27yekxUE5A4d3p2ei/q
-	5Wr6QAyV/HSw+jhNvAzLPJD1bnlIujgKYjShfP4BELj8gRjQusqSX3+aDKHRgDZl2n3Y=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=umDnDevC1hOwd+5m3UUa2UpJqSRwq3ZXPFrpdJ/jp6o=; b=U1nWWN2ygBgC6nk59B29sL0z5k
+	qBj2krLH5D7GC5jc3mSlzGmOQs6N+iMB9RYgpPq6MWw0sFZbSX59fMXaO1yV5UzlXhi7TtW0vHBu8
+	Ylj2qYnkJLB79Ns0KStt9ZP5J24cvcgbSHnPjySghHx1FksEcOdRbugrtN03218qtDMw=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wojLf-0001va-ML;
-	Tue, 28 Jul 2026 15:04:04 +0000
+	id 1wojLg-0001kH-Mt;
+	Tue, 28 Jul 2026 15:04:05 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wojLe-0001vJ-CS
+ (envelope-from <gerrit@openvpn.net>) id 1wojLe-0001k3-T6
  for openvpn-devel@lists.sourceforge.net;
  Tue, 28 Jul 2026 15:04:03 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
@@ -32,76 +32,77 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
  :List-Post:List-Owner:List-Archive;
- bh=cZ0ho/KM5mYxMNbBf8KB8xU8i6XNyLjLjxB1lswj6c8=; b=MyGsfVxz8/GqQFXie8nel5sqbH
- iySIV6nZt9IEW+ugwRf/DpcHyHFwGXJBh2TJ1QQLPQcI1ZTjya5WnGVAv7ZUBrL/e4S73b9FFTr/3
- nzG3ldfjFRosnwMCaLhVIPktMAZ155koicI1aAWoaoTBB6aih2CDO+JyTw+4Kep/5eqQ=;
+ bh=vXGMoLy5m4vJS6ABa0sZhE7Q3eckpTgVoxFm8oizYjg=; b=KwMyYOt+RpR/QsszH1ujBUDNbA
+ i75vPW8uZOF+5d9LYALYaXrIQ74JnqohhpSRWZlTrWn36II8Ol0sptjxziBUd399tzY2TkqDSZN7M
+ j5DFMQKIjZAH7CzUN7niW7sXIEc3Swx/f7bHIkYcvX8oy8m/p7Es81sbV7GTWUbYsXaU=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
  Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=cZ0ho/KM5mYxMNbBf8KB8xU8i6XNyLjLjxB1lswj6c8=; b=B
- 9IuB86sHqxMzHaDjg7ZqbkTV+xMb2ZfYEFbP6SbxOhqrQwtWKZ+ln9jgekkBXoGmVFEMTCRxOYnYI
- ByYE6j8B3C/uFlQv+z8J1JJkAzVdvnxWvVU94jPddA11SQJaer2OnZi9ssYyjAFYUQpQtfMdif26t
- QQqZIuWPWci1/LZo=;
-Received: from mail-wm1-f45.google.com ([209.85.128.45])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ List-Owner:List-Archive; bh=vXGMoLy5m4vJS6ABa0sZhE7Q3eckpTgVoxFm8oizYjg=; b=m
+ LBxzi6sieAsMKQ3Gn7Bf3MjIsZKo9VCOnPMq3I+OPll6/Bjex/SBWVWZGMsIPSRmP5Vc9FOfH0H6m
+ LUv2nDAFV9yd7ZySGFdzgN3tCoukrGh+SoIYdyYLGg60cWnjra3tJjTrigjseA5AKOF7BzNhkKQQk
+ MsDERYCrZCh3oOAw=;
+Received: from mail-wm1-f44.google.com ([209.85.128.44])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wojLc-0000Od-Fa for openvpn-devel@lists.sourceforge.net;
+ id 1wojLh-0000R5-Ev for openvpn-devel@lists.sourceforge.net;
  Tue, 28 Jul 2026 15:04:03 +0000
-Received: by mail-wm1-f45.google.com with SMTP id
- 5b1f17b1804b1-49553515a8bso49181045e9.1
+Received: by mail-wm1-f44.google.com with SMTP id
+ 5b1f17b1804b1-493f6de72faso8349855e9.0
  for <openvpn-devel@lists.sourceforge.net>;
- Tue, 28 Jul 2026 08:04:00 -0700 (PDT)
+ Tue, 28 Jul 2026 08:04:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1785251034; x=1785855834; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1785251035; x=1785855835; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=cZ0ho/KM5mYxMNbBf8KB8xU8i6XNyLjLjxB1lswj6c8=;
- b=KtV6uB/ZsRHIt9Upzk85iLQfB4Yc7yynMRglZTgs2ml7EmHCpRwKEjypPl500m7wEY
- q6H9v7w68RyC6AGOi2fVtwf7Dud+SySJmGe92JltE+D15WX1CDWWE99w6b9+i9EPjV9l
- z6S+QvimvF0J85T2R9Vk7P8v5gmoezMtAl7zajEjx4pBCgEM0i6LD6g/igh4XIXBY13C
- /yB7E3fjJgIIueVtJ44L0IXI6DyW8AFqngEabcdC7AcYuBeMYpGDvKjoT/XJHh7ti/kG
- i67QlGeB4qlBbyVVX2mAxojdEK20Y8WJgv1U2pv75yfaqqIngOU9bfJDwTIessD96Fes
- 6vnw==
+ bh=vXGMoLy5m4vJS6ABa0sZhE7Q3eckpTgVoxFm8oizYjg=;
+ b=Uekk1ir06Q5D5eJEGBaUaVelDekh8UgGKcmSMzwDCCsJ2Q8V+JNAAEm5Hj9530gUeB
+ D5NlHKDRbybR1W7xwcAn6G8nyVwv86Bxeeu/Jkp4Nm3XXaJLCqx3690HEjPKmso5qSma
+ h3M6aAYTH8CUybw1nQrMsM45OxwX6/aE4urqHD7Guf6v2Bq/tBLfXhq8eHJqZMtgyIDU
+ BuaGeAKHdLVrgp/D/5Gh4FobciqdA0KYFlbuVryf0OAnA36sXaiHo5BU+Gyy+cS6m8xa
+ 37O9S43qUqmI5Akp/NCj07NKnfm+jnG8J4RZsDCu5pGVT1HmfDVQWAGwkZF3ImEhbI6K
+ +2Fw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1785251034; x=1785855834;
+ d=1e100.net; s=20251104; t=1785251035; x=1785855835;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=cZ0ho/KM5mYxMNbBf8KB8xU8i6XNyLjLjxB1lswj6c8=;
- b=Z36eJDPZgYOMKtI+YpCMJBCA8V1SRpyrADZYqbxnbC/dW8ju5AloUWVXCFjrP7t9CQ
- iU5tQJmQwJkBll0pKZtRZckwT+fvOumaNfVjTcR5wI/mG9MSCCnefrRGtijAeniTEov3
- suLhzZjIIWGNvp2XBujQDus8HsYq3oOMo4FLmOrxF2ceXNkjEKdldYl8ABU7yXQ9eciK
- EUdPWdfypAQVwXfw/WPQZSofM9RDVChebD18H8hJBmEqwu/GYBxUO/1OGVqDkigPeS+O
- mnoLQRK+ADzP/vVICcYFxYd1aIo1A0YkkgskdDMp2JCcKZSaZ2pfQCQcd714m9p4u8Ij
- 2/hA==
-X-Gm-Message-State: AOJu0YwmiK1/lAirOYfXLspJ+ei5htcPVP0XAXeLgtW3GdQigy2WmR2l
- MiSanrBWsJUer17l79n7qv/8L0DJ0UkKxmrzfLWkDtuxMeTF4gi8S8H5Y7XrCt3QGnATOyxElSL
- pfMDHgt+dgT86dICIRRdNxkOW37/cmftuwjZtZ9IcL+hTlgdOOsU1PGKZ0QdJz/RWHGdz
-X-Gm-Gg: AR+sD10ferpcesi2Ji+qlVeCAt6QQSGJkf446g8tPr1mC67WPoDJWvVsIUHi62ORcSR
- LiH9+rHq0utWrilAjcRIrFZyJ3KYf1RnNLA03E+Q5CPB26TR80SIRwsTFc6PzV5RYr8MaMLwd1S
- /Zz4tRTEFv960mo78LIEkAcXqfrthDZRSdtnMuaJFuB3nfBTDorQMTf8iifkGTXnwVN74hZaD59
- 54oCKfMzVmQZNCnQY1/SMIOodf520ZUODOKM1ehymLd4/OhMdMv5VW4T0nOCX26u/H98+vHNwj8
- FYFf31P/rDCek1nW8BLq1IUhys8aSKI2XRqQ1y2lSOL305luKmIbl+31aYfVnbVGTRc7bkTK+v6
- +sZgiWdIs/ulbnsLWo/eaoVqvFedNrbStsNTQ+JR+K1pdWkO0e7F2LgJKb/NuwENG9Fpelj/fZe
- 5wEX4WsaAuh+Sn0bCtBdjkvrRR+h78FW1jynhd45dOlGfDxe9+ZgOEoujrU9eS/ZuxGq7/tonxL
- esYMlvFb2VzTk1kh3OMnS1aA/+Mxq26So2pop7Js8a4XLg/x2sPE7LQDLzy8253SiRH
-X-Received: by 2002:a05:600c:354a:b0:495:7293:4fe2 with SMTP id
- 5b1f17b1804b1-496c653c4fcmr33520875e9.17.1785251033577; 
- Tue, 28 Jul 2026 08:03:53 -0700 (PDT)
+ bh=vXGMoLy5m4vJS6ABa0sZhE7Q3eckpTgVoxFm8oizYjg=;
+ b=ZQN3ChGnjdbMwXV/dHlzIGWlpISspoPiX1gpdbtLHgtuX95ygMPPIY+u4+gRL7gi00
+ cbXnJxRi96nfrCjFgoGktsd86BiEql90H8goL2RLnFV3POKHYyXcZ4z6TKomxvJshSmq
+ MiucqkFgitzMiW1D0MJ5RGT1xV80tTZ4ElLBrNIDfr4B9qoVBKrXfgnY9MMAcX5FYjdF
+ 0TWzfweMD1BpQl4foFzHf+Tq2CqtpxVTO+cY08x2/VOrOGSWXfaOr2qBiWJyn0oITEwK
+ sbTPjoY2Y94usxjmhQgUtOr/nhy/Zvo7IAjcs3RnyTCkJYprCCvREe/YO1NtVJJoH6Tp
+ Y/eg==
+X-Gm-Message-State: AOJu0YytV4qsDVJa0uu16jtaFoVbERLbhn+aTPgUGK29PYMxOh181TtM
+ 54DLtoTaW68YpicpHjN78MovuFcg3pL1H0Z+I9pdKyQqOwrXpUU1hj2K9LLtETJSG2OaJdG6jE2
+ sDB8aGBnqfBYUvQBfixun0Gbj2RImkT7M/R7r9Td8QzpdVBnrpCKGJZ1z8dBUqeo0+CzB
+X-Gm-Gg: AR+sD106cVbe9/2f8WTHPveviPyC3fdT6GriKPannd8/UxDLP8GnOU8XHNTQ+C0tjli
+ vo+tBZOp/Pn3lb/JICkGEcMhsTAbAuAYFJe0vhOasbN6rB0LfOB4+4NBNArprEcV0szrKujwN5o
+ t73ppxlzupAYBF3mq7nH8cPt7ejIp+AhXyesm8jr1sH7xlmFTuOdlAiaJrQ7Pxt0uD4WddHAI14
+ UBZcDDEkQF3vOrG5bIKFy2VFGjsKq8JocfOyimeIMR0ZVuDEQDmcO8MUdyDnm4qs1ZUoHIiF5gD
+ +NTNmpErnCL/TSbRh5RGkNF/5bltS61JWCOtoEUYUz3AxzbL2+C0NR/CCR/6sTi0dmKP4TTFUNu
+ HHhK7FK38TVHzjzi9hZSgwWMO+xkutfAhPwaDGW3NscxcZpSB8pCFBG2ZRjHVXiYQ4GjWGlX8sO
+ Tf+6MC0KYWHp/KDLpcdJ7rhYzUoOyfqUqmEXfdJwepZyWnSa6CB5/nKeNq9/VGQBK6OtWnu297r
+ OiZfobeI1X/dqWW4e3BHu7f+bgZ00UTABC8+8n63bijrQf4J4OLEc105fR2uTrunn3pC4OoxzVp
+ 4Wo=
+X-Received: by 2002:a05:600c:5d1:b0:495:499e:ec37 with SMTP id
+ 5b1f17b1804b1-496c657cd58mr22632375e9.18.1785251035063; 
+ Tue, 28 Jul 2026 08:03:55 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-496c45b0535sm81429085e9.4.2026.07.28.08.03.52
+ ffacd0b85a97d-47f85c532d4sm58022972f8f.22.2026.07.28.08.03.54
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 28 Jul 2026 08:03:52 -0700 (PDT)
+ Tue, 28 Jul 2026 08:03:54 -0700 (PDT)
 X-Google-Original-From: "stipa (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
 Date: Tue, 28 Jul 2026 15:03:23 +0000
@@ -109,20 +110,20 @@ To: plaisthos <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newpatchset
 X-Gerrit-PatchSet: 13
-X-Gerrit-Change-Id: I00208610e0ce4f3ed9a87233e68ece1b3b8a768a
-X-Gerrit-Change-Number: 1751
+X-Gerrit-Change-Id: Id74cfae7e9d69029d2ddbf635ee85a2a6cedc3d8
+X-Gerrit-Change-Number: 1752
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1751?usp=email>
-X-Gerrit-Commit: db28918db4865dd66bb2c50c78f7af1fdd9eba77
-In-Reply-To: <gerrit.1782719911000.I00208610e0ce4f3ed9a87233e68ece1b3b8a768a@gerrit.openvpn.net>
-References: <gerrit.1782719911000.I00208610e0ce4f3ed9a87233e68ece1b3b8a768a@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzgyNzE5OTExMDAwLkkwMDIwODYxMGUwY2U0ZjNlZDlhODcyMzNlNjhlY2UxYjNiOGE3NjhhQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <4107f06f88c19440ed72798d1a487174149f3184-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1752?usp=email>
+X-Gerrit-Commit: f515e228b1a9bfa53245864b80730ea114490183
+In-Reply-To: <gerrit.1782719911000.Id74cfae7e9d69029d2ddbf635ee85a2a6cedc3d8@gerrit.openvpn.net>
+References: <gerrit.1782719911000.Id74cfae7e9d69029d2ddbf635ee85a2a6cedc3d8@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzgyNzE5OTExMDAwLklkNzRjZmFlN2U5ZDY5MDI5ZDJkZGJmNjM1ZWU4NWEyYTZjZWRjM2Q4QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <9e8ebb5a2e504606087e5a944c8b72bb24e9da08-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wojLc-0000Od-Fa
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: oob: Probe every
- resolved address of a remote
+X-Headers-End: 1wojLh-0000R5-Ev
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: oob: Add
+ --server-probe-reply to advertise probe reply values
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -140,15 +141,15 @@ Reply-To: lstipakov@gmail.com, arne-openvpn@rfc2549.org,
  openvpn-devel@lists.sourceforge.net
 Cc: "stipa \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============6394410257033159373=="
+Content-Type: multipart/mixed; boundary="===============6325851750954288607=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============6394410257033159373==
+--===============6325851750954288607==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="FbS+hW+VK5k="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="IVLMtIeiaXY="; charset=UTF-8
 
---FbS+hW+VK5k=
+--IVLMtIeiaXY=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
@@ -160,360 +161,360 @@ I'd =
 like you to reexamine a change=2E Please visit
 
     http://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1751?usp=3Demail
+=2Enet/c/openvpn/+/1752?usp=3Demail
 
 to look at the new patch set (#13)=2E
 =
 
 
-Change subject: oob: Probe every resolved address of a remote
-=2E=2E=2E=
+Change subject: oob: Add --server-probe-reply to advertise probe reply va=
+lues
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-oob: Probe every resol=
-ved address of a remote
+oob: Ad=
+d --server-probe-reply to advertise probe reply values
 
-A remote can resolve to several A/AAAA records; --=
-server-probe previously
-sent a SERVER_PROBE only to the first one, so a rem=
-ote whose first address
-was unreachable looked unresponsive even if another=
- address answered, and
-the connection could later try an address that was n=
-ever probed=2E
+Add a server option=
+, --server-probe-reply [max-latency-diff] [weight] [prio],
+each argument op=
+tional, setting the values the server returns in its OOB
+PROBE_REPLY=2E An =
+unconfigured server advertises weight 50 and priority 100=2E
+max-latency-di=
+ff is how much slower than the fastest server a server may be
+and still cou=
+nt as equally good; 0 means the client decides=2E All three are
+range-check=
+ed to 0=2E=2E65535=2E
 
-Probe every resolved address of each remote in parallel (pe=
-r-remote storage
-is sized to the resolved address count, no fixed cap), acc=
-ept a reply from
-any of them (first reply for a remote wins), and resend to=
- all of a remote's
-addresses while it is unanswered=2E
+The values are plumbed through oob_build_probe_reply=
+() into the probe_reply
+TLV; the client already reads and ranks remotes by =
+them=2E
 
-Change-Id: I0020861=
-0e0ce4f3ed9a87233e68ece1b3b8a768a
-Signed-off-by: Lev Stipakov <lev@openvpn=
-=2Enet>
+Change-Id: Id74cfae7e9d69029d2ddbf635ee85a2a6cedc3d8
+Signed-off-by=
+: Lev Stipakov <lev@openvpn=2Enet>
 ---
-M src/openvpn/oob_client=2Ec
-1 file changed, 92 insertions(+), =
-45 deletions(-)
+M Changes=2Erst
+M doc/man-sections/s=
+erver-options=2Erst
+M src/openvpn/mudp=2Ec
+M src/openvpn/options=2Ec
+M src/=
+openvpn/options=2Eh
+M tests/unit_tests/openvpn/test_oob=2Ec
+6 files changed=
+, 81 insertions(+), 9 deletions(-)
 
 
-  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn ref=
-s/changes/51/1751/13
+  git pull ssh://gerrit=2Eopenvpn=2Ene=
+t:29418/openvpn refs/changes/52/1752/13
 
-diff --git a/src/openvpn/oob_client=2Ec b/src/openvpn=
-/oob_client=2Ec
-index 5249672=2E=2E8c67da5 100644
---- a/src/openvpn/oob_cli=
-ent=2Ec
-+++ b/src/openvpn/oob_client=2Ec
-@@ -52,11 +52,15 @@
- #define OOB_P=
-ROBE_RETRIES 1
- 
- /* Where we sent a probe, so a reply's source address can=
- be matched back to the
-- * connection-list entry it belongs to=2E */
-+ * c=
-onnection-list entry it belongs to=2E A remote may resolve to several
-+ * a=
-ddresses, all of which are probed; a reply from any of them counts=2E The
+diff --git a/Changes=2Erst b/Chang=
+es=2Erst
+index 1f992b2=2E=2E080d928 100644
+--- a/Changes=2Erst
++++ b/Change=
+s=2Erst
+@@ -1,5 +1,13 @@
+ Overview of changes in 2=2E8
+ =3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
++New features
+=
++------------
++Out-of-band server probing and server-controlled selection
 +=
- * dests / destlens arrays are gc-allocated, sized to the remote's resolved=
-
-+ * address count=2E */
- struct probe_target
- {
--    struct sockaddr_stora=
-ge dest;
--    socklen_t destlen;
-+    struct sockaddr_storage *dests;
+    With ``--server-probe``, a client probes all configured UDP remotes
++  =
+  before connecting and reorders them based on the replies: reachable
 +    =
-socklen_t *destlens;
-+    int n_dests;
-     bool sent;
-     struct timeval =
-sent_at; /* when the probe was sent, for RTT measurement */
- };
-@@ -177,6 +=
-181,29 @@
-     }
- }
+servers are tried first, ordered by server-advertised priority,
++    measur=
+ed latency and advertised weight with DNS-SRV-like semantics=2E
++    Server=
+s advertise these values with ``--server-probe-reply``=2E
  
-+/* Send the probe to every resolved address of t, ea=
-ch on the socket matching
-+ * its address family=2E Returns true if at leas=
-t one send succeeded=2E */
-+static bool
-+oob_probe_send_target(const struct=
- probe_ctx *pc, const struct buffer *probe,
-+                      const st=
-ruct probe_target *t)
-+{
-+    bool any_sent =3D false;
-+    for (int k =3D =
-0; k < t->n_dests; k++)
+ 
+ Overview of =
+changes in 2=2E7
+diff --git a/doc/man-sections/server-options=2Erst b/doc/m=
+an-sections/server-options=2Erst
+index f420588=2E=2E1277cf7 100644
+--- a/do=
+c/man-sections/server-options=2Erst
++++ b/doc/man-sections/server-options=
+=2Erst
+@@ -662,6 +662,31 @@
+   Pushing of the ``--tun-ipv6`` directive is d=
+one for older clients which
+   require an explicit ``--tun-ipv6`` in their =
+configuration=2E
+ 
++--server-probe-reply args
++  Set the values a server ad=
+vertises in its replies to out-of-band
++  probes from clients using ``--ser=
+ver-probe``=2E
++
++  Valid syntaxes::
++
++     server-probe-reply max-latency=
+-diff
++     server-probe-reply max-latency-diff weight
++     server-probe-r=
+eply max-latency-diff weight priority
++
++  ``max-latency-diff`` is the cand=
+idate-band margin in milliseconds: a
++  probing client treats servers of th=
+e same priority whose round-trip
++  time is within this margin of the faste=
+st one as equally good=2E
++  :code:`0` (the default) lets the client use it=
+s own margin=2E
++
++  ``weight`` (default :code:`50`) and ``priority`` (defa=
+ult :code:`100`)
++  have DNS SRV (RFC 2782) semantics: clients try servers =
+with a lower
++  priority value first, and distribute load between equally-g=
+ood
++  servers of the same priority proportionally to their weights=2E
++
++ =
+ All values are in the range :code:`0` to :code:`65535`=2E A UDP server
++  =
+answers probes regardless of this option; replies are stateless,
++  replay-=
+protected and rate-limited=2E The option only controls the
++  advertised va=
+lues=2E
++
+ --stale-routes-check args
+   Remove routes which haven't had act=
+ivity for ``n`` seconds (i=2Ee=2E the ageing
+   time)=2E  This check is run=
+ every ``t`` seconds (i=2Ee=2E check interval)=2E
+diff --git a/src/openvpn/=
+mudp=2Ec b/src/openvpn/mudp=2Ec
+index 2209407=2E=2E3e50994 100644
+--- a/src=
+/openvpn/mudp=2Ec
++++ b/src/openvpn/mudp=2Ec
+@@ -238,7 +238,12 @@
+         =
+/* Out-of-band server probe=2E state->newbuf points at the TLV payload
+    =
+      * (read_control_auth has stripped the opcode, session id and any
+    =
+      * tls-auth/tls-crypt wrapping)=2E Answer it without creating a sessio=
+n=2E */
+-        struct oob_probe_reply reply;
++        /* what we advertis=
+e; oob_build_probe_reply() adds the peer's session id */
++        struct oo=
+b_probe_reply reply =3D {
++            =2Epriority =3D (uint16_t)m->top=2Eo=
+ptions=2Eserver_probe_reply_priority,
++            =2Eweight =3D (uint16_t)=
+m->top=2Eoptions=2Eserver_probe_reply_weight,
++            =2Emax_latency_d=
+iff =3D (uint16_t)m->top=2Eoptions=2Eserver_probe_reply_max_latency_diff,
++=
+        };
+         if (!oob_build_probe_reply(&state->newbuf, (uint64_t)no=
+w, (uint64_t)handwindow,
+                                    &state->peer_s=
+ession_id, &reply))
+         {
+diff --git a/src/openvpn/options=2Ec b/src/o=
+penvpn/options=2Ec
+index dc88a55=2E=2E6edb78b 100644
+--- a/src/openvpn/opti=
+ons=2Ec
++++ b/src/openvpn/options=2Ec
+@@ -805,10 +805,14 @@
+     o->ce=2Epr=
+oto =3D PROTO_UDP;
+     o->ce=2Eaf =3D AF_UNSPEC;
+ 
+-    /* The client late=
+ncy margin is -1 =3D "not set": the client's value is
+-     * authoritative=
+ when given, otherwise each server's advertised margin (or
+-     * the buil=
+t-in default) applies=2E */
++    /* server-probe defaults=2E The client lat=
+ency margin is -1 =3D "not set": the
++     * client's value is authoritativ=
+e when given, otherwise each server's
++     * advertised margin (or the bui=
+lt-in default) applies=2E An (unconfigured)
++     * server advertises weigh=
+t 50 / priority 100 and no margin (0)=2E */
+     o->server_probe_latency_ma=
+rgin =3D -1;
++    o->server_probe_reply_weight =3D 50;
++    o->server_probe=
+_reply_priority =3D 100;
++    o->server_probe_reply_max_latency_diff =3D 0;=
+
+     o->ce=2Ebind_ipv6_only =3D false;
+     o->ce=2Econnect_retry_seconds =
+=3D 1;
+     o->ce=2Econnect_retry_seconds_max =3D 300;
+@@ -6527,6 +6531,26 =
+@@
+             options->server_probe_latency_margin =3D margin;
+         }=
+
+     }
++    else if (streq(p[0], "server-probe-reply") && !p[4])
 +    {
-+        socket_descriptor_t sd =3D pc->sd[p=
-robe_af_index(t->dests[k]=2Ess_family)];
-+        if (sd =3D=3D SOCKET_UNDE=
-FINED)
-+        {
-+            continue;
-+        }
-+        if (sendto(sd,=
- (const char *)BPTR(probe), (int)BLEN(probe), 0,
-+                   (const=
- struct sockaddr *)&t->dests[k], t->destlens[k])
-+            >=3D 0)
-+    =
-    {
-+            any_sent =3D true;
-+        }
-+    }
-+    return any_sen=
-t;
-+}
- 
- /* Parse one received datagram as a PROBE_REPLY and, if valid and =
-matching one
-  * of the probes we sent, record the reply in results=2E */
-@=
-@ -218,25 +245,38 @@
-         return;
-     }
- 
--    /* Match the reply's so=
-urce address to the remote we probed=2E */
-+    /* Match the reply's source=
- address to one of the addresses we probed for a
-+     * remote=2E The firs=
-t reply for a remote wins (a remote with several addresses
-+     * may answ=
-er from more than one)=2E */
-     for (int i =3D 0; i < n; i++)
-     {
--   =
-     if (targets[i]=2Esent
--            && addr_port_match((const struct op=
-envpn_sockaddr *)(const void *)from,
--                               (const=
- struct openvpn_sockaddr *)(const void *)&targets[i]=2Edest))
-+        if (=
-!targets[i]=2Esent || results[i]=2Eresponded)
-         {
--            struc=
-t timeval rcv;
--            openvpn_gettimeofday(&rcv, NULL);
--            =
-long ms =3D (long)(rcv=2Etv_sec - targets[i]=2Esent_at=2Etv_sec) * 1000
--  =
-                    + (rcv=2Etv_usec - targets[i]=2Esent_at=2Etv_usec) / 10=
-00;
--
--            results[i]=2Eresponded =3D true;
--            results[i]=
-=2Epriority =3D reply=2Epriority;
--            results[i]=2Eweight =3D repl=
-y=2Eweight;
--            results[i]=2Emax_latency_diff =3D reply=2Emax_late=
-ncy_diff;
--            results[i]=2Ertt_ms =3D (ms > 0) ? (unsigned int)ms =
-: 0;
--            break;
-+            continue;
-         }
-+
-+        bool =
-match =3D false;
-+        for (int k =3D 0; k < targets[i]=2En_dests && !ma=
-tch; k++)
-+        {
-+            match =3D addr_port_match((const struct o=
-penvpn_sockaddr *)(const void *)from,
-+                                    =
-(const struct openvpn_sockaddr *)(const void *)&targets[i]=2Edests[k]);
-+  =
-      }
-+        if (!match)
-+        {
-+            continue;
-+        }
-+=
-
-+        struct timeval rcv;
-+        openvpn_gettimeofday(&rcv, NULL);
 + =
-       long ms =3D (long)(rcv=2Etv_sec - targets[i]=2Esent_at=2Etv_sec) * 1=
-000
-+                  + (rcv=2Etv_usec - targets[i]=2Esent_at=2Etv_usec) /=
- 1000;
-+
-+        results[i]=2Eresponded =3D true;
-+        results[i]=2Epr=
-iority =3D reply=2Epriority;
-+        results[i]=2Eweight =3D reply=2Eweigh=
-t;
-+        results[i]=2Emax_latency_diff =3D reply=2Emax_latency_diff;
-+  =
-      results[i]=2Ertt_ms =3D (ms > 0) ? (unsigned int)ms : 0;
-+        bre=
-ak;
-     }
- }
- 
-@@ -329,12 +369,7 @@
-     {
-         if (targets[i]=2Esent =
-&& !results[i]=2Eresponded)
-         {
--            socket_descriptor_t sd =
-=3D pc->sd[probe_af_index(targets[i]=2Edest=2Ess_family)];
--            if =
-(sd !=3D SOCKET_UNDEFINED)
--            {
--                sendto(sd, (cons=
-t char *)BPTR(probe), (int)BLEN(probe), 0,
--                       (const s=
-truct sockaddr *)&targets[i]=2Edest, targets[i]=2Edestlen);
--            }
-=
-+            oob_probe_send_target(pc, probe, &targets[i]);
-         }
-    =
- }
- }
-@@ -502,33 +537,45 @@
-             continue;
-         }
- 
--        /*=
- Probe the first resolved address on the socket matching its address
--     =
-    * family (stored natively; no IPv4-mapping)=2E */
--        socket_descr=
-iptor_t sd =3D pc=2Esd[probe_af_index(ai->ai_family)];
--        if (sd =3D=
-=3D SOCKET_UNDEFINED)
-+        /* Collect every resolved address whose addr=
-ess family has a probe socket=2E
-+         * Each address is stored nativel=
-y (no IPv4-mapping) and later probed on
-+         * its AF socket=2E Storag=
-e is sized to the resolved address count=2E */
-+        struct probe_target=
- *t =3D &targets[i];
-+        int n_addr =3D 0;
-+        for (const struct =
-addrinfo *a =3D ai; a; a =3D a->ai_next)
+       VERIFY_PERMISSION(OPT_P_GENERAL);
++        /* --server-probe-reply [=
+max-latency-diff] [weight] [prio]; each optional */
++        int vals[3] =
+=3D { options->server_probe_reply_max_latency_diff,
++                      =
+  options->server_probe_reply_weight,
++                        options->ser=
+ver_probe_reply_priority };
++        for (int i =3D 0; i < 3 && p[i + 1]; i=
+++)
 +        {
-+            n_addr++;
++            vals[i] =3D positive_atoi(p[i + 1], msglevel);
 =
-+        }
-+        t->dests =3D gc_malloc(sizeof(*t->dests) * n_addr, true=
-, &gc);
-+        t->destlens =3D gc_malloc(sizeof(*t->destlens) * n_addr, t=
-rue, &gc);
-+        for (const struct addrinfo *a =3D ai; a; a =3D a->ai_ne=
-xt)
-+        {
-+            if (pc=2Esd[probe_af_index(a->ai_family)] =3D=
-=3D SOCKET_UNDEFINED)
++            if (vals[i] > 0xffff)
 +            {
-+                continue; /* no socke=
-t for this address family */
++                msg(msgl=
+evel, "--server-probe-reply: values must be 0 to 65535");
++                =
+goto err;
 +            }
-+            memcpy(&t->dests[t=
-->n_dests], a->ai_addr, a->ai_addrlen);
-+            t->destlens[t->n_dests=
-] =3D (socklen_t)a->ai_addrlen;
-+            t->n_dests++;
 +        }
-+    =
-    freeaddrinfo(ai);
-+
-+        if (t->n_dests =3D=3D 0)
-         {
-      =
-       msg(D_LOW, "server-probe: %s:%s: not reachable by the probe socket",=
- ce->remote,
-                 ce->remote_port);
-+            continue;
-    =
-     }
--        else
-+
-+        if (!oob_probe_send_target(&pc, &probe, t))=
++        options->server_probe_reply_ma=
+x_latency_diff =3D vals[0];
++        options->server_probe_reply_weight =3D=
+ vals[1];
++        options->server_probe_reply_priority =3D vals[2];
++    }=
 
-         {
--            memcpy(&targets[i]=2Edest, ai->ai_addr, ai->ai_add=
-rlen);
--            socklen_t destlen =3D (socklen_t)ai->ai_addrlen;
--     =
-       if (sendto(sd, (const char *)BPTR(&probe), (int)BLEN(&probe), 0,
--  =
-                     (struct sockaddr *)&targets[i]=2Edest, destlen)
--     =
-           < 0)
--            {
--                msg(D_LOW, "server-probe: %=
-s:%s: probe send failed", ce->remote, ce->remote_port);
--            }
--   =
-         else
--            {
--                openvpn_gettimeofday(&targets=
-[i]=2Esent_at, NULL);
--                targets[i]=2Edestlen =3D destlen;
-- =
-               targets[i]=2Esent =3D true;
--                sent_count++;
--=
-            }
-+            msg(D_LOW, "server-probe: %s:%s: probe send fail=
-ed", ce->remote, ce->remote_port);
-+            continue;
-         }
--     =
-   freeaddrinfo(ai);
-+
-+        openvpn_gettimeofday(&t->sent_at, NULL);
-+ =
-       t->sent =3D true;
-+        sent_count++;
-     }
+     else if (streq(p[0], "nice") && p[1] && !p[2])
+     {
+         VERIFY=
+_PERMISSION(OPT_P_NICE);
+diff --git a/src/openvpn/options=2Eh b/src/openvpn=
+/options=2Eh
+index 6b1120a=2E=2E6e4829d 100644
+--- a/src/openvpn/options=2E=
+h
++++ b/src/openvpn/options=2Eh
+@@ -339,6 +339,12 @@
+     /* client: defaul=
+t candidate-band margin in ms (--server-probe [max-latency-diff]):
+      * =
+servers within this RTT of the fastest are treated as equally fast */
+     =
+int server_probe_latency_margin;
++    /* server: values advertised in the O=
+OB PROBE_REPLY (--server-probe-reply)=2E
++     * priority/weight follow DNS=
+-SRV semantics; max_latency_diff overrides the
++     * client's margin for =
+this server (0 =3D defer to the client)=2E */
++    int server_probe_reply_p=
+riority;
++    int server_probe_reply_weight;
++    int server_probe_reply_ma=
+x_latency_diff;
  
-     if (sent_coun=
-t > 0)
+     bool mlock;
+ 
+diff --git a/tests/unit_tests/openvpn/=
+test_oob=2Ec b/tests/unit_tests/openvpn/test_oob=2Ec
+index 004ad8f=2E=2Ec89=
+10b8 100644
+--- a/tests/unit_tests/openvpn/test_oob=2Ec
++++ b/tests/unit_te=
+sts/openvpn/test_oob=2Ec
+@@ -372,7 +372,7 @@
+ }
+ 
+ /* A valid, in-window SE=
+RVER_PROBE yields a reply that echoes the peer's
+- * session id and zeroes =
+the remaining fields=2E */
++ * session id and carries the configured priori=
+ty and weight=2E */
+ static void
+ test_build_probe_reply_valid(void **state=
+)
+ {
+@@ -386,14 +386,18 @@
+     struct session_id peer;
+     memcpy(peer=2E=
+id, "PEER1234", SID_SIZE);
+ 
+-    /* left as the caller set them: the funct=
+ion only fills the session id */
+-    struct oob_probe_reply reply =3D { 0 =
+};
++    struct oob_probe_reply reply =3D {
++        =2Epriority =3D 5,
++   =
+     =2Eweight =3D 50,
++        =2Emax_latency_diff =3D 25,
++    };
+     as=
+sert_true(oob_build_probe_reply(&buf, now, 30, &peer, &reply));
+     assert=
+_memory_equal(reply=2Epeer_session_id=2Eid, peer=2Eid, SID_SIZE);
+-    asse=
+rt_int_equal(reply=2Epriority, 0);
+-    assert_int_equal(reply=2Eweight, 0)=
+;
++    assert_int_equal(reply=2Epriority, 5);
++    assert_int_equal(reply=
+=2Eweight, 50);
+     assert_int_equal(reply=2Econnect_lifetime, 0);
+     as=
+sert_int_equal(reply=2Eflags, 0);
++    assert_int_equal(reply=2Emax_latency=
+_diff, 25);
+ 
+     gc_free(&gc);
+ }
 
 -- 
-To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1751?u=
-sp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://g=
-errit=2Eopenvpn=2Enet/settings?usp=3Demail
+To view, visit http://gerrit=2Eope=
+nvpn=2Enet/c/openvpn/+/1752?usp=3Demail
+To unsubscribe, or for help writing=
+ mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset=
-
+Ge=
+rrit-MessageType: newpatchset
 Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I00208610e=
-0ce4f3ed9a87233e68ece1b3b8a768a
-Gerrit-Change-Number: 1751
-Gerrit-PatchSet:=
- 13
-Gerrit-Owner: stipa <lstipakov@gmail=2Ecom>
-Gerrit-Reviewer: plaisthos =
-<arne-openvpn@rfc2549=2Eorg>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=
-=2Esourceforge=2Enet>
-Gerrit-Attention: plaisthos <arne-openvpn@rfc2549=2Eo=
-rg>
+Gerrit-Branch: master=
 
---FbS+hW+VK5k=
+Gerrit-Change-Id: Id74cfae7e9d69029d2ddbf635ee85a2a6cedc3d8
+Gerrit-Change-=
+Number: 1752
+Gerrit-PatchSet: 13
+Gerrit-Owner: stipa <lstipakov@gmail=2Ecom=
+>
+Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-CC: openvp=
+n-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Attention: plaisth=
+os <arne-openvpn@rfc2549=2Eorg>
+
+--IVLMtIeiaXY=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
@@ -521,273 +522,256 @@ Content-Transfer-Encoding: quoted-printable
 rently required from: plaisthos=2E </p>
 <p>stipa <strong>uploaded patch set=
  #13</strong> to this change=2E</p><p><a href=3D"http://gerrit=2Eopenvpn=2E=
-net/c/openvpn/+/1751?usp=3Demail">View Change</a></p><pre class=3D"blocks" =
-style=3D"font-family: monospace,monospace; white-space: pre-wrap;">oob: Pro=
-be every resolved address of a remote<br><br>A remote can resolve to severa=
-l A/AAAA records; --server-probe previously<br>sent a SERVER_PROBE only to =
-the first one, so a remote whose first address<br>was unreachable looked un=
-responsive even if another address answered, and<br>the connection could la=
-ter try an address that was never probed=2E<br><br>Probe every resolved add=
-ress of each remote in parallel (per-remote storage<br>is sized to the reso=
-lved address count, no fixed cap), accept a reply from<br>any of them (firs=
-t reply for a remote wins), and resend to all of a remote&#39;s<br>addresse=
-s while it is unanswered=2E<br><br>Change-Id: I00208610e0ce4f3ed9a87233e68e=
-ce1b3b8a768a<br>Signed-off-by: Lev Stipakov &lt;lev@openvpn=2Enet&gt;<br>--=
--<br>M src/openvpn/oob_client=2Ec<br>1 file changed, 92 insertions(+), 45 d=
-eletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monosp=
-ace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Ene=
-t:29418/openvpn refs/changes/51/1751/13</pre><pre style=3D"font-family: mon=
-ospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/oo=
-b_client=2Ec b/src/openvpn/oob_client=2Ec</span><br><span>index 5249672=2E=
-=2E8c67da5 100644</span><br><span>--- a/src/openvpn/oob_client=2Ec</span><b=
-r><span>+++ b/src/openvpn/oob_client=2Ec</span><br><span>@@ -52,11 +52,15 @=
-@</span><br><span> #define OOB_PROBE_RETRIES 1</span><br><span> </span><br>=
-<span> /* Where we sent a probe, so a reply&#39;s source address can be mat=
-ched back to the</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * co=
-nnection-list entry it belongs to=2E */</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+ * connection-list entry it belongs to=2E A remote may =
-resolve to several</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-* addresses, all of which are probed; a reply from any of them counts=2E Th=
-e</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * dests / destlen=
-s arrays are gc-allocated, sized to the remote&#39;s resolved</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ * address count=2E */</span><br>=
-<span> struct probe_target</span><br><span> {</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    struct sockaddr_storage dest;</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    socklen_t destlen;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    struct sockaddr_storage *dests;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    socklen_t *destl=
-ens;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int n_dests=
-;</span><br><span>     bool sent;</span><br><span>     struct timeval sent_=
-at; /* when the probe was sent, for RTT measurement */</span><br><span> };<=
-/span><br><span>@@ -177,6 +181,29 @@</span><br><span>     }</span><br><span=
-> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+/* Send the probe to every resolved address of t, each on the socket matc=
-hing</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * its address =
-family=2E Returns true if at least one send succeeded=2E */</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+static bool</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+oob_probe_send_target(const struct probe_=
-ctx *pc, const struct buffer *probe,</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+                      const struct probe_target *t)</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    bool any_sent =3D false;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    for (int k =3D 0; k &lt; t-&gt;=
-n_dests; k++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        socket_descr=
-iptor_t sd =3D pc-&gt;sd[probe_af_index(t-&gt;dests[k]=2Ess_family)];</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (sd =3D=3D SOC=
-KET_UNDEFINED)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            con=
-tinue;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (sendto(sd, =
-(const char *)BPTR(probe), (int)BLEN(probe), 0,</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+                   (const struct sockaddr *)&am=
-p;t-&gt;dests[k], t-&gt;destlens[k])</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+            &gt;=3D 0)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+            any_sent =3D true;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- return any_sent;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}<=
-/span><br><span> </span><br><span> /* Parse one received datagram as a PROB=
-E_REPLY and, if valid and matching one</span><br><span>  * of the probes we=
- sent, record the reply in results=2E */</span><br><span>@@ -218,25 +245,38=
- @@</span><br><span>         return;</span><br><span>     }</span><br><span=
-> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* Match the re=
-ply&#39;s source address to the remote we probed=2E */</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    /* Match the reply&#39;s source addr=
-ess to one of the addresses we probed for a</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+     * remote=2E The first reply for a remote wins =
-(a remote with several addresses</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+     * may answer from more than one)=2E */</span><br><span>  =
-   for (int i =3D 0; i &lt; n; i++)</span><br><span>     {</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        if (targets[i]=2Esent</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-            &amp;&amp; addr_po=
-rt_match((const struct openvpn_sockaddr *)(const void *)from,</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-                               (con=
-st struct openvpn_sockaddr *)(const void *)&amp;targets[i]=2Edest))</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!targets[i]=2Es=
-ent || results[i]=2Eresponded)</span><br><span>         {</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-            struct timeval rcv;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-            openvpn_gettimeof=
-day(&amp;rcv, NULL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-           long ms =3D (long)(rcv=2Etv_sec - targets[i]=2Esent_at=2Etv_sec)=
- * 1000</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
-        + (rcv=2Etv_usec - targets[i]=2Esent_at=2Etv_usec) / 1000;</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-            results[i]=2Eresponded =3D true;</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-            results[i]=2Epri=
-ority =3D reply=2Epriority;</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-            results[i]=2Eweight =3D reply=2Eweight;</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-            results[i]=2Emax_latency_di=
-ff =3D reply=2Emax_latency_diff;</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-            results[i]=2Ertt_ms =3D (ms &gt; 0) ? (unsigned int)=
-ms : 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            br=
-eak;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            con=
-tinue;</span><br><span>         }</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   bool match =3D false;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        for (int k =3D 0; k &lt; targets[i]=2En_dests &amp;&amp; !matc=
-h; k++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            match =3D =
-addr_port_match((const struct openvpn_sockaddr *)(const void *)from,</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+                          =
-          (const struct openvpn_sockaddr *)(const void *)&amp;targets[i]=2E=
-dests[k]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!match)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+            continue;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        struct timeval rcv;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        openvpn_gettimeofday(&amp;rcv, NULL);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        long ms =3D (l=
-ong)(rcv=2Etv_sec - targets[i]=2Esent_at=2Etv_sec) * 1000</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+                  + (rcv=2Etv_usec - =
-targets[i]=2Esent_at=2Etv_usec) / 1000;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        results[i]=2Eresponded =3D true;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        results[i]=2Epriority =3D reply=2Epriority;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        results[i]=2E=
-weight =3D reply=2Eweight;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        results[i]=2Emax_latency_diff =3D reply=2Emax_latency_diff;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        results[i]=
-=2Ertt_ms =3D (ms &gt; 0) ? (unsigned int)ms : 0;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        break;</span><br><span>     }</span><=
-br><span> }</span><br><span> </span><br><span>@@ -329,12 +369,7 @@</span><b=
-r><span>     {</span><br><span>         if (targets[i]=2Esent &amp;&amp; !r=
-esults[i]=2Eresponded)</span><br><span>         {</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-            socket_descriptor_t sd =3D pc-&gt;s=
-d[probe_af_index(targets[i]=2Edest=2Ess_family)];</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-            if (sd !=3D SOCKET_UNDEFINED)</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-                sendto(sd, (const c=
-har *)BPTR(probe), (int)BLEN(probe), 0,</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-                       (const struct sockaddr *)&amp;targ=
-ets[i]=2Edest, targets[i]=2Edestlen);</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+            oob_probe_send_target(pc, probe, &amp;targets[i]);</s=
-pan><br><span>         }</span><br><span>     }</span><br><span> }</span><b=
-r><span>@@ -502,33 +537,45 @@</span><br><span>             continue;</span>=
-<br><span>         }</span><br><span> </span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-        /* Probe the first resolved address on the socket =
-matching its address</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-        * family (stored natively; no IPv4-mapping)=2E */</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        socket_descriptor_t sd =3D pc=
-=2Esd[probe_af_index(ai-&gt;ai_family)];</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-        if (sd =3D=3D SOCKET_UNDEFINED)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        /* Collect every resolved ad=
-dress whose address family has a probe socket=2E</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+         * Each address is stored natively (no=
- IPv4-mapping) and later probed on</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+         * its AF socket=2E Storage is sized to the resolved=
- address count=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        struct probe_target *t =3D &amp;targets[i];</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        int n_addr =3D 0;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        for (const struct addrinfo =
-*a =3D ai; a; a =3D a-&gt;ai_next)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+            n_addr++;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     t-&gt;dests =3D gc_malloc(sizeof(*t-&gt;dests) * n_addr, true, &amp;gc=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        t-&gt;des=
-tlens =3D gc_malloc(sizeof(*t-&gt;destlens) * n_addr, true, &amp;gc);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        for (const struct=
- addrinfo *a =3D ai; a; a =3D a-&gt;ai_next)</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            if (pc=2Esd[probe_af_index(a-&gt;ai_family)] =3D=
-=3D SOCKET_UNDEFINED)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-            continue; /* no socket for this address family */</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+            memcpy(&amp;t-&gt;dests[t-&=
-gt;n_dests], a-&gt;ai_addr, a-&gt;ai_addrlen);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            t-&gt;destlens[t-&gt;n_dests] =3D (s=
-ocklen_t)a-&gt;ai_addrlen;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+            t-&gt;n_dests++;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        freeaddrinfo(ai);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- if (t-&gt;n_dests =3D=3D 0)</span><br><span>         {</span><br><span>   =
-          msg(D_LOW, &quot;server-probe: %s:%s: not reachable by the probe =
-socket&quot;, ce-&gt;remote,</span><br><span>                 ce-&gt;remote=
-_port);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-continue;</span><br><span>         }</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-        else</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if =
-(!oob_probe_send_target(&amp;pc, &amp;probe, t))</span><br><span>         {=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            memcpy(&a=
-mp;targets[i]=2Edest, ai-&gt;ai_addr, ai-&gt;ai_addrlen);</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-            socklen_t destlen =3D (sock=
-len_t)ai-&gt;ai_addrlen;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-            if (sendto(sd, (const char *)BPTR(&amp;probe), (int)BLEN(&am=
-p;probe), 0,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-              (struct sockaddr *)&amp;targets[i]=2Edest, destlen)</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-                &lt; 0)</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-                msg(D_LOW, &quot;serv=
-er-probe: %s:%s: probe send failed&quot;, ce-&gt;remote, ce-&gt;remote_port=
-);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-            else</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-                openvpn_gettimeofday(&am=
-p;targets[i]=2Esent_at, NULL);</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-                targets[i]=2Edestlen =3D destlen;</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-                targets[i]=2Esent =3D =
-true;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                =
-sent_count++;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            ms=
-g(D_LOW, &quot;server-probe: %s:%s: probe send failed&quot;, ce-&gt;remote,=
- ce-&gt;remote_port);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+            continue;</span><br><span>         }</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        freeaddrinfo(ai);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        openvpn_gettimeofday(&amp;t-&gt;sent_at, NULL);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        t-&gt;sent =3D =
-true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        sent_c=
-ount++;</span><br><span>     }</span><br><span> </span><br><span>     if (s=
-ent_count &gt; 0)</span><br><span></span><br></pre><p>To view, visit <a hre=
-f=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1751?usp=3Demail">change 175=
-1</a>=2E To unsubscribe, or for help writing mail filters, visit <a href=3D=
-"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><di=
-v itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope it=
-emprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1751?usp=3Demai=
-l"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+net/c/openvpn/+/1752?usp=3Demail">View Change</a></p><pre class=3D"blocks" =
+style=3D"font-family: monospace,monospace; white-space: pre-wrap;">oob: Add=
+ --server-probe-reply to advertise probe reply values<br><br>Add a server o=
+ption, --server-probe-reply [max-latency-diff] [weight] [prio],<br>each arg=
+ument optional, setting the values the server returns in its OOB<br>PROBE_R=
+EPLY=2E An unconfigured server advertises weight 50 and priority 100=2E<br>=
+max-latency-diff is how much slower than the fastest server a server may be=
+<br>and still count as equally good; 0 means the client decides=2E All thre=
+e are<br>range-checked to 0=2E=2E65535=2E<br><br>The values are plumbed thr=
+ough oob_build_probe_reply() into the probe_reply<br>TLV; the client alread=
+y reads and ranks remotes by them=2E<br><br>Change-Id: Id74cfae7e9d69029d2d=
+dbf635ee85a2a6cedc3d8<br>Signed-off-by: Lev Stipakov &lt;lev@openvpn=2Enet&=
+gt;<br>---<br>M Changes=2Erst<br>M doc/man-sections/server-options=2Erst<br=
+>M src/openvpn/mudp=2Ec<br>M src/openvpn/options=2Ec<br>M src/openvpn/optio=
+ns=2Eh<br>M tests/unit_tests/openvpn/test_oob=2Ec<br>6 files changed, 81 in=
+sertions(+), 9 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"fon=
+t-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerri=
+t=2Eopenvpn=2Enet:29418/openvpn refs/changes/52/1752/13</pre><pre style=3D"=
+font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git =
+a/Changes=2Erst b/Changes=2Erst</span><br><span>index 1f992b2=2E=2E080d928 =
+100644</span><br><span>--- a/Changes=2Erst</span><br><span>+++ b/Changes=2E=
+rst</span><br><span>@@ -1,5 +1,13 @@</span><br><span> Overview of changes i=
+n 2=2E8</span><br><span> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+New features</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+------------</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Out=
+-of-band server probing and server-controlled selection</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    With ``--server-probe``, a client p=
+robes all configured UDP remotes</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    before connecting and reorders them based on the replies: =
+reachable</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    server=
+s are tried first, ordered by server-advertised priority,</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    measured latency and advertised w=
+eight with DNS-SRV-like semantics=2E</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    Servers advertise these values with ``--server-probe-r=
+eply``=2E</span><br><span> </span><br><span> </span><br><span> Overview of =
+changes in 2=2E7</span><br><span>diff --git a/doc/man-sections/server-optio=
+ns=2Erst b/doc/man-sections/server-options=2Erst</span><br><span>index f420=
+588=2E=2E1277cf7 100644</span><br><span>--- a/doc/man-sections/server-optio=
+ns=2Erst</span><br><span>+++ b/doc/man-sections/server-options=2Erst</span>=
+<br><span>@@ -662,6 +662,31 @@</span><br><span>   Pushing of the ``--tun-ip=
+v6`` directive is done for older clients which</span><br><span>   require a=
+n explicit ``--tun-ipv6`` in their configuration=2E</span><br><span> </span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+--server-probe-reply args=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Set the values a =
+server advertises in its replies to out-of-band</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+  probes from clients using ``--server-probe``=
+=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+  Valid syntaxes::</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+     server-probe-reply max-latency-diff</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+     server-probe-reply max-latenc=
+y-diff weight</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     s=
+erver-probe-reply max-latency-diff weight priority</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+  ``max-latency-diff`` is the candidate-band margin in millisec=
+onds: a</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  probing cl=
+ient treats servers of the same priority whose round-trip</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+  time is within this margin of the f=
+astest one as equally good=2E</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+  :code:`0` (the default) lets the client use its own margin=2E</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+  ``weight`` (default :code:`50`) and ``=
+priority`` (default :code:`100`)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+  have DNS SRV (RFC 2782) semantics: clients try servers with =
+a lower</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  priority v=
+alue first, and distribute load between equally-good</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  servers of the same priority proportion=
+ally to their weights=2E</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  All values a=
+re in the range :code:`0` to :code:`65535`=2E A UDP server</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+  answers probes regardless of this =
+option; replies are stateless,</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+  replay-protected and rate-limited=2E The option only controls =
+the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  advertised val=
+ues=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan> --stale-routes-check args</span><br><span>   Remove routes which haven=
+&#39;t had activity for ``n`` seconds (i=2Ee=2E the ageing</span><br><span>=
+   time)=2E  This check is run every ``t`` seconds (i=2Ee=2E check interval=
+)=2E</span><br><span>diff --git a/src/openvpn/mudp=2Ec b/src/openvpn/mudp=
+=2Ec</span><br><span>index 2209407=2E=2E3e50994 100644</span><br><span>--- =
+a/src/openvpn/mudp=2Ec</span><br><span>+++ b/src/openvpn/mudp=2Ec</span><br=
+><span>@@ -238,7 +238,12 @@</span><br><span>         /* Out-of-band server =
+probe=2E state-&gt;newbuf points at the TLV payload</span><br><span>       =
+   * (read_control_auth has stripped the opcode, session id and any</span><=
+br><span>          * tls-auth/tls-crypt wrapping)=2E Answer it without crea=
+ting a session=2E */</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       struct oob_probe_reply reply;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        /* what we advertise; oob_build_probe_reply() adds=
+ the peer&#39;s session id */</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        struct oob_probe_reply reply =3D {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            =2Epriority =3D (uint16_t)m-&=
+gt;top=2Eoptions=2Eserver_probe_reply_priority,</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+            =2Eweight =3D (uint16_t)m-&gt;top=
+=2Eoptions=2Eserver_probe_reply_weight,</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+            =2Emax_latency_diff =3D (uint16_t)m-&gt;top=
+=2Eoptions=2Eserver_probe_reply_max_latency_diff,</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        };</span><br><span>         if (!oob_=
+build_probe_reply(&amp;state-&gt;newbuf, (uint64_t)now, (uint64_t)handwindo=
+w,</span><br><span>                                    &amp;state-&gt;peer_=
+session_id, &amp;reply))</span><br><span>         {</span><br><span>diff --=
+git a/src/openvpn/options=2Ec b/src/openvpn/options=2Ec</span><br><span>ind=
+ex dc88a55=2E=2E6edb78b 100644</span><br><span>--- a/src/openvpn/options=2E=
+c</span><br><span>+++ b/src/openvpn/options=2Ec</span><br><span>@@ -805,10 =
++805,14 @@</span><br><span>     o-&gt;ce=2Eproto =3D PROTO_UDP;</span><br><=
+span>     o-&gt;ce=2Eaf =3D AF_UNSPEC;</span><br><span> </span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    /* The client latency margin is -1 =
+=3D &quot;not set&quot;: the client&#39;s value is</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-     * authoritative when given, otherwise eac=
+h server&#39;s advertised margin (or</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-     * the built-in default) applies=2E */</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    /* server-probe defaults=2E The c=
+lient latency margin is -1 =3D &quot;not set&quot;: the</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+     * client&#39;s value is authoritat=
+ive when given, otherwise each server&#39;s</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+     * advertised margin (or the built-in default) =
+applies=2E An (unconfigured)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+     * server advertises weight 50 / priority 100 and no margin (0=
+)=2E */</span><br><span>     o-&gt;server_probe_latency_margin =3D -1;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    o-&gt;server_probe_r=
+eply_weight =3D 50;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    o-&gt;server_probe_reply_priority =3D 100;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    o-&gt;server_probe_reply_max_latency_diff =
+=3D 0;</span><br><span>     o-&gt;ce=2Ebind_ipv6_only =3D false;</span><br>=
+<span>     o-&gt;ce=2Econnect_retry_seconds =3D 1;</span><br><span>     o-&=
+gt;ce=2Econnect_retry_seconds_max =3D 300;</span><br><span>@@ -6527,6 +6531=
+,26 @@</span><br><span>             options-&gt;server_probe_latency_margin=
+ =3D margin;</span><br><span>         }</span><br><span>     }</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    else if (streq(p[0], &quot;s=
+erver-probe-reply&quot;) &amp;&amp; !p[4])</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        /* --server-probe-reply [max-latency=
+-diff] [weight] [prio]; each optional */</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        int vals[3] =3D { options-&gt;server_probe_rep=
+ly_max_latency_diff,</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++                        options-&gt;server_probe_reply_weight,</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                        options=
+-&gt;server_probe_reply_priority };</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        for (int i =3D 0; i &lt; 3 &amp;&amp; p[i + 1]; i++=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+            vals[i] =3D posi=
+tive_atoi(p[i + 1], msglevel);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+            if (vals[i] &gt; 0xffff)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+                msg(msglevel, &quot;--server-probe-re=
+ply: values must be 0 to 65535&quot;);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+                goto err;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        options-&gt;server_probe_reply_max_latency_diff =3D vals[0=
+];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&=
+gt;server_probe_reply_weight =3D vals[1];</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        options-&gt;server_probe_reply_priority =3D v=
+als[2];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span>=
+<br><span>     else if (streq(p[0], &quot;nice&quot;) &amp;&amp; p[1] &amp;=
+&amp; !p[2])</span><br><span>     {</span><br><span>         VERIFY_PERMISS=
+ION(OPT_P_NICE);</span><br><span>diff --git a/src/openvpn/options=2Eh b/src=
+/openvpn/options=2Eh</span><br><span>index 6b1120a=2E=2E6e4829d 100644</spa=
+n><br><span>--- a/src/openvpn/options=2Eh</span><br><span>+++ b/src/openvpn=
+/options=2Eh</span><br><span>@@ -339,6 +339,12 @@</span><br><span>     /* c=
+lient: default candidate-band margin in ms (--server-probe [max-latency-dif=
+f]):</span><br><span>      * servers within this RTT of the fastest are tre=
+ated as equally fast */</span><br><span>     int server_probe_latency_margi=
+n;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* server: va=
+lues advertised in the OOB PROBE_REPLY (--server-probe-reply)=2E</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+     * priority/weight follow =
+DNS-SRV semantics; max_latency_diff overrides the</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+     * client&#39;s margin for this server (0=
+ =3D defer to the client)=2E */</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    int server_probe_reply_priority;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    int server_probe_reply_weight;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    int server_probe_reply_max_=
+latency_diff;</span><br><span> </span><br><span>     bool mlock;</span><br>=
+<span> </span><br><span>diff --git a/tests/unit_tests/openvpn/test_oob=2Ec =
+b/tests/unit_tests/openvpn/test_oob=2Ec</span><br><span>index 004ad8f=2E=2E=
+c8910b8 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_oob=2Ec<=
+/span><br><span>+++ b/tests/unit_tests/openvpn/test_oob=2Ec</span><br><span=
+>@@ -372,7 +372,7 @@</span><br><span> }</span><br><span> </span><br><span> =
+/* A valid, in-window SERVER_PROBE yields a reply that echoes the peer&#39;=
+s</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * session id and ze=
+roes the remaining fields=2E */</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ * session id and carries the configured priority and weight=2E=
+ */</span><br><span> static void</span><br><span> test_build_probe_reply_va=
+lid(void **state)</span><br><span> {</span><br><span>@@ -386,14 +386,18 @@<=
+/span><br><span>     struct session_id peer;</span><br><span>     memcpy(pe=
+er=2Eid, &quot;PEER1234&quot;, SID_SIZE);</span><br><span> </span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    /* left as the caller set them: t=
+he function only fills the session id */</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    struct oob_probe_reply reply =3D { 0 };</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    struct oob_probe_reply reply=
+ =3D {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =2Epr=
+iority =3D 5,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  =2Eweight =3D 50,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        =2Emax_latency_diff =3D 25,</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    };</span><br><span>     assert_true(oob_build_probe_rep=
+ly(&amp;buf, now, 30, &amp;peer, &amp;reply));</span><br><span>     assert_=
+memory_equal(reply=2Epeer_session_id=2Eid, peer=2Eid, SID_SIZE);</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    assert_int_equal(reply=2Epri=
+ority, 0);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    assert_=
+int_equal(reply=2Eweight, 0);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    assert_int_equal(reply=2Epriority, 5);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(reply=2Eweight, 50);=
+</span><br><span>     assert_int_equal(reply=2Econnect_lifetime, 0);</span>=
+<br><span>     assert_int_equal(reply=2Eflags, 0);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    assert_int_equal(reply=2Emax_latency_dif=
+f, 25);</span><br><span> </span><br><span>     gc_free(&amp;gc);</span><br>=
+<span> }</span><br><span></span><br></pre><p>To view, visit <a href=3D"http=
+://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1752?usp=3Demail">change 1752</a>=2E =
+To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
+errit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemsco=
+pe itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D=
+"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url"=
+ href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1752?usp=3Demail"/><meta=
+ itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div sty=
-le=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-<div style=3D"d=
-isplay:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> G=
-errit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: =
-I00208610e0ce4f3ed9a87233e68ece1b3b8a768a </div>
-<div style=3D"display:none=
-"> Gerrit-Change-Number: 1751 </div>
-<div style=3D"display:none"> Gerrit-Pa=
-tchSet: 13 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lsti=
-pakov@gmail=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: =
-plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:n=
-one"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&=
-gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arn=
-e-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"dis=
+play:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:no=
+ne"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Bra=
+nch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Id74cfae7=
+e9d69029d2ddbf635ee85a2a6cedc3d8 </div>
+<div style=3D"display:none"> Gerrit=
+-Change-Number: 1752 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1=
+3 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@gma=
+il=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos=
+ &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Ger=
+rit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div=
+>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn=
+@rfc2549=2Eorg&gt; </div>
 
 </body></html>
---FbS+hW+VK5k=--
+--IVLMtIeiaXY=--
 
 
---===============6394410257033159373==
+--===============6325851750954288607==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============6394410257033159373==
+--===============6325851750954288607==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -798,5 +782,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============6394410257033159373==--
+--===============6325851750954288607==--
 
