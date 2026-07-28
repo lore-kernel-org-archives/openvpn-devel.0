@@ -4,127 +4,126 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B18DAC53219
-	for <openvpn-devel@archiver.kernel.org>; Tue, 28 Jul 2026 19:06:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0621DC53219
+	for <openvpn-devel@archiver.kernel.org>; Tue, 28 Jul 2026 22:25:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:Date:Sender:To:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=AX63YEQTX4EIXtptxZ7tyrUvDcmnpxLDpEzKts/PIx8=; b=SjokPNk+9PUVv20qzUb6slPInh
-	IK3ulsLjSacdWlp33BGHFtRAvHPBHjoxeBnbtGjs1bzslxE1IEtPZosUYU+SDdRTjUpSZnbQQCLIL
-	b86Th5zXdNBTSw+go4BSn0hS6QvIKEtjvbC8va8QZ1R1WaWl6qcT6n9UZH33P1BrlFSQ=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=+AvegGPrr+pxS/eglkPpv0POebwBdATwUA6VH5UHWhc=; b=Js4SzcQgCBSl8iMPgHyRZPKcKu
+	IgvAFe4MISBoLS9FiRS+jjWassdLORRJQeULG1B8za7XnVZWb972f1n/9T9LIABkpxbAKwd9RYCa9
+	xJz+nmm2uuPDucIVSWZobmSGXSNRfoOpl58ZZZo4bBRWAc3S5Ozt3AeaxgM3Cw5HRss4=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1won8a-0000qh-K8;
-	Tue, 28 Jul 2026 19:06:46 +0000
+	id 1woqF7-0003Mj-Vm;
+	Tue, 28 Jul 2026 22:25:46 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1won8Z-0000qa-M4
+ (envelope-from <gerrit@openvpn.net>) id 1woqEf-0003LM-8P
  for openvpn-devel@lists.sourceforge.net;
- Tue, 28 Jul 2026 19:06:45 +0000
+ Tue, 28 Jul 2026 22:25:18 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
+ Cc:Date:From:Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
  :List-Post:List-Owner:List-Archive;
- bh=iD9S0y6xme7NcYdX05DO5xdOPy1BQO7vzVCzGAhv03o=; b=I8mVN/qVw8YjwYHkr0Jff4h42T
- cY4qi4Vkpi+MNqRmAJqguP+5J9J6EGQg6nHM5/P7y7khT3qJU7Og5WzQ62Swd4jjYwKjpDdVGyM0a
- OxO/VmWDJGe4lWZBI3LPJDBofwWnCpjAASL4r7CAs0Jyp3LuOclUbHX9RlmaEeRQGEn0=;
+ bh=g0zLu0Tq97SqsaDRjIA0rEoyejAKh+nyXQeOU+uChZE=; b=KHKNHF4hOYRtf2T8CJXzvdUDKr
+ EjmEdGPRX1j40L0Zn49nkQ3T5AKRYpP4KkcuV+an5IJRctWN/qOxd8GALt53bprZNKKqYLIcUN1T3
+ rueXbMUkDJEBRQswtPf/cEk0YvE7St+gVJyejnAQszZ3EsAokqJrT0ElmthL+3k1L6n0=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
- Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:Date:From:Sender:
+ To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=iD9S0y6xme7NcYdX05DO5xdOPy1BQO7vzVCzGAhv03o=; b=V
- Dc0geqV+MFqhXj5DJiUesUVObF7/lHWwol/JNvE+veFL2dCmqYQLloGFq6Eyee3b7CKVsSxLfDa6O
- 7/GC7krQPdvmedwI+rgVszshuHMtHAJvYjlN6zKhXe2LBe+YT/ugzsgnnCa/sCBNRWXhdST+E8eUA
- vd22iUWuWuc8kh20=;
-Received: from mail-wr1-f44.google.com ([209.85.221.44])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ List-Owner:List-Archive; bh=g0zLu0Tq97SqsaDRjIA0rEoyejAKh+nyXQeOU+uChZE=; b=b
+ Td9xUAM1Hp25ssN3+7cm9R5Bcz/pPviO2iv7fZFdcS1CoX87OyVPOLdwye1m6LH8HG5uvoM9I2qiC
+ qPLrcvmcNjBNnxCr5HxeFqMhj+j9i9txd+CdAXMo8u/afvNljHUvTg4/gpi779cq4/8l2cV4EEzcH
+ 8tFBv3v45FjiZPx0=;
+Received: from mail-wm1-f54.google.com ([209.85.128.54])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1won8W-0001Bq-Cj for openvpn-devel@lists.sourceforge.net;
- Tue, 28 Jul 2026 19:06:45 +0000
-Received: by mail-wr1-f44.google.com with SMTP id
- ffacd0b85a97d-476a130c138so252745f8f.0
+ id 1woqEi-0007DZ-Db for openvpn-devel@lists.sourceforge.net;
+ Tue, 28 Jul 2026 22:25:17 +0000
+Received: by mail-wm1-f54.google.com with SMTP id
+ 5b1f17b1804b1-49548aebcd8so2147935e9.3
  for <openvpn-devel@lists.sourceforge.net>;
- Tue, 28 Jul 2026 12:06:44 -0700 (PDT)
+ Tue, 28 Jul 2026 15:25:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1785265598; x=1785870398; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1785277510; x=1785882310; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
+ :auto-submitted:cc:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=iD9S0y6xme7NcYdX05DO5xdOPy1BQO7vzVCzGAhv03o=;
- b=EFki4ibVFJ/Pdgw4GTkapg0yB2c0g6IKjRd/tfmv4H3GggcBplv19/SGgQTLHdl9zc
- 1nyVDZnt5xa0ELUmZoJKmlQdXwISP0IW6BkWslC3VVmu3sqi7uCnOFRHEDRc79riEVne
- NFzQ+gFjZU0NkPkKkN+5mlZu3k0xx91vfNlBxPR2rgPXbhDiK+kGEKj7WYG79uRe8GAP
- pROCEPkujcAhRuE2/1H5FT7Mh/HDmxAb7A3Ra1U20rsbbZ1J4SK+p3ffhnMozhtVedCf
- 3ZaB2FS2iKjtAP7KoBOyMaNPwXx9imfM0BQUE/dg0nfC2aDqGdxCdsR3IkKyNHKc9gO9
- ib3g==
+ bh=g0zLu0Tq97SqsaDRjIA0rEoyejAKh+nyXQeOU+uChZE=;
+ b=Xq3C7rPAmWDV6f3zbvWy8PVoCl0t3CZnAFTj8VC8IxSJ7ynNeeVnsioG116X+c6xDP
+ W0WLpL5d35513YgPbpiJh3i34TRygRilhIUV4BLnpYR1lSIbok3Yw0iMKZ/I83FlGabO
+ 2UN5itOSJyc1qocmQukSqP3Ivi4Il5i4s7824zA2CQEc6lqCeRlKqFeefE0MwmrJpL/3
+ g90mD8Ez79j3l5mfeDFUk6b8tczLytrYOfzDHxvBe9uIPGUKSouVY8dXKvmwmvmqYS5L
+ 3/z+z/O3gYY+JCHjRe5bOWzgoDMmiCPNlQVaAWMrJf7MiNkuM4OQa6j7Lrk/8SdxexeJ
+ vAvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1785265598; x=1785870398;
+ d=1e100.net; s=20251104; t=1785277510; x=1785882310;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
- :cc:subject:date:message-id:reply-to:content-type;
- bh=iD9S0y6xme7NcYdX05DO5xdOPy1BQO7vzVCzGAhv03o=;
- b=B6QBy7z3eT2JIReDgJgJZqUU+fVX+OwbvSCCfirW3zzf3mcwRpGOQbz5YKmByInjy3
- 0nJUxZFCJg3qIqIgeUkAT17QuNBK3qGKG5Z2VgB8EMxfC1o+rEDuw1POm7Cx5lpUTC25
- lnsrGLspE99yw71VRgdT96xDZCIZTBF1vF0aCEUp5Go3XPhWjemVs+/jQX+bOFDlZC6+
- v7dMdEbXtRaSNPRnZDi+VSIZbvpEUjXC2JDWq5lbAmXAYsknq9igUAuMr59fbHT+ltti
- 5K7sE+3noFPEJVp7cPmrDJnv7Jzb+//qp4WKvW5e1/0qXsXC+xBxPoRlRt6UnvNZJYDz
- djvA==
-X-Gm-Message-State: AOJu0YzAQcRrgBGsot3n2ezI+kqOUjKSAaRbcOAjePVC2MHXX4OYTpBX
- GpTkBFK582dIAnyk6MTDY4glIzxi+cS8wSXTdyBc6SnmJrAUF8wesheFwtoEWWxMxdNrXJD0QjW
- xKOJAuIpPQANg6uvVGOLZgzx/uZOo7XNf/2vw97CKQZVjMOvtfoN85gnVKNnRU8J+7G8JpNnBzO
- eN8lZUKQ==
-X-Gm-Gg: AR+sD13GINTpARuHumxZCy7j61inH5gMZ1aD+lTYuOSaXK6ZkUkBfAjsjpIw+1ifw88
- 7YqgDXIvxz3qkBSC8/hZMGu6J2DQrEP7Qb0ZA5rG64xsx8BvYF5I/b+rT6hs/YiUrQ+CWvK3UEU
- M2TfRNxHFOKq1zRNkNzYV+yxg9Np7HplgAW9Sc1L2dX9pxXmbBXfq94WTzqJVoVGSd2Ge3rZoNr
- hK7YEHgPSwqsOuHlhy/IbxcG0FuIicMxG4qCH2bjuBtbo6ZBwJoECjIrCjLaQdrszN+uozBMAld
- FqkfXUKbXGOHSmrnrU+VaKTuWXgyBN3N561yFSiJe28ol86Tk+tD/LXJqVHE+fhOxogmC9wWbsl
- P3zyhIU4e7/RekMu91Ic5Knp5ggX6gXM8F32eINSiXfWttuVayqC4bQ1VI8B3jyxbtuuqx6D2Bk
- WGPSyijFJbLaqlvWxL2y3/0mEoVO0cmVJHi5wZv+o34Fi1L9TXW6nU2I3ddiNyDRCkPp+ygpcFo
- AOXiN/pMd6vQ8UFnv/4oIKHpcSBNjpLqhOGku6fjoPJ5MSjTke+H9OhvKmp32TGNIKW
-X-Received: by 2002:a05:6000:2dc6:b0:474:64bf:8fb6 with SMTP id
- ffacd0b85a97d-47fb1ed61c3mr4193006f8f.39.1785265597607; 
- Tue, 28 Jul 2026 12:06:37 -0700 (PDT)
+ :auto-submitted:cc:date:from:x-gm-gg:x-gm-message-state:from:to:cc
+ :subject:date:message-id:reply-to:content-type;
+ bh=g0zLu0Tq97SqsaDRjIA0rEoyejAKh+nyXQeOU+uChZE=;
+ b=cKvnAJupX4scq0FwVrWGW8M+xccPppabVZ8VPm6Rc8vQ8ctClp3ug2Iyz18DZgQJwh
+ HFkBMolNzlhjCmsuswVaRgG0T45IBJQ2xiRh6vZ8T+1XKaQrPNEH3LHCG0n6qpkrFwX+
+ SLat/gJX/B4IQsh/sxMAIBRQAcMMz3NRSRQ0IMXkFMWtAir57Zqxy62vGIWHzcuS0BY5
+ eThk+UajnOqkqZ6P+GH1bou+qPj7+OqAQpLi32UQYl1d5vsqwVLGKy523NJdBtLgieel
+ 98Ow/A7CsSvs8tfJRz95KcWvfM4egB+2dEvHs0RuM74wBxzjnDJaAt+coRBTh3gbPH7Y
+ dsBA==
+X-Gm-Message-State: AOJu0YwLecNAF8s42keFWtHjouXCBoum7muTtlsmf4zJLVvCr3PmNt6f
+ hJa6auZpPrwVSOQ1X2UH9fROS0ADQIeH6SZjJHCdBA2mv5fmG3Y6IPZh+ijPUVtl94bqeZgKKwv
+ MAKVibaRk6/XSmtSSaAFRKwSBspgTx2MbswN9LTuolJsvo1H9AE6PrtuOBcGu1DfnyqrTc4l29y
+ j2j+R0uA==
+X-Gm-Gg: AR+sD137FgAFqzf2e27ypNuybfr2D2RaYZlPi9Ci12cJZWlckGdN+nBL96qy8osWAaV
+ EggD/weqqOcR+I9/3lxsGTp7yObH837DNMqEQpDN4eaFlvYaAbiB7Ph3uB6oE/VZNrheaw0Vok+
+ QqDysSRAzXGsZBN4LX3hW/Dbez+hqBg74Vj1ioBA2xsljg0TBD5WYeiiKJGnOSiTbfeCprusoE4
+ jicYlYmvVAkOP2D/sVGN1ZoY96KJdQI8k2DJGdUL/hRCsOuZBySXYbFKHNbQjBlW7KwsV9WOxcE
+ eV0axFg/vPFJpNVfCGdULw7vAQu4+zmFiqpARLFgJYINVicarKZ9SHZ3/2XDe5tkx2BC4vZQArV
+ BOy7b10iNe+n+YW/XWJOJih/P3jd1IlZTf3u//EVZilsL5PaH1mBMrvT0bQ8/EEKEMFPi8iNfg9
+ oZE3dCei8mlouTWBzp1W4nflJ5SCRHUmgP2is0Gr+WkbUdZpsZ3HlH67nz53l/P52aSQnyW/6Je
+ kKEWZ820ZdtZLs+GKw+soYoEalUdx0MGg8P7Ju2fd4ETS3eG3//p5ERcPnj0u+5pOdk6nL1DAYx
+ YHccrmkkHFSLPUc5SJmxRN4SoG4spytudwl7FP8tVk5EJ6lzZPQWmbSHvX+gIw==
+X-Received: by 2002:a05:600c:3f10:b0:495:7278:95c3 with SMTP id
+ 5b1f17b1804b1-496c657de59mr43403885e9.26.1785277510225; 
+ Tue, 28 Jul 2026 15:25:10 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-47fb6aa3a32sm1398248f8f.2.2026.07.28.12.06.37
+ 5b1f17b1804b1-49764d72d9asm12615515e9.3.2026.07.28.15.25.09
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 28 Jul 2026 12:06:37 -0700 (PDT)
-X-Google-Original-From: "ordex (Code Review)"
+ Tue, 28 Jul 2026 15:25:09 -0700 (PDT)
+X-Google-Original-From: "plaisthos (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Tue, 28 Jul 2026 19:06:34 +0000
-To: plaisthos <arne-openvpn@rfc2549.org>
+Date: Tue, 28 Jul 2026 22:25:08 +0000
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: comment
-X-Gerrit-PatchSet: 1
+X-Gerrit-MessageType: newpatchset
+X-Gerrit-PatchSet: 2
 X-Gerrit-Change-Id: I5b862eabe032eb4d2229ff5b2f4f6af7406f6f4e
 X-Gerrit-Change-Number: 1829
 X-Gerrit-Project: openvpn
 X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1829?usp=email>
-X-Gerrit-Commit: 8633bd5a871a62e457eeb592467f2af21678e7b6
-X-Gerrit-Comment-Date: Tue, 28 Jul 2026 19:06:34 +0000
+X-Gerrit-Commit: c4c3172a707875fbb49f214adb2c12526d545488
 In-Reply-To: <gerrit.1785264441000.I5b862eabe032eb4d2229ff5b2f4f6af7406f6f4e@gerrit.openvpn.net>
 References: <gerrit.1785264441000.I5b862eabe032eb4d2229ff5b2f4f6af7406f6f4e@gerrit.openvpn.net>
 Thread-Index: PGdlcnJpdC4xNzg1MjY0NDQxMDAwLkk1Yjg2MmVhYmUwMzJlYjRkMjIyOWZmNWIyZjRmNmFmNzQwNmY2ZjRlQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <9c1aeb6f8bc15354297f60db3b51fc19bb0d6fe8-EmailReviewComments-HTML@gerrit.openvpn.net>
+Message-ID: <d24dcfa14e95d75aa7e7c9a1182461fc0af0859d-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1won8W-0001Bq-Cj
+X-Headers-End: 1woqEi-0007DZ-Db
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Correctly calculate
- packet id size when epoch is in use
+ packet id size when epoch packet format is in use
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -136,187 +135,234 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "ordex \(Code Review\) via Openvpn-devel"
+From: "plaisthos \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
-Reply-To: antonio@mandelbit.com, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net
-Cc: "ordex \(Code Review\)" <gerrit@openvpn.net>,
+Reply-To: arne-openvpn@rfc2549.org, openvpn-devel@lists.sourceforge.net,
+ antonio@mandelbit.com
+Cc: "plaisthos \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============5250872849613154935=="
+Content-Type: multipart/mixed; boundary="===============4415538135897546696=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============5250872849613154935==
+--===============4415538135897546696==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="U5LYFdRr4is="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="9EO6F7awFTc="; charset=UTF-8
 
---U5LYFdRr4is=
+--9EO6F7awFTc=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos=2E
+Attention is currently required from: ordex, plaisthos=2E
 
-ordex has posted commen=
-ts on this change by plaisthos=2E ( http://gerrit=2Eopenvpn=2Enet/c/openvpn=
-/+/1829?usp=3Demail )
+Hello ordex, 
 
-Change subject: Correctly calculate packet id size w=
-hen epoch is in use
+I=
+'d like you to reexamine a change=2E Please visit
+
+    http://gerrit=2Eopen=
+vpn=2Enet/c/openvpn/+/1829?usp=3Demail
+
+to look at the new patch set (#2)=
+=2E
+
+The following approvals got outdated and were removed:
+Code-Review-1 b=
+y ordex
+
+
+Change subject: Correctly calculate packet id size when epoch pac=
+ket format is in use
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E
 
+Correctly calculate packet id size when epoch packet format is in u=
+se
 
-Patch Set 1: Code-Review-1
+The code assumed that always when tls mode (without CFB/OFB) is in use
+=
+that the packet size is 4 bytes=2E With epoch packet format is incorrect
+as=
+ that uses 64 bit=2E
 
-(2 comments)
+Even thought packet_id_long_form has a the same size =
+(8 byte) it is not
+the same header format (32 bit time + 32 bit IV) as the =
+epoch
+format (16 bit epoch + 48 IV)=2E Use a simple sizeof(uint64_t) to
+avo=
+id suggesting that it might be the same=2E
 
-Patchset:
+Closes: Github #1074
 
-PS1: 
-I think=
- the commit message is quite misleading=2E From it I understand you are fix=
-ing some notation to make the computation more clear=2E
-But from the GH rep=
-ort I understand this is really fixing the computation (the commit title ag=
-rees)=2E
-
-Maybe the commit message is justifying why you are doing things t=
-his way, rather than setting packet_id_long_form to true?
-
-Still, I think y=
-ou should add a line explaining what we are fixing: i=2Ee=2E the packet ID =
-size computation was not considering the epoch case and was falling back to=
- XX bytes, which is smaller than expected, resulting in MTU screw up
-
-
-File=
- src/openvpn/mtu=2Ec:
-
-http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1829/comme=
-nt/3ac069bb_6ba4a15b?usp=3Demail :
-PS1, Line 59:         return sizeof(uint=
-64_t);
-since we don't have explicit members to call sizeof() on, how about =
-a little comment explaining the meaning behind the magic uint64_t?
-
-i=2Ee=
-=2E /* 16 bit epoch + 48 bit IV */
+Change-Id=
+: I5b862eabe032eb4d2229ff5b2f4f6af7406f6f4e
+Signed-off-by: Arne Schwabe <ar=
+ne@rfc2549=2Eorg>
+---
+M src/openvpn/mtu=2Ec
+1 file changed, 8 insertions(+)=
+, 0 deletions(-)
 
 
+  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn re=
+fs/changes/29/1829/2
+
+diff --git a/src/openvpn/mtu=2Ec b/src/openvpn/mtu=2E=
+c
+index e5db8ab=2E=2E1f64a8a 100644
+--- a/src/openvpn/mtu=2Ec
++++ b/src/ope=
+nvpn/mtu=2Ec
+@@ -35,6 +35,7 @@
+ #include "crypto=2Eh"
+ 
+ #include "memdbg=
+=2Eh"
++#include "ssl_common=2Eh"
+ 
+ /* allocate a buffer for socket or tun =
+layer */
+ void
+@@ -51,6 +52,13 @@
+ calc_packet_id_size_dc(const struct opti=
+ons *options, const struct key_type *kt)
+ {
+     bool tlsmode =3D options->=
+tls_server || options->tls_client;
++    bool epoch =3D options->imported_pr=
+otocol_flags & CO_EPOCH_DATA_KEY_FORMAT;
++
++    /* epoch uses a 64-bit pack=
+et ID consisting of 64 bit (24 bit epoch + 48 bit IV) */
++    if (epoch)
++ =
+   {
++        return sizeof(uint64_t);
++    }
+ 
+     bool packet_id_long_fo=
+rm =3D !tlsmode || cipher_kt_mode_ofb_cfb(kt->cipher);
+ 
 
 -- 
-To view, visit http://gerrit=2Eop=
-envpn=2Enet/c/openvpn/+/1829?usp=3Demail
-To unsubscribe, or for help writin=
-g mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+To view, visi=
+t http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1829?usp=3Demail
+To unsubscribe=
+, or for help writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/set=
+tings?usp=3Demail
 
-G=
-errit-MessageType: comment
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
+=
 Gerrit-Branch: master
-Ge=
-rrit-Change-Id: I5b862eabe032eb4d2229ff5b2f4f6af7406f6f4e
-Gerrit-Change-Num=
-ber: 1829
-Gerrit-PatchSet: 1
-Gerrit-Owner: plaisthos <arne-openvpn@rfc2549=
-=2Eorg>
-Gerrit-Reviewer: ordex <antonio@mandelbit=2Ecom>
-Gerrit-CC: openvpn=
--devel <openvpn-devel@lists=2Esourceforge=2Enet>
-Gerrit-Attention: plaistho=
+Gerrit-Change-Id: I5b862eabe032eb4d2229ff5b2f4f6af740=
+6f6f4e
+Gerrit-Change-Number: 1829
+Gerrit-PatchSet: 2
+Gerrit-Owner: plaistho=
 s <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Comment-Date: Tue, 28 Jul 2026 19:06:=
-34 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
+Gerrit-Reviewer: ordex <antonio@mandelbit=2E=
+com>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Ger=
+rit-Attention: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Attention: ord=
+ex <antonio@mandelbit=2Ecom>
 
---U5LYFdRr4is=
+--9EO6F7awFTc=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos=2E </p>
-<p>Patch set 1:<span style=3D"borde=
-r-radius: 3px; display: inline-block; margin: 0 2px; padding: 4px;backgroun=
-d-color: #ffd4d4;">Code-Review -1</span></p><p><a href=3D"http://gerrit=2Eo=
-penvpn=2Enet/c/openvpn/+/1829?usp=3Demail">View Change</a></p><p>2 comments=
-:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; pa=
-dding: 0;"><p>Patchset:</p><ul style=3D"list-style: none; padding: 0;"><li =
-style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;">=
-<a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1829?tab=3Dcomments&am=
-p;usp=3Demail">Patch Set #1:</a> </p><p class=3D"blocks" style=3D"white-spa=
-ce: pre-wrap; word-wrap: break-word;">I think the commit message is quite m=
-isleading=2E From it I understand you are fixing some notation to make the =
-computation more clear=2E<br>But from the GH report I understand this is re=
-ally fixing the computation (the commit title agrees)=2E</p><p class=3D"blo=
-cks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Maybe the comm=
-it message is justifying why you are doing things this way, rather than set=
-ting packet_id_long_form to true?</p><p class=3D"blocks" style=3D"white-spa=
-ce: pre-wrap; word-wrap: break-word;">Still, I think you should add a line =
-explaining what we are fixing: i=2Ee=2E the packet ID size computation was =
-not considering the epoch case and was falling back to XX bytes, which is s=
-maller than expected, resulting in MTU screw up</p></li></ul></li><li style=
-=3D"margin: 0; padding: 0;"><p>File src/openvpn/mtu=2Ec:</p><ul style=3D"li=
-st-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;">=
-<p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c=
-/openvpn/+/1829/comment/3ac069bb_6ba4a15b?usp=3Demail">Patch Set #1, Line 5=
-9:</a> <code style=3D"font-family:monospace,monospace">        return sizeo=
-f(uint64_t);</code></p><p class=3D"blocks" style=3D"white-space: pre-wrap; =
-word-wrap: break-word;">since we don&#39;t have explicit members to call si=
-zeof() on, how about a little comment explaining the meaning behind the mag=
-ic uint64_t?</p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wr=
-ap: break-word;">i=2Ee=2E /* 16 bit epoch + 48 bit IV */</p></li></ul></li>=
-</ul><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+=
-/1829?usp=3Demail">change 1829</a>=2E To unsubscribe, or for help writing m=
-ail filters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3D=
-email">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/Em=
-ailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=2E=
-org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Ene=
-t/c/openvpn/+/1829?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Ch=
-ange"/></div></div>
+rently required from: ordex, plaisthos=2E </p>
+<p>plaisthos <strong>uploade=
+d patch set #2</strong> to this change=2E</p><p><a href=3D"http://gerrit=2E=
+openvpn=2Enet/c/openvpn/+/1829?usp=3Demail">View Change</a></p><p>The follo=
+wing approvals got outdated and were removed:
+Code-Review-1 by ordex</p><pr=
+e class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: =
+pre-wrap;">Correctly calculate packet id size when epoch packet format is i=
+n use<br><br>The code assumed that always when tls mode (without CFB/OFB) i=
+s in use<br>that the packet size is 4 bytes=2E With epoch packet format is =
+incorrect<br>as that uses 64 bit=2E<br><br>Even thought packet_id_long_form=
+ has a the same size (8 byte) it is not<br>the same header format (32 bit t=
+ime + 32 bit IV) as the epoch<br>format (16 bit epoch + 48 IV)=2E Use a sim=
+ple sizeof(uint64_t) to<br>avoid suggesting that it might be the same=2E<br=
+><br>Closes: Github #1074<br><br>Change-Id: I5b862eabe032eb4d2229ff5b2f4f6a=
+f7406f6f4e<br>Signed-off-by: Arne Schwabe &lt;arne@rfc2549=2Eorg&gt;<br>---=
+<br>M src/openvpn/mtu=2Ec<br>1 file changed, 8 insertions(+), 0 deletions(-=
+)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/op=
+envpn refs/changes/29/1829/2</pre><pre style=3D"font-family: monospace,mono=
+space; white-space: pre-wrap;"><span>diff --git a/src/openvpn/mtu=2Ec b/src=
+/openvpn/mtu=2Ec</span><br><span>index e5db8ab=2E=2E1f64a8a 100644</span><b=
+r><span>--- a/src/openvpn/mtu=2Ec</span><br><span>+++ b/src/openvpn/mtu=2Ec=
+</span><br><span>@@ -35,6 +35,7 @@</span><br><span> #include &quot;crypto=
+=2Eh&quot;</span><br><span> </span><br><span> #include &quot;memdbg=2Eh&quo=
+t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;ss=
+l_common=2Eh&quot;</span><br><span> </span><br><span> /* allocate a buffer =
+for socket or tun layer */</span><br><span> void</span><br><span>@@ -51,6 +=
+52,13 @@</span><br><span> calc_packet_id_size_dc(const struct options *opti=
+ons, const struct key_type *kt)</span><br><span> {</span><br><span>     boo=
+l tlsmode =3D options-&gt;tls_server || options-&gt;tls_client;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    bool epoch =3D options-&gt;=
+imported_protocol_flags &amp; CO_EPOCH_DATA_KEY_FORMAT;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    /* epoch uses a 64-bit packet ID consisting of 64 bit =
+(24 bit epoch + 48 bit IV) */</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    if (epoch)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        r=
+eturn sizeof(uint64_t);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    }</span><br><span> </span><br><span>     bool packet_id_long_form =
+=3D !tlsmode || cipher_kt_mode_ofb_cfb(kt-&gt;cipher);</span><br><span> </s=
+pan><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit=
+=2Eopenvpn=2Enet/c/openvpn/+/1829?usp=3Demail">change 1829</a>=2E To unsubs=
+cribe, or for help writing mail filters, visit <a href=3D"http://gerrit=2Eo=
+penvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemty=
+pe=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" =
+itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"=
+http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1829?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: comme=
-nt </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div =
-style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:=
-none"> Gerrit-Change-Id: I5b862eabe032eb4d2229ff5b2f4f6af7406f6f4e </div>
-<=
-div style=3D"display:none"> Gerrit-Change-Number: 1829 </div>
-<div style=3D=
-"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none=
+"> Gerrit-MessageType: newpatchset </div>
 <div style=3D"display:none"> Gerr=
-it-Owner: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D=
-"display:none"> Gerrit-Reviewer: ordex &lt;antonio@mandelbit=2Ecom&gt; </di=
-v>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@=
-lists=2Esourceforge=2Enet&gt; </div>
-<div style=3D"display:none"> Gerrit-At=
-tention: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"=
-display:none"> Gerrit-Comment-Date: Tue, 28 Jul 2026 19:06:34 +0000 </div>
-=
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"d=
-isplay:none"> Gerrit-Has-Labels: Yes </div>
+it-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: mast=
+er </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I5b862eabe032eb4d2=
+229ff5b2f4f6af7406f6f4e </div>
+<div style=3D"display:none"> Gerrit-Change-N=
+umber: 1829 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<=
+div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@rfc254=
+9=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;=
+antonio@mandelbit=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: =
+openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div s=
+tyle=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@rfc2549=
+=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;=
+antonio@mandelbit=2Ecom&gt; </div>
 
 </body></html>
---U5LYFdRr4is=--
+--9EO6F7awFTc=--
 
 
---===============5250872849613154935==
+--===============4415538135897546696==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============5250872849613154935==
+--===============4415538135897546696==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -327,5 +373,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============5250872849613154935==--
+--===============4415538135897546696==--
 
