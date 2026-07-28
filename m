@@ -4,128 +4,127 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 883ABC53219
-	for <openvpn-devel@archiver.kernel.org>; Tue, 28 Jul 2026 12:09:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A5864C53219
+	for <openvpn-devel@archiver.kernel.org>; Tue, 28 Jul 2026 12:13:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=s3AVldyLN/AgRITTBS4wMr63J04TDzX/2lFAOICHv7Q=; b=Ki59aroc4KZc/ZLU6XOR4Eajwi
-	ExHiy8SCYVPnFgrN+x0nGZ9/XNp8feArPirEmNjDDX2e4whGANIjO52lC+qw8RsNS+o02kV8t2qM+
-	EmiJOSEBieW32Csvo7x06eSfA3Nx98Hp9zaU+BezCiwYip3a3MZvGOzAFFDWPk/EjMoY=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=wD1Fm6kphieunP/ipozCaHM+h0C4podldnYuRXeOJ6I=; b=lYUn+TkdoHiYaCwqjsVWj6hhBD
+	wdWPUPp73sftUAaDRlSamfvpSbqFtzWZgtb8hNshuzqEom8Sy/ypWIsUmmlSJgJ8sftu5qu755Qp3
+	0bUjrLjddY6v3AkR/2U80CPeRPmGrX4i6zs3nvJumOaFPHvNAIXTZ6r8E/xIQb8bMhgQ=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wogcW-000595-S4;
-	Tue, 28 Jul 2026 12:09:17 +0000
+	id 1woggS-0003MX-1m;
+	Tue, 28 Jul 2026 12:13:20 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wogc6-00057I-Ig
+ (envelope-from <gerrit@openvpn.net>) id 1woggQ-0003MO-By
  for openvpn-devel@lists.sourceforge.net;
- Tue, 28 Jul 2026 12:08:51 +0000
+ Tue, 28 Jul 2026 12:13:18 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
  :List-Post:List-Owner:List-Archive;
- bh=52ZKlAlwG65qIZPhgQfAj/Z+3/qGn0eZhn9iARllLOA=; b=XksRlSK5LhpOu5qj0jr4ahkIDS
- PcHGYqe2gjj5cUrOsUd5JJGM6b6zMzcdSmVql7vLpDM4CWsMef9ovGui1o60WaRxsURgnZvpgm+cu
- l8ZzeQ3QPZgYedtQKSpvZTkzrh0PCYal8kfnDZxCGH+hLnXXAaKd9H49TydW3LNvwBJs=;
+ bh=A5VSgbobFNylT/lkTsk1REJxREyb4IljukW8sUM0i7U=; b=CeeqmfTm6vPzzHqWSq3tsYGT2e
+ 7zzl3GJTbdBV2bkKgJi4TL/J/msQsPXEZocM1/eCLvoyT+O4HasXTmFvt9uJmTW+822JI2kPBa0l4
+ 2TdQyq8Nx9it52sAqpfO/qx2+TTQGtugKn1xc/2W1j5QWTYfuuUrgbwFr1aykw/WGVgc=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
  Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=52ZKlAlwG65qIZPhgQfAj/Z+3/qGn0eZhn9iARllLOA=; b=S
- WiNyyXUpuvlylRZcn/e7+KiL8CGqLgBkY8O6HGq64fsRSIuq+GhNaV7REUa78OFT5OIhWe4QlPbkR
- bLkS6zxAqsYiR+o1WjTrbyaVZS2j5eObBLl2Pk9xvvmy4p7gIWdT8X08UqrZ36L96mFQmbHmZ2oi0
- osJCj7AHhpTobMNQ=;
-Received: from mail-wm1-f41.google.com ([209.85.128.41])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ List-Owner:List-Archive; bh=A5VSgbobFNylT/lkTsk1REJxREyb4IljukW8sUM0i7U=; b=F
+ lwa5khih/6NdLQDRCRR6pgH7FSl60a6YTAj7cMOTPPiL6OmKrD+UGmtUaB1s62LDJxnnCrScqHrq+
+ ZxknV2Cp3kDBPA2/9InmQN8Q9Wkt/6lfQ7JAYtcy36GDShTG4Y4K1QfZ5rkbVjzuteapmmAZV/bgv
+ E1YxRUar0sD85t7o=;
+Received: from mail-wm1-f44.google.com ([209.85.128.44])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wogc9-0003uo-VP for openvpn-devel@lists.sourceforge.net;
- Tue, 28 Jul 2026 12:08:51 +0000
-Received: by mail-wm1-f41.google.com with SMTP id
- 5b1f17b1804b1-4954aff6088so33249695e9.3
+ id 1woggM-0003hH-HK for openvpn-devel@lists.sourceforge.net;
+ Tue, 28 Jul 2026 12:13:18 +0000
+Received: by mail-wm1-f44.google.com with SMTP id
+ 5b1f17b1804b1-4954aff6088so33295925e9.3
  for <openvpn-devel@lists.sourceforge.net>;
- Tue, 28 Jul 2026 05:08:50 -0700 (PDT)
+ Tue, 28 Jul 2026 05:13:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1785240524; x=1785845324; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1785240788; x=1785845588; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=52ZKlAlwG65qIZPhgQfAj/Z+3/qGn0eZhn9iARllLOA=;
- b=fqPFGHM6Qosoe3QcClEXRoJ7JrvxMg3K/LierrRmxnuNPLqTINLkfy0uBZnCieRjoe
- JYGl0iMxA43UBrf76A1wU4naDhEEs3S2ZipO00NeKrRjCp2m5teauUvAvZjerHjnvQLu
- RHSueIdOgSZOh+qUW6VimLiD9dVyIpMqOVyo/nzcb9SQ/ejLaPMgtjAgdMX5n0xn4YUD
- N6VI2eqRZ0BlNpuxQIyX2n5vZ5jZY5Mk/KlKk4e7S5bqObbW5pXF2QnPTPf8BYZ6/OcD
- KVf9G8f/4Fl1B7G1/FTDjZrMPWOIaHnhPgJO8QPEQGWn6AJWpGJi9eYgdAtgrAHEjEts
- d/hw==
+ bh=A5VSgbobFNylT/lkTsk1REJxREyb4IljukW8sUM0i7U=;
+ b=dBu8j94o7OVYdERiM5YUnpAImqB3oGivDfpvjG/gb/a/Y1WU2+47iOESFZ1NRWe5+k
+ 4+gAoFINUO0SucrAC+vxTUS+e8XUJ/DkLw/QQa149h9mjECfh7FEVrDLiNdblOX2xd1L
+ ZBtGG/t7BKbbE8UXwScZsXx40y4iqN8BhwMSsfwAg0lDXmx77POuZPlJhw5O2OdKZ+hX
+ Y5PbwLz8K1apE/aNBtrX3N/m9bwE0fJIaVv3CBcmQGCNoExKbUzWxRSEANcZmerZMrXB
+ w5fmJnqAg/SPFO98AcCCojjUQQDIvlLRhw7vUo7jq1G3lenc6b9dcn/lQKlmaaGcyyn5
+ zA0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1785240524; x=1785845324;
+ d=1e100.net; s=20251104; t=1785240788; x=1785845588;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=52ZKlAlwG65qIZPhgQfAj/Z+3/qGn0eZhn9iARllLOA=;
- b=U90Sw7PsbRrdlaztXkdBTpZgw9ZKrmKjz0jo/gtH2v/NvXLqDD5icvAFThocqv2aS6
- BXYouKohQz6ujvtSevxrEWGjzmW6lUWfE6LOliZvyF5Ji1WW/65hRhDEOnTqmaBbv6RB
- YStkQxv/fnvZOvx3syR7rVUmXlWdY7PCBI10ngsi8mOqyaC5knQj1Wf1r/JppgFdENwc
- d9ltEY2nNIs5du8K7Cuy+oanzM/Bsx2Sg048Z0AYc35kGIlQuFq9tP+ue0nwWcNJhlOT
- y7Xf66pX7YN2GV/+caUae955OxS4OOxmzWxRT/N2YMV1ym6RvzBt1XxQquCAz9td749R
- mq8Q==
-X-Forwarded-Encrypted: i=1;
- AHgh+RrGin0BLIaJY+XTWNb5qcW1EQd6oYy129caO6mhSBLb+WT+BSJvTfDglhK6M//IZV5ntU4FvqjeV1DBmUZ4@lists.sourceforge.net
-X-Gm-Message-State: AOJu0YxnIj33MPR551iCIxb0wr+Mp8SZ9tPAYAZkFRivxWhWgRBT6wzJ
- tM0g+V4qtrrb4JHbvwtQct6Ow4kD7MrEPimgUvySQdWkKP1fMdDjP5thYzpymZ6T3ls+a1lxz7B
- Yte2i29FSfTd7v+k/8QSnvmUHC2TIN9HYIQxvKbnEH2pJ5xNP4j6SEKbVtFxY2+Vodewn
-X-Gm-Gg: AR+sD10MspHe9oKcTnnwv2wilUdc20BiAX287/n1QOsnRT/0wxYFr2oReqetipm+Lbr
- QogvOIedjdbh29P58Brdd9OuXfpcgGvmWFjkasCpmfmT88qrMkYR/Rp/3e2E/H2mTeqHJWWmeHr
- UujKsamHn1HV5wbZadIngyHswCGOlGL+e7KY9fnOkZj9fNqfgcH/0NoVOokyyxaTa43dDpi7tR8
- Prj3Rc+tc4miLLAaDECuIS4Y/NYDudVxmCsw/c3KPJTi1VjULC6tBu51CJ0rSF8NsHW4zSD7xFy
- qG/pZ61T7G390JviuJNGXYsRUYH6sIL1HMVUq40J5SW0VPZ+jpwakX73y8Vq3/EBo19xrqzKxNW
- 7OstsGzfCsr3IAJWxgD7keAwRAiXpuxr02Uk7fwvsFsbAYFR3nHecVkM1B0NAxgzlvcDXjJmx65
- Fnml8Z/nX4PKktq9wNpe1j+tDLuS6kqRJgBmzrMP1ygDH493/88Ldwmmh8E8pUtU/p2Lh/DBk7p
- IAvv2EGjAgsU+eDBJPFVR5hOs8d/hp7aIa6MhfmrcKIfRkN76GexMABZrnauK6BvPO/
-X-Received: by 2002:a05:600c:1384:b0:495:6e68:5df2 with SMTP id
- 5b1f17b1804b1-496c643be67mr25479385e9.12.1785240523803; 
- Tue, 28 Jul 2026 05:08:43 -0700 (PDT)
+ bh=A5VSgbobFNylT/lkTsk1REJxREyb4IljukW8sUM0i7U=;
+ b=VTrFwJ8LsVZ3UT2Red8llgfbJ2M9c+Vk9XNyU3dR8rCgcrNwxpU65JL/NUtQSsfayp
+ fgG31NW7UP2Pt0P7UZoQubItCtRIo2GKdz+gYP3lWIM0Fda1TPVzixA044BeLZisL8Je
+ ZKXvwLwfbukfhh8H+MoteqUWKc3Rf8Qq5qrsPHZOg10flBlo7rwGhohWJwf4kZSycMsm
+ 5rkkCnpie/ozbe/gcgBi/FZ+R0araMwli+o7CBw7q1Kq7uUHUOisINNmLb3LFbcfr3lL
+ q5VUe9Myqyd8IYGK+lRdZ6TP0kqA79Rp9EgOg7M1+Mc8E9EdIZmVxMDc3L8OFRO4swJC
+ NPLQ==
+X-Gm-Message-State: AOJu0Yya0UO44GBTxsXJ7cRuC4/vgTsh1pdpPMBExp3uYveCerZx4HqZ
+ zX0sLmyMSdaPDZtJwS/Y9KSIf3YWM4QAqJN75YAN1LJwxK5ZGSYvGbTM2ssIPqLwTcxJsw+72vK
+ 97debfjT37rFLGHN/GEnp5GGkyR/oLCQTd1XAe7NYms1cfXSQpI+t6cx4F5UeejMtS5KXzebic0
+ DJqd6opw==
+X-Gm-Gg: AR+sD13IbunJ7xZ+XfZj058l/LESHdOcwESaKdW+Z4+GndIhkzlQ/4aOJ2K4fSwV/ln
+ XNtPYeaeD7wb/Jx9guiAjVIQ1UX2Xg14NU7OtiylYXxJwiDDcmdeY8qo1VCn3pxoWQIQg5LUqjc
+ Hltj+XM5tucuWbzhroh0NALMsiaYCGwZVfgKVZHS5h5JrZSoSvxDGglK6Cf6h5b/6o98XdhGYrf
+ 9BRhJPgbkAnDTP6rtqxEvkqBt9YTcQ/j8vS2GPzFB9l6AEsIQ+S9iGcuGSZZhFVYT+Lj1DlMEGZ
+ Hd53GuCAOgU+ODeRphkxkiGg/301KJ8tJgCy7WRY8TjnINFSzHzwvt0vyJew8U8nPtNPbC7pI/z
+ QJGKACpjEI7W8i2EMQHnIFAtLecdqssDudGnqyqXp5xt9eJ3IEOhKGP45/HGBCrjWsG8is/u7kn
+ BPl99JgHUyznWqmyN10InQH9FF6wIikF8nA4JRHdCaztcQ747gB5zujA3wTuGyI/AwtUS9zv9oE
+ 6a+4dqmUl4qSVvqn7Ap8Jm/sb/1sTqwpI5r3WN/XYOFc+UtxV3vasFC9QOQV35T/Yz265bR1LQ/
+ gUQ=
+X-Received: by 2002:a05:600c:a00b:b0:495:515a:dad9 with SMTP id
+ 5b1f17b1804b1-496c65a14b2mr24512755e9.37.1785240787468; 
+ Tue, 28 Jul 2026 05:13:07 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-4957f99fa7asm340811795e9.2.2026.07.28.05.08.42
+ 5b1f17b1804b1-496c46240c4sm73548905e9.12.2026.07.28.05.13.06
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 28 Jul 2026 05:08:42 -0700 (PDT)
+ Tue, 28 Jul 2026 05:13:06 -0700 (PDT)
 X-Google-Original-From: "plaisthos (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Tue, 28 Jul 2026 12:08:39 +0000
-To: its_Giaan <gianmarco@mandelbit.com>
+Date: Tue, 28 Jul 2026 12:13:04 +0000
+To: flichtenheld <frank@lichtenheld.com>
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: comment
-X-Gerrit-PatchSet: 29
-X-Gerrit-Change-Id: I0a13ee90b6706acf20eabcee3bab3f2dff639bf9
-X-Gerrit-Change-Number: 1089
+X-Gerrit-MessageType: newpatchset
+X-Gerrit-PatchSet: 2
+X-Gerrit-Change-Id: Ie33aea26026e07c860da7d79880cef6b27b7b0e8
+X-Gerrit-Change-Number: 1828
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1089?usp=email>
-X-Gerrit-Commit: 166bad41b6b290bffc81db9e747967d58833ea1e
-X-Gerrit-Comment-Date: Tue, 28 Jul 2026 12:08:39 +0000
-In-Reply-To: <gerrit.1752743854000.I0a13ee90b6706acf20eabcee3bab3f2dff639bf9@gerrit.openvpn.net>
-References: <gerrit.1752743854000.I0a13ee90b6706acf20eabcee3bab3f2dff639bf9@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzUyNzQzODU0MDAwLkkwYTEzZWU5MGI2NzA2YWNmMjBlYWJjZWUzYmFiM2YyZGZmNjM5YmY5QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <3d01ae6077e24f5e532603c99cc54495b0f2bb71-EmailReviewComments-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1828?usp=email>
+X-Gerrit-Commit: 0c96106fa08237e4500526924ff073372406f9c7
+In-Reply-To: <gerrit.1785239387000.Ie33aea26026e07c860da7d79880cef6b27b7b0e8@gerrit.openvpn.net>
+References: <gerrit.1785239387000.Ie33aea26026e07c860da7d79880cef6b27b7b0e8@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzg1MjM5Mzg3MDAwLkllMzNhZWEyNjAyNmUwN2M4NjBkYTdkNzk4ODBjZWY2YjI3YjdiMGU4QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <83585314e42463b5149eab6ff9f601d6dcec3eac-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wogc9-0003uo-VP
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: multipeer: introduce
- asymmetric peer-id
+X-Headers-End: 1woggM-0003hH-HK
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Move schedule test
+ to a unit test
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -139,204 +138,2418 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 From: "plaisthos \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
-Reply-To: arne-openvpn@rfc2549.org, gianmarco@mandelbit.com,
- openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com,
- antonio@mandelbit.com, gert@greenie.muc.de
+Reply-To: arne-openvpn@rfc2549.org, openvpn-devel@lists.sourceforge.net,
+ frank@lichtenheld.com
 Cc: "plaisthos \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============0131589348668212428=="
+Content-Type: multipart/mixed; boundary="===============1715098188056119378=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============0131589348668212428==
+--===============1715098188056119378==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="tSWVzSbJizA="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="YZC9mBGWJck="; charset=UTF-8
 
---tSWVzSbJizA=
+--YZC9mBGWJck=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, flichtenheld, its_Giaan, ordex=
-=2E
+Attention is currently required from: flichtenheld, plaisthos=2E
 
-plaisthos has posted comments on this change by its_Giaan=2E ( http://=
-gerrit=2Eopenvpn=2Enet/c/openvpn/+/1089?usp=3Demail )
+Hello fli=
+chtenheld, 
 
-Change subject: mult=
-ipeer: introduce asymmetric peer-id
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+I'd like you to reexamine a change=2E Please visit
+
+    http:/=
+/gerrit=2Eopenvpn=2Enet/c/openvpn/+/1828?usp=3Demail
+
+to look at the new pa=
+tch set (#2)=2E
+
+The following approvals got outdated and were removed:
+Cod=
+e-Review-1 by flichtenheld
+
+
+Change subject: Move schedule test to a unit t=
+est
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+
+Move sc=
+hedule test to a unit test
+
+While this test might not be extremely useful t=
+his change removes
+the dead code from init=2Ec and schedule=2Ec and moves i=
+t to a unit
+test=2E
+
+Change-Id: Ie33aea26026e07c860da7d79880cef6b27b7b0e8
+S=
+igned-off-by: Arne Schwabe <arne@rfc2549=2Eorg>
+---
+M CMakeLists=2Etxt
+M sr=
+c/openvpn/init=2Ec
+M src/openvpn/otime=2Eh
+M src/openvpn/schedule=2Ec
+M src=
+/openvpn/schedule=2Eh
+M tests/unit_tests/openvpn/Makefile=2Eam
+M tests/unit=
+_tests/openvpn/test_common=2Eh
+M tests/unit_tests/openvpn/test_misc=2Ec
+A t=
+ests/unit_tests/openvpn/test_schedule=2Ec
+A tests/unit_tests/openvpn/test_s=
+chedule=2Eh
+10 files changed, 397 insertions(+), 400 deletions(-)
 
 
-Patch Set 29: Code-Review+2
+  git p=
+ull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/28/1828/2
 
-(2 comments)
+diff=
+ --git a/CMakeLists=2Etxt b/CMakeLists=2Etxt
+index 7473f15=2E=2E74c080e 100=
+644
+--- a/CMakeLists=2Etxt
++++ b/CMakeLists=2Etxt
+@@ -828,10 +828,14 @@
+ 
+ =
+    target_sources(test_misc PRIVATE
+         tests/unit_tests/openvpn/mock=
+_get_random=2Ec
++        tests/unit_tests/openvpn/test_schedule=2Ec
+       =
+  src/openvpn/options_util=2Ec
++        src/openvpn/otime=2Ec
+         src/=
+openvpn/ssl_util=2Ec
+         src/openvpn/list=2Ec
+-        )
++        src/=
+openvpn/session_id=2Ec
++        src/openvpn/schedule=2Ec
++    )
+ 
+     targ=
+et_sources(test_ncp PRIVATE
+         src/openvpn/crypto_epoch=2Ec
+diff --gi=
+t a/src/openvpn/init=2Ec b/src/openvpn/init=2Ec
+index 914d191=2E=2E0236886 =
+100644
+--- a/src/openvpn/init=2Ec
++++ b/src/openvpn/init=2Ec
+@@ -53,6 +53,7=
+ @@
+ #include "mudp=2Eh"
+ #include "dco=2Eh"
+ #include "tun_afunix=2Eh"
++#i=
+nclude "schedule=2Eh"
+ 
+ #include "memdbg=2Eh"
+ 
+@@ -876,11 +877,6 @@
+ 
+   =
+  init_ssl_lib();
+ 
+-#ifdef SCHEDULE_TEST
+-    schedule_test();
+-    return=
+ false;
+-#endif
+-
+ #ifdef IFCONFIG_POOL_TEST
+     ifconfig_pool_test(0x0A01=
+0004, 0x0A0100FF);
+     return false;
+diff --git a/src/openvpn/otime=2Eh b/=
+src/openvpn/otime=2Eh
+index ad79120=2E=2Ef02cc31 100644
+--- a/src/openvpn/o=
+time=2Eh
++++ b/src/openvpn/otime=2Eh
+@@ -150,80 +150,6 @@
+     }
+ }
+ 
+-stat=
+ic inline bool
+-tv_lt(const struct timeval *t1, const struct timeval *t2)
+-=
+{
+-    if (t1->tv_sec < t2->tv_sec)
+-    {
+-        return true;
+-    }
+-  =
+  else if (t1->tv_sec > t2->tv_sec)
+-    {
+-        return false;
+-    }
+- =
+   else
+-    {
+-        return t1->tv_usec < t2->tv_usec;
+-    }
+-}
+-
+-stat=
+ic inline bool
+-tv_le(const struct timeval *t1, const struct timeval *t2)
+-=
+{
+-    if (t1->tv_sec < t2->tv_sec)
+-    {
+-        return true;
+-    }
+-  =
+  else if (t1->tv_sec > t2->tv_sec)
+-    {
+-        return false;
+-    }
+- =
+   else
+-    {
+-        return t1->tv_usec <=3D t2->tv_usec;
+-    }
+-}
+-
+-s=
+tatic inline bool
+-tv_ge(const struct timeval *t1, const struct timeval *t2=
+)
+-{
+-    if (t1->tv_sec > t2->tv_sec)
+-    {
+-        return true;
+-    }
+=
+-    else if (t1->tv_sec < t2->tv_sec)
+-    {
+-        return false;
+-    }=
 
-File src=
-/openvpn/init=2Ec:
+-    else
+-    {
+-        return t1->tv_usec >=3D t2->tv_usec;
+-    }
+-}
+-=
 
-http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1089/comment/=
-9dd0589c_911979bb?usp=3Demail :
-PS29, Line 2333:     c->options=2Euse_peer_=
-id =3D c->c2=2Etls_multi->use_peer_id;
-I will accept this for now but I thi=
-nk we should eventually clean that up so we have only one boolean that is t=
-he single source of truth instead of having to have two bools that are kept=
- in sync=2E
+-static inline bool
+-tv_gt(const struct timeval *t1, const struct timeval =
+*t2)
+-{
+-    if (t1->tv_sec > t2->tv_sec)
+-    {
+-        return true;
+-   =
+ }
+-    else if (t1->tv_sec < t2->tv_sec)
+-    {
+-        return false;
+-  =
+  }
+-    else
+-    {
+-        return t1->tv_usec > t2->tv_usec;
+-    }
+-}
+-=
 
+-static inline bool
+-tv_eq(const struct timeval *t1, const struct timeval =
+*t2)
+-{
+-    return t1->tv_sec =3D=3D t2->tv_sec && t1->tv_usec =3D=3D t2->=
+tv_usec;
+-}
+-
+ static inline void
+ tv_delta(struct timeval *dest, const str=
+uct timeval *t1, const struct timeval *t2)
+ {
+diff --git a/src/openvpn/sche=
+dule=2Ec b/src/openvpn/schedule=2Ec
+index 6d9bb62=2E=2E6772ad6 100644
+--- a=
+/src/openvpn/schedule=2Ec
++++ b/src/openvpn/schedule=2Ec
+@@ -33,20 +33,6 @@=
 
-File src/openvpn/ssl=2Ec:
+ 
+ #include "memdbg=2Eh"
+ 
+-#ifdef SCHEDULE_TEST
+-
+-struct status
+-{
+-    =
+int sru;
+-    int ins;
+-    int coll;
+-    int lsteps;
+-};
+-
+-static struct=
+ status z;
+-
+-#endif
+-
+ #ifdef ENABLE_DEBUG
+ static void
+ schedule_entry_de=
+bug_info(const char *caller, const struct schedule_entry *e)
+@@ -75,12 +61,=
+7 @@
+     }
+ }
+ 
+-/* This is the master key comparison routine=2E  A key is=
 
-http://gerrit=2Eopenvpn=2Enet/c/op=
-envpn/+/1089/comment/1e3199ef_e1c248d4?usp=3Demail :
-PS29, Line 2323:      =
-       /* Peer has no support for asymmetric peer-id, and DCO currently
-Thi=
-s sounds like both conditions are true here to me=2E Can we change tit some=
-thing that makes it clear that is either condition?
-```suggestion
+- * simply a struct timeval containing the absolute time for
+- * an event=
+=2E  The unique treap priority (pri) is used to ensure
+- * that keys do not=
+ collide=2E
+- */
+-static inline int
++int
+ schedule_entry_compare(const stru=
+ct schedule_entry *e1, const struct schedule_entry *e2)
+ {
+     if (e1->tv=
+=2Etv_sec < e2->tv=2Etv_sec)
+@@ -226,10 +207,6 @@
+             /* parent <-=
+> child linkage is corrupted */
+             ASSERT(0);
+         }
+-
+-#ifde=
+f SCHEDULE_TEST
+-        ++z=2Esru;
+-#endif
+     }
+ }
+ 
+@@ -284,10 +261,6 @=
+@
+     {
+         const int comp =3D schedule_entry_compare(e, c);
+ 
+-#ifde=
+f SCHEDULE_TEST
+-        ++z=2Eins;
+-#endif
+-
+         if (comp =3D=3D -1)
+=
+         {
+             if (c->lt)
+@@ -320,9 +293,6 @@
+         {
          =
-   /* Peer has either no support for asymmetric peer-id, or DCO is in use a=
-nd 
-             * can only handle symmetric peer IDs */
-```
+    /* rare key/priority collision -- no big deal,
+              * just cho=
+ose another priority and retry */
+-#ifdef SCHEDULE_TEST
+-            ++z=2E=
+coll;
+-#endif
+             schedule_set_pri(e);
+             /* msg (M_INFO=
+, "PRI COLLISION pri=3D%u", e->pri); */
+             c =3D s->root;
+@@ -381=
+,9 +351,6 @@
+     {
+         while (e->lt)
+         {
+-#ifdef SCHEDULE_TEST=
 
+-            ++z=2Elsteps;
+-#endif
+             e =3D e->lt;
+         }
+  =
+   }
+@@ -422,280 +389,4 @@
+ {
+     s->earliest_wakeup =3D NULL; /* invalida=
+te cache */
+     schedule_remove_node(s, e);
+-}
+-
+-/*
+- *  Debug functions =
+below this point
+- */
+-
+-#ifdef SCHEDULE_TEST
+-
+-static inline struct sched=
+ule_entry *
+-schedule_find_earliest_wakeup(struct schedule *s)
+-{
+-    retu=
+rn schedule_find_least(s->root);
+-}
+-
+-/*
+- * Recursively check that the tr=
+eap (btree) is
+- * internally consistent=2E
+- */
+-int
+-schedule_debug_entry=
+(const struct schedule_entry *e, int depth, int *count, struct timeval *lea=
+st,
+-                     const struct timeval *min, const struct timeval *=
+max)
+-{
+-    struct gc_arena gc =3D gc_new();
+-    int maxdepth =3D depth;
+=
+-    if (e)
+-    {
+-        int d;
+-
+-        ASSERT(e !=3D e->lt);
+-      =
+  ASSERT(e !=3D e->gt);
+-        ASSERT(e !=3D e->parent);
+-        ASSERT(=
+!e->parent || e->parent !=3D e->lt);
+-        ASSERT(!e->parent || e->paren=
+t !=3D e->gt);
+-        ASSERT(!e->lt || e->lt !=3D e->gt);
+-
+-        if (=
+e->lt)
+-        {
+-            ASSERT(e->lt->parent =3D=3D e);
+-           =
+ ASSERT(schedule_entry_compare(e->lt, e) =3D=3D -1);
+-            ASSERT(e-=
+>lt->pri >=3D e->pri);
+-        }
+-
+-        if (e->gt)
+-        {
+-       =
+     ASSERT(e->gt->parent =3D=3D e);
+-            ASSERT(schedule_entry_com=
+pare(e->gt, e));
+-            ASSERT(e->gt->pri >=3D e->pri);
+-        }
+-
+=
+-        ASSERT(tv_le(min, &e->tv));
+-        ASSERT(tv_le(&e->tv, max));
+-=
 
+-        if (count)
+-        {
+-            ++(*count);
+-        }
+-
+-    =
+    if (least && tv_lt(&e->tv, least))
+-        {
+-            *least =3D e=
+->tv;
+-        }
+-
+-        d =3D schedule_debug_entry(e->lt, depth + 1, co=
+unt, least, min, &e->tv);
+-        if (d > maxdepth)
+-        {
+-          =
+  maxdepth =3D d;
+-        }
+-
+-        d =3D schedule_debug_entry(e->gt, d=
+epth + 1, count, least, &e->tv, max);
+-        if (d > maxdepth)
+-        {=
+
+-            maxdepth =3D d;
+-        }
+-    }
+-    gc_free(&gc);
+-    ret=
+urn maxdepth;
+-}
+-
+-int
+-schedule_debug(struct schedule *s, int *count, str=
+uct timeval *least)
+-{
+-    struct timeval min;
+-    struct timeval max;
+-
+=
+-    min=2Etv_sec =3D 0;
+-    min=2Etv_usec =3D 0;
+-    max=2Etv_sec =3D 0x=
+7FFFFFFF;
+-    max=2Etv_usec =3D 0x7FFFFFFF;
+-
+-    if (s->root)
+-    {
+-  =
+      ASSERT(s->root->parent =3D=3D NULL);
+-    }
+-    return schedule_debu=
+g_entry(s->root, 0, count, least, &min, &max);
+-}
+-
+-#if 1
+-
+-void
+-tv_rand=
+omize(struct timeval *tv)
+-{
+-    tv->tv_sec +=3D random() % 100;
+-    tv->=
+tv_usec =3D random() % 100;
+-}
+-
+-#else  /* if 1 */
+-
+-void
+-tv_randomize(s=
+truct timeval *tv)
+-{
+-    struct gc_arena gc =3D gc_new();
+-    long int c=
+hoice =3D get_random();
+-    if ((choice & 0xFF) =3D=3D 0)
+-    {
+-        =
+tv->tv_usec +=3D ((choice >> 8) & 0xFF);
+-    }
+-    else
+-    {
+-        p=
+rng_bytes((uint8_t *)tv, sizeof(struct timeval));
+-    }
+-    gc_free(&gc);=
+
+-}
+-
+-#endif /* if 1 */
+-
+-void
+-schedule_verify(struct schedule *s)
+-{
+- =
+   struct gc_arena gc =3D gc_new();
+-    struct timeval least;
+-    int cou=
+nt;
+-    int maxlev;
+-    struct schedule_entry *e;
+-    const struct statu=
+s zz =3D z;
+-
+-    least=2Etv_sec =3D least=2Etv_usec =3D 0x7FFFFFFF;
+-
+-  =
+  count =3D 0;
+-
+-    maxlev =3D schedule_debug(s, &count, &least);
+-
+-    =
+e =3D schedule_find_earliest_wakeup(s);
+-
+-    if (e)
+-    {
+-        print=
+f("Verification Phase  count=3D%d maxlev=3D%d sru=3D%d ins=3D%d coll=3D%d l=
+s=3D%d l=3D%s", count,
+-               maxlev, zz=2Esru, zz=2Eins, zz=2Ecol=
+l, zz=2Elsteps, tv_string(&e->tv, &gc));
+-
+-        if (!tv_eq(&least, &e->=
+tv))
+-        {
+-            printf(" [COMPUTED DIFFERENT MIN VALUES!]");
+-=
+        }
+-
+-        printf("\n");
+-    }
+-
+-    CLEAR(z);
+-    gc_free(&gc=
+);
+-}
+-
+-void
+-schedule_randomize_array(struct schedule_entry **array, int =
+size)
+-{
+-    int i;
+-    for (i =3D 0; i < size; ++i)
+-    {
+-        cons=
+t int src =3D get_random() % size;
+-        struct schedule_entry *tmp =3D =
+array[i];
+-        if (i !=3D src)
+-        {
+-            array[i] =3D arr=
+ay[src];
+-            array[src] =3D tmp;
+-        }
+-    }
+-}
+-
+-void
+-sch=
+edule_print_work(struct schedule_entry *e, int indent)
+-{
+-    struct gc_ar=
+ena gc =3D gc_new();
+-    int i;
+-    for (i =3D 0; i < indent; ++i)
+-    {=
+
+-        printf(" ");
+-    }
+-    if (e)
+-    {
+-        printf("%s [%u] e=
+=3D" ptr_format ", p=3D" ptr_format " lt=3D" ptr_format " gt=3D" ptr_format=
+ "\n",
+-               tv_string(&e->tv, &gc), e->pri, (ptr_type)e, (ptr_ty=
+pe)e->parent, (ptr_type)e->lt,
+-               (ptr_type)e->gt);
+-        s=
+chedule_print_work(e->lt, indent + 1);
+-        schedule_print_work(e->gt, =
+indent + 1);
+-    }
+-    else
+-    {
+-        printf("NULL\n");
+-    }
+-   =
+ gc_free(&gc);
+-}
+-
+-void
+-schedule_print(struct schedule *s)
+-{
+-    print=
+f("*************************\n");
+-    schedule_print_work(s->root, 0);
+-}
+=
+-
+-void
+-schedule_test(void)
+-{
+-    struct gc_arena gc =3D gc_new();
+-    =
+int n =3D 1000;
+-    int n_mod =3D 25;
+-
+-    int i, j;
+-    struct schedul=
+e_entry **array;
+-    struct schedule *s =3D schedule_init();
+-    struct s=
+chedule_entry *e;
+-
+-    CLEAR(z);
+-    ALLOC_ARRAY(array, struct schedule_=
+entry *, n);
+-
+-    printf("Creation/Insertion Phase\n");
+-
+-    for (i =3D=
+ 0; i < n; ++i)
+-    {
+-        ALLOC_OBJ_CLEAR(array[i], struct schedule_e=
+ntry);
+-        tv_randomize(&array[i]->tv);
+-        /*schedule_print (s);=
+*/
+-        /*schedule_verify (s);*/
+-        schedule_add_modify(s, array[=
+i]);
+-    }
+-
+-    schedule_randomize_array(array, n);
+-
+-    /*schedule_pr=
+int (s);*/
+-    schedule_verify(s);
+-
+-    for (j =3D 1; j <=3D n_mod; ++j)=
+
+-    {
+-        printf("Modification Phase Pass %d\n", j);
+-
+-        for =
+(i =3D 0; i < n; ++i)
+-        {
+-            e =3D schedule_find_earliest_=
+wakeup(s);
+-            /*printf ("BEFORE %s\n", tv_string (&e->tv, &gc));*=
+/
+-            tv_randomize(&e->tv);
+-            /*printf ("AFTER %s\n", t=
+v_string (&e->tv, &gc));*/
+-            schedule_add_modify(s, e);
+-       =
+     /*schedule_verify (s);*/
+-            /*schedule_print (s);*/
+-       =
+ }
+-        schedule_verify(s);
+-        /*schedule_print (s);*/
+-    }
+-
+-=
+    /*printf ("INS=3D%d\n", z=2Eins);*/
+-
+-    while ((e =3D schedule_find_=
+earliest_wakeup(s)))
+-    {
+-        schedule_remove_node(s, e);
+-        /=
+*schedule_verify (s);*/
+-    }
+-    schedule_verify(s);
+-
+-    printf("S->R=
+OOT is %s\n", s->root ? "NOT NULL" : "NULL");
+-
+-    for (i =3D 0; i < n; +=
++i)
+-    {
+-        free(array[i]);
+-    }
+-    free(array);
+-    free(s);
+=
+-    gc_free(&gc);
+-}
+-
+-#endif /* ifdef SCHEDULE_TEST */
++}
+\ No newline a=
+t end of file
+diff --git a/src/openvpn/schedule=2Eh b/src/openvpn/schedule=
+=2Eh
+index 3847186=2E=2E3c93208 100644
+--- a/src/openvpn/schedule=2Eh
++++ b=
+/src/openvpn/schedule=2Eh
+@@ -34,9 +34,6 @@
+  * a ping or scheduling a TLS =
+renegotiation=2E
+  */
+ 
+-/* define to enable a special test mode */
+-/*#def=
+ine SCHEDULE_TEST*/
+-
+ #include "otime=2Eh"
+ #include "error=2Eh"
+ 
+@@ -63,=
+11 +60,6 @@
+ 
+ void schedule_remove_entry(struct schedule *s, struct schedu=
+le_entry *e);
+ 
+-#ifdef SCHEDULE_TEST
+-void schedule_test(void);
+-
+-#endif
+=
+-
+ /* Private Functions */
+ 
+ /* is node already in tree? */
+@@ -139,4 +131=
+,14 @@
+     return ret;
+ }
+ 
++/**
++ * This method compares two schedule ent=
+ries and return which one is
++ * earlier,later or equal=2E
++ *
++ * A key is=
+ simply a struct timeval containing the absolute time for
++ * an event=2E  =
+The unique treap priority (pri) is used to ensure
++ * that keys do not coll=
+ide=2E
++ */
++int
++schedule_entry_compare(const struct schedule_entry *e1, c=
+onst struct schedule_entry *e2);
+ #endif /* ifndef SCHEDULE_H */
+diff --git=
+ a/tests/unit_tests/openvpn/Makefile=2Eam b/tests/unit_tests/openvpn/Makefi=
+le=2Eam
+index d861ef9=2E=2Ef3d61b4 100644
+--- a/tests/unit_tests/openvpn/Ma=
+kefile=2Eam
++++ b/tests/unit_tests/openvpn/Makefile=2Eam
+@@ -370,6 +370,7 @=
+@
+ misc_testdriver_LDFLAGS =3D @TEST_LDFLAGS@
+ 
+ misc_testdriver_SOURCES =
+=3D test_misc=2Ec \
++    test_schedule=2Ec test_schedule=2Eh \
+ 	mock_msg=
+=2Ec test_common=2Eh  \
+ 	mock_get_random=2Ec \
+ 	$(top_srcdir)/src/openvpn=
+/buffer=2Ec \
+@@ -378,6 +379,9 @@
+ 	$(top_srcdir)/src/openvpn/win32-util=2E=
+c \
+ 	$(top_srcdir)/src/openvpn/platform=2Ec \
+ 	$(top_srcdir)/src/openvpn/=
+list=2Ec
++	$(top_srcdir)/src/openvpn/list=2Ec \
++	$(top_srcdir)/src/openvpn=
+/otime=2Ec \
++	$(top_srcdir)/src/openvpn/schedule=2Ec
+ 
+ push_update_msg_te=
+stdriver_CFLAGS =3D -I$(top_srcdir)/src/openvpn \
+ 	-I$(top_srcdir)/src/com=
+pat \
+diff --git a/tests/unit_tests/openvpn/test_common=2Eh b/tests/unit_te=
+sts/openvpn/test_common=2Eh
+index fb070aa=2E=2E8db4ea6 100644
+--- a/tests/u=
+nit_tests/openvpn/test_common=2Eh
++++ b/tests/unit_tests/openvpn/test_commo=
+n=2Eh
+@@ -78,7 +78,7 @@
+  * @param filename      name of the filename to re=
+trieve relative to the
+  *                      unit test source directory
+=
+  */
+-void
++static inline void
+ openvpn_test_get_srcdir_dir(char *buf, size=
+_t bufsize, const char *filename)
+ {
+     const char *srcdir =3D getenv("sr=
+cdir");
+diff --git a/tests/unit_tests/openvpn/test_misc=2Ec b/tests/unit_te=
+sts/openvpn/test_misc=2Ec
+index fc9840a=2E=2E228d059 100644
+--- a/tests/uni=
+t_tests/openvpn/test_misc=2Ec
++++ b/tests/unit_tests/openvpn/test_misc=2Ec
+=
+@@ -41,6 +41,8 @@
+ #ifdef _WIN32
+ #include "win32-util=2Eh"
+ #endif
++#inclu=
+de "test_schedule=2Eh"
++
+ 
+ static void
+ test_compat_lzo_string(void **stat=
+e)
+@@ -488,7 +490,13 @@
+     cmocka_unit_test(test_auth_fail_temp_flags),
+ =
+    cmocka_unit_test(test_auth_fail_temp_flags_msg),
+     cmocka_unit_test(=
+test_list),
++<<<<<<< HEAD
+     cmocka_unit_test(test_atoi_variants)
++=3D=3D=
+=3D=3D=3D=3D=3D
++    cmocka_unit_test(test_atoi_variants),
++    cmocka_unit=
+_test(test_sid_hash_list),
++    cmocka_unit_test(schedule_test),
++>>>>>>> 9=
+05c36ce5 (Move schedule test to a unit test)
+ };
+ 
+ int
+diff --git a/tests/=
+unit_tests/openvpn/test_schedule=2Ec b/tests/unit_tests/openvpn/test_schedu=
+le=2Ec
+new file mode 100644
+index 0000000=2E=2E73ff6ec
+--- /dev/null
++++ b/=
+tests/unit_tests/openvpn/test_schedule=2Ec
+@@ -0,0 +1,335 @@
++/*
++ *  OpenV=
+PN -- An application to securely tunnel IP networks
++ *             over a =
+single TCP/UDP port, with support for SSL/TLS-based
++ *             session=
+ authentication and key exchange,
++ *             packet encryption, packet=
+ authentication, and
++ *             packet compression=2E
++ *
++ *  Copyrig=
+ht (C) 2026 OpenVPN Inc <sales@openvpn=2Enet>
++ *  Copyright (C) 2026 Arne =
+Schwabe <arne@rfc2549=2Eorg>
++ *
++ *
++ *  This program is free software; yo=
+u can redistribute it and/or modify
++ *  it under the terms of the GNU Gene=
+ral Public License version 2
++ *  as published by the Free Software Foundat=
+ion=2E
++ *
++ *  This program is distributed in the hope that it will be use=
+ful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ =
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE=2E  See the
++ *  GNU=
+ General Public License for more details=2E
++ *
++ *  You should have receiv=
+ed a copy of the GNU General Public License along
++ *  with this program; i=
+f not, write to the Free Software Foundation, Inc=2E,
++ *  51 Franklin Stre=
+et, Fifth Floor, Boston, MA 02110-1301 USA=2E
++ */
++
++#ifdef HAVE_CONFIG_H
+=
++#include "config=2Eh"
++#endif
++
++#include "syshead=2Eh"
++#include "schedul=
+e=2Eh"
++#include "test_common=2Eh"
++
++static inline bool
++tv_lt(const struc=
+t timeval *t1, const struct timeval *t2)
++{
++    if (t1->tv_sec < t2->tv_se=
+c)
++    {
++        return true;
++    }
++    else if (t1->tv_sec > t2->tv_se=
+c)
++    {
++        return false;
++    }
++    else
++    {
++        return t1=
+->tv_usec < t2->tv_usec;
++    }
++}
++
++static inline bool
++tv_le(const struc=
+t timeval *t1, const struct timeval *t2)
++{
++    if (t1->tv_sec < t2->tv_se=
+c)
++    {
++        return true;
++    }
++    else if (t1->tv_sec > t2->tv_se=
+c)
++    {
++        return false;
++    }
++    else
++    {
++        return t1=
+->tv_usec <=3D t2->tv_usec;
++    }
++}
++
++static inline bool
++tv_eq(const st=
+ruct timeval *t1, const struct timeval *t2)
++{
++    return t1->tv_sec =3D=
+=3D t2->tv_sec && t1->tv_usec =3D=3D t2->tv_usec;
++}
++
++static inline struc=
+t schedule_entry *
++schedule_find_earliest_wakeup(struct schedule *s)
++{
++ =
+   return schedule_find_least(s->root);
++}
++
++/*
++ * Recursively check that=
+ the treap (btree) is
++ * internally consistent=2E
++ */
++int
++schedule_debu=
+g_entry(const struct schedule_entry *e, int depth, int *count, struct timev=
+al *least,
++                     const struct timeval *min, const struct ti=
+meval *max)
++{
++    struct gc_arena gc =3D gc_new();
++    int maxdepth =3D =
+depth;
++    if (e)
++    {
++        int d;
++
++        ASSERT(e !=3D e->lt);
+=
++        ASSERT(e !=3D e->gt);
++        ASSERT(e !=3D e->parent);
++        =
+ASSERT(!e->parent || e->parent !=3D e->lt);
++        ASSERT(!e->parent || e=
+->parent !=3D e->gt);
++        ASSERT(!e->lt || e->lt !=3D e->gt);
++
++     =
+   if (e->lt)
++        {
++            ASSERT(e->lt->parent =3D=3D e);
++    =
+        ASSERT(schedule_entry_compare(e->lt, e) =3D=3D -1);
++            AS=
+SERT(e->lt->pri >=3D e->pri);
++        }
++
++        if (e->gt)
++        {
++=
+            ASSERT(e->gt->parent =3D=3D e);
++            ASSERT(schedule_en=
+try_compare(e->gt, e));
++            ASSERT(e->gt->pri >=3D e->pri);
++     =
+   }
++
++        ASSERT(tv_le(min, &e->tv));
++        ASSERT(tv_le(&e->tv, m=
+ax));
++
++        if (count)
++        {
++            ++(*count);
++        }
+=
++
++        if (least && tv_lt(&e->tv, least))
++        {
++            *leas=
+t =3D e->tv;
++        }
++
++        d =3D schedule_debug_entry(e->lt, depth =
++ 1, count, least, min, &e->tv);
++        if (d > maxdepth)
++        {
++   =
+         maxdepth =3D d;
++        }
++
++        d =3D schedule_debug_entry(e=
+->gt, depth + 1, count, least, &e->tv, max);
++        if (d > maxdepth)
++  =
+      {
++            maxdepth =3D d;
++        }
++    }
++    gc_free(&gc);
++=
+    return maxdepth;
++}
++
++int
++schedule_debug(struct schedule *s, int *cou=
+nt, struct timeval *least)
++{
++    struct timeval min;
++    struct timeval =
+max;
++
++    min=2Etv_sec =3D 0;
++    min=2Etv_usec =3D 0;
++    max=2Etv_sec=
+ =3D 0x7FFFFFFF;
++    max=2Etv_usec =3D 0x7FFFFFFF;
++
++    if (s->root)
++  =
+  {
++        ASSERT(s->root->parent =3D=3D NULL);
++    }
++    return schedu=
+le_debug_entry(s->root, 0, count, least, &min, &max);
++}
++
++#if 1
++
++void
++=
+tv_randomize(struct timeval *tv)
++{
++    tv->tv_sec +=3D random() % 100;
++ =
+   tv->tv_usec =3D random() % 100;
++}
++
++#else  /* if 1 */
++
++void
++tv_rand=
+omize(struct timeval *tv)
++{
++    struct gc_arena gc =3D gc_new();
++    lon=
+g int choice =3D get_random();
++    if ((choice & 0xFF) =3D=3D 0)
++    {
++ =
+       tv->tv_usec +=3D ((choice >> 8) & 0xFF);
++    }
++    else
++    {
++  =
+      prng_bytes((uint8_t *)tv, sizeof(struct timeval));
++    }
++    gc_fre=
+e(&gc);
++}
++
++#endif /* if 1 */
++
++void
++schedule_verify(struct schedule *s=
+, int n)
++{
++    struct gc_arena gc =3D gc_new();
++    struct timeval least=
+;
++
++    least=2Etv_sec =3D least=2Etv_usec =3D 0x7FFFFFFF;
++
++    int coun=
+t =3D 0;
++    int maxlev =3D schedule_debug(s, &count, &least);
++
++    /* a=
+ stupid algorithm to do C23 stdc_bit_ceil_ui/stdc_bit_width
++     * calcula=
+te roundup(log2 n) */
++    int bit_ceil_n =3D 1;
++    int log2n =3D 0;
++   =
+ while (bit_ceil_n < n)
++    {
++        bit_ceil_n <<=3D 1;
++        log2n+=
++;
++    }
++
++    /* Since this is a binary tree the maximum level needs to =
+be at least
++     * log2(n) */
++    assert_true(maxlev >=3D log2n);
++    st=
+ruct schedule_entry *e =3D schedule_find_earliest_wakeup(s);
++
++    if (e)
+=
++    {
++        assert_true(tv_eq(&least, &e->tv));
++    }
++
++    gc_free(&=
+gc);
++}
++
++void
++schedule_randomize_array(struct schedule_entry **array, in=
+t size)
++{
++    int i;
++    for (i =3D 0; i < size; ++i)
++    {
++        co=
+nst int src =3D rand() % size;
++        struct schedule_entry *tmp =3D arra=
+y[i];
++        if (i !=3D src)
++        {
++            array[i] =3D array[s=
+rc];
++            array[src] =3D tmp;
++        }
++    }
++}
++
++void
++schedul=
+e_print_work(struct schedule_entry *e, int indent)
++{
++    struct gc_arena =
+gc =3D gc_new();
++    int i;
++    for (i =3D 0; i < indent; ++i)
++    {
++  =
+      printf(" ");
++    }
++    if (e)
++    {
++        printf("%s [%u] e=3D"=
+ ptr_format ", p=3D" ptr_format " lt=3D" ptr_format " gt=3D" ptr_format "\n=
+",
++               tv_string(&e->tv, &gc), e->pri, (ptr_type)e, (ptr_type)e=
+->parent, (ptr_type)e->lt,
++               (ptr_type)e->gt);
++        sched=
+ule_print_work(e->lt, indent + 1);
++        schedule_print_work(e->gt, inde=
+nt + 1);
++    }
++    else
++    {
++        printf("NULL\n");
++    }
++    gc_=
+free(&gc);
++}
++
++void
++schedule_print(struct schedule *s)
++{
++    printf("*=
+************************\n");
++    schedule_print_work(s->root, 0);
++}
++
++v=
+oid
++schedule_test(void **state)
++{
++    struct gc_arena gc =3D gc_new();
++=
+    int n =3D 1000;
++    int n_mod =3D 25;
++
++    int i, j;
++    struct sch=
+edule_entry **array;
++    struct schedule *s =3D schedule_init();
++    stru=
+ct schedule_entry *e;
++
++    ALLOC_ARRAY(array, struct schedule_entry *, n)=
+;
++
++    for (i =3D 0; i < n; ++i)
++    {
++        ALLOC_OBJ_CLEAR(array[i]=
+, struct schedule_entry);
++        tv_randomize(&array[i]->tv);
++        /*=
+schedule_print (s);*/
++        /*schedule_verify (s, n);*/
++        schedul=
+e_add_modify(s, array[i]);
++    }
++
++    schedule_randomize_array(array, n)=
+;
++
++    /*schedule_print (s);*/
++    schedule_verify(s, n);
++
++    for (j =
+=3D 1; j <=3D n_mod; ++j)
++    {
++        /*printf("Modification Phase Pass=
+ %d\n", j);*/
++
++        for (i =3D 0; i < n; ++i)
++        {
++            =
+e =3D schedule_find_earliest_wakeup(s);
++            /*printf ("BEFORE %s\n=
+", tv_string (&e->tv, &gc));*/
++            tv_randomize(&e->tv);
++        =
+    /*printf ("AFTER %s\n", tv_string (&e->tv, &gc));*/
++            schedu=
+le_add_modify(s, e);
++            /*schedule_verify (s, n);*/
++            =
+/*schedule_print (s);*/
++        }
++        schedule_verify(s, n);
++       =
+ /*schedule_print (s);*/
++    }
++
++    /*printf ("INS=3D%d\n", z=2Eins);*/
+=
++
++    while ((e =3D schedule_find_earliest_wakeup(s)))
++    {
++        sch=
+edule_remove_node(s, e);
++        /*schedule_verify (s, n);*/
++    }
++    s=
+chedule_verify(s, 0);
++    assert_null(s->root);
++
++    for (i =3D 0; i < n=
+; ++i)
++    {
++        free(array[i]);
++    }
++    free(array);
++    schedu=
+le_free(s);
++    gc_free(&gc);
++}
+diff --git a/tests/unit_tests/openvpn/tes=
+t_schedule=2Eh b/tests/unit_tests/openvpn/test_schedule=2Eh
+new file mode 1=
+00644
+index 0000000=2E=2E09bbfb1
+--- /dev/null
++++ b/tests/unit_tests/openv=
+pn/test_schedule=2Eh
+@@ -0,0 +1,31 @@
++/*
++ *  OpenVPN -- An application to=
+ securely tunnel IP networks
++ *             over a single TCP/UDP port, wi=
+th support for SSL/TLS-based
++ *             session authentication and key=
+ exchange,
++ *             packet encryption, packet authentication, and
++ =
+*             packet compression=2E
++ *
++ *  Copyright (C) 2026 OpenVPN Inc=
+ <sales@openvpn=2Enet>
++ *  Copyright (C) 2026 Arne Schwabe <arne@rfc2549=
+=2Eorg>
++ *
++ *
++ *  This program is free software; you can redistribute it=
+ and/or modify
++ *  it under the terms of the GNU General Public License ve=
+rsion 2
++ *  as published by the Free Software Foundation=2E
++ *
++ *  This =
+program is distributed in the hope that it will be useful,
++ *  but WITHOUT=
+ ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or=
+ FITNESS FOR A PARTICULAR PURPOSE=2E  See the
++ *  GNU General Public Licen=
+se for more details=2E
++ *
++ *  You should have received a copy of the GNU =
+General Public License along
++ *  with this program; if not, write to the F=
+ree Software Foundation, Inc=2E,
++ *  51 Franklin Street, Fifth Floor, Bost=
+on, MA 02110-1301 USA=2E
++ */
++
++#ifndef SCHEDULE_TEST_H
++#define SCHEDULE_=
+TEST_H
++/** Runs the schedule test */
++void
++schedule_test(void **state);
++=
+#endif
+\ No newline at end of file
 
 -- 
-To view=
-, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1089?usp=3Demail
-To unsub=
-scribe, or for help writing mail filters, visit http://gerrit=2Eopenvpn=2En=
-et/settings?usp=3Demail
+To view, visit http://gerrit=2Eopen=
+vpn=2Enet/c/openvpn/+/1828?usp=3Demail
+To unsubscribe, or for help writing =
+mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Gerrit-MessageType: comment
-Gerrit-Project: openvp=
-n
+Ger=
+rit-MessageType: newpatchset
+Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I0a13ee90b6706acf20eabcee3bab3f2d=
-ff639bf9
-Gerrit-Change-Number: 1089
-Gerrit-PatchSet: 29
-Gerrit-Owner: its_G=
-iaan <gianmarco@mandelbit=2Ecom>
-Gerrit-Reviewer: cron2 <gert@greenie=2Emuc=
-=2Ede>
+=
+Gerrit-Change-Id: Ie33aea26026e07c860da7d79880cef6b27b7b0e8
+Gerrit-Change-N=
+umber: 1828
+Gerrit-PatchSet: 2
+Gerrit-Owner: plaisthos <arne-openvpn@rfc254=
+9=2Eorg>
 Gerrit-Reviewer: flichtenheld <frank@lichtenheld=2Ecom>
-Gerrit-Revie=
-wer: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-CC: openvpn-devel <openv=
-pn-devel@lists=2Esourceforge=2Enet>
-Gerrit-CC: ordex <antonio@mandelbit=2Ec=
-om>
-Gerrit-Attention: its_Giaan <gianmarco@mandelbit=2Ecom>
-Gerrit-Attentio=
-n: cron2 <gert@greenie=2Emuc=2Ede>
-Gerrit-Attention: flichtenheld <frank@li=
-chtenheld=2Ecom>
-Gerrit-Attention: ordex <antonio@mandelbit=2Ecom>
-Gerrit-C=
-omment-Date: Tue, 28 Jul 2026 12:08:39 +0000
-Gerrit-HasComments: Yes
-Gerrit=
--Has-Labels: Yes
+Gerrit-CC:=
+ openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Attention: =
+plaisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Attention: flichtenheld <fran=
+k@lichtenheld=2Ecom>
 
---tSWVzSbJizA=
+--YZC9mBGWJck=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: cron2, flichtenheld, its_Giaan, ordex=2E </p>
-<p>Patc=
-h set 29:<span style=3D"border-radius: 3px; display: inline-block; margin: =
-0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span></p><p=
-><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1089?usp=3Demail">Vie=
-w Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/init=2Ec:</p><u=
-l style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: =
-0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=2Eop=
-envpn=2Enet/c/openvpn/+/1089/comment/9dd0589c_911979bb?usp=3Demail">Patch S=
-et #29, Line 2333:</a> <code style=3D"font-family:monospace,monospace">    =
-c-&gt;options=2Euse_peer_id =3D c-&gt;c2=2Etls_multi-&gt;use_peer_id;</code=
-></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-w=
-ord;">I will accept this for now but I think we should eventually clean tha=
-t up so we have only one boolean that is the single source of truth instead=
- of having to have two bools that are kept in sync=2E</p></li></ul></li><li=
- style=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl=2Ec:</p><ul style=
-=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 1=
-6px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1089/comment/1e3199ef_e1c248d4?usp=3Demail">Patch Set #2=
-9, Line 2323:</a> <code style=3D"font-family:monospace,monospace">         =
-   /* Peer has no support for asymmetric peer-id, and DCO currently</code><=
-/p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-s=
-pace: pre-wrap;">This sounds like both conditions are true here to me=2E Ca=
-n we change tit something that makes it clear that is either condition?<br>=
-```suggestion<br>            /* Peer has either no support for asymmetric p=
-eer-id, or DCO is in use and <br>             * can only handle symmetric p=
-eer IDs */<br>```</pre></li></ul></li></ul><p>To view, visit <a href=3D"htt=
-p://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1089?usp=3Demail">change 1089</a>=2E=
- To unsubscribe, or for help writing mail filters, visit <a href=3D"http://=
-gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemsc=
-ope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=
-=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"u=
-rl" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1089?usp=3Demail"/><m=
-eta itemprop=3D"name" content=3D"View Change"/></div></div>
+rently required from: flichtenheld, plaisthos=2E </p>
+<p>plaisthos <strong>=
+uploaded patch set #2</strong> to this change=2E</p><p><a href=3D"http://ge=
+rrit=2Eopenvpn=2Enet/c/openvpn/+/1828?usp=3Demail">View Change</a></p><p>Th=
+e following approvals got outdated and were removed:
+Code-Review-1 by flich=
+tenheld</p><pre class=3D"blocks" style=3D"font-family: monospace,monospace;=
+ white-space: pre-wrap;">Move schedule test to a unit test<br><br>While thi=
+s test might not be extremely useful this change removes<br>the dead code f=
+rom init=2Ec and schedule=2Ec and moves it to a unit<br>test=2E<br><br>Chan=
+ge-Id: Ie33aea26026e07c860da7d79880cef6b27b7b0e8<br>Signed-off-by: Arne Sch=
+wabe &lt;arne@rfc2549=2Eorg&gt;<br>---<br>M CMakeLists=2Etxt<br>M src/openv=
+pn/init=2Ec<br>M src/openvpn/otime=2Eh<br>M src/openvpn/schedule=2Ec<br>M s=
+rc/openvpn/schedule=2Eh<br>M tests/unit_tests/openvpn/Makefile=2Eam<br>M te=
+sts/unit_tests/openvpn/test_common=2Eh<br>M tests/unit_tests/openvpn/test_m=
+isc=2Ec<br>A tests/unit_tests/openvpn/test_schedule=2Ec<br>A tests/unit_tes=
+ts/openvpn/test_schedule=2Eh<br>10 files changed, 397 insertions(+), 400 de=
+letions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospa=
+ce,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet=
+:29418/openvpn refs/changes/28/1828/2</pre><pre style=3D"font-family: monos=
+pace,monospace; white-space: pre-wrap;"><span>diff --git a/CMakeLists=2Etxt=
+ b/CMakeLists=2Etxt</span><br><span>index 7473f15=2E=2E74c080e 100644</span=
+><br><span>--- a/CMakeLists=2Etxt</span><br><span>+++ b/CMakeLists=2Etxt</s=
+pan><br><span>@@ -828,10 +828,14 @@</span><br><span> </span><br><span>     =
+target_sources(test_misc PRIVATE</span><br><span>         tests/unit_tests/=
+openvpn/mock_get_random=2Ec</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        tests/unit_tests/openvpn/test_schedule=2Ec</span><br><span>=
+         src/openvpn/options_util=2Ec</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        src/openvpn/otime=2Ec</span><br><span>         sr=
+c/openvpn/ssl_util=2Ec</span><br><span>         src/openvpn/list=2Ec</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        )</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        src/openvpn/session_id=2Ec</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        src/openvpn/sch=
+edule=2Ec</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    )</spa=
+n><br><span> </span><br><span>     target_sources(test_ncp PRIVATE</span><b=
+r><span>         src/openvpn/crypto_epoch=2Ec</span><br><span>diff --git a/=
+src/openvpn/init=2Ec b/src/openvpn/init=2Ec</span><br><span>index 914d191=
+=2E=2E0236886 100644</span><br><span>--- a/src/openvpn/init=2Ec</span><br><=
+span>+++ b/src/openvpn/init=2Ec</span><br><span>@@ -53,6 +53,7 @@</span><br=
+><span> #include &quot;mudp=2Eh&quot;</span><br><span> #include &quot;dco=
+=2Eh&quot;</span><br><span> #include &quot;tun_afunix=2Eh&quot;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;schedule=2Eh&quo=
+t;</span><br><span> </span><br><span> #include &quot;memdbg=2Eh&quot;</span=
+><br><span> </span><br><span>@@ -876,11 +877,6 @@</span><br><span> </span><=
+br><span>     init_ssl_lib();</span><br><span> </span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-#ifdef SCHEDULE_TEST</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    schedule_test();</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    return false;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-</span><br><span> #ifdef IFCONFIG_POOL_TEST</span><br><span>     ifcon=
+fig_pool_test(0x0A010004, 0x0A0100FF);</span><br><span>     return false;</=
+span><br><span>diff --git a/src/openvpn/otime=2Eh b/src/openvpn/otime=2Eh</=
+span><br><span>index ad79120=2E=2Ef02cc31 100644</span><br><span>--- a/src/=
+openvpn/otime=2Eh</span><br><span>+++ b/src/openvpn/otime=2Eh</span><br><sp=
+an>@@ -150,80 +150,6 @@</span><br><span>     }</span><br><span> }</span><br=
+><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-static inline=
+ bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-tv_lt(const stru=
+ct timeval *t1, const struct timeval *t2)</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    if (t1-&gt;tv_sec &lt; t2-&gt;tv_sec)</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-        return true;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    else if (=
+t1-&gt;tv_sec &gt; t2-&gt;tv_sec)</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    return false;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    else</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-        return t1-&gt;tv_usec &lt; t2-&gt;tv_usec=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-st=
+atic inline bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-tv_le=
+(const struct timeval *t1, const struct timeval *t2)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    if (t1-&gt;tv_sec &lt; t2-&gt;tv_sec)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        return true;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   else if (t1-&gt;tv_sec &gt; t2-&gt;tv_sec)</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-        return false;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    else=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-        return t1-&gt;tv_usec &lt;=3D=
+ t2-&gt;tv_usec;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-static inline bool</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-tv_ge(const struct timeval *t1, const struct timeval *t2)</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    if (t1-&gt;tv_sec &gt; t2-&gt;tv_sec)</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        return true;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    else if (t1-&gt;tv_sec &lt; t2-&gt;tv_sec)</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-        return false;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    else</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return t1-&g=
+t;tv_usec &gt;=3D t2-&gt;tv_usec;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-static inline bool</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-tv_gt(const struct timeval *t1, const struct t=
+imeval *t2)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    if (t1-&gt;tv_sec &gt; t2-=
+&gt;tv_sec)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-        return true;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    else if (t1-&gt;tv_sec &lt; t2-&gt;tv_s=
+ec)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-        return false;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    else</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    return t1-&gt;tv_usec &gt; t2-&gt;tv_usec;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-static inline bool</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-tv_eq(const struct timeval *t1, con=
+st struct timeval *t2)</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return t1-&gt;t=
+v_sec =3D=3D t2-&gt;tv_sec &amp;&amp; t1-&gt;tv_usec =3D=3D t2-&gt;tv_usec;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-</span><br><span> static inline void</spa=
+n><br><span> tv_delta(struct timeval *dest, const struct timeval *t1, const=
+ struct timeval *t2)</span><br><span> {</span><br><span>diff --git a/src/op=
+envpn/schedule=2Ec b/src/openvpn/schedule=2Ec</span><br><span>index 6d9bb62=
+=2E=2E6772ad6 100644</span><br><span>--- a/src/openvpn/schedule=2Ec</span><=
+br><span>+++ b/src/openvpn/schedule=2Ec</span><br><span>@@ -33,20 +33,6 @@<=
+/span><br><span> </span><br><span> #include &quot;memdbg=2Eh&quot;</span><b=
+r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef SCHED=
+ULE_TEST</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-struct status</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    int sru;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    int ins;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    i=
+nt coll;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int lstep=
+s;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-};</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-static struct status z;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#en=
+dif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> =
+#ifdef ENABLE_DEBUG</span><br><span> static void</span><br><span> schedule_=
+entry_debug_info(const char *caller, const struct schedule_entry *e)</span>=
+<br><span>@@ -75,12 +61,7 @@</span><br><span>     }</span><br><span> }</spa=
+n><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-/* This =
+is the master key comparison routine=2E  A key is</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">- * simply a struct timeval containing the absol=
+ute time for</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * an eve=
+nt=2E  The unique treap priority (pri) is used to ensure</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">- * that keys do not collide=2E</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-static inline int</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+int</span><br><span> schedule_entry_compare(const s=
+truct schedule_entry *e1, const struct schedule_entry *e2)</span><br><span>=
+ {</span><br><span>     if (e1-&gt;tv=2Etv_sec &lt; e2-&gt;tv=2Etv_sec)</sp=
+an><br><span>@@ -226,10 +207,6 @@</span><br><span>             /* parent &l=
+t;-&gt; child linkage is corrupted */</span><br><span>             ASSERT(0=
+);</span><br><span>         }</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef SCHEDU=
+LE_TEST</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        ++z=2E=
+sru;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br>=
+<span>     }</span><br><span> }</span><br><span> </span><br><span>@@ -284,1=
+0 +261,6 @@</span><br><span>     {</span><br><span>         const int comp =
+=3D schedule_entry_compare(e, c);</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#ifdef SCHEDULE_TEST</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        ++z=2Eins;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-</span><br><span>         if (comp =3D=3D -1)</span><br><span=
+>         {</span><br><span>             if (c-&gt;lt)</span><br><span>@@ -=
+320,9 +293,6 @@</span><br><span>         {</span><br><span>             /* =
+rare key/priority collision -- no big deal,</span><br><span>              *=
+ just choose another priority and retry */</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-#ifdef SCHEDULE_TEST</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-            ++z=2Ecoll;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-#endif</span><br><span>             schedule_set_pri(=
+e);</span><br><span>             /* msg (M_INFO, &quot;PRI COLLISION pri=3D=
+%u&quot;, e-&gt;pri); */</span><br><span>             c =3D s-&gt;root;</sp=
+an><br><span>@@ -381,9 +351,6 @@</span><br><span>     {</span><br><span>   =
+      while (e-&gt;lt)</span><br><span>         {</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-#ifdef SCHEDULE_TEST</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-            ++z=2Elsteps;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span>             e =3D e=
+-&gt;lt;</span><br><span>         }</span><br><span>     }</span><br><span>=
+@@ -422,280 +389,4 @@</span><br><span> {</span><br><span>     s-&gt;earlies=
+t_wakeup =3D NULL; /* invalidate cache */</span><br><span>     schedule_rem=
+ove_node(s, e);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">- *  Debug functions below this point</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef SCHEDULE=
+_TEST</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-static inline struct schedule_entry *=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-schedule_find_earlies=
+t_wakeup(struct schedule *s)</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return sc=
+hedule_find_least(s-&gt;root);</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-/*</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">- * Recursively check that the treap (btree) is</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">- * internally consistent=
+=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-schedule_debug_entry(const struct schedule_entry *e, i=
+nt depth, int *count, struct timeval *least,</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-                     const struct timeval *min, cons=
+t struct timeval *max)</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct gc_arena=
+ gc =3D gc_new();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+int maxdepth =3D depth;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    if (e)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-        int d;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-        ASSERT(e !=3D e-&gt;lt);</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-        ASSERT(e !=3D e-&gt;gt);</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-        ASSERT(e !=3D e-&gt;par=
+ent);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        ASSERT(!=
+e-&gt;parent || e-&gt;parent !=3D e-&gt;lt);</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-        ASSERT(!e-&gt;parent || e-&gt;parent !=3D e-=
+&gt;gt);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        ASSER=
+T(!e-&gt;lt || e-&gt;lt !=3D e-&gt;gt);</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     if (e-&gt;lt)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            ASS=
+ERT(e-&gt;lt-&gt;parent =3D=3D e);</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-            ASSERT(schedule_entry_compare(e-&gt;lt, e) =3D=3D =
+-1);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            ASSER=
+T(e-&gt;lt-&gt;pri &gt;=3D e-&gt;pri);</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (e-&g=
+t;gt)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-            ASSERT(e-&gt;gt-=
+&gt;parent =3D=3D e);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+            ASSERT(schedule_entry_compare(e-&gt;gt, e));</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-            ASSERT(e-&gt;gt-&gt;pri &gt;=
+=3D e-&gt;pri);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+  }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-        ASSERT(tv_le(min, &amp;e-&gt;tv=
+));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        ASSERT(tv_=
+le(&amp;e-&gt;tv, max));</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (count)=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-            ++(*count);</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-        if (least &amp;&amp; tv_lt(&amp;e-&gt;tv, least))</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-            *least =3D e-&gt;tv;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-        d =3D schedule_debug_entry(e-&gt;lt, depth + 1, count,=
+ least, min, &amp;e-&gt;tv);</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        if (d &gt; maxdepth)</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-            maxdepth =3D d;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-        d =3D schedule_de=
+bug_entry(e-&gt;gt, depth + 1, count, least, &amp;e-&gt;tv, max);</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-        if (d &gt; maxdepth)</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-            maxdepth =3D d;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    gc_free(&amp;gc);</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    return maxdepth;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-schedule_debug(struct schedule *s, int *cou=
+nt, struct timeval *least)</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct time=
+val min;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct ti=
+meval max;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    min=2Etv_sec =3D 0;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    min=2Etv_usec =3D 0;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    max=2Etv_sec =3D 0x7FFF=
+FFFF;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    max=2Etv_use=
+c =3D 0x7FFFFFFF;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (s-&gt;root)</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        ASSERT(s-&gt;root-&gt;parent =3D=3D=
+ NULL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    return schedule_debug_entr=
+y(s-&gt;root, 0, count, least, &amp;min, &amp;max);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if 1</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-void</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-tv_randomize(struct timeval *tv)</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    tv-&gt;tv_sec +=3D random() % 100;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    tv-&gt;tv_usec =3D random() % 100;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#els=
+e  /* if 1 */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-void</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-tv_randomize(struct timeval *tv)</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    struct gc_arena gc =3D gc_new();</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    long int choice =3D get_random();</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    if ((choice &amp; 0x=
+FF) =3D=3D 0)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        tv-&gt;tv_usec +=
+=3D ((choice &gt;&gt; 8) &amp; 0xFF);</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    else</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        prng_bytes((uint8_t *=
+)tv, sizeof(struct timeval));</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    gc_f=
+ree(&amp;gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-#endif /* if 1 */</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-schedule_verify(=
+struct schedule *s)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct gc_arena gc=
+ =3D gc_new();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    str=
+uct timeval least;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ int count;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int ma=
+xlev;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct sched=
+ule_entry *e;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    cons=
+t struct status zz =3D z;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    least=2Etv_se=
+c =3D least=2Etv_usec =3D 0x7FFFFFFF;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    c=
+ount =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    maxlev =3D schedule_debug(s=
+, &amp;count, &amp;least);</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    e =3D schedu=
+le_find_earliest_wakeup(s);</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (e)</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-        printf(&quot;Verification Phase  c=
+ount=3D%d maxlev=3D%d sru=3D%d ins=3D%d coll=3D%d ls=3D%d l=3D%s&quot;, cou=
+nt,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-               max=
+lev, zz=2Esru, zz=2Eins, zz=2Ecoll, zz=2Elsteps, tv_string(&amp;e-&gt;tv, &=
+amp;gc));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        if (!tv_eq(&amp;least, &a=
+mp;e-&gt;tv))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            printf(&=
+quot; [COMPUTED DIFFERENT MIN VALUES!]&quot;);</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+printf(&quot;\n&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    CLEAR(z);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    gc_free(&amp;gc);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-void</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-schedule_randomize_array(s=
+truct schedule_entry **array, int size)</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  int i;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    for (i =
+=3D 0; i &lt; size; ++i)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        const=
+ int src =3D get_random() % size;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-        struct schedule_entry *tmp =3D array[i];</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-        if (i !=3D src)</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-            array[i] =3D array[src];</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-            array[src] =3D tmp;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-void</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-schedule_print_work(struct sched=
+ule_entry *e, int indent)</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct gc_ar=
+ena gc =3D gc_new();</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   int i;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    for (i =
+=3D 0; i &lt; indent; ++i)</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        pri=
+ntf(&quot; &quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (e)</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        printf(&quot;%s [%u] e=3D&quot; ptr=
+_format &quot;, p=3D&quot; ptr_format &quot; lt=3D&quot; ptr_format &quot; =
+gt=3D&quot; ptr_format &quot;\n&quot;,</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-               tv_string(&amp;e-&gt;tv, &amp;gc), e-&gt;pr=
+i, (ptr_type)e, (ptr_type)e-&gt;parent, (ptr_type)e-&gt;lt,</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-               (ptr_type)e-&gt;gt);</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-        schedule_print_=
+work(e-&gt;lt, indent + 1);</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-        schedule_print_work(e-&gt;gt, indent + 1);</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    else</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        pr=
+intf(&quot;NULL\n&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    gc_free(=
+&amp;gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-void</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-schedule_print(struct schedule *s)</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  printf(&quot;*************************\n&quot;);</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    schedule_print_work(s-&gt;root, 0);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-schedule_te=
+st(void)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    struct gc_arena gc =3D gc_new=
+();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int n =3D 1000=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int n_mod =3D 25=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    int i, j;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    struct schedule_entry **array;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    struct schedule *s =3D schedule_=
+init();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct sch=
+edule_entry *e;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    CLEAR(z);</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    ALLOC_ARRAY(array, struct sched=
+ule_entry *, n);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    printf(&quot;Creation/=
+Insertion Phase\n&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    for (i =3D 0;=
+ i &lt; n; ++i)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        ALLOC_OBJ_CLEA=
+R(array[i], struct schedule_entry);</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        tv_randomize(&amp;array[i]-&gt;tv);</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-        /*schedule_print (s);*/</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        /*schedule_verify (s)=
+;*/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        schedule_a=
+dd_modify(s, array[i]);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    schedule_randomize_array(array,=
+ n);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    /*schedule_print (s);*/</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    schedule_verify(s);</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    for (j =3D 1; j &lt;=3D n_mod; ++j)</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-        printf(&quot;Modification Phase Pass %d\n=
+&quot;, j);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-        for (i =3D 0; i &lt; n;=
+ ++i)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-            e =3D schedule_f=
+ind_earliest_wakeup(s);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-            /*printf (&quot;BEFORE %s\n&quot;, tv_string (&amp;e-&gt;tv, =
+&amp;gc));*/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+   tv_randomize(&amp;e-&gt;tv);</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-            /*printf (&quot;AFTER %s\n&quot;, tv_string (&amp;e-&=
+gt;tv, &amp;gc));*/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+          schedule_add_modify(s, e);</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-            /*schedule_verify (s);*/</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            /*schedule_print (s);*/</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-        schedule_verify(s);</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        /*schedule_print (s);*/</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    /*printf (&quot;INS=3D%d\n&quot;, z=2Eins);*/</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    while ((e =3D schedule_find_earliest_wakeup(s)))</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-        schedule_remove_node(s, e);</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-        /*schedule_verify =
+(s);*/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    schedule_verify(s);</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    printf(&quot;S-&gt;ROOT is %s\n&quot;, s-&gt;r=
+oot ? &quot;NOT NULL&quot; : &quot;NULL&quot;);</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    for (i =3D 0; i &lt; n; ++i)</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+        free(array[i]);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    free(array=
+);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    free(s);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    gc_free(&amp;gc);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-#endif /* ifdef SCHEDULE_TEST */</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+}</span><br><span>\ No newline at end of file</span><br>=
+<span>diff --git a/src/openvpn/schedule=2Eh b/src/openvpn/schedule=2Eh</spa=
+n><br><span>index 3847186=2E=2E3c93208 100644</span><br><span>--- a/src/ope=
+nvpn/schedule=2Eh</span><br><span>+++ b/src/openvpn/schedule=2Eh</span><br>=
+<span>@@ -34,9 +34,6 @@</span><br><span>  * a ping or scheduling a TLS rene=
+gotiation=2E</span><br><span>  */</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-/* define to enable a special test mode */<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*#define SCHEDULE_TES=
+T*/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> =
+#include &quot;otime=2Eh&quot;</span><br><span> #include &quot;error=2Eh&qu=
+ot;</span><br><span> </span><br><span>@@ -63,11 +60,6 @@</span><br><span> <=
+/span><br><span> void schedule_remove_entry(struct schedule *s, struct sche=
+dule_entry *e);</span><br><span> </span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-#ifdef SCHEDULE_TEST</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-void schedule_test(void);</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /* =
+Private Functions */</span><br><span> </span><br><span> /* is node already =
+in tree? */</span><br><span>@@ -139,4 +131,14 @@</span><br><span>     retur=
+n ret;</span><br><span> }</span><br><span> </span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ * This method compares two schedule entries and return which one i=
+s</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * earlier,later o=
+r equal=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ * A key is simply a struc=
+t timeval containing the absolute time for</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ * an event=2E  The unique treap priority (pri) is u=
+sed to ensure</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * tha=
+t keys do not collide=2E</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+schedule_entry_compare(cons=
+t struct schedule_entry *e1, const struct schedule_entry *e2);</span><br><s=
+pan> #endif /* ifndef SCHEDULE_H */</span><br><span>diff --git a/tests/unit=
+_tests/openvpn/Makefile=2Eam b/tests/unit_tests/openvpn/Makefile=2Eam</span=
+><br><span>index d861ef9=2E=2Ef3d61b4 100644</span><br><span>--- a/tests/un=
+it_tests/openvpn/Makefile=2Eam</span><br><span>+++ b/tests/unit_tests/openv=
+pn/Makefile=2Eam</span><br><span>@@ -370,6 +370,7 @@</span><br><span> misc_=
+testdriver_LDFLAGS =3D @TEST_LDFLAGS@</span><br><span> </span><br><span> mi=
+sc_testdriver_SOURCES =3D test_misc=2Ec \</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    test_schedule=2Ec test_schedule=2Eh \</span><br><=
+span> 	mock_msg=2Ec test_common=2Eh  \</span><br><span> 	mock_get_random=2E=
+c \</span><br><span> 	$(top_srcdir)/src/openvpn/buffer=2Ec \</span><br><spa=
+n>@@ -378,6 +379,9 @@</span><br><span> 	$(top_srcdir)/src/openvpn/win32-uti=
+l=2Ec \</span><br><span> 	$(top_srcdir)/src/openvpn/platform=2Ec \</span><b=
+r><span> 	$(top_srcdir)/src/openvpn/list=2Ec</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/list=2Ec \</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/otime=
+=2Ec \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir=
+)/src/openvpn/schedule=2Ec</span><br><span> </span><br><span> push_update_m=
+sg_testdriver_CFLAGS =3D -I$(top_srcdir)/src/openvpn \</span><br><span> 	-I=
+$(top_srcdir)/src/compat \</span><br><span>diff --git a/tests/unit_tests/op=
+envpn/test_common=2Eh b/tests/unit_tests/openvpn/test_common=2Eh</span><br>=
+<span>index fb070aa=2E=2E8db4ea6 100644</span><br><span>--- a/tests/unit_te=
+sts/openvpn/test_common=2Eh</span><br><span>+++ b/tests/unit_tests/openvpn/=
+test_common=2Eh</span><br><span>@@ -78,7 +78,7 @@</span><br><span>  * @para=
+m filename      name of the filename to retrieve relative to the</span><br>=
+<span>  *                      unit test source directory</span><br><span> =
+ */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-void</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+static inline void</span><br><spa=
+n> openvpn_test_get_srcdir_dir(char *buf, size_t bufsize, const char *filen=
+ame)</span><br><span> {</span><br><span>     const char *srcdir =3D getenv(=
+&quot;srcdir&quot;);</span><br><span>diff --git a/tests/unit_tests/openvpn/=
+test_misc=2Ec b/tests/unit_tests/openvpn/test_misc=2Ec</span><br><span>inde=
+x fc9840a=2E=2E228d059 100644</span><br><span>--- a/tests/unit_tests/openvp=
+n/test_misc=2Ec</span><br><span>+++ b/tests/unit_tests/openvpn/test_misc=2E=
+c</span><br><span>@@ -41,6 +41,8 @@</span><br><span> #ifdef _WIN32</span><b=
+r><span> #include &quot;win32-util=2Eh&quot;</span><br><span> #endif</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;test_schedu=
+le=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span> </span><br><span> static void</span><br><span> test_compat_lzo_s=
+tring(void **state)</span><br><span>@@ -488,7 +490,13 @@</span><br><span>  =
+   cmocka_unit_test(test_auth_fail_temp_flags),</span><br><span>     cmocka=
+_unit_test(test_auth_fail_temp_flags_msg),</span><br><span>     cmocka_unit=
+_test(test_list),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+&l=
+t;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</span><br><span>     cmocka_unit_test(test_=
+atoi_variants)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=3D=
+=3D=3D=3D=3D=3D=3D</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   cmocka_unit_test(test_atoi_variants),</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    cmocka_unit_test(test_sid_hash_list),</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    cmocka_unit_test(schedule_te=
+st),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+&gt;&gt;&gt;&gt=
+;&gt;&gt;&gt; 905c36ce5 (Move schedule test to a unit test)</span><br><span=
+> };</span><br><span> </span><br><span> int</span><br><span>diff --git a/te=
+sts/unit_tests/openvpn/test_schedule=2Ec b/tests/unit_tests/openvpn/test_sc=
+hedule=2Ec</span><br><span>new file mode 100644</span><br><span>index 00000=
+00=2E=2E73ff6ec</span><br><span>--- /dev/null</span><br><span>+++ b/tests/u=
+nit_tests/openvpn/test_schedule=2Ec</span><br><span>@@ -0,0 +1,335 @@</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *  OpenVPN -- An application to securely=
+ tunnel IP networks</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ *             over a single TCP/UDP port, with support for SSL/TLS-based</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             sessio=
+n authentication and key exchange,</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ *             packet encryption, packet authentication, and=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             pack=
+et compression=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  Copyright (C) 2=
+026 OpenVPN Inc &lt;sales@openvpn=2Enet&gt;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+ *  Copyright (C) 2026 Arne Schwabe &lt;arne@rfc254=
+9=2Eorg&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *  This program is free software; you ca=
+n redistribute it and/or modify</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ *  it under the terms of the GNU General Public License versio=
+n 2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  as published=
+ by the Free Software Foundation=2E</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+*  This program is distributed in the hope that it will be useful,</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY=
+; without even the implied warranty of</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE=
+=2E  See the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  GNU=
+ General Public License for more details=2E</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ *  You should have received a copy of the GNU General Public Licens=
+e along</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  with thi=
+s program; if not, write to the Free Software Foundation, Inc=2E,</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ *  51 Franklin Street, Fifth=
+ Floor, Boston, MA 02110-1301 USA=2E</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef HAVE_CONFIG=
+_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;co=
+nfig=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endi=
+f</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+#include &quot;syshead=2Eh&quot;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;schedule=
+=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include =
+&quot;test_common=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static inli=
+ne bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+tv_lt(const =
+struct timeval *t1, const struct timeval *t2)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    if (t1-&gt;tv_sec &lt; t2-&gt;tv_sec)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        return true;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    else if (t1-&gt;tv_sec &gt; t2-&gt;tv_sec)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        return false;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return t1-&gt=
+;tv_usec &lt; t2-&gt;tv_usec;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+static inline bool</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+tv_le(const struct timeval *t1, const str=
+uct timeval *t2)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (t1-&gt;tv_sec=
+ &lt; t2-&gt;tv_sec)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        retur=
+n true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (t1-&gt;tv_sec=
+ &gt; t2-&gt;tv_sec)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        retur=
+n false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        return t1-&gt;tv_usec &lt;=3D t2-&gt;tv_us=
+ec;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+static inline bool</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+tv_eq(const struct timeval *t1, const struct timeval *t2)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    return t1-&gt;tv_sec =3D=3D t2-&gt;tv_sec &a=
+mp;&amp; t1-&gt;tv_usec =3D=3D t2-&gt;tv_usec;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static inl=
+ine struct schedule_entry *</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+schedule_find_earliest_wakeup(struct schedule *s)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    return schedule_find_least(s-&gt;root);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Recursi=
+vely check that the treap (btree) is</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ * internally consistent=2E</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+schedul=
+e_debug_entry(const struct schedule_entry *e, int depth, int *count, struct=
+ timeval *least,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+                  const struct timeval *min, const struct timeval *max)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena gc =3D gc_new();</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    int maxdepth =3D dep=
+th;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (e)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        int d;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        ASSERT(e !=3D e-&gt;lt);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        ASSERT(e !=3D e-&gt;gt);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        ASSERT(e !=3D e-&gt;parent);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ASSERT(!e-&g=
+t;parent || e-&gt;parent !=3D e-&gt;lt);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        ASSERT(!e-&gt;parent || e-&gt;parent !=3D e-&g=
+t;gt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ASSER=
+T(!e-&gt;lt || e-&gt;lt !=3D e-&gt;gt);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        if (e-&gt;lt)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+     ASSERT(e-&gt;lt-&gt;parent =3D=3D e);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+            ASSERT(schedule_entry_compare(e-&gt;lt, =
+e) =3D=3D -1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+       ASSERT(e-&gt;lt-&gt;pri &gt;=3D e-&gt;pri);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        if (e-&gt;gt)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      ASSERT(e-&gt;gt-&gt;parent =3D=3D e);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            ASSERT(schedule_entry_compare(e-&gt;gt,=
+ e));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            AS=
+SERT(e-&gt;gt-&gt;pri &gt;=3D e-&gt;pri);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ ASSERT(tv_le(min, &amp;e-&gt;tv));</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        ASSERT(tv_le(&amp;e-&gt;tv, max));</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        if (count)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+            ++(*count);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (leas=
+t &amp;&amp; tv_lt(&amp;e-&gt;tv, least))</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            *least =3D e-&gt;tv;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    d =3D schedule_debug_entry(e-&gt;lt, depth + 1, count, least, min, &amp=
+;e-&gt;tv);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+if (d &gt; maxdepth)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   maxdepth =3D d;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        d =3D schedule_debug_e=
+ntry(e-&gt;gt, depth + 1, count, least, &amp;e-&gt;tv, max);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        if (d &gt; maxdepth)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+            maxdepth =3D d;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    return maxdepth;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+schedule_debug(struct sche=
+dule *s, int *count, struct timeval *least)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    struct timeval min;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    struct timeval max;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    m=
+in=2Etv_sec =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   min=2Etv_usec =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    max=2Etv_sec =3D 0x7FFFFFFF;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    max=2Etv_usec =3D 0x7FFFFFFF;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    if (s-&gt;root)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      ASSERT(s-&gt;root-&gt;parent =3D=3D NULL);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    return schedule_debug_entry(s-&gt;root, 0, count, least,=
+ &amp;min, &amp;max);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+#if 1</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+tv_rando=
+mize(struct timeval *tv)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    tv-&gt;tv=
+_sec +=3D random() % 100;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    tv-&gt;tv_usec =3D random() % 100;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#else  /* if=
+ 1 */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+tv_randomize(struct timeval *tv)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    struct gc_arena gc =3D gc_new();</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    long int choice =3D get_random()=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if ((choice &a=
+mp; 0xFF) =3D=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        tv-&gt=
+;tv_usec +=3D ((choice &gt;&gt; 8) &amp; 0xFF);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    else</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        prn=
+g_bytes((uint8_t *)tv, sizeof(struct timeval));</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    gc_free(&amp;gc);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* if 1 */</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+schedule_verify(struct schedule *s, int n)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    struct gc_arena gc =3D gc_new();</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    struct timeval least;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    least=2Etv_sec =3D least=2Etv_usec =3D 0x7F=
+FFFFFF;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    int count =3D 0;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    int maxlev =3D schedule_de=
+bug(s, &amp;count, &amp;least);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* =
+a stupid algorithm to do C23 stdc_bit_ceil_ui/stdc_bit_width</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+     * calculate roundup(log2 n) *=
+/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int bit_ceil_n=
+ =3D 1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int log2=
+n =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    while (=
+bit_ceil_n &lt; n)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        bit_cei=
+l_n &lt;&lt;=3D 1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       log2n++;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    /* Since this is a binary tree th=
+e maximum level needs to be at least</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+     * log2(n) */</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    assert_true(maxlev &gt;=3D log2n);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    struct schedule_entry *e =3D schedule=
+_find_earliest_wakeup(s);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (e)</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        assert_true(tv_eq(&amp;least=
+, &amp;e-&gt;tv));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+schedule_=
+randomize_array(struct schedule_entry **array, int size)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    int i;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    for (i =3D 0; i &lt; size; ++i)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        const int src =3D rand() % size;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        struct schedule_entry *tmp =3D ar=
+ray[i];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (=
+i !=3D src)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            array[=
+i] =3D array[src];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           array[src] =3D tmp;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+schedule_print_work(struct schedule_entry *e, int indent)</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    struct gc_arena gc =3D gc_new();</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    int i;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    for (i =3D 0; i &lt; indent; ++i)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        printf(&quot; &quot;);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    if (e)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        printf(&quot;%s [%u] e=3D&quot; ptr_format &quot;, =
+p=3D&quot; ptr_format &quot; lt=3D&quot; ptr_format &quot; gt=3D&quot; ptr_=
+format &quot;\n&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+               tv_string(&amp;e-&gt;tv, &amp;gc), e-&gt;pri, (ptr_type)e=
+, (ptr_type)e-&gt;parent, (ptr_type)e-&gt;lt,</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+               (ptr_type)e-&gt;gt);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        schedule_print_work(e-&gt=
+;lt, indent + 1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      schedule_print_work(e-&gt;gt, indent + 1);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    else</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        pr=
+intf(&quot;NULL\n&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    gc_f=
+ree(&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+schedule_print(struct schedule *s)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    printf(&quot;*************************\n&quot;);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    schedule_print_work(s-=
+&gt;root, 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+schedule_test(void **state)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    struct gc_arena gc =3D gc_new();</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    int n =3D 1000;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    int n_mod =3D 25;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    int i, j;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    struct schedule_entry **array;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    struct schedule *s =3D schedule_init();</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    struct schedule_entry *e;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    ALLOC_ARRAY(array, struct schedule_en=
+try *, n);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    for (i =3D 0; i &lt; n; =
+++i)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        ALLOC_OBJ_CLEAR(array=
+[i], struct schedule_entry);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        tv_randomize(&amp;array[i]-&gt;tv);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        /*schedule_print (s);*/</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        /*schedule_verify (s,=
+ n);*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        sched=
+ule_add_modify(s, array[i]);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    schedule_randomize_a=
+rray(array, n);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    /*schedule_print (s=
+);*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    schedule_ve=
+rify(s, n);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    for (j =3D 1; j &lt;=3D=
+ n_mod; ++j)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /*printf(&quo=
+t;Modification Phase Pass %d\n&quot;, j);*/</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        for (i =3D 0; i &lt; n; ++i)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            e =3D schedule_find_earliest_wakeup(s);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+            /*printf (&quot;BEF=
+ORE %s\n&quot;, tv_string (&amp;e-&gt;tv, &amp;gc));*/</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+            tv_randomize(&amp;e-&gt;tv);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            /*print=
+f (&quot;AFTER %s\n&quot;, tv_string (&amp;e-&gt;tv, &amp;gc));*/</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+            schedule_add_modi=
+fy(s, e);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+  /*schedule_verify (s, n);*/</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+            /*schedule_print (s);*/</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        schedule_verify(s, n);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        /*schedule_print (s);*/</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    /*printf (&quot;INS=3D%d\n&quot;, z=2Eins);*/</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    while ((e =3D schedule_find_earliest_wakeup(s)))</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        schedule_remove_node(s, e);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        /*schedule_veri=
+fy (s, n);*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    schedule_verify(s=
+, 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_nul=
+l(s-&gt;root);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (i =3D 0; i &lt;=
+ n; ++i)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        free(array[i]);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    free(array);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    schedule_free(s);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span>diff --git a/tes=
+ts/unit_tests/openvpn/test_schedule=2Eh b/tests/unit_tests/openvpn/test_sch=
+edule=2Eh</span><br><span>new file mode 100644</span><br><span>index 000000=
+0=2E=2E09bbfb1</span><br><span>--- /dev/null</span><br><span>+++ b/tests/un=
+it_tests/openvpn/test_schedule=2Eh</span><br><span>@@ -0,0 +1,31 @@</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ *  OpenVPN -- An application to securely tu=
+nnel IP networks</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
+            over a single TCP/UDP port, with support for SSL/TLS-based</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             session a=
+uthentication and key exchange,</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ *             packet encryption, packet authentication, and</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             packet =
+compression=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  Copyright (C) 2026=
+ OpenVPN Inc &lt;sales@openvpn=2Enet&gt;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ *  Copyright (C) 2026 Arne Schwabe &lt;arne@rfc2549=
+=2Eorg&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *  This program is free software; you ca=
+n redistribute it and/or modify</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ *  it under the terms of the GNU General Public License versio=
+n 2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  as published=
+ by the Free Software Foundation=2E</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+*  This program is distributed in the hope that it will be useful,</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY=
+; without even the implied warranty of</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE=
+=2E  See the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  GNU=
+ General Public License for more details=2E</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ *  You should have received a copy of the GNU General Public Licens=
+e along</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  with thi=
+s program; if not, write to the Free Software Foundation, Inc=2E,</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ *  51 Franklin Street, Fifth=
+ Floor, Boston, MA 02110-1301 USA=2E</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifndef SCHEDULE_T=
+EST_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define SCHEDU=
+LE_TEST_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/** Runs t=
+he schedule test */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+schedule_test(v=
+oid **state);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif=
+</span><br><span>\ No newline at end of file</span><br><span></span><br></p=
+re><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1=
+828?usp=3Demail">change 1828</a>=2E To unsubscribe, or for help writing mai=
+l filters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Dem=
+ail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/Emai=
+lMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eor=
+g/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/=
+c/openvpn/+/1828?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chan=
+ge"/></div></div>
 
-<div style=3D"=
-display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:non=
-e"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Bran=
-ch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I0a13ee90b=
-6706acf20eabcee3bab3f2dff639bf9 </div>
-<div style=3D"display:none"> Gerrit-=
-Change-Number: 1089 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 29=
- </div>
-<div style=3D"display:none"> Gerrit-Owner: its_Giaan &lt;gianmarco@=
-mandelbit=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cr=
-on2 &lt;gert@greenie=2Emuc=2Ede&gt; </div>
-<div style=3D"display:none"> Ger=
-rit-Reviewer: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
-<div styl=
-e=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@rfc2549=2Eo=
-rg&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;ope=
-nvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
-<div style=3D"display:none"=
-> Gerrit-CC: ordex &lt;antonio@mandelbit=2Ecom&gt; </div>
-<div style=3D"dis=
-play:none"> Gerrit-Attention: its_Giaan &lt;gianmarco@mandelbit=2Ecom&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@greenie=
-=2Emuc=2Ede&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flich=
-tenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatc=
+hset </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<di=
+v style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"displa=
+y:none"> Gerrit-Change-Id: Ie33aea26026e07c860da7d79880cef6b27b7b0e8 </div>=
+
+<div style=3D"display:none"> Gerrit-Change-Number: 1828 </div>
+<div style=
+=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> G=
+errit-Owner: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=
+=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@lichtenheld=2Eco=
+m&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;open=
+vpn-devel@lists=2Esourceforge=2Enet&gt; </div>
 <div style=3D"display:none">=
- Gerrit-Attention: ordex &lt;antonio@mandelbit=2Ecom&gt; </div>
-<div style=
-=3D"display:none"> Gerrit-Comment-Date: Tue, 28 Jul 2026 12:08:39 +0000 </d=
-iv>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=
-=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+ Gerrit-Attention: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div=
+ style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@lichtenhe=
+ld=2Ecom&gt; </div>
 
 </body></html>
---tSWVzSbJizA=--
+--YZC9mBGWJck=--
 
 
---===============0131589348668212428==
+--===============1715098188056119378==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============0131589348668212428==
+--===============1715098188056119378==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -347,5 +2560,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============0131589348668212428==--
+--===============1715098188056119378==--
 
