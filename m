@@ -4,7 +4,7 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id EC9C3C531F9
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D90A3C53219
 	for <openvpn-devel@archiver.kernel.org>; Tue, 28 Jul 2026 11:49:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:Cc:
@@ -12,29 +12,29 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
 	:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=4JI7XNkscyUSBkFxU8QJIaqodb34DsucJL7LCK2HePQ=; b=Qipb2ScDaj370sJGxZowuH+ZCd
-	DRMOc4nf8piXu7EOsSINMDs57SryM+C1T/TyblXRb8bwGHDBjaFe1exfru9ij1kPZ/j7hwhMQQi7M
-	hhHSJSt1jGqQljAHb9X4f9X4qjf2HU+q32vgWhF2WBcYIksWN9AzaiI7EWUSrQq/RQ9s=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=fU92+gKt4yApHpIwY37R1b5J7gHtzpyeXo1Ak2efZCE=; b=XbwLAUfs7QwdKFYNF29gGflsEF
+	NlhD0tbDXu+gmkhuow14N9MVejLv4q/8gkPsoFWZx6b+Hf1hkNGdNqYcEzX3cwKTTIjEvkQLI/ExO
+	AZWcg24X/euyFJDrsmGQHWGXWzUYtEhgKxdjEyO937rs9QoncNd0g+PdROAfJujqpDFY=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wogJ6-0002oD-PZ;
-	Tue, 28 Jul 2026 11:49:12 +0000
+	id 1wogJ7-0003Fx-2k;
+	Tue, 28 Jul 2026 11:49:13 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <a@unstable.cc>) id 1wogJ5-0002o4-7u
+ (envelope-from <a@unstable.cc>) id 1wogJ5-0003Fk-S2
  for openvpn-devel@lists.sourceforge.net;
- Tue, 28 Jul 2026 11:49:11 +0000
+ Tue, 28 Jul 2026 11:49:12 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
  In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=tRaDtzA/BJj2zwxV9t0k38HHdjtHPPreMlLZlmWrfj4=; b=e+5Ep7NBXW95fLRn11aiXK9R9x
- fNKV3jdeDAh4rYbWfNXqJnREdfx2dHu1ra68mvjRaVZ6NcH0cQwUmRRX4oS3oskOMjTSU+GZ6BelH
- cTDSeE1vx9Ixw9AbDIFLwPR4LYYgcb1L0Jq3QKA8AtOFtj0BFSgxhymMy3q2lKWPIj4w=;
+ bh=Q5s+IliVCAtSxSuO/VpXlFTI87izFQhZPPXqXBnI1qQ=; b=B/t2AhNx4AwZhdD64FAKs0RSYu
+ HUXNmRLvtte4lsImbNwIcRuSuCFgfh3poDYawnDeRKT9FKG/TkqVHO9/A9DqvCH2baEgrkloWWtKe
+ YTe7Jq0JYSxq0f3k1Hs/bb33g9HMhKZlq0MqH11kJugoS0td70eABk3/Auk7BOWrsA44=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -42,47 +42,42 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=tRaDtzA/BJj2zwxV9t0k38HHdjtHPPreMlLZlmWrfj4=; b=APMGQGnpJJTxJqRjZ5qjxDiYga
- iCxSkVYaRYW8HGillYpBw7mJGw7jkU2aV2S78XsweatArO3WwEXnGAkUTORSbVj+5ts9tYBZy0cdc
- 0p8VLpwPHuigWsZdITtjnAIhqszSfo8BDH3qleiqqJT0KEKfCuGHCoFM0SC9DYh/S6vs=;
-Received: from mout-p-201.mailbox.org ([80.241.56.171])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ bh=Q5s+IliVCAtSxSuO/VpXlFTI87izFQhZPPXqXBnI1qQ=; b=Cu/gypxEWnLXy2BJFRIEjrrhf9
+ xVLMSPnle6vwpF+72upjLT9LCZhG0+zlBxELUOAGp5DyDT2IxzR3deNrGtONTcouYNp7OrozRQdl/
+ Ox4AQLjzlD1eX/k8m1r2BLmlq5Pqp8X83vqg8isfwTAB7g6R+d6MAw3wOqWXH76C2goA=;
+Received: from mout-p-101.mailbox.org ([80.241.56.151])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wogJ7-0003Bi-7X for openvpn-devel@lists.sourceforge.net;
- Tue, 28 Jul 2026 11:49:11 +0000
-Received: from smtp1.mailbox.org (smtp1.mailbox.org
- [IPv6:2001:67c:2050:b231:465::1])
+ id 1wogJ5-0002um-0H for openvpn-devel@lists.sourceforge.net;
+ Tue, 28 Jul 2026 11:49:12 +0000
+Received: from smtp1.mailbox.org (unknown [10.196.197.1])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
  (No client certificate requested)
- by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4h8Ydn6CNLzMlKT;
- Tue, 28 Jul 2026 13:49:01 +0200 (CEST)
+ by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4h8Ydq1Hr3z8v0H;
+ Tue, 28 Jul 2026 13:49:03 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=unstable.cc; s=MBO0001;
- t=1785239341;
+ t=1785239343;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=tRaDtzA/BJj2zwxV9t0k38HHdjtHPPreMlLZlmWrfj4=;
- b=Fg4PMUavj9XbqjgTlU4KvyycExXg2eGInSsBBohkLacnXA3tW1Md3sdU0+RsfHEFNe5sIw
- 7lVnYap7Djg+QJci0YZta0yJZWPZwgRvrHTCBZ70wfPpf0qf/rzZ5fVK2ueYnxcq/XlKTF
- KQvkMz2fHwzxaiSmuaWftcf1A85lQSbBSafwmye30hRJKcOlVsKtFBwr7QX/ZouqPpf4DA
- ejx/8IeXJ/HaUNeLCKbWCSMQJzquVekh+snVq5ACAJtp8w5sRrBUTECA8kYYnkIzWpWdXy
- WioOWl1fS3YyCXWHVHf1gTMNTxfcN1DuvfVnrXgKaFI3w8MylvG0kqFjLwMfeA==
-Authentication-Results: outgoing_mbo_mout; dkim=none;
- spf=pass (outgoing_mbo_mout: domain of a@unstable.cc designates
- 2001:67c:2050:b231:465::1 as permitted sender) smtp.mailfrom=a@unstable.cc
+ bh=Q5s+IliVCAtSxSuO/VpXlFTI87izFQhZPPXqXBnI1qQ=;
+ b=qLu2lLQqcFJMQEcJ4bsza6Ojqrj5Z/lRxWprggB0G58fmNcWIYfIYs4IXiL77VLTfHU/qH
+ VLQeJ/o+I4xwVUnUNaany4+R1Qg/4x/7cHYekbNKImfUSp1q6tO2g+P/YtWQ6LBd+8FRvW
+ 9/8gR/FSCjU8QXQhlB1n1tE4OZAf7NswgEmnnIf1J2i0y7HNpPDCo0PFBBjfHd5RfzfJHk
+ QF8tGN7dZfstYhX1Oc/cDDLTY1pYPqebwzGHgTC80EwDr4s3JoK/XC1N6KYRj/XRxZqx2Z
+ r2A2q/1muYloYqcBA+2/w5SzN0YWmAH8lQfbukN8Q3J/3U6Ebv3+QONxjosQ+w==
 From: Antonio Quartulli <a@unstable.cc>
 To: openvpn-devel@lists.sourceforge.net
-Date: Tue, 28 Jul 2026 13:48:47 +0200
-Message-ID: <20260728114855.1323861-2-a@unstable.cc>
+Date: Tue, 28 Jul 2026 13:48:49 +0200
+Message-ID: <20260728114855.1323861-4-a@unstable.cc>
 In-Reply-To: <20260728114855.1323861-1-a@unstable.cc>
 References: <20260728114855.1323861-1-a@unstable.cc>
 MIME-Version: 1.0
-X-Rspamd-Queue-Id: 4h8Ydn6CNLzMlKT
-X-Headers-End: 1wogJ7-0003Bi-7X
-Subject: [Openvpn-devel] [PATCH ovpn net v4 1/9] ovpn: skip rehash for peers
- already removed from by_id
+X-Headers-End: 1wogJ5-0002um-0H
+Subject: [Openvpn-devel] [PATCH ovpn net v4 3/9] ovpn: fix data race reading
+ cached local endpoint on TX path
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -101,139 +96,241 @@ Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
 From: Antonio Quartulli <antonio@openvpn.net>
 
-ovpn_nl_peer_set_doit() resolves the target peer via
-ovpn_peer_get_by_id() before taking ovpn->lock. In the window between
-the lookup (which only takes a refcount) and the subsequent
-spin_lock_bh(&ovpn->lock), a concurrent OVPN_CMD_PEER_DEL, keepalive
-expiry, or socket teardown can take ovpn->lock first, run
-ovpn_peer_remove() to unhash the peer from all four tables (by_id,
-by_vpn_addr4/6, by_transp_addr) and release the lock. set_doit then
-acquires ovpn->lock and calls ovpn_peer_hash_vpn_ip(), which
-re-inserts the now-removed peer back into the rehashing tables.
+The cached local source address bind->local is updated in place on a
+live, RCU-published ovpn_bind while holding peer->lock: the UDP output
+error paths reset it (ovpn_udp4_output()/ovpn_udp6_output()) and the RX
+float path learns it (ovpn_peer_endpoints_update()). The UDP TX fast
+path and the netlink dump, however, read bind->local holding only
+rcu_read_lock(), never peer->lock.
 
-The same race affects the float path: ovpn_peer_endpoints_update()
-holds only a refcount and acquires ovpn->lock very late (after async
-AEAD decrypt and a netlink notification), then rehashes the peer
-in the by_transp_addr table.
+For bind->local.ipv6 this is a torn read: struct in6_addr is 128 bit and
+is copied as multiple words, so a concurrent in-place update can make a
+reader observe a mix of the old and new address. The mangled source
+address then feeds ip6_dst_lookup_flow() and udp_tunnel6_xmit_skb(). For
+bind->local.ipv4 (a single aligned word) it is a data race without
+tearing.
 
-The resurrected peer becomes reachable again from the RX lookup
-(ovpn_peer_get_by_transp_addr) and the TX VPN-IP lookup, even though
-userspace believes it is gone. Once the data-path refcount drops the
-peer is freed via call_rcu while the hash entries embedded in it
-remain linked, opening a UAF window.
+A spinlock on the per-packet TX path is not acceptable, and
+READ_ONCE()/WRITE_ONCE() cannot atomically access the 128-bit IPv6
+address (the >8-byte access is rejected at build time and per-word
+accesses still can't yield a consistent snapshot).
 
-Bail out of the rehash when hash_entry_id is unhashed, mirroring
-the sentinel already used by ovpn_peer_remove() to detect the
-already-removed state. The check is safe under ovpn->lock, which
-serializes every mutation of hash_entry_id, and is a no-op for the
-add path because ovpn_peer_add_mp() inserts hash_entry_id before
-calling ovpn_peer_hash_vpn_ip().
+Serialize the IPv6 field with a per-peer seqcount_spinlock_t tied to the
+existing peer->lock: the in-place writers (already under peer->lock) bump
+it, and readers take a lock-free read_seqcount_begin()/retry() snapshot
+via the new ovpn_peer_local_ipv6() helper. The single-word IPv4 field is
+handled with plain READ_ONCE()/WRITE_ONCE(). bind->remote is untouched:
+it is immutable for a given bind object (only swapped via whole-bind RCU
+replacement), so reading it locklessly remains safe.
 
-Fixes: 1d36a36f6d53 ("ovpn: implement peer add/get/dump/delete via netlink")
+Fixes: 08857b5ec5d9 ("ovpn: implement basic TX path (UDP)")
 Signed-off-by: Antonio Quartulli <antonio@openvpn.net>
 ---
-Changes since v1:
-* simplified flow in ovpn_peer_endpoints_update() and introduced new
-  unlock2 label
----
- drivers/net/ovpn/peer.c | 73 ++++++++++++++++++++++++-----------------
- 1 file changed, 43 insertions(+), 30 deletions(-)
+ drivers/net/ovpn/netlink.c | 13 +++++++++++--
+ drivers/net/ovpn/peer.c    | 26 +++++++++++++++++++++++++-
+ drivers/net/ovpn/peer.h    |  6 ++++++
+ drivers/net/ovpn/udp.c     | 17 +++++++++++++----
+ 4 files changed, 55 insertions(+), 7 deletions(-)
 
+diff --git a/drivers/net/ovpn/netlink.c b/drivers/net/ovpn/netlink.c
+index 4dad85294198..8e21fa3e7822 100644
+--- a/drivers/net/ovpn/netlink.c
++++ b/drivers/net/ovpn/netlink.c
+@@ -610,14 +610,23 @@ static int ovpn_nl_send_peer(struct sk_buff *skb, const struct genl_info *info,
+ 	bind = rcu_dereference(peer->bind);
+ 	if (bind) {
+ 		if (bind->remote.in4.sin_family == AF_INET) {
++			/* bind->local is updated in place under peer->lock;
++			 * READ_ONCE() pairs with the WRITE_ONCE() updaters
++			 */
+ 			if (nla_put_in_addr(skb, OVPN_A_PEER_REMOTE_IPV4,
+ 					    bind->remote.in4.sin_addr.s_addr) ||
+ 			    nla_put_net16(skb, OVPN_A_PEER_REMOTE_PORT,
+ 					  bind->remote.in4.sin_port) ||
+ 			    nla_put_in_addr(skb, OVPN_A_PEER_LOCAL_IPV4,
+-					    bind->local.ipv4.s_addr))
++					    READ_ONCE(bind->local.ipv4.s_addr)))
+ 				goto err_unlock;
+ 		} else if (bind->remote.in4.sin_family == AF_INET6) {
++			struct in6_addr local_ipv6;
++
++			/* read the 128-bit local address under the peer
++			 * seqcount to avoid a torn read
++			 */
++			ovpn_peer_local_ipv6(peer, bind, &local_ipv6);
+ 			if (nla_put_in6_addr(skb, OVPN_A_PEER_REMOTE_IPV6,
+ 					     &bind->remote.in6.sin6_addr) ||
+ 			    nla_put_u32(skb, OVPN_A_PEER_REMOTE_IPV6_SCOPE_ID,
+@@ -625,7 +634,7 @@ static int ovpn_nl_send_peer(struct sk_buff *skb, const struct genl_info *info,
+ 			    nla_put_net16(skb, OVPN_A_PEER_REMOTE_PORT,
+ 					  bind->remote.in6.sin6_port) ||
+ 			    nla_put_in6_addr(skb, OVPN_A_PEER_LOCAL_IPV6,
+-					     &bind->local.ipv6))
++					     &local_ipv6))
+ 				goto err_unlock;
+ 		}
+ 	}
 diff --git a/drivers/net/ovpn/peer.c b/drivers/net/ovpn/peer.c
-index a21d02ac715e..68021c0c1783 100644
+index a330892e82bf..3554da01e406 100644
 --- a/drivers/net/ovpn/peer.c
 +++ b/drivers/net/ovpn/peer.c
-@@ -297,40 +297,46 @@ void ovpn_peer_endpoints_update(struct ovpn_peer *peer, struct sk_buff *skb)
- 	/* rehashing is required only in MP mode as P2P has one peer
- 	 * only and thus there is no hashtable
- 	 */
--	if (peer->ovpn->mode == OVPN_MODE_MP) {
--		spin_lock_bh(&peer->ovpn->lock);
--		spin_lock_bh(&peer->lock);
--		bind = rcu_dereference_protected(peer->bind,
--						 lockdep_is_held(&peer->lock));
--		if (unlikely(!bind)) {
--			spin_unlock_bh(&peer->lock);
--			spin_unlock_bh(&peer->ovpn->lock);
--			return;
--		}
-+	if (peer->ovpn->mode != OVPN_MODE_MP)
-+		return;
+@@ -113,6 +113,7 @@ struct ovpn_peer *ovpn_peer_new(struct ovpn_priv *ovpn, u32 id)
+ 	RCU_INIT_POINTER(peer->bind, NULL);
+ 	ovpn_crypto_state_init(&peer->crypto);
+ 	spin_lock_init(&peer->lock);
++	seqcount_spinlock_init(&peer->bind_local_seq, &peer->lock);
+ 	kref_init(&peer->refcount);
+ 	ovpn_peer_stats_init(&peer->vpn_stats);
+ 	ovpn_peer_stats_init(&peer->link_stats);
+@@ -176,6 +177,27 @@ int ovpn_peer_reset_sockaddr(struct ovpn_peer *peer,
+ 	return 0;
+ }
  
--		/* This function may be invoked concurrently, therefore another
--		 * float may have happened in parallel: perform rehashing
--		 * using the peer->bind->remote directly as key
--		 */
-+	spin_lock_bh(&peer->ovpn->lock);
-+	spin_lock_bh(&peer->lock);
-+	bind = rcu_dereference_protected(peer->bind,
-+					 lockdep_is_held(&peer->lock));
-+	if (unlikely(!bind))
-+		goto unlock2;
- 
--		switch (bind->remote.in4.sin_family) {
--		case AF_INET:
--			salen = sizeof(*sa);
--			break;
--		case AF_INET6:
--			salen = sizeof(*sa6);
--			break;
--		}
-+	/* peer may have been concurrently removed between the caller's
-+	 * initial lookup and our acquisition of ovpn->lock; skip the
-+	 * rehash so we don't re-insert a removed peer
-+	 */
-+	if (unlikely(hlist_unhashed(&peer->hash_entry_id)))
-+		goto unlock2;
- 
--		/* remove old hashing */
--		hlist_nulls_del_init_rcu(&peer->hash_entry_transp_addr);
--		/* re-add with new transport address */
--		nhead = ovpn_get_hash_head(peer->ovpn->peers->by_transp_addr,
--					   &bind->remote, salen);
--		hlist_nulls_add_head_rcu(&peer->hash_entry_transp_addr, nhead);
--		spin_unlock_bh(&peer->lock);
--		spin_unlock_bh(&peer->ovpn->lock);
-+	/* This function may be invoked concurrently, therefore another
-+	 * float may have happened in parallel: perform rehashing
-+	 * using the peer->bind->remote directly as key
-+	 */
++/**
++ * ovpn_peer_local_ipv6 - read the cached local IPv6 endpoint of a peer
++ * @peer: the peer owning the binding
++ * @bind: the binding to read the local address from
++ * @dst: where the local IPv6 address is copied to
++ *
++ * bind->local is updated in place under peer->lock (TX error path and RX
++ * float path). Read the 128-bit address under the peer seqcount so that
++ * lockless readers never observe a torn value.
++ */
++void ovpn_peer_local_ipv6(const struct ovpn_peer *peer,
++			  const struct ovpn_bind *bind, struct in6_addr *dst)
++{
++	unsigned int seq;
 +
-+	switch (bind->remote.in4.sin_family) {
-+	case AF_INET:
-+		salen = sizeof(*sa);
-+		break;
-+	case AF_INET6:
-+		salen = sizeof(*sa6);
-+		break;
++	do {
++		seq = read_seqcount_begin(&peer->bind_local_seq);
++		*dst = bind->local.ipv6;
++	} while (read_seqcount_retry(&peer->bind_local_seq, seq));
++}
++
+ /* variable name __tbl2 needs to be different from __tbl1
+  * in the macro below to avoid confusing clang
+  */
+@@ -238,7 +260,7 @@ void ovpn_peer_endpoints_update(struct ovpn_peer *peer, struct sk_buff *skb)
+ 					    netdev_name(peer->ovpn->dev),
+ 					    peer->id, &bind->local.ipv4.s_addr,
+ 					    &ip_hdr(skb)->daddr);
+-			bind->local.ipv4.s_addr = ip_hdr(skb)->daddr;
++			WRITE_ONCE(bind->local.ipv4.s_addr, ip_hdr(skb)->daddr);
+ 			reset_cache = true;
+ 		}
+ 		break;
+@@ -269,7 +291,9 @@ void ovpn_peer_endpoints_update(struct ovpn_peer *peer, struct sk_buff *skb)
+ 					    netdev_name(peer->ovpn->dev),
+ 					    peer->id, &bind->local.ipv6,
+ 					    &ipv6_hdr(skb)->daddr);
++			write_seqcount_begin(&peer->bind_local_seq);
+ 			bind->local.ipv6 = ipv6_hdr(skb)->daddr;
++			write_seqcount_end(&peer->bind_local_seq);
+ 			reset_cache = true;
+ 		}
+ 		break;
+diff --git a/drivers/net/ovpn/peer.h b/drivers/net/ovpn/peer.h
+index dfa5c0037e02..c0994c606554 100644
+--- a/drivers/net/ovpn/peer.h
++++ b/drivers/net/ovpn/peer.h
+@@ -10,6 +10,7 @@
+ #ifndef _NET_OVPN_OVPNPEER_H_
+ #define _NET_OVPN_OVPNPEER_H_
+ 
++#include <linux/seqlock.h>
+ #include <net/dst_cache.h>
+ #include <net/strparser.h>
+ 
+@@ -56,6 +57,8 @@
+  * @link_stats: per-peer link/transport TX/RX stats
+  * @delete_reason: why peer was deleted (i.e. timeout, transport error, ..)
+  * @lock: protects binding to peer (bind) and keepalive* fields
++ * @bind_local_seq: seqcount serializing in-place updates of bind->local
++ *		    (done under @lock) against lockless readers on the TX path
+  * @refcount: reference counter
+  * @rcu: used to free peer in an RCU safe way
+  * @release_entry: entry for the socket release list
+@@ -110,6 +113,7 @@ struct ovpn_peer {
+ 	struct ovpn_peer_stats link_stats;
+ 	enum ovpn_del_peer_reason delete_reason;
+ 	spinlock_t lock; /* protects bind  and keepalive* */
++	seqcount_spinlock_t bind_local_seq; /* protects bind->local */
+ 	struct kref refcount;
+ 	struct rcu_head rcu;
+ 	struct llist_node release_entry;
+@@ -151,6 +155,8 @@ struct ovpn_peer *ovpn_peer_get_by_dst(struct ovpn_priv *ovpn,
+ 				       struct sk_buff *skb);
+ void ovpn_peer_hash_vpn_ip(struct ovpn_peer *peer);
+ void ovpn_peer_hash_transp_addr(struct ovpn_peer *peer);
++void ovpn_peer_local_ipv6(const struct ovpn_peer *peer,
++			  const struct ovpn_bind *bind, struct in6_addr *dst);
+ bool ovpn_peer_check_by_src(struct ovpn_priv *ovpn, struct sk_buff *skb,
+ 			    struct ovpn_peer *peer);
+ 
+diff --git a/drivers/net/ovpn/udp.c b/drivers/net/ovpn/udp.c
+index 7f69e8890b5b..17d65d1595ed 100644
+--- a/drivers/net/ovpn/udp.c
++++ b/drivers/net/ovpn/udp.c
+@@ -147,7 +147,10 @@ static int ovpn_udp4_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
+ {
+ 	struct rtable *rt;
+ 	struct flowi4 fl = {
+-		.saddr = bind->local.ipv4.s_addr,
++		/* bind->local is updated in place under peer->lock; a single
++		 * aligned word is read/written atomically via {READ,WRITE}_ONCE
++		 */
++		.saddr = READ_ONCE(bind->local.ipv4.s_addr),
+ 		.daddr = bind->remote.in4.sin_addr.s_addr,
+ 		.fl4_sport = inet_sk(sk)->inet_sport,
+ 		.fl4_dport = bind->remote.in4.sin_port,
+@@ -169,7 +172,7 @@ static int ovpn_udp4_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
+ 		 */
+ 		fl.saddr = 0;
+ 		spin_lock_bh(&peer->lock);
+-		bind->local.ipv4.s_addr = 0;
++		WRITE_ONCE(bind->local.ipv4.s_addr, 0);
+ 		spin_unlock_bh(&peer->lock);
+ 		dst_cache_reset(cache);
  	}
-+
-+	/* remove old hashing */
-+	hlist_nulls_del_init_rcu(&peer->hash_entry_transp_addr);
-+	/* re-add with new transport address */
-+	nhead = ovpn_get_hash_head(peer->ovpn->peers->by_transp_addr,
-+				   &bind->remote, salen);
-+	hlist_nulls_add_head_rcu(&peer->hash_entry_transp_addr, nhead);
-+unlock2:
-+	spin_unlock_bh(&peer->lock);
-+	spin_unlock_bh(&peer->ovpn->lock);
- 	return;
- unlock:
- 	spin_unlock_bh(&peer->lock);
-@@ -906,6 +912,13 @@ void ovpn_peer_hash_vpn_ip(struct ovpn_peer *peer)
- 	if (peer->ovpn->mode != OVPN_MODE_MP)
- 		return;
+@@ -178,7 +181,7 @@ static int ovpn_udp4_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
+ 	if (IS_ERR(rt) && PTR_ERR(rt) == -EINVAL) {
+ 		fl.saddr = 0;
+ 		spin_lock_bh(&peer->lock);
+-		bind->local.ipv4.s_addr = 0;
++		WRITE_ONCE(bind->local.ipv4.s_addr, 0);
+ 		spin_unlock_bh(&peer->lock);
+ 		dst_cache_reset(cache);
  
-+	/* peer may have been concurrently removed between the caller's
-+	 * initial lookup and our acquisition of ovpn->lock; skip the
-+	 * rehash so we don't re-insert a removed peer
+@@ -224,7 +227,6 @@ static int ovpn_udp6_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
+ 	int ret;
+ 
+ 	struct flowi6 fl = {
+-		.saddr = bind->local.ipv6,
+ 		.daddr = bind->remote.in6.sin6_addr,
+ 		.fl6_sport = inet_sk(sk)->inet_sport,
+ 		.fl6_dport = bind->remote.in6.sin6_port,
+@@ -233,6 +235,11 @@ static int ovpn_udp6_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
+ 		.flowi6_oif = bind->remote.in6.sin6_scope_id,
+ 	};
+ 
++	/* bind->local is updated in place under peer->lock; read the 128-bit
++	 * address under the peer seqcount to avoid a torn read
 +	 */
-+	if (hlist_unhashed(&peer->hash_entry_id))
-+		return;
++	ovpn_peer_local_ipv6(peer, bind, &fl.saddr);
 +
- 	if (peer->vpn_addrs.ipv4.s_addr != htonl(INADDR_ANY)) {
- 		/* remove potential old hashing */
- 		hlist_nulls_del_init_rcu(&peer->hash_entry_addr4);
+ 	local_bh_disable();
+ 	dst = dst_cache_get_ip6(cache, &fl.saddr);
+ 	if (dst)
+@@ -245,7 +252,9 @@ static int ovpn_udp6_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
+ 		 */
+ 		fl.saddr = in6addr_any;
+ 		spin_lock_bh(&peer->lock);
++		write_seqcount_begin(&peer->bind_local_seq);
+ 		bind->local.ipv6 = in6addr_any;
++		write_seqcount_end(&peer->bind_local_seq);
+ 		spin_unlock_bh(&peer->lock);
+ 		dst_cache_reset(cache);
+ 	}
 -- 
 2.54.0
 
