@@ -4,80 +4,68 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9867AC53219
-	for <openvpn-devel@archiver.kernel.org>; Mon, 27 Jul 2026 20:07:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2ABC2C53219
+	for <openvpn-devel@archiver.kernel.org>; Tue, 28 Jul 2026 06:37:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:Cc:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
-	:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=ny4MRHVcSK6yira5JNqkiDKWuMPmr1qC8fPpjYZjYCM=; b=kugKkC9gRbdyyOYt3yWCpWKGUU
-	E1I1vIq3j+DQfl6dlWFa5FE7oM1DpnWeVfiISN7PV8MEMjAaSHIZi9w/RxwLPaIMH+wtzdpJaOl33
-	ZQKJMzdeBVbpo26sgv9A/HgbNHaGPHkUvEzOWx0Av+PJY5tx4GF3L/3aaO9rSBTKbkYY=;
+	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=ErM79lkO8eDMlJIMUaxq1m8UvxF44/Rols1lcOmEgLI=; b=CvZ8rr+FIIFU08j+cGwx1qfBw+
+	sUylr76fwWoEOdVuZAqL2sHU25GkjQZEAFNgyFJc3Pmg8twOUVjEyvYAMgB4LbA6kFVb6uC7KXcSS
+	JC1wpJbqC0R1r9OPzYraGqQVWK+oZOKNvzx0Cd9KwwNu0Lys4ascCqOZAmQV4v8yxD2k=;
 Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
 	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1woRbo-00064v-CU;
-	Mon, 27 Jul 2026 20:07:33 +0000
+	id 1wobRM-0003iF-Fs;
+	Tue, 28 Jul 2026 06:37:25 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <a@unstable.cc>) id 1woRbi-00063m-FR
+ (envelope-from <gert@blue4.greenie.muc.de>) id 1wobR1-0003gK-Ma
  for openvpn-devel@lists.sourceforge.net;
- Mon, 27 Jul 2026 20:07:27 +0000
+ Tue, 28 Jul 2026 06:37:04 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+ In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=poOp9vJOUTetKP7O4RcdXH5uZmAmZchCPEQH41D6Hlo=; b=gOEuLpo7E03wyRVO9inydZwnd2
- w4tdHwFe2Z4Qqs982kJ82Lk1VpRa5Wjp4QoI6oBjB7nsHWtBHl4n+ivGPl/5lXfBrlbsHMKwW5jwD
- 2dL8EILZHGUgE4tYS67S7FuHFflb8VhBVY2V6yUoHPr12ilG1b7KjJttCvHNXJgTQRPM=;
+ bh=7K2jijvEGDSW5Irw4bw6sRWZ9OofsJFWi/6vADpuku0=; b=SFPnNsYWoW0/GBs7/ZLpgd58EW
+ y78ohCuPuhwKGQLyPziGvyLy+iyXsiVWBHT1T5HxpOkkkQt6pD7rBnu2lm1qFR3tsVHVwZprQN0CN
+ RQI83uaMCmJXJ0d2R0x+lSnFEYyGfLHx88vTmc6NBLM4P+u38fSv/lCYosW5m6FyaGCw=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+ Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=poOp9vJOUTetKP7O4RcdXH5uZmAmZchCPEQH41D6Hlo=; b=LLi46jQ1OZdQ33QEaBN0zmaeqR
- fdFU0L3VQP+DGVJL5sXVKqgKDuRENZKcLXSk559fTizgmYkHyxW/yO500jkWkLNAG5/0rJ5+F/2oE
- xsh+xPYguuTiibeE9WfMknDD7/Derxb1DMuctJzc4Rg+FlxmkrCSS99N6bmHSOQOF2QE=;
-Received: from mout-p-202.mailbox.org ([80.241.56.172])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ bh=7K2jijvEGDSW5Irw4bw6sRWZ9OofsJFWi/6vADpuku0=; b=fVjCBv5gD5K7o7DNstlTyuZRG/
+ yJgHqiSkNLXxT0UCm3/AEkguCNkX/193dN9EerYIkAnBMR/Wk2Qu2yOxek3H7c6mcns61TKFiTjVk
+ fdPyw/ssqXLb1mg9/5nYis7Aaj3li0cfwjGgykYOtx55wU00mgpKOO8/hU449fZzVv/8=;
+Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1woRbi-0001PQ-21 for openvpn-devel@lists.sourceforge.net;
- Mon, 27 Jul 2026 20:07:27 +0000
-Received: from smtp102.mailbox.org (unknown [10.196.197.102])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
- key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
- (No client certificate requested)
- by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4h88lB305JzMlPb;
- Mon, 27 Jul 2026 22:07:18 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=unstable.cc; s=MBO0001;
- t=1785182838;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=poOp9vJOUTetKP7O4RcdXH5uZmAmZchCPEQH41D6Hlo=;
- b=zQkg3XQUCkEbstRcIrwybt7032YE72LLreYsG7NAdVjs2BcigF9870kTy3jdqf9uOiFsoY
- yhp+ENv2/uj/oObvFbP5bSXPzRpyYEPRsXPh68Q8Q0q6hfIWsyJf8YnGX9s2h3XNRntRI7
- lvMgg1q3mi10jxjPnn26bw+6qB8jSkGpjdR7AR7fW2KJUObKSpUCu1usTCcrlKywvInq0k
- WxnBKkE8vi8OcSiHd7UGDjAgryO0VdOQ9BhPhR81eiGQ0Dz2CnZky2ce9olTaFizuj/Kbe
- 0gco930S5cR4E2AOrNJHeYgzLCzXKcfTj5EkwPwNDawNUND9yse/6cf+2nuOaw==
-From: Antonio Quartulli <a@unstable.cc>
+ id 1wobR1-0001KO-LT for openvpn-devel@lists.sourceforge.net;
+ Tue, 28 Jul 2026 06:37:04 +0000
+Received: from blue.greenie.muc.de (localhost [127.0.0.1])
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 66S6aqcl010479
+ for <openvpn-devel@lists.sourceforge.net>; Tue, 28 Jul 2026 08:36:52 +0200
+Received: (from gert@localhost)
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 66S6aqWu010478
+ for openvpn-devel@lists.sourceforge.net; Tue, 28 Jul 2026 08:36:52 +0200
+From: Gert Doering <gert@greenie.muc.de>
 To: openvpn-devel@lists.sourceforge.net
-Date: Mon, 27 Jul 2026 22:07:05 +0200
-Message-ID: <20260727200705.869169-10-a@unstable.cc>
-In-Reply-To: <20260727200705.869169-1-a@unstable.cc>
-References: <20260727200705.869169-1-a@unstable.cc>
+Date: Tue, 28 Jul 2026 08:36:47 +0200
+Message-ID: <20260728063652.10456-1-gert@greenie.muc.de>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <gerrit.1784824991000.Iae76f10fa683369ca3f718dc24fd54560bb74112@gerrit.openvpn.net>
+References: <gerrit.1784824991000.Iae76f10fa683369ca3f718dc24fd54560bb74112@gerrit.openvpn.net>
 MIME-Version: 1.0
-X-Headers-End: 1woRbi-0001PQ-21
-Subject: [Openvpn-devel] [PATCH ovpn net v3 9/9] ovpn: invalidate the UDP TX
- dst_cache when the flow key changes
+X-Headers-End: 1wobR1-0001KO-LT
+Subject: [Openvpn-devel] [PATCH v1] Drop support for OpenSSL 1.1.0
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -89,237 +77,281 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: Antonio Quartulli <antonio@openvpn.net>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Antonio Quartulli <antonio@openvpn.net>
+From: Frank Lichtenheld <frank@lichtenheld.com>
 
-ovpn_udp{4,6}_output() resolve a route from a flow key sampled from the
-peer binding and the transport socket, then cache the result in the
-per-peer dst_cache. Several of those sources may change concurrently
-with TX, and the dst_cache epoch (reset_ts vs the per-CPU refresh_ts
-stamped at get-miss time) only neutralizes the common ordering. Three
-issues remain:
+Slight simplification of the code since we can then
+assume that TLS 1.3 support is present.
 
- - ovpn_peer_endpoints_update() may either update bind->local in place
-   or replace the whole bind via RCU (float -> new remote, hence new
-   daddr/dport/oif). It already dst_cache_reset()s, but the TX path can
-   still cache a dst it resolved with the pre-update values if its
-   dst_cache_get-miss lands a strictly later jiffy than the reset.
- - inet_sk(sk)->inet_sport can be reset to 0 by __udp_disconnect()
-   (connect() with AF_UNSPEC) on a socket without SOCK_BINDPORT_LOCK,
-   and sk->sk_mark can change any time via setsockopt(SO_MARK). Neither
-   triggers an ovpn cache reset, so a previously-cached entry resolved
-   with the old value persists until dst obsolescence. Both fields are
-   also read locklessly into the flow key (data race).
- - A sport of 0 means the transport socket has been disconnected and
-   unhashed; sending a UDP packet from source port 0 is nonsense.
-
-In the common dispatcher ovpn_udp_output() (so every TX, including
-cache hits, runs the check):
- - Sample inet_sport with READ_ONCE(). If it is 0, emit a one-time
-   netdev_warn_once() and return -EIO so ovpn_udp_send_skb() drops the
-   skb.
- - Sample sk_mark with READ_ONCE().
- - Compare both against the values stored when the dst_cache was last
-   (re-)populated (new per-peer fields dst_cache_sport/dst_cache_mark,
-   zero-initialised by kzalloc_obj() in ovpn_peer_new()). On mismatch
-   dst_cache_reset() the cache and WRITE_ONCE() the new values, so the
-   subsequent dst_cache_get() misses and the lookup re-resolves with
-   the current sport/mark.
- - Pass sport/mark down to ovpn_udp{4,6}_output(); they use those in
-   the flowi initializer and skip the per-function sampling.
-
-The post-lookup re-check in the v4/v6 paths is retained, but only for
-the bind/local race the original commit addressed (rcu_access_pointer
-on peer->bind and READ_ONCE/ovpn_peer_local_ipv6 on bind->local); the
-sport/mark comparison is dropped from there because the entry check
-now catches it. sk_protocol is immutable post-creation and is
-intentionally read plain.
-
-The in-flight packet is still transmitted with the resolved
-parameters; only the cache is guarded. No fast-path lock is added.
-
-Fixes: 08857b5ec5d9 ("ovpn: implement basic TX path (UDP)")
-Signed-off-by: Antonio Quartulli <antonio@openvpn.net>
+Change-Id: Iae76f10fa683369ca3f718dc24fd54560bb74112
+Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
+Acked-by: Arne Schwabe <arne-openvpn@rfc2549.org>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1821
 ---
- drivers/net/ovpn/peer.h |  8 +++++
- drivers/net/ovpn/udp.c  | 70 +++++++++++++++++++++++++++++++++++------
- 2 files changed, 68 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ovpn/peer.h b/drivers/net/ovpn/peer.h
-index c0994c606554..17d57b12fa5e 100644
---- a/drivers/net/ovpn/peer.h
-+++ b/drivers/net/ovpn/peer.h
-@@ -46,6 +46,12 @@
-  * @tcp.sk_cb.ops: pointer to the original prot_ops object (TCP only)
-  * @crypto: the crypto configuration (ciphers, keys, etc..)
-  * @dst_cache: cache for dst_entry used to send to peer
-+ * @dst_cache_sport: inet_sport observed when the dst_cache was last
-+ *		     (re-)populated; compared on every TX to detect changes
-+ *		     (e.g. connect(AF_UNSPEC)) and invalidate the cache
-+ * @dst_cache_mark: sk_mark observed when the dst_cache was last
-+ *		    (re-)populated; compared on every TX to detect changes
-+ *		    via setsockopt(SO_MARK) and invalidate the cache
-  * @bind: remote peer binding
-  * @keepalive_interval: seconds after which a new keepalive should be sent
-  * @keepalive_xmit_exp: future timestamp when next keepalive should be sent
-@@ -102,6 +108,8 @@ struct ovpn_peer {
- 	} tcp;
- 	struct ovpn_crypto_state crypto;
- 	struct dst_cache dst_cache;
-+	__be16 dst_cache_sport;
-+	u32 dst_cache_mark;
- 	struct ovpn_bind __rcu *bind;
- 	unsigned long keepalive_interval;
- 	unsigned long keepalive_xmit_exp;
-diff --git a/drivers/net/ovpn/udp.c b/drivers/net/ovpn/udp.c
-index 17d65d1595ed..ca502c920f54 100644
---- a/drivers/net/ovpn/udp.c
-+++ b/drivers/net/ovpn/udp.c
-@@ -143,7 +143,7 @@ static int ovpn_udp_encap_recv(struct sock *sk, struct sk_buff *skb)
-  */
- static int ovpn_udp4_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
- 			    struct dst_cache *cache, struct sock *sk,
--			    struct sk_buff *skb)
-+			    struct sk_buff *skb, __be16 sport, u32 mark)
- {
- 	struct rtable *rt;
- 	struct flowi4 fl = {
-@@ -152,10 +152,10 @@ static int ovpn_udp4_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
- 		 */
- 		.saddr = READ_ONCE(bind->local.ipv4.s_addr),
- 		.daddr = bind->remote.in4.sin_addr.s_addr,
--		.fl4_sport = inet_sk(sk)->inet_sport,
-+		.fl4_sport = sport,
- 		.fl4_dport = bind->remote.in4.sin_port,
- 		.flowi4_proto = sk->sk_protocol,
--		.flowi4_mark = sk->sk_mark,
-+		.flowi4_mark = mark,
- 	};
- 	int ret;
- 
-@@ -196,7 +196,17 @@ static int ovpn_udp4_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
- 				    ret);
- 		goto err;
- 	}
--	dst_cache_set_ip4(cache, &rt->dst, fl.saddr);
-+	/* only cache the result if the bind is still current: a concurrent
-+	 * ovpn_peer_endpoints_update() may have replaced the bind (float) or
-+	 * updated bind->local in place, in which case ovpn already reset the
-+	 * cache and re-caching here would reinstate a stale route. sport/mark
-+	 * are validated at TX entry by ovpn_udp_output().
-+	 */
-+	if (rcu_access_pointer(peer->bind) == bind &&
-+	    READ_ONCE(bind->local.ipv4.s_addr) == fl.saddr)
-+		dst_cache_set_ip4(cache, &rt->dst, fl.saddr);
-+	else
-+		dst_cache_reset(cache);
- 
- transmit:
- 	udp_tunnel_xmit_skb(rt, sk, skb, fl.saddr, fl.daddr, 0,
-@@ -221,17 +231,18 @@ static int ovpn_udp4_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
-  */
- static int ovpn_udp6_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
- 			    struct dst_cache *cache, struct sock *sk,
--			    struct sk_buff *skb)
-+			    struct sk_buff *skb, __be16 sport, u32 mark)
- {
- 	struct dst_entry *dst;
-+	struct in6_addr local;
- 	int ret;
- 
- 	struct flowi6 fl = {
- 		.daddr = bind->remote.in6.sin6_addr,
--		.fl6_sport = inet_sk(sk)->inet_sport,
-+		.fl6_sport = sport,
- 		.fl6_dport = bind->remote.in6.sin6_port,
- 		.flowi6_proto = sk->sk_protocol,
--		.flowi6_mark = sk->sk_mark,
-+		.flowi6_mark = mark,
- 		.flowi6_oif = bind->remote.in6.sin6_scope_id,
- 	};
- 
-@@ -267,7 +278,18 @@ static int ovpn_udp6_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
- 				    &bind->remote.in6, ret);
- 		goto err;
- 	}
--	dst_cache_set_ip6(cache, dst, &fl.saddr);
-+	/* only cache the result if the bind is still current: a concurrent
-+	 * ovpn_peer_endpoints_update() may have replaced the bind (float) or
-+	 * updated bind->local in place, in which case ovpn already reset the
-+	 * cache and re-caching here would reinstate a stale route. sport/mark
-+	 * are validated at TX entry by ovpn_udp_output().
-+	 */
-+	ovpn_peer_local_ipv6(peer, bind, &local);
-+	if (rcu_access_pointer(peer->bind) == bind &&
-+	    ipv6_addr_equal(&local, &fl.saddr))
-+		dst_cache_set_ip6(cache, dst, &fl.saddr);
-+	else
-+		dst_cache_reset(cache);
- 
- transmit:
- 	/* user IPv6 packets may be larger than the transport interface
-@@ -306,12 +328,40 @@ static int ovpn_udp_output(struct ovpn_peer *peer, struct dst_cache *cache,
- 			   struct sock *sk, struct sk_buff *skb)
- {
- 	struct ovpn_bind *bind;
-+	__be16 sport;
-+	u32 mark;
- 	int ret;
- 
- 	/* set sk to null if skb is already orphaned */
- 	if (!skb->destructor)
- 		skb->sk = NULL;
- 
-+	sport = READ_ONCE(inet_sk(sk)->inet_sport);
-+	if (unlikely(!sport)) {
-+		/* the transport UDP socket has been disconnected (e.g. via
-+		 * connect(AF_UNSPEC)): inet_sport == 0 means the socket has
-+		 * been unhashed and sending from source port 0 is nonsense;
-+		 * refuse and tell the operator
-+		 */
-+		netdev_warn_once(peer->ovpn->dev,
-+				 "UDP transport socket has no source port; was it disconnected?\n");
-+		return -EIO;
-+	}
-+	mark = READ_ONCE(sk->sk_mark);
-+
-+	/* userspace can change sk_mark (via setsockopt(SO_MARK)) and
-+	 * inet_sport (via connect(AF_UNSPEC)) at any time without notifying
-+	 * ovpn; if either differs from what the dst_cache was last populated
-+	 * with, invalidate the cache now so a hit doesn't return a dst
-+	 * resolved with the old value
-+	 */
-+	if (READ_ONCE(peer->dst_cache_sport) != sport ||
-+	    READ_ONCE(peer->dst_cache_mark) != mark) {
-+		dst_cache_reset(cache);
-+		WRITE_ONCE(peer->dst_cache_sport, sport);
-+		WRITE_ONCE(peer->dst_cache_mark, mark);
-+	}
-+
- 	rcu_read_lock();
- 	bind = rcu_dereference(peer->bind);
- 	if (unlikely(!bind)) {
-@@ -323,11 +373,11 @@ static int ovpn_udp_output(struct ovpn_peer *peer, struct dst_cache *cache,
- 
- 	switch (bind->remote.in4.sin_family) {
- 	case AF_INET:
--		ret = ovpn_udp4_output(peer, bind, cache, sk, skb);
-+		ret = ovpn_udp4_output(peer, bind, cache, sk, skb, sport, mark);
- 		break;
- #if IS_ENABLED(CONFIG_IPV6)
- 	case AF_INET6:
--		ret = ovpn_udp6_output(peer, bind, cache, sk, skb);
-+		ret = ovpn_udp6_output(peer, bind, cache, sk, skb, sport, mark);
- 		break;
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
+
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1821
+This mail reflects revision 1 of this Change.
+
+Acked-by according to Gerrit (reflected above):
+Arne Schwabe <arne-openvpn@rfc2549.org>
+
+        
+diff --git a/INSTALL b/INSTALL
+index 77656b2c..78390d5 100644
+--- a/INSTALL
++++ b/INSTALL
+@@ -66,10 +66,10 @@
+   (1) TUN and/or TAP driver to allow user-space programs to control
+       a virtual point-to-point IP or Ethernet device.
+       See TUN/TAP Driver References section below for more info.
+-  (2a) OpenSSL library, necessary for encryption, version 1.1.0 or higher
++  (2a) OpenSSL library, necessary for encryption, version 1.1.1 or higher
+       required, available from https://www.openssl.org/
+       or
+-  (2b) mbed TLS library, an alternative for encryption, version 2.0 or higher
++  (2b) mbed TLS library, an alternative for encryption, version 3.2.1 or higher
+       required, available from https://tls.mbed.org/
+   (3) on Linux, "libnl-gen" is required for kernel netlink support
+   (4) on Linux, "libcap-ng" is required for Linux capability handling
+diff --git a/configure.ac b/configure.ac
+index 188f8fa..1aec805 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -776,7 +776,7 @@
+ 		# if the user did not explicitly specify flags, try to autodetect
+ 		PKG_CHECK_MODULES(
+ 			[OPENSSL],
+-			[openssl >= 1.1.0],
++			[openssl >= 1.1.1],
+ 			[have_openssl="yes"],
+ 			[AC_MSG_WARN([OpenSSL not found by pkg-config ${pkg_config_found}])] # If this fails, we will do another test next
+ 		)
+@@ -799,7 +799,7 @@
+ 				]],
+ 				[[
+ /*	     Version encoding: MNNFFPPS - see opensslv.h for details */
+-#if OPENSSL_VERSION_NUMBER < 0x10100000L
++#if OPENSSL_VERSION_NUMBER < 0x10101000L
+ #error OpenSSL too old
  #endif
- 	default:
--- 
-2.54.0
-
+ 				]]
+diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+index b61bcbf..098bdd5 100644
+--- a/src/openvpn/openssl_compat.h
++++ b/src/openvpn/openssl_compat.h
+@@ -26,9 +26,9 @@
+  * OpenSSL compatibility stub
+  *
+  * This file provide compatibility stubs for the OpenSSL libraries
+- * prior to version 1.1. This version introduces many changes in the
+- * library interface, including the fact that various objects and
+- * structures are not fully opaque.
++ * prior to the current major version. Newer versions may introduce changes
++ * in the library interface, including replacing functions or enforcing
++ * various objects and structures as fully opaque.
+  */
+ 
+ #ifndef OPENSSL_COMPAT_H_
+@@ -62,11 +62,6 @@
+ #endif
+ 
+ 
+-/* Functionality missing in 1.1.0 */
+-#if OPENSSL_VERSION_NUMBER < 0x10101000L && !defined(ENABLE_CRYPTO_WOLFSSL)
+-#define SSL_CTX_set1_groups SSL_CTX_set1_curves
+-#endif
+-
+ /* Functionality missing in LibreSSL before 3.5 */
+ #if defined(LIBRESSL_VERSION_NUMBER) && LIBRESSL_VERSION_NUMBER < 0x3050000fL
+ #define EVP_CTRL_AEAD_SET_TAG EVP_CTRL_GCM_SET_TAG
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index ef99b22..32b13db 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -200,42 +200,12 @@
+ 
+ /*
+  * Return maximum TLS version supported by local OpenSSL library.
+- * Assume that presence of SSL_OP_NO_TLSvX macro indicates that
+- * TLSvX is supported.
++ * We only support OpenSSL versions that support TLS 1.3.
+  */
+ int
+ tls_version_max(void)
+ {
+-#if defined(TLS1_3_VERSION)
+-    /* If this is defined we can safely assume TLS 1.3 support */
+     return TLS_VER_1_3;
+-#elif OPENSSL_VERSION_NUMBER >= 0x10100000L
+-    /*
+-     * If TLS_VER_1_3 is not defined, we were compiled against a version that
+-     * did not support TLS 1.3.
+-     *
+-     * However, the library we are *linked* against might be OpenSSL 1.1.1
+-     * and therefore supports TLS 1.3. This needs to be checked at runtime
+-     * since we can be compiled against 1.1.0 and then the library can be
+-     * upgraded to 1.1.1.
+-     * We only need to check this for OpenSSL versions that can be
+-     * upgraded to 1.1.1 without recompile (>= 1.1.0)
+-     */
+-    if (OpenSSL_version_num() >= 0x1010100fL)
+-    {
+-        return TLS_VER_1_3;
+-    }
+-    else
+-    {
+-        return TLS_VER_1_2;
+-    }
+-#elif defined(TLS1_2_VERSION) || defined(SSL_OP_NO_TLSv1_2)
+-    return TLS_VER_1_2;
+-#elif defined(TLS1_1_VERSION) || defined(SSL_OP_NO_TLSv1_1)
+-    return TLS_VER_1_1;
+-#else /* if defined(TLS1_3_VERSION) */
+-    return TLS_VER_1_0;
+-#endif
+ }
+ 
+ /** Convert internal version number to openssl version number */
+@@ -256,22 +226,7 @@
+     }
+     else if (ver == TLS_VER_1_3)
+     {
+-        /*
+-         * Supporting the library upgraded to TLS1.3 without recompile
+-         * is enough to support here with a simple constant that the same
+-         * as in the TLS 1.3, so spec it is very unlikely that OpenSSL
+-         * will change this constant
+-         */
+-#ifndef TLS1_3_VERSION
+-        /*
+-         * We do not want to define TLS_VER_1_3 if not defined
+-         * since other parts of the code use the existance of this macro
+-         * as proxy for TLS 1.3 support
+-         */
+-        return 0x0304;
+-#else
+         return TLS1_3_VERSION;
+-#endif
+     }
+     return 0;
+ }
+@@ -491,8 +446,8 @@
+      */
+     if (strlen(ciphers) >= (len - 1))
+     {
+-        msg(M_FATAL, "Failed to set restricted TLS 1.3 cipher list, too long (>%d).",
+-            (int)(len - 1));
++        msg(M_FATAL, "Failed to set restricted TLS 1.3 cipher list, too long (>%zd).",
++            len - 1);
+     }
+ 
+     strncpy(openssl_ciphers, ciphers, len);
+@@ -511,17 +466,11 @@
+ {
+     if (ciphers == NULL)
+     {
+-        /* default cipher list of OpenSSL 1.1.1 is sane, do not set own
++        /* default cipher list of OpenSSL is sane, do not set own
+          * default as we do with tls-cipher */
+         return;
+     }
+ 
+-#if !defined(TLS1_3_VERSION)
+-    crypto_msg(M_WARN,
+-               "Not compiled with OpenSSL 1.1.1 or higher. "
+-               "Ignoring TLS 1.3 only tls-ciphersuites '%s' setting.",
+-               ciphers);
+-#else
+     ASSERT(NULL != ctx);
+ 
+     char openssl_ciphers[4096];
+@@ -531,14 +480,12 @@
+     {
+         crypto_msg(M_FATAL, "Failed to set restricted TLS 1.3 cipher list: %s", openssl_ciphers);
+     }
+-#endif
+ }
+ 
+ void
+ tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile)
+ {
+-#if OPENSSL_VERSION_NUMBER > 0x10100000L                                            \
+-    && (!defined(LIBRESSL_VERSION_NUMBER) || LIBRESSL_VERSION_NUMBER > 0x3060000fL) \
++#if (!defined(LIBRESSL_VERSION_NUMBER) || LIBRESSL_VERSION_NUMBER > 0x3060000fL) \
+     && !defined(OPENSSL_IS_AWSLC)
+     /* OpenSSL does not have certificate profiles, but a complex set of
+      * callbacks that we could try to implement to achieve something similar.
+@@ -565,7 +512,7 @@
+     {
+         msg(M_FATAL, "ERROR: Invalid cert profile: %s", profile);
+     }
+-#else  /* if OPENSSL_VERSION_NUMBER > 0x10100000L */
++#else
+     if (profile)
+     {
+         msg(M_WARN,
+@@ -573,7 +520,7 @@
+             "support --tls-cert-profile, ignoring user-set profile: '%s'",
+             profile);
+     }
+-#endif /* if OPENSSL_VERSION_NUMBER > 0x10100000L */
++#endif
+ }
+ 
+ void
+@@ -2597,14 +2544,12 @@
+         crypto_msg(M_FATAL, "Cannot create SSL_CTX object");
+     }
+ 
+-#if defined(TLS1_3_VERSION)
+     if (tls13)
+     {
+         SSL_CTX_set_min_proto_version(tls_ctx.ctx, TLS1_3_VERSION);
+         tls_ctx_restrict_ciphers_tls13(&tls_ctx, cipher_list);
+     }
+     else
+-#endif
+     {
+         SSL_CTX_set_max_proto_version(tls_ctx.ctx, TLS1_2_VERSION);
+         tls_ctx_restrict_ciphers(&tls_ctx, cipher_list);
+@@ -2618,7 +2563,7 @@
+         crypto_msg(M_FATAL, "Cannot create SSL object");
+     }
+ 
+-#if OPENSSL_VERSION_NUMBER < 0x1010000fL || defined(OPENSSL_IS_AWSLC) || defined(ENABLE_CRYPTO_WOLFSSL)
++#if defined(OPENSSL_IS_AWSLC) || defined(ENABLE_CRYPTO_WOLFSSL)
+     STACK_OF(SSL_CIPHER) *sk = SSL_get_ciphers(ssl);
+ #else
+     STACK_OF(SSL_CIPHER) *sk = SSL_get1_supported_ciphers(ssl);
+@@ -2646,9 +2591,7 @@
+             printf("%s\n", pair->iana_name);
+         }
+     }
+-#if (OPENSSL_VERSION_NUMBER >= 0x1010000fL)
+     sk_SSL_CIPHER_free(sk);
+-#endif
+     SSL_free(ssl);
+     SSL_CTX_free(tls_ctx.ctx);
+ }
+diff --git a/tests/unit_tests/openvpn/test_ncp.c b/tests/unit_tests/openvpn/test_ncp.c
+index 29365db..99e1aac 100644
+--- a/tests/unit_tests/openvpn/test_ncp.c
++++ b/tests/unit_tests/openvpn/test_ncp.c
+@@ -110,7 +110,7 @@
+     assert_string_equal(mutate_ncp_cipher_list("AES-256-GCM:?AES-128-CCM:AES-128-GCM", &gc),
+                         aes_ciphers);
+ 
+-    /* For testing that with OpenSSL 1.1.0+ that also accepts ciphers in
++    /* For testing that with OpenSSL that also accepts ciphers in
+      * a different spelling the normalised cipher output is the same */
+     bool have_chacha_mixed_case = cipher_valid("ChaCha20-Poly1305");
+     if (have_chacha_mixed_case)
 
 
 _______________________________________________
