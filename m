@@ -4,127 +4,125 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id AD17BC53219
-	for <openvpn-devel@archiver.kernel.org>; Tue, 28 Jul 2026 15:03:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1503EC54F4C
+	for <openvpn-devel@archiver.kernel.org>; Tue, 28 Jul 2026 15:03:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=GgBl5aOSzWbIhK25XMG5576Jkgp1JMIJM89cs/KGAeE=; b=LFUpKEGCfb8K1bmDGSxE1ss/8a
-	SMd+ofj7PYw1tTdhQc7A1IwLVZhWG9cFVBuzUfPOMlfNIAOBVxg1LL/gilF1m9/ePuvYeIre0ixBQ
-	dLEqS+pJM6douT2AfRNK9Bz+LrgZURWu/hOulr63tWeae71mt13rmXYnEb5eCoJbNado=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=W3Ww63+wFVcqRVd5fKZiTNKRw+z3O2rDfQxCKWlVkbk=; b=c/FewvFZYvUiil0aUqDOZZ0xDJ
+	1pvOD/FGwnsH9aUaw2jI+KwGQVo/nQfkTx3FLwDuRugWMg7gzPKT7Q2+AeR61xoTi/ZZcCXlJHb39
+	nhH9GZ3NuVgR/ew7yu8ZEL5QyNiOo+PZ+GS1fEz9DJLoSyHb/EObX87jc5sCsaPdGzn0=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wojLV-0006pS-6J;
-	Tue, 28 Jul 2026 15:03:53 +0000
+	id 1wojLQ-0001sm-A7;
+	Tue, 28 Jul 2026 15:03:49 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wojLT-0006pM-Mx
+ (envelope-from <gerrit@openvpn.net>) id 1wojLP-0001se-TX
  for openvpn-devel@lists.sourceforge.net;
- Tue, 28 Jul 2026 15:03:51 +0000
+ Tue, 28 Jul 2026 15:03:48 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
  :List-Post:List-Owner:List-Archive;
- bh=YYvDnDWLaBG1DexxT9F4XPFUYZJ2KiKE31DFQakZeCY=; b=RA1ocylKh/Vxow2/liS38eLjc6
- jrsphKK5kSUe98XFzC1XErxfDfbesnHoZTL/WsDjTUqWWwzdCmIAlTmgnBUua3NlKE25Y3NqMf64h
- +PiKO0cNDmkvQHEwdgFt7ma7x+O5h+1CWXI8T/e5mgBAVHlX3vv18ReWHk4+H9G9YWGg=;
+ bh=pcK7YI8VlEWK6iUk9wkLyp2xLRnjBNGMpsnYMwXtRJc=; b=K/ENMWs6IvIu8iT3xA+2X/dY+a
+ Q5cwsbcLsUaacnkJ/KH86T2yt0+VkHIq1Wh5t3/YpeopWpBNxb25zpVoPbZQ9E8DtfJ9TPTtZ/+8u
+ I+kpGdQoXQwGgptyL90Fa1jHNaImsk1qAA5tockz0SvnUVKp+nsWnwoe6U9qqyjQpaho=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
  Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=YYvDnDWLaBG1DexxT9F4XPFUYZJ2KiKE31DFQakZeCY=; b=I
- daOEhDkj4HMFLze38O1SLTh6fUXsU16u60HP4bFVPzWp2OU873V6eA0IVMzPsZS4UN29f07vRQ9jP
- I06x054MSM+e6hh2herEdH7AqPH5yNwoSXw5/690ns9abaROcFjPNKJeLfpU+BTrXpBUUkFu/9G0Z
- rH0hSVRr1cvVOS1o=;
-Received: from mail-wr1-f42.google.com ([209.85.221.42])
+ List-Owner:List-Archive; bh=pcK7YI8VlEWK6iUk9wkLyp2xLRnjBNGMpsnYMwXtRJc=; b=A
+ dr+S/HtbLEz0iIV5vi0tyPLcExcnkTUsl4/UYVMWImKPgfRGXvirU5WG5W2XxqfGXnOmmht0EcvlF
+ BB8NU7FKNxUHBWwTuRXkZlbMt8eTenniT1EKB1FfEBmJaUxh9/fmgE+UULZhaoGZs0NzGyJFvTu/h
+ sk6PJiMAx8ECIuCA=;
+Received: from mail-wm1-f48.google.com ([209.85.128.48])
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wojLV-0000Q9-5t for openvpn-devel@lists.sourceforge.net;
- Tue, 28 Jul 2026 15:03:51 +0000
-Received: by mail-wr1-f42.google.com with SMTP id
- ffacd0b85a97d-47ddf7b09e5so3978708f8f.1
+ id 1wojLQ-0000Pz-L8 for openvpn-devel@lists.sourceforge.net;
+ Tue, 28 Jul 2026 15:03:47 +0000
+Received: by mail-wm1-f48.google.com with SMTP id
+ 5b1f17b1804b1-495757ccbc1so36257475e9.2
  for <openvpn-devel@lists.sourceforge.net>;
- Tue, 28 Jul 2026 08:03:49 -0700 (PDT)
+ Tue, 28 Jul 2026 08:03:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1785251023; x=1785855823; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1785251018; x=1785855818; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=YYvDnDWLaBG1DexxT9F4XPFUYZJ2KiKE31DFQakZeCY=;
- b=alF5FrT/iEoQ+M2TQXSBjtkbonCtcjeTUMJmc/e/9j1jXmwQWOk6nYYZPSUjEWaP5W
- hFFREfHbVyzlwH00L7t2nKDwrW40uVq1l2M+D5bhunK7VBLzn5jdFbH6S7YAEEwhe7Fv
- 7MzVUa/rS5M4gVL5yxmjtfizavVFxs4yjcOpBXxUB8vxAoQ7av3XULQK1F2pZV/CFaYs
- d8QJunr4J4ll4+LHqXFCiEI1EiF9wVFXAXl6A182j3hdZ/piWwfDpUAr2afMDLp71tl4
- 5sCXxkx9Y8HQ5KspyTVCbkUqq8C21PJ936Ti6rPdk3hHCo9EnMiqolCzZ5r0YYAHC13D
- Ib7Q==
+ bh=pcK7YI8VlEWK6iUk9wkLyp2xLRnjBNGMpsnYMwXtRJc=;
+ b=HQ0PWvrqWAjGQEEAezk3+YXuzmh4IpeggCMxRpSnfoPXAugQvppkYjwCXLXlSgmhwt
+ J91X+Lh2WmiG5wqNBVItoZmbhJ+hpEcWreUScqhP+UlElYuibwlsddpXcLIdMq+LSnZ0
+ fdtd70ZXx7ToA+rRSdh+3y8g8AOXzs+dIjQ0SnGf5gAf23dP1wDO427sP0wir39osDDY
+ qmr9O5qm7Qr619h9NwBrP7XrtGfHDtwzfsKNBEBCY7EfTeiRONuTMWC0ECO/P6h6Eahc
+ fT+aHUMIFNroxK4y6qZIIszTmsRaCVmSdtsklG4dn1R79zEuB1HdGTiJ/JSbTn9ST2yY
+ 31wg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1785251023; x=1785855823;
+ d=1e100.net; s=20251104; t=1785251018; x=1785855818;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=YYvDnDWLaBG1DexxT9F4XPFUYZJ2KiKE31DFQakZeCY=;
- b=f02ycADlyzM2VjqWLTytLvcxvNVkb5J5KA8Ky2DhcmGhrZtJic2dwLOUjw96auSsxz
- Cdg4COYFLUnH5vYmjCfujqYE5fz+svp0VeSF/vd/3Jmnt840NXemst30cBzM3vp9PTFw
- WXaImzzmjK1YP2LU5f4iJAUXJx++708Jvupk3u6/SmOXfoEtSGow7SY5Bi3mJvP2Ii9e
- Webg0rrsk8bMTaVsy4k74rriDb6tGqOj6YU0lsJmbbK6GIuf+1Daob5TaDM4tOYZkuKu
- NJSfeRg3PSCbiby07fxbUvSxlu4p3lBeSw/UL3BmAvzDxqXGF8D4vn/eQVlJUGV3EkVt
- 6RwA==
-X-Forwarded-Encrypted: i=1;
- AHgh+Rpj7igtPxMCqEkZ8D/1eFlwNp7vH3EC1l9W9cWWJRmRXiI8EVhb9VsICwMYDTWBiH6iFTvyr0cBK30St8bE@lists.sourceforge.net
-X-Gm-Message-State: AOJu0YwJT5xeCM14YGbtqUk5f4qwQFkjxYiiWXrGyGSMQue40B7FY7li
- rxKAU1e+GqAUTE8zV8Qjoo1TC021lwKqaRk7CByHUSzvVaNyrzI3zYJZqAbQMjbt2EnCXV2JtOY
- CMgBb84klSUXt8MWledI4HNkVqL0FmRBzZmG/04cX3ZUSohLSnj73rs72mrXX5e338beL
-X-Gm-Gg: AR+sD11WrjCPbMql2qv22BaHx5tWQ1IsPHqxkFc0nC0CDVeHy3KGqw/tm8P/5ySH+Vi
- dqkSspLLjwXpDufBsUtasmhaMyZhhwGig2RDbBqafAqQ54hfVMz/v74n3Ksl7/8v85cZ46wffoq
- B8mPe0z7y+pQ6U//0Z3Q/mBaWRcnfVKGyjajOULGI/IwZc56F91LzNdEyhT8bfPgggAB96ewwfx
- UN/5+bzfxVhQv2f82EWow7SiDtT5Yi0xL4vUgzRe791em5HSzfANnmOL9cZGe/0DwjlaUMv26TN
- SvpWWdJ1ggPDimITbCOFSYqy19jM5Vd05xFoAlrnf4SJ5oGVCBrN/uGQHq6fFz9DN7JxEihA0dj
- Gt8AWY8W39xKCh8+qJjOMe9yk+0HWLMI4PgzHDHVXEc3Y8tfK8m8k7uQuZrUdWkIFN8vzug38eH
- qrHYSFwQz04CveUwNAuMLQpeThKYHq0u6t+Kt9dW1DsO3GwXpOR04bluq2p1chijv8u4T9dVeiF
- DgPlCFgPMl727YdzyyxkOMBdD73u+Tikgxi+kbcWA8ouWFES1pZenhWVY9t1ZDfIEKz
-X-Received: by 2002:a05:6000:2c0c:b0:47f:8b75:2520 with SMTP id
- ffacd0b85a97d-47fb1edbd56mr3181448f8f.42.1785251022714; 
- Tue, 28 Jul 2026 08:03:42 -0700 (PDT)
+ bh=pcK7YI8VlEWK6iUk9wkLyp2xLRnjBNGMpsnYMwXtRJc=;
+ b=ffer8AMP6laGGs5ncunwiAS6QFD4oDMqvHTnyz4swsOH+8Y7xHXzv/77hpfgDAMYcn
+ fzEJbiRANLiBfPolc3mla7Zakh/hcOJjqyW1vcoMMVtOnfiREoWFJHr7fwPuwwDHjxZV
+ i4k/DswaC9Lg+9McelHZr1t2k6t3LaiC9Nuw9WoUo8WPfkQvBATd0g8NI8FTTJQ7uHbL
+ Zl0Fe0ts3XfohvkSu8R2DD+BUAubXvTcwOLBBNoYtt09K+XN46PQIhVN4KlR4wYl74NG
+ Er6Q8xPExVxpN5ug8gd+6tE3GQAJ+oxVnubgR1ZOMxc0N+WmVsqTNz8zF2fJpI/CTad2
+ EWcA==
+X-Gm-Message-State: AOJu0YwvpzRnpYYfYtSwJBlYxT4QsYqeXGHHSq242DtmD8TtG3ouKhwC
+ 2ZJ6DX6m0KXWZrXYDJs0ZwFIrMG9sEPgDFUjGoSZvOGa57he3W0zv/LLBDH3JAlxcAugXm7Y99E
+ JQADt11r/RlgK2jZqv0KJghxIcFwMxBtNEss3GJ25xuF+ElR/Ll/I+P7g6jl2jtq7jU8E
+X-Gm-Gg: AR+sD13UBqSbvaz2tbG4Ura6VeEi/vT/UqbaqLKl2fR6PFir878LEYRcxqrU7Xn93uM
+ SFnUthFSx1FcBCrfG9rwt5prZJKHcPAkMSiRvWqUK1Qm6tKfR33HcP+Dzsr1OBfArffWkOsoW86
+ P4k1FXjnTL679qUos6yYfYlIDBz39kP6zsHx9B/wyxPEm5FO8TYFiwoiyFB1R2T8QQUgTZmnUn1
+ leTOG0mBk4ECqYnmYt1eCaqVasJiTc6VU9TLYgVaHWE2p3sBUokIJfkC1O0iGHXKgynv7PknPQk
+ cJJk9BoMr+vRT87WAHAQHVzoflwgcbwdyy69KZ4sMwVWC6H4lg8wqWSccCjUeSZME/Hv5ONAVvP
+ DCanKh+HQnjJmjJg2C+5IBxPRQMz4i7kwTghwZPwTGuvRdGr9mKTK/+LOjVKgdTEz/yPIVTdgoq
+ tDr/kdtsRS3lQPX4ABSOFaHpWjkYV1UWJhMf+6MtNts1AvybW5IOkegBm3IT8CYpEDkdrorjbhK
+ Wdgf2mP85ct4TeI6r+fpDgg8xy/uY5y5q6qu1VDpo55sRs0jELuzXQa8M4AsRjrhkW5
+X-Received: by 2002:a05:600c:3103:b0:493:f278:ba2f with SMTP id
+ 5b1f17b1804b1-496c643219amr29717355e9.9.1785251018134; 
+ Tue, 28 Jul 2026 08:03:38 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-47f85c6dc25sm57566939f8f.33.2026.07.28.08.03.41
+ 5b1f17b1804b1-496c462512dsm78527895e9.13.2026.07.28.08.03.37
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 28 Jul 2026 08:03:41 -0700 (PDT)
+ Tue, 28 Jul 2026 08:03:37 -0700 (PDT)
 X-Google-Original-From: "stipa (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
 Date: Tue, 28 Jul 2026 15:03:23 +0000
-To: plaisthos <arne-openvpn@rfc2549.org>
+To: plaisthos <arne-openvpn@rfc2549.org>, flichtenheld <frank@lichtenheld.com>
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newpatchset
 X-Gerrit-PatchSet: 9
-X-Gerrit-Change-Id: I930d3789e0313aa0c3bc51ee5fd1d108343d59f0
-X-Gerrit-Change-Number: 1744
+X-Gerrit-Change-Id: Iafa9efc1c156974ad9f5752e9de810a8c2f68c30
+X-Gerrit-Change-Number: 1742
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1744?usp=email>
-X-Gerrit-Commit: 9565b10bbed5fd91897e7f84ade40811017c7d28
-In-Reply-To: <gerrit.1782719911000.I930d3789e0313aa0c3bc51ee5fd1d108343d59f0@gerrit.openvpn.net>
-References: <gerrit.1782719911000.I930d3789e0313aa0c3bc51ee5fd1d108343d59f0@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzgyNzE5OTExMDAwLkk5MzBkMzc4OWUwMzEzYWEwYzNiYzUxZWU1ZmQxZDEwODM0M2Q1OWYwQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <0f9669bdcccae874108a989d68654ff7bb42e460-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1742?usp=email>
+X-Gerrit-Commit: a342918fab203bb635bcb53c314871e141eeb4d4
+In-Reply-To: <gerrit.1782719911000.Iafa9efc1c156974ad9f5752e9de810a8c2f68c30@gerrit.openvpn.net>
+References: <gerrit.1782719911000.Iafa9efc1c156974ad9f5752e9de810a8c2f68c30@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzgyNzE5OTExMDAwLklhZmE5ZWZjMWMxNTY5NzRhZDlmNTc1MmU5ZGU4MTBhOGMyZjY4YzMwQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <08a55a9de3548f84b53fd5fd72f7526fed43d544-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wojLV-0000Q9-5t
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: oob: Answer
- SERVER_PROBE on the server (P_CONTROL_OOB_V1)
+X-Headers-End: 1wojLQ-0000Pz-L8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: oob: Add
+ SERVER_PROBE parsing and the probe-reply decision
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -142,774 +140,1058 @@ Reply-To: lstipakov@gmail.com, arne-openvpn@rfc2549.org,
  openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com
 Cc: "stipa \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============1203629100981288047=="
+Content-Type: multipart/mixed; boundary="===============1682716147966230387=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============1203629100981288047==
+--===============1682716147966230387==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="RKbqOpLvDlA="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="L9iYQIp5Isw="; charset=UTF-8
 
---RKbqOpLvDlA=
+--L9iYQIp5Isw=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: stipa=2E
+Attention is currently required from: flichtenheld, stipa=2E
 
-Hello plaisthos, 
+Hello flichte=
+nheld, plaisthos, 
 
-I'd like=
- you to reexamine a change=2E Please visit
+I'd like you to reexamine a change=2E Please visit
 
-    http://gerrit=2Eopenvpn=2En=
-et/c/openvpn/+/1744?usp=3Demail
+   =
+ http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1742?usp=3Demail
 
-to look at the new patch set (#9)=2E
+to look at the=
+ new patch set (#9)=2E
+
+The following approvals got outdated and were remov=
+ed:
+Code-Review+2 by flichtenheld
 
 
-Cha=
-nge subject: oob: Answer SERVER_PROBE on the server (P_CONTROL_OOB_V1)
-=2E=
+Change subject: oob: Add SERVER_PROBE p=
+arsing and the probe-reply decision
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E
 
-oob: Answer SERV=
-ER_PROBE on the server (P_CONTROL_OOB_V1)
+oob: Add SERVER_PROBE parsing and the probe-reply de=
+cision
 
-Make a --mode server UDP listene=
-r answer an out-of-band SERVER_PROBE without
-creating a session:
+Add the message-level helpers the server needs to answer a probe:
 
-  - tls_p=
-re_decrypt_lite() accepts P_CONTROL_OOB_V1 and returns the new
-    VERDICT_=
-VALID_OOB_V1 verdict=2E
-  - tls_wrap_oob_standalone() builds a session-less=
- P_CONTROL_OOB_V1 packet:
-    opcode + session id + the usual tls-auth/tls-=
-crypt wrapping around a bare
-    TLV payload (no reliability/ACK fields), m=
-irroring tls_reset_standalone()=2E
-  - oob_client_reply_write() writes the =
-PROBE_REPLY message (message-type
-    header + probe_reply TLV)=2E
-  - do_p=
-re_decrypt_check() handles the new verdict: it asks
-    oob_build_probe_rep=
-ly() whether to answer, and if so sends a PROBE_REPLY
-    via send_probe_re=
-ply() (synchronous, stateless, like the HMAC reset path)
-    and returns fa=
-lse so no session is created=2E The verdict joins the reset
-    verdicts in=
- the reflect_filter rate-limit check, so probes cannot be used
-    to make =
-the server answer faster than a reset flood could=2E
+=
+  - oob_server_probe_read() scans the TLV payload of a received OOB
+    SER=
+VER_PROBE for the probe_parameter TLV, skipping other/future TLV
+    types =
+and rejecting malformed or truncated input=2E
+  - oob_timestamp_in_window()=
+ performs the cheap replay/skew check on the
+    probe timestamp described =
+in the wire protocol specification=2E
+  - oob_build_probe_reply() composes =
+the two: given a received SERVER_PROBE
+    it scans for the probe_parameter=
+, drops the probe if it is missing or
+    its timestamp is outside the acce=
+ptable window, and otherwise populates
+    the probe_reply (echoing the pee=
+r's session id) to send back=2E
 
-The reply's own sessi=
-on id is the stateless SYN-cookie used by the three-way
-handshake, so the r=
-esponder keeps no state and the reply can later serve as
-the handshake rese=
-t (connect_lifetime advertisement)=2E
+These are pure functions exercised by unit=
+ tests; the server packet path
+calls oob_build_probe_reply() in a follow-up=
+, which performs the actual send=2E
 
-Change-Id: I930d3789e0313aa0c3bc51ee=
-5fd1d108343d59f0
+Change-Id: Iafa9efc1c156974ad9f5752e9d=
+e810a8c2f68c30
 Signed-off-by: Lev Stipakov <lev@openvpn=2Enet>
 ---
-M src/=
-openvpn/mudp=2Ec
-M src/openvpn/oob=2Ec
+M src/op=
+envpn/oob=2Ec
 M src/openvpn/oob=2Eh
-M src/openvpn/=
-ssl_pkt=2Ec
-M src/openvpn/ssl_pkt=2Eh
-5 files changed, 118 insertions(+), 4=
- deletions(-)
+M tests/unit_tests/openvpn/test_oob=2Ec=
+
+3 files changed, 289 insertions(+), 0 deletions(-)
 
 
-  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/=
-changes/44/1744/9
+  git pull ssh://gerr=
+it=2Eopenvpn=2Enet:29418/openvpn refs/changes/42/1742/9
 
-diff --git a/src/openvpn/mudp=2Ec b/src/openvpn/mudp=2Ec=
-
-index 2be085f=2E=2E2209407 100644
---- a/src/openvpn/mudp=2Ec
-+++ b/src/ope=
-nvpn/mudp=2Ec
-@@ -32,6 +32,7 @@
- 
- #include "memdbg=2Eh"
- #include "ssl_pkt=
-=2Eh"
-+#include "oob=2Eh"
- 
- #ifdef HAVE_SYS_INOTIFY_H
- #include <sys/inoti=
-fy=2Eh>
-@@ -87,6 +88,34 @@
-                           "Reset packet from cl=
-ient, sending HMAC based reset challenge", sock);
+diff --git a/src/o=
+penvpn/oob=2Ec b/src/openvpn/oob=2Ec
+index c807171=2E=2E930b213 100644
+--- =
+a/src/openvpn/oob=2Ec
++++ b/src/openvpn/oob=2Ec
+@@ -81,3 +81,54 @@
+     r->=
+flags =3D buf_read_u32(buf, NULL);
+     return true;
  }
- 
-+/* Send an out-of-b=
-and PROBE_REPLY back to the source of a SERVER_PROBE,
-+ * synchronously and=
- without keeping any state, mirroring the reset path=2E */
-+static void
-+se=
-nd_probe_reply(struct multi_context *m, struct tls_pre_decrypt_state *state=
-,
-+                 struct tls_auth_standalone *tas, const struct oob_probe=
-_reply *reply,
-+                 struct session_id *own_sid, struct link_so=
-cket *sock)
-+{
-+    struct gc_arena gc =3D gc_new();
 +
-+    /* Build the pa=
-yload of the reply (message-type header + probe_reply TLV) */
-+    struct b=
-uffer payload =3D alloc_buf_gc(128, &gc);
-+    if (!oob_client_reply_write(=
-&payload, reply))
++bool
++oob_server=
+_probe_write(struct buffer *buf, const struct oob_probe_parameter *param)
++=
+{
++    return buf_write_u16(buf, OOB_MSG_SERVER_PROBE) && oob_probe_paramet=
+er_write(buf, param);
++}
++
++bool
++oob_server_probe_read(struct buffer *payl=
+oad, struct oob_probe_parameter *param)
++{
++    if (!ctrl_msg_read_header(p=
+ayload, OOB_MSG_SERVER_PROBE))
 +    {
-+        gc_free(&gc);
-+        return;
++        return false;
 +    }
 +
-+=
-    /* OOB replies use the same control-channel wrapping as the request */
-=
-+    reset_packet_id_send(&state->tls_wrap_tmp=2Eopt=2Epacket_id=2Esend);
-+=
-    state->tls_wrap_tmp=2Eopt=2Epacket_id=2Erec=2Einitialized =3D true;
++    =
+struct buffer value;
++    if (!ctrl_msg_find_tlv(payload, OOB_TLV_PROBE_PAR=
+AMETER, &value))
++    {
++        return false;
++    }
++
++    return oob_pro=
+be_parameter_read(&value, param);
++}
++
++bool
++oob_timestamp_in_window(uint6=
+4_t probe_ts, uint64_t now, uint64_t window_secs)
++{
++    uint64_t diff =3D=
+ (now > probe_ts) ? (now - probe_ts) : (probe_ts - now);
++    return diff <=
+=3D window_secs;
++}
++
++bool
++oob_build_probe_reply(struct buffer *probe_pay=
+load, uint64_t now, uint64_t window_secs,
++                      const stru=
+ct session_id *peer_sid, struct oob_probe_reply *reply)
++{
++    struct oob_=
+probe_parameter param;
++    if (!oob_server_probe_read(probe_payload, &para=
+m))
++    {
++        return false;
++    }
++
++    /* Drop replayed or implaus=
+ibly-timed probes before doing any more work=2E */
++    if (!oob_timestamp_=
+in_window(param=2Etimestamp, now, window_secs))
++    {
++        return fals=
+e;
++    }
++
++    /* the caller's advertised values are kept; only the echo =
+is ours to fill */
++    reply->peer_session_id =3D *peer_sid;
++    return t=
+rue;
++}
+diff --git a/src/openvpn/oob=2Eh b/src/openvpn/oob=2Eh
+index 0a9a4b=
+b=2E=2E1afabbd 100644
+--- a/src/openvpn/oob=2Eh
++++ b/src/openvpn/oob=2Eh
+@=
+@ -107,4 +107,58 @@
+  */
+ bool oob_probe_reply_read(struct buffer *buf, str=
+uct oob_probe_reply *r);
+ 
++/**
++ * Write a complete SERVER_PROBE message (=
+message-type header + probe_parameter
++ * TLV) to buf=2E Sent by the client=
+=2E
++ */
++bool oob_server_probe_write(struct buffer *buf, const struct oob_=
+probe_parameter *param);
++
++/**
++ * Read a received OOB SERVER_PROBE: verif=
+y its message-type header, then scan
++ * for the probe_parameter TLV=2E TLV=
+ types other than probe_parameter are
++ * skipped=2E payload is consumed as=
+ it is read=2E
++ *
++ * @param payload  buffer positioned at the start of th=
+e OOB message payload
++ * @param param    filled with the parsed probe_para=
+meter on success
++ * @return true if the header matched and a well-formed p=
+robe_parameter was
++ *         found, false otherwise
++ */
++bool oob_server=
+_probe_read(struct buffer *payload, struct oob_probe_parameter *param);
 +
 +=
-    struct buffer buf =3D tls_wrap_oob_standalone(&state->tls_wrap_tmp, tas=
-, own_sid, &payload);
-+    send_standalone_reply(m, &buf, "Server Probe", "=
-Server probe from client, sending probe reply",
-+                          =
-sock);
+/**
++ * Check whether a probe timestamp is within an acceptable window arou=
+nd the
++ * current time=2E Used to cheaply drop replayed or implausibly-tim=
+ed probes
++ * before doing any further work (see the probe_parameter timest=
+amp rationale
++ * in the wire protocol specification)=2E
++ *
++ * @param pro=
+be_ts     timestamp from the probe_parameter (UNIX seconds)
++ * @param now =
+         current time (UNIX seconds)
++ * @param window_secs  maximum allowe=
+d difference, in either direction
++ * @return true if |now - probe_ts| <=3D=
+ window_secs
++ */
++bool oob_timestamp_in_window(uint64_t probe_ts, uint64_t=
+ now, uint64_t window_secs);
++
++/**
++ * Process the TLV payload of a receiv=
+ed SERVER_PROBE and decide whether to
++ * answer it=2E Combines oob_server_=
+probe_read() and oob_timestamp_in_window():
++ * the probe is dropped (false=
+ returned) if it has no valid probe_parameter or
++ * its timestamp is outsi=
+de the acceptable window=2E
++ *
++ * reply carries the values the server adv=
+ertises (priority, weight,
++ * max_latency_diff, connect_lifetime, flags) i=
+n, and is deliberately not
++ * cleared: on success only the peer's session =
+id is filled in, leaving the
++ * reply ready to be wrapped and sent=2E
++ *
+=
++ * This is the transport-agnostic decision step; the caller performs the s=
+end=2E
++ *
++ * @param probe_payload  TLV payload of the received OOB SERVER=
+_PROBE
++ * @param now            current time (UNIX seconds)
++ * @param win=
+dow_secs    acceptable timestamp skew, in either direction
++ * @param peer_=
+sid       session id of the requesting peer (echoed in the reply)
++ * @para=
+m reply          in: the values to advertise; out: the reply to send
++ * @r=
+eturn true if a reply should be sent, false to silently drop the probe
++ */=
+
++bool oob_build_probe_reply(struct buffer *probe_payload, uint64_t now, ui=
+nt64_t window_secs,
++                           const struct session_id *pe=
+er_sid, struct oob_probe_reply *reply);
++
+ #endif /* OOB_H */
+diff --git a/=
+tests/unit_tests/openvpn/test_oob=2Ec b/tests/unit_tests/openvpn/test_oob=
+=2Ec
+index aa4eb23=2E=2E371cbc6 100644
+--- a/tests/unit_tests/openvpn/test_=
+oob=2Ec
++++ b/tests/unit_tests/openvpn/test_oob=2Ec
+@@ -259,6 +259,181 @@
+ =
+    gc_free(&gc);
+ }
+ 
++/* A SERVER_PROBE carrying just a probe_parameter i=
+s found by the scan=2E */
++static void
++test_server_probe_read_finds_parame=
+ter(void **state)
++{
++    struct gc_arena gc =3D gc_new();
++    struct buff=
+er buf =3D alloc_buf_gc(128, &gc);
++
++    const struct oob_probe_parameter =
+in =3D {
++        =2Etimestamp =3D 0x1122334455667788ULL,
++        =2Eflags=
+ =3D 0,
++    };
++    assert_true(oob_server_probe_write(&buf, &in));
++
++   =
+ struct oob_probe_parameter out =3D { 0 };
++    assert_true(oob_server_prob=
+e_read(&buf, &out));
++    assert_true(in=2Etimestamp =3D=3D out=2Etimestamp=
+);
++    assert_int_equal(in=2Eflags, out=2Eflags);
++
++    gc_free(&gc);
++}
+=
++
++/* TLVs other than probe_parameter are skipped, so the scan finds the
++ =
+* probe_parameter even when preceded by an unknown TLV=2E */
++static void
++=
+test_server_probe_read_skips_unknown(void **state)
++{
++    struct gc_arena =
+gc =3D gc_new();
++    struct buffer buf =3D alloc_buf_gc(128, &gc);
++
++    =
+/* SERVER_PROBE message header, then an unknown TLV (type 0x7ff) =2E=2E=2E =
+*/
++    assert_true(buf_write_u16(&buf, OOB_MSG_SERVER_PROBE));
++    assert=
+_true(ctrl_msg_tlv_write_header(&buf, 0x7ff, false, 4));
++    assert_true(b=
+uf_write_u32(&buf, 0xcafef00d));
++    /* =2E=2E=2E followed by the real pro=
+be_parameter */
++    const struct oob_probe_parameter in =3D { =2Etimestamp=
+ =3D 42, =2Eflags =3D 0 };
++    assert_true(oob_probe_parameter_write(&buf,=
+ &in));
++
++    struct oob_probe_parameter out =3D { 0 };
++    assert_true(o=
+ob_server_probe_read(&buf, &out));
++    assert_true(out=2Etimestamp =3D=3D =
+42);
 +
 +    gc_free(&gc);
 +}
 +
- 
- /* Returns true if this packet should c=
-reate a new session */
- static bool
-@@ -105,7 +134,8 @@
-     struct openvpn=
-_sockaddr *from =3D &m->top=2Ec2=2Efrom=2Edest;
-     int handwindow =3D m->=
-top=2Eoptions=2Ehandshake_window;
- 
--    if (verdict =3D=3D VERDICT_VALID_R=
-ESET_V3 || verdict =3D=3D VERDICT_VALID_RESET_V2)
-+    if (verdict =3D=3D V=
-ERDICT_VALID_RESET_V3 || verdict =3D=3D VERDICT_VALID_RESET_V2
-+        || =
-verdict =3D=3D VERDICT_VALID_OOB_V1)
-     {
-         /* Check if we are sti=
-ll below our limit for sending out
-          * responses */
-@@ -203,6 +233,=
-31 @@
- 
-         return ret;
-     }
-+    else if (verdict =3D=3D VERDICT_VA=
-LID_OOB_V1)
-+    {
-+        /* Out-of-band server probe=2E state->newbuf po=
-ints at the TLV payload
-+         * (read_control_auth has stripped the opc=
-ode, session id and any
-+         * tls-auth/tls-crypt wrapping)=2E Answer =
-it without creating a session=2E */
-+        struct oob_probe_reply reply;
-=
-+        if (!oob_build_probe_reply(&state->newbuf, (uint64_t)now, (uint64_=
-t)handwindow,
-+                                   &state->peer_session_id, =
-&reply))
-+        {
-+            /* malformed or replayed/stale probe: sile=
-ntly drop */
-+            return false;
-+        }
-+
-+        /* Our sessio=
-n id is a stateless SYN cookie (the same HMAC the three-way
-+         * han=
-dshake uses): we keep no per-probe state, and the reply can later
-+        =
- * also serve as the server's CONTROL_HARD_RESET_SERVER_V2, so a client
-+  =
-       * can start the handshake from it (the connect_lifetime advertisemen=
-t)=2E */
-+        struct session_id sid =3D
-+            calculate_session_=
-id_hmac(state->peer_session_id, from, hmac, handwindow, 0);
-+
-+        send=
-_probe_reply(m, state, tas, &reply, &sid, sock);
-+
-+        /* An OOB probe=
- never creates a session */
-+        return false;
-+    }
- 
-     /* VERDICT=
-_INVALID */
-     return false;
-diff --git a/src/openvpn/oob=2Ec b/src/openv=
-pn/oob=2Ec
-index 930b213=2E=2Ec841d59 100644
---- a/src/openvpn/oob=2Ec
-+++ =
-b/src/openvpn/oob=2Ec
-@@ -106,6 +106,12 @@
- }
- 
- bool
-+oob_client_reply_wri=
-te(struct buffer *buf, const struct oob_probe_reply *reply)
-+{
-+    return =
-buf_write_u16(buf, OOB_MSG_PROBE_REPLY) && oob_probe_reply_write(buf, reply=
-);
-+}
-+
-+bool
- oob_timestamp_in_window(uint64_t probe_ts, uint64_t now, uin=
-t64_t window_secs)
- {
-     uint64_t diff =3D (now > probe_ts) ? (now - prob=
-e_ts) : (probe_ts - now);
-diff --git a/src/openvpn/oob=2Eh b/src/openvpn/oo=
-b=2Eh
-index 1afabbd=2E=2E49d64e8 100644
---- a/src/openvpn/oob=2Eh
-+++ b/src=
-/openvpn/oob=2Eh
-@@ -126,6 +126,12 @@
- bool oob_server_probe_read(struct bu=
-ffer *payload, struct oob_probe_parameter *param);
- 
- /**
-+ * Write a compl=
-ete PROBE_REPLY message (message-type header + probe_reply TLV)
-+ * to buf=
-=2E Sent by the server=2E
-+ */
-+bool oob_client_reply_write(struct buffer *=
-buf, const struct oob_probe_reply *reply);
-+
-+/**
-  * Check whether a probe=
- timestamp is within an acceptable window around the
-  * current time=2E Us=
-ed to cheaply drop replayed or implausibly-timed probes
-  * before doing an=
-y further work (see the probe_parameter timestamp rationale
-diff --git a/sr=
-c/openvpn/ssl_pkt=2Ec b/src/openvpn/ssl_pkt=2Ec
-index 0d882d9=2E=2E335e26f =
-100644
---- a/src/openvpn/ssl_pkt=2Ec
-+++ b/src/openvpn/ssl_pkt=2Ec
-@@ -313,=
-7 +313,8 @@
- 
-     /* Allow only the reset packet or the first packet of th=
-e actual handshake=2E */
-     if (op !=3D P_CONTROL_HARD_RESET_CLIENT_V2 &&=
- op !=3D P_CONTROL_HARD_RESET_CLIENT_V3
--        && op !=3D P_CONTROL_V1 &&=
- op !=3D P_CONTROL_WKC_V1 && op !=3D P_ACK_V1)
-+        && op !=3D P_CONTRO=
-L_V1 && op !=3D P_CONTROL_WKC_V1 && op !=3D P_ACK_V1
-+        && !opcode_is=
-_oob(op))
-     {
-         /*
-          * This can occur due to bogus data o=
-r DoS packets=2E
-@@ -388,6 +389,10 @@
-     {
-         return VERDICT_VALID_=
-WKC_V1;
-     }
-+    else if (opcode_is_oob(op))
-+    {
-+        return VERD=
-ICT_VALID_OOB_V1;
-+    }
-     else
-     {
-         return VERDICT_VALID_RES=
-ET_V2;
-@@ -442,6 +447,29 @@
-     return buf;
- }
- 
-+struct buffer
-+tls_wrap_=
-oob_standalone(struct tls_wrap_ctx *ctx, struct tls_auth_standalone *tas,
-+=
-                        struct session_id *own_sid, const struct buffer *pa=
-yload)
-+{
-+    /* Copy buffer here to point at the same data but allow tls_=
-wrap_control
-+     * to potentially change buf to point to another buffer w=
-ithout
-+     * modifying the buffer in tas */
-+    struct buffer buf =3D ta=
-s->workbuf;
-+    ASSERT(buf_init(&buf, tas->frame=2Ebuf=2Eheadroom));
-+
-+  =
-  /* Out-of-band messages carry the payload directly, with no reliability
-+=
-     * or ACK fields=2E */
-+    ASSERT(buf_copy(&buf, payload));
-+
-+    uin=
-t8_t header =3D (uint8_t)(P_CONTROL_OOB_V1 << P_OPCODE_SHIFT);
-+
-+    /* Ad=
-d tls-auth/tls-crypt wrapping, this might replace buf with
-+     * ctx->wor=
-k */
-+    tls_wrap_control(ctx, header, &buf, own_sid);
-+
-+    return buf;
-=
-+}
-+
- hmac_ctx_t *
- session_id_hmac_init(void)
- {
-diff --git a/src/openvpn/=
-ssl_pkt=2Eh b/src/openvpn/ssl_pkt=2Eh
-index 25e50bf=2E=2E3ab09db 100644
----=
- a/src/openvpn/ssl_pkt=2Eh
-+++ b/src/openvpn/ssl_pkt=2Eh
-@@ -62,8 +62,9 @@
-=
-  * control channel session (e=2Eg=2E a server probe)=2E Inherently unrelia=
-ble:
-  * there is no protocol-level retransmission=2E
-  *
-- * It is not leg=
-al on an established session; see opcode_valid_in_session()
-- * below=2E */=
++/* A payload with no probe_parameter must b=
+e rejected=2E */
++static void
++test_server_probe_read_missing(void **state)=
 
-+ * On the server this is accepted via the tls_pre_decrypt_lite() allowlis=
-t and
-+ * handled in the new-connection path (it never creates a session)=
-=2E It is not
-+ * legal on an established session; see opcode_valid_in_sess=
-ion() below=2E */
- #define P_CONTROL_OOB_V1 12
- 
- /* define the range of de=
-fined opcodes, in- and out-of-band=2E Note this is not
-@@ -136,6 +137,9 @@
-=
-     VERDICT_VALID_ACK_V1,
-     /** The packet is a valid control packet wi=
-th appended wrapped client key */
-     VERDICT_VALID_WKC_V1,
-+    /** This =
-packet is a valid out-of-band control message (e=2Eg=2E a server
-+     * pr=
-obe)=2E It does not belong to a session and must not create one=2E */
-+    =
-VERDICT_VALID_OOB_V1,
-     /** the packet failed on of the various checks *=
-/
-     VERDICT_INVALID
- };
-@@ -264,6 +268,21 @@
-                           =
-         struct session_id *own_sid, struct session_id *remote_sid,
-       =
-                             uint8_t header, bool request_resend_wkc);
- 
-+/=
-**
-+ * Wrap an already-built out-of-band payload (e=2Eg=2E probe-reply TLVs=
-) into a
-+ * standalone, session-less P_CONTROL_OOB_V1 packet: it prepends =
-the opcode and
-+ * own_sid and applies the same tls-auth/tls-crypt wrapping=
- as a regular
-+ * control packet, but carries no reliability/ACK fields=2E
-=
-+ *
-+ * @param ctx       tls wrapping context (from the pre-decrypt state)
-=
-+ * @param tas       standalone auth context providing the work buffer
-+ * =
-@param own_sid   session id to use as our session id in the header
-+ * @par=
-am payload   the OOB message payload (TLV stream) to wrap
-+ * @return      =
-    the wrapped packet buffer, ready to send
-+ */
-+struct buffer tls_wrap_o=
-ob_standalone(struct tls_wrap_ctx *ctx, struct tls_auth_standalone *tas,
-+ =
-                                     struct session_id *own_sid, const stru=
-ct buffer *payload);
++{
++    struct gc_arena gc =3D gc_new();
++    struct buffer buf =3D alloc_=
+buf_gc(128, &gc);
 +
++    assert_true(buf_write_u16(&buf, OOB_MSG_SERVER_PRO=
+BE));
++    assert_true(ctrl_msg_tlv_write_header(&buf, 0x7ff, false, 4));
++=
+    assert_true(buf_write_u32(&buf, 0));
++
++    struct oob_probe_parameter =
+out =3D { 0 };
++    assert_false(oob_server_probe_read(&buf, &out));
++
++   =
+ gc_free(&gc);
++}
++
++/* A TLV whose declared length runs past the buffer mu=
+st be rejected, not
++ * read out of bounds=2E */
++static void
++test_server_=
+probe_read_truncated(void **state)
++{
++    struct gc_arena gc =3D gc_new();=
+
++    struct buffer buf =3D alloc_buf_gc(128, &gc);
++
++    /* TLV header cl=
+aims a 16-byte value but no value bytes follow */
++    assert_true(buf_writ=
+e_u16(&buf, OOB_MSG_SERVER_PROBE));
++    assert_true(ctrl_msg_tlv_write_hea=
+der(&buf, 0x7ff, false, 16));
++
++    struct oob_probe_parameter out =3D { 0=
+ };
++    assert_false(oob_server_probe_read(&buf, &out));
++
++    gc_free(&g=
+c);
++}
++
++/* A SERVER_PROBE reader rejects a payload carrying a different m=
+essage type
++ * (here a PROBE_REPLY's), even if it contains a valid probe_p=
+arameter TLV=2E */
++static void
++test_server_probe_read_wrong_msg_type(void=
+ **state)
++{
++    struct gc_arena gc =3D gc_new();
++    struct buffer buf =
+=3D alloc_buf_gc(128, &gc);
++
++    assert_true(buf_write_u16(&buf, OOB_MSG_=
+PROBE_REPLY));
++    const struct oob_probe_parameter in =3D { =2Etimestamp =
+=3D 42, =2Eflags =3D 0 };
++    assert_true(oob_probe_parameter_write(&buf, =
+&in));
++
++    struct oob_probe_parameter out =3D { 0 };
++    assert_false(o=
+ob_server_probe_read(&buf, &out));
++
++    gc_free(&gc);
++}
++
++/* Timestamp =
+window check accepts values within the window (either direction)
++ * and re=
+jects values outside it=2E */
++static void
++test_timestamp_in_window(void *=
+*state)
++{
++    const uint64_t now =3D 1000000;
++    const uint64_t window =
+=3D 30;
++
++    assert_true(oob_timestamp_in_window(now, now, window));
++   =
+ assert_true(oob_timestamp_in_window(now - window, now, window));      /* b=
+oundary, past */
++    assert_true(oob_timestamp_in_window(now + window, now=
+, window));      /* boundary, future */
++    assert_false(oob_timestamp_in_=
+window(now - window - 1, now, window)); /* too old */
++    assert_false(oob=
+_timestamp_in_window(now + window + 1, now, window)); /* too far ahead */
++=
+}
++
++/* A valid, in-window SERVER_PROBE yields a reply that echoes the peer=
+'s
++ * session id and zeroes the remaining fields=2E */
++static void
++test_=
+build_probe_reply_valid(void **state)
++{
++    struct gc_arena gc =3D gc_new=
+();
++    struct buffer buf =3D alloc_buf_gc(128, &gc);
++
++    const uint64_=
+t now =3D 1000000;
++    const struct oob_probe_parameter probe =3D { =2Etim=
+estamp =3D now, =2Eflags =3D 0 };
++    assert_true(oob_server_probe_write(&=
+buf, &probe));
++
++    struct session_id peer;
++    memcpy(peer=2Eid, "PEER1=
+234", SID_SIZE);
++
++    /* left as the caller set them: the function only f=
+ills the session id */
++    struct oob_probe_reply reply =3D { 0 };
++    as=
+sert_true(oob_build_probe_reply(&buf, now, 30, &peer, &reply));
++    assert=
+_memory_equal(reply=2Epeer_session_id=2Eid, peer=2Eid, SID_SIZE);
++    asse=
+rt_int_equal(reply=2Epriority, 0);
++    assert_int_equal(reply=2Eweight, 0)=
+;
++    assert_int_equal(reply=2Econnect_lifetime, 0);
++    assert_int_equal=
+(reply=2Eflags, 0);
++
++    gc_free(&gc);
++}
++
++/* A probe whose timestamp i=
+s outside the window is dropped (no reply)=2E */
++static void
++test_build_p=
+robe_reply_stale(void **state)
++{
++    struct gc_arena gc =3D gc_new();
++  =
+  struct buffer buf =3D alloc_buf_gc(128, &gc);
++
++    const uint64_t now =
+=3D 1000000;
++    const struct oob_probe_parameter probe =3D { =2Etimestamp=
+ =3D now - 1000, =2Eflags =3D 0 };
++    assert_true(oob_server_probe_write(=
+&buf, &probe));
++
++    struct session_id peer =3D { 0 };
++    struct oob_pr=
+obe_reply reply =3D { 0 };
++    assert_false(oob_build_probe_reply(&buf, no=
+w, 30, &peer, &reply));
++
++    gc_free(&gc);
++}
++
++/* A payload without a p=
+robe_parameter is dropped (no reply)=2E */
++static void
++test_build_probe_r=
+eply_no_parameter(void **state)
++{
++    struct gc_arena gc =3D gc_new();
++ =
+   struct buffer buf =3D alloc_buf_gc(128, &gc);
++
++    assert_true(buf_wri=
+te_u16(&buf, OOB_MSG_SERVER_PROBE));
++    assert_true(ctrl_msg_tlv_write_he=
+ader(&buf, 0x7ff, false, 4));
++    assert_true(buf_write_u32(&buf, 0));
++
++=
+    struct session_id peer =3D { 0 };
++    struct oob_probe_reply reply =3D=
+ { 0 };
++    assert_false(oob_build_probe_reply(&buf, 1000000, 30, &peer, &=
+reply));
++
++    gc_free(&gc);
++}
++
+ int
+ main(void)
+ {
+@@ -271,6 +446,15 @@=
+
+         cmocka_unit_test(test_probe_parameter_too_short),
+         cmocka=
+_unit_test(test_find_tlv_value_truncated),
+         cmocka_unit_test(test_t=
+lv_header_truncated),
++        cmocka_unit_test(test_server_probe_read_find=
+s_parameter),
++        cmocka_unit_test(test_server_probe_read_skips_unknow=
+n),
++        cmocka_unit_test(test_server_probe_read_missing),
++        cmo=
+cka_unit_test(test_server_probe_read_truncated),
++        cmocka_unit_test(=
+test_server_probe_read_wrong_msg_type),
++        cmocka_unit_test(test_time=
+stamp_in_window),
++        cmocka_unit_test(test_build_probe_reply_valid),
+=
++        cmocka_unit_test(test_build_probe_reply_stale),
++        cmocka_un=
+it_test(test_build_probe_reply_no_parameter),
+     };
  
- /**
-  * Extracts a control channel message from b=
-uf and adjusts the size of
+     return cmocka_=
+run_group_tests_name("oob tests", tests, NULL, NULL);
 
 -- 
-To view, visit http://gerrit=2Eopenvpn=2Ene=
-t/c/openvpn/+/1744?usp=3Demail
-To unsubscribe, or for help writing mail fil=
-ters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+To view, visit h=
+ttp://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1742?usp=3Demail
+To unsubscribe, o=
+r for help writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/settin=
+gs?usp=3Demail
 
-Gerrit-Mess=
-ageType: newpatchset
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-C=
-hange-Id: I930d3789e0313aa0c3bc51ee5fd1d108343d59f0
-Gerrit-Change-Number: 1=
-744
+Ger=
+rit-Branch: master
+Gerrit-Change-Id: Iafa9efc1c156974ad9f5752e9de810a8c2f68=
+c30
+Gerrit-Change-Number: 1742
 Gerrit-PatchSet: 9
-Gerrit-Owner: stipa <lstipakov@gmail=2Ecom>
-Gerrit-R=
-eviewer: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-CC: flichtenheld <fr=
-ank@lichtenheld=2Ecom>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esour=
-ceforge=2Enet>
-Gerrit-Attention: stipa <lstipakov@gmail=2Ecom>
+Gerrit-Owner: stipa <lsti=
+pakov@gmail=2Ecom>
+Gerrit-Reviewer: flichtenheld <frank@lichtenheld=2Ecom>
+=
+Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-CC: openvpn-=
+devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Attention: flichtenh=
+eld <frank@lichtenheld=2Ecom>
+Gerrit-Attention: stipa <lstipakov@gmail=2Eco=
+m>
 
---RKbqOpLvDlA=
+--L9iYQIp5Isw=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: stipa=2E </p>
-<p>stipa <strong>uploaded patch set #9<=
-/strong> to this change=2E</p><p><a href=3D"http://gerrit=2Eopenvpn=2Enet/c=
-/openvpn/+/1744?usp=3Demail">View Change</a></p><pre class=3D"blocks" style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;">oob: Answer S=
-ERVER_PROBE on the server (P_CONTROL_OOB_V1)<br><br>Make a --mode server UD=
-P listener answer an out-of-band SERVER_PROBE without<br>creating a session=
-:<br><br>  - tls_pre_decrypt_lite() accepts P_CONTROL_OOB_V1 and returns th=
-e new<br>    VERDICT_VALID_OOB_V1 verdict=2E<br>  - tls_wrap_oob_standalone=
-() builds a session-less P_CONTROL_OOB_V1 packet:<br>    opcode + session i=
-d + the usual tls-auth/tls-crypt wrapping around a bare<br>    TLV payload =
-(no reliability/ACK fields), mirroring tls_reset_standalone()=2E<br>  - oob=
-_client_reply_write() writes the PROBE_REPLY message (message-type<br>    h=
-eader + probe_reply TLV)=2E<br>  - do_pre_decrypt_check() handles the new v=
-erdict: it asks<br>    oob_build_probe_reply() whether to answer, and if so=
- sends a PROBE_REPLY<br>    via send_probe_reply() (synchronous, stateless,=
- like the HMAC reset path)<br>    and returns false so no session is create=
-d=2E The verdict joins the reset<br>    verdicts in the reflect_filter rate=
--limit check, so probes cannot be used<br>    to make the server answer fas=
-ter than a reset flood could=2E<br><br>The reply&#39;s own session id is th=
-e stateless SYN-cookie used by the three-way<br>handshake, so the responder=
- keeps no state and the reply can later serve as<br>the handshake reset (co=
-nnect_lifetime advertisement)=2E<br><br>Change-Id: I930d3789e0313aa0c3bc51e=
-e5fd1d108343d59f0<br>Signed-off-by: Lev Stipakov &lt;lev@openvpn=2Enet&gt;<=
-br>---<br>M src/openvpn/mudp=2Ec<br>M src/openvpn/oob=2Ec<br>M src/openvpn/=
-oob=2Eh<br>M src/openvpn/ssl_pkt=2Ec<br>M src/openvpn/ssl_pkt=2Eh<br>5 file=
-s changed, 118 insertions(+), 4 deletions(-)<br><br></pre><pre class=3D"blo=
-cks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git=
- pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/44/1744/9</pr=
-e><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><=
-span>diff --git a/src/openvpn/mudp=2Ec b/src/openvpn/mudp=2Ec</span><br><sp=
-an>index 2be085f=2E=2E2209407 100644</span><br><span>--- a/src/openvpn/mudp=
-=2Ec</span><br><span>+++ b/src/openvpn/mudp=2Ec</span><br><span>@@ -32,6 +3=
-2,7 @@</span><br><span> </span><br><span> #include &quot;memdbg=2Eh&quot;</=
-span><br><span> #include &quot;ssl_pkt=2Eh&quot;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+#include &quot;oob=2Eh&quot;</span><br><span> =
-</span><br><span> #ifdef HAVE_SYS_INOTIFY_H</span><br><span> #include &lt;s=
-ys/inotify=2Eh&gt;</span><br><span>@@ -87,6 +88,34 @@</span><br><span>     =
-                      &quot;Reset packet from client, sending HMAC based re=
-set challenge&quot;, sock);</span><br><span> }</span><br><span> </span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+/* Send an out-of-band PROBE_R=
-EPLY back to the source of a SERVER_PROBE,</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ * synchronously and without keeping any state, mirr=
-oring the reset path=2E */</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+s=
-end_probe_reply(struct multi_context *m, struct tls_pre_decrypt_state *stat=
-e,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                 =
-struct tls_auth_standalone *tas, const struct oob_probe_reply *reply,</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+                 struct s=
-ession_id *own_sid, struct link_socket *sock)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    struct gc_arena gc =3D gc_new();</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    /* Build the payload of the reply (message-type header + probe_re=
-ply TLV) */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    stru=
-ct buffer payload =3D alloc_buf_gc(128, &amp;gc);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    if (!oob_client_reply_write(&amp;payload,=
- reply))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        gc_free(&amp;gc);=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    /* OOB replies use the same control-channel wrapping=
- as the request */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   reset_packet_id_send(&amp;state-&gt;tls_wrap_tmp=2Eopt=2Epacket_id=2Esen=
-d);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    state-&gt;tl=
-s_wrap_tmp=2Eopt=2Epacket_id=2Erec=2Einitialized =3D true;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    struct buffer buf =3D tls_wrap_oob_standalone(&amp;=
-state-&gt;tls_wrap_tmp, tas, own_sid, &amp;payload);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    send_standalone_reply(m, &amp;buf, &q=
-uot;Server Probe&quot;, &quot;Server probe from client, sending probe reply=
-&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-              sock);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;g=
-c);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> </span><br><span=
-> /* Returns true if this packet should create a new session */</span><br><=
-span> static bool</span><br><span>@@ -105,7 +134,8 @@</span><br><span>     =
-struct openvpn_sockaddr *from =3D &amp;m-&gt;top=2Ec2=2Efrom=2Edest;</span>=
-<br><span>     int handwindow =3D m-&gt;top=2Eoptions=2Ehandshake_window;</=
-span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    i=
-f (verdict =3D=3D VERDICT_VALID_RESET_V3 || verdict =3D=3D VERDICT_VALID_RE=
-SET_V2)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (verd=
-ict =3D=3D VERDICT_VALID_RESET_V3 || verdict =3D=3D VERDICT_VALID_RESET_V2<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        || verdict =
-=3D=3D VERDICT_VALID_OOB_V1)</span><br><span>     {</span><br><span>       =
-  /* Check if we are still below our limit for sending out</span><br><span>=
-          * responses */</span><br><span>@@ -203,6 +233,31 @@</span><br><sp=
-an> </span><br><span>         return ret;</span><br><span>     }</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    else if (verdict =3D=3D VE=
-RDICT_VALID_OOB_V1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* Out=
--of-band server probe=2E state-&gt;newbuf points at the TLV payload</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+         * (read_control_au=
-th has stripped the opcode, session id and any</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+         * tls-auth/tls-crypt wrapping)=2E Answe=
-r it without creating a session=2E */</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        struct oob_probe_reply reply;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        if (!oob_build_probe_reply(&amp=
-;state-&gt;newbuf, (uint64_t)now, (uint64_t)handwindow,</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+                                   &amp=
-;state-&gt;peer_session_id, &amp;reply))</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+            /* malformed or replayed/stale probe: silently drop =
-*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            retur=
-n false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        /* Our session id is a stateless=
- SYN cookie (the same HMAC the three-way</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+         * handshake uses): we keep no per-probe state=
-, and the reply can later</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+         * also serve as the server&#39;s CONTROL_HARD_RESET_SERVER_V=
-2, so a client</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-    * can start the handshake from it (the connect_lifetime advertisement)=
-=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        struc=
-t session_id sid =3D</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+            calculate_session_id_hmac(state-&gt;peer_session_id, from, hma=
-c, handwindow, 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        send_probe_r=
-eply(m, state, tas, &amp;reply, &amp;sid, sock);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        /* An OOB probe never creates a session */</span><br><spa=
+rently required from: flichtenheld, stipa=2E </p>
+<p>stipa <strong>uploaded=
+ patch set #9</strong> to this change=2E</p><p><a href=3D"http://gerrit=2Eo=
+penvpn=2Enet/c/openvpn/+/1742?usp=3Demail">View Change</a></p><p>The follow=
+ing approvals got outdated and were removed:
+Code-Review+2 by flichtenheld<=
+/p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-s=
+pace: pre-wrap;">oob: Add SERVER_PROBE parsing and the probe-reply decision=
+<br><br>Add the message-level helpers the server needs to answer a probe:<b=
+r><br>  - oob_server_probe_read() scans the TLV payload of a received OOB<b=
+r>    SERVER_PROBE for the probe_parameter TLV, skipping other/future TLV<b=
+r>    types and rejecting malformed or truncated input=2E<br>  - oob_timest=
+amp_in_window() performs the cheap replay/skew check on the<br>    probe ti=
+mestamp described in the wire protocol specification=2E<br>  - oob_build_pr=
+obe_reply() composes the two: given a received SERVER_PROBE<br>    it scans=
+ for the probe_parameter, drops the probe if it is missing or<br>    its ti=
+mestamp is outside the acceptable window, and otherwise populates<br>    th=
+e probe_reply (echoing the peer&#39;s session id) to send back=2E<br><br>Th=
+ese are pure functions exercised by unit tests; the server packet path<br>c=
+alls oob_build_probe_reply() in a follow-up, which performs the actual send=
+=2E<br><br>Change-Id: Iafa9efc1c156974ad9f5752e9de810a8c2f68c30<br>Signed-o=
+ff-by: Lev Stipakov &lt;lev@openvpn=2Enet&gt;<br>---<br>M src/openvpn/oob=
+=2Ec<br>M src/openvpn/oob=2Eh<br>M tests/unit_tests/openvpn/test_oob=2Ec<br=
+>3 files changed, 289 insertions(+), 0 deletions(-)<br><br></pre><pre class=
+=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
+p;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/42/174=
+2/9</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
+rap;"><span>diff --git a/src/openvpn/oob=2Ec b/src/openvpn/oob=2Ec</span><b=
+r><span>index c807171=2E=2E930b213 100644</span><br><span>--- a/src/openvpn=
+/oob=2Ec</span><br><span>+++ b/src/openvpn/oob=2Ec</span><br><span>@@ -81,3=
+ +81,54 @@</span><br><span>     r-&gt;flags =3D buf_read_u32(buf, NULL);</s=
+pan><br><span>     return true;</span><br><span> }</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+oob=
+_server_probe_write(struct buffer *buf, const struct oob_probe_parameter *p=
+aram)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    return buf_write_u16(buf, OO=
+B_MSG_SERVER_PROBE) &amp;&amp; oob_probe_parameter_write(buf, param);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+oob_server_probe_read(struct buffer *payload, struct oob_probe_parameter *p=
+aram)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    if (!ctrl_msg_read_header(pa=
+yload, OOB_MSG_SERVER_PROBE))</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    return false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    struct buffer value;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    if (!ctrl_msg_find_tlv(pay=
+load, OOB_TLV_PROBE_PARAMETER, &amp;value))</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        return false;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return oob_probe_=
+parameter_read(&amp;value, param);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+oob_timestamp_in_window(uint64_t prob=
+e_ts, uint64_t now, uint64_t window_secs)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    uint64_t diff =3D (now &gt; probe_ts) ? (now - probe_ts) : (probe_t=
+s - now);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return=
+ diff &lt;=3D window_secs;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+oob_build_probe_reply(struct buffer *probe_pa=
+yload, uint64_t now, uint64_t window_secs,</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                      const struct session_id *peer_=
+sid, struct oob_probe_reply *reply)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  struct oob_probe_parameter param;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    if (!oob_server_probe_read(probe_payload, &amp;param))<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><spa=
 n style=3D"color: hsl(120, 100%, 40%);">+        return false;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span> </span><b=
-r><span>     /* VERDICT_INVALID */</span><br><span>     return false;</span=
-><br><span>diff --git a/src/openvpn/oob=2Ec b/src/openvpn/oob=2Ec</span><br=
-><span>index 930b213=2E=2Ec841d59 100644</span><br><span>--- a/src/openvpn/=
-oob=2Ec</span><br><span>+++ b/src/openvpn/oob=2Ec</span><br><span>@@ -106,6=
- +106,12 @@</span><br><span> }</span><br><span> </span><br><span> bool</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+oob_client_reply_write(s=
-truct buffer *buf, const struct oob_probe_reply *reply)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    return buf_write_u16(buf, OOB_MSG_PROBE_REPLY) &amp;&=
-amp; oob_probe_reply_write(buf, reply);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><s=
-pan> oob_timestamp_in_window(uint64_t probe_ts, uint64_t now, uint64_t wind=
-ow_secs)</span><br><span> {</span><br><span>     uint64_t diff =3D (now &gt=
-; probe_ts) ? (now - probe_ts) : (probe_ts - now);</span><br><span>diff --g=
-it a/src/openvpn/oob=2Eh b/src/openvpn/oob=2Eh</span><br><span>index 1afabb=
-d=2E=2E49d64e8 100644</span><br><span>--- a/src/openvpn/oob=2Eh</span><br><=
-span>+++ b/src/openvpn/oob=2Eh</span><br><span>@@ -126,6 +126,12 @@</span><=
-br><span> bool oob_server_probe_read(struct buffer *payload, struct oob_pro=
-be_parameter *param);</span><br><span> </span><br><span> /**</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+ * Write a complete PROBE_REPLY me=
-ssage (message-type header + probe_reply TLV)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+ * to buf=2E Sent by the server=2E</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+bool oob_client_reply_write(struct buffer *buf, co=
-nst struct oob_probe_reply *reply);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**=
-</span><br><span>  * Check whether a probe timestamp is within an acceptabl=
-e window around the</span><br><span>  * current time=2E Used to cheaply dro=
-p replayed or implausibly-timed probes</span><br><span>  * before doing any=
- further work (see the probe_parameter timestamp rationale</span><br><span>=
-diff --git a/src/openvpn/ssl_pkt=2Ec b/src/openvpn/ssl_pkt=2Ec</span><br><s=
-pan>index 0d882d9=2E=2E335e26f 100644</span><br><span>--- a/src/openvpn/ssl=
-_pkt=2Ec</span><br><span>+++ b/src/openvpn/ssl_pkt=2Ec</span><br><span>@@ -=
-313,7 +313,8 @@</span><br><span> </span><br><span>     /* Allow only the re=
-set packet or the first packet of the actual handshake=2E */</span><br><spa=
-n>     if (op !=3D P_CONTROL_HARD_RESET_CLIENT_V2 &amp;&amp; op !=3D P_CONT=
-ROL_HARD_RESET_CLIENT_V3</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-        &amp;&amp; op !=3D P_CONTROL_V1 &amp;&amp; op !=3D P_CONTROL_WKC=
-_V1 &amp;&amp; op !=3D P_ACK_V1)</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        &amp;&amp; op !=3D P_CONTROL_V1 &amp;&amp; op !=3D P_C=
-ONTROL_WKC_V1 &amp;&amp; op !=3D P_ACK_V1</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        &amp;&amp; !opcode_is_oob(op))</span><br><spa=
-n>     {</span><br><span>         /*</span><br><span>          * This can o=
-ccur due to bogus data or DoS packets=2E</span><br><span>@@ -388,6 +389,10 =
-@@</span><br><span>     {</span><br><span>         return VERDICT_VALID_WKC=
-_V1;</span><br><span>     }</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    else if (opcode_is_oob(op))</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        return VERDICT_VALID_OOB_V1;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    }</span><br><span>     else</span><br><span>    =
- {</span><br><span>         return VERDICT_VALID_RESET_V2;</span><br><span>=
-@@ -442,6 +447,29 @@</span><br><span>     return buf;</span><br><span> }</s=
-pan><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+stru=
-ct buffer</span><br><span style=3D"color: hsl(120, 100%, 40%);">+tls_wrap_o=
-ob_standalone(struct tls_wrap_ctx *ctx, struct tls_auth_standalone *tas,</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                      =
-  struct session_id *own_sid, const struct buffer *payload)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    /* Copy buffer here to point at the same data but=
- allow tls_wrap_control</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+     * to potentially change buf to point to another buffer without</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+     * modifying the bu=
-ffer in tas */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    s=
-truct buffer buf =3D tas-&gt;workbuf;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    ASSERT(buf_init(&amp;buf, tas-&gt;frame=2Ebuf=2Eheadr=
-oom));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    /* Out-of-band messages carr=
-y the payload directly, with no reliability</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+     * or ACK fields=2E */</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    ASSERT(buf_copy(&amp;buf, payload));</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    uint8_t header =3D (uint8_t)(P_CONTRO=
-L_OOB_V1 &lt;&lt; P_OPCODE_SHIFT);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-/* Add tls-auth/tls-crypt wrapping, this might replace buf with</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+     * ctx-&gt;work */</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    tls_wrap_control(ctx, he=
-ader, &amp;buf, own_sid);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return bu=
-f;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> hmac_ctx_t *</spa=
-n><br><span> session_id_hmac_init(void)</span><br><span> {</span><br><span>=
-diff --git a/src/openvpn/ssl_pkt=2Eh b/src/openvpn/ssl_pkt=2Eh</span><br><s=
-pan>index 25e50bf=2E=2E3ab09db 100644</span><br><span>--- a/src/openvpn/ssl=
-_pkt=2Eh</span><br><span>+++ b/src/openvpn/ssl_pkt=2Eh</span><br><span>@@ -=
-62,8 +62,9 @@</span><br><span>  * control channel session (e=2Eg=2E a serve=
-r probe)=2E Inherently unreliable:</span><br><span>  * there is no protocol=
--level retransmission=2E</span><br><span>  *</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">- * It is not legal on an established session; see op=
-code_valid_in_session()</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->- * below=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
-On the server this is accepted via the tls_pre_decrypt_lite() allowlist and=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * handled in the n=
-ew-connection path (it never creates a session)=2E It is not</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+ * legal on an established session=
-; see opcode_valid_in_session() below=2E */</span><br><span> #define P_CONT=
-ROL_OOB_V1 12</span><br><span> </span><br><span> /* define the range of def=
-ined opcodes, in- and out-of-band=2E Note this is not</span><br><span>@@ -1=
-36,6 +137,9 @@</span><br><span>     VERDICT_VALID_ACK_V1,</span><br><span> =
-    /** The packet is a valid control packet with appended wrapped client k=
-ey */</span><br><span>     VERDICT_VALID_WKC_V1,</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    /** This packet is a valid out-of-band con=
-trol message (e=2Eg=2E a server</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+     * probe)=2E It does not belong to a session and must not c=
-reate one=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-VERDICT_VALID_OOB_V1,</span><br><span>     /** the packet failed on of the =
-various checks */</span><br><span>     VERDICT_INVALID</span><br><span> };<=
-/span><br><span>@@ -264,6 +268,21 @@</span><br><span>                      =
-              struct session_id *own_sid, struct session_id *remote_sid,</s=
-pan><br><span>                                    uint8_t header, bool requ=
-est_resend_wkc);</span><br><span> </span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-* Wrap an already-built out-of-band payload (e=2Eg=2E probe-reply TLVs) int=
-o a</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * standalone, s=
-ession-less P_CONTROL_OOB_V1 packet: it prepends the opcode and</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+ * own_sid and applies the same=
- tls-auth/tls-crypt wrapping as a regular</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+ * control packet, but carries no reliability/ACK fie=
-lds=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ * @param ctx       tls wrappi=
-ng context (from the pre-decrypt state)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+ * @param tas       standalone auth context providing t=
-he work buffer</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @p=
-aram own_sid   session id to use as our session id in the header</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ * @param payload   the OOB me=
-ssage payload (TLV stream) to wrap</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+ * @return          the wrapped packet buffer, ready to send=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+struct buffer tls_wrap_oob_standalo=
-ne(struct tls_wrap_ctx *ctx, struct tls_auth_standalone *tas,</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+                                 =
-     struct session_id *own_sid, const struct buffer *payload);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> </span><br><s=
-pan> /**</span><br><span>  * Extracts a control channel message from buf an=
-d adjusts the size of</span><br><span></span><br></pre><p>To view, visit <a=
- href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1744?usp=3Demail">change=
- 1744</a>=2E To unsubscribe, or for help writing mail filters, visit <a hre=
-f=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p=
-><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscop=
-e itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link ite=
-mprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1744?usp=3D=
-email"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+pan style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    /* Drop replayed or implausibly-timed probes before doing any=
+ more work=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ if (!oob_timestamp_in_window(param=2Etimestamp, now, window_secs))</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        return false;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    /* the caller&#39;s advertised values are kept; only the echo is our=
+s to fill */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    rep=
+ly-&gt;peer_session_id =3D *peer_sid;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    return true;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+}</span><br><span>diff --git a/src/openvpn/oob=2Eh b/src/ope=
+nvpn/oob=2Eh</span><br><span>index 0a9a4bb=2E=2E1afabbd 100644</span><br><s=
+pan>--- a/src/openvpn/oob=2Eh</span><br><span>+++ b/src/openvpn/oob=2Eh</sp=
+an><br><span>@@ -107,4 +107,58 @@</span><br><span>  */</span><br><span> boo=
+l oob_probe_reply_read(struct buffer *buf, struct oob_probe_reply *r);</spa=
+n><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Write a complete SE=
+RVER_PROBE message (message-type header + probe_parameter</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ * TLV) to buf=2E Sent by the client=
+=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+bool oob_server_probe_write(stru=
+ct buffer *buf, const struct oob_probe_parameter *param);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ * Read a received OOB SERVER_PROBE: verify its message-type header, the=
+n scan</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * for the pr=
+obe_parameter TLV=2E TLV types other than probe_parameter are</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+ * skipped=2E payload is consumed=
+ as it is read=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param payload  =
+buffer positioned at the start of the OOB message payload</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ * @param param    filled with the pa=
+rsed probe_parameter on success</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ * @return true if the header matched and a well-formed probe_p=
+arameter was</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *     =
+    found, false otherwise</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool oob_=
+server_probe_read(struct buffer *payload, struct oob_probe_parameter *param=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ * Check whether a probe timestamp is within an acce=
+ptable window around the</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+ * current time=2E Used to cheaply drop replayed or implausibly-timed =
+probes</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * before doi=
+ng any further work (see the probe_parameter timestamp rationale</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ * in the wire protocol specif=
+ication)=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param probe_ts     ti=
+mestamp from the probe_parameter (UNIX seconds)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+ * @param now          current time (UNIX secon=
+ds)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param window=
+_secs  maximum allowed difference, in either direction</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ * @return true if |now - probe_ts| &lt;=
+=3D window_secs</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool oob_timestamp_i=
+n_window(uint64_t probe_ts, uint64_t now, uint64_t window_secs);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ * Process the TLV payload of a received SERVER_PROBE and decide =
+whether to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * answer=
+ it=2E Combines oob_server_probe_read() and oob_timestamp_in_window():</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ * the probe is dropped =
+(false returned) if it has no valid probe_parameter or</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ * its timestamp is outside the acceptab=
+le window=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ * reply carries the val=
+ues the server advertises (priority, weight,</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ * max_latency_diff, connect_lifetime, flags) in, =
+and is deliberately not</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ * cleared: on success only the peer&#39;s session id is filled in, lea=
+ving the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * reply re=
+ady to be wrapped and sent=2E</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * This=
+ is the transport-agnostic decision step; the caller performs the send=2E</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ * @param probe_payload  TLV payload o=
+f the received OOB SERVER_PROBE</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ * @param now            current time (UNIX seconds)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ * @param window_secs    accep=
+table timestamp skew, in either direction</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+ * @param peer_sid       session id of the requesting=
+ peer (echoed in the reply)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ * @param reply          in: the values to advertise; out: the repl=
+y to send</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return=
+ true if a reply should be sent, false to silently drop the probe</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+bool oob_build_probe_reply(struct buffer *pro=
+be_payload, uint64_t now, uint64_t window_secs,</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+                           const struct session=
+_id *peer_sid, struct oob_probe_reply *reply);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span> #endif /* OOB_H */</span><br><=
+span>diff --git a/tests/unit_tests/openvpn/test_oob=2Ec b/tests/unit_tests/=
+openvpn/test_oob=2Ec</span><br><span>index aa4eb23=2E=2E371cbc6 100644</spa=
+n><br><span>--- a/tests/unit_tests/openvpn/test_oob=2Ec</span><br><span>+++=
+ b/tests/unit_tests/openvpn/test_oob=2Ec</span><br><span>@@ -259,6 +259,181=
+ @@</span><br><span>     gc_free(&amp;gc);</span><br><span> }</span><br><sp=
+an> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* A SERVER_PRO=
+BE carrying just a probe_parameter is found by the scan=2E */</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+test_server_probe_read_finds_parameter(vo=
+id **state)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena gc =3D=
+ gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struc=
+t buffer buf =3D alloc_buf_gc(128, &amp;gc);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    const struct oob_probe_parameter in =3D {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        =2Etimestamp =3D 0x11223344556677=
+88ULL,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =2Efl=
+ags =3D 0,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    };</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(oob_se=
+rver_probe_write(&amp;buf, &amp;in));</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   struct oob_probe_parameter out =3D { 0 };</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    assert_true(oob_server_probe_read(&amp;buf, &a=
+mp;out));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert=
+_true(in=2Etimestamp =3D=3D out=2Etimestamp);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    assert_int_equal(in=2Eflags, out=2Eflags);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/=
+* TLVs other than probe_parameter are skipped, so the scan finds the</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ * probe_parameter even wh=
+en preceded by an unknown TLV=2E */</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+test_server_probe_read_skips_unknown(void **state)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    struct gc_arena gc =3D gc_new();</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    struct buffer buf =3D alloc_buf_g=
+c(128, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* SERVER_PROBE me=
+ssage header, then an unknown TLV (type 0x7ff) =2E=2E=2E */</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    assert_true(buf_write_u16(&amp;=
+buf, OOB_MSG_SERVER_PROBE));</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    assert_true(ctrl_msg_tlv_write_header(&amp;buf, 0x7ff, false, =
+4));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true=
+(buf_write_u32(&amp;buf, 0xcafef00d));</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    /* =2E=2E=2E followed by the real probe_parameter */=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const struct oo=
+b_probe_parameter in =3D { =2Etimestamp =3D 42, =2Eflags =3D 0 };</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(oob_probe_par=
+ameter_write(&amp;buf, &amp;in));</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    s=
+truct oob_probe_parameter out =3D { 0 };</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    assert_true(oob_server_probe_read(&amp;buf, &amp;o=
+ut));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_tru=
+e(out=2Etimestamp =3D=3D 42);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    gc_fr=
+ee(&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+/* A payload with no probe_parameter must be=
+ rejected=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+stat=
+ic void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_server_=
+probe_read_missing(void **state)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    s=
+truct gc_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    struct buffer buf =3D alloc_buf_gc(128, &amp;gc);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    assert_true(buf_write_u16(&amp;buf, OOB_MSG_=
+SERVER_PROBE));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+assert_true(ctrl_msg_tlv_write_header(&amp;buf, 0x7ff, false, 4));</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(buf_write_u3=
+2(&amp;buf, 0));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct oob_probe_p=
+arameter out =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    assert_false(oob_server_probe_read(&amp;buf, &amp;out));</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* A TLV =
+whose declared length runs past the buffer must be rejected, not</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ * read out of bounds=2E */</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+test_server_probe_read_truncat=
+ed(void **state)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena g=
+c =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+struct buffer buf =3D alloc_buf_gc(128, &amp;gc);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    /* TLV header claims a 16-byte value but no value bytes foll=
+ow */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_tru=
+e(buf_write_u16(&amp;buf, OOB_MSG_SERVER_PROBE));</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    assert_true(ctrl_msg_tlv_write_header(&am=
+p;buf, 0x7ff, false, 16));</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct o=
+ob_probe_parameter out =3D { 0 };</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    assert_false(oob_server_probe_read(&amp;buf, &amp;out));<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++/* A SERVER_PROBE reader rejects a payload carrying a different message ty=
+pe</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * (here a PROBE_=
+REPLY&#39;s), even if it contains a valid probe_parameter TLV=2E */</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+test_server_probe_read_wrong_msg_ty=
+pe(void **state)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena g=
+c =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+struct buffer buf =3D alloc_buf_gc(128, &amp;gc);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    assert_true(buf_write_u16(&amp;buf, OOB_MSG_PROBE_REPLY));</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const struct oob_=
+probe_parameter in =3D { =2Etimestamp =3D 42, =2Eflags =3D 0 };</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(oob_probe_param=
+eter_write(&amp;buf, &amp;in));</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    str=
+uct oob_probe_parameter out =3D { 0 };</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    assert_false(oob_server_probe_read(&amp;buf, &amp;ou=
+t));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+/* Timestamp window check accepts values within the window (either di=
+rection)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * and reje=
+cts values outside it=2E */</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+test_timestamp_in_window(void **state)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    const uint64_t now =3D 1000000;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    const uint64_t window =3D 30;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    assert_true(oob_timestamp_in_window(now, now, window));</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(oob_tim=
+estamp_in_window(now - window, now, window));      /* boundary, past */</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(oob_tim=
+estamp_in_window(now + window, now, window));      /* boundary, future */</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_false(oob_=
+timestamp_in_window(now - window - 1, now, window)); /* too old */</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    assert_false(oob_timesta=
+mp_in_window(now + window + 1, now, window)); /* too far ahead */</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+/* A valid, in-window SERVER_PROBE yields a reply that echoes the =
+peer&#39;s</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * sessio=
+n id and zeroes the remaining fields=2E */</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+test_build_probe_reply_valid(void **state)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    struct gc_arena gc =3D gc_new();</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    struct buffer buf =3D alloc_buf_gc=
+(128, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    const uint64_t now =
+=3D 1000000;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    con=
+st struct oob_probe_parameter probe =3D { =2Etimestamp =3D now, =2Eflags =
+=3D 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_=
+true(oob_server_probe_write(&amp;buf, &amp;probe));</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    struct session_id peer;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    memcpy(peer=2Eid, &quot;PEER1234&quot;, SID_SIZE=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    /* left as the caller set them: =
+the function only fills the session id */</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    struct oob_probe_reply reply =3D { 0 };</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(oob_build_pro=
+be_reply(&amp;buf, now, 30, &amp;peer, &amp;reply));</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    assert_memory_equal(reply=2Epeer_sess=
+ion_id=2Eid, peer=2Eid, SID_SIZE);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    assert_int_equal(reply=2Epriority, 0);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(reply=2Eweight, =
+0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_e=
+qual(reply=2Econnect_lifetime, 0);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    assert_int_equal(reply=2Eflags, 0);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* A probe whose ti=
+mestamp is outside the window is dropped (no reply)=2E */</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+test_build_probe_reply_stale(void **state)</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena gc =3D gc_new();</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct buffer buf =
+=3D alloc_buf_gc(128, &amp;gc);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    con=
+st uint64_t now =3D 1000000;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    const struct oob_probe_parameter probe =3D { =2Etimestamp =3D =
+now - 1000, =2Eflags =3D 0 };</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    assert_true(oob_server_probe_write(&amp;buf, &amp;probe));</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    struct session_id peer =3D { 0 };</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct oob_probe_re=
+ply reply =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    assert_false(oob_build_probe_reply(&amp;buf, now, 30, &amp;peer, &amp;=
+reply));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+/* A payload without a probe_parameter is dropped (no reply)=2E *=
+/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+test_build_probe_reply_no_=
+parameter(void **state)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct gc_=
+arena gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    struct buffer buf =3D alloc_buf_gc(128, &amp;gc);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    assert_true(buf_write_u16(&amp;buf, OOB_MSG_SERVER_PR=
+OBE));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_tr=
+ue(ctrl_msg_tlv_write_header(&amp;buf, 0x7ff, false, 4));</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    assert_true(buf_write_u32(&amp;bu=
+f, 0));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    struct session_id peer =3D =
+{ 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct oo=
+b_probe_reply reply =3D { 0 };</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    assert_false(oob_build_probe_reply(&amp;buf, 1000000, 30, &a=
+mp;peer, &amp;reply));</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp=
+;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> int</span><br>=
+<span> main(void)</span><br><span> {</span><br><span>@@ -271,6 +446,15 @@</=
+span><br><span>         cmocka_unit_test(test_probe_parameter_too_short),</=
+span><br><span>         cmocka_unit_test(test_find_tlv_value_truncated),</s=
+pan><br><span>         cmocka_unit_test(test_tlv_header_truncated),</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(te=
+st_server_probe_read_finds_parameter),</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        cmocka_unit_test(test_server_probe_read_skips_un=
+known),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        cmoc=
+ka_unit_test(test_server_probe_read_missing),</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        cmocka_unit_test(test_server_probe_read_t=
+runcated),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        c=
+mocka_unit_test(test_server_probe_read_wrong_msg_type),</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(test_timestamp=
+_in_window),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ cmocka_unit_test(test_build_probe_reply_valid),</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        cmocka_unit_test(test_build_probe_repl=
+y_stale),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        cm=
+ocka_unit_test(test_build_probe_reply_no_parameter),</span><br><span>     }=
+;</span><br><span> </span><br><span>     return cmocka_run_group_tests_name=
+(&quot;oob tests&quot;, tests, NULL, NULL);</span><br><span></span><br></pr=
+e><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/17=
+42?usp=3Demail">change 1742</a>=2E To unsubscribe, or for help writing mail=
+ filters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Dema=
+il">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/Email=
+Message"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg=
+/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c=
+/openvpn/+/1742?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chang=
+e"/></div></div>
 
+<div style=3D"display:none"> Gerrit-MessageType: newpatch=
+set </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div=
- style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-<div style=
-=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:non=
-e"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change=
--Id: I930d3789e0313aa0c3bc51ee5fd1d108343d59f0 </div>
+ style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display=
-:none"> Gerrit-Change-Number: 1744 </div>
-<div style=3D"display:none"> Gerr=
-it-PatchSet: 9 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;=
-lstipakov@gmail=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Review=
-er: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+:none"> Gerrit-Change-Id: Iafa9efc1c156974ad9f5752e9de810a8c2f68c30 </div>
+=
+<div style=3D"display:none"> Gerrit-Change-Number: 1742 </div>
+<div style=
+=3D"display:none"> Gerrit-PatchSet: 9 </div>
+<div style=3D"display:none"> G=
+errit-Owner: stipa &lt;lstipakov@gmail=2Ecom&gt; </div>
 <div style=3D"displ=
-ay:none"> Gerrit-CC: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
-<d=
-iv style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=
-=2Esourceforge=2Enet&gt; </div>
-<div style=3D"display:none"> Gerrit-Attenti=
-on: stipa &lt;lstipakov@gmail=2Ecom&gt; </div>
+ay:none"> Gerrit-Reviewer: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; </d=
+iv>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvp=
+n@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-=
+devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"=
+display:none"> Gerrit-Attention: flichtenheld &lt;frank@lichtenheld=2Ecom&g=
+t; </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipako=
+v@gmail=2Ecom&gt; </div>
 
 </body></html>
---RKbqOpLvDlA=--
+--L9iYQIp5Isw=--
 
 
---===============1203629100981288047==
+--===============1682716147966230387==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============1203629100981288047==
+--===============1682716147966230387==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -920,5 +1202,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============1203629100981288047==--
+--===============1682716147966230387==--
 
