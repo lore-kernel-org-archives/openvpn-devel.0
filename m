@@ -4,37 +4,37 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 17DBFC53219
-	for <openvpn-devel@archiver.kernel.org>; Wed, 29 Jul 2026 07:14:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id ED5E6C54F51
+	for <openvpn-devel@archiver.kernel.org>; Wed, 29 Jul 2026 07:14:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:Cc:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
 	:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=ouoMF8h/Su819JvEYNJuofAnAMyeMx4v7sVTbMxa9+Y=; b=BlosR/ukaniA9M0RcMIGFyy9Ny
-	a8x6r88RNGena5UZrgY1AgBxBZnvBWRv7mzPbSCZuFoUbhduQPrud83dHI8btLwcn84SRCTQZT2go
-	CAllimc1XFJqqsiz9kMYlJNoCpxd+MxpoFHbnSOIp/pidkkPmUq4CTX3I1+ysWfK5EIc=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=1CtzvWsvJoBRmxfyMNS1mIFZdU1JZPYs4kNK4kPA/7s=; b=nHrNlgHEaD1wk/PsQtU5WzmrK7
+	zLXuKmOlcbtKqL9bsfxBxfva/ACMZEMCzjcSQzdsMiiM1l51NgutynkVUpoYQ1g0BAWOCPhVXmig9
+	Eegb6su5rEPViiRgtJmMfGiKlM67vPm+DYfSTh33Os49/ZVsou8famQ2KcKkyetUnk98=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1woyUm-0008Td-Hn;
-	Wed, 29 Jul 2026 07:14:28 +0000
+	id 1woyUv-000639-Sq;
+	Wed, 29 Jul 2026 07:14:35 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <marco@mandelbit.com>) id 1woyUl-0008TW-Pd
+ (envelope-from <marco@mandelbit.com>) id 1woyUu-000631-FA
  for openvpn-devel@lists.sourceforge.net;
- Wed, 29 Jul 2026 07:14:27 +0000
+ Wed, 29 Jul 2026 07:14:34 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
  In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=i4/GgFLWUKLQ5Ku+pssvw7epYBWPzNQaHYNpQaIB+Rs=; b=j88XnqJgySP/FubIrjpyMjc80s
- 1bIimXUNYcrvmH5gDW0AJ2hvy7MMWcRLPCFRBdI7rxmHHqaOU0ilyJ8Czj7qos+DbTA1fx6MskiL6
- 2aFWgEwWfnmAsE81p8MJFSN1zl/taBfwHFE9tn+Y2fur2ifN9bMdEqiuTZ3+ks1m2wkY=;
+ bh=xZyk3IyDroL7Nn1ENLzzZgQrZaHVcIwichYBr5rnyRE=; b=nJHDp4tlbJXasoR4viuASOn6zo
+ Qd7xVdoZY+5Rh5LtgCivG5QritJPAqcc8+vYXRoBieZkExHTW4DYFP6nvB/F9c6d1UvRE5wuHlaov
+ DiCJauwngfN4KSl2UoVtbsqMUef+WRemLLnysW+wlBt4d/e0pEPgLj44ycjNvVTokvZY=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -42,48 +42,42 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=i4/GgFLWUKLQ5Ku+pssvw7epYBWPzNQaHYNpQaIB+Rs=; b=bMlN2qNmKAjwI/M3iEPRzF8FHp
- 5kps7smL7AAXPHE3nSAO4G9uHPF/S3JkOfCw6kx5AJQHh6RrZqY9DcPOy6FPNCc0ggnxA1p8zCMDC
- js0SulYVSwNQHqDrcrPp7FLKLi1p3xO1C4zlZNvfQQv1/LVMt27MUFj+W3atTh92Vfu4=;
-Received: from mout-b-210.mailbox.org ([195.10.208.40])
+ bh=xZyk3IyDroL7Nn1ENLzzZgQrZaHVcIwichYBr5rnyRE=; b=JaXN7O9HjbR6cAtTyhob0iknTc
+ slE6AWD/djhrTGwIBN1zLFyMnbDACgDTITZwGJfY3CBHY2hbr3eG+Bwqfxl0+no3+1kgbR0R3CI02
+ qmdn0c/fVXNPNDaUaoItV9iFyJ21uZ2dqg3BL4KJtoEXBjPWCBGdJVQb797nrjXW2bcQ=;
+Received: from mout-b-106.mailbox.org ([195.10.208.46])
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1woyUm-0004Q3-9l for openvpn-devel@lists.sourceforge.net;
- Wed, 29 Jul 2026 07:14:27 +0000
-Received: from smtp102.mailbox.org (smtp102.mailbox.org
- [IPv6:2001:67c:2050:b231:465::102])
+ id 1woyUs-0004QF-9P for openvpn-devel@lists.sourceforge.net;
+ Wed, 29 Jul 2026 07:14:33 +0000
+Received: from smtp102.mailbox.org (unknown [10.196.197.102])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
  (No client certificate requested)
- by mout-b-210.mailbox.org (Postfix) with ESMTPS id 4h93VJ5hNzzFr3b;
- Wed, 29 Jul 2026 09:14:16 +0200 (CEST)
+ by mout-b-106.mailbox.org (Postfix) with ESMTPS id 4h93VQ6BZMzNljF;
+ Wed, 29 Jul 2026 09:14:22 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
- s=MBO0001; t=1785309256;
+ s=MBO0001; t=1785309262;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=i4/GgFLWUKLQ5Ku+pssvw7epYBWPzNQaHYNpQaIB+Rs=;
- b=Ivd1AB5v8jRV78WHA0mz3wkGRyYLEz9tvUm9Yz8k90A3uecpnSk14uEYH7JGJquvjNXaQJ
- wFoZiYfNeRFynBF2WRyonDUe9+kUAkTfTlLY48iUj7YpbW+MzKdEX7mIDjLVA4Sxjd9NDB
- TFBTsd7vXbG260Ei21oXfig1Bct5Ws0J3h+6fmUlA/a+VYBfzr0Cha4I7/h0yUjj0XGQV0
- 6yM/tr2ZCi2G7qsAyx6lXIIoNx2r1OS8Wm0bk4ndNSdP6Gz/HDoaNJQrwhKiJIabp/u4c+
- KQGqgM3k6dopRp1dxItEO3nfNTdJaENE9eym0LM5pgJhBaWQAsiktMwK/GekKw==
-Authentication-Results: outgoing_mbo_mout; dkim=none;
- spf=pass (outgoing_mbo_mout: domain of marco@mandelbit.com designates
- 2001:67c:2050:b231:465::102 as permitted sender)
- smtp.mailfrom=marco@mandelbit.com
+ bh=xZyk3IyDroL7Nn1ENLzzZgQrZaHVcIwichYBr5rnyRE=;
+ b=fxZNTVSj4WkaSHsBOe3ak21BnT1h6esL28AfjG7N79fNQdKqcmkPCV2qSkFZlucUyEp3Rr
+ jg7VR7R20AYYLHinV6jW5p7EF6WyWmGhIQLVWauJSEidou5BWIHH4dKWd8Lb5k9n13dbMz
+ k7bc5zlHCyXwji05bHFMMudB+KYPRJ29Xsvu2WHRjlZIdQ4bQRCFsNstLykdtX7/gKwgiL
+ +YUU7/Q+ueGpyZgABUTWS2S0XLmOnTXEYpRT7yi9RDSMKQPgJBcEZfrkaI2UosM046P6y5
+ ENILB/RinbfBelZEu/6c20LgVWP9aD+R6arZ+f0EbnmsKHFjFBjNrxkgFU/Iyg==
 From: Marco Baffo <marco@mandelbit.com>
 To: openvpn-devel@lists.sourceforge.net
-Date: Wed, 29 Jul 2026 09:13:58 +0200
-Message-ID: <20260729071400.2403200-2-marco@mandelbit.com>
+Date: Wed, 29 Jul 2026 09:13:59 +0200
+Message-ID: <20260729071400.2403200-3-marco@mandelbit.com>
 In-Reply-To: <20260729071400.2403200-1-marco@mandelbit.com>
 References: <20260729071400.2403200-1-marco@mandelbit.com>
 MIME-Version: 1.0
-X-Rspamd-Queue-Id: 4h93VJ5hNzzFr3b
-X-Headers-End: 1woyUm-0004Q3-9l
-Subject: [Openvpn-devel] [PATCH ovpn net-next v2 2/4] ovpn: include target
- netns ID in notifications
+X-Headers-End: 1woyUs-0004QF-9P
+Subject: [Openvpn-devel] [PATCH ovpn net-next v2 3/4] selftests: ovpn: test
+ operations in a foreign netns
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -100,206 +94,623 @@ Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-ovpn notifications are multicast in the network namespace of the peer
-transport socket, but carry an ifindex from the ovpn device namespace.
-If these namespaces differ, the ifindex alone is ambiguous to listeners.
+Extend ovpn-cli with -n to resolve an interface in a named network
+namespace and include OVPN_A_TARGET_NETNSID in peer and key requests.
 
-Include the device namespace ID relative to the receiving namespace when
-the two namespaces differ. Update the Netlink specification accordingly.
+Use -n for existing peer and key operations that do not create transport
+sockets, exercising foreign-netns requests throughout the test suite.
 
-Fixes: 89d3c0e4612a ("ovpn: kill key and notify userspace in case of IV exhaustion")
-Fixes: a215d253c17a ("ovpn: notify userspace when a peer is deleted")
-Fixes: c841b676da98 ("ovpn: notify userspace on client float event")
 Signed-off-by: Marco Baffo <marco@mandelbit.com>
 ---
 Changes in v2:
-- This is a new patch.
+- Used "ovpn-cli -n" instead of "ip netns exec ovpn-cli" where possible.
+- Removed additional tests since we modified the existing ones to
+  exercise the new code path.
 
- Documentation/netlink/specs/ovpn.yaml |  6 ++
- drivers/net/ovpn/netlink.c            | 87 +++++++++++++++------------
- 2 files changed, 53 insertions(+), 40 deletions(-)
+tools/testing/selftests/net/ovpn/common.sh    |   8 +-
+ tools/testing/selftests/net/ovpn/ovpn-cli.c   | 266 +++++++++++++++++-
+ .../selftests/net/ovpn/test-close-socket.sh   |   4 +-
+ tools/testing/selftests/net/ovpn/test-mark.sh |   6 +-
+ tools/testing/selftests/net/ovpn/test.sh      |  50 ++--
+ 5 files changed, 289 insertions(+), 45 deletions(-)
 
-diff --git a/Documentation/netlink/specs/ovpn.yaml b/Documentation/netlink/specs/ovpn.yaml
-index 1f0d4d6037c0..5dc998cce714 100644
---- a/Documentation/netlink/specs/ovpn.yaml
-+++ b/Documentation/netlink/specs/ovpn.yaml
-@@ -453,6 +453,8 @@ operations:
-             - peer
-         reply:
-           attributes:
-+            - ifindex
-+            - target-netnsid
-             - peer
-       dump:
-         request:
-@@ -461,6 +463,8 @@ operations:
-             - target-netnsid
-         reply:
-           attributes:
-+            - ifindex
-+            - target-netnsid
-             - peer
-     -
-       name: peer-del
-@@ -509,6 +513,8 @@ operations:
-             - keyconf
-         reply:
-           attributes:
-+            - ifindex
-+            - target-netnsid
-             - keyconf
-     -
-       name: key-swap
-diff --git a/drivers/net/ovpn/netlink.c b/drivers/net/ovpn/netlink.c
-index b70ecfaf46c8..0f15eb264332 100644
---- a/drivers/net/ovpn/netlink.c
-+++ b/drivers/net/ovpn/netlink.c
-@@ -1167,6 +1167,44 @@ int ovpn_nl_key_del_doit(struct sk_buff *skb, struct genl_info *info)
- 	return 0;
+diff --git a/tools/testing/selftests/net/ovpn/common.sh b/tools/testing/selftests/net/ovpn/common.sh
+index 2d844eb3aa6e..4f2510fb6d7f 100644
+--- a/tools/testing/selftests/net/ovpn/common.sh
++++ b/tools/testing/selftests/net/ovpn/common.sh
+@@ -221,7 +221,7 @@ ovpn_add_peer() {
+ 				${OVPN_UDP_PEERS_FILE}
+ 
+ 			for p in $(seq 1 ${OVPN_NUM_PEERS}); do
+-				ip netns exec "${server_ns}" ${OVPN_CLI} \
++				"${OVPN_CLI}" -n "${server_ns}" \
+ 					new_key tun0 ${p} 1 0 ${OVPN_ALG} 0 \
+ 					data64.key
+ 			done
+@@ -244,7 +244,7 @@ ovpn_add_peer() {
+ 			ip netns exec "${peer_ns}" ${OVPN_CLI} new_peer \
+ 				tun${1} ${PEER_ID} ${TX_ID} ${LPORT} ${RADDR} \
+ 				${RPORT}
+-			ip netns exec "${peer_ns}" ${OVPN_CLI} new_key tun${1} \
++			"${OVPN_CLI}" -n "${peer_ns}" new_key tun${1} \
+ 				${PEER_ID} 1 0 ${OVPN_ALG} 1 data64.key
+ 		fi
+ 	else
+@@ -252,8 +252,8 @@ ovpn_add_peer() {
+ 			(ip netns exec "${server_ns}" ${OVPN_CLI} listen tun0 \
+ 				1 ${M_ID} ${OVPN_TCP_PEERS_FILE} && {
+ 				for p in $(seq 1 ${OVPN_NUM_PEERS}); do
+-					ip netns exec "${server_ns}" \
+-						${OVPN_CLI} new_key tun0 ${p} \
++					"${OVPN_CLI}" -n "${server_ns}" \
++						new_key tun0 ${p} \
+ 						1 0 ${OVPN_ALG} 0 data64.key
+ 				done
+ 			}) &
+diff --git a/tools/testing/selftests/net/ovpn/ovpn-cli.c b/tools/testing/selftests/net/ovpn/ovpn-cli.c
+index d40953375c86..6ea39b3ecc29 100644
+--- a/tools/testing/selftests/net/ovpn/ovpn-cli.c
++++ b/tools/testing/selftests/net/ovpn/ovpn-cli.c
+@@ -6,6 +6,7 @@
+  *  Author:	Antonio Quartulli <antonio@openvpn.net>
+  */
+ 
++#include <fcntl.h>
+ #include <stdint.h>
+ #include <stdio.h>
+ #include <inttypes.h>
+@@ -21,6 +22,7 @@
+ #include <linux/ovpn.h>
+ #include <linux/types.h>
+ #include <linux/netlink.h>
++#include <linux/net_namespace.h>
+ 
+ #include <netlink/socket.h>
+ #include <netlink/netlink.h>
+@@ -121,6 +123,8 @@ struct ovpn_ctx {
+ 
+ 	unsigned int ifindex;
+ 	char ifname[IFNAMSIZ];
++	const char *target_netns_name;
++	int target_netnsid;
+ 	enum ovpn_mode mode;
+ 	bool mode_set;
+ 
+@@ -224,6 +228,10 @@ static struct nl_ctx *nl_ctx_alloc_flags(struct ovpn_ctx *ovpn, int cmd,
+ 	if (ovpn->ifindex > 0)
+ 		NLA_PUT_U32(ctx->nl_msg, OVPN_A_IFINDEX, ovpn->ifindex);
+ 
++	if (ovpn->target_netnsid >= 0)
++		NLA_PUT_S32(ctx->nl_msg, OVPN_A_TARGET_NETNSID,
++			    ovpn->target_netnsid);
++
+ 	return ctx;
+ nla_put_failure:
+ err_msg:
+@@ -1365,12 +1373,196 @@ static int ovpn_rt_send(struct nlmsghdr *payload, pid_t peer,
+ 	return ret;
  }
  
-+static int ovpn_nl_send_notify(struct ovpn_peer *peer, struct sk_buff *msg,
-+			       void *hdr)
++static int ovpn_parse_netnsid(struct nlmsghdr *msg, void *arg)
 +{
-+	struct ovpn_socket *sock;
-+	struct net *net_sock, *net_dev;
-+	int netnsid, ret = 0;
++	struct rtgenmsg *gen;
++	struct rtattr *attr;
++	int len;
 +
-+	rcu_read_lock();
-+	sock = rcu_dereference(peer->sock);
-+	if (!sock) {
-+		ret = -EINVAL;
-+		goto unlock;
++	if (msg->nlmsg_type != RTM_NEWNSID ||
++	    msg->nlmsg_len < NLMSG_LENGTH(sizeof(*gen)))
++		return -EINVAL;
++
++	gen = NLMSG_DATA(msg);
++	len = NLMSG_PAYLOAD(msg, sizeof(*gen));
++	attr = (struct rtattr *)((char *)gen + NLMSG_ALIGN(sizeof(*gen)));
++
++	for (; RTA_OK(attr, len); attr = RTA_NEXT(attr, len)) {
++		if (attr->rta_type != NETNSA_NSID)
++			continue;
++
++		if (RTA_PAYLOAD(attr) < sizeof(int32_t))
++			return -EINVAL;
++
++		memcpy(arg, RTA_DATA(attr), sizeof(int32_t));
++		return 0;
 +	}
 +
-+	net_sock = sock_net(sock->sk);
-+	net_dev = dev_net(peer->ovpn->dev);
++	return -ENOENT;
++}
 +
-+	/* The notification is delivered in the transport socket's netns. If
-+	 * the ovpn device is elsewhere, report its netns ID relative to that
-+	 * netns. Use -1 if no ID can be assigned.
-+	 */
-+	if (!net_eq(net_sock, net_dev)) {
-+		netnsid = peernet2id_alloc(net_sock, net_dev, GFP_ATOMIC);
-+		if (nla_put_s32(msg, OVPN_A_TARGET_NETNSID, netnsid)) {
-+			ret = -EMSGSIZE;
-+			goto unlock;
-+		}
++struct ovpn_netns_req {
++	struct nlmsghdr n;
++	struct rtgenmsg g;
++	char buf[64];
++};
++
++static int ovpn_get_netnsid(int netns_fd, int *netnsid)
++{
++	struct ovpn_netns_req req = { 0 };
++	uint32_t fd = netns_fd;
++
++	req.n.nlmsg_len = NLMSG_LENGTH(sizeof(req.g));
++	req.n.nlmsg_flags = NLM_F_REQUEST;
++	req.n.nlmsg_type = RTM_GETNSID;
++	req.g.rtgen_family = AF_UNSPEC;
++
++	if (ovpn_addattr(&req.n, sizeof(req), NETNSA_FD, &fd,
++			 sizeof(fd)) < 0)
++		return -EMSGSIZE;
++
++	*netnsid = NETNSA_NSID_NOT_ASSIGNED;
++	return ovpn_rt_send(&req.n, 0, 0, ovpn_parse_netnsid, netnsid);
++}
++
++static int ovpn_assign_netnsid(int netns_fd)
++{
++	/* NETNSA_NSID_NOT_ASSIGNED asks the kernel to allocate an NSID. */
++	int32_t netnsid = NETNSA_NSID_NOT_ASSIGNED;
++	struct ovpn_netns_req req = { 0 };
++	uint32_t fd = netns_fd;
++
++	req.n.nlmsg_len = NLMSG_LENGTH(sizeof(req.g));
++	req.n.nlmsg_flags = NLM_F_REQUEST;
++	req.n.nlmsg_type = RTM_NEWNSID;
++	req.g.rtgen_family = AF_UNSPEC;
++
++	if (ovpn_addattr(&req.n, sizeof(req), NETNSA_NSID, &netnsid,
++			 sizeof(netnsid)) < 0 ||
++	    ovpn_addattr(&req.n, sizeof(req), NETNSA_FD, &fd,
++			 sizeof(fd)) < 0)
++		return -EMSGSIZE;
++
++	return ovpn_rt_send(&req.n, 0, 0, NULL, NULL);
++}
++
++/* Get the target NSID relative to the current netns, assigning one if necessary. */
++static int ovpn_get_or_assign_netnsid(int netns_fd)
++{
++	int netnsid, ret;
++
++	ret = ovpn_get_netnsid(netns_fd, &netnsid);
++	if (ret < 0)
++		return ret;
++
++	if (netnsid >= 0)
++		return netnsid;
++
++	ret = ovpn_assign_netnsid(netns_fd);
++	if (ret < 0 && ret != -EEXIST)
++		return ret;
++
++	ret = ovpn_get_netnsid(netns_fd, &netnsid);
++	if (ret < 0)
++		return ret;
++
++	if (netnsid < 0)
++		return -ENOENT;
++
++	return netnsid;
++}
++
++static int ovpn_parse_ifindex(struct nlmsghdr *msg, void *arg)
++{
++	struct ifinfomsg *ifinfo;
++
++	if (msg->nlmsg_type != RTM_NEWLINK ||
++	    msg->nlmsg_len < NLMSG_LENGTH(sizeof(*ifinfo)))
++		return -EINVAL;
++
++	ifinfo = NLMSG_DATA(msg);
++	if (ifinfo->ifi_index <= 0)
++		return -EINVAL;
++
++	*(unsigned int *)arg = ifinfo->ifi_index;
++
++	return 0;
++}
++
+ struct ovpn_link_req {
+ 	struct nlmsghdr n;
+ 	struct ifinfomsg i;
+ 	char buf[256];
+ };
+ 
++static int ovpn_get_ifindex(int netnsid, const char *ifname,
++			    unsigned int *ifindex)
++{
++	struct ovpn_link_req req = { 0 };
++	int32_t id = netnsid;
++
++	req.n.nlmsg_len = NLMSG_LENGTH(sizeof(req.i));
++	req.n.nlmsg_flags = NLM_F_REQUEST;
++	req.n.nlmsg_type = RTM_GETLINK;
++	req.i.ifi_family = AF_UNSPEC;
++
++	if (ovpn_addattr(&req.n, sizeof(req), IFLA_TARGET_NETNSID, &id,
++			 sizeof(id)) < 0 ||
++	    ovpn_addattr(&req.n, sizeof(req), IFLA_IFNAME, ifname,
++			 strlen(ifname) + 1) < 0)
++		return -EMSGSIZE;
++
++	return ovpn_rt_send(&req.n, 0, 0, ovpn_parse_ifindex, ifindex);
++}
++
++#define NETNS_RUN_DIR "/var/run/netns"
++
++static int ovpn_resolve_netns(struct ovpn_ctx *ovpn)
++{
++	int target_fd, ret;
++	char path[PATH_MAX];
++	int len;
++
++	if (!ovpn->target_netns_name[0] ||
++	    strchr(ovpn->target_netns_name, '/')) {
++		fprintf(stderr, "invalid network namespace name: %s\n",
++			ovpn->target_netns_name);
++		return -EINVAL;
 +	}
 +
-+	genlmsg_end(msg, hdr);
-+	genlmsg_multicast_netns(&ovpn_nl_family, net_sock, msg, 0,
-+				OVPN_NLGRP_PEERS, GFP_ATOMIC);
-+unlock:
-+	rcu_read_unlock();
++	len = snprintf(path, sizeof(path), "%s/%s", NETNS_RUN_DIR,
++		       ovpn->target_netns_name);
++	if (len < 0 || len >= (int)sizeof(path))
++		return -ENAMETOOLONG;
++
++	target_fd = open(path, O_RDONLY);
++	if (target_fd < 0) {
++		ret = errno;
++		fprintf(stderr, "cannot open network namespace %s: %s\n",
++			ovpn->target_netns_name, strerror(ret));
++		return -ret;
++	}
++
++	ovpn->target_netnsid = ovpn_get_or_assign_netnsid(target_fd);
++	if (ovpn->target_netnsid < 0) {
++		ret = ovpn->target_netnsid;
++		fprintf(stderr, "cannot resolve network namespace ID for %s\n",
++			ovpn->target_netns_name);
++		goto out;
++	}
++
++	ret = ovpn_get_ifindex(ovpn->target_netnsid, ovpn->ifname,
++			       &ovpn->ifindex);
++	if (ret < 0) {
++		fprintf(stderr, "cannot find interface %s in namespace %s\n",
++			ovpn->ifname, ovpn->target_netns_name);
++	}
++out:
++	close(target_fd);
 +
 +	return ret;
 +}
 +
- /**
-  * ovpn_nl_peer_del_notify - notify userspace about peer being deleted
-  * @peer: the peer being deleted
-@@ -1175,7 +1213,6 @@ int ovpn_nl_key_del_doit(struct sk_buff *skb, struct genl_info *info)
-  */
- int ovpn_nl_peer_del_notify(struct ovpn_peer *peer)
+ static int ovpn_new_iface(struct ovpn_ctx *ovpn)
  {
--	struct ovpn_socket *sock;
- 	struct sk_buff *msg;
- 	struct nlattr *attr;
- 	int ret = -EMSGSIZE;
-@@ -1209,22 +1246,12 @@ int ovpn_nl_peer_del_notify(struct ovpn_peer *peer)
- 
- 	nla_nest_end(msg, attr);
- 
--	genlmsg_end(msg, hdr);
--
--	rcu_read_lock();
--	sock = rcu_dereference(peer->sock);
--	if (!sock) {
--		ret = -EINVAL;
--		goto err_unlock;
--	}
--	genlmsg_multicast_netns(&ovpn_nl_family, sock_net(sock->sk), msg, 0,
--				OVPN_NLGRP_PEERS, GFP_ATOMIC);
--	rcu_read_unlock();
-+	ret = ovpn_nl_send_notify(peer, msg, hdr);
-+	if (ret < 0)
-+		goto err_cancel_msg;
- 
- 	return 0;
- 
--err_unlock:
--	rcu_read_unlock();
- err_cancel_msg:
- 	genlmsg_cancel(msg, hdr);
- err_free_msg:
-@@ -1242,7 +1269,6 @@ int ovpn_nl_peer_del_notify(struct ovpn_peer *peer)
- int ovpn_nl_peer_float_notify(struct ovpn_peer *peer,
- 			      const struct sockaddr_storage *ss)
+ 	struct rtattr *linkinfo, *data;
+@@ -1662,8 +1854,10 @@ static int ovpn_listen_mcast(void)
+ static void usage(const char *cmd)
  {
--	struct ovpn_socket *sock;
- 	struct sockaddr_in6 *sa6;
- 	struct sockaddr_in *sa;
- 	struct sk_buff *msg;
-@@ -1291,22 +1317,13 @@ int ovpn_nl_peer_float_notify(struct ovpn_peer *peer,
+ 	fprintf(stderr,
+-		"Usage %s <command> <iface> [arguments..]\n",
++		"Usage %s [-n <netns>] <command> <iface> [arguments..]\n",
+ 		cmd);
++	fprintf(stderr,
++		"\t-n netns: run peer/key operations on an interface in the named network namespace\n");
+ 	fprintf(stderr, "where <command> can be one of the following\n\n");
+ 
+ 	fprintf(stderr, "* new_iface <iface> [mode]: create new ovpn interface\n");
+@@ -1966,6 +2160,26 @@ static enum ovpn_cmd ovpn_parse_cmd(const char *cmd)
+ 	return CMD_INVALID;
+ }
+ 
++static bool ovpn_cmd_supports_target_netns(enum ovpn_cmd cmd)
++{
++	switch (cmd) {
++	case CMD_LISTEN:
++	case CMD_CONNECT:
++	case CMD_NEW_PEER:
++	case CMD_NEW_MULTI_PEER:
++	case CMD_SET_PEER:
++	case CMD_DEL_PEER:
++	case CMD_GET_PEER:
++	case CMD_NEW_KEY:
++	case CMD_DEL_KEY:
++	case CMD_GET_KEY:
++	case CMD_SWAP_KEYS:
++		return true;
++	default:
++		return false;
++	}
++}
++
+ /* Send process to background and waits for signal.
+  *
+  * This helper is called at the end of commands
+@@ -2021,6 +2235,7 @@ static int ovpn_run_cmd(struct ovpn_ctx *ovpn)
+ 			}
+ 
+ 			peer_ctx.ifindex = ovpn->ifindex;
++			peer_ctx.target_netnsid = ovpn->target_netnsid;
+ 			peer_ctx.sa_family = ovpn->sa_family;
+ 			peer_ctx.asymm_id = ovpn->asymm_id;
+ 
+@@ -2107,6 +2322,7 @@ static int ovpn_run_cmd(struct ovpn_ctx *ovpn)
+ 			struct ovpn_ctx peer_ctx = { 0 };
+ 
+ 			peer_ctx.ifindex = ovpn->ifindex;
++			peer_ctx.target_netnsid = ovpn->target_netnsid;
+ 			peer_ctx.socket = ovpn->socket;
+ 			peer_ctx.sa_family = AF_UNSPEC;
+ 			peer_ctx.asymm_id = ovpn->asymm_id;
+@@ -2179,13 +2395,19 @@ static int ovpn_parse_cmd_args(struct ovpn_ctx *ovpn, int argc, char *argv[])
+ 	strscpy(ovpn->ifname, argv[2], IFNAMSIZ - 1);
+ 	ovpn->ifname[IFNAMSIZ - 1] = '\0';
+ 
+-	/* all commands, except NEW_IFNAME, needs an ifindex */
++	/* all commands, except NEW_IFACE, need an ifindex */
+ 	if (ovpn->cmd != CMD_NEW_IFACE) {
+-		ovpn->ifindex = if_nametoindex(ovpn->ifname);
+-		if (!ovpn->ifindex) {
+-			fprintf(stderr, "cannot find interface: %s\n",
+-				strerror(errno));
+-			return -1;
++		if (ovpn->target_netns_name) {
++			ret = ovpn_resolve_netns(ovpn);
++			if (ret < 0)
++				return ret;
++		} else {
++			ovpn->ifindex = if_nametoindex(ovpn->ifname);
++			if (!ovpn->ifindex) {
++				fprintf(stderr, "cannot find interface: %s\n",
++					strerror(errno));
++				return -1;
++			}
+ 		}
  	}
  
- 	nla_nest_end(msg, attr);
--	genlmsg_end(msg, hdr);
- 
--	rcu_read_lock();
--	sock = rcu_dereference(peer->sock);
--	if (!sock) {
--		ret = -EINVAL;
--		goto err_unlock;
--	}
--	genlmsg_multicast_netns(&ovpn_nl_family, sock_net(sock->sk), msg,
--				0, OVPN_NLGRP_PEERS, GFP_ATOMIC);
--	rcu_read_unlock();
-+	ret = ovpn_nl_send_notify(peer, msg, hdr);
-+	if (ret < 0)
-+		goto err_cancel_msg;
- 
- 	return 0;
- 
--err_unlock:
--	rcu_read_unlock();
- err_cancel_msg:
- 	genlmsg_cancel(msg, hdr);
- err_free_msg:
-@@ -1323,7 +1340,6 @@ int ovpn_nl_peer_float_notify(struct ovpn_peer *peer,
-  */
- int ovpn_nl_key_swap_notify(struct ovpn_peer *peer, u8 key_id)
+@@ -2432,29 +2654,51 @@ static int ovpn_parse_cmd_args(struct ovpn_ctx *ovpn, int argc, char *argv[])
+ int main(int argc, char *argv[])
  {
--	struct ovpn_socket *sock;
- 	struct nlattr *k_attr;
- 	struct sk_buff *msg;
- 	int ret = -EMSGSIZE;
-@@ -1356,21 +1372,12 @@ int ovpn_nl_key_swap_notify(struct ovpn_peer *peer, u8 key_id)
- 		goto err_cancel_msg;
+ 	struct ovpn_ctx ovpn;
++	const char *program = argv[0];
+ 	int ret;
  
- 	nla_nest_end(msg, k_attr);
--	genlmsg_end(msg, hdr);
++	memset(&ovpn, 0, sizeof(ovpn));
++	if (argc > 1 && !strcmp(argv[1], "-n")) {
++		if (argc < 4) {
++			fprintf(stderr,
++				"Error: -n requires a namespace and a command.\n\n");
++			usage(program);
++			return -EINVAL;
++		}
++
++		ovpn.target_netns_name = argv[2];
++		argc -= 2;
++		argv += 2;
++	}
++
+ 	if (argc < 2) {
+-		usage(argv[0]);
++		usage(program);
+ 		return -1;
+ 	}
  
--	rcu_read_lock();
--	sock = rcu_dereference(peer->sock);
--	if (!sock) {
--		ret = -EINVAL;
--		goto err_unlock;
--	}
--	genlmsg_multicast_netns(&ovpn_nl_family, sock_net(sock->sk), msg, 0,
--				OVPN_NLGRP_PEERS, GFP_ATOMIC);
--	rcu_read_unlock();
-+	ret = ovpn_nl_send_notify(peer, msg, hdr);
-+	if (ret < 0)
-+		goto err_cancel_msg;
+-	memset(&ovpn, 0, sizeof(ovpn));
++	ovpn.target_netnsid = NETNSA_NSID_NOT_ASSIGNED;
+ 	ovpn.sa_family = AF_UNSPEC;
+ 	ovpn.cipher = OVPN_CIPHER_ALG_NONE;
  
- 	return 0;
--err_unlock:
--	rcu_read_unlock();
- err_cancel_msg:
- 	genlmsg_cancel(msg, hdr);
- err_free_msg:
+ 	ovpn.cmd = ovpn_parse_cmd(argv[1]);
+ 	if (ovpn.cmd == CMD_INVALID) {
+ 		fprintf(stderr, "Error: unknown command.\n\n");
+-		usage(argv[0]);
++		usage(program);
+ 		return -1;
+ 	}
+ 
++	if (ovpn.target_netns_name &&
++	    !ovpn_cmd_supports_target_netns(ovpn.cmd)) {
++		fprintf(stderr, "Error: -n is not supported for command %s.\n",
++			argv[1]);
++		return -EOPNOTSUPP;
++	}
++
+ 	ret = ovpn_parse_cmd_args(&ovpn, argc, argv);
+ 	if (ret < 0) {
+ 		fprintf(stderr, "Error: invalid arguments.\n\n");
+ 		if (ret == -EINVAL)
+-			usage(argv[0]);
++			usage(program);
+ 		return ret;
+ 	}
+ 
+diff --git a/tools/testing/selftests/net/ovpn/test-close-socket.sh b/tools/testing/selftests/net/ovpn/test-close-socket.sh
+index ec9a51bbf3c9..0e4e33b2973f 100755
+--- a/tools/testing/selftests/net/ovpn/test-close-socket.sh
++++ b/tools/testing/selftests/net/ovpn/test-close-socket.sh
+@@ -40,10 +40,10 @@ ovpn_prepare_network() {
+ 	for p in $(seq 1 ${OVPN_NUM_PEERS}); do
+ 		peer_ns="ovpn_peer${p}"
+ 		ovpn_cmd_ok "set peer0 timeout for peer ${p}" \
+-			ip netns exec ovpn_peer0 ${OVPN_CLI} set_peer tun0 \
++			"${OVPN_CLI}" -n ovpn_peer0 set_peer tun0 \
+ 				${p} 60 120
+ 		ovpn_cmd_ok "set peer${p} timeout for peer ${p}" \
+-			ip netns exec "${peer_ns}" ${OVPN_CLI} set_peer \
++			"${OVPN_CLI}" -n "${peer_ns}" set_peer \
+ 				tun${p} $((p + OVPN_ID_OFFSET)) 60 120
+ 	done
+ }
+diff --git a/tools/testing/selftests/net/ovpn/test-mark.sh b/tools/testing/selftests/net/ovpn/test-mark.sh
+index 7c1d56e9c525..8a9ca52f86be 100755
+--- a/tools/testing/selftests/net/ovpn/test-mark.sh
++++ b/tools/testing/selftests/net/ovpn/test-mark.sh
+@@ -42,7 +42,7 @@ ovpn_mark_prepare_network() {
+ 			ASYMM "${OVPN_UDP_PEERS_FILE}" "${MARK}"
+ 	for p in $(seq 1 3); do
+ 		ovpn_cmd_ok "install server key for peer ${p}" \
+-			ip netns exec ovpn_peer0 "${OVPN_CLI}" new_key tun0 \
++			"${OVPN_CLI}" -n ovpn_peer0 new_key tun0 \
+ 				"${p}" 1 0 "${OVPN_ALG}" 0 data64.key
+ 	done
+ 
+@@ -53,10 +53,10 @@ ovpn_mark_prepare_network() {
+ 	for p in $(seq 1 3); do
+ 		peer_ns="ovpn_peer${p}"
+ 		ovpn_cmd_ok "set peer0 timeout for peer ${p}" \
+-			ip netns exec ovpn_peer0 "${OVPN_CLI}" set_peer tun0 \
++			"${OVPN_CLI}" -n ovpn_peer0 set_peer tun0 \
+ 				"${p}" 60 120
+ 		ovpn_cmd_ok "set peer${p} timeout for peer ${p}" \
+-			ip netns exec "${peer_ns}" "${OVPN_CLI}" set_peer \
++			"${OVPN_CLI}" -n "${peer_ns}" set_peer \
+ 				tun"${p}" $((p + OVPN_ID_OFFSET)) 60 120
+ 	done
+ }
+diff --git a/tools/testing/selftests/net/ovpn/test.sh b/tools/testing/selftests/net/ovpn/test.sh
+index 9b5610837032..468dd7985c8f 100755
+--- a/tools/testing/selftests/net/ovpn/test.sh
++++ b/tools/testing/selftests/net/ovpn/test.sh
+@@ -48,10 +48,10 @@ ovpn_prepare_network() {
+ 	for p in $(seq 1 ${OVPN_NUM_PEERS}); do
+ 		peer_ns="ovpn_peer${p}"
+ 		ovpn_cmd_ok "set peer0 timeout for peer ${p}" \
+-			ip netns exec ovpn_peer0 ${OVPN_CLI} set_peer tun0 \
++			"${OVPN_CLI}" -n ovpn_peer0 set_peer tun0 \
+ 				${p} 60 120
+ 		ovpn_cmd_ok "set peer${p} timeout for peer ${p}" \
+-			ip netns exec "${peer_ns}" ${OVPN_CLI} set_peer \
++			"${OVPN_CLI}" -n "${peer_ns}" set_peer \
+ 				tun${p} $((p + OVPN_ID_OFFSET)) 60 120
+ 	done
+ }
+@@ -151,14 +151,14 @@ ovpn_run_key_rollover() {
+ 	for p in $(seq 1 ${OVPN_NUM_PEERS}); do
+ 		peer_ns="ovpn_peer${p}"
+ 		ovpn_cmd_ok "add secondary key on peer0 for peer ${p}" \
+-			ip netns exec ovpn_peer0 ${OVPN_CLI} new_key tun0 \
++			"${OVPN_CLI}" -n ovpn_peer0 new_key tun0 \
+ 				${p} 2 1 ${OVPN_ALG} 0 data64.key
+ 		ovpn_cmd_ok "add secondary key on peer${p} for peer ${p}" \
+-			ip netns exec "${peer_ns}" ${OVPN_CLI} new_key tun${p} \
++			"${OVPN_CLI}" -n "${peer_ns}" new_key tun${p} \
+ 				$((p + OVPN_ID_OFFSET)) 2 1 ${OVPN_ALG} 1 \
+ 				data64.key
+ 		ovpn_cmd_ok "swap keys on peer${p}" \
+-			ip netns exec "${peer_ns}" ${OVPN_CLI} swap_keys \
++			"${OVPN_CLI}" -n "${peer_ns}" swap_keys \
+ 				tun${p} $((p + OVPN_ID_OFFSET))
+ 	done
+ }
+@@ -166,22 +166,22 @@ ovpn_run_key_rollover() {
+ ovpn_run_queries() {
+ 	ovpn_log "Querying all peers:"
+ 
+-	ovpn_cmd_ok "query all peers from peer0" \
+-		ip netns exec ovpn_peer0 ${OVPN_CLI} get_peer tun0
+-	ovpn_cmd_ok "query all peers from peer1" \
+-		ip netns exec ovpn_peer1 ${OVPN_CLI} get_peer tun1
++	ovpn_cmd_ok "query all peers on peer0" \
++		"${OVPN_CLI}" -n ovpn_peer0 get_peer tun0
++	ovpn_cmd_ok "query all peers on peer1" \
++		"${OVPN_CLI}" -n ovpn_peer1 get_peer tun1
+ 
+ 	ovpn_log "Querying peer 1:"
+ 
+-	ovpn_cmd_ok "query peer 1 from peer0" \
+-		ip netns exec ovpn_peer0 ${OVPN_CLI} get_peer tun0 1
++	ovpn_cmd_ok "query peer 1 on peer0" \
++		"${OVPN_CLI}" -n ovpn_peer0 get_peer tun0 1
+ }
+ 
+ ovpn_query_peer_missing() {
+ 	ovpn_log "Querying non-existent peer 20:"
+ 
+ 	ovpn_cmd_fail "query missing peer 20 on peer0" \
+-		ip netns exec ovpn_peer0 ${OVPN_CLI} get_peer tun0 20
++		"${OVPN_CLI}" -n ovpn_peer0 get_peer tun0 20
+ }
+ 
+ ovpn_run_peer_cleanup() {
+@@ -191,9 +191,9 @@ ovpn_run_peer_cleanup() {
+ 	ovpn_log "Deleting peer 1:"
+ 
+ 	ovpn_cmd_ok "delete peer1 on peer0" \
+-		ip netns exec ovpn_peer0 ${OVPN_CLI} del_peer tun0 1
++		"${OVPN_CLI}" -n ovpn_peer0 del_peer tun0 1
+ 	ovpn_cmd_ok "delete peer1 on peer1" \
+-		ip netns exec ovpn_peer1 ${OVPN_CLI} del_peer tun1 \
++		"${OVPN_CLI}" -n ovpn_peer1 del_peer tun1 \
+ 			$((1 + OVPN_ID_OFFSET))
+ 
+ 	ovpn_log "Querying keys:"
+@@ -201,10 +201,10 @@ ovpn_run_peer_cleanup() {
+ 	for p in $(seq 2 ${OVPN_NUM_PEERS}); do
+ 		peer_ns="ovpn_peer${p}"
+ 		ovpn_cmd_ok "query peer${p} key 1" \
+-			ip netns exec "${peer_ns}" ${OVPN_CLI} get_key tun${p} \
++			"${OVPN_CLI}" -n "${peer_ns}" get_key tun${p} \
+ 				$((p + OVPN_ID_OFFSET)) 1
+ 		ovpn_cmd_ok "query peer${p} key 2" \
+-			ip netns exec "${peer_ns}" ${OVPN_CLI} get_key tun${p} \
++			"${OVPN_CLI}" -n "${peer_ns}" get_key tun${p} \
+ 				$((p + OVPN_ID_OFFSET)) 2
+ 	done
+ }
+@@ -217,16 +217,16 @@ ovpn_run_traffic_delete_peer() {
+ 	ovpn_run_bg ping_pid ip netns exec ovpn_peer2 ping -qf -w 4 5.5.5.1
+ 	sleep 2
+ 	ovpn_cmd_ok "delete peer0 peer 2" \
+-		ip netns exec ovpn_peer0 ${OVPN_CLI} del_peer tun0 2
++		"${OVPN_CLI}" -n ovpn_peer0 del_peer tun0 2
+ 
+ 	if [ "${OVPN_PROTO}" == "TCP" ]; then
+ 		# In TCP mode this command is expected to fail for both peers.
+ 		ovpn_cmd_mayfail "delete peer2 peer 2 (TCP non-fatal)" \
+-			ip netns exec ovpn_peer2 ${OVPN_CLI} del_peer tun2 \
++			"${OVPN_CLI}" -n ovpn_peer2 del_peer tun2 \
+ 				$((2 + OVPN_ID_OFFSET))
+ 	else
+-		ovpn_cmd_ok "delete peer2 peer 2" ip netns exec ovpn_peer2 \
+-			${OVPN_CLI} del_peer tun2 $((2 + OVPN_ID_OFFSET))
++		ovpn_cmd_ok "delete peer2 peer 2" "${OVPN_CLI}" -n ovpn_peer2 \
++			del_peer tun2 $((2 + OVPN_ID_OFFSET))
+ 	fi
+ 
+ 	wait "${ping_pid}" || true
+@@ -241,10 +241,10 @@ ovpn_run_key_cleanup() {
+ 	for p in $(seq 3 ${OVPN_NUM_PEERS}); do
+ 		peer_ns="ovpn_peer${p}"
+ 		ovpn_cmd_ok "delete key 1 for peer${p}" \
+-			ip netns exec "${peer_ns}" ${OVPN_CLI} del_key tun${p} \
++			"${OVPN_CLI}" -n "${peer_ns}" del_key tun${p} \
+ 				$((p + OVPN_ID_OFFSET)) 1
+ 		ovpn_cmd_ok "delete key 2 for peer${p}" \
+-			ip netns exec "${peer_ns}" ${OVPN_CLI} del_key tun${p} \
++			"${OVPN_CLI}" -n "${peer_ns}" del_key tun${p} \
+ 				$((p + OVPN_ID_OFFSET)) 2
+ 	done
+ }
+@@ -258,11 +258,11 @@ ovpn_run_timeouts() {
+ 	for p in $(seq 3 ${OVPN_NUM_PEERS}); do
+ 		# Non-fatal: this may fail in some protocol modes.
+ 		ovpn_cmd_mayfail "set peer0 timeout for peer ${p} (non-fatal)" \
+-			ip netns exec ovpn_peer0 ${OVPN_CLI} set_peer tun0 \
++			"${OVPN_CLI}" -n ovpn_peer0 set_peer tun0 \
+ 				${p} 3 3
+ 		peer_ns="ovpn_peer${p}"
+ 		ovpn_cmd_ok "disable timeout on peer${p} while peer0 adjusts \
+-			state" ip netns exec "${peer_ns}" ${OVPN_CLI} set_peer \
++			state" "${OVPN_CLI}" -n "${peer_ns}" set_peer \
+ 			tun${p} $((p + OVPN_ID_OFFSET)) 0 0
+ 	done
+ 	# wait for peers to timeout
+@@ -273,7 +273,7 @@ ovpn_run_timeouts() {
+ 	for p in $(seq 3 ${OVPN_NUM_PEERS}); do
+ 		peer_ns="ovpn_peer${p}"
+ 		ovpn_cmd_ok "set peer${p} P2P timeout" \
+-			ip netns exec "${peer_ns}" ${OVPN_CLI} set_peer \
++			"${OVPN_CLI}" -n "${peer_ns}" set_peer \
+ 				tun${p} $((p + OVPN_ID_OFFSET)) 3 3
+ 	done
+ 	sleep 5
 -- 
 2.43.0
 
