@@ -4,83 +4,86 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id AEA41C54F51
-	for <openvpn-devel@archiver.kernel.org>; Wed, 29 Jul 2026 07:20:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C6736C53219
+	for <openvpn-devel@archiver.kernel.org>; Wed, 29 Jul 2026 07:21:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:Date:To:From:Sender:Reply-To:Cc:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:In-Reply-To:References:List-Owner;
-	bh=h/x3OA30QH2W6KNyuafMAj9Z6V2lddg+AGpQEGTd3j4=; b=fTIAEbjrCbs30LYIO1tfBaigp6
-	W25sNGrHYsV/TaFhhWxvaGofvNNRgRaQM3Q9li/SZ/Vt797DPxbPgiKHRX4r/46TwqDX84vncW5fr
-	E5oGHcRE5UmjCUfBixNolb/6Z7dfmGoCpZtW7Cu3zIpVwAawsEN9Bdjd8ei0ZRg469hw=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
+	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=4ljfiyeO3VDJQ4sgKYBTKTmTdsjkIKSSTTuadrFUADc=; b=Yu57yea8j49WBk+xeeJwusjR8Z
+	WClswy0YM1zFpy7F3wtdfyoLYpsnHMp+whyYwkJj9WBEZMV2MyBwnkAK3KzZNdH/06k40/kB64WrF
+	aYZgNd9OeeDPeLxUH8JttZV5gh5hLdG3j/7sx5D30+c/Xej9tMpPoT9G8mvsWh3CE1Yo=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1woyb2-0003eN-I7;
-	Wed, 29 Jul 2026 07:20:57 +0000
+	id 1woyb4-0003zq-GX;
+	Wed, 29 Jul 2026 07:20:59 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <ralf@mandelbit.com>) id 1woyb0-0003e0-PZ
+ (envelope-from <ralf@mandelbit.com>) id 1woyb2-0003zi-Dw
  for openvpn-devel@lists.sourceforge.net;
- Wed, 29 Jul 2026 07:20:55 +0000
+ Wed, 29 Jul 2026 07:20:57 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:Message-ID:
- Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
+ In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=Ju3ju7iPX9dR1zVKP/Wn2ETUUPw8gE5cGxWJGqhKnJg=; b=mEFGcaWEetXRFpbUPLw5D541n7
- I0cMdPmvS63ILKMLymgYZUBZaqnJ6aPy8+/78WdtOpMgPUk+ITsu4YmlrhNg8iv3vUb0RFfzfoIMi
- giwHn+rtOitQHRGXk2YoHEh0S/5g7HR3vAE+j+EC1hStSMmCKKT3ymlChJEN5QpNU0Vo=;
+ bh=oGXHWlz0X58ND2Q1t9QiDKv7FLuqLrjAxFhwirx7mLI=; b=SqGzpPntyvDktUQZGk5m+r2hD3
+ l5I9tpeLV3xUI9dX4GRwgHmMXRwBp0U+ycGz6Moj56CScH4FWkGMvSqiCv0KhYOrsYRflu8qHmn8O
+ 6EewKOaVSGkSx+DvDOnIyaDQYR9LQKKX/nvRdKv68GhUG3+xeSnirgmN71n1dfZfnep8=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:Cc:To:From
- :Sender:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:
- Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
- References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=Ju3ju7iPX9dR1zVKP/Wn2ETUUPw8gE5cGxWJGqhKnJg=; b=J
- qUbgjWeOYwdwrxLaaW9EOv/GZ025OMJuxMGurQPHsyp/XdiPwjaUZfJynq/JM7VyUkPjqsU4kQ+12
- ycyBPbbTqky6uxjEp9v/8Tco+i0QAdF4nQw3w2szcOL/jLKcfUgq5KlMKx6sO+Y/atNmemuFiudSD
- pskQ+gF/B9iHug4U=;
-Received: from mout-b-107.mailbox.org ([195.10.208.47])
+ h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
+ Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+ List-Post:List-Owner:List-Archive;
+ bh=oGXHWlz0X58ND2Q1t9QiDKv7FLuqLrjAxFhwirx7mLI=; b=Jd5RayPHRUJIqmVe9t9R8Q/Ge9
+ NKoHDZnTBa4flv2OXsNdshuDMLXKJ+G755gNRoAaWzex0gAHGzqGBfq1uvRuW255mw1QtEQqmM4pV
+ yzpwVBzVxzEg1cAHk2E/bjKXbAmtfZCkn8rqPC35cmtzNp4JOMbSE1UnFh7tbmoiqi0U=;
+Received: from mout-b-203.mailbox.org ([195.10.208.52])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1woyb0-0005D7-Ps for openvpn-devel@lists.sourceforge.net;
- Wed, 29 Jul 2026 07:20:55 +0000
+ id 1woyb2-0005D8-CB for openvpn-devel@lists.sourceforge.net;
+ Wed, 29 Jul 2026 07:20:57 +0000
 Received: from smtp1.mailbox.org (smtp1.mailbox.org
  [IPv6:2001:67c:2050:b231:465::1])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
  (No client certificate requested)
- by mout-b-107.mailbox.org (Postfix) with ESMTPS id 4h93dp6KvJz3y0f;
- Wed, 29 Jul 2026 09:20:46 +0200 (CEST)
+ by mout-b-203.mailbox.org (Postfix) with ESMTPS id 4h93dr3h28zLlsF;
+ Wed, 29 Jul 2026 09:20:48 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
- s=MBO0001; t=1785309646;
+ s=MBO0001; t=1785309648;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:
- content-transfer-encoding:content-transfer-encoding;
- bh=Ju3ju7iPX9dR1zVKP/Wn2ETUUPw8gE5cGxWJGqhKnJg=;
- b=tdAJe3dNm6jucrE8aZiCnmVNFep8yAAqMU6nAbbt7EzJJJtAFHMb9Yh5+fDe/sUPgWenST
- GkSOavrIJx7BWEYWt0aeZYldfqv7bNAwJmIgEEqt/Med4hXHoVAY5dNU6NCkBpbh8HcX0a
- cOge54iAKnWvgke+NNoKAkwH6Kotzke50QQJ5tr6i2GEt96vF1iBzLZOtXFyrB+yoX8Tgj
- OcIONg6hW3GPmOREyNO9L1Nzz12KNOOdCPYTZ/Vpdx3iBQfsOa8huGtROTHn1ihrlrDQxt
- +s94Z2l4ahzYOmj0OIwaHXmEvZrDs1wT8boLYVlTW0jKSSaioWBJj67kzuA0zg==
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=oGXHWlz0X58ND2Q1t9QiDKv7FLuqLrjAxFhwirx7mLI=;
+ b=Ycju+t9l8IPHzChtQsL5T3gYL7fzINRcTpJvfDj+jYs6XwknDa2tBPxdjGAkDAy9UHv+7Z
+ A7PvgkWoOnDXqHkdwsQAbtTGVQPMBEAkVw9lbi5/jkk7TpxxleKa5vXsPeHZ8W5Fe4llTP
+ eS7JfZZrZMwZk7f/m+6J1d3jdVVIjH9YRaOlF7d0O49kI1wy2RDfQyi4fZpD8zkCQ9zq94
+ 1HnoFc4wIl8vqCFPGmnOlGJo+qlEShz0dMU0bgBFVaO3aoyFdEgXQYpKHRGuz0LQzrh4Ye
+ lfUrE3bvtn3sYrDKDXv2X6G68DrfezUzVZwnRAhtzrRaRrggJA8Jlz6embJIuw==
 Authentication-Results: outgoing_mbo_mout; dkim=none;
  spf=pass (outgoing_mbo_mout: domain of ralf@mandelbit.com designates
  2001:67c:2050:b231:465::1 as permitted sender)
  smtp.mailfrom=ralf@mandelbit.com
 From: Ralf Lici <ralf@mandelbit.com>
 To: openvpn-devel@lists.sourceforge.net
-Date: Wed, 29 Jul 2026 09:20:31 +0200
-Message-ID: <cover.1785308184.git.ralf@mandelbit.com>
+Date: Wed, 29 Jul 2026 09:20:33 +0200
+Message-ID: <cb51001bfdaeba899b6ca9b22186ea2ebb49c23c.1785308184.git.ralf@mandelbit.com>
+In-Reply-To: <cover.1785308184.git.ralf@mandelbit.com>
+References: <cover.1785308184.git.ralf@mandelbit.com>
 MIME-Version: 1.0
-X-Rspamd-Queue-Id: 4h93dp6KvJz3y0f
-X-Headers-End: 1woyb0-0005D7-Ps
-Subject: [Openvpn-devel] [PATCH ovpn net v2 0/5] ovpn: fix UDP route cache
- and endpoint handling
+X-Rspamd-Queue-Id: 4h93dr3h28zLlsF
+X-Headers-End: 1woyb2-0005D8-CB
+Subject: [Openvpn-devel] [PATCH ovpn net v2 2/5] ovpn: skip UDP source
+ validation for unspecified addresses
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -96,52 +99,55 @@ Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-Hi,
+ovpn validates the cached local UDP source address before reusing or
+refreshing a peer dst cache. This is only meaningful when a concrete
+source address is selected.
 
-This is v2 of a net series that fixes several related issues in ovpn's
-UDP endpoint and route-cache handling. The only change since v1 is the
-addition of memory barriers in the last patch when reading IPv6 route
-generations. Sashiko also noted that uninitialized stack memory in ss is
-used as a hash key for peer endpoints but this is already covered by
-Antonio's "ovpn: zero-initialize sockaddr before learning a floated
-endpoint" patch
-(https://lore.kernel.org/openvpn-devel/20260728114855.1323861-6-a@unstable.cc/).
+For IPv6, calling ipv6_chk_addr with :: checks whether the unspecified
+address itself is configured on the host. A peer may legitimately have
+bind->local.ipv6 set to :: when no local endpoint was configured or
+after a stale learned address was cleared. In that case the source
+should be left unspecified and selected by ip6_dst_lookup_flow().
 
-This series preserves IPv6 scope IDs supplied through netlink, handles
-unspecified source addresses correctly, invalidates cached routes when
-mutable socket route inputs change, avoids in-place updates of
-RCU-published peer binds, and prevents stale IPv6 routes from being
-cached across FIB updates.
+For IPv4, inet_confirm_addr(..., local = 0, ...) asks for local address
+autoselection rather than validating a chosen source. Skip the precheck
+there as well and let ip_route_output_flow select or reject the source.
 
-Support for honoring UDP sockets bound to a device or local address will
-follow separately for net-next, after these route-cache fixes are
-available there.
+Only validate non-zero/non-any source addresses.
 
-Cheers,
-
-Ralf Lici
-Mandelbit Srl
-
+Fixes: 08857b5ec5d9 ("ovpn: implement basic TX path (UDP)")
+Signed-off-by: Ralf Lici <ralf@mandelbit.com>
 ---
-Changes since v1 https://lore.kernel.org/openvpn-devel/cover.1785253480.git.ralf@mandelbit.com
-- Patch 5/5: add memory barriers around IPv6 FIB generation reads to
-  avoid reordering on weakly ordered architectures (Sashiko).
+No changes since v1 https://lore.kernel.org/openvpn-devel/cb51001bfdaeba899b6ca9b22186ea2ebb49c23c.1785253480.git.ralf@mandelbit.com/
 
-Ralf Lici (5):
-  ovpn: preserve IPv6 scope id for netlink peer endpoints
-  ovpn: skip UDP source validation for unspecified addresses
-  ovpn: track UDP socket route key for peer dst cache
-  ovpn: avoid in-place updates of peer bind local address
-  ovpn: avoid caching stale IPv6 dst after FIB changes
+ drivers/net/ovpn/udp.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
- drivers/net/ovpn/netlink.c |   6 +
- drivers/net/ovpn/peer.c    |  37 ++++---
- drivers/net/ovpn/peer.h    |  19 +++-
- drivers/net/ovpn/udp.c     | 217 +++++++++++++++++++++++++++++++------
- include/net/dst_cache.h    |  13 +++
- net/core/dst_cache.c       |  16 ++-
- 6 files changed, 253 insertions(+), 55 deletions(-)
-
+diff --git a/drivers/net/ovpn/udp.c b/drivers/net/ovpn/udp.c
+index 493a5a0744af..eb342c7eef29 100644
+--- a/drivers/net/ovpn/udp.c
++++ b/drivers/net/ovpn/udp.c
+@@ -161,8 +161,8 @@ static int ovpn_udp4_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
+ 	if (rt)
+ 		goto transmit;
+ 
+-	if (unlikely(!inet_confirm_addr(sock_net(sk), NULL, 0, fl.saddr,
+-					RT_SCOPE_HOST))) {
++	if (fl.saddr && unlikely(!inet_confirm_addr(sock_net(sk), NULL, 0,
++						    fl.saddr, RT_SCOPE_HOST))) {
+ 		/* we may end up here when the cached address is not usable
+ 		 * anymore. In this case we reset address/cache and perform a
+ 		 * new look up
+@@ -238,7 +238,8 @@ static int ovpn_udp6_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
+ 	if (dst)
+ 		goto transmit;
+ 
+-	if (unlikely(!ipv6_chk_addr(sock_net(sk), &fl.saddr, NULL, 0))) {
++	if (!ipv6_addr_any(&fl.saddr) &&
++	    unlikely(!ipv6_chk_addr(sock_net(sk), &fl.saddr, NULL, 0))) {
+ 		/* we may end up here when the cached address is not usable
+ 		 * anymore. In this case we reset address/cache and perform a
+ 		 * new look up
 -- 
 2.54.0
 
