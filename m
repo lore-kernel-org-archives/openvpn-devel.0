@@ -4,26 +4,26 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 30C51C53200
-	for <openvpn-devel@archiver.kernel.org>; Wed, 29 Jul 2026 15:42:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1C0DCC54FD2
+	for <openvpn-devel@archiver.kernel.org>; Wed, 29 Jul 2026 15:42:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=txNzFFfVBQkWDYR3vfhax3izHp5zZDYU5EDvjpSsYW0=; b=LTQBMGJuheETKX9uXUXyC70PV7
-	OirFpuEgwfom/fAIwLQLv/JGdurSJ0dh9fRilJc1UO4eIgg+IF+KixtVJFNMzVD71NVWAhbs4aMu9
-	M6KZlfB5nm1eK9mIv+uURSWFn9wV43j16eF4ir2P4/pZs9kuTFbiMPWYzLwaq59wtCug=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=8cGRYLl9DNQAa1p+DdGbUHxB2O8lL7fkPJrSV01Cyzc=; b=k1Ni4IjLo3Ha4z+mfK2nUOkG5G
+	EdIWUF7fO7sAoprwty0sHU2T+GS7J11wCpnkuSH6lhFq6okrXmaVKGzH1bYSBiQeMv5wBLlGYYfWH
+	n+utaUF4zmCQ7fxSnTRrKeFtTfhEwivyWegGTk33nuqixXJSFOPQ8Q+aFG9ZAuLtxegg=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wp6QV-0000HI-Ki;
-	Wed, 29 Jul 2026 15:42:33 +0000
+	id 1wp6QU-0002WH-Tp;
+	Wed, 29 Jul 2026 15:42:34 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <ralf@mandelbit.com>) id 1wp6QH-0000Gm-7W
+ (envelope-from <ralf@mandelbit.com>) id 1wp6QE-0002Vh-Nn
  for openvpn-devel@lists.sourceforge.net;
  Wed, 29 Jul 2026 15:42:18 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
@@ -32,9 +32,9 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=WapK7H1NDi6EtOG50cprXW6e9N5mJDrFi0U+8naQrBk=; b=FvnUf76biez6V5iKS+MV2dDnDh
- bVZujNj03eHYzDagNdEvFe3j2WJIGrx+St4CYPTmGhDPXxRe8TsfTtoyjARAORJwtjQWOg2mgXo+C
- Z3nv+Y9vNKupwg4UJV5IgVM+jjgUQ4BdoaaD/dYLPdlqDMVBrUc2pGAoO210x9NH+9/8=;
+ bh=2vjgLsDKJbs5n1mVWaNjla9Xm1S5OTNt2up56irwDqk=; b=YhMRyRIjji5J4Z1nsPdKmpYgYR
+ a2aEo7bz9TFotPm0IxNwlLeBClx0MQmPd/bG/URgSI/ub2Ihm8pvH/8TdNkgqhRwwrxi+PJyzRy2O
+ tXNg3giXRbOoMKospp259bv90AQIaEH7M9Mm62J904ttFcRUnbucjKII8/ltQqWnZm5U=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -42,42 +42,48 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=WapK7H1NDi6EtOG50cprXW6e9N5mJDrFi0U+8naQrBk=; b=YJFwLuVrRk03YIJEnKs1EHROH1
- Rus1N+k4OVmHZbjW7i+vJ2p7hY5kdBi6HuBYaXy8Yx1EQdfGEjWl0EzASxgvFx53v3V27rQQyFhuI
- j4/f6gX3ywR9Z68McJ0uxSdQjnrc55cNI9a1sy8nTfwy1JgMQFA6occViI9zvKf/b/XQ=;
-Received: from mout-b-206.mailbox.org ([195.10.208.51])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ bh=2vjgLsDKJbs5n1mVWaNjla9Xm1S5OTNt2up56irwDqk=; b=NKVRWm9AcRUq/x6d6ZHlb93toV
+ yemxanD++ZrfPnWHskXFigNL5PzZHFGdRBVRjOBHMW28ZxRZW0AjxZKUVNJyNdJkx5CEp3Ey7JjwQ
+ JpM9Ju5TbIUZ52hIaa7dJ7YA0kX4e6EisuGMcjDd14iUQMfD9S0u9uw/ZBBrfxyZD7gw=;
+Received: from mout-b-110.mailbox.org ([195.10.208.55])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wp6QH-0001TD-JU for openvpn-devel@lists.sourceforge.net;
+ id 1wp6QD-0002tz-9O for openvpn-devel@lists.sourceforge.net;
  Wed, 29 Jul 2026 15:42:18 +0000
-Received: from smtp2.mailbox.org (unknown [10.196.197.2])
+Received: from smtp2.mailbox.org (smtp2.mailbox.org
+ [IPv6:2001:67c:2050:b231:465::2])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
  (No client certificate requested)
- by mout-b-206.mailbox.org (Postfix) with ESMTPS id 4h9GmL5713zXb;
- Wed, 29 Jul 2026 17:42:10 +0200 (CEST)
+ by mout-b-110.mailbox.org (Postfix) with ESMTPS id 4h9GmK3b83zNlmH;
+ Wed, 29 Jul 2026 17:42:09 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
- s=MBO0001; t=1785339730;
+ s=MBO0001; t=1785339729;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=WapK7H1NDi6EtOG50cprXW6e9N5mJDrFi0U+8naQrBk=;
- b=yd+q9AMwqB+ArkwOkdvwEOo2Y158MgikpViOtHIuZjMYIpBFpia3dj0nBXYjrQgoCkktCR
- xr9JqRbZl44FnmnrMos9bZdYf+UM1bPdGn2tQ/lPELK/TKovjItwO3NM9m7/IcnumaxjI2
- b91L0OsVqccG+QAKwxNPQHe8IQJxXLKOfx6vQf1SiuQsd0gisuUMMBteMe0Ckqmm+Yujo0
- 6OzMs9ILhiA/KStVyMq9BbyfktvkVL6Nw8Y97MaIhTohP0MGSVFouBRgz5vpHofAdNMiDv
- Gk1vXLtoeiwRUFYPtSfsVUmTzDPXvFm+/JuUf8pcO5vRH2cb3Z5tkHrUFQ5RGg==
+ bh=2vjgLsDKJbs5n1mVWaNjla9Xm1S5OTNt2up56irwDqk=;
+ b=hHKkNcIjxRopzPbYfiYVcBqXYrAssZ/Sejv0hAt6qhZVlX2KKBJB4moyPTPPv07dIkVEPB
+ BifP4R1/CI4P3s+/i6tUQSezQUmsODyVig0yyd99sZcWXLdfQxAW93fSo4dznbpd9vK+ef
+ yUQXnnEY9i1uEq3JCGH6sRIRgqx1+clmqjDMo3ZSI+Vzr/a1IP005Advw/Kv9xjOheSUDV
+ 5dj0qBmCf6gFMRtNB+k5JV5o5ek6yeQj6gCoPEv+qlJ0XpU9UDBqhRIkSckoS1tF8cwNct
+ KE1NUSlvuVvJl2XxSFmEy2VRICtXGcHpu2AbPfL37XWDcldcirk2TLmD6QH2zA==
+Authentication-Results: outgoing_mbo_mout; dkim=none;
+ spf=pass (outgoing_mbo_mout: domain of ralf@mandelbit.com designates
+ 2001:67c:2050:b231:465::2 as permitted sender)
+ smtp.mailfrom=ralf@mandelbit.com
 From: Ralf Lici <ralf@mandelbit.com>
 To: openvpn-devel@lists.sourceforge.net
-Date: Wed, 29 Jul 2026 17:37:41 +0200
-Message-ID: <17ced9a7caee691e602e3c02f5e399aa9a35067c.1785338921.git.ralf@mandelbit.com>
+Date: Wed, 29 Jul 2026 17:37:39 +0200
+Message-ID: <e15d597b1c6d0e98727f482113b51f86a8510c50.1785338921.git.ralf@mandelbit.com>
 In-Reply-To: <cover.1785338921.git.ralf@mandelbit.com>
 References: <cover.1785338921.git.ralf@mandelbit.com>
 MIME-Version: 1.0
-X-Headers-End: 1wp6QH-0001TD-JU
-Subject: [Openvpn-devel] [PATCH ovpn net 3/5] ovpn: reject multipeer peers
- without VPN addresses
+X-Rspamd-Queue-Id: 4h9GmK3b83zNlmH
+X-Headers-End: 1wp6QD-0002tz-9O
+Subject: [Openvpn-devel] [PATCH ovpn net 1/5] ovpn: always unhash old VPN
+ addresses before rehashing
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -93,98 +99,56 @@ Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-In MP mode, ovpn uses the peer VPN addresses to select the peer for
-outgoing tunnel packets. Peer creation currently requires a VPN IPv4 or
-IPv6 attribute, but it only checks for the presence of the attribute and
-not for a usable address value.
+ovpn_peer_hash_vpn_ip updates the per-peer VPN address hash entries
+after userspace changes a peer VPN address. The current code removes an
+old hash entry only when the new address for that family is not the
+unspecified address.
 
-This allows userspace to create an MP peer with only unspecified VPN
-addresses, or to update an existing peer so that both VPN address
-families become unspecified. Such a peer cannot be selected through the
-VPN address hash tables.
+When an address is cleared to 0.0.0.0 or ::, its hash node therefore
+remains linked in the bucket selected by the old address. The address
+comparison performed during lookup prevents the old address from
+matching, but the table retains a stale entry until the peer is removed
+or another address is configured for that family.
 
-Reject MP peer creation or update when the resulting peer would not have
-at least one VPN address configured.
+Always remove both old VPN address hash entries before conditionally
+adding the currently configured addresses back. This ensures that a
+cleared address leaves its hash node unhashed.
 
 Fixes: 1d36a36f6d53 ("ovpn: implement peer add/get/dump/delete via netlink")
 Signed-off-by: Ralf Lici <ralf@mandelbit.com>
 ---
- drivers/net/ovpn/netlink.c | 47 +++++++++++++++++++++++++++-----------
- 1 file changed, 34 insertions(+), 13 deletions(-)
+ drivers/net/ovpn/peer.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ovpn/netlink.c b/drivers/net/ovpn/netlink.c
-index 79775af26fda..43e6c7a29a6f 100644
---- a/drivers/net/ovpn/netlink.c
-+++ b/drivers/net/ovpn/netlink.c
-@@ -346,8 +346,10 @@ static int ovpn_nl_peer_modify(struct ovpn_peer *peer, struct genl_info *info,
+diff --git a/drivers/net/ovpn/peer.c b/drivers/net/ovpn/peer.c
+index a21d02ac715e..6b1f176433d9 100644
+--- a/drivers/net/ovpn/peer.c
++++ b/drivers/net/ovpn/peer.c
+@@ -906,10 +906,11 @@ void ovpn_peer_hash_vpn_ip(struct ovpn_peer *peer)
+ 	if (peer->ovpn->mode != OVPN_MODE_MP)
+ 		return;
  
- int ovpn_nl_peer_new_doit(struct sk_buff *skb, struct genl_info *info)
- {
--	struct nlattr *attrs[OVPN_A_PEER_MAX + 1];
-+	struct in_addr vpn_addr4 = { .s_addr = INADDR_ANY };
-+	struct in6_addr vpn_addr6 = IN6ADDR_ANY_INIT;
- 	struct ovpn_priv *ovpn = info->user_ptr[0];
-+	struct nlattr *attrs[OVPN_A_PEER_MAX + 1];
- 	struct ovpn_socket *ovpn_sock;
- 	struct socket *sock = NULL;
- 	struct ovpn_peer *peer;
-@@ -371,11 +373,19 @@ int ovpn_nl_peer_new_doit(struct sk_buff *skb, struct genl_info *info)
- 		return -EINVAL;
+-	if (peer->vpn_addrs.ipv4.s_addr != htonl(INADDR_ANY)) {
+-		/* remove potential old hashing */
+-		hlist_nulls_del_init_rcu(&peer->hash_entry_addr4);
++	/* remove potential old hashing */
++	hlist_nulls_del_init_rcu(&peer->hash_entry_addr4);
++	hlist_nulls_del_init_rcu(&peer->hash_entry_addr6);
  
- 	/* in MP mode VPN IPs are required for selecting the right peer */
--	if (ovpn->mode == OVPN_MODE_MP && !attrs[OVPN_A_PEER_VPN_IPV4] &&
--	    !attrs[OVPN_A_PEER_VPN_IPV6]) {
--		NL_SET_ERR_MSG_FMT_MOD(info->extack,
--				       "VPN IP must be provided in MP mode");
--		return -EINVAL;
-+	if (ovpn->mode == OVPN_MODE_MP) {
-+		if (attrs[OVPN_A_PEER_VPN_IPV4])
-+			vpn_addr4.s_addr =
-+				nla_get_in_addr(attrs[OVPN_A_PEER_VPN_IPV4]);
-+		if (attrs[OVPN_A_PEER_VPN_IPV6])
-+			vpn_addr6 =
-+				nla_get_in6_addr(attrs[OVPN_A_PEER_VPN_IPV6]);
-+
-+		if (!vpn_addr4.s_addr && ipv6_addr_any(&vpn_addr6)) {
-+			NL_SET_ERR_MSG_FMT_MOD(info->extack,
-+					       "VPN IP must be provided in MP mode");
-+			return -EINVAL;
-+		}
++	if (peer->vpn_addrs.ipv4.s_addr != htonl(INADDR_ANY)) {
+ 		nhead = ovpn_get_hash_head(peer->ovpn->peers->by_vpn_addr4,
+ 					   &peer->vpn_addrs.ipv4,
+ 					   sizeof(peer->vpn_addrs.ipv4));
+@@ -917,9 +918,6 @@ void ovpn_peer_hash_vpn_ip(struct ovpn_peer *peer)
  	}
  
- 	peer_id = nla_get_u32(attrs[OVPN_A_PEER_ID]);
-@@ -534,13 +544,24 @@ int ovpn_nl_peer_set_doit(struct sk_buff *skb, struct genl_info *info)
- 	if (attrs[OVPN_A_PEER_VPN_IPV6])
- 		vpn_addr6 = nla_get_in6_addr(attrs[OVPN_A_PEER_VPN_IPV6]);
- 
--	/* reject peer with conflicting VPN address */
--	if ((attrs[OVPN_A_PEER_VPN_IPV4] || attrs[OVPN_A_PEER_VPN_IPV6]) &&
--	    ovpn_peer_vpn_addr_conflict(ovpn, peer, &vpn_addr4, &vpn_addr6)) {
--		NL_SET_ERR_MSG_FMT_MOD(info->extack,
--				       "VPN IP is already assigned to another peer");
--		ret = -EADDRINUSE;
--		goto unlock;
-+	/* in MP mode VPN IPs are required for selecting the right peer */
-+	if (ovpn->mode == OVPN_MODE_MP &&
-+	    (attrs[OVPN_A_PEER_VPN_IPV4] || attrs[OVPN_A_PEER_VPN_IPV6])) {
-+		if (!vpn_addr4.s_addr && ipv6_addr_any(&vpn_addr6)) {
-+			NL_SET_ERR_MSG_FMT_MOD(info->extack,
-+					       "MP peer must have at least one valid VPN IP");
-+			ret = -EINVAL;
-+			goto unlock;
-+		}
-+
-+		/* reject peer with conflicting VPN address */
-+		if (ovpn_peer_vpn_addr_conflict(ovpn, peer, &vpn_addr4,
-+						&vpn_addr6)) {
-+			NL_SET_ERR_MSG_FMT_MOD(info->extack,
-+					       "VPN IP is already assigned to another peer");
-+			ret = -EADDRINUSE;
-+			goto unlock;
-+		}
- 	}
- 
- 	ret = ovpn_nl_peer_modify(peer, info, attrs);
+ 	if (!ipv6_addr_any(&peer->vpn_addrs.ipv6)) {
+-		/* remove potential old hashing */
+-		hlist_nulls_del_init_rcu(&peer->hash_entry_addr6);
+-
+ 		nhead = ovpn_get_hash_head(peer->ovpn->peers->by_vpn_addr6,
+ 					   &peer->vpn_addrs.ipv6,
+ 					   sizeof(peer->vpn_addrs.ipv6));
 -- 
 2.55.0
 
