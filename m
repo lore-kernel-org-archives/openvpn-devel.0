@@ -4,79 +4,127 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B407EC54FDF
-	for <openvpn-devel@archiver.kernel.org>; Thu, 30 Jul 2026 10:16:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 43FEBC54FD2
+	for <openvpn-devel@archiver.kernel.org>; Thu, 30 Jul 2026 10:21:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=naVaPBXNLSw4YKUJjQgFeYjV7OlJItpUXcKZ9oN4t54=; b=LKj9YLQcIFOWB0+51/zEVg74iy
-	2il6yCHpEBg/eV83kPOWcUGBo18oVZjdxSHNm34lq+DlEgopbiaqPC+qIDVEAi7BbrbQOYLz+He6D
-	6rsPJ2ZEjgjKrGf6fdiaNKcrPKPkv2puJzJdti6xfTzdjXv8sizIYTAx1KiVisDTZgqE=;
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=4Dv1SooKlrpoS6tHMuZZHDaeMvPYiKm2GNMqy5n2jsE=; b=XB8SQCj1kDGlq0YXOmn1NvtDBk
+	NWwniQyi3q0dlOXWAMAh1BamZlU/a5Wzg22geeFTnmwVF4J1F5yHYH7JSqR9FnDR82RtQPZsXv7yB
+	I5YmjeGFkPlOhsMYAutXDTedNT2BvAnFzK7N8QAri/Ade+Ts652eE4hUCVOxMwgkEDWY=;
 Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
 	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wpNoV-0000n0-AG;
-	Thu, 30 Jul 2026 10:16:32 +0000
+	id 1wpNt9-0001Bz-F8;
+	Thu, 30 Jul 2026 10:21:20 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <frank@lichtenheld.com>) id 1wpNoS-0000mc-9T
+ (envelope-from <gerrit@openvpn.net>) id 1wpNt7-0001Bl-W4
  for openvpn-devel@lists.sourceforge.net;
- Thu, 30 Jul 2026 10:16:30 +0000
+ Thu, 30 Jul 2026 10:21:18 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=UAC/dN4qC+zz1dZ1VCdalM+r7vz0Z9Atxpw+pUhi5Vs=; b=BczD2BIpKy/SQ+iKHWHUz7rbPh
- J5FgdgoRgDf2HuQOpYbD+QNzF08OgeQEMeCPQFb5F7vdV2770wxesGXkXRXj+onXsSItbpFBTo/YZ
- 3RFw73bBTdoXzpehIhrwMcTHCkrH+a9T0zOpKu/D0DmsvWvp3aNkKmvVyYk9MkBzZ7rg=;
+ d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
+ :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
+ Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
+ :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
+ :List-Post:List-Owner:List-Archive;
+ bh=/kEVoUvBLAf2qDpTvap8uoHnuWsRHIjUpHKZxp52ed8=; b=KQdXeVMwqgUPg2VTc1PAc2W6yp
+ K+Cay4rZQao1CR7HEhGPLzFfT+Z+JsL8wzAw0c12utZPyDTYhPdbBHPt2ZmkuhSovsgZYnLWpUzRR
+ NbBHDzOBwReX1vX3F6V8iCNWHkrfR1t7B6UCfqQzlOG1WDo5Jo81O1M1PykrxjXAbDGc=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=UAC/dN4qC+zz1dZ1VCdalM+r7vz0Z9Atxpw+pUhi5Vs=; b=Wl/0uFtDPWuL50Xg4285d5tZg7
- hRw4wl14GB1M7IgHCl6qtKww5WsyocBQpU+yndOOZF42Y/+7qO4mYJuhw5PERwc4ctNJnHESK3pfn
- YaHaDNIoKqraiQDT8VqU49Eyo1kuR3Q/griS8t23soVNZTce0wt4NOmkAorG0LQMltUw=;
-Received: from mout-p-102.mailbox.org ([80.241.56.152])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wpNoT-0003l8-CK for openvpn-devel@lists.sourceforge.net;
- Thu, 30 Jul 2026 10:16:29 +0000
-Received: from smtp2.mailbox.org (unknown [10.196.197.2])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
- key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
- (No client certificate requested)
- by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4h9lTs5QTVzKvyx;
- Thu, 30 Jul 2026 12:16:17 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lichtenheld.com;
- s=MBO0001; t=1785406577;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=UAC/dN4qC+zz1dZ1VCdalM+r7vz0Z9Atxpw+pUhi5Vs=;
- b=c53PcR8qGVQZL56XqKlroBJIXbdUzvYjZFj6LwfZsNKsFCLG/DjJrE3lqjd4MiS1YkSXlo
- xBV4ZrQoPAqgJ/1q4POqqh0XhlLKlXk132Xq1We8un/7qO34pJ8KpPt4KBE5J1xzfcwGN1
- DG+d/38lfvIfDC4pz43c6YUg18IY+u1ttInNrWa01MCC1UZoxwaT2wE44N1UvLXJ61FX0r
- B8vo6JjPafEHBMM/Uv1eDWcJhzRydcnMTPSr+DKrvj28pB3kQN6X8upKrNgO27Ho+tskWn
- trf4Q13QsR0N1OWaUSPcmpRNeaRVQK3KgcGQFqlwOVWEpMU8TJnq/zvQqqzh/Q==
-From: Frank Lichtenheld <frank@lichtenheld.com>
-To: openvpn-devel@lists.sourceforge.net
-Date: Thu, 30 Jul 2026 12:16:16 +0200
-Message-ID: <20260730101616.28738-1-frank@lichtenheld.com>
-In-Reply-To: <gerrit.1785239387000.Ie33aea26026e07c860da7d79880cef6b27b7b0e8@gerrit.openvpn.net>
-References: <gerrit.1785239387000.Ie33aea26026e07c860da7d79880cef6b27b7b0e8@gerrit.openvpn.net>
+ h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
+ Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=/kEVoUvBLAf2qDpTvap8uoHnuWsRHIjUpHKZxp52ed8=; b=S
+ 3u40GdePqWsgT/fjVQDrhygHdEM6P959RSPdeiPPz7WQEF69oaoh2Ul7m5J/bt4bzP2/etWjhU2kT
+ uNPtQVcsY+rzoyoEH1njMD8empDJfNW5S5cf1xb1u4h4YPMSjmcHxohOpiibJEb4G7BINCXqippn3
+ zgl3esfIbqeguY2A=;
+Received: from mail-wm1-f52.google.com ([209.85.128.52])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
+ id 1wpNt7-0005jV-Bh for openvpn-devel@lists.sourceforge.net;
+ Thu, 30 Jul 2026 10:21:18 +0000
+Received: by mail-wm1-f52.google.com with SMTP id
+ 5b1f17b1804b1-498028b3d5eso4365745e9.1
+ for <openvpn-devel@lists.sourceforge.net>;
+ Thu, 30 Jul 2026 03:21:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=openvpn.net; s=google; t=1785406871; x=1786011671; darn=lists.sourceforge.net;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
+ :reply-to:content-type;
+ bh=/kEVoUvBLAf2qDpTvap8uoHnuWsRHIjUpHKZxp52ed8=;
+ b=Bx4PBOX7xuTPcuWi9VWl89MY8TN7Q6VQp7/OTFYK3c0hGh4btPfl20bZe9NNrLDCHC
+ 03jGm19FYJY1FYpF5MUinnZIYzIXGJeGtCxw8fFFI0KX6kZ3J1mrsZean05geCCQYQ4v
+ EevK6hDH/Vy84rs40amH2qksOLTZ3mfSeOu5nNd+hVGynlgj7E6IGtSyGDPJ+qSx8av2
+ b7h9inVJM9iKrCkM6bIDv2diLqxj4H1VR1FC3P3pcq6sCJjCkTICDBHiQGZqgMb4ZKd7
+ 8/haF3fxMX3jiBXy2afmCatU315nPaxdnmZzspMFV+HJWp+rWkHUBog+o2WQaR+iZpba
+ Cf+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20251104; t=1785406871; x=1786011671;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
+ :cc:subject:date:message-id:reply-to:content-type;
+ bh=/kEVoUvBLAf2qDpTvap8uoHnuWsRHIjUpHKZxp52ed8=;
+ b=q+6dDNRiajaTtkQ9foGF0qgpygPXWRjsfCxVE7ZKrlOh5EfcQyEbJRbGt7++rZY9U4
+ oXJ4kIYVhA9SzZirR6802dd07XhxHVG05O0NSqmk0ZINa2FjtclGIt6MYhWEsPiIIkho
+ nwGezWIK6XnLZCby50PNdqneA60jBhp8Kl/GUDUaGcxPiHm8cqx/NLjwRi4kGrik2iRk
+ zVQwGIJKYYfNtVhvqnAqxc8NVWgiD6f7s/smOgPvPjYZ1Gk0Igdr67ZKJIMgifoFrY9V
+ uI3YfkPhnWtBHP7BCcGSYkAVbfjJYVV5U24yIOzEAoiwGY3dxd88U8/7n/QthQp7e4YH
+ g0aQ==
+X-Gm-Message-State: AOJu0YySUM8ivnlgysjYukQPrj4ft01fDUfDjDjFBotPCW1XHOHEr/F4
+ La/DnLUFQNP9k6OuQhGNBin7G279ns8afQUl3n7BFDaM86AeTqcx2t6FyCwTEAJEcktJyvlkGZ1
+ 18VbfusOdkUlw/cjp584VJQkBwXyiFDrSI0i2uPUlTTdd44VD8UelK/whdvwrUStlVXTA
+X-Gm-Gg: AR+sD10VZpQiDeMniNgQpJ4+Eq3TLqtgMJ46UrspNAmVB9/qw9uZIFIq2tee6Txezgu
+ NI15NL7+KjrvvEygjA7H+HbWiUj7YiaQ2l3cjCVt4erCg+KeJLR7cAAyNoxmvMRgO7pFHTkYHa6
+ npCh+eG1LUc36zZdHtC02gTG3L1+Y29KmgQOkXAiUhwqgt6wZuAj5FxoqXB6FtOhFs/sa20gN9s
+ 5WPKUdmakdmA9IMIHrJJQ/F8+A+Wg0j/9rQZL9L10cfh7MzL0eCHQgXp4bBth2m1gm6IxrnMmPR
+ lyLvhgWnngEROzI7Un7yyJbDDV5a+5VWmJ+FFHAi9UcvOLQPK/EI5uciAsF9ijBVhC5sNCXF5d8
+ BFxjKH5VtSwpqge2WhYWDaWHO4VUAfACtFAiu61IQSwqVc+ucycz1Lv8hHbqrZyH9UGCeOmdMxP
+ cJ3vqP4c1ATlhJpWpAcLktAW1w7FeNcxJNvgJUXpE2x3xRF0JPzbn/vQrHGVS3NMvAn/Ohep6xy
+ ThcMzhTRuI4oSBmEGfdVFVLjzu5yfmoyas3HsSRoX/Pk8RZhH+QGVcy1KknRMuDdfuiX4LErHqF
+ go+QiW33PNvZmbZW2mH/Ij/WUOp2miYzST6/n/MNGVloUxis3oE=
+X-Received: by 2002:a05:600c:1505:b0:495:4df2:b8c1 with SMTP id
+ 5b1f17b1804b1-49800ebbf5dmr15428645e9.35.1785406870505; 
+ Thu, 30 Jul 2026 03:21:10 -0700 (PDT)
+Received: from ip-10-18-1-162.eu-central-1.compute.internal
+ (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
+ by smtp.gmail.com with ESMTPSA id
+ 5b1f17b1804b1-498010bb0e7sm46942345e9.15.2026.07.30.03.21.09
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 30 Jul 2026 03:21:10 -0700 (PDT)
+X-Google-Original-From: "flichtenheld (Code Review)"
+ <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
+Date: Thu, 30 Jul 2026 10:21:08 +0000
+To: plaisthos <arne-openvpn@rfc2549.org>
+Auto-Submitted: auto-generated
+X-Gerrit-MessageType: comment
+X-Gerrit-PatchSet: 20
+X-Gerrit-Change-Id: If47c7d920b2fa4047b7db03fcde821899839324d
+X-Gerrit-Change-Number: 1571
+X-Gerrit-Project: openvpn
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1571?usp=email>
+X-Gerrit-Commit: 124613f88855cf4b97c403de5d5ca145d5cd44f5
+X-Gerrit-Comment-Date: Thu, 30 Jul 2026 10:21:08 +0000
+In-Reply-To: <gerrit.1773251317000.If47c7d920b2fa4047b7db03fcde821899839324d@gerrit.openvpn.net>
+References: <gerrit.1773251317000.If47c7d920b2fa4047b7db03fcde821899839324d@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzczMjUxMzE3MDAwLklmNDdjN2Q5MjBiMmZhNDA0N2I3ZGIwM2ZjZGU4MjE4OTk4MzkzMjRkQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <2f5b02729c9f6afdea48843542b6fcb94d56ec36-EmailReviewComments-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
-X-Headers-End: 1wpNoT-0003l8-CK
-Subject: [Openvpn-devel] [PATCH v5] Move schedule test to a unit test
+User-Agent: Gerrit/3.11.5
+X-Headers-End: 1wpNt7-0005jV-Bh
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Change hash iv to a
+ be a fixed sized array
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -88,978 +136,179 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+From: "flichtenheld \(Code Review\) via Openvpn-devel"
+ <openvpn-devel@lists.sourceforge.net>
+Reply-To: frank@lichtenheld.com, arne-openvpn@rfc2549.org,
+ openvpn-devel@lists.sourceforge.net
+Cc: "flichtenheld \(Code Review\)" <gerrit@openvpn.net>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: multipart/mixed; boundary="===============7265226882522976115=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Arne Schwabe <arne@rfc2549.org>
+--===============7265226882522976115==
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="NrmgbwavIVE="; charset=UTF-8
 
-While this test might not be extremely useful this change removes
-the dead code from init.c and schedule.c and moves it to a unit
-test.
+--NrmgbwavIVE=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Change-Id: Ie33aea26026e07c860da7d79880cef6b27b7b0e8
-Signed-off-by: Arne Schwabe <arne@rfc2549.org>
-Acked-by: Frank Lichtenheld <frank@lichtenheld.com>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1828
----
+Attention is currently required from: plaisthos=2E
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+flichtenheld has posted=
+ comments on this change by plaisthos=2E ( http://gerrit=2Eopenvpn=2Enet/c/=
+openvpn/+/1571?usp=3Demail )
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1828
-This mail reflects revision 5 of this Change.
+The change is no longer submittable: Code-Rev=
+iew is unsatisfied now=2E
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@lichtenheld.com>
+Change subject: Change hash iv to a be a fixed s=
+ized array
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-        
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 7473f15..74c080e 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -828,10 +828,14 @@
- 
-     target_sources(test_misc PRIVATE
-         tests/unit_tests/openvpn/mock_get_random.c
-+        tests/unit_tests/openvpn/test_schedule.c
-         src/openvpn/options_util.c
-+        src/openvpn/otime.c
-         src/openvpn/ssl_util.c
-         src/openvpn/list.c
--        )
-+        src/openvpn/session_id.c
-+        src/openvpn/schedule.c
-+    )
- 
-     target_sources(test_ncp PRIVATE
-         src/openvpn/crypto_epoch.c
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 914d191..0236886 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -53,6 +53,7 @@
- #include "mudp.h"
- #include "dco.h"
- #include "tun_afunix.h"
-+#include "schedule.h"
- 
- #include "memdbg.h"
- 
-@@ -876,11 +877,6 @@
- 
-     init_ssl_lib();
- 
--#ifdef SCHEDULE_TEST
--    schedule_test();
--    return false;
--#endif
--
- #ifdef IFCONFIG_POOL_TEST
-     ifconfig_pool_test(0x0A010004, 0x0A0100FF);
-     return false;
-diff --git a/src/openvpn/otime.h b/src/openvpn/otime.h
-index ad79120..f02cc31 100644
---- a/src/openvpn/otime.h
-+++ b/src/openvpn/otime.h
-@@ -150,80 +150,6 @@
-     }
- }
- 
--static inline bool
--tv_lt(const struct timeval *t1, const struct timeval *t2)
--{
--    if (t1->tv_sec < t2->tv_sec)
--    {
--        return true;
--    }
--    else if (t1->tv_sec > t2->tv_sec)
--    {
--        return false;
--    }
--    else
--    {
--        return t1->tv_usec < t2->tv_usec;
--    }
--}
--
--static inline bool
--tv_le(const struct timeval *t1, const struct timeval *t2)
--{
--    if (t1->tv_sec < t2->tv_sec)
--    {
--        return true;
--    }
--    else if (t1->tv_sec > t2->tv_sec)
--    {
--        return false;
--    }
--    else
--    {
--        return t1->tv_usec <= t2->tv_usec;
--    }
--}
--
--static inline bool
--tv_ge(const struct timeval *t1, const struct timeval *t2)
--{
--    if (t1->tv_sec > t2->tv_sec)
--    {
--        return true;
--    }
--    else if (t1->tv_sec < t2->tv_sec)
--    {
--        return false;
--    }
--    else
--    {
--        return t1->tv_usec >= t2->tv_usec;
--    }
--}
--
--static inline bool
--tv_gt(const struct timeval *t1, const struct timeval *t2)
--{
--    if (t1->tv_sec > t2->tv_sec)
--    {
--        return true;
--    }
--    else if (t1->tv_sec < t2->tv_sec)
--    {
--        return false;
--    }
--    else
--    {
--        return t1->tv_usec > t2->tv_usec;
--    }
--}
--
--static inline bool
--tv_eq(const struct timeval *t1, const struct timeval *t2)
--{
--    return t1->tv_sec == t2->tv_sec && t1->tv_usec == t2->tv_usec;
--}
--
- static inline void
- tv_delta(struct timeval *dest, const struct timeval *t1, const struct timeval *t2)
- {
-diff --git a/src/openvpn/schedule.c b/src/openvpn/schedule.c
-index 6d9bb62..6772ad6 100644
---- a/src/openvpn/schedule.c
-+++ b/src/openvpn/schedule.c
-@@ -33,20 +33,6 @@
- 
- #include "memdbg.h"
- 
--#ifdef SCHEDULE_TEST
--
--struct status
--{
--    int sru;
--    int ins;
--    int coll;
--    int lsteps;
--};
--
--static struct status z;
--
--#endif
--
- #ifdef ENABLE_DEBUG
- static void
- schedule_entry_debug_info(const char *caller, const struct schedule_entry *e)
-@@ -75,12 +61,7 @@
-     }
- }
- 
--/* This is the master key comparison routine.  A key is
-- * simply a struct timeval containing the absolute time for
-- * an event.  The unique treap priority (pri) is used to ensure
-- * that keys do not collide.
-- */
--static inline int
-+int
- schedule_entry_compare(const struct schedule_entry *e1, const struct schedule_entry *e2)
- {
-     if (e1->tv.tv_sec < e2->tv.tv_sec)
-@@ -226,10 +207,6 @@
-             /* parent <-> child linkage is corrupted */
-             ASSERT(0);
-         }
--
--#ifdef SCHEDULE_TEST
--        ++z.sru;
--#endif
-     }
- }
- 
-@@ -284,10 +261,6 @@
-     {
-         const int comp = schedule_entry_compare(e, c);
- 
--#ifdef SCHEDULE_TEST
--        ++z.ins;
--#endif
--
-         if (comp == -1)
-         {
-             if (c->lt)
-@@ -320,9 +293,6 @@
-         {
-             /* rare key/priority collision -- no big deal,
-              * just choose another priority and retry */
--#ifdef SCHEDULE_TEST
--            ++z.coll;
--#endif
-             schedule_set_pri(e);
-             /* msg (M_INFO, "PRI COLLISION pri=%u", e->pri); */
-             c = s->root;
-@@ -381,9 +351,6 @@
-     {
-         while (e->lt)
-         {
--#ifdef SCHEDULE_TEST
--            ++z.lsteps;
--#endif
-             e = e->lt;
-         }
-     }
-@@ -422,280 +389,4 @@
- {
-     s->earliest_wakeup = NULL; /* invalidate cache */
-     schedule_remove_node(s, e);
--}
--
--/*
-- *  Debug functions below this point
-- */
--
--#ifdef SCHEDULE_TEST
--
--static inline struct schedule_entry *
--schedule_find_earliest_wakeup(struct schedule *s)
--{
--    return schedule_find_least(s->root);
--}
--
--/*
-- * Recursively check that the treap (btree) is
-- * internally consistent.
-- */
--int
--schedule_debug_entry(const struct schedule_entry *e, int depth, int *count, struct timeval *least,
--                     const struct timeval *min, const struct timeval *max)
--{
--    struct gc_arena gc = gc_new();
--    int maxdepth = depth;
--    if (e)
--    {
--        int d;
--
--        ASSERT(e != e->lt);
--        ASSERT(e != e->gt);
--        ASSERT(e != e->parent);
--        ASSERT(!e->parent || e->parent != e->lt);
--        ASSERT(!e->parent || e->parent != e->gt);
--        ASSERT(!e->lt || e->lt != e->gt);
--
--        if (e->lt)
--        {
--            ASSERT(e->lt->parent == e);
--            ASSERT(schedule_entry_compare(e->lt, e) == -1);
--            ASSERT(e->lt->pri >= e->pri);
--        }
--
--        if (e->gt)
--        {
--            ASSERT(e->gt->parent == e);
--            ASSERT(schedule_entry_compare(e->gt, e));
--            ASSERT(e->gt->pri >= e->pri);
--        }
--
--        ASSERT(tv_le(min, &e->tv));
--        ASSERT(tv_le(&e->tv, max));
--
--        if (count)
--        {
--            ++(*count);
--        }
--
--        if (least && tv_lt(&e->tv, least))
--        {
--            *least = e->tv;
--        }
--
--        d = schedule_debug_entry(e->lt, depth + 1, count, least, min, &e->tv);
--        if (d > maxdepth)
--        {
--            maxdepth = d;
--        }
--
--        d = schedule_debug_entry(e->gt, depth + 1, count, least, &e->tv, max);
--        if (d > maxdepth)
--        {
--            maxdepth = d;
--        }
--    }
--    gc_free(&gc);
--    return maxdepth;
--}
--
--int
--schedule_debug(struct schedule *s, int *count, struct timeval *least)
--{
--    struct timeval min;
--    struct timeval max;
--
--    min.tv_sec = 0;
--    min.tv_usec = 0;
--    max.tv_sec = 0x7FFFFFFF;
--    max.tv_usec = 0x7FFFFFFF;
--
--    if (s->root)
--    {
--        ASSERT(s->root->parent == NULL);
--    }
--    return schedule_debug_entry(s->root, 0, count, least, &min, &max);
--}
--
--#if 1
--
--void
--tv_randomize(struct timeval *tv)
--{
--    tv->tv_sec += random() % 100;
--    tv->tv_usec = random() % 100;
--}
--
--#else  /* if 1 */
--
--void
--tv_randomize(struct timeval *tv)
--{
--    struct gc_arena gc = gc_new();
--    long int choice = get_random();
--    if ((choice & 0xFF) == 0)
--    {
--        tv->tv_usec += ((choice >> 8) & 0xFF);
--    }
--    else
--    {
--        prng_bytes((uint8_t *)tv, sizeof(struct timeval));
--    }
--    gc_free(&gc);
--}
--
--#endif /* if 1 */
--
--void
--schedule_verify(struct schedule *s)
--{
--    struct gc_arena gc = gc_new();
--    struct timeval least;
--    int count;
--    int maxlev;
--    struct schedule_entry *e;
--    const struct status zz = z;
--
--    least.tv_sec = least.tv_usec = 0x7FFFFFFF;
--
--    count = 0;
--
--    maxlev = schedule_debug(s, &count, &least);
--
--    e = schedule_find_earliest_wakeup(s);
--
--    if (e)
--    {
--        printf("Verification Phase  count=%d maxlev=%d sru=%d ins=%d coll=%d ls=%d l=%s", count,
--               maxlev, zz.sru, zz.ins, zz.coll, zz.lsteps, tv_string(&e->tv, &gc));
--
--        if (!tv_eq(&least, &e->tv))
--        {
--            printf(" [COMPUTED DIFFERENT MIN VALUES!]");
--        }
--
--        printf("\n");
--    }
--
--    CLEAR(z);
--    gc_free(&gc);
--}
--
--void
--schedule_randomize_array(struct schedule_entry **array, int size)
--{
--    int i;
--    for (i = 0; i < size; ++i)
--    {
--        const int src = get_random() % size;
--        struct schedule_entry *tmp = array[i];
--        if (i != src)
--        {
--            array[i] = array[src];
--            array[src] = tmp;
--        }
--    }
--}
--
--void
--schedule_print_work(struct schedule_entry *e, int indent)
--{
--    struct gc_arena gc = gc_new();
--    int i;
--    for (i = 0; i < indent; ++i)
--    {
--        printf(" ");
--    }
--    if (e)
--    {
--        printf("%s [%u] e=" ptr_format ", p=" ptr_format " lt=" ptr_format " gt=" ptr_format "\n",
--               tv_string(&e->tv, &gc), e->pri, (ptr_type)e, (ptr_type)e->parent, (ptr_type)e->lt,
--               (ptr_type)e->gt);
--        schedule_print_work(e->lt, indent + 1);
--        schedule_print_work(e->gt, indent + 1);
--    }
--    else
--    {
--        printf("NULL\n");
--    }
--    gc_free(&gc);
--}
--
--void
--schedule_print(struct schedule *s)
--{
--    printf("*************************\n");
--    schedule_print_work(s->root, 0);
--}
--
--void
--schedule_test(void)
--{
--    struct gc_arena gc = gc_new();
--    int n = 1000;
--    int n_mod = 25;
--
--    int i, j;
--    struct schedule_entry **array;
--    struct schedule *s = schedule_init();
--    struct schedule_entry *e;
--
--    CLEAR(z);
--    ALLOC_ARRAY(array, struct schedule_entry *, n);
--
--    printf("Creation/Insertion Phase\n");
--
--    for (i = 0; i < n; ++i)
--    {
--        ALLOC_OBJ_CLEAR(array[i], struct schedule_entry);
--        tv_randomize(&array[i]->tv);
--        /*schedule_print (s);*/
--        /*schedule_verify (s);*/
--        schedule_add_modify(s, array[i]);
--    }
--
--    schedule_randomize_array(array, n);
--
--    /*schedule_print (s);*/
--    schedule_verify(s);
--
--    for (j = 1; j <= n_mod; ++j)
--    {
--        printf("Modification Phase Pass %d\n", j);
--
--        for (i = 0; i < n; ++i)
--        {
--            e = schedule_find_earliest_wakeup(s);
--            /*printf ("BEFORE %s\n", tv_string (&e->tv, &gc));*/
--            tv_randomize(&e->tv);
--            /*printf ("AFTER %s\n", tv_string (&e->tv, &gc));*/
--            schedule_add_modify(s, e);
--            /*schedule_verify (s);*/
--            /*schedule_print (s);*/
--        }
--        schedule_verify(s);
--        /*schedule_print (s);*/
--    }
--
--    /*printf ("INS=%d\n", z.ins);*/
--
--    while ((e = schedule_find_earliest_wakeup(s)))
--    {
--        schedule_remove_node(s, e);
--        /*schedule_verify (s);*/
--    }
--    schedule_verify(s);
--
--    printf("S->ROOT is %s\n", s->root ? "NOT NULL" : "NULL");
--
--    for (i = 0; i < n; ++i)
--    {
--        free(array[i]);
--    }
--    free(array);
--    free(s);
--    gc_free(&gc);
--}
--
--#endif /* ifdef SCHEDULE_TEST */
-+}
-\ No newline at end of file
-diff --git a/src/openvpn/schedule.h b/src/openvpn/schedule.h
-index 3847186..3c93208 100644
---- a/src/openvpn/schedule.h
-+++ b/src/openvpn/schedule.h
-@@ -34,9 +34,6 @@
-  * a ping or scheduling a TLS renegotiation.
-  */
- 
--/* define to enable a special test mode */
--/*#define SCHEDULE_TEST*/
--
- #include "otime.h"
- #include "error.h"
- 
-@@ -63,11 +60,6 @@
- 
- void schedule_remove_entry(struct schedule *s, struct schedule_entry *e);
- 
--#ifdef SCHEDULE_TEST
--void schedule_test(void);
--
--#endif
--
- /* Private Functions */
- 
- /* is node already in tree? */
-@@ -139,4 +131,14 @@
-     return ret;
- }
- 
-+/**
-+ * This method compares two schedule entries and return which one is
-+ * earlier,later or equal.
-+ *
-+ * A key is simply a struct timeval containing the absolute time for
-+ * an event.  The unique treap priority (pri) is used to ensure
-+ * that keys do not collide.
-+ */
-+int
-+schedule_entry_compare(const struct schedule_entry *e1, const struct schedule_entry *e2);
- #endif /* ifndef SCHEDULE_H */
-diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
-index d861ef9..4a76269 100644
---- a/tests/unit_tests/openvpn/Makefile.am
-+++ b/tests/unit_tests/openvpn/Makefile.am
-@@ -370,6 +370,7 @@
- misc_testdriver_LDFLAGS = @TEST_LDFLAGS@
- 
- misc_testdriver_SOURCES = test_misc.c \
-+	test_schedule.c test_schedule.h \
- 	mock_msg.c test_common.h  \
- 	mock_get_random.c \
- 	$(top_srcdir)/src/openvpn/buffer.c \
-@@ -377,7 +378,9 @@
- 	$(top_srcdir)/src/openvpn/ssl_util.c \
- 	$(top_srcdir)/src/openvpn/win32-util.c \
- 	$(top_srcdir)/src/openvpn/platform.c \
--	$(top_srcdir)/src/openvpn/list.c
-+	$(top_srcdir)/src/openvpn/list.c \
-+	$(top_srcdir)/src/openvpn/otime.c \
-+	$(top_srcdir)/src/openvpn/schedule.c
- 
- push_update_msg_testdriver_CFLAGS = -I$(top_srcdir)/src/openvpn \
- 	-I$(top_srcdir)/src/compat \
-diff --git a/tests/unit_tests/openvpn/test_common.h b/tests/unit_tests/openvpn/test_common.h
-index fb070aa..8db4ea6 100644
---- a/tests/unit_tests/openvpn/test_common.h
-+++ b/tests/unit_tests/openvpn/test_common.h
-@@ -78,7 +78,7 @@
-  * @param filename      name of the filename to retrieve relative to the
-  *                      unit test source directory
-  */
--void
-+static inline void
- openvpn_test_get_srcdir_dir(char *buf, size_t bufsize, const char *filename)
- {
-     const char *srcdir = getenv("srcdir");
-diff --git a/tests/unit_tests/openvpn/test_misc.c b/tests/unit_tests/openvpn/test_misc.c
-index fc9840a..cd86fd2 100644
---- a/tests/unit_tests/openvpn/test_misc.c
-+++ b/tests/unit_tests/openvpn/test_misc.c
-@@ -41,6 +41,8 @@
- #ifdef _WIN32
- #include "win32-util.h"
- #endif
-+#include "test_schedule.h"
-+
- 
- static void
- test_compat_lzo_string(void **state)
-@@ -488,7 +490,8 @@
-     cmocka_unit_test(test_auth_fail_temp_flags),
-     cmocka_unit_test(test_auth_fail_temp_flags_msg),
-     cmocka_unit_test(test_list),
--    cmocka_unit_test(test_atoi_variants)
-+    cmocka_unit_test(test_atoi_variants),
-+    cmocka_unit_test(schedule_test)
- };
- 
- int
-diff --git a/tests/unit_tests/openvpn/test_schedule.c b/tests/unit_tests/openvpn/test_schedule.c
-new file mode 100644
-index 0000000..52cd415
---- /dev/null
-+++ b/tests/unit_tests/openvpn/test_schedule.c
-@@ -0,0 +1,310 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single TCP/UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2002-2026 OpenVPN Inc <sales@openvpn.net>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, see <https://www.gnu.org/licenses/>.
-+ */
-+
-+#ifdef HAVE_CONFIG_H
-+#include "config.h"
-+#endif
-+
-+#include "syshead.h"
-+#include "schedule.h"
-+#include "test_common.h"
-+
-+static inline bool
-+tv_lt(const struct timeval *t1, const struct timeval *t2)
-+{
-+    if (t1->tv_sec < t2->tv_sec)
-+    {
-+        return true;
-+    }
-+    else if (t1->tv_sec > t2->tv_sec)
-+    {
-+        return false;
-+    }
-+    else
-+    {
-+        return t1->tv_usec < t2->tv_usec;
-+    }
-+}
-+
-+static inline bool
-+tv_le(const struct timeval *t1, const struct timeval *t2)
-+{
-+    if (t1->tv_sec < t2->tv_sec)
-+    {
-+        return true;
-+    }
-+    else if (t1->tv_sec > t2->tv_sec)
-+    {
-+        return false;
-+    }
-+    else
-+    {
-+        return t1->tv_usec <= t2->tv_usec;
-+    }
-+}
-+
-+static inline bool
-+tv_eq(const struct timeval *t1, const struct timeval *t2)
-+{
-+    return t1->tv_sec == t2->tv_sec && t1->tv_usec == t2->tv_usec;
-+}
-+
-+static inline struct schedule_entry *
-+schedule_find_earliest_wakeup(struct schedule *s)
-+{
-+    return schedule_find_least(s->root);
-+}
-+
-+/*
-+ * Recursively check that the treap (btree) is
-+ * internally consistent.
-+ */
-+int
-+schedule_debug_entry(const struct schedule_entry *e, int depth, int *count, struct timeval *least,
-+                     const struct timeval *min, const struct timeval *max)
-+{
-+    struct gc_arena gc = gc_new();
-+    int maxdepth = depth;
-+    if (e)
-+    {
-+        int d;
-+
-+        assert_ptr_not_equal(e, e->lt);
-+        assert_ptr_not_equal(e, e->gt);
-+        assert_ptr_not_equal(e, e->parent);
-+        assert_true(!e->parent || e->parent != e->lt);
-+        assert_true(!e->parent || e->parent != e->gt);
-+        assert_true(!e->lt || e->lt != e->gt);
-+
-+        if (e->lt)
-+        {
-+            assert_ptr_equal(e->lt->parent, e);
-+            assert_int_equal(schedule_entry_compare(e->lt, e), -1);
-+            assert_true(e->lt->pri >= e->pri);
-+        }
-+
-+        if (e->gt)
-+        {
-+            assert_ptr_equal(e->gt->parent, e);
-+            assert_int_equal(schedule_entry_compare(e->gt, e), 1);
-+            assert_true(e->gt->pri >= e->pri);
-+        }
-+
-+        assert_true(tv_le(min, &e->tv));
-+        assert_true(tv_le(&e->tv, max));
-+
-+        if (count)
-+        {
-+            ++(*count);
-+        }
-+
-+        if (least && tv_lt(&e->tv, least))
-+        {
-+            *least = e->tv;
-+        }
-+
-+        d = schedule_debug_entry(e->lt, depth + 1, count, least, min, &e->tv);
-+        if (d > maxdepth)
-+        {
-+            maxdepth = d;
-+        }
-+
-+        d = schedule_debug_entry(e->gt, depth + 1, count, least, &e->tv, max);
-+        if (d > maxdepth)
-+        {
-+            maxdepth = d;
-+        }
-+    }
-+    gc_free(&gc);
-+    return maxdepth;
-+}
-+
-+int
-+schedule_debug(struct schedule *s, int *count, struct timeval *least)
-+{
-+    struct timeval min;
-+    struct timeval max;
-+
-+    min.tv_sec = 0;
-+    min.tv_usec = 0;
-+    max.tv_sec = 0x7FFFFFFF;
-+    max.tv_usec = 0x7FFFFFFF;
-+
-+    if (s->root)
-+    {
-+        assert_null(s->root->parent);
-+    }
-+    return schedule_debug_entry(s->root, 0, count, least, &min, &max);
-+}
-+
-+void
-+tv_randomize(struct timeval *tv)
-+{
-+    tv->tv_sec += random() % 100;
-+    tv->tv_usec = random() % 100;
-+}
-+
-+void
-+schedule_verify(struct schedule *s, int n)
-+{
-+    struct gc_arena gc = gc_new();
-+    struct timeval least;
-+
-+    least.tv_sec = least.tv_usec = 0x7FFFFFFF;
-+
-+    int count = 0;
-+    int maxlev = schedule_debug(s, &count, &least);
-+
-+    /* a stupid algorithm to do C23 stdc_bit_ceil_ui/stdc_bit_width
-+     * calculate roundup(log2 n) */
-+    int bit_ceil_n = 1;
-+    int log2n = 0;
-+    while (bit_ceil_n < n)
-+    {
-+        bit_ceil_n <<= 1;
-+        log2n++;
-+    }
-+
-+    /* Since this is a binary tree the maximum level needs to be at least
-+     * log2(n) */
-+    assert_true(maxlev >= log2n);
-+    struct schedule_entry *e = schedule_find_earliest_wakeup(s);
-+
-+    if (e)
-+    {
-+        assert_true(tv_eq(&least, &e->tv));
-+    }
-+
-+    gc_free(&gc);
-+}
-+
-+void
-+schedule_randomize_array(struct schedule_entry **array, int size)
-+{
-+    int i;
-+    for (i = 0; i < size; ++i)
-+    {
-+        const int src = rand() % size;
-+        struct schedule_entry *tmp = array[i];
-+        if (i != src)
-+        {
-+            array[i] = array[src];
-+            array[src] = tmp;
-+        }
-+    }
-+}
-+
-+void
-+schedule_print_work(struct schedule_entry *e, int indent)
-+{
-+    struct gc_arena gc = gc_new();
-+    int i;
-+    for (i = 0; i < indent; ++i)
-+    {
-+        printf(" ");
-+    }
-+    if (e)
-+    {
-+        printf("%s [%u] e=" ptr_format ", p=" ptr_format " lt=" ptr_format " gt=" ptr_format "\n",
-+               tv_string(&e->tv, &gc), e->pri, (ptr_type)e, (ptr_type)e->parent, (ptr_type)e->lt,
-+               (ptr_type)e->gt);
-+        schedule_print_work(e->lt, indent + 1);
-+        schedule_print_work(e->gt, indent + 1);
-+    }
-+    else
-+    {
-+        printf("NULL\n");
-+    }
-+    gc_free(&gc);
-+}
-+
-+void
-+schedule_print(struct schedule *s)
-+{
-+    printf("*************************\n");
-+    schedule_print_work(s->root, 0);
-+}
-+
-+void
-+schedule_test(void **state)
-+{
-+    struct gc_arena gc = gc_new();
-+    int n = 1000;
-+    int n_mod = 25;
-+
-+    int i, j;
-+    struct schedule_entry **array;
-+    struct schedule *s = schedule_init();
-+    struct schedule_entry *e;
-+
-+    ALLOC_ARRAY(array, struct schedule_entry *, n);
-+
-+    for (i = 0; i < n; ++i)
-+    {
-+        ALLOC_OBJ_CLEAR(array[i], struct schedule_entry);
-+        tv_randomize(&array[i]->tv);
-+        /*schedule_print (s);*/
-+        /*schedule_verify (s, n);*/
-+        schedule_add_modify(s, array[i]);
-+    }
-+
-+    schedule_randomize_array(array, n);
-+
-+    /*schedule_print (s);*/
-+    schedule_verify(s, n);
-+
-+    for (j = 1; j <= n_mod; ++j)
-+    {
-+        /*printf("Modification Phase Pass %d\n", j);*/
-+
-+        for (i = 0; i < n; ++i)
-+        {
-+            e = schedule_find_earliest_wakeup(s);
-+            /*printf ("BEFORE %s\n", tv_string (&e->tv, &gc));*/
-+            tv_randomize(&e->tv);
-+            /*printf ("AFTER %s\n", tv_string (&e->tv, &gc));*/
-+            schedule_add_modify(s, e);
-+            /*schedule_verify (s, n);*/
-+            /*schedule_print (s);*/
-+        }
-+        schedule_verify(s, n);
-+        /*schedule_print (s);*/
-+    }
-+
-+    /*printf ("INS=%d\n", z.ins);*/
-+
-+    while ((e = schedule_find_earliest_wakeup(s)))
-+    {
-+        schedule_remove_node(s, e);
-+        /*schedule_verify (s, n);*/
-+    }
-+    schedule_verify(s, 0);
-+    assert_null(s->root);
-+
-+    for (i = 0; i < n; ++i)
-+    {
-+        free(array[i]);
-+    }
-+    free(array);
-+    schedule_free(s);
-+    gc_free(&gc);
-+}
-diff --git a/tests/unit_tests/openvpn/test_schedule.h b/tests/unit_tests/openvpn/test_schedule.h
-new file mode 100644
-index 0000000..55dc591
---- /dev/null
-+++ b/tests/unit_tests/openvpn/test_schedule.h
-@@ -0,0 +1,27 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single TCP/UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2002-2026 OpenVPN Inc <sales@openvpn.net>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, see <https://www.gnu.org/licenses/>.
-+ */
-+#ifndef SCHEDULE_TEST_H
-+#define SCHEDULE_TEST_H
-+/** Runs the schedule test */
-+void
-+schedule_test(void **state);
-+#endif
-\ No newline at end of file
 
+=
+Patch Set 20: Code-Review-1
+
+(2 comments)
+
+File src/openvpn/mroute=2Ec:
+
+ht=
+tp://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1571/comment/400191c1_fbfefae1?usp=
+=3Demail :
+PS20, Line 361:                      mroute_addr_hash_len((const=
+ struct mroute_addr *)key), *(int32_t *)hash_key);
+Should be `uint32_t*`
+
+
+=
+File tests/unit_tests/openvpn/test_misc=2Ec:
+
+http://gerrit=2Eopenvpn=2Enet=
+/c/openvpn/+/1571/comment/29f53a5d_6b9aef7e?usp=3Demail :
+PS20, Line 135:  =
+   return hash_func((const uint8_t *)str, len, *(int32_t *)(hash_key));
+Sho=
+uld be `uint32_t*`
+
+
+
+-- 
+To view, visit http://gerrit=2Eopenvpn=2Enet/c/op=
+envpn/+/1571?usp=3Demail
+To unsubscribe, or for help writing mail filters, =
+visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+
+Gerrit-MessageTyp=
+e: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: =
+If47c7d920b2fa4047b7db03fcde821899839324d
+Gerrit-Change-Number: 1571
+Gerrit=
+-PatchSet: 20
+Gerrit-Owner: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-R=
+eviewer: flichtenheld <frank@lichtenheld=2Ecom>
+Gerrit-CC: openvpn-devel <o=
+penvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Attention: plaisthos <arne-o=
+penvpn@rfc2549=2Eorg>
+Gerrit-Comment-Date: Thu, 30 Jul 2026 10:21:08 +0000
+=
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+
+--NrmgbwavIVE=
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: plaisthos=2E </p>
+<p>Patch set 20:<span style=3D"bord=
+er-radius: 3px; display: inline-block; margin: 0 2px; padding: 4px;backgrou=
+nd-color: #ffd4d4;">Code-Review -1</span></p><p>The change is no longer sub=
+mittable: Code-Review is unsatisfied now=2E</p><p><a href=3D"http://gerrit=
+=2Eopenvpn=2Enet/c/openvpn/+/1571?usp=3Demail">View Change</a></p><p>2 comm=
+ents:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0=
+; padding: 0;"><p>File src/openvpn/mroute=2Ec:</p><ul style=3D"list-style: =
+none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
+=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn=
+/+/1571/comment/400191c1_fbfefae1?usp=3Demail">Patch Set #20, Line 361:</a>=
+ <code style=3D"font-family:monospace,monospace">                     mrout=
+e_addr_hash_len((const struct mroute_addr *)key), *(int32_t *)hash_key);</c=
+ode></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: brea=
+k-word;">Should be `uint32_t*`</p></li></ul></li><li style=3D"margin: 0; pa=
+dding: 0;"><p>File tests/unit_tests/openvpn/test_misc=2Ec:</p><ul style=3D"=
+list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;=
+"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet=
+/c/openvpn/+/1571/comment/29f53a5d_6b9aef7e?usp=3Demail">Patch Set #20, Lin=
+e 135:</a> <code style=3D"font-family:monospace,monospace">    return hash_=
+func((const uint8_t *)str, len, *(int32_t *)(hash_key));</code></p><p class=
+=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Should =
+be `uint32_t*`</p></li></ul></li></ul><p>To view, visit <a href=3D"http://g=
+errit=2Eopenvpn=2Enet/c/openvpn/+/1571?usp=3Demail">change 1571</a>=2E To u=
+nsubscribe, or for help writing mail filters, visit <a href=3D"http://gerri=
+t=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope i=
+temtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" hre=
+f=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1571?usp=3Demail"/><meta ite=
+mprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display=
+:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Ger=
+rit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: mas=
+ter </div>
+<div style=3D"display:none"> Gerrit-Change-Id: If47c7d920b2fa404=
+7b7db03fcde821899839324d </div>
+<div style=3D"display:none"> Gerrit-Change-=
+Number: 1571 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 20 </div>=
+
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@rfc2=
+549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichten=
+held &lt;frank@lichtenheld=2Ecom&gt; </div>
+<div style=3D"display:none"> Ge=
+rrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </di=
+v>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvp=
+n@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date=
+: Thu, 30 Jul 2026 10:21:08 +0000 </div>
+<div style=3D"display:none"> Gerri=
+t-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Y=
+es </div>
+
+</body></html>
+--NrmgbwavIVE=--
+
+
+--===============7265226882522976115==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============7265226882522976115==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+--===============7265226882522976115==--
+
