@@ -4,127 +4,129 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1F45FC55160
-	for <openvpn-devel@archiver.kernel.org>; Thu, 30 Jul 2026 11:41:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 81E9BC55160
+	for <openvpn-devel@archiver.kernel.org>; Thu, 30 Jul 2026 12:03:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:Date:Sender:To:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=9/1mhEuKTRKvbDuDZKrhlEKnkAHvwIVCfWn8xnU/XfY=; b=HUdbXD9SUkDGHyZEruUHXMkZb1
-	sJIrFO3fg0nnfg0VrEKHk/1AVWz63RdQyhi6b6zpILLEZTUJQEEuAg2dKAmk0Nxu6aLjYdrZNjwJ8
-	g8E8/oXjMNJjD1Aliqd28d+4ntGXYUhrvHq0nbZZjjjGMxzLg+lyIi9vIgd3xaMWeB00=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=5oweohoDXL+zyriFc+O2EZkKQAyk7BPT5FhpodLgx0g=; b=LNCKW/Sr+qV/GVcH7xjMDlU1Qa
+	85d2kt3rvgHm1I0SvNaG1PCWwbmPnBvrropIn3SanYarMFZOTwnSiHnzqmxm1ZaMYYDZktYVmLX29
+	EhGkY8iAV+LTxjKMjoE6EHniz00Nxj6WdOqAyZpaZ3WqSPhbzysObkALrO6VU2vtZkH0=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wpP92-000182-Lw;
-	Thu, 30 Jul 2026 11:41:48 +0000
+	id 1wpPTV-0000tq-6g;
+	Thu, 30 Jul 2026 12:02:58 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wpP92-00017v-0z
+ (envelope-from <gerrit@openvpn.net>) id 1wpPTT-0000td-Sg
  for openvpn-devel@lists.sourceforge.net;
- Thu, 30 Jul 2026 11:41:48 +0000
+ Thu, 30 Jul 2026 12:02:56 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
+ Cc:Date:From:Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
  :List-Post:List-Owner:List-Archive;
- bh=aZm8TlH+ZfZdUdBpmbfCmFEuTcM057OQMFSU+Wk5xjk=; b=XF6UTWk6U2S+voJT21BMz0xE7q
- FbZ4uAyGy+PLqmknj72e2JxG26e79vJkAjg5lY3aWZ0w+g987PKnwfYDgpCqnTmNLrR/2fVKToG/b
- ooWEIBtEv1z4OnTvgHljBoOjpcKxhlm2FX+6uQ2U5I5Ub22Y8TsLrSKUB+w+UptMjUr8=;
+ bh=OHU6LHB/SnIt7BDKgcKVe5ezslakYNlCsd2Rqkl88o4=; b=l3HmOR7CWEgFZ2j3lYcP9FAy2x
+ GXP9+z2D7xiDKJjIesZjCqcyYQBX8RhHcm2UKrYShjPJzBRsphXnsNKMrkvyTs2hprp10kRz+xDgz
+ 8J9SLuCZG2kNBfFZN0yNdM03ZPypo/QYLi2g2Z5IUd9dAYPpElp1LHAb+neRYZvRHRYg=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
- Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:Date:From:Sender:
+ To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=aZm8TlH+ZfZdUdBpmbfCmFEuTcM057OQMFSU+Wk5xjk=; b=e
- 02iGT9D/W2VjPajw+o46xNMmh8icVbyKjKOWGM/tTyaOF5MZ8bFjtK+AudjheCLKM2q1sxiUIqxFa
- 2C1qqMc61G04gzPwp35txVDdpLJVjsSMgb/uMOZXRl/kT3j8jKNUXdCX7wXNtQVuyjY8fauz/gwJ7
- z3vPGtidKwcYtVz4=;
-Received: from mail-wm1-f51.google.com ([209.85.128.51])
+ List-Owner:List-Archive; bh=OHU6LHB/SnIt7BDKgcKVe5ezslakYNlCsd2Rqkl88o4=; b=T
+ TAmIct1gckEq7JafrixwVaJh2raE8SeiQmTcQ7o+yQucwq34+dMmmK/S6sK/JUtZITq2js/pHBXt6
+ Bq1QOH/PKNERIWzjIErHPJfEW8qrAwNuInH7pRjTQ4yj3ORrmT/sRv5iVH7Tq1U5I0S3pmUQa3n/j
+ SlrjQ1k2FSm1fnQ8=;
+Received: from mail-wr1-f54.google.com ([209.85.221.54])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wpP8z-0007yI-90 for openvpn-devel@lists.sourceforge.net;
- Thu, 30 Jul 2026 11:41:47 +0000
-Received: by mail-wm1-f51.google.com with SMTP id
- 5b1f17b1804b1-495635a85d2so16265315e9.0
+ id 1wpPTT-0008OD-1f for openvpn-devel@lists.sourceforge.net;
+ Thu, 30 Jul 2026 12:02:56 +0000
+Received: by mail-wr1-f54.google.com with SMTP id
+ ffacd0b85a97d-471eeac43bfso1871818f8f.3
  for <openvpn-devel@lists.sourceforge.net>;
- Thu, 30 Jul 2026 04:41:45 -0700 (PDT)
+ Thu, 30 Jul 2026 05:02:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1785411699; x=1786016499; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1785412937; x=1786017737; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
+ :auto-submitted:cc:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=aZm8TlH+ZfZdUdBpmbfCmFEuTcM057OQMFSU+Wk5xjk=;
- b=e4E3xsL/C3EzXEr0EN3uQasMRJsVnsZ+1Hw0E8/WD+H4UQoOjvKI/sJ2ylwk7Yv8J0
- 0Lc3HWmGD05zLxEDg+p/cOstFTYeqJ59wLJYdqiU61RzlmiF5naRybElSGEzI9P+940l
- waw3HRPR0mYgSa7fEysUAS5Pt98BYcSjNO87nXa8X1TvjTka6TSZ0ma1vFa+0GQaSt27
- Dgky4dGKckguXD9y0K+lhH6xxtVaOlZFWvtODO/FERgon5FiUaeWqDWHuh9xkUsbleMW
- UvYCN1zOJa76A37xQtg+v3eB0HBXLzhhDqFgQPltMx2Ab7lDKsvpTAfERbHH2EulTQ93
- 7yLg==
+ bh=OHU6LHB/SnIt7BDKgcKVe5ezslakYNlCsd2Rqkl88o4=;
+ b=PsJlrlOdluZgfIWhewt84hBM2SeLFEtWmC89404QlKRkR4W9eD1tIHuCsXYdTtXN1E
+ LPApeJ9Z9WDEZ3Eh43nPTjVwoWSyE6HbnqVVNI2UcOrOp7+wYYW40ILMURUtYyVvfelM
+ bHbQzZg6gCLOLNgDfb+Vz2ECZoMmN1C96uQglmwfcHbtd74Dtw66IUUeGwg+xZZgIorB
+ rG7Htt4U5YnMA5HEAPvC2wmwAyqDJtpRBXjlvQa1os+BFyZ/psaKahghhO52gzFjJwAO
+ TGhk9Z8VA8tNsAjOcf9i+l4aEzZk3uQ8dkB31ICMCD5M/a8zfnyHtmaDhH51xa2tmcL/
+ rxyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1785411699; x=1786016499;
+ d=1e100.net; s=20251104; t=1785412937; x=1786017737;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
- :cc:subject:date:message-id:reply-to:content-type;
- bh=aZm8TlH+ZfZdUdBpmbfCmFEuTcM057OQMFSU+Wk5xjk=;
- b=SmfZtrSTgzAYi1bi+VE08woKE1Nk1ilqUCgoaEluJFD5To3eaPANnPA3AVT5JZUKz+
- ikVfBZzihpssu8Lu36bRlibQ2WFuVbgnRDB5GZ042gyMQjuoT1LaJ5hFCqGntcCdlIU5
- 1WVEOdCC68pZtD7s9PuDGRfT75VdwCWGQn45tC5EwQwkuP0UsCx3KuFgPPIt5jhDrKLH
- YSRuQkOI8dOzSqf9xmapS97950gqTuyZKJkAr5HXBdSshgW4KdNexiR++uCmbgaCH+Px
- rF7Z7XPz7wDOX1t2W1+MfWIE9PZbxILK4qRPsWsQTAkRqfVvSkWhe56qvCfLD5u4X9pd
- NbEA==
-X-Gm-Message-State: AOJu0YxPbI8xgA54WOUi/b5g5S0GsvNESM7uUd1dpT2gyzw50Jt9Y0Rx
- JpsJDBCdp18LZnkHmJHjzQTfihG0dXH2r9NEv6DD4BKvMAkjFB4DzW84Yi3OBGUmabxaKv4NvXs
- e4xG+DXq0/O0P78l7kfAIt8H68Bpc/Lnf9PtGYBISO9dLyHSErHSze3/KWqHyUwrSAMBojFrm/G
- ckoQyzQg==
-X-Gm-Gg: AR+sD11QSvinAENtsPm8RDw+YUItVuDrqOsGthSOgNp5KcL05bhHKj2ARqNFKc4ITRB
- ep49gAtIvYD5QU/xorwA+ftVW1tNda2y2BF8B5vs6eLO/hvE696LNyqzTLs79V7tgkL4DuhjIU+
- NPTUbAx9W6koYKdCc43shjPc9e922ulHqQV7tCQADBTAvzukjijeE3D/Gv/NqbFw6zZcPWFtVqM
- 6Ct6GaINvD8GWBpQG2YTA2SBgAtDstEh35U1hFPAJ6+P+DfIhEcNH8vkTSTUvSPfmtobyrpc397
- 4ZUozZ4ftBmPaoTeSCT3VSDL/qywTAU59kvvK5mZnWtdeLP4InCsIlFZ7y4Vj/lQjgEs3bdP5xm
- C+De6uswmvjDiLI6wRW8KocnrQaDRLqiK4kwDc2WoddGUCxraV2lal+SiKTv7VjD2AI3tP0Hi4S
- EK2wu7D+CUZe90e2nPPph1KnYADfPOvHtkK8fSuEoXOVDHZFhHu1UQ13fi/WLNmoqwta/Qr0PwG
- 4o9JhhIvZYbTsMeHuDhMnrwr9uZ99E+Q7epx246atLKWCVhalp/M4qHqTklS68wgNGBfHKlacXF
- nYO5b15KdHTImrtGlPoyRJUWrU4Ol/9xzLwLNh0iEJ6FCvAp4+Q=
-X-Received: by 2002:a05:600c:1f92:b0:495:5d5b:7533 with SMTP id
- 5b1f17b1804b1-49800e93ddamr29909525e9.13.1785411698519; 
- Thu, 30 Jul 2026 04:41:38 -0700 (PDT)
+ :auto-submitted:cc:date:from:x-gm-gg:x-gm-message-state:from:to:cc
+ :subject:date:message-id:reply-to:content-type;
+ bh=OHU6LHB/SnIt7BDKgcKVe5ezslakYNlCsd2Rqkl88o4=;
+ b=J3M83OPcyIqNTRzgwwrfwI78Ees0mMkPQQhq8DhyVeieDRZr7HFBJS9uBlcHJiwCsh
+ hu3BLECp5ZHyBF9mrTQ3zHDBvYd0Kx2hwwc2rpRpywKRpCg4N99CaaXHtC30AS9cPz01
+ dvmxaJxAtSMhA8w1yxY21Zm1kydYMDQu7h+DenQQ9STH/6vQrqC+mcDTD5AdgCM/15hF
+ fG3JwXGDOakJKjzngtQCDOuy4EUKVY3TaqFZuzmt0WbqWfSFLRaxrUTolmlNySbCU/AH
+ NgFpjBkHDNbwTXqOkKoIPQmKJ7W/tniN2tFjRpK7xV+jpsefR6ZMR+2+NPmIRrQb+EIo
+ Dmnw==
+X-Forwarded-Encrypted: i=1;
+ AHgh+RrAiFknulGSRGKlGq9M7YmYbUDyjrCmeVKQbPQt+Td9+b7Hy2vf6znyyIl+/f3OWqx82i1hDDbC8po5ksTh@lists.sourceforge.net
+X-Gm-Message-State: AOJu0Yxriu+gC/CgrRhuRp02EZs+vRK9mwbG7fkrrXdVlEVWOe/uFcfX
+ 0t+KceyK+qFxALFTBZ3JKCjRFmHo3Z3uVW8yxvJKd3b1jTdD8a0BIiwTFO2xWqTQBhHxXrW9eAb
+ kObldkJIByG8aW2hgS9EGl9hGRrLvRlqhbPgguDdd/B+hAJ+Rfrqd0CU0afsZO4vY0x6plxu3tz
+ QaBNE8jg==
+X-Gm-Gg: AR+sD10u23z4KVfpBI6a5QRvxFc6FeaNm77V+8A+LKEdwBHL0fOPTpjSW2RLDxHIDF2
+ 3voYkN4YTqz+7dxq8iRR4FIcTT4ZJWxSxwtUIj9nwyX5emYmcDc81XOaTTilsJsIX3gs+jb+kEe
+ OrvaWTuhKxoDlZ8LfQ1HMyaGHaczD2AHwwOQR2lXEiIo864CVdiKPW0pa5sSaN+Bx29QvNLuZvs
+ 8GS85vVzwDVahxqHxhD+o6MH6iJebUM/QU5xWOEu3zkdJlLKP/0nL0IMVp3jsNsD+c5h+SMrFNX
+ vogZdLntCEsWJ44i2ZNJOaDBRIasHCguN7+dO4W+zv0ECNN4cgyeKrJzrpUb9Fz1syeI9O2kaKi
+ +jaYR1MriQjhROWrqauDnYGxr3d4PA+wMZNYh4KnIYcW10fRGmJnZ1BpbcXj4+4//IKDpmJ5h5/
+ OsrYBYsy1oF9k4h2W398EzzVs3T4Ryf+qDV2llHfPncQGPa0j0Cp4XIf6xwS+shsu0zhD2u7IEp
+ tf/cuNo0CmZM129l5V3pqZzzTydOM+edRKDaHiJ997it/WfST/5SZE3o+qkpotNfhk6DKYbSDFL
+ 0QNOc2+OTOgFHR0sclfilmPYCzKqQCWb7cJYc5JGjleGNh0zBhQjsj/WN88oag==
+X-Received: by 2002:a05:6000:2c12:b0:470:2fb1:3dbc with SMTP id
+ ffacd0b85a97d-47fc81f619emr3415035f8f.35.1785412936830; 
+ Thu, 30 Jul 2026 05:02:16 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-49800f0ebfasm51439215e9.2.2026.07.30.04.41.37
+ ffacd0b85a97d-47fcb9cb612sm656156f8f.20.2026.07.30.05.02.16
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 30 Jul 2026 04:41:37 -0700 (PDT)
+ Thu, 30 Jul 2026 05:02:16 -0700 (PDT)
 X-Google-Original-From: "plaisthos (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Thu, 30 Jul 2026 11:41:35 +0000
-To: flichtenheld <frank@lichtenheld.com>
+Date: Thu, 30 Jul 2026 12:02:14 +0000
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: newpatchset
-X-Gerrit-PatchSet: 22
-X-Gerrit-Change-Id: I05e20f8c82494e4abf96fe1e3a73e1c7b9101af6
-X-Gerrit-Change-Number: 1572
+X-Gerrit-MessageType: comment
+X-Gerrit-PatchSet: 1
+X-Gerrit-Change-Id: I3b6bb178ffb2bb49981bc23eabf04fe8e06d6fc3
+X-Gerrit-Change-Number: 1827
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1572?usp=email>
-X-Gerrit-Commit: 7dc15b674dcc756a7211f0832ffdedfc6265ffee
-In-Reply-To: <gerrit.1773251317000.I05e20f8c82494e4abf96fe1e3a73e1c7b9101af6@gerrit.openvpn.net>
-References: <gerrit.1773251317000.I05e20f8c82494e4abf96fe1e3a73e1c7b9101af6@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzczMjUxMzE3MDAwLkkwNWUyMGY4YzgyNDk0ZTRhYmY5NmZlMWUzYTczZTFjN2I5MTAxYWY2QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <ed053e13e70eb1916de70017baa5d5549278e468-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1827?usp=email>
+X-Gerrit-Commit: 57d144c62e424eff54ae345a8d8cf7408c1948f4
+X-Gerrit-Comment-Date: Thu, 30 Jul 2026 12:02:14 +0000
+In-Reply-To: <gerrit.1785161118000.I3b6bb178ffb2bb49981bc23eabf04fe8e06d6fc3@gerrit.openvpn.net>
+References: <gerrit.1785161118000.I3b6bb178ffb2bb49981bc23eabf04fe8e06d6fc3@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzg1MTYxMTE4MDAwLkkzYjZiYjE3OGZmYjJiYjQ5OTgxYmMyM2VhYmYwNGZlOGUwNmQ2ZmMzQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <431cebb5bb67d2af8f2fcdf73639d30cdb4c33ac-EmailReviewComments-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wpP8z-0007yI-90
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Add aws-lc siphash
- implementation
+X-Headers-End: 1wpPTT-0008OD-1f
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Replace SHA256 with
+ SIPHASH24 in hamc cookie approach
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -142,387 +144,181 @@ Reply-To: arne-openvpn@rfc2549.org, openvpn-devel@lists.sourceforge.net,
  frank@lichtenheld.com
 Cc: "plaisthos \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============2179811984817406290=="
+Content-Type: multipart/mixed; boundary="===============8492158797137417338=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============2179811984817406290==
+--===============8492158797137417338==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="PE7Ejgf8dHQ="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="vbKY5hRj0Fk="; charset=UTF-8
 
---PE7Ejgf8dHQ=
+--vbKY5hRj0Fk=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld=2E
 
-Hello flichtenheld, =
+plaisthos has posted=
+ comments on this change by plaisthos=2E ( http://gerrit=2Eopenvpn=2Enet/c/=
+openvpn/+/1827?usp=3Demail )
 
-
-I'd like you to reexamine a change=2E Please visit
-
-    http://gerrit=2Eo=
-penvpn=2Enet/c/openvpn/+/1572?usp=3Demail
-
-to look at the new patch set (#2=
-2)=2E
-
-The following approvals got outdated and were removed:
-Code-Review-1=
- by flichtenheld
-
-
-Change subject: Add aws-lc siphash implementation
-=2E=2E=
+Change subject: Replace SHA256 with SIPHASH24=
+ in hamc cookie approach
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
-
-Add aws-lc siphash =
-implementation
-
-AWS-LC has a siphash implementation that is just a simple f=
-unction call
-that also performs the same/better than the reference implemen=
-tation that
-it looks to be based on=2E AWS-lc variant seems to have come fr=
-om boringssl
-according to the Google copyright=2E
-
-The return type of the s=
-iphash related function has been also removed as
-neither the reference nor =
-the aws-lc implementation can fail=2E Only the
-OpenSSL based implementation=
- needed a return type=2E
-
-Change-Id: I05e20f8c82494e4abf96fe1e3a73e1c7b9101=
-af6
-Signed-off-by: Arne Schwabe <arne@rfc2549=2Eorg>
----
-M src/openvpn/siph=
-ash=2Eh
-M src/openvpn/siphash_reference=2Ec
-2 files changed, 42 insertions(=
-+), 7 deletions(-)
+=2E=2E=2E=2E
 
 
-  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn =
-refs/changes/72/1572/22
+Patch Set 1:
 
-diff --git a/src/openvpn/siphash=2Eh b/src/openvpn=
-/siphash=2Eh
-index bddddc3=2E=2E3c0f560 100644
---- a/src/openvpn/siphash=2E=
-h
-+++ b/src/openvpn/siphash=2Eh
-@@ -18,26 +18,63 @@
- #ifndef SIPHASH_H
- #de=
-fine SIPHASH_H
- 
-+#ifdef HAVE_CONFIG_H
-+#include "config=2Eh"
-+#endif
-+
- #i=
-nclude <stdint=2Eh>
- #include <stdio=2Eh>
- #include <stdbool=2Eh>
- 
-+/* We =
-need to include this to check for the OPENSSL_IS_AWSLC macro */
-+#ifdef ENA=
-BLE_CRYPTO_OPENSSL
-+#include <openssl/opensslv=2Eh>
-+#endif
-+
- /* siphash a=
-lways uses 128-bit keys */
- #define SIPHASH_KEY_SIZE 16
- 
- /**
-  * Calculat=
-es SIPHASH using the reference implementation
-  */
--int
-+void
- siphash_refe=
-rence(const void *in, size_t inlen, const void *k,
-                   uint8=
-_t *out, size_t outlen);
- 
- 
--static inline int
-+#if defined(OPENSSL_IS_AWS=
-LC)
-+#define USE_CRYPOTOLIB_SIPHASH
-+#include <openssl/siphash=2Eh>
-+#inclu=
-de <string=2Eh>
-+#include "error=2Eh"
-+/**
-+ *  Computes a SipHash value
-+ =
-* @param   in      pointer to input data (read-only)
-+ * @param   inlen   i=
-nput data length in bytes (any size_t value)
-+ * @param   k       pointer t=
-o the key data (read-only), must be 16 bytes
-+ * @param   out     pointer t=
-o output data (write-only), outlen bytes must be allocated
-+ * @param   out=
-len  length of the output in bytes, must be 8
-+ */
-+static inline void
-+sip=
-hash_cryptolib(const void *in, const size_t inlen,
-+                  const=
- void *k, uint8_t *out, const size_t outlen)
-+{
-+    ASSERT(outlen =3D=3D s=
-izeof(uint64_t));
-+    uint64_t sipout =3D SIPHASH_24(k, in, inlen);
-+
-+   =
- memcpy(out, &sipout, sizeof(uint64_t));
-+}
-+#endif
-+
-+static inline void
- =
-siphash(const void *in, size_t inlen, const void *k,
-         uint8_t *out,=
- size_t outlen)
- {
-+#if defined(USE_CRYPOTOLIB_SIPHASH)
-+    return siphash=
-_cryptolib(in, inlen, k, out, outlen);
-+#else
-     return siphash_reference=
-(in, inlen, k, out, outlen);
-+#endif
- }
- 
--#endif /* ifndef SIPHASH_H */
-\ =
-No newline at end of file
-+#endif /* ifndef SIPHASH_H */
-diff --git a/src/o=
-penvpn/siphash_reference=2Ec b/src/openvpn/siphash_reference=2Ec
-index ad19=
-a51=2E=2E5f0adb9 100644
---- a/src/openvpn/siphash_reference=2Ec
-+++ b/src/o=
-penvpn/siphash_reference=2Ec
-@@ -99,7 +99,7 @@
-  * out: pointer to output d=
-ata (write-only), outlen bytes must be allocated
-  *  outlen: length of the=
- output in bytes, must be 8 or 16
-  */
--int
-+void
- siphash_reference(const =
-void *in, const size_t inlen, const void *k, uint8_t *out,
-                =
-   const size_t outlen)
- {
-@@ -206,7 +206,7 @@
- 
-     if (outlen =3D=3D 8)
+(3 comments)
+
+Commit Message:
+
+http://gerrit=
+=2Eopenvpn=2Enet/c/openvpn/+/1827/comment/02ddaf25_c1974c19?usp=3Demail :
+P=
+S1, Line 7: Replace SHA256 with SIPHASH24 in hamc cookie approach
+> "hmac"
 =
-     {
--        return 0;
-+        return;
-     }
- 
-     v1 ^=3D 0xdd;
-@@ -=
-219,6 +219,4 @@
- 
-     b =3D v0 ^ v1 ^ v2 ^ v3;
-     U64TO8_LE(out + 8, b);=
+Done
 
--
--    return 0;
- }
+
+File src/openvpn/ssl_pkt=2Ec:
+
+http://gerrit=2Eopenvpn=2Enet/c/openv=
+pn/+/1827/comment/03e63c76_056f1882?usp=3Demail :
+PS1, Line 458:     /* ens=
+ure out input is large enough */
+> "our"
+Done
+
+
+http://gerrit=2Eopenvpn=2En=
+et/c/openvpn/+/1827/comment/321fe484_41c054de?usp=3Demail :
+PS1, Line 481: =
+    /* add session id of client */
+> obsolete comment? or missing code?
+No=
+=2E Actually I accidentially removed hasing the client sid=2E Thanks for no=
+ticing=2E
+
+
 
 -- 
-To view, visit http://gerrit=2Eopenvpn=2Enet/c/op=
-envpn/+/1572?usp=3Demail
-To unsubscribe, or for help writing mail filters, =
-visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1=
+827?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit htt=
+p://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Gerrit-MessageTyp=
-e: newpatchset
+Gerrit-MessageType: commen=
+t
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-=
-Id: I05e20f8c82494e4abf96fe1e3a73e1c7b9101af6
-Gerrit-Change-Number: 1572
-Ge=
-rrit-PatchSet: 22
+Gerrit-Change-Id: I3b6bb178=
+ffb2bb49981bc23eabf04fe8e06d6fc3
+Gerrit-Change-Number: 1827
+Gerrit-PatchSet=
+: 1
 Gerrit-Owner: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerr=
-it-Reviewer: flichtenheld <frank@lichtenheld=2Ecom>
-Gerrit-CC: openvpn-deve=
-l <openvpn-devel@lists=2Esourceforge=2Enet>
-Gerrit-Attention: flichtenheld =
-<frank@lichtenheld=2Ecom>
+Gerrit-Reviewer: f=
+lichtenheld <frank@lichtenheld=2Ecom>
+Gerrit-CC: openvpn-devel <openvpn-dev=
+el@lists=2Esourceforge=2Enet>
+Gerrit-Attention: flichtenheld <frank@lichten=
+held=2Ecom>
+Gerrit-Comment-Date: Thu, 30 Jul 2026 12:02:14 +0000
+Gerrit-Has=
+Comments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: flichtenheld <fran=
+k@lichtenheld=2Ecom>
 
---PE7Ejgf8dHQ=
+--vbKY5hRj0Fk=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: flichtenheld=2E </p>
-<p>plaisthos <strong>uploaded pa=
-tch set #22</strong> to this change=2E</p><p><a href=3D"http://gerrit=2Eope=
-nvpn=2Enet/c/openvpn/+/1572?usp=3Demail">View Change</a></p><p>The followin=
-g approvals got outdated and were removed:
-Code-Review-1 by flichtenheld</p=
-><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">Add aws-lc siphash implementation<br><br>AWS-LC has a siphas=
-h implementation that is just a simple function call<br>that also performs =
-the same/better than the reference implementation that<br>it looks to be ba=
-sed on=2E AWS-lc variant seems to have come from boringssl<br>according to =
-the Google copyright=2E<br><br>The return type of the siphash related funct=
-ion has been also removed as<br>neither the reference nor the aws-lc implem=
-entation can fail=2E Only the<br>OpenSSL based implementation needed a retu=
-rn type=2E<br><br>Change-Id: I05e20f8c82494e4abf96fe1e3a73e1c7b9101af6<br>S=
-igned-off-by: Arne Schwabe &lt;arne@rfc2549=2Eorg&gt;<br>---<br>M src/openv=
-pn/siphash=2Eh<br>M src/openvpn/siphash_reference=2Ec<br>2 files changed, 4=
-2 insertions(+), 7 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D=
-"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://g=
-errit=2Eopenvpn=2Enet:29418/openvpn refs/changes/72/1572/22</pre><pre style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
-git a/src/openvpn/siphash=2Eh b/src/openvpn/siphash=2Eh</span><br><span>ind=
-ex bddddc3=2E=2E3c0f560 100644</span><br><span>--- a/src/openvpn/siphash=2E=
-h</span><br><span>+++ b/src/openvpn/siphash=2Eh</span><br><span>@@ -18,26 +=
-18,63 @@</span><br><span> #ifndef SIPHASH_H</span><br><span> #define SIPHAS=
-H_H</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+#ifdef HAVE_CONFIG_H</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+#include &quot;config=2Eh&quot;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span> #include &lt;stdint=2Eh&gt;</span><br><span> #include &=
-lt;stdio=2Eh&gt;</span><br><span> #include &lt;stdbool=2Eh&gt;</span><br><s=
-pan> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* We need to =
-include this to check for the OPENSSL_IS_AWSLC macro */</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+#ifdef ENABLE_CRYPTO_OPENSSL</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;openssl/opensslv=
-=2Eh&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /* sip=
-hash always uses 128-bit keys */</span><br><span> #define SIPHASH_KEY_SIZE =
-16</span><br><span> </span><br><span> /**</span><br><span>  * Calculates SI=
-PHASH using the reference implementation</span><br><span>  */</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+void</span><br><span> siphash_reference(const void =
-*in, size_t inlen, const void *k,</span><br><span>                   uint8_=
-t *out, size_t outlen);</span><br><span> </span><br><span> </span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-static inline int</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+#if defined(OPENSSL_IS_AWSLC)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#define USE_CRYPOTOLIB_SIPHAS=
-H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;opens=
-sl/siphash=2Eh&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
-include &lt;string=2Eh&gt;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#include &quot;error=2Eh&quot;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ *  Computes a SipHash value</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+ * @param   in      pointer to input data (read-only)</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ * @param   inlen   input data=
- length in bytes (any size_t value)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+ * @param   k       pointer to the key data (read-only), mu=
-st be 16 bytes</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @p=
-aram   out     pointer to output data (write-only), outlen bytes must be al=
-located</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param   =
-outlen  length of the output in bytes, must be 8</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+static inline void</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+siphash_cryptolib(const void *in, const size_t inlen,</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+                  const void =
-*k, uint8_t *out, const size_t outlen)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    ASSERT(outlen =3D=3D sizeof(uint64_t));</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    uint64_t sipout =3D SIPHASH_24(k, in, inlen);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    memcpy(out, &amp;sipout, sizeof(uin=
-t64_t));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+static inline void</span><br><span> siphash(const void *in, =
-size_t inlen, const void *k,</span><br><span>         uint8_t *out, size_t =
-outlen)</span><br><span> {</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#if defined(USE_CRYPOTOLIB_SIPHASH)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    return siphash_cryptolib(in, inlen, k, out, outl=
-en);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#else</span><br=
-><span>     return siphash_reference(in, inlen, k, out, outlen);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span> }</spa=
-n><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif /=
-* ifndef SIPHASH_H */</span><br><span>\ No newline at end of file</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* ifndef SIPHASH_H */=
-</span><br><span>diff --git a/src/openvpn/siphash_reference=2Ec b/src/openv=
-pn/siphash_reference=2Ec</span><br><span>index ad19a51=2E=2E5f0adb9 100644<=
-/span><br><span>--- a/src/openvpn/siphash_reference=2Ec</span><br><span>+++=
- b/src/openvpn/siphash_reference=2Ec</span><br><span>@@ -99,7 +99,7 @@</spa=
-n><br><span>  * out: pointer to output data (write-only), outlen bytes must=
- be allocated</span><br><span>  *  outlen: length of the output in bytes, m=
-ust be 8 or 16</span><br><span>  */</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+vo=
-id</span><br><span> siphash_reference(const void *in, const size_t inlen, c=
-onst void *k, uint8_t *out,</span><br><span>                   const size_t=
- outlen)</span><br><span> {</span><br><span>@@ -206,7 +206,7 @@</span><br><=
-span> </span><br><span>     if (outlen =3D=3D 8)</span><br><span>     {</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        return 0;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        return;</span><br><=
-span>     }</span><br><span> </span><br><span>     v1 ^=3D 0xdd;</span><br>=
-<span>@@ -219,6 +219,4 @@</span><br><span> </span><br><span>     b =3D v0 ^=
- v1 ^ v2 ^ v3;</span><br><span>     U64TO8_LE(out + 8, b);</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    return 0;</span><br><span> }</span><br><span></span><br=
-></pre><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn=
-/+/1572?usp=3Demail">change 1572</a>=2E To unsubscribe, or for help writing=
- mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=
-=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg=
-/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=
-=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1572?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
-ew Change"/></div></div>
+<p><a href=3D"http://gerrit=2Eop=
+envpn=2Enet/c/openvpn/+/1827?usp=3Demail">View Change</a></p><p>3 comments:=
+</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; pad=
+ding: 0;"><p>Commit Message:</p><ul style=3D"list-style: none; padding: 0;"=
+><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4=
+px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1827/comment/02dd=
+af25_c1974c19?usp=3Demail">Patch Set #1, Line 7:</a> <code style=3D"font-fa=
+mily:monospace,monospace">Replace SHA256 with SIPHASH24 in hamc cookie appr=
+oach</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin:=
+ 10px 0; padding: 0 10px;">&quot;hmac&quot;</blockquote></p><p class=3D"blo=
+cks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li><=
+/ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl_pkt=
+=2Ec:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0=
+; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://=
+gerrit=2Eopenvpn=2Enet/c/openvpn/+/1827/comment/03e63c76_056f1882?usp=3Dema=
+il">Patch Set #1, Line 458:</a> <code style=3D"font-family:monospace,monosp=
+ace">    /* ensure out input is large enough */</code></p><p><blockquote st=
+yle=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">&quot=
+;our&quot;</blockquote></p><p class=3D"blocks" style=3D"white-space: pre-wr=
+ap; word-wrap: break-word;">Done</p></li><li style=3D"margin: 0; padding: 0=
+ 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=2Eope=
+nvpn=2Enet/c/openvpn/+/1827/comment/321fe484_41c054de?usp=3Demail">Patch Se=
+t #1, Line 481:</a> <code style=3D"font-family:monospace,monospace">    /* =
+add session id of client */</code></p><p><blockquote style=3D"border-left: =
+1px solid #aaa; margin: 10px 0; padding: 0 10px;">obsolete comment? or miss=
+ing code?</blockquote></p><p class=3D"blocks" style=3D"white-space: pre-wra=
+p; word-wrap: break-word;">No=2E Actually I accidentially removed hasing th=
+e client sid=2E Thanks for noticing=2E</p></li></ul></li></ul><p>To view, v=
+isit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1827?usp=3Demail"=
+>change 1827</a>=2E To unsubscribe, or for help writing mail filters, visit=
+ <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a=
+>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div i=
+temscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><l=
+ink itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1827=
+?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div=
+>
 
-<div style=3D"display:none"> Gerrit-MessageType: =
-newpatchset </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </d=
-iv>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D=
-"display:none"> Gerrit-Change-Id: I05e20f8c82494e4abf96fe1e3a73e1c7b9101af6=
- </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1572 </div>
-<div=
- style=3D"display:none"> Gerrit-PatchSet: 22 </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div sty=
+le=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:n=
-one"> Gerrit-Owner: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<di=
-v style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@lichtenhe=
-ld=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &=
-lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
-<div style=3D"display=
-:none"> Gerrit-Attention: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; </di=
-v>
+one"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Chan=
+ge-Id: I3b6bb178ffb2bb49981bc23eabf04fe8e06d6fc3 </div>
+<div style=3D"displ=
+ay:none"> Gerrit-Change-Number: 1827 </div>
+<div style=3D"display:none"> Ge=
+rrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaistho=
+s &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Ge=
+rrit-Reviewer: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<div sty=
+le=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esou=
+rceforge=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: fl=
+ichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<div style=3D"display:non=
+e"> Gerrit-Comment-Date: Thu, 30 Jul 2026 12:02:14 +0000 </div>
+<div style=
+=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:non=
+e"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Re=
+ply-To: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
 
 </body></html>
---PE7Ejgf8dHQ=--
+--vbKY5hRj0Fk=--
 
 
---===============2179811984817406290==
+--===============8492158797137417338==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============2179811984817406290==
+--===============8492158797137417338==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -533,5 +329,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============2179811984817406290==--
+--===============8492158797137417338==--
 
