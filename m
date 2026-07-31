@@ -4,127 +4,69 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B1F25C5516D
-	for <openvpn-devel@archiver.kernel.org>; Fri, 31 Jul 2026 10:06:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id BAB06C54F54
+	for <openvpn-devel@archiver.kernel.org>; Fri, 31 Jul 2026 10:08:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:Date:Sender:To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=IZ36+/d4m6D/ZodkfN0ZDMFayTBgOXVr1D1P8+TbZrM=; b=e0DCCXDtk5tn8O/WVck0Uyq71J
-	G0pCvYDzoQRAGfjRbNliLsHczRiysKGROJgzJ2eW85DIxm9WmBm2/Xja3/XZQtkxQPMrAIbnuY9tD
-	hEauTELNWNyu3Jsw7CeSnpFVKaiu/HYteCyhRy4MuXQSi44vkbzt0IvuZjcipUpM1AHw=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
+	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=g2CA0CjLBWgb/Du9kL6ZWpn62LPMUhyi0bgIp/+SM0Y=; b=XWrrE08ABwp9A2wsYxhWNg81NE
+	GLVWxNEsUpjvTp/1c6BomC9m5esTvLXi7GWwTdWG1diNUpKoWiZVcUERINtcqZkh06ZFtaSeiSSbR
+	316f4M/Rad0jSYJKrlliKgxKa4TTABqN5acVTxz19yCoMyrqFy/8b0xghMZnTVqHpS58=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wpk8A-00036C-CP;
-	Fri, 31 Jul 2026 10:06:19 +0000
+	id 1wpk9y-0005Yy-FO;
+	Fri, 31 Jul 2026 10:08:08 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wpk88-00035x-KO
+ (envelope-from <gert@blue4.greenie.muc.de>) id 1wpk9x-0005Ys-Oh
  for openvpn-devel@lists.sourceforge.net;
- Fri, 31 Jul 2026 10:06:17 +0000
+ Fri, 31 Jul 2026 10:08:07 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:Date:From:Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
- :List-Post:List-Owner:List-Archive;
- bh=GwpXtBqLB4CZggrwu71MpxJs/uJu1fxX44YLjNn3oS4=; b=l8zGQJMVtPtAHuuxG+ZZcG7mVI
- 4heZbMtmaX6nxPdUddn5ImmYgz4NAOZIsdOZB3PJLA6c9rmzRsb1SjFN7zS/pWX7BNh6NqcGB/vp5
- bXPeCovr0aa5Mz8xLGeyfNvxNLYM3ydBhvL5BSiLEqIzxt5/mHveD6KjBXFldGHmTHcE=;
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
+ In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=lvpkmAqt8fO7VAZmNqPSEQqLqgYlvVb7ch56qFwBRoU=; b=lHnnNqkttAPSsX5Bs+J2+/nSS4
+ vMqfiKsR+/qaTtuByrx15kDFseObOi6CCETRMS3m6wUreEJgKUvAMo0xSBTFYzswm5dzlxB3p+nRJ
+ 9BOwT3dqqOb9dhZECXSJ9XUqiz9+Dy5J3hK+QoouvguHVWOOTttlMBDbCAVNPobq3yBY=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:Date:From:Sender:
- To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=GwpXtBqLB4CZggrwu71MpxJs/uJu1fxX44YLjNn3oS4=; b=i
- WSX/7dFfsy0LEbaVme+6CMOpmtyNBxa+Lf+p0mfCWN12F5cbUVPV3C5O1+jvY/OSp4W2SM8uOxoC4
- o7qQSO8cpR7nhXOO1f7PuAfaTK0n1wN3DMu68LFROINurVwS/icMqDij5rg9TqoB6B1TLsD4O/z+f
- OMXMj2YzrHSv3FtM=;
-Received: from mail-wr1-f41.google.com ([209.85.221.41])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wpk88-0003yh-0o for openvpn-devel@lists.sourceforge.net;
- Fri, 31 Jul 2026 10:06:17 +0000
-Received: by mail-wr1-f41.google.com with SMTP id
- ffacd0b85a97d-47f59f25ec4so352485f8f.2
- for <openvpn-devel@lists.sourceforge.net>;
- Fri, 31 Jul 2026 03:06:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1785492369; x=1786097169; darn=lists.sourceforge.net;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:date:from:from:to:cc:subject:date:message-id
- :reply-to:content-type;
- bh=GwpXtBqLB4CZggrwu71MpxJs/uJu1fxX44YLjNn3oS4=;
- b=Ij/sFQ/pQbC23HTQUqM4WYMs5dwqPoBsqybEKy2pPsoaKrR1aadAcN9Rc3cBYY58rM
- hp886KVX25uCkAedJbkD6fZdjPLrm8dM2MmL2pE7wO3NXONQvGQ84tK5oKJxZIhbUPnc
- afKwGUbreYeUnL2Tjs4NqwnhgruSYBYTDO/Xa8z2CJFsYnCznVOVMha6jlkxFm8FScTt
- 9Wg9rb2mNiLV+BaMiefmTykAR+n8Y4jjVK9U2NrW5NuooK0J8CMnFl99mF3kQWA+Z2Ru
- DhG+1IMXscfqd/UBAiiKIFR8vj+wNCgJeXVw0WyGmVpDB4VoBhR4FQ20XG9c/CptHW3U
- YwVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1785492369; x=1786097169;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:date:from:x-gm-gg:x-gm-message-state:from:to:cc
- :subject:date:message-id:reply-to:content-type;
- bh=GwpXtBqLB4CZggrwu71MpxJs/uJu1fxX44YLjNn3oS4=;
- b=V+7mZPfLzgb98cwAsr8iW8eab57nxf1JUcCWJaLZWzOpN9jjbaRq5KG9QSe2FLceef
- Eh+DfRNajEgDcg14g6CfupVgfCh5f9q+My26oMrEDudeNEtYxP9pATcIWP6l6V1VYVTO
- KHmIQVYdVE7zxvTabV9GNUKo5ZMXETOb5b7YQF+C+VK7YjcVok4DYGrlX4gN6jI8dghL
- 03HdNYEMv282mP/25GqXmBLYR6Of/EYHszLiE0u+YZgtnz+4asFMaMW8HznCAg6dstqT
- TCKD6Kju//GKkPc73YdtWFPbdwhIHYTRB1g4lSbS9AD/PkTHqbRjea9tLla2P9mw0Xua
- udKQ==
-X-Forwarded-Encrypted: i=1;
- AHgh+Rpfz1c66e2eH0Z/8C3UfZ0SW5W5EekTK1CNN7ees3efbzJsm3yjSzb2RkbKw0kWBBLXn1OLl7kcSgUq+oVq@lists.sourceforge.net
-X-Gm-Message-State: AOJu0Yy2bha8Ai1ojqwinHy+pbmhXZjXux1Yz4Sp89Kfae6soGzVH3Ko
- KOIn+7vgWOfNM15WOBUVJztimKQQUBJqfBtqpxfFWvGSSkFfvx4iOxa4P2ePpIP1Ea4huxxS1f2
- XCff600l4ZBEOCuXkSaO/MF1HhxsEJSLE6nPf0Hdli1UwD7Se0yjrWIX0puj9CRGmDD+J
-X-Gm-Gg: AR+sD13r/4BqDX7rxlRl5en3ChN5WlWfDIETFUWX536NCw4ZowjfbWg0baI87Rbcwbc
- zcx3dX12xrIHzk/0rt2bjcoVqFgimHUKt3jdOZpMZfE5+aGvlFBIAJ9Hbb2WuGdrFGmIkNNNJzb
- nGMOFDNhyrCDZRAWeKU4dfCQQLQGQ37IMNE/uGnfEcIR9BHXRHqdoEzaw6lppblJ5tJvvdEo3h0
- x6ICrNcPCxxXrSfXL/4wGfx3z2RfDcAF8GE/NIyI+2WCJ0DNGfxQjQ60fnyW76EVvFhXM5gXM2y
- 4JS/OZ48ZU9V4gYEl4QDMqq1reaDdnGmEPjpxQYOOrrK7fFFMfkxoocsZiChFuP29MBSZYdOxc1
- i37m9JdlmemSCRACxgpRR/ngcmYOGyy5xKdGka1dm/hC1Gpl22irIwT9ArqVV6jjlCqq8d37tx7
- nyBomTlDoKB3UlcUl0K3BUq9QK0JZLa8EigHuh2XcD2CKh5CNgpFYjPJG2gArrx16cnc+Wb/XCA
- LOTWtpDzK2qZNuz4KPgaB0FAz5KyukJpDylZzrHN0cnB4IlYTAEPYX0vBvZqx6zC9C4FQ79uX3u
- 3XVVdd0IkogC/KZCqYWBBANaLHiDAFOX4JNS9EE02vZT1NhHB/tnhwM1J0zj0Q==
-X-Received: by 2002:adf:e18f:0:b0:47f:7531:3e6d with SMTP id
- ffacd0b85a97d-47fd2b33495mr3052426f8f.38.1785492369231; 
- Fri, 31 Jul 2026 03:06:09 -0700 (PDT)
-Received: from ip-10-18-1-162.eu-central-1.compute.internal
- (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
- by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-47fd41e296csm3132643f8f.12.2026.07.31.03.06.08
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 31 Jul 2026 03:06:08 -0700 (PDT)
-X-Google-Original-From: "cron2 (Code Review)"
- <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Fri, 31 Jul 2026 10:06:07 +0000
-Auto-Submitted: auto-generated
-X-Gerrit-MessageType: merged
-X-Gerrit-PatchSet: 3
-X-Gerrit-Change-Id: I7e5ac9b4a8594251c3b5c4655f9d74b021950098
-X-Gerrit-Change-Number: 777
-X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/777?usp=email>
-X-Gerrit-Commit: d9ae1f0fa43f8ac2551f048f90f37a110a9ecaa4
-In-Reply-To: <gerrit.1728025749000.I7e5ac9b4a8594251c3b5c4655f9d74b021950098@gerrit.openvpn.net>
-References: <gerrit.1728025749000.I7e5ac9b4a8594251c3b5c4655f9d74b021950098@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzI4MDI1NzQ5MDAwLkk3ZTVhYzliNGE4NTk0MjUxYzNiNWM0NjU1ZjlkNzRiMDIxOTUwMDk4QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <615ee924da5679f7736bedfaaf2b2ab52e11651f-HTML@gerrit.openvpn.net>
+ h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
+ Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+ List-Post:List-Owner:List-Archive;
+ bh=lvpkmAqt8fO7VAZmNqPSEQqLqgYlvVb7ch56qFwBRoU=; b=CO4tCjs2arMvkcyTVTS0hg7sLK
+ l9Uav2bMYFDoyiVOl87QOFpbhFprXC98mp8odW8Je08kQuF1HP0hWh+VI7tyYx5XlYyeGXeK8yOsI
+ YeoKLGOwtMiavgSGyANjjr/Wi9oKcXtQgNcYw2rRx9F7WaHDXKWcRvBQWwaT29IT58v4=;
+Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
+ id 1wpk9x-0000pt-0H for openvpn-devel@lists.sourceforge.net;
+ Fri, 31 Jul 2026 10:08:07 +0000
+Received: from blue.greenie.muc.de (localhost [127.0.0.1])
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 66VA7wWn003381
+ for <openvpn-devel@lists.sourceforge.net>; Fri, 31 Jul 2026 12:07:58 +0200
+Received: (from gert@localhost)
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 66VA7wxh003380
+ for openvpn-devel@lists.sourceforge.net; Fri, 31 Jul 2026 12:07:58 +0200
+From: Gert Doering <gert@greenie.muc.de>
+To: openvpn-devel@lists.sourceforge.net
+Date: Fri, 31 Jul 2026 12:07:52 +0200
+Message-ID: <20260731100758.3368-1-gert@greenie.muc.de>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <gerrit.1782134588000.I3d52c6d008502293c3ec57ad22d1c613dcd1a94e@gerrit.openvpn.net>
+References: <gerrit.1782134588000.I3d52c6d008502293c3ec57ad22d1c613dcd1a94e@gerrit.openvpn.net>
 MIME-Version: 1.0
-User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wpk88-0003yh-0o
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: t_server_null: run
- server processes with 'ulimit -t 300'
+X-Headers-End: 1wpk9x-0000pt-0H
+Subject: [Openvpn-devel] [PATCH v15] Extract multi_check_dest_addr_allowed
+ from multi_process_float
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -136,199 +78,188 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "cron2 \(Code Review\) via Openvpn-devel"
- <openvpn-devel@lists.sourceforge.net>
-Reply-To: gert@greenie.muc.de, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com
-Cc: "cron2 \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>,
- plaisthos <arne-openvpn@rfc2549.org>
-Content-Type: multipart/mixed; boundary="===============7553737712200494016=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============7553737712200494016==
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="kRSSdKkywuE="; charset=UTF-8
+From: Arne Schwabe <arne@rfc2549.org>
 
---kRSSdKkywuE=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-cron2 has submitted this change=2E ( http://gerrit=2Eopenvpn=2Enet/c/openvp=
-n/+/777?usp=3Demail )
-
-Change subject: t_server_null: run server processes =
-with 'ulimit -t 300'
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E
-
-t_server_null: run server processes with 'ulimit -t 300'
-
-"ulimit -=
-t" will hard limit the usable CPU time for any process started
-to the speci=
-fied number of seconds=2E  So if we have a stuck-and-looping
-server process=
- (which was observed frequently) this will make sure
-the situation will fix=
- itself eventually=2E
-
-Change-Id: I7e5ac9b4a8594251c3b5c4655f9d74b021950098=
-
-Signed-off-by: Gert Doering <gert@greenie=2Emuc=2Ede>
-Acked-by: Arne Schwa=
-be <arne-openvpn@rfc2549=2Eorg>
-Gerrit URL: https://gerrit=2Eopenvpn=2Enet/=
-c/openvpn/+/777
-Message-Id: <20260730204642=2E27250-1-gert@greenie=2Emuc=2E=
-de>
-URL: https://www=2Email-archive=2Ecom/openvpn-devel@lists=2Esourceforge=
-=2Enet/msg38088=2Ehtml
-Signed-off-by: Gert Doering <gert@greenie=2Emuc=2Ede=
->
+Change-Id: I3d52c6d008502293c3ec57ad22d1c613dcd1a94e
+Signed-off-by: Arne Schwabe <arne@rfc2549.org>
+Acked-by: Frank Lichtenheld <frank@lichtenheld.com>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1723
 ---
-M tests/t_server_null_server=2Esh
-1 file changed, 4 insertions(+), 0 =
-deletions(-)
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1723
+This mail reflects revision 15 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Frank Lichtenheld <frank@lichtenheld.com>
 
-diff --git a/tests/t_server_null_server=2Esh b/tests/t_ser=
-ver_null_server=2Esh
-index 65b7d56=2E=2Ee1775f0 100755
---- a/tests/t_server=
-_null_server=2Esh
-+++ b/tests/t_server_null_server=2Esh
-@@ -11,6 +11,10 @@
-=
-     # Allow reading this file even umask values are strict
-     touch "$lo=
-g"
+        
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 72b0b53..9b64598 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -3069,6 +3069,76 @@
+ }
  
-+    # limit CPU time of processes to "5 minutes"
-+    # (so a stuck-a=
-nd-looping process will auto-terminate)
-+    ulimit -t 300
+ /**
++ * This methods checks if a client instance is allowed to use an address
++ *
++ * Reasons for disallowing a specific address are that a client might be
++ * already using that address. In that case the method needs to decide
++ * if this instance can kick out the other instance.
++ *
++ * The method will then terminate the other instance if that check was
++ * positive.
++ */
++static bool
++multi_check_dest_addr_allowed(struct multi_context *m, struct multi_instance *mi, struct mroute_addr *real)
++{
++    struct hash *hash = m->hash;
++    const uint64_t hv = hash_value(hash, real);
++    struct hash_bucket *bucket = hash_bucket(hash, hv);
 +
-     # Try to =
-launch the server
-     $RUN_SUDO "${server_exec}" \
-                $server=
-_conf \
++    /* make sure that we don't assign the client to an address taken by
++     * another client */
++    struct hash_element *he = hash_lookup_fast(hash, bucket, real, hv);
++    if (!he)
++    {
++        /* Address is not taken, everything is fine. */
++        return true;
++    }
++
++    struct multi_instance *ex_mi = he->value;
++
++    struct tls_multi *m1 = mi->context.c2.tls_multi;
++    struct tls_multi *m2 = ex_mi->context.c2.tls_multi;
++
++    struct gc_arena gc = gc_new();
++    int ret = false;
++
++    /* do not allow if target address is taken by client with another cert */
++    if (!cert_hash_compare(m1->locked_cert_hash_set, m2->locked_cert_hash_set))
++    {
++        msg(D_MULTI_LOW, "Disallow float to an address taken by another client %s",
++            multi_instance_string(ex_mi, false, &gc));
++
++        mi->context.c2.buf.len = 0;
++        goto done;
++    }
++
++    /* It doesn't make sense to let a peer float to the address it already
++     * has, so we disallow it. This can happen if a DCO netlink notification
++     * gets lost and we miss a floating step.
++     */
++    if (m1->rx_peer_id == m2->rx_peer_id)
++    {
++        msg(M_WARN,
++            "disallowing peer %" PRIu32 " (%s) from floating to "
++            "its own address (%s)",
++            m1->rx_peer_id, tls_common_name(mi->context.c2.tls_multi, false),
++            mroute_addr_print(&mi->real, &gc));
++        goto done;
++    }
++
++    msg(D_MULTI_LOW,
++        "closing instance %s due to float collision with %s "
++        "using the same certificate",
++        multi_instance_string(ex_mi, false, &gc), multi_instance_string(mi, false, &gc));
++    multi_close_instance(m, ex_mi, false);
++    ret = true;
++
++done:
++    gc_free(&gc);
++    return ret;
++}
++
++/**
+  * Handles peer floating.
+  *
+  * If peer is floated to a taken address, either drops packet
+@@ -3080,8 +3150,6 @@
+ multi_process_float(struct multi_context *m, struct multi_instance *mi, struct link_socket *sock)
+ {
+     struct mroute_addr real = { 0 };
+-    struct hash *hash = m->hash;
+-    struct gc_arena gc = gc_new();
+ 
+     if (mi->real.type & MR_WITH_PROTO)
+     {
+@@ -3091,53 +3159,16 @@
+ 
+     if (!mroute_extract_openvpn_sockaddr(&real, &m->top.c2.from.dest, true))
+     {
+-        goto done;
++        return;
+     }
+ 
+-    const uint64_t hv = hash_value(hash, &real);
+-    struct hash_bucket *bucket = hash_bucket(hash, hv);
+-
+-    /* make sure that we don't float to an address taken by another client */
+-    struct hash_element *he = hash_lookup_fast(hash, bucket, &real, hv);
+-    if (he)
++    if (!multi_check_dest_addr_allowed(m, mi, &real))
+     {
+-        struct multi_instance *ex_mi = (struct multi_instance *)he->value;
+-
+-        struct tls_multi *m1 = mi->context.c2.tls_multi;
+-        struct tls_multi *m2 = ex_mi->context.c2.tls_multi;
+-
+-        /* do not float if target address is taken by client with another cert */
+-        if (!cert_hash_compare(m1->locked_cert_hash_set, m2->locked_cert_hash_set))
+-        {
+-            msg(D_MULTI_LOW, "Disallow float to an address taken by another client %s",
+-                multi_instance_string(ex_mi, false, &gc));
+-
+-            mi->context.c2.buf.len = 0;
+-
+-            goto done;
+-        }
+-
+-        /* It doesn't make sense to let a peer float to the address it already
+-         * has, so we disallow it. This can happen if a DCO netlink notification
+-         * gets lost and we miss a floating step.
+-         */
+-        if (m1->rx_peer_id == m2->rx_peer_id)
+-        {
+-            msg(M_WARN,
+-                "disallowing peer %" PRIu32 " (%s) from floating to "
+-                "its own address (%s)",
+-                m1->rx_peer_id, tls_common_name(mi->context.c2.tls_multi, false),
+-                mroute_addr_print(&mi->real, &gc));
+-            goto done;
+-        }
+-
+-        msg(D_MULTI_LOW,
+-            "closing instance %s due to float collision with %s "
+-            "using the same certificate",
+-            multi_instance_string(ex_mi, false, &gc), multi_instance_string(mi, false, &gc));
+-        multi_close_instance(m, ex_mi, false);
++        return;
+     }
+ 
++    struct gc_arena gc = gc_new();
++
+     msg(D_MULTI_MEDIUM, "peer %" PRIu32 " (%s) floated from %s to %s",
+         mi->context.c2.tls_multi->rx_peer_id,
+         tls_common_name(mi->context.c2.tls_multi, false),
+@@ -3166,7 +3197,6 @@
+     ASSERT(hash_add(m->cid_hash, &mi->context.c2.mda_context.cid, mi, true));
+ #endif
+ 
+-done:
+     gc_free(&gc);
+ }
+ 
 
--- 
-To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/777?u=
-sp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://g=
-errit=2Eopenvpn=2Enet/settings?usp=3Demail
-
-Gerrit-MessageType: merged
-Gerr=
-it-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I7e5ac9b4a85942=
-51c3b5c4655f9d74b021950098
-Gerrit-Change-Number: 777
-Gerrit-PatchSet: 3
-Ger=
-rit-Owner: cron2 <gert@greenie=2Emuc=2Ede>
-Gerrit-Reviewer: flichtenheld <f=
-rank@lichtenheld=2Ecom>
-Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=2E=
-org>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
-
---kRSSdKkywuE=
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change=2E</p><p><a href=3D"http://gerrit=2Eopenvpn=2En=
-et/c/openvpn/+/777?usp=3Demail">View Change</a></p><div style=3D"white-spac=
-e:pre-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">t_server_null: run server processes with &#=
-39;ulimit -t 300&#39;<br><br>&quot;ulimit -t&quot; will hard limit the usab=
-le CPU time for any process started<br>to the specified number of seconds=
-=2E  So if we have a stuck-and-looping<br>server process (which was observe=
-d frequently) this will make sure<br>the situation will fix itself eventual=
-ly=2E<br><br>Change-Id: I7e5ac9b4a8594251c3b5c4655f9d74b021950098<br>Signed=
--off-by: Gert Doering &lt;gert@greenie=2Emuc=2Ede&gt;<br>Acked-by: Arne Sch=
-wabe &lt;arne-openvpn@rfc2549=2Eorg&gt;<br>Gerrit URL: https://gerrit=2Eope=
-nvpn=2Enet/c/openvpn/+/777<br>Message-Id: &lt;20260730204642=2E27250-1-gert=
-@greenie=2Emuc=2Ede&gt;<br>URL: https://www=2Email-archive=2Ecom/openvpn-de=
-vel@lists=2Esourceforge=2Enet/msg38088=2Ehtml<br>Signed-off-by: Gert Doerin=
-g &lt;gert@greenie=2Emuc=2Ede&gt;<br>---<br>M tests/t_server_null_server=2E=
-sh<br>1 file changed, 4 insertions(+), 0 deletions(-)<br><br></pre>
-<pre st=
-yle=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff=
- --git a/tests/t_server_null_server=2Esh b/tests/t_server_null_server=2Esh<=
-/span><br><span>index 65b7d56=2E=2Ee1775f0 100755</span><br><span>--- a/tes=
-ts/t_server_null_server=2Esh</span><br><span>+++ b/tests/t_server_null_serv=
-er=2Esh</span><br><span>@@ -11,6 +11,10 @@</span><br><span>     # Allow rea=
-ding this file even umask values are strict</span><br><span>     touch &quo=
-t;$log&quot;</span><br><span> </span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    # limit CPU time of processes to &quot;5 minutes&quot;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    # (so a stuck-and-loo=
-ping process will auto-terminate)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    ulimit -t 300</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span>     # Try to launch the server</span><br><spa=
-n>     $RUN_SUDO &quot;${server_exec}&quot; \</span><br><span>             =
-   $server_conf \</span><br><span></span><br></pre><p>To view, visit <a hre=
-f=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/777?usp=3Demail">change 777<=
-/a>=2E To unsubscribe, or for help writing mail filters, visit <a href=3D"h=
-ttp://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div =
-itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope item=
-prop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=
-=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/777?usp=3Demail"=
-/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=
-=3D"display:none"> Gerrit-MessageType: merged </div>
-<div style=3D"display:=
-none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-B=
-ranch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I7e5ac9=
-b4a8594251c3b5c4655f9d74b021950098 </div>
-<div style=3D"display:none"> Gerr=
-it-Change-Number: 777 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: =
-3 </div>
-<div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@greenie=
-=2Emuc=2Ede&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flicht=
-enheld &lt;frank@lichtenheld=2Ecom&gt; </div>
-<div style=3D"display:none"> =
-Gerrit-Reviewer: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div s=
-tyle=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Es=
-ourceforge=2Enet&gt; </div>
-
-</body></html>
---kRSSdKkywuE=--
-
-
---===============7553737712200494016==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============7553737712200494016==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
---===============7553737712200494016==--
-
