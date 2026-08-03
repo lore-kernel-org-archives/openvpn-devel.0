@@ -4,127 +4,127 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B40AEC55184
-	for <openvpn-devel@archiver.kernel.org>; Mon,  3 Aug 2026 13:25:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 53B8AC55179
+	for <openvpn-devel@archiver.kernel.org>; Mon,  3 Aug 2026 13:25:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=3sp2JK/5Vb6PRpP8ZfkFuIbW6I/ziksj96pRyRnwcW4=; b=ilcBiVj7LUipdnG9g0SU/N2ZTb
-	RnbpCyMpQaugsBamTpv9VygekpYl6CeWPZsAEOepRFSVbqesUkVaNL0ZHZKGLLHihdnCsOnJ9Bo+A
-	G9329BiU0KOm2XkQQ1DrbF3voXC1arEWbMbZHTbbQewCrU1H+N80inFCpd0YpWloTAHM=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=vej25MxCr5aQU0DymqBN9wPMMzN60UV/T2r73MZpai0=; b=EvI64jc60sJDg2ifny/SgU2WcC
+	S0nOjqOBMzdl1RtcCISjH5RkCEIhzudzgGpm+BwxJ8SLtzJ1dt10rUGEfEg+JNnIMxak2otO7iYKm
+	5Qop2ElrkWB5B+CkCyej2ml0aRPKLNFZMrOhQVT1TvBPCXuQ48b6hKn0+tzm7PKfCaqM=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wqsfu-0001Bg-0s;
-	Mon, 03 Aug 2026 13:25:50 +0000
+	id 1wqsg0-00023K-77;
+	Mon, 03 Aug 2026 13:25:53 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wqsfs-0001Ba-RD
+ (envelope-from <gerrit@openvpn.net>) id 1wqsfy-00023B-H5
  for openvpn-devel@lists.sourceforge.net;
- Mon, 03 Aug 2026 13:25:48 +0000
+ Mon, 03 Aug 2026 13:25:52 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
  :List-Post:List-Owner:List-Archive;
- bh=avesALkDE3HGAgp3Ol4CZvWmFfzWv+1nLdNgPJ9hrkY=; b=kHQ5QDy1DgyZ8MqhfIttYwLQg1
- kFE1WxEqDjSArrcXYxGyYgeg139xZ8tPeo+OJCvPmRFdeeTLIHkDXptno1yVjydtCnl6bTgQlYJI4
- DeqjqPrcXISs8O0YKmUWAzmBgBUCiRhFsOHBaDCznUGDBIa7ete/FoAqPFzx9qFZyC8A=;
+ bh=5pAeQPB1x62ga0XmWDTr+oWkPKs4gQ+NEdrxuQcbjNs=; b=M+kAJI4Vhv0JQqU7McDP8VUYiv
+ SUpFGFnLFwuMDDCQuJ8h8lst2fNQ+REl1JzCRRkW/hAEBY5uxYVfA2qbj/bYEjTl83lrzCaElGKHG
+ uIKU9keS2wmad//+og/bBp71H1PwKrwkrI00ozmYnbrUwcvJG3JWFDakRfm9bpIHogoY=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
  Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=avesALkDE3HGAgp3Ol4CZvWmFfzWv+1nLdNgPJ9hrkY=; b=R
- XGb0nrSNfp6bh3vH4uqLBUBrZgvxgkGAJrL7qOIeBUudUqoA5bgwtH2sSrzrZfvkM4gPvx7XujggF
- 2g39+FfQDeo50GRfVSxNDsfqFz60bwbjpSUYrGeJjYLnh90XEx124LRvnrYeqFSMqLeARaUyu9iER
- 8LW4VXzTrcj/CNWI=;
-Received: from mail-wm1-f46.google.com ([209.85.128.46])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ List-Owner:List-Archive; bh=5pAeQPB1x62ga0XmWDTr+oWkPKs4gQ+NEdrxuQcbjNs=; b=V
+ O/kAbAQuU4unUa/JX3sGVPjVUSdYz8v+RtA/mPcYKylj91bLG3k5QGVWexdsIt4ndKZZ7ge1VAoZi
+ KEmHyufLek7XyUz3FLF41ICxK36RBPa9ybJYr2kItEijjqTZt77BKLC5seHKb6O/ZGFBXF7pyA3GW
+ WE7cRdCRyZlBb+dk=;
+Received: from mail-wm1-f50.google.com ([209.85.128.50])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wqsft-0003Q2-NQ for openvpn-devel@lists.sourceforge.net;
- Mon, 03 Aug 2026 13:25:48 +0000
-Received: by mail-wm1-f46.google.com with SMTP id
- 5b1f17b1804b1-49556f97a9dso13511405e9.1
+ id 1wqsfs-0003RR-Hf for openvpn-devel@lists.sourceforge.net;
+ Mon, 03 Aug 2026 13:25:51 +0000
+Received: by mail-wm1-f50.google.com with SMTP id
+ 5b1f17b1804b1-495590dde14so21060595e9.0
  for <openvpn-devel@lists.sourceforge.net>;
- Mon, 03 Aug 2026 06:25:46 -0700 (PDT)
+ Mon, 03 Aug 2026 06:25:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1785763540; x=1786368340; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1785763542; x=1786368342; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=avesALkDE3HGAgp3Ol4CZvWmFfzWv+1nLdNgPJ9hrkY=;
- b=VMaJnSULyLah/4w9xeAjfb8b/4E4QNQKY5g66HPMcIRj1j1e0QkUDdO4X3TMPcodd4
- LmdLxaGJqrTQ24uLJOIjoboOgGMmxegUJkAsq7J4cKIQp1p9tIBjFo2nBeFJFnHIUdme
- KKyMQczgTvJja2UxZ/Czcp7bDnZQtQ1BDa2upjLm7NXVe3YnbknvLCFRCk4m2u57TgUg
- FRQQyLBoRnNgnqdfmcFimm8RIS9n072WHRJHRrH+VUVAMXQQo/e3A5g1mFd6zymQIeE9
- hKx0z0zaOz3SI5Wj6psLuHf+r9m+y1dM2+JWjUCjNlnSG5CMb7LUD6quxra3f2ZhnBkR
- X/6Q==
+ bh=5pAeQPB1x62ga0XmWDTr+oWkPKs4gQ+NEdrxuQcbjNs=;
+ b=OKRmJEBfzCYDRRv1O9H2vQH7ggLlXjfix1ZgNy3KIUcYLCnzShTfo8V/060NJIiw8Q
+ CX7fG6oCvNlRyV5wEq0GbKX9dlLiIoM0tM1gL0RCVDj33edlOGq7Sh4Z5zr/WxeCRWv+
+ Y9qss0BS8nnbHNtrGBbrJNODCkMAewGunm3rPvOoTczn2b3gFNEbvOqJl7ORo1WeDbvF
+ UOy+DeZESDyXqSwDPnpB9iGDa66zKagyTWq1nj+yfz2c12ydBuaHKsNcfpS36YLj/aMF
+ P+KdkEqSpGsLORTkJAMR6rz91k+DJj0zR6XGCBbYLB+w+DdutUB8DLG2ybFFu5/brrKv
+ uIng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1785763540; x=1786368340;
+ d=1e100.net; s=20251104; t=1785763542; x=1786368342;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=avesALkDE3HGAgp3Ol4CZvWmFfzWv+1nLdNgPJ9hrkY=;
- b=fp2PF7U/LlV/fPlT+P4R1tRZpoKh+uh9pWMvQrbLsNOAJ09JoS1Tekg1WEoA4lviLw
- Dn/q2QbhNWJGiekdur34sKvl+Z7+RcIWGRIY6YJMNY3gSvZc0xMixDVtmaexqs+iWWvp
- eShEpx+N+r2z+y8GD4kXbk7X7Nr9rvbn2G9aq9V4apdP1eI2laZRGw77mWS+QaxZ52TR
- f89H26fNDxpy6dn57FcoaWFYIjysvymeaTEsE8eO+/IPlZzvAMRPsZu6w2XrO0z5lWiJ
- FTle8JFFFc4EobJ/fBUVtYeb48b4ch+YavmaxcJOctZip+MnFqVVvRQ1QToaVtdS/wu3
- 3AiQ==
-X-Gm-Message-State: AOJu0YxH62Nut9I3T1rZKV6oyMiJ0PM7bAIXhPNvC3Yskjfqz/0VlOz3
- M+Wou9VlFqeA1IayOqa4ZTNd+cw55xYMMG5mG+yBFe8qIRfXqTrwNl3rnjsfV7QT+3P/KLpqlFg
- Y3XRarNiGqGru86IUVu55UXoJ2yEwhqbWD3v+JZFkN2PviApa5aU43bg9S9xa8SZYILdXdAF93h
- Vr8jA5nQ==
-X-Gm-Gg: AR+sD130hgQhE7+Rs2Gnge2T9Ltg2Ix/uOqUSELmsZF0uZ3Mpbot4urnP1FycPGCtND
- 8gCacT6K4heaV5FFOB3VIit9n77B/Gq1p9o05W0ib7mWsImj6zNfhQOLild75VEa6dcd5M0FVuX
- neD9HwIS7hy37IKKTcdp7NT5bCxptVB512B85ZuFEeqBuOxZxuiVYgROREzSI3j+xBk8mQ2ij5n
- wI12hMXI3HsFIkLOd/5qLB+NEvrkD8jjqHtr3sQT9EG8KrGOpR1foeOtjFyI3VVsuvzZvbl7VX1
- 2Wp5VHixx/sU2/6KM9fi8RDPwvNFWDnz7gDkCzmCdSfUbFD1vxerl4aUnz5DH9QO0rKOrhR5EtJ
- RvZ50mP8iMpEfL4etteY45wB3v4Bn//U2IQ7eQXkcCf1YC28SBL87FD+9tNi34cvWWzXtpF5KOl
- XZbfD5yT7nsiEXsAfMvn/weo3QBvIluKPrWfBx/dM6s/c1WCLHQx3UaRCcGEMeT3I2oSQV/gGsE
- 1R6CyQpAQ/Ntmta0BY6va97Y7h4PyVwZwRL0M9bndODMNcLz0cmpG8D/96Thu/eeYXU6dQLdKyL
- qnGWnc+KJr60PEAqAr97AYEGUrKGa9UV/8rlg375oM8wPeEELcRl9IZc6LtmLw==
-X-Received: by 2002:a05:600c:468e:b0:495:4b42:8677 with SMTP id
- 5b1f17b1804b1-4980c6a2268mr205991265e9.18.1785763538631; 
- Mon, 03 Aug 2026 06:25:38 -0700 (PDT)
+ bh=5pAeQPB1x62ga0XmWDTr+oWkPKs4gQ+NEdrxuQcbjNs=;
+ b=C95IG3a6qEC8B7n9RtBNkL1s7ftKKU+QqVUwSjAkxRbkwPq+nzG5UNTqybJYs9zbvC
+ kr9cp2q/trLn7vRj8dk1Z+CHnJizOZpMPtNhsVA8nKfkBwT5ACks21BMl8ER0TUZqoud
+ cGBMGtYy5kUJbG9KQV7cWueoQNDdOwZGuZBo2tgRtILhERggS4jFsMPpsQnr4PTjS1Rn
+ g77DAY/d0pFDhVxq9RjKxc+z1gGZkBobAhv28NnciPB2jJo7FDyVcvX5M1F2zVayaTtB
+ 8WT+tnwmq3ZTu901Oh4M43Muli+UPdhsm92DLeYs19RvgWfNzxfcQPWyejOo++f6y3MD
+ 1v/g==
+X-Gm-Message-State: AOJu0Yx69qjuhYxEql2ZyJBGuHYJNuRdAGAA7Ys6vp592LbI11KV+ySI
+ YepR6i79HFxvWwLYPMJGfBleFkNB9y/F+UJRdxLZSO1Pn+rfa8OfiEyEZD0HKzh+Jq6T1+OiBV4
+ 9Lhfn2yLdyqG7U0aaYOUEZc1S31dygkNJHLMlxoUzPvbRym8XnKSqaMoRa1z18TMQ/LaajAIkk5
+ axr/0rKw==
+X-Gm-Gg: AR+sD10SXPWN9oHByDpcezDJ0RpYyXpE891Jgdg9Z+OKrYEvZIUOwOhFhBZLVkjNBZi
+ FLWMQSxeEfmG452qIK1DpUvkecq8RqCLBwFZjdXEdJ7Tqvu6eTRG1daRSO6jLY3TryoQhxpkEWC
+ ovdT4WyTMkCNBtLW4LimzMF5q01me5rbQzwQvUk3dWYwTlz8dLobLBbgrJNoOe22Q0GPhHRBM4Z
+ BTh7otbUGnwuFJqg/iWxp+sQ6WF+zMfu9OHLcRq5HE7m9bBuHYgy0REeMdy6mcSBPnxIkQs7hkq
+ nbsbGIp9APzgx+XKZuraiNpqoNPWaE16eDRSalRgRqYy4dLq8x2t51hE1hExLai1OVF9qX4iNHw
+ cDyHt5rjV98bN0EszY5q93Gi+2Qd6A99QSkWz4eL2O78KvhiAuasQuhhadyezLePsJXTmlHp3Oe
+ D9UuvbIX8tZrK/yGpZku0t7RXZn67bJ4Fcpfd0/mw7gerOjT2yVgVlrISixpL9JIwxK509UVDrk
+ Szz5cVF/ypSqrJ/EyUZ3iwik9tNC0sQR27y3jk5UtTfZ1bBZrZbll7OchwhcU+TandhMgYvgMGx
+ SrEajegXSJ4jGhtsfJJ43fnqWWAE4VNk49unVLtLW3nxwD20ClM=
+X-Received: by 2002:a05:600c:4f4a:b0:495:6478:2dbc with SMTP id
+ 5b1f17b1804b1-4980eea02e5mr210322545e9.6.1785763541489; 
+ Mon, 03 Aug 2026 06:25:41 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-47fd42d91b3sm35817468f8f.14.2026.08.03.06.25.38
+ 5b1f17b1804b1-49807b8d04fsm309513005e9.3.2026.08.03.06.25.40
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 03 Aug 2026 06:25:38 -0700 (PDT)
+ Mon, 03 Aug 2026 06:25:40 -0700 (PDT)
 X-Google-Original-From: "plaisthos (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
 Date: Mon, 3 Aug 2026 13:25:30 +0000
 To: flichtenheld <frank@lichtenheld.com>
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newpatchset
-X-Gerrit-PatchSet: 22
-X-Gerrit-Change-Id: I807f398903ac2047530800c29949793c6f4f0ec9
-X-Gerrit-Change-Number: 1573
+X-Gerrit-PatchSet: 25
+X-Gerrit-Change-Id: Idb59ecd119331b198792ad1379bec8600211651b
+X-Gerrit-Change-Number: 1727
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1573?usp=email>
-X-Gerrit-Commit: 8c084888fd3bc5a1e545d37e8014a04c766fea3d
-In-Reply-To: <gerrit.1773255066000.I807f398903ac2047530800c29949793c6f4f0ec9@gerrit.openvpn.net>
-References: <gerrit.1773255066000.I807f398903ac2047530800c29949793c6f4f0ec9@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzczMjU1MDY2MDAwLkk4MDdmMzk4OTAzYWMyMDQ3NTMwODAwYzI5OTQ5NzkzYzZmNGYwZWM5QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <320c342a845d3dcaace444ee160dfe02be9afa72-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1727?usp=email>
+X-Gerrit-Commit: 89e0a69040356390333432041997a4d3dfe2ea5d
+In-Reply-To: <gerrit.1782134588000.Idb59ecd119331b198792ad1379bec8600211651b@gerrit.openvpn.net>
+References: <gerrit.1782134588000.Idb59ecd119331b198792ad1379bec8600211651b@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzgyMTM0NTg4MDAwLklkYjU5ZWNkMTE5MzMxYjE5ODc5MmFkMTM3OWJlYzg2MDAyMTE2NTFiQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <4894f5a259baa58153249f13d24a065715754812-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wqsft-0003Q2-NQ
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Replace custom
- hash_func with siphash
+X-Headers-End: 1wqsfs-0003RR-Hf
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Add lookup of multi
+ session by session id
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -142,1153 +142,1759 @@ Reply-To: arne-openvpn@rfc2549.org, openvpn-devel@lists.sourceforge.net,
  frank@lichtenheld.com
 Cc: "plaisthos \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============8568183927778653229=="
+Content-Type: multipart/mixed; boundary="===============0367511233571082502=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============8568183927778653229==
+--===============0367511233571082502==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="u6q5F4BM6dE="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="TnPoNrKfDZg="; charset=UTF-8
 
---u6q5F4BM6dE=
+--TnPoNrKfDZg=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld=2E
-
-Hello flichtenheld, =
-
+Hello flichtenheld, 
 
 I'd like you to reexamine a change=2E Please visit
 
-    http://gerrit=2Eo=
-penvpn=2Enet/c/openvpn/+/1573?usp=3Demail
+ =
+   http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1727?usp=3Demail
 
-to look at the new patch set (#2=
-2)=2E
-
-The following approvals got outdated and were removed:
-Code-Review-1=
- by flichtenheld
+to look at t=
+he new patch set (#25)=2E
 
 
-Change subject: Replace custom hash_func with siphash
-=
+Change subject: Add lookup of multi session by =
+session id
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-Replace custo=
-m hash_func with siphash
+A=
+dd lookup of multi session by session id
 
-Benchmarking the two functions gives a bit better=
+This refactors the way that we lo=
+okup control channel packets for UDP
+packets from other peers=2E Instead of=
+ looking them up by their source
+IP address, we lookup the session ids inst=
+ead=2E
 
-performance to the custom hash function but also it is
-difficult to get a =
-good measurement since the order of
-magnitude that these function use is si=
-milar to the
-test framework itself=2E
+It also has the consequence that we can have multiple ongoing
+sessi=
+ons from the same source IP address and the new session will
+go through all=
+ the connect steps like an initial session=2E
 
-However siphash24 is a modern and be=
-tter suited
-function for the hash tables that we are using
-because the inpu=
-ts are controlled by the
-peers (e=2Eg=2E source IP address)=2E
+The check if the new session=
+ can take over the old session's IP
+is now also the same as for floating=2E=
 
-Change-Id: =
-I807f398903ac2047530800c29949793c6f4f0ec9
-Signed-off-by: Arne Schwabe <arne=
-@rfc2549=2Eorg>
----
+
+This eliminates a whole class of bugs that we currently have that
+break c=
+onnection if the reconnecting client has different
+capabilities as the setu=
+p and negotiation is inherited from the
+previous client currently=2E Curren=
+tly there is at least one bug
+regarding the dynamic tls-crypt in this situa=
+tion=2E
+
+This also changes the user visible behaviour for clients
+reconnect=
+ing from the same IP and port=2E They are now almost
+behaving like clients =
+that reconnect from a different IP
+address=2E These now do the whole renego=
+tiation and run
+connect scripts/plugins and all the things are normally
+ski=
+pped when reconnecting from the same IP and port=2E
+
+The only difference is=
+ that duplicate-cn does not
+allow both connection=2E
+
+This will also eventu=
+ally allow us to get rid of TM_INITIAL
+slot as we now do no longer need to =
+keep an ongoing and a
+new session anymore=2E Currently the p2p mode still n=
+eeds
+the extra session slot for the new session so we cannot
+remove it just=
+ yet=2E
+
+This now allows a multiple pending session from the
+same source IP=
+ and port=2E Previously a client would need
+to use a different ports to cre=
+ate multiple pending
+session=2E This change does not make it really easier =
+to
+exhaust all pending session than before=2E
+
+Change-Id: Idb59ecd119331b19=
+8792ad1379bec8600211651b
+Signed-off-by: Arne Schwabe <arne@rfc2549=2Eorg>
+-=
+--
 M CMakeLists=2Etxt
-M src/openvpn/Makefile=2Eam
-M src/op=
-envpn/list=2Ec
-M src/openvpn/list=2Eh
-M src/openvpn/mroute=2Ec
-A src/openvp=
-n/siphash=2Ec
-M src/openvpn/siphash=2Eh
+M doc/man-sections/advanced-options=2Erst
+M src/openv=
+pn/Makefile=2Eam
+M src/openvpn/mtcp=2Ec
+M src/openvpn/mudp=2Ec
+M src/openvp=
+n/multi=2Ec
+M src/openvpn/multi=2Eh
+M src/openvpn/options=2Ec
+M src/openvpn=
+/options=2Eh
+A src/openvpn/sid_hash=2Eh
 M tests/unit_tests/openvpn/Makefile=
 =2Eam
 M tests/unit_tests/openvpn/test_misc=2Ec
-9 files changed, 77 insertio=
-ns(+), 187 deletions(-)
+12 files changed, 270 insert=
+ions(+), 59 deletions(-)
 
 
-  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/ope=
-nvpn refs/changes/73/1573/22
+  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/op=
+envpn refs/changes/27/1727/25
 
-diff --git a/CMakeLists=2Etxt b/CMakeLists=2E=
-txt
-index 29b53a9=2E=2E9b31b1a 100644
+diff --git a/CMakeLists=2Etxt b/CMakeLists=
+=2Etxt
+index 9b31b1a=2E=2E40fea99 100644
 --- a/CMakeLists=2Etxt
-+++ b/CMakeLis=
-ts=2Etxt
-@@ -572,6 +572,7 @@
-     src/openvpn/shaper=2Eh
-     src/openvpn/s=
-ig=2Ec
-     src/openvpn/sig=2Eh
-+    src/openvpn/siphash=2Ec
-     src/openv=
-pn/siphash=2Eh
-     src/openvpn/siphash_reference=2Ec
-     src/openvpn/sock=
-et=2Ec
-@@ -835,7 +836,10 @@
-         src/openvpn/options_util=2Ec
-         =
-src/openvpn/ssl_util=2Ec
-         src/openvpn/list=2Ec
--        )
++++ b/CMake=
+Lists=2Etxt
+@@ -839,6 +839,7 @@
+         src/openvpn/siphash=2Eh
+         s=
+rc/openvpn/siphash=2Ec
+         src/openvpn/siphash_reference=2Ec
 +        =
-src/openvpn/siphash=2Eh
-+        src/openvpn/siphash=2Ec
-+        src/openv=
-pn/siphash_reference=2Ec
-+    )
+src/openvpn/session_id=2Ec
+     )
  
      target_sources(test_ncp PRIVATE
-    =
-     src/openvpn/crypto_epoch=2Ec
-diff --git a/src/openvpn/Makefile=2Eam b/=
-src/openvpn/Makefile=2Eam
-index 1f77384=2E=2Ef5a7621 100644
---- a/src/openv=
-pn/Makefile=2Eam
+di=
+ff --git a/doc/man-sections/advanced-options=2Erst b/doc/man-sections/advan=
+ced-options=2Erst
+index 3eff3085=2E=2Eb20c3f7 100644
+--- a/doc/man-sections=
+/advanced-options=2Erst
++++ b/doc/man-sections/advanced-options=2Erst
+@@ -2=
+9,16 +29,18 @@
+ 
+ --hash-size args
+   Set the size of the real address hash=
+ table to ``r`` and the virtual
+-  address table to ``v``=2E
++  address tab=
+le to ``v``=2E If specified set the size of session id hash table
++  to ``s=
+``=2E Otherwise ``s`` will be set to the same value as ``r``=2E
+ 
+   Valid =
+syntax:
+   ::
+ 
+-     hash-size r v
++     hash-size r v [s]
+ 
+-  By default=
+, both tables are sized at 4 times ``--max-clients`` buckets=2E
++  By defau=
+lt, all three tables are sized at 4 times ``--max-clients`` buckets=2E
+   W=
+ith the default of 1024 of ``--max-clients`` this gives 4096 buckets=2E
+ 
++=
+
+ --bcast-buffers n
+   Allocate ``n`` buffers for broadcast datagrams (defa=
+ult :code:`256`)=2E
+ 
+diff --git a/src/openvpn/Makefile=2Eam b/src/openvpn/=
+Makefile=2Eam
+index f5a7621=2E=2Eeb3533c 100644
+--- a/src/openvpn/Makefile=
+=2Eam
 +++ b/src/openvpn/Makefile=2Eam
-@@ -128,7 +128,8 @@
- 	sess=
-ion_id=2Ec session_id=2Eh \
+@@ -127,6 +127,7 @@
+ 	schedule=2Ec sc=
+hedule=2Eh \
+ 	session_id=2Ec session_id=2Eh \
  	shaper=2Ec shaper=2Eh \
++	=
+sid_hash=2Eh \
  	sig=2Ec sig=2Eh \
--=
-	siphash_reference=2Ec siphash=2Eh \
-+	siphash_reference=2Ec \
-+	siphash=2E=
-c siphash=2Eh \
- 	socket=2Ec socket=2Eh \
- 	socket_util=2Ec socket_util=2Eh=
- \
- 	socks=2Ec socks=2Eh \
-diff --git a/src/openvpn/list=2Ec b/src/openvpn/=
-list=2Ec
-index e52c778=2E=2E9e80761 100644
---- a/src/openvpn/list=2Ec
-+++ b=
-/src/openvpn/list=2Ec
-@@ -31,9 +31,6 @@
- #include "list=2Eh"
+ 	siphash_reference=2Ec \
+ 	siphash=2Ec =
+siphash=2Eh \
+diff --git a/src/openvpn/mtcp=2Ec b/src/openvpn/mtcp=2Ec
+inde=
+x f000283=2E=2Eeb4e944 100644
+--- a/src/openvpn/mtcp=2Ec
++++ b/src/openvpn/=
+mtcp=2Ec
+@@ -42,36 +42,12 @@
+ {
+     struct gc_arena gc =3D gc_new();
+     =
+struct multi_instance *mi =3D NULL;
+-    struct hash *hash =3D m->hash;
  
- #include "c=
-rypto=2Eh"
--#include "misc=2Eh"
--
--#include "memdbg=2Eh"
- 
- struct hash *
  =
-hash_init(const uint32_t n_buckets,
-@@ -316,178 +313,3 @@
-     hi->last->ke=
-y =3D NULL;
-     hi->bucket_marked =3D true;
- }
+    mi =3D multi_create_instance(m, NULL, sock);
+     if (mi)
+     {
+      =
+   mi->real=2Eproto =3D sock->info=2Eproto;
+-        struct hash_element *h=
+e;
+-        const uint64_t hv =3D hash_value(hash, &mi->real);
+-        str=
+uct hash_bucket *bucket =3D hash_bucket(hash, hv);
 -
+         multi_assign_=
+peer_id(m, mi);
 -
--/*
-- * ---------------=
------------------------------------------------------
-- * hash() -- hash a =
-variable-length key into a 32-bit value
-- * k     : the key (the unaligned =
-variable-length array of bytes)
-- * len   : the length of the key, counting=
- by bytes
-- * level : can be any 4-byte value
-- * Returns a 32-bit value=2E=
-  Every bit of the key affects every bit of
-- * the return value=2E  Every =
-1-bit and 2-bit delta achieves avalanche=2E
-- * About 36+6len instructions=
-=2E
-- *
-- * #define hashsize(n) ((uint32_t)1<<(n))
-- * #define hashmask(n) =
-(hashsize(n)-1)
-- *
-- * The best hash table sizes are powers of 2=2E  There=
- is no need to do
-- * mod a prime (mod is sooo slow!)=2E  If you need less =
-than 32 bits,
-- * use a bitmask=2E  For example, if you need only 10 bits, =
-do
-- * h =3D (h & hashmask(10));
-- * In which case, the hash table should h=
-ave hashsize(10) elements=2E
-- *
-- * If you are hashing n strings (uint8_t =
-**)k, do it like this:
-- * for (i=3D0, h=3D0; i<n; ++i) h =3D hash( k[i], l=
-en[i], h);
-- *
-- * By Bob Jenkins, 1996=2E  bob_jenkins@burtleburtle=2Enet=
-=2E  You may use this
-- * code any way you wish, private, educational, or c=
-ommercial=2E  It's free=2E
-- *
-- * See https://burtleburtle=2Enet/bob/hash/=
-evahash=2Ehtml
-- * Use for hash table lookup, or anything where one collisi=
-on in 2^32 is
-- * acceptable=2E  Do NOT use for cryptographic purposes=2E
--=
- *
-- * --------------------------------------------------------------------=
-
-- *
-- * mix -- mix 3 32-bit values reversibly=2E
-- * For every delta with =
-one or two bit set, and the deltas of all three
-- * high bits or all three =
-low bits, whether the original value of a,b,c
-- * is almost all zero or is =
-uniformly distributed,
-- * If mix() is run forward or backward, at least 32=
- bits in a,b,c
-- * have at least 1/4 probability of changing=2E
-- * If mix(=
-) is run forward, every bit of c will change between 1/3 and
-- * 2/3 of the=
- time=2E  (Well, 22/100 and 78/100 for some 2-bit deltas=2E)
-- * mix() was =
-built out of 36 single-cycle latency instructions in a
-- * structure that c=
-ould supported 2x parallelism, like so:
-- *    a -=3D b;
-- *    a -=3D c; x=
- =3D (c>>13);
-- *    b -=3D c; a ^=3D x;
-- *    b -=3D a; x =3D (a<<8);
-- *=
-    c -=3D a; b ^=3D x;
-- *    c -=3D b; x =3D (b>>13);
-- *    =2E=2E=2E
+-        he =3D hash_lookup_fast(hash, bucket, &mi->real,=
+ hv);
+-
+-        if (he)
+-        {
+-            struct multi_instance *old=
+mi =3D (struct multi_instance *)he->value;
+-            msg(D_MULTI_LOW,
 - =
-* Unfortunately, superscalar Pentiums and Sparcs can't take advantage
-- * o=
-f that parallelism=2E  They've also turned some of those single-cycle
-- * l=
-atency instructions into multi-cycle latency instructions=2E  Still,
-- * th=
-is is the fastest good hash I could find=2E  There were about 2^^68
-- * to =
-choose from=2E  I only looked at a billion or so=2E
-- *
-- * James Yonan Not=
-es:
-- *
-- * This function is faster than it looks, and appears to be
-- * ap=
-propriate for our usage in OpenVPN which is primarily
-- * for hash-table ba=
-sed address lookup (IPv4, IPv6, and Ethernet MAC)=2E
-- * NOTE: This functio=
-n is never used for cryptographic purposes, only
-- * to produce evenly-dist=
-ributed indexes into hash tables=2E
-- *
-- * Benchmark results: 11=2E39 mach=
-ine cycles per byte on a P2 266Mhz,
-- *                   and 12=2E1 machin=
-e cycles per byte on a
-- *                   2=2E2 Ghz P4 when hashing a 6 =
-byte string=2E
-- * --------------------------------------------------------=
-------------
-- */
--
--#define mix(a, b, c)    \
--    {                   \
--=
-        a -=3D b;         \
--        a -=3D c;         \
--        a ^=3D (c=
- >> 13); \
--        b -=3D c;         \
--        b -=3D a;         \
--     =
-   b ^=3D (a << 8);  \
--        c -=3D a;         \
--        c -=3D b;     =
-    \
--        c ^=3D (b >> 13); \
--        a -=3D b;         \
--        a =
--=3D c;         \
--        a ^=3D (c >> 12); \
--        b -=3D c;         \=
-
--        b -=3D a;         \
--        b ^=3D (a << 16); \
--        c -=3D =
-a;         \
--        c -=3D b;         \
--        c ^=3D (b >> 5);  \
--   =
-     a -=3D b;         \
--        a -=3D c;         \
--        a ^=3D (c >>=
- 3);  \
--        b -=3D c;         \
--        b -=3D a;         \
--        =
-b ^=3D (a << 10); \
--        c -=3D a;         \
--        c -=3D b;        =
- \
--        c ^=3D (b >> 15); \
--    }
--
--uint64_t
--hash_func(const uint8_t=
- *k, uint32_t length, uint32_t initval)
--{
--    uint32_t a, b, c, len;
--
-- =
-   /* Set up the internal state */
--    len =3D length;
--    a =3D b =3D 0x=
-9e3779b9; /* the golden ratio; an arbitrary value */
--    c =3D initval;   =
-     /* the previous hash value */
--
--    /*-------------------------------=
---------- handle most of the key */
--    while (len >=3D 12)
--    {
+               "MULTI TCP: new incoming client address matches existing cli=
+ent address -- new client takes precedence");
+-            oldmi->did_real_=
+hash =3D false;
+-            multi_close_instance(m, oldmi, false);
 -      =
-  a +=3D (k[0] + ((uint32_t)k[1] << 8) + ((uint32_t)k[2] << 16) + ((uint32_=
-t)k[3] << 24));
--        b +=3D (k[4] + ((uint32_t)k[5] << 8) + ((uint32_t)=
-k[6] << 16) + ((uint32_t)k[7] << 24));
--        c +=3D (k[8] + ((uint32_t)k=
-[9] << 8) + ((uint32_t)k[10] << 16) + ((uint32_t)k[11] << 24));
--        mi=
-x(a, b, c);
--        k +=3D 12;
--        len -=3D 12;
--    }
+      he->key =3D &mi->real;
+-            he->value =3D mi;
+-        }
+-   =
+     else
+-        {
+-            hash_add_fast(hash, bucket, &mi->real, hv=
+, mi);
+-        }
 -
--    /*-----=
--------------------------------- handle the last 11 bytes */
--    c +=3D le=
-ngth;
--    switch (len) /* all the case statements fall through */
--    {
--=
-        case 11:
--            c +=3D ((uint32_t)k[10] << 24);
+-        mi->did_real_hash =3D true;
+     }
+ 
+ #ifdef E=
+NABLE_DEBUG
+diff --git a/src/openvpn/mudp=2Ec b/src/openvpn/mudp=2Ec
+index =
+08c634e=2E=2E5924d9b 100644
+--- a/src/openvpn/mudp=2Ec
++++ b/src/openvpn/mu=
+dp=2Ec
+@@ -32,6 +32,7 @@
+ 
+ #include "memdbg=2Eh"
+ #include "ssl_pkt=2Eh"
++=
+#include "sid_hash=2Eh"
+ 
+ #ifdef HAVE_SYS_INOTIFY_H
+ #include <sys/inotify=
+=2Eh>
+@@ -186,7 +187,7 @@
+         }
+         else
+         {
 -            =
-/* Intentional [[fallthrough]]; */
--
--        case 10:
--            c +=3D =
-((uint32_t)k[9] << 16);
--            /* Intentional [[fallthrough]]; */
--
--=
-        case 9:
--            c +=3D ((uint32_t)k[8] << 8);
--        /* Inte=
-ntional [[fallthrough]]; */
--
--        /* the first byte of c is reserved f=
-or the length */
--        case 8:
--            b +=3D ((uint32_t)k[7] << 24=
-);
--            /* Intentional [[fallthrough]]; */
--
--        case 7:
--    =
-        b +=3D ((uint32_t)k[6] << 16);
--            /* Intentional [[fallth=
-rough]]; */
--
--        case 6:
--            b +=3D ((uint32_t)k[5] << 8);
--=
-            /* Intentional [[fallthrough]]; */
--
--        case 5:
--        =
-    b +=3D k[4];
--            /* Intentional [[fallthrough]]; */
--
--       =
- case 4:
--            a +=3D ((uint32_t)k[3] << 24);
--            /* Intent=
-ional [[fallthrough]]; */
--
--        case 3:
--            a +=3D ((uint32_t=
-)k[2] << 16);
--            /* Intentional [[fallthrough]]; */
--
--        ca=
-se 2:
--            a +=3D ((uint32_t)k[1] << 8);
--            /* Intentiona=
-l [[fallthrough]]; */
--
--        case 1:
--            a +=3D k[0];
--       =
-     /* case 0: nothing left to add */
--    }
--    mix(a, b, c);
--    /*---=
------------------------------------ report the result */
--    return c;
--}
-=
-diff --git a/src/openvpn/list=2Eh b/src/openvpn/list=2Eh
-index cbf1abf=2E=
-=2E55bc3c8 100644
---- a/src/openvpn/list=2Eh
-+++ b/src/openvpn/list=2Eh
+msg(D_MULTI_DEBUG,
++            msg(D_MULTI_MEDIUM,
+                 "Valid=
+ packet (%s) with HMAC challenge from peer (%s), "
+                 "accept=
+ing new connection=2E",
+                 packet_opcode_name(op), peer);
 @@ =
--50,7 +50,7 @@
+-212,7 +213,6 @@
+                           struct link_socket *sock,
+     =
+                      struct mroute_addr *real)
+ {
+-    struct hash *hash =
+=3D m->hash;
+     struct tls_pre_decrypt_state state =3D { 0 };
+     struct=
+ multi_instance *mi =3D NULL;
+     struct gc_arena gc =3D gc_new();
+@@ -243=
+,11 +243,6 @@
+             mi =3D multi_create_instance(m, real, sock);
+   =
+          if (mi)
+             {
+-                const uint64_t hv =3D has=
+h_value(hash, real);
+-                struct hash_bucket *bucket =3D hash_b=
+ucket(hash, hv);
+-                hash_add_fast(hash, bucket, &mi->real, hv=
+, mi);
+-
+-                mi->did_real_hash =3D true;
+                 mult=
+i_assign_peer_id(m, mi);
+ 
+                 /* If we have a session id alre=
+ady, ensure that the
+@@ -262,6 +257,7 @@
+                     {
+           =
+              session_skip_to_pre_start(session, &state, &m->top=2Ec2=2Efro=
+m);
+                     }
++                    multi_hash_sid_add(m, &stat=
+e=2Epeer_session_id, mi);
+                 }
+             }
+         }
+@@ -=
+298,15 +294,26 @@
+     return NULL;
+ }
+ 
+-struct multi_instance *
+-multi_ge=
+t_instance_udp_control(struct multi_context *m, struct link_socket *sock)
+-=
+{
+-    struct mroute_addr real =3D { 0 };
+-    real=2Eproto =3D sock->info=
+=2Eproto;
+ 
+-    if (mroute_extract_openvpn_sockaddr(&real, &m->top=2Ec2=2E=
+from=2Edest, true) && m->top=2Ec2=2Ebuf=2Elen > 0)
++static struct multi_ins=
+tance *
++multi_get_instance_udp_control(struct multi_context *m)
++{
++    /*=
+ Copy buffer, to a tmp buffer, so that reading the sesison does not
++     *=
+ modify the internal pointers */
++    struct buffer tmp =3D m->top=2Ec2=2Eb=
+uf;
++
++    /* op code */
++    uint8_t op =3D (uint8_t)buf_read_u8(&tmp) >> =
+P_OPCODE_SHIFT;
++    (void)op;
++
++    struct session_id sid =3D { 0 };
++   =
+ session_id_read(&sid, &tmp);
++
++    struct hash_element *he_sid =3D multi_=
+hash_sid_lookup(m, &sid);
++
++    if (he_sid)
+     {
+-        return multi_g=
+et_instance_udp_real(m, &real);
++        return he_sid->value;
+     }
+ 
+   =
+  return NULL;
+@@ -392,7 +399,14 @@
+     }
+     else
+     {
+-        mi =3D=
+ multi_get_instance_udp_control(m, sock);
++        if (m->top=2Ec2=2Ebuf=2E=
+len < (int)SID_SIZE + 1)
++        {
++            /* control packets must be=
+ at least the opcode byte + session id
++             * (8 byte) long, other=
+wise they are not valid packets */
++            return NULL;
++        }
++
++=
+        mi =3D multi_get_instance_udp_control(m);
+ 
+         /* we have no =
+existing multi instance for this connection, control
+          * packets ca=
+n create a session=2E Data packets cannot */
+diff --git a/src/openvpn/multi=
+=2Ec b/src/openvpn/multi=2Ec
+index 20b4f14=2E=2E60e89fb 100644
+--- a/src/op=
+envpn/multi=2Ec
++++ b/src/openvpn/multi=2Ec
+@@ -42,6 +42,7 @@
+ #include "vl=
+an=2Eh"
+ #include "auth_token=2Eh"
+ #include "route=2Eh"
++#include "sid_has=
+h=2Eh"
+ #include <inttypes=2Eh>
+ #include <string=2Eh>
+ 
+@@ -271,8 +272,8 @=
+@
+     struct multi_context *m =3D t->multi;
+     int dev =3D DEV_TYPE_UNDE=
+F;
+ 
+-    msg(D_MULTI_LOW, "MULTI: multi_init called, r=3D%d v=3D%d", t->op=
+tions=2Ereal_hash_size,
+-        t->options=2Evirtual_hash_size);
++    msg(=
+D_MULTI_LOW, "MULTI: multi_init called, r=3D%d v=3D%d s=3D%d", t->options=
+=2Ereal_hash_size,
++        t->options=2Evirtual_hash_size, t->options=2Esi=
+d_hash_size);
+ 
+     /*
+      * Get tun/tap/null device type
+@@ -300,6 +301=
+,12 @@
+     m->vhash =3D hash_init(t->options=2Evirtual_hash_size,
+        =
+                  mroute_addr_hash_function, mroute_addr_compare_function);=
+
+ 
++    /*
++     * Peer session id hash table=2E Used to lookup a session b=
+y the session
++     * id of one of its active sessions */
++    m->sid_hash =
+=3D hash_init(t->options=2Esid_hash_size,
++                            sess=
+ion_id_hash_function, session_id_hash_equal);
++
+ #ifdef ENABLE_MANAGEMENT
+ =
+    m->cid_hash =3D hash_init(t->options=2Ereal_hash_size, cid_hash_functio=
+n, cid_compare_function);
+ #endif
+@@ -427,8 +434,7 @@
+             buf_prin=
+tf(&out, "%s/", cn);
+         }
+         buf_printf(&out, "%s", mroute_addr=
+_print(&mi->real, gc));
+-        if (mi->context=2Ec2=2Etls_multi && check_=
+debug_level(D_DCO_DEBUG)
+-            && dco_enabled(&mi->context=2Eoptions=
+))
++        if (mi->context=2Ec2=2Etls_multi)
+         {
+             buf_p=
+rintf(&out, " rx-peer-id=3D%d", mi->context=2Ec2=2Etls_multi->rx_peer_id);
+=
+         }
+@@ -598,6 +604,12 @@
+         }
+ #endif
+ 
++
++        if (session=
+_id_defined(&mi->sid_hashed_value))
++        {
++            multi_hash_sid_=
+remove(m, &mi->sid_hashed_value);
++        }
++
+         if (mi->context=2Ec=
+2=2Etls_multi->rx_peer_id !=3D MAX_PEER_ID)
+         {
+             m->inst=
+ances[mi->context=2Ec2=2Etls_multi->rx_peer_id] =3D NULL;
+@@ -672,6 +684,7 =
+@@
+ 
+         hash_free(m->hash);
+         hash_free(m->vhash);
++        ha=
+sh_free(m->sid_hash);
+ #ifdef ENABLE_MANAGEMENT
+         hash_free(m->cid_h=
+ash);
+ #endif
+@@ -2456,6 +2469,34 @@
+     multi_client_connect_setenv(mi);
+=
+ }
+ 
++static bool
++multi_check_dest_addr_allowed(struct multi_context *m, s=
+truct multi_instance *mi, struct mroute_addr *real);
++
++/**
++ * This sets u=
+p the client real address (outer tunnel addr) in the
++ * hash map for data =
+channel packet=2E If the address is already taken
++ * this steps fails
++ */=
+
++static enum client_connect_return
++multi_client_connect_real_addr(struct =
+multi_context *m, struct multi_instance *mi,
++                             =
+  bool deferred, uint64_t *option_types_found)
++{
++    /* If the address is=
+ already taken up by another client we fail the new
++     * connection */
++=
+    if (!multi_check_dest_addr_allowed(m, mi, &mi->real))
++    {
++        m=
+sg(D_MULTI_ERRORS,
++            "MULTI: client IP address and port already =
+assigned to another "
++            "client, terminating connection");
++    =
+    return CC_RET_FAILED;
++    }
++
++    ASSERT(!mi->did_real_hash);
++    AS=
+SERT(hash_add(m->hash, &mi->real, mi, false));
++    mi->did_real_hash =3D t=
+rue;
++    return CC_RET_SUCCEEDED;
++}
++
+ /**
+  *  Do the necessary modifica=
+tion for doing the compress migrate=2E This is
+  *  implemented as a connec=
+t handler as it fits the modify config for a client
+@@ -2550,6 +2591,7 @@
+ =
+    uint64_t *option_types_found);
+ 
+ static const multi_client_connect_han=
+dler client_connect_handlers[] =3D {
++    multi_client_connect_real_addr,
+ =
+    multi_client_connect_compress_migrate,
+     multi_client_connect_source=
+_ccd,
+     multi_client_connect_call_plugin_v1,
+@@ -2618,6 +2660,7 @@
+     =
+}
+     return true;
+ }
++
+ /*
+  * Called as soon as the SSL/TLS connection i=
+s authenticated=2E
+  *
+@@ -3104,7 +3147,7 @@
+     /* do not allow if target=
+ address is taken by client with another cert */
+     if (!cert_hash_compar=
+e(m1->locked_cert_hash_set, m2->locked_cert_hash_set))
+     {
+-        msg(=
+D_MULTI_LOW, "Disallow float to an address taken by another client %s",
++  =
+      msg(D_MULTI_LOW, "Disallow float/connect to an address taken by anoth=
+er client %s",
+             multi_instance_string(ex_mi, false, &gc));
+ 
+  =
+       mi->context=2Ec2=2Ebuf=2Elen =3D 0;
+@@ -3117,7 +3160,7 @@
+         i=
+f (!m1->locked_username || !m2->locked_username
+             || strcmp(m1->=
+locked_username, m2->locked_username) !=3D 0)
+         {
+-            msg(D=
+_MULTI_LOW, "Disallow float to an address taken by another client %s",
++   =
+         msg(D_MULTI_LOW, "Disallow float/connect to an address taken by an=
+other client %s",
+                 multi_instance_string(ex_mi, false, &gc)=
+);
+             goto done;
+         }
+diff --git a/src/openvpn/multi=2Eh b/=
+src/openvpn/multi=2Eh
+index 8b837fa=2E=2E98547b0 100644
+--- a/src/openvpn/m=
+ulti=2Eh
++++ b/src/openvpn/multi=2Eh
+@@ -131,7 +131,15 @@
+     in_addr_t re=
+porting_addr;            /* IP address shown in status listing */
+     stru=
+ct in6_addr reporting_addr_ipv6; /* IPv6 address in status listing */
+ 
++  =
+  /** Indicates that the real address/port of the client is hashed in
++    =
+ * the multi_context m->hash table=2E */
+     bool did_real_hash;
++
++    /*=
+* If this is multi_instance is hashed in the sid lookup table the session
++=
+     * id here is a non-null session id and the hash map's key pointer poin=
+ts
++     * to this field (the value pointer points to the whole struct) */
+=
++    struct session_id sid_hashed_value;
++
+ #ifdef ENABLE_MANAGEMENT
+     b=
+ool did_cid_hash;
+     struct buffer_list *cc_config;
+@@ -170,6 +178,12 @@
+=
+                                         *   address of the remote peer=2E =
+*/
+     struct hash *vhash;                /**< VPN tunnel instances indexe=
+d by
+                                         *   virtual address of remote=
+ hosts=2E */
++    struct hash *sid_hash;             /**< TLS sessions inde=
+xed by the peer's
++                                            session id=
+=2E We do not care about
++                                            colli=
+sions here as clients should
++                                            h=
+ave unique ids and supporting
++                                            =
+clients with identical SIDs
++                                            is=
+ not needed */
+     struct schedule *schedule;
+     struct mbuf_set *mbuf; =
+            /**< Set of buffers for passing data
+                          =
+               *   channel packets between VPN tunnel
+diff --git a/src/open=
+vpn/options=2Ec b/src/openvpn/options=2Ec
+index d0f447c=2E=2E629652e 100644=
+
+--- a/src/openvpn/options=2Ec
++++ b/src/openvpn/options=2Ec
+@@ -3764,6 +37=
+64,10 @@
+     {
+         o->virtual_hash_size =3D 4 * o->max_clients;
+     =
+}
++    if (!o->sid_hash_size)
++    {
++        o->sid_hash_size =3D o->real_=
+hash_size;
++    }
+ }
+ 
+ static void
+@@ -7367,7 +7371,7 @@
+         options-=
+>ifconfig_ipv6_pool_base =3D network;
+         options->ifconfig_ipv6_pool_=
+netbits =3D netbits;
+     }
+-    else if (streq(p[0], "hash-size") && p[1] =
+&& p[2] && !p[3])
++    else if (streq(p[0], "hash-size") && p[1] && p[2] &&=
+ !p[4])
+     {
+         int real, virtual;
+ 
+@@ -7379,6 +7383,16 @@
+       =
+  }
+         options->real_hash_size =3D (uint32_t)real;
+         options->=
+virtual_hash_size =3D (uint32_t)virtual;
++
++        if (p[3])
++        {
++ =
+           int sid;
++            if (!atoi_constrained(p[3], &sid, "hash-si=
+ze sid", 1, INT_MAX, msglevel))
++            {
++                goto err;
++=
+            }
++            options->sid_hash_size =3D (uint32_t)sid;
++     =
+   }
+     }
+     else if (streq(p[0], "connect-freq") && p[1] && p[2] && !p=
+[3])
+     {
+diff --git a/src/openvpn/options=2Eh b/src/openvpn/options=2Eh
+=
+index 30a146f=2E=2Ec7825c7 100644
+--- a/src/openvpn/options=2Eh
++++ b/src/o=
+penvpn/options=2Eh
+@@ -498,6 +498,7 @@
+ 
+     uint32_t real_hash_size;
+    =
+ uint32_t virtual_hash_size;
++    uint32_t sid_hash_size;
+     const char *=
+client_connect_script;
+     const char *client_disconnect_script;
+     cons=
+t char *learn_address_script;
+diff --git a/src/openvpn/sid_hash=2Eh b/src/o=
+penvpn/sid_hash=2Eh
+new file mode 100644
+index 0000000=2E=2E4667fb1
+--- /de=
+v/null
++++ b/src/openvpn/sid_hash=2Eh
+@@ -0,0 +1,90 @@
++/*
++ *  OpenVPN -- =
+An application to securely tunnel IP networks
++ *             over a single=
+ TCP/UDP port, with support for SSL/TLS-based
++ *             session authe=
+ntication and key exchange,
++ *             packet encryption, packet authe=
+ntication, and
++ *             packet compression=2E
++ *
++ *  Copyright (C)=
+ 2026 OpenVPN Inc <sales@openvpn=2Enet>
++ *  Copyright (C) 2026 Arne Schwab=
+e <arne@rfc2549=2Eorg>
++ *
++ *
++ *  This program is free software; you can =
+redistribute it and/or modify
++ *  it under the terms of the GNU General Pu=
+blic License version 2
++ *  as published by the Free Software Foundation=2E=
+
++ *
++ *  This program is distributed in the hope that it will be useful,
++=
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MER=
+CHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE=2E  See the
++ *  GNU Gener=
+al Public License for more details=2E
++ *
++ *  You should have received a c=
+opy of the GNU General Public License along
++ *  with this program; if not,=
+ write to the Free Software Foundation, Inc=2E,
++ *  51 Franklin Street, Fi=
+fth Floor, Boston, MA 02110-1301 USA=2E
++ */
++
++#include "session_id=2Eh"
++=
+#include "multi=2Eh"
++#include "list=2Eh"
++#include "siphash=2Eh"
++
++inline=
+ static void
++multi_hash_sid_add(struct multi_context *m, struct session_id=
+ *sid,
++                   struct multi_instance *mi)
++{
++    /* This must =
+only be called if the multi instance is not already present
++     * in the =
+hash table */
++    ASSERT(!session_id_defined(&mi->sid_hashed_value));
++
++ =
+   mi->sid_hashed_value =3D *sid;
++
++    const uint64_t hv =3D hash_value(m=
+->sid_hash, &mi->sid_hashed_value);
++    struct hash_bucket *bucket =3D has=
+h_bucket(m->sid_hash, hv);
++    hash_add_fast(m->sid_hash, bucket, &mi->sid=
+_hashed_value, hv, mi);
++    multi_instance_inc_refcount(mi);
++}
++
++static =
+inline struct hash_element *
++multi_hash_sid_lookup(struct multi_context *m=
+, const struct session_id *sid)
++{
++    const uint64_t sid_hv =3D hash_valu=
+e(m->sid_hash, sid);
++    struct hash_bucket *sid_bucket =3D hash_bucket(m-=
+>sid_hash, sid_hv);
++    struct hash_element *he_sid =3D hash_lookup_fast(m=
+->sid_hash, sid_bucket, sid, sid_hv);
++    return he_sid;
++}
++
++inline stat=
+ic bool
++multi_hash_sid_remove(struct multi_context *m, const struct sessio=
+n_id *sid)
++{
++    const uint64_t sid_hv =3D hash_value(m->sid_hash, sid);
+=
++    struct hash_bucket *sid_bucket =3D hash_bucket(m->sid_hash, sid_hv);
++=
+    struct hash_element *he_sid =3D hash_lookup_fast(m->sid_hash, sid_bucke=
+t, sid, sid_hv);
++    if (he_sid)
++    {
++        struct multi_instance *mi=
+ =3D he_sid->value;
++        ASSERT(hash_remove_fast(m->sid_hash, sid_bucke=
+t, sid, sid_hv));
++        CLEAR(mi->sid_hashed_value);
++        multi_inst=
+ance_dec_refcount(mi);
++        return true;
++    }
++    else
++    {
++     =
+   return false;
++    }
++}
++
++/* hashing the session=2E As the struct is ju=
+st an 8 byte array
++ * hashing is straight forward */
++static inline uint64=
+_t
++session_id_hash_function(const void *key, const uint8_t hash_key[HASH_K=
+EY_LEN])
++{
++    return siphash_hash_func(key, sizeof(struct session_id), h=
+ash_key);
++}
++
++/* wrapper for session_id_equal to have the void* arguments=
+ that the
++ * hash map requires */
++static inline bool
++session_id_hash_equ=
+al(const void *sid1, const void *sid2)
++{
++    return session_id_equal((str=
+uct session_id *)sid1, (struct session_id *)sid2);
++}
+diff --git a/tests/un=
+it_tests/openvpn/Makefile=2Eam b/tests/unit_tests/openvpn/Makefile=2Eam
+ind=
+ex 6af25b1=2E=2Eb4611dd 100644
+--- a/tests/unit_tests/openvpn/Makefile=2Eam=
+
++++ b/tests/unit_tests/openvpn/Makefile=2Eam
+@@ -383,7 +383,8 @@
+ 	$(top_s=
+rcdir)/src/openvpn/platform=2Ec \
+ 	$(top_srcdir)/src/openvpn/list=2Ec \
+ 	=
+$(top_srcdir)/src/openvpn/siphash=2Ec \
+-	$(top_srcdir)/src/openvpn/siphash=
+_reference=2Ec
++	$(top_srcdir)/src/openvpn/siphash_reference=2Ec \
++	$(top_=
+srcdir)/src/openvpn/session_id=2Ec
+ 
+ push_update_msg_testdriver_CFLAGS =3D=
+ -I$(top_srcdir)/src/openvpn \
+ 	-I$(top_srcdir)/src/compat \
+diff --git a/=
+tests/unit_tests/openvpn/test_misc=2Ec b/tests/unit_tests/openvpn/test_misc=
+=2Ec
+index ab21d5e=2E=2Eb094344 100644
+--- a/tests/unit_tests/openvpn/test_=
+misc=2Ec
++++ b/tests/unit_tests/openvpn/test_misc=2Ec
+@@ -42,6 +42,7 @@
+ #i=
+fdef _WIN32
+ #include "win32-util=2Eh"
+ #endif
++#include "sid_hash=2Eh"
+ 
+ =
+static void
+ test_compat_lzo_string(void **state)
+@@ -142,13 +143,6 @@
+    =
+ return strcmp((const char *)key1, (const char *)key2) =3D=3D 0;
+ }
+ 
+-stat=
+ic uint32_t
+-get_random(void)
+-{
+-    /* rand() is not very random, but it'=
+s C99 and this is just for testing */
+-    return (uint32_t)rand();
+-}
+-
+ s=
+tatic struct hash_element *
+ hash_lookup_by_value(struct hash *hash, void *=
+value)
+ {
+@@ -264,7 +258,7 @@
+         {
+             struct hash_iterator =
+hi;
+             struct hash_element *he;
+-            inc =3D (get_random(=
+) % 3) + 1;
++            inc =3D ((int)get_random() % 3) + 1;
+             =
+hash_iterator_init_range(hash, &hi, base, base + inc);
+ 
+             while=
+ ((he =3D hash_iterator_next(&hi)))
+@@ -479,6 +473,65 @@
+ }
+ #endif /* _WIN=
+32 */
+ 
++
++static void
++test_sid_hash_list(void **state)
++{
++    struct gc_=
+arena gc =3D gc_new();
++    /* very simple tests to ensure the basic hash f=
+unctions work */
++
++    struct multi_context m =3D { 0 };
++    m=2Esid_hash=
+ =3D hash_init(2048, session_id_hash_function, session_id_hash_equal);
++
++ =
+   struct session_id sid1;
++    struct session_id sid2;
++    struct session=
+_id sid3;
++
++    struct multi_instance *m1, *m3;
++
++    /* multi_hash_sid_r=
+emove will call gc_free on the gc of a mi and
++     * free on the mi itself=
+ */
++    ALLOC_OBJ_CLEAR(m1, struct multi_instance);
++    ALLOC_OBJ_CLEAR(m=
+3, struct multi_instance);
++
++    m1->gc =3D gc_new();
++    m3->gc =3D gc_n=
+ew();
++
++    session_id_random(&sid1);
++    session_id_random(&sid2);
++    =
+session_id_random(&sid3);
++
++    multi_hash_sid_add(&m, &sid1, m1);
++    mu=
+lti_hash_sid_add(&m, &sid3, m3);
++
++
++    /* sid2 is not added and should n=
+ot be returned */
++    struct hash_element *he_sid =3D multi_hash_sid_looku=
+p(&m, &sid2);
++    assert_null(he_sid);
++
++    he_sid =3D multi_hash_sid_lo=
+okup(&m, &sid1);
++    assert_non_null(he_sid);
++    assert_ptr_equal(he_sid=
+->value, m1);
++
++    /* Try removing elements, only that are in the map sho=
+uld return true */
++    assert_true(multi_hash_sid_remove(&m, &sid1));
++   =
+ assert_false(multi_hash_sid_remove(&m, &sid2));
++    assert_false(multi_ha=
+sh_sid_remove(&m, &sid1));
++
++    /* should no longer find the element */
++=
+    he_sid =3D multi_hash_sid_lookup(&m, &sid1);
++    assert_null(he_sid);
+=
++
++    /* this element should still be in the hash table */
++    he_sid =3D=
+ multi_hash_sid_lookup(&m, &sid3);
++    assert_ptr_equal(he_sid->value, m3)=
+;
++
++    assert_true(multi_hash_sid_remove(&m, &sid3));
++
++    hash_free(m=
+=2Esid_hash);
++    gc_free(&gc);
++}
++
+ const struct CMUnitTest misc_tests[]=
+ =3D {
+ #ifdef _WIN32
+     cmocka_unit_test(test_win_path_in_dir),
+@@ -488,=
+7 +541,8 @@
+     cmocka_unit_test(test_auth_fail_temp_flags),
+     cmocka_u=
+nit_test(test_auth_fail_temp_flags_msg),
+     cmocka_unit_test(test_list),
+=
+-    cmocka_unit_test(test_atoi_variants)
++    cmocka_unit_test(test_atoi_v=
+ariants),
++    cmocka_unit_test(test_sid_hash_list)
  };
  
- 
--#define HASH_KEY_LEN 4
-+#define HASH_KEY_LEN 16
- 
- =
-struct hash
- {
-@@ -103,8 +103,6 @@
- 
- void hash_iterator_free(struct hash_i=
-terator *hi);
- 
--uint64_t hash_func(const uint8_t *k, uint32_t length, uint=
-32_t initval);
--
- static inline uint64_t
- hash_value(const struct hash *has=
-h, const void *key)
- {
-diff --git a/src/openvpn/mroute=2Ec b/src/openvpn/mr=
-oute=2Ec
-index a5179d0=2E=2Eedf8239 100644
---- a/src/openvpn/mroute=2Ec
-+++=
- b/src/openvpn/mroute=2Ec
-@@ -33,6 +33,7 @@
- #include "socket_util=2Eh"
- 
- =
-#include "memdbg=2Eh"
-+#include "siphash=2Eh"
- 
- void
- mroute_addr_init(str=
-uct mroute_addr *addr)
-@@ -357,8 +358,8 @@
- uint64_t
- mroute_addr_hash_func=
-tion(const void *key, const uint8_t hash_key[HASH_KEY_LEN])
- {
--    return =
-hash_func(mroute_addr_hash_ptr((const struct mroute_addr *)key),
--         =
-            mroute_addr_hash_len((const struct mroute_addr *)key), *(uint32=
-_t *)hash_key);
-+    return siphash_hash_func(mroute_addr_hash_ptr((const s=
-truct mroute_addr *)key),
-+                             mroute_addr_hash_le=
-n((const struct mroute_addr *)key), hash_key);
- }
- 
- bool
-diff --git a/src/=
-openvpn/siphash=2Ec b/src/openvpn/siphash=2Ec
-new file mode 100644
-index 00=
-00000=2E=2E0f58c25
---- /dev/null
-+++ b/src/openvpn/siphash=2Ec
-@@ -0,0 +1,4=
-9 @@
-+/*
-+*  OpenVPN -- An application to securely tunnel IP networks
-+ *  =
-           over a single UDP port, with support for SSL/TLS-based
-+ *      =
-       session authentication and key exchange,
-+ *             packet encr=
-yption, packet authentication, and
-+ *             packet compression=2E
-+ =
-*
-+ *  Copyright (C) 2002-2026 OpenVPN Inc <sales@openvpn=2Enet>
-+ *
-+ *  T=
-his program is free software; you can redistribute it and/or modify
-+ *  it=
- under the terms of the GNU General Public License version 2
-+ *  as publis=
-hed by the Free Software Foundation=2E
-+ *
-+ *  This program is distributed=
- in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without=
- even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICU=
-LAR PURPOSE=2E  See the
-+ *  GNU General Public License for more details=2E=
-
-+ *
-+ *  You should have received a copy of the GNU General Public License=
- along
-+ *  with this program; if not, see <https://www=2Egnu=2Eorg/license=
-s/>=2E
-+ */
-+
-+#ifdef HAVE_CONFIG_H
-+#include "config=2Eh"
-+#endif
-+
-+#incl=
-ude <stdlib=2Eh>
-+#include "syshead=2Eh"
-+#include "siphash=2Eh"
-+#include =
-"buffer=2Eh"
-+#include "crypto=2Eh"
-+#include "list=2Eh"
-+
-+static_assert(S=
-IPHASH_KEY_SIZE <=3D HASH_KEY_LEN, "hash map key size must be at least the =
-same as siphash key size");
-+
-+uint64_t
-+siphash_hash_func(const uint8_t *k=
-, uint32_t length, const uint8_t hash_key[SIPHASH_KEY_SIZE])
-+{
-+    /* Thi=
-s is not endian-safe but we only care about local hashes here
-+     * and r=
-eversing the byte does not make the hash functions any
-+     * weaker or le=
-ss usable */
-+    union
-+    {
-+        uint8_t out[8];
-+        uint64_t h=
-ash;
-+    } ret;
-+    siphash(k, length, hash_key, ret=2Eout, sizeof(ret=2E=
-out));
-+    return ret=2Ehash;
-+}
-\ No newline at end of file
-diff --git a/=
-src/openvpn/siphash=2Eh b/src/openvpn/siphash=2Eh
-index 462175c=2E=2E26516e=
-1 100644
---- a/src/openvpn/siphash=2Eh
-+++ b/src/openvpn/siphash=2Eh
-@@ -87=
-,4 +87,15 @@
-     prng_bytes(key, SIPHASH_KEY_SIZE);
- }
- 
-+/**
-+ * Wrapper =
-of the siphash function to be able to use it in the
-+ * hash map=2E
-+ *
-+ *=
- @param k the data to hash
-+ * @param length length of the data to hash
-+ *=
- @param hash_key   the siphash key
-+ * @return a uint64_t containing the re=
-sult of the hashing
-+ */
-+uint64_t
-+siphash_hash_func(const uint8_t *k, uin=
-t32_t length, const uint8_t hash_key[SIPHASH_KEY_SIZE]);
- #endif /* ifndef =
-SIPHASH_H */
-diff --git a/tests/unit_tests/openvpn/Makefile=2Eam b/tests/un=
-it_tests/openvpn/Makefile=2Eam
-index c76d94a=2E=2E6af25b1 100644
---- a/test=
-s/unit_tests/openvpn/Makefile=2Eam
-+++ b/tests/unit_tests/openvpn/Makefile=
-=2Eam
-@@ -86,6 +86,7 @@
- 	$(top_srcdir)/src/openvpn/mtu=2Ec \
- 	$(top_srcdi=
-r)/src/openvpn/win32-util=2Ec \
- 	$(top_srcdir)/src/openvpn/mss=2Ec \
-+	$(t=
-op_srcdir)/src/openvpn/siphash=2Ec \
- 	$(top_srcdir)/src/openvpn/siphash_re=
-ference=2Ec
- 
- dhcp_testdriver_CFLAGS  =3D -I$(top_srcdir)/src/openvpn -I$(=
-top_srcdir)/src/compat @TEST_CFLAGS@ -DDHCP_UNIT_TEST
-@@ -380,7 +381,9 @@
- =
-	$(top_srcdir)/src/openvpn/ssl_util=2Ec \
- 	$(top_srcdir)/src/openvpn/win32=
--util=2Ec \
- 	$(top_srcdir)/src/openvpn/platform=2Ec \
--	$(top_srcdir)/src/=
-openvpn/list=2Ec
-+	$(top_srcdir)/src/openvpn/list=2Ec \
-+	$(top_srcdir)/src=
-/openvpn/siphash=2Ec \
-+	$(top_srcdir)/src/openvpn/siphash_reference=2Ec
- 
-=
- push_update_msg_testdriver_CFLAGS =3D -I$(top_srcdir)/src/openvpn \
- 	-I$(=
-top_srcdir)/src/compat \
-diff --git a/tests/unit_tests/openvpn/test_misc=2E=
-c b/tests/unit_tests/openvpn/test_misc=2Ec
-index 501286c=2E=2Eab21d5e 10064=
-4
---- a/tests/unit_tests/openvpn/test_misc=2Ec
-+++ b/tests/unit_tests/openv=
-pn/test_misc=2Ec
-@@ -32,6 +32,7 @@
- #include <string=2Eh>
- #include <setjmp=
-=2Eh>
- #include <cmocka=2Eh>
-+#include <siphash=2Eh>
- 
- #include "ssl_util=
-=2Eh"
- #include "options_util=2Eh"
-@@ -132,7 +133,7 @@
- {
-     const char *=
-str =3D (const char *)key;
-     const uint32_t len =3D (uint32_t)strlen(str=
-);
--    return hash_func((const uint8_t *)str, len, *(uint32_t *)(hash_key)=
-);
-+    return siphash_hash_func((const uint8_t *)str, len, hash_key);
- }
- =
-
- static bool
+ int
 
 -- 
-To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+=
-/1573?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit h=
-ttp://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+To view=
+, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1727?usp=3Demail
+To unsub=
+scribe, or for help writing mail filters, visit http://gerrit=2Eopenvpn=2En=
+et/settings?usp=3Demail
 
-Gerrit-MessageType: newp=
-atchset
-Gerrit-Project: openvpn
+Gerrit-MessageType: newpatchset
+Gerrit-Project: op=
+envpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I80=
-7f398903ac2047530800c29949793c6f4f0ec9
-Gerrit-Change-Number: 1573
-Gerrit-Pa=
-tchSet: 22
-Gerrit-Owner: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Revi=
-ewer: flichtenheld <frank@lichtenheld=2Ecom>
-Gerrit-CC: openvpn-devel <open=
-vpn-devel@lists=2Esourceforge=2Enet>
-Gerrit-Attention: flichtenheld <frank@=
+Gerrit-Change-Id: Idb59ecd119331b198792ad1379be=
+c8600211651b
+Gerrit-Change-Number: 1727
+Gerrit-PatchSet: 25
+Gerrit-Owner: p=
+laisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Reviewer: flichtenheld <frank@=
 lichtenheld=2Ecom>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourcefo=
+rge=2Enet>
 
---u6q5F4BM6dE=
+--TnPoNrKfDZg=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld=2E </p>
-<p>plaisthos <strong>uploaded pa=
-tch set #22</strong> to this change=2E</p><p><a href=3D"http://gerrit=2Eope=
-nvpn=2Enet/c/openvpn/+/1573?usp=3Demail">View Change</a></p><p>The followin=
-g approvals got outdated and were removed:
-Code-Review-1 by flichtenheld</p=
-><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">Replace custom hash_func with siphash<br><br>Benchmarking th=
-e two functions gives a bit better<br>performance to the custom hash functi=
-on but also it is<br>difficult to get a good measurement since the order of=
-<br>magnitude that these function use is similar to the<br>test framework i=
-tself=2E<br><br>However siphash24 is a modern and better suited<br>function=
- for the hash tables that we are using<br>because the inputs are controlled=
- by the<br>peers (e=2Eg=2E source IP address)=2E<br><br>Change-Id: I807f398=
-903ac2047530800c29949793c6f4f0ec9<br>Signed-off-by: Arne Schwabe &lt;arne@r=
-fc2549=2Eorg&gt;<br>---<br>M CMakeLists=2Etxt<br>M src/openvpn/Makefile=2Ea=
-m<br>M src/openvpn/list=2Ec<br>M src/openvpn/list=2Eh<br>M src/openvpn/mrou=
-te=2Ec<br>A src/openvpn/siphash=2Ec<br>M src/openvpn/siphash=2Eh<br>M tests=
-/unit_tests/openvpn/Makefile=2Eam<br>M tests/unit_tests/openvpn/test_misc=
-=2Ec<br>9 files changed, 77 insertions(+), 187 deletions(-)<br><br></pre><p=
-re class=3D"blocks" style=3D"font-family: monospace,monospace; white-space:=
- pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/change=
-s/73/1573/22</pre><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;"><span>diff --git a/CMakeLists=2Etxt b/CMakeLists=2Etxt</span=
-><br><span>index 29b53a9=2E=2E9b31b1a 100644</span><br><span>--- a/CMakeLis=
-ts=2Etxt</span><br><span>+++ b/CMakeLists=2Etxt</span><br><span>@@ -572,6 +=
-572,7 @@</span><br><span>     src/openvpn/shaper=2Eh</span><br><span>     s=
-rc/openvpn/sig=2Ec</span><br><span>     src/openvpn/sig=2Eh</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/siphash=2Ec</span><=
-br><span>     src/openvpn/siphash=2Eh</span><br><span>     src/openvpn/siph=
-ash_reference=2Ec</span><br><span>     src/openvpn/socket=2Ec</span><br><sp=
-an>@@ -835,7 +836,10 @@</span><br><span>         src/openvpn/options_util=
-=2Ec</span><br><span>         src/openvpn/ssl_util=2Ec</span><br><span>    =
-     src/openvpn/list=2Ec</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-        )</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  src/openvpn/siphash=2Eh</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        src/openvpn/siphash=2Ec</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        src/openvpn/siphash_reference=2Ec</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    )</span><br><span> </span><br><=
-span>     target_sources(test_ncp PRIVATE</span><br><span>         src/open=
-vpn/crypto_epoch=2Ec</span><br><span>diff --git a/src/openvpn/Makefile=2Eam=
- b/src/openvpn/Makefile=2Eam</span><br><span>index 1f77384=2E=2Ef5a7621 100=
-644</span><br><span>--- a/src/openvpn/Makefile=2Eam</span><br><span>+++ b/s=
-rc/openvpn/Makefile=2Eam</span><br><span>@@ -128,7 +128,8 @@</span><br><spa=
-n> 	session_id=2Ec session_id=2Eh \</span><br><span> 	shaper=2Ec shaper=2Eh=
- \</span><br><span> 	sig=2Ec sig=2Eh \</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-	siphash_reference=2Ec siphash=2Eh \</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+	siphash_reference=2Ec \</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+	siphash=2Ec siphash=2Eh \</span><br=
-><span> 	socket=2Ec socket=2Eh \</span><br><span> 	socket_util=2Ec socket_u=
-til=2Eh \</span><br><span> 	socks=2Ec socks=2Eh \</span><br><span>diff --gi=
-t a/src/openvpn/list=2Ec b/src/openvpn/list=2Ec</span><br><span>index e52c7=
-78=2E=2E9e80761 100644</span><br><span>--- a/src/openvpn/list=2Ec</span><br=
-><span>+++ b/src/openvpn/list=2Ec</span><br><span>@@ -31,9 +31,6 @@</span><=
-br><span> #include &quot;list=2Eh&quot;</span><br><span> </span><br><span> =
-#include &quot;crypto=2Eh&quot;</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-#include &quot;misc=2Eh&quot;</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#in=
-clude &quot;memdbg=2Eh&quot;</span><br><span> </span><br><span> struct hash=
- *</span><br><span> hash_init(const uint32_t n_buckets,</span><br><span>@@ =
--316,178 +313,3 @@</span><br><span>     hi-&gt;last-&gt;key =3D NULL;</span=
-><br><span>     hi-&gt;bucket_marked =3D true;</span><br><span> }</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-/*</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * --------------=
-------------------------------------------------------</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">- * hash() -- hash a variable-length key in=
-to a 32-bit value</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * k=
-     : the key (the unaligned variable-length array of bytes)</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">- * len   : the length of the key, c=
-ounting by bytes</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * le=
-vel : can be any 4-byte value</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">- * Returns a 32-bit value=2E  Every bit of the key affects every bi=
-t of</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * the return val=
-ue=2E  Every 1-bit and 2-bit delta achieves avalanche=2E</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">- * About 36+6len instructions=2E</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">- * #define hashsize(n) ((uint32_t)1&lt;&lt;(n))<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">- * #define hashmask(n)=
- (hashsize(n)-1)</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">- * The best hash table s=
-izes are powers of 2=2E  There is no need to do</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">- * mod a prime (mod is sooo slow!)=2E  If you nee=
-d less than 32 bits,</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-* use a bitmask=2E  For example, if you need only 10 bits, do</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">- * h =3D (h &amp; hashmask(10));</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">- * In which case, the ha=
-sh table should have hashsize(10) elements=2E</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">- * If you are hashing n strings (uint8_t **)k, do it like this:</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">- * for (i=3D0, h=3D0; i&lt;n=
-; ++i) h =3D hash( k[i], len[i], h);</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * B=
-y Bob Jenkins, 1996=2E  bob_jenkins@burtleburtle=2Enet=2E  You may use this=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * code any way you w=
-ish, private, educational, or commercial=2E  It&#39;s free=2E</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">- * See https://burtleburtle=2Enet/bob/hash/evahash=2Eh=
-tml</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Use for hash ta=
-ble lookup, or anything where one collision in 2^32 is</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">- * acceptable=2E  Do NOT use for cryptogra=
-phic purposes=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">- * ---------------------=
------------------------------------------------</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">- * mix -- mix 3 32-bit values reversibly=2E</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">- * For every delta with one or two bit set, an=
-d the deltas of all three</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">- * high bits or all three low bits, whether the original value of a,b,c=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * is almost all zero=
- or is uniformly distributed,</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">- * If mix() is run forward or backward, at least 32 bits in a,b,c</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">- * have at least 1/4 pr=
-obability of changing=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">- * If mix() is run forward, every bit of c will change between 1/3 and</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">- * 2/3 of the time=2E  =
-(Well, 22/100 and 78/100 for some 2-bit deltas=2E)</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">- * mix() was built out of 36 single-cycle late=
-ncy instructions in a</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
- * structure that could supported 2x parallelism, like so:</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">- *    a -=3D b;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">- *    a -=3D c; x =3D (c&gt;&gt;13);</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">- *    b -=3D c; a ^=3D x;</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">- *    b -=3D a; x =3D (a=
-&lt;&lt;8);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *    c -=
-=3D a; b ^=3D x;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *   =
- c -=3D b; x =3D (b&gt;&gt;13);</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">- *    =2E=2E=2E</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">- * Unfortunately, superscalar Pentiums and Sparcs can&#39;t take advant=
-age</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * of that paralle=
-lism=2E  They&#39;ve also turned some of those single-cycle</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">- * latency instructions into multi-cy=
-cle latency instructions=2E  Still,</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">- * this is the fastest good hash I could find=2E  There were =
-about 2^^68</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * to choo=
-se from=2E  I only looked at a billion or so=2E</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">- * James Yonan Notes:</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * This func=
-tion is faster than it looks, and appears to be</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">- * appropriate for our usage in OpenVPN which is =
-primarily</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * for hash-=
-table based address lookup (IPv4, IPv6, and Ethernet MAC)=2E</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">- * NOTE: This function is never used=
- for cryptographic purposes, only</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">- * to produce evenly-distributed indexes into hash tables=2E</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">- * Benchmark results: 11=2E39 machine cycle=
-s per byte on a P2 266Mhz,</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">- *                   and 12=2E1 machine cycles per byte on a</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">- *                   2=2E2 Ghz =
-P4 when hashing a 6 byte string=2E</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">- * -----------------------------------------------------------=
----------</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-#define mix(a, b, c)    \</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    {                   \</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        a -=3D b;         \</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-        a -=3D c;         \</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-        a ^=3D (c &gt;&gt; 13);=
- \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        b -=3D c;  =
-       \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        b -=
-=3D a;         \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   b ^=3D (a &lt;&lt; 8);  \</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        c -=3D a;         \</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        c -=3D b;         \</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-        c ^=3D (b &gt;&gt; 13); \</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        a -=3D b;         \</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-        a -=3D c;         \</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-        a ^=3D (c &gt;&gt; 12);=
- \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        b -=3D c;  =
-       \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        b -=
-=3D a;         \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   b ^=3D (a &lt;&lt; 16); \</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        c -=3D a;         \</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        c -=3D b;         \</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-        c ^=3D (b &gt;&gt; 5);  \</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        a -=3D b;         \</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-        a -=3D c;         \</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-        a ^=3D (c &gt;&gt; 3); =
- \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        b -=3D c;  =
-       \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        b -=
-=3D a;         \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   b ^=3D (a &lt;&lt; 10); \</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        c -=3D a;         \</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        c -=3D b;         \</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-        c ^=3D (b &gt;&gt; 15); \</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-uint6=
-4_t</span><br><span style=3D"color: hsl(0, 100%, 40%);">-hash_func(const ui=
-nt8_t *k, uint32_t length, uint32_t initval)</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    uint32_t a, b, c, len;</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* Set up=
- the internal state */</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    len =3D length;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   a =3D b =3D 0x9e3779b9; /* the golden ratio; an arbitrary value */</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    c =3D initval;        /=
-* the previous hash value */</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /*--------=
--------------------------------- handle most of the key */</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    while (len &gt;=3D 12)</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-        a +=3D (k[0] + ((uint32_t)k[1] &lt;&lt; 8=
-) + ((uint32_t)k[2] &lt;&lt; 16) + ((uint32_t)k[3] &lt;&lt; 24));</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-        b +=3D (k[4] + ((uint32=
-_t)k[5] &lt;&lt; 8) + ((uint32_t)k[6] &lt;&lt; 16) + ((uint32_t)k[7] &lt;&l=
-t; 24));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        c +=
-=3D (k[8] + ((uint32_t)k[9] &lt;&lt; 8) + ((uint32_t)k[10] &lt;&lt; 16) + (=
-(uint32_t)k[11] &lt;&lt; 24));</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-        mix(a, b, c);</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-        k +=3D 12;</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        len -=3D 12;</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    /*--------------------------=
------------ handle the last 11 bytes */</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    c +=3D length;</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    switch (len) /* all the case statements fall through */<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        case 11:</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            c +=3D ((uint32_t)k[10] &lt;&lt=
-; 24);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            /* =
-Intentional [[fallthrough]]; */</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        cas=
-e 10:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            c +=
-=3D ((uint32_t)k[9] &lt;&lt; 16);</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-            /* Intentional [[fallthrough]]; */</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-        case 9:</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-            c +=3D ((uint32_t)k[8] &lt;&lt; 8);</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        /* Intentional [[fallthrough]];=
- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        /* the first byte of c is reser=
-ved for the length */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        case 8:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-      b +=3D ((uint32_t)k[7] &lt;&lt; 24);</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-            /* Intentional [[fallthrough]]; */</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-        case 7:</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-            b +=3D ((uint32_t)k[6] &lt;&lt; 16);</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-            /* Intentional [[=
-fallthrough]]; */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        case 6:</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-            b +=3D ((uint32_t)k=
-[5] &lt;&lt; 8);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-       /* Intentional [[fallthrough]]; */</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-       case 5:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-     b +=3D k[4];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-        /* Intentional [[fallthrough]]; */</span><br><span style=3D"color: =
+<!DOCTYPE html><html><head><style></style></head><body><p>plaisthos <strong=
+>uploaded patch set #25</strong> to this change=2E</p><p><a href=3D"http://=
+gerrit=2Eopenvpn=2Enet/c/openvpn/+/1727?usp=3Demail">View Change</a></p><pr=
+e class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: =
+pre-wrap;">Add lookup of multi session by session id<br><br>This refactors =
+the way that we lookup control channel packets for UDP<br>packets from othe=
+r peers=2E Instead of looking them up by their source<br>IP address, we loo=
+kup the session ids instead=2E<br><br>It also has the consequence that we c=
+an have multiple ongoing<br>sessions from the same source IP address and th=
+e new session will<br>go through all the connect steps like an initial sess=
+ion=2E<br><br>The check if the new session can take over the old session&#3=
+9;s IP<br>is now also the same as for floating=2E<br><br>This eliminates a =
+whole class of bugs that we currently have that<br>break connection if the =
+reconnecting client has different<br>capabilities as the setup and negotiat=
+ion is inherited from the<br>previous client currently=2E Currently there i=
+s at least one bug<br>regarding the dynamic tls-crypt in this situation=2E<=
+br><br>This also changes the user visible behaviour for clients<br>reconnec=
+ting from the same IP and port=2E They are now almost<br>behaving like clie=
+nts that reconnect from a different IP<br>address=2E These now do the whole=
+ renegotiation and run<br>connect scripts/plugins and all the things are no=
+rmally<br>skipped when reconnecting from the same IP and port=2E<br><br>The=
+ only difference is that duplicate-cn does not<br>allow both connection=2E<=
+br><br>This will also eventually allow us to get rid of TM_INITIAL<br>slot =
+as we now do no longer need to keep an ongoing and a<br>new session anymore=
+=2E Currently the p2p mode still needs<br>the extra session slot for the ne=
+w session so we cannot<br>remove it just yet=2E<br><br>This now allows a mu=
+ltiple pending session from the<br>same source IP and port=2E Previously a =
+client would need<br>to use a different ports to create multiple pending<br=
+>session=2E This change does not make it really easier to<br>exhaust all pe=
+nding session than before=2E<br><br>Change-Id: Idb59ecd119331b198792ad1379b=
+ec8600211651b<br>Signed-off-by: Arne Schwabe &lt;arne@rfc2549=2Eorg&gt;<br>=
+---<br>M CMakeLists=2Etxt<br>M doc/man-sections/advanced-options=2Erst<br>M=
+ src/openvpn/Makefile=2Eam<br>M src/openvpn/mtcp=2Ec<br>M src/openvpn/mudp=
+=2Ec<br>M src/openvpn/multi=2Ec<br>M src/openvpn/multi=2Eh<br>M src/openvpn=
+/options=2Ec<br>M src/openvpn/options=2Eh<br>A src/openvpn/sid_hash=2Eh<br>=
+M tests/unit_tests/openvpn/Makefile=2Eam<br>M tests/unit_tests/openvpn/test=
+_misc=2Ec<br>12 files changed, 270 insertions(+), 59 deletions(-)<br><br></=
+pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-=
+space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/=
+changes/27/1727/25</pre><pre style=3D"font-family: monospace,monospace; whi=
+te-space: pre-wrap;"><span>diff --git a/CMakeLists=2Etxt b/CMakeLists=2Etxt=
+</span><br><span>index 9b31b1a=2E=2E40fea99 100644</span><br><span>--- a/CM=
+akeLists=2Etxt</span><br><span>+++ b/CMakeLists=2Etxt</span><br><span>@@ -8=
+39,6 +839,7 @@</span><br><span>         src/openvpn/siphash=2Eh</span><br><=
+span>         src/openvpn/siphash=2Ec</span><br><span>         src/openvpn/=
+siphash_reference=2Ec</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        src/openvpn/session_id=2Ec</span><br><span>     )</span><br><span=
+> </span><br><span>     target_sources(test_ncp PRIVATE</span><br><span>dif=
+f --git a/doc/man-sections/advanced-options=2Erst b/doc/man-sections/advanc=
+ed-options=2Erst</span><br><span>index 3eff3085=2E=2Eb20c3f7 100644</span><=
+br><span>--- a/doc/man-sections/advanced-options=2Erst</span><br><span>+++ =
+b/doc/man-sections/advanced-options=2Erst</span><br><span>@@ -29,16 +29,18 =
+@@</span><br><span> </span><br><span> --hash-size args</span><br><span>   S=
+et the size of the real address hash table to ``r`` and the virtual</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-  address table to ``v``=2E</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+  address table to ``=
+v``=2E If specified set the size of session id hash table</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+  to ``s``=2E Otherwise ``s`` will be=
+ set to the same value as ``r``=2E</span><br><span> </span><br><span>   Val=
+id syntax:</span><br><span>   ::</span><br><span> </span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-     hash-size r v</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+     hash-size r v [s]</span><br><span> </span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-  By default, both tables ar=
+e sized at 4 times ``--max-clients`` buckets=2E</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+  By default, all three tables are sized at 4 t=
+imes ``--max-clients`` buckets=2E</span><br><span>   With the default of 10=
+24 of ``--max-clients`` this gives 4096 buckets=2E</span><br><span> </span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> --bcast-=
+buffers n</span><br><span>   Allocate ``n`` buffers for broadcast datagrams=
+ (default :code:`256`)=2E</span><br><span> </span><br><span>diff --git a/sr=
+c/openvpn/Makefile=2Eam b/src/openvpn/Makefile=2Eam</span><br><span>index f=
+5a7621=2E=2Eeb3533c 100644</span><br><span>--- a/src/openvpn/Makefile=2Eam<=
+/span><br><span>+++ b/src/openvpn/Makefile=2Eam</span><br><span>@@ -127,6 +=
+127,7 @@</span><br><span> 	schedule=2Ec schedule=2Eh \</span><br><span> 	se=
+ssion_id=2Ec session_id=2Eh \</span><br><span> 	shaper=2Ec shaper=2Eh \</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+	sid_hash=2Eh \</span><=
+br><span> 	sig=2Ec sig=2Eh \</span><br><span> 	siphash_reference=2Ec \</spa=
+n><br><span> 	siphash=2Ec siphash=2Eh \</span><br><span>diff --git a/src/op=
+envpn/mtcp=2Ec b/src/openvpn/mtcp=2Ec</span><br><span>index f000283=2E=2Eeb=
+4e944 100644</span><br><span>--- a/src/openvpn/mtcp=2Ec</span><br><span>+++=
+ b/src/openvpn/mtcp=2Ec</span><br><span>@@ -42,36 +42,12 @@</span><br><span=
+> {</span><br><span>     struct gc_arena gc =3D gc_new();</span><br><span> =
+    struct multi_instance *mi =3D NULL;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    struct hash *hash =3D m-&gt;hash;</span><br><span> </=
+span><br><span>     mi =3D multi_create_instance(m, NULL, sock);</span><br>=
+<span>     if (mi)</span><br><span>     {</span><br><span>         mi-&gt;r=
+eal=2Eproto =3D sock-&gt;info=2Eproto;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-        struct hash_element *he;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-        const uint64_t hv =3D hash_value(hash, =
+&amp;mi-&gt;real);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     struct hash_bucket *bucket =3D hash_bucket(hash, hv);</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>         multi_assign=
+_peer_id(m, mi);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-        he =3D hash_lookup=
+_fast(hash, bucket, &amp;mi-&gt;real, hv);</span><br><span style=3D"color: =
 hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        case 4:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-      a +=3D ((uint32_t)k[3] &lt;&lt; 24);</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-            /* Intentional [[fallthrough]]; */</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-        case 3:</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-            a +=3D ((uint32_t)k[2] &lt;&lt; 16);</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-            /* Intentional [[=
-fallthrough]]; */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        case 2:</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-            a +=3D ((uint32_t)k=
-[1] &lt;&lt; 8);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-       /* Intentional [[fallthrough]]; */</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-       case 1:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-     a +=3D k[0];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-        /* case 0: nothing left to add */</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    mix(a, b, c);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    /*-------------------------------------- report the result */</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    return c;</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-}</span><br><span>diff --git a/src/open=
-vpn/list=2Eh b/src/openvpn/list=2Eh</span><br><span>index cbf1abf=2E=2E55bc=
-3c8 100644</span><br><span>--- a/src/openvpn/list=2Eh</span><br><span>+++ b=
-/src/openvpn/list=2Eh</span><br><span>@@ -50,7 +50,7 @@</span><br><span> };=
-</span><br><span> </span><br><span> </span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-#define HASH_KEY_LEN 4</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+#define HASH_KEY_LEN 16</span><br><span> </span><br><span=
-> struct hash</span><br><span> {</span><br><span>@@ -103,8 +103,6 @@</span>=
-<br><span> </span><br><span> void hash_iterator_free(struct hash_iterator *=
-hi);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--uint64_t hash_func(const uint8_t *k, uint32_t length, uint32_t initval);</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> stati=
-c inline uint64_t</span><br><span> hash_value(const struct hash *hash, cons=
-t void *key)</span><br><span> {</span><br><span>diff --git a/src/openvpn/mr=
-oute=2Ec b/src/openvpn/mroute=2Ec</span><br><span>index a5179d0=2E=2Eedf823=
-9 100644</span><br><span>--- a/src/openvpn/mroute=2Ec</span><br><span>+++ b=
-/src/openvpn/mroute=2Ec</span><br><span>@@ -33,6 +33,7 @@</span><br><span> =
-#include &quot;socket_util=2Eh&quot;</span><br><span> </span><br><span> #in=
-clude &quot;memdbg=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+#include &quot;siphash=2Eh&quot;</span><br><span> </span><br><span=
-> void</span><br><span> mroute_addr_init(struct mroute_addr *addr)</span><b=
-r><span>@@ -357,8 +358,8 @@</span><br><span> uint64_t</span><br><span> mrou=
-te_addr_hash_function(const void *key, const uint8_t hash_key[HASH_KEY_LEN]=
-)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   return hash_func(mroute_addr_hash_ptr((const struct mroute_addr *)key),<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-                     m=
-route_addr_hash_len((const struct mroute_addr *)key), *(uint32_t *)hash_key=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return siphas=
-h_hash_func(mroute_addr_hash_ptr((const struct mroute_addr *)key),</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+                            =
- mroute_addr_hash_len((const struct mroute_addr *)key), hash_key);</span><b=
-r><span> }</span><br><span> </span><br><span> bool</span><br><span>diff --g=
-it a/src/openvpn/siphash=2Ec b/src/openvpn/siphash=2Ec</span><br><span>new =
-file mode 100644</span><br><span>index 0000000=2E=2E0f58c25</span><br><span=
->--- /dev/null</span><br><span>+++ b/src/openvpn/siphash=2Ec</span><br><spa=
-n>@@ -0,0 +1,49 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/=
-*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+*  OpenVPN -- An a=
-pplication to securely tunnel IP networks</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+ *             over a single UDP port, with support f=
-or SSL/TLS-based</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
-            session authentication and key exchange,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *             packet encryption, packet =
-authentication, and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- *             packet compression=2E</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- *  Copyright (C) 2002-2026 OpenVPN Inc &lt;sales@openvpn=2Enet&gt;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+ *  This program is free software; you can r=
-edistribute it and/or modify</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+ *  it under the terms of the GNU General Public License version 2=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  as published by=
- the Free Software Foundation=2E</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  =
-This program is distributed in the hope that it will be useful,</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY; w=
-ithout even the implied warranty of</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE=2E =
- See the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  GNU Gen=
-eral Public License for more details=2E</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+ *  You should have received a copy of the GNU General Public License al=
-ong</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  with this pr=
-ogram; if not, see &lt;https://www=2Egnu=2Eorg/licenses/&gt;=2E</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+#ifdef HAVE_CONFIG_H</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+#include &quot;config=2Eh&quot;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &=
-lt;stdlib=2Eh&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#i=
-nclude &quot;syshead=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+#include &quot;siphash=2Eh&quot;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+#include &quot;buffer=2Eh&quot;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+#include &quot;crypto=2Eh&quot;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;list=2Eh&quo=
-t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+static_assert(SIPHASH_KEY_SIZE &lt;=
-=3D HASH_KEY_LEN, &quot;hash map key size must be at least the same as siph=
-ash key size&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+uint64_t</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+siphash_hash_func(const uint8=
-_t *k, uint32_t length, const uint8_t hash_key[SIPHASH_KEY_SIZE])</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    /* This is not endian-safe but we only care=
- about local hashes here</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+     * and reversing the byte does not make the hash functions any</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+     * weaker or less u=
-sable */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    union</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        uint8_t out[8];</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        uint64_t hash;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    } ret;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    siphash(k, length, hash_key, ret=
-=2Eout, sizeof(ret=2Eout));</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    return ret=2Ehash;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+}</span><br><span>\ No newline at end of file</span><br><span>di=
-ff --git a/src/openvpn/siphash=2Eh b/src/openvpn/siphash=2Eh</span><br><spa=
-n>index 462175c=2E=2E26516e1 100644</span><br><span>--- a/src/openvpn/sipha=
-sh=2Eh</span><br><span>+++ b/src/openvpn/siphash=2Eh</span><br><span>@@ -87=
-,4 +87,15 @@</span><br><span>     prng_bytes(key, SIPHASH_KEY_SIZE);</span>=
-<br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Wr=
-apper of the siphash function to be able to use it in the</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+ * hash map=2E</span><br><span style=
+        if (he)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+  {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            struct=
+ multi_instance *oldmi =3D (struct multi_instance *)he-&gt;value;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-            msg(D_MULTI_LOW,</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-                &quot;MU=
+LTI TCP: new incoming client address matches existing client address -- new=
+ client takes precedence&quot;);</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-            oldmi-&gt;did_real_hash =3D false;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-            multi_close_instance(m, old=
+mi, false);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
+  he-&gt;key =3D &amp;mi-&gt;real;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-            he-&gt;value =3D mi;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-        else</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+   hash_add_fast(hash, bucket, &amp;mi-&gt;real, hv, mi);</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-        mi-&gt;did_real_hash =3D true;</span><br><span>     }</span><br>=
+<span> </span><br><span> #ifdef ENABLE_DEBUG</span><br><span>diff --git a/s=
+rc/openvpn/mudp=2Ec b/src/openvpn/mudp=2Ec</span><br><span>index 08c634e=2E=
+=2E5924d9b 100644</span><br><span>--- a/src/openvpn/mudp=2Ec</span><br><spa=
+n>+++ b/src/openvpn/mudp=2Ec</span><br><span>@@ -32,6 +32,7 @@</span><br><s=
+pan> </span><br><span> #include &quot;memdbg=2Eh&quot;</span><br><span> #in=
+clude &quot;ssl_pkt=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+#include &quot;sid_hash=2Eh&quot;</span><br><span> </span><br><sp=
+an> #ifdef HAVE_SYS_INOTIFY_H</span><br><span> #include &lt;sys/inotify=2Eh=
+&gt;</span><br><span>@@ -186,7 +187,7 @@</span><br><span>         }</span><=
+br><span>         else</span><br><span>         {</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-            msg(D_MULTI_DEBUG,</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+            msg(D_MULTI_MEDIUM,</spa=
+n><br><span>                 &quot;Valid packet (%s) with HMAC challenge fr=
+om peer (%s), &quot;</span><br><span>                 &quot;accepting new c=
+onnection=2E&quot;,</span><br><span>                 packet_opcode_name(op)=
+, peer);</span><br><span>@@ -212,7 +213,6 @@</span><br><span>              =
+             struct link_socket *sock,</span><br><span>                    =
+       struct mroute_addr *real)</span><br><span> {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    struct hash *hash =3D m-&gt;hash;</span=
+><br><span>     struct tls_pre_decrypt_state state =3D { 0 };</span><br><sp=
+an>     struct multi_instance *mi =3D NULL;</span><br><span>     struct gc_=
+arena gc =3D gc_new();</span><br><span>@@ -243,11 +243,6 @@</span><br><span=
+>             mi =3D multi_create_instance(m, real, sock);</span><br><span>=
+             if (mi)</span><br><span>             {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                const uint64_t hv =3D hash_=
+value(hash, real);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+             struct hash_bucket *bucket =3D hash_bucket(hash, hv);</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-                hash_add_fast(=
+hash, bucket, &amp;mi-&gt;real, hv, mi);</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+              mi-&gt;did_real_hash =3D true;</span><br><span>              =
+   multi_assign_peer_id(m, mi);</span><br><span> </span><br><span>         =
+        /* If we have a session id already, ensure that the</span><br><span=
+>@@ -262,6 +257,7 @@</span><br><span>                     {</span><br><span=
+>                         session_skip_to_pre_start(session, &amp;state, &a=
+mp;m-&gt;top=2Ec2=2Efrom);</span><br><span>                     }</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                    multi_has=
+h_sid_add(m, &amp;state=2Epeer_session_id, mi);</span><br><span>           =
+      }</span><br><span>             }</span><br><span>         }</span><br=
+><span>@@ -298,15 +294,26 @@</span><br><span>     return NULL;</span><br><s=
+pan> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-struct multi_instance *</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-multi_get_instance_udp_control(struct multi_context *m, struct link_so=
+cket *sock)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    struct mroute_addr real =
+=3D { 0 };</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    real=2E=
+proto =3D sock-&gt;info=2Eproto;</span><br><span> </span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    if (mroute_extract_openvpn_sockaddr(&amp;r=
+eal, &amp;m-&gt;top=2Ec2=2Efrom=2Edest, true) &amp;&amp; m-&gt;top=2Ec2=2Eb=
+uf=2Elen &gt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+sta=
+tic struct multi_instance *</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+multi_get_instance_udp_control(struct multi_context *m)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    /* Copy buffer, to a tmp buffer, so that read=
+ing the sesison does not</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+     * modify the internal pointers */</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    struct buffer tmp =3D m-&gt;top=2Ec2=2Ebuf;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    /* op code */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    uint8_t op =3D (uint8_t)buf_read_u8(&=
+amp;tmp) &gt;&gt; P_OPCODE_SHIFT;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    (void)op;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct =
+session_id sid =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    session_id_read(&amp;sid, &amp;tmp);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    struct hash_element *he_sid =3D multi_hash_sid_lookup(m, &amp;s=
+id);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    if (he_sid)</span><br><span>  =
+   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return mu=
+lti_get_instance_udp_real(m, &amp;real);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        return he_sid-&gt;value;</span><br><span>     =
+}</span><br><span> </span><br><span>     return NULL;</span><br><span>@@ -3=
+92,7 +399,14 @@</span><br><span>     }</span><br><span>     else</span><br>=
+<span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        m=
+i =3D multi_get_instance_udp_control(m, sock);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        if (m-&gt;top=2Ec2=2Ebuf=2Elen &lt; (int=
+)SID_SIZE + 1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            /* =
+control packets must be at least the opcode byte + session id</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+             * (8 byte) long, oth=
+erwise they are not valid packets */</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+            return NULL;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ mi =3D multi_get_instance_udp_control(m);</span><br><span> </span><br><spa=
+n>         /* we have no existing multi instance for this connection, contr=
+ol</span><br><span>          * packets can create a session=2E Data packets=
+ cannot */</span><br><span>diff --git a/src/openvpn/multi=2Ec b/src/openvpn=
+/multi=2Ec</span><br><span>index 20b4f14=2E=2E60e89fb 100644</span><br><spa=
+n>--- a/src/openvpn/multi=2Ec</span><br><span>+++ b/src/openvpn/multi=2Ec</=
+span><br><span>@@ -42,6 +42,7 @@</span><br><span> #include &quot;vlan=2Eh&q=
+uot;</span><br><span> #include &quot;auth_token=2Eh&quot;</span><br><span> =
+#include &quot;route=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+#include &quot;sid_hash=2Eh&quot;</span><br><span> #include &lt;=
+inttypes=2Eh&gt;</span><br><span> #include &lt;string=2Eh&gt;</span><br><sp=
+an> </span><br><span>@@ -271,8 +272,8 @@</span><br><span>     struct multi_=
+context *m =3D t-&gt;multi;</span><br><span>     int dev =3D DEV_TYPE_UNDEF=
+;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  msg(D_MULTI_LOW, &quot;MULTI: multi_init called, r=3D%d v=3D%d&quot;, t-&=
+gt;options=2Ereal_hash_size,</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        t-&gt;options=2Evirtual_hash_size);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    msg(D_MULTI_LOW, &quot;MULTI: multi_init=
+ called, r=3D%d v=3D%d s=3D%d&quot;, t-&gt;options=2Ereal_hash_size,</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        t-&gt;options=2Evi=
+rtual_hash_size, t-&gt;options=2Esid_hash_size);</span><br><span> </span><b=
+r><span>     /*</span><br><span>      * Get tun/tap/null device type</span>=
+<br><span>@@ -300,6 +301,12 @@</span><br><span>     m-&gt;vhash =3D hash_in=
+it(t-&gt;options=2Evirtual_hash_size,</span><br><span>                     =
+     mroute_addr_hash_function, mroute_addr_compare_function);</span><br><s=
+pan> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /*</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+     * Peer session id hash=
+ table=2E Used to lookup a session by the session</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+     * id of one of its active sessions */</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    m-&gt;sid_hash =3D=
+ hash_init(t-&gt;options=2Esid_hash_size,</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+                            session_id_hash_function,=
+ session_id_hash_equal);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span> #ifdef ENABLE_MANAGEMENT</span><br><span>     m-&gt;=
+cid_hash =3D hash_init(t-&gt;options=2Ereal_hash_size, cid_hash_function, c=
+id_compare_function);</span><br><span> #endif</span><br><span>@@ -427,8 +43=
+4,7 @@</span><br><span>             buf_printf(&amp;out, &quot;%s/&quot;, c=
+n);</span><br><span>         }</span><br><span>         buf_printf(&amp;out=
+, &quot;%s&quot;, mroute_addr_print(&amp;mi-&gt;real, gc));</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-        if (mi-&gt;context=2Ec2=2Etls=
+_multi &amp;&amp; check_debug_level(D_DCO_DEBUG)</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-            &amp;&amp; dco_enabled(&amp;mi-&gt;c=
+ontext=2Eoptions))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       if (mi-&gt;context=2Ec2=2Etls_multi)</span><br><span>         {</spa=
+n><br><span>             buf_printf(&amp;out, &quot; rx-peer-id=3D%d&quot;,=
+ mi-&gt;context=2Ec2=2Etls_multi-&gt;rx_peer_id);</span><br><span>         =
+}</span><br><span>@@ -598,6 +604,12 @@</span><br><span>         }</span><br=
+><span> #endif</span><br><span> </span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  if (session_id_defined(&amp;mi-&gt;sid_hashed_value))</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            multi_hash_sid_remove(m, &amp;mi-&gt;=
+sid_hashed_value);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span>         if (mi-&gt;context=2Ec2=2Etls_multi-&gt;rx_peer_id !=3D MAX_=
+PEER_ID)</span><br><span>         {</span><br><span>             m-&gt;inst=
+ances[mi-&gt;context=2Ec2=2Etls_multi-&gt;rx_peer_id] =3D NULL;</span><br><=
+span>@@ -672,6 +684,7 @@</span><br><span> </span><br><span>         hash_fr=
+ee(m-&gt;hash);</span><br><span>         hash_free(m-&gt;vhash);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        hash_free(m-&gt;sid_ha=
+sh);</span><br><span> #ifdef ENABLE_MANAGEMENT</span><br><span>         has=
+h_free(m-&gt;cid_hash);</span><br><span> #endif</span><br><span>@@ -2456,6 =
++2469,34 @@</span><br><span>     multi_client_connect_setenv(mi);</span><br=
+><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+static bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+multi_check_dest_addr_allowed(struct multi_context *m, struct multi_instanc=
+e *mi, struct mroute_addr *real);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * This sets up the c=
+lient real address (outer tunnel addr) in the</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+ * hash map for data channel packet=2E If the add=
+ress is already taken</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ * this steps fails</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static enum cl=
+ient_connect_return</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+multi_client_connect_real_addr(struct multi_context *m, struct multi_instan=
+ce *mi,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+                   bool deferred, uint64_t *option_types_found)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    /* If the address is already taken up by anot=
+her client we fail the new</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+     * connection */</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    if (!multi_check_dest_addr_allowed(m, mi, &amp;mi-&gt;real))</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        msg(D_MULTI_ERRORS,</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;MULTI: cli=
+ent IP address and port already assigned to another &quot;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+            &quot;client, terminatin=
+g connection&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        return CC_RET_FAILED;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(!mi-&gt;did=
+_real_hash);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASS=
+ERT(hash_add(m-&gt;hash, &amp;mi-&gt;real, mi, false));</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    mi-&gt;did_real_hash =3D true;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    return CC_RET_SUCCEE=
+DED;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /**</span><br><=
+span>  *  Do the necessary modification for doing the compress migrate=2E T=
+his is</span><br><span>  *  implemented as a connect handler as it fits the=
+ modify config for a client</span><br><span>@@ -2550,6 +2591,7 @@</span><br=
+><span>     uint64_t *option_types_found);</span><br><span> </span><br><spa=
+n> static const multi_client_connect_handler client_connect_handlers[] =3D =
+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    multi_client_c=
+onnect_real_addr,</span><br><span>     multi_client_connect_compress_migrat=
+e,</span><br><span>     multi_client_connect_source_ccd,</span><br><span>  =
+   multi_client_connect_call_plugin_v1,</span><br><span>@@ -2618,6 +2660,7 =
+@@</span><br><span>     }</span><br><span>     return true;</span><br><span=
+> }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+> /*</span><br><span>  * Called as soon as the SSL/TLS connection is authen=
+ticated=2E</span><br><span>  *</span><br><span>@@ -3104,7 +3147,7 @@</span>=
+<br><span>     /* do not allow if target address is taken by client with an=
+other cert */</span><br><span>     if (!cert_hash_compare(m1-&gt;locked_cer=
+t_hash_set, m2-&gt;locked_cert_hash_set))</span><br><span>     {</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-        msg(D_MULTI_LOW, &quot;D=
+isallow float to an address taken by another client %s&quot;,</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        msg(D_MULTI_LOW, &quot;Di=
+sallow float/connect to an address taken by another client %s&quot;,</span>=
+<br><span>             multi_instance_string(ex_mi, false, &amp;gc));</span=
+><br><span> </span><br><span>         mi-&gt;context=2Ec2=2Ebuf=2Elen =3D 0=
+;</span><br><span>@@ -3117,7 +3160,7 @@</span><br><span>         if (!m1-&g=
+t;locked_username || !m2-&gt;locked_username</span><br><span>             |=
+| strcmp(m1-&gt;locked_username, m2-&gt;locked_username) !=3D 0)</span><br>=
+<span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+       msg(D_MULTI_LOW, &quot;Disallow float to an address taken by another=
+ client %s&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+          msg(D_MULTI_LOW, &quot;Disallow float/connect to an address taken=
+ by another client %s&quot;,</span><br><span>                 multi_instanc=
+e_string(ex_mi, false, &amp;gc));</span><br><span>             goto done;</=
+span><br><span>         }</span><br><span>diff --git a/src/openvpn/multi=2E=
+h b/src/openvpn/multi=2Eh</span><br><span>index 8b837fa=2E=2E98547b0 100644=
+</span><br><span>--- a/src/openvpn/multi=2Eh</span><br><span>+++ b/src/open=
+vpn/multi=2Eh</span><br><span>@@ -131,7 +131,15 @@</span><br><span>     in_=
+addr_t reporting_addr;            /* IP address shown in status listing */<=
+/span><br><span>     struct in6_addr reporting_addr_ipv6; /* IPv6 address i=
+n status listing */</span><br><span> </span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    /** Indicates that the real address/port of the clien=
+t is hashed in</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+* the multi_context m-&gt;hash table=2E */</span><br><span>     bool did_re=
+al_hash;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    /** If this is multi_insta=
+nce is hashed in the sid lookup table the session</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+     * id here is a non-null session id and t=
+he hash map&#39;s key pointer points</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+     * to this field (the value pointer points to the whol=
+e struct) */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    str=
+uct session_id sid_hashed_value;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span> #ifdef ENABLE_MANAGEMENT</span><br><span>   =
+  bool did_cid_hash;</span><br><span>     struct buffer_list *cc_config;</s=
+pan><br><span>@@ -170,6 +178,12 @@</span><br><span>                        =
+                 *   address of the remote peer=2E */</span><br><span>     =
+struct hash *vhash;                /**&lt; VPN tunnel instances indexed by<=
+/span><br><span>                                         *   virtual addres=
+s of remote hosts=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    struct hash *sid_hash;             /**&lt; TLS sessions indexed by =
+the peer&#39;s</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+                                       session id=2E We do not care about</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                     =
+                       collisions here as clients should</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+                                      =
+      have unique ids and supporting</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+                                            clients with i=
+dentical SIDs</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+                                      is not needed */</span><br><span>    =
+ struct schedule *schedule;</span><br><span>     struct mbuf_set *mbuf;    =
+         /**&lt; Set of buffers for passing data</span><br><span>          =
+                               *   channel packets between VPN tunnel</span=
+><br><span>diff --git a/src/openvpn/options=2Ec b/src/openvpn/options=2Ec</=
+span><br><span>index d0f447c=2E=2E629652e 100644</span><br><span>--- a/src/=
+openvpn/options=2Ec</span><br><span>+++ b/src/openvpn/options=2Ec</span><br=
+><span>@@ -3764,6 +3764,10 @@</span><br><span>     {</span><br><span>      =
+   o-&gt;virtual_hash_size =3D 4 * o-&gt;max_clients;</span><br><span>     =
+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!o-&gt;sid=
+_hash_size)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        o-&gt;sid_hash=
+_size =3D o-&gt;real_hash_size;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    }</span><br><span> }</span><br><span> </span><br><span> sta=
+tic void</span><br><span>@@ -7367,7 +7371,7 @@</span><br><span>         opt=
+ions-&gt;ifconfig_ipv6_pool_base =3D network;</span><br><span>         opti=
+ons-&gt;ifconfig_ipv6_pool_netbits =3D netbits;</span><br><span>     }</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    else if (streq(p[0], &=
+quot;hash-size&quot;) &amp;&amp; p[1] &amp;&amp; p[2] &amp;&amp; !p[3])</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (streq(p[0]=
+, &quot;hash-size&quot;) &amp;&amp; p[1] &amp;&amp; p[2] &amp;&amp; !p[4])<=
+/span><br><span>     {</span><br><span>         int real, virtual;</span><b=
+r><span> </span><br><span>@@ -7379,6 +7383,16 @@</span><br><span>         }=
+</span><br><span>         options-&gt;real_hash_size =3D (uint32_t)real;</s=
+pan><br><span>         options-&gt;virtual_hash_size =3D (uint32_t)virtual;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        if (p[3])</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+            int sid;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            if (!atoi_constrained(p[3], &amp;sid,=
+ &quot;hash-size sid&quot;, 1, INT_MAX, msglevel))</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+                goto err;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+            options-&gt;sid_hash_size =3D (uint32_=
+t)sid;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</sp=
+an><br><span>     }</span><br><span>     else if (streq(p[0], &quot;connect=
+-freq&quot;) &amp;&amp; p[1] &amp;&amp; p[2] &amp;&amp; !p[3])</span><br><s=
+pan>     {</span><br><span>diff --git a/src/openvpn/options=2Eh b/src/openv=
+pn/options=2Eh</span><br><span>index 30a146f=2E=2Ec7825c7 100644</span><br>=
+<span>--- a/src/openvpn/options=2Eh</span><br><span>+++ b/src/openvpn/optio=
+ns=2Eh</span><br><span>@@ -498,6 +498,7 @@</span><br><span> </span><br><spa=
+n>     uint32_t real_hash_size;</span><br><span>     uint32_t virtual_hash_=
+size;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint32_t s=
+id_hash_size;</span><br><span>     const char *client_connect_script;</span=
+><br><span>     const char *client_disconnect_script;</span><br><span>     =
+const char *learn_address_script;</span><br><span>diff --git a/src/openvpn/=
+sid_hash=2Eh b/src/openvpn/sid_hash=2Eh</span><br><span>new file mode 10064=
+4</span><br><span>index 0000000=2E=2E4667fb1</span><br><span>--- /dev/null<=
+/span><br><span>+++ b/src/openvpn/sid_hash=2Eh</span><br><span>@@ -0,0 +1,9=
+0 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ *  OpenVPN -- An application to=
+ securely tunnel IP networks</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+ *             over a single TCP/UDP port, with support for SSL/TL=
+S-based</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *          =
+   session authentication and key exchange,</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+ *             packet encryption, packet authentica=
+tion, and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *        =
+     packet compression=2E</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  Copyri=
+ght (C) 2026 OpenVPN Inc &lt;sales@openvpn=2Enet&gt;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *  Copyright (C) 2026 Arne Schwabe &lt;a=
+rne@rfc2549=2Eorg&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ *  This program is free softwar=
+e; you can redistribute it and/or modify</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ *  it under the terms of the GNU General Public Licen=
+se version 2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  as =
+published by the Free Software Foundation=2E</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ *  This program is distributed in the hope that it will be useful,=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY=
+ WARRANTY; without even the implied warranty of</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR=
+ PURPOSE=2E  See the</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ *  GNU General Public License for more details=2E</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ * @param k the data to hash</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+ * @param length length of the data to hash</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param hash_key   the =
-siphash key</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @retu=
-rn a uint64_t containing the result of the hashing</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+uint64_t</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+siphash_hash_func(const uint8_t *k, uint32_t length, const uint8_t hash=
-_key[SIPHASH_KEY_SIZE]);</span><br><span> #endif /* ifndef SIPHASH_H */</sp=
-an><br><span>diff --git a/tests/unit_tests/openvpn/Makefile=2Eam b/tests/un=
-it_tests/openvpn/Makefile=2Eam</span><br><span>index c76d94a=2E=2E6af25b1 1=
-00644</span><br><span>--- a/tests/unit_tests/openvpn/Makefile=2Eam</span><b=
-r><span>+++ b/tests/unit_tests/openvpn/Makefile=2Eam</span><br><span>@@ -86=
-,6 +86,7 @@</span><br><span> 	$(top_srcdir)/src/openvpn/mtu=2Ec \</span><br=
-><span> 	$(top_srcdir)/src/openvpn/win32-util=2Ec \</span><br><span> 	$(top=
-_srcdir)/src/openvpn/mss=2Ec \</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+	$(top_srcdir)/src/openvpn/siphash=2Ec \</span><br><span> 	$(top=
-_srcdir)/src/openvpn/siphash_reference=2Ec</span><br><span> </span><br><spa=
-n> dhcp_testdriver_CFLAGS  =3D -I$(top_srcdir)/src/openvpn -I$(top_srcdir)/=
-src/compat @TEST_CFLAGS@ -DDHCP_UNIT_TEST</span><br><span>@@ -380,7 +381,9 =
-@@</span><br><span> 	$(top_srcdir)/src/openvpn/ssl_util=2Ec \</span><br><sp=
-an> 	$(top_srcdir)/src/openvpn/win32-util=2Ec \</span><br><span> 	$(top_src=
-dir)/src/openvpn/platform=2Ec \</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-	$(top_srcdir)/src/openvpn/list=2Ec</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/list=2Ec \</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/siph=
-ash=2Ec \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_src=
-dir)/src/openvpn/siphash_reference=2Ec</span><br><span> </span><br><span> p=
-ush_update_msg_testdriver_CFLAGS =3D -I$(top_srcdir)/src/openvpn \</span><b=
-r><span> 	-I$(top_srcdir)/src/compat \</span><br><span>diff --git a/tests/u=
-nit_tests/openvpn/test_misc=2Ec b/tests/unit_tests/openvpn/test_misc=2Ec</s=
-pan><br><span>index 501286c=2E=2Eab21d5e 100644</span><br><span>--- a/tests=
-/unit_tests/openvpn/test_misc=2Ec</span><br><span>+++ b/tests/unit_tests/op=
-envpn/test_misc=2Ec</span><br><span>@@ -32,6 +32,7 @@</span><br><span> #inc=
-lude &lt;string=2Eh&gt;</span><br><span> #include &lt;setjmp=2Eh&gt;</span>=
-<br><span> #include &lt;cmocka=2Eh&gt;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+#include &lt;siphash=2Eh&gt;</span><br><span> </span><br=
-><span> #include &quot;ssl_util=2Eh&quot;</span><br><span> #include &quot;o=
-ptions_util=2Eh&quot;</span><br><span>@@ -132,7 +133,7 @@</span><br><span> =
-{</span><br><span>     const char *str =3D (const char *)key;</span><br><sp=
-an>     const uint32_t len =3D (uint32_t)strlen(str);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    return hash_func((const uint8_t *)str, =
-len, *(uint32_t *)(hash_key));</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    return siphash_hash_func((const uint8_t *)str, len, hash_key=
-);</span><br><span> }</span><br><span> </span><br><span> static bool</span>=
-<br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit=2Eope=
-nvpn=2Enet/c/openvpn/+/1573?usp=3Demail">change 1573</a>=2E To unsubscribe,=
- or for help writing mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=
-=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"=
-http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemty=
-pe=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http:/=
-/gerrit=2Eopenvpn=2Enet/c/openvpn/+/1573?usp=3Demail"/><meta itemprop=3D"na=
-me" content=3D"View Change"/></div></div>
+0, 100%, 40%);">+ *  You should have received a copy of the GNU General Pub=
+lic License along</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+  with this program; if not, write to the Free Software Foundation, Inc=2E,=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  51 Franklin Str=
+eet, Fifth Floor, Boston, MA 02110-1301 USA=2E</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include=
+ &quot;session_id=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+#include &quot;multi=2Eh&quot;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+#include &quot;list=2Eh&quot;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+#include &quot;siphash=2Eh&quot;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+inline static void</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+multi_hash_sid_add(struct multi_context *m, struct se=
+ssion_id *sid,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+              struct multi_instance *mi)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    /* This must only be called if the multi instance is not already pre=
+sent</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * in the h=
+ash table */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASS=
+ERT(!session_id_defined(&amp;mi-&gt;sid_hashed_value));</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    mi-&gt;sid_hashed_value =3D *sid;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    const uint64_t hv =3D hash_value(m-&gt;sid_hash, &amp;m=
+i-&gt;sid_hashed_value);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    struct hash_bucket *bucket =3D hash_bucket(m-&gt;sid_hash, hv);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    hash_add_fast(m-&g=
+t;sid_hash, bucket, &amp;mi-&gt;sid_hashed_value, hv, mi);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    multi_instance_inc_refcount(mi);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+static inline struct hash_element *</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+multi_hash_sid_lookup(struct multi_conte=
+xt *m, const struct session_id *sid)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   const uint64_t sid_hv =3D hash_value(m-&gt;sid_hash, sid);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    struct hash_bucket *sid_bucke=
+t =3D hash_bucket(m-&gt;sid_hash, sid_hv);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    struct hash_element *he_sid =3D hash_lookup_fast=
+(m-&gt;sid_hash, sid_bucket, sid, sid_hv);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    return he_sid;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+inline static b=
+ool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+multi_hash_sid_r=
+emove(struct multi_context *m, const struct session_id *sid)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    const uint64_t sid_hv =3D hash_value(m-&gt;sid_h=
+ash, sid);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struc=
+t hash_bucket *sid_bucket =3D hash_bucket(m-&gt;sid_hash, sid_hv);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    struct hash_element *he_=
+sid =3D hash_lookup_fast(m-&gt;sid_hash, sid_bucket, sid, sid_hv);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    if (he_sid)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        struct multi_instance *mi =3D he_sid-&=
+gt;value;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        AS=
+SERT(hash_remove_fast(m-&gt;sid_hash, sid_bucket, sid, sid_hv));</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        CLEAR(mi-&gt;sid_hashe=
+d_value);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        mu=
+lti_instance_dec_refcount(mi);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        return true;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        return false;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/=
+* hashing the session=2E As the struct is just an 8 byte array</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ * hashing is straight forward *=
+/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static inline uint=
+64_t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+session_id_hash=
+_function(const void *key, const uint8_t hash_key[HASH_KEY_LEN])</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    return siphash_hash_func(key, sizeof(struct =
+session_id), hash_key);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+/* wrapper for session_id_equal t=
+o have the void* arguments that the</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+ * hash map requires */</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+static inline bool</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+session_id_hash_equal(const void *sid1, const void *sid2=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    return session_id_equal((struct =
+session_id *)sid1, (struct session_id *)sid2);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+}</span><br><span>diff --git a/tests/unit_tests/=
+openvpn/Makefile=2Eam b/tests/unit_tests/openvpn/Makefile=2Eam</span><br><s=
+pan>index 6af25b1=2E=2Eb4611dd 100644</span><br><span>--- a/tests/unit_test=
+s/openvpn/Makefile=2Eam</span><br><span>+++ b/tests/unit_tests/openvpn/Make=
+file=2Eam</span><br><span>@@ -383,7 +383,8 @@</span><br><span> 	$(top_srcdi=
+r)/src/openvpn/platform=2Ec \</span><br><span> 	$(top_srcdir)/src/openvpn/l=
+ist=2Ec \</span><br><span> 	$(top_srcdir)/src/openvpn/siphash=2Ec \</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-	$(top_srcdir)/src/openvpn/si=
+phash_reference=2Ec</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+	$(top_srcdir)/src/openvpn/siphash_reference=2Ec \</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/session_id=2Ec</s=
+pan><br><span> </span><br><span> push_update_msg_testdriver_CFLAGS =3D -I$(=
+top_srcdir)/src/openvpn \</span><br><span> 	-I$(top_srcdir)/src/compat \</s=
+pan><br><span>diff --git a/tests/unit_tests/openvpn/test_misc=2Ec b/tests/u=
+nit_tests/openvpn/test_misc=2Ec</span><br><span>index ab21d5e=2E=2Eb094344 =
+100644</span><br><span>--- a/tests/unit_tests/openvpn/test_misc=2Ec</span><=
+br><span>+++ b/tests/unit_tests/openvpn/test_misc=2Ec</span><br><span>@@ -4=
+2,6 +42,7 @@</span><br><span> #ifdef _WIN32</span><br><span> #include &quot=
+;win32-util=2Eh&quot;</span><br><span> #endif</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+#include &quot;sid_hash=2Eh&quot;</span><br><span=
+> </span><br><span> static void</span><br><span> test_compat_lzo_string(voi=
+d **state)</span><br><span>@@ -142,13 +143,6 @@</span><br><span>     return=
+ strcmp((const char *)key1, (const char *)key2) =3D=3D 0;</span><br><span> =
+}</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-st=
+atic uint32_t</span><br><span style=3D"color: hsl(0, 100%, 40%);">-get_rand=
+om(void)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    /* rand() is not very random,=
+ but it&#39;s C99 and this is just for testing */</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    return (uint32_t)rand();</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-</span><br><span> static struct hash_element *</span><br><sp=
+an> hash_lookup_by_value(struct hash *hash, void *value)</span><br><span> {=
+</span><br><span>@@ -264,7 +258,7 @@</span><br><span>         {</span><br><=
+span>             struct hash_iterator hi;</span><br><span>             str=
+uct hash_element *he;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+            inc =3D (get_random() % 3) + 1;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            inc =3D ((int)get_random() % 3) + 1;</s=
+pan><br><span>             hash_iterator_init_range(hash, &amp;hi, base, ba=
+se + inc);</span><br><span> </span><br><span>             while ((he =3D ha=
+sh_iterator_next(&amp;hi)))</span><br><span>@@ -479,6 +473,65 @@</span><br>=
+<span> }</span><br><span> #endif /* _WIN32 */</span><br><span> </span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+test_sid_hash_list(void **state)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    struct gc_arena gc =3D gc_new();</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    /* very simple tests to ensure the basic h=
+ash functions work */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct multi_=
+context m =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    m=2Esid_hash =3D hash_init(2048, session_id_hash_function, session_id_=
+hash_equal);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    struct session_id sid1=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct session=
+_id sid2;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct=
+ session_id sid3;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct multi_inst=
+ance *m1, *m3;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* multi_hash_sid_re=
+move will call gc_free on the gc of a mi and</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+     * free on the mi itself */</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    ALLOC_OBJ_CLEAR(m1, struct multi_i=
+nstance);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ALLOC_=
+OBJ_CLEAR(m3, struct multi_instance);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   m1-&gt;gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    m3-&gt;gc =3D gc_new();</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+session_id_random(&amp;sid1);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    session_id_random(&amp;sid2);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    session_id_random(&amp;sid3);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    multi_hash_sid_add(&amp;m, &amp;sid1, m1);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    multi_hash_sid_add(&amp;m=
+, &amp;sid3, m3);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    /* sid2 is not added and should not =
+be returned */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    s=
+truct hash_element *he_sid =3D multi_hash_sid_lookup(&amp;m, &amp;sid2);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_null(he_sid=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    he_sid =3D multi_hash_sid_lookup=
+(&amp;m, &amp;sid1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    assert_non_null(he_sid);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    assert_ptr_equal(he_sid-&gt;value, m1);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    /* Try removing elements, only that are in the map shoul=
+d return true */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ assert_true(multi_hash_sid_remove(&amp;m, &amp;sid1));</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    assert_false(multi_hash_sid_remove(=
+&amp;m, &amp;sid2));</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    assert_false(multi_hash_sid_remove(&amp;m, &amp;sid1));</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    /* should no longer find the element */</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    he_sid =3D multi_hash_sid=
+_lookup(&amp;m, &amp;sid1);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    assert_null(he_sid);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /*=
+ this element should still be in the hash table */</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    he_sid =3D multi_hash_sid_lookup(&amp;m,=
+ &amp;sid3);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ass=
+ert_ptr_equal(he_sid-&gt;value, m3);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  assert_true(multi_hash_sid_remove(&amp;m, &amp;sid3));</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    hash_free(m=2Esid_hash);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span> const struct CMUnitTest misc_tests[] =3D {</sp=
+an><br><span> #ifdef _WIN32</span><br><span>     cmocka_unit_test(test_win_=
+path_in_dir),</span><br><span>@@ -488,7 +541,8 @@</span><br><span>     cmoc=
+ka_unit_test(test_auth_fail_temp_flags),</span><br><span>     cmocka_unit_t=
+est(test_auth_fail_temp_flags_msg),</span><br><span>     cmocka_unit_test(t=
+est_list),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    cmocka_=
+unit_test(test_atoi_variants)</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    cmocka_unit_test(test_atoi_variants),</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    cmocka_unit_test(test_sid_hash_list)<=
+/span><br><span> };</span><br><span> </span><br><span> int</span><br><span>=
+</span><br></pre><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet=
+/c/openvpn/+/1727?usp=3Demail">change 1727</a>=2E To unsubscribe, or for he=
+lp writing mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/set=
+tings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://sch=
+ema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http=
+://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=2E=
+openvpn=2Enet/c/openvpn/+/1727?usp=3Demail"/><meta itemprop=3D"name" conten=
+t=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Ger=
-rit-MessageType: newpatchset </div>
-<div style=3D"display:none"> Gerrit-Pro=
-ject: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </d=
-iv>
-<div style=3D"display:none"> Gerrit-Change-Id: I807f398903ac2047530800c=
-29949793c6f4f0ec9 </div>
-<div style=3D"display:none"> Gerrit-Change-Number:=
- 1573 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 22 </div>
+<div style=3D"display:none"> Gerrit-Messag=
+eType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Project: open=
+vpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
 <div s=
-tyle=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@rfc2549=2Eo=
-rg&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &l=
-t;frank@lichtenheld=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-CC=
-: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
-<div=
- style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@lichtenhe=
-ld=2Ecom&gt; </div>
+tyle=3D"display:none"> Gerrit-Change-Id: Idb59ecd119331b198792ad1379bec8600=
+211651b </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1727 </di=
+v>
+<div style=3D"display:none"> Gerrit-PatchSet: 25 </div>
+<div style=3D"di=
+splay:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </d=
+iv>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@li=
+chtenheld=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-=
+devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
 
-</body></html>
---u6q5F4BM6dE=--
+</body></html=
+>
+--TnPoNrKfDZg=--
 
 
---===============8568183927778653229==
+--===============0367511233571082502==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============8568183927778653229==
+--===============0367511233571082502==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -1299,5 +1905,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============8568183927778653229==--
+--===============0367511233571082502==--
 
