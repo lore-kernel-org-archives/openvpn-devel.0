@@ -4,127 +4,86 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5BF4DC56205
-	for <openvpn-devel@archiver.kernel.org>; Thu,  6 Aug 2026 15:27:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 32B78C56205
+	for <openvpn-devel@archiver.kernel.org>; Thu,  6 Aug 2026 15:32:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=8lHgbN/Jt7iLEZhvx59pRgTiUKQGWuoGZs2ZJewNw9o=; b=WS81yrVw7GsNJEBjotqBFVOMMv
-	Ql7dtXypeFTg7PHyjfExkiU6ogi5wwsnlHuv8BVo+78e113mW+PCiE58P+0+kz6gANWwUm0hCJzdz
-	hBk/3UESTm92k9CRHfWQy4SAskkJ4H2eartcKPw47MJGU1X/uogWngAxWLjTG+Nhbjq0=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
+	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=JxPJW2TH+740FX6bKjhzflR1Z2xYDDkXHPx/udIWjKo=; b=NPAPIsJyMIV2o9+4c4QpvQeDoP
+	bbQ8jgbMtBZ5E7ett8oX1DMCAGSlqNI+rI0Gr447+IooC/9eAu7KLcuVToI+aU9qGpWGt+41/wnnS
+	r2Sp7DNa97k3Q5LywUsFbTesalX2vISzcwt9o6B/qx6cuj5tbtQ4S4o1H+mDOERJFxu4=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1ws00Q-0003H8-KO;
-	Thu, 06 Aug 2026 15:27:39 +0000
+	id 1ws05Q-0000tx-P0;
+	Thu, 06 Aug 2026 15:32:46 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1ws00P-0003Gz-Su
+ (envelope-from <frank@lichtenheld.com>) id 1ws05O-0000to-3e
  for openvpn-devel@lists.sourceforge.net;
- Thu, 06 Aug 2026 15:27:38 +0000
+ Thu, 06 Aug 2026 15:32:44 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
- :List-Post:List-Owner:List-Archive;
- bh=08EI+bpVczvKYKGSeT9ICcxBhVV32Y2AW4joBARy2jQ=; b=VGu/3VMUx7vPrePETPRZIKtjBv
- SyPkdff8KZbMGZHz9Us71m+ez3Z/kd8htkVPrUFTOk5FAayHYiYNv/KNuiVOLdeWenjpKgcxgYkz9
- dKwhA9So3dYOb0fLCpMsP+Ebp5ATHCc7pVbc+raLlURGOkPiOgYxzsiLpq7spAkrBbNk=;
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
+ In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=tWORsImqoez+4otC4pF5ie/Bq7Y2Jnhb/US7QZzu+fM=; b=kvlPlwNi+FiSnpK/lpxzrKgmHM
+ 8KiGe6GjdU+EqnX1R1iPI0FFI4hIGqdVy2feDi7VaI302/E6PZCiS32zlECvR5//r1+acFJAFInGD
+ /GR5P5YdKZSrxB/nbPCyEinY9I0XRRSgqTrlFxyO37HdJgYpzoD4rvoiVbj5JtPqJLEs=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
- Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=08EI+bpVczvKYKGSeT9ICcxBhVV32Y2AW4joBARy2jQ=; b=K
- fLp/gNDUcPdhxqUbR1TnGu298wCzTUSfHEUwOg7AIa39O9yS1aTtv4dPusHrNrmdx4WJT84lb3sHT
- mm3kC7XZXdK9pSfbdjCoAiJH4iPx3xVAnbA38w3I2TbnoKeehRqV3UtkYJ9O7aCnbI9tEFhRVLBml
- dmdBPwBnbsmFB3W8=;
-Received: from mail-wm1-f53.google.com ([209.85.128.53])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1ws00O-0007Wu-Tk for openvpn-devel@lists.sourceforge.net;
- Thu, 06 Aug 2026 15:27:38 +0000
-Received: by mail-wm1-f53.google.com with SMTP id
- 5b1f17b1804b1-490cf322ed0so19584795e9.1
- for <openvpn-devel@lists.sourceforge.net>;
- Thu, 06 Aug 2026 08:27:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1786030050; x=1786634850; darn=lists.sourceforge.net;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
- :reply-to:content-type;
- bh=08EI+bpVczvKYKGSeT9ICcxBhVV32Y2AW4joBARy2jQ=;
- b=PWsgF7Aa2q/vDB9VzFw7EqW03s6pqjRDVe9V4zSbdUGYtIsnGFyZGZiqoY6Mb2bsrW
- uUuofAmMhDMFbaFaM+1qj5cR9YdvbUayFLU6EQrAVbdwhFf8Z/7Lo1PawmWytrFTHsG+
- 5W1QzoP+xWxCXcByYlhoMUFMts3FOKq1SqOdexPwbQ2kvMwfDjC9+kwIoZ+aRg9ATZmC
- egqyHxGh0I56de5hWnn2wNhYtTc0f52c7qlBVH1951hwh9L9ni2CgzHnF+zjMYTUpnk6
- WzVDzegfdUyv5LYk79i0Iq0rWWjlXC2/t5NlNx71mYAeFEbhVLctQlT6THIUVhkHNwRP
- Wv5w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1786030050; x=1786634850;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
- :cc:subject:date:message-id:reply-to:content-type;
- bh=08EI+bpVczvKYKGSeT9ICcxBhVV32Y2AW4joBARy2jQ=;
- b=HcMxMwtG1z+vwTubZ6zX+LFLxqqrU9ynjkVO4EeFLptAf1dHI/6HX0IrLDzonBCSy1
- mnJtdfHrPRbnoeSX64vwPhQb86ia5sIuw40tm9aGYmYn6vTAGaXTmlKYDPj5dlqRKwvB
- N8qX/ItfW6sSafcxJz0Uirg70LLsv3bjEZb4yrs7tRJxU6rcXUU1lvbQzFjx35PaR5bO
- ArlqgzpQTbZkJtyNh01ubJj81uU+dQ47wbvE0KiHqe58+4G4nxyn4llpd5cc8U1tbEhv
- bGI2lvOIPSf9GMg1y5f7FYrcNBgVOEC5uNBqxtM/qG3rrQsSULhiOUwqqvXgoiYAAFaM
- EFfQ==
-X-Gm-Message-State: AOJu0YytAap487C9p6mrsfYdnN5kN3PHwZB5SMieBcfzMNCNdMkf0VnC
- IKLuaR35IXvaosFEK3xUEXsNO+hQxXbNCmc5V568tbcHHiz4sPYqi2iqlieRr/da2g7pMrpB0i2
- xw53+MftttuXG4njJQnLxG+ENbFqAo8jzV9+CDl6xQnKmAqmY6jfy+mbgI5EbxIzL/ZJW
-X-Gm-Gg: AR+sD12HzoeOJZtvvTcCcYvP14pCVPlo+C5f1iXx+z4049hvpYwTDgcu40ZDDBggpBZ
- /3UDu2Xg/bUTkJjX1/IXs5RUeO3VX9lsKBX57926fHflTolCOtcQWLQ1L1JK/NkiiVZqynxFmhZ
- 5NaUeIboH4P+P/Bkzf2Bu+OJTX1Ph76tPgq/9VBi6YupoAXl2IfdiOV4uBm/P7dOdlLrYDjsA6u
- Vd4f32sub4GufReOkdGs0WplRiYnZgVdRFmrGNepMEUsQq/lyXeI04m5HNj53OFwTtBXUXhaaQe
- 9wq14+ss8eL6ZAKvu+j+dAuTEe9vsGo/XeRRv7e0U9TO94TFtOub4hnHK+CNcJKN4iYbdPWNuqm
- KFW5hFOss7cSdP9EoYYY3aAgbc+Nsys4OKmk+ppnTvYr2gmIVGUxa2smrfY5g8LtsUdmTvdCAze
- T7+vv3pGtQgkTJVK0vCZq0MzJz73eSf628EEQMZQOij4QXbAK+3N2Seucymzv0YXhV7F/pQyDcZ
- qV89PQ+zlAzUfOcnV43OQiVKnCZu4ZpoTJnsyolBs116g8pE+aKNJ3bQfzQPOrx2FUBoQc11dka
- W3A9PTYob6UqqA3ntbZYlNhkB4g7/kZZe0IeD1/2FqPWCjj1ChmSI2Ri0bnd+w==
-X-Received: by 2002:a05:600d:4448:20b0:495:5e3d:15e1 with SMTP id
- 5b1f17b1804b1-4994e7d21fdmr190194805e9.16.1786030049929; 
- Thu, 06 Aug 2026 08:27:29 -0700 (PDT)
-Received: from ip-10-18-1-162.eu-central-1.compute.internal
- (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
- by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-47ff7b18086sm7551692f8f.22.2026.08.06.08.27.28
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 06 Aug 2026 08:27:29 -0700 (PDT)
-X-Google-Original-From: "flichtenheld (Code Review)"
- <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Thu, 6 Aug 2026 15:27:27 +0000
-To: plaisthos <arne-openvpn@rfc2549.org>
-Auto-Submitted: auto-generated
-X-Gerrit-MessageType: comment
-X-Gerrit-PatchSet: 5
-X-Gerrit-Change-Id: I3b6bb178ffb2bb49981bc23eabf04fe8e06d6fc3
-X-Gerrit-Change-Number: 1827
-X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1827?usp=email>
-X-Gerrit-Commit: b65e19e081d86b0929dc82dc48b0e71816167f73
-X-Gerrit-Comment-Date: Thu, 6 Aug 2026 15:27:27 +0000
-In-Reply-To: <gerrit.1785161118000.I3b6bb178ffb2bb49981bc23eabf04fe8e06d6fc3@gerrit.openvpn.net>
-References: <gerrit.1785161118000.I3b6bb178ffb2bb49981bc23eabf04fe8e06d6fc3@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzg1MTYxMTE4MDAwLkkzYjZiYjE3OGZmYjJiYjQ5OTgxYmMyM2VhYmYwNGZlOGUwNmQ2ZmMzQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <4375e78f356d71de42add2bd49940a0d828fe78c-EmailReviewComments-HTML@gerrit.openvpn.net>
+ h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
+ Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+ List-Post:List-Owner:List-Archive;
+ bh=tWORsImqoez+4otC4pF5ie/Bq7Y2Jnhb/US7QZzu+fM=; b=gqRnIMYHmbxA8DQWDxrdwcSwij
+ BLeTV5sDFyh3LqG/1QW8GAtBkzaDwqp1vj1q0iv/7/dZvvxPY782Mny/8ylkiPwnI+3xLav8MuMkH
+ N4vsn5moOsK1ONVgSJOX8luNYsyrpdeBubA6yINRFp+lmz2mNbnEFJdtqsHDcNKl8YeE=;
+Received: from mout-p-202.mailbox.org ([80.241.56.172])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
+ id 1ws05M-0003LJ-Fw for openvpn-devel@lists.sourceforge.net;
+ Thu, 06 Aug 2026 15:32:43 +0000
+Received: from smtp202.mailbox.org (smtp202.mailbox.org
+ [IPv6:2001:67c:2050:b231:465::202])
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+ key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+ (No client certificate requested)
+ by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4hGB9X3zqvzMlFW;
+ Thu, 06 Aug 2026 17:32:32 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lichtenheld.com;
+ s=MBO0001; t=1786030352;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=tWORsImqoez+4otC4pF5ie/Bq7Y2Jnhb/US7QZzu+fM=;
+ b=f4rkQjJIIgkUCn5OuLnTWGUFFHS6u2CpaGwGHLrLzW8gon4KG9VdNYi7kj2eymq1IHqyYM
+ DUAZE7lvxbo81/4yC4T0cLi+yASiz4FN28AGpi5z+jIX6zMvSNKxOgQAlRWHLeKfECNOLI
+ QINheeS5TRJOR3X68gz5AuSvfUhn02kn68uUV9RMYeDRYSV6B4Nw/K4qrnZGkspeXPmc+d
+ 9MEjvl8asosbulB/o7tkJgRD4GOtoFZ9n5Klv90IVAEPTM7QZnsGZ3bm5NrqlVNp6B/+dh
+ 9LlYDLwSITsKJ2nEhk3AKAHTzDcDtN9uqugQEhTXr+SpxbQtyqvNgyQqhqZqoA==
+Authentication-Results: outgoing_mbo_mout; dkim=none;
+ spf=pass (outgoing_mbo_mout: domain of frank@lichtenheld.com designates
+ 2001:67c:2050:b231:465::202 as permitted sender)
+ smtp.mailfrom=frank@lichtenheld.com
+From: Frank Lichtenheld <frank@lichtenheld.com>
+To: openvpn-devel@lists.sourceforge.net
+Date: Thu,  6 Aug 2026 17:32:30 +0200
+Message-ID: <20260806153230.65971-1-frank@lichtenheld.com>
+In-Reply-To: <gerrit.1677175662000.I09aa27caa1a3aab0d1be6118b26d54a1c1bf7aa0@gerrit.openvpn.net>
+References: <gerrit.1677175662000.I09aa27caa1a3aab0d1be6118b26d54a1c1bf7aa0@gerrit.openvpn.net>
 MIME-Version: 1.0
-User-Agent: Gerrit/3.11.5
-X-Headers-End: 1ws00O-0007Wu-Tk
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Replace SHA256 with
- SIPHASH24 in HMAC cookie approach
+X-Rspamd-Queue-Id: 4hGB9X3zqvzMlFW
+X-Headers-End: 1ws05M-0003LJ-Fw
+Subject: [Openvpn-devel] [PATCH v30] Use OpenSSL's SIPHASH implementation to
+ double check our implementation
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -136,159 +95,484 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "flichtenheld \(Code Review\) via Openvpn-devel"
- <openvpn-devel@lists.sourceforge.net>
-Reply-To: frank@lichtenheld.com, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net
-Cc: "flichtenheld \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============6086619344120199997=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============6086619344120199997==
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="2Pjz5MFnPVY="; charset=UTF-8
+From: Arne Schwabe <arne@rfc2549.org>
 
---2Pjz5MFnPVY=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+OpenSSL library is currently slower than the reference implementation
+(about 1.5x to 2x depending of the compiler).
 
-Attention is currently required from: plaisthos=2E
+The OpenSSL API for using the SIPHASH MAC is different enough from using
+normal HMAC or Digest that we already implement that combining them into
+one API does not make sense.
 
-flichtenheld has posted=
- comments on this change by plaisthos=2E ( http://gerrit=2Eopenvpn=2Enet/c/=
-openvpn/+/1827?usp=3Demail )
+SIPHASH is only available on OpenSSL 3.1 and later. We still check for
+support on 3.0 and later as the whole API to allow using the SIPHASH alrady
+exists in OpenSSL 3.0. Some of the later OpenSSL 3.0.x might get support
+for it. Theoretically, a provider can be loaded in OpenSSL 3.0 that
+implements SIPHASH.
 
-Change subject: Replace SHA256 with SIPHASH24=
- in HMAC cookie approach
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E
+With OpenSSL's implementation being slower, we currently only use it to
+check that our reference implementation and the OpenSSL implementation
+yield the same result in unit tests
 
+Change-Id: I09aa27caa1a3aab0d1be6118b26d54a1c1bf7aa0
+Signed-off-by: Arne Schwabe <arne@rfc2549.org>
+Acked-by: Frank Lichtenheld <frank@lichtenheld.com>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/31
+---
 
-Patch Set 5: Code-Review-1
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-(1 comment)
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/31
+This mail reflects revision 30 of this Change.
 
-File tests/unit_tes=
-ts/openvpn/test_pkt=2Ec:
+Acked-by according to Gerrit (reflected above):
+Frank Lichtenheld <frank@lichtenheld.com>
 
-http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1827/co=
-mment/e84c4be3_665c03b1?usp=3Demail :
-PS5, Line 522:     rand_bytes(key, si=
-zeof(key));
-You missed one=2E As apparently did I in my last review since I=
- flagged two and you fixed two=2E But there were three
+        
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 7473f15..9e1dde1 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -572,6 +572,8 @@
+     src/openvpn/shaper.h
+     src/openvpn/sig.c
+     src/openvpn/sig.h
++    src/openvpn/siphash.h
++    src/openvpn/siphash_reference.c
+     src/openvpn/socket.c
+     src/openvpn/socket.h
+     src/openvpn/socket_util.c
+@@ -784,6 +786,7 @@
+         )
+ 
+     target_sources(test_crypto PRIVATE
++        tests/unit_tests/openvpn/siphash_openssl.c
+         src/openvpn/crypto_mbedtls.c
+         src/openvpn/crypto_openssl.c
+         src/openvpn/crypto_epoch.c
+@@ -792,6 +795,7 @@
+         src/openvpn/packet_id.c
+         src/openvpn/mtu.c
+         src/openvpn/mss.c
++        src/openvpn/siphash_reference.c
+         )
+ 
+     target_sources(test_ssl PRIVATE
+diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+index ff8cc54..1f77384 100644
+--- a/src/openvpn/Makefile.am
++++ b/src/openvpn/Makefile.am
+@@ -128,6 +128,7 @@
+ 	session_id.c session_id.h \
+ 	shaper.c shaper.h \
+ 	sig.c sig.h \
++	siphash_reference.c siphash.h \
+ 	socket.c socket.h \
+ 	socket_util.c socket_util.h \
+ 	socks.c socks.h \
+diff --git a/src/openvpn/siphash.h b/src/openvpn/siphash.h
+index ef61110..bddddc3 100644
+--- a/src/openvpn/siphash.h
++++ b/src/openvpn/siphash.h
+@@ -18,12 +18,26 @@
+ #ifndef SIPHASH_H
+ #define SIPHASH_H
+ 
+-#include <inttypes.h>
++#include <stdint.h>
++#include <stdio.h>
++#include <stdbool.h>
+ 
+ /* siphash always uses 128-bit keys */
+ #define SIPHASH_KEY_SIZE 16
+ 
+-int siphash(const void *in, size_t inlen, const void *k, uint8_t *out,
+-            size_t outlen);
++/**
++ * Calculates SIPHASH using the reference implementation
++ */
++int
++siphash_reference(const void *in, size_t inlen, const void *k,
++                  uint8_t *out, size_t outlen);
+ 
+-#endif
++
++static inline int
++siphash(const void *in, size_t inlen, const void *k,
++        uint8_t *out, size_t outlen)
++{
++    return siphash_reference(in, inlen, k, out, outlen);
++}
++
++#endif /* ifndef SIPHASH_H */
+\ No newline at end of file
+diff --git a/src/openvpn/siphash_reference.c b/src/openvpn/siphash_reference.c
+index b21a86e..ad19a51 100644
+--- a/src/openvpn/siphash_reference.c
++++ b/src/openvpn/siphash_reference.c
+@@ -100,8 +100,8 @@
+  *  outlen: length of the output in bytes, must be 8 or 16
+  */
+ int
+-siphash(const void *in, const size_t inlen, const void *k, uint8_t *out,
+-        const size_t outlen)
++siphash_reference(const void *in, const size_t inlen, const void *k, uint8_t *out,
++                  const size_t outlen)
+ {
+     const unsigned char *ni = (const unsigned char *)in;
+     const unsigned char *kk = (const unsigned char *)k;
+diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
+index d861ef9..ae15759 100644
+--- a/tests/unit_tests/openvpn/Makefile.am
++++ b/tests/unit_tests/openvpn/Makefile.am
+@@ -73,6 +73,7 @@
+ crypto_testdriver_LDFLAGS = @TEST_LDFLAGS@
+ crypto_testdriver_SOURCES = test_crypto.c \
+ 	mock_msg.c mock_msg.h test_common.h \
++	siphash_openssl.c siphash_openssl.h \
+ 	$(top_srcdir)/src/openvpn/buffer.c \
+ 	$(top_srcdir)/src/openvpn/crypto.c \
+ 	$(top_srcdir)/src/openvpn/crypto_mbedtls.c \
+@@ -84,7 +85,8 @@
+ 	$(top_srcdir)/src/openvpn/platform.c \
+ 	$(top_srcdir)/src/openvpn/mtu.c \
+ 	$(top_srcdir)/src/openvpn/win32-util.c \
+-	$(top_srcdir)/src/openvpn/mss.c
++	$(top_srcdir)/src/openvpn/mss.c \
++	$(top_srcdir)/src/openvpn/siphash_reference.c
+ 
+ dhcp_testdriver_CFLAGS  = -I$(top_srcdir)/src/openvpn -I$(top_srcdir)/src/compat @TEST_CFLAGS@ -DDHCP_UNIT_TEST
+ dhcp_testdriver_LDFLAGS = @TEST_LDFLAGS@ -L$(top_srcdir)/src/openvpn
+diff --git a/tests/unit_tests/openvpn/siphash_openssl.c b/tests/unit_tests/openvpn/siphash_openssl.c
+new file mode 100644
+index 0000000..c301f2d
+--- /dev/null
++++ b/tests/unit_tests/openvpn/siphash_openssl.c
+@@ -0,0 +1,144 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single TCP/UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2002-2026 OpenVPN Inc <sales@openvpn.net>
++ *  Copyright (C) 2026 Arne Schwabe <arne@rfc2549.org>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, see <https://www.gnu.org/licenses/>.
++ */
++
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
++
++#include "siphash.h"
++
++#ifdef ENABLE_CRYPTO_OPENSSL
++#include <openssl/opensslv.h>
++#endif
++
++/* OpenSSL siphash is currently 2-3 times slower than the reference
++ * implementation, so we only use it for unit testing that our implementation
++ * and OpenSSL agree */
++#if defined(ENABLE_CRYPTO_OPENSSL) && OPENSSL_VERSION_NUMBER >= 0x30000000L
++#include <openssl/evp.h>
++#include "crypto_openssl.h"
++#include "crypto_backend.h"
++#include "buffer.h"
++
++struct siphash_context
++{
++    EVP_MAC *mac;
++    EVP_MAC_CTX *ctx;
++    size_t size;
++    OSSL_PARAM params[3];
++};
++
++/*
++ *  Computes a SipHash value
++ * in: pointer to input data (read-only)
++ *  inlen: input data length in bytes (any size_t value)
++ * k: pointer to the key data (read-only), must be 16 bytes
++ * out: pointer to output data (write-only), outlen bytes must be allocated
++ *  outlen: length of the output in bytes, must be 8 or 16
++ */
++int
++siphash_openssl(void *sip_context, const void *in, const size_t inlen,
++                const void *k, uint8_t *out, const size_t outlen)
++{
++    struct siphash_context *sip = sip_context;
++
++
++    sip->params[1] = OSSL_PARAM_construct_octet_string("key", (void *)k,
++                                                       SIPHASH_KEY_SIZE);
++    if (!EVP_MAC_init(sip->ctx, NULL, 0, sip->params))
++    {
++        crypto_msg(M_FATAL, "EVP_MAC_init failed");
++    }
++    EVP_MAC_update(sip->ctx, in, inlen);
++
++    size_t outl = 0;
++    EVP_MAC_final(sip->ctx, out, &outl, outlen);
++    return 0;
++}
++
++void *
++siphash_openssl_init(size_t hash_size)
++{
++    struct siphash_context *sip;
++    ALLOC_OBJ(sip, struct siphash_context);
++
++    sip->mac = EVP_MAC_fetch(NULL, "SIPHASH", NULL);
++    if (!sip->mac)
++    {
++        /* Our OpenSSL library does not support SIPHASH */
++        return sip;
++    }
++    sip->ctx = EVP_MAC_CTX_new(sip->mac);
++
++    /* OpenSSL will truly hold a pointer to an int in that parameter */
++    sip->size = hash_size;
++    sip->params[0] = OSSL_PARAM_construct_size_t("size", &sip->size);
++    /* params[1] will hold the key that changes which each invocation */
++    sip->params[2] = OSSL_PARAM_construct_end();
++    return sip;
++}
++
++bool
++siphash_openssl_available(void *sip_context)
++{
++    struct siphash_context *sip = sip_context;
++
++    return (bool)(sip->mac);
++}
++
++void
++siphash_openssl_uninit(void *sip_context)
++{
++    struct siphash_context *sip = sip_context;
++    EVP_MAC_CTX_free(sip->ctx);
++    EVP_MAC_free(sip->mac);
++    free(sip_context);
++}
++#else
++/* Do avoid a lot more ifdefs in the test we put dummy functions here */
++int
++siphash_openssl(void *sip_context, const void *in, const size_t inlen,
++                const void *k, uint8_t *out, const size_t outlen)
++{
++    return -1;
++}
++
++bool
++siphash_openssl_available(void *sip_context)
++{
++    return false;
++}
++
++void *
++siphash_openssl_init(size_t hash_size)
++{
++    return NULL;
++}
++
++void
++siphash_openssl_uninit(void *sip_context)
++{
++}
++
++
++#endif /* if defined(ENABLE_CRYPTO_OPENSSL) && OPENSSL_VERSION_NUMBER >= 0x30000000L */
+diff --git a/tests/unit_tests/openvpn/siphash_openssl.h b/tests/unit_tests/openvpn/siphash_openssl.h
+new file mode 100644
+index 0000000..0f1d329
+--- /dev/null
++++ b/tests/unit_tests/openvpn/siphash_openssl.h
+@@ -0,0 +1,64 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single TCP/UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2002-2026 OpenVPN Inc <sales@openvpn.net>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, see <https://www.gnu.org/licenses/>.
++ */
++#ifndef SIPHASH_OPENSSL_H
++#define SIPHASH_OPENSSL_H
++
++#include <stdint.h>
++#include <stdio.h>
++#include <stdbool.h>
++
++
++/* Prototypes for an implementation of SIPHASH in a crypto library */
++/**
++ *
++ * @param hash_size the size of the output hash size
++ * @return initialised context for siphash
++ */
++void *
++siphash_openssl_init(size_t hash_size);
++
++
++/**
++ * Calculates SIPHASH using the crypto library function.
++ */
++int
++siphash_openssl(void *sip_context, const void *in, size_t inlen,
++                const void *k, uint8_t *out, size_t outlen);
++
++/**
++ * Free the siphash context used for the crypto library
++ * @param sip_context
++ */
++void
++siphash_openssl_uninit(void *sip_context);
++
++/**
++ * Returns if the crypto library is available (and should be used)
++ *
++ * This returns if there is a crypto library version of Siphash24 is
++ * available and should be used (OpenSSL 3/4 version is quite slow, so
++ * we prefer the reference implementation)
++ *
++ */
++bool
++siphash_openssl_available(void *sip_context);
++#endif /* ifndef SIPHASH_OPENSSL_H */
+\ No newline at end of file
+diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.c
+index cb4eaa2..77cf295 100644
+--- a/tests/unit_tests/openvpn/test_crypto.c
++++ b/tests/unit_tests/openvpn/test_crypto.c
+@@ -31,12 +31,15 @@
+ #include <stdarg.h>
+ #include <string.h>
+ #include <setjmp.h>
++#include <inttypes.h>
+ #include <cmocka.h>
+ 
+ #include "crypto.h"
+ #include "crypto_epoch.h"
+ #include "options.h"
+ #include "ssl_backend.h"
++#include "siphash.h"
++#include "siphash_openssl.h"
+ 
+ #include "mss.h"
+ #include "test_common.h"
+@@ -923,6 +926,69 @@
+     assert_memory_equal(key_parameters.hmac, exp_impl_iv, sizeof(exp_impl_iv));
+ }
+ 
++/* Use a define here since some c compilers don't like array initialisation
++ * with an integer */
++#define UT_SIPHASH_HASH_SIZE 16
++
++static const char *ut_message = "Look behind you, a Three-Headed Monkey!";
++static const uint8_t ut_key[SIPHASH_KEY_SIZE] = { 0x11, 0x22, 0x33, 0x44, 0x55, 0x66 };
++const uint8_t expected_hash[UT_SIPHASH_HASH_SIZE] = { 0x3e, 0xea, 0x95, 0xb2, 0x6d, 0x5c, 0x4e, 0xfa,
++                                                      0x20, 0x47, 0x65, 0x7e, 0xdd, 0xcd, 0x62, 0x51 };
++
++static void
++test_siphash(void **state)
++{
++    uint8_t out[UT_SIPHASH_HASH_SIZE] = { 0 };
++    siphash_reference(ut_message, strlen(ut_message), ut_key, out, UT_SIPHASH_HASH_SIZE);
++    assert_memory_equal(out, expected_hash, UT_SIPHASH_HASH_SIZE);
++}
++
++static void
++test_siphash_openssl(void **state)
++{
++    void *sipctx = siphash_openssl_init(UT_SIPHASH_HASH_SIZE);
++
++    if (!siphash_openssl_available(sipctx))
++    {
++        siphash_openssl_uninit(sipctx);
++        skip();
++    }
++
++    uint8_t out[UT_SIPHASH_HASH_SIZE] = { 0 };
++
++    siphash_openssl(sipctx, ut_message, strlen(ut_message), ut_key, out,
++                    UT_SIPHASH_HASH_SIZE);
++    assert_memory_equal(out, expected_hash, UT_SIPHASH_HASH_SIZE);
++
++    /* check that calling the function twice is safe */
++    siphash_openssl(sipctx, ut_message, strlen(ut_message), ut_key, out,
++                    UT_SIPHASH_HASH_SIZE);
++    assert_memory_equal(out, expected_hash, UT_SIPHASH_HASH_SIZE);
++
++    /* Test a few random strings and ensure that our implementation behave the
++     * same */
++    for (int i = 0; i < 1000; i++)
++    {
++        size_t len = random() % 1000u;
++        uint8_t buf[1024] = { 0 };
++        uint8_t key[SIPHASH_KEY_SIZE] = { 0 };
++
++        assert_true(rand_bytes(buf, (int)len));
++        assert_true(rand_bytes(key, sizeof(key)));
++
++
++        siphash_openssl(sipctx, buf, len, key, out, UT_SIPHASH_HASH_SIZE);
++
++        uint8_t outref[UT_SIPHASH_HASH_SIZE] = { 0 };
++        siphash_reference(buf, len, key, outref, UT_SIPHASH_HASH_SIZE);
++
++        assert_memory_equal(out, outref, UT_SIPHASH_HASH_SIZE);
++    }
++
++    siphash_openssl_uninit(sipctx);
++}
++
++
+ int
+ main(void)
+ {
+@@ -960,7 +1026,9 @@
+         cmocka_unit_test_prestate_setup_teardown(crypto_test_epoch_edge,
+                                                  crypto_test_epoch_setup,
+                                                  crypto_test_epoch_teardown, &prestate_num13),
+-        cmocka_unit_test(epoch_test_derive_data_key)
++        cmocka_unit_test(epoch_test_derive_data_key),
++        cmocka_unit_test(test_siphash),
++        cmocka_unit_test(test_siphash_openssl)
+     };
+ 
+     return cmocka_run_group_tests_name("crypto tests", tests, NULL, NULL);
 
-
-
--- 
-To view, visi=
-t http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1827?usp=3Demail
-To unsubscribe=
-, or for help writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/set=
-tings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerr=
-it-Branch: master
-Gerrit-Change-Id: I3b6bb178ffb2bb49981bc23eabf04fe8e06d6f=
-c3
-Gerrit-Change-Number: 1827
-Gerrit-PatchSet: 5
-Gerrit-Owner: plaisthos <a=
-rne-openvpn@rfc2549=2Eorg>
-Gerrit-Reviewer: flichtenheld <frank@lichtenheld=
-=2Ecom>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
-=
-Gerrit-Attention: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Comment-Dat=
-e: Thu, 06 Aug 2026 15:27:27 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Label=
-s: Yes
-
---2Pjz5MFnPVY=
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos=2E </p>
-<p>Patch set 5:<span style=3D"borde=
-r-radius: 3px; display: inline-block; margin: 0 2px; padding: 4px;backgroun=
-d-color: #ffd4d4;">Code-Review -1</span></p><p><a href=3D"http://gerrit=2Eo=
-penvpn=2Enet/c/openvpn/+/1827?usp=3Demail">View Change</a></p><p>1 comment:=
-</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; pad=
-ding: 0;"><p>File tests/unit_tests/openvpn/test_pkt=2Ec:</p><ul style=3D"li=
-st-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;">=
-<p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c=
-/openvpn/+/1827/comment/e84c4be3_665c03b1?usp=3Demail">Patch Set #5, Line 5=
-22:</a> <code style=3D"font-family:monospace,monospace">    rand_bytes(key,=
- sizeof(key));</code></p><p class=3D"blocks" style=3D"white-space: pre-wrap=
-; word-wrap: break-word;">You missed one=2E As apparently did I in my last =
-review since I flagged two and you fixed two=2E But there were three</p></l=
-i></ul></li></ul><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet=
-/c/openvpn/+/1827?usp=3Demail">change 1827</a>=2E To unsubscribe, or for he=
-lp writing mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/set=
-tings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://sch=
-ema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http=
-://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=2E=
-openvpn=2Enet/c/openvpn/+/1827?usp=3Demail"/><meta itemprop=3D"name" conten=
-t=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Messag=
-eType: comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn =
-</div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=
-=3D"display:none"> Gerrit-Change-Id: I3b6bb178ffb2bb49981bc23eabf04fe8e06d6=
-fc3 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1827 </div>
-<=
-div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display=
-:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<=
-div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@lichten=
-held=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel=
- &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
-<div style=3D"displ=
-ay:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 06 Aug 2026 15:=
-27:27 +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </d=
-iv>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></ht=
-ml>
---2Pjz5MFnPVY=--
-
-
---===============6086619344120199997==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============6086619344120199997==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
---===============6086619344120199997==--
-
