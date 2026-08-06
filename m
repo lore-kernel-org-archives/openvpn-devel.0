@@ -4,69 +4,127 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 28CFAC56208
-	for <openvpn-devel@archiver.kernel.org>; Thu,  6 Aug 2026 12:31:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C3C84C55ABF
+	for <openvpn-devel@archiver.kernel.org>; Thu,  6 Aug 2026 12:32:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=yTPMGlKTV8S2FV9ROYW7/q1LvECNeCi4O8mp0FdxfJ0=; b=lG9ABu4+QoFxiIn0sXfOdNLH0/
-	zW6ELdg1jnhycW3BjMVSlsxEdhg8avcZ8dyLdU9MY0+dhgXezJLlDfLQsi/DmKBUBCtN5ISiipx4W
-	hgUBJRFgowZrI4HM76bLNoH1MieyweE5t3l7SZ27noN8i64uy9Vzm4Y7CjMQcb0PH/Vg=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=C/KKaxmEMeUEMCQ0FuJugKCZClT+BTKcMGO/gORBgh0=; b=S+dC/81jlU4q4AnJyA3peXSwOl
+	iBHeNWmqLiGlY/RF3ZNhKOnScr0cUMHXt7lbVxyS/nJkXwpWGAVz2fzTTUfmiG7VrPw3VJ1Dsmqnt
+	whgGOnRLwVQFpXuiHaR3xiCOV3X+ttMA9JB2ofV8rUcPouspkJXfl+KeTQ3fuGevjb+o=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wrxFp-00055w-LG;
-	Thu, 06 Aug 2026 12:31:21 +0000
+	id 1wrxHI-0006OZ-JN;
+	Thu, 06 Aug 2026 12:32:53 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1wrxFo-00055o-4j
+ (envelope-from <gerrit@openvpn.net>) id 1wrxHG-0006OJ-P3
  for openvpn-devel@lists.sourceforge.net;
- Thu, 06 Aug 2026 12:31:20 +0000
+ Thu, 06 Aug 2026 12:32:51 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=z6vBBgnS9d9L3iSjAkzdc41CVh4jSiN3mgEgp9vNWFU=; b=PqIxMhJjHQwTgbg2riIAkUPbTg
- FA/RGen28+Z5/xkiLHxut4k3xF4Waf7pvigUi+e60khUGDhrk2B7z50/Qfh88tekJSrc0qMwT5TGl
- ImiQZM93/fq2Fg/zg0djzPowm9YCOItFDbJpa+ZMJCAR9VZ67zrJJcVtJSK1YBzoDPgc=;
+ d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
+ :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
+ Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
+ :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
+ :List-Post:List-Owner:List-Archive;
+ bh=OvoF3H4IM3kM8PRaSBVsJFPGKmSO6W0eKuSZe8EApLQ=; b=AENlDHOwRqD6K1wMKhjWN0C5MA
+ II92tq9IZbr/ZTZJhzVYmLP6dPLe2rQctBS3H47r8ZyO+CJhE8NpYS7QFu/2njZ3g406rXRZQLpcz
+ PqdU34+GXJOivw452LcwInkfj+4EC1Gf/fc04YOxP0Aq0dE0wtLy2MbPu9S4Oc33DV3c=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=z6vBBgnS9d9L3iSjAkzdc41CVh4jSiN3mgEgp9vNWFU=; b=RIadx6+AoR2PgSRE7c7bSxdZIl
- Kwkf5CnZBdk7N70beuaCeaEFVUBCyyDvyFjVQDOiyCFRaayEyc01BNt4SQwIx/TKy9jg6j3tE7z51
- oGVErd3HDlU46Fv9yMmvaOPAs/uGybzayWxcrJaDru69iI917xWU5PaVPxr6p+qgRk4E=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wrxFk-0008SD-LK for openvpn-devel@lists.sourceforge.net;
- Thu, 06 Aug 2026 12:31:19 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 676C2Lnt003823
- for <openvpn-devel@lists.sourceforge.net>; Thu, 6 Aug 2026 14:02:21 +0200
-Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 676C2Lsu003822
- for openvpn-devel@lists.sourceforge.net; Thu, 6 Aug 2026 14:02:21 +0200
-From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Thu,  6 Aug 2026 14:02:14 +0200
-Message-ID: <20260806120220.3806-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1785893242000.I564edc6e0cc179c2b8b5ddef5e80838949fe9fcd@gerrit.openvpn.net>
-References: <gerrit.1785893242000.I564edc6e0cc179c2b8b5ddef5e80838949fe9fcd@gerrit.openvpn.net>
+ h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
+ Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=OvoF3H4IM3kM8PRaSBVsJFPGKmSO6W0eKuSZe8EApLQ=; b=e
+ aPdK8UlkXDm4BF8pRhPUgAdZ2RwdBKdpc0Pn90X38930X48hbG+tnZvv67orTBhDROxg6BoNCxy81
+ nK9VmmipKq3ZJI6I6TQFfiMJNbXbhABowlNHuPxL1GqqkJv8X+QmSwY8HucOUQVsvuFI2beK4HF9m
+ zJf7+PAi4zZmO7sQ=;
+Received: from mail-wr1-f41.google.com ([209.85.221.41])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
+ id 1wrxHJ-0004KB-Bi for openvpn-devel@lists.sourceforge.net;
+ Thu, 06 Aug 2026 12:32:51 +0000
+Received: by mail-wr1-f41.google.com with SMTP id
+ ffacd0b85a97d-47f3b39f2a1so1611963f8f.2
+ for <openvpn-devel@lists.sourceforge.net>;
+ Thu, 06 Aug 2026 05:32:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=openvpn.net; s=google; t=1786019563; x=1786624363; darn=lists.sourceforge.net;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
+ :reply-to:content-type;
+ bh=OvoF3H4IM3kM8PRaSBVsJFPGKmSO6W0eKuSZe8EApLQ=;
+ b=g14uidtV9HFYsX/v50QGDwBJGoO2914zs20hI5eKu95sR16gvTnY87kDtL9nQ25Ixg
+ gMBU/aO5aNPbyDQrG7+YwA2kNQVZnQH5kMZfC3f/iLoTlL3BcJIqjjbFaiNJPK91Ix/c
+ w8diuKa2U0VnPfV73cHMRAvTL8QgH9Ux0fpUIipMFIFxspOXnIHau/PVu6Z1ImgI5KiR
+ FRSi53MVtNJMldsbcCHZmw+gxpGuUBQROpYR9FELvZNO1jG87R4LVDfk1dUvuHeCgC74
+ IMoqERmKDaqtZAiuUhivXdDGZMVaslalNpHZYU86QT02yUxQmDgIc1nYRSq0g//RA1J5
+ AjzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20251104; t=1786019563; x=1786624363;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
+ :cc:subject:date:message-id:reply-to:content-type;
+ bh=OvoF3H4IM3kM8PRaSBVsJFPGKmSO6W0eKuSZe8EApLQ=;
+ b=G5gg8mFSLj47B5pSSVkcWjBOyChKgWjxMO2rinJF4kip6hJeNK31PvGFZg/s5jOLlp
+ 4ndGTDKJHBXO9r8BqJeHObeOtuJn7woUpGZ3vH4xZqnAO69BY/0phF4UpQ1iOcNXtFF0
+ ZyaBpkoAWiNaKgxu0OJP9nLtqS+dY06h0E6w1JEQ647HvWlgumo6dEXI0v0pQdxCo28p
+ YJXLW1KTOGMEMHqECnBcJt8dIWIlDuuqi+ShOVZO9JbV0HG2hKl7FtFn8guYb5fOkP6Q
+ ZXFtLhWPCEL6rBS+HJbXwXeQYzB3qoj8DKrZTdXoMF0zIy2eR2n5A2bmARhZEA+PGBN/
+ ZRDQ==
+X-Gm-Message-State: AOJu0YxpWEzOCtWiITXFGuGVteEyle0ZQRmpAuAFrqdNNDyehiV/aUMu
+ gNS1f4NwKRzn3muKV3nbRsQTDplbdzXg993EyVs89gWKFM8KeO2XDJl9AyCyld9cUzfW1dh/xyf
+ 4MSSNabyRg18uZHCFFjCwzDQD4SMsvI20lh/SjCHS3Bhpxq0jlLsSRu7TGUZFgXxlg8SoM4OYkA
+ ZJ8UEUHA==
+X-Gm-Gg: AR+sD12ldkDaQojxx7k6RuWMvIoJSNUoDPbLVkL5ExmVRs1Br85dqAMc1oUVB4zWWzz
+ niZMHdYm6Yb8aNDF+uDtsFjBiUcK1e4DCJK1ENTcRg/FmkmaG0d8DiW2gcaLsrIpXWlwu1uDTf5
+ Q7dqLn5iS3QDg4BJKMfhThoqnyQj+WPLs/YKIB4/io1Pj8p1NoT5hipruqbER+kEQQ1Sl6xQHSh
+ eVeut12Et0Zkga/Bjq0tbianE/XxkKWeUKw3RBBApyKRuR9N+9MdlQp/dErwe5QzCdWJz8JEo/X
+ 7gRukUXZudU356XIILVJEhtwQhxaSy5WfOUXqHcwJSlJbOlH+vasBLLq7Z/wk6vwWNLtD8vWcJ7
+ 3s90/HnLpj8h3dOGfvg+dJrOA410mIt+eWDrLkcHV9VnRF2leSv+rvj5ENiheY4SWLKnIdoSE0n
+ 22OIm3xxN8V5XybmOZkjX4cmongQh8Xg9bnLY1Ke0U1V72tCdMYSkMO96flQ0MMrzy7o8llRYFk
+ kpzi5Nxp0OPn580Ib506zErvO7KHzpUmTybA5XCYEss1WIW/HaRAoCPgsWD/kmqo55YCitC2XMy
+ iQbSJ1lugJ7tOKQYZtQc07b2pVv84H4CdKTaEaCw0X5SRQ0hG0A=
+X-Received: by 2002:a05:6000:2995:20b0:47f:c648:e265 with SMTP id
+ ffacd0b85a97d-47fec51960cmr20527955f8f.17.1786019561995; 
+ Thu, 06 Aug 2026 05:32:41 -0700 (PDT)
+Received: from ip-10-18-1-162.eu-central-1.compute.internal
+ (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
+ by smtp.gmail.com with ESMTPSA id
+ ffacd0b85a97d-47ff7b18079sm5820845f8f.17.2026.08.06.05.32.41
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 06 Aug 2026 05:32:41 -0700 (PDT)
+X-Google-Original-From: "flichtenheld (Code Review)"
+ <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
+Date: Thu, 6 Aug 2026 12:32:32 +0000
+To: plaisthos <arne-openvpn@rfc2549.org>
+Auto-Submitted: auto-generated
+X-Gerrit-MessageType: newpatchset
+X-Gerrit-PatchSet: 12
+X-Gerrit-Change-Id: I81b7168b64c438f759eace1e8f2735891c797bb9
+X-Gerrit-Change-Number: 1611
+X-Gerrit-Project: openvpn
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1611?usp=email>
+X-Gerrit-Commit: c18e74d52fd88489806f86a43712b78b56d9b231
+In-Reply-To: <gerrit.1775343746000.I81b7168b64c438f759eace1e8f2735891c797bb9@gerrit.openvpn.net>
+References: <gerrit.1775343746000.I81b7168b64c438f759eace1e8f2735891c797bb9@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzc1MzQzNzQ2MDAwLkk4MWI3MTY4YjY0YzQzOGY3NTllYWNlMWU4ZjI3MzU4OTFjNzk3YmI5QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <bfe954cbb56b371512d8172c802d4384d93e739a-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
-X-Headers-End: 1wrxFk-0008SD-LK
-Subject: [Openvpn-devel] [PATCH v3] dco: do not exit the process when
- installing a DCO key fails
+User-Agent: Gerrit/3.11.5
+X-Headers-End: 1wrxHJ-0004KB-Bi
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Hide various
+ functions when unused
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -78,281 +136,570 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+From: "flichtenheld \(Code Review\) via Openvpn-devel"
+ <openvpn-devel@lists.sourceforge.net>
+Reply-To: frank@lichtenheld.com, arne-openvpn@rfc2549.org,
+ openvpn-devel@lists.sourceforge.net
+Cc: "flichtenheld \(Code Review\)" <gerrit@openvpn.net>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: multipart/mixed; boundary="===============3526288270317923532=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Antonio Quartulli <antonio@mandelbit.com>
+--===============3526288270317923532==
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="kDP0oiIabmc="; charset=UTF-8
 
-When the DCO peer is gone from the kernel while userspace still believes
-it exists, dco_new_key() fails with ENOENT and init_key_contexts() calls
-msg(M_FATAL, ...). On a server this terminates the whole daemon and
-disconnects every other client, even though only a single peer is
-affected.
+--kDP0oiIabmc=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Propagate the failure instead. Since a DCO desync needs a different
-recovery than any other key generation error - the kernel peer has to be
-re-created, which only a reconnect can do - report it as a distinct
-key_gen_status through generate_key_expansion() and
-tls_session_generate_data_channel_keys(), and let tls_multi_process()
-turn it into a new TLSMP_RESTART result that check_tls() dispatches as a
-SIGUSR1. On a server this restarts only the affected client instance.
+Attention is currently required from: plaisthos=2E
 
-The restart request is tracked separately from 'active' because it must
-not be overwritten by a later TLSMP_ACTIVE or TLSMP_RECONNECT
-assignment, and the return value now applies an explicit precedence:
-killing the session supersedes restarting it, which supersedes 'active'.
+Hello plaisthos, 
 
-tls_session_update_crypto_params_do_work() collapses the desync back to
-a plain failure, as all of its callers already turn a failure into a
-SIGUSR1.
+I'd =
+like you to reexamine a change=2E Please visit
 
-Note that commit ea3bb67e2b1e ("dco: make key state desync recoverable")
-does not cover this case, as both of its hunks are conditional on the
-key installation having succeeded.
+    http://gerrit=2Eopenvpn=
+=2Enet/c/openvpn/+/1611?usp=3Demail
 
-Github: fixes OpenVPN/openvpn#542
-Change-Id: I564edc6e0cc179c2b8b5ddef5e80838949fe9fcd
-Signed-off-by: Antonio Quartulli <antonio@mandelbit.com>
-Acked-by: Arne Schwabe <arne-openvpn@rfc2549.org>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1835
+to look at the new patch set (#12)=2E
+=
+
+
+Change subject: Hide various functions when unused
+=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+
+Hide various functions when unused=
+
+
+Wrap them into the same ifdef as their only user(s)=2E
+
+Identified by cpp=
+check=2E
+
+Change-Id: I81b7168b64c438f759eace1e8f2735891c797bb9
+Signed-off-b=
+y: Frank Lichtenheld <frank@lichtenheld=2Ecom>
 ---
+M src/openvpn/buffer=2Ec=
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+M src/openvpn/buffer=2Eh
+M src/openvpn/error=2Ec
+M src/openvpn/error=2Eh
+M=
+ src/openvpn/socket=2Ec
+M src/openvpn/socket=2Eh
+M src/openvpn/socket_util=
+=2Eh
+M src/openvpn/ssl_openssl=2Ec
+M tests/unit_tests/openvpn/test_pkcs11=
+=2Ec
+9 files changed, 25 insertions(+), 10 deletions(-)
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1835
-This mail reflects revision 3 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@rfc2549.org>
+  git pull ssh://=
+gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/11/1611/12
 
-        
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 46e1a53..a0ddb0f 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -206,6 +206,12 @@
-                 register_signal(c->sig, SIGTERM, "auth-control-exit");
-             }
-         }
-+        else if (tmp_status == TLSMP_RESTART)
-+        {
-+            /* The session cannot recover on its own. Kill the connection so
-+             * that it is set up again from scratch */
-+            register_signal(c->sig, SIGUSR1, "dco key state desync");
-+        }
- 
-         interval_future_trigger(&c->c2.tmp_int, wakeup);
-     }
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index ccd8264..4a4feaf 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1373,7 +1373,22 @@
-     secure_memzero(&e1_recv, sizeof(e1_recv));
+diff --git a/=
+src/openvpn/buffer=2Ec b/src/openvpn/buffer=2Ec
+index 5f2b233=2E=2E922238d =
+100644
+--- a/src/openvpn/buffer=2Ec
++++ b/src/openvpn/buffer=2Ec
+@@ -594,6 =
++594,7 @@
+     return str;
  }
  
--static void
-+/**
-+ * Outcome of generating the data channel keys of a session.
-+ *
-+ * \c KEY_GEN_DCO_DESYNC is kept distinct from \c KEY_GEN_FAILED because it
-+ * means userspace and kernel disagree about the DCO peer: the session cannot
-+ * recover on its own and the connection has to be restarted, while any other
-+ * failure only invalidates the affected key state.
-+ */
-+enum key_gen_status
-+{
-+    KEY_GEN_OK,         /**< keys were generated and installed */
-+    KEY_GEN_FAILED,     /**< generation failed, invalidate the key state */
-+    KEY_GEN_DCO_DESYNC, /**< the DCO peer is gone from the kernel */
-+};
-+
-+static enum key_gen_status
- init_key_contexts(struct key_state *ks, struct tls_multi *multi, const struct key_type *key_type,
-                   bool server, struct key2 *key2, bool dco_enabled)
- {
-@@ -1392,7 +1407,16 @@
-         int ret = init_key_dco_bi(multi, ks, key2, key_direction, key_type->cipher, server);
-         if (ret < 0)
-         {
--            msg(M_FATAL, "Impossible to install key material in DCO: %s", strerror(-ret));
-+            /* This normally means the DCO peer is gone from the kernel while
-+             * userspace still believes it exists. Do not take the whole
-+             * process down over a single peer: report the desync so that the
-+             * connection is restarted and the peer re-created from scratch */
-+            msg(M_WARN,
-+                "Impossible to install key material in DCO: %s. The underlying "
-+                "DCO peer may have been deleted from the kernel without "
-+                "notifying userspace. Restarting the session.",
-+                strerror(-ret));
-+            return KEY_GEN_DCO_DESYNC;
-         }
- 
-         /* encrypt/decrypt context are unused with DCO */
-@@ -1415,6 +1439,8 @@
-     {
-         init_key_ctx_bi(key, key2, key_direction, key_type, "Data Channel");
-     }
-+
-+    return KEY_GEN_OK;
- }
- 
- static bool
-@@ -1475,11 +1501,11 @@
-  * Using source entropy from local and remote hosts, mix into
-  * master key.
++#ifdef _WIN32
+ /*
+  * like buf_null_termin=
+ate, but operate on strings
   */
--static bool
-+static enum key_gen_status
- generate_key_expansion(struct tls_multi *multi, struct key_state *ks, struct tls_session *session)
- {
-     struct key_ctx_bi *key = &ks->crypto_options.key_ctx_bi;
--    bool ret = false;
-+    enum key_gen_status ret = KEY_GEN_FAILED;
-     struct key2 key2;
- 
-     if (key->initialized)
-@@ -1524,8 +1550,8 @@
-         }
+@@ -610,6 +611,7 @@
+         *(str + len -=
+ 1) =3D '\0';
      }
- 
--    init_key_contexts(ks, multi, &session->opt->key_type, server, &key2, session->opt->dco_enabled);
--    ret = true;
-+    ret = init_key_contexts(ks, multi, &session->opt->key_type, server, &key2,
-+                            session->opt->dco_enabled);
- 
- exit:
-     secure_memzero(&key2, sizeof(key2));
-@@ -1539,10 +1565,10 @@
-  * This erases the source material used to generate the data channel keys, and
-  * can thus be called only once per session.
-  */
--bool
-+static enum key_gen_status
- tls_session_generate_data_channel_keys(struct tls_multi *multi, struct tls_session *session)
- {
--    bool ret = false;
-+    enum key_gen_status ret = KEY_GEN_FAILED;
-     struct key_state *ks = &session->key[KS_PRIMARY]; /* primary key */
- 
-     if (ks->authenticated <= KS_AUTH_FALSE)
-@@ -1553,7 +1579,8 @@
- 
-     ks->crypto_options.flags = session->opt->crypto_flags;
- 
--    if (!generate_key_expansion(multi, ks, session))
-+    ret = generate_key_expansion(multi, ks, session);
-+    if (ret != KEY_GEN_OK)
-     {
-         msg(D_TLS_ERRORS, "TLS Error: generate_key_expansion failed");
-         goto cleanup;
-@@ -1565,7 +1592,6 @@
-     /* set the state of the keys for the session to generated */
-     ks->state = S_GENERATED_KEYS;
- 
--    ret = true;
- cleanup:
-     secure_memzero(ks->key_src, sizeof(*ks->key_src));
-     return ret;
-@@ -1637,7 +1663,10 @@
-             }
-         }
-     }
--    return tls_session_generate_data_channel_keys(multi, session);
-+    /* A DCO desync is reported as a plain failure here: every caller of this
-+     * function already turns a failure into a SIGUSR1, which is exactly the
-+     * recovery a desync needs */
-+    return tls_session_generate_data_channel_keys(multi, session) == KEY_GEN_OK;
  }
- 
- bool
-@@ -3232,6 +3261,9 @@
-     struct gc_arena gc = gc_new();
-     int active = TLSMP_INACTIVE;
-     bool error = false;
-+    /* kept separate from 'active' on purpose: a restart request must not be
-+     * overwritten by a later TLSMP_ACTIVE/TLSMP_RECONNECT assignment */
-+    bool restart = false;
- 
-     tls_clear_error();
- 
-@@ -3334,12 +3366,22 @@
-             /* Session is now fully authenticated.
-              * tls_session_generate_data_channel_keys will move ks->state
-              * from S_ACTIVE to S_GENERATED_KEYS */
--            if (!tls_session_generate_data_channel_keys(multi, session))
-+            enum key_gen_status status = tls_session_generate_data_channel_keys(multi, session);
-+            if (status != KEY_GEN_OK)
-             {
-                 msg(D_TLS_ERRORS, "TLS Error: generate_key_expansion failed");
-                 ks->authenticated = KS_AUTH_FALSE;
-                 key_state_ssl_shutdown(&ks->ks_ssl);
-                 ks->state = S_ERROR_PRE;
-+
-+                /* Invalidating the key state is not enough to recover from a
-+                 * DCO desync: the kernel peer has to be re-created, and the
-+                 * key state we just invalidated will never be retried, so ask
-+                 * for a restart right away */
-+                if (status == KEY_GEN_DCO_DESYNC)
-+                {
-+                    restart = true;
-+                }
-             }
- 
-             /* Update auth token on the client if needed on renegotiation
-@@ -3428,7 +3470,17 @@
- 
-     gc_free(&gc);
- 
--    return (tas == TLS_AUTHENTICATION_FAILED) ? TLSMP_KILL : active;
-+    /* strongest outcome wins: killing the session supersedes restarting it,
-+     * and restarting supersedes whatever 'active' ended up being */
-+    if (tas == TLS_AUTHENTICATION_FAILED)
-+    {
-+        return TLSMP_KILL;
-+    }
-+    if (restart)
-+    {
-+        return TLSMP_RESTART;
-+    }
-+    return active;
- }
- 
- /**
-diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index 7ddf965..5483fbb 100644
---- a/src/openvpn/ssl.h
-+++ b/src/openvpn/ssl.h
-@@ -231,6 +231,8 @@
- #define TLSMP_ACTIVE    1
- #define TLSMP_KILL      2
- #define TLSMP_RECONNECT 3
-+/** the session cannot recover on its own and has to be restarted */
-+#define TLSMP_RESTART   4
++#endif
  
  /*
-  * Called by the top-level event loop.
-@@ -554,15 +556,6 @@
- void show_available_tls_ciphers(const char *cipher_list, const char *cipher_list_tls13,
-                                 const char *tls_cert_profile);
+  * Remove trailing \r and \n chars=
+=2E
+diff --git a/src/openvpn/buffer=2Eh b/src/openvpn/buffer=2Eh
+index 833a=
+e6f=2E=2Ec6722c7 100644
+--- a/src/openvpn/buffer=2Eh
++++ b/src/openvpn/buff=
+er=2Eh
+@@ -470,7 +470,9 @@
  
--
--/**
-- * Generate data channel keys for the supplied TLS session.
-- *
-- * This erases the source material used to generate the data channel keys, and
-- * can thus be called only once per session.
-- */
--bool tls_session_generate_data_channel_keys(struct tls_multi *multi, struct tls_session *session);
--
- void tls_session_soft_reset(struct tls_multi *multi);
+ const char *skip_leading_whitespace(const cha=
+r *str);
+ 
++#ifdef _WIN32
+ void string_null_terminate(char *str, int len, i=
+nt capacity);
++#endif
  
  /**
+  * Write buffer contents to file=2E
+diff --gi=
+t a/src/openvpn/error=2Ec b/src/openvpn/error=2Ec
+index 2900352=2E=2E26d4c7=
+c 100644
+--- a/src/openvpn/error=2Ec
++++ b/src/openvpn/error=2Ec
+@@ -84,18 =
++84,20 @@
+ /* If non-null, messages should be written here (used for debugg=
+ing only) */
+ static FILE *msgfp; /* GLOBAL */
+ 
+-/* If true, we forked fro=
+m main OpenVPN process */
+-static bool forked; /* GLOBAL */
+-
+ /* our defau=
+lt output targets */
+ static FILE *default_out; /* GLOBAL */
+ static FILE *=
+default_err; /* GLOBAL */
+ 
++/* If true, we forked from main OpenVPN proces=
+s */
++static bool forked; /* GLOBAL */
++
++#if PORT_SHARE
+ void
+ msg_forked(=
+void)
+ {
+     forked =3D true;
+ }
++#endif
+ 
+ bool
+ set_debug_level(const in=
+t level, const unsigned int flags)
+diff --git a/src/openvpn/error=2Eh b/src=
+/openvpn/error=2Eh
+index 3b742d7=2E=2E45826a2 100644
+--- a/src/openvpn/erro=
+r=2Eh
++++ b/src/openvpn/error=2Eh
+@@ -260,8 +260,10 @@
+     return check_de=
+bug_level(flags) && dont_mute(flags);
+ }
+ 
++#if PORT_SHARE
+ /* Call if we f=
+orked */
+ void msg_forked(void);
++#endif
+ 
+ /* syslog output */
+ 
+@@ -393,1=
+2 +395,14 @@
+     return false;
+ }
+ 
++#if defined(ENABLE_CRYPTO_OPENSSL)
+ /=
+** Convert fatal errors to nonfatal, don't touch other errors */
+ static in=
+line msglvl_t
+ nonfatal(const msglvl_t err)
+ {
+     return (err & M_FATAL) =
+? (err ^ M_FATAL) | M_NONFATAL : err;
+ }
++#endif
+ 
+ static inline int
+ open=
+vpn_errno_maybe_crt(bool *crt_error)
+diff --git a/src/openvpn/socket=2Ec b/=
+src/openvpn/socket=2Ec
+index 8bcc332=2E=2E0f66ad51 100644
+--- a/src/openvpn=
+/socket=2Ec
++++ b/src/openvpn/socket=2Ec
+@@ -2961,6 +2961,8 @@
+     return =
+rwflags;
+ }
+ 
++#if UNIX_SOCK_SUPPORT
++
+ void
+ sd_close(socket_descriptor_t =
+*sd)
+ {
+@@ -2971,8 +2973,6 @@
+     }
+ }
+ 
+-#if UNIX_SOCK_SUPPORT
+-
+ /*
+  * =
+code for unix domain sockets
+  */
+diff --git a/src/openvpn/socket=2Eh b/src=
+/openvpn/socket=2Eh
+index b490610=2E=2E1a532e1 100644
+--- a/src/openvpn/soc=
+ket=2Eh
++++ b/src/openvpn/socket=2Eh
+@@ -366,7 +366,9 @@
+ 
+ void link_socke=
+t_close(struct link_socket *sock);
+ 
++#ifdef ENABLE_MANAGEMENT
+ void sd_clo=
+se(socket_descriptor_t *sd);
++#endif
+ 
+ void bad_address_length(int actual,=
+ int expected);
+ 
+diff --git a/src/openvpn/socket_util=2Eh b/src/openvpn/so=
+cket_util=2Eh
+index 13deeaa=2E=2E13f5962 100644
+--- a/src/openvpn/socket_ut=
+il=2Eh
++++ b/src/openvpn/socket_util=2Eh
+@@ -250,6 +250,7 @@
+     }
+ }
+ 
++#=
+ifdef TARGET_ANDROID
+ static inline bool
+ addr_local(const struct sockaddr =
+*addr)
+ {
+@@ -269,12 +270,12 @@
+             return false;
+     }
+ }
++#endi=
+f
+ 
+-
++#if ENABLE_IP_PKTINFO
+ static inline bool
+ addr_defined_ipi(const st=
+ruct link_socket_actual *lsa)
+ {
+-#if ENABLE_IP_PKTINFO
+     if (!lsa)
+    =
+ {
+         return 0;
+@@ -296,11 +297,9 @@
+         default:
+             r=
+eturn 0;
+     }
+-#else /* if ENABLE_IP_PKTINFO */
+-    ASSERT(0);
+-#endif
+ =
+    return false;
+ }
++#endif
+ 
+ /*
+  * Overhead added to packets by various=
+ protocols=2E
+diff --git a/src/openvpn/ssl_openssl=2Ec b/src/openvpn/ssl_op=
+enssl=2Ec
+index 32b13db=2E=2Ee4b760e 100644
+--- a/src/openvpn/ssl_openssl=
+=2Ec
++++ b/src/openvpn/ssl_openssl=2Ec
+@@ -436,6 +436,7 @@
+     }
+ }
+ 
++#if=
+def TLS1_3_VERSION
+ static void
+ convert_tls13_list_to_openssl(char *openss=
+l_ciphers, size_t len, const char *ciphers)
+ {
+@@ -460,6 +461,7 @@
+        =
+ }
+     }
+ }
++#endif
+ 
+ void
+ tls_ctx_restrict_ciphers_tls13(struct tls_roo=
+t_ctx *ctx, const char *ciphers)
+diff --git a/tests/unit_tests/openvpn/test=
+_pkcs11=2Ec b/tests/unit_tests/openvpn/test_pkcs11=2Ec
+index 8b6e594=2E=2E0=
+42bd8b 100644
+--- a/tests/unit_tests/openvpn/test_pkcs11=2Ec
++++ b/tests/un=
+it_tests/openvpn/test_pkcs11=2Ec
+@@ -45,6 +45,7 @@
+ 
+ struct management *ma=
+nagement; /* global */
+ 
++#if defined(ENABLE_CRYPTO_OPENSSL)
+ /* replacemen=
+t for crypto_print_openssl_errors() */
+ void
+ crypto_print_openssl_errors(c=
+onst unsigned int flags)
+@@ -55,6 +56,7 @@
+         msg(flags, "OpenSSL err=
+or %lu: %s", e, ERR_error_string(e, NULL));
+     }
+ }
++#endif
+ 
+ /* stubs f=
+or some unused functions instead of pulling in too many dependencies */
+ in=
+t
 
+-- 
+To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1611?usp=3D=
+email
+To unsubscribe, or for help writing mail filters, visit http://gerrit=
+=2Eopenvpn=2Enet/settings?usp=3Demail
+
+Gerrit-MessageType: newpatchset
+Gerr=
+it-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I81b7168b64c438=
+f759eace1e8f2735891c797bb9
+Gerrit-Change-Number: 1611
+Gerrit-PatchSet: 12
+G=
+errit-Owner: flichtenheld <frank@lichtenheld=2Ecom>
+Gerrit-Reviewer: plaist=
+hos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-devel@li=
+sts=2Esourceforge=2Enet>
+Gerrit-Attention: plaisthos <arne-openvpn@rfc2549=
+=2Eorg>
+
+--kDP0oiIabmc=
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: plaisthos=2E </p>
+<p>flichtenheld <strong>uploaded pa=
+tch set #12</strong> to this change=2E</p><p><a href=3D"http://gerrit=2Eope=
+nvpn=2Enet/c/openvpn/+/1611?usp=3Demail">View Change</a></p><pre class=3D"b=
+locks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">H=
+ide various functions when unused<br><br>Wrap them into the same ifdef as t=
+heir only user(s)=2E<br><br>Identified by cppcheck=2E<br><br>Change-Id: I81=
+b7168b64c438f759eace1e8f2735891c797bb9<br>Signed-off-by: Frank Lichtenheld =
+&lt;frank@lichtenheld=2Ecom&gt;<br>---<br>M src/openvpn/buffer=2Ec<br>M src=
+/openvpn/buffer=2Eh<br>M src/openvpn/error=2Ec<br>M src/openvpn/error=2Eh<b=
+r>M src/openvpn/socket=2Ec<br>M src/openvpn/socket=2Eh<br>M src/openvpn/soc=
+ket_util=2Eh<br>M src/openvpn/ssl_openssl=2Ec<br>M tests/unit_tests/openvpn=
+/test_pkcs11=2Ec<br>9 files changed, 25 insertions(+), 10 deletions(-)<br><=
+br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn =
+refs/changes/11/1611/12</pre><pre style=3D"font-family: monospace,monospace=
+; white-space: pre-wrap;"><span>diff --git a/src/openvpn/buffer=2Ec b/src/o=
+penvpn/buffer=2Ec</span><br><span>index 5f2b233=2E=2E922238d 100644</span><=
+br><span>--- a/src/openvpn/buffer=2Ec</span><br><span>+++ b/src/openvpn/buf=
+fer=2Ec</span><br><span>@@ -594,6 +594,7 @@</span><br><span>     return str=
+;</span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+#ifdef _WIN32</span><br><span> /*</span><br><span>  * li=
+ke buf_null_terminate, but operate on strings</span><br><span>  */</span><b=
+r><span>@@ -610,6 +611,7 @@</span><br><span>         *(str + len - 1) =3D &=
+#39;\0&#39;;</span><br><span>     }</span><br><span> }</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span> </span><br><span=
+> /*</span><br><span>  * Remove trailing \r and \n chars=2E</span><br><span=
+>diff --git a/src/openvpn/buffer=2Eh b/src/openvpn/buffer=2Eh</span><br><sp=
+an>index 833ae6f=2E=2Ec6722c7 100644</span><br><span>--- a/src/openvpn/buff=
+er=2Eh</span><br><span>+++ b/src/openvpn/buffer=2Eh</span><br><span>@@ -470=
+,7 +470,9 @@</span><br><span> </span><br><span> const char *skip_leading_wh=
+itespace(const char *str);</span><br><span> </span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+#ifdef _WIN32</span><br><span> void string_null_te=
+rminate(char *str, int len, int capacity);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+#endif</span><br><span> </span><br><span> /**</span>=
+<br><span>  * Write buffer contents to file=2E</span><br><span>diff --git a=
+/src/openvpn/error=2Ec b/src/openvpn/error=2Ec</span><br><span>index 290035=
+2=2E=2E26d4c7c 100644</span><br><span>--- a/src/openvpn/error=2Ec</span><br=
+><span>+++ b/src/openvpn/error=2Ec</span><br><span>@@ -84,18 +84,20 @@</spa=
+n><br><span> /* If non-null, messages should be written here (used for debu=
+gging only) */</span><br><span> static FILE *msgfp; /* GLOBAL */</span><br>=
+<span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-/* If true, we=
+ forked from main OpenVPN process */</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-static bool forked; /* GLOBAL */</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-</span><br><span> /* our default output targets *=
+/</span><br><span> static FILE *default_out; /* GLOBAL */</span><br><span> =
+static FILE *default_err; /* GLOBAL */</span><br><span> </span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+/* If true, we forked from main OpenVP=
+N process */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static =
+bool forked; /* GLOBAL */</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if PORT_SHAR=
+E</span><br><span> void</span><br><span> msg_forked(void)</span><br><span> =
+{</span><br><span>     forked =3D true;</span><br><span> }</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span> </span><br><=
+span> bool</span><br><span> set_debug_level(const int level, const unsigned=
+ int flags)</span><br><span>diff --git a/src/openvpn/error=2Eh b/src/openvp=
+n/error=2Eh</span><br><span>index 3b742d7=2E=2E45826a2 100644</span><br><sp=
+an>--- a/src/openvpn/error=2Eh</span><br><span>+++ b/src/openvpn/error=2Eh<=
+/span><br><span>@@ -260,8 +260,10 @@</span><br><span>     return check_debu=
+g_level(flags) &amp;&amp; dont_mute(flags);</span><br><span> }</span><br><s=
+pan> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if PORT_SHARE=
+</span><br><span> /* Call if we forked */</span><br><span> void msg_forked(=
+void);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span>=
+<br><span> </span><br><span> /* syslog output */</span><br><span> </span><b=
+r><span>@@ -393,12 +395,14 @@</span><br><span>     return false;</span><br>=
+<span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+#if defined(ENABLE_CRYPTO_OPENSSL)</span><br><span> /** Convert fata=
+l errors to nonfatal, don&#39;t touch other errors */</span><br><span> stat=
+ic inline msglvl_t</span><br><span> nonfatal(const msglvl_t err)</span><br>=
+<span> {</span><br><span>     return (err &amp; M_FATAL) ? (err ^ M_FATAL) =
+| M_NONFATAL : err;</span><br><span> }</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+#endif</span><br><span> </span><br><span> static inline =
+int</span><br><span> openvpn_errno_maybe_crt(bool *crt_error)</span><br><sp=
+an>diff --git a/src/openvpn/socket=2Ec b/src/openvpn/socket=2Ec</span><br><=
+span>index 8bcc332=2E=2E0f66ad51 100644</span><br><span>--- a/src/openvpn/s=
+ocket=2Ec</span><br><span>+++ b/src/openvpn/socket=2Ec</span><br><span>@@ -=
+2961,6 +2961,8 @@</span><br><span>     return rwflags;</span><br><span> }</=
+span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if=
+ UNIX_SOCK_SUPPORT</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span> void</span><br><span> sd_close(socket_descriptor_t *sd)</s=
+pan><br><span> {</span><br><span>@@ -2971,8 +2973,6 @@</span><br><span>    =
+ }</span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-#if UNIX_SOCK_SUPPORT</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-</span><br><span> /*</span><br><span>  * code for unix do=
+main sockets</span><br><span>  */</span><br><span>diff --git a/src/openvpn/=
+socket=2Eh b/src/openvpn/socket=2Eh</span><br><span>index b490610=2E=2E1a53=
+2e1 100644</span><br><span>--- a/src/openvpn/socket=2Eh</span><br><span>+++=
+ b/src/openvpn/socket=2Eh</span><br><span>@@ -366,7 +366,9 @@</span><br><sp=
+an> </span><br><span> void link_socket_close(struct link_socket *sock);</sp=
+an><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifde=
+f ENABLE_MANAGEMENT</span><br><span> void sd_close(socket_descriptor_t *sd)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><=
+span> </span><br><span> void bad_address_length(int actual, int expected);<=
+/span><br><span> </span><br><span>diff --git a/src/openvpn/socket_util=2Eh =
+b/src/openvpn/socket_util=2Eh</span><br><span>index 13deeaa=2E=2E13f5962 10=
+0644</span><br><span>--- a/src/openvpn/socket_util=2Eh</span><br><span>+++ =
+b/src/openvpn/socket_util=2Eh</span><br><span>@@ -250,6 +250,7 @@</span><br=
+><span>     }</span><br><span> }</span><br><span> </span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+#ifdef TARGET_ANDROID</span><br><span> stati=
+c inline bool</span><br><span> addr_local(const struct sockaddr *addr)</spa=
+n><br><span> {</span><br><span>@@ -269,12 +270,12 @@</span><br><span>      =
+       return false;</span><br><span>     }</span><br><span> }</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span> </span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+#if ENABLE_IP_PKTINFO</span><br><span> static in=
+line bool</span><br><span> addr_defined_ipi(const struct link_socket_actual=
+ *lsa)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-#if ENABLE_IP_PKTINFO</span><br><span>     if (!lsa)</span><br><span>  =
+   {</span><br><span>         return 0;</span><br><span>@@ -296,11 +297,9 @=
+@</span><br><span>         default:</span><br><span>             return 0;<=
+/span><br><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-#else /* if ENABLE_IP_PKTINFO */</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    ASSERT(0);</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-#endif</span><br><span>     return false;</span><br><span> }</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span> </spa=
+n><br><span> /*</span><br><span>  * Overhead added to packets by various pr=
+otocols=2E</span><br><span>diff --git a/src/openvpn/ssl_openssl=2Ec b/src/o=
+penvpn/ssl_openssl=2Ec</span><br><span>index 32b13db=2E=2Ee4b760e 100644</s=
+pan><br><span>--- a/src/openvpn/ssl_openssl=2Ec</span><br><span>+++ b/src/o=
+penvpn/ssl_openssl=2Ec</span><br><span>@@ -436,6 +436,7 @@</span><br><span>=
+     }</span><br><span> }</span><br><span> </span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+#ifdef TLS1_3_VERSION</span><br><span> static void<=
+/span><br><span> convert_tls13_list_to_openssl(char *openssl_ciphers, size_=
+t len, const char *ciphers)</span><br><span> {</span><br><span>@@ -460,6 +4=
+61,7 @@</span><br><span>         }</span><br><span>     }</span><br><span> =
+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><=
+span> </span><br><span> void</span><br><span> tls_ctx_restrict_ciphers_tls1=
+3(struct tls_root_ctx *ctx, const char *ciphers)</span><br><span>diff --git=
+ a/tests/unit_tests/openvpn/test_pkcs11=2Ec b/tests/unit_tests/openvpn/test=
+_pkcs11=2Ec</span><br><span>index 8b6e594=2E=2E042bd8b 100644</span><br><sp=
+an>--- a/tests/unit_tests/openvpn/test_pkcs11=2Ec</span><br><span>+++ b/tes=
+ts/unit_tests/openvpn/test_pkcs11=2Ec</span><br><span>@@ -45,6 +45,7 @@</sp=
+an><br><span> </span><br><span> struct management *management; /* global */=
+</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
+if defined(ENABLE_CRYPTO_OPENSSL)</span><br><span> /* replacement for crypt=
+o_print_openssl_errors() */</span><br><span> void</span><br><span> crypto_p=
+rint_openssl_errors(const unsigned int flags)</span><br><span>@@ -55,6 +56,=
+7 @@</span><br><span>         msg(flags, &quot;OpenSSL error %lu: %s&quot;,=
+ e, ERR_error_string(e, NULL));</span><br><span>     }</span><br><span> }</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><spa=
+n> </span><br><span> /* stubs for some unused functions instead of pulling =
+in too many dependencies */</span><br><span> int</span><br><span></span><br=
+></pre><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn=
+/+/1611?usp=3Demail">change 1611</a>=2E To unsubscribe, or for help writing=
+ mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=
+=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg=
+/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=
+=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=
+=2Enet/c/openvpn/+/1611?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
+ew Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: =
+newpatchset </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </d=
+iv>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D=
+"display:none"> Gerrit-Change-Id: I81b7168b64c438f759eace1e8f2735891c797bb9=
+ </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1611 </div>
+<div=
+ style=3D"display:none"> Gerrit-PatchSet: 12 </div>
+<div style=3D"display:n=
+one"> Gerrit-Owner: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<di=
+v style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@rfc25=
+49=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &=
+lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"display=
+:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </di=
+v>
+
+</body></html>
+--kDP0oiIabmc=--
+
+
+--===============3526288270317923532==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============3526288270317923532==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+--===============3526288270317923532==--
+
