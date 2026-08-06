@@ -4,125 +4,86 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 00714C5AC67
-	for <openvpn-devel@archiver.kernel.org>; Thu,  6 Aug 2026 19:30:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C4AF1C5AC67
+	for <openvpn-devel@archiver.kernel.org>; Thu,  6 Aug 2026 23:52:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:Cc:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:To:Message-ID:Date:From:In-Reply-To:References:MIME-Version:Sender:
+	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
 	:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=ASkyuT2aaIw01VZ9maxjCoBjOy83TyN45rQBpu2Q7Jw=; b=BvXqH2rR602zyOUr0kVcLP0uyq
-	s5y8PLNaSkIpk0rbHBCAnB/ouDvEsDIRhxm8YSeB6CpAKuAH9kLKAak5jYLPQh2l9l9ctdfSaU8Lr
-	emBvLvNxknLoHBjwcLW1cSeJ9vEFWvpPa18YS4ERP4jJjkTm61fn99esN3BwChJ174Es=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=mFcSg3t6qTbRcMGqvvTwbT0nMQPtgOn56ZKlry8YpSo=; b=hTRxvcovlUhFmWsg2pg7HR7f9X
+	s8YQ4tP/D9wtFKBKA3jQdVrWrKIXYhRqyZddiOP8sHSAeYle2jgklweQIazzJAvwjZlQCSBo0aCvK
+	IAWgnV48vH7zEtk4iXkD2DdshjRKnTi7wKb3dIzvHCP9NbajboUxqWT8tICHQ/+/x7os=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1ws3nf-00046c-3J;
-	Thu, 06 Aug 2026 19:30:43 +0000
+	id 1ws7sh-0003at-3C;
+	Thu, 06 Aug 2026 23:52:08 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <jkbullard@gmail.com>) id 1ws3nQ-00046N-Vd
+ (envelope-from <a@unstable.cc>) id 1ws7se-0003ak-5e
  for openvpn-devel@lists.sourceforge.net;
- Thu, 06 Aug 2026 19:30:29 +0000
+ Thu, 06 Aug 2026 23:52:06 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:Content-Type:Cc:To:
- Subject:Message-ID:Date:From:In-Reply-To:References:MIME-Version:Sender:
- Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
- :Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:Content-Type:MIME-Version
+ :References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=TbmsCZjiWuME36jbIOwr/BKunKQAiOgfFrjX1GB1l/o=; b=D8+r9Eeop97+8hH/rLoalljv4N
- AaBFtC0sDkzFIjyZdP+5RAxoL5+pwxlFEe70Gh0Q4VTtUI1jKz2D/5OZFXNdrTTs4T0fd4fPpDNjF
- 34CVEN25M2tASOpGZ6LHIpa1idYFBZlnGBdXXJ1fx1X5JBkA/3a3Ph2+XN6zzTs5AhJE=;
+ bh=EeVQxvALINn4z22+lBcNL9f2LaeiCri7AVXl9MqTyKk=; b=cNRWE1EW3czPsiSCDPXsD6ZJaX
+ XCePGhxm6B8KGF31KP3XIzw93I8IBnU/McH58UkSXzF4KOHLVk90geaCn9ELayydam76o4Dz8wi2b
+ gSt39T7FcGvdoXBFs6KwzFQfHJvj1Lbghw2Ue6vXG3NCErgVHFZAg8iBMOVDl+baI7P4=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:Content-Type:Cc:To:Subject:Message-ID:Date:From
- :In-Reply-To:References:MIME-Version:Sender:Reply-To:Content-ID:
+ h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:
+ In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=TbmsCZjiWuME36jbIOwr/BKunKQAiOgfFrjX1GB1l/o=; b=euVfcMKuq4VwGJxX3LQYsbempt
- RuUbX54Q9r5Zu2yv/gUzR/3hLa0y6mqEyYc4m6Jw7MoJ2GR++uWKf6eJK3TtdUW+S9P1kXwqRhh6V
- k3g1DhMI380RPzQBT0Xjm8IjGDODkEsYU1iT23MZOW11bHqN1K7tyud8EZDNeiP27wx4=;
-Received: from mail-lj1-f177.google.com ([209.85.208.177])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1ws3nN-0004Na-D6 for openvpn-devel@lists.sourceforge.net;
- Thu, 06 Aug 2026 19:30:25 +0000
-Received: by mail-lj1-f177.google.com with SMTP id
- 38308e7fff4ca-39c8dbf4f38so24359041fa.3
- for <openvpn-devel@lists.sourceforge.net>;
- Thu, 06 Aug 2026 12:30:24 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1786044618; cv=none;
- d=google.com; s=arc-20260327;
- b=HF4Hrc+a4nNOnrmBrYokoqTtGLTcdHmPRhqU+NL4suilZGxCcB9y+OvEj5Nkib9bH0
- AFpYERZf13CsnV+7RJUiK940bw0hUr0B18wVsJqy+CAR9xIn7E+fWn1H3c6ygxS3TDuu
- xubXo9fVs4eoi02TfucSUXceLIvdBAoOD0rHBSm3/LCu5CvkccTNdw9DCyu5JB+n/uwk
- Ewi/3dvUIp0XuxGFc39ts/6MxbFt5F49VJOahswUDdiuWHg0XbDBM2m4TDLYo1hPNAIh
- PUUBtZkVgZQnhuFMAjRxB0QA4JpV9ETHGs48xDEhg0AEtVF5zJJbOSbL204+FCGAdjB5
- OaXw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com;
- s=arc-20260327; 
- h=content-transfer-encoding:cc:to:subject:message-id:date:from
- :in-reply-to:references:mime-version:dkim-signature;
- bh=TbmsCZjiWuME36jbIOwr/BKunKQAiOgfFrjX1GB1l/o=;
- fh=e7WtX+/0WlcL03MiXXSk/zdf2qelQFYWrtwZZmNxLIk=;
- b=kcIn4GTFdcmBDFm6MBBRgpMHrBn9BeZYlVqnd//M5DThbTgHu/KBVFWGBQ0HAsLt/e
- GlSQZEqvvpSFn+eA2D14FmPeaMPHB2rBly58WpcP5FY3fuY46nm8xpVZLELobR9sVEYM
- 4FsngKLeFA/SFoCWwYrt2Z77BdUuZNK6Oomo5EZjOvCHsCwZz9Haf4rvpWOw9S7PYsWx
- l6B0H7ky4qsXZ9yx9btnpDjKLoU9FjJ2fEOmJ4qQERIolxN2qLIcuFkclPOn7NEYHx5c
- BeCMT+4fqhZxkhEKdvZyWWvU5ZIGmQH/AJlUdMdGpIg9a5tEXrs/Tw/vNCD6MVe/dm/C
- nO1A==; darn=lists.sourceforge.net
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=gmail.com; s=20251104; t=1786044618; x=1786649418; darn=lists.sourceforge.net;
- h=content-transfer-encoding:content-type:cc:to:subject:message-id
- :date:from:in-reply-to:references:mime-version:from:to:cc:subject
- :date:message-id:reply-to:content-type;
- bh=TbmsCZjiWuME36jbIOwr/BKunKQAiOgfFrjX1GB1l/o=;
- b=e40UFUoEtxMP0f4BwE2AGj97WdgenDzLgSGQ3Jro7mWu6JrMKLDhHdH1E+792CLXBY
- aUQMkK+l+mIFk4r4ImlyHyaDznaYfjFppokmRRuxVgyUP8HRk3VNGKepBsmZl25eSGwJ
- zF6Avtnge77qJbCCzofDsyZF6cg1viLkWOgqP4WX/zAFIVxKQ4gQfDG0srrPQuc8dAq3
- 6qtcRAc7c8rxRYCqZZ3CYnsltSQSLULVxDQoQmJ1GD0e4gGnNiJ4t5hjDP9DU9a0xtl2
- IWDiFNFlizokrXTFCZwxgr8aq+o6a1S4loxeH9a9iOfdq8SZChHuhtzH86C9hiUHEXUh
- KOYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1786044618; x=1786649418;
- h=content-transfer-encoding:content-type:cc:to:subject:message-id
- :date:from:in-reply-to:references:mime-version:x-gm-gg
- :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
- :content-type;
- bh=TbmsCZjiWuME36jbIOwr/BKunKQAiOgfFrjX1GB1l/o=;
- b=QLixEryMFAtcIzgUZ8nklrqSMlq3+LiNVGdlpVdcUs9ynOG0YiGfZPs45OBUkRO2+m
- AUPAxQHKQmogPKB01Vex4avog400R14OMNO0fmN714V7oorGYRuDWGmIN/kpoLr8JSYv
- /8geA+KAMPs5SNWTvjHOVfllv7S+O7jdOuASXWfW/gTL0lMekf/+E3/Qyurkgta3LuWp
- 5bzpXmI01Jys+t7f+/0tbgAWUkWD7PcoIAhESc+T+sJqIRISiSxfZ48vRXurk78FgtAf
- JR8MBTkFzvgWjo5xCCvfV5TVk/nV8tTbJ5LX7kfnoKPIYcFFlPtO8PuIKP78IDvsLUD7
- zleA==
-X-Gm-Message-State: AOJu0YzkKytHMjG7k6myqEIYU9ij8V1/HljCYhvIhdGJkT4PVEy82mPy
- 2hKASNNVwIPdCvEDEkkkCAWKKkcIoAlVWZjeeJ5tQwm1vQlVgTQyG6PG1K1dC3Istgvf06g4rF8
- CW5QfnrClazBdZTX8F16Yxz9/qQbCRH8=
-X-Gm-Gg: AR+sD12DtqjdNdvbBOb46M+crzMArbN6er/SEuP1zCucly4ylyzaq0Jb3/V4MWsumWt
- hHHe5pbTJ2Eb4JXYp2mY4b7pA3LbXb3ezNi8ZDa6ZcBNQ/PYusqui8/FVg6uiaHO+vw6vOnIuRP
- oUkD+OMu1+FTRrs/mpISRFf65byjiESIJfOdLL0amxuebgprqcUWUaxvIhkrmL0pWhyFu1hTTPm
- jiPDPGV2UR/j5iD3DRt+0FC9rG+AQIxrS9blzCKh726huxkEWClduOp3CYr7hK4Z7G8dEL6fFB2
- P8uJy2s0TX5jw7b5aJQUicJiABW+GQKt1i4QIpmfoH7uErrajoEWClkRpUKuPC+UyZs4hc+Nk5V
- RLwE8obX0TWTkbXaBk37WRSZDE1cNbP16mld3+ALBhj/mkIffFEwwrFik0ztnKa4NJsaqqtwJVn
- NnJoEBgHY=
-X-Received: by 2002:a2e:be8c:0:b0:399:9436:15c8 with SMTP id
- 38308e7fff4ca-39fbae1baedmr20523581fa.2.1786044617943; Thu, 06 Aug 2026
- 12:30:17 -0700 (PDT)
+ bh=EeVQxvALINn4z22+lBcNL9f2LaeiCri7AVXl9MqTyKk=; b=lrtK1IVCgBJuYIOkP180l0psIT
+ dEfeQQjWvo9fMttwGvDuv/OLmth6qpOorSasCGZWAcL3eTKxvdTzJhH7G2kmBj9YQhOd57LgxsWy0
+ WK+TQTgEL0KXdleyhfNqvHsxN4ywuXmvmmUnxILy0B7YABLWOTC2X8CX2Lq5Fn01GcQA=;
+Received: from mout-p-103.mailbox.org ([80.241.56.161])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
+ id 1ws7se-0000i4-Ct for openvpn-devel@lists.sourceforge.net;
+ Thu, 06 Aug 2026 23:52:05 +0000
+Received: from smtp202.mailbox.org (smtp202.mailbox.org
+ [IPv6:2001:67c:2050:b231:465::202])
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+ key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+ (No client certificate requested)
+ by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4hGPFn3KV8zKn0p;
+ Fri, 07 Aug 2026 01:51:57 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=unstable.cc; s=MBO0001;
+ t=1786060317;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=EeVQxvALINn4z22+lBcNL9f2LaeiCri7AVXl9MqTyKk=;
+ b=UvmoDwNtzoQiE4nxMAzQCa49aGf2soWg9UYsN7zmrMDnZvjppfjJe/1+6Q/a3BJlbqkUMo
+ 2YMQDZruH0/GooSmqAOa0d/AY/Xo9Slw32PdfXcxkYjWfMV6k0Te5hT1tls2PPZ2SC80uu
+ 1TVpfDVh2AIUNLZuhE0AZhNJc81kvjCxRJartweQ8HcTK9eHfBrxtza10cVUS6IGka25Vf
+ 6/P0Uh8NPD8SURuqlAdiYBzr1W3FesvJtO+kWYSFmAm4ZPj+dU6BI8kxC5m6nYu3OKnn5a
+ mRBsXggaVqY4Owuhdwewg0SP4+GopWfWfS1bO3JZwqFMTriQZt9Q0DW54lxwYw==
+Authentication-Results: outgoing_mbo_mout; dkim=none;
+ spf=pass (outgoing_mbo_mout: domain of a@unstable.cc designates
+ 2001:67c:2050:b231:465::202 as permitted sender) smtp.mailfrom=a@unstable.cc
+From: Antonio Quartulli <a@unstable.cc>
+To: openvpn-devel@lists.sourceforge.net,
+	Ralf Lici <ralf@mandelbit.com>
+Date: Fri,  7 Aug 2026 01:51:52 +0200
+Message-ID: <178606029611.1728075.9738818476482859007.b4-ty@b4>
+In-Reply-To: <cover.1785318038.git.ralf@mandelbit.com>
+References: <cover.1785318038.git.ralf@mandelbit.com>
 MIME-Version: 1.0
-References: <4579e6f6-0d3d-433b-a74f-6e1c8ab629aa@openvpn.com>
-In-Reply-To: <4579e6f6-0d3d-433b-a74f-6e1c8ab629aa@openvpn.com>
-From: "Jonathan K. Bullard" <jkbullard@gmail.com>
-Date: Thu, 6 Aug 2026 15:29:40 -0400
-X-Gm-Features: AUfX_mwWH7UW6QjyUIQPQL_OukqNnEH90IHvGD-W7AiybeEKWWQdXOJVQt99Dbo
-Message-ID: <CAEsd45QZ3wYQ2PUxO+NSJhXcixzrJgzNDZ1p-enUx-BQbXGGzA@mail.gmail.com>
-To: Johan Draaisma <johan@openvpn.com>
-X-Headers-End: 1ws3nN-0004Na-D6
-Subject: Re: [Openvpn-devel] IRC community meeting summary
+X-Rspamd-Queue-Id: 4hGPFn3KV8zKn0p
+X-Headers-End: 1ws7se-0000i4-Ct
+Subject: Re: [Openvpn-devel] (subset) [PATCH ovpn net v6 0/6] ovpn: fix key
+ and workqueue lifetime issues
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -134,29 +95,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: openvpn-devel@lists.sourceforge.net
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Cc: Antonio Quartulli <antonio@openvpn.net>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-SGksIGV2ZXJ5b25lIQoKVGhhbmtzLCBhcyBhbHdheXMsIGZvciB0aGUgdXBkYXRlLgoKT24gV2Vk
-LCBBdWcgNSwgMjAyNiBhdCAxMDo1N+KAr0FNIEpvaGFuIERyYWFpc21hIHZpYSBPcGVudnBuLWRl
-dmVsCjxvcGVudnBuLWRldmVsQGxpc3RzLnNvdXJjZWZvcmdlLm5ldD4gd3JvdGU6Cj4KPiAgVGhl
-cmUgYXJlIGFsc28gc29tZSBzZWN1cml0eSBmaXhlcyBiYWNrcG9ydGVkIHRvIDIuNSBidXQgdGhh
-dCBicmFuY2ggZG9lcyBub3QgaGF2ZSBvZmZpY2lhbCByZWxlYXNlcyBhbnltb3JlIChvdXQgb2Yg
-c3VwcG9ydCkuCgpBcmUgdGhlIGRldnMgcGxhbm5pbmcgdG8gYmFja3BvcnQgYW55IG1vcmUgb2Yg
-dGhlIHJlY2VudCBzZWN1cml0eQpmaXhlcyB0byB0aGUgMi41IGJyYW5jaD8gVGhlcmUncyBvbmx5
-IG9uZSBjb21taXQgWzFdIG9uIEdpdEh1YiBzaW5jZQpKdWx5IDEsIGFuZCBpdCBkb2Vzbid0IGFm
-ZmVjdCAib3BlbnZwbiIgY29kZSwgb25seSAib3BlbnZwbnNlcnYiIGNvZGUsCnNvIGl0J3Mgbm90
-IHJlbGV2YW50IHRvIFR1bm5lbGJsaWNrLiAoVGhlcmUgYXJlIG5vIGNoYW5nZXMgdG8KQ2hhbmdl
-cy5yc3QsIGVpdGhlci4pCgpJZiB0aGVyZSBhcmUgbW9yZSBiYWNrcG9ydHMgcGxhbm5lZCwgZG9l
-cyBhbnlvbmUgaGF2ZSBhbiBpZGVhIG9mIHdoZW4KdGhleSBtaWdodCBiZSBhdmFpbGFibGU/Cgoo
-SSdtIG5vdCBhc2tpbmcgZm9yIG1vcmUgb3IgZmFzdGVyIGJhY2twb3J0cywgYnV0IEkgd291bGQg
-bGlrZSB0byBrbm93CmlmIGFueSBhcmUgcGxhbm5lZCBhbmQgaWYgc28sIHdoZW4gdGhleSBtaWdo
-dCBoYXBwZW4uIEFuZCBJIHVuZGVyc3RhbmQKdGhhdCBwbGFucyBjYW4gY2hhbmdlISkKCkJlc3Qg
-cmVnYXJkcywKCkpvbiBCdWxsYXJkClR1bm5lbGJsaWNrCgpbMV0gQ29tbWl0IDY4ZTE4ZTUgImlu
-dGVyYWN0aXZlOiBmb3JiaWQgIi0tc2V0ZW52IG9wdCIgaW4gc3RhcnR1cApkYXRhIiBtYWRlIG9u
-IEF1Z3VzdCAzLCAyMDI2IGF0IDk6MTMgQU0gRURUCgoKX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX18KT3BlbnZwbi1kZXZlbCBtYWlsaW5nIGxpc3QKT3BlbnZw
-bi1kZXZlbEBsaXN0cy5zb3VyY2Vmb3JnZS5uZXQKaHR0cHM6Ly9saXN0cy5zb3VyY2Vmb3JnZS5u
-ZXQvbGlzdHMvbGlzdGluZm8vb3BlbnZwbi1kZXZlbAo=
+From: Antonio Quartulli <antonio@openvpn.net>
+
+
+On Wed, 29 Jul 2026 12:21:40 +0200, Ralf Lici wrote:
+> This is a respin of the series that collects various ovpn fixes around
+> key-slot handling, netlink key notifications, TCP initialization
+> ordering, and teardown of deferred work.
+> 
+> This version has no more pending dependencies and incorporates the
+> changes discussed with Sabrina. In particular, patch 6/6 now uses
+> queue_rcu_work for key-slot release, instead of adding a key-slot
+> reference in ovpn_crypto_config_get.
+> 
+> [...]
+
+Applied, thanks!
+
+[1/6] ovpn: fix NULL dereference when killing missing key
+      commit: eeb8f94b9b0fbd7f08ac81361d937c3d11d9df00
+[2/6] ovpn: use nla_put_u32 for the key ID attribute in ovpn_nl_key_swap_notify
+      commit: 1425d5ff5add800187371aef1519cb029f83959c
+[4/6] ovpn: finish crypto callback cleanup before peer release
+      commit: 0627b2c23ee28fe6f8e7ae1b62602b59831c6ec6
+[5/6] ovpn: run deferred work on a module-owned workqueue
+      commit: 0c377eff1548138430a6fd1a19f014e4aa87d1c0
+[6/6] ovpn: defer key slot crypto freeing to workqueue
+      commit: 217b85519877263bf59d38c2c00781d3fe93c676
+
+Best regards,
+-- 
+Antonio Quartulli <antonio@openvpn.net>
+
+
+_______________________________________________
+Openvpn-devel mailing list
+Openvpn-devel@lists.sourceforge.net
+https://lists.sourceforge.net/lists/listinfo/openvpn-devel
