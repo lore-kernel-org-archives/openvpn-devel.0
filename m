@@ -4,79 +4,128 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0CAB1C5AC7A
-	for <openvpn-devel@archiver.kernel.org>; Fri,  7 Aug 2026 15:41:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 25304C5AC7A
+	for <openvpn-devel@archiver.kernel.org>; Fri,  7 Aug 2026 15:44:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:Cc:
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
-	:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=Sis6oE38+xw9TrcIFTHxYkhtDlP+AvPHu0N3CaZFjsg=; b=CmDbOcHcLzbslijDkPSdGonp1X
-	1h/maBS/Hhdli+xkKyw8afo7pKnzgdCQ8yhyaYWaBZOn7YOZjykR+VTptx8bZhnbxzVZJmGleh0Gy
-	CzSRIDe+MzMSA+28dbEK4Sdr59opUX80VHJY6ZbEmmuiyKdMWTCcfQXNZPJSLdsgPtwE=;
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=PYX69WKjyC6qsgnrH8pnuAdK2FGivkzhlmueDn1R4xM=; b=fVr8nBDqwJrxX5Uu4h0conIqBA
+	ZWTNvED8cots+NMNwTKpTYW1uYMF1dziLeLAUy5t6AdgPkR13n5hJNcBjDdh8RxgCg7HNW1XFCmIg
+	GohNtHs4QU2sMiF4a/TDY+ONlkyMLJJ6awFePunhm+0JSDI0jXpwxPZrd+/x3vzkb/m4=;
 Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
 	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wsMh2-00035P-N0;
-	Fri, 07 Aug 2026 15:41:09 +0000
+	id 1wsMkL-0003AW-GW;
+	Fri, 07 Aug 2026 15:44:34 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <frank@lichtenheld.com>) id 1wsMh2-00035I-2s
+ (envelope-from <gerrit@openvpn.net>) id 1wsMkJ-0003AQ-RK
  for openvpn-devel@lists.sourceforge.net;
- Fri, 07 Aug 2026 15:41:08 +0000
+ Fri, 07 Aug 2026 15:44:32 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=11IDMYg56vB+7+USd261TJSxKfeWOWOfikV8mKKIHaE=; b=gyuU0kgx3NGj9NHwNfp7WqNUue
- QCOTDVeYbZlU5mCzSCAyJd2wyKblD2F9E2XOz3HIQHj0+ultU8VUDONedhymSNdKcLgVeP+P434CL
- 5V0GvJ6Gg0w+KZr+ZviB9RchF9FtONCf3d72NlNhQGmPlmJwYLlXN4GwAO6UDOuUO30A=;
+ d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
+ :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
+ Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
+ :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
+ :List-Post:List-Owner:List-Archive;
+ bh=s6pOxvfItTBHOWnCF974rE7PV8Vjin5zNie1vt7v8KE=; b=T9inVYYnOcuT7tJDsOdDK7MOHu
+ n+kzoZK6VsPOi+Zhuydid+qIJOomSpkLmTBcnF+1dN9mlJyJWlYh3vrUNZeKeozbRYhvomKc3EvWH
+ /84hrbCvsSb/hdpz2wh20O3quyJ0JJA+vYpWcQJdl32lus/xPD3zUT/WF/cfFGM9/wmk=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=11IDMYg56vB+7+USd261TJSxKfeWOWOfikV8mKKIHaE=; b=SAVCeQaYc8rUCZmZ0nnNruyLl0
- ACW2jHXvLFuqaMG4c5VZwa/9Hi1dEEOuYY1sCUpyFEOvOy1UzUmzzPFsnD3LQxgPiClNUm72et4uz
- ofnPRp03RwU4cjgR93rddmRIbnttbvPjUNnJa1OSlsv7Pb3YV2cP6bQfBDOoTWnElKUc=;
-Received: from mout-p-102.mailbox.org ([80.241.56.152])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wsMh0-0001jB-PO for openvpn-devel@lists.sourceforge.net;
- Fri, 07 Aug 2026 15:41:08 +0000
-Received: from smtp102.mailbox.org (smtp102.mailbox.org [10.196.197.102])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
- key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
- (No client certificate requested)
- by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4hGl585p46zKvv0;
- Fri, 07 Aug 2026 15:15:40 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lichtenheld.com;
- s=MBO0001; t=1786108540;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=11IDMYg56vB+7+USd261TJSxKfeWOWOfikV8mKKIHaE=;
- b=wYU+HKnwVU2lRoCAhfUXWCKsnWf8U2TMCQqlYYj1LtR6qK+BrmcNfOAe6GZng3K7H2xNBA
- NV0d5EHyoV1YhTeuL6TgI9RV22aAik6RWBcd8G4h/EUhq9YdLkyJOFqTwzri4htlMWlk6r
- ITcG+lV8n42TinDQBZ6YcXYA9OUItdCvGG+fQ5VwuEPG7Gx9IGJA6NWzqQuXwQjME/Ymx1
- EJt1rBmsIVyykIS8it6Q35SISGTaPz8dJLMUWmiIN6B4GppmNUX/ljf2Cu1jl5UZ+/D4ZL
- SMRVVlntUL79xifVpZg22dfQtqqDmW3Jo9FTpf3+E7Ou/3mDmX1F/VurSkJUow==
-From: Frank Lichtenheld <frank@lichtenheld.com>
-To: openvpn-devel@lists.sourceforge.net
-Date: Fri,  7 Aug 2026 15:15:39 +0200
-Message-ID: <20260807131539.53877-1-frank@lichtenheld.com>
-In-Reply-To: <gerrit.1773842036000.I4920318ac537064508eee3ca449d48de76c2ea5d@gerrit.openvpn.net>
-References: <gerrit.1773842036000.I4920318ac537064508eee3ca449d48de76c2ea5d@gerrit.openvpn.net>
+ h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
+ Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=s6pOxvfItTBHOWnCF974rE7PV8Vjin5zNie1vt7v8KE=; b=X
+ Vxzy1ARc+Q4/bZouFW3V1Rsvn7Js4VuqSLfabB1fCyGNuOMyrq0afBg6xBzOVJ4RMlXEglRl2iQZV
+ +b68DefEKAJWdLFxPUM0F5WdClwkR4UDnngQNIP0TxEwUk2CyHCumLz0EN8CdZ1WzvryXUjZu1UMB
+ TeLOOg+oQ0ToDJzY=;
+Received: from mail-wr1-f48.google.com ([209.85.221.48])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
+ id 1wsMkM-0004qO-Mw for openvpn-devel@lists.sourceforge.net;
+ Fri, 07 Aug 2026 15:44:32 +0000
+Received: by mail-wr1-f48.google.com with SMTP id
+ ffacd0b85a97d-4807df69172so383518f8f.1
+ for <openvpn-devel@lists.sourceforge.net>;
+ Fri, 07 Aug 2026 08:44:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=openvpn.net; s=google; t=1786117464; x=1786722264; darn=lists.sourceforge.net;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
+ :reply-to:content-type;
+ bh=s6pOxvfItTBHOWnCF974rE7PV8Vjin5zNie1vt7v8KE=;
+ b=eOYOhUpR2JZdqJUViBHtcfSJoiqtLr9p29V8KOdkzxNLULYscJPzrWd/aKIAwfvBR+
+ XVl79MvMSs3oVeoldEwwnSsTkDxCNow80a8jl6/8CE5Co+FlA9eHOgoYnxdg01MjCEiU
+ S+bqIhQgAJIfn5q8WhT+dgB63AxYxGIZUlZ5zgfqi1aTzFaDb/Lshff72ZlrnVCCusMi
+ mD08n2Q4N98xAonNqTMu/guXAThJdoiXMEdJWB+AJLLxKKps1O6W6c+8zAT6fXedMJ41
+ BEzxqGj1VS5USHi1ntKLrD/JCP9L7n7TdtNXdze4274etUR1w8t+4gXE4kGttyO/YJ8h
+ oMyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20251104; t=1786117464; x=1786722264;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
+ :cc:subject:date:message-id:reply-to:content-type;
+ bh=s6pOxvfItTBHOWnCF974rE7PV8Vjin5zNie1vt7v8KE=;
+ b=qWtmwj/cWSXCzVjM6jf7civmSpCyfLEKj2Z40nNDtzLub4uAWy3WwjHgKtk7HHtUE4
+ jDKxoHT26ydwZrU5JzgW1sl3T1ZfQjePaQamO+e+/SYwP30ibP11Ul5V7qqKN/bAZYg7
+ K2AdTdMK+8fzWJ6XqxGCtLv4yR0ZFIjdt4lkn9akj1JpgLzi0up2r2bKL8LzofyCewbQ
+ KIjQByHHI0YOZC9dvlZsjNLWy7MXSVSMk0H8pf3jv06cqE0qhPYwjxpDkkly1xLxbYsR
+ IPlb3oH3JVo63sprkfv/9jUQlP2IKWvZZquZMAloq2ZA7uPuB1kIeMrvia8DgC3k8VFY
+ ZfFQ==
+X-Gm-Message-State: AOJu0YzR/D30bxYK1vvFljE/YSD1QcsppJyBOm0ovAfBvUiKrGr994Yn
+ wHWQTujPgvhSllYhb/UbcKSnP2ptqan4hc+PfMxQ6FeXnP5C8lwI4z0hJoq5rTkouk+BFiOx9k2
+ 8a3QneC10qrofJW2uzufF9J1o6vb0u/1de1zQ9NGE4bhlv93oT8xnB5sJBWDS+3Xw8UBFRtk5Nh
+ k+XwmZSg==
+X-Gm-Gg: AR+sD12uu/hIBIgrVncPiZK35/lZSOjiHubQQBn/bEXnVqZhzkYqlJvRtF3v0HbZzj1
+ rF/ralckkHl07qgq9YnDqUaTCo8HBMotdfQ7dHbDfOAEHUdaDfeNHX7yWShUPyNk1J5Puoz+ml0
+ dQ5UbWOQfBPSQtcE//g8kHadyDVgG61r5OS6CprMOiwJuhh6uHAftYhZaIYfJB7qzcX4+XupksS
+ E5lYMRM3ivadrTS3vrakMvMrUNRiz4oLW2VuG339LbH0oQrafHX/Iei+HO8MCqJQhpCPrHoDswp
+ j1F+Hd1lNIAqdGSyuSOz4EVLvgjJxOXO1iBRhmp0rtwj2VZsCLG1qRv6xwUyOIkfFGqjx3NkvAT
+ J+GtlC4ZnGifxQcyBfseBhpuUFfcD7DVCtMpvDp6gba1qKHU6zehLkeQpzJ3Jtu9w6srxGbliK4
+ pa1bDla4gpgaL7+fnxx1FxLQyVd/pWE8QZFrvAqw26Ps3jVbwTQ3tdZ7wYfwS6RN9vkdsC0XEYn
+ ts3ktsqUdQN/Dg7dFO5v5pH2wL1+LR/9ZQRko9F2whCMvMqh5hFGJbmbr2E3gw3OWiBK00h2XWq
+ OuROeY4JUN+HVztKr0ecjjHLwkFlM2+Oa3ju6++oVmFesu6wH+s=
+X-Received: by 2002:a05:6000:460c:b0:481:2fff:2a09 with SMTP id
+ ffacd0b85a97d-4812fff2bb9mr2964339f8f.14.1786117464376; 
+ Fri, 07 Aug 2026 08:44:24 -0700 (PDT)
+Received: from ip-10-18-1-162.eu-central-1.compute.internal
+ (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
+ by smtp.gmail.com with ESMTPSA id
+ ffacd0b85a97d-4800220a6d9sm7351790f8f.34.2026.08.07.08.44.23
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 07 Aug 2026 08:44:23 -0700 (PDT)
+X-Google-Original-From: "plaisthos (Code Review)"
+ <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
+Date: Fri, 7 Aug 2026 15:44:22 +0000
+To: flichtenheld <frank@lichtenheld.com>
+Auto-Submitted: auto-generated
+X-Gerrit-MessageType: comment
+X-Gerrit-PatchSet: 2
+X-Gerrit-Change-Id: I1905d9494336da4e91f1946d2ffd875720605b41
+X-Gerrit-Change-Number: 1763
+X-Gerrit-Project: openvpn
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1763?usp=email>
+X-Gerrit-Commit: de4a268fe490245fce4a6443a886bd6aea8ee893
+X-Gerrit-Comment-Date: Fri, 7 Aug 2026 15:44:22 +0000
+In-Reply-To: <gerrit.1782933852000.I1905d9494336da4e91f1946d2ffd875720605b41@gerrit.openvpn.net>
+References: <gerrit.1782933852000.I1905d9494336da4e91f1946d2ffd875720605b41@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzgyOTMzODUyMDAwLkkxOTA1ZDk0OTQzMzZkYTRlOTFmMTk0NmQyZmZkODc1NzIwNjA1YjQxQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <c101f46f7dc2ebf5cf0dc4fb3068ed99ca27bd2e-EmailReviewComments-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
-X-Headers-End: 1wsMh0-0001jB-PO
-Subject: [Openvpn-devel] [PATCH v2] Remove --with-mem-check=dmalloc
+User-Agent: Gerrit/3.11.5
+X-Headers-End: 1wsMkM-0004qO-Mw
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: t_client.sh.in: Add
+ utility function needs_openvpn()
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -88,511 +137,166 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: Arne Schwabe <arne-openvpn@rfc2549.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+From: "plaisthos \(Code Review\) via Openvpn-devel"
+ <openvpn-devel@lists.sourceforge.net>
+Reply-To: arne-openvpn@rfc2549.org, openvpn-devel@lists.sourceforge.net,
+ frank@lichtenheld.com
+Cc: "plaisthos \(Code Review\)" <gerrit@openvpn.net>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: multipart/mixed; boundary="===============2831287753123786324=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-This code hasn't compiled for years and noone complained.
-We generally use ASAN instead.
+--===============2831287753123786324==
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="hWy2GjoYicU="; charset=UTF-8
 
-So remove the dead code.
+--hWy2GjoYicU=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-v2: The first version of this change tried to fix the
-    code. v2 instead removes it.
+Attention is currently required from: flichtenheld=2E
 
-Change-Id: I4920318ac537064508eee3ca449d48de76c2ea5d
-Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
-Acked-by: Arne Schwabe <arne-openvpn@rfc2549.org>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1582
----
+plaisthos has posted=
+ comments on this change by flichtenheld=2E ( http://gerrit=2Eopenvpn=2Enet=
+/c/openvpn/+/1763?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: t_client=2Esh=2Ein: Add ut=
+ility function needs_openvpn()
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1582
-This mail reflects revision 2 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@rfc2549.org>
+Patch Set 2: Code-Review+2
 
-        
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 74c080e..6b3b455 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -260,7 +260,6 @@
- 
- check_include_files(arpa/inet.h HAVE_ARPA_INET_H)
- check_include_files(dlfcn.h HAVE_DLFCN_H)
--check_include_files(dmalloc.h HAVE_DMALLOC_H)
- check_include_files(fcntl.h HAVE_FCNTL_H)
- check_include_files(err.h HAVE_ERR_H)
- check_include_files(netdb.h HAVE_NETDB_H)
-diff --git a/config.h.cmake.in b/config.h.cmake.in
-index 34f289d..c3bb5a5 100644
---- a/config.h.cmake.in
-+++ b/config.h.cmake.in
-@@ -96,9 +96,6 @@
- /* Define to 1 if you have the <dlfcn.h> header file. */
- #cmakedefine HAVE_DLFCN_H
- 
--/* Define to 1 if you have the <dmalloc.h> header file. */
--#cmakedefine HAVE_DMALLOC_H
--
- /* Define to 1 if you have the `dup' function. */
- #cmakedefine HAVE_DUP
- 
-diff --git a/configure.ac b/configure.ac
-index 1aec805..469a475 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -245,10 +245,10 @@
- 
- AC_ARG_WITH(
- 	[mem-check],
--	[AS_HELP_STRING([--with-mem-check=TYPE], [build with debug memory checking, TYPE=no|dmalloc|valgrind|ssl @<:@default=no@:>@])],
-+	[AS_HELP_STRING([--with-mem-check=TYPE], [build with debug memory checking, TYPE=no|valgrind|ssl @<:@default=no@:>@])],
- 	[
- 		case "${withval}" in
--			dmalloc|valgrind|ssl|no) ;;
-+			valgrind|ssl|no) ;;
- 			*) AC_MSG_ERROR([bad value ${withval} for --mem-check]) ;;
- 		esac
- 	],
-@@ -652,25 +652,6 @@
- 			[AC_MSG_ERROR([valgrind headers not found.])]
- 		)
- 		;;
--	dmalloc)
--		AC_CHECK_HEADERS(
--			[dmalloc.h],
--			[AC_CHECK_LIB(
--				[dmalloc],
--				[malloc],
--				[
--					LIBS="${LIBS} -ldmalloc"
--					AC_DEFINE(
--						[DMALLOC],
--						[1],
--						[Use dmalloc memory debugging library]
--					)
--				],
--				[AC_MSG_ERROR([dmalloc library not found.])]
--			)],
--			[AC_MSG_ERROR([dmalloc headers not found.])]
--		)
--		;;
- 	ssl)
- 		AC_CHECK_LIB(
- 			[ssl],
-diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
-index 5f2b233..23d714d 100644
---- a/src/openvpn/buffer.c
-+++ b/src/openvpn/buffer.c
-@@ -57,11 +57,7 @@
- }
- 
- struct buffer
--#ifdef DMALLOC
--alloc_buf_debug(size_t size, const char *file, int line)
--#else
- alloc_buf(size_t size)
--#endif
- {
-     struct buffer buf;
-     CLEAR(buf);
-@@ -71,22 +67,14 @@
-         buf_size_error(size);
-     }
-     buf.capacity = (int)size;
--#ifdef DMALLOC
--    buf.data = openvpn_dmalloc(file, line, size);
--#else
-     buf.data = calloc(1, size);
--#endif
-     check_malloc_return(buf.data);
- 
-     return buf;
- }
- 
- struct buffer
--#ifdef DMALLOC
--alloc_buf_gc_debug(size_t size, struct gc_arena *gc, const char *file, int line)
--#else
- alloc_buf_gc(size_t size, struct gc_arena *gc)
--#endif
- {
-     struct buffer buf;
-     CLEAR(buf);
-@@ -96,11 +84,7 @@
-         buf_size_error(size);
-     }
-     buf.capacity = (int)size;
--#ifdef DMALLOC
--    buf.data = (uint8_t *)gc_malloc_debug(size, false, gc, file, line);
--#else
-     buf.data = (uint8_t *)gc_malloc(size, false, gc);
--#endif
-     if (size)
-     {
-         *buf.data = 0;
-@@ -109,7 +93,7 @@
- }
- 
- struct buffer
--#ifdef DMALLOC
-+#ifdef BUF_INIT_TRACKING
- clone_buf_debug(const struct buffer *buf, const char *file, int line)
- #else
- clone_buf(const struct buffer *buf)
-@@ -123,11 +107,7 @@
-     ret.debug_file = buf->debug_file;
-     ret.debug_line = buf->debug_line;
- #endif
--#ifdef DMALLOC
--    ret.data = (uint8_t *)openvpn_dmalloc(file, line, buf->capacity);
--#else
-     ret.data = (uint8_t *)malloc(buf->capacity);
--#endif
-     check_malloc_return(ret.data);
-     memcpy(BPTR(&ret), BPTR(buf), BLENZ(buf));
-     return ret;
-@@ -335,21 +315,13 @@
-  */
- 
- void *
--#ifdef DMALLOC
--gc_malloc_debug(size_t size, bool clear, struct gc_arena *a, const char *file, int line)
--#else
- gc_malloc(size_t size, bool clear, struct gc_arena *a)
--#endif
- {
-     void *ret;
-     if (a)
-     {
-         struct gc_entry *e;
--#ifdef DMALLOC
--        e = (struct gc_entry *)openvpn_dmalloc(file, line, size + sizeof(struct gc_entry));
--#else
-         e = (struct gc_entry *)malloc(size + sizeof(struct gc_entry));
--#endif
-         check_malloc_return(e);
-         ret = (char *)e + sizeof(struct gc_entry);
-         e->next = a->list;
-@@ -357,11 +329,7 @@
-     }
-     else
-     {
--#ifdef DMALLOC
--        ret = openvpn_dmalloc(file, line, size);
--#else
-         ret = malloc(size);
--#endif
-         check_malloc_return(ret);
-     }
- #ifndef ZERO_BUFFER_ON_ALLOC
-@@ -444,11 +412,7 @@
- {
-     ASSERT(a);
-     struct gc_entry_special *e;
--#ifdef DMALLOC
--    e = (struct gc_entry_special *)openvpn_dmalloc(file, line, sizeof(struct gc_entry_special));
--#else
-     e = (struct gc_entry_special *)malloc(sizeof(struct gc_entry_special));
--#endif
-     check_malloc_return(e);
-     e->free_fnc = free_function;
-     e->addr = addr;
-@@ -647,11 +611,7 @@
-  * Allocate a string
-  */
- char *
--#ifdef DMALLOC
--string_alloc_debug(const char *str, struct gc_arena *gc, const char *file, int line)
--#else
- string_alloc(const char *str, struct gc_arena *gc)
--#endif
- {
-     if (str)
-     {
-@@ -660,11 +620,7 @@
- 
-         if (gc)
-         {
--#ifdef DMALLOC
--            ret = (char *)gc_malloc_debug(n, false, gc, file, line);
--#else
-             ret = (char *)gc_malloc(n, false, gc);
--#endif
-         }
-         else
-         {
-@@ -672,11 +628,7 @@
-              * that the caller cleans up afterwards.  This is coherent with the
-              * earlier behaviour when gc_malloc() would be called with gc == NULL
-              */
--#ifdef DMALLOC
--            ret = openvpn_dmalloc(file, line, n);
--#else
-             ret = calloc(1, n);
--#endif
-             check_malloc_return(ret);
-         }
-         memcpy(ret, str, n);
-@@ -750,21 +702,13 @@
-  * Allocate a string inside a buffer
-  */
- struct buffer
--#ifdef DMALLOC
--string_alloc_buf_debug(const char *str, struct gc_arena *gc, const char *file, int line)
--#else
- string_alloc_buf(const char *str, struct gc_arena *gc)
--#endif
- {
-     struct buffer buf;
- 
-     ASSERT(str);
- 
--#ifdef DMALLOC
--    buf_set_read(&buf, (uint8_t *)string_alloc_debug(str, gc, file, line), strlen(str) + 1);
--#else
-     buf_set_read(&buf, (uint8_t *)string_alloc(str, gc), strlen(str) + 1);
--#endif
- 
-     if (buf.len > 0) /* Don't count trailing '\0' as part of length */
-     {
-diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
-index 1db9367..22e045c 100644
---- a/src/openvpn/buffer.h
-+++ b/src/openvpn/buffer.h
-@@ -147,32 +147,6 @@
- 
- void buf_size_error(const size_t size);
- 
--/* for dmalloc debugging */
--
--#ifdef DMALLOC
--
--#define alloc_buf(size)               alloc_buf_debug(size, __FILE__, __LINE__)
--#define alloc_buf_gc(size, gc)        alloc_buf_gc_debug(size, gc, __FILE__, __LINE__);
--#define clone_buf(buf)                clone_buf_debug(buf, __FILE__, __LINE__);
--#define gc_malloc(size, clear, arena) gc_malloc_debug(size, clear, arena, __FILE__, __LINE__)
--#define string_alloc(str, gc)         string_alloc_debug(str, gc, __FILE__, __LINE__)
--#define string_alloc_buf(str, gc)     string_alloc_buf_debug(str, gc, __FILE__, __LINE__)
--
--struct buffer alloc_buf_debug(size_t size, const char *file, int line);
--
--struct buffer alloc_buf_gc_debug(size_t size, struct gc_arena *gc, const char *file, int line);
--
--struct buffer clone_buf_debug(const struct buffer *buf, const char *file, int line);
--
--void *gc_malloc_debug(size_t size, bool clear, struct gc_arena *a, const char *file, int line);
--
--char *string_alloc_debug(const char *str, struct gc_arena *gc, const char *file, int line);
--
--struct buffer string_alloc_buf_debug(const char *str, struct gc_arena *gc, const char *file,
--                                     int line);
--
--#else  /* ifdef DMALLOC */
--
- struct buffer alloc_buf(size_t size);
- 
- struct buffer alloc_buf_gc(size_t size,
-@@ -186,8 +160,6 @@
- 
- struct buffer string_alloc_buf(const char *str, struct gc_arena *gc);
- 
--#endif /* ifdef DMALLOC */
--
- void gc_addspecial(void *addr, void (*free_function)(void *), struct gc_arena *a);
- 
- /**
-diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
-index b602ba1..17085d6 100644
---- a/src/openvpn/crypto_backend.h
-+++ b/src/openvpn/crypto_backend.h
-@@ -102,16 +102,6 @@
-  */
- void crypto_unload_provider(const char *provname, provider_t *provider);
- 
--#ifdef DMALLOC
--/*
-- * OpenSSL memory debugging.  If dmalloc debugging is enabled, tell
-- * OpenSSL to use our private malloc/realloc/free functions so that
-- * we can dispatch them to dmalloc.
-- */
--void crypto_init_dmalloc(void);
--
--#endif /* DMALLOC */
--
- void show_available_ciphers(void);
- 
- void show_available_digests(void);
-diff --git a/src/openvpn/crypto_mbedtls_legacy.c b/src/openvpn/crypto_mbedtls_legacy.c
-index debd53d..9e47c26 100644
---- a/src/openvpn/crypto_mbedtls_legacy.c
-+++ b/src/openvpn/crypto_mbedtls_legacy.c
-@@ -139,14 +139,6 @@
- }
- 
- 
--#ifdef DMALLOC
--void
--crypto_init_dmalloc(void)
--{
--    msg(M_ERR, "Error: dmalloc support is not available for mbed TLS.");
--}
--#endif /* DMALLOC */
--
- const cipher_name_pair cipher_name_translation_table[] = {
-     { "BF-CBC", "BLOWFISH-CBC" },
-     { "BF-CFB", "BLOWFISH-CFB64" },
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index fa9eb67..1191f20 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -39,6 +39,7 @@
- #include "integer.h"
- #include "crypto.h"
- #include "crypto_backend.h"
-+#include "memdbg.h"
- #include "openssl_compat.h"
- 
- #include <openssl/conf.h>
-@@ -273,40 +274,6 @@
- }
- 
- 
--/*
-- *
-- * OpenSSL memory debugging.  If dmalloc debugging is enabled, tell
-- * OpenSSL to use our private malloc/realloc/free functions so that
-- * we can dispatch them to dmalloc.
-- *
-- */
--
--#ifdef DMALLOC
--static void *
--crypto_malloc(size_t size, const char *file, int line)
--{
--    return dmalloc_malloc(file, line, size, DMALLOC_FUNC_MALLOC, 0, 0);
--}
--
--static void *
--crypto_realloc(void *ptr, size_t size, const char *file, int line)
--{
--    return dmalloc_realloc(file, line, ptr, size, DMALLOC_FUNC_REALLOC, 0);
--}
--
--static void
--crypto_free(void *ptr)
--{
--    dmalloc_free(__FILE__, __LINE__, ptr, DMALLOC_FUNC_FREE);
--}
--
--void
--crypto_init_dmalloc(void)
--{
--    CRYPTO_set_mem_ex_functions(crypto_malloc, crypto_realloc, crypto_free);
--}
--#endif /* DMALLOC */
--
- const cipher_name_pair cipher_name_translation_table[] = {
-     { "AES-128-GCM", "id-aes128-GCM" },
-     { "AES-192-GCM", "id-aes192-GCM" },
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 0236886..893670f 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -838,11 +838,6 @@
- bool
- init_static(void)
- {
--#if defined(DMALLOC)
--    crypto_init_dmalloc();
--#endif
--
--
-     /*
-      * Initialize random number seed.  random() is only used
-      * when "weak" random numbers are acceptable.
-diff --git a/src/openvpn/memdbg.h b/src/openvpn/memdbg.h
-index ea620c2..1f94582 100644
---- a/src/openvpn/memdbg.h
-+++ b/src/openvpn/memdbg.h
-@@ -43,67 +43,10 @@
-  */
- 
- #ifdef USE_VALGRIND
--
- #include <valgrind/memcheck.h>
--
--#define VALGRIND_MAKE_READABLE(addr, len)
--
--#else /* ifdef USE_VALGRIND */
--
--#define VALGRIND_MAKE_READABLE(addr, len)
--
- #endif
- 
--#ifdef DMALLOC /* see ./configure options to enable */
--
--/*
-- * See ./configure options to enable dmalloc
-- * support for memory leak checking.
-- *
-- * The dmalloc package can be downloaded from:
-- *
-- *     https://dmalloc.com/
-- *
-- * When dmalloc is installed and enabled,
-- * use this command prior to running openvpn:
-- *
-- *    dmalloc -l dlog -i 100 low -p log-unknown
-- *
-- * Also, put this in your .bashrc file:
-- *
-- *    function dmalloc { eval `command dmalloc -b $*`; }
-- *
-- * Or take a more low-level approach:
-- *
-- *    export DMALLOC_OPTIONS="debug=0x4e48503,inter=100,log=dlog"
-- *
-- *  NOTE: When building dmalloc you need to add something
-- *  like this to dmalloc's settings.h -- it will allocate a static
-- *  buffer to be used as the malloc arena:
-- *
-- *  #define INTERNAL_MEMORY_SPACE (1024 * 1024 * 50)
-- */
--
--#include <dmalloc.h>
--
--#define openvpn_dmalloc(file, line, size) \
--    dmalloc_malloc((file), (line), (size), DMALLOC_FUNC_MALLOC, 0, 0)
--
--/*
-- * This #define will put the line number of the log
-- * file position where leaked memory was allocated instead
-- * of the source code file and line number.  Make sure
-- * to increase the size of dmalloc's info tables,
-- * (MEMORY_TABLE_SIZE in settings.h)
-- * otherwise it might get overwhelmed by the large
-- * number of unique file/line combinations.
-- */
--#if 0
--#undef malloc
--#define malloc(size) openvpn_dmalloc("logfile", x_msg_line_num, (size))
--#endif
--
--#endif /* DMALLOC */
-+#define VALGRIND_MAKE_READABLE(addr, len)
- 
- /*
-  * Force buffers to be zeroed after allocation.
+(1 comment)
 
+File tests/t_=
+client=2Esh=2Ein:
+
+http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1763/comment/0=
+8cec795_6020fd06?usp=3Demail :
+PS2, Line 79: =2E "${t_client_rc}"
+> `source=
+` is a bashism=2E
+Acknowledged
+
+
+
+-- 
+To view, visit http://gerrit=2Eopenvp=
+n=2Enet/c/openvpn/+/1763?usp=3Demail
+To unsubscribe, or for help writing ma=
+il filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+
+Gerri=
+t-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit=
+-Change-Id: I1905d9494336da4e91f1946d2ffd875720605b41
+Gerrit-Change-Number:=
+ 1763
+Gerrit-PatchSet: 2
+Gerrit-Owner: flichtenheld <frank@lichtenheld=2Eco=
+m>
+Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-CC: openv=
+pn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Attention: flicht=
+enheld <frank@lichtenheld=2Ecom>
+Gerrit-Comment-Date: Fri, 07 Aug 2026 15:4=
+4:22 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Comment-In-Reply-=
+To: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Comment-In-Reply-To: flichtenhel=
+d <frank@lichtenheld=2Ecom>
+
+--hWy2GjoYicU=
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld=2E </p>
+<p>Patch set 2:<span style=3D"bo=
+rder-radius: 3px; display: inline-block; margin: 0 2px; padding: 4px;backgr=
+ound-color: #d4ffd4;">Code-Review +2</span></p><p><a href=3D"http://gerrit=
+=2Eopenvpn=2Enet/c/openvpn/+/1763?usp=3Demail">View Change</a></p><p>1 comm=
+ent:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0;=
+ padding: 0;"><p>File tests/t_client=2Esh=2Ein:</p><ul style=3D"list-style:=
+ none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
+=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn=
+/+/1763/comment/08cec795_6020fd06?usp=3Demail">Patch Set #2, Line 79:</a> <=
+code style=3D"font-family:monospace,monospace">=2E &quot;${t_client_rc}&quo=
+t;</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 1=
+0px 0; padding: 0 10px;">`source` is a bashism=2E</blockquote></p><p class=
+=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Acknowl=
+edged</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit=2Eo=
+penvpn=2Enet/c/openvpn/+/1763?usp=3Demail">change 1763</a>=2E To unsubscrib=
+e, or for help writing mail filters, visit <a href=3D"http://gerrit=2Eopenv=
+pn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=
+=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" it=
+emtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"ht=
+tp://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1763?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none=
+"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-P=
+roject: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master <=
+/div>
+<div style=3D"display:none"> Gerrit-Change-Id: I1905d9494336da4e91f19=
+46d2ffd875720605b41 </div>
+<div style=3D"display:none"> Gerrit-Change-Numbe=
+r: 1763 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div =
+style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@lichtenheld=2E=
+com&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;=
+arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-C=
+C: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<di=
+v style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@lichtenh=
+eld=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri,=
+ 07 Aug 2026 15:44:22 +0000 </div>
+<div style=3D"display:none"> Gerrit-HasC=
+omments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </d=
+iv>
+<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-op=
+envpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Comment-In-Repl=
+y-To: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+
+</body></html>
+--hWy2GjoYicU=--
+
+
+--===============2831287753123786324==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============2831287753123786324==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+--===============2831287753123786324==--
+
