@@ -4,127 +4,127 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4B507C5AC7A
-	for <openvpn-devel@archiver.kernel.org>; Fri,  7 Aug 2026 15:19:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A23A0C2A09B
+	for <openvpn-devel@archiver.kernel.org>; Fri,  7 Aug 2026 15:25:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=vVhVyolAPkgfjrKbm6nUkaGOPzyiQz4gx2Wb5/RBVyY=; b=SuIny/87JHNJNgkHT/lXnxA9xr
-	dKU32Lpkb5T2AZKz9tmMda49sTi4hKyYuRdjbs6MfnJfekoiJp/a9DXyfoiGRVxDpJWVIaWOVSxqN
-	bFTCYTZUC+gatjb6VTJrmnLyg8q4LCAsb5efmxNbjOJRvIP0Wma4XgHe9b+IK4fC3W8E=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=WiSjE6nc7DvoP53j8uuDhO8gfAOyXQ8Xs8OLGcJy5DM=; b=Ql923d9dWNLTUe3y5yj/3b8X8U
+	PpWCncR7BZYFpuPGEsri9eWBNvs7vnuds0thw9TNjet6KJ0vuPYCTyAoaAx37yiQrrPXHR+OCPWcg
+	6AS+v7fATZNg0q6udd34Z1kCFg0wSlE9yn8sFxAhuZMtB4ZNArKM8nC4EBv7CCQeW+ss=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wsMMO-0003IQ-SO;
-	Fri, 07 Aug 2026 15:19:48 +0000
+	id 1wsMS2-0007UB-WE;
+	Fri, 07 Aug 2026 15:25:39 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wsMMN-0003IJ-3g
+ (envelope-from <gerrit@openvpn.net>) id 1wsMS1-0007Tz-Ov
  for openvpn-devel@lists.sourceforge.net;
- Fri, 07 Aug 2026 15:19:47 +0000
+ Fri, 07 Aug 2026 15:25:38 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
  :List-Post:List-Owner:List-Archive;
- bh=ctRBsHQ/POUdAwqyeaj0WzQQJsF9ECH86mgRlsDEHaY=; b=ZL/9W9M1wkTxEBn53xVCQvjsIA
- yNCuQ/vKN1tCH+TOLjCOx2ntY7wy1PZJsNaWmxXNsEnbyHctBBiQXUNrLVWprIj0dV2PJUi3sAcxL
- B/czCf5QbB+NJfekjSEgWIofc99o7DqsCPbT4BEM4kVQZMGGb7UoqyiCeuvCC/zXbxvw=;
+ bh=Qp0SubAWT8RgnK9/Et9fGWbUJ+nb3jeP0yS2i3vnGxA=; b=FwnWX4w67GioyDG41z5yGYiJZO
+ NfBVvLOg4lTU8u6rhIvqMlwO+85oCF8WOZJjUVsw0HGV4fnNjGZy8kQS6oKdfZOhmgRLVi9TXDPG6
+ SK//LFPMrJCS4Etp4RKCLsvkQIKD1Db5JBI9YdOmrqC3A6QNU//0ekRqECxMaaGqWle0=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
  Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=ctRBsHQ/POUdAwqyeaj0WzQQJsF9ECH86mgRlsDEHaY=; b=X
- qjBVQSf0wi9iVr/UMbUsxIqCpVnn+wdel21MGWPQ73jwkJR8TqMVK9eVlE3lwJFawYebEoTuEPvDD
- TviN45OJgAkHUNjd5Au5gr/fZtQ/cu/5KMQ9ryW/PA2NC8HAC+E3OKMgPonnX4B9ULYn1Y6duQ8na
- mvu3F1GKrfod8/Pk=;
-Received: from mail-ej1-f53.google.com ([209.85.218.53])
+ List-Owner:List-Archive; bh=Qp0SubAWT8RgnK9/Et9fGWbUJ+nb3jeP0yS2i3vnGxA=; b=G
+ itos4tgPDJ59c5odblntqdh2UOIdb0KJbyDtb1RH3WNMHPCnKLS2NLFOLdMUZhHQLstlyiVFJvZZ+
+ uOI+SMj8I3YXWVyHWAyzeRKfDVUCEemU3Il24ncrQmBEv8hEeC6q3TB3QnObp6C2PFx/8CtgQV2PL
+ dmDkOWJowcgd9EM8=;
+Received: from mail-ed1-f42.google.com ([209.85.208.42])
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wsMMO-0002MF-9U for openvpn-devel@lists.sourceforge.net;
- Fri, 07 Aug 2026 15:19:47 +0000
-Received: by mail-ej1-f53.google.com with SMTP id
- a640c23a62f3a-c20363107f4so361625466b.2
+ id 1wsMS4-0002wW-59 for openvpn-devel@lists.sourceforge.net;
+ Fri, 07 Aug 2026 15:25:38 +0000
+Received: by mail-ed1-f42.google.com with SMTP id
+ 4fb4d7f45d1cf-6a18840e2abso4079914a12.0
  for <openvpn-devel@lists.sourceforge.net>;
- Fri, 07 Aug 2026 08:19:44 -0700 (PDT)
+ Fri, 07 Aug 2026 08:25:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1786115978; x=1786720778; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1786116330; x=1786721130; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=ctRBsHQ/POUdAwqyeaj0WzQQJsF9ECH86mgRlsDEHaY=;
- b=HYuZwW0xoo6CPE2OyQiL0mymeK70Ef07cqreHT1mcy0Kur/ej7rU34xMU6wrw3aZ9V
- a1YdFYe0Iz5bNjQpbIQXE+tIPSBL6TQci7hv9QMTspm3oyJBeZ5JPfCow4m26MFUe9n+
- +tl8oJl11xrhK+uo6lRa6uvf3o/WJOoHttcTxscJ6wdqroZaYNvbsGWq/OoFG9HWav67
- LYbmfPDZCW7CiEpW6FEuv080TT6lGFrz8xpJKxFs/8D8IYFct4oaPqNxxrW5fkLOYKyn
- /DKTX38EakquPdxyfXUQtU5/xWI0kxnTtZ89XCP4SJXBAMIDwYys+1Q5i166/jf/mw9h
- r6Bg==
+ bh=Qp0SubAWT8RgnK9/Et9fGWbUJ+nb3jeP0yS2i3vnGxA=;
+ b=Xjy8GFenl27vWa12oRxa0pi8LFW57tzXUx1zjMU9LLKClIGaMIyPHFGGt5cjTD96UF
+ Lpm2Li5XINwIVRp8F8XIwg0B2YJCA7K5JbU6Sop8iVlHYEysQuEQL21dEzWaMDEjSX5h
+ ZGhC8qUVaZsy4KtSvx0CsY8tkdGfwJnZvZ2DeYV3k8kWW2d46FvcdsukdKwy2PX1JQbn
+ Ba8S+SLdCl57Fo28srjnZUq5mY4MBJAM0GnujS2gMNWFk+UkPpsXs//+sAZ5qIbUTq2x
+ BJoSHR7QENpypsWH/WJrW2lzjP+I+J3C5ds6mBK5BAvKynDVQpTP7QzYW6560O2gS3qv
+ bOpg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1786115978; x=1786720778;
+ d=1e100.net; s=20251104; t=1786116330; x=1786721130;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=ctRBsHQ/POUdAwqyeaj0WzQQJsF9ECH86mgRlsDEHaY=;
- b=I2JTmRW+m4z5vFtXqA+0nijWktq/YRSLgimdmMbS+TmdBgfO6loSlNpC0EPM13sj9H
- /T3jyReE140ru7a0tgb2gLVCLCzzgMoOB/XY2BOjxelJ9RxUOcSdk4GxnhS/AIil7XZl
- 52iMhGGk0OME125rHY0rkcjgZLHABxCtvnjvLREfB+QGDyZ2122ivrTXz58LJYUbRGcb
- zeT7imBuTfHwccTP6MdYFSAEqf0jxluAu2ecEO7p/b+0XJt/veKKL3La3fyTG2I+Ua5e
- p2ugVJmPyTX0M5Z/ffvxxjCbE9kgCgbQ2Cgw/XPreflWz2LczDYWSRXqYltGbcHFGO/L
- cDcg==
-X-Gm-Message-State: AOJu0YzRL9wfUQo4qilrcnkBQ6toeFuWddDCymvT6NrBITDnt79H1YxM
- nEs/1/iHgsC5NUoYniXbqk16mzzPXtW9X3B/cDKRsnSk856N8HBCgh176UlwI2QISrtkkpjudOb
- Ax0zsG7dXYUjfBNzMZWdp8OlPEiwm0859oWxiqQ3Jw4UmcVgkMMuxDhmcWkapmfHwAEWtSdI7XZ
- uXYvm02A==
-X-Gm-Gg: AR+sD10AFHg53zYnMm09bsuhQPkzpaoIoo3lpOE3hD6rlhQmFmUxszLxwazOUMEMJ38
- 7Skhm/j4Qh2LpACkxdsxuhSyq0xjwPAeQWC8U47ORpmF846yulTuKiU/pBf11IbRE46b9yHb4GC
- 7UDoidzmQ1P9zbC2qlg+iyr5Thkm/C7IWF3gQRe+t9VN9se03XWY322mACEBIBwJ3OimzGkVGN3
- V1GcHY5oe6jMVbUIjToOgG/f3jtC3btZTbLPBo8laYxEhoXNj/9kKSkr3NDsEr8VPrR2ppCa7tF
- bpWKoMlMezmfkDTvN/211RwP3vipEFPnTTGRnVlZp4AaALofpJ6WOnOiJlBIo2Gwz1iKa+2v2lv
- ETPmJ8vYTsF5l794VJoEpg4Y4u1NN3WcPl8bK1+GjSg6sIu9+95FSVFmi/WQC5prl29SDYLmSh8
- DDGUiSxzyx7ikXILTahU7hveBnxxHGCeMt9V6a7kYRzexOQGMSCLLkDN9sStfxCUKCTyoVCuv/o
- voqnKI3HbV1TJlfslZgcWyeByPy93PO4LfvL0Sknyb528PajLbBlzCyThglQR8c9zrl+85C6rV2
- FN2L1/z9uSwCucjYP/Ay0ZtjARc/CPsfEATs4miYZMfkv4luRxQ=
-X-Received: by 2002:a05:600c:1c25:b0:499:4e47:eaf2 with SMTP id
- 5b1f17b1804b1-4994e79dbf0mr313186705e9.6.1786104846840; 
- Fri, 07 Aug 2026 05:14:06 -0700 (PDT)
+ bh=Qp0SubAWT8RgnK9/Et9fGWbUJ+nb3jeP0yS2i3vnGxA=;
+ b=Z/wkWs3T9uA+40CM8eUDJTpR+2XbqZigq/D8hP8AqLnCPIZ+DjikRG9gwEvU9obtlE
+ 3MEFB2ykaAl1LaO8M95CtabT3DvFdH8wEhjPj86qisGU+KpczTrwmWIpP82zsuRAJ1+h
+ cfPVwry19JIuUAvfLxpDxwWF7NeX+9gZaxkNL/gHNx3KfTbzKk5sQgEjfkPDbpwPIRQE
+ jP4IPCY60jtXv/DxjTUSgxf5Qr2r2jpGlPXl4XFDvJQM9NzN1M5yioBy/fgRWcQVz0bP
+ VkwxeQdY7FgYbb8QksG+3Q3H4QdRb5cYr4f/oXO8slK/Z84iCLXzsJnr1mBUutevf57g
+ XVww==
+X-Gm-Message-State: AOJu0YxzbnhSuKOfD2l6sCeI4XCps1E2Ci+xsWpCeJXI9WVDYERXCW7U
+ mLtqBA3M5+dQf1Ddf9vJVQHnFXTKfOHJMUK7QK0IplwtzHAZFTYj6eXh6xOfgTzIbmqWu+v8LvO
+ tMySQj0HtYBHjdiCP7EqC4xqWY9FfzifT8SbTXMDz/jlEMhdxEuKH6bfhMHAyzPqFwmY2hHQOn0
+ QwiGwHhA==
+X-Gm-Gg: AR+sD109VarVIsqxQuNLRbDXG80ncUa9uhhUD7Ltu93SbaYZz6e19lYHW6RngLMPDc9
+ BvmqhTAx0xozxn6CmehEUKuoayPvHSlOS3CGNlB89VNKS3GYnbaz/ANYxLSt6WCAxc5/vCA6XXM
+ uQdsJEDtJ2qQPO5EfGLwelumUdqaNkxVG/UmHJu3egyf8m74TEjboVEhjNu2oPwEXGXNgWoI1ry
+ AS53lM1DxriXwbFc7ra2sby7IZlEbu0VfOS7vlod9CkyAw190NqEUxPTeKmWkOfLy4NqvdDUMiq
+ tThC1/wmCk0Ysooj38BB9r4ORo7yIOAlj7lBURNmWRMBeOWdePWTWix6a6rBBqF2iYBtAexNbvf
+ y3FwnRtUHDcvHfwc/8H23DLOBk0drOsAsBVEWEk4cIjGyzJaVZJVNfmNM0O4/qoeMg6IQs+q/sm
+ M4//Wi2yAw+D99e85gL3GtNHqchS+E3KOu25KfH8EXhPDCJUC90Tq95EdP2BlyV8PmCfWWb0MT1
+ k9zLviPmLs/jhNOq75IHbBXK7beD5iIs4xRgd8LLa0hd3P2kFiwHk6gVDDBtbb5mTTObCjyq1Cx
+ Xv5h6AYJQhhDjaM6juPGwy7ukyEokkOOKf0PT907Shiy0QM2QJA=
+X-Received: by 2002:a05:600d:8483:b0:498:1371:6612 with SMTP id
+ 5b1f17b1804b1-4994e7a70aemr243387905e9.6.1786110579701; 
+ Fri, 07 Aug 2026 06:49:39 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-480021e7b34sm4923671f8f.19.2026.08.07.05.14.06
+ 5b1f17b1804b1-4995e9e702dsm52928985e9.3.2026.08.07.06.49.39
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 07 Aug 2026 05:14:06 -0700 (PDT)
-X-Google-Original-From: "flichtenheld (Code Review)"
+ Fri, 07 Aug 2026 06:49:39 -0700 (PDT)
+X-Google-Original-From: "plaisthos (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Fri, 7 Aug 2026 12:14:03 +0000
-To: plaisthos <arne-openvpn@rfc2549.org>
+Date: Fri, 7 Aug 2026 13:49:36 +0000
+To: flichtenheld <frank@lichtenheld.com>
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newpatchset
-X-Gerrit-PatchSet: 2
-X-Gerrit-Change-Id: I4920318ac537064508eee3ca449d48de76c2ea5d
-X-Gerrit-Change-Number: 1582
+X-Gerrit-PatchSet: 6
+X-Gerrit-Change-Id: Iaf1f3475e4f27a920c028cd73b1a2497953583d0
+X-Gerrit-Change-Number: 1728
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1582?usp=email>
-X-Gerrit-Commit: 64bcf0ad06bbab1f862c749cb3b9947162f67291
-In-Reply-To: <gerrit.1773842036000.I4920318ac537064508eee3ca449d48de76c2ea5d@gerrit.openvpn.net>
-References: <gerrit.1773842036000.I4920318ac537064508eee3ca449d48de76c2ea5d@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzczODQyMDM2MDAwLkk0OTIwMzE4YWM1MzcwNjQ1MDhlZWUzY2E0NDlkNDhkZTc2YzJlYTVkQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <1da2bf9bd742001515337346bab029fe758a10a8-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1728?usp=email>
+X-Gerrit-Commit: 7f4541b3b554f681d3e102c57d9c50f9ebc51199
+In-Reply-To: <gerrit.1782142268000.Iaf1f3475e4f27a920c028cd73b1a2497953583d0@gerrit.openvpn.net>
+References: <gerrit.1782142268000.Iaf1f3475e4f27a920c028cd73b1a2497953583d0@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzgyMTQyMjY4MDAwLklhZjFmMzQ3NWU0ZjI3YTkyMGMwMjhjZDczYjFhMjQ5Nzk1MzU4M2QwQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <101e2eb2989a7a7f51e0bdaba046d2f02dded605-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wsMMO-0002MF-9U
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Remove
- --with-mem-check=dmalloc
+X-Headers-End: 1wsMS4-0002wW-59
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Do not differentiate
+ TLS server and client context initialisation
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -136,1206 +136,689 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "flichtenheld \(Code Review\) via Openvpn-devel"
+From: "plaisthos \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
-Reply-To: frank@lichtenheld.com, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net
-Cc: "flichtenheld \(Code Review\)" <gerrit@openvpn.net>,
+Reply-To: arne-openvpn@rfc2549.org, openvpn-devel@lists.sourceforge.net,
+ frank@lichtenheld.com
+Cc: "plaisthos \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============8395038881426235085=="
+Content-Type: multipart/mixed; boundary="===============1287372067655188051=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============8395038881426235085==
+--===============1287372067655188051==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="crOp4cVjNNA="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="Z8MPSdZomQg="; charset=UTF-8
 
---crOp4cVjNNA=
+--Z8MPSdZomQg=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld=2E
+Attention is currently required from: flichtenheld, plaisthos=2E
 
-Hello plaisthos, 
+Hello fli=
+chtenheld, 
 
-I=
-'d like you to reexamine a change=2E Please visit
+I'd like you to reexamine a change=2E Please visit
 
-    http://gerrit=2Eopen=
-vpn=2Enet/c/openvpn/+/1582?usp=3Demail
+    http:/=
+/gerrit=2Eopenvpn=2Enet/c/openvpn/+/1728?usp=3Demail
 
-to look at the new patch set (#2)=
+to look at the new pa=
+tch set (#6)=2E
+
+The following approvals got outdated and were removed:
+Cod=
+e-Review+2 by flichtenheld
+
+
+Change subject: Do not differentiate TLS serve=
+r and client context initialisation
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E
+
+Do not differentiate TLS server and client context i=
+nitialisation
+
+OpenSSL has the quite curious way of allowing to create cont=
+exts
+that allow only server or only client=2E This creates extra
+complicati=
+ons when we want to use both server and client SSL
+objects and does not see=
+m to have any advantages=2E
+
+We later explicitly tell OpenSSL to initialise=
+ the SSL objects
+to be a server or client object in key_state_ssl_init via
+=
+SSL_set_accept_state or SSL_set_connect_state=2E If this is
+mismatched we e=
+nd up getting an error from OpenSSL ("called a
+function you should not call=
+") that ends up calling a function
+that is not defined in that TLS_method=
 =2E
 
+Looking into the OpenSSL source (IMPLEMENT_tls_meth_func) the main
+dif=
+ference between the methods is whether they have a proper
+accept/connect or=
+ have the ssl_undefined_function that triggers the
+"called a function you s=
+hould not call"=2E
 
-Change subject: Remove --with-mem-check=3Ddmalloc
-=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+Our mbed TLS code basically does not give the TLS conte=
+xt any personality
+of client or server until we are in the same area in whi=
+ch the OpenSSL
+code calls SSL_set_accept_state/SSL_set_connect_state=2E
 
-Remove --with-mem-check=3Ddmall=
-oc
+Th=
+is also modifies the mbedTLS backend to make the decision to use
+client or =
+server TLS context personality in key_state_ssl_init=2E
+same as the OpenSSL=
+ backend=2E
 
-This code hasn't compiled for years and noone complained=2E
-We generall=
-y use ASAN instead=2E
-
-So remove the dead code=2E
-
-v2: The first version of=
- this change tried to fix the
-    code=2E v2 instead removes it=2E
-
-Change-=
-Id: I4920318ac537064508eee3ca449d48de76c2ea5d
-Signed-off-by: Frank Lichtenh=
-eld <frank@lichtenheld=2Ecom>
+Change-Id: Iaf1f3475e4f27a920c028cd73b1a2497953583d0
+Signed-of=
+f-by: Arne Schwabe <arne@rfc2549=2Eorg>
 ---
-M CMakeLists=2Etxt
-M config=2Eh=2Ecmake=
-=2Ein
-M configure=2Eac
-M src/openvpn/buffer=2Ec
-M src/openvpn/buffer=2Eh
-M =
-src/openvpn/crypto_backend=2Eh
-M src/openvpn/crypto_mbedtls_legacy=2Ec
-M sr=
-c/openvpn/crypto_openssl=2Ec
-M src/openvpn/init=2Ec
-M src/openvpn/memdbg=2E=
-h
-10 files changed, 5 insertions(+), 225 deletions(-)
+M src/openvpn/ssl=2Ec
+M src/ope=
+nvpn/ssl_backend=2Eh
+M src/openvpn/ssl_mbedtls=2Ec
+M src/openvpn/ssl_mbedtl=
+s=2Eh
+M src/openvpn/ssl_openssl=2Ec
+M tests/unit_tests/openvpn/test_ssl=2Ec=
+
+6 files changed, 17 insertions(+), 65 deletions(-)
 
 
-  git pull ssh://ge=
-rrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/82/1582/2
+  git pull ssh://gerr=
+it=2Eopenvpn=2Enet:29418/openvpn refs/changes/28/1728/6
 
-diff --git a/CMa=
-keLists=2Etxt b/CMakeLists=2Etxt
-index 74c080e=2E=2E6b3b455 100644
---- a/CM=
-akeLists=2Etxt
-+++ b/CMakeLists=2Etxt
-@@ -260,7 +260,6 @@
- 
- check_include_=
-files(arpa/inet=2Eh HAVE_ARPA_INET_H)
- check_include_files(dlfcn=2Eh HAVE_D=
-LFCN_H)
--check_include_files(dmalloc=2Eh HAVE_DMALLOC_H)
- check_include_fil=
-es(fcntl=2Eh HAVE_FCNTL_H)
- check_include_files(err=2Eh HAVE_ERR_H)
- check_=
-include_files(netdb=2Eh HAVE_NETDB_H)
-diff --git a/config=2Eh=2Ecmake=2Ein =
-b/config=2Eh=2Ecmake=2Ein
-index 34f289d=2E=2Ec3bb5a5 100644
---- a/config=2E=
-h=2Ecmake=2Ein
-+++ b/config=2Eh=2Ecmake=2Ein
-@@ -96,9 +96,6 @@
- /* Define t=
-o 1 if you have the <dlfcn=2Eh> header file=2E */
- #cmakedefine HAVE_DLFCN_=
-H
- 
--/* Define to 1 if you have the <dmalloc=2Eh> header file=2E */
--#cmake=
-define HAVE_DMALLOC_H
--
- /* Define to 1 if you have the `dup' function=2E *=
-/
- #cmakedefine HAVE_DUP
- 
-diff --git a/configure=2Eac b/configure=2Eac
-ind=
-ex 1aec805=2E=2E469a475 100644
---- a/configure=2Eac
-+++ b/configure=2Eac
-@@=
- -245,10 +245,10 @@
- 
- AC_ARG_WITH(
- 	[mem-check],
--	[AS_HELP_STRING([--wit=
-h-mem-check=3DTYPE], [build with debug memory checking, TYPE=3Dno|dmalloc|v=
-algrind|ssl @<:@default=3Dno@:>@])],
-+	[AS_HELP_STRING([--with-mem-check=3D=
-TYPE], [build with debug memory checking, TYPE=3Dno|valgrind|ssl @<:@defaul=
-t=3Dno@:>@])],
- 	[
- 		case "${withval}" in
--			dmalloc|valgrind|ssl|no) ;;
-=
-+			valgrind|ssl|no) ;;
- 			*) AC_MSG_ERROR([bad value ${withval} for --mem=
--check]) ;;
- 		esac
- 	],
-@@ -652,25 +652,6 @@
- 			[AC_MSG_ERROR([valgrind h=
-eaders not found=2E])]
- 		)
- 		;;
--	dmalloc)
--		AC_CHECK_HEADERS(
--			[dmal=
-loc=2Eh],
--			[AC_CHECK_LIB(
--				[dmalloc],
--				[malloc],
--				[
--					LI=
-BS=3D"${LIBS} -ldmalloc"
--					AC_DEFINE(
--						[DMALLOC],
--						[1],
--		=
-				[Use dmalloc memory debugging library]
--					)
--				],
--				[AC_MSG_ERR=
-OR([dmalloc library not found=2E])]
--			)],
--			[AC_MSG_ERROR([dmalloc head=
-ers not found=2E])]
--		)
--		;;
- 	ssl)
- 		AC_CHECK_LIB(
- 			[ssl],
-diff --gi=
-t a/src/openvpn/buffer=2Ec b/src/openvpn/buffer=2Ec
-index 5f2b233=2E=2E23d7=
-14d 100644
---- a/src/openvpn/buffer=2Ec
-+++ b/src/openvpn/buffer=2Ec
-@@ -57=
-,11 +57,7 @@
- }
- 
- struct buffer
--#ifdef DMALLOC
--alloc_buf_debug(size_t si=
-ze, const char *file, int line)
--#else
- alloc_buf(size_t size)
--#endif
- {
- =
-    struct buffer buf;
-     CLEAR(buf);
-@@ -71,22 +67,14 @@
-         buf_si=
-ze_error(size);
-     }
-     buf=2Ecapacity =3D (int)size;
--#ifdef DMALLOC
--=
-    buf=2Edata =3D openvpn_dmalloc(file, line, size);
--#else
-     buf=2Edat=
-a =3D calloc(1, size);
--#endif
-     check_malloc_return(buf=2Edata);
- 
-    =
- return buf;
- }
- 
- struct buffer
--#ifdef DMALLOC
--alloc_buf_gc_debug(size_t=
- size, struct gc_arena *gc, const char *file, int line)
--#else
- alloc_buf_g=
-c(size_t size, struct gc_arena *gc)
--#endif
- {
-     struct buffer buf;
-    =
- CLEAR(buf);
-@@ -96,11 +84,7 @@
-         buf_size_error(size);
-     }
+diff --git a/src/o=
+penvpn/ssl=2Ec b/src/openvpn/ssl=2Ec
+index ccd8264=2E=2E17808f7 100644
+--- =
+a/src/openvpn/ssl=2Ec
++++ b/src/openvpn/ssl=2Ec
+@@ -525,18 +525,11 @@
      =
-buf=2Ecapacity =3D (int)size;
--#ifdef DMALLOC
--    buf=2Edata =3D (uint8_t =
-*)gc_malloc_debug(size, false, gc, file, line);
--#else
-     buf=2Edata =3D =
-(uint8_t *)gc_malloc(size, false, gc);
--#endif
-     if (size)
-     {
-      =
-   *buf=2Edata =3D 0;
-@@ -109,7 +93,7 @@
- }
+struct tls_root_ctx *new_ctx;
+     ALLOC_OBJ_CLEAR(new_ctx, struct tls_root=
+_ctx);
  
- struct buffer
--#ifdef DMALLO=
-C
-+#ifdef BUF_INIT_TRACKING
- clone_buf_debug(const struct buffer *buf, cons=
-t char *file, int line)
- #else
- clone_buf(const struct buffer *buf)
-@@ -123=
-,11 +107,7 @@
-     ret=2Edebug_file =3D buf->debug_file;
-     ret=2Edebug_l=
-ine =3D buf->debug_line;
- #endif
--#ifdef DMALLOC
--    ret=2Edata =3D (uint8=
-_t *)openvpn_dmalloc(file, line, buf->capacity);
--#else
-     ret=2Edata =3D=
- (uint8_t *)malloc(buf->capacity);
--#endif
-     check_malloc_return(ret=2Ed=
-ata);
-     memcpy(BPTR(&ret), BPTR(buf), BLENZ(buf));
-     return ret;
-@@ -=
-335,21 +315,13 @@
-  */
+-    if (options->tls_server)
+-    {
+-        tls_ctx_server_new(n=
+ew_ctx);
++    tls_ctx_new(new_ctx);
  
- void *
--#ifdef DMALLOC
--gc_malloc_debug(size_t si=
-ze, bool clear, struct gc_arena *a, const char *file, int line)
--#else
- gc_=
-malloc(size_t size, bool clear, struct gc_arena *a)
--#endif
- {
-     void *r=
-et;
-     if (a)
+-        if (options->dh_file)
+-     =
+   {
+-            tls_ctx_load_dh_params(new_ctx, options->dh_file, options=
+->dh_file_inline);
+-        }
+-    }
+-    else /* if client */
++    if (opt=
+ions->tls_server && options->dh_file)
      {
-         struct gc_entry *e;
--#ifdef DMALLOC
--      =
-  e =3D (struct gc_entry *)openvpn_dmalloc(file, line, size + sizeof(struct=
- gc_entry));
--#else
-         e =3D (struct gc_entry *)malloc(size + sizeof(=
-struct gc_entry));
--#endif
-         check_malloc_return(e);
-         ret =
-=3D (char *)e + sizeof(struct gc_entry);
-         e->next =3D a->list;
-@@ -=
-357,11 +329,7 @@
+-        tls_ctx_client_new(ne=
+w_ctx);
++        tls_ctx_load_dh_params(new_ctx, options->dh_file, options-=
+>dh_file_inline);
      }
-     else
-     {
--#ifdef DMALLOC
--        ret =3D o=
-penvpn_dmalloc(file, line, size);
--#else
-         ret =3D malloc(size);
--#e=
-ndif
-         check_malloc_return(ret);
-     }
- #ifndef ZERO_BUFFER_ON_ALLO=
-C
-@@ -444,11 +412,7 @@
- {
-     ASSERT(a);
-     struct gc_entry_special *e;
-=
--#ifdef DMALLOC
--    e =3D (struct gc_entry_special *)openvpn_dmalloc(file,=
- line, sizeof(struct gc_entry_special));
--#else
-     e =3D (struct gc_entry=
-_special *)malloc(sizeof(struct gc_entry_special));
--#endif
-     check_mall=
-oc_return(e);
-     e->free_fnc =3D free_function;
-     e->addr =3D addr;
-@@=
- -647,11 +611,7 @@
-  * Allocate a string
-  */
- char *
--#ifdef DMALLOC
--stri=
-ng_alloc_debug(const char *str, struct gc_arena *gc, const char *file, int =
-line)
--#else
- string_alloc(const char *str, struct gc_arena *gc)
--#endif
- {=
-
-     if (str)
-     {
-@@ -660,11 +620,7 @@
  
-         if (gc)
-         {
--#=
-ifdef DMALLOC
--            ret =3D (char *)gc_malloc_debug(n, false, gc, fi=
-le, line);
--#else
-             ret =3D (char *)gc_malloc(n, false, gc);
--#e=
-ndif
-         }
-         else
-         {
-@@ -672,11 +628,7 @@
-             =
- * that the caller cleans up afterwards=2E  This is coherent with the
-     =
-         * earlier behaviour when gc_malloc() would be called with gc =3D=
-=3D NULL
-              */
--#ifdef DMALLOC
--            ret =3D openvpn_dmal=
-loc(file, line, n);
--#else
-             ret =3D calloc(1, n);
--#endif
-     =
-        check_malloc_return(ret);
-         }
-         memcpy(ret, str, n);
-=
-@@ -750,21 +702,13 @@
-  * Allocate a string inside a buffer
-  */
- struct bu=
-ffer
--#ifdef DMALLOC
--string_alloc_buf_debug(const char *str, struct gc_are=
-na *gc, const char *file, int line)
--#else
- string_alloc_buf(const char *st=
-r, struct gc_arena *gc)
--#endif
- {
-     struct buffer buf;
- 
-     ASSERT(st=
-r);
- 
--#ifdef DMALLOC
--    buf_set_read(&buf, (uint8_t *)string_alloc_debug=
-(str, gc, file, line), strlen(str) + 1);
--#else
-     buf_set_read(&buf, (ui=
-nt8_t *)string_alloc(str, gc), strlen(str) + 1);
--#endif
- 
-     if (buf=2El=
-en > 0) /* Don't count trailing '\0' as part of length */
-     {
-diff --git=
- a/src/openvpn/buffer=2Eh b/src/openvpn/buffer=2Eh
-index 1db9367=2E=2E22e04=
-5c 100644
---- a/src/openvpn/buffer=2Eh
-+++ b/src/openvpn/buffer=2Eh
-@@ -147=
-,32 +147,6 @@
- 
- void buf_size_error(const size_t size);
- 
--/* for dmalloc =
-debugging */
--
--#ifdef DMALLOC
--
--#define alloc_buf(size)               all=
-oc_buf_debug(size, __FILE__, __LINE__)
--#define alloc_buf_gc(size, gc)     =
-   alloc_buf_gc_debug(size, gc, __FILE__, __LINE__);
--#define clone_buf(buf=
-)                clone_buf_debug(buf, __FILE__, __LINE__);
--#define gc_mall=
-oc(size, clear, arena) gc_malloc_debug(size, clear, arena, __FILE__, __LINE=
-__)
--#define string_alloc(str, gc)         string_alloc_debug(str, gc, __FI=
-LE__, __LINE__)
--#define string_alloc_buf(str, gc)     string_alloc_buf_deb=
-ug(str, gc, __FILE__, __LINE__)
--
--struct buffer alloc_buf_debug(size_t siz=
-e, const char *file, int line);
--
--struct buffer alloc_buf_gc_debug(size_t =
-size, struct gc_arena *gc, const char *file, int line);
--
--struct buffer cl=
-one_buf_debug(const struct buffer *buf, const char *file, int line);
--
--voi=
-d *gc_malloc_debug(size_t size, bool clear, struct gc_arena *a, const char =
-*file, int line);
--
--char *string_alloc_debug(const char *str, struct gc_ar=
-ena *gc, const char *file, int line);
--
--struct buffer string_alloc_buf_deb=
-ug(const char *str, struct gc_arena *gc, const char *file,
--               =
-                      int line);
--
--#else  /* ifdef DMALLOC */
--
- struct bu=
-ffer alloc_buf(size_t size);
- 
- struct buffer alloc_buf_gc(size_t size,
-@@ =
--186,8 +160,6 @@
- 
- struct buffer string_alloc_buf(const char *str, struct =
-gc_arena *gc);
- 
--#endif /* ifdef DMALLOC */
--
- void gc_addspecial(void *ad=
-dr, void (*free_function)(void *), struct gc_arena *a);
+     /* Restrict allowed certificate crypto algo=
+rithms */
+diff --git a/src/openvpn/ssl_backend=2Eh b/src/openvpn/ssl_backen=
+d=2Eh
+index 816fb9c=2E=2Ea6d57f2 100644
+--- a/src/openvpn/ssl_backend=2Eh
++=
+++ b/src/openvpn/ssl_backend=2Eh
+@@ -117,18 +117,11 @@
+ int tls_version_max=
+(void);
  
  /**
-diff --git a=
-/src/openvpn/crypto_backend=2Eh b/src/openvpn/crypto_backend=2Eh
-index b602=
-ba1=2E=2E17085d6 100644
---- a/src/openvpn/crypto_backend=2Eh
-+++ b/src/open=
-vpn/crypto_backend=2Eh
-@@ -102,16 +102,6 @@
+- * Initialise a library-specific TLS context for a server=
+=2E
++ * Initialise a library-specific TLS context=2E
+  *
+  * @param ctx    =
+       TLS context to initialise
   */
- void crypto_unload_provid=
-er(const char *provname, provider_t *provider);
- 
--#ifdef DMALLOC
--/*
-- * O=
-penSSL memory debugging=2E  If dmalloc debugging is enabled, tell
-- * OpenS=
-SL to use our private malloc/realloc/free functions so that
-- * we can disp=
-atch them to dmalloc=2E
+-void tls_ctx_server_new(struct tls_r=
+oot_ctx *ctx);
+-
+-/**
+- * Initialises a library-specific TLS context for a =
+client=2E
+- *
+- * @param ctx           TLS context to initialise
 - */
--void crypto_init_dmalloc(void);
--
--#endif /* =
-DMALLOC */
--
- void show_available_ciphers(void);
+-void=
+ tls_ctx_client_new(struct tls_root_ctx *ctx);
++void tls_ctx_new(struct tls=
+_root_ctx *ctx);
  
- void show_available_dig=
-ests(void);
-diff --git a/src/openvpn/crypto_mbedtls_legacy=2Ec b/src/openvp=
-n/crypto_mbedtls_legacy=2Ec
-index debd53d=2E=2E9e47c26 100644
---- a/src/ope=
-nvpn/crypto_mbedtls_legacy=2Ec
-+++ b/src/openvpn/crypto_mbedtls_legacy=2Ec
-=
-@@ -139,14 +139,6 @@
+ /**
+  * Frees the library-specific TLSv1 context
+diff -=
+-git a/src/openvpn/ssl_mbedtls=2Ec b/src/openvpn/ssl_mbedtls=2Ec
+index 07ca=
+f08=2E=2E6d7ac04 100644
+--- a/src/openvpn/ssl_mbedtls=2Ec
++++ b/src/openvpn=
+/ssl_mbedtls=2Ec
+@@ -88,7 +88,7 @@
  }
  
- 
--#ifdef DMALLOC
--void
--crypto_init_dmalloc(void=
-)
--{
--    msg(M_ERR, "Error: dmalloc support is not available for mbed TLS=
-=2E");
--}
--#endif /* DMALLOC */
--
- const cipher_name_pair cipher_name_trans=
-lation_table[] =3D {
-     { "BF-CBC", "BLOWFISH-CBC" },
-     { "BF-CFB", "B=
-LOWFISH-CFB64" },
-diff --git a/src/openvpn/crypto_openssl=2Ec b/src/openvpn=
-/crypto_openssl=2Ec
-index fa9eb67=2E=2E1191f20 100644
---- a/src/openvpn/cry=
-pto_openssl=2Ec
-+++ b/src/openvpn/crypto_openssl=2Ec
-@@ -39,6 +39,7 @@
- #in=
-clude "integer=2Eh"
- #include "crypto=2Eh"
- #include "crypto_backend=2Eh"
-+=
-#include "memdbg=2Eh"
- #include "openssl_compat=2Eh"
- 
- #include <openssl/c=
-onf=2Eh>
-@@ -273,40 +274,6 @@
- }
- 
- 
--/*
-- *
-- * OpenSSL memory debugging=
-=2E  If dmalloc debugging is enabled, tell
-- * OpenSSL to use our private m=
-alloc/realloc/free functions so that
-- * we can dispatch them to dmalloc=2E=
-
-- *
-- */
--
--#ifdef DMALLOC
--static void *
--crypto_malloc(size_t size, cons=
-t char *file, int line)
--{
--    return dmalloc_malloc(file, line, size, DMA=
-LLOC_FUNC_MALLOC, 0, 0);
--}
--
--static void *
--crypto_realloc(void *ptr, siz=
-e_t size, const char *file, int line)
--{
--    return dmalloc_realloc(file, =
-line, ptr, size, DMALLOC_FUNC_REALLOC, 0);
--}
--
--static void
--crypto_free(v=
-oid *ptr)
--{
--    dmalloc_free(__FILE__, __LINE__, ptr, DMALLOC_FUNC_FREE);=
-
--}
--
--void
--crypto_init_dmalloc(void)
--{
--    CRYPTO_set_mem_ex_functions(=
-crypto_malloc, crypto_realloc, crypto_free);
--}
--#endif /* DMALLOC */
--
- co=
-nst cipher_name_pair cipher_name_translation_table[] =3D {
-     { "AES-128-=
-GCM", "id-aes128-GCM" },
-     { "AES-192-GCM", "id-aes192-GCM" },
-diff --gi=
-t a/src/openvpn/init=2Ec b/src/openvpn/init=2Ec
-index 0236886=2E=2E893670f =
-100644
---- a/src/openvpn/init=2Ec
-+++ b/src/openvpn/init=2Ec
-@@ -838,11 +83=
-8,6 @@
- bool
- init_static(void)
+ void
+-tls_ctx_server_new(struct tl=
+s_root_ctx *ctx)
++tls_ctx_new(struct tls_root_ctx *ctx)
  {
--#if defined(DMALLOC)
--    crypto_init_d=
-malloc();
--#endif
--
--
-     /*
-      * Initialize random number seed=2E  ran=
-dom() is only used
-      * when "weak" random numbers are acceptable=2E
-dif=
-f --git a/src/openvpn/memdbg=2Eh b/src/openvpn/memdbg=2Eh
-index ea620c2=2E=
-=2E1f94582 100644
---- a/src/openvpn/memdbg=2Eh
-+++ b/src/openvpn/memdbg=2Eh=
-
-@@ -43,67 +43,10 @@
-  */
+     ASSERT(NULL=
+ !=3D ctx);
+     CLEAR(*ctx);
+@@ -99,24 +99,9 @@
  
- #ifdef USE_VALGRIND
+     ALLOC_OBJ_CLEAR(ctx=
+->ca_chain, mbedtls_x509_crt);
+ 
+-    ctx->endpoint =3D MBEDTLS_SSL_IS_SERV=
+ER;
+     ctx->initialised =3D true;
+ }
+ 
+-void
+-tls_ctx_client_new(struct t=
+ls_root_ctx *ctx)
+-{
+-    ASSERT(NULL !=3D ctx);
+-    CLEAR(*ctx);
 -
- #include <valgrind/memc=
-heck=2Eh>
+-#if M=
+BEDTLS_VERSION_NUMBER < 0x04000000
+-    ALLOC_OBJ_CLEAR(ctx->dhm_ctx, mbedt=
+ls_dhm_context);
+-#endif
+-    ALLOC_OBJ_CLEAR(ctx->ca_chain, mbedtls_x509_c=
+rt);
 -
--#define VALGRIND_MAKE_READABLE(addr, len)
+-    ctx->endpoint =3D MBEDTLS_SSL_IS_CLIENT;
+-    ctx->initialised =
+=3D true;
+-}
+ 
+ void
+ tls_ctx_free(struct tls_root_ctx *ctx)
+@@ -1141,7 +11=
+26,8 @@
+     /* Initialise SSL config */
+     ALLOC_OBJ_CLEAR(ks_ssl->ssl_c=
+onfig, mbedtls_ssl_config);
+     mbedtls_ssl_config_init(ks_ssl->ssl_config=
+);
+-    mbedtls_ssl_config_defaults(ks_ssl->ssl_config, ssl_ctx->endpoint, =
+MBEDTLS_SSL_TRANSPORT_STREAM,
++    int endpoint =3D is_server ? MBEDTLS_SSL=
+_IS_SERVER : MBEDTLS_SSL_IS_CLIENT;
++    mbedtls_ssl_config_defaults(ks_ssl=
+->ssl_config, endpoint, MBEDTLS_SSL_TRANSPORT_STREAM,
+                     =
+            MBEDTLS_SSL_PRESET_DEFAULT);
+ #ifdef MBEDTLS_DEBUG_C
+     /* We=
+ only want to have mbed TLS generate debug level logging when we would
+@@ -=
+1530,7 +1516,7 @@
+     struct tls_root_ctx tls_ctx;
+     const int *ciphers=
+ =3D mbedtls_ssl_list_ciphersuites();
+ 
+-    tls_ctx_server_new(&tls_ctx);
+=
++    tls_ctx_new(&tls_ctx);
+     tls_ctx_set_cert_profile(&tls_ctx, tls_cer=
+t_profile);
+     tls_ctx_restrict_ciphers(&tls_ctx, cipher_list);
+ 
+diff --=
+git a/src/openvpn/ssl_mbedtls=2Eh b/src/openvpn/ssl_mbedtls=2Eh
+index 6b678=
+b2=2E=2E32d4f60 100644
+--- a/src/openvpn/ssl_mbedtls=2Eh
++++ b/src/openvpn/=
+ssl_mbedtls=2Eh
+@@ -114,8 +114,6 @@
+ {
+     bool initialised; /**< True if =
+the context has been initialised */
+ 
+-    int endpoint;     /**< Whether o=
+r not this is a server or a client */
 -
--#else /* ifdef US=
-E_VALGRIND */
--
--#define VALGRIND_MAKE_READABLE(addr, len)
--
+ #if MBEDTLS_VERSION_NUMBER < 0x040=
+00000
+     mbedtls_dhm_context *dhm_ctx;          /**< Diffie-Helmann-Merkl=
+e context */
  #endif
+diff --git a/src/openvpn/ssl_openssl=2Ec b/src/openvpn=
+/ssl_openssl=2Ec
+index 32b13db=2E=2Ee4e78e9 100644
+--- a/src/openvpn/ssl_op=
+enssl=2Ec
++++ b/src/openvpn/ssl_openssl=2Ec
+@@ -100,37 +100,19 @@
+ }
  
--#if=
-def DMALLOC /* see =2E/configure options to enable */
--
--/*
-- * See =2E/con=
-figure options to enable dmalloc
-- * support for memory leak checking=2E
-- =
-*
-- * The dmalloc package can be downloaded from:
-- *
-- *     https://dmall=
-oc=2Ecom/
-- *
-- * When dmalloc is installed and enabled,
-- * use this comma=
-nd prior to running openvpn:
-- *
-- *    dmalloc -l dlog -i 100 low -p log-u=
-nknown
-- *
-- * Also, put this in your =2Ebashrc file:
-- *
-- *    function d=
-malloc { eval `command dmalloc -b $*`; }
-- *
-- * Or take a more low-level a=
-pproach:
-- *
-- *    export DMALLOC_OPTIONS=3D"debug=3D0x4e48503,inter=3D100=
-,log=3Ddlog"
-- *
-- *  NOTE: When building dmalloc you need to add something=
+ voi=
+d
+-tls_ctx_server_new(struct tls_root_ctx *ctx)
++tls_ctx_new(struct tls_roo=
+t_ctx *ctx)
+ {
+     ASSERT(NULL !=3D ctx);
+ 
+-    ctx->ctx =3D SSL_CTX_new_=
+ex(tls_libctx, NULL, SSLv23_server_method());
++    ctx->ctx =3D SSL_CTX_new=
+_ex(tls_libctx, NULL, TLS_method());
+ 
+     if (ctx->ctx =3D=3D NULL)
+     =
+{
+-        crypto_msg(M_FATAL, "SSL_CTX_new SSLv23_server_method");
++      =
+  crypto_msg(M_FATAL, "SSL_CTX_new TLS_method");
+     }
+     if (ERR_peek_e=
+rror() !=3D 0)
+     {
+-        crypto_msg(M_WARN, "Warning: TLS server cont=
+ext initialisation "
+-                           "has warnings=2E");
+-    }=
 
-- *  like this to dmalloc's settings=2Eh -- it will allocate a static
-- * =
- buffer to be used as the malloc arena:
-- *
-- *  #define INTERNAL_MEMORY_SP=
-ACE (1024 * 1024 * 50)
-- */
+-}
 -
--#include <dmalloc=2Eh>
+-void
+-tls_ctx_client_new(struct tls_root_ctx *ctx)
+-{
+-    ASSERT(NU=
+LL !=3D ctx);
 -
--#define openvpn_dm=
-alloc(file, line, size) \
--    dmalloc_malloc((file), (line), (size), DMALL=
-OC_FUNC_MALLOC, 0, 0)
+-    ctx->ctx =3D SSL_CTX_new_ex(tls_libctx, NULL, SSLv23_c=
+lient_method());
 -
--/*
-- * This #define will put the line number of th=
-e log
-- * file position where leaked memory was allocated instead
-- * of th=
-e source code file and line number=2E  Make sure
-- * to increase the size o=
-f dmalloc's info tables,
-- * (MEMORY_TABLE_SIZE in settings=2Eh)
-- * otherw=
-ise it might get overwhelmed by the large
-- * number of unique file/line co=
-mbinations=2E
-- */
--#if 0
--#undef malloc
--#define malloc(size) openvpn_dmal=
-loc("logfile", x_msg_line_num, (size))
--#endif
--
--#endif /* DMALLOC */
-+#de=
-fine VALGRIND_MAKE_READABLE(addr, len)
+-    if (ctx->ctx =3D=3D NULL)
+-    {
+-        crypto_ms=
+g(M_FATAL, "SSL_CTX_new SSLv23_client_method");
+-    }
+-    if (ERR_peek_er=
+ror() !=3D 0)
+-    {
+-        crypto_msg(M_WARN, "Warning: TLS client conte=
+xt initialisation "
++        crypto_msg(M_WARN, "Warning: TLS context initi=
+alisation "
+                            "has warnings=2E");
+     }
+ }
+diff =
+--git a/tests/unit_tests/openvpn/test_ssl=2Ec b/tests/unit_tests/openvpn/te=
+st_ssl=2Ec
+index d473d67=2E=2E54d52a0 100644
+--- a/tests/unit_tests/openvpn=
+/test_ssl=2Ec
++++ b/tests/unit_tests/openvpn/test_ssl=2Ec
+@@ -175,7 +175,7 =
+@@
+     struct gc_arena gc =3D gc_new();
  
- /*
-  * Force buffers to be zeroed=
- after allocation=2E
+     struct tls_root_ctx ctx =3D=
+ { 0 };
+-    tls_ctx_client_new(&ctx);
++    tls_ctx_new(&ctx);
+     tls_ctx=
+_load_cert_file(&ctx, unittest_cert, true);
+ 
+     openvpn_x509_cert_t *cer=
+t =3D NULL;
+@@ -208,13 +208,13 @@
+     /* test loading of inlined cert and =
+key=2E
+      * loading the key also checks that it matches the loaded certi=
+ficate
+      */
+-    tls_ctx_client_new(&ctx);
++    tls_ctx_new(&ctx);
+    =
+ tls_ctx_load_cert_file(&ctx, unittest_cert, true);
+     assert_int_equal(t=
+ls_ctx_load_priv_file(&ctx, unittest_key, true), 0);
+     tls_ctx_free(&ctx=
+);
+ 
+     /* test loading of cert and key from file */
+-    tls_ctx_client_=
+new(&ctx);
++    tls_ctx_new(&ctx);
+     tls_ctx_load_cert_file(&ctx, global=
+_state=2Ecertfile, false);
+     assert_int_equal(tls_ctx_load_priv_file(&ct=
+x, global_state=2Ekeyfile, false), 0);
+     tls_ctx_free(&ctx);
+@@ -252,7 +=
+252,7 @@
+     string_mod(BSTR(&keyuri), CC_ANY, CC_BACKSLASH, '/');
+ #endif=
+ /* _WIN32 */
+ 
+-    tls_ctx_client_new(&ctx);
++    tls_ctx_new(&ctx);
+    =
+ tls_ctx_load_cert_file(&ctx, BSTR(&certuri), false);
+     assert_int_equal=
+(tls_ctx_load_priv_file(&ctx, BSTR(&keyuri), false), 0);
+     tls_ctx_free(=
+&ctx);
 
 -- 
-To view, visit http://gerrit=2Eopenvpn=2Enet/c/op=
-envpn/+/1582?usp=3Demail
-To unsubscribe, or for help writing mail filters, =
-visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1728?u=
+sp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://g=
+errit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Gerrit-MessageTyp=
-e: newpatchset
+Gerrit-MessageType: newpatchset=
+
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-=
-Id: I4920318ac537064508eee3ca449d48de76c2ea5d
-Gerrit-Change-Number: 1582
-Ge=
-rrit-PatchSet: 2
-Gerrit-Owner: flichtenheld <frank@lichtenheld=2Ecom>
-Gerri=
-t-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-CC: openvpn-devel=
- <openvpn-devel@lists=2Esourceforge=2Enet>
-Gerrit-Attention: flichtenheld <=
-frank@lichtenheld=2Ecom>
+Gerrit-Change-Id: Iaf1f3475e=
+4f27a920c028cd73b1a2497953583d0
+Gerrit-Change-Number: 1728
+Gerrit-PatchSet:=
+ 6
+Gerrit-Owner: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Reviewer: fl=
+ichtenheld <frank@lichtenheld=2Ecom>
+Gerrit-CC: openvpn-devel <openvpn-deve=
+l@lists=2Esourceforge=2Enet>
+Gerrit-Attention: plaisthos <arne-openvpn@rfc2=
+549=2Eorg>
+Gerrit-Attention: flichtenheld <frank@lichtenheld=2Ecom>
 
---crOp4cVjNNA=
+--Z8MPSdZomQg=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld=2E </p>
-<p>flichtenheld <strong>uploaded=
- patch set #2</strong> to this change=2E</p><p><a href=3D"http://gerrit=2Eo=
-penvpn=2Enet/c/openvpn/+/1582?usp=3Demail">View Change</a></p><pre class=3D=
-"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;"=
->Remove --with-mem-check=3Ddmalloc<br><br>This code hasn&#39;t compiled for=
- years and noone complained=2E<br>We generally use ASAN instead=2E<br><br>S=
-o remove the dead code=2E<br><br>v2: The first version of this change tried=
- to fix the<br>    code=2E v2 instead removes it=2E<br><br>Change-Id: I4920=
-318ac537064508eee3ca449d48de76c2ea5d<br>Signed-off-by: Frank Lichtenheld &l=
-t;frank@lichtenheld=2Ecom&gt;<br>---<br>M CMakeLists=2Etxt<br>M config=2Eh=
-=2Ecmake=2Ein<br>M configure=2Eac<br>M src/openvpn/buffer=2Ec<br>M src/open=
-vpn/buffer=2Eh<br>M src/openvpn/crypto_backend=2Eh<br>M src/openvpn/crypto_=
-mbedtls_legacy=2Ec<br>M src/openvpn/crypto_openssl=2Ec<br>M src/openvpn/ini=
-t=2Ec<br>M src/openvpn/memdbg=2Eh<br>10 files changed, 5 insertions(+), 225=
- deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: mono=
-space,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2E=
-net:29418/openvpn refs/changes/82/1582/2</pre><pre style=3D"font-family: mo=
-nospace,monospace; white-space: pre-wrap;"><span>diff --git a/CMakeLists=2E=
-txt b/CMakeLists=2Etxt</span><br><span>index 74c080e=2E=2E6b3b455 100644</s=
-pan><br><span>--- a/CMakeLists=2Etxt</span><br><span>+++ b/CMakeLists=2Etxt=
-</span><br><span>@@ -260,7 +260,6 @@</span><br><span> </span><br><span> che=
-ck_include_files(arpa/inet=2Eh HAVE_ARPA_INET_H)</span><br><span> check_inc=
-lude_files(dlfcn=2Eh HAVE_DLFCN_H)</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-check_include_files(dmalloc=2Eh HAVE_DMALLOC_H)</span><br><spa=
-n> check_include_files(fcntl=2Eh HAVE_FCNTL_H)</span><br><span> check_inclu=
-de_files(err=2Eh HAVE_ERR_H)</span><br><span> check_include_files(netdb=2Eh=
- HAVE_NETDB_H)</span><br><span>diff --git a/config=2Eh=2Ecmake=2Ein b/confi=
-g=2Eh=2Ecmake=2Ein</span><br><span>index 34f289d=2E=2Ec3bb5a5 100644</span>=
-<br><span>--- a/config=2Eh=2Ecmake=2Ein</span><br><span>+++ b/config=2Eh=2E=
-cmake=2Ein</span><br><span>@@ -96,9 +96,6 @@</span><br><span> /* Define to =
-1 if you have the &lt;dlfcn=2Eh&gt; header file=2E */</span><br><span> #cma=
-kedefine HAVE_DLFCN_H</span><br><span> </span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-/* Define to 1 if you have the &lt;dmalloc=2Eh&gt; header=
- file=2E */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#cmakedefi=
-ne HAVE_DMALLOC_H</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
-an><br><span> /* Define to 1 if you have the `dup&#39; function=2E */</span=
-><br><span> #cmakedefine HAVE_DUP</span><br><span> </span><br><span>diff --=
-git a/configure=2Eac b/configure=2Eac</span><br><span>index 1aec805=2E=2E46=
-9a475 100644</span><br><span>--- a/configure=2Eac</span><br><span>+++ b/con=
-figure=2Eac</span><br><span>@@ -245,10 +245,10 @@</span><br><span> </span><=
-br><span> AC_ARG_WITH(</span><br><span> 	[mem-check],</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-	[AS_HELP_STRING([--with-mem-check=3DTYPE],=
- [build with debug memory checking, TYPE=3Dno|dmalloc|valgrind|ssl @&lt;:@d=
-efault=3Dno@:&gt;@])],</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+	[AS_HELP_STRING([--with-mem-check=3DTYPE], [build with debug memory che=
-cking, TYPE=3Dno|valgrind|ssl @&lt;:@default=3Dno@:&gt;@])],</span><br><spa=
-n> 	[</span><br><span> 		case &quot;${withval}&quot; in</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-			dmalloc|valgrind|ssl|no) ;;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+			valgrind|ssl|no) ;;</span><=
-br><span> 			*) AC_MSG_ERROR([bad value ${withval} for --mem-check]) ;;</sp=
-an><br><span> 		esac</span><br><span> 	],</span><br><span>@@ -652,25 +652,6=
- @@</span><br><span> 			[AC_MSG_ERROR([valgrind headers not found=2E])]</sp=
-an><br><span> 		)</span><br><span> 		;;</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-	dmalloc)</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-		AC_CHECK_HEADERS(</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-			[dmalloc=2Eh],</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-			[AC_CHECK_LIB(</span><br><span style=3D"color: hsl(0, 100%, 40%);">-				=
-[dmalloc],</span><br><span style=3D"color: hsl(0, 100%, 40%);">-				[malloc=
-],</span><br><span style=3D"color: hsl(0, 100%, 40%);">-				[</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-					LIBS=3D&quot;${LIBS} -ldmalloc=
-&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-					AC_DEFINE(=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-						[DMALLOC],</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-						[1],</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-						[Use dmalloc memory debugging l=
-ibrary]</span><br><span style=3D"color: hsl(0, 100%, 40%);">-					)</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-				],</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-				[AC_MSG_ERROR([dmalloc library not foun=
-d=2E])]</span><br><span style=3D"color: hsl(0, 100%, 40%);">-			)],</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-			[AC_MSG_ERROR([dmalloc hea=
-ders not found=2E])]</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	=
-	)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		;;</span><br><spa=
-n> 	ssl)</span><br><span> 		AC_CHECK_LIB(</span><br><span> 			[ssl],</span>=
-<br><span>diff --git a/src/openvpn/buffer=2Ec b/src/openvpn/buffer=2Ec</spa=
-n><br><span>index 5f2b233=2E=2E23d714d 100644</span><br><span>--- a/src/ope=
-nvpn/buffer=2Ec</span><br><span>+++ b/src/openvpn/buffer=2Ec</span><br><spa=
-n>@@ -57,11 +57,7 @@</span><br><span> }</span><br><span> </span><br><span> =
-struct buffer</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef D=
-MALLOC</span><br><span style=3D"color: hsl(0, 100%, 40%);">-alloc_buf_debug=
-(size_t size, const char *file, int line)</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-#else</span><br><span> alloc_buf(size_t size)</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span> {</span=
-><br><span>     struct buffer buf;</span><br><span>     CLEAR(buf);</span><=
-br><span>@@ -71,22 +67,14 @@</span><br><span>         buf_size_error(size);=
-</span><br><span>     }</span><br><span>     buf=2Ecapacity =3D (int)size;<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef DMALLOC</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    buf=2Edata =3D openvpn_dm=
-alloc(file, line, size);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-#else</span><br><span>     buf=2Edata =3D calloc(1, size);</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span>     check_m=
-alloc_return(buf=2Edata);</span><br><span> </span><br><span>     return buf=
-;</span><br><span> }</span><br><span> </span><br><span> struct buffer</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef DMALLOC</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-alloc_buf_gc_debug(size_t size, st=
-ruct gc_arena *gc, const char *file, int line)</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-#else</span><br><span> alloc_buf_gc(size_t size, s=
-truct gc_arena *gc)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#e=
-ndif</span><br><span> {</span><br><span>     struct buffer buf;</span><br><=
-span>     CLEAR(buf);</span><br><span>@@ -96,11 +84,7 @@</span><br><span>  =
-       buf_size_error(size);</span><br><span>     }</span><br><span>     bu=
-f=2Ecapacity =3D (int)size;</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-#ifdef DMALLOC</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   buf=2Edata =3D (uint8_t *)gc_malloc_debug(size, false, gc, file, line);<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-#else</span><br><span>=
-     buf=2Edata =3D (uint8_t *)gc_malloc(size, false, gc);</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span>     if (size)<=
-/span><br><span>     {</span><br><span>         *buf=2Edata =3D 0;</span><b=
-r><span>@@ -109,7 +93,7 @@</span><br><span> }</span><br><span> </span><br><=
-span> struct buffer</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#i=
-fdef DMALLOC</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef =
-BUF_INIT_TRACKING</span><br><span> clone_buf_debug(const struct buffer *buf=
-, const char *file, int line)</span><br><span> #else</span><br><span> clone=
-_buf(const struct buffer *buf)</span><br><span>@@ -123,11 +107,7 @@</span><=
-br><span>     ret=2Edebug_file =3D buf-&gt;debug_file;</span><br><span>    =
- ret=2Edebug_line =3D buf-&gt;debug_line;</span><br><span> #endif</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef DMALLOC</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    ret=2Edata =3D (uint8_t *)openvpn_=
-dmalloc(file, line, buf-&gt;capacity);</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-#else</span><br><span>     ret=2Edata =3D (uint8_t *)mallo=
-c(buf-&gt;capacity);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
-endif</span><br><span>     check_malloc_return(ret=2Edata);</span><br><span=
->     memcpy(BPTR(&amp;ret), BPTR(buf), BLENZ(buf));</span><br><span>     r=
-eturn ret;</span><br><span>@@ -335,21 +315,13 @@</span><br><span>  */</span=
-><br><span> </span><br><span> void *</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-#ifdef DMALLOC</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-gc_malloc_debug(size_t size, bool clear, struct gc_arena *a, const =
-char *file, int line)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-#else</span><br><span> gc_malloc(size_t size, bool clear, struct gc_arena *=
-a)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><s=
-pan> {</span><br><span>     void *ret;</span><br><span>     if (a)</span><b=
-r><span>     {</span><br><span>         struct gc_entry *e;</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-#ifdef DMALLOC</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        e =3D (struct gc_entry *)openvpn_dm=
-alloc(file, line, size + sizeof(struct gc_entry));</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-#else</span><br><span>         e =3D (struct g=
-c_entry *)malloc(size + sizeof(struct gc_entry));</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-#endif</span><br><span>         check_malloc_re=
-turn(e);</span><br><span>         ret =3D (char *)e + sizeof(struct gc_entr=
-y);</span><br><span>         e-&gt;next =3D a-&gt;list;</span><br><span>@@ =
--357,11 +329,7 @@</span><br><span>     }</span><br><span>     else</span><b=
-r><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef =
-DMALLOC</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        ret =
-=3D openvpn_dmalloc(file, line, size);</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-#else</span><br><span>         ret =3D malloc(size);</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span>    =
-     check_malloc_return(ret);</span><br><span>     }</span><br><span> #ifn=
-def ZERO_BUFFER_ON_ALLOC</span><br><span>@@ -444,11 +412,7 @@</span><br><sp=
-an> {</span><br><span>     ASSERT(a);</span><br><span>     struct gc_entry_=
-special *e;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef DMA=
-LLOC</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    e =3D (struct=
- gc_entry_special *)openvpn_dmalloc(file, line, sizeof(struct gc_entry_spec=
-ial));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#else</span><br=
-><span>     e =3D (struct gc_entry_special *)malloc(sizeof(struct gc_entry_=
-special));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</spa=
-n><br><span>     check_malloc_return(e);</span><br><span>     e-&gt;free_fn=
-c =3D free_function;</span><br><span>     e-&gt;addr =3D addr;</span><br><s=
-pan>@@ -647,11 +611,7 @@</span><br><span>  * Allocate a string</span><br><s=
-pan>  */</span><br><span> char *</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-#ifdef DMALLOC</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-string_alloc_debug(const char *str, struct gc_arena *gc, const char *fi=
-le, int line)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#else</s=
-pan><br><span> string_alloc(const char *str, struct gc_arena *gc)</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span> {</span=
-><br><span>     if (str)</span><br><span>     {</span><br><span>@@ -660,11 =
-+620,7 @@</span><br><span> </span><br><span>         if (gc)</span><br><spa=
-n>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef DM=
-ALLOC</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            ret =
-=3D (char *)gc_malloc_debug(n, false, gc, file, line);</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-#else</span><br><span>             ret =3D=
- (char *)gc_malloc(n, false, gc);</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-#endif</span><br><span>         }</span><br><span>         else=
-</span><br><span>         {</span><br><span>@@ -672,11 +628,7 @@</span><br>=
-<span>              * that the caller cleans up afterwards=2E  This is cohe=
-rent with the</span><br><span>              * earlier behaviour when gc_mal=
-loc() would be called with gc =3D=3D NULL</span><br><span>              */<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef DMALLOC</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-            ret =3D openvpn_d=
-malloc(file, line, n);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--#else</span><br><span>             ret =3D calloc(1, n);</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span>             che=
-ck_malloc_return(ret);</span><br><span>         }</span><br><span>         =
-memcpy(ret, str, n);</span><br><span>@@ -750,21 +702,13 @@</span><br><span>=
-  * Allocate a string inside a buffer</span><br><span>  */</span><br><span>=
- struct buffer</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef =
-DMALLOC</span><br><span style=3D"color: hsl(0, 100%, 40%);">-string_alloc_b=
-uf_debug(const char *str, struct gc_arena *gc, const char *file, int line)<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-#else</span><br><span>=
- string_alloc_buf(const char *str, struct gc_arena *gc)</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span> {</span><br><span=
->     struct buffer buf;</span><br><span> </span><br><span>     ASSERT(str)=
-;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#i=
-fdef DMALLOC</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    buf_s=
-et_read(&amp;buf, (uint8_t *)string_alloc_debug(str, gc, file, line), strle=
-n(str) + 1);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#else</sp=
-an><br><span>     buf_set_read(&amp;buf, (uint8_t *)string_alloc(str, gc), =
-strlen(str) + 1);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#end=
-if</span><br><span> </span><br><span>     if (buf=2Elen &gt; 0) /* Don&#39;=
-t count trailing &#39;\0&#39; as part of length */</span><br><span>     {</=
-span><br><span>diff --git a/src/openvpn/buffer=2Eh b/src/openvpn/buffer=2Eh=
-</span><br><span>index 1db9367=2E=2E22e045c 100644</span><br><span>--- a/sr=
-c/openvpn/buffer=2Eh</span><br><span>+++ b/src/openvpn/buffer=2Eh</span><br=
-><span>@@ -147,32 +147,6 @@</span><br><span> </span><br><span> void buf_siz=
-e_error(const size_t size);</span><br><span> </span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-/* for dmalloc debugging */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-#ifdef DMALLOC</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define alloc_buf=
-(size)               alloc_buf_debug(size, __FILE__, __LINE__)</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-#define alloc_buf_gc(size, gc)    =
-    alloc_buf_gc_debug(size, gc, __FILE__, __LINE__);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#define clone_buf(buf)                clone=
-_buf_debug(buf, __FILE__, __LINE__);</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-#define gc_malloc(size, clear, arena) gc_malloc_debug(size, =
-clear, arena, __FILE__, __LINE__)</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-#define string_alloc(str, gc)         string_alloc_debug(str, g=
-c, __FILE__, __LINE__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--#define string_alloc_buf(str, gc)     string_alloc_buf_debug(str, gc, __FI=
-LE__, __LINE__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-struct buffer alloc_buf_deb=
-ug(size_t size, const char *file, int line);</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-struct buffer alloc_buf_gc_debug(size_t size, struct gc_arena *gc, const =
-char *file, int line);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--</span><br><span style=3D"color: hsl(0, 100%, 40%);">-struct buffer clone_=
-buf_debug(const struct buffer *buf, const char *file, int line);</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-void *gc_malloc_debug(size_t size, bool clear, struct=
- gc_arena *a, const char *file, int line);</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-char *string_alloc_debug(const char *str, struct gc_arena *gc, const char *=
-file, int line);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-struct buffer string_alloc=
-_buf_debug(const char *str, struct gc_arena *gc, const char *file,</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-                              =
-       int line);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-#else  /* ifdef DMALLOC *=
-/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> st=
-ruct buffer alloc_buf(size_t size);</span><br><span> </span><br><span> stru=
-ct buffer alloc_buf_gc(size_t size,</span><br><span>@@ -186,8 +160,6 @@</sp=
-an><br><span> </span><br><span> struct buffer string_alloc_buf(const char *=
-str, struct gc_arena *gc);</span><br><span> </span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-#endif /* ifdef DMALLOC */</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-</span><br><span> void gc_addspecial(void *addr=
-, void (*free_function)(void *), struct gc_arena *a);</span><br><span> </sp=
-an><br><span> /**</span><br><span>diff --git a/src/openvpn/crypto_backend=
-=2Eh b/src/openvpn/crypto_backend=2Eh</span><br><span>index b602ba1=2E=2E17=
-085d6 100644</span><br><span>--- a/src/openvpn/crypto_backend=2Eh</span><br=
-><span>+++ b/src/openvpn/crypto_backend=2Eh</span><br><span>@@ -102,16 +102=
-,6 @@</span><br><span>  */</span><br><span> void crypto_unload_provider(con=
-st char *provname, provider_t *provider);</span><br><span> </span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-#ifdef DMALLOC</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">- * OpenSSL memory debugging=2E  If dmalloc debugging is enable=
-d, tell</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * OpenSSL to =
-use our private malloc/realloc/free functions so that</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">- * we can dispatch them to dmalloc=2E</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-void crypto_init_dmalloc(void);</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-#endif /* DMALLOC */</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-</span><br><span> void show_available_ciphers(void);</s=
-pan><br><span> </span><br><span> void show_available_digests(void);</span><=
-br><span>diff --git a/src/openvpn/crypto_mbedtls_legacy=2Ec b/src/openvpn/c=
-rypto_mbedtls_legacy=2Ec</span><br><span>index debd53d=2E=2E9e47c26 100644<=
-/span><br><span>--- a/src/openvpn/crypto_mbedtls_legacy=2Ec</span><br><span=
->+++ b/src/openvpn/crypto_mbedtls_legacy=2Ec</span><br><span>@@ -139,14 +13=
-9,6 @@</span><br><span> }</span><br><span> </span><br><span> </span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-#ifdef DMALLOC</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-void</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-crypto_init_dmalloc(void)</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    msg(M_ERR, &quot;Error: dmalloc support is not available for mbed TLS=
-=2E&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-#endif /* DMALLOC */</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> const cipher_=
-name_pair cipher_name_translation_table[] =3D {</span><br><span>     { &quo=
-t;BF-CBC&quot;, &quot;BLOWFISH-CBC&quot; },</span><br><span>     { &quot;BF=
--CFB&quot;, &quot;BLOWFISH-CFB64&quot; },</span><br><span>diff --git a/src/=
-openvpn/crypto_openssl=2Ec b/src/openvpn/crypto_openssl=2Ec</span><br><span=
->index fa9eb67=2E=2E1191f20 100644</span><br><span>--- a/src/openvpn/crypto=
-_openssl=2Ec</span><br><span>+++ b/src/openvpn/crypto_openssl=2Ec</span><br=
-><span>@@ -39,6 +39,7 @@</span><br><span> #include &quot;integer=2Eh&quot;<=
-/span><br><span> #include &quot;crypto=2Eh&quot;</span><br><span> #include =
-&quot;crypto_backend=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+#include &quot;memdbg=2Eh&quot;</span><br><span> #include &quot;=
-openssl_compat=2Eh&quot;</span><br><span> </span><br><span> #include &lt;op=
-enssl/conf=2Eh&gt;</span><br><span>@@ -273,40 +274,6 @@</span><br><span> }<=
-/span><br><span> </span><br><span> </span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">- * OpenSSL memory debugg=
-ing=2E  If dmalloc debugging is enabled, tell</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">- * OpenSSL to use our private malloc/realloc/free f=
-unctions so that</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * we=
- can dispatch them to dmalloc=2E</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-#ifdef DMALLOC</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-static void *</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-crypto_malloc(size_t size, const char *file, int line)</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    return dmalloc_malloc(file, line, size, DMALL=
-OC_FUNC_MALLOC, 0, 0);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-static void *</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-crypto_realloc(void *ptr, size_t size, const cha=
-r *file, int line)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return dmalloc_real=
-loc(file, line, ptr, size, DMALLOC_FUNC_REALLOC, 0);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static vo=
-id</span><br><span style=3D"color: hsl(0, 100%, 40%);">-crypto_free(void *p=
-tr)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    dmalloc_free(__FILE__, __LINE__, p=
-tr, DMALLOC_FUNC_FREE);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-void</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-crypto_init_dmalloc(void)</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    CRYPTO_set_mem_ex_functions(crypto_malloc, crypto_realloc, crypto_fr=
-ee);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-#endif /* DMALLOC */</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> const cipher_name_pa=
-ir cipher_name_translation_table[] =3D {</span><br><span>     { &quot;AES-1=
-28-GCM&quot;, &quot;id-aes128-GCM&quot; },</span><br><span>     { &quot;AES=
--192-GCM&quot;, &quot;id-aes192-GCM&quot; },</span><br><span>diff --git a/s=
-rc/openvpn/init=2Ec b/src/openvpn/init=2Ec</span><br><span>index 0236886=2E=
-=2E893670f 100644</span><br><span>--- a/src/openvpn/init=2Ec</span><br><spa=
-n>+++ b/src/openvpn/init=2Ec</span><br><span>@@ -838,11 +838,6 @@</span><br=
-><span> bool</span><br><span> init_static(void)</span><br><span> {</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(DMALLOC)</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    crypto_init_dmalloc();</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span sty=
+rently required from: flichtenheld, plaisthos=2E </p>
+<p>plaisthos <strong>=
+uploaded patch set #6</strong> to this change=2E</p><p><a href=3D"http://ge=
+rrit=2Eopenvpn=2Enet/c/openvpn/+/1728?usp=3Demail">View Change</a></p><p>Th=
+e following approvals got outdated and were removed:
+Code-Review+2 by flich=
+tenheld</p><pre class=3D"blocks" style=3D"font-family: monospace,monospace;=
+ white-space: pre-wrap;">Do not differentiate TLS server and client context=
+ initialisation<br><br>OpenSSL has the quite curious way of allowing to cre=
+ate contexts<br>that allow only server or only client=2E This creates extra=
+<br>complications when we want to use both server and client SSL<br>objects=
+ and does not seem to have any advantages=2E<br><br>We later explicitly tel=
+l OpenSSL to initialise the SSL objects<br>to be a server or client object =
+in key_state_ssl_init via<br>SSL_set_accept_state or SSL_set_connect_state=
+=2E If this is<br>mismatched we end up getting an error from OpenSSL (&quot=
+;called a<br>function you should not call&quot;) that ends up calling a fun=
+ction<br>that is not defined in that TLS_method=2E<br><br>Looking into the =
+OpenSSL source (IMPLEMENT_tls_meth_func) the main<br>difference between the=
+ methods is whether they have a proper<br>accept/connect or have the ssl_un=
+defined_function that triggers the<br>&quot;called a function you should no=
+t call&quot;=2E<br><br>Our mbed TLS code basically does not give the TLS co=
+ntext any personality<br>of client or server until we are in the same area =
+in which the OpenSSL<br>code calls SSL_set_accept_state/SSL_set_connect_sta=
+te=2E<br><br>This also modifies the mbedTLS backend to make the decision to=
+ use<br>client or server TLS context personality in key_state_ssl_init=2E<b=
+r>same as the OpenSSL backend=2E<br><br>Change-Id: Iaf1f3475e4f27a920c028cd=
+73b1a2497953583d0<br>Signed-off-by: Arne Schwabe &lt;arne@rfc2549=2Eorg&gt;=
+<br>---<br>M src/openvpn/ssl=2Ec<br>M src/openvpn/ssl_backend=2Eh<br>M src/=
+openvpn/ssl_mbedtls=2Ec<br>M src/openvpn/ssl_mbedtls=2Eh<br>M src/openvpn/s=
+sl_openssl=2Ec<br>M tests/unit_tests/openvpn/test_ssl=2Ec<br>6 files change=
+d, 17 insertions(+), 65 deletions(-)<br><br></pre><pre class=3D"blocks" sty=
+le=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ss=
+h://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/28/1728/6</pre><pre s=
+tyle=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>dif=
+f --git a/src/openvpn/ssl=2Ec b/src/openvpn/ssl=2Ec</span><br><span>index c=
+cd8264=2E=2E17808f7 100644</span><br><span>--- a/src/openvpn/ssl=2Ec</span>=
+<br><span>+++ b/src/openvpn/ssl=2Ec</span><br><span>@@ -525,18 +525,11 @@</=
+span><br><span>     struct tls_root_ctx *new_ctx;</span><br><span>     ALLO=
+C_OBJ_CLEAR(new_ctx, struct tls_root_ctx);</span><br><span> </span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    if (options-&gt;tls_server)</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-        tls_ctx_server_new(new_ctx);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    tls_ctx_new(new_ctx);=
+</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     if (options-&gt;dh_file)</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+        tls_ctx_load_dh_params(new_ctx, options-&gt;dh_file, options-&gt;dh=
+_file_inline);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+ }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    else /* if client */</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    if (options-&gt;tls_server=
+ &amp;&amp; options-&gt;dh_file)</span><br><span>     {</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-        tls_ctx_client_new(new_ctx);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        tls_ctx_load_dh_=
+params(new_ctx, options-&gt;dh_file, options-&gt;dh_file_inline);</span><br=
+><span>     }</span><br><span> </span><br><span>     /* Restrict allowed ce=
+rtificate crypto algorithms */</span><br><span>diff --git a/src/openvpn/ssl=
+_backend=2Eh b/src/openvpn/ssl_backend=2Eh</span><br><span>index 816fb9c=2E=
+=2Ea6d57f2 100644</span><br><span>--- a/src/openvpn/ssl_backend=2Eh</span><=
+br><span>+++ b/src/openvpn/ssl_backend=2Eh</span><br><span>@@ -117,18 +117,=
+11 @@</span><br><span> int tls_version_max(void);</span><br><span> </span><=
+br><span> /**</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Initi=
+alise a library-specific TLS context for a server=2E</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * Initialise a library-specific TLS cont=
+ext=2E</span><br><span>  *</span><br><span>  * @param ctx           TLS con=
+text to initialise</span><br><span>  */</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-void tls_ctx_server_new(struct tls_root_ctx *ctx);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-/**</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">- * Initialises a library-specific TLS context for a client=2E</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">- * @param ctx           TLS context to initial=
+ise</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-void tls_ctx_client_new(struct tls_r=
+oot_ctx *ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void =
+tls_ctx_new(struct tls_root_ctx *ctx);</span><br><span> </span><br><span> /=
+**</span><br><span>  * Frees the library-specific TLSv1 context</span><br><=
+span>diff --git a/src/openvpn/ssl_mbedtls=2Ec b/src/openvpn/ssl_mbedtls=2Ec=
+</span><br><span>index 07caf08=2E=2E6d7ac04 100644</span><br><span>--- a/sr=
+c/openvpn/ssl_mbedtls=2Ec</span><br><span>+++ b/src/openvpn/ssl_mbedtls=2Ec=
+</span><br><span>@@ -88,7 +88,7 @@</span><br><span> }</span><br><span> </sp=
+an><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-tls=
+_ctx_server_new(struct tls_root_ctx *ctx)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+tls_ctx_new(struct tls_root_ctx *ctx)</span><br><span=
+> {</span><br><span>     ASSERT(NULL !=3D ctx);</span><br><span>     CLEAR(=
+*ctx);</span><br><span>@@ -99,24 +99,9 @@</span><br><span> </span><br><span=
+>     ALLOC_OBJ_CLEAR(ctx-&gt;ca_chain, mbedtls_x509_crt);</span><br><span>=
+ </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ctx-&gt;endpoint=
+ =3D MBEDTLS_SSL_IS_SERVER;</span><br><span>     ctx-&gt;initialised =3D tr=
+ue;</span><br><span> }</span><br><span> </span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-void</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-tls_ctx_client_new(struct tls_root_ctx *ctx)</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    ASSERT(NULL !=3D ctx);</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    CLEAR(*ctx);</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if MBEDTLS_VERS=
+ION_NUMBER &lt; 0x04000000</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    ALLOC_OBJ_CLEAR(ctx-&gt;dhm_ctx, mbedtls_dhm_context);</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    ALLOC_OBJ_CLEAR(ctx-&gt;ca_chain, mbedtls_x5=
+09_crt);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    ctx-&gt;endpoint =3D MBEDTLS_S=
+SL_IS_CLIENT;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ctx-=
+&gt;initialised =3D true;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-}</span><br><span> </span><br><span> void</span><br><span> tls_ctx_free=
+(struct tls_root_ctx *ctx)</span><br><span>@@ -1141,7 +1126,8 @@</span><br>=
+<span>     /* Initialise SSL config */</span><br><span>     ALLOC_OBJ_CLEAR=
+(ks_ssl-&gt;ssl_config, mbedtls_ssl_config);</span><br><span>     mbedtls_s=
+sl_config_init(ks_ssl-&gt;ssl_config);</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    mbedtls_ssl_config_defaults(ks_ssl-&gt;ssl_config, ssl=
+_ctx-&gt;endpoint, MBEDTLS_SSL_TRANSPORT_STREAM,</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    int endpoint =3D is_server ? MBEDTLS_SSL_I=
+S_SERVER : MBEDTLS_SSL_IS_CLIENT;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    mbedtls_ssl_config_defaults(ks_ssl-&gt;ssl_config, endpoi=
+nt, MBEDTLS_SSL_TRANSPORT_STREAM,</span><br><span>                         =
+        MBEDTLS_SSL_PRESET_DEFAULT);</span><br><span> #ifdef MBEDTLS_DEBUG_=
+C</span><br><span>     /* We only want to have mbed TLS generate debug leve=
+l logging when we would</span><br><span>@@ -1530,7 +1516,7 @@</span><br><sp=
+an>     struct tls_root_ctx tls_ctx;</span><br><span>     const int *cipher=
+s =3D mbedtls_ssl_list_ciphersuites();</span><br><span> </span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    tls_ctx_server_new(&amp;tls_ctx);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    tls_ctx_new(&amp;t=
+ls_ctx);</span><br><span>     tls_ctx_set_cert_profile(&amp;tls_ctx, tls_ce=
+rt_profile);</span><br><span>     tls_ctx_restrict_ciphers(&amp;tls_ctx, ci=
+pher_list);</span><br><span> </span><br><span>diff --git a/src/openvpn/ssl_=
+mbedtls=2Eh b/src/openvpn/ssl_mbedtls=2Eh</span><br><span>index 6b678b2=2E=
+=2E32d4f60 100644</span><br><span>--- a/src/openvpn/ssl_mbedtls=2Eh</span><=
+br><span>+++ b/src/openvpn/ssl_mbedtls=2Eh</span><br><span>@@ -114,8 +114,6=
+ @@</span><br><span> {</span><br><span>     bool initialised; /**&lt; True =
+if the context has been initialised */</span><br><span> </span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    int endpoint;     /**&lt; Whether or=
+ not this is a server or a client */</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-</span><br><span> #if MBEDTLS_VERSION_NUMBER &lt; 0x04000000=
+</span><br><span>     mbedtls_dhm_context *dhm_ctx;          /**&lt; Diffie=
+-Helmann-Merkle context */</span><br><span> #endif</span><br><span>diff --g=
+it a/src/openvpn/ssl_openssl=2Ec b/src/openvpn/ssl_openssl=2Ec</span><br><s=
+pan>index 32b13db=2E=2Ee4e78e9 100644</span><br><span>--- a/src/openvpn/ssl=
+_openssl=2Ec</span><br><span>+++ b/src/openvpn/ssl_openssl=2Ec</span><br><s=
+pan>@@ -100,37 +100,19 @@</span><br><span> }</span><br><span> </span><br><s=
+pan> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-tls_ctx_serv=
+er_new(struct tls_root_ctx *ctx)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+tls_ctx_new(struct tls_root_ctx *ctx)</span><br><span> {</span=
+><br><span>     ASSERT(NULL !=3D ctx);</span><br><span> </span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    ctx-&gt;ctx =3D SSL_CTX_new_ex(tls_l=
+ibctx, NULL, SSLv23_server_method());</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    ctx-&gt;ctx =3D SSL_CTX_new_ex(tls_libctx, NULL, TLS_=
+method());</span><br><span> </span><br><span>     if (ctx-&gt;ctx =3D=3D NU=
+LL)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-        crypto_msg(M_FATAL, &quot;SSL_CTX_new SSLv23_server_method&quo=
+t;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        crypto_=
+msg(M_FATAL, &quot;SSL_CTX_new TLS_method&quot;);</span><br><span>     }</s=
+pan><br><span>     if (ERR_peek_error() !=3D 0)</span><br><span>     {</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-        crypto_msg(M_WARN,=
+ &quot;Warning: TLS server context initialisation &quot;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-                           &quot;has war=
+nings=2E&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span sty=
 le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-</span><br><span>     /*</span><br><span>      * Initialize ra=
-ndom number seed=2E  random() is only used</span><br><span>      * when &qu=
-ot;weak&quot; random numbers are acceptable=2E</span><br><span>diff --git a=
-/src/openvpn/memdbg=2Eh b/src/openvpn/memdbg=2Eh</span><br><span>index ea62=
-0c2=2E=2E1f94582 100644</span><br><span>--- a/src/openvpn/memdbg=2Eh</span>=
-<br><span>+++ b/src/openvpn/memdbg=2Eh</span><br><span>@@ -43,67 +43,10 @@<=
-/span><br><span>  */</span><br><span> </span><br><span> #ifdef USE_VALGRIND=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> #in=
-clude &lt;valgrind/memcheck=2Eh&gt;</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define=
- VALGRIND_MAKE_READABLE(addr, len)</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#else /*=
- ifdef USE_VALGRIND */</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define VALGRIND_MAK=
-E_READABLE(addr, len)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-</span><br><span> #endif</span><br><span> </span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-#ifdef DMALLOC /* see =2E/configure options to enable =
-*/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-/*</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">- * See =2E/configure options to enable dmalloc</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">- * support for memory leak checkin=
-g=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">- * The dmalloc package can be downlo=
-aded from:</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">- *     https://dmalloc=2Ecom/<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">- * When dmalloc is installed and enabled,=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * use this command p=
-rior to running openvpn:</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *    dmalloc -l=
- dlog -i 100 low -p log-unknown</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Also, =
-put this in your =2Ebashrc file:</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *    fu=
-nction dmalloc { eval `command dmalloc -b $*`; }</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">- * Or take a more low-level approach:</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">- *    export DMALLOC_OPTIONS=3D&quot;debug=3D0x4e48503,inter=3D100,log=
-=3Ddlog&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">- *  NOTE: When building dma=
-lloc you need to add something</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">- *  like this to dmalloc&#39;s settings=2Eh -- it will allocate a =
-static</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *  buffer to b=
-e used as the malloc arena:</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *  #define I=
-NTERNAL_MEMORY_SPACE (1024 * 1024 * 50)</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &lt;dmalloc=
-=2Eh&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-#define openvpn_dmalloc(file, line=
-, size) \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    dmalloc_=
-malloc((file), (line), (size), DMALLOC_FUNC_MALLOC, 0, 0)</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * T=
-his #define will put the line number of the log</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">- * file position where leaked memory was allocate=
-d instead</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * of the so=
-urce code file and line number=2E  Make sure</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">- * to increase the size of dmalloc&#39;s info tables=
-,</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * (MEMORY_TABLE_SIZ=
-E in settings=2Eh)</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * =
-otherwise it might get overwhelmed by the large</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">- * number of unique file/line combinations=2E</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#if 0</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-#undef malloc</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-#define malloc(size) openvpn_dmalloc(&quot;logfile&quot;, x_msg_lin=
-e_num, (size))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#endif /* DMALLOC */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#define VALGRIND_MAKE_READABLE(addr, len)=
-</span><br><span> </span><br><span> /*</span><br><span>  * Force buffers to=
- be zeroed after allocation=2E</span><br><span></span><br></pre><p>To view,=
- visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1582?usp=3Demai=
-l">change 1582</a>=2E To unsubscribe, or for help writing mail filters, vis=
-it <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings<=
-/a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div=
- itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction">=
-<link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/15=
-82?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></d=
-iv>
+00%, 40%);">-void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-tls_=
+ctx_client_new(struct tls_root_ctx *ctx)</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   ASSERT(NULL !=3D ctx);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ctx-&gt;ctx =
+=3D SSL_CTX_new_ex(tls_libctx, NULL, SSLv23_client_method());</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    if (ctx-&gt;ctx =3D=3D NULL)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        crypto_msg(M_FATAL, &quot;SSL_CTX_new SSLv23_client=
+_method&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (ERR_peek_error=
+() !=3D 0)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        crypto_msg(M_WARN, =
+&quot;Warning: TLS client context initialisation &quot;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        crypto_msg(M_WARN, &quot;Warnin=
+g: TLS context initialisation &quot;</span><br><span>                      =
+      &quot;has warnings=2E&quot;);</span><br><span>     }</span><br><span>=
+ }</span><br><span>diff --git a/tests/unit_tests/openvpn/test_ssl=2Ec b/tes=
+ts/unit_tests/openvpn/test_ssl=2Ec</span><br><span>index d473d67=2E=2E54d52=
+a0 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_ssl=2Ec</span=
+><br><span>+++ b/tests/unit_tests/openvpn/test_ssl=2Ec</span><br><span>@@ -=
+175,7 +175,7 @@</span><br><span>     struct gc_arena gc =3D gc_new();</span=
+><br><span> </span><br><span>     struct tls_root_ctx ctx =3D { 0 };</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    tls_ctx_client_new(&amp;=
+ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    tls_ctx_ne=
+w(&amp;ctx);</span><br><span>     tls_ctx_load_cert_file(&amp;ctx, unittest=
+_cert, true);</span><br><span> </span><br><span>     openvpn_x509_cert_t *c=
+ert =3D NULL;</span><br><span>@@ -208,13 +208,13 @@</span><br><span>     /*=
+ test loading of inlined cert and key=2E</span><br><span>      * loading th=
+e key also checks that it matches the loaded certificate</span><br><span>  =
+    */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    tls_ctx_cli=
+ent_new(&amp;ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   tls_ctx_new(&amp;ctx);</span><br><span>     tls_ctx_load_cert_file(&amp;=
+ctx, unittest_cert, true);</span><br><span>     assert_int_equal(tls_ctx_lo=
+ad_priv_file(&amp;ctx, unittest_key, true), 0);</span><br><span>     tls_ct=
+x_free(&amp;ctx);</span><br><span> </span><br><span>     /* test loading of=
+ cert and key from file */</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    tls_ctx_client_new(&amp;ctx);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    tls_ctx_new(&amp;ctx);</span><br><span>     tls_ctx_=
+load_cert_file(&amp;ctx, global_state=2Ecertfile, false);</span><br><span> =
+    assert_int_equal(tls_ctx_load_priv_file(&amp;ctx, global_state=2Ekeyfil=
+e, false), 0);</span><br><span>     tls_ctx_free(&amp;ctx);</span><br><span=
+>@@ -252,7 +252,7 @@</span><br><span>     string_mod(BSTR(&amp;keyuri), CC_=
+ANY, CC_BACKSLASH, &#39;/&#39;);</span><br><span> #endif /* _WIN32 */</span=
+><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    tls_c=
+tx_client_new(&amp;ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    tls_ctx_new(&amp;ctx);</span><br><span>     tls_ctx_load_cert_file=
+(&amp;ctx, BSTR(&amp;certuri), false);</span><br><span>     assert_int_equa=
+l(tls_ctx_load_priv_file(&amp;ctx, BSTR(&amp;keyuri), false), 0);</span><br=
+><span>     tls_ctx_free(&amp;ctx);</span><br><span></span><br></pre><p>To =
+view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1728?usp=
+=3Demail">change 1728</a>=2E To unsubscribe, or for help writing mail filte=
+rs, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">se=
+ttings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessag=
+e"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewA=
+ction"><link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openv=
+pn/+/1728?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></=
+div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-<d=
-iv style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"dis=
-play:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerri=
-t-Change-Id: I4920318ac537064508eee3ca449d48de76c2ea5d </div>
-<div style=3D=
-"display:none"> Gerrit-Change-Number: 1582 </div>
-<div style=3D"display:non=
-e"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: fl=
-ichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
-<div style=3D"display:non=
-e"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<d=
-iv style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=
-=2Esourceforge=2Enet&gt; </div>
-<div style=3D"display:none"> Gerrit-Attenti=
-on: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </=
+div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=
+=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"=
+> Gerrit-Change-Id: Iaf1f3475e4f27a920c028cd73b1a2497953583d0 </div>
+<div s=
+tyle=3D"display:none"> Gerrit-Change-Number: 1728 </div>
+<div style=3D"disp=
+lay:none"> Gerrit-PatchSet: 6 </div>
+<div style=3D"display:none"> Gerrit-Ow=
+ner: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"disp=
+lay:none"> Gerrit-Reviewer: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-deve=
+l@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-=
+Attention: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=
+=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@lichtenheld=2Ec=
+om&gt; </div>
 
 </body></html>
---crOp4cVjNNA=--
+--Z8MPSdZomQg=--
 
 
---===============8395038881426235085==
+--===============1287372067655188051==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============8395038881426235085==
+--===============1287372067655188051==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -1346,5 +829,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============8395038881426235085==--
+--===============1287372067655188051==--
 
