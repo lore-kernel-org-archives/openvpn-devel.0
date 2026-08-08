@@ -4,69 +4,129 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 981A8C55174
-	for <openvpn-devel@archiver.kernel.org>; Sat,  8 Aug 2026 15:50:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 05BCAC5AD4E
+	for <openvpn-devel@archiver.kernel.org>; Sat,  8 Aug 2026 21:53:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=HuToPEbjgh1qdmUkoAenwKANDfPdOiWIxFgvvCwh3ok=; b=IrlN1zmpLUdY3209J7QRB90hDV
-	qoG1x6LGjhri4IZG7PYaYwErWnkFRMrceTmY23G+/Uwq56Q3TpJQDIYNwjs8MsiwQH7v3XN6vRENn
-	hIPj07QUdPeYRvcXd3XLMn0jBDsF43DpTaeVz7DsmvF+MWDklXjYBYaqJrQoAB/mi2c4=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:Date:Sender:To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=XtbVlvwoxZxS5vzBxSt//mRG2jL3kg81AR+2fDLzaiM=; b=DHTFCk3dwlUD/YrxPCp5GInLxB
+	jjeXDDdORgqnUf45u48+Dxvdzs6r/uvAgZVGXnDTfx4oZhv8LaWdAIJXg8uEhFtQjo6W1grtZqvK2
+	Qd/oyyU4a2Rtw/+BA/XCVinJFYwAFJ9yUIXG4ScX6XzZ20zY92HdO9IMCEoiQZKCS8uw=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wsjJL-00089h-Mg;
-	Sat, 08 Aug 2026 15:50:09 +0000
+	id 1wsoyf-0002pq-Hh;
+	Sat, 08 Aug 2026 21:53:14 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1wsjJK-00088Q-Sr
+ (envelope-from <gerrit@openvpn.net>) id 1wsoyd-0002pk-Uj
  for openvpn-devel@lists.sourceforge.net;
- Sat, 08 Aug 2026 15:50:08 +0000
+ Sat, 08 Aug 2026 21:53:12 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=NXx90ez1EYdNq4XqOIGcqBxwDM/rGpVEaI8Qw2xf8fU=; b=VTW/zX1NbFXd384SZ/LVcUj37r
- l2NbcBj0G0A7eYn1s28yfi6z7PhnTccQHRT1VBK9hgrLxRaB47QPHahHqaLCIMT9oOgEzVwCq05Sm
- srLmYbh7+wgRCQg+rHgvO0UDUdgK2niYCk1LSPnA35Trbf8c2Ffei3m7+7zzThdBXimY=;
+ d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
+ :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
+ Cc:Date:From:Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From
+ :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
+ :List-Post:List-Owner:List-Archive;
+ bh=yAcxKbM4pB6nddP29CGeap2DVBjVaekXAN2myWv+cl4=; b=ctUcfEySGDbI5WhEU6ZPdcaozC
+ VAUysDTfZJE9YmQc4hvJ7lqd34YfitZoRKOe30YEnkJpQYfMhFGXINvIpa0lNWUtx0xzAZfkUpiyY
+ QRicJg2nCcTZcyfKPdJQ9h6iBIuLdAPkET4ZhX4/Qgmeo/GXj9Tt3nxWsSjjTKt4aEYg=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=NXx90ez1EYdNq4XqOIGcqBxwDM/rGpVEaI8Qw2xf8fU=; b=X5dmZ2B9UOpsb0d4OFw+oqsBDP
- D9e1LhTT4yClIkl6cf3O4fk7jNO402KhZWObGvqRyAaQIDONrSREQ0jKL3Nxfzv0fBtcC63w4lfmo
- XhViU5Q2+VAP+BQI0Ab4/xqmrmPRvuR4Z4i4fG7i7p1sNWgvvZAZ/bnli7bKEtHgrJtY=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:Date:From:Sender:
+ To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=yAcxKbM4pB6nddP29CGeap2DVBjVaekXAN2myWv+cl4=; b=j
+ 98Su84wKVGi3+5jjqzu1ofjnOYxyY3a0PDfBgsUEde5CMvl9BD3sAoipbBLqVb94VX/hZEQM3YEb0
+ taCZrDYkOPZJw81Dy90KHshEyuYUSgWFlkpvBrXUNwK43OrkTWUAoYdhe2RWPK4z8lKY9PCi8iBo+
+ OwW4ZoUYbZiSA8BA=;
+Received: from mail-wm1-f42.google.com ([209.85.128.42])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wsjIq-0003BM-W2 for openvpn-devel@lists.sourceforge.net;
- Sat, 08 Aug 2026 15:49:42 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 678FnYHt017556
- for <openvpn-devel@lists.sourceforge.net>; Sat, 8 Aug 2026 17:49:34 +0200
-Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 678FnYsQ017555
- for openvpn-devel@lists.sourceforge.net; Sat, 8 Aug 2026 17:49:34 +0200
-From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Sat,  8 Aug 2026 17:49:28 +0200
-Message-ID: <20260808154933.17540-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1784722744000.Iad94e7a9d0b3be8a8db09e9a20eaac6041470ab6@gerrit.openvpn.net>
-References: <gerrit.1784722744000.Iad94e7a9d0b3be8a8db09e9a20eaac6041470ab6@gerrit.openvpn.net>
+ (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
+ id 1wsoyd-0005E5-Ll for openvpn-devel@lists.sourceforge.net;
+ Sat, 08 Aug 2026 21:53:12 +0000
+Received: by mail-wm1-f42.google.com with SMTP id
+ 5b1f17b1804b1-495757ccbc1so7666365e9.2
+ for <openvpn-devel@lists.sourceforge.net>;
+ Sat, 08 Aug 2026 14:53:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=openvpn.net; s=google; t=1786225985; x=1786830785; darn=lists.sourceforge.net;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:date:from:from:to:cc:subject:date:message-id
+ :reply-to:content-type;
+ bh=yAcxKbM4pB6nddP29CGeap2DVBjVaekXAN2myWv+cl4=;
+ b=edM4TEuGNNnce2Cx/ZZS3T48yymp5qxgHyC6Lf9STR+Pad7to4tY0ge2ot7tEWRYFB
+ 4CcrrtogGIbJTPL5kqbZcTGIl3wQ81/OJd5AW2D55Pf/UkBjMvtM/rgAypsBzbZicGZG
+ Fxlop4miUVTdgr6iWMULySrmog0WPgbBvrRkGfEXgD4eNKYWsA8hHyU9Up27umibR0u9
+ SBqMvRzW7q4wEW62OHURnUa395d9vkbiwnEp0MCr1RAnhfSaVUoWw6yqNZZ9EWWlnoX+
+ DPVdJQ7L/qkk9wQxtc8gCQtV3duxRK++iYFgIK43PE2aJb0dfHjnCGVktJoMOEmLVjkM
+ feFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20251104; t=1786225985; x=1786830785;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:date:from:x-gm-gg:x-gm-message-state:from:to:cc
+ :subject:date:message-id:reply-to:content-type;
+ bh=yAcxKbM4pB6nddP29CGeap2DVBjVaekXAN2myWv+cl4=;
+ b=Kg91bxZzG/C3bI242Sgb2W3Qi5FXbgeheS75t69UMVm4oDqWxZa7dFn1p6Ndps0tn1
+ SYSXbkgdOka32jPZoWX8esVUpbeznZyYPoIdciNn25/gaImFH2araW/chy7O0glZNIxh
+ vi0B3DfEZgN+/tX7SdCb7mWCmQnC6jMsLUgbiX1dxHAXME6nieFu/0UBAtWugy4j1t6G
+ VyeGMYX8H/uXMnEsQ9E3YDDXN1Ae6BcjbF9pglBU6uhx2YWPFwXBIe6NKo9hVWLdQvjp
+ yBsKzg5K9ZJN3cXhMgbMJewZPws7K+zdyUOnR2zrK+vUSH58ggKsKa7jHp5cqHTo/1my
+ xx6A==
+X-Forwarded-Encrypted: i=1;
+ AHgh+RqHmbq2+KvxLBfQYxNV+SdRX7p3+N3200RpmCCsevuIgAV0OTi/W1o7fqUBwATOzqCNRk+UStlhoMvk8MSE@lists.sourceforge.net
+X-Gm-Message-State: AOJu0YwTPaWjq1OKjpzTYKmFRAhB/VEV362xOIoshLnbxUXFakLqCVgy
+ kV08lfwC3hfpkntv89pRPbjX8zJeHG83atvFqoubaAtKSfyLZLgsGi6i4UJ4vjBTMOZo3iug5qP
+ J5fruyOnY41g/qnf1gi9q+WoED74iri/BEPVPrkuDYgm6oMaEhfINyOPID134oY2gqkx+64r40W
+ RoyT5RSA==
+X-Gm-Gg: AR+sD104PYbAn8NrH+LrjWKGp4fBXkoTGYdLsgrBDin5y0DPcxWu++ur4KjpZwheS3C
+ pA3dX1XEkfMIzD1Zkqd3PUCOACbLeIfOGxzokLROjg9nn01Vr8SvkIAJGSg2O549GNsOT0mvt4D
+ Bos/fxz5BB54pTxukcO6d5bjo6lf9HHdRIMCoxvzajCXgWoSkE4ill6PR1Z/om4VZM7Hv/oc/ex
+ RXV+qohubdvAIIbyAQWMOQpPblEdRp5U0f0sEaHgQB0xfcnovPYjqVSCvHtAtZb6Hgb7yygc5Pr
+ 7akJRcASxIbZCfEE6P2oKkuui0brUlFxv1h6DGRqWGuZIdYt9uQvc50kKa1ieffdff8jt0rTHCh
+ Jqhm0aHhfhjh1ehxoNalTYMi+ucHwUH/d00wOULg3b2Eh5oeMN2H8kX3VQYa6+rCs/GewdTSqsZ
+ e54ugu9bz0K+dAT2Nr768itHrCeTzucPr+8Cmo0qkMixylMYpZSXcJiyH/rciMgeSWd8hDIGw48
+ XiFq9lHPLxofvPTsS8RuioCc0WI4TIefC20CXWpVXaobHLmE+BWmGnA0chYwKLdtQrKP8VQQaw0
+ YxrPmWng1rck/WbghXaB85beU95AxJzCW8SPAlpiCPrcuKUcQYA=
+X-Received: by 2002:a05:600c:4e94:b0:497:ff73:68d5 with SMTP id
+ 5b1f17b1804b1-4994e6c5eafmr415203865e9.0.1786225985049; 
+ Sat, 08 Aug 2026 14:53:05 -0700 (PDT)
+Received: from ip-10-18-1-162.eu-central-1.compute.internal
+ (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
+ by smtp.gmail.com with ESMTPSA id
+ 5b1f17b1804b1-4995ea2e038sm144108475e9.14.2026.08.08.14.53.04
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Sat, 08 Aug 2026 14:53:04 -0700 (PDT)
+X-Google-Original-From: "plaisthos (Code Review)"
+ <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
+Date: Sat, 8 Aug 2026 21:53:02 +0000
+Auto-Submitted: auto-generated
+X-Gerrit-MessageType: comment
+X-Gerrit-PatchSet: 26
+X-Gerrit-Change-Id: Idb59ecd119331b198792ad1379bec8600211651b
+X-Gerrit-Change-Number: 1727
+X-Gerrit-Project: openvpn
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1727?usp=email>
+X-Gerrit-Commit: 40cfe5c6d64dcd4fb6cbe8dbd3268a21527e71a3
+X-Gerrit-Comment-Date: Sat, 8 Aug 2026 21:53:02 +0000
+In-Reply-To: <gerrit.1782134588000.Idb59ecd119331b198792ad1379bec8600211651b@gerrit.openvpn.net>
+References: <gerrit.1782134588000.Idb59ecd119331b198792ad1379bec8600211651b@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzgyMTM0NTg4MDAwLklkYjU5ZWNkMTE5MzMxYjE5ODc5MmFkMTM3OWJlYzg2MDAyMTE2NTFiQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <745126b44dc27fc8a92978e16775aa15322a1778-EmailReviewComments-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
-X-Headers-End: 1wsjIq-0003BM-W2
-Subject: [Openvpn-devel] [PATCH v7] Allow extracing other integers from peer
- info and add a unit test for it
+User-Agent: Gerrit/3.11.5
+X-Headers-End: 1wsoyd-0005E5-Ll
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Add lookup of multi
+ session by session id
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -78,402 +138,227 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+From: "plaisthos \(Code Review\) via Openvpn-devel"
+ <openvpn-devel@lists.sourceforge.net>
+Reply-To: arne-openvpn@rfc2549.org, openvpn-devel@lists.sourceforge.net,
+ frank@lichtenheld.com
+Cc: "plaisthos \(Code Review\)" <gerrit@openvpn.net>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: multipart/mixed; boundary="===============2702883398764805621=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Arne Schwabe <arne@rfc2549.org>
+--===============2702883398764805621==
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="4pyQk+7uXyk="; charset=UTF-8
 
-This also ensure that we only really extract the variable we are looking
-for. The old code would also consider UV_IV_NCP to be IV_NCP.
+--4pyQk+7uXyk=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Change-Id: Iad94e7a9d0b3be8a8db09e9a20eaac6041470ab6
-Signed-off-by: Arne Schwabe <arne@rfc2549.org>
-Acked-by: Gert Doering <gert@greenie.muc.de>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1800
----
+Attention is currently required from: flichtenheld=2E
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+plaisthos has posted=
+ comments on this change by plaisthos=2E ( http://gerrit=2Eopenvpn=2Enet/c/=
+openvpn/+/1727?usp=3Demail )
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1800
-This mail reflects revision 7 of this Change.
+Change subject: Add lookup of multi session b=
+y session id
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@greenie.muc.de>
 
-        
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 7473f15..21bcb91 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -908,7 +908,8 @@
-         src/openvpn/options_util.c
-         src/openvpn/otime.c
-         src/openvpn/list.c
--        )
-+        src/openvpn/ssl_util.c
-+    )
- 
-     target_sources(test_argv PRIVATE
-         tests/unit_tests/openvpn/mock_get_random.c
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index 633c007d..ce2baf2 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -718,9 +718,9 @@
- 
-     /* Push our mtu to the peer if it supports pushable MTUs */
-     int client_max_mtu = 0;
--    const char *iv_mtu = extract_var_peer_info(tls_multi->peer_info, "IV_MTU=", gc);
-+    unsigned int iv_mtu = peer_info_extract_uint(tls_multi->peer_info, "IV_MTU=");
- 
--    if (iv_mtu && sscanf(iv_mtu, "%d", &client_max_mtu) == 1)
-+    if (iv_mtu != 0)
-     {
-         push_option_fmt(gc, push_list, M_USAGE, "tun-mtu %d", o->ce.tun_mtu);
-         if (client_max_mtu < o->ce.tun_mtu)
-diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
-index b450de8..8b0f28d 100644
---- a/src/openvpn/ssl_ncp.c
-+++ b/src/openvpn/ssl_ncp.c
-@@ -55,20 +55,10 @@
-  * Return the Negotiable Crypto Parameters version advertised in the peer info
-  * string, or 0 if none specified.
-  */
--static int
-+static unsigned int
- tls_peer_info_ncp_ver(const char *peer_info)
- {
--    const char *ncpstr = peer_info ? strstr(peer_info, "IV_NCP=") : NULL;
--    if (ncpstr)
--    {
--        int ncp = 0;
--        int r = sscanf(ncpstr, "IV_NCP=%d", &ncp);
--        if (r == 1)
--        {
--            return ncp;
--        }
--    }
--    return 0;
-+    return peer_info_extract_uint(peer_info, "IV_NCP=");
- }
- 
- /**
-diff --git a/src/openvpn/ssl_util.c b/src/openvpn/ssl_util.c
-index 2f01f8a..ba185c1 100644
---- a/src/openvpn/ssl_util.c
-+++ b/src/openvpn/ssl_util.c
-@@ -27,26 +27,56 @@
- #include "openvpn.h"
- #include "ssl_util.h"
- 
--char *
--extract_var_peer_info(const char *peer_info, const char *var, struct gc_arena *gc)
-+/**
-+ * Looks for the string field at the start of peer_info or
-+ * after any new line and returns a pointer to the start of the field
-+ * or NULL if not found.
-+ */
-+static const char *
-+peer_info_extract_varstr(const char *peer_info, const char *field)
- {
-     if (!peer_info)
-     {
-         return NULL;
-     }
- 
--    const char *var_start = strstr(peer_info, var);
-+    while (peer_info)
-+    {
-+        /* peer info starts with this field */
-+        if (strncmp(peer_info, field, strlen(field)) == 0)
-+        {
-+            return peer_info;
-+        }
-+
-+        /* skip to the next line */
-+        peer_info = strchr(peer_info, '\n');
-+        if (peer_info)
-+        {
-+            /* skip the '\n' itself */
-+            peer_info++;
-+        }
-+    }
-+    return NULL;
-+}
-+
-+char *
-+extract_var_peer_info(const char *peer_info, const char *var, struct gc_arena *gc)
-+{
-+    const char *var_start = peer_info_extract_varstr(peer_info, var);
-     if (!var_start)
-     {
--        /* variable not found in peer info */
-+        /* variable hasn't been found in peer info */
-         return NULL;
-     }
- 
-+    /* skip over the variable name (includes the = as per API)*/
-     var_start += strlen(var);
--    const char *var_end = strstr(var_start, "\n");
-+
-+    /* returns the location of the next '\n' or the end of the
-+     * string if the variable is already on the last line */
-+    const char *var_end = strchr(var_start, '\n');
-     if (!var_end)
-     {
--        /* var is at end of the peer_info list and no '\n' follows */
-         var_end = var_start + strlen(var_start);
-     }
- 
-@@ -56,38 +86,40 @@
-     return var_value;
- }
- 
-+
- unsigned int
--extract_iv_proto(const char *peer_info)
-+peer_info_extract_int(const char *peer_info, const char *field, const char *format, unsigned int default_value)
- {
--    const char *optstr = peer_info ? strstr(peer_info, "IV_PROTO=") : NULL;
-+    const char *optstr = peer_info_extract_varstr(peer_info, field);
-     if (optstr)
-     {
--        int proto = 0;
--        int r = sscanf(optstr, "IV_PROTO=%d", &proto);
--        if (r == 1 && proto > 0)
-+        optstr += strlen(field);
-+
-+        int value = 0;
-+        int r = sscanf(optstr, format, &value);
-+        if (r == 1 && value >= 0)
-         {
--            return proto;
-+            return value;
-         }
-     }
--    return 0;
-+    return default_value;
-+}
-+
-+unsigned int
-+peer_info_extract_uint(const char *peer_info, const char *field)
-+{
-+    return peer_info_extract_int(peer_info, field, "%u", 0);
- }
- 
- uint32_t
- extract_asymmetric_peer_id(const char *peer_info)
- {
--    for (const char *p = peer_info; p && (p = strstr(p, "ID=")); p += 3)
-+    uint32_t peer_id = peer_info_extract_int(peer_info, "ID=", "%x", MAX_PEER_ID);
-+    if (peer_id < MAX_PEER_ID)
-     {
--        /* only accept "ID=" at the start of a line, so it does not match
--         * substrings like "UV_ID=" or "GUID=" */
--        if (p == peer_info || p[-1] == '\n')
--        {
--            uint32_t peer_id = 0;
--            if (sscanf(p, "ID=%x", &peer_id) == 1 && peer_id < MAX_PEER_ID)
--            {
--                return peer_id;
--            }
--        }
-+        return peer_id;
-     }
-+
-     return MAX_PEER_ID;
- }
- 
-diff --git a/src/openvpn/ssl_util.h b/src/openvpn/ssl_util.h
-index 1a69e6f..6f9f65b 100644
---- a/src/openvpn/ssl_util.h
-+++ b/src/openvpn/ssl_util.h
-@@ -33,11 +33,33 @@
- #include "buffer.h"
- 
- /**
-+ * Extracts the named integer variable and returns its value or default_value
-+ * if it cannot be extracted.
-+ *
-+ * @param peer_info     peer info string to search in
-+ * @param field         name of the field to be extracted including the =
-+ * @param format        sscanf/printf format string of the type to extract
-+ * @param default_value default value to return if the field cannot be extracted
-+ */
-+unsigned int
-+peer_info_extract_int(const char *peer_info, const char *field, const char *format, unsigned int default_value);
-+
-+/**
-+ * Extracts the named integer variable and returns its value or 0
-+ * if it cannot be extracted.
-+ *
-+ * @param peer_info     peer info string to search in
-+ * @param field          name of the field to be extracted
-+ */
-+unsigned int
-+peer_info_extract_uint(const char *peer_info, const char *field);
-+
-+/**
-  * Extracts a variable from peer info, the returned string will be allocated
-  * using the supplied gc_arena
-  *
-  * @param peer_info     The peer's peer_info
-- * @param var           The variable *including* =, e.g. IV_CIPHERS=
-+ * @param var           The variable including =, e.g. IV_CIPHERS=
-  * @param gc            GC arena to allocate return value in
-  *
-  * @return  The content of the variable as NULL terminated string or NULL if the
-@@ -51,8 +73,11 @@
-  *
-  * @param peer_info     peer info string to search for IV_PROTO
-  */
--unsigned int extract_iv_proto(const char *peer_info);
--
-+static inline unsigned int
-+extract_iv_proto(const char *peer_info)
-+{
-+    return peer_info_extract_uint(peer_info, "IV_PROTO=");
-+}
- 
- /**
-  * Extracts the ID variable and returns its value or
-diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
-index d861ef9..5ccf3ce 100644
---- a/tests/unit_tests/openvpn/Makefile.am
-+++ b/tests/unit_tests/openvpn/Makefile.am
-@@ -395,7 +395,8 @@
- 	$(top_srcdir)/src/openvpn/platform.c \
- 	$(top_srcdir)/src/openvpn/options_util.c \
- 	$(top_srcdir)/src/openvpn/otime.c \
--	$(top_srcdir)/src/openvpn/list.c
-+	$(top_srcdir)/src/openvpn/list.c \
-+	$(top_srcdir)/src/openvpn/ssl_util.c
- 
- socket_testdriver_CFLAGS  = \
- 	-I$(top_srcdir)/include -I$(top_srcdir)/src/compat -I$(top_srcdir)/src/openvpn \
-diff --git a/tests/unit_tests/openvpn/test_push_update_msg.c b/tests/unit_tests/openvpn/test_push_update_msg.c
-index 219b476..389fa09 100644
---- a/tests/unit_tests/openvpn/test_push_update_msg.c
-+++ b/tests/unit_tests/openvpn/test_push_update_msg.c
-@@ -188,12 +188,6 @@
- {
-     return true;
- }
--
--unsigned int
--extract_iv_proto(const char *peer_info)
--{
--    return IV_PROTO_PUSH_UPDATE;
--}
- #endif /* ifdef ENABLE_MANAGEMENT */
- 
- /* tests */
-@@ -650,6 +644,7 @@
-     m->instances = calloc(1, sizeof(struct multi_instance *));
-     struct multi_instance *mi = calloc(1, sizeof(struct multi_instance));
-     mi->context.c2.tls_multi = calloc(1, sizeof(struct tls_multi));
-+    mi->context.c2.tls_multi->peer_info = "IV_PROTO=4096";  // IV_PROTO_PUSH_UPDATE
-     *(m->instances) = mi;
-     m->top.options.disable_dco = true;
-     *state = m;
-diff --git a/tests/unit_tests/openvpn/test_ssl.c b/tests/unit_tests/openvpn/test_ssl.c
-index d473d67..3e84fb8 100644
---- a/tests/unit_tests/openvpn/test_ssl.c
-+++ b/tests/unit_tests/openvpn/test_ssl.c
-@@ -48,7 +48,9 @@
- #include "buffer.h"
- #include "cert_data.h"
- #include "packet_id.h"
-+#include "ssl_util.h"
- #include "ssl_verify.h"
-+#include "openvpn.h"
- 
- /* Mock function to be allowed to include win32.c which is required for
-  * getting the temp directory */
-@@ -884,6 +886,68 @@
-     free_certificate(cert);
- }
- 
-+void
-+ssl_test_extract_peer_info(void **state)
-+{
-+    const char *peer_info_normal =
-+        "IV_VER=2.6_git\nIV_PLAT=mac\nIV_TCPNL=1\nIV_NCP=2\n"
-+        "IV_CIPHERS=AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305\n"
-+        "IV_PROTO=94\nIV_LZO_STUB=1\nIV_COMP_STUB=1\nP=78\nIV_COMP_STUBv2=1\n"
-+        "IV_SSL=OpenSSL_3.0.5_5_Jul_2022\nIV_LZ4v2=1";
-+
-+    const char *empty = "";
-+    const char *invalid_proto = "IV_PROTO=seven\nIV_SSL=7\nP=300\nID=xyz";
-+    const char *test_prefix = "UV_IV_PROTO=773\nNP=112\nPD=8\n";
-+
-+
-+    assert_int_equal(extract_iv_proto(peer_info_normal), 94);
-+    assert_int_equal(extract_iv_proto(empty), 0);
-+    assert_int_equal(extract_iv_proto(invalid_proto), 0);
-+    /* This should not pick up the UV_IV_PROTO that has the extra prefix */
-+    assert_int_equal(extract_iv_proto(test_prefix), 0);
-+
-+    assert_int_equal(peer_info_extract_uint(peer_info_normal, "IV_COMP_STUB="), 1);
-+    assert_int_equal(peer_info_extract_int(empty, "IV_COMP_STUB=", "%d", 0xfe0d0d), 0xfe0d0d);
-+    assert_int_equal(peer_info_extract_uint(invalid_proto, "IV_COMP_STUB="), 0);
-+
-+    assert_int_equal(peer_info_extract_int(test_prefix, "NP=", "%d", 23), 112);
-+    assert_int_equal(peer_info_extract_uint(test_prefix, "PD="), 8);
-+    assert_int_equal(peer_info_extract_int(test_prefix, "P=", "%x", 0xfe0d0d), 0xfe0d0d);
-+    assert_int_equal(peer_info_extract_uint(peer_info_normal, "P="), 78);
-+    assert_int_equal(peer_info_extract_uint(test_prefix, "UV_IV_PROTO="), 773);
-+
-+    struct gc_arena gc = gc_new();
-+
-+    const char *peer_ciphers = extract_var_peer_info(peer_info_normal, "IV_CIPHERS=", &gc);
-+    assert_string_equal(peer_ciphers, "AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305");
-+
-+    /* with the extra = this should not extract anything */
-+    const char *proto = extract_var_peer_info(peer_info_normal, "IV_PROTO==", &gc);
-+    assert_null(proto);
-+
-+    proto = extract_var_peer_info(peer_info_normal, "IV_PROTO=", &gc);
-+    assert_string_equal(proto, "94");
-+
-+
-+    const char *double_eq_info = "FOO=7\nFOO==new";
-+    const char *foo_eq = extract_var_peer_info(double_eq_info, "FOO=", &gc);
-+    const char *foo = extract_var_peer_info(double_eq_info, "FOO", &gc);
-+    const char *foo_2eq = extract_var_peer_info(double_eq_info, "FOO==", &gc);
-+
-+    assert_string_equal(foo, "=7");
-+    assert_string_equal(foo_eq, "7");
-+    assert_string_equal(foo_2eq, "new");
-+
-+    assert_int_equal(extract_asymmetric_peer_id(double_eq_info), MAX_PEER_ID);
-+    assert_int_equal(extract_asymmetric_peer_id(peer_info_normal), MAX_PEER_ID);
-+    assert_int_equal(extract_asymmetric_peer_id(invalid_proto), MAX_PEER_ID);
-+    assert_int_equal(extract_asymmetric_peer_id("ID=f7"), 0xf7);
-+    assert_int_equal(extract_asymmetric_peer_id("X=foo\nID=12ab"), 0x12ab);
-+    assert_int_equal(extract_asymmetric_peer_id("X=foo\nID=34dd\nY=bar"), 0x34dd);
-+    assert_int_equal(extract_asymmetric_peer_id("X=foo\nID=12345678"), MAX_PEER_ID);
-+
-+    gc_free(&gc);
-+}
- 
- int
- main(void)
-@@ -908,7 +972,8 @@
-         cmocka_unit_test(test_data_channel_roundtrip_bf_cbc),
-         cmocka_unit_test(test_data_channel_known_vectors_epoch),
-         cmocka_unit_test(test_data_channel_known_vectors_shortpktid),
--        cmocka_unit_test(crypto_test_print_cert_details)
-+        cmocka_unit_test(crypto_test_print_cert_details),
-+        cmocka_unit_test(ssl_test_extract_peer_info)
- 
-     };
- 
 
+Patch Set 26:
+
+(4 comments)
+
+File src/openvpn/multi=2Eh:
+
+http://gerrit=
+=2Eopenvpn=2Enet/c/openvpn/+/1727/comment/d55f5112_31eb2707?usp=3Demail :
+P=
+S26, Line 138:     /** If this is multi_instance is hashed in the sid looku=
+p table the session
+> Remove the first "is" and the second "session id"
+Don=
+e
+
+
+File src/openvpn/multi=2Ec:
+
+http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/=
+1727/comment/de3e6230_c5a2a5a0?usp=3Demail :
+PS26, Line 431:             &&=
+ dco_enabled(&mi->context=2Eoptions))
+> is this an intended change or a deb=
+ugging left-over?
+I think that is a leftover of some of the many assym peer=
+ id back and forth that accidentially ended up in this patch=2E I remove th=
+at change=2E
+
+
+File src/openvpn/sid_hash=2Eh:
+
+http://gerrit=2Eopenvpn=2Ene=
+t/c/openvpn/+/1727/comment/32b92473_dd418a1a?usp=3Demail :
+PS26, Line 23:  =
+*  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA=2E
+> old head=
+er
+Done
+
+
+http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1727/comment/a7038ae0_6=
+4e00167?usp=3Demail :
+PS26, Line 61:     struct hash_element *he_sid =3D ha=
+sh_lookup_fast(m->sid_hash, sid_bucket, sid, sid_hv);
+> should use `multi_h=
+ash_sid_lookup()`
+It looks like that but that does not actually work=2E The=
+ function hash_remove_fast later the function requires sid_bucket and multi=
+_hash_sid_lookup does not actually return that=2E
+
+
+
+-- 
+To view, visit htt=
+p://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1727?usp=3Demail
+To unsubscribe, or =
+for help writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings=
+?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Br=
+anch: master
+Gerrit-Change-Id: Idb59ecd119331b198792ad1379bec8600211651b
+Ge=
+rrit-Change-Number: 1727
+Gerrit-PatchSet: 26
+Gerrit-Owner: plaisthos <arne-=
+openvpn@rfc2549=2Eorg>
+Gerrit-Reviewer: flichtenheld <frank@lichtenheld=2Ec=
+om>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerr=
+it-Attention: flichtenheld <frank@lichtenheld=2Ecom>
+Gerrit-Comment-Date: S=
+at, 08 Aug 2026 21:53:02 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: N=
+o
+Comment-In-Reply-To: flichtenheld <frank@lichtenheld=2Ecom>
+
+--4pyQk+7uXyk=
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld=2E </p>
+<p><a href=3D"http://gerrit=2Eop=
+envpn=2Enet/c/openvpn/+/1727?usp=3Demail">View Change</a></p><p>4 comments:=
+</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; pad=
+ding: 0;"><p>File src/openvpn/multi=2Eh:</p><ul style=3D"list-style: none; =
+padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"marg=
+in-bottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1727/=
+comment/d55f5112_31eb2707?usp=3Demail">Patch Set #26, Line 138:</a> <code s=
+tyle=3D"font-family:monospace,monospace">    /** If this is multi_instance =
+is hashed in the sid lookup table the session</code></p><p><blockquote styl=
+e=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Remove =
+the first &quot;is&quot; and the second &quot;session id&quot;</blockquote>=
+</p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-wo=
+rd;">Done</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File sr=
+c/openvpn/multi=2Ec:</p><ul style=3D"list-style: none; padding: 0;"><li sty=
+le=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a =
+href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1727/comment/de3e6230_c5a=
+2a5a0?usp=3Demail">Patch Set #26, Line 431:</a> <code style=3D"font-family:=
+monospace,monospace">            &amp;&amp; dco_enabled(&amp;mi-&gt;context=
+=2Eoptions))</code></p><p><blockquote style=3D"border-left: 1px solid #aaa;=
+ margin: 10px 0; padding: 0 10px;">is this an intended change or a debuggin=
+g left-over?</blockquote></p><p class=3D"blocks" style=3D"white-space: pre-=
+wrap; word-wrap: break-word;">I think that is a leftover of some of the man=
+y assym peer id back and forth that accidentially ended up in this patch=2E=
+ I remove that change=2E</p></li></ul></li><li style=3D"margin: 0; padding:=
+ 0;"><p>File src/openvpn/sid_hash=2Eh:</p><ul style=3D"list-style: none; pa=
+dding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin=
+-bottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1727/co=
+mment/32b92473_dd418a1a?usp=3Demail">Patch Set #26, Line 23:</a> <code styl=
+e=3D"font-family:monospace,monospace"> *  51 Franklin Street, Fifth Floor, =
+Boston, MA 02110-1301 USA=2E</code></p><p><blockquote style=3D"border-left:=
+ 1px solid #aaa; margin: 10px 0; padding: 0 10px;">old header</blockquote><=
+/p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-wor=
+d;">Done</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"=
+margin-bottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1=
+727/comment/a7038ae0_64e00167?usp=3Demail">Patch Set #26, Line 61:</a> <cod=
+e style=3D"font-family:monospace,monospace">    struct hash_element *he_sid=
+ =3D hash_lookup_fast(m-&gt;sid_hash, sid_bucket, sid, sid_hv);</code></p><=
+p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding=
+: 0 10px;">should use `multi_hash_sid_lookup()`</blockquote></p><p class=3D=
+"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">It looks l=
+ike that but that does not actually work=2E The function hash_remove_fast l=
+ater the function requires sid_bucket and multi_hash_sid_lookup does not ac=
+tually return that=2E</p></li></ul></li></ul><p>To view, visit <a href=3D"h=
+ttp://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1727?usp=3Demail">change 1727</a>=
+=2E To unsubscribe, or for help writing mail filters, visit <a href=3D"http=
+://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div ite=
+mscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itempro=
+p=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"=
+url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1727?usp=3Demail"/><=
+meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D=
+"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:no=
+ne"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Bra=
+nch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Idb59ecd1=
+19331b198792ad1379bec8600211651b </div>
+<div style=3D"display:none"> Gerrit=
+-Change-Number: 1727 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2=
+6 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-open=
+vpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: =
+flichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<div style=3D"display:n=
+one"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&=
+gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;=
+frank@lichtenheld=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Comm=
+ent-Date: Sat, 08 Aug 2026 21:53:02 +0000 </div>
+<div style=3D"display:none=
+"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-L=
+abels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: flichten=
+held &lt;frank@lichtenheld=2Ecom&gt; </div>
+
+</body></html>
+--4pyQk+7uXyk=--
+
+
+--===============2702883398764805621==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============2702883398764805621==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+--===============2702883398764805621==--
+
