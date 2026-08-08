@@ -4,68 +4,68 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 36857C5AD2C
-	for <openvpn-devel@archiver.kernel.org>; Sat,  8 Aug 2026 07:24:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id AB848C5AD2B
+	for <openvpn-devel@archiver.kernel.org>; Sat,  8 Aug 2026 09:51:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
-	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	MIME-Version:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
+	List-Unsubscribe:List-Id:Subject:References:In-Reply-To:To:From:Message-Id:
+	Date:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=y5/OFLlpK/H1EaOZtCzumpKGnDi/vkG1l+T0TlTdDJI=; b=APvpkHknGGEOAjzaNLbBHjvGBq
-	C9cCW/GM4+1fj33BPwWnZ6UBSTTHLCqRLBCQgcEWlzdQY9TNtKtYAqsfzlCSwuoGMygGf2i9Jotus
-	IwiInWTqhz4IQtl1yTyadORFDkvuI3gqFJkbL8vrKLknksUAG7hb1CQf9QwtVQeuyn1A=;
+	bh=vGm03709YKatCwHE7lD1wAvhckhNE/sVZvG44GDqnDQ=; b=S95shevxUEpfZIH7rdbRzb2+GQ
+	8Ay+N+5Sij1LVode2cLc4yDXBpdHD5SyrLymTtXsvNQijaKAZmhemyJJ+bV2PBTjpYdc4WiSFOl62
+	YyPm9kTr495GHlDml9wwfgWVpieH1PhWjxMNtoFTYgEhpAY2OozNFX615frc3zB2PWFc=;
 Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
 	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wsbQ4-00054c-S1;
-	Sat, 08 Aug 2026 07:24:36 +0000
+	id 1wsdiM-0008NV-4m;
+	Sat, 08 Aug 2026 09:51:38 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1wsbQ3-00054U-Qd
+ (envelope-from <gert@chekov.greenie.muc.de>) id 1wsdiK-0008NO-Sf
  for openvpn-devel@lists.sourceforge.net;
- Sat, 08 Aug 2026 07:24:35 +0000
+ Sat, 08 Aug 2026 09:51:36 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=4CPum5KjGsdNfbAd3B2a7DGFnhvvU4tZGbUTHBVKt/g=; b=driY2Hn2zpvYDb9lekSFyZqyq8
- 2SQGeI2xkpmwbNwcTTtS3HqW0+eQJCkjJT7994Be4HwKsbiETAPyJz0hgrWzVfAZaNB6MbAnRYSAI
- JtF5wHLixnI794mOdlTc5Q4npKzD9slQrk0dWdzTTj4MGW8MoNEYp0S4PiUS8WEWqu+4=;
+ d=sourceforge.net; s=x; h=References:In-Reply-To:Subject:Cc:To:From:
+ Message-Id:Date:Sender:Reply-To:MIME-Version:Content-Type:
+ Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+ List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=vOs//FhdgrBJ2JdzSr3BRQUJJZKJzkM4e8TPRHVoJiI=; b=AURnVhp6OhZZg0XOuUfKowV5g9
+ 4xHElcv085GavTp91gXdMwe/jxveNgn8gPjVU9Vg9dgUXHYZo4Fd0CV4HTzDOlXv7nt7M9wjIEwr1
+ TaAi9v5cKbZBRRPB6kol0jMKVp0REvUcQgyDRUHTu+Fc8M23WDGt+lYShTC7NVL6B4DY=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ h=References:In-Reply-To:Subject:Cc:To:From:Message-Id:Date:Sender:Reply-To
+ :MIME-Version:Content-Type:Content-Transfer-Encoding:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=4CPum5KjGsdNfbAd3B2a7DGFnhvvU4tZGbUTHBVKt/g=; b=NkPxZInE3u7w6UrztLh7Fz4KR+
- ZNui8Z+xs9wE5NWufXRBLL91IVgkTOZ1JX8RM+0BDxlKKk5DG8M7cTfW3xRP4mia0N2z0nEYH2lqE
- qJ9qkekNl7F7M7KMBz/2XwPKVYMcvRgtEf5wdfML+nN+22ZgB+Y9hkbc1gp0yK8Di6FI=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ bh=vOs//FhdgrBJ2JdzSr3BRQUJJZKJzkM4e8TPRHVoJiI=; b=eqIbdtSKljOh8iN6HV4+qecqhr
+ /NMW1PxLagMp6d66ak/49S8yUqVrR/jefg2AYO1IbrHP/GL+5zthG9QbXp3uyQqlph0TLQ/E43cUw
+ MfxsJh3ZZefIJVbN5ZmPgSrfp82aK6zTFm6Ir/57+isL3psA7tCO1jpvAll2hxqZIrdE=;
+Received: from chekov.greenie.muc.de ([193.149.48.178])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wsbQ2-0002R4-Tv for openvpn-devel@lists.sourceforge.net;
- Sat, 08 Aug 2026 07:24:35 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 6787ORmM006357
- for <openvpn-devel@lists.sourceforge.net>; Sat, 8 Aug 2026 09:24:27 +0200
+ id 1wsdiM-0007Go-6N for openvpn-devel@lists.sourceforge.net;
+ Sat, 08 Aug 2026 09:51:36 +0000
+Received: from chekov.greenie.muc.de (localhost [IPv6:0:0:0:0:0:0:0:1])
+ by chekov.greenie.muc.de (8.18.2/8.18.1) with ESMTP id 6789pKM3057907;
+ Sat, 8 Aug 2026 11:51:20 +0200 (CEST)
+ (envelope-from gert@chekov.greenie.muc.de)
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 6787ORrg006356
- for openvpn-devel@lists.sourceforge.net; Sat, 8 Aug 2026 09:24:27 +0200
+ by chekov.greenie.muc.de (8.18.2/8.18.1/Submit) id 6789pKit057906;
+ Sat, 8 Aug 2026 11:51:20 +0200 (CEST) (envelope-from gert)
+Date: Sat, 8 Aug 2026 11:51:20 +0200 (CEST)
+Message-Id: <202608080951.6789pKit057906@chekov.greenie.muc.de>
 From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Sat,  8 Aug 2026 09:24:20 +0200
-Message-ID: <20260808072427.6344-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1784290573000.Ib6956c3a8b332866a59b41c186cce4e0bc5f078f@gerrit.openvpn.net>
-References: <gerrit.1784290573000.Ib6956c3a8b332866a59b41c186cce4e0bc5f078f@gerrit.openvpn.net>
-MIME-Version: 1.0
-X-Headers-End: 1wsbQ2-0002R4-Tv
-Subject: [Openvpn-devel] [PATCH v2] t_client.rc-sample: Add missing
+To: Frank Lichtenheld <frank@lichtenheld.com>
+X-Patchwork-State: Accepted
+In-Reply-To: <20260807131327.52748-1-frank@lichtenheld.com>
+References: <20260807131327.52748-1-frank@lichtenheld.com>
+X-Headers-End: 1wsdiM-0007Go-6N
+Subject: [Openvpn-devel] [PATCH applied] Re: t_client.rc-sample: Add missing
  documentation for FPING_ARGS_x
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
@@ -78,67 +78,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Cc: openvpn-devel@lists.sourceforge.net
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@lichtenheld.com>
+Thanks.  Documentation is always welcome :-) - since it's all commented-out
+text in a sample file, nothing for me to test, just look at it.
 
-Also include some smaller misc documentation fixes.
+Your patch has been applied to the master and release/2.7 branch
+(documentation).
 
-Change-Id: Ib6956c3a8b332866a59b41c186cce4e0bc5f078f
-Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
-Acked-by: Arne Schwabe <arne-openvpn@rfc2549.org>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1791
----
+commit 944166798f7696d8db2412be59a29f3e3f19270c (master)
+commit 1728a75745bb069decb1ad229b3780b7f0c799ab (release/2.7)
+Author: Frank Lichtenheld
+Date:   Fri Aug 7 15:13:27 2026 +0200
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+     t_client.rc-sample: Add missing documentation for FPING_ARGS_x
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1791
-This mail reflects revision 2 of this Change.
+     Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
+     Acked-by: Arne Schwabe <arne-openvpn@rfc2549.org>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1791
+     Message-Id: <20260807131327.52748-1-frank@lichtenheld.com>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg38207.html
+     Signed-off-by: Gert Doering <gert@greenie.muc.de>
 
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@rfc2549.org>
 
-        
-diff --git a/tests/t_client.rc-sample b/tests/t_client.rc-sample
-index d07c376..defa4aa 100644
---- a/tests/t_client.rc-sample
-+++ b/tests/t_client.rc-sample
-@@ -8,9 +8,13 @@
- # define these - if empty, no tests will run
- #
- top_srcdir="${top_srcdir:-..}"
-+
-+# PKI args
- CA_CERT="${top_srcdir}/sample/sample-keys/ca.crt"
- CLIENT_KEY="${top_srcdir}/sample/sample-keys/client.key"
- CLIENT_CERT="${top_srcdir}/sample/sample-keys/client.crt"
-+
-+# Customize ping tests
- #FPING_EXTRA_ARGS="-t 1000"
- 
- # Load EXPECT_IFCONFIG* parameters from cache
-@@ -63,8 +67,8 @@
- 
- #
- #
--# now define the individual tests - all variables suffixed with _1, _2 etc
--# will be used in test run "1", "2", etc.
-+# now define the individual tests - all variables suffixed with _1, _2, _2n etc
-+# will be used in test run "1", "2", "2n" etc.
- #
- # if something is not defined here, the corresponding test is not run
- #
-@@ -86,6 +90,7 @@
- #
- # hook test options:
- #
-+# FPING_ARGS_x      = "arguments to append to the fping command line"
- # CHECK_SKIP_x      = "commands to execute before openvpn, skip test on failure"
- # PREPARE_x         = "commands to execute before openvpn"
- # POSTINIT_CMD_x    = "commands to execute after openvpn but before ping"
+--
+kind regards,
+
+Gert Doering
+
 
 
 _______________________________________________
