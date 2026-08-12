@@ -4,68 +4,109 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3C737C5AC67
-	for <openvpn-devel@archiver.kernel.org>; Tue, 11 Aug 2026 18:44:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0BF9CC5B56A
+	for <openvpn-devel@archiver.kernel.org>; Wed, 12 Aug 2026 12:40:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
-	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=KfMQwtepzYuiLG/TH44lXSz9148Ji5nXuN5mGJJd93Y=; b=LBhxTcTutwODDVbWL7Jop9iiDl
-	rde7IVnFRR5BbIMsjLx2M3CZ7yLEeS0giBxdIo2J1ZRDCXy+iJIp9c4zjpALi97lOU5SimEDafCct
-	EQVH91F1gPTEO9QCXGfrPpSTBXRpgW+B0ggRxhhngbUxPyEoZH07FIdwB0o6RONEqp0g=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Reply-To:From:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:Subject:To:
+	MIME-Version:Date:Message-ID:Sender:Cc:Content-Transfer-Encoding:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Owner;
+	bh=mXSXNxZFurz2tlWaxB9ldC97WiRcgGwuU8NWXsz7YPs=; b=VLKJ8Opbk6el1eE3nDhwOtVlPh
+	lVsbvNH0cYN6/1VL/65IK+HJL58G5ttgWG3+Gi+rCxOKLqn0vOevliTwqnuzOVAlEfiCW7OBzRzf+
+	V3cS7H01dbjnXleQZ1uBqpkwYekfB2r0b2wk0FG53pejClmAJdK8muRTV3GDXll28avk=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wtrSY-0003C0-Ve;
-	Tue, 11 Aug 2026 18:44:20 +0000
+	id 1wu8FY-0004oF-NA;
+	Wed, 12 Aug 2026 12:40:05 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1wtrSX-0003Bt-Gh
+ (envelope-from <johan@openvpn.com>) id 1wu8FW-0004o3-QS
  for openvpn-devel@lists.sourceforge.net;
- Tue, 11 Aug 2026 18:44:19 +0000
+ Wed, 12 Aug 2026 12:40:03 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ d=sourceforge.net; s=x; h=To:Subject:From:MIME-Version:Date:Message-ID:
+ Content-Type:Sender:Reply-To:Cc:Content-Transfer-Encoding:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=6vCBEQ54luY/JIThanv1LZsHctAkD2GctX1ISBWv3Os=; b=If5TjCQm+WbOQAZOUQyYbCOmBf
- noawz/Qq80Yj42rqk4upuTw39vGcbntuHWdDA6IRoG42n+L3TJeSg8zrSyrgVUdTN1wCdDq30CF5q
- hED42Ut0l45qBzARGlCPjM7GyCNeDHH4qkzQhPW0DLoPJzEsouPl66Irq0qZvo2oqhxw=;
+ bh=l4hs1NsGSaJEcQahsQwiZcK43w17Dq8db11IU0wTa4o=; b=PbQDFeZsReoHEORxyQMKUKVwka
+ hlJIOcfq88xoDFg5ki5eFFg8kYSaHAbzvLhpoV1tYOIiMuAFlPI3QcMQj/UBk40qw9RQ380HiymTD
+ DKmG/VlqU4xG1Iw4WmMDjO8X5FYlWBAgcVO/eDGuT+B+N9yjw4MF8jEv+1qGkgJxGBPM=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=6vCBEQ54luY/JIThanv1LZsHctAkD2GctX1ISBWv3Os=; b=GNu2funCWjE6SJzMkK2unQ2juO
- 91o3XSwq+7AkZXNmtCyUUHt/3XLqioNprRdVc6pJiFpkdCJW03X1A7FxKEKATUFKwi6y1ksE+x+lK
- OVfSJ5rogJdUTb5Ntemcj2CKADpRsMc+/rEhB+xnd7UEVyuFsVJaO1Nb9IyquiBeQnAY=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wtrSS-0004GT-8n for openvpn-devel@lists.sourceforge.net;
- Tue, 11 Aug 2026 18:44:18 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 67BIi82A003559
- for <openvpn-devel@lists.sourceforge.net>; Tue, 11 Aug 2026 20:44:08 +0200
-Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 67BIi8r3003558
- for openvpn-devel@lists.sourceforge.net; Tue, 11 Aug 2026 20:44:08 +0200
-From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Tue, 11 Aug 2026 20:44:02 +0200
-Message-ID: <20260811184408.3535-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1786465628000.I2bd5259de702fce5d4ef6926c1dee7c6e6e597d7@gerrit.openvpn.net>
-References: <gerrit.1786465628000.I2bd5259de702fce5d4ef6926c1dee7c6e6e597d7@gerrit.openvpn.net>
+ h=To:Subject:From:MIME-Version:Date:Message-ID:Content-Type:Sender:Reply-To
+ :Cc:Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+ References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=l4hs1NsGSaJEcQahsQwiZcK43w17Dq8db11IU0wTa4o=; b=Z
+ ODJ6ADEg6xqRsRt5SO+hJHDJgaKKVf72lf7W2k6EIXH5cFHwuArsIqi2M9fC23mE4THfii2RPatic
+ xG/0CCDsFUMnDhMGuYbA8uWZ7/RiOl1/MDqL+0AU6X5XDEMoJChx3reFybDyS1cFQ4z0k7KbOr1Vx
+ +n1MhR+VzHnsC8Eo=;
+Received: from mail-pf1-f173.google.com ([209.85.210.173])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
+ id 1wu8Fa-0001Q0-6k for openvpn-devel@lists.sourceforge.net;
+ Wed, 12 Aug 2026 12:40:03 +0000
+Received: by mail-pf1-f173.google.com with SMTP id
+ d2e1a72fcca58-8485ef63b68so1273675b3a.1
+ for <openvpn-devel@lists.sourceforge.net>;
+ Wed, 12 Aug 2026 05:40:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=openvpn.com; s=google; t=1786538397; x=1787143197; darn=lists.sourceforge.net;
+ h=content-language:to:subject:from:user-agent:mime-version:date
+ :message-id:content-type:from:to:cc:subject:date:message-id:reply-to
+ :content-type; bh=l4hs1NsGSaJEcQahsQwiZcK43w17Dq8db11IU0wTa4o=;
+ b=UC9gWj+sx7NlhbSBws7vULyBoL/YZunwi9RFb1GDzeTRlsZFgiyveAjVUxLigpYWI6
+ 0j8rCUyJnzxjPSksfli1mWnMwNuW4DyG7N9YOvWg4HtW8VMdoJ7P6XAyLrdzH1Ceom2Y
+ HGUknkhLEaKn+cBs4ZMtPlsF1AsqxiA/gkBE5PcoEMQpCOVo3A7vnoDJKqO9geUw6S/2
+ kyQXn4CpKqcn76yH+tbfEHR9d39IA8vD4OW3JmiYqFrAB9TQsgNFfiR9skfF0VIRXt8o
+ HET/fI+i7FOhToEKD9yap6X1UW3UcfvURunmk8X4x1CbjLKeqIBM3vIKIk/fp7lSGiPU
+ qBBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20251104; t=1786538397; x=1787143197;
+ h=content-language:to:subject:from:user-agent:mime-version:date
+ :message-id:content-type:x-gm-gg:x-gm-message-state:from:to:cc
+ :subject:date:message-id:reply-to:content-type;
+ bh=l4hs1NsGSaJEcQahsQwiZcK43w17Dq8db11IU0wTa4o=;
+ b=N8Na1fzUAeNnqjE29jBHrzS3fHw/omzNp4074pvisG1Kmc4H6FrUV1fO6wrK3GAd8Y
+ YUagJjZCcf/67BcbXiXXW/bhafQ4iU0mcMf4bo74V8Vo/loYD7j9LwoLYqOcS8Cr+C6m
+ 7qoyJNhEmnmSXu/feCO5QADK12ryATVL/NT5tTGk5dYZ/AnFna700mQk2jFo8ugRUCo8
+ j+/8d65bxaPv12JDC9i3JBGRtbhie1pSuR4ZDmaxpD6t/nlsRJeq9VMdM51VgIXRot6U
+ 1/RICnK4EpBNXEoetO39b09hRnMiq66uICfyi1oKf5he5qTKKpZPqz/w7CDegBe1ds/G
+ zY9w==
+X-Gm-Message-State: AOJu0YwWqusmZrbnWo6sgWcdc0F57qrfh08v/Dh9uiOE4OrMkG3Sedzn
+ Gc6aEqiJTPvjllh9cauAehhb3fWWr32FicJWJqTIrWFTqaCFKOZwjYvGM3DIL0Vstj/o5SOTEwy
+ 63RXVpEuEipLCfOqCC6IWI/Hz50Slc4gb3idc+gAggIpXLjytQNHV+AF3lcYfrwKSucvbQH7MGb
+ I3FnQnpwQB
+X-Gm-Gg: AR+sD123bUfH1fTXxbxBKQd3AlImc1lk1HAZC2DGe41FqDIrH+x46jsULgFq91UZV7e
+ 2Nx0L4h6x2m+DPsSvkGvkFFwiBJc1wOeTRgH/YYc6kt8jlMWEXq+Zwnk3PDI84jXnTWx8Y9iNAK
+ Cyo0+Z0XNWRvj883cqatJD0WtUqscDpErB+Lug8VJa3J87c2uEuDCBTYrtkPEnF1z1yVkpL5i3s
+ DejDwttsxhb2ZX+YhIYzZGSnC8tTBokz2XJ56u7t/cDrLj3GejB1oo6BffuSO65pNfuLk9y7iVH
+ EzlqsOmcYI6tZTyMrmjKSBl1sNbu5m+LLgQjCyuDw/6n5BMH3pMINSGtFJWmI9pBsG8IUln56/s
+ qgBznKvihQ5/xib3OD+bytEX//uTloZi2TTprE6ZRp2DJUXb4Uz843rclZhfsv4XLhZHK2D1iGj
+ YtiT1499aceoADyBQCUCkfUNta//M8zl5+o6CNo60SAeVnoaNGusNJ0bijDbhRN6Gc9LKI8j3yI
+ KcWtD7jjP6yJv5FCyw1rhGsxW/6vw4RpQ==
+X-Received: by 2002:a05:6a00:3d4f:b0:848:48c6:480c with SMTP id
+ d2e1a72fcca58-84fb54a14c9mr4885106b3a.24.1786538396644; 
+ Wed, 12 Aug 2026 05:39:56 -0700 (PDT)
+Received: from ?IPV6:2001:ee0:4f83:3c70:6e33:fc04:43f5:d700?
+ ([2001:ee0:4f83:3c70:6e33:fc04:43f5:d700])
+ by smtp.gmail.com with ESMTPSA id
+ d2e1a72fcca58-84fb1f2645bsm921448b3a.50.2026.08.12.05.39.54
+ for <openvpn-devel@lists.sourceforge.net>
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Wed, 12 Aug 2026 05:39:55 -0700 (PDT)
+Message-ID: <6ca58276-9358-446a-ba4d-f737fbea03b1@openvpn.com>
+Date: Wed, 12 Aug 2026 19:39:52 +0700
 MIME-Version: 1.0
-X-Headers-End: 1wtrSS-0004GT-8n
-Subject: [Openvpn-devel] [PATCH v1] otime: Remove openvpn_time()
+User-Agent: Mozilla Thunderbird
+To: openvpn-devel@lists.sourceforge.net
+Content-Language: en-US
+X-Headers-End: 1wu8Fa-0001Q0-6k
+Subject: [Openvpn-devel]  IRC community meeting summary
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -77,87 +118,172 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+From: Johan Draaisma via Openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Reply-To: Johan Draaisma <johan@openvpn.com>
+Content-Type: multipart/mixed; boundary="===============8880604058923059609=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@lichtenheld.com>
+This is a multi-part message in MIME format.
+--===============8880604058923059609==
+Content-Type: multipart/alternative;
+ boundary="------------CtsAbUWDOuRXecT9OKerRBcd"
+Content-Language: en-US
 
-Using this function seems to be more complicated
-than just using now directly.
+This is a multi-part message in MIME format.
+--------------CtsAbUWDOuRXecT9OKerRBcd
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Suggested by Arne in review of cppcheck fixes.
+Meeting summary for 12 August 2026:
 
-Change-Id: I2bd5259de702fce5d4ef6926c1dee7c6e6e597d7
-Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
-Acked-by: Arne Schwabe <arne-openvpn@rfc2549.org>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1841
----
+  *
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+    *Updated: 2.7.6 and 2.6.22 release*
+    Last week 2.7.6 and 2.6.22 were released with some security fixes.
+    There are also some security fixes backported to 2.5 but that branch
+    does not have official releases anymore (out of support).
+    cron2 mentioned we might prepare for another release in about 3
+    weeks as there are still further small fixes to come.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1841
-This mail reflects revision 1 of this Change.
+  *
 
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@rfc2549.org>
+    *Updated: Amount of open changes in the queue*
+    This is also a discussion topic for the community meeting but we can
+    look into addressing things here as well.
+    see e.g.1776: Start a new document CODE_CHECKLIST
+    <https://gerrit.openvpn.net/c/openvpn/+/1776>in Gerrit.
+    lev__ said he would contribute some time to doing reviews.
+    There are also other colleagues from OpenVPN Inc interested in
+    participating in the community.
+    But reviews alone don't help if the bottleneck is cron2 not having
+    time dedicated to testing/merging.
+    OpenVPN Inc. is willing to contribute by paying cron2 to do
+    community work - details to be figured out.
 
-        
-diff --git a/src/openvpn/otime.h b/src/openvpn/otime.h
-index f02cc31..d14f01e 100644
---- a/src/openvpn/otime.h
-+++ b/src/openvpn/otime.h
-@@ -93,17 +93,6 @@
- #endif
- }
- 
--static inline time_t
--openvpn_time(time_t *t)
--{
--    update_time();
--    if (t)
--    {
--        *t = now;
--    }
--    return now;
--}
--
- static inline void
- tv_clear(struct timeval *tv)
- {
-diff --git a/src/openvpn/pkcs11.c b/src/openvpn/pkcs11.c
-index cfcd372..8b06fd0 100644
---- a/src/openvpn/pkcs11.c
-+++ b/src/openvpn/pkcs11.c
-@@ -42,7 +42,8 @@
- static time_t
- __mytime(void)
- {
--    return openvpn_time(NULL);
-+    update_time();
-+    return now;
- }
- 
- #if !defined(_WIN32)
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index ce2baf2..97f352e 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -999,9 +999,7 @@
-     else if (tls_authentication_status(c->c2.tls_multi) == TLS_AUTHENTICATION_SUCCEEDED
-              && c->c2.tls_multi->multi_state >= CAS_CONNECT_DONE)
-     {
--        time_t now;
--
--        openvpn_time(&now);
-+        update_time();
-         if (c->c2.sent_push_reply_expiry > now)
-         {
-             ret = PUSH_MSG_ALREADY_REPLIED;
+  * *Updated: test latency and MTU in openvpn*
+    A new feature is proposed for adding to master; ability to do
+    latency and MTU tests in the OpenVPN protocol.
+    Idea is to allow to do a 'best server selection' type of logic, in
+    case there are multiple servers available to connect to.
+    RFC PR is athttps://github.com/OpenVPN/openvpn-rfc/pull/30and an
+    early initial implementation is available from lev.
+    What's needed is a community member's review and ralf_lici did so
+    and provided some comments.
 
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 14:00 Central European Time.
+
+Kind regards,
+Johan Draaisma
+
+--------------CtsAbUWDOuRXecT9OKerRBcd
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 12 August 2026:</p>
+    <ul
+style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            2.7.6 and 2.6.22 release</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Last week 2.7.6 and 2.6.22 were released with some security
+          fixes.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          There are also some security fixes backported to 2.5 but that
+          branch does not have official releases anymore (out of
+          support).<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          cron2 mentioned we might prepare for another release in about
+          3 weeks as there are still further small fixes to come.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            Amount of open changes in the queue</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          This is also a discussion topic for the community meeting but
+          we can look into addressing things here as well.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          see e.g.<span> </span><a
+            href="https://gerrit.openvpn.net/c/openvpn/+/1776"
+style="box-sizing: inherit; background-color: transparent; color: rgb(24, 144, 255); text-decoration: none; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">1776:
+            Start a new document CODE_CHECKLIST</a><span> </span>in
+          Gerrit.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          lev__ said he would contribute some time to doing reviews.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          There are also other colleagues from OpenVPN Inc interested in
+          participating in the community.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          But reviews alone don't help if the bottleneck is cron2 not
+          having time dedicated to testing/merging.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          OpenVPN Inc. is willing to contribute by paying cron2 to do
+          community work - details to be figured out.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+          test latency and MTU in openvpn</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+        A new feature is proposed for adding to master; ability to do
+        latency and MTU tests in the OpenVPN protocol.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+        Idea is to allow to do a 'best server selection' type of logic,
+        in case there are multiple servers available to connect to.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+        RFC PR is at<span> </span><a
+          href="https://github.com/OpenVPN/openvpn-rfc/pull/30"
+style="box-sizing: inherit; background-color: transparent; color: rgb(24, 144, 255); text-decoration: none; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"
+          class="moz-txt-link-freetext">https://github.com/OpenVPN/openvpn-rfc/pull/30</a><span> </span>and
+        an early initial implementation is available from lev.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+        What's needed is a community member's review and ralf_lici did
+        so and provided some comments.</li>
+    </ul>
+    <ul
+style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+    </ul>
+    As always you're welcome to join at #openvpn-meeting on Libera IRC
+    network every Wednesday at 14:00 Central European Time.
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
+
+--------------CtsAbUWDOuRXecT9OKerRBcd--
+
+
+--===============8880604058923059609==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============8880604058923059609==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+--===============8880604058923059609==--
+
