@@ -4,37 +4,37 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 06727C5CFCF
-	for <openvpn-devel@archiver.kernel.org>; Thu, 13 Aug 2026 18:09:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id BA3AAC5CFCF
+	for <openvpn-devel@archiver.kernel.org>; Thu, 13 Aug 2026 18:09:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=nff5REdKlGgH+FhiBMShTdZrQGt+yhplx96wjVIXLvw=; b=XlSmDDB+6kUt1tpXrDLpqUlTUY
-	t0LGdddO0NaNQYw2qaEisQMRGJMZpfIzxfQZUPPMEfVdNSAIO/KkjXnooOZUdsB3gbYC0aFaUN/hq
-	f4YzzE/2hcbw6JC2jVAwIZvwJqF898gi2NTRci6fEnKFfZu3g5loGOtDQq42dDdPsFuA=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=pEbzpVPu8KRnGdaFnjChrqj9E/ilNY7DJK8hEqOHGN8=; b=BgmK57B3wpmvUSmZxwShBo32Sm
+	haer1YF9URqEA97JgTXxd8EUYH7gudVXkvaSmVfs5p9CyisDnzjpiEp2a4n2MCabOSF+JJUNZlWNW
+	3tuJP3GqjLYwH9XDVuGBN3HKbE8CjPLo70UTc/ShrtT1UiLdIyC8nomJqyAScVMZs6eI=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wuZrW-0007sk-0u;
-	Thu, 13 Aug 2026 18:09:06 +0000
+	id 1wuZs0-0000ez-F9;
+	Thu, 13 Aug 2026 18:09:37 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1wuZrT-0007sU-UJ
+ (envelope-from <gert@blue4.greenie.muc.de>) id 1wuZrz-0000es-5v
  for openvpn-devel@lists.sourceforge.net;
- Thu, 13 Aug 2026 18:09:04 +0000
+ Thu, 13 Aug 2026 18:09:35 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
  In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=veZGtbfQeP38nfVcrYgiGclwgEdIknSIG9bhLfZIM/A=; b=al04kbdV3kUkSAtO/9WEs/hZl+
- oZObd22Gk8DiY3W8hgGX7xqsSEdF14kOj47S1rdptr2AUKJxc2hk8UlWdDvqlFQNMVNpiks1gjoVr
- 6vySWM6mVg5tm4QIsOLAoGIV7bL/77LldXD/xD+8WOI+B121x38PzX2BcjuXpNN1kPMs=;
+ bh=E+8c/sxXyx4507mrKDU833XCjMsgi4CuObshLgbhryQ=; b=Vh6NFjCv5NFu9ABcxa/rhZCHgP
+ osxWnO77L+20QrwW0jJzwtc1VavszK50vyx9QfqF2DMLGTnJJp0OLrsowZ6UCwVQYQSBrJi+6SzjG
+ B44T6Ti099hz8sdISTtVRDs9Hb8UsrOSlsouS4QxGhd/t1pJkxeY4ueAvKcFR30NsH98=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -42,31 +42,30 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=veZGtbfQeP38nfVcrYgiGclwgEdIknSIG9bhLfZIM/A=; b=iYcKygA7DsIZlG2SkAIOpvF2Mx
- CYXOKRqTQL6NssuDkP7lKL9aCZxFlSnEonufJF5vyH4EPjCmpQbz316v7+dC5jq8Mz5cvcxahoBRF
- sE3i4QsWYguN0KsUwFz41o0irP0/B09Z14LhmlFrs+FN4aCeABXS5yPY59l5m1eCrPLM=;
+ bh=E+8c/sxXyx4507mrKDU833XCjMsgi4CuObshLgbhryQ=; b=W10Ua1NVKnY4CHQ1e3vWtUuJmq
+ B0lr9CXc1st1eTxUMtpngdrsuAMpUaCttvVCxl+0KNAz+IcHcVeSGrfBmXLuLzEzj3PnG/lIvRUOO
+ jJ2Rl4uvlWgIQm0nb49KFm9d57rFzrot5vS1TSXmxMP++b1hYHE352TUimI0TR8h8DYw=;
 Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wuZrW-0001X9-Cb for openvpn-devel@lists.sourceforge.net;
- Thu, 13 Aug 2026 18:09:04 +0000
+ id 1wuZs1-0001aB-Oo for openvpn-devel@lists.sourceforge.net;
+ Thu, 13 Aug 2026 18:09:35 +0000
 Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 67DI8uLO003226
- for <openvpn-devel@lists.sourceforge.net>; Thu, 13 Aug 2026 20:08:56 +0200
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 67DI9RFa003276
+ for <openvpn-devel@lists.sourceforge.net>; Thu, 13 Aug 2026 20:09:27 +0200
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 67DI8uPt003225
- for openvpn-devel@lists.sourceforge.net; Thu, 13 Aug 2026 20:08:56 +0200
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 67DI9Rvs003275
+ for openvpn-devel@lists.sourceforge.net; Thu, 13 Aug 2026 20:09:27 +0200
 From: Gert Doering <gert@greenie.muc.de>
 To: openvpn-devel@lists.sourceforge.net
-Date: Thu, 13 Aug 2026 20:08:45 +0200
-Message-ID: <20260813180856.3208-1-gert@greenie.muc.de>
+Date: Thu, 13 Aug 2026 20:09:21 +0200
+Message-ID: <20260813180927.3263-1-gert@greenie.muc.de>
 X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1768911587000.Iac4af315c6d7798f09a27383fc0a755a874b9881@gerrit.openvpn.net>
-References: <gerrit.1768911587000.Iac4af315c6d7798f09a27383fc0a755a874b9881@gerrit.openvpn.net>
+In-Reply-To: <gerrit.1783961511000.Ie44556f5ece28b54cc657fa86261b827efb42467@gerrit.openvpn.net>
+References: <gerrit.1783961511000.Ie44556f5ece28b54cc657fa86261b827efb42467@gerrit.openvpn.net>
 MIME-Version: 1.0
-X-Headers-End: 1wuZrW-0001X9-Cb
-Subject: [Openvpn-devel] [PATCH v3] reliable: Avoid conversion warning in
- reliable_send_timeout
+X-Headers-End: 1wuZs1-0001aB-Oo
+Subject: [Openvpn-devel] [PATCH v1] win32-util.h: Fix includes
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -84,62 +83,43 @@ Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
 From: Frank Lichtenheld <frank@lichtenheld.com>
 
-It is not realistic that this produced big values
-and we already discard negative values. So just use
-whatever we get.
+This file includes various headers but then doesn't
+use anything from them. It does not include the header
+(buffer.h) it actually uses.
 
-Change-Id: Iac4af315c6d7798f09a27383fc0a755a874b9881
+Change-Id: Ie44556f5ece28b54cc657fa86261b827efb42467
 Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
 Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1480
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1779
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1480
-This mail reflects revision 3 of this Change.
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1779
+This mail reflects revision 1 of this Change.
 
 Acked-by according to Gerrit (reflected above):
 Razvan Cojocaru <razvanc@mailbox.org>
 
         
-diff --git a/src/openvpn/reliable.c b/src/openvpn/reliable.c
-index 52adacf..690e50d6 100644
---- a/src/openvpn/reliable.c
-+++ b/src/openvpn/reliable.c
-@@ -687,11 +687,6 @@
-     }
- }
+diff --git a/src/openvpn/win32-util.h b/src/openvpn/win32-util.h
+index 4849ea9..fb83762 100644
+--- a/src/openvpn/win32-util.h
++++ b/src/openvpn/win32-util.h
+@@ -24,11 +24,7 @@
+ #ifndef OPENVPN_WIN32_UTIL_H
+ #define OPENVPN_WIN32_UTIL_H
  
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wconversion"
--#endif
+-#include <winioctl.h>
 -
- /* in how many seconds should we wake up to check for timeout */
- /* if we return BIG_TIMEOUT, nothing to wait for */
- interval_t
-@@ -713,7 +708,7 @@
-             }
-             else
-             {
--                ret = min_int(ret, e->next_try - local_now);
-+                ret = min_int(ret, (int)(e->next_try - local_now));
-             }
-         }
-     }
-@@ -724,10 +719,6 @@
-     return ret;
- }
+-#include "mtu.h"
+-#include "openvpn-msg.h"
+-#include "argv.h"
++#include "buffer.h"
  
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- /*
-  * Enable an incoming buffer previously returned by a get function as active.
-  */
+ /* Convert a string from UTF-8 to UCS-2 */
+ WCHAR *wide_string(const char *utf8, struct gc_arena *gc);
 
 
 _______________________________________________
