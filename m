@@ -4,37 +4,37 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 48E36C5AD5A
-	for <openvpn-devel@archiver.kernel.org>; Sat, 15 Aug 2026 13:07:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D817DC5DF6A
+	for <openvpn-devel@archiver.kernel.org>; Sat, 15 Aug 2026 13:09:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=rkuvwTprE24fJNghi4ZBVGoXmVdkyqtzK8056YxkOMA=; b=Z2vJKQmwCdNKdXDsY0ItgqZD2p
-	cScirOYM1fxO3bj/3wKfuIiKipG27iDjZgWhvIrfDld7gMvNpZ2dfNQ7H5KcCF19vQ1irPNWtPf9Q
-	MrmTPuh3zkdatKyzES1/NClKSrj4Gn7x7pKrZzbrxzG8KwaKVsShe28kKPeBFb1Mkc7Y=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=hSZi8o0LhstucNT0OEqd6HIo88C3OZX9k+NdoyL7nnU=; b=ffJXQcw6mTsXWKb7IHCN6sAhC/
+	effKlFTut+3kXJPjBGKYlxIMiz1PjJ9aClDboG5d5DdXS2XuxwDFcRVrfcapqgMLitO04bJCcSUcy
+	leud3rBEYauw5A1ZDvfp/Zw6ht3oY/6UKjI7+HaRPOycnAk6r3vIrwn6iwShNzFN3MB0=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wvE6P-0005tY-Sg;
-	Sat, 15 Aug 2026 13:07:09 +0000
+	id 1wvE8H-0008Sw-Fk;
+	Sat, 15 Aug 2026 13:09:06 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1wvE6N-0005tM-Tr
+ (envelope-from <gert@blue4.greenie.muc.de>) id 1wvE8F-0008Sf-Gp
  for openvpn-devel@lists.sourceforge.net;
- Sat, 15 Aug 2026 13:07:07 +0000
+ Sat, 15 Aug 2026 13:09:04 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
  In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=gllhWvfh7w3BKPSYBNXOQwggUO8qGnC0x554PTpqb6k=; b=kyYoT6ggN++D8dHorWm9ytjI6M
- 7NyTNevyFHs4/DhBUiK+xt9JgCzl7uYEQMu065WOXFBQQiGGh2X2hjcgEWVRVnrpheofgN/71kk7z
- ug02oCo0hAeJp98FAEF1G6204pnveypFa2SJvMO0ZwKNtN9FCDfe4TntI63tRyxCArdE=;
+ bh=0M5NrA2qFlt3ZvaN4J2vqBqp9sz3JsFD+df1yY5sbOI=; b=nUtNYjMjJyPmATIMwO+khJWyTY
+ VJXUj5v0EWo+K811QaKmAkAod32x1mWraOjhpOqUSzRUU1djM9olcf76XR1/0NDxXEDGl8ILwlMR/
+ n9TkfIvu815xuUUrJxqZCzp9B/lQmz6peFsdhGfqf0+si8eWatVyc06Rl5d9j/sNxWRg=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -42,31 +42,30 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=gllhWvfh7w3BKPSYBNXOQwggUO8qGnC0x554PTpqb6k=; b=Gch9gs7LgppsdF75BWKgAIay7S
- hk/YxV/Zn8p5W/w8jTVXiwVMI4atyjT+oB+oBBnIjjrdbz/GShcdqBPBX3xEqRqZr9sOApADl1/o8
- 6z6xf76Zs0wz+zZdxdQjh04RRlD/3L08sDIb6ZWR5TaYkRiodP8bkeKkNyNpZa7jLTJA=;
+ bh=0M5NrA2qFlt3ZvaN4J2vqBqp9sz3JsFD+df1yY5sbOI=; b=P5xhLecnTKTcjJVxsYcy1xGnmU
+ 1o59VtHgK7zTEcRqe8D5y9EiMDHDibZHitxKDCe6FzOt8gxJ71iwWHAFnCWsEMMJY6qqE80htdXSa
+ a8u4M8+eDajLfUATMee3UmVg6i7eH1brqqLxqJKmwLmx4w++EYWYqiCavY6QK5mvD+3k=;
 Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wvE6Q-00006l-HG for openvpn-devel@lists.sourceforge.net;
- Sat, 15 Aug 2026 13:07:07 +0000
+ id 1wvE8F-0000QO-CG for openvpn-devel@lists.sourceforge.net;
+ Sat, 15 Aug 2026 13:09:04 +0000
 Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 67FD70xk020292
- for <openvpn-devel@lists.sourceforge.net>; Sat, 15 Aug 2026 15:07:00 +0200
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 67FD8uea020449
+ for <openvpn-devel@lists.sourceforge.net>; Sat, 15 Aug 2026 15:08:56 +0200
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 67FD70vA020291
- for openvpn-devel@lists.sourceforge.net; Sat, 15 Aug 2026 15:07:00 +0200
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 67FD8uKY020448
+ for openvpn-devel@lists.sourceforge.net; Sat, 15 Aug 2026 15:08:56 +0200
 From: Gert Doering <gert@greenie.muc.de>
 To: openvpn-devel@lists.sourceforge.net
-Date: Sat, 15 Aug 2026 15:06:53 +0200
-Message-ID: <20260815130700.20272-1-gert@greenie.muc.de>
+Date: Sat, 15 Aug 2026 15:08:49 +0200
+Message-ID: <20260815130856.20431-1-gert@greenie.muc.de>
 X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1783600902000.I09ad0d9baaa7351eecb5aafdb5c6e7b47cf7c909@gerrit.openvpn.net>
-References: <gerrit.1783600902000.I09ad0d9baaa7351eecb5aafdb5c6e7b47cf7c909@gerrit.openvpn.net>
+In-Reply-To: <gerrit.1773073753000.Ie0b94b596637d660392bc4eda48d16cfecfeb971@gerrit.openvpn.net>
+References: <gerrit.1773073753000.Ie0b94b596637d660392bc4eda48d16cfecfeb971@gerrit.openvpn.net>
 MIME-Version: 1.0
-X-Headers-End: 1wvE6Q-00006l-HG
-Subject: [Openvpn-devel] [PATCH v2] options: Move string utility functions
- to buffer
+X-Headers-End: 1wvE8F-0000QO-CG
+Subject: [Openvpn-devel] [PATCH v8] init: Avoid sign-compare warnings
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -84,145 +83,107 @@ Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
 From: Frank Lichtenheld <frank@lichtenheld.com>
 
-buffer seems to be where we collect string utility
-functions, so move them out of options.
+- Use BLENZ instead of buf_len where applicable
+- Fix some comparisons with ce list length
 
-Change-Id: I09ad0d9baaa7351eecb5aafdb5c6e7b47cf7c909
+Change-Id: Ie0b94b596637d660392bc4eda48d16cfecfeb971
 Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
 Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1775
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1562
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1775
-This mail reflects revision 2 of this Change.
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1562
+This mail reflects revision 8 of this Change.
 
 Acked-by according to Gerrit (reflected above):
 Razvan Cojocaru <razvanc@mailbox.org>
 
         
-diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
-index 2f4d037..6531f3e 100644
---- a/src/openvpn/buffer.c
-+++ b/src/openvpn/buffer.c
-@@ -1142,6 +1142,38 @@
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index caaa769..2196364 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -325,11 +325,6 @@
+     return l->len;
  }
  
- bool
-+string_defined_equal(const char *s1, const char *s2)
-+{
-+    if (s1 && s2)
-+    {
-+        return !strcmp(s1, s2);
-+    }
-+    else
-+    {
-+        return false;
-+    }
-+}
-+
-+char *
-+string_substitute(const char *src, char from, char to, struct gc_arena *gc)
-+{
-+    char *ret = (char *)gc_malloc(strlen(src) + 1, true, gc);
-+    char *dest = ret;
-+    char c;
-+
-+    do
-+    {
-+        c = *src++;
-+        if (c == from)
-+        {
-+            c = to;
-+        }
-+        *dest++ = c;
-+    } while (c);
-+    return ret;
-+}
-+
-+bool
- checked_snprintf(char *str, size_t size, const char *format, ...)
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wsign-compare"
+-#endif
+-
+ static bool
+ management_callback_remote_entry_get(void *arg, unsigned int index, char **remote)
  {
-     va_list arglist;
-diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
-index 9bdb36a..2776bfc 100644
---- a/src/openvpn/buffer.h
-+++ b/src/openvpn/buffer.h
-@@ -952,6 +952,9 @@
-     return 0 == strncmp(str, prefix, strlen(prefix));
+@@ -340,7 +335,7 @@
+     struct connection_list *l = c->options.connection_list;
+     bool ret = true;
+ 
+-    if (index < l->len)
++    if (l->len > 0 && index < (unsigned int)l->len)
+     {
+         struct connection_entry *ce = l->array[index];
+         const char *proto = proto2ascii(ce->proto, ce->af, false);
+@@ -364,10 +359,6 @@
+     return ret;
  }
  
-+bool string_defined_equal(const char *s1, const char *s2);
-+char *string_substitute(const char *src, char from, char to, struct gc_arena *gc);
-+
- /**
-  * Like snprintf() but returns an boolean.
-  *
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 03cda5a..a95b6e0 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -1101,25 +1101,6 @@
-     return get_ipv6_addr(ipv6_prefix_spec, NULL, NULL, M_WARN);
- }
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ static bool
+ management_callback_remote_cmd(void *arg, const char **p)
+ {
+@@ -466,7 +457,6 @@
+ #if defined(__GNUC__) || defined(__clang__)
+ #pragma GCC diagnostic push
+ #pragma GCC diagnostic ignored "-Wconversion"
+-#pragma GCC diagnostic ignored "-Wsign-compare"
+ #endif
  
--static char *
--string_substitute(const char *src, char from, char to, struct gc_arena *gc)
--{
--    char *ret = (char *)gc_malloc(strlen(src) + 1, true, gc);
--    char *dest = ret;
--    char c;
--
--    do
--    {
--        c = *src++;
--        if (c == from)
--        {
--            c = to;
--        }
--        *dest++ = c;
--    } while (c);
--    return ret;
--}
--
- /**
-  * Parses a hexstring and checks if the string has the correct length. Return
-  * a verify_hash_list containing the parsed hash string.
-@@ -3574,19 +3555,6 @@
-     }
- }
+ /*
+@@ -638,8 +628,8 @@
+     } while (!ce_defined);
  
--bool
--string_defined_equal(const char *s1, const char *s2)
--{
--    if (s1 && s2)
--    {
--        return !strcmp(s1, s2);
--    }
--    else
--    {
--        return false;
--    }
--}
--
- #if 0
+     /* Check if this connection attempt would bring us over the limit */
+-    if (c->options.connect_retry_max > 0
+-        && c->options.unsuccessful_attempts > (l->len * c->options.connect_retry_max))
++    int max_attempts = l->len * c->options.connect_retry_max;
++    if (max_attempts > 0 && c->options.unsuccessful_attempts > (unsigned int)max_attempts)
+     {
+         msg(M_FATAL, "All connections have been connect-retry-max (%d) times unsuccessful, exiting",
+             c->options.connect_retry_max);
+@@ -2176,7 +2166,7 @@
  static void
- ping_rec_err(msglvl_t msglevel)
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index d950a67..90a422b 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -896,8 +896,6 @@
+ add_delim_if_non_empty(struct buffer *buf, const char *header)
+ {
+-    if (buf_len(buf) > strlen(header))
++    if (BLENZ(buf) > strlen(header))
+     {
+         buf_printf(buf, ", ");
+     }
+@@ -2264,7 +2254,7 @@
+         buf_printf(&out, "session-timeout %d", o->session_timeout);
+     }
  
- void setenv_settings(struct env_set *es, const struct options *o);
+-    if (buf_len(&out) > strlen(header))
++    if (BLENZ(&out) > strlen(header))
+     {
+         msg(D_HANDSHAKE, "%s", BSTR(&out));
+     }
+@@ -2301,7 +2291,7 @@
+         }
+     }
  
--bool string_defined_equal(const char *s1, const char *s2);
--
- void options_postprocess(struct options *options, struct env_set *es);
- 
- bool options_postprocess_pull(struct options *o, struct env_set *es);
+-    if (buf_len(&out) > strlen(header))
++    if (BLENZ(&out) > strlen(header))
+     {
+         msg(D_HANDSHAKE, "%s", BSTR(&out));
+     }
 
 
 _______________________________________________
