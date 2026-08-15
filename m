@@ -4,68 +4,73 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D817DC5DF6A
-	for <openvpn-devel@archiver.kernel.org>; Sat, 15 Aug 2026 13:09:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 213D4C5AD5A
+	for <openvpn-devel@archiver.kernel.org>; Sat, 15 Aug 2026 19:35:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
-	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=hSZi8o0LhstucNT0OEqd6HIo88C3OZX9k+NdoyL7nnU=; b=ffJXQcw6mTsXWKb7IHCN6sAhC/
-	effKlFTut+3kXJPjBGKYlxIMiz1PjJ9aClDboG5d5DdXS2XuxwDFcRVrfcapqgMLitO04bJCcSUcy
-	leud3rBEYauw5A1ZDvfp/Zw6ht3oY/6UKjI7+HaRPOycnAk6r3vIrwn6iwShNzFN3MB0=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	d=lists.sourceforge.net; s=beta; h=Content-Type:List-Subscribe:List-Help:
+	List-Post:List-Archive:List-Unsubscribe:List-Id:Subject:In-Reply-To:
+	MIME-Version:References:Message-ID:To:From:Date:Sender:Reply-To:Cc:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=Gb+i6E6whHZM0qk8xK04a6I/u8q6UEjzU95y+uvHy8s=; b=iv+quPxeHcE4Il5P2dlj+22kJg
+	4UD38geEbLQoPqJpZevBL7y9Ya99m8O+w2eOSKRTfnKmPDHEIKNT/fs4+2iI+TB2iCesU37UuI5DV
+	ZC83WHV53vy0wXAuHCaF8ZDyFa6IDmThiXAyL8bpOgifLZD8ClNe4af0f6qxgGoZTnm8=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wvE8H-0008Sw-Fk;
-	Sat, 15 Aug 2026 13:09:06 +0000
+	id 1wvKAK-0002Pd-Tu;
+	Sat, 15 Aug 2026 19:35:34 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1wvE8F-0008Sf-Gp
+ (envelope-from <gert@chekov.greenie.muc.de>) id 1wvKAJ-0002PU-Gf
  for openvpn-devel@lists.sourceforge.net;
- Sat, 15 Aug 2026 13:09:04 +0000
+ Sat, 15 Aug 2026 19:35:33 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
+ d=sourceforge.net; s=x; h=In-Reply-To:Content-Type:MIME-Version:References:
+ Message-ID:Subject:To:From:Date:Sender:Reply-To:Cc:Content-Transfer-Encoding:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=0M5NrA2qFlt3ZvaN4J2vqBqp9sz3JsFD+df1yY5sbOI=; b=nUtNYjMjJyPmATIMwO+khJWyTY
- VJXUj5v0EWo+K811QaKmAkAod32x1mWraOjhpOqUSzRUU1djM9olcf76XR1/0NDxXEDGl8ILwlMR/
- n9TkfIvu815xuUUrJxqZCzp9B/lQmz6peFsdhGfqf0+si8eWatVyc06Rl5d9j/sNxWRg=;
+ bh=MobOwwSrkf4ncMNQhS1UukhDZLKBdfxoY/oRugtXN+E=; b=hgmMC+NVBoZo/Kn3ewotipJj9z
+ rBt1OpaCUpygGzcw4lZa4+orYI5AQ+l+Em4HYY/jD3sXI8dSzm++CrcfvbnTwqhReuafPXwCfvXmK
+ bbDjJuWDFW7tKyzsYNVEhZLqDGdH1XwVHHe0EEjHFmG4Q26Jsyg51B+z4Xfn+poA3sM8=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:To:
+ From:Date:Sender:Reply-To:Cc:Content-Transfer-Encoding:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=0M5NrA2qFlt3ZvaN4J2vqBqp9sz3JsFD+df1yY5sbOI=; b=P5xhLecnTKTcjJVxsYcy1xGnmU
- 1o59VtHgK7zTEcRqe8D5y9EiMDHDibZHitxKDCe6FzOt8gxJ71iwWHAFnCWsEMMJY6qqE80htdXSa
- a8u4M8+eDajLfUATMee3UmVg6i7eH1brqqLxqJKmwLmx4w++EYWYqiCavY6QK5mvD+3k=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ bh=MobOwwSrkf4ncMNQhS1UukhDZLKBdfxoY/oRugtXN+E=; b=c7a1cJLbj5lldhQXOr1VergHSz
+ 5PmwO0F60INjg+F41U5TY7+0dbL6BUIGrhh5ogYLrHmGvtR8ttNFi5DnUEbrK8xDeH3P4kiXQMr5v
+ VCJijOHkHHlUtNe/2uBarxW4qddNspTi63B3LujNZsPbX6/k6/m12eN/64C6JAyImw2Q=;
+Received: from chekov.greenie.muc.de ([193.149.48.178])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wvE8F-0000QO-CG for openvpn-devel@lists.sourceforge.net;
- Sat, 15 Aug 2026 13:09:04 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 67FD8uea020449
- for <openvpn-devel@lists.sourceforge.net>; Sat, 15 Aug 2026 15:08:56 +0200
+ id 1wvKAJ-0002Rs-Az for openvpn-devel@lists.sourceforge.net;
+ Sat, 15 Aug 2026 19:35:32 +0000
+Received: from chekov.greenie.muc.de (localhost [IPv6:0:0:0:0:0:0:0:1])
+ by chekov.greenie.muc.de (8.18.2/8.18.1) with ESMTP id 67FJZOuN072245
+ for <openvpn-devel@lists.sourceforge.net>;
+ Sat, 15 Aug 2026 21:35:24 +0200 (CEST)
+ (envelope-from gert@chekov.greenie.muc.de)
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 67FD8uKY020448
- for openvpn-devel@lists.sourceforge.net; Sat, 15 Aug 2026 15:08:56 +0200
+ by chekov.greenie.muc.de (8.18.2/8.18.1/Submit) id 67FJZOnm072244
+ for openvpn-devel@lists.sourceforge.net; Sat, 15 Aug 2026 21:35:24 +0200 (CEST)
+ (envelope-from gert)
+Date: Sat, 15 Aug 2026 21:35:24 +0200
 From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Sat, 15 Aug 2026 15:08:49 +0200
-Message-ID: <20260815130856.20431-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1773073753000.Ie0b94b596637d660392bc4eda48d16cfecfeb971@gerrit.openvpn.net>
-References: <gerrit.1773073753000.Ie0b94b596637d660392bc4eda48d16cfecfeb971@gerrit.openvpn.net>
+To: Razvan Cojocaru via Openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Message-ID: <aoC_d-mqHuNUtmXp@greenie.muc.de>
+References: <20260812140515.107442-1-razvanc@mailbox.org>
+ <202608141057.67EAvLDt017548@chekov.greenie.muc.de>
 MIME-Version: 1.0
-X-Headers-End: 1wvE8F-0000QO-CG
-Subject: [Openvpn-devel] [PATCH v8] init: Avoid sign-compare warnings
+In-Reply-To: <202608141057.67EAvLDt017548@chekov.greenie.muc.de>
+X-mgetty-docs: http://mgetty.greenie.net/
+X-Headers-End: 1wvKAJ-0002Rs-Az
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: buffer.h: Fix
+ buf_substring_len() documentation
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -77,116 +82,96 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============2968464342114183689=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@lichtenheld.com>
+--===============2968464342114183689==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="O020cKEaeklXmTIQ"
+Content-Disposition: inline
 
-- Use BLENZ instead of buf_len where applicable
-- Fix some comparisons with ce list length
+--O020cKEaeklXmTIQ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Change-Id: Ie0b94b596637d660392bc4eda48d16cfecfeb971
-Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
-Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1562
----
+Hi,
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+On Fri, Aug 14, 2026 at 12:57:21PM +0200, Gert Doering wrote:
+> Your patch has been applied to the master branch.
+>=20
+> commit 9b114749d9db9918fa951814cf2d8f4827b3947e
+> Author: Razvan Cojocaru via Openvpn-devel
+> Date:   Wed Aug 12 17:05:15 2026 +0300
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1562
-This mail reflects revision 8 of this Change.
+*sigh* damn DMARC header massacre...
 
-Acked-by according to Gerrit (reflected above):
-Razvan Cojocaru <razvanc@mailbox.org>
+fixed that, new commit ID of course
 
-        
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index caaa769..2196364 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -325,11 +325,6 @@
-     return l->len;
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wsign-compare"
--#endif
--
- static bool
- management_callback_remote_entry_get(void *arg, unsigned int index, char **remote)
- {
-@@ -340,7 +335,7 @@
-     struct connection_list *l = c->options.connection_list;
-     bool ret = true;
- 
--    if (index < l->len)
-+    if (l->len > 0 && index < (unsigned int)l->len)
-     {
-         struct connection_entry *ce = l->array[index];
-         const char *proto = proto2ascii(ce->proto, ce->af, false);
-@@ -364,10 +359,6 @@
-     return ret;
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- static bool
- management_callback_remote_cmd(void *arg, const char **p)
- {
-@@ -466,7 +457,6 @@
- #if defined(__GNUC__) || defined(__clang__)
- #pragma GCC diagnostic push
- #pragma GCC diagnostic ignored "-Wconversion"
--#pragma GCC diagnostic ignored "-Wsign-compare"
- #endif
- 
- /*
-@@ -638,8 +628,8 @@
-     } while (!ce_defined);
- 
-     /* Check if this connection attempt would bring us over the limit */
--    if (c->options.connect_retry_max > 0
--        && c->options.unsuccessful_attempts > (l->len * c->options.connect_retry_max))
-+    int max_attempts = l->len * c->options.connect_retry_max;
-+    if (max_attempts > 0 && c->options.unsuccessful_attempts > (unsigned int)max_attempts)
-     {
-         msg(M_FATAL, "All connections have been connect-retry-max (%d) times unsuccessful, exiting",
-             c->options.connect_retry_max);
-@@ -2176,7 +2166,7 @@
- static void
- add_delim_if_non_empty(struct buffer *buf, const char *header)
- {
--    if (buf_len(buf) > strlen(header))
-+    if (BLENZ(buf) > strlen(header))
-     {
-         buf_printf(buf, ", ");
-     }
-@@ -2264,7 +2254,7 @@
-         buf_printf(&out, "session-timeout %d", o->session_timeout);
-     }
- 
--    if (buf_len(&out) > strlen(header))
-+    if (BLENZ(&out) > strlen(header))
-     {
-         msg(D_HANDSHAKE, "%s", BSTR(&out));
-     }
-@@ -2301,7 +2291,7 @@
-         }
-     }
- 
--    if (buf_len(&out) > strlen(header))
-+    if (BLENZ(&out) > strlen(header))
-     {
-         msg(D_HANDSHAKE, "%s", BSTR(&out));
-     }
+commit a743a67b84ef0324f163a949a4db07e0c4f30799 (HEAD -> master)
+Author: Razvan Cojocaru <razvanc@mailbox.org>
+Date:   Sat Aug 15 21:32:47 2026 +0200
 
+    buffer.h: Fix buf_substring_len() documentation
+
+pushed *now*.
+
+(I do have a pre-push hook that prevents me from pushing with a=20
+DMARC-garbled author, but AFAIK you can't install that as a pre-commit
+hook and I didn't notice the refusal to push before leaving for the
+weekend...)
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=
+=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@greenie.muc=
+=2Ede
+
+--O020cKEaeklXmTIQ
+Content-Type: application/pgp-signature; name=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+
+iQHPBAEBCAA5FiEEti5qK05WVwt73GvgHYKe/spWKBIFAmqAv3obFIAAAAAABAAO
+bWFudTIsMi41KzEuMTIsMiwzAAoJEB2Cnv7KVigSf6IL/1Fe963ZwN+f4+nmpb6z
+U3MKRa6vJO2ERBbRc8wh6MIPNit5Obii7a+ulLrTpwn4bl6UigLFHVb8RXh+HstC
+E+W0j4Wbmha5B1s05oEQXGE9AdQqcyMe+2cGKp906dgK1yNHN9LDw2DGSKyqKWO3
+ISTmlG/wazDqIU6GYnIMlqPmVP4BMjEBT1AkLiYVWqmVE13gDouWylafwortUV1+
+0Oyg88nTDorHJrIN7N4cW7utFIbqqvo0YcV8DqyDE0VBMiEoi/gRgimIvqV9ZIBC
+fEUuxDHQtUXzFmnXSdkDfGKc0dpdxb6xaYisLSGw3K3O2tbDKMoCkLglLXLZqUk4
+r8gCAxgkb0W6pj571oLGl45+LBdZiS9X8WnV0TT4DZemE6DXIJ/v6y3Ul3wNU2IW
+/PsO63w/qQz5jHjQvZd5SWymBodsN4Rkdur9XCSmTUaibpKlw+rVJlAEKlYKqlWl
+Lz3MOl1n/SfEfGT+3zy+yIsJDr98wtBPVI5ts2n/Tk5XGg==
+=0AAq
+-----END PGP SIGNATURE-----
+
+--O020cKEaeklXmTIQ--
+
+
+--===============2968464342114183689==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============2968464342114183689==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+--===============2968464342114183689==--
+
