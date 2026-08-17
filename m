@@ -4,129 +4,69 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C1CDAC5B572
-	for <openvpn-devel@archiver.kernel.org>; Mon, 17 Aug 2026 12:58:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id AD6BCC5B572
+	for <openvpn-devel@archiver.kernel.org>; Mon, 17 Aug 2026 13:04:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:Date:Sender:To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=zdZgucLIvx44RIOCMK+bRdpP+NrYb/f4D5ymQqQJsgE=; b=d/98bNEwf24CErLnqtatXHGPWs
-	4+04DQ9HFBhP6IfnNRIAc/FCjnYmUWRdEN5NvbgrBtgw4Qmt2BxAbJUE+ahFJg6wIr2Kjka84vvzH
-	dfdrlqOojH4byneAxbjjfLrzw3qitwMPi4FUrKwT0TaAW//uSoN0j9fPigR4ir47/PE0=;
+	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
+	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=zmUvW4v3sfMIxNPoeilgZlQ+6C5bJW5FF2S1iy3zK+U=; b=AFaR03857a5Q4iYQl9T4vfSCCk
+	s0RtPDcni4HtBEf9oAE8mOwv8660Q2dLgSEwUxV7eRVIuBSfGHSll4YhfMIiijpy6amR7wN4dVfF5
+	FU2azO07u4JleYGOukBtAFK6pAP34T4m4n5vhpETLYk0hev6XSWJvmWHno4s0dlv9Zoc=;
 Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
 	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wvwv5-0005oR-6k;
-	Mon, 17 Aug 2026 12:58:28 +0000
+	id 1wvx11-000655-P9;
+	Mon, 17 Aug 2026 13:04:36 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wvwun-0005oC-VI
+ (envelope-from <gert@blue4.greenie.muc.de>) id 1wvx10-00064w-6m
  for openvpn-devel@lists.sourceforge.net;
- Mon, 17 Aug 2026 12:58:10 +0000
+ Mon, 17 Aug 2026 13:04:35 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:Date:From:Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
- :List-Post:List-Owner:List-Archive;
- bh=IepaIFpqkhzWY1lUoMZsuq4ct699fPLphcgVQ5cmL0w=; b=bwBq95mcnGd7lK7DMkp/y77y60
- OjmYPK+Uh+4kQOMUqU6KqBTmwYDydX3AvWKV3LR/MKNqgEsaloMnH4vcprl4vIOgWhc8OkUzFWzpE
- LWllzJeT9bwbVz9hqn1uDtH+HjmJFAXP+Dur0oA+pzCKzntoQHv3RyJC1qt3kMN6dhJI=;
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
+ In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=ubuz8Skuwy+SOh1wVBqPeQbKd1teshzTA1r1PeRNg7E=; b=CP3JFDHBWMzpmFEQksLMgkzND1
+ 4Ys/LraoyC/QoFgwuhdbLw58nrKJ9fw0SaO4zYH3WGmJSQMrqhjNqqedaHDGz1Qs/C9YprBzmLnS/
+ /UpRgdg/dWjhapdm5/HLhN3h4iVfNz/BhYXKgjDYtVf241TROn2dtoeue1y0bwxzHc1w=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:Date:From:Sender:
- To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=IepaIFpqkhzWY1lUoMZsuq4ct699fPLphcgVQ5cmL0w=; b=H
- 3jWS+ZD34KQAbC2UdIVzBROR9tZIg/VmtzoMViKO1v6z6jLuso1Xd16Aeo4eSdqMf1xzP4GhDVRqp
- N07oOrHxzwSXcKQ0wNPthAI+CAp5a+G1+L+7MhD5iBGlXviGJDJ03XelJrxKpRUgSL1x0ysRhczXp
- ZsE1aUyRXGRXne6E=;
-Received: from mail-wm1-f53.google.com ([209.85.128.53])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wvwun-0007b7-23 for openvpn-devel@lists.sourceforge.net;
- Mon, 17 Aug 2026 12:58:10 +0000
-Received: by mail-wm1-f53.google.com with SMTP id
- 5b1f17b1804b1-49556f97a9dso23080535e9.1
- for <openvpn-devel@lists.sourceforge.net>;
- Mon, 17 Aug 2026 05:58:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1786971482; x=1787576282; darn=lists.sourceforge.net;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:date:from:from:to:cc:subject:date:message-id
- :reply-to:content-type;
- bh=IepaIFpqkhzWY1lUoMZsuq4ct699fPLphcgVQ5cmL0w=;
- b=HbJQO3k/wjLttfoWyDVwmTnLuej9eB9K1Os766AyY7NZayh0Ery6tq5zDUQ8sLMjAd
- X6WnOIdBO9hnvWeSR60w84rHAWxSxJIxHlpFqnXwuRx5ORCFKBifQvEbmY7AKvGxnY3t
- cLB257Hr9tB7p7LVC2XsrMZqWdfD2230yAHxfjOikznPpENYXRLRWEoVaBiMqJN+T0QA
- PdE9CIxnu9x8y0YOQo5jYrj53m8+80QwY7rqmbZlZvpuGjTWBqo4KnCb8QU+Zme8vXjp
- jL5r4511lA/RSWLui3A2e6PpT2DLPlWCVxSkYvrLVIN8DwU61CDDZXrI5FB+DHvXEslc
- oLUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1786971482; x=1787576282;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:date:from:x-gm-gg:x-gm-message-state:from:to:cc
- :subject:date:message-id:reply-to:content-type;
- bh=IepaIFpqkhzWY1lUoMZsuq4ct699fPLphcgVQ5cmL0w=;
- b=hGeN2Z4kk2xZ85JwL7Gf3t/zGPXpMtQgSZYOsTAL7KtXsC0cIHWQFmgGpcoXQu/EEi
- W0Sss/zyMbmJz/RwH1LrwVi2PLzcx6B0aJZfUNNBJbO4qvF8Z2EV0JSp3iJaEb2pQDdx
- 4rCXPw6P4mIIp/R/k4pA5dzf/tbPBNnRfh1m0FVlMxEJTV59K51RVZEPic9z0uMNp/rW
- nXJMQDMeL2SLgpUk4z30lugv7WpgrrNOfocdVGDVtxh4zRP7DoraAhF/3nRKX2QamSmV
- 0m4sdCcUoqBTKBmV6vVhmBtIXS/vCZa7S4VHXiJlRpZlnkTtoWJ2dSVVmivgP6nKdpQo
- pE8Q==
-X-Forwarded-Encrypted: i=1;
- AHgh+Rrihq8PW+h6GHsY/hOX8ksA4XFFel674Hnub2QzXqDX/yhQXVYPDJgPcgyV9gdO5o3XZNCxWtR+WqRRcxMf@lists.sourceforge.net
-X-Gm-Message-State: AOJu0YxJ90l1V0/SOqg29HoGn+lblBK92vpdZzPRsgH7tr7FPqzK4asI
- rM4lpo5aKTs0lqlcxwVkrNr+cWFNibvECzKG06/2baOBd13FalEostR2TcaAD+P0ZFn5C9IW29W
- XCkCjEzcpNXdjxZQN7DqO/rRuNgQIbqI3rfIOUNFq07HgMTXXjgr8kut39FL2WnQtYTnvtRwmNQ
- vQcdmI+Q==
-X-Gm-Gg: AR+sD11iBzfWzJhTLuaGFZWPe6+VYX0ArxfQW9ibaecODRTnZR0fwO6vpkMqjJ0n1Lb
- Q0PUf/SwbmOvj+TEC18d/mdyusjGreUT40bEsi3K2OCOwKAZdw/c6x+ApIq0ll04wp7GO7H2Nwv
- w4cOUREUd/O6yGKjnBv+14cutDQV+4/l1kyXoQZ209blrgU6g5H8WReAkYr33aDMmJUJWlls2qZ
- FY1T7PiQ+4ZZgOKJUzemhDcUaz23ebckT6S7smG0FvQk1wvsde/R3xYve4TzMWdxyQbB4q8x502
- SSiFL/YZxiTkscxmGFyGTLbOv6APnSq8H0qjux4JGiTd34XJpSLmeYvxN2AH64i1Wysy2JQVpmb
- j24ogWu1hkqqY/G1+UY228DIibIjtcVWjUIcb0HbW+E1EPZ7t0wD2mozSb26L280dC1C31fr+gt
- CpvdofQTMpx4Ti1Z+oyHcvpJ9Y7dJp27XIGxUW1FCdvYoTVli+THPEjzT5XelUv7tKm00dlGDi3
- FzZOoKaOfDIQ4M6tsCT6fZCOP2E/2tdCmW5md3zx2Oi/HA/eYRWZlVCrdhrJSdI1S8z5Fvn1I0z
- s7e6+euqe0eX4fqgzN7TiBanPvyVee1PnNNwNcHMn0MC29lnfOM=
-X-Received: by 2002:a05:600c:a087:b0:499:9240:9a1c with SMTP id
- 5b1f17b1804b1-49992409ab3mr269850925e9.15.1786971482390; 
- Mon, 17 Aug 2026 05:58:02 -0700 (PDT)
-Received: from ip-10-18-1-162.eu-central-1.compute.internal
- (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
- by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-49996176b8asm122397075e9.11.2026.08.17.05.58.01
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 17 Aug 2026 05:58:02 -0700 (PDT)
-X-Google-Original-From: "plaisthos (Code Review)"
- <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Mon, 17 Aug 2026 12:58:00 +0000
-Auto-Submitted: auto-generated
-X-Gerrit-MessageType: comment
-X-Gerrit-PatchSet: 2
-X-Gerrit-Change-Id: Id3c6681b29026c2920a62a0ea570fd098649e197
-X-Gerrit-Change-Number: 1844
-X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1844?usp=email>
-X-Gerrit-Commit: 79f87e8fa83b20485262f5a50497d621febc5e40
-X-Gerrit-Comment-Date: Mon, 17 Aug 2026 12:58:00 +0000
-In-Reply-To: <gerrit.1786959771000.Id3c6681b29026c2920a62a0ea570fd098649e197@gerrit.openvpn.net>
-References: <gerrit.1786959771000.Id3c6681b29026c2920a62a0ea570fd098649e197@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzg2OTU5NzcxMDAwLklkM2M2NjgxYjI5MDI2YzI5MjBhNjJhMGVhNTcwZmQwOTg2NDllMTk3QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <0b59bead892ca1b8ca3ef987000bf0542417c6e4-EmailReviewComments-HTML@gerrit.openvpn.net>
+ h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
+ Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+ List-Post:List-Owner:List-Archive;
+ bh=ubuz8Skuwy+SOh1wVBqPeQbKd1teshzTA1r1PeRNg7E=; b=b7UHGnmvnf+4ZQeHj0tlQ0gxZX
+ SV2R4RFersd1KYHNKjmIOhegeX1PqyKHFMeykXzBefGVY0i37oHkLmMLeM2EVjywGPOYkx2yQ1YQy
+ rJwaVAeQqfi/YeZvZyUu02j5gSaynlEO9KRX3mnLcOJNxX8PdHjxroiEaQxn8EES4dIA=;
+Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
+ id 1wvx10-0004XE-4E for openvpn-devel@lists.sourceforge.net;
+ Mon, 17 Aug 2026 13:04:33 +0000
+Received: from blue.greenie.muc.de (localhost [127.0.0.1])
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 67HD4MB5019950
+ for <openvpn-devel@lists.sourceforge.net>; Mon, 17 Aug 2026 15:04:22 +0200
+Received: (from gert@localhost)
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 67HD4MRD019949
+ for openvpn-devel@lists.sourceforge.net; Mon, 17 Aug 2026 15:04:22 +0200
+From: Gert Doering <gert@greenie.muc.de>
+To: openvpn-devel@lists.sourceforge.net
+Date: Mon, 17 Aug 2026 15:04:17 +0200
+Message-ID: <20260817130422.19931-1-gert@greenie.muc.de>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <gerrit.1783600902000.I61762374c141662d596bbf88b64ca7f7472b5149@gerrit.openvpn.net>
+References: <gerrit.1783600902000.I61762374c141662d596bbf88b64ca7f7472b5149@gerrit.openvpn.net>
 MIME-Version: 1.0
-User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wvwun-0007b7-23
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Reduce number of
- future epoch keys from 16 to 4
+X-Headers-End: 1wvx10-0004XE-4E
+Subject: [Openvpn-devel] [PATCH v3] options: Factor out options display code
+ from options.c
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -138,179 +78,1434 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "plaisthos \(Code Review\) via Openvpn-devel"
- <openvpn-devel@lists.sourceforge.net>
-Reply-To: arne-openvpn@rfc2549.org, razvanc@mailbox.org,
- openvpn-devel@lists.sourceforge.net
-Cc: "plaisthos \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============1574832740387007529=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============1574832740387007529==
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="OjGEO9xDnsA="; charset=UTF-8
+From: Frank Lichtenheld <frank@lichtenheld.com>
 
---OjGEO9xDnsA=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+options.c is a huge, unwieldly file. So remove some
+closely related code that has no direct dependencies
+with the other functions in the file.
 
-Attention is currently required from: razvanc=2E
+In this case it is the code that prints out the current
+configuration.
 
-plaisthos has posted comm=
-ents on this change by plaisthos=2E ( http://gerrit=2Eopenvpn=2Enet/c/openv=
-pn/+/1844?usp=3Demail )
+Change-Id: I61762374c141662d596bbf88b64ca7f7472b5149
+Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
+Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1772
+---
 
-Change subject: Reduce number of future epoch keys=
- from 16 to 4
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1772
+This mail reflects revision 3 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Razvan Cojocaru <razvanc@mailbox.org>
 
-Patch Set 2:
+        
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index ad7de6e..540992b 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -527,6 +527,8 @@
+     src/openvpn/options_util.c
+     src/openvpn/options_util.h
+     src/openvpn/options_parse.c
++    src/openvpn/options_show.c
++    src/openvpn/options_show.h
+     src/openvpn/otime.c
+     src/openvpn/otime.h
+     src/openvpn/ovpn_dco_win.h
+diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+index 1f77384..2092e96 100644
+--- a/src/openvpn/Makefile.am
++++ b/src/openvpn/Makefile.am
+@@ -108,6 +108,7 @@
+ 	pkcs11_mbedtls.c \
+ 	openvpn.c openvpn.h \
+ 	options.c options.h \
++	options_show.c options_show.h \
+ 	options_util.c options_util.h \
+ 	options_parse.c \
+ 	otime.c otime.h \
+diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c
+index 5e1f680..24d6bb6 100644
+--- a/src/openvpn/openvpn.c
++++ b/src/openvpn/openvpn.c
+@@ -30,6 +30,7 @@
+ #include "forward.h"
+ #include "multi.h"
+ #include "win32.h"
++#include "options_show.h"
+ #include "platform.h"
+ 
+ #include "memdbg.h"
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 5e74a41..87da344 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -931,41 +931,6 @@
+     gc_free(&o->dns_options.gc);
+ }
+ 
+-#ifndef ENABLE_SMALL
+-
+-static const char *
+-pull_filter_type_name(int type)
+-{
+-    if (type == PUF_TYPE_ACCEPT)
+-    {
+-        return "accept";
+-    }
+-    if (type == PUF_TYPE_IGNORE)
+-    {
+-        return "ignore";
+-    }
+-    if (type == PUF_TYPE_REJECT)
+-    {
+-        return "reject";
+-    }
+-    else
+-    {
+-        return "???";
+-    }
+-}
+-
+-#define SHOW_PARM(name, value, format) msg(D_SHOW_PARMS, "  " #name " = " format, (value))
+-#define SHOW_STR(var)                  SHOW_PARM(var, (o->var ? o->var : "[UNDEF]"), "'%s'")
+-#define SHOW_STR_INLINE(var) \
+-    SHOW_PARM(var, o->var##_inline ? "[INLINE]" : (o->var ? o->var : "[UNDEF]"), "'%s'")
+-#define SHOW_INT(var)      SHOW_PARM(var, o->var, "%d")
+-#define SHOW_UINT(var)     SHOW_PARM(var, o->var, "%u")
+-#define SHOW_INT64(var)    SHOW_PARM(var, o->var, "%" PRIi64)
+-#define SHOW_UNSIGNED(var) SHOW_PARM(var, o->var, "0x%08x")
+-#define SHOW_BOOL(var)     SHOW_PARM(var, (o->var ? "ENABLED" : "DISABLED"), "%s");
+-
+-#endif /* ifndef ENABLE_SMALL */
+-
+ static void
+ setenv_connection_entry(struct env_set *es, const struct connection_entry *e, const int i)
+ {
+@@ -1257,55 +1222,6 @@
+ 
+     return ret;
+ }
+-#ifdef _WIN32
+-
+-#ifndef ENABLE_SMALL
+-
+-static void
+-show_dhcp_option_list(const char *name, const char *const *array, unsigned int len)
+-{
+-    for (unsigned int i = 0; i < len; ++i)
+-    {
+-        msg(D_SHOW_PARMS, "  %s[%u] = %s", name, i, array[i]);
+-    }
+-}
+-
+-static void
+-show_dhcp_option_addrs(const char *name, const in_addr_t *array, unsigned int len)
+-{
+-    struct gc_arena gc = gc_new();
+-    for (unsigned int i = 0; i < len; ++i)
+-    {
+-        msg(D_SHOW_PARMS, "  %s[%u] = %s", name, i, print_in_addr_t(array[i], 0, &gc));
+-    }
+-    gc_free(&gc);
+-}
+-
+-static void
+-show_tuntap_options(const struct tuntap_options *o)
+-{
+-    SHOW_BOOL(ip_win32_defined);
+-    SHOW_INT(ip_win32_type);
+-    SHOW_INT(dhcp_masq_offset);
+-    SHOW_INT(dhcp_lease_time);
+-    SHOW_INT(tap_sleep);
+-    SHOW_UNSIGNED(dhcp_options);
+-    SHOW_BOOL(dhcp_renew);
+-    SHOW_BOOL(dhcp_pre_release);
+-    SHOW_STR(domain);
+-    SHOW_STR(netbios_scope);
+-    SHOW_UNSIGNED(netbios_node_type);
+-    SHOW_BOOL(disable_nbt);
+-
+-    show_dhcp_option_addrs("DNS", o->dns, o->dns_len);
+-    show_dhcp_option_addrs("WINS", o->wins, o->wins_len);
+-    show_dhcp_option_addrs("NTP", o->ntp, o->ntp_len);
+-    show_dhcp_option_addrs("NBDD", o->nbdd, o->nbdd_len);
+-    show_dhcp_option_list("DOMAIN-SEARCH", o->domain_search_list, o->domain_search_list_len);
+-}
+-
+-#endif /* ifndef ENABLE_SMALL */
+-#endif /* ifdef _WIN32 */
+ 
+ static void
+ dhcp_option_dns6_parse(const char *parm, struct in6_addr *dns6_list, unsigned int *len, msglvl_t msglevel)
+@@ -1348,116 +1264,6 @@
+     }
+ }
+ 
+-#ifndef ENABLE_SMALL
+-static const char *
+-print_vlan_accept(enum vlan_acceptable_frames mode)
+-{
+-    switch (mode)
+-    {
+-        case VLAN_ONLY_TAGGED:
+-            return "tagged";
+-
+-        case VLAN_ONLY_UNTAGGED_OR_PRIORITY:
+-            return "untagged";
+-
+-        case VLAN_ALL:
+-            return "all";
+-    }
+-    return NULL;
+-}
+-
+-static void
+-show_p2mp_parms(const struct options *o)
+-{
+-    struct gc_arena gc = gc_new();
+-
+-    msg(D_SHOW_PARMS, "  server_network = %s", print_in_addr_t(o->server_network, 0, &gc));
+-    msg(D_SHOW_PARMS, "  server_netmask = %s", print_in_addr_t(o->server_netmask, 0, &gc));
+-    msg(D_SHOW_PARMS, "  server_network_ipv6 = %s", print_in6_addr(o->server_network_ipv6, 0, &gc));
+-    SHOW_INT(server_netbits_ipv6);
+-    msg(D_SHOW_PARMS, "  server_bridge_ip = %s", print_in_addr_t(o->server_bridge_ip, 0, &gc));
+-    msg(D_SHOW_PARMS, "  server_bridge_netmask = %s",
+-        print_in_addr_t(o->server_bridge_netmask, 0, &gc));
+-    msg(D_SHOW_PARMS, "  server_bridge_pool_start = %s",
+-        print_in_addr_t(o->server_bridge_pool_start, 0, &gc));
+-    msg(D_SHOW_PARMS, "  server_bridge_pool_end = %s",
+-        print_in_addr_t(o->server_bridge_pool_end, 0, &gc));
+-    if (o->push_list.head)
+-    {
+-        const struct push_entry *e = o->push_list.head;
+-        while (e)
+-        {
+-            if (e->enable)
+-            {
+-                msg(D_SHOW_PARMS, "  push_entry = '%s'", e->option);
+-            }
+-            e = e->next;
+-        }
+-    }
+-    SHOW_BOOL(ifconfig_pool_defined);
+-    msg(D_SHOW_PARMS, "  ifconfig_pool_start = %s",
+-        print_in_addr_t(o->ifconfig_pool_start, 0, &gc));
+-    msg(D_SHOW_PARMS, "  ifconfig_pool_end = %s", print_in_addr_t(o->ifconfig_pool_end, 0, &gc));
+-    msg(D_SHOW_PARMS, "  ifconfig_pool_netmask = %s",
+-        print_in_addr_t(o->ifconfig_pool_netmask, 0, &gc));
+-    SHOW_STR(ifconfig_pool_persist_filename);
+-    SHOW_INT(ifconfig_pool_persist_refresh_freq);
+-    SHOW_BOOL(ifconfig_ipv6_pool_defined);
+-    msg(D_SHOW_PARMS, "  ifconfig_ipv6_pool_base = %s",
+-        print_in6_addr(o->ifconfig_ipv6_pool_base, 0, &gc));
+-    SHOW_INT(ifconfig_ipv6_pool_netbits);
+-    SHOW_INT(n_bcast_buf);
+-    SHOW_INT(tcp_queue_limit);
+-    SHOW_INT(real_hash_size);
+-    SHOW_INT(virtual_hash_size);
+-    SHOW_STR(client_connect_script);
+-    SHOW_STR(learn_address_script);
+-    SHOW_STR(client_disconnect_script);
+-    SHOW_STR(client_crresponse_script);
+-    SHOW_STR(client_config_dir);
+-    SHOW_BOOL(ccd_exclusive);
+-    SHOW_STR(tmp_dir);
+-    SHOW_BOOL(push_ifconfig_defined);
+-    msg(D_SHOW_PARMS, "  push_ifconfig_local = %s",
+-        print_in_addr_t(o->push_ifconfig_local, 0, &gc));
+-    msg(D_SHOW_PARMS, "  push_ifconfig_remote_netmask = %s",
+-        print_in_addr_t(o->push_ifconfig_remote_netmask, 0, &gc));
+-    SHOW_BOOL(push_ifconfig_ipv6_defined);
+-    msg(D_SHOW_PARMS, "  push_ifconfig_ipv6_local = %s/%d",
+-        print_in6_addr(o->push_ifconfig_ipv6_local, 0, &gc), o->push_ifconfig_ipv6_netbits);
+-    msg(D_SHOW_PARMS, "  push_ifconfig_ipv6_remote = %s",
+-        print_in6_addr(o->push_ifconfig_ipv6_remote, 0, &gc));
+-    SHOW_BOOL(enable_c2c);
+-    SHOW_BOOL(duplicate_cn);
+-    SHOW_INT(cf_max);
+-    SHOW_INT(cf_per);
+-    SHOW_INT(cf_initial_max);
+-    SHOW_INT(cf_initial_per);
+-    SHOW_UINT(max_clients);
+-    SHOW_INT(max_routes_per_client);
+-    SHOW_STR(auth_user_pass_verify_script);
+-    SHOW_BOOL(auth_user_pass_verify_script_via_file);
+-    SHOW_BOOL(auth_token_generate);
+-    SHOW_BOOL(force_key_material_export);
+-    SHOW_INT(auth_token_lifetime);
+-    SHOW_STR_INLINE(auth_token_secret_file);
+-#if PORT_SHARE
+-    SHOW_STR(port_share_host);
+-    SHOW_STR(port_share_port);
+-#endif
+-    SHOW_BOOL(vlan_tagging);
+-    msg(D_SHOW_PARMS, "  vlan_accept = %s", print_vlan_accept(o->vlan_accept));
+-    SHOW_INT(vlan_pvid);
+-
+-    SHOW_BOOL(client);
+-    SHOW_BOOL(pull);
+-    SHOW_STR_INLINE(auth_user_pass_file);
+-
+-    gc_free(&gc);
+-}
+-
+-#endif /* ! ENABLE_SMALL */
+-
+ static void
+ option_iroute(struct options *o, const char *network_str, const char *netmask_str,
+               msglvl_t msglevel)
+@@ -1502,37 +1308,6 @@
+     o->iroutes_ipv6 = ir;
+ }
+ 
+-#ifndef ENABLE_SMALL
+-static void
+-show_http_proxy_options(const struct http_proxy_options *o)
+-{
+-    int i;
+-    msg(D_SHOW_PARMS, "BEGIN http_proxy");
+-    SHOW_STR(server);
+-    SHOW_STR(port);
+-    SHOW_STR(auth_method_string);
+-    SHOW_STR(auth_file);
+-    SHOW_STR(auth_file_up);
+-    SHOW_BOOL(inline_creds);
+-    SHOW_BOOL(nocache);
+-    SHOW_STR(http_version);
+-    SHOW_STR(user_agent);
+-    for (i = 0; i < MAX_CUSTOM_HTTP_HEADER && o->custom_headers[i].name; i++)
+-    {
+-        if (o->custom_headers[i].content)
+-        {
+-            msg(D_SHOW_PARMS, "  custom_header[%d] = %s: %s", i, o->custom_headers[i].name,
+-                o->custom_headers[i].content);
+-        }
+-        else
+-        {
+-            msg(D_SHOW_PARMS, "  custom_header[%d] = %s", i, o->custom_headers[i].name);
+-        }
+-    }
+-    msg(D_SHOW_PARMS, "END http_proxy");
+-}
+-#endif /* ifndef ENABLE_SMALL */
+-
+ void
+ options_detach(struct options *o)
+ {
+@@ -1580,399 +1355,6 @@
+     }
+ }
+ 
+-#ifndef ENABLE_SMALL
+-static void
+-show_connection_entry(const struct connection_entry *o)
+-{
+-    /* Display the global proto only in client mode or with no '--local'*/
+-    if (o->local_list->len == 1)
+-    {
+-        msg(D_SHOW_PARMS, "  proto = %s", proto2ascii(o->proto, o->af, false));
+-    }
+-
+-    msg(D_SHOW_PARMS, "  Local Sockets:");
+-    for (int i = 0; i < o->local_list->len; i++)
+-    {
+-        msg(D_SHOW_PARMS, "    [%s]:%s-%s", o->local_list->array[i]->local,
+-            o->local_list->array[i]->port,
+-            proto2ascii(o->local_list->array[i]->proto, o->af, false));
+-    }
+-    SHOW_STR(remote);
+-    SHOW_STR(remote_port);
+-    SHOW_BOOL(remote_float);
+-    SHOW_BOOL(bind_defined);
+-    SHOW_BOOL(bind_local);
+-    SHOW_BOOL(bind_ipv6_only);
+-    SHOW_INT(connect_retry_seconds);
+-    SHOW_INT(connect_timeout);
+-
+-    if (o->http_proxy_options)
+-    {
+-        show_http_proxy_options(o->http_proxy_options);
+-    }
+-    SHOW_STR(socks_proxy_server);
+-    SHOW_STR(socks_proxy_port);
+-    SHOW_INT(tun_mtu);
+-    SHOW_BOOL(tun_mtu_defined);
+-    SHOW_INT(link_mtu);
+-    SHOW_BOOL(link_mtu_defined);
+-    SHOW_INT(tun_mtu_extra);
+-    SHOW_BOOL(tun_mtu_extra_defined);
+-    SHOW_INT(tls_mtu);
+-
+-    SHOW_INT(mtu_discover_type);
+-
+-#ifdef ENABLE_FRAGMENT
+-    SHOW_INT(fragment);
+-#endif
+-    SHOW_INT(mssfix);
+-    SHOW_BOOL(mssfix_encap);
+-    SHOW_BOOL(mssfix_fixed);
+-
+-    SHOW_INT(explicit_exit_notification);
+-
+-    SHOW_STR_INLINE(tls_auth_file);
+-    SHOW_PARM(key_direction, keydirection2ascii(o->key_direction, false, true), "%s");
+-    SHOW_STR_INLINE(tls_crypt_file);
+-    SHOW_STR_INLINE(tls_crypt_v2_file);
+-}
+-
+-
+-static void
+-show_connection_entries(const struct options *o)
+-{
+-    if (o->connection_list)
+-    {
+-        const struct connection_list *l = o->connection_list;
+-        int i;
+-        for (i = 0; i < l->len; ++i)
+-        {
+-            msg(D_SHOW_PARMS, "Connection profiles [%d]:", i);
+-            show_connection_entry(l->array[i]);
+-        }
+-    }
+-    else
+-    {
+-        msg(D_SHOW_PARMS, "Connection profiles [default]:");
+-        show_connection_entry(&o->ce);
+-    }
+-    msg(D_SHOW_PARMS, "Connection profiles END");
+-}
+-
+-static void
+-show_pull_filter_list(const struct pull_filter_list *l)
+-{
+-    struct pull_filter *f;
+-    if (!l)
+-    {
+-        return;
+-    }
+-
+-    msg(D_SHOW_PARMS, "  Pull filters:");
+-    for (f = l->head; f; f = f->next)
+-    {
+-        msg(D_SHOW_PARMS, "    %s \"%s\"", pull_filter_type_name(f->type), f->pattern);
+-    }
+-}
+-
+-#endif /* ifndef ENABLE_SMALL */
+-
+-void
+-show_settings(const struct options *o)
+-{
+-#ifndef ENABLE_SMALL
+-    msg(D_SHOW_PARMS, "Current Parameter Settings:");
+-
+-    SHOW_STR(config);
+-
+-    SHOW_INT(mode);
+-
+-#ifdef ENABLE_FEATURE_TUN_PERSIST
+-    SHOW_BOOL(persist_config);
+-    SHOW_INT(persist_mode);
+-#endif
+-
+-    SHOW_BOOL(show_ciphers);
+-    SHOW_BOOL(show_digests);
+-    SHOW_BOOL(show_engines);
+-    SHOW_BOOL(genkey);
+-    SHOW_STR(genkey_filename);
+-    SHOW_STR(key_pass_file);
+-    SHOW_BOOL(show_tls_ciphers);
+-
+-    SHOW_INT(connect_retry_max);
+-    show_connection_entries(o);
+-
+-    SHOW_BOOL(remote_random);
+-
+-    SHOW_STR(ipchange);
+-    SHOW_STR(dev);
+-    SHOW_STR(dev_type);
+-    SHOW_STR(dev_node);
+-#if defined(ENABLE_DCO)
+-    SHOW_BOOL(disable_dco);
+-#endif
+-    SHOW_STR(lladdr);
+-    SHOW_INT(topology);
+-    SHOW_STR(ifconfig_local);
+-    SHOW_STR(ifconfig_remote_netmask);
+-    SHOW_BOOL(ifconfig_noexec);
+-    SHOW_BOOL(ifconfig_nowarn);
+-    SHOW_STR(ifconfig_ipv6_local);
+-    SHOW_INT(ifconfig_ipv6_netbits);
+-    SHOW_STR(ifconfig_ipv6_remote);
+-
+-    SHOW_INT(shaper);
+-    SHOW_INT(mtu_test);
+-
+-    SHOW_BOOL(mlock);
+-
+-    SHOW_INT(keepalive_ping);
+-    SHOW_INT(keepalive_timeout);
+-    SHOW_INT(inactivity_timeout);
+-    SHOW_INT(session_timeout);
+-    SHOW_INT64(inactivity_minimum_bytes);
+-    SHOW_INT(ping_send_timeout);
+-    SHOW_INT(ping_rec_timeout);
+-    SHOW_INT(ping_rec_timeout_action);
+-    SHOW_BOOL(ping_timer_remote);
+-    SHOW_INT(remap_sigusr1);
+-    SHOW_BOOL(persist_tun);
+-    SHOW_BOOL(persist_local_ip);
+-    SHOW_BOOL(persist_remote_ip);
+-
+-#if PASSTOS_CAPABILITY
+-    SHOW_BOOL(passtos);
+-#endif
+-
+-    SHOW_INT(resolve_retry_seconds);
+-    SHOW_BOOL(resolve_in_advance);
+-
+-    SHOW_STR(username);
+-    SHOW_STR(groupname);
+-    SHOW_STR(chroot_dir);
+-    SHOW_STR(cd_dir);
+-#ifdef ENABLE_SELINUX
+-    SHOW_STR(selinux_context);
+-#endif
+-    SHOW_STR(writepid);
+-    SHOW_STR(up_script);
+-    SHOW_STR(down_script);
+-    SHOW_BOOL(down_pre);
+-    SHOW_BOOL(up_restart);
+-    SHOW_BOOL(up_delay);
+-    SHOW_BOOL(daemon);
+-    SHOW_BOOL(log);
+-    SHOW_BOOL(suppress_timestamps);
+-    SHOW_BOOL(machine_readable_output);
+-    SHOW_INT(nice);
+-    SHOW_INT(verbosity);
+-    SHOW_INT(mute);
+-#ifdef ENABLE_DEBUG
+-    SHOW_INT(gremlin);
+-#endif
+-    SHOW_STR(status_file);
+-    SHOW_INT(status_file_version);
+-    SHOW_INT(status_file_update_freq);
+-
+-    SHOW_BOOL(occ);
+-    SHOW_INT(rcvbuf);
+-    SHOW_INT(sndbuf);
+-#if defined(TARGET_LINUX)
+-    SHOW_INT(mark);
+-#endif
+-    SHOW_INT(sockflags);
+-
+-    SHOW_INT(comp.alg);
+-    SHOW_INT(comp.flags);
+-
+-    SHOW_STR(route_script);
+-    SHOW_STR(route_default_gateway);
+-    SHOW_INT(route_default_metric);
+-    SHOW_INT(route_default_table_id);
+-    SHOW_BOOL(route_noexec);
+-    SHOW_INT(route_delay);
+-    SHOW_INT(route_delay_window);
+-    SHOW_BOOL(route_delay_defined);
+-    SHOW_BOOL(route_nopull);
+-    SHOW_BOOL(route_gateway_via_dhcp);
+-    SHOW_BOOL(allow_pull_fqdn);
+-    show_pull_filter_list(o->pull_filter_list);
+-
+-    if (o->routes)
+-    {
+-        print_route_options(o->routes, D_SHOW_PARMS);
+-    }
+-
+-    if (o->client_nat)
+-    {
+-        print_client_nat_list(o->client_nat, D_SHOW_PARMS);
+-    }
+-
+-    show_dns_options(&o->dns_options);
+-
+-#ifdef ENABLE_MANAGEMENT
+-    SHOW_STR(management_addr);
+-    SHOW_STR(management_port);
+-    SHOW_STR(management_user_pass);
+-    SHOW_INT(management_log_history_cache);
+-    SHOW_INT(management_echo_buffer_size);
+-    SHOW_STR(management_client_user);
+-    SHOW_STR(management_client_group);
+-    SHOW_INT(management_flags);
+-#endif
+-#ifdef ENABLE_PLUGIN
+-    if (o->plugin_list)
+-    {
+-        plugin_option_list_print(o->plugin_list, D_SHOW_PARMS);
+-    }
+-#endif
+-
+-    SHOW_STR_INLINE(shared_secret_file);
+-    SHOW_PARM(key_direction, keydirection2ascii(o->key_direction, false, true), "%s");
+-    SHOW_STR(ciphername);
+-    SHOW_STR(ncp_ciphers);
+-    SHOW_STR(authname);
+-#ifndef ENABLE_CRYPTO_MBEDTLS
+-    SHOW_BOOL(engine);
+-#endif /* ENABLE_CRYPTO_MBEDTLS */
+-    SHOW_BOOL(mute_replay_warnings);
+-    SHOW_INT(replay_window);
+-    SHOW_INT(replay_time);
+-    SHOW_STR(packet_id_file);
+-    SHOW_BOOL(test_crypto);
+-
+-    SHOW_BOOL(tls_server);
+-    SHOW_BOOL(tls_client);
+-    SHOW_STR_INLINE(ca_file);
+-    SHOW_STR(ca_path);
+-    SHOW_STR_INLINE(dh_file);
+-    if ((o->management_flags & MF_EXTERNAL_CERT))
+-    {
+-        SHOW_PARM("cert_file", "EXTERNAL_CERT", "%s");
+-    }
+-    else
+-    {
+-        SHOW_STR_INLINE(cert_file);
+-    }
+-    SHOW_STR_INLINE(extra_certs_file);
+-
+-    if ((o->management_flags & MF_EXTERNAL_KEY))
+-    {
+-        SHOW_PARM("priv_key_file", "EXTERNAL_PRIVATE_KEY", "%s");
+-    }
+-    else
+-    {
+-        SHOW_STR_INLINE(priv_key_file);
+-    }
+-#ifndef ENABLE_CRYPTO_MBEDTLS
+-    SHOW_STR_INLINE(pkcs12_file);
+-#endif
+-#ifdef ENABLE_CRYPTOAPI
+-    SHOW_STR(cryptoapi_cert);
+-#endif
+-    SHOW_STR(cipher_list);
+-    SHOW_STR(cipher_list_tls13);
+-    SHOW_STR(tls_cert_profile);
+-    SHOW_STR(tls_verify);
+-    SHOW_STR(tls_export_peer_cert_dir);
+-    SHOW_INT(verify_x509_type);
+-    SHOW_STR(verify_x509_name);
+-    SHOW_STR_INLINE(crl_file);
+-    SHOW_INT(ns_cert_type);
+-    {
+-        int i;
+-        for (i = 0; i < MAX_PARMS; i++)
+-        {
+-            SHOW_INT(remote_cert_ku[i]);
+-        }
+-    }
+-    SHOW_STR(remote_cert_eku);
+-    if (o->verify_hash)
+-    {
+-        SHOW_INT(verify_hash_algo);
+-        SHOW_INT(verify_hash_depth);
+-        struct gc_arena gc = gc_new();
+-        const struct verify_hash_list *hl = o->verify_hash;
+-        int digest_len =
+-            (o->verify_hash_algo == MD_SHA1) ? SHA_DIGEST_LENGTH : SHA256_DIGEST_LENGTH;
+-        while (hl)
+-        {
+-            char *s = format_hex_ex(hl->hash, digest_len, 0, 1, ":", &gc);
+-            SHOW_PARM(verify_hash, s, "%s");
+-            hl = hl->next;
+-        }
+-        gc_free(&gc);
+-    }
+-    SHOW_INT(ssl_flags);
+-
+-    SHOW_INT(tls_timeout);
+-
+-    SHOW_INT64(renegotiate_bytes);
+-    SHOW_INT64(renegotiate_packets);
+-    SHOW_INT(renegotiate_seconds);
+-
+-    SHOW_INT(handshake_window);
+-    SHOW_INT(transition_window);
+-
+-    SHOW_BOOL(single_session);
+-    SHOW_BOOL(push_peer_info);
+-    SHOW_BOOL(tls_exit);
+-
+-    SHOW_STR(tls_crypt_v2_metadata);
+-
+-#ifdef ENABLE_PKCS11
+-    {
+-        int i;
+-        for (i = 0; i < MAX_PARMS && o->pkcs11_providers[i] != NULL; i++)
+-        {
+-            SHOW_PARM(pkcs11_providers, o->pkcs11_providers[i], "%s");
+-        }
+-    }
+-    {
+-        int i;
+-        for (i = 0; i < MAX_PARMS; i++)
+-        {
+-            SHOW_PARM(pkcs11_protected_authentication,
+-                      o->pkcs11_protected_authentication[i] ? "ENABLED" : "DISABLED", "%s");
+-        }
+-    }
+-    {
+-        int i;
+-        for (i = 0; i < MAX_PARMS; i++)
+-        {
+-            SHOW_PARM(pkcs11_private_mode, o->pkcs11_private_mode[i], "%08x");
+-        }
+-    }
+-    {
+-        int i;
+-        for (i = 0; i < MAX_PARMS; i++)
+-        {
+-            SHOW_PARM(pkcs11_cert_private, o->pkcs11_cert_private[i] ? "ENABLED" : "DISABLED",
+-                      "%s");
+-        }
+-    }
+-    SHOW_INT(pkcs11_pin_cache_period);
+-    SHOW_STR(pkcs11_id);
+-    SHOW_BOOL(pkcs11_id_management);
+-#endif /* ENABLE_PKCS11 */
+-
+-    show_p2mp_parms(o);
+-
+-#ifdef _WIN32
+-    SHOW_BOOL(show_net_up);
+-    SHOW_INT(route_method);
+-    SHOW_BOOL(block_outside_dns);
+-    show_tuntap_options(&o->tuntap_options);
+-#endif
+-#endif /* ifndef ENABLE_SMALL */
+-}
+-
+-#undef SHOW_PARM
+-#undef SHOW_STR
+-#undef SHOW_INT
+-#undef SHOW_BOOL
+-
+ #ifdef ENABLE_MANAGEMENT
+ 
+ static struct http_proxy_options *
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 30a146f..d42773f 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -901,8 +901,6 @@
+ 
+ void setenv_settings(struct env_set *es, const struct options *o);
+ 
+-void show_settings(const struct options *o);
+-
+ bool string_defined_equal(const char *s1, const char *s2);
+ 
+ const char *options_string_version(const char *s, struct gc_arena *gc);
+diff --git a/src/openvpn/options_show.c b/src/openvpn/options_show.c
+new file mode 100644
+index 0000000..34c00df
+--- /dev/null
++++ b/src/openvpn/options_show.c
+@@ -0,0 +1,631 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2002-2026 OpenVPN Inc <sales@openvpn.net>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, see <https://www.gnu.org/licenses/>.
++ */
++
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
++
++#ifndef ENABLE_SMALL
++
++#include "syshead.h"
++
++#include "crypto.h"
++#include "error.h"
++#include "options.h"
++
++static const char *
++pull_filter_type_name(int type)
++{
++    if (type == PUF_TYPE_ACCEPT)
++    {
++        return "accept";
++    }
++    if (type == PUF_TYPE_IGNORE)
++    {
++        return "ignore";
++    }
++    if (type == PUF_TYPE_REJECT)
++    {
++        return "reject";
++    }
++    else
++    {
++        return "???";
++    }
++}
++
++#define SHOW_PARM(name, value, format) msg(D_SHOW_PARMS, "  " #name " = " format, (value))
++#define SHOW_STR(var)                  SHOW_PARM(var, (o->var ? o->var : "[UNDEF]"), "'%s'")
++#define SHOW_STR_INLINE(var) \
++    SHOW_PARM(var, o->var##_inline ? "[INLINE]" : (o->var ? o->var : "[UNDEF]"), "'%s'")
++#define SHOW_INT(var)      SHOW_PARM(var, o->var, "%d")
++#define SHOW_UINT(var)     SHOW_PARM(var, o->var, "%u")
++#define SHOW_INT64(var)    SHOW_PARM(var, o->var, "%" PRIi64)
++#define SHOW_UNSIGNED(var) SHOW_PARM(var, o->var, "0x%08x")
++#define SHOW_BOOL(var)     SHOW_PARM(var, (o->var ? "ENABLED" : "DISABLED"), "%s");
++
++#ifdef _WIN32
++
++static void
++show_dhcp_option_list(const char *name, const char *const *array, unsigned int len)
++{
++    for (unsigned int i = 0; i < len; ++i)
++    {
++        msg(D_SHOW_PARMS, "  %s[%u] = %s", name, i, array[i]);
++    }
++}
++
++static void
++show_dhcp_option_addrs(const char *name, const in_addr_t *array, unsigned int len)
++{
++    struct gc_arena gc = gc_new();
++    for (unsigned int i = 0; i < len; ++i)
++    {
++        msg(D_SHOW_PARMS, "  %s[%u] = %s", name, i, print_in_addr_t(array[i], 0, &gc));
++    }
++    gc_free(&gc);
++}
++
++static void
++show_tuntap_options(const struct tuntap_options *o)
++{
++    SHOW_BOOL(ip_win32_defined);
++    SHOW_INT(ip_win32_type);
++    SHOW_INT(dhcp_masq_offset);
++    SHOW_INT(dhcp_lease_time);
++    SHOW_INT(tap_sleep);
++    SHOW_UNSIGNED(dhcp_options);
++    SHOW_BOOL(dhcp_renew);
++    SHOW_BOOL(dhcp_pre_release);
++    SHOW_STR(domain);
++    SHOW_STR(netbios_scope);
++    SHOW_UNSIGNED(netbios_node_type);
++    SHOW_BOOL(disable_nbt);
++
++    show_dhcp_option_addrs("DNS", o->dns, o->dns_len);
++    show_dhcp_option_addrs("WINS", o->wins, o->wins_len);
++    show_dhcp_option_addrs("NTP", o->ntp, o->ntp_len);
++    show_dhcp_option_addrs("NBDD", o->nbdd, o->nbdd_len);
++    show_dhcp_option_list("DOMAIN-SEARCH", o->domain_search_list, o->domain_search_list_len);
++}
++#endif /* ifdef _WIN32 */
++
++static const char *
++print_vlan_accept(enum vlan_acceptable_frames mode)
++{
++    switch (mode)
++    {
++        case VLAN_ONLY_TAGGED:
++            return "tagged";
++
++        case VLAN_ONLY_UNTAGGED_OR_PRIORITY:
++            return "untagged";
++
++        case VLAN_ALL:
++            return "all";
++    }
++    return NULL;
++}
++
++static void
++show_p2mp_parms(const struct options *o)
++{
++    struct gc_arena gc = gc_new();
++
++    msg(D_SHOW_PARMS, "  server_network = %s", print_in_addr_t(o->server_network, 0, &gc));
++    msg(D_SHOW_PARMS, "  server_netmask = %s", print_in_addr_t(o->server_netmask, 0, &gc));
++    msg(D_SHOW_PARMS, "  server_network_ipv6 = %s", print_in6_addr(o->server_network_ipv6, 0, &gc));
++    SHOW_INT(server_netbits_ipv6);
++    msg(D_SHOW_PARMS, "  server_bridge_ip = %s", print_in_addr_t(o->server_bridge_ip, 0, &gc));
++    msg(D_SHOW_PARMS, "  server_bridge_netmask = %s",
++        print_in_addr_t(o->server_bridge_netmask, 0, &gc));
++    msg(D_SHOW_PARMS, "  server_bridge_pool_start = %s",
++        print_in_addr_t(o->server_bridge_pool_start, 0, &gc));
++    msg(D_SHOW_PARMS, "  server_bridge_pool_end = %s",
++        print_in_addr_t(o->server_bridge_pool_end, 0, &gc));
++    if (o->push_list.head)
++    {
++        const struct push_entry *e = o->push_list.head;
++        while (e)
++        {
++            if (e->enable)
++            {
++                msg(D_SHOW_PARMS, "  push_entry = '%s'", e->option);
++            }
++            e = e->next;
++        }
++    }
++    SHOW_BOOL(ifconfig_pool_defined);
++    msg(D_SHOW_PARMS, "  ifconfig_pool_start = %s",
++        print_in_addr_t(o->ifconfig_pool_start, 0, &gc));
++    msg(D_SHOW_PARMS, "  ifconfig_pool_end = %s", print_in_addr_t(o->ifconfig_pool_end, 0, &gc));
++    msg(D_SHOW_PARMS, "  ifconfig_pool_netmask = %s",
++        print_in_addr_t(o->ifconfig_pool_netmask, 0, &gc));
++    SHOW_STR(ifconfig_pool_persist_filename);
++    SHOW_INT(ifconfig_pool_persist_refresh_freq);
++    SHOW_BOOL(ifconfig_ipv6_pool_defined);
++    msg(D_SHOW_PARMS, "  ifconfig_ipv6_pool_base = %s",
++        print_in6_addr(o->ifconfig_ipv6_pool_base, 0, &gc));
++    SHOW_INT(ifconfig_ipv6_pool_netbits);
++    SHOW_INT(n_bcast_buf);
++    SHOW_INT(tcp_queue_limit);
++    SHOW_INT(real_hash_size);
++    SHOW_INT(virtual_hash_size);
++    SHOW_STR(client_connect_script);
++    SHOW_STR(learn_address_script);
++    SHOW_STR(client_disconnect_script);
++    SHOW_STR(client_crresponse_script);
++    SHOW_STR(client_config_dir);
++    SHOW_BOOL(ccd_exclusive);
++    SHOW_STR(tmp_dir);
++    SHOW_BOOL(push_ifconfig_defined);
++    msg(D_SHOW_PARMS, "  push_ifconfig_local = %s",
++        print_in_addr_t(o->push_ifconfig_local, 0, &gc));
++    msg(D_SHOW_PARMS, "  push_ifconfig_remote_netmask = %s",
++        print_in_addr_t(o->push_ifconfig_remote_netmask, 0, &gc));
++    SHOW_BOOL(push_ifconfig_ipv6_defined);
++    msg(D_SHOW_PARMS, "  push_ifconfig_ipv6_local = %s/%d",
++        print_in6_addr(o->push_ifconfig_ipv6_local, 0, &gc), o->push_ifconfig_ipv6_netbits);
++    msg(D_SHOW_PARMS, "  push_ifconfig_ipv6_remote = %s",
++        print_in6_addr(o->push_ifconfig_ipv6_remote, 0, &gc));
++    SHOW_BOOL(enable_c2c);
++    SHOW_BOOL(duplicate_cn);
++    SHOW_INT(cf_max);
++    SHOW_INT(cf_per);
++    SHOW_INT(cf_initial_max);
++    SHOW_INT(cf_initial_per);
++    SHOW_UINT(max_clients);
++    SHOW_INT(max_routes_per_client);
++    SHOW_STR(auth_user_pass_verify_script);
++    SHOW_BOOL(auth_user_pass_verify_script_via_file);
++    SHOW_BOOL(auth_token_generate);
++    SHOW_BOOL(force_key_material_export);
++    SHOW_INT(auth_token_lifetime);
++    SHOW_STR_INLINE(auth_token_secret_file);
++#if PORT_SHARE
++    SHOW_STR(port_share_host);
++    SHOW_STR(port_share_port);
++#endif
++    SHOW_BOOL(vlan_tagging);
++    msg(D_SHOW_PARMS, "  vlan_accept = %s", print_vlan_accept(o->vlan_accept));
++    SHOW_INT(vlan_pvid);
++
++    SHOW_BOOL(client);
++    SHOW_BOOL(pull);
++    SHOW_STR_INLINE(auth_user_pass_file);
++
++    gc_free(&gc);
++}
++
++static void
++show_http_proxy_options(const struct http_proxy_options *o)
++{
++    int i;
++    msg(D_SHOW_PARMS, "BEGIN http_proxy");
++    SHOW_STR(server);
++    SHOW_STR(port);
++    SHOW_STR(auth_method_string);
++    SHOW_STR(auth_file);
++    SHOW_STR(auth_file_up);
++    SHOW_BOOL(inline_creds);
++    SHOW_BOOL(nocache);
++    SHOW_STR(http_version);
++    SHOW_STR(user_agent);
++    for (i = 0; i < MAX_CUSTOM_HTTP_HEADER && o->custom_headers[i].name; i++)
++    {
++        if (o->custom_headers[i].content)
++        {
++            msg(D_SHOW_PARMS, "  custom_header[%d] = %s: %s", i, o->custom_headers[i].name,
++                o->custom_headers[i].content);
++        }
++        else
++        {
++            msg(D_SHOW_PARMS, "  custom_header[%d] = %s", i, o->custom_headers[i].name);
++        }
++    }
++    msg(D_SHOW_PARMS, "END http_proxy");
++}
++
++static void
++show_connection_entry(const struct connection_entry *o)
++{
++    /* Display the global proto only in client mode or with no '--local'*/
++    if (o->local_list->len == 1)
++    {
++        msg(D_SHOW_PARMS, "  proto = %s", proto2ascii(o->proto, o->af, false));
++    }
++
++    msg(D_SHOW_PARMS, "  Local Sockets:");
++    for (int i = 0; i < o->local_list->len; i++)
++    {
++        msg(D_SHOW_PARMS, "    [%s]:%s-%s", o->local_list->array[i]->local,
++            o->local_list->array[i]->port,
++            proto2ascii(o->local_list->array[i]->proto, o->af, false));
++    }
++    SHOW_STR(remote);
++    SHOW_STR(remote_port);
++    SHOW_BOOL(remote_float);
++    SHOW_BOOL(bind_defined);
++    SHOW_BOOL(bind_local);
++    SHOW_BOOL(bind_ipv6_only);
++    SHOW_INT(connect_retry_seconds);
++    SHOW_INT(connect_timeout);
++
++    if (o->http_proxy_options)
++    {
++        show_http_proxy_options(o->http_proxy_options);
++    }
++    SHOW_STR(socks_proxy_server);
++    SHOW_STR(socks_proxy_port);
++    SHOW_INT(tun_mtu);
++    SHOW_BOOL(tun_mtu_defined);
++    SHOW_INT(link_mtu);
++    SHOW_BOOL(link_mtu_defined);
++    SHOW_INT(tun_mtu_extra);
++    SHOW_BOOL(tun_mtu_extra_defined);
++    SHOW_INT(tls_mtu);
++
++    SHOW_INT(mtu_discover_type);
++
++#ifdef ENABLE_FRAGMENT
++    SHOW_INT(fragment);
++#endif
++    SHOW_INT(mssfix);
++    SHOW_BOOL(mssfix_encap);
++    SHOW_BOOL(mssfix_fixed);
++
++    SHOW_INT(explicit_exit_notification);
++
++    SHOW_STR_INLINE(tls_auth_file);
++    SHOW_PARM(key_direction, keydirection2ascii(o->key_direction, false, true), "%s");
++    SHOW_STR_INLINE(tls_crypt_file);
++    SHOW_STR_INLINE(tls_crypt_v2_file);
++}
++
++
++static void
++show_connection_entries(const struct options *o)
++{
++    if (o->connection_list)
++    {
++        const struct connection_list *l = o->connection_list;
++        int i;
++        for (i = 0; i < l->len; ++i)
++        {
++            msg(D_SHOW_PARMS, "Connection profiles [%d]:", i);
++            show_connection_entry(l->array[i]);
++        }
++    }
++    else
++    {
++        msg(D_SHOW_PARMS, "Connection profiles [default]:");
++        show_connection_entry(&o->ce);
++    }
++    msg(D_SHOW_PARMS, "Connection profiles END");
++}
++
++static void
++show_pull_filter_list(const struct pull_filter_list *l)
++{
++    struct pull_filter *f;
++    if (!l)
++    {
++        return;
++    }
++
++    msg(D_SHOW_PARMS, "  Pull filters:");
++    for (f = l->head; f; f = f->next)
++    {
++        msg(D_SHOW_PARMS, "    %s \"%s\"", pull_filter_type_name(f->type), f->pattern);
++    }
++}
++
++void
++show_settings(const struct options *o)
++{
++    msg(D_SHOW_PARMS, "Current Parameter Settings:");
++
++    SHOW_STR(config);
++
++    SHOW_INT(mode);
++
++#ifdef ENABLE_FEATURE_TUN_PERSIST
++    SHOW_BOOL(persist_config);
++    SHOW_INT(persist_mode);
++#endif
++
++    SHOW_BOOL(show_ciphers);
++    SHOW_BOOL(show_digests);
++    SHOW_BOOL(show_engines);
++    SHOW_BOOL(genkey);
++    SHOW_STR(genkey_filename);
++    SHOW_STR(key_pass_file);
++    SHOW_BOOL(show_tls_ciphers);
++
++    SHOW_INT(connect_retry_max);
++    show_connection_entries(o);
++
++    SHOW_BOOL(remote_random);
++
++    SHOW_STR(ipchange);
++    SHOW_STR(dev);
++    SHOW_STR(dev_type);
++    SHOW_STR(dev_node);
++#if defined(ENABLE_DCO)
++    SHOW_BOOL(disable_dco);
++#endif
++    SHOW_STR(lladdr);
++    SHOW_INT(topology);
++    SHOW_STR(ifconfig_local);
++    SHOW_STR(ifconfig_remote_netmask);
++    SHOW_BOOL(ifconfig_noexec);
++    SHOW_BOOL(ifconfig_nowarn);
++    SHOW_STR(ifconfig_ipv6_local);
++    SHOW_INT(ifconfig_ipv6_netbits);
++    SHOW_STR(ifconfig_ipv6_remote);
++
++    SHOW_INT(shaper);
++    SHOW_INT(mtu_test);
++
++    SHOW_BOOL(mlock);
++
++    SHOW_INT(keepalive_ping);
++    SHOW_INT(keepalive_timeout);
++    SHOW_INT(inactivity_timeout);
++    SHOW_INT(session_timeout);
++    SHOW_INT64(inactivity_minimum_bytes);
++    SHOW_INT(ping_send_timeout);
++    SHOW_INT(ping_rec_timeout);
++    SHOW_INT(ping_rec_timeout_action);
++    SHOW_BOOL(ping_timer_remote);
++    SHOW_INT(remap_sigusr1);
++    SHOW_BOOL(persist_tun);
++    SHOW_BOOL(persist_local_ip);
++    SHOW_BOOL(persist_remote_ip);
++
++#if PASSTOS_CAPABILITY
++    SHOW_BOOL(passtos);
++#endif
++
++    SHOW_INT(resolve_retry_seconds);
++    SHOW_BOOL(resolve_in_advance);
++
++    SHOW_STR(username);
++    SHOW_STR(groupname);
++    SHOW_STR(chroot_dir);
++    SHOW_STR(cd_dir);
++#ifdef ENABLE_SELINUX
++    SHOW_STR(selinux_context);
++#endif
++    SHOW_STR(writepid);
++    SHOW_STR(up_script);
++    SHOW_STR(down_script);
++    SHOW_BOOL(down_pre);
++    SHOW_BOOL(up_restart);
++    SHOW_BOOL(up_delay);
++    SHOW_BOOL(daemon);
++    SHOW_BOOL(log);
++    SHOW_BOOL(suppress_timestamps);
++    SHOW_BOOL(machine_readable_output);
++    SHOW_INT(nice);
++    SHOW_INT(verbosity);
++    SHOW_INT(mute);
++#ifdef ENABLE_DEBUG
++    SHOW_INT(gremlin);
++#endif
++    SHOW_STR(status_file);
++    SHOW_INT(status_file_version);
++    SHOW_INT(status_file_update_freq);
++
++    SHOW_BOOL(occ);
++    SHOW_INT(rcvbuf);
++    SHOW_INT(sndbuf);
++#if defined(TARGET_LINUX)
++    SHOW_INT(mark);
++#endif
++    SHOW_INT(sockflags);
++
++    SHOW_INT(comp.alg);
++    SHOW_INT(comp.flags);
++
++    SHOW_STR(route_script);
++    SHOW_STR(route_default_gateway);
++    SHOW_INT(route_default_metric);
++    SHOW_INT(route_default_table_id);
++    SHOW_BOOL(route_noexec);
++    SHOW_INT(route_delay);
++    SHOW_INT(route_delay_window);
++    SHOW_BOOL(route_delay_defined);
++    SHOW_BOOL(route_nopull);
++    SHOW_BOOL(route_gateway_via_dhcp);
++    SHOW_BOOL(allow_pull_fqdn);
++    show_pull_filter_list(o->pull_filter_list);
++
++    if (o->routes)
++    {
++        print_route_options(o->routes, D_SHOW_PARMS);
++    }
++
++    if (o->client_nat)
++    {
++        print_client_nat_list(o->client_nat, D_SHOW_PARMS);
++    }
++
++    show_dns_options(&o->dns_options);
++
++#ifdef ENABLE_MANAGEMENT
++    SHOW_STR(management_addr);
++    SHOW_STR(management_port);
++    SHOW_STR(management_user_pass);
++    SHOW_INT(management_log_history_cache);
++    SHOW_INT(management_echo_buffer_size);
++    SHOW_STR(management_client_user);
++    SHOW_STR(management_client_group);
++    SHOW_INT(management_flags);
++#endif
++#ifdef ENABLE_PLUGIN
++    if (o->plugin_list)
++    {
++        plugin_option_list_print(o->plugin_list, D_SHOW_PARMS);
++    }
++#endif
++
++    SHOW_STR_INLINE(shared_secret_file);
++    SHOW_PARM(key_direction, keydirection2ascii(o->key_direction, false, true), "%s");
++    SHOW_STR(ciphername);
++    SHOW_STR(ncp_ciphers);
++    SHOW_STR(authname);
++#ifndef ENABLE_CRYPTO_MBEDTLS
++    SHOW_BOOL(engine);
++#endif /* ENABLE_CRYPTO_MBEDTLS */
++    SHOW_BOOL(mute_replay_warnings);
++    SHOW_INT(replay_window);
++    SHOW_INT(replay_time);
++    SHOW_STR(packet_id_file);
++    SHOW_BOOL(test_crypto);
++
++    SHOW_BOOL(tls_server);
++    SHOW_BOOL(tls_client);
++    SHOW_STR_INLINE(ca_file);
++    SHOW_STR(ca_path);
++    SHOW_STR_INLINE(dh_file);
++    if ((o->management_flags & MF_EXTERNAL_CERT))
++    {
++        SHOW_PARM("cert_file", "EXTERNAL_CERT", "%s");
++    }
++    else
++    {
++        SHOW_STR_INLINE(cert_file);
++    }
++    SHOW_STR_INLINE(extra_certs_file);
++
++    if ((o->management_flags & MF_EXTERNAL_KEY))
++    {
++        SHOW_PARM("priv_key_file", "EXTERNAL_PRIVATE_KEY", "%s");
++    }
++    else
++    {
++        SHOW_STR_INLINE(priv_key_file);
++    }
++#ifndef ENABLE_CRYPTO_MBEDTLS
++    SHOW_STR_INLINE(pkcs12_file);
++#endif
++#ifdef ENABLE_CRYPTOAPI
++    SHOW_STR(cryptoapi_cert);
++#endif
++    SHOW_STR(cipher_list);
++    SHOW_STR(cipher_list_tls13);
++    SHOW_STR(tls_cert_profile);
++    SHOW_STR(tls_verify);
++    SHOW_STR(tls_export_peer_cert_dir);
++    SHOW_INT(verify_x509_type);
++    SHOW_STR(verify_x509_name);
++    SHOW_STR_INLINE(crl_file);
++    SHOW_INT(ns_cert_type);
++    {
++        int i;
++        for (i = 0; i < MAX_PARMS; i++)
++        {
++            SHOW_INT(remote_cert_ku[i]);
++        }
++    }
++    SHOW_STR(remote_cert_eku);
++    if (o->verify_hash)
++    {
++        SHOW_INT(verify_hash_algo);
++        SHOW_INT(verify_hash_depth);
++        struct gc_arena gc = gc_new();
++        const struct verify_hash_list *hl = o->verify_hash;
++        int digest_len =
++            (o->verify_hash_algo == MD_SHA1) ? SHA_DIGEST_LENGTH : SHA256_DIGEST_LENGTH;
++        while (hl)
++        {
++            char *s = format_hex_ex(hl->hash, digest_len, 0, 1, ":", &gc);
++            SHOW_PARM(verify_hash, s, "%s");
++            hl = hl->next;
++        }
++        gc_free(&gc);
++    }
++    SHOW_INT(ssl_flags);
++
++    SHOW_INT(tls_timeout);
++
++    SHOW_INT64(renegotiate_bytes);
++    SHOW_INT64(renegotiate_packets);
++    SHOW_INT(renegotiate_seconds);
++
++    SHOW_INT(handshake_window);
++    SHOW_INT(transition_window);
++
++    SHOW_BOOL(single_session);
++    SHOW_BOOL(push_peer_info);
++    SHOW_BOOL(tls_exit);
++
++    SHOW_STR(tls_crypt_v2_metadata);
++
++#ifdef ENABLE_PKCS11
++    {
++        int i;
++        for (i = 0; i < MAX_PARMS && o->pkcs11_providers[i] != NULL; i++)
++        {
++            SHOW_PARM(pkcs11_providers, o->pkcs11_providers[i], "%s");
++        }
++    }
++    {
++        int i;
++        for (i = 0; i < MAX_PARMS; i++)
++        {
++            SHOW_PARM(pkcs11_protected_authentication,
++                      o->pkcs11_protected_authentication[i] ? "ENABLED" : "DISABLED", "%s");
++        }
++    }
++    {
++        int i;
++        for (i = 0; i < MAX_PARMS; i++)
++        {
++            SHOW_PARM(pkcs11_private_mode, o->pkcs11_private_mode[i], "%08x");
++        }
++    }
++    {
++        int i;
++        for (i = 0; i < MAX_PARMS; i++)
++        {
++            SHOW_PARM(pkcs11_cert_private, o->pkcs11_cert_private[i] ? "ENABLED" : "DISABLED",
++                      "%s");
++        }
++    }
++    SHOW_INT(pkcs11_pin_cache_period);
++    SHOW_STR(pkcs11_id);
++    SHOW_BOOL(pkcs11_id_management);
++#endif /* ENABLE_PKCS11 */
++
++    show_p2mp_parms(o);
++
++#ifdef _WIN32
++    SHOW_BOOL(show_net_up);
++    SHOW_INT(route_method);
++    SHOW_BOOL(block_outside_dns);
++    show_tuntap_options(&o->tuntap_options);
++#endif
++}
++
++#endif /* ifndef ENABLE_SMALL */
+diff --git a/src/openvpn/options_show.h b/src/openvpn/options_show.h
+new file mode 100644
+index 0000000..fb233fc
+--- /dev/null
++++ b/src/openvpn/options_show.h
+@@ -0,0 +1,46 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2002-2026 OpenVPN Inc <sales@openvpn.net>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, see <https://www.gnu.org/licenses/>.
++ */
++
++#ifndef OPTIONS_SHOW_H
++#define OPTIONS_SHOW_H
++
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
++
++#include "options.h"
++
++#ifdef ENABLE_SMALL
++
++static inline void
++show_settings(const struct options *o)
++{
++    (void)o;
++}
++
++#else
++
++void show_settings(const struct options *o);
++
++#endif /* ENABLE_SMALL */
++
++#endif /* OPTIONS_SHOW_H */
 
-(2 comments)
-
-Patchset:
-
-PS1: 
-> Is this a squash gone wro=
-ng? The patch does a lot more than the stated commit message, and the part =
- [=E2=80=A6]
-Yeah, something really gone wrong here=2E I will redo the patc=
-h=2E,
-
-
-File src/openvpn/ssl=2Ec:
-
-http://gerrit=2Eopenvpn=2Enet/c/openvpn/=
-+/1844/comment/39eef646_1c164414?usp=3Demail :
-PS1, Line 2000:             =
-    buf_printf(&out, "P=3D%d\n", session->opt->ping_rec_timeout);
-> This ac=
-tually does not build: [=E2=80=A6]
-Done
-
-
-
--- 
-To view, visit http://gerrit=
-=2Eopenvpn=2Enet/c/openvpn/+/1844?usp=3Demail
-To unsubscribe, or for help w=
-riting mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Dema=
-il
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: mast=
-er
-Gerrit-Change-Id: Id3c6681b29026c2920a62a0ea570fd098649e197
-Gerrit-Chang=
-e-Number: 1844
-Gerrit-PatchSet: 2
-Gerrit-Owner: plaisthos <arne-openvpn@rfc=
-2549=2Eorg>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2En=
-et>
-Gerrit-CC: razvanc <razvanc@mailbox=2Eorg>
-Gerrit-Attention: razvanc <r=
-azvanc@mailbox=2Eorg>
-Gerrit-Comment-Date: Mon, 17 Aug 2026 12:58:00 +0000
-=
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: razvanc =
-<razvanc@mailbox=2Eorg>
-
---OjGEO9xDnsA=
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: razvanc=2E </p>
-<p><a href=3D"http://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1844?usp=3Demail">View Change</a></p><p>2 comments:</p><=
-ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding:=
- 0;"><p>Patchset:</p><ul style=3D"list-style: none; padding: 0;"><li style=
-=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a hr=
-ef=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1844?tab=3Dcomments&amp;usp=
-=3Demail">Patch Set #1:</a> </p><p><blockquote style=3D"border-left: 1px so=
-lid #aaa; margin: 10px 0; padding: 0 10px;">Is this a squash gone wrong? Th=
-e patch does a lot more than the stated commit message, and the part  [=E2=
-=80=A6]</blockquote></p><p class=3D"blocks" style=3D"white-space: pre-wrap;=
- word-wrap: break-word;">Yeah, something really gone wrong here=2E I will r=
-edo the patch=2E,</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p=
->File src/openvpn/ssl=2Ec:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px=
-;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1844/comment/39eef6=
-46_1c164414?usp=3Demail">Patch Set #1, Line 2000:</a> <code style=3D"font-f=
-amily:monospace,monospace">                buf_printf(&amp;out, &quot;P=3D%=
-d\n&quot;, session-&gt;opt-&gt;ping_rec_timeout);</code></p><p><blockquote =
-style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Thi=
-s actually does not build: [=E2=80=A6]</blockquote></p><p class=3D"blocks" =
-style=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul><=
-/li></ul><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openv=
-pn/+/1844?usp=3Demail">change 1844</a>=2E To unsubscribe, or for help writi=
-ng mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?us=
-p=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eor=
-g/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schem=
-a=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1844?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
-ew Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: =
-comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-=
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"dis=
-play:none"> Gerrit-Change-Id: Id3c6681b29026c2920a62a0ea570fd098649e197 </d=
-iv>
-<div style=3D"display:none"> Gerrit-Change-Number: 1844 </div>
-<div sty=
-le=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none">=
- Gerrit-Owner: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div sty=
-le=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esou=
-rceforge=2Enet&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: razvanc &=
-lt;razvanc@mailbox=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Att=
-ention: razvanc &lt;razvanc@mailbox=2Eorg&gt; </div>
-<div style=3D"display:=
-none"> Gerrit-Comment-Date: Mon, 17 Aug 2026 12:58:00 +0000 </div>
-<div sty=
-le=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:n=
-one"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-=
-Reply-To: razvanc &lt;razvanc@mailbox=2Eorg&gt; </div>
-
-</body></html>
---OjGEO9xDnsA=--
-
-
---===============1574832740387007529==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============1574832740387007529==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
---===============1574832740387007529==--
-
