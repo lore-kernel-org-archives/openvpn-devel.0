@@ -4,37 +4,37 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id AD6BCC5B572
-	for <openvpn-devel@archiver.kernel.org>; Mon, 17 Aug 2026 13:04:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C7CB2C5B572
+	for <openvpn-devel@archiver.kernel.org>; Mon, 17 Aug 2026 13:15:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=zmUvW4v3sfMIxNPoeilgZlQ+6C5bJW5FF2S1iy3zK+U=; b=AFaR03857a5Q4iYQl9T4vfSCCk
-	s0RtPDcni4HtBEf9oAE8mOwv8660Q2dLgSEwUxV7eRVIuBSfGHSll4YhfMIiijpy6amR7wN4dVfF5
-	FU2azO07u4JleYGOukBtAFK6pAP34T4m4n5vhpETLYk0hev6XSWJvmWHno4s0dlv9Zoc=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=sTCE2ZwZFMIprO7JGBUksrxRM40LKL5RDY4Hi7vBmXY=; b=Ndr5inqdeKmfFXDG6BLvkh9e38
+	BO3fRFfw/MTKhpxUYVI8jRZy/j975ZAtBR74blZuEZVFBDXnBTWK6WgBz4j0WW+wMcASrMTXZb/sX
+	c6o+KJ6ZvybCk/g50QhG5NxKJB/9wiFbzEh9nLe6nwvVfERRDtUSh8LuHLMlVCaR+qmA=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wvx11-000655-P9;
-	Mon, 17 Aug 2026 13:04:36 +0000
+	id 1wvxBp-0006Qk-Sb;
+	Mon, 17 Aug 2026 13:15:46 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1wvx10-00064w-6m
+ (envelope-from <gert@blue4.greenie.muc.de>) id 1wvxBp-0006Qe-1Q
  for openvpn-devel@lists.sourceforge.net;
- Mon, 17 Aug 2026 13:04:35 +0000
+ Mon, 17 Aug 2026 13:15:45 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
  In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=ubuz8Skuwy+SOh1wVBqPeQbKd1teshzTA1r1PeRNg7E=; b=CP3JFDHBWMzpmFEQksLMgkzND1
- 4Ys/LraoyC/QoFgwuhdbLw58nrKJ9fw0SaO4zYH3WGmJSQMrqhjNqqedaHDGz1Qs/C9YprBzmLnS/
- /UpRgdg/dWjhapdm5/HLhN3h4iVfNz/BhYXKgjDYtVf241TROn2dtoeue1y0bwxzHc1w=;
+ bh=bQ5SI3sJolc7D5KESYlC/YN0znQn0IJqI8o6Bb04+6Y=; b=AxEFMdvG+mYBfc9QonQWd8yHBc
+ FdJDL+l/EptUgHRFr1PT9Iq1BaF5ncv45eVUoOvZDvLfffGkgsu+plMAV2ECC3WAyXfmgu0nZPGLP
+ H9s+W+t0FCBBimTvtTIjMgt2PYfO2+2BvM0l+P1X7IP997VfijjwS1qxp3CE6R9QyEa8=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -42,31 +42,30 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=ubuz8Skuwy+SOh1wVBqPeQbKd1teshzTA1r1PeRNg7E=; b=b7UHGnmvnf+4ZQeHj0tlQ0gxZX
- SV2R4RFersd1KYHNKjmIOhegeX1PqyKHFMeykXzBefGVY0i37oHkLmMLeM2EVjywGPOYkx2yQ1YQy
- rJwaVAeQqfi/YeZvZyUu02j5gSaynlEO9KRX3mnLcOJNxX8PdHjxroiEaQxn8EES4dIA=;
+ bh=bQ5SI3sJolc7D5KESYlC/YN0znQn0IJqI8o6Bb04+6Y=; b=FJ4mzX4CDEgujAUiEBrKsyRBdD
+ WBqC8YC/eWQwFoZtoZyg1GJLnFhsLYNBDOp75MVXCLn/orVxstu1xrUnRI8RRNeL5ualcig5zEYcx
+ p7jaB8J1sW3zdilLinDF3hrbUbPoUMLydLOqphU5snbB9p1sGThfUEmAtEW5Bwfx8SLc=;
 Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wvx10-0004XE-4E for openvpn-devel@lists.sourceforge.net;
- Mon, 17 Aug 2026 13:04:33 +0000
+ id 1wvxBn-0008QX-O0 for openvpn-devel@lists.sourceforge.net;
+ Mon, 17 Aug 2026 13:15:45 +0000
 Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 67HD4MB5019950
- for <openvpn-devel@lists.sourceforge.net>; Mon, 17 Aug 2026 15:04:22 +0200
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 67HDFaQ7021589
+ for <openvpn-devel@lists.sourceforge.net>; Mon, 17 Aug 2026 15:15:36 +0200
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 67HD4MRD019949
- for openvpn-devel@lists.sourceforge.net; Mon, 17 Aug 2026 15:04:22 +0200
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 67HDFa35021588
+ for openvpn-devel@lists.sourceforge.net; Mon, 17 Aug 2026 15:15:36 +0200
 From: Gert Doering <gert@greenie.muc.de>
 To: openvpn-devel@lists.sourceforge.net
-Date: Mon, 17 Aug 2026 15:04:17 +0200
-Message-ID: <20260817130422.19931-1-gert@greenie.muc.de>
+Date: Mon, 17 Aug 2026 15:15:31 +0200
+Message-ID: <20260817131536.21559-1-gert@greenie.muc.de>
 X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1783600902000.I61762374c141662d596bbf88b64ca7f7472b5149@gerrit.openvpn.net>
-References: <gerrit.1783600902000.I61762374c141662d596bbf88b64ca7f7472b5149@gerrit.openvpn.net>
+In-Reply-To: <gerrit.1774451380000.Iba7e5e553679ec0cf47cb2e5d9b2fb1859ea767c@gerrit.openvpn.net>
+References: <gerrit.1774451380000.Iba7e5e553679ec0cf47cb2e5d9b2fb1859ea767c@gerrit.openvpn.net>
 MIME-Version: 1.0
-X-Headers-End: 1wvx10-0004XE-4E
-Subject: [Openvpn-devel] [PATCH v3] options: Factor out options display code
- from options.c
+X-Headers-End: 1wvxBn-0008QX-O0
+Subject: [Openvpn-devel] [PATCH v1] m4: Add ax_code_coverage
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -84,1425 +83,306 @@ Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
 From: Frank Lichtenheld <frank@lichtenheld.com>
 
-options.c is a huge, unwieldly file. So remove some
-closely related code that has no direct dependencies
-with the other functions in the file.
+Putting this into a separate commit, so that
+we can easier track changes we need to do to it.
+(As the autoconf-archive in general this seems
+mostly abandonded).
 
-In this case it is the code that prints out the current
-configuration.
-
-Change-Id: I61762374c141662d596bbf88b64ca7f7472b5149
+Change-Id: Iba7e5e553679ec0cf47cb2e5d9b2fb1859ea767c
 Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
 Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1772
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1591
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1772
-This mail reflects revision 3 of this Change.
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1591
+This mail reflects revision 1 of this Change.
 
 Acked-by according to Gerrit (reflected above):
 Razvan Cojocaru <razvanc@mailbox.org>
 
         
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index ad7de6e..540992b 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -527,6 +527,8 @@
-     src/openvpn/options_util.c
-     src/openvpn/options_util.h
-     src/openvpn/options_parse.c
-+    src/openvpn/options_show.c
-+    src/openvpn/options_show.h
-     src/openvpn/otime.c
-     src/openvpn/otime.h
-     src/openvpn/ovpn_dco_win.h
-diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-index 1f77384..2092e96 100644
---- a/src/openvpn/Makefile.am
-+++ b/src/openvpn/Makefile.am
-@@ -108,6 +108,7 @@
- 	pkcs11_mbedtls.c \
- 	openvpn.c openvpn.h \
- 	options.c options.h \
-+	options_show.c options_show.h \
- 	options_util.c options_util.h \
- 	options_parse.c \
- 	otime.c otime.h \
-diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c
-index 5e1f680..24d6bb6 100644
---- a/src/openvpn/openvpn.c
-+++ b/src/openvpn/openvpn.c
-@@ -30,6 +30,7 @@
- #include "forward.h"
- #include "multi.h"
- #include "win32.h"
-+#include "options_show.h"
- #include "platform.h"
- 
- #include "memdbg.h"
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 5e74a41..87da344 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -931,41 +931,6 @@
-     gc_free(&o->dns_options.gc);
- }
- 
--#ifndef ENABLE_SMALL
--
--static const char *
--pull_filter_type_name(int type)
--{
--    if (type == PUF_TYPE_ACCEPT)
--    {
--        return "accept";
--    }
--    if (type == PUF_TYPE_IGNORE)
--    {
--        return "ignore";
--    }
--    if (type == PUF_TYPE_REJECT)
--    {
--        return "reject";
--    }
--    else
--    {
--        return "???";
--    }
--}
--
--#define SHOW_PARM(name, value, format) msg(D_SHOW_PARMS, "  " #name " = " format, (value))
--#define SHOW_STR(var)                  SHOW_PARM(var, (o->var ? o->var : "[UNDEF]"), "'%s'")
--#define SHOW_STR_INLINE(var) \
--    SHOW_PARM(var, o->var##_inline ? "[INLINE]" : (o->var ? o->var : "[UNDEF]"), "'%s'")
--#define SHOW_INT(var)      SHOW_PARM(var, o->var, "%d")
--#define SHOW_UINT(var)     SHOW_PARM(var, o->var, "%u")
--#define SHOW_INT64(var)    SHOW_PARM(var, o->var, "%" PRIi64)
--#define SHOW_UNSIGNED(var) SHOW_PARM(var, o->var, "0x%08x")
--#define SHOW_BOOL(var)     SHOW_PARM(var, (o->var ? "ENABLED" : "DISABLED"), "%s");
--
--#endif /* ifndef ENABLE_SMALL */
--
- static void
- setenv_connection_entry(struct env_set *es, const struct connection_entry *e, const int i)
- {
-@@ -1257,55 +1222,6 @@
- 
-     return ret;
- }
--#ifdef _WIN32
--
--#ifndef ENABLE_SMALL
--
--static void
--show_dhcp_option_list(const char *name, const char *const *array, unsigned int len)
--{
--    for (unsigned int i = 0; i < len; ++i)
--    {
--        msg(D_SHOW_PARMS, "  %s[%u] = %s", name, i, array[i]);
--    }
--}
--
--static void
--show_dhcp_option_addrs(const char *name, const in_addr_t *array, unsigned int len)
--{
--    struct gc_arena gc = gc_new();
--    for (unsigned int i = 0; i < len; ++i)
--    {
--        msg(D_SHOW_PARMS, "  %s[%u] = %s", name, i, print_in_addr_t(array[i], 0, &gc));
--    }
--    gc_free(&gc);
--}
--
--static void
--show_tuntap_options(const struct tuntap_options *o)
--{
--    SHOW_BOOL(ip_win32_defined);
--    SHOW_INT(ip_win32_type);
--    SHOW_INT(dhcp_masq_offset);
--    SHOW_INT(dhcp_lease_time);
--    SHOW_INT(tap_sleep);
--    SHOW_UNSIGNED(dhcp_options);
--    SHOW_BOOL(dhcp_renew);
--    SHOW_BOOL(dhcp_pre_release);
--    SHOW_STR(domain);
--    SHOW_STR(netbios_scope);
--    SHOW_UNSIGNED(netbios_node_type);
--    SHOW_BOOL(disable_nbt);
--
--    show_dhcp_option_addrs("DNS", o->dns, o->dns_len);
--    show_dhcp_option_addrs("WINS", o->wins, o->wins_len);
--    show_dhcp_option_addrs("NTP", o->ntp, o->ntp_len);
--    show_dhcp_option_addrs("NBDD", o->nbdd, o->nbdd_len);
--    show_dhcp_option_list("DOMAIN-SEARCH", o->domain_search_list, o->domain_search_list_len);
--}
--
--#endif /* ifndef ENABLE_SMALL */
--#endif /* ifdef _WIN32 */
- 
- static void
- dhcp_option_dns6_parse(const char *parm, struct in6_addr *dns6_list, unsigned int *len, msglvl_t msglevel)
-@@ -1348,116 +1264,6 @@
-     }
- }
- 
--#ifndef ENABLE_SMALL
--static const char *
--print_vlan_accept(enum vlan_acceptable_frames mode)
--{
--    switch (mode)
--    {
--        case VLAN_ONLY_TAGGED:
--            return "tagged";
--
--        case VLAN_ONLY_UNTAGGED_OR_PRIORITY:
--            return "untagged";
--
--        case VLAN_ALL:
--            return "all";
--    }
--    return NULL;
--}
--
--static void
--show_p2mp_parms(const struct options *o)
--{
--    struct gc_arena gc = gc_new();
--
--    msg(D_SHOW_PARMS, "  server_network = %s", print_in_addr_t(o->server_network, 0, &gc));
--    msg(D_SHOW_PARMS, "  server_netmask = %s", print_in_addr_t(o->server_netmask, 0, &gc));
--    msg(D_SHOW_PARMS, "  server_network_ipv6 = %s", print_in6_addr(o->server_network_ipv6, 0, &gc));
--    SHOW_INT(server_netbits_ipv6);
--    msg(D_SHOW_PARMS, "  server_bridge_ip = %s", print_in_addr_t(o->server_bridge_ip, 0, &gc));
--    msg(D_SHOW_PARMS, "  server_bridge_netmask = %s",
--        print_in_addr_t(o->server_bridge_netmask, 0, &gc));
--    msg(D_SHOW_PARMS, "  server_bridge_pool_start = %s",
--        print_in_addr_t(o->server_bridge_pool_start, 0, &gc));
--    msg(D_SHOW_PARMS, "  server_bridge_pool_end = %s",
--        print_in_addr_t(o->server_bridge_pool_end, 0, &gc));
--    if (o->push_list.head)
--    {
--        const struct push_entry *e = o->push_list.head;
--        while (e)
--        {
--            if (e->enable)
--            {
--                msg(D_SHOW_PARMS, "  push_entry = '%s'", e->option);
--            }
--            e = e->next;
--        }
--    }
--    SHOW_BOOL(ifconfig_pool_defined);
--    msg(D_SHOW_PARMS, "  ifconfig_pool_start = %s",
--        print_in_addr_t(o->ifconfig_pool_start, 0, &gc));
--    msg(D_SHOW_PARMS, "  ifconfig_pool_end = %s", print_in_addr_t(o->ifconfig_pool_end, 0, &gc));
--    msg(D_SHOW_PARMS, "  ifconfig_pool_netmask = %s",
--        print_in_addr_t(o->ifconfig_pool_netmask, 0, &gc));
--    SHOW_STR(ifconfig_pool_persist_filename);
--    SHOW_INT(ifconfig_pool_persist_refresh_freq);
--    SHOW_BOOL(ifconfig_ipv6_pool_defined);
--    msg(D_SHOW_PARMS, "  ifconfig_ipv6_pool_base = %s",
--        print_in6_addr(o->ifconfig_ipv6_pool_base, 0, &gc));
--    SHOW_INT(ifconfig_ipv6_pool_netbits);
--    SHOW_INT(n_bcast_buf);
--    SHOW_INT(tcp_queue_limit);
--    SHOW_INT(real_hash_size);
--    SHOW_INT(virtual_hash_size);
--    SHOW_STR(client_connect_script);
--    SHOW_STR(learn_address_script);
--    SHOW_STR(client_disconnect_script);
--    SHOW_STR(client_crresponse_script);
--    SHOW_STR(client_config_dir);
--    SHOW_BOOL(ccd_exclusive);
--    SHOW_STR(tmp_dir);
--    SHOW_BOOL(push_ifconfig_defined);
--    msg(D_SHOW_PARMS, "  push_ifconfig_local = %s",
--        print_in_addr_t(o->push_ifconfig_local, 0, &gc));
--    msg(D_SHOW_PARMS, "  push_ifconfig_remote_netmask = %s",
--        print_in_addr_t(o->push_ifconfig_remote_netmask, 0, &gc));
--    SHOW_BOOL(push_ifconfig_ipv6_defined);
--    msg(D_SHOW_PARMS, "  push_ifconfig_ipv6_local = %s/%d",
--        print_in6_addr(o->push_ifconfig_ipv6_local, 0, &gc), o->push_ifconfig_ipv6_netbits);
--    msg(D_SHOW_PARMS, "  push_ifconfig_ipv6_remote = %s",
--        print_in6_addr(o->push_ifconfig_ipv6_remote, 0, &gc));
--    SHOW_BOOL(enable_c2c);
--    SHOW_BOOL(duplicate_cn);
--    SHOW_INT(cf_max);
--    SHOW_INT(cf_per);
--    SHOW_INT(cf_initial_max);
--    SHOW_INT(cf_initial_per);
--    SHOW_UINT(max_clients);
--    SHOW_INT(max_routes_per_client);
--    SHOW_STR(auth_user_pass_verify_script);
--    SHOW_BOOL(auth_user_pass_verify_script_via_file);
--    SHOW_BOOL(auth_token_generate);
--    SHOW_BOOL(force_key_material_export);
--    SHOW_INT(auth_token_lifetime);
--    SHOW_STR_INLINE(auth_token_secret_file);
--#if PORT_SHARE
--    SHOW_STR(port_share_host);
--    SHOW_STR(port_share_port);
--#endif
--    SHOW_BOOL(vlan_tagging);
--    msg(D_SHOW_PARMS, "  vlan_accept = %s", print_vlan_accept(o->vlan_accept));
--    SHOW_INT(vlan_pvid);
--
--    SHOW_BOOL(client);
--    SHOW_BOOL(pull);
--    SHOW_STR_INLINE(auth_user_pass_file);
--
--    gc_free(&gc);
--}
--
--#endif /* ! ENABLE_SMALL */
--
- static void
- option_iroute(struct options *o, const char *network_str, const char *netmask_str,
-               msglvl_t msglevel)
-@@ -1502,37 +1308,6 @@
-     o->iroutes_ipv6 = ir;
- }
- 
--#ifndef ENABLE_SMALL
--static void
--show_http_proxy_options(const struct http_proxy_options *o)
--{
--    int i;
--    msg(D_SHOW_PARMS, "BEGIN http_proxy");
--    SHOW_STR(server);
--    SHOW_STR(port);
--    SHOW_STR(auth_method_string);
--    SHOW_STR(auth_file);
--    SHOW_STR(auth_file_up);
--    SHOW_BOOL(inline_creds);
--    SHOW_BOOL(nocache);
--    SHOW_STR(http_version);
--    SHOW_STR(user_agent);
--    for (i = 0; i < MAX_CUSTOM_HTTP_HEADER && o->custom_headers[i].name; i++)
--    {
--        if (o->custom_headers[i].content)
--        {
--            msg(D_SHOW_PARMS, "  custom_header[%d] = %s: %s", i, o->custom_headers[i].name,
--                o->custom_headers[i].content);
--        }
--        else
--        {
--            msg(D_SHOW_PARMS, "  custom_header[%d] = %s", i, o->custom_headers[i].name);
--        }
--    }
--    msg(D_SHOW_PARMS, "END http_proxy");
--}
--#endif /* ifndef ENABLE_SMALL */
--
- void
- options_detach(struct options *o)
- {
-@@ -1580,399 +1355,6 @@
-     }
- }
- 
--#ifndef ENABLE_SMALL
--static void
--show_connection_entry(const struct connection_entry *o)
--{
--    /* Display the global proto only in client mode or with no '--local'*/
--    if (o->local_list->len == 1)
--    {
--        msg(D_SHOW_PARMS, "  proto = %s", proto2ascii(o->proto, o->af, false));
--    }
--
--    msg(D_SHOW_PARMS, "  Local Sockets:");
--    for (int i = 0; i < o->local_list->len; i++)
--    {
--        msg(D_SHOW_PARMS, "    [%s]:%s-%s", o->local_list->array[i]->local,
--            o->local_list->array[i]->port,
--            proto2ascii(o->local_list->array[i]->proto, o->af, false));
--    }
--    SHOW_STR(remote);
--    SHOW_STR(remote_port);
--    SHOW_BOOL(remote_float);
--    SHOW_BOOL(bind_defined);
--    SHOW_BOOL(bind_local);
--    SHOW_BOOL(bind_ipv6_only);
--    SHOW_INT(connect_retry_seconds);
--    SHOW_INT(connect_timeout);
--
--    if (o->http_proxy_options)
--    {
--        show_http_proxy_options(o->http_proxy_options);
--    }
--    SHOW_STR(socks_proxy_server);
--    SHOW_STR(socks_proxy_port);
--    SHOW_INT(tun_mtu);
--    SHOW_BOOL(tun_mtu_defined);
--    SHOW_INT(link_mtu);
--    SHOW_BOOL(link_mtu_defined);
--    SHOW_INT(tun_mtu_extra);
--    SHOW_BOOL(tun_mtu_extra_defined);
--    SHOW_INT(tls_mtu);
--
--    SHOW_INT(mtu_discover_type);
--
--#ifdef ENABLE_FRAGMENT
--    SHOW_INT(fragment);
--#endif
--    SHOW_INT(mssfix);
--    SHOW_BOOL(mssfix_encap);
--    SHOW_BOOL(mssfix_fixed);
--
--    SHOW_INT(explicit_exit_notification);
--
--    SHOW_STR_INLINE(tls_auth_file);
--    SHOW_PARM(key_direction, keydirection2ascii(o->key_direction, false, true), "%s");
--    SHOW_STR_INLINE(tls_crypt_file);
--    SHOW_STR_INLINE(tls_crypt_v2_file);
--}
--
--
--static void
--show_connection_entries(const struct options *o)
--{
--    if (o->connection_list)
--    {
--        const struct connection_list *l = o->connection_list;
--        int i;
--        for (i = 0; i < l->len; ++i)
--        {
--            msg(D_SHOW_PARMS, "Connection profiles [%d]:", i);
--            show_connection_entry(l->array[i]);
--        }
--    }
--    else
--    {
--        msg(D_SHOW_PARMS, "Connection profiles [default]:");
--        show_connection_entry(&o->ce);
--    }
--    msg(D_SHOW_PARMS, "Connection profiles END");
--}
--
--static void
--show_pull_filter_list(const struct pull_filter_list *l)
--{
--    struct pull_filter *f;
--    if (!l)
--    {
--        return;
--    }
--
--    msg(D_SHOW_PARMS, "  Pull filters:");
--    for (f = l->head; f; f = f->next)
--    {
--        msg(D_SHOW_PARMS, "    %s \"%s\"", pull_filter_type_name(f->type), f->pattern);
--    }
--}
--
--#endif /* ifndef ENABLE_SMALL */
--
--void
--show_settings(const struct options *o)
--{
--#ifndef ENABLE_SMALL
--    msg(D_SHOW_PARMS, "Current Parameter Settings:");
--
--    SHOW_STR(config);
--
--    SHOW_INT(mode);
--
--#ifdef ENABLE_FEATURE_TUN_PERSIST
--    SHOW_BOOL(persist_config);
--    SHOW_INT(persist_mode);
--#endif
--
--    SHOW_BOOL(show_ciphers);
--    SHOW_BOOL(show_digests);
--    SHOW_BOOL(show_engines);
--    SHOW_BOOL(genkey);
--    SHOW_STR(genkey_filename);
--    SHOW_STR(key_pass_file);
--    SHOW_BOOL(show_tls_ciphers);
--
--    SHOW_INT(connect_retry_max);
--    show_connection_entries(o);
--
--    SHOW_BOOL(remote_random);
--
--    SHOW_STR(ipchange);
--    SHOW_STR(dev);
--    SHOW_STR(dev_type);
--    SHOW_STR(dev_node);
--#if defined(ENABLE_DCO)
--    SHOW_BOOL(disable_dco);
--#endif
--    SHOW_STR(lladdr);
--    SHOW_INT(topology);
--    SHOW_STR(ifconfig_local);
--    SHOW_STR(ifconfig_remote_netmask);
--    SHOW_BOOL(ifconfig_noexec);
--    SHOW_BOOL(ifconfig_nowarn);
--    SHOW_STR(ifconfig_ipv6_local);
--    SHOW_INT(ifconfig_ipv6_netbits);
--    SHOW_STR(ifconfig_ipv6_remote);
--
--    SHOW_INT(shaper);
--    SHOW_INT(mtu_test);
--
--    SHOW_BOOL(mlock);
--
--    SHOW_INT(keepalive_ping);
--    SHOW_INT(keepalive_timeout);
--    SHOW_INT(inactivity_timeout);
--    SHOW_INT(session_timeout);
--    SHOW_INT64(inactivity_minimum_bytes);
--    SHOW_INT(ping_send_timeout);
--    SHOW_INT(ping_rec_timeout);
--    SHOW_INT(ping_rec_timeout_action);
--    SHOW_BOOL(ping_timer_remote);
--    SHOW_INT(remap_sigusr1);
--    SHOW_BOOL(persist_tun);
--    SHOW_BOOL(persist_local_ip);
--    SHOW_BOOL(persist_remote_ip);
--
--#if PASSTOS_CAPABILITY
--    SHOW_BOOL(passtos);
--#endif
--
--    SHOW_INT(resolve_retry_seconds);
--    SHOW_BOOL(resolve_in_advance);
--
--    SHOW_STR(username);
--    SHOW_STR(groupname);
--    SHOW_STR(chroot_dir);
--    SHOW_STR(cd_dir);
--#ifdef ENABLE_SELINUX
--    SHOW_STR(selinux_context);
--#endif
--    SHOW_STR(writepid);
--    SHOW_STR(up_script);
--    SHOW_STR(down_script);
--    SHOW_BOOL(down_pre);
--    SHOW_BOOL(up_restart);
--    SHOW_BOOL(up_delay);
--    SHOW_BOOL(daemon);
--    SHOW_BOOL(log);
--    SHOW_BOOL(suppress_timestamps);
--    SHOW_BOOL(machine_readable_output);
--    SHOW_INT(nice);
--    SHOW_INT(verbosity);
--    SHOW_INT(mute);
--#ifdef ENABLE_DEBUG
--    SHOW_INT(gremlin);
--#endif
--    SHOW_STR(status_file);
--    SHOW_INT(status_file_version);
--    SHOW_INT(status_file_update_freq);
--
--    SHOW_BOOL(occ);
--    SHOW_INT(rcvbuf);
--    SHOW_INT(sndbuf);
--#if defined(TARGET_LINUX)
--    SHOW_INT(mark);
--#endif
--    SHOW_INT(sockflags);
--
--    SHOW_INT(comp.alg);
--    SHOW_INT(comp.flags);
--
--    SHOW_STR(route_script);
--    SHOW_STR(route_default_gateway);
--    SHOW_INT(route_default_metric);
--    SHOW_INT(route_default_table_id);
--    SHOW_BOOL(route_noexec);
--    SHOW_INT(route_delay);
--    SHOW_INT(route_delay_window);
--    SHOW_BOOL(route_delay_defined);
--    SHOW_BOOL(route_nopull);
--    SHOW_BOOL(route_gateway_via_dhcp);
--    SHOW_BOOL(allow_pull_fqdn);
--    show_pull_filter_list(o->pull_filter_list);
--
--    if (o->routes)
--    {
--        print_route_options(o->routes, D_SHOW_PARMS);
--    }
--
--    if (o->client_nat)
--    {
--        print_client_nat_list(o->client_nat, D_SHOW_PARMS);
--    }
--
--    show_dns_options(&o->dns_options);
--
--#ifdef ENABLE_MANAGEMENT
--    SHOW_STR(management_addr);
--    SHOW_STR(management_port);
--    SHOW_STR(management_user_pass);
--    SHOW_INT(management_log_history_cache);
--    SHOW_INT(management_echo_buffer_size);
--    SHOW_STR(management_client_user);
--    SHOW_STR(management_client_group);
--    SHOW_INT(management_flags);
--#endif
--#ifdef ENABLE_PLUGIN
--    if (o->plugin_list)
--    {
--        plugin_option_list_print(o->plugin_list, D_SHOW_PARMS);
--    }
--#endif
--
--    SHOW_STR_INLINE(shared_secret_file);
--    SHOW_PARM(key_direction, keydirection2ascii(o->key_direction, false, true), "%s");
--    SHOW_STR(ciphername);
--    SHOW_STR(ncp_ciphers);
--    SHOW_STR(authname);
--#ifndef ENABLE_CRYPTO_MBEDTLS
--    SHOW_BOOL(engine);
--#endif /* ENABLE_CRYPTO_MBEDTLS */
--    SHOW_BOOL(mute_replay_warnings);
--    SHOW_INT(replay_window);
--    SHOW_INT(replay_time);
--    SHOW_STR(packet_id_file);
--    SHOW_BOOL(test_crypto);
--
--    SHOW_BOOL(tls_server);
--    SHOW_BOOL(tls_client);
--    SHOW_STR_INLINE(ca_file);
--    SHOW_STR(ca_path);
--    SHOW_STR_INLINE(dh_file);
--    if ((o->management_flags & MF_EXTERNAL_CERT))
--    {
--        SHOW_PARM("cert_file", "EXTERNAL_CERT", "%s");
--    }
--    else
--    {
--        SHOW_STR_INLINE(cert_file);
--    }
--    SHOW_STR_INLINE(extra_certs_file);
--
--    if ((o->management_flags & MF_EXTERNAL_KEY))
--    {
--        SHOW_PARM("priv_key_file", "EXTERNAL_PRIVATE_KEY", "%s");
--    }
--    else
--    {
--        SHOW_STR_INLINE(priv_key_file);
--    }
--#ifndef ENABLE_CRYPTO_MBEDTLS
--    SHOW_STR_INLINE(pkcs12_file);
--#endif
--#ifdef ENABLE_CRYPTOAPI
--    SHOW_STR(cryptoapi_cert);
--#endif
--    SHOW_STR(cipher_list);
--    SHOW_STR(cipher_list_tls13);
--    SHOW_STR(tls_cert_profile);
--    SHOW_STR(tls_verify);
--    SHOW_STR(tls_export_peer_cert_dir);
--    SHOW_INT(verify_x509_type);
--    SHOW_STR(verify_x509_name);
--    SHOW_STR_INLINE(crl_file);
--    SHOW_INT(ns_cert_type);
--    {
--        int i;
--        for (i = 0; i < MAX_PARMS; i++)
--        {
--            SHOW_INT(remote_cert_ku[i]);
--        }
--    }
--    SHOW_STR(remote_cert_eku);
--    if (o->verify_hash)
--    {
--        SHOW_INT(verify_hash_algo);
--        SHOW_INT(verify_hash_depth);
--        struct gc_arena gc = gc_new();
--        const struct verify_hash_list *hl = o->verify_hash;
--        int digest_len =
--            (o->verify_hash_algo == MD_SHA1) ? SHA_DIGEST_LENGTH : SHA256_DIGEST_LENGTH;
--        while (hl)
--        {
--            char *s = format_hex_ex(hl->hash, digest_len, 0, 1, ":", &gc);
--            SHOW_PARM(verify_hash, s, "%s");
--            hl = hl->next;
--        }
--        gc_free(&gc);
--    }
--    SHOW_INT(ssl_flags);
--
--    SHOW_INT(tls_timeout);
--
--    SHOW_INT64(renegotiate_bytes);
--    SHOW_INT64(renegotiate_packets);
--    SHOW_INT(renegotiate_seconds);
--
--    SHOW_INT(handshake_window);
--    SHOW_INT(transition_window);
--
--    SHOW_BOOL(single_session);
--    SHOW_BOOL(push_peer_info);
--    SHOW_BOOL(tls_exit);
--
--    SHOW_STR(tls_crypt_v2_metadata);
--
--#ifdef ENABLE_PKCS11
--    {
--        int i;
--        for (i = 0; i < MAX_PARMS && o->pkcs11_providers[i] != NULL; i++)
--        {
--            SHOW_PARM(pkcs11_providers, o->pkcs11_providers[i], "%s");
--        }
--    }
--    {
--        int i;
--        for (i = 0; i < MAX_PARMS; i++)
--        {
--            SHOW_PARM(pkcs11_protected_authentication,
--                      o->pkcs11_protected_authentication[i] ? "ENABLED" : "DISABLED", "%s");
--        }
--    }
--    {
--        int i;
--        for (i = 0; i < MAX_PARMS; i++)
--        {
--            SHOW_PARM(pkcs11_private_mode, o->pkcs11_private_mode[i], "%08x");
--        }
--    }
--    {
--        int i;
--        for (i = 0; i < MAX_PARMS; i++)
--        {
--            SHOW_PARM(pkcs11_cert_private, o->pkcs11_cert_private[i] ? "ENABLED" : "DISABLED",
--                      "%s");
--        }
--    }
--    SHOW_INT(pkcs11_pin_cache_period);
--    SHOW_STR(pkcs11_id);
--    SHOW_BOOL(pkcs11_id_management);
--#endif /* ENABLE_PKCS11 */
--
--    show_p2mp_parms(o);
--
--#ifdef _WIN32
--    SHOW_BOOL(show_net_up);
--    SHOW_INT(route_method);
--    SHOW_BOOL(block_outside_dns);
--    show_tuntap_options(&o->tuntap_options);
--#endif
--#endif /* ifndef ENABLE_SMALL */
--}
--
--#undef SHOW_PARM
--#undef SHOW_STR
--#undef SHOW_INT
--#undef SHOW_BOOL
--
- #ifdef ENABLE_MANAGEMENT
- 
- static struct http_proxy_options *
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 30a146f..d42773f 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -901,8 +901,6 @@
- 
- void setenv_settings(struct env_set *es, const struct options *o);
- 
--void show_settings(const struct options *o);
--
- bool string_defined_equal(const char *s1, const char *s2);
- 
- const char *options_string_version(const char *s, struct gc_arena *gc);
-diff --git a/src/openvpn/options_show.c b/src/openvpn/options_show.c
+diff --git a/m4/ax_code_coverage.m4 b/m4/ax_code_coverage.m4
 new file mode 100644
-index 0000000..34c00df
+index 0000000..216708a4
 --- /dev/null
-+++ b/src/openvpn/options_show.c
-@@ -0,0 +1,631 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2002-2026 OpenVPN Inc <sales@openvpn.net>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, see <https://www.gnu.org/licenses/>.
-+ */
-+
-+#ifdef HAVE_CONFIG_H
-+#include "config.h"
-+#endif
-+
-+#ifndef ENABLE_SMALL
-+
-+#include "syshead.h"
-+
-+#include "crypto.h"
-+#include "error.h"
-+#include "options.h"
-+
-+static const char *
-+pull_filter_type_name(int type)
-+{
-+    if (type == PUF_TYPE_ACCEPT)
-+    {
-+        return "accept";
-+    }
-+    if (type == PUF_TYPE_IGNORE)
-+    {
-+        return "ignore";
-+    }
-+    if (type == PUF_TYPE_REJECT)
-+    {
-+        return "reject";
-+    }
-+    else
-+    {
-+        return "???";
-+    }
-+}
-+
-+#define SHOW_PARM(name, value, format) msg(D_SHOW_PARMS, "  " #name " = " format, (value))
-+#define SHOW_STR(var)                  SHOW_PARM(var, (o->var ? o->var : "[UNDEF]"), "'%s'")
-+#define SHOW_STR_INLINE(var) \
-+    SHOW_PARM(var, o->var##_inline ? "[INLINE]" : (o->var ? o->var : "[UNDEF]"), "'%s'")
-+#define SHOW_INT(var)      SHOW_PARM(var, o->var, "%d")
-+#define SHOW_UINT(var)     SHOW_PARM(var, o->var, "%u")
-+#define SHOW_INT64(var)    SHOW_PARM(var, o->var, "%" PRIi64)
-+#define SHOW_UNSIGNED(var) SHOW_PARM(var, o->var, "0x%08x")
-+#define SHOW_BOOL(var)     SHOW_PARM(var, (o->var ? "ENABLED" : "DISABLED"), "%s");
-+
-+#ifdef _WIN32
-+
-+static void
-+show_dhcp_option_list(const char *name, const char *const *array, unsigned int len)
-+{
-+    for (unsigned int i = 0; i < len; ++i)
-+    {
-+        msg(D_SHOW_PARMS, "  %s[%u] = %s", name, i, array[i]);
-+    }
-+}
-+
-+static void
-+show_dhcp_option_addrs(const char *name, const in_addr_t *array, unsigned int len)
-+{
-+    struct gc_arena gc = gc_new();
-+    for (unsigned int i = 0; i < len; ++i)
-+    {
-+        msg(D_SHOW_PARMS, "  %s[%u] = %s", name, i, print_in_addr_t(array[i], 0, &gc));
-+    }
-+    gc_free(&gc);
-+}
-+
-+static void
-+show_tuntap_options(const struct tuntap_options *o)
-+{
-+    SHOW_BOOL(ip_win32_defined);
-+    SHOW_INT(ip_win32_type);
-+    SHOW_INT(dhcp_masq_offset);
-+    SHOW_INT(dhcp_lease_time);
-+    SHOW_INT(tap_sleep);
-+    SHOW_UNSIGNED(dhcp_options);
-+    SHOW_BOOL(dhcp_renew);
-+    SHOW_BOOL(dhcp_pre_release);
-+    SHOW_STR(domain);
-+    SHOW_STR(netbios_scope);
-+    SHOW_UNSIGNED(netbios_node_type);
-+    SHOW_BOOL(disable_nbt);
-+
-+    show_dhcp_option_addrs("DNS", o->dns, o->dns_len);
-+    show_dhcp_option_addrs("WINS", o->wins, o->wins_len);
-+    show_dhcp_option_addrs("NTP", o->ntp, o->ntp_len);
-+    show_dhcp_option_addrs("NBDD", o->nbdd, o->nbdd_len);
-+    show_dhcp_option_list("DOMAIN-SEARCH", o->domain_search_list, o->domain_search_list_len);
-+}
-+#endif /* ifdef _WIN32 */
-+
-+static const char *
-+print_vlan_accept(enum vlan_acceptable_frames mode)
-+{
-+    switch (mode)
-+    {
-+        case VLAN_ONLY_TAGGED:
-+            return "tagged";
-+
-+        case VLAN_ONLY_UNTAGGED_OR_PRIORITY:
-+            return "untagged";
-+
-+        case VLAN_ALL:
-+            return "all";
-+    }
-+    return NULL;
-+}
-+
-+static void
-+show_p2mp_parms(const struct options *o)
-+{
-+    struct gc_arena gc = gc_new();
-+
-+    msg(D_SHOW_PARMS, "  server_network = %s", print_in_addr_t(o->server_network, 0, &gc));
-+    msg(D_SHOW_PARMS, "  server_netmask = %s", print_in_addr_t(o->server_netmask, 0, &gc));
-+    msg(D_SHOW_PARMS, "  server_network_ipv6 = %s", print_in6_addr(o->server_network_ipv6, 0, &gc));
-+    SHOW_INT(server_netbits_ipv6);
-+    msg(D_SHOW_PARMS, "  server_bridge_ip = %s", print_in_addr_t(o->server_bridge_ip, 0, &gc));
-+    msg(D_SHOW_PARMS, "  server_bridge_netmask = %s",
-+        print_in_addr_t(o->server_bridge_netmask, 0, &gc));
-+    msg(D_SHOW_PARMS, "  server_bridge_pool_start = %s",
-+        print_in_addr_t(o->server_bridge_pool_start, 0, &gc));
-+    msg(D_SHOW_PARMS, "  server_bridge_pool_end = %s",
-+        print_in_addr_t(o->server_bridge_pool_end, 0, &gc));
-+    if (o->push_list.head)
-+    {
-+        const struct push_entry *e = o->push_list.head;
-+        while (e)
-+        {
-+            if (e->enable)
-+            {
-+                msg(D_SHOW_PARMS, "  push_entry = '%s'", e->option);
-+            }
-+            e = e->next;
-+        }
-+    }
-+    SHOW_BOOL(ifconfig_pool_defined);
-+    msg(D_SHOW_PARMS, "  ifconfig_pool_start = %s",
-+        print_in_addr_t(o->ifconfig_pool_start, 0, &gc));
-+    msg(D_SHOW_PARMS, "  ifconfig_pool_end = %s", print_in_addr_t(o->ifconfig_pool_end, 0, &gc));
-+    msg(D_SHOW_PARMS, "  ifconfig_pool_netmask = %s",
-+        print_in_addr_t(o->ifconfig_pool_netmask, 0, &gc));
-+    SHOW_STR(ifconfig_pool_persist_filename);
-+    SHOW_INT(ifconfig_pool_persist_refresh_freq);
-+    SHOW_BOOL(ifconfig_ipv6_pool_defined);
-+    msg(D_SHOW_PARMS, "  ifconfig_ipv6_pool_base = %s",
-+        print_in6_addr(o->ifconfig_ipv6_pool_base, 0, &gc));
-+    SHOW_INT(ifconfig_ipv6_pool_netbits);
-+    SHOW_INT(n_bcast_buf);
-+    SHOW_INT(tcp_queue_limit);
-+    SHOW_INT(real_hash_size);
-+    SHOW_INT(virtual_hash_size);
-+    SHOW_STR(client_connect_script);
-+    SHOW_STR(learn_address_script);
-+    SHOW_STR(client_disconnect_script);
-+    SHOW_STR(client_crresponse_script);
-+    SHOW_STR(client_config_dir);
-+    SHOW_BOOL(ccd_exclusive);
-+    SHOW_STR(tmp_dir);
-+    SHOW_BOOL(push_ifconfig_defined);
-+    msg(D_SHOW_PARMS, "  push_ifconfig_local = %s",
-+        print_in_addr_t(o->push_ifconfig_local, 0, &gc));
-+    msg(D_SHOW_PARMS, "  push_ifconfig_remote_netmask = %s",
-+        print_in_addr_t(o->push_ifconfig_remote_netmask, 0, &gc));
-+    SHOW_BOOL(push_ifconfig_ipv6_defined);
-+    msg(D_SHOW_PARMS, "  push_ifconfig_ipv6_local = %s/%d",
-+        print_in6_addr(o->push_ifconfig_ipv6_local, 0, &gc), o->push_ifconfig_ipv6_netbits);
-+    msg(D_SHOW_PARMS, "  push_ifconfig_ipv6_remote = %s",
-+        print_in6_addr(o->push_ifconfig_ipv6_remote, 0, &gc));
-+    SHOW_BOOL(enable_c2c);
-+    SHOW_BOOL(duplicate_cn);
-+    SHOW_INT(cf_max);
-+    SHOW_INT(cf_per);
-+    SHOW_INT(cf_initial_max);
-+    SHOW_INT(cf_initial_per);
-+    SHOW_UINT(max_clients);
-+    SHOW_INT(max_routes_per_client);
-+    SHOW_STR(auth_user_pass_verify_script);
-+    SHOW_BOOL(auth_user_pass_verify_script_via_file);
-+    SHOW_BOOL(auth_token_generate);
-+    SHOW_BOOL(force_key_material_export);
-+    SHOW_INT(auth_token_lifetime);
-+    SHOW_STR_INLINE(auth_token_secret_file);
-+#if PORT_SHARE
-+    SHOW_STR(port_share_host);
-+    SHOW_STR(port_share_port);
-+#endif
-+    SHOW_BOOL(vlan_tagging);
-+    msg(D_SHOW_PARMS, "  vlan_accept = %s", print_vlan_accept(o->vlan_accept));
-+    SHOW_INT(vlan_pvid);
-+
-+    SHOW_BOOL(client);
-+    SHOW_BOOL(pull);
-+    SHOW_STR_INLINE(auth_user_pass_file);
-+
-+    gc_free(&gc);
-+}
-+
-+static void
-+show_http_proxy_options(const struct http_proxy_options *o)
-+{
-+    int i;
-+    msg(D_SHOW_PARMS, "BEGIN http_proxy");
-+    SHOW_STR(server);
-+    SHOW_STR(port);
-+    SHOW_STR(auth_method_string);
-+    SHOW_STR(auth_file);
-+    SHOW_STR(auth_file_up);
-+    SHOW_BOOL(inline_creds);
-+    SHOW_BOOL(nocache);
-+    SHOW_STR(http_version);
-+    SHOW_STR(user_agent);
-+    for (i = 0; i < MAX_CUSTOM_HTTP_HEADER && o->custom_headers[i].name; i++)
-+    {
-+        if (o->custom_headers[i].content)
-+        {
-+            msg(D_SHOW_PARMS, "  custom_header[%d] = %s: %s", i, o->custom_headers[i].name,
-+                o->custom_headers[i].content);
-+        }
-+        else
-+        {
-+            msg(D_SHOW_PARMS, "  custom_header[%d] = %s", i, o->custom_headers[i].name);
-+        }
-+    }
-+    msg(D_SHOW_PARMS, "END http_proxy");
-+}
-+
-+static void
-+show_connection_entry(const struct connection_entry *o)
-+{
-+    /* Display the global proto only in client mode or with no '--local'*/
-+    if (o->local_list->len == 1)
-+    {
-+        msg(D_SHOW_PARMS, "  proto = %s", proto2ascii(o->proto, o->af, false));
-+    }
-+
-+    msg(D_SHOW_PARMS, "  Local Sockets:");
-+    for (int i = 0; i < o->local_list->len; i++)
-+    {
-+        msg(D_SHOW_PARMS, "    [%s]:%s-%s", o->local_list->array[i]->local,
-+            o->local_list->array[i]->port,
-+            proto2ascii(o->local_list->array[i]->proto, o->af, false));
-+    }
-+    SHOW_STR(remote);
-+    SHOW_STR(remote_port);
-+    SHOW_BOOL(remote_float);
-+    SHOW_BOOL(bind_defined);
-+    SHOW_BOOL(bind_local);
-+    SHOW_BOOL(bind_ipv6_only);
-+    SHOW_INT(connect_retry_seconds);
-+    SHOW_INT(connect_timeout);
-+
-+    if (o->http_proxy_options)
-+    {
-+        show_http_proxy_options(o->http_proxy_options);
-+    }
-+    SHOW_STR(socks_proxy_server);
-+    SHOW_STR(socks_proxy_port);
-+    SHOW_INT(tun_mtu);
-+    SHOW_BOOL(tun_mtu_defined);
-+    SHOW_INT(link_mtu);
-+    SHOW_BOOL(link_mtu_defined);
-+    SHOW_INT(tun_mtu_extra);
-+    SHOW_BOOL(tun_mtu_extra_defined);
-+    SHOW_INT(tls_mtu);
-+
-+    SHOW_INT(mtu_discover_type);
-+
-+#ifdef ENABLE_FRAGMENT
-+    SHOW_INT(fragment);
-+#endif
-+    SHOW_INT(mssfix);
-+    SHOW_BOOL(mssfix_encap);
-+    SHOW_BOOL(mssfix_fixed);
-+
-+    SHOW_INT(explicit_exit_notification);
-+
-+    SHOW_STR_INLINE(tls_auth_file);
-+    SHOW_PARM(key_direction, keydirection2ascii(o->key_direction, false, true), "%s");
-+    SHOW_STR_INLINE(tls_crypt_file);
-+    SHOW_STR_INLINE(tls_crypt_v2_file);
-+}
-+
-+
-+static void
-+show_connection_entries(const struct options *o)
-+{
-+    if (o->connection_list)
-+    {
-+        const struct connection_list *l = o->connection_list;
-+        int i;
-+        for (i = 0; i < l->len; ++i)
-+        {
-+            msg(D_SHOW_PARMS, "Connection profiles [%d]:", i);
-+            show_connection_entry(l->array[i]);
-+        }
-+    }
-+    else
-+    {
-+        msg(D_SHOW_PARMS, "Connection profiles [default]:");
-+        show_connection_entry(&o->ce);
-+    }
-+    msg(D_SHOW_PARMS, "Connection profiles END");
-+}
-+
-+static void
-+show_pull_filter_list(const struct pull_filter_list *l)
-+{
-+    struct pull_filter *f;
-+    if (!l)
-+    {
-+        return;
-+    }
-+
-+    msg(D_SHOW_PARMS, "  Pull filters:");
-+    for (f = l->head; f; f = f->next)
-+    {
-+        msg(D_SHOW_PARMS, "    %s \"%s\"", pull_filter_type_name(f->type), f->pattern);
-+    }
-+}
-+
-+void
-+show_settings(const struct options *o)
-+{
-+    msg(D_SHOW_PARMS, "Current Parameter Settings:");
-+
-+    SHOW_STR(config);
-+
-+    SHOW_INT(mode);
-+
-+#ifdef ENABLE_FEATURE_TUN_PERSIST
-+    SHOW_BOOL(persist_config);
-+    SHOW_INT(persist_mode);
-+#endif
-+
-+    SHOW_BOOL(show_ciphers);
-+    SHOW_BOOL(show_digests);
-+    SHOW_BOOL(show_engines);
-+    SHOW_BOOL(genkey);
-+    SHOW_STR(genkey_filename);
-+    SHOW_STR(key_pass_file);
-+    SHOW_BOOL(show_tls_ciphers);
-+
-+    SHOW_INT(connect_retry_max);
-+    show_connection_entries(o);
-+
-+    SHOW_BOOL(remote_random);
-+
-+    SHOW_STR(ipchange);
-+    SHOW_STR(dev);
-+    SHOW_STR(dev_type);
-+    SHOW_STR(dev_node);
-+#if defined(ENABLE_DCO)
-+    SHOW_BOOL(disable_dco);
-+#endif
-+    SHOW_STR(lladdr);
-+    SHOW_INT(topology);
-+    SHOW_STR(ifconfig_local);
-+    SHOW_STR(ifconfig_remote_netmask);
-+    SHOW_BOOL(ifconfig_noexec);
-+    SHOW_BOOL(ifconfig_nowarn);
-+    SHOW_STR(ifconfig_ipv6_local);
-+    SHOW_INT(ifconfig_ipv6_netbits);
-+    SHOW_STR(ifconfig_ipv6_remote);
-+
-+    SHOW_INT(shaper);
-+    SHOW_INT(mtu_test);
-+
-+    SHOW_BOOL(mlock);
-+
-+    SHOW_INT(keepalive_ping);
-+    SHOW_INT(keepalive_timeout);
-+    SHOW_INT(inactivity_timeout);
-+    SHOW_INT(session_timeout);
-+    SHOW_INT64(inactivity_minimum_bytes);
-+    SHOW_INT(ping_send_timeout);
-+    SHOW_INT(ping_rec_timeout);
-+    SHOW_INT(ping_rec_timeout_action);
-+    SHOW_BOOL(ping_timer_remote);
-+    SHOW_INT(remap_sigusr1);
-+    SHOW_BOOL(persist_tun);
-+    SHOW_BOOL(persist_local_ip);
-+    SHOW_BOOL(persist_remote_ip);
-+
-+#if PASSTOS_CAPABILITY
-+    SHOW_BOOL(passtos);
-+#endif
-+
-+    SHOW_INT(resolve_retry_seconds);
-+    SHOW_BOOL(resolve_in_advance);
-+
-+    SHOW_STR(username);
-+    SHOW_STR(groupname);
-+    SHOW_STR(chroot_dir);
-+    SHOW_STR(cd_dir);
-+#ifdef ENABLE_SELINUX
-+    SHOW_STR(selinux_context);
-+#endif
-+    SHOW_STR(writepid);
-+    SHOW_STR(up_script);
-+    SHOW_STR(down_script);
-+    SHOW_BOOL(down_pre);
-+    SHOW_BOOL(up_restart);
-+    SHOW_BOOL(up_delay);
-+    SHOW_BOOL(daemon);
-+    SHOW_BOOL(log);
-+    SHOW_BOOL(suppress_timestamps);
-+    SHOW_BOOL(machine_readable_output);
-+    SHOW_INT(nice);
-+    SHOW_INT(verbosity);
-+    SHOW_INT(mute);
-+#ifdef ENABLE_DEBUG
-+    SHOW_INT(gremlin);
-+#endif
-+    SHOW_STR(status_file);
-+    SHOW_INT(status_file_version);
-+    SHOW_INT(status_file_update_freq);
-+
-+    SHOW_BOOL(occ);
-+    SHOW_INT(rcvbuf);
-+    SHOW_INT(sndbuf);
-+#if defined(TARGET_LINUX)
-+    SHOW_INT(mark);
-+#endif
-+    SHOW_INT(sockflags);
-+
-+    SHOW_INT(comp.alg);
-+    SHOW_INT(comp.flags);
-+
-+    SHOW_STR(route_script);
-+    SHOW_STR(route_default_gateway);
-+    SHOW_INT(route_default_metric);
-+    SHOW_INT(route_default_table_id);
-+    SHOW_BOOL(route_noexec);
-+    SHOW_INT(route_delay);
-+    SHOW_INT(route_delay_window);
-+    SHOW_BOOL(route_delay_defined);
-+    SHOW_BOOL(route_nopull);
-+    SHOW_BOOL(route_gateway_via_dhcp);
-+    SHOW_BOOL(allow_pull_fqdn);
-+    show_pull_filter_list(o->pull_filter_list);
-+
-+    if (o->routes)
-+    {
-+        print_route_options(o->routes, D_SHOW_PARMS);
-+    }
-+
-+    if (o->client_nat)
-+    {
-+        print_client_nat_list(o->client_nat, D_SHOW_PARMS);
-+    }
-+
-+    show_dns_options(&o->dns_options);
-+
-+#ifdef ENABLE_MANAGEMENT
-+    SHOW_STR(management_addr);
-+    SHOW_STR(management_port);
-+    SHOW_STR(management_user_pass);
-+    SHOW_INT(management_log_history_cache);
-+    SHOW_INT(management_echo_buffer_size);
-+    SHOW_STR(management_client_user);
-+    SHOW_STR(management_client_group);
-+    SHOW_INT(management_flags);
-+#endif
-+#ifdef ENABLE_PLUGIN
-+    if (o->plugin_list)
-+    {
-+        plugin_option_list_print(o->plugin_list, D_SHOW_PARMS);
-+    }
-+#endif
-+
-+    SHOW_STR_INLINE(shared_secret_file);
-+    SHOW_PARM(key_direction, keydirection2ascii(o->key_direction, false, true), "%s");
-+    SHOW_STR(ciphername);
-+    SHOW_STR(ncp_ciphers);
-+    SHOW_STR(authname);
-+#ifndef ENABLE_CRYPTO_MBEDTLS
-+    SHOW_BOOL(engine);
-+#endif /* ENABLE_CRYPTO_MBEDTLS */
-+    SHOW_BOOL(mute_replay_warnings);
-+    SHOW_INT(replay_window);
-+    SHOW_INT(replay_time);
-+    SHOW_STR(packet_id_file);
-+    SHOW_BOOL(test_crypto);
-+
-+    SHOW_BOOL(tls_server);
-+    SHOW_BOOL(tls_client);
-+    SHOW_STR_INLINE(ca_file);
-+    SHOW_STR(ca_path);
-+    SHOW_STR_INLINE(dh_file);
-+    if ((o->management_flags & MF_EXTERNAL_CERT))
-+    {
-+        SHOW_PARM("cert_file", "EXTERNAL_CERT", "%s");
-+    }
-+    else
-+    {
-+        SHOW_STR_INLINE(cert_file);
-+    }
-+    SHOW_STR_INLINE(extra_certs_file);
-+
-+    if ((o->management_flags & MF_EXTERNAL_KEY))
-+    {
-+        SHOW_PARM("priv_key_file", "EXTERNAL_PRIVATE_KEY", "%s");
-+    }
-+    else
-+    {
-+        SHOW_STR_INLINE(priv_key_file);
-+    }
-+#ifndef ENABLE_CRYPTO_MBEDTLS
-+    SHOW_STR_INLINE(pkcs12_file);
-+#endif
-+#ifdef ENABLE_CRYPTOAPI
-+    SHOW_STR(cryptoapi_cert);
-+#endif
-+    SHOW_STR(cipher_list);
-+    SHOW_STR(cipher_list_tls13);
-+    SHOW_STR(tls_cert_profile);
-+    SHOW_STR(tls_verify);
-+    SHOW_STR(tls_export_peer_cert_dir);
-+    SHOW_INT(verify_x509_type);
-+    SHOW_STR(verify_x509_name);
-+    SHOW_STR_INLINE(crl_file);
-+    SHOW_INT(ns_cert_type);
-+    {
-+        int i;
-+        for (i = 0; i < MAX_PARMS; i++)
-+        {
-+            SHOW_INT(remote_cert_ku[i]);
-+        }
-+    }
-+    SHOW_STR(remote_cert_eku);
-+    if (o->verify_hash)
-+    {
-+        SHOW_INT(verify_hash_algo);
-+        SHOW_INT(verify_hash_depth);
-+        struct gc_arena gc = gc_new();
-+        const struct verify_hash_list *hl = o->verify_hash;
-+        int digest_len =
-+            (o->verify_hash_algo == MD_SHA1) ? SHA_DIGEST_LENGTH : SHA256_DIGEST_LENGTH;
-+        while (hl)
-+        {
-+            char *s = format_hex_ex(hl->hash, digest_len, 0, 1, ":", &gc);
-+            SHOW_PARM(verify_hash, s, "%s");
-+            hl = hl->next;
-+        }
-+        gc_free(&gc);
-+    }
-+    SHOW_INT(ssl_flags);
-+
-+    SHOW_INT(tls_timeout);
-+
-+    SHOW_INT64(renegotiate_bytes);
-+    SHOW_INT64(renegotiate_packets);
-+    SHOW_INT(renegotiate_seconds);
-+
-+    SHOW_INT(handshake_window);
-+    SHOW_INT(transition_window);
-+
-+    SHOW_BOOL(single_session);
-+    SHOW_BOOL(push_peer_info);
-+    SHOW_BOOL(tls_exit);
-+
-+    SHOW_STR(tls_crypt_v2_metadata);
-+
-+#ifdef ENABLE_PKCS11
-+    {
-+        int i;
-+        for (i = 0; i < MAX_PARMS && o->pkcs11_providers[i] != NULL; i++)
-+        {
-+            SHOW_PARM(pkcs11_providers, o->pkcs11_providers[i], "%s");
-+        }
-+    }
-+    {
-+        int i;
-+        for (i = 0; i < MAX_PARMS; i++)
-+        {
-+            SHOW_PARM(pkcs11_protected_authentication,
-+                      o->pkcs11_protected_authentication[i] ? "ENABLED" : "DISABLED", "%s");
-+        }
-+    }
-+    {
-+        int i;
-+        for (i = 0; i < MAX_PARMS; i++)
-+        {
-+            SHOW_PARM(pkcs11_private_mode, o->pkcs11_private_mode[i], "%08x");
-+        }
-+    }
-+    {
-+        int i;
-+        for (i = 0; i < MAX_PARMS; i++)
-+        {
-+            SHOW_PARM(pkcs11_cert_private, o->pkcs11_cert_private[i] ? "ENABLED" : "DISABLED",
-+                      "%s");
-+        }
-+    }
-+    SHOW_INT(pkcs11_pin_cache_period);
-+    SHOW_STR(pkcs11_id);
-+    SHOW_BOOL(pkcs11_id_management);
-+#endif /* ENABLE_PKCS11 */
-+
-+    show_p2mp_parms(o);
-+
-+#ifdef _WIN32
-+    SHOW_BOOL(show_net_up);
-+    SHOW_INT(route_method);
-+    SHOW_BOOL(block_outside_dns);
-+    show_tuntap_options(&o->tuntap_options);
-+#endif
-+}
-+
-+#endif /* ifndef ENABLE_SMALL */
-diff --git a/src/openvpn/options_show.h b/src/openvpn/options_show.h
-new file mode 100644
-index 0000000..fb233fc
---- /dev/null
-+++ b/src/openvpn/options_show.h
-@@ -0,0 +1,46 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2002-2026 OpenVPN Inc <sales@openvpn.net>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, see <https://www.gnu.org/licenses/>.
-+ */
-+
-+#ifndef OPTIONS_SHOW_H
-+#define OPTIONS_SHOW_H
-+
-+#ifdef HAVE_CONFIG_H
-+#include "config.h"
-+#endif
-+
-+#include "options.h"
-+
-+#ifdef ENABLE_SMALL
-+
-+static inline void
-+show_settings(const struct options *o)
-+{
-+    (void)o;
-+}
-+
-+#else
-+
-+void show_settings(const struct options *o);
-+
-+#endif /* ENABLE_SMALL */
-+
-+#endif /* OPTIONS_SHOW_H */
++++ b/m4/ax_code_coverage.m4
+@@ -0,0 +1,273 @@
++# ===========================================================================
++#     https://www.gnu.org/software/autoconf-archive/ax_code_coverage.html
++# ===========================================================================
++#
++# SYNOPSIS
++#
++#   AX_CODE_COVERAGE()
++#
++# DESCRIPTION
++#
++#   Defines CODE_COVERAGE_CPPFLAGS, CODE_COVERAGE_CFLAGS,
++#   CODE_COVERAGE_CXXFLAGS and CODE_COVERAGE_LIBS which should be included
++#   in the CPPFLAGS, CFLAGS CXXFLAGS and LIBS/LIBADD variables of every
++#   build target (program or library) which should be built with code
++#   coverage support. Also add rules using AX_ADD_AM_MACRO_STATIC; and
++#   $enable_code_coverage which can be used in subsequent configure output.
++#   CODE_COVERAGE_ENABLED is defined and substituted, and corresponds to the
++#   value of the --enable-code-coverage option, which defaults to being
++#   disabled.
++#
++#   Test also for gcov program and create GCOV variable that could be
++#   substituted.
++#
++#   Note that all optimization flags in CFLAGS must be disabled when code
++#   coverage is enabled.
++#
++#   Usage example:
++#
++#   configure.ac:
++#
++#     AX_CODE_COVERAGE
++#
++#   Makefile.am:
++#
++#     include $(top_srcdir)/aminclude_static.am
++#
++#     my_program_LIBS = ... $(CODE_COVERAGE_LIBS) ...
++#     my_program_CPPFLAGS = ... $(CODE_COVERAGE_CPPFLAGS) ...
++#     my_program_CFLAGS = ... $(CODE_COVERAGE_CFLAGS) ...
++#     my_program_CXXFLAGS = ... $(CODE_COVERAGE_CXXFLAGS) ...
++#
++#     clean-local: code-coverage-clean
++#     distclean-local: code-coverage-dist-clean
++#
++#   This results in a "check-code-coverage" rule being added to any
++#   Makefile.am which do "include $(top_srcdir)/aminclude_static.am"
++#   (assuming the module has been configured with --enable-code-coverage).
++#   Running `make check-code-coverage` in that directory will run the
++#   module's test suite (`make check`) and build a code coverage report
++#   detailing the code which was touched, then print the URI for the report.
++#
++#   This code was derived from Makefile.decl in GLib, originally licensed
++#   under LGPLv2.1+.
++#
++# LICENSE
++#
++#   Copyright (c) 2012, 2016 Philip Withnall
++#   Copyright (c) 2012 Xan Lopez
++#   Copyright (c) 2012 Christian Persch
++#   Copyright (c) 2012 Paolo Borelli
++#   Copyright (c) 2012 Dan Winship
++#   Copyright (c) 2015,2018 Bastien ROUCARIES
++#
++#   This library is free software; you can redistribute it and/or modify it
++#   under the terms of the GNU Lesser General Public License as published by
++#   the Free Software Foundation; either version 2.1 of the License, or (at
++#   your option) any later version.
++#
++#   This library is distributed in the hope that it will be useful, but
++#   WITHOUT ANY WARRANTY; without even the implied warranty of
++#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
++#   General Public License for more details.
++#
++#   You should have received a copy of the GNU Lesser General Public License
++#   along with this program. If not, see <https://www.gnu.org/licenses/>.
++
++#serial 37
++
++m4_define(_AX_CODE_COVERAGE_RULES,[
++AX_ADD_AM_MACRO_STATIC([
++# Code coverage
++#
++# Optional:
++#  - CODE_COVERAGE_DIRECTORY: Top-level directory for code coverage reporting.
++#    Multiple directories may be specified, separated by whitespace.
++#    (Default: \$(top_builddir))
++#  - CODE_COVERAGE_OUTPUT_FILE: Filename and path for the .info file generated
++#    by lcov for code coverage. (Default:
++#    \$(PACKAGE_NAME)-\$(PACKAGE_VERSION)-coverage.info)
++#  - CODE_COVERAGE_OUTPUT_DIRECTORY: Directory for generated code coverage
++#    reports to be created. (Default:
++#    \$(PACKAGE_NAME)-\$(PACKAGE_VERSION)-coverage)
++#  - CODE_COVERAGE_BRANCH_COVERAGE: Set to 1 to enforce branch coverage,
++#    set to 0 to disable it and leave empty to stay with the default.
++#    (Default: empty)
++#  - CODE_COVERAGE_LCOV_SHOPTS_DEFAULT: Extra options shared between both lcov
++#    instances. (Default: based on $CODE_COVERAGE_BRANCH_COVERAGE)
++#  - CODE_COVERAGE_LCOV_SHOPTS: Extra options to shared between both lcov
++#    instances. (Default: $CODE_COVERAGE_LCOV_SHOPTS_DEFAULT)
++#  - CODE_COVERAGE_LCOV_OPTIONS_GCOVPATH: --gcov-tool pathtogcov
++#  - CODE_COVERAGE_LCOV_OPTIONS_DEFAULT: Extra options to pass to the
++#    collecting lcov instance. (Default: $CODE_COVERAGE_LCOV_OPTIONS_GCOVPATH)
++#  - CODE_COVERAGE_LCOV_OPTIONS: Extra options to pass to the collecting lcov
++#    instance. (Default: $CODE_COVERAGE_LCOV_OPTIONS_DEFAULT)
++#  - CODE_COVERAGE_LCOV_RMOPTS_DEFAULT: Extra options to pass to the filtering
++#    lcov instance. (Default: empty)
++#  - CODE_COVERAGE_LCOV_RMOPTS: Extra options to pass to the filtering lcov
++#    instance. (Default: $CODE_COVERAGE_LCOV_RMOPTS_DEFAULT)
++#  - CODE_COVERAGE_GENHTML_OPTIONS_DEFAULT: Extra options to pass to the
++#    genhtml instance. (Default: based on $CODE_COVERAGE_BRANCH_COVERAGE)
++#  - CODE_COVERAGE_GENHTML_OPTIONS: Extra options to pass to the genhtml
++#    instance. (Default: $CODE_COVERAGE_GENHTML_OPTIONS_DEFAULT)
++#  - CODE_COVERAGE_IGNORE_PATTERN: Extra glob pattern of files to ignore
++#
++# The generated report will be titled using the \$(PACKAGE_NAME) and
++# \$(PACKAGE_VERSION). In order to add the current git hash to the title,
++# use the git-version-gen script, available online.
++# Optional variables
++# run only on top dir
++if CODE_COVERAGE_ENABLED
++ ifeq (\$(abs_builddir), \$(abs_top_builddir))
++CODE_COVERAGE_DIRECTORY ?= \$(top_builddir)
++CODE_COVERAGE_OUTPUT_FILE ?= \$(PACKAGE_NAME)-\$(PACKAGE_VERSION)-coverage.info
++CODE_COVERAGE_OUTPUT_DIRECTORY ?= \$(PACKAGE_NAME)-\$(PACKAGE_VERSION)-coverage
++
++CODE_COVERAGE_BRANCH_COVERAGE ?=
++CODE_COVERAGE_LCOV_SHOPTS_DEFAULT ?= \$(if \$(CODE_COVERAGE_BRANCH_COVERAGE),\
++--rc lcov_branch_coverage=\$(CODE_COVERAGE_BRANCH_COVERAGE))
++CODE_COVERAGE_LCOV_SHOPTS ?= \$(CODE_COVERAGE_LCOV_SHOPTS_DEFAULT)
++CODE_COVERAGE_LCOV_OPTIONS_GCOVPATH ?= --gcov-tool \"\$(GCOV)\"
++CODE_COVERAGE_LCOV_OPTIONS_DEFAULT ?= \$(CODE_COVERAGE_LCOV_OPTIONS_GCOVPATH)
++CODE_COVERAGE_LCOV_OPTIONS ?= \$(CODE_COVERAGE_LCOV_OPTIONS_DEFAULT)
++CODE_COVERAGE_LCOV_RMOPTS_DEFAULT ?=
++CODE_COVERAGE_LCOV_RMOPTS ?= \$(CODE_COVERAGE_LCOV_RMOPTS_DEFAULT)
++CODE_COVERAGE_GENHTML_OPTIONS_DEFAULT ?=\
++\$(if \$(CODE_COVERAGE_BRANCH_COVERAGE),\
++--rc genhtml_branch_coverage=\$(CODE_COVERAGE_BRANCH_COVERAGE))
++CODE_COVERAGE_GENHTML_OPTIONS ?= \$(CODE_COVERAGE_GENHTML_OPTIONS_DEFAULT)
++CODE_COVERAGE_IGNORE_PATTERN ?=
++
++GITIGNOREFILES := \$(GITIGNOREFILES) \$(CODE_COVERAGE_OUTPUT_FILE) \$(CODE_COVERAGE_OUTPUT_DIRECTORY)
++code_coverage_v_lcov_cap = \$(code_coverage_v_lcov_cap_\$(V))
++code_coverage_v_lcov_cap_ = \$(code_coverage_v_lcov_cap_\$(AM_DEFAULT_VERBOSITY))
++code_coverage_v_lcov_cap_0 = @echo \"  LCOV   --capture\" \$(CODE_COVERAGE_OUTPUT_FILE);
++code_coverage_v_lcov_ign = \$(code_coverage_v_lcov_ign_\$(V))
++code_coverage_v_lcov_ign_ = \$(code_coverage_v_lcov_ign_\$(AM_DEFAULT_VERBOSITY))
++code_coverage_v_lcov_ign_0 = @echo \"  LCOV   --remove\" \"\$(CODE_COVERAGE_OUTPUT_FILE).tmp\" \$(CODE_COVERAGE_IGNORE_PATTERN);
++code_coverage_v_genhtml = \$(code_coverage_v_genhtml_\$(V))
++code_coverage_v_genhtml_ = \$(code_coverage_v_genhtml_\$(AM_DEFAULT_VERBOSITY))
++code_coverage_v_genhtml_0 = @echo \"  GEN   \" \"\$(CODE_COVERAGE_OUTPUT_DIRECTORY)\";
++code_coverage_quiet = \$(code_coverage_quiet_\$(V))
++code_coverage_quiet_ = \$(code_coverage_quiet_\$(AM_DEFAULT_VERBOSITY))
++code_coverage_quiet_0 = --quiet
++
++# sanitizes the test-name: replaces with underscores: dashes and dots
++code_coverage_sanitize = \$(subst -,_,\$(subst .,_,\$(1)))
++
++# Use recursive makes in order to ignore errors during check
++check-code-coverage:
++	-\$(AM_V_at)\$(MAKE) \$(AM_MAKEFLAGS) -k check
++	\$(AM_V_at)\$(MAKE) \$(AM_MAKEFLAGS) code-coverage-capture
++
++# Capture code coverage data
++code-coverage-capture: code-coverage-capture-hook
++	\$(code_coverage_v_lcov_cap)\$(LCOV) \$(code_coverage_quiet) \$(addprefix --directory ,\$(CODE_COVERAGE_DIRECTORY)) --capture --output-file \"\$(CODE_COVERAGE_OUTPUT_FILE).tmp\" --test-name \"\$(call code_coverage_sanitize,\$(PACKAGE_NAME)-\$(PACKAGE_VERSION))\" --no-checksum --compat-libtool \$(CODE_COVERAGE_LCOV_SHOPTS) \$(CODE_COVERAGE_LCOV_OPTIONS)
++	\$(code_coverage_v_lcov_ign)\$(LCOV) \$(code_coverage_quiet) \$(addprefix --directory ,\$(CODE_COVERAGE_DIRECTORY)) --remove \"\$(CODE_COVERAGE_OUTPUT_FILE).tmp\" \$(CODE_COVERAGE_IGNORE_PATTERN) --output-file \"\$(CODE_COVERAGE_OUTPUT_FILE)\" \$(CODE_COVERAGE_LCOV_SHOPTS) \$(CODE_COVERAGE_LCOV_RMOPTS)
++	-@rm -f \"\$(CODE_COVERAGE_OUTPUT_FILE).tmp\"
++	\$(code_coverage_v_genhtml)LANG=C \$(GENHTML) \$(code_coverage_quiet) \$(addprefix --prefix ,\$(CODE_COVERAGE_DIRECTORY)) --output-directory \"\$(CODE_COVERAGE_OUTPUT_DIRECTORY)\" --title \"\$(PACKAGE_NAME)-\$(PACKAGE_VERSION) Code Coverage\" --legend --show-details \"\$(CODE_COVERAGE_OUTPUT_FILE)\" \$(CODE_COVERAGE_GENHTML_OPTIONS)
++	@echo \"file://\$(abs_builddir)/\$(CODE_COVERAGE_OUTPUT_DIRECTORY)/index.html\"
++
++code-coverage-clean:
++	-\$(LCOV) --directory \$(top_builddir) -z
++	-rm -rf \"\$(CODE_COVERAGE_OUTPUT_FILE)\" \"\$(CODE_COVERAGE_OUTPUT_FILE).tmp\" \"\$(CODE_COVERAGE_OUTPUT_DIRECTORY)\"
++	-find . \\( -name \"*.gcda\" -o -name \"*.gcno\" -o -name \"*.gcov\" \\) -delete
++
++code-coverage-dist-clean:
++
++A][M_DISTCHECK_CONFIGURE_FLAGS := \$(A][M_DISTCHECK_CONFIGURE_FLAGS) --disable-code-coverage
++ else # ifneq (\$(abs_builddir), \$(abs_top_builddir))
++check-code-coverage:
++
++code-coverage-capture: code-coverage-capture-hook
++
++code-coverage-clean:
++
++code-coverage-dist-clean:
++ endif # ifeq (\$(abs_builddir), \$(abs_top_builddir))
++else #! CODE_COVERAGE_ENABLED
++# Use recursive makes in order to ignore errors during check
++check-code-coverage:
++	@echo \"Need to reconfigure with --enable-code-coverage\"
++# Capture code coverage data
++code-coverage-capture: code-coverage-capture-hook
++	@echo \"Need to reconfigure with --enable-code-coverage\"
++
++code-coverage-clean:
++
++code-coverage-dist-clean:
++
++endif #CODE_COVERAGE_ENABLED
++# Hook rule executed before code-coverage-capture, overridable by the user
++code-coverage-capture-hook:
++
++.PHONY: check-code-coverage code-coverage-capture code-coverage-dist-clean code-coverage-clean code-coverage-capture-hook
++])
++])
++
++AC_DEFUN([_AX_CODE_COVERAGE_ENABLED],[
++	AX_CHECK_GNU_MAKE([],[AC_MSG_ERROR([not using GNU make that is needed for coverage])])
++	AC_REQUIRE([AX_ADD_AM_MACRO_STATIC])
++	# check for gcov
++	AC_CHECK_TOOL([GCOV],
++		  [$_AX_CODE_COVERAGE_GCOV_PROG_WITH],
++		  [:])
++	AS_IF([test "X$GCOV" = "X:"],
++	      [AC_MSG_ERROR([gcov is needed to do coverage])])
++	AC_SUBST([GCOV])
++
++	dnl Check if gcc is being used
++	AS_IF([ test "$GCC" = "no" ], [
++		AC_MSG_ERROR([not compiling with gcc, which is required for gcov code coverage])
++	      ])
++
++	AC_CHECK_PROG([LCOV], [lcov], [lcov])
++	AC_CHECK_PROG([GENHTML], [genhtml], [genhtml])
++
++	AS_IF([ test x"$LCOV" = x ], [
++		AC_MSG_ERROR([To enable code coverage reporting you must have lcov installed])
++	      ])
++
++	AS_IF([ test x"$GENHTML" = x ], [
++		AC_MSG_ERROR([Could not find genhtml from the lcov package])
++	])
++
++	AC_CHECK_LIB([gcov], [_gcov_init], [CODE_COVERAGE_LIBS="-lgcov"], [CODE_COVERAGE_LIBS=""])
++
++	dnl Build the code coverage flags
++	dnl Define CODE_COVERAGE_LDFLAGS for backwards compatibility
++	CODE_COVERAGE_CPPFLAGS="-DNDEBUG"
++	CODE_COVERAGE_CFLAGS="-O0 -g -fprofile-arcs -ftest-coverage"
++	CODE_COVERAGE_CXXFLAGS="-O0 -g -fprofile-arcs -ftest-coverage"
++
++	AC_SUBST([CODE_COVERAGE_CPPFLAGS])
++	AC_SUBST([CODE_COVERAGE_CFLAGS])
++	AC_SUBST([CODE_COVERAGE_CXXFLAGS])
++	AC_SUBST([CODE_COVERAGE_LIBS])
++])
++
++AC_DEFUN([AX_CODE_COVERAGE],[
++	dnl Check for --enable-code-coverage
++
++	# allow to override gcov location
++	AC_ARG_WITH([gcov],
++	  [AS_HELP_STRING([--with-gcov[=GCOV]], [use given GCOV for coverage (GCOV=gcov).])],
++	  [_AX_CODE_COVERAGE_GCOV_PROG_WITH=$with_gcov],
++	  [_AX_CODE_COVERAGE_GCOV_PROG_WITH=gcov])
++
++	AC_MSG_CHECKING([whether to build with code coverage support])
++	AC_ARG_ENABLE([code-coverage],
++	  AS_HELP_STRING([--enable-code-coverage],
++	  [Whether to enable code coverage support]),,
++	  enable_code_coverage=no)
++
++	AM_CONDITIONAL([CODE_COVERAGE_ENABLED], [test "x$enable_code_coverage" = xyes])
++	AC_SUBST([CODE_COVERAGE_ENABLED], [$enable_code_coverage])
++	AC_MSG_RESULT($enable_code_coverage)
++
++	AS_IF([ test "x$enable_code_coverage" = xyes ], [
++		_AX_CODE_COVERAGE_ENABLED
++	      ])
++
++	_AX_CODE_COVERAGE_RULES
++])
 
 
 _______________________________________________
