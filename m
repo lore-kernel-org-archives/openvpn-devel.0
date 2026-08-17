@@ -4,126 +4,127 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E0791C5DF70
-	for <openvpn-devel@archiver.kernel.org>; Mon, 17 Aug 2026 09:43:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B67FEC5DF66
+	for <openvpn-devel@archiver.kernel.org>; Mon, 17 Aug 2026 09:48:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:Date:Sender:To:
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
-	List-Owner; bh=wgV/LBtwR8sT7WheQjx7c1tR8AIRK/FP0qvfEgl2VZg=; b=nA1n+q8QxeC3DD
-	DQsbNMvxXAtkw/wAikQ7EFldnAZjYLrd+HzUlhAiKADr8q8/oiznj/T3wmawFoBcC/b9mmCtNI0Ii
-	aQot+uc3skfv1gsl3Uw67fi0qCZqHmezQFxqSBsoQL/GVyUSzxyrlSr86r48jD1+0STD9fFvIZkYB
-	LSA=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=mMMJ0EumBrdFK4BjyMC+cL17mt2SoqEoHTqB+o9waNY=; b=d5PZ922DnZPWAIbqB0TYuTvfdC
+	PeOGR5OJLsWrQnrXC5n3jONbpW4zLJjs/W8DhJKd5o9ql41A7LfjQyAmLuCtEKMVESdAubdDZnavw
+	K869MUfOGZO9WQqbP1dgd/lJvk1qMV9duHplEetre9r1ABeB+FkBi3Q/FwNZ2xjZiXY4=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wvts1-00020A-FL;
-	Mon, 17 Aug 2026 09:43:06 +0000
+	id 1wvtxJ-0004r8-IW;
+	Mon, 17 Aug 2026 09:48:31 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wvtrz-000203-E7
+ (envelope-from <gerrit@openvpn.net>) id 1wvtxH-0004r0-Id
  for openvpn-devel@lists.sourceforge.net;
- Mon, 17 Aug 2026 09:43:04 +0000
+ Mon, 17 Aug 2026 09:48:29 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:Date:From
- :Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From:
- Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=5JGb5rQEC7DHklQFm1DD5V79q0MlKFzisP3l4bN3iKg=; b=YZ0anfdy/osCSZqOrIXgXx382r
- XR7qVgiMO1Xo54S8jABmrasObTdRNeO3f1d9jA1RLk2pyBkZRjQ5EmkOjADg2oU7ya9Duw+6d3Sst
- Db8VYeu1Y0XohpaEslV8SLMYjvS3wmALve3DfQpYw9gorG4zDuujJgQELybOR3Wx40iU=;
+ :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
+ Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
+ :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
+ :List-Post:List-Owner:List-Archive;
+ bh=KAThbQ+yMuSH06jbHNqTJFeMQuNtd+Yvm1m+5IsJUpA=; b=Z/VeeBmaI6bmQjkTrSIw3kMYgP
+ JHm2FTHMKaDpHozkFNLXrc5PTiMDY8S6w1cEbKYiA1JJPqw5W0N95eR99KSl+ElJVBqP24Xs6ZBug
+ 4F2YxMc0dVf5I2rn46RukX3sLvkT9cQMktptbrE4f4AtS+xg5TbV2RVxWDz4G2r/8Pdc=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:List-Unsubscribe:List-Id:Cc:Date:From:Sender:To:Content-ID
- :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
- Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=5JGb5rQEC7DHklQFm1DD5V79q0MlKFzisP3l4bN3iKg=; b=Q
- QMi4tHBestuu6xiHAc+RMEDpsLvG9k72CLx2/dLp/ICS9+WdEFAS4JagtrX6jXbsASDEF9+iinE2q
- WXpEL09b8eLAim7eiMl3UWj/N/De/GTXMd1jrrRRAubJQhGpMbLv94ALD0PMyeYfLES7LpQQuDxQe
- 5WTmCDHxLP6Mcwy4=;
-Received: from mail-wm1-f53.google.com ([209.85.128.53])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
+ Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=KAThbQ+yMuSH06jbHNqTJFeMQuNtd+Yvm1m+5IsJUpA=; b=m
+ 3gt5nJr393PmH8reCyQmVTbnc4gyZyXSGTXgs/T1bzchcIoFBHZ+ko7kkN2QVWK+F+o76mbUclYR2
+ 4DeprhS1jWTccpElbv9TTq2CaeG0N0y/SvyhU+Ax8xwbs34KsA3HSat6t/3/m7wqxDz1jPXVF3ncC
+ Nn0L7wmtNx9E11wk=;
+Received: from mail-wm1-f49.google.com ([209.85.128.49])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wvts2-0003Az-3b for openvpn-devel@lists.sourceforge.net;
- Mon, 17 Aug 2026 09:43:04 +0000
-Received: by mail-wm1-f53.google.com with SMTP id
- 5b1f17b1804b1-49554ebb87dso31332565e9.3
+ id 1wvtxD-0006R5-Bs for openvpn-devel@lists.sourceforge.net;
+ Mon, 17 Aug 2026 09:48:29 +0000
+Received: by mail-wm1-f49.google.com with SMTP id
+ 5b1f17b1804b1-49954b88fffso35912595e9.0
  for <openvpn-devel@lists.sourceforge.net>;
- Mon, 17 Aug 2026 02:43:02 -0700 (PDT)
+ Mon, 17 Aug 2026 02:48:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1786959776; x=1787564576; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1786960101; x=1787564901; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
- :date:from:from:to:cc:subject:date:message-id:reply-to:content-type;
- bh=5JGb5rQEC7DHklQFm1DD5V79q0MlKFzisP3l4bN3iKg=;
- b=MgLPBpLNRjyeesgTgJVEFiXZBxjlDbZzNGKHNC2aH1CRcfyB18ZelwGZmVV2yJekvr
- ZQEaoR24qjp/rb016AtaZ+FclKj53ZtdKlorhyVDIxVvea+TCPCWev87tPoyMSOaW6lj
- Vk5bSA8Hv5Ry7Mlgw2JeWmtHDeB1bXTgPTBLjzthT79uMegGFR3l+k6g7/k+Ls7SYvfe
- tj0gPVm2FXM5anV3smFgfhjNMV0QO+QvhJ+I6RmBNWDsenAOrESp+WsL+cXur87n1Gpd
- jbPAOZPpM9GyzPNNQWEoZg4AplOBBHD/9Qg9bJJDhhWMWRQbpDj4No9JXi2YSjZ2MulZ
- sASA==
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
+ :reply-to:content-type;
+ bh=KAThbQ+yMuSH06jbHNqTJFeMQuNtd+Yvm1m+5IsJUpA=;
+ b=PC//YNgxCOfScMHg6RqSjBIQe0LR8X09MgTrjBY1es4Qg7w9Mv/E78la1TyIOyLzih
+ nLhnZ8ofAIKueEqv/u9J4Yl4+I8FiaXoTmfepqEsGcFSqyqsvOOsVPxyDsV7MGCmi56/
+ t9u2iinPJ/EBQcH1kxwiZMK/oO+jppObv9mz2UCEJoGDYt18YfhAgBplVDPhXEVDd+Jk
+ Dm/6EblczOtbM1LMU7eg+WfSD9Qs3laUhFfO93BlS5rqkK/SQ+PWuXUj9NRRk3zxkRnC
+ Om0Zy5WyvmP3nNKFdvhj2mHV/j91Kem1O+S/sFrLEaIduRezqHm0GijrJ/88zDSlyQ5x
+ Sc/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1786959776; x=1787564576;
+ d=1e100.net; s=20251104; t=1786960101; x=1787564901;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
- :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
- :message-id:reply-to:content-type;
- bh=5JGb5rQEC7DHklQFm1DD5V79q0MlKFzisP3l4bN3iKg=;
- b=Xq8xOlo8fQSBjm0lERgA2nvsOQyd3xY7iJ/whAm4elZgFgbF6aFZvMljXEzqchkvt8
- +xjESTLqDTeIhGuXlBKWJ0ZCrkpt2DXNuqLUo4GbiHSh7wPz85AcPuWqfQ/3VwMhRsNI
- 6AjBFzos2FgDOjtyGWN9WIq4A8EqHfXEtwtvVPPC0C5DNnK0XDqqGvXAIWpuS3fdq+X8
- ufOw+q/T0VvHEuoDAVbslZnPFsbRppDpMznnzyNnWZPJ2voa8B6ynskP9A/9C3gM2B8P
- uakqcNHE46DJ1Po86U6+K+yqrGnNlJguyZMKBIKu8kvxFr86bo9eggj82t0sK1TICIje
- qyBg==
-X-Gm-Message-State: AOJu0YzrCsF/UjOx+Ng0R27MtPI/F9HV9RSrmV29J9QHV/m9NNPUBmhs
- fpP6bZvfDm6wNEUT3KfKVu2bKK8LixqD1SESqFzAqp3uIWdXpmjBec8l5NtFMAZC61CQsggCWoF
- XkxAW3+Qo6COM3cYZsFBWGJIR4DntBpRHzwLWFnu34J9WWFZhTZqdZeJ1OKtGV4c3VUX2iZ5SCw
- xuSRs60g==
-X-Gm-Gg: AR+sD11TVmBOtvCsSxUz5YtLJVVGJBLrkg6RJb2Il8WzKCjN0aUMg1M4VveLyR1FKAi
- wD0oiYAqkiotoq45vvo/k2DhHeLu9Hi3dLKhSgMFufam8IrhahXHNp2hb9HcAB8Mrzrf8hh0f4W
- zneEou8ycDIKeckdh/zx2OH37eB7mU5yQCOwreLdMl+cXcaxlPUyy5bZS2+huUSKaypoAxCJA2r
- e3pBexezaPe8YQni4UZcVCVfG4PJ20WmTrIgYe4BxsGB3W+fxNVlvDXPlLB1UHZh0MllDQr0nK9
- yCRo7/5yHn2sP3JeN5uvZ2pE2xgrRMZjPmV9GVvBSy82gCP4tbRqgh8j+gR0fiKk7MDscCkj8ML
- hqcqtb6ZTRnFanZcBOMe8jEnDZQxPRvhdrF4HMpkRqF8VJss16nY863TrMuYnbBsSqeoCTHsuhC
- Y+Pc2QbaQ0gzuGvvO82so/nGboB9I4IrkXrJ58JjQAFXpym3zYrMmbuwAqgIYMJaA7c0W6zrhWy
- /UNBTI/iaJqGbbbI10xjl5yEHFdQWktMceKYwUKtH8xfWNjfVEmyaH8eIFSrcDBirT4W0VxmJ1s
- /BN2E34htH6Z8UcbvWEnMEsLPnZCvI2lj9aAYsqweEXR/l1vWzE=
-X-Received: by 2002:a05:600c:8b6b:b0:499:8f9f:e9ee with SMTP id
- 5b1f17b1804b1-4998f9febbdmr276626375e9.7.1786959775435; 
- Mon, 17 Aug 2026 02:42:55 -0700 (PDT)
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
+ :cc:subject:date:message-id:reply-to:content-type;
+ bh=KAThbQ+yMuSH06jbHNqTJFeMQuNtd+Yvm1m+5IsJUpA=;
+ b=EkBt4bU/eXZq6gQlc8zpULgOqNHMXo+z8+NIxxZlpjE6Aw2fW1QFi4JINu1vzc3Taz
+ SNbFX5lUtlCAKQp+F6XU9lECKRJyFuXlDDCSVUve4EhInNP+Qppp6AX0M5DbTAufy59q
+ 4cQfeSPAsOZOOLybbcwJNA17ZtyFzdwdv1AOaS1F/juDxR0QJDkHWEPQLeMPnk/niO01
+ nYa4z3vlMhxlEWFK3nmreB2tM+Za2YJL4ldQ7axChi+16QMpv3xQ8HABAhg0FJyWARCK
+ zBn4NQ9Z5Iyffk/gVdAK8PBa+kat922kh1j0swhxpp4fjAgyeg8hJEsAODK5fB/Ux1DM
+ ufXA==
+X-Gm-Message-State: AOJu0YyVcMfFqxmfi5VyKG1MtCPa8hDiZ1w3PGEilRzNxelWPlo0aMlo
+ mg1Ze2LY0GtzJTz/o2XleJSH0Go4hd/lwCAk/G7PvXpqgPvgDIMi5Z3XXE9hqVQPkCewAuxx6CT
+ teUST0d6udK7gVW9l5fUlhWwPsg7wlaYrpfAin4Nw50IQuvElch2om7iJx/xAyu/fAAgE2TJCuV
+ buPwsotQ==
+X-Gm-Gg: AR+sD10ONF3ymSis2KjeQ9xQ3knsJMf94ChKIXMTT5lSSs4dngdLZwyNOwszo148B4h
+ AC93fwmJGDjjtcL4QxRyAZSWvvRfbJEFp8ea0SBE6chQ6hfaId/hdflh6IWLToRyNwStWP1LREr
+ S7blZpiJOh5geJCYCECGhUF5yKZtzXLkQs/TiflvYD4vZGHmcqPBSkbEETv+Bgjm4z6sqnQ9l6w
+ w6GC2B8jGkPrwzZO5KtdL1JsVq9dP4AHNcL2vUSYK53MzNhDkPq9nSI2GQvR3LQTVFsWdTGI75c
+ PnA2baMJRHhr0jD/LJ6J5MsMF4vZ52VS9RAni5dblXwOoByjLt5VPYfuFns+O08MhGxU96Aup/z
+ FEAWc7CX7taHI9ugAIpD119jXNt6t6L4AOiwXqlSePIE34q2esVMW+J+8j96t0AXLuR+sAm6NBD
+ ZJSqCaUSFnfZuL1gGQC14Epc33Rr+I0ONzKCcmKG42/eiHm+xR1b547A7ex94bvw8P/AUXWayiB
+ 2vQI7yNfbLdaTCQz87bQYGWMRW6Daq10duCAqWBOJBF9w4jw2H6IRlAC4XyCGD0FDx1gADIZV6k
+ Yf1PlYtxE9Z/5/pHrPxPScwZjrUXq/jnn88ij660j1Uo9dN5lL0=
+X-Received: by 2002:a05:600c:3485:b0:499:726a:a017 with SMTP id
+ 5b1f17b1804b1-49987938e19mr387328325e9.1.1786960100605; 
+ Mon, 17 Aug 2026 02:48:20 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-49996188217sm296760005e9.13.2026.08.17.02.42.54
- for <openvpn-devel@lists.sourceforge.net>
+ 5b1f17b1804b1-4999610966dsm175903145e9.5.2026.08.17.02.48.20
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 17 Aug 2026 02:42:55 -0700 (PDT)
+ Mon, 17 Aug 2026 02:48:20 -0700 (PDT)
 X-Google-Original-From: "plaisthos (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Mon, 17 Aug 2026 09:42:54 +0000
+Date: Mon, 17 Aug 2026 09:48:18 +0000
+To: flichtenheld <frank@lichtenheld.com>, stipa <lstipakov@gmail.com>
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: newchange
-X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: Id3c6681b29026c2920a62a0ea570fd098649e197
-X-Gerrit-Change-Number: 1844
+X-Gerrit-MessageType: newpatchset
+X-Gerrit-PatchSet: 8
+X-Gerrit-Change-Id: Iccdd4cfad090c565aac27e16cdaa9871106c2f89
+X-Gerrit-Change-Number: 1826
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1844?usp=email>
-X-Gerrit-Commit: c35df952df85077d28b8b848f00ef5d450ce84ad
-References: <gerrit.1786959771000.Id3c6681b29026c2920a62a0ea570fd098649e197@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzg2OTU5NzcxMDAwLklkM2M2NjgxYjI5MDI2YzI5MjBhNjJhMGVhNTcwZmQwOTg2NDllMTk3QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <99faaeb6215729e32b0d365e3d96c6a4849f64e7-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1826?usp=email>
+X-Gerrit-Commit: 0ed03b5aa12f834249b9ecd2e8edb20d5e4d6fef
+In-Reply-To: <gerrit.1785155982000.Iccdd4cfad090c565aac27e16cdaa9871106c2f89@gerrit.openvpn.net>
+References: <gerrit.1785155982000.Iccdd4cfad090c565aac27e16cdaa9871106c2f89@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzg1MTU1OTgyMDAwLkljY2RkNGNmYWQwOTBjNTY1YWFjMjdlMTZjZGFhOTg3MTEwNmMyZjg5QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <ff0a745adc23ba11e7d08f376259b1b36850c2fc-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wvts2-0003Az-3b
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Reduce number of
- future epoch keys from 16 to 4
+X-Headers-End: 1wvtxD-0006R5-Bs
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Make required action
+ returned from pre_decrypt_verdict more explicit
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -137,460 +138,512 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 From: "plaisthos \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
-Reply-To: arne-openvpn@rfc2549.org, openvpn-devel@lists.sourceforge.net
+Reply-To: arne-openvpn@rfc2549.org, openvpn-devel@lists.sourceforge.net,
+ frank@lichtenheld.com, lstipakov@gmail.com
 Cc: "plaisthos \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============6008498050634053679=="
+Content-Type: multipart/mixed; boundary="===============5984002234168769144=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============6008498050634053679==
+--===============5984002234168769144==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="QXXvUgJ3bNU="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="/EqiSGPiH74="; charset=UTF-8
 
---QXXvUgJ3bNU=
+--/EqiSGPiH74=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-plaisthos has uploaded this change for review=2E ( http://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1844?usp=3Demail )
+Attention is currently required from: flichtenheld, stipa=2E
+
+Hello flichte=
+nheld, stipa, 
+
+I'd like you to reexamine a change=2E Please visit
+
+    htt=
+p://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1826?usp=3Demail
+
+to look at the new=
+ patch set (#8)=2E
 
 
-Change subject: Reduce number of fu=
-ture epoch keys from 16 to 4
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+Change subject: Make required action returned from pre=
+_decrypt_verdict more explicit
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E
 
-Reduce number of future epoch keys from 16 to 4
+Make required action returned from pre_decrypt_verdict =
+more explicit
 
-The calcu=
-lation in the RFC was wrong and probably influenced
-by an older worst case =
-assumption=2E With the fixed calculation
-four future epoch keys should be m=
-ore than enough even for
-100 Gbit/s=2E So change the number to 4 in OpenVPN=
- as well=2E
+The current code relies on the condition if state=2Eserver_s=
+ession_id
+is defined to decided if session_skip_to_pre_start should be used=
+=2E
 
-This also reduces the spam about the epoch keys a bit=2E
+Instead explicitly return the intent and use that to decide if
+session=
+_skip_to_pre_start should be called=2E
 
-Than=
-ks to Ralf Lici for noticing the wrong calculation=2E
-
-Change-Id: Id3c6681b=
-29026c2920a62a0ea570fd098649e197
-Signed-off-by: Arne Schwabe <arne@rfc2549=
-=2Eorg>
+Change-Id: Iccdd4cfad090c565aac27e1=
+6cdaa9871106c2f89
 ---
-M src/openvpn/ssl=2Ec
-1 file changed, 42 insertions(+), 21 dele=
-tions(-)
+M src/openvpn/mudp=2Ec
+1 file changed, 43 insertions(=
++), 17 deletions(-)
 
 
+  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn=
+ refs/changes/26/1826/8
 
-  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/chan=
-ges/44/1844/1
-
-diff --git a/src/openvpn/ssl=2Ec b/src/openvpn/ssl=2Ec
-index=
- fd96b85=2E=2E617ac2f 100644
---- a/src/openvpn/ssl=2Ec
-+++ b/src/openvpn/ss=
-l=2Ec
-@@ -1343,10 +1343,14 @@
- init_epoch_keys(struct key_state *ks, struct=
- tls_multi *multi, const struct key_type *key_type,
-                 bool s=
-erver, struct key2 *key2)
+diff --git a/src/openvpn/mudp=2Ec b/src/openvpn/mu=
+dp=2Ec
+index 632b064=2E=2Edc049f6 100644
+--- a/src/openvpn/mudp=2Ec
++++ b/s=
+rc/openvpn/mudp=2Ec
+@@ -87,9 +87,24 @@
+                           "Reset pa=
+cket from client, sending HMAC based reset challenge", sock);
+ }
+ 
++/**
++ *=
+ Verdict if this packet should create a new session=2E If a packet is inval=
+id
++ * or we send out an HMAC based challenge, we do not want to create a n=
+ew
++ * session=2E
++ */
++enum pre_decrypt_verdict
++{
++    /** This packet sh=
+ould not create a new session */
++    PRE_DECRYPT_NO_ACTION,
++    /** This =
+packet creates a new session normally */
++    PRE_DECRYPT_CREATE_SESSION,
++=
+    /** Create a new session but skip the first two packets of
++     * the =
+three way handshake */
++    PRE_DECRYPT_CREATE_SESSION_SKIP
++};
+ 
+-/* Retur=
+ns true if this packet should create a new session */
+-static bool
++/** Ret=
+urns a verdict if this packet should create a new session */
++static enum p=
+re_decrypt_verdict
+ do_pre_decrypt_check(struct multi_context *m, struct tl=
+s_pre_decrypt_state *state,
+                      struct mroute_addr addr, =
+struct link_socket *sock)
  {
--    /* For now we hardcode this to be 16 for =
-the software based data channel
-+    /* For now we hardcode this to be 4 fo=
-r the software based data channel
-      * DCO based implementations/HW impl=
-ementation might adjust this number
--     * based on their expected speed *=
-/
--    const uint8_t future_key_count =3D 16;
-+     * based on their expect=
-ed speed=2E
-+     *
-+     * One epoch lasts 910 GB with 128 byte packets or=
- 78s at 100 GBit/s=2E
-+     * (respectively 1011 GB and 86s with 1280 byte =
-packets)=2E
-+     */
-+    const uint8_t future_key_count =3D 4;
- 
-     int =
-key_direction =3D server ? KEY_DIRECTION_INVERSE : KEY_DIRECTION_NORMAL;
-  =
-   struct key_direction_state kds;
-@@ -1874,7 +1878,8 @@
- 
-     /* In serve=
-r mode we only add this when the client has announced its
-      * support f=
-or the feature */
--    if (session->opt->mode !=3D MODE_SERVER || multi->us=
-e_asymmetric_peer_id)
-+    if (session->opt->mode !=3D MODE_SERVER || multi=
-->use_asymmetric_peer_id
-+        || !session->opt->server)
+@@ -111,7 +126,7 @@
+          * responses */
+ =
+        if (!reflect_filter_rate_limit_check(m->initial_rate_limiter))
+    =
      {
-        =
- return buf_printf(out, "ID=3D%x\n", multi->rx_peer_id);
+-            return false;
++            return PRE_DECRYPT_NO_ACTION=
+;
+         }
      }
-@@ -1945,21=
- +1950,21 @@
-         /* support for P_DATA_V2 */
-         int iv_proto =3D=
- IV_PROTO_DATA_V2;
  
--        /* support for the latest --dns option */
--  =
-      iv_proto |=3D IV_PROTO_DNS_OPTION_V2;
--
-         /* support for exit =
-notify via control channel */
-         iv_proto |=3D IV_PROTO_CC_EXIT_NOTIF=
-Y;
+@@ -136,7 +151,7 @@
+                 calculate_sessio=
+n_id_hmac(state->peer_session_id, from, hmac_key, handwindow, 0);
+         =
+    send_hmac_reset_packet(m, state, tas, &sid, true, sock);
  
--        /* currently push-update is not supported when DCO is enabled=
- */
--        if (!session->opt->dco_enabled)
--        {
--            /* sup=
-port push-updates */
--            iv_proto |=3D IV_PROTO_PUSH_UPDATE;
--    =
-    }
--
-         if (session->opt->pull)
+-           =
+ return false;
++            return PRE_DECRYPT_NO_ACTION;
+         }
+      =
+   else
          {
-+            /* support=
- for the latest --dns option */
-+            iv_proto |=3D IV_PROTO_DNS_OPT=
-ION_V2;
-+
-+            /* currently push-update is not supported when DCO i=
-s enabled */
-+            if (!session->opt->dco_enabled)
-+            {
-+ =
-               /* support push-updates */
-+                iv_proto |=3D IV=
-_PROTO_PUSH_UPDATE;
-+            }
-+
-             /* support for receiving =
-push_reply before sending
-              * push request, also signal that th=
-e client wants
-              * to get push-reply messages without requiring=
- a round
-@@ -1974,21 +1979,26 @@
- 
-             /* support for tun-mtu as p=
-art of the push message */
-             buf_printf(&out, "IV_MTU=3D%d\n", s=
-ession->opt->frame=2Etun_max_mtu);
--        }
- 
--        /* support for Neg=
-otiable Crypto Parameters */
--        if (session->opt->mode =3D=3D MODE_SE=
-RVER || session->opt->pull)
--        {
-+            /* legacy support for N=
-egotiable Crypto Parameters (deprecated in
-+             * favour of IV_CIP=
-HERS) */
-             if (tls_item_in_cipher_list("AES-128-GCM", session->o=
-pt->config_ncp_ciphers)
-                 && tls_item_in_cipher_list("AES-25=
-6-GCM", session->opt->config_ncp_ciphers))
+@@ -153,11 +168,11 @@
+                     "ignoring con=
+nection attempt from old client (%s)",
+                     peer);
+        =
+         gc_free(&gc);
+-                return false;
++                retu=
+rn PRE_DECRYPT_NO_ACTION;
+             }
+             else
              {
-                 =
-buf_printf(&out, "IV_NCP=3D2\n");
+-=
+                return true;
++                return PRE_DECRYPT_CREATE_SES=
+SION;
              }
          }
--        else
-+=
-        else if (session->opt->mode !=3D MODE_SERVER)
-         {
--         =
-   /* We are not using pull or p2mp server, instead do P2P NCP */
-+        =
-    /* If we are not using pull we announce P2P NCP support */
-            =
- iv_proto |=3D IV_PROTO_NCP_P2P;
-+
-+            /* We are sending our ping =
-receive timeout to allow detecting
-+             * mismatched ping */
-+    =
-        if (session->opt->ping_rec_timeout)
-+            {
-+               =
- buf_printf(&out, "P=3D%d\n", session->opt->ping_rec_timeout);
-+           =
- }
-         }
+     }
+@@ -170,7 +185,7 @@
+         send_hm=
+ac_reset_packet(m, state, tas, &sid, false, sock);
  
-         if (session->opt->data_epoch_supported)
-@@ -2317,6=
- +2327,17 @@
-              * can only handle symmetric peer IDs */
-        =
-     multi->tx_peer_id =3D multi->rx_peer_id;
-         }
-+
-+        unsigne=
-d int iv_proto =3D extract_iv_proto(multi->peer_info);
-+
-+        if (iv_pr=
-oto & IV_PROTO_NCP_P2P && multi->session->opt->push_peer_info_detail < 1)
-+=
-        {
-+            /* If are currently not sending any peerinfo to the =
-peer but the
-+             * (most likely mode =3D=3D MODE_SERVER) but the =
-peer is using NCP P2P
-+             * we also enable sending minimal peerin=
-fo that carries p2p NCP to
-+             * allow peers in p2p mode to conne=
-ct */
-+            multi->session->opt->push_peer_info_detail =3D 1;
+         /* We have a =
+reply do not create a new session */
+-        return false;
++        return=
+ PRE_DECRYPT_NO_ACTION;
+     }
+     else if (verdict =3D=3D VERDICT_VALID_C=
+ONTROL_V1 || verdict =3D=3D VERDICT_VALID_ACK_V1
+              || verdict =
+=3D=3D VERDICT_VALID_WKC_V1)
+@@ -181,6 +196,7 @@
+ 
+         bool pkt_is_ack=
+ =3D (verdict =3D=3D VERDICT_VALID_ACK_V1);
+         bool ret =3D check_ses=
+sion_hmac_and_pkt_id(state, from, hmac_key, handwindow, pkt_is_ack);
 +     =
-   }
+   enum pre_decrypt_verdict action =3D PRE_DECRYPT_NO_ACTION;
+ 
+         co=
+nst char *peer =3D print_link_socket_actual(&m->top=2Ec2=2Efrom, &gc);
+    =
+     uint8_t pkt_firstbyte =3D *BPTR(&m->top=2Ec2=2Ebuf);
+@@ -198,14 +214,1=
+5 @@
+                 "Valid packet (%s) with HMAC challenge from peer (%s)=
+, "
+                 "accepting new connection=2E",
+                 packet=
+_opcode_name(op), peer);
++            action =3D PRE_DECRYPT_CREATE_SESSION=
+_SKIP;
+         }
+         gc_free(&gc);
+ 
+-        return ret;
++        re=
+turn action;
      }
  
-     free(multi->remote_ciphername);
-@@ -2413,7 +2434,7 @@
-  =
-       setenv_del(session->opt->es, "exported_keying_material");
-     }
+     /* VERDICT_INVALID */
+-    return false;
++    re=
+turn PRE_DECRYPT_NO_ACTION;
+ }
  
--=
-    if (!session->opt->server && !session->opt->pull && ks->key_id =3D=3D 0=
-)
-+    if (!session->opt->server && !session->opt->pull && ks->key_id =3D=
-=3D 0 && session->opt->mode !=3D MODE_SERVER)
+ /**
+@@ -220,9 +237,6 @@
+                 =
+          struct link_socket *sock,
+                           struct mrout=
+e_addr *real)
+ {
+-    struct hash *hash =3D m->hash;
+-    struct tls_pre_de=
+crypt_state state =3D { 0 };
+-    struct multi_instance *mi =3D NULL;
+     =
+struct gc_arena gc =3D gc_new();
+ 
+     if (m->deferred_shutdown_signal=2Es=
+ignal_received)
+@@ -231,8 +245,17 @@
+             "MULTI: Connection attemp=
+t from %s ignored while server is "
+             "shutting down",
+         =
+    mroute_addr_print(real, &gc));
++        gc_free(&gc);
++        return N=
+ULL;
+     }
+-    else if (do_pre_decrypt_check(m, &state, *real, sock))
++
++=
+    struct hash *hash =3D m->hash;
++    struct tls_pre_decrypt_state state =
+=3D { 0 };
++    struct multi_instance *mi =3D NULL;
++
++    enum pre_decrypt=
+_verdict verdict =3D do_pre_decrypt_check(m, &state, *real, sock);
++
++    i=
+f (verdict !=3D PRE_DECRYPT_NO_ACTION)
      {
-         /* We are a p=
-2p tls-client without pull, enable common
-          * protocol options */
+         /* This is an unknow=
+n session but with valid tls-auth/tls-crypt
+          * (or no auth at all)=
+=2E  If this is the initial packet of a
+@@ -257,13 +280,16 @@
+ 
+           =
+      /* If we have a session id already, ensure that the
+                 =
+ * state is using the same */
+-                if (session_id_defined(&stat=
+e=2Eserver_session_id)
+-                    && session_id_defined((&state=
+=2Epeer_session_id)))
++                if (session_id_defined((&state=2Epee=
+r_session_id)))
+                 {
+-                    mi->context=2Ec2=2E=
+tls_multi->n_sessions++;
+                     struct tls_session *session =
+=3D
+                         &mi->context=2Ec2=2Etls_multi->session[TM_INIT=
+IAL];
+-                    session_skip_to_pre_start(session, &state, &m->t=
+op=2Ec2=2Efrom);
++
++                    if (verdict =3D=3D PRE_DECRYPT_CREA=
+TE_SESSION_SKIP)
++                    {
++                        mi->contex=
+t=2Ec2=2Etls_multi->n_sessions++;
++                        session_skip_to_=
+pre_start(session, &state, &m->top=2Ec2=2Efrom);
++                    }
+   =
+              }
+             }
+         }
 
-=
 -- 
-To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1844?usp=3Dema=
+To view, visit http://gerrit=
+=2Eopenvpn=2Enet/c/openvpn/+/1826?usp=3Demail
+To unsubscribe, or for help w=
+riting mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Dema=
 il
-To unsubscribe, or for help writing mail filters, visit http://gerrit=2E=
-openvpn=2Enet/settings?usp=3Demail
 
-Gerrit-MessageType: newchange
-Gerrit-Pr=
-oject: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Id3c6681b29026c2920a=
-62a0ea570fd098649e197
-Gerrit-Change-Number: 1844
-Gerrit-PatchSet: 1
-Gerrit-=
-Owner: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-CC: openvpn-devel <ope=
-nvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-MessageType: newpatchset
+Gerrit-Project: openvpn
+Gerrit-Branch: =
+master
+Gerrit-Change-Id: Iccdd4cfad090c565aac27e16cdaa9871106c2f89
+Gerrit-C=
+hange-Number: 1826
+Gerrit-PatchSet: 8
+Gerrit-Owner: plaisthos <arne-openvpn=
+@rfc2549=2Eorg>
+Gerrit-Reviewer: flichtenheld <frank@lichtenheld=2Ecom>
+Ger=
+rit-Reviewer: stipa <lstipakov@gmail=2Ecom>
+Gerrit-CC: openvpn-devel <openv=
+pn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Attention: flichtenheld <frank@l=
+ichtenheld=2Ecom>
+Gerrit-Attention: stipa <lstipakov@gmail=2Ecom>
 
---QXXvUgJ3bNU=
+--/EqiSGPiH74=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>plaisthos has upl=
-oaded this change for <strong>review</strong>=2E</p><p><a href=3D"http://ge=
-rrit=2Eopenvpn=2Enet/c/openvpn/+/1844?usp=3Demail">View Change</a></p><pre =
-class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pr=
-e-wrap;">Reduce number of future epoch keys from 16 to 4<br><br>The calcula=
-tion in the RFC was wrong and probably influenced<br>by an older worst case=
- assumption=2E With the fixed calculation<br>four future epoch keys should =
-be more than enough even for<br>100 Gbit/s=2E So change the number to 4 in =
-OpenVPN as well=2E<br><br>This also reduces the spam about the epoch keys a=
- bit=2E<br><br>Thanks to Ralf Lici for noticing the wrong calculation=2E<br=
-><br>Change-Id: Id3c6681b29026c2920a62a0ea570fd098649e197<br>Signed-off-by:=
- Arne Schwabe &lt;arne@rfc2549=2Eorg&gt;<br>---<br>M src/openvpn/ssl=2Ec<br=
->1 file changed, 42 insertions(+), 21 deletions(-)<br><br></pre><pre class=
-=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
-p;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/44/184=
-4/1</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
-rap;"><span>diff --git a/src/openvpn/ssl=2Ec b/src/openvpn/ssl=2Ec</span><b=
-r><span>index fd96b85=2E=2E617ac2f 100644</span><br><span>--- a/src/openvpn=
-/ssl=2Ec</span><br><span>+++ b/src/openvpn/ssl=2Ec</span><br><span>@@ -1343=
-,10 +1343,14 @@</span><br><span> init_epoch_keys(struct key_state *ks, stru=
-ct tls_multi *multi, const struct key_type *key_type,</span><br><span>     =
-            bool server, struct key2 *key2)</span><br><span> {</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    /* For now we hardcode this to=
- be 16 for the software based data channel</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    /* For now we hardcode this to be 4 for the soft=
-ware based data channel</span><br><span>      * DCO based implementations/H=
-W implementation might adjust this number</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-     * based on their expected speed */</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    const uint8_t future_key_count =
-=3D 16;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * based=
- on their expected speed=2E</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+     *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-* One epoch lasts 910 GB with 128 byte packets or 78s at 100 GBit/s=2E</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+     * (respectively 101=
-1 GB and 86s with 1280 byte packets)=2E</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+     */</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    const uint8_t future_key_count =3D 4;</span><br><span> </span><=
-br><span>     int key_direction =3D server ? KEY_DIRECTION_INVERSE : KEY_DI=
-RECTION_NORMAL;</span><br><span>     struct key_direction_state kds;</span>=
-<br><span>@@ -1874,7 +1878,8 @@</span><br><span> </span><br><span>     /* I=
-n server mode we only add this when the client has announced its</span><br>=
-<span>      * support for the feature */</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    if (session-&gt;opt-&gt;mode !=3D MODE_SERVER || mul=
-ti-&gt;use_asymmetric_peer_id)</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    if (session-&gt;opt-&gt;mode !=3D MODE_SERVER || multi-&gt;u=
-se_asymmetric_peer_id</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        || !session-&gt;opt-&gt;server)</span><br><span>     {</span><br>=
-<span>         return buf_printf(out, &quot;ID=3D%x\n&quot;, multi-&gt;rx_p=
-eer_id);</span><br><span>     }</span><br><span>@@ -1945,21 +1950,21 @@</sp=
-an><br><span>         /* support for P_DATA_V2 */</span><br><span>         =
-int iv_proto =3D IV_PROTO_DATA_V2;</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        /* support for the latest --dns opt=
-ion */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        iv_prot=
-o |=3D IV_PROTO_DNS_OPTION_V2;</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-</span><br><span>         /* support for exit notify via control c=
-hannel */</span><br><span>         iv_proto |=3D IV_PROTO_CC_EXIT_NOTIFY;</=
-span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   /* currently push-update is not supported when DCO is enabled */</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-        if (!session-&gt;opt-=
-&gt;dco_enabled)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            /* su=
-pport push-updates */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-            iv_proto |=3D IV_PROTO_PUSH_UPDATE;</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-</span><br><span>         if (session-&gt;opt-&gt;pull)</span=
-><br><span>         {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+            /* support for the latest --dns option */</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+            iv_proto |=3D IV_PROTO_DNS_=
-OPTION_V2;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+            /* currently pus=
-h-update is not supported when DCO is enabled */</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+            if (!session-&gt;opt-&gt;dco_enabl=
-ed)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                /* sup=
-port push-updates */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+                iv_proto |=3D IV_PROTO_PUSH_UPDATE;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span>             /* support for re=
-ceiving push_reply before sending</span><br><span>              * push requ=
-est, also signal that the client wants</span><br><span>              * to g=
-et push-reply messages without requiring a round</span><br><span>@@ -1974,2=
-1 +1979,26 @@</span><br><span> </span><br><span>             /* support for=
- tun-mtu as part of the push message */</span><br><span>             buf_pr=
-intf(&amp;out, &quot;IV_MTU=3D%d\n&quot;, session-&gt;opt-&gt;frame=2Etun_m=
-ax_mtu);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</sp=
-an><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
- /* support for Negotiable Crypto Parameters */</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-        if (session-&gt;opt-&gt;mode =3D=3D MODE_=
-SERVER || session-&gt;opt-&gt;pull)</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-        {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            /* legacy support for Negotiable Crypto Parameters (depreca=
-ted in</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
-* favour of IV_CIPHERS) */</span><br><span>             if (tls_item_in_cip=
-her_list(&quot;AES-128-GCM&quot;, session-&gt;opt-&gt;config_ncp_ciphers)</=
-span><br><span>                 &amp;&amp; tls_item_in_cipher_list(&quot;AE=
-S-256-GCM&quot;, session-&gt;opt-&gt;config_ncp_ciphers))</span><br><span> =
-            {</span><br><span>                 buf_printf(&amp;out, &quot;I=
-V_NCP=3D2\n&quot;);</span><br><span>             }</span><br><span>        =
- }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        else</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        else if (session-&=
-gt;opt-&gt;mode !=3D MODE_SERVER)</span><br><span>         {</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-            /* We are not using pull=
- or p2mp server, instead do P2P NCP */</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+            /* If we are not using pull we announce P2P =
-NCP support */</span><br><span>             iv_proto |=3D IV_PROTO_NCP_P2P;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+            /* We are sending our ping=
- receive timeout to allow detecting</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+             * mismatched ping */</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            if (session-&gt;opt-&gt;ping_rec_=
-timeout)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
- {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                b=
-uf_printf(&amp;out, &quot;P=3D%d\n&quot;, session-&gt;opt-&gt;ping_rec_time=
-out);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }<=
-/span><br><span>         }</span><br><span> </span><br><span>         if (s=
-ession-&gt;opt-&gt;data_epoch_supported)</span><br><span>@@ -2317,6 +2327,1=
-7 @@</span><br><span>              * can only handle symmetric peer IDs */<=
-/span><br><span>             multi-&gt;tx_peer_id =3D multi-&gt;rx_peer_id;=
-</span><br><span>         }</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        uns=
-igned int iv_proto =3D extract_iv_proto(multi-&gt;peer_info);</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        if (iv_proto &amp; IV_PROTO_NCP_P2P &amp;&am=
-p; multi-&gt;session-&gt;opt-&gt;push_peer_info_detail &lt; 1)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            /* If are currently not sendi=
-ng any peerinfo to the peer but the</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+             * (most likely mode =3D=3D MODE_SERVER) but th=
-e peer is using NCP P2P</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+             * we also enable sending minimal peerinfo that carries p2p=
- NCP to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
- * allow peers in p2p mode to connect */</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+            multi-&gt;session-&gt;opt-&gt;push_peer_in=
-fo_detail =3D 1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     }</span><br><span>     }</span><br><span> </span><br><span>     free(m=
-ulti-&gt;remote_ciphername);</span><br><span>@@ -2413,7 +2434,7 @@</span><b=
-r><span>         setenv_del(session-&gt;opt-&gt;es, &quot;exported_keying_m=
-aterial&quot;);</span><br><span>     }</span><br><span> </span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    if (!session-&gt;opt-&gt;server &amp=
-;&amp; !session-&gt;opt-&gt;pull &amp;&amp; ks-&gt;key_id =3D=3D 0)</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!session-&gt;opt-&g=
-t;server &amp;&amp; !session-&gt;opt-&gt;pull &amp;&amp; ks-&gt;key_id =3D=
-=3D 0 &amp;&amp; session-&gt;opt-&gt;mode !=3D MODE_SERVER)</span><br><span=
->     {</span><br><span>         /* We are a p2p tls-client without pull, e=
-nable common</span><br><span>          * protocol options */</span><br><spa=
-n></span><br></pre><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2En=
-et/c/openvpn/+/1844?usp=3Demail">change 1844</a>=2E To unsubscribe, or for =
-help writing mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/s=
-ettings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://s=
-chema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"ht=
-tp://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
-=2Eopenvpn=2Enet/c/openvpn/+/1844?usp=3Demail"/><meta itemprop=3D"name" con=
-tent=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, stipa=2E </p>
+<p>plaisthos <strong>uplo=
+aded patch set #8</strong> to this change=2E</p><p><a href=3D"http://gerrit=
+=2Eopenvpn=2Enet/c/openvpn/+/1826?usp=3Demail">View Change</a></p><pre clas=
+s=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wr=
+ap;">Make required action returned from pre_decrypt_verdict more explicit<b=
+r><br>The current code relies on the condition if state=2Eserver_session_id=
+<br>is defined to decided if session_skip_to_pre_start should be used=2E<br=
+><br>Instead explicitly return the intent and use that to decide if<br>sess=
+ion_skip_to_pre_start should be called=2E<br><br>Change-Id: Iccdd4cfad090c5=
+65aac27e16cdaa9871106c2f89<br>---<br>M src/openvpn/mudp=2Ec<br>1 file chang=
+ed, 43 insertions(+), 17 deletions(-)<br><br></pre><pre class=3D"blocks" st=
+yle=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull s=
+sh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/26/1826/8</pre><pre =
+style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>di=
+ff --git a/src/openvpn/mudp=2Ec b/src/openvpn/mudp=2Ec</span><br><span>inde=
+x 632b064=2E=2Edc049f6 100644</span><br><span>--- a/src/openvpn/mudp=2Ec</s=
+pan><br><span>+++ b/src/openvpn/mudp=2Ec</span><br><span>@@ -87,9 +87,24 @@=
+</span><br><span>                           &quot;Reset packet from client,=
+ sending HMAC based reset challenge&quot;, sock);</span><br><span> }</span>=
+<br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Verdict if this packe=
+t should create a new session=2E If a packet is invalid</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+ * or we send out an HMAC based challen=
+ge, we do not want to create a new</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ * session=2E</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+enum pr=
+e_decrypt_verdict</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /** This packet =
+should not create a new session */</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    PRE_DECRYPT_NO_ACTION,</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    /** This packet creates a new session normally */=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    PRE_DECRYPT_CRE=
+ATE_SESSION,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /**=
+ Create a new session but skip the first two packets of</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+     * the three way handshake */</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    PRE_DECRYPT_CREATE_SE=
+SSION_SKIP</span><br><span style=3D"color: hsl(120, 100%, 40%);">+};</span>=
+<br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-/* Returns=
+ true if this packet should create a new session */</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-static bool</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+/** Returns a verdict if this packet should create =
+a new session */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+sta=
+tic enum pre_decrypt_verdict</span><br><span> do_pre_decrypt_check(struct m=
+ulti_context *m, struct tls_pre_decrypt_state *state,</span><br><span>     =
+                 struct mroute_addr addr, struct link_socket *sock)</span><=
+br><span> {</span><br><span>@@ -111,7 +126,7 @@</span><br><span>          *=
+ responses */</span><br><span>         if (!reflect_filter_rate_limit_check=
+(m-&gt;initial_rate_limiter))</span><br><span>         {</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-            return false;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+            return PRE_DECRYPT_NO_=
+ACTION;</span><br><span>         }</span><br><span>     }</span><br><span> =
+</span><br><span>@@ -136,7 +151,7 @@</span><br><span>                 calcu=
+late_session_id_hmac(state-&gt;peer_session_id, from, hmac_key, handwindow,=
+ 0);</span><br><span>             send_hmac_reset_packet(m, state, tas, &am=
+p;sid, true, sock);</span><br><span> </span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-            return false;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+            return PRE_DECRYPT_NO_ACTION;</span><br><=
+span>         }</span><br><span>         else</span><br><span>         {</s=
+pan><br><span>@@ -153,11 +168,11 @@</span><br><span>                     &q=
+uot;ignoring connection attempt from old client (%s)&quot;,</span><br><span=
+>                     peer);</span><br><span>                 gc_free(&amp;=
+gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                r=
+eturn false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+         return PRE_DECRYPT_NO_ACTION;</span><br><span>             }</span=
+><br><span>             else</span><br><span>             {</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-                return true;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+                return PRE_D=
+ECRYPT_CREATE_SESSION;</span><br><span>             }</span><br><span>     =
+    }</span><br><span>     }</span><br><span>@@ -170,7 +185,7 @@</span><br>=
+<span>         send_hmac_reset_packet(m, state, tas, &amp;sid, false, sock)=
+;</span><br><span> </span><br><span>         /* We have a reply do not crea=
+te a new session */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+      return false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        return PRE_DECRYPT_NO_ACTION;</span><br><span>     }</span><br><spa=
+n>     else if (verdict =3D=3D VERDICT_VALID_CONTROL_V1 || verdict =3D=3D V=
+ERDICT_VALID_ACK_V1</span><br><span>              || verdict =3D=3D VERDICT=
+_VALID_WKC_V1)</span><br><span>@@ -181,6 +196,7 @@</span><br><span> </span>=
+<br><span>         bool pkt_is_ack =3D (verdict =3D=3D VERDICT_VALID_ACK_V1=
+);</span><br><span>         bool ret =3D check_session_hmac_and_pkt_id(stat=
+e, from, hmac_key, handwindow, pkt_is_ack);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        enum pre_decrypt_verdict action =3D PRE_DEC=
+RYPT_NO_ACTION;</span><br><span> </span><br><span>         const char *peer=
+ =3D print_link_socket_actual(&amp;m-&gt;top=2Ec2=2Efrom, &amp;gc);</span><=
+br><span>         uint8_t pkt_firstbyte =3D *BPTR(&amp;m-&gt;top=2Ec2=2Ebuf=
+);</span><br><span>@@ -198,14 +214,15 @@</span><br><span>                 &=
+quot;Valid packet (%s) with HMAC challenge from peer (%s), &quot;</span><br=
+><span>                 &quot;accepting new connection=2E&quot;,</span><br>=
+<span>                 packet_opcode_name(op), peer);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            action =3D PRE_DECRYPT_CREATE=
+_SESSION_SKIP;</span><br><span>         }</span><br><span>         gc_free(=
+&amp;gc);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-        return ret;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        return action;</span><br><span>     }</span><br><span> </span=
+><br><span>     /* VERDICT_INVALID */</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    return false;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    return PRE_DECRYPT_NO_ACTION;</span><br><span> }</span><b=
+r><span> </span><br><span> /**</span><br><span>@@ -220,9 +237,6 @@</span><b=
+r><span>                           struct link_socket *sock,</span><br><spa=
+n>                           struct mroute_addr *real)</span><br><span> {</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct hash *hash =
+=3D m-&gt;hash;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    st=
+ruct tls_pre_decrypt_state state =3D { 0 };</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    struct multi_instance *mi =3D NULL;</span><br><sp=
+an>     struct gc_arena gc =3D gc_new();</span><br><span> </span><br><span>=
+     if (m-&gt;deferred_shutdown_signal=2Esignal_received)</span><br><span>=
+@@ -231,8 +245,17 @@</span><br><span>             &quot;MULTI: Connection a=
+ttempt from %s ignored while server is &quot;</span><br><span>             =
+&quot;shutting down&quot;,</span><br><span>             mroute_addr_print(r=
+eal, &amp;gc));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    gc_free(&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        return NULL;</span><br><span>     }</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    else if (do_pre_decrypt_check(m, &amp;state, *r=
+eal, sock))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    struct hash *hash =3D m=
+-&gt;hash;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struc=
+t tls_pre_decrypt_state state =3D { 0 };</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    struct multi_instance *mi =3D NULL;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    enum pre_decrypt_verdict verdict =3D do_pre_decry=
+pt_check(m, &amp;state, *real, sock);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   if (verdict !=3D PRE_DECRYPT_NO_ACTION)</span><br><span>     {</span><br=
+><span>         /* This is an unknown session but with valid tls-auth/tls-c=
+rypt</span><br><span>          * (or no auth at all)=2E  If this is the ini=
+tial packet of a</span><br><span>@@ -257,13 +280,16 @@</span><br><span> </s=
+pan><br><span>                 /* If we have a session id already, ensure t=
+hat the</span><br><span>                  * state is using the same */</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-                if (sessio=
+n_id_defined(&amp;state=2Eserver_session_id)</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-                    &amp;&amp; session_id_defined((&=
+amp;state=2Epeer_session_id)))</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+                if (session_id_defined((&amp;state=2Epeer_sessio=
+n_id)))</span><br><span>                 {</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-                    mi-&gt;context=2Ec2=2Etls_multi-&g=
+t;n_sessions++;</span><br><span>                     struct tls_session *se=
+ssion =3D</span><br><span>                         &amp;mi-&gt;context=2Ec2=
+=2Etls_multi-&gt;session[TM_INITIAL];</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-                    session_skip_to_pre_start(session, &amp=
+;state, &amp;m-&gt;top=2Ec2=2Efrom);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+                  if (verdict =3D=3D PRE_DECRYPT_CREATE_SESSION_SKIP)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+                    {</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+                       =
+ mi-&gt;context=2Ec2=2Etls_multi-&gt;n_sessions++;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+                        session_skip_to_pre_=
+start(session, &amp;state, &amp;m-&gt;top=2Ec2=2Efrom);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+                    }</span><br><span> =
+                }</span><br><span>             }</span><br><span>         }=
+</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerri=
+t=2Eopenvpn=2Enet/c/openvpn/+/1826?usp=3Demail">change 1826</a>=2E To unsub=
+scribe, or for help writing mail filters, visit <a href=3D"http://gerrit=2E=
+openvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemt=
+ype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action"=
+ itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D=
+"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1826?usp=3Demail"/><meta itempro=
+p=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-Mes=
-sageType: newchange </div>
-<div style=3D"display:none"> Gerrit-Project: ope=
-nvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div =
-style=3D"display:none"> Gerrit-Change-Id: Id3c6681b29026c2920a62a0ea570fd09=
-8649e197 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1844 </d=
-iv>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"di=
-splay:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </d=
-iv>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel=
-@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"display:non=
+e"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Ger=
+rit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: mas=
+ter </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Iccdd4cfad090c565=
+aac27e16cdaa9871106c2f89 </div>
+<div style=3D"display:none"> Gerrit-Change-=
+Number: 1826 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 8 </div>
+=
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@rfc25=
+49=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenh=
+eld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<div style=3D"display:none"> Ger=
+rit-Reviewer: stipa &lt;lstipakov@gmail=2Ecom&gt; </div>
+<div style=3D"disp=
+lay:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=
+=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenhe=
+ld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerr=
+it-Attention: stipa &lt;lstipakov@gmail=2Ecom&gt; </div>
 
 </body></html>
---QXXvUgJ3bNU=--
+--/EqiSGPiH74=--
 
 
---===============6008498050634053679==
+--===============5984002234168769144==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============6008498050634053679==
+--===============5984002234168769144==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -601,5 +654,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============6008498050634053679==--
+--===============5984002234168769144==--
 
