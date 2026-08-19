@@ -4,109 +4,126 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9D316C5DF6D
-	for <openvpn-devel@archiver.kernel.org>; Wed, 19 Aug 2026 13:53:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E08C2C5DF81
+	for <openvpn-devel@archiver.kernel.org>; Wed, 19 Aug 2026 14:40:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Reply-To:From:List-Subscribe:
-	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:Subject:To:
-	MIME-Version:Date:Message-ID:Sender:Cc:Content-Transfer-Encoding:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:In-Reply-To:References:List-Owner;
-	bh=/iOAkx8DI5UTDyxIpriPJml9BT1bQq7nP2Ln021phX8=; b=fqDpMlGTf0ws9J8JD3LWz8Rey1
-	dYymsSwvzWMdXUPEx9gt3jwP31rfoKCn4apN9wNvpV7Uxd3Ijc/1z/rGkfF6RAcQQiwMJ5HN8kITR
-	EpgCVmN8Od1yGigf4FzmwoudQKBjUNeYGEnS883jRyqDkUAYP8Ew9fN5F/OUCIPwmW4k=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
+	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
+	Subject:MIME-Version:Message-ID:References:To:Date:Sender:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+	List-Owner; bh=DboWEfr78/PpVAtigmsMnZH2g8udcCXIM7auu7PfYvM=; b=ggUgC1NwtuFE00
+	Bqu2H/dKueZWmT6LwEPYD5DFUaQ8/RAUowCo/4aEpogH+0Pq67mpmWgBuAyVNWkz2cNv9FH1N7ik7
+	vzgKRPWUSOW5LNVCIYNy9kVx/UMyd9cLpgRk8Njq1UPmSaXtdkzJRfh1Sn7+yv0seH1qEUw+oOE7Q
+	mmE=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wwgjo-0001bF-3k;
-	Wed, 19 Aug 2026 13:53:52 +0000
+	id 1wwhSz-0007Gs-Vt;
+	Wed, 19 Aug 2026 14:40:34 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <johan@openvpn.com>) id 1wwgjn-0001b9-13
+ (envelope-from <gerrit@openvpn.net>) id 1wwhSj-0007FV-AB
  for openvpn-devel@lists.sourceforge.net;
- Wed, 19 Aug 2026 13:53:51 +0000
+ Wed, 19 Aug 2026 14:40:18 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=To:Subject:From:MIME-Version:Date:Message-ID:
- Content-Type:Sender:Reply-To:Cc:Content-Transfer-Encoding:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+ d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
+ :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:
+ From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From:
+ Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=QNCUCiTf702W7Lz/pmEhyB23nHGk1rKiivn7r3dQb2w=; b=Y0mZA5AGJaL2ns7xALid9XQOGg
- EmsqP9XB5QokO7G/SiAGz5SOMzUj1HCwHB4Jqu2hYVwn78hsa0/SOBqZpWjKAkw7ctFTfsmRYJVrJ
- ZHvlmyzcW6LzkhBw4vd9rfCd7cakhp48Sx8ij7tegrNCCbUK3Vh81NBnmuM+UHSmqgvs=;
+ bh=OvFewRkfgjWqNqSJjnZRh33AgLZeLdPthqQ6rpmLjBU=; b=TEz9Pqb/LNNxRNpxjN7OyMGNDj
+ uXYbT8HlxzV5zyU9j1H48hEkYdID/RZfGhVswDpH1NTjqubvHhLOJZXStYzcGb3sBwtiMal2HYvCk
+ Wa4evxw0STJttG8scycQNfwcFgbmSR905TGjqN3OffFRuW5KfQWckfJXPf0XblnApINg=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=To:Subject:From:MIME-Version:Date:Message-ID:Content-Type:Sender:Reply-To
- :Cc:Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
- Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
- References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=QNCUCiTf702W7Lz/pmEhyB23nHGk1rKiivn7r3dQb2w=; b=c
- QhGyu9V144CRvE+Qzts+VfYB7tDHSxX2eMZfLOF4yZGM4py4Nl39QfcnyOUmtZGPSpm5tyfNrIijs
- 9PnkeIwm449BEp8oTlnIfJxsY34ObE5OI5o563+bq61sV6uNIz3hCg8Unj6ixkbDRU+9CGCZ9BTEz
- emdbzNmuKJHsr3Ms=;
-Received: from mail-yx1-f49.google.com ([74.125.224.49])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
+ Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:From:Sender:Content-ID
+ :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+ Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=OvFewRkfgjWqNqSJjnZRh33AgLZeLdPthqQ6rpmLjBU=; b=a
+ tRs+ljYB96rk7650OhScNSzdQVAh5XuCyrP05Yz+4yxKiFpq9DNgsEdsQyIlT3/i4VFN4OP0eKQhi
+ 9cXgX7pV4tRjWEUaCWY6eNn/UG9/Y+M+kMSurMZacXXL1RyPvWqc6YnQB0nsIqU2tkEYdilyO3PYg
+ Hv/lfjR/GxlgD7vo=;
+Received: from mail-wm1-f51.google.com ([209.85.128.51])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wwgjp-0004gY-Sp for openvpn-devel@lists.sourceforge.net;
- Wed, 19 Aug 2026 13:53:50 +0000
-Received: by mail-yx1-f49.google.com with SMTP id
- 956f58d0204a3-66bee06ff74so1620130d50.0
+ id 1wwhSi-0004TC-3q for openvpn-devel@lists.sourceforge.net;
+ Wed, 19 Aug 2026 14:40:18 +0000
+Received: by mail-wm1-f51.google.com with SMTP id
+ 5b1f17b1804b1-49558ce01afso9330665e9.1
  for <openvpn-devel@lists.sourceforge.net>;
- Wed, 19 Aug 2026 06:53:50 -0700 (PDT)
+ Wed, 19 Aug 2026 07:40:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.com; s=google; t=1787147624; x=1787752424; darn=lists.sourceforge.net;
- h=content-language:to:subject:from:user-agent:mime-version:date
- :message-id:content-type:from:to:cc:subject:date:message-id:reply-to
- :content-type; bh=QNCUCiTf702W7Lz/pmEhyB23nHGk1rKiivn7r3dQb2w=;
- b=W5b03M1Br3uJeoJerQhtYXXDWJ4iHnqIZDRB6PPY+7KhURrNUW5QxMXozWI+lSZk78
- UaGDoXfu/QfcuIrGGa8biEWwxzMmneEmKcI8mx+jOsZlp5BnQ3uO4EDbbX4EJKQghuQx
- T3JaJuKlC3MLds2zL9WjPtAXyxDqRfBUEpTAFb5d30b1WxgWa5Tj51J9+d1tjjV0/sV+
- /q25UMcXa6PeTW6+6FpEtnvLkte2oTobbnXm/5vMIu3MFhbQ39w10sDnD1+Fdr4xNaj8
- ImiW6cORSjUwcdSEgngMkXQUGJTg0zk0UAbKlkZUviqBD3r2RwbYyCuSjPjbLiI/EYjV
- 8JkQ==
+ d=openvpn.net; s=google; t=1787150409; x=1787755209; darn=lists.sourceforge.net;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
+ :to:date:from:from:to:cc:subject:date:message-id:reply-to
+ :content-type; bh=OvFewRkfgjWqNqSJjnZRh33AgLZeLdPthqQ6rpmLjBU=;
+ b=Z9PiIQ3m7nU2U5u7ffNPoZ8gyD3JIbt0iqoYbsueAQ8XMZ9tGv2S9sYq5X7apFiI8S
+ qVblN55/4E7EgdWf4Sinb4cerb0I7J3GJfZBWKRjYtyesFqIk4QeFpuezz+Z+r36fBXK
+ OHs2NAbJulcg6xeDZ35TU69WaGlPjRYJTilzj5mZGVLSj6jq+r61D6TMNoiGNWrszS6h
+ A+P1YqzqRLa/BINfSGmtoDhJjOJ8qMo5aZuUJJYYl9UioK7lllj/KCK1RVDiDGIwq/qD
+ jmo9WnybFQOOccjfUwLjSsKptoXBZNjr5BCVw9sxS4JSqxknYT2mZ9Vq6qhSrAZAVjE8
+ nr3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1787147624; x=1787752424;
- h=content-language:to:subject:from:user-agent:mime-version:date
- :message-id:content-type:x-gm-gg:x-gm-message-state:from:to:cc
- :subject:date:message-id:reply-to:content-type;
- bh=QNCUCiTf702W7Lz/pmEhyB23nHGk1rKiivn7r3dQb2w=;
- b=m1oA0JkuTBB5yMChr3Owe9JPTRm6Irio7gYyXKRUDIpRyT8E0iX7o4a9XA+qlV2fuw
- jIKIjFQiyu9gWLrCAtOQC1Av1+ktVmiVq4tZMGyTiv3/0xw2VdC+EQA4rYALJp25lrXk
- dlQctYYpE+GEv/ksATX4gcDTWxeohYTSfkxIgmy4f22PJIBeukiCzBQC89roUUTK+sDc
- uEjInj8lpMiSKgOKIvGfNGjKeqmKv2KJl9XOC8ZuZJjk7iGHmL9Bbv4m1TmfHfOEj4/N
- c/xZQFdFjcfMty9V/JpI3NYE64qBRfQh5tIisnRj68GYW+0azHWP1xsuiO5dEuV1oeH2
- +efQ==
-X-Gm-Message-State: AFuF++mf18nqeF30/SrVBNGuv7N/MBS0+gmx23BPQmIRfbs+M/hlGzwS
- amroEQP2QU1uPwL0gX/nBpl3FQtw/h9HSChO8n4TBKkdktBWrB8X9BLHFcCiQGp/KfmAVVA5a4Z
- TqreTBEGISP6L9AuvC8j+Ffl1nbKVexezmswF/fOPcIF11At/pLHas3cD2DRJc5eeR7kyJisZj2
- FuhLGk6XTj
-X-Gm-Gg: AR+sD12kJABGTIQEjwJ77dYACP02LceV7zzXY01qaU2S/mVjNWvwaFV+akAheQDVNjp
- SIg6TdIoRiX5LnxVsUGC0bv2M8psX3BVnwtNA305eusziKB2ZiHCoHDQxL7MnIETR2JtXIGTENj
- iaNruF/poXmXKa2kjfdiO82AIALUOGCf+v7I4P7oQ8fybT6fWCK1FskPITOcfg8MitBx6OZMCK+
- Q99++1jebO6AeTVw42rZx6aZJ/z6/HLs7zR6XdW0dX9lGOKO/mAFEWL8TQsZ3tC7WgM2eOb7ryk
- uZ/1bVYs+6Iyggszn2hZAuAqC/qN0L5l4IMV6zkGEKTCUDvRzzbOUdcrK9PcGD9N6oF6/JA5Vsq
- e4JVkey+kK93Nnr9zjedDpLIb+NcI8CVCMWkkrqCyCS8zoB9/0HXdjuCpH4P5Yw36efnUMsYL4e
- 3O7NyuwC7PQ6EoMlUV7E9idnrZWUsMOW8vMCW4IJQddnUzpwaqakOGmA6JjdiFPMJVmFTvOqYtc
- rlBo5tirQyYy4mafOUrqBBEBQej3j2ldUZ6QgrRjFzM
-X-Received: by 2002:a17:90b:3805:b0:390:b41a:b92a with SMTP id
- 98e67ed59e1d1-39580eca128mr8000591a91.4.1787144319154; 
- Wed, 19 Aug 2026 05:58:39 -0700 (PDT)
-Received: from ?IPV6:2001:ee0:4f83:3c70:9d0a:4d05:17b7:debe?
- ([2001:ee0:4f83:3c70:9d0a:4d05:17b7:debe])
+ d=1e100.net; s=20251104; t=1787150409; x=1787755209;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
+ :to:date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+ :message-id:reply-to:content-type;
+ bh=OvFewRkfgjWqNqSJjnZRh33AgLZeLdPthqQ6rpmLjBU=;
+ b=RQ4BkRUcNMTynPgsnXcebmmtaNV/+LAKi8yCLItrR+9sSTJ8YyvQ8sxOlbnm06nte6
+ 4eE3IVmo12HWcQmxBK9ddz9T0NZ2UZSbP7twZXmieUMffmCxgHfZlMR0/zgR4P8lq/TL
+ x6TxIVujs58pkLlSdbNFyxl1X4nEfHEwE/rxhz4olHyApoXn0SYlcydnWKue4ZpCZgf0
+ KjJpFq/VaQzYwMgDCCnrKW1Jh4rhwrnMTOceExjBULizDj/qTBnUWGG90JrRv04k7JEd
+ 0+X2Tit1uKT7mOxzQF3D7AghzHSSy2V4fB/Mz+vVnYxbgjF/Y+eJ+EXTgDFa3Xu3R4uP
+ FDSw==
+X-Gm-Message-State: AOJu0YzecQvUewOzVUkCt5vYzZaDsvD3UnzIu4BPD19CQtJkZT1vpwhG
+ wJ3qc+xS5qZ3SK3FYHH3kOiRHVm7uh7C9hfU7ncMmI1HKiHLYEoPZ0u3Yy9nBR2dibBDwaCH9bQ
+ OaGcs4sJyOCfH0Lqg1j1OdO04MCGNylW8oiw2Ju4B2N0Rt7/mBkjozLFFXsIhGiSOuYO7fT4KMU
+ LWWaLjZQ==
+X-Gm-Gg: AR+sD11mS6evoLwc7Udep/2CRnPTNwA80HFJp5sme+QSN8yAQecW48Z+NBwQUMQtEiZ
+ lN63L4u65Qp3ScpR+DDlESJSAW/xJh+EwjCLRX4nPtPqL7J+BhhS+zvlJpdav7otApYgRW4Oq+V
+ YCRhUEFv53NCrHFi61DuBdSanL7gK7VUXg0zNvHic/oJL+BIgB15eoxzorWHN+GrB0/BAEsz67p
+ p0IMYmSiy2zTz/svG8RAA4dZl9mokQSW5ECJrd1HSA4iGyc4yxxtNq4Ki6HyYWlO7jLGZPyEuOf
+ k6zEM135xBH3V+cTwqDUclVRTKoyorv9cY6z+9TrN6/hxfCPXwxlQFC4i5Ib7/7XwnWIhJa1CiB
+ pqMETnbDKpd0yGlxBJSQctsX/XEVrku0pf1CxwtlGrqbQP4BstwEGvw2nnQ8nibLYCUCUQFTC9D
+ +W3uU+1L9KkUhLg1jg29gQ+TyVsd9ugkXRqRv8FWeJmEGJIn8zmD3XcwB2ekC6SvCBayHmPEEEZ
+ TIKm0tV/aCetokW330ph7q/mTa8dk0H6Vh0soffYlnShBlR+jOJL59jIFVkT8QOoB4iw0acE1EP
+ u494ocwfpaMCrjwSWfUsNnjWCBt7toTiOsYele0qp740PBOfpa4uBhNy5iQ0u7A=
+X-Received: by 2002:a05:600c:4ec9:b0:495:4d5c:903e with SMTP id
+ 5b1f17b1804b1-499aa167256mr91273215e9.7.1787150409257; 
+ Wed, 19 Aug 2026 07:40:09 -0700 (PDT)
+Received: from ip-10-18-1-162.eu-central-1.compute.internal
+ (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 98e67ed59e1d1-3957f8b28c1sm947361a91.0.2026.08.19.05.58.37
- for <openvpn-devel@lists.sourceforge.net>
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Wed, 19 Aug 2026 05:58:38 -0700 (PDT)
-Message-ID: <ebe24695-cd66-4853-a52e-61af4ebab3c0@openvpn.com>
-Date: Wed, 19 Aug 2026 19:58:34 +0700
+ 5b1f17b1804b1-499aa09b199sm58153545e9.0.2026.08.19.07.40.08
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 19 Aug 2026 07:40:08 -0700 (PDT)
+X-Google-Original-From: "razvanc (Code Review)"
+ <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
+Date: Wed, 19 Aug 2026 14:40:08 +0000
+To: plaisthos <arne-openvpn@rfc2549.org>
+Auto-Submitted: auto-generated
+X-Gerrit-MessageType: newchange
+X-Gerrit-PatchSet: 1
+X-Gerrit-Change-Id: I57b4122b292f643ddedd91e81bf95fe2f5b2e03a
+X-Gerrit-Change-Number: 1850
+X-Gerrit-Project: openvpn
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1850?usp=email>
+X-Gerrit-Commit: a9543c4fe3e3411894b6e65fa4291211337b4d98
+References: <gerrit.1787150406000.I57b4122b292f643ddedd91e81bf95fe2f5b2e03a@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzg3MTUwNDA2MDAwLkk1N2I0MTIyYjI5MmY2NDNkZGVkZDkxZTgxYmY5NWZlMmY1YjJlMDNhQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <97d9a2ce88f702c3356968c3d03598498d38d61f-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-To: openvpn-devel@lists.sourceforge.net
-Content-Language: en-US
-X-Headers-End: 1wwgjp-0004gY-Sp
-Subject: [Openvpn-devel]  IRC community meeting summary
+User-Agent: Gerrit/3.11.5
+X-Headers-End: 1wwhSi-0004TC-3q
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: doc: Update doxygen
+ references to removed tunnel_server_{udp, tcp}()
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -118,122 +135,332 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: Johan Draaisma via Openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Reply-To: Johan Draaisma <johan@openvpn.com>
-Content-Type: multipart/mixed; boundary="===============0896355276982169549=="
+From: "razvanc \(Code Review\) via Openvpn-devel"
+ <openvpn-devel@lists.sourceforge.net>
+Reply-To: razvanc@mailbox.org, arne-openvpn@rfc2549.org,
+ openvpn-devel@lists.sourceforge.net
+Cc: "razvanc \(Code Review\)" <gerrit@openvpn.net>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: multipart/mixed; boundary="===============3676578867771651808=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---===============0896355276982169549==
-Content-Type: multipart/alternative;
- boundary="------------WQ2eoqdJWaPgVfzgDhilALAM"
-Content-Language: en-US
-
-This is a multi-part message in MIME format.
---------------WQ2eoqdJWaPgVfzgDhilALAM
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-
-Meeting summary for 19 August 2026:
-
-  * *Updated: 2.7.7 release*
-    Currently we are aiming for another release at around September 2.
-    There are some small security issues, mostly Windows related and
-    involving rather unlikely scenarios.
-  * *community meetup 2026*
-    Coordination is currently taking place
-    here:https://community.openvpn.net/Meetups/2026-Paderborn
-    The date is around 17 and 18 October, location in Paderborn, Germany.
-    For the t-shirt we have some idea of what to do. Will check with
-    designer if he can do it for us.
-  * *Updated: Amount of open changes in the queue*
-    OpenVPN Inc. and cron2 reached a deal where he gets paid part-time
-    to work on OpenVPN2 code reviews/merges.
-    We encouraged razvanc and chugly from the company to get involved in
-    the community as well to speed up reviews.
-    lev also promised he would spend some more time on reviewing, after
-    his vacation.
-
-As always you're welcome to join at #openvpn-meeting on Libera IRC 
-network every Wednesday at 14:00 Central European Time.
-
-Kind regards,
-Johan Draaisma
-
---------------WQ2eoqdJWaPgVfzgDhilALAM
-Content-Type: text/html; charset=UTF-8
+--===============3676578867771651808==
 Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="dgvJYrhNpv8="; charset=UTF-8
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
-    <p> Meeting summary for 19 August 2026:</p>
-    <ul
-style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
-          2.7.7 release</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-        Currently we are aiming for another release at around September
-        2.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-        There are some small security issues, mostly Windows related and
-        involving rather unlikely scenarios.</li>
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">community
-          meetup 2026</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-        Coordination is currently taking place here:<span> </span><a
-          href="https://community.openvpn.net/Meetups/2026-Paderborn"
-style="box-sizing: inherit; background-color: transparent; color: rgb(24, 144, 255); text-decoration: none; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"
-          class="moz-txt-link-freetext">https://community.openvpn.net/Meetups/2026-Paderborn</a><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-        The date is around 17 and 18 October, location in Paderborn,
-        Germany.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-        For the t-shirt we have some idea of what to do. Will check with
-        designer if he can do it for us.</li>
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
-          Amount of open changes in the queue</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-        OpenVPN Inc. and cron2 reached a deal where he gets paid
-        part-time to work on OpenVPN2 code reviews/merges.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-        We encouraged razvanc and chugly from the company to get
-        involved in the community as well to speed up reviews.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-        lev also promised he would spend some more time on reviewing,
-        after his vacation.</li>
-    </ul>
-    <ul
-style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-    </ul>
-    As always you're welcome to join at #openvpn-meeting on Libera IRC
-    network every Wednesday at 14:00 Central European Time.
-    <p>Kind regards,<br>
-      Johan Draaisma<br>
-    </p>
-  </body>
-</html>
+--dgvJYrhNpv8=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
---------------WQ2eoqdJWaPgVfzgDhilALAM--
+Attention is currently required from: plaisthos=2E
+
+Hello plaisthos,
+
+I'd l=
+ike you to do a code review=2E
+Please visit
+
+    http://gerrit=2Eopenvpn=2E=
+net/c/openvpn/+/1850?usp=3Demail
+
+to review the following change=2E
 
 
---===============0896355276982169549==
+Chang=
+e subject: doc: Update doxygen references to removed tunnel_server_{udp,tcp=
+}()
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+
+doc: Up=
+date doxygen references to removed tunnel_server_{udp,tcp}()
+
+The point-to-=
+multipoint server event loop is no longer split into
+protocol-specific tunn=
+el_server_udp() and tunnel_server_tcp()
+functions; tunnel_server() now hand=
+les both UDP and TCP=2E
+
+Update the Doxygen module documentation accordingl=
+y: list
+tunnel_server() as the server-mode event loop implementation, and
+r=
+ewrite the server-mode startup, initialization and cleanup sections
+so that=
+ they describe tunnel_server() instead of the removed
+functions=2E
+
+Documen=
+tation only, no functional change=2E
+
+Change-Id: I57b4122b292f643ddedd91e81=
+bf95fe2f5b2e03a
+Signed-off-by: Razvan Cojocaru <razvanc@mailbox=2Eorg>
+---
+=
+M doc/doxygen/doc_eventloop=2Eh
+M doc/doxygen/doc_tunnel_state=2Eh
+2 files =
+changed, 11 insertions(+), 14 deletions(-)
+
+
+
+  git pull ssh://gerrit=2Eope=
+nvpn=2Enet:29418/openvpn refs/changes/50/1850/1
+
+diff --git a/doc/doxygen/d=
+oc_eventloop=2Eh b/doc/doxygen/doc_eventloop=2Eh
+index 55ecd73=2E=2E4c1b012=
+ 100644
+--- a/doc/doxygen/doc_eventloop=2Eh
++++ b/doc/doxygen/doc_eventloop=
+=2Eh
+@@ -60,6 +60,5 @@
+  * event loop function is called to drive the event=
+ processing=2E  The
+  * following implementations are available:
+  * - Clie=
+nt mode using UDP or TCP: \c tunnel_point_to_point()
+- * - Server mode usin=
+g UDP: \c tunnel_server_udp()
+- * - Server mode using TCP: \c tunnel_server=
+_tcp()
++ * - Server mode using UDP or TCP: \c tunnel_server()
+  */
+diff --g=
+it a/doc/doxygen/doc_tunnel_state=2Eh b/doc/doxygen/doc_tunnel_state=2Eh
+in=
+dex 296e804=2E=2E424f81e 100644
+--- a/doc/doxygen/doc_tunnel_state=2Eh
++++ =
+b/doc/doxygen/doc_tunnel_state=2Eh
+@@ -117,10 +117,10 @@
+  * tunnel_point_t=
+o_point() or \c tunnel_server()=2E
+  *
+  * In server-mode, \c main() calls =
+the \c tunnel_server() function, which
+- * transfers control to \c tunnel_s=
+erver_udp() or \c
+- * tunnel_server_tcp() depending on the external transpo=
+rt protocol=2E
++ * drives the event loop for both the UDP and TCP external =
+transport
++ * protocols=2E
+  *
+- * These functions receive the \c context c=
+reated in \c main()=2E  This
++ * This function receives the \c context crea=
+ted in \c main()=2E  This
+  * object has a special status in server-mode, a=
+s it does not represent an
+  * active VPN tunnel, but does contain process-=
+wide configuration
+  * parameters=2E  In the source code, it is often store=
+d in "top" variables=2E
+@@ -130,11 +130,10 @@
+  * CM_CHILD_UDP or \c CM_CHI=
+LD_TCP, depending on the external transport
+  * protocol=2E
+  *
+- * Both \c=
+ tunnel_server_udp_single_threaded() and \c tunnel_server_tcp()
+- * perform=
+ similar initialization=2E  In either case, a \c multi_context
+- * structur=
+e is created, and it is initialized according to the
+- * configuration stor=
+ed in the top \c context by the \c multi_init() and
+- * \c multi_top_init()=
+ functions=2E
++ * During initialization, \c tunnel_server() creates a \c mu=
+lti_context
++ * structure, which is initialized according to the configurat=
+ion stored
++ * in the top \c context by the \c multi_init() and \c multi_to=
+p_init()
++ * functions=2E
+  *
+  * @subsection tunnel_state_server_tunnels C=
+reating and destroying VPN tunnels
+  *
+@@ -146,8 +145,7 @@
+  *
+  * @subsect=
+ion tunnel_state_server_cleanup Final cleanup
+  *
+- * After the main event =
+loop exits, both \c
+- * tunnel_server_udp_single_threaded() and \c tunnel_s=
+erver_tcp() perform
+- * similar cleanup=2E  They call \c multi_uninit() fol=
+lowed by \c
+- * multi_top_free() to clean up the \c multi_context structure=
+=2E
++ * After the main event loop exits, \c tunnel_server() performs the
++ =
+* cleanup=2E  It calls \c multi_uninit() followed by \c multi_top_free()
++ =
+* to clean up the \c multi_context structure=2E
+  */
+
+-- 
+To view, visit ht=
+tp://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1850?usp=3Demail
+To unsubscribe, or=
+ for help writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/setting=
+s?usp=3Demail
+
+Gerrit-MessageType: newchange
+Gerrit-Project: openvpn
+Gerrit=
+-Branch: master
+Gerrit-Change-Id: I57b4122b292f643ddedd91e81bf95fe2f5b2e03a=
+
+Gerrit-Change-Number: 1850
+Gerrit-PatchSet: 1
+Gerrit-Owner: razvanc <razva=
+nc@mailbox=2Eorg>
+Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eorg>
+G=
+errit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-At=
+tention: plaisthos <arne-openvpn@rfc2549=2Eorg>
+
+--dgvJYrhNpv8=
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: plaisthos=2E </p>
+<p>razvanc would like plaisthos to =
+<strong>review</strong> this change=2E
+</p><p><a href=3D"http://gerrit=2Eop=
+envpn=2Enet/c/openvpn/+/1850?usp=3Demail">View Change</a></p><pre class=3D"=
+blocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
+doc: Update doxygen references to removed tunnel_server_{udp,tcp}()<br><br>=
+The point-to-multipoint server event loop is no longer split into<br>protoc=
+ol-specific tunnel_server_udp() and tunnel_server_tcp()<br>functions; tunne=
+l_server() now handles both UDP and TCP=2E<br><br>Update the Doxygen module=
+ documentation accordingly: list<br>tunnel_server() as the server-mode even=
+t loop implementation, and<br>rewrite the server-mode startup, initializati=
+on and cleanup sections<br>so that they describe tunnel_server() instead of=
+ the removed<br>functions=2E<br><br>Documentation only, no functional chang=
+e=2E<br><br>Change-Id: I57b4122b292f643ddedd91e81bf95fe2f5b2e03a<br>Signed-=
+off-by: Razvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt;<br>---<br>M doc/doxyg=
+en/doc_eventloop=2Eh<br>M doc/doxygen/doc_tunnel_state=2Eh<br>2 files chang=
+ed, 11 insertions(+), 14 deletions(-)<br><br></pre><pre class=3D"blocks" st=
+yle=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull s=
+sh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/50/1850/1</pre><pre =
+style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>di=
+ff --git a/doc/doxygen/doc_eventloop=2Eh b/doc/doxygen/doc_eventloop=2Eh</s=
+pan><br><span>index 55ecd73=2E=2E4c1b012 100644</span><br><span>--- a/doc/d=
+oxygen/doc_eventloop=2Eh</span><br><span>+++ b/doc/doxygen/doc_eventloop=2E=
+h</span><br><span>@@ -60,6 +60,5 @@</span><br><span>  * event loop function=
+ is called to drive the event processing=2E  The</span><br><span>  * follow=
+ing implementations are available:</span><br><span>  * - Client mode using =
+UDP or TCP: \c tunnel_point_to_point()</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">- * - Server mode using UDP: \c tunnel_server_udp()</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">- * - Server mode using TCP: \=
+c tunnel_server_tcp()</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ * - Server mode using UDP or TCP: \c tunnel_server()</span><br><span>  *=
+/</span><br><span>diff --git a/doc/doxygen/doc_tunnel_state=2Eh b/doc/doxyg=
+en/doc_tunnel_state=2Eh</span><br><span>index 296e804=2E=2E424f81e 100644</=
+span><br><span>--- a/doc/doxygen/doc_tunnel_state=2Eh</span><br><span>+++ b=
+/doc/doxygen/doc_tunnel_state=2Eh</span><br><span>@@ -117,10 +117,10 @@</sp=
+an><br><span>  * tunnel_point_to_point() or \c tunnel_server()=2E</span><br=
+><span>  *</span><br><span>  * In server-mode, \c main() calls the \c tunne=
+l_server() function, which</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">- * transfers control to \c tunnel_server_udp() or \c</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">- * tunnel_server_tcp() depending on the=
+ external transport protocol=2E</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ * drives the event loop for both the UDP and TCP external tran=
+sport</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * protocols=
+=2E</span><br><span>  *</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>- * These functions receive the \c context created in \c main()=2E  This</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * This function rece=
+ives the \c context created in \c main()=2E  This</span><br><span>  * objec=
+t has a special status in server-mode, as it does not represent an</span><b=
+r><span>  * active VPN tunnel, but does contain process-wide configuration<=
+/span><br><span>  * parameters=2E  In the source code, it is often stored i=
+n &quot;top&quot; variables=2E</span><br><span>@@ -130,11 +130,10 @@</span>=
+<br><span>  * CM_CHILD_UDP or \c CM_CHILD_TCP, depending on the external tr=
+ansport</span><br><span>  * protocol=2E</span><br><span>  *</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">- * Both \c tunnel_server_udp_single_t=
+hreaded() and \c tunnel_server_tcp()</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">- * perform similar initialization=2E  In either case, a \c m=
+ulti_context</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * struct=
+ure is created, and it is initialized according to the</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">- * configuration stored in the top \c cont=
+ext by the \c multi_init() and</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">- * \c multi_top_init() functions=2E</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ * During initialization, \c tunnel_server() creat=
+es a \c multi_context</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ * structure, which is initialized according to the configuration stored<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * in the top \c con=
+text by the \c multi_init() and \c multi_top_init()</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * functions=2E</span><br><span>  *</span=
+><br><span>  * @subsection tunnel_state_server_tunnels Creating and destroy=
+ing VPN tunnels</span><br><span>  *</span><br><span>@@ -146,8 +145,7 @@</sp=
+an><br><span>  *</span><br><span>  * @subsection tunnel_state_server_cleanu=
+p Final cleanup</span><br><span>  *</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">- * After the main event loop exits, both \c</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">- * tunnel_server_udp_single_threaded() =
+and \c tunnel_server_tcp() perform</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">- * similar cleanup=2E  They call \c multi_uninit() followed by=
+ \c</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * multi_top_free(=
+) to clean up the \c multi_context structure=2E</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+ * After the main event loop exits, \c tunnel_s=
+erver() performs the</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ * cleanup=2E  It calls \c multi_uninit() followed by \c multi_top_free()<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * to clean up the \=
+c multi_context structure=2E</span><br><span>  */</span><br><span></span><b=
+r></pre><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvp=
+n/+/1850?usp=3Demail">change 1850</a>=2E To unsubscribe, or for help writin=
+g mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=
+=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg=
+/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=
+=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=
+=2Enet/c/openvpn/+/1850?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
+ew Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: =
+newchange </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div=
+>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"d=
+isplay:none"> Gerrit-Change-Id: I57b4122b292f643ddedd91e81bf95fe2f5b2e03a <=
+/div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1850 </div>
+<div s=
+tyle=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none=
+"> Gerrit-Owner: razvanc &lt;razvanc@mailbox=2Eorg&gt; </div>
+<div style=3D=
+"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&g=
+t; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn=
+-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"display:none"> Ge=
+rrit-Attention: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+
+</body=
+></html>
+--dgvJYrhNpv8=--
+
+
+--===============3676578867771651808==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============0896355276982169549==
+--===============3676578867771651808==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -244,5 +471,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============0896355276982169549==--
+--===============3676578867771651808==--
 
