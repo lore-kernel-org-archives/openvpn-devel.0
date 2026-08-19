@@ -4,129 +4,68 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 76A95C5DF6D
-	for <openvpn-devel@archiver.kernel.org>; Wed, 19 Aug 2026 13:26:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 913D5C5DF6D
+	for <openvpn-devel@archiver.kernel.org>; Wed, 19 Aug 2026 13:27:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=3ktbiJhawG7DuXqjv/yLjUqyUCrmf3jcwGU32odqxrw=; b=h3AhFKSOQuIW/6BmD8ie//npk2
-	8W1kXr+s21vL0uB3lQ4MQftgquK4cUDFL9TUDDZaxnoKVb0ftUJaT4jK9LR7Bj2HswXOqjpbdomp+
-	Vp3gcWMbVTa4MOM9W1mOzsFDhw1h36aLhDQ0WBH7Fm0XJD3heyyk/VG5jPNNZtTFv6W4=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
+	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=bVp0G/RFWVaVCMqh8PgMkKJMv/CPmpeRIFMJjg45AvU=; b=Z+3Nq+toDoxKQSzKp0te4u9E9b
+	sSY2kjw+oTThlbuny5+RV6jBb5LvCDW4N8nhxQ3WGbuSdFLSMd6lU8eUJ1GENHoGI/tBxhlweM8fW
+	qStoep9dhHuWd/Jp8pffpDCH2wDurhpSM4HFL5QLhw1gO6GMLBrHM9VuAn/mlgU5eCX0=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wwgJh-00083h-S4;
-	Wed, 19 Aug 2026 13:26:51 +0000
+	id 1wwgJq-0001Wg-Ke;
+	Wed, 19 Aug 2026 13:27:03 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wwgJe-00083Z-Ja
+ (envelope-from <gert@blue4.greenie.muc.de>) id 1wwgJo-0001WO-VW
  for openvpn-devel@lists.sourceforge.net;
- Wed, 19 Aug 2026 13:26:48 +0000
+ Wed, 19 Aug 2026 13:27:01 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
- :List-Post:List-Owner:List-Archive;
- bh=yFjYvoFTaGxLCHJCUCUJaExiwDqsx2ZDfljGZGx2MaE=; b=RwVzlbAhksl4fh05cxdf3g8bh5
- Ch1HglMsm09vtTn7IEFsNHbeAl3mtEaZu4hrXKAdNbt6RrZW939+gVbZkVJzgEMVN/LMhk8Q+51WF
- IEoS0yxqNHg+U4FWcB9EpUibeJY4wYAVFCapUrufNAzPL7o2cFz9W6Ekj9LAgkTbIKJ8=;
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
+ In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=cJiJ9IVlhoOaHYdyrH4v1qRQffcbW92BCOlKVwUA9Rg=; b=biVoja7SApDOKtatW+wj1WcPkl
+ 0hrO6CKxQKGQv+DV+TPz8q+T1TfmXOMDuEOb++A7iURf4kM3TS+FF6u6mYLOfQB4B924sMeLZvC75
+ Q3gYr/flt5mKYZI/KiMCirz7sUczbFLT3iyu8V/ub2RLa04B8OmVOCIBGFjUZ3OaEBhc=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
- Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=yFjYvoFTaGxLCHJCUCUJaExiwDqsx2ZDfljGZGx2MaE=; b=B
- P6594muqKPLsDifvI6XPwUdp9ttgfDKhjrjyMx2ReoOmf8W5MllCGSi9BwdtJl++4+CCscEKATugU
- nY6dDeNBfVhlOjLDzt3u6C38YX8wDvZ4P3leGPIV4pJQogniep5Zmf+7B91cEarRuV1G3I4BKIUO9
- QY+lYLbN5KY2yNAU=;
-Received: from mail-wm1-f52.google.com ([209.85.128.52])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wwgJb-0003QZ-MY for openvpn-devel@lists.sourceforge.net;
- Wed, 19 Aug 2026 13:26:48 +0000
-Received: by mail-wm1-f52.google.com with SMTP id
- 5b1f17b1804b1-495590dde14so12567945e9.0
- for <openvpn-devel@lists.sourceforge.net>;
- Wed, 19 Aug 2026 06:26:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1787145997; x=1787750797; darn=lists.sourceforge.net;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
- :reply-to:content-type;
- bh=yFjYvoFTaGxLCHJCUCUJaExiwDqsx2ZDfljGZGx2MaE=;
- b=bxDf1ZrYdcfQvY5KwaG2GV3WubBTNJYlvZtfv5+0uwo8Q1CElKjmjlzS2o/3aThIHp
- VtMhYomDY62aHh3fdJh/cnTcEcwNQQ8tN3JtO6lW75Eu8Ls1bW5PZ62VZuFT4M26ULUs
- c5oGV9r5ZJojaYKV3jyzsLCOoMCwLmD2tzutMGt9lg+FYr86D36HAcXqbRQWkxMzMNDt
- 3itozcuR0nFVwxjog96qzjAG+1VoNyhvf8AKOgBgdLolorFkJH/yBANkNCsFsn8Co1Zy
- WMiPSenRgfjgLpghF1c/ymIoHJiuGSEVplbeb6BHzC9bXf3gANM6uw2k79F5JRipzQRh
- z9lQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1787145997; x=1787750797;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
- :cc:subject:date:message-id:reply-to:content-type;
- bh=yFjYvoFTaGxLCHJCUCUJaExiwDqsx2ZDfljGZGx2MaE=;
- b=ai0Lg5qVSvuSU97R3D5/NSTYx9OmTiJomu68LfWwuADJnETfwsQiwYTxTT8eX2a5r6
- X/dCZ2+c/EaJOAnW8YvFxjKdXO1m2f/WuRwSCtSREVK6gtihpOQzkJiqZ1stKC/ldwnR
- FG1ZX2W54roW+wWJx+vwaDJEfUukMISnlKYvjaczdsId6CzgxFK+wDTTg76r6qJVc/NY
- lMPDg8veAAwQso3Fq/Nrz5Da4h224NlhvA4vuAFGXh+rkS+pokFq2l0QoURK2feDLEMY
- cELdwdSvLTR0BJq3SxV8QBCwgxc0QDom8dTAddoZjWGMI8R9+Z2BRpc3KoPd/egRopA9
- chJg==
-X-Forwarded-Encrypted: i=1;
- AHgh+RqflGlyUWKT7Qk4oFXgz+So3nKJ+Dgnm4b9rnIys9utpsJE8S/7MswQUV+2N635Ku0CCLtsb7Fb5IPHkFBc@lists.sourceforge.net
-X-Gm-Message-State: AOJu0YwIctymXYDj56T2Z7Rro2Ux18E7XN+4S7tbpPEJo2BDpZmOoWLo
- BQEKIBpcFKrrjE5BxWxUfDbJkpqW9klbboQH7GnonYWLXoDACtIYou7j2jA+ssf9OlNjTdJ/UD3
- H7lCe0Te1AX8TEYm93Mv6vjm2YpoM50gZ7FBseE/SDmF2AlHGFYoU6kpxsMJ/8rFQa8qt
-X-Gm-Gg: AR+sD13+B37LjMI9RcBDMSyj4q9GO8ApTGE9vJQLJc+S7vOpnM0idZm8agCfhi8ED3E
- oEUpDm7T9ETBgpY1lWDQPuaf0JomvGeUDm1XdPb/qRvU8WI73ncKtxWTZJ3SQf8b+mUyScPHzUa
- C4UJOUR6hhjV8EY74trTjQTAnj7b9NK0Jy1L+HNlWGf/VfKvphbYlzqFa3zYwyOmzESKTXqqEWb
- 0FNJTGaDbifQTuioLbeA0+GiZYdS8J+4LJDa4HI9ZahRmssG4URLOu1ugF2lQ6kzZ87XOSaCte3
- RdR6AbPu6hL291BDdFJE+EgemxBol4BZsOAR4wQ8Vc5y9RMDMlsLzG8VEAHQsQzvHzVoIPLq2kh
- BucXgKQZq+jk99h4XlNS93Kz2nVZdn/p1mBYLi20mKeReyFtBLH6fNBtHmCCnhGjUnTw2MLpvRZ
- 7kmg/GNV1oBkBpP4XdkPAcXZv+AepuhriDBczgrO0cdHgRDqaHqyfLeblbrqvpdRzFpqcQb/kY+
- pBBSG/Mfq9nDIQDge1K+qFsOoNlqnHZg78HeWdyNK28xeatbMUBqWEpcSYmrdq2P+cSP2MffCoz
- BB2KHPbR6nYRR/b/v/s+qyIlPndQATkl1cBlb+O9CF8zOWX0z0ee8YrXE1OOyw==
-X-Received: by 2002:a05:600c:1f94:b0:499:8807:345f with SMTP id
- 5b1f17b1804b1-499aa1b6994mr75382775e9.13.1787145997239; 
- Wed, 19 Aug 2026 06:26:37 -0700 (PDT)
-Received: from ip-10-18-1-162.eu-central-1.compute.internal
- (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
- by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-482b10fcebdsm5874862f8f.0.2026.08.19.06.26.36
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 19 Aug 2026 06:26:36 -0700 (PDT)
-X-Google-Original-From: "cron2 (Code Review)"
- <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Wed, 19 Aug 2026 13:26:35 +0000
-To: flichtenheld <frank@lichtenheld.com>
-Auto-Submitted: auto-generated
-X-Gerrit-MessageType: comment
-X-Gerrit-PatchSet: 3
-X-Gerrit-Change-Id: I10b912bad3bb0b97e2b47eae20d2dd7ffb0c6879
-X-Gerrit-Change-Number: 1847
-X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1847?usp=email>
-X-Gerrit-Commit: 1fb0b5f4ecbdacdf2ccf0596d57363adc405c1d7
-X-Gerrit-Comment-Date: Wed, 19 Aug 2026 13:26:35 +0000
+ h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
+ Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+ List-Post:List-Owner:List-Archive;
+ bh=cJiJ9IVlhoOaHYdyrH4v1qRQffcbW92BCOlKVwUA9Rg=; b=bshhLPS8zbfX+OLm/zbMlY8j7z
+ kwLlkQKzjUcPB/WbA6XX65FO9UgnDGQq8SEdnpOWK+3FjPkaj0HowAoFmQwYsb1fGliUd+D4ZSJxa
+ +m2GfpRc/S5KB7J1GLhwIZVw9pmGUZoHsekq6qUlyHt5Wp/GrATlJSLJ9NKwEmjZUtOg=;
+Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
+ id 1wwgJn-0000a1-Um for openvpn-devel@lists.sourceforge.net;
+ Wed, 19 Aug 2026 13:27:01 +0000
+Received: from blue.greenie.muc.de (localhost [127.0.0.1])
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 67JDQrxk024223
+ for <openvpn-devel@lists.sourceforge.net>; Wed, 19 Aug 2026 15:26:53 +0200
+Received: (from gert@localhost)
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 67JDQrbF024222
+ for openvpn-devel@lists.sourceforge.net; Wed, 19 Aug 2026 15:26:53 +0200
+From: Gert Doering <gert@greenie.muc.de>
+To: openvpn-devel@lists.sourceforge.net
+Date: Wed, 19 Aug 2026 15:26:46 +0200
+Message-ID: <20260819132652.24207-1-gert@greenie.muc.de>
+X-Mailer: git-send-email 2.53.0
 In-Reply-To: <gerrit.1787139759000.I10b912bad3bb0b97e2b47eae20d2dd7ffb0c6879@gerrit.openvpn.net>
 References: <gerrit.1787139759000.I10b912bad3bb0b97e2b47eae20d2dd7ffb0c6879@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzg3MTM5NzU5MDAwLkkxMGI5MTJiYWQzYmIwYjk3ZTJiNDdlYWUyMGQyZGQ3ZmZiMGM2ODc5QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <59423f3fc4113c9ed1260005bc4a76b92545eeba-EmailReviewComments-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
-User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wwgJb-0003QZ-MY
-Subject: [Openvpn-devel] [M] Change in openvpn[master]:
- gen-release-tarballs.sh: Remove
+X-Headers-End: 1wwgJn-0000a1-Um
+Subject: [Openvpn-devel] [PATCH v3] gen-release-tarballs.sh: Remove
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -138,153 +77,292 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "cron2 \(Code Review\) via Openvpn-devel"
- <openvpn-devel@lists.sourceforge.net>
-Reply-To: gert@greenie.muc.de, arne-openvpn@rfc2549.org, razvanc@mailbox.org,
- openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com
-Cc: "cron2 \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>,
- plaisthos <arne-openvpn@rfc2549.org>
-Content-Type: multipart/mixed; boundary="===============5046560829359231786=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============5046560829359231786==
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="UCsm7kLFUlo="; charset=UTF-8
+From: Frank Lichtenheld <frank@lichtenheld.com>
 
---UCsm7kLFUlo=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+This is unused (all our releases use code in openvpn-build
+repository instead) and of doubtful use. E.g. why would we
+need three different tarballs for releases?
 
-Attention is currently required from: flichtenheld, plaisthos, razvanc=2E
+It also has small issues like using a /bin/sh shebang but
+containing bashisms.
 
-=
-cron2 has posted comments on this change by flichtenheld=2E ( http://gerrit=
-=2Eopenvpn=2Enet/c/openvpn/+/1847?usp=3Demail )
+So get rid of the dead code.
 
-Change subject: gen-releas=
-e-tarballs=2Esh: Remove
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E
+Change-Id: I10b912bad3bb0b97e2b47eae20d2dd7ffb0c6879
+Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
+Acked-by: Gert Doering <gert@greenie.muc.de>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1847
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Patch Set 3: Code-Review+2
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1847
+This mail reflects revision 3 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@greenie.muc.de>
 
--- 
-To view, visit http://gerrit=
-=2Eopenvpn=2Enet/c/openvpn/+/1847?usp=3Demail
-To unsubscribe, or for help w=
-riting mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Dema=
-il
+        
+diff --git a/dev-tools/gen-release-tarballs.sh b/dev-tools/gen-release-tarballs.sh
+deleted file mode 100755
+index 6071b57..0000000
+--- a/dev-tools/gen-release-tarballs.sh
++++ /dev/null
+@@ -1,246 +0,0 @@
+-#!/bin/sh
+-# gen-release-tarballs.sh  -  Generates release tarballs with signatures
+-#
+-# Copyright (C) 2017-2026 - David Sommerseth <davids@openvpn.net>
+-#
+-# This program is free software; you can redistribute it and/or
+-# modify it under the terms of the GNU General Public License
+-# as published by the Free Software Foundation; either version 2
+-# of the License.
+-#
+-# This program is distributed in the hope that it will be useful,
+-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-# GNU General Public License for more details.
+-#
+-# You should have received a copy of the GNU General Public License
+-# along with this program; if not, see <https://www.gnu.org/licenses/>.
+-#
+-set -u
+-
+-if [ $# -ne 4 ]; then
+-    echo "Usage: $0 <remote-name> <tag-name> <sign-key> <dest-dir>"
+-    echo ""
+-    echo "   remote-name  -- valid remotes: `git remote | tr \\\n ' '`"
+-    echo "   tag-name     -- An existing release tag"
+-    echo "   sign-key     -- PGP key used to sign all files"
+-    echo "   dest-dir     -- Where to put the complete set of release tarballs"
+-    echo ""
+-    echo "   Example: $0 origin v2.4.2 /tmp/openvpn-release"
+-    echo
+-    exit 1
+-fi
+-
+-arg_remote_name="$1"
+-arg_tag_name="$2"
+-arg_sign_key="$3"
+-arg_dest_dir="$4"
+-
+-#
+-# Sanity checks
+-#
+-
+-# Check that the tag exists
+-git tag | grep "$arg_tag_name" 1>/dev/null
+-if [ $? -ne 0 ]; then
+-    echo "** ERROR **  The tag '$arg_tag_name' does not exist"
+-    exit 2
+-fi
+-
+-# Extract the git URL
+-giturl="`git remote get-url $arg_remote_name 2>/dev/null`"
+-if [ $? -ne 0 ]; then
+-    echo "** ERROR ** Invalid git remote name: $arg_remote_name"
+-    exit 2
+-fi
+-
+-# Check we have the needed signing key
+-echo "test" | gpg -a --clearsign -u "$arg_sign_key" 2>/dev/null 1>/dev/null
+-if [ $? -ne 0 ]; then
+-    echo "** ERROR ** Failed when testing the PGP signing.  Wrong signing key?"
+-    exit 2;
+-fi
+-
+-
+-#
+-# Helper functions
+-#
+-
+-get_filename()
+-{
+-    local wildcard="$1"
+-
+-    res="`find . -maxdepth 1 -type f -name \"$wildcard\" | head -n1 | cut -d/ -f2-`"
+-    if [ $? -ne 0 ]; then
+-        echo "-- 'find' failed."
+-        exit 5
+-    fi
+-    if [ -z "$res" ]; then
+-        echo "-- Could not find a file with the wildcard: $wildcard"
+-        exit 4
+-    fi
+-    echo "$res"
+-}
+-
+-copy_files()
+-{
+-    local fileext="$1"
+-    local dest="$2"
+-
+-    file="`get_filename openvpn-*.*.*.$fileext`"
+-    if [ -z "$file" ]; then
+-        echo "** ERROR Failed to find source file"
+-        exit 5
+-    fi
+-    echo "-- Copying $file"
+-    cp "$file" "$dest"
+-    if [ $? -ne 0 ]; then
+-        echo "** ERROR ** Failed to copy $file to $destdir"
+-        exit 3;
+-    fi
+-}
+-
+-sign_file()
+-{
+-    local signkey="$1"
+-    local srchfile="$2"
+-    local signtype="$3"
+-    local file="`get_filename $srchfile`"
+-
+-    echo "-- Signing $file ..."
+-    case "$signtype" in
+-        inline)
+-            # Have the signature in the same file as the data
+-            gpg -a --clearsign -u "$signkey" "$file" 2>/dev/null
+-            res=$?
+-            if [ $res -eq 0 ]; then
+-                rm -f "$file"
+-            fi
+-            ;;
+-
+-        detached)
+-            # Have the signature in a separate file
+-            gpg -a --detach-sign -u "$signkey" "$file" 2>/dev/null
+-            res=$?
+-            ;;
+-
+-        *)
+-            echo "** ERROR **  Unknown signing type \"$signtype\"."
+-            exit 4;
+-    esac
+-
+-    if [ $res -ne 0 ]; then
+-        echo "** ERROR **  Failed to sign the file $PWD/$file"
+-        exit 4;
+-    fi
+-}
+-
+-
+-#
+-# Preparations
+-#
+-
+-# Create the destination directory, using a sub-dir with the tag-name
+-destdir=""
+-case "$arg_dest_dir" in
+-    /*) # Absolute path
+-        destdir="$arg_dest_dir/$arg_tag_name"
+-        ;;
+-    *)  # Make absolute path from relative path
+-        destdir="$PWD/$arg_dest_dir/$arg_tag_name"
+-        ;;
+-esac
+-echo "-- Destination directory: $destdir"
+-if [ -e "$destdir" ]; then
+-    echo "** ERROR ** Destination directory already exists.  "
+-    echo "            Please check your command line carefully."
+-    exit 2
+-fi
+-
+-mkdir -p "$destdir"
+-if [ $? -ne 0 ]; then
+-    echo "** ERROR ** Failed to create destination directory"
+-    exit 2
+-fi
+-
+-#
+-# Start the release process
+-#
+-
+-# Clone the remote repository
+-workdir="`mktemp -d -p /var/tmp openvpn-build-release-XXXXXX`"
+-cd $workdir
+-echo "-- Working directory: $workdir"
+-echo "-- git clone $giturl"
+-git clone $giturl openvpn-gen-tarball 2> "$workdir/git-clone.log" 1>&2
+-if [ $? -ne 0 ]; then
+-    echo "** ERROR **  git clone failed.  See $workdir/git-clone.log for details"
+-    exit 3;
+-fi
+-cd openvpn-gen-tarball
+-
+-# Check out the proper release tag
+-echo "-- Checking out tag $arg_tag_name ... "
+-git checkout -b mkrelease "$arg_tag_name" 2> "$workdir/git-checkout-tag.log" 1>&2
+-if [ $? -ne 0 ]; then
+-    echo "** ERROR **  git checkout failed.  See $workdir/git-checkout-tag.log for details"
+-    exit 3;
+-fi
+-
+-# Prepare the source tree
+-echo "-- Running autoreconf + a simple configure ... "
+-(autoreconf -vi && ./configure) 2> "$workdir/autotools-prep.log" 1>&2
+-if [ $? -ne 0 ]; then
+-    echo "** ERROR **  Failed running autotools.  See $workdir/autotools-prep.log for details"
+-    exit 3;
+-fi
+-
+-# Generate the tar/zip files
+-echo "-- Running make distcheck (generates .tar.gz) ... "
+-(make distcheck) 2> "$workdir/make-distcheck.log" 1>&2
+-if [ $? -ne 0 ]; then
+-    echo "** ERROR **  make distcheck failed.  See $workdir/make-distcheck.log for details"
+-    exit 3;
+-fi
+-copy_files tar.gz "$destdir"
+-
+-echo "-- Running make dist-xz (generates .tar.xz) ... "
+-(make dist-xz) 2> "$workdir/make-dist-xz.log" 1>&2
+-if [ $? -ne 0 ]; then
+-    echo "** ERROR **  make dist-xz failed.  See $workdir/make-dist-xz.log for details"
+-    exit 3;
+-fi
+-copy_files tar.xz "$destdir"
+-
+-echo "-- Running make dist-zip (generates .zip) ... "
+-(make dist-zip) 2> "$workdir/make-dist-zip.log" 1>&2
+-if [ $? -ne 0 ]; then
+-    echo "** ERROR **  make dist-zip failed.  See $workdir/make-dist-zip.log for details"
+-    exit 3;
+-fi
+-copy_files zip "$destdir"
+-
+-# Generate SHA256 checksums
+-cd "$destdir"
+-sha256sum openvpn-*.tar.{gz,xz} openvpn-*.zip > "openvpn-$arg_tag_name.sha256sum"
+-
+-# Sign all the files
+-echo "-- Signing files ... "
+-sign_file "$arg_sign_key" "openvpn-$arg_tag_name.sha256sum" inline
+-sign_file "$arg_sign_key" "openvpn-*.tar.gz" detached
+-sign_file "$arg_sign_key" "openvpn-*.tar.xz" detached
+-sign_file "$arg_sign_key" "openvpn-*.zip" detached
+-
+-# Create a tar-bundle with everything
+-echo "-- Creating final tarbundle with everything ..."
+-tar cf "openvpn-$arg_tag_name.tar" openvpn-*.{tar.gz,tar.xz,zip}{,.asc} openvpn-*.sha256sum.asc
+-
+-echo "-- Cleaning up ..."
+-# Save the log files
+-mkdir -p "$destdir/logs"
+-mv $workdir/*.log "$destdir/logs"
+-
+-# Finally, done!
+-rm -rf "$workdir"
+-echo "-- Done"
+-exit 0
 
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: mast=
-er
-Gerrit-Change-Id: I10b912bad3bb0b97e2b47eae20d2dd7ffb0c6879
-Gerrit-Chang=
-e-Number: 1847
-Gerrit-PatchSet: 3
-Gerrit-Owner: flichtenheld <frank@lichten=
-held=2Ecom>
-Gerrit-Reviewer: cron2 <gert@greenie=2Emuc=2Ede>
-Gerrit-Reviewe=
-r: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Reviewer: razvanc <razvanc=
-@mailbox=2Eorg>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=
-=2Enet>
-Gerrit-Attention: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Att=
-ention: flichtenheld <frank@lichtenheld=2Ecom>
-Gerrit-Attention: razvanc <r=
-azvanc@mailbox=2Eorg>
-Gerrit-Comment-Date: Wed, 19 Aug 2026 13:26:35 +0000
-=
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---UCsm7kLFUlo=
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos, razvanc=2E </p>
-<p>Patch set=
- 3:<span style=3D"border-radius: 3px; display: inline-block; margin: 0 2px;=
- padding: 4px;background-color: #d4ffd4;">Code-Review +2</span></p><p><a hr=
-ef=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1847?usp=3Demail">View Chan=
-ge</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To view, visi=
-t <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1847?usp=3Demail">ch=
-ange 1847</a>=2E To unsubscribe, or for help writing mail filters, visit <a=
- href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=
-=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div it=
-emscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><li=
-nk itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1847?=
-usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>=
-
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div styl=
-e=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:no=
-ne"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Chang=
-e-Id: I10b912bad3bb0b97e2b47eae20d2dd7ffb0c6879 </div>
-<div style=3D"displa=
-y:none"> Gerrit-Change-Number: 1847 </div>
-<div style=3D"display:none"> Ger=
-rit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenh=
-eld &lt;frank@lichtenheld=2Ecom&gt; </div>
-<div style=3D"display:none"> Ger=
-rit-Reviewer: cron2 &lt;gert@greenie=2Emuc=2Ede&gt; </div>
-<div style=3D"di=
-splay:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; =
-</div>
-<div style=3D"display:none"> Gerrit-Reviewer: razvanc &lt;razvanc@ma=
-ilbox=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-deve=
-l &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
-<div style=3D"disp=
-lay:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank=
-@lichtenheld=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention=
-: razvanc &lt;razvanc@mailbox=2Eorg&gt; </div>
-<div style=3D"display:none">=
- Gerrit-Comment-Date: Wed, 19 Aug 2026 13:26:35 +0000 </div>
-<div style=3D"=
-display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> G=
-errit-Has-Labels: Yes </div>
-
-</body></html>
---UCsm7kLFUlo=--
-
-
---===============5046560829359231786==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============5046560829359231786==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
---===============5046560829359231786==--
-
