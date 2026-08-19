@@ -4,126 +4,128 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id EAF72C5B572
-	for <openvpn-devel@archiver.kernel.org>; Wed, 19 Aug 2026 15:07:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1A7A4C5DF81
+	for <openvpn-devel@archiver.kernel.org>; Wed, 19 Aug 2026 15:11:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:To:Date:Sender:
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
-	List-Owner; bh=Ip4RKqYguWmkSMr9Xq9uBrAjQxZe6oF16QdZm89/jL4=; b=SJh34IyNykNSTp
-	M2pC9bf1mTh7B6LAx5HjtRrpo/aO42Mu2rPXsT8xVvcFL2MXZ1YBvuceH/SisV608I0Ggd60VhXzk
-	tEwAv7k0232fs2uRB9w8RQnQJbjgJpHIfM6sLcAAacXKzYsW5YVr1cJXk4NAJpca2ckHvDoXNJUIA
-	hwY=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=UBr07A267ieYRtmIx45ETZrooTkoloMYp/G9tdCmTe8=; b=Q04vbOGR06W3w0y7b7qtrfBGTK
+	FaD64jTvdSAJnhCAvMHln/ZYlXRoV6YdOQ/skSxGWeKJDZIe3iusj2P3TzErI3UQgodEF1KX1ye5m
+	BS3XVRFujg3YaU+xCKa54l/f2wb1yf0Vj//9VwVpsdpMLsedAGD+S+cGSqfWLuAC0uo8=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wwhsc-0005JW-Jb;
-	Wed, 19 Aug 2026 15:07:03 +0000
+	id 1wwhwS-00032F-5c;
+	Wed, 19 Aug 2026 15:11:00 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wwhsb-0005JQ-FV
+ (envelope-from <gerrit@openvpn.net>) id 1wwhwA-00031r-6U
  for openvpn-devel@lists.sourceforge.net;
- Wed, 19 Aug 2026 15:07:02 +0000
+ Wed, 19 Aug 2026 15:10:42 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:
- From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From:
- Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=0eLkPEN+u7bBZywGkUC9AfuvLbEnQGS1Pc2pAC4zB5M=; b=eH/2XSoO2fDCz2OVGUbFWt8kSo
- HF36C9WFBkpnBrObT+Ahzs2agEyNKsb6iaD3sWWxcvISmGccKm4v2rMXdGIxM5MNquYoZFee8GbIV
- MDKOP4DVRUmoHBMdYw4dnpduf6FqFlRaT+QcZKdgRPYl2TUhRayi1xBfGoiXXzFBt3e0=;
+ :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
+ Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
+ :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
+ :List-Post:List-Owner:List-Archive;
+ bh=calQpZwvMpoF/0G0pMR4jpan/G0kl83hJ3lQdvfJi38=; b=YM8+smuUE/hIDnBM36dpXydsXz
+ oeBmGeHjg0xstgG2wS6ntZTbYaBIVW4Bb+YKuT/2fhG/i2/fdoeuA0tBDSh7XBmwAUat5RI4NDb5T
+ I3CWBTD90aSD+FL8cgj+2GApw23QcHTCnd8E88aOtC37CuaGQ5FjYhbMxpcfk2Q3PKr0=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:From:Sender:Content-ID
- :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
- Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=0eLkPEN+u7bBZywGkUC9AfuvLbEnQGS1Pc2pAC4zB5M=; b=i
- yL+eQoTWJO4S2YydvhOKrHpYQrW0NZgpYx4BgFI6LuzJM8GWBNCB3MLX2x011tVTaDBNED17NAiw+
- 5VekH07intmrC4hEQo2LuTtfY7q4o+vYmiM6UAmyQxkV3vomZqAOLRK60H/HeAcym/GZ9Wi2wROcp
- cwIDOyQZybolK3xo=;
-Received: from mail-lf1-f49.google.com ([209.85.167.49])
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
+ Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=calQpZwvMpoF/0G0pMR4jpan/G0kl83hJ3lQdvfJi38=; b=R
+ AFQFzRrfwqcW81qQxsohdh6atO5BMNsf7Kdu91qj7cuP0PhjsKOWUf85xeStv6jdpLSGpXKHkuWf9
+ jeyDTWGfn77Uzp+iCFWeJsj/vaZO29EtTtugdNGHSnX9e8T3iCDQcKh1+aHWRj9ewReExp088026D
+ CNhAeCdfI0jzPiu0=;
+Received: from mail-ej1-f42.google.com ([209.85.218.42])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wwhsa-0005wd-Hx for openvpn-devel@lists.sourceforge.net;
- Wed, 19 Aug 2026 15:07:02 +0000
-Received: by mail-lf1-f49.google.com with SMTP id
- 2adb3069b0e04-5b021916bd3so1720785e87.3
+ id 1wwhw1-00069A-Eo for openvpn-devel@lists.sourceforge.net;
+ Wed, 19 Aug 2026 15:10:37 +0000
+Received: by mail-ej1-f42.google.com with SMTP id
+ a640c23a62f3a-c16794450aeso158141566b.2
  for <openvpn-devel@lists.sourceforge.net>;
- Wed, 19 Aug 2026 08:07:00 -0700 (PDT)
+ Wed, 19 Aug 2026 08:10:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1787152014; x=1787756814; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1787152227; x=1787757027; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
- :to:date:from:from:to:cc:subject:date:message-id:reply-to
- :content-type; bh=0eLkPEN+u7bBZywGkUC9AfuvLbEnQGS1Pc2pAC4zB5M=;
- b=DS84hHvLixro39CKGc4tvwczNfTv6WybLtit3tTVp81feC2JCZHD4e8RfCrY+6VHn7
- V+rLpMZBFrwBfAoLPYm+5tZevM8kbD8VE/CXoyiZmOZCLYqGpRwWYuBQSBSERZs+pIcY
- XmZA604Qya2vCB35VZOTJnSdSJZQkSre1jocLUHslIy+ItKFAd6eOLk6QoQHcof3JKkK
- xAKKrOREi+ZnMTdKz7CtvnwxLsNSscs9IN3vCjX2sSXJ3HCO1cZMf93M+ew9ad5HPHP0
- G4MCPq3I7+XCY1nimxqZfNGGmvT9uY8XOfCDM+PNGd8u6pMVYFmOoFhv0q06qJY97jrt
- zJOg==
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
+ :reply-to:content-type;
+ bh=calQpZwvMpoF/0G0pMR4jpan/G0kl83hJ3lQdvfJi38=;
+ b=MVHAyVoKpFuCK/Dd4XfcQZ09SMK2qNkWkIEO96HnZW2kOYYB49ShYS4uS3l0kxUlSr
+ lMbv+DrJnXTSKe99JCVkipv+uSqKSQaBrmqB8JPF8Ak6+raUNIXwlths6R8dT3QDKVZJ
+ P+5pk3y7SEJmsi2M6o1uo/IVryIDJDS8UZKYaYEYeSqpj+CwjuOxq+PGjYpcCEciB8mc
+ FKWt7aOKBIYnnZEdPUKFjwqzT+irSpdoaIGsO5nuWTN2es1ctBj8Ftzt2qzu4vNF/n7C
+ pEkYeuyYFvL6avz5heuZepwBY5QiAl4Ox0PLrW/6UiTomNwcQW2mX2kVBm+4myBDlC0X
+ SR+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1787152014; x=1787756814;
+ d=1e100.net; s=20251104; t=1787152227; x=1787757027;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
- :to:date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
- :message-id:reply-to:content-type;
- bh=0eLkPEN+u7bBZywGkUC9AfuvLbEnQGS1Pc2pAC4zB5M=;
- b=AS+Xn+zyoxNky4NWvrFEOv6gySIwMQAUj5rTO0O695k/MNa4fW40U1dOGOxnFHZTsh
- EDl7kbHdf4YCwUXKhvX3KpBqzCPqYulhMS9lTszGxi1vKkj2yQc9KXTiU+hGU4kr+zXT
- 3kT3rqDcMnzq5BvPxNl+S4ApGMAntszyCmAO3Hwx5CaQoB4oTuHlJF0J9v1KSoX1annD
- 12ZGl0oAbvOTYhLZtnef73BPrH+V5S1t/niW6qtngOnp7g+2WD1lHpJddCRnR75F50U/
- EsKlM+7kPR18uBRS83aw2hWKmfz8TVxvEoxWsXSmtP7y0Iq9wId0o/mbjQCsHIlIptBr
- pkIw==
-X-Gm-Message-State: AOJu0YxEz0i0vug8qnhCRqDmaDfNMqx1ejf5fT0VvEg6eOvsbsdv6Xh3
- SfiObpsWCldlV8J1dgUMFbkCC8/G4AXR4zkpvpOEzuZOaJBrDI7lvIkYZIO+AnaunYCdH277bL/
- JD0dBnBp7Flr/bB82VsbhxIYhFfzlDiWUp5NobN74E4YkJ9Gw3q+YmzKKrQl9XD1jRDSbe+08ZA
- Vg0aXfzg==
-X-Gm-Gg: AR+sD13A2Wi2UgEZPCSUOt5r82rsCRFXwT7ClKLaolCKUIjI3/7zJlQpJt3UoDQi3DA
- qIIWYtzz5EsZHkgYWzhN/Cbhf8rZ43KTRZYdBYVPPYRilnglzuUae6QlEAJDWQbgye2Np/zerQm
- O6ENgSLoFjjNjn6vGWvLLUmXf/WpDeA5MkuVL4XWCqWRURJn+r3/bSXW+6BCoZJHUMKdrN7Uloo
- mO83DB2i1fN18pk+EhzigxGtxkXgDPgEFNM0WcH7Vq//WXQwOqkArDl2XLeOAjRaiT4UGxpPhfu
- qopJ6MI4XTWB7nJnGvxuPupj1wP1y7ZWnqc8g14e2eKeMB84XS9frn4Uz1toVT6eNB86Lf88dKs
- GoMlzq7hVIrUsGREofm6B3Z7P+zoLNnNYo6pbHGXY6NKaeVMNcf8+g0Qh1ipRrCvYEq8J0I5/X6
- sWFSlP+5/3jSaW5q8C2iV6SgyUtVup7zdu7kvxZcbsNBHkBQYy+l8GtKvY+E/FWDVT08i9fR7j2
- tNpyx0u470xjh5/urT+3nIhnwmWhPIHUKPyOKTcVNRVSmqC4dObPAdzSf6ty/XQdX3V6ZNcuAbt
- k38Tl24x3pO+/KIy/EFdOaR2ZBmdLPTMov7eVN/vyQhQGhMEXHO/fLjs0/9Vyg==
-X-Received: by 2002:a05:600c:6211:b0:499:a760:722f with SMTP id
- 5b1f17b1804b1-499aa1ba0b7mr101911375e9.13.1787150250612; 
- Wed, 19 Aug 2026 07:37:30 -0700 (PDT)
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
+ :cc:subject:date:message-id:reply-to:content-type;
+ bh=calQpZwvMpoF/0G0pMR4jpan/G0kl83hJ3lQdvfJi38=;
+ b=AYq6vGflD//QahWDDqC5sueWt+smaaNd027FUrb0RwPu/H8HGpDnJyXC9VK+9AVSx+
+ hh0IwAirrlxFC9gqzrvM0uiiG+1Bi+b08a/UKvrNS53cNbFhQ5FBWL0R4mnA5vCnI74O
+ qHPSCc6IGJPzgBhqh4Zzpv2m3plvPS3UTfqYAWJOYT/CT6P6sAhv5F59IuFPGMZL6vfE
+ dvmMjQcHBWi3GCCm7iPRiY2GWjes5m40hpRdL8A3+m8udKBZIn+xjWRjE49RgHCwkzVd
+ X4WSZYBS7JDgYZB+3jUYdc0M51pcrC00iwHaRCokr+ggtqQEJH+kpyksSn3zxxH5a/P1
+ XOiQ==
+X-Gm-Message-State: AOJu0YxQrDthZGBEUperJif7gYs/MHmb9uDlROgZs7XRHF9ht4fm9EY0
+ SpTDvfdQuN/e2vnOIAoJWwIaXnrsHmcmNBW0P10LtK8x73nUn5wIrWLhCYCJDSEPey9t+XELTzt
+ 2x2G426WbLj7/NYim3MS0leGT4/+etBckbaFDsiPKeHSdJ6/yjrcQz8fH/TVHYDJPUxVnvMapSe
+ +2LjxLfQ==
+X-Gm-Gg: AR+sD13GME575asOjZJePlFuBJtvgQd0UpDVXO9O2L9AWDQAzDz4wgQPTN2QQr7ScpT
+ e74AN3ihZdFCoAPcEkgGd0j0Dkhc7ki0nCuTKVpLLGveC2ot0aeXmGVFEGzmHx3nIEERhQ0CqKt
+ SYARQdWUvqzaegTYOEwVzqA3AKRtjI6TqTPbJ7QXdBYiPpxc3MdgveulCQw8MxuatZIAlGv50mW
+ hP6751f4UPz5/QB61e42eCwaqRqyq1S2FrzGddOYJolhWATO3BbmTsvsu62mlS6mJ4MSuOEyvKm
+ uVrFsE1GBj8Elc4ktuj+gDJZAXS+UggQhGcvMhUp3Jzy0SFY53pzemQX9k2hABiAVZKJoaxUSsk
+ 2r6B+SL6m/8+HhNi5/IH0YHhDlu6tgSiPO5ZTzUyb+tAO3gqTiDLdc/J1ufT/E525ZiNccNABjY
+ ifndRCYY7BpaNPUFrvD8kLWLVkGpope1pIaCTc3G8vdQOCGU2MPqkWQtTbM44aPmzNZx339xWxo
+ btRbpbWbGZU1F7GD+CODbCroDVLAzwss3Li8NYjb3xWmTEH7hub9uKphu/Y18Dwa/lWIQv7jPXn
+ 9bA5+Yhkov/ORCMmMSgu7jWiOdvxY9afmESH0/jFUx3MG2jq7sA=
+X-Received: by 2002:a05:600c:3f12:b0:499:8174:9f39 with SMTP id
+ 5b1f17b1804b1-499aa0dd282mr103980505e9.0.1787151796986; 
+ Wed, 19 Aug 2026 08:03:16 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-499a9dff4c1sm45929285e9.3.2026.08.19.07.37.30
+ 5b1f17b1804b1-499a9def415sm55317195e9.2.2026.08.19.08.03.15
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 19 Aug 2026 07:37:30 -0700 (PDT)
-X-Google-Original-From: "flichtenheld (Code Review)"
+ Wed, 19 Aug 2026 08:03:15 -0700 (PDT)
+X-Google-Original-From: "cron2 (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Wed, 19 Aug 2026 14:37:29 +0000
-To: plaisthos <arne-openvpn@rfc2549.org>
+Date: Wed, 19 Aug 2026 15:03:14 +0000
+To: flichtenheld <frank@lichtenheld.com>, plaisthos <arne-openvpn@rfc2549.org>,
+ razvanc <razvanc@mailbox.org>
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: newchange
-X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: I694410615958afbb422d9ead71f04c1a60edc640
-X-Gerrit-Change-Number: 1849
+X-Gerrit-MessageType: newpatchset
+X-Gerrit-PatchSet: 4
+X-Gerrit-Change-Id: I10b912bad3bb0b97e2b47eae20d2dd7ffb0c6879
+X-Gerrit-Change-Number: 1847
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1849?usp=email>
-X-Gerrit-Commit: 63603d64043f4ffc0761d964988ccddc36772709
-References: <gerrit.1787150248000.I694410615958afbb422d9ead71f04c1a60edc640@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzg3MTUwMjQ4MDAwLkk2OTQ0MTA2MTU5NThhZmJiNDIyZDllYWQ3MWYwNGMxYTYwZWRjNjQwQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <12a5dc04530e58d3f3680413144470a5e30c2e87-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1847?usp=email>
+X-Gerrit-Commit: 2b3df1ed0f0207a1df6ffa4640457655ab2aa10c
+In-Reply-To: <gerrit.1787139759000.I10b912bad3bb0b97e2b47eae20d2dd7ffb0c6879@gerrit.openvpn.net>
+References: <gerrit.1787139759000.I10b912bad3bb0b97e2b47eae20d2dd7ffb0c6879@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzg3MTM5NzU5MDAwLkkxMGI5MTJiYWQzYmIwYjk3ZTJiNDdlYWUyMGQyZGQ3ZmZiMGM2ODc5QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <c4abe2600103f23e8a86dde75282fcf68bd5f9db-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wwhsa-0005wd-Hx
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: mbedtls: Work-around
- bug in mbedtls 4.1.0 and 4.2.0
+X-Headers-End: 1wwhw1-00069A-Eo
+Subject: [Openvpn-devel] [M] Change in openvpn[master]:
+ gen-release-tarballs.sh: Remove
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -135,273 +137,811 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "flichtenheld \(Code Review\) via Openvpn-devel"
+From: "cron2 \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
-Reply-To: frank@lichtenheld.com, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net
-Cc: "flichtenheld \(Code Review\)" <gerrit@openvpn.net>,
+Reply-To: gert@greenie.muc.de, arne-openvpn@rfc2549.org, razvanc@mailbox.org,
+ openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com
+Cc: "cron2 \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============8650388615611159544=="
+Content-Type: multipart/mixed; boundary="===============2738963899669880831=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============8650388615611159544==
+--===============2738963899669880831==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="KtMv41LMAlA="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="Xq66QUTlXIU="; charset=UTF-8
 
---KtMv41LMAlA=
+--Xq66QUTlXIU=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos=2E
+cron2 has uploaded a new patch set (#4) to the change originally created by=
+ flichtenheld=2E ( http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1847?usp=3Dema=
+il )
 
-Hello plaisthos,
-
-I'd l=
-ike you to do a code review=2E
-Please visit
-
-    http://gerrit=2Eopenvpn=2E=
-net/c/openvpn/+/1849?usp=3Demail
-
-to review the following change=2E
+The following approvals got outdated and were removed:
+Code-Review+2 =
+by cron2, Code-Review+2 by razvanc
 
 
-Chang=
-e subject: mbedtls: Work-around bug in mbedtls 4=2E1=2E0 and 4=2E2=2E0
-=2E=
+Change subject: gen-release-tarballs=
+=2Esh: Remove
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-mbedtls: Work-ar=
-ound bug in mbedtls 4=2E1=2E0 and 4=2E2=2E0
 
-Since the first distros have s=
-tarted to pick up these
-versions before a fix is released, let's make our t=
-ests
-pass on these versions=2E
+gen-release-tarballs=2Esh: Remove
 
-A fix is merged, so it might be fixed in 4=
-=2E3=2E0=2E But I
-didn't want to add that to the version check until we
-hav=
-e verified that=2E
+This is unused (all our releases use c=
+ode in openvpn-build
+repository instead) and of doubtful use=2E E=2Eg=2E wh=
+y would we
+need three different tarballs for releases?
 
-Change-Id: I694410615958afbb422d9ead71f04c1a60edc640
+It also has small i=
+ssues like using a /bin/sh shebang but
+containing bashisms=2E
+
+So get rid o=
+f the dead code=2E
+
+Change-Id: I10b912bad3bb0b97e2b47eae20d2dd7ffb0c6879
 Si=
 gned-off-by: Frank Lichtenheld <frank@lichtenheld=2Ecom>
+Acked-by: Gert Doe=
+ring <gert@greenie=2Emuc=2Ede>
+Gerrit URL: https://gerrit=2Eopenvpn=2Enet/c=
+/openvpn/+/1847
+Message-Id: <20260819132652=2E24207-1-gert@greenie=2Emuc=2E=
+de>
+URL: https://www=2Email-archive=2Ecom/openvpn-devel@lists=2Esourceforge=
+=2Enet/msg38509=2Ehtml
+Signed-off-by: Gert Doering <gert@greenie=2Emuc=2Ede=
+>
 ---
-M =2Egithub/wo=
-rkflows/build=2Eyaml
-M src/openvpn/mbedtls_compat=2Eh
-2 files changed, 13 i=
-nsertions(+), 1 deletion(-)
+D dev-tools/gen-release-tarballs=2Esh
+1 file changed, 0 insertions(+)=
+, 246 deletions(-)
 
 
+  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn =
+refs/changes/47/1847/4
 
-  git pull ssh://gerrit=2Eopenvpn=2Enet:2941=
-8/openvpn refs/changes/49/1849/1
+diff --git a/dev-tools/gen-release-tarballs=2Esh b/=
+dev-tools/gen-release-tarballs=2Esh
+deleted file mode 100755
+index 6071b57=
+=2E=2E0000000
+--- a/dev-tools/gen-release-tarballs=2Esh
++++ /dev/null
+@@ -1=
+,246 +0,0 @@
+-#!/bin/sh
+-# gen-release-tarballs=2Esh  -  Generates release =
+tarballs with signatures
+-#
+-# Copyright (C) 2017-2026 - David Sommerseth <=
+davids@openvpn=2Enet>
+-#
+-# This program is free software; you can redistri=
+bute it and/or
+-# modify it under the terms of the GNU General Public Licen=
+se
+-# as published by the Free Software Foundation; either version 2
+-# of =
+the License=2E
+-#
+-# This program is distributed in the hope that it will b=
+e useful,
+-# but WITHOUT ANY WARRANTY; without even the implied warranty of=
 
-diff --git a/=2Egithub/workflows/build=2E=
-yaml b/=2Egithub/workflows/build=2Eyaml
-index 29e8be2a=2E=2E56dd3ed 100644
+-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE=2E  See the
+-# GNU =
+General Public License for more details=2E
+-#
+-# You should have received a=
+ copy of the GNU General Public License
+-# along with this program; if not,=
+ see <https://www=2Egnu=2Eorg/licenses/>=2E
+-#
+-set -u
+-
+-if [ $# -ne 4 ]; =
+then
+-    echo "Usage: $0 <remote-name> <tag-name> <sign-key> <dest-dir>"
+-=
+    echo ""
+-    echo "   remote-name  -- valid remotes: `git remote | tr \=
+\\n ' '`"
+-    echo "   tag-name     -- An existing release tag"
+-    echo =
+"   sign-key     -- PGP key used to sign all files"
+-    echo "   dest-dir =
+    -- Where to put the complete set of release tarballs"
+-    echo ""
+-   =
+ echo "   Example: $0 origin v2=2E4=2E2 /tmp/openvpn-release"
+-    echo
+-  =
+  exit 1
+-fi
+-
+-arg_remote_name=3D"$1"
+-arg_tag_name=3D"$2"
+-arg_sign_key=
+=3D"$3"
+-arg_dest_dir=3D"$4"
+-
+-#
+-# Sanity checks
+-#
+-
+-# Check that the t=
+ag exists
+-git tag | grep "$arg_tag_name" 1>/dev/null
+-if [ $? -ne 0 ]; the=
+n
+-    echo "** ERROR **  The tag '$arg_tag_name' does not exist"
+-    exit=
+ 2
+-fi
+-
+-# Extract the git URL
+-giturl=3D"`git remote get-url $arg_remote_=
+name 2>/dev/null`"
+-if [ $? -ne 0 ]; then
+-    echo "** ERROR ** Invalid gi=
+t remote name: $arg_remote_name"
+-    exit 2
+-fi
+-
+-# Check we have the nee=
+ded signing key
+-echo "test" | gpg -a --clearsign -u "$arg_sign_key" 2>/dev=
+/null 1>/dev/null
+-if [ $? -ne 0 ]; then
+-    echo "** ERROR ** Failed when=
+ testing the PGP signing=2E  Wrong signing key?"
+-    exit 2;
+-fi
+-
+-
+-#
+-#=
+ Helper functions
+-#
+-
+-get_filename()
+-{
+-    local wildcard=3D"$1"
+-
+-   =
+ res=3D"`find =2E -maxdepth 1 -type f -name \"$wildcard\" | head -n1 | cut =
+-d/ -f2-`"
+-    if [ $? -ne 0 ]; then
+-        echo "-- 'find' failed=2E"
+-=
+        exit 5
+-    fi
+-    if [ -z "$res" ]; then
+-        echo "-- Could =
+not find a file with the wildcard: $wildcard"
+-        exit 4
+-    fi
+-    =
+echo "$res"
+-}
+-
+-copy_files()
+-{
+-    local fileext=3D"$1"
+-    local dest=
+=3D"$2"
+-
+-    file=3D"`get_filename openvpn-*=2E*=2E*=2E$fileext`"
+-    if=
+ [ -z "$file" ]; then
+-        echo "** ERROR Failed to find source file"
+-=
+        exit 5
+-    fi
+-    echo "-- Copying $file"
+-    cp "$file" "$dest"=
+
+-    if [ $? -ne 0 ]; then
+-        echo "** ERROR ** Failed to copy $file=
+ to $destdir"
+-        exit 3;
+-    fi
+-}
+-
+-sign_file()
+-{
+-    local sign=
+key=3D"$1"
+-    local srchfile=3D"$2"
+-    local signtype=3D"$3"
+-    local=
+ file=3D"`get_filename $srchfile`"
+-
+-    echo "-- Signing $file =2E=2E=2E"=
+
+-    case "$signtype" in
+-        inline)
+-            # Have the signatur=
+e in the same file as the data
+-            gpg -a --clearsign -u "$signkey=
+" "$file" 2>/dev/null
+-            res=3D$?
+-            if [ $res -eq 0 ];=
+ then
+-                rm -f "$file"
+-            fi
+-            ;;
+-
+-   =
+     detached)
+-            # Have the signature in a separate file
+-      =
+      gpg -a --detach-sign -u "$signkey" "$file" 2>/dev/null
+-            r=
+es=3D$?
+-            ;;
+-
+-        *)
+-            echo "** ERROR **  Unkno=
+wn signing type \"$signtype\"=2E"
+-            exit 4;
+-    esac
+-
+-    if =
+[ $res -ne 0 ]; then
+-        echo "** ERROR **  Failed to sign the file $P=
+WD/$file"
+-        exit 4;
+-    fi
+-}
+-
+-
+-#
+-# Preparations
+-#
+-
+-# Create=
+ the destination directory, using a sub-dir with the tag-name
+-destdir=3D""=
+
+-case "$arg_dest_dir" in
+-    /*) # Absolute path
+-        destdir=3D"$arg=
+_dest_dir/$arg_tag_name"
+-        ;;
+-    *)  # Make absolute path from rel=
+ative path
+-        destdir=3D"$PWD/$arg_dest_dir/$arg_tag_name"
+-        ;=
+;
+-esac
+-echo "-- Destination directory: $destdir"
+-if [ -e "$destdir" ]; t=
+hen
+-    echo "** ERROR ** Destination directory already exists=2E  "
+-    =
+echo "            Please check your command line carefully=2E"
+-    exit 2
 =
---- a/=2Egithub/workflows/build=2Eyaml
-+++ b/=2Egithub/workflows/build=2Eya=
-ml
-@@ -365,7 +365,7 @@
-       ovpnlibdesc: mbed TLS 4=2E
-       # versionin=
-g=3Dsemver-coerced
-       ghrepo: Mbed-TLS/mbedtls
--      gitref: v4=2E0=2E=
-0
-+      gitref: v4=2E2=2E0
-       libconfigure: cmake -B build -DCMAKE_INS=
-TALL_PREFIX=3D$LIBPREFIX
-       libmake: cmake --build build
-       libinst=
-all: sudo cmake --install build
-diff --git a/src/openvpn/mbedtls_compat=2Eh=
- b/src/openvpn/mbedtls_compat=2Eh
-index 50739b6=2E=2E7149487 100644
---- a/s=
-rc/openvpn/mbedtls_compat=2Eh
-+++ b/src/openvpn/mbedtls_compat=2Eh
-@@ -43,6=
- +43,7 @@
- #include "crypto_mbedtls_legacy=2Eh"
- #else
- #include <mbedtls/o=
-id=2Eh>
-+#include "crypto_mbedtls=2Eh"
- #endif /* MBEDTLS_VERSION_NUMBER < =
-0x04000000 */
- 
- #ifdef HAVE_PSA_CRYPTO_H
-@@ -228,6 +229,17 @@
- mbedtls_com=
-pat_pk_check_pair(const mbedtls_pk_context *pub, const mbedtls_pk_context *=
-prv)
- {
- #if MBEDTLS_VERSION_NUMBER >=3D 0x04000000
-+    /* work around bug=
- in mbedtls 4=2E1=2E0 by adding missing public key information in prv
-+    =
- * cf=2E https://github=2Ecom/Mbed-TLS/TF-PSA-Crypto/issues/807 */
-+#if MBE=
-DTLS_VERSION_NUMBER >=3D 0x04010000
-+    if (prv->MBEDTLS_PRIVATE(pub_raw_l=
-en) =3D=3D 0)
-+    {
-+        ASSERT(mbed_ok(psa_export_public_key(prv->MBE=
-DTLS_PRIVATE(priv_id),
-+                                             (uint8=
-_t *)prv->MBEDTLS_PRIVATE(pub_raw),
-+                                      =
-       sizeof(prv->MBEDTLS_PRIVATE(pub_raw)),
-+                            =
-                 (size_t *)&prv->MBEDTLS_PRIVATE(pub_raw_len))));
-+    }
-+#=
-endif
-     return mbedtls_pk_check_pair(pub, prv);
- #else
-     return mbedt=
-ls_pk_check_pair(pub, prv, mbedtls_ctr_drbg_random, rand_ctx_get());
+-fi
+-
+-mkdir -p "$destdir"
+-if [ $? -ne 0 ]; then
+-    echo "** ERROR ** Fa=
+iled to create destination directory"
+-    exit 2
+-fi
+-
+-#
+-# Start the rel=
+ease process
+-#
+-
+-# Clone the remote repository
+-workdir=3D"`mktemp -d -p =
+/var/tmp openvpn-build-release-XXXXXX`"
+-cd $workdir
+-echo "-- Working dire=
+ctory: $workdir"
+-echo "-- git clone $giturl"
+-git clone $giturl openvpn-ge=
+n-tarball 2> "$workdir/git-clone=2Elog" 1>&2
+-if [ $? -ne 0 ]; then
+-    ec=
+ho "** ERROR **  git clone failed=2E  See $workdir/git-clone=2Elog for deta=
+ils"
+-    exit 3;
+-fi
+-cd openvpn-gen-tarball
+-
+-# Check out the proper rel=
+ease tag
+-echo "-- Checking out tag $arg_tag_name =2E=2E=2E "
+-git checkout=
+ -b mkrelease "$arg_tag_name" 2> "$workdir/git-checkout-tag=2Elog" 1>&2
+-if=
+ [ $? -ne 0 ]; then
+-    echo "** ERROR **  git checkout failed=2E  See $wo=
+rkdir/git-checkout-tag=2Elog for details"
+-    exit 3;
+-fi
+-
+-# Prepare the=
+ source tree
+-echo "-- Running autoreconf + a simple configure =2E=2E=2E "
+=
+-(autoreconf -vi && =2E/configure) 2> "$workdir/autotools-prep=2Elog" 1>&2
+=
+-if [ $? -ne 0 ]; then
+-    echo "** ERROR **  Failed running autotools=2E =
+ See $workdir/autotools-prep=2Elog for details"
+-    exit 3;
+-fi
+-
+-# Gener=
+ate the tar/zip files
+-echo "-- Running make distcheck (generates =2Etar=2E=
+gz) =2E=2E=2E "
+-(make distcheck) 2> "$workdir/make-distcheck=2Elog" 1>&2
+-=
+if [ $? -ne 0 ]; then
+-    echo "** ERROR **  make distcheck failed=2E  See=
+ $workdir/make-distcheck=2Elog for details"
+-    exit 3;
+-fi
+-copy_files ta=
+r=2Egz "$destdir"
+-
+-echo "-- Running make dist-xz (generates =2Etar=2Exz) =
+=2E=2E=2E "
+-(make dist-xz) 2> "$workdir/make-dist-xz=2Elog" 1>&2
+-if [ $? =
+-ne 0 ]; then
+-    echo "** ERROR **  make dist-xz failed=2E  See $workdir/=
+make-dist-xz=2Elog for details"
+-    exit 3;
+-fi
+-copy_files tar=2Exz "$des=
+tdir"
+-
+-echo "-- Running make dist-zip (generates =2Ezip) =2E=2E=2E "
+-(ma=
+ke dist-zip) 2> "$workdir/make-dist-zip=2Elog" 1>&2
+-if [ $? -ne 0 ]; then
+=
+-    echo "** ERROR **  make dist-zip failed=2E  See $workdir/make-dist-zip=
+=2Elog for details"
+-    exit 3;
+-fi
+-copy_files zip "$destdir"
+-
+-# Genera=
+te SHA256 checksums
+-cd "$destdir"
+-sha256sum openvpn-*=2Etar=2E{gz,xz} ope=
+nvpn-*=2Ezip > "openvpn-$arg_tag_name=2Esha256sum"
+-
+-# Sign all the files
+=
+-echo "-- Signing files =2E=2E=2E "
+-sign_file "$arg_sign_key" "openvpn-$ar=
+g_tag_name=2Esha256sum" inline
+-sign_file "$arg_sign_key" "openvpn-*=2Etar=
+=2Egz" detached
+-sign_file "$arg_sign_key" "openvpn-*=2Etar=2Exz" detached
+=
+-sign_file "$arg_sign_key" "openvpn-*=2Ezip" detached
+-
+-# Create a tar-bun=
+dle with everything
+-echo "-- Creating final tarbundle with everything =2E=
+=2E=2E"
+-tar cf "openvpn-$arg_tag_name=2Etar" openvpn-*=2E{tar=2Egz,tar=2Ex=
+z,zip}{,=2Easc} openvpn-*=2Esha256sum=2Easc
+-
+-echo "-- Cleaning up =2E=2E=
+=2E"
+-# Save the log files
+-mkdir -p "$destdir/logs"
+-mv $workdir/*=2Elog "=
+$destdir/logs"
+-
+-# Finally, done!
+-rm -rf "$workdir"
+-echo "-- Done"
+-exit=
+ 0
 
 -- 
-T=
-o view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1849?usp=3Demail
-To=
- unsubscribe, or for help writing mail filters, visit http://gerrit=2Eopenv=
-pn=2Enet/settings?usp=3Demail
+To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1847?usp=
+=3Demail
+To unsubscribe, or for help writing mail filters, visit http://ger=
+rit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Gerrit-MessageType: newchange
-Gerrit-Project=
-: openvpn
+Gerrit-MessageType: newpatchset
+G=
+errit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I694410615958afbb422d9ead=
-71f04c1a60edc640
-Gerrit-Change-Number: 1849
-Gerrit-PatchSet: 1
-Gerrit-Owner=
-: flichtenheld <frank@lichtenheld=2Ecom>
-Gerrit-Reviewer: plaisthos <arne-o=
-penvpn@rfc2549=2Eorg>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourc=
-eforge=2Enet>
-Gerrit-Attention: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Change-Id: I10b912bad3b=
+b0b97e2b47eae20d2dd7ffb0c6879
+Gerrit-Change-Number: 1847
+Gerrit-PatchSet: 4=
 
---KtMv41LMAlA=
+Gerrit-Owner: flichtenheld <frank@lichtenheld=2Ecom>
+Gerrit-Reviewer: cron=
+2 <gert@greenie=2Emuc=2Ede>
+Gerrit-Reviewer: plaisthos <arne-openvpn@rfc254=
+9=2Eorg>
+Gerrit-Reviewer: razvanc <razvanc@mailbox=2Eorg>
+Gerrit-CC: openvp=
+n-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+
+--Xq66QUTlXIU=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos=2E </p>
-<p>flichtenheld would like plaistho=
-s to <strong>review</strong> this change=2E
-</p><p><a href=3D"http://gerrit=
-=2Eopenvpn=2Enet/c/openvpn/+/1849?usp=3Demail">View Change</a></p><pre clas=
-s=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wr=
-ap;">mbedtls: Work-around bug in mbedtls 4=2E1=2E0 and 4=2E2=2E0<br><br>Sin=
-ce the first distros have started to pick up these<br>versions before a fix=
- is released, let&#39;s make our tests<br>pass on these versions=2E<br><br>=
-A fix is merged, so it might be fixed in 4=2E3=2E0=2E But I<br>didn&#39;t w=
-ant to add that to the version check until we<br>have verified that=2E<br><=
-br>Change-Id: I694410615958afbb422d9ead71f04c1a60edc640<br>Signed-off-by: F=
-rank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt;<br>---<br>M =2Egithub/work=
-flows/build=2Eyaml<br>M src/openvpn/mbedtls_compat=2Eh<br>2 files changed, =
-13 insertions(+), 1 deletion(-)<br><br></pre><pre class=3D"blocks" style=3D=
-"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://g=
-errit=2Eopenvpn=2Enet:29418/openvpn refs/changes/49/1849/1</pre><pre style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
-git a/=2Egithub/workflows/build=2Eyaml b/=2Egithub/workflows/build=2Eyaml</=
-span><br><span>index 29e8be2a=2E=2E56dd3ed 100644</span><br><span>--- a/=2E=
-github/workflows/build=2Eyaml</span><br><span>+++ b/=2Egithub/workflows/bui=
-ld=2Eyaml</span><br><span>@@ -365,7 +365,7 @@</span><br><span>       ovpnli=
-bdesc: mbed TLS 4=2E</span><br><span>       # versioning=3Dsemver-coerced</=
-span><br><span>       ghrepo: Mbed-TLS/mbedtls</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-      gitref: v4=2E0=2E0</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+      gitref: v4=2E2=2E0</span><br><span>    =
-   libconfigure: cmake -B build -DCMAKE_INSTALL_PREFIX=3D$LIBPREFIX</span><=
-br><span>       libmake: cmake --build build</span><br><span>       libinst=
-all: sudo cmake --install build</span><br><span>diff --git a/src/openvpn/mb=
-edtls_compat=2Eh b/src/openvpn/mbedtls_compat=2Eh</span><br><span>index 507=
-39b6=2E=2E7149487 100644</span><br><span>--- a/src/openvpn/mbedtls_compat=
-=2Eh</span><br><span>+++ b/src/openvpn/mbedtls_compat=2Eh</span><br><span>@=
-@ -43,6 +43,7 @@</span><br><span> #include &quot;crypto_mbedtls_legacy=2Eh&=
-quot;</span><br><span> #else</span><br><span> #include &lt;mbedtls/oid=2Eh&=
-gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;c=
-rypto_mbedtls=2Eh&quot;</span><br><span> #endif /* MBEDTLS_VERSION_NUMBER &=
-lt; 0x04000000 */</span><br><span> </span><br><span> #ifdef HAVE_PSA_CRYPTO=
-_H</span><br><span>@@ -228,6 +229,17 @@</span><br><span> mbedtls_compat_pk_=
-check_pair(const mbedtls_pk_context *pub, const mbedtls_pk_context *prv)</s=
-pan><br><span> {</span><br><span> #if MBEDTLS_VERSION_NUMBER &gt;=3D 0x0400=
-0000</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* work aro=
-und bug in mbedtls 4=2E1=2E0 by adding missing public key information in pr=
-v</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * cf=2E https=
-://github=2Ecom/Mbed-TLS/TF-PSA-Crypto/issues/807 */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMBER &gt;=3D 0x0401=
-0000</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (prv-&gt=
-;MBEDTLS_PRIVATE(pub_raw_len) =3D=3D 0)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        ASSERT(mbed_ok(psa_export_public_key(prv-&gt;MBEDTLS_PRIVATE(=
-priv_id),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-                                   (uint8_t *)prv-&gt;MBEDTLS_PRIVATE(pub_r=
-aw),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
-                              sizeof(prv-&gt;MBEDTLS_PRIVATE(pub_raw)),</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+                       =
-                      (size_t *)&amp;prv-&gt;MBEDTLS_PRIVATE(pub_raw_len)))=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span>     ret=
-urn mbedtls_pk_check_pair(pub, prv);</span><br><span> #else</span><br><span=
->     return mbedtls_pk_check_pair(pub, prv, mbedtls_ctr_drbg_random, rand_=
-ctx_get());</span><br><span></span><br></pre><p>To view, visit <a href=3D"h=
-ttp://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1849?usp=3Demail">change 1849</a>=
-=2E To unsubscribe, or for help writing mail filters, visit <a href=3D"http=
-://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div ite=
-mscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itempro=
-p=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"=
-url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1849?usp=3Demail"/><=
-meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
+oaded patch set #4</strong> to the change originally created by flichtenhel=
+d=2E</p><p><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1847?usp=3D=
+email">View Change</a></p><p>The following approvals got outdated and were =
+removed:
+Code-Review+2 by cron2, Code-Review+2 by razvanc</p><pre class=3D"=
+blocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
+gen-release-tarballs=2Esh: Remove<br><br>This is unused (all our releases u=
+se code in openvpn-build<br>repository instead) and of doubtful use=2E E=2E=
+g=2E why would we<br>need three different tarballs for releases?<br><br>It =
+also has small issues like using a /bin/sh shebang but<br>containing bashis=
+ms=2E<br><br>So get rid of the dead code=2E<br><br>Change-Id: I10b912bad3bb=
+0b97e2b47eae20d2dd7ffb0c6879<br>Signed-off-by: Frank Lichtenheld &lt;frank@=
+lichtenheld=2Ecom&gt;<br>Acked-by: Gert Doering &lt;gert@greenie=2Emuc=2Ede=
+&gt;<br>Gerrit URL: https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1847<br>Mess=
+age-Id: &lt;20260819132652=2E24207-1-gert@greenie=2Emuc=2Ede&gt;<br>URL: ht=
+tps://www=2Email-archive=2Ecom/openvpn-devel@lists=2Esourceforge=2Enet/msg3=
+8509=2Ehtml<br>Signed-off-by: Gert Doering &lt;gert@greenie=2Emuc=2Ede&gt;<=
+br>---<br>D dev-tools/gen-release-tarballs=2Esh<br>1 file changed, 0 insert=
+ions(+), 246 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-=
+family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=
+=2Eopenvpn=2Enet:29418/openvpn refs/changes/47/1847/4</pre><pre style=3D"fo=
+nt-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/=
+dev-tools/gen-release-tarballs=2Esh b/dev-tools/gen-release-tarballs=2Esh</=
+span><br><span>deleted file mode 100755</span><br><span>index 6071b57=2E=2E=
+0000000</span><br><span>--- a/dev-tools/gen-release-tarballs=2Esh</span><br=
+><span>+++ /dev/null</span><br><span>@@ -1,246 +0,0 @@</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-#!/bin/sh</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-# gen-release-tarballs=2Esh  -  Generates release tarb=
+alls with signatures</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# Copyright (C) 2017-=
+2026 - David Sommerseth &lt;davids@openvpn=2Enet&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-# This program is free software; you can redistribute it and/or=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# modify it under the=
+ terms of the GNU General Public License</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-# as published by the Free Software Foundation; either v=
+ersion 2</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# of the Lice=
+nse=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-# This program is distributed in th=
+e hope that it will be useful,</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-# but WITHOUT ANY WARRANTY; without even the implied warranty of</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-# MERCHANTABILITY or FI=
+TNESS FOR A PARTICULAR PURPOSE=2E  See the</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-# GNU General Public License for more details=2E</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-#</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-# You should have received a copy of the GNU Ge=
+neral Public License</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
+ along with this program; if not, see &lt;https://www=2Egnu=2Eorg/licenses/=
+&gt;=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-set -u</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-if [ $# -ne 4 ]; then</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    echo &quot;Usage: $0 &lt;remote-name&gt; &lt;tag-name&gt; &lt;sign=
+-key&gt; &lt;dest-dir&gt;&quot;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    echo &quot;&quot;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    echo &quot;   remote-name  -- valid remotes: `git remote | tr=
+ \\\n &#39; &#39;`&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    echo &quot;   tag-name     -- An existing release tag&quot;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    echo &quot;   sign-key    =
+ -- PGP key used to sign all files&quot;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    echo &quot;   dest-dir     -- Where to put the compl=
+ete set of release tarballs&quot;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    echo &quot;&quot;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    echo &quot;   Example: $0 origin v2=2E4=2E2 /tmp/openvpn-re=
+lease&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    echo</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    exit 1</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-fi</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-arg_remote_name=3D&quot;$1&quot;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-arg_tag_name=3D&quot;$2&quot;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-arg_sign_key=3D&quot;$3&quot;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-arg_dest_dir=3D&quot;$4&quot;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-#</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# San=
+ity checks</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-# Check that the tag exists</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-git tag | grep &quot;$arg_tag_name&quot; 1&gt;=
+/dev/null</span><br><span style=3D"color: hsl(0, 100%, 40%);">-if [ $? -ne =
+0 ]; then</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    echo &qu=
+ot;** ERROR **  The tag &#39;$arg_tag_name&#39; does not exist&quot;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    exit 2</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-fi</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# Ex=
+tract the git URL</span><br><span style=3D"color: hsl(0, 100%, 40%);">-gitu=
+rl=3D&quot;`git remote get-url $arg_remote_name 2&gt;/dev/null`&quot;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-if [ $? -ne 0 ]; then</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    echo &quot;** ERROR ** =
+Invalid git remote name: $arg_remote_name&quot;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    exit 2</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-fi</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-# Check we have the neede=
+d signing key</span><br><span style=3D"color: hsl(0, 100%, 40%);">-echo &qu=
+ot;test&quot; | gpg -a --clearsign -u &quot;$arg_sign_key&quot; 2&gt;/dev/n=
+ull 1&gt;/dev/null</span><br><span style=3D"color: hsl(0, 100%, 40%);">-if =
+[ $? -ne 0 ]; then</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ echo &quot;** ERROR ** Failed when testing the PGP signing=2E  Wrong signi=
+ng key?&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    exit=
+ 2;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-fi</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-# Helper functions</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-#</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-get_filename()</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    local wildcard=
+=3D&quot;$1&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    res=3D&quot;`find =2E=
+ -maxdepth 1 -type f -name \&quot;$wildcard\&quot; | head -n1 | cut -d/ -f2=
+-`&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if [ $? -=
+ne 0 ]; then</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        e=
+cho &quot;-- &#39;find&#39; failed=2E&quot;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-        exit 5</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    fi</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    if [ -z &quot;$res&quot; ]; then</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-        echo &quot;-- Could not find a file with the wildcar=
+d: $wildcard&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     exit 4</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    fi</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    echo &quot;$res&quot;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-copy_files()</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    local fileex=
+t=3D&quot;$1&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ local dest=3D&quot;$2&quot;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    file=3D&qu=
+ot;`get_filename openvpn-*=2E*=2E*=2E$fileext`&quot;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    if [ -z &quot;$file&quot; ]; then</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        echo &quot;** ERROR=
+ Failed to find source file&quot;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-        exit 5</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    fi</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    echo &=
+quot;-- Copying $file&quot;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    cp &quot;$file&quot; &quot;$dest&quot;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    if [ $? -ne 0 ]; then</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        echo &quot;** ERROR ** Failed to co=
+py $file to $destdir&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-        exit 3;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   fi</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-sign_file()</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    local si=
+gnkey=3D&quot;$1&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    local srchfile=3D&quot;$2&quot;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    local signtype=3D&quot;$3&quot;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    local file=3D&quot;`get_filename $srchfile=
+`&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    echo &quot;-- Signing $file =2E=
+=2E=2E&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    case =
+&quot;$signtype&quot; in</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-        inline)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+         # Have the signature in the same file as the data</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-            gpg -a --clearsign -u &quo=
+t;$signkey&quot; &quot;$file&quot; 2&gt;/dev/null</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-            res=3D$?</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-            if [ $res -eq 0 ]; then</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-                rm -f &quot;$file&=
+quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            fi</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-            ;;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-        detached)</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-            # Have the signature in a separate file</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-            gpg -a --deta=
+ch-sign -u &quot;$signkey&quot; &quot;$file&quot; 2&gt;/dev/null</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-            res=3D$?</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-            ;;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        *)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-            echo &quot;** ERROR **  Unknown signing type \&quot;$signtyp=
+e\&quot;=2E&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+        exit 4;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    es=
+ac</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    if [ $res -ne 0 ]; then</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-        echo &quot;** ERROR **  Fa=
+iled to sign the file $PWD/$file&quot;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-        exit 4;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    fi</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-#</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# Prepara=
+tions</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-# Create the destination directory, using a sub-dir with =
+the tag-name</span><br><span style=3D"color: hsl(0, 100%, 40%);">-destdir=
+=3D&quot;&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-case &=
+quot;$arg_dest_dir&quot; in</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    /*) # Absolute path</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-        destdir=3D&quot;$arg_dest_dir/$arg_tag_name&quot;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-        ;;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    *)  # Make absolute path from relative=
+ path</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        destdir=
+=3D&quot;$PWD/$arg_dest_dir/$arg_tag_name&quot;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-        ;;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-esac</span><br><span style=3D"color: hsl(0, 100%, 40%);">-ec=
+ho &quot;-- Destination directory: $destdir&quot;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-if [ -e &quot;$destdir&quot; ]; then</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    echo &quot;** ERROR ** Desti=
+nation directory already exists=2E  &quot;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    echo &quot;            Please check your command l=
+ine carefully=2E&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    exit 2</span><br><span style=3D"color: hsl(0, 100%, 40%);">-fi</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-mkdir -p &quot;$destdir&quot;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-if [ $? -ne 0 ]; then</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    echo &quot;** ERROR ** Failed to creat=
+e destination directory&quot;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    exit 2</span><br><span style=3D"color: hsl(0, 100%, 40%);">-fi<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-# Start the release process</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-#</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-# Clone the remote repo=
+sitory</span><br><span style=3D"color: hsl(0, 100%, 40%);">-workdir=3D&quot=
+;`mktemp -d -p /var/tmp openvpn-build-release-XXXXXX`&quot;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-cd $workdir</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-echo &quot;-- Working directory: $workdir&quot;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-echo &quot;-- git clo=
+ne $giturl&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-git c=
+lone $giturl openvpn-gen-tarball 2&gt; &quot;$workdir/git-clone=2Elog&quot;=
+ 1&gt;&amp;2</span><br><span style=3D"color: hsl(0, 100%, 40%);">-if [ $? -=
+ne 0 ]; then</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    echo =
+&quot;** ERROR **  git clone failed=2E  See $workdir/git-clone=2Elog for de=
+tails&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    exit 3=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-fi</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-cd openvpn-gen-tarball</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-# Check out the proper release tag</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-echo &quot;-- Checking out tag $arg_tag_name =
+=2E=2E=2E &quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-git c=
+heckout -b mkrelease &quot;$arg_tag_name&quot; 2&gt; &quot;$workdir/git-che=
+ckout-tag=2Elog&quot; 1&gt;&amp;2</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-if [ $? -ne 0 ]; then</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    echo &quot;** ERROR **  git checkout failed=2E  See $workdi=
+r/git-checkout-tag=2Elog for details&quot;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    exit 3;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-fi</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-# Prepare the source tree</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-echo &quot;-- Running aut=
+oreconf + a simple configure =2E=2E=2E &quot;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-(autoreconf -vi &amp;&amp; =2E/configure) 2&gt; &qu=
+ot;$workdir/autotools-prep=2Elog&quot; 1&gt;&amp;2</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-if [ $? -ne 0 ]; then</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    echo &quot;** ERROR **  Failed running aut=
+otools=2E  See $workdir/autotools-prep=2Elog for details&quot;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    exit 3;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-fi</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# Genera=
+te the tar/zip files</span><br><span style=3D"color: hsl(0, 100%, 40%);">-e=
+cho &quot;-- Running make distcheck (generates =2Etar=2Egz) =2E=2E=2E &quot=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-(make distcheck) 2&g=
+t; &quot;$workdir/make-distcheck=2Elog&quot; 1&gt;&amp;2</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-if [ $? -ne 0 ]; then</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    echo &quot;** ERROR **  make distche=
+ck failed=2E  See $workdir/make-distcheck=2Elog for details&quot;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    exit 3;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-fi</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-copy_files tar=2Egz &quot;$destdir&quot;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-echo &quot;-- Running make dist-xz (generates =2Etar=2Exz) =2E=
+=2E=2E &quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-(make di=
+st-xz) 2&gt; &quot;$workdir/make-dist-xz=2Elog&quot; 1&gt;&amp;2</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-if [ $? -ne 0 ]; then</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    echo &quot;** ERROR **  make=
+ dist-xz failed=2E  See $workdir/make-dist-xz=2Elog for details&quot;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    exit 3;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-fi</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-copy_files tar=2Exz &quot;$destdir&quot;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-echo &quot;-- Running make dist-zip (generates =2Ezip) =2E=
+=2E=2E &quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-(make di=
+st-zip) 2&gt; &quot;$workdir/make-dist-zip=2Elog&quot; 1&gt;&amp;2</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-if [ $? -ne 0 ]; then</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    echo &quot;** ERROR **  ma=
+ke dist-zip failed=2E  See $workdir/make-dist-zip=2Elog for details&quot;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    exit 3;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-fi</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-copy_files zip &quot;$destdir&quot;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-# Generate SHA256 checksums</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-cd &quot;$destdir&quot;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-sha256sum openvpn-*=2Etar=2E{gz,xz} openvpn-*=2Ezip=
+ &gt; &quot;openvpn-$arg_tag_name=2Esha256sum&quot;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-# Sign all the files</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-echo &quot;-- Signing files =2E=2E=2E &quot;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-sign_file &quot;$arg_sign_key&quot; &quot;=
+openvpn-$arg_tag_name=2Esha256sum&quot; inline</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-sign_file &quot;$arg_sign_key&quot; &quot;openvpn-=
+*=2Etar=2Egz&quot; detached</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-sign_file &quot;$arg_sign_key&quot; &quot;openvpn-*=2Etar=2Exz&quot; =
+detached</span><br><span style=3D"color: hsl(0, 100%, 40%);">-sign_file &qu=
+ot;$arg_sign_key&quot; &quot;openvpn-*=2Ezip&quot; detached</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-# Create a tar-bundle with everything</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-echo &quot;-- Creating final tarbundle wit=
+h everything =2E=2E=2E&quot;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-tar cf &quot;openvpn-$arg_tag_name=2Etar&quot; openvpn-*=2E{tar=2Egz=
+,tar=2Exz,zip}{,=2Easc} openvpn-*=2Esha256sum=2Easc</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-echo &quot;-- Cleaning up =2E=2E=2E&quot;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-# Save the log files</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-mkdir -p &quot;$destdir/logs&quot;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-mv $workdir/*=2Elog &quot;$des=
+tdir/logs&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-# Finally, done!</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-rm -rf &quot;$workdir&quot;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-echo &quot;-- Done&quot;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-exit 0</span><br><span>=
+</span><br></pre><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet=
+/c/openvpn/+/1847?usp=3Demail">change 1847</a>=2E To unsubscribe, or for he=
+lp writing mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/set=
+tings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://sch=
+ema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http=
+://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=2E=
+openvpn=2Enet/c/openvpn/+/1847?usp=3Demail"/><meta itemprop=3D"name" conten=
+t=3D"View Change"/></div></div>
 
-<div style=3D=
-"display:none"> Gerrit-MessageType: newchange </div>
-<div style=3D"display:=
-none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-B=
-ranch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I694410=
-615958afbb422d9ead71f04c1a60edc640 </div>
+<div style=3D"display:none"> Gerrit-Messag=
+eType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Project: open=
+vpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div s=
+tyle=3D"display:none"> Gerrit-Change-Id: I10b912bad3bb0b97e2b47eae20d2dd7ff=
+b0c6879 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1847 </di=
+v>
+<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"dis=
+play:none"> Gerrit-Owner: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; </di=
+v>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@greenie=2Em=
+uc=2Ede&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos =
+&lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
 <div style=3D"display:none"> Gerr=
-it-Change-Number: 1849 </div>
-<div style=3D"display:none"> Gerrit-PatchSet:=
- 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank=
-@lichtenheld=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer:=
- plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:=
-none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;ar=
-ne-openvpn@rfc2549=2Eorg&gt; </div>
+it-Reviewer: razvanc &lt;razvanc@mailbox=2Eorg&gt; </div>
+<div style=3D"dis=
+play:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=
+=2Enet&gt; </div>
 
 </body></html>
---KtMv41LMAlA=--
+--Xq66QUTlXIU=--
 
 
---===============8650388615611159544==
+--===============2738963899669880831==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============8650388615611159544==
+--===============2738963899669880831==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -412,5 +952,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============8650388615611159544==--
+--===============2738963899669880831==--
 
