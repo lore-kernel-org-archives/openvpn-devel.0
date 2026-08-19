@@ -4,126 +4,126 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E08C2C5DF81
-	for <openvpn-devel@archiver.kernel.org>; Wed, 19 Aug 2026 14:40:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id EAF72C5B572
+	for <openvpn-devel@archiver.kernel.org>; Wed, 19 Aug 2026 15:07:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:Message-ID:References:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
-	List-Owner; bh=DboWEfr78/PpVAtigmsMnZH2g8udcCXIM7auu7PfYvM=; b=ggUgC1NwtuFE00
-	Bqu2H/dKueZWmT6LwEPYD5DFUaQ8/RAUowCo/4aEpogH+0Pq67mpmWgBuAyVNWkz2cNv9FH1N7ik7
-	vzgKRPWUSOW5LNVCIYNy9kVx/UMyd9cLpgRk8Njq1UPmSaXtdkzJRfh1Sn7+yv0seH1qEUw+oOE7Q
-	mmE=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	List-Owner; bh=Ip4RKqYguWmkSMr9Xq9uBrAjQxZe6oF16QdZm89/jL4=; b=SJh34IyNykNSTp
+	M2pC9bf1mTh7B6LAx5HjtRrpo/aO42Mu2rPXsT8xVvcFL2MXZ1YBvuceH/SisV608I0Ggd60VhXzk
+	tEwAv7k0232fs2uRB9w8RQnQJbjgJpHIfM6sLcAAacXKzYsW5YVr1cJXk4NAJpca2ckHvDoXNJUIA
+	hwY=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wwhSz-0007Gs-Vt;
-	Wed, 19 Aug 2026 14:40:34 +0000
+	id 1wwhsc-0005JW-Jb;
+	Wed, 19 Aug 2026 15:07:03 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wwhSj-0007FV-AB
+ (envelope-from <gerrit@openvpn.net>) id 1wwhsb-0005JQ-FV
  for openvpn-devel@lists.sourceforge.net;
- Wed, 19 Aug 2026 14:40:18 +0000
+ Wed, 19 Aug 2026 15:07:02 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:
  From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From:
  Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=OvFewRkfgjWqNqSJjnZRh33AgLZeLdPthqQ6rpmLjBU=; b=TEz9Pqb/LNNxRNpxjN7OyMGNDj
- uXYbT8HlxzV5zyU9j1H48hEkYdID/RZfGhVswDpH1NTjqubvHhLOJZXStYzcGb3sBwtiMal2HYvCk
- Wa4evxw0STJttG8scycQNfwcFgbmSR905TGjqN3OffFRuW5KfQWckfJXPf0XblnApINg=;
+ bh=0eLkPEN+u7bBZywGkUC9AfuvLbEnQGS1Pc2pAC4zB5M=; b=eH/2XSoO2fDCz2OVGUbFWt8kSo
+ HF36C9WFBkpnBrObT+Ahzs2agEyNKsb6iaD3sWWxcvISmGccKm4v2rMXdGIxM5MNquYoZFee8GbIV
+ MDKOP4DVRUmoHBMdYw4dnpduf6FqFlRaT+QcZKdgRPYl2TUhRayi1xBfGoiXXzFBt3e0=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
  Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:From:Sender:Content-ID
  :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
  Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=OvFewRkfgjWqNqSJjnZRh33AgLZeLdPthqQ6rpmLjBU=; b=a
- tRs+ljYB96rk7650OhScNSzdQVAh5XuCyrP05Yz+4yxKiFpq9DNgsEdsQyIlT3/i4VFN4OP0eKQhi
- 9cXgX7pV4tRjWEUaCWY6eNn/UG9/Y+M+kMSurMZacXXL1RyPvWqc6YnQB0nsIqU2tkEYdilyO3PYg
- Hv/lfjR/GxlgD7vo=;
-Received: from mail-wm1-f51.google.com ([209.85.128.51])
+ List-Owner:List-Archive; bh=0eLkPEN+u7bBZywGkUC9AfuvLbEnQGS1Pc2pAC4zB5M=; b=i
+ yL+eQoTWJO4S2YydvhOKrHpYQrW0NZgpYx4BgFI6LuzJM8GWBNCB3MLX2x011tVTaDBNED17NAiw+
+ 5VekH07intmrC4hEQo2LuTtfY7q4o+vYmiM6UAmyQxkV3vomZqAOLRK60H/HeAcym/GZ9Wi2wROcp
+ cwIDOyQZybolK3xo=;
+Received: from mail-lf1-f49.google.com ([209.85.167.49])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wwhSi-0004TC-3q for openvpn-devel@lists.sourceforge.net;
- Wed, 19 Aug 2026 14:40:18 +0000
-Received: by mail-wm1-f51.google.com with SMTP id
- 5b1f17b1804b1-49558ce01afso9330665e9.1
+ id 1wwhsa-0005wd-Hx for openvpn-devel@lists.sourceforge.net;
+ Wed, 19 Aug 2026 15:07:02 +0000
+Received: by mail-lf1-f49.google.com with SMTP id
+ 2adb3069b0e04-5b021916bd3so1720785e87.3
  for <openvpn-devel@lists.sourceforge.net>;
- Wed, 19 Aug 2026 07:40:16 -0700 (PDT)
+ Wed, 19 Aug 2026 08:07:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1787150409; x=1787755209; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1787152014; x=1787756814; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
  :to:date:from:from:to:cc:subject:date:message-id:reply-to
- :content-type; bh=OvFewRkfgjWqNqSJjnZRh33AgLZeLdPthqQ6rpmLjBU=;
- b=Z9PiIQ3m7nU2U5u7ffNPoZ8gyD3JIbt0iqoYbsueAQ8XMZ9tGv2S9sYq5X7apFiI8S
- qVblN55/4E7EgdWf4Sinb4cerb0I7J3GJfZBWKRjYtyesFqIk4QeFpuezz+Z+r36fBXK
- OHs2NAbJulcg6xeDZ35TU69WaGlPjRYJTilzj5mZGVLSj6jq+r61D6TMNoiGNWrszS6h
- A+P1YqzqRLa/BINfSGmtoDhJjOJ8qMo5aZuUJJYYl9UioK7lllj/KCK1RVDiDGIwq/qD
- jmo9WnybFQOOccjfUwLjSsKptoXBZNjr5BCVw9sxS4JSqxknYT2mZ9Vq6qhSrAZAVjE8
- nr3g==
+ :content-type; bh=0eLkPEN+u7bBZywGkUC9AfuvLbEnQGS1Pc2pAC4zB5M=;
+ b=DS84hHvLixro39CKGc4tvwczNfTv6WybLtit3tTVp81feC2JCZHD4e8RfCrY+6VHn7
+ V+rLpMZBFrwBfAoLPYm+5tZevM8kbD8VE/CXoyiZmOZCLYqGpRwWYuBQSBSERZs+pIcY
+ XmZA604Qya2vCB35VZOTJnSdSJZQkSre1jocLUHslIy+ItKFAd6eOLk6QoQHcof3JKkK
+ xAKKrOREi+ZnMTdKz7CtvnwxLsNSscs9IN3vCjX2sSXJ3HCO1cZMf93M+ew9ad5HPHP0
+ G4MCPq3I7+XCY1nimxqZfNGGmvT9uY8XOfCDM+PNGd8u6pMVYFmOoFhv0q06qJY97jrt
+ zJOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1787150409; x=1787755209;
+ d=1e100.net; s=20251104; t=1787152014; x=1787756814;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
  :to:date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
  :message-id:reply-to:content-type;
- bh=OvFewRkfgjWqNqSJjnZRh33AgLZeLdPthqQ6rpmLjBU=;
- b=RQ4BkRUcNMTynPgsnXcebmmtaNV/+LAKi8yCLItrR+9sSTJ8YyvQ8sxOlbnm06nte6
- 4eE3IVmo12HWcQmxBK9ddz9T0NZ2UZSbP7twZXmieUMffmCxgHfZlMR0/zgR4P8lq/TL
- x6TxIVujs58pkLlSdbNFyxl1X4nEfHEwE/rxhz4olHyApoXn0SYlcydnWKue4ZpCZgf0
- KjJpFq/VaQzYwMgDCCnrKW1Jh4rhwrnMTOceExjBULizDj/qTBnUWGG90JrRv04k7JEd
- 0+X2Tit1uKT7mOxzQF3D7AghzHSSy2V4fB/Mz+vVnYxbgjF/Y+eJ+EXTgDFa3Xu3R4uP
- FDSw==
-X-Gm-Message-State: AOJu0YzecQvUewOzVUkCt5vYzZaDsvD3UnzIu4BPD19CQtJkZT1vpwhG
- wJ3qc+xS5qZ3SK3FYHH3kOiRHVm7uh7C9hfU7ncMmI1HKiHLYEoPZ0u3Yy9nBR2dibBDwaCH9bQ
- OaGcs4sJyOCfH0Lqg1j1OdO04MCGNylW8oiw2Ju4B2N0Rt7/mBkjozLFFXsIhGiSOuYO7fT4KMU
- LWWaLjZQ==
-X-Gm-Gg: AR+sD11mS6evoLwc7Udep/2CRnPTNwA80HFJp5sme+QSN8yAQecW48Z+NBwQUMQtEiZ
- lN63L4u65Qp3ScpR+DDlESJSAW/xJh+EwjCLRX4nPtPqL7J+BhhS+zvlJpdav7otApYgRW4Oq+V
- YCRhUEFv53NCrHFi61DuBdSanL7gK7VUXg0zNvHic/oJL+BIgB15eoxzorWHN+GrB0/BAEsz67p
- p0IMYmSiy2zTz/svG8RAA4dZl9mokQSW5ECJrd1HSA4iGyc4yxxtNq4Ki6HyYWlO7jLGZPyEuOf
- k6zEM135xBH3V+cTwqDUclVRTKoyorv9cY6z+9TrN6/hxfCPXwxlQFC4i5Ib7/7XwnWIhJa1CiB
- pqMETnbDKpd0yGlxBJSQctsX/XEVrku0pf1CxwtlGrqbQP4BstwEGvw2nnQ8nibLYCUCUQFTC9D
- +W3uU+1L9KkUhLg1jg29gQ+TyVsd9ugkXRqRv8FWeJmEGJIn8zmD3XcwB2ekC6SvCBayHmPEEEZ
- TIKm0tV/aCetokW330ph7q/mTa8dk0H6Vh0soffYlnShBlR+jOJL59jIFVkT8QOoB4iw0acE1EP
- u494ocwfpaMCrjwSWfUsNnjWCBt7toTiOsYele0qp740PBOfpa4uBhNy5iQ0u7A=
-X-Received: by 2002:a05:600c:4ec9:b0:495:4d5c:903e with SMTP id
- 5b1f17b1804b1-499aa167256mr91273215e9.7.1787150409257; 
- Wed, 19 Aug 2026 07:40:09 -0700 (PDT)
+ bh=0eLkPEN+u7bBZywGkUC9AfuvLbEnQGS1Pc2pAC4zB5M=;
+ b=AS+Xn+zyoxNky4NWvrFEOv6gySIwMQAUj5rTO0O695k/MNa4fW40U1dOGOxnFHZTsh
+ EDl7kbHdf4YCwUXKhvX3KpBqzCPqYulhMS9lTszGxi1vKkj2yQc9KXTiU+hGU4kr+zXT
+ 3kT3rqDcMnzq5BvPxNl+S4ApGMAntszyCmAO3Hwx5CaQoB4oTuHlJF0J9v1KSoX1annD
+ 12ZGl0oAbvOTYhLZtnef73BPrH+V5S1t/niW6qtngOnp7g+2WD1lHpJddCRnR75F50U/
+ EsKlM+7kPR18uBRS83aw2hWKmfz8TVxvEoxWsXSmtP7y0Iq9wId0o/mbjQCsHIlIptBr
+ pkIw==
+X-Gm-Message-State: AOJu0YxEz0i0vug8qnhCRqDmaDfNMqx1ejf5fT0VvEg6eOvsbsdv6Xh3
+ SfiObpsWCldlV8J1dgUMFbkCC8/G4AXR4zkpvpOEzuZOaJBrDI7lvIkYZIO+AnaunYCdH277bL/
+ JD0dBnBp7Flr/bB82VsbhxIYhFfzlDiWUp5NobN74E4YkJ9Gw3q+YmzKKrQl9XD1jRDSbe+08ZA
+ Vg0aXfzg==
+X-Gm-Gg: AR+sD13A2Wi2UgEZPCSUOt5r82rsCRFXwT7ClKLaolCKUIjI3/7zJlQpJt3UoDQi3DA
+ qIIWYtzz5EsZHkgYWzhN/Cbhf8rZ43KTRZYdBYVPPYRilnglzuUae6QlEAJDWQbgye2Np/zerQm
+ O6ENgSLoFjjNjn6vGWvLLUmXf/WpDeA5MkuVL4XWCqWRURJn+r3/bSXW+6BCoZJHUMKdrN7Uloo
+ mO83DB2i1fN18pk+EhzigxGtxkXgDPgEFNM0WcH7Vq//WXQwOqkArDl2XLeOAjRaiT4UGxpPhfu
+ qopJ6MI4XTWB7nJnGvxuPupj1wP1y7ZWnqc8g14e2eKeMB84XS9frn4Uz1toVT6eNB86Lf88dKs
+ GoMlzq7hVIrUsGREofm6B3Z7P+zoLNnNYo6pbHGXY6NKaeVMNcf8+g0Qh1ipRrCvYEq8J0I5/X6
+ sWFSlP+5/3jSaW5q8C2iV6SgyUtVup7zdu7kvxZcbsNBHkBQYy+l8GtKvY+E/FWDVT08i9fR7j2
+ tNpyx0u470xjh5/urT+3nIhnwmWhPIHUKPyOKTcVNRVSmqC4dObPAdzSf6ty/XQdX3V6ZNcuAbt
+ k38Tl24x3pO+/KIy/EFdOaR2ZBmdLPTMov7eVN/vyQhQGhMEXHO/fLjs0/9Vyg==
+X-Received: by 2002:a05:600c:6211:b0:499:a760:722f with SMTP id
+ 5b1f17b1804b1-499aa1ba0b7mr101911375e9.13.1787150250612; 
+ Wed, 19 Aug 2026 07:37:30 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-499aa09b199sm58153545e9.0.2026.08.19.07.40.08
+ 5b1f17b1804b1-499a9dff4c1sm45929285e9.3.2026.08.19.07.37.30
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 19 Aug 2026 07:40:08 -0700 (PDT)
-X-Google-Original-From: "razvanc (Code Review)"
+ Wed, 19 Aug 2026 07:37:30 -0700 (PDT)
+X-Google-Original-From: "flichtenheld (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Wed, 19 Aug 2026 14:40:08 +0000
+Date: Wed, 19 Aug 2026 14:37:29 +0000
 To: plaisthos <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newchange
 X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: I57b4122b292f643ddedd91e81bf95fe2f5b2e03a
-X-Gerrit-Change-Number: 1850
+X-Gerrit-Change-Id: I694410615958afbb422d9ead71f04c1a60edc640
+X-Gerrit-Change-Number: 1849
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1850?usp=email>
-X-Gerrit-Commit: a9543c4fe3e3411894b6e65fa4291211337b4d98
-References: <gerrit.1787150406000.I57b4122b292f643ddedd91e81bf95fe2f5b2e03a@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzg3MTUwNDA2MDAwLkk1N2I0MTIyYjI5MmY2NDNkZGVkZDkxZTgxYmY5NWZlMmY1YjJlMDNhQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <97d9a2ce88f702c3356968c3d03598498d38d61f-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1849?usp=email>
+X-Gerrit-Commit: 63603d64043f4ffc0761d964988ccddc36772709
+References: <gerrit.1787150248000.I694410615958afbb422d9ead71f04c1a60edc640@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzg3MTUwMjQ4MDAwLkk2OTQ0MTA2MTU5NThhZmJiNDIyZDllYWQ3MWYwNGMxYTYwZWRjNjQwQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <12a5dc04530e58d3f3680413144470a5e30c2e87-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wwhSi-0004TC-3q
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: doc: Update doxygen
- references to removed tunnel_server_{udp, tcp}()
+X-Headers-End: 1wwhsa-0005wd-Hx
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: mbedtls: Work-around
+ bug in mbedtls 4.1.0 and 4.2.0
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -135,21 +135,21 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "razvanc \(Code Review\) via Openvpn-devel"
+From: "flichtenheld \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
-Reply-To: razvanc@mailbox.org, arne-openvpn@rfc2549.org,
+Reply-To: frank@lichtenheld.com, arne-openvpn@rfc2549.org,
  openvpn-devel@lists.sourceforge.net
-Cc: "razvanc \(Code Review\)" <gerrit@openvpn.net>,
+Cc: "flichtenheld \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============3676578867771651808=="
+Content-Type: multipart/mixed; boundary="===============8650388615611159544=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============3676578867771651808==
+--===============8650388615611159544==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="dgvJYrhNpv8="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="KtMv41LMAlA="; charset=UTF-8
 
---dgvJYrhNpv8=
+--KtMv41LMAlA=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
@@ -162,305 +162,246 @@ ike you to do a code review=2E
 Please visit
 
     http://gerrit=2Eopenvpn=2E=
-net/c/openvpn/+/1850?usp=3Demail
+net/c/openvpn/+/1849?usp=3Demail
 
 to review the following change=2E
 
 
 Chang=
-e subject: doc: Update doxygen references to removed tunnel_server_{udp,tcp=
-}()
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+e subject: mbedtls: Work-around bug in mbedtls 4=2E1=2E0 and 4=2E2=2E0
+=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-doc: Up=
-date doxygen references to removed tunnel_server_{udp,tcp}()
+mbedtls: Work-ar=
+ound bug in mbedtls 4=2E1=2E0 and 4=2E2=2E0
 
-The point-to-=
-multipoint server event loop is no longer split into
-protocol-specific tunn=
-el_server_udp() and tunnel_server_tcp()
-functions; tunnel_server() now hand=
-les both UDP and TCP=2E
+Since the first distros have s=
+tarted to pick up these
+versions before a fix is released, let's make our t=
+ests
+pass on these versions=2E
 
-Update the Doxygen module documentation accordingl=
-y: list
-tunnel_server() as the server-mode event loop implementation, and
-r=
-ewrite the server-mode startup, initialization and cleanup sections
-so that=
- they describe tunnel_server() instead of the removed
-functions=2E
+A fix is merged, so it might be fixed in 4=
+=2E3=2E0=2E But I
+didn't want to add that to the version check until we
+hav=
+e verified that=2E
 
-Documen=
-tation only, no functional change=2E
-
-Change-Id: I57b4122b292f643ddedd91e81=
-bf95fe2f5b2e03a
-Signed-off-by: Razvan Cojocaru <razvanc@mailbox=2Eorg>
+Change-Id: I694410615958afbb422d9ead71f04c1a60edc640
+Si=
+gned-off-by: Frank Lichtenheld <frank@lichtenheld=2Ecom>
 ---
+M =2Egithub/wo=
+rkflows/build=2Eyaml
+M src/openvpn/mbedtls_compat=2Eh
+2 files changed, 13 i=
+nsertions(+), 1 deletion(-)
+
+
+
+  git pull ssh://gerrit=2Eopenvpn=2Enet:2941=
+8/openvpn refs/changes/49/1849/1
+
+diff --git a/=2Egithub/workflows/build=2E=
+yaml b/=2Egithub/workflows/build=2Eyaml
+index 29e8be2a=2E=2E56dd3ed 100644
 =
-M doc/doxygen/doc_eventloop=2Eh
-M doc/doxygen/doc_tunnel_state=2Eh
-2 files =
-changed, 11 insertions(+), 14 deletions(-)
-
-
-
-  git pull ssh://gerrit=2Eope=
-nvpn=2Enet:29418/openvpn refs/changes/50/1850/1
-
-diff --git a/doc/doxygen/d=
-oc_eventloop=2Eh b/doc/doxygen/doc_eventloop=2Eh
-index 55ecd73=2E=2E4c1b012=
- 100644
---- a/doc/doxygen/doc_eventloop=2Eh
-+++ b/doc/doxygen/doc_eventloop=
-=2Eh
-@@ -60,6 +60,5 @@
-  * event loop function is called to drive the event=
- processing=2E  The
-  * following implementations are available:
-  * - Clie=
-nt mode using UDP or TCP: \c tunnel_point_to_point()
-- * - Server mode usin=
-g UDP: \c tunnel_server_udp()
-- * - Server mode using TCP: \c tunnel_server=
-_tcp()
-+ * - Server mode using UDP or TCP: \c tunnel_server()
-  */
-diff --g=
-it a/doc/doxygen/doc_tunnel_state=2Eh b/doc/doxygen/doc_tunnel_state=2Eh
-in=
-dex 296e804=2E=2E424f81e 100644
---- a/doc/doxygen/doc_tunnel_state=2Eh
-+++ =
-b/doc/doxygen/doc_tunnel_state=2Eh
-@@ -117,10 +117,10 @@
-  * tunnel_point_t=
-o_point() or \c tunnel_server()=2E
-  *
-  * In server-mode, \c main() calls =
-the \c tunnel_server() function, which
-- * transfers control to \c tunnel_s=
-erver_udp() or \c
-- * tunnel_server_tcp() depending on the external transpo=
-rt protocol=2E
-+ * drives the event loop for both the UDP and TCP external =
-transport
-+ * protocols=2E
-  *
-- * These functions receive the \c context c=
-reated in \c main()=2E  This
-+ * This function receives the \c context crea=
-ted in \c main()=2E  This
-  * object has a special status in server-mode, a=
-s it does not represent an
-  * active VPN tunnel, but does contain process-=
-wide configuration
-  * parameters=2E  In the source code, it is often store=
-d in "top" variables=2E
-@@ -130,11 +130,10 @@
-  * CM_CHILD_UDP or \c CM_CHI=
-LD_TCP, depending on the external transport
-  * protocol=2E
-  *
-- * Both \c=
- tunnel_server_udp_single_threaded() and \c tunnel_server_tcp()
-- * perform=
- similar initialization=2E  In either case, a \c multi_context
-- * structur=
-e is created, and it is initialized according to the
-- * configuration stor=
-ed in the top \c context by the \c multi_init() and
-- * \c multi_top_init()=
- functions=2E
-+ * During initialization, \c tunnel_server() creates a \c mu=
-lti_context
-+ * structure, which is initialized according to the configurat=
-ion stored
-+ * in the top \c context by the \c multi_init() and \c multi_to=
-p_init()
-+ * functions=2E
-  *
-  * @subsection tunnel_state_server_tunnels C=
-reating and destroying VPN tunnels
-  *
-@@ -146,8 +145,7 @@
-  *
-  * @subsect=
-ion tunnel_state_server_cleanup Final cleanup
-  *
-- * After the main event =
-loop exits, both \c
-- * tunnel_server_udp_single_threaded() and \c tunnel_s=
-erver_tcp() perform
-- * similar cleanup=2E  They call \c multi_uninit() fol=
-lowed by \c
-- * multi_top_free() to clean up the \c multi_context structure=
-=2E
-+ * After the main event loop exits, \c tunnel_server() performs the
-+ =
-* cleanup=2E  It calls \c multi_uninit() followed by \c multi_top_free()
-+ =
-* to clean up the \c multi_context structure=2E
-  */
+--- a/=2Egithub/workflows/build=2Eyaml
++++ b/=2Egithub/workflows/build=2Eya=
+ml
+@@ -365,7 +365,7 @@
+       ovpnlibdesc: mbed TLS 4=2E
+       # versionin=
+g=3Dsemver-coerced
+       ghrepo: Mbed-TLS/mbedtls
+-      gitref: v4=2E0=2E=
+0
++      gitref: v4=2E2=2E0
+       libconfigure: cmake -B build -DCMAKE_INS=
+TALL_PREFIX=3D$LIBPREFIX
+       libmake: cmake --build build
+       libinst=
+all: sudo cmake --install build
+diff --git a/src/openvpn/mbedtls_compat=2Eh=
+ b/src/openvpn/mbedtls_compat=2Eh
+index 50739b6=2E=2E7149487 100644
+--- a/s=
+rc/openvpn/mbedtls_compat=2Eh
++++ b/src/openvpn/mbedtls_compat=2Eh
+@@ -43,6=
+ +43,7 @@
+ #include "crypto_mbedtls_legacy=2Eh"
+ #else
+ #include <mbedtls/o=
+id=2Eh>
++#include "crypto_mbedtls=2Eh"
+ #endif /* MBEDTLS_VERSION_NUMBER < =
+0x04000000 */
+ 
+ #ifdef HAVE_PSA_CRYPTO_H
+@@ -228,6 +229,17 @@
+ mbedtls_com=
+pat_pk_check_pair(const mbedtls_pk_context *pub, const mbedtls_pk_context *=
+prv)
+ {
+ #if MBEDTLS_VERSION_NUMBER >=3D 0x04000000
++    /* work around bug=
+ in mbedtls 4=2E1=2E0 by adding missing public key information in prv
++    =
+ * cf=2E https://github=2Ecom/Mbed-TLS/TF-PSA-Crypto/issues/807 */
++#if MBE=
+DTLS_VERSION_NUMBER >=3D 0x04010000
++    if (prv->MBEDTLS_PRIVATE(pub_raw_l=
+en) =3D=3D 0)
++    {
++        ASSERT(mbed_ok(psa_export_public_key(prv->MBE=
+DTLS_PRIVATE(priv_id),
++                                             (uint8=
+_t *)prv->MBEDTLS_PRIVATE(pub_raw),
++                                      =
+       sizeof(prv->MBEDTLS_PRIVATE(pub_raw)),
++                            =
+                 (size_t *)&prv->MBEDTLS_PRIVATE(pub_raw_len))));
++    }
++#=
+endif
+     return mbedtls_pk_check_pair(pub, prv);
+ #else
+     return mbedt=
+ls_pk_check_pair(pub, prv, mbedtls_ctr_drbg_random, rand_ctx_get());
 
 -- 
-To view, visit ht=
-tp://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1850?usp=3Demail
-To unsubscribe, or=
- for help writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/setting=
-s?usp=3Demail
+T=
+o view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1849?usp=3Demail
+To=
+ unsubscribe, or for help writing mail filters, visit http://gerrit=2Eopenv=
+pn=2Enet/settings?usp=3Demail
 
 Gerrit-MessageType: newchange
-Gerrit-Project: openvpn
-Gerrit=
--Branch: master
-Gerrit-Change-Id: I57b4122b292f643ddedd91e81bf95fe2f5b2e03a=
-
-Gerrit-Change-Number: 1850
+Gerrit-Project=
+: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I694410615958afbb422d9ead=
+71f04c1a60edc640
+Gerrit-Change-Number: 1849
 Gerrit-PatchSet: 1
-Gerrit-Owner: razvanc <razva=
-nc@mailbox=2Eorg>
-Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eorg>
-G=
-errit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
-Gerrit-At=
-tention: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Owner=
+: flichtenheld <frank@lichtenheld=2Ecom>
+Gerrit-Reviewer: plaisthos <arne-o=
+penvpn@rfc2549=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourc=
+eforge=2Enet>
+Gerrit-Attention: plaisthos <arne-openvpn@rfc2549=2Eorg>
 
---dgvJYrhNpv8=
+--KtMv41LMAlA=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos=2E </p>
-<p>razvanc would like plaisthos to =
-<strong>review</strong> this change=2E
-</p><p><a href=3D"http://gerrit=2Eop=
-envpn=2Enet/c/openvpn/+/1850?usp=3Demail">View Change</a></p><pre class=3D"=
-blocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
-doc: Update doxygen references to removed tunnel_server_{udp,tcp}()<br><br>=
-The point-to-multipoint server event loop is no longer split into<br>protoc=
-ol-specific tunnel_server_udp() and tunnel_server_tcp()<br>functions; tunne=
-l_server() now handles both UDP and TCP=2E<br><br>Update the Doxygen module=
- documentation accordingly: list<br>tunnel_server() as the server-mode even=
-t loop implementation, and<br>rewrite the server-mode startup, initializati=
-on and cleanup sections<br>so that they describe tunnel_server() instead of=
- the removed<br>functions=2E<br><br>Documentation only, no functional chang=
-e=2E<br><br>Change-Id: I57b4122b292f643ddedd91e81bf95fe2f5b2e03a<br>Signed-=
-off-by: Razvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt;<br>---<br>M doc/doxyg=
-en/doc_eventloop=2Eh<br>M doc/doxygen/doc_tunnel_state=2Eh<br>2 files chang=
-ed, 11 insertions(+), 14 deletions(-)<br><br></pre><pre class=3D"blocks" st=
-yle=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull s=
-sh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/50/1850/1</pre><pre =
-style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>di=
-ff --git a/doc/doxygen/doc_eventloop=2Eh b/doc/doxygen/doc_eventloop=2Eh</s=
-pan><br><span>index 55ecd73=2E=2E4c1b012 100644</span><br><span>--- a/doc/d=
-oxygen/doc_eventloop=2Eh</span><br><span>+++ b/doc/doxygen/doc_eventloop=2E=
-h</span><br><span>@@ -60,6 +60,5 @@</span><br><span>  * event loop function=
- is called to drive the event processing=2E  The</span><br><span>  * follow=
-ing implementations are available:</span><br><span>  * - Client mode using =
-UDP or TCP: \c tunnel_point_to_point()</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">- * - Server mode using UDP: \c tunnel_server_udp()</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">- * - Server mode using TCP: \=
-c tunnel_server_tcp()</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ * - Server mode using UDP or TCP: \c tunnel_server()</span><br><span>  *=
-/</span><br><span>diff --git a/doc/doxygen/doc_tunnel_state=2Eh b/doc/doxyg=
-en/doc_tunnel_state=2Eh</span><br><span>index 296e804=2E=2E424f81e 100644</=
-span><br><span>--- a/doc/doxygen/doc_tunnel_state=2Eh</span><br><span>+++ b=
-/doc/doxygen/doc_tunnel_state=2Eh</span><br><span>@@ -117,10 +117,10 @@</sp=
-an><br><span>  * tunnel_point_to_point() or \c tunnel_server()=2E</span><br=
-><span>  *</span><br><span>  * In server-mode, \c main() calls the \c tunne=
-l_server() function, which</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">- * transfers control to \c tunnel_server_udp() or \c</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">- * tunnel_server_tcp() depending on the=
- external transport protocol=2E</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+ * drives the event loop for both the UDP and TCP external tran=
-sport</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * protocols=
-=2E</span><br><span>  *</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->- * These functions receive the \c context created in \c main()=2E  This</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * This function rece=
-ives the \c context created in \c main()=2E  This</span><br><span>  * objec=
-t has a special status in server-mode, as it does not represent an</span><b=
-r><span>  * active VPN tunnel, but does contain process-wide configuration<=
-/span><br><span>  * parameters=2E  In the source code, it is often stored i=
-n &quot;top&quot; variables=2E</span><br><span>@@ -130,11 +130,10 @@</span>=
-<br><span>  * CM_CHILD_UDP or \c CM_CHILD_TCP, depending on the external tr=
-ansport</span><br><span>  * protocol=2E</span><br><span>  *</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">- * Both \c tunnel_server_udp_single_t=
-hreaded() and \c tunnel_server_tcp()</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">- * perform similar initialization=2E  In either case, a \c m=
-ulti_context</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * struct=
-ure is created, and it is initialized according to the</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">- * configuration stored in the top \c cont=
-ext by the \c multi_init() and</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">- * \c multi_top_init() functions=2E</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+ * During initialization, \c tunnel_server() creat=
-es a \c multi_context</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ * structure, which is initialized according to the configuration stored<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * in the top \c con=
-text by the \c multi_init() and \c multi_top_init()</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * functions=2E</span><br><span>  *</span=
-><br><span>  * @subsection tunnel_state_server_tunnels Creating and destroy=
-ing VPN tunnels</span><br><span>  *</span><br><span>@@ -146,8 +145,7 @@</sp=
-an><br><span>  *</span><br><span>  * @subsection tunnel_state_server_cleanu=
-p Final cleanup</span><br><span>  *</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">- * After the main event loop exits, both \c</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">- * tunnel_server_udp_single_threaded() =
-and \c tunnel_server_tcp() perform</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">- * similar cleanup=2E  They call \c multi_uninit() followed by=
- \c</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * multi_top_free(=
-) to clean up the \c multi_context structure=2E</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+ * After the main event loop exits, \c tunnel_s=
-erver() performs the</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ * cleanup=2E  It calls \c multi_uninit() followed by \c multi_top_free()<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * to clean up the \=
-c multi_context structure=2E</span><br><span>  */</span><br><span></span><b=
-r></pre><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvp=
-n/+/1850?usp=3Demail">change 1850</a>=2E To unsubscribe, or for help writin=
-g mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=
-=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg=
-/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=
-=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1850?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
-ew Change"/></div></div>
+<p>flichtenheld would like plaistho=
+s to <strong>review</strong> this change=2E
+</p><p><a href=3D"http://gerrit=
+=2Eopenvpn=2Enet/c/openvpn/+/1849?usp=3Demail">View Change</a></p><pre clas=
+s=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wr=
+ap;">mbedtls: Work-around bug in mbedtls 4=2E1=2E0 and 4=2E2=2E0<br><br>Sin=
+ce the first distros have started to pick up these<br>versions before a fix=
+ is released, let&#39;s make our tests<br>pass on these versions=2E<br><br>=
+A fix is merged, so it might be fixed in 4=2E3=2E0=2E But I<br>didn&#39;t w=
+ant to add that to the version check until we<br>have verified that=2E<br><=
+br>Change-Id: I694410615958afbb422d9ead71f04c1a60edc640<br>Signed-off-by: F=
+rank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt;<br>---<br>M =2Egithub/work=
+flows/build=2Eyaml<br>M src/openvpn/mbedtls_compat=2Eh<br>2 files changed, =
+13 insertions(+), 1 deletion(-)<br><br></pre><pre class=3D"blocks" style=3D=
+"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://g=
+errit=2Eopenvpn=2Enet:29418/openvpn refs/changes/49/1849/1</pre><pre style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
+git a/=2Egithub/workflows/build=2Eyaml b/=2Egithub/workflows/build=2Eyaml</=
+span><br><span>index 29e8be2a=2E=2E56dd3ed 100644</span><br><span>--- a/=2E=
+github/workflows/build=2Eyaml</span><br><span>+++ b/=2Egithub/workflows/bui=
+ld=2Eyaml</span><br><span>@@ -365,7 +365,7 @@</span><br><span>       ovpnli=
+bdesc: mbed TLS 4=2E</span><br><span>       # versioning=3Dsemver-coerced</=
+span><br><span>       ghrepo: Mbed-TLS/mbedtls</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-      gitref: v4=2E0=2E0</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+      gitref: v4=2E2=2E0</span><br><span>    =
+   libconfigure: cmake -B build -DCMAKE_INSTALL_PREFIX=3D$LIBPREFIX</span><=
+br><span>       libmake: cmake --build build</span><br><span>       libinst=
+all: sudo cmake --install build</span><br><span>diff --git a/src/openvpn/mb=
+edtls_compat=2Eh b/src/openvpn/mbedtls_compat=2Eh</span><br><span>index 507=
+39b6=2E=2E7149487 100644</span><br><span>--- a/src/openvpn/mbedtls_compat=
+=2Eh</span><br><span>+++ b/src/openvpn/mbedtls_compat=2Eh</span><br><span>@=
+@ -43,6 +43,7 @@</span><br><span> #include &quot;crypto_mbedtls_legacy=2Eh&=
+quot;</span><br><span> #else</span><br><span> #include &lt;mbedtls/oid=2Eh&=
+gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;c=
+rypto_mbedtls=2Eh&quot;</span><br><span> #endif /* MBEDTLS_VERSION_NUMBER &=
+lt; 0x04000000 */</span><br><span> </span><br><span> #ifdef HAVE_PSA_CRYPTO=
+_H</span><br><span>@@ -228,6 +229,17 @@</span><br><span> mbedtls_compat_pk_=
+check_pair(const mbedtls_pk_context *pub, const mbedtls_pk_context *prv)</s=
+pan><br><span> {</span><br><span> #if MBEDTLS_VERSION_NUMBER &gt;=3D 0x0400=
+0000</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* work aro=
+und bug in mbedtls 4=2E1=2E0 by adding missing public key information in pr=
+v</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * cf=2E https=
+://github=2Ecom/Mbed-TLS/TF-PSA-Crypto/issues/807 */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMBER &gt;=3D 0x0401=
+0000</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (prv-&gt=
+;MBEDTLS_PRIVATE(pub_raw_len) =3D=3D 0)</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        ASSERT(mbed_ok(psa_export_public_key(prv-&gt;MBEDTLS_PRIVATE(=
+priv_id),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+                                   (uint8_t *)prv-&gt;MBEDTLS_PRIVATE(pub_r=
+aw),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
+                              sizeof(prv-&gt;MBEDTLS_PRIVATE(pub_raw)),</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+                       =
+                      (size_t *)&amp;prv-&gt;MBEDTLS_PRIVATE(pub_raw_len)))=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span>     ret=
+urn mbedtls_pk_check_pair(pub, prv);</span><br><span> #else</span><br><span=
+>     return mbedtls_pk_check_pair(pub, prv, mbedtls_ctr_drbg_random, rand_=
+ctx_get());</span><br><span></span><br></pre><p>To view, visit <a href=3D"h=
+ttp://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1849?usp=3Demail">change 1849</a>=
+=2E To unsubscribe, or for help writing mail filters, visit <a href=3D"http=
+://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div ite=
+mscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itempro=
+p=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"=
+url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1849?usp=3Demail"/><=
+meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: =
-newchange </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div=
->
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"d=
-isplay:none"> Gerrit-Change-Id: I57b4122b292f643ddedd91e81bf95fe2f5b2e03a <=
-/div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1850 </div>
-<div s=
-tyle=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none=
-"> Gerrit-Owner: razvanc &lt;razvanc@mailbox=2Eorg&gt; </div>
 <div style=3D=
-"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&g=
-t; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn=
--devel@lists=2Esourceforge=2Enet&gt; </div>
-<div style=3D"display:none"> Ge=
-rrit-Attention: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:=
+none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-B=
+ranch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I694410=
+615958afbb422d9ead71f04c1a60edc640 </div>
+<div style=3D"display:none"> Gerr=
+it-Change-Number: 1849 </div>
+<div style=3D"display:none"> Gerrit-PatchSet:=
+ 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank=
+@lichtenheld=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer:=
+ plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:=
+none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;ar=
+ne-openvpn@rfc2549=2Eorg&gt; </div>
 
-</body=
-></html>
---dgvJYrhNpv8=--
+</body></html>
+--KtMv41LMAlA=--
 
 
---===============3676578867771651808==
+--===============8650388615611159544==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============3676578867771651808==
+--===============8650388615611159544==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -471,5 +412,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============3676578867771651808==--
+--===============8650388615611159544==--
 
