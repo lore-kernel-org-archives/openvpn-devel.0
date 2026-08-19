@@ -4,127 +4,69 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id CE18DC5B572
-	for <openvpn-devel@archiver.kernel.org>; Wed, 19 Aug 2026 21:09:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 12159C5B572
+	for <openvpn-devel@archiver.kernel.org>; Wed, 19 Aug 2026 21:13:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=HFprIx0x4ArJtWwEU7cAx8DhzdYKqQdGczYMQpEtJbg=; b=C0GTbNZ5b993n2XsneWxdm9XVw
-	sOhsL+z2Baa7BhcBBjSKToalIihVpaeSHug+Q310jpePcJfq4GSoQDFr4vqQ5sisElbmJ1rYipPux
-	IGeVnxSZ5q6LGLj+ojEvilA5mmGsgsYJbAWeLHjkhmpOswGpMcyQbAvbcYXR0XkjRt+U=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
+	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=/kFv7nhKZF0wI3EKvRoYk5A85OWaKpiJfAy0yNKc9As=; b=H70lRlcXG3v6kShPuIxGc6/yFK
+	UEZvAl+GRpEYeKKWB06qol935lsgQ++lBSRbo0pJzF8345aiwXS/1JiRB7pk7UFsx+tc+M2FjaVCE
+	zIac+ifvgUdUlsDrg5ooIU8X2lZsGrsUUq8kwqU6oVQcyw7S3gTUAPLNHmxZd21THfS4=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wwnWy-00046O-Al;
-	Wed, 19 Aug 2026 21:09:05 +0000
+	id 1wwnbH-000259-Fg;
+	Wed, 19 Aug 2026 21:13:32 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wwnWv-00046G-Ei
+ (envelope-from <gert@blue4.greenie.muc.de>) id 1wwnbG-00024v-3F
  for openvpn-devel@lists.sourceforge.net;
- Wed, 19 Aug 2026 21:09:02 +0000
+ Wed, 19 Aug 2026 21:13:31 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
- :List-Post:List-Owner:List-Archive;
- bh=TuYiZznRMZWjBv5vxlCDhe/m5+PGtcMSUTHx+/G50jw=; b=IjBZfih6F+FxE1IK35va9qvMfj
- Vz9k8FcS+WSDPAKtZFG4Bypy1SAiAJ6qab2jFALHd+hByUJNl6FfS8cM9G69FhVg1YuprDHOhwLQw
- Gbp5OqRyWuyiqrBTFH0j4ngJ9+Gu3y/1Xf0Q+4ffApcHO+rfSQzLjWCRO65boUU6RMXY=;
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
+ In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=sLxDxLCjISUD5ghqBVys6o8Eu9N2cDg4H0IIYW21q5g=; b=m9nE9fS/WdSrIJBoaoEse9pwwf
+ 7WXQnL/APuk6VWweBXYHSvx0dx/uWJw87hwRiww07c4kHMraRhcEjySuP8QPp5j3JI3T45tKqKvo2
+ I2w2FoCjtVE0tYRAAKqvkqYLZ3vlmVrPF8DxJLYE1lBCQc5VXWffdiNDN9Ib4XlKqm34=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
- Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=TuYiZznRMZWjBv5vxlCDhe/m5+PGtcMSUTHx+/G50jw=; b=l
- KfTZGwPPgfE57SylFn3cj9RgwzENTZY/7snkY4NtxXAQGo/rpYxKVLSCEJAsYxJfzObd6ZnE5T0Ls
- MjqAe/24GT7/d2h28DVRglCySuzQO0TQHpqfe6VXFPux3F+r9mo1+w0QpfuQ+YGvxx4zkMaLy1haG
- u1OhIDWxstu6kgTU=;
-Received: from mail-wm1-f43.google.com ([209.85.128.43])
+ h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
+ Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+ List-Post:List-Owner:List-Archive;
+ bh=sLxDxLCjISUD5ghqBVys6o8Eu9N2cDg4H0IIYW21q5g=; b=fTd/x0ZOjB1iuyJgLr8wWHGIYi
+ W6I1LbAIK8oBbQ+PA1nQBNs0LSp4+mqguS+dZSpqJmp7Tvji9CpiZBmS3wSlOg/idIlS/v8SLLemy
+ Mr0bsW4BgocsJvIQhcHdw6KxCebIj7KS1/dE/GZkkuxTULOmiElAzI4JGAVVeNO0wmvg=;
+Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wwnWr-00007g-JE for openvpn-devel@lists.sourceforge.net;
- Wed, 19 Aug 2026 21:09:02 +0000
-Received: by mail-wm1-f43.google.com with SMTP id
- 5b1f17b1804b1-490cf322ed0so13067415e9.1
- for <openvpn-devel@lists.sourceforge.net>;
- Wed, 19 Aug 2026 14:08:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1787173731; x=1787778531; darn=lists.sourceforge.net;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
- :reply-to:content-type;
- bh=TuYiZznRMZWjBv5vxlCDhe/m5+PGtcMSUTHx+/G50jw=;
- b=THDi1u3xPBaaQtStLatJLAfp5cF/xw6Vc33OjqH5caHq3iLutJC3YxPsNRFZ8izZ9O
- ZJxaKksI7vNGTyvofBU7lf3be4Dmu94E2ff3IzvF3e4D247FK3l7+bpl6bK5lpmpmDA1
- S0L2sBvY9WV3bijaPWqPTq1TQFGIEu+/YpuJQ/X4ySHqTWbBz5ue/JPSIO4mFAjcWuia
- Qp/5kUsESUcE/YLDLJJpaWDdf7xHB0Tq/r47XHYNOu96LbLz41/GKeY37ToiocrXDEXU
- Ym1oQgFFj3xe9D7vWOzBGYoylKwlkPrAC0FtkvxP8yHSX71P6YH235lkwInQFXxa1nSm
- rIyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1787173731; x=1787778531;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
- :cc:subject:date:message-id:reply-to:content-type;
- bh=TuYiZznRMZWjBv5vxlCDhe/m5+PGtcMSUTHx+/G50jw=;
- b=fyNX0KDsCO/1lzO53D2WrXxM0CbhjVr6zKBvoS/aE9s2RMqKlzSJWOBfhIINb2Jd9Z
- zbW26a+qUDbN6WQ2xW5luq998RkVB106wGmz9M7THPyzUPydZcedkNoK1RYIF3S8LkER
- CrVMAbRRP1ercC1CHxj2Ktuq5+X7q2XUbTzkLfRogZNW6dFQofwsNQvgox9m8ncVjzOO
- Xy5tsUP6RVdI25KKiZhlP/BLF9hI10g7bLu8VqbG/EB4BBUoJ37JVzHxIi8kGF9hMqWq
- NsBfjwtkC4W7m4YQllORitaIDgFTsTAcwgcoYSWl/logYuAOUC451VJyxC5XMPR/uQOM
- ujyw==
-X-Gm-Message-State: AOJu0Yy+EYDn6seYPaw9VvwFParuWRAQ3rsIJv0a9ekg+tkr4RQkaq8N
- 1BoxPNrT3U+LSm/F2wnt/sI5RF5TAf19aBy9Xtp6j7xtGeix2GmlkXdy1Y1kdovBMwr267o7xAI
- yxLY+NHkzHZXfqTk7aG1ScqxXH6fguWIdVZM4og8jbS3nps7W7Mo1Q+YSnJWt1+k7Hgg/
-X-Gm-Gg: AR+sD13Bf38+kWDApLgI5v5jklrz/WvjqDjLa9Xt5tiylEiC5QTYf5kboZ+wD62Gp+P
- YGxwzM/NklDVy8FZ1XsqBJ4YALN/mTQ2LY+RvASi2LV3/W68R+4iLH6y3eJO1XzLYfVVDMnsro4
- sZ2qhwCXXeYvDBrzNwG6th8lxT17rBg9Di1sS9S3pupX/y/jHsGISrLB4IZRt2uJH29JqfCL0Hk
- AK3s/QTcUYymBmkKJj3b6K/CrGsA2FoeoZ8Hwe173DBdgsQ1+KnSqz6xF4qoc/0CyQFhb9S/Hoy
- tcii4M+2hQictulM0US+NK+xPM0YLXavGCeJX/eyTLzXcR6yRpcZqGin+PJnP/BTqj78tF/szCi
- M/4fFWQSrCkcG/CNDGzVNZrESSAQDZl0lqaaTfqglBFvMmgmQHNJO7OnBAmptQ5J1lH+yfP/tkp
- Xw4w7fwgEMLnqUMXnLq+N5kXewt/Y9JanMLNAcr8zFnmQ7LZ3tEilZ0BCmJfnCHgEgc33dZAi6Z
- 1Lcn/4kRDn0rRJCfCf/BkhGu9pRmJIx1uEuGZxOGUDTw7uxtM+VeUthFMRH7l9KFOChVbA82W3D
- gDLuZ5K2ELPjPn2IohtrM/I56C3f+PCibRfZcTzVVT6w9bmFSgg=
-X-Received: by 2002:a05:600c:34d1:b0:499:49f3:77b1 with SMTP id
- 5b1f17b1804b1-499aa14a6a6mr142203675e9.3.1787173730485; 
- Wed, 19 Aug 2026 14:08:50 -0700 (PDT)
-Received: from ip-10-18-1-162.eu-central-1.compute.internal
- (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
- by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-499aa09b199sm76860935e9.0.2026.08.19.14.08.49
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 19 Aug 2026 14:08:49 -0700 (PDT)
-X-Google-Original-From: "cron2 (Code Review)"
- <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Wed, 19 Aug 2026 21:08:45 +0000
-To: flichtenheld <frank@lichtenheld.com>, plaisthos <arne-openvpn@rfc2549.org>,
- razvanc <razvanc@mailbox.org>
-Auto-Submitted: auto-generated
-X-Gerrit-MessageType: newpatchset
-X-Gerrit-PatchSet: 6
-X-Gerrit-Change-Id: I6dafab74b82fbf770c1798b4851a0fd5e4b5d81e
-X-Gerrit-Change-Number: 1774
-X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1774?usp=email>
-X-Gerrit-Commit: 6334d3d188437ea392faac4ed3283b61e7a51e54
-In-Reply-To: <gerrit.1783600902000.I6dafab74b82fbf770c1798b4851a0fd5e4b5d81e@gerrit.openvpn.net>
-References: <gerrit.1783600902000.I6dafab74b82fbf770c1798b4851a0fd5e4b5d81e@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzgzNjAwOTAyMDAwLkk2ZGFmYWI3NGI4MmZiZjc3MGMxNzk4YjQ4NTFhMGZkNWU0YjVkODFlQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <0d01bdb3d196575e3f619a39aaa05719220f4c27-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
+ id 1wwnbD-0000KB-T6 for openvpn-devel@lists.sourceforge.net;
+ Wed, 19 Aug 2026 21:13:30 +0000
+Received: from blue.greenie.muc.de (localhost [127.0.0.1])
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 67JLDKpQ002735
+ for <openvpn-devel@lists.sourceforge.net>; Wed, 19 Aug 2026 23:13:20 +0200
+Received: (from gert@localhost)
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 67JLDKgA002734
+ for openvpn-devel@lists.sourceforge.net; Wed, 19 Aug 2026 23:13:20 +0200
+From: Gert Doering <gert@greenie.muc.de>
+To: openvpn-devel@lists.sourceforge.net
+Date: Wed, 19 Aug 2026 23:13:15 +0200
+Message-ID: <20260819211320.2716-1-gert@greenie.muc.de>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <gerrit.1778013601000.I2b71dae37ebe63c26a66761f877b25d326ed140f@gerrit.openvpn.net>
+References: <gerrit.1778013601000.I2b71dae37ebe63c26a66761f877b25d326ed140f@gerrit.openvpn.net>
 MIME-Version: 1.0
-User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wwnWr-00007g-JE
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: options: Factor out
- file access code from options.c
+X-Headers-End: 1wwnbD-0000KB-T6
+Subject: [Openvpn-devel] [PATCH v13] Remove instances of
+ constVariable/constVariablePointer cppcheck warnings
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -136,2314 +78,1619 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "cron2 \(Code Review\) via Openvpn-devel"
- <openvpn-devel@lists.sourceforge.net>
-Reply-To: gert@greenie.muc.de, arne-openvpn@rfc2549.org, razvanc@mailbox.org,
- openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com
-Cc: "cron2 \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============6401484371174434649=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============6401484371174434649==
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="2BZxPpBJDEc="; charset=UTF-8
+From: Frank Lichtenheld <frank@lichtenheld.com>
 
---2BZxPpBJDEc=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Of varied usefulness, but easier to just address all of
+them.
 
-cron2 has uploaded a new patch set (#6) to the change originally created by=
- flichtenheld=2E ( http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1774?usp=3Dema=
-il )
+Also change vpn_* parameters of dco_new_peer to const since
+that is required by one of the changes and it works (and would
+happen anyway when doing constParameterPointer).
 
-The following approvals got outdated and were removed:
-Code-Review+2 =
-by razvanc
-
-
-Change subject: options: Factor out file access code from opti=
-ons=2Ec
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
-
-opti=
-ons: Factor out file access code from options=2Ec
-
-options=2Ec is a huge, u=
-nwieldly file=2E So remove some
-closely related code that has no direct dep=
-endencies
-with the other functions in the file=2E
-
-This time it is the code=
- that checks file accessibility=2E
-
-Change-Id: I6dafab74b82fbf770c1798b4851=
-a0fd5e4b5d81e
-Signed-off-by: Frank Lichtenheld <frank@lichtenheld=2Ecom>
-Ac=
-ked-by: Razvan Cojocaru <razvanc@mailbox=2Eorg>
-Gerrit URL: https://gerrit=
-=2Eopenvpn=2Enet/c/openvpn/+/1774
-Message-Id: <20260819160522=2E6662-1-gert=
-@greenie=2Emuc=2Ede>
-URL: https://www=2Email-archive=2Ecom/openvpn-devel@li=
-sts=2Esourceforge=2Enet/msg38535=2Ehtml
-Signed-off-by: Gert Doering <gert@g=
-reenie=2Emuc=2Ede>
+Change-Id: I2b71dae37ebe63c26a66761f877b25d326ed140f
+Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
+Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1661
 ---
-M CMakeLists=2Etxt
-M src/openvpn/Makefile=2Eam
-A src=
-/openvpn/check_file_access=2Ec
-A src/openvpn/check_file_access=2Eh
-M src/op=
-envpn/options=2Ec
-5 files changed, 418 insertions(+), 334 deletions(-)
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-  =
-git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/74/1774/6
-=
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1661
+This mail reflects revision 13 of this Change.
 
-diff --git a/CMakeLists=2Etxt b/CMakeLists=2Etxt
-index 9af7870=2E=2E886652=
-0 100644
---- a/CMakeLists=2Etxt
-+++ b/CMakeLists=2Etxt
-@@ -431,6 +431,8 @@
-=
-     src/openvpn/basic=2Eh
-     src/openvpn/buffer=2Ec
-     src/openvpn/buf=
-fer=2Eh
-+    src/openvpn/check_file_access=2Ec
-+    src/openvpn/check_file_=
-access=2Eh
-     src/openvpn/circ_list=2Eh
-     src/openvpn/clinat=2Ec
-     =
-src/openvpn/clinat=2Eh
-diff --git a/src/openvpn/Makefile=2Eam b/src/openvpn=
-/Makefile=2Eam
-index 4220d07=2E=2E42b4404 100644
---- a/src/openvpn/Makefile=
-=2Eam
-+++ b/src/openvpn/Makefile=2Eam
-@@ -47,6 +47,7 @@
- 	base64=2Ec base64=
-=2Eh \
- 	basic=2Eh \
- 	buffer=2Ec buffer=2Eh \
-+	check_file_access=2Ec chec=
-k_file_access=2Eh \
- 	circ_list=2Eh \
- 	clinat=2Ec clinat=2Eh \
- 	common=2E=
-h \
-diff --git a/src/openvpn/check_file_access=2Ec b/src/openvpn/check_file=
-_access=2Ec
-new file mode 100644
-index 0000000=2E=2E83654b2
---- /dev/null
-+=
-++ b/src/openvpn/check_file_access=2Ec
-@@ -0,0 +1,354 @@
-+/*
-+ *  OpenVPN -=
-- An application to securely tunnel IP networks
-+ *             over a sing=
-le UDP port, with support for SSL/TLS-based
-+ *             session authent=
-ication and key exchange,
-+ *             packet encryption, packet authent=
-ication, and
-+ *             packet compression=2E
-+ *
-+ *  Copyright (C) 2=
-002-2026 OpenVPN Inc <sales@openvpn=2Enet>
-+ *  Copyright (C) 2008-2026 Dav=
-id Sommerseth <dazo@eurephia=2Eorg>
-+ *
-+ *  This program is free software;=
- you can redistribute it and/or modify
-+ *  it under the terms of the GNU G=
-eneral Public License version 2
-+ *  as published by the Free Software Foun=
-dation=2E
-+ *
-+ *  This program is distributed in the hope that it will be =
-useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of=
+Acked-by according to Gerrit (reflected above):
+Razvan Cojocaru <razvanc@mailbox.org>
 
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE=2E  See the
-+ *  =
-GNU General Public License for more details=2E
-+ *
-+ *  You should have rec=
-eived a copy of the GNU General Public License along
-+ *  with this program=
-; if not, see <https://www=2Egnu=2Eorg/licenses/>=2E
-+ */
-+
-+/*
-+ *  Check =
-file/directory sanity
-+ *
-+ */
-+#ifdef HAVE_CONFIG_H
-+#include "config=2Eh"=
-
-+#endif
-+
-+/* Expect people using the stripped down version to know what t=
-hey do */
-+#ifndef ENABLE_SMALL
-+
-+#include "syshead=2Eh"
-+
-+#include "chec=
-k_file_access=2Eh"
-+
-+#include "argv=2Eh"
-+#include "buffer=2Eh"
-+#include =
-"error=2Eh"
-+#include "options=2Eh"
-+#include "platform=2Eh"
-+#include "ssl=
-_common=2Eh"
-+
-+#include <string=2Eh>
-+
-+#define CHKACC_FILE       (1 << 0)=
- /**< Check for a file/directory presence */
-+#define CHKACC_DIRPATH    (1 =
-<< 1) /**< Check for directory presence where a file should reside */
-+#def=
-ine CHKACC_FILEXSTWR  (1 << 2) /**< If file exists, is it writable? */
-+#de=
-fine CHKACC_ACPTSTDIN  (1 << 3) /**< If filename is stdin, it's allowed and=
- "exists" */
-+#define CHKACC_PRIVATE    (1 << 4) /**< Warn if this (private=
-) file is group/others accessible */
-+#define CHKACC_ACCEPT_URI (1 << 5) /*=
-*< Do not check URIs, unless they start with file: */
-+
-+static bool
-+check=
-_file_access(const int type, const char *file, const int mode, const char *=
-opt)
-+{
-+    int errcode =3D 0;
-+
-+    /* If no file configured, no errors =
-to look for */
-+    if (!file)
-+    {
-+        return false;
-+    }
-+
-+    =
-/* If stdin is allowed and the file name is 'stdin', then do no
-+     * fur=
-ther checks as stdin is always available
-+     */
-+    if ((type & CHKACC_A=
-CPTSTDIN) && streq(file, "stdin"))
-+    {
-+        return false;
-+    }
-+
-+=
-    /* file name is a URI if its first segment  has ":" (i=2Ee=2E, before a=
-ny "/")
-+     * Then no checks done if CHKACC_ACCEPT_URI is set and the URI=
- does not start with "file:"
-+     */
-+    if ((type & CHKACC_ACCEPT_URI) &=
-& strchr(file, ':'))
-+    {
-+        if (!strncmp(file, "file:", 5))
-+     =
-   {
-+            file +=3D 5;
-+        }
-+        else if (!strchr(file, '=
-/') || strchr(file, '/') > strchr(file, ':'))
-+        {
-+            retur=
-n false;
-+        }
-+    }
-+
-+    /* Is the directory path leading to the g=
-iven file accessible? */
-+    if (type & CHKACC_DIRPATH)
-+    {
-+        ch=
-ar *fullpath =3D
-+            string_alloc(file, NULL); /* POSIX dirname() =
-implementation may modify its arguments */
-+        const char *dirpath =3D=
- dirname(fullpath);
-+
-+        if (platform_access(dirpath, mode | X_OK) !=
-=3D 0)
-+        {
-+            errcode =3D errno;
-+        }
-+        free(=
-fullpath);
-+    }
-+
-+    /* Is the file itself accessible? */
-+    if (!err=
-code && (type & CHKACC_FILE) && (platform_access(file, mode) !=3D 0))
-+    =
-{
-+        errcode =3D errno;
-+    }
-+
-+    /* If the file exists and is ac=
-cessible, is it writable? */
-+    if (!errcode && (type & CHKACC_FILEXSTWR)=
- && (platform_access(file, F_OK) =3D=3D 0))
-+    {
-+        if (platform_ac=
-cess(file, W_OK) !=3D 0)
-+        {
-+            errcode =3D errno;
-+      =
-  }
-+    }
-+
-+    /* Warn if a given private file is group/others accessibl=
-e=2E */
-+    if (type & CHKACC_PRIVATE)
-+    {
-+        platform_stat_t st;=
-
-+        if (platform_stat(file, &st))
-+        {
-+            msg(M_WARN =
-| M_ERRNO, "WARNING: cannot stat file '%s'", file);
-+        }
-+#ifndef _WI=
-N32
-+        else
-+        {
-+            if (st=2Est_mode & (S_IRWXG | S_I=
-RWXO))
-+            {
-+                msg(M_WARN, "WARNING: file '%s' is g=
-roup or others accessible", file);
-+            }
-+        }
-+#endif
-+    }=
-
-+
-+    /* Scream if an error is found */
-+    if (errcode > 0)
-+    {
-+   =
-     msg(M_NOPREFIX | M_OPTERR | M_ERRNO, "%s fails with '%s'", opt, file);=
-
-+    }
-+
-+    /* Return true if an error occurred */
-+    return (errcode =
-!=3D 0 ? true : false);
-+}
-+
-+/** A wrapper for check_file_access() which a=
-lso takes a chroot directory=2E
-+ * If chroot is NULL, behaviour is exactly=
- the same as calling check_file_access() directly,
-+ * otherwise it will lo=
-ok for the file inside the given chroot directory instead=2E
-+ */
-+static b=
-ool
-+check_file_access_chroot(const char *chroot, const int type, const cha=
-r *file, const int mode,
-+                         const char *opt)
-+{
-+   =
- bool ret =3D false;
-+
-+    /* If no file configured, no errors to look for=
- */
-+    if (!file)
-+    {
-+        return false;
-+    }
-+
-+    /* If chroo=
-t is set, look for the file/directory inside the chroot */
-+    if (chroot)=
-
-+    {
-+        struct gc_arena gc =3D gc_new();
-+        struct buffer ch=
-root_file;
-+
-+        chroot_file =3D prepend_dir(chroot, file, &gc);
-+    =
-    ret =3D check_file_access(type, BSTR(&chroot_file), mode, opt);
-+      =
-  gc_free(&gc);
-+    }
-+    else
-+    {
-+        /* No chroot in play, just=
- call core file check function */
-+        ret =3D check_file_access(type, =
-file, mode, opt);
-+    }
-+    return ret;
-+}
-+
-+/**
-+ * A wrapper for check=
-_file_access_chroot() that returns false immediately if
-+ * the file is inl=
-ine (and therefore there is no access to check)
-+ */
-+static bool
-+check_fi=
-le_access_chroot_inline(bool is_inline, const char *chroot, const int type,=
-
-+                                const char *file, const int mode, const c=
-har *opt)
-+{
-+    if (is_inline)
-+    {
-+        return false;
-+    }
-+
-+  =
-  return check_file_access_chroot(chroot, type, file, mode, opt);
-+}
-+
-+/**=
-
-+ * A wrapper for check_file_access() that returns false immediately if th=
-e file
-+ * is inline (and therefore there is no access to check)
-+ */
-+stat=
-ic bool
-+check_file_access_inline(bool is_inline, const int type, const cha=
-r *file, const int mode,
-+                         const char *opt)
-+{
-+   =
- if (is_inline)
-+    {
-+        return false;
-+    }
-+
-+    return check_fi=
-le_access(type, file, mode, opt);
-+}
-+
-+bool
-+check_cmd_access(const char *=
-command, const char *opt, const char *chroot)
-+{
-+    struct argv argv;
-+  =
-  bool return_code;
-+
-+    /* If no command was set, there are no errors to=
- look for */
-+    if (!command)
-+    {
-+        return false;
-+    }
-+
-+   =
- /* Extract executable path and arguments */
-+    argv =3D argv_new();
-+   =
- argv_parse_cmd(&argv, command);
-+
-+    /* if an executable is specified th=
-en check it; otherwise, complain */
-+    if (argv=2Eargv[0])
-+    {
-+      =
-  /* Scripts requires R_OK as well, but that might fail on binaries which
-+=
-         * only requires X_OK to function on Unix - a scenario not unlikely=
- to
-+         * be seen on suid binaries=2E
-+         */
-+        return_co=
-de =3D check_file_access_chroot(chroot, CHKACC_FILE, argv=2Eargv[0], X_OK, =
-opt);
-+    }
-+    else
-+    {
-+        msg(M_NOPREFIX | M_OPTERR, "%s fails=
- with '%s': No path to executable=2E", opt, command);
-+        return_code =
-=3D true;
-+    }
-+
-+    argv_free(&argv);
-+
-+    return return_code;
-+}
-+
-+=
-void
-+options_postprocess_filechecks(struct options *options)
-+{
-+    bool =
-errs =3D false;
-+
-+    /* ** SSL/TLS/crypto related files ** */
-+    errs |=
-=3D check_file_access_inline(options->dh_file_inline, CHKACC_FILE, options-=
->dh_file, R_OK,
-+                                     "--dh");
-+
-+    if (!=
-options->verify_hash_no_ca)
-+    {
-+        errs |=3D check_file_access_inl=
-ine(options->ca_file_inline, CHKACC_FILE, options->ca_file,
-+              =
-                           R_OK, "--ca");
-+    }
-+
-+    errs |=3D check_fil=
-e_access_chroot(options->chroot_dir, CHKACC_FILE, options->ca_path, R_OK,
-+=
-                                     "--capath");
-+
-+    errs |=3D check_fi=
-le_access_inline(options->cert_file_inline, CHKACC_FILE | CHKACC_ACCEPT_URI=
-,
-+                                     options->cert_file, R_OK, "--cert")=
-;
-+
-+    errs |=3D check_file_access_inline(options->extra_certs_file, CHKA=
-CC_FILE,
-+                                     options->extra_certs_file, R=
-_OK, "--extra-certs");
-+
-+    if (!(options->management_flags & MF_EXTERNAL=
-_KEY))
-+    {
-+        errs |=3D check_file_access_inline(options->priv_key=
-_file_inline,
-+                                         CHKACC_FILE | CHKAC=
-C_PRIVATE | CHKACC_ACCEPT_URI,
-+                                         op=
-tions->priv_key_file, R_OK, "--key");
-+    }
-+
-+    errs |=3D check_file_ac=
-cess_inline(options->pkcs12_file_inline, CHKACC_FILE | CHKACC_PRIVATE,
-+   =
-                                  options->pkcs12_file, R_OK, "--pkcs12");
-=
-+
-+    if (options->ssl_flags & SSLF_CRL_VERIFY_DIR)
-+    {
-+        errs |=
-=3D check_file_access_chroot(options->chroot_dir, CHKACC_FILE, options->crl=
-_file,
-+                                         R_OK | X_OK, "--crl-verify=
- directory");
-+    }
-+    else
-+    {
-+        errs |=3D
-+            check=
-_file_access_chroot_inline(options->crl_file_inline, options->chroot_dir,
-+=
-                                            CHKACC_FILE, options->crl_file,=
- R_OK, "--crl-verify");
-+    }
-+
-+    if (options->tls_export_peer_cert_dir=
-)
-+    {
-+        errs |=3D
-+            check_file_access_chroot(options->=
-chroot_dir, CHKACC_FILE,
-+                                     options->tls=
-_export_peer_cert_dir, W_OK, "--tls-export-cert");
-+    }
-+
-+    ASSERT(opt=
-ions->connection_list);
-+    for (int i =3D 0; i < options->connection_list=
-->len; ++i)
-+    {
-+        const struct connection_entry *ce =3D options->=
-connection_list->array[i];
-+
-+        errs |=3D check_file_access_inline(ce=
-->tls_auth_file_inline, CHKACC_FILE | CHKACC_PRIVATE,
-+                    =
-                     ce->tls_auth_file, R_OK, "--tls-auth");
-+        errs =
-|=3D check_file_access_inline(ce->tls_crypt_file_inline, CHKACC_FILE | CHKA=
-CC_PRIVATE,
-+                                         ce->tls_crypt_file, R=
-_OK, "--tls-crypt");
-+        errs |=3D check_file_access_inline(ce->tls_cr=
-ypt_v2_file_inline, CHKACC_FILE | CHKACC_PRIVATE,
-+                        =
-                 ce->tls_crypt_v2_file, R_OK, "--tls-crypt-v2");
-+    }
-+
-+=
-    errs |=3D
-+        check_file_access_inline(options->shared_secret_file=
-_inline, CHKACC_FILE | CHKACC_PRIVATE,
-+                                 op=
-tions->shared_secret_file, R_OK, "--secret");
-+
-+    errs |=3D check_file_a=
-ccess(CHKACC_DIRPATH | CHKACC_FILEXSTWR, options->packet_id_file,
-+        =
-                      R_OK | W_OK, "--replay-persist");
-+
-+    /* ** Passwo=
-rd files ** */
-+    errs |=3D check_file_access(CHKACC_FILE | CHKACC_ACPTST=
-DIN | CHKACC_PRIVATE,
-+                              options->key_pass_file=
-, R_OK, "--askpass");
-+#ifdef ENABLE_MANAGEMENT
-+    errs |=3D
-+        che=
-ck_file_access(CHKACC_FILE | CHKACC_ACPTSTDIN | CHKACC_PRIVATE,
-+          =
-                options->management_user_pass, R_OK, "--management user/pas=
-sword file");
-+#endif /* ENABLE_MANAGEMENT */
-+    errs |=3D check_file_acc=
-ess_inline(options->auth_user_pass_file_inline,
-+                          =
-           CHKACC_FILE | CHKACC_ACPTSTDIN | CHKACC_PRIVATE,
-+              =
-                       options->auth_user_pass_file, R_OK, "--auth-user-pas=
-s");
-+    /* ** System related ** */
-+    errs |=3D check_file_access(CHKAC=
-C_FILE, options->chroot_dir, R_OK | X_OK, "--chroot directory");
-+    errs =
-|=3D check_file_access(CHKACC_DIRPATH | CHKACC_FILEXSTWR, options->writepid=
-, R_OK | W_OK,
-+                              "--writepid");
-+
-+    /* ** L=
-og related ** */
-+    errs |=3D check_file_access(CHKACC_DIRPATH | CHKACC_F=
-ILEXSTWR, options->status_file, R_OK | W_OK,
-+                             =
- "--status");
-+
-+    /* ** Config related ** */
-+    errs |=3D check_file_a=
-ccess_chroot(options->chroot_dir, CHKACC_FILE, options->client_config_dir,
-=
-+                                     R_OK | X_OK, "--client-config-dir");
-=
-+    errs |=3D check_file_access_chroot(options->chroot_dir, CHKACC_FILE, o=
-ptions->tmp_dir,
-+                                     R_OK | W_OK | X_OK, =
-"Temporary directory (--tmp-dir)");
-+
-+    if (errs)
-+    {
-+        msg(M_=
-USAGE, "Please correct these errors=2E");
-+    }
-+}
-+
-+#endif /* !ENABLE_SM=
-ALL */
-diff --git a/src/openvpn/check_file_access=2Eh b/src/openvpn/check_f=
-ile_access=2Eh
-new file mode 100644
-index 0000000=2E=2Eb3ed886
---- /dev/nul=
-l
-+++ b/src/openvpn/check_file_access=2Eh
-@@ -0,0 +1,60 @@
-+/*
-+ *  OpenVPN=
- -- An application to securely tunnel IP networks
-+ *             over a si=
-ngle UDP port, with support for SSL/TLS-based
-+ *             session authe=
-ntication and key exchange,
-+ *             packet encryption, packet authe=
-ntication, and
-+ *             packet compression=2E
-+ *
-+ *  Copyright (C)=
- 2002-2026 OpenVPN Inc <sales@openvpn=2Enet>
-+ *
-+ *  This program is free =
-software; you can redistribute it and/or modify
-+ *  it under the terms of =
-the GNU General Public License version 2
-+ *  as published by the Free Soft=
-ware Foundation=2E
-+ *
-+ *  This program is distributed in the hope that it=
- will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied wa=
-rranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE=2E  See =
-the
-+ *  GNU General Public License for more details=2E
-+ *
-+ *  You should=
- have received a copy of the GNU General Public License along
-+ *  with thi=
-s program; if not, see <https://www=2Egnu=2Eorg/licenses/>=2E
-+ */
-+
-+#ifnd=
-ef CHECK_FILE_ACCESS_H
-+#define CHECK_FILE_ACCESS_H
-+
-+#ifdef HAVE_CONFIG_H=
-
-+#include "config=2Eh"
-+#endif
-+
-+#ifndef ENABLE_SMALL
-+
-+#include "option=
-s=2Eh"
-+
-+/**
-+ * Verifies that the path in the "command" that comes after =
-certain script options (e=2Eg=2E, --up) is a
-+ * valid file with appropriat=
-e permissions=2E
-+ *
-+ * "command" consists of a path, optionally followed =
-by a space, which may be
-+ * followed by arbitrary arguments=2E It is NOT a=
- full shell command line -- shell expansion is not
-+ * performed=2E
-+ *
-+ *=
- The path and arguments in "command" may be single- or double-quoted or esc=
-aped=2E
-+ *
-+ * The path is extracted from "command", then check_file_acces=
-s() is called to check it=2E The
-+ * arguments, if any, are ignored=2E
-+ *
-=
-+ * Note that the type, mode, and opt arguments to this routine are the sam=
-e as the corresponding
-+ * check_file_access() arguments=2E
-+ */
-+bool chec=
-k_cmd_access(const char *command, const char *opt, const char *chroot);
-+
-+=
-/**
-+ * Sanity check of all file/dir options=2E  Checks that file/dir
-+ * i=
-s accessible by OpenVPN
-+ */
-+void options_postprocess_filechecks(struct op=
-tions *options);
-+
-+#endif /* !ENABLE_SMALL */
-+
-+#endif /* CHECK_FILE_ACCE=
-SS_H */
-diff --git a/src/openvpn/options=2Ec b/src/openvpn/options=2Ec
-inde=
-x e899fa6=2E=2E317ce44 100644
---- a/src/openvpn/options=2Ec
-+++ b/src/openv=
-pn/options=2Ec
-@@ -63,6 +63,7 @@
- #include "tun_afunix=2Eh"
- #include "doma=
-in_helper=2Eh"
- #include "mbuf=2Eh"
-+#include "check_file_access=2Eh"
+        
+diff --git a/dev-tools/cppcheck-suppression b/dev-tools/cppcheck-suppression
+index 2e3350b..900e03c 100644
+--- a/dev-tools/cppcheck-suppression
++++ b/dev-tools/cppcheck-suppression
+@@ -3,8 +3,6 @@
+ constParameter
+ constParameterCallback
+ constParameterPointer
+-constVariable
+-constVariablePointer
+ invalidPrintfArgType_sint
+ invalidPrintfArgType_uint
+ usleepCalled
+diff --git a/sample/sample-plugins/defer/multi-auth.c b/sample/sample-plugins/defer/multi-auth.c
+index f6bbf44..bacf557 100644
+--- a/sample/sample-plugins/defer/multi-auth.c
++++ b/sample/sample-plugins/defer/multi-auth.c
+@@ -381,7 +381,7 @@
+     }
+     const char **argv = args->argv;
+     const char **envp = args->envp;
+-    struct plugin_context *context = (struct plugin_context *)args->handle;
++    const struct plugin_context *context = (struct plugin_context *)args->handle;
+     struct plugin_per_client_context *pcc =
+         (struct plugin_per_client_context *)args->per_client_context;
+     switch (args->type)
+@@ -399,7 +399,7 @@
+ OPENVPN_EXPORT void *
+ openvpn_plugin_client_constructor_v1(openvpn_plugin_handle_t handle)
+ {
+-    struct plugin_context *context = (struct plugin_context *)handle;
++    const struct plugin_context *context = (struct plugin_context *)handle;
+     plog(context, PLOG_NOTE, "FUNC: openvpn_plugin_client_constructor_v1");
+     return calloc(1, sizeof(struct plugin_per_client_context));
+ }
+@@ -407,7 +407,7 @@
+ OPENVPN_EXPORT void
+ openvpn_plugin_client_destructor_v1(openvpn_plugin_handle_t handle, void *per_client_context)
+ {
+-    struct plugin_context *context = (struct plugin_context *)handle;
++    const struct plugin_context *context = (struct plugin_context *)handle;
+     plog(context, PLOG_NOTE, "FUNC: openvpn_plugin_client_destructor_v1");
+     free(per_client_context);
+ }
+diff --git a/sample/sample-plugins/log/log.c b/sample/sample-plugins/log/log.c
+index 330e3e0..76350ee 100644
+--- a/sample/sample-plugins/log/log.c
++++ b/sample/sample-plugins/log/log.c
+@@ -173,7 +173,7 @@
+ openvpn_plugin_func_v1(openvpn_plugin_handle_t handle, const int type, const char *argv[],
+                        const char *envp[])
+ {
+-    struct plugin_context *context = (struct plugin_context *)handle;
++    const struct plugin_context *context = (struct plugin_context *)handle;
  
- #i=
-nclude <ctype=2Eh>
+     show(type, argv, envp);
  
-@@ -3328,340 +3329,6 @@
+diff --git a/sample/sample-plugins/log/log_v3.c b/sample/sample-plugins/log/log_v3.c
+index d2d44c7..09c6735 100644
+--- a/sample/sample-plugins/log/log_v3.c
++++ b/sample/sample-plugins/log/log_v3.c
+@@ -245,7 +245,7 @@
+ openvpn_plugin_func_v3(const int version, struct openvpn_plugin_args_func_in const *args,
+                        struct openvpn_plugin_args_func_return *retptr)
+ {
+-    struct plugin_context *context = (struct plugin_context *)args->handle;
++    const struct plugin_context *context = (struct plugin_context *)args->handle;
+ 
+     printf("\nopenvpn_plugin_func_v3() :::::>> ");
+     show(args->type, args->argv, args->envp);
+diff --git a/sample/sample-plugins/simple/simple.c b/sample/sample-plugins/simple/simple.c
+index 687a633..3182be0 100644
+--- a/sample/sample-plugins/simple/simple.c
++++ b/sample/sample-plugins/simple/simple.c
+@@ -104,7 +104,7 @@
+ openvpn_plugin_func_v1(openvpn_plugin_handle_t handle, const int type, const char *argv[],
+                        const char *envp[])
+ {
+-    struct plugin_context *context = (struct plugin_context *)handle;
++    const struct plugin_context *context = (struct plugin_context *)handle;
+ 
+     /* get username/password from envp string array */
+     const char *username = get_env("username", envp);
+diff --git a/src/openvpn/argv.c b/src/openvpn/argv.c
+index 6a5d92e..028671d 100644
+--- a/src/openvpn/argv.c
++++ b/src/openvpn/argv.c
+@@ -359,7 +359,7 @@
+      *
+      */
+     size_t argc = argres->argc;
+-    char *f = argv_prep_format(format, delim, &argc, &argres->gc);
++    const char *f = argv_prep_format(format, delim, &argc, &argres->gc);
+     if (f == NULL)
+     {
+         goto out;
+diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c
+index bd90212..f928a41 100644
+--- a/src/openvpn/auth_token.c
++++ b/src/openvpn/auth_token.c
+@@ -235,7 +235,7 @@
+      * a new token with the empty username since we do not want to loose
+      * the information that the username cannot be trusted
+      */
+-    struct key_state *ks = &multi->session[TM_ACTIVE].key[KS_PRIMARY];
++    const struct key_state *ks = &multi->session[TM_ACTIVE].key[KS_PRIMARY];
+     if (ks->auth_token_state_flags & AUTH_TOKEN_VALID_EMPTYUSER)
+     {
+         hmac_ctx_update(ctx, (const uint8_t *)"", 0);
+diff --git a/src/openvpn/base64.c b/src/openvpn/base64.c
+index 7af8976..5752844 100644
+--- a/src/openvpn/base64.c
++++ b/src/openvpn/base64.c
+@@ -161,7 +161,7 @@
+ {
+     const char *p;
+     unsigned char *q;
+-    unsigned char *e = NULL;
++    const unsigned char *e = NULL;
+ 
+     q = data;
+     if (size >= 0)
+diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
+index f14caa2..45ad0b9 100644
+--- a/src/openvpn/buffer.c
++++ b/src/openvpn/buffer.c
+@@ -500,7 +500,7 @@
+ void
+ buf_null_terminate(struct buffer *buf)
+ {
+-    char *last = (char *)BLAST(buf);
++    const char *last = (char *)BLAST(buf);
+     if (last && *last == '\0') /* already terminated? */
+     {
+         return;
+@@ -523,7 +523,7 @@
+ {
+     while (true)
+     {
+-        char *last = (char *)BLAST(buf);
++        const char *last = (char *)BLAST(buf);
+         if (!last)
+         {
+             break;
+diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
+index 47c9420..9a4315e 100644
+--- a/src/openvpn/buffer.h
++++ b/src/openvpn/buffer.h
+@@ -1318,7 +1318,7 @@
+ static inline bool
+ buf_copy_n(struct buffer *dest, struct buffer *src, int n)
+ {
+-    uint8_t *cp = buf_read_alloc(src, n);
++    const uint8_t *cp = buf_read_alloc(src, n);
+     if (!cp)
+     {
+         return false;
+@@ -1409,7 +1409,7 @@
+ static inline bool
+ buf_read(struct buffer *src, void *dest, int size)
+ {
+-    uint8_t *cp = buf_read_alloc(src, size);
++    const uint8_t *cp = buf_read_alloc(src, size);
+     if (!cp)
+     {
+         return false;
+diff --git a/src/openvpn/comp-lz4.c b/src/openvpn/comp-lz4.c
+index 45f138c..48797b0 100644
+--- a/src/openvpn/comp-lz4.c
++++ b/src/openvpn/comp-lz4.c
+@@ -164,7 +164,7 @@
+     ASSERT(buf_init(&work, frame->buf.headroom));
+ 
+     /* do unframing/swap (assumes buf->len > 0) */
+-    uint8_t *head = BPTR(buf);
++    const uint8_t *head = BPTR(buf);
+     c = *head;
+ 
+     /* Not compressed */
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 674105d..e5ad31a 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -1210,7 +1210,7 @@
+ 
+     /* init implicit IV */
+     {
+-        cipher_ctx_t *cipher = co->key_ctx_bi.encrypt.cipher;
++        const cipher_ctx_t *cipher = co->key_ctx_bi.encrypt.cipher;
+         if (cipher_ctx_mode_aead(cipher))
+         {
+             ASSERT(cipher_ctx_iv_length(cipher) <= OPENVPN_MAX_IV_LENGTH);
+@@ -1920,7 +1920,7 @@
+     const char *seed = "tls1-prf-test";
+     const char *secret = "tls1-prf-test-secret";
+     uint8_t out[8];
+-    uint8_t expected_out[] = { 'q', 'D', 0xfe, '%', '@', 's', 'u', 0x95 };
++    const uint8_t expected_out[] = { 'q', 'D', 0xfe, '%', '@', 's', 'u', 0x95 };
+ 
+     int ret = ssl_tls1_PRF((uint8_t *)seed, strlen(seed), (uint8_t *)secret,
+                            strlen(secret), out, sizeof(out));
+diff --git a/src/openvpn/crypto_epoch.c b/src/openvpn/crypto_epoch.c
+index 37933a1..158c841 100644
+--- a/src/openvpn/crypto_epoch.c
++++ b/src/openvpn/crypto_epoch.c
+@@ -213,7 +213,7 @@
+      *
+      * The last generated key might have been moved to the decrypt key already.
+      */
+-    struct key_ctx *highest_future_key =
++    const struct key_ctx *highest_future_key =
+         &co->epoch_data_keys_future[co->epoch_data_keys_future_count - 1];
+ 
+     ASSERT(co->epoch_key_recv.epoch == 1 || highest_future_key->epoch == co->epoch_key_recv.epoch
+diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
+index 0f95ab7..ad2706c 100644
+--- a/src/openvpn/cryptoapi.c
++++ b/src/openvpn/cryptoapi.c
+@@ -225,7 +225,6 @@
+     const CERT_INFO *info = cert_ctx->pCertInfo;
+     const CERT_EXTENSION *ext;
+     DWORD cbext;
+-    void *pvext;
+     struct gc_arena gc = gc_new();
+     const WCHAR *tmpl_name = wide_string(cert_prop, &gc);
+ 
+@@ -233,7 +232,7 @@
+     ext = CertFindExtension(szOID_CERTIFICATE_TEMPLATE, info->cExtension, info->rgExtension);
+     if (ext)
+     {
+-        pvext = decode_object(&gc, X509_CERTIFICATE_TEMPLATE, &ext->Value, 0, &cbext);
++        const void *pvext = decode_object(&gc, X509_CERTIFICATE_TEMPLATE, &ext->Value, 0, &cbext);
+         if (pvext && cbext >= sizeof(CERT_TEMPLATE_EXT))
+         {
+             const CERT_TEMPLATE_EXT *cte = (const CERT_TEMPLATE_EXT *)pvext;
+diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
+index ce73701..8eae4bf 100644
+--- a/src/openvpn/dco.c
++++ b/src/openvpn/dco.c
+@@ -112,7 +112,7 @@
+     for (int i = 0; i < KEY_SCAN_SIZE; ++i)
+     {
+         struct key_state *ks = get_key_scan(multi, i);
+-        struct key_ctx_bi *key = &ks->crypto_options.key_ctx_bi;
++        const struct key_ctx_bi *key = &ks->crypto_options.key_ctx_bi;
+ 
+         if (ks == primary)
+         {
+@@ -577,7 +577,7 @@
+                         struct sockaddr_storage *local)
+ {
+ #if ENABLE_IP_PKTINFO
+-    struct context *c = &mi->context;
++    const struct context *c = &mi->context;
+ 
+     if (!proto_is_udp(c->c2.link_sockets[0]->info.proto)
+         || !(c->options.sockflags & SF_USE_IP_PKTINFO))
+@@ -625,7 +625,7 @@
+ int
+ dco_multi_add_new_peer(struct multi_context *m, struct multi_instance *mi)
+ {
+-    struct context *c = &mi->context;
++    const struct context *c = &mi->context;
+ 
+     int peer_id = c->c2.tls_multi->rx_peer_id;
+     struct sockaddr *remoteaddr, *localaddr = NULL;
+@@ -646,14 +646,14 @@
+ 
+     /* In server mode we need to fetch the remote addresses from the push config */
+     struct in_addr vpn_ip4 = { 0 };
+-    struct in_addr *vpn_addr4 = NULL;
++    const struct in_addr *vpn_addr4 = NULL;
+     if (c->c2.push_ifconfig_defined)
+     {
+         vpn_ip4.s_addr = htonl(c->c2.push_ifconfig_local);
+         vpn_addr4 = &vpn_ip4;
+     }
+ 
+-    struct in6_addr *vpn_addr6 = NULL;
++    const struct in6_addr *vpn_addr6 = NULL;
+     if (c->c2.push_ifconfig_ipv6_defined)
+     {
+         vpn_addr6 = &c->c2.push_ifconfig_ipv6_local;
+@@ -702,7 +702,7 @@
+     }
+ #endif
+ 
+-    struct context *c = &mi->context;
++    const struct context *c = &mi->context;
+     if (addrtype == MR_ADDR_IPV6)
+     {
+ #if defined(_WIN32)
+@@ -750,7 +750,7 @@
+     }
+     ASSERT(TUNNEL_TYPE(mi->context.c1.tuntap) == DEV_TYPE_TUN);
+ 
+-    struct context *c = &mi->context;
++    const struct context *c = &mi->context;
+ 
+     if (mi->context.c2.push_ifconfig_defined)
+     {
+diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
+index eaca86b..d933aaf 100644
+--- a/src/openvpn/dco_freebsd.c
++++ b/src/openvpn/dco_freebsd.c
+@@ -134,7 +134,8 @@
+ 
+ int
+ dco_new_peer(dco_context_t *dco, unsigned int peerid, int sd, struct sockaddr *localaddr,
+-             struct sockaddr *remoteaddr, struct in_addr *vpn_ipv4, struct in6_addr *vpn_ipv6)
++             struct sockaddr *remoteaddr, const struct in_addr *vpn_ipv4,
++             const struct in6_addr *vpn_ipv6)
+ {
+     struct ifdrv drv;
+     nvlist_t *nvl, *local_nvl, *remote_nvl;
+diff --git a/src/openvpn/dco_internal.h b/src/openvpn/dco_internal.h
+index da07780..fcf8aca 100644
+--- a/src/openvpn/dco_internal.h
++++ b/src/openvpn/dco_internal.h
+@@ -60,7 +60,7 @@
+  */
+ 
+ int dco_new_peer(dco_context_t *dco, unsigned int peerid, socket_descriptor_t sd, struct sockaddr *localaddr,
+-                 struct sockaddr *remoteaddr, struct in_addr *vpn_ipv4, struct in6_addr *vpn_ipv6);
++                 struct sockaddr *remoteaddr, const struct in_addr *vpn_ipv4, const struct in6_addr *vpn_ipv6);
+ 
+ int dco_del_peer(dco_context_t *dco, unsigned int peerid);
+ 
+diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
+index 40746bd..56f6259 100644
+--- a/src/openvpn/dco_linux.c
++++ b/src/openvpn/dco_linux.c
+@@ -222,7 +222,8 @@
+ 
+ int
+ dco_new_peer(dco_context_t *dco, unsigned int peerid, int sd, struct sockaddr *localaddr,
+-             struct sockaddr *remoteaddr, struct in_addr *vpn_ipv4, struct in6_addr *vpn_ipv6)
++             struct sockaddr *remoteaddr, const struct in_addr *vpn_ipv4,
++             const struct in6_addr *vpn_ipv6)
+ {
+     struct gc_arena gc = gc_new();
+     const char *remotestr = "[undefined]";
+@@ -697,7 +698,7 @@
+ {
+     dco_context_t *dco = arg;
+     struct nlattr *tb[CTRL_ATTR_MAX + 1];
+-    struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
++    const struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
+ 
+     nla_parse(tb, CTRL_ATTR_MAX, genlmsg_attrdata(gnlh, 0), genlmsg_attrlen(gnlh, 0), NULL);
+ 
+@@ -706,7 +707,7 @@
+         return NL_SKIP;
+     }
+ 
+-    struct nlattr *mcgrp;
++    const struct nlattr *mcgrp;
+     int rem_mcgrp;
+     nla_for_each_nested(mcgrp, tb[CTRL_ATTR_MCAST_GROUPS], rem_mcgrp)
+     {
+diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
+index 2e26f2a..b3268bc 100644
+--- a/src/openvpn/dco_win.c
++++ b/src/openvpn/dco_win.c
+@@ -285,8 +285,8 @@
+     msg(D_DCO_DEBUG, "%s", __func__);
+ 
+     int ai_family = sock->info.lsa->bind_local->ai_family;
+-    struct addrinfo *local = sock->info.lsa->bind_local;
+-    struct addrinfo *cur = NULL;
++    const struct addrinfo *local = sock->info.lsa->bind_local;
++    const struct addrinfo *cur = NULL;
+ 
+     for (cur = local; cur; cur = cur->ai_next)
+     {
+@@ -334,7 +334,7 @@
+     struct addrinfo *remoteaddr = sock->info.lsa->current_remote;
+ 
+     struct sockaddr *local = NULL;
+-    struct sockaddr *remote = remoteaddr->ai_addr;
++    const struct sockaddr *remote = remoteaddr->ai_addr;
+ 
+     if (remoteaddr->ai_protocol == IPPROTO_TCP || remoteaddr->ai_socktype == SOCK_STREAM)
+     {
+@@ -348,7 +348,7 @@
+     if (sock->bind_local)
+     {
+         /* Use first local address with correct address family */
+-        struct addrinfo *bind = sock->info.lsa->bind_local;
++        const struct addrinfo *bind = sock->info.lsa->bind_local;
+         while (bind && !local)
+         {
+             if (bind->ai_family == remote->sa_family)
+@@ -415,8 +415,9 @@
  }
  
- /*
-- *  Check file/direc=
-tory sanity
-- *
-- */
--/* Expect people using the stripped down version to k=
-now what they do */
--#ifndef ENABLE_SMALL
--
--#define CHKACC_FILE       (1 <=
-< 0) /**< Check for a file/directory presence */
--#define CHKACC_DIRPATH   =
- (1 << 1) /**< Check for directory presence where a file should reside */
--=
-#define CHKACC_FILEXSTWR  (1 << 2) /**< If file exists, is it writable? */
-=
--#define CHKACC_ACPTSTDIN  (1 << 3) /**< If filename is stdin, it's allowed=
- and "exists" */
--#define CHKACC_PRIVATE    (1 << 4) /**< Warn if this (pri=
-vate) file is group/others accessible */
--#define CHKACC_ACCEPT_URI (1 << 5=
-) /**< Do not check URIs, unless they start with file: */
--
--static bool
--c=
-heck_file_access(const int type, const char *file, const int mode, const ch=
-ar *opt)
--{
--    int errcode =3D 0;
--
--    /* If no file configured, no err=
-ors to look for */
--    if (!file)
--    {
--        return false;
--    }
--
--=
-    /* If stdin is allowed and the file name is 'stdin', then do no
--     *=
- further checks as stdin is always available
--     */
--    if ((type & CHKA=
-CC_ACPTSTDIN) && streq(file, "stdin"))
--    {
--        return false;
--    }=
-
--
--    /* file name is a URI if its first segment  has ":" (i=2Ee=2E, befo=
-re any "/")
--     * Then no checks done if CHKACC_ACCEPT_URI is set and the=
- URI does not start with "file:"
--     */
--    if ((type & CHKACC_ACCEPT_UR=
-I) && strchr(file, ':'))
--    {
--        if (!strncmp(file, "file:", 5))
-- =
-       {
--            file +=3D 5;
--        }
--        else if (!strchr(fil=
-e, '/') || strchr(file, '/') > strchr(file, ':'))
--        {
--            r=
-eturn false;
--        }
--    }
--
--    /* Is the directory path leading to t=
-he given file accessible? */
--    if (type & CHKACC_DIRPATH)
--    {
--      =
-  char *fullpath =3D
--            string_alloc(file, NULL); /* POSIX dirnam=
-e() implementation may modify its arguments */
--        char *dirpath =3D d=
-irname(fullpath);
--
--        if (platform_access(dirpath, mode | X_OK) !=3D=
- 0)
--        {
--            errcode =3D errno;
--        }
--        free(ful=
-lpath);
--    }
--
--    /* Is the file itself accessible? */
--    if (!errcod=
-e && (type & CHKACC_FILE) && (platform_access(file, mode) !=3D 0))
--    {
--=
-        errcode =3D errno;
--    }
--
--    /* If the file exists and is acces=
-sible, is it writable? */
--    if (!errcode && (type & CHKACC_FILEXSTWR) &&=
- (platform_access(file, F_OK) =3D=3D 0))
--    {
--        if (platform_acces=
-s(file, W_OK) !=3D 0)
--        {
--            errcode =3D errno;
--        }=
-
--    }
--
--    /* Warn if a given private file is group/others accessible=
-=2E */
--    if (type & CHKACC_PRIVATE)
--    {
--        platform_stat_t st;
-=
--        if (platform_stat(file, &st))
--        {
--            msg(M_WARN |=
- M_ERRNO, "WARNING: cannot stat file '%s'", file);
--        }
--#ifndef _WIN=
-32
--        else
--        {
--            if (st=2Est_mode & (S_IRWXG | S_IR=
-WXO))
--            {
--                msg(M_WARN, "WARNING: file '%s' is gr=
-oup or others accessible", file);
--            }
--        }
--#endif
--    }
-=
--
--    /* Scream if an error is found */
--    if (errcode > 0)
--    {
--    =
-    msg(M_NOPREFIX | M_OPTERR | M_ERRNO, "%s fails with '%s'", opt, file);
-=
--    }
--
--    /* Return true if an error occurred */
--    return (errcode !=
-=3D 0 ? true : false);
--}
--
--/* A wrapper for check_file_access() which als=
-o takes a chroot directory=2E
-- * If chroot is NULL, behaviour is exactly t=
-he same as calling check_file_access() directly,
-- * otherwise it will look=
- for the file inside the given chroot directory instead=2E
-- */
--static boo=
-l
--check_file_access_chroot(const char *chroot, const int type, const char =
-*file, const int mode,
--                         const char *opt)
--{
--    b=
-ool ret =3D false;
--
--    /* If no file configured, no errors to look for *=
-/
--    if (!file)
--    {
--        return false;
--    }
--
--    /* If chroot =
-is set, look for the file/directory inside the chroot */
--    if (chroot)
--=
-    {
--        struct gc_arena gc =3D gc_new();
--        struct buffer chro=
-ot_file;
--
--        chroot_file =3D prepend_dir(chroot, file, &gc);
--      =
-  ret =3D check_file_access(type, BSTR(&chroot_file), mode, opt);
--        =
-gc_free(&gc);
--    }
--    else
--    {
--        /* No chroot in play, just c=
-all core file check function */
--        ret =3D check_file_access(type, fi=
-le, mode, opt);
--    }
--    return ret;
--}
--
--/**
-- * A wrapper for check_f=
-ile_access_chroot() that returns false immediately if
-- * the file is inlin=
-e (and therefore there is no access to check)
-- */
--static bool
--check_file=
-_access_chroot_inline(bool is_inline, const char *chroot, const int type,
--=
-                                const char *file, const int mode, const cha=
-r *opt)
--{
--    if (is_inline)
--    {
--        return false;
--    }
--
--    =
-return check_file_access_chroot(chroot, type, file, mode, opt);
--}
--
--/**
--=
- * A wrapper for check_file_access() that returns false immediately if the =
-file
-- * is inline (and therefore there is no access to check)
-- */
--static=
- bool
--check_file_access_inline(bool is_inline, const int type, const char =
-*file, const int mode,
--                         const char *opt)
--{
--    i=
-f (is_inline)
--    {
--        return false;
--    }
--
--    return check_file=
-_access(type, file, mode, opt);
--}
--
--/*
-- * Verifies that the path in the =
-"command" that comes after certain script options (e=2Eg=2E, --up) is a
-- *=
- valid file with appropriate permissions=2E
-- *
-- * "command" consists of a=
- path, optionally followed by a space, which may be
-- * followed by arbitra=
-ry arguments=2E It is NOT a full shell command line -- shell expansion is n=
-ot
-- * performed=2E
-- *
-- * The path and arguments in "command" may be sing=
-le- or double-quoted or escaped=2E
-- *
-- * The path is extracted from "comm=
-and", then check_file_access() is called to check it=2E The
-- * arguments, =
-if any, are ignored=2E
-- *
-- * Note that the type, mode, and opt arguments =
-to this routine are the same as the corresponding
-- * check_file_access() a=
-rguments=2E
-- */
--static bool
--check_cmd_access(const char *command, const =
-char *opt, const char *chroot)
--{
--    struct argv argv;
--    bool return_c=
-ode;
--
--    /* If no command was set, there are no errors to look for */
-- =
-   if (!command)
--    {
--        return false;
--    }
--
--    /* Extract exe=
-cutable path and arguments */
--    argv =3D argv_new();
--    argv_parse_cmd=
-(&argv, command);
--
--    /* if an executable is specified then check it; ot=
-herwise, complain */
--    if (argv=2Eargv[0])
--    {
--        /* Scripts re=
-quires R_OK as well, but that might fail on binaries which
--         * only=
- requires X_OK to function on Unix - a scenario not unlikely to
--         *=
- be seen on suid binaries=2E
--         */
--        return_code =3D check_fi=
-le_access_chroot(chroot, CHKACC_FILE, argv=2Eargv[0], X_OK, opt);
--    }
-- =
-   else
--    {
--        msg(M_NOPREFIX | M_OPTERR, "%s fails with '%s': No =
-path to executable=2E", opt, command);
--        return_code =3D true;
--    =
-}
--
--    argv_free(&argv);
--
--    return return_code;
--}
--
--/*
-- * Sanity c=
-heck of all file/dir options=2E  Checks that file/dir
-- * is accessible by =
-OpenVPN
-- */
--static void
--options_postprocess_filechecks(struct options *o=
-ptions)
--{
--    bool errs =3D false;
--
--    /* ** SSL/TLS/crypto related fi=
-les ** */
--    errs |=3D check_file_access_inline(options->dh_file_inline, =
-CHKACC_FILE, options->dh_file, R_OK,
--                                     =
-"--dh");
--
--    if (!options->verify_hash_no_ca)
--    {
--        errs |=3D =
-check_file_access_inline(options->ca_file_inline, CHKACC_FILE, options->ca_=
-file,
--                                         R_OK, "--ca");
--    }
--
--  =
-  errs |=3D check_file_access_chroot(options->chroot_dir, CHKACC_FILE, opti=
-ons->ca_path, R_OK,
--                                     "--capath");
--
-- =
-   errs |=3D check_file_access_inline(options->cert_file_inline, CHKACC_FIL=
-E | CHKACC_ACCEPT_URI,
--                                     options->cert_=
-file, R_OK, "--cert");
--
--    errs |=3D check_file_access_inline(options->e=
-xtra_certs_file, CHKACC_FILE,
--                                     options=
-->extra_certs_file, R_OK, "--extra-certs");
--
--    if (!(options->managemen=
-t_flags & MF_EXTERNAL_KEY))
--    {
--        errs |=3D check_file_access_inl=
-ine(options->priv_key_file_inline,
--                                       =
-  CHKACC_FILE | CHKACC_PRIVATE | CHKACC_ACCEPT_URI,
--                      =
-                   options->priv_key_file, R_OK, "--key");
--    }
--
--    er=
-rs |=3D check_file_access_inline(options->pkcs12_file_inline, CHKACC_FILE |=
- CHKACC_PRIVATE,
--                                     options->pkcs12_file=
-, R_OK, "--pkcs12");
--
--    if (options->ssl_flags & SSLF_CRL_VERIFY_DIR)
--=
-    {
--        errs |=3D check_file_access_chroot(options->chroot_dir, CHKA=
-CC_FILE, options->crl_file,
--                                         R_OK =
-| X_OK, "--crl-verify directory");
--    }
--    else
--    {
--        errs |=
-=3D
--            check_file_access_chroot_inline(options->crl_file_inline, =
-options->chroot_dir,
--                                            CHKACC_FI=
-LE, options->crl_file, R_OK, "--crl-verify");
--    }
--
--    if (options->tl=
-s_export_peer_cert_dir)
--    {
--        errs |=3D
--            check_file_a=
-ccess_chroot(options->chroot_dir, CHKACC_FILE,
--                           =
-          options->tls_export_peer_cert_dir, W_OK, "--tls-export-cert");
-- =
-   }
--
--    ASSERT(options->connection_list);
--    for (int i =3D 0; i < op=
-tions->connection_list->len; ++i)
--    {
--        struct connection_entry *=
-ce =3D options->connection_list->array[i];
--
--        errs |=3D check_file_=
-access_inline(ce->tls_auth_file_inline, CHKACC_FILE | CHKACC_PRIVATE,
--    =
-                                     ce->tls_auth_file, R_OK, "--tls-auth")=
-;
--        errs |=3D check_file_access_inline(ce->tls_crypt_file_inline, CH=
-KACC_FILE | CHKACC_PRIVATE,
--                                         ce->t=
-ls_crypt_file, R_OK, "--tls-crypt");
--        errs |=3D check_file_access_i=
-nline(ce->tls_crypt_v2_file_inline, CHKACC_FILE | CHKACC_PRIVATE,
--        =
-                                 ce->tls_crypt_v2_file, R_OK, "--tls-crypt-=
-v2");
--    }
--
--    errs |=3D
--        check_file_access_inline(options->sh=
-ared_secret_file_inline, CHKACC_FILE | CHKACC_PRIVATE,
--                   =
-              options->shared_secret_file, R_OK, "--secret");
--
--    errs |=
-=3D check_file_access(CHKACC_DIRPATH | CHKACC_FILEXSTWR, options->packet_id=
-_file,
--                              R_OK | W_OK, "--replay-persist");
--
--=
-    /* ** Password files ** */
--    errs |=3D check_file_access(CHKACC_FILE=
- | CHKACC_ACPTSTDIN | CHKACC_PRIVATE,
--                              option=
-s->key_pass_file, R_OK, "--askpass");
--#ifdef ENABLE_MANAGEMENT
--    errs |=
-=3D
--        check_file_access(CHKACC_FILE | CHKACC_ACPTSTDIN | CHKACC_PRIV=
-ATE,
--                          options->management_user_pass, R_OK, "--man=
-agement user/password file");
--#endif /* ENABLE_MANAGEMENT */
--    errs |=
-=3D check_file_access_inline(options->auth_user_pass_file_inline,
--        =
-                             CHKACC_FILE | CHKACC_ACPTSTDIN | CHKACC_PRIVAT=
-E,
--                                     options->auth_user_pass_file, R_OK=
-, "--auth-user-pass");
--    /* ** System related ** */
--    errs |=3D check=
-_file_access(CHKACC_FILE, options->chroot_dir, R_OK | X_OK, "--chroot direc=
-tory");
--    errs |=3D check_file_access(CHKACC_DIRPATH | CHKACC_FILEXSTWR,=
- options->writepid, R_OK | W_OK,
--                              "--writepid=
-");
--
--    /* ** Log related ** */
--    errs |=3D check_file_access(CHKACC_=
-DIRPATH | CHKACC_FILEXSTWR, options->status_file, R_OK | W_OK,
--           =
-                   "--status");
--
--    /* ** Config related ** */
--    errs=
- |=3D check_file_access_chroot(options->chroot_dir, CHKACC_FILE, options->c=
-lient_config_dir,
--                                     R_OK | X_OK, "--cli=
-ent-config-dir");
--    errs |=3D check_file_access_chroot(options->chroot_d=
-ir, CHKACC_FILE, options->tmp_dir,
--                                     R_=
-OK | W_OK | X_OK, "Temporary directory (--tmp-dir)");
--
--    if (errs)
--   =
+ int
+-dco_new_peer(dco_context_t *dco, unsigned int peerid, socket_descriptor_t sd, struct sockaddr *localaddr,
+-             struct sockaddr *remoteaddr, struct in_addr *vpn_ipv4, struct in6_addr *vpn_ipv6)
++dco_new_peer(dco_context_t *dco, unsigned int peerid, socket_descriptor_t sd,
++             struct sockaddr *localaddr, struct sockaddr *remoteaddr,
++             const struct in_addr *vpn_ipv4, const struct in6_addr *vpn_ipv6)
  {
--        msg(M_USAGE, "Please correct these errors=2E");
--    }
--}
--#end=
-if /* !ENABLE_SMALL */
+     msg(D_DCO_DEBUG, "%s: peer-id %d, fd " SOCKET_PRINTF, __func__, peerid, sd);
+ 
+@@ -745,7 +746,7 @@
+     struct gc_arena gc = gc_new();
+ 
+     int ret = 0;
+-    struct tuntap *tt = dco->tt;
++    const struct tuntap *tt = dco->tt;
+ 
+     if (!tuntap_defined(tt))
+     {
+@@ -869,7 +870,7 @@
+ int
+ dco_get_peer_stats_fallback(struct context *c, const bool raise_sigusr1_on_err)
+ {
+-    struct tuntap *tt = c->c1.tuntap;
++    const struct tuntap *tt = c->c1.tuntap;
+ 
+     if (!tuntap_defined(tt))
+     {
+@@ -898,7 +899,7 @@
+ int
+ dco_get_peer_stats(struct context *c, const bool raise_sigusr1_on_err)
+ {
+-    struct tuntap *tt = c->c1.tuntap;
++    const struct tuntap *tt = c->c1.tuntap;
+ 
+     if (!tuntap_defined(tt))
+     {
+diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
+index 1465cdf..7f4dde4 100644
+--- a/src/openvpn/dns.c
++++ b/src/openvpn/dns.c
+@@ -132,7 +132,7 @@
+     }
+     else
+     {
+-        struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)ai->ai_addr;
++        const struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)ai->ai_addr;
+         server->addr[server->addr_count].in.a6 = sin6->sin6_addr;
+     }
+ 
+@@ -156,7 +156,7 @@
+     /* Append all domains to the end of the list */
+     while (*domains)
+     {
+-        char *domain = *domains++;
++        const char *domain = *domains++;
+         if (!validate_domain(domain))
+         {
+             return false;
+@@ -699,7 +699,7 @@
+ run_up_down_command(bool up, struct options *o, const struct tuntap *tt,
+                     struct dns_updown_runner_info *updown_runner)
+ {
+-    struct dns_options *dns = &o->dns_options;
++    const struct dns_options *dns = &o->dns_options;
+     if (!dns->updown || (o->up_script && !dns_updown_user_set(dns) && !dns_updown_forced(dns)))
+     {
+         return;
+@@ -864,7 +864,7 @@
+     }
+ #ifdef _WIN32
+     /* Don't use iservice in DHCP mode */
+-    struct tuntap_options *tto = &o->tuntap_options;
++    const struct tuntap_options *tto = &o->tuntap_options;
+     if (tto->ip_win32_type == IPW32_SET_DHCP_MASQ || tto->ip_win32_type == IPW32_SET_ADAPTIVE)
+     {
+         return;
+diff --git a/src/openvpn/event.c b/src/openvpn/event.c
+index 9e17807..8b7716a 100644
+--- a/src/openvpn/event.c
++++ b/src/openvpn/event.c
+@@ -557,7 +557,7 @@
+ ep_del(struct event_set *es, event_t event)
+ {
+     struct epoll_event ev;
+-    struct ep_set *eps = (struct ep_set *)es;
++    const struct ep_set *eps = (struct ep_set *)es;
+ 
+     dmsg(D_EVENT_WAIT, "EP_DEL ev=%d", (int)event);
+ 
+@@ -572,7 +572,7 @@
+ static void
+ ep_ctl(struct event_set *es, event_t event, unsigned int rwflags, void *arg)
+ {
+-    struct ep_set *eps = (struct ep_set *)es;
++    const struct ep_set *eps = (struct ep_set *)es;
+     struct epoll_event ev;
+ 
+     CLEAR(ev);
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index c5b9278..6581998 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1213,7 +1213,7 @@
+ {
+     if (float_sa->sa_family == AF_INET)
+     {
+-        struct sockaddr_in *float4 = (struct sockaddr_in *)float_sa;
++        const struct sockaddr_in *float4 = (struct sockaddr_in *)float_sa;
+         /* DCO treats IPv4-mapped IPv6 addresses as pure IPv4. However, on a
+          * dual-stack socket, we need to preserve the mapping otherwise openvpn
+          * will not be able to find the peer by its transport address.
+@@ -1236,7 +1236,7 @@
+     }
+     else
+     {
+-        struct sockaddr_in6 *float6 = (struct sockaddr_in6 *)float_sa;
++        const struct sockaddr_in6 *float6 = (struct sockaddr_in6 *)float_sa;
+         memcpy(&out_osaddr->addr.in6, float6, sizeof(struct sockaddr_in6));
+     }
+ }
+@@ -1366,8 +1366,8 @@
+         return;
+     }
+ 
+-    struct openvpn_sockaddr *link_addr = &c->c2.to_link_addr->dest;
+-    struct link_socket_info *lsi = get_link_socket_info(c);
++    const struct openvpn_sockaddr *link_addr = &c->c2.to_link_addr->dest;
++    const struct link_socket_info *lsi = get_link_socket_info(c);
+ 
+     int ip_hdr_offset = 0;
+     int tun_ip_ver = get_tun_ip_ver(TUNNEL_TYPE(c->c1.tuntap), buf, &ip_hdr_offset);
+@@ -1404,7 +1404,7 @@
+         }
+ 
+         /* drop packets with same dest addr and port as remote */
+-        uint8_t *l4_hdr = (uint8_t *)pip + ip_hlen;
++        const uint8_t *l4_hdr = (uint8_t *)pip + ip_hlen;
+ 
+         uint16_t link_port = ntohs(link_addr->addr.in4.sin_port);
+ 
+@@ -1451,7 +1451,7 @@
+         uint16_t link_port = ntohs(link_addr->addr.in6.sin6_port);
+ 
+         /* drop packets with same dest addr and port as remote */
+-        uint8_t *l4_hdr = (uint8_t *)pip6 + sizeof(struct openvpn_ipv6hdr);
++        const uint8_t *l4_hdr = (uint8_t *)pip6 + sizeof(struct openvpn_ipv6hdr);
+         uint16_t src_port = ntohs(*(uint16_t *)l4_hdr);
+         uint16_t dst_port = ntohs(*(uint16_t *)(l4_hdr + sizeof(uint16_t)));
+         if ((OPENVPN_IN6_ARE_ADDR_EQUAL(&link_addr->addr.in6.sin6_addr, &pip6->daddr)) && (link_port == dst_port))
+@@ -2209,7 +2209,7 @@
+ 
+                     if (e->arg >= MULTI_N)
+                     {
+-                        struct event_arg *ev_arg = (struct event_arg *)e->arg;
++                        const struct event_arg *ev_arg = (struct event_arg *)e->arg;
+                         if (ev_arg->type != EVENT_ARG_LINK_SOCKET)
+                         {
+                             c->c2.event_set_status = ES_ERROR;
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index a90fe69..299c04b 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -320,8 +320,8 @@
+ management_callback_remote_entry_count(void *arg)
+ {
+     ASSERT(arg);
+-    struct context *c = (struct context *)arg;
+-    struct connection_list *l = c->options.connection_list;
++    const struct context *c = (struct context *)arg;
++    const struct connection_list *l = c->options.connection_list;
+ 
+     return l->len;
+ }
+@@ -338,7 +338,7 @@
+ 
+     if (l->len > 0 && index < (unsigned int)l->len)
+     {
+-        struct connection_entry *ce = l->array[index];
++        const struct connection_entry *ce = l->array[index];
+         const char *proto = proto2ascii(ce->proto, ce->af, false);
+         const char *status = (ce->flags & CE_DISABLED) ? "disabled" : "enabled";
+ 
+@@ -516,7 +516,7 @@
+ {
+     struct connection_list *l = c->options.connection_list;
+     bool ce_defined;
+-    struct connection_entry *ce;
++    const struct connection_entry *ce;
+     int n_cycles = 0;
+ 
+     do
+@@ -1562,10 +1562,10 @@
+     /* Tell management interface that we initialized */
+     if (management)
+     {
+-        in_addr_t *tun_local = NULL;
+-        struct in6_addr *tun_local6 = NULL;
++        const in_addr_t *tun_local = NULL;
++        const struct in6_addr *tun_local6 = NULL;
+         struct openvpn_sockaddr local, remote;
+-        struct link_socket_actual *actual;
++        const struct link_socket_actual *actual;
+         socklen_t sa_len = sizeof(local);
+         const char *detail = "SUCCESS";
+         if (flags & ISC_ERRORS)
+@@ -4281,7 +4281,7 @@
+     /* On some newer Android handsets, changing to a different network
+      * often does not trigger a TCP reset but continue using the old
+      * connection (e.g. using mobile connection when WiFi becomes available */
+-    struct link_socket_info *lsi = get_link_socket_info(c);
++    const struct link_socket_info *lsi = get_link_socket_info(c);
+     if (lsi && proto_is_tcp(lsi->proto) && !samenetwork)
+     {
+         return -2;
+diff --git a/src/openvpn/list.c b/src/openvpn/list.c
+index 9e80761..e51dcd0 100644
+--- a/src/openvpn/list.c
++++ b/src/openvpn/list.c
+@@ -167,7 +167,7 @@
+ hash_remove_by_value(struct hash *hash, void *value)
+ {
+     struct hash_iterator hi;
+-    struct hash_element *he;
++    const struct hash_element *he;
+ 
+     hash_iterator_init(hash, &hi);
+     while ((he = hash_iterator_next(&hi)))
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index c082f51..604bbcd 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -3820,7 +3820,7 @@
+ {
+     int ok;
+     char *result = NULL;
+-    struct buffer *buf;
++    const struct buffer *buf;
+ 
+     ok = management_query_multiline(man, b64_data, prompt, cmd, state, input);
+     if (ok && buffer_list_defined(*input))
+@@ -3849,7 +3849,7 @@
+ {
+     int ok;
+     char *result = NULL;
+-    struct buffer *buf;
++    const struct buffer *buf;
+ 
+     ok = management_query_multiline(man, b64_data, prompt, cmd, state, input);
+     if (ok && buffer_list_defined(*input))
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index a8c88c9..54af890 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -131,7 +131,7 @@
+     struct auth_challenge_info *ac;
+     const int len = strlen(auth_challenge);
+     char *work = (char *)gc_malloc(len + 1, false, gc);
+-    char *cp;
++    const char *cp;
+ 
+     struct buffer b;
+     buf_set_read(&b, (const uint8_t *)auth_challenge, len);
+diff --git a/src/openvpn/mss.c b/src/openvpn/mss.c
+index 14112b4..36bbb43 100644
+--- a/src/openvpn/mss.c
++++ b/src/openvpn/mss.c
+@@ -65,7 +65,7 @@
+         struct buffer newbuf = *buf;
+         if (buf_advance(&newbuf, hlen))
+         {
+-            struct openvpn_tcphdr *tc = (struct openvpn_tcphdr *)BPTR(&newbuf);
++            const struct openvpn_tcphdr *tc = (struct openvpn_tcphdr *)BPTR(&newbuf);
+             if (tc->flags & OPENVPN_TCPH_SYN_MASK)
+             {
+                 mss_fixup_dowork(&newbuf, maxmss);
+@@ -122,7 +122,7 @@
+     newbuf = *buf;
+     if (buf_advance(&newbuf, 40) && BLENZ(&newbuf) >= sizeof(struct openvpn_tcphdr))
+     {
+-        struct openvpn_tcphdr *tc = (struct openvpn_tcphdr *)BPTR(&newbuf);
++        const struct openvpn_tcphdr *tc = (struct openvpn_tcphdr *)BPTR(&newbuf);
+         if (tc->flags & OPENVPN_TCPH_SYN_MASK)
+         {
+             mss_fixup_dowork(&newbuf, maxmss - 20);
+diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
+index f000283..5d88f8a 100644
+--- a/src/openvpn/mtcp.c
++++ b/src/openvpn/mtcp.c
+@@ -130,7 +130,7 @@
+ void
+ multi_tcp_dereference_instance(struct multi_io *multi_io, struct multi_instance *mi)
+ {
+-    struct link_socket *sock = mi->context.c2.link_sockets[0];
++    const struct link_socket *sock = mi->context.c2.link_sockets[0];
+     if (sock && mi->socket_set_called)
+     {
+         event_del(multi_io->es, socket_event_handle(sock));
+diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
+index 632b064..6d9c181 100644
+--- a/src/openvpn/mudp.c
++++ b/src/openvpn/mudp.c
+@@ -102,7 +102,7 @@
+     verdict = tls_pre_decrypt_lite(tas, state, &m->top.c2.from, &m->top.c2.buf);
+ 
+     uint8_t *hmac_key = m->top.c2.session_id_key;
+-    struct openvpn_sockaddr *from = &m->top.c2.from.dest;
++    const struct openvpn_sockaddr *from = &m->top.c2.from.dest;
+     int handwindow = m->top.options.handshake_window;
+ 
+     if (verdict == VERDICT_VALID_RESET_V3 || verdict == VERDICT_VALID_RESET_V2)
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 20b4f14..60a5148 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -86,7 +86,7 @@
+     struct gc_arena gc = gc_new();
+     struct env_set *es;
+     bool ret = true;
+-    struct plugin_list *plugins;
++    const struct plugin_list *plugins;
+ 
+     /* get environmental variable source */
+     if (mi && mi->context.c2.es)
+@@ -1793,7 +1793,7 @@
+      * Push the first cipher from --data-ciphers to the client that
+      * the client announces to be supporting.
+      */
+-    char *push_cipher =
++    const char *push_cipher =
+         ncp_get_best_cipher(o->ncp_ciphers, peer_info, tls_multi->remote_ciphername, &o->gc);
+     if (push_cipher)
+     {
+@@ -1924,7 +1924,7 @@
+ static enum client_connect_return
+ ccs_test_deferred_ret_file(struct multi_instance *mi)
+ {
+-    struct client_connect_defer_state *ccs = &(mi->client_connect_defer_state);
++    const struct client_connect_defer_state *ccs = &(mi->client_connect_defer_state);
+     FILE *fp = fopen(ccs->deferred_ret_file, "r");
+     if (!fp)
+     {
+@@ -2165,7 +2165,7 @@
+ {
+     ASSERT(mi);
+     ASSERT(option_types_found);
+-    struct client_connect_defer_state *ccs = &(mi->client_connect_defer_state);
++    const struct client_connect_defer_state *ccs = &(mi->client_connect_defer_state);
+     enum client_connect_return ret = CC_RET_SKIPPED;
+ 
+     ret = ccs_test_deferred_ret_file(mi);
+@@ -2567,7 +2567,7 @@
+ override_locked_username(struct multi_instance *mi)
+ {
+     struct tls_multi *multi = mi->context.c2.tls_multi;
+-    struct options *options = &mi->context.options;
++    const struct options *options = &mi->context.options;
+     struct tls_session *session = &multi->session[TM_ACTIVE];
+ 
+     if (!multi->locked_username)
+@@ -2986,7 +2986,7 @@
+     {
+ #if defined(ENABLE_ASYNC_PUSH)
+         bool was_unauthenticated = true;
+-        struct key_state *ks = NULL;
++        const struct key_state *ks = NULL;
+         if (mi->context.c2.tls_multi)
+         {
+             ks = &mi->context.c2.tls_multi->session[TM_ACTIVE].key[KS_PRIMARY];
+@@ -3919,7 +3919,7 @@
+ static int
+ management_callback_n_clients(void *arg)
+ {
+-    struct multi_context *m = (struct multi_context *)arg;
++    const struct multi_context *m = (struct multi_context *)arg;
+     return m->n_clients;
+ }
+ 
+@@ -4430,7 +4430,7 @@
+ bool
+ multi_check_push_ifconfig_extra_route(struct multi_instance *mi, in_addr_t dest)
+ {
+-    struct options *o = &mi->context.options;
++    const struct options *o = &mi->context.options;
+     in_addr_t local_addr, local_netmask;
+ 
+     if (!o->ifconfig_local || !o->ifconfig_remote_netmask)
+@@ -4452,7 +4452,7 @@
+ multi_check_push_ifconfig_ipv6_extra_route(struct multi_instance *mi,
+                                            struct in6_addr *dest)
+ {
+-    struct options *o = &mi->context.options;
++    const struct options *o = &mi->context.options;
+ 
+     if (!o->ifconfig_ipv6_local || !o->ifconfig_ipv6_netbits)
+     {
+diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c
+index b3f8e2b..e6e72d0 100644
+--- a/src/openvpn/networking_sitnl.c
++++ b/src/openvpn/networking_sitnl.c
+@@ -462,7 +462,7 @@
+     struct rtattr *rta = RTM_RTA(r);
+     size_t len = n->nlmsg_len - NLMSG_LENGTH(sizeof(*r));
+     unsigned int table, ifindex = 0;
+-    void *gw = NULL;
++    const void *gw = NULL;
+ 
+     /* filter-out non-zero dst prefixes */
+     if (res->default_only && r->rtm_dst_len != 0)
+@@ -1179,7 +1179,7 @@
+ net_route_v4_add(openvpn_net_ctx_t *ctx, const in_addr_t *dst, int prefixlen, const in_addr_t *gw,
+                  const char *iface, uint32_t table, int metric)
+ {
+-    in_addr_t *dst_ptr = NULL, *gw_ptr = NULL;
++    const in_addr_t *dst_ptr = NULL, *gw_ptr = NULL;
+     in_addr_t dst_be = 0, gw_be = 0;
+     char dst_str[INET_ADDRSTRLEN];
+     char gw_str[INET_ADDRSTRLEN];
+@@ -1326,7 +1326,7 @@
+ #if defined(ENABLE_DCO)
+     if (arg && (strcmp(type, OVPN_FAMILY_NAME) == 0))
+     {
+-        dco_context_t *dco = arg;
++        const dco_context_t *dco = arg;
+         struct rtattr *data = SITNL_NEST(&req.n, sizeof(req), IFLA_INFO_DATA);
+ 
+         /* the netlink format is uint8_t for this and using something
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 1de7672..67c23b3 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1714,7 +1714,7 @@
+ 
+     for (int i = 0; i < ce->local_list->len; i++)
+     {
+-        struct local_entry *le = ce->local_list->array[i];
++        const struct local_entry *le = ce->local_list->array[i];
+ 
+         if (proto_is_net(le->proto) && string_defined_equal(le->local, ce->remote)
+             && string_defined_equal(le->port, ce->remote_port))
+@@ -3379,7 +3379,7 @@
+     {
+         char *fullpath =
+             string_alloc(file, NULL); /* POSIX dirname() implementation may modify its arguments */
+-        char *dirpath = dirname(fullpath);
++        const char *dirpath = dirname(fullpath);
+ 
+         if (platform_access(dirpath, mode | X_OK) != 0)
+         {
+@@ -3610,7 +3610,7 @@
+     ASSERT(options->connection_list);
+     for (int i = 0; i < options->connection_list->len; ++i)
+     {
+-        struct connection_entry *ce = options->connection_list->array[i];
++        const struct connection_entry *ce = options->connection_list->array[i];
+ 
+         errs |= check_file_access_inline(ce->tls_auth_file_inline, CHKACC_FILE | CHKACC_PRIVATE,
+                                          ce->tls_auth_file, R_OK, "--tls-auth");
+@@ -8487,7 +8487,7 @@
+ #ifdef ENABLE_PKCS11
+     else if (streq(p[0], "show-pkcs11-ids") && !p[3])
+     {
+-        char *provider = p[1];
++        const char *provider = p[1];
+         bool cert_private = (p[2] == NULL ? false : (atoi_warn(p[2], msglevel) != 0));
+ 
+ #ifdef DEFAULT_PKCS11_MODULE
+diff --git a/src/openvpn/options_parse.c b/src/openvpn/options_parse.c
+index a8c4aee..88ab4d2 100644
+--- a/src/openvpn/options_parse.c
++++ b/src/openvpn/options_parse.c
+@@ -268,7 +268,7 @@
+     while (in_src_get(is, line, sizeof(line)))
+     {
+         (*num_lines)++;
+-        char *line_ptr = line;
++        const char *line_ptr = line;
+         /* Remove leading spaces */
+         while (isspace(*line_ptr))
+         {
+diff --git a/src/openvpn/options_util.c b/src/openvpn/options_util.c
+index d72ea25c..779c38e 100644
+--- a/src/openvpn/options_util.c
++++ b/src/openvpn/options_util.c
+@@ -273,7 +273,7 @@
+         return true;
+     }
+ 
+-    struct pull_filter *f;
++    const struct pull_filter *f;
+ 
+     for (f = o->pull_filter_list->head; f; f = f->next)
+     {
+diff --git a/src/openvpn/pool.c b/src/openvpn/pool.c
+index ff74e7c..80dec6c 100644
+--- a/src/openvpn/pool.c
++++ b/src/openvpn/pool.c
+@@ -63,7 +63,7 @@
+ 
+     for (i = 0; i < pool->size; ++i)
+     {
+-        struct ifconfig_pool_entry *ipe = &pool->list[i];
++        const struct ifconfig_pool_entry *ipe = &pool->list[i];
+         if (!ipe->in_use)
+         {
+             /*
+diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
+index 9acb2fa..e0700aa 100644
+--- a/src/openvpn/proxy.c
++++ b/src/openvpn/proxy.c
+@@ -703,7 +703,7 @@
+ #if PROXY_DIGEST_AUTH
+         else if (p->auth_method == HTTP_AUTH_DIGEST && !processed)
+         {
+-            char *pa = p->proxy_authenticate;
++            const char *pa = p->proxy_authenticate;
+             const int method = p->auth_method;
+             ASSERT(pa);
+ 
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 5b15f71..fa7bf1e 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -271,8 +271,8 @@
+     }
+ #ifdef ENABLE_MANAGEMENT
+     struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
+-    struct man_def_auth_context *mda = session->opt->mda_context;
+-    struct env_set *es = session->opt->es;
++    const struct man_def_auth_context *mda = session->opt->mda_context;
++    const struct env_set *es = session->opt->es;
+     unsigned int mda_key_id = get_primary_key(c->c2.tls_multi)->mda_key_id;
+ 
+     management_notify_client_cr_response(mda_key_id, mda, es, m);
+@@ -917,7 +917,7 @@
+ push_options(struct options *o, char **p, msglvl_t msglevel, struct gc_arena *gc)
+ {
+     const char **argv = make_extended_arg_array(p, false, gc);
+-    char *opt = print_argv(argv, gc, 0);
++    const char *opt = print_argv(argv, gc, 0);
+     push_option(o, opt, msglevel);
+ }
+ 
+@@ -1199,7 +1199,7 @@
+                     /* parse route-ipv6 arguments */
+                     if (get_ipv6_addr(p[1], &network, &netbits, D_ROUTE_DEBUG))
+                     {
+-                        struct iroute_ipv6 *ir;
++                        const struct iroute_ipv6 *ir;
+ 
+                         /* does this route-ipv6 match an iroute-ipv6? */
+                         for (ir = o->iroutes_ipv6; ir != NULL; ir = ir->next)
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 6dbe3ec..03a2526 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -667,7 +667,7 @@
+ 
+     /* parse the routes from opt to rl */
+     {
+-        struct route_option *ro;
++        const struct route_option *ro;
+         for (ro = opt->routes; ro; ro = ro->next)
+         {
+             struct addrinfo *netlist = NULL;
+@@ -679,7 +679,7 @@
+             }
+             else
+             {
+-                struct addrinfo *curele;
++                const struct addrinfo *curele;
+                 for (curele = netlist; curele; curele = curele->ai_next)
+                 {
+                     struct route_ipv4 *new;
+@@ -799,7 +799,7 @@
+     need_remote_ipv6_route = false;
+ 
+     {
+-        struct route_ipv6_option *ro6;
++        const struct route_ipv6_option *ro6;
+         for (ro6 = opt6->routes_ipv6; ro6; ro6 = ro6->next)
+         {
+             struct route_ipv6 *r6;
+@@ -1187,7 +1187,7 @@
+ {
+     if (rl6 && (rl6->iflags & RL_ROUTES_ADDED))
+     {
+-        struct route_ipv6 *r6;
++        const struct route_ipv6 *r6;
+         for (r6 = rl6->routes_ipv6; r6; r6 = r6->next)
+         {
+             delete_route_ipv6(r6, tt, es, ctx);
+@@ -1226,7 +1226,7 @@
+ void
+ print_route_options(const struct route_option_list *rol, msglvl_t msglevel)
+ {
+-    struct route_option *ro;
++    const struct route_option *ro;
+     if (rol->flags & RG_ENABLE)
+     {
+         msg(msglevel, "  [redirect_default_gateway local=%d]", (rol->flags & RG_LOCAL) != 0);
+@@ -1335,7 +1335,7 @@
+ setenv_routes(struct env_set *es, const struct route_list *rl)
+ {
+     int i = 1;
+-    struct route_ipv4 *r;
++    const struct route_ipv4 *r;
+     for (r = rl->routes; r; r = r->next)
+     {
+         setenv_route(es, r, i++);
+@@ -1372,7 +1372,7 @@
+ setenv_routes_ipv6(struct env_set *es, const struct route_ipv6_list *rl6)
+ {
+     int i = 1;
+-    struct route_ipv6 *r6;
++    const struct route_ipv6 *r6;
+     for (r6 = rl6->routes_ipv6; r6; r6 = r6->next)
+     {
+         setenv_route_ipv6(es, r6, i++);
+@@ -2423,7 +2423,7 @@
+          */
+         if (rl && tt->did_ifconfig_setup)
+         {
+-            struct route_ipv4 *r;
++            const struct route_ipv4 *r;
+             for (r = rl->routes, len = 0; r; r = r->next, ++len)
+             {
+                 test_route_helper(&ret, &count, &good, &ambig, adapters, r->gateway);
+@@ -3110,7 +3110,8 @@
+     /* scan adapter list */
+     if (rgi->flags & RGI_ADDR_DEFINED)
+     {
+-        struct ifreq *ifr, *ifend;
++        const struct ifreq *ifr;
++        const struct ifreq *ifend;
+         in_addr_t addr, netmask;
+         struct ifreq ifreq;
+         struct ifconf ifc;
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 47edbdb..50126bf 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -393,7 +393,7 @@
+ 
+             for (int j = 0; j < ce->local_list->len; j++)
+             {
+-                struct local_entry *le = ce->local_list->array[j];
++                const struct local_entry *le = ce->local_list->array[j];
+ 
+                 if (!le->local)
+                 {
+@@ -898,12 +898,10 @@
+      * What is the correct way to deal with it?
+      */
+ 
+-    struct addrinfo *cur;
 -
--/*
-  * Sanity check on options=2E
-  * Also set so=
-me options based on other
-  * options=2E
+     ASSERT(local);
+ 
+-
+     /* find the first addrinfo with correct ai_family */
++    const struct addrinfo *cur;
+     for (cur = local; cur; cur = cur->ai_next)
+     {
+         if (cur->ai_family == ai_family)
+@@ -1490,7 +1488,7 @@
+         /* Socket is always bound on the first matching address,
+          * For bound sockets with no remote addr this is the element of
+          * the list */
+-        struct addrinfo *cur;
++        const struct addrinfo *cur;
+         for (cur = sock->info.lsa->bind_local; cur; cur = cur->ai_next)
+         {
+             if (!ai_family || ai_family == cur->ai_family)
+@@ -1621,7 +1619,7 @@
+ create_socket_dco_win(struct context *c, struct link_socket *sock, struct signal_info *sig_info)
+ {
+     /* in P2P mode we must have remote resolved at this point */
+-    struct addrinfo *remoteaddr = sock->info.lsa->current_remote;
++    const struct addrinfo *remoteaddr = sock->info.lsa->current_remote;
+     if ((c->options.mode == MODE_POINT_TO_POINT) && (!remoteaddr))
+     {
+         return;
+@@ -1910,7 +1908,7 @@
+                               const struct link_socket_actual *from_addr)
+ {
+     struct gc_arena gc = gc_new();
+-    struct addrinfo *ai;
++    const struct addrinfo *ai;
+ 
+     switch (from_addr->dest.addr.sa.sa_family)
+     {
+diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
+index 1a532e1..89465bc 100644
+--- a/src/openvpn/socket.h
++++ b/src/openvpn/socket.h
+@@ -761,7 +761,7 @@
+ {
+     if (sock && ipbuf)
+     {
+-        struct openvpn_iphdr *iph = (struct openvpn_iphdr *)BPTR(ipbuf);
++        const struct openvpn_iphdr *iph = (struct openvpn_iphdr *)BPTR(ipbuf);
+         sock->ptos = iph->tos;
+         sock->ptos_defined = true;
+     }
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 01e45fd..93c1293 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1487,7 +1487,7 @@
+ static bool
+ generate_key_expansion(struct tls_multi *multi, struct key_state *ks, struct tls_session *session)
+ {
+-    struct key_ctx_bi *key = &ks->crypto_options.key_ctx_bi;
++    const struct key_ctx_bi *key = &ks->crypto_options.key_ctx_bi;
+     bool ret = false;
+     struct key2 key2;
+ 
+@@ -1749,7 +1749,7 @@
+ static void
+ flush_payload_buffer(struct key_state *ks)
+ {
+-    struct buffer *b;
++    const struct buffer *b;
+ 
+     while ((b = buffer_list_peek(ks->paybuf)))
+     {
+@@ -2778,7 +2778,7 @@
+     /* Outgoing Ciphertext to reliable buffer */
+     if (ks->state >= S_START)
+     {
+-        struct buffer *buf = reliable_get_buf_output_sequenced(ks->send_reliable);
++        const struct buffer *buf = reliable_get_buf_output_sequenced(ks->send_reliable);
+         if (buf)
+         {
+             if (!write_outgoing_tls_ciphertext(session, continue_tls_process))
+@@ -2847,7 +2847,7 @@
+     {
+         int opcode;
+ 
+-        struct buffer *buf = reliable_send(ks->send_reliable, &opcode);
++        const struct buffer *buf = reliable_send(ks->send_reliable, &opcode);
+         ASSERT(buf);
+         struct buffer b = *buf;
+         INCR_SENT;
+@@ -3210,7 +3210,7 @@
+ static void
+ check_session_buf_not_used(struct buffer *to_link, struct tls_session *session)
+ {
+-    uint8_t *dataptr = to_link->data;
++    const uint8_t *dataptr = to_link->data;
+     if (!dataptr)
+     {
+         return;
+@@ -3232,7 +3232,7 @@
+ 
+     for (int i = 0; i < KS_SIZE; i++)
+     {
+-        struct key_state *ks = &session->key[i];
++        const struct key_state *ks = &session->key[i];
+         if (ks->state == S_UNDEF)
+         {
+             continue;
+@@ -3303,7 +3303,7 @@
+     {
+         struct tls_session *session = &multi->session[i];
+         struct key_state *ks = &session->key[KS_PRIMARY];
+-        struct key_state *ks_lame = &session->key[KS_LAME_DUCK];
++        const struct key_state *ks_lame = &session->key[KS_LAME_DUCK];
+ 
+         /* set initial remote address. This triggers connecting with that
+          * session. So we only do that if the TM_ACTIVE session is not
+@@ -3504,7 +3504,7 @@
+ 
+     for (int i = 0; i < KEY_SCAN_SIZE; ++i)
+     {
+-        struct key_state *ks = get_key_scan(multi, i);
++        const struct key_state *ks = get_key_scan(multi, i);
+         if (ks->key_id != key_id)
+         {
+             continue;
+@@ -4069,7 +4069,7 @@
+ void
+ tls_prepend_opcode_v1(const struct tls_multi *multi, struct buffer *buf)
+ {
+-    struct key_state *ks = multi->save_ks;
++    const struct key_state *ks = multi->save_ks;
+ 
+     msg(D_TLS_DEBUG, __func__);
+ 
+@@ -4083,7 +4083,7 @@
+ void
+ tls_prepend_opcode_v2(const struct tls_multi *multi, struct buffer *buf)
+ {
+-    struct key_state *ks = multi->save_ks;
++    const struct key_state *ks = multi->save_ks;
+     uint32_t peer;
+ 
+     msg(D_TLS_DEBUG, __func__);
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index 6d7ac04..faf5a27 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -730,7 +730,7 @@
+ static inline size_t
+ external_key_len(void *vctx)
+ {
+-    struct external_context *const ctx = vctx;
++    const struct external_context *const ctx = vctx;
+ 
+     return ctx->signature_length;
+ }
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index 162f68f..063fa5d 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -409,7 +409,7 @@
+                     const char *subject, const struct x509_track *x509_track)
+ {
+     char envname[64];
+-    char *serial = NULL;
++    const char *serial = NULL;
+     struct gc_arena gc = gc_new();
+ 
+     /* Save X509 fields in environment */
+@@ -699,7 +699,7 @@
+                 goto cleanup;
+         }
+ 
+-        struct verify_hash_list *current_hash = opt->verify_hash;
++        const struct verify_hash_list *current_hash = opt->verify_hash;
+ 
+         while (current_hash)
+         {
+@@ -1532,7 +1532,7 @@
+ verify_user_pass_management(struct tls_session *session, const struct user_pass *up)
+ {
+     int retval = KMDA_ERROR;
+-    struct key_state *ks = &session->key[KS_PRIMARY]; /* primary key */
++    const struct key_state *ks = &session->key[KS_PRIMARY]; /* primary key */
+ 
+     /* set username/password in private env space */
+     setenv_str(session->opt->es, "password", up->password);
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index f2a4394..af48921 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -871,7 +871,7 @@
+          */
+         if (strict_warn)
+         {
+-            struct addrinfo *curele;
++            const struct addrinfo *curele;
+             ifconfig_sanity_check(tun_p2p, tt->remote_netmask);
+ 
+             /*
+@@ -1726,7 +1726,7 @@
+     {
+         u_int32_t type;
+         struct iovec iv[2];
+-        struct ip *iph = (struct ip *)buf;
++        const struct ip *iph = (struct ip *)buf;
+ 
+         if (iph->ip_v == 6)
+         {
+@@ -3414,7 +3414,7 @@
+         SP_DEVINFO_DATA device_info_data;
+         BOOL res;
+         HKEY dev_key;
+-        char net_cfg_instance_id_string[] = "NetCfgInstanceId";
++        const char net_cfg_instance_id_string[] = "NetCfgInstanceId";
+         BYTE net_cfg_instance_id[256];
+         char device_instance_id[256];
+         DWORD len;
+@@ -3542,7 +3542,7 @@
+         HKEY unit_key;
+         char component_id_string[] = "ComponentId";
+         char component_id[256];
+-        char net_cfg_instance_id_string[] = "NetCfgInstanceId";
++        const char net_cfg_instance_id_string[] = "NetCfgInstanceId";
+         BYTE net_cfg_instance_id[256];
+         DWORD data_type;
+ 
+diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
+index ade7ec0..81437c1 100644
+--- a/src/openvpn/win32.c
++++ b/src/openvpn/win32.c
+@@ -889,7 +889,7 @@
+ 
+     if (es)
+     {
+-        struct env_item *e;
++        const struct env_item *e;
+         char *ret;
+         char *p;
+         size_t nchars = 1;
+diff --git a/src/openvpnmsica/msica_arg.c b/src/openvpnmsica/msica_arg.c
+index a334710..d763d93 100644
+--- a/src/openvpnmsica/msica_arg.c
++++ b/src/openvpnmsica/msica_arg.c
+@@ -92,7 +92,7 @@
+ {
+     /* Count required space. */
+     size_t size = 2 /*x + zero-terminator*/;
+-    for (struct msica_arg *p = seq->head; p != NULL; p = p->next)
++    for (const struct msica_arg *p = seq->head; p != NULL; p = p->next)
+     {
+         size += wcslen(p->val) + 1 /*space delimiter|zero-terminator*/;
+     }
+@@ -119,7 +119,7 @@
+ 
+     /* Join. */
+     LPWSTR s = str + 1 /*x*/;
+-    for (struct msica_arg *p = seq->head; p != NULL; p = p->next)
++    for (const struct msica_arg *p = seq->head; p != NULL; p = p->next)
+     {
+         /* Convert zero-terminator into space delimiter. */
+         s[0] = L' ';
+diff --git a/src/openvpnmsica/openvpnmsica.c b/src/openvpnmsica/openvpnmsica.c
+index 95e457c..a861e8a 100644
+--- a/src/openvpnmsica/openvpnmsica.c
++++ b/src/openvpnmsica/openvpnmsica.c
+@@ -196,7 +196,7 @@
+ 
+     /* Count adapters. */
+     size_t adapter_count = 0;
+-    for (struct tap_adapter_node *pAdapter = pAdapterList; pAdapter; pAdapter = pAdapter->pNext)
++    for (const struct tap_adapter_node *pAdapter = pAdapterList; pAdapter; pAdapter = pAdapter->pNext)
+     {
+         adapter_count++;
+     }
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index 32c1b9c..a9e9665 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -2685,7 +2685,7 @@
+     unsigned n = 0;
+     for (size_t i = 0; i < _countof(data); ++i)
+     {
+-        nrpt_exclude_data_t *d = &data[i];
++        const nrpt_exclude_data_t *d = &data[i];
+         if (d->domains_size == 0)
+         {
+             break;
+diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
+index 3b7bcc2..948b6af 100644
+--- a/src/plugins/auth-pam/auth-pam.c
++++ b/src/plugins/auth-pam/auth-pam.c
+@@ -526,7 +526,7 @@
+ openvpn_plugin_func_v1(openvpn_plugin_handle_t handle, const int type, const char *argv[],
+                        const char *envp[])
+ {
+-    struct auth_pam_context *context = (struct auth_pam_context *)handle;
++    const struct auth_pam_context *context = (struct auth_pam_context *)handle;
+ 
+     if (type == OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY && context->foreground_fd >= 0)
+     {
+diff --git a/src/tapctl/main.c b/src/tapctl/main.c
+index 6a4a240..6697d14 100644
+--- a/src/tapctl/main.c
++++ b/src/tapctl/main.c
+@@ -317,7 +317,7 @@
+             return NULL;
+         }
+ 
+-        struct tap_adapter_node *conflict = find_adapter_by_name(requested_name, adapter_list);
++        const struct tap_adapter_node *conflict = find_adapter_by_name(requested_name, adapter_list);
+         if (conflict)
+         {
+             LPOLESTR adapter_id = NULL;
+diff --git a/tests/unit_tests/openvpn/test_buffer.c b/tests/unit_tests/openvpn/test_buffer.c
+index 326de40..ce38bbe 100644
+--- a/tests/unit_tests/openvpn/test_buffer.c
++++ b/tests/unit_tests/openvpn/test_buffer.c
+@@ -88,7 +88,7 @@
+ 
+     int maxoutput = 0;
+     unsigned int blocksize = 5;
+-    char *separator = " ";
++    const char *separator = " ";
+     output = format_hex_ex(input, input_size, maxoutput, blocksize, separator, &gc);
+     assert_string_equal(output, "0100ff10ff 00f00f090a");
+ 
+@@ -174,7 +174,7 @@
+     /* With a max length of 2, no aggregation should take place */
+     buffer_list_aggregate_separator(ctx->one_two_three, 2, testsep);
+     assert_int_equal(ctx->one_two_three->size, 3);
+-    struct buffer *buf = buffer_list_peek(ctx->one_two_three);
++    const struct buffer *buf = buffer_list_peek(ctx->one_two_three);
+     assert_buf_equals_str(buf, teststr1);
+ }
+ 
+@@ -189,7 +189,7 @@
+      */
+     buffer_list_aggregate_separator(ctx->one_two_three, strlen(expected) + 1, testsep);
+     assert_int_equal(ctx->one_two_three->size, 2);
+-    struct buffer *buf = buffer_list_peek(ctx->one_two_three);
++    const struct buffer *buf = buffer_list_peek(ctx->one_two_three);
+     assert_buf_equals_str(buf, expected);
+ }
+ 
+@@ -201,7 +201,7 @@
+     /* Aggregate all */
+     buffer_list_aggregate_separator(ctx->one_two_three, 1 << 16, testsep);
+     assert_int_equal(ctx->one_two_three->size, 1);
+-    struct buffer *buf = buffer_list_peek(ctx->one_two_three);
++    const struct buffer *buf = buffer_list_peek(ctx->one_two_three);
+     assert_buf_equals_str(buf, teststr1 testsep teststr2 testsep teststr3 testsep);
+ }
+ 
+@@ -213,7 +213,7 @@
+     /* Aggregate all */
+     buffer_list_aggregate_separator(ctx->one_two_three, 1 << 16, testnosep);
+     assert_int_equal(ctx->one_two_three->size, 1);
+-    struct buffer *buf = buffer_list_peek(ctx->one_two_three);
++    const struct buffer *buf = buffer_list_peek(ctx->one_two_three);
+     assert_buf_equals_str(buf, teststr1 teststr2 teststr3);
+ }
+ 
+@@ -226,7 +226,7 @@
+     /* Aggregate all */
+     buffer_list_aggregate_separator(bl_zerolen, 1 << 16, testnosep);
+     assert_int_equal(bl_zerolen->size, 1);
+-    struct buffer *buf = buffer_list_peek(bl_zerolen);
++    const struct buffer *buf = buffer_list_peek(bl_zerolen);
+     assert_buf_equals_str(buf, "");
+ }
+ 
+@@ -239,7 +239,7 @@
+     /* Aggregate all */
+     buffer_list_aggregate_separator(bl_emptybuffers, 1 << 16, testnosep);
+     assert_int_equal(bl_emptybuffers->size, 1);
+-    struct buffer *buf = buffer_list_peek(bl_emptybuffers);
++    const struct buffer *buf = buffer_list_peek(bl_emptybuffers);
+     assert_int_equal(BLEN(buf), 0);
+ }
+ 
+diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.c
+index 77cf295..07c54b4 100644
+--- a/tests/unit_tests/openvpn/test_crypto.c
++++ b/tests/unit_tests/openvpn/test_crypto.c
+@@ -482,9 +482,9 @@
+ crypto_test_hkdf_expand_testa1(void **state)
+ {
+     /* RFC 5889 A.1 Test Case 1 */
+-    uint8_t prk[32] = { 0x07, 0x77, 0x09, 0x36, 0x2c, 0x2e, 0x32, 0xdf, 0x0d, 0xdc, 0x3f,
+-                        0x0d, 0xc4, 0x7b, 0xba, 0x63, 0x90, 0xb6, 0xc7, 0x3b, 0xb5, 0x0f,
+-                        0x9c, 0x31, 0x22, 0xec, 0x84, 0x4a, 0xd7, 0xc2, 0xb3, 0xe5 };
++    const uint8_t prk[32] = { 0x07, 0x77, 0x09, 0x36, 0x2c, 0x2e, 0x32, 0xdf, 0x0d, 0xdc, 0x3f,
++                              0x0d, 0xc4, 0x7b, 0xba, 0x63, 0x90, 0xb6, 0xc7, 0x3b, 0xb5, 0x0f,
++                              0x9c, 0x31, 0x22, 0xec, 0x84, 0x4a, 0xd7, 0xc2, 0xb3, 0xe5 };
+ 
+     uint8_t info[10] = { 0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8, 0xf9 };
+ 
+@@ -503,9 +503,9 @@
+ crypto_test_hkdf_expand_testa2(void **state)
+ {
+     /* RFC 5889 A.2 Test Case 2 */
+-    uint8_t prk[32] = { 0x06, 0xa6, 0xb8, 0x8c, 0x58, 0x53, 0x36, 0x1a, 0x06, 0x10, 0x4c,
+-                        0x9c, 0xeb, 0x35, 0xb4, 0x5c, 0xef, 0x76, 0x00, 0x14, 0x90, 0x46,
+-                        0x71, 0x01, 0x4a, 0x19, 0x3f, 0x40, 0xc1, 0x5f, 0xc2, 0x44 };
++    const uint8_t prk[32] = { 0x06, 0xa6, 0xb8, 0x8c, 0x58, 0x53, 0x36, 0x1a, 0x06, 0x10, 0x4c,
++                              0x9c, 0xeb, 0x35, 0xb4, 0x5c, 0xef, 0x76, 0x00, 0x14, 0x90, 0x46,
++                              0x71, 0x01, 0x4a, 0x19, 0x3f, 0x40, 0xc1, 0x5f, 0xc2, 0x44 };
+ 
+     uint8_t info[80] = { 0xb0, 0xb1, 0xb2, 0xb3, 0xb4, 0xb5, 0xb6, 0xb7, 0xb8, 0xb9, 0xba, 0xbb,
+                          0xbc, 0xbd, 0xbe, 0xbf, 0xc0, 0xc1, 0xc2, 0xc3, 0xc4, 0xc5, 0xc6, 0xc7,
+@@ -534,11 +534,11 @@
+ crypto_test_hkdf_expand_testa3(void **state)
+ {
+     /* RFC 5889 A.3 Test Case 3 */
+-    uint8_t prk[32] = { 0x19, 0xef, 0x24, 0xa3, 0x2c, 0x71, 0x7b, 0x16, 0x7f, 0x33, 0xa9,
+-                        0x1d, 0x6f, 0x64, 0x8b, 0xdf, 0x96, 0x59, 0x67, 0x76, 0xaf, 0xdb,
+-                        0x63, 0x77, 0xac, 0x43, 0x4c, 0x1c, 0x29, 0x3c, 0xcb, 0x04 };
++    const uint8_t prk[32] = { 0x19, 0xef, 0x24, 0xa3, 0x2c, 0x71, 0x7b, 0x16, 0x7f, 0x33, 0xa9,
++                              0x1d, 0x6f, 0x64, 0x8b, 0xdf, 0x96, 0x59, 0x67, 0x76, 0xaf, 0xdb,
++                              0x63, 0x77, 0xac, 0x43, 0x4c, 0x1c, 0x29, 0x3c, 0xcb, 0x04 };
+ 
+-    uint8_t info[] = { 0 };
++    const uint8_t info[] = { 0 };
+ 
+     int L = 42;
+     uint8_t okm[42] = { 0x8d, 0xa4, 0xe7, 0x75, 0xa5, 0x63, 0xc1, 0x8f, 0x71, 0x5f, 0x80,
+@@ -558,9 +558,9 @@
+     /* tests the HDKF with a label/okm that OpenVPN itself uses in OpenSSL 3
+      * HDKF unit test*/
+ 
+-    uint8_t prk[32] = { 0x07, 0x77, 0x09, 0x36, 0x2c, 0x2e, 0x32, 0xdf, 0x0d, 0xdc, 0x3f,
+-                        0x0d, 0xc4, 0x7b, 0xba, 0x63, 0x90, 0xb6, 0xc7, 0x3b, 0xb5, 0x0f,
+-                        0x9c, 0x31, 0x22, 0xec, 0x84, 0x4a, 0xd7, 0xc2, 0xb3, 0xe5 };
++    const uint8_t prk[32] = { 0x07, 0x77, 0x09, 0x36, 0x2c, 0x2e, 0x32, 0xdf, 0x0d, 0xdc, 0x3f,
++                              0x0d, 0xc4, 0x7b, 0xba, 0x63, 0x90, 0xb6, 0xc7, 0x3b, 0xb5, 0x0f,
++                              0x9c, 0x31, 0x22, 0xec, 0x84, 0x4a, 0xd7, 0xc2, 0xb3, 0xe5 };
+ 
+     uint8_t info[18] = { 0x00, 0x1b, 0x0e, 0x6f, 0x76, 0x70, 0x6e, 0x20, 0x75,
+                          0x6e, 0x69, 0x74, 0x20, 0x74, 0x65, 0x73, 0x74, 0x00 };
+@@ -680,7 +680,7 @@
+ static int
+ crypto_test_epoch_setup(void **state)
+ {
+-    uint16_t *num_future_keys = (uint16_t *)*state;
++    const uint16_t *num_future_keys = (uint16_t *)*state;
+     struct epoch_test_state *data = calloc(1, sizeof(struct epoch_test_state));
+ 
+     data->gc = gc_new();
+diff --git a/tests/unit_tests/openvpn/test_cryptoapi.c b/tests/unit_tests/openvpn/test_cryptoapi.c
+index 508afc9..37bbe92 100644
+--- a/tests/unit_tests/openvpn/test_cryptoapi.c
++++ b/tests/unit_tests/openvpn/test_cryptoapi.c
+@@ -233,7 +233,7 @@
+         const CERT_CONTEXT *ctx = NULL;
+         while ((ctx = CertEnumCertificatesInStore(user_store, ctx)))
+         {
+-            char *friendly_name = get_cert_name(ctx, &gc);
++            const char *friendly_name = get_cert_name(ctx, &gc);
+             if (!lookup_cert(friendly_name)) /* not our cert */
+             {
+                 continue;
+@@ -310,7 +310,7 @@
+          */
+         assert_non_null(ctx);
+ 
+-        char *friendly_name = get_cert_name(ctx, &gc);
++        const char *friendly_name = get_cert_name(ctx, &gc);
+         struct test_cert *found = lookup_cert(friendly_name);
+         assert_non_null(found);
+         assert_string_equal(found->cname, c->cname);
+@@ -343,7 +343,7 @@
+          */
+         assert_non_null(ctx);
+ 
+-        char *friendly_name = get_cert_name(ctx, &gc);
++        const char *friendly_name = get_cert_name(ctx, &gc);
+         struct test_cert *found = lookup_cert(friendly_name);
+         assert_non_null(found);
+         assert_string_equal(found->issuer, c->issuer);
+diff --git a/tests/unit_tests/openvpn/test_misc.c b/tests/unit_tests/openvpn/test_misc.c
+index 5f03860..a41c27b 100644
+--- a/tests/unit_tests/openvpn/test_misc.c
++++ b/tests/unit_tests/openvpn/test_misc.c
+@@ -300,7 +300,7 @@
+     {
+         for (ptr_type i = 1; i <= 16; ++i)
+         {
+-            struct hash_element *item = hash_lookup_by_value(nhash, (void *)i);
++            const struct hash_element *item = hash_lookup_by_value(nhash, (void *)i);
+             hash_remove_by_value(nhash, (void *)i);
+             /* check item got removed if it was present before */
+             if (item)
+diff --git a/tests/unit_tests/openvpn/test_ssl.c b/tests/unit_tests/openvpn/test_ssl.c
+index 4de463c..963e8cb 100644
+--- a/tests/unit_tests/openvpn/test_ssl.c
++++ b/tests/unit_tests/openvpn/test_ssl.c
+@@ -672,7 +672,7 @@
+     openvpn_encrypt(&buf, encrypt_workspace, &co);
+ 
+     /* separate buffer in authenticated data and encrypted data */
+-    uint8_t *ad_start = BPTR(&buf);
++    const uint8_t *ad_start = BPTR(&buf);
+     buf_advance(&buf, 4);
+ 
+     if (epoch)
+diff --git a/tests/unit_tests/plugins/auth-pam/test_search_and_replace.c b/tests/unit_tests/plugins/auth-pam/test_search_and_replace.c
+index a861bfd..89f0642 100644
+--- a/tests/unit_tests/plugins/auth-pam/test_search_and_replace.c
++++ b/tests/unit_tests/plugins/auth-pam/test_search_and_replace.c
+@@ -12,7 +12,7 @@
+ static void
+ pass_any_null_param__returns_null(void **state)
+ {
+-    char DUMMY[] = "DUMMY";
++    const char DUMMY[] = "DUMMY";
+ 
+     assert_null(searchandreplace(NULL, DUMMY, DUMMY));
+     assert_null(searchandreplace(DUMMY, NULL, DUMMY));
+@@ -22,8 +22,8 @@
+ static void
+ pass_any_empty_string__returns_null(void **state)
+ {
+-    char DUMMY[] = "DUMMY";
+-    char EMPTY[] = "";
++    const char DUMMY[] = "DUMMY";
++    const char EMPTY[] = "";
+ 
+     assert_null(searchandreplace(EMPTY, DUMMY, DUMMY));
+     assert_null(searchandreplace(DUMMY, EMPTY, DUMMY));
 
--- 
-To view, visit http://gerrit=
-=2Eopenvpn=2Enet/c/openvpn/+/1774?usp=3Demail
-To unsubscribe, or for help w=
-riting mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Dema=
-il
-
-Gerrit-MessageType: newpatchset
-Gerrit-Project: openvpn
-Gerrit-Branch: =
-master
-Gerrit-Change-Id: I6dafab74b82fbf770c1798b4851a0fd5e4b5d81e
-Gerrit-C=
-hange-Number: 1774
-Gerrit-PatchSet: 6
-Gerrit-Owner: flichtenheld <frank@lic=
-htenheld=2Ecom>
-Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Ger=
-rit-Reviewer: razvanc <razvanc@mailbox=2Eorg>
-Gerrit-CC: openvpn-devel <ope=
-nvpn-devel@lists=2Esourceforge=2Enet>
-
---2BZxPpBJDEc=
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #6</strong> to the change originally created by flichtenhel=
-d=2E</p><p><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1774?usp=3D=
-email">View Change</a></p><p>The following approvals got outdated and were =
-removed:
-Code-Review+2 by razvanc</p><pre class=3D"blocks" style=3D"font-fa=
-mily: monospace,monospace; white-space: pre-wrap;">options: Factor out file=
- access code from options=2Ec<br><br>options=2Ec is a huge, unwieldly file=
-=2E So remove some<br>closely related code that has no direct dependencies<=
-br>with the other functions in the file=2E<br><br>This time it is the code =
-that checks file accessibility=2E<br><br>Change-Id: I6dafab74b82fbf770c1798=
-b4851a0fd5e4b5d81e<br>Signed-off-by: Frank Lichtenheld &lt;frank@lichtenhel=
-d=2Ecom&gt;<br>Acked-by: Razvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt;<br>G=
-errit URL: https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1774<br>Message-Id: &=
-lt;20260819160522=2E6662-1-gert@greenie=2Emuc=2Ede&gt;<br>URL: https://www=
-=2Email-archive=2Ecom/openvpn-devel@lists=2Esourceforge=2Enet/msg38535=2Eht=
-ml<br>Signed-off-by: Gert Doering &lt;gert@greenie=2Emuc=2Ede&gt;<br>---<br=
->M CMakeLists=2Etxt<br>M src/openvpn/Makefile=2Eam<br>A src/openvpn/check_f=
-ile_access=2Ec<br>A src/openvpn/check_file_access=2Eh<br>M src/openvpn/opti=
-ons=2Ec<br>5 files changed, 418 insertions(+), 334 deletions(-)<br><br></pr=
-e><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-sp=
-ace: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/ch=
-anges/74/1774/6</pre><pre style=3D"font-family: monospace,monospace; white-=
-space: pre-wrap;"><span>diff --git a/CMakeLists=2Etxt b/CMakeLists=2Etxt</s=
-pan><br><span>index 9af7870=2E=2E8866520 100644</span><br><span>--- a/CMake=
-Lists=2Etxt</span><br><span>+++ b/CMakeLists=2Etxt</span><br><span>@@ -431,=
-6 +431,8 @@</span><br><span>     src/openvpn/basic=2Eh</span><br><span>    =
- src/openvpn/buffer=2Ec</span><br><span>     src/openvpn/buffer=2Eh</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/check_file_=
-access=2Ec</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/o=
-penvpn/check_file_access=2Eh</span><br><span>     src/openvpn/circ_list=2Eh=
-</span><br><span>     src/openvpn/clinat=2Ec</span><br><span>     src/openv=
-pn/clinat=2Eh</span><br><span>diff --git a/src/openvpn/Makefile=2Eam b/src/=
-openvpn/Makefile=2Eam</span><br><span>index 4220d07=2E=2E42b4404 100644</sp=
-an><br><span>--- a/src/openvpn/Makefile=2Eam</span><br><span>+++ b/src/open=
-vpn/Makefile=2Eam</span><br><span>@@ -47,6 +47,7 @@</span><br><span> 	base6=
-4=2Ec base64=2Eh \</span><br><span> 	basic=2Eh \</span><br><span> 	buffer=
-=2Ec buffer=2Eh \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	c=
-heck_file_access=2Ec check_file_access=2Eh \</span><br><span> 	circ_list=2E=
-h \</span><br><span> 	clinat=2Ec clinat=2Eh \</span><br><span> 	common=2Eh =
-\</span><br><span>diff --git a/src/openvpn/check_file_access=2Ec b/src/open=
-vpn/check_file_access=2Ec</span><br><span>new file mode 100644</span><br><s=
-pan>index 0000000=2E=2E83654b2</span><br><span>--- /dev/null</span><br><spa=
-n>+++ b/src/openvpn/check_file_access=2Ec</span><br><span>@@ -0,0 +1,354 @@=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+ *  OpenVPN -- An application to sec=
-urely tunnel IP networks</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+ *             over a single UDP port, with support for SSL/TLS-based<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             sessi=
-on authentication and key exchange,</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+ *             packet encryption, packet authentication, an=
-d</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             pac=
-ket compression=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  Copyright (C) =
-2002-2026 OpenVPN Inc &lt;sales@openvpn=2Enet&gt;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+ *  Copyright (C) 2008-2026 David Sommerseth =
-&lt;dazo@eurephia=2Eorg&gt;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This =
-program is free software; you can redistribute it and/or modify</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+ *  it under the terms of the G=
-NU General Public License version 2</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+ *  as published by the Free Software Foundation=2E</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+ *  This program is distributed in the hope =
-that it will be useful,</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  MERCHANTABILITY or F=
-ITNESS FOR A PARTICULAR PURPOSE=2E  See the</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+ *  GNU General Public License for more details=2E<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+ *  You should have received a copy o=
-f the GNU General Public License along</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+ *  with this program; if not, see &lt;https://www=2Egnu=
-=2Eorg/licenses/&gt;=2E</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+ *  Check file/directory sanity</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+#ifdef HAVE_CONFIG_H</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#include &quot;config=2Eh&quot;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Expect peo=
-ple using the stripped down version to know what they do */</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+#ifndef ENABLE_SMALL</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+#include &quot;syshead=2Eh&quot;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+#include &quot;check_file_access=2Eh&quot;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+#include &quot;argv=2Eh&quot;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+#include &quot;buffer=2Eh&quot;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+#include &quot;error=2Eh&quot;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;options=
-=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include =
-&quot;platform=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+#include &quot;ssl_common=2Eh&quot;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+#include &lt;string=2Eh&gt;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define C=
-HKACC_FILE       (1 &lt;&lt; 0) /**&lt; Check for a file/directory presence=
- */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define CHKACC_D=
-IRPATH    (1 &lt;&lt; 1) /**&lt; Check for directory presence where a file =
-should reside */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#de=
-fine CHKACC_FILEXSTWR  (1 &lt;&lt; 2) /**&lt; If file exists, is it writabl=
-e? */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define CHKACC=
-_ACPTSTDIN  (1 &lt;&lt; 3) /**&lt; If filename is stdin, it&#39;s allowed a=
-nd &quot;exists&quot; */</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+#define CHKACC_PRIVATE    (1 &lt;&lt; 4) /**&lt; Warn if this (private=
-) file is group/others accessible */</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+#define CHKACC_ACCEPT_URI (1 &lt;&lt; 5) /**&lt; Do not ch=
-eck URIs, unless they start with file: */</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+static bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+check=
-_file_access(const int type, const char *file, const int mode, const char *=
-opt)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    int errcode =3D 0;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    /* If no file configured, no errors to look f=
-or */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!file)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        return false;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    /* If stdin is allowed and the file name is &#39;stdin&#39;,=
- then do no</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * f=
-urther checks as stdin is always available</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+     */</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    if ((type &amp; CHKACC_ACPTSTDIN) &amp;&amp; streq(file, &qu=
-ot;stdin&quot;))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return fa=
-lse;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    /* file name is a URI if its first segment  =
-has &quot;:&quot; (i=2Ee=2E, before any &quot;/&quot;)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+     * Then no checks done if CHKACC_ACC=
-EPT_URI is set and the URI does not start with &quot;file:&quot;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+     */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if ((type &amp; CHKACC_ACCEPT_URI) &a=
-mp;&amp; strchr(file, &#39;:&#39;))</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        if (!strncmp(file, &quot;file:&quot;, 5))</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            file +=3D 5;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        else if (!strchr(file, &#39;/&#39;) || strchr(fi=
-le, &#39;/&#39;) &gt; strchr(file, &#39;:&#39;))</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+            return false;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Is the dire=
-ctory path leading to the given file accessible? */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (type &amp; CHKACC_DIRPATH)</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        char *fullpath =3D</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+            string_alloc(file, NU=
-LL); /* POSIX dirname() implementation may modify its arguments */</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        const char *dirpath =
-=3D dirname(fullpath);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (plat=
-form_access(dirpath, mode | X_OK) !=3D 0)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+            errcode =3D errno;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        free(fullpath);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Is the fi=
-le itself accessible? */</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    if (!errcode &amp;&amp; (type &amp; CHKACC_FILE) &amp;&amp; (platf=
-orm_access(file, mode) !=3D 0))</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      errcode =3D errno;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    /* If the file exists an=
-d is accessible, is it writable? */</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    if (!errcode &amp;&amp; (type &amp; CHKACC_FILEXSTWR) &=
-amp;&amp; (platform_access(file, F_OK) =3D=3D 0))</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        if (platform_access(file, W_OK) !=3D 0)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            errcode =3D errno;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    /* Warn if a given private file is group/others accessible=2E */</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (type &amp; CHKAC=
-C_PRIVATE)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        platform_stat_t=
- st;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (pla=
-tform_stat(file, &amp;st))</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         msg(M_WARN | M_ERRNO, &quot;WARNING: cannot stat file &#39;%s&#39;=
-&quot;, file);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifndef _WIN32<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        else</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+            if (st=2Est_mode &amp; (S=
-_IRWXG | S_IRWXO))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-           {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-         msg(M_WARN, &quot;WARNING: file &#39;%s&#39; is group or others ac=
-cessible&quot;, file);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+            }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    /* Scream if an error is found */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (errcode &gt; 0)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        msg(M_NOPREFIX | M_OPTERR | M_ERRNO, &quot;=
-%s fails with &#39;%s&#39;&quot;, opt, file);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* =
-Return true if an error occurred */</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    return (errcode !=3D 0 ? true : false);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+/** A wrapper for check_file_access() which also takes a chroot director=
-y=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * If chroot is=
- NULL, behaviour is exactly the same as calling check_file_access() directl=
-y,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * otherwise it w=
-ill look for the file inside the given chroot directory instead=2E</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+static bool</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+check_file_access_chroot(const char *chroot, const i=
-nt type, const char *file, const int mode,</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+                         const char *opt)</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    bool ret =3D false;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    /* If no file configured, no errors to look for */</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    if (!file)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        return false;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- /* If chroot is set, look for the file/directory inside the chroot */</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (chroot)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        struct gc_arena gc =3D gc_new();<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        struct buffe=
-r chroot_file;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        chroot_file =3D =
-prepend_dir(chroot, file, &amp;gc);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        ret =3D check_file_access(type, BSTR(&amp;chroot_fi=
-le), mode, opt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     gc_free(&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        /* No chroot in play, just c=
-all core file check function */</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        ret =3D check_file_access(type, file, mode, opt);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    return ret;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * A wrapper for ch=
-eck_file_access_chroot() that returns false immediately if</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+ * the file is inline (and therefore=
- there is no access to check)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static=
- bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+check_file_acc=
-ess_chroot_inline(bool is_inline, const char *chroot, const int type,</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+                         =
-       const char *file, const int mode, const char *opt)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    if (is_inline)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        return false;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    return check_file_acce=
-ss_chroot(chroot, type, file, mode, opt);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+ * A wrapper for check_file_acc=
-ess() that returns false immediately if the file</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+ * is inline (and therefore there is no access=
- to check)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+static bool</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+check_file_access_inline(bool is_=
-inline, const int type, const char *file, const int mode,</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+                         const char *=
-opt)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    if (is_inline)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        return false;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-return check_file_access(type, file, mode, opt);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+check_cmd_access(const =
-char *command, const char *opt, const char *chroot)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    struct argv argv;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    bool return_code;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    /* If no command was set, there are no errors to look for */</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    if (!command)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        return false;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    /* Extract executable path and arguments */</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    argv =3D argv_new();</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    argv_parse_cmd(&amp;argv, command);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    /* if an executable is specified the=
-n check it; otherwise, complain */</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    if (argv=2Eargv[0])</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        /* Scripts requires R_OK as well, but that might fail on binar=
-ies which</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         *=
- only requires X_OK to function on Unix - a scenario not unlikely to</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+         * be seen on suid=
- binaries=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-  */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return_=
-code =3D check_file_access_chroot(chroot, CHKACC_FILE, argv=2Eargv[0], X_OK=
-, opt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        msg(M_NOPREFIX | M_OPTERR, &quot;%s fails w=
-ith &#39;%s&#39;: No path to executable=2E&quot;, opt, command);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        return_code =3D true;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    argv_free(&amp;argv);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    return return_code;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+options_postprocess_filechecks(struct o=
-ptions *options)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    bool errs =3D fal=
-se;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    /* ** SSL/TLS/crypto related fi=
-les ** */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    errs |=
-=3D check_file_access_inline(options-&gt;dh_file_inline, CHKACC_FILE, optio=
-ns-&gt;dh_file, R_OK,</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+                                     &quot;--dh&quot;);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    if (!options-&gt;verify_hash_no_ca)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        errs |=3D check_file_access_inline(options=
--&gt;ca_file_inline, CHKACC_FILE, options-&gt;ca_file,</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+                                        =
- R_OK, &quot;--ca&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    errs |=3D check_file_ac=
-cess_chroot(options-&gt;chroot_dir, CHKACC_FILE, options-&gt;ca_path, R_OK,=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                   =
-                  &quot;--capath&quot;);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    errs |=3D check_file_access_inline(options-&gt;cert_file_inline, CHKA=
-CC_FILE | CHKACC_ACCEPT_URI,</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+                                     options-&gt;cert_file, R_OK, =
-&quot;--cert&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    errs |=3D chec=
-k_file_access_inline(options-&gt;extra_certs_file, CHKACC_FILE,</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+                               =
-      options-&gt;extra_certs_file, R_OK, &quot;--extra-certs&quot;);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    if (!(options-&gt;management_flags &amp;=
- MF_EXTERNAL_KEY))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        errs |=
-=3D check_file_access_inline(options-&gt;priv_key_file_inline,</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+                                =
-         CHKACC_FILE | CHKACC_PRIVATE | CHKACC_ACCEPT_URI,</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+                                    =
-     options-&gt;priv_key_file, R_OK, &quot;--key&quot;);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    errs |=3D check_file_access_inline(options-&gt;pkcs12_file_inline,=
- CHKACC_FILE | CHKACC_PRIVATE,</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+                                     options-&gt;pkcs12_file, R_=
-OK, &quot;--pkcs12&quot;);</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (opti=
-ons-&gt;ssl_flags &amp; SSLF_CRL_VERIFY_DIR)</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        errs |=3D check_file_access_chroot(options-&gt;chroot_di=
-r, CHKACC_FILE, options-&gt;crl_file,</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+                                         R_OK | X_OK, &qu=
-ot;--crl-verify directory&quot;);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        errs |=3D</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+            check_file_acce=
-ss_chroot_inline(options-&gt;crl_file_inline, options-&gt;chroot_dir,</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+                         =
-                   CHKACC_FILE, options-&gt;crl_file, R_OK, &quot;--crl-ver=
-ify&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (options-&gt;tls_export_peer_cert_=
-dir)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        errs |=3D</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+            check_file_access_c=
-hroot(options-&gt;chroot_dir, CHKACC_FILE,</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+                                     options-&gt;tls=
-_export_peer_cert_dir, W_OK, &quot;--tls-export-cert&quot;);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    ASSERT(options-&gt;connection_list);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    for (int i =3D 0; i &lt; options-&gt;conne=
-ction_list-&gt;len; ++i)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        c=
-onst struct connection_entry *ce =3D options-&gt;connection_list-&gt;array[=
-i];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        errs |=3D check_file_access=
-_inline(ce-&gt;tls_auth_file_inline, CHKACC_FILE | CHKACC_PRIVATE,</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+                            =
-             ce-&gt;tls_auth_file, R_OK, &quot;--tls-auth&quot;);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        errs |=3D check_file_=
-access_inline(ce-&gt;tls_crypt_file_inline, CHKACC_FILE | CHKACC_PRIVATE,</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+                     =
-                    ce-&gt;tls_crypt_file, R_OK, &quot;--tls-crypt&quot;);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        errs |=3D ch=
-eck_file_access_inline(ce-&gt;tls_crypt_v2_file_inline, CHKACC_FILE | CHKAC=
-C_PRIVATE,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-                                ce-&gt;tls_crypt_v2_file, R_OK, &quot;--tls=
--crypt-v2&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    errs |=3D</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        check_file_access_inline(options-=
-&gt;shared_secret_file_inline, CHKACC_FILE | CHKACC_PRIVATE,</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+                                 o=
-ptions-&gt;shared_secret_file, R_OK, &quot;--secret&quot;);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    errs |=3D check_file_access(CHKACC_DIRPATH | CHKAC=
-C_FILEXSTWR, options-&gt;packet_id_file,</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                              R_OK | W_OK, &quot;--rep=
-lay-persist&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* ** Password =
-files ** */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    errs=
- |=3D check_file_access(CHKACC_FILE | CHKACC_ACPTSTDIN | CHKACC_PRIVATE,</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                      =
-        options-&gt;key_pass_file, R_OK, &quot;--askpass&quot;);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+#ifdef ENABLE_MANAGEMENT</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    errs |=3D</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        check_file_access(CHKAC=
-C_FILE | CHKACC_ACPTSTDIN | CHKACC_PRIVATE,</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+                          options-&gt;management_us=
-er_pass, R_OK, &quot;--management user/password file&quot;);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+#endif /* ENABLE_MANAGEMENT */</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    errs |=3D check_fil=
-e_access_inline(options-&gt;auth_user_pass_file_inline,</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+                                     CH=
-KACC_FILE | CHKACC_ACPTSTDIN | CHKACC_PRIVATE,</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+                                     options-&gt=
-;auth_user_pass_file, R_OK, &quot;--auth-user-pass&quot;);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    /* ** System related ** */</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    errs |=3D check_file_=
-access(CHKACC_FILE, options-&gt;chroot_dir, R_OK | X_OK, &quot;--chroot dir=
-ectory&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    e=
-rrs |=3D check_file_access(CHKACC_DIRPATH | CHKACC_FILEXSTWR, options-&gt;w=
-ritepid, R_OK | W_OK,</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+                              &quot;--writepid&quot;);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    /* ** Log related ** */</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    errs |=3D check_file_access(CHKACC_DIRPATH | =
-CHKACC_FILEXSTWR, options-&gt;status_file, R_OK | W_OK,</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+                              &quot;--s=
-tatus&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* ** Config related =
-** */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    errs |=3D =
-check_file_access_chroot(options-&gt;chroot_dir, CHKACC_FILE, options-&gt;c=
-lient_config_dir,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-                                   R_OK | X_OK, &quot;--client-config-dir&q=
-uot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    errs |=3D=
- check_file_access_chroot(options-&gt;chroot_dir, CHKACC_FILE, options-&gt;=
-tmp_dir,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
-                          R_OK | W_OK | X_OK, &quot;Temporary directory (--=
-tmp-dir)&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (errs)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        msg(M_USAGE, &quot;Please correct=
- these errors=2E&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+#endif /* !ENABLE_SMALL */</span><br><span>dif=
-f --git a/src/openvpn/check_file_access=2Eh b/src/openvpn/check_file_access=
-=2Eh</span><br><span>new file mode 100644</span><br><span>index 0000000=2E=
-=2Eb3ed886</span><br><span>--- /dev/null</span><br><span>+++ b/src/openvpn/=
-check_file_access=2Eh</span><br><span>@@ -0,0 +1,60 @@</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+ *  OpenVPN -- An application to securely tunnel IP netwo=
-rks</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             o=
-ver a single UDP port, with support for SSL/TLS-based</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *             session authentication and=
- key exchange,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *   =
-          packet encryption, packet authentication, and</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+ *             packet compression=2E</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+ *  Copyright (C) 2002-2026 OpenVPN Inc=
- &lt;sales@openvpn=2Enet&gt;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This=
- program is free software; you can redistribute it and/or modify</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ *  it under the terms of the =
-GNU General Public License version 2</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ *  as published by the Free Software Foundation=2E</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *  This program is distributed in the ho=
-pe that it will be useful,</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  MERCHANTABILITY o=
-r FITNESS FOR A PARTICULAR PURPOSE=2E  See the</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+ *  GNU General Public License for more details=
-=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ *  You should have received a co=
-py of the GNU General Public License along</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ *  with this program; if not, see &lt;https://www=
-=2Egnu=2Eorg/licenses/&gt;=2E</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifndef CHECK_FILE_ACCESS=
-_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define CHECK_FIL=
-E_ACCESS_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef HAVE_CONFIG_H</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;config=2Eh&q=
-uot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+#ifndef ENABLE_SMALL</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+#include &quot;options=2Eh&quot;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Verifies =
-that the path in the &quot;command&quot; that comes after certain script op=
-tions (e=2Eg=2E, --up) is a</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+ * valid file with appropriate permissions=2E</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ * &quot;command&quot; consists of a path, optionally foll=
-owed by a space, which may be</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+ * followed by arbitrary arguments=2E It is NOT a full shell comm=
-and line -- shell expansion is not</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+ * performed=2E</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * The=
- path and arguments in &quot;command&quot; may be single- or double-quoted =
-or escaped=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+ * The path is extracte=
-d from &quot;command&quot;, then check_file_access() is called to check it=
-=2E The</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * arguments=
-, if any, are ignored=2E</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Note that=
- the type, mode, and opt arguments to this routine are the same as the corr=
-esponding</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * check_f=
-ile_access() arguments=2E</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool check=
-_cmd_access(const char *command, const char *opt, const char *chroot);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+ * Sanity check of all file/dir options=2E  Checks that f=
-ile/dir</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * is access=
-ible by OpenVPN</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+void options_postpro=
-cess_filechecks(struct options *options);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+#endif /* !ENABLE_SMALL */</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /*=
- CHECK_FILE_ACCESS_H */</span><br><span>diff --git a/src/openvpn/options=2E=
-c b/src/openvpn/options=2Ec</span><br><span>index e899fa6=2E=2E317ce44 1006=
-44</span><br><span>--- a/src/openvpn/options=2Ec</span><br><span>+++ b/src/=
-openvpn/options=2Ec</span><br><span>@@ -63,6 +63,7 @@</span><br><span> #inc=
-lude &quot;tun_afunix=2Eh&quot;</span><br><span> #include &quot;domain_help=
-er=2Eh&quot;</span><br><span> #include &quot;mbuf=2Eh&quot;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+#include &quot;check_file_access=2E=
-h&quot;</span><br><span> </span><br><span> #include &lt;ctype=2Eh&gt;</span=
-><br><span> </span><br><span>@@ -3328,340 +3329,6 @@</span><br><span> }</sp=
-an><br><span> </span><br><span> /*</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">- *  Check file/directory sanity</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/* Expect peop=
-le using the stripped down version to know what they do */</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-#ifndef ENABLE_SMALL</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-#define CHKACC_FILE       (1 &lt;&lt; 0) /**&lt; Check for a=
- file/directory presence */</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-#define CHKACC_DIRPATH    (1 &lt;&lt; 1) /**&lt; Check for directory =
-presence where a file should reside */</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-#define CHKACC_FILEXSTWR  (1 &lt;&lt; 2) /**&lt; If file e=
-xists, is it writable? */</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-#define CHKACC_ACPTSTDIN  (1 &lt;&lt; 3) /**&lt; If filename is stdin, =
-it&#39;s allowed and &quot;exists&quot; */</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-#define CHKACC_PRIVATE    (1 &lt;&lt; 4) /**&lt; Warn =
-if this (private) file is group/others accessible */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#define CHKACC_ACCEPT_URI (1 &lt;&lt; 5) /*=
-*&lt; Do not check URIs, unless they start with file: */</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-static bool</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-check_file_access(const int type, const char *file, const int mode, con=
-st char *opt)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    int errcode =3D 0;</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    /* If no file configured, no errors to look =
-for */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!file)<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        return false;</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    /* If stdin is allowed and the file name is &#39;stdin&#39;, then do no=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     * further checks=
- as stdin is always available</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-     */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if=
- ((type &amp; CHKACC_ACPTSTDIN) &amp;&amp; streq(file, &quot;stdin&quot;))<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        return false;</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    /* file name is a URI if its first segment  has &quot;:&quot; (i=2Ee=2E=
-, before any &quot;/&quot;)</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-     * Then no checks done if CHKACC_ACCEPT_URI is set and the URI do=
-es not start with &quot;file:&quot;</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-     */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    if ((type &amp; CHKACC_ACCEPT_URI) &amp;&amp; strchr(file, &#39;:&#39;)=
-)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-        if (!strncmp(file, &quot;fil=
-e:&quot;, 5))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            file +=
-=3D 5;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        else if (!strchr(fi=
-le, &#39;/&#39;) || strchr(file, &#39;/&#39;) &gt; strchr(file, &#39;:&#39;=
-))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-            return false;</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   /* Is the directory path leading to the given file accessible? */</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    if (type &amp; CHKACC_DI=
-RPATH)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-        char *fullpath =3D</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-            string_alloc(f=
-ile, NULL); /* POSIX dirname() implementation may modify its arguments */</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-        char *dirpath =
-=3D dirname(fullpath);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (platform=
-_access(dirpath, mode | X_OK) !=3D 0)</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-            errcode =3D errno;</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--        free(fullpath);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    /* Is the file itself accessib=
-le? */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!errcod=
-e &amp;&amp; (type &amp; CHKACC_FILE) &amp;&amp; (platform_access(file, mod=
-e) !=3D 0))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        errcode =3D errno;=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    /* If the file exists and is accessible, is it writabl=
-e? */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!errcode=
- &amp;&amp; (type &amp; CHKACC_FILEXSTWR) &amp;&amp; (platform_access(file,=
- F_OK) =3D=3D 0))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (platform=
-_access(file, W_OK) !=3D 0)</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-      errcode =3D errno;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    /* Warn if a given private file is group/o=
-thers accessible=2E */</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    if (type &amp; CHKACC_PRIVATE)</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-      platform_stat_t st;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-        if (platform_stat(file, &amp;st))</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-            msg(M_WARN | M_ERRNO, &quot;WARNING: cannot stat fi=
-le &#39;%s&#39;&quot;, file);</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifn=
-def _WIN32</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        els=
-e</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-            if (st=2Est_mode &am=
-p; (S_IRWXG | S_IRWXO))</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-          msg(M_WARN, &quot;WARNING: file &#39;%s&#39; is group or others a=
-ccessible&quot;, file);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-            }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    /* Scream if an error is found */</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    if (errcode &gt; 0)</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        msg(M_NOPREFIX | M_OPTERR | M_ERRNO, &quot;%s fails with &#3=
-9;%s&#39;&quot;, opt, file);</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    /* Return true if an error=
- occurred */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    retur=
-n (errcode !=3D 0 ? true : false);</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-/* A wrapper for check_file_=
-access() which also takes a chroot directory=2E</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">- * If chroot is NULL, behaviour is exactly the sa=
-me as calling check_file_access() directly,</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">- * otherwise it will look for the file inside the giv=
-en chroot directory instead=2E</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static bo=
-ol</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_file_access_c=
-hroot(const char *chroot, const int type, const char *file, const int mode,=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                     =
-    const char *opt)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    bool ret =3D fals=
-e;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    /* If no file configured, no errors =
-to look for */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if =
-(!file)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        return false;</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    /* If chroot is set, look for the file/directory inside the chr=
-oot */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (chroot)=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-        struct gc_arena gc =3D gc_new=
-();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        struct buf=
-fer chroot_file;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        chroot_file =3D pr=
-epend_dir(chroot, file, &amp;gc);</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-        ret =3D check_file_access(type, BSTR(&amp;chroot_file),=
- mode, opt);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        g=
-c_free(&amp;gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    else</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-        /* No chroot in play, just call core file =
-check function */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-    ret =3D check_file_access(type, file, mode, opt);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    return ret;</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-/**</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">- * A wrapper for check_file_access_chroot() that =
-returns false immediately if</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">- * the file is inline (and therefore there is no access to check)</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-static bool</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-check_file_access_chroot_inline(bool is_inline, cons=
-t char *chroot, const int type,</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-                                const char *file, const int mode,=
- const char *opt)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (is_inline)</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        return false;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    r=
-eturn check_file_access_chroot(chroot, type, file, mode, opt);</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-/**</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * A wrapper for c=
-heck_file_access() that returns false immediately if the file</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">- * is inline (and therefore there i=
-s no access to check)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static bool</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-check_file_access_inline(boo=
-l is_inline, const int type, const char *file, const int mode,</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-                         const cha=
-r *opt)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    if (is_inline)</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-        return false;</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return chec=
-k_file_access(type, file, mode, opt);</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-/*</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">- * Verifies that the path in the &quot;comm=
-and&quot; that comes after certain script options (e=2Eg=2E, --up) is a</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">- * valid file with approp=
-riate permissions=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-*</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * &quot;command&quo=
-t; consists of a path, optionally followed by a space, which may be</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">- * followed by arbitrary argu=
-ments=2E It is NOT a full shell command line -- shell expansion is not</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">- * performed=2E</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">- * The path and arguments in &quot;command&quot; ma=
-y be single- or double-quoted or escaped=2E</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">- * The path is extracted from &quot;command&quot;, then check_file_acces=
-s() is called to check it=2E The</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">- * arguments, if any, are ignored=2E</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">- * Note that the type, mode, and opt arguments to this routine are t=
-he same as the corresponding</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">- * check_file_access() arguments=2E</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-static bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_c=
-md_access(const char *command, const char *opt, const char *chroot)</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    struct argv argv;</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    bool return_code;</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    /* If no command was set, there are no errors to look for */</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!command)</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        return false;</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* Ex=
-tract executable path and arguments */</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    argv =3D argv_new();</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    argv_parse_cmd(&amp;argv, command);</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    /* if an executable is specified then check it; otherw=
-ise, complain */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    i=
-f (argv=2Eargv[0])</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        /* Scripts =
-requires R_OK as well, but that might fail on binaries which</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-         * only requires X_OK to fun=
-ction on Unix - a scenario not unlikely to</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-         * be seen on suid binaries=2E</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-         */</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        return_code =3D check_file_access_chroo=
-t(chroot, CHKACC_FILE, argv=2Eargv[0], X_OK, opt);</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    else</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(M_NO=
-PREFIX | M_OPTERR, &quot;%s fails with &#39;%s&#39;: No path to executable=
-=2E&quot;, opt, command);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-        return_code =3D true;</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    argv_free(&amp;argv);=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    return return_code;</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">- * Sanity check of all fi=
-le/dir options=2E  Checks that file/dir</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">- * is accessible by OpenVPN</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-static void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-opti=
-ons_postprocess_filechecks(struct options *options)</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    bool errs =3D false;</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /*=
- ** SSL/TLS/crypto related files ** */</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    errs |=3D check_file_access_inline(options-&gt;dh_file=
-_inline, CHKACC_FILE, options-&gt;dh_file, R_OK,</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-                                     &quot;--dh&=
-quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    if (!options-&gt;verify_hash_no=
-_ca)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        errs |=3D check_file_acce=
-ss_inline(options-&gt;ca_file_inline, CHKACC_FILE, options-&gt;ca_file,</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-                         =
-                R_OK, &quot;--ca&quot;);</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    errs |=3D chec=
-k_file_access_chroot(options-&gt;chroot_dir, CHKACC_FILE, options-&gt;ca_pa=
-th, R_OK,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
-                         &quot;--capath&quot;);</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    errs |=3D check_file_access_inline(options-&gt;cert_file_inline, C=
-HKACC_FILE | CHKACC_ACCEPT_URI,</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-                                     options-&gt;cert_file, R_OK,=
- &quot;--cert&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    errs |=3D check_f=
-ile_access_inline(options-&gt;extra_certs_file, CHKACC_FILE,</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-                                    =
- options-&gt;extra_certs_file, R_OK, &quot;--extra-certs&quot;);</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    if (!(options-&gt;management_flags &amp; MF_EXTER=
-NAL_KEY))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-        errs |=3D check_file=
-_access_inline(options-&gt;priv_key_file_inline,</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-                                         CHKACC_=
-FILE | CHKACC_PRIVATE | CHKACC_ACCEPT_URI,</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-                                         options-&gt;p=
-riv_key_file, R_OK, &quot;--key&quot;);</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    errs |=3D check=
-_file_access_inline(options-&gt;pkcs12_file_inline, CHKACC_FILE | CHKACC_PR=
-IVATE,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-               =
-                      options-&gt;pkcs12_file, R_OK, &quot;--pkcs12&quot;);=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    if (options-&gt;ssl_flags &amp; SSLF_C=
-RL_VERIFY_DIR)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-        errs |=3D check=
-_file_access_chroot(options-&gt;chroot_dir, CHKACC_FILE, options-&gt;crl_fi=
-le,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                  =
-                       R_OK | X_OK, &quot;--crl-verify directory&quot;);</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    else</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        errs |=3D</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-            check_file_access_chroot_inline(options-&gt;crl_file_inline, =
-options-&gt;chroot_dir,</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-                                            CHKACC_FILE, options-&gt;crl_=
-file, R_OK, &quot;--crl-verify&quot;);</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (options-&gt;=
-tls_export_peer_cert_dir)</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        errs=
- |=3D</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            chec=
-k_file_access_chroot(options-&gt;chroot_dir, CHKACC_FILE,</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-                                     op=
-tions-&gt;tls_export_peer_cert_dir, W_OK, &quot;--tls-export-cert&quot;);</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    ASSERT(options-&gt;connection_list);</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    for (int i =3D 0; i &lt; options-&gt;=
-connection_list-&gt;len; ++i)</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-struct connection_entry *ce =3D options-&gt;connection_list-&gt;array[i];</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        errs |=3D check_file_access_inline(=
-ce-&gt;tls_auth_file_inline, CHKACC_FILE | CHKACC_PRIVATE,</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-                                      =
-   ce-&gt;tls_auth_file, R_OK, &quot;--tls-auth&quot;);</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-        errs |=3D check_file_access_inlin=
-e(ce-&gt;tls_crypt_file_inline, CHKACC_FILE | CHKACC_PRIVATE,</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-                                   =
-      ce-&gt;tls_crypt_file, R_OK, &quot;--tls-crypt&quot;);</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-        errs |=3D check_file_access_=
-inline(ce-&gt;tls_crypt_v2_file_inline, CHKACC_FILE | CHKACC_PRIVATE,</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-                           =
-              ce-&gt;tls_crypt_v2_file, R_OK, &quot;--tls-crypt-v2&quot;);<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    errs |=3D</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-        check_file_access_inline(options-&gt;shared_secret_file_inl=
-ine, CHKACC_FILE | CHKACC_PRIVATE,</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-                                 options-&gt;shared_secret_fil=
-e, R_OK, &quot;--secret&quot;);</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    errs |=
-=3D check_file_access(CHKACC_DIRPATH | CHKACC_FILEXSTWR, options-&gt;packet=
-_id_file,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
-                  R_OK | W_OK, &quot;--replay-persist&quot;);</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    /* ** Password files ** */</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    errs |=3D check_file_access(CHKACC_FILE | C=
-HKACC_ACPTSTDIN | CHKACC_PRIVATE,</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-                              options-&gt;key_pass_file, R_OK, =
-&quot;--askpass&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-#ifdef ENABLE_MANAGEMENT</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    errs |=3D</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-     check_file_access(CHKACC_FILE | CHKACC_ACPTSTDIN | CHKACC_PRIVATE,</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-                         =
- options-&gt;management_user_pass, R_OK, &quot;--management user/password f=
-ile&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif /* =
-ENABLE_MANAGEMENT */</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   errs |=3D check_file_access_inline(options-&gt;auth_user_pass_file_inlin=
-e,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                   =
-                  CHKACC_FILE | CHKACC_ACPTSTDIN | CHKACC_PRIVATE,</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-                              =
-       options-&gt;auth_user_pass_file, R_OK, &quot;--auth-user-pass&quot;)=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* ** System rel=
-ated ** */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    errs |=
-=3D check_file_access(CHKACC_FILE, options-&gt;chroot_dir, R_OK | X_OK, &qu=
-ot;--chroot directory&quot;);</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    errs |=3D check_file_access(CHKACC_DIRPATH | CHKACC_FILEXSTWR, =
-options-&gt;writepid, R_OK | W_OK,</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-                              &quot;--writepid&quot;);</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    /* ** Log related ** */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    errs |=3D check_file_access(CHKACC_DIRP=
-ATH | CHKACC_FILEXSTWR, options-&gt;status_file, R_OK | W_OK,</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-                              &quot=
-;--status&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* ** Config related =
-** */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    errs |=3D ch=
-eck_file_access_chroot(options-&gt;chroot_dir, CHKACC_FILE, options-&gt;cli=
-ent_config_dir,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-                               R_OK | X_OK, &quot;--client-config-dir&quot;=
-);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    errs |=3D check=
-_file_access_chroot(options-&gt;chroot_dir, CHKACC_FILE, options-&gt;tmp_di=
-r,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                   =
-                  R_OK | W_OK | X_OK, &quot;Temporary directory (--tmp-dir)=
-&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    if (errs)</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-        msg(M_USAGE, &quot;Please correct these errors=2E&=
-quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-#endif /* !ENABLE_SMALL */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-/*</span><br><span>  * Sanity check on options=2E</span><br><spa=
-n>  * Also set some options based on other</span><br><span>  * options=2E</=
-span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit=
-=2Eopenvpn=2Enet/c/openvpn/+/1774?usp=3Demail">change 1774</a>=2E To unsubs=
-cribe, or for help writing mail filters, visit <a href=3D"http://gerrit=2Eo=
-penvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemty=
-pe=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" =
-itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"=
-http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1774?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none=
-"> Gerrit-MessageType: newpatchset </div>
-<div style=3D"display:none"> Gerr=
-it-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: mast=
-er </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I6dafab74b82fbf770=
-c1798b4851a0fd5e4b5d81e </div>
-<div style=3D"display:none"> Gerrit-Change-N=
-umber: 1774 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
-<=
-div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@lichtenhel=
-d=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos =
-&lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerr=
-it-Reviewer: razvanc &lt;razvanc@mailbox=2Eorg&gt; </div>
-<div style=3D"dis=
-play:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=
-=2Enet&gt; </div>
-
-</body></html>
---2BZxPpBJDEc=--
-
-
---===============6401484371174434649==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============6401484371174434649==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
---===============6401484371174434649==--
-
