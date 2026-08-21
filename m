@@ -4,126 +4,126 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 192A2C5DF97
-	for <openvpn-devel@archiver.kernel.org>; Fri, 21 Aug 2026 15:49:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 326BAC5DF93
+	for <openvpn-devel@archiver.kernel.org>; Fri, 21 Aug 2026 15:49:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:Message-ID:References:Date:Sender:To:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
-	List-Owner; bh=YUjC+Cp3MKyKnpP6QxrQB9T8KktnFEiqS/xHLyviTWA=; b=PEgRDgS4NR3Yqy
-	qhO27Qx7PDaCNhEpmb7Ru4zHRXkGn15eBv0B3760wj0oN1/mNe7ZsiLlTzDqsdbvR2/TFK5DMAuT3
-	/Rm2qUCfjN3SlHWKN/89gc+YewdnaOyRiRUIDpDn9ql9U7i9jJy3hcsAJNaSRS63BHVKh4AQsVJvT
-	kE0=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	List-Owner; bh=WOPKnObaoN2YOVvOctEQWvyWzEcZwPIsp+b3oNE9My8=; b=EM9Z0V+MfoLyZk
+	zwPLuML/3nwBl2Tsavq1czgAr568NcqhCNahGbk3bBmD2k4zVj4SDO0DMEVXWa3QLLim4cgr2+TMD
+	kGk0HT635eFb4JdRR8DHdLsL6LlN+BI8iq/9z/mvBaRPJG5tkEXNm45bwz7zasxFHoMf3oo1g5d7M
+	53A=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wxRUm-0004Bo-4F;
-	Fri, 21 Aug 2026 15:49:25 +0000
+	id 1wxRUn-0003wY-2q;
+	Fri, 21 Aug 2026 15:49:29 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wxRUk-0004Bg-P4
+ (envelope-from <gerrit@openvpn.net>) id 1wxRUl-0003wM-EX
  for openvpn-devel@lists.sourceforge.net;
- Fri, 21 Aug 2026 15:49:24 +0000
+ Fri, 21 Aug 2026 15:49:28 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:Date:From
  :Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From:
  Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=lSvmuqRQlo2N0nvbmWgFFkBqrrx0q9BTFLMj/CQQ+jc=; b=U6LuhRxrMABEgNUUVoLE5B27FE
- TAkR98wBDS3BqwTQDCJ1WXzc5/ftrq+Y0toaVWrQfB4aldkEztilUTp2Q6l7RxpCmClG3X8HCukKZ
- HNC3UuPdviRQHVJm0auJrF3FS8nbma0ru09BVCbRiLGykv7kYqC6evo7nP4cOeKVBcBM=;
+ bh=x8wKLmax2q2svknHpzb2dLqMnHC9oCmVlMQDXc8Jq60=; b=jWE/UVJtPkV3cu+xa/fSpnmeNM
+ PPP8W2uZozsyPF8EwOt2M+ajrgi/6eh+5mr6S7OvHhCC4yPndzY311EwncB4xh5JctBQcwnDSVO77
+ vlN9O5As5uPwHMuQDAVDehLpC06PX4DA6GhCZJDHFn6STfUGuEwMJm1fWPbkKl+495yY=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
  Subject:References:List-Unsubscribe:List-Id:Cc:Date:From:Sender:To:Content-ID
  :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
  Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=lSvmuqRQlo2N0nvbmWgFFkBqrrx0q9BTFLMj/CQQ+jc=; b=G
- snicTIcsio7FtXtPlsQ8/mzWnkte1gSTT9SjtinBu2kMxSZYSbviPV/4lf0JpRSkInjhTmRRGOJ1i
- 74jZGHZcj3XpNJTBG+6QqcPThCyvATN7idcH7o5rzGVGtFXLYBTpREqF4So/s0LApr1rxsohv6d/h
- Giu/LAm3VVLL9TJg=;
-Received: from mail-ej1-f43.google.com ([209.85.218.43])
+ List-Owner:List-Archive; bh=x8wKLmax2q2svknHpzb2dLqMnHC9oCmVlMQDXc8Jq60=; b=d
+ EcE3jgeHybwT0HF5mSM4UJpY62FIIlLpZ8roKRnxNoYL93RAew4vCzj1xYAnpfj1iNBtNBAu4aNaa
+ WKsASUb2DZf4Slx/x+BTfjD7mFonh2pxflUo8okYbAj5n+EF+Mf9zhhsvTceUkg6ufcwKqQu7PNmN
+ NlF7dZItY1qKcoFc=;
+Received: from mail-ej1-f49.google.com ([209.85.218.49])
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wxRUg-00058r-CK for openvpn-devel@lists.sourceforge.net;
- Fri, 21 Aug 2026 15:49:24 +0000
-Received: by mail-ej1-f43.google.com with SMTP id
- a640c23a62f3a-c167aa9500dso183599766b.3
+ id 1wxRUl-000596-3W for openvpn-devel@lists.sourceforge.net;
+ Fri, 21 Aug 2026 15:49:28 +0000
+Received: by mail-ej1-f49.google.com with SMTP id
+ a640c23a62f3a-c15b1da6b82so130429366b.1
  for <openvpn-devel@lists.sourceforge.net>;
- Fri, 21 Aug 2026 08:49:22 -0700 (PDT)
+ Fri, 21 Aug 2026 08:49:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1787327356; x=1787932156; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1787327360; x=1787932160; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
  :date:from:from:to:cc:subject:date:message-id:reply-to:content-type;
- bh=lSvmuqRQlo2N0nvbmWgFFkBqrrx0q9BTFLMj/CQQ+jc=;
- b=Bkg+gXqfR5K2OWr1Tryg5Tpl74aUw4kzwS2ygE8VDGuvz1Y14rTY3kayzqWx2N73KR
- veh5L6V+oztfV6j48B6IRXgQ2pzIgYrqHQAq8VN2WSoOaHY3YhBxXFxh2SPkQdz7xfrS
- fkayka8lHXBbErgFeLd959+qfUCw5soHByDkRzyKnfDln4XzdkXYLhNtrQ2EY78/kLZt
- lwRhORWrustJjkYIvEaFOZdyDeZ/oq020SBpRa131eDHh6RVDT5x++sZWjUV//B2o6WC
- VEreFClCqOh+SLmwQDKKakZdnb/IinDAYXwj9Ev4Wu2PP+2Um4Jz39sj6RJlsTdsDafO
- z2WQ==
+ bh=x8wKLmax2q2svknHpzb2dLqMnHC9oCmVlMQDXc8Jq60=;
+ b=bZNrep4P2KgOBr+UFtybqUvXkJCwIlt2tqPhN/YjmGN2vsLkw0JDw0RqKRbUmEXmob
+ Z3kRdldIYNDkKV1MwwkGRLN5oevmhGO2b5KKnTp4LuCrXyequITPneW5JKXzRaQaZS8Y
+ jE+pPLQtVsbPmhj2epSKz1DUc7swZHSguCb8e+iIOCo8ciR9U9HUApNslTzVsP72YL9i
+ PKFYtx4qFICMdFfVYjRBRBMMOXmVf5Ygq9LMVVQ5Bay8yNilykslDsipfJXvdTgeKy6i
+ Sp926Foz9Rr0v7sg2srNxDe/PtvbpzDASlFYuisKiYBdT23mqYJtsxLes8bkPV08Tz+K
+ b+CQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1787327356; x=1787932156;
+ d=1e100.net; s=20251104; t=1787327360; x=1787932160;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
  :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
  :message-id:reply-to:content-type;
- bh=lSvmuqRQlo2N0nvbmWgFFkBqrrx0q9BTFLMj/CQQ+jc=;
- b=eMab1bDvYPPP3SaH9dpo7KA/pYyf/KwlmdecOGj4SqlHgXiqBiBwM9IGuiCcXNLDax
- 9hFG6ww4alSB7vaqJJWeIyZunyjKIi1mJKy30cxEVADZ9ESmv/AF1s8BXwvC1rHwwQCt
- egt22yUXY6DmmHynTr9BjTeFTLW96RADZMI+8EtfjZQey/Fj30Er0DPjkdeSIvffYjCG
- JLZDxVqevN8bYdQWnFjhoHbaoySW2fnO7bgOAwkhJbfVcRoPxiEmHxTvqJ7I4Je8Sxmb
- BevEyvbFI6tpZQMWbvOqZoP42/vUYuPNKYmDkwexjUS1dVKXH8ZESaMxRWAQmGtDXb+Y
- sk/A==
-X-Gm-Message-State: AFuF++lc7EVV1+JMBRF9A/90+YcJ0LGMqyUpeWlcL4u5Kk91k/tG/j/d
- JTqGF8QqghEAV39YdR1DNbhRqoxV+InYtlU6iaoujxpLdDzb2RnMmKkbpxTW6PYEC9c43xR+Tf0
- RyO4wT6beeaVTlZYu7H+kYStE3cYuUTcnFKWL1pYNNpyRjTTyOySm078jSDrwlKlwEw2GAjS99p
- bZEUoxYw==
-X-Gm-Gg: AR+sD108ecjpCSSTt/H3XJSvC+ksLeEW5Y2eLsN56AO9G6CIbB4KIzaOyc9daH14oKa
- HWC3YMwbuXh28/2AXiSCD/8BdUemdhpZJxCdWGU01a1ZmESkrhBYPX8ovvJnNqHKck1GTlnIvi6
- sNxtaCHfbs02oV09P0jadZP+w0aMzjPn9tyJEMYapakCSyqZnflLJukNoZIomGpTXGmyEqbcinI
- fpL2opR1CkF32SmLW3f9QNQEjlEQ8G6HX4W8LRIXeqSf/8R5mie78DCMu/ZvLgf7lFfKrLwFT/S
- SvVJL6aTErDRkHZQsFNaXjjBYn9FDicotGT31J1YZqaRXqGCNUrYiq9otKB+6O27MclXP4WSvjq
- ZaAGH7NQGQ+L56zvJgJO6xxlRitODIpCcXAMBqOxhzpF6Oix5Pt9G38L7IjHPGqRmxr0Nd3t1BH
- QPn+56NdUTpCVcQCeh9ypuh+COM7n56kuxaHi8I6g4Cmm/d5esEYupfMtS2g0kVo7zYPE47Diuj
- GOL8QRRER00BjjqgTAXSU9DuX6vt4Wm5G/9+kCMifj5rU48mFE5Ma9FM3qWXmjrTLFHAzm0ihsD
- kcoZ1LoP2pdNX+ePDl7reuAOuOAjIQsnYM2YToeAfvi6iFP7ky4=
-X-Received: by 2002:a17:907:d048:b0:c21:74ed:4608 with SMTP id
- a640c23a62f3a-c246a4cf8b5mr803423666b.10.1787327355552; 
- Fri, 21 Aug 2026 08:49:15 -0700 (PDT)
+ bh=x8wKLmax2q2svknHpzb2dLqMnHC9oCmVlMQDXc8Jq60=;
+ b=bKbqwCAbAIgPP8t1wV5Dqd+eRabbs87V3mGMmS61O1AJRfY+SkdvJnmFImgUeutSRd
+ pKYCAAmm0Pko7sDFpr2RmM86ClwNlt+/WvbRrweLIRJ1rh0awzrvlWiNEb1ZXWrD9JnV
+ 5K6kCKRxGYm+N//CCFsM1scki4a3n0B8Fizc7xtf3wmwGfhKb8p2zPMoM+xr6uXy+uPb
+ apgMRFhHkWy9CkyW4TaXuqtJwWdNJ5jMBOVX6p/Tl8cuPOVSo66IJfliR9na3rJZWbDo
+ fU2z6os2dcINO9UEJBHhDFiZyrKFHce+K0eftMFNAm1eXHMTRmaZBh8rYZvnu/LS6/Ba
+ zfuQ==
+X-Gm-Message-State: AFuF++nz4Bb+Tf5gtik6PJS3zYNjgRfB/sfFqTbZDqb8jbBHbvwxSCO6
+ D0HBLg6EnECa1cWcYT1iy0t0UXb1+uNThjGrmF/5SJ+ELO8sN0vketl5GMllSrYBTkJyd3OzwQA
+ pKZnYyXB1bsGbU5aRprOOodDquD+75wo03jeQZMphk0Ug6w5VRQh/JaU19EcJzeObaucu4wWP1Q
+ nBgoyMGw==
+X-Gm-Gg: AR+sD139ZVamsRvvQAJgczZpXT/6zZML7NKOYUX3WSnvLYKvuCtNzDHmah0OLojyUn+
+ E+WhEp2PkVEOSD1v6w7fdT2JjB+JTAjj1p5HAgkO/Ed6bzJtJWyyH0XBmPuoo590LTcVETradNt
+ zPQ/XI5AmSX0oa250WwkishkUKCapkmRTd55OcM0dLOd2Ehz1S5hLfawa6TxjOE/rYm+GPV2AV0
+ YNXbHQ8tenogwiO8sjUMG5C+vwFLho4i3uURsOgNYMnOm+Qihn+jPAIt2kikH9HkmQuhseNnmXO
+ AS37SiBVaUWtr+9WiXkkbnsyg3fuR/OrsSdMbcQbZZ0eogwu+LzTTKL2eVC+5yLpRGL1aMFQC9M
+ Fo0vGwxiY+7ocA9yqgouLSVb3iKtCosh7PsCjWqMA4tDdmRpx6S76obsO9+a6Wu7pjIloBmQRBh
+ F6a2PF+Va9/ZcpAbLrfFEsls4W38uz2ZYP6k+DjIwOJYWlbmkUg206tRjn9TJ7P7lK6x9S6zamN
+ X/iRCrNB2xJPRraN+v/kPTC0r87JTzjxSpoosnMB8vxMDFK10ZID3jMREFrpx4L2wVMGfJUXIu8
+ ngYKPINvSuINrs/GQx7QDhQ0xVAo1IT/QaPCWCse1BZDsfxki/w=
+X-Received: by 2002:a17:907:3c83:b0:c21:7584:fc58 with SMTP id
+ a640c23a62f3a-c246a60cd41mr759103066b.12.1787327360322; 
+ Fri, 21 Aug 2026 08:49:20 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- a640c23a62f3a-c245921e4f5sm537898866b.55.2026.08.21.08.49.14
+ a640c23a62f3a-c2458b0933csm553368566b.18.2026.08.21.08.49.19
  for <openvpn-devel@lists.sourceforge.net>
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 21 Aug 2026 08:49:14 -0700 (PDT)
+ Fri, 21 Aug 2026 08:49:19 -0700 (PDT)
 X-Google-Original-From: "plaisthos (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Fri, 21 Aug 2026 15:49:14 +0000
+Date: Fri, 21 Aug 2026 15:49:19 +0000
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newchange
 X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: Ic1ed693f73029f5b5609f717333fdaaabe42acbd
-X-Gerrit-Change-Number: 1853
+X-Gerrit-Change-Id: Ifdd2122a3e60cdb11cc9df67570ab5628bfcdeea
+X-Gerrit-Change-Number: 1855
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1853?usp=email>
-X-Gerrit-Commit: b06b7a2808b68c14de5151e5b065e1ae0a848733
-References: <gerrit.1787327336000.Ic1ed693f73029f5b5609f717333fdaaabe42acbd@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzg3MzI3MzM2MDAwLkljMWVkNjkzZjczMDI5ZjViNTYwOWY3MTczMzNmZGFhYWJlNDJhY2JkQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <9f6952377ac653ca613175ee9403e854aad2a92e-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1855?usp=email>
+X-Gerrit-Commit: 8bca2970f7a913787d554ecf2ed9036a8de39d4a
+References: <gerrit.1787327336000.Ifdd2122a3e60cdb11cc9df67570ab5628bfcdeea@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzg3MzI3MzM2MDAwLklmZGQyMTIyYTNlNjBjZGIxMWNjOWRmNjc1NzBhYjU2MjhiZmNkZWVhQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <6274346bb49accf6a6f8b2a9fb9a0a85582457e9-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wxRUg-00058r-CK
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Move mocks from
- test_push_update_msg into its own compile unit
+X-Headers-End: 1wxRUl-000596-3W
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Add helper method to
+ read an integer from a buffer
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -140,505 +140,514 @@ From: "plaisthos \(Code Review\) via Openvpn-devel"
 Reply-To: arne-openvpn@rfc2549.org, openvpn-devel@lists.sourceforge.net
 Cc: "plaisthos \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============1493221293452191826=="
+Content-Type: multipart/mixed; boundary="===============3182662372774027294=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============1493221293452191826==
+--===============3182662372774027294==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="7/CqgaVimps="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="axNLA+HIyl4="; charset=UTF-8
 
---7/CqgaVimps=
+--axNLA+HIyl4=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 plaisthos has uploaded this change for review=2E ( http://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1853?usp=3Demail )
+=2Enet/c/openvpn/+/1855?usp=3Demail )
 
 
-Change subject: Move mocks from tes=
-t_push_update_msg into its own compile unit
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+Change subject: Add helper method t=
+o read an integer from a buffer
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E
 
-Move mocks from test_push_update_msg into i=
-ts own compile unit
+Add helper method to read an integer from a buffer
 
-This allows these mocks to be reused by other unit tes=
-ts that
-need to include push_util=2Ec/h functions=2E
-
-Change-Id: Ic1ed693f7=
-3029f5b5609f717333fdaaabe42acbd
-Signed-off-by: Arne Schwabe <arne@rfc2549=
-=2Eorg>
+Cha=
+nge-Id: Ifdd2122a3e60cdb11cc9df67570ab5628bfcdeea
+Signed-off-by: Arne Schwa=
+be <arne@rfc2549=2Eorg>
 ---
-M CMakeLists=2Etxt
-M tests/unit_tests/openvpn/Makefile=2Eam
-A t=
-ests/unit_tests/openvpn/mock_push_dependencies=2Ec
-M tests/unit_tests/openv=
-pn/test_push_update_msg=2Ec
-4 files changed, 71 insertions(+), 42 deletions=
-(-)
+M src/openvpn/buffer=2Ec
+M src/openvpn/buffer=
+=2Eh
+M tests/unit_tests/openvpn/test_buffer=2Ec
+3 files changed, 126 insert=
+ions(+), 1 deletion(-)
 
 
 
-  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/5=
-3/1853/1
+  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/ope=
+nvpn refs/changes/55/1855/1
 
-diff --git a/CMakeLists=2Etxt b/CMakeLists=2Etxt
-index 2c3324d=2E=
-=2E6eb5954 100644
---- a/CMakeLists=2Etxt
-+++ b/CMakeLists=2Etxt
-@@ -930,6 +=
-930,7 @@
-     target_sources(test_push_update_msg PRIVATE
-         tests/un=
-it_tests/openvpn/mock_msg=2Ec
-         tests/unit_tests/openvpn/mock_get_ra=
-ndom=2Ec
-+        tests/unit_tests/openvpn/mock_push_dependencies=2Ec
-     =
-    src/openvpn/options_util=2Ec
-         src/openvpn/otime=2Ec
-         sr=
-c/openvpn/list=2Ec
-diff --git a/tests/unit_tests/openvpn/Makefile=2Eam b/te=
-sts/unit_tests/openvpn/Makefile=2Eam
-index 6db611e=2E=2E5954902 100644
---- =
-a/tests/unit_tests/openvpn/Makefile=2Eam
-+++ b/tests/unit_tests/openvpn/Mak=
-efile=2Eam
-@@ -400,6 +400,7 @@
- push_update_msg_testdriver_SOURCES =3D test=
-_push_update_msg=2Ec \
- 	mock_msg=2Ec \
- 	mock_get_random=2Ec \
-+	mock_push=
-_dependencies=2Ec \
- 	$(top_srcdir)/src/openvpn/buffer=2Ec \
- 	$(top_srcdir=
-)/src/openvpn/platform=2Ec \
- 	$(top_srcdir)/src/openvpn/options_util=2Ec \=
-
-diff --git a/tests/unit_tests/openvpn/mock_push_dependencies=2Ec b/tests/u=
-nit_tests/openvpn/mock_push_dependencies=2Ec
-new file mode 100644
-index 000=
-0000=2E=2E112bcfd
---- /dev/null
-+++ b/tests/unit_tests/openvpn/mock_push_de=
-pendencies=2Ec
-@@ -0,0 +1,69 @@
-+/*
-+ *  OpenVPN -- An application to secur=
-ely tunnel IP networks
-+ *             over a single UDP port, with support=
- for SSL/TLS-based
-+ *             session authentication and key exchange,=
-
-+ *             packet encryption, packet authentication, and
-+ *         =
-    packet compression=2E
-+ *
-+ *  Copyright (C) 2002-2026 OpenVPN Inc <sal=
-es@openvpn=2Enet>
-+ *
-+ *  This program is free software; you can redistrib=
-ute it and/or modify
-+ *  it under the terms of the GNU General Public Lice=
-nse version 2
-+ *  as published by the Free Software Foundation=2E
-+ *
-+ * =
- This program is distributed in the hope that it will be useful,
-+ *  but W=
-ITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABIL=
-ITY or FITNESS FOR A PARTICULAR PURPOSE=2E  See the
-+ *  GNU General Public=
- License for more details=2E
-+ *
-+ *  You should have received a copy of th=
-e GNU General Public License along
-+ *  with this program; if not, see <htt=
-ps://www=2Egnu=2Eorg/licenses/>=2E
-+ */
-+
-+/* Set of mocked function/global=
-s to get unit tests to
-+ * compile that use the push_util=2Ec file */
-+
-+
-+=
-#ifdef HAVE_CONFIG_H
-+#include "config=2Eh"
-+#endif
-+
-+#include "error=2Eh"=
-
-+#include "options=2Eh"
-+
-+void
-+throw_signal_soft(const int signum, const=
- char *signal_text)
-+{
-+    msg(M_WARN, "Offending option received from ser=
-ver");
-+}
-+
-+uint64_t
-+pull_permission_mask(const struct context *c)
-+{
-+  =
-  uint64_t flags =3D OPT_P_UP | OPT_P_ROUTE_EXTRAS | OPT_P_SOCKBUF | OPT_P_=
-SOCKFLAGS
-+                     | OPT_P_SETENV | OPT_P_SHAPER | OPT_P_TIMER=
- | OPT_P_COMP | OPT_P_PERSIST
-+                     | OPT_P_MESSAGES | OPT_=
-P_EXPLICIT_NOTIFY | OPT_P_ECHO | OPT_P_PULL_MODE
-+                     | OP=
-T_P_PEER_ID | OPT_P_NCP | OPT_P_PUSH_MTU | OPT_P_ROUTE | OPT_P_DHCPDNS;
-+  =
-  return flags;
-+}
-+
-+void
-+unlearn_ifconfig(struct multi_context *m, struc=
-t multi_instance *mi)
-+{
-+}
-+
-+void
-+unlearn_ifconfig_ipv6(struct multi_con=
-text *m, struct multi_instance *mi)
-+{
-+}
-+
-+void
-+update_vhash(struct mult=
-i_context *m, struct multi_instance *mi, const char *new_ip, const char *ne=
-w_ipv6)
-+{
-+}
+diff --git a/src/openvpn/buffer=2Ec b/src/open=
+vpn/buffer=2Ec
+index f14caa2=2E=2Edee0906 100644
+--- a/src/openvpn/buffer=
+=2Ec
++++ b/src/openvpn/buffer=2Ec
+@@ -1352,3 +1352,47 @@
+     fclose(fp);
+ =
+    return ret;
+ }
 +
 +bool
-+options_postprocess_pull(struct options *options, st=
-ruct env_set *es)
++buffer_read_int(struct buffer *buf, int *result=
+)
 +{
-+    return true;
-+}
-diff --git a/tests/unit_tests/ope=
-nvpn/test_push_update_msg=2Ec b/tests/unit_tests/openvpn/test_push_update_m=
-sg=2Ec
-index 01bf6c8=2E=2Ea93f916 100644
---- a/tests/unit_tests/openvpn/tes=
-t_push_update_msg=2Ec
-+++ b/tests/unit_tests/openvpn/test_push_update_msg=
-=2Ec
-@@ -12,48 +12,6 @@
- 
- #include "push_util=2Ec"
- 
--/* mocks */
--
--void
++    *result =3D 0;
++    bool ret =3D false;
++
++    while (buf_len(buf=
+))
++    {
++        uint8_t c =3D *BPTR(buf);
++        if (c >=3D '0' && c <=
+=3D '9')
++        {
++            *result =3D *result * 10;
++            /* =
+lower nibble of ascii digits is their value */
++            *result +=3D (c=
+ & 0x0f);
++            buf_advance(buf, 1);
++            ret =3D true;
++   =
+     }
++        else
++        {
++            return ret;
++        }
++    }
 =
--throw_signal_soft(const int signum, const char *signal_text)
--{
--    msg(M=
-_WARN, "Offending option received from server");
--}
--
--uint64_t
--pull_permi=
-ssion_mask(const struct context *c)
--{
--    unsigned int flags =3D OPT_P_UP=
- | OPT_P_ROUTE_EXTRAS | OPT_P_SOCKBUF | OPT_P_SOCKFLAGS
--                  =
-       | OPT_P_SETENV | OPT_P_SHAPER | OPT_P_TIMER | OPT_P_COMP | OPT_P_PER=
-SIST
--                         | OPT_P_MESSAGES | OPT_P_EXPLICIT_NOTIFY | O=
-PT_P_ECHO | OPT_P_PULL_MODE
--                         | OPT_P_PEER_ID | OPT=
-_P_NCP | OPT_P_PUSH_MTU | OPT_P_ROUTE | OPT_P_DHCPDNS;
--    return flags;
--=
-}
--
--void
--unlearn_ifconfig(struct multi_context *m, struct multi_instance =
-*mi)
--{
--    return;
--}
--
--void
--unlearn_ifconfig_ipv6(struct multi_context=
- *m, struct multi_instance *mi)
--{
--    return;
--}
--
--void
--update_vhash(st=
-ruct multi_context *m, struct multi_instance *mi, const char *new_ip, const=
- char *new_ipv6)
--{
--    return;
--}
--
--bool
--options_postprocess_pull(struc=
-t options *options, struct env_set *es)
--{
--    return true;
--}
--
- /*
-  * C=
-ounters to track route accumulation across continuation messages=2E
-  * Use=
-d to verify the bug where update_options_found resets per message=2E
++    return ret;
++}
++
++char *
++extract_field(struct buffer *buf, char sep, =
+struct gc_arena *gc)
++{
++    const uint8_t *seppos =3D memchr(BPTR(buf), se=
+p, buf_len(buf));
++    if (!seppos)
++    {
++        return NULL;
++    }
++  =
+  size_t field_len =3D seppos - BPTR(buf);
++
++    char *field =3D gc_malloc=
+(field_len + 1, false, gc);
++
++    strncpy(field, BSTR(buf), field_len);
++ =
+   field[field_len] =3D 0;
++
++    buf_advance(buf, (int)field_len + 1);
++  =
+  return field;
++}
+\ No newline at end of file
+diff --git a/src/openvpn/buf=
+fer=2Eh b/src/openvpn/buffer=2Eh
+index 85277ff=2E=2Ec3202fa 100644
+--- a/sr=
+c/openvpn/buffer=2Eh
++++ b/src/openvpn/buffer=2Eh
+@@ -2240,4 +2240,23 @@
+ /=
+**@}*/
+ /* End of Buffer Lists */
+ 
++/**
++ * will read a decimal integer fr=
+om a buffer until the next non-decimal
++ * character=2E If successful the m=
+ethod will return true and the integer
++ * in \c result=2E The buffer will =
+be advanced to the next character after
++ * the integer=2E  This function a=
+lso ensures to not advance beyond the end
++ * of the buffer=2E
++ */
++bool
++=
+buffer_read_int(struct buffer *buf, int *result);
++
++/**
++ * Extract a fiel=
+d from buf that end with the \c sep character=2E The
++ * returned string is=
+ allocated in the gc_arena=2E If the seperator character
++ * is not found, =
+the function returns the nullptr=2E
++ *
++ * The buffer is also forward to t=
+he point after the seperator character=2E
++ */
++char *
++extract_field(struc=
+t buffer *buf, char sep, struct gc_arena *gc);
+ #endif /* BUFFER_H */
+diff =
+--git a/tests/unit_tests/openvpn/test_buffer=2Ec b/tests/unit_tests/openvpn=
+/test_buffer=2Ec
+index 326de40=2E=2E3575357 100644
+--- a/tests/unit_tests/o=
+penvpn/test_buffer=2Ec
++++ b/tests/unit_tests/openvpn/test_buffer=2Ec
+@@ -4=
+56,6 +456,66 @@
+     /* Check that our own method agrees */
+     assert_tru=
+e(string_check_buf(&buf2, CC_PRINT | CC_NULL, CC_CRLF));
+     assert_string=
+_equal(BSTR(&buf2), "CR_RESPONSE,MTIx");
++    gc_free(&gc);
++}
++
++static vo=
+id
++test_buffer_read_int(void **state)
++{
++    struct gc_arena gc =3D gc_ne=
+w();
++    struct buffer buf =3D alloc_buf_gc(1000, &gc);
++
++    buf_printf(=
+&buf, "72732,1234");
++
++    int tmp =3D -1;
++    assert_true(buffer_read_in=
+t(&buf, &tmp));
++    assert_int_equal(tmp, 72732);
++    assert_int_equal(*B=
+PTR(&buf), ',');
++
++    buf_advance(&buf, 1);
++
++    assert_true(buffer_rea=
+d_int(&buf, &tmp));
++    assert_int_equal(tmp, 1234);
++    assert_int_equal=
+(buf_len(&buf), 0);
++
++    buf =3D alloc_buf_gc(1000, &gc);
++    buf_printf=
+(&buf, "fo42,7777");
++
++    assert_false(buffer_read_int(&buf, &tmp));
++
++ =
+   /* empty buffer */
++    buf =3D alloc_buf_gc(1000, &gc);
++    assert_fal=
+se(buffer_read_int(&buf, &tmp));
++
++    gc_free(&gc);
++}
++
++static void
++te=
+st_buffer_extract_field(void **state)
++{
++    struct gc_arena gc =3D gc_new=
+();
++    struct buffer buf =3D alloc_buf_gc(1000, &gc);
++    assert_null(ex=
+tract_field(&buf, ',', &gc));
++
++    buf =3D alloc_buf_gc(5, &gc);
++    buf=
+_write(&buf, "12345", 5);
++    const char *ret =3D extract_field(&buf, '5',=
+ &gc);
++    assert_string_equal(ret, "1234");
++    /* nothing left after th=
+e 5 */
++    assert_int_equal(buf_len(&buf), 0);
++
++    buf =3D alloc_buf_gc=
+(5, &gc);
++    buf_write(&buf, "12345", 5);
++    ret =3D extract_field(&buf=
+, '4', &gc);
++    assert_string_equal(ret, "123");
++
++    /* 5 should be le=
+ft */
++    assert_int_equal(buf_len(&buf), 1);
++    assert_memory_equal(buf=
+_bptr(&buf), "5", 1);
++
++    buf =3D alloc_buf_gc(5, &gc);
++    buf_write(&=
+buf, "12345", 5);
++    assert_null(extract_field(&buf, '6', &gc));
+ 
+     g=
+c_free(&gc);
+ }
+@@ -567,7 +627,9 @@
+         cmocka_unit_test(test_checked_=
+snprintf),
+         cmocka_unit_test(test_buffer_chomp),
+         cmocka_un=
+it_test(test_buffer_null_terminate),
+-        cmocka_unit_test(test_buffer_=
+parse)
++        cmocka_unit_test(test_buffer_parse),
++        cmocka_unit_t=
+est(test_buffer_read_int),
++        cmocka_unit_test(test_buffer_extract_fi=
+eld)
+     };
+ 
+     return cmocka_run_group_tests_name("buffer", tests, NUL=
+L, NULL);
 
 -- 
-T=
-o view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1853?usp=3Demail
-To=
- unsubscribe, or for help writing mail filters, visit http://gerrit=2Eopenv=
-pn=2Enet/settings?usp=3Demail
+To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/185=
+5?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http:=
+//gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Gerrit-MessageType: newchange
-Gerrit-Project=
-: openvpn
+Gerrit-MessageType: newchang=
+e
+Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ic1ed693f73029f5b5609f717=
-333fdaaabe42acbd
-Gerrit-Change-Number: 1853
-Gerrit-PatchSet: 1
-Gerrit-Owner=
-: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-CC: openvpn-devel <openvpn-=
-devel@lists=2Esourceforge=2Enet>
+Gerrit-Change-Id: Ifdd2122a=
+3e60cdb11cc9df67570ab5628bfcdeea
+Gerrit-Change-Number: 1855
+Gerrit-PatchSet=
+: 1
+Gerrit-Owner: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-CC: openvpn=
+-devel <openvpn-devel@lists=2Esourceforge=2Enet>
 
---7/CqgaVimps=
+--axNLA+HIyl4=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p>plaisthos has upl=
 oaded this change for <strong>review</strong>=2E</p><p><a href=3D"http://ge=
-rrit=2Eopenvpn=2Enet/c/openvpn/+/1853?usp=3Demail">View Change</a></p><pre =
+rrit=2Eopenvpn=2Enet/c/openvpn/+/1855?usp=3Demail">View Change</a></p><pre =
 class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pr=
-e-wrap;">Move mocks from test_push_update_msg into its own compile unit<br>=
-<br>This allows these mocks to be reused by other unit tests that<br>need t=
-o include push_util=2Ec/h functions=2E<br><br>Change-Id: Ic1ed693f73029f5b5=
-609f717333fdaaabe42acbd<br>Signed-off-by: Arne Schwabe &lt;arne@rfc2549=2Eo=
-rg&gt;<br>---<br>M CMakeLists=2Etxt<br>M tests/unit_tests/openvpn/Makefile=
-=2Eam<br>A tests/unit_tests/openvpn/mock_push_dependencies=2Ec<br>M tests/u=
-nit_tests/openvpn/test_push_update_msg=2Ec<br>4 files changed, 71 insertion=
-s(+), 42 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-fami=
-ly: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eop=
-envpn=2Enet:29418/openvpn refs/changes/53/1853/1</pre><pre style=3D"font-fa=
-mily: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/CMake=
-Lists=2Etxt b/CMakeLists=2Etxt</span><br><span>index 2c3324d=2E=2E6eb5954 1=
-00644</span><br><span>--- a/CMakeLists=2Etxt</span><br><span>+++ b/CMakeLis=
-ts=2Etxt</span><br><span>@@ -930,6 +930,7 @@</span><br><span>     target_so=
-urces(test_push_update_msg PRIVATE</span><br><span>         tests/unit_test=
-s/openvpn/mock_msg=2Ec</span><br><span>         tests/unit_tests/openvpn/mo=
-ck_get_random=2Ec</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      tests/unit_tests/openvpn/mock_push_dependencies=2Ec</span><br><span> =
-        src/openvpn/options_util=2Ec</span><br><span>         src/openvpn/o=
-time=2Ec</span><br><span>         src/openvpn/list=2Ec</span><br><span>diff=
- --git a/tests/unit_tests/openvpn/Makefile=2Eam b/tests/unit_tests/openvpn/=
-Makefile=2Eam</span><br><span>index 6db611e=2E=2E5954902 100644</span><br><=
-span>--- a/tests/unit_tests/openvpn/Makefile=2Eam</span><br><span>+++ b/tes=
-ts/unit_tests/openvpn/Makefile=2Eam</span><br><span>@@ -400,6 +400,7 @@</sp=
-an><br><span> push_update_msg_testdriver_SOURCES =3D test_push_update_msg=
-=2Ec \</span><br><span> 	mock_msg=2Ec \</span><br><span> 	mock_get_random=
-=2Ec \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	mock_push_de=
-pendencies=2Ec \</span><br><span> 	$(top_srcdir)/src/openvpn/buffer=2Ec \</=
-span><br><span> 	$(top_srcdir)/src/openvpn/platform=2Ec \</span><br><span> =
-	$(top_srcdir)/src/openvpn/options_util=2Ec \</span><br><span>diff --git a/=
-tests/unit_tests/openvpn/mock_push_dependencies=2Ec b/tests/unit_tests/open=
-vpn/mock_push_dependencies=2Ec</span><br><span>new file mode 100644</span><=
-br><span>index 0000000=2E=2E112bcfd</span><br><span>--- /dev/null</span><br=
-><span>+++ b/tests/unit_tests/openvpn/mock_push_dependencies=2Ec</span><br>=
-<span>@@ -0,0 +1,69 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  OpenVPN --=
- An application to securely tunnel IP networks</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+ *             over a single UDP port, with supp=
-ort for SSL/TLS-based</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ *             session authentication and key exchange,</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+ *             packet encryption, pac=
-ket authentication, and</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+ *             packet compression=2E</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+ *  Copyright (C) 2002-2026 OpenVPN Inc &lt;sales@openvpn=2Enet&gt;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+ *  This program is free software; you c=
-an redistribute it and/or modify</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+ *  it under the terms of the GNU General Public License versi=
-on 2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  as publishe=
-d by the Free Software Foundation=2E</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- *  This program is distributed in the hope that it will be useful,</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WARRANT=
-Y; without even the implied warranty of</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE=
-=2E  See the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  GNU=
- General Public License for more details=2E</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+ *  You should have received a copy of the GNU General Public Licens=
-e along</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  with thi=
-s program; if not, see &lt;https://www=2Egnu=2Eorg/licenses/&gt;=2E</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=
+e-wrap;">Add helper method to read an integer from a buffer<br><br>Change-I=
+d: Ifdd2122a3e60cdb11cc9df67570ab5628bfcdeea<br>Signed-off-by: Arne Schwabe=
+ &lt;arne@rfc2549=2Eorg&gt;<br>---<br>M src/openvpn/buffer=2Ec<br>M src/ope=
+nvpn/buffer=2Eh<br>M tests/unit_tests/openvpn/test_buffer=2Ec<br>3 files ch=
+anged, 126 insertions(+), 1 deletion(-)<br><br></pre><pre class=3D"blocks" =
+style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull=
+ ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/55/1855/1</pre><pr=
+e style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>=
+diff --git a/src/openvpn/buffer=2Ec b/src/openvpn/buffer=2Ec</span><br><spa=
+n>index f14caa2=2E=2Edee0906 100644</span><br><span>--- a/src/openvpn/buffe=
+r=2Ec</span><br><span>+++ b/src/openvpn/buffer=2Ec</span><br><span>@@ -1352=
+,3 +1352,47 @@</span><br><span>     fclose(fp);</span><br><span>     return=
+ ret;</span><br><span> }</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+buffer_read_int(struct buffer=
+ *buf, int *result)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    *result =3D 0;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    bool ret =3D fa=
+lse;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    while (buf_len(buf))</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        uint8_t c =3D *BPTR(buf);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        if (c &gt;=3D &#39;=
+0&#39; &amp;&amp; c &lt;=3D &#39;9&#39;)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+            *result =3D *result * 10;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+            /* lower nibble of ascii digits is=
+ their value */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        *result +=3D (c &amp; 0x0f);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+            buf_advance(buf, 1);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+            ret =3D true;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        else</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+            return ret;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return =
+ret;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+char *</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+extract_field(struct buffer *buf, char sep, struct gc_arena *gc)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    const uint8_t *seppos =3D memchr(B=
+PTR(buf), sep, buf_len(buf));</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    if (!seppos)</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ return NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    size_t field_len=
+ =3D seppos - BPTR(buf);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    char *fiel=
+d =3D gc_malloc(field_len + 1, false, gc);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    strncpy(field, BSTR(buf), field_len);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    field[field_len] =3D 0;</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+/* Set of mocked function/globals to get unit tests to</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ * compile that use the p=
-ush_util=2Ec file */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+#ifdef HAVE_CONFIG_H</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+#include &quot;config=2Eh&quot;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+#include &quot;error=2Eh&quot;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+#include &quot;options=2Eh&quot;</span><br><s=
+ 100%, 40%);">+    buf_advance(buf, (int)field_len + 1);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    return field;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+}</span><br><span>\ No newline at end of=
+ file</span><br><span>diff --git a/src/openvpn/buffer=2Eh b/src/openvpn/buf=
+fer=2Eh</span><br><span>index 85277ff=2E=2Ec3202fa 100644</span><br><span>-=
+-- a/src/openvpn/buffer=2Eh</span><br><span>+++ b/src/openvpn/buffer=2Eh</s=
+pan><br><span>@@ -2240,4 +2240,23 @@</span><br><span> /**@}*/</span><br><sp=
+an> /* End of Buffer Lists */</span><br><span> </span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ * will read a decimal integer from a buffer until the next non=
+-decimal</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * characte=
+r=2E If successful the method will return true and the integer</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ * in \c result=2E The buffer wi=
+ll be advanced to the next character after</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ * the integer=2E  This function also ensures to not=
+ advance beyond the end</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ * of the buffer=2E</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+buffer_read_int(struct buff=
+er *buf, int *result);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ * Extract a field from buf that=
+ end with the \c sep character=2E The</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ * returned string is allocated in the gc_arena=2E If the=
+ seperator character</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ * is not found, the function returns the nullptr=2E</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ * The buffer is also forward to the point after the seper=
+ator character=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+char *</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+extract_field(struct buffer *bu=
+f, char sep, struct gc_arena *gc);</span><br><span> #endif /* BUFFER_H */</=
+span><br><span>diff --git a/tests/unit_tests/openvpn/test_buffer=2Ec b/test=
+s/unit_tests/openvpn/test_buffer=2Ec</span><br><span>index 326de40=2E=2E357=
+5357 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_buffer=2Ec<=
+/span><br><span>+++ b/tests/unit_tests/openvpn/test_buffer=2Ec</span><br><s=
+pan>@@ -456,6 +456,66 @@</span><br><span>     /* Check that our own method =
+agrees */</span><br><span>     assert_true(string_check_buf(&amp;buf2, CC_P=
+RINT | CC_NULL, CC_CRLF));</span><br><span>     assert_string_equal(BSTR(&a=
+mp;buf2), &quot;CR_RESPONSE,MTIx&quot;);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+test_buffer_read_int(v=
+oid **state)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena gc =
+=3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    st=
+ruct buffer buf =3D alloc_buf_gc(1000, &amp;gc);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    buf_printf(&amp;buf, &quot;72732,1234&quot;);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    int tmp =3D -1;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    assert_true(buffer_read_int(&amp;buf, &amp;tmp));<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal=
+(tmp, 72732);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    as=
+sert_int_equal(*BPTR(&amp;buf), &#39;,&#39;);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    buf_advance(&amp;buf, 1);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  assert_true(buffer_read_int(&amp;buf, &amp;tmp));</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(tmp, 1234);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(buf_len=
+(&amp;buf), 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    buf =3D alloc_buf_g=
+c(1000, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  buf_printf(&amp;buf, &quot;fo42,7777&quot;);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    assert_false(buffer_read_int(&amp;buf, &amp;tmp));</span><br><s=
 pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+throw_signal_soft(const int signum, const char *signal_text)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    msg(M_WARN, &quot;Offending option re=
-ceived from server&quot;);</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+uint64_t</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+pull_permission_mask(const struct context=
- *c)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    uint64_t flags =3D OPT_P_UP |=
- OPT_P_ROUTE_EXTRAS | OPT_P_SOCKBUF | OPT_P_SOCKFLAGS</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                     | OPT_P_SETENV | OPT=
-_P_SHAPER | OPT_P_TIMER | OPT_P_COMP | OPT_P_PERSIST</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                     | OPT_P_MESSAGES | O=
-PT_P_EXPLICIT_NOTIFY | OPT_P_ECHO | OPT_P_PULL_MODE</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                     | OPT_P_PEER_ID | OP=
-T_P_NCP | OPT_P_PUSH_MTU | OPT_P_ROUTE | OPT_P_DHCPDNS;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    return flags;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+voi=
-d</span><br><span style=3D"color: hsl(120, 100%, 40%);">+unlearn_ifconfig(s=
-truct multi_context *m, struct multi_instance *mi)</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+unlearn_ifconfig_ipv6(struct multi_cont=
-ext *m, struct multi_instance *mi)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+update_vhash(struct multi_context *m, struct multi_inst=
-ance *mi, const char *new_ip, const char *new_ipv6)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+options_postprocess_pull(struct opti=
-ons *options, struct env_set *es)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-return true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span=
-><br><span>diff --git a/tests/unit_tests/openvpn/test_push_update_msg=2Ec b=
-/tests/unit_tests/openvpn/test_push_update_msg=2Ec</span><br><span>index 01=
-bf6c8=2E=2Ea93f916 100644</span><br><span>--- a/tests/unit_tests/openvpn/te=
-st_push_update_msg=2Ec</span><br><span>+++ b/tests/unit_tests/openvpn/test_=
-push_update_msg=2Ec</span><br><span>@@ -12,48 +12,6 @@</span><br><span> </s=
-pan><br><span> #include &quot;push_util=2Ec&quot;</span><br><span> </span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-/* mocks */</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-th=
-row_signal_soft(const int signum, const char *signal_text)</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    msg(M_WARN, &quot;Offending option received from serve=
-r&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-uint64_t</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-pull_permission_mask(const struct context *c)</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    unsigned int flags =3D OPT_P_UP | OPT_P_ROUTE_EXTRAS | OPT=
-_P_SOCKBUF | OPT_P_SOCKFLAGS</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-                         | OPT_P_SETENV | OPT_P_SHAPER | OPT_P_TIMER=
- | OPT_P_COMP | OPT_P_PERSIST</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-                         | OPT_P_MESSAGES | OPT_P_EXPLICIT_NOTIFY |=
- OPT_P_ECHO | OPT_P_PULL_MODE</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-                         | OPT_P_PEER_ID | OPT_P_NCP | OPT_P_PUSH_M=
-TU | OPT_P_ROUTE | OPT_P_DHCPDNS;</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    return flags;</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-void</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-unlearn_ifconfig(struct multi_context *m, struct m=
-ulti_instance *mi)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return;</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-unlearn_ifconfig=
-_ipv6(struct multi_context *m, struct multi_instance *mi)</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    return;</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-void</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-update_vhash(struct multi_context *m, struct multi_i=
-nstance *mi, const char *new_ip, const char *new_ipv6)</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    return;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-bool</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-options_postprocess_pull(struct options *options, struc=
-t env_set *es)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    return true;</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-</span><br><span> /*</span><br><span>  * Counters to=
- track route accumulation across continuation messages=2E</span><br><span> =
- * Used to verify the bug where update_options_found resets per message=2E<=
-/span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit=
-=2Eopenvpn=2Enet/c/openvpn/+/1853?usp=3Demail">change 1853</a>=2E To unsubs=
-cribe, or for help writing mail filters, visit <a href=3D"http://gerrit=2Eo=
-penvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemty=
-pe=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" =
-itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"=
-http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1853?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+ hsl(120, 100%, 40%);">+    /* empty buffer */</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    buf =3D alloc_buf_gc(1000, &amp;gc);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_false(buffer_rea=
+d_int(&amp;buf, &amp;tmp));</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    gc_free=
+(&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+test_buffer_extract_field(void **state)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    struct gc_arena gc =3D gc_new();</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    struct buffer buf =3D alloc_buf=
+_gc(1000, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    assert_null(extract_field(&amp;buf, &#39;,&#39;, &amp;gc));</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    buf =3D alloc_buf_gc(5, &amp;gc);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    buf_write(&amp;buf, &quot;12=
+345&quot;, 5);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    c=
+onst char *ret =3D extract_field(&amp;buf, &#39;5&#39;, &amp;gc);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(ret, =
+&quot;1234&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   /* nothing left after the 5 */</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    assert_int_equal(buf_len(&amp;buf), 0);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    buf =3D alloc_buf_gc(5, &amp;gc);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    buf_write(&amp;buf, &quot;12345&qu=
+ot;, 5);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ret =3D=
+ extract_field(&amp;buf, &#39;4&#39;, &amp;gc);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    assert_string_equal(ret, &quot;123&quot;);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    /* 5 should be left */</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(buf_len(&am=
+p;buf), 1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    asse=
+rt_memory_equal(buf_bptr(&amp;buf), &quot;5&quot;, 1);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    buf =3D alloc_buf_gc(5, &amp;gc);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    buf_write(&amp;buf, &quot;12345&quot;=
+, 5);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_nul=
+l(extract_field(&amp;buf, &#39;6&#39;, &amp;gc));</span><br><span> </span><=
+br><span>     gc_free(&amp;gc);</span><br><span> }</span><br><span>@@ -567,=
+7 +627,9 @@</span><br><span>         cmocka_unit_test(test_checked_snprintf=
+),</span><br><span>         cmocka_unit_test(test_buffer_chomp),</span><br>=
+<span>         cmocka_unit_test(test_buffer_null_terminate),</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-        cmocka_unit_test(test_buffer=
+_parse)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        cmoc=
+ka_unit_test(test_buffer_parse),</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        cmocka_unit_test(test_buffer_read_int),</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(test_buff=
+er_extract_field)</span><br><span>     };</span><br><span> </span><br><span=
+>     return cmocka_run_group_tests_name(&quot;buffer&quot;, tests, NULL, N=
+ULL);</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://=
+gerrit=2Eopenvpn=2Enet/c/openvpn/+/1855?usp=3Demail">change 1855</a>=2E To =
+unsubscribe, or for help writing mail filters, visit <a href=3D"http://gerr=
+it=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope =
+itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"ac=
+tion" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" hr=
+ef=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1855?usp=3Demail"/><meta it=
+emprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none=
-"> Gerrit-MessageType: newchange </div>
-<div style=3D"display:none"> Gerrit=
--Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master=
- </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ic1ed693f73029f5b560=
-9f717333fdaaabe42acbd </div>
-<div style=3D"display:none"> Gerrit-Change-Num=
-ber: 1853 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<di=
-v style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@rfc2549=
-=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt=
-;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"displa=
+y:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> =
+Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: =
+master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ifdd2122a3e60c=
+db11cc9df67570ab5628bfcdeea </div>
+<div style=3D"display:none"> Gerrit-Chan=
+ge-Number: 1855 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </di=
+v>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@rf=
+c2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-deve=
+l &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
 
 </body></html>
---7/CqgaVimps=--
+--axNLA+HIyl4=--
 
 
---===============1493221293452191826==
+--===============3182662372774027294==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============1493221293452191826==
+--===============3182662372774027294==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -649,5 +658,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============1493221293452191826==--
+--===============3182662372774027294==--
 
