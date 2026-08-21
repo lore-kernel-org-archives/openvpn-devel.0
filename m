@@ -4,126 +4,126 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 864E9C5DF7D
-	for <openvpn-devel@archiver.kernel.org>; Fri, 21 Aug 2026 15:49:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 70D86C5DF7D
+	for <openvpn-devel@archiver.kernel.org>; Fri, 21 Aug 2026 15:49:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:Message-ID:References:Date:Sender:To:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
-	List-Owner; bh=tUFl7gbZFV1Pq3n0z8BJpv/Fzp4pAx0ggF7bXZO1JTY=; b=cMs8X6n7vIKTOI
-	ZJDA21ZfGqnLdNSs0O3iV+o7gCEcwNHm9zlNF8SNR2XAsWRNZN/ne6uuB+wwqEW1/wc8kVdTwCiIL
-	OMQ4cjZgugddOVcV1yN+kkkn/oz8fBx8uEHnTk/OHyDH1/edac3XV1qzzcSs8j/qfZ9VIvmRCeOJw
-	BtE=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	List-Owner; bh=xhL4YDZ2sffW7cY6SbCVYOUuUzX5WCf+lK8MN1CqKE4=; b=VOKjTrgLYas+Gl
+	zENOvdb1VpJXm6KKFZXUFUg+NqV+7lVWlwuNbZKk4NfgD37nTp13gC+KkpHCHhgOyuz7yCHYN0TsW
+	z8qquiUTJg/8XzFTGaHO8XMrPLj9ITIUxov02apcWGZmR5Kn8QRXHdFyziGwLt/m+q7IvK2I0A8xH
+	Tvo=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wxRUr-0002aD-8M;
-	Fri, 21 Aug 2026 15:49:33 +0000
+	id 1wxRUx-0004CY-Fc;
+	Fri, 21 Aug 2026 15:49:37 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wxRUq-0002a4-4e
+ (envelope-from <gerrit@openvpn.net>) id 1wxRUw-0004CR-CE
  for openvpn-devel@lists.sourceforge.net;
- Fri, 21 Aug 2026 15:49:32 +0000
+ Fri, 21 Aug 2026 15:49:35 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:Date:From
  :Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From:
  Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=6W2BbfGoD8OxPHzegIRjhrWgq3yKKgNSEHocGbb+PSc=; b=RS+sK1re2GKhmPyNrUmtUoh6Em
- TWmENU13HmoYIkaKsVow/TYlhBaAXldXhcQ/W4Yl2RJBaLlYpzqUK04EE3JuaSSqmg/aEv33RMIA4
- uJ0i2+MOd6SRomIEXWABAZbjWd5s3g728RroogOjUi6iD1O1aairP/Xku5bzYKlZO/1Q=;
+ bh=kKlZhYkODDLKPdpfWvBsPB3NkpE4TSrPWeIMViPgLf4=; b=IC9d27bL6OIV/JSaVFQQSjFlzn
+ qWDZCBYOM3SpAH25w3Gw3aoLUbcfEuMIXbRF1o15oachBJ2kmZshFF37tqdMlzg7YIne66OqC9Ogg
+ SIz3R3ynjd3Q8jQ3aNmLKjFJ7ScO5dp3B/Misn6/yo/TEqi+TgeDXxvexgI+6KDSSSec=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
  Subject:References:List-Unsubscribe:List-Id:Cc:Date:From:Sender:To:Content-ID
  :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
  Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=6W2BbfGoD8OxPHzegIRjhrWgq3yKKgNSEHocGbb+PSc=; b=g
- hwYfEfQ3EfKaEa6lVfj+gqOLw74FFOA63pGk35OQ3CNOhYzOMpAkXcR44z+nZ/rl641LKDMhTPDdT
- AHB93fBL8J/j72IE2FD0ZNKoOoPyCirD5neXdBMwSFjVrFedg0Bt5p7Nz2+BMs9BhuApD8mqjzhdw
- BZjrjzM7AH56d4QA=;
-Received: from mail-ej1-f53.google.com ([209.85.218.53])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ List-Owner:List-Archive; bh=kKlZhYkODDLKPdpfWvBsPB3NkpE4TSrPWeIMViPgLf4=; b=h
+ go1Bi6yIZB48bi2xZe8E1aqX3V3J1sA9zUooV0ilyP9SdBI6VBfj3inWAvq3a76b5s6gCoqPdCT3l
+ UX9nN54J6hI8x9b5kyCkiYlAD882bGOqjnfUGAWgZNE/l4xRhhkJo6XF55baqCjk9cV5DDVrkD1te
+ DakNi/1Eq6kfuQLs=;
+Received: from mail-ed1-f42.google.com ([209.85.208.42])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wxRUp-0005cZ-70 for openvpn-devel@lists.sourceforge.net;
- Fri, 21 Aug 2026 15:49:32 +0000
-Received: by mail-ej1-f53.google.com with SMTP id
- a640c23a62f3a-c1677c91969so142519166b.1
+ id 1wxRUs-00059j-Fn for openvpn-devel@lists.sourceforge.net;
+ Fri, 21 Aug 2026 15:49:35 +0000
+Received: by mail-ed1-f42.google.com with SMTP id
+ 4fb4d7f45d1cf-6a173ad7cf4so2319471a12.3
  for <openvpn-devel@lists.sourceforge.net>;
- Fri, 21 Aug 2026 08:49:31 -0700 (PDT)
+ Fri, 21 Aug 2026 08:49:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1787327365; x=1787932165; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1787327368; x=1787932168; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
  :date:from:from:to:cc:subject:date:message-id:reply-to:content-type;
- bh=6W2BbfGoD8OxPHzegIRjhrWgq3yKKgNSEHocGbb+PSc=;
- b=Uqs0vnizLNfU4wfJa3CgYpxiDjrLbgcCybUD8C4vEpQvULTma7WsVpc2M88qqeIYd6
- 7SVlvmE7KHvz5VxOSEOYTvdOyzpjbvLiXw+OVX9ISakQwXjMSt2EhKCynaFlk0TbZWAp
- QnQ42tB0KnHJHQZu/PzjbqFyDt3vpX46aPjSC1xsfaCSmV0gznye2J1Xi/kizHJsJyoH
- RSciuXWCND6EWhMTyP/+5Ib+QvtV37f4NsuBIiPKuLaXKHVW9dmoHfzvgaP8AIFni98u
- KErNpW6O1MjxZ0pjySwVJTEcTrkjnneePhdGSXZemlTI9RwUEBOB1zceWc3pUrQCw1xI
- R/EQ==
+ bh=kKlZhYkODDLKPdpfWvBsPB3NkpE4TSrPWeIMViPgLf4=;
+ b=JzSDVFBx6osDIMygnU67b1ybWCXPF/ZG99O/74IQnFN7ycRVoUfM+bSBXgFKQUenrR
+ d5LpXJx7DQuT8pSj23E+oAaqPMKkhOIAnekHnWRRZ+m/LElC5V+iicOqTxTh38hvoEVR
+ 7R7pAQs/SWtUvOZIO9W4+mbjjdGRRpM7q2vbHg30ja/YhBQ0OgY6MsH5QNfEQQe4B6mV
+ guxBCnlP77Ii5dXsTEpkCjK2a82atEulzzOADoLRQvbgyUpKd6J9T1fBMiBvqckv5OI1
+ 5MuIdJKcA4EJR+qmV45ZxwdzzBUAGdmb0a1Pq3l0kBiHaNgNJKz6Xs+Fg0WQskjtzQHe
+ nOCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1787327365; x=1787932165;
+ d=1e100.net; s=20251104; t=1787327368; x=1787932168;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
  :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
  :message-id:reply-to:content-type;
- bh=6W2BbfGoD8OxPHzegIRjhrWgq3yKKgNSEHocGbb+PSc=;
- b=p779CMxz0rbxFIKWvllxdWIGePhSCTE/8hiyatzSSGm4n7NfgvSyzifaN9Q7yfPTpU
- +OlgdakDqhdVtokVyyD6hEG38QcZbQatx3EJeZxuh+eU7jkopEExpI43mzWkRSufS8xi
- TYWql22z6z6hzxkwaFBDe//+NdQsM3MrOP2WuE7IZROc7qzAuzKcYTLKXO/PJUhV9dr+
- Z9VHBTuymWYaQJtpVlNTBaPbhSUwU/QseVpYQdFkvYaABcbKllL5EGjP0Z8HLa+TheoA
- liLJ67+0VRWf8DciB/dB3YgQ8p+r5AAi5sr0WrNltChz7KOZlyTKujuUGDeSC3Eq40ax
- DlHQ==
-X-Gm-Message-State: AFuF++nzKrr9I7vgbrgCxwMyuS3vHpDGS8IRphhJg+Z+oJ7305WWf9kx
- rf/r+Aaq3PO7XCf9DNdS5lDssCCxnVLU+icEhEaUX6k9G6SGpTfx2lzrJwkV2TvxGRngJIsQumv
- GJNAJJPsaHywAL3MGFVnNcSd3CLlZCLrQ+sSSmtfTXglU/CegWXqf5WJp6mXLVH/S+dTC6SGus4
- tHZlZdXQ==
-X-Gm-Gg: AR+sD13R4sQ0ZCXjyjirINdJzCZenTSijqY8wJDDdEk1Xt1HCcgbmwpmGw/pLQQHLy6
- Um5M6tae8lZhzy1bB18HoYctkjI/zANU88e2PD+ku5kivUooEjOYAvKeR5FSEuOEmiVGIm5l/Dh
- 7P3Wiml3GhGB/SMEaFvq9XNZLX4Ssb+9UqNWlGF9koyBTeLd4e331L7DZrtaApXgKvfgRdfa0tm
- VUsTjGh+JczHocoQa+7xLWqikcBcL+mcRmpaGki5wAieo7FtX8ImV89WCgwx9hmfYxf2d7pg5DW
- hiS7BkDQ6wkBjm9NIWCE5VipsmRG2IoLPmCbIfpiCD+QpLPhUK2u5cstY9uFK9e0ABq9IGaZJ+Y
- wvedNaBnacFb9TOBeTxOWhpWFbGmdqtrF3E1/uPWWXqgz7FDa0RojQ3Jwjh7gZWgSxECyY+64VJ
- 4bRcnVSSocidjyZoq42PGm37veXhoyM6khlST7xBNmZfyB7C3epNRxlyZ/XVOwCtn0G2ZHVjycR
- o1x24AGpqgPaq6jC/ujFa6iEw0/T7dOb3psuJthX/NlYAThdtmb8eiyECQEANH2b4RD1jzm9870
- BDHitHputWKDiX40rihUsKkfL60kZKc71wF4kxdgCCy79JvtFhg=
-X-Received: by 2002:a17:907:d1e:b0:c24:7f65:9c8a with SMTP id
- a640c23a62f3a-c247f659d8amr424567166b.12.1787327364460; 
- Fri, 21 Aug 2026 08:49:24 -0700 (PDT)
+ bh=kKlZhYkODDLKPdpfWvBsPB3NkpE4TSrPWeIMViPgLf4=;
+ b=ccM+kZFgoTd1G2Vo55ZXKZFdwhf0ls8CeJYHA4JVECxYdlcK+MFl4/RxHZrJmSPUHn
+ 5mvQyZNKUJljKSbWr6Zd+ENsBSCKiYE7W8XD2HvLDO171TvlRm6I8TNW5MQma9Mhdi0F
+ dmcmjBmzZSQmEYVxehcQvg+0UlUdsWaVzmPo5OsCCQ5PvQYQ91z/2VrxKPiZMmQrXS3e
+ H4Cz+73pkSyohxbJhMVG5Xx+atbAE9YH1XL+g/LZ1x4m+eATLyF3GIlr1TtBeeVoRF2m
+ 5tCB2KhJ+Q7w0bjRi/eAx46b51Hsfmohjut7jotEF5AES1kzFpkB06W+kTmG8Gg9nkKs
+ pfIQ==
+X-Gm-Message-State: AFuF++n70nEksz5w3AxJ9kgGxBmawrzhyz6FtEgTjgyp4EoECLk1BR6+
+ G2X9Vb6f7fXSqJkgJXyjtzsb5PZmbwSgOxMQOAksl6Cga9rv2QEYetgBPW6ElIPEB/i2S4cRVIV
+ cYsdcBirFNkrP+bbFoaB4djcZm7aX2VT26PJ0Rd/eczi3DJWM5G8n6ltiPr+KYippThToFuHgQH
+ pH8qcVgA==
+X-Gm-Gg: AR+sD11ln52peKBvLZdwQVVbziFAg/gEbl7VdoxHFWhA9iehGkDr8Gnc19iIL1sILbn
+ 2Upeq2MO45vmhXjFH+yunZrg4EfXpAmHTgkxcI7JadjfcXfsAce8dqL6RRZrxR8CX5lSoySce9B
+ kvyEDvy7d35RM96cd3MKjz0v6TdOkKjCuBYgWzc9fbjTY9Sz3b0FdVGgBS2uDlwfP9gOOFuUGkV
+ C2u8GW2ohtCl8uMIUTDyefmmnlmHgu5QoPXRhvFWD0CqnHbDqHN6uRKvn2+8DMYOrK3BbKvhJPp
+ yyw5yRZ53+3ZlA23qPOxOhVTWn7kVY7xJyOZrUqL6n3nocdxtu02gs7ggGQCjibaWosLLwg1mEq
+ Wh36eYyW7+dXIU1qFFcFUAtGEYflWfYpuwcBP537deqXcRN+ybdopS2qYXHuhPdrNHi2It4Imp8
+ NX6A9vqKo9Vg3yYAvrwYHqca6JwMf8hJGhhY4mqBQoTLQGD6f2nSP4969o371WgTpIrFz/nDMc5
+ z4W1AWuJ68jiIjMlSan8NFjrajyTsafHvB55KhlFw1sJ6QhO5uhUoi3JEjtayRdbSfpVREDDwT7
+ 91MUhCFYQ5mDsh5i4+juu/VQz/ix4fn6TS5eLBZDQuWiXBmnpUA=
+X-Received: by 2002:a17:907:a0e:b0:c19:45e3:2f57 with SMTP id
+ a640c23a62f3a-c246a61435fmr756978866b.9.1787327367667; 
+ Fri, 21 Aug 2026 08:49:27 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 4fb4d7f45d1cf-6a3ff177b1esm7385228a12.29.2026.08.21.08.49.23
+ a640c23a62f3a-c24589e1b0csm511949066b.8.2026.08.21.08.49.27
  for <openvpn-devel@lists.sourceforge.net>
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 21 Aug 2026 08:49:23 -0700 (PDT)
+ Fri, 21 Aug 2026 08:49:27 -0700 (PDT)
 X-Google-Original-From: "plaisthos (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Fri, 21 Aug 2026 15:49:23 +0000
+Date: Fri, 21 Aug 2026 15:49:26 +0000
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newchange
 X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: I42d8785959c24bf688190965e58b9b98251b8557
-X-Gerrit-Change-Number: 1856
+X-Gerrit-Change-Id: I432df6c69249b49e9b9a3a904803904d134387a0
+X-Gerrit-Change-Number: 1857
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1856?usp=email>
-X-Gerrit-Commit: 9c7c07333c1533dcb421b70cf5569b4eb4bfcfe3
-References: <gerrit.1787327336000.I42d8785959c24bf688190965e58b9b98251b8557@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzg3MzI3MzM2MDAwLkk0MmQ4Nzg1OTU5YzI0YmY2ODgxOTA5NjVlNThiOWI5ODI1MWI4NTU3QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <c11e769e671d4c7d9454298d259f24a9601ce2e1-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1857?usp=email>
+X-Gerrit-Commit: 736091bab4b3b810bea37e418530cfcc72b13d8c
+References: <gerrit.1787327336000.I432df6c69249b49e9b9a3a904803904d134387a0@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzg3MzI3MzM2MDAwLkk0MzJkZjZjNjkyNDliNDllOWI5YTNhOTA0ODAzOTA0ZDEzNDM4N2EwQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <54ebfb5f45f5049a764f4df5eb96053f25f77e75-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wxRUp-0005cZ-70
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Introduce
- get_key_by_management_key_id helper function
+X-Headers-End: 1wxRUs-00059j-Fn
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Add mock support for
+ management messages
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -140,293 +140,203 @@ From: "plaisthos \(Code Review\) via Openvpn-devel"
 Reply-To: arne-openvpn@rfc2549.org, openvpn-devel@lists.sourceforge.net
 Cc: "plaisthos \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============5310385999298795510=="
+Content-Type: multipart/mixed; boundary="===============7219849969909412525=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============5310385999298795510==
+--===============7219849969909412525==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="kAs1UPe8Nyw="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="FyZ3YGsrwUE="; charset=UTF-8
 
---kAs1UPe8Nyw=
+--FyZ3YGsrwUE=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 plaisthos has uploaded this change for review=2E ( http://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1856?usp=3Demail )
+=2Enet/c/openvpn/+/1857?usp=3Demail )
 
 
-Change subject: Introduce get_key_b=
-y_management_key_id helper function
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+Change subject: Add mock support fo=
+r management messages
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E
 
-Introduce get_key_by_management_key_id helper functi=
-on
+Add mock support for management messages
 
-This function allows us to map from a management key id to a key struct=
-ure
-and also allows this function to be reused=2E
-
-Patch v2: add message wh=
-en key is not found=2E
-Patch v3: only consider valid keys
-
-Change-Id: I42d8=
-785959c24bf688190965e58b9b98251b8557
-Signed-off-by: Arne Schwabe <arne@rfc2=
-549=2Eorg>
+Change-Id: I432df6c692=
+49b49e9b9a3a904803904d134387a0
+Signed-off-by: Arne Schwabe <arne@rfc2549=2E=
+org>
 ---
-M src/openvpn/ssl_common=2Eh
-M src/openvpn/ssl_verify=2Ec
-2 =
-files changed, 33 insertions(+), 10 deletions(-)
+M tests/unit_tests/openvpn/mock_msg=2Ec
+M tests/unit_tests/openvpn=
+/mock_msg=2Eh
+2 files changed, 11 insertions(+), 0 deletions(-)
 
 
 
-  git pull ssh://gerrit=
-=2Eopenvpn=2Enet:29418/openvpn refs/changes/56/1856/1
+  git pu=
+ll ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/57/1857/1
 
-diff --git a/src/ope=
-nvpn/ssl_common=2Eh b/src/openvpn/ssl_common=2Eh
-index f6392f9=2E=2Edb61198=
- 100644
---- a/src/openvpn/ssl_common=2Eh
-+++ b/src/openvpn/ssl_common=2Eh
-@=
-@ -759,4 +759,24 @@
-     return &multi->session[TM_ACTIVE]=2Ekey[KS_PRIMARY=
-];
- }
+diff =
+--git a/tests/unit_tests/openvpn/mock_msg=2Ec b/tests/unit_tests/openvpn/mo=
+ck_msg=2Ec
+index 8176d2a=2E=2E3e73d19 100644
+--- a/tests/unit_tests/openvpn=
+/mock_msg=2Ec
++++ b/tests/unit_tests/openvpn/mock_msg=2Ec
+@@ -43,6 +43,7 @@=
+
  
-+#ifdef ENABLE_MANAGEMENT
-+/**
-+ * Gets the \c key_state  object th=
-at belong to the management key id or
-+ * return NULL if not found=2E
-+ */
-=
-+static inline struct key_state *
-+get_key_by_management_key_id(struct tls_=
-multi *multi, unsigned int mda_key_id)
-+{
-+    for (int i =3D 0; i < KEY_SC=
-AN_SIZE; ++i)
-+    {
-+        struct key_state *ks =3D get_key_scan(multi, =
-i);
-+        if (ks->mda_key_id =3D=3D mda_key_id && ks->state > S_UNDEF)
-+=
-        {
-+            return ks;
-+        }
-+    }
-+    return NULL;
-+}
-+#=
-endif
-+
- #endif /* SSL_COMMON_H_ */
-diff --git a/src/openvpn/ssl_verify=2Ec=
- b/src/openvpn/ssl_verify=2Ec
-index 162f68f=2E=2Efae3279 100644
---- a/src/o=
-penvpn/ssl_verify=2Ec
-+++ b/src/openvpn/ssl_verify=2Ec
-@@ -1249,22 +1249,25=
- @@
- tls_authenticate_key(struct tls_multi *multi, const unsigned int mda_k=
-ey_id, const bool auth,
-                      const char *client_reason)
- {=
-
--    bool ret =3D false;
-+    struct key_state *ks =3D NULL;
-     if (mult=
-i)
+ 
+ char mock_msg_buf[MOCK_MSG_BUF];
++char mock_managment_buf[MOCK_MSG_BU=
+F];
+ 
+ 
+ void
+@@ -76,6 +77,14 @@
      {
--        int i;
+         printf("FATAL ERROR:");
+  =
+   }
 +
-         auth_set_client_reason(multi, client_r=
-eason);
--        for (i =3D 0; i < KEY_SCAN_SIZE; ++i)
-+        ks =3D get_=
-key_by_management_key_id(multi, mda_key_id);
++    if (flags & M_MSG_VIRT_OUT)
++    {
++        CLEAR(mock_managmen=
+t_buf);
++        vsnprintf(mock_managment_buf, sizeof(mock_managment_buf), =
+format, arglist);
++        return;
++    }
 +
-+        if (ks)
-         {
+     CLEAR(mock_msg_buf);
+     =
+vsnprintf(mock_msg_buf, sizeof(mock_msg_buf), format, arglist);
+ 
+diff --gi=
+t a/tests/unit_tests/openvpn/mock_msg=2Eh b/tests/unit_tests/openvpn/mock_m=
+sg=2Eh
+index da96b212=2E=2E41ce48f 100644
+--- a/tests/unit_tests/openvpn/mo=
+ck_msg=2Eh
++++ b/tests/unit_tests/openvpn/mock_msg=2Eh
+@@ -36,6 +36,8 @@
+ 
 =
--            struct key_state *ks =3D get_key_scan(multi, i);
--            =
-if (ks->mda_key_id =3D=3D mda_key_id)
--            {
--                ks->m=
-da_status =3D auth ? ACF_SUCCEEDED : ACF_FAILED;
--                ret =3D t=
-rue;
--            }
-+            ks->mda_status =3D auth ? ACF_SUCCEEDED : =
-ACF_FAILED;
-         }
-+        else
-+        {
-+            msg(D_TLS_DEBU=
-G_LOW, "%s: no key state found for management key id "
-+                "%d=
-", __func__, mda_key_id);
-+        }
+ extern bool fatal_error_triggered;
+ extern char mock_msg_buf[MOCK_MSG_BUF]=
+;
++extern char mock_managment_buf[MOCK_MSG_BUF];
 +
-     }
--    return ret;
-+    return =
-(bool) ks;
- }
- #endif /* ifdef ENABLE_MANAGEMENT */
+ 
+ msglvl_t mock_get_deb=
+ug_level(void);
  
 
 -- 
-To view, visit h=
-ttp://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1856?usp=3Demail
-To unsubscribe, o=
-r for help writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/settin=
-gs?usp=3Demail
+To view, visit http://gerrit=2Eopenvpn=2Enet/c/openv=
+pn/+/1857?usp=3Demail
+To unsubscribe, or for help writing mail filters, vis=
+it http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Gerrit-MessageType: newchange
+Gerrit-MessageType: =
+newchange
 Gerrit-Project: openvpn
-Gerri=
-t-Branch: master
-Gerrit-Change-Id: I42d8785959c24bf688190965e58b9b98251b855=
-7
-Gerrit-Change-Number: 1856
-Gerrit-PatchSet: 1
-Gerrit-Owner: plaisthos <ar=
-ne-openvpn@rfc2549=2Eorg>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Es=
-ourceforge=2Enet>
+Gerrit-Branch: master
+Gerrit-Change-Id: I=
+432df6c69249b49e9b9a3a904803904d134387a0
+Gerrit-Change-Number: 1857
+Gerrit-=
+PatchSet: 1
+Gerrit-Owner: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-CC:=
+ openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
 
---kAs1UPe8Nyw=
+--FyZ3YGsrwUE=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p>plaisthos has upl=
 oaded this change for <strong>review</strong>=2E</p><p><a href=3D"http://ge=
-rrit=2Eopenvpn=2Enet/c/openvpn/+/1856?usp=3Demail">View Change</a></p><pre =
+rrit=2Eopenvpn=2Enet/c/openvpn/+/1857?usp=3Demail">View Change</a></p><pre =
 class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pr=
-e-wrap;">Introduce get_key_by_management_key_id helper function<br><br>This=
- function allows us to map from a management key id to a key structure<br>a=
-nd also allows this function to be reused=2E<br><br>Patch v2: add message w=
-hen key is not found=2E<br>Patch v3: only consider valid keys<br><br>Change=
--Id: I42d8785959c24bf688190965e58b9b98251b8557<br>Signed-off-by: Arne Schwa=
-be &lt;arne@rfc2549=2Eorg&gt;<br>---<br>M src/openvpn/ssl_common=2Eh<br>M s=
-rc/openvpn/ssl_verify=2Ec<br>2 files changed, 33 insertions(+), 10 deletion=
-s(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418=
-/openvpn refs/changes/56/1856/1</pre><pre style=3D"font-family: monospace,m=
-onospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/ssl_common=
-=2Eh b/src/openvpn/ssl_common=2Eh</span><br><span>index f6392f9=2E=2Edb6119=
-8 100644</span><br><span>--- a/src/openvpn/ssl_common=2Eh</span><br><span>+=
-++ b/src/openvpn/ssl_common=2Eh</span><br><span>@@ -759,4 +759,24 @@</span>=
-<br><span>     return &amp;multi-&gt;session[TM_ACTIVE]=2Ekey[KS_PRIMARY];<=
-/span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+#ifdef ENABLE_MANAGEMENT</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+ * Gets the \c key_state  object that belong to the management key id=
- or</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * return NULL i=
-f not found=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+static inline struct =
-key_state *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+get_key_=
-by_management_key_id(struct tls_multi *multi, unsigned int mda_key_id)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    for (int i =3D 0; i &lt; KEY_SCAN_SIZ=
-E; ++i)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        struct key_state *=
-ks =3D get_key_scan(multi, i);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        if (ks-&gt;mda_key_id =3D=3D mda_key_id &amp;&amp; ks-&g=
-t;state &gt; S_UNDEF)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-    return ks;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    return NULL;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span> #endif /* SSL_COMMON_H_ */</span><br><span>di=
-ff --git a/src/openvpn/ssl_verify=2Ec b/src/openvpn/ssl_verify=2Ec</span><b=
-r><span>index 162f68f=2E=2Efae3279 100644</span><br><span>--- a/src/openvpn=
-/ssl_verify=2Ec</span><br><span>+++ b/src/openvpn/ssl_verify=2Ec</span><br>=
-<span>@@ -1249,22 +1249,25 @@</span><br><span> tls_authenticate_key(struct =
-tls_multi *multi, const unsigned int mda_key_id, const bool auth,</span><br=
-><span>                      const char *client_reason)</span><br><span> {<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    bool ret =3D false=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct key_sta=
-te *ks =3D NULL;</span><br><span>     if (multi)</span><br><span>     {</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        int i;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>         auth=
-_set_client_reason(multi, client_reason);</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        for (i =3D 0; i &lt; KEY_SCAN_SIZE; ++i)</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        ks =3D get_key_by_=
-management_key_id(multi, mda_key_id);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       if (ks)</span><br><span>         {</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-            struct key_state *ks =3D get_key_scan(multi=
-, i);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (=
-ks-&gt;mda_key_id =3D=3D mda_key_id)</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-                ks-&gt;mda_status =3D auth ? ACF_SUCCEEDED : ACF_FAI=
-LED;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                r=
-et =3D true;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            ks-=
-&gt;mda_status =3D auth ? ACF_SUCCEEDED : ACF_FAILED;</span><br><span>     =
-    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        else</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+            msg(D_TLS_DEBUG_LOW=
-, &quot;%s: no key state found for management key id &quot;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+                &quot;%d&quot;, __f=
-unc__, mda_key_id);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    retu=
-rn ret;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return (=
-bool) ks;</span><br><span> }</span><br><span> #endif /* ifdef ENABLE_MANAGE=
-MENT */</span><br><span> </span><br><span></span><br></pre><p>To view, visi=
-t <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1856?usp=3Demail">ch=
-ange 1856</a>=2E To unsubscribe, or for help writing mail filters, visit <a=
- href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=
-=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div it=
-emscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><li=
-nk itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1856?=
-usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>=
+e-wrap;">Add mock support for management messages<br><br>Change-Id: I432df6=
+c69249b49e9b9a3a904803904d134387a0<br>Signed-off-by: Arne Schwabe &lt;arne@=
+rfc2549=2Eorg&gt;<br>---<br>M tests/unit_tests/openvpn/mock_msg=2Ec<br>M te=
+sts/unit_tests/openvpn/mock_msg=2Eh<br>2 files changed, 11 insertions(+), 0=
+ deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: mono=
+space,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2E=
+net:29418/openvpn refs/changes/57/1857/1</pre><pre style=3D"font-family: mo=
+nospace,monospace; white-space: pre-wrap;"><span>diff --git a/tests/unit_te=
+sts/openvpn/mock_msg=2Ec b/tests/unit_tests/openvpn/mock_msg=2Ec</span><br>=
+<span>index 8176d2a=2E=2E3e73d19 100644</span><br><span>--- a/tests/unit_te=
+sts/openvpn/mock_msg=2Ec</span><br><span>+++ b/tests/unit_tests/openvpn/moc=
+k_msg=2Ec</span><br><span>@@ -43,6 +43,7 @@</span><br><span> </span><br><sp=
+an> </span><br><span> char mock_msg_buf[MOCK_MSG_BUF];</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+char mock_managment_buf[MOCK_MSG_BUF];</=
+span><br><span> </span><br><span> </span><br><span> void</span><br><span>@@=
+ -76,6 +77,14 @@</span><br><span>     {</span><br><span>         printf(&qu=
+ot;FATAL ERROR:&quot;);</span><br><span>     }</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    if (flags &amp; M_MSG_VIRT_OUT)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        CLEAR(mock_managment_buf);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        vsnprintf(mock_managment_buf, sizeof(mock_=
+managment_buf), format, arglist);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        return;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span>     CLEAR(mock_msg_buf);</span><br><span>     vsnprintf(mock_=
+msg_buf, sizeof(mock_msg_buf), format, arglist);</span><br><span> </span><b=
+r><span>diff --git a/tests/unit_tests/openvpn/mock_msg=2Eh b/tests/unit_tes=
+ts/openvpn/mock_msg=2Eh</span><br><span>index da96b212=2E=2E41ce48f 100644<=
+/span><br><span>--- a/tests/unit_tests/openvpn/mock_msg=2Eh</span><br><span=
+>+++ b/tests/unit_tests/openvpn/mock_msg=2Eh</span><br><span>@@ -36,6 +36,8=
+ @@</span><br><span> </span><br><span> extern bool fatal_error_triggered;</=
+span><br><span> extern char mock_msg_buf[MOCK_MSG_BUF];</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+extern char mock_managment_buf[MOCK_MSG=
+_BUF];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan> </span><br><span> msglvl_t mock_get_debug_level(void);</span><br><span=
+> </span><br><span></span><br></pre><p>To view, visit <a href=3D"http://ger=
+rit=2Eopenvpn=2Enet/c/openvpn/+/1857?usp=3Demail">change 1857</a>=2E To uns=
+ubscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
+=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope it=
+emtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"acti=
+on" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1857?usp=3Demail"/><meta item=
+prop=3D"name" content=3D"View Change"/></div></div>
 
-
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
-<div st=
-yle=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:=
-none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Cha=
-nge-Id: I42d8785959c24bf688190965e58b9b98251b8557 </div>
-<div style=3D"disp=
-lay:none"> Gerrit-Change-Number: 1856 </div>
-<div style=3D"display:none"> G=
-errit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisth=
-os &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> G=
-errit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </d=
-iv>
+none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Ge=
+rrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: ma=
+ster </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I432df6c69249b49=
+e9b9a3a904803904d134387a0 </div>
+<div style=3D"display:none"> Gerrit-Change=
+-Number: 1857 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>=
+
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@rfc2=
+549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel =
+&lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
 
 </body></html>
---kAs1UPe8Nyw=--
+--FyZ3YGsrwUE=--
 
 
---===============5310385999298795510==
+--===============7219849969909412525==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============5310385999298795510==
+--===============7219849969909412525==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -437,5 +347,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============5310385999298795510==--
+--===============7219849969909412525==--
 
