@@ -4,125 +4,127 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 23FE6C61DB4
-	for <openvpn-devel@archiver.kernel.org>; Mon, 24 Aug 2026 11:23:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 79D34C61CE2
+	for <openvpn-devel@archiver.kernel.org>; Mon, 24 Aug 2026 11:23:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:To:Date:Sender:
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
-	List-Owner; bh=MKJdzyrPAHm8nOYGG/tbq5FPryYdj+fRsTrs82tRc2g=; b=Amc9+yEnctPmU2
-	H8hCYZuBzDcY2eW4yK3vIv5ZPnWadcrZJAKdOcGW2HsznXviCvh/G8DbM0bJBXP1+LXq2t/T/FcHX
-	3qmzNis+oJG0PgnRbm92eS3wmSj9lGD3yml2XSofkRXZGm75hn7R+ijsi8uhVl4PYrYiVMjVVrKC+
-	1c4=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=imNmcLmt+OMmfHwsUAu1II4lZl6yWMyAEgMH1gz51Mo=; b=LKBKZBcRVI5q1fD0ImHCsDCu8X
+	gDwsgt2Pj/eP7KFLsI8EboDSlEH22ohVtabA/e5/qStwLTG32s8PS3mdY0nlrmIfhAT47XZmlmnxe
+	mIhTxeAxoOczlHO9cuKuf8guzdEsELxqTP0pwQEAYJ7b2v05ewWS9+UHPrBmTCp7JOIU=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wySm1-0005J0-Lp;
-	Mon, 24 Aug 2026 11:23:29 +0000
+	id 1wySlt-0005Sc-NL;
+	Mon, 24 Aug 2026 11:23:22 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1wySm0-0005Io-5l
+ (envelope-from <gerrit@openvpn.net>) id 1wySlp-0005ST-3c
  for openvpn-devel@lists.sourceforge.net;
- Mon, 24 Aug 2026 11:23:28 +0000
+ Mon, 24 Aug 2026 11:23:17 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:
- From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From:
- Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=c74y44aquysns7D3IFnmY2o5E2KHuxOsToU/aMzWTxI=; b=TWwcGDOkisEkLmg6SHFfizumh1
- /FCINxtSBoj/K0scKyvUVl0QxfpnylegtsvoWf9/n80WgzvdvhDDYxWT4RjCCxBTsEPD7JvxQX/VY
- WzOggSgyrTwWnO0dKS/L1uAeiwP5Hu6XQwC0kdk7tQnE3PjTBXr+1PdZXVAhAR2ne31U=;
+ :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
+ Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
+ :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
+ :List-Post:List-Owner:List-Archive;
+ bh=RbTOUBiKt3GZiZCyci+1Z44/TqKXoOd47+ZAUwpQhvA=; b=THFhepP+mUMdyVDajz141QDlua
+ 99h41ZUlQ3j1EvsNcth1y+qJroD4oUSuhyj6960bHQepd5PVT0k6eeL4AsFO2bbHtUmDs5NrdF++U
+ U/IY0IzoD4nHHEYQo9AhDsvlO2tP/HPFcAyZzzznyqDlfWKP7deVEcU93kpKox2QInD0=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:From:Sender:Content-ID
- :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
- Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=c74y44aquysns7D3IFnmY2o5E2KHuxOsToU/aMzWTxI=; b=g
- zRT/J1rpO1sHM8pZ7tdVdv6q1Bvs2XB2SA5QjLL/Y0pxLX5yVQkcYOa814dDGH2TRZux7bkoLcoOP
- Zcu8AEVqs4+1Of5LorK3sE68Bp7X2vZXzEkfvYTCzWcyJ9eQmuaOGcQsyhpp2MtLPcrdJ8cH8vTdo
- Ad76xc5OUaOHesY8=;
-Received: from mail-ed1-f47.google.com ([209.85.208.47])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
+ Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=RbTOUBiKt3GZiZCyci+1Z44/TqKXoOd47+ZAUwpQhvA=; b=f
+ BdIao6gGpasObuAsvYCUBhjozd1LbHCH98cauxmF/d0nA1UPQkUN+Av5AYk+Mak3GdGOErIflWmhd
+ hZmAvu1RGR2DdRXhbAXKW04Rjs8rvgdIjaQ2oyxTn9VA0k1uqS5QM6tgdhZ/+Shipk8N2jmtzkCV3
+ oz5C6cpepuJ6okOk=;
+Received: from mail-ej1-f45.google.com ([209.85.218.45])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1wySlz-0006z2-6H for openvpn-devel@lists.sourceforge.net;
- Mon, 24 Aug 2026 11:23:28 +0000
-Received: by mail-ed1-f47.google.com with SMTP id
- 4fb4d7f45d1cf-6a378f90555so5314710a12.3
+ id 1wySli-0003v2-1X for openvpn-devel@lists.sourceforge.net;
+ Mon, 24 Aug 2026 11:23:17 +0000
+Received: by mail-ej1-f45.google.com with SMTP id
+ a640c23a62f3a-c247f6687dcso375122666b.2
  for <openvpn-devel@lists.sourceforge.net>;
- Mon, 24 Aug 2026 04:23:27 -0700 (PDT)
+ Mon, 24 Aug 2026 04:23:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1787570600; x=1788175400; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1787570583; x=1788175383; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
- :to:date:from:from:to:cc:subject:date:message-id:reply-to
- :content-type; bh=c74y44aquysns7D3IFnmY2o5E2KHuxOsToU/aMzWTxI=;
- b=EoT1Z3EVi43Q41KbNFOj6vKQ/jJOfN6IFqw0m3MxkohAdxDx0FVAL23KtgnXThyQex
- ZT5DxUTaYPo+2xPeECfnnXkksrSHJfPyJiea/SkOA2/VVPHrfXVg02qjdoC+tIN7A7GB
- K1P5AS8GN9p+XiFy9QC+1fYmbsmESfgZBuB/sN/WZl+wUqJN1c60HMb1+9UVbr17KTSD
- c1a8X+1DPvf/WQGevinJvV6tKHkQcb/LAkbDeKIk3Qoa6eLnuA9lE5mpSI34RzF83jgf
- Vc/bjcKuYJjTGusLWr7MQ/l/MiaM40fFaZjXIrOUpz508MyoIDddvpKIkFJIaBhhO7Pg
- BS4A==
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
+ :reply-to:content-type;
+ bh=RbTOUBiKt3GZiZCyci+1Z44/TqKXoOd47+ZAUwpQhvA=;
+ b=abKt2pVCRxH1UsaLMtPQjAcGbE4Pozh69WDiggpmeBwU4l6yImK9Jh+VIg94Zin4Ps
+ S6Nhz7096DyriR4Q7gmG6gQe4IbuMcCKlSpdTHjVmhgZkK9rEGdWaQFmAMH8nAvGx9cy
+ iG9Kg0IfBSROdfnuguXUJPcoWsv1hfjOKVZLgoPGRHmHWA8KdtGEXca8hPZRCdidJwsT
+ V3eq97Z6gSdNCyz/hyWR8+BSQoq4OAx28seMg2AhkkHnS6UEDgz/+a/OW2GoVEfC0LMg
+ UQ8dh7s6CEukkrQsGATon/4kn+kMIQ9QYMZossFo2Qgitu1Nb0f0GjvKjKJMvRxzVnj/
+ ktCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1787570600; x=1788175400;
+ d=1e100.net; s=20251104; t=1787570583; x=1788175383;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
- :to:date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
- :message-id:reply-to:content-type;
- bh=c74y44aquysns7D3IFnmY2o5E2KHuxOsToU/aMzWTxI=;
- b=g9t8TxSA9upoVliIjIFuAli8ah8ZNB+hdo6ngKhUa3/eH3D6EuOAzQzziJBSu0JpNT
- qw+QBdOszKzladHl9JUXKUlEsagHgIUiS69ApNblfXl0/NfwmXbMJdU5eOiT53T5OjJg
- uYRgH6w02WHp7+wJY8+vhmbDnzsgY3KmH+aw36sUdbmpQJeptgHrMs2OQi7XRosAEhFK
- OpHD1NGjL3AL+ytYcKZNJPUe4QnhwM/hF/CMd8z1ASmToJaAqvRe/orBA2EO27dPm+KW
- BRcqFeAKXKTrMtV0s7wtqwCFeNutsUA+bqxoM/LqQEyWl9h2HIEVTM/hn6xZa14qy8f2
- Cfcw==
-X-Gm-Message-State: AFuF++nNMXUrFx37j1yJRvkT8YXbPmROpZHkEnFNOhCm6hcM05OokGX2
- 4UttO+BuqHY8G1nrvWeu/nrfx6CAJcjvNuGrjDsOOLo/sLpZ5xfEsqUuyUTjohbYxp2yyO5rdrh
- zMtudk6wzfgDR+qpSdk+PUflFOCZZBXJSurD+qmrGK3fgF/EIiJEN1iQ+meftwMaU+uwO
-X-Gm-Gg: AR+sD12muk+q5Lkcf66toz1dxgZA7sXPw2/O/L14cz87Kpd0t1ztCm5qhk/74g8hoTA
- HpuJ4CwNn1lBJRRQnvU1CO4SBMN44nzmcCNauSaTNwTkUmhxLAEm4RRaUkdqKF0g61LCwCnq2f0
- 0K+2gGXJH7xaqYGOgI81uCzH/RFelA8VEbmjjr1uzt5Ki8z7b3uX++eY8vwZECYkxPr+jbxPvas
- Wk+M5D4T4M0tJeXeJZeV3Sz4gIUmSVkdsWCohDrbX3Y5dTbqYLDyU2zFsXqI1yqyiaecmafRsEQ
- Gl8a3Ta1OWEQ+VvlBjfHKhkvuKjFxdFUM1hz91O9oNhhLV9SBdel2Rw2fGcmi+y5ON2K0ryLnyY
- EfN9tepdq6b7xD4u3kRhJga0rFdsoSmzuOFTzU/nIUGN7WjH7KBuae3YUym4wjBO/CxswxNyxH4
- Vt6DX0T1roL3VUignWu0SjbRGmU/XF+/qGYLa2PLG1AYMY8hlxWi1/i0CrRfDZT8hjvc9dL4Jzz
- hyiGj0oEOjPR6Y1QSVsyx6ROzQZGff/yYl7rcnolc6tqBJ7G/8ySbjwqy9orqJSUk1t+v5oFk7T
- Rta/WU1wLznN7yiaZlCcTp7a2rMjrpFNP8116yzOO2+hEpEsRrBx0MUfK+M1Og==
-X-Received: by 2002:a17:907:da16:b0:c21:34a3:4df9 with SMTP id
- a640c23a62f3a-c246a2cf648mr2905506166b.3.1787570600466; 
- Mon, 24 Aug 2026 04:23:20 -0700 (PDT)
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
+ :cc:subject:date:message-id:reply-to:content-type;
+ bh=RbTOUBiKt3GZiZCyci+1Z44/TqKXoOd47+ZAUwpQhvA=;
+ b=G5iJ/3Mwpddr/4SLJFcnsyM/TFv9pHvTTAzdEisXjXtfEW4wGmlB2PAuMFcVVUHLq8
+ D+q+6vOimfQX08Q8i4oA1IpYNFVx7gyFVHIpXD58qX1q72E9AHSb3CzmCMc/CPXvD5Or
+ ioHa5ekN+7f6t/FG42ZTvGmkhhbNvRDpkqDQWKB5H/0LJL1fFzrj5xktMwIwNPoh7RIn
+ m3J6TnSlhXrvTmZSYpsA66/FHyZqlHC1U5fJqcDhWEfflW1KFpyePwBRE5OVPONO+clN
+ YvHpQX29k3mO986NMaQdVMYLbQ+276cB/I7lqvl8wp+DqCTgYbWvT8QBmJ7MsAgxMgtI
+ JfrQ==
+X-Gm-Message-State: AFuF++mtekfr01k7zuhlI8Gvi+WB1kpzPTNcTJk+bS1Ud+Y/JVXutKad
+ 4g1Viy/YcNejET4pCrlxZY3KGtelATyyTaVG8YfuOatF3vV4q66vTKzLUZIpStRBHLbW8pANO7K
+ XEOoNwloKVpjqwyJuN1cJ0Xt0458f9aM0n/pMkwj0kqwvqat/8hhtoYZWRrPgMndq+cE4
+X-Gm-Gg: AR+sD10lOLX+V/yQKk18sSpvc095nhgzHi+KmL65dYhsWVvgNO6ajOTLVanHot0/pU6
+ hXQ57SjyTHaRDPuF0vz8sBwJRa/088soVpxCIqL8fddRTMauYxW1auH3MGW7XnlQUT1fMSwOhS5
+ aueJOGKifuAdWP2loaYpoIRiDN43OiIj9yW1tmNLcWqcJFUa4T+OwJl2ctDMRrlLSfVPmDYfZhb
+ mBLwQzHIO6eXZhfDiZo36mFnKiBCESwaJVYUz+DDyZ8YSq0ZsJOf09ZOIgKIq4uFghAzJ4d78Jp
+ j89sUT9UYXNTLu36y3WXMr0ETyEZtchQqtlCReoLdyhlH3rxOTVjIOx3+lfElP7LhmsZOntBKc9
+ Bng5P6TerhNa9K/f4/gS095qkQGhQyg8o7/BFac7Uuu8e2WgEgEP5Ka1FIOODhM1nJc20nsvgMb
+ dqL9NVzQNHRxMzOpyWh9YPTiLqjsbERk/XftjPa8ea8hmGoKt1sGlCtTbiKGO2tl/ZYqpVhxSdh
+ hzTs1vbLR7qH8w21LE3I7i3hWN98sBrz/1iBCn+Vmk/nJ3nSyvkRJ9dRed7YJKze6wtXbMwy7f1
+ dcgZ98/jG7mAtAbMqAQywLTBJuzNp24DSheFczwAGJcaDmHviSA=
+X-Received: by 2002:a17:906:a353:10b0:c1c:5c90:1bb0 with SMTP id
+ a640c23a62f3a-c246a353d2emr2034502066b.8.1787570581759; 
+ Mon, 24 Aug 2026 04:23:01 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- a640c23a62f3a-c24968abf18sm1308788266b.61.2026.08.24.04.23.19
+ a640c23a62f3a-c249685ab3csm1235563066b.49.2026.08.24.04.23.00
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 24 Aug 2026 04:23:19 -0700 (PDT)
+ Mon, 24 Aug 2026 04:23:01 -0700 (PDT)
 X-Google-Original-From: "flichtenheld (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Mon, 24 Aug 2026 11:23:19 +0000
-To: plaisthos <arne-openvpn@rfc2549.org>
+Date: Mon, 24 Aug 2026 11:22:43 +0000
+To: plaisthos <arne-openvpn@rfc2549.org>,
+ razvanc <razvanc@mailbox.org>, stipa <lstipakov@gmail.com>
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: newchange
-X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: Idfa78643da27fe8a8bd0ff2bcf3025d8687024a9
-X-Gerrit-Change-Number: 1865
+X-Gerrit-MessageType: newpatchset
+X-Gerrit-PatchSet: 14
+X-Gerrit-Change-Id: I2b71dae37ebe63c26a66761f877b25d326ed140f
+X-Gerrit-Change-Number: 1661
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1865?usp=email>
-X-Gerrit-Commit: 48b7adb1a9cc67261a820bc1be2b548794c221d9
-References: <gerrit.1787570563000.Idfa78643da27fe8a8bd0ff2bcf3025d8687024a9@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzg3NTcwNTYzMDAwLklkZmE3ODY0M2RhMjdmZThhOGJkMGZmMmJjZjMwMjVkODY4NzAyNGE5QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <62355124c6a88bcb5f5a24caaecb76e0191601ab-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1661?usp=email>
+X-Gerrit-Commit: 2e8ab4a160cd75b457dd12cf21fd6caa09367078
+In-Reply-To: <gerrit.1778013601000.I2b71dae37ebe63c26a66761f877b25d326ed140f@gerrit.openvpn.net>
+References: <gerrit.1778013601000.I2b71dae37ebe63c26a66761f877b25d326ed140f@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzc4MDEzNjAxMDAwLkkyYjcxZGFlMzdlYmU2M2MyNmE2Njc2MWY4NzdiMjVkMzI2ZWQxNDBmQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <57fb50e417c496803c5c180f97489e32275164b9-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1wySlz-0006z2-6H
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: route: Remove unused
- function print_routes
+X-Headers-End: 1wySli-0003v2-1X
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Remove instances of
+ constVariable/constVariablePointer cppcheck warnings
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -136,295 +138,3935 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 From: "flichtenheld \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
-Reply-To: frank@lichtenheld.com, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net
+Reply-To: frank@lichtenheld.com, arne-openvpn@rfc2549.org, razvanc@mailbox.org,
+ openvpn-devel@lists.sourceforge.net, lstipakov@gmail.com
 Cc: "flichtenheld \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============4045386108008666475=="
+Content-Type: multipart/mixed; boundary="===============2109614159215304225=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============4045386108008666475==
+--===============2109614159215304225==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="cQV9xetKQQs="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="A5fH1YxqRIY="; charset=UTF-8
 
---cQV9xetKQQs=
+--A5fH1YxqRIY=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos=2E
+Attention is currently required from: flichtenheld, plaisthos, razvanc, sti=
+pa=2E
 
-Hello plaisthos,
+Hello plaisthos, razvanc, stipa, 
 
-I'd l=
-ike you to do a code review=2E
-Please visit
+I'd like you to reexamine a chang=
+e=2E Please visit
 
-    http://gerrit=2Eopenvpn=2E=
-net/c/openvpn/+/1865?usp=3Demail
+    http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1661?usp=
+=3Demail
 
-to review the following change=2E
+to look at the new patch set (#14)=2E
+
+The following approvals go=
+t outdated and were removed:
+Code-Review+2 by razvanc
 
 
-Chang=
-e subject: route: Remove unused function print_routes
-=2E=2E=2E=2E=2E=2E=2E=
+Change subject: Rem=
+ove instances of constVariable/constVariablePointer cppcheck warnings
+=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-route: Remove unused function prin=
-t_routes
+Remove instances=
+ of constVariable/constVariablePointer cppcheck warnings
 
-This function has never been used in the git history=2E
-Probably =
-an OpenVPN 1=2Ex remnant=2E
+Of varied usefuln=
+ess, but easier to just address all of
+them=2E
 
-Identified by cppcheck=2E
+Also change vpn_* parameter=
+s of dco_new_peer to const since
+that is required by one of the changes and=
+ it works (and would
+happen anyway when doing constParameterPointer)=2E
 
-Change-Id: Idfa7864=
-3da27fe8a8bd0ff2bcf3025d8687024a9
-Signed-off-by: Frank Lichtenheld <frank@l=
-ichtenheld=2Ecom>
+Ch=
+ange-Id: I2b71dae37ebe63c26a66761f877b25d326ed140f
+Signed-off-by: Frank Lic=
+htenheld <frank@lichtenheld=2Ecom>
 ---
+M dev-tools/cppcheck-suppression
+M s=
+ample/sample-plugins/defer/multi-auth=2Ec
+M sample/sample-plugins/log/log=
+=2Ec
+M sample/sample-plugins/log/log_v3=2Ec
+M sample/sample-plugins/simple/=
+simple=2Ec
+M src/openvpn/argv=2Ec
+M src/openvpn/auth_token=2Ec
+M src/openvp=
+n/base64=2Ec
+M src/openvpn/buffer=2Ec
+M src/openvpn/buffer=2Eh
+M src/openvp=
+n/comp-lz4=2Ec
+M src/openvpn/crypto=2Ec
+M src/openvpn/crypto_epoch=2Ec
+M sr=
+c/openvpn/cryptoapi=2Ec
+M src/openvpn/dco=2Ec
+M src/openvpn/dco_freebsd=2Ec=
+
+M src/openvpn/dco_internal=2Eh
+M src/openvpn/dco_linux=2Ec
+M src/openvpn/d=
+co_win=2Ec
+M src/openvpn/dns=2Ec
+M src/openvpn/event=2Ec
+M src/openvpn/forw=
+ard=2Ec
+M src/openvpn/init=2Ec
+M src/openvpn/list=2Ec
+M src/openvpn/manage=
+=2Ec
+M src/openvpn/misc=2Ec
+M src/openvpn/mss=2Ec
+M src/openvpn/mtcp=2Ec
+M =
+src/openvpn/mudp=2Ec
+M src/openvpn/multi=2Ec
+M src/openvpn/networking_sitnl=
+=2Ec
+M src/openvpn/options=2Ec
+M src/openvpn/options_parse=2Ec
+M src/openvp=
+n/options_util=2Ec
+M src/openvpn/pool=2Ec
+M src/openvpn/proxy=2Ec
+M src/ope=
+nvpn/push=2Ec
 M src/openvpn/route=2Ec
-M src/openvpn/route=2Eh
-2 fil=
-es changed, 0 insertions(+), 36 deletions(-)
+M src/openvpn/socket=2Ec
+M src/openvp=
+n/socket=2Eh
+M src/openvpn/ssl=2Ec
+M src/openvpn/ssl_mbedtls=2Ec
+M src/open=
+vpn/ssl_verify=2Ec
+M src/openvpn/tun=2Ec
+M src/openvpn/win32=2Ec
+M src/open=
+vpnmsica/msica_arg=2Ec
+M src/openvpnmsica/openvpnmsica=2Ec
+M src/openvpnser=
+v/interactive=2Ec
+M src/plugins/auth-pam/auth-pam=2Ec
+M src/tapctl/main=2Ec=
+
+M tests/unit_tests/openvpn/test_buffer=2Ec
+M tests/unit_tests/openvpn/test=
+_crypto=2Ec
+M tests/unit_tests/openvpn/test_cryptoapi=2Ec
+M tests/unit_test=
+s/openvpn/test_misc=2Ec
+M tests/unit_tests/openvpn/test_ssl=2Ec
+M tests/uni=
+t_tests/plugins/auth-pam/test_search_and_replace=2Ec
+56 files changed, 163 =
+insertions(+), 164 deletions(-)
 
 
+  git pull ssh://gerrit=2Eopenvpn=2Enet:2=
+9418/openvpn refs/changes/61/1661/14
 
-  git pull ssh://gerrit=2Eo=
-penvpn=2Enet:29418/openvpn refs/changes/65/1865/1
-
-diff --git a/src/openvpn=
-/route=2Ec b/src/openvpn/route=2Ec
-index 8ea745d=2E=2E6dbe3ec 100644
---- a/=
-src/openvpn/route=2Ec
-+++ b/src/openvpn/route=2Ec
-@@ -185,19 +185,6 @@
-    =
- dest->gc =3D a;
- }
- 
--static const char *
--route_string(const struct route=
-_ipv4 *r, struct gc_arena *gc)
--{
--    struct buffer out =3D alloc_buf_gc(2=
-56, gc);
--    buf_printf(&out, "ROUTE network %s netmask %s gateway %s", pr=
-int_in_addr_t(r->network, 0, gc),
--               print_in_addr_t(r->netmas=
-k, 0, gc), print_in_addr_t(r->gateway, 0, gc));
--    if (r->flags & RT_METR=
-IC_DEFINED)
--    {
--        buf_printf(&out, " metric %d", r->metric);
--   =
- }
--    return BSTR(&out);
--}
--
- static bool
- is_route_parm_defined(const c=
-har *parm)
- {
-@@ -1325,27 +1312,6 @@
- #endif /* ifndef ENABLE_SMALL */
- 
- s=
-tatic void
--print_route(const struct route_ipv4 *r, msglvl_t msglevel)
--{
+diff --git a/dev-tools/cppcheck-suppr=
+ession b/dev-tools/cppcheck-suppression
+index 2e3350b=2E=2E900e03c 100644
 -=
-    struct gc_arena gc =3D gc_new();
--    if (r->flags & RT_DEFINED)
--    {=
-
--        msg(msglevel, "%s", route_string(r, &gc));
--    }
--    gc_free(&g=
-c);
--}
--
--void
--print_routes(const struct route_list *rl, msglvl_t msglevel=
-)
--{
--    struct route_ipv4 *r;
--    for (r =3D rl->routes; r; r =3D r->nex=
-t)
--    {
--        print_route(r, msglevel);
--    }
--}
--
--static void
- sete=
-nv_route(struct env_set *es, const struct route_ipv4 *r, int i)
+-- a/dev-tools/cppcheck-suppression
++++ b/dev-tools/cppcheck-suppression
+@@=
+ -3,8 +3,6 @@
+ constParameter
+ constParameterCallback
+ constParameterPointe=
+r
+-constVariable
+-constVariablePointer
+ invalidPrintfArgType_sint
+ invalidP=
+rintfArgType_uint
+ usleepCalled
+diff --git a/sample/sample-plugins/defer/mu=
+lti-auth=2Ec b/sample/sample-plugins/defer/multi-auth=2Ec
+index f6bbf44=2E=
+=2Ebacf557 100644
+--- a/sample/sample-plugins/defer/multi-auth=2Ec
++++ b/sa=
+mple/sample-plugins/defer/multi-auth=2Ec
+@@ -381,7 +381,7 @@
+     }
+     co=
+nst char **argv =3D args->argv;
+     const char **envp =3D args->envp;
+-   =
+ struct plugin_context *context =3D (struct plugin_context *)args->handle;
+=
++    const struct plugin_context *context =3D (struct plugin_context *)args=
+->handle;
+     struct plugin_per_client_context *pcc =3D
+         (struct p=
+lugin_per_client_context *)args->per_client_context;
+     switch (args->typ=
+e)
+@@ -399,7 +399,7 @@
+ OPENVPN_EXPORT void *
+ openvpn_plugin_client_constr=
+uctor_v1(openvpn_plugin_handle_t handle)
  {
-     str=
-uct gc_arena gc =3D gc_new();
-diff --git a/src/openvpn/route=2Eh b/src/open=
-vpn/route=2Eh
-index 473df87=2E=2E0d33d36 100644
---- a/src/openvpn/route=2Eh=
+-    struct plugin_context *con=
+text =3D (struct plugin_context *)handle;
++    const struct plugin_context =
+*context =3D (struct plugin_context *)handle;
+     plog(context, PLOG_NOTE,=
+ "FUNC: openvpn_plugin_client_constructor_v1");
+     return calloc(1, sizeo=
+f(struct plugin_per_client_context));
+ }
+@@ -407,7 +407,7 @@
+ OPENVPN_EXPOR=
+T void
+ openvpn_plugin_client_destructor_v1(openvpn_plugin_handle_t handle,=
+ void *per_client_context)
+ {
+-    struct plugin_context *context =3D (stru=
+ct plugin_context *)handle;
++    const struct plugin_context *context =3D (=
+struct plugin_context *)handle;
+     plog(context, PLOG_NOTE, "FUNC: openvp=
+n_plugin_client_destructor_v1");
+     free(per_client_context);
+ }
+diff --g=
+it a/sample/sample-plugins/log/log=2Ec b/sample/sample-plugins/log/log=2Ec
+=
+index 330e3e0=2E=2E76350ee 100644
+--- a/sample/sample-plugins/log/log=2Ec
++=
+++ b/sample/sample-plugins/log/log=2Ec
+@@ -173,7 +173,7 @@
+ openvpn_plugin_=
+func_v1(openvpn_plugin_handle_t handle, const int type, const char *argv[],=
 
-+++ b/src/openvpn/route=2Eh
-@@ -377,8 +377,6 @@
+                        const char *envp[])
+ {
+-    struct plugin_context =
+*context =3D (struct plugin_context *)handle;
++    const struct plugin_cont=
+ext *context =3D (struct plugin_context *)handle;
  
+     show(type, argv, e=
+nvp);
+ 
+diff --git a/sample/sample-plugins/log/log_v3=2Ec b/sample/sample-p=
+lugins/log/log_v3=2Ec
+index d2d44c7=2E=2E09c6735 100644
+--- a/sample/sample=
+-plugins/log/log_v3=2Ec
++++ b/sample/sample-plugins/log/log_v3=2Ec
+@@ -245,=
+7 +245,7 @@
+ openvpn_plugin_func_v3(const int version, struct openvpn_plugi=
+n_args_func_in const *args,
+                        struct openvpn_plugin_a=
+rgs_func_return *retptr)
+ {
+-    struct plugin_context *context =3D (struct=
+ plugin_context *)args->handle;
++    const struct plugin_context *context =
+=3D (struct plugin_context *)args->handle;
+ 
+     printf("\nopenvpn_plugin_=
+func_v3() :::::>> ");
+     show(args->type, args->argv, args->envp);
+diff -=
+-git a/sample/sample-plugins/simple/simple=2Ec b/sample/sample-plugins/simp=
+le/simple=2Ec
+index 687a633=2E=2E3182be0 100644
+--- a/sample/sample-plugins=
+/simple/simple=2Ec
++++ b/sample/sample-plugins/simple/simple=2Ec
+@@ -104,7 =
++104,7 @@
+ openvpn_plugin_func_v1(openvpn_plugin_handle_t handle, const int=
+ type, const char *argv[],
+                        const char *envp[])
+ {
+-=
+    struct plugin_context *context =3D (struct plugin_context *)handle;
++  =
+  const struct plugin_context *context =3D (struct plugin_context *)handle;=
+
+ 
+     /* get username/password from envp string array */
+     const char =
+*username =3D get_env("username", envp);
+diff --git a/src/openvpn/argv=2Ec =
+b/src/openvpn/argv=2Ec
+index 6a5d92e=2E=2E028671d 100644
+--- a/src/openvpn/=
+argv=2Ec
++++ b/src/openvpn/argv=2Ec
+@@ -359,7 +359,7 @@
+      *
+      */
+  =
+   size_t argc =3D argres->argc;
+-    char *f =3D argv_prep_format(format, =
+delim, &argc, &argres->gc);
++    const char *f =3D argv_prep_format(format,=
+ delim, &argc, &argres->gc);
+     if (f =3D=3D NULL)
+     {
+         goto o=
+ut;
+diff --git a/src/openvpn/auth_token=2Ec b/src/openvpn/auth_token=2Ec
+in=
+dex bd90212=2E=2Ef928a41 100644
+--- a/src/openvpn/auth_token=2Ec
++++ b/src/=
+openvpn/auth_token=2Ec
+@@ -235,7 +235,7 @@
+      * a new token with the emp=
+ty username since we do not want to loose
+      * the information that the =
+username cannot be trusted
+      */
+-    struct key_state *ks =3D &multi->s=
+ession[TM_ACTIVE]=2Ekey[KS_PRIMARY];
++    const struct key_state *ks =3D &m=
+ulti->session[TM_ACTIVE]=2Ekey[KS_PRIMARY];
+     if (ks->auth_token_state_f=
+lags & AUTH_TOKEN_VALID_EMPTYUSER)
+     {
+         hmac_ctx_update(ctx, (co=
+nst uint8_t *)"", 0);
+diff --git a/src/openvpn/base64=2Ec b/src/openvpn/bas=
+e64=2Ec
+index 7af8976=2E=2E5752844 100644
+--- a/src/openvpn/base64=2Ec
++++ =
+b/src/openvpn/base64=2Ec
+@@ -161,7 +161,7 @@
+ {
+     const char *p;
+     un=
+signed char *q;
+-    unsigned char *e =3D NULL;
++    const unsigned char *e=
+ =3D NULL;
+ 
+     q =3D data;
+     if (size >=3D 0)
+diff --git a/src/openvp=
+n/buffer=2Ec b/src/openvpn/buffer=2Ec
+index 8c19902=2E=2E2b4d05d 100644
+---=
+ a/src/openvpn/buffer=2Ec
++++ b/src/openvpn/buffer=2Ec
+@@ -500,7 +500,7 @@
+=
+ void
+ buf_null_terminate(struct buffer *buf)
+ {
+-    char *last =3D (char =
+*)BLAST(buf);
++    const char *last =3D (char *)BLAST(buf);
+     if (last &=
+& *last =3D=3D '\0') /* already terminated? */
+     {
+         return;
+@@ -=
+523,7 +523,7 @@
+ {
+     while (true)
+     {
+-        char *last =3D (char *=
+)BLAST(buf);
++        const char *last =3D (char *)BLAST(buf);
+         if =
+(!last)
+         {
+             break;
+diff --git a/src/openvpn/buffer=2Eh =
+b/src/openvpn/buffer=2Eh
+index e48a793=2E=2Efbc94c5 100644
+--- a/src/openvp=
+n/buffer=2Eh
++++ b/src/openvpn/buffer=2Eh
+@@ -1318,7 +1318,7 @@
+ static inl=
+ine bool
+ buf_copy_n(struct buffer *dest, struct buffer *src, int n)
+ {
+-  =
+  uint8_t *cp =3D buf_read_alloc(src, n);
++    const uint8_t *cp =3D buf_re=
+ad_alloc(src, n);
+     if (!cp)
+     {
+         return false;
+@@ -1409,7 +1=
+409,7 @@
+ static inline bool
+ buf_read(struct buffer *src, void *dest, int =
+size)
+ {
+-    uint8_t *cp =3D buf_read_alloc(src, size);
++    const uint8_t=
+ *cp =3D buf_read_alloc(src, size);
+     if (!cp)
+     {
+         return fa=
+lse;
+diff --git a/src/openvpn/comp-lz4=2Ec b/src/openvpn/comp-lz4=2Ec
+index=
+ 45f138c=2E=2E48797b0 100644
+--- a/src/openvpn/comp-lz4=2Ec
++++ b/src/openv=
+pn/comp-lz4=2Ec
+@@ -164,7 +164,7 @@
+     ASSERT(buf_init(&work, frame->buf=
+=2Eheadroom));
+ 
+     /* do unframing/swap (assumes buf->len > 0) */
+-    u=
+int8_t *head =3D BPTR(buf);
++    const uint8_t *head =3D BPTR(buf);
+     c =
+=3D *head;
+ 
+     /* Not compressed */
+diff --git a/src/openvpn/crypto=2Ec =
+b/src/openvpn/crypto=2Ec
+index 674105d=2E=2Ee5ad31a 100644
+--- a/src/openvp=
+n/crypto=2Ec
++++ b/src/openvpn/crypto=2Ec
+@@ -1210,7 +1210,7 @@
+ 
+     /* i=
+nit implicit IV */
+     {
+-        cipher_ctx_t *cipher =3D co->key_ctx_bi=
+=2Eencrypt=2Ecipher;
++        const cipher_ctx_t *cipher =3D co->key_ctx_bi=
+=2Eencrypt=2Ecipher;
+         if (cipher_ctx_mode_aead(cipher))
+         {
+=
+             ASSERT(cipher_ctx_iv_length(cipher) <=3D OPENVPN_MAX_IV_LENGTH=
+);
+@@ -1920,7 +1920,7 @@
+     const char *seed =3D "tls1-prf-test";
+     co=
+nst char *secret =3D "tls1-prf-test-secret";
+     uint8_t out[8];
+-    uint=
+8_t expected_out[] =3D { 'q', 'D', 0xfe, '%', '@', 's', 'u', 0x95 };
++    c=
+onst uint8_t expected_out[] =3D { 'q', 'D', 0xfe, '%', '@', 's', 'u', 0x95 =
+};
+ 
+     int ret =3D ssl_tls1_PRF((uint8_t *)seed, strlen(seed), (uint8_t =
+*)secret,
+                            strlen(secret), out, sizeof(out));
+di=
+ff --git a/src/openvpn/crypto_epoch=2Ec b/src/openvpn/crypto_epoch=2Ec
+inde=
+x 37933a1=2E=2E158c841 100644
+--- a/src/openvpn/crypto_epoch=2Ec
++++ b/src/=
+openvpn/crypto_epoch=2Ec
+@@ -213,7 +213,7 @@
+      *
+      * The last gener=
+ated key might have been moved to the decrypt key already=2E
+      */
+-    =
+struct key_ctx *highest_future_key =3D
++    const struct key_ctx *highest_f=
+uture_key =3D
+         &co->epoch_data_keys_future[co->epoch_data_keys_futu=
+re_count - 1];
+ 
+     ASSERT(co->epoch_key_recv=2Eepoch =3D=3D 1 || highest=
+_future_key->epoch =3D=3D co->epoch_key_recv=2Eepoch
+diff --git a/src/openv=
+pn/cryptoapi=2Ec b/src/openvpn/cryptoapi=2Ec
+index 0f95ab7=2E=2Ead2706c 100=
+644
+--- a/src/openvpn/cryptoapi=2Ec
++++ b/src/openvpn/cryptoapi=2Ec
+@@ -225=
+,7 +225,6 @@
+     const CERT_INFO *info =3D cert_ctx->pCertInfo;
+     const=
+ CERT_EXTENSION *ext;
+     DWORD cbext;
+-    void *pvext;
+     struct gc_ar=
+ena gc =3D gc_new();
+     const WCHAR *tmpl_name =3D wide_string(cert_prop,=
+ &gc);
+ 
+@@ -233,7 +232,7 @@
+     ext =3D CertFindExtension(szOID_CERTIFICA=
+TE_TEMPLATE, info->cExtension, info->rgExtension);
+     if (ext)
+     {
+-  =
+      pvext =3D decode_object(&gc, X509_CERTIFICATE_TEMPLATE, &ext->Value, =
+0, &cbext);
++        const void *pvext =3D decode_object(&gc, X509_CERTIFIC=
+ATE_TEMPLATE, &ext->Value, 0, &cbext);
+         if (pvext && cbext >=3D siz=
+eof(CERT_TEMPLATE_EXT))
+         {
+             const CERT_TEMPLATE_EXT *ct=
+e =3D (const CERT_TEMPLATE_EXT *)pvext;
+diff --git a/src/openvpn/dco=2Ec b/=
+src/openvpn/dco=2Ec
+index ce73701=2E=2E8eae4bf 100644
+--- a/src/openvpn/dco=
+=2Ec
++++ b/src/openvpn/dco=2Ec
+@@ -112,7 +112,7 @@
+     for (int i =3D 0; i=
+ < KEY_SCAN_SIZE; ++i)
+     {
+         struct key_state *ks =3D get_key_sca=
+n(multi, i);
+-        struct key_ctx_bi *key =3D &ks->crypto_options=2Ekey_=
+ctx_bi;
++        const struct key_ctx_bi *key =3D &ks->crypto_options=2Ekey=
+_ctx_bi;
+ 
+         if (ks =3D=3D primary)
+         {
+@@ -577,7 +577,7 @@
+ =
+                        struct sockaddr_storage *local)
+ {
+ #if ENABLE_IP_P=
+KTINFO
+-    struct context *c =3D &mi->context;
++    const struct context *=
+c =3D &mi->context;
+ 
+     if (!proto_is_udp(c->c2=2Elink_sockets[0]->info=
+=2Eproto)
+         || !(c->options=2Esockflags & SF_USE_IP_PKTINFO))
+@@ -62=
+5,7 +625,7 @@
+ int
+ dco_multi_add_new_peer(struct multi_context *m, struct =
+multi_instance *mi)
+ {
+-    struct context *c =3D &mi->context;
++    const =
+struct context *c =3D &mi->context;
+ 
+     int peer_id =3D c->c2=2Etls_mult=
+i->rx_peer_id;
+     struct sockaddr *remoteaddr, *localaddr =3D NULL;
+@@ -6=
+46,14 +646,14 @@
+ 
+     /* In server mode we need to fetch the remote addre=
+sses from the push config */
+     struct in_addr vpn_ip4 =3D { 0 };
+-    st=
+ruct in_addr *vpn_addr4 =3D NULL;
++    const struct in_addr *vpn_addr4 =3D =
+NULL;
+     if (c->c2=2Epush_ifconfig_defined)
+     {
+         vpn_ip4=2Es_a=
+ddr =3D htonl(c->c2=2Epush_ifconfig_local);
+         vpn_addr4 =3D &vpn_ip4=
+;
+     }
+ 
+-    struct in6_addr *vpn_addr6 =3D NULL;
++    const struct in6_=
+addr *vpn_addr6 =3D NULL;
+     if (c->c2=2Epush_ifconfig_ipv6_defined)
+    =
+ {
+         vpn_addr6 =3D &c->c2=2Epush_ifconfig_ipv6_local;
+@@ -702,7 +702=
+,7 @@
+     }
  #endif
  
--void print_ro=
-utes(const struct route_list *rl, msglvl_t msglevel);
--
- #ifdef _WIN32
+-    struct context *c =3D &mi->context;
++    const =
+struct context *c =3D &mi->context;
+     if (addrtype =3D=3D MR_ADDR_IPV6)
+=
+     {
+ #if defined(_WIN32)
+@@ -750,7 +750,7 @@
+     }
+     ASSERT(TUNNEL_T=
+YPE(mi->context=2Ec1=2Etuntap) =3D=3D DEV_TYPE_TUN);
  
- v=
-oid show_routes(msglvl_t msglevel);
+-    struct context =
+*c =3D &mi->context;
++    const struct context *c =3D &mi->context;
+ 
+     =
+if (mi->context=2Ec2=2Epush_ifconfig_defined)
+     {
+diff --git a/src/openv=
+pn/dco_freebsd=2Ec b/src/openvpn/dco_freebsd=2Ec
+index eaca86b=2E=2Ed933aaf=
+ 100644
+--- a/src/openvpn/dco_freebsd=2Ec
++++ b/src/openvpn/dco_freebsd=2Ec=
+
+@@ -134,7 +134,8 @@
+ 
+ int
+ dco_new_peer(dco_context_t *dco, unsigned int =
+peerid, int sd, struct sockaddr *localaddr,
+-             struct sockaddr *=
+remoteaddr, struct in_addr *vpn_ipv4, struct in6_addr *vpn_ipv6)
++         =
+    struct sockaddr *remoteaddr, const struct in_addr *vpn_ipv4,
++         =
+    const struct in6_addr *vpn_ipv6)
+ {
+     struct ifdrv drv;
+     nvlist_=
+t *nvl, *local_nvl, *remote_nvl;
+diff --git a/src/openvpn/dco_internal=2Eh =
+b/src/openvpn/dco_internal=2Eh
+index da07780=2E=2Efcf8aca 100644
+--- a/src/=
+openvpn/dco_internal=2Eh
++++ b/src/openvpn/dco_internal=2Eh
+@@ -60,7 +60,7 =
+@@
+  */
+ 
+ int dco_new_peer(dco_context_t *dco, unsigned int peerid, socket=
+_descriptor_t sd, struct sockaddr *localaddr,
+-                 struct sock=
+addr *remoteaddr, struct in_addr *vpn_ipv4, struct in6_addr *vpn_ipv6);
++  =
+               struct sockaddr *remoteaddr, const struct in_addr *vpn_ipv4,=
+ const struct in6_addr *vpn_ipv6);
+ 
+ int dco_del_peer(dco_context_t *dco, =
+unsigned int peerid);
+ 
+diff --git a/src/openvpn/dco_linux=2Ec b/src/openvp=
+n/dco_linux=2Ec
+index 40746bd=2E=2E56f6259 100644
+--- a/src/openvpn/dco_lin=
+ux=2Ec
++++ b/src/openvpn/dco_linux=2Ec
+@@ -222,7 +222,8 @@
+ 
+ int
+ dco_new_=
+peer(dco_context_t *dco, unsigned int peerid, int sd, struct sockaddr *loca=
+laddr,
+-             struct sockaddr *remoteaddr, struct in_addr *vpn_ipv4,=
+ struct in6_addr *vpn_ipv6)
++             struct sockaddr *remoteaddr, cons=
+t struct in_addr *vpn_ipv4,
++             const struct in6_addr *vpn_ipv6)
+=
+ {
+     struct gc_arena gc =3D gc_new();
+     const char *remotestr =3D "[u=
+ndefined]";
+@@ -697,7 +698,7 @@
+ {
+     dco_context_t *dco =3D arg;
+     st=
+ruct nlattr *tb[CTRL_ATTR_MAX + 1];
+-    struct genlmsghdr *gnlh =3D nlmsg_=
+data(nlmsg_hdr(msg));
++    const struct genlmsghdr *gnlh =3D nlmsg_data(nlm=
+sg_hdr(msg));
+ 
+     nla_parse(tb, CTRL_ATTR_MAX, genlmsg_attrdata(gnlh, 0)=
+, genlmsg_attrlen(gnlh, 0), NULL);
+ 
+@@ -706,7 +707,7 @@
+         return NL=
+_SKIP;
+     }
+ 
+-    struct nlattr *mcgrp;
++    const struct nlattr *mcgrp;=
+
+     int rem_mcgrp;
+     nla_for_each_nested(mcgrp, tb[CTRL_ATTR_MCAST_GRO=
+UPS], rem_mcgrp)
+     {
+diff --git a/src/openvpn/dco_win=2Ec b/src/openvpn/=
+dco_win=2Ec
+index 2e26f2a=2E=2Eb3268bc 100644
+--- a/src/openvpn/dco_win=2Ec=
+
++++ b/src/openvpn/dco_win=2Ec
+@@ -285,8 +285,8 @@
+     msg(D_DCO_DEBUG, "%=
+s", __func__);
+ 
+     int ai_family =3D sock->info=2Elsa->bind_local->ai_fa=
+mily;
+-    struct addrinfo *local =3D sock->info=2Elsa->bind_local;
+-    st=
+ruct addrinfo *cur =3D NULL;
++    const struct addrinfo *local =3D sock->in=
+fo=2Elsa->bind_local;
++    const struct addrinfo *cur =3D NULL;
+ 
+     for =
+(cur =3D local; cur; cur =3D cur->ai_next)
+     {
+@@ -334,7 +334,7 @@
+     =
+struct addrinfo *remoteaddr =3D sock->info=2Elsa->current_remote;
+ 
+     st=
+ruct sockaddr *local =3D NULL;
+-    struct sockaddr *remote =3D remoteaddr-=
+>ai_addr;
++    const struct sockaddr *remote =3D remoteaddr->ai_addr;
+ 
+   =
+  if (remoteaddr->ai_protocol =3D=3D IPPROTO_TCP || remoteaddr->ai_socktype=
+ =3D=3D SOCK_STREAM)
+     {
+@@ -348,7 +348,7 @@
+     if (sock->bind_local)
+=
+     {
+         /* Use first local address with correct address family */
+-=
+        struct addrinfo *bind =3D sock->info=2Elsa->bind_local;
++        co=
+nst struct addrinfo *bind =3D sock->info=2Elsa->bind_local;
+         while =
+(bind && !local)
+         {
+             if (bind->ai_family =3D=3D remote-=
+>sa_family)
+@@ -415,8 +415,9 @@
+ }
+ 
+ int
+-dco_new_peer(dco_context_t *dco,=
+ unsigned int peerid, socket_descriptor_t sd, struct sockaddr *localaddr,
+-=
+             struct sockaddr *remoteaddr, struct in_addr *vpn_ipv4, struct =
+in6_addr *vpn_ipv6)
++dco_new_peer(dco_context_t *dco, unsigned int peerid, =
+socket_descriptor_t sd,
++             struct sockaddr *localaddr, struct so=
+ckaddr *remoteaddr,
++             const struct in_addr *vpn_ipv4, const str=
+uct in6_addr *vpn_ipv6)
+ {
+     msg(D_DCO_DEBUG, "%s: peer-id %d, fd " SOCK=
+ET_PRINTF, __func__, peerid, sd);
+ 
+@@ -745,7 +746,7 @@
+     struct gc_aren=
+a gc =3D gc_new();
+ 
+     int ret =3D 0;
+-    struct tuntap *tt =3D dco->tt=
+;
++    const struct tuntap *tt =3D dco->tt;
+ 
+     if (!tuntap_defined(tt))=
+
+     {
+@@ -869,7 +870,7 @@
+ int
+ dco_get_peer_stats_fallback(struct contex=
+t *c, const bool raise_sigusr1_on_err)
+ {
+-    struct tuntap *tt =3D c->c1=
+=2Etuntap;
++    const struct tuntap *tt =3D c->c1=2Etuntap;
+ 
+     if (!tun=
+tap_defined(tt))
+     {
+@@ -898,7 +899,7 @@
+ int
+ dco_get_peer_stats(struct=
+ context *c, const bool raise_sigusr1_on_err)
+ {
+-    struct tuntap *tt =3D=
+ c->c1=2Etuntap;
++    const struct tuntap *tt =3D c->c1=2Etuntap;
+ 
+     if=
+ (!tuntap_defined(tt))
+     {
+diff --git a/src/openvpn/dns=2Ec b/src/openvp=
+n/dns=2Ec
+index 1465cdf=2E=2E7f4dde4 100644
+--- a/src/openvpn/dns=2Ec
++++ b=
+/src/openvpn/dns=2Ec
+@@ -132,7 +132,7 @@
+     }
+     else
+     {
+-        s=
+truct sockaddr_in6 *sin6 =3D (struct sockaddr_in6 *)ai->ai_addr;
++        c=
+onst struct sockaddr_in6 *sin6 =3D (struct sockaddr_in6 *)ai->ai_addr;
+    =
+     server->addr[server->addr_count]=2Ein=2Ea6 =3D sin6->sin6_addr;
+     }=
+
+ 
+@@ -156,7 +156,7 @@
+     /* Append all domains to the end of the list */=
+
+     while (*domains)
+     {
+-        char *domain =3D *domains++;
++      =
+  const char *domain =3D *domains++;
+         if (!validate_domain(domain))=
+
+         {
+             return false;
+@@ -699,7 +699,7 @@
+ run_up_down_com=
+mand(bool up, struct options *o, const struct tuntap *tt,
+                 =
+    struct dns_updown_runner_info *updown_runner)
+ {
+-    struct dns_option=
+s *dns =3D &o->dns_options;
++    const struct dns_options *dns =3D &o->dns_=
+options;
+     if (!dns->updown || (o->up_script && !dns_updown_user_set(dns=
+) && !dns_updown_forced(dns)))
+     {
+         return;
+@@ -864,7 +864,7 @@
+=
+     }
+ #ifdef _WIN32
+     /* Don't use iservice in DHCP mode */
+-    struc=
+t tuntap_options *tto =3D &o->tuntap_options;
++    const struct tuntap_opti=
+ons *tto =3D &o->tuntap_options;
+     if (tto->ip_win32_type =3D=3D IPW32_S=
+ET_DHCP_MASQ || tto->ip_win32_type =3D=3D IPW32_SET_ADAPTIVE)
+     {
+      =
+   return;
+diff --git a/src/openvpn/event=2Ec b/src/openvpn/event=2Ec
+index=
+ 9e17807=2E=2E8b7716a 100644
+--- a/src/openvpn/event=2Ec
++++ b/src/openvpn/=
+event=2Ec
+@@ -557,7 +557,7 @@
+ ep_del(struct event_set *es, event_t event)
+=
+ {
+     struct epoll_event ev;
+-    struct ep_set *eps =3D (struct ep_set *=
+)es;
++    const struct ep_set *eps =3D (struct ep_set *)es;
+ 
+     dmsg(D_E=
+VENT_WAIT, "EP_DEL ev=3D%d", (int)event);
+ 
+@@ -572,7 +572,7 @@
+ static voi=
+d
+ ep_ctl(struct event_set *es, event_t event, unsigned int rwflags, void *=
+arg)
+ {
+-    struct ep_set *eps =3D (struct ep_set *)es;
++    const struct =
+ep_set *eps =3D (struct ep_set *)es;
+     struct epoll_event ev;
+ 
+     CLE=
+AR(ev);
+diff --git a/src/openvpn/forward=2Ec b/src/openvpn/forward=2Ec
+inde=
+x c5b9278=2E=2E6581998 100644
+--- a/src/openvpn/forward=2Ec
++++ b/src/openv=
+pn/forward=2Ec
+@@ -1213,7 +1213,7 @@
+ {
+     if (float_sa->sa_family =3D=3D=
+ AF_INET)
+     {
+-        struct sockaddr_in *float4 =3D (struct sockaddr_i=
+n *)float_sa;
++        const struct sockaddr_in *float4 =3D (struct sockadd=
+r_in *)float_sa;
+         /* DCO treats IPv4-mapped IPv6 addresses as pure =
+IPv4=2E However, on a
+          * dual-stack socket, we need to preserve th=
+e mapping otherwise openvpn
+          * will not be able to find the peer b=
+y its transport address=2E
+@@ -1236,7 +1236,7 @@
+     }
+     else
+     {
+- =
+       struct sockaddr_in6 *float6 =3D (struct sockaddr_in6 *)float_sa;
++  =
+      const struct sockaddr_in6 *float6 =3D (struct sockaddr_in6 *)float_sa=
+;
+         memcpy(&out_osaddr->addr=2Ein6, float6, sizeof(struct sockaddr_i=
+n6));
+     }
+ }
+@@ -1366,8 +1366,8 @@
+         return;
+     }
+ 
+-    struct=
+ openvpn_sockaddr *link_addr =3D &c->c2=2Eto_link_addr->dest;
+-    struct l=
+ink_socket_info *lsi =3D get_link_socket_info(c);
++    const struct openvpn=
+_sockaddr *link_addr =3D &c->c2=2Eto_link_addr->dest;
++    const struct lin=
+k_socket_info *lsi =3D get_link_socket_info(c);
+ 
+     int ip_hdr_offset =
+=3D 0;
+     int tun_ip_ver =3D get_tun_ip_ver(TUNNEL_TYPE(c->c1=2Etuntap), =
+buf, &ip_hdr_offset);
+@@ -1404,7 +1404,7 @@
+         }
+ 
+         /* drop p=
+ackets with same dest addr and port as remote */
+-        uint8_t *l4_hdr =
+=3D (uint8_t *)pip + ip_hlen;
++        const uint8_t *l4_hdr =3D (uint8_t *=
+)pip + ip_hlen;
+ 
+         uint16_t link_port =3D ntohs(link_addr->addr=2Ei=
+n4=2Esin_port);
+ 
+@@ -1451,7 +1451,7 @@
+         uint16_t link_port =3D nto=
+hs(link_addr->addr=2Ein6=2Esin6_port);
+ 
+         /* drop packets with same=
+ dest addr and port as remote */
+-        uint8_t *l4_hdr =3D (uint8_t *)pi=
+p6 + sizeof(struct openvpn_ipv6hdr);
++        const uint8_t *l4_hdr =3D (ui=
+nt8_t *)pip6 + sizeof(struct openvpn_ipv6hdr);
+         uint16_t src_port =
+=3D ntohs(*(uint16_t *)l4_hdr);
+         uint16_t dst_port =3D ntohs(*(uint=
+16_t *)(l4_hdr + sizeof(uint16_t)));
+         if ((OPENVPN_IN6_ARE_ADDR_EQU=
+AL(&link_addr->addr=2Ein6=2Esin6_addr, &pip6->daddr)) && (link_port =3D=3D =
+dst_port))
+@@ -2209,7 +2209,7 @@
+ 
+                     if (e->arg >=3D MUL=
+TI_N)
+                     {
+-                        struct event_arg *ev_=
+arg =3D (struct event_arg *)e->arg;
++                        const struct e=
+vent_arg *ev_arg =3D (struct event_arg *)e->arg;
+                         i=
+f (ev_arg->type !=3D EVENT_ARG_LINK_SOCKET)
+                         {
+    =
+                         c->c2=2Eevent_set_status =3D ES_ERROR;
+diff --git =
+a/src/openvpn/init=2Ec b/src/openvpn/init=2Ec
+index 66bae34=2E=2Ea8e041d 10=
+0644
+--- a/src/openvpn/init=2Ec
++++ b/src/openvpn/init=2Ec
+@@ -321,8 +321,8=
+ @@
+ management_callback_remote_entry_count(void *arg)
+ {
+     ASSERT(arg);=
+
+-    struct context *c =3D (struct context *)arg;
+-    struct connection_l=
+ist *l =3D c->options=2Econnection_list;
++    const struct context *c =3D (=
+struct context *)arg;
++    const struct connection_list *l =3D c->options=
+=2Econnection_list;
+ 
+     return l->len;
+ }
+@@ -339,7 +339,7 @@
+ 
+     if =
+(l->len > 0 && index < (unsigned int)l->len)
+     {
+-        struct connect=
+ion_entry *ce =3D l->array[index];
++        const struct connection_entry *=
+ce =3D l->array[index];
+         const char *proto =3D proto2ascii(ce->prot=
+o, ce->af, false);
+         const char *status =3D (ce->flags & CE_DISABLED=
+) ? "disabled" : "enabled";
+ 
+@@ -517,7 +517,7 @@
+ {
+     struct connection=
+_list *l =3D c->options=2Econnection_list;
+     bool ce_defined;
+-    struc=
+t connection_entry *ce;
++    const struct connection_entry *ce;
+     int n_=
+cycles =3D 0;
+ 
+     do
+@@ -1563,10 +1563,10 @@
+     /* Tell management int=
+erface that we initialized */
+     if (management)
+     {
+-        in_addr_=
+t *tun_local =3D NULL;
+-        struct in6_addr *tun_local6 =3D NULL;
++    =
+    const in_addr_t *tun_local =3D NULL;
++        const struct in6_addr *tu=
+n_local6 =3D NULL;
+         struct openvpn_sockaddr local, remote;
+-       =
+ struct link_socket_actual *actual;
++        const struct link_socket_actua=
+l *actual;
+         socklen_t sa_len =3D sizeof(local);
+         const char=
+ *detail =3D "SUCCESS";
+         if (flags & ISC_ERRORS)
+@@ -4282,7 +4282,7=
+ @@
+     /* On some newer Android handsets, changing to a different network=
+
+      * often does not trigger a TCP reset but continue using the old
+    =
+  * connection (e=2Eg=2E using mobile connection when WiFi becomes availabl=
+e */
+-    struct link_socket_info *lsi =3D get_link_socket_info(c);
++    co=
+nst struct link_socket_info *lsi =3D get_link_socket_info(c);
+     if (lsi =
+&& proto_is_tcp(lsi->proto) && !samenetwork)
+     {
+         return -2;
+dif=
+f --git a/src/openvpn/list=2Ec b/src/openvpn/list=2Ec
+index 9e80761=2E=2Ee5=
+1dcd0 100644
+--- a/src/openvpn/list=2Ec
++++ b/src/openvpn/list=2Ec
+@@ -167,=
+7 +167,7 @@
+ hash_remove_by_value(struct hash *hash, void *value)
+ {
+     s=
+truct hash_iterator hi;
+-    struct hash_element *he;
++    const struct has=
+h_element *he;
+ 
+     hash_iterator_init(hash, &hi);
+     while ((he =3D ha=
+sh_iterator_next(&hi)))
+diff --git a/src/openvpn/manage=2Ec b/src/openvpn/m=
+anage=2Ec
+index c082f51=2E=2E604bbcd 100644
+--- a/src/openvpn/manage=2Ec
+++=
++ b/src/openvpn/manage=2Ec
+@@ -3820,7 +3820,7 @@
+ {
+     int ok;
+     char =
+*result =3D NULL;
+-    struct buffer *buf;
++    const struct buffer *buf;
+ =
+
+     ok =3D management_query_multiline(man, b64_data, prompt, cmd, state, =
+input);
+     if (ok && buffer_list_defined(*input))
+@@ -3849,7 +3849,7 @@
+ =
+{
+     int ok;
+     char *result =3D NULL;
+-    struct buffer *buf;
++    co=
+nst struct buffer *buf;
+ 
+     ok =3D management_query_multiline(man, b64_d=
+ata, prompt, cmd, state, input);
+     if (ok && buffer_list_defined(*input)=
+)
+diff --git a/src/openvpn/misc=2Ec b/src/openvpn/misc=2Ec
+index a8c88c9=2E=
+=2E54af890 100644
+--- a/src/openvpn/misc=2Ec
++++ b/src/openvpn/misc=2Ec
+@@ =
+-131,7 +131,7 @@
+     struct auth_challenge_info *ac;
+     const int len =
+=3D strlen(auth_challenge);
+     char *work =3D (char *)gc_malloc(len + 1, =
+false, gc);
+-    char *cp;
++    const char *cp;
+ 
+     struct buffer b;
+   =
+  buf_set_read(&b, (const uint8_t *)auth_challenge, len);
+diff --git a/src/=
+openvpn/mss=2Ec b/src/openvpn/mss=2Ec
+index 14112b4=2E=2E36bbb43 100644
+---=
+ a/src/openvpn/mss=2Ec
++++ b/src/openvpn/mss=2Ec
+@@ -65,7 +65,7 @@
+        =
+ struct buffer newbuf =3D *buf;
+         if (buf_advance(&newbuf, hlen))
+  =
+       {
+-            struct openvpn_tcphdr *tc =3D (struct openvpn_tcphdr =
+*)BPTR(&newbuf);
++            const struct openvpn_tcphdr *tc =3D (struct o=
+penvpn_tcphdr *)BPTR(&newbuf);
+             if (tc->flags & OPENVPN_TCPH_SY=
+N_MASK)
+             {
+                 mss_fixup_dowork(&newbuf, maxmss);
+=
+@@ -122,7 +122,7 @@
+     newbuf =3D *buf;
+     if (buf_advance(&newbuf, 40)=
+ && BLENZ(&newbuf) >=3D sizeof(struct openvpn_tcphdr))
+     {
+-        stru=
+ct openvpn_tcphdr *tc =3D (struct openvpn_tcphdr *)BPTR(&newbuf);
++        =
+const struct openvpn_tcphdr *tc =3D (struct openvpn_tcphdr *)BPTR(&newbuf);=
+
+         if (tc->flags & OPENVPN_TCPH_SYN_MASK)
+         {
+             ms=
+s_fixup_dowork(&newbuf, maxmss - 20);
+diff --git a/src/openvpn/mtcp=2Ec b/s=
+rc/openvpn/mtcp=2Ec
+index f000283=2E=2E5d88f8a 100644
+--- a/src/openvpn/mtc=
+p=2Ec
++++ b/src/openvpn/mtcp=2Ec
+@@ -130,7 +130,7 @@
+ void
+ multi_tcp_deref=
+erence_instance(struct multi_io *multi_io, struct multi_instance *mi)
+ {
+- =
+   struct link_socket *sock =3D mi->context=2Ec2=2Elink_sockets[0];
++    co=
+nst struct link_socket *sock =3D mi->context=2Ec2=2Elink_sockets[0];
+     i=
+f (sock && mi->socket_set_called)
+     {
+         event_del(multi_io->es, s=
+ocket_event_handle(sock));
+diff --git a/src/openvpn/mudp=2Ec b/src/openvpn/=
+mudp=2Ec
+index 632b064=2E=2E6d9c181 100644
+--- a/src/openvpn/mudp=2Ec
++++ b=
+/src/openvpn/mudp=2Ec
+@@ -102,7 +102,7 @@
+     verdict =3D tls_pre_decrypt_=
+lite(tas, state, &m->top=2Ec2=2Efrom, &m->top=2Ec2=2Ebuf);
+ 
+     uint8_t *=
+hmac_key =3D m->top=2Ec2=2Esession_id_key;
+-    struct openvpn_sockaddr *fr=
+om =3D &m->top=2Ec2=2Efrom=2Edest;
++    const struct openvpn_sockaddr *from=
+ =3D &m->top=2Ec2=2Efrom=2Edest;
+     int handwindow =3D m->top=2Eoptions=
+=2Ehandshake_window;
+ 
+     if (verdict =3D=3D VERDICT_VALID_RESET_V3 || ve=
+rdict =3D=3D VERDICT_VALID_RESET_V2)
+diff --git a/src/openvpn/multi=2Ec b/s=
+rc/openvpn/multi=2Ec
+index 20b4f14=2E=2E60a5148 100644
+--- a/src/openvpn/mu=
+lti=2Ec
++++ b/src/openvpn/multi=2Ec
+@@ -86,7 +86,7 @@
+     struct gc_arena =
+gc =3D gc_new();
+     struct env_set *es;
+     bool ret =3D true;
+-    stru=
+ct plugin_list *plugins;
++    const struct plugin_list *plugins;
+ 
+     /* =
+get environmental variable source */
+     if (mi && mi->context=2Ec2=2Ees)
+=
+@@ -1793,7 +1793,7 @@
+      * Push the first cipher from --data-ciphers to =
+the client that
+      * the client announces to be supporting=2E
+      */
+-=
+    char *push_cipher =3D
++    const char *push_cipher =3D
+         ncp_get=
+_best_cipher(o->ncp_ciphers, peer_info, tls_multi->remote_ciphername, &o->g=
+c);
+     if (push_cipher)
+     {
+@@ -1924,7 +1924,7 @@
+ static enum client_=
+connect_return
+ ccs_test_deferred_ret_file(struct multi_instance *mi)
+ {
+- =
+   struct client_connect_defer_state *ccs =3D &(mi->client_connect_defer_st=
+ate);
++    const struct client_connect_defer_state *ccs =3D &(mi->client_co=
+nnect_defer_state);
+     FILE *fp =3D fopen(ccs->deferred_ret_file, "r");
+ =
+    if (!fp)
+     {
+@@ -2165,7 +2165,7 @@
+ {
+     ASSERT(mi);
+     ASSERT(o=
+ption_types_found);
+-    struct client_connect_defer_state *ccs =3D &(mi->c=
+lient_connect_defer_state);
++    const struct client_connect_defer_state *c=
+cs =3D &(mi->client_connect_defer_state);
+     enum client_connect_return r=
+et =3D CC_RET_SKIPPED;
+ 
+     ret =3D ccs_test_deferred_ret_file(mi);
+@@ -2=
+567,7 +2567,7 @@
+ override_locked_username(struct multi_instance *mi)
+ {
+  =
+   struct tls_multi *multi =3D mi->context=2Ec2=2Etls_multi;
+-    struct op=
+tions *options =3D &mi->context=2Eoptions;
++    const struct options *optio=
+ns =3D &mi->context=2Eoptions;
+     struct tls_session *session =3D &multi-=
+>session[TM_ACTIVE];
+ 
+     if (!multi->locked_username)
+@@ -2986,7 +2986,7=
+ @@
+     {
+ #if defined(ENABLE_ASYNC_PUSH)
+         bool was_unauthenticate=
+d =3D true;
+-        struct key_state *ks =3D NULL;
++        const struct k=
+ey_state *ks =3D NULL;
+         if (mi->context=2Ec2=2Etls_multi)
+         =
+{
+             ks =3D &mi->context=2Ec2=2Etls_multi->session[TM_ACTIVE]=2Ek=
+ey[KS_PRIMARY];
+@@ -3919,7 +3919,7 @@
+ static int
+ management_callback_n_cl=
+ients(void *arg)
+ {
+-    struct multi_context *m =3D (struct multi_context =
+*)arg;
++    const struct multi_context *m =3D (struct multi_context *)arg;
+=
+     return m->n_clients;
+ }
+ 
+@@ -4430,7 +4430,7 @@
+ bool
+ multi_check_pus=
+h_ifconfig_extra_route(struct multi_instance *mi, in_addr_t dest)
+ {
+-    s=
+truct options *o =3D &mi->context=2Eoptions;
++    const struct options *o =
+=3D &mi->context=2Eoptions;
+     in_addr_t local_addr, local_netmask;
+ 
+   =
+  if (!o->ifconfig_local || !o->ifconfig_remote_netmask)
+@@ -4452,7 +4452,7=
+ @@
+ multi_check_push_ifconfig_ipv6_extra_route(struct multi_instance *mi,
+=
+                                            struct in6_addr *dest)
+ {
+-    =
+struct options *o =3D &mi->context=2Eoptions;
++    const struct options *o =
+=3D &mi->context=2Eoptions;
+ 
+     if (!o->ifconfig_ipv6_local || !o->ifcon=
+fig_ipv6_netbits)
+     {
+diff --git a/src/openvpn/networking_sitnl=2Ec b/sr=
+c/openvpn/networking_sitnl=2Ec
+index b3f8e2b=2E=2Ee6e72d0 100644
+--- a/src/=
+openvpn/networking_sitnl=2Ec
++++ b/src/openvpn/networking_sitnl=2Ec
+@@ -462=
+,7 +462,7 @@
+     struct rtattr *rta =3D RTM_RTA(r);
+     size_t len =3D n-=
+>nlmsg_len - NLMSG_LENGTH(sizeof(*r));
+     unsigned int table, ifindex =3D=
+ 0;
+-    void *gw =3D NULL;
++    const void *gw =3D NULL;
+ 
+     /* filter-=
+out non-zero dst prefixes */
+     if (res->default_only && r->rtm_dst_len !=
+=3D 0)
+@@ -1179,7 +1179,7 @@
+ net_route_v4_add(openvpn_net_ctx_t *ctx, cons=
+t in_addr_t *dst, int prefixlen, const in_addr_t *gw,
+                  con=
+st char *iface, uint32_t table, int metric)
+ {
+-    in_addr_t *dst_ptr =3D =
+NULL, *gw_ptr =3D NULL;
++    const in_addr_t *dst_ptr =3D NULL, *gw_ptr =3D=
+ NULL;
+     in_addr_t dst_be =3D 0, gw_be =3D 0;
+     char dst_str[INET_ADD=
+RSTRLEN];
+     char gw_str[INET_ADDRSTRLEN];
+@@ -1326,7 +1326,7 @@
+ #if def=
+ined(ENABLE_DCO)
+     if (arg && (strcmp(type, OVPN_FAMILY_NAME) =3D=3D 0))=
+
+     {
+-        dco_context_t *dco =3D arg;
++        const dco_context_t *=
+dco =3D arg;
+         struct rtattr *data =3D SITNL_NEST(&req=2En, sizeof(r=
+eq), IFLA_INFO_DATA);
+ 
+         /* the netlink format is uint8_t for this =
+and using something
+diff --git a/src/openvpn/options=2Ec b/src/openvpn/opti=
+ons=2Ec
+index 1fc38a6=2E=2Eb210a5d 100644
+--- a/src/openvpn/options=2Ec
++++=
+ b/src/openvpn/options=2Ec
+@@ -1696,7 +1696,7 @@
+ 
+     for (int i =3D 0; i=
+ < ce->local_list->len; i++)
+     {
+-        struct local_entry *le =3D ce-=
+>local_list->array[i];
++        const struct local_entry *le =3D ce->local_=
+list->array[i];
+ 
+         if (proto_is_net(le->proto) && string_defined_eq=
+ual(le->local, ce->remote)
+             && string_defined_equal(le->port, c=
+e->remote_port))
+@@ -7692,7 +7692,7 @@
+ #ifdef ENABLE_PKCS11
+     else if (=
+streq(p[0], "show-pkcs11-ids") && !p[3])
+     {
+-        char *provider =3D=
+ p[1];
++        const char *provider =3D p[1];
+         bool cert_private =
+=3D (p[2] =3D=3D NULL ? false : (atoi_warn(p[2], msglevel) !=3D 0));
+ 
+ #if=
+def DEFAULT_PKCS11_MODULE
+diff --git a/src/openvpn/options_parse=2Ec b/src/=
+openvpn/options_parse=2Ec
+index a8c4aee=2E=2E88ab4d2 100644
+--- a/src/openv=
+pn/options_parse=2Ec
++++ b/src/openvpn/options_parse=2Ec
+@@ -268,7 +268,7 @=
+@
+     while (in_src_get(is, line, sizeof(line)))
+     {
+         (*num_lin=
+es)++;
+-        char *line_ptr =3D line;
++        const char *line_ptr =3D =
+line;
+         /* Remove leading spaces */
+         while (isspace(*line_pt=
+r))
+         {
+diff --git a/src/openvpn/options_util=2Ec b/src/openvpn/opti=
+ons_util=2Ec
+index d72ea25c=2E=2E779c38e 100644
+--- a/src/openvpn/options_u=
+til=2Ec
++++ b/src/openvpn/options_util=2Ec
+@@ -273,7 +273,7 @@
+         ret=
+urn true;
+     }
+ 
+-    struct pull_filter *f;
++    const struct pull_filte=
+r *f;
+ 
+     for (f =3D o->pull_filter_list->head; f; f =3D f->next)
+     {=
+
+diff --git a/src/openvpn/pool=2Ec b/src/openvpn/pool=2Ec
+index ff74e7c=2E=
+=2E80dec6c 100644
+--- a/src/openvpn/pool=2Ec
++++ b/src/openvpn/pool=2Ec
+@@ =
+-63,7 +63,7 @@
+ 
+     for (i =3D 0; i < pool->size; ++i)
+     {
+-        st=
+ruct ifconfig_pool_entry *ipe =3D &pool->list[i];
++        const struct ifc=
+onfig_pool_entry *ipe =3D &pool->list[i];
+         if (!ipe->in_use)
+      =
+   {
+             /*
+diff --git a/src/openvpn/proxy=2Ec b/src/openvpn/proxy=
+=2Ec
+index 9acb2fa=2E=2Ee0700aa 100644
+--- a/src/openvpn/proxy=2Ec
++++ b/sr=
+c/openvpn/proxy=2Ec
+@@ -703,7 +703,7 @@
+ #if PROXY_DIGEST_AUTH
+         els=
+e if (p->auth_method =3D=3D HTTP_AUTH_DIGEST && !processed)
+         {
+-   =
+         char *pa =3D p->proxy_authenticate;
++            const char *pa =
+=3D p->proxy_authenticate;
+             const int method =3D p->auth_method=
+;
+             ASSERT(pa);
+ 
+diff --git a/src/openvpn/push=2Ec b/src/openvp=
+n/push=2Ec
+index 5b15f71=2E=2Efa7bf1e 100644
+--- a/src/openvpn/push=2Ec
++++=
+ b/src/openvpn/push=2Ec
+@@ -271,8 +271,8 @@
+     }
+ #ifdef ENABLE_MANAGEMEN=
+T
+     struct tls_session *session =3D &c->c2=2Etls_multi->session[TM_ACTIV=
+E];
+-    struct man_def_auth_context *mda =3D session->opt->mda_context;
+- =
+   struct env_set *es =3D session->opt->es;
++    const struct man_def_auth_=
+context *mda =3D session->opt->mda_context;
++    const struct env_set *es =
+=3D session->opt->es;
+     unsigned int mda_key_id =3D get_primary_key(c->c=
+2=2Etls_multi)->mda_key_id;
+ 
+     management_notify_client_cr_response(mda=
+_key_id, mda, es, m);
+@@ -917,7 +917,7 @@
+ push_options(struct options *o, =
+char **p, msglvl_t msglevel, struct gc_arena *gc)
+ {
+     const char **argv=
+ =3D make_extended_arg_array(p, false, gc);
+-    char *opt =3D print_argv(a=
+rgv, gc, 0);
++    const char *opt =3D print_argv(argv, gc, 0);
+     push_op=
+tion(o, opt, msglevel);
+ }
+ 
+@@ -1199,7 +1199,7 @@
+                     /* =
+parse route-ipv6 arguments */
+                     if (get_ipv6_addr(p[1], =
+&network, &netbits, D_ROUTE_DEBUG))
+                     {
+-               =
+         struct iroute_ipv6 *ir;
++                        const struct irou=
+te_ipv6 *ir;
+ 
+                         /* does this route-ipv6 match an ir=
+oute-ipv6? */
+                         for (ir =3D o->iroutes_ipv6; ir !=3D=
+ NULL; ir =3D ir->next)
+diff --git a/src/openvpn/route=2Ec b/src/openvpn/ro=
+ute=2Ec
+index 6dbe3ec=2E=2E03a2526 100644
+--- a/src/openvpn/route=2Ec
++++ b=
+/src/openvpn/route=2Ec
+@@ -667,7 +667,7 @@
+ 
+     /* parse the routes from =
+opt to rl */
+     {
+-        struct route_option *ro;
++        const struct=
+ route_option *ro;
+         for (ro =3D opt->routes; ro; ro =3D ro->next)
+ =
+        {
+             struct addrinfo *netlist =3D NULL;
+@@ -679,7 +679,7 =
+@@
+             }
+             else
+             {
+-                struct =
+addrinfo *curele;
++                const struct addrinfo *curele;
+         =
+        for (curele =3D netlist; curele; curele =3D curele->ai_next)
+      =
+           {
+                     struct route_ipv4 *new;
+@@ -799,7 +799,7 =
+@@
+     need_remote_ipv6_route =3D false;
+ 
+     {
+-        struct route_ip=
+v6_option *ro6;
++        const struct route_ipv6_option *ro6;
+         for =
+(ro6 =3D opt6->routes_ipv6; ro6; ro6 =3D ro6->next)
+         {
+            =
+ struct route_ipv6 *r6;
+@@ -1187,7 +1187,7 @@
+ {
+     if (rl6 && (rl6->ifla=
+gs & RL_ROUTES_ADDED))
+     {
+-        struct route_ipv6 *r6;
++        cons=
+t struct route_ipv6 *r6;
+         for (r6 =3D rl6->routes_ipv6; r6; r6 =3D =
+r6->next)
+         {
+             delete_route_ipv6(r6, tt, es, ctx);
+@@ -1=
+226,7 +1226,7 @@
+ void
+ print_route_options(const struct route_option_list =
+*rol, msglvl_t msglevel)
+ {
+-    struct route_option *ro;
++    const struct=
+ route_option *ro;
+     if (rol->flags & RG_ENABLE)
+     {
+         msg(msg=
+level, "  [redirect_default_gateway local=3D%d]", (rol->flags & RG_LOCAL) !=
+=3D 0);
+@@ -1335,7 +1335,7 @@
+ setenv_routes(struct env_set *es, const stru=
+ct route_list *rl)
+ {
+     int i =3D 1;
+-    struct route_ipv4 *r;
++    con=
+st struct route_ipv4 *r;
+     for (r =3D rl->routes; r; r =3D r->next)
+    =
+ {
+         setenv_route(es, r, i++);
+@@ -1372,7 +1372,7 @@
+ setenv_routes_=
+ipv6(struct env_set *es, const struct route_ipv6_list *rl6)
+ {
+     int i =
+=3D 1;
+-    struct route_ipv6 *r6;
++    const struct route_ipv6 *r6;
+     f=
+or (r6 =3D rl6->routes_ipv6; r6; r6 =3D r6->next)
+     {
+         setenv_ro=
+ute_ipv6(es, r6, i++);
+@@ -2423,7 +2423,7 @@
+          */
+         if (rl &=
+& tt->did_ifconfig_setup)
+         {
+-            struct route_ipv4 *r;
++  =
+          const struct route_ipv4 *r;
+             for (r =3D rl->routes, l=
+en =3D 0; r; r =3D r->next, ++len)
+             {
+                 test_rou=
+te_helper(&ret, &count, &good, &ambig, adapters, r->gateway);
+@@ -3110,7 +3=
+110,8 @@
+     /* scan adapter list */
+     if (rgi->flags & RGI_ADDR_DEFINE=
+D)
+     {
+-        struct ifreq *ifr, *ifend;
++        const struct ifreq *=
+ifr;
++        const struct ifreq *ifend;
+         in_addr_t addr, netmask;
+=
+         struct ifreq ifreq;
+         struct ifconf ifc;
+diff --git a/src/o=
+penvpn/socket=2Ec b/src/openvpn/socket=2Ec
+index 47edbdb=2E=2E50126bf 10064=
+4
+--- a/src/openvpn/socket=2Ec
++++ b/src/openvpn/socket=2Ec
+@@ -393,7 +393,=
+7 @@
+ 
+             for (int j =3D 0; j < ce->local_list->len; j++)
+       =
+      {
+-                struct local_entry *le =3D ce->local_list->array[j=
+];
++                const struct local_entry *le =3D ce->local_list->array[=
+j];
+ 
+                 if (!le->local)
+                 {
+@@ -898,12 +898,1=
+0 @@
+      * What is the correct way to deal with it?
+      */
+ 
+-    struc=
+t addrinfo *cur;
+-
+     ASSERT(local);
+ 
+-
+     /* find the first addrinfo =
+with correct ai_family */
++    const struct addrinfo *cur;
+     for (cur =
+=3D local; cur; cur =3D cur->ai_next)
+     {
+         if (cur->ai_family =
+=3D=3D ai_family)
+@@ -1490,7 +1488,7 @@
+         /* Socket is always bound =
+on the first matching address,
+          * For bound sockets with no remote=
+ addr this is the element of
+          * the list */
+-        struct addrin=
+fo *cur;
++        const struct addrinfo *cur;
+         for (cur =3D sock->i=
+nfo=2Elsa->bind_local; cur; cur =3D cur->ai_next)
+         {
+             i=
+f (!ai_family || ai_family =3D=3D cur->ai_family)
+@@ -1621,7 +1619,7 @@
+ cr=
+eate_socket_dco_win(struct context *c, struct link_socket *sock, struct sig=
+nal_info *sig_info)
+ {
+     /* in P2P mode we must have remote resolved at =
+this point */
+-    struct addrinfo *remoteaddr =3D sock->info=2Elsa->curren=
+t_remote;
++    const struct addrinfo *remoteaddr =3D sock->info=2Elsa->curr=
+ent_remote;
+     if ((c->options=2Emode =3D=3D MODE_POINT_TO_POINT) && (!re=
+moteaddr))
+     {
+         return;
+@@ -1910,7 +1908,7 @@
+                  =
+             const struct link_socket_actual *from_addr)
+ {
+     struct gc_=
+arena gc =3D gc_new();
+-    struct addrinfo *ai;
++    const struct addrinfo=
+ *ai;
+ 
+     switch (from_addr->dest=2Eaddr=2Esa=2Esa_family)
+     {
+diff -=
+-git a/src/openvpn/socket=2Eh b/src/openvpn/socket=2Eh
+index 1a532e1=2E=2E8=
+9465bc 100644
+--- a/src/openvpn/socket=2Eh
++++ b/src/openvpn/socket=2Eh
+@@ =
+-761,7 +761,7 @@
+ {
+     if (sock && ipbuf)
+     {
+-        struct openvpn_=
+iphdr *iph =3D (struct openvpn_iphdr *)BPTR(ipbuf);
++        const struct o=
+penvpn_iphdr *iph =3D (struct openvpn_iphdr *)BPTR(ipbuf);
+         sock->p=
+tos =3D iph->tos;
+         sock->ptos_defined =3D true;
+     }
+diff --git a=
+/src/openvpn/ssl=2Ec b/src/openvpn/ssl=2Ec
+index d5bd602=2E=2E5f5d1f9 10064=
+4
+--- a/src/openvpn/ssl=2Ec
++++ b/src/openvpn/ssl=2Ec
+@@ -1488,7 +1488,7 @@=
+
+ static bool
+ generate_key_expansion(struct tls_multi *multi, struct key_s=
+tate *ks, struct tls_session *session)
+ {
+-    struct key_ctx_bi *key =3D &=
+ks->crypto_options=2Ekey_ctx_bi;
++    const struct key_ctx_bi *key =3D &ks-=
+>crypto_options=2Ekey_ctx_bi;
+     bool ret =3D false;
+     struct key2 key=
+2;
+ 
+@@ -1750,7 +1750,7 @@
+ static void
+ flush_payload_buffer(struct key_st=
+ate *ks)
+ {
+-    struct buffer *b;
++    const struct buffer *b;
+ 
+     whil=
+e ((b =3D buffer_list_peek(ks->paybuf)))
+     {
+@@ -2779,7 +2779,7 @@
+     =
+/* Outgoing Ciphertext to reliable buffer */
+     if (ks->state >=3D S_STAR=
+T)
+     {
+-        struct buffer *buf =3D reliable_get_buf_output_sequenced=
+(ks->send_reliable);
++        const struct buffer *buf =3D reliable_get_buf=
+_output_sequenced(ks->send_reliable);
+         if (buf)
+         {
+        =
+     if (!write_outgoing_tls_ciphertext(session, continue_tls_process))
+@@ =
+-2848,7 +2848,7 @@
+     {
+         int opcode;
+ 
+-        struct buffer *bu=
+f =3D reliable_send(ks->send_reliable, &opcode);
++        const struct buff=
+er *buf =3D reliable_send(ks->send_reliable, &opcode);
+         ASSERT(buf)=
+;
+         struct buffer b =3D *buf;
+         INCR_SENT;
+@@ -3211,7 +3211,7=
+ @@
+ static void
+ check_session_buf_not_used(struct buffer *to_link, struct=
+ tls_session *session)
+ {
+-    uint8_t *dataptr =3D to_link->data;
++    con=
+st uint8_t *dataptr =3D to_link->data;
+     if (!dataptr)
+     {
+         r=
+eturn;
+@@ -3233,7 +3233,7 @@
+ 
+     for (int i =3D 0; i < KS_SIZE; i++)
+   =
+  {
+-        struct key_state *ks =3D &session->key[i];
++        const stru=
+ct key_state *ks =3D &session->key[i];
+         if (ks->state =3D=3D S_UNDE=
+F)
+         {
+             continue;
+@@ -3304,7 +3304,7 @@
+     {
+         =
+struct tls_session *session =3D &multi->session[i];
+         struct key_sta=
+te *ks =3D &session->key[KS_PRIMARY];
+-        struct key_state *ks_lame =
+=3D &session->key[KS_LAME_DUCK];
++        const struct key_state *ks_lame =
+=3D &session->key[KS_LAME_DUCK];
+ 
+         /* set initial remote address=
+=2E This triggers connecting with that
+          * session=2E So we only do=
+ that if the TM_ACTIVE session is not
+@@ -3505,7 +3505,7 @@
+ 
+     for (int=
+ i =3D 0; i < KEY_SCAN_SIZE; ++i)
+     {
+-        struct key_state *ks =3D =
+get_key_scan(multi, i);
++        const struct key_state *ks =3D get_key_sca=
+n(multi, i);
+         if (ks->key_id !=3D key_id)
+         {
+             c=
+ontinue;
+@@ -4070,7 +4070,7 @@
+ void
+ tls_prepend_opcode_v1(const struct tl=
+s_multi *multi, struct buffer *buf)
+ {
+-    struct key_state *ks =3D multi-=
+>save_ks;
++    const struct key_state *ks =3D multi->save_ks;
+ 
+     msg(D_=
+TLS_DEBUG, __func__);
+ 
+@@ -4084,7 +4084,7 @@
+ void
+ tls_prepend_opcode_v2(=
+const struct tls_multi *multi, struct buffer *buf)
+ {
+-    struct key_state=
+ *ks =3D multi->save_ks;
++    const struct key_state *ks =3D multi->save_ks=
+;
+     uint32_t peer;
+ 
+     msg(D_TLS_DEBUG, __func__);
+diff --git a/src/o=
+penvpn/ssl_mbedtls=2Ec b/src/openvpn/ssl_mbedtls=2Ec
+index 6d7ac04=2E=2Efaf=
+5a27 100644
+--- a/src/openvpn/ssl_mbedtls=2Ec
++++ b/src/openvpn/ssl_mbedtls=
+=2Ec
+@@ -730,7 +730,7 @@
+ static inline size_t
+ external_key_len(void *vctx=
+)
+ {
+-    struct external_context *const ctx =3D vctx;
++    const struct ex=
+ternal_context *const ctx =3D vctx;
+ 
+     return ctx->signature_length;
+ }=
+
+diff --git a/src/openvpn/ssl_verify=2Ec b/src/openvpn/ssl_verify=2Ec
+index=
+ 162f68f=2E=2E063fa5d 100644
+--- a/src/openvpn/ssl_verify=2Ec
++++ b/src/ope=
+nvpn/ssl_verify=2Ec
+@@ -409,7 +409,7 @@
+                     const char *su=
+bject, const struct x509_track *x509_track)
+ {
+     char envname[64];
+-    =
+char *serial =3D NULL;
++    const char *serial =3D NULL;
+     struct gc_are=
+na gc =3D gc_new();
+ 
+     /* Save X509 fields in environment */
+@@ -699,7 =
++699,7 @@
+                 goto cleanup;
+         }
+ 
+-        struct verif=
+y_hash_list *current_hash =3D opt->verify_hash;
++        const struct verif=
+y_hash_list *current_hash =3D opt->verify_hash;
+ 
+         while (current_h=
+ash)
+         {
+@@ -1532,7 +1532,7 @@
+ verify_user_pass_management(struct t=
+ls_session *session, const struct user_pass *up)
+ {
+     int retval =3D KMD=
+A_ERROR;
+-    struct key_state *ks =3D &session->key[KS_PRIMARY]; /* primar=
+y key */
++    const struct key_state *ks =3D &session->key[KS_PRIMARY]; /* =
+primary key */
+ 
+     /* set username/password in private env space */
+    =
+ setenv_str(session->opt->es, "password", up->password);
+diff --git a/src/o=
+penvpn/tun=2Ec b/src/openvpn/tun=2Ec
+index f2a4394=2E=2Eaf48921 100644
+--- =
+a/src/openvpn/tun=2Ec
++++ b/src/openvpn/tun=2Ec
+@@ -871,7 +871,7 @@
+       =
+   */
+         if (strict_warn)
+         {
+-            struct addrinfo *cu=
+rele;
++            const struct addrinfo *curele;
+             ifconfig_san=
+ity_check(tun_p2p, tt->remote_netmask);
+ 
+             /*
+@@ -1726,7 +1726,=
+7 @@
+     {
+         u_int32_t type;
+         struct iovec iv[2];
+-        =
+struct ip *iph =3D (struct ip *)buf;
++        const struct ip *iph =3D (str=
+uct ip *)buf;
+ 
+         if (iph->ip_v =3D=3D 6)
+         {
+@@ -3414,7 +341=
+4,7 @@
+         SP_DEVINFO_DATA device_info_data;
+         BOOL res;
+      =
+   HKEY dev_key;
+-        char net_cfg_instance_id_string[] =3D "NetCfgInst=
+anceId";
++        const char net_cfg_instance_id_string[] =3D "NetCfgInstan=
+ceId";
+         BYTE net_cfg_instance_id[256];
+         char device_instanc=
+e_id[256];
+         DWORD len;
+@@ -3542,7 +3542,7 @@
+         HKEY unit_key=
+;
+         char component_id_string[] =3D "ComponentId";
+         char comp=
+onent_id[256];
+-        char net_cfg_instance_id_string[] =3D "NetCfgInstan=
+ceId";
++        const char net_cfg_instance_id_string[] =3D "NetCfgInstance=
+Id";
+         BYTE net_cfg_instance_id[256];
+         DWORD data_type;
+ 
+di=
+ff --git a/src/openvpn/win32=2Ec b/src/openvpn/win32=2Ec
+index ade7ec0=2E=
+=2E81437c1 100644
+--- a/src/openvpn/win32=2Ec
++++ b/src/openvpn/win32=2Ec
+@=
+@ -889,7 +889,7 @@
+ 
+     if (es)
+     {
+-        struct env_item *e;
++    =
+    const struct env_item *e;
+         char *ret;
+         char *p;
+       =
+  size_t nchars =3D 1;
+diff --git a/src/openvpnmsica/msica_arg=2Ec b/src/op=
+envpnmsica/msica_arg=2Ec
+index a334710=2E=2Ed763d93 100644
+--- a/src/openvp=
+nmsica/msica_arg=2Ec
++++ b/src/openvpnmsica/msica_arg=2Ec
+@@ -92,7 +92,7 @@=
+
+ {
+     /* Count required space=2E */
+     size_t size =3D 2 /*x + zero-te=
+rminator*/;
+-    for (struct msica_arg *p =3D seq->head; p !=3D NULL; p =3D=
+ p->next)
++    for (const struct msica_arg *p =3D seq->head; p !=3D NULL; p=
+ =3D p->next)
+     {
+         size +=3D wcslen(p->val) + 1 /*space delimite=
+r|zero-terminator*/;
+     }
+@@ -119,7 +119,7 @@
+ 
+     /* Join=2E */
+     L=
+PWSTR s =3D str + 1 /*x*/;
+-    for (struct msica_arg *p =3D seq->head; p !=
+=3D NULL; p =3D p->next)
++    for (const struct msica_arg *p =3D seq->head;=
+ p !=3D NULL; p =3D p->next)
+     {
+         /* Convert zero-terminator int=
+o space delimiter=2E */
+         s[0] =3D L' ';
+diff --git a/src/openvpnmsi=
+ca/openvpnmsica=2Ec b/src/openvpnmsica/openvpnmsica=2Ec
+index 95e457c=2E=2E=
+a861e8a 100644
+--- a/src/openvpnmsica/openvpnmsica=2Ec
++++ b/src/openvpnmsi=
+ca/openvpnmsica=2Ec
+@@ -196,7 +196,7 @@
+ 
+     /* Count adapters=2E */
+    =
+ size_t adapter_count =3D 0;
+-    for (struct tap_adapter_node *pAdapter =
+=3D pAdapterList; pAdapter; pAdapter =3D pAdapter->pNext)
++    for (const s=
+truct tap_adapter_node *pAdapter =3D pAdapterList; pAdapter; pAdapter =3D p=
+Adapter->pNext)
+     {
+         adapter_count++;
+     }
+diff --git a/src/op=
+envpnserv/interactive=2Ec b/src/openvpnserv/interactive=2Ec
+index 32c1b9c=
+=2E=2Ea9e9665 100644
+--- a/src/openvpnserv/interactive=2Ec
++++ b/src/openvp=
+nserv/interactive=2Ec
+@@ -2685,7 +2685,7 @@
+     unsigned n =3D 0;
+     for=
+ (size_t i =3D 0; i < _countof(data); ++i)
+     {
+-        nrpt_exclude_dat=
+a_t *d =3D &data[i];
++        const nrpt_exclude_data_t *d =3D &data[i];
+  =
+       if (d->domains_size =3D=3D 0)
+         {
+             break;
+diff --=
+git a/src/plugins/auth-pam/auth-pam=2Ec b/src/plugins/auth-pam/auth-pam=2Ec=
+
+index 3b7bcc2=2E=2E948b6af 100644
+--- a/src/plugins/auth-pam/auth-pam=2Ec
+=
++++ b/src/plugins/auth-pam/auth-pam=2Ec
+@@ -526,7 +526,7 @@
+ openvpn_plugin=
+_func_v1(openvpn_plugin_handle_t handle, const int type, const char *argv[]=
+,
+                        const char *envp[])
+ {
+-    struct auth_pam_conte=
+xt *context =3D (struct auth_pam_context *)handle;
++    const struct auth_p=
+am_context *context =3D (struct auth_pam_context *)handle;
+ 
+     if (type =
+=3D=3D OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY && context->foreground_fd >=3D =
+0)
+     {
+diff --git a/src/tapctl/main=2Ec b/src/tapctl/main=2Ec
+index 6a4a=
+240=2E=2E6697d14 100644
+--- a/src/tapctl/main=2Ec
++++ b/src/tapctl/main=2Ec=
+
+@@ -317,7 +317,7 @@
+             return NULL;
+         }
+ 
+-        struct=
+ tap_adapter_node *conflict =3D find_adapter_by_name(requested_name, adapte=
+r_list);
++        const struct tap_adapter_node *conflict =3D find_adapter_=
+by_name(requested_name, adapter_list);
+         if (conflict)
+         {
+  =
+           LPOLESTR adapter_id =3D NULL;
+diff --git a/tests/unit_tests/open=
+vpn/test_buffer=2Ec b/tests/unit_tests/openvpn/test_buffer=2Ec
+index 326de4=
+0=2E=2Ece38bbe 100644
+--- a/tests/unit_tests/openvpn/test_buffer=2Ec
++++ b/=
+tests/unit_tests/openvpn/test_buffer=2Ec
+@@ -88,7 +88,7 @@
+ 
+     int maxou=
+tput =3D 0;
+     unsigned int blocksize =3D 5;
+-    char *separator =3D " "=
+;
++    const char *separator =3D " ";
+     output =3D format_hex_ex(input, =
+input_size, maxoutput, blocksize, separator, &gc);
+     assert_string_equal=
+(output, "0100ff10ff 00f00f090a");
+ 
+@@ -174,7 +174,7 @@
+     /* With a max=
+ length of 2, no aggregation should take place */
+     buffer_list_aggregat=
+e_separator(ctx->one_two_three, 2, testsep);
+     assert_int_equal(ctx->one=
+_two_three->size, 3);
+-    struct buffer *buf =3D buffer_list_peek(ctx->one=
+_two_three);
++    const struct buffer *buf =3D buffer_list_peek(ctx->one_tw=
+o_three);
+     assert_buf_equals_str(buf, teststr1);
+ }
+ 
+@@ -189,7 +189,7 =
+@@
+      */
+     buffer_list_aggregate_separator(ctx->one_two_three, strlen=
+(expected) + 1, testsep);
+     assert_int_equal(ctx->one_two_three->size, 2=
+);
+-    struct buffer *buf =3D buffer_list_peek(ctx->one_two_three);
++    c=
+onst struct buffer *buf =3D buffer_list_peek(ctx->one_two_three);
+     asse=
+rt_buf_equals_str(buf, expected);
+ }
+ 
+@@ -201,7 +201,7 @@
+     /* Aggregat=
+e all */
+     buffer_list_aggregate_separator(ctx->one_two_three, 1 << 16, =
+testsep);
+     assert_int_equal(ctx->one_two_three->size, 1);
+-    struct b=
+uffer *buf =3D buffer_list_peek(ctx->one_two_three);
++    const struct buff=
+er *buf =3D buffer_list_peek(ctx->one_two_three);
+     assert_buf_equals_st=
+r(buf, teststr1 testsep teststr2 testsep teststr3 testsep);
+ }
+ 
+@@ -213,7 =
++213,7 @@
+     /* Aggregate all */
+     buffer_list_aggregate_separator(ctx=
+->one_two_three, 1 << 16, testnosep);
+     assert_int_equal(ctx->one_two_th=
+ree->size, 1);
+-    struct buffer *buf =3D buffer_list_peek(ctx->one_two_th=
+ree);
++    const struct buffer *buf =3D buffer_list_peek(ctx->one_two_three=
+);
+     assert_buf_equals_str(buf, teststr1 teststr2 teststr3);
+ }
+ 
+@@ -22=
+6,7 +226,7 @@
+     /* Aggregate all */
+     buffer_list_aggregate_separator=
+(bl_zerolen, 1 << 16, testnosep);
+     assert_int_equal(bl_zerolen->size, 1=
+);
+-    struct buffer *buf =3D buffer_list_peek(bl_zerolen);
++    const str=
+uct buffer *buf =3D buffer_list_peek(bl_zerolen);
+     assert_buf_equals_st=
+r(buf, "");
+ }
+ 
+@@ -239,7 +239,7 @@
+     /* Aggregate all */
+     buffer_l=
+ist_aggregate_separator(bl_emptybuffers, 1 << 16, testnosep);
+     assert_i=
+nt_equal(bl_emptybuffers->size, 1);
+-    struct buffer *buf =3D buffer_list=
+_peek(bl_emptybuffers);
++    const struct buffer *buf =3D buffer_list_peek(=
+bl_emptybuffers);
+     assert_int_equal(BLEN(buf), 0);
+ }
+ 
+diff --git a/te=
+sts/unit_tests/openvpn/test_crypto=2Ec b/tests/unit_tests/openvpn/test_cryp=
+to=2Ec
+index 77cf295=2E=2E07c54b4 100644
+--- a/tests/unit_tests/openvpn/tes=
+t_crypto=2Ec
++++ b/tests/unit_tests/openvpn/test_crypto=2Ec
+@@ -482,9 +482,=
+9 @@
+ crypto_test_hkdf_expand_testa1(void **state)
+ {
+     /* RFC 5889 A=2E=
+1 Test Case 1 */
+-    uint8_t prk[32] =3D { 0x07, 0x77, 0x09, 0x36, 0x2c, 0=
+x2e, 0x32, 0xdf, 0x0d, 0xdc, 0x3f,
+-                        0x0d, 0xc4, 0x7=
+b, 0xba, 0x63, 0x90, 0xb6, 0xc7, 0x3b, 0xb5, 0x0f,
+-                       =
+ 0x9c, 0x31, 0x22, 0xec, 0x84, 0x4a, 0xd7, 0xc2, 0xb3, 0xe5 };
++    const u=
+int8_t prk[32] =3D { 0x07, 0x77, 0x09, 0x36, 0x2c, 0x2e, 0x32, 0xdf, 0x0d, =
+0xdc, 0x3f,
++                              0x0d, 0xc4, 0x7b, 0xba, 0x63, 0x=
+90, 0xb6, 0xc7, 0x3b, 0xb5, 0x0f,
++                              0x9c, 0x31=
+, 0x22, 0xec, 0x84, 0x4a, 0xd7, 0xc2, 0xb3, 0xe5 };
+ 
+     uint8_t info[10]=
+ =3D { 0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8, 0xf9 };
+ 
+@@ -=
+503,9 +503,9 @@
+ crypto_test_hkdf_expand_testa2(void **state)
+ {
+     /* RF=
+C 5889 A=2E2 Test Case 2 */
+-    uint8_t prk[32] =3D { 0x06, 0xa6, 0xb8, 0x=
+8c, 0x58, 0x53, 0x36, 0x1a, 0x06, 0x10, 0x4c,
+-                        0x9c=
+, 0xeb, 0x35, 0xb4, 0x5c, 0xef, 0x76, 0x00, 0x14, 0x90, 0x46,
+-            =
+            0x71, 0x01, 0x4a, 0x19, 0x3f, 0x40, 0xc1, 0x5f, 0xc2, 0x44 };
++=
+    const uint8_t prk[32] =3D { 0x06, 0xa6, 0xb8, 0x8c, 0x58, 0x53, 0x36, 0=
+x1a, 0x06, 0x10, 0x4c,
++                              0x9c, 0xeb, 0x35, 0xb=
+4, 0x5c, 0xef, 0x76, 0x00, 0x14, 0x90, 0x46,
++                             =
+ 0x71, 0x01, 0x4a, 0x19, 0x3f, 0x40, 0xc1, 0x5f, 0xc2, 0x44 };
+ 
+     uint8=
+_t info[80] =3D { 0xb0, 0xb1, 0xb2, 0xb3, 0xb4, 0xb5, 0xb6, 0xb7, 0xb8, 0xb=
+9, 0xba, 0xbb,
+                          0xbc, 0xbd, 0xbe, 0xbf, 0xc0, 0xc1=
+, 0xc2, 0xc3, 0xc4, 0xc5, 0xc6, 0xc7,
+@@ -534,11 +534,11 @@
+ crypto_test_hk=
+df_expand_testa3(void **state)
+ {
+     /* RFC 5889 A=2E3 Test Case 3 */
+-  =
+  uint8_t prk[32] =3D { 0x19, 0xef, 0x24, 0xa3, 0x2c, 0x71, 0x7b, 0x16, 0x7=
+f, 0x33, 0xa9,
+-                        0x1d, 0x6f, 0x64, 0x8b, 0xdf, 0x96,=
+ 0x59, 0x67, 0x76, 0xaf, 0xdb,
+-                        0x63, 0x77, 0xac, 0=
+x43, 0x4c, 0x1c, 0x29, 0x3c, 0xcb, 0x04 };
++    const uint8_t prk[32] =3D {=
+ 0x19, 0xef, 0x24, 0xa3, 0x2c, 0x71, 0x7b, 0x16, 0x7f, 0x33, 0xa9,
++       =
+                       0x1d, 0x6f, 0x64, 0x8b, 0xdf, 0x96, 0x59, 0x67, 0x76=
+, 0xaf, 0xdb,
++                              0x63, 0x77, 0xac, 0x43, 0x4c, =
+0x1c, 0x29, 0x3c, 0xcb, 0x04 };
+ 
+-    uint8_t info[] =3D { 0 };
++    const=
+ uint8_t info[] =3D { 0 };
+ 
+     int L =3D 42;
+     uint8_t okm[42] =3D { =
+0x8d, 0xa4, 0xe7, 0x75, 0xa5, 0x63, 0xc1, 0x8f, 0x71, 0x5f, 0x80,
+@@ -558,9=
+ +558,9 @@
+     /* tests the HDKF with a label/okm that OpenVPN itself uses=
+ in OpenSSL 3
+      * HDKF unit test*/
+ 
+-    uint8_t prk[32] =3D { 0x07, 0=
+x77, 0x09, 0x36, 0x2c, 0x2e, 0x32, 0xdf, 0x0d, 0xdc, 0x3f,
+-               =
+         0x0d, 0xc4, 0x7b, 0xba, 0x63, 0x90, 0xb6, 0xc7, 0x3b, 0xb5, 0x0f,
+=
+-                        0x9c, 0x31, 0x22, 0xec, 0x84, 0x4a, 0xd7, 0xc2, 0x=
+b3, 0xe5 };
++    const uint8_t prk[32] =3D { 0x07, 0x77, 0x09, 0x36, 0x2c, =
+0x2e, 0x32, 0xdf, 0x0d, 0xdc, 0x3f,
++                              0x0d, 0x=
+c4, 0x7b, 0xba, 0x63, 0x90, 0xb6, 0xc7, 0x3b, 0xb5, 0x0f,
++                =
+              0x9c, 0x31, 0x22, 0xec, 0x84, 0x4a, 0xd7, 0xc2, 0xb3, 0xe5 };=
+
+ 
+     uint8_t info[18] =3D { 0x00, 0x1b, 0x0e, 0x6f, 0x76, 0x70, 0x6e, 0x=
+20, 0x75,
+                          0x6e, 0x69, 0x74, 0x20, 0x74, 0x65, 0x7=
+3, 0x74, 0x00 };
+@@ -680,7 +680,7 @@
+ static int
+ crypto_test_epoch_setup(v=
+oid **state)
+ {
+-    uint16_t *num_future_keys =3D (uint16_t *)*state;
++   =
+ const uint16_t *num_future_keys =3D (uint16_t *)*state;
+     struct epoch_=
+test_state *data =3D calloc(1, sizeof(struct epoch_test_state));
+ 
+     dat=
+a->gc =3D gc_new();
+diff --git a/tests/unit_tests/openvpn/test_cryptoapi=2E=
+c b/tests/unit_tests/openvpn/test_cryptoapi=2Ec
+index 508afc9=2E=2E37bbe92 =
+100644
+--- a/tests/unit_tests/openvpn/test_cryptoapi=2Ec
++++ b/tests/unit_t=
+ests/openvpn/test_cryptoapi=2Ec
+@@ -233,7 +233,7 @@
+         const CERT_CON=
+TEXT *ctx =3D NULL;
+         while ((ctx =3D CertEnumCertificatesInStore(us=
+er_store, ctx)))
+         {
+-            char *friendly_name =3D get_cert_n=
+ame(ctx, &gc);
++            const char *friendly_name =3D get_cert_name(ctx=
+, &gc);
+             if (!lookup_cert(friendly_name)) /* not our cert */
+  =
+           {
+                 continue;
+@@ -310,7 +310,7 @@
+          */
+  =
+       assert_non_null(ctx);
+ 
+-        char *friendly_name =3D get_cert_na=
+me(ctx, &gc);
++        const char *friendly_name =3D get_cert_name(ctx, &gc=
+);
+         struct test_cert *found =3D lookup_cert(friendly_name);
+       =
+  assert_non_null(found);
+         assert_string_equal(found->cname, c->cna=
+me);
+@@ -343,7 +343,7 @@
+          */
+         assert_non_null(ctx);
+ 
+-   =
+     char *friendly_name =3D get_cert_name(ctx, &gc);
++        const char *=
+friendly_name =3D get_cert_name(ctx, &gc);
+         struct test_cert *found=
+ =3D lookup_cert(friendly_name);
+         assert_non_null(found);
+         =
+assert_string_equal(found->issuer, c->issuer);
+diff --git a/tests/unit_test=
+s/openvpn/test_misc=2Ec b/tests/unit_tests/openvpn/test_misc=2Ec
+index 5f03=
+860=2E=2Ea41c27b 100644
+--- a/tests/unit_tests/openvpn/test_misc=2Ec
++++ b/=
+tests/unit_tests/openvpn/test_misc=2Ec
+@@ -300,7 +300,7 @@
+     {
+         =
+for (ptr_type i =3D 1; i <=3D 16; ++i)
+         {
+-            struct hash_=
+element *item =3D hash_lookup_by_value(nhash, (void *)i);
++            cons=
+t struct hash_element *item =3D hash_lookup_by_value(nhash, (void *)i);
+   =
+          hash_remove_by_value(nhash, (void *)i);
+             /* check ite=
+m got removed if it was present before */
+             if (item)
+diff --git=
+ a/tests/unit_tests/openvpn/test_ssl=2Ec b/tests/unit_tests/openvpn/test_ss=
+l=2Ec
+index 4de463c=2E=2E963e8cb 100644
+--- a/tests/unit_tests/openvpn/test=
+_ssl=2Ec
++++ b/tests/unit_tests/openvpn/test_ssl=2Ec
+@@ -672,7 +672,7 @@
+  =
+   openvpn_encrypt(&buf, encrypt_workspace, &co);
+ 
+     /* separate buffer=
+ in authenticated data and encrypted data */
+-    uint8_t *ad_start =3D BPT=
+R(&buf);
++    const uint8_t *ad_start =3D BPTR(&buf);
+     buf_advance(&buf=
+, 4);
+ 
+     if (epoch)
+diff --git a/tests/unit_tests/plugins/auth-pam/test=
+_search_and_replace=2Ec b/tests/unit_tests/plugins/auth-pam/test_search_and=
+_replace=2Ec
+index a861bfd=2E=2E89f0642 100644
+--- a/tests/unit_tests/plugi=
+ns/auth-pam/test_search_and_replace=2Ec
++++ b/tests/unit_tests/plugins/auth=
+-pam/test_search_and_replace=2Ec
+@@ -12,7 +12,7 @@
+ static void
+ pass_any_n=
+ull_param__returns_null(void **state)
+ {
+-    char DUMMY[] =3D "DUMMY";
++  =
+  const char DUMMY[] =3D "DUMMY";
+ 
+     assert_null(searchandreplace(NULL,=
+ DUMMY, DUMMY));
+     assert_null(searchandreplace(DUMMY, NULL, DUMMY));
+@@=
+ -22,8 +22,8 @@
+ static void
+ pass_any_empty_string__returns_null(void **st=
+ate)
+ {
+-    char DUMMY[] =3D "DUMMY";
+-    char EMPTY[] =3D "";
++    const=
+ char DUMMY[] =3D "DUMMY";
++    const char EMPTY[] =3D "";
+ 
+     assert_nu=
+ll(searchandreplace(EMPTY, DUMMY, DUMMY));
+     assert_null(searchandreplac=
+e(DUMMY, EMPTY, DUMMY));
 
 -- 
-To view, visit http://gerrit=2Eope=
-nvpn=2Enet/c/openvpn/+/1865?usp=3Demail
-To unsubscribe, or for help writing=
- mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+To view, visit http://gerrit=2Eopenvpn=2Enet/=
+c/openvpn/+/1661?usp=3Demail
+To unsubscribe, or for help writing mail filte=
+rs, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Ge=
-rrit-MessageType: newchange
+Gerrit-Messag=
+eType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-G=
-errit-Change-Id: Idfa78643da27fe8a8bd0ff2bcf3025d8687024a9
-Gerrit-Change-Nu=
-mber: 1865
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@lichtenheld=
-=2Ecom>
+Gerrit-Cha=
+nge-Id: I2b71dae37ebe63c26a66761f877b25d326ed140f
+Gerrit-Change-Number: 166=
+1
+Gerrit-PatchSet: 14
+Gerrit-Owner: flichtenheld <frank@lichtenheld=2Ecom>
+=
 Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-CC: =
-openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
-Gerrit-Attention: p=
-laisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Reviewer: ra=
+zvanc <razvanc@mailbox=2Eorg>
+Gerrit-Reviewer: stipa <lstipakov@gmail=2Ecom=
+>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit=
+-Attention: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Attention: flicht=
+enheld <frank@lichtenheld=2Ecom>
+Gerrit-Attention: razvanc <razvanc@mailbox=
+=2Eorg>
+Gerrit-Attention: stipa <lstipakov@gmail=2Ecom>
 
---cQV9xetKQQs=
+--A5fH1YxqRIY=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos=2E </p>
-<p>flichtenheld would like plaistho=
-s to <strong>review</strong> this change=2E
-</p><p><a href=3D"http://gerrit=
-=2Eopenvpn=2Enet/c/openvpn/+/1865?usp=3Demail">View Change</a></p><pre clas=
-s=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wr=
-ap;">route: Remove unused function print_routes<br><br>This function has ne=
-ver been used in the git history=2E<br>Probably an OpenVPN 1=2Ex remnant=2E=
-<br><br>Identified by cppcheck=2E<br><br>Change-Id: Idfa78643da27fe8a8bd0ff=
-2bcf3025d8687024a9<br>Signed-off-by: Frank Lichtenheld &lt;frank@lichtenhel=
-d=2Ecom&gt;<br>---<br>M src/openvpn/route=2Ec<br>M src/openvpn/route=2Eh<br=
->2 files changed, 0 insertions(+), 36 deletions(-)<br><br></pre><pre class=
-=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
-p;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/65/186=
-5/1</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
-rap;"><span>diff --git a/src/openvpn/route=2Ec b/src/openvpn/route=2Ec</spa=
-n><br><span>index 8ea745d=2E=2E6dbe3ec 100644</span><br><span>--- a/src/ope=
-nvpn/route=2Ec</span><br><span>+++ b/src/openvpn/route=2Ec</span><br><span>=
-@@ -185,19 +185,6 @@</span><br><span>     dest-&gt;gc =3D a;</span><br><spa=
-n> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--static const char *</span><br><span style=3D"color: hsl(0, 100%, 40%);">-r=
-oute_string(const struct route_ipv4 *r, struct gc_arena *gc)</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    struct buffer out =3D alloc_buf_gc(256, gc);</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    buf_printf(&amp;out, &quo=
-t;ROUTE network %s netmask %s gateway %s&quot;, print_in_addr_t(r-&gt;netwo=
-rk, 0, gc),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
-     print_in_addr_t(r-&gt;netmask, 0, gc), print_in_addr_t(r-&gt;gateway, =
-0, gc));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (r-&gt=
-;flags &amp; RT_METRIC_DEFINED)</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  buf_printf(&amp;out, &quot; metric %d&quot;, r-&gt;metric);</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    return BSTR(&amp;out);</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-</span><br><span> static bool</span><br><span> is_route_parm_defin=
-ed(const char *parm)</span><br><span> {</span><br><span>@@ -1325,27 +1312,6=
- @@</span><br><span> #endif /* ifndef ENABLE_SMALL */</span><br><span> </sp=
-an><br><span> static void</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-print_route(const struct route_ipv4 *r, msglvl_t msglevel)</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    struct gc_arena gc =3D gc_new();</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    if (r-&gt;flags &amp; RT_DEFINED)</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        msg(msglevel, &quot;%s&quot;, r=
-oute_string(r, &amp;gc));</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    gc_free(=
-&amp;gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-void</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-print_routes(const struct route_list *rl, msglvl_t msglevel)</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    struct route_ipv4 *r;</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    for (r =3D rl-&gt;routes; r; r =3D r-&gt;ne=
-xt)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-        print_route(r, msglevel);<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-stat=
-ic void</span><br><span> setenv_route(struct env_set *es, const struct rout=
-e_ipv4 *r, int i)</span><br><span> {</span><br><span>     struct gc_arena g=
-c =3D gc_new();</span><br><span>diff --git a/src/openvpn/route=2Eh b/src/op=
-envpn/route=2Eh</span><br><span>index 473df87=2E=2E0d33d36 100644</span><br=
-><span>--- a/src/openvpn/route=2Eh</span><br><span>+++ b/src/openvpn/route=
-=2Eh</span><br><span>@@ -377,8 +377,6 @@</span><br><span> </span><br><span>=
- #endif</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-void print_routes(const struct route_list *rl, msglvl_t msglevel);</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> #ifdef _=
-WIN32</span><br><span> </span><br><span> void show_routes(msglvl_t msglevel=
-);</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://ger=
-rit=2Eopenvpn=2Enet/c/openvpn/+/1865?usp=3Demail">change 1865</a>=2E To uns=
-ubscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
-=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope it=
-emtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"acti=
-on" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1865?usp=3Demail"/><meta item=
-prop=3D"name" content=3D"View Change"/></div></div>
+rently required from: flichtenheld, plaisthos, razvanc, stipa=2E </p>
+<p>fl=
+ichtenheld <strong>uploaded patch set #14</strong> to this change=2E</p><p>=
+<a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1661?usp=3Demail">View=
+ Change</a></p><p>The following approvals got outdated and were removed:
+Co=
+de-Review+2 by razvanc</p><pre class=3D"blocks" style=3D"font-family: monos=
+pace,monospace; white-space: pre-wrap;">Remove instances of constVariable/c=
+onstVariablePointer cppcheck warnings<br><br>Of varied usefulness, but easi=
+er to just address all of<br>them=2E<br><br>Also change vpn_* parameters of=
+ dco_new_peer to const since<br>that is required by one of the changes and =
+it works (and would<br>happen anyway when doing constParameterPointer)=2E<b=
+r><br>Change-Id: I2b71dae37ebe63c26a66761f877b25d326ed140f<br>Signed-off-by=
+: Frank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt;<br>---<br>M dev-tools/c=
+ppcheck-suppression<br>M sample/sample-plugins/defer/multi-auth=2Ec<br>M sa=
+mple/sample-plugins/log/log=2Ec<br>M sample/sample-plugins/log/log_v3=2Ec<b=
+r>M sample/sample-plugins/simple/simple=2Ec<br>M src/openvpn/argv=2Ec<br>M =
+src/openvpn/auth_token=2Ec<br>M src/openvpn/base64=2Ec<br>M src/openvpn/buf=
+fer=2Ec<br>M src/openvpn/buffer=2Eh<br>M src/openvpn/comp-lz4=2Ec<br>M src/=
+openvpn/crypto=2Ec<br>M src/openvpn/crypto_epoch=2Ec<br>M src/openvpn/crypt=
+oapi=2Ec<br>M src/openvpn/dco=2Ec<br>M src/openvpn/dco_freebsd=2Ec<br>M src=
+/openvpn/dco_internal=2Eh<br>M src/openvpn/dco_linux=2Ec<br>M src/openvpn/d=
+co_win=2Ec<br>M src/openvpn/dns=2Ec<br>M src/openvpn/event=2Ec<br>M src/ope=
+nvpn/forward=2Ec<br>M src/openvpn/init=2Ec<br>M src/openvpn/list=2Ec<br>M s=
+rc/openvpn/manage=2Ec<br>M src/openvpn/misc=2Ec<br>M src/openvpn/mss=2Ec<br=
+>M src/openvpn/mtcp=2Ec<br>M src/openvpn/mudp=2Ec<br>M src/openvpn/multi=2E=
+c<br>M src/openvpn/networking_sitnl=2Ec<br>M src/openvpn/options=2Ec<br>M s=
+rc/openvpn/options_parse=2Ec<br>M src/openvpn/options_util=2Ec<br>M src/ope=
+nvpn/pool=2Ec<br>M src/openvpn/proxy=2Ec<br>M src/openvpn/push=2Ec<br>M src=
+/openvpn/route=2Ec<br>M src/openvpn/socket=2Ec<br>M src/openvpn/socket=2Eh<=
+br>M src/openvpn/ssl=2Ec<br>M src/openvpn/ssl_mbedtls=2Ec<br>M src/openvpn/=
+ssl_verify=2Ec<br>M src/openvpn/tun=2Ec<br>M src/openvpn/win32=2Ec<br>M src=
+/openvpnmsica/msica_arg=2Ec<br>M src/openvpnmsica/openvpnmsica=2Ec<br>M src=
+/openvpnserv/interactive=2Ec<br>M src/plugins/auth-pam/auth-pam=2Ec<br>M sr=
+c/tapctl/main=2Ec<br>M tests/unit_tests/openvpn/test_buffer=2Ec<br>M tests/=
+unit_tests/openvpn/test_crypto=2Ec<br>M tests/unit_tests/openvpn/test_crypt=
+oapi=2Ec<br>M tests/unit_tests/openvpn/test_misc=2Ec<br>M tests/unit_tests/=
+openvpn/test_ssl=2Ec<br>M tests/unit_tests/plugins/auth-pam/test_search_and=
+_replace=2Ec<br>56 files changed, 163 insertions(+), 164 deletions(-)<br><b=
+r></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; wh=
+ite-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn r=
+efs/changes/61/1661/14</pre><pre style=3D"font-family: monospace,monospace;=
+ white-space: pre-wrap;"><span>diff --git a/dev-tools/cppcheck-suppression =
+b/dev-tools/cppcheck-suppression</span><br><span>index 2e3350b=2E=2E900e03c=
+ 100644</span><br><span>--- a/dev-tools/cppcheck-suppression</span><br><spa=
+n>+++ b/dev-tools/cppcheck-suppression</span><br><span>@@ -3,8 +3,6 @@</spa=
+n><br><span> constParameter</span><br><span> constParameterCallback</span><=
+br><span> constParameterPointer</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-constVariable</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-constVariablePointer</span><br><span> invalidPrintfArgType_sint</span><br=
+><span> invalidPrintfArgType_uint</span><br><span> usleepCalled</span><br><=
+span>diff --git a/sample/sample-plugins/defer/multi-auth=2Ec b/sample/sampl=
+e-plugins/defer/multi-auth=2Ec</span><br><span>index f6bbf44=2E=2Ebacf557 1=
+00644</span><br><span>--- a/sample/sample-plugins/defer/multi-auth=2Ec</spa=
+n><br><span>+++ b/sample/sample-plugins/defer/multi-auth=2Ec</span><br><spa=
+n>@@ -381,7 +381,7 @@</span><br><span>     }</span><br><span>     const cha=
+r **argv =3D args-&gt;argv;</span><br><span>     const char **envp =3D args=
+-&gt;envp;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct =
+plugin_context *context =3D (struct plugin_context *)args-&gt;handle;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    const struct plugin_c=
+ontext *context =3D (struct plugin_context *)args-&gt;handle;</span><br><sp=
+an>     struct plugin_per_client_context *pcc =3D</span><br><span>         =
+(struct plugin_per_client_context *)args-&gt;per_client_context;</span><br>=
+<span>     switch (args-&gt;type)</span><br><span>@@ -399,7 +399,7 @@</span=
+><br><span> OPENVPN_EXPORT void *</span><br><span> openvpn_plugin_client_co=
+nstructor_v1(openvpn_plugin_handle_t handle)</span><br><span> {</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    struct plugin_context *contex=
+t =3D (struct plugin_context *)handle;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    const struct plugin_context *context =3D (struct plu=
+gin_context *)handle;</span><br><span>     plog(context, PLOG_NOTE, &quot;F=
+UNC: openvpn_plugin_client_constructor_v1&quot;);</span><br><span>     retu=
+rn calloc(1, sizeof(struct plugin_per_client_context));</span><br><span> }<=
+/span><br><span>@@ -407,7 +407,7 @@</span><br><span> OPENVPN_EXPORT void</s=
+pan><br><span> openvpn_plugin_client_destructor_v1(openvpn_plugin_handle_t =
+handle, void *per_client_context)</span><br><span> {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    struct plugin_context *context =3D (str=
+uct plugin_context *)handle;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    const struct plugin_context *context =3D (struct plugin_contex=
+t *)handle;</span><br><span>     plog(context, PLOG_NOTE, &quot;FUNC: openv=
+pn_plugin_client_destructor_v1&quot;);</span><br><span>     free(per_client=
+_context);</span><br><span> }</span><br><span>diff --git a/sample/sample-pl=
+ugins/log/log=2Ec b/sample/sample-plugins/log/log=2Ec</span><br><span>index=
+ 330e3e0=2E=2E76350ee 100644</span><br><span>--- a/sample/sample-plugins/lo=
+g/log=2Ec</span><br><span>+++ b/sample/sample-plugins/log/log=2Ec</span><br=
+><span>@@ -173,7 +173,7 @@</span><br><span> openvpn_plugin_func_v1(openvpn_=
+plugin_handle_t handle, const int type, const char *argv[],</span><br><span=
+>                        const char *envp[])</span><br><span> {</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    struct plugin_context *contex=
+t =3D (struct plugin_context *)handle;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    const struct plugin_context *context =3D (struct plu=
+gin_context *)handle;</span><br><span> </span><br><span>     show(type, arg=
+v, envp);</span><br><span> </span><br><span>diff --git a/sample/sample-plug=
+ins/log/log_v3=2Ec b/sample/sample-plugins/log/log_v3=2Ec</span><br><span>i=
+ndex d2d44c7=2E=2E09c6735 100644</span><br><span>--- a/sample/sample-plugin=
+s/log/log_v3=2Ec</span><br><span>+++ b/sample/sample-plugins/log/log_v3=2Ec=
+</span><br><span>@@ -245,7 +245,7 @@</span><br><span> openvpn_plugin_func_v=
+3(const int version, struct openvpn_plugin_args_func_in const *args,</span>=
+<br><span>                        struct openvpn_plugin_args_func_return *r=
+etptr)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    struct plugin_context *context =3D (struct plugin_context *)args-&g=
+t;handle;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const =
+struct plugin_context *context =3D (struct plugin_context *)args-&gt;handle=
+;</span><br><span> </span><br><span>     printf(&quot;\nopenvpn_plugin_func=
+_v3() :::::&gt;&gt; &quot;);</span><br><span>     show(args-&gt;type, args-=
+&gt;argv, args-&gt;envp);</span><br><span>diff --git a/sample/sample-plugin=
+s/simple/simple=2Ec b/sample/sample-plugins/simple/simple=2Ec</span><br><sp=
+an>index 687a633=2E=2E3182be0 100644</span><br><span>--- a/sample/sample-pl=
+ugins/simple/simple=2Ec</span><br><span>+++ b/sample/sample-plugins/simple/=
+simple=2Ec</span><br><span>@@ -104,7 +104,7 @@</span><br><span> openvpn_plu=
+gin_func_v1(openvpn_plugin_handle_t handle, const int type, const char *arg=
+v[],</span><br><span>                        const char *envp[])</span><br>=
+<span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct pl=
+ugin_context *context =3D (struct plugin_context *)handle;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    const struct plugin_context *con=
+text =3D (struct plugin_context *)handle;</span><br><span> </span><br><span=
+>     /* get username/password from envp string array */</span><br><span>  =
+   const char *username =3D get_env(&quot;username&quot;, envp);</span><br>=
+<span>diff --git a/src/openvpn/argv=2Ec b/src/openvpn/argv=2Ec</span><br><s=
+pan>index 6a5d92e=2E=2E028671d 100644</span><br><span>--- a/src/openvpn/arg=
+v=2Ec</span><br><span>+++ b/src/openvpn/argv=2Ec</span><br><span>@@ -359,7 =
++359,7 @@</span><br><span>      *</span><br><span>      */</span><br><span>=
+     size_t argc =3D argres-&gt;argc;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    char *f =3D argv_prep_format(format, delim, &amp;argc, =
+&amp;argres-&gt;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    const char *f =3D argv_prep_format(format, delim, &amp;argc, &amp;argr=
+es-&gt;gc);</span><br><span>     if (f =3D=3D NULL)</span><br><span>     {<=
+/span><br><span>         goto out;</span><br><span>diff --git a/src/openvpn=
+/auth_token=2Ec b/src/openvpn/auth_token=2Ec</span><br><span>index bd90212=
+=2E=2Ef928a41 100644</span><br><span>--- a/src/openvpn/auth_token=2Ec</span=
+><br><span>+++ b/src/openvpn/auth_token=2Ec</span><br><span>@@ -235,7 +235,=
+7 @@</span><br><span>      * a new token with the empty username since we d=
+o not want to loose</span><br><span>      * the information that the userna=
+me cannot be trusted</span><br><span>      */</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    struct key_state *ks =3D &amp;multi-&gt;session=
+[TM_ACTIVE]=2Ekey[KS_PRIMARY];</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    const struct key_state *ks =3D &amp;multi-&gt;session[TM_ACT=
+IVE]=2Ekey[KS_PRIMARY];</span><br><span>     if (ks-&gt;auth_token_state_fl=
+ags &amp; AUTH_TOKEN_VALID_EMPTYUSER)</span><br><span>     {</span><br><spa=
+n>         hmac_ctx_update(ctx, (const uint8_t *)&quot;&quot;, 0);</span><b=
+r><span>diff --git a/src/openvpn/base64=2Ec b/src/openvpn/base64=2Ec</span>=
+<br><span>index 7af8976=2E=2E5752844 100644</span><br><span>--- a/src/openv=
+pn/base64=2Ec</span><br><span>+++ b/src/openvpn/base64=2Ec</span><br><span>=
+@@ -161,7 +161,7 @@</span><br><span> {</span><br><span>     const char *p;<=
+/span><br><span>     unsigned char *q;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    unsigned char *e =3D NULL;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    const unsigned char *e =3D NULL;</span><br>=
+<span> </span><br><span>     q =3D data;</span><br><span>     if (size &gt;=
+=3D 0)</span><br><span>diff --git a/src/openvpn/buffer=2Ec b/src/openvpn/bu=
+ffer=2Ec</span><br><span>index 8c19902=2E=2E2b4d05d 100644</span><br><span>=
+--- a/src/openvpn/buffer=2Ec</span><br><span>+++ b/src/openvpn/buffer=2Ec</=
+span><br><span>@@ -500,7 +500,7 @@</span><br><span> void</span><br><span> b=
+uf_null_terminate(struct buffer *buf)</span><br><span> {</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    char *last =3D (char *)BLAST(buf);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const char *last =
+=3D (char *)BLAST(buf);</span><br><span>     if (last &amp;&amp; *last =3D=
+=3D &#39;\0&#39;) /* already terminated? */</span><br><span>     {</span><b=
+r><span>         return;</span><br><span>@@ -523,7 +523,7 @@</span><br><spa=
+n> {</span><br><span>     while (true)</span><br><span>     {</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        char *last =3D (char *)BLAS=
+T(buf);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        cons=
+t char *last =3D (char *)BLAST(buf);</span><br><span>         if (!last)</s=
+pan><br><span>         {</span><br><span>             break;</span><br><spa=
+n>diff --git a/src/openvpn/buffer=2Eh b/src/openvpn/buffer=2Eh</span><br><s=
+pan>index e48a793=2E=2Efbc94c5 100644</span><br><span>--- a/src/openvpn/buf=
+fer=2Eh</span><br><span>+++ b/src/openvpn/buffer=2Eh</span><br><span>@@ -13=
+18,7 +1318,7 @@</span><br><span> static inline bool</span><br><span> buf_co=
+py_n(struct buffer *dest, struct buffer *src, int n)</span><br><span> {</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    uint8_t *cp =3D buf_r=
+ead_alloc(src, n);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   const uint8_t *cp =3D buf_read_alloc(src, n);</span><br><span>     if (!=
+cp)</span><br><span>     {</span><br><span>         return false;</span><br=
+><span>@@ -1409,7 +1409,7 @@</span><br><span> static inline bool</span><br>=
+<span> buf_read(struct buffer *src, void *dest, int size)</span><br><span> =
+{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    uint8_t *cp =3D =
+buf_read_alloc(src, size);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    const uint8_t *cp =3D buf_read_alloc(src, size);</span><br><span=
+>     if (!cp)</span><br><span>     {</span><br><span>         return false=
+;</span><br><span>diff --git a/src/openvpn/comp-lz4=2Ec b/src/openvpn/comp-=
+lz4=2Ec</span><br><span>index 45f138c=2E=2E48797b0 100644</span><br><span>-=
+-- a/src/openvpn/comp-lz4=2Ec</span><br><span>+++ b/src/openvpn/comp-lz4=2E=
+c</span><br><span>@@ -164,7 +164,7 @@</span><br><span>     ASSERT(buf_init(=
+&amp;work, frame-&gt;buf=2Eheadroom));</span><br><span> </span><br><span>  =
+   /* do unframing/swap (assumes buf-&gt;len &gt; 0) */</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    uint8_t *head =3D BPTR(buf);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    const uint8_t *head =3D =
+BPTR(buf);</span><br><span>     c =3D *head;</span><br><span> </span><br><s=
+pan>     /* Not compressed */</span><br><span>diff --git a/src/openvpn/cryp=
+to=2Ec b/src/openvpn/crypto=2Ec</span><br><span>index 674105d=2E=2Ee5ad31a =
+100644</span><br><span>--- a/src/openvpn/crypto=2Ec</span><br><span>+++ b/s=
+rc/openvpn/crypto=2Ec</span><br><span>@@ -1210,7 +1210,7 @@</span><br><span=
+> </span><br><span>     /* init implicit IV */</span><br><span>     {</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        cipher_ctx_t *ciphe=
+r =3D co-&gt;key_ctx_bi=2Eencrypt=2Ecipher;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        const cipher_ctx_t *cipher =3D co-&gt;key_c=
+tx_bi=2Eencrypt=2Ecipher;</span><br><span>         if (cipher_ctx_mode_aead=
+(cipher))</span><br><span>         {</span><br><span>             ASSERT(ci=
+pher_ctx_iv_length(cipher) &lt;=3D OPENVPN_MAX_IV_LENGTH);</span><br><span>=
+@@ -1920,7 +1920,7 @@</span><br><span>     const char *seed =3D &quot;tls1-=
+prf-test&quot;;</span><br><span>     const char *secret =3D &quot;tls1-prf-=
+test-secret&quot;;</span><br><span>     uint8_t out[8];</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    uint8_t expected_out[] =3D { &#39;q&#=
+39;, &#39;D&#39;, 0xfe, &#39;%&#39;, &#39;@&#39;, &#39;s&#39;, &#39;u&#39;,=
+ 0x95 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const u=
+int8_t expected_out[] =3D { &#39;q&#39;, &#39;D&#39;, 0xfe, &#39;%&#39;, &#=
+39;@&#39;, &#39;s&#39;, &#39;u&#39;, 0x95 };</span><br><span> </span><br><s=
+pan>     int ret =3D ssl_tls1_PRF((uint8_t *)seed, strlen(seed), (uint8_t *=
+)secret,</span><br><span>                            strlen(secret), out, s=
+izeof(out));</span><br><span>diff --git a/src/openvpn/crypto_epoch=2Ec b/sr=
+c/openvpn/crypto_epoch=2Ec</span><br><span>index 37933a1=2E=2E158c841 10064=
+4</span><br><span>--- a/src/openvpn/crypto_epoch=2Ec</span><br><span>+++ b/=
+src/openvpn/crypto_epoch=2Ec</span><br><span>@@ -213,7 +213,7 @@</span><br>=
+<span>      *</span><br><span>      * The last generated key might have bee=
+n moved to the decrypt key already=2E</span><br><span>      */</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    struct key_ctx *highest_future=
+_key =3D</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const s=
+truct key_ctx *highest_future_key =3D</span><br><span>         &amp;co-&gt;=
+epoch_data_keys_future[co-&gt;epoch_data_keys_future_count - 1];</span><br>=
+<span> </span><br><span>     ASSERT(co-&gt;epoch_key_recv=2Eepoch =3D=3D 1 =
+|| highest_future_key-&gt;epoch =3D=3D co-&gt;epoch_key_recv=2Eepoch</span>=
+<br><span>diff --git a/src/openvpn/cryptoapi=2Ec b/src/openvpn/cryptoapi=2E=
+c</span><br><span>index 0f95ab7=2E=2Ead2706c 100644</span><br><span>--- a/s=
+rc/openvpn/cryptoapi=2Ec</span><br><span>+++ b/src/openvpn/cryptoapi=2Ec</s=
+pan><br><span>@@ -225,7 +225,6 @@</span><br><span>     const CERT_INFO *inf=
+o =3D cert_ctx-&gt;pCertInfo;</span><br><span>     const CERT_EXTENSION *ex=
+t;</span><br><span>     DWORD cbext;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    void *pvext;</span><br><span>     struct gc_arena gc =3D=
+ gc_new();</span><br><span>     const WCHAR *tmpl_name =3D wide_string(cert=
+_prop, &amp;gc);</span><br><span> </span><br><span>@@ -233,7 +232,7 @@</spa=
+n><br><span>     ext =3D CertFindExtension(szOID_CERTIFICATE_TEMPLATE, info=
+-&gt;cExtension, info-&gt;rgExtension);</span><br><span>     if (ext)</span=
+><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    pvext =3D decode_object(&amp;gc, X509_CERTIFICATE_TEMPLATE, &amp;ext-&g=
+t;Value, 0, &amp;cbext);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        const void *pvext =3D decode_object(&amp;gc, X509_CERTIFICATE_=
+TEMPLATE, &amp;ext-&gt;Value, 0, &amp;cbext);</span><br><span>         if (=
+pvext &amp;&amp; cbext &gt;=3D sizeof(CERT_TEMPLATE_EXT))</span><br><span> =
+        {</span><br><span>             const CERT_TEMPLATE_EXT *cte =3D (co=
+nst CERT_TEMPLATE_EXT *)pvext;</span><br><span>diff --git a/src/openvpn/dco=
+=2Ec b/src/openvpn/dco=2Ec</span><br><span>index ce73701=2E=2E8eae4bf 10064=
+4</span><br><span>--- a/src/openvpn/dco=2Ec</span><br><span>+++ b/src/openv=
+pn/dco=2Ec</span><br><span>@@ -112,7 +112,7 @@</span><br><span>     for (in=
+t i =3D 0; i &lt; KEY_SCAN_SIZE; ++i)</span><br><span>     {</span><br><spa=
+n>         struct key_state *ks =3D get_key_scan(multi, i);</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-        struct key_ctx_bi *key =3D &a=
+mp;ks-&gt;crypto_options=2Ekey_ctx_bi;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        const struct key_ctx_bi *key =3D &amp;ks-&gt;cry=
+pto_options=2Ekey_ctx_bi;</span><br><span> </span><br><span>         if (ks=
+ =3D=3D primary)</span><br><span>         {</span><br><span>@@ -577,7 +577,=
+7 @@</span><br><span>                         struct sockaddr_storage *loca=
+l)</span><br><span> {</span><br><span> #if ENABLE_IP_PKTINFO</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    struct context *c =3D &amp;mi-&g=
+t;context;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const=
+ struct context *c =3D &amp;mi-&gt;context;</span><br><span> </span><br><sp=
+an>     if (!proto_is_udp(c-&gt;c2=2Elink_sockets[0]-&gt;info=2Eproto)</spa=
+n><br><span>         || !(c-&gt;options=2Esockflags &amp; SF_USE_IP_PKTINFO=
+))</span><br><span>@@ -625,7 +625,7 @@</span><br><span> int</span><br><span=
+> dco_multi_add_new_peer(struct multi_context *m, struct multi_instance *mi=
+)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   struct context *c =3D &amp;mi-&gt;context;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    const struct context *c =3D &amp;mi-&gt;conte=
+xt;</span><br><span> </span><br><span>     int peer_id =3D c-&gt;c2=2Etls_m=
+ulti-&gt;rx_peer_id;</span><br><span>     struct sockaddr *remoteaddr, *loc=
+aladdr =3D NULL;</span><br><span>@@ -646,14 +646,14 @@</span><br><span> </s=
+pan><br><span>     /* In server mode we need to fetch the remote addresses =
+from the push config */</span><br><span>     struct in_addr vpn_ip4 =3D { 0=
+ };</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct in_addr=
+ *vpn_addr4 =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    const struct in_addr *vpn_addr4 =3D NULL;</span><br><span>     if (c-=
+&gt;c2=2Epush_ifconfig_defined)</span><br><span>     {</span><br><span>    =
+     vpn_ip4=2Es_addr =3D htonl(c-&gt;c2=2Epush_ifconfig_local);</span><br>=
+<span>         vpn_addr4 =3D &amp;vpn_ip4;</span><br><span>     }</span><br=
+><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct in=
+6_addr *vpn_addr6 =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    const struct in6_addr *vpn_addr6 =3D NULL;</span><br><span>    =
+ if (c-&gt;c2=2Epush_ifconfig_ipv6_defined)</span><br><span>     {</span><b=
+r><span>         vpn_addr6 =3D &amp;c-&gt;c2=2Epush_ifconfig_ipv6_local;</s=
+pan><br><span>@@ -702,7 +702,7 @@</span><br><span>     }</span><br><span> #=
+endif</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    struct context *c =3D &amp;mi-&gt;context;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    const struct context *c =3D &amp;mi-&gt;co=
+ntext;</span><br><span>     if (addrtype =3D=3D MR_ADDR_IPV6)</span><br><sp=
+an>     {</span><br><span> #if defined(_WIN32)</span><br><span>@@ -750,7 +7=
+50,7 @@</span><br><span>     }</span><br><span>     ASSERT(TUNNEL_TYPE(mi-&=
+gt;context=2Ec1=2Etuntap) =3D=3D DEV_TYPE_TUN);</span><br><span> </span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    struct context *c =3D &amp;=
+mi-&gt;context;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+const struct context *c =3D &amp;mi-&gt;context;</span><br><span> </span><b=
+r><span>     if (mi-&gt;context=2Ec2=2Epush_ifconfig_defined)</span><br><sp=
+an>     {</span><br><span>diff --git a/src/openvpn/dco_freebsd=2Ec b/src/op=
+envpn/dco_freebsd=2Ec</span><br><span>index eaca86b=2E=2Ed933aaf 100644</sp=
+an><br><span>--- a/src/openvpn/dco_freebsd=2Ec</span><br><span>+++ b/src/op=
+envpn/dco_freebsd=2Ec</span><br><span>@@ -134,7 +134,8 @@</span><br><span> =
+</span><br><span> int</span><br><span> dco_new_peer(dco_context_t *dco, uns=
+igned int peerid, int sd, struct sockaddr *localaddr,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-             struct sockaddr *remoteaddr, s=
+truct in_addr *vpn_ipv4, struct in6_addr *vpn_ipv6)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+             struct sockaddr *remoteaddr,=
+ const struct in_addr *vpn_ipv4,</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+             const struct in6_addr *vpn_ipv6)</span><br><span>=
+ {</span><br><span>     struct ifdrv drv;</span><br><span>     nvlist_t *nv=
+l, *local_nvl, *remote_nvl;</span><br><span>diff --git a/src/openvpn/dco_in=
+ternal=2Eh b/src/openvpn/dco_internal=2Eh</span><br><span>index da07780=2E=
+=2Efcf8aca 100644</span><br><span>--- a/src/openvpn/dco_internal=2Eh</span>=
+<br><span>+++ b/src/openvpn/dco_internal=2Eh</span><br><span>@@ -60,7 +60,7=
+ @@</span><br><span>  */</span><br><span> </span><br><span> int dco_new_pee=
+r(dco_context_t *dco, unsigned int peerid, socket_descriptor_t sd, struct s=
+ockaddr *localaddr,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+               struct sockaddr *remoteaddr, struct in_addr *vpn_ipv4, struc=
+t in6_addr *vpn_ipv6);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+                 struct sockaddr *remoteaddr, const struct in_addr *vpn_=
+ipv4, const struct in6_addr *vpn_ipv6);</span><br><span> </span><br><span> =
+int dco_del_peer(dco_context_t *dco, unsigned int peerid);</span><br><span>=
+ </span><br><span>diff --git a/src/openvpn/dco_linux=2Ec b/src/openvpn/dco_=
+linux=2Ec</span><br><span>index 40746bd=2E=2E56f6259 100644</span><br><span=
+>--- a/src/openvpn/dco_linux=2Ec</span><br><span>+++ b/src/openvpn/dco_linu=
+x=2Ec</span><br><span>@@ -222,7 +222,8 @@</span><br><span> </span><br><span=
+> int</span><br><span> dco_new_peer(dco_context_t *dco, unsigned int peerid=
+, int sd, struct sockaddr *localaddr,</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-             struct sockaddr *remoteaddr, struct in_addr *v=
+pn_ipv4, struct in6_addr *vpn_ipv6)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+             struct sockaddr *remoteaddr, const struct in_a=
+ddr *vpn_ipv4,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+        const struct in6_addr *vpn_ipv6)</span><br><span> {</span><br><span=
+>     struct gc_arena gc =3D gc_new();</span><br><span>     const char *rem=
+otestr =3D &quot;[undefined]&quot;;</span><br><span>@@ -697,7 +698,7 @@</sp=
+an><br><span> {</span><br><span>     dco_context_t *dco =3D arg;</span><br>=
+<span>     struct nlattr *tb[CTRL_ATTR_MAX + 1];</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    struct genlmsghdr *gnlh =3D nlmsg_data(nlmsg=
+_hdr(msg));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cons=
+t struct genlmsghdr *gnlh =3D nlmsg_data(nlmsg_hdr(msg));</span><br><span> =
+</span><br><span>     nla_parse(tb, CTRL_ATTR_MAX, genlmsg_attrdata(gnlh, 0=
+), genlmsg_attrlen(gnlh, 0), NULL);</span><br><span> </span><br><span>@@ -7=
+06,7 +707,7 @@</span><br><span>         return NL_SKIP;</span><br><span>   =
+  }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    struct nlattr *mcgrp;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    const struct nlattr *mcgrp;</span><br><span>     int rem_mcgrp;</=
+span><br><span>     nla_for_each_nested(mcgrp, tb[CTRL_ATTR_MCAST_GROUPS], =
+rem_mcgrp)</span><br><span>     {</span><br><span>diff --git a/src/openvpn/=
+dco_win=2Ec b/src/openvpn/dco_win=2Ec</span><br><span>index 2e26f2a=2E=2Eb3=
+268bc 100644</span><br><span>--- a/src/openvpn/dco_win=2Ec</span><br><span>=
++++ b/src/openvpn/dco_win=2Ec</span><br><span>@@ -285,8 +285,8 @@</span><br=
+><span>     msg(D_DCO_DEBUG, &quot;%s&quot;, __func__);</span><br><span> </=
+span><br><span>     int ai_family =3D sock-&gt;info=2Elsa-&gt;bind_local-&g=
+t;ai_family;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struc=
+t addrinfo *local =3D sock-&gt;info=2Elsa-&gt;bind_local;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    struct addrinfo *cur =3D NULL;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    const struct addrinf=
+o *local =3D sock-&gt;info=2Elsa-&gt;bind_local;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    const struct addrinfo *cur =3D NULL;</span=
+><br><span> </span><br><span>     for (cur =3D local; cur; cur =3D cur-&gt;=
+ai_next)</span><br><span>     {</span><br><span>@@ -334,7 +334,7 @@</span><=
+br><span>     struct addrinfo *remoteaddr =3D sock-&gt;info=2Elsa-&gt;curre=
+nt_remote;</span><br><span> </span><br><span>     struct sockaddr *local =
+=3D NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct s=
+ockaddr *remote =3D remoteaddr-&gt;ai_addr;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    const struct sockaddr *remote =3D remoteaddr-&g=
+t;ai_addr;</span><br><span> </span><br><span>     if (remoteaddr-&gt;ai_pro=
+tocol =3D=3D IPPROTO_TCP || remoteaddr-&gt;ai_socktype =3D=3D SOCK_STREAM)<=
+/span><br><span>     {</span><br><span>@@ -348,7 +348,7 @@</span><br><span>=
+     if (sock-&gt;bind_local)</span><br><span>     {</span><br><span>      =
+   /* Use first local address with correct address family */</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-        struct addrinfo *bind =3D so=
+ck-&gt;info=2Elsa-&gt;bind_local;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        const struct addrinfo *bind =3D sock-&gt;info=2Elsa-&=
+gt;bind_local;</span><br><span>         while (bind &amp;&amp; !local)</spa=
+n><br><span>         {</span><br><span>             if (bind-&gt;ai_family =
+=3D=3D remote-&gt;sa_family)</span><br><span>@@ -415,8 +415,9 @@</span><br>=
+<span> }</span><br><span> </span><br><span> int</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-dco_new_peer(dco_context_t *dco, unsigned int pee=
+rid, socket_descriptor_t sd, struct sockaddr *localaddr,</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-             struct sockaddr *remoteaddr=
+, struct in_addr *vpn_ipv4, struct in6_addr *vpn_ipv6)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+dco_new_peer(dco_context_t *dco, unsigne=
+d int peerid, socket_descriptor_t sd,</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+             struct sockaddr *localaddr, struct sockaddr =
+*remoteaddr,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+      const struct in_addr *vpn_ipv4, const struct in6_addr *vpn_ipv6)</spa=
+n><br><span> {</span><br><span>     msg(D_DCO_DEBUG, &quot;%s: peer-id %d, =
+fd &quot; SOCKET_PRINTF, __func__, peerid, sd);</span><br><span> </span><br=
+><span>@@ -745,7 +746,7 @@</span><br><span>     struct gc_arena gc =3D gc_n=
+ew();</span><br><span> </span><br><span>     int ret =3D 0;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    struct tuntap *tt =3D dco-&gt;tt;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const struct tu=
+ntap *tt =3D dco-&gt;tt;</span><br><span> </span><br><span>     if (!tuntap=
+_defined(tt))</span><br><span>     {</span><br><span>@@ -869,7 +870,7 @@</s=
+pan><br><span> int</span><br><span> dco_get_peer_stats_fallback(struct cont=
+ext *c, const bool raise_sigusr1_on_err)</span><br><span> {</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    struct tuntap *tt =3D c-&gt;c1=2E=
+tuntap;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const st=
+ruct tuntap *tt =3D c-&gt;c1=2Etuntap;</span><br><span> </span><br><span>  =
+   if (!tuntap_defined(tt))</span><br><span>     {</span><br><span>@@ -898,=
+7 +899,7 @@</span><br><span> int</span><br><span> dco_get_peer_stats(struct=
+ context *c, const bool raise_sigusr1_on_err)</span><br><span> {</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    struct tuntap *tt =3D c-&gt;=
+c1=2Etuntap;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    con=
+st struct tuntap *tt =3D c-&gt;c1=2Etuntap;</span><br><span> </span><br><sp=
+an>     if (!tuntap_defined(tt))</span><br><span>     {</span><br><span>dif=
+f --git a/src/openvpn/dns=2Ec b/src/openvpn/dns=2Ec</span><br><span>index 1=
+465cdf=2E=2E7f4dde4 100644</span><br><span>--- a/src/openvpn/dns=2Ec</span>=
+<br><span>+++ b/src/openvpn/dns=2Ec</span><br><span>@@ -132,7 +132,7 @@</sp=
+an><br><span>     }</span><br><span>     else</span><br><span>     {</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        struct sockaddr_in6 =
+*sin6 =3D (struct sockaddr_in6 *)ai-&gt;ai_addr;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        const struct sockaddr_in6 *sin6 =3D (s=
+truct sockaddr_in6 *)ai-&gt;ai_addr;</span><br><span>         server-&gt;ad=
+dr[server-&gt;addr_count]=2Ein=2Ea6 =3D sin6-&gt;sin6_addr;</span><br><span=
+>     }</span><br><span> </span><br><span>@@ -156,7 +156,7 @@</span><br><sp=
+an>     /* Append all domains to the end of the list */</span><br><span>   =
+  while (*domains)</span><br><span>     {</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-        char *domain =3D *domains++;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        const char *domain =3D *domain=
+s++;</span><br><span>         if (!validate_domain(domain))</span><br><span=
+>         {</span><br><span>             return false;</span><br><span>@@ -=
+699,7 +699,7 @@</span><br><span> run_up_down_command(bool up, struct option=
+s *o, const struct tuntap *tt,</span><br><span>                     struct =
+dns_updown_runner_info *updown_runner)</span><br><span> {</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    struct dns_options *dns =3D &amp;o-=
+&gt;dns_options;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ const struct dns_options *dns =3D &amp;o-&gt;dns_options;</span><br><span>=
+     if (!dns-&gt;updown || (o-&gt;up_script &amp;&amp; !dns_updown_user_se=
+t(dns) &amp;&amp; !dns_updown_forced(dns)))</span><br><span>     {</span><b=
+r><span>         return;</span><br><span>@@ -864,7 +864,7 @@</span><br><spa=
+n>     }</span><br><span> #ifdef _WIN32</span><br><span>     /* Don&#39;t u=
+se iservice in DHCP mode */</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    struct tuntap_options *tto =3D &amp;o-&gt;tuntap_options;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    const struct tuntap_opt=
+ions *tto =3D &amp;o-&gt;tuntap_options;</span><br><span>     if (tto-&gt;i=
+p_win32_type =3D=3D IPW32_SET_DHCP_MASQ || tto-&gt;ip_win32_type =3D=3D IPW=
+32_SET_ADAPTIVE)</span><br><span>     {</span><br><span>         return;</s=
+pan><br><span>diff --git a/src/openvpn/event=2Ec b/src/openvpn/event=2Ec</s=
+pan><br><span>index 9e17807=2E=2E8b7716a 100644</span><br><span>--- a/src/o=
+penvpn/event=2Ec</span><br><span>+++ b/src/openvpn/event=2Ec</span><br><spa=
+n>@@ -557,7 +557,7 @@</span><br><span> ep_del(struct event_set *es, event_t=
+ event)</span><br><span> {</span><br><span>     struct epoll_event ev;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct ep_set *eps =3D=
+ (struct ep_set *)es;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    const struct ep_set *eps =3D (struct ep_set *)es;</span><br><span> </=
+span><br><span>     dmsg(D_EVENT_WAIT, &quot;EP_DEL ev=3D%d&quot;, (int)eve=
+nt);</span><br><span> </span><br><span>@@ -572,7 +572,7 @@</span><br><span>=
+ static void</span><br><span> ep_ctl(struct event_set *es, event_t event, u=
+nsigned int rwflags, void *arg)</span><br><span> {</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    struct ep_set *eps =3D (struct ep_set *)es=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const struct e=
+p_set *eps =3D (struct ep_set *)es;</span><br><span>     struct epoll_event=
+ ev;</span><br><span> </span><br><span>     CLEAR(ev);</span><br><span>diff=
+ --git a/src/openvpn/forward=2Ec b/src/openvpn/forward=2Ec</span><br><span>=
+index c5b9278=2E=2E6581998 100644</span><br><span>--- a/src/openvpn/forward=
+=2Ec</span><br><span>+++ b/src/openvpn/forward=2Ec</span><br><span>@@ -1213=
+,7 +1213,7 @@</span><br><span> {</span><br><span>     if (float_sa-&gt;sa_f=
+amily =3D=3D AF_INET)</span><br><span>     {</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-        struct sockaddr_in *float4 =3D (struct socka=
+ddr_in *)float_sa;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       const struct sockaddr_in *float4 =3D (struct sockaddr_in *)float_sa;=
+</span><br><span>         /* DCO treats IPv4-mapped IPv6 addresses as pure =
+IPv4=2E However, on a</span><br><span>          * dual-stack socket, we nee=
+d to preserve the mapping otherwise openvpn</span><br><span>          * wil=
+l not be able to find the peer by its transport address=2E</span><br><span>=
+@@ -1236,7 +1236,7 @@</span><br><span>     }</span><br><span>     else</spa=
+n><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     struct sockaddr_in6 *float6 =3D (struct sockaddr_in6 *)float_sa;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        const struct sock=
+addr_in6 *float6 =3D (struct sockaddr_in6 *)float_sa;</span><br><span>     =
+    memcpy(&amp;out_osaddr-&gt;addr=2Ein6, float6, sizeof(struct sockaddr_i=
+n6));</span><br><span>     }</span><br><span> }</span><br><span>@@ -1366,8 =
++1366,8 @@</span><br><span>         return;</span><br><span>     }</span><b=
+r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct o=
+penvpn_sockaddr *link_addr =3D &amp;c-&gt;c2=2Eto_link_addr-&gt;dest;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct link_socket_info=
+ *lsi =3D get_link_socket_info(c);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    const struct openvpn_sockaddr *link_addr =3D &amp;c-&gt;=
+c2=2Eto_link_addr-&gt;dest;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    const struct link_socket_info *lsi =3D get_link_socket_info(c);=
+</span><br><span> </span><br><span>     int ip_hdr_offset =3D 0;</span><br>=
+<span>     int tun_ip_ver =3D get_tun_ip_ver(TUNNEL_TYPE(c-&gt;c1=2Etuntap)=
+, buf, &amp;ip_hdr_offset);</span><br><span>@@ -1404,7 +1404,7 @@</span><br=
+><span>         }</span><br><span> </span><br><span>         /* drop packet=
+s with same dest addr and port as remote */</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-        uint8_t *l4_hdr =3D (uint8_t *)pip + ip_hlen;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        const uint8=
+_t *l4_hdr =3D (uint8_t *)pip + ip_hlen;</span><br><span> </span><br><span>=
+         uint16_t link_port =3D ntohs(link_addr-&gt;addr=2Ein4=2Esin_port);=
+</span><br><span> </span><br><span>@@ -1451,7 +1451,7 @@</span><br><span>  =
+       uint16_t link_port =3D ntohs(link_addr-&gt;addr=2Ein6=2Esin6_port);<=
+/span><br><span> </span><br><span>         /* drop packets with same dest a=
+ddr and port as remote */</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-        uint8_t *l4_hdr =3D (uint8_t *)pip6 + sizeof(struct openvpn_ipv=
+6hdr);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        const=
+ uint8_t *l4_hdr =3D (uint8_t *)pip6 + sizeof(struct openvpn_ipv6hdr);</spa=
+n><br><span>         uint16_t src_port =3D ntohs(*(uint16_t *)l4_hdr);</spa=
+n><br><span>         uint16_t dst_port =3D ntohs(*(uint16_t *)(l4_hdr + siz=
+eof(uint16_t)));</span><br><span>         if ((OPENVPN_IN6_ARE_ADDR_EQUAL(&=
+amp;link_addr-&gt;addr=2Ein6=2Esin6_addr, &amp;pip6-&gt;daddr)) &amp;&amp; =
+(link_port =3D=3D dst_port))</span><br><span>@@ -2209,7 +2209,7 @@</span><b=
+r><span> </span><br><span>                     if (e-&gt;arg &gt;=3D MULTI_=
+N)</span><br><span>                     {</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-                        struct event_arg *ev_arg =3D (s=
+truct event_arg *)e-&gt;arg;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                        const struct event_arg *ev_arg =3D (struct=
+ event_arg *)e-&gt;arg;</span><br><span>                         if (ev_arg=
+-&gt;type !=3D EVENT_ARG_LINK_SOCKET)</span><br><span>                     =
+    {</span><br><span>                             c-&gt;c2=2Eevent_set_sta=
+tus =3D ES_ERROR;</span><br><span>diff --git a/src/openvpn/init=2Ec b/src/o=
+penvpn/init=2Ec</span><br><span>index 66bae34=2E=2Ea8e041d 100644</span><br=
+><span>--- a/src/openvpn/init=2Ec</span><br><span>+++ b/src/openvpn/init=2E=
+c</span><br><span>@@ -321,8 +321,8 @@</span><br><span> management_callback_=
+remote_entry_count(void *arg)</span><br><span> {</span><br><span>     ASSER=
+T(arg);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct con=
+text *c =3D (struct context *)arg;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    struct connection_list *l =3D c-&gt;options=2Econnection_l=
+ist;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const struc=
+t context *c =3D (struct context *)arg;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    const struct connection_list *l =3D c-&gt;options=
+=2Econnection_list;</span><br><span> </span><br><span>     return l-&gt;len=
+;</span><br><span> }</span><br><span>@@ -339,7 +339,7 @@</span><br><span> <=
+/span><br><span>     if (l-&gt;len &gt; 0 &amp;&amp; index &lt; (unsigned i=
+nt)l-&gt;len)</span><br><span>     {</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-        struct connection_entry *ce =3D l-&gt;array[index];<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        const struct=
+ connection_entry *ce =3D l-&gt;array[index];</span><br><span>         cons=
+t char *proto =3D proto2ascii(ce-&gt;proto, ce-&gt;af, false);</span><br><s=
+pan>         const char *status =3D (ce-&gt;flags &amp; CE_DISABLED) ? &quo=
+t;disabled&quot; : &quot;enabled&quot;;</span><br><span> </span><br><span>@=
+@ -517,7 +517,7 @@</span><br><span> {</span><br><span>     struct connectio=
+n_list *l =3D c-&gt;options=2Econnection_list;</span><br><span>     bool ce=
+_defined;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct c=
+onnection_entry *ce;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    const struct connection_entry *ce;</span><br><span>     int n_cycles =
+=3D 0;</span><br><span> </span><br><span>     do</span><br><span>@@ -1563,1=
+0 +1563,10 @@</span><br><span>     /* Tell management interface that we ini=
+tialized */</span><br><span>     if (management)</span><br><span>     {</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-        in_addr_t *tun_lo=
+cal =3D NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+struct in6_addr *tun_local6 =3D NULL;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        const in_addr_t *tun_local =3D NULL;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        const struct in6_addr *t=
+un_local6 =3D NULL;</span><br><span>         struct openvpn_sockaddr local,=
+ remote;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        struc=
+t link_socket_actual *actual;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        const struct link_socket_actual *actual;</span><br><span>=
+         socklen_t sa_len =3D sizeof(local);</span><br><span>         const=
+ char *detail =3D &quot;SUCCESS&quot;;</span><br><span>         if (flags &=
+amp; ISC_ERRORS)</span><br><span>@@ -4282,7 +4282,7 @@</span><br><span>    =
+ /* On some newer Android handsets, changing to a different network</span><=
+br><span>      * often does not trigger a TCP reset but continue using the =
+old</span><br><span>      * connection (e=2Eg=2E using mobile connection wh=
+en WiFi becomes available */</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    struct link_socket_info *lsi =3D get_link_socket_info(c);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    const struct link_sock=
+et_info *lsi =3D get_link_socket_info(c);</span><br><span>     if (lsi &amp=
+;&amp; proto_is_tcp(lsi-&gt;proto) &amp;&amp; !samenetwork)</span><br><span=
+>     {</span><br><span>         return -2;</span><br><span>diff --git a/sr=
+c/openvpn/list=2Ec b/src/openvpn/list=2Ec</span><br><span>index 9e80761=2E=
+=2Ee51dcd0 100644</span><br><span>--- a/src/openvpn/list=2Ec</span><br><spa=
+n>+++ b/src/openvpn/list=2Ec</span><br><span>@@ -167,7 +167,7 @@</span><br>=
+<span> hash_remove_by_value(struct hash *hash, void *value)</span><br><span=
+> {</span><br><span>     struct hash_iterator hi;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    struct hash_element *he;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    const struct hash_element *he;</sp=
+an><br><span> </span><br><span>     hash_iterator_init(hash, &amp;hi);</spa=
+n><br><span>     while ((he =3D hash_iterator_next(&amp;hi)))</span><br><sp=
+an>diff --git a/src/openvpn/manage=2Ec b/src/openvpn/manage=2Ec</span><br><=
+span>index c082f51=2E=2E604bbcd 100644</span><br><span>--- a/src/openvpn/ma=
+nage=2Ec</span><br><span>+++ b/src/openvpn/manage=2Ec</span><br><span>@@ -3=
+820,7 +3820,7 @@</span><br><span> {</span><br><span>     int ok;</span><br>=
+<span>     char *result =3D NULL;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    struct buffer *buf;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    const struct buffer *buf;</span><br><span> </span><br><=
+span>     ok =3D management_query_multiline(man, b64_data, prompt, cmd, sta=
+te, input);</span><br><span>     if (ok &amp;&amp; buffer_list_defined(*inp=
+ut))</span><br><span>@@ -3849,7 +3849,7 @@</span><br><span> {</span><br><sp=
+an>     int ok;</span><br><span>     char *result =3D NULL;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    struct buffer *buf;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    const struct buffer *buf;</sp=
+an><br><span> </span><br><span>     ok =3D management_query_multiline(man, =
+b64_data, prompt, cmd, state, input);</span><br><span>     if (ok &amp;&amp=
+; buffer_list_defined(*input))</span><br><span>diff --git a/src/openvpn/mis=
+c=2Ec b/src/openvpn/misc=2Ec</span><br><span>index a8c88c9=2E=2E54af890 100=
+644</span><br><span>--- a/src/openvpn/misc=2Ec</span><br><span>+++ b/src/op=
+envpn/misc=2Ec</span><br><span>@@ -131,7 +131,7 @@</span><br><span>     str=
+uct auth_challenge_info *ac;</span><br><span>     const int len =3D strlen(=
+auth_challenge);</span><br><span>     char *work =3D (char *)gc_malloc(len =
++ 1, false, gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    c=
+har *cp;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const c=
+har *cp;</span><br><span> </span><br><span>     struct buffer b;</span><br>=
+<span>     buf_set_read(&amp;b, (const uint8_t *)auth_challenge, len);</spa=
+n><br><span>diff --git a/src/openvpn/mss=2Ec b/src/openvpn/mss=2Ec</span><b=
+r><span>index 14112b4=2E=2E36bbb43 100644</span><br><span>--- a/src/openvpn=
+/mss=2Ec</span><br><span>+++ b/src/openvpn/mss=2Ec</span><br><span>@@ -65,7=
+ +65,7 @@</span><br><span>         struct buffer newbuf =3D *buf;</span><br=
+><span>         if (buf_advance(&amp;newbuf, hlen))</span><br><span>       =
+  {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            struct=
+ openvpn_tcphdr *tc =3D (struct openvpn_tcphdr *)BPTR(&amp;newbuf);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+            const struct op=
+envpn_tcphdr *tc =3D (struct openvpn_tcphdr *)BPTR(&amp;newbuf);</span><br>=
+<span>             if (tc-&gt;flags &amp; OPENVPN_TCPH_SYN_MASK)</span><br>=
+<span>             {</span><br><span>                 mss_fixup_dowork(&amp=
+;newbuf, maxmss);</span><br><span>@@ -122,7 +122,7 @@</span><br><span>     =
+newbuf =3D *buf;</span><br><span>     if (buf_advance(&amp;newbuf, 40) &amp=
+;&amp; BLENZ(&amp;newbuf) &gt;=3D sizeof(struct openvpn_tcphdr))</span><br>=
+<span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        s=
+truct openvpn_tcphdr *tc =3D (struct openvpn_tcphdr *)BPTR(&amp;newbuf);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        const struct o=
+penvpn_tcphdr *tc =3D (struct openvpn_tcphdr *)BPTR(&amp;newbuf);</span><br=
+><span>         if (tc-&gt;flags &amp; OPENVPN_TCPH_SYN_MASK)</span><br><sp=
+an>         {</span><br><span>             mss_fixup_dowork(&amp;newbuf, ma=
+xmss - 20);</span><br><span>diff --git a/src/openvpn/mtcp=2Ec b/src/openvpn=
+/mtcp=2Ec</span><br><span>index f000283=2E=2E5d88f8a 100644</span><br><span=
+>--- a/src/openvpn/mtcp=2Ec</span><br><span>+++ b/src/openvpn/mtcp=2Ec</spa=
+n><br><span>@@ -130,7 +130,7 @@</span><br><span> void</span><br><span> mult=
+i_tcp_dereference_instance(struct multi_io *multi_io, struct multi_instance=
+ *mi)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    struct link_socket *sock =3D mi-&gt;context=2Ec2=2Elink_sockets[0];<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const struct lin=
+k_socket *sock =3D mi-&gt;context=2Ec2=2Elink_sockets[0];</span><br><span> =
+    if (sock &amp;&amp; mi-&gt;socket_set_called)</span><br><span>     {</s=
+pan><br><span>         event_del(multi_io-&gt;es, socket_event_handle(sock)=
+);</span><br><span>diff --git a/src/openvpn/mudp=2Ec b/src/openvpn/mudp=2Ec=
+</span><br><span>index 632b064=2E=2E6d9c181 100644</span><br><span>--- a/sr=
+c/openvpn/mudp=2Ec</span><br><span>+++ b/src/openvpn/mudp=2Ec</span><br><sp=
+an>@@ -102,7 +102,7 @@</span><br><span>     verdict =3D tls_pre_decrypt_lit=
+e(tas, state, &amp;m-&gt;top=2Ec2=2Efrom, &amp;m-&gt;top=2Ec2=2Ebuf);</span=
+><br><span> </span><br><span>     uint8_t *hmac_key =3D m-&gt;top=2Ec2=2Ese=
+ssion_id_key;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    stru=
+ct openvpn_sockaddr *from =3D &amp;m-&gt;top=2Ec2=2Efrom=2Edest;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    const struct openvpn_socka=
+ddr *from =3D &amp;m-&gt;top=2Ec2=2Efrom=2Edest;</span><br><span>     int h=
+andwindow =3D m-&gt;top=2Eoptions=2Ehandshake_window;</span><br><span> </sp=
+an><br><span>     if (verdict =3D=3D VERDICT_VALID_RESET_V3 || verdict =3D=
+=3D VERDICT_VALID_RESET_V2)</span><br><span>diff --git a/src/openvpn/multi=
+=2Ec b/src/openvpn/multi=2Ec</span><br><span>index 20b4f14=2E=2E60a5148 100=
+644</span><br><span>--- a/src/openvpn/multi=2Ec</span><br><span>+++ b/src/o=
+penvpn/multi=2Ec</span><br><span>@@ -86,7 +86,7 @@</span><br><span>     str=
+uct gc_arena gc =3D gc_new();</span><br><span>     struct env_set *es;</spa=
+n><br><span>     bool ret =3D true;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    struct plugin_list *plugins;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    const struct plugin_list *plugins;</span><br=
+><span> </span><br><span>     /* get environmental variable source */</span=
+><br><span>     if (mi &amp;&amp; mi-&gt;context=2Ec2=2Ees)</span><br><span=
+>@@ -1793,7 +1793,7 @@</span><br><span>      * Push the first cipher from -=
+-data-ciphers to the client that</span><br><span>      * the client announc=
+es to be supporting=2E</span><br><span>      */</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    char *push_cipher =3D</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    const char *push_cipher =3D</span><br=
+><span>         ncp_get_best_cipher(o-&gt;ncp_ciphers, peer_info, tls_multi=
+-&gt;remote_ciphername, &amp;o-&gt;gc);</span><br><span>     if (push_ciphe=
+r)</span><br><span>     {</span><br><span>@@ -1924,7 +1924,7 @@</span><br><=
+span> static enum client_connect_return</span><br><span> ccs_test_deferred_=
+ret_file(struct multi_instance *mi)</span><br><span> {</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    struct client_connect_defer_state *ccs=
+ =3D &amp;(mi-&gt;client_connect_defer_state);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    const struct client_connect_defer_state *ccs=
+ =3D &amp;(mi-&gt;client_connect_defer_state);</span><br><span>     FILE *f=
+p =3D fopen(ccs-&gt;deferred_ret_file, &quot;r&quot;);</span><br><span>    =
+ if (!fp)</span><br><span>     {</span><br><span>@@ -2165,7 +2165,7 @@</spa=
+n><br><span> {</span><br><span>     ASSERT(mi);</span><br><span>     ASSERT=
+(option_types_found);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    struct client_connect_defer_state *ccs =3D &amp;(mi-&gt;client_connect_=
+defer_state);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    co=
+nst struct client_connect_defer_state *ccs =3D &amp;(mi-&gt;client_connect_=
+defer_state);</span><br><span>     enum client_connect_return ret =3D CC_RE=
+T_SKIPPED;</span><br><span> </span><br><span>     ret =3D ccs_test_deferred=
+_ret_file(mi);</span><br><span>@@ -2567,7 +2567,7 @@</span><br><span> overr=
+ide_locked_username(struct multi_instance *mi)</span><br><span> {</span><br=
+><span>     struct tls_multi *multi =3D mi-&gt;context=2Ec2=2Etls_multi;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct options *opti=
+ons =3D &amp;mi-&gt;context=2Eoptions;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    const struct options *options =3D &amp;mi-&gt;contex=
+t=2Eoptions;</span><br><span>     struct tls_session *session =3D &amp;mult=
+i-&gt;session[TM_ACTIVE];</span><br><span> </span><br><span>     if (!multi=
+-&gt;locked_username)</span><br><span>@@ -2986,7 +2986,7 @@</span><br><span=
+>     {</span><br><span> #if defined(ENABLE_ASYNC_PUSH)</span><br><span>   =
+      bool was_unauthenticated =3D true;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-        struct key_state *ks =3D NULL;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        const struct key_state *ks =
+=3D NULL;</span><br><span>         if (mi-&gt;context=2Ec2=2Etls_multi)</sp=
+an><br><span>         {</span><br><span>             ks =3D &amp;mi-&gt;con=
+text=2Ec2=2Etls_multi-&gt;session[TM_ACTIVE]=2Ekey[KS_PRIMARY];</span><br><=
+span>@@ -3919,7 +3919,7 @@</span><br><span> static int</span><br><span> man=
+agement_callback_n_clients(void *arg)</span><br><span> {</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    struct multi_context *m =3D (struct =
+multi_context *)arg;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    const struct multi_context *m =3D (struct multi_context *)arg;</span><=
+br><span>     return m-&gt;n_clients;</span><br><span> }</span><br><span> <=
+/span><br><span>@@ -4430,7 +4430,7 @@</span><br><span> bool</span><br><span=
+> multi_check_push_ifconfig_extra_route(struct multi_instance *mi, in_addr_=
+t dest)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    struct options *o =3D &amp;mi-&gt;context=2Eoptions;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    const struct options *o =3D &=
+amp;mi-&gt;context=2Eoptions;</span><br><span>     in_addr_t local_addr, lo=
+cal_netmask;</span><br><span> </span><br><span>     if (!o-&gt;ifconfig_loc=
+al || !o-&gt;ifconfig_remote_netmask)</span><br><span>@@ -4452,7 +4452,7 @@=
+</span><br><span> multi_check_push_ifconfig_ipv6_extra_route(struct multi_i=
+nstance *mi,</span><br><span>                                            st=
+ruct in6_addr *dest)</span><br><span> {</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    struct options *o =3D &amp;mi-&gt;context=2Eoptions;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const struct opt=
+ions *o =3D &amp;mi-&gt;context=2Eoptions;</span><br><span> </span><br><spa=
+n>     if (!o-&gt;ifconfig_ipv6_local || !o-&gt;ifconfig_ipv6_netbits)</spa=
+n><br><span>     {</span><br><span>diff --git a/src/openvpn/networking_sitn=
+l=2Ec b/src/openvpn/networking_sitnl=2Ec</span><br><span>index b3f8e2b=2E=
+=2Ee6e72d0 100644</span><br><span>--- a/src/openvpn/networking_sitnl=2Ec</s=
+pan><br><span>+++ b/src/openvpn/networking_sitnl=2Ec</span><br><span>@@ -46=
+2,7 +462,7 @@</span><br><span>     struct rtattr *rta =3D RTM_RTA(r);</span=
+><br><span>     size_t len =3D n-&gt;nlmsg_len - NLMSG_LENGTH(sizeof(*r));<=
+/span><br><span>     unsigned int table, ifindex =3D 0;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    void *gw =3D NULL;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    const void *gw =3D NULL;</span><br=
+><span> </span><br><span>     /* filter-out non-zero dst prefixes */</span>=
+<br><span>     if (res-&gt;default_only &amp;&amp; r-&gt;rtm_dst_len !=3D 0=
+)</span><br><span>@@ -1179,7 +1179,7 @@</span><br><span> net_route_v4_add(o=
+penvpn_net_ctx_t *ctx, const in_addr_t *dst, int prefixlen, const in_addr_t=
+ *gw,</span><br><span>                  const char *iface, uint32_t table, =
+int metric)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    in_addr_t *dst_ptr =3D NULL, *gw_ptr =3D NULL;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    const in_addr_t *dst_ptr =3D NU=
+LL, *gw_ptr =3D NULL;</span><br><span>     in_addr_t dst_be =3D 0, gw_be =
+=3D 0;</span><br><span>     char dst_str[INET_ADDRSTRLEN];</span><br><span>=
+     char gw_str[INET_ADDRSTRLEN];</span><br><span>@@ -1326,7 +1326,7 @@</s=
+pan><br><span> #if defined(ENABLE_DCO)</span><br><span>     if (arg &amp;&a=
+mp; (strcmp(type, OVPN_FAMILY_NAME) =3D=3D 0))</span><br><span>     {</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        dco_context_t *dco =
+=3D arg;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        con=
+st dco_context_t *dco =3D arg;</span><br><span>         struct rtattr *data=
+ =3D SITNL_NEST(&amp;req=2En, sizeof(req), IFLA_INFO_DATA);</span><br><span=
+> </span><br><span>         /* the netlink format is uint8_t for this and u=
+sing something</span><br><span>diff --git a/src/openvpn/options=2Ec b/src/o=
+penvpn/options=2Ec</span><br><span>index 1fc38a6=2E=2Eb210a5d 100644</span>=
+<br><span>--- a/src/openvpn/options=2Ec</span><br><span>+++ b/src/openvpn/o=
+ptions=2Ec</span><br><span>@@ -1696,7 +1696,7 @@</span><br><span> </span><b=
+r><span>     for (int i =3D 0; i &lt; ce-&gt;local_list-&gt;len; i++)</span=
+><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    struct local_entry *le =3D ce-&gt;local_list-&gt;array[i];</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        const struct local_entry=
+ *le =3D ce-&gt;local_list-&gt;array[i];</span><br><span> </span><br><span>=
+         if (proto_is_net(le-&gt;proto) &amp;&amp; string_defined_equal(le-=
+&gt;local, ce-&gt;remote)</span><br><span>             &amp;&amp; string_de=
+fined_equal(le-&gt;port, ce-&gt;remote_port))</span><br><span>@@ -7692,7 +7=
+692,7 @@</span><br><span> #ifdef ENABLE_PKCS11</span><br><span>     else if=
+ (streq(p[0], &quot;show-pkcs11-ids&quot;) &amp;&amp; !p[3])</span><br><spa=
+n>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        char =
+*provider =3D p[1];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        const char *provider =3D p[1];</span><br><span>         bool cert_p=
+rivate =3D (p[2] =3D=3D NULL ? false : (atoi_warn(p[2], msglevel) !=3D 0));=
+</span><br><span> </span><br><span> #ifdef DEFAULT_PKCS11_MODULE</span><br>=
+<span>diff --git a/src/openvpn/options_parse=2Ec b/src/openvpn/options_pars=
+e=2Ec</span><br><span>index a8c4aee=2E=2E88ab4d2 100644</span><br><span>---=
+ a/src/openvpn/options_parse=2Ec</span><br><span>+++ b/src/openvpn/options_=
+parse=2Ec</span><br><span>@@ -268,7 +268,7 @@</span><br><span>     while (i=
+n_src_get(is, line, sizeof(line)))</span><br><span>     {</span><br><span> =
+        (*num_lines)++;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-        char *line_ptr =3D line;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        const char *line_ptr =3D line;</span><br><span>     =
+    /* Remove leading spaces */</span><br><span>         while (isspace(*li=
+ne_ptr))</span><br><span>         {</span><br><span>diff --git a/src/openvp=
+n/options_util=2Ec b/src/openvpn/options_util=2Ec</span><br><span>index d72=
+ea25c=2E=2E779c38e 100644</span><br><span>--- a/src/openvpn/options_util=2E=
+c</span><br><span>+++ b/src/openvpn/options_util=2Ec</span><br><span>@@ -27=
+3,7 +273,7 @@</span><br><span>         return true;</span><br><span>     }<=
+/span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+struct pull_filter *f;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    const struct pull_filter *f;</span><br><span> </span><br><span>     =
+for (f =3D o-&gt;pull_filter_list-&gt;head; f; f =3D f-&gt;next)</span><br>=
+<span>     {</span><br><span>diff --git a/src/openvpn/pool=2Ec b/src/openvp=
+n/pool=2Ec</span><br><span>index ff74e7c=2E=2E80dec6c 100644</span><br><spa=
+n>--- a/src/openvpn/pool=2Ec</span><br><span>+++ b/src/openvpn/pool=2Ec</sp=
+an><br><span>@@ -63,7 +63,7 @@</span><br><span> </span><br><span>     for (=
+i =3D 0; i &lt; pool-&gt;size; ++i)</span><br><span>     {</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-        struct ifconfig_pool_entry *ip=
+e =3D &amp;pool-&gt;list[i];</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        const struct ifconfig_pool_entry *ipe =3D &amp;pool-&gt;li=
+st[i];</span><br><span>         if (!ipe-&gt;in_use)</span><br><span>      =
+   {</span><br><span>             /*</span><br><span>diff --git a/src/openv=
+pn/proxy=2Ec b/src/openvpn/proxy=2Ec</span><br><span>index 9acb2fa=2E=2Ee07=
+00aa 100644</span><br><span>--- a/src/openvpn/proxy=2Ec</span><br><span>+++=
+ b/src/openvpn/proxy=2Ec</span><br><span>@@ -703,7 +703,7 @@</span><br><spa=
+n> #if PROXY_DIGEST_AUTH</span><br><span>         else if (p-&gt;auth_metho=
+d =3D=3D HTTP_AUTH_DIGEST &amp;&amp; !processed)</span><br><span>         {=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            char *pa =
+=3D p-&gt;proxy_authenticate;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+            const char *pa =3D p-&gt;proxy_authenticate;</span><b=
+r><span>             const int method =3D p-&gt;auth_method;</span><br><spa=
+n>             ASSERT(pa);</span><br><span> </span><br><span>diff --git a/s=
+rc/openvpn/push=2Ec b/src/openvpn/push=2Ec</span><br><span>index 5b15f71=2E=
+=2Efa7bf1e 100644</span><br><span>--- a/src/openvpn/push=2Ec</span><br><spa=
+n>+++ b/src/openvpn/push=2Ec</span><br><span>@@ -271,8 +271,8 @@</span><br>=
+<span>     }</span><br><span> #ifdef ENABLE_MANAGEMENT</span><br><span>    =
+ struct tls_session *session =3D &amp;c-&gt;c2=2Etls_multi-&gt;session[TM_A=
+CTIVE];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct man=
+_def_auth_context *mda =3D session-&gt;opt-&gt;mda_context;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    struct env_set *es =3D session-&g=
+t;opt-&gt;es;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    co=
+nst struct man_def_auth_context *mda =3D session-&gt;opt-&gt;mda_context;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const struct env_=
+set *es =3D session-&gt;opt-&gt;es;</span><br><span>     unsigned int mda_k=
+ey_id =3D get_primary_key(c-&gt;c2=2Etls_multi)-&gt;mda_key_id;</span><br><=
+span> </span><br><span>     management_notify_client_cr_response(mda_key_id=
+, mda, es, m);</span><br><span>@@ -917,7 +917,7 @@</span><br><span> push_op=
+tions(struct options *o, char **p, msglvl_t msglevel, struct gc_arena *gc)<=
+/span><br><span> {</span><br><span>     const char **argv =3D make_extended=
+_arg_array(p, false, gc);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    char *opt =3D print_argv(argv, gc, 0);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    const char *opt =3D print_argv(argv, gc, 0);=
+</span><br><span>     push_option(o, opt, msglevel);</span><br><span> }</sp=
+an><br><span> </span><br><span>@@ -1199,7 +1199,7 @@</span><br><span>      =
+               /* parse route-ipv6 arguments */</span><br><span>           =
+          if (get_ipv6_addr(p[1], &amp;network, &amp;netbits, D_ROUTE_DEBUG=
+))</span><br><span>                     {</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-                        struct iroute_ipv6 *ir;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                        con=
+st struct iroute_ipv6 *ir;</span><br><span> </span><br><span>              =
+           /* does this route-ipv6 match an iroute-ipv6? */</span><br><span=
+>                         for (ir =3D o-&gt;iroutes_ipv6; ir !=3D NULL; ir =
+=3D ir-&gt;next)</span><br><span>diff --git a/src/openvpn/route=2Ec b/src/o=
+penvpn/route=2Ec</span><br><span>index 6dbe3ec=2E=2E03a2526 100644</span><b=
+r><span>--- a/src/openvpn/route=2Ec</span><br><span>+++ b/src/openvpn/route=
+=2Ec</span><br><span>@@ -667,7 +667,7 @@</span><br><span> </span><br><span>=
+     /* parse the routes from opt to rl */</span><br><span>     {</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-        struct route_option *ro=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        const stru=
+ct route_option *ro;</span><br><span>         for (ro =3D opt-&gt;routes; r=
+o; ro =3D ro-&gt;next)</span><br><span>         {</span><br><span>         =
+    struct addrinfo *netlist =3D NULL;</span><br><span>@@ -679,7 +679,7 @@<=
+/span><br><span>             }</span><br><span>             else</span><br>=
+<span>             {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+               struct addrinfo *curele;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+                const struct addrinfo *curele;</span><b=
+r><span>                 for (curele =3D netlist; curele; curele =3D curele=
+-&gt;ai_next)</span><br><span>                 {</span><br><span>          =
+           struct route_ipv4 *new;</span><br><span>@@ -799,7 +799,7 @@</spa=
+n><br><span>     need_remote_ipv6_route =3D false;</span><br><span> </span>=
+<br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+   struct route_ipv6_option *ro6;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        const struct route_ipv6_option *ro6;</span><br><span>=
+         for (ro6 =3D opt6-&gt;routes_ipv6; ro6; ro6 =3D ro6-&gt;next)</spa=
+n><br><span>         {</span><br><span>             struct route_ipv6 *r6;<=
+/span><br><span>@@ -1187,7 +1187,7 @@</span><br><span> {</span><br><span>  =
+   if (rl6 &amp;&amp; (rl6-&gt;iflags &amp; RL_ROUTES_ADDED))</span><br><sp=
+an>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        stru=
+ct route_ipv6 *r6;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       const struct route_ipv6 *r6;</span><br><span>         for (r6 =3D rl=
+6-&gt;routes_ipv6; r6; r6 =3D r6-&gt;next)</span><br><span>         {</span=
+><br><span>             delete_route_ipv6(r6, tt, es, ctx);</span><br><span=
+>@@ -1226,7 +1226,7 @@</span><br><span> void</span><br><span> print_route_o=
+ptions(const struct route_option_list *rol, msglvl_t msglevel)</span><br><s=
+pan> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct rout=
+e_option *ro;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    co=
+nst struct route_option *ro;</span><br><span>     if (rol-&gt;flags &amp; R=
+G_ENABLE)</span><br><span>     {</span><br><span>         msg(msglevel, &qu=
+ot;  [redirect_default_gateway local=3D%d]&quot;, (rol-&gt;flags &amp; RG_L=
+OCAL) !=3D 0);</span><br><span>@@ -1335,7 +1335,7 @@</span><br><span> seten=
+v_routes(struct env_set *es, const struct route_list *rl)</span><br><span> =
+{</span><br><span>     int i =3D 1;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    struct route_ipv4 *r;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    const struct route_ipv4 *r;</span><br><span>     fo=
+r (r =3D rl-&gt;routes; r; r =3D r-&gt;next)</span><br><span>     {</span><=
+br><span>         setenv_route(es, r, i++);</span><br><span>@@ -1372,7 +137=
+2,7 @@</span><br><span> setenv_routes_ipv6(struct env_set *es, const struct=
+ route_ipv6_list *rl6)</span><br><span> {</span><br><span>     int i =3D 1;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct route_ipv6=
+ *r6;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const stru=
+ct route_ipv6 *r6;</span><br><span>     for (r6 =3D rl6-&gt;routes_ipv6; r6=
+; r6 =3D r6-&gt;next)</span><br><span>     {</span><br><span>         seten=
+v_route_ipv6(es, r6, i++);</span><br><span>@@ -2423,7 +2423,7 @@</span><br>=
+<span>          */</span><br><span>         if (rl &amp;&amp; tt-&gt;did_if=
+config_setup)</span><br><span>         {</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-            struct route_ipv4 *r;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            const struct route_ipv4 *r;</=
+span><br><span>             for (r =3D rl-&gt;routes, len =3D 0; r; r =3D r=
+-&gt;next, ++len)</span><br><span>             {</span><br><span>          =
+       test_route_helper(&amp;ret, &amp;count, &amp;good, &amp;ambig, adapt=
+ers, r-&gt;gateway);</span><br><span>@@ -3110,7 +3110,8 @@</span><br><span>=
+     /* scan adapter list */</span><br><span>     if (rgi-&gt;flags &amp; R=
+GI_ADDR_DEFINED)</span><br><span>     {</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-        struct ifreq *ifr, *ifend;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        const struct ifreq *ifr;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        const struct ifreq *=
+ifend;</span><br><span>         in_addr_t addr, netmask;</span><br><span>  =
+       struct ifreq ifreq;</span><br><span>         struct ifconf ifc;</spa=
+n><br><span>diff --git a/src/openvpn/socket=2Ec b/src/openvpn/socket=2Ec</s=
+pan><br><span>index 47edbdb=2E=2E50126bf 100644</span><br><span>--- a/src/o=
+penvpn/socket=2Ec</span><br><span>+++ b/src/openvpn/socket=2Ec</span><br><s=
+pan>@@ -393,7 +393,7 @@</span><br><span> </span><br><span>             for =
+(int j =3D 0; j &lt; ce-&gt;local_list-&gt;len; j++)</span><br><span>      =
+       {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
+   struct local_entry *le =3D ce-&gt;local_list-&gt;array[j];</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+                const struct loca=
+l_entry *le =3D ce-&gt;local_list-&gt;array[j];</span><br><span> </span><br=
+><span>                 if (!le-&gt;local)</span><br><span>                =
+ {</span><br><span>@@ -898,12 +898,10 @@</span><br><span>      * What is th=
+e correct way to deal with it?</span><br><span>      */</span><br><span> </=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct addrinfo *cu=
+r;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>  =
+   ASSERT(local);</span><br><span> </span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-</span><br><span>     /* find the first addrinfo with correct=
+ ai_family */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    co=
+nst struct addrinfo *cur;</span><br><span>     for (cur =3D local; cur; cur=
+ =3D cur-&gt;ai_next)</span><br><span>     {</span><br><span>         if (c=
+ur-&gt;ai_family =3D=3D ai_family)</span><br><span>@@ -1490,7 +1488,7 @@</s=
+pan><br><span>         /* Socket is always bound on the first matching addr=
+ess,</span><br><span>          * For bound sockets with no remote addr this=
+ is the element of</span><br><span>          * the list */</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-        struct addrinfo *cur;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        const struct addrinf=
+o *cur;</span><br><span>         for (cur =3D sock-&gt;info=2Elsa-&gt;bind_=
+local; cur; cur =3D cur-&gt;ai_next)</span><br><span>         {</span><br><=
+span>             if (!ai_family || ai_family =3D=3D cur-&gt;ai_family)</sp=
+an><br><span>@@ -1621,7 +1619,7 @@</span><br><span> create_socket_dco_win(s=
+truct context *c, struct link_socket *sock, struct signal_info *sig_info)</=
+span><br><span> {</span><br><span>     /* in P2P mode we must have remote r=
+esolved at this point */</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    struct addrinfo *remoteaddr =3D sock-&gt;info=2Elsa-&gt;current_remo=
+te;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const struct=
+ addrinfo *remoteaddr =3D sock-&gt;info=2Elsa-&gt;current_remote;</span><br=
+><span>     if ((c-&gt;options=2Emode =3D=3D MODE_POINT_TO_POINT) &amp;&amp=
+; (!remoteaddr))</span><br><span>     {</span><br><span>         return;</s=
+pan><br><span>@@ -1910,7 +1908,7 @@</span><br><span>                       =
+        const struct link_socket_actual *from_addr)</span><br><span> {</spa=
+n><br><span>     struct gc_arena gc =3D gc_new();</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    struct addrinfo *ai;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    const struct addrinfo *ai;</span><br>=
+<span> </span><br><span>     switch (from_addr-&gt;dest=2Eaddr=2Esa=2Esa_fa=
+mily)</span><br><span>     {</span><br><span>diff --git a/src/openvpn/socke=
+t=2Eh b/src/openvpn/socket=2Eh</span><br><span>index 1a532e1=2E=2E89465bc 1=
+00644</span><br><span>--- a/src/openvpn/socket=2Eh</span><br><span>+++ b/sr=
+c/openvpn/socket=2Eh</span><br><span>@@ -761,7 +761,7 @@</span><br><span> {=
+</span><br><span>     if (sock &amp;&amp; ipbuf)</span><br><span>     {</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-        struct openvpn_ip=
+hdr *iph =3D (struct openvpn_iphdr *)BPTR(ipbuf);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        const struct openvpn_iphdr *iph =3D (=
+struct openvpn_iphdr *)BPTR(ipbuf);</span><br><span>         sock-&gt;ptos =
+=3D iph-&gt;tos;</span><br><span>         sock-&gt;ptos_defined =3D true;</=
+span><br><span>     }</span><br><span>diff --git a/src/openvpn/ssl=2Ec b/sr=
+c/openvpn/ssl=2Ec</span><br><span>index d5bd602=2E=2E5f5d1f9 100644</span><=
+br><span>--- a/src/openvpn/ssl=2Ec</span><br><span>+++ b/src/openvpn/ssl=2E=
+c</span><br><span>@@ -1488,7 +1488,7 @@</span><br><span> static bool</span>=
+<br><span> generate_key_expansion(struct tls_multi *multi, struct key_state=
+ *ks, struct tls_session *session)</span><br><span> {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    struct key_ctx_bi *key =3D &amp;ks-&gt;=
+crypto_options=2Ekey_ctx_bi;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    const struct key_ctx_bi *key =3D &amp;ks-&gt;crypto_options=2E=
+key_ctx_bi;</span><br><span>     bool ret =3D false;</span><br><span>     s=
+truct key2 key2;</span><br><span> </span><br><span>@@ -1750,7 +1750,7 @@</s=
+pan><br><span> static void</span><br><span> flush_payload_buffer(struct key=
+_state *ks)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    struct buffer *b;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    const struct buffer *b;</span><br><span> </span><br><span>  =
+   while ((b =3D buffer_list_peek(ks-&gt;paybuf)))</span><br><span>     {</=
+span><br><span>@@ -2779,7 +2779,7 @@</span><br><span>     /* Outgoing Ciphe=
+rtext to reliable buffer */</span><br><span>     if (ks-&gt;state &gt;=3D S=
+_START)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-        struct buffer *buf =3D reliable_get_buf_output_sequenced(k=
+s-&gt;send_reliable);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        const struct buffer *buf =3D reliable_get_buf_output_sequenced(ks=
+-&gt;send_reliable);</span><br><span>         if (buf)</span><br><span>    =
+     {</span><br><span>             if (!write_outgoing_tls_ciphertext(sess=
+ion, continue_tls_process))</span><br><span>@@ -2848,7 +2848,7 @@</span><br=
+><span>     {</span><br><span>         int opcode;</span><br><span> </span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        struct buffer *buf =
+=3D reliable_send(ks-&gt;send_reliable, &amp;opcode);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        const struct buffer *buf =3D reli=
+able_send(ks-&gt;send_reliable, &amp;opcode);</span><br><span>         ASSE=
+RT(buf);</span><br><span>         struct buffer b =3D *buf;</span><br><span=
+>         INCR_SENT;</span><br><span>@@ -3211,7 +3211,7 @@</span><br><span>=
+ static void</span><br><span> check_session_buf_not_used(struct buffer *to_=
+link, struct tls_session *session)</span><br><span> {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    uint8_t *dataptr =3D to_link-&gt;data;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const uint8_t *d=
+ataptr =3D to_link-&gt;data;</span><br><span>     if (!dataptr)</span><br><=
+span>     {</span><br><span>         return;</span><br><span>@@ -3233,7 +32=
+33,7 @@</span><br><span> </span><br><span>     for (int i =3D 0; i &lt; KS_=
+SIZE; i++)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-        struct key_state *ks =3D &amp;session-&gt;key[i];</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        const struct key_=
+state *ks =3D &amp;session-&gt;key[i];</span><br><span>         if (ks-&gt;=
+state =3D=3D S_UNDEF)</span><br><span>         {</span><br><span>          =
+   continue;</span><br><span>@@ -3304,7 +3304,7 @@</span><br><span>     {</=
+span><br><span>         struct tls_session *session =3D &amp;multi-&gt;sess=
+ion[i];</span><br><span>         struct key_state *ks =3D &amp;session-&gt;=
+key[KS_PRIMARY];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+   struct key_state *ks_lame =3D &amp;session-&gt;key[KS_LAME_DUCK];</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        const struct key_s=
+tate *ks_lame =3D &amp;session-&gt;key[KS_LAME_DUCK];</span><br><span> </sp=
+an><br><span>         /* set initial remote address=2E This triggers connec=
+ting with that</span><br><span>          * session=2E So we only do that if=
+ the TM_ACTIVE session is not</span><br><span>@@ -3505,7 +3505,7 @@</span><=
+br><span> </span><br><span>     for (int i =3D 0; i &lt; KEY_SCAN_SIZE; ++i=
+)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-        struct key_state *ks =3D get_key_scan(multi, i);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        const struct key_state *ks =
+=3D get_key_scan(multi, i);</span><br><span>         if (ks-&gt;key_id !=3D=
+ key_id)</span><br><span>         {</span><br><span>             continue;<=
+/span><br><span>@@ -4070,7 +4070,7 @@</span><br><span> void</span><br><span=
+> tls_prepend_opcode_v1(const struct tls_multi *multi, struct buffer *buf)<=
+/span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ struct key_state *ks =3D multi-&gt;save_ks;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    const struct key_state *ks =3D multi-&gt;save_=
+ks;</span><br><span> </span><br><span>     msg(D_TLS_DEBUG, __func__);</spa=
+n><br><span> </span><br><span>@@ -4084,7 +4084,7 @@</span><br><span> void</=
+span><br><span> tls_prepend_opcode_v2(const struct tls_multi *multi, struct=
+ buffer *buf)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    struct key_state *ks =3D multi-&gt;save_ks;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    const struct key_state *ks =3D m=
+ulti-&gt;save_ks;</span><br><span>     uint32_t peer;</span><br><span> </sp=
+an><br><span>     msg(D_TLS_DEBUG, __func__);</span><br><span>diff --git a/=
+src/openvpn/ssl_mbedtls=2Ec b/src/openvpn/ssl_mbedtls=2Ec</span><br><span>i=
+ndex 6d7ac04=2E=2Efaf5a27 100644</span><br><span>--- a/src/openvpn/ssl_mbed=
+tls=2Ec</span><br><span>+++ b/src/openvpn/ssl_mbedtls=2Ec</span><br><span>@=
+@ -730,7 +730,7 @@</span><br><span> static inline size_t</span><br><span> e=
+xternal_key_len(void *vctx)</span><br><span> {</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    struct external_context *const ctx =3D vctx;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const struct exte=
+rnal_context *const ctx =3D vctx;</span><br><span> </span><br><span>     re=
+turn ctx-&gt;signature_length;</span><br><span> }</span><br><span>diff --gi=
+t a/src/openvpn/ssl_verify=2Ec b/src/openvpn/ssl_verify=2Ec</span><br><span=
+>index 162f68f=2E=2E063fa5d 100644</span><br><span>--- a/src/openvpn/ssl_ve=
+rify=2Ec</span><br><span>+++ b/src/openvpn/ssl_verify=2Ec</span><br><span>@=
+@ -409,7 +409,7 @@</span><br><span>                     const char *subject=
+, const struct x509_track *x509_track)</span><br><span> {</span><br><span> =
+    char envname[64];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    char *serial =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    const char *serial =3D NULL;</span><br><span>     struct gc_aren=
+a gc =3D gc_new();</span><br><span> </span><br><span>     /* Save X509 fiel=
+ds in environment */</span><br><span>@@ -699,7 +699,7 @@</span><br><span>  =
+               goto cleanup;</span><br><span>         }</span><br><span> </=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-        struct verify_h=
+ash_list *current_hash =3D opt-&gt;verify_hash;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        const struct verify_hash_list *current_=
+hash =3D opt-&gt;verify_hash;</span><br><span> </span><br><span>         wh=
+ile (current_hash)</span><br><span>         {</span><br><span>@@ -1532,7 +1=
+532,7 @@</span><br><span> verify_user_pass_management(struct tls_session *s=
+ession, const struct user_pass *up)</span><br><span> {</span><br><span>    =
+ int retval =3D KMDA_ERROR;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    struct key_state *ks =3D &amp;session-&gt;key[KS_PRIMARY]; /* pri=
+mary key */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cons=
+t struct key_state *ks =3D &amp;session-&gt;key[KS_PRIMARY]; /* primary key=
+ */</span><br><span> </span><br><span>     /* set username/password in priv=
+ate env space */</span><br><span>     setenv_str(session-&gt;opt-&gt;es, &q=
+uot;password&quot;, up-&gt;password);</span><br><span>diff --git a/src/open=
+vpn/tun=2Ec b/src/openvpn/tun=2Ec</span><br><span>index f2a4394=2E=2Eaf4892=
+1 100644</span><br><span>--- a/src/openvpn/tun=2Ec</span><br><span>+++ b/sr=
+c/openvpn/tun=2Ec</span><br><span>@@ -871,7 +871,7 @@</span><br><span>     =
+     */</span><br><span>         if (strict_warn)</span><br><span>         =
+{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            struct a=
+ddrinfo *curele;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         const struct addrinfo *curele;</span><br><span>             ifconf=
+ig_sanity_check(tun_p2p, tt-&gt;remote_netmask);</span><br><span> </span><b=
+r><span>             /*</span><br><span>@@ -1726,7 +1726,7 @@</span><br><sp=
+an>     {</span><br><span>         u_int32_t type;</span><br><span>        =
+ struct iovec iv[2];</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       struct ip *iph =3D (struct ip *)buf;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        const struct ip *iph =3D (struct ip *)buf;<=
+/span><br><span> </span><br><span>         if (iph-&gt;ip_v =3D=3D 6)</span=
+><br><span>         {</span><br><span>@@ -3414,7 +3414,7 @@</span><br><span=
+>         SP_DEVINFO_DATA device_info_data;</span><br><span>         BOOL r=
+es;</span><br><span>         HKEY dev_key;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-        char net_cfg_instance_id_string[] =3D &quot;Ne=
+tCfgInstanceId&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        const char net_cfg_instance_id_string[] =3D &quot;NetCfgInstanceI=
+d&quot;;</span><br><span>         BYTE net_cfg_instance_id[256];</span><br>=
+<span>         char device_instance_id[256];</span><br><span>         DWORD=
+ len;</span><br><span>@@ -3542,7 +3542,7 @@</span><br><span>         HKEY u=
+nit_key;</span><br><span>         char component_id_string[] =3D &quot;Comp=
+onentId&quot;;</span><br><span>         char component_id[256];</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        char net_cfg_instance_id_=
+string[] =3D &quot;NetCfgInstanceId&quot;;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        const char net_cfg_instance_id_string[] =3D =
+&quot;NetCfgInstanceId&quot;;</span><br><span>         BYTE net_cfg_instanc=
+e_id[256];</span><br><span>         DWORD data_type;</span><br><span> </spa=
+n><br><span>diff --git a/src/openvpn/win32=2Ec b/src/openvpn/win32=2Ec</spa=
+n><br><span>index ade7ec0=2E=2E81437c1 100644</span><br><span>--- a/src/ope=
+nvpn/win32=2Ec</span><br><span>+++ b/src/openvpn/win32=2Ec</span><br><span>=
+@@ -889,7 +889,7 @@</span><br><span> </span><br><span>     if (es)</span><b=
+r><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+ struct env_item *e;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        const struct env_item *e;</span><br><span>         char *ret;</spa=
+n><br><span>         char *p;</span><br><span>         size_t nchars =3D 1;=
+</span><br><span>diff --git a/src/openvpnmsica/msica_arg=2Ec b/src/openvpnm=
+sica/msica_arg=2Ec</span><br><span>index a334710=2E=2Ed763d93 100644</span>=
+<br><span>--- a/src/openvpnmsica/msica_arg=2Ec</span><br><span>+++ b/src/op=
+envpnmsica/msica_arg=2Ec</span><br><span>@@ -92,7 +92,7 @@</span><br><span>=
+ {</span><br><span>     /* Count required space=2E */</span><br><span>     =
+size_t size =3D 2 /*x + zero-terminator*/;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    for (struct msica_arg *p =3D seq-&gt;head; p !=3D =
+NULL; p =3D p-&gt;next)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    for (const struct msica_arg *p =3D seq-&gt;head; p !=3D NULL; p =3D=
+ p-&gt;next)</span><br><span>     {</span><br><span>         size +=3D wcsl=
+en(p-&gt;val) + 1 /*space delimiter|zero-terminator*/;</span><br><span>    =
+ }</span><br><span>@@ -119,7 +119,7 @@</span><br><span> </span><br><span>  =
+   /* Join=2E */</span><br><span>     LPWSTR s =3D str + 1 /*x*/;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    for (struct msica_arg *p =
+=3D seq-&gt;head; p !=3D NULL; p =3D p-&gt;next)</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    for (const struct msica_arg *p =3D seq-&gt=
+;head; p !=3D NULL; p =3D p-&gt;next)</span><br><span>     {</span><br><spa=
+n>         /* Convert zero-terminator into space delimiter=2E */</span><br>=
+<span>         s[0] =3D L&#39; &#39;;</span><br><span>diff --git a/src/open=
+vpnmsica/openvpnmsica=2Ec b/src/openvpnmsica/openvpnmsica=2Ec</span><br><sp=
+an>index 95e457c=2E=2Ea861e8a 100644</span><br><span>--- a/src/openvpnmsica=
+/openvpnmsica=2Ec</span><br><span>+++ b/src/openvpnmsica/openvpnmsica=2Ec</=
+span><br><span>@@ -196,7 +196,7 @@</span><br><span> </span><br><span>     /=
+* Count adapters=2E */</span><br><span>     size_t adapter_count =3D 0;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    for (struct tap_adapt=
+er_node *pAdapter =3D pAdapterList; pAdapter; pAdapter =3D pAdapter-&gt;pNe=
+xt)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (const s=
+truct tap_adapter_node *pAdapter =3D pAdapterList; pAdapter; pAdapter =3D p=
+Adapter-&gt;pNext)</span><br><span>     {</span><br><span>         adapter_=
+count++;</span><br><span>     }</span><br><span>diff --git a/src/openvpnser=
+v/interactive=2Ec b/src/openvpnserv/interactive=2Ec</span><br><span>index 3=
+2c1b9c=2E=2Ea9e9665 100644</span><br><span>--- a/src/openvpnserv/interactiv=
+e=2Ec</span><br><span>+++ b/src/openvpnserv/interactive=2Ec</span><br><span=
+>@@ -2685,7 +2685,7 @@</span><br><span>     unsigned n =3D 0;</span><br><sp=
+an>     for (size_t i =3D 0; i &lt; _countof(data); ++i)</span><br><span>  =
+   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        nrpt_excl=
+ude_data_t *d =3D &amp;data[i];</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        const nrpt_exclude_data_t *d =3D &amp;data[i];</span><b=
+r><span>         if (d-&gt;domains_size =3D=3D 0)</span><br><span>         =
+{</span><br><span>             break;</span><br><span>diff --git a/src/plug=
+ins/auth-pam/auth-pam=2Ec b/src/plugins/auth-pam/auth-pam=2Ec</span><br><sp=
+an>index 3b7bcc2=2E=2E948b6af 100644</span><br><span>--- a/src/plugins/auth=
+-pam/auth-pam=2Ec</span><br><span>+++ b/src/plugins/auth-pam/auth-pam=2Ec</=
+span><br><span>@@ -526,7 +526,7 @@</span><br><span> openvpn_plugin_func_v1(=
+openvpn_plugin_handle_t handle, const int type, const char *argv[],</span><=
+br><span>                        const char *envp[])</span><br><span> {</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct auth_pam_conte=
+xt *context =3D (struct auth_pam_context *)handle;</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    const struct auth_pam_context *context =
+=3D (struct auth_pam_context *)handle;</span><br><span> </span><br><span>  =
+   if (type =3D=3D OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY &amp;&amp; context-=
+&gt;foreground_fd &gt;=3D 0)</span><br><span>     {</span><br><span>diff --=
+git a/src/tapctl/main=2Ec b/src/tapctl/main=2Ec</span><br><span>index 6a4a2=
+40=2E=2E6697d14 100644</span><br><span>--- a/src/tapctl/main=2Ec</span><br>=
+<span>+++ b/src/tapctl/main=2Ec</span><br><span>@@ -317,7 +317,7 @@</span><=
+br><span>             return NULL;</span><br><span>         }</span><br><sp=
+an> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-        struct ta=
+p_adapter_node *conflict =3D find_adapter_by_name(requested_name, adapter_l=
+ist);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        const =
+struct tap_adapter_node *conflict =3D find_adapter_by_name(requested_name, =
+adapter_list);</span><br><span>         if (conflict)</span><br><span>     =
+    {</span><br><span>             LPOLESTR adapter_id =3D NULL;</span><br>=
+<span>diff --git a/tests/unit_tests/openvpn/test_buffer=2Ec b/tests/unit_te=
+sts/openvpn/test_buffer=2Ec</span><br><span>index 326de40=2E=2Ece38bbe 1006=
+44</span><br><span>--- a/tests/unit_tests/openvpn/test_buffer=2Ec</span><br=
+><span>+++ b/tests/unit_tests/openvpn/test_buffer=2Ec</span><br><span>@@ -8=
+8,7 +88,7 @@</span><br><span> </span><br><span>     int maxoutput =3D 0;</s=
+pan><br><span>     unsigned int blocksize =3D 5;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    char *separator =3D &quot; &quot;;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    const char *separator =3D=
+ &quot; &quot;;</span><br><span>     output =3D format_hex_ex(input, input_=
+size, maxoutput, blocksize, separator, &amp;gc);</span><br><span>     asser=
+t_string_equal(output, &quot;0100ff10ff 00f00f090a&quot;);</span><br><span>=
+ </span><br><span>@@ -174,7 +174,7 @@</span><br><span>     /* With a max le=
+ngth of 2, no aggregation should take place */</span><br><span>     buffer_=
+list_aggregate_separator(ctx-&gt;one_two_three, 2, testsep);</span><br><spa=
+n>     assert_int_equal(ctx-&gt;one_two_three-&gt;size, 3);</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    struct buffer *buf =3D buffer_lis=
+t_peek(ctx-&gt;one_two_three);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    const struct buffer *buf =3D buffer_list_peek(ctx-&gt;one_tw=
+o_three);</span><br><span>     assert_buf_equals_str(buf, teststr1);</span>=
+<br><span> }</span><br><span> </span><br><span>@@ -189,7 +189,7 @@</span><b=
+r><span>      */</span><br><span>     buffer_list_aggregate_separator(ctx-&=
+gt;one_two_three, strlen(expected) + 1, testsep);</span><br><span>     asse=
+rt_int_equal(ctx-&gt;one_two_three-&gt;size, 2);</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    struct buffer *buf =3D buffer_list_peek(ctx-=
+&gt;one_two_three);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    const struct buffer *buf =3D buffer_list_peek(ctx-&gt;one_two_three);</=
+span><br><span>     assert_buf_equals_str(buf, expected);</span><br><span> =
+}</span><br><span> </span><br><span>@@ -201,7 +201,7 @@</span><br><span>   =
+  /* Aggregate all */</span><br><span>     buffer_list_aggregate_separator(=
+ctx-&gt;one_two_three, 1 &lt;&lt; 16, testsep);</span><br><span>     assert=
+_int_equal(ctx-&gt;one_two_three-&gt;size, 1);</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    struct buffer *buf =3D buffer_list_peek(ctx-&g=
+t;one_two_three);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  const struct buffer *buf =3D buffer_list_peek(ctx-&gt;one_two_three);</sp=
+an><br><span>     assert_buf_equals_str(buf, teststr1 testsep teststr2 test=
+sep teststr3 testsep);</span><br><span> }</span><br><span> </span><br><span=
+>@@ -213,7 +213,7 @@</span><br><span>     /* Aggregate all */</span><br><sp=
+an>     buffer_list_aggregate_separator(ctx-&gt;one_two_three, 1 &lt;&lt; 1=
+6, testnosep);</span><br><span>     assert_int_equal(ctx-&gt;one_two_three-=
+&gt;size, 1);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    stru=
+ct buffer *buf =3D buffer_list_peek(ctx-&gt;one_two_three);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    const struct buffer *buf =3D bu=
+ffer_list_peek(ctx-&gt;one_two_three);</span><br><span>     assert_buf_equa=
+ls_str(buf, teststr1 teststr2 teststr3);</span><br><span> }</span><br><span=
+> </span><br><span>@@ -226,7 +226,7 @@</span><br><span>     /* Aggregate al=
+l */</span><br><span>     buffer_list_aggregate_separator(bl_zerolen, 1 &lt=
+;&lt; 16, testnosep);</span><br><span>     assert_int_equal(bl_zerolen-&gt;=
+size, 1);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct b=
+uffer *buf =3D buffer_list_peek(bl_zerolen);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    const struct buffer *buf =3D buffer_list_peek(=
+bl_zerolen);</span><br><span>     assert_buf_equals_str(buf, &quot;&quot;);=
+</span><br><span> }</span><br><span> </span><br><span>@@ -239,7 +239,7 @@</=
+span><br><span>     /* Aggregate all */</span><br><span>     buffer_list_ag=
+gregate_separator(bl_emptybuffers, 1 &lt;&lt; 16, testnosep);</span><br><sp=
+an>     assert_int_equal(bl_emptybuffers-&gt;size, 1);</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    struct buffer *buf =3D buffer_list_pee=
+k(bl_emptybuffers);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    const struct buffer *buf =3D buffer_list_peek(bl_emptybuffers);</span><=
+br><span>     assert_int_equal(BLEN(buf), 0);</span><br><span> }</span><br>=
+<span> </span><br><span>diff --git a/tests/unit_tests/openvpn/test_crypto=
+=2Ec b/tests/unit_tests/openvpn/test_crypto=2Ec</span><br><span>index 77cf2=
+95=2E=2E07c54b4 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_=
+crypto=2Ec</span><br><span>+++ b/tests/unit_tests/openvpn/test_crypto=2Ec</=
+span><br><span>@@ -482,9 +482,9 @@</span><br><span> crypto_test_hkdf_expand=
+_testa1(void **state)</span><br><span> {</span><br><span>     /* RFC 5889 A=
+=2E1 Test Case 1 */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  uint8_t prk[32] =3D { 0x07, 0x77, 0x09, 0x36, 0x2c, 0x2e, 0x32, 0xdf, 0x0=
+d, 0xdc, 0x3f,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+                 0x0d, 0xc4, 0x7b, 0xba, 0x63, 0x90, 0xb6, 0xc7, 0x3b, 0xb5=
+, 0x0f,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
+          0x9c, 0x31, 0x22, 0xec, 0x84, 0x4a, 0xd7, 0xc2, 0xb3, 0xe5 };</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    const uint8_t prk[3=
+2] =3D { 0x07, 0x77, 0x09, 0x36, 0x2c, 0x2e, 0x32, 0xdf, 0x0d, 0xdc, 0x3f,<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
+          0x0d, 0xc4, 0x7b, 0xba, 0x63, 0x90, 0xb6, 0xc7, 0x3b, 0xb5, 0x0f,=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                   =
+           0x9c, 0x31, 0x22, 0xec, 0x84, 0x4a, 0xd7, 0xc2, 0xb3, 0xe5 };</s=
+pan><br><span> </span><br><span>     uint8_t info[10] =3D { 0xf0, 0xf1, 0xf=
+2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8, 0xf9 };</span><br><span> </span><br>=
+<span>@@ -503,9 +503,9 @@</span><br><span> crypto_test_hkdf_expand_testa2(v=
+oid **state)</span><br><span> {</span><br><span>     /* RFC 5889 A=2E2 Test=
+ Case 2 */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    uint8_t=
+ prk[32] =3D { 0x06, 0xa6, 0xb8, 0x8c, 0x58, 0x53, 0x36, 0x1a, 0x06, 0x10, =
+0x4c,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                =
+        0x9c, 0xeb, 0x35, 0xb4, 0x5c, 0xef, 0x76, 0x00, 0x14, 0x90, 0x46,</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-                       =
+ 0x71, 0x01, 0x4a, 0x19, 0x3f, 0x40, 0xc1, 0x5f, 0xc2, 0x44 };</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    const uint8_t prk[32] =3D { =
+0x06, 0xa6, 0xb8, 0x8c, 0x58, 0x53, 0x36, 0x1a, 0x06, 0x10, 0x4c,</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                             =
+ 0x9c, 0xeb, 0x35, 0xb4, 0x5c, 0xef, 0x76, 0x00, 0x14, 0x90, 0x46,</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+                            =
+  0x71, 0x01, 0x4a, 0x19, 0x3f, 0x40, 0xc1, 0x5f, 0xc2, 0x44 };</span><br><=
+span> </span><br><span>     uint8_t info[80] =3D { 0xb0, 0xb1, 0xb2, 0xb3, =
+0xb4, 0xb5, 0xb6, 0xb7, 0xb8, 0xb9, 0xba, 0xbb,</span><br><span>           =
+               0xbc, 0xbd, 0xbe, 0xbf, 0xc0, 0xc1, 0xc2, 0xc3, 0xc4, 0xc5, =
+0xc6, 0xc7,</span><br><span>@@ -534,11 +534,11 @@</span><br><span> crypto_t=
+est_hkdf_expand_testa3(void **state)</span><br><span> {</span><br><span>   =
+  /* RFC 5889 A=2E3 Test Case 3 */</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    uint8_t prk[32] =3D { 0x19, 0xef, 0x24, 0xa3, 0x2c, 0x71, =
+0x7b, 0x16, 0x7f, 0x33, 0xa9,</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-                        0x1d, 0x6f, 0x64, 0x8b, 0xdf, 0x96, 0x59, 0=
+x67, 0x76, 0xaf, 0xdb,</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-                        0x63, 0x77, 0xac, 0x43, 0x4c, 0x1c, 0x29, 0x3c, 0x=
+cb, 0x04 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cons=
+t uint8_t prk[32] =3D { 0x19, 0xef, 0x24, 0xa3, 0x2c, 0x71, 0x7b, 0x16, 0x7=
+f, 0x33, 0xa9,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+                         0x1d, 0x6f, 0x64, 0x8b, 0xdf, 0x96, 0x59, 0x67, 0x=
+76, 0xaf, 0xdb,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+                          0x63, 0x77, 0xac, 0x43, 0x4c, 0x1c, 0x29, 0x3c, 0=
+xcb, 0x04 };</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    uint8_t info[] =3D { 0 };</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    const uint8_t info[] =3D { 0 };</span><br><span> </s=
+pan><br><span>     int L =3D 42;</span><br><span>     uint8_t okm[42] =3D {=
+ 0x8d, 0xa4, 0xe7, 0x75, 0xa5, 0x63, 0xc1, 0x8f, 0x71, 0x5f, 0x80,</span><b=
+r><span>@@ -558,9 +558,9 @@</span><br><span>     /* tests the HDKF with a l=
+abel/okm that OpenVPN itself uses in OpenSSL 3</span><br><span>      * HDKF=
+ unit test*/</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    uint8_t prk[32] =3D { 0x07, 0x77, 0x09, 0x36, 0x2c, 0x2e, 0x32=
+, 0xdf, 0x0d, 0xdc, 0x3f,</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-                        0x0d, 0xc4, 0x7b, 0xba, 0x63, 0x90, 0xb6, 0xc7,=
+ 0x3b, 0xb5, 0x0f,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+                     0x9c, 0x31, 0x22, 0xec, 0x84, 0x4a, 0xd7, 0xc2, 0xb3, =
+0xe5 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const ui=
+nt8_t prk[32] =3D { 0x07, 0x77, 0x09, 0x36, 0x2c, 0x2e, 0x32, 0xdf, 0x0d, 0=
+xdc, 0x3f,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+                     0x0d, 0xc4, 0x7b, 0xba, 0x63, 0x90, 0xb6, 0xc7, 0x3b, =
+0xb5, 0x0f,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+                      0x9c, 0x31, 0x22, 0xec, 0x84, 0x4a, 0xd7, 0xc2, 0xb3,=
+ 0xe5 };</span><br><span> </span><br><span>     uint8_t info[18] =3D { 0x00=
+, 0x1b, 0x0e, 0x6f, 0x76, 0x70, 0x6e, 0x20, 0x75,</span><br><span>         =
+                 0x6e, 0x69, 0x74, 0x20, 0x74, 0x65, 0x73, 0x74, 0x00 };</s=
+pan><br><span>@@ -680,7 +680,7 @@</span><br><span> static int</span><br><sp=
+an> crypto_test_epoch_setup(void **state)</span><br><span> {</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    uint16_t *num_future_keys =3D (u=
+int16_t *)*state;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  const uint16_t *num_future_keys =3D (uint16_t *)*state;</span><br><span> =
+    struct epoch_test_state *data =3D calloc(1, sizeof(struct epoch_test_st=
+ate));</span><br><span> </span><br><span>     data-&gt;gc =3D gc_new();</sp=
+an><br><span>diff --git a/tests/unit_tests/openvpn/test_cryptoapi=2Ec b/tes=
+ts/unit_tests/openvpn/test_cryptoapi=2Ec</span><br><span>index 508afc9=2E=
+=2E37bbe92 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_crypt=
+oapi=2Ec</span><br><span>+++ b/tests/unit_tests/openvpn/test_cryptoapi=2Ec<=
+/span><br><span>@@ -233,7 +233,7 @@</span><br><span>         const CERT_CON=
+TEXT *ctx =3D NULL;</span><br><span>         while ((ctx =3D CertEnumCertif=
+icatesInStore(user_store, ctx)))</span><br><span>         {</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-            char *friendly_name =3D g=
+et_cert_name(ctx, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            const char *friendly_name =3D get_cert_name(ctx, &amp;g=
+c);</span><br><span>             if (!lookup_cert(friendly_name)) /* not ou=
+r cert */</span><br><span>             {</span><br><span>                 c=
+ontinue;</span><br><span>@@ -310,7 +310,7 @@</span><br><span>          */</=
+span><br><span>         assert_non_null(ctx);</span><br><span> </span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        char *friendly_name =3D g=
+et_cert_name(ctx, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        const char *friendly_name =3D get_cert_name(ctx, &amp;gc);<=
+/span><br><span>         struct test_cert *found =3D lookup_cert(friendly_n=
+ame);</span><br><span>         assert_non_null(found);</span><br><span>    =
+     assert_string_equal(found-&gt;cname, c-&gt;cname);</span><br><span>@@ =
+-343,7 +343,7 @@</span><br><span>          */</span><br><span>         asse=
+rt_non_null(ctx);</span><br><span> </span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        char *friendly_name =3D get_cert_name(ctx, &amp;gc);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        const char *=
+friendly_name =3D get_cert_name(ctx, &amp;gc);</span><br><span>         str=
+uct test_cert *found =3D lookup_cert(friendly_name);</span><br><span>      =
+   assert_non_null(found);</span><br><span>         assert_string_equal(fou=
+nd-&gt;issuer, c-&gt;issuer);</span><br><span>diff --git a/tests/unit_tests=
+/openvpn/test_misc=2Ec b/tests/unit_tests/openvpn/test_misc=2Ec</span><br><=
+span>index 5f03860=2E=2Ea41c27b 100644</span><br><span>--- a/tests/unit_tes=
+ts/openvpn/test_misc=2Ec</span><br><span>+++ b/tests/unit_tests/openvpn/tes=
+t_misc=2Ec</span><br><span>@@ -300,7 +300,7 @@</span><br><span>     {</span=
+><br><span>         for (ptr_type i =3D 1; i &lt;=3D 16; ++i)</span><br><sp=
+an>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+    struct hash_element *item =3D hash_lookup_by_value(nhash, (void *)i);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            const str=
+uct hash_element *item =3D hash_lookup_by_value(nhash, (void *)i);</span><b=
+r><span>             hash_remove_by_value(nhash, (void *)i);</span><br><spa=
+n>             /* check item got removed if it was present before */</span>=
+<br><span>             if (item)</span><br><span>diff --git a/tests/unit_te=
+sts/openvpn/test_ssl=2Ec b/tests/unit_tests/openvpn/test_ssl=2Ec</span><br>=
+<span>index 4de463c=2E=2E963e8cb 100644</span><br><span>--- a/tests/unit_te=
+sts/openvpn/test_ssl=2Ec</span><br><span>+++ b/tests/unit_tests/openvpn/tes=
+t_ssl=2Ec</span><br><span>@@ -672,7 +672,7 @@</span><br><span>     openvpn_=
+encrypt(&amp;buf, encrypt_workspace, &amp;co);</span><br><span> </span><br>=
+<span>     /* separate buffer in authenticated data and encrypted data */</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    uint8_t *ad_start =
+=3D BPTR(&amp;buf);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    const uint8_t *ad_start =3D BPTR(&amp;buf);</span><br><span>     buf_ad=
+vance(&amp;buf, 4);</span><br><span> </span><br><span>     if (epoch)</span=
+><br><span>diff --git a/tests/unit_tests/plugins/auth-pam/test_search_and_r=
+eplace=2Ec b/tests/unit_tests/plugins/auth-pam/test_search_and_replace=2Ec<=
+/span><br><span>index a861bfd=2E=2E89f0642 100644</span><br><span>--- a/tes=
+ts/unit_tests/plugins/auth-pam/test_search_and_replace=2Ec</span><br><span>=
++++ b/tests/unit_tests/plugins/auth-pam/test_search_and_replace=2Ec</span><=
+br><span>@@ -12,7 +12,7 @@</span><br><span> static void</span><br><span> pa=
+ss_any_null_param__returns_null(void **state)</span><br><span> {</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    char DUMMY[] =3D &quot;DUMMY=
+&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const ch=
+ar DUMMY[] =3D &quot;DUMMY&quot;;</span><br><span> </span><br><span>     as=
+sert_null(searchandreplace(NULL, DUMMY, DUMMY));</span><br><span>     asser=
+t_null(searchandreplace(DUMMY, NULL, DUMMY));</span><br><span>@@ -22,8 +22,=
+8 @@</span><br><span> static void</span><br><span> pass_any_empty_string__r=
+eturns_null(void **state)</span><br><span> {</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    char DUMMY[] =3D &quot;DUMMY&quot;;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    char EMPTY[] =3D &quot;&quot;;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const char DUMM=
+Y[] =3D &quot;DUMMY&quot;;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    const char EMPTY[] =3D &quot;&quot;;</span><br><span> </span><br=
+><span>     assert_null(searchandreplace(EMPTY, DUMMY, DUMMY));</span><br><=
+span>     assert_null(searchandreplace(DUMMY, EMPTY, DUMMY));</span><br><sp=
+an></span><br></pre><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2E=
+net/c/openvpn/+/1661?usp=3Demail">change 1661</a>=2E To unsubscribe, or for=
+ help writing mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/=
+settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://=
+schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"h=
+ttp://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
+=2Eopenvpn=2Enet/c/openvpn/+/1661?usp=3Demail"/><meta itemprop=3D"name" con=
+tent=3D"View Change"/></div></div>
 
-<div style=3D"display:=
-none"> Gerrit-MessageType: newchange </div>
-<div style=3D"display:none"> Ge=
-rrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: ma=
-ster </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Idfa78643da27fe8=
-a8bd0ff2bcf3025d8687024a9 </div>
-<div style=3D"display:none"> Gerrit-Change=
--Number: 1865 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>=
-
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@lichtenh=
-eld=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaistho=
-s &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Ge=
-rrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </di=
-v>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvp=
-n@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Mes=
+sageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Project: o=
+penvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<di=
+v style=3D"display:none"> Gerrit-Change-Id: I2b71dae37ebe63c26a66761f877b25=
+d326ed140f </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1661 <=
+/div>
+<div style=3D"display:none"> Gerrit-PatchSet: 14 </div>
+<div style=3D=
+"display:none"> Gerrit-Owner: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; =
+</div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-ope=
+nvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer:=
+ razvanc &lt;razvanc@mailbox=2Eorg&gt; </div>
+<div style=3D"display:none"> =
+Gerrit-Reviewer: stipa &lt;lstipakov@gmail=2Ecom&gt; </div>
+<div style=3D"d=
+isplay:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforg=
+e=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos=
+ &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Ger=
+rit-Attention: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<div sty=
+le=3D"display:none"> Gerrit-Attention: razvanc &lt;razvanc@mailbox=2Eorg&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov=
+@gmail=2Ecom&gt; </div>
 
 </body></html>
---cQV9xetKQQs=--
+--A5fH1YxqRIY=--
 
 
---===============4045386108008666475==
+--===============2109614159215304225==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============4045386108008666475==
+--===============2109614159215304225==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -435,5 +4077,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============4045386108008666475==--
+--===============2109614159215304225==--
 
