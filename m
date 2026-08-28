@@ -4,7 +4,7 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0B4EBC61DDB
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2D962C61DD9
 	for <openvpn-devel@archiver.kernel.org>; Fri, 28 Aug 2026 14:50:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
@@ -12,29 +12,29 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=Dkr9P7bf0MFoeVTMvsZYuVFQHk4ioDZgiY46AACerqg=; b=RA2NCHVt9lX2CY27MNnlZtVgHl
-	88dkMSme37k7SoNDlEQ7aImSRC+48dcpZP5rnKqP1eA3jIni1tdMqGPRSMI28nP5iTH3QiJyNyoj5
-	fzJtSNZmes4z+3pgI53DAytUOPTWQ2c44BTvlID6Wv4W1VugPZHo4y01TB/0Eso5Tigs=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=qYzwudV+NzBLNRJEmob+rXxGadxGGgQK8RELb0n1irM=; b=GUgnJjKRLCF/1iFD7OidIlmeHT
+	oWBalfpoWTViBoYUlv3pIYoAmX50dVXlvcLq/dzhWghnRgdm6e7QbTNza89AThhGZzvWqkepqKmEZ
+	z5FyZ1FnbZf8vtMoIZGzyY0NxTn7BiQC3TnjM0bv4SjeIa2PIElsZeurB6cOtGYpQfak=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wzxuw-00046P-QB;
-	Fri, 28 Aug 2026 14:50:55 +0000
+	id 1wzxv0-00048C-P0;
+	Fri, 28 Aug 2026 14:50:56 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <ralf@mandelbit.com>) id 1wzxuv-00046A-4Z
+ (envelope-from <ralf@mandelbit.com>) id 1wzxux-000484-Aq
  for openvpn-devel@lists.sourceforge.net;
- Fri, 28 Aug 2026 14:50:53 +0000
+ Fri, 28 Aug 2026 14:50:52 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
  In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=c5sz0/xLsrD5HMxlj6w/xp0zpsYJ0lexaVHSBaKgrLM=; b=W26QTmE7eb55/GCdI1UWmU/VLe
- 8UQqqVd8wy97Z/ygfKtXmEfLw7DfezAfq19tNlA0MWLZoMos3Sqfric5SLDsytjBGPgT0XEg+3DgN
- N8RtW92td91/LfvlojJjVN8O7HJunoorAombwphj4hEocMAu8WGeQLKQx8gOV4cbRxAA=;
+ bh=mGXWEtESJmpRf+hvG7ryt7oZfowt9ZJ+xoPXROLSSX0=; b=AUz7ic8FgU2QraKkRzD48lEznJ
+ WTWO4H2Dc1JAlok+92GfwxKvIkcwkN43gR+OuCMutWaBF1hlTJxC9vrRxzb4dsZc5DxQX4b+iL9T+
+ TVts33oMt6jabxAP7iPxiyNGpk504c1+nhUASlifB2EGEEEEdEr4DQY8Oudlnncf3HPs=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -42,49 +42,49 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=c5sz0/xLsrD5HMxlj6w/xp0zpsYJ0lexaVHSBaKgrLM=; b=be7vfujf1NCnGRrr2sGLnydWA7
- p3wffkMX27rR65yxMrclEqEgO6PIQsN37D07rh7RlsdcXMyhWL5KkAi0mIQeA247vA2TyLW8xZPZ8
- Fxe+/IjdWMNlxWnag1hoXHoz8SpN7dbHsE0DnHI2S55eP8O8fwnWfnetU3uNRIsUlHcA=;
-Received: from mout-b-210.mailbox.org ([195.10.208.40])
+ bh=mGXWEtESJmpRf+hvG7ryt7oZfowt9ZJ+xoPXROLSSX0=; b=K+0GPBGucahgmXfski1KEcZ9vA
+ AQ2N2IHMH6NmhIWdEP74jDM5rJt69TOIB1GcTccM1ZMkYenlcTRfITvlQhyj1de3PD9phwT2+sPbt
+ dEMmNbQn+eBbAbBUP2ZoqBr6IMzMWjXM9/ogArSMxBBJyZAJGL1jg8JAAmQaPJlHpbyA=;
+Received: from mout-b-110.mailbox.org ([195.10.208.55])
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wzxut-0005qZ-Fz for openvpn-devel@lists.sourceforge.net;
- Fri, 28 Aug 2026 14:50:53 +0000
+ id 1wzxuq-0005qW-Mm for openvpn-devel@lists.sourceforge.net;
+ Fri, 28 Aug 2026 14:50:52 +0000
 Received: from smtp102.mailbox.org (smtp102.mailbox.org
  [IPv6:2001:67c:2050:b231:465::102])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
  (No client certificate requested)
- by mout-b-210.mailbox.org (Postfix) with ESMTPS id 4hWhC71R3GzFpwZ
+ by mout-b-110.mailbox.org (Postfix) with ESMTPS id 4hWhC43lkzzNlfQ
  for <openvpn-devel@lists.sourceforge.net>;
- Fri, 28 Aug 2026 16:50:43 +0200 (CEST)
+ Fri, 28 Aug 2026 16:50:40 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
- s=MBO0001; t=1787928643;
+ s=MBO0001; t=1787928640;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:mime-version:mime-version:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=c5sz0/xLsrD5HMxlj6w/xp0zpsYJ0lexaVHSBaKgrLM=;
- b=dG3ys2jPFttsgfvfJpXgWcOM5U02+sl+MvOXSMMoMRwdJIIBCC2agAJH4OR58Ap6/Vhgc+
- n7/jHIZc7GMlefTYE462jj+wm1dx7GvpqVw3ydBBycBbZlgWM5xYpELecil3wWMmah25p3
- KaBM5UAXlzpTPVCXjO4+BbkeqMVc5NjewHggicFbfdl09jGEFtoUK0fDJoyyADMZjqK5a0
- CvmfYoscDxpBPHwMCdDcp9nSoL0Ws2FKkevBNgmzsqqFl0c+maKv22ABFyBwocEp/oXBDy
- 8CbYBR0MsCLQOLHuBnsQdcIuW7WhuM0+KKPzPO8n/Cmu3AgYjKF7LbcpsSx9dQ==
+ bh=mGXWEtESJmpRf+hvG7ryt7oZfowt9ZJ+xoPXROLSSX0=;
+ b=crTjqrp4dosbNRoMW125l7hCu+h5pPouZNYToUaWv74IJrwSZ0B/N9LocP6MeFnBDdjqXm
+ Bx+prHmUKaw6IYR8O3x6T//BTX+4vSitxvlf6eqksaqU39zLdUsjnzQz1G5Prvu0qi/ZnK
+ FIgYZnnhoJnPOHDW9tDiGSJBUmHuuOXsJZnehYZBpu4Y2jIZv1VnZ4Xdx15aPp4RLyAVNc
+ quLKoAQVRz2B831ClUCDPAsiaJxLu6a1sBgaEc7nkzEzZI9iMIgvVQ046J8gNtNFtIsxCN
+ LZ1ufB7MHa+kSM/ZPjQgKppdQP/tRC0gnODuj9tcJZ74F18M24UaH4N3JX1xxA==
 Authentication-Results: outgoing_mbo_mout; dkim=none;
  spf=pass (outgoing_mbo_mout: domain of ralf@mandelbit.com designates
  2001:67c:2050:b231:465::102 as permitted sender)
  smtp.mailfrom=ralf@mandelbit.com
 From: Ralf Lici <ralf@mandelbit.com>
 To: openvpn-devel@lists.sourceforge.net
-Date: Fri, 28 Aug 2026 16:50:26 +0200
-Message-ID: <f1011c5f725f2caf81a39a2c7766bd5c0f95b660.1787925761.git.ralf@mandelbit.com>
+Date: Fri, 28 Aug 2026 16:50:23 +0200
+Message-ID: <204af84e2b14079780e06d32ad24c88f1b2d1999.1787925761.git.ralf@mandelbit.com>
 In-Reply-To: <cover.1787925761.git.ralf@mandelbit.com>
 References: <cover.1787925761.git.ralf@mandelbit.com>
 MIME-Version: 1.0
-X-Rspamd-Queue-Id: 4hWhC71R3GzFpwZ
-X-Headers-End: 1wzxut-0005qZ-Fz
-Subject: [Openvpn-devel] [PATCH ovpn net v3 5/6] ovpn: replace bind when
- learning local endpoint
+X-Rspamd-Queue-Id: 4hWhC43lkzzNlfQ
+X-Headers-End: 1wzxuq-0005qW-Mm
+Subject: [Openvpn-devel] [PATCH ovpn net v3 2/6] ovpn: skip UDP source
+ validation for unspecified addresses
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -100,129 +100,57 @@ Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-struct ovpn_bind is published through peer->bind with RCU, but local
-endpoint learning updates bind->local in place under peer->lock. UDP TX
-reads the field without that lock. In particular, a concurrent IPv6
-update can therefore result in a torn address read.
+ovpn validates the cached local UDP source address before reusing or
+refreshing a peer dst cache. This is only meaningful when a concrete
+source address is selected.
 
-Use ovpn_peer_reset_sockaddr to publish a replacement bind when learning
-a new local endpoint, just as a remote endpoint change does. Preserve
-the current remote address and reset the dst cache only after the new
-bind has been published successfully.
+For IPv6, calling ipv6_chk_addr with :: checks whether the unspecified
+address itself is configured on the host. A peer may legitimately have
+bind->local.ipv6 set to :: when no local endpoint was configured or
+after a stale learned address was cleared. In that case the source
+should be left unspecified and selected by ip6_dst_lookup_flow().
 
-Track remote endpoint changes separately so that float notification and
-transport-address rehashing remain limited to actual peer floats.
+For IPv4, inet_confirm_addr(..., local = 0, ...) asks for local address
+autoselection rather than validating a chosen source. Skip the precheck
+there as well and let ip_route_output_flow select or reject the source.
 
-Fixes: f0281c1d3732 ("ovpn: add support for updating local or remote UDP endpoint")
+Only validate non-zero/non-any source addresses.
+
+Fixes: 08857b5ec5d9 ("ovpn: implement basic TX path (UDP)")
 Signed-off-by: Ralf Lici <ralf@mandelbit.com>
 ---
-Changes since v2 https://lore.kernel.org/openvpn-devel/082540583b9145d89e1cdd5a74c485ea3a53d285.1785308184.git.ralf@mandelbit.com/
-- Split former 4/5 into this plus the previous and the next patch.
-  (Sabrina)
-- Tracked float with the specific floated boolean rather than indirectly
-  through salen.
-- Refactored the code into a cleaner shape. (Sabrina)
+No changes since v2 https://lore.kernel.org/openvpn-devel/cb51001bfdaeba899b6ca9b22186ea2ebb49c23c.1785308184.git.ralf@mandelbit.com/
 
- drivers/net/ovpn/peer.c | 43 ++++++++++++++++++++++-------------------
- 1 file changed, 23 insertions(+), 20 deletions(-)
+No changes since v1 https://lore.kernel.org/openvpn-devel/cb51001bfdaeba899b6ca9b22186ea2ebb49c23c.1785253480.git.ralf@mandelbit.com/
 
-diff --git a/drivers/net/ovpn/peer.c b/drivers/net/ovpn/peer.c
-index b400783c2efa..430c6cd48db8 100644
---- a/drivers/net/ovpn/peer.c
-+++ b/drivers/net/ovpn/peer.c
-@@ -200,13 +200,12 @@ static void __ovpn_peer_hash_transp_addr(struct ovpn_peer *peer,
-  */
- void ovpn_peer_endpoints_update(struct ovpn_peer *peer, struct sk_buff *skb)
- {
-+	const void *local_ip = NULL;
- 	struct sockaddr_storage ss;
- 	struct sockaddr_in6 *sa6;
--	bool reset_cache = false;
- 	struct sockaddr_in *sa;
- 	struct ovpn_bind *bind;
--	const void *local_ip;
--	size_t salen = 0;
-+	bool floated = false;
+ drivers/net/ovpn/udp.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/ovpn/udp.c b/drivers/net/ovpn/udp.c
+index 7f69e8890b5b..df4750dabd1e 100644
+--- a/drivers/net/ovpn/udp.c
++++ b/drivers/net/ovpn/udp.c
+@@ -161,8 +161,8 @@ static int ovpn_udp4_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
+ 	if (rt)
+ 		goto transmit;
  
- 	spin_lock_bh(&peer->lock);
- 	bind = rcu_dereference_protected(peer->bind,
-@@ -233,8 +232,7 @@ void ovpn_peer_endpoints_update(struct ovpn_peer *peer, struct sk_buff *skb)
- 				.sin_addr.s_addr = ip_hdr(skb)->saddr,
- 				.sin_port = udp_hdr(skb)->source,
- 			};
--			salen = sizeof(*sa);
--			reset_cache = true;
-+			floated = true;
- 			break;
- 		}
+-	if (unlikely(!inet_confirm_addr(sock_net(sk), NULL, 0, fl.saddr,
+-					RT_SCOPE_HOST))) {
++	if (fl.saddr && unlikely(!inet_confirm_addr(sock_net(sk), NULL, 0,
++						    fl.saddr, RT_SCOPE_HOST))) {
+ 		/* we may end up here when the cached address is not usable
+ 		 * anymore. In this case we reset address/cache and perform a
+ 		 * new look up
+@@ -238,7 +238,8 @@ static int ovpn_udp6_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
+ 	if (dst)
+ 		goto transmit;
  
-@@ -246,10 +244,12 @@ void ovpn_peer_endpoints_update(struct ovpn_peer *peer, struct sk_buff *skb)
- 					    netdev_name(peer->ovpn->dev),
- 					    peer->id, &bind->local.ipv4.s_addr,
- 					    &ip_hdr(skb)->daddr);
--			bind->local.ipv4.s_addr = ip_hdr(skb)->daddr;
--			reset_cache = true;
-+			local_ip = &ip_hdr(skb)->daddr;
-+			memcpy(&ss, &bind->remote, sizeof(struct sockaddr_in));
-+			break;
- 		}
--		break;
-+		/* nothing changed */
-+		goto unlock;
- 	case htons(ETH_P_IPV6):
- 		/* float check */
- 		if (unlikely(!ovpn_bind_skb_src_match(bind, skb))) {
-@@ -271,8 +271,7 @@ void ovpn_peer_endpoints_update(struct ovpn_peer *peer, struct sk_buff *skb)
- 					ipv6_iface_scope_id(&ipv6_hdr(skb)->saddr,
- 							    skb->skb_iif),
- 			};
--			salen = sizeof(*sa6);
--			reset_cache = true;
-+			floated = true;
- 			break;
- 		}
- 
-@@ -285,26 +284,30 @@ void ovpn_peer_endpoints_update(struct ovpn_peer *peer, struct sk_buff *skb)
- 					    netdev_name(peer->ovpn->dev),
- 					    peer->id, &bind->local.ipv6,
- 					    &ipv6_hdr(skb)->daddr);
--			bind->local.ipv6 = ipv6_hdr(skb)->daddr;
--			reset_cache = true;
-+			local_ip = &ipv6_hdr(skb)->daddr;
-+			memcpy(&ss, &bind->remote, sizeof(struct sockaddr_in6));
-+			break;
- 		}
--		break;
-+		/* nothing changed */
-+		goto unlock;
- 	default:
- 		goto unlock;
- 	}
- 
--	if (unlikely(reset_cache))
--		dst_cache_reset(&peer->dst_cache);
--
--	/* if the peer did not float, we can bail out now */
--	if (likely(!salen))
--		goto unlock;
--
- 	if (unlikely(ovpn_peer_reset_sockaddr(peer,
- 					      (struct sockaddr_storage *)&ss,
- 					      local_ip) < 0))
- 		goto unlock;
- 
-+	/* reset the cache only after a successful bind update to avoid useless
-+	 * cache misses on concurrent TX
-+	 */
-+	dst_cache_reset(&peer->dst_cache);
-+
-+	/* if only the local address changed, bail out now */
-+	if (!floated)
-+		goto unlock;
-+
- 	net_dbg_ratelimited("%s: peer %d floated to %pIScp",
- 			    netdev_name(peer->ovpn->dev), peer->id, &ss);
- 
+-	if (unlikely(!ipv6_chk_addr(sock_net(sk), &fl.saddr, NULL, 0))) {
++	if (!ipv6_addr_any(&fl.saddr) &&
++	    unlikely(!ipv6_chk_addr(sock_net(sk), &fl.saddr, NULL, 0))) {
+ 		/* we may end up here when the cached address is not usable
+ 		 * anymore. In this case we reset address/cache and perform a
+ 		 * new look up
 -- 
 2.55.0
 
