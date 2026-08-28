@@ -4,80 +4,69 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A3479C61DCB
-	for <openvpn-devel@archiver.kernel.org>; Fri, 28 Aug 2026 14:55:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 13BC8C61DB9
+	for <openvpn-devel@archiver.kernel.org>; Fri, 28 Aug 2026 20:18:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:Cc:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
-	:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=mtLGzCJvGqthvASNVuiM58nUGDP6x4Oqr3FQMOlxXkg=; b=ZBvGwnAIl6daQFr0aKvI5mCLSP
-	EgE9tvWuQRgrY3QnzxBI+lJnEBuDrkwTNCQW6+HKEnlIlElT/5rUdGiJjUjcNRd+UEk4DiPBKXTIW
-	Az/75oVENeXSVGK8tVMrAgTTBEFGqco6DK4U6rrB0eLbprTmC7HA4ZaNt4YswvfSv8jE=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=zprAGpHSA0QDbu2HMdcgUKyO/LAzQiMD5bN/MAK+wxY=; b=krjaQHnXg9iB4QH3KKZidd0OJF
+	i3j+ZqI4ITVRVzxoGTjRnK9d2kHxDP+Xl/WAJGKVYYtf+noeqHK6fJc1b2fQpuHCVLUplnhOf4AZM
+	57kieSGuG581xpUtdpOmPLr1ol2t58tPC01TWqXYpSki8XX6qRCWenmumR2AZTKUyeJM=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wzxyu-0004EB-4H;
-	Fri, 28 Aug 2026 14:55:00 +0000
+	id 1x031e-0006Lb-6U;
+	Fri, 28 Aug 2026 20:18:07 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <ralf@mandelbit.com>) id 1wzxys-0004E3-Vt
+ (envelope-from <gert@blue4.greenie.muc.de>) id 1x031c-0006LS-Ob
  for openvpn-devel@lists.sourceforge.net;
- Fri, 28 Aug 2026 14:54:59 +0000
+ Fri, 28 Aug 2026 20:18:06 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+ In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=D9xP+W3+Q55XjtgNaW6L3RB4g2wherle9rPO4+HpYos=; b=Vf8CKfUPrZErBicRNOM3OVSFEP
- C85TQIxwfbSvwSKInd3gJ4edbEj1y6uriNZFgI3gWWQjTWnGIHZfTTuBeJ3xumMjh7/rP665yvP+x
- IxEHYNuyshuHtZh+wiDgoL/E7mSYcrkn59pFKnmRxciHJWJhtStJwhUXap8fAlbnBwcM=;
+ bh=teqr5lNlbjVaUjNWk+FXzKVk0sobbSbRToJ5c76Q2xo=; b=dU0znS9tGsQJ5/qF6GPioNz11T
+ su2FCVFcFfiBhQdhSN1pavEGeQC4tMUn14b5gc0GtoxakEWM1NLBZ6B+pyBZRfKMPDBgoZJpzgEYA
+ RvAyzpieS2L1WWLJ8PtW6cZfhmhq420edWK8tTiYh43nPmoZaL+24PQamd4YvM61y3xE=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+ Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=D9xP+W3+Q55XjtgNaW6L3RB4g2wherle9rPO4+HpYos=; b=TCGOgKZL6YQQTPvFc3eiItgb3o
- +Y6+YrMXLk7pLj56lyciakN9P9ttU8ZJfrP2eCIY7/Y0Vmse+drmUO4Jkn9N+jKVHcLcBNR49v1pq
- 37jjKZ8E4kIemaW+MIKZ70eSpRnwp+bHGldn+mfDrc/2uggoV2l3/XuSnOzBeTH3MQyM=;
-Received: from mout-b-110.mailbox.org ([195.10.208.55])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ bh=teqr5lNlbjVaUjNWk+FXzKVk0sobbSbRToJ5c76Q2xo=; b=Y+2nm1Cv4d8VXvN7Te+hdBm64R
+ qstJ2QVtjcYvqciSQKEfVNlF47L1aWk3oISWh3W6Q6Z9fn96Qs8SCWAaxHKDyYfOVcN2ff1wBjxxM
+ 2KNMlxL6Y7r/ykt8E3rkn/FRNnGrFMb8iKjPi6AA2TB+w6eZ6moodzT7vSvqCQZAc9fo=;
+Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wzxys-0008Az-WE for openvpn-devel@lists.sourceforge.net;
- Fri, 28 Aug 2026 14:54:59 +0000
-Received: from smtp102.mailbox.org (smtp102.mailbox.org [10.196.197.102])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
- key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
- (No client certificate requested)
- by mout-b-110.mailbox.org (Postfix) with ESMTPS id 4hWhHv6MC8zNl9x;
- Fri, 28 Aug 2026 16:54:51 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
- s=MBO0001; t=1787928891;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=D9xP+W3+Q55XjtgNaW6L3RB4g2wherle9rPO4+HpYos=;
- b=bIwc+sWPjde9foaCibA+dYLmYpWJ3j5Yqob/JG1QfshI8j4ARI4yXK7PY99vAnba5c/rBO
- 3b7jcLcfy6nnvYCX68loX/Xf9uMn8eO5xzF+QpbeKtj6SDE5IwgEWNse3ZNa/PC1+/lALq
- kdA0y6LvHkwxWrZqn8QcisLxwgJ1WtdaxQNiKonvxk/F8DLYRRO9fcULVLNUShBIOKByTz
- 5FVLjUwF2Dm+1bIG5mIbViNdUyRD8VQFBF1JLStFDbDboenQGhB4wJxjCMx6tU0lbSD4Uy
- cVlROPyEhlxmZI6RUNNzC7QbaQdoJNvU9mIg0ZPrjHyvEFEnWt6d9zpUg5xGcw==
-From: Ralf Lici <ralf@mandelbit.com>
-To: Ralf Lici <ralf@mandelbit.com>
-Date: Fri, 28 Aug 2026 16:54:41 +0200
-Message-ID: <20260828145442.791181-1-ralf@mandelbit.com>
-In-Reply-To: <20260814082530.190853-1-ralf@mandelbit.com>
-References: <20260814082530.190853-1-ralf@mandelbit.com>
+ id 1x031Y-00052i-Rw for openvpn-devel@lists.sourceforge.net;
+ Fri, 28 Aug 2026 20:18:06 +0000
+Received: from blue.greenie.muc.de (localhost [127.0.0.1])
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 67SKHvFW000764
+ for <openvpn-devel@lists.sourceforge.net>; Fri, 28 Aug 2026 22:17:57 +0200
+Received: (from gert@localhost)
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 67SKHvSL000763
+ for openvpn-devel@lists.sourceforge.net; Fri, 28 Aug 2026 22:17:57 +0200
+From: Gert Doering <gert@greenie.muc.de>
+To: openvpn-devel@lists.sourceforge.net
+Date: Fri, 28 Aug 2026 22:17:50 +0200
+Message-ID: <20260828201757.744-1-gert@greenie.muc.de>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <gerrit.1787150248000.I694410615958afbb422d9ead71f04c1a60edc640@gerrit.openvpn.net>
+References: <gerrit.1787150248000.I694410615958afbb422d9ead71f04c1a60edc640@gerrit.openvpn.net>
 MIME-Version: 1.0
-X-Headers-End: 1wzxys-0008Az-WE
-Subject: Re: [Openvpn-devel] [PATCH ovpn net v2 4/5] ovpn: avoid in-place
- updates of peer bind local address
+X-Headers-End: 1x031Y-00052i-Rw
+Subject: [Openvpn-devel] [PATCH v2] mbedtls: Work-around bug in mbedtls
+ 4.1.0 and 4.2.0
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -89,51 +78,80 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: openvpn-devel@lists.sourceforge.net, Sabrina Dubroca <sd@queasysnail.net>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-On Fri, 14 Aug 2026 10:25:29 +0200, Ralf Lici <ralf@mandelbit.com> wrote:
-> On Thu, 13 Aug 2026 18:55:33 +0200, Sabrina Dubroca <sd@queasysnail.net> wrote:
-> > [...]
-> > > @@ -267,26 +263,40 @@ void ovpn_peer_endpoints_update(struct ovpn_peer *peer, struct sk_buff *skb)
-> > >  					    netdev_name(peer->ovpn->dev),
-> > >  					    peer->id, &bind->local.ipv6,
-> > >  					    &ipv6_hdr(skb)->daddr);
-> > > -			bind->local.ipv6 = ipv6_hdr(skb)->daddr;
-> > > -			reset_cache = true;
-> > > +			local_ip = &ipv6_hdr(skb)->daddr;
-> > >  		}
-> > >  		break;
-> > >  	default:
-> > >  		goto unlock;
-> > >  	}
-> > >  
-> > > -	if (unlikely(reset_cache))
-> > > -		dst_cache_reset(&peer->dst_cache);
-> > > -
-> > > -	/* if the peer did not float, we can bail out now */
-> > > -	if (likely(!salen))
-> > > +	/* if there was no float and the local address is unchanged, bail out */
-> > > +	if (likely(!salen && !local_ip))
-> > >  		goto unlock;
-> >
-> > nit: !salen is redundant? local_ip is also set in the float case.
-> >
->
-> Good catch.
->
+From: Frank Lichtenheld <frank@lichtenheld.com>
 
-Small correction to my previous reply: !salen was not actually
-redundant. It implicitly distinguished a remote endpoint float from a
-local endpoint update, so only float reached notification and
-transport-address rehashing. Since that was unclear, v3 replaces it with
-an explicit "floated" boolean.
+Since the first distros have started to pick up these
+versions before a fix is released, let's make our tests
+pass on these versions.
 
--- 
-Ralf Lici
-Mandelbit Srl
+A fix is merged, so it might be fixed in 4.3.0. But I
+didn't want to add that to the version check until we
+have verified that.
+
+Change-Id: I694410615958afbb422d9ead71f04c1a60edc640
+Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
+Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1849
+---
+
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
+
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1849
+This mail reflects revision 2 of this Change.
+
+Acked-by according to Gerrit (reflected above):
+Razvan Cojocaru <razvanc@mailbox.org>
+
+        
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index 29e8be2a..56dd3ed 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -365,7 +365,7 @@
+       ovpnlibdesc: mbed TLS 4.
+       # versioning=semver-coerced
+       ghrepo: Mbed-TLS/mbedtls
+-      gitref: v4.0.0
++      gitref: v4.2.0
+       libconfigure: cmake -B build -DCMAKE_INSTALL_PREFIX=$LIBPREFIX
+       libmake: cmake --build build
+       libinstall: sudo cmake --install build
+diff --git a/src/openvpn/mbedtls_compat.h b/src/openvpn/mbedtls_compat.h
+index 50739b6..ec45a0f 100644
+--- a/src/openvpn/mbedtls_compat.h
++++ b/src/openvpn/mbedtls_compat.h
+@@ -43,6 +43,7 @@
+ #include "crypto_mbedtls_legacy.h"
+ #else
+ #include <mbedtls/oid.h>
++#include "crypto_mbedtls.h"
+ #endif /* MBEDTLS_VERSION_NUMBER < 0x04000000 */
+ 
+ #ifdef HAVE_PSA_CRYPTO_H
+@@ -228,6 +229,18 @@
+ mbedtls_compat_pk_check_pair(const mbedtls_pk_context *pub, const mbedtls_pk_context *prv)
+ {
+ #if MBEDTLS_VERSION_NUMBER >= 0x04000000
++    /* work around bug in mbedtls 4.1.0 by adding missing public key information in prv
++     * cf. https://github.com/Mbed-TLS/TF-PSA-Crypto/issues/807 */
++#if MBEDTLS_VERSION_NUMBER >= 0x04010000
++    if (prv->MBEDTLS_PRIVATE(pub_raw_len) == 0)
++    {
++        mbedtls_pk_context *mut_prv = (mbedtls_pk_context *)prv; /* remove const */
++        ASSERT(mbed_ok(psa_export_public_key(mut_prv->MBEDTLS_PRIVATE(priv_id),
++                                             mut_prv->MBEDTLS_PRIVATE(pub_raw),
++                                             sizeof(mut_prv->MBEDTLS_PRIVATE(pub_raw)),
++                                             &mut_prv->MBEDTLS_PRIVATE(pub_raw_len))));
++    }
++#endif
+     return mbedtls_pk_check_pair(pub, prv);
+ #else
+     return mbedtls_pk_check_pair(pub, prv, mbedtls_ctr_drbg_random, rand_ctx_get());
 
 
 _______________________________________________
