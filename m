@@ -4,81 +4,80 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 91829C61DDC
-	for <openvpn-devel@archiver.kernel.org>; Fri, 28 Aug 2026 14:50:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A3479C61DCB
+	for <openvpn-devel@archiver.kernel.org>; Fri, 28 Aug 2026 14:55:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:Cc:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=f4pAYerNnEp/cTHKV4sE10LY/k4TAsxZ13RFpz8GmfU=; b=dQv9iYJlrwWuOUMMNOoizul2Kq
-	imZiQNgVgYWmnZCyiNM9H3O4GwF4yNQjMDV6W+R6kyXHLcYTFgo14X0AASxOuafWvFWfryB3OdzgH
-	jqRCiOpkr2+K1QwwShkTipqDCqG1/55wnZ+4CV1In5g1kxUkboGE7l0P5Ze6w6ckNaRM=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
+	:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=mtLGzCJvGqthvASNVuiM58nUGDP6x4Oqr3FQMOlxXkg=; b=ZBvGwnAIl6daQFr0aKvI5mCLSP
+	EgE9tvWuQRgrY3QnzxBI+lJnEBuDrkwTNCQW6+HKEnlIlElT/5rUdGiJjUjcNRd+UEk4DiPBKXTIW
+	Az/75oVENeXSVGK8tVMrAgTTBEFGqco6DK4U6rrB0eLbprTmC7HA4ZaNt4YswvfSv8jE=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wzxuz-0003li-1Y;
-	Fri, 28 Aug 2026 14:50:57 +0000
+	id 1wzxyu-0004EB-4H;
+	Fri, 28 Aug 2026 14:55:00 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <ralf@mandelbit.com>) id 1wzxux-0003lN-BE
+ (envelope-from <ralf@mandelbit.com>) id 1wzxys-0004E3-Vt
  for openvpn-devel@lists.sourceforge.net;
- Fri, 28 Aug 2026 14:50:55 +0000
+ Fri, 28 Aug 2026 14:54:59 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
+ In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=hMLQhg4jRBvzq8SQ0G9OMO0zBFJJXot2Uhu4sgDz98c=; b=kRJsH6EmjlVlAORqxPMBzj15Ut
- LcydWo0ixqxBooy3b+yd0nLU9pKW5FaRKnQIvnLVrhqc2o9BlLI3JWSe68B5CBr2y3wn8fJAZhd1y
- 9YpCHCUm7LVom2jTQzZF2OUBAEqx9iOzj0hLy8zkJkIx4ITttEakb1gbSqc4/seRW4a8=;
+ bh=D9xP+W3+Q55XjtgNaW6L3RB4g2wherle9rPO4+HpYos=; b=Vf8CKfUPrZErBicRNOM3OVSFEP
+ C85TQIxwfbSvwSKInd3gJ4edbEj1y6uriNZFgI3gWWQjTWnGIHZfTTuBeJ3xumMjh7/rP665yvP+x
+ IxEHYNuyshuHtZh+wiDgoL/E7mSYcrkn59pFKnmRxciHJWJhtStJwhUXap8fAlbnBwcM=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=hMLQhg4jRBvzq8SQ0G9OMO0zBFJJXot2Uhu4sgDz98c=; b=ON0ZXKsj7sDCkhyvmBb3SnbGVZ
- DiZNh55/Rr3ISEgDAONdulEZYKGIG5phMFTygQ71tOPOdNShjWS0jfN9IlP9RkztVbbGczxIGrblT
- 52Pt0dCc+kXxUl5+ojj5KWv2MX9NrzyVwibcErRHwZx4D0/jsymkPw3MoSEvFG0Wbg5k=;
-Received: from mout-b-106.mailbox.org ([195.10.208.46])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ bh=D9xP+W3+Q55XjtgNaW6L3RB4g2wherle9rPO4+HpYos=; b=TCGOgKZL6YQQTPvFc3eiItgb3o
+ +Y6+YrMXLk7pLj56lyciakN9P9ttU8ZJfrP2eCIY7/Y0Vmse+drmUO4Jkn9N+jKVHcLcBNR49v1pq
+ 37jjKZ8E4kIemaW+MIKZ70eSpRnwp+bHGldn+mfDrc/2uggoV2l3/XuSnOzBeTH3MQyM=;
+Received: from mout-b-110.mailbox.org ([195.10.208.55])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wzxur-0005qY-SJ for openvpn-devel@lists.sourceforge.net;
- Fri, 28 Aug 2026 14:50:55 +0000
+ id 1wzxys-0008Az-WE for openvpn-devel@lists.sourceforge.net;
+ Fri, 28 Aug 2026 14:54:59 +0000
 Received: from smtp102.mailbox.org (smtp102.mailbox.org [10.196.197.102])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
  (No client certificate requested)
- by mout-b-106.mailbox.org (Postfix) with ESMTPS id 4hWhC60ZLJzNlZB
- for <openvpn-devel@lists.sourceforge.net>;
- Fri, 28 Aug 2026 16:50:42 +0200 (CEST)
+ by mout-b-110.mailbox.org (Postfix) with ESMTPS id 4hWhHv6MC8zNl9x;
+ Fri, 28 Aug 2026 16:54:51 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
- s=MBO0001; t=1787928642;
+ s=MBO0001; t=1787928891;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:mime-version:mime-version:
+ to:to:cc:cc:mime-version:mime-version:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=hMLQhg4jRBvzq8SQ0G9OMO0zBFJJXot2Uhu4sgDz98c=;
- b=bwlfZISsOc5vrx9cIXXCnPGvdk24ZAWuKXxO07uAggNnb/sbtJF9mgxGOZWnQwzGP1UMZH
- bVuo1XJ5Sgc22qid2yAqs8U+pA1H+g1Kj0/DYQSk3P9vVCLz9qQdBK5oTtRI/Podg2+drv
- +8JlxAPpU0Et3iWuoXRhNgIbxGOlKV7kXS42uL1Fp6tmZGF+/T8FtGyJDi13WnJzGecB0z
- XAtP+PLguAYPFtxci7H5akcz3S3rqR/rNva6dZ+9OLhuQ9U/jugoT9e6uN03nOSACjKmaB
- syk1H5aVbhnPfyptDpvcHJzfQ+i5/McSVi808z5HC/ti3Ion8X0zTox78z4LGA==
+ bh=D9xP+W3+Q55XjtgNaW6L3RB4g2wherle9rPO4+HpYos=;
+ b=bIwc+sWPjde9foaCibA+dYLmYpWJ3j5Yqob/JG1QfshI8j4ARI4yXK7PY99vAnba5c/rBO
+ 3b7jcLcfy6nnvYCX68loX/Xf9uMn8eO5xzF+QpbeKtj6SDE5IwgEWNse3ZNa/PC1+/lALq
+ kdA0y6LvHkwxWrZqn8QcisLxwgJ1WtdaxQNiKonvxk/F8DLYRRO9fcULVLNUShBIOKByTz
+ 5FVLjUwF2Dm+1bIG5mIbViNdUyRD8VQFBF1JLStFDbDboenQGhB4wJxjCMx6tU0lbSD4Uy
+ cVlROPyEhlxmZI6RUNNzC7QbaQdoJNvU9mIg0ZPrjHyvEFEnWt6d9zpUg5xGcw==
 From: Ralf Lici <ralf@mandelbit.com>
-To: openvpn-devel@lists.sourceforge.net
-Date: Fri, 28 Aug 2026 16:50:24 +0200
-Message-ID: <2bcaad8bb9c79b499f754324d6723a74ecd13c76.1787925761.git.ralf@mandelbit.com>
-In-Reply-To: <cover.1787925761.git.ralf@mandelbit.com>
-References: <cover.1787925761.git.ralf@mandelbit.com>
+To: Ralf Lici <ralf@mandelbit.com>
+Date: Fri, 28 Aug 2026 16:54:41 +0200
+Message-ID: <20260828145442.791181-1-ralf@mandelbit.com>
+In-Reply-To: <20260814082530.190853-1-ralf@mandelbit.com>
+References: <20260814082530.190853-1-ralf@mandelbit.com>
 MIME-Version: 1.0
-X-Headers-End: 1wzxur-0005qY-SJ
-Subject: [Openvpn-devel] [PATCH ovpn net v3 3/6] ovpn: track UDP socket
- route key for peer dst cache
+X-Headers-End: 1wzxys-0008Az-WE
+Subject: Re: [Openvpn-devel] [PATCH ovpn net v2 4/5] ovpn: avoid in-place
+ updates of peer bind local address
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -90,310 +89,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Cc: openvpn-devel@lists.sourceforge.net, Sabrina Dubroca <sd@queasysnail.net>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-ovpn stores the route used to transmit UDP packets in a per-peer dst
-cache. A cached dst is only valid for the route lookup inputs used when
-it was resolved.
+On Fri, 14 Aug 2026 10:25:29 +0200, Ralf Lici <ralf@mandelbit.com> wrote:
+> On Thu, 13 Aug 2026 18:55:33 +0200, Sabrina Dubroca <sd@queasysnail.net> wrote:
+> > [...]
+> > > @@ -267,26 +263,40 @@ void ovpn_peer_endpoints_update(struct ovpn_peer *peer, struct sk_buff *skb)
+> > >  					    netdev_name(peer->ovpn->dev),
+> > >  					    peer->id, &bind->local.ipv6,
+> > >  					    &ipv6_hdr(skb)->daddr);
+> > > -			bind->local.ipv6 = ipv6_hdr(skb)->daddr;
+> > > -			reset_cache = true;
+> > > +			local_ip = &ipv6_hdr(skb)->daddr;
+> > >  		}
+> > >  		break;
+> > >  	default:
+> > >  		goto unlock;
+> > >  	}
+> > >  
+> > > -	if (unlikely(reset_cache))
+> > > -		dst_cache_reset(&peer->dst_cache);
+> > > -
+> > > -	/* if the peer did not float, we can bail out now */
+> > > -	if (likely(!salen))
+> > > +	/* if there was no float and the local address is unchanged, bail out */
+> > > +	if (likely(!salen && !local_ip))
+> > >  		goto unlock;
+> >
+> > nit: !salen is redundant? local_ip is also set in the float case.
+> >
+>
+> Good catch.
+>
 
-Some of those inputs are mutable while userspace still owns the UDP
-socket. In particular, changes to the socket mark or UDP source port do
-not invalidate ovpn's peer dst cache, so ovpn can keep using a route
-selected with an old socket route key.
+Small correction to my previous reply: !salen was not actually
+redundant. It implicitly distinguished a remote endpoint float from a
+local endpoint update, so only float reached notification and
+transport-address rehashing. Since that was unclear, v3 replaces it with
+an explicit "floated" boolean.
 
-Replace the cached mark with a route key containing the socket-owned
-lookup inputs currently used by ovpn, and reset the peer dst cache when
-the key changes. Before storing a newly looked-up dst, recheck the route
-key under the peer lock so a dst resolved for stale socket state is not
-published.
-
-Fixes: 08857b5ec5d9 ("ovpn: implement basic TX path (UDP)")
-Signed-off-by: Ralf Lici <ralf@mandelbit.com>
----
-No changes since v2 https://lore.kernel.org/openvpn-devel/15a79f79de3cf192bc862acfd07534c1995f7ad8.1785308184.git.ralf@mandelbit.com/
-
-No changes since v1 https://lore.kernel.org/openvpn-devel/15a79f79de3cf192bc862acfd07534c1995f7ad8.1785253480.git.ralf@mandelbit.com/
-
- drivers/net/ovpn/peer.c |  1 +
- drivers/net/ovpn/peer.h | 19 ++++++++-
- drivers/net/ovpn/udp.c  | 90 +++++++++++++++++++++++++++++++++++------
- 3 files changed, 95 insertions(+), 15 deletions(-)
-
-diff --git a/drivers/net/ovpn/peer.c b/drivers/net/ovpn/peer.c
-index c95656ca7c35..b400783c2efa 100644
---- a/drivers/net/ovpn/peer.c
-+++ b/drivers/net/ovpn/peer.c
-@@ -113,6 +113,7 @@ struct ovpn_peer *ovpn_peer_new(struct ovpn_priv *ovpn, u32 id)
- 	RCU_INIT_POINTER(peer->bind, NULL);
- 	ovpn_crypto_state_init(&peer->crypto);
- 	spin_lock_init(&peer->lock);
-+	seqcount_spinlock_init(&peer->route_key_seq, &peer->lock);
- 	kref_init(&peer->refcount);
- 	ovpn_peer_stats_init(&peer->vpn_stats);
- 	ovpn_peer_stats_init(&peer->link_stats);
-diff --git a/drivers/net/ovpn/peer.h b/drivers/net/ovpn/peer.h
-index dfa5c0037e02..063535699ecd 100644
---- a/drivers/net/ovpn/peer.h
-+++ b/drivers/net/ovpn/peer.h
-@@ -10,6 +10,7 @@
- #ifndef _NET_OVPN_OVPNPEER_H_
- #define _NET_OVPN_OVPNPEER_H_
- 
-+#include <linux/seqlock.h>
- #include <net/dst_cache.h>
- #include <net/strparser.h>
- 
-@@ -17,6 +18,16 @@
- #include "socket.h"
- #include "stats.h"
- 
-+/**
-+ * struct ovpn_route_key - route key used for the peer dst cache
-+ * @mark: fwmark used for route lookup
-+ * @sport: UDP source port used for route lookup
-+ */
-+struct ovpn_route_key {
-+	u32 mark;
-+	__be16 sport;
-+};
-+
- /**
-  * struct ovpn_peer - the main remote peer object
-  * @ovpn: main openvpn instance this peer belongs to
-@@ -45,6 +56,8 @@
-  * @tcp.sk_cb.ops: pointer to the original prot_ops object (TCP only)
-  * @crypto: the crypto configuration (ciphers, keys, etc..)
-  * @dst_cache: cache for dst_entry used to send to peer
-+ * @route_key: route key matching the current dst cache contents
-+ * @route_key_seq: seqcount protecting lockless route_key reads
-  * @bind: remote peer binding
-  * @keepalive_interval: seconds after which a new keepalive should be sent
-  * @keepalive_xmit_exp: future timestamp when next keepalive should be sent
-@@ -55,7 +68,7 @@
-  * @vpn_stats: per-peer in-VPN TX/RX stats
-  * @link_stats: per-peer link/transport TX/RX stats
-  * @delete_reason: why peer was deleted (i.e. timeout, transport error, ..)
-- * @lock: protects binding to peer (bind) and keepalive* fields
-+ * @lock: protects binding to peer (bind), route_key and keepalive* fields
-  * @refcount: reference counter
-  * @rcu: used to free peer in an RCU safe way
-  * @release_entry: entry for the socket release list
-@@ -99,6 +112,8 @@ struct ovpn_peer {
- 	} tcp;
- 	struct ovpn_crypto_state crypto;
- 	struct dst_cache dst_cache;
-+	struct ovpn_route_key route_key;
-+	seqcount_spinlock_t route_key_seq;
- 	struct ovpn_bind __rcu *bind;
- 	unsigned long keepalive_interval;
- 	unsigned long keepalive_xmit_exp;
-@@ -109,7 +124,7 @@ struct ovpn_peer {
- 	struct ovpn_peer_stats vpn_stats;
- 	struct ovpn_peer_stats link_stats;
- 	enum ovpn_del_peer_reason delete_reason;
--	spinlock_t lock; /* protects bind  and keepalive* */
-+	spinlock_t lock; /* protects bind, route_key and keepalive* */
- 	struct kref refcount;
- 	struct rcu_head rcu;
- 	struct llist_node release_entry;
-diff --git a/drivers/net/ovpn/udp.c b/drivers/net/ovpn/udp.c
-index df4750dabd1e..c6d591cb7ff4 100644
---- a/drivers/net/ovpn/udp.c
-+++ b/drivers/net/ovpn/udp.c
-@@ -131,6 +131,48 @@ static int ovpn_udp_encap_recv(struct sock *sk, struct sk_buff *skb)
- 	return 0;
- }
- 
-+static bool ovpn_route_key_equal(const struct ovpn_route_key *a,
-+				 const struct ovpn_route_key *b)
-+{
-+	return a->mark == b->mark && a->sport == b->sport;
-+}
-+
-+/**
-+ * ovpn_dst_cache_check_key - reset peer dst cache after key changes
-+ * @peer: the peer owning the dst cache
-+ * @cache: the cache that might need to be reset
-+ * @key: the route key for the packet being transmitted
-+ *
-+ * Reset the peer dst cache if it was populated for a different route key.
-+ */
-+static void ovpn_dst_cache_check_key(struct ovpn_peer *peer,
-+				     struct dst_cache *cache,
-+				     const struct ovpn_route_key *key)
-+{
-+	struct ovpn_route_key old_key;
-+	unsigned int seq;
-+
-+	/* snapshot the saved key before deciding whether the cache matches */
-+	do {
-+		seq = read_seqcount_begin(&peer->route_key_seq);
-+		old_key = peer->route_key;
-+	} while (read_seqcount_retry(&peer->route_key_seq, seq));
-+
-+	/* nothing changed: the current cache can be reused */
-+	if (likely(ovpn_route_key_equal(&old_key, key)))
-+		return;
-+
-+	/* recheck under lock because another path may have updated the key */
-+	spin_lock_bh(&peer->lock);
-+	if (!ovpn_route_key_equal(&peer->route_key, key)) {
-+		write_seqcount_begin(&peer->route_key_seq);
-+		peer->route_key = *key;
-+		dst_cache_reset(cache);
-+		write_seqcount_end(&peer->route_key_seq);
-+	}
-+	spin_unlock_bh(&peer->lock);
-+}
-+
- /**
-  * ovpn_udp4_output - send IPv4 packet over udp socket
-  * @peer: the destination peer
-@@ -138,21 +180,23 @@ static int ovpn_udp_encap_recv(struct sock *sk, struct sk_buff *skb)
-  * @cache: dst cache
-  * @sk: the socket to send the packet over
-  * @skb: the packet to send
-+ * @key: the route key snapshot used for cache validation and flow lookup
-  *
-  * Return: 0 on success or a negative error code otherwise
-  */
- static int ovpn_udp4_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
- 			    struct dst_cache *cache, struct sock *sk,
--			    struct sk_buff *skb)
-+			    struct sk_buff *skb,
-+			    const struct ovpn_route_key *key)
- {
- 	struct rtable *rt;
- 	struct flowi4 fl = {
- 		.saddr = bind->local.ipv4.s_addr,
- 		.daddr = bind->remote.in4.sin_addr.s_addr,
--		.fl4_sport = inet_sk(sk)->inet_sport,
-+		.fl4_sport = key->sport,
- 		.fl4_dport = bind->remote.in4.sin_port,
- 		.flowi4_proto = sk->sk_protocol,
--		.flowi4_mark = sk->sk_mark,
-+		.flowi4_mark = key->mark,
- 	};
- 	int ret;
- 
-@@ -193,7 +237,12 @@ static int ovpn_udp4_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
- 				    ret);
- 		goto err;
- 	}
--	dst_cache_set_ip4(cache, &rt->dst, fl.saddr);
-+
-+	/* avoid storing a stale cache */
-+	spin_lock_bh(&peer->lock);
-+	if (likely(ovpn_route_key_equal(key, &peer->route_key)))
-+		dst_cache_set_ip4(cache, &rt->dst, fl.saddr);
-+	spin_unlock_bh(&peer->lock);
- 
- transmit:
- 	udp_tunnel_xmit_skb(rt, sk, skb, fl.saddr, fl.daddr, 0,
-@@ -213,12 +262,14 @@ static int ovpn_udp4_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
-  * @cache: dst cache
-  * @sk: the socket to send the packet over
-  * @skb: the packet to send
-+ * @key: the route key snapshot used for cache validation and flow lookup
-  *
-  * Return: 0 on success or a negative error code otherwise
-  */
- static int ovpn_udp6_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
- 			    struct dst_cache *cache, struct sock *sk,
--			    struct sk_buff *skb)
-+			    struct sk_buff *skb,
-+			    const struct ovpn_route_key *key)
- {
- 	struct dst_entry *dst;
- 	int ret;
-@@ -226,10 +277,10 @@ static int ovpn_udp6_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
- 	struct flowi6 fl = {
- 		.saddr = bind->local.ipv6,
- 		.daddr = bind->remote.in6.sin6_addr,
--		.fl6_sport = inet_sk(sk)->inet_sport,
-+		.fl6_sport = key->sport,
- 		.fl6_dport = bind->remote.in6.sin6_port,
- 		.flowi6_proto = sk->sk_protocol,
--		.flowi6_mark = sk->sk_mark,
-+		.flowi6_mark = key->mark,
- 		.flowi6_oif = bind->remote.in6.sin6_scope_id,
- 	};
- 
-@@ -259,7 +310,12 @@ static int ovpn_udp6_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
- 				    &bind->remote.in6, ret);
- 		goto err;
- 	}
--	dst_cache_set_ip6(cache, dst, &fl.saddr);
-+
-+	/* avoid storing a stale cache */
-+	spin_lock_bh(&peer->lock);
-+	if (likely(ovpn_route_key_equal(key, &peer->route_key)))
-+		dst_cache_set_ip6(cache, dst, &fl.saddr);
-+	spin_unlock_bh(&peer->lock);
- 
- transmit:
- 	/* user IPv6 packets may be larger than the transport interface
-@@ -288,6 +344,7 @@ static int ovpn_udp6_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
-  * @cache: dst cache
-  * @sk: the socket to send the packet over
-  * @skb: the packet to send
-+ * @key: route key snapshot used for cache validation and flow lookup
-  *
-  * rcu_read_lock should be held on entry.
-  * On return, the skb is consumed.
-@@ -295,7 +352,8 @@ static int ovpn_udp6_output(struct ovpn_peer *peer, struct ovpn_bind *bind,
-  * Return: 0 on success or a negative error code otherwise
-  */
- static int ovpn_udp_output(struct ovpn_peer *peer, struct dst_cache *cache,
--			   struct sock *sk, struct sk_buff *skb)
-+			   struct sock *sk, struct sk_buff *skb,
-+			   struct ovpn_route_key *key)
- {
- 	struct ovpn_bind *bind;
- 	int ret;
-@@ -315,11 +373,11 @@ static int ovpn_udp_output(struct ovpn_peer *peer, struct dst_cache *cache,
- 
- 	switch (bind->remote.in4.sin_family) {
- 	case AF_INET:
--		ret = ovpn_udp4_output(peer, bind, cache, sk, skb);
-+		ret = ovpn_udp4_output(peer, bind, cache, sk, skb, key);
- 		break;
- #if IS_ENABLED(CONFIG_IPV6)
- 	case AF_INET6:
--		ret = ovpn_udp6_output(peer, bind, cache, sk, skb);
-+		ret = ovpn_udp6_output(peer, bind, cache, sk, skb, key);
- 		break;
- #endif
- 	default:
-@@ -341,15 +399,21 @@ static int ovpn_udp_output(struct ovpn_peer *peer, struct dst_cache *cache,
- void ovpn_udp_send_skb(struct ovpn_peer *peer, struct sock *sk,
- 		       struct sk_buff *skb)
- {
-+	struct ovpn_route_key key = {
-+		.mark = READ_ONCE(sk->sk_mark),
-+		.sport = READ_ONCE(inet_sk(sk)->inet_sport),
-+	};
- 	int ret;
- 
- 	skb->dev = peer->ovpn->dev;
--	skb->mark = READ_ONCE(sk->sk_mark);
-+	skb->mark = key.mark;
- 	/* no checksum performed at this layer */
- 	skb->ip_summed = CHECKSUM_NONE;
- 
-+	ovpn_dst_cache_check_key(peer, &peer->dst_cache, &key);
-+
- 	/* crypto layer -> transport (UDP) */
--	ret = ovpn_udp_output(peer, &peer->dst_cache, sk, skb);
-+	ret = ovpn_udp_output(peer, &peer->dst_cache, sk, skb, &key);
- 	if (unlikely(ret < 0))
- 		kfree_skb(skb);
- }
 -- 
-2.55.0
-
+Ralf Lici
+Mandelbit Srl
 
 
 _______________________________________________
