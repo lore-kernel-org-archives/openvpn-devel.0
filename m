@@ -4,26 +4,26 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5256DC61DB9
-	for <openvpn-devel@archiver.kernel.org>; Fri, 28 Aug 2026 13:01:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 48018C61DDA
+	for <openvpn-devel@archiver.kernel.org>; Fri, 28 Aug 2026 13:01:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=EPG89q/UKjh6SOVGDivsC2Sy2ANHEvKeWmt7plWEFGA=; b=e69BfvM99xSAkhrfZ75FQhGDzm
-	VeyNeNy3Fkiw1BJi/PEEmBi+AdXUaCE4EP5VgK87YpCGk2G8tGRWDl4DmgYlb6AzuJswtGuDEZLip
-	1YFapxG64m+yC+RqUnianoWjIZ4rN+kCRtJicvbGvrXsACnt+Qb6qJeUFoXHOrI02nAM=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=1l+znuyS9Iq2X8+ZUk55dxxrAhapFh0acSpaa5HkgLw=; b=A8ZERpLeuxx4j3jXSCnUHzQbVj
+	CFyCVj6UjVLSc2s7vVvnXmqI/83WwtLMUL9dfNRWeDujEaRB892dcYdnbkB5vS84LjKk5DX6m2Tsx
+	vq6H7hA1W6PbSLpE+grwuOUs+8PwOrI/TR8ghTpljzz3/AjpMfsnFAdpa8giFUSAAnkU=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1wzwCg-0002kL-S6;
-	Fri, 28 Aug 2026 13:01:07 +0000
+	id 1wzwCj-0001b4-7H;
+	Fri, 28 Aug 2026 13:01:09 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <ralf@mandelbit.com>) id 1wzwCM-0002jg-H9
+ (envelope-from <ralf@mandelbit.com>) id 1wzwCM-0001aM-JL
  for openvpn-devel@lists.sourceforge.net;
  Fri, 28 Aug 2026 13:00:48 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
@@ -32,9 +32,9 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=64FT6M4h95fUIBYhCf5pIcrEkfMFR0b/9CKVXRTYQuc=; b=G+p1ootX8t/JWQ2mt/ShWNSZkE
- f8sC1cmLV3SnYjStAPR1y+qyRQGeqXc5hD5aeMe921zp+p4QZgQMsssvkPIKF49o98XO6E9ON72ME
- 8OI59wxhQ01VE9z0ruQJxtoWnlFcPCU6TUpK2/Ex5xZgM1fmnC0XEVrCq71TOl7uucG0=;
+ bh=l3kKVzpsCJJNFGYtCfLWekadyfB69gwfvzgBALJzdSw=; b=Zwb1iDyMXgw6n0g4VcrPDEGztn
+ lM3WSjscl/9bpEPq6zhtPTdSdJ0NxtYU9Uo8JioVN+LTC39SsCRX8/eHzBohHZHpwI6NpcnOLHZ9a
+ aJwfQgrIkfEp+Rpoe/AniJwcs8MxrsQqn5kdp5dj6TBmk8szxmC8OsnhYepMNyUt9sDA=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -42,42 +42,42 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=64FT6M4h95fUIBYhCf5pIcrEkfMFR0b/9CKVXRTYQuc=; b=M+o4e9MUUbxZSnISUosDDefiqk
- vNm/Wb1wEekXB+fm/CJx2EKi4KV5el69y/XJwpCY0VZQWvt6BpXVWRsdnhpRFsW7i6HnbSx9LAfP3
- T1U2w+MQMrpqretDWt4Rj6hyi7hSAp7naRgNzXFG5ShvXJK2XjIhXxgSfZSZrlcKXpGQ=;
-Received: from mout-b-106.mailbox.org ([195.10.208.46])
+ bh=l3kKVzpsCJJNFGYtCfLWekadyfB69gwfvzgBALJzdSw=; b=WQtq3vEiUUYP0HunglGQBnnYBD
+ 42gmcMnMoSrcYvt3wpkzcJ3JxTcVLKj42EF6wW2tlZExIC5ivB0876chvTLTVGpNdaYsW3tEcP7cD
+ 9rUxTjsI1vVuy+twFz3e1+eTJ/FgHaJ3bS4hy1FfK2Fcf3nrNMBL8MoMjB/OUa3DIRPM=;
+Received: from mout-b-112.mailbox.org ([195.10.208.42])
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1wzwCG-0003Wv-1R for openvpn-devel@lists.sourceforge.net;
- Fri, 28 Aug 2026 13:00:43 +0000
+ id 1wzwCH-0003Ww-7C for openvpn-devel@lists.sourceforge.net;
+ Fri, 28 Aug 2026 13:00:45 +0000
 Received: from smtp102.mailbox.org (smtp102.mailbox.org [10.196.197.102])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
  (No client certificate requested)
- by mout-b-106.mailbox.org (Postfix) with ESMTPS id 4hWdlz38nbzNlZq;
- Fri, 28 Aug 2026 15:00:31 +0200 (CEST)
+ by mout-b-112.mailbox.org (Postfix) with ESMTPS id 4hWdlx2S8Pz5wPq;
+ Fri, 28 Aug 2026 15:00:29 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
- s=MBO0001; t=1787922031;
+ s=MBO0001; t=1787922029;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=64FT6M4h95fUIBYhCf5pIcrEkfMFR0b/9CKVXRTYQuc=;
- b=TvKUXUVYkQKyOcWx1k+SANJOPTJAPr/ZOxfwBGx1EIKi9IqbHHt9zSt/8ppSI4hrE+9qqZ
- 59gjcKagedyvbu7+QUoyTfjyTgfYsl4CvL5aVOxnuci1Emv8ucoMFzLx/29PElbTpcbLCU
- naITfM6/RrYVJFQmuMydMninuyVEWoZ3tT3+9ya6+73Na0gYRzjXxM3wZTa2DxPiVDictV
- WYjPs/HYHVM6cXMpGu+rC6Ihx+rtdXBWUdT1Yi94lkL59KdxP3KtgPwSA6n6y4CC4IJF2K
- AuVtkk3CWPmTZkxXqOCZ1Ndb+jFm+fKavkLqDIVRgivid/AxcSXzv77JVk2G7w==
+ bh=l3kKVzpsCJJNFGYtCfLWekadyfB69gwfvzgBALJzdSw=;
+ b=Swe3vX+2qqRES9i5QHz1w9BqUrRwOXIYf9fhPByes6If/YazAoUf3wyVpdCsE+aH5GNyGP
+ skjx6x3lXo3KxoCFfL75aNovUEcS0FgkhgLtqxOnekxDTe806um638UrS4XzYvWRyXrwaB
+ t+O599tP9nsCQsfLJ25hPZG1ZwNuZnf14pPn7dHHdnHcEK5gdbKPNNIJ/v60mfR0nO8tFy
+ 19/OH3DNFSDpEw9abLKnubM4JyTPUA+lQCAMqiIKrKqUzTQaa+XKSn40aVXmh8CSX7TvzT
+ s7XEUnCWeKpXqzyZLknpkcP0ekrJFZN/oZ23fvO1LSYg1+M+No7jdVoRoatvbA==
 From: Ralf Lici <ralf@mandelbit.com>
 To: openvpn-devel@lists.sourceforge.net
-Date: Fri, 28 Aug 2026 15:00:10 +0200
-Message-ID: <035e544caefc976ba9649eda9ca541a6fe4c56b2.1787919082.git.ralf@mandelbit.com>
+Date: Fri, 28 Aug 2026 15:00:09 +0200
+Message-ID: <1bddf9d3f19e8d74d831526e9ce80182bcfcab73.1787919082.git.ralf@mandelbit.com>
 In-Reply-To: <cover.1787919082.git.ralf@mandelbit.com>
 References: <cover.1787919082.git.ralf@mandelbit.com>
 MIME-Version: 1.0
-X-Headers-End: 1wzwCG-0003Wv-1R
-Subject: [Openvpn-devel] [PATCH ovpn net v2 5/5] selftests: ovpn: validate
- peer VPN addresses
+X-Headers-End: 1wzwCH-0003Ww-7C
+Subject: [Openvpn-devel] [PATCH ovpn net v2 4/5] ovpn: reject invalid peer
+ VPN addresses
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -93,258 +93,104 @@ Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-Exercise peer VPN address validation through both peer creation and
-update. Check missing, unspecified, duplicate, multicast, broadcast,
-loopback, IPv4-compatible and IPv4-mapped addresses.
+In MP mode, ovpn uses peer VPN addresses as lookup keys for selecting
+the peer that should receive outgoing tunnel packets. The netlink
+configuration path currently accepts address values that cannot sensibly
+identify a VPN peer, such as multicast, broadcast or loopback addresses.
 
-Temporarily configure a peer with both address families to verify that
-either family can be cleared while the other remains configured, then
-restore the original addresses before running the existing traffic
-tests.
+Reject invalid peer VPN addresses when creating or updating an MP peer.
+Keep accepting the unspecified address as the internal unset value,
+provided that at least one VPN address family remains configured.
 
-Extend ovpn-cli peer updates with an optional VPN address and preserve
-peer creation errors so the negative tests can observe rejected netlink
-requests.
-
+Fixes: 1d36a36f6d53 ("ovpn: implement peer add/get/dump/delete via netlink")
 Signed-off-by: Ralf Lici <ralf@mandelbit.com>
 ---
-No changes since v1 https://lore.kernel.org/openvpn-devel/7b19fd9eb8d2c2a4afc4a8d102bdfeeeec8024bf.1785338921.git.ralf@mandelbit.com/
+Changes since v1 https://lore.kernel.org/openvpn-devel/934f840c132e350415369712806b3d9d77957ca5.1785338921.git.ralf@mandelbit.com/
+- Adapted to changes in 2/5 and 3/5; no behavioral changes.
 
- tools/testing/selftests/net/ovpn/common.sh  | 13 ++++
- tools/testing/selftests/net/ovpn/ovpn-cli.c | 54 ++++++++++-----
- tools/testing/selftests/net/ovpn/test.sh    | 75 ++++++++++++++++++++-
- 3 files changed, 123 insertions(+), 19 deletions(-)
+ drivers/net/ovpn/netlink.c | 55 +++++++++++++++++++++++++++++---------
+ 1 file changed, 42 insertions(+), 13 deletions(-)
 
-diff --git a/tools/testing/selftests/net/ovpn/common.sh b/tools/testing/selftests/net/ovpn/common.sh
-index 2d844eb3aa6e..5e9c81e885e6 100644
---- a/tools/testing/selftests/net/ovpn/common.sh
-+++ b/tools/testing/selftests/net/ovpn/common.sh
-@@ -136,6 +136,19 @@ ovpn_create_ns() {
- 	ip netns add "ovpn_peer${1}"
+diff --git a/drivers/net/ovpn/netlink.c b/drivers/net/ovpn/netlink.c
+index a0ed09278a6b..e9fef784dfc1 100644
+--- a/drivers/net/ovpn/netlink.c
++++ b/drivers/net/ovpn/netlink.c
+@@ -179,6 +179,39 @@ static sa_family_t ovpn_nl_family_get(struct nlattr *addr4,
+ 	return AF_UNSPEC;
  }
  
-+ovpn_peer_vpn_addr() {
-+	local peer="$1"
-+	local file
-+
-+	if [ "${OVPN_PROTO}" == "UDP" ]; then
-+		file="${OVPN_UDP_PEERS_FILE}"
-+	else
-+		file="${OVPN_TCP_PEERS_FILE}"
-+	fi
-+
-+	awk -v peer="${peer}" '$1 == peer {print $NF; exit}' "${file}"
-+}
-+
- ovpn_setup_ns() {
- 	local peer="ovpn_peer${1}"
- 	local server_ns="ovpn_peer0"
-diff --git a/tools/testing/selftests/net/ovpn/ovpn-cli.c b/tools/testing/selftests/net/ovpn/ovpn-cli.c
-index f4effa7580c0..3b612a8a18fe 100644
---- a/tools/testing/selftests/net/ovpn/ovpn-cli.c
-+++ b/tools/testing/selftests/net/ovpn/ovpn-cli.c
-@@ -650,6 +650,26 @@ static int ovpn_connect(struct ovpn_ctx *ovpn)
- 	return ret;
- }
- 
-+static int ovpn_nl_put_vpn_addr(struct nl_msg *msg,
-+				const struct ovpn_ctx *ovpn)
++static int ovpn_nl_peer_check_vpn_addrs(const struct in_addr *addr4,
++					const struct in6_addr *addr6,
++					struct genl_info *info)
 +{
-+	if (!ovpn->peer_ip_set)
-+		return 0;
++	int addr6_type;
 +
-+	switch (ovpn->peer_ip.in4.sin_family) {
-+	case AF_INET:
-+		return nla_put_u32(msg, OVPN_A_PEER_VPN_IPV4,
-+				   ovpn->peer_ip.in4.sin_addr.s_addr);
-+	case AF_INET6:
-+		return nla_put(msg, OVPN_A_PEER_VPN_IPV6,
-+			       sizeof(struct in6_addr),
-+			       &ovpn->peer_ip.in6.sin6_addr);
-+	default:
-+		fprintf(stderr, "Invalid family for peer address\n");
-+		return -EAFNOSUPPORT;
++	if (addr4->s_addr == htonl(INADDR_ANY) && ipv6_addr_any(addr6)) {
++		NL_SET_ERR_MSG_MOD(info->extack,
++				   "at least one VPN IP must be configured in MP mode");
++		return -EINVAL;
 +	}
++
++	if (ipv4_is_multicast(addr4->s_addr) || ipv4_is_lbcast(addr4->s_addr) ||
++	    ipv4_is_loopback(addr4->s_addr)) {
++		NL_SET_ERR_MSG_MOD(info->extack,
++				   "VPN IPv4 address must be valid unicast or any");
++		return -EADDRNOTAVAIL;
++	}
++
++	if (!ipv6_addr_any(addr6)) {
++		addr6_type = ipv6_addr_type(addr6);
++
++		if (!(addr6_type & IPV6_ADDR_UNICAST) ||
++		    (addr6_type & (IPV6_ADDR_LOOPBACK | IPV6_ADDR_COMPATv4))) {
++			NL_SET_ERR_MSG_MOD(info->extack,
++					   "VPN IPv6 address must be valid unicast or any");
++			return -EADDRNOTAVAIL;
++		}
++	}
++
++	return 0;
 +}
 +
- static int ovpn_new_peer(struct ovpn_ctx *ovpn, bool is_tcp)
- {
- 	struct nlattr *attr;
-@@ -691,22 +711,9 @@ static int ovpn_new_peer(struct ovpn_ctx *ovpn, bool is_tcp)
- 		}
- 	}
+ static int ovpn_nl_peer_precheck(struct ovpn_priv *ovpn,
+ 				 struct genl_info *info,
+ 				 struct nlattr **attrs)
+@@ -381,12 +414,10 @@ int ovpn_nl_peer_new_doit(struct sk_buff *skb, struct genl_info *info)
+ 			vpn_addr6 =
+ 				nla_get_in6_addr(attrs[OVPN_A_PEER_VPN_IPV6]);
  
--	if (ovpn->peer_ip_set) {
--		switch (ovpn->peer_ip.in4.sin_family) {
--		case AF_INET:
--			NLA_PUT_U32(ctx->nl_msg, OVPN_A_PEER_VPN_IPV4,
--				    ovpn->peer_ip.in4.sin_addr.s_addr);
--			break;
--		case AF_INET6:
--			NLA_PUT(ctx->nl_msg, OVPN_A_PEER_VPN_IPV6,
--				sizeof(struct in6_addr),
--				&ovpn->peer_ip.in6.sin6_addr);
--			break;
--		default:
--			fprintf(stderr, "Invalid family for peer address\n");
--			goto nla_put_failure;
+-		if (vpn_addr4.s_addr == htonl(INADDR_ANY) &&
+-		    ipv6_addr_any(&vpn_addr6)) {
+-			NL_SET_ERR_MSG_FMT_MOD(info->extack,
+-					       "at least one VPN IP must be configured in MP mode");
+-			return -EINVAL;
 -		}
--	}
-+	ret = ovpn_nl_put_vpn_addr(ctx->nl_msg, ovpn);
-+	if (ret)
-+		goto nla_put_failure;
- 
- 	nla_nest_end(ctx->nl_msg, attr);
- 
-@@ -732,6 +739,10 @@ static int ovpn_set_peer(struct ovpn_ctx *ovpn)
- 		    ovpn->keepalive_interval);
- 	NLA_PUT_U32(ctx->nl_msg, OVPN_A_PEER_KEEPALIVE_TIMEOUT,
- 		    ovpn->keepalive_timeout);
-+
-+	ret = ovpn_nl_put_vpn_addr(ctx->nl_msg, ovpn);
-+	if (ret)
-+		goto nla_put_failure;
- 	nla_nest_end(ctx->nl_msg, attr);
- 
- 	ret = ovpn_nl_msg_send(ctx, NULL);
-@@ -1730,13 +1741,14 @@ static void usage(const char *cmd)
- 	fprintf(stderr, "\tmark: socket FW mark value\n");
- 
- 	fprintf(stderr,
--		"* set_peer <iface> <peer_id> <keepalive_interval> <keepalive_timeout>: set peer attributes\n");
-+		"* set_peer <iface> <peer_id> <keepalive_interval> <keepalive_timeout> [vpnaddr]: set peer attributes\n");
- 	fprintf(stderr, "\tiface: ovpn interface name\n");
- 	fprintf(stderr, "\tpeer_id: peer ID of the peer to modify\n");
- 	fprintf(stderr,
- 		"\tkeepalive_interval: interval for sending ping messages\n");
- 	fprintf(stderr,
- 		"\tkeepalive_timeout: time after which a peer is timed out\n");
-+	fprintf(stderr, "\tvpnaddr: peer VPN IP\n");
- 
- 	fprintf(stderr, "* del_peer <iface> <peer_id>: delete peer\n");
- 	fprintf(stderr, "\tiface: ovpn interface name\n");
-@@ -2090,6 +2102,8 @@ static int ovpn_run_cmd(struct ovpn_ctx *ovpn)
- 			return ret;
- 
- 		ret = ovpn_new_peer(ovpn, false);
++		ret = ovpn_nl_peer_check_vpn_addrs(&vpn_addr4, &vpn_addr6,
++						   info);
 +		if (ret < 0)
 +			return ret;
- 		ovpn_waitbg();
- 		break;
- 	case CMD_NEW_MULTI_PEER:
-@@ -2331,6 +2345,12 @@ static int ovpn_parse_cmd_args(struct ovpn_ctx *ovpn, int argc, char *argv[])
- 				"keepalive interval value out of range\n");
- 			return -1;
- 		}
-+
-+		if (argc > 6) {
-+			ret = ovpn_parse_remote(ovpn, NULL, NULL, argv[6]);
-+			if (ret < 0)
-+				return -1;
-+		}
- 		break;
- 	case CMD_DEL_PEER:
- 		if (argc < 4)
-diff --git a/tools/testing/selftests/net/ovpn/test.sh b/tools/testing/selftests/net/ovpn/test.sh
-index 9b5610837032..392109d5e14e 100755
---- a/tools/testing/selftests/net/ovpn/test.sh
-+++ b/tools/testing/selftests/net/ovpn/test.sh
-@@ -56,6 +56,76 @@ ovpn_prepare_network() {
- 	done
- }
+ 	}
  
-+ovpn_new_test_peer() {
-+	local peer_id="$1"
-+
-+	shift
-+	ip netns exec ovpn_peer0 "${OVPN_CLI}" new_peer tun0 \
-+		"${peer_id}" none 65000 10.10.1.2 1 "$@"
-+}
-+
-+ovpn_set_peer_vpn_addr() {
-+	ip netns exec ovpn_peer0 "${OVPN_CLI}" set_peer tun0 \
-+		"$1" 60 120 "$2"
-+}
-+
-+ovpn_run_vpn_addr_validation() {
-+	local addr
-+	local peer1_addr4
-+	local test_peer_id=$((OVPN_NUM_PEERS + 1))
-+	local test_peer_addr6="2001:db8::2"
-+	# Do not include 0.0.0.0 or :: here. They are invalid on creation, but
-+	# clear one address family on update and are valid if the other remains.
-+	local -a invalid_addrs=(
-+		"127.0.0.1"
-+		"224.0.0.1"
-+		"255.255.255.255"
-+		"::1"
-+		"::192.0.2.1"
-+		"::ffff:192.0.2.1"
-+		"ff02::1"
-+	)
-+
-+	peer1_addr4=$(ovpn_peer_vpn_addr 1)
-+
-+	ovpn_cmd_fail "reject peer without VPN address" \
-+		ovpn_new_test_peer "${test_peer_id}"
-+
-+	for addr in "0.0.0.0" "::" "${invalid_addrs[@]}"; do
-+		ovpn_cmd_fail "reject new peer VPN address ${addr}" \
-+			ovpn_new_test_peer "${test_peer_id}" "${addr}"
-+	done
-+
-+	ovpn_cmd_fail "reject duplicate IPv4 address on peer creation" \
-+		ovpn_new_test_peer "${test_peer_id}" "${peer1_addr4}"
-+	ovpn_cmd_fail "reject clearing the last peer VPN address" \
-+		ovpn_set_peer_vpn_addr 1 0.0.0.0
-+
-+	for addr in "${invalid_addrs[@]}"; do
-+		ovpn_cmd_fail "reject updated peer VPN address ${addr}" \
-+			ovpn_set_peer_vpn_addr 1 "${addr}"
-+	done
-+
-+	ovpn_cmd_fail "reject duplicate IPv4 address on peer update" \
-+		ovpn_set_peer_vpn_addr 2 "${peer1_addr4}"
-+
-+	ovpn_cmd_ok "add peer IPv6 address" \
-+		ovpn_set_peer_vpn_addr 1 "${test_peer_addr6}"
-+	ovpn_cmd_fail "reject duplicate IPv6 address on peer creation" \
-+		ovpn_new_test_peer "${test_peer_id}" "${test_peer_addr6}"
-+	ovpn_cmd_fail "reject duplicate IPv6 address on peer update" \
-+		ovpn_set_peer_vpn_addr 2 "${test_peer_addr6}"
-+
-+	ovpn_cmd_ok "clear peer IPv4 address" \
-+		ovpn_set_peer_vpn_addr 1 0.0.0.0
-+	ovpn_cmd_fail "reject clearing the remaining peer IPv6 address" \
-+		ovpn_set_peer_vpn_addr 1 ::
-+	ovpn_cmd_ok "restore peer IPv4 address" \
-+		ovpn_set_peer_vpn_addr 1 "${peer1_addr4}"
-+	ovpn_cmd_ok "clear peer IPv6 address" \
-+		ovpn_set_peer_vpn_addr 1 ::
-+}
-+
- ovpn_run_basic_traffic() {
- 	local p
- 	local header1
-@@ -293,15 +363,16 @@ trap ovpn_stage_err ERR
+ 	peer_id = nla_get_u32(attrs[OVPN_A_PEER_ID]);
+@@ -552,13 +583,11 @@ int ovpn_nl_peer_set_doit(struct sk_buff *skb, struct genl_info *info)
+ 	}
  
- ktap_print_header
- if [ "${OVPN_FLOAT}" == "1" ]; then
--	ktap_set_plan 13
-+	ktap_set_plan 14
- else
--	ktap_set_plan 12
-+	ktap_set_plan 13
- fi
+ 	/* in MP mode VPN IPs are required for selecting the right peer */
+-	if (ovpn->mode == OVPN_MODE_MP &&
+-	    vpn_addr4.s_addr == htonl(INADDR_ANY) &&
+-	    ipv6_addr_any(&vpn_addr6)) {
+-		NL_SET_ERR_MSG_FMT_MOD(info->extack,
+-				       "at least one VPN IP must be configured in MP mode");
+-		ret = -EINVAL;
+-		goto unlock;
++	if (ovpn->mode == OVPN_MODE_MP) {
++		ret = ovpn_nl_peer_check_vpn_addrs(&vpn_addr4, &vpn_addr6,
++						   info);
++		if (ret < 0)
++			goto unlock;
+ 	}
  
- ovpn_cleanup
- modprobe -q ovpn || true
- 
- ovpn_run_stage "setup network topology" ovpn_prepare_network
-+ovpn_run_stage "validate peer VPN addresses" ovpn_run_vpn_addr_validation
- ovpn_run_stage "run baseline data traffic" ovpn_run_basic_traffic
- ovpn_run_stage "run LAN traffic behind peer1" ovpn_run_lan_traffic
- [ "${OVPN_FLOAT}" == "1" ] && ovpn_run_stage "run floating peer checks" \
+ 	ret = ovpn_nl_peer_modify(peer, info, attrs);
 -- 
 2.55.0
 
