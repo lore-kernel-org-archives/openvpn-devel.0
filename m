@@ -4,127 +4,126 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1D84CC61DD3
-	for <openvpn-devel@archiver.kernel.org>; Tue,  1 Sep 2026 17:01:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id BF7B1C61DD3
+	for <openvpn-devel@archiver.kernel.org>; Tue,  1 Sep 2026 17:06:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:Date:Sender:To:
+	Subject:MIME-Version:Message-ID:References:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=00r1Uo9ubpbTiNB6AdHqO8VjKJv8d045JR9erV0DDhE=; b=aGOB8O1EjgcuxYqmWTInlz4mVI
-	0m9tpyAXUZCL3SzF1Rlq+EGtrB96LGT+qDONkjQQYzE+9WHycwN8ed/IsuOOknRmLwvAaULMmgcJI
-	g3J655oXZ1Bm0TRsGLfnMKVB3zScnu7K5o1Av1UdqO2P0gKBom/SBgszXiBXt1n4Gdy4=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+	List-Owner; bh=NfPvu45n5MuiKniIyLYmL/r3Pm6YeBL6IkHo0hqGU/I=; b=QVrUq7LWkeTof6
+	DkMoh+Fc+I8pJo++99w0k2YRbPrfzGGz/mwibvN6xke/Z+padFm2q40w5UF4BBPl/PnNeDbLJ5gIQ
+	KunFlPC2ZsiFqSGti02BemsH+VDL9Bqq/6PJ6+NnMoEsxqmtLDdend4QPu1bnk+V2P2lVt2P237c9
+	7LE=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x1Rrf-0003ez-TM;
-	Tue, 01 Sep 2026 17:01:37 +0000
+	id 1x1RwG-0003rk-AS;
+	Tue, 01 Sep 2026 17:06:25 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1x1Rre-0003et-1p
+ (envelope-from <gerrit@openvpn.net>) id 1x1RwE-0003rd-Rj
  for openvpn-devel@lists.sourceforge.net;
- Tue, 01 Sep 2026 17:01:35 +0000
+ Tue, 01 Sep 2026 17:06:23 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:Date:From:Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
- :List-Post:List-Owner:List-Archive;
- bh=i7dzaaguvKwUl+GncMRAh1veX7306sNqkDGm1YPyg2s=; b=OWASKyuGP9Hp3KKFHXJnuYJgp+
- aJQ0lBlv40p2NNE45bZxBTE/LPXvC4loY4En2I0IqNehEHqabNC2UzGgBhFFhGYCVcSN5Ob3e5X0X
- O5kkCuaYPvAd1P9DSvJOGFmkpMsUrqCVWasHK433GydoV5Yt7mqLZ06d+LXH8IGgcSb8=;
+ :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:
+ From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From:
+ Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=Fym3uT+jVzP4a93LuKrIU77bcFXY/SRS8eDvsxBzlnA=; b=bBHEKOLtUnlC0frW6QDKVNNPv1
+ sge677wjHm1+2T7Dzn/4D2rMIaChlY+Np25se7RxMtXzK3moi5z7Nuqr5TODqLirp8U76sJp80Dj6
+ QndU3ozEjMD/cb8LIf1m/81cgMNJhLugG1LntnIVfpjWMB7lXPV/dnNl+RzWznvpLZeg=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:Date:From:Sender:
- To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=i7dzaaguvKwUl+GncMRAh1veX7306sNqkDGm1YPyg2s=; b=X
- Cpq+d04K+Jwyf4Y70zyTTdY/bnJYJTAWb8FxNtRg6aJAw1ZGGKrI5XtruG56joz830CD2D0G7O4iT
- JDj+7zbJd3Lu6QWWASDumg/UOZWF7EOnmzfb2N4kthlp/Yfyi/F9oTmm+Qz1qyuavL8Uo4pzksdf8
- UBpdvtoM6Xb4Oz7k=;
-Received: from mail-wm1-f45.google.com ([209.85.128.45])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:From:Sender:Content-ID
+ :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+ Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=Fym3uT+jVzP4a93LuKrIU77bcFXY/SRS8eDvsxBzlnA=; b=H
+ LKbgANsZYbxueoTmBSl+7g3JrqrmYDIsLO0AjZ2MpP3JOFqQVJmBrnqwz2e6eJ3YgJ5PzneN9vbzl
+ A4u6xY78UEvlxo7aOnS47Bp6SRtUgdQ6bqd0NyFqqGWQ6KRxisWRgAKvJms8fQdeDN1y6OmXX4HRQ
+ /ONo1+ew34CLAWQ8=;
+Received: from mail-wr1-f46.google.com ([209.85.221.46])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1x1Rra-0006lf-Gl for openvpn-devel@lists.sourceforge.net;
- Tue, 01 Sep 2026 17:01:35 +0000
-Received: by mail-wm1-f45.google.com with SMTP id
- 5b1f17b1804b1-49b8e527d63so12900985e9.2
+ id 1x1RwD-0000DP-Tb for openvpn-devel@lists.sourceforge.net;
+ Tue, 01 Sep 2026 17:06:23 +0000
+Received: by mail-wr1-f46.google.com with SMTP id
+ ffacd0b85a97d-47fe89fb333so85381f8f.3
  for <openvpn-devel@lists.sourceforge.net>;
- Tue, 01 Sep 2026 10:01:34 -0700 (PDT)
+ Tue, 01 Sep 2026 10:06:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1788282088; x=1788886888; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1788282375; x=1788887175; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:date:from:from:to:cc:subject:date:message-id
- :reply-to:content-type;
- bh=i7dzaaguvKwUl+GncMRAh1veX7306sNqkDGm1YPyg2s=;
- b=cjh72XKO9xq8Aa/Py8GrWagSr0bn2+IGp96hfKIRbJ0JNYNJ6cP86LaHA/9gh7Df5n
- cSXlDVpbzKKBhgeFCseGTa6/t+lrcua5vWep3lgXpAzUhCS6d4fNSQqyT4G0o9QtE1oS
- YFGemEougOJQlR0fgjwXe5WhKVpZlbb0mQoGMyDGDs7xhkYqmXGL69j5bp4aAXTQrdGR
- fVT9iTPo6MCNVLa7vxCArA6+8mTSaa5i2uEAJ4ROaH+blXPUTaLEWyVsMtI0xvPQhDT4
- 6917WHYQwLSMQ2UtJ63Xnn01L6BHOkx6OKQ840GV6iHo9y+PsZKJkfAOFfKlpzUQRO6Y
- qyXA==
+ :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
+ :to:date:from:from:to:cc:subject:date:message-id:reply-to
+ :content-type; bh=Fym3uT+jVzP4a93LuKrIU77bcFXY/SRS8eDvsxBzlnA=;
+ b=SIT7Bw7KipRWJKUQ/+AzfkYe3I1ITUSm+mvyp4Ih246N2VRZOD8fBLkFR9tEBpB2xT
+ wW9o6aWwWRz4NQ2gHni0xjghL7QUPVkhZ80EpRQc2ir7cjdIk10ZykCRrmhjKuUArqBM
+ XgohsFLjG0VdeAusBAcc9CM5l65tbO3JQ2soThTD8Sc7c+me48VzBjZfKPBh+WHNUESM
+ eEK0cmP7V9rN9NTvyTVuEupvYDNjtaF178QOCTYdU7W6nC17PNa0Mj2OE17tE3hUw/oc
+ 8bjGdofzlpJpKjV9uVO58kQ29vQAK+CQ98UEH320xuBxLJfrEKStFu/bb0HKQBAgBUBk
+ roDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1788282088; x=1788886888;
+ d=1e100.net; s=20251104; t=1788282375; x=1788887175;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:date:from:x-gm-gg:x-gm-message-state:from:to:cc
- :subject:date:message-id:reply-to:content-type;
- bh=i7dzaaguvKwUl+GncMRAh1veX7306sNqkDGm1YPyg2s=;
- b=pZ6EhRRE1s3RqZntoJUViN2Zqw97z8G995uzKMfIhbgeKbvcz1vzpPvKfFOipoRbxD
- SOvZre01JIfRtFK45FSoSwW777IQfMjakzshuur4tprlWUxbyEKLhlzjV3F8rzufpEhA
- PrQ/BKIt3vun49kkqJzeyx+O262wdoCvxjqmf//BoeHLnWeRCtzp7J8HnaB6Y5ok/Lwj
- indl9NURmcamb+ql4jzBt0e48pHozz0e/7rIdr5SEzt2HYZklKkcKZGxBp7IYYVoUCCb
- ZcD9UJgx9XS+omQfzJladERG5r+h9S0vK4u3ojNSTwpCtjEtWBR2vRMEnAeSAmg3e7U7
- 8ubw==
-X-Forwarded-Encrypted: i=1;
- AHgh+RrHDb1c8XSOu7eakWh2dW0I1zF1Nkw+TcYS0Eaoo4wuFruhHxxChfa3Q4sSAYGWN/4yPD8XlptKnBFdso7x@lists.sourceforge.net
-X-Gm-Message-State: AFuF++n+k8pGgNRfM1qfjVntvUhCcXHLNHfpHXyRT0YgBQZecznSfamp
- 3efJsPfXWconP8+o+Feewj0yce0la3auXrWOWRU+LlEGyIUrhwhEWZxYglrzxKPcr0IfCDisAKw
- O2CyS2W1DV7Xc+ZoLQgH1bac9tcYA00Yat9SsHMiyCDi9gBTD7b0e1j4kOKQKdhRlBN7u
-X-Gm-Gg: AR+sD10qwDeMHqTjLsypxVt9gk+QMoFtU49JhDHLzt3K0xn4yWpWbkPM3kEEqsFcA7j
- OYkLSl3/tZaf/W9T3JM+V7ZnCXqQR0AjqibgRonsWH8IEdd09+w6hs0/Kr2j1b9sbXejUtUk6Wh
- Geb4DqrXigVoVi0bcAA9lsshdgY4EiAmqPz52lVKe8zD804jqMtzaOezpaexGSqFgGd5C6implF
- M3FlKjLfb9iDkAkMtfXHXyUfbqev97Dai6mmkARmDgdTfWAKD28V1UF3MxD50BjPNVmrooJDmdf
- Jtvy2GplkJfGZC/4dsJlNDO+W0dQXKrHE1vEwguRQ7+WFK7UQRflPfNel9j+xV390OxqFScDEGu
- Rj5h2Oz/jWee+ewDgmU0fYWqj/JSaWF+7j6TGApB8d+YK50MtijdjQTgch/6cqwG8amPQzM6LzC
- 3RXgq/pbUKjojjxlRhETfC8KC5YrOaauI1rlFV/oI54PClN/vSssz7PmZel1LjQpcnCFjsnXFqd
- /gzaBRchZjN4BBJ9SHid42j1DZID4GKmcgeHOaFCHigZjo9WnSQYwGqaObhWte5+hvqCvc6VGEI
- cO1KlF2UqqXOShDlFKhDmwvD3mFmm8nmgA6dfygEpXYZNeSvGKo=
-X-Received: by 2002:a05:600c:4e01:b0:49c:cedc:768a with SMTP id
- 5b1f17b1804b1-49ccedc76a1mr512147135e9.16.1788282087782; 
- Tue, 01 Sep 2026 10:01:27 -0700 (PDT)
+ :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
+ :to:date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+ :message-id:reply-to:content-type;
+ bh=Fym3uT+jVzP4a93LuKrIU77bcFXY/SRS8eDvsxBzlnA=;
+ b=XOjT2Re18xAf2DPdoCqDlfSJizkMaNXM9dWnC/swYg+O3S7gDrTtyGzmRTTUtXeJRm
+ 9uHOx7/sct6JP76CV5GdocpBdcaTBIF1/blM/X9YUi3zLzr/bhKK64jp4MkA4tpPNp+H
+ kyaqMxWBLoqUlNcX1zuPj62ERX/3NxIrZ3969pTzblweGJdOlj1T/+MpcfqkdOH2ETKj
+ EddgXU/YWn6Ub7/oU30LNFGIHXxpG9GzNj9onTYbawTi1CixBn4cobicHBHsdTGl7cBj
+ Bex8xFl7fvSpIzvZXzrlEHm37/hQpx+57c5DUrIYoF7U1tKURfcDzs/HFEf8Ly3cc/sd
+ vkGQ==
+X-Gm-Message-State: AFuF++l+1+rQfbM3ePpJFrldYoLA1EWAhxKnSrBhnSPwGKtZAuMvaJU5
+ oqLuLldqAAsZmBJMYuvCnFyqhFNaHkjYa7HqoC3gqPdenZ3crXQedztR9lANK2NfTkRgSHab/fp
+ 3tYqi8q/zGBqoHm+ZBQiezMwobrgdCGqf4U9VnzVufL39CUcvpmNj1BEFuJ78TZKYhDpzPSl/Zw
+ PBPVTULg==
+X-Gm-Gg: AYBFou39IyfZ+q7QkU8tGm59TBG2pMwKEMU0R80Z5l4pBJTVgSeWQ+dUaHHxHGmLU3m
+ vG7y0f1Oc7ot+fV2lOURg7z03cMlnZg9SO/2Krfg3hkZbfRQbRgnGkTCzvNhb7EcmoYJXizYfxO
+ jvhvGqgpALRmW6oHIUwDpIg+JotDVTst6humM7KABUmHSY9oVfTGA3CcXyAGgOXB+85609nkAes
+ nX2/OizJYWNE0lBJG14RdEqJy/7c3lBLkmcamUff3v0NghUr5UicwPAYG0itkFa32uhAypHF9Ue
+ vdy97QHs+bHxvMcLcsxptl7ggZnT79eCHkTMKe15u/6GY3DHS+N22ebeXqXQVTfoB/inBarsHuO
+ Htv4R4alHYabeN5iQOLYZJiuf7DyBSbWj2OU+qubXssAiOyYwbUpl+sKIWWyC6TU6XQPk7AG9P4
+ vKicmpdQOAk1MDNGGsdRS/gADBWO8TnOsPjpnywx/bSzVRSBaFucBVx7Fc7CkfxpCT2Z0j0GzOD
+ AdmkKNP+Xwr9xxp+8fFeyWt9AK+Zu2iigv7gtA5jhw/7kG9FLTf+F5fwAIZRJmc7rCbKDG/ZEmA
+ 6kXtTOr22zZK3Gx3SLoWnxvNt59+Dxx0ueF1tX3XpiIycAhWtKo=
+X-Received: by 2002:a05:6000:27c6:b0:482:f270:65c5 with SMTP id
+ ffacd0b85a97d-48440fe3214mr14061947f8f.9.1788282374976; 
+ Tue, 01 Sep 2026 10:06:14 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-49ce3c86a0asm10679455e9.9.2026.09.01.10.01.27
+ ffacd0b85a97d-48448eeae34sm311025f8f.32.2026.09.01.10.06.14
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 01 Sep 2026 10:01:27 -0700 (PDT)
+ Tue, 01 Sep 2026 10:06:14 -0700 (PDT)
 X-Google-Original-From: "cron2 (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Tue, 1 Sep 2026 17:01:27 +0000
+Date: Tue, 1 Sep 2026 17:06:14 +0000
+To: plaisthos <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: merged
-X-Gerrit-PatchSet: 4
-X-Gerrit-Change-Id: Ie7352dd136cccda2bd6b6e1a36db1a5f27afd8f7
-X-Gerrit-Change-Number: 1782
+X-Gerrit-MessageType: newchange
+X-Gerrit-PatchSet: 1
+X-Gerrit-Change-Id: I787a7067f6ff040c6a1f43f384321bddf5efc97b
+X-Gerrit-Change-Number: 1889
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1782?usp=email>
-X-Gerrit-Commit: 90ab7be00e73d06f7a5bf72e6a454fcfd5f2818c
-In-Reply-To: <gerrit.1783977723000.Ie7352dd136cccda2bd6b6e1a36db1a5f27afd8f7@gerrit.openvpn.net>
-References: <gerrit.1783977723000.Ie7352dd136cccda2bd6b6e1a36db1a5f27afd8f7@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzgzOTc3NzIzMDAwLkllNzM1MmRkMTM2Y2NjZGEyYmQ2YjZlMWEzNmRiMWE1ZjI3YWZkOGY3QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <dca290c93d3baf649e4257ffac6eed7bb253451f-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1889?usp=email>
+X-Gerrit-Commit: 395f0a0e0661e4acc76432a71735c45d5cd657a2
+References: <gerrit.1788282372000.I787a7067f6ff040c6a1f43f384321bddf5efc97b@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzg4MjgyMzcyMDAwLkk3ODdhNzA2N2Y2ZmYwNDBjNmExZjQzZjM4NDMyMWJkZGY1ZWZjOTdiQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <0c150614fa6225d81b699bc518098d897a3366e9-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1x1Rra-0006lf-Gl
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: networking_sitnl:
- validate netlink replies against the request
+X-Headers-End: 1x1RwD-0000DP-Tb
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: win: don't use NULL
+ DACL with system objects
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -139,424 +138,609 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 From: "cron2 \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
 Reply-To: gert@greenie.muc.de, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net, ralf@mandelbit.com, antonio@mandelbit.com
+ openvpn-devel@lists.sourceforge.net
 Cc: "cron2 \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>,
- plaisthos <arne-openvpn@rfc2549.org>
-Content-Type: multipart/mixed; boundary="===============5033095520358846684=="
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: multipart/mixed; boundary="===============1440367797640784351=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============5033095520358846684==
+--===============1440367797640784351==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="rTf6KBCN8E4="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="AgN+ZPg/bfE="; charset=UTF-8
 
---rTf6KBCN8E4=
+--AgN+ZPg/bfE=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change=2E ( http://gerrit=2Eopenvpn=2Enet/c/openvp=
-n/+/1782?usp=3Demail )
+Attention is currently required from: d12fk, plaisthos=2E
 
-Change subject: networking_sitnl: validate netlink =
-replies against the request
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E
-
-networking_sitnl: validate netlink replies against the req=
-uest
-
-sitnl_send() passed every well-formed reply to the callback without
-c=
-hecking it matched the outstanding request: the seq/pid check was
-commented=
- out and the sequence number came from time(NULL)=2E
-
-Seed a monotonically =
-increasing sequence number and drop any message
-that is not from the kernel=
- (nl_pid 0) or does not echo our port id and
-sequence number=2E
-
-Change-Id:=
- Ie7352dd136cccda2bd6b6e1a36db1a5f27afd8f7
-GitHub: fixes OpenVPN/openvpn-pr=
-ivate-issues#9
-Reported-by: Joshua Rogers <contact@joshua=2Ehu>
-Found-By: Z=
-eroPath (https://zeropath=2Ecom)
-Signed-off-by: Antonio Quartulli <antonio@=
-mandelbit=2Ecom>
-Acked-by: Ralf Lici <ralf@mandelbit=2Ecom>
-Gerrit URL: htt=
-ps://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1782
-Message-Id: <20260901151017=2E=
-16221-1-gert@greenie=2Emuc=2Ede>
-URL: https://www=2Email-archive=2Ecom/open=
-vpn-devel@lists=2Esourceforge=2Enet/msg38879=2Ehtml
-Signed-off-by: Gert Doe=
-ring <gert@greenie=2Emuc=2Ede>
----
-M src/openvpn/networking_sitnl=2Ec
-1 fil=
-e changed, 37 insertions(+), 17 deletions(-)
+Hello plaisthos,=
 
 
+I'd like you to do a code review=2E
+Please visit
 
+    http://gerrit=2Eope=
+nvpn=2Enet/c/openvpn/+/1889?usp=3Demail
 
-diff --git a/src/openvpn/n=
-etworking_sitnl=2Ec b/src/openvpn/networking_sitnl=2Ec
-index e6e72d0=2E=2Ea=
-396255 100644
---- a/src/openvpn/networking_sitnl=2Ec
-+++ b/src/openvpn/netw=
-orking_sitnl=2Ec
-@@ -197,7 +197,7 @@
-  * Bind socket to Netlink subsystem
- =
- */
- static int
--sitnl_bind(int fd, uint32_t groups)
-+sitnl_bind(int fd, ui=
-nt32_t groups, uint32_t *local_pid)
- {
-     socklen_t addr_len;
-     struct=
- sockaddr_nl local;
-@@ -232,6 +232,14 @@
-         return -EINVAL;
-     }
- 
+to review the following change=2E
 =
-+    /* We bound with nl_pid=3D0, so the kernel assigned this socket a uniq=
-ue port
-+     * id (it is not the process pid - a process may own several n=
-etlink
-+     * sockets)=2E getsockname() above is the only way to learn it:=
- hand it back
-+     * to the caller, which uses it to check that replies ar=
-e addressed to this
-+     * socket=2E
-+     */
-+    *local_pid =3D local=2E=
-nl_pid;
-+
-     return 0;
+
+
+Change subject: win: don't use NULL DACL with system objects
+=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+
+win: don't use NULL DACL =
+with system objects
+
+The netsh semaphore used a NULL DACL, which allowed an=
+y user on a shared
+system to block openvpn from running=2E Instances would =
+time out and shut
+down=2E
+
+Similar with the --service exit event=2E Any use=
+r could signal it and shut
+down the instance if the event name is known or =
+can be retrieved from
+the running process=2E
+
+To prevent both, the objects =
+are created with a DACL which allows access
+to the creating user only=2E In=
+ case of the netsh semaphore this means that
+only the first user running op=
+envpn can run more instances=2E Other
+accounts doing so will error out=2E T=
+he interactive service can be used to
+prevent this from happening, since th=
+e netsh semaphore is only used when
+the openvpn process runs privileged ope=
+rations directly=2E
+
+Github: OpenVPN/openvpn-private-issues#167
+CVE: 2026-8=
+2312
+Reported-By: DEBRAJ BASAK <https://in=2Elinkedin=2Ecom/in/debrajbasak>=
+
+Change-Id: I787a7067f6ff040c6a1f43f384321bddf5efc97b
+Signed-off-by: Heiko =
+Hund <heiko@ist=2Eeigentlich=2Enet>
+---
+M src/openvpn/win32=2Ec
+M src/openv=
+pn/win32=2Eh
+2 files changed, 107 insertions(+), 3 deletions(-)
+
+
+
+  git pu=
+ll ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/89/1889/1
+
+diff =
+--git a/src/openvpn/win32=2Ec b/src/openvpn/win32=2Ec
+index 44b010d=2E=2Edd=
+88a22 100644
+--- a/src/openvpn/win32=2Ec
++++ b/src/openvpn/win32=2Ec
+@@ -35=
+,6 +35,8 @@
+ 
+ #include <minwindef=2Eh>
+ #include <winsock2=2Eh>
++#include =
+<accctrl=2Eh>
++#include <aclapi=2Eh>
+ 
+ #include "buffer=2Eh"
+ #include "er=
+ror=2Eh"
+@@ -146,6 +148,13 @@
+     pause_exit_enabled =3D true;
  }
  
-@@ -243,6 +251,7 @@
-            void *arg_cb)=
-
- {
-     int fd, ret;
-+    uint32_t local_pid =3D 0;
-     struct sockaddr_n=
-l nladdr;
-     struct nlmsgerr *err;
-     struct nlmsghdr *h;
-@@ -264,11 +2=
-73,17 @@
-     nladdr=2Enl_pid =3D peer;
-     nladdr=2Enl_groups =3D groups;=
-
- 
--    /* NB: We currently do not verify seq and pid on answers=2E
--     *=
- If we ever want to start with that we probably need to come up
--     * wit=
-h something better than "seconds since epoch"=2E=2E=2E
-+    /* Match replie=
-s to requests with a monotonically increasing sequence
-+     * number, seed=
-ed once from wall-clock time so it differs between runs=2E
-+     * The kern=
-el echoes this seq (and our port id) in its replies, letting the
-+     * re=
-ceive loop below discard any unrelated or spoofed message=2E
-      */
--    =
-payload->nlmsg_seq =3D (uint32_t)time(NULL);
-+    static uint32_t sitnl_seq=
-;
-+    if (!sitnl_seq)
-+    {
-+        sitnl_seq =3D (uint32_t)time(NULL);
-=
-+    }
-+    payload->nlmsg_seq =3D ++sitnl_seq;
- 
-     /* no need to send r=
-eply */
-     if (!cb)
-@@ -283,7 +298,7 @@
-         return -errno;
-     }
- 
-=
--    if (sitnl_bind(fd, 0) < 0)
-+    if (sitnl_bind(fd, 0, &local_pid) < 0)=
-
-     {
-         msg(M_WARN | M_ERRNO, "%s: can't bind rtnl socket", __func=
-__);
-         ret =3D -errno;
-@@ -357,18 +372,23 @@
-                 goto o=
-ut;
-             }
- 
--            /*            if (((int)nladdr=2Enl_pid !=
-=3D peer) || (h->nlmsg_pid !=3D nladdr=2Enl_pid)
--             *           =
-    || (h->nlmsg_seq !=3D seq))
--             *           {
--             *=
-               rcv_len -=3D NLMSG_ALIGN(len);
--             *              =
- h =3D (struct nlmsghdr *)((char *)h + NLMSG_ALIGN(len));
--             *  =
-             msg(M_DEBUG, "%s: skipping unrelated message=2E nl_pid:%d (pee=
-r:%d)
--             * nl_msg_pid:%d nl_seq:%d seq:%d",
--             *     =
-              __func__, (int)nladdr=2Enl_pid, peer, h->nlmsg_pid,
--        =
-     *                   h->nlmsg_seq, seq);
--             *               =
-continue;
--             *           }
-+            /* Discard any message t=
-hat did not come from the kernel or does
-+             * not match the requ=
-est we sent: only the kernel (nl_pid 0) can
-+             * legitimately re=
-ply, and a valid reply echoes our port id and
-+             * sequence numb=
-er=2E This prevents a local process from injecting a
-+             * spoofe=
-d reply that the callback would otherwise act on=2E
-              */
-+     =
-       if ((nladdr=2Enl_pid !=3D 0) || (h->nlmsg_pid !=3D local_pid)
-+     =
-           || (h->nlmsg_seq !=3D payload->nlmsg_seq))
-+            {
-+     =
-           msg(D_RTNL,
-+                    "%s: skipping unrelated message=
-=2E nl_pid:%u nlmsg_pid:%u (local:%u) nlmsg_seq:%u (seq:%u)",
-+            =
-        __func__, nladdr=2Enl_pid, h->nlmsg_pid, local_pid, h->nlmsg_seq,
++/**
 +=
-                    payload->nlmsg_seq);
-+                rcv_len -=3D NLMS=
-G_ALIGN(len);
-+                h =3D (struct nlmsghdr *)((char *)h + NLMSG_=
-ALIGN(len));
-+                continue;
-+            }
+ * @brief Initializes security attributes with a NULL DACL, allowing
++ *   =
+     unrestricted access to the resulting object=2E
++ *
++ * @param obj Secu=
+rity attributes structure to initialize=2E
++ * @return true on success, fal=
+se otherwise=2E
++ */
+ bool
+ init_security_attributes_allow_all(struct secur=
+ity_attributes *obj)
+ {
+@@ -165,6 +174,93 @@
+     return true;
+ }
  
-             if (h=
-->nlmsg_type =3D=3D NLMSG_DONE)
-             {
++/**
++ =
+* @brief Initializes security attributes with a DACL restricted to the
++ * =
+       current process user=2E
++ *
++ * The resulting DACL grants GENERIC_AL=
+L access to the calling user only,
++ * so the created object cannot be open=
+ed, signaled or otherwise accessed
++ * by other users on the system=2E The =
+allocated DACL must be released with
++ * free_security_attributes() once th=
+e security attributes are no longer
++ * needed=2E
++ *
++ * @param obj Securi=
+ty attributes structure to initialize=2E
++ * @return true on success, false=
+ otherwise=2E
++ */
++static bool
++init_security_attributes_allow_user(struct=
+ security_attributes *obj)
++{
++    bool ret =3D false;
++
++    CLEAR(*obj);
+=
++    obj->sa=2EnLength =3D sizeof(SECURITY_ATTRIBUTES);
++    obj->sa=2ElpSe=
+curityDescriptor =3D &obj->sd;
++    obj->sa=2EbInheritHandle =3D FALSE;
++
++=
+    if (!InitializeSecurityDescriptor(&obj->sd, SECURITY_DESCRIPTOR_REVISIO=
+N))
++    {
++        return ret;
++    }
++
++    HANDLE token =3D NULL;
++    i=
+f (!OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &token))
++    {
++   =
+     return ret;
++    }
++
++    PTOKEN_USER info =3D NULL;
++    DWORD info_l=
+en =3D 0;
++    if (!GetTokenInformation(token, TokenUser, info, info_len, &=
+info_len)
++        && GetLastError() !=3D ERROR_INSUFFICIENT_BUFFER)
++    {=
+
++        goto out;
++    }
++
++    info =3D malloc(info_len);
++    if (!info=
+ || !GetTokenInformation(token, TokenUser, info, info_len, &info_len))
++   =
+ {
++        goto out;
++    }
++
++    EXPLICIT_ACCESS ea =3D { 0 };
++    ea=
+=2EgrfAccessPermissions =3D GENERIC_ALL;
++    ea=2EgrfAccessMode =3D SET_AC=
+CESS;
++    ea=2EgrfInheritance =3D NO_INHERITANCE;
++    ea=2ETrustee=2ETrus=
+teeForm =3D TRUSTEE_IS_SID;
++    ea=2ETrustee=2ETrusteeType =3D TRUSTEE_IS_=
+USER;
++    ea=2ETrustee=2EptstrName =3D (LPTSTR)info->User=2ESid;
++
++    if=
+ (SetEntriesInAcl(1, &ea, NULL, &obj->dacl) !=3D ERROR_SUCCESS)
++    {
++   =
+     goto out;
++    }
++
++    if (SetSecurityDescriptorDacl(&obj->sd, TRUE, =
+obj->dacl, FALSE))
++    {
++        ret =3D true;
++    }
++
++out:
++    free(i=
+nfo);
++    CloseHandle(token);
++    return ret;
++}
++
++/**
++ * @brief Releas=
+es resources allocated by init_security_attributes_allow_user()=2E
++ *
++ * =
+@param obj Security attributes structure to release=2E
++ */
++static void
++f=
+ree_security_attributes(struct security_attributes *obj)
++{
++    if (obj->d=
+acl)
++    {
++        LocalFree(obj->dacl);
++        obj->dacl =3D NULL;
++  =
+  }
++}
++
+ void
+ overlapped_io_init(struct overlapped_io *o, const struct fr=
+ame *frame, BOOL event_state)
+ {
+@@ -504,7 +600,7 @@
+         struct gc_are=
+na gc =3D gc_new();
+         const wchar_t *exit_event_nameW =3D wide_strin=
+g(exit_event_name, &gc);
+ 
+-        if (!init_security_attributes_allow_all=
+(&sa))
++        if (!init_security_attributes_allow_user(&sa))
+         {
+ =
+            msg(M_ERR, "Error: win32_signal_open: init SA failed");
+       =
+  }
+@@ -526,6 +622,7 @@
+                 ws->mode =3D WSO_MODE_SERVICE;
+   =
+          }
+         }
++        free_security_attributes(&sa);
+         gc_=
+free(&gc);
+     }
+     /* set the ctrl handler in both console and service =
+modes */
+@@ -751,14 +848,15 @@
+     s->name =3D name;
+     s->hand =3D NULL=
+;
+ 
+-    if (init_security_attributes_allow_all(&sa))
++    if (init_securit=
+y_attributes_allow_user(&sa))
+     {
+         s->hand =3D CreateSemaphore(&=
+sa=2Esa, 1, 1, name);
+     }
++    free_security_attributes(&sa);
+ 
+     if =
+(s->hand =3D=3D NULL)
+     {
+-        msg(M_WARN | M_ERRNO, "WARNING: Canno=
+t create Win32 semaphore '%s'", name);
++        msg(M_ERR, "Cannot create W=
+in32 semaphore '%s'", name);
+     }
+     else
+     {
+diff --git a/src/openv=
+pn/win32=2Eh b/src/openvpn/win32=2Eh
+index ef32062=2E=2E8be3d96 100644
+--- =
+a/src/openvpn/win32=2Eh
++++ b/src/openvpn/win32=2Eh
+@@ -63,6 +63,7 @@
+ {
+  =
+   SECURITY_ATTRIBUTES sa;
+     SECURITY_DESCRIPTOR sd;
++    PACL dacl;
+ };=
+
+ 
+ #define HANDLE_DEFINED(h) ((h) !=3D NULL && (h) !=3D INVALID_HANDLE_VAL=
+UE)
+@@ -262,6 +263,11 @@
+  *
+  * It seems you can't run more than one insta=
+nce
+  * of netsh on the same machine at the same time=2E
++ *
++ * Its DACL i=
+s restricted to the creating user to prevent an unprivileged
++ * local user=
+ from starving it and DoS'ing running instances=2E This means
++ * different=
+ user accounts running OpenVPN directly, not via the interactive
++ * servic=
+e, will make all but the first user's instances exit=2E
+  */
+ 
+ extern stru=
+ct semaphore netcmd_semaphore;
 
 -- 
-To view, visit http://g=
-errit=2Eopenvpn=2Enet/c/openvpn/+/1782?usp=3Demail
-To unsubscribe, or for h=
-elp writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=
-=3Demail
+To view, visit http://gerrit=2Eopenvpn=
+=2Enet/c/openvpn/+/1889?usp=3Demail
+To unsubscribe, or for help writing mai=
+l filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Gerrit-MessageType: merged
+Gerrit=
+-MessageType: newchange
 Gerrit-Project: openvpn
-Gerrit-Branch:=
- master
-Gerrit-Change-Id: Ie7352dd136cccda2bd6b6e1a36db1a5f27afd8f7
-Gerrit-=
-Change-Number: 1782
-Gerrit-PatchSet: 4
-Gerrit-Owner: ordex <antonio@mandelb=
-it=2Ecom>
-Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Re=
-viewer: ralf_lici <ralf@mandelbit=2Ecom>
-Gerrit-CC: openvpn-devel <openvpn-=
-devel@lists=2Esourceforge=2Enet>
+Gerrit-Branch: master
+Gerri=
+t-Change-Id: I787a7067f6ff040c6a1f43f384321bddf5efc97b
+Gerrit-Change-Number=
+: 1889
+Gerrit-PatchSet: 1
+Gerrit-Owner: cron2 <gert@greenie=2Emuc=2Ede>
+Ger=
+rit-Reviewer: d12fk <heiko@openvpn=2Enet>
+Gerrit-Reviewer: plaisthos <arne-=
+openvpn@rfc2549=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esour=
+ceforge=2Enet>
+Gerrit-Attention: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Ger=
+rit-Attention: d12fk <heiko@openvpn=2Enet>
 
---rTf6KBCN8E4=
+--AgN+ZPg/bfE=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change=2E</p><p><a href=3D"http://gerrit=2Eopenvpn=2En=
-et/c/openvpn/+/1782?usp=3Demail">View Change</a></p><div style=3D"white-spa=
-ce:pre-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,mo=
-nospace; white-space: pre-wrap;">networking_sitnl: validate netlink replies=
- against the request<br><br>sitnl_send() passed every well-formed reply to =
-the callback without<br>checking it matched the outstanding request: the se=
-q/pid check was<br>commented out and the sequence number came from time(NUL=
-L)=2E<br><br>Seed a monotonically increasing sequence number and drop any m=
-essage<br>that is not from the kernel (nl_pid 0) or does not echo our port =
-id and<br>sequence number=2E<br><br>Change-Id: Ie7352dd136cccda2bd6b6e1a36d=
-b1a5f27afd8f7<br>GitHub: fixes OpenVPN/openvpn-private-issues#9<br>Reported=
--by: Joshua Rogers &lt;contact@joshua=2Ehu&gt;<br>Found-By: ZeroPath (https=
-://zeropath=2Ecom)<br>Signed-off-by: Antonio Quartulli &lt;antonio@mandelbi=
-t=2Ecom&gt;<br>Acked-by: Ralf Lici &lt;ralf@mandelbit=2Ecom&gt;<br>Gerrit U=
-RL: https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1782<br>Message-Id: &lt;2026=
-0901151017=2E16221-1-gert@greenie=2Emuc=2Ede&gt;<br>URL: https://www=2Email=
--archive=2Ecom/openvpn-devel@lists=2Esourceforge=2Enet/msg38879=2Ehtml<br>S=
-igned-off-by: Gert Doering &lt;gert@greenie=2Emuc=2Ede&gt;<br>---<br>M src/=
-openvpn/networking_sitnl=2Ec<br>1 file changed, 37 insertions(+), 17 deleti=
-ons(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-=
-space: pre-wrap;"><span>diff --git a/src/openvpn/networking_sitnl=2Ec b/src=
-/openvpn/networking_sitnl=2Ec</span><br><span>index e6e72d0=2E=2Ea396255 10=
-0644</span><br><span>--- a/src/openvpn/networking_sitnl=2Ec</span><br><span=
->+++ b/src/openvpn/networking_sitnl=2Ec</span><br><span>@@ -197,7 +197,7 @@=
-</span><br><span>  * Bind socket to Netlink subsystem</span><br><span>  */<=
-/span><br><span> static int</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-sitnl_bind(int fd, uint32_t groups)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+sitnl_bind(int fd, uint32_t groups, uint32_t *local_p=
-id)</span><br><span> {</span><br><span>     socklen_t addr_len;</span><br><=
-span>     struct sockaddr_nl local;</span><br><span>@@ -232,6 +232,14 @@</s=
-pan><br><span>         return -EINVAL;</span><br><span>     }</span><br><sp=
-an> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* We bound=
- with nl_pid=3D0, so the kernel assigned this socket a unique port</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+     * id (it is not the pro=
-cess pid - a process may own several netlink</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+     * sockets)=2E getsockname() above is the only=
- way to learn it: hand it back</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+     * to the caller, which uses it to check that replies are ad=
-dressed to this</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
- * socket=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     */=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    *local_pid =3D =
-local=2Enl_pid;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span>     return 0;</span><br><span> }</span><br><span> </span><br>=
-<span>@@ -243,6 +251,7 @@</span><br><span>            void *arg_cb)</span><=
-br><span> {</span><br><span>     int fd, ret;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    uint32_t local_pid =3D 0;</span><br><span>   =
-  struct sockaddr_nl nladdr;</span><br><span>     struct nlmsgerr *err;</sp=
-an><br><span>     struct nlmsghdr *h;</span><br><span>@@ -264,11 +273,17 @@=
-</span><br><span>     nladdr=2Enl_pid =3D peer;</span><br><span>     nladdr=
-=2Enl_groups =3D groups;</span><br><span> </span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    /* NB: We currently do not verify seq and pid on a=
-nswers=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     * If we=
- ever want to start with that we probably need to come up</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-     * with something better than &quot=
-;seconds since epoch&quot;=2E=2E=2E</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    /* Match replies to requests with a monotonically incre=
-asing sequence</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-* number, seeded once from wall-clock time so it differs between runs=2E</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+     * The kernel echo=
-es this seq (and our port id) in its replies, letting the</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+     * receive loop below discard any=
- unrelated or spoofed message=2E</span><br><span>      */</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    payload-&gt;nlmsg_seq =3D (uint32_t=
-)time(NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    sta=
-tic uint32_t sitnl_seq;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    if (!sitnl_seq)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        si=
-tnl_seq =3D (uint32_t)time(NULL);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    payload-&gt;nlmsg_seq =3D ++sitnl_seq;</span><br><span> </span><br><spa=
-n>     /* no need to send reply */</span><br><span>     if (!cb)</span><br>=
-<span>@@ -283,7 +298,7 @@</span><br><span>         return -errno;</span><br=
-><span>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    if (sitnl_bind(fd, 0) &lt; 0)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    if (sitnl_bind(fd, 0, &amp;local_pid) &lt; 0)</=
-span><br><span>     {</span><br><span>         msg(M_WARN | M_ERRNO, &quot;=
-%s: can&#39;t bind rtnl socket&quot;, __func__);</span><br><span>         r=
-et =3D -errno;</span><br><span>@@ -357,18 +372,23 @@</span><br><span>      =
-           goto out;</span><br><span>             }</span><br><span> </span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-            /*            i=
-f (((int)nladdr=2Enl_pid !=3D peer) || (h-&gt;nlmsg_pid !=3D nladdr=2Enl_pi=
-d)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             *     =
-          || (h-&gt;nlmsg_seq !=3D seq))</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-             *           {</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-             *               rcv_len -=3D NLMSG_ALI=
-GN(len);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
-*               h =3D (struct nlmsghdr *)((char *)h + NLMSG_ALIGN(len));</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-             *          =
-     msg(M_DEBUG, &quot;%s: skipping unrelated message=2E nl_pid:%d (peer:%=
-d)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             * nl_m=
-sg_pid:%d nl_seq:%d seq:%d&quot;,</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-             *                   __func__, (int)nladdr=2Enl_pid=
-, peer, h-&gt;nlmsg_pid,</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-             *                   h-&gt;nlmsg_seq, seq);</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-             *               continue;=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             *       =
-    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            /*=
- Discard any message that did not come from the kernel or does</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+             * not match the req=
-uest we sent: only the kernel (nl_pid 0) can</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+             * legitimately reply, and a valid rep=
-ly echoes our port id and</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+             * sequence number=2E This prevents a local process from =
-injecting a</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-     * spoofed reply that the callback would otherwise act on=2E</span><br>=
-<span>              */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+            if ((nladdr=2Enl_pid !=3D 0) || (h-&gt;nlmsg_pid !=3D local_=
-pid)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
- || (h-&gt;nlmsg_seq !=3D payload-&gt;nlmsg_seq))</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+                msg(D_RTNL,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                    &quot;%s: skipping un=
-related message=2E nl_pid:%u nlmsg_pid:%u (local:%u) nlmsg_seq:%u (seq:%u)&=
-quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
-       __func__, nladdr=2Enl_pid, h-&gt;nlmsg_pid, local_pid, h-&gt;nlmsg_s=
-eq,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
-    payload-&gt;nlmsg_seq);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+                rcv_len -=3D NLMSG_ALIGN(len);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+                h =3D (struct nlmsghdr *=
-)((char *)h + NLMSG_ALIGN(len));</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+                continue;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+            }</span><br><span> </span><br><span>        =
-     if (h-&gt;nlmsg_type =3D=3D NLMSG_DONE)</span><br><span>             {=
-</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerri=
-t=2Eopenvpn=2Enet/c/openvpn/+/1782?usp=3Demail">change 1782</a>=2E To unsub=
-scribe, or for help writing mail filters, visit <a href=3D"http://gerrit=2E=
-openvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemt=
-ype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action"=
- itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D=
-"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1782?usp=3Demail"/><meta itempro=
-p=3D"name" content=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: d12fk, plaisthos=2E </p>
+<p>cron2 would like plaistho=
+s to <strong>review</strong> this change=2E
+</p><p><a href=3D"http://gerrit=
+=2Eopenvpn=2Enet/c/openvpn/+/1889?usp=3Demail">View Change</a></p><pre clas=
+s=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wr=
+ap;">win: don&#39;t use NULL DACL with system objects<br><br>The netsh sema=
+phore used a NULL DACL, which allowed any user on a shared<br>system to blo=
+ck openvpn from running=2E Instances would time out and shut<br>down=2E<br>=
+<br>Similar with the --service exit event=2E Any user could signal it and s=
+hut<br>down the instance if the event name is known or can be retrieved fro=
+m<br>the running process=2E<br><br>To prevent both, the objects are created=
+ with a DACL which allows access<br>to the creating user only=2E In case of=
+ the netsh semaphore this means that<br>only the first user running openvpn=
+ can run more instances=2E Other<br>accounts doing so will error out=2E The=
+ interactive service can be used to<br>prevent this from happening, since t=
+he netsh semaphore is only used when<br>the openvpn process runs privileged=
+ operations directly=2E<br><br>Github: OpenVPN/openvpn-private-issues#167<b=
+r>CVE: 2026-82312<br>Reported-By: DEBRAJ BASAK &lt;https://in=2Elinkedin=2E=
+com/in/debrajbasak&gt;<br>Change-Id: I787a7067f6ff040c6a1f43f384321bddf5efc=
+97b<br>Signed-off-by: Heiko Hund &lt;heiko@ist=2Eeigentlich=2Enet&gt;<br>--=
+-<br>M src/openvpn/win32=2Ec<br>M src/openvpn/win32=2Eh<br>2 files changed,=
+ 107 insertions(+), 3 deletions(-)<br><br></pre><pre class=3D"blocks" style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh:=
+//gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/89/1889/1</pre><pre sty=
+le=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff =
+--git a/src/openvpn/win32=2Ec b/src/openvpn/win32=2Ec</span><br><span>index=
+ 44b010d=2E=2Edd88a22 100644</span><br><span>--- a/src/openvpn/win32=2Ec</s=
+pan><br><span>+++ b/src/openvpn/win32=2Ec</span><br><span>@@ -35,6 +35,8 @@=
+</span><br><span> </span><br><span> #include &lt;minwindef=2Eh&gt;</span><b=
+r><span> #include &lt;winsock2=2Eh&gt;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+#include &lt;accctrl=2Eh&gt;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#include &lt;aclapi=2Eh&gt;</span><br><span> </=
+span><br><span> #include &quot;buffer=2Eh&quot;</span><br><span> #include &=
+quot;error=2Eh&quot;</span><br><span>@@ -146,6 +148,13 @@</span><br><span> =
+    pause_exit_enabled =3D true;</span><br><span> }</span><br><span> </span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * @brief Initializes security attributes=
+ with a NULL DACL, allowing</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ *        unrestricted access to the resulting object=2E</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+ * @param obj Security attributes structure to =
+initialize=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @re=
+turn true on success, false otherwise=2E</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ */</span><br><span> bool</span><br><span> init_securi=
+ty_attributes_allow_all(struct security_attributes *obj)</span><br><span> {=
+</span><br><span>@@ -165,6 +174,93 @@</span><br><span>     return true;</sp=
+an><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+ @brief Initializes security attributes with a DACL restricted to the</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ *        current process=
+ user=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ * The resulting DACL grants=
+ GENERIC_ALL access to the calling user only,</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+ * so the created object cannot be opened, signal=
+ed or otherwise accessed</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+ * by other users on the system=2E The allocated DACL must be released=
+ with</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * free_securi=
+ty_attributes() once the security attributes are no longer</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ * needed=2E</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ * @param obj Security attributes structure to initialize=
+=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return true =
+on success, false otherwise=2E</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+stati=
+c bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+init_security=
+_attributes_allow_user(struct security_attributes *obj)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    bool ret =3D false;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    CLEAR(*obj);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    obj-&gt;sa=2EnLength =3D sizeof(SECURITY_ATTRIBUTES);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    obj-&gt;sa=2ElpSecurityDescriptor=
+ =3D &amp;obj-&gt;sd;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    obj-&gt;sa=2EbInheritHandle =3D FALSE;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    if (!InitializeSecurityDescriptor(&amp;obj-&gt;sd, SECURITY_DESCR=
+IPTOR_REVISION))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return re=
+t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    HANDLE token =3D NULL;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (!OpenProcessToken(GetCurrentProce=
+ss(), TOKEN_QUERY, &amp;token))</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      return ret;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    PTOKEN_USER info =3D NULL;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    DWORD info_len =3D 0=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!GetTokenI=
+nformation(token, TokenUser, info, info_len, &amp;info_len)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        &amp;&amp; GetLastError() !=
+=3D ERROR_INSUFFICIENT_BUFFER)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     goto out;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    info =3D malloc(info_len);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!info || !GetTokenI=
+nformation(token, TokenUser, info, info_len, &amp;info_len))</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        goto out;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    EXPL=
+ICIT_ACCESS ea =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    ea=2EgrfAccessPermissions =3D GENERIC_ALL;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    ea=2EgrfAccessMode =3D SET_ACCESS;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    ea=2EgrfInheritanc=
+e =3D NO_INHERITANCE;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    ea=2ETrustee=2ETrusteeForm =3D TRUSTEE_IS_SID;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    ea=2ETrustee=2ETrusteeType =3D TRUSTE=
+E_IS_USER;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ea=2E=
+Trustee=2EptstrName =3D (LPTSTR)info-&gt;User=2ESid;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    if (SetEntriesInAcl(1, &amp;ea, NULL, &amp;obj-&gt;dacl)=
+ !=3D ERROR_SUCCESS)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        goto =
+out;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    if (SetSecurityDescriptorDacl(&amp;obj-&gt;s=
+d, TRUE, obj-&gt;dacl, FALSE))</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     ret =3D true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+out:</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    free(info);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    CloseHandle(token);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    return ret;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+ * @brief Releases resources al=
+located by init_security_attributes_allow_user()=2E</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ * @param obj Security attributes structure to release=2E<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+free_security_attributes(struct security_att=
+ributes *obj)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (obj-&gt;dacl)</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        LocalFree(obj-&gt;dacl);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        obj-&gt;dacl =
+=3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span> void</span><br><span> o=
+verlapped_io_init(struct overlapped_io *o, const struct frame *frame, BOOL =
+event_state)</span><br><span> {</span><br><span>@@ -504,7 +600,7 @@</span><=
+br><span>         struct gc_arena gc =3D gc_new();</span><br><span>        =
+ const wchar_t *exit_event_nameW =3D wide_string(exit_event_name, &amp;gc);=
+</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     if (!init_security_attributes_allow_all(&amp;sa))</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        if (!init_security_attributes_al=
+low_user(&amp;sa))</span><br><span>         {</span><br><span>             =
+msg(M_ERR, &quot;Error: win32_signal_open: init SA failed&quot;);</span><br=
+><span>         }</span><br><span>@@ -526,6 +622,7 @@</span><br><span>     =
+            ws-&gt;mode =3D WSO_MODE_SERVICE;</span><br><span>             =
+}</span><br><span>         }</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        free_security_attributes(&amp;sa);</span><br><span>       =
+  gc_free(&amp;gc);</span><br><span>     }</span><br><span>     /* set the =
+ctrl handler in both console and service modes */</span><br><span>@@ -751,1=
+4 +848,15 @@</span><br><span>     s-&gt;name =3D name;</span><br><span>    =
+ s-&gt;hand =3D NULL;</span><br><span> </span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    if (init_security_attributes_allow_all(&amp;sa))</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (init_security_at=
+tributes_allow_user(&amp;sa))</span><br><span>     {</span><br><span>      =
+   s-&gt;hand =3D CreateSemaphore(&amp;sa=2Esa, 1, 1, name);</span><br><spa=
+n>     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    free_se=
+curity_attributes(&amp;sa);</span><br><span> </span><br><span>     if (s-&g=
+t;hand =3D=3D NULL)</span><br><span>     {</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-        msg(M_WARN | M_ERRNO, &quot;WARNING: Cannot cr=
+eate Win32 semaphore &#39;%s&#39;&quot;, name);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        msg(M_ERR, &quot;Cannot create Win32 se=
+maphore &#39;%s&#39;&quot;, name);</span><br><span>     }</span><br><span> =
+    else</span><br><span>     {</span><br><span>diff --git a/src/openvpn/wi=
+n32=2Eh b/src/openvpn/win32=2Eh</span><br><span>index ef32062=2E=2E8be3d96 =
+100644</span><br><span>--- a/src/openvpn/win32=2Eh</span><br><span>+++ b/sr=
+c/openvpn/win32=2Eh</span><br><span>@@ -63,6 +63,7 @@</span><br><span> {</s=
+pan><br><span>     SECURITY_ATTRIBUTES sa;</span><br><span>     SECURITY_DE=
+SCRIPTOR sd;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    PAC=
+L dacl;</span><br><span> };</span><br><span> </span><br><span> #define HAND=
+LE_DEFINED(h) ((h) !=3D NULL &amp;&amp; (h) !=3D INVALID_HANDLE_VALUE)</spa=
+n><br><span>@@ -262,6 +263,11 @@</span><br><span>  *</span><br><span>  * It=
+ seems you can&#39;t run more than one instance</span><br><span>  * of nets=
+h on the same machine at the same time=2E</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+ * Its DACL is restricted to the creating user to prevent an unprivile=
+ged</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * local user fr=
+om starving it and DoS&#39;ing running instances=2E This means</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ * different user accounts runni=
+ng OpenVPN directly, not via the interactive</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ * service, will make all but the first user&#39;s=
+ instances exit=2E</span><br><span>  */</span><br><span> </span><br><span> =
+extern struct semaphore netcmd_semaphore;</span><br><span></span><br></pre>=
+<p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1889=
+?usp=3Demail">change 1889</a>=2E To unsubscribe, or for help writing mail f=
+ilters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail=
+">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMe=
+ssage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/V=
+iewAction"><link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/o=
+penvpn/+/1889?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"=
+/></div></div>
 
-<div style=3D"display:non=
-e"> Gerrit-MessageType: merged </div>
-<div style=3D"display:none"> Gerrit-P=
-roject: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master <=
-/div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ie7352dd136cccda2bd6b6=
-e1a36db1a5f27afd8f7 </div>
-<div style=3D"display:none"> Gerrit-Change-Numbe=
-r: 1782 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div =
-style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@mandelbit=2Ecom&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-op=
-envpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer=
-: ralf_lici &lt;ralf@mandelbit=2Ecom&gt; </div>
-<div style=3D"display:none"=
-> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; =
+<div style=3D"display:none"> Gerrit-MessageType: newchange =
 </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div sty=
+le=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:non=
+e"> Gerrit-Change-Id: I787a7067f6ff040c6a1f43f384321bddf5efc97b </div>
+<div=
+ style=3D"display:none"> Gerrit-Change-Number: 1889 </div>
+<div style=3D"di=
+splay:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-=
+Owner: cron2 &lt;gert@greenie=2Emuc=2Ede&gt; </div>
+<div style=3D"display:n=
+one"> Gerrit-Reviewer: d12fk &lt;heiko@openvpn=2Enet&gt; </div>
+<div style=
+=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@rfc2549=2Eor=
+g&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;open=
+vpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"display:none">=
+ Gerrit-Attention: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div=
+ style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@openvpn=2Enet&gt=
+; </div>
 
 </body></html>
---rTf6KBCN8E4=--
+--AgN+ZPg/bfE=--
 
 
---===============5033095520358846684==
+--===============1440367797640784351==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============5033095520358846684==
+--===============1440367797640784351==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -567,5 +751,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============5033095520358846684==--
+--===============1440367797640784351==--
 
