@@ -4,111 +4,113 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 021ADC624D4
-	for <openvpn-devel@archiver.kernel.org>; Wed,  2 Sep 2026 15:45:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0852CC61DD6
+	for <openvpn-devel@archiver.kernel.org>; Wed,  2 Sep 2026 15:45:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:Date:Sender:To:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=l4zQEF3RMX7/J6M69Cw5u7xCJuy8JoSOaEHLi9Ottdc=; b=GnUo7RBQfYzz8pr2UxPLR4sVLv
-	3qdufeUNB8xP96Mr7YGziFC1I7M0Jjgpx8T7R379SpSh+y9gLzNG2Oypkmmxo1TXA+ZR0r4tDB6OC
-	sWnHnG1DirewtHCu108kXC3/1oRPcuWpLfnocnN264SOHnQow7cbBQ0+5AyvRsaiDld4=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=Ju/BmwmN2up+SlPp9tCoMD+E/G1sBIWYEfiakPY9Pyg=; b=aZTEEd6d7gfdUa9bfiBMXQmS4o
+	eIz6eMgIZ0xO1ujrqMwjYtUvdD6L3+adC69nPYlKjMlmXnLrfHn/+fOgiZdabCH5gzORhotJ9wWyf
+	3C6QAp2X61tPeHL4xs2ZCgeHsTKs9Hkism2JkUkheAfxtKPBzFJtckMndzosFauGor7s=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x1n9R-0004xQ-Mt;
-	Wed, 02 Sep 2026 15:45:23 +0000
+	id 1x1n9a-0005bs-Id;
+	Wed, 02 Sep 2026 15:45:35 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1x1n9P-0004xK-Th
+ (envelope-from <gerrit@openvpn.net>) id 1x1n9Y-0005bN-P1
  for openvpn-devel@lists.sourceforge.net;
- Wed, 02 Sep 2026 15:45:21 +0000
+ Wed, 02 Sep 2026 15:45:33 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
+ Cc:Date:From:Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
  :List-Post:List-Owner:List-Archive;
- bh=YZRPkc3gOxfERzWeDooOr03PL2YTOMNMF1Xc8XMf8R0=; b=hXyy039sufepvnK0txDYFtUuUu
- NoTetRK64509cPWCcAO89AyOYpqqvb/EFvGbUDed46nY0Gf43+alKs+vvl+RRJKtk5j5YyUiG1FUq
- o+TJzYxf0jccKm7uM2Z28/Sc/ivMUnLHzlglSpslf06d+mb1OqVC22LBNMBLEjOeFb48=;
+ bh=JupXOaG1Rfn/aqAUuCRx6CSYU38eyPukk7zOtZjFWM4=; b=ec0Fmlf5qI6XJ2KwctW8R8Hldk
+ NUTrc6HETgWJeCTJZF936bEju+EBTrghXVbLKiOO65WAzloQArpb9NzeeMKvqYWm4Q4aQGz3Ekie3
+ gGmtrteM7uWyo1PGX3/prHKgrGZWsdOztC/3oQviEDF8HqgmR3n8UBu7PU39RwQrbNRE=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
- Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:Date:From:Sender:
+ To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=YZRPkc3gOxfERzWeDooOr03PL2YTOMNMF1Xc8XMf8R0=; b=d
- jcxky14S4KA748eVznunBfKMcZ+OKlG9FldbLn8ZiX4ANEpF0yhLWpupHJXroWCqAYZs8nf+FNKyN
- uHJ2mJQJlKdq+dWTQild5/cENq9H/UdCqFYoh2knEYhwKNYUkswzPEDLsPLh/8Qbc0UMuw3jVtqS8
- mE+XdTtgavcYptGU=;
-Received: from mail-wm1-f48.google.com ([209.85.128.48])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ List-Owner:List-Archive; bh=JupXOaG1Rfn/aqAUuCRx6CSYU38eyPukk7zOtZjFWM4=; b=L
+ /89A96apFbed9odRJpE3HfXoeWkixOlKvQYtTX2Kfxc8/e97L19LSuhfbnnhYart/WEWgFaySPGkx
+ n59cfEebcnB7FBmvu0dPEoOqwCWgvWZjXuvpQTyj6DwkiDwscOXfpzbZOGDDP+jp9fp8ckuXniXu9
+ ZIChnr6NA6P9RZ8g=;
+Received: from mail-wm1-f52.google.com ([209.85.128.52])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1x1n9L-0005if-I6 for openvpn-devel@lists.sourceforge.net;
- Wed, 02 Sep 2026 15:45:21 +0000
-Received: by mail-wm1-f48.google.com with SMTP id
- 5b1f17b1804b1-4995b0343c1so12840635e9.3
+ id 1x1n9Q-0000XV-S6 for openvpn-devel@lists.sourceforge.net;
+ Wed, 02 Sep 2026 15:45:27 +0000
+Received: by mail-wm1-f52.google.com with SMTP id
+ 5b1f17b1804b1-49b0dbfbf7bso8435805e9.2
  for <openvpn-devel@lists.sourceforge.net>;
- Wed, 02 Sep 2026 08:45:19 -0700 (PDT)
+ Wed, 02 Sep 2026 08:45:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1788363913; x=1788968713; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1788363918; x=1788968718; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
+ :auto-submitted:cc:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=YZRPkc3gOxfERzWeDooOr03PL2YTOMNMF1Xc8XMf8R0=;
- b=WfltGLbeUoY3pLcTsh0h4vf4FxGiQyVJV5Q2h3Nfvkn0b0YNJ8X/8n19oZrdYqgqkK
- A4GTpxcY4Fp95F/TDpaIAbgjCiFt63hU1iu3jg+0xBqp8u4Da59jVUTatvpy5nmvPjPr
- OumZAHeF/XJ5rB84Mzuz6EBkyudsrVpDfwSlXXCcWw2VZDXlibvdPWcJOZwZ9TY3Wgdd
- ymRFnOU6A0SOgapDkcoVUg2Gbi6smzJyiGjajWtIrGMl84NybPRL3X4TSJKly7j0O1dE
- pa5vhS431Dq88v3/ar7yXYRXYDcdRY/JY+BiJFpfwkI1wccslV6bmLGeaBDY572GuDmk
- zvwQ==
+ bh=JupXOaG1Rfn/aqAUuCRx6CSYU38eyPukk7zOtZjFWM4=;
+ b=F1rByVD86MrgpAspyfZ2Z+H9K3O7ASiQoNvwl14H/Oy6ag037SCHXbN93IrjYQg82s
+ gVh5ysTYAcUqFeyiuFQg03uq/9+fpt5sxEmeoGxbaB75g9HLKFKdZUpknTdVaXhxrotk
+ EztkzpY1nBliL3SA2IP403tExB5nJk/v6iVWLnqe8radha5Vi08YouUlA/nR+lodubci
+ Im0TVqAo+phsT7GdeOer7ub9AIIa7K+Xcv5pJ50WQxPNT8v82DXGlpDcCqbJzhzbRGmv
+ yrEEDHR0MqLTek6w0dayitaIhTfNa6c4m3/cjkXn0ILc2zpUCqevUmhSCI6QnrizV2gH
+ UVcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1788363913; x=1788968713;
+ d=1e100.net; s=20251104; t=1788363918; x=1788968718;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
- :cc:subject:date:message-id:reply-to:content-type;
- bh=YZRPkc3gOxfERzWeDooOr03PL2YTOMNMF1Xc8XMf8R0=;
- b=Q7cm0NjBA5A2CdNILzAZ2RSflEJnuZ/UaYvHqpTItWXE4OKqFBGk2dKAV/HoAzKwt7
- ANHvWAEFe6nQFyfBMikYi7gc3pZlncl0hIf13Gb8+7OAEDcIeZyCSx+yhPioVTAHAmUC
- bQa25q2azt5ndAkHq64JyWM2sJIOJL6pGhe5PYPonxumpBaRBRcG/B6oGZQa0BmciyKD
- yaWMLc6nuxjNJqnVJqOgGqxY8Ogpp6u8W/HSUTONwxeusiIdYKtGe5zHZMcrnGjfLZbA
- H5cZzD1Nf9wX6JmShw6FF3xiwKS33GJUjvcMnqo4TrL2Rmvb7smMgnlPRMrDkDaCsirj
- WHYA==
-X-Gm-Message-State: AFuF++lHMCqaOJ15EkqxX1yYAA7f3MsKS3j6/OVRYhTpPBmuUXkBY5Ox
- jeD+5pwuUmihkxKXaCSUNY3ORg1nViWqS6k6Opq+vXLteoQQ90U+k9DVmwfOoqFo0pI9mp7Ius3
- mpUVHq2+aWpKn+FD7pghFUhOA9FYz4LCC3HhKqZP/Q3bHhVjwoNFmFs22r52nPPJHPr9E
-X-Gm-Gg: AR+sD101vgUGGX4TV9yS1BpaFQ1d0QFlpb+jU9tibK2QfxgETTgvZmfzf6/EbdXSgpM
- cklb/Ik7sbFHyGi13pcLXlFpuLMSbAt9l0riwzj9QYXZj4Z09uE97nnknr1h99TfepAjecuhQN8
- bZHMwVmsjfnnuhiP0ok+FoyWUncw4lV1I5mN7tn8tIlYiivIfp4gNl5u8ERS8oLxVhPmqmTGTS9
- W/wzcZsNMXN9cTxHGc6BeU31WAWPqfgjwMcXl/ish0UeSm1nMp0K7liQk86mabRBNZItCl4m1X2
- UCoTg/pc/7nSS2u1fR/04Kb4C72RnKiy5rcHFCbrjy1D1KtTecsYejuwsGgaVhuLFEE+ZRDMcgw
- lJuvrkB/Ju/dMVuD7AvCG+wuJH3yvtYR88T9pH5ZXrElhvzc4Vig52xeQC8aiSChqpzkL1PnTiP
- n7SNqNv2PPtT9sWOrzE7wyPZPLfqBGWgia1BPYyhhCOKc8b6KvwdAxmdSId7YLwFAMkT/FYX/Y2
- DB+QzdXG8Dlz6Ajya2t1t5ixxDxSCOgEyvvY8CHLsHMSA35+itWM9TKT0FnW1iEcVMXCkvjlxjQ
- d/U7D4k0OYtPV6X34P+fIx5DJXSPEzSf1MHgrz0JEKncySYYjbs=
-X-Received: by 2002:a05:600c:1f92:b0:49c:dada:30b7 with SMTP id
- 5b1f17b1804b1-49ce5816440mr92867545e9.2.1788363912624; 
- Wed, 02 Sep 2026 08:45:12 -0700 (PDT)
+ :auto-submitted:cc:date:from:x-gm-gg:x-gm-message-state:from:to:cc
+ :subject:date:message-id:reply-to:content-type;
+ bh=JupXOaG1Rfn/aqAUuCRx6CSYU38eyPukk7zOtZjFWM4=;
+ b=sRTI6ZyY+7ISIEn0pN6xqDrwFI8u7H53yEoqIf85waBCHlNgqNm3ZFKe1pmwNNtRrK
+ FKRh5GfKDDPny352okRjaxf/HR8UlPXpLWtcAj3EM64VwZ5byoku8t6EoVI4iaTdnrMJ
+ NNAMdHbnZ6/eMmZyPo6+B31dAdQj5w1rbusSWfFyYNWJYGcwqM3+yHpY4FRAkx4DdfYb
+ hu0eANzI6uNhIYv1QE7VTDMi2Sh+hHGeezM8f0LhH4nEzSFAaizkqnPo9hd41ryNjjQw
+ jCvocT96zE6XtydCkTTNTu5GqrkSZQ2ikKOsMW6vOrtdTMFh16Xbp/Ujmch6f72CfPBl
+ gfoQ==
+X-Forwarded-Encrypted: i=1;
+ AHgh+Rq/Fw8mHjBmvtmti/X4BEN4T3h/Jevx5eCR8E/GuHd4wcA7PqXtLkAw5gAVvdDf+zHR/+Y6CX0ZI7v+faZl@lists.sourceforge.net
+X-Gm-Message-State: AFuF++mE4jXKOpaKkrj41IJeghWeiGR74cONBWcotaJGsZSAb5MrxDsx
+ c0xEGxhZ3FAkwJSwYtYBO4v412bGp7sOYzAur33Vs7V2aQpCc+KgawjrJrYG+Q1seX3YXZqoTCX
+ CbBJR7B24DXIzUt8H1kyYJEF4WDAXdAmMCDuDOJ1zbDkayZjsWJpuwbqxS8z7ZADRwv5b2huobw
+ +Mrct/WA==
+X-Gm-Gg: AR+sD12Wjp0I1B1ify4cSuXhpagU5cs5tg605/MrwALF58iy8p7nrnQgiOzt1bq9P6G
+ Yr/wAlwi7w/aoOoIpoQPb0pljr8esfNtF8I1x6Smgbx17k7DSJ86hjBI7Q66SagOGJU43jyMBlu
+ mmyy6xQ0tBGZ8m7LJnLkb48aMaA2RscQkZj4ZO3NbQ4eMx5cr3Bi3zZsEnwDy27oJ1B0oaIJlzO
+ U4xUj5ExyWlzAKx4HQZzy58I8zQAG4qtP1RG/1JCInzr6PcuFjf3daLWB79z1QIFZgDh12WAn0H
+ s8VrVE/XZbcNVkQPgGok9qOXlI8NL58JPN1CeQ4Hr1/haq4PBBM2M+1CdQCur+RgGwkktbB/slh
+ KAiGm195xHWQT1sMUL+KZ1fRCnEXg75UJYjMgKrZHPxldJ5pGvovm+22+HXV5JQyIEGMqK06HR1
+ 3xOStcXDLpdGpLs8u/lzMkgQUNfX6xWTt/n/x1Dgf7r4/a+tOKuLHFo8hknL/LDslJfUlrjT2RK
+ b3oBrk0UwiJ1fc2r1h+i1bQUYbk4D6lmhvVk2mKJPDvQtuMNKOdqZtGJN2TGAif7xpqRs80ltor
+ zlglRkq4/87w0ORgklVjv4F20uHJX0T+tqJYl3pvcTQak4PYvV7w
+X-Received: by 2002:a05:600c:4eca:b0:49c:e1f1:3dd5 with SMTP id
+ 5b1f17b1804b1-49ce5816892mr88486595e9.4.1788363917875; 
+ Wed, 02 Sep 2026 08:45:17 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-49ce58da3acsm130540515e9.0.2026.09.02.08.45.11
+ 5b1f17b1804b1-49cee5f914bsm295995e9.3.2026.09.02.08.45.13
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 02 Sep 2026 08:45:11 -0700 (PDT)
+ Wed, 02 Sep 2026 08:45:14 -0700 (PDT)
 X-Google-Original-From: "cron2 (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Wed, 2 Sep 2026 15:45:10 +0000
-To: plaisthos <arne-openvpn@rfc2549.org>, d12fk <heiko@openvpn.net>
+Date: Wed, 2 Sep 2026 15:45:12 +0000
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: newpatchset
+X-Gerrit-MessageType: merged
 X-Gerrit-PatchSet: 2
 X-Gerrit-Change-Id: Iba66235cbad52692da542abd47e9f51810b0ed66
 X-Gerrit-Change-Number: 1892
@@ -118,10 +120,10 @@ X-Gerrit-Commit: 3496ee3fb3d21ec8790abd2ebee6e5b15e7dc5d7
 In-Reply-To: <gerrit.1788295708000.Iba66235cbad52692da542abd47e9f51810b0ed66@gerrit.openvpn.net>
 References: <gerrit.1788295708000.Iba66235cbad52692da542abd47e9f51810b0ed66@gerrit.openvpn.net>
 Thread-Index: PGdlcnJpdC4xNzg4Mjk1NzA4MDAwLkliYTY2MjM1Y2JhZDUyNjkyZGE1NDJhYmQ0N2U5ZjUxODEwYjBlZDY2QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <a235b069c8c982c70bba22af32cd6314354d15d8-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+Message-ID: <a235b069c8c982c70bba22af32cd6314354d15d8-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1x1n9L-0005if-I6
+X-Headers-End: 1x1n9Q-0000XV-S6
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: win32: unit-test the
  CreateProcess() command line quoting
 X-BeenThere: openvpn-devel@lists.sourceforge.net
@@ -140,517 +142,502 @@ From: "cron2 \(Code Review\) via Openvpn-devel"
 Reply-To: gert@greenie.muc.de, arne-openvpn@rfc2549.org, heiko@openvpn.net,
  openvpn-devel@lists.sourceforge.net
 Cc: "cron2 \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============7230591506901717067=="
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>, d12fk <heiko@openvpn.net>,
+ plaisthos <arne-openvpn@rfc2549.org>
+Content-Type: multipart/mixed; boundary="===============7295000452269292690=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============7230591506901717067==
+--===============7295000452269292690==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="LcPZ59ttSuE="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="DH+KIJCXalE="; charset=UTF-8
 
---LcPZ59ttSuE=
+--DH+KIJCXalE=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Hello d12fk, plaisthos, 
+cron2 has submitted this change=2E ( http://gerrit=2Eopenvpn=2Enet/c/openvp=
+n/+/1892?usp=3Demail )
 
-I'd like you to reexamine a change=2E Please visi=
-t
-
-    http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1892?usp=3Demail
-
-to look =
-at the new patch set (#2)=2E
-
-The following approvals got outdated and were=
- removed:
-Code-Review+2 by d12fk
-
-
-Change subject: win32: unit-test the Cre=
-ateProcess() command line quoting
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+Change subject: win32: unit-test the CreateProcess(=
+) command line quoting
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E
 
-win32: unit-test the CreateProcess() command line qu=
-oting
+win32: unit-test the CreateProcess() command line quoting
 
-Cover which argument shapes wide_cmd_line() quotes: plain arguments =
-and
-the batch delimiters , ; =3D stay bare, a space or a cmd=2Eexe metachar=
-acter
-forces quotes, and an embedded double quote is replaced so quoting ca=
-nnot
-be broken out of=2E The first two cases pin the compatibility guarante=
-e -
-they are what a later "just quote everything" simplification would brea=
-k=2E
+Cover=
+ which argument shapes wide_cmd_line() quotes: plain arguments and
+the batc=
+h delimiters , ; =3D stay bare, a space or a cmd=2Eexe metacharacter
+forces=
+ quotes, and an embedded double quote is replaced so quoting cannot
+be brok=
+en out of=2E The first two cases pin the compatibility guarantee -
+they are=
+ what a later "just quote everything" simplification would break=2E
 
-Move wide_cmd_line() to win32-util=2Ec next to wide_string(), which i=
-t
-calls=2E The unit tests already link that file, so nothing else needs to
-=
-change to reach it=2E
+Move w=
+ide_cmd_line() to win32-util=2Ec next to wide_string(), which it
+calls=2E T=
+he unit tests already link that file, so nothing else needs to
+change to re=
+ach it=2E
 
-Change-Id: Iba66235cbad52692da542abd47e9f51810b0ed66=
-
-Signed-off-by: Lev Stipakov <lev@openvpn=2Enet>
-Acked-by: Heiko Hund <heik=
-o@openvpn=2Enet>
-Gerrit URL: https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/189=
-2
-Message-Id: <20260902141002=2E16513-1-gert@greenie=2Emuc=2Ede>
-URL: https=
-://www=2Email-archive=2Ecom/openvpn-devel@lists=2Esourceforge=2Enet/msg3889=
-9=2Ehtml
-Signed-off-by: Gert Doering <gert@greenie=2Emuc=2Ede>
+Change-Id: Iba66235cbad52692da542abd47e9f51810b0ed66
+Signed-off-=
+by: Lev Stipakov <lev@openvpn=2Enet>
+Acked-by: Heiko Hund <heiko@openvpn=2E=
+net>
+Gerrit URL: https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1892
+Message-Id=
+: <20260902141002=2E16513-1-gert@greenie=2Emuc=2Ede>
+URL: https://www=2Emai=
+l-archive=2Ecom/openvpn-devel@lists=2Esourceforge=2Enet/msg38899=2Ehtml
+Sig=
+ned-off-by: Gert Doering <gert@greenie=2Emuc=2Ede>
 ---
-M src/op=
-envpn/win32-util=2Ec
+M src/openvpn/win32-=
+util=2Ec
 M src/openvpn/win32-util=2Eh
 M src/openvpn/win32=2Ec
-M=
- tests/unit_tests/openvpn/test_argv=2Ec
-4 files changed, 128 insertions(+),=
- 67 deletions(-)
+M tests/unit_=
+tests/openvpn/test_argv=2Ec
+4 files changed, 128 insertions(+), 67 deletion=
+s(-)
 
 
-  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn re=
-fs/changes/92/1892/2
 
-diff --git a/src/openvpn/win32-util=2Ec b/src/openvpn=
-/win32-util=2Ec
+
+diff --git a/src/openvpn/win32-util=2Ec b/src/openvpn/win32-util=
+=2Ec
 index 209e34e=2E=2E4e3819c 100644
---- a/src/openvpn/win32-u=
-til=2Ec
-+++ b/src/openvpn/win32-util=2Ec
+--- a/src/openvpn/win32-util=2Ec
++++=
+ b/src/openvpn/win32-util=2Ec
 @@ -45,6 +45,73 @@
-     return ucs=
-16;
+     return ucs16;
  }
  
-+/* special to cmd=2Eexe, which CreateProcess() uses to run =2Ebat=
-/=2Ecmd (VU#123335) */
++/=
+* special to cmd=2Eexe, which CreateProcess() uses to run =2Ebat/=2Ecmd (VU=
+#123335) */
 +#define CMD_QUOTE_TRIGGERS " &|<>^%()!"
 +
-+static b=
-ool
-+argv_element_needs_quotes(const char *str)
++static bool
++argv_e=
+lement_needs_quotes(const char *str)
 +{
-+    for (const char *c =
-=3D str; *c !=3D '\0'; ++c)
++    for (const char *c =3D str; *c=
+ !=3D '\0'; ++c)
 +    {
-+        if (strchr(CMD_QUOTE_TRIGGERS, =
-*c) !=3D NULL)
++        if (strchr(CMD_QUOTE_TRIGGERS, *c) !=3D NU=
+LL)
 +        {
 +            return true;
 +        }
 +    }
-+    =
-return false;
++    return fals=
+e;
 +}
 +
 +WCHAR *
-+wide_cmd_line(const struct argv *a, struct gc_=
-arena *gc)
++wide_cmd_line(const struct argv *a, struct gc_arena *gc)
+=
 +{
 +    size_t nchars =3D 1;
 +    size_t maxlen =3D 0;
-+    size=
-_t i;
-+    struct buffer buf;
++    size_t i;
++    =
+struct buffer buf;
 +    char *work =3D NULL;
 +
 +    if (!a)
-+   =
- {
-+        return NULL;
++    {
++       =
+ return NULL;
 +    }
-+
-+    for (i =3D 0; i < a->argc; ++i)
-+   =
- {
-+        const char *arg =3D a->argv[i];
-+        const size_t len =3D s=
-trlen(arg);
-+        nchars +=3D len + 3;
-+        if (len > maxlen)
-+     =
-   {
-+            maxlen =3D len;
-+        }
-+    }
-+
-+    work =3D gc_mall=
-oc(maxlen + 1, false, gc);
-+    check_malloc_return(work);
-+    buf =3D all=
-oc_buf_gc(nchars, gc);
 +
 +    for (i =3D 0; i < a->argc; ++i)
 +    {
-+     =
-   const char *arg =3D a->argv[i];
-+        strcpy(work, arg);
-+        str=
-ing_mod(work, CC_PRINT, CC_DOUBLE_QUOTE | CC_CRLF, '_');
-+        if (i)
-+ =
-       {
-+            buf_printf(&buf, " ");
-+        }
-+        if (argv_e=
-lement_needs_quotes(work))
++       =
+ const char *arg =3D a->argv[i];
++        const size_t len =3D strlen(arg);=
+
++        nchars +=3D len + 3;
++        if (len > maxlen)
 +        {
-+            buf_printf(&buf, "\"%s\"=
-", work);
++     =
+       maxlen =3D len;
 +        }
++    }
++
++    work =3D gc_malloc(maxlen +=
+ 1, false, gc);
++    check_malloc_return(work);
++    buf =3D alloc_buf_gc(n=
+chars, gc);
++
++    for (i =3D 0; i < a->argc; ++i)
++    {
++        const ch=
+ar *arg =3D a->argv[i];
++        strcpy(work, arg);
++        string_mod(wor=
+k, CC_PRINT, CC_DOUBLE_QUOTE | CC_CRLF, '_');
++        if (i)
++        {
++ =
+           buf_printf(&buf, " ");
++        }
++        if (argv_element_need=
+s_quotes(work))
++        {
++            buf_printf(&buf, "\"%s\"", work);
++=
+        }
 +        else
 +        {
-+            buf_printf(&buf,=
- "%s", work);
++            buf_printf(&buf, "%s", work=
+);
 +        }
 +    }
 +
 +    return wide_string(BSTR(&buf), gc);
-=
 +}
 +
- char *
+ char =
+*
  utf16to8(const wchar_t *utf16, struct gc_arena *gc)
  {
-diff -=
--git a/src/openvpn/win32-util=2Eh b/src/openvpn/win32-util=2Eh
-index fb8376=
-2=2E=2Ec2ad64b 100644
+diff --git a/src/=
+openvpn/win32-util=2Eh b/src/openvpn/win32-util=2Eh
+index fb83762=2E=2Ec2ad=
+64b 100644
 --- a/src/openvpn/win32-util=2Eh
-+++ b/src/openvpn/wi=
-n32-util=2Eh
++++ b/src/openvpn/win32-util=2E=
+h
 @@ -24,11 +24,15 @@
  #ifndef OPENVPN_WIN32_UTIL_H
- #define OPE=
-NVPN_WIN32_UTIL_H
+ #define OPENVPN_WIN32_=
+UTIL_H
  
 +#include "argv=2Eh"
  #include "buffer=2Eh"
  
- /* Conve=
-rt a string from UTF-8 to UCS-2 */
- WCHAR *wide_string(const char *utf8, st=
-ruct gc_arena *gc);
+ /* Convert a string=
+ from UTF-8 to UCS-2 */
+ WCHAR *wide_string(const char *utf8, struct gc_are=
+na *gc);
  
-+/* Build a CreateProcess() command line from argv */=
-
-+WCHAR *wide_cmd_line(const struct argv *a, struct gc_arena *gc);
++/* Build a CreateProcess() command line from argv */
++WCHAR *wi=
+de_cmd_line(const struct argv *a, struct gc_arena *gc);
 +
- /* Co=
-nvert a string from UTF-16 to UTF-8 */
- char *utf16to8(const wchar_t *utf16=
-, struct gc_arena *gc);
+ /* Convert a str=
+ing from UTF-16 to UTF-8 */
+ char *utf16to8(const wchar_t *utf16, struct gc=
+_arena *gc);
  
-diff --git a/src/openvpn/win32=2Ec b/src/openvpn/=
-win32=2Ec
-index a9990b5=2E=2E94e79d5e 100644
+diff --git a/src/openvpn/win32=2Ec b/src/openvpn/win32=2Ec
+i=
+ndex a9990b5=2E=2E94e79d5e 100644
 --- a/src/openvpn/win32=2Ec
-++=
-+ b/src/openvpn/win32=2Ec
++++ b/src/ope=
+nvpn/win32=2Ec
 @@ -1034,73 +1034,6 @@
      }
  }
  
--/* special to=
- cmd=2Eexe, which CreateProcess() uses to run =2Ebat/=2Ecmd (VU#123335) */
-=
--#define CMD_QUOTE_TRIGGERS " &|<>^%()!"
+-/* special to cmd=2Eexe,=
+ which CreateProcess() uses to run =2Ebat/=2Ecmd (VU#123335) */
+-#define CM=
+D_QUOTE_TRIGGERS " &|<>^%()!"
 -
 -static bool
--argv_element_needs=
-_quotes(const char *str)
+-argv_element_needs_quotes(con=
+st char *str)
 -{
--    for (const char *c =3D str; *c !=3D '\0'; =
-++c)
--    {
+-    for (const char *c =3D str; *c !=3D '\0'; ++c)
+-    {=
+
 -        if (strchr(CMD_QUOTE_TRIGGERS, *c) !=3D NULL)
+-        {
 -       =
- {
--            return true;
+     return true;
 -        }
 -    }
 -    return false;
 -}
 -
--sta=
-tic WCHAR *
+-static WCHAR *=
+
 -wide_cmd_line(const struct argv *a, struct gc_arena *gc)
 -{
-- =
-   size_t nchars =3D 1;
+-    size_t n=
+chars =3D 1;
 -    size_t maxlen =3D 0;
 -    size_t i;
--    struc=
-t buffer buf;
+-    struct buffer bu=
+f;
 -    char *work =3D NULL;
 -
 -    if (!a)
 -    {
--        retu=
-rn NULL;
--    }
+-        return NULL;
+- =
+   }
 -
 -    for (i =3D 0; i < a->argc; ++i)
 -    {
--        cons=
-t char *arg =3D a->argv[i];
+-        const char *arg=
+ =3D a->argv[i];
 -        const size_t len =3D strlen(arg);
--   =
-     nchars +=3D len + 3;
+-        nchars=
+ +=3D len + 3;
 -        if (len > maxlen)
 -        {
--          =
-  maxlen =3D len;
+-            maxlen =
+=3D len;
 -        }
 -    }
 -
--    work =3D gc_malloc(maxlen + 1, f=
-alse, gc);
+-    work =3D gc_malloc(maxlen + 1, false, gc)=
+;
 -    check_malloc_return(work);
--    buf =3D alloc_buf_gc(nchars=
-, gc);
+-    buf =3D alloc_buf_gc(nchars, gc);
 -
+=
 -    for (i =3D 0; i < a->argc; ++i)
 -    {
--        const char *a=
-rg =3D a->argv[i];
+-        const char *arg =3D a-=
+>argv[i];
 -        strcpy(work, arg);
--        string_mod(work, CC=
-_PRINT, CC_DOUBLE_QUOTE | CC_CRLF, '_');
+-        string_mod(work, CC_PRINT, C=
+C_DOUBLE_QUOTE | CC_CRLF, '_');
 -        if (i)
 -        {
--      =
-      buf_printf(&buf, " ");
+-            buf=
+_printf(&buf, " ");
 -        }
--        if (argv_element_needs_quo=
-tes(work))
+-        if (argv_element_needs_quotes(work)=
+)
 -        {
 -            buf_printf(&buf, "\"%s\"", work);
--     =
-   }
--        else
+-        }
+-   =
+     else
 -        {
 -            buf_printf(&buf, "%s", work);
-- =
-       }
+-        }
+=
 -    }
 -
 -    return wide_string(BSTR(&buf), gc);
 -}
 -
  /*
-  * Att=
-empt to simulate fork/execve on Windows
+  * Attempt to s=
+imulate fork/execve on Windows
   */
-diff --git a/tests/unit_tests/=
-openvpn/test_argv=2Ec b/tests/unit_tests/openvpn/test_argv=2Ec
-index b1e326=
-1=2E=2E5b6e26e 100644
+diff --git a/tests/unit_tests/openvpn/t=
+est_argv=2Ec b/tests/unit_tests/openvpn/test_argv=2Ec
+index b1e3261=2E=2E5b=
+6e26e 100644
 --- a/tests/unit_tests/openvpn/test_argv=2Ec
-+++ b/te=
-sts/unit_tests/openvpn/test_argv=2Ec
++++ b/tests/unit_=
+tests/openvpn/test_argv=2Ec
 @@ -14,6 +14,10 @@
- #include "buffer=
-=2Eh"
- #include "test_common=2Eh"
+ #include "buffer=2Eh"
+ #inc=
+lude "test_common=2Eh"
  
 +#ifdef _WIN32
-+#include "win32-util=2E=
-h"
++#include "win32-util=2Eh"
 +#endif
+=
 +
  /* Defines for use in the tests and the mock parse_line() */
-=
- #define PATH1      "/s p a c e"
+ #define PA=
+TH1      "/s p a c e"
  #define PATH2      "/foo bar/baz"
-@@ -248=
-,6 +252,56 @@
+@@ -248,6 +252,56 =
+@@
      argv_free(&a);
  }
  
 +#ifdef _WIN32
 +/*
-+ * An argument i=
-s quoted if and only if it holds a space or a character that
-+ * cmd=2Eexe =
-would act on when CreateProcess() runs a =2Ebat/=2Ecmd target=2E
++ * An argument is quoted if=
+ and only if it holds a space or a character that
++ * cmd=2Eexe would act o=
+n when CreateProcess() runs a =2Ebat/=2Ecmd target=2E
 + */
-+stat=
-ic void
-+wide_cmd_line__quotes_only_what_cmd_would_reinterpret(void **state=
-)
++static void
++wi=
+de_cmd_line__quotes_only_what_cmd_would_reinterpret(void **state)
 +{
-+    static const struct
++    s=
+tatic const struct
 +    {
 +        const char *arg;
-+        con=
-st WCHAR *expected;
++        const WCHAR *e=
+xpected;
 +    } cases[] =3D {
-+        /* nothing special - must=
- stay unquoted, or existing scripts break */
-+        { "CN=3Duser1", L"scr=
-ipt=2Ebat 0 CN=3Duser1" },
-+        /* the batch delimiters are deliberatel=
-y not triggers */
-+        { "CN=3Da,b;c=3Dd", L"script=2Ebat 0 CN=3Da,b;c=
-=3Dd" },
-+        /* a space has always forced quoting */
-+        { "O=3DC=
-trl, CN=3Dy", L"script=2Ebat 0 \"O=3DCtrl, CN=3Dy\"" },
-+        /* cmd=2Ee=
-xe operators */
-+        { "CN=3Dx&ver", L"script=2Ebat 0 \"CN=3Dx&ver\"" }=
++        /* nothing special - must stay unquo=
+ted, or existing scripts break */
++        { "CN=3Duser1", L"script=2Ebat 0=
+ CN=3Duser1" },
++        /* the batch delimiters are deliberately not trigg=
+ers */
++        { "CN=3Da,b;c=3Dd", L"script=2Ebat 0 CN=3Da,b;c=3Dd" },
++  =
+      /* a space has always forced quoting */
++        { "O=3DCtrl, CN=3Dy"=
+, L"script=2Ebat 0 \"O=3DCtrl, CN=3Dy\"" },
++        /* cmd=2Eexe operators=
+ */
++        { "CN=3Dx&ver", L"script=2Ebat 0 \"CN=3Dx&ver\"" },
++        {=
+ "CN=3Dx|ver", L"script=2Ebat 0 \"CN=3Dx|ver\"" },
++        { "CN=3Dx>f", L=
+"script=2Ebat 0 \"CN=3Dx>f\"" },
++        { "CN=3Dx<f", L"script=2Ebat 0 \"=
+CN=3Dx<f\"" },
++        { "CN=3Dx^f", L"script=2Ebat 0 \"CN=3Dx^f\"" },
++  =
+      { "CN=3Dx%f", L"script=2Ebat 0 \"CN=3Dx%f\"" },
++        { "CN=3Dx(f)=
+", L"script=2Ebat 0 \"CN=3Dx(f)\"" },
++        { "CN=3Dx!f", L"script=2Ebat=
+ 0 \"CN=3Dx!f\"" },
++        /* a double quote is replaced, so quoting cann=
+ot be broken out of */
++        { "CN=3Da\"b", L"script=2Ebat 0 CN=3Da_b" }=
 ,
-+        { "CN=3Dx|ver", L"script=2Ebat 0 \"CN=3Dx|ver\"" },
-+        { "=
-CN=3Dx>f", L"script=2Ebat 0 \"CN=3Dx>f\"" },
-+        { "CN=3Dx<f", L"scrip=
-t=2Ebat 0 \"CN=3Dx<f\"" },
-+        { "CN=3Dx^f", L"script=2Ebat 0 \"CN=3Dx=
-^f\"" },
-+        { "CN=3Dx%f", L"script=2Ebat 0 \"CN=3Dx%f\"" },
-+        =
-{ "CN=3Dx(f)", L"script=2Ebat 0 \"CN=3Dx(f)\"" },
-+        { "CN=3Dx!f", L"=
-script=2Ebat 0 \"CN=3Dx!f\"" },
-+        /* a double quote is replaced, so =
-quoting cannot be broken out of */
-+        { "CN=3Da\"b", L"script=2Ebat 0=
- CN=3Da_b" },
 +    };
 +
 +    for (size_t i =3D 0; i < SIZE(cases); i++)
-+  =
-  {
-+        struct gc_arena gc =3D gc_new();
-+        struct argv a =3D ar=
-gv_new();
++    {
++       =
+ struct gc_arena gc =3D gc_new();
++        struct argv a =3D argv_new();
 +
-+        argv_printf(&a, "%s %d %s", "script=2Ebat", 0, cases[i=
-]=2Earg);
-+        assert_int_equal(a=2Eargc, 3);
+=
++        argv_printf(&a, "%s %d %s", "script=2Ebat", 0, cases[i]=2Earg);
++ =
+       assert_int_equal(a=2Eargc, 3);
 +
-+        WCHAR *cmd_lin=
-e =3D wide_cmd_line(&a, &gc);
++        WCHAR *cmd_line =3D wide_c=
+md_line(&a, &gc);
 +        assert_non_null(cmd_line);
-+        =
-assert_int_equal(wcscmp(cmd_line, cases[i]=2Eexpected), 0);
++        assert_int_e=
+qual(wcscmp(cmd_line, cases[i]=2Eexpected), 0);
 +
-+        argv=
-_free(&a);
-+        gc_free(&gc);
++        argv_free(&a);
++=
+        gc_free(&gc);
 +    }
 +}
 +#endif /* _WIN32 */
 +
  int
- ma=
-in(void)
+ main(void)
  {
+=
 @@ -267,6 +321,9 @@
-         cmocka_unit_test(argv_str__multipl=
-e_argv__correct_output),
-         cmocka_unit_test(argv_insert_head__non_em=
-pty_argv__head_added),
-         cmocka_unit_test(argv_insert_head__empty_ar=
-gv__head_only),
+         cmocka_unit_test(argv_str__multiple_argv__corr=
+ect_output),
+         cmocka_unit_test(argv_insert_head__non_empty_argv__he=
+ad_added),
+         cmocka_unit_test(argv_insert_head__empty_argv__head_onl=
+y),
 +#ifdef _WIN32
-+        cmocka_unit_test(wide_cmd_line__quo=
-tes_only_what_cmd_would_reinterpret),
++        cmocka_unit_test(wide_cmd_line__quotes_only_wha=
+t_cmd_would_reinterpret),
 +#endif
      };
  
-     return cmocka_=
-run_group_tests_name("argv", tests, NULL, NULL);
+     return cmocka_run_group_te=
+sts_name("argv", tests, NULL, NULL);
 
 -- 
-To view, visit http:/=
-/gerrit=2Eopenvpn=2Enet/c/openvpn/+/1892?usp=3Demail
-To unsubscribe, or for=
- help writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?us=
-p=3Demail
+To view, visit http://gerrit=2Eop=
+envpn=2Enet/c/openvpn/+/1892?usp=3Demail
+To unsubscribe, or for help writin=
+g mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
-Gerrit-Project: openvpn
-Gerrit-B=
-ranch: master
-Gerrit-Change-Id: Iba66235cbad52692da542abd47e9f51810b0ed66
 G=
-errit-Change-Number: 1892
+errit-MessageType: merged
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Ger=
+rit-Change-Id: Iba66235cbad52692da542abd47e9f51810b0ed66
+Gerrit-Change-Numb=
+er: 1892
 Gerrit-PatchSet: 2
-Gerrit-Owner: cron2 <gert@gree=
-nie=2Emuc=2Ede>
-Gerrit-Reviewer: d12fk <heiko@openvpn=2Enet>
-Gerrit-Reviewe=
-r: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-CC: openvpn-devel <openvpn=
--devel@lists=2Esourceforge=2Enet>
+Gerrit-Owner: cron2 <gert@greenie=2Emuc=2Ede>
+G=
+errit-Reviewer: d12fk <heiko@openvpn=2Enet>
+Gerrit-Reviewer: plaisthos <arn=
+e-openvpn@rfc2549=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Eso=
+urceforge=2Enet>
 
---LcPZ59ttSuE=
+--DH+KIJCXalE=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #2</strong> to this change=2E</p><p><a href=3D"http://gerri=
-t=2Eopenvpn=2Enet/c/openvpn/+/1892?usp=3Demail">View Change</a></p><p>The f=
-ollowing approvals got outdated and were removed:
-Code-Review+2 by d12fk</p=
-><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">win32: unit-test the CreateProcess() command line quoting<br=
-><br>Cover which argument shapes wide_cmd_line() quotes: plain arguments an=
-d<br>the batch delimiters , ; =3D stay bare, a space or a cmd=2Eexe metacha=
-racter<br>forces quotes, and an embedded double quote is replaced so quotin=
-g cannot<br>be broken out of=2E The first two cases pin the compatibility g=
-uarantee -<br>they are what a later &quot;just quote everything&quot; simpl=
-ification would break=2E<br><br>Move wide_cmd_line() to win32-util=2Ec next=
- to wide_string(), which it<br>calls=2E The unit tests already link that fi=
-le, so nothing else needs to<br>change to reach it=2E<br><br>Change-Id: Iba=
-66235cbad52692da542abd47e9f51810b0ed66<br>Signed-off-by: Lev Stipakov &lt;l=
-ev@openvpn=2Enet&gt;<br>Acked-by: Heiko Hund &lt;heiko@openvpn=2Enet&gt;<br=
->Gerrit URL: https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1892<br>Message-Id:=
- &lt;20260902141002=2E16513-1-gert@greenie=2Emuc=2Ede&gt;<br>URL: https://w=
-ww=2Email-archive=2Ecom/openvpn-devel@lists=2Esourceforge=2Enet/msg38899=2E=
-html<br>Signed-off-by: Gert Doering &lt;gert@greenie=2Emuc=2Ede&gt;<br>---<=
-br>M src/openvpn/win32-util=2Ec<br>M src/openvpn/win32-util=2Eh<br>M src/op=
-envpn/win32=2Ec<br>M tests/unit_tests/openvpn/test_argv=2Ec<br>4 files chan=
-ged, 128 insertions(+), 67 deletions(-)<br><br></pre><pre class=3D"blocks" =
-style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull=
- ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/92/1892/2</pre><pr=
-e style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>=
-diff --git a/src/openvpn/win32-util=2Ec b/src/openvpn/win32-util=2Ec</span>=
-<br><span>index 209e34e=2E=2E4e3819c 100644</span><br><span>--- a/src/openv=
-pn/win32-util=2Ec</span><br><span>+++ b/src/openvpn/win32-util=2Ec</span><b=
-r><span>@@ -45,6 +45,73 @@</span><br><span>     return ucs16;</span><br><sp=
-an> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+/* special to cmd=2Eexe, which CreateProcess() uses to run =2Ebat/=2Ecm=
-d (VU#123335) */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#de=
-fine CMD_QUOTE_TRIGGERS &quot; &amp;|&lt;&gt;^%()!&quot;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+static bool</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+argv_element_needs_quotes(const char *str)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    for (const char *c =3D str; *c !=3D &#39;\0&#39;; ++c)<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        if (strchr(CMD_QUOTE_TRIGG=
-ERS, *c) !=3D NULL)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-  return true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    return false;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+WCHAR *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+wide_=
-cmd_line(const struct argv *a, struct gc_arena *gc)</span><br><span style=
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change=2E</p><p><a href=3D"http://gerrit=2Eopenvpn=2En=
+et/c/openvpn/+/1892?usp=3Demail">View Change</a></p><div style=3D"white-spa=
+ce:pre-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,mo=
+nospace; white-space: pre-wrap;">win32: unit-test the CreateProcess() comma=
+nd line quoting<br><br>Cover which argument shapes wide_cmd_line() quotes: =
+plain arguments and<br>the batch delimiters , ; =3D stay bare, a space or a=
+ cmd=2Eexe metacharacter<br>forces quotes, and an embedded double quote is =
+replaced so quoting cannot<br>be broken out of=2E The first two cases pin t=
+he compatibility guarantee -<br>they are what a later &quot;just quote ever=
+ything&quot; simplification would break=2E<br><br>Move wide_cmd_line() to w=
+in32-util=2Ec next to wide_string(), which it<br>calls=2E The unit tests al=
+ready link that file, so nothing else needs to<br>change to reach it=2E<br>=
+<br>Change-Id: Iba66235cbad52692da542abd47e9f51810b0ed66<br>Signed-off-by: =
+Lev Stipakov &lt;lev@openvpn=2Enet&gt;<br>Acked-by: Heiko Hund &lt;heiko@op=
+envpn=2Enet&gt;<br>Gerrit URL: https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1=
+892<br>Message-Id: &lt;20260902141002=2E16513-1-gert@greenie=2Emuc=2Ede&gt;=
+<br>URL: https://www=2Email-archive=2Ecom/openvpn-devel@lists=2Esourceforge=
+=2Enet/msg38899=2Ehtml<br>Signed-off-by: Gert Doering &lt;gert@greenie=2Emu=
+c=2Ede&gt;<br>---<br>M src/openvpn/win32-util=2Ec<br>M src/openvpn/win32-ut=
+il=2Eh<br>M src/openvpn/win32=2Ec<br>M tests/unit_tests/openvpn/test_argv=
+=2Ec<br>4 files changed, 128 insertions(+), 67 deletions(-)<br><br></pre>
+<=
+pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><spa=
+n>diff --git a/src/openvpn/win32-util=2Ec b/src/openvpn/win32-util=2Ec</spa=
+n><br><span>index 209e34e=2E=2E4e3819c 100644</span><br><span>--- a/src/ope=
+nvpn/win32-util=2Ec</span><br><span>+++ b/src/openvpn/win32-util=2Ec</span>=
+<br><span>@@ -45,6 +45,73 @@</span><br><span>     return ucs16;</span><br><=
+span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+/* special to cmd=2Eexe, which CreateProcess() uses to run =2Ebat/=2E=
+cmd (VU#123335) */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
+define CMD_QUOTE_TRIGGERS &quot; &amp;|&lt;&gt;^%()!&quot;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+static bool</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+argv_element_needs_quotes(const char *str)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    for (const char *c =3D str; *c !=3D &#39;\0&#39;; ++c)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        if (strchr(CMD_QUOTE_TRIG=
+GERS, *c) !=3D NULL)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   return true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    return false;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+WCHAR *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+wide=
+_cmd_line(const struct argv *a, struct gc_arena *gc)</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
 , 100%, 40%);">+    size_t nchars =3D 1;</span><br><span style=3D"color: hs=
 l(120, 100%, 40%);">+    size_t maxlen =3D 0;</span><br><span style=3D"colo=
@@ -892,39 +879,39 @@ p://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
 tent=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Mes=
-sageType: newpatchset </div>
-<div style=3D"display:none"> Gerrit-Project: o=
-penvpn </div>
+sageType: merged </div>
+<div style=3D"display:none"> Gerrit-Project: openvp=
+n </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<di=
-v style=3D"display:none"> Gerrit-Change-Id: Iba66235cbad52692da542abd47e9f5=
-1810b0ed66 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1892 <=
-/div>
+<div sty=
+le=3D"display:none"> Gerrit-Change-Id: Iba66235cbad52692da542abd47e9f51810b=
+0ed66 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1892 </div>=
+
 <div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"=
-display:none"> Gerrit-Owner: cron2 &lt;gert@greenie=2Emuc=2Ede&gt; </div>
-<=
-div style=3D"display:none"> Gerrit-Reviewer: d12fk &lt;heiko@openvpn=2Enet&=
-gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne=
--openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: o=
-penvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"displ=
+ay:none"> Gerrit-Owner: cron2 &lt;gert@greenie=2Emuc=2Ede&gt; </div>
+<div s=
+tyle=3D"display:none"> Gerrit-Reviewer: d12fk &lt;heiko@openvpn=2Enet&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-open=
+vpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvp=
+n-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
 
-</body=
-></html>
---LcPZ59ttSuE=--
+</body></ht=
+ml>
+--DH+KIJCXalE=--
 
 
---===============7230591506901717067==
+--===============7295000452269292690==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============7230591506901717067==
+--===============7295000452269292690==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -935,5 +922,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============7230591506901717067==--
+--===============7295000452269292690==--
 
