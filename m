@@ -4,109 +4,69 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 493A9C61DD6
-	for <openvpn-devel@archiver.kernel.org>; Wed,  2 Sep 2026 13:13:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 92808C624D3
+	for <openvpn-devel@archiver.kernel.org>; Wed,  2 Sep 2026 14:10:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Reply-To:From:List-Subscribe:
-	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:Subject:To:
-	MIME-Version:Date:Message-ID:Sender:Cc:Content-Transfer-Encoding:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:In-Reply-To:References:List-Owner;
-	bh=adCNMN+o1nyn9g7TRwtan2HMEkKL3BT1QATGkjT8NxQ=; b=A9djjtAARLyOjMtspEkhmb9A5N
-	jFbGX/iVnffarsduPIvr0HaoFcoXhRYwR6VUnlmbS0vFoSa9DN6GZ+MVUZaXYguuwB3xxAstHnC82
-	3AYPkWRsw2dfI72e8I0AjNqwz7zYSVP7e8s2fOiKc1NBQ/Vx7vF+8HzeRY7xchWmR/qI=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
+	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
+	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
+	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=G8HUBAYZ0wYr0TcSa0SdVkqqM/8TLlIWW6RFPRNODNk=; b=ABUvJnVWD2pCNSmm/91vBufYGE
+	hn07oVkmrpt6wipzM0+cLrTWQT4CyjHlKW89E3SU0pZcVqL5DicFEFQYF7CvhKavlg0zs9TP4lzlY
+	g9j3jQ0LpHB33I/X6weRsz0JNA6yThc/sy24Ys4KcnXw1i1zS+2pLrNZta1rOBNrnzFo=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x1km6-0005WS-Oz;
-	Wed, 02 Sep 2026 13:13:11 +0000
+	id 1x1lfN-0004IN-D2;
+	Wed, 02 Sep 2026 14:10:17 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <johan@openvpn.com>) id 1x1klr-0005Vm-6z
+ (envelope-from <gert@blue4.greenie.muc.de>) id 1x1lfM-0004IG-9B
  for openvpn-devel@lists.sourceforge.net;
- Wed, 02 Sep 2026 13:12:56 +0000
+ Wed, 02 Sep 2026 14:10:16 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=To:Subject:From:MIME-Version:Date:Message-ID:
- Content-Type:Sender:Reply-To:Cc:Content-Transfer-Encoding:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
+ In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=V3rY48Z7dVJpIChEMB7mwuEWKvjJkkq73lCS4e7nReQ=; b=SB1QueVldB1I9l8/PIvOoLyea6
- tY20N6oatHQnOz+6SeG81oxwK3tzRIlE5zr75HsTMzBX2KwNDeqSRutHiTlBsTLrb45WDrDrZZXr+
- cYCW5z1hwGHI+wqD08vJDPM2rlnT8A91SRClopfDQj+H/pFheTEIYh/R4CtUBWnVwwg8=;
+ bh=mZPcupRE4uZbgjAg0AoHORZ0/TPeorAKSySZ3QD2gL8=; b=abUQqZN29W05/3SVz/Av1+/fDz
+ Ob9/PTOuQhghhhFK6CI/+/03PvWhDvTqr5hdoCWW1SoHi4KOcsPHF+EgIbM5cBjgzPJ/xIkk0cnJf
+ myOyS+84+wCo2+RJBuvLE06J+vq838scxuzbUTdPHLoFN5CIuxYYO4vKdrh0YnrdaOfk=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=To:Subject:From:MIME-Version:Date:Message-ID:Content-Type:Sender:Reply-To
- :Cc:Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
- Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
- References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=V3rY48Z7dVJpIChEMB7mwuEWKvjJkkq73lCS4e7nReQ=; b=S
- 5cFZaSYuEW7vYsn9H7LR/ptMJB4yytgHH7/xOFXOHrSvy+mVuf8+r/kghtMOjObKZaqz5wmNNE6PG
- zSB7MTZQN4GgcJh0FsiTESsiCTbMORWrfVJM+8pBNWexlp29sLIC3nASyl/Wof6VV3xerAqwqdTgw
- hzCS75TDPJ/OV7NY=;
-Received: from mail-yx1-f45.google.com ([74.125.224.45])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1x1klq-0001ns-Jl for openvpn-devel@lists.sourceforge.net;
- Wed, 02 Sep 2026 13:12:55 +0000
-Received: by mail-yx1-f45.google.com with SMTP id
- 956f58d0204a3-66e63afda8fso1004873d50.3
- for <openvpn-devel@lists.sourceforge.net>;
- Wed, 02 Sep 2026 06:12:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.com; s=google; t=1788354769; x=1788959569; darn=lists.sourceforge.net;
- h=content-language:to:subject:from:user-agent:mime-version:date
- :message-id:content-type:from:to:cc:subject:date:message-id:reply-to
- :content-type; bh=V3rY48Z7dVJpIChEMB7mwuEWKvjJkkq73lCS4e7nReQ=;
- b=JKNMAZeNf3jOI61/MN2jkJT51HdXtuoG0X9K6esroaEkvTsjPFnM2oMTR2tTySlQv7
- 9LQ3m6ZS3J6FntMnFpQWl7x087EaXbQcgOGXLve9OyzHTSBk5NLgPGjSqTwSZ4GLFNNL
- xxmK+JZdN43ygB7+YqcIya9qsVBYC2tX/WMJm2bgoDdp4c4yofSgzq68h3al3EIocfLn
- J4I51LyKVgL734au7O85Xub8kkzUe+jrNomDw4oa6rrCjjeICRWi5ATGnEhBsBt/A7HC
- 7f7DgbmULJVwDAfW/3aaZlcRAvMvFqoLOMIn6vFAizmTUvcWghEuR3+AZZQXVm4Tb/Nu
- JyrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1788354769; x=1788959569;
- h=content-language:to:subject:from:user-agent:mime-version:date
- :message-id:content-type:x-gm-gg:x-gm-message-state:from:to:cc
- :subject:date:message-id:reply-to:content-type;
- bh=V3rY48Z7dVJpIChEMB7mwuEWKvjJkkq73lCS4e7nReQ=;
- b=Z6dWDtPec3A8FS7tFcAnfwu7wUUnVh23VV1ivyOSFjB5pTbj8IlNXqspPQ+P7SHQhE
- NxwQVPW84lm/KaxTJddHkDzNC8Cg9oCrSmgx3FaCg572E/Wxe26J4Q0H2XIXcuEOhmA6
- ycb/t3owu1+g/v3A98spBFfZgBAKqkhCz+BgxQbWJmMUefVhu7yxfE1pZSysTdyV+z6L
- vIqDyOYvtCKE6c4bS735u3L0cHPP2dJJVesnD4kygV5xtHJP9f9IxgJ7Ig5Z4dx0FnVC
- 2nsGKioZL69sAMd5/38rtyqrW4K7SVy4urGpxktBkhgRQkRPJakWiPTn6Uq5zm9vhBRc
- aStA==
-X-Gm-Message-State: AFuF++n+3gMsxLhB2RdWKtZicNvVM6weXCK2Kh8vOm1GvaBdhKCwqeo0
- BdCF5ZYL6SfXmZ1veNNmXTV2mnnEej9wsbvjaUh2DXXiuHpdbaj4ZzGFRQi3RbbfSGSuhQ+TGy5
- ueiQSXYN7fT2zwnlNxSor8oNz73qFgxRF4cHqbLuTBY/RZU5Rcr8hzDoh922NoiZS5zQB9IVObl
- EI2FUVvA==
-X-Gm-Gg: AYBFou0T0sD8gFqFWqQaLKekn43zKfKaS1FTWVBFddSjdQtO5GAFRsyXwz67SQzTm+0
- jysKK3TzvwF/juG8xLZS/7Dj7Hw3Fg8RbfKrk46bi5e4V0Dl67NLqKIRDBgNaOh38fDrTGE1VOD
- WKkDEIlR4elMWCYHQE+oHuhsXvmURpG+d+9D6SXMmx5ewIjg5hQ1NXzY+voYqoF/BLGh2WyygVt
- GVu+N66SzCVS+FaLswSr7HXxch0IVt/C59F+ytNo2lj+XNKelTAN/kMoow4Tpesi821CtwjPgtf
- iSjLvCeWJ4o323wv8pkLtwEeZF/cRBrkAUkZog+OL77asn6/muFNfu4x8nzBgMchiK1lp5G2xqS
- izQDV9FQZK1kWp4yH7yGW6w0O5fEnWKucnGc2cHERO+kuL3MPIwjp6FteZcpOH8xtnqsjgj6ZgW
- WJH2w51dB3CFhMXvfwOu2gU2IKwUahuo1ShChTEXbeX2OEkFSo2CEd7wDyne0BFnaAXNz0Se3qU
- tOWNKj4taclQklLQYTl1X2ulAnLROidVns=
-X-Received: by 2002:a17:903:324c:b0:2d9:123c:8c49 with SMTP id
- d9443c01a7336-2daec6d8a15mr74191115ad.14.1788353152446; 
- Wed, 02 Sep 2026 05:45:52 -0700 (PDT)
-Received: from ?IPV6:2001:ee0:4fc0:e8f0:5cad:f76c:37e4:5e01?
- ([2001:ee0:4fc0:e8f0:5cad:f76c:37e4:5e01])
- by smtp.gmail.com with ESMTPSA id
- d9443c01a7336-2dadd39e9cfsm12411425ad.34.2026.09.02.05.45.51
- for <openvpn-devel@lists.sourceforge.net>
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Wed, 02 Sep 2026 05:45:52 -0700 (PDT)
-Message-ID: <eadf5cba-3ca4-4b6f-91b7-26195cd0a887@openvpn.com>
-Date: Wed, 2 Sep 2026 19:45:49 +0700
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
+ h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
+ Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+ List-Post:List-Owner:List-Archive;
+ bh=mZPcupRE4uZbgjAg0AoHORZ0/TPeorAKSySZ3QD2gL8=; b=EOyC27Gnaa3wKNs/6SwCZLB1++
+ S0gT+WW4X7AZvANX6yIyqlQvkpPhbFQZPkEn8zxsaFZrLm6o0inzKXv5UPezwSCqr5NpS/mBkFZ2Y
+ WwujZvctXgubwsvL3frtFKJLkVnFc9rPctkBC2A7LYX94l/z7lSAe6uXXbmyiuPhbzWw=;
+Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
+ id 1x1lfG-0006IK-Aj for openvpn-devel@lists.sourceforge.net;
+ Wed, 02 Sep 2026 14:10:16 +0000
+Received: from blue.greenie.muc.de (localhost [127.0.0.1])
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 682EA3Kb016553
+ for <openvpn-devel@lists.sourceforge.net>; Wed, 2 Sep 2026 16:10:03 +0200
+Received: (from gert@localhost)
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 682EA3Fk016552
+ for openvpn-devel@lists.sourceforge.net; Wed, 2 Sep 2026 16:10:03 +0200
+From: Gert Doering <gert@greenie.muc.de>
 To: openvpn-devel@lists.sourceforge.net
-Content-Language: en-US
-X-Headers-End: 1x1klq-0001ns-Jl
-Subject: [Openvpn-devel]  IRC community meeting summary
+Date: Wed,  2 Sep 2026 16:09:55 +0200
+Message-ID: <20260902141002.16513-1-gert@greenie.muc.de>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <gerrit.1788295708000.Iba66235cbad52692da542abd47e9f51810b0ed66@gerrit.openvpn.net>
+References: <gerrit.1788295708000.Iba66235cbad52692da542abd47e9f51810b0ed66@gerrit.openvpn.net>
+MIME-Version: 1.0
+X-Headers-End: 1x1lfG-0006IK-Aj
+Subject: [Openvpn-devel] [PATCH v1] win32: unit-test the CreateProcess()
+ command line quoting
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -118,134 +78,299 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: Johan Draaisma via Openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Reply-To: Johan Draaisma <johan@openvpn.com>
-Content-Type: multipart/mixed; boundary="===============7707450175326663744=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---===============7707450175326663744==
-Content-Type: multipart/alternative;
- boundary="------------NuuWy74eG6qLqRgZM7Mpwmvs"
-Content-Language: en-US
+From: Lev Stipakov <lev@openvpn.net>
 
-This is a multi-part message in MIME format.
---------------NuuWy74eG6qLqRgZM7Mpwmvs
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Cover which argument shapes wide_cmd_line() quotes: plain arguments and
+the batch delimiters , ; = stay bare, a space or a cmd.exe metacharacter
+forces quotes, and an embedded double quote is replaced so quoting cannot
+be broken out of. The first two cases pin the compatibility guarantee -
+they are what a later "just quote everything" simplification would break.
 
-Meeting summary for 2 September 2026:
+Move wide_cmd_line() to win32-util.c next to wide_string(), which it
+calls. The unit tests already link that file, so nothing else needs to
+change to reach it.
 
-  * *Updated: 2.7.7 release*
-    We are preparing a release this week, version 2.7.7.
-    It will contain some security fixes, one of them of a DoS type, the
-    rest more minor stuff.
-    Currently we are finishing up the DoS type security fix, as we
-    consider it important to have that one released. We hope to get this
-    in.
-    Expected release date will be 3rd of September.
-  * *Updated: test latency and MTU in openvpn*
-    A new feature is proposed for adding to master; ability to do
-    latency and MTU tests in the OpenVPN protocol.
-    This would allow for a client to for example select the best
-    available server based on test results.
-    The RFC for this was merged to OpenVPN protocol specification
-    documentation.
-    The patch series can be found
-    here:https://gerrit.openvpn.net/q/topic:%22oob-server-probe%22
-    ralf_lici reviewed the RFC earlier, and said he would be willing to
-    take a look at the patch series next.
+Change-Id: Iba66235cbad52692da542abd47e9f51810b0ed66
+Signed-off-by: Lev Stipakov <lev@openvpn.net>
+Acked-by: Heiko Hund <heiko@openvpn.net>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1892
+---
 
-As always you're welcome to join at #openvpn-meeting on Libera IRC 
-network every Wednesday at 14:00 Central European Time.
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Kind regards,
-Johan Draaisma
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1892
+This mail reflects revision 1 of this Change.
 
---------------NuuWy74eG6qLqRgZM7Mpwmvs
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Acked-by according to Gerrit (reflected above):
+Heiko Hund <heiko@openvpn.net>
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
-    <p> Meeting summary for 2 September 2026:</p>
-    <ul
-style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
-          2.7.7 release</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-        We are preparing a release this week, version 2.7.7.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-        It will contain some security fixes, one of them of a DoS type,
-        the rest more minor stuff.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-        Currently we are finishing up the DoS type security fix, as we
-        consider it important to have that one released. We hope to get
-        this in.  <br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-        Expected release date will be 3rd of September.</li>
-      <li
-style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;"><strong
-style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
-          test latency and MTU in openvpn</strong><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-        A new feature is proposed for adding to master; ability to do
-        latency and MTU tests in the OpenVPN protocol.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-        This would allow for a client to for example select the best
-        available server based on test results.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-        The RFC for this was merged to OpenVPN protocol specification
-        documentation.<br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-        The patch series can be found here:<span> </span><a
-href="https://gerrit.openvpn.net/q/topic:%22oob-server-probe%22"
-style="box-sizing: inherit; background-color: transparent; color: rgb(24, 144, 255); text-decoration: none; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"
-          class="moz-txt-link-freetext">https://gerrit.openvpn.net/q/topic:%22oob-server-probe%22</a><br
-style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
-        ralf_lici reviewed the RFC earlier, and said he would be willing
-        to take a look at the patch series next.</li>
-    </ul>
-    <ul
-style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-    </ul>
-    <ul
-style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-    </ul>
-    As always you're welcome to join at #openvpn-meeting on Libera IRC
-    network every Wednesday at 14:00 Central European Time.
-    <p>Kind regards,<br>
-      Johan Draaisma<br>
-    </p>
-  </body>
-</html>
+        
+diff --git a/src/openvpn/win32-util.c b/src/openvpn/win32-util.c
+index 209e34e..4e3819c 100644
+--- a/src/openvpn/win32-util.c
++++ b/src/openvpn/win32-util.c
+@@ -45,6 +45,73 @@
+     return ucs16;
+ }
+ 
++/* special to cmd.exe, which CreateProcess() uses to run .bat/.cmd (VU#123335) */
++#define CMD_QUOTE_TRIGGERS " &|<>^%()!"
++
++static bool
++argv_element_needs_quotes(const char *str)
++{
++    for (const char *c = str; *c != '\0'; ++c)
++    {
++        if (strchr(CMD_QUOTE_TRIGGERS, *c) != NULL)
++        {
++            return true;
++        }
++    }
++    return false;
++}
++
++WCHAR *
++wide_cmd_line(const struct argv *a, struct gc_arena *gc)
++{
++    size_t nchars = 1;
++    size_t maxlen = 0;
++    size_t i;
++    struct buffer buf;
++    char *work = NULL;
++
++    if (!a)
++    {
++        return NULL;
++    }
++
++    for (i = 0; i < a->argc; ++i)
++    {
++        const char *arg = a->argv[i];
++        const size_t len = strlen(arg);
++        nchars += len + 3;
++        if (len > maxlen)
++        {
++            maxlen = len;
++        }
++    }
++
++    work = gc_malloc(maxlen + 1, false, gc);
++    check_malloc_return(work);
++    buf = alloc_buf_gc(nchars, gc);
++
++    for (i = 0; i < a->argc; ++i)
++    {
++        const char *arg = a->argv[i];
++        strcpy(work, arg);
++        string_mod(work, CC_PRINT, CC_DOUBLE_QUOTE | CC_CRLF, '_');
++        if (i)
++        {
++            buf_printf(&buf, " ");
++        }
++        if (argv_element_needs_quotes(work))
++        {
++            buf_printf(&buf, "\"%s\"", work);
++        }
++        else
++        {
++            buf_printf(&buf, "%s", work);
++        }
++    }
++
++    return wide_string(BSTR(&buf), gc);
++}
++
+ char *
+ utf16to8(const wchar_t *utf16, struct gc_arena *gc)
+ {
+diff --git a/src/openvpn/win32-util.h b/src/openvpn/win32-util.h
+index fb83762..c2ad64b 100644
+--- a/src/openvpn/win32-util.h
++++ b/src/openvpn/win32-util.h
+@@ -24,11 +24,15 @@
+ #ifndef OPENVPN_WIN32_UTIL_H
+ #define OPENVPN_WIN32_UTIL_H
+ 
++#include "argv.h"
+ #include "buffer.h"
+ 
+ /* Convert a string from UTF-8 to UCS-2 */
+ WCHAR *wide_string(const char *utf8, struct gc_arena *gc);
+ 
++/* Build a CreateProcess() command line from argv */
++WCHAR *wide_cmd_line(const struct argv *a, struct gc_arena *gc);
++
+ /* Convert a string from UTF-16 to UTF-8 */
+ char *utf16to8(const wchar_t *utf16, struct gc_arena *gc);
+ 
+diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
+index d527160..80ec7e8 100644
+--- a/src/openvpn/win32.c
++++ b/src/openvpn/win32.c
+@@ -936,73 +936,6 @@
+     }
+ }
+ 
+-/* special to cmd.exe, which CreateProcess() uses to run .bat/.cmd (VU#123335) */
+-#define CMD_QUOTE_TRIGGERS " &|<>^%()!"
+-
+-static bool
+-argv_element_needs_quotes(const char *str)
+-{
+-    for (const char *c = str; *c != '\0'; ++c)
+-    {
+-        if (strchr(CMD_QUOTE_TRIGGERS, *c) != NULL)
+-        {
+-            return true;
+-        }
+-    }
+-    return false;
+-}
+-
+-static WCHAR *
+-wide_cmd_line(const struct argv *a, struct gc_arena *gc)
+-{
+-    size_t nchars = 1;
+-    size_t maxlen = 0;
+-    size_t i;
+-    struct buffer buf;
+-    char *work = NULL;
+-
+-    if (!a)
+-    {
+-        return NULL;
+-    }
+-
+-    for (i = 0; i < a->argc; ++i)
+-    {
+-        const char *arg = a->argv[i];
+-        const size_t len = strlen(arg);
+-        nchars += len + 3;
+-        if (len > maxlen)
+-        {
+-            maxlen = len;
+-        }
+-    }
+-
+-    work = gc_malloc(maxlen + 1, false, gc);
+-    check_malloc_return(work);
+-    buf = alloc_buf_gc(nchars, gc);
+-
+-    for (i = 0; i < a->argc; ++i)
+-    {
+-        const char *arg = a->argv[i];
+-        strcpy(work, arg);
+-        string_mod(work, CC_PRINT, CC_DOUBLE_QUOTE | CC_CRLF, '_');
+-        if (i)
+-        {
+-            buf_printf(&buf, " ");
+-        }
+-        if (argv_element_needs_quotes(work))
+-        {
+-            buf_printf(&buf, "\"%s\"", work);
+-        }
+-        else
+-        {
+-            buf_printf(&buf, "%s", work);
+-        }
+-    }
+-
+-    return wide_string(BSTR(&buf), gc);
+-}
+-
+ /*
+  * Attempt to simulate fork/execve on Windows
+  */
+diff --git a/tests/unit_tests/openvpn/test_argv.c b/tests/unit_tests/openvpn/test_argv.c
+index b1e3261..5b6e26e 100644
+--- a/tests/unit_tests/openvpn/test_argv.c
++++ b/tests/unit_tests/openvpn/test_argv.c
+@@ -14,6 +14,10 @@
+ #include "buffer.h"
+ #include "test_common.h"
+ 
++#ifdef _WIN32
++#include "win32-util.h"
++#endif
++
+ /* Defines for use in the tests and the mock parse_line() */
+ #define PATH1      "/s p a c e"
+ #define PATH2      "/foo bar/baz"
+@@ -248,6 +252,56 @@
+     argv_free(&a);
+ }
+ 
++#ifdef _WIN32
++/*
++ * An argument is quoted if and only if it holds a space or a character that
++ * cmd.exe would act on when CreateProcess() runs a .bat/.cmd target.
++ */
++static void
++wide_cmd_line__quotes_only_what_cmd_would_reinterpret(void **state)
++{
++    static const struct
++    {
++        const char *arg;
++        const WCHAR *expected;
++    } cases[] = {
++        /* nothing special - must stay unquoted, or existing scripts break */
++        { "CN=user1", L"script.bat 0 CN=user1" },
++        /* the batch delimiters are deliberately not triggers */
++        { "CN=a,b;c=d", L"script.bat 0 CN=a,b;c=d" },
++        /* a space has always forced quoting */
++        { "O=Ctrl, CN=y", L"script.bat 0 \"O=Ctrl, CN=y\"" },
++        /* cmd.exe operators */
++        { "CN=x&ver", L"script.bat 0 \"CN=x&ver\"" },
++        { "CN=x|ver", L"script.bat 0 \"CN=x|ver\"" },
++        { "CN=x>f", L"script.bat 0 \"CN=x>f\"" },
++        { "CN=x<f", L"script.bat 0 \"CN=x<f\"" },
++        { "CN=x^f", L"script.bat 0 \"CN=x^f\"" },
++        { "CN=x%f", L"script.bat 0 \"CN=x%f\"" },
++        { "CN=x(f)", L"script.bat 0 \"CN=x(f)\"" },
++        { "CN=x!f", L"script.bat 0 \"CN=x!f\"" },
++        /* a double quote is replaced, so quoting cannot be broken out of */
++        { "CN=a\"b", L"script.bat 0 CN=a_b" },
++    };
++
++    for (size_t i = 0; i < SIZE(cases); i++)
++    {
++        struct gc_arena gc = gc_new();
++        struct argv a = argv_new();
++
++        argv_printf(&a, "%s %d %s", "script.bat", 0, cases[i].arg);
++        assert_int_equal(a.argc, 3);
++
++        WCHAR *cmd_line = wide_cmd_line(&a, &gc);
++        assert_non_null(cmd_line);
++        assert_int_equal(wcscmp(cmd_line, cases[i].expected), 0);
++
++        argv_free(&a);
++        gc_free(&gc);
++    }
++}
++#endif /* _WIN32 */
++
+ int
+ main(void)
+ {
+@@ -267,6 +321,9 @@
+         cmocka_unit_test(argv_str__multiple_argv__correct_output),
+         cmocka_unit_test(argv_insert_head__non_empty_argv__head_added),
+         cmocka_unit_test(argv_insert_head__empty_argv__head_only),
++#ifdef _WIN32
++        cmocka_unit_test(wide_cmd_line__quotes_only_what_cmd_would_reinterpret),
++#endif
+     };
+ 
+     return cmocka_run_group_tests_name("argv", tests, NULL, NULL);
 
---------------NuuWy74eG6qLqRgZM7Mpwmvs--
-
-
---===============7707450175326663744==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============7707450175326663744==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
---===============7707450175326663744==--
-
