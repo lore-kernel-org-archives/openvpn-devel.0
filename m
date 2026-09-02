@@ -4,69 +4,69 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C496BC61DD6
-	for <openvpn-devel@archiver.kernel.org>; Wed,  2 Sep 2026 09:57:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 77EDDC61DD6
+	for <openvpn-devel@archiver.kernel.org>; Wed,  2 Sep 2026 11:05:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
-	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	MIME-Version:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
+	List-Unsubscribe:List-Id:Subject:References:In-Reply-To:To:From:Message-Id:
+	Date:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=+7UDN2ufgqRxa4WOH0waCoZ1f8SeYXikwfFxk7sBOm4=; b=e2oZAqxKb9fXUWq7sSXh3JvCfh
-	MChJK1AtEd/j5TfoeY/6mNe+/ke87bKjnPlnAgCMRAlpgQB16JhgSqxtB68hOW8cxt2pSn3Tbp74h
-	KxO6ja/+FRAsCf8TBBAROEZ3U42aW7RYcsFfUMx7AddykZHBVF3aPPDvpvBopaQwxdW8=;
+	bh=VllwEM9A6NO+XpJSLrCJ1f7cGADsbMxHcr26DWgs4Q0=; b=C7oYRXuCzUX8xkWESQfYwra1J1
+	sxHJPnudBs3XsL3uijx0oJOS09yA96g8kGUll3tT2EpiYzDZbAdGi7Vh5hVo3/4Rn8VJuZSu9HzMY
+	4d9cEONGyIWk1X+v3EEvY86pBNzIvyhUt/O3TOCcp3S+1197s1OsXsIzs+lmcT95FMAU=;
 Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
 	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x1hj1-0003em-QR;
-	Wed, 02 Sep 2026 09:57:45 +0000
+	id 1x1imh-0002fr-4i;
+	Wed, 02 Sep 2026 11:05:36 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1x1hiz-0003ed-V0
+ (envelope-from <gert@chekov.greenie.muc.de>) id 1x1imd-0002fe-6o
  for openvpn-devel@lists.sourceforge.net;
- Wed, 02 Sep 2026 09:57:43 +0000
+ Wed, 02 Sep 2026 11:05:32 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=a/aOQ5s91BcHBgpbr8W2Wh1agFFKnEu5S9qA6441gQA=; b=nO55PCOlKhE/in+nUAb+/vA/u1
- Jxo2gegzOVK6fR3XIXVxdqrqaMaIWMK7snYStliRjs10u2P6hxiH8x5H6rqSoY5KKhilK08t3xccJ
- Nf75qzXffbEZBrVlct51/t0o7OODKEJlWha+UGcU5dykydex0rn3zSmkTTnMTm8idRqA=;
+ d=sourceforge.net; s=x; h=References:In-Reply-To:Subject:Cc:To:From:
+ Message-Id:Date:Sender:Reply-To:MIME-Version:Content-Type:
+ Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+ List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=0P0nWH8vjp08liuvNf/CYHgYkkzgwF8CaQerb4wWdzk=; b=ESS3OquGTbpsAcd0diBEgZVqBm
+ xqfY7G+PrRN9OUT3fvqihrvx8r1XDAmGm+3o2+eghU12RU2bttU3S+nD8mfyq6OftEv6VyIIkH2tp
+ dfGDnOn/jUdE+3MWQbXTfAeJ2Molk5QNKLasbHBpQAHgD5kqrZXMUdtFYx+UWocmv5go=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ h=References:In-Reply-To:Subject:Cc:To:From:Message-Id:Date:Sender:Reply-To
+ :MIME-Version:Content-Type:Content-Transfer-Encoding:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=a/aOQ5s91BcHBgpbr8W2Wh1agFFKnEu5S9qA6441gQA=; b=ZfSn+vbbSPKB97lm8d31NhAQek
- oo48K2SsVYRWqwCCxwg/fTs3gthLuE65YKQE07qpKYZ5LEW9mRckkmF3n2SBW7a6Pu0bUWwLquLuI
- fuC/nJpbIrujmFfGhEhVmvp7b1qDrEaV0dhv8/NXNmSmVzZGqKOGFm/yNGYMuPp2ZT2Q=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ bh=0P0nWH8vjp08liuvNf/CYHgYkkzgwF8CaQerb4wWdzk=; b=BapBbDFvsdU1AqVXaqoqrPtuN1
+ 7q2aTDWkPXntbxwHKkk03wlBag8b6E/XCUJ1s7BpV8V+0hmBvYnwPrWz1e+nYtqHWt0becUde6uJC
+ 8tDYre6AxBG0jGOyzdw8ug5Y992Bk3WIa/BuSx/hkac5ExwBwRYDS5ufi72/9OTrWjuQ=;
+Received: from chekov.greenie.muc.de ([193.149.48.178])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1x1hiv-00082a-W0 for openvpn-devel@lists.sourceforge.net;
- Wed, 02 Sep 2026 09:57:43 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 6829vZIQ026870
- for <openvpn-devel@lists.sourceforge.net>; Wed, 2 Sep 2026 11:57:35 +0200
+ id 1x1imV-00077G-Mt for openvpn-devel@lists.sourceforge.net;
+ Wed, 02 Sep 2026 11:05:29 +0000
+Received: from chekov.greenie.muc.de (localhost [IPv6:0:0:0:0:0:0:0:1])
+ by chekov.greenie.muc.de (8.18.2/8.18.1) with ESMTP id 682B5GXX000912;
+ Wed, 2 Sep 2026 13:05:16 +0200 (CEST)
+ (envelope-from gert@chekov.greenie.muc.de)
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 6829vZ0r026869
- for openvpn-devel@lists.sourceforge.net; Wed, 2 Sep 2026 11:57:35 +0200
+ by chekov.greenie.muc.de (8.18.2/8.18.1/Submit) id 682B5G51000909;
+ Wed, 2 Sep 2026 13:05:16 +0200 (CEST) (envelope-from gert)
+Date: Wed, 2 Sep 2026 13:05:16 +0200 (CEST)
+Message-Id: <202609021105.682B5G51000909@chekov.greenie.muc.de>
 From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Wed,  2 Sep 2026 11:57:29 +0200
-Message-ID: <20260902095734.26857-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1788282930000.I70282985a7e8e46add92b2277674cbca6bce39c1@gerrit.openvpn.net>
-References: <gerrit.1788282930000.I70282985a7e8e46add92b2277674cbca6bce39c1@gerrit.openvpn.net>
-MIME-Version: 1.0
-X-Headers-End: 1x1hiv-00082a-W0
-Subject: [Openvpn-devel] [PATCH v1] tapctl: prevent binary planting with
- netsh
+To: Heiko Hund <heiko@ist.eigentlich.net>
+X-Patchwork-State: Accepted
+In-Reply-To: <20260902095734.26857-1-gert@greenie.muc.de>
+References: <20260902095734.26857-1-gert@greenie.muc.de>
+X-Headers-End: 1x1imV-00077G-Mt
+Subject: [Openvpn-devel] [PATCH applied] Re: tapctl: prevent binary planting
+ with netsh
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -78,108 +78,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Cc: openvpn-devel@lists.sourceforge.net
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Heiko Hund <heiko@ist.eigentlich.net>
+Change looks reasonable, detailed review from Razvan both in "private GH"
+and +2 on Gerrit (thanks).  Compile- and unit-tested via GHA.
 
-Provide a application name to CreateProcess(), so that it doesn't try to
-locate an executable - somewhere. Instead construct the full path to
-netsh.exe in the system dir and pass that to the function instead of NULL.
+Your patch has been applied to the master, release/2.7 and release/2.6
+branch.  2.6 needed a bit of massaging due to different wrapping in
+the old CreateProcessW() call - but uncrustify is also fine with the
+new wrapping, so the new code is 1:1 the same in 2.6 and onwards.
 
-Discovered and reported by BreachX Zero Day Labs, using Typhon AI Mil v2.
-Contributing Researcher: Vivek Parikh.
+commit 03f8b88898b06d0d0acb3bded18eba82fa2e6277 (master)
+commit 19b1b9f82d93b481b4a9a6c2a22782ee7a630186 (release/2.7)
+commit d836a52b7f8117558d36b6f7133f2812b838a475 (release/2.6)
+Author: Heiko Hund
+Date:   Wed Sep 2 11:57:29 2026 +0200
 
-Reported-by: Vivek Parikh <vivek.parikh@breachx.ai>
-Tested-by: Vivek Parikh <vivek.parikh@breachx.ai>
-Github: OpenVPN/openvpn-private-issues#164
-CVE: 2026-84226
-Change-Id: I70282985a7e8e46add92b2277674cbca6bce39c1
-Signed-off-by: Heiko Hund <heiko@ist.eigentlich.net>
-Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1890
----
+     tapctl: prevent binary planting with netsh
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+     Signed-off-by: Heiko Hund <heiko@ist.eigentlich.net>
+     Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1890
+     Message-Id: <20260902095734.26857-1-gert@greenie.muc.de>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg38894.html
+     Signed-off-by: Gert Doering <gert@greenie.muc.de>
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1890
-This mail reflects revision 1 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Razvan Cojocaru <razvanc@mailbox.org>
+--
+kind regards,
 
-        
-diff --git a/src/tapctl/tap.c b/src/tapctl/tap.c
-index 1d94988..769df6c 100644
---- a/src/tapctl/tap.c
-+++ b/src/tapctl/tap.c
-@@ -921,32 +921,38 @@
-                                     bEnable ? enable_device : disable_device, pbRebootRequired);
- }
- 
--/* stripped version of ExecCommand in interactive.c */
- static DWORD
--ExecCommand(const WCHAR *cmdline)
-+ExecNetsh(PWSTR cmdline)
- {
-     DWORD exit_code;
-     STARTUPINFOW si;
-     PROCESS_INFORMATION pi;
-     DWORD proc_flags = CREATE_NO_WINDOW | CREATE_UNICODE_ENVIRONMENT;
--    WCHAR *cmdline_dup = NULL;
- 
-     ZeroMemory(&si, sizeof(si));
-     ZeroMemory(&pi, sizeof(pi));
--
-     si.cb = sizeof(si);
- 
--    /* CreateProcess needs a modifiable cmdline: make a copy */
--    cmdline_dup = _wcsdup(cmdline);
--    if (cmdline_dup
--        && CreateProcessW(NULL, cmdline_dup, NULL, NULL, FALSE, proc_flags, NULL, NULL, &si, &pi))
-+    WCHAR appName[MAX_PATH];
-+    WCHAR netsh_exe[] = L"\\netsh.exe";
-+    UINT sysdir_len = GetSystemDirectoryW(appName, _countof(appName));
-+    if (sysdir_len == 0)
-+    {
-+        wcscpy_s(appName, _countof(appName), L"C:\\Windows\\system32");
-+    }
-+    else if (sysdir_len + _countof(netsh_exe) > _countof(appName))
-+    {
-+        return ERROR_INSUFFICIENT_BUFFER;
-+    }
-+    wcscat_s(appName, _countof(appName), netsh_exe);
-+
-+    if (CreateProcessW(appName, cmdline, NULL, NULL, FALSE, proc_flags, NULL, NULL, &si, &pi))
-     {
-         WaitForSingleObject(pi.hProcess, INFINITE);
-         if (!GetExitCodeProcess(pi.hProcess, &exit_code))
-         {
-             exit_code = GetLastError();
-         }
--
-         CloseHandle(pi.hProcess);
-         CloseHandle(pi.hThread);
-     }
-@@ -955,7 +961,6 @@
-         exit_code = GetLastError();
-     }
- 
--    free(cmdline_dup);
-     return exit_code;
- }
- 
-@@ -1013,7 +1018,7 @@
- 
-     free(szOldName);
- 
--    dwResult = ExecCommand(szCmdLine);
-+    dwResult = ExecNetsh(szCmdLine);
-     free(szCmdLine);
- 
-     if (dwResult != ERROR_SUCCESS)
+Gert Doering
+
 
 
 _______________________________________________
