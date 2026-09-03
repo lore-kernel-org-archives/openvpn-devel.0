@@ -4,126 +4,125 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0BE5CC624DB
-	for <openvpn-devel@archiver.kernel.org>; Thu,  3 Sep 2026 07:22:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8C254C61DD3
+	for <openvpn-devel@archiver.kernel.org>; Thu,  3 Sep 2026 10:30:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
+	Subject:MIME-Version:Message-ID:References:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=Xt+hTt5t+QMETWekdrQ9ViS0peyt72F+ZtUtsTWkL24=; b=HX2mSQzTn9OTJAsMPY1tD67FRR
-	ETyVAuPaLK/SN5Ktn5bLHhyCOyCa7+gH1R6npbdA3595dZT2brf5B8/Ht7ZI4PJPUbw8g4r7RGfQ6
-	qXt5UPcsq/Q7joaCmAE2YZmfYy0vrYjNn8KNqK1zf2h99szmvgAW36NbNylbgcrvwSgA=;
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+	List-Owner; bh=uVE0dfC7VIGfrAcuFQ2WB+LEaWC3pEFcr16htipGJLc=; b=fNgHLhl1ylXV6K
+	gEPX1n3xYX5wbHFLAjEsmKa8LuKFaL/ZYh6o+eBMJtbmZvuHPlM1kJxfU5J3tKzrzrpkBiaY3q+HA
+	QOYK8wz6y4mRCxAfZ1bUqEUlWXdWmiXNK8aqz5Lfm6P2ItEMbPNxYoul84HBwOcR9Nh+yLjx4FsjZ
+	QI0=;
 Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
 	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x21lt-0007ty-N8;
-	Thu, 03 Sep 2026 07:22:05 +0000
+	id 1x24i8-0003ue-B1;
+	Thu, 03 Sep 2026 10:30:24 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1x21ls-0007tq-Ce
+ (envelope-from <gerrit@openvpn.net>) id 1x24i7-0003uX-9R
  for openvpn-devel@lists.sourceforge.net;
- Thu, 03 Sep 2026 07:22:04 +0000
+ Thu, 03 Sep 2026 10:30:23 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
- :List-Post:List-Owner:List-Archive;
- bh=mhdZlg7NHkxqTW2QPkeKmD7AUzRBTVGkwCB4bHWhjqs=; b=BMGsiUQDaT09EY53vDCX5cejU3
- ZCvwmqwOH7ul8mgRoKu+QB90dbwpO2HcnPx+za6goAxQy5tMaxKE9WKeU7l1CC1SHGKKkwVqbQJ+4
- ngnTEGXCSHSFAAoXkZr8NrwNmGc3wfhzOWOuds39kWmM23Lb9L8G/uFfALglT7YS8P7Q=;
+ :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:
+ From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From:
+ Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=Cm4RPNgUwtTO5cWzY3FATW1yEABURZQdvtbR8kldsFk=; b=Rqhwu+00bd2aJK4otvSp2oZ1yU
+ VqMpcb7rRke/dNwxlnzsw3t7ZGO1bBu/qOATgOIWmiDqrlDEtX40oj2makm6li4eAyeK9qCKlz8Z8
+ qgG5mk1KsHIb+wZrDcVEcAd9uBS32iCWdhNonrrOpIK48KIvWxc0px4nUzxbA7FjEEDU=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
- Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=mhdZlg7NHkxqTW2QPkeKmD7AUzRBTVGkwCB4bHWhjqs=; b=O
- l2mpnOWT04YhehtZjfoRnlQcYtFATvYUy0FdyWHLFaqrb1UEmBA1purmtux/TvjvvgjhX2gnMK8Sw
- g4IMe2peQVujQLepEUBwEOa+Bvpn2k601yo2bvjwqrzLszyvOGfGVXoo1y78IdzL3HxR0cYKgbblf
- RiEtopJgqlVtkNZg=;
+ Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:From:Sender:Content-ID
+ :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+ Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=Cm4RPNgUwtTO5cWzY3FATW1yEABURZQdvtbR8kldsFk=; b=Y
+ //OHLH4a1SD9/rXjFaTG1epWfSmXzwNBIfVXR6sdMgxtgD3qClIMcqoiXm2N75e5KVzNemTIFKZDM
+ r28SYPwFZwDavC8k5ljsa/Wbw4ICxCl1lyxGMECUvvUUhZORKS3vKlLFX/feolT7mgFsi45JVjcmD
+ 9f1IhL5S3ksN2yfM=;
 Received: from mail-wm1-f46.google.com ([209.85.128.46])
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1x21lq-0004cz-Du for openvpn-devel@lists.sourceforge.net;
- Thu, 03 Sep 2026 07:22:04 +0000
+ id 1x24i5-0002yZ-52 for openvpn-devel@lists.sourceforge.net;
+ Thu, 03 Sep 2026 10:30:23 +0000
 Received: by mail-wm1-f46.google.com with SMTP id
- 5b1f17b1804b1-495590dde14so21307085e9.0
+ 5b1f17b1804b1-4956869750eso15198835e9.2
  for <openvpn-devel@lists.sourceforge.net>;
- Thu, 03 Sep 2026 00:22:02 -0700 (PDT)
+ Thu, 03 Sep 2026 03:30:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1788420116; x=1789024916; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1788431414; x=1789036214; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
- :reply-to:content-type;
- bh=mhdZlg7NHkxqTW2QPkeKmD7AUzRBTVGkwCB4bHWhjqs=;
- b=JLVTNOVbi7MapHPYugS7PEGMBEdElcw7tCnZKj8DUc6KNJQmAbPF13Lslq4n1vcAMl
- 6p+RLNuuSSl8mMxs05gWCLzgVETs2H1WrSuvt1JwRHjMx7U/RGenbQC2coK/fJx2XLo7
- IQJiq9raegGbd5RnnrnQRU25PWiHWh60NWGNvw9vRYav4320rbeZNCCs/HesYu/bnuC4
- B3k/a9MLqgoSQHZtpw77+iv6ZWkFUgUFJt6JMQ0rZtiwwojj4RXFZfo1QILeIhgio2ak
- EtbgPtl9csu/hQGCHzUDFNZgfILuCwYNDSl2uuylJCS4Yp8QcUQpSxbORjBnYl/eJw9D
- EMtg==
+ :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
+ :to:date:from:from:to:cc:subject:date:message-id:reply-to
+ :content-type; bh=Cm4RPNgUwtTO5cWzY3FATW1yEABURZQdvtbR8kldsFk=;
+ b=Z8Q8u5ldzsLKAOvXpC8coPzUUvSA2q5EEozl4lzTjj/SLRNoAM1Fd6YokP9n4gOky/
+ L6xCGO4xffmCJDQh6h+CfJb45ml/tOcrRV+FdywaY18BBHEfdMetpGvz+g02MnPmZX7k
+ xm1lDacoK4fNDo5XwwK7EWSskjWh/ICxvLrhwgrQjhslwqh4G8xKviQIdaY01EPW5sOa
+ dnWR5REj0WIZyOw365G+kkbNwPj+KMsTPAwtMGcdst4SggK2Q7UlErfHEnmPT62ISGAW
+ s79DzPje+bPvpAMLN0yB25kpmklbN+Utymb6NJxpH1Vc/qNsvZ77kQQQEmczEc+pkvWK
+ g5RA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1788420116; x=1789024916;
+ d=1e100.net; s=20251104; t=1788431414; x=1789036214;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
- :cc:subject:date:message-id:reply-to:content-type;
- bh=mhdZlg7NHkxqTW2QPkeKmD7AUzRBTVGkwCB4bHWhjqs=;
- b=KeV76NSl7e8YUNpmLUq2MSAWp8VnXbODNMO18Oe389GbT7TnIViU0tGI6vLtCUiGis
- ACUkpHv9iT92qNlzuMdih5sTd9zF1D6E9KBdhWzT8JSOeT0vT9fToiQSCwGzkzun07xU
- jNkk3oUpConJZVK/kdRynefQqtdgUfCP7cJxrOYApUEyxCrtCAH+7tbZqpU4LXLGpRKV
- v+3eRB6JOkkIkAxBFDsDBhiBC033N5XIk5x/3qwxBBQY0FSNrED/HYZiXj/XbgP58jkw
- E8s0PieiGn0vSulbUHPa4LOdpxxwGAUTtY+nGj8emkWr1CQhpTSFXKx5Ji33nvDabwXE
- 2Uvg==
-X-Gm-Message-State: AFuF++nnaCaDcpNCs+FTMaYyeQi0Mtw71j9jiAp9vgahRkacKys7TbSH
- CoP33z6XjMm9Frxm0ifERtIz93odC1heyh/xWH2K6WoU9VAO0hdTAITLneOdGN8h/miJd+OZtRO
- LWclgBlWHaip3gznZhlxRlue9Zl4o6y4atMQGd2L7rAlx9PWqGz6JbbhtskvlbH6lQEmj
-X-Gm-Gg: AYBFou3NY/CNq8Amw1s6PoN1VmH3KP30+gTzdI4iy4dRoX4LvAr1nJCOX/fy/VdB64P
- N1mMat2cvUCsoMmXP4ZmAqEz1X99kfMvdf51TlJW73lqVMH+kTNxHZdt7MTGG98SNsnBVJsFVKL
- cEjv4a4H26rIy/j2MhGKt/ryDW95wod11Fl57G5LPUAEph/pqEJd1v1B7dGQGIh49g8s1hsH0gR
- GdGtZEKT811saOp4YQmgzoGs8h/AFKFs6Upe/O3paKJVVswhaCGOVL0ZxjO/kzprWR+IIrHuXed
- 2R7zcztK0PPIeM+6WltdSLHO3ZFnxQIzo6PGKg0HsLGIq0QYQm0qU+wJPCkZVeSw65my2GULT/s
- rxsxucigmxs5tYVfLj8aH+8w9Ip6NwSTiT84Z2lIe1xQMI7rLIfUnG1wcm64Mbk+vYQyI9tFdQl
- Cpkzla4hX5SDrQawT9Pf0puog3YPyEP0QwqPvWsgGp0VFtb/2/qra9e538IqoJVe+Ork046HrrI
- nsDHTND3XZwvB0iOwPZONj8Xer3fpMfVuiPGU6i2Jo1A7p0VNS5nqG0AOJe3UCTF+EiBzpvYdEh
- jjcrYwha5yvSJsj1RAlviuAeI/7NOdogM29OWVppkRjVDopCKLk=
-X-Received: by 2002:a05:600c:8b86:b0:49c:d27e:8f7c with SMTP id
- 5b1f17b1804b1-49ce5843b42mr178883915e9.12.1788420115660; 
- Thu, 03 Sep 2026 00:21:55 -0700 (PDT)
+ :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
+ :to:date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+ :message-id:reply-to:content-type;
+ bh=Cm4RPNgUwtTO5cWzY3FATW1yEABURZQdvtbR8kldsFk=;
+ b=mXV4mBtcWL/dv1PKQGlJBH7Yvs6OXlbO+K8nqdks2ztmvSOUTpRGxnDSfsmyJwqkpZ
+ deUR4YpEYLFJjicxKmLVX2IWQlu8289NtiS15jZG5b16OrKOpRwj7M2EmkXzlNIy6Wnj
+ b6NQh4zHpRxmxtQdNk/bm/YaQ7EaGargNRwlTaGvF6EIh8efEIiy3LVatIwLkw4SMaKC
+ UdhAvpbkuxCK1USdnrl6G0W6eqwXEX0ATGOWcHFw3gF2NdhqGknIV+Ob8XkE5vxwOk6A
+ cScB4HJNY0aAwcj4z+XwzxIgf6MJ/Bo5UepzgbFFVKutjyzTiileF/WG8usowDC7ICeu
+ qooQ==
+X-Gm-Message-State: AFuF++mLtjQwkpK0opttdWW3kzUteMQSibvqZ0kOA+fdwn/Om7WaPsvN
+ 16/1kuYqAB7gejL7/CZYlKQ2KkKqtfepkOBZrNyM39A5JA8wdiXEPmTVm/zB+LhJcfhk1UyxGwB
+ WJjwlmNMwbhUyxHpL0IOm/N0ZuuAS9ZQR5ZuliW0vi4+DB3yGn2woZzR9AlIIcEBGtz3z
+X-Gm-Gg: AYBFou2YbIFkeZJxWIz1rcA12VRxXPl6M2URbnl/5a8EzEIVgj2o5GXYbNGxsbMFXRo
+ yqnB9Mws55UYNy3ACsXP5Ev0jY6SvnyZBM82wFCyZRkIBb1Zl5dCMymolIBLD9khMtRtilj09U1
+ rkwa0rkKgHbLtm2USgo/wzV2w3CKU0Li+L3Mnn8v56VoeulltQ8aCOJLWIPiJ9l4bgqQSMTPYZS
+ aSq4upc4Wj//YFxeVgpqTxNkRaeqsvysCMiwW7Ti9w0xuML8++oMfuoGFtXqaBFoyyyW0fSv3js
+ If5KtPASQhzPrv+nfw2PRh8gKDfTKLBj1JAf6U0+UJoIy9Elpb7FcFtql8HHzxwY6UNGcTASb/v
+ VQ+X9CeMOjTCFaF8Xotb8Ucs1G4ha3YjiJTHZ6kKf7oxMTdN3VTKaw6EXMZZilhZpY7xYKl6rYe
+ FkSGAV2aezPpYUTJLLW6UH7yKqZ2IvyO5kzGAgqn3IardIK0ycsm+vbq4UXufFT9PI+omj6i3nc
+ tfPJsZOlVxsFh76ImH/qbJGpnIM3gdqPNkI34vTqmCQ6MwMZSuXJ/8ZooQmG+8wXLX96AuKCBHD
+ 8HbP0z89nV8OYfTYxixkpqVXIWeC0QTViZjY48nw3/+V1wOSaT0=
+X-Received: by 2002:a05:600c:3b25:b0:49c:cfae:34d2 with SMTP id
+ 5b1f17b1804b1-49ce55fb5f7mr193706715e9.4.1788431409585; 
+ Thu, 03 Sep 2026 03:30:09 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-49cee7fec25sm53012635e9.13.2026.09.03.00.21.55
+ 5b1f17b1804b1-49ce5927b68sm117444835e9.1.2026.09.03.03.30.09
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 03 Sep 2026 00:21:55 -0700 (PDT)
-X-Google-Original-From: "cron2 (Code Review)"
+ Thu, 03 Sep 2026 03:30:09 -0700 (PDT)
+X-Google-Original-From: "stipa (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Thu, 3 Sep 2026 07:21:54 +0000
+Date: Thu, 3 Sep 2026 10:30:08 +0000
 To: plaisthos <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: merged
-X-Gerrit-PatchSet: 4
-X-Gerrit-Change-Id: I64920ed9f714803604d76c6df6b38cf20ce7626d
-X-Gerrit-Change-Number: 1893
+X-Gerrit-MessageType: newchange
+X-Gerrit-PatchSet: 1
+X-Gerrit-Change-Id: I70dfdc70778458b78f80b8d0b0b786f18fe4fc76
+X-Gerrit-Change-Number: 1895
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1893?usp=email>
-X-Gerrit-Commit: 2a881d737b2562ee28247148160cfb60f0ba4645
-In-Reply-To: <gerrit.1788368618000.I64920ed9f714803604d76c6df6b38cf20ce7626d@gerrit.openvpn.net>
-References: <gerrit.1788368618000.I64920ed9f714803604d76c6df6b38cf20ce7626d@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzg4MzY4NjE4MDAwLkk2NDkyMGVkOWY3MTQ4MDM2MDRkNzZjNmRmNmIzOGNmMjBjZTc2MjZkQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <34a22995dd74832ba244d7d8cacd347dda69ad43-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1895?usp=email>
+X-Gerrit-Commit: a7ec3039f051c7664d7d004a1fea2a301d4b639f
+References: <gerrit.1788431406000.I70dfdc70778458b78f80b8d0b0b786f18fe4fc76@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzg4NDMxNDA2MDAwLkk3MGRmZGM3MDc3ODQ1OGI3OGY4MGI4ZDBiMGI3ODZmMThmZTRmYzc2QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <cc51f38a06fd84847f61320b04bcf3f9b0198e35-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1x21lq-0004cz-Du
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Move
- check_session_buf_not_used method into the method that free the ...
+X-Headers-End: 1x24i5-0002yZ-52
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: win32: stop cmd.exe
+ from expanding variables in quoted arguments
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -135,883 +134,536 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "cron2 \(Code Review\) via Openvpn-devel"
+From: "stipa \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
-Reply-To: gert@greenie.muc.de, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net, max@max-fillinger.net
-Cc: "cron2 \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>,
- MaxF <max@max-fillinger.net>
-Content-Type: multipart/mixed; boundary="===============0124866215224942249=="
+Reply-To: lstipakov@gmail.com, arne-openvpn@rfc2549.org,
+ openvpn-devel@lists.sourceforge.net
+Cc: "stipa \(Code Review\)" <gerrit@openvpn.net>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: multipart/mixed; boundary="===============7258031384468934816=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============0124866215224942249==
+--===============7258031384468934816==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="XG5/zUyGDLI="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="xsL/TrPqjcQ="; charset=UTF-8
 
---XG5/zUyGDLI=
+--xsL/TrPqjcQ=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change=2E ( http://gerrit=2Eopenvpn=2Enet/c/openvp=
-n/+/1893?usp=3Demail )
+Attention is currently required from: plaisthos=2E
 
-Change subject: Move check_session_buf_not_used met=
-hod into the method that free the buffer
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+Hello plaisthos,
+
+I'd l=
+ike you to do a code review=2E
+Please visit
+
+    http://gerrit=2Eopenvpn=2E=
+net/c/openvpn/+/1895?usp=3Demail
+
+to review the following change=2E
+
+
+Chang=
+e subject: win32: stop cmd=2Eexe from expanding variables in quoted argumen=
+ts
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-Move check_session_buf_not_used method into th=
-e method that free the buffer
+win32: sto=
+p cmd=2Eexe from expanding variables in quoted arguments
 
-This cleans the code up a bit and ensure tha=
-t we do not miss an invocation
-of a problematic code path=2E This is still =
-a band-aid fix and a real fix
-requires more refactoring and changing the lo=
-gic=2E
+Commit cf08504 qu=
+otes arguments that contain cmd=2Eexe metacharacters, so a
+certificate subj=
+ect passed to --tls-verify cannot start a second command
+when CreateProcess=
+() runs a =2Ebat or =2Ecmd hook=2E
 
-v2: sprinkle some "const" over check_keystate_buf_not_used() args
-v=
-3: add missing doxygen for to_link parameter to tls_session_free()
+Quoting is not enough for %VAR% and !VA=
+R!: cmd=2Eexe expands those even
+inside double quotes, and OpenVPN exports =
+peer-controlled certificate
+fields into the child environment=2E A subject =
+that puts a quote and an
+operator in one field (O=3DBREAK"&whoami&") and re=
+ferences it from another
+(CN=3D%X509_0_O%) expands back into a quote and co=
+mmand operator after
+wide_cmd_line() has already replaced the direct quotes=
+, running a command
+before the hook can reject the peer=2E
 
-CVE: 20=
-26-84471
-Reported-By: Andreas Gabriel Berbescu <aberbescu@gmail=2Ecom>
-Test=
-ed-By: Andreas Gabriel Berbescu <aberbescu@gmail=2Ecom>
-Github: openvpn/ope=
-nvpn-private-issues#157
-Reported-By: Haruki Oyama (Waseda University)
-Githu=
-b: openvpn/openvpn-private-issues#132
-Change-Id: I64920ed9f714803604d76c6df=
-6b38cf20ce7626d
-Signed-off-by: Arne Schwabe <arne@rfc2549=2Eorg>
-Gerrit URL=
-: https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1893
-Acked-by: MaxF <max@max-f=
-illinger=2Enet>
-Message-Id: <20260903061209=2E12599-1-gert@greenie=2Emuc=2E=
-de>
-URL: https://www=2Email-archive=2Ecom/openvpn-devel@lists=2Esourceforge=
-=2Enet/msg38913=2Ehtml
-Signed-off-by: Gert Doering <gert@greenie=2Emuc=2Ede=
->
+Replace % and !=
+ in wide_cmd_line() along with the double quotes and CRLF,
+so no argument c=
+an expand=2E This reuses two character classes that had no
+users, CC_AT and=
+ CC_EQUAL, renamed to CC_PERCENT and CC_EXCLAMATION=2E Add
+regression tests=
+ for a bare percent or bang, a closed expansion token, and
+the reported sub=
+ject=2E
+
+This completes the CVE-2026-84256 fix for Windows batch hooks=2E
+
+=
+GitHub: OpenVPN/openvpn-private-issues#176
+Reported-By: Darren Carreras
+CVE=
+: 2026-84256
+Change-Id: I70dfdc70778458b78f80b8d0b0b786f18fe4fc76
+Signed-of=
+f-by: Lev Stipakov <lev@openvpn=2Enet>
 ---
-M src/openvpn/ssl=2Ec
-1 file changed, 88 insertions(+), 58 deletions(=
--)
+M src/openvpn/buffer=2Ec
+M src/o=
+penvpn/buffer=2Eh
+M src/openvpn/win32-util=2Ec
+M tests/unit_tests/openvpn/t=
+est_argv=2Ec
+4 files changed, 53 insertions(+), 8 deletions(-)
 
 
 
+  git pul=
+l ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/95/1895/1
 
-diff --git a/src/openvpn/ssl=2Ec b/src/openvpn/ssl=2Ec
-index 5f5d1f9=
-=2E=2E71459ee 100644
---- a/src/openvpn/ssl=2Ec
-+++ b/src/openvpn/ssl=2Ec
-@@=
- -96,6 +96,14 @@
- 
- #endif /* ifdef MEASURE_TLS_HANDSHAKE_STATS */
- 
-+/* fo=
-rward decleration since tls_process needs this function prototype */
-+stati=
-c void
-+check_session_buf_not_used(struct buffer *to_link, struct tls_sessi=
-on *session);
-+
-+static void
-+check_keystate_buf_not_used(struct buffer *to=
-_link, const struct key_state *ks);
-+
-+
- /**
-  * Limit the reneg_bytes valu=
-e when using a small-block (<128 bytes) cipher=2E
-  *
-@@ -896,10 +904,15 @@=
-
-  *                       cleaned up=2E
-  * @param clear        - Whether =
-the memory allocated for the \a ks object
-  *                       should =
-be overwritten with 0s=2E
-+ *
-+ * @param to_link      - if not NULL, check =
-that the buffer does not contain
-+ *                       any pointer to o=
-ne of the internal structs of ks
-  */
- static void
--key_state_free(struct k=
-ey_state *ks, bool clear)
-+key_state_free(struct key_state *ks, bool clear,=
- struct buffer *to_link)
- {
-+    check_keystate_buf_not_used(to_link, ks);
-=
-+
-     ks->state =3D S_UNDEF;
- 
-     key_state_ssl_free(&ks->ks_ssl);
-@@ -1=
-043,11 +1056,14 @@
-  *                       object should be overwritten w=
-ith 0s=2E This
-  *                       implicitly sets many states to 0/f=
-alse,
-  *                       e=2Eg=2E the validity of the keys in the st=
-ructure
-+ * @param to_link      - if not NULL, check that the buffer does n=
-ot contain
-+ *                       any pointer to one of the internal str=
-ucts of ks
-  *
-  */
- static void
--tls_session_free(struct tls_session *sess=
-ion, bool clear)
-+tls_session_free(struct tls_session *session, bool clear,=
- struct buffer *to_link)
- {
-+    check_session_buf_not_used(to_link, sessio=
-n);
-     tls_wrap_free(&session->tls_wrap);
-     tls_wrap_free(&session->tl=
-s_wrap_reneg);
- 
-@@ -1056,7 +1072,7 @@
-         /* we don't need clear=3Dtr=
-ue for this call since
-          * the structs are part of session and get =
-cleared
-          * as part of session */
--        key_state_free(&session-=
->key[i], false);
-+        key_state_free(&session->key[i], false, to_link);=
-
-     }
- 
-     free(session->common_name);
-@@ -1075,14 +1091,16 @@
- 
- 
- sta=
-tic void
--move_session(struct tls_multi *multi, int dest, int src, bool rei=
-nit_src)
-+move_session(struct tls_multi *multi, int dest, int src, bool rei=
-nit_src,
-+             struct buffer *to_link)
- {
-+    check_session_buf_no=
-t_used(to_link, &multi->session[dest]);
-     msg(D_TLS_DEBUG_LOW, "TLS: mov=
-e_session: dest=3D%s src=3D%s reinit_src=3D%d",
-         session_index_name=
-(dest), session_index_name(src), reinit_src);
-     ASSERT(src !=3D dest);
- =
-    ASSERT(src >=3D 0 && src < TM_SIZE);
-     ASSERT(dest >=3D 0 && dest < =
-TM_SIZE);
--    tls_session_free(&multi->session[dest], false);
-+    tls_ses=
-sion_free(&multi->session[dest], false, to_link);
-     multi->session[dest]=
- =3D multi->session[src];
- 
-     if (reinit_src)
-@@ -1098,9 +1116,9 @@
- }
- =
-
- static void
--reset_session(struct tls_multi *multi, struct tls_session *s=
-ession)
-+reset_session(struct tls_multi *multi, struct tls_session *session=
-, struct buffer *to_link)
- {
--    tls_session_free(session, false);
-+    tl=
-s_session_free(session, false, to_link);
-     tls_session_init(multi, sessi=
-on);
- }
- 
-@@ -1265,7 +1283,7 @@
- 
-     for (int i =3D 0; i < TM_SIZE; ++i)
-=
+diff -=
+-git a/src/openvpn/buffer=2Ec b/src/openvpn/buffer=2Ec
+index 5ce2e39=2E=2E5=
+d00415 100644
+--- a/src/openvpn/buffer=2Ec
++++ b/src/openvpn/buffer=2Ec
+@@ =
+-943,11 +943,11 @@
      {
--        tls_session_free(&multi->session[i], false);
-+        tls_s=
-ession_free(&multi->session[i], false, NULL);
+         return true;
      }
- 
-     if (clear)
-@@ -=
-1764,13 +1782,13 @@
-  * active key=2E
-  */
- static void
--key_state_soft_res=
-et(struct tls_session *session)
-+key_state_soft_reset(struct tls_session *s=
-ession, struct buffer *to_link)
- {
-     struct key_state *ks =3D &session->=
-key[KS_PRIMARY];        /* primary key */
-     struct key_state *ks_lame =
-=3D &session->key[KS_LAME_DUCK]; /* retiring key */
- 
-     ks->must_die =3D=
- now + session->opt->transition_window;    /* remaining lifetime of old key=
- */
--    key_state_free(ks_lame, false);
-+    key_state_free(ks_lame, false=
-, to_link);
-     *ks_lame =3D *ks;
- 
-     key_state_init(session, ks);
-@@ -=
-1781,7 +1799,7 @@
- void
- tls_session_soft_reset(struct tls_multi *tls_multi=
+-    if ((flags & CC=
+_AT) && c =3D=3D '@')
++    if ((flags & CC_PERCENT) && c =3D=3D '%')
+     {=
+
+         return true;
+     }
+-    if ((flags & CC_EQUAL) && c =3D=3D '=3D'=
 )
- {
--    key_state_soft_reset(&tls_multi->session[TM_ACTIVE]);
-+    key_st=
-ate_soft_reset(&tls_multi->session[TM_ACTIVE], NULL);
- }
- 
- /*
-@@ -3101,13 =
-+3119,13 @@
-             session->opt->aead_usage_limit,
-             ks->c=
-rypto_options=2Ekey_ctx_bi=2Edecrypt=2Eplaintext_blocks + ks->n_packets,
-  =
-           session->opt->aead_usage_limit);
--        key_state_soft_reset(s=
-ession);
-+        key_state_soft_reset(session, to_link);
++    if ((flags & CC_EXCLAMATION) && c =3D=3D '!')
+     {
+         return=
+ true;
      }
- 
-     /* =
-Kill lame duck key transition_window seconds after primary key negotiation =
+diff --git a/src/openvpn/buffer=2Eh b/src/openvpn/buffer=2Eh
+=
+index 4471697=2E=2E0a02e94 100644
+--- a/src/openvpn/buffer=2Eh
++++ b/src/op=
+envpn/buffer=2Eh
+@@ -1660,8 +1660,8 @@
+ #define CC_SINGLE_QUOTE  (1 << 21) =
+/**< single quote */
+ #define CC_DOUBLE_QUOTE  (1 << 22) /**< double quote =
 */
-     if (lame_duck_must_die(session, wakeup))
+ #define CC_REVERSE_QUOTE (1 << 23) /**< reverse quote */
+-#define CC_AT=
+            (1 << 24) /**< at sign */
+-#define CC_EQUAL         (1 << 25) /=
+**< equal sign */
++#define CC_PERCENT       (1 << 24) /**< percent sign */
+=
++#define CC_EXCLAMATION   (1 << 25) /**< exclamation mark */
+ #define CC_LE=
+SS_THAN     (1 << 26) /**< less than sign */
+ #define CC_GREATER_THAN  (1 <=
+< 27) /**< greater than sign */
+ #define CC_PIPE          (1 << 28) /**< pi=
+pe */
+diff --git a/src/openvpn/win32-util=2Ec b/src/openvpn/win32-util=2Ec
+=
+index 4e3819c=2E=2Ee2c8810 100644
+--- a/src/openvpn/win32-util=2Ec
++++ b/sr=
+c/openvpn/win32-util=2Ec
+@@ -94,7 +94,10 @@
      {
--        key_state_=
-free(ks_lame, true);
-+        key_state_free(ks_lame, true, to_link);
-     =
-    msg(D_TLS_DEBUG_LOW, "TLS: tls_process: killed expiring key");
+         const char *arg=
+ =3D a->argv[i];
+         strcpy(work, arg);
+-        string_mod(work, CC_P=
+RINT, CC_DOUBLE_QUOTE | CC_CRLF, '_');
++        /* cmd=2Eexe expands %VAR% =
+and !VAR! even inside quotes, so a value like
++         * %X509_0_O% could =
+turn back into a quote and start a new command=2E
++         * Replace those=
+ along with the double quotes and CRLF=2E */
++        string_mod(work, CC_P=
+RINT, CC_DOUBLE_QUOTE | CC_CRLF | CC_PERCENT | CC_EXCLAMATION, '_');
+      =
+   if (i)
+         {
+             buf_printf(&buf, " ");
+diff --git a/tests=
+/unit_tests/openvpn/test_argv=2Ec b/tests/unit_tests/openvpn/test_argv=2Ec
+=
+index 5b6e26e=2E=2E1fc73d8 100644
+--- a/tests/unit_tests/openvpn/test_argv=
+=2Ec
++++ b/tests/unit_tests/openvpn/test_argv=2Ec
+@@ -271,15 +271,13 @@
+   =
+      { "CN=3Da,b;c=3Dd", L"script=2Ebat 0 CN=3Da,b;c=3Dd" },
+         /* a=
+ space has always forced quoting */
+         { "O=3DCtrl, CN=3Dy", L"script=
+=2Ebat 0 \"O=3DCtrl, CN=3Dy\"" },
+-        /* cmd=2Eexe operators */
++     =
+   /* cmd=2Eexe operators that quoting neutralizes */
+         { "CN=3Dx&ve=
+r", L"script=2Ebat 0 \"CN=3Dx&ver\"" },
+         { "CN=3Dx|ver", L"script=
+=2Ebat 0 \"CN=3Dx|ver\"" },
+         { "CN=3Dx>f", L"script=2Ebat 0 \"CN=3D=
+x>f\"" },
+         { "CN=3Dx<f", L"script=2Ebat 0 \"CN=3Dx<f\"" },
+        =
+ { "CN=3Dx^f", L"script=2Ebat 0 \"CN=3Dx^f\"" },
+-        { "CN=3Dx%f", L"s=
+cript=2Ebat 0 \"CN=3Dx%f\"" },
+         { "CN=3Dx(f)", L"script=2Ebat 0 \"C=
+N=3Dx(f)\"" },
+-        { "CN=3Dx!f", L"script=2Ebat 0 \"CN=3Dx!f\"" },
+   =
+      /* a double quote is replaced, so quoting cannot be broken out of */
+=
+         { "CN=3Da\"b", L"script=2Ebat 0 CN=3Da_b" },
+     };
+@@ -300,6 +29=
+8,49 @@
+         gc_free(&gc);
      }
- =
-
-@@ -3200,6 +3218,55 @@
-     return false;
  }
- 
++
++/*
++ * cmd=2Eexe expands %VAR% =
+and !VAR! even inside quotes, and OpenVPN puts
++ * peer-controlled data (e=
+=2Eg=2E certificate subject fields) on the command line,
++ * so these chara=
+cters are replaced to stop a value from expanding back into a
++ * quote and=
+ command operator=2E
++ */
 +static void
-+check_keystat=
-e_buf_not_used(struct buffer *to_link, const struct key_state *ks)
++wide_cmd_line__replaces_cmd_expansi=
+on(void **state)
 +{
-+    =
-if (ks->state =3D=3D S_UNDEF || !to_link || !to_link->data)
++    static const struct
 +    {
-+       =
- return;
-+    }
++        const char *ar=
+g;
++        const WCHAR *expected;
++    } cases[] =3D {
++        /* a bare =
+percent or bang is replaced */
++        { "CN=3Dx%f", L"script=2Ebat 0 CN=
+=3Dx_f" },
++        { "CN=3Dx!f", L"script=2Ebat 0 CN=3Dx_f" },
++        /*=
+ a closed expansion token is replaced, so nothing expands */
++        { "CN=
+=3D%X509_0_O%", L"script=2Ebat 0 CN=3D_X509_0_O_" },
++        { "CN=3D!X509=
+_0_O!", L"script=2Ebat 0 CN=3D_X509_0_O_" },
++        /* the reported bypas=
+s: quotes in one field are already replaced, and
++         * neutralizing %=
+ stops %X509_0_O% from re-injecting them */
++        { "O=3DBREAK\"&whoami&=
+\", CN=3D%X509_0_O%",
++          L"script=2Ebat 0 \"O=3DBREAK_&whoami&_, CN=
+=3D_X509_0_O_\"" },
++    };
 +
-+    uint8_t *dataptr =3D to_link->data;
-+
-+    /* we don=
-'t expect send_reliable to be NULL when state is
-+     * not S_UNDEF, but p=
-eople have reported crashes nonetheless,
-+     * therefore we better catch =
-this event, report and exit=2E
-+     */
-+    if (!ks->send_reliable)
-+    {=
-
-+        msg(M_FATAL,
-+            "ERROR: ks=2Esend_reliable (key-id %d),=
- is NULL "
-+            "while key state is %s=2E Exiting=2E",
-+           =
- ks->key_id, state_name(ks->state));
-+    }
-+
-+    for (int j =3D 0; j < ks=
-->send_reliable->size; j++)
++    for (size_t i =3D 0; i < SIZE(cases); i+=
++)
 +    {
-+        if (ks->send_reliable->array[j]=
-=2Ebuf=2Edata =3D=3D dataptr)
-+        {
-+            msg(M_INFO,
-+        =
-        "Warning buffer of freed TLS session is still in"
-+                =
-" use (key-id %d, ks=2Esend_reliable->array[%d])",
-+                ks->key=
-_id, j);
++        struct gc_arena gc =3D gc_new();
++        struct argv a =
+=3D argv_new();
 +
-+            goto used;
-+        }
++        argv_printf(&a, "%s %d %s", "script=2Ebat", 0, c=
+ases[i]=2Earg);
++        assert_int_equal(a=2Eargc, 3);
++
++        WCHAR *c=
+md_line =3D wide_cmd_line(&a, &gc);
++        assert_non_null(cmd_line);
++  =
+      assert_int_equal(wcscmp(cmd_line, cases[i]=2Eexpected), 0);
++
++      =
+  argv_free(&a);
++        gc_free(&gc);
 +    }
-+
-+    if (ks->ack_wri=
-te_buf=2Edata =3D=3D dataptr)
-+    {
-+        msg(M_INFO, "Warning buffer o=
-f freed TLS session is still in use "
-+                    "(ks=2Eack_write=
-_buf, key-id %d)",
-+            ks->key_id);
-+
-+        goto used;
-+    }
-+=
-    return;
-+
-+used:
-+    to_link->len =3D 0;
-+    to_link->data =3D 0;
 +}
-=
+ #endif /* _WIN32 */
  
- /**
-  * This is a safe guard function to double check that a buffer from=
- a session is
-@@ -3211,11 +3278,11 @@
- static void
- check_session_buf_not_u=
-sed(struct buffer *to_link, struct tls_session *session)
- {
--    const uint=
-8_t *dataptr =3D to_link->data;
--    if (!dataptr)
-+    if (!to_link || !to=
-_link->data)
-     {
-         return;
-     }
-+    const uint8_t *dataptr =3D=
- to_link->data;
+ i=
+nt
+@@ -323,6 +364,7 @@
+         cmocka_unit_test(argv_insert_head__empty_ar=
+gv__head_only),
+ #ifdef _WIN32
+         cmocka_unit_test(wide_cmd_line__quo=
+tes_only_what_cmd_would_reinterpret),
++        cmocka_unit_test(wide_cmd_li=
+ne__replaces_cmd_expansion),
+ #endif
+     };
  
-     /* Checks buffers in tls_wrap */
-     if (session->t=
-ls_wrap=2Ework=2Edata =3D=3D dataptr)
-@@ -3234,41 +3301,7 @@
-     for (int =
-i =3D 0; i < KS_SIZE; i++)
-     {
-         const struct key_state *ks =3D &=
-session->key[i];
--        if (ks->state =3D=3D S_UNDEF)
--        {
--       =
-     continue;
--        }
--
--        /* we don't expect send_reliable to be=
- NULL when state is
--         * not S_UNDEF, but people have reported crash=
-es nonetheless,
--         * therefore we better catch this event, report an=
-d exit=2E
--         */
--        if (!ks->send_reliable)
--        {
--       =
-     msg(M_FATAL,
--                "ERROR: session->key[%d]->send_reliable =
-is NULL "
--                "while key state is %s=2E Exiting=2E",
--        =
-        i, state_name(ks->state));
--        }
--
--        for (int j =3D 0; =
-j < ks->send_reliable->size; j++)
--        {
--            if (ks->send_reli=
-able->array[j]=2Ebuf=2Edata =3D=3D dataptr)
--            {
--               =
- msg(M_INFO,
--                    "Warning buffer of freed TLS session is s=
-till in"
--                    " use (session->key[%d]=2Esend_reliable->arra=
-y[%d])",
--                    i, j);
--
--                goto used;
--       =
-     }
--        }
--        if (ks->ack_write_buf=2Edata =3D=3D dataptr)
--  =
-      {
--            msg(M_INFO, "Warning buffer of freed TLS session is st=
-ill in use (session->key[%d]=2Eack_write_buf)", i);
--
--            goto use=
-d;
--        }
-+        check_keystate_buf_not_used(to_link, ks);
-     }
-   =
-  return;
- 
-@@ -3362,13 +3395,11 @@
-                 if (i =3D=3D TM_ACTIVE=
- && ks_lame->state >=3D S_GENERATED_KEYS
-                     && !multi->op=
-t=2Esingle_session)
-                 {
--                    check_session_b=
-uf_not_used(to_link, session);
--                    move_session(multi, TM_=
-LAME_DUCK, TM_ACTIVE, true);
-+                    move_session(multi, TM_LA=
-ME_DUCK, TM_ACTIVE, true, to_link);
-                 }
-                 els=
-e
-                 {
--                    check_session_buf_not_used(to_lin=
-k, session);
--                    reset_session(multi, session);
-+         =
-           reset_session(multi, session, to_link);
-                 }
-     =
-        }
-         }
-@@ -3421,7 +3452,7 @@
-      */
-     if (lame_duck_must=
-_die(&multi->session[TM_LAME_DUCK], wakeup))
-     {
--        tls_session_fr=
-ee(&multi->session[TM_LAME_DUCK], true);
-+        tls_session_free(&multi->=
-session[TM_LAME_DUCK], true, to_link);
-         msg(D_TLS_DEBUG_LOW, "TLS: =
-tls_multi_process: killed expiring key");
-     }
- 
-@@ -3436,8 +3467,7 @@
-  =
-    */
-     if (TLS_AUTHENTICATED(multi, &multi->session[TM_INITIAL]=2Ekey[=
-KS_PRIMARY]))
-     {
--        check_session_buf_not_used(to_link, &multi->s=
-ession[TM_ACTIVE]);
--        move_session(multi, TM_ACTIVE, TM_INITIAL, tru=
-e);
-+        move_session(multi, TM_ACTIVE, TM_INITIAL, true, to_link);
-   =
-      tas =3D tls_authentication_status(multi);
-         msg(D_TLS_DEBUG_LO=
-W,
-             "TLS: tls_multi_process: initial untrusted "
-@@ -3839,7 +38=
-69,7 @@
-                 goto error;
-             }
- 
--            key_stat=
-e_soft_reset(session);
-+            key_state_soft_reset(session, NULL);
- 
-=
-             dmsg(D_TLS_DEBUG, "TLS: received P_CONTROL_SOFT_RESET_V1 s=3D%=
-d sid=3D%s", i,
-                  session_id_print(&sid, &gc));
 
 -- 
-To vie=
-w, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1893?usp=3Demail
-To unsu=
-bscribe, or for help writing mail filters, visit http://gerrit=2Eopenvpn=2E=
-net/settings?usp=3Demail
+To view, visit http://g=
+errit=2Eopenvpn=2Enet/c/openvpn/+/1895?usp=3Demail
+To unsubscribe, or for h=
+elp writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=
+=3Demail
 
-Gerrit-MessageType: merged
-Gerrit-Project: openvp=
-n
-Gerrit-Branch: master
-Gerrit-Change-Id: I64920ed9f714803604d76c6df6b38cf2=
-0ce7626d
-Gerrit-Change-Number: 1893
-Gerrit-PatchSet: 4
-Gerrit-Owner: cron2 =
-<gert@greenie=2Emuc=2Ede>
-Gerrit-Reviewer: MaxF <max@max-fillinger=2Enet>
-G=
-errit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
-Gerrit-CC=
+Gerrit-MessageType: newchange
+Gerrit-Project: openvpn
+Gerrit-Bran=
+ch: master
+Gerrit-Change-Id: I70dfdc70778458b78f80b8d0b0b786f18fe4fc76
+Gerr=
+it-Change-Number: 1895
+Gerrit-PatchSet: 1
+Gerrit-Owner: stipa <lstipakov@gm=
+ail=2Ecom>
+Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-C=
+C: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Attention=
 : plaisthos <arne-openvpn@rfc2549=2Eorg>
 
---XG5/zUyGDLI=
+--xsL/TrPqjcQ=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change=2E</p><p><a href=3D"http://gerrit=2Eopenvpn=2En=
-et/c/openvpn/+/1893?usp=3Demail">View Change</a></p><div style=3D"white-spa=
-ce:pre-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,mo=
-nospace; white-space: pre-wrap;">Move check_session_buf_not_used method int=
-o the method that free the buffer<br><br>This cleans the code up a bit and =
-ensure that we do not miss an invocation<br>of a problematic code path=2E T=
-his is still a band-aid fix and a real fix<br>requires more refactoring and=
- changing the logic=2E<br><br>v2: sprinkle some &quot;const&quot; over chec=
-k_keystate_buf_not_used() args<br>v3: add missing doxygen for to_link param=
-eter to tls_session_free()<br><br>CVE: 2026-84471<br>Reported-By: Andreas G=
-abriel Berbescu &lt;aberbescu@gmail=2Ecom&gt;<br>Tested-By: Andreas Gabriel=
- Berbescu &lt;aberbescu@gmail=2Ecom&gt;<br>Github: openvpn/openvpn-private-=
-issues#157<br>Reported-By: Haruki Oyama (Waseda University)<br>Github: open=
-vpn/openvpn-private-issues#132<br>Change-Id: I64920ed9f714803604d76c6df6b38=
-cf20ce7626d<br>Signed-off-by: Arne Schwabe &lt;arne@rfc2549=2Eorg&gt;<br>Ge=
-rrit URL: https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1893<br>Acked-by: MaxF=
- &lt;max@max-fillinger=2Enet&gt;<br>Message-Id: &lt;20260903061209=2E12599-=
-1-gert@greenie=2Emuc=2Ede&gt;<br>URL: https://www=2Email-archive=2Ecom/open=
-vpn-devel@lists=2Esourceforge=2Enet/msg38913=2Ehtml<br>Signed-off-by: Gert =
-Doering &lt;gert@greenie=2Emuc=2Ede&gt;<br>---<br>M src/openvpn/ssl=2Ec<br>=
-1 file changed, 88 insertions(+), 58 deletions(-)<br><br></pre>
-<pre style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
-git a/src/openvpn/ssl=2Ec b/src/openvpn/ssl=2Ec</span><br><span>index 5f5d1=
-f9=2E=2E71459ee 100644</span><br><span>--- a/src/openvpn/ssl=2Ec</span><br>=
-<span>+++ b/src/openvpn/ssl=2Ec</span><br><span>@@ -96,6 +96,14 @@</span><b=
-r><span> </span><br><span> #endif /* ifdef MEASURE_TLS_HANDSHAKE_STATS */</=
-span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* =
-forward decleration since tls_process needs this function prototype */</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+check_session_buf_not_used(struc=
-t buffer *to_link, struct tls_session *session);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+check_keystate_buf_not_used(struct buffer *to_link, const struct key_stat=
-e *ks);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /**</span><br=
-><span>  * Limit the reneg_bytes value when using a small-block (&lt;128 by=
-tes) cipher=2E</span><br><span>  *</span><br><span>@@ -896,10 +904,15 @@</s=
-pan><br><span>  *                       cleaned up=2E</span><br><span>  * @=
-param clear        - Whether the memory allocated for the \a ks object</spa=
-n><br><span>  *                       should be overwritten with 0s=2E</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * @param to_link      - if not NULL, che=
-ck that the buffer does not contain</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+ *                       any pointer to one of the internal=
- structs of ks</span><br><span>  */</span><br><span> static void</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-key_state_free(struct key_state =
-*ks, bool clear)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+key=
-_state_free(struct key_state *ks, bool clear, struct buffer *to_link)</span=
-><br><span> {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ch=
-eck_keystate_buf_not_used(to_link, ks);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span>     ks-&gt;state =3D S_UNDEF;</span><=
-br><span> </span><br><span>     key_state_ssl_free(&amp;ks-&gt;ks_ssl);</sp=
-an><br><span>@@ -1043,11 +1056,14 @@</span><br><span>  *                   =
-    object should be overwritten with 0s=2E This</span><br><span>  *       =
-                implicitly sets many states to 0/false,</span><br><span>  *=
-                       e=2Eg=2E the validity of the keys in the structure</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param to_link    =
-  - if not NULL, check that the buffer does not contain</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+ *                       any pointer to=
- one of the internal structs of ks</span><br><span>  *</span><br><span>  */=
-</span><br><span> static void</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-tls_session_free(struct tls_session *session, bool clear)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+tls_session_free(struct tls_s=
-ession *session, bool clear, struct buffer *to_link)</span><br><span> {</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    check_session_buf_n=
-ot_used(to_link, session);</span><br><span>     tls_wrap_free(&amp;session-=
-&gt;tls_wrap);</span><br><span>     tls_wrap_free(&amp;session-&gt;tls_wrap=
-_reneg);</span><br><span> </span><br><span>@@ -1056,7 +1072,7 @@</span><br>=
-<span>         /* we don&#39;t need clear=3Dtrue for this call since</span>=
-<br><span>          * the structs are part of session and get cleared</span=
-><br><span>          * as part of session */</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-        key_state_free(&amp;session-&gt;key[i], fals=
-e);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        key_stat=
-e_free(&amp;session-&gt;key[i], false, to_link);</span><br><span>     }</sp=
-an><br><span> </span><br><span>     free(session-&gt;common_name);</span><b=
-r><span>@@ -1075,14 +1091,16 @@</span><br><span> </span><br><span> </span><=
-br><span> static void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-move_session(struct tls_multi *multi, int dest, int src, bool reinit_src)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+move_session(struct t=
-ls_multi *multi, int dest, int src, bool reinit_src,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+             struct buffer *to_link)</spa=
-n><br><span> {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    c=
-heck_session_buf_not_used(to_link, &amp;multi-&gt;session[dest]);</span><br=
-><span>     msg(D_TLS_DEBUG_LOW, &quot;TLS: move_session: dest=3D%s src=3D%=
-s reinit_src=3D%d&quot;,</span><br><span>         session_index_name(dest),=
- session_index_name(src), reinit_src);</span><br><span>     ASSERT(src !=3D=
- dest);</span><br><span>     ASSERT(src &gt;=3D 0 &amp;&amp; src &lt; TM_SI=
-ZE);</span><br><span>     ASSERT(dest &gt;=3D 0 &amp;&amp; dest &lt; TM_SIZ=
-E);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    tls_session_fr=
-ee(&amp;multi-&gt;session[dest], false);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    tls_session_free(&amp;multi-&gt;session[dest], fal=
-se, to_link);</span><br><span>     multi-&gt;session[dest] =3D multi-&gt;se=
-ssion[src];</span><br><span> </span><br><span>     if (reinit_src)</span><b=
-r><span>@@ -1098,9 +1116,9 @@</span><br><span> }</span><br><span> </span><b=
-r><span> static void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-r=
-eset_session(struct tls_multi *multi, struct tls_session *session)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+reset_session(struct tls_mul=
-ti *multi, struct tls_session *session, struct buffer *to_link)</span><br><=
-span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    tls_sessio=
-n_free(session, false);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    tls_session_free(session, false, to_link);</span><br><span>     tls=
-_session_init(multi, session);</span><br><span> }</span><br><span> </span><=
-br><span>@@ -1265,7 +1283,7 @@</span><br><span> </span><br><span>     for (=
-int i =3D 0; i &lt; TM_SIZE; ++i)</span><br><span>     {</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-        tls_session_free(&amp;multi-&gt;=
-session[i], false);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        tls_session_free(&amp;multi-&gt;session[i], false, NULL);</span><br=
-><span>     }</span><br><span> </span><br><span>     if (clear)</span><br><=
-span>@@ -1764,13 +1782,13 @@</span><br><span>  * active key=2E</span><br><s=
-pan>  */</span><br><span> static void</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-key_state_soft_reset(struct tls_session *session)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+key_state_soft_reset(struct t=
-ls_session *session, struct buffer *to_link)</span><br><span> {</span><br><=
-span>     struct key_state *ks =3D &amp;session-&gt;key[KS_PRIMARY];       =
- /* primary key */</span><br><span>     struct key_state *ks_lame =3D &amp;=
-session-&gt;key[KS_LAME_DUCK]; /* retiring key */</span><br><span> </span><=
-br><span>     ks-&gt;must_die =3D now + session-&gt;opt-&gt;transition_wind=
-ow;    /* remaining lifetime of old key */</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    key_state_free(ks_lame, false);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    key_state_free(ks_lame, false, to_=
-link);</span><br><span>     *ks_lame =3D *ks;</span><br><span> </span><br><=
-span>     key_state_init(session, ks);</span><br><span>@@ -1781,7 +1799,7 @=
-@</span><br><span> void</span><br><span> tls_session_soft_reset(struct tls_=
-multi *tls_multi)</span><br><span> {</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    key_state_soft_reset(&amp;tls_multi-&gt;session[TM_ACTIV=
-E]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    key_state_s=
-oft_reset(&amp;tls_multi-&gt;session[TM_ACTIVE], NULL);</span><br><span> }<=
-/span><br><span> </span><br><span> /*</span><br><span>@@ -3101,13 +3119,13 =
-@@</span><br><span>             session-&gt;opt-&gt;aead_usage_limit,</span=
-><br><span>             ks-&gt;crypto_options=2Ekey_ctx_bi=2Edecrypt=2Eplai=
-ntext_blocks + ks-&gt;n_packets,</span><br><span>             session-&gt;o=
-pt-&gt;aead_usage_limit);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-        key_state_soft_reset(session);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        key_state_soft_reset(session, to_link);</spa=
-n><br><span>     }</span><br><span> </span><br><span>     /* Kill lame duck=
- key transition_window seconds after primary key negotiation */</span><br><=
-span>     if (lame_duck_must_die(session, wakeup))</span><br><span>     {</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-        key_state_free(=
-ks_lame, true);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    key_state_free(ks_lame, true, to_link);</span><br><span>         msg(D_=
-TLS_DEBUG_LOW, &quot;TLS: tls_process: killed expiring key&quot;);</span><b=
-r><span>     }</span><br><span> </span><br><span>@@ -3200,6 +3218,55 @@</sp=
-an><br><span>     return false;</span><br><span> }</span><br><span> </span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+check_keystate_buf_not_used(struct=
- buffer *to_link, const struct key_state *ks)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    if (ks-&gt;state =3D=3D S_UNDEF || !to_link || !to_link-&gt;dat=
-a)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        return;</span><br><span=
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: plaisthos=2E </p>
+<p>stipa would like plaisthos to <s=
+trong>review</strong> this change=2E
+</p><p><a href=3D"http://gerrit=2Eopen=
+vpn=2Enet/c/openvpn/+/1895?usp=3Demail">View Change</a></p><pre class=3D"bl=
+ocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">wi=
+n32: stop cmd=2Eexe from expanding variables in quoted arguments<br><br>Com=
+mit cf08504 quotes arguments that contain cmd=2Eexe metacharacters, so a<br=
+>certificate subject passed to --tls-verify cannot start a second command<b=
+r>when CreateProcess() runs a =2Ebat or =2Ecmd hook=2E<br><br>Quoting is no=
+t enough for %VAR% and !VAR!: cmd=2Eexe expands those even<br>inside double=
+ quotes, and OpenVPN exports peer-controlled certificate<br>fields into the=
+ child environment=2E A subject that puts a quote and an<br>operator in one=
+ field (O=3DBREAK&quot;&amp;whoami&amp;&quot;) and references it from anoth=
+er<br>(CN=3D%X509_0_O%) expands back into a quote and command operator afte=
+r<br>wide_cmd_line() has already replaced the direct quotes, running a comm=
+and<br>before the hook can reject the peer=2E<br><br>Replace % and ! in wid=
+e_cmd_line() along with the double quotes and CRLF,<br>so no argument can e=
+xpand=2E This reuses two character classes that had no<br>users, CC_AT and =
+CC_EQUAL, renamed to CC_PERCENT and CC_EXCLAMATION=2E Add<br>regression tes=
+ts for a bare percent or bang, a closed expansion token, and<br>the reporte=
+d subject=2E<br><br>This completes the CVE-2026-84256 fix for Windows batch=
+ hooks=2E<br><br>GitHub: OpenVPN/openvpn-private-issues#176<br>Reported-By:=
+ Darren Carreras<br>CVE: 2026-84256<br>Change-Id: I70dfdc70778458b78f80b8d0=
+b0b786f18fe4fc76<br>Signed-off-by: Lev Stipakov &lt;lev@openvpn=2Enet&gt;<b=
+r>---<br>M src/openvpn/buffer=2Ec<br>M src/openvpn/buffer=2Eh<br>M src/open=
+vpn/win32-util=2Ec<br>M tests/unit_tests/openvpn/test_argv=2Ec<br>4 files c=
+hanged, 53 insertions(+), 8 deletions(-)<br><br></pre><pre class=3D"blocks"=
+ style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pul=
+l ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/95/1895/1</pre><p=
+re style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span=
+>diff --git a/src/openvpn/buffer=2Ec b/src/openvpn/buffer=2Ec</span><br><sp=
+an>index 5ce2e39=2E=2E5d00415 100644</span><br><span>--- a/src/openvpn/buff=
+er=2Ec</span><br><span>+++ b/src/openvpn/buffer=2Ec</span><br><span>@@ -943=
+,11 +943,11 @@</span><br><span>     {</span><br><span>         return true;=
+</span><br><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    if ((flags &amp; CC_AT) &amp;&amp; c =3D=3D &#39;@&#39;)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    if ((flags &amp; CC_PERCENT)=
+ &amp;&amp; c =3D=3D &#39;%&#39;)</span><br><span>     {</span><br><span>  =
+       return true;</span><br><span>     }</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    if ((flags &amp; CC_EQUAL) &amp;&amp; c =3D=3D &#3=
+9;=3D&#39;)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (=
+(flags &amp; CC_EXCLAMATION) &amp;&amp; c =3D=3D &#39;!&#39;)</span><br><sp=
+an>     {</span><br><span>         return true;</span><br><span>     }</spa=
+n><br><span>diff --git a/src/openvpn/buffer=2Eh b/src/openvpn/buffer=2Eh</s=
+pan><br><span>index 4471697=2E=2E0a02e94 100644</span><br><span>--- a/src/o=
+penvpn/buffer=2Eh</span><br><span>+++ b/src/openvpn/buffer=2Eh</span><br><s=
+pan>@@ -1660,8 +1660,8 @@</span><br><span> #define CC_SINGLE_QUOTE  (1 &lt;=
+&lt; 21) /**&lt; single quote */</span><br><span> #define CC_DOUBLE_QUOTE  =
+(1 &lt;&lt; 22) /**&lt; double quote */</span><br><span> #define CC_REVERSE=
+_QUOTE (1 &lt;&lt; 23) /**&lt; reverse quote */</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-#define CC_AT            (1 &lt;&lt; 24) /**&lt; =
+at sign */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define CC_=
+EQUAL         (1 &lt;&lt; 25) /**&lt; equal sign */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#define CC_PERCENT       (1 &lt;&lt; 24) =
+/**&lt; percent sign */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+#define CC_EXCLAMATION   (1 &lt;&lt; 25) /**&lt; exclamation mark */</s=
+pan><br><span> #define CC_LESS_THAN     (1 &lt;&lt; 26) /**&lt; less than s=
+ign */</span><br><span> #define CC_GREATER_THAN  (1 &lt;&lt; 27) /**&lt; gr=
+eater than sign */</span><br><span> #define CC_PIPE          (1 &lt;&lt; 28=
+) /**&lt; pipe */</span><br><span>diff --git a/src/openvpn/win32-util=2Ec b=
+/src/openvpn/win32-util=2Ec</span><br><span>index 4e3819c=2E=2Ee2c8810 1006=
+44</span><br><span>--- a/src/openvpn/win32-util=2Ec</span><br><span>+++ b/s=
+rc/openvpn/win32-util=2Ec</span><br><span>@@ -94,7 +94,10 @@</span><br><spa=
+n>     {</span><br><span>         const char *arg =3D a-&gt;argv[i];</span>=
+<br><span>         strcpy(work, arg);</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        string_mod(work, CC_PRINT, CC_DOUBLE_QUOTE | CC_CRL=
+F, &#39;_&#39;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     /* cmd=2Eexe expands %VAR% and !VAR! even inside quotes, so a value li=
+ke</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         * %X509_=
+0_O% could turn back into a quote and start a new command=2E</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+         * Replace those along wit=
+h the double quotes and CRLF=2E */</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        string_mod(work, CC_PRINT, CC_DOUBLE_QUOTE | CC_CRLF=
+ | CC_PERCENT | CC_EXCLAMATION, &#39;_&#39;);</span><br><span>         if (=
+i)</span><br><span>         {</span><br><span>             buf_printf(&amp;=
+buf, &quot; &quot;);</span><br><span>diff --git a/tests/unit_tests/openvpn/=
+test_argv=2Ec b/tests/unit_tests/openvpn/test_argv=2Ec</span><br><span>inde=
+x 5b6e26e=2E=2E1fc73d8 100644</span><br><span>--- a/tests/unit_tests/openvp=
+n/test_argv=2Ec</span><br><span>+++ b/tests/unit_tests/openvpn/test_argv=2E=
+c</span><br><span>@@ -271,15 +271,13 @@</span><br><span>         { &quot;CN=
+=3Da,b;c=3Dd&quot;, L&quot;script=2Ebat 0 CN=3Da,b;c=3Dd&quot; },</span><br=
+><span>         /* a space has always forced quoting */</span><br><span>   =
+      { &quot;O=3DCtrl, CN=3Dy&quot;, L&quot;script=2Ebat 0 \&quot;O=3DCtrl=
+, CN=3Dy\&quot;&quot; },</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-        /* cmd=2Eexe operators */</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        /* cmd=2Eexe operators that quoting neutralizes */=
+</span><br><span>         { &quot;CN=3Dx&amp;ver&quot;, L&quot;script=2Ebat=
+ 0 \&quot;CN=3Dx&amp;ver\&quot;&quot; },</span><br><span>         { &quot;C=
+N=3Dx|ver&quot;, L&quot;script=2Ebat 0 \&quot;CN=3Dx|ver\&quot;&quot; },</s=
+pan><br><span>         { &quot;CN=3Dx&gt;f&quot;, L&quot;script=2Ebat 0 \&q=
+uot;CN=3Dx&gt;f\&quot;&quot; },</span><br><span>         { &quot;CN=3Dx&lt;=
+f&quot;, L&quot;script=2Ebat 0 \&quot;CN=3Dx&lt;f\&quot;&quot; },</span><br=
+><span>         { &quot;CN=3Dx^f&quot;, L&quot;script=2Ebat 0 \&quot;CN=3Dx=
+^f\&quot;&quot; },</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     { &quot;CN=3Dx%f&quot;, L&quot;script=2Ebat 0 \&quot;CN=3Dx%f\&quot;&q=
+uot; },</span><br><span>         { &quot;CN=3Dx(f)&quot;, L&quot;script=2Eb=
+at 0 \&quot;CN=3Dx(f)\&quot;&quot; },</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        { &quot;CN=3Dx!f&quot;, L&quot;script=2Ebat 0 \&quo=
+t;CN=3Dx!f\&quot;&quot; },</span><br><span>         /* a double quote is re=
+placed, so quoting cannot be broken out of */</span><br><span>         { &q=
+uot;CN=3Da\&quot;b&quot;, L&quot;script=2Ebat 0 CN=3Da_b&quot; },</span><br=
+><span>     };</span><br><span>@@ -300,6 +298,49 @@</span><br><span>       =
+  gc_free(&amp;gc);</span><br><span>     }</span><br><span> }</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+ * cmd=2Eexe expands %VAR% and !VAR! even inside quotes, and OpenVPN =
+puts</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * peer-control=
+led data (e=2Eg=2E certificate subject fields) on the command line,</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+ * so these characters are =
+replaced to stop a value from expanding back into a</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * quote and command operator=2E</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+wide_cmd_line__replaces_cmd_expansion(void **state)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    static const struct</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        const char *arg;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        const WCHAR *expected;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    } cases[] =3D {</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        /* a bare percent or b=
+ang is replaced */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       { &quot;CN=3Dx%f&quot;, L&quot;script=2Ebat 0 CN=3Dx_f&quot; },</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        { &quot;CN=3Dx!f=
+&quot;, L&quot;script=2Ebat 0 CN=3Dx_f&quot; },</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        /* a closed expansion token is replaced=
+, so nothing expands */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        { &quot;CN=3D%X509_0_O%&quot;, L&quot;script=2Ebat 0 CN=3D_X509=
+_0_O_&quot; },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   { &quot;CN=3D!X509_0_O!&quot;, L&quot;script=2Ebat 0 CN=3D_X509_0_O_&quo=
+t; },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* the=
+ reported bypass: quotes in one field are already replaced, and</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+         * neutralizing % stops=
+ %X509_0_O% from re-injecting them */</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        { &quot;O=3DBREAK\&quot;&amp;whoami&amp;\&quot;, =
+CN=3D%X509_0_O%&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+          L&quot;script=2Ebat 0 \&quot;O=3DBREAK_&amp;whoami&amp;_, CN=
+=3D_X509_0_O_\&quot;&quot; },</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (size_t i =3D =
+0; i &lt; SIZE(cases); i++)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  struct gc_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        struct argv a =3D argv_new();</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        argv_printf(&amp;a, &quot;%s %d %s&quot;, &quot;scri=
+pt=2Ebat&quot;, 0, cases[i]=2Earg);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        assert_int_equal(a=2Eargc, 3);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        WCHAR *cmd_line =3D wide_cmd_line(&amp;a, &amp;gc);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        assert_non_=
+null(cmd_line);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    assert_int_equal(wcscmp(cmd_line, cases[i]=2Eexpected), 0);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        argv_free(&amp;a);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        gc_free(&amp;gc);</span><br><span=
  style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    uint8_t *dataptr =3D to_link-&gt;data;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    /* we don&#39;t expect send_reliable to be NULL when state i=
-s</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * not S_UNDEF=
-, but people have reported crashes nonetheless,</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+     * therefore we better catch this event, re=
-port and exit=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-  */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!ks-&gt=
-;send_reliable)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_FATA=
-L,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot=
-;ERROR: ks=2Esend_reliable (key-id %d), is NULL &quot;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            &quot;while key state is %s=
-=2E Exiting=2E&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+            ks-&gt;key_id, state_name(ks-&gt;state));</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    for (int j =3D 0; j &lt; ks-&gt;send_reliable-&gt;size; j++)</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        if (ks-&gt;send_reliable-&gt;arra=
-y[j]=2Ebuf=2Edata =3D=3D dataptr)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            msg(M_INFO,</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+                &quot;Warning buffer of freed TLS session is still =
-in&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
-     &quot; use (key-id %d, ks=2Esend_reliable-&gt;array[%d])&quot;,</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+                ks-&gt;key=
-_id, j);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+            goto used;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    if (ks-&gt;ack_write_buf=2Edata =3D=3D dataptr)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        msg(M_INFO, &quot;Warning buffer of freed TL=
-S session is still in use &quot;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+                    &quot;(ks=2Eack_write_buf, key-id %d)&quot=
-;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            ks-&g=
-t;key_id);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        goto used;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    return;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+used:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    to_=
-link-&gt;len =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    to_link-&gt;data =3D 0;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+}</span><br><span> </span><br><span> /**</span><br><span>  * This i=
-s a safe guard function to double check that a buffer from a session is</sp=
-an><br><span>@@ -3211,11 +3278,11 @@</span><br><span> static void</span><br=
-><span> check_session_buf_not_used(struct buffer *to_link, struct tls_sessi=
-on *session)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    const uint8_t *dataptr =3D to_link-&gt;data;</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    if (!dataptr)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    if (!to_link || !to_link-&gt;data)</=
-span><br><span>     {</span><br><span>         return;</span><br><span>    =
- }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const uint8_t=
- *dataptr =3D to_link-&gt;data;</span><br><span> </span><br><span>     /* C=
-hecks buffers in tls_wrap */</span><br><span>     if (session-&gt;tls_wrap=
-=2Ework=2Edata =3D=3D dataptr)</span><br><span>@@ -3234,41 +3301,7 @@</span=
-><br><span>     for (int i =3D 0; i &lt; KS_SIZE; i++)</span><br><span>    =
- {</span><br><span>         const struct key_state *ks =3D &amp;session-&gt=
-;key[i];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (k=
-s-&gt;state =3D=3D S_UNDEF)</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-      continue;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        /* we don&#39;t expect send_rel=
-iable to be NULL when state is</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-         * not S_UNDEF, but people have reported crashes nonethele=
-ss,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         * therefo=
-re we better catch this event, report and exit=2E</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-         */</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-        if (!ks-&gt;send_reliable)</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-            msg(M_FATAL,</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-                &quot;ERROR: session-&gt;key[%d]-&gt=
-;send_reliable is NULL &quot;</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-                &quot;while key state is %s=2E Exiting=2E&quot;,</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-                i, state=
-_name(ks-&gt;state));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        for (int j =3D 0; j &lt; =
-ks-&gt;send_reliable-&gt;size; j++)</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-            if (ks-&gt;send_reliable-&gt;array[j]=2Ebuf=2Edata =3D=3D dat=
-aptr)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-                msg(M_IN=
-FO,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                  =
-  &quot;Warning buffer of freed TLS session is still in&quot;</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-                    &quot; use (ses=
-sion-&gt;key[%d]=2Esend_reliable-&gt;array[%d])&quot;,</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-                    i, j);</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-                goto used;</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-        if (ks-&gt;ack_write_buf=2Edata =3D=3D dataptr)</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-            msg(M_INFO, &quot;Warning buffer of fre=
-ed TLS session is still in use (session-&gt;key[%d]=2Eack_write_buf)&quot;,=
- i);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-            goto used;</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        check_keystate_buf_not_used(to_link, ks=
-);</span><br><span>     }</span><br><span>     return;</span><br><span> </s=
-pan><br><span>@@ -3362,13 +3395,11 @@</span><br><span>                 if (=
-i =3D=3D TM_ACTIVE &amp;&amp; ks_lame-&gt;state &gt;=3D S_GENERATED_KEYS</s=
-pan><br><span>                     &amp;&amp; !multi-&gt;opt=2Esingle_sessi=
-on)</span><br><span>                 {</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-                    check_session_buf_not_used(to_link, se=
-ssion);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
-      move_session(multi, TM_LAME_DUCK, TM_ACTIVE, true);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+                    move_session(mult=
-i, TM_LAME_DUCK, TM_ACTIVE, true, to_link);</span><br><span>               =
-  }</span><br><span>                 else</span><br><span>                 =
-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    =
-check_session_buf_not_used(to_link, session);</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-                    reset_session(multi, session);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
-reset_session(multi, session, to_link);</span><br><span>                 }<=
-/span><br><span>             }</span><br><span>         }</span><br><span>@=
-@ -3421,7 +3452,7 @@</span><br><span>      */</span><br><span>     if (lame=
-_duck_must_die(&amp;multi-&gt;session[TM_LAME_DUCK], wakeup))</span><br><sp=
-an>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        tls_=
-session_free(&amp;multi-&gt;session[TM_LAME_DUCK], true);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        tls_session_free(&amp;multi-&=
-gt;session[TM_LAME_DUCK], true, to_link);</span><br><span>         msg(D_TL=
-S_DEBUG_LOW, &quot;TLS: tls_multi_process: killed expiring key&quot;);</spa=
-n><br><span>     }</span><br><span> </span><br><span>@@ -3436,8 +3467,7 @@<=
-/span><br><span>      */</span><br><span>     if (TLS_AUTHENTICATED(multi, =
-&amp;multi-&gt;session[TM_INITIAL]=2Ekey[KS_PRIMARY]))</span><br><span>    =
- {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        check_sessi=
-on_buf_not_used(to_link, &amp;multi-&gt;session[TM_ACTIVE]);</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-        move_session(multi, TM_ACTIV=
-E, TM_INITIAL, true);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        move_session(multi, TM_ACTIVE, TM_INITIAL, true, to_link);</span>=
-<br><span>         tas =3D tls_authentication_status(multi);</span><br><spa=
-n>         msg(D_TLS_DEBUG_LOW,</span><br><span>             &quot;TLS: tls=
-_multi_process: initial untrusted &quot;</span><br><span>@@ -3839,7 +3869,7=
- @@</span><br><span>                 goto error;</span><br><span>          =
-   }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--            key_state_soft_reset(session);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            key_state_soft_reset(session, NULL);</s=
-pan><br><span> </span><br><span>             dmsg(D_TLS_DEBUG, &quot;TLS: r=
-eceived P_CONTROL_SOFT_RESET_V1 s=3D%d sid=3D%s&quot;, i,</span><br><span> =
-                 session_id_print(&amp;sid, &amp;gc));</span><br><span></sp=
-an><br></pre><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/o=
-penvpn/+/1893?usp=3Demail">change 1893</a>=2E To unsubscribe, or for help w=
-riting mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/setting=
-s?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=
-=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://=
-schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=2Eope=
-nvpn=2Enet/c/openvpn/+/1893?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
+r: hsl(120, 100%, 40%);">+}</span><br><span> #endif /* _WIN32 */</span><br>=
+<span> </span><br><span> int</span><br><span>@@ -323,6 +364,7 @@</span><br>=
+<span>         cmocka_unit_test(argv_insert_head__empty_argv__head_only),</=
+span><br><span> #ifdef _WIN32</span><br><span>         cmocka_unit_test(wid=
+e_cmd_line__quotes_only_what_cmd_would_reinterpret),</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(wide_cmd_line__r=
+eplaces_cmd_expansion),</span><br><span> #endif</span><br><span>     };</sp=
+an><br><span> </span><br><span></span><br></pre><p>To view, visit <a href=
+=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1895?usp=3Demail">change 1895=
+</a>=2E To unsubscribe, or for help writing mail filters, visit <a href=3D"=
+http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div=
+ itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope ite=
+mprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=
+=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1895?usp=3Demail=
+"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-Message=
-Type: merged </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </=
-div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=
-=3D"display:none"> Gerrit-Change-Id: I64920ed9f714803604d76c6df6b38cf20ce76=
-26d </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1893 </div>
-<=
-div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display=
-:none"> Gerrit-Owner: cron2 &lt;gert@greenie=2Emuc=2Ede&gt; </div>
-<div sty=
-le=3D"display:none"> Gerrit-Reviewer: MaxF &lt;max@max-fillinger=2Enet&gt; =
+<div styl=
+e=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"disp=
+lay:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerr=
+it-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I70=
+dfdc70778458b78f80b8d0b0b786f18fe4fc76 </div>
+<div style=3D"display:none"> =
+Gerrit-Change-Number: 1895 </div>
+<div style=3D"display:none"> Gerrit-Patch=
+Set: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipako=
+v@gmail=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plai=
+sthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"=
+> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; =
 </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-de=
-vel@lists=2Esourceforge=2Enet&gt; </div>
-<div style=3D"display:none"> Gerri=
-t-CC: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-op=
+envpn@rfc2549=2Eorg&gt; </div>
 
 </body></html>
---XG5/zUyGDLI=--
+--xsL/TrPqjcQ=--
 
 
---===============0124866215224942249==
+--===============7258031384468934816==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============0124866215224942249==
+--===============7258031384468934816==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -1022,5 +674,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============0124866215224942249==--
+--===============7258031384468934816==--
 
