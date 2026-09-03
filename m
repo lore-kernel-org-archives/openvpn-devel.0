@@ -4,109 +4,128 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6833FC61DD3
-	for <openvpn-devel@archiver.kernel.org>; Thu,  3 Sep 2026 18:50:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4411CC624DA
+	for <openvpn-devel@archiver.kernel.org>; Thu,  3 Sep 2026 19:34:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Reply-To:From:List-Subscribe:
-	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:Subject:To:Date:
-	Message-Id:Mime-Version:Sender:Cc:Content-Transfer-Encoding:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:In-Reply-To:References:List-Owner;
-	bh=9PliHFKa/Ru7w+aLBUxhF0iU2L/nhQ+xBEH8snxAy5Y=; b=OKlqhjiQ6bzVWdVGatt/FV/kIt
-	4rqZiwLZKL2fOl96Elt30AGTSEmgIdAtK+mnqHKb8z1uXmG386PCdv1id4kmAp94n35tMAUb/OLiZ
-	rl5iUaZhjamc+PeDwHchiNoWlDy+gV4kfEICD+lAXts2adqftcvQbg8AOCTgLQn963Ms=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
+	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:Date:Sender:To:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=ys+Nj6W/oxisPND2s5dm3sS+EobJ1bFF6pUyHVtbYAI=; b=kr1aMuHvNq6jG2aHXqRwJEkB20
+	HUMagRgjll0ZyhVApjtxV87N7UQYZ93Edked3cdW+9YCcmc5z06Qcn2zKTiHUjfyPGpY+K3kXRed4
+	daGQkuGnQmLwYPuDLpWkHxnI7mb6ZuAnVMawif4LifooGHKVx7nI7nGKyqj5dVGAJG/Q=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x2CWK-0000YT-TH;
-	Thu, 03 Sep 2026 18:50:42 +0000
+	id 1x2DCv-00072v-HZ;
+	Thu, 03 Sep 2026 19:34:46 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <yuriy.darnobyt@openvpn.com>) id 1x2CW6-0000YD-Dv
- for Openvpn-devel@lists.sourceforge.net;
- Thu, 03 Sep 2026 18:50:27 +0000
+ (envelope-from <gerrit@openvpn.net>) id 1x2DCd-00072c-Gm
+ for openvpn-devel@lists.sourceforge.net;
+ Thu, 03 Sep 2026 19:34:28 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=To:Date:Message-Id:Subject:Mime-Version:
- Content-Type:From:Sender:Reply-To:Cc:Content-Transfer-Encoding:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=duPgS2RJfj1DMLqOcnT2Cm1lUA62+vl5tl6R1dVmlHc=; b=L/C3zu+CohK1zybSGRpLtqi5jt
- 7lMKYV0jlXj0B4F+PbNA00JoC4OP/7x8ACI+Khp+nTkyuAuSZT+JuNo8JCZn92GkUmTRbTkV2T7RX
- KL/W7AuNSfGSIBf7Y7DBfI9Q0YI8LFP5yeqjw7HYbMXS5ncd7Cq8YHZlMmQbmnipuetA=;
+ d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
+ :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
+ Cc:Date:From:Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From
+ :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
+ :List-Post:List-Owner:List-Archive;
+ bh=P9mNdyFfY7H/ZzC4a0gd0nCcQtYf4VSpREbQNXdz6sk=; b=USuk5CTZ+Pz9O4NfPBXRv9sMes
+ DbeTFmAJm+csEXgLdkCmqnXrLStOcHy6yXd54G5qiG9iyJIoPrZSUnCrHGiZwlX1yvle1/Eo4leCa
+ f8Bt2KadUhrd+zVuOtcUrtX6VpfVDVlcHq4TMqjRvnH90LD0u6tvxvRIdAltb0GO80Yc=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=To:Date:Message-Id:Subject:Mime-Version:Content-Type:From:Sender:Reply-To
- :Cc:Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
- Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
- References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=duPgS2RJfj1DMLqOcnT2Cm1lUA62+vl5tl6R1dVmlHc=; b=B
- 6LY7QacGwkbOOdDv5FxolgCMXFPPw+J2BETxwfC5i72RjLN4D+LXS6nNpHbSnQjn/mqSRa4poFxEQ
- tzpiQbRsHTyJZxXAxCZCUcKTi6RN1jkQ2DvTVt/v4/8K5jTiuLhNyj6U5xpc4oQNVmDpeFyXvVRHd
- L7PWMWVOWbVNNR34=;
-Received: from mail-lf1-f48.google.com ([209.85.167.48])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:Date:From:Sender:
+ To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=P9mNdyFfY7H/ZzC4a0gd0nCcQtYf4VSpREbQNXdz6sk=; b=J
+ nlIkAo8vm60NlEv2UpBfi3n2t2g3CUvaQ34cficcv3+nOXPTWN5kKL8OXJ9ayMjCJmkbfZBI6wOts
+ kEbJEGg+wWv0HNo/WHE7trCGcsfK0UOVAaB+sP2YdlLp42PAmeD5ZGEVMvWkNGxveaqiEs1STTvOZ
+ WaxSNWuGwLmZo6PM=;
+Received: from mail-wm1-f46.google.com ([209.85.128.46])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1x2CW2-0002fZ-VS for Openvpn-devel@lists.sourceforge.net;
- Thu, 03 Sep 2026 18:50:27 +0000
-Received: by mail-lf1-f48.google.com with SMTP id
- 2adb3069b0e04-5b5e41fe5a4so65223e87.1
- for <Openvpn-devel@lists.sourceforge.net>;
- Thu, 03 Sep 2026 11:50:26 -0700 (PDT)
+ id 1x2DCW-0000yw-Lm for openvpn-devel@lists.sourceforge.net;
+ Thu, 03 Sep 2026 19:34:22 +0000
+Received: by mail-wm1-f46.google.com with SMTP id
+ 5b1f17b1804b1-495590dde14so3815345e9.0
+ for <openvpn-devel@lists.sourceforge.net>;
+ Thu, 03 Sep 2026 12:34:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.com; s=google; t=1788461420; x=1789066220; darn=lists.sourceforge.net;
- h=to:date:message-id:subject:mime-version:content-type:from:from:to
- :cc:subject:date:message-id:reply-to:content-type;
- bh=duPgS2RJfj1DMLqOcnT2Cm1lUA62+vl5tl6R1dVmlHc=;
- b=RyYlv1E4k1UUOEZJmpWwpEJLrIrKoeEgtV6n5yApl09J5J+LbWY8iTJHotzn5eUGru
- ieyORw49p46otLxykE+ubYRf2dYIrr+6m7Ug9j2Y6IvGvWA1GcWIW2Ew7543u395qknm
- 27WoNKojxaCwRLW9XpL37sfwBJj6PvnW0cg4MyMjvVJ/1ehkfZe5zQ5eCqWHB8apYAiw
- k2H0OtZ5QD0snMacsZBXSgYNgZ+uKBb1iCdRUB59sRGIldB5MeyIke/j19mCG8qG5Lr2
- /ZK8HZMF+Am/wy/JylA5lHzUrS3mXauH/+T6xKZvSo8AobYhzBrzvfloiQYA9y7S1Vej
- l1QQ==
+ d=openvpn.net; s=google; t=1788464054; x=1789068854; darn=lists.sourceforge.net;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:date:from:from:to:cc:subject:date:message-id
+ :reply-to:content-type;
+ bh=P9mNdyFfY7H/ZzC4a0gd0nCcQtYf4VSpREbQNXdz6sk=;
+ b=DwBlhRW8pGO1xfPZd84O+fzhq+kGs62wQWh0WUncAEmcW8W/lluCgMC77DP6OPD9tu
+ YcnD2umqRT/VkjdkvBNS//rjjZL7TesnmFm0zUblXF3ej0h/5APUt39BYAkJa/diYkE6
+ 8DG+uUs1/M6jjC1M4Eu5KDjlzoGG9zP7MOp3ne8tzYapt81IdjS/TlcBVYBneI3cWoTo
+ TNJBoVJVor/VMAgVe6HanXfvQ3hAZcFdEwMBxXmh5gx/1J9s6HpitH7dfilwStp0az8V
+ W/CNy8LQBRLr0uuqYrJHyAgiMYO4E4OBasZgtlce4w6vz3vFPEzmxdnikWzG5Mr96+JJ
+ sl/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1788461420; x=1789066220;
- h=to:date:message-id:subject:mime-version:content-type:from:x-gm-gg
- :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
- :content-type;
- bh=duPgS2RJfj1DMLqOcnT2Cm1lUA62+vl5tl6R1dVmlHc=;
- b=DbBOLBEt3h+uklXB3UkIYGQghFkMsG9kqIg7XyFK2ffFutz2JuZSIza9wYJ/t0vXA+
- hr4pzo8DNxRba2an6ZtVoU0KkOiX1Jmgx3r/WPetazo+AUbKnH0eKd/bQ0MrN+oAFIG5
- oTdYXxwN+ACVTF20ztdt9FP7FDFsXO9y0vv+/JI7uIfatKNWeVAd6JHgC07+QgRlM6D/
- lMnX+UJXfSHCGtrBXR2vakXzp4LmW4eCrLZeKMHBfLaFcuEk1ENzt8RQ0FPH9zAzJVOE
- BqbiHnamtk82Hj8+5iAewfOjSp4nNjxMT3S1dNdCYMzC4QFthS6WVbVkBLuHSlMQuhBF
- 0LDw==
+ d=1e100.net; s=20251104; t=1788464054; x=1789068854;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:date:from:x-gm-gg:x-gm-message-state:from:to:cc
+ :subject:date:message-id:reply-to:content-type;
+ bh=P9mNdyFfY7H/ZzC4a0gd0nCcQtYf4VSpREbQNXdz6sk=;
+ b=Fp496T30+p2bD2gsKZYgNvKaLgnLrAhYoRWoX97LPuEHmqU1zAYKioQtYl6kbFNiKV
+ sSwOInqNJW0kyg//18riabIEEv7N4V06BWObInMHwpUtw6qhVMkNE2y56iL8lMCX7sH4
+ LJfgHe8gKezT5KhAePnACSGr0ljObXOq3sXiadgfN76vp6PbxManPfv9QrcRX561Kdfn
+ gJ7y9fr6cPvBx8EY97pgG5QaxJu4+1oPgmHPCpgJ1pKuj74vriwC3Q5vaMlsFBnYWRQm
+ D0y3yvCwltB54hAdH7MMXSrdUirbJ5cVZlqVsHqWVJ36LwHm9tVJGrv25tS3+vvbqeX6
+ rDwQ==
 X-Forwarded-Encrypted: i=1;
- AKwUvBzy+/BMrkLlCh6Z/5xguohpeJF1YcskPNuU7dEmE/UopbjgMTo0G39RCTt0mOvQ3HtvKsoZfCub/Iq+HrsZ@lists.sourceforge.net
-X-Gm-Message-State: AFuF++m9drrI8cEN6Of8/Y2+FTHTwiqkC0WRnN7Dh0z9TB1aXbQirEge
- JfUYWH+1zOOU3bCRbVxsIXnZ2kCgF02UrhAMKqmiuR900b7fFcrLagEz9ZivZl518YXuglVrVj/
- RuhH6lLKjPbCtSG0iNm8c+jGohWJhK4ZFj23/57RFKSbTf/3899p73MUioHN8D5BPnHQ8TVZ9Fv
- gqc5Gw3cfN
-X-Gm-Gg: AYBFou2KVTQEJo2qvk52N9AcP1P9h81/C5s0VjtXruXjAw5wQx0Dq50Rg6+9S2yUW8f
- zHJpNmYLmZC4uQ17ARHNp9FG04jf89EJ4LHNw0hQwir+N5ZinJ/StTPz/pw/MgDiSBAeDXo5Mhj
- AA+CqrKaZhEV1Qr4Y9azk4AKA69mojfnzK+hW3I0QHfiqSvjC9mBomEgeL4uFYDqNysLSkre0te
- BULpNhJVgC09xN5xqhNYSc/3btHOoHMYCKq/PBXPNpfyGY/2U5wiFMn6JFWjNbXUcK+ufNIBOzt
- ZQee3rUPgq0nP5pjdoxs5i5mjW+JN4hb0f1ahnjIL3r7nEYrS4LN9+8/jxdmgyJsmGs09+l/2JM
- f+aG3Q/l7rDKB8Ks35w73AOwMGTfGm/7Nps+p/ugBdFxzfDnRU/pOw7hUe1+FLVn7MUnKG6gX8d
- tCfuWmtEiDODh52zcNX1BxrhlsnKWrvUDBfe+5IvP3g+W5jPkXm6XlWPXuZ5LAqbq3Lx6pZhHcQ
- uFwWZ3d3/5qQSfY9znX1DTjWHA=
-X-Received: by 2002:a05:600c:6748:b0:499:db6d:bc97 with SMTP id
- 5b1f17b1804b1-49cf5b64358mr44873515e9.0.1788459987942; 
- Thu, 03 Sep 2026 11:26:27 -0700 (PDT)
-Received: from smtpclient.apple ([45.89.91.226])
+ AKwUvBxV4EkbU6I2XecRy72/76ucSDyAW3wGXytdaXh/b2bN9xTzNgWW3gkWH5OlYFi7aS6U9tJG93nKnYhZFwAe@lists.sourceforge.net
+X-Gm-Message-State: AFuF++lfm/QnVoT7kySQJXvkn2MnoDXxt+8IoLDWrdlz/mSFDnGNKoTo
+ ooK41Wci372P2y/GGQz4QvbllamX4vom57gESux9rVRHE0Mpwn35q49bTjxr+jItHrMQdEo/gKE
+ G2XJPhmkI0oa/IXeTJM54SCwrEUL704Xf6S67YRg9Va0uyFSuzRLP98ikbQ7C5xXk5lyd
+X-Gm-Gg: AYBFou0NkcnbhQGqIzJDLg4Qil/mEl3/Bbpj4JGJDgHSHWiwbi8whszPDT35VgmX46h
+ I8FO8ft3nRnxtcJSFt/CNJSgDvc8yEqQvudDCghA4uuOXBLrfOfuJ1WPt8JXR8IzYjqr9Vco3J5
+ S3KCi0fwFV+mpoulVmiB90qOETECN9T1tvfvsXTeM4W8Y79ZlNvPJw1B4F2lUzkkJ9qsSBJQVwA
+ 1mLZNFaebrfDTauJu5aUz7v3cSKvu+NzXlcnXmpbg1pOxTkETGgStYpIonDc5Sdu7c5mHGDsv+N
+ GIjat+n2cKz/xpDJNkWGLVafxuReIQRpWEUIH5HxYxI9wLf1Lky21fkZxWUmD7yv3++UUQbiG7P
+ W5Q9ZebOzxLt0G1AEIk2kfp5D/fMlzDavK2udY6jNhHT6WeRNBnKRvJs9JgWZd6bv1BSHP1g00J
+ 9HXFJ+NjvaGkb6DsYCXUjcvVndDxLNZTKlMp/w5tF4mBlve0zzRr0vB0Q0Iiu/tIch68LEUZ860
+ sxKV6+NeSJi03Jo/nsm2KGHZ2wsJfckV9oQOqP91gtgb2DJQCFtQCrE4huACVwoD9eXxG5RWO5r
+ x5NQO5VDRnks8C4VGXvWOSfDm+cG3PlnA4ypuNavumzOajzTwzs=
+X-Received: by 2002:a05:600c:8519:b0:49c:d27e:8f7c with SMTP id
+ 5b1f17b1804b1-49cf8251111mr4110635e9.12.1788464053493; 
+ Thu, 03 Sep 2026 12:34:13 -0700 (PDT)
+Received: from ip-10-18-1-162.eu-central-1.compute.internal
+ (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-48588394fa1sm405955f8f.8.2026.09.03.11.26.27
- (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
- Thu, 03 Sep 2026 11:26:27 -0700 (PDT)
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3864.700.51.1.1\))
-Message-Id: <B827E164-CDC8-4B4D-8293-A8AE7BA8863A@openvpn.com>
-Date: Thu, 3 Sep 2026 21:26:16 +0300
-To: Openvpn-announce@lists.sourceforge.net,
- Openvpn-devel@lists.sourceforge.net, Openvpn-users@lists.sourceforge.net
-X-Mailer: Apple Mail (2.3864.700.51.1.1)
-X-Headers-End: 1x2CW2-0002fZ-VS
-Subject: [Openvpn-devel] OpenVPN 2.7.7 released
+ ffacd0b85a97d-485883c6ba4sm843161f8f.25.2026.09.03.12.34.12
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 03 Sep 2026 12:34:13 -0700 (PDT)
+X-Google-Original-From: "cron2 (Code Review)"
+ <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
+Date: Thu, 3 Sep 2026 19:34:11 +0000
+Auto-Submitted: auto-generated
+X-Gerrit-MessageType: comment
+X-Gerrit-PatchSet: 2
+X-Gerrit-Change-Id: I3c6ad247614fb204a279b73e98f8c4704e16da2a
+X-Gerrit-Change-Number: 1894
+X-Gerrit-Project: openvpn
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1894?usp=email>
+X-Gerrit-Commit: 287f1ca39cc776ca7491d1196e2500a61bf1faef
+X-Gerrit-Comment-Date: Thu, 3 Sep 2026 19:34:11 +0000
+In-Reply-To: <gerrit.1788416209000.I3c6ad247614fb204a279b73e98f8c4704e16da2a@gerrit.openvpn.net>
+References: <gerrit.1788416209000.I3c6ad247614fb204a279b73e98f8c4704e16da2a@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzg4NDE2MjA5MDAwLkkzYzZhZDI0NzYxNGZiMjA0YTI3OWI3M2U5OGY4YzQ3MDRlMTZkYTJhQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <18cc447ed5b3aab12668af14ce32382d84f0ef00-EmailReviewComments-HTML@gerrit.openvpn.net>
+MIME-Version: 1.0
+User-Agent: Gerrit/3.11.5
+X-Headers-End: 1x2DCW-0000yw-Lm
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: reliable: add unit
+ tests for ACK and backoff DoS hardening
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -118,422 +137,132 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: Yuriy Darnobyt via Openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Reply-To: Yuriy Darnobyt <yuriy.darnobyt@openvpn.com>
-Content-Type: multipart/mixed; boundary="===============6055247935520577157=="
+From: "cron2 \(Code Review\) via Openvpn-devel"
+ <openvpn-devel@lists.sourceforge.net>
+Reply-To: gert@greenie.muc.de, arne-openvpn@rfc2549.org,
+ openvpn-devel@lists.sourceforge.net
+Cc: "cron2 \(Code Review\)" <gerrit@openvpn.net>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>,
+ plaisthos <arne-openvpn@rfc2549.org>
+Content-Type: multipart/mixed; boundary="===============1199499087025410091=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
+--===============1199499087025410091==
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="q6fL80Ho7XU="; charset=UTF-8
 
---===============6055247935520577157==
-Content-Type: multipart/alternative;
-	boundary="Apple-Mail=_8A8929A5-88E4-4DEB-AB05-E45672DFEF5B"
-
-
---Apple-Mail=_8A8929A5-88E4-4DEB-AB05-E45672DFEF5B
+--q6fL80Ho7XU=
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain;
-	charset=us-ascii
 
-The OpenVPN community project team is proud to release OpenVPN 2.7.7. =
-This is a
-bugfix release fixing several security issues.
+Attention is currently required from: plaisthos=2E
 
-Security fixes:
+cron2 has posted commen=
+ts on this change by cron2=2E ( http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1=
+894?usp=3Demail )
 
-* reliability layer: avoid unbounded reliable TLS timeout, and ignore =
-acks for
- packets that cannot be outstanding (CVE-2026-84732)
- Both reliability layer bugs found by Mark Bregman (Fox-IT)
-* windows: fix CreateProcess() command line quoting for characters that =
-are special
- to cmd.exe, where a combination of validation script plus rogue CA =
-could lead to
- misbehavior (CVE-2026-84256)
- Bug found by Clouditera Security
-* windows: fix tapctl to always call netsh.exe with full path (as we do =
-elsewhere)
- (CVE-2026-84226)
- Bug found by BreachX Zero Day Labs (using Typhon AI Mil v2)
-* windows: don't use NULL DACL with system objects, namely the --service =
-exit event
- and the netsh.exe guard semaphore.
- The old approach was prone to a local DoS where one user could =
-interfere with
- other users' openvpn processes by blocking the netsh semaphore or =
-sending events.
- This only affects setups not using the iservice, or using the automatic =
-service to
- start/stop openvpn (CVE-2026-82312)
- Bug found by DEBRAJ BASAK
-* openvpnserv (windows): pass correct NRPT domains size - when IDN =
-domains with UTF8
- encoding were involved, a buffer overread could be achieved =
-(CVE-2026-78221)
- Bug found by BreachX Zero Day Labs (using Typhon AI Mil v2)
-* openvpnserv (windows): don't allow '/' in config paths.
- The APIs windows uses for path validation do not handle '/' as path =
-separator,
- while the file open APIs do, so this could be used to circumvent our =
-config path
- validation, leading to openvpn.exe starting a user-controlled config =
-file even if
- administratively not allowed (CVE-2026-78043)
- Bug found by BreachX Zero Day Labs (using Typhon AI Mil v2)
-* dhcp (windows): fix off-by-one in write_dhcp_search_str() temp buffer =
-guard -
- suitable DHCP options could lead to a single-byte overflow of a temp =
-buffer
- (CVE-2026-81738)
- Bug found by Andre Kropp (Nexory) and ChinhNguyen
-* linux netlink: validate netlink replies against the request
- Suggested by Joshua Rogers as a security improvement
-* openvpnserv (windows): fix off-by-one on input validation (discovered =
-while fixing
- CVE-2026-78221)
-* openvpnserv (windows): harden CheckConfigPath() a bit more (another =
-improvement
- while working on CVE-2026-78043)
+Change subject: reliable: add unit tests for ACK and bac=
+koff DoS hardening
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E
 
-User-visible Changes:
 
-* when using EPOCH data channel format, reduce the number of future keys =
-from 16 to
- 4 - the previous calculation was wrong, and 4 spare keys are sufficient =
-for 100+
- Gbit/s links. This means less log spam in userland and fewer resources =
-used in
- in-kernel implementations.
+Patch Set 2: Code-Review+2
 
-Bugfixes:
 
-* work around a pubkey-handling bug in mbedTLS 4.1.0 and 4.2.0 =
-(supposedly fixed in
- 4.3.0)
-* multi: don't let stale-routes-check delete permanent routes - =
---stale-routes-check
- did not only delete dynamic cached routes, but also routes installed by =
---iroute
- and --ifconfig-push. Fixed by introducing route flags and restraining =
-the check on
- them (Github: OpenVPN/openvpn#1063)
-* ssl: do not queue control ciphertext while a packet is still queued =
-(fixes problems
- in TCP p2p handshake when both sides try to handshake at the same time) =
-(Github:
- OpenVPN/openvpn#1089)
-* reenable xmit_hold when using p2p tcp-server and tls-server - in TCP =
-server mode
- the server is not expected to initiate the TLS handshake. This was =
-introduced by
- the multisocket code checking the wrong variable for socket protocol =
-(Github:
- OpenVPN/openvpn#1089)
-* clinat: do not adjust UDP checksum if zero (as per RFC768) (Github:
- OpenVPN/openvpn#1037)
-* openssl: avoid resetting the HMAC key on every packet (Github:
- OpenVPN/openvpn#1088)
-* openvpnserv (windows): fix log lines format string - interface names =
-with
- international characters printed in some error messages need to be =
-converted from
- UTF8 to UCS16 first.
-* fix format string specifier for size_t (%zu)
-* fix test_misc compile issues with -Werror
+-- 
+To view, visit http://gerrit=2Eop=
+envpn=2Enet/c/openvpn/+/1894?usp=3Demail
+To unsubscribe, or for help writin=
+g mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Windows MSI changes since 2.7.6-I001:
+G=
+errit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Ge=
+rrit-Change-Id: I3c6ad247614fb204a279b73e98f8c4704e16da2a
+Gerrit-Change-Num=
+ber: 1894
+Gerrit-PatchSet: 2
+Gerrit-Owner: cron2 <gert@greenie=2Emuc=2Ede>
+=
+Gerrit-Reviewer: cron2 <gert@greenie=2Emuc=2Ede>
+Gerrit-Reviewer: plaisthos=
+ <arne-openvpn@rfc2549=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=
+=2Esourceforge=2Enet>
+Gerrit-Attention: plaisthos <arne-openvpn@rfc2549=2Eo=
+rg>
+Gerrit-Comment-Date: Thu, 03 Sep 2026 19:34:11 +0000
+Gerrit-HasComments=
+: No
+Gerrit-Has-Labels: Yes
 
-* Update included dco-win driver to v2.8.7
-  * peer: fix use-after-free in multipeer peer table handling (Github: =
-OpenVPN/ovpn-dco-win#140)
-  * inf: set the device security descriptor in the hardware key (Github: =
-OpenVPN/ovpn-dco-win#139)
-
-More details can be found in the Changes document:
-
-<https://github.com/OpenVPN/openvpn/blob/v2.7.7/Changes.rst =
-<https://github.com/OpenVPN/openvpn/blob/v2.7./Changes.rst>>
-
-Source code and Windows installers can be downloaded from our download =
-page:
-
-<https://openvpn.net/community/>
-
-Packages for Debian, Ubuntu, Fedora, RHEL, and openSUSE are available in =
-the various
-official Community repositories:
-
-<https://community.openvpn.net/Pages/OpenVPN%20software%20repos>
-
-Kind regards,
-Yuriy Darnobyt=
-
---Apple-Mail=_8A8929A5-88E4-4DEB-AB05-E45672DFEF5B
+--q6fL80Ho7XU=
+Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/html;
-	charset=us-ascii
 
-<html aria-label=3D"message body"><head><meta http-equiv=3D"content-type" =
-content=3D"text/html; charset=3Dus-ascii"></head><body =
-style=3D"overflow-wrap: break-word; -webkit-nbsp-mode: space; =
-line-break: after-white-space;"><div>The OpenVPN community project team =
-is proud to release OpenVPN 2.7.7. This is a</div><div>bugfix release =
-fixing several security issues.</div><div><br></div><div>Security =
-fixes:</div><div><br></div><div>* reliability layer: avoid unbounded =
-reliable TLS timeout, and ignore acks for</div><div>&nbsp;packets that =
-cannot be outstanding (CVE-2026-84732)</div><div>&nbsp;Both reliability =
-layer bugs found by Mark Bregman (Fox-IT)</div><div>* windows: fix =
-CreateProcess() command line quoting for characters that are =
-special</div><div>&nbsp;to cmd.exe, where a combination of validation =
-script plus rogue CA could lead to</div><div>&nbsp;misbehavior =
-(CVE-2026-84256)</div><div>&nbsp;Bug found by Clouditera =
-Security</div><div>* windows: fix tapctl to always call netsh.exe with =
-full path (as we do =
-elsewhere)</div><div>&nbsp;(CVE-2026-84226)</div><div>&nbsp;Bug found by =
-BreachX Zero Day Labs (using Typhon AI Mil v2)</div><div>* windows: =
-don't use NULL DACL with system objects, namely the --service exit =
-event</div><div>&nbsp;and the netsh.exe guard =
-semaphore.</div><div>&nbsp;The old approach was prone to a local DoS =
-where one user could interfere with</div><div>&nbsp;other users' openvpn =
-processes by blocking the netsh semaphore or sending =
-events.</div><div>&nbsp;This only affects setups not using the iservice, =
-or using the automatic service to</div><div>&nbsp;start/stop openvpn =
-(CVE-2026-82312)</div><div>&nbsp;Bug found by DEBRAJ BASAK</div><div>* =
-openvpnserv (windows): pass correct NRPT domains size - when IDN domains =
-with UTF8</div><div>&nbsp;encoding were involved, a buffer overread =
-could be achieved (CVE-2026-78221)</div><div>&nbsp;Bug found by BreachX =
-Zero Day Labs (using Typhon AI Mil v2)</div><div>* openvpnserv =
-(windows): don't allow '/' in config paths.</div><div>&nbsp;The APIs =
-windows uses for path validation do not handle '/' as path =
-separator,</div><div>&nbsp;while the file open APIs do, so this could be =
-used to circumvent our config path</div><div>&nbsp;validation, leading =
-to openvpn.exe starting a user-controlled config file even =
-if</div><div>&nbsp;administratively not allowed =
-(CVE-2026-78043)</div><div>&nbsp;Bug found by BreachX Zero Day Labs =
-(using Typhon AI Mil v2)</div><div>* dhcp (windows): fix off-by-one in =
-write_dhcp_search_str() temp buffer guard -</div><div>&nbsp;suitable =
-DHCP options could lead to a single-byte overflow of a temp =
-buffer</div><div>&nbsp;(CVE-2026-81738)</div><div>&nbsp;Bug found by =
-Andre Kropp (Nexory) and ChinhNguyen</div><div>* linux netlink: validate =
-netlink replies against the request</div><div>&nbsp;Suggested by Joshua =
-Rogers as a security improvement</div><div>* openvpnserv (windows): fix =
-off-by-one on input validation (discovered while =
-fixing</div><div>&nbsp;CVE-2026-78221)</div><div>* openvpnserv =
-(windows): harden CheckConfigPath() a bit more (another =
-improvement</div><div>&nbsp;while working on =
-CVE-2026-78043)</div><div><br></div><div>User-visible =
-Changes:</div><div><br></div><div>* when using EPOCH data channel =
-format, reduce the number of future keys from 16 to</div><div>&nbsp;4 - =
-the previous calculation was wrong, and 4 spare keys are sufficient for =
-100+</div><div>&nbsp;Gbit/s links. This means less log spam in userland =
-and fewer resources used in</div><div>&nbsp;in-kernel =
-implementations.</div><div><br></div><div>Bugfixes:</div><div><br></div><d=
-iv>* work around a pubkey-handling bug in mbedTLS 4.1.0 and 4.2.0 =
-(supposedly fixed in</div><div>&nbsp;4.3.0)</div><div>* multi: don't let =
-stale-routes-check delete permanent routes - =
---stale-routes-check</div><div>&nbsp;did not only delete dynamic cached =
-routes, but also routes installed by --iroute</div><div>&nbsp;and =
---ifconfig-push. Fixed by introducing route flags and restraining the =
-check on</div><div>&nbsp;them (Github: OpenVPN/openvpn#1063)</div><div>* =
-ssl: do not queue control ciphertext while a packet is still queued =
-(fixes problems</div><div>&nbsp;in TCP p2p handshake when both sides try =
-to handshake at the same time) =
-(Github:</div><div>&nbsp;OpenVPN/openvpn#1089)</div><div>* reenable =
-xmit_hold when using p2p tcp-server and tls-server - in TCP server =
-mode</div><div>&nbsp;the server is not expected to initiate the TLS =
-handshake. This was introduced by</div><div>&nbsp;the multisocket code =
-checking the wrong variable for socket protocol =
-(Github:</div><div>&nbsp;OpenVPN/openvpn#1089)</div><div>* clinat: do =
-not adjust UDP checksum if zero (as per RFC768) =
-(Github:</div><div>&nbsp;OpenVPN/openvpn#1037)</div><div>* openssl: =
-avoid resetting the HMAC key on every packet =
-(Github:</div><div>&nbsp;OpenVPN/openvpn#1088)</div><div>* openvpnserv =
-(windows): fix log lines format string - interface names =
-with</div><div>&nbsp;international characters printed in some error =
-messages need to be converted from</div><div>&nbsp;UTF8 to UCS16 =
-first.</div><div>* fix format string specifier for size_t =
-(%zu)</div><div>* fix test_misc compile issues with =
--Werror</div><div><br></div><div><div>Windows MSI changes since =
-2.7.6-I001:</div><div><br></div><div>* Update included dco-win driver to =
-v2.8.7</div><div>&nbsp; * peer: fix use-after-free in multipeer peer =
-table handling (Github: OpenVPN/ovpn-dco-win#140)</div><div>&nbsp; * =
-inf: set the device security descriptor in the hardware key (Github: =
-OpenVPN/ovpn-dco-win#139)</div></div><div><br></div><div><p =
-style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; =
-font-width: normal; line-height: normal; font-size-adjust: none; =
-font-kerning: auto; font-variant-alternates: normal; =
-font-variant-ligatures: normal; font-variant-numeric: normal; =
-font-variant-east-asian: normal; font-variant-position: normal; =
-font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; =
--webkit-text-stroke-width: 0px; -webkit-text-stroke-color: rgb(255, 255, =
-255);"><span style=3D"font-kerning: none">More details can be found in =
-the Changes document:</span></p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; =
-font-width: normal; line-height: normal; font-size-adjust: none; =
-font-kerning: auto; font-variant-alternates: normal; =
-font-variant-ligatures: normal; font-variant-numeric: normal; =
-font-variant-east-asian: normal; font-variant-position: normal; =
-font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; =
--webkit-text-stroke-width: 0px; -webkit-text-stroke-color: rgb(255, 255, =
-255); min-height: 14px;"><span style=3D"font-kerning: =
-none"></span><br></p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; =
-font-width: normal; line-height: normal; font-size-adjust: none; =
-font-kerning: auto; font-variant-alternates: normal; =
-font-variant-ligatures: normal; font-variant-numeric: normal; =
-font-variant-east-asian: normal; font-variant-position: normal; =
-font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; color: =
-rgb(53, 134, 255); -webkit-text-stroke-width: 0px; =
--webkit-text-stroke-color: rgb(53, 134, 255);"><span =
-style=3D"font-kerning: none; color: rgb(0, 0, 0); =
--webkit-text-stroke-color: rgb(255, 255, 255);">&lt;<a =
-href=3D"https://github.com/OpenVPN/openvpn/blob/v2.7./Changes.rst"><span =
-style=3D"font-kerning: none; -webkit-text-stroke-color: rgb(53, 134, =
-255);">https://github.com/OpenVPN/openvpn/blob/v2.7.7/Changes.rst</span></=
-a>&gt;</span></p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; =
-font-width: normal; line-height: normal; font-size-adjust: none; =
-font-kerning: auto; font-variant-alternates: normal; =
-font-variant-ligatures: normal; font-variant-numeric: normal; =
-font-variant-east-asian: normal; font-variant-position: normal; =
-font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; =
--webkit-text-stroke-width: 0px; -webkit-text-stroke-color: rgb(255, 255, =
-255); min-height: 14px;"><span style=3D"font-kerning: =
-none"></span><br></p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; =
-font-width: normal; line-height: normal; font-size-adjust: none; =
-font-kerning: auto; font-variant-alternates: normal; =
-font-variant-ligatures: normal; font-variant-numeric: normal; =
-font-variant-east-asian: normal; font-variant-position: normal; =
-font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; =
--webkit-text-stroke-width: 0px; -webkit-text-stroke-color: rgb(255, 255, =
-255);"><span style=3D"font-kerning: none">Source code and Windows =
-installers can be downloaded from our download page:</span></p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; =
-font-width: normal; line-height: normal; font-size-adjust: none; =
-font-kerning: auto; font-variant-alternates: normal; =
-font-variant-ligatures: normal; font-variant-numeric: normal; =
-font-variant-east-asian: normal; font-variant-position: normal; =
-font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; =
--webkit-text-stroke-width: 0px; -webkit-text-stroke-color: rgb(255, 255, =
-255); min-height: 14px;"><span style=3D"font-kerning: =
-none"></span><br></p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; =
-font-width: normal; line-height: normal; font-size-adjust: none; =
-font-kerning: auto; font-variant-alternates: normal; =
-font-variant-ligatures: normal; font-variant-numeric: normal; =
-font-variant-east-asian: normal; font-variant-position: normal; =
-font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; color: =
-rgb(53, 134, 255); -webkit-text-stroke-width: 0px; =
--webkit-text-stroke-color: rgb(53, 134, 255);"><span =
-style=3D"font-kerning: none; color: rgb(0, 0, 0); =
--webkit-text-stroke-color: rgb(255, 255, 255);">&lt;<a =
-href=3D"https://openvpn.net/community/"><span style=3D"font-kerning: =
-none; -webkit-text-stroke-color: rgb(53, 134, =
-255);">https://openvpn.net/community/</span></a>&gt;</span></p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; =
-font-width: normal; line-height: normal; font-size-adjust: none; =
-font-kerning: auto; font-variant-alternates: normal; =
-font-variant-ligatures: normal; font-variant-numeric: normal; =
-font-variant-east-asian: normal; font-variant-position: normal; =
-font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; =
--webkit-text-stroke-width: 0px; -webkit-text-stroke-color: rgb(255, 255, =
-255); min-height: 14px;"><span style=3D"font-kerning: =
-none"></span><br></p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; =
-font-width: normal; line-height: normal; font-size-adjust: none; =
-font-kerning: auto; font-variant-alternates: normal; =
-font-variant-ligatures: normal; font-variant-numeric: normal; =
-font-variant-east-asian: normal; font-variant-position: normal; =
-font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; =
--webkit-text-stroke-width: 0px; -webkit-text-stroke-color: rgb(255, 255, =
-255);"><span style=3D"font-kerning: none">Packages for Debian, Ubuntu, =
-Fedora, RHEL, and openSUSE are available in the various</span></p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; =
-font-width: normal; line-height: normal; font-size-adjust: none; =
-font-kerning: auto; font-variant-alternates: normal; =
-font-variant-ligatures: normal; font-variant-numeric: normal; =
-font-variant-east-asian: normal; font-variant-position: normal; =
-font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; =
--webkit-text-stroke-width: 0px; -webkit-text-stroke-color: rgb(255, 255, =
-255);"><span style=3D"font-kerning: none">official Community =
-repositories:</span></p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; =
-font-width: normal; line-height: normal; font-size-adjust: none; =
-font-kerning: auto; font-variant-alternates: normal; =
-font-variant-ligatures: normal; font-variant-numeric: normal; =
-font-variant-east-asian: normal; font-variant-position: normal; =
-font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; =
--webkit-text-stroke-width: 0px; -webkit-text-stroke-color: rgb(255, 255, =
-255); min-height: 14px;"><span style=3D"font-kerning: =
-none"></span><br></p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; =
-font-width: normal; line-height: normal; font-size-adjust: none; =
-font-kerning: auto; font-variant-alternates: normal; =
-font-variant-ligatures: normal; font-variant-numeric: normal; =
-font-variant-east-asian: normal; font-variant-position: normal; =
-font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; color: =
-rgb(53, 134, 255); -webkit-text-stroke-width: 0px; =
--webkit-text-stroke-color: rgb(53, 134, 255);"><span =
-style=3D"font-kerning: none; color: rgb(0, 0, 0); =
--webkit-text-stroke-color: rgb(255, 255, 255);">&lt;<a =
-href=3D"https://community.openvpn.net/Pages/OpenVPN%20software%20repos"><s=
-pan style=3D"font-kerning: none; -webkit-text-stroke-color: rgb(53, 134, =
-255);">https://community.openvpn.net/Pages/OpenVPN%20software%20repos</spa=
-n></a>&gt;</span></p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; =
-font-width: normal; line-height: normal; font-size-adjust: none; =
-font-kerning: auto; font-variant-alternates: normal; =
-font-variant-ligatures: normal; font-variant-numeric: normal; =
-font-variant-east-asian: normal; font-variant-position: normal; =
-font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; =
--webkit-text-stroke-width: 0px; -webkit-text-stroke-color: rgb(255, 255, =
-255); min-height: 14px;"><span style=3D"font-kerning: =
-none"></span><br></p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; =
-font-width: normal; line-height: normal; font-size-adjust: none; =
-font-kerning: auto; font-variant-alternates: normal; =
-font-variant-ligatures: normal; font-variant-numeric: normal; =
-font-variant-east-asian: normal; font-variant-position: normal; =
-font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; color: =
-rgb(0, 0, 0); -webkit-text-stroke-width: 0px; -webkit-text-stroke-color: =
-rgb(0, 0, 0);"><span style=3D"font-kerning: none">Kind =
-regards,</span></p>
-<p style=3D"margin: 0px; font-style: normal; font-variant-caps: normal; =
-font-width: normal; line-height: normal; font-size-adjust: none; =
-font-kerning: auto; font-variant-alternates: normal; =
-font-variant-ligatures: normal; font-variant-numeric: normal; =
-font-variant-east-asian: normal; font-variant-position: normal; =
-font-variant-emoji: normal; font-feature-settings: normal; =
-font-optical-sizing: auto; font-variation-settings: normal; color: =
-rgb(0, 0, 0); -webkit-text-stroke-width: 0px; -webkit-text-stroke-color: =
-rgb(0, 0, 0);"><span style=3D"font-kerning: none">Yuriy =
-Darnobyt</span></p></div></body></html>=
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: plaisthos=2E </p>
+<p>Patch set 2:<span style=3D"borde=
+r-radius: 3px; display: inline-block; margin: 0 2px; padding: 4px;backgroun=
+d-color: #d4ffd4;">Code-Review +2</span></p><p><a href=3D"http://gerrit=2Eo=
+penvpn=2Enet/c/openvpn/+/1894?usp=3Demail">View Change</a></p><ul style=3D"=
+list-style: none; padding: 0;"></ul><p>To view, visit <a href=3D"http://ger=
+rit=2Eopenvpn=2Enet/c/openvpn/+/1894?usp=3Demail">change 1894</a>=2E To uns=
+ubscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
+=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope it=
+emtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"acti=
+on" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1894?usp=3Demail"/><meta item=
+prop=3D"name" content=3D"View Change"/></div></div>
 
---Apple-Mail=_8A8929A5-88E4-4DEB-AB05-E45672DFEF5B--
+<div style=3D"display:=
+none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerr=
+it-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: mast=
+er </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I3c6ad247614fb204a=
+279b73e98f8c4704e16da2a </div>
+<div style=3D"display:none"> Gerrit-Change-N=
+umber: 1894 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<=
+div style=3D"display:none"> Gerrit-Owner: cron2 &lt;gert@greenie=2Emuc=2Ede=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@gr=
+eenie=2Emuc=2Ede&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: p=
+laisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:no=
+ne"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&g=
+t; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne=
+-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Comme=
+nt-Date: Thu, 03 Sep 2026 19:34:11 +0000 </div>
+<div style=3D"display:none"=
+> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Lab=
+els: Yes </div>
+
+</body></html>
+--q6fL80Ho7XU=--
 
 
---===============6055247935520577157==
+--===============1199499087025410091==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============6055247935520577157==
+--===============1199499087025410091==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -544,5 +273,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============6055247935520577157==--
+--===============1199499087025410091==--
 
