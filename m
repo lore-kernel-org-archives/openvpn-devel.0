@@ -4,129 +4,126 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 44DE9C79F80
-	for <openvpn-devel@archiver.kernel.org>; Fri,  4 Sep 2026 08:30:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4B777C624DE
+	for <openvpn-devel@archiver.kernel.org>; Fri,  4 Sep 2026 09:37:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=0b4Tnp1RcSbG/C+8esPnSYjr6LQ5D6MQ/ix7GUYJK6U=; b=MTmVZ9Q3TSbsBF4wEtxo7Oyv2Y
-	3VeP7UpWthSU/QzBSI0TY7k6VkhS2ZAWTvNc6KVjeJ1EaheOw54VczbRXihPrFDwF+xZyVFd57lqB
-	Uf7TFIeucOhL4JMsrhq9KIf4XXk9wRcP62bmlxKoOtoUluuEyq6xOjyq8Z6SlM59EESk=;
+	bh=2AWas0LM4RVeO7Xs/ujAA5HLbacvt1VZPfZ7Ohvas40=; b=Z9wzVG/hwyo0taSYZEVXyVkxrl
+	VIVkw9lsuaaol6EJ9NMhIT1aZvmGRr9Anfs9alC2I8K6RN4WhrNem5o2V6VSmRLQxfve3pvKmAUBd
+	7zEE8rLPoi9xbBtL9Xhbp5PRsQ3DVreErdHuGQ9OTb5Xh7f5RCy1ZQVgJrOLL4wPHFmE=;
 Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
 	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x2PJE-0003yE-FW;
-	Fri, 04 Sep 2026 08:30:02 +0000
+	id 1x2QMe-0000ah-T7;
+	Fri, 04 Sep 2026 09:37:38 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1x2PIo-0003uS-It
+ (envelope-from <gerrit@openvpn.net>) id 1x2QMd-0000ab-Tu
  for openvpn-devel@lists.sourceforge.net;
- Fri, 04 Sep 2026 08:29:36 +0000
+ Fri, 04 Sep 2026 09:37:37 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
  :List-Post:List-Owner:List-Archive;
- bh=R2CR5PK8jrVj1JXsbZdMoK6fdIC3SQkGe8KSU32BFoU=; b=a+Eek9jmkLFd16OF3VkMONpjST
- zq/GVEx7Q/YkgWqvu7LMlij8KwlSWFOz+UIYx2JUltnONxirI5GjlaAuJZRPJLjeLOneJy2IcU7tN
- AFE04gnV52PYi4yfzWS0AQKaq14O/J2ll4PFqIvGElO3flLsYL2hxUWrb8x/k9fUnnVM=;
+ bh=6UH14Yg8AjT6Bn0pY5lfenOB3BjnAJ1cXldcOXSJjCg=; b=Hu0aoijFpVpoJlSwucDACmrDDy
+ i9Q2QhLQsz+P3GybxhlAz/gdQLcp/RoD7z1xaMbV4etO2y/0N5P9613BkC9s0lh3cxqBNbmrS/DYd
+ DMpi8xGACGib4Seey5TXG9GBGuD2s/x09AbcRAr0E/q9PI+QjYCNiNkHUqwf2H3qAkRI=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
  Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=R2CR5PK8jrVj1JXsbZdMoK6fdIC3SQkGe8KSU32BFoU=; b=R
- qqj5K99yaHYSeK8crZazw0Mc5lxThb2Q53HQKvRdyXy8Hj5rI10KezaIADYnv+HzMbPqIEpuAvPMg
- /lfCbm4tLolnMu0LJEmfy5afy+yMsg7Yoauf0rO96u+c2oz9NYxNFcyhMaw5ubNkw8sDBq5elKiRv
- 23y1qdenEzeJPSb0=;
-Received: from mail-wm1-f52.google.com ([209.85.128.52])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ List-Owner:List-Archive; bh=6UH14Yg8AjT6Bn0pY5lfenOB3BjnAJ1cXldcOXSJjCg=; b=G
+ +kMYV4EG9S18sgFClwHuVMkabs7IOaemcxnOZHTm0Jk+VSsDWrcft7gijk41oEwXHeRsTN/g3l6eP
+ VtpRJBFKjvt7d5F0OthnBBhIccLd/dXboY006c2MXA5ZedKEZT+uIQJRypxziegONh2+fOpekED2+
+ 8Xgienc0oAEnGYy4=;
+Received: from mail-wm1-f50.google.com ([209.85.128.50])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1x2PIk-0005P2-32 for openvpn-devel@lists.sourceforge.net;
- Fri, 04 Sep 2026 08:29:36 +0000
-Received: by mail-wm1-f52.google.com with SMTP id
- 5b1f17b1804b1-49cdc81f40eso4883825e9.2
+ id 1x2QMa-0001OG-BW for openvpn-devel@lists.sourceforge.net;
+ Fri, 04 Sep 2026 09:37:37 +0000
+Received: by mail-wm1-f50.google.com with SMTP id
+ 5b1f17b1804b1-4998b5a63e2so8439205e9.1
  for <openvpn-devel@lists.sourceforge.net>;
- Fri, 04 Sep 2026 01:29:33 -0700 (PDT)
+ Fri, 04 Sep 2026 02:37:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1788510567; x=1789115367; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1788514650; x=1789119450; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=R2CR5PK8jrVj1JXsbZdMoK6fdIC3SQkGe8KSU32BFoU=;
- b=Fit8vtuBiKmlfX9EKK7bk1WrQezZFe7gm82Q0S8gB6657XH559sMnP1eEaFCtajKRU
- zKSqQKVriRhaIyDjp4USUq8TtICHnkFc1Z4vsiqGf061IbWnhbikDyarCq38Uoth9MiB
- y4uKBwZX9LOP0G1Ju3sI8lT6s/cl8e40j1iA4Pxiq+zie9y4JJN4cxWUqFpKZQQFmebI
- POCCRw7xeaVpx3L9NopD7vajyIioWBtfoWszttjAVMnqxV0vxhosy41sSSVb0TbwI/Rc
- 9zdt74HRhAVRlGN0/7AhhycchuijCt8Om1R1xlFqlHX3S2KpMveSe/X/sGp0VJlcWOZH
- Y16w==
+ bh=6UH14Yg8AjT6Bn0pY5lfenOB3BjnAJ1cXldcOXSJjCg=;
+ b=E3gAKJeyJnhEi0rib2rdfXQo6viSHO5lQstwRCO9MyJ31A7DBv5XHtQxQCdc4wary2
+ wWoWbdG72BX2re1D9lc2eLkQixQj4/6dHZ7nuMcTgxiiU6GMUIEo5816pVRcCJYbUj9x
+ yaCmkZFsjQbxrtDYlGU5H5XP2OBTYq3Bk1nXgPMesRDnCa+KHymzc+xyhsPnhBNHajxi
+ cjjaB+QO0rNZPpR3/sYrNEGXWNjGoMA3rMIhidNyc7/pWAmyDd9XM/eYm2+Zlwv4eguJ
+ BCQQTHKzi1ov4zT1ZaAqDtqFOkl6aydi16TsSnywxf7cKT/3InUKQEhgr83gVcqbx+5R
+ 1RWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1788510567; x=1789115367;
+ d=1e100.net; s=20251104; t=1788514650; x=1789119450;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=R2CR5PK8jrVj1JXsbZdMoK6fdIC3SQkGe8KSU32BFoU=;
- b=rIzfwtriKWoBJlh4EEAU+JCe28Fk8DFHZNvd1Qmhb5NVwX8gxf0csBALL6NcQ0A1iu
- Hb76qW9nzrM7JPrCCSezStoiVL3sgHQ0tWFjh/1PYVXpowAeTO49zP1Qg9BpRTAhq1Oq
- UP/8TrpvqeL/4oNFa8X4fjYIHsqPwBadaDDOorAgU0RUAMGahd8ykHkYbmAvqNyJ/W0y
- 4P1CT/YUXAo8/ctfTSROgDk1ldNny4TPwUupCjAKftoddTdekE4Iegbt6bizwLy3dpnq
- 1B/c5gRN/fWic4o+llgJyxVFUpDlRDz4tmdUSF1NCBWP3+aTRLLz4TAPnEb6n1cPXX6n
- zsqg==
-X-Forwarded-Encrypted: i=1;
- AKwUvBzLSioWmcNGN6MmPBU2JxMwsLONqKXMUHpI6XJsBjDTmGdqnYKf6YxFCY/PrSIPeOQy+yjCHaUy5CJpFFKU@lists.sourceforge.net
-X-Gm-Message-State: AFuF++mZ9FOXj4/ASzVlf7YjHmo6v+TVksT0PRo1Z0Z1BeuBdLpRtueP
- ZEOiVFLtMiKfKk0iecQw+/0Rh+rf4jvTVBkE/04Uk3lkG/oBCAdYmWPqSemmSwUyjV0kEojlYpa
- sTD5nxsNtAtYtbO3BhjHx29pwy9XHPW2AWfwoJn2c3RktpVYvueyJGs4833JF7PlDwJi4
-X-Gm-Gg: AYBFou0NA8redjeIMU7sDfmoyCpJEOL9ckmEQQ1ahuIVsVGUsiygZ2Pp2be/2DOq/pA
- n76QnFFVIXHl4TJuqaXYtD5dv9nl1NX/uz1B4fzSV8pXMAoG3dpZg9C/xfKNVFmsF+ucAPFXSID
- zK+JM+prJWCyFmxGyW+4p/5/VGFJ4W8x5zGhlp4KZ3PFmFe/YZinPKyJjthzEc+q75VBRsJNb/7
- LB+qNYqjMJgtUH4VtB+FrVHrpzjVKrTWkt4iSUTANKzcWCTrrQl2/KkGcgwEHv3k9GEwlIKKajm
- LGalmZl3QIytYOLB4oBdirjS3z3YA5KDg44oFwb9flWzdHVI7lZVOv2OhusFIXlI1VR5hLr1Ece
- sxpva9CJ+bQ6r26H1lTs2QrEbSfm94QV2XarGIuL2D4YwHGjqiqgLAiUgdU63YKrTNCB42cSsyP
- 8i1uBCaUCb8kcocnotyk0G90RsBN9zF+eZl9aRbrbf2cd0AemAPrjTKxB2HKwa9uuO7Q3Dwi1Zv
- /PbcFbi3f1MXkb+cE/Va2aaUAbQDh8I9ZGmd2l+FDPN2klZCN0/xVg2W1N3yl+xmt+AM+lIDssY
- MW2oxkKhq8EgmkAbYLXC1rZCrVs++oeEms2TIgg7/Zz5Q2yLTLw=
-X-Received: by 2002:a05:600c:4f4b:b0:499:83f1:398 with SMTP id
- 5b1f17b1804b1-49cf823f53emr67932145e9.9.1788510567237; 
- Fri, 04 Sep 2026 01:29:27 -0700 (PDT)
+ bh=6UH14Yg8AjT6Bn0pY5lfenOB3BjnAJ1cXldcOXSJjCg=;
+ b=lEEFN32xTl2IIHCUbxxK+cOwxKi4bVd9kbRiSXw8yEEzW/XslWik4yBLRDGRxNQmCs
+ JuC9KkVfj10mzq8iLvxINNb2X9gsN4Xq/owve2maa+RDnW3z5imMqDsHj/LYzh6WhDc1
+ 7Qfewd1s9rqy5EjGcUwe/a36qP5mQcp3WANY63n7lXs6G7z50agH70hqCDrqFqWXqmc0
+ 7kb2FWJhH7HPqIEeuEj07xFPr43w2hBaXMvyWcE7nBo7sos/ESbftiqW7+9Fhhwu2PLZ
+ dslghgeARHn4OnJdFW96U14S6iEV5dTkMii0waXVzNd5zTXQkgfS9IfeK9LRwSEtq8K1
+ QrWw==
+X-Gm-Message-State: AFuF++lLtWvkwQaU36PpBHvhObQ/RAnE3Nl/WQOT863K/lUwQWN9HAL5
+ TBHTSfaYK+TaAGJUoQDmoGBSPmfGU7smqlz5143sNt3gWQTYdNNZ2cC8jjnkCUnQvkj93mZI01Z
+ 7dDDvHR/qQGllAjr7UH5exiUd7FN3rPjwO9hBvANNnLlPIAfGsgGUq3JHV3NxFzuR0XUu
+X-Gm-Gg: AYBFou398Rtx9k09qO+z4BaFkLxPB2FVXMZJH4/Or9p6qh5S09tMmHcgGBZjAH3ZxFU
+ jAZHHG2Q2IAsZo8V6SlbS9RyjyAELkBUfDynPvYSrJ26l0aaerkFcP0N/c9K7NbjZK8mdQVLUS5
+ iOmNDPVQS60DZcm3k/Ep/V5ibNAvwQYRm+lSv4dzEhBgtFguqdME2u9V7Uw1Rwmsv6uEh7rvUOK
+ w1xWOxqW+7QCWWhOCc8P6iGzCxYPZ8sHZERv/v1YeZrQ+qnaZDwbvkkkARCvZOwTQ1W/80Yd+tk
+ PmfFNdr6BEdwaefZmz4lnHNA54MmgSv+oKJi4nlS6+Ybx4XGssMZ1kl0wF3+/yP6L86Q5dpB+Fw
+ WUT2DoNdLq5ienuUX/5AOop06W+/erNKGUxZhEMOA0eRbxZBMfaAY/xZSHxjpansYAiY5oDiBEP
+ RaTOJqGko52hS0X11LOlilpFMfJl2+g0tpNW1ejdFgI63TztcLaequ58KwpuusMWVOLe2/V8X81
+ 4pvVCqc/csQBaQahn08onoR1EQBNfFDGpZ2ROCG/c52dUgsGYvKBl8jNFsFOVYJ7tGs0YXZSRaa
+ TyAf7ncMDLBNn6I1MaC9TlHw3R2D47Lop1cr0fCzxtVuryQYIY8=
+X-Received: by 2002:a05:600c:4585:b0:49c:fc6c:be16 with SMTP id
+ 5b1f17b1804b1-49cfea09f08mr5457135e9.28.1788514649551; 
+ Fri, 04 Sep 2026 02:37:29 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-49cf7703cefsm74247335e9.5.2026.09.04.01.29.25
+ 5b1f17b1804b1-49ce551bf7asm122422895e9.2.2026.09.04.02.37.29
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 04 Sep 2026 01:29:26 -0700 (PDT)
-X-Google-Original-From: "razvanc (Code Review)"
+ Fri, 04 Sep 2026 02:37:29 -0700 (PDT)
+X-Google-Original-From: "ralf_lici (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Fri, 4 Sep 2026 08:29:24 +0000
-To: srkyn <david@srkyn.com>
+Date: Fri, 4 Sep 2026 09:37:25 +0000
+To: plaisthos <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: comment
-X-Gerrit-PatchSet: 3
-X-Gerrit-Change-Id: Iacd56d245e9ab30cfb25b2b364ca661fa289dc55
-X-Gerrit-Change-Number: 1881
+X-Gerrit-MessageType: newpatchset
+X-Gerrit-PatchSet: 2
+X-Gerrit-Change-Id: Ic8c83132a4de64f27e6453ddb90ebcf137500db2
+X-Gerrit-Change-Number: 1735
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1881?usp=email>
-X-Gerrit-Commit: db8854f550226474ea84c377fdbc5024620f05e4
-X-Gerrit-Comment-Date: Fri, 4 Sep 2026 08:29:24 +0000
-In-Reply-To: <gerrit.1787849678000.Iacd56d245e9ab30cfb25b2b364ca661fa289dc55@gerrit.openvpn.net>
-References: <gerrit.1787849678000.Iacd56d245e9ab30cfb25b2b364ca661fa289dc55@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzg3ODQ5Njc4MDAwLklhY2Q1NmQyNDVlOWFiMzBjZmIyNWIyYjM2NGNhNjYxZmEyODlkYzU1QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <00eefa6276abf97b564161fbd33fe7fa3e3086a8-EmailReviewComments-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1735?usp=email>
+X-Gerrit-Commit: 5a088f96ab0d3b10e6d8c4f1bd3910a049909f1c
+In-Reply-To: <gerrit.1782545314000.Ic8c83132a4de64f27e6453ddb90ebcf137500db2@gerrit.openvpn.net>
+References: <gerrit.1782545314000.Ic8c83132a4de64f27e6453ddb90ebcf137500db2@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzgyNTQ1MzE0MDAwLkljOGM4MzEzMmE0ZGU2NGYyN2U2NDUzZGRiOTBlYmNmMTM3NTAwZGIyQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <6f20a2c281617a6ca8ecb2fcccf8ceec765b5ee4-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1x2PIk-0005P2-32
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: compat: close all
- unrelated fds in forked helpers
+X-Headers-End: 1x2QMa-0001OG-BW
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: init: create and
+ destroy Linux DCO devices with --mktun/--rmtun
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -138,227 +135,364 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "razvanc \(Code Review\) via Openvpn-devel"
+From: "ralf_lici \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
-Reply-To: razvanc@mailbox.org, arne-openvpn@rfc2549.org, david@srkyn.com,
- openvpn-devel@lists.sourceforge.net, gert@greenie.muc.de
-Cc: "razvanc \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>,
- plaisthos <arne-openvpn@rfc2549.org>
-Content-Type: multipart/mixed; boundary="===============5146561711630678240=="
+Reply-To: ralf@mandelbit.com, arne-openvpn@rfc2549.org,
+ openvpn-devel@lists.sourceforge.net
+Cc: "ralf_lici \(Code Review\)" <gerrit@openvpn.net>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: multipart/mixed; boundary="===============9184235344653123565=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============5146561711630678240==
+--===============9184235344653123565==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="fP4/iWQbD9o="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="Ag3J0+y4Rt8="; charset=UTF-8
 
---fP4/iWQbD9o=
+--Ag3J0+y4Rt8=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: srkyn=2E
+Attention is currently required from: plaisthos=2E
 
-razvanc has posted comments=
- on this change by srkyn=2E ( http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/188=
-1?usp=3Demail )
+Hello plaisthos, 
 
-Change subject: compat: close all unrelated fds in forked =
-helpers
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+I'd =
+like you to reexamine a change=2E Please visit
 
+    http://gerrit=2Eopenvpn=
+=2Enet/c/openvpn/+/1735?usp=3Demail
 
-Pat=
-ch Set 3:
+to look at the new patch set (#2)=2E
 
-(3 comments)
-
-File src/compat/close-fds=2Ec:
-
-http://gerrit=2Eop=
-envpn=2Enet/c/openvpn/+/1881/comment/1446d86a_fd3a4d1f?usp=3Demail :
-PS3, L=
-ine 1: /*
-It looks like all the other files in src/compat have a naming con=
-vention of compat-*=2Ec and shim a missing standard function, while close-f=
-ds=2Ec breaks both conventions=2E
-
-Maybe cron2 has a suggestion on where th=
-ese files best belong=2E At the very least, they should probably be renamed=
- compat-close-fds=2E{h,c}=2E
-
-
-http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/18=
-81/comment/321312d5_9afa555f?usp=3Demail :
-PS3, Line 64:     }
-This can pro=
-bably be done in a synonymous but shorter form, i=2Ee=2E something like (I =
-haven't tested this):
-
-```
-    bool closed =3D true;
-    unsigned int first=
- =3D 3;
-    if (keep >=3D 3)
-    {
-        if (keep > 3)
-        {
-        =
-    closed =3D close_range(3, (unsigned int)keep - 1, 0) =3D=3D 0;
-        =
-}
-        first =3D (unsigned int)keep + 1;
-    }
-    closed =3D close_rang=
-e(first, ~0U, 0) =3D=3D 0 && closed;
-    if (closed)
-    {
-        return;
 =
-    }
-```
+The following approvals got outdated and were removed:
+Code-Review-1 by pla=
+isthos
 
 
-File tests/unit_tests/openvpn/test_misc=2Ec:
-
-http://gerrit=2Eo=
-penvpn=2Enet/c/openvpn/+/1881/comment/c5ac903a_24a1ddba?usp=3Demail :
-PS3, =
-Line 544:         if (dup2(source, 100) < 0 || dup2(source, 200) < 0)
-The n=
-ew tests fail when `RLIMIT_NOFILE` =E2=89=A4 200 (e=2Eg=2E `ulimit -n  64` =
-causes them to fail=2E A CI container with a tight `NOFILE` breaks the test=
- suite=2E
+Change subject: init: create and destroy Linux DCO devices with --=
+mktun/--rmtun
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 
 
+init: create and destroy Linux DCO devices with --mktun/--rmtun
+
+When DCO=
+ is enabled on Linux, make --mktun create an ovpn interface
+instead of fall=
+ing back to a TUN device=2E Set the ovpn interface mode
+from --mode, using =
+MP for server mode and P2P otherwise=2E Handle --rmtun
+in the same branch b=
+y deleting the ovpn interface through the networking
+backend=2E
+
+Users can =
+still request the old userspace TUN behavior with
+--disable-dco=2E
+
+Change-=
+Id: Ic8c83132a4de64f27e6453ddb90ebcf137500db2
+Signed-off-by: Ralf Lici <ral=
+f@mandelbit=2Ecom>
+---
+M src/openvpn/init=2Ec
+1 file changed, 46 insertions=
+(+), 8 deletions(-)
+
+
+  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn=
+ refs/changes/35/1735/2
+
+diff --git a/src/openvpn/init=2Ec b/src/openvpn/in=
+it=2Ec
+index 1109a13=2E=2Eea1802d 100644
+--- a/src/openvpn/init=2Ec
++++ b/s=
+rc/openvpn/init=2Ec
+@@ -1085,21 +1085,59 @@
+     }
+ 
+ #if defined(ENABLE_DC=
+O)
+-    if (dco_enabled(options))
++    if (dco_enabled(options) && dev_type=
+_enum(options->dev, options->dev_type) =3D=3D DEV_TYPE_TUN)
+     {
+-       =
+ /* creating a DCO interface via --mktun is not supported as it does not
+- =
+        * make much sense=2E Since DCO is enabled by default, people may ru=
+n into
+-         * this without knowing, therefore this case should be prop=
+erly handled=2E
++#if defined(TARGET_LINUX)
++        if (options->persist_mo=
+de)
++        {
++            /* dco_available autoloads the kernel module=2E=
+ Use D_DCO_DEBUG
++             * because it could print "disabling data cha=
+nnel offload" which is
++             * misleading if you immediately fatal=
+=2E
++             */
++            if (!dco_available(D_DCO_DEBUG))
++       =
+     {
++                msg(M_FATAL, "Cannot create DCO device: ovpn kernel=
+ support unavailable=2E "
++                             "Install ovpn or us=
+e --disable-dco to create a TUN device=2E");
++            }
++
++            =
+struct tuntap *tt;
++
++            ALLOC_OBJ_CLEAR(tt, struct tuntap);
++    =
+        tt->type =3D DEV_TYPE_TUN;
++            tt->backend_driver =3D DRIV=
+ER_DCO;
++            tt->dco=2Eifmode =3D options->mode =3D=3D MODE_SERVER =
+? OVPN_MODE_MP : OVPN_MODE_P2P;
++
++            open_tun(options->dev, optio=
+ns->dev_type, options->dev_node, tt, ctx);
++            msg(M_INFO, "Create=
+d DCO device %s in %s mode", tt->actual_name,
++                options->mod=
+e =3D=3D MODE_SERVER ? "server" : "p2p");
++            free(tt->actual_name=
+);
++            free(tt);
++            return true;
++        }
++        els=
+e
++        {
++            int ret =3D net_iface_del(ctx, options->dev);
++  =
+          if (ret < 0)
++            {
++                msg(M_FATAL, "Cannot=
+ remove DCO device %s: %s (%d)", options->dev,
++                    strerro=
+r(-ret), ret);
++            }
++            msg(M_INFO, "Deleted DCO device =
+%s", options->dev);
++            return true;
++        }
++#else  /* if defi=
+ned(TARGET_LINUX) */
++        /* creating a non-Linux DCO interface via --m=
+ktun is not supported as it
++         * does not make much sense=2E Since D=
+CO is enabled by default, people may
++         * run into this without know=
+ing, therefore this case should be properly
++         * handled=2E
+        =
+  *
+          * Disable DCO if --mktun was provided and print a message to =
+let
+          * user know=2E
+          */
+-        if (dev_type_enum(option=
+s->dev, options->dev_type) =3D=3D DEV_TYPE_TUN)
+-        {
+-            msg=
+(M_WARN, "Note: --mktun does not support DCO=2E Creating TUN interface=2E")=
+;
+-        }
++        msg(M_WARN, "Note: --mktun does not support DCO=2E Cr=
+eating TUN interface=2E");
+ 
+         options->disable_dco =3D true;
++#endi=
+f /* defined(TARGET_LINUX) */
+     }
+ #endif
+ 
 
 -- 
-To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1=
-881?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit htt=
-p://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+To view, visit http://g=
+errit=2Eopenvpn=2Enet/c/openvpn/+/1735?usp=3Demail
+To unsubscribe, or for h=
+elp writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=
+=3Demail
 
-Gerrit-MessageType: commen=
-t
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Iacd56d24=
-5e9ab30cfb25b2b364ca661fa289dc55
-Gerrit-Change-Number: 1881
-Gerrit-PatchSet=
-: 3
-Gerrit-Owner: srkyn <david@srkyn=2Ecom>
-Gerrit-Reviewer: plaisthos <arn=
-e-openvpn@rfc2549=2Eorg>
-Gerrit-Reviewer: razvanc <razvanc@mailbox=2Eorg>
-G=
-errit-CC: cron2 <gert@greenie=2Emuc=2Ede>
-Gerrit-CC: openvpn-devel <openvpn=
--devel@lists=2Esourceforge=2Enet>
-Gerrit-Attention: srkyn <david@srkyn=2Eco=
-m>
-Gerrit-Comment-Date: Fri, 04 Sep 2026 08:29:24 +0000
-Gerrit-HasComments:=
- Yes
-Gerrit-Has-Labels: No
+Gerrit-Br=
+anch: master
+Gerrit-Change-Id: Ic8c83132a4de64f27e6453ddb90ebcf137500db2
+Ge=
+rrit-Change-Number: 1735
+Gerrit-PatchSet: 2
+Gerrit-Owner: ralf_lici <ralf@m=
+andelbit=2Ecom>
+Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Ger=
+rit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Atte=
+ntion: plaisthos <arne-openvpn@rfc2549=2Eorg>
 
---fP4/iWQbD9o=
+--Ag3J0+y4Rt8=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: srkyn=2E </p>
-<p><a href=3D"http://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1881?usp=3Demail">View Change</a></p><p>3 comments:</p><=
-ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding:=
- 0;"><p>File src/compat/close-fds=2Ec:</p><ul style=3D"list-style: none; pa=
-dding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin=
--bottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1881/co=
-mment/1446d86a_fd3a4d1f?usp=3Demail">Patch Set #3, Line 1:</a> <code style=
-=3D"font-family:monospace,monospace">/*</code></p><p class=3D"blocks" style=
-=3D"white-space: pre-wrap; word-wrap: break-word;">It looks like all the ot=
-her files in src/compat have a naming convention of compat-*=2Ec and shim a=
- missing standard function, while close-fds=2Ec breaks both conventions=2E<=
-/p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-wor=
-d;">Maybe cron2 has a suggestion on where these files best belong=2E At the=
- very least, they should probably be renamed compat-close-fds=2E{h,c}=2E</p=
-></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bott=
-om: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1881/comment=
-/321312d5_9afa555f?usp=3Demail">Patch Set #3, Line 64:</a> <code style=3D"f=
-ont-family:monospace,monospace">    }</code></p><p class=3D"blocks" style=
-=3D"white-space: pre-wrap; word-wrap: break-word;">This can probably be don=
-e in a synonymous but shorter form, i=2Ee=2E something like (I haven&#39;t =
-tested this):</p><pre class=3D"blocks" style=3D"font-family: monospace,mono=
-space; white-space: pre-wrap;">```<br>    bool closed =3D true;<br>    unsi=
-gned int first =3D 3;<br>    if (keep &gt;=3D 3)<br>    {<br>        if (ke=
-ep &gt; 3)<br>        {<br>            closed =3D close_range(3, (unsigned =
-int)keep - 1, 0) =3D=3D 0;<br>        }<br>        first =3D (unsigned int)=
-keep + 1;<br>    }<br>    closed =3D close_range(first, ~0U, 0) =3D=3D 0 &a=
-mp;&amp; closed;<br>    if (closed)<br>    {<br>        return;<br>    }<br=
->```</pre></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File tests=
-/unit_tests/openvpn/test_misc=2Ec:</p><ul style=3D"list-style: none; paddin=
-g: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bot=
-tom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1881/commen=
-t/c5ac903a_24a1ddba?usp=3Demail">Patch Set #3, Line 544:</a> <code style=3D=
-"font-family:monospace,monospace">        if (dup2(source, 100) &lt; 0 || d=
-up2(source, 200) &lt; 0)</code></p><p class=3D"blocks" style=3D"white-space=
-: pre-wrap; word-wrap: break-word;">The new tests fail when `RLIMIT_NOFILE`=
- =E2=89=A4 200 (e=2Eg=2E `ulimit -n  64` causes them to fail=2E A CI contai=
-ner with a tight `NOFILE` breaks the test suite=2E</p></li></ul></li></ul><=
-p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1881?=
-usp=3Demail">change 1881</a>=2E To unsubscribe, or for help writing mail fi=
-lters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail"=
->settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMes=
-sage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/Vi=
-ewAction"><link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/op=
-envpn/+/1881?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/=
-></div></div>
+rently required from: plaisthos=2E </p>
+<p>ralf_lici <strong>uploaded patch=
+ set #2</strong> to this change=2E</p><p><a href=3D"http://gerrit=2Eopenvpn=
+=2Enet/c/openvpn/+/1735?usp=3Demail">View Change</a></p><p>The following ap=
+provals got outdated and were removed:
+Code-Review-1 by plaisthos</p><pre c=
+lass=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre=
+-wrap;">init: create and destroy Linux DCO devices with --mktun/--rmtun<br>=
+<br>When DCO is enabled on Linux, make --mktun create an ovpn interface<br>=
+instead of falling back to a TUN device=2E Set the ovpn interface mode<br>f=
+rom --mode, using MP for server mode and P2P otherwise=2E Handle --rmtun<br=
+>in the same branch by deleting the ovpn interface through the networking<b=
+r>backend=2E<br><br>Users can still request the old userspace TUN behavior =
+with<br>--disable-dco=2E<br><br>Change-Id: Ic8c83132a4de64f27e6453ddb90ebcf=
+137500db2<br>Signed-off-by: Ralf Lici &lt;ralf@mandelbit=2Ecom&gt;<br>---<b=
+r>M src/openvpn/init=2Ec<br>1 file changed, 46 insertions(+), 8 deletions(-=
+)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/op=
+envpn refs/changes/35/1735/2</pre><pre style=3D"font-family: monospace,mono=
+space; white-space: pre-wrap;"><span>diff --git a/src/openvpn/init=2Ec b/sr=
+c/openvpn/init=2Ec</span><br><span>index 1109a13=2E=2Eea1802d 100644</span>=
+<br><span>--- a/src/openvpn/init=2Ec</span><br><span>+++ b/src/openvpn/init=
+=2Ec</span><br><span>@@ -1085,21 +1085,59 @@</span><br><span>     }</span><=
+br><span> </span><br><span> #if defined(ENABLE_DCO)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    if (dco_enabled(options))</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    if (dco_enabled(options) &amp=
+;&amp; dev_type_enum(options-&gt;dev, options-&gt;dev_type) =3D=3D DEV_TYPE=
+_TUN)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        /* creating a DCO interface via --mktun is not supported as =
+it does not</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         *=
+ make much sense=2E Since DCO is enabled by default, people may run into</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-         * this without =
+knowing, therefore this case should be properly handled=2E</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+#if defined(TARGET_LINUX)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        if (options-&gt;persis=
+t_mode)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            /* dco_ava=
+ilable autoloads the kernel module=2E Use D_DCO_DEBUG</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+             * because it could print &qu=
+ot;disabling data channel offload&quot; which is</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+             * misleading if you immediately f=
+atal=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (=
+!dco_available(D_DCO_DEBUG))</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+                msg(M_FATAL, &quot;Cannot create DCO device: ovpn kernel=
+ support unavailable=2E &quot;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+                             &quot;Install ovpn or use --disable=
+-dco to create a TUN device=2E&quot;);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      struct tuntap *tt;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            AL=
+LOC_OBJ_CLEAR(tt, struct tuntap);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+            tt-&gt;type =3D DEV_TYPE_TUN;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+            tt-&gt;backend_driver =3D D=
+RIVER_DCO;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   tt-&gt;dco=2Eifmode =3D options-&gt;mode =3D=3D MODE_SERVER ? OVPN_MODE_=
+MP : OVPN_MODE_P2P;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            open_tu=
+n(options-&gt;dev, options-&gt;dev_type, options-&gt;dev_node, tt, ctx);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            msg(M_INFO=
+, &quot;Created DCO device %s in %s mode&quot;, tt-&gt;actual_name,</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                options-&gt=
+;mode =3D=3D MODE_SERVER ? &quot;server&quot; : &quot;p2p&quot;);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+            free(tt-&gt;actua=
+l_name);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+ free(tt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   return true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        else</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+            int ret =3D net_ifa=
+ce_del(ctx, options-&gt;dev);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+            if (ret &lt; 0)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+                msg(M_FATAL, &quot;Cannot remove DCO device %s:=
+ %s (%d)&quot;, options-&gt;dev,</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+                    strerror(-ret), ret);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+            msg(M_INFO, &quot;Deleted DCO devi=
+ce %s&quot;, options-&gt;dev);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+            return true;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+#else  /* if defined(TARGET_LINUX) */</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        /* creating a non-Linux DCO interface via -=
+-mktun is not supported as it</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+         * does not make much sense=2E Since DCO is enabled by de=
+fault, people may</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+       * run into this without knowing, therefore this case should be prope=
+rly</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         * handl=
+ed=2E</span><br><span>          *</span><br><span>          * Disable DCO i=
+f --mktun was provided and print a message to let</span><br><span>         =
+ * user know=2E</span><br><span>          */</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-        if (dev_type_enum(options-&gt;dev, options-&=
+gt;dev_type) =3D=3D DEV_TYPE_TUN)</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+            msg(M_WARN, &quot;Note: --mktun does not support DCO=2E Creatin=
+g TUN interface=2E&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   msg(M_WARN, &quot;Note: --mktun does not support DCO=2E Creating TUN int=
+erface=2E&quot;);</span><br><span> </span><br><span>         options-&gt;di=
+sable_dco =3D true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+#endif /* defined(TARGET_LINUX) */</span><br><span>     }</span><br><span> =
+#endif</span><br><span> </span><br><span></span><br></pre><p>To view, visit=
+ <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1735?usp=3Demail">cha=
+nge 1735</a>=2E To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E=
+</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div items=
+cope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link =
+itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1735?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: comment </d=
-iv>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=
-=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"=
-> Gerrit-Change-Id: Iacd56d245e9ab30cfb25b2b364ca661fa289dc55 </div>
-<div s=
-tyle=3D"display:none"> Gerrit-Change-Number: 1881 </div>
-<div style=3D"disp=
-lay:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Ow=
-ner: srkyn &lt;david@srkyn=2Ecom&gt; </div>
-<div style=3D"display:none"> Ge=
-rrit-Reviewer: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<=
+div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 <div sty=
-le=3D"display:none"> Gerrit-Reviewer: razvanc &lt;razvanc@mailbox=2Eorg&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@greenie=2Emu=
-c=2Ede&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt=
-;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+le=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:n=
-one"> Gerrit-Attention: srkyn &lt;david@srkyn=2Ecom&gt; </div>
-<div style=
-=3D"display:none"> Gerrit-Comment-Date: Fri, 04 Sep 2026 08:29:24 +0000 </d=
-iv>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=
-=3D"display:none"> Gerrit-Has-Labels: No </div>
+one"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Chan=
+ge-Id: Ic8c83132a4de64f27e6453ddb90ebcf137500db2 </div>
+<div style=3D"displ=
+ay:none"> Gerrit-Change-Number: 1735 </div>
+<div style=3D"display:none"> Ge=
+rrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: ralf_lic=
+i &lt;ralf@mandelbit=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-R=
+eviewer: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"=
+display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourcefor=
+ge=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaistho=
+s &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
 
 </body></html>
---fP4/iWQbD9o=--
+--Ag3J0+y4Rt8=--
 
 
---===============5146561711630678240==
+--===============9184235344653123565==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============5146561711630678240==
+--===============9184235344653123565==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -369,5 +503,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============5146561711630678240==--
+--===============9184235344653123565==--
 
