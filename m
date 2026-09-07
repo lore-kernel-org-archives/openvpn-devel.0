@@ -4,69 +4,87 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id AD93FC79F99
-	for <openvpn-devel@archiver.kernel.org>; Mon,  7 Sep 2026 18:18:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2D89EC79FA0
+	for <openvpn-devel@archiver.kernel.org>; Mon,  7 Sep 2026 19:39:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:Cc:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=b4/prK63n/ztQ0i9mtG6fcvViaiBIzWDHsSPW5qzfYY=; b=lMM+xh5Sn7JU7pSk0E7OvAVoUi
-	KAs4qN26XGvnhnpZrEiXuu0/tYUI1Ca6sjCY0UAfMsA1DIFy6wjKLtf0wES7krvs2z0yMlCAM0mzg
-	S8jK/0SYjXGghDDwHQ76hhFYwwNbjyLJNvi/v8F1rS2RiWLpaecHkHjns+rLK1Mkb4GA=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:In-Reply-To:MIME-Version:References:Message-ID:To:From:Date:Sender:
+	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
+	:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=HTthTPFoABg2F7GtjI7uR3rcuSdQkvYa7DGsfAsci5U=; b=TuHvWf5IIZ5PJwefBikB45bKup
+	h/9clAJKab6eR8MSjSBdSG9bwbgy6Kfz2eFMumhYqEQbRAEu6wNsRyHZ7rAHX1I9awv1cIdpqbOQ1
+	4AFlFkUQuSxKRjAfeknGxJBjoLj1LpY7V3IMHhDdPL+NxgDPn3fKfoHDo3jbkGQSyD0w=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x3dux-0006Ew-Fk;
-	Mon, 07 Sep 2026 18:18:05 +0000
+	id 1x3fBF-0001Ik-Ho;
+	Mon, 07 Sep 2026 19:39:02 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1x3duv-0006Eq-EZ
+ (envelope-from <frank@lichtenheld.com>) id 1x3fBD-0001IM-R7
  for openvpn-devel@lists.sourceforge.net;
- Mon, 07 Sep 2026 18:18:02 +0000
+ Mon, 07 Sep 2026 19:39:01 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
+ d=sourceforge.net; s=x; h=In-Reply-To:Content-Type:MIME-Version:References:
+ Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=3g9fr4wqMNr38El/jhQkFSplrYzvHep1l65A0rDQSOg=; b=L56kZqcDeslv3Tw/+6LW+e316v
- LGG3Ky14W84ejFpDnB2VDy1Pehl2E4/uLDFQXh5WhX9vbMEDedj0Zpn/ne6uCRlEZH69sJbKzRYSB
- cMT2KImtJOtX0gdKAIQ7cg/xNMBl/CQeBusVo4n825fQxeQKbKyr4rQ+EZxmvvDw3c7I=;
+ bh=0yJF4FXHuBKxT//FGNPluDYseWjQeDSuMg0GKeBJzOo=; b=LcC1m0hwa/rhrAiak/gHcGPLqK
+ B+C1dsjNuHzikURZZpBt287Bg/l0sP2m264PgAH+l34t//OMYZ4Xi8QKwNqbrdUzztN+NzD7uJadK
+ BFb0DHXNi7CZovVyqgkg9TGoC+qv4ZZh4BXKRU2pUsq+MHqpGb1NZAx19zu9HSF9VVqs=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To
+ :From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=3g9fr4wqMNr38El/jhQkFSplrYzvHep1l65A0rDQSOg=; b=A9aagIyoKB2aOy3iYhgM6h7NyM
- ujLFY4LThu93u9Vze9a/2W/eKT8WrmYPvyPBy35DTfZhLluD4sR1rqZvrdURlsBYIngNwnORgwJWU
- d/s4G5xqi9agbpjYg8mFXI7CFw2FHDjPoYNXNogXlZA6FK+88heqA4X4EBRlUUDcwqHI=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ bh=0yJF4FXHuBKxT//FGNPluDYseWjQeDSuMg0GKeBJzOo=; b=YvUmlrUcq4PGOGqS7irAAJuHqM
+ 9LfIdpwdyViZOlDp0n9+/MWJ02M4cLMQR7GPEpwEw4zrUTpfTObVfanfUT3N0qKwkfVfP/lb+h3Y0
+ OrHnvfRmaAQORatRkRDOKNTYlqDMvNBhaqDL527XnK/sw0jmWlD2BjYrVC4SerQcw6D0=;
+Received: from mout-p-101.mailbox.org ([80.241.56.151])
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1x3dur-0005DF-JP for openvpn-devel@lists.sourceforge.net;
- Mon, 07 Sep 2026 18:18:02 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 687IHsC1013372
- for <openvpn-devel@lists.sourceforge.net>; Mon, 7 Sep 2026 20:17:54 +0200
-Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 687IHsMd013371
- for openvpn-devel@lists.sourceforge.net; Mon, 7 Sep 2026 20:17:54 +0200
-From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Mon,  7 Sep 2026 20:17:49 +0200
-Message-ID: <20260907181754.13356-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1787672720000.I65beb37a2d822333aa888de1baf11dfcb8490e90@gerrit.openvpn.net>
-References: <gerrit.1787672720000.I65beb37a2d822333aa888de1baf11dfcb8490e90@gerrit.openvpn.net>
+ id 1x3fBD-00072Q-J1 for openvpn-devel@lists.sourceforge.net;
+ Mon, 07 Sep 2026 19:39:00 +0000
+Received: from smtp202.mailbox.org (smtp202.mailbox.org
+ [IPv6:2001:67c:2050:b231:465::202])
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+ key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+ (No client certificate requested)
+ by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4hdy6z4Zhkz8t0M;
+ Mon, 07 Sep 2026 21:38:51 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lichtenheld.com;
+ s=MBO0001; t=1788809931;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=0yJF4FXHuBKxT//FGNPluDYseWjQeDSuMg0GKeBJzOo=;
+ b=u85MYoco2/3FAW4HoaaltEoawwZqtUbG1vPAq++VdIbsDFsS6mj/NHOmQCSrZ9kIe3ZY/+
+ AAJYAhtQ/rrybcOyDgGYfBl7anHUG2YY9EPsxtQfL6nAxiFHYgqpRXLcleqLgXgdyOSusv
+ ot0Ekmax23g/r1od9C5mQ4hPJYbVmqQ2Y/Q/n2RxVCSXLAK/q9jk9PiImnL55kSntBBoLK
+ gchAjP6J9mYFIgEyX+GihQXjtQuqcp5jIKxQ/udS+iD+XNcyuqGihpb8/JWZhrZYuB60Cx
+ QHnagm5U1rrYYfUZG366v19rJIvNXHohwSYznU2NaDTGFLRd1kn3IGP4A9x8+g==
+Authentication-Results: outgoing_mbo_mout; dkim=none;
+ spf=pass (outgoing_mbo_mout: domain of frank@lichtenheld.com designates
+ 2001:67c:2050:b231:465::202 as permitted sender)
+ smtp.mailfrom=frank@lichtenheld.com
+Date: Mon, 7 Sep 2026 21:38:49 +0200
+From: Frank Lichtenheld <frank@lichtenheld.com>
+To: Gert Doering <gert@greenie.muc.de>
+Message-ID: <ap8Sye4MWwMGbaQv@flichtenheld-TUXEDO-InfinityBook-S-15-17-Gen7>
+References: <20260907154412.29523-1-gert@greenie.muc.de>
+ <202609071813.687IDgCV038538@chekov.greenie.muc.de>
 MIME-Version: 1.0
-X-Headers-End: 1x3dur-0005DF-JP
-Subject: [Openvpn-devel] [PATCH v3] run-cppcheck.sh: Make it more
- configurable
+Content-Disposition: inline
+In-Reply-To: <202609071813.687IDgCV038538@chekov.greenie.muc.de>
+X-Rspamd-Queue-Id: 4hdy6z4Zhkz8t0M
+X-Headers-End: 1x3fBD-00072Q-J1
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Convert Changes.rst to
+ Markdown
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -78,93 +96,24 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Cc: openvpn-devel@lists.sourceforge.net
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@lichtenheld.com>
+On Mon, Sep 07, 2026 at 08:13:42PM +0200, Gert Doering wrote:
+> Nothing to test here :-)  (except for "distcheck" but that should be fine).
+> 
+> Your patch has been applied to the master branch.
+> 
+> Do we want to do that for 2.7 as well?
 
-- Allow to easily control verbosity and automatically
-  adjust to the verbosity of the Make run
-- Allow to easily control check level. With exhaustive the
-  check can take hours (due to options.c), so we couldn't
-  use that in CI
+Yes, we should do that. Otherwise it will only save us time during
+releasing in two years ;) I will see when I get around to it.
 
-v3:
-- Use AM_V_P instead of V to correctly reflect
-  AM_DEFAULT_VERBOSITY
-
-Change-Id: I65beb37a2d822333aa888de1baf11dfcb8490e90
-Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
-Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1868
----
-
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
-
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1868
-This mail reflects revision 3 of this Change.
-
-Acked-by according to Gerrit (reflected above):
-Razvan Cojocaru <razvanc@mailbox.org>
-
-        
-diff --git a/Makefile.am b/Makefile.am
-index feeaabb..dd6cee6 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -96,4 +96,5 @@
- 	BUILD_DIR="$(abs_top_builddir)" \
- 	SOURCE_DIR="$(abs_top_srcdir)" \
- 	INCLUDE_FLAGS="$(LIBNL_GENL_CFLAGS)" \
-+	CPPCHECK_VERBOSE="$(AM_V_P)" \
- 		"$(top_srcdir)/dev-tools/run-cppcheck.sh"
-diff --git a/dev-tools/run-cppcheck.sh b/dev-tools/run-cppcheck.sh
-index a7aa3c4..fc14405 100755
---- a/dev-tools/run-cppcheck.sh
-+++ b/dev-tools/run-cppcheck.sh
-@@ -2,22 +2,37 @@
- 
- set -eu
- 
-+: ${CPPCHECK_VERBOSE:=false}
-+: ${CPPCHECK_CHECK_LEVEL:=exhaustive}
-+
-+if "${CPPCHECK_VERBOSE}"; then
-+    verbosity_arg="-v"
-+else
-+    verbosity_arg="-q"
-+fi
-+
-+disable_arg=
-+if [ "${CPPCHECK_CHECK_LEVEL}" != exhaustive ]; then
-+    # suppress all the information that we should use exhaustive
-+    disable_arg="--disable=information"
-+fi
-+
- SCRIPT_DIR=$(dirname $(readlink -e "${BASH_SOURCE[0]}"))
- : ${SOURCE_DIR:=$SCRIPT_DIR/..}
- : ${BUILD_DIR:=$PWD}
- : ${INCLUDE_FLAGS:=}
- CPPCHECK_DIR="${BUILD_DIR}/cppcheck_build_dir"
--COMMON_ARGS="-j$(nproc) -q \
-+COMMON_ARGS="-j$(nproc) ${verbosity_arg} \
-  -DMBEDTLS_SSL_PROTO_TLS1_3 -DMBEDTLS_SSL_KEYING_MATERIAL_EXPORT \
-  -I./include/ -I./tests/unit_tests/openvpn/ \
-  -I./src/compat/ -I./src/openvpn/ -I./src/openvpnserv/ -I./src/plugins/auth-pam/ \
-  -I${BUILD_DIR} -I${BUILD_DIR}/include/ \
-- --enable=all \
-+ --enable=all ${disable_arg} \
-  --library=${SCRIPT_DIR}/openvpn-cppcheck-library.cfg \
-  --library=openssl.cfg \
-  --suppressions-list=${SCRIPT_DIR}/cppcheck-suppression \
-  --cppcheck-build-dir=${CPPCHECK_DIR} \
-- --check-level=exhaustive --max-configs=10 \
-+ --check-level=${CPPCHECK_CHECK_LEVEL} --max-configs=10 \
-  --error-exitcode=1"
- 
- set -x
+Regards,
+-- 
+  Frank Lichtenheld
 
 
 _______________________________________________
