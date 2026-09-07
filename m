@@ -4,113 +4,113 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6EFE0C79FAA
-	for <openvpn-devel@archiver.kernel.org>; Mon,  7 Sep 2026 18:14:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7B704C79F99
+	for <openvpn-devel@archiver.kernel.org>; Mon,  7 Sep 2026 18:14:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=trMyXBBphvItw+gYgJfcx2y/r5JhlCv0rXeE7iTLtO8=; b=PUg3UTDRgSzB+km6/AHfa0VSlb
-	MvQRKPGxdyNSQoWsUUGUNlRplvntFsMVIrzuNGbuV0w7W6rNNx7D9DkVTSqiTUwRcMbNUPhS3N6Wz
-	vLYqyAd5JwK4hTjggAw/+O+j4b5mCGY4xDLH+dDV8kNIDwvLiYElRsoCW+b4ekf2CeVo=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=4uvvVSXS5bF/9GsPRDa9BONSKXvUzvvYPvAJFu7ykKQ=; b=OmhrbZnSO6lQ0uMWEBLAwwVudE
+	JiN+KxDE4VK40zeje/t8TMhFXWf8JV1O9RJmbuCqUA8Q/T2cSqVmZxTdCEZT4K7/zWViO1nX2yudE
+	7MslCjY7ziY6WJn1b4d8Go3dhMXfP1j4OHGFKYVsGJLwPzNpxrUxjcfoLZKmmQES0zM4=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x3drF-00068E-Vg;
-	Mon, 07 Sep 2026 18:14:15 +0000
+	id 1x3drC-0001zf-28;
+	Mon, 07 Sep 2026 18:14:14 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1x3drD-000687-Vg
+ (envelope-from <gerrit@openvpn.net>) id 1x3drA-0001zX-FK
  for openvpn-devel@lists.sourceforge.net;
- Mon, 07 Sep 2026 18:14:13 +0000
+ Mon, 07 Sep 2026 18:14:12 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
  :List-Post:List-Owner:List-Archive;
- bh=wTJjSQfuRvknmc+HUkFUk4HSm8EhQ5cdUFJMAxBjHMI=; b=EbW36yMBbHnQyD/tbOj/fQx7rw
- IZ4mGbmQbiuEapdPGyOcJyFno6oXwu6OjliXSiP9r3J5XQQteiFzCGp21D85+zmT85JGOEG6SixJp
- W9NQqCD+Ug4VP+1f3aZPyxMRuiAEUAhhDrPzYej4ue/NBSnR/EjsFg3pn5F+/fKhjb+s=;
+ bh=CrvtvJbB3mX4chZrHkrv5GZ+nwmg/hfuQ4Q0XgVNDok=; b=lJJ7TQQNoVlqBV/5wu+MZwHk0m
+ yUGTcni3lK/eq4cDwQm1pdJyS2Xx8HGowyGIbqzhBE0i0Rgdx8unX7QkE+Zxaf6DQ2SMLcg4NlGBI
+ TewFXEm0CvJdWkYiml00Hvth2RBAWQOakawDebsEu3R5VautD+eaW09ZoDiya++djePk=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
  Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=wTJjSQfuRvknmc+HUkFUk4HSm8EhQ5cdUFJMAxBjHMI=; b=D
- t0xnEvzZWxU1zW2cZ4dOvLNz7jACIgvQTjowN1R98CNflu2rcrHAPCcISw9X3aBQVcEHot0jTDeBR
- PfWVrpdwfZ6axXXE75TKERUzK+JR1PILaAbNQYPnelDyuOjdD6/HMzwsokRGiVT8K7UICxuKW4hcH
- K6ntGS9V5pPR6nSw=;
-Received: from mail-wr1-f50.google.com ([209.85.221.50])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ List-Owner:List-Archive; bh=CrvtvJbB3mX4chZrHkrv5GZ+nwmg/hfuQ4Q0XgVNDok=; b=a
+ KeGSEMrK5lZN7y0E92d+U+3tq70b2OMHwNKcsVq5niJHTZaqDdeM93f7kL7YKCo6ylXyDgNtPA/wW
+ 6BvHWbYWnWq2v7vj7fJQS2UG/emBifYjOLVox7Ec8jhmZJTOPFVJJJd5BsFu7lZ7SFCKim3uiYN7a
+ eA/0jhwqaUJLBs4A=;
+Received: from mail-wm1-f49.google.com ([209.85.128.49])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1x3dr2-00017Y-Tt for openvpn-devel@lists.sourceforge.net;
- Mon, 07 Sep 2026 18:14:13 +0000
-Received: by mail-wr1-f50.google.com with SMTP id
- ffacd0b85a97d-482e257a23aso2703963f8f.0
+ id 1x3dr2-00056V-0P for openvpn-devel@lists.sourceforge.net;
+ Mon, 07 Sep 2026 18:14:12 +0000
+Received: by mail-wm1-f49.google.com with SMTP id
+ 5b1f17b1804b1-49b0d78a801so38694105e9.2
  for <openvpn-devel@lists.sourceforge.net>;
- Mon, 07 Sep 2026 11:14:04 -0700 (PDT)
+ Mon, 07 Sep 2026 11:14:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1788804838; x=1789409638; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1788804837; x=1789409637; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=wTJjSQfuRvknmc+HUkFUk4HSm8EhQ5cdUFJMAxBjHMI=;
- b=Wy0iije9/pQriPRz64ARaLGbLrz6BnytCT9qr/Hcpo+2smS16meIb0Sk6IqURo7BDf
- Az6wlMJvsSTbFtbMaaIzwdXcCzmyUANcYVUyLvZGkw6eEx5MgtZQu/jGD03yfN7ZFuYO
- sC4o1/IN+ozzpGXUYhjUiOwfk1C6BDWii8ymWgT7igcZrjemwvIXBoudcQ1qq/1eOaiE
- 5hk4iIbJAqR5ANODlHd3hN5LxooCSLd+I2sWnSvJ0IrUlKshFRnZ5vUlntz6kWH4F73/
- OAZY+WSCeTPnO53ZDW6VNpyBOe/Z/Mb+AA8LBJ0IkuArbPWyQ9Qyc/nDfzys4v51nbQn
- APXw==
+ bh=CrvtvJbB3mX4chZrHkrv5GZ+nwmg/hfuQ4Q0XgVNDok=;
+ b=gacCf4W1GkxwUV3ZxOdGp5uFEeBXxn6ibwYE4OCHcqocDE87UFT+5B544dATzU9oFc
+ iVydW79ETi+DBIc5bGZO7W73lV4G6f3fPyh6n4OD1Zza5YUAR/895d6VHCNfjP4eWAvi
+ y2ugx4j4Jgk56vodIjYgBYUKWRDWoS5hmpV2fIlKrkUw7wMdEOAC81KmUvQDvDly7fQy
+ NPVDRQDyZnkfYMu98DseL2cPOxP0EAnA2wPhS9XKFFRp0EF14w+9Z1gOICnZH8ileudb
+ 8lP8XNiPz+Md5hMQ/SXLi1OFeP/FsMNUy8YvW5A+heOvlAEUD05w7wq0+7nTFcn7TIf6
+ akdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1788804838; x=1789409638;
+ d=1e100.net; s=20251104; t=1788804837; x=1789409637;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=wTJjSQfuRvknmc+HUkFUk4HSm8EhQ5cdUFJMAxBjHMI=;
- b=UghB+8DXkjwCDnXvNhtgzsoEmDUEVwRewM9dsCwde+aM6TnvPGzra8YGC59Ejz8HhV
- +Jops12sAovCB+a1YKLkp/Lr9VRRI0ynxjoPabb/m3ZJZbamOHaaxPRt+0naH99dpXDH
- 7w7IsXyLco422P/AkHKPiL65CamygpFT+PmNuQSBTddALB+JZAtMkcTdmkwxsq3RFs2+
- d4MqELJDVogE7M1t5YF8IqdGbXRIB7W8oU9H8IkwLu3kx0t8TAgFCZCE+KmgMOfXCXQO
- XfzzJm59VWk+wJ3fpgj5tuKJKls1SUlCdwu6Cz3LZPNysp673LGpJsid1KMUsltSY+CJ
- 23sg==
-X-Forwarded-Encrypted: i=1;
- AKwUvByA5P2zyMbV30lj+oZhuW0VezBilcexBV6czP5SR+MoClSl7UpyH7BSYhdSX2QGaB61Q1NmJdQCIc5Es4SJ@lists.sourceforge.net
-X-Gm-Message-State: AFuF++k28ki99uaC6LwViTtOs/8qAjEu4B8QB03VhGPxyR2tqC6DL9Qx
- 7o47OldNIhFDwdPBfBkSd5sO6shKyuLF3+thfS0K065spnQW/Of+APt5mei8Lul/s1rvJFJiqtW
- Cl9jS9xawmIrjTGZRQmVz2867+Dm33ZDAVKl5e12VeAMRKoTVJMRU5D9GRh7ZeW1G2sBG
-X-Gm-Gg: AYBFou2979rvXr2DbPkmSHp9YN/GNF9UtbBJbPQsNvMLSZZwxzBq50iLkvctlKVof6b
- QB9opNxDq9fJanAuCU+Vn0F8bVr/0DJeTNBupxCFo++Q74U4UkxlmXhUeqZ2yY+BmDo5JQ3qj0s
- SczT9alihct6eldLjeePEW9qsyZcjCRwZzxYlLLwem9w+dsMwLPJvXpp2iWuRIuwzJ35FOrNiTx
- Ep8RR7b3SbioQ4XkgPH5rR2ORADezt+dqQZ22fbABpfr2MYvsPRKorpktB8nB9j9q7rRHEjtPCb
- 2MwlKdkPVQbaORAmK3Cq5X3U/1j95FoAbbn8dhlz5WLnqrdCeT6mvOcL52o9glXQrOY/2AuUNgK
- x5vXjoN11Lvh7ez4cPpgoTcRFt8iUPvN7TOnyN8dWyN6CKNmtnwA8FJQ1uFYUJEJp14Vy6GKzth
- w+lXis3JMfOLw+DnynIjhjvgqgDGU7+XNsFjMiXoe9/2tGC4ZOR3DMeUGDkSxyudr3vT5FcJTk5
- U4PLgJNPPMXeQN2q4xnZOveaYJq7RfQjZ2Qm0/NmkWkggvVpFALG6LerakTYKcx/jkaE2TXB3sc
- Hathq8QLyjBW/Wnp4Hs+CaHMRWBSL+OrHKWfEJKXg7mHh+OcLus=
-X-Received: by 2002:a5d:584f:0:b0:485:9309:6f07 with SMTP id
- ffacd0b85a97d-4859309765fmr17364465f8f.26.1788804836698; 
- Mon, 07 Sep 2026 11:13:56 -0700 (PDT)
+ bh=CrvtvJbB3mX4chZrHkrv5GZ+nwmg/hfuQ4Q0XgVNDok=;
+ b=A5BBFQw1DJ+V3phdf3/AJDt8zAsFmuEPm+swNFuF3FUGfOs8wVKEzGVIX2WZnAaM3c
+ Ztr/YoPGsFWcTDO6s2r2G8xwPvDJytRHozkuZafse1gEAED9ZKyOO2GNCK+q3QHyqo28
+ FNe1acbOXTDLJVggjIjZBRIGOEV6kVnmgXcqvC6DBb8o4yAfb49Tg8MtgwGChJob7gHB
+ Im80wDomAHy4drId+gCr/imLoqolmFZGAYpmfyRXGk68iS2JshoHmTxBku7SiEGwC000
+ XgNg5IAmX6X1Md+mMRSoErL193rPiSDoNSqv4VyUheGOaAA6wMeDRWLgmwAdNGln3jVn
+ o/EQ==
+X-Gm-Message-State: AFuF++lld2dEonBs57FM76VKovRD53jPw9S8mutInUMWkaF4rQss9Gwy
+ dYqJghRrqGvOUAhySio7x89dTlXblV5usrpP0qby3yWtAmiFEIb+u6DOkXwUD3MRjdIV+N62fu0
+ +hf07453MOx8BhsTZ5g/snkPc5tj3JDo7KLecMzzCFLbPw4VijaHYij2hk0wPk9ZJvEAbyrAsje
+ kJMwQKSw==
+X-Gm-Gg: AYBFou2Chjx6I2OISmPPnopglxINkcfOlZKNDB7+/83zPUtahtaGl6dKO6npu1g1kBy
+ qpe40mnFNRxi0xISM5ttbv5D9gO/NLmltdAK3u8ZW7a1R45zaCuKviaUJ9zTRH36ZFTcXgYPKuk
+ oAGi8Qh3GkecVq0Rq+h5LOxzUx6BXUJ+t04cdRw9o94QLa4QjGl2hLs0GAJY8ZpmqUL/kRFWXmF
+ NdhPpBoqHDTrg+XIPHtuKYD+DB5mcn5dpSJePeKC1Q9ILzsyBvPzZMwZ0MrmJekMDG3jPcZhqtS
+ fuIxKNeLJszQYcIZNhBtWz7h93KhiEvi8LlemH5C2caWC1pMLc+VqlF41Svm3A9wzMVmx+yUY8m
+ +nyMSL/dkFtNu8X4WA96b5K2ezKCoI9yVmCJy+p7J5LHRVlQOMj91XudMpoEAcfYtx7Ytt8e/bl
+ 3yIzLPcSHLjaNx+IJQAPRqJ/LS+aeTdb6jg10L5ymI16KYeqdoewZrqrwXWlB1GU1LXtL8NG0Sl
+ WgSPQ920PjlV8HUlxHrFehL6dqb4zWCAE0T/zPTBfSdmOaoBrKwbMm7LHngfrYCnHaIkXv5Sw9+
+ qF3dybIE1v0EfZzb1SOxPDCPgsQjPJWhZU7dLNBTR7iqe5YcTic=
+X-Received: by 2002:a05:600c:46d5:b0:49c:fc6c:be04 with SMTP id
+ 5b1f17b1804b1-49cfc6cc091mr203169535e9.27.1788804835272; 
+ Mon, 07 Sep 2026 11:13:55 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-4859162f354sm22625509f8f.20.2026.09.07.11.13.55
+ 5b1f17b1804b1-49cfd3f815bsm236935075e9.4.2026.09.07.11.13.54
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 07 Sep 2026 11:13:55 -0700 (PDT)
+ Mon, 07 Sep 2026 11:13:54 -0700 (PDT)
 X-Google-Original-From: "cron2 (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Mon, 7 Sep 2026 18:13:55 +0000
-To: flichtenheld <frank@lichtenheld.com>
+Date: Mon, 7 Sep 2026 18:13:52 +0000
+To: flichtenheld <frank@lichtenheld.com>, plaisthos <arne-openvpn@rfc2549.org>,
+ razvanc <razvanc@mailbox.org>
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: merged
+X-Gerrit-MessageType: newpatchset
 X-Gerrit-PatchSet: 3
 X-Gerrit-Change-Id: I8887fa7ccf407d727c2b59397000149e45487e13
 X-Gerrit-Change-Number: 1767
@@ -120,10 +120,10 @@ X-Gerrit-Commit: 57b1f870a76dbe94dbf8dc6a4d22d1a225a42578
 In-Reply-To: <gerrit.1782994293000.I8887fa7ccf407d727c2b59397000149e45487e13@gerrit.openvpn.net>
 References: <gerrit.1782994293000.I8887fa7ccf407d727c2b59397000149e45487e13@gerrit.openvpn.net>
 Thread-Index: PGdlcnJpdC4xNzgyOTk0MjkzMDAwLkk4ODg3ZmE3Y2NmNDA3ZDcyN2MyYjU5Mzk3MDAwMTQ5ZTQ1NDg3ZTEzQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <c22a4531b742288d86c2c48cc356a7ffee017305-HTML@gerrit.openvpn.net>
+Message-ID: <c22a4531b742288d86c2c48cc356a7ffee017305-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1x3dr2-00017Y-Tt
+X-Headers-End: 1x3dr2-00056V-0P
 Subject: [Openvpn-devel] [XL] Change in openvpn[master]: Convert Changes.rst
  to Markdown
 X-BeenThere: openvpn-devel@lists.sourceforge.net
@@ -142,616 +142,622 @@ From: "cron2 \(Code Review\) via Openvpn-devel"
 Reply-To: gert@greenie.muc.de, arne-openvpn@rfc2549.org, razvanc@mailbox.org,
  openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com
 Cc: "cron2 \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>,
- plaisthos <arne-openvpn@rfc2549.org>
-Content-Type: multipart/mixed; boundary="===============4272062365968240308=="
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: multipart/mixed; boundary="===============5852978360916733229=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============4272062365968240308==
+--===============5852978360916733229==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="x4c+AxinNkw="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="nNhD4lcniuk="; charset=UTF-8
 
---x4c+AxinNkw=
+--nNhD4lcniuk=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change=2E ( http://gerrit=2Eopenvpn=2Enet/c/openvp=
-n/+/1767?usp=3Demail )
+cron2 has uploaded a new patch set (#3) to the change originally created by=
+ flichtenheld=2E ( http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1767?usp=3Dema=
+il )
+
+The following approvals got outdated and were removed:
+Code-Review+2 =
+by razvanc
+
 
 Change subject: Convert Changes=2Erst to Markdown
-=
+=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-Convert Chang=
-es=2Erst to Markdown
+Convert Changes=2Erst to =
+Markdown
 
-Since all of our release publishing infrastructure no=
-w uses
-Markdown (Wiki, Forums, Github), preparing this documentation
-in rst=
- just creates more work for the people creating the
-release (so often me ;)=
-)=2E
+Since all of our release publishing infrastructure now uses
+Markd=
+own (Wiki, Forums, Github), preparing this documentation
+in rst just create=
+s more work for the people creating the
+release (so often me ;))=2E
 
-This conversion to Markdown tries to also fix several instances
-of we=
-ird formatting=2E But I tried to limit myself to not go
-too much in the dir=
-ection of actually "improving" the text=2E
+This c=
+onversion to Markdown tries to also fix several instances
+of weird formatti=
+ng=2E But I tried to limit myself to not go
+too much in the direction of ac=
+tually "improving" the text=2E
 
-The biggest changes come due to=
- the missing support for
-<dl> style lists in MarkDown=2E We work around thi=
-s by
-converting to a <ul> and manually adding a bold paragraph
-with the "ti=
-tle"=2E
+The biggest changes come due to the missing=
+ support for
+<dl> style lists in MarkDown=2E We work around this by
+convert=
+ing to a <ul> and manually adding a bold paragraph
+with the "title"=2E
 
-v2:
+v2:=
+
 - reformat feature lists as ul
 
-Change-Id: I8887fa7ccf407d727c=
-2b59397000149e45487e13
-Signed-off-by: Frank Lichtenheld <frank@lichtenheld=
-=2Ecom>
-Acked-by: Razvan Cojocaru <razvanc@mailbox=2Eorg>
-Gerrit URL: https=
-://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1767
-Message-Id: <20260907154412=2E29=
-523-1-gert@greenie=2Emuc=2Ede>
-URL: https://www=2Email-archive=2Ecom/openvp=
-n-devel@lists=2Esourceforge=2Enet/msg38990=2Ehtml
-Signed-off-by: Gert Doeri=
-ng <gert@greenie=2Emuc=2Ede>
+Change-Id: I8887fa7ccf407d727c2b5939700014=
+9e45487e13
+Signed-off-by: Frank Lichtenheld <frank@lichtenheld=2Ecom>
+Acked=
+-by: Razvan Cojocaru <razvanc@mailbox=2Eorg>
+Gerrit URL: https://gerrit=2Eo=
+penvpn=2Enet/c/openvpn/+/1767
+Message-Id: <20260907154412=2E29523-1-gert@gr=
+eenie=2Emuc=2Ede>
+URL: https://www=2Email-archive=2Ecom/openvpn-devel@lists=
+=2Esourceforge=2Enet/msg38990=2Ehtml
+Signed-off-by: Gert Doering <gert@gree=
+nie=2Emuc=2Ede>
 ---
 A Changes=2Emd
 D Changes=2Erst
-M Makefile=
-=2Eam
-3 files changed, 1,458 insertions(+), 1,481 deletions(-)
+M Makefile=2Eam
+3 files =
+changed, 1,458 insertions(+), 1,481 deletions(-)
 
 
+  git pull ssh://gerrit=
+=2Eopenvpn=2Enet:29418/openvpn refs/changes/67/1767/3
 
-
-diff --g=
-it a/Changes=2Emd b/Changes=2Emd
+diff --git a/Changes=
+=2Emd b/Changes=2Emd
 new file mode 100644
-index 0000000=2E=2E26=
-84251
---- /dev/null
+index 0000000=2E=2E2684251
+--- /d=
+ev/null
 +++ b/Changes=2Emd
 @@ -0,0 +1,1457 @@
-+# Overview of ch=
-anges in 2=2E8
++# Overview of changes in 2=
+=2E8
 +
 +## User-visible Changes
 +
-+* **Parsing Distinguished Name=
-s in certificates**
++* **Parsing Distinguished Names in certi=
+ficates**
 +
-+  (OpenSSL backend:) OpenVPN now rejects certificate=
-s that have a null-byte
-+  inside any of the field values of their subject=
-=2E To avoid ambiguity in the
-+  parsed subject, OpenVPN escapes the follow=
-ing characters by prefixing them with
++  (OpenSSL backend:) OpenVPN now rejects certificates that hav=
+e a null-byte
++  inside any of the field values of their subject=2E To avoi=
+d ambiguity in the
++  parsed subject, OpenVPN escapes the following charact=
+ers by prefixing them with
 +  a backslash:
 +
-+  * " " (space) at=
- the start or end of a field,
++  * " " (space) at the start =
+or end of a field,
 +  * "#" at the start of a field,
-+  * ",", "=
-+", """, "\", "<", ">" and ";" anywhere=2E
++  * ",", "+", """, "\=
+", "<", ">" and ";" anywhere=2E
 +
-+  As a result, if you use the=
- option `--verify-x509-name <expected subject>`,
-+  you need to prefix thes=
-e characters with a backslash in your configuration=2E
-+  The subject passe=
-d to a `--tls-verify` script is escaped in the same way and
-+  you may need=
- to adjust your script=2E
++  As a result, if you use the option `--=
+verify-x509-name <expected subject>`,
++  you need to prefix these character=
+s with a backslash in your configuration=2E
++  The subject passed to a `--t=
+ls-verify` script is escaped in the same way and
++  you may need to adjust =
+your script=2E
 +
-+  (Mbed TLS backend:) The behavior has not cha=
-nged=2E Subjects with null-bytes were
-+  already rejected (assuming OpenVPN=
- was built with Mbed TLS 3=2E5 or later) and
-+  the characters mentioned ab=
-ove were already escaped=2E However, the behavior of
-+  Mbed TLS is slightl=
-y different from OpenSSL in that it also escapes "=3D"=2E
++  (Mbed TLS backend:) The behavior has not changed=2E Sub=
+jects with null-bytes were
++  already rejected (assuming OpenVPN was built =
+with Mbed TLS 3=2E5 or later) and
++  the characters mentioned above were al=
+ready escaped=2E However, the behavior of
++  Mbed TLS is slightly different=
+ from OpenSSL in that it also escapes "=3D"=2E
 +
-+# Overview of =
-changes in 2=2E7
++# Overview of changes in =
+2=2E7
 +
 +## New features
 +
-+* **Multi-socket support for servers=
-**
++* **Multi-socket support for servers**
 +
-+  OpenVPN servers now can listen on multiple sockets at the same time=
-=2E Multiple
-+  `--local` statements in the configuration can be used to co=
-nfigure this=2E This
-+  way the same server can e=2Eg=2E listen for UDP and=
- TCP connections at the same
-+  time, or listen on multiple addresses and/o=
-r ports=2E
++  Ope=
+nVPN servers now can listen on multiple sockets at the same time=2E Multipl=
+e
++  `--local` statements in the configuration can be used to configure thi=
+s=2E This
++  way the same server can e=2Eg=2E listen for UDP and TCP connec=
+tions at the same
++  time, or listen on multiple addresses and/or ports=2E
+=
 +
-+* **Client implementations for DNS options sent by server for=
- Linux/BSD/macOS**
++* **Client implementations for DNS options sent by server for Linux/BSD/=
+macOS**
 +
-+  Linux, BSD and macOS versions of OpenVPN now ship w=
-ith a per-platform default
-+  `--dns-updown` script that implements proper =
-handling of DNS configuration sent
-+  by the server=2E The scripts should w=
-ork on systems that use `systemd` or
-+  `resolveconf` to manage the DNS set=
-up, as well as raw `/etc/resolv=2Econf` files=2E
-+  However, the exact feat=
-ures supported will depend on the configuration method=2E
-+  On Linux and M=
-acOS this should usually make split-DNS configurations supported
-+  out-of-=
-the-box now=2E
-+
-+  Note that this new script will not be used by default i=
-f a `--up` script is
-+  already in use to reduce problems with backwards co=
-mpatibility=2E
-+
-+  See documentation for `--dns-updown` and `--dns` for mo=
-re details=2E
-+
-+* **New client implementation for DNS options sent by serv=
-er for Windows**
-+
-+  The Windows client now uses NRPT (Name Resolution Pol=
-icy Table) to handle DNS
-+  configurations=2E This adds support for split-D=
-NS and DNSSEC and improves the
-+  compatbility with local DNS resolvers=2E =
-Requires the interactive service=2E
-+
-+* **On Windows the `block-local` fla=
-g is now enforced with WFP filters=2E**
-+
-+  The `block-local` flag to `--r=
-edirect-gateway` and `--redirect-private` is now
-+  also enforced via the W=
-indows Firewall, making sure packets can't be sent to the
-+  local network=
-=2E This provides stronger protection against TunnelCrack-style
-+  attacks=
++  Linux, BSD and macOS versions of OpenVPN now ship with a per-p=
+latform default
++  `--dns-updown` script that implements proper handling of=
+ DNS configuration sent
++  by the server=2E The scripts should work on syst=
+ems that use `systemd` or
++  `resolveconf` to manage the DNS setup, as well=
+ as raw `/etc/resolv=2Econf` files=2E
++  However, the exact features suppor=
+ted will depend on the configuration method=2E
++  On Linux and MacOS this s=
+hould usually make split-DNS configurations supported
++  out-of-the-box now=
 =2E
 +
-+* **Windows network adapters are now generated on demand**
++  Note that this new script will not be used by default if a `--up` =
+script is
++  already in use to reduce problems with backwards compatibility=
+=2E
 +
-+  This=
- means that on systems that run multiple OpenVPN connections at the same
-+ =
- time the users don't need to manually create enough network adapters anymo=
-re (in
-+  addition to the ones created by the installer)=2E
++  See documentation for `--dns-updown` and `--dns` for more details=
+=2E
 +
-+* **Windows =
-automatic service now runs as an unpriviledged user**
++* **New client implementation for DNS options sent by server for Win=
+dows**
 +
-+  All tasks that n=
-eed privileges are now delegated to the interactive service=2E
-+  **NOTE** =
-this has the risk of breaking existing setups if the Windows
-+  certificate=
- store is used (cryptoapi), and the certificates are not readable for
-+  `N=
-T SERVICE\OpenVPNService`=2E
++  The Windows client now uses NRPT (Name Resolution Policy Table)=
+ to handle DNS
++  configurations=2E This adds support for split-DNS and DNS=
+SEC and improves the
++  compatbility with local DNS resolvers=2E Requires t=
+he interactive service=2E
 +
-+* **Support for new version of Linux DCO mo=
-dule**
++* **On Windows the `block-local` flag is now e=
+nforced with WFP filters=2E**
 +
-+  The OpenVPN DCO module has been merged into the Linux kernel as=
- of 6=2E16=2E This
-+  required some API changes and OpenVPN 2=2E7 only supp=
-orts the new API=2E The new
-+  module is called `ovpn`=2E Out-of-tree build=
-s for older kernels are available from
-+  <https://github=2Ecom/OpenVPN/ovp=
-n-backports>=2E Please see the release
-+  announcements for further informa=
-tion=2E
++  The `block-local` flag to `--redirect-ga=
+teway` and `--redirect-private` is now
++  also enforced via the Windows Fir=
+ewall, making sure packets can't be sent to the
++  local network=2E This pr=
+ovides stronger protection against TunnelCrack-style
++  attacks=2E
 +
++* **W=
+indows network adapters are now generated on demand**
++
++  This means that =
+on systems that run multiple OpenVPN connections at the same
++  time the us=
+ers don't need to manually create enough network adapters anymore (in
++  ad=
+dition to the ones created by the installer)=2E
++
++* **Windows automatic se=
+rvice now runs as an unpriviledged user**
++
++  All tasks that need privileg=
+es are now delegated to the interactive service=2E
++  **NOTE** this has the=
+ risk of breaking existing setups if the Windows
++  certificate store is us=
+ed (cryptoapi), and the certificates are not readable for
++  `NT SERVICE\Op=
+enVPNService`=2E
++
++* **Support for new version of Linux DCO module**
++
++  =
+The OpenVPN DCO module has been merged into the Linux kernel as of 6=2E16=
+=2E This
++  required some API changes and OpenVPN 2=2E7 only supports the n=
+ew API=2E The new
++  module is called `ovpn`=2E Out-of-tree builds for olde=
+r kernels are available from
++  <https://github=2Ecom/OpenVPN/ovpn-backport=
+s>=2E Please see the release
++  announcements for further information=2E
++
+=
 +* **Support for server mode in win-dco driver**
 +
-+  On Windows =
-the win-dco driver can now be used in server setups=2E
++  On Windows the win-dc=
+o driver can now be used in server setups=2E
 +
-+* **Support for T=
-LS client floating in DCO implementations**
++* **Support for TLS client =
+floating in DCO implementations**
 +
-+  The kernel modules will de=
-tect clients floating to a new IP address and notify
-+  userland so both da=
-ta packets (kernel) and TLS packets (sent by userland) can
-+  reach the new=
- client IP=2E (Actual support depends on recent-enough kernel
-+  implementa=
-tion)
++  The kernel modules will detect clien=
+ts floating to a new IP address and notify
++  userland so both data packets=
+ (kernel) and TLS packets (sent by userland) can
++  reach the new client IP=
+=2E (Actual support depends on recent-enough kernel
++  implementation)
 +
-+* **Enforcement of AES-GCM usage limit**
++*=
+ **Enforcement of AES-GCM usage limit**
 +
-+  OpenVPN will now enf=
-orce the usage limits on AES-GCM with the same
-+  confidentiality margin as=
- TLS 1=2E3 does=2E This mean that renegotiation will be
-+  triggered after =
-roughly 2^28 to 2^31 packets depending of the packet size=2E More
-+  detail=
-s about usage limit of AES-GCM can be found here:
++  OpenVPN will now enforce the u=
+sage limits on AES-GCM with the same
++  confidentiality margin as TLS 1=2E3=
+ does=2E This mean that renegotiation will be
++  triggered after roughly 2^=
+28 to 2^31 packets depending of the packet size=2E More
++  details about us=
+age limit of AES-GCM can be found here:
 +
-+  <https://datatracker=
-=2Eietf=2Eorg/doc/draft-irtf-cfrg-aead-limits/>
++  <https://datatracker=2Eietf=2E=
+org/doc/draft-irtf-cfrg-aead-limits/>
 +
-+* **Epoch data keys and =
-packet format**
++* **Epoch data keys and packet for=
+mat**
 +
-+  This introduces the epoch data format for AEAD data ch=
-annel ciphers in TLS mode
-+  ciphers=2E This new data format has a number o=
-f improvements over the standard
++  This introduces the epoch data format for AEAD data channel ciph=
+ers in TLS mode
++  ciphers=2E This new data format has a number of improvem=
+ents over the standard
 +  "DATA_V2" format=2E
 +
-+  - AEAD tag at =
-the end of packet which is more hardware implementation friendly
-+  - Autom=
-atic key switchover when cipher usage limits are hit, similar to the
-+    e=
-poch data keys in (D)TLS 1=2E3
-+  - 64 bit instead of 32 bit packet ids to =
-allow the data channel to be ready for
-+    10 GBit/s without having freque=
-nt renegotiation
-+  - IV constructed with XOR instead of concatenation to n=
-ot have (parts) of the
++  - AEAD tag at the end of=
+ packet which is more hardware implementation friendly
++  - Automatic key s=
+witchover when cipher usage limits are hit, similar to the
++    epoch data =
+keys in (D)TLS 1=2E3
++  - 64 bit instead of 32 bit packet ids to allow the =
+data channel to be ready for
++    10 GBit/s without having frequent renegot=
+iation
++  - IV constructed with XOR instead of concatenation to not have (p=
+arts) of the
 +    real IV on the wire
 +
-+* **Support for Epoch da=
-ta channel on Windows, using the win-dco driver (2=2E8=2E0+)**
++* **Support for Epoch data channel=
+ on Windows, using the win-dco driver (2=2E8=2E0+)**
 +
-+* **Defau=
-lt ciphers in `--data-ciphers`**
++* **Default ciphers=
+ in `--data-ciphers`**
 +
-+  Ciphers in `--data-ciphers` can conta=
-in the string DEFAULT that is replaced by
-+  the default ciphers used by Op=
-enVPN, making it easier to add an allowed cipher
-+  without having to spell=
- out the default ciphers=2E
++  Ciphers in `--data-ciphers` can contain the str=
+ing DEFAULT that is replaced by
++  the default ciphers used by OpenVPN, mak=
+ing it easier to add an allowed cipher
++  without having to spell out the d=
+efault ciphers=2E
 +
 +* **TLS alerts**
 +
-+  OpenVPN 2=2E7 will sen=
-d out TLS alerts to peers informing them if the TLS session
-+  shuts down o=
-r when the TLS implementation informs the peer about an error in the
-+  TLS=
- session (e=2Eg=2E mismatching TLS versions)=2E This improves the user expe=
-rience
-+  as the client shows an error instead of running into a timeout wh=
-en the server
++  OpenVPN 2=2E7 will send out TLS =
+alerts to peers informing them if the TLS session
++  shuts down or when the=
+ TLS implementation informs the peer about an error in the
++  TLS session (=
+e=2Eg=2E mismatching TLS versions)=2E This improves the user experience
++  =
+as the client shows an error instead of running into a timeout when the ser=
+ver
 +  just stops responding completely=2E
 +
-+* **Support for tun=
-/tap via unix domain socket and lwipovpn support**
++* **Support for tun/tap via u=
+nix domain socket and lwipovpn support**
 +
-+  To allow better tes=
-ting and emulating a full client with a full network stack
-+  OpenVPN now a=
-llows a program executed to provide a tun/tap device instead of
-+  opening =
-a device=2E
++  To allow better testing and e=
+mulating a full client with a full network stack
++  OpenVPN now allows a pr=
+ogram executed to provide a tun/tap device instead of
++  opening a device=
+=2E
 +
-+  The co-developed lwipovpn program based on lwIP stack allo=
-ws to simulate full IP
-+  stack=2E An OpenVPN client using `--dev-node unix=
-:/path/to/lwipovpn` can emulate a
-+  full client that can be pinged, can se=
-rve a website and more without requiring
-+  any elevated permission=2E This=
- can make testing OpenVPN much easier=2E
++  The co-developed lwipovpn program based on lwIP stack allows to si=
+mulate full IP
++  stack=2E An OpenVPN client using `--dev-node unix:/path/t=
+o/lwipovpn` can emulate a
++  full client that can be pinged, can serve a we=
+bsite and more without requiring
++  any elevated permission=2E This can mak=
+e testing OpenVPN much easier=2E
 +
-+  For more details see [lwipovp=
-n on Github](https://github=2Ecom/OpenVPN/lwipovpn)=2E
++  For more details see [lwipovpn on Git=
+hub](https://github=2Ecom/OpenVPN/lwipovpn)=2E
 +
-+* **Allow overrid=
-ing username with `--override-username`**
++* **Allow overriding user=
+name with `--override-username`**
 +
-+  This is intended to allow us=
-ing `--auth-gen-token` in scenarios where the
-+  clients use certificates a=
-nd multi-factor authentication=2E This will also
-+  generate a `push "auth-=
-token-user newusername"` directive in push replies=2E
++  This is intended to allow using `--a=
+uth-gen-token` in scenarios where the
++  clients use certificates and multi=
+-factor authentication=2E This will also
++  generate a `push "auth-token-us=
+er newusername"` directive in push replies=2E
 +
-+* **`--port-share`=
- now properly supports IPv6**
++* **`--port-share` now pro=
+perly supports IPv6**
 +
-+  Issues with logging of IPv6 addresses we=
-re fixed=2E The feature now allows IPv6
-+  connections towards the proxy re=
-ceiver=2E
++  Issues with logging of IPv6 addresses were fixed=
+=2E The feature now allows IPv6
++  connections towards the proxy receiver=
+=2E
 +
 +* **Support for Haiku OS**
 +
-+* **TLS1=2E3 support with mbedTL=
-S (requires mbedTLS >=3D 3=2E6=2E4)**
++* **TLS1=2E3 support with mbedTLS (req=
+uires mbedTLS >=3D 3=2E6=2E4)**
 +
 +* **PUSH_UPDATE client support**
-+=
++
++  It=
+ is now possible to update parts of the client-side configuration (IP addre=
+ss,
++  routes, MTU, DNS) by sending a new server-to-client control message,=
 
-+  It is now possible to update parts of the client-side configuration (IP=
- address,
-+  routes, MTU, DNS) by sending a new server-to-client control me=
-ssage,
 +  `PUSH_UPDATE,<options>`=2E See also:
-+  <https://openvpn=2Egithub=
-=2Eio/openvpn-rfc/openvpn-wire-protocol=2Ehtml>
++  <https://openvpn=2Egithub=2Eio/=
+openvpn-rfc/openvpn-wire-protocol=2Ehtml>
 +
-+  NOTE: PUSH_UPDATE clie=
-nt support is currently disabled if DCO is active (on all
++  NOTE: PUSH_UPDATE client sup=
+port is currently disabled if DCO is active (on all
 +  platforms)=2E
-=
 +
-+* **PUSH_UPDATE server support (minimal)**
++* *=
+*PUSH_UPDATE server support (minimal)**
 +
-+  New management interface=
- commands `push-update-broad` and `push-update-cid` to
-+  send PUSH_UPDATE =
-option updates to all clients ("there is a new DNS server") or
-+  only a sp=
-ecific client ID ("privileges have changed, here's a new IP address")=2E
++  New management interface comma=
+nds `push-update-broad` and `push-update-cid` to
++  send PUSH_UPDATE option=
+ updates to all clients ("there is a new DNS server") or
++  only a specific=
+ client ID ("privileges have changed, here's a new IP address")=2E
 +
-=
-+  See doc/management-notes=2Etxt
++  See=
+ doc/management-notes=2Etxt
 +
-+  NOTE: PUSH_UPDATE server support is =
-currently disabled if DCO is active
++  NOTE: PUSH_UPDATE server support is curren=
+tly disabled if DCO is active
 +  (on all platforms)=2E
 +
-+* **Support=
- for user-defined routing tables on Linux**
++* **Support for u=
+ser-defined routing tables on Linux**
 +
-+  See the `--route-table` op=
-tion in the manpage
++  See the `--route-table` option i=
+n the manpage
 +
 +* **PQE support for WolfSSL**
 +
-+* **New environment=
- variables for gateway redirection**
++* **New environment varia=
+bles for gateway redirection**
 +
-+  Two new environment variables hav=
-e been introduced to communicate desired
-+  default gateway redirection to =
-plugins like Network Manager,
-+  `route_redirect_gateway_ipv4` and `route_r=
-edirect_gateway_ipv6`=2E See the
-+  "Environmental Variables" section in th=
-e man page
++  Two new environment variables have been=
+ introduced to communicate desired
++  default gateway redirection to plugin=
+s like Network Manager,
++  `route_redirect_gateway_ipv4` and `route_redirec=
+t_gateway_ipv6`=2E See the
++  "Environmental Variables" section in the man =
+page
 +
-+* **Improved logging of service events/errors to event log on=
- Windows=2E**
++* **Improved logging of service events/errors to event log on Windo=
+ws=2E**
 +
 +* **Improved "Recursive Routing" check**
 +
-+  The check is=
- now more granular, and will only drop
-+  packets-in-tunnel if destination =
-IP, protocol and port matches with those needed
-+  to reach the VPN server=
-=2E With that change, you can now use policies that direct
-+  "everything t=
-hat is not OpenVPN" into the tunnel, and have IP packets to the VPN
-+  serv=
-er address arrive as expected (no such policies are currently installed by
-=
-+  OpenVPN) (GH: OpenVPN/openvpn#669)=2E
++  The check is now m=
+ore granular, and will only drop
++  packets-in-tunnel if destination IP, pr=
+otocol and port matches with those needed
++  to reach the VPN server=2E Wit=
+h that change, you can now use policies that direct
++  "everything that is =
+not OpenVPN" into the tunnel, and have IP packets to the VPN
++  server addr=
+ess arrive as expected (no such policies are currently installed by
++  Open=
+VPN) (GH: OpenVPN/openvpn#669)=2E
 +
-+* **COPYING: license details on=
-ly relevant to our Windows installers have
-+been updated and moved to the o=
-penvpn-build repo**
++* **COPYING: license details only rele=
+vant to our Windows installers have
++been updated and moved to the openvpn-=
+build repo**
 +
 +* **Improved BYTECOUNT support**
 +
-+  More strictly =
-adhere to timing interval requested, correctly support client and
-+  server=
- counters with Linux and Windows DCO offloading=2E
++  More strictly adhere =
+to timing interval requested, correctly support client and
++  server counte=
+rs with Linux and Windows DCO offloading=2E
 +
-+* **Improve compatibi=
-lity with OpenSSL 3=2E6=2E0 (do not fail t_lpback selftest)**
++* **Improve compatibility wi=
+th OpenSSL 3=2E6=2E0 (do not fail t_lpback selftest)**
 +
-+* **New op=
-tion `--tls-crypt-v2-max-age n` to check tls-crypt-v2 timestamps**
++* **New option `-=
+-tls-crypt-v2-max-age n` to check tls-crypt-v2 timestamps**
 +
-+  Whe=
-n a client is older than n days or has no timestamp, the server will reject=
-
-+  it=2E
++  When a cli=
+ent is older than n days or has no timestamp, the server will reject
++  it=
+=2E
 +
 +* **mbedTLS 4 support has been added=2E**
 +
-+  Note that with =
-mbedTLS 4 algorithms need to be translated to mbedTLS 4 internal
-+  IDs by =
-OpenVPN, and some names might be missing=2E
++  Note that with mbedTL=
+S 4 algorithms need to be translated to mbedTLS 4 internal
++  IDs by OpenVP=
+N, and some names might be missing=2E
 +
 +## Deprecated features
 +
-+* =
-**`secret` support has been removed (by default)=2E**
++* **`sec=
+ret` support has been removed (by default)=2E**
 +
-+  static key mode =
-(non-TLS) is no longer considered "good and secure enough" for
-+  today's r=
-equirements=2E Use TLS mode instead=2E If deploying a PKI CA is considered
++  static key mode (non-T=
+LS) is no longer considered "good and secure enough" for
++  today's require=
+ments=2E Use TLS mode instead=2E If deploying a PKI CA is considered
++  "to=
+o complicated", using `--peer-fingerprint` makes TLS mode about as easy as
 =
-+  "too complicated", using `--peer-fingerprint` makes TLS mode about as ea=
-sy as
 +  using `--secret`=2E
 +
 +  This mode can still be enabled by using
-+=
-  `--allow-deprecated-insecure-static-crypto` but will be removed in OpenVP=
-N 2=2E8=2E
++  `--a=
+llow-deprecated-insecure-static-crypto` but will be removed in OpenVPN 2=2E=
+8=2E
 +
 +* **Support for wintun Windows driver has been removed=2E**
-+=
++
++  Op=
+enVPN 2=2E6 added support for the new dco-win driver, so it supported three=
 
-+  OpenVPN 2=2E6 added support for the new dco-win driver, so it supported=
- three
-+  different device drivers: dco-win, wintun, and tap-windows6=2E Op=
-enVPN 2=2E7 now
-+  drops the support for wintun driver=2E By default all mo=
-dern configs should be
-+  supported by dco-win driver=2E In all other cases=
- OpenVPN will fall back
++  different device drivers: dco-win, wintun, and tap-windows6=2E OpenVPN =
+2=2E7 now
++  drops the support for wintun driver=2E By default all modern c=
+onfigs should be
++  supported by dco-win driver=2E In all other cases OpenV=
+PN will fall back
 +  automatically to tap-windows6 driver=2E
 +
-+* **N=
-TLMv1 authentication support for HTTP proxies has been removed=2E**
++* **NTLMv1 =
+authentication support for HTTP proxies has been removed=2E**
 +
-+  Th=
-is is considered an insecure method of authentication that uses obsolete
-+ =
- crypto algorithms=2E NTLMv2 support is still available, but will be remove=
-d in a
-+  future release=2E When configured to authenticate with NTLMv1 (`n=
-tlm` keyword in
++  This is =
+considered an insecure method of authentication that uses obsolete
++  crypt=
+o algorithms=2E NTLMv2 support is still available, but will be removed in a=
+
++  future release=2E When configured to authenticate with NTLMv1 (`ntlm` k=
+eyword in
 +  `--http-proxy`) OpenVPN will try NTLMv2 instead=2E
 +
-+* =
-**`persist-key` option has been enabled by default=2E**
++* **`per=
+sist-key` option has been enabled by default=2E**
 +
-+  All the keys w=
-ill be kept in memory across restart=2E
++  All the keys will be=
+ kept in memory across restart=2E
 +
-+* **OpenSSL 1=2E0=2E2 support ha=
-s been removed=2E**
++* **OpenSSL 1=2E0=2E2 support has been=
+ removed=2E**
 +
-+  Support for building with OpenSSL 1=2E0=2E2 has be=
-en removed=2E The minimum supported
++  Support for building with OpenSSL 1=2E0=2E2 has been rem=
+oved=2E The minimum supported
 +  OpenSSL version is now 1=2E1=2E0=2E
-=
 +
-+* **mbedTLS 2=2Ex support has been removed**
++* *=
+*mbedTLS 2=2Ex support has been removed**
 +
-+  Support for building w=
-ith mbedTLS 2=2Ex has been removed (it is out of support
-+  since March 202=
-5, and the necessary compatibility code is making maintenance and
-+  suppor=
-t for mbedTLS 4=2Ex hard)=2E The minimum supported mbedTLS version is now
-+=
-  3=2E2=2E1=2E
++  Support for building with mb=
+edTLS 2=2Ex has been removed (it is out of support
++  since March 2025, and=
+ the necessary compatibility code is making maintenance and
++  support for =
+mbedTLS 4=2Ex hard)=2E The minimum supported mbedTLS version is now
++  3=2E=
+2=2E1=2E
 +
 +* **Compression on send has been removed=2E**
 +
-+  OpenVP=
-N 2=2E7 will never compress data before sending=2E Decompression of receive=
-d
-+  data is still supported=2E `--allow-compression yes` is now an alias f=
-or
-+  `--allow-compression asym`=2E
++  OpenVPN 2=2E=
+7 will never compress data before sending=2E Decompression of received
++  d=
+ata is still supported=2E `--allow-compression yes` is now an alias for
++  =
+`--allow-compression asym`=2E
 +
 +* **`--memstats` feature removed**
++
++  Th=
+e `--memstats` option was largely undocumented and there is no known user o=
+f
++  this feature=2E This feature provided very limited statistics (number =
+of users,
++  link bytes read/written) and we do not except any usage becaus=
+e of this=2E
++
++* **Warning when using `--push` without `--mode server`**
 +=
 
-+  The `--memstats` option was largely undocumented and there is no known =
-user of
-+  this feature=2E This feature provided very limited statistics (n=
-umber of users,
-+  link bytes read/written) and we do not except any usage =
-because of this=2E
-+
-+* **Warning when using `--push` without `--mode serve=
-r`**
-+
-+  Using `--push` in a mode that is not `--mode server` will now pri=
-nt a
-+  clear warning that this is an unsupported operation and might cause=
- negotiation
++  Using `--push` in a mode that is not `--mode server` will now print a
++=
+  clear warning that this is an unsupported operation and might cause negot=
+iation
 +  failures=2E
 +
-+* **Warning for `--reneg-bytes` and `--reneg=
--packets` in DCO mode**
++* **Warning for `--reneg-bytes` and `--reneg-packe=
+ts` in DCO mode**
 +
-+  `--reneg-bytes` and `--reneg-packets` do not w=
-ork in DCO mode, and will
++  `--reneg-bytes` and `--reneg-packets` do not work in=
+ DCO mode, and will
 +  now print an appropriate warning=2E
 +
-+* **On-=
-connect resolving of `--remote` in `--tcp-server` mode removed**
++* **On-connec=
+t resolving of `--remote` in `--tcp-server` mode removed**
 +
-+  On-co=
-nnect resolving of `--remote` addresses in `--tcp-server` mode
-+  was not w=
-orking since 2=2E4, so the code was completely removed=2E
++  On-connect =
+resolving of `--remote` addresses in `--tcp-server` mode
++  was not working=
+ since 2=2E4, so the code was completely removed=2E
 +
-+## User-visibl=
-e Changes
++## User-visible Chan=
+ges
 +
-+- Default for `--topology` changed to `subnet` for `--mode ser=
-ver`=2E Previous
-+  releases always used `net30` as default=2E This only af=
-fects configs with
-+  `--mode server` or `--server` (the latter implies the=
- former), and
-+  `--dev tun`, and only if IPv4 is enabled=2E Note that this=
- changes the semantics
-+  of `--ifconfig`, so if you have manual settings f=
-or that in your config but
-+  not set `--topology` your config might fail t=
-o parse with the new version=2E
-+  Just adding `--topology net30` to the co=
-nfig should fix the problem=2E By
-+  default `--topology` is pushed from se=
-rver to client=2E
-+- `--x509-username-field` will no longer automatically c=
-onvert fieldnames to
-+  uppercase=2E This was deprecated since OpenVPN 2=2E=
-4, and has now been removed=2E
-+- `--dh none` is now the default if `--dh` =
-is not specified=2E Modern TLS
-+  implementations will prefer ECDH and othe=
-r more modern algorithms anyway=2E And
-+  finite field Diffie Hellman is in=
- the proces of being deprecated (see
-+  draft-ietf-tls-deprecate-obsolete-k=
-ex)
++- Default for `--topology` changed to `subnet` for `--mode server`=
+=2E Previous
++  releases always used `net30` as default=2E This only affect=
+s configs with
++  `--mode server` or `--server` (the latter implies the for=
+mer), and
++  `--dev tun`, and only if IPv4 is enabled=2E Note that this cha=
+nges the semantics
++  of `--ifconfig`, so if you have manual settings for t=
+hat in your config but
++  not set `--topology` your config might fail to pa=
+rse with the new version=2E
++  Just adding `--topology net30` to the config=
+ should fix the problem=2E By
++  default `--topology` is pushed from server=
+ to client=2E
++- `--x509-username-field` will no longer automatically conve=
+rt fieldnames to
++  uppercase=2E This was deprecated since OpenVPN 2=2E4, a=
+nd has now been removed=2E
++- `--dh none` is now the default if `--dh` is n=
+ot specified=2E Modern TLS
++  implementations will prefer ECDH and other mo=
+re modern algorithms anyway=2E And
++  finite field Diffie Hellman is in the=
+ proces of being deprecated (see
++  draft-ietf-tls-deprecate-obsolete-kex)
+=
 +- `--lport 0` does not imply `--bind` anymore=2E
-+- `--redirect-gatewa=
-y` now works correctly if the VPN remote is not reachable by
-+  the default=
- gateway=2E
-+- `--show-gateway` now supports querying the gateway for IPv4 =
-addresses=2E
-+- `--static-challenge` option now has a third parameter `form=
-at` that can change
-+  how password and challenge response should be combin=
-ed=2E
-+- `--key` and `--cert` now accept URIs implemented in OpenSSL 3 as w=
-ell as
-+  optional OpenSSL 3 providers loaded using `--providers` option=2E=
-
-+- `--cryptoapicert` now supports issuer name as well as Windows CA templa=
-te name
++- `--redirect-gateway` n=
+ow works correctly if the VPN remote is not reachable by
++  the default gat=
+eway=2E
++- `--show-gateway` now supports querying the gateway for IPv4 addr=
+esses=2E
++- `--static-challenge` option now has a third parameter `format` =
+that can change
++  how password and challenge response should be combined=
+=2E
++- `--key` and `--cert` now accept URIs implemented in OpenSSL 3 as wel=
+l as
++  optional OpenSSL 3 providers loaded using `--providers` option=2E
++=
+- `--cryptoapicert` now supports issuer name as well as Windows CA template=
+ name
 +  or OID as selector string=2E
-+- TLS handshake debugging informat=
-ion contains much more details now when using
++- TLS handshake debugging informatio=
+n contains much more details now when using
 +  recent versions of OpenSSL=
 =2E
 +- The `IV_PLAT_VER` variable sent by Windows clients now contains the =
@@ -5122,3419 +5128,3422 @@ To unsubscribe, or f=
 or help writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?=
 usp=3Demail
 
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
-Gerrit-Bran=
-ch: master
-Gerrit-Change-Id: I8887fa7ccf407d727c2b59397000149e45487e13
-Gerr=
-it-Change-Number: 1767
+Gerrit=
+-Branch: master
+Gerrit-Change-Id: I8887fa7ccf407d727c2b59397000149e45487e13=
+
+Gerrit-Change-Number: 1767
 Gerrit-PatchSet: 3
-Gerrit-Owner: flichtenheld <frank=
-@lichtenheld=2Ecom>
-Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eorg>=
-
+Gerrit-Owner: flichtenheld <=
+frank@lichtenheld=2Ecom>
+Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=
+=2Eorg>
 Gerrit-Reviewer: razvanc <razvanc@mailbox=2Eorg>
-Gerrit-CC: openvpn-devel =
-<openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-CC: openvpn=
+-devel <openvpn-devel@lists=2Esourceforge=2Enet>
 
---x4c+AxinNkw=
+--nNhD4lcniuk=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
-mitted</strong> this change=2E</p><p><a href=3D"http://gerrit=2Eopenvpn=2En=
-et/c/openvpn/+/1767?usp=3Demail">View Change</a></p><div style=3D"white-spa=
-ce:pre-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,mo=
-nospace; white-space: pre-wrap;">Convert Changes=2Erst to Markdown<br><br>S=
-ince all of our release publishing infrastructure now uses<br>Markdown (Wik=
-i, Forums, Github), preparing this documentation<br>in rst just creates mor=
-e work for the people creating the<br>release (so often me ;))=2E<br><br>Th=
-is conversion to Markdown tries to also fix several instances<br>of weird f=
-ormatting=2E But I tried to limit myself to not go<br>too much in the direc=
-tion of actually &quot;improving&quot; the text=2E<br><br>The biggest chang=
-es come due to the missing support for<br>&lt;dl&gt; style lists in MarkDow=
-n=2E We work around this by<br>converting to a &lt;ul&gt; and manually addi=
-ng a bold paragraph<br>with the &quot;title&quot;=2E<br><br>v2:<br>- reform=
-at feature lists as ul<br><br>Change-Id: I8887fa7ccf407d727c2b59397000149e4=
-5487e13<br>Signed-off-by: Frank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt;=
-<br>Acked-by: Razvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt;<br>Gerrit URL: =
-https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1767<br>Message-Id: &lt;20260907=
-154412=2E29523-1-gert@greenie=2Emuc=2Ede&gt;<br>URL: https://www=2Email-arc=
-hive=2Ecom/openvpn-devel@lists=2Esourceforge=2Enet/msg38990=2Ehtml<br>Signe=
-d-off-by: Gert Doering &lt;gert@greenie=2Emuc=2Ede&gt;<br>---<br>A Changes=
-=2Emd<br>D Changes=2Erst<br>M Makefile=2Eam<br>3 files changed, 1,458 inser=
-tions(+), 1,481 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;"><span>diff --git a/Changes=2Emd b/C=
-hanges=2Emd</span><br><span>new file mode 100644</span><br><span>index 0000=
-000=2E=2E2684251</span><br><span>--- /dev/null</span><br><span>+++ b/Change=
-s=2Emd</span><br><span>@@ -0,0 +1,1457 @@</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+# Overview of changes in 2=2E8</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+## User-visible Changes</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-* **Parsing Distinguished Names in certificates**</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+  (OpenSSL backend:) OpenVPN now rejects certificates that have =
-a null-byte</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  inside=
- any of the field values of their subject=2E To avoid ambiguity in the</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+  parsed subject, OpenVP=
-N escapes the following characters by prefixing them with</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+  a backslash:</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+  * &quot; &quot; (space) at the start or end of a field,</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+  * &quot;#&quot; at t=
-he start of a field,</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+  * &quot;,&quot;, &quot;+&quot;, &quot;&quot;&quot;, &quot;\&quot;, &quot=
-;&lt;&quot;, &quot;&gt;&quot; and &quot;;&quot; anywhere=2E</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+  As a result, if you use the option `--verify-x509-na=
-me &lt;expected subject&gt;`,</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+  you need to prefix these characters with a backslash in your co=
-nfiguration=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  The=
- subject passed to a `--tls-verify` script is escaped in the same way and</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+  you may need to adj=
-ust your script=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+  (Mbed TLS backend:=
-) The behavior has not changed=2E Subjects with null-bytes were</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+  already rejected (assuming Op=
-enVPN was built with Mbed TLS 3=2E5 or later) and</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+  the characters mentioned above were already=
- escaped=2E However, the behavior of</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+  Mbed TLS is slightly different from OpenSSL in that it a=
-lso escapes &quot;=3D&quot;=2E</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# Overvi=
-ew of changes in 2=2E7</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+## New features<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+* **Multi-socket support for servers**<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+  OpenVPN servers now can listen on mul=
-tiple sockets at the same time=2E Multiple</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+  `--local` statements in the configuration can be u=
-sed to configure this=2E This</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+  way the same server can e=2Eg=2E listen for UDP and TCP connect=
-ions at the same</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  t=
-ime, or listen on multiple addresses and/or ports=2E</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+* **Client implementations for DNS options sent by server fo=
-r Linux/BSD/macOS**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Linux, BSD and ma=
-cOS versions of OpenVPN now ship with a per-platform default</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+  `--dns-updown` script that imple=
-ments proper handling of DNS configuration sent</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+  by the server=2E The scripts should work on s=
-ystems that use `systemd` or</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+  `resolveconf` to manage the DNS setup, as well as raw `/etc/reso=
-lv=2Econf` files=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-  However, the exact features supported will depend on the configuration me=
-thod=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  On Linux a=
-nd MacOS this should usually make split-DNS configurations supported</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+  out-of-the-box now=2E</s=
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
+oaded patch set #3</strong> to the change originally created by flichtenhel=
+d=2E</p><p><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1767?usp=3D=
+email">View Change</a></p><p>The following approvals got outdated and were =
+removed:
+Code-Review+2 by razvanc</p><pre class=3D"blocks" style=3D"font-fa=
+mily: monospace,monospace; white-space: pre-wrap;">Convert Changes=2Erst to=
+ Markdown<br><br>Since all of our release publishing infrastructure now use=
+s<br>Markdown (Wiki, Forums, Github), preparing this documentation<br>in rs=
+t just creates more work for the people creating the<br>release (so often m=
+e ;))=2E<br><br>This conversion to Markdown tries to also fix several insta=
+nces<br>of weird formatting=2E But I tried to limit myself to not go<br>too=
+ much in the direction of actually &quot;improving&quot; the text=2E<br><br=
+>The biggest changes come due to the missing support for<br>&lt;dl&gt; styl=
+e lists in MarkDown=2E We work around this by<br>converting to a &lt;ul&gt;=
+ and manually adding a bold paragraph<br>with the &quot;title&quot;=2E<br><=
+br>v2:<br>- reformat feature lists as ul<br><br>Change-Id: I8887fa7ccf407d7=
+27c2b59397000149e45487e13<br>Signed-off-by: Frank Lichtenheld &lt;frank@lic=
+htenheld=2Ecom&gt;<br>Acked-by: Razvan Cojocaru &lt;razvanc@mailbox=2Eorg&g=
+t;<br>Gerrit URL: https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1767<br>Messag=
+e-Id: &lt;20260907154412=2E29523-1-gert@greenie=2Emuc=2Ede&gt;<br>URL: http=
+s://www=2Email-archive=2Ecom/openvpn-devel@lists=2Esourceforge=2Enet/msg389=
+90=2Ehtml<br>Signed-off-by: Gert Doering &lt;gert@greenie=2Emuc=2Ede&gt;<br=
+>---<br>A Changes=2Emd<br>D Changes=2Erst<br>M Makefile=2Eam<br>3 files cha=
+nged, 1,458 insertions(+), 1,481 deletions(-)<br><br></pre><pre class=3D"bl=
+ocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">gi=
+t pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/67/1767/3</p=
+re><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
+<span>diff --git a/Changes=2Emd b/Changes=2Emd</span><br><span>new file mod=
+e 100644</span><br><span>index 0000000=2E=2E2684251</span><br><span>--- /de=
+v/null</span><br><span>+++ b/Changes=2Emd</span><br><span>@@ -0,0 +1,1457 @=
+@</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# Overview of chan=
+ges in 2=2E8</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+## User-visible Changes</s=
 pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  Note that this new script will not be u=
-sed by default if a `--up` script is</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+  already in use to reduce problems with backwards compati=
-bility=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+  See documentation for `--dn=
-s-updown` and `--dns` for more details=2E</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+* **New client implementation for DNS options sent by server for Windows=
-**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+  The Windows client now uses NRPT (=
-Name Resolution Policy Table) to handle DNS</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+  configurations=2E This adds support for split-DNS=
- and DNSSEC and improves the</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+  compatbility with local DNS resolvers=2E Requires the interactiv=
-e service=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+* **On Windows the `block-=
-local` flag is now enforced with WFP filters=2E**</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+  The `block-local` flag to `--redirect-gateway` and `--redirect=
--private` is now</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  a=
-lso enforced via the Windows Firewall, making sure packets can&#39;t be sen=
-t to the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  local net=
-work=2E This provides stronger protection against TunnelCrack-style</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+  attacks=2E</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+* **Windows network adapters are now generated on dem=
-and**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+  This means that on systems that=
- run multiple OpenVPN connections at the same</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+  time the users don&#39;t need to manually creat=
-e enough network adapters anymore (in</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+  addition to the ones created by the installer)=2E</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+* **Windows automatic service now runs as an=
- unpriviledged user**</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  All tasks that =
-need privileges are now delegated to the interactive service=2E</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+  **NOTE** this has the risk of=
- breaking existing setups if the Windows</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+  certificate store is used (cryptoapi), and the certi=
-ficates are not readable for</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+  `NT SERVICE\OpenVPNService`=2E</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+* **Support for new version of Linux DCO module**</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+* **Parsing Distinguished Names in certif=
+icates**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+  (OpenSSL backend:) OpenVPN n=
+ow rejects certificates that have a null-byte</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+  inside any of the field values of their subject=
+=2E To avoid ambiguity in the</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+  parsed subject, OpenVPN escapes the following characters by pre=
+fixing them with</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  a=
+ backslash:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+  * &quot; &quot; (space) a=
+t the start or end of a field,</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+  * &quot;#&quot; at the start of a field,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  * &quot;,&quot;, &quot;+&quot;, &quot;&=
+quot;&quot;, &quot;\&quot;, &quot;&lt;&quot;, &quot;&gt;&quot; and &quot;;&=
+quot; anywhere=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+  As a result, if you=
+ use the option `--verify-x509-name &lt;expected subject&gt;`,</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+  you need to prefix these chara=
+cters with a backslash in your configuration=2E</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+  The subject passed to a `--tls-verify` script=
+ is escaped in the same way and</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+  you may need to adjust your script=2E</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+  The OpenVPN DCO module has been merged into the Linux kern=
-el as of 6=2E16=2E This</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+  required some API changes and OpenVPN 2=2E7 only supports the new API=
-=2E The new</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  module=
- is called `ovpn`=2E Out-of-tree builds for older kernels are available fro=
-m</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  &lt;https://gith=
-ub=2Ecom/OpenVPN/ovpn-backports&gt;=2E Please see the release</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+  announcements for further infor=
-mation=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+* **Support for server mode i=
-n win-dco driver**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+  On Windows the win=
--dco driver can now be used in server setups=2E</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+* **Support for TLS client floating in DCO implementations**</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+  The kernel modules will detect clients flo=
-ating to a new IP address and notify</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+  userland so both data packets (kernel) and TLS packets (=
-sent by userland) can</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+  reach the new client IP=2E (Actual support depends on recent-enough ker=
-nel</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  implementation=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+* **Enforcement of AES-GCM usage limi=
-t**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+  OpenVPN will now enforce the usag=
-e limits on AES-GCM with the same</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+  confidentiality margin as TLS 1=2E3 does=2E This mean that =
-renegotiation will be</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+  triggered after roughly 2^28 to 2^31 packets depending of the packet si=
-ze=2E More</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  details=
- about usage limit of AES-GCM can be found here:</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+  &lt;https://datatracker=2Eietf=2Eorg/doc/draft-irtf-cfrg-aead-l=
-imits/&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+* **Epoch data keys and pack=
-et format**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+  This introduces the epoch=
- data format for AEAD data channel ciphers in TLS mode</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+  ciphers=2E This new data format has a =
-number of improvements over the standard</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+  &quot;DATA_V2&quot; format=2E</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+  - AEAD tag at the end of packet which is more hardware imp=
-lementation friendly</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+  - Automatic key switchover when cipher usage limits are hit, similar to =
-the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    epoch data k=
-eys in (D)TLS 1=2E3</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-  - 64 bit instead of 32 bit packet ids to allow the data channel to be rea=
-dy for</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    10 GBit/s=
- without having frequent renegotiation</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+  - IV constructed with XOR instead of concatenation to =
-not have (parts) of the</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    real IV on the wire</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Support=
- for Epoch data channel on Windows, using the win-dco driver (2=2E8=2E0+)**=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+* **Default ciphers in `--data-ciphers=
-`**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+  Ciphers in `--data-ciphers` can c=
-ontain the string DEFAULT that is replaced by</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+  the default ciphers used by OpenVPN, making it =
-easier to add an allowed cipher</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+  without having to spell out the default ciphers=2E</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+* **TLS alerts**</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+  OpenVPN 2=2E7 will send out TLS alerts to peers informing them if the=
- TLS session</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  shuts=
- down or when the TLS implementation informs the peer about an error in the=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  TLS session (e=2E=
-g=2E mismatching TLS versions)=2E This improves the user experience</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+  as the client shows an er=
-ror instead of running into a timeout when the server</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  just stops responding completely=2E</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+* **Support for tun/tap via unix domain s=
-ocket and lwipovpn support**</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  To allow=
- better testing and emulating a full client with a full network stack</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+  OpenVPN now allows a pr=
-ogram executed to provide a tun/tap device instead of</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  opening a device=2E</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+  The co-developed lwipovpn program based on lwIP stack al=
-lows to simulate full IP</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+  stack=2E An OpenVPN client using `--dev-node unix:/path/to/lwipovpn`=
- can emulate a</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  ful=
-l client that can be pinged, can serve a website and more without requiring=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  any elevated perm=
-ission=2E This can make testing OpenVPN much easier=2E</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+  For more details see [lwipovpn on Github](https://github=
-=2Ecom/OpenVPN/lwipovpn)=2E</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Allow o=
-verriding username with `--override-username`**</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+  This is intended to allow using `--auth-gen-token` in scenarios =
-where the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  clients =
-use certificates and multi-factor authentication=2E This will also</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+  generate a `push &quot;aut=
-h-token-user newusername&quot;` directive in push replies=2E</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+* **`--port-share` now properly supports IPv6**</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+  Issues with logging of IPv6 addresses were=
- fixed=2E The feature now allows IPv6</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+  connections towards the proxy receiver=2E</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+* **Support for Haiku OS**</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+* **TLS1=2E3 support with mbedTLS (requires mbedTLS &gt;=3D 3=2E=
-6=2E4)**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+* **PUSH_UPDATE client support=
-**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+  It is now possible to update parts=
- of the client-side configuration (IP address,</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+  routes, MTU, DNS) by sending a new server-to-c=
-lient control message,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+  `PUSH_UPDATE,&lt;options&gt;`=2E See also:</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+  &lt;https://openvpn=2Egithub=2Eio/openvpn-rfc=
-/openvpn-wire-protocol=2Ehtml&gt;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  NOT=
-E: PUSH_UPDATE client support is currently disabled if DCO is active (on al=
-l</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  platforms)=2E</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+* **PUSH_UPDATE server support (minimal)*=
-*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+  New management interface commands `=
-push-update-broad` and `push-update-cid` to</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+  send PUSH_UPDATE option updates to all clients (&=
-quot;there is a new DNS server&quot;) or</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+  only a specific client ID (&quot;privileges have cha=
-nged, here&#39;s a new IP address&quot;)=2E</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+  See doc/management-notes=2Etxt</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
- NOTE: PUSH_UPDATE server support is currently disabled if DCO is active</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+  (on all platforms)=
-=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+* **Support for user-defined routin=
-g tables on Linux**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  See the `--route-=
-table` option in the manpage</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **PQE su=
-pport for WolfSSL**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **New environment=
- variables for gateway redirection**</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-Two new environment variables have been introduced to communicate desired</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+  default gateway red=
-irection to plugins like Network Manager,</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+  `route_redirect_gateway_ipv4` and `route_redirect_g=
-ateway_ipv6`=2E See the</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+  &quot;Environmental Variables&quot; section in the man page</span><br=
+ 100%, 40%);">+  (Mbed TLS backend:) The behavior has not changed=2E Subjec=
+ts with null-bytes were</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+  already rejected (assuming OpenVPN was built with Mbed TLS 3=2E5 or l=
+ater) and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  the char=
+acters mentioned above were already escaped=2E However, the behavior of</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+  Mbed TLS is slightly =
+different from OpenSSL in that it also escapes &quot;=3D&quot;=2E</span><br=
 ><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+* **Improved logging of service events/errors to=
- event log on Windows=2E**</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Improved=
- &quot;Recursive Routing&quot; check**</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-  The check is now more granular, and will only drop</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  packets-in-tunnel if destination IP, pr=
-otocol and port matches with those needed</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+  to reach the VPN server=2E With that change, you ca=
-n now use policies that direct</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+  &quot;everything that is not OpenVPN&quot; into the tunnel, an=
-d have IP packets to the VPN</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+  server address arrive as expected (no such policies are currentl=
-y installed by</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Ope=
-nVPN) (GH: OpenVPN/openvpn#669)=2E</span><br><span style=3D"color: hsl(120,=
+or: hsl(120, 100%, 40%);">+# Overview of changes in 2=2E7</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+## New features</span><br><span style=3D"color: hsl(120,=
  100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **=
-COPYING: license details only relevant to our Windows installers have</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+been updated and moved to=
- the openvpn-build repo**</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Improved =
-BYTECOUNT support**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  More strictly adh=
-ere to timing interval requested, correctly support client and</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+  server counters with Linux and=
- Windows DCO offloading=2E</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Improve =
-compatibility with OpenSSL 3=2E6=2E0 (do not fail t_lpback selftest)**</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+* **New option `--tls-crypt-v2-max-age n`=
- to check tls-crypt-v2 timestamps**</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  W=
-hen a client is older than n days or has no timestamp, the server will reje=
-ct</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  it=2E</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+* **mbedTLS 4 support has been added=2E**</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+  Note that with mbedTLS 4 algorithms need to=
- be translated to mbedTLS 4 internal</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+  IDs by OpenVPN, and some names might be missing=2E</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+## Deprecated features</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+* **`secret` support has been removed (by default)=2E**</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  static key mode (non-TLS) is no longer =
-considered &quot;good and secure enough&quot; for</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+  today&#39;s requirements=2E Use TLS mode in=
-stead=2E If deploying a PKI CA is considered</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+  &quot;too complicated&quot;, using `--peer-finge=
-rprint` makes TLS mode about as easy as</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+  using `--secret`=2E</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+  This mode can still be enabled by using</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+  `--allow-deprecated-insecure-static-crypto` but =
-will be removed in OpenVPN 2=2E8=2E</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* *=
-*Support for wintun Windows driver has been removed=2E**</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+  OpenVPN 2=2E6 added support for the new dco-win driver,=
- so it supported three</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+  different device drivers: dco-win, wintun, and tap-windows6=2E OpenVPN=
- 2=2E7 now</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  drops t=
-he support for wintun driver=2E By default all modern configs should be</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+  supported by dco-win =
-driver=2E In all other cases OpenVPN will fall back</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  automatically to tap-windows6 driver=2E=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+* **NTLMv1 authentication support for =
-HTTP proxies has been removed=2E**</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Th=
-is is considered an insecure method of authentication that uses obsolete</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+  crypto algorithms=2E=
- NTLMv2 support is still available, but will be removed in a</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+  future release=2E When configure=
-d to authenticate with NTLMv1 (`ntlm` keyword in</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+  `--http-proxy`) OpenVPN will try NTLMv2 inst=
-ead=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+* **`persist-key` option has bee=
-n enabled by default=2E**</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  All the key=
-s will be kept in memory across restart=2E</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+* **OpenSSL 1=2E0=2E2 support has been removed=2E**</span><br><span sty=
+Multi-socket support for servers**</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Op=
+enVPN servers now can listen on multiple sockets at the same time=2E Multip=
+le</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  `--local` state=
+ments in the configuration can be used to configure this=2E This</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+  way the same server can e=2E=
+g=2E listen for UDP and TCP connections at the same</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  time, or listen on multiple addresses a=
+nd/or ports=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Client implementatio=
+ns for DNS options sent by server for Linux/BSD/macOS**</span><br><span sty=
 le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+  Support for building with OpenSSL 1=2E0=2E2 has been rem=
-oved=2E The minimum supported</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+  OpenSSL version is now 1=2E1=2E0=2E</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+* **mbedTLS 2=2Ex support has been removed**</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+  Support for building with mbedTLS 2=2Ex has been removed (=
-it is out of support</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+  since March 2025, and the necessary compatibility code is making mainten=
-ance and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  support f=
-or mbedTLS 4=2Ex hard)=2E The minimum supported mbedTLS version is now</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+  3=2E2=2E1=2E</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+* **Compression on send has been removed=2E**</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  OpenVPN 2=2E7 will never compress data =
-before sending=2E Decompression of received</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+  data is still supported=2E `--allow-compression y=
-es` is now an alias for</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+  `--allow-compression asym`=2E</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* *=
-*`--memstats` feature removed**</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  The `=
---memstats` option was largely undocumented and there is no known user of</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+  this feature=2E Thi=
-s feature provided very limited statistics (number of users,</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+  link bytes read/written) and we =
-do not except any usage because of this=2E</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+* **Warning when using `--push` without `--mode server`**</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+  Using `--push` in a mode that is not `--mode serve=
-r` will now print a</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-  clear warning that this is an unsupported operation and might cause negot=
-iation</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  failures=2E=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+* **Warning for `--reneg-bytes` and `-=
--reneg-packets` in DCO mode**</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  `--rene=
-g-bytes` and `--reneg-packets` do not work in DCO mode, and will</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+  now print an appropriate war=
-ning=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+* **On-connect resolving of `--=
-remote` in `--tcp-server` mode removed**</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+  On-connect resolving of `--remote` addresses in `--tcp-server` mode</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+  was not working since=
- 2=2E4, so the code was completely removed=2E</span><br><span style=3D"colo=
+0, 100%, 40%);">+  Linux, BSD and macOS versions of OpenVPN now ship with a=
+ per-platform default</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+  `--dns-updown` script that implements proper handling of DNS configurat=
+ion sent</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  by the se=
+rver=2E The scripts should work on systems that use `systemd` or</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+  `resolveconf` to manage the =
+DNS setup, as well as raw `/etc/resolv=2Econf` files=2E</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+  However, the exact features supported=
+ will depend on the configuration method=2E</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+  On Linux and MacOS this should usually make split=
+-DNS configurations supported</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+  out-of-the-box now=2E</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Not=
+e that this new script will not be used by default if a `--up` script is</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+  already in use to re=
+duce problems with backwards compatibility=2E</span><br><span style=3D"colo=
 r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+## User-visible Changes</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- Defaul=
-t for `--topology` changed to `subnet` for `--mode server`=2E Previous</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+  releases always used `=
-net30` as default=2E This only affects configs with</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  `--mode server` or `--server` (the latt=
-er implies the former), and</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+  `--dev tun`, and only if IPv4 is enabled=2E Note that this change=
-s the semantics</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  of=
- `--ifconfig`, so if you have manual settings for that in your config but</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+  not set `--topology=
-` your config might fail to parse with the new version=2E</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+  Just adding `--topology net30` to t=
-he config should fix the problem=2E By</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+  default `--topology` is pushed from server to client=
-=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- `--x509-userna=
-me-field` will no longer automatically convert fieldnames to</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+  uppercase=2E This was deprecated=
- since OpenVPN 2=2E4, and has now been removed=2E</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+- `--dh none` is now the default if `--dh` is=
- not specified=2E Modern TLS</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+  implementations will prefer ECDH and other more modern algorithm=
-s anyway=2E And</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  fi=
-nite field Diffie Hellman is in the proces of being deprecated (see</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+  draft-ietf-tls-deprecate-=
-obsolete-kex)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- `--l=
-port 0` does not imply `--bind` anymore=2E</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+- `--redirect-gateway` now works correctly if the VP=
-N remote is not reachable by</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+  the default gateway=2E</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+- `--show-gateway` now supports querying the gateway for IPv4=
- addresses=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- `--s=
-tatic-challenge` option now has a third parameter `format` that can change<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+  how password and c=
-hallenge response should be combined=2E</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+- `--key` and `--cert` now accept URIs implemented in O=
-penSSL 3 as well as</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-  optional OpenSSL 3 providers loaded using `--providers` option=2E</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+- `--cryptoapicert` now sup=
-ports issuer name as well as Windows CA template name</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  or OID as selector string=2E</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+- TLS handshake debugging info=
-rmation contains much more details now when using</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+  recent versions of OpenSSL=2E</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+- The `IV_PLAT_VER` variable sent=
- by Windows clients now contains the full</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+  Windows build version to make it possible to determ=
-ine the Windows 10 or</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+  Windows 11 version used=2E</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+- The `--windows-driver` option to select between various window=
-s drivers will</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  no =
-longer do anything - it&#39;s kept so existing configs will not become inva=
-lid,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  but it is ign=
-ored with a warning=2E The default is now `ovpn-dco` if all options</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+  used are compatible with =
-DCO, with a fallback to `tap-windows6`=2E To force TAP</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+  (for example because a server pushes D=
-CO incompatible options), use the</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+  `--disable-dco` option=2E</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+- Apply more checks to incoming TLS handshake packets=
- before creating new</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+  state - namely, verify message ID / acked ID for &quot;valid range for a=
-n initial</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  packet&q=
-uot;=2E This fixes a problem with clients that float very early but send</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+  control channel pack=
-et from the pre-float IP (Github: OpenVPN/openvpn#704)=2E</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+- Use of `--dh dh2048=2Epem` in all s=
-ample configs has been replaced with</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+  `--dh none`=2E The `dh2048=2Epem` file has been removed=
-=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- The startup de=
-lay in `t_client=2Esh` has been reduced from 3s to 1s, making a</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+  noticeable difference for set=
-ups with many tests=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+- Changed from using `uncrustify` for code formatting and pre-commit che=
-cks to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  `clang-form=
-at`=2E This reformatted quite a bit of code, and requires that</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+  regular committers change thei=
-r pre-commit checks accordingly=2E</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+- On Linux, on interfaces where applicable, OpenVPN explicit=
-ly configures the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-broadcast address again=2E This was dropped for 2=2E6=2E0 &quot;because com=
-puters are</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  smart a=
-nd can do it themselves&quot;, but the kernel netlink interface isn&#39;t, =
-and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  will install &=
-quot;0=2E0=2E0=2E0&quot;=2E This does not normally matter, but for broadcas=
-t-based</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  applicatio=
-ns that get the address to use from &quot;ifconfig&quot;, this change repai=
-rs</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  functionality (=
-this has been backported to 2=2E6=2E15, but is not in earlier 2=2E6</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+  versions)=2E</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+- `max-routes-per-client 0` used=
- to be silently upgraded to `1`=2E This now</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+  produces an error=2E</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+- `ifconfig` and `ifconfig-ipv6` values are now =
-stored in pre-connect options</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+  cache, and will be restored to pre-connect values on reconnects=
- if the server</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  sto=
-ps pushing the respective option=2E</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+- `tapctl=2Eexe` helper binary on Windows has been reworked=
- to improve help texts</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+  (making clear that it can not only do TAP-Adapters but Win-DCO as well=
-), add</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  printing of=
- the hwid to all adapter outputs, and change the default adapter</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+  type created to `ovpn-dco`=
-=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- The default fo=
-r `multihome` egress interface handling has changed=2E 2=2E7=2E0 will</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+  default to ipi_ifindex=
-=3D0, that is, leave the decision to the routing/policy</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+  setup of the operating system=2E The =
-pre-2=2E7 behaviour (force egress =3D ingress</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+  interface) can be achieved with the new `--mult=
-ihome same-interface`</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+  sub-option=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- =
-Windows `openvpn=2Eexe` binary manifest now sets code page UTF8 - which has=
- no</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  direct effect =
-on OpenVPN itself, but this repairs OpenSSL file loading for</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+  key/cert files with non-ASCII ch=
-aracters in their file names (GH:</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+  OpenVPN/openvpn#920)=2E</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+- The `test-crypto` option no longer requires a `--secr=
-et` argument and will</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+  automatically generate a random key=2E</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+- The configure-time option `--enable-x509-alt-usern=
-ame` is no longer</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-conditional, and always-on (GH: OpenVPN/openvpn#917)=2E</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+## Deprecated features</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+* **`--opt-verify` feature removed**</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
- This option was already deprecated and it is now being converted to a no-o=
-p=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Using this op=
-tion will only print a warning=2E</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# Ove=
-rview of changes in 2=2E6</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+## Project ch=
-anges</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+We want to deprecate our old Trac=
- bug tracking system=2E Please report any issues</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+with this release in GitHub instead: &lt;https=
-://github=2Ecom/OpenVPN/openvpn/issues&gt;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+## New features</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Support unlimit=
-ed number of connection entries and remote entries**</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+* **New management commands to enumerate and list remote ent=
-ries**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+  Use `remote-entry-count` and `=
-remote-entry-get` commands from the management</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+  interface to get the number of remote entries =
-and the entries themselves=2E</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Keyin=
-g Material Exporters (RFC 5705) based key generation**</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+  As part of the cipher negotiation OpenVPN will automatica=
-lly prefer the RFC5705</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+  based key material generation to the current custom OpenVPN PRF=2E Thi=
-s feature</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  requires=
- OpenSSL or mbed TLS 2=2E18+=2E</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Com=
-patibility with OpenSSL in FIPS mode**</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-  OpenVPN will now work with OpenSSL in FIPS mode=2E Note, no effort has be=
-en made</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  to check o=
-r implement all the requirements/recommendation of FIPS 140-2=2E This</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+  just allows OpenVPN to =
-be run on a system that be configured OpenSSL in FIPS</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  mode=2E</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+* **`mlock` now checks available memlock-able memory**</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+  `mlock` will now check if enough memlock-able memory=
- has been reserved,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-  and if less than 100MB RAM are available, use setrlimit() to upgrade the =
-limit=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  See Trac =
-#1390=2E Not available on OpenSolaris=2E</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+* **Certificate pinning/verify peer fingerprint**</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+  The `--peer-fingerprint` option has been introduced to giv=
-e users an easy to use</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+  alternative to the `tls-verify` for matching the fingerprint of the pe=
-er=2E The</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  option t=
-akes use a number of allowed SHA256 certificate fingerprints=2E</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+  See the man page section &quot;Small OpenVPN set=
-up with peer-fingerprint&quot; for a</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+  tutorial on how to use this feature=2E This is also avai=
-lable online under</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
- &lt;https://github=2Ecom/openvpn/openvpn/blob/master/doc/man-sections/exam=
-ple-fingerprint=2Erst&gt;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **TLS mode =
-with self-signed certificates**</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  When =
-`--peer-fingerprint` is used, the `--ca` and `--capath` option become</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+  optional=2E This allows=
- for small OpenVPN setups without setting up a PKI with</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+  Easy-RSA or similar software=2E</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+* **Deferred auth support for scripts**</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  The `--auth-user-pass-verify` script su=
-pports now deferred authentication=2E</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+*=
- **Pending auth support for plugins and scripts**</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+  Both auth plugin and script can now signal pending authenticat=
-ion to the client</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-when using deferred authentication=2E The new `client-crresponse` script op=
-tion</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  and `OPENVPN_=
-PLUGIN_CLIENT_CRRESPONSE` plugin function can be used to parse a</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+  client response to a `CR_TEX=
-T` two factor challenge=2E</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  See `sampl=
-e/sample-scripts/totpauth=2Epy` for an example=2E</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+* **Compatibility mode (`--compat-mode`)**</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+  The modernisation of defaults can impact the compatibility=
- of OpenVPN 2=2E6=2E0 with</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+  older peers=2E The options `--compat-mode` allows UIs to provide u=
-sers with an</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  easy =
-way to still connect to older servers=2E</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+* **OpenSSL 3=2E0 support**</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  OpenSSL=
- 3=2E0 has been added=2E Most of OpenSSL 3=2E0 changes are not user visible=
- but</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  improve gener=
-al compatibility with OpenSSL 3=2E0=2E `--tls-cert-profile insecure`</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+  has been added to allow =
-selecting the lowest OpenSSL security level (not</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+  recommended, use only if you must)=2E OpenSS=
-L 3=2E0 no longer supports the Blowfish</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+  (and other deprecated) algorithm by default and the n=
-ew option `--providers`</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+  allows loading the legacy provider to renable these algorithms=2E</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+* **Optional ciphers in `--data-ciphers`*=
-*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+  Ciphers in `--data-ciphers` can now=
- be prefixed with a `?` to mark those as</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+  optional and only use them if the SSL library suppor=
-ts them=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+* **Improved `--mssfix` and =
-`--fragment` calculation**</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  The `--mss=
-fix` and `--fragment` options now allow an optional `mtu` parameter to</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+  specify that different=
- overhead for IPv4/IPv6 should taken into account and the</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+  resulting size is specified as the =
-total size of the VPN packets including IP</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+  and UDP headers=2E</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+* **Cookie based handshake for UDP server**</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+  Instead of allocating a connection for each client on the initi=
-al packet OpenVPN</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-server will now use an HMAC based cookie as its session id=2E This way the =
-server</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  can verify =
-it on completing the handshake without keeping state=2E This eliminates</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+  the amplification and=
- resource exhaustion attacks=2E For tls-crypt-v2 clients,</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+  this requires OpenVPN 2=2E6 clients=
- or later because the client needs to resend</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+  its client key on completing the hand shake=2E T=
-he tls-crypt-v2 option allows</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+  controlling if older clients are accepted=2E</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+  By default the rate of initial packet responses is limi=
-ted to 100 per 10s</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
- interval to avoid OpenVPN servers being abused in reflection attacks (see<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+  `--connect-freq-in=
-itial`)=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+* **Data channel offloading =
-with ovpn-dco**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+  2=2E6=2E0+ implements=
- support for data-channel offloading where the data packets are</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+  directly processed and forwar=
-ded in kernel space thanks to the ovpn-dco kernel</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+  module=2E The userspace openvpn program act=
-s purely as a control plane</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+  application=2E Note that DCO will use DATA\_V2 packets in P2P mod=
-e, therefore, this</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
- implies that peers must be running 2=2E6=2E0+ in order to have P2P-NCP whi=
-ch brings</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  DATA\_V2=
- packet support=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Session timeout*=
-*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+  It is now possible to terminate a s=
-ession (or all) after a specified amount of</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+  seconds has passed session commencement=2E This b=
-ehaviour can be configured using</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+  `--session-timeout`=2E This option can be configured on the =
-server, on the client</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+  or can also be pushed=2E</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Inline=
- auth username and password**</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Usernam=
-e and password can now be specified inline in the configuration file</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+  within the `&lt;auth-use=
-r-pass&gt;&lt;/auth-user-pass&gt;` tags=2E If the password is</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+  missing OpenVPN will prompt for=
- input via stdin=2E This applies to inline&#39;d</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+  http-proxy-user-pass too=2E</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+* **Tun MTU can be pushed**</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+  The client can now also dynamically configure its MTU and the se=
-rver will try to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  p=
-ush the client MTU when the client supports it=2E The directive `--tun-mtu-=
-max`</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  has been intr=
-oduced to increase the maximum pushable MTU size (defaults to</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+  1600)=2E</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+* **Dynamic TLS Crypt**</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-  When both peers are OpenVPN 2=2E6=2E1+, OpenVPN will dynamically create a=
- tls-crypt</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  key tha=
-t is used for renegotiation=2E This ensure that only the previously</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+  authenticated peer can do=
- trigger renegotiation and complete renegotiations=2E</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+* **Improved control channel packet size control (`max-packe=
-t-size`)**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+  The size of control channe=
-l is no longer tied to `--link-mtu`/`--tun-mtu` and</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  can be set using `--max-packet-size`=2E=
- Sending large control channel frames is</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+  also optimised by allowing 6 outstanding packets ins=
-tead of just 4=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-`max-packet-size` will also set `mssfix` to try to limit data-channel packe=
-ts as</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  well=2E</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+## Deprecated features</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+* **`inetd` has been removed**</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+  This was a very limited and not-well-tested way to run OpenVPN,=
- on TCP and TAP</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  mo=
-de only=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+* **`verify-hash` has been d=
-eprecated**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+  This option has very limi=
-ted usefulness and should be replaced by either a</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+  better `--ca` configuration or with a `--tl=
-s-verify` script=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **`secret` has be=
-en deprecated**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+  Static key mode (non-=
-TLS) is no longer considered &quot;good and secure enough&quot; for</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+  today&#39;s requirements=
-=2E Use TLS mode instead=2E If deploying a PKI CA is considered</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+  &quot;too complicated&quot;, =
-using `--peer-fingerprint` makes TLS mode about as easy as</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+  using `--secret`=2E</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+* **`ncp-disable` has been removed**</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+  This option mainly served a role as debug option when=
- NCP was first introduced=2E</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+  It should now no longer be necessary=2E</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+* **TLS 1=2E0 and 1=2E1 are deprecated**</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+  `tls-version-min` is set to 1=2E2 by default=2E OpenVPN 2=
-=2E6=2E0 defaults to a minimum</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+  TLS version of 1=2E2 as TLS 1=2E0 and 1=2E1 should be generall=
-y avoided=2E Note that</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+  OpenVPN versions older than 2=2E3=2E7 use TLS 1=2E0 only=2E</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+* **`--cipher` argument is no longer appended to =
-`--data-ciphers` by default**</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Data ci=
-pher negotiation has been introduced in 2=2E4=2E0 and been</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+  significantly improved in 2=2E5=2E=
-0=2E The implicit fallback to the cipher specified</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+  in `--cipher` has been removed=2E Effectiv=
-ely, `--cipher` is a no-op in TLS mode</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+  now, and will only have an effect in pre-shared-key mo=
-de (`--secret`)=2E From now</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+  on `--cipher` should not be used in new configurations for TLS mo=
-de=2E Should</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  backw=
-ards compatibility with older OpenVPN peers be required, please see the</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+  `--compat-mode` inste=
-ad=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+* **`--prng` has beeen removed**<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+  OpenVPN used to implement its own PRN=
-G based on a hash=2E However implementing a</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+  PRNG is better left to a crypto library=2E So we =
-use the PRNG mbed TLS or OpenSSL</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+  now=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **`--keysize` h=
-as been removed**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+  The `--keysize` opt=
-ion was only useful to change the key length when using the</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+  BF, CAST6 or RC2 ciphers=2E For a=
-ll other ciphers the key size is fixed with the</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+  chosen cipher=2E As OpenVPN v2=2E6 no longer =
-supports any of these variable length</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+  ciphers, this option was removed as well to avoid confu=
-sion=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+* **Compression no longer enabl=
-ed by default**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+  Unless an explicit co=
-mpression option is specified in the configuration,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  `--allow-compression` defaults to `no` =
-in OpeNVPN 2=2E6=2E0=2E By default, OpenVPN 2=2E5</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+  still allowed a server to enable compressio=
-n by pushing compression related</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+  options=2E</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **PF (Packe=
-t Filtering) support has been removed**</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+  The built-in PF functionality has been removed from the code base=2E Thi=
-s feature</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  wasn&#39=
-;t really easy to use and was long unmaintained=2E This implies that also</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+  `--management-clien=
-t-pf` and any other compile time or run time related option</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+  do not exist any longer=2E</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+* **Option conflict checking is being depreca=
-ted and phased out**</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  The static optio=
-n checking (OCC) is no longer useful in typical setups that</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+  negotiate most connection paramet=
-ers=2E The `--opt-verify` and `--occ-disable`</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+  options are deprecated, and the configure optio=
-n `--enable-strict-options` has</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+  been removed=2E Logging of mismatched options has been moved =
-to debug logging</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  (=
-verb 7)=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+## User-visible Changes</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+- CHACHA20-POLY1305 is included in the de=
-fault of `--data-ciphers` when</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+  available=2E</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+- Option `--prng` is ignored as we rely on the SSL library random num=
-ber</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  generator=2E</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+- Option `--nobind` i=
-s default when `--client` or `--pull` is used in the</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  configuration</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+- `link_mtu` parameter is removed from enviro=
-nment or replaced with 0 when</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+  scripts are called with parameters=2E This parameter is unrelia=
-ble and no longer</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-internally calculated=2E</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+- control channel packet maximum size is no longer influenced by</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+  `--link-mtu`/`--tun-mtu=
-` and must be set by `--max-packet-size` now=2E The</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  default is 1250 for the control channel=
- size=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- In point-=
-to-point OpenVPN setups (no `--server`), using `--explict-exit-notiy`</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+  on one end would termin=
-ate the other side at session end=2E This is considered a</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+  no longer useful default and has be=
-en changed to &quot;restart on reception of</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+  explicit-exit-notify message&quot;=2E If the old =
-behaviour is still desired,</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+  `--remap-usr1 SIGTERM` can be used=2E</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+- FreeBSD tun interfaces with `--topology subne=
-t` are now put into real subnet</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+  mode (IFF_BROADCAST instead of IFF_POINTOPOINT) - this might =
-upset software</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  tha=
-t enumerates interfaces, looking for &quot;broadcast capable?&quot; and exp=
-ecting</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  certain res=
-ults=2E Normal uses should not see any difference=2E</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+- The default configurations will no long=
-er allow connections to OpenVPN 2=2E3=2Ex</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+  peer or earlier, use the new `--compat-mode` option=
- if you need compatibility</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+  with older versions=2E See the manual page on the `--compat-mode` =
-for details=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- The=
- `client-pending-auth` management command now requires also the key id=2E T=
-he</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  management vers=
-ion has been changed to 5 to indicate this change=2E</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+- (OpenVPN 2=2E6=2E2) A client will now r=
-efuse a connection if pushed compression</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+  settings will contradict the setting of allow-compre=
-ssion as this almost</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+  always results in a non-working connection=2E</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+- The &quot;kill&quot; by addr management comm=
-and now requires also the protocol as string</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+  e=2Eg=2E &quot;udp&quot;, &quot;tcp&quot;=2E</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+## Common errors with OpenSSL 3=2E0 and O=
-penVPN 2=2E6</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+Both OpenVPN 2=2E6 and Ope=
-nSSL 3=2E0 tighten the security considerable, so some</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+configuration will no longer work=2E This=
- section will cover the most common</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+causes and error message we have seen and explain their rea=
-son and temporary</span><br><span style=3D"color: hsl(120, 100%, 40%);">+wo=
-rkarounds=2E You should fix the underlying problems as soon as possible sin=
-ce</span><br><span style=3D"color: hsl(120, 100%, 40%);">+these workaround =
-are not secure and will eventually stop working in a future</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+update=2E</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+- weak SHA1 or MD5 signature on certificates</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+  This will happen on either loading of certificates or on=
- connection to a</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  s=
-erver:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+      OpenSSL: error:0A00018E:SS=
-L routines::ca md too weak</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+      Cannot load certificate file cert=2Ecrt</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+      Exiting due to fatal error</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+  OpenSSL 3=2E0 no longer allows weak signature=
-s on certificates=2E You can</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+  downgrade your security to allow them by using `--tls-cert-profi=
-le insecure`</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  but s=
-hould replace/regenerate these certificates as soon as possible=2E</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+- 1024 bit RSA certificates, 1024 bit DH parame=
-ters, other weak keys</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  This happens if=
- you use private keys or other cryptographic material that does</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+  not meet today&#39;s cryptogr=
-aphic standards anymore=2E Messages are similar to:</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+      OpenSSL: error:0A00018F:SSL routines::ee key too small=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      OpenSSL: erro=
-r:1408518A:SSL routines:ssl3_ctx_ctrl:dh key too small</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+  DH parameters (`--dh`) can be regenerated with `openssl d=
-hparam 2048`=2E For</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-  other cryptographic keys, these keys and certificates need to be regenera=
-ted=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  TLS Securit=
-y level can be temporarily lowered with `--tls-cert-profile legacy`</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+  or even `--tls-cert-profi=
-le insecure`=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+- Connecting to a OpenV=
-PN 2=2E3=2Ex server or allowing OpenVPN 2=2E3=2Ex or earlier</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+  clients</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+  This will normally result in messages like:</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+      OPTIONS ERROR: failed to negotiate cipher with ser=
-ver=2E Add the server&#39;s cipher (&#39;AES-128-CBC&#39;) to --data-cipher=
-s (currently &#39;AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305&#39;) if you wa=
-nt to connect to this server=2E</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  or</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+      client/127=2E0=2E0=2E1:49954 SENT C=
-ONTROL [client]: &#39;AUTH_FAILED,Data channel cipher negotiation failed (n=
-o shared cipher)&#39; (status=3D1)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Yo=
-u can manually add the missing cipher to the `--data-ciphers`=2E The standa=
-rd</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  ciphers should =
-be included as well, e=2Eg=2E</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+  `--data-ciphers AES-256-GCM:AES-128-GCM:?Chacha20-Poly1305:?AES=
--128-CBC`=2E You</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  c=
-an also use the `--compat-mode` option=2E Note that these message may also<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+  indicate other cip=
-her configuration problems=2E See the data channel cipher</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+  negotiation manual section for more=
- details=2E (Available online under</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+  &lt;https://github=2Ecom/OpenVPN/openvpn/blob/master/doc/=
-man-sections/cipher-negotiation=2Erst&gt;)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+- Use of a legacy or deprecated cipher (e=2Eg=2E 64bit block ciphers)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+  OpenSSL 3=2E0 no longer supports a num=
-ber of insecure and outdated ciphers in</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+  its default configuration=2E Some of these ciphers ar=
-e known to be vulnerable</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+  (SWEET32 attack)=2E</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  This will =
-typically manifest itself in messages like:</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+      OpenSSL: error:0308010C:digital envelope routines::unsupported</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+      Cipher algorith=
-m &#39;BF-CBC&#39; not found</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+      Unsupported cipher in --data-ciphers: BF-CBC</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+  If your OpenSSL distribution comes with the legacy p=
-rovider (see also</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-`man OSSL_PROVIDER-legacy`), you can load it with</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+  `--providers legacy default`=2E This will r=
-e-enable the old algorithms=2E</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- OpenVP=
-N version not supporting TLS 1=2E2 or later</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+  The default in OpenVPN 2=2E6 and also in many distributions is now T=
-LS 1=2E2 or</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  later=
-=2E Connecting to a peer that does not support this will results in</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+  messages like:</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+      TLS error: Unsupported protocol=2E</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+  This typically indicates that client and serv=
-er have no common TLS version</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+  enabled=2E This can be caused by mismatched tls-version-min and=
- tls-version-max</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  o=
-ptions on client and server=2E If your OpenVPN client is between v2=2E3=2E6=
- and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  v2=2E3=2E2 tr=
-y adding `tls-version-min 1=2E0` to the client configuration to use</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+  TLS 1=2E0+ instead of TLS=
- 1=2E0 only=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+      OpenSSL: error:0A0=
-00102:SSL routines::unsupported protocol</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+  This can be an OpenVPN 2=2E3=2E6 or earlier version=2E `compat-version =
-2=2E3=2E0` will</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  en=
-able TLS 1=2E0 support if supported by the OpenSSL distribution=2E Note tha=
-t on</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  some Linux di=
-stributions enabling TLS 1=2E1 or 1=2E0 is not possible=2E</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+# Overview of changes in 2=2E5</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+## New features</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Client-=
-specific tls-crypt keys (`--tls-crypt-v2`)**</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+  `tls-crypt-v2` adds the ability to supply each client with a unique=
- tls-crypt</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  key=2E =
-This allows large organisations and VPN providers to profit from the same</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+  DoS and TLS stack p=
-rotection that small deployments can already achieve using</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+  `tls-auth` or `tls-crypt`=2E</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+* **ChaCha20-Poly1305 cipher support**</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+  Added support for using the ChaCha20-Poly1=
-305 cipher in the OpenVPN data</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+  channel=2E</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Improved Da=
-ta channel cipher negotiation**</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  The o=
-ption `ncp-ciphers` has been renamed to `data-ciphers`=2E The old name is</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+  still accepted=2E T=
-he change in name signals that `data-ciphers` is the preferred</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+  way to configure data channel =
-ciphers and the data prefix is chosen to avoid the</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+  ambiguity that exists with `--cipher` for =
-the data cipher and `tls-cipher` for</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+  the TLS ciphers=2E</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
- OpenVPN clients will now signal all supported ciphers from the `data-ciphe=
-rs`</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  option to the =
-server via `IV_CIPHERS`=2E OpenVPN servers will select the first</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+  common cipher from the `data=
--ciphers` list instead of blindly pushing the first</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  cipher of the list=2E This allows to us=
-e a configuration like</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+  `data-ciphers ChaCha20-Poly1305:AES-256-GCM` on the server that prefer=
-s</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  ChaCha20-Poly130=
-5 but uses it only if the client supports it=2E</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+  See the data channel negotiation section in the manual for more =
-details=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+* **Removal of BF-CBC suppor=
-t in default configuration:**</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  By defa=
-ult OpenVPN 2=2E5 will only accept AES-256-GCM and AES-128-GCM as data</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+  ciphers=2E OpenVPN 2=
-=2E4 allows AES-256-GCM,AES-128-GCM and BF-CBC when no --cipher</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+  and --ncp-ciphers options are=
- present=2E Accepting BF-CBC can be enabled by adding</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+  &gt; data-ciphers AES-256-GCM:AES-128-GCM:BF-CBC</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+  and when you need to support very old peers al=
-so</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+  &gt; data-ciphers-fallback BF-CBC<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+  To offer backwards compatibility with=
- older configs an *explicit*</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  &gt; cip=
-her BF-CBC</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+  in the configuration will =
-be automatically translated into adding BF-CBC to the</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  data-ciphers option and setting data-ci=
-phers-fallback to BF-CBC (as in the</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+  example commands above)=2E We strongly recommend to switc=
-hing away from BF-CBC to</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+  a more secure cipher=2E</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Asyn=
-chronous (deferred) authentication support for auth-pam plugin=2E**</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+  See src/plugins/auth-pam/README=2Eauth-pam f=
-or details=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Deferred client-conne=
-ct**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+  The `--client-connect` option an=
-d the connect plugin API allow</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+  asynchronous/deferred return of the configuration file in the =
-same way as the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  au=
-th-plugin=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+* **Faster connection setu=
-p**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+  A client will signal in the `IV_P=
-ROTO` variable that it is in pull mode=2E This</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+  allows the server to push the configuration op=
-tions to the client without</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+  waiting for a `PULL_REQUEST` message=2E The feature is automatica=
-lly enabled if</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  bot=
-h client and server support it and significantly reduces the connection set=
-up</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  time by avoidin=
-g one extra packet round-trip and 1s of internal event delays=2E</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+* **Netlink support**</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+  On Linux, if configured without `--enable-iproute2`, configuring=
- IP addresses</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  and =
-adding/removing routes is now done via the netlink(3) kernel interface=2E T=
-his</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  is much faster=
- than calling `ifconfig` or `route` and also enables OpenVPN to</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+  run with less privileges=2E</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+  If configured with --enable-iproute2, =
-the `ip` command is used (as in 2=2E4)=2E</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+  Support for `ifconfig` and `route` is gone=2E</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+* **Wintun support**</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+  On Windows, OpenVPN can now use `wintun` devices=2E They a=
-re faster than the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
- traditional `tap9` tun/tap devices, but do not provide `--dev tap` mode - =
-so the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  official in=
-stallers contain both=2E To use a wintun device, add</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  `--windows-driver wintun` to your confi=
-g (and use of the interactive service is</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+  required as wintun needs SYSTEM privileges to enable=
- access)=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+* **IPv6-only operation**</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+  It is now possible to have only IPv6 a=
-ddresses inside the VPN tunnel, and</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+  IPv6-only address pools (2=2E4 always required IPv4 confi=
-g/pools and IPv6 was the</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+  &quot;optional extra&quot;)=2E</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+*=
- **Improved Windows 10 detection**</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Co=
-rrectly log OS on Windows 10 now=2E</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* *=
-*Linux VRF support**</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Using the new `-=
--bind-dev` option, the OpenVPN outside socket can now be put</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+  into a Linux VRF=2E See the &quo=
-t;Virtual Routing and Forwarding&quot; documentation in the</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+  man page=2E</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+* **TLS 1=2E3 support**</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-  TLS 1=2E3 support has been added to OpenVPN=2E Currently, this requires O=
-penSSL</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  1=2E1=2E1+=
-=2E The options `--tls-ciphersuites` and `--tls-groups` have been added to<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+  fine tune TLS prot=
-ocol options=2E Most of the improvements were also backported to</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+  OpenVPN 2=2E4 as part of the=
- maintainance releases=2E</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Support s=
-etting DHCP search domain**</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  A new opt=
-ion `--dhcp-option DOMAIN-SEARCH my=2Eexample=2Ecom` has been defined, and<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Windows support fo=
-r it is implemented (tun/tap only, no wintun support yet)=2E</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+  Other platforms need to support =
-this via `--up` script (Linux) or GUI</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+  (OSX/Tunnelblick)=2E</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+* **per-client changing of `--data-ciphers` or `data-ciphers-fallback`**<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+  Via client-connect script/dir (NOTE: =
-this only changes preference of ciphers</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+  for NCP, but can not override what the client announc=
-es as &quot;willing to accept&quot;)=2E</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+* **Handle setting of tun/tap interface MTU on Windows**</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+  If IPv6 is in use, MTU must be &gt;=3D 1280 (Windows e=
-nforces IETF requirements)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Add supp=
-ort for OpenSSL engines to access private key material (like TPM)=2E**</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+* **HMAC based auth-token support**</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+  The `--auth-gen-token` support has been im=
-proved and now generates HMAC based</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+  user token=2E If the optional `--auth-gen-token-secret` o=
-ption is used clients</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+  will be able to seamlessly reconnect to a different server using the sa=
-me secret</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  file or =
-to the same server after a server restart=2E</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+* **Improved support for pending authentication**</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+  The protocol has been enhanced to be able to signal that=
- the authentication</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-  should use a secondary authentication via web (like SAML) or a two factor=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  authentication wi=
-thout disconnecting the OpenVPN session with AUTH_FAILED=2E The</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+  session will instead be stay =
-in a authenticated state and wait for the second</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+  factor authentication to complete=2E</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+  This feature currently requires usage of the=
- managent interface on both client</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+  and server side=2E See the `management-notes=2Etxt` `clien=
-t-pending-auth` and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-  `cr-response` commands for more details=2E</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+* **VLAN support**</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  OpenVPN serv=
-ers in TAP mode can now use 802=2E1q tagged VLANs on the TAP interface</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+  to separate clients in=
-to different groups that can then be handled differently</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+  (different subnets / DHCP, firewall =
-zones, =2E=2E=2E) further down the network=2E See</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+  the new options `--vlan-tagging`, `--vlan-a=
-ccept`, `--vlan-pvid`=2E</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  802=2E1q tag=
-ging on the client side TAP interface is not handled today (=3D tags are</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+  just forwarded trans=
-parently to the server)=2E</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Support =
-building of =2Emsi installers for Windows**</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+* **Allow unicode search string in `--cryptoapicert` option (Windows)*=
-*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+* **Support IPv4 configs with /31 net=
-masks now**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+  (By no longer trying to c=
-onfigure `broadcast x=2Ex=2Ex=2Ex` in ifconfig calls, /31</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+  support &quot;just works&quot;)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+* **New option `--block-ipv6` to reject a=
-ll IPv6 packets (ICMPv6)**</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  This is us=
-eful if the VPN service has no IPv6, but the clients might have (LAN),</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+  to avoid client connec=
-tions to IPv6-enabled servers leaking &quot;around&quot; the</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+  IPv4-only VPN=2E</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+* **`--ifconfig-ipv6` and `--ifconfig-ipv6-push` accep=
-t hostnames**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+  `--ifconfig-ipv6` and `=
---ifconfig-ipv6-push` will now accept hostnames and do</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+  a DNS lookup to get the IPv6 address t=
-o use=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+## Deprecated features</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+For an up-to-date list of all deprecated optio=
-ns, see this wiki page:</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+&lt;https://community=2Eopenvpn=2Enet/openvpn/wiki/DeprecatedOptions&gt=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+- `ncp-disable` has been deprecated=
+0%);">+  See documentation for `--dns-updown` and `--dns` for more details=
 =2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+  With the improved and matured dat=
-a channel cipher negotiation, the use of</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+  `ncp-disable` should not be necessary anymore=2E</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+- `inetd` has been deprecated=2E</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+  This is a very limited and not-well-tested wa=
-y to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  run OpenVPN, =
-on TCP and TAP mode only, which complicates the code quite a bit</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+  for little gain=2E To be rem=
-oved in OpenVPN 2=2E6 (unless users protest)=2E</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+- `no-iv` has been removed=2E</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-  This option was made into a NOOP option with OpenVPN</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+  2=2E4=2E This has now been completely =
-removed=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+- `--client-cert-not-require=
-d` has been removed</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  This option will =
-now cause server configurations to not start=2E</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+  Use `--verify-client-cert none` instead=2E</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+- `--ifconfig-pool-linear` has been remov=
-ed=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+  This option is removed=2E Use `=
---topology p2p` or `--topology subnet` instead=2E</span><br><span style=3D"=
+ style=3D"color: hsl(120, 100%, 40%);">+* **New client implementation for D=
+NS options sent by server for Windows**</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++  The Windows client now uses NRPT (Name Resolution Policy Table) to handl=
+e DNS</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  configuratio=
+ns=2E This adds support for split-DNS and DNSSEC and improves the</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+  compatbility with local DNS=
+ resolvers=2E Requires the interactive service=2E</span><br><span style=3D"=
 color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+- `--compress xxx` is considered risky and is warned against, se=
-e below=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+- `--key-method 1` has been =
-removed</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+## User-visible Changes</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+- If multiple connect handlers are used (clien=
-t-connect, ccd, connect plugin)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+  and one of the handler succeeds but a subsequent fails, the</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+  client-disconnect-s=
-cript is now called immediately=2E Previously it was called,</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+  when the VPN session was termina=
-ted=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- Support for=
- building with OpenSSL 1=2E0=2E1 has been removed=2E The minimum</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+  supported OpenSSL version is=
- now 1=2E0=2E2=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- =
-The GET_CONFIG management state is omitted if the server pushes the client<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+  configuration almo=
-st immediately as result of the faster connection setup</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+  feature=2E</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+- `--compress` is nowadays considered risky, b=
-ecause attacks exist leveraging</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+  compression-inside-crypto to reveal plaintext (VORACLE)=2E So=
- by default,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  `--co=
-mpress xxx` will now accept incoming compressed packets (for</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+  compatibility with peers that ha=
-ve not been upgraded yet), but will not use</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+  compression outgoing packets=2E This can be contr=
-olled with the new option</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+  `--allow-compression yes|no|asym`=2E</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+- Stop changing `--txlen` aways from OS defaults u=
-nless explicitly specified in</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+  config file=2E OS defaults nowadays are actually larger then wh=
-at we used to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  conf=
-igure, so our defaults sometimes caused packet drops =3D bad performance=2E=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- remove `--writepi=
-d` pid file on exit now</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+- plugin-auth-pam now logs via OpenVPN logging method, no longer to std=
-err (this</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  means yo=
-u&#39;ll have log messages in syslog or openvpn log file now)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+- use ISO 8601 time format for fi=
-le based logging now (YYYY-MM-DD hh:mm:dd)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+  (syslog is not affected, nor is `--machine-readabl=
-e-output`)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- `--clr-=
-verify` now loads all CRLs if more than one CRL is in the same file</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+  (OpenSSL backend only, mb=
-edTLS always did that)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+- when `--auth-user-pass file` has no password, and the management inter=
-face is</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  active, qu=
-ery management interface (instead of trying console query, which</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+  does not work on windows)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+- skip expired certifi=
-cates in Windows certificate store (`--cryptoapicert`)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+- `--socks-proxy` + `--proto udp*` will =
-now allways use IPv4, even if IPv6 is</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+  requested and available=2E Our SOCKS code does not hand=
-le IPv6+UDP, and before</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+  that change it would just fail in non-obvious ways=2E</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+- TCP listen() backlog queue is now=
- set to 32 - this helps TCP servers that</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+  receive lots of &quot;invalid&quot; connects by TCP =
-port scanners</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- do n=
-o longer print OCC warnings (&quot;option mismatch&quot;) about `key-method=
-`,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  `keydir`, `tls-=
-auth` and `cipher` - these are either gone now, or negotiated,</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+  and the warnings do not serve =
-a useful purpose=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-- `dhcp-option DNS` and `dhcp-option DNS6` are now treated identically (=3D=
- both</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  accept an IP=
-v4 or IPv6 address for the nameserver)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-## Maintainer-visible changes</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- the man=
- page is now in maintained in =2Erst format, so building the openvpn=2E8</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+  manpage from a git c=
-heckout now requires python-docutils (if this is missing,</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+  the manpage will not be built - whi=
-ch is not considered an error generally,</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+  but for package builders or `make distcheck` it is)=
-=2E Release tarballs contain</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+  the openvpn=2E8 file, so unless some =2Erst is changed, doc-util=
-s are not needed</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  f=
-or building=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- OCC=
- support can no longer be disabled</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+- AEAD support is now required in the crypto library</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+- `--disable-server` has be=
-en removed from configure (so it is no longer</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+  possible to build a client-/p2p-only OpenVPN bi=
-nary) - the saving in code size</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+  no longer outweighs the extra maintenance effort=2E</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+- `--enable-iproute2` will di=
-sable netlink(3) support, so maybe remove that from</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  package building configs (see above)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+- support building wit=
-h MSVC 2019</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- cmocka=
- based unit tests are now only run if cmocka is installed externally</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+  (2=2E4 used to ship a lo=
-cal git submodule which was painful to maintain)</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+- `--disable-crypto` configure option has been=
- removed=2E OpenVPN is now always</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+  built with crypto support, which makes the code much easier=
- to maintain=2E This</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+  does not affect `--cipher none` to do a tunnel without encryption=2E</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+- `--disable-multi` con=
-figure option has been removed</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# Overvi=
-ew of changes in 2=2E4</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+## New features<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+* **Seamless client IP/port floating**<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+  Added new packet format P_DATA_V2, wh=
-ich includes peer-id=2E If both the server</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+  and client support it, the client sends all data p=
-ackets in the new format=2E When</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+  a data packet arrives, the server identifies peer by peer-id=
-=2E If peer&#39;s ip/port</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+  has changed, server assumes that client has floated, verifies HMAC =
-and updates</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  ip/por=
-t in internal structs=2E This allows the connection to be immediately</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+  restored, instead of re=
-quiring a TLS handshake before the server accepts packets</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+  from the new client ip/port=2E</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+* **Data channel cipher negotiation**</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  Data channel ciphers (`--cipher`) are n=
-ow by default negotiated=2E If a client</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+  advertises support for Negotiable Crypto Parameters (=
-NCP), the server will</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+  choose a cipher (by default AES-256-GCM) for the data channel, and tell=
- the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  client to use=
- that cipher=2E Data channel cipher negotiation can be controlled</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+  using `--ncp-ciphers` and `=
---ncp-disable`=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+  A more limited vers=
-ion also works in client-to-server and server-to-client</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+  scenarios where one of the end points=
- uses a v2=2E4 client or server and the other</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+  side uses an older version=2E In such scenarios=
- the v2=2E4 side will change to the</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+  `--cipher` set by the remote side, if permitted by by `--=
-ncp-ciphers`=2E For</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-  example, a v2=2E4 client with `--cipher BF-CBC` and</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  `ncp-ciphers AES-256-GCM:AES-256-CBC` c=
-an connect to both a v2=2E3 server with</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+  `cipher BF-CBC` as well as a server with `cipher AES-=
-256-CBC` in its config=2E The</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+  other way around, a v2=2E3 client with either `cipher BF-CBC` o=
-r</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  `cipher AES-256-=
-CBC` can connect to a v2=2E4 server with e=2Eg=2E `cipher BF-CBC` and</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+  `ncp-ciphers AES-256-GC=
-M:AES-256-CBC` in its config=2E For this to work it</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  requires that OpenVPN was built without=
- disabling OCC support=2E</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **AEAD (GCM=
-) data channel cipher support**</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  The d=
-ata channel now supports AEAD ciphers (currently only GCM)=2E The AEAD pack=
-et</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  format has a sm=
-aller crypto overhead than the CBC packet format, (e=2Eg=2E 20 bytes</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+  per packet for AES-128-G=
-CM instead of 36 bytes per packet for AES-128-CBC +</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  HMAC-SHA1)=2E</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+* **ECDH key exchange**</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Th=
-e TLS control channel now supports for elliptic curve diffie-hellmann key</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+  exchange (ECDH)=2E<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+* **Improved Certificate Revocation Lis=
-t (CRL) processing**</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  CRLs are now han=
-dled by the crypto library (OpenSSL or mbed TLS), instead of</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+  inside OpenVPN itself=2E The cry=
-pto library implementations are more strict than</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+  the OpenVPN implementation was=2E This might=
- reject peer certificates that would</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+  previously be accepted=2E If this occurs, OpenVPN will l=
-og the crypto library&#39;s</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+  error description=2E</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Dual=
-stack round-robin DNS client connect**</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-  Instead of only using the first address of each `--remote` OpenVPN will n=
-ow try</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  all address=
-es (IPv6 and IPv4) of a `--remote` entry=2E</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+* **Support for providing IPv6 DNS servers**</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+  A new DHCP sub-option `DNS6` is added alongside with the alrea=
-dy existing `DNS`</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-sub-option=2E This is used to provide DNS resolvers available over IPv6=2E =
-This may</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  be pushed=
- to clients where `--up` scripts and `--plugin` can act upon it through</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+  the `foreign_option_&=
-lt;n&gt;` environment variables=2E</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Su=
-pport for the Windows client picking up this new sub-option is added, howev=
-er</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  IPv6 DNS resolv=
-ers need to be configured via `netsh` which requires</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  administrator privileges unless the new=
- interactive services on Windows is being</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+  used=2E If the interactive service is used, this se=
-rvice will execute `netsh` in</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+  the background with the proper privileges=2E</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+* **New improved Windows Background service**</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+  The new OpenVPNService is based on openvpnserv2,=
- a complete rewrite of the</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+  OpenVPN service wrapper=2E It is intended for launching OpenVPN in=
-stances that</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  shoul=
-d be up at all times, instead of being manually launched by a user=2E</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+  OpenVPNService is able =
-to restart individual OpenVPN processes if they crash,</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+  and it also works properly on recent W=
-indows versions=2E OpenVPNServiceLegacy</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+  tends to work poorly, if at all, on newer Windows ver=
-sions (8+) and its use is</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+  not recommended=2E</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **New inte=
-ractive Windows service**</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  The install=
-er starts OpenVPNServiceInteractive automatically and configures it</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+  to start at system startu=
-p=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+  The interactive Windows service =
-allows unprivileged users to start OpenVPN</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+  connections in the global config directory (usuall=
-y C:\Program</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Files=
-\OpenVPN\config) using OpenVPN GUI without any extra configuration=2E</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+  Users who belong to the built-in Administr=
-ator group or to the local &quot;OpenVPN</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+  Administrator&quot; group can also store configurati=
-on files under</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  %US=
-ERPROFILE%\OpenVPN\config for use with the interactive service=2E</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+* **redirect-gateway ipv6**</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+  OpenVPN has now feature parity between IPv4 and IPv6 for =
-redirect gateway</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  i=
-ncluding the handling of overlapping IPv6 routes with IPv6 remote VPN serve=
-r</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  address=2E</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+* **LZ4 Compression and pushable compression=
-**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+  Additionally to LZO compression Op=
-enVPN now also supports LZ4 compression=2E</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+  Compression options are now pushable from the serv=
-er=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+* **Filter pulled options client-=
-side: pull-filter**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  New option to exp=
-licitly allow or reject options pushed by the server=2E May be</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+  used multiple times and is app=
-lied in the order specified=2E</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Per-=
-client remove push options: push-remove**</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+  New option to remove options on a per-client basis from the &quot;push=
-&quot; list (more</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-fine-grained than `--push-reset`)=2E</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* =
-**Http proxy password inside config file**</span><br><span style=3D"color: =
+%, 40%);">+* **On Windows the `block-local` flag is now enforced with WFP f=
+ilters=2E**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+  The `block-local` flag to=
+ `--redirect-gateway` and `--redirect-private` is now</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  also enforced via the Windows Firewall,=
+ making sure packets can&#39;t be sent to the</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+  local network=2E This provides stronger protect=
+ion against TunnelCrack-style</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+  attacks=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Windows netw=
+ork adapters are now generated on demand**</span><br><span style=3D"color: =
 hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+  Http proxy passwords can be specified with the inline file option</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+  `&lt;http-proxy-user-=
-pass&gt;` =2E=2E `&lt;/http-proxy-user-pass&gt;`</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+* **Windows version detection**</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+  Windows version is detected, logged and possibly signalled to server</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+  (`IV_PLAT_VER=3D&lt=
-;nn&gt;` if `--push-peer-info` is set on client)=2E</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+* **Authentication tokens**</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+  In situations where it is not suitable to save user passwords on the =
-client,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  OpenVPN ha=
-s support for pushing a --auth-token since v2=2E3=2E This option is pushed<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+  from the server to=
- the client with a token value to be used instead of the users</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+  password=2E For this to work, =
-the authentication plug-in would need to implement</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+  this support as well=2E In OpenVPN 2=2E4 -=
--auth-gen-token is introduced, which will</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+  allow the OpenVPN server to generate a random token=
- and push it to the client</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+  without any changes to the authentication modules=2E When the clie=
-nts need to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  re-aut=
-henticate the OpenVPN server will do the authentication internally,</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+  instead of sending the re=
--authentication request to the authentication module =2E</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+  This feature is especially useful in=
- configurations which use One Time Password</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+  (OTP) authentication schemes, as this allows the =
-tunnel keys to be renegotiated</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+  regularly without any need to supply new OTP codes=2E</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+* **keying-material-exporter**</span><br><span =
+;">+  This means that on systems that run multiple OpenVPN connections at t=
+he same</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  time the u=
+sers don&#39;t need to manually create enough network adapters anymore (in<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+  addition to the on=
+es created by the installer)=2E</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Win=
+dows automatic service now runs as an unpriviledged user**</span><br><span =
 style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+  Keying Material Exporter [RFC-5705] allow additional =
-keying material to be</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+  derived from existing TLS channel=2E</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+* **Android platform support**</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Supp=
-ort for running on Android using Android&#39;s VPNService API has been adde=
-d=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  See doc/andro=
-id=2Etxt for more details=2E This support is primarily used in the</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+  OpenVPN for Android app (&=
-lt;https://github=2Ecom/schwabe/ics-openvpn&gt;)</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+* **AIX platform support**</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-AIX platform support has been added=2E The support only includes tap device=
-s since</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  AIX does n=
-ot provide tun interface=2E</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Control=
- channel encryption (`--tls-crypt`)**</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
- Use a pre-shared static key (like the `--tls-auth` key) to encrypt control=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  channel packets=
-=2E Provides more privacy, some obfuscation and poor-man&#39;s</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+  post-quantum security=2E</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+* **Asynchronous push reply**</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+  Plug-ins providing support for deferred authenticat=
-ion can benefit from a more</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+  responsive authentication where the server sends PUSH\_REPLY imme=
-diately once the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  a=
-uthentication result is ready, instead of waiting for the client to to send=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  PUSH\_REQUEST onc=
-e more=2E This requires OpenVPN to be built with</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+  `=2E/configure --enable-async-push`=2E This =
-is a compile-time only switch=2E</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+## Dep=
-recated features</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+For an up-to-date list=
- of all deprecated options, see this wiki page:</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+&lt;https://community=2Eopenvpn=2Enet/openvpn/w=
-iki/DeprecatedOptions&gt;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- `--key-meth=
-od 1` is deprecated in OpenVPN 2=2E4 and will be removed in v2=2E5=2E</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+  Migrate away from `--ke=
-y-method 1` as soon as possible=2E The recommended</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+  approach is to remove the `--key-method` o=
-ption from the configuration files,</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+  OpenVPN will then use `--key-method 2` by default=2E Note=
- that this requires</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-  changing the option in both the client and server side configs=2E</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+- `--tls-remote` is removed=
- in OpenVPN 2=2E4, as indicated in the v2=2E3 man-pages=2E</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+  Similar functionality is provided =
-via `--verify-x509-name`, which does the</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+  same job in a better way=2E</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+- `--compat-names` and `--no-name-remapping`=
- were deprecated in OpenVPN 2=2E3 and</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+  will be removed in v2=2E5=2E All scripts and plug-ins d=
-epending on the old</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-  non-standard X=2E509 subject formatting must be updated to the standardiz=
-ed</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  formatting=2E S=
-ee the man page for more information=2E</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+- `--no-iv` is deprecated in OpenVPN 2=2E4 and will be =
-removed in v2=2E5=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+- `--keysize` is deprecated in OpenVPN 2=2E4 and will be removed in v2=2E6=
- together</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  with the=
- support of ciphers with cipher block size less than 128-bits=2E</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+- `--comp-lzo` is deprecated i=
-n OpenVPN 2=2E4=2E Use `--compress` instead=2E</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+- `--ifconfig-pool-linear` has been deprecated s=
-ince OpenVPN 2=2E1 and will be</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+  removed in v2=2E5=2E Use `--topology p2p` instead=2E</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+- `--client-cert-not-required=
-` is deprecated in OpenVPN 2=2E4 and will be removed</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  in v2=2E5=2E Use `--verify-client-cert =
-none` for a functional equivalent=2E</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+- `--ns-cert-type` is deprecated in OpenVPN 2=2E3=2E18 and=
- v2=2E4=2E It will be removed</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+  in v2=2E5=2E Use the far better `--remote-cert-tls` option whic=
-h replaces this</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  fe=
-ature=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+## User-visible Changes</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+- When using ciphers with cipher blocks less =
-than 128-bits, OpenVPN will</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+  complain loudly if the configuration uses ciphers considered weak=
-, such as the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  SWEE=
-T32 attack vector=2E In such scenarios, OpenVPN will by default renegotiate=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  for each 64MB of =
-transported data (`--reneg-bytes`)=2E This renegotiation can be</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+  disabled, but is HIGHLY DISCO=
-URAGED=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+- For certificate DNs with du=
-plicate fields, e=2Eg=2E &quot;OU=3Done,OU=3Dtwo&quot;, both fields</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+  are now exported to the e=
-nvironment, where each second and later occurrence of</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  a field get `_$N` appended to it&#39;s =
-field name, starting at N=3D1=2E For the</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+  example above, that would result in e=2Eg=2E `X509_0=
-_OU=3Done`, `X509_0_OU_1=3Dtwo`=2E Note</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+  that this breaks setups that rely on the fact that Op=
-enVPN would previously</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+  (incorrectly) only export the last occurrence of a field=2E</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+- `proto udp` and `proto tcp` now use both IPv4 a=
-nd IPv6=2E The new options</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+  `proto udp4` and `proto tcp4` use IPv4 only=2E</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+- `--sndbuf` and `--recvbuf` default now to OS defaults in=
-stead of 64k</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+- OpenVPN exits with an er=
-ror if an option has extra parameters; previously they</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+  were silently ignored</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+- `--tls-auth` always requires OpenVPN static key files=
- and will no longer work</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+  with free form files</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- `--proto =
-udp6/tcp6` in server mode will now try to always listen to both IPv4</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+  and IPv6 on platforms th=
-at allow it=2E Use `--bind ipv6only` to explicitly</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+  listen only on IPv6=2E</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+- Removed `--enable-password-save` from configure=2E This =
-option is now always</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+  enabled=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+- Stricter default TLS ci=
-pher list (override with `--tls-cipher`), that now also</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+  disables:</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+  - Non-ephemeral key exchange using static (EC)DH keys</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+  - DSS private keys</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+- mbed TLS builds: changed the `tls_digest_N` va=
-lues exported to the script</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+  environment to be equal to the ones exported by OpenSSL builds, n=
-amely the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  certific=
-ate fingerprint (was the hash of the &#39;to be signed&#39; data)=2E</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+- mbed TLS builds: minimum RSA key size is no=
-w 2048 bits=2E Shorter keys will not</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+  be accepted, both local and from the peer=2E</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+- `--connect-timeout` now specifies the timeout un=
-til the first TLS packet is</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+  received (identical to `--server-poll-timeout`) and this timeout =
-now includes</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  the r=
-emoved socks proxy timeout and http proxy timeout=2E</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+  In `--static` mode `connect-timeout` specifies the timeout=
- for TCP and proxy</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
- connection establishment</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- `--connect-=
-retry-max` now specifies the maximum number of unsuccessful</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+  attempts of each remote/connectio=
-n entry before exiting=2E</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- `--http-pro=
-xy-timeout` and the static non-changeable socks timeout (5s) have</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+  been folded into a &quot;un=
-ified&quot; `--connect-timeout` which covers all steps needed</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+  to connect to the server, up to=
- the start of the TLS exchange=2E The default</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+  value has been raised to 120s, to handle slow h=
-ttp/socks proxies graciously=2E</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+  The old &quot;fail TCP fast&quot; behaviour can be achieved b=
-y adding</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  &quot;`--=
-connect-timeout 10`&quot; to the client config=2E</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+- `--http-proxy-retry` and `--sock-proxy-retry` have been remove=
-d=2E Proxy</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  connect=
-ions will now behave like regular connection entries and generate a</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+  USR1 on failure=2E</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+- `--connect-retry` gets an optional second a=
-rgument that specifies the maximum</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+  time in seconds to wait between reconnection attempts when=
- an exponential</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  ba=
-ckoff is triggered due to repeated retries=2E Default =3D 300 seconds=2E</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+- Data channel cipher negotiation (see Ne=
-w features section) can override</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+  ciphers configured in the config file=2E Use `--ncp-disable`=
- if you do not want</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-  this behavior=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+- All tun devices on=
- all platforms are always considered to be IPv6 capable=2E The</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+  `--tun-ipv6` option is ignored=
- (behaves like it is always on)=2E</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- On=
- the client side recursively routed packets, which have the same destinatio=
-n</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  as the VPN serve=
-r, are dropped=2E This can be disabled with</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+  --allow-recursive-routing option=2E</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+- On Windows, when the `--register-dns` option is se=
-t, OpenVPN no longer</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+  restarts the `dnscache` service - this had unwanted side effects, and se=
-ems to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  be no longe=
-r necessary with currently supported Windows versions=2E</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+- If no flags are given, and the interactive Windows serv=
-ice is used, &quot;def1&quot; is</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+  implicitly set (because &quot;delete and later reinstall the=
- existing default</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-route&quot; does not work well here)=2E If not using the service, the old b=
-ehaviour</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  is kept=
+(120, 100%, 40%);">+  All tasks that need privileges are now delegated to t=
+he interactive service=2E</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+  **NOTE** this has the risk of breaking existing setups if the Windo=
+ws</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  certificate sto=
+re is used (cryptoapi), and the certificates are not readable for</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+  `NT SERVICE\OpenVPNService`=
 =2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+- OpenVPN now reloads a CRL only if=
- the modication time or file size has</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+  changed, instead of for each new connection=2E This red=
-uces the connection setup</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+  time, in particular when using large CRLs=2E</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+- OpenVPN now ships with more up-to-date systemd unit files =
-which take advantage</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+  of the improved service management as well as some hardening steps=2E Th=
-e</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  configuration fi=
-les are picked up from the /etc/openvpn/server/ and</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  /etc/openvpn/client/ directories (depen=
-ding on unit file)=2E This also avoids</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+  these new unit files and how they work to collide with=
- older pre-existing unit</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+  files=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+- Using `--no-iv` (whic=
-h is generally not a recommended setup) will require</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  explicitly disabling NCP with `--disabl=
-e-ncp`=2E This is intentional because NCP</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+  will by default use AES-GCM, which requires an IV -=
- so we want users of that</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+  option to consciously reconsider=2E</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+## Maintainer-visible changes</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- Op=
-enVPN no longer supports building with crypto support, but without TLS</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+  support=2E As a conseq=
-uence, `OPENSSL_CRYPTO_{CFLAGS,LIBS}` and</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+  `OPENSSL_SSL_{CFLAGS,LIBS}` have been merged into `=
-OPENSSL_{CFLAGS,LIBS}`=2E</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+  This is particularly relevant for maintainers who build their own O=
-penSSL</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  library, e=
-=2Eg=2E when cross-compiling=2E</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+- Linux distributions using systemd is highly encouraged to shi=
-p these new unit</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  f=
-iles instead of older ones, to provide a unified behaviour across systemd</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+  based Linux distrib=
-utions=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- With Ope=
-nVPN 2=2E4, the project has moved over to depend on and actively use the</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+  official C99 standar=
-d (-std=3Dc99)=2E This may fail on some older compiler/libc</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+  header combinations=2E In most of=
- these situations it is recommended to use</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+  -std=3Dgnu99 in CFLAGS=2E This is known to be need=
-ed when doing i386/i686 builds</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+  on RHEL5=2E</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# Version 2=2E=
-4=2E5</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+## New features</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+- The new option `--tls-cert-profile` can be used to res=
-trict the set of allowed</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+  crypto algorithms in TLS certificates in mbed TLS builds=2E The defa=
-ult profile</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  is &#3=
-9;legacy&#39; for now, which allows SHA1+, RSA-1024+ and any elliptic curve=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  certificates=2E T=
-he default will be changed to the &#39;preferred&#39; profile in the</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+  future, which requires S=
-HA2+, RSA-2048+ and any curve=2E</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# Vers=
-ion 2=2E4=2E3</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+## New features</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+- Support building with OpenSSL 1=2E1 now (in ad=
-dition to older versions)</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+- On Win10, set low interface metric for TAP adapter when block-outsi=
-de-dns is</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  in use, =
-to make Windows prefer the TAP adapter for DNS queries (avoiding large</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+  delays)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+## Security</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- CVE=
--2017-7522: Fix `--x509-track` post-authentication remote DoS A client</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+  could crash a v2=2E4+ =
-mbedtls server, if that server uses the `--x509-track`</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+  option and the client has a correct, s=
-igned and unrevoked certificate that</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+  contains an embedded NUL in the certificate subject=2E D=
-iscovered and reported</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+  to the OpenVPN security team by Guido Vranken=2E</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+- CVE-2017-7521: Fix post-authentication =
-remote-triggerable memory leaks A</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+  client could cause a server to leak a few bytes each time i=
-t connects to the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-server=2E That can eventually cause the server to run out of memory, and th=
-ereby</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  causing the =
-server process to terminate=2E Discovered and reported to the</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+  OpenVPN security team by Guido =
-Vranken=2E (OpenSSL builds only=2E)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+- CVE-2017-7521: Fix a potential post-authentication remote=
- code execution</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  at=
-tack on servers that use the `--x509-username-field` option with an X=2E509=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  extension field (=
-option argument prefixed with `ext:`)=2E A client that can</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+  cause a server to run out-of-memor=
-y (see above) might be able to cause the</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+  server to double free, which in turn might lead to r=
-emote code execution=2E</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+  Discovered and reported to the OpenVPN security team by Guido Vranken=
-=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  (OpenSSL build=
-s only=2E)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- CVE-201=
-7-7520: Pre-authentication remote crash/information disclosure for</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+  clients=2E If clients use =
-a HTTP proxy with NTLM authentication (i=2Ee=2E</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+  `--http-proxy &lt;server&gt; &lt;port&gt; [&l=
-t;authfile&gt;|&#39;auto&#39;|&#39;auto-nct&#39;] ntlm2`), a</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+  man-in-the-middle attacker betwe=
-en the client and the proxy can cause the</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+  client to crash or disclose at most 96 bytes of sta=
-ck memory=2E The disclosed</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+  stack memory is likely to contain the proxy password=2E If the pro=
-xy password is</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  not=
- reused, this is unlikely to compromise the security of the OpenVPN tunnel<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+  itself=2E Clients =
-who do not use the `--http-proxy` option with ntlm2</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  authentication are not affected=2E</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+- CVE-2017-7508: Fix rem=
-otely-triggerable ASSERT() on malformed IPv6 packet=2E</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+  This can be used to remotely shutdown =
-an openvpn server or client, if IPv6 and</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+  `--mssfix` are enabled and the IPv6 networks used in=
-side the VPN are known=2E</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+- Fix null-pointer dereference when talking to a malicious http proxy=
- that</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  returns a ma=
-lformed `Proxy-Authenticate:` headers for digest auth=2E</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+- Fix overflow check for long `--tls-c=
-ipher` option</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- Wind=
-ows: Pass correct buffer size to `GetModuleFileNameW()` (OSTIF/Quarkslabs</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+  audit, finding 5=2E=
-6)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+## User-visible Changes</span><br><s=
+ style=3D"color: hsl(120, 100%, 40%);">+* **Support for new version of Linu=
+x DCO module**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+  The OpenVPN DCO module=
+ has been merged into the Linux kernel as of 6=2E16=2E This</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+  required some API changes and Ope=
+nVPN 2=2E7 only supports the new API=2E The new</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+  module is called `ovpn`=2E Out-of-tree builds=
+ for older kernels are available from</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+  &lt;https://github=2Ecom/OpenVPN/ovpn-backports&gt;=2E =
+Please see the release</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+  announcements for further information=2E</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+* **Support for server mode in win-dco driver**</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+  On Windows the win-dco driver can now be used in server s=
+etups=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+* **Support for TLS client flo=
+ating in DCO implementations**</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  The ke=
+rnel modules will detect clients floating to a new IP address and notify</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+  userland so both dat=
+a packets (kernel) and TLS packets (sent by userland) can</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+  reach the new client IP=2E (Actual =
+support depends on recent-enough kernel</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+  implementation)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+*=
+ **Enforcement of AES-GCM usage limit**</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++  OpenVPN will now enforce the usage limits on AES-GCM with the same</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+  confidentiality margin =
+as TLS 1=2E3 does=2E This mean that renegotiation will be</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+  triggered after roughly 2^28 to 2^3=
+1 packets depending of the packet size=2E More</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+  details about usage limit of AES-GCM can be fo=
+und here:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+  &lt;https://datatracker=2Ei=
+etf=2Eorg/doc/draft-irtf-cfrg-aead-limits/&gt;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+* **Epoch data keys and packet format**</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+  This introduces the epoch data format for AEAD data channel ciph=
+ers in TLS mode</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  ci=
+phers=2E This new data format has a number of improvements over the standar=
+d</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  &quot;DATA_V2&qu=
+ot; format=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+  - AEAD tag at the end o=
+f packet which is more hardware implementation friendly</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+  - Automatic key switchover when ciphe=
+r usage limits are hit, similar to the</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    epoch data keys in (D)TLS 1=2E3</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+  - 64 bit instead of 32 bit packet ids =
+to allow the data channel to be ready for</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    10 GBit/s without having frequent renegotiation</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+  - IV constructed wi=
+th XOR instead of concatenation to not have (parts) of the</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    real IV on the wire</span><br><s=
 pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+- `--verify-hash` can now take an optional flag whi=
-ch changes the hashing</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+  algorithm=2E It can be either SHA1 or SHA256=2E The default if not pro=
-vided is</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  SHA1 to p=
-reserve backwards compatibility with existing configurations=2E</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+- Restrict the supported `--x50=
-9-username-field` extension fields to</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+  subjectAltName and issuerAltName=2E Other extensions pr=
-obably didn&#39;t work</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+  anyway, and would cause OpenVPN to crash when a client connects=2E</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+## Bugfixes</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+- Fix fingerprint calculation in mbed TLS builds=2E This means that =
-mbed TLS users</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  of =
-OpenVPN 2=2E4=2E0, v2=2E4=2E1 and v2=2E4=2E2 that rely on the values of the=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  `tls_digest_*` en=
-v vars, or that use `--verify-hash` will have to change the</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+  fingerprint values they check aga=
-inst=2E The security impact of the incorrect</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+  calculation is very minimal; the last few bytes =
-(max 4, typically 4) are not</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+  verified by the fingerprint=2E We expect no real-world impact,</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+  because users that =
-used this feature before will notice that it has suddenly</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+  stopped working, and users that did=
-n&#39;t will notice that connection setup fails</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+  if they specify correct fingerprints=2E</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+- Fix edge case with NCP when the server sen=
-ds an empty PUSH_REPLY message back,</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+  and the client would not initialize it&#39;s data channe=
-l crypto layer properly</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+  (trac #903)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+- Fix SIGSEGV on unal=
-igned buffer access on OpenBSD/Sparc64</span><br><span style=3D"color: hsl(=
+ hsl(120, 100%, 40%);">+* **Support for Epoch data channel on Windows, usin=
+g the win-dco driver (2=2E8=2E0+)**</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* *=
+*Default ciphers in `--data-ciphers`**</span><br><span style=3D"color: hsl(=
 120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-- Fix TCP_NODELAY on OpenBSD</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- Remove e=
-rroneous limitation on max number of args for `--plugin`</span><br><span st=
+  Ciphers in `--data-ciphers` can contain the string DEFAULT that is replac=
+ed by</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  the default =
+ciphers used by OpenVPN, making it easier to add an allowed cipher</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+  without having to spell ou=
+t the default ciphers=2E</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **TLS alerts=
+**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+  OpenVPN 2=2E7 will send out TLS al=
+erts to peers informing them if the TLS session</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+  shuts down or when the TLS implementation inf=
+orms the peer about an error in the</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+  TLS session (e=2Eg=2E mismatching TLS versions)=2E This i=
+mproves the user experience</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+  as the client shows an error instead of running into a timeout wh=
+en the server</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  just=
+ stops responding completely=2E</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Sup=
+port for tun/tap via unix domain socket and lwipovpn support**</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+  To allow better testing and emulating a full clie=
+nt with a full network stack</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+  OpenVPN now allows a program executed to provide a tun/tap devic=
+e instead of</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  openi=
+ng a device=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+  The co-developed lwipo=
+vpn program based on lwIP stack allows to simulate full IP</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+  stack=2E An OpenVPN client using `=
+--dev-node unix:/path/to/lwipovpn` can emulate a</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+  full client that can be pinged, can serve a =
+website and more without requiring</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+  any elevated permission=2E This can make testing OpenVPN m=
+uch easier=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+  For more details see [l=
+wipovpn on Github](https://github=2Ecom/OpenVPN/lwipovpn)=2E</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+* **Allow overriding username with `--override-userna=
+me`**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+  This is intended to allow using=
+ `--auth-gen-token` in scenarios where the</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+  clients use certificates and multi-factor authenti=
+cation=2E This will also</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+  generate a `push &quot;auth-token-user newusername&quot;` directive =
+in push replies=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **`--port-share` n=
+ow properly supports IPv6**</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Issues wi=
+th logging of IPv6 addresses were fixed=2E The feature now allows IPv6</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+  connections towards th=
+e proxy receiver=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Support for Hai=
+ku OS**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+* **TLS1=2E3 support with mbedT=
+LS (requires mbedTLS &gt;=3D 3=2E6=2E4)**</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+* **PUSH_UPDATE client support**</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  I=
+t is now possible to update parts of the client-side configuration (IP addr=
+ess,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  routes, MTU, =
+DNS) by sending a new server-to-client control message,</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+  `PUSH_UPDATE,&lt;options&gt;`=2E See =
+also:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  &lt;https://=
+openvpn=2Egithub=2Eio/openvpn-rfc/openvpn-wire-protocol=2Ehtml&gt;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+  NOTE: PUSH_UPDATE client support is currently=
+ disabled if DCO is active (on all</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+  platforms)=2E</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **PUSH=
+_UPDATE server support (minimal)**</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Ne=
+w management interface commands `push-update-broad` and `push-update-cid` t=
+o</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  send PUSH_UPDATE=
+ option updates to all clients (&quot;there is a new DNS server&quot;) or</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+  only a specific cli=
+ent ID (&quot;privileges have changed, here&#39;s a new IP address&quot;)=
+=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+  See doc/management-notes=2Etxt</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  NOTE: PUSH_UPDATE server support is cur=
+rently disabled if DCO is active</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+  (on all platforms)=2E</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* =
+**Support for user-defined routing tables on Linux**</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+  See the `--route-table` option in the manpage</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+* **PQE support for WolfSSL**</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+* **New environment variables for gateway redirection**</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  Two new environment variables have been=
+ introduced to communicate desired</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+  default gateway redirection to plugins like Network Manage=
+r,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  `route_redirect=
+_gateway_ipv4` and `route_redirect_gateway_ipv6`=2E See the</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+  &quot;Environmental Variables&quo=
+t; section in the man page</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Improved=
+ logging of service events/errors to event log on Windows=2E**</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+* **Improved &quot;Recursive Routing&quot; check**<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+  The check is now more granular, and w=
+ill only drop</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  pack=
+ets-in-tunnel if destination IP, protocol and port matches with those neede=
+d</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  to reach the VPN=
+ server=2E With that change, you can now use policies that direct</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+  &quot;everything that is no=
+t OpenVPN&quot; into the tunnel, and have IP packets to the VPN</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+  server address arrive as expe=
+cted (no such policies are currently installed by</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+  OpenVPN) (GH: OpenVPN/openvpn#669)=2E</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+* **COPYING: license details only relevant t=
+o our Windows installers have</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+been updated and moved to the openvpn-build repo**</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+* **Improved BYTECOUNT support**</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+  More strictly adhere to timing interval requested, correc=
+tly support client and</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+  server counters with Linux and Windows DCO offloading=2E</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+* **Improve compatibility with OpenSSL 3=2E6=2E0 (do=
+ not fail t_lpback selftest)**</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **New =
+option `--tls-crypt-v2-max-age n` to check tls-crypt-v2 timestamps**</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+  When a client is older than n days or has n=
+o timestamp, the server will reject</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+  it=2E</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **mbedTLS 4 s=
+upport has been added=2E**</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Note that =
+with mbedTLS 4 algorithms need to be translated to mbedTLS 4 internal</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+  IDs by OpenVPN, and som=
+e names might be missing=2E</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+## Deprecat=
+ed features</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+* **`secret` support has be=
+en removed (by default)=2E**</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  static k=
+ey mode (non-TLS) is no longer considered &quot;good and secure enough&quot=
+; for</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  today&#39;s =
+requirements=2E Use TLS mode instead=2E If deploying a PKI CA is considered=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  &quot;too complic=
+ated&quot;, using `--peer-fingerprint` makes TLS mode about as easy as</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+  using `--secret`=2E</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  This mode can still be enabled by using=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  `--allow-deprecat=
+ed-insecure-static-crypto` but will be removed in OpenVPN 2=2E8=2E</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+* **Support for wintun Windows driver has been =
+removed=2E**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+  OpenVPN 2=2E6 added supp=
+ort for the new dco-win driver, so it supported three</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  different device drivers: dco-win, wint=
+un, and tap-windows6=2E OpenVPN 2=2E7 now</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+  drops the support for wintun driver=2E By default a=
+ll modern configs should be</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+  supported by dco-win driver=2E In all other cases OpenVPN will fa=
+ll back</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  automatica=
+lly to tap-windows6 driver=2E</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **NTLMv=
+1 authentication support for HTTP proxies has been removed=2E**</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+  This is considered an insecure method of authent=
+ication that uses obsolete</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+  crypto algorithms=2E NTLMv2 support is still available, but will b=
+e removed in a</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  fut=
+ure release=2E When configured to authenticate with NTLMv1 (`ntlm` keyword =
+in</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  `--http-proxy`)=
+ OpenVPN will try NTLMv2 instead=2E</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* *=
+*`persist-key` option has been enabled by default=2E**</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+  All the keys will be kept in memory across restart=2E</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+* **OpenSSL 1=2E0=2E2 support has been re=
+moved=2E**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+  Support for building with =
+OpenSSL 1=2E0=2E2 has been removed=2E The minimum supported</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+  OpenSSL version is now 1=2E1=2E0=
+=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+* **mbedTLS 2=2Ex support has been =
+removed**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+  Support for building with m=
+bedTLS 2=2Ex has been removed (it is out of support</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  since March 2025, and the necessary com=
+patibility code is making maintenance and</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+  support for mbedTLS 4=2Ex hard)=2E The minimum supp=
+orted mbedTLS version is now</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+  3=2E2=2E1=2E</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Compression=
+ on send has been removed=2E**</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  OpenVP=
+N 2=2E7 will never compress data before sending=2E Decompression of receive=
+d</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  data is still su=
+pported=2E `--allow-compression yes` is now an alias for</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+  `--allow-compression asym`=2E</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+* **`--memstats` feature removed**</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+  The `--memstats` option was largely undocumente=
+d and there is no known user of</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+  this feature=2E This feature provided very limited statistics=
+ (number of users,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+ link bytes read/written) and we do not except any usage because of this=2E=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+* **Warning when using `--push` withou=
+t `--mode server`**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Using `--push` in=
+ a mode that is not `--mode server` will now print a</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  clear warning that this is an unsupport=
+ed operation and might cause negotiation</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+  failures=2E</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **=
+Warning for `--reneg-bytes` and `--reneg-packets` in DCO mode**</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+  `--reneg-bytes` and `--reneg-packets` do not wor=
+k in DCO mode, and will</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+  now print an appropriate warning=2E</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+* **On-connect resolving of `--remote` in `--tcp-server` mode removed**<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+  On-connect resolving of `--remote` ad=
+dresses in `--tcp-server` mode</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+  was not working since 2=2E4, so the code was completely remove=
+d=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+## User-visible Changes</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+- Default for `--topology` changed to `subnet` fo=
+r `--mode server`=2E Previous</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+  releases always used `net30` as default=2E This only affects co=
+nfigs with</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  `--mode=
+ server` or `--server` (the latter implies the former), and</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+  `--dev tun`, and only if IPv4 is =
+enabled=2E Note that this changes the semantics</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+  of `--ifconfig`, so if you have manual settin=
+gs for that in your config but</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+  not set `--topology` your config might fail to parse with the =
+new version=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Jus=
+t adding `--topology net30` to the config should fix the problem=2E By</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+  default `--topology` i=
+s pushed from server to client=2E</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+- `--x509-username-field` will no longer automatically conver=
+t fieldnames to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  up=
+percase=2E This was deprecated since OpenVPN 2=2E4, and has now been remove=
+d=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- `--dh none` i=
+s now the default if `--dh` is not specified=2E Modern TLS</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+  implementations will prefer ECDH a=
+nd other more modern algorithms anyway=2E And</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+  finite field Diffie Hellman is in the proces of=
+ being deprecated (see</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+  draft-ietf-tls-deprecate-obsolete-kex)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+- `--lport 0` does not imply `--bind` anymore=2E</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+- `--redirect-gateway`=
+ now works correctly if the VPN remote is not reachable by</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+  the default gateway=2E</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+- `--show-gateway` now supports=
+ querying the gateway for IPv4 addresses=2E</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+- `--static-challenge` option now has a third param=
+eter `format` that can change</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+  how password and challenge response should be combined=2E</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+- `--key` and `--cert` no=
+w accept URIs implemented in OpenSSL 3 as well as</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+  optional OpenSSL 3 providers loaded using `=
+--providers` option=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+- `--cryptoapicert` now supports issuer name as well as Windows CA templ=
+ate name</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  or OID as=
+ selector string=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+- TLS handshake debugging information contains much more details now when u=
+sing</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  recent versio=
+ns of OpenSSL=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- T=
+he `IV_PLAT_VER` variable sent by Windows clients now contains the full</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+  Windows build version=
+ to make it possible to determine the Windows 10 or</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  Windows 11 version used=2E</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+- The `--windows-driver` option =
+to select between various windows drivers will</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+  no longer do anything - it&#39;s kept so exist=
+ing configs will not become invalid,</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+  but it is ignored with a warning=2E The default is now `=
+ovpn-dco` if all options</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+  used are compatible with DCO, with a fallback to `tap-windows6`=2E T=
+o force TAP</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  (for e=
+xample because a server pushes DCO incompatible options), use the</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+  `--disable-dco` option=2E</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+- Apply more checks t=
+o incoming TLS handshake packets before creating new</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  state - namely, verify message ID / ack=
+ed ID for &quot;valid range for an initial</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+  packet&quot;=2E This fixes a problem with clients =
+that float very early but send</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+  control channel packet from the pre-float IP (Github: OpenVPN/=
+openvpn#704)=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- Us=
+e of `--dh dh2048=2Epem` in all sample configs has been replaced with</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+  `--dh none`=2E The `dh2=
+048=2Epem` file has been removed=2E</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+- The startup delay in `t_client=2Esh` has been reduced fro=
+m 3s to 1s, making a</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++  noticeable difference for setups with many tests=2E</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+- Changed from using `uncrustify` for co=
+de formatting and pre-commit checks to</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+  `clang-format`=2E This reformatted quite a bit of code=
+, and requires that</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+  regular committers change their pre-commit checks accordingly=2E</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+- On Linux, on interfaces wh=
+ere applicable, OpenVPN explicitly configures the</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+  broadcast address again=2E This was dropped=
+ for 2=2E6=2E0 &quot;because computers are</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+  smart and can do it themselves&quot;, but the kern=
+el netlink interface isn&#39;t, and</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+  will install &quot;0=2E0=2E0=2E0&quot;=2E This does not n=
+ormally matter, but for broadcast-based</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+  applications that get the address to use from &quot;i=
+fconfig&quot;, this change repairs</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+  functionality (this has been backported to 2=2E6=2E15, but=
+ is not in earlier 2=2E6</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+  versions)=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+- `max-routes-per-client 0` used to be silently upgraded to `1`=2E This now=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  produces an error=
+=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- `ifconfig` and=
+ `ifconfig-ipv6` values are now stored in pre-connect options</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+  cache, and will be restored to =
+pre-connect values on reconnects if the server</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+  stops pushing the respective option=2E</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+- `tapctl=2Eexe` helper bin=
+ary on Windows has been reworked to improve help texts</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+  (making clear that it can not only do =
+TAP-Adapters but Win-DCO as well), add</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+  printing of the hwid to all adapter outputs, and chang=
+e the default adapter</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+  type created to `ovpn-dco`=2E</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+- The default for `multihome` egress interface handling has c=
+hanged=2E 2=2E7=2E0 will</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+  default to ipi_ifindex=3D0, that is, leave the decision to the routi=
+ng/policy</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  setup of=
+ the operating system=2E The pre-2=2E7 behaviour (force egress =3D ingress<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+  interface) can be =
+achieved with the new `--multihome same-interface`</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+  sub-option=2E</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+- Windows `openvpn=2Eexe` binary manifest now se=
+ts code page UTF8 - which has no</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+  direct effect on OpenVPN itself, but this repairs OpenSSL fi=
+le loading for</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  key=
+/cert files with non-ASCII characters in their file names (GH:</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+  OpenVPN/openvpn#920)=2E</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+- The `test-crypto` option=
+ no longer requires a `--secret` argument and will</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+  automatically generate a random key=2E</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+- The configure-time op=
+tion `--enable-x509-alt-username` is no longer</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+  conditional, and always-on (GH: OpenVPN/openvp=
+n#917)=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+## Deprecated features</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+* **`--opt-verify` feature removed**</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+  This option was already deprecated and it is =
+now being converted to a no-op=2E</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+  Using this option will only print a warning=2E</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+# Overview of changes in 2=2E6</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+## Project changes</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+We w=
+ant to deprecate our old Trac bug tracking system=2E Please report any issu=
+es</span><br><span style=3D"color: hsl(120, 100%, 40%);">+with this release=
+ in GitHub instead: &lt;https://github=2Ecom/OpenVPN/openvpn/issues&gt;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+## New features</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+* **Support unlimited number of connection entries and remote en=
+tries**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+* **New management commands to =
+enumerate and list remote entries**</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  U=
+se `remote-entry-count` and `remote-entry-get` commands from the management=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  interface to get =
+the number of remote entries and the entries themselves=2E</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+* **Keying Material Exporters (RFC 5705) based key gene=
+ration**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+  As part of the cipher negoti=
+ation OpenVPN will automatically prefer the RFC5705</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  based key material generation to the cu=
+rrent custom OpenVPN PRF=2E This feature</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+  requires OpenSSL or mbed TLS 2=2E18+=2E</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+* **Compatibility with OpenSSL in FIPS mode**</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+  OpenVPN will now work with OpenSSL in FIPS=
+ mode=2E Note, no effort has been made</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+  to check or implement all the requirements/recommendat=
+ion of FIPS 140-2=2E This</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+  just allows OpenVPN to be run on a system that be configured OpenSS=
+L in FIPS</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  mode=2E<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+* **`mlock` now checks available memloc=
+k-able memory**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+  `mlock` will now chec=
+k if enough memlock-able memory has been reserved,</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+  and if less than 100MB RAM are available, =
+use setrlimit() to upgrade the limit=2E</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+  See Trac #1390=2E Not available on OpenSolaris=2E</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+* **Certificate pinning/verify peer finge=
+rprint**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+  The `--peer-fingerprint` opt=
+ion has been introduced to give users an easy to use</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  alternative to the `tls-verify` for mat=
+ching the fingerprint of the peer=2E The</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+  option takes use a number of allowed SHA256 certific=
+ate fingerprints=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  See the man page =
+section &quot;Small OpenVPN setup with peer-fingerprint&quot; for a</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+  tutorial on how to use th=
+is feature=2E This is also available online under</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+  &lt;https://github=2Ecom/openvpn/openvpn/bl=
+ob/master/doc/man-sections/example-fingerprint=2Erst&gt;</span><br><span st=
 yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+- Fix NCP behaviour on TLS reconnect (Server would not se=
-nd a proper &quot;cipher</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+  =2E=2E=2E&quot; message back to the client, leading to client and se=
-rver using different</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+  ciphers) (trac #887)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# Version 2=2E4=
-=2E2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+## Bugfixes</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+- Fix memory leak introduced in OpenVPN 2=2E4=2E1: if `--rem=
-ote-cert-tls` is used,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+  we leaked some memory on each TLS (re)negotiation=2E</span><br><span s=
+20, 100%, 40%);">+* **TLS mode with self-signed certificates**</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+  When `--peer-fingerprint` is used, the `--ca` and=
+ `--capath` option become</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+  optional=2E This allows for small OpenVPN setups without setting up=
+ a PKI with</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Easy-R=
+SA or similar software=2E</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Deferred =
+auth support for scripts**</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  The `--aut=
+h-user-pass-verify` script supports now deferred authentication=2E</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+* **Pending auth support for plugins and script=
+s**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+  Both auth plugin and script can n=
+ow signal pending authentication to the client</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+  when using deferred authentication=2E The new =
+`client-crresponse` script option</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+  and `OPENVPN_PLUGIN_CLIENT_CRRESPONSE` plugin function can =
+be used to parse a</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+ client response to a `CR_TEXT` two factor challenge=2E</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+  See `sample/sample-scripts/totpauth=2Epy` for an example=
+=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+* **Compatibility mode (`--compat-m=
+ode`)**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+  The modernisation of defaults=
+ can impact the compatibility of OpenVPN 2=2E6=2E0 with</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+  older peers=2E The options `--compat-=
+mode` allows UIs to provide users with an</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+  easy way to still connect to older servers=2E</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+* **OpenSSL 3=2E0 support**</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+  OpenSSL 3=2E0 has been added=2E Most of OpenSSL 3=2E0=
+ changes are not user visible but</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+  improve general compatibility with OpenSSL 3=2E0=2E `--tls-=
+cert-profile insecure`</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+  has been added to allow selecting the lowest OpenSSL security level (n=
+ot</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  recommended, us=
+e only if you must)=2E OpenSSL 3=2E0 no longer supports the Blowfish</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+  (and other deprecated) a=
+lgorithm by default and the new option `--providers`</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  allows loading the legacy provider to r=
+enable these algorithms=2E</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Optional=
+ ciphers in `--data-ciphers`**</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Cipher=
+s in `--data-ciphers` can now be prefixed with a `?` to mark those as</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+  optional and only use t=
+hem if the SSL library supports them=2E</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++* **Improved `--mssfix` and `--fragment` calculation**</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+  The `--mssfix` and `--fragment` options now allow an opt=
+ional `mtu` parameter to</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+  specify that different overhead for IPv4/IPv6 should taken into acco=
+unt and the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  result=
+ing size is specified as the total size of the VPN packets including IP</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+  and UDP headers=2E</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+* **Cookie based handshake for UDP server=
+**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+  Instead of allocating a connection=
+ for each client on the initial packet OpenVPN</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+  server will now use an HMAC based cookie as it=
+s session id=2E This way the server</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+  can verify it on completing the handshake without keeping=
+ state=2E This eliminates</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+  the amplification and resource exhaustion attacks=2E For tls-crypt-=
+v2 clients,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  this r=
+equires OpenVPN 2=2E6 clients or later because the client needs to resend</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+  its client key on c=
+ompleting the hand shake=2E The tls-crypt-v2 option allows</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+  controlling if older clients are a=
+ccepted=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+  By default the rate of ini=
+tial packet responses is limited to 100 per 10s</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+  interval to avoid OpenVPN servers being abuse=
+d in reflection attacks (see</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+  `--connect-freq-initial`)=2E</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++* **Data channel offloading with ovpn-dco**</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+  2=2E6=2E0+ implements support for data-channel offloading where the=
+ data packets are</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+directly processed and forwarded in kernel space thanks to the ovpn-dco ker=
+nel</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  module=2E The =
+userspace openvpn program acts purely as a control plane</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+  application=2E Note that DCO will us=
+e DATA\_V2 packets in P2P mode, therefore, this</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+  implies that peers must be running 2=2E6=2E0+=
+ in order to have P2P-NCP which brings</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+  DATA\_V2 packet support=2E</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+* **Session timeout**</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  It is =
+now possible to terminate a session (or all) after a specified amount of</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+  seconds has passed s=
+ession commencement=2E This behaviour can be configured using</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+  `--session-timeout`=2E This opt=
+ion can be configured on the server, on the client</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+  or can also be pushed=2E</span><br><span s=
 tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+## Security</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- Fix a =
-pre-authentication denial-of-service attack on both clients and servers=2E<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+  By sending a too-l=
-arge control packet, OpenVPN 2=2E4=2E0 or v2=2E4=2E1 can be forced</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+  to hit an ASSERT() and sto=
-p the process=2E If `--tls-auth` or `--tls-crypt` is</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  used, only attackers that have the `--t=
-ls-auth` or `--tls-crypt` key can mount</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+  an attack=2E (OSTIF/Quarkslab audit finding 5=2E1, CV=
-E-2017-7478)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- Fix a=
-n authenticated remote DoS vulnerability that could be triggered by</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+  causing a packet id roll =
-over=2E An attack is rather inefficient; a peer would</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  need to get us to send at least about 1=
-96 GB of data=2E (OSTIF/Quarkslab audit</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+  finding 5=2E2, CVE-2017-7479)</span><br><span style=
+120, 100%, 40%);">+* **Inline auth username and password**</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+  Username and password can now be specified inline in =
+the configuration file</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+  within the `&lt;auth-user-pass&gt;&lt;/auth-user-pass&gt;` tags=2E If =
+the password is</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  mi=
+ssing OpenVPN will prompt for input via stdin=2E This applies to inline&#39=
+;d</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  http-proxy-user=
+-pass too=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+* **Tun MTU can be pushed*=
+*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+  The client can now also dynamically=
+ configure its MTU and the server will try to</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+  push the client MTU when the client supports it=
+=2E The directive `--tun-mtu-max`</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+  has been introduced to increase the maximum pushable MTU si=
+ze (defaults to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  16=
+00)=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+* **Dynamic TLS Crypt**</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+  When both peers are OpenVPN 2=2E6=2E1+, OpenV=
+PN will dynamically create a tls-crypt</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+  key that is used for renegotiation=2E This ensure that=
+ only the previously</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++  authenticated peer can do trigger renegotiation and complete renegotiati=
+ons=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+* **Improved control channel pac=
+ket size control (`max-packet-size`)**</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+  The size of control channel is no longer tied to `--link-mtu`/`--tun-mtu`=
+ and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  can be set us=
+ing `--max-packet-size`=2E Sending large control channel frames is</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+  also optimised by allowing=
+ 6 outstanding packets instead of just 4=2E</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+  `max-packet-size` will also set `mssfix` to try t=
+o limit data-channel packets as</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+  well=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+## Deprecated fea=
+tures</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+* **`inetd` has been removed**</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  This was a very limited and not-well-te=
+sted way to run OpenVPN, on TCP and TAP</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+  mode only=2E</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **=
+`verify-hash` has been deprecated**</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  T=
+his option has very limited usefulness and should be replaced by either a</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+  better `--ca` confi=
+guration or with a `--tls-verify` script=2E</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+* **`secret` has been deprecated**</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++  Static key mode (non-TLS) is no longer considered &quot;good and secure =
+enough&quot; for</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  t=
+oday&#39;s requirements=2E Use TLS mode instead=2E If deploying a PKI CA is=
+ considered</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  &quot;=
+too complicated&quot;, using `--peer-fingerprint` makes TLS mode about as e=
+asy as</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  using `--se=
+cret`=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+* **`ncp-disable` has been rem=
+oved**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+  This option mainly served a ro=
+le as debug option when NCP was first introduced=2E</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  It should now no longer be necessary=2E=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+* **TLS 1=2E0 and 1=2E1 are deprecated=
+**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+  `tls-version-min` is set to 1=2E2 =
+by default=2E OpenVPN 2=2E6=2E0 defaults to a minimum</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  TLS version of 1=2E2 as TLS 1=2E0 and 1=
+=2E1 should be generally avoided=2E Note that</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+  OpenVPN versions older than 2=2E3=2E7 use TLS 1=
+=2E0 only=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+* **`--cipher` argument is=
+ no longer appended to `--data-ciphers` by default**</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+# Version 2=2E4=2E1</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- `-=
--remote-cert-ku` now only requires the certificate to have at least the bit=
-s</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  set of one of th=
-e values in the supplied list, instead of requiring an exact</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+  match to one of the values in th=
-e list=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- `--remot=
-e-cert-tls` now only requires that a keyUsage is present in the</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+  certificate, and leaves the v=
-erification of the value up to the crypto</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+  library, which has more information (i=2Ee=2E the k=
-ey exchange method in use) to</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+  verify that the keyUsage is correct=2E</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+- `--ns-cert-type` is deprecated=2E Use `--r=
-emote-cert-tls` instead=2E The</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+  nsCertType x509 extension is very old, and barely used=2E `--r=
-emote-cert-tls`</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  us=
-es the far more common keyUsage and extendedKeyUsage extension instead=2E M=
-ake</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  sure your cert=
-ificates carry these to be able to use `--remote-cert-tls`=2E</span><br><sp=
-an>diff --git a/Changes=2Erst b/Changes=2Erst</span><br><span>deleted file =
-mode 100644</span><br><span>index fe81909=2E=2E0000000</span><br><span>--- =
-a/Changes=2Erst</span><br><span>+++ /dev/null</span><br><span>@@ -1,1480 +0=
-,0 @@</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Overview of chan=
-ges in 2=2E8</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-User-visible Changes</span>=
-<br><span>---------------------</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-Parsing Distinguished Names in certificates</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    (OpenSSL backend:) OpenVPN now rejects =
-certificates that have a null-byte</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    inside any of the field values of their subject=2E To avoi=
-d ambiguity in the</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- parsed subject, OpenVPN escapes the following characters by prefixing them=
- with</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    a backslash:=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     * &quot; &quot; =
-(space) at the start or end of a field,</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-     * &quot;#&quot; at the start of a field,</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-     * &quot;,&quot;, &quot;+&quo=
-t;, &quot;&quot;&quot;, &quot;\&quot;, &quot;&lt;&quot;, &quot;&gt;&quot; a=
-nd &quot;;&quot; anywhere=2E</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    As a resul=
-t, if you use the option ``--verify-x509-name &lt;expected subject&gt;``,</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    you need to prefix =
-these characters with a backslash in your configuration=2E</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    The subject passed to a ``--tls-ve=
-rify`` script is escaped in the same way and</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    you may need to adjust your script=2E</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    (Mbed TLS backend:) The behavior has not changed=
-=2E Subjects with null-bytes were</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    already rejected (assuming OpenVPN was built with Mbed TLS =
-3=2E5 or later) and</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  the characters mentioned above were already escaped=2E However, the behav=
-ior of</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    Mbed TLS is=
- slightly different from OpenSSL in that it also escapes &quot;=3D&quot;=2E=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-Overview of changes in 2=2E7</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-New features</span><br><span>-------------</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-Multi-socket support for servers</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    OpenVPN servers now can listen on mu=
-ltiple sockets at the same time=2E</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    Multiple ``--local`` statements in the configuration can b=
-e used to</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    configur=
-e this=2E This way the same server can e=2Eg=2E listen for UDP</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    and TCP connections at the sam=
-e time, or listen on multiple addresses</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    and/or ports=2E</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Clien=
-t implementations for DNS options sent by server for Linux/BSD/macOS</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    Linux, BSD and macOS ver=
-sions of OpenVPN now ship with a per-platform</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    default ``--dns-updown`` script that implements=
- proper handling of</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  DNS configuration sent by the server=2E  The scripts should work on</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    systems that use ``syst=
-emd`` or ``resolveconf`` to manage the DNS</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    setup, as well as raw ``/etc/resolv=2Econf`` files=
-=2E However, the exact</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    features supported will depend on the configuration method=2E</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    On Linux and MacOS this sh=
-ould usually make split-DNS configurations</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    supported out-of-the-box now=2E</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    Note that this new script will not be used by default if =
-a ``--up``</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    script =
-is already in use to reduce problems with</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    backwards compatibility=2E</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    See documentation for ``--dns-updown`` and ``--dns`` for more d=
-etails=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-New client implementation for DNS=
- options sent by server for Windows</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    The Windows client now uses NRPT (Name Resolution Policy =
-Table) to</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    handle D=
-NS configurations=2E This adds support for split-DNS and DNSSEC</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    and improves the compatbility=
- with local DNS resolvers=2E Requires the</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    interactive service=2E</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-On Windows the ``block-local`` flag is now enforced with WFP filters=2E=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    The ``block-local=
-`` flag to ``--redirect-gateway`` and</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    ``--redirect-private`` is now also enforced via the Win=
-dows Firewall,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    mak=
-ing sure packets can&#39;t be sent to the local network=2E</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    This provides stronger protection =
-against TunnelCrack-style attacks=2E</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Window=
-s network adapters are now generated on demand</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    This means that on systems that run multiple O=
-penVPN connections at</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    the same time the users don&#39;t need to manually create enough networ=
-k</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    adapters anymore=
- (in addition to the ones created by the installer)=2E</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-Windows automatic service now runs as an unpriviledged user</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    All tasks that need p=
-rivileges are now delegated to the interactive</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    service=2E</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    **NOTE** this has the risk of breaking existing setup=
-s if the</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    Windows c=
-ertificate store is used (cryptoapi), and the certificates</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    are not readable for ``NT SERVICE\=
-OpenVPNService``=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-Support for new version=
- of Linux DCO module</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   The OpenVPN DCO module has been merged into the Linux kernel as of</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    6=2E16=2E  This require=
-d some API changes and OpenVPN 2=2E7 only supports</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    the new API=2E The new module is called ``=
-ovpn``=2E Out-of-tree builds</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    for older kernels are available from</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    https://github=2Ecom/OpenVPN/ovpn-backports=
-=2E Please</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    see the=
- release announcements for further information=2E</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-Support for server mode in win-dco driver</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    On Windows the win-dco driver can now be use=
-d in server setups=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Support for TLS clien=
-t floating in DCO implementations</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    The kernel modules will detect clients floating to a new IP=
- address</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    and notif=
-y userland so both data packets (kernel) and TLS packets</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    (sent by userland) can reach the new=
- client IP=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    (Act=
-ual support depends on recent-enough kernel implementation)</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-Enforcement of AES-GCM usage limit</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    OpenVPN will now enforce the usage limi=
-ts on AES-GCM with the same</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    confidentiality margin as TLS 1=2E3 does=2E This mean that renego=
-tiation will</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    be tr=
-iggered after roughly 2^28 to 2^31 packets depending of the packet</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    size=2E More details about=
- usage limit of AES-GCM can be found here:</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    https://datatracker=2Eietf=2Eorg/doc/draft-irtf-cfrg-aead-limits/</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-Epoch data keys and packet format</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    This introduces the epoch data f=
-ormat for AEAD data channel</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    ciphers in TLS mode ciphers=2E This new data format has a number =
-of</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    improvements ov=
-er the standard &quot;DATA_V2&quot; format=2E</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    - AEAD tag at the end of packet which is more hardware implementatio=
-n</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      friendly</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    - Automatic key switcho=
-ver when cipher usage limits are hit, similar to</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-      the epoch data keys in (D)TLS 1=2E3</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    - 64 bit instead of 32 b=
-it packet ids to allow the data channel to be</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-      ready for 10 GBit/s without having frequent r=
-enegotiation</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    - IV =
-constructed with XOR instead of concatenation to not have (parts) of</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-      the real IV on the wir=
-e</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-Support for Epoch data channel on Windows=
-, using the win-dco driver (2=2E8=2E0+)</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Def=
-ault ciphers in ``--data-ciphers``</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    Ciphers in ``--data-ciphers`` can contain the string DEFAU=
-LT that is</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    replace=
-d by the default ciphers used by OpenVPN, making it easier to</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    add an allowed cipher without h=
-aving to spell out the default ciphers=2E</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-T=
-LS alerts</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    OpenVPN =
-2=2E7 will send out TLS alerts to peers informing them if the TLS</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    session shuts down or when =
-the TLS implementation informs the peer about</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    an error in the TLS session (e=2Eg=2E mismatchi=
-ng TLS versions)=2E This improves</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    the user experience as the client shows an error instead of=
- running into</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    a ti=
-meout when the server just stops responding completely=2E</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-Support for tun/tap via unix domain socket and lwipovpn supp=
-ort</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    To allow bette=
-r testing and emulating a full client with a full</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    network stack OpenVPN now allows a program =
-executed to provide</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  a tun/tap device instead of opening a device=2E</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    The co-developed lwipovpn program based on lwIP stack allows to<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    simulate full IP s=
-tack=2E An OpenVPN client using</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    ``--dev-node unix:/path/to/lwipovpn`` can emulate a full clie=
-nt that</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    can be pin=
-ged, can serve a website and more without requiring any</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    elevated permission=2E This can make =
-testing OpenVPN much easier=2E</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    For more=
- details see</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    `lwip=
-ovpn on Github &lt;https://github=2Ecom/OpenVPN/lwipovpn&gt;`_=2E</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-Allow overriding username with ``--override-username=
-``</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    This is intende=
-d to allow using ``--auth-gen-token`` in scenarios where the</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    clients use certificates and mul=
-ti-factor authentication=2E  This will</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    also generate a ``push &quot;auth-token-user newuserna=
-me&quot;`` directive in</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-    push replies=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-``--port-share`` now =
-properly supports IPv6</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    Issues with logging of IPv6 addresses were fixed=2E The feature now al=
-lows</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    IPv6 connecti=
-ons towards the proxy receiver=2E</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Support f=
-or Haiku OS</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-TLS1=2E3 support with mbedTLS (=
-requires mbedTLS &gt;=3D 3=2E6=2E4)</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-PUSH_UP=
-DATE client support</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  It is now possible to update parts of the client-side configuration</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    (IP address, routes, MT=
-U, DNS) by sending a new server-to-client</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    control message, ``PUSH_UPDATE,&lt;options&gt;``=2E=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    See also: https:/=
-/openvpn=2Egithub=2Eio/openvpn-rfc/openvpn-wire-protocol=2Ehtml</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    NOTE: PUSH_UPDATE client supp=
-ort is currently disabled if DCO</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    is active (on all platforms)=2E</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-PUSH_UPDATE server support (minimal)</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    New management interface commands ``push-update-broa=
-d`` and</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ``push-upd=
-ate-cid`` to send PUSH_UPDATE option updates to all</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    clients (&quot;there is a new DNS serve=
-r&quot;) or only a specific client ID</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    (&quot;privileges have changed, here&#39;s a new IP add=
-ress&quot;)=2E  See</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  doc/management-notes=2Etxt</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    NOTE: PUSH_UPDATE server support is currently disabled if DCO</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    is active (on all pl=
-atforms)=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-Support for user-defined routin=
-g tables on Linux</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-See the ``--route-table`` option in the manpage</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-PQE support for WolfSSL</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Two new enviro=
-nment variables have been introduced to communicate desired</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    default gateway redirection to pl=
-ugins like Network Manager,</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    ``route_redirect_gateway_ipv4`` and ``route_redirect_gateway_ipv6=
-``=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    See the &quo=
-t;Environmental Variables&quot; section in the man page</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-Improved logging of service events/errors to event log on Wind=
-ows=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-&quot;Recursive Routing&quot; check =
-is now more granular, and will only drop</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-   packets-in-tunnel if destination IP, protocol and por=
-t matches with</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   thos=
-e needed to reach the VPN server=2E  With that change, you can now</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-   use policies that direct &q=
-uot;everything that is not OpenVPN&quot; into the</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-   tunnel, and have IP packets to the VPN serve=
-r address arrive as</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
- expected (no such policies are currently installed by OpenVPN)</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-   (GH: OpenVPN/openvpn#669)=2E</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-COPYING: license details only relevant to o=
-ur Windows installers have</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-   been updated and moved to the openvpn-build repo</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-Improved BYTECOUNT support - more strictly adhere to timing i=
-nterval</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   requested, =
-correctly support client and server counters with Linux and</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-   Windows DCO offloading=2E</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-Improve compatibility with OpenSSL 3=2E6=2E0 (do no=
-t fail t_lpback selftest)</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-New option ``--tl=
-s-crypt-v2-max-age n`` to check tls-crypt-v2 timestamps</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-   (When a client is older than n days or=
- has no timestamp, the server</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    will reject it)</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-mbedTLS 4 suppo=
-rt has been added=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-  Note that with mbedTLS 4 algorithms need to be translated to</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-   mbedTLS 4 internal IDs by OpenV=
-PN, and some names might be</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-   missing=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-Deprecated features</span><br><span>-------=
--------------</span><br><span style=3D"color: hsl(0, 100%, 40%);">-``secret=
-`` support has been removed (by default)=2E</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    static key mode (non-TLS) is no longer considered=
- &quot;good and secure enough&quot;</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    for today&#39;s requirements=2E  Use TLS mode instead=2E =
- If deploying a PKI CA</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    is considered &quot;too complicated&quot;, using ``--peer-fingerprint`=
-` makes</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    TLS mode a=
-bout as easy as using ``--secret``=2E</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    T=
-his mode can still be enabled by using</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    ``--allow-deprecated-insecure-static-crypto`` but will=
- be removed in</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    Ope=
-nVPN 2=2E8=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-Support for wintun Windows dr=
-iver has been removed=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    OpenVPN 2=2E6 added support for the new dco-win driver, so it suppor=
-ted</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    three differen=
-t device drivers: dco-win, wintun, and tap-windows6=2E</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    OpenVPN 2=2E7 now drops the support fo=
-r wintun driver=2E By default</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    all modern configs should be supported by dco-win driver=2E In =
-all</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    other cases Op=
-enVPN will fall back automatically to tap-windows6</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    driver=2E</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-NTLMv1 authentication support for HTTP proxies has been removed=2E</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    This is considered an inse=
-cure method of authentication that uses</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    obsolete crypto algorithms=2E</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    NTLMv2 support is still available, but =
-will be removed in a future</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    release=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   When configured to authenticate with NTLMv1 (``ntlm`` keyword in</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    ``--http-proxy``) OpenVPN=
- will try NTLMv2 instead=2E</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-``persist-key``=
- option has been enabled by default=2E</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    All the keys will be kept in memory across restart=2E<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-OpenSSL 1=2E0=2E2 support has been removed=
-=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    Support for bu=
-ilding with OpenSSL 1=2E0=2E2 has been removed=2E The minimum</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    supported OpenSSL version is no=
-w 1=2E1=2E0=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-mbedTLS 2=2Ex support has be=
-en removed</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    Support=
- for building with mbedTLS 2=2Ex has been removed (it is out</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    of support since March 2025, and=
- the necessary compatibility code</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    is making maintenance and support for mbedTLS 4=2Ex hard)=
-=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    The minimum su=
-pported mbedTLS version is now 3=2E2=2E1=2E</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--Compression on send has been removed=2E</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    OpenVPN 2=2E7 will never compress data before sendin=
-g=2E Decompression of</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    received data is still supported=2E</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    ``--allow-compression yes`` is now an alias for</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    ``--allow-compression a=
-sym``=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-``--memstats`` feature removed</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    The ``--memstats`` op=
-tion was largely undocumented and there is no known</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    user of this feature=2E  This feature p=
-rovided very limited statistics</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    (number of users, link bytes read/written) and we do not exce=
-pt any</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    usage becau=
-se of this=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-Using ``--push`` in a mode th=
-at is not ``--mode server`` will now print a</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    clear warning that this is an unsupported operat=
-ion and might cause</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  negotiation failures=2E</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-``--reneg-bytes``=
- and ``--reneg-packets`` do not work in DCO mode, and will</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    now print an appropriate warning=
-=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-On-connect resolving of ``--remote`` ad=
-dresses in ``--tcp-server`` mode</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    was not working since 2=2E4, so the code was completely remo=
-ved=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-User-visible Changes</span><br><span>--------------------=
--</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- Default for ``--to=
-pology`` changed to ``subnet`` for ``--mode server``=2E</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-  Previous releases always used ``net30``=
- as default=2E This only affects</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-  configs with ``--mode server`` or ``--server`` (the latter imp=
-lies the</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  former), an=
-d ``--dev tun``, and only if IPv4 is enabled=2E</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-  Note that this changes the semantics of ``--ifc=
-onfig``, so if you have</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-  manual settings for that in your config but not set ``--topology``</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-  your config might fail t=
-o parse with the new version=2E Just adding</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-  ``--topology net30`` to the config should fix the p=
-roblem=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  By default=
- ``--topology`` is pushed from server to client=2E</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-- ``--x509-username-field`` will no longer automatically convert fi=
-eldnames to</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  uppercas=
-e=2E This was deprecated since OpenVPN 2=2E4, and has now been removed=2E</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-- ``--dh none`` is now the default if ``--d=
-h`` is not specified=2E Modern TLS</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-  implementations will prefer ECDH and other more modern algor=
-ithms anyway=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  And =
-finite field Diffie Hellman is in the proces of being deprecated</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-  (see draft-ietf-tls-deprecate-=
-obsolete-kex)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-- ``--lport 0`` does not impl=
-y ``--bind`` anymore=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- ``--redirect-gate=
-way`` now works correctly if the VPN remote is not</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-  reachable by the default gateway=2E</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-- ``--show-gateway`` now supports querying the gate=
-way for IPv4 addresses=2E</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- ``--static-chal=
-lenge`` option now has a third parameter ``format`` that</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-  can change how password and challenge =
-response should be combined=2E</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- ``--key`` =
-and ``--cert`` now accept URIs implemented in OpenSSL 3 as well as</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-  optional OpenSSL 3 providers=
- loaded using ``--providers`` option=2E</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- `=
-`--cryptoapicert`` now supports issuer name as well as Windows CA template<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-  name or OID as selec=
-tor string=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-- TLS handshake debugging inf=
-ormation contains much more details now when</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-  using recent versions of OpenSSL=2E</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-- The ``IV_PLAT_VER`` variable sent by Windows clients no=
-w contains the</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  full =
-Windows build version to make it possible to determine the</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-  Windows 10 or Windows 11 version use=
-d=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-- The ``--windows-driver`` option to s=
-elect between various windows</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-  drivers will no longer do anything - it&#39;s kept so existing co=
-nfigs</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  will not becom=
-e invalid, but it is ignored with a warning=2E  The default</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-  is now ``ovpn-dco`` if all options =
-used are compatible with DCO, with</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-  a fallback to ``tap-windows6``=2E  To force TAP (for example=
- because a</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  server pu=
-shes DCO incompatible options), use the ``--disable-dco``</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-  option=2E</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-- Apply more checks to incoming TLS handshake packets before creating<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-  new state - namely, =
-verify message ID / acked ID for &quot;valid range for</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-  an initial packet&quot;=2E  This fixes a=
- problem with clients that float</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-  very early but send control channel packet from the pre-float =
-IP</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  (Github: OpenVPN/=
-openvpn#704)=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-- Use of ``--dh dh2048=2Epe=
-m`` in all sample configs has been replaced</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-  with ``--dh none``=2E  The ``dh2048=2Epem`` file ha=
-s been removed=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-- The startup delay in ``=
-t_client=2Esh`` has been reduced from 3s to 1s,</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-  making a noticeable difference for setups with =
-many tests=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-- Changed from using ``uncrus=
-tify`` for code formatting and pre-commit checks</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-  to ``clang-format``=2E  This reformatted quite=
- a bit of code, and requires</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-  that regular committers change their pre-commit checks accordingly=
-=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-- On Linux, on interfaces where applica=
-ble, OpenVPN explicitly configures</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-  the broadcast address again=2E  This was dropped for 2=2E6=
-=2E0 &quot;because</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  c=
-omputers are smart and can do it themselves&quot;, but the kernel netlink</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-  interface isn&#39;t, =
-and will install &quot;0=2E0=2E0=2E0&quot;=2E  This does not normally</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-  matter, but for broadcast=
--based applications that get the address to</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-  use from &quot;ifconfig&quot;, this change repairs =
-functionality (this has</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-  been backported to 2=2E6=2E15, but is not in earlier 2=2E6 versions)=2E=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-- ``max-routes-per-client 0`` used to be s=
-ilently upgraded to ``1``=2E  This</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-  now produces an error=2E</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- `=
-`ifconfig`` and ``ifconfig-ipv6`` values are now stored in pre-connect</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-  options cache, and will =
-be restored to pre-connect values on reconnects</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-  if the server stops pushing the respective opti=
-on=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-- ``tapctl=2Eexe`` helper binary on W=
-indows has been reworked to improve</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-  help texts (making clear that it can not only do TAP-Adapte=
-rs but</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  Win-DCO as we=
-ll), add printing of the hwid to all adapter outputs, and</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-  change the default adapter type creat=
-ed to ``ovpn-dco``=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- The default for ``m=
-ultihome`` egress interface handling has changed=2E</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-  2=2E7=2E0 will default to ipi_ifindex=3D0=
-, that is, leave the decision to the</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-  routing/policy setup of the operating system=2E  The pre-2=
-=2E7 behaviour</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  (forc=
-e egress =3D ingress interface) can be achieved with the new</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-  ``--multihome same-interface`` sub=
--option=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-- Windows ``openvpn=2Eexe`` bina=
-ry manifest now sets code page UTF8 - which</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-  has no direct effect on OpenVPN itself, but this re=
-pairs OpenSSL file</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  l=
-oading for key/cert files with non-ASCII characters in their file names</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-  (GH: OpenVPN/openvpn#92=
-0)=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-- The ``test-crypto`` option no longe=
-r requires a ``--secret`` argument and</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-  will automatically generate a random key=2E</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-- The configure-time option ``--enable-x509-alt-usernam=
-e`` is no longer</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  con=
-ditional, and always-on (GH: OpenVPN/openvpn#917)=2E</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Deprecated=
- features</span><br><span>--------------------</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-``--opt-verify`` feature removed</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    This option was already deprecated =
-and it is now being converted to a</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    no-op=2E Using this option will only print a warning=2E</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-Overview of changes in 2=2E6</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Project changes</span=
-><br><span>----------------</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-We want to depr=
-ecate our old Trac bug tracking system=2E</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-Please report any issues with this release in GitHub</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-instead: https://github=
-=2Ecom/OpenVPN/openvpn/issues</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-New features<=
-/span><br><span>-------------</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-Support unlimited number of connection entries and remote entries</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-New management commands to enumerate and li=
-st remote entries</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-Use ``remote-entry-count`` and ``remote-entry-get``</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    commands from the management interface =
-to get the number of</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   remote entries and the entries themselves=2E</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-Keying Material Exporters (RFC 5705) based key generation</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    As part of the cipher negotiat=
-ion OpenVPN will automatically prefer</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    the RFC5705 based key material generation to the curren=
-t custom</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    OpenVPN P=
-RF=2E This feature requires OpenSSL or mbed TLS 2=2E18+=2E</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-Compatibility with OpenSSL in FIPS mode</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    OpenVPN will now work with OpenSSL in=
- FIPS mode=2E Note, no effort</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    has been made to check or implement all the</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    requirements/recommendation of FIPS 1=
-40-2=2E This just allows OpenVPN</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    to be run on a system that be configured OpenSSL in FIPS mod=
-e=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-``mlock`` will now check if enough mem=
-lock-able memory has been reserved,</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    and if less than 100MB RAM are available, use setrlimit()=
- to upgrade</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    the li=
-mit=2E  See Trac #1390=2E  Not available on OpenSolaris=2E</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-Certificate pinning/verify peer fingerprint</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    The ``--peer-fingerprint`` option=
- has been introduced to give users an</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    easy to use alternative to the ``tls-verify`` for match=
-ing the</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    fingerprin=
-t of the peer=2E The option takes use a number of allowed</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    SHA256 certificate fingerprints=2E<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    See the man page section &quot;Small Op=
-enVPN setup with peer-fingerprint&quot;</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    for a tutorial on how to use this feature=2E This is =
-also available online</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    under https://github=2Ecom/openvpn/openvpn/blob/master/doc/man-sections=
-/example-fingerprint=2Erst</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-TLS mode with se=
-lf-signed certificates</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    When ``--peer-fingerprint`` is used, the ``--ca`` and ``--capath`` opt=
-ion</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    become optiona=
-l=2E This allows for small OpenVPN setups without setting up</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    a PKI with Easy-RSA or similar s=
-oftware=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-Deferred auth support for script=
-s</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    The ``--auth-use=
-r-pass-verify`` script supports now deferred authentication=2E</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-Pending auth support for plugins and scripts</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    Both auth plugin and script =
-can now signal pending authentication to</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    the client when using deferred authentication=2E The=
- new ``client-crresponse``</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    script option and ``OPENVPN_PLUGIN_CLIENT_CRRESPONSE`` plugin func=
-tion can</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    be used t=
-o parse a client response to a ``CR_TEXT`` two factor challenge=2E</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    See ``sample/sample-scripts/totpauth=2Epy`` for=
- an example=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-Compatibility mode (``--comp=
-at-mode``)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    The mod=
-ernisation of defaults can impact the compatibility of OpenVPN 2=2E6=2E0</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    with older peers=2E =
-The options ``--compat-mode`` allows UIs to provide users</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    with an easy way to still connect t=
-o older servers=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-OpenSSL 3=2E0 support</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    OpenSSL 3=2E0 has be=
-en added=2E Most of OpenSSL 3=2E0 changes are not user visible but</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    improve general compatibil=
-ity with OpenSSL 3=2E0=2E ``--tls-cert-profile insecure``</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    has been added to allow selecting t=
-he lowest OpenSSL security level (not</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    recommended, use only if you must)=2E OpenSSL 3=2E0 no =
-longer supports the Blowfish</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    (and other deprecated) algorithm by default and the new option `=
-`--providers``</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    all=
-ows loading the legacy provider to renable these algorithms=2E</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-Optional ciphers in ``--data-ciphers``</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    Ciphers in ``--data-ciphers`` can =
-now be prefixed with a ``?`` to mark</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    those as optional and only use them if the SSL library s=
-upports them=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-Improved ``--mssfix`` and ``--fragment`` calcula=
-tion</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    The ``--mssfi=
-x`` and ``--fragment`` options now allow an optional :code:`mtu`</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    parameter to specify that di=
-fferent overhead for IPv4/IPv6 should taken into</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    account and the resulting size is specified =
-as the total size of the VPN packets</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    including IP and UDP headers=2E</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-Cookie based handshake for UDP server</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    Instead of allocating a connection for each cli=
-ent on the initial packet</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    OpenVPN server will now use an HMAC based cookie as its session id=
-=2E This</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    way the s=
-erver can verify it on completing the handshake without keeping</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    state=2E This eliminates the =
-amplification and resource exhaustion attacks=2E</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    For tls-crypt-v2 clients, this requires Open=
-VPN 2=2E6 clients or later</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    because the client needs to resend its client key on completing th=
-e hand</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    shake=2E Th=
-e tls-crypt-v2 option allows controlling if older clients are</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    accepted=2E</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    By default the rate of initial packet responses is limited=
- to 100 per 10s</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    in=
-terval to avoid OpenVPN servers being abused in reflection attacks</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    (see ``--connect-freq-init=
-ial``)=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-Data channel offloading with ovpn=
--dco</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    2=2E6=2E0+ im=
-plements support for data-channel offloading where the data packets</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    are directly processed an=
-d forwarded in kernel space thanks to the ovpn-dco</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    kernel module=2E The userspace openvpn pro=
-gram acts purely as a control plane</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    application=2E Note that DCO will use DATA_V2 packets in =
-P2P mode, therefore,</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   this implies that peers must be running 2=2E6=2E0+ in order to have P2P-=
-NCP</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    which brings D=
-ATA_V2 packet support=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Session timeout</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    It is now possible t=
-o terminate a session (or all) after a specified amount</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    of seconds has passed session commenc=
-ement=2E This behaviour can be configured</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    using ``--session-timeout``=2E This option can be c=
-onfigured on the server, on</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    the client or can also be pushed=2E</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-Inline auth username and password</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    Username and password can now be specified inline in the=
- configuration file</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  within the &lt;auth-user-pass&gt;&lt;/auth-user-pass&gt; tags=2E If the p=
-assword is</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    missing=
- OpenVPN will prompt for input via stdin=2E This applies to inline&#39;d</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    http-proxy-user-pass=
- too=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-Tun MTU can be pushed</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    The  client can now also dynami=
-cally configure its MTU and the server</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    will try to push the client MTU when the client suppor=
-ts it=2E The</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    direc=
-tive ``--tun-mtu-max`` has been introduced to increase the maximum</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    pushable MTU size (default=
-s to 1600)=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-Dynamic TLS Crypt</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    When both peers are OpenVPN 2=
-=2E6=2E1+, OpenVPN will dynamically create</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    a tls-crypt key that is used for renegotiation=2E =
-This ensure that only the</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    previously authenticated peer can do trigger renegotiation and comp=
-lete</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    renegotiation=
-s=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-Improved control channel packet size c=
-ontrol (``max-packet-size``)</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    The size of control channel is no longer tied to</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    ``--link-mtu``/``--tun-mtu`` and =
-can be set using ``--max-packet-size``=2E</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    Sending large control channel frames is also optimi=
-sed by allowing 6</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-outstanding packets instead of just 4=2E ``max-packet-size`` will also set<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ``mssfix`` to try =
-to limit data-channel packets as well=2E</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-De=
-precated features</span><br><span>--------------------</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-``inetd`` has been removed</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    This was a very limited and not-w=
-ell-tested way to run OpenVPN, on TCP</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    and TAP mode only=2E</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-``=
-verify-hash`` has been deprecated</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    This option has very limited usefulness and should be repla=
-ced by either</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    a be=
-tter ``--ca`` configuration or with a ``--tls-verify`` script=2E</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-``secret`` has been deprecated</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    static key mode (non-TLS) is no longer =
-considered &quot;good and secure enough&quot;</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    for today&#39;s requirements=2E  Use TLS mode i=
-nstead=2E  If deploying a PKI CA</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    is considered &quot;too complicated&quot;, using ``--peer-fi=
-ngerprint`` makes</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-TLS mode about as easy as using ``--secret``=2E</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-``ncp-disable`` has been removed</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    This option mainly served a role as debug option when N=
-CP was first</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    intro=
-duced=2E It should now no longer be necessary=2E</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-TLS 1=2E0 and 1=2E1 are deprecated</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    ``tls-version-min`` is set to 1=2E2 by default=2E  O=
-penVPN 2=2E6=2E0 defaults</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    to a minimum TLS version of 1=2E2 as TLS 1=2E0 and 1=2E1 should be =
-generally</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    avoided=
-=2E Note that OpenVPN versions older than 2=2E3=2E7 use TLS 1=2E0 only=2E</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-``--cipher`` argument is no longer appended=
- to ``--data-ciphers``</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    by default=2E Data cipher negotiation has been introduced in 2=2E4=2E0=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    and been signific=
-antly improved in 2=2E5=2E0=2E The implicit fallback</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    to the cipher specified in ``--cipher``=
- has been removed=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   Effectively, ``--cipher`` is a no-op in TLS mode now, and will</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    only have an effect in pre-=
-shared-key mode (``--secret``)=2E</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    From now on ``--cipher`` should not be used in new configur=
-ations</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    for TLS mod=
-e=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    Should backwa=
-rds compatibility with older OpenVPN peers be</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    required, please see the ``--compat-mode`` inst=
-ead=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-``--prng`` has beeen removed</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    OpenVPN used to implement=
- its own PRNG based on a hash=2E However implementing</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    a PRNG is better left to a crypto libra=
-ry=2E So we use the PRNG</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    mbed TLS or OpenSSL now=2E</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-``--keysi=
-ze`` has been removed</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    The ``--keysize`` option was only useful to change the key length when =
-using the</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    BF, CAST=
-6 or RC2 ciphers=2E For all other ciphers the key size is fixed with the</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    chosen cipher=2E As =
-OpenVPN v2=2E6 no longer supports any of these variable length</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    ciphers, this option was remov=
-ed as well to avoid confusion=2E</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Compressio=
-n no longer enabled by default</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    Unless an explicit compression option is specified in the conf=
-iguration,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ``--all=
-ow-compression`` defaults to ``no`` in OpeNVPN 2=2E6=2E0=2E</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    By default, OpenVPN 2=2E5 still a=
-llowed a server to enable compression by</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    pushing compression related options=2E</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-PF (Packet Filtering) support has been removed</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-   The built-in PF functionalit=
-y has been removed from the code base=2E This</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-   feature wasn&#39;t really easy to use and was lo=
-ng unmaintained=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-This implies that also ``--management-client-pf`` and any other compile</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-   time or run time relat=
-ed option do not exist any longer=2E</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Option=
- conflict checking is being deprecated and phased out</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    The static option checking (OCC) is no =
-longer useful in typical setups</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    that negotiate most connection parameters=2E The ``--opt-veri=
-fy`` and</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ``--occ-d=
-isable`` options are deprecated, and the configure option</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    ``--enable-strict-options`` has bee=
-n removed=2E Logging of mismatched</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    options has been moved to debug logging (verb 7)=2E</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-User-visible Changes</span><br><span>------------=
----------</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- CHACHA20-P=
-OLY1305 is included in the default of ``--data-ciphers`` when available=2E<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-- Option ``--prng`` is=
- ignored as we rely on the SSL library random number generator=2E</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-- Option ``--nobind`` is defaul=
-t when ``--client`` or ``--pull`` is used in the configuration</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-- :code:`link_mtu` parameter is re=
-moved from environment or replaced with 0 when scripts are</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-  called with parameters=2E This param=
-eter is unreliable and no longer internally calculated=2E</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-- control channel packet maximum size is no longer influence=
-d by</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  ``--link-mtu``/=
-``--tun-mtu`` and must be set by ``--max-packet-size`` now=2E</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-  The default is 1250 for the contr=
-ol channel size=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-- In point-to-point Open=
-VPN setups (no ``--server``), using</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-  ``--explict-exit-notiy`` on one end would terminate the oth=
-er side at</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  session e=
-nd=2E  This is considered a no longer useful default and has</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-  been changed to &quot;restart on r=
-eception of explicit-exit-notify message&quot;=2E</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-  If the old behaviour is still desired, ``--re=
-map-usr1 SIGTERM`` can be used=2E</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- FreeBSD=
- tun interfaces with ``--topology subnet`` are now put into real</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-  subnet mode (IFF_BROADCAST ins=
-tead of IFF_POINTOPOINT) - this might upset</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-  software that enumerates interfaces, looking for &q=
-uot;broadcast capable?&quot; and</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-  expecting certain results=2E  Normal uses should not see any d=
-ifference=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-- The default configurations w=
-ill no longer allow connections to OpenVPN 2=2E3=2Ex</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-  peer or earlier, use the new ``--compat-m=
-ode`` option if you need</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-  compatibility with older versions=2E See the manual page on the</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-  ``--compat-mode`` for deta=
-ils=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-- The ``client-pending-auth`` manage=
-ment command now requires also the</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-  key id=2E The management version has been changed to 5 to in=
-dicate this change=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- (OpenVPN 2=2E6=2E2)=
+ 100%, 40%);">+  Data cipher negotiation has been introduced in 2=2E4=2E0 a=
+nd been</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  significan=
+tly improved in 2=2E5=2E0=2E The implicit fallback to the cipher specified<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+  in `--cipher` has =
+been removed=2E Effectively, `--cipher` is a no-op in TLS mode</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+  now, and will only have an eff=
+ect in pre-shared-key mode (`--secret`)=2E From now</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  on `--cipher` should not be used in new=
+ configurations for TLS mode=2E Should</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+  backwards compatibility with older OpenVPN peers be re=
+quired, please see the</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+  `--compat-mode` instead=2E</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **`--=
+prng` has beeen removed**</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  OpenVPN use=
+d to implement its own PRNG based on a hash=2E However implementing a</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+  PRNG is better left to =
+a crypto library=2E So we use the PRNG mbed TLS or OpenSSL</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+  now=2E</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+* **`--keysize` has been removed**</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+  The `--keysize` option was only useful to change the key length when=
+ using the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  BF, CAS=
+T6 or RC2 ciphers=2E For all other ciphers the key size is fixed with the</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+  chosen cipher=2E As=
+ OpenVPN v2=2E6 no longer supports any of these variable length</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+  ciphers, this option was remo=
+ved as well to avoid confusion=2E</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **C=
+ompression no longer enabled by default**</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+  Unless an explicit compression option is specified in the configuratio=
+n,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  `--allow-compre=
+ssion` defaults to `no` in OpeNVPN 2=2E6=2E0=2E By default, OpenVPN 2=2E5</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+  still allowed a ser=
+ver to enable compression by pushing compression related</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+  options=2E</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+* **PF (Packet Filtering) support has been removed**</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+  The built-in PF functionality has been removed f=
+rom the code base=2E This feature</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+  wasn&#39;t really easy to use and was long unmaintained=2E =
+This implies that also</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+  `--management-client-pf` and any other compile time or run time relate=
+d option</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  do not ex=
+ist any longer=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Option conflict c=
+hecking is being deprecated and phased out**</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+  The static option checking (OCC) is no longer useful in typical set=
+ups that</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  negotiate=
+ most connection parameters=2E The `--opt-verify` and `--occ-disable`</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+  options are deprecated,=
+ and the configure option `--enable-strict-options` has</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+  been removed=2E Logging of mismatched=
+ options has been moved to debug logging</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+  (verb 7)=2E</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+## U=
+ser-visible Changes</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- CHACHA20-POLY1305=
+ is included in the default of `--data-ciphers` when</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  available=2E</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+- Option `--prng` is ignored as we rely on the=
+ SSL library random number</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+  generator=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+- Option `--nobind` is default when `--client` or `--pull` is used in the=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  configuration</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+- `link_mtu` parameter =
+is removed from environment or replaced with 0 when</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  scripts are called with parameters=2E T=
+his parameter is unreliable and no longer</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+  internally calculated=2E</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+- control channel packet maximum size is no lo=
+nger influenced by</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+ `--link-mtu`/`--tun-mtu` and must be set by `--max-packet-size` now=2E The=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  default is 1250 f=
+or the control channel size=2E</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+- In point-to-point OpenVPN setups (no `--server`), using `--exp=
+lict-exit-notiy`</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  o=
+n one end would terminate the other side at session end=2E This is consider=
+ed a</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  no longer use=
+ful default and has been changed to &quot;restart on reception of</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+  explicit-exit-notify messag=
+e&quot;=2E If the old behaviour is still desired,</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+  `--remap-usr1 SIGTERM` can be used=2E</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+- FreeBSD tun interfaces =
+with `--topology subnet` are now put into real subnet</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  mode (IFF_BROADCAST instead of IFF_POIN=
+TOPOINT) - this might upset software</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+  that enumerates interfaces, looking for &quot;broadcast =
+capable?&quot; and expecting</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+  certain results=2E Normal uses should not see any difference=2E<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+- The default config=
+urations will no longer allow connections to OpenVPN 2=2E3=2Ex</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+  peer or earlier, use the new `=
+--compat-mode` option if you need compatibility</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+  with older versions=2E See the manual page on=
+ the `--compat-mode` for details=2E</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+- The `client-pending-auth` management command now requires=
+ also the key id=2E The</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+  management version has been changed to 5 to indicate this change=2E</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+- (OpenVPN 2=2E6=2E2)=
  A client will now refuse a connection if pushed compression</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-  settings will contradict the setti=
-ng of allow-compression as this almost</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-  always results in a non-working connection=2E</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-- The &quot;kill&quot; by addr management command now=
- requires also the protocol</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-  as string e=2Eg=2E &quot;udp&quot;, &quot;tcp&quot;=2E</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-Common errors with OpenSSL 3=2E0 and OpenVPN 2=2E6</spa=
-n><br><span>-----------------------------------------------</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-Both OpenVPN 2=2E6 and OpenSSL 3=2E0 =
-tighten the security considerable, so some</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-configuration will no longer work=2E This section will=
- cover the most common</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--causes and error message we have seen and explain their reason and tempora=
-ry</span><br><span style=3D"color: hsl(0, 100%, 40%);">-workarounds=2E You =
-should fix the underlying problems as soon as possible since</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-these workaround are not secure and =
-will eventually stop working in a future</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-update=2E</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- weak SHA1 or=
- MD5 signature on certificates</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  This will =
-happen on either loading of certificates or on connection</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-  to a server::</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-      OpenSSL: error:0A00018E:SSL routines::ca md too weak</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-      Cannot load certifica=
-te file cert=2Ecrt</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-   Exiting due to fatal error</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  OpenSSL 3=
-=2E0 no longer allows weak signatures on certificates=2E You can</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-  downgrade your security to all=
-ow them by using ``--tls-cert-profile insecure``</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-  but should replace/regenerate these certificat=
-es as soon as possible=2E</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-- 1024 bit RSA certificates, 1024 bit =
-DH parameters, other weak keys</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  This happe=
-ns if you use private keys or other cryptographic material that</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-  does not meet today&#39;s crypt=
-ographic standards anymore=2E Messages are similar</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-  to::</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      O=
-penSSL: error:0A00018F:SSL routines::ee key too small</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-      OpenSSL: error:1408518A:SSL routines:=
-ssl3_ctx_ctrl:dh key too small</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  DH paramet=
-ers (``--dh``) can be regenerated with ``openssl dhparam 2048``=2E</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-  For other cryptographic keys=
-, these keys and certificates need to be</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-  regenerated=2E TLS Security level can be temporarily l=
-owered with</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  ``--tls-=
-cert-profile legacy`` or even ``--tls-cert-profile insecure``=2E</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-- Connecting to a OpenVPN 2=2E3=2Ex server or allowin=
-g OpenVPN 2=2E3=2Ex or earlier</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-  clients</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-  This will normally res=
-ult in messages like::</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     OPTIONS ERROR: =
-failed to negotiate cipher with server=2E  Add the server&#39;s cipher (&#3=
-9;AES-128-CBC&#39;) to --data-ciphers (currently &#39;AES-256-GCM:AES-128-G=
-CM:CHACHA20-POLY1305&#39;) if you want to connect to this server=2E</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-     or</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     clien=
-t/127=2E0=2E0=2E1:49954 SENT CONTROL [client]: &#39;AUTH_FAILED,Data channe=
-l cipher negotiation failed (no shared cipher)&#39; (status=3D1)</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-  You can manually add the missing cipher to the ``--=
-data-ciphers``=2E The</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-  standard ciphers should be included as well, e=2Eg=2E</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-  ``--data-ciphers AES-256-GCM:AES-128-GC=
-M:?Chacha20-Poly1305:?AES-128-CBC``=2E</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-  You can also use the ``--compat-mode`` option=2E Note th=
-at these message may</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
- also indicate other cipher configuration problems=2E See the data channel<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-  cipher negotiation m=
-anual section for more details=2E (Available online under</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-  https://github=2Ecom/OpenVPN/openvpn/=
-blob/master/doc/man-sections/cipher-negotiation=2Erst)</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-- Use of a legacy or deprecated cipher (e=2Eg=2E 64bit block ci=
-phers)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-  OpenSSL 3=2E0 no longer supports a=
- number of insecure and outdated ciphers in</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-  its default configuration=2E Some of these ciphers =
-are known to be vulnerable (SWEET32 attack)=2E</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-  This will typically manifest itself in messages like::</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-      OpenSSL: error:0308010C:digital envelope routines::=
-unsupported</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      Ciph=
-er algorithm &#39;BF-CBC&#39; not found</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-      Unsupported cipher in --data-ciphers: BF-CBC</span>=
+n style=3D"color: hsl(120, 100%, 40%);">+  settings will contradict the set=
+ting of allow-compression as this almost</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+  always results in a non-working connection=2E</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+- The &quot;kill&quot; by =
+addr management command now requires also the protocol as string</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+  e=2Eg=2E &quot;udp&quot;, &q=
+uot;tcp&quot;=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+## Common errors with =
+OpenSSL 3=2E0 and OpenVPN 2=2E6</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Both Op=
+enVPN 2=2E6 and OpenSSL 3=2E0 tighten the security considerable, so some</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+configuration will no =
+longer work=2E This section will cover the most common</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+causes and error message we have seen an=
+d explain their reason and temporary</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+workarounds=2E You should fix the underlying problems as s=
+oon as possible since</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+these workaround are not secure and will eventually stop working in a fut=
+ure</span><br><span style=3D"color: hsl(120, 100%, 40%);">+update=2E</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+- weak SHA1 or MD5 signature on certificates<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+  This will happen on either loading of=
+ certificates or on connection to a</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+  server:</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      OpenSSL=
+: error:0A00018E:SSL routines::ca md too weak</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+      Cannot load certificate file cert=2Ecrt</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+      Exiting due to fa=
+tal error</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+  OpenSSL 3=2E0 no longer all=
+ows weak signatures on certificates=2E You can</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+  downgrade your security to allow them by using=
+ `--tls-cert-profile insecure`</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+  but should replace/regenerate these certificates as soon as po=
+ssible=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+- 1024 bit RSA certificates, =
+1024 bit DH parameters, other weak keys</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++  This happens if you use private keys or other cryptographic material tha=
+t does</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  not meet to=
+day&#39;s cryptographic standards anymore=2E Messages are similar to:</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+      OpenSSL: error:0A00018F:SSL routines::=
+ee key too small</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+   OpenSSL: error:1408518A:SSL routines:ssl3_ctx_ctrl:dh key too small</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  DH parameters (`--dh`) can be regenerat=
+ed with `openssl dhparam 2048`=2E For</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+  other cryptographic keys, these keys and certificates n=
+eed to be regenerated=2E</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+  TLS Security level can be temporarily lowered with `--tls-cert-profi=
+le legacy`</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  or even=
+ `--tls-cert-profile insecure`=2E</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- Con=
+necting to a OpenVPN 2=2E3=2Ex server or allowing OpenVPN 2=2E3=2Ex or earl=
+ier</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  clients</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+  This will normally result in messages like:=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+      OPTIONS ERROR: failed to negotia=
+te cipher with server=2E Add the server&#39;s cipher (&#39;AES-128-CBC&#39;=
+) to --data-ciphers (currently &#39;AES-256-GCM:AES-128-GCM:CHACHA20-POLY13=
+05&#39;) if you want to connect to this server=2E</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+  or</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+      client/127=2E0=2E=
+0=2E1:49954 SENT CONTROL [client]: &#39;AUTH_FAILED,Data channel cipher neg=
+otiation failed (no shared cipher)&#39; (status=3D1)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+  You can manually add the missing cipher to the `--data-cip=
+hers`=2E The standard</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+  ciphers should be included as well, e=2Eg=2E</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+  `--data-ciphers AES-256-GCM:AES-128-GCM:?Cha=
+cha20-Poly1305:?AES-128-CBC`=2E You</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+  can also use the `--compat-mode` option=2E Note that thes=
+e message may also</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+ indicate other cipher configuration problems=2E See the data channel ciphe=
+r</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  negotiation manu=
+al section for more details=2E (Available online under</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+  &lt;https://github=2Ecom/OpenVPN/openv=
+pn/blob/master/doc/man-sections/cipher-negotiation=2Erst&gt;)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+- Use of a legacy or deprecated cipher (e=2Eg=2E 64b=
+it block ciphers)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+  OpenSSL 3=2E0 no lo=
+nger supports a number of insecure and outdated ciphers in</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+  its default configuration=2E Some =
+of these ciphers are known to be vulnerable</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+  (SWEET32 attack)=2E</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+  This will typically manifest itself in messages like:</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+      OpenSSL: error:0308010C:digital envelope rout=
+ines::unsupported</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+    Cipher algorithm &#39;BF-CBC&#39; not found</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+      Unsupported cipher in --data-ciphers: BF-=
+CBC</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+  If your OpenSSL distribution come=
+s with the legacy provider (see also</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+  `man OSSL_PROVIDER-legacy`), you can load it with</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+  `--providers legacy defa=
+ult`=2E This will re-enable the old algorithms=2E</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+- OpenVPN version not supporting TLS 1=2E2 or later</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+  The default in OpenVPN 2=2E6 and also in many dis=
+tributions is now TLS 1=2E2 or</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+  later=2E Connecting to a peer that does not support this will =
+results in</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  message=
+s like:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+      TLS error: Unsupported pr=
+otocol=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+  This typically indicates th=
+at client and server have no common TLS version</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+  enabled=2E This can be caused by mismatched t=
+ls-version-min and tls-version-max</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+  options on client and server=2E If your OpenVPN client is =
+between v2=2E3=2E6 and</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+  v2=2E3=2E2 try adding `tls-version-min 1=2E0` to the client configurat=
+ion to use</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  TLS 1=
+=2E0+ instead of TLS 1=2E0 only=2E</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+  OpenSSL: error:0A000102:SSL routines::unsupported protocol</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+  This can be an OpenVPN 2=2E3=2E6 or earlier version=
+=2E `compat-version 2=2E3=2E0` will</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+  enable TLS 1=2E0 support if supported by the OpenSSL dist=
+ribution=2E Note that on</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+  some Linux distributions enabling TLS 1=2E1 or 1=2E0 is not possible=
+=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+# Overview of changes in 2=2E5</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+## New features</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+* **Client-specific tls-crypt keys (`--tls-crypt-v2`)**</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+  `tls-crypt-v2` adds the ability to supply eac=
+h client with a unique tls-crypt</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+  key=2E This allows large organisations and VPN providers to =
+profit from the same</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++  DoS and TLS stack protection that small deployments can already achieve =
+using</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  `tls-auth` o=
+r `tls-crypt`=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+* **ChaCha20-Poly1305 =
+cipher support**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+  Added support for us=
+ing the ChaCha20-Poly1305 cipher in the OpenVPN data</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  channel=2E</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+* **Improved Data channel cipher negotiation**</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+  The option `ncp-ciphers` has been renamed to `data-cipher=
+s`=2E The old name is</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+  still accepted=2E The change in name signals that `data-ciphers` is the=
+ preferred</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  way to =
+configure data channel ciphers and the data prefix is chosen to avoid the</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+  ambiguity that exis=
+ts with `--cipher` for the data cipher and `tls-cipher` for</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+  the TLS ciphers=2E</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+  OpenVPN clients will now signal all supported ciphe=
+rs from the `data-ciphers`</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+  option to the server via `IV_CIPHERS`=2E OpenVPN servers will sele=
+ct the first</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  commo=
+n cipher from the `data-ciphers` list instead of blindly pushing the first<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+  cipher of the list=
+=2E This allows to use a configuration like</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+  `data-ciphers ChaCha20-Poly1305:AES-256-GCM` on t=
+he server that prefers</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+  ChaCha20-Poly1305 but uses it only if the client supports it=2E</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+  See the data channel negotiation section in=
+ the manual for more details=2E</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Rem=
+oval of BF-CBC support in default configuration:**</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+  By default OpenVPN 2=2E5 will only accept AES-256-GCM and AES=
+-128-GCM as data</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  c=
+iphers=2E OpenVPN 2=2E4 allows AES-256-GCM,AES-128-GCM and BF-CBC when no -=
+-cipher</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  and --ncp-=
+ciphers options are present=2E Accepting BF-CBC can be enabled by adding</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  &gt; data-ciphers AES-256-GCM:AES-128-G=
+CM:BF-CBC</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+  and when you need to suppor=
+t very old peers also</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  &gt; data-ciphe=
+rs-fallback BF-CBC</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+  To offer backwards=
+ compatibility with older configs an *explicit*</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+  &gt; cipher BF-CBC</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  in the =
+configuration will be automatically translated into adding BF-CBC to the</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+  data-ciphers option =
+and setting data-ciphers-fallback to BF-CBC (as in the</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+  example commands above)=2E We strongly=
+ recommend to switching away from BF-CBC to</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+  a more secure cipher=2E</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+* **Asynchronous (deferred) authentication support for auth-pam =
+plugin=2E**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+  See src/plugins/auth-pam/=
+README=2Eauth-pam for details=2E</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **De=
+ferred client-connect**</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  The `--client=
+-connect` option and the connect plugin API allow</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+  asynchronous/deferred return of the configu=
+ration file in the same way as the</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+  auth-plugin=2E</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Fas=
+ter connection setup**</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  A client will =
+signal in the `IV_PROTO` variable that it is in pull mode=2E This</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+  allows the server to push t=
+he configuration options to the client without</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+  waiting for a `PULL_REQUEST` message=2E The fe=
+ature is automatically enabled if</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+  both client and server support it and significantly reduces=
+ the connection setup</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+  time by avoiding one extra packet round-trip and 1s of internal event d=
+elays=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+* **Netlink support**</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+  On Linux, if configured without `--enable-ipr=
+oute2`, configuring IP addresses</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+  and adding/removing routes is now done via the netlink(3) ke=
+rnel interface=2E This</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+  is much faster than calling `ifconfig` or `route` and also enables Ope=
+nVPN to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  run with l=
+ess privileges=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+  If configured with =
+--enable-iproute2, the `ip` command is used (as in 2=2E4)=2E</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+  Support for `ifconfig` and `rout=
+e` is gone=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Wintun support**</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  On Windows, OpenVPN can now use `wintun=
+` devices=2E They are faster than the</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+  traditional `tap9` tun/tap devices, but do not provide =
+`--dev tap` mode - so the</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+  official installers contain both=2E To use a wintun device, add</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+  `--windows-driver win=
+tun` to your config (and use of the interactive service is</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+  required as wintun needs SYSTEM pr=
+ivileges to enable access)=2E</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **IPv6-=
+only operation**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+  It is now possible t=
+o have only IPv6 addresses inside the VPN tunnel, and</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  IPv6-only address pools (2=2E4 always r=
+equired IPv4 config/pools and IPv6 was the</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+  &quot;optional extra&quot;)=2E</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+* **Improved Windows 10 detection**</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+  Correctly log OS on Windows 10 now=2E</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+* **Linux VRF support**</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++  Using the new `--bind-dev` option, the OpenVPN outside socket can now be=
+ put</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  into a Linux =
+VRF=2E See the &quot;Virtual Routing and Forwarding&quot; documentation in =
+the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  man page=2E</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+* **TLS 1=2E3 support**</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+  TLS 1=2E3 support has been added to OpenVPN=2E Current=
+ly, this requires OpenSSL</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+  1=2E1=2E1+=2E The options `--tls-ciphersuites` and `--tls-groups` h=
+ave been added to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+fine tune TLS protocol options=2E Most of the improvements were also backpo=
+rted to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  OpenVPN 2=
+=2E4 as part of the maintainance releases=2E</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+* **Support setting DHCP search domain**</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+  A new option `--dhcp-option DOMAIN-SEARCH my=2Eexample=2Ecom` has=
+ been defined, and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+ Windows support for it is implemented (tun/tap only, no wintun support yet=
+)=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Other platfor=
+ms need to support this via `--up` script (Linux) or GUI</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+  (OSX/Tunnelblick)=2E</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+* **per-client changing of `--data-ciphers` or `data-c=
+iphers-fallback`**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Via client-connect=
+ script/dir (NOTE: this only changes preference of ciphers</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+  for NCP, but can not override what=
+ the client announces as &quot;willing to accept&quot;)=2E</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+* **Handle setting of tun/tap interface MTU on Windows*=
+*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+  If IPv6 is in use, MTU must be &gt;=
+=3D 1280 (Windows enforces IETF requirements)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+* **Add support for OpenSSL engines to access private key material (=
+like TPM)=2E**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+* **HMAC based auth-toke=
+n support**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+  The `--auth-gen-token` su=
+pport has been improved and now generates HMAC based</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  user token=2E If the optional `--auth-g=
+en-token-secret` option is used clients</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+  will be able to seamlessly reconnect to a different s=
+erver using the same secret</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+  file or to the same server after a server restart=2E</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+* **Improved support for pending authentication**</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+  The protocol has been enhanced to be a=
+ble to signal that the authentication</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+  should use a secondary authentication via web (like SAM=
+L) or a two factor</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+ authentication without disconnecting the OpenVPN session with AUTH_FAILED=
+=2E The</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  session wi=
+ll instead be stay in a authenticated state and wait for the second</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+  factor authentication to =
+complete=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+  This feature currently re=
+quires usage of the managent interface on both client</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  and server side=2E See the `management-=
+notes=2Etxt` `client-pending-auth` and</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+  `cr-response` commands for more details=2E</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+* **VLAN support**</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+  OpenVPN servers in TAP mode can now use 802=2E1q tagged VLANs on the=
+ TAP interface</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  to =
+separate clients into different groups that can then be handled differently=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  (different subnet=
+s / DHCP, firewall zones, =2E=2E=2E) further down the network=2E See</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+  the new options `--vlan-=
+tagging`, `--vlan-accept`, `--vlan-pvid`=2E</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+  802=2E1q tagging on the client side TAP interface is not handled tod=
+ay (=3D tags are</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  j=
+ust forwarded transparently to the server)=2E</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+* **Support building of =2Emsi installers for Windows**</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+* **Allow unicode search string in `--cryptoapicert=
+` option (Windows)**</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Support IPv4 c=
+onfigs with /31 netmasks now**</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  (By no=
+ longer trying to configure `broadcast x=2Ex=2Ex=2Ex` in ifconfig calls, /3=
+1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  support &quot;ju=
+st works&quot;)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+* **New option `--block=
+-ipv6` to reject all IPv6 packets (ICMPv6)**</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+  This is useful if the VPN service has no IPv6, but the clients migh=
+t have (LAN),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  to a=
+void client connections to IPv6-enabled servers leaking &quot;around&quot; =
+the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  IPv4-only VPN=
+=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+* **`--ifconfig-ipv6` and `--ifconf=
+ig-ipv6-push` accept hostnames**</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  `--i=
+fconfig-ipv6` and `--ifconfig-ipv6-push` will now accept hostnames and do</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+  a DNS lookup to get=
+ the IPv6 address to use=2E</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+## Deprecat=
+ed features</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+For an up-to-date list of a=
+ll deprecated options, see this wiki page:</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+&lt;https://community=2Eopenvpn=2Enet/openvpn/wiki/D=
+eprecatedOptions&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- `ncp-disable` ha=
+s been deprecated=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  With the improve=
+d and matured data channel cipher negotiation, the use of</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+  `ncp-disable` should not be necessa=
+ry anymore=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+- `inetd` has been deprec=
+ated=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+  This is a very limited and no=
+t-well-tested way to</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++  run OpenVPN, on TCP and TAP mode only, which complicates the code quite =
+a bit</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  for little g=
+ain=2E To be removed in OpenVPN 2=2E6 (unless users protest)=2E</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+- `no-iv` has been removed=2E</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+  This option was made into a NOOP option with OpenVPN</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+  2=2E4=2E This has now =
+been completely removed=2E</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- `--client-=
+cert-not-required` has been removed</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  T=
+his option will now cause server configurations to not start=2E</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+  Use `--verify-client-cert non=
+e` instead=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+- `--ifconfig-pool-linear=
+` has been removed=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  This option is =
+removed=2E Use `--topology p2p` or `--topology subnet` instead=2E</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+- `--compress xxx` is considered risky and is wa=
+rned against, see below=2E</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- `--key-met=
+hod 1` has been removed</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+## User-visible=
+ Changes</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+- If multiple connect handlers=
+ are used (client-connect, ccd, connect plugin)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+  and one of the handler succeeds but a subsequ=
+ent fails, the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  cli=
+ent-disconnect-script is now called immediately=2E Previously it was called=
+,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  when the VPN ses=
+sion was terminated=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+- Support for building with OpenSSL 1=2E0=2E1 has been removed=2E The mi=
+nimum</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  supported Op=
+enSSL version is now 1=2E0=2E2=2E</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+- The GET_CONFIG management state is omitted if the server pu=
+shes the client</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  co=
+nfiguration almost immediately as result of the faster connection setup</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+  feature=2E</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+- `--compress` is nowadays con=
+sidered risky, because attacks exist leveraging</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+  compression-inside-crypto to reveal plaintext=
+ (VORACLE)=2E So by default,</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+  `--compress xxx` will now accept incoming compressed packets (fo=
+r</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  compatibility wi=
+th peers that have not been upgraded yet), but will not use</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+  compression outgoing packets=2E T=
+his can be controlled with the new option</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+  `--allow-compression yes|no|asym`=2E</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+- Stop changing `--txlen` aways fr=
+om OS defaults unless explicitly specified in</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+  config file=2E OS defaults nowadays are actuall=
+y larger then what we used to</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+  configure, so our defaults sometimes caused packet drops =3D ba=
+d performance=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- r=
+emove `--writepid` pid file on exit now</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+- plugin-auth-pam now logs via OpenVPN logging method, =
+no longer to stderr (this</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+  means you&#39;ll have log messages in syslog or openvpn log file no=
+w)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- use ISO 8601 ti=
+me format for file based logging now (YYYY-MM-DD hh:mm:dd)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+  (syslog is not affected, nor is `-=
+-machine-readable-output`)</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+- `--clr-verify` now loads all CRLs if more than one CRL is in the s=
+ame file</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  (OpenSSL =
+backend only, mbedTLS always did that)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+- when `--auth-user-pass file` has no password, and the =
+management interface is</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+  active, query management interface (instead of trying console query, =
+which</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  does not wor=
+k on windows)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- skip=
+ expired certificates in Windows certificate store (`--cryptoapicert`)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+- `--socks-proxy` + `--p=
+roto udp*` will now allways use IPv4, even if IPv6 is</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  requested and available=2E Our SOCKS co=
+de does not handle IPv6+UDP, and before</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+  that change it would just fail in non-obvious ways=2E=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- TCP listen() back=
+log queue is now set to 32 - this helps TCP servers that</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+  receive lots of &quot;invalid&quot; =
+connects by TCP port scanners</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+- do no longer print OCC warnings (&quot;option mismatch&quot;) a=
+bout `key-method`,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+ `keydir`, `tls-auth` and `cipher` - these are either gone now, or negotiat=
+ed,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  and the warnin=
+gs do not serve a useful purpose=2E</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+- `dhcp-option DNS` and `dhcp-option DNS6` are now treated =
+identically (=3D both</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+  accept an IPv4 or IPv6 address for the nameserver)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+## Maintainer-visible changes</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+- the man page is now in maintained in =2Erst format, so building th=
+e openvpn=2E8</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  manp=
+age from a git checkout now requires python-docutils (if this is missing,</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+  the manpage will no=
+t be built - which is not considered an error generally,</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+  but for package builders or `make di=
+stcheck` it is)=2E Release tarballs contain</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+  the openvpn=2E8 file, so unless some =2Erst is ch=
+anged, doc-utils are not needed</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+  for building=2E</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+- OCC support can no longer be disabled</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+- AEAD support is now required in the crypto =
+library</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- `--disable=
+-server` has been removed from configure (so it is no longer</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+  possible to build a client-/p2p-=
+only OpenVPN binary) - the saving in code size</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+  no longer outweighs the extra maintenance effo=
+rt=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- `--enable-ip=
+route2` will disable netlink(3) support, so maybe remove that from</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+  package building configs (=
+see above)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- support=
+ building with MSVC 2019</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+- cmocka based unit tests are now only run if cmocka is installed exte=
+rnally</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  (2=2E4 used=
+ to ship a local git submodule which was painful to maintain)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+- `--disable-crypto` configure op=
+tion has been removed=2E OpenVPN is now always</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+  built with crypto support, which makes the cod=
+e much easier to maintain=2E This</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+  does not affect `--cipher none` to do a tunnel without encr=
+yption=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- `--disab=
+le-multi` configure option has been removed</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+# Overview of changes in 2=2E4</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+## =
+New features</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+* **Seamless client IP/por=
+t floating**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+  Added new packet format =
+P_DATA_V2, which includes peer-id=2E If both the server</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+  and client support it, the client sen=
+ds all data packets in the new format=2E When</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+  a data packet arrives, the server identifies pe=
+er by peer-id=2E If peer&#39;s ip/port</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+  has changed, server assumes that client has floated, v=
+erifies HMAC and updates</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+  ip/port in internal structs=2E This allows the connection to be imme=
+diately</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  restored, =
+instead of requiring a TLS handshake before the server accepts packets</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+  from the new client ip=
+/port=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+* **Data channel cipher negoti=
+ation**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+  Data channel ciphers (`--ciph=
+er`) are now by default negotiated=2E If a client</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+  advertises support for Negotiable Crypto Pa=
+rameters (NCP), the server will</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+  choose a cipher (by default AES-256-GCM) for the data channel=
+, and tell the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  cli=
+ent to use that cipher=2E Data channel cipher negotiation can be controlled=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  using `--ncp-ciph=
+ers` and `--ncp-disable`=2E</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  A more li=
+mited version also works in client-to-server and server-to-client</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+  scenarios where one of the =
+end points uses a v2=2E4 client or server and the other</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+  side uses an older version=2E In such=
+ scenarios the v2=2E4 side will change to the</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+  `--cipher` set by the remote side, if permitted=
+ by by `--ncp-ciphers`=2E For</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+  example, a v2=2E4 client with `--cipher BF-CBC` and</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+  `ncp-ciphers AES-256-GCM:AES-=
+256-CBC` can connect to both a v2=2E3 server with</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+  `cipher BF-CBC` as well as a server with `c=
+ipher AES-256-CBC` in its config=2E The</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+  other way around, a v2=2E3 client with either `cipher=
+ BF-CBC` or</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  `ciphe=
+r AES-256-CBC` can connect to a v2=2E4 server with e=2Eg=2E `cipher BF-CBC`=
+ and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  `ncp-ciphers =
+AES-256-GCM:AES-256-CBC` in its config=2E For this to work it</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+  requires that OpenVPN was built=
+ without disabling OCC support=2E</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **A=
+EAD (GCM) data channel cipher support**</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++  The data channel now supports AEAD ciphers (currently only GCM)=2E The A=
+EAD packet</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  format =
+has a smaller crypto overhead than the CBC packet format, (e=2Eg=2E 20 byte=
+s</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  per packet for A=
+ES-128-GCM instead of 36 bytes per packet for AES-128-CBC +</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+  HMAC-SHA1)=2E</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+* **ECDH key exchange**</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+  The TLS control channel now supports for elliptic curve diffie-hellmann=
+ key</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  exchange (ECD=
+H)=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+* **Improved Certificate Revocati=
+on List (CRL) processing**</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  CRLs are n=
+ow handled by the crypto library (OpenSSL or mbed TLS), instead of</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+  inside OpenVPN itself=2E T=
+he crypto library implementations are more strict than</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+  the OpenVPN implementation was=2E This=
+ might reject peer certificates that would</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+  previously be accepted=2E If this occurs, OpenVPN =
+will log the crypto library&#39;s</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+  error description=2E</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* =
+**Dualstack round-robin DNS client connect**</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+  Instead of only using the first address of each `--remote` OpenVPN =
+will now try</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  all a=
+ddresses (IPv6 and IPv4) of a `--remote` entry=2E</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+* **Support for providing IPv6 DNS servers**</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+  A new DHCP sub-option `DNS6` is added alongside with the=
+ already existing `DNS`</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+  sub-option=2E This is used to provide DNS resolvers available over IP=
+v6=2E This may</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  be =
+pushed to clients where `--up` scripts and `--plugin` can act upon it throu=
+gh</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  the `foreign_op=
+tion_&lt;n&gt;` environment variables=2E</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+  Support for the Windows client picking up this new sub-option is added,=
+ however</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  IPv6 DNS =
+resolvers need to be configured via `netsh` which requires</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+  administrator privileges unless th=
+e new interactive services on Windows is being</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+  used=2E If the interactive service is used, th=
+is service will execute `netsh` in</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+  the background with the proper privileges=2E</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+* **New improved Windows Background service**</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+  The new OpenVPNService is based on openvpns=
+erv2, a complete rewrite of the</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+  OpenVPN service wrapper=2E It is intended for launching OpenV=
+PN instances that</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+should be up at all times, instead of being manually launched by a user=2E<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+  OpenVPNService is =
+able to restart individual OpenVPN processes if they crash,</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+  and it also works properly on rec=
+ent Windows versions=2E OpenVPNServiceLegacy</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+  tends to work poorly, if at all, on newer Window=
+s versions (8+) and its use is</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+  not recommended=2E</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **New=
+ interactive Windows service**</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  The in=
+staller starts OpenVPNServiceInteractive automatically and configures it</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+  to start at system s=
+tartup=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+  The interactive Windows ser=
+vice allows unprivileged users to start OpenVPN</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+  connections in the global config directory (u=
+sually C:\Program</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+Files\OpenVPN\config) using OpenVPN GUI without any extra configuration=2E<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+  Users who belong to the built-in Admi=
+nistrator group or to the local &quot;OpenVPN</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+  Administrator&quot; group can also store config=
+uration files under</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+  %USERPROFILE%\OpenVPN\config for use with the interactive service=2E</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+* **redirect-gateway ipv6**</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+  OpenVPN has now feature parity between IPv4 and IP=
+v6 for redirect gateway</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+  including the handling of overlapping IPv6 routes with IPv6 remote VP=
+N server</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  address=
+=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+* **LZ4 Compression and pushable co=
+mpression**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+  Additionally to LZO compr=
+ession OpenVPN now also supports LZ4 compression=2E</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  Compression options are now pushable fr=
+om the server=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+* **Filter pulled opti=
+ons client-side: pull-filter**</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  New op=
+tion to explicitly allow or reject options pushed by the server=2E May be</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+  used multiple times=
+ and is applied in the order specified=2E</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+* **Per-client remove push options: push-remove**</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+  New option to remove options on a per-client basis from th=
+e &quot;push&quot; list (more</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+  fine-grained than `--push-reset`)=2E</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+* **Http proxy password inside config file**</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+  Http proxy passwords can be specified with the inline fil=
+e option</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  `&lt;http=
+-proxy-user-pass&gt;` =2E=2E `&lt;/http-proxy-user-pass&gt;`</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+* **Windows version detection**</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+  Windows version is detected, logged and possibly signalled=
+ to server</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  (`IV_PL=
+AT_VER=3D&lt;nn&gt;` if `--push-peer-info` is set on client)=2E</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+* **Authentication tokens**</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+  In situations where it is not suitable to save user passwo=
+rds on the client,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+ OpenVPN has support for pushing a --auth-token since v2=2E3=2E This option=
+ is pushed</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  from th=
+e server to the client with a token value to be used instead of the users</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+  password=2E For thi=
+s to work, the authentication plug-in would need to implement</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+  this support as well=2E In Open=
+VPN 2=2E4 --auth-gen-token is introduced, which will</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  allow the OpenVPN server to generate a =
+random token and push it to the client</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+  without any changes to the authentication modules=2E W=
+hen the clients need to</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+  re-authenticate the OpenVPN server will do the authentication interna=
+lly,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  instead of se=
+nding the re-authentication request to the authentication module =2E</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+  This feature is especial=
+ly useful in configurations which use One Time Password</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+  (OTP) authentication schemes, as this=
+ allows the tunnel keys to be renegotiated</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+  regularly without any need to supply new OTP codes=
+=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+* **keying-material-exporter**</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  Keying Material Exporter [RFC-5705] all=
+ow additional keying material to be</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+  derived from existing TLS channel=2E</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+* **Android platform support**</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+  Support for running on Android using Android&#39;s VPNService API=
+ has been added=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+ See doc/android=2Etxt for more details=2E This support is primarily used i=
+n the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  OpenVPN for =
+Android app (&lt;https://github=2Ecom/schwabe/ics-openvpn&gt;)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+* **AIX platform support**</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+  AIX platform support has been added=2E The support only inclu=
+des tap devices since</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+  AIX does not provide tun interface=2E</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+* **Control channel encryption (`--tls-crypt`)**</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+  Use a pre-shared static key (like the `--tls-auth` key) to=
+ encrypt control</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  c=
+hannel packets=2E Provides more privacy, some obfuscation and poor-man&#39;=
+s</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  post-quantum sec=
+urity=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+* **Asynchronous push reply**<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+  Plug-ins providing support for deferr=
+ed authentication can benefit from a more</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+  responsive authentication where the server sends PU=
+SH\_REPLY immediately once the</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+  authentication result is ready, instead of waiting for the cli=
+ent to to send</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  PUS=
+H\_REQUEST once more=2E This requires OpenVPN to be built with</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+  `=2E/configure --enable-async-=
+push`=2E This is a compile-time only switch=2E</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+## Deprecated features</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+For an u=
+p-to-date list of all deprecated options, see this wiki page:</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+&lt;https://community=2Eopenvpn=
+=2Enet/openvpn/wiki/DeprecatedOptions&gt;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+- `--key-method 1` is deprecated in OpenVPN 2=2E4 and will be removed in=
+ v2=2E5=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Migrate=
+ away from `--key-method 1` as soon as possible=2E The recommended</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+  approach is to remove the =
+`--key-method` option from the configuration files,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  OpenVPN will then use `--key-method 2` =
+by default=2E Note that this requires</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+  changing the option in both the client and server side =
+configs=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- `--tls-=
+remote` is removed in OpenVPN 2=2E4, as indicated in the v2=2E3 man-pages=
+=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Similar functi=
+onality is provided via `--verify-x509-name`, which does the</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+  same job in a better way=2E</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+- `--compat-names` and `=
+--no-name-remapping` were deprecated in OpenVPN 2=2E3 and</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+  will be removed in v2=2E5=2E All sc=
+ripts and plug-ins depending on the old</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+  non-standard X=2E509 subject formatting must be updat=
+ed to the standardized</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+  formatting=2E See the man page for more information=2E</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+- `--no-iv` is deprecated in OpenVP=
+N 2=2E4 and will be removed in v2=2E5=2E</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+- `--keysize` is deprecated in OpenVPN 2=2E4 and will =
+be removed in v2=2E6 together</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+  with the support of ciphers with cipher block size less than 12=
+8-bits=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- `--comp-=
+lzo` is deprecated in OpenVPN 2=2E4=2E Use `--compress` instead=2E</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+- `--ifconfig-pool-linear` h=
+as been deprecated since OpenVPN 2=2E1 and will be</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+  removed in v2=2E5=2E Use `--topology p2p` =
+instead=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- `--clie=
+nt-cert-not-required` is deprecated in OpenVPN 2=2E4 and will be removed</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+  in v2=2E5=2E Use `--=
+verify-client-cert none` for a functional equivalent=2E</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+- `--ns-cert-type` is deprecated in Ope=
+nVPN 2=2E3=2E18 and v2=2E4=2E It will be removed</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+  in v2=2E5=2E Use the far better `--remote-ce=
+rt-tls` option which replaces this</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+  feature=2E</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+## User-vis=
+ible Changes</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+- When using ciphers with =
+cipher blocks less than 128-bits, OpenVPN will</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+  complain loudly if the configuration uses ciph=
+ers considered weak, such as the</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+  SWEET32 attack vector=2E In such scenarios, OpenVPN will by =
+default renegotiate</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+  for each 64MB of transported data (`--reneg-bytes`)=2E This renegotiation=
+ can be</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  disabled, =
+but is HIGHLY DISCOURAGED=2E</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- For cert=
+ificate DNs with duplicate fields, e=2Eg=2E &quot;OU=3Done,OU=3Dtwo&quot;, =
+both fields</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  are no=
+w exported to the environment, where each second and later occurrence of</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+  a field get `_$N` ap=
+pended to it&#39;s field name, starting at N=3D1=2E For the</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+  example above, that would result =
+in e=2Eg=2E `X509_0_OU=3Done`, `X509_0_OU_1=3Dtwo`=2E Note</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+  that this breaks setups that rely =
+on the fact that OpenVPN would previously</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+  (incorrectly) only export the last occurrence of a =
+field=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+- `proto udp` and `proto tcp` =
+now use both IPv4 and IPv6=2E The new options</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+  `proto udp4` and `proto tcp4` use IPv4 only=2E<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+- `--sndbuf` and `--recvbuf` default no=
+w to OS defaults instead of 64k</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- OpenV=
+PN exits with an error if an option has extra parameters; previously they</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+  were silently ignor=
+ed</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+- `--tls-auth` always requires OpenV=
+PN static key files and will no longer work</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+  with free form files</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+- `--proto udp6/tcp6` in server mode will now try to always listen =
+to both IPv4</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  and I=
+Pv6 on platforms that allow it=2E Use `--bind ipv6only` to explicitly</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+  listen only on IPv6=2E<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+- Removed `--enable-password-save` from=
+ configure=2E This option is now always</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+  enabled=2E</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- Stri=
+cter default TLS cipher list (override with `--tls-cipher`), that now also<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+  disables:</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+  - Non-ephemeral key exchange using static (EC=
+)DH keys</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  - DSS pri=
+vate keys</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+- mbed TLS builds: changed th=
+e `tls_digest_N` values exported to the script</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+  environment to be equal to the ones exported b=
+y OpenSSL builds, namely the</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+  certificate fingerprint (was the hash of the &#39;to be signed&#=
+39; data)=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+- mbed TLS builds: minimum=
+ RSA key size is now 2048 bits=2E Shorter keys will not</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+  be accepted, both local and from the =
+peer=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+- `--connect-timeout` now speci=
+fies the timeout until the first TLS packet is</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+  received (identical to `--server-poll-timeout`=
+) and this timeout now includes</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+  the removed socks proxy timeout and http proxy timeout=2E</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  In `--static` mode `connect-timeout` sp=
+ecifies the timeout for TCP and proxy</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+  connection establishment</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+- `--connect-retry-max` now specifies the maximum number of unsuccess=
+ful</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  attempts of ea=
+ch remote/connection entry before exiting=2E</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+- `--http-proxy-timeout` and the static non-changeable socks timeout =
+(5s) have</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  been fol=
+ded into a &quot;unified&quot; `--connect-timeout` which covers all steps n=
+eeded</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  to connect t=
+o the server, up to the start of the TLS exchange=2E The default</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+  value has been raised to 120=
+s, to handle slow http/socks proxies graciously=2E</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+  The old &quot;fail TCP fast&quot; behaviou=
+r can be achieved by adding</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+  &quot;`--connect-timeout 10`&quot; to the client config=2E</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+- `--http-proxy-retry` and `--sock-proxy-retr=
+y` have been removed=2E Proxy</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+  connections will now behave like regular connection entries and=
+ generate a</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  USR1 o=
+n failure=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+- `--connect-retry` gets a=
+n optional second argument that specifies the maximum</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  time in seconds to wait between reconne=
+ction attempts when an exponential</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+  backoff is triggered due to repeated retries=2E Default =
+=3D 300 seconds=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+- Data channel ciphe=
+r negotiation (see New features section) can override</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  ciphers configured in the config file=
+=2E Use `--ncp-disable` if you do not want</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+  this behavior=2E</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+- All tun devices on all platforms are always considered to be IPv6 capa=
+ble=2E The</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  `--tun-=
+ipv6` option is ignored (behaves like it is always on)=2E</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+- On the client side recursively routed packets, which h=
+ave the same destination</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+  as the VPN server, are dropped=2E This can be disabled with</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+  --allow-recursive-routing =
+option=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+- On Windows, when the `--reg=
+ister-dns` option is set, OpenVPN no longer</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+  restarts the `dnscache` service - this had unwant=
+ed side effects, and seems to</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+  be no longer necessary with currently supported Windows version=
+s=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+- If no flags are given, and the i=
+nteractive Windows service is used, &quot;def1&quot; is</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+  implicitly set (because &quot;delete =
+and later reinstall the existing default</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+  route&quot; does not work well here)=2E If not using=
+ the service, the old behaviour</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+  is kept=2E</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- OpenVPN now =
+reloads a CRL only if the modication time or file size has</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+  changed, instead of for each new c=
+onnection=2E This reduces the connection setup</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+  time, in particular when using large CRLs=2E</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+- OpenVPN now ships with more up-to-date=
+ systemd unit files which take advantage</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+  of the improved service management as well as some h=
+ardening steps=2E The</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+  configuration files are picked up from the /etc/openvpn/server/ and</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+  /etc/openvpn/client/ =
+directories (depending on unit file)=2E This also avoids</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+  these new unit files and how they wo=
+rk to collide with older pre-existing unit</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+  files=2E</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- Usi=
+ng `--no-iv` (which is generally not a recommended setup) will require</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+  explicitly disabling N=
+CP with `--disable-ncp`=2E This is intentional because NCP</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+  will by default use AES-GCM, which=
+ requires an IV - so we want users of that</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+  option to consciously reconsider=2E</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+## Maintainer-visible changes</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+- OpenVPN no longer supports building with crypto support, b=
+ut without TLS</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  sup=
+port=2E As a consequence, `OPENSSL_CRYPTO_{CFLAGS,LIBS}` and</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+  `OPENSSL_SSL_{CFLAGS,LIBS}` have=
+ been merged into `OPENSSL_{CFLAGS,LIBS}`=2E</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+  This is particularly relevant for maintainers wh=
+o build their own OpenSSL</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+  library, e=2Eg=2E when cross-compiling=2E</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+- Linux distributions using systemd is highly=
+ encouraged to ship these new unit</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+  files instead of older ones, to provide a unified behaviou=
+r across systemd</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  b=
+ased Linux distributions=2E</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+- With OpenVPN 2=2E4, the project has moved over to depend on and a=
+ctively use the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  of=
+ficial C99 standard (-std=3Dc99)=2E This may fail on some older compiler/li=
+bc</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  header combinat=
+ions=2E In most of these situations it is recommended to use</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+  -std=3Dgnu99 in CFLAGS=2E This i=
+s known to be needed when doing i386/i686 builds</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+  on RHEL5=2E</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+# Version 2=2E4=2E5</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+## New features=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+- The new option `--tls-cert-profile` =
+can be used to restrict the set of allowed</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+  crypto algorithms in TLS certificates in mbed TLS =
+builds=2E The default profile</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+  is &#39;legacy&#39; for now, which allows SHA1+, RSA-1024+ and =
+any elliptic curve</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+ certificates=2E The default will be changed to the &#39;preferred&#39; pro=
+file in the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  future=
+, which requires SHA2+, RSA-2048+ and any curve=2E</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+# Version 2=2E4=2E3</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+## New =
+features</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+- Support building with OpenSS=
+L 1=2E1 now (in addition to older versions)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+- On Win10, set low interface metric for TAP adapte=
+r when block-outside-dns is</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+  in use, to make Windows prefer the TAP adapter for DNS queries (a=
+voiding large</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  dela=
+ys)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+## Security</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+- CVE-2017-7522: Fix `--x509-track` post-authentication remo=
+te DoS A client</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  co=
+uld crash a v2=2E4+ mbedtls server, if that server uses the `--x509-track`<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+  option and the cli=
+ent has a correct, signed and unrevoked certificate that</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+  contains an embedded NUL in the cert=
+ificate subject=2E Discovered and reported</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+  to the OpenVPN security team by Guido Vranken=2E</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+- CVE-2017-7521: Fix =
+post-authentication remote-triggerable memory leaks A</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  client could cause a server to leak a f=
+ew bytes each time it connects to the</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+  server=2E That can eventually cause the server to run o=
+ut of memory, and thereby</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+  causing the server process to terminate=2E Discovered and reported =
+to the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  OpenVPN sec=
+urity team by Guido Vranken=2E (OpenSSL builds only=2E)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+- CVE-2017-7521: Fix a potential post-a=
+uthentication remote code execution</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+  attack on servers that use the `--x509-username-field` op=
+tion with an X=2E509</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++  extension field (option argument prefixed with `ext:`)=2E A client that =
+can</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  cause a server=
+ to run out-of-memory (see above) might be able to cause the</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+  server to double free, which in =
+turn might lead to remote code execution=2E</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+  Discovered and reported to the OpenVPN security t=
+eam by Guido Vranken=2E</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+  (OpenSSL builds only=2E)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+- CVE-2017-7520: Pre-authentication remote crash/information dis=
+closure for</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  client=
+s=2E If clients use a HTTP proxy with NTLM authentication (i=2Ee=2E</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+  `--http-proxy &lt;server&=
+gt; &lt;port&gt; [&lt;authfile&gt;|&#39;auto&#39;|&#39;auto-nct&#39;] ntlm2=
+`), a</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  man-in-the-m=
+iddle attacker between the client and the proxy can cause the</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+  client to crash or disclose at =
+most 96 bytes of stack memory=2E The disclosed</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+  stack memory is likely to contain the proxy pa=
+ssword=2E If the proxy password is</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+  not reused, this is unlikely to compromise the security of=
+ the OpenVPN tunnel</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+  itself=2E Clients who do not use the `--http-proxy` option with ntlm2</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+  authentication are no=
+t affected=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- CVE-=
+2017-7508: Fix remotely-triggerable ASSERT() on malformed IPv6 packet=2E</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+  This can be used to =
+remotely shutdown an openvpn server or client, if IPv6 and</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+  `--mssfix` are enabled and the IPv=
+6 networks used inside the VPN are known=2E</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+- Fix null-pointer dereference when talking to a ma=
+licious http proxy that</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+  returns a malformed `Proxy-Authenticate:` headers for digest auth=2E<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+- Fix overflow check=
+ for long `--tls-cipher` option</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+- Windows: Pass correct buffer size to `GetModuleFileNameW()` (=
+OSTIF/Quarkslabs</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  a=
+udit, finding 5=2E6)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+## User-visible Ch=
+anges</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+- `--verify-hash` can now take an=
+ optional flag which changes the hashing</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+  algorithm=2E It can be either SHA1 or SHA256=2E The =
+default if not provided is</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+  SHA1 to preserve backwards compatibility with existing configurati=
+ons=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- Restrict th=
+e supported `--x509-username-field` extension fields to</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+  subjectAltName and issuerAltName=2E O=
+ther extensions probably didn&#39;t work</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+  anyway, and would cause OpenVPN to crash when a clie=
+nt connects=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+## Bugfixes</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+- Fix fingerprint calculation in mbed TLS builds=2E=
+ This means that mbed TLS users</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+  of OpenVPN 2=2E4=2E0, v2=2E4=2E1 and v2=2E4=2E2 that rely on =
+the values of the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+`tls_digest_*` env vars, or that use `--verify-hash` will have to change th=
+e</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  fingerprint valu=
+es they check against=2E The security impact of the incorrect</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+  calculation is very minimal; th=
+e last few bytes (max 4, typically 4) are not</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+  verified by the fingerprint=2E We expect no rea=
+l-world impact,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  be=
+cause users that used this feature before will notice that it has suddenly<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+  stopped working, a=
+nd users that didn&#39;t will notice that connection setup fails</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+  if they specify correct fing=
+erprints=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+- Fix edge case with NCP wh=
+en the server sends an empty PUSH_REPLY message back,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  and the client would not initialize it&=
+#39;s data channel crypto layer properly</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+  (trac #903)</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+- Fi=
+x SIGSEGV on unaligned buffer access on OpenBSD/Sparc64</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+- Fix TCP_NODELAY on OpenBSD</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+- Remove erroneous limitation on max number of args for `--plugin`</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+- Fix NCP behaviour on TLS reconnect (Se=
+rver would not send a proper &quot;cipher</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+  =2E=2E=2E&quot; message back to the client, leading=
+ to client and server using different</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+  ciphers) (trac #887)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+# Version 2=2E4=2E2</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+## Bugfixes</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+- Fix memory leak introduced in OpenVPN 2=2E=
+4=2E1: if `--remote-cert-tls` is used,</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+  we leaked some memory on each TLS (re)negotiation=2E</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+## Security</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+- Fix a pre-authentication denial-of-service attack on both clients=
+ and servers=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  By=
+ sending a too-large control packet, OpenVPN 2=2E4=2E0 or v2=2E4=2E1 can be=
+ forced</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  to hit an =
+ASSERT() and stop the process=2E If `--tls-auth` or `--tls-crypt` is</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+  used, only attackers tha=
+t have the `--tls-auth` or `--tls-crypt` key can mount</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+  an attack=2E (OSTIF/Quarkslab audit fi=
+nding 5=2E1, CVE-2017-7478)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+- Fix an authenticated remote DoS vulnerability that could be trigg=
+ered by</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  causing a =
+packet id roll over=2E An attack is rather inefficient; a peer would</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+  need to get us to send a=
+t least about 196 GB of data=2E (OSTIF/Quarkslab audit</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+  finding 5=2E2, CVE-2017-7479)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+# Version 2=2E4=2E1</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+- `--remote-cert-ku` now only requires the certificate to have at =
+least the bits</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  set=
+ of one of the values in the supplied list, instead of requiring an exact</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+  match to one of the=
+ values in the list=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+- `--remote-cert-tls` now only requires that a keyUsage is present in th=
+e</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  certificate, and=
+ leaves the verification of the value up to the crypto</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+  library, which has more information (i=
+=2Ee=2E the key exchange method in use) to</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+  verify that the keyUsage is correct=2E</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+- `--ns-cert-type` is deprecate=
+d=2E Use `--remote-cert-tls` instead=2E The</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+  nsCertType x509 extension is very old, and barely=
+ used=2E `--remote-cert-tls`</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+  uses the far more common keyUsage and extendedKeyUsage extension=
+ instead=2E Make</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  s=
+ure your certificates carry these to be able to use `--remote-cert-tls`=2E<=
+/span><br><span>diff --git a/Changes=2Erst b/Changes=2Erst</span><br><span>=
+deleted file mode 100644</span><br><span>index fe81909=2E=2E0000000</span><=
+br><span>--- a/Changes=2Erst</span><br><span>+++ /dev/null</span><br><span>=
+@@ -1,1480 +0,0 @@</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Ove=
+rview of changes in 2=2E8</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D</span><br><span style=3D"color: hsl(0, 100%, 40%);">-User-visible=
+ Changes</span><br><span>---------------------</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-Parsing Distinguished Names in certificates</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    (OpenSSL backend:) OpenV=
+PN now rejects certificates that have a null-byte</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    inside any of the field values of their sub=
+ject=2E To avoid ambiguity in the</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    parsed subject, OpenVPN escapes the following characters by=
+ prefixing them with</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   a backslash:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     *=
+ &quot; &quot; (space) at the start or end of a field,</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-     * &quot;#&quot; at the start of a fie=
+ld,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     * &quot;,&quo=
+t;, &quot;+&quot;, &quot;&quot;&quot;, &quot;\&quot;, &quot;&lt;&quot;, &qu=
+ot;&gt;&quot; and &quot;;&quot; anywhere=2E</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    As a result, if you use the option ``--verify-x509-name &lt;expected s=
+ubject&gt;``,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    you =
+need to prefix these characters with a backslash in your configuration=2E</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    The subject passed =
+to a ``--tls-verify`` script is escaped in the same way and</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    you may need to adjust your scrip=
+t=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    (Mbed TLS backend:) The behavior h=
+as not changed=2E Subjects with null-bytes were</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    already rejected (assuming OpenVPN was built =
+with Mbed TLS 3=2E5 or later) and</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    the characters mentioned above were already escaped=2E Howe=
+ver, the behavior of</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   Mbed TLS is slightly different from OpenSSL in that it also escapes &quo=
+t;=3D&quot;=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
 <br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-  If your OpenSSL distribution comes with the leg=
-acy provider (see</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  al=
-so ``man OSSL_PROVIDER-legacy``), you can load it with</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-  ``--providers legacy default``=2E  This =
-will re-enable the old algorithms=2E</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- Open=
-VPN version not supporting TLS 1=2E2 or later</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-  The default in OpenVPN 2=2E6 and also in many distributions is now TLS=
- 1=2E2 or</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  later=2E C=
-onnecting to a peer that does not support this will results in</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-  messages like::</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    TLS error: Unsupported protocol=2E This typically indic=
-ates that client and</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   server have no common TLS version enabled=2E This can be caused by misma=
-tched</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    tls-version-=
-min and tls-version-max options on client and server=2E If your</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    OpenVPN client is between v2=
-=2E3=2E6 and v2=2E3=2E2 try adding tls-version-min 1=2E0</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    to the client configuration to use T=
-LS 1=2E0+ instead of TLS 1=2E0 only</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    OpenSSL: error:0A000102:SSL routines::unsupported protoco=
-l</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-  This can be an OpenVPN 2=2E3=2E6 or ear=
-lier version=2E ``compat-version 2=2E3=2E0`` will</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-  enable TLS 1=2E0 support if supported by the =
-OpenSSL distribution=2E Note that</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-  on some Linux distributions enabling TLS 1=2E1 or 1=2E0 is no=
-t possible=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-Overview of changes in 2=2E5</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-New features</span><br><spa=
-n>-------------</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Client=
--specific tls-crypt keys (``--tls-crypt-v2``)</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    ``tls-crypt-v2`` adds the ability to supply eac=
-h client with a unique</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    tls-crypt key=2E  This allows large organisations and VPN providers to=
- profit</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    from the s=
-ame DoS and TLS stack protection that small deployments can</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    already achieve using ``tls-auth`=
-` or ``tls-crypt``=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-ChaCha20-Poly1305 cip=
-her support</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    Added =
-support for using the ChaCha20-Poly1305 cipher in the OpenVPN data</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    channel=2E</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-Improved Data channel cipher negotiation</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    The option ``ncp-ciphers`` has been=
- renamed to ``data-ciphers``=2E</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    The old name is still accepted=2E The change in name signals =
-that</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ``data-cipher=
-s`` is the preferred way to configure data channel</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    ciphers and the data prefix is chosen to a=
-void the ambiguity that</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-    exists with ``--cipher`` for the data cipher and ``tls-cipher``</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    for the TLS ciphers=2E<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    OpenVPN clients will now signal all sup=
-ported ciphers from the</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-    ``data-ciphers`` option to the server via ``IV_CIPHERS``=2E OpenVPN</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    servers will select=
- the first common cipher from the ``data-ciphers``</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    list instead of blindly pushing the first =
-cipher of the list=2E This</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    allows to use a configuration like</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    ``data-ciphers ChaCha20-Poly1305:AES-256-GCM`` on=
- the server that</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    p=
-refers ChaCha20-Poly1305 but uses it only if the client supports it=2E</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    See the data channel negotiation section in=
- the manual for more details=2E</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Removal of =
-BF-CBC support in default configuration:</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    By default OpenVPN 2=2E5 will only accept AES-256-GC=
-M and AES-128-GCM as</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   data ciphers=2E OpenVPN 2=2E4 allows AES-256-GCM,AES-128-GCM and BF-CBC =
-when</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    no --cipher a=
-nd --ncp-ciphers options are present=2E Accepting BF-CBC can be</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    enabled by adding</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-        data-ciphers AES-256-GCM:AES-128-GCM:BF-CBC</s=
+lor: hsl(0, 100%, 40%);">-Overview of changes in 2=2E7</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-New features</span><br><span>-------------</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-Multi-socket support for servers</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    OpenVPN servers now can =
+listen on multiple sockets at the same time=2E</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    Multiple ``--local`` statements in the configu=
+ration can be used to</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    configure this=2E This way the same server can e=2Eg=2E listen for UDP<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    and TCP connection=
+s at the same time, or listen on multiple addresses</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    and/or ports=2E</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-Client implementations for DNS options sent by server for Linux/=
+BSD/macOS</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    Linux, B=
+SD and macOS versions of OpenVPN now ship with a per-platform</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    default ``--dns-updown`` script=
+ that implements proper handling of</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    DNS configuration sent by the server=2E  The scripts shou=
+ld work on</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    systems=
+ that use ``systemd`` or ``resolveconf`` to manage the DNS</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    setup, as well as raw ``/etc/resol=
+v=2Econf`` files=2E However, the exact</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    features supported will depend on the configuration me=
+thod=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    On Linux a=
+nd MacOS this should usually make split-DNS configurations</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    supported out-of-the-box now=2E</s=
 pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    and when you need to support very old p=
-eers also</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        data-ciphers-fallback BF-=
-CBC</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    To offer backwards compatibility wi=
-th older configs an *explicit*</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        ciph=
-er BF-CBC</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    in the configuration will be =
-automatically translated into adding BF-CBC</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    to the data-ciphers option and setting data-ciphe=
-rs-fallback to BF-CBC</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    (as in the example commands above)=2E We strongly recommend to switchin=
-g</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    away from BF-CBC=
- to a more secure cipher=2E</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Asynchronous (d=
-eferred) authentication support for auth-pam plugin=2E</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    See src/plugins/auth-pam/README=2Eauth=
--pam for details=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-Deferred client-connect=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    The ``--client-co=
-nnect`` option and the connect plugin API allow</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    asynchronous/deferred return of the configura=
-tion file in the same way</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    as the auth-plugin=2E</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Faster connec=
-tion setup</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    A clien=
-t will signal in the ``IV_PROTO`` variable that it is in pull</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    mode=2E This allows the server =
-to push the configuration options to</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    the client without waiting for a ``PULL_REQUEST`` messag=
-e=2E The feature</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    i=
-s automatically enabled if both client and server support it and</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    significantly reduces the co=
-nnection setup time by avoiding one</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    extra packet round-trip and 1s of internal event delays=
-=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-Netlink support</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    On Linux, if configured without ``--ena=
-ble-iproute2``, configuring IP</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    addresses and adding/removing routes is now done via the netli=
-nk(3)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    kernel inter=
-face=2E  This is much faster than calling ``ifconfig`` or</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    ``route`` and also enables OpenVPN =
-to run with less privileges=2E</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    If confi=
-gured with --enable-iproute2, the ``ip`` command is used</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    (as in 2=2E4)=2E  Support for ``ifco=
-nfig`` and ``route`` is gone=2E</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Wintun supp=
-ort</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    On Windows, Op=
-enVPN can now use ``wintun`` devices=2E  They are faster</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    than the traditional ``tap9`` tun/ta=
-p devices, but do not provide</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    ``--dev tap`` mode - so the official installers contain both=2E=
-  To use</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    a wintun =
-device, add ``--windows-driver wintun`` to your config</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    (and use of the interactive service is=
- required as wintun needs</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    SYSTEM privileges to enable access)=2E</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-IPv6-only operation</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-    It is now possible to have only IPv6 addresses inside the VPN tunnel,=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    and IPv6-only add=
-ress pools (2=2E4 always required IPv4 config/pools</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    and IPv6 was the &quot;optional extra&q=
-uot;)=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-Improved Windows 10 detection</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    Correctly log OS on Wi=
-ndows 10 now=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-Linux VRF support</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    Using the new ``--bind-dev`=
-` option, the OpenVPN outside socket can</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    now be put into a Linux VRF=2E  See the &quot;Virtua=
-l Routing and Forwarding&quot;</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    documentation in the man page=2E</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-TLS 1=2E3 support</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   TLS 1=2E3 support has been added to OpenVPN=2E  Currently, this requires=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    OpenSSL 1=2E1=2E1=
-+=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    The options `=
-`--tls-ciphersuites`` and ``--tls-groups`` have been</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    added to fine tune TLS protocol options=
-=2E  Most of the improvements</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    were also backported to OpenVPN 2=2E4 as part of the maintainan=
-ce</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    releases=2E</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-Support setting DHCP search domain</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    A new option ``--dhcp-option =
-DOMAIN-SEARCH my=2Eexample=2Ecom`` has been</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    defined, and Windows support for it is implemente=
-d (tun/tap only, no</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  wintun support yet)=2E  Other platforms need to support this via ``--up``=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    script (Linux) or=
- GUI (OSX/Tunnelblick)=2E</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-per-client changi=
-ng of ``--data-ciphers`` or ``data-ciphers-fallback``</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    from client-connect script/dir (NOTE: t=
-his only changes preference of</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    ciphers for NCP, but can not override what the client announce=
-s as</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &quot;willing=
- to accept&quot;)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-Handle setting of tun/tap=
- interface MTU on Windows</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    If IPv6 is in use, MTU must be &gt;=3D 1280 (Windows enforces IETF =
-requirements)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-Add support for OpenSSL engin=
-es to access private key material (like TPM)=2E</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-HMAC based auth-token support</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    The ``--auth-gen-token`` support has been improved and now=
- generates HMAC</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ba=
-sed user token=2E If the optional ``--auth-gen-token-secret`` option is</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    used clients will be =
-able to seamlessly reconnect to a different server</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    using the same secret file or to the same =
-server after a server restart=2E</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Improved s=
-upport for pending authentication</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    The protocol has been enhanced to be able to signal that</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    the authentication s=
-hould use a secondary authentication</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    via web (like SAML) or a two factor authentication witho=
-ut</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    disconnecting t=
-he OpenVPN session with AUTH_FAILED=2E The</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    session will instead be stay in a authenticated st=
-ate and</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    wait for t=
-he second factor authentication to complete=2E</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    This feature currently requires usage of the managent interface</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    on both client and se=
-rver side=2E See the ``management-notes=2Etxt``</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    ``client-pending-auth`` and ``cr-response`` c=
-ommands for more</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    d=
-etails=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-VLAN support</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    OpenVPN servers in TAP mode can now us=
-e 802=2E1q tagged VLANs</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-    on the TAP interface to separate clients into different groups</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    that can then be handled=
- differently (different subnets / DHCP,</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    firewall zones, =2E=2E=2E) further down the network=
-=2E  See the new</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    o=
-ptions ``--vlan-tagging``, ``--vlan-accept``, ``--vlan-pvid``=2E</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    802=2E1q tagging on the client side TAP interface=
- is not handled</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    to=
-day (=3D tags are just forwarded transparently to the server)=2E</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-Support building of =2Emsi installers for Windows</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-Allow unicode search string in ``--cryptoapice=
-rt`` option (Windows)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Support IPv4 configs =
-with /31 netmasks now</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    (By no longer trying to configure ``broadcast x=2Ex=2Ex=2Ex`` in</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    ifconfig calls, /31 supp=
-ort &quot;just works&quot;)</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-New option ``--=
-block-ipv6`` to reject all IPv6 packets (ICMPv6)</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    this is useful if the VPN service has no IPv=
-6, but the clients</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- might have (LAN), to avoid client connections to IPv6-enabled</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    servers leaking &quot;around&q=
-uot; the IPv4-only VPN=2E</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-``--ifconfig-ipv6=
-`` and ``--ifconfig-ipv6-push`` will now accept</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    hostnames and do a DNS lookup to get the IPv6=
- address to use</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-Deprecated features</span><br><span>------------=
---------</span><br><span style=3D"color: hsl(0, 100%, 40%);">-For an up-to-=
-date list of all deprecated options, see this wiki page:</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-https://community=2Eopenvpn=2Enet/openvp=
-n/wiki/DeprecatedOptions</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- ``ncp-disable`` =
-has been deprecated</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  With the improved and matured data channel cipher negotiation, the use</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    of ``ncp-disable`` s=
-hould not be necessary anymore=2E</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- ``inetd=
-`` has been deprecated</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--  This is a very limited and not-well-tested way to run OpenVPN, on TCP</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-  and TAP mode only, whi=
-ch complicates the code quite a bit for little gain=2E</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-  To be removed in OpenVPN 2=2E6 (unless u=
-sers protest)=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-- ``no-iv`` has been remov=
-ed</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  This option was m=
-ade into a NOOP option with OpenVPN 2=2E4=2E  This has now</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-  been completely removed=2E</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-- ``--client-cert-not-required`` has been removed</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-  This option will now c=
-ause server configurations to not start=2E  Use</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-  ``--verify-client-cert none`` instead=2E</span>=
+=3D"color: hsl(0, 100%, 40%);">-    Note that this new script will not be u=
+sed by default if a ``--up``</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    script is already in use to reduce problems with</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    backwards compatibility=2E</span>=
 <br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-- ``--ifconfig-pool-linear`` has been removed</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-  This option is removed=
-=2E  Use ``--topology p2p`` or ``--topology subnet``</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-  instead=2E</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-- ``--compress xxx`` is considered risky and is warned against, see below=
-=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-- ``--key-method 1`` has been removed</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-User-visible Changes</span><br><span>---------------------</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-- If multiple connect handl=
-ers are used (client-connect, ccd, connect</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-  plugin) and one of the handler succeeds but a subseq=
-uent fails, the</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  clie=
-nt-disconnect-script is now called immediately=2E Previously it</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-  was called, when the VPN sessio=
-n was terminated=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-- Support for building =
-with OpenSSL 1=2E0=2E1 has been removed=2E The minimum</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-  supported OpenSSL version is now 1=2E0=
-=2E2=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-- The GET_CONFIG management state i=
-s omitted if the server pushes</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-  the client configuration almost immediately as result of the</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-  faster connection setup=
- feature=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-- ``--compress`` is nowadays co=
-nsidered risky, because attacks exist</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-  leveraging compression-inside-crypto to reveal plaintext =
-(VORACLE)=2E  So</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  by =
-default, ``--compress xxx`` will now accept incoming compressed</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-  packets (for compatibility with=
- peers that have not been upgraded yet),</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-  but will not use compression outgoing packets=2E  This=
- can be controlled with</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-  the new option ``--allow-compression yes|no|asym``=2E</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-- Stop changing ``--txlen`` aways from OS defaults unless ex=
-plicitly specified</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  i=
-n config file=2E  OS defaults nowadays are actually larger then what we use=
-d</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  to configure, so o=
-ur defaults sometimes caused packet drops =3D bad performance=2E</span><br>=
+lor: hsl(0, 100%, 40%);">-    See documentation for ``--dns-updown`` and ``=
+--dns`` for more details=2E</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-New client impl=
+ementation for DNS options sent by server for Windows</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    The Windows client now uses NRPT (Name =
+Resolution Policy Table) to</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    handle DNS configurations=2E This adds support for split-DNS and =
+DNSSEC</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    and improve=
+s the compatbility with local DNS resolvers=2E Requires the</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    interactive service=2E</span><br>=
 <span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-- remove ``--writepid`` pid file on exit now</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-- plugin-auth-pam now logs via OpenVPN logging meth=
-od, no longer to stderr</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-  (this means you&#39;ll have log messages in syslog or openvpn log file =
-now)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-- use ISO 8601 time format for file ba=
-sed logging now (YYYY-MM-DD hh:mm:dd)</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-  (syslog is not affected, nor is ``--machine-readable-outp=
-ut``)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-- ``--clr-verify`` now loads all CRLs=
- if more than one CRL is in the same</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-  file (OpenSSL backend only, mbedTLS always did that)</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-- when ``--auth-user-pass file`` has no password=
-, and the management interface</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-  is active, query management interface (instead of trying console=
- query,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  which does n=
-ot work on windows)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-- skip expired certific=
-ates in Windows certificate store (``--cryptoapicert``)</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-- ``--socks-proxy`` + ``--proto udp*`` will now allways use IP=
-v4, even if</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  IPv6 is =
-requested and available=2E  Our SOCKS code does not handle IPv6+UDP,</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-  and before that change it =
-would just fail in non-obvious ways=2E</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- TC=
-P listen() backlog queue is now set to 32 - this helps TCP servers that</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-  receive lots of &quot;i=
-nvalid&quot; connects by TCP port scanners</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-- do no longer print OCC warnings (&quot;option mismatch&quot;) about ``key=
--method``,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  ``keydir`=
-`, ``tls-auth`` and ``cipher`` - these are either gone now, or</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-  negotiated, and the warnings do =
-not serve a useful purpose=2E</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- ``dhcp-opti=
-on DNS`` and ``dhcp-option DNS6`` are now treated identically</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-  (=3D both accept an IPv4 or IPv6 =
-address for the nameserver)</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-Maintainer-visible changes</span><br=
-><span>---------------------------</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-- the man page is now in maintained in =2Erst format, so build=
-ing the openvpn=2E8</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-manpage from a git checkout now requires python-docutils (if this is missin=
-g,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  the manpage will =
-not be built - which is not considered an error generally,</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-  but for package builders or ``make d=
-istcheck`` it is)=2E  Release tarballs</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-  contain the openvpn=2E8 file, so unless some =2Erst is c=
-hanged, doc-utils are</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-  not needed for building=2E</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- OCC support =
-can no longer be disabled</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- AEAD support is=
- now required in the crypto library</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- ``--d=
-isable-server`` has been removed from configure (so it is no longer</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-  possible to build a client-=
-/p2p-only OpenVPN binary) - the saving in code</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-  size no longer outweighs the extra maintenance e=
-ffort=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-- ``--enable-iproute2`` will disab=
-le netlink(3) support, so maybe remove</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-  that from package building configs (see above)</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-- support building with MSVC 2019</span><br><span st=
+ hsl(0, 100%, 40%);">-On Windows the ``block-local`` flag is now enforced w=
+ith WFP filters=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ The ``block-local`` flag to ``--redirect-gateway`` and</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    ``--redirect-private`` is now also en=
+forced via the Windows Firewall,</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    making sure packets can&#39;t be sent to the local network=
+=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    This provides =
+stronger protection against TunnelCrack-style attacks=2E</span><br><span st=
 yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-- cmocka based unit tests are now only run if cmocka is insta=
-lled externally</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  (2=
+100%, 40%);">-Windows network adapters are now generated on demand</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    This means that on systems=
+ that run multiple OpenVPN connections at</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    the same time the users don&#39;t need to manually =
+create enough network</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    adapters anymore (in addition to the ones created by the installer)=2E<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-Windows automatic service now runs as an un=
+priviledged user</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    A=
+ll tasks that need privileges are now delegated to the interactive</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    service=2E</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    **NOTE** this has the risk of bre=
+aking existing setups if the</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    Windows certificate store is used (cryptoapi), and the certifica=
+tes</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    are not readab=
+le for ``NT SERVICE\OpenVPNService``=2E</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Sup=
+port for new version of Linux DCO module</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    The OpenVPN DCO module has been merged into the Linu=
+x kernel as of</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    6=
+=2E16=2E  This required some API changes and OpenVPN 2=2E7 only supports</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    the new API=2E The n=
+ew module is called ``ovpn``=2E Out-of-tree builds</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    for older kernels are available from</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    https://github=2Ecom/Op=
+enVPN/ovpn-backports=2E Please</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    see the release announcements for further information=2E</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-Support for server mode in win-dco driver</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    On Windows the win-dco d=
+river can now be used in server setups=2E</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-S=
+upport for TLS client floating in DCO implementations</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    The kernel modules will detect clients =
+floating to a new IP address</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    and notify userland so both data packets (kernel) and TLS packet=
+s</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    (sent by userlan=
+d) can reach the new client IP=2E</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    (Actual support depends on recent-enough kernel implementat=
+ion)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-Enforcement of AES-GCM usage limit</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    OpenVPN will now enfo=
+rce the usage limits on AES-GCM with the same</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    confidentiality margin as TLS 1=2E3 does=2E Thi=
+s mean that renegotiation will</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    be triggered after roughly 2^28 to 2^31 packets depending of t=
+he packet</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    size=2E =
+More details about usage limit of AES-GCM can be found here:</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    https://datatracker=2Eietf=2Eorg/doc/draft-irtf-cfrg-=
+aead-limits/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-Epoch data keys and packet for=
+mat</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    This introduce=
+s the epoch data format for AEAD data channel</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    ciphers in TLS mode ciphers=2E This new data fo=
+rmat has a number of</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   improvements over the standard &quot;DATA_V2&quot; format=2E</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    - AEAD tag at the end of packet which is more hard=
+ware implementation</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+    friendly</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    - Aut=
+omatic key switchover when cipher usage limits are hit, similar to</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-      the epoch data keys in (=
+D)TLS 1=2E3</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    - 64 b=
+it instead of 32 bit packet ids to allow the data channel to be</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-      ready for 10 GBit/s without=
+ having frequent renegotiation</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    - IV constructed with XOR instead of concatenation to not have=
+ (parts) of</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      the =
+real IV on the wire</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-Support for Epoch data =
+channel on Windows, using the win-dco driver (2=2E8=2E0+)</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-Default ciphers in ``--data-ciphers``</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    Ciphers in ``--data-ciphers`` can conta=
+in the string DEFAULT that is</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    replaced by the default ciphers used by OpenVPN, making it easi=
+er to</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    add an allow=
+ed cipher without having to spell out the default ciphers=2E</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-TLS alerts</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    OpenVPN 2=2E7 will send out TLS alerts to peers informing them i=
+f the TLS</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    session =
+shuts down or when the TLS implementation informs the peer about</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    an error in the TLS session =
+(e=2Eg=2E mismatching TLS versions)=2E This improves</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    the user experience as the client shows=
+ an error instead of running into</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    a timeout when the server just stops responding completely=
+=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-Support for tun/tap via unix domain soc=
+ket and lwipovpn support</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    To allow better testing and emulating a full client with a full</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    network stack OpenVPN =
+now allows a program executed to provide</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    a tun/tap device instead of opening a device=2E</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    The co-developed lwipovpn program based on =
+lwIP stack allows to</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   simulate full IP stack=2E An OpenVPN client using</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    ``--dev-node unix:/path/to/lwipovpn`` c=
+an emulate a full client that</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    can be pinged, can serve a website and more without requiring a=
+ny</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    elevated permis=
+sion=2E This can make testing OpenVPN much easier=2E</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    For more details see</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    `lwipovpn on Github &lt;https://github=2Ecom/OpenVPN/lwip=
+ovpn&gt;`_=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-Allow overriding username wit=
+h ``--override-username``</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    This is intended to allow using ``--auth-gen-token`` in scenarios w=
+here the</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    clients u=
+se certificates and multi-factor authentication=2E  This will</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    also generate a ``push &quot;au=
+th-token-user newusername&quot;`` directive in</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    push replies=2E</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-``--port-share`` now properly supports IPv6</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    Issues with logging of IPv6 addresses were fixe=
+d=2E The feature now allows</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    IPv6 connections towards the proxy receiver=2E</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-Support for Haiku OS</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-TLS1=2E3=
+ support with mbedTLS (requires mbedTLS &gt;=3D 3=2E6=2E4)</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-PUSH_UPDATE client support</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    It is now possible to update parts of the client-s=
+ide configuration</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+(IP address, routes, MTU, DNS) by sending a new server-to-client</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    control message, ``PUSH_UPDA=
+TE,&lt;options&gt;``=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    See also: https://openvpn=2Egithub=2Eio/openvpn-rfc/openvpn-wire-prot=
+ocol=2Ehtml</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    NOTE: =
+PUSH_UPDATE client support is currently disabled if DCO</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    is active (on all platforms)=2E</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-PUSH_UPDATE server support (minimal)</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    New management interface comm=
+ands ``push-update-broad`` and</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    ``push-update-cid`` to send PUSH_UPDATE option updates to all<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    clients (&quot;the=
+re is a new DNS server&quot;) or only a specific client ID</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    (&quot;privileges have changed, he=
+re&#39;s a new IP address&quot;)=2E  See</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    doc/management-notes=2Etxt</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    NOTE: PUSH_UPDATE server support is current=
+ly disabled if DCO</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ is active (on all platforms)=2E</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Support fo=
+r user-defined routing tables on Linux</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    See the ``--route-table`` option in the manpage</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-PQE support for WolfSSL</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-Two new environment variables have been introduced to communicate de=
+sired</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    default gate=
+way redirection to plugins like Network Manager,</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    ``route_redirect_gateway_ipv4`` and ``route_=
+redirect_gateway_ipv6``=2E</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    See the &quot;Environmental Variables&quot; section in the man pag=
+e</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-Improved logging of service events/errors=
+ to event log on Windows=2E</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-&quot;Recursive=
+ Routing&quot; check is now more granular, and will only drop</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-   packets-in-tunnel if destination=
+ IP, protocol and port matches with</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-   those needed to reach the VPN server=2E  With that change,=
+ you can now</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   use po=
+licies that direct &quot;everything that is not OpenVPN&quot; into the</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-   tunnel, and have IP pac=
+kets to the VPN server address arrive as</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-   expected (no such policies are currently installed by=
+ OpenVPN)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   (GH: Open=
+VPN/openvpn#669)=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-COPYING: license detail=
+s only relevant to our Windows installers have</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-   been updated and moved to the openvpn-build rep=
+o</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-Improved BYTECOUNT support - more strictl=
+y adhere to timing interval</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-   requested, correctly support client and server counters with Linux=
+ and</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   Windows DCO of=
+floading=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-Improve compatibility with Open=
+SSL 3=2E6=2E0 (do not fail t_lpback selftest)</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-New option ``--tls-crypt-v2-max-age n`` to check tls-crypt-v2 timestamps=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   (When a client is =
+older than n days or has no timestamp, the server</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    will reject it)</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-mbedTLS 4 support has been added=2E</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-   Note that with mbedTLS 4 algorithms need to be transl=
+ated to</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   mbedTLS 4 i=
+nternal IDs by OpenVPN, and some names might be</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-   missing=2E</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-Deprecated features</spa=
+n><br><span>--------------------</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-``secret`` support has been removed (by default)=2E</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    static key mode (non-TLS) is n=
+o longer considered &quot;good and secure enough&quot;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    for today&#39;s requirements=2E  Use T=
+LS mode instead=2E  If deploying a PKI CA</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    is considered &quot;too complicated&quot;, using ``=
+--peer-fingerprint`` makes</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    TLS mode about as easy as using ``--secret``=2E</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    This mode can still be enabled by using</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    ``--allow-deprecated-insecure-stati=
+c-crypto`` but will be removed in</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    OpenVPN 2=2E8=2E</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Support fo=
+r wintun Windows driver has been removed=2E</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    OpenVPN 2=2E6 added support for the new dco-win d=
+river, so it supported</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    three different device drivers: dco-win, wintun, and tap-windows6=2E</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    OpenVPN 2=2E7 now d=
+rops the support for wintun driver=2E By default</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    all modern configs should be supported by dc=
+o-win driver=2E In all</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    other cases OpenVPN will fall back automatically to tap-windows6</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    driver=2E</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-NTLMv1 authentication support for HTTP proxies has been =
+removed=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    This is=
+ considered an insecure method of authentication that uses</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    obsolete crypto algorithms=2E</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    NTLMv2 support is stil=
+l available, but will be removed in a future</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    release=2E</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    When configured to authenticate with NTLMv1 (``ntlm`` k=
+eyword in</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ``--http=
+-proxy``) OpenVPN will try NTLMv2 instead=2E</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-``persist-key`` option has been enabled by default=2E</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    All the keys will be kept in memory a=
+cross restart=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-OpenSSL 1=2E0=2E2 support =
+has been removed=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  Support for building with OpenSSL 1=2E0=2E2 has been removed=2E The minim=
+um</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    supported OpenS=
+SL version is now 1=2E1=2E0=2E</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-mbedTLS 2=2E=
+x support has been removed</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    Support for building with mbedTLS 2=2Ex has been removed (it is ou=
+t</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    of support since=
+ March 2025, and the necessary compatibility code</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    is making maintenance and support for mbedT=
+LS 4=2Ex hard)=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+The minimum supported mbedTLS version is now 3=2E2=2E1=2E</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-Compression on send has been removed=2E</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    OpenVPN 2=2E7 will never compress data=
+ before sending=2E Decompression of</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    received data is still supported=2E</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    ``--allow-compression yes`` is now an a=
+lias for</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ``--allow=
+-compression asym``=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-``--memstats`` featu=
+re removed</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    The ``-=
+-memstats`` option was largely undocumented and there is no known</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    user of this feature=2E  Th=
+is feature provided very limited statistics</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    (number of users, link bytes read/written) and we=
+ do not except any</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ usage because of this=2E</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Using ``--push`` =
+in a mode that is not ``--mode server`` will now print a</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    clear warning that this is an unsupp=
+orted operation and might cause</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    negotiation failures=2E</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-``--r=
+eneg-bytes`` and ``--reneg-packets`` do not work in DCO mode, and will</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    now print an appropria=
+te warning=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-On-connect resolving of ``--r=
+emote`` addresses in ``--tcp-server`` mode</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    was not working since 2=2E4, so the code was compl=
+etely removed=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-User-visible Changes</span><br><span>----------=
+-----------</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- Default =
+for ``--topology`` changed to ``subnet`` for ``--mode server``=2E</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-  Previous releases always used=
+ ``net30`` as default=2E This only affects</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-  configs with ``--mode server`` or ``--server`` (the =
+latter implies the</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  f=
+ormer), and ``--dev tun``, and only if IPv4 is enabled=2E</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-  Note that this changes the semantics =
+of ``--ifconfig``, so if you have</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-  manual settings for that in your config but not set ``--topol=
+ogy``</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  your config mi=
+ght fail to parse with the new version=2E Just adding</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-  ``--topology net30`` to the config should=
+ fix the problem=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+By default ``--topology`` is pushed from server to client=2E</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-- ``--x509-username-field`` will no longer automatically =
+convert fieldnames to</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+  uppercase=2E This was deprecated since OpenVPN 2=2E4, and has now been re=
+moved=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-- ``--dh none`` is now the default=
+ if ``--dh`` is not specified=2E Modern TLS</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-  implementations will prefer ECDH and other more mod=
+ern algorithms anyway=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-  And finite field Diffie Hellman is in the proces of being deprecated</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-  (see draft-ietf-tls-d=
+eprecate-obsolete-kex)</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- ``--lport 0`` does=
+ not imply ``--bind`` anymore=2E</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- ``--redi=
+rect-gateway`` now works correctly if the VPN remote is not</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-  reachable by the default gateway=2E=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-- ``--show-gateway`` now supports querying=
+ the gateway for IPv4 addresses=2E</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- ``--st=
+atic-challenge`` option now has a third parameter ``format`` that</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-  can change how password and c=
+hallenge response should be combined=2E</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- `=
+`--key`` and ``--cert`` now accept URIs implemented in OpenSSL 3 as well as=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  optional OpenSSL 3 =
+providers loaded using ``--providers`` option=2E</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-- ``--cryptoapicert`` now supports issuer name as well as Windows CA =
+template</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  name or OID=
+ as selector string=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- TLS handshake debu=
+gging information contains much more details now when</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-  using recent versions of OpenSSL=2E</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-- The ``IV_PLAT_VER`` variable sent by Windows c=
+lients now contains the</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-  full Windows build version to make it possible to determine the</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-  Windows 10 or Windows 11 ve=
+rsion used=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-- The ``--windows-driver`` op=
+tion to select between various windows</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-  drivers will no longer do anything - it&#39;s kept so ex=
+isting configs</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  will =
+not become invalid, but it is ignored with a warning=2E  The default</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-  is now ``ovpn-dco`` if all=
+ options used are compatible with DCO, with</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-  a fallback to ``tap-windows6``=2E  To force TAP (fo=
+r example because a</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+server pushes DCO incompatible options), use the ``--disable-dco``</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-  option=2E</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-- Apply more checks to incoming TLS handshake packets before =
+creating</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  new state -=
+ namely, verify message ID / acked ID for &quot;valid range for</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-  an initial packet&quot;=2E  Thi=
+s fixes a problem with clients that float</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-  very early but send control channel packet from the p=
+re-float IP</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  (Github:=
+ OpenVPN/openvpn#704)=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- Use of ``--dh dh=
+2048=2Epem`` in all sample configs has been replaced</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-  with ``--dh none``=2E  The ``dh2048=2Epem=
+`` file has been removed=2E</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- The startup d=
+elay in ``t_client=2Esh`` has been reduced from 3s to 1s,</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-  making a noticeable difference for se=
+tups with many tests=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- Changed from usin=
+g ``uncrustify`` for code formatting and pre-commit checks</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-  to ``clang-format``=2E  This reforma=
+tted quite a bit of code, and requires</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-  that regular committers change their pre-commit checks a=
+ccordingly=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-- On Linux, on interfaces whe=
+re applicable, OpenVPN explicitly configures</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-  the broadcast address again=2E  This was dropped f=
+or 2=2E6=2E0 &quot;because</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-  computers are smart and can do it themselves&quot;, but the kernel n=
+etlink</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  interface isn=
+&#39;t, and will install &quot;0=2E0=2E0=2E0&quot;=2E  This does not normal=
+ly</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  matter, but for b=
+roadcast-based applications that get the address to</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-  use from &quot;ifconfig&quot;, this chang=
+e repairs functionality (this has</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-  been backported to 2=2E6=2E15, but is not in earlier 2=2E6 ve=
+rsions)=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-- ``max-routes-per-client 0`` us=
+ed to be silently upgraded to ``1``=2E  This</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-  now produces an error=2E</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-- ``ifconfig`` and ``ifconfig-ipv6`` values are now stored in pre-co=
+nnect</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  options cache,=
+ and will be restored to pre-connect values on reconnects</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-  if the server stops pushing the respe=
+ctive option=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-- ``tapctl=2Eexe`` helper b=
+inary on Windows has been reworked to improve</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-  help texts (making clear that it can not only do =
+TAP-Adapters but</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  Win=
+-DCO as well), add printing of the hwid to all adapter outputs, and</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-  change the default adapter =
+type created to ``ovpn-dco``=2E</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- The defau=
+lt for ``multihome`` egress interface handling has changed=2E</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-  2=2E7=2E0 will default to ipi_ifi=
+ndex=3D0, that is, leave the decision to the</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-  routing/policy setup of the operating system=2E  T=
+he pre-2=2E7 behaviour</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-  (force egress =3D ingress interface) can be achieved with the new</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-  ``--multihome same-interfa=
+ce`` sub-option=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-- Windows ``openvpn=2Eex=
+e`` binary manifest now sets code page UTF8 - which</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-  has no direct effect on OpenVPN itself, b=
+ut this repairs OpenSSL file</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-  loading for key/cert files with non-ASCII characters in their file=
+ names</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  (GH: OpenVPN/=
+openvpn#920)=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-- The ``test-crypto`` optio=
+n no longer requires a ``--secret`` argument and</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-  will automatically generate a random key=2E</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-- The configure-time option ``--enable-x509=
+-alt-username`` is no longer</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-  conditional, and always-on (GH: OpenVPN/openvpn#917)=2E</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-Deprecated features</span><br><span>--------------------</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-``--opt-verify`` feature removed</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    This option was already =
+deprecated and it is now being converted to a</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    no-op=2E Using this option will only print a wa=
+rning=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-Overview of changes in 2=2E6</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Project chan=
+ges</span><br><span>----------------</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-We wan=
+t to deprecate our old Trac bug tracking system=2E</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-Please report any issues with this release in =
+GitHub</span><br><span style=3D"color: hsl(0, 100%, 40%);">-instead: https:=
+//github=2Ecom/OpenVPN/openvpn/issues</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-New f=
+eatures</span><br><span>-------------</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-Support unlimited number of connection entries and remote e=
+ntries</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-New management commands to enumerate=
+ and list remote entries</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    Use ``remote-entry-count`` and ``remote-entry-get``</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    commands from the management inter=
+face to get the number of</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    remote entries and the entries themselves=2E</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-Keying Material Exporters (RFC 5705) based key generation</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    As part of the cipher ne=
+gotiation OpenVPN will automatically prefer</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    the RFC5705 based key material generation to the =
+current custom</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    Ope=
+nVPN PRF=2E This feature requires OpenSSL or mbed TLS 2=2E18+=2E</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-Compatibility with OpenSSL in FIPS mode</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    OpenVPN will now work with Open=
+SSL in FIPS mode=2E Note, no effort</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    has been made to check or implement all the</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    requirements/recommendation of =
+FIPS 140-2=2E This just allows OpenVPN</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    to be run on a system that be configured OpenSSL in FI=
+PS mode=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-``mlock`` will now check if enou=
+gh memlock-able memory has been reserved,</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    and if less than 100MB RAM are available, use setrl=
+imit() to upgrade</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+the limit=2E  See Trac #1390=2E  Not available on OpenSolaris=2E</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-Certificate pinning/verify peer fingerprint</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    The ``--peer-fingerprint`` =
+option has been introduced to give users an</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    easy to use alternative to the ``tls-verify`` for=
+ matching the</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    fing=
+erprint of the peer=2E The option takes use a number of allowed</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    SHA256 certificate fingerprin=
+ts=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    See the man page section &quot;Sm=
+all OpenVPN setup with peer-fingerprint&quot;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    for a tutorial on how to use this feature=2E Th=
+is is also available online</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    under https://github=2Ecom/openvpn/openvpn/blob/master/doc/man-se=
+ctions/example-fingerprint=2Erst</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-TLS mode w=
+ith self-signed certificates</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    When ``--peer-fingerprint`` is used, the ``--ca`` and ``--capath=
+`` option</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    become o=
+ptional=2E This allows for small OpenVPN setups without setting up</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    a PKI with Easy-RSA or sim=
+ilar software=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-Deferred auth support for =
+scripts</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    The ``--au=
+th-user-pass-verify`` script supports now deferred authentication=2E</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-Pending auth support for plugins and scripts</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    Both auth plugin and s=
+cript can now signal pending authentication to</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    the client when using deferred authentication=
+=2E The new ``client-crresponse``</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    script option and ``OPENVPN_PLUGIN_CLIENT_CRRESPONSE`` plug=
+in function can</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    be=
+ used to parse a client response to a ``CR_TEXT`` two factor challenge=2E</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    See ``sample/sample-scripts/totpauth=2E=
+py`` for an example=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Compatibility mode (=
+``--compat-mode``)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ The modernisation of defaults can impact the compatibility of OpenVPN 2=2E=
+6=2E0</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    with older p=
+eers=2E The options ``--compat-mode`` allows UIs to provide users</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    with an easy way to still c=
+onnect to older servers=2E</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-OpenSSL 3=2E0 su=
+pport</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    OpenSSL 3=2E=
+0 has been added=2E Most of OpenSSL 3=2E0 changes are not user visible but<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    improve general co=
+mpatibility with OpenSSL 3=2E0=2E ``--tls-cert-profile insecure``</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    has been added to allow sel=
+ecting the lowest OpenSSL security level (not</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    recommended, use only if you must)=2E OpenSSL 3=
+=2E0 no longer supports the Blowfish</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    (and other deprecated) algorithm by default and the new =
+option ``--providers``</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    allows loading the legacy provider to renable these algorithms=2E</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-Optional ciphers in ``--data-ciphers``</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    Ciphers in ``--data-cipher=
+s`` can now be prefixed with a ``?`` to mark</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    those as optional and only use them if the SSL l=
+ibrary supports them=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-Improved ``--mssfix`` and ``--fragment``=
+ calculation</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    The `=
+`--mssfix`` and ``--fragment`` options now allow an optional :code:`mtu`</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    parameter to specify=
+ that different overhead for IPv4/IPv6 should taken into</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    account and the resulting size is sp=
+ecified as the total size of the VPN packets</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    including IP and UDP headers=2E</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-Cookie based handshake for UDP server</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    Instead of allocating a connection for =
+each client on the initial packet</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    OpenVPN server will now use an HMAC based cookie as its ses=
+sion id=2E This</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    wa=
+y the server can verify it on completing the handshake without keeping</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    state=2E This eliminat=
+es the amplification and resource exhaustion attacks=2E</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    For tls-crypt-v2 clients, this requir=
+es OpenVPN 2=2E6 clients or later</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    because the client needs to resend its client key on comple=
+ting the hand</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    shak=
+e=2E The tls-crypt-v2 option allows controlling if older clients are</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    accepted=2E</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    By default the rate of initial packet responses is =
+limited to 100 per 10s</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    interval to avoid OpenVPN servers being abused in reflection attacks</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    (see ``--connect-fr=
+eq-initial``)=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-Data channel offloading wi=
+th ovpn-dco</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    2=2E6=
+=2E0+ implements support for data-channel offloading where the data packets=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    are directly proc=
+essed and forwarded in kernel space thanks to the ovpn-dco</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    kernel module=2E The userspace ope=
+nvpn program acts purely as a control plane</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    application=2E Note that DCO will use DATA_V2 pac=
+kets in P2P mode, therefore,</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    this implies that peers must be running 2=2E6=2E0+ in order to h=
+ave P2P-NCP</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    which =
+brings DATA_V2 packet support=2E</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Session ti=
+meout</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    It is now po=
+ssible to terminate a session (or all) after a specified amount</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    of seconds has passed session=
+ commencement=2E This behaviour can be configured</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    using ``--session-timeout``=2E This option =
+can be configured on the server, on</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    the client or can also be pushed=2E</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-Inline auth username and password</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    Username and password can now be specified inlin=
+e in the configuration file</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    within the &lt;auth-user-pass&gt;&lt;/auth-user-pass&gt; tags=2E =
+If the password is</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ missing OpenVPN will prompt for input via stdin=2E This applies to inline&=
+#39;d</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    http-proxy-u=
+ser-pass too=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-Tun MTU can be pushed</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    The  client can now als=
+o dynamically configure its MTU and the server</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    will try to push the client MTU when the clien=
+t supports it=2E The</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   directive ``--tun-mtu-max`` has been introduced to increase the maximum<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    pushable MTU size =
+(defaults to 1600)=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Dynamic TLS Crypt</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    When both peers are O=
+penVPN 2=2E6=2E1+, OpenVPN will dynamically create</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    a tls-crypt key that is used for renegotia=
+tion=2E This ensure that only the</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    previously authenticated peer can do trigger renegotiation =
+and complete</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    reneg=
+otiations=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-Improved control channel packe=
+t size control (``max-packet-size``)</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    The size of control channel is no longer tied to</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    ``--link-mtu``/``--tun-mt=
+u`` and can be set using ``--max-packet-size``=2E</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    Sending large control channel frames is als=
+o optimised by allowing 6</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    outstanding packets instead of just 4=2E ``max-packet-size`` will a=
+lso set</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ``mssfix``=
+ to try to limit data-channel packets as well=2E</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-Deprecated features</span><br><span>--------------------</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-``inetd`` has been removed</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    This was a very limited a=
+nd not-well-tested way to run OpenVPN, on TCP</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    and TAP mode only=2E</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-``verify-hash`` has been deprecated</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    This option has very limited usefulness and should =
+be replaced by either</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    a better ``--ca`` configuration or with a ``--tls-verify`` script=2E</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-``secret`` has been deprecated</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    static key mode (non-TLS) is n=
+o longer considered &quot;good and secure enough&quot;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    for today&#39;s requirements=2E  Use T=
+LS mode instead=2E  If deploying a PKI CA</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    is considered &quot;too complicated&quot;, using ``=
+--peer-fingerprint`` makes</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    TLS mode about as easy as using ``--secret``=2E</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-``ncp-disable`` has been removed</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    This option mainly served a role as debug opti=
+on when NCP was first</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    introduced=2E It should now no longer be necessary=2E</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-TLS 1=2E0 and 1=2E1 are deprecated</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    ``tls-version-min`` is set to 1=2E2 by defa=
+ult=2E  OpenVPN 2=2E6=2E0 defaults</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    to a minimum TLS version of 1=2E2 as TLS 1=2E0 and 1=2E1 s=
+hould be generally</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ avoided=2E Note that OpenVPN versions older than 2=2E3=2E7 use TLS 1=2E0 o=
+nly=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-``--cipher`` argument is no longer a=
+ppended to ``--data-ciphers``</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    by default=2E Data cipher negotiation has been introduced in 2=
+=2E4=2E0</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    and been =
+significantly improved in 2=2E5=2E0=2E The implicit fallback</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    to the cipher specified in ``--c=
+ipher`` has been removed=2E</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    Effectively, ``--cipher`` is a no-op in TLS mode now, and will</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    only have an effect =
+in pre-shared-key mode (``--secret``)=2E</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    From now on ``--cipher`` should not be used in new c=
+onfigurations</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    for =
+TLS mode=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    Should=
+ backwards compatibility with older OpenVPN peers be</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    required, please see the ``--compat-mod=
+e`` instead=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-``--prng`` has beeen removed=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    OpenVPN used to i=
+mplement its own PRNG based on a hash=2E However implementing</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    a PRNG is better left to a cryp=
+to library=2E So we use the PRNG</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    mbed TLS or OpenSSL now=2E</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-`=
+`--keysize`` has been removed</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    The ``--keysize`` option was only useful to change the key leng=
+th when using the</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+BF, CAST6 or RC2 ciphers=2E For all other ciphers the key size is fixed wit=
+h the</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    chosen ciphe=
+r=2E As OpenVPN v2=2E6 no longer supports any of these variable length</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    ciphers, this option w=
+as removed as well to avoid confusion=2E</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Co=
+mpression no longer enabled by default</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    Unless an explicit compression option is specified in =
+the configuration,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ ``--allow-compression`` defaults to ``no`` in OpeNVPN 2=2E6=2E0=2E</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    By default, OpenVPN 2=2E5=
+ still allowed a server to enable compression by</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    pushing compression related options=2E</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-PF (Packet Filtering) support has been removed</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-   The built-in PF func=
+tionality has been removed from the code base=2E This</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-   feature wasn&#39;t really easy to use an=
+d was long unmaintained=2E</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-   This implies that also ``--management-client-pf`` and any other com=
+pile</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   time or run ti=
+me related option do not exist any longer=2E</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-Option conflict checking is being deprecated and phased out</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    The static option checking (OCC=
+) is no longer useful in typical setups</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    that negotiate most connection parameters=2E The ``--=
+opt-verify`` and</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    `=
+`--occ-disable`` options are deprecated, and the configure option</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    ``--enable-strict-options``=
+ has been removed=2E Logging of mismatched</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    options has been moved to debug logging (verb 7)=
+=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-User-visible Changes</span><br><span>--=
+-------------------</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- =
+CHACHA20-POLY1305 is included in the default of ``--data-ciphers`` when ava=
+ilable=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- Option ``-=
+-prng`` is ignored as we rely on the SSL library random number generator=2E=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- Option ``--nobind``=
+ is default when ``--client`` or ``--pull`` is used in the configuration</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-- :code:`link_mtu` param=
+eter is removed from environment or replaced with 0 when scripts are</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-  called with parameters=2E =
+This parameter is unreliable and no longer internally calculated=2E</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-- control channel packet maximum size is no longer=
+ influenced by</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  ``--l=
+ink-mtu``/``--tun-mtu`` and must be set by ``--max-packet-size`` now=2E</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-  The default is 1250 for=
+ the control channel size=2E</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- In point-to-=
+point OpenVPN setups (no ``--server``), using</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-  ``--explict-exit-notiy`` on one end would termina=
+te the other side at</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+ session end=2E  This is considered a no longer useful default and has</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-  been changed to &quot;re=
+start on reception of explicit-exit-notify message&quot;=2E</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-  If the old behaviour is still desir=
+ed, ``--remap-usr1 SIGTERM`` can be used=2E</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-- FreeBSD tun interfaces with ``--topology subnet`` are now put into real<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-  subnet mode (IFF_BRO=
+ADCAST instead of IFF_POINTOPOINT) - this might upset</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-  software that enumerates interfaces, look=
+ing for &quot;broadcast capable?&quot; and</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-  expecting certain results=2E  Normal uses should not=
+ see any difference=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- The default config=
+urations will no longer allow connections to OpenVPN 2=2E3=2Ex</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-  peer or earlier, use the new ``-=
+-compat-mode`` option if you need</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-  compatibility with older versions=2E See the manual page on t=
+he</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  ``--compat-mode``=
+ for details=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-- The ``client-pending-auth=
+`` management command now requires also the</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-  key id=2E The management version has been changed t=
+o 5 to indicate this change=2E</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- (OpenVPN 2=
+=2E6=2E2) A client will now refuse a connection if pushed compression</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-  settings will contradict =
+the setting of allow-compression as this almost</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-  always results in a non-working connection=2E</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-- The &quot;kill&quot; by addr management c=
+ommand now requires also the protocol</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-  as string e=2Eg=2E &quot;udp&quot;, &quot;tcp&quot;=2E</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-Common errors with OpenSSL 3=2E0 and OpenVP=
+N 2=2E6</span><br><span>-----------------------------------------------</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-Both OpenVPN 2=2E6 and Op=
+enSSL 3=2E0 tighten the security considerable, so some</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-configuration will no longer work=2E This =
+section will cover the most common</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-causes and error message we have seen and explain their reason=
+ and temporary</span><br><span style=3D"color: hsl(0, 100%, 40%);">-workaro=
+unds=2E You should fix the underlying problems as soon as possible since</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-these workaround are not=
+ secure and will eventually stop working in a future</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-update=2E</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">--=
+ weak SHA1 or MD5 signature on certificates</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-  This will happen on either loading of certificates or on connection</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-  to a server::</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-      OpenSSL: error:0A00018E:SSL routines::ca md too=
+ weak</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      Cannot loa=
+d certificate file cert=2Ecrt</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-      Exiting due to fatal error</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+OpenSSL 3=2E0 no longer allows weak signatures on certificates=2E You can</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-  downgrade your securi=
+ty to allow them by using ``--tls-cert-profile insecure``</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-  but should replace/regenerate these c=
+ertificates as soon as possible=2E</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-- 1024 bit RSA certificates, =
+1024 bit DH parameters, other weak keys</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  T=
+his happens if you use private keys or other cryptographic material that</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-  does not meet today&#3=
+9;s cryptographic standards anymore=2E Messages are similar</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-  to::</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-      OpenSSL: error:0A00018F:SSL routines::ee key too small</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-      OpenSSL: error:1408518A:SSL =
+routines:ssl3_ctx_ctrl:dh key too small</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  D=
+H parameters (``--dh``) can be regenerated with ``openssl dhparam 2048``=2E=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  For other cryptogra=
+phic keys, these keys and certificates need to be</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-  regenerated=2E TLS Security level can be temp=
+orarily lowered with</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+ ``--tls-cert-profile legacy`` or even ``--tls-cert-profile insecure``=2E</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-- Connecting to a OpenVPN 2=2E3=2Ex server =
+or allowing OpenVPN 2=2E3=2Ex or earlier</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-  clients</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  This will no=
+rmally result in messages like::</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     OPTIO=
+NS ERROR: failed to negotiate cipher with server=2E  Add the server&#39;s c=
+ipher (&#39;AES-128-CBC&#39;) to --data-ciphers (currently &#39;AES-256-GCM=
+:AES-128-GCM:CHACHA20-POLY1305&#39;) if you want to connect to this server=
+=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-     or</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-     client/127=2E0=2E0=2E1:49954 SENT CONTROL [client]: &#39;AUTH_FAILED,=
+Data channel cipher negotiation failed (no shared cipher)&#39; (status=3D1)=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-  You can manually add the missing cipher =
+to the ``--data-ciphers``=2E The</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-  standard ciphers should be included as well, e=2Eg=2E</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-  ``--data-ciphers AES-256-GCM=
+:AES-128-GCM:?Chacha20-Poly1305:?AES-128-CBC``=2E</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-  You can also use the ``--compat-mode`` option=
+=2E Note that these message may</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-  also indicate other cipher configuration problems=2E See the da=
+ta channel</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  cipher ne=
+gotiation manual section for more details=2E (Available online under</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-  https://github=2Ecom/OpenV=
+PN/openvpn/blob/master/doc/man-sections/cipher-negotiation=2Erst)</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-- Use of a legacy or deprecated cipher (e=2Eg=2E 64b=
+it block ciphers)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-  OpenSSL 3=2E0 no longer=
+ supports a number of insecure and outdated ciphers in</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-  its default configuration=2E Some of the=
+se ciphers are known to be vulnerable (SWEET32 attack)=2E</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-  This will typically manifest itself in messages like::</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-      OpenSSL: error:0308010C:digital envelope=
+ routines::unsupported</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-      Cipher algorithm &#39;BF-CBC&#39; not found</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-      Unsupported cipher in --data-ciphers: BF=
+-CBC</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-  If your OpenSSL distribution comes w=
+ith the legacy provider (see</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-  also ``man OSSL_PROVIDER-legacy``), you can load it with</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-  ``--providers legacy default`=
+`=2E  This will re-enable the old algorithms=2E</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-- OpenVPN version not supporting TLS 1=2E2 or later</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-  The default in OpenVPN 2=2E6 and also in many distributions=
+ is now TLS 1=2E2 or</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+ later=2E Connecting to a peer that does not support this will results in</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-  messages like::</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    TLS error: Unsupported protocol=2E This typi=
+cally indicates that client and</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    server have no common TLS version enabled=2E This can be caus=
+ed by mismatched</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    t=
+ls-version-min and tls-version-max options on client and server=2E If your<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    OpenVPN client is =
+between v2=2E3=2E6 and v2=2E3=2E2 try adding tls-version-min 1=2E0</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    to the client configuratio=
+n to use TLS 1=2E0+ instead of TLS 1=2E0 only</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    OpenSSL: error:0A000102:SSL routines::unsupport=
+ed protocol</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-  This can be an OpenVPN 2=2E3=
+=2E6 or earlier version=2E ``compat-version 2=2E3=2E0`` will</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-  enable TLS 1=2E0 support if suppor=
+ted by the OpenSSL distribution=2E Note that</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-  on some Linux distributions enabling TLS 1=2E1 or =
+1=2E0 is not possible=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-Overview of changes in 2=2E5</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-New features</s=
+pan><br><span>-------------</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-Client-specific tls-crypt keys (``--tls-crypt-v2``)</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    ``tls-crypt-v2`` adds the ability t=
+o supply each client with a unique</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    tls-crypt key=2E  This allows large organisations and VPN =
+providers to profit</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  from the same DoS and TLS stack protection that small deployments can</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    already achieve using=
+ ``tls-auth`` or ``tls-crypt``=2E</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-ChaCha20-=
+Poly1305 cipher support</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    Added support for using the ChaCha20-Poly1305 cipher in the OpenVPN d=
+ata</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    channel=2E</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-Improved Data channel cipher negotiation</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    The option ``ncp-cipher=
+s`` has been renamed to ``data-ciphers``=2E</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    The old name is still accepted=2E The change in n=
+ame signals that</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    `=
+`data-ciphers`` is the preferred way to configure data channel</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    ciphers and the data prefix is=
+ chosen to avoid the ambiguity that</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    exists with ``--cipher`` for the data cipher and ``tls-ci=
+pher``</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    for the TLS=
+ ciphers=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    OpenVPN clients will now si=
+gnal all supported ciphers from the</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    ``data-ciphers`` option to the server via ``IV_CIPHERS``=
+=2E OpenVPN</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    server=
+s will select the first common cipher from the ``data-ciphers``</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    list instead of blindly pushi=
+ng the first cipher of the list=2E This</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    allows to use a configuration like</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    ``data-ciphers ChaCha20-Poly1305:AES=
+-256-GCM`` on the server that</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    prefers ChaCha20-Poly1305 but uses it only if the client suppor=
+ts it=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    See the data channel negotiati=
+on section in the manual for more details=2E</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-Removal of BF-CBC support in default configuration:</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    By default OpenVPN 2=2E5 will only acce=
+pt AES-256-GCM and AES-128-GCM as</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    data ciphers=2E OpenVPN 2=2E4 allows AES-256-GCM,AES-128-GC=
+M and BF-CBC when</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+no --cipher and --ncp-ciphers options are present=2E Accepting BF-CBC can b=
+e</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    enabled by addin=
+g</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-        data-ciphers AES-256-GCM:AES-128-=
+GCM:BF-CBC</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    and when you need to support=
+ very old peers also</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        data-ciphers-f=
+allback BF-CBC</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    To offer backwards compa=
+tibility with older configs an *explicit*</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       cipher BF-CBC</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    in the configurati=
+on will be automatically translated into adding BF-CBC</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    to the data-ciphers option and setting=
+ data-ciphers-fallback to BF-CBC</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    (as in the example commands above)=2E We strongly recommend =
+to switching</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    away =
+from BF-CBC to a more secure cipher=2E</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Asyn=
+chronous (deferred) authentication support for auth-pam plugin=2E</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    See src/plugins/auth-pam/RE=
+ADME=2Eauth-pam for details=2E</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Deferred cli=
+ent-connect</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    The ``=
+--client-connect`` option and the connect plugin API allow</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    asynchronous/deferred return of th=
+e configuration file in the same way</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    as the auth-plugin=2E</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Fa=
+ster connection setup</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    A client will signal in the ``IV_PROTO`` variable that it is in pull</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    mode=2E This allows =
+the server to push the configuration options to</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    the client without waiting for a ``PULL_REQUE=
+ST`` message=2E The feature</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    is automatically enabled if both client and server support it and=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    significantly red=
+uces the connection setup time by avoiding one</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    extra packet round-trip and 1s of internal eve=
+nt delays=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-Netlink support</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    On Linux, if configured without =
+``--enable-iproute2``, configuring IP</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    addresses and adding/removing routes is now done via th=
+e netlink(3)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    kerne=
+l interface=2E  This is much faster than calling ``ifconfig`` or</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    ``route`` and also enables O=
+penVPN to run with less privileges=2E</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    I=
+f configured with --enable-iproute2, the ``ip`` command is used</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    (as in 2=2E4)=2E  Support for=
+ ``ifconfig`` and ``route`` is gone=2E</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Wint=
+un support</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    On Wind=
+ows, OpenVPN can now use ``wintun`` devices=2E  They are faster</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    than the traditional ``tap9``=
+ tun/tap devices, but do not provide</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    ``--dev tap`` mode - so the official installers contain =
+both=2E  To use</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    a =
+wintun device, add ``--windows-driver wintun`` to your config</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    (and use of the interactive ser=
+vice is required as wintun needs</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    SYSTEM privileges to enable access)=2E</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-IPv6-only operation</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    It is now possible to have only IPv6 addresses inside the VPN =
+tunnel,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    and IPv6-o=
+nly address pools (2=2E4 always required IPv4 config/pools</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    and IPv6 was the &quot;optional ex=
+tra&quot;)=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-Improved Windows 10 detection=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    Correctly log OS =
+on Windows 10 now=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-Linux VRF support</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    Using the new ``--bind=
+-dev`` option, the OpenVPN outside socket can</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    now be put into a Linux VRF=2E  See the &quot;V=
+irtual Routing and Forwarding&quot;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    documentation in the man page=2E</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-TLS 1=2E3 support</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    TLS 1=2E3 support has been added to OpenVPN=2E  Currently, this req=
+uires</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    OpenSSL 1=2E=
+1=2E1+=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    The opti=
+ons ``--tls-ciphersuites`` and ``--tls-groups`` have been</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    added to fine tune TLS protocol opt=
+ions=2E  Most of the improvements</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    were also backported to OpenVPN 2=2E4 as part of the mainta=
+inance</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    releases=2E=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-Support setting DHCP search domain</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    A new option ``--dhcp-opt=
+ion DOMAIN-SEARCH my=2Eexample=2Ecom`` has been</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    defined, and Windows support for it is implem=
+ented (tun/tap only, no</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    wintun support yet)=2E  Other platforms need to support this via ``--=
+up``</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    script (Linux=
+) or GUI (OSX/Tunnelblick)=2E</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-per-client ch=
+anging of ``--data-ciphers`` or ``data-ciphers-fallback``</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    from client-connect script/dir (NOT=
+E: this only changes preference of</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    ciphers for NCP, but can not override what the client anno=
+unces as</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &quot;wil=
+ling to accept&quot;)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Handle setting of tun=
+/tap interface MTU on Windows</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    If IPv6 is in use, MTU must be &gt;=3D 1280 (Windows enforces I=
+ETF requirements)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-Add support for OpenSSL e=
+ngines to access private key material (like TPM)=2E</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-HMAC based auth-token support</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    The ``--auth-gen-token`` support has been improved a=
+nd now generates HMAC</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    based user token=2E If the optional ``--auth-gen-token-secret`` option =
+is</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    used clients wi=
+ll be able to seamlessly reconnect to a different server</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    using the same secret file or to the=
+ same server after a server restart=2E</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Impr=
+oved support for pending authentication</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    The protocol has been enhanced to be able to signal t=
+hat</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    the authentica=
+tion should use a secondary authentication</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    via web (like SAML) or a two factor authentication=
+ without</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    disconnec=
+ting the OpenVPN session with AUTH_FAILED=2E The</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    session will instead be stay in a authentica=
+ted state and</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    wait=
+ for the second factor authentication to complete=2E</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    This feature currently requires usage of the managent interf=
+ace</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    on both client=
+ and server side=2E See the ``management-notes=2Etxt``</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    ``client-pending-auth`` and ``cr-respo=
+nse`` commands for more</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    details=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-VLAN support</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    OpenVPN servers in TAP mode can=
+ now use 802=2E1q tagged VLANs</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    on the TAP interface to separate clients into different groups=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    that can then be =
+handled differently (different subnets / DHCP,</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    firewall zones, =2E=2E=2E) further down the ne=
+twork=2E  See the new</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    options ``--vlan-tagging``, ``--vlan-accept``, ``--vlan-pvid``=2E</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    802=2E1q tagging on the client side TAP inte=
+rface is not handled</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   today (=3D tags are just forwarded transparently to the server)=2E</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-Support building of =2Emsi installers for Window=
+s</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-Allow unicode search string in ``--crypto=
+apicert`` option (Windows)</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Support IPv4 con=
+figs with /31 netmasks now</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    (By no longer trying to configure ``broadcast x=2Ex=2Ex=2Ex`` in</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ifconfig calls, /31=
+ support &quot;just works&quot;)</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-New option=
+ ``--block-ipv6`` to reject all IPv6 packets (ICMPv6)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    this is useful if the VPN service has n=
+o IPv6, but the clients</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    might have (LAN), to avoid client connections to IPv6-enabled</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    servers leaking &quot;aro=
+und&quot; the IPv4-only VPN=2E</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-``--ifconfig=
+-ipv6`` and ``--ifconfig-ipv6-push`` will now accept</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    hostnames and do a DNS lookup to get th=
+e IPv6 address to use</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-Deprecated features</span><br><span>------=
+--------------</span><br><span style=3D"color: hsl(0, 100%, 40%);">-For an =
+up-to-date list of all deprecated options, see this wiki page:</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-https://community=2Eopenvpn=2Enet/=
+openvpn/wiki/DeprecatedOptions</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- ``ncp-disa=
+ble`` has been deprecated</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    With the improved and matured data channel cipher negotiation, the =
+use</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    of ``ncp-disab=
+le`` should not be necessary anymore=2E</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- `=
+`inetd`` has been deprecated</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-  This is a very limited and not-well-tested way to run OpenVPN, on =
+TCP</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  and TAP mode onl=
+y, which complicates the code quite a bit for little gain=2E</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-  To be removed in OpenVPN 2=2E6 (un=
+less users protest)=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- ``no-iv`` has been=
+ removed</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  This option=
+ was made into a NOOP option with OpenVPN 2=2E4=2E  This has now</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-  been completely removed=2E</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-- ``--client-cert-not-required`` has been remo=
+ved</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  This option will=
+ now cause server configurations to not start=2E  Use</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-  ``--verify-client-cert none`` instead=2E<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-- ``--ifconfig-pool-linear`` has been remov=
+ed</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  This option is re=
+moved=2E  Use ``--topology p2p`` or ``--topology subnet``</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-  instead=2E</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-- ``--compress xxx`` is considered risky and is warned against, see b=
+elow=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-- ``--key-method 1`` has been remov=
+ed</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-User-visible Changes</span><br><span>---------------------</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-- If multiple connect ha=
+ndlers are used (client-connect, ccd, connect</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-  plugin) and one of the handler succeeds but a sub=
+sequent fails, the</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  c=
+lient-disconnect-script is now called immediately=2E Previously it</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-  was called, when the VPN ses=
+sion was terminated=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- Support for buildi=
+ng with OpenSSL 1=2E0=2E1 has been removed=2E The minimum</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-  supported OpenSSL version is now 1=2E=
+0=2E2=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-- The GET_CONFIG management state =
+is omitted if the server pushes</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-  the client configuration almost immediately as result of the</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-  faster connection setu=
+p feature=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-- ``--compress`` is nowadays c=
+onsidered risky, because attacks exist</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-  leveraging compression-inside-crypto to reveal plaintext=
+ (VORACLE)=2E  So</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  by=
+ default, ``--compress xxx`` will now accept incoming compressed</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-  packets (for compatibility wit=
+h peers that have not been upgraded yet),</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-  but will not use compression outgoing packets=2E  Thi=
+s can be controlled with</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-  the new option ``--allow-compression yes|no|asym``=2E</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-- Stop changing ``--txlen`` aways from OS defaults unless e=
+xplicitly specified</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+in config file=2E  OS defaults nowadays are actually larger then what we us=
+ed</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  to configure, so =
+our defaults sometimes caused packet drops =3D bad performance=2E</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-- remove ``--writepid`` pid file on exit now</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-- plugin-auth-pam now logs via OpenVPN logging met=
+hod, no longer to stderr</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-  (this means you&#39;ll have log messages in syslog or openvpn log file=
+ now)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-- use ISO 8601 time format for file b=
+ased logging now (YYYY-MM-DD hh:mm:dd)</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-  (syslog is not affected, nor is ``--machine-readable-out=
+put``)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-- ``--clr-verify`` now loads all CRL=
+s if more than one CRL is in the same</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-  file (OpenSSL backend only, mbedTLS always did that)</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-- when ``--auth-user-pass file`` has no passwor=
+d, and the management interface</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-  is active, query management interface (instead of trying consol=
+e query,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  which does =
+not work on windows)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-- skip expired certifi=
+cates in Windows certificate store (``--cryptoapicert``)</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-- ``--socks-proxy`` + ``--proto udp*`` will now allways use I=
+Pv4, even if</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  IPv6 is=
+ requested and available=2E  Our SOCKS code does not handle IPv6+UDP,</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-  and before that change it=
+ would just fail in non-obvious ways=2E</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- T=
+CP listen() backlog queue is now set to 32 - this helps TCP servers that</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-  receive lots of &quot;=
+invalid&quot; connects by TCP port scanners</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-- do no longer print OCC warnings (&quot;option mismatch&quot;) about ``ke=
+y-method``,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  ``keydir=
+``, ``tls-auth`` and ``cipher`` - these are either gone now, or</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-  negotiated, and the warnings do=
+ not serve a useful purpose=2E</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- ``dhcp-opt=
+ion DNS`` and ``dhcp-option DNS6`` are now treated identically</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-  (=3D both accept an IPv4 or IPv6=
+ address for the nameserver)</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-Maintainer-visible changes</span><b=
+r><span>---------------------------</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-- the man page is now in maintained in =2Erst format, so buil=
+ding the openvpn=2E8</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+ manpage from a git checkout now requires python-docutils (if this is missi=
+ng,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  the manpage will=
+ not be built - which is not considered an error generally,</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-  but for package builders or ``make =
+distcheck`` it is)=2E  Release tarballs</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-  contain the openvpn=2E8 file, so unless some =2Erst is =
+changed, doc-utils are</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-  not needed for building=2E</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- OCC support=
+ can no longer be disabled</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- AEAD support i=
+s now required in the crypto library</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-- ``--=
+disable-server`` has been removed from configure (so it is no longer</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-  possible to build a client=
+-/p2p-only OpenVPN binary) - the saving in code</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-  size no longer outweighs the extra maintenance =
+effort=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-- ``--enable-iproute2`` will disa=
+ble netlink(3) support, so maybe remove</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-  that from package building configs (see above)</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-- support building with MSVC 2019</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-- cmocka based unit tests are now only run if cmocka is inst=
+alled externally</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  (2=
 =2E4 used to ship a local git submodule which was painful to maintain)</spa=
 n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
 color: hsl(0, 100%, 40%);">-- ``--disable-crypto`` configure option has bee=
@@ -9203,39 +9212,39 @@ prop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1767?usp=3De=
 mail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div =
-style=3D"display:none"> Gerrit-MessageType: merged </div>
-<div style=3D"dis=
-play:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Ger=
-rit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I8=
-887fa7ccf407d727c2b59397000149e45487e13 </div>
-<div style=3D"display:none">=
- Gerrit-Change-Number: 1767 </div>
-<div style=3D"display:none"> Gerrit-Patc=
-hSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;=
-frank@lichtenheld=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Revi=
-ewer: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"dis=
-play:none"> Gerrit-Reviewer: razvanc &lt;razvanc@mailbox=2Eorg&gt; </div>
-<=
-div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@list=
-s=2Esourceforge=2Enet&gt; </div>
+style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=
+=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:non=
+e"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change=
+-Id: I8887fa7ccf407d727c2b59397000149e45487e13 </div>
+<div style=3D"display=
+:none"> Gerrit-Change-Number: 1767 </div>
+<div style=3D"display:none"> Gerr=
+it-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenhe=
+ld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerr=
+it-Reviewer: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=
+=3D"display:none"> Gerrit-Reviewer: razvanc &lt;razvanc@mailbox=2Eorg&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-dev=
+el@lists=2Esourceforge=2Enet&gt; </div>
 
 </body></html>
---x4c+AxinNkw=--
+--nNhD4lcniuk=--
 
 
---===============4272062365968240308==
+--===============5852978360916733229==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============4272062365968240308==
+--===============5852978360916733229==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -9246,5 +9255,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============4272062365968240308==--
+--===============5852978360916733229==--
 
