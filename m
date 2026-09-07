@@ -4,69 +4,83 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6DF8EC79F99
-	for <openvpn-devel@archiver.kernel.org>; Mon,  7 Sep 2026 10:10:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9CD50C79F99
+	for <openvpn-devel@archiver.kernel.org>; Mon,  7 Sep 2026 10:59:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:Cc:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=ceZOF3XklTDaNCKsebBwMzrUfr3Ntu/daHT/Ur65frQ=; b=EmjQUSH51e5nqG4tR7jSsSmCu5
-	qQqjrie796w+Rz/FLNaF+h60PlVHxfU5yJ0AmveRHOIG6IM5KCmownR5QevfbhfYP834LXERftKtI
-	rhLcR2nCSeFpy9xSf+Sr7DisaUnF5vm+7kxk9cIlELKYEIFCUKwDqWUYTCcwrq6pi75o=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:Message-ID:Date:To:From:Sender:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Owner;
+	bh=uDM/qUKshMat6P2RcYqyfiGPDvMvpMlsVZeyiZcr7C0=; b=iCFFTnosBh/MLh2kADt9Fh7vd9
+	K5dHA89T5WNF1b8xHRwkidbdpdsIy6r8mzrqrNs54dthDQHBeuAgIs4L4gKoKRlAJyuzLByEwHnBL
+	pj2K27dh+DsQnAYIvc+Re6edVu8i6FwHi0HuAH8m207BU6QVq9tbcS7n2zuk8HN0dx2M=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x3WIp-0000ej-Ie;
-	Mon, 07 Sep 2026 10:10:15 +0000
+	id 1x3X4K-0000kO-7t;
+	Mon, 07 Sep 2026 10:59:17 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1x3WIn-0000dS-I4
+ (envelope-from <marco@mandelbit.com>) id 1x3X4I-0000kG-G4
  for openvpn-devel@lists.sourceforge.net;
- Mon, 07 Sep 2026 10:10:13 +0000
+ Mon, 07 Sep 2026 10:59:16 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:Message-ID:
+ Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=aAEM2f4mMTkwS1okYZHKU6gqqtBY5rxOgYFdbwMnSGM=; b=Gp6cF9LYmgvSSl/ts25+HZ9w94
- C4K2m4AoUoDBWsBLLcLEN6WkvK9ig9wU2Hlek01CIYAB2ZYhWtsLyEiiW2QIs4bSHEUxvwVPsKP7Y
- z2CrsjRj/SAq17t/l6/g8EjOOpsnpf9BCAQPgRWSQOh3ZBpBJlr3+B4XDk5xwzw5W0xs=;
+ bh=1LF/SyvYYxlmMyYIg42TXzIgqdw4CptSyjvzk7Uhnlw=; b=ZzaZhTTSdPrLPbuT+VVLsbKyQD
+ AscWTH21c5o/64WseqmNLmk7WlNCC66vbSrpDzhJl4QBfahh7butTlJMJDHIEEeK9SpoC6lnxa4Yh
+ BffjjSYaTv1Q2uvRzdUegt6uEzLQj+5YA22qcGjZVk7SDBd0moaVyCjtWN8v2bVarAiE=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=aAEM2f4mMTkwS1okYZHKU6gqqtBY5rxOgYFdbwMnSGM=; b=C+IJHXNYvbjR8lZeI18nQdouDx
- GaxHkDURjKMjx6wgMyztM7dLATWMXhlODmEYN7xE0L2TPID5wTszBfmLhUuFWMqdnX5ksywH32lrA
- y+u+ZsEFlVrUzamSg20TTd1+U+NTKZyQKWlzfOtHbn0WqOc/fawOCixZa9ksDBdBlD00=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:Cc:To:From
+ :Sender:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+ References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=1LF/SyvYYxlmMyYIg42TXzIgqdw4CptSyjvzk7Uhnlw=; b=e
+ oyBj2ARkbJNL4NdJ/XH2Rt6dNu6Ahwyx+pxJtyDpZoR1ngubC58hKsv2CdW0d5wvfFnVjAgZ2hLVC
+ 5glRFhuMAfsRh3FGeAyDZS8TxeY0BZui3Rtvyocw3CUsuGjKa87A3l65iPbeVugrb3jKauMIt/54D
+ Dvg1ExSJPC37t/hc=;
+Received: from mout-b-206.mailbox.org ([195.10.208.51])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1x3WIU-00059H-MJ for openvpn-devel@lists.sourceforge.net;
- Mon, 07 Sep 2026 10:09:56 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 687A9lRV025297
- for <openvpn-devel@lists.sourceforge.net>; Mon, 7 Sep 2026 12:09:47 +0200
-Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 687A9l2f025295
- for openvpn-devel@lists.sourceforge.net; Mon, 7 Sep 2026 12:09:47 +0200
-From: Gert Doering <gert@greenie.muc.de>
+ id 1x3X4E-00021x-Nd for openvpn-devel@lists.sourceforge.net;
+ Mon, 07 Sep 2026 10:59:15 +0000
+Received: from smtp102.mailbox.org (smtp102.mailbox.org
+ [IPv6:2001:67c:2050:b231:465::102])
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+ key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+ (No client certificate requested)
+ by mout-b-206.mailbox.org (Postfix) with ESMTPS id 4hdkbG70fzzNJ;
+ Mon, 07 Sep 2026 12:59:06 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
+ s=MBO0001; t=1788778747;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:
+ content-transfer-encoding:content-transfer-encoding;
+ bh=1LF/SyvYYxlmMyYIg42TXzIgqdw4CptSyjvzk7Uhnlw=;
+ b=11x2LUqHH5JCboLifB7ZDs/DLN0d8hxRQyD0lxNBYIYdsiJ/l1MnDOeQTOI0E2Eh/45fi5
+ cewV3WgYGSX+W838v5K8GUKS0SLYMzcQhldQgFOZPSKljQHdxcN9Jz3+KsFT+wbcf/zdoE
+ p+R1A6G9p4Xm70xjtyUc0U1Ua477LLokic1M40tnGtA83e1uvD6BFvOqEsJKinA7WJoWrf
+ yWvVet8935WfE2ptHOmaiQYGvb3ZYi3OXFqBx8GUseHQMXDhe/F3Ne+f+93eqcfD0y+2Qj
+ +j31uEIjYq3BijjlfsoPvPmyWCASjJEa/TF7WHOfDrXFF5HB05gV1u+axJhSTQ==
+Authentication-Results: outgoing_mbo_mout; dkim=none;
+ spf=pass (outgoing_mbo_mout: domain of marco@mandelbit.com designates
+ 2001:67c:2050:b231:465::102 as permitted sender)
+ smtp.mailfrom=marco@mandelbit.com
+From: Marco Baffo <marco@mandelbit.com>
 To: openvpn-devel@lists.sourceforge.net
-Date: Mon,  7 Sep 2026 12:09:41 +0200
-Message-ID: <20260907100947.25255-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1788519683000.Ic334518048d6ca57a504257e210467f9c451d268@gerrit.openvpn.net>
-References: <gerrit.1788519683000.Ic334518048d6ca57a504257e210467f9c451d268@gerrit.openvpn.net>
+Date: Mon,  7 Sep 2026 12:59:02 +0200
+Message-ID: <20260907105902.3270608-1-marco@mandelbit.com>
 MIME-Version: 1.0
-X-Headers-End: 1x3WIU-00059H-MJ
-Subject: [Openvpn-devel] [PATCH v2] Check for \0 and RFC 2253 chars in cert
- subjects
+X-Rspamd-Queue-Id: 4hdkbG70fzzNJ
+X-Headers-End: 1x3X4E-00021x-Nd
+Subject: [Openvpn-devel] [PATCH ovpn net-next] ovpn: remove redundant peer
+ NULL checks in crypto post functions
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -78,442 +92,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Cc: Antonio Quartulli <antonio@openvpn.net>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Max Fillinger <maximilian.fillinger@sentyron.com>
+The AEAD helpers set the peer pointer in the skb control buffer before
+any error return or crypto request submission. Both crypto paths hold
+a peer reference until post-processing finishes.
 
-When using the OpenSSL library, we escaped embedded null-bytes in a
-certificate's subject in x509_get_subject(), but in
-extract_x509_field_ssl(), we copied any null-bytes that are contained in
-the field value. When using the option --verify-x509-name, this could
-lead to an incorrect name being accepted. For example, the common name
-"admin\0impersonator" would be accepted when running with
---verify-x509-name admin name.
+Remove the redundant NULL checks before ovpn_peer_put() in
+ovpn_encrypt_post() and ovpn_decrypt_post().
 
-To fix this, this commit makes x509_get_subject() return an error if the
-subject contains an embedded null-byte. This way, OpenVPN won't connect
-with peers that present such certificates.
-
-As a defense-in-depth measure, we also check for null-bytes in
-extract_x509_field_ssl() in case a future version of OpenVPN has a code
-path that avoids x509_get_subject().
-
-Additionally, we escape RFC 2253 characters in the subject that would
-make parsing of the resulting string ambiguous. For example, if the
-Common Name is "name, O=InjectedOrg", and the Organization is "RealOrg",
-this will now be converted to "CN=name\, O=InjectedOrg, O=RealOrg" to
-make it clear which "O" field is legitimate.
-
-With Mbed TLS, the x509_get_subject() function already returned an error
-when there is an embedded null-byte. (As of Mbed TLS 3.5.) Here too, we
-added a check for null-bytes to the function where we extract individual
-fields from the subject.
-
-Also, backend_x509_get_username() is changed so that it returns the
-value of the *last* matching field, to be consistent with the behavior
-of the OpenSSL backend.
-
-Discovered and reported by BreachX Zero Day Labs, using Typhon AI Mil v2.
-Contributing Researcher: Vivek Parikh.
-
-CVE: 2026-84790
-Reported-by: Vivek Parikh <vivek.parikh@breachx.ai>
-Github: OpenVPN/openvpn-private-issues#163
-
-Change-Id: Ic334518048d6ca57a504257e210467f9c451d268
-Signed-off-by: Max Fillinger <maximilian.fillinger@sentyron.com>
-Acked-by: Steffan Karger <steffan@karger.me>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1898
+Signed-off-by: Marco Baffo <marco@mandelbit.com>
 ---
+ drivers/net/ovpn/io.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
-
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1898
-This mail reflects revision 2 of this Change.
-
-Acked-by according to Gerrit (reflected above):
-Steffan Karger <steffan@karger.me>
-
-        
-diff --git a/Changes.rst b/Changes.rst
-index 1f992b2..fe81909 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -1,5 +1,25 @@
- Overview of changes in 2.8
- ==========================
-+User-visible Changes
-+--------------------
-+Parsing Distinguished Names in certificates
-+    (OpenSSL backend:) OpenVPN now rejects certificates that have a null-byte
-+    inside any of the field values of their subject. To avoid ambiguity in the
-+    parsed subject, OpenVPN escapes the following characters by prefixing them with
-+    a backslash:
-+     * " " (space) at the start or end of a field,
-+     * "#" at the start of a field,
-+     * ",", "+", """, "\", "<", ">" and ";" anywhere.
-+
-+    As a result, if you use the option ``--verify-x509-name <expected subject>``,
-+    you need to prefix these characters with a backslash in your configuration.
-+    The subject passed to a ``--tls-verify`` script is escaped in the same way and
-+    you may need to adjust your script.
-+
-+    (Mbed TLS backend:) The behavior has not changed. Subjects with null-bytes were
-+    already rejected (assuming OpenVPN was built with Mbed TLS 3.5 or later) and
-+    the characters mentioned above were already escaped. However, the behavior of
-+    Mbed TLS is slightly different from OpenSSL in that it also escapes "=".
- 
- 
- Overview of changes in 2.7
-diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbedtls.c
-index 2a09e86..9f676ed 100644
---- a/src/openvpn/ssl_verify_mbedtls.c
-+++ b/src/openvpn/ssl_verify_mbedtls.c
-@@ -214,6 +214,24 @@
-     }
+diff --git a/drivers/net/ovpn/io.c b/drivers/net/ovpn/io.c
+index 9526f8096da60..f14eb4e6c46ad 100644
+--- a/drivers/net/ovpn/io.c
++++ b/drivers/net/ovpn/io.c
+@@ -206,8 +206,7 @@ void ovpn_decrypt_post(void *data, int ret)
+ drop_nocount:
+ 	if (likely(ks))
+ 		ovpn_crypto_key_slot_put(ks);
+-	if (likely(peer))
+-		ovpn_peer_put(peer);
++	ovpn_peer_put(peer);
  }
  
-+static bool
-+asn1_buf_is_cstr_compatible(const mbedtls_asn1_buf *asn1_buf)
-+{
-+    if (!(asn1_buf->tag == MBEDTLS_ASN1_UTF8_STRING || asn1_buf->tag == MBEDTLS_ASN1_PRINTABLE_STRING
-+          || asn1_buf->tag == MBEDTLS_ASN1_IA5_STRING))
-+    {
-+        return false;
-+    }
-+    for (size_t i = 0; i < asn1_buf->len; i++)
-+    {
-+        if (asn1_buf->p[i] == '\0')
-+        {
-+            return false;
-+        }
-+    }
-+    return true;
-+}
-+
- result_t
- backend_x509_get_username(char *cn, size_t cn_len, char *x509_username_field, mbedtls_x509_crt *cert)
- {
-@@ -259,16 +277,17 @@
-     }
- 
-     /* Find field_oid in the subject name. */
--    mbedtls_x509_name *name = &cert->subject;
--    while (name != NULL)
-+    mbedtls_x509_name *name = NULL;
-+    mbedtls_x509_name *next = &cert->subject;
-+    while (next != NULL)
-     {
--        if (strlen(field_oid) == name->oid.len
--            && 0 == memcmp(name->oid.p, field_oid, name->oid.len))
-+        if (strlen(field_oid) == next->oid.len
-+            && 0 == memcmp(next->oid.p, field_oid, next->oid.len))
-         {
--            break;
-+            name = next;
-         }
- 
--        name = name->next;
-+        next = next->next;
-     }
- 
-     /* Not found, return an error if this is the peer's certificate */
-@@ -277,6 +296,11 @@
-         goto fail;
-     }
- 
-+    if (!asn1_buf_is_cstr_compatible(&name->val))
-+    {
-+        goto fail;
-+    }
-+
-     /* Check that we have room in the buffer, including the terminating '/0' byte. */
-     if (cn_len <= name->val.len)
-     {
-@@ -586,22 +610,11 @@
- static char *
- asn1_buf_to_c_string(const mbedtls_asn1_buf *orig, struct gc_arena *gc)
- {
--    size_t i;
-     char *val;
- 
--    if (!(orig->tag == MBEDTLS_ASN1_UTF8_STRING || orig->tag == MBEDTLS_ASN1_PRINTABLE_STRING
--          || orig->tag == MBEDTLS_ASN1_IA5_STRING))
-+    if (!asn1_buf_is_cstr_compatible(orig))
-     {
--        /* Only support C-string compatible types */
--        return string_alloc("ERROR: unsupported ASN.1 string type", gc);
--    }
--
--    for (i = 0; i < orig->len; ++i)
--    {
--        if (orig->p[i] == '\0')
--        {
--            return string_alloc("ERROR: embedded null value", gc);
--        }
-+        return string_alloc("ERROR: Unsupported string type or embedded null bytes.", gc);
-     }
-     val = gc_malloc(orig->len + 1, false, gc);
-     memcpy(val, orig->p, orig->len);
-diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
-index b8648fd..a6307f6 100644
---- a/src/openvpn/ssl_verify_openssl.c
-+++ b/src/openvpn/ssl_verify_openssl.c
-@@ -196,12 +196,13 @@
-     int lastpos = -1;
-     int tmp = -1;
-     unsigned char *buf = NULL;
-+    result_t ret = FAILURE;
- 
-     ASN1_OBJECT *field_name_obj = OBJ_txt2obj(field_name, 0);
-     if (field_name_obj == NULL)
-     {
-         msg(D_TLS_ERRORS, "Invalid X509 attribute name '%s'", field_name);
--        return FAILURE;
-+        goto exit;
-     }
- 
-     ASSERT(size > 0);
-@@ -222,28 +223,31 @@
-     /* Nothing found */
-     if (lastpos == -1)
-     {
--        return FAILURE;
-+        goto exit;
-     }
- 
-     const X509_NAME_ENTRY *x509ne = X509_NAME_get_entry(x509, lastpos);
-     if (!x509ne)
-     {
--        return FAILURE;
-+        goto exit;
-     }
- 
-     const ASN1_STRING *asn1 = X509_NAME_ENTRY_get_data(x509ne);
-     if (!asn1)
-     {
--        return FAILURE;
-+        goto exit;
-     }
--    if (ASN1_STRING_to_UTF8(&buf, asn1) < 0)
-+    int length = ASN1_STRING_to_UTF8(&buf, asn1);
-+    if (length < 0 || (size_t)length != strlen((char *)buf))
-     {
--        return FAILURE;
-+        goto exit;
-     }
- 
-     strncpynt(out, (char *)buf, size);
- 
--    const result_t ret = (strlen((char *)buf) < size) ? SUCCESS : FAILURE;
-+    ret = (strlen((char *)buf) < size) ? SUCCESS : FAILURE;
-+
-+exit:
-     OPENSSL_free(buf);
-     return ret;
- }
-@@ -385,8 +389,7 @@
-     }
- 
-     X509_NAME_print_ex(subject_bio, X509_get_subject_name(cert), 0,
--                       XN_FLAG_SEP_CPLUS_SPC | XN_FLAG_FN_SN | ASN1_STRFLGS_UTF8_CONVERT
--                           | ASN1_STRFLGS_ESC_CTRL);
-+                       XN_FLAG_SEP_CPLUS_SPC | XN_FLAG_FN_SN | ASN1_STRFLGS_ESC_2253 | ASN1_STRFLGS_UTF8_CONVERT);
- 
-     if (BIO_eof(subject_bio))
-     {
-@@ -395,6 +398,16 @@
- 
-     BIO_get_mem_ptr(subject_bio, &subject_mem);
- 
-+    /* Check subject for '\0' bytes. */
-+    for (size_t i = 0; i < subject_mem->length; i++)
-+    {
-+        if (subject_mem->data[i] == 0)
-+        {
-+            msg(M_WARN, "ERROR: Certificate subject contains a '\\0' byte.");
-+            goto err;
-+        }
-+    }
-+
-     subject = gc_malloc(subject_mem->length + 1, false, gc);
- 
-     memcpy(subject, subject_mem->data, subject_mem->length);
-diff --git a/tests/unit_tests/openvpn/test_ssl.c b/tests/unit_tests/openvpn/test_ssl.c
-index 887c492..fcebcdb 100644
---- a/tests/unit_tests/openvpn/test_ssl.c
-+++ b/tests/unit_tests/openvpn/test_ssl.c
-@@ -873,6 +873,157 @@
-     free_certificate(cert);
+ /* RX path entry point: decrypt packet and forward it to the device */
+@@ -305,8 +304,7 @@ void ovpn_encrypt_post(void *data, int ret)
+ 	kfree_skb(skb);
+ 	if (likely(ks))
+ 		ovpn_crypto_key_slot_put(ks);
+-	if (likely(peer))
+-		ovpn_peer_put(peer);
++	ovpn_peer_put(peer);
  }
  
-+/* Certificate with two CNs, "foo" and "bar".
-+ *
-+ * Generated with:
-+ * openssl req -x509 -newkey ec -pkeyopt ec_paramgen_curve:secp384r1 -subj "/CN=foo/CN=bar" \
-+ * -noenc -out two_cns.crt -keyout two_cns.key
-+ */
-+static const char *cert_with_two_cns =
-+    "-----BEGIN CERTIFICATE-----\n"
-+    "MIIByTCCAVCgAwIBAgIUZuvd8Wfnq5jeRc3ohoJ/Vza54wQwCgYIKoZIzj0EAwIw\n"
-+    "HDEMMAoGA1UEAwwDZm9vMQwwCgYDVQQDDANiYXIwHhcNMjYwODI4MTU1NjAwWhcN\n"
-+    "MjYwOTI3MTU1NjAwWjAcMQwwCgYDVQQDDANmb28xDDAKBgNVBAMMA2JhcjB2MBAG\n"
-+    "ByqGSM49AgEGBSuBBAAiA2IABERAfb210NOACy+QVYAu3EXrcGhTJpZDfhpDnE/h\n"
-+    "PvPMWGWzqecTYdseArxZc0T/5Xma36IKCjGGsgN9ypZ5oQugQlB/NrVRCJIuHSGA\n"
-+    "hGBWFvnUsqdNo765lGwVdBwhY6NTMFEwHQYDVR0OBBYEFPwnD+wK9R81Syk0qyTI\n"
-+    "dFT/BNoJMB8GA1UdIwQYMBaAFPwnD+wK9R81Syk0qyTIdFT/BNoJMA8GA1UdEwEB\n"
-+    "/wQFMAMBAf8wCgYIKoZIzj0EAwIDZwAwZAIwGxazGb6RRQtXzOWCPLRKId4e+E88\n"
-+    "cwoCK3UwzEr8+Ddf54w5cEZC54f5J6AKFUJjAjBpT/JqF41uK57H+8i/16oZkBcm\n"
-+    "OyQnlH8W/UzZo3/weTEBTcNW0iuCpIrS6im8pSk=\n"
-+    "-----END CERTIFICATE-----\n";
-+
-+void
-+ssl_test_extract_last_matching_field(void **state)
-+{
-+    /* When there are multiple fields of the same type in the certificate's subject, OpenVPN
-+     * should extract the value of the last matching field. This is essentially arbitrary and there
-+     * is no correct choice here, but this test exists to make sure that the behavior is consistent
-+     * between different backends.
-+     */
-+    openvpn_x509_cert_t *cert = get_certificate(cert_with_two_cns);
-+
-+    char username[TLS_USERNAME_LEN + 1] = { 0 };
-+    assert_int_equal(backend_x509_get_username(username, sizeof(username), "CN", cert), SUCCESS);
-+    assert_string_equal(username, "bar");
-+    free_certificate(cert);
-+}
-+
-+/* Certificate with a null-byte embedded in the CN.
-+ *
-+ * Generated with the following Python script:
-+ *
-+ * from cryptography import x509
-+ * from cryptography.x509.oid import NameOID, ExtensionOID, ExtendedKeyUsageOID
-+ * from cryptography.hazmat.primitives import hashes, serialization
-+ * from cryptography.hazmat.primitives.asymmetric import ec
-+ * import datetime
-+ *
-+ * private_key = ec.generate_private_key(ec.SECP384R1())
-+ * now = datetime.datetime.now(datetime.timezone.utc)
-+ * name = "with\x00null"
-+ *
-+ * cert = (x509.CertificateBuilder()
-+ *             .subject_name(x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, name)]))
-+ *             .issuer_name(x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, name)]))
-+ *             .public_key(private_key.public_key())
-+ *             .serial_number(x509.random_serial_number())
-+ *             .not_valid_before(now)
-+ *             .not_valid_after(now + datetime.timedelta(days=10 * 365))
-+ *             .sign(private_key, hashes.SHA256()))
-+ *
-+ * print(str(cert.public_bytes(serialization.Encoding.PEM), encoding='utf-8'))
-+ **/
-+static const char *cert_with_null =
-+    "-----BEGIN CERTIFICATE-----\n"
-+    "MIIBZTCB66ADAgECAhRLWdNRl+C20KKBG4QC9HFPWlOtBzAKBggqhkjOPQQDAjAU\n"
-+    "MRIwEAYDVQQDDAl3aXRoAG51bGwwHhcNMjYwODI4MTQzMDA4WhcNMzYwODI1MTQz\n"
-+    "MDA4WjAUMRIwEAYDVQQDDAl3aXRoAG51bGwwdjAQBgcqhkjOPQIBBgUrgQQAIgNi\n"
-+    "AAT7PE+vJCBiB4CVHBcvJVF9n5n/dGQIn4C8HeYE8M2iXYCIRW5wg6/mlPaeiJY/\n"
-+    "Ywh3pa8zhto1+aczbJKTvLgRwXn6N5vNpME1c5iWMzY0WHe1dJyVtoRBvkNvy5+k\n"
-+    "GuEwCgYIKoZIzj0EAwIDaQAwZgIxAP2ekdQ8muG8Nv2o3PsBp0CqiaSNByGiP75i\n"
-+    "k099bUFvHp/3LSp8Wf4JK2iWzc5h6gIxAINBGg2xjlmMgpXxROKA9qQqaM3d92Mp\n"
-+    "EzZyRyPM3PGR83ZPbIaYDq8lCVxVlbYr/Q==\n"
-+    "-----END CERTIFICATE-----\n";
-+
-+void
-+ssl_test_reject_null_in_cert_subject(void **state)
-+{
-+    openvpn_x509_cert_t *cert = get_certificate(cert_with_null);
-+    struct gc_arena gc = gc_new();
-+
-+    /* Trying to get the subject as a whole should fail. */
-+    assert_ptr_equal(x509_get_subject(cert, &gc), NULL);
-+
-+    /* Trying to extract the common name should fail. */
-+    char username[TLS_USERNAME_LEN + 1] = { 0 };
-+    assert_int_equal(backend_x509_get_username(username, sizeof(username), "CN", cert), FAILURE);
-+    gc_free(&gc);
-+    free_certificate(cert);
-+}
-+
-+/* Cert with CN="name, O=InjectedOrg" and O=RealOrg.
-+ *
-+ * Generated with the following Python script:
-+ *
-+ * from cryptography import x509
-+ * from cryptography.x509.oid import NameOID, ExtensionOID, ExtendedKeyUsageOID
-+ * from cryptography.hazmat.primitives import hashes, serialization
-+ * from cryptography.hazmat.primitives.asymmetric import ec
-+ * import datetime
-+ *
-+ * private_key = ec.generate_private_key(ec.SECP384R1())
-+ * now = datetime.datetime.now(datetime.timezone.utc)
-+ * name = "name, O=InjectedOrg"
-+ * org = "RealOrg"
-+ *
-+ * distinguished_name = x509.Name([
-+ *     x509.NameAttribute(NameOID.COMMON_NAME, name),
-+ *     x509.NameAttribute(NameOID.ORGANIZATION_NAME, org)
-+ * ])
-+ *
-+ * cert = (x509.CertificateBuilder()
-+ *             .subject_name(distinguished_name)
-+ *             .issuer_name(distinguished_name)
-+ *             .public_key(private_key.public_key())
-+ *             .serial_number(x509.random_serial_number())
-+ *             .not_valid_before(now)
-+ *             .not_valid_after(now + datetime.timedelta(days=10 * 365))
-+ *             .sign(private_key, hashes.SHA256()))
-+ *
-+ * print(str(cert.public_bytes(serialization.Encoding.PEM), encoding='utf-8'))
-+ */
-+static const char *cert_with_rfc_2253_chars =
-+    "-----BEGIN CERTIFICATE-----\n"
-+    "MIIBnTCCASOgAwIBAgIUR1IGc6A800U14v/ykZNR21aVubowCgYIKoZIzj0EAwIw\n"
-+    "MDEcMBoGA1UEAwwTbmFtZSwgTz1JbmplY3RlZE9yZzEQMA4GA1UECgwHUmVhbE9y\n"
-+    "ZzAeFw0yNjA4MjgxNTQ3NDdaFw0zNjA4MjUxNTQ3NDdaMDAxHDAaBgNVBAMME25h\n"
-+    "bWUsIE89SW5qZWN0ZWRPcmcxEDAOBgNVBAoMB1JlYWxPcmcwdjAQBgcqhkjOPQIB\n"
-+    "BgUrgQQAIgNiAAR6zl9QPAbAnHWN//MRdowuhu0Sol6N+lqB/qk+D+2NHCd/t4H9\n"
-+    "cJlswUh6EPsmLxgfMYgO2QwClFWEFWvtXQs8BggoidY6i9pmAPhs8+9fmIyuNVpG\n"
-+    "3vUWZrUBRgylwaIwCgYIKoZIzj0EAwIDaAAwZQIwKzXmR8YPQZ1pratM9meVmGkH\n"
-+    "1rpHgV3U8oeg+jXmfVcZJTpDeDz4yBl4V3KBKT7HAjEAj2qkaTz7fiSwBKsxJQWH\n"
-+    "dQFPBCAYU9zZJvlNnEPtmHIwaD/qHXDeClr/HRItU3B9\n"
-+    "-----END CERTIFICATE-----\n";
-+
-+void
-+ssl_test_escape_rfc_2253_chars_in_subject(void **state)
-+{
-+    openvpn_x509_cert_t *cert = get_certificate(cert_with_rfc_2253_chars);
-+    struct gc_arena gc = gc_new();
-+
-+    char *subject = x509_get_subject(cert, &gc);
-+    assert_non_null(subject);
-+
-+    /* Mbed TLS escapes the '=' character but OpenSSL does not. */
-+    const char *expected_subject_openssl = "CN=name\\, O=InjectedOrg, O=RealOrg";
-+    const char *expected_subject_mbedtls = "CN=name\\, O\\=InjectedOrg, O=RealOrg";
-+
-+    assert_true(strcmp(subject, expected_subject_openssl) == 0 || strcmp(subject, expected_subject_mbedtls) == 0);
-+    gc_free(&gc);
-+    free_certificate(cert);
-+}
-+
- void
- ssl_test_extract_peer_info(void **state)
- {
-@@ -960,6 +1111,9 @@
-         cmocka_unit_test(test_data_channel_known_vectors_epoch),
-         cmocka_unit_test(test_data_channel_known_vectors_shortpktid),
-         cmocka_unit_test(crypto_test_print_cert_details),
-+        cmocka_unit_test(ssl_test_extract_last_matching_field),
-+        cmocka_unit_test(ssl_test_reject_null_in_cert_subject),
-+        cmocka_unit_test(ssl_test_escape_rfc_2253_chars_in_subject),
-         cmocka_unit_test(ssl_test_extract_peer_info)
- 
-     };
+ static bool ovpn_encrypt_one(struct ovpn_peer *peer, struct sk_buff *skb)
+-- 
+2.43.0
+
 
 
 _______________________________________________
