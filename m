@@ -4,128 +4,83 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5D4F1C79F9E
-	for <openvpn-devel@archiver.kernel.org>; Mon,  7 Sep 2026 09:08:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0A4B2C79F9E
+	for <openvpn-devel@archiver.kernel.org>; Mon,  7 Sep 2026 09:14:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:Cc:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:Date:Sender:To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=MePdCtGY3upoWwbDaw65s9fwWzSycjmS6yRds+PyvY8=; b=eA8yYJQ1ISTo7RF42hMgp3DAv0
-	2+KWyH+H/iob6hDuckiGm3O8dS7ySQL58cBoT8kmKBT5/83CwZDVa0fS7PXuTDpUQoafZfVINWIT6
-	gRNzBpjCQtsTfHqhlY3rxjLqmH1W1U+o2Df50upZ0vRqss1ztaHFVoAgAlcF5Nkxem+0=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:Message-ID:Date:To:From:Sender:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Owner;
+	bh=UZvevz6J5B5RNtud7KHh4WQm8+3dAK35ImuN8HeeC38=; b=Re9BYVQNlUCHIsh5t6wk49ciXW
+	Thb0/ylGGGCw/Bm9hR6t3ZmXCJRVa30SXp6J8yfCsulAxAUWroa7ate0LJc9QDvWgAj83X2iDaGWg
+	kGfqMM+zsMUC55mX4F7McICJanpnknTEZOIwyVipZAPdjomEl1d52TtyIIXioL8u0CA4=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x3VKn-0007EP-6h;
-	Mon, 07 Sep 2026 09:08:10 +0000
+	id 1x3VQt-0008Lj-Qe;
+	Mon, 07 Sep 2026 09:14:32 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1x3VKm-0007EI-0G
+ (envelope-from <marco@mandelbit.com>) id 1x3VQq-0008La-La
  for openvpn-devel@lists.sourceforge.net;
- Mon, 07 Sep 2026 09:08:09 +0000
+ Mon, 07 Sep 2026 09:14:30 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:Date:From:Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
- :List-Post:List-Owner:List-Archive;
- bh=9sqMrHO0sHnEFdrPaNn9dO25/KFXb+Yiktb4cwduQG0=; b=mcsAWGzJi/nykBgToeKXUa4yfs
- jYNLlUR29dMgTvU3OLbZYoQZpZoNX5ReE5mGgTa/l6W2wuUbKq9n+BhDDToOWJppXyJSrghntkL+7
- aVjA9cjdJExL86wiD892umQlUWuryRc45fH4pJ8An5LhxD1wFzhBKc013cbfeeDXPKFI=;
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:Message-ID:
+ Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=S91yxV56dh6H0BAB0pZyzSwEKfzR8YBKrkHlS3Yi6P4=; b=QwFVO5SS946MP/nwOwdq9+80gF
+ Sz5oi4Hye5VBXoTN5jd8mYEITE3qYxajic17MoNYP81BCnG+KxvpfMQhfZherefp9HOukeLung8q8
+ chwa6xNhjcXfmbIbv0pOSrhF+rOSaeFPBLD2HNY5RYdAielekm320vpKLhd7MB5BR040=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:Date:From:Sender:
- To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=9sqMrHO0sHnEFdrPaNn9dO25/KFXb+Yiktb4cwduQG0=; b=e
- kmapBAj+ADY0LVRDy435ehG550A/y7KbdN3vNynBPXoeXLqOLaiVjrvEowLSWSIbsYQpIWEEeTvHM
- jEAMhTIb34GGAdBoZwczMS3ofonZ2lXxflPUZXzTgCvDheISSLMhDqlY8efGNDzlmBXbn5lphAxPy
- 01ZhkNGBd3al59zM=;
-Received: from mail-wr1-f54.google.com ([209.85.221.54])
+ h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:Cc:To:From
+ :Sender:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+ References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=S91yxV56dh6H0BAB0pZyzSwEKfzR8YBKrkHlS3Yi6P4=; b=D
+ aU/ndzmOyLtfAcMFgA9NOmIGqKdSezA+Y1TOU7NYs+rTzYK9a910oKvLubuyBxtEoZmM+PPrVg/IV
+ NymyAs5ernJc9ID1b1DsYgSPgq7wMUcHugb6skmLIxhxEwR3mHLS8bBoqNdIuFFOUigP+WViav7Ol
+ XCUqOS2BjQYec78s=;
+Received: from mout-b-107.mailbox.org ([195.10.208.47])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1x3VKi-0003h4-3v for openvpn-devel@lists.sourceforge.net;
- Mon, 07 Sep 2026 09:08:09 +0000
-Received: by mail-wr1-f54.google.com with SMTP id
- ffacd0b85a97d-4858595f997so1895477f8f.1
- for <openvpn-devel@lists.sourceforge.net>;
- Mon, 07 Sep 2026 02:08:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1788772081; x=1789376881; darn=lists.sourceforge.net;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:date:from:from:to:cc:subject:date:message-id
- :reply-to:content-type;
- bh=9sqMrHO0sHnEFdrPaNn9dO25/KFXb+Yiktb4cwduQG0=;
- b=XjiP1Lr/rqoOgniJQV4PqeyCXO+77yEcaAMXl33eL1JNYstXOYAXYbdG2j7xeadirN
- NelJXbWoD6qdU1ImTQD9e5JfHW2jlhSNyC33b37PjaCfMt2P10KiO4bGkC68qazpqrsM
- FO8Py5X5z7JLPkyvB+M7Q9OzQTiLINCMMvFU5ZR4+DM+94lVads+RJGxt/688Cjn3dCE
- OC1pRUnKR7cKpx1kEPSyvN5DnrqEzOJnR2DPHROALMw0lhVbeKULswTcZ0ZtQR46S8r9
- ClakCFITKj2Vv3JNHiVnAXmUis5D755zNgdbZ8WosfRRHyBfU3oao8ye9Y7hXhgpIT2z
- Q4mQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1788772081; x=1789376881;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:date:from:x-gm-gg:x-gm-message-state:from:to:cc
- :subject:date:message-id:reply-to:content-type;
- bh=9sqMrHO0sHnEFdrPaNn9dO25/KFXb+Yiktb4cwduQG0=;
- b=mojMw1xjOfM6IuVS8YRdqu0ukWZY8z1YXm8394tSlCloiRe9cfAsnFgx+kgZMtQxQd
- rjw1lYI/aulK164znrtoRZo/33AkwAj9J7xtTdCdR/Ag/er5ANt2ur5OMqrijAhhwn6Z
- ifniXtH6VgaErKb6kzVI8yF97dhObYPCL90HPzxCZl/Eywpc+3TRbogFW40lL4D3y4o7
- Cs7xmE6z2Q5ySaBxKyBFZYDO2w3lnJXX+8Wata0dXl/afngKert8+9viI/rK/RLAK37f
- WLnstTmKmeDTeBstSz/7d+NTsGwmZ52LQYludcHKfHk0/O/n0WcHA22okIiLcm6qNczS
- 1kBg==
-X-Forwarded-Encrypted: i=1;
- AKwUvByYsNgDKjW46Vc/HH1aErxonG/JAXaAc5YUSf75dXIJQtx49P1U9ySxr/qT0tl4ZK/qbfbNJUuj51cyfWI3@lists.sourceforge.net
-X-Gm-Message-State: AFuF++kOJtueHcti+ej+eeyoJbGk8TAJYtYpdBOljfThKjIi0mr/zH+L
- JOnaLUxsTaAqzQJ4g9EPf2aCW9BazYpAxgFYxDLecjM0nRDEqvP0DmVU55iP1rjRN3K5+tuVPfE
- IuEHK18CPUgizAyQlPo1d2G6FnnhwyieCOyYtbNT2W5bAKxj9vQpN225y35PseE6k+LvG
-X-Gm-Gg: AYBFou0v1p02HY1R8kJ6j0eFRGCD8T4qLQ7og11ojquoL0r2ZDphMa26fHbq3SMKhXU
- 9n06XQCZM17ZgUIaa+e0LPt0UT/GqhV2WuAR/Yzg3z0/oaMSM8iESIMzDWZPVGNZMHaoSK0Ri+h
- HX+4t4HhkQLJFHXvKv1oJCEiU61mnHhIZBCdV1Dm6NjZ3bu9xlZoTHFf0k39m9Gj0VNWO+03QhL
- +/cxADPuXfyZ7Q9nGVtEvuJnQReSXSUf43ikUpNoknzEriibRIpFTFHxP3uyIdtbrUwd79XLI7w
- UX9ecacZ4fp56zsqPd3HE62riUscJrKC8rDPmXDZFJGk/J14nehsbEQdPxw527JSN/+UMAyvKp3
- mfenXIopQ7FAFmZyztlp5sbSKTJQB1glPZ+PSg1RvnD705+x8RyeZi2c0dMgGpf7orKfgMEaFQ6
- Db+ii/XU3K6Re7e0lobnbdywOSC5zxNei8M7PrABbTy8jHzUv3ZssqOtR6CVhJA1tMSZto6a1OC
- WWH9hG+B8dXrXSHxzToxPW1zgxg6hScgoE2SaHkZkcAF++GqSaCpacF1Ink6wSqr4jLHzV6akJL
- tXr3MJLBsHF+/qkzRrRg5QdwhV1bYUpFqj0heMV4sNBM9d0O3vE=
-X-Received: by 2002:a05:6000:2c02:b0:484:3604:c7bd with SMTP id
- ffacd0b85a97d-4858708c895mr44707395f8f.17.1788772081373; 
- Mon, 07 Sep 2026 02:08:01 -0700 (PDT)
-Received: from ip-10-18-1-162.eu-central-1.compute.internal
- (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
- by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-48588135600sm23352299f8f.2.2026.09.07.02.08.00
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 07 Sep 2026 02:08:01 -0700 (PDT)
-X-Google-Original-From: "MaxF (Code Review)"
- <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Mon, 7 Sep 2026 09:07:59 +0000
-Auto-Submitted: auto-generated
-X-Gerrit-MessageType: comment
-X-Gerrit-PatchSet: 2
-X-Gerrit-Change-Id: Ic334518048d6ca57a504257e210467f9c451d268
-X-Gerrit-Change-Number: 1898
-X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1898?usp=email>
-X-Gerrit-Commit: 590a76643df65c4fc73a696a83d58b90ded32af7
-X-Gerrit-Comment-Date: Mon, 7 Sep 2026 09:07:59 +0000
-In-Reply-To: <gerrit.1788519683000.Ic334518048d6ca57a504257e210467f9c451d268@gerrit.openvpn.net>
-References: <gerrit.1788519683000.Ic334518048d6ca57a504257e210467f9c451d268@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzg4NTE5NjgzMDAwLkljMzM0NTE4MDQ4ZDZjYTU3YTUwNDI1N2UyMTA0NjdmOWM0NTFkMjY4QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <5acb68273e2aa51859fe91661949262faea88c68-EmailReviewComments-HTML@gerrit.openvpn.net>
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
+ id 1x3VQo-0003pQ-RD for openvpn-devel@lists.sourceforge.net;
+ Mon, 07 Sep 2026 09:14:29 +0000
+Received: from smtp2.mailbox.org (smtp2.mailbox.org
+ [IPv6:2001:67c:2050:b231:465::2])
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+ key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+ (No client certificate requested)
+ by mout-b-107.mailbox.org (Postfix) with ESMTPS id 4hdhGL5kvtz3y3p;
+ Mon, 07 Sep 2026 11:14:18 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
+ s=MBO0001; t=1788772458;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:
+ content-transfer-encoding:content-transfer-encoding;
+ bh=S91yxV56dh6H0BAB0pZyzSwEKfzR8YBKrkHlS3Yi6P4=;
+ b=nhgyU7phbxsNOoC0P+M4IK045kS4Tj+1d8PlGjbQSuCeSqB7VVEe1yE+ecYSIMH9jtDD9z
+ qlpiieyZ8eh/dZCgkzNYl0wMU4IkubJk2OdcAEc9RkXbfwx/9QlP5DZNbZDoTjUKrf//gM
+ JbJVO1ceMyr9OYhR0DybiOg93RCIc9IgiWaq62pnvLhvxxVRV5H3Lt9pTN2/Ejg31mq3B7
+ 1LEJFedB9rvB0C7JThoaYw2fHKfLfhKiVS32WIqLHxjU68XBmewjftJcvneVpjRJ3aPdgS
+ c1vEtY+zTMB4QhZBz3U5FG37lk4g+ciGfbxO+SO5ygLRegYBZv2jZfYMhlE0pg==
+Authentication-Results: outgoing_mbo_mout; dkim=none;
+ spf=pass (outgoing_mbo_mout: domain of marco@mandelbit.com designates
+ 2001:67c:2050:b231:465::2 as permitted sender)
+ smtp.mailfrom=marco@mandelbit.com
+From: Marco Baffo <marco@mandelbit.com>
+To: openvpn-devel@lists.sourceforge.net
+Date: Mon,  7 Sep 2026 11:14:13 +0200
+Message-ID: <20260907091414.3201246-1-marco@mandelbit.com>
 MIME-Version: 1.0
-User-Agent: Gerrit/3.11.5
-X-Headers-End: 1x3VKi-0003h4-3v
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Check for \0 and RFC
- 2253 chars in cert subjects
+X-Rspamd-Queue-Id: 4hdhGL5kvtz3y3p
+X-Headers-End: 1x3VQo-0003pQ-RD
+Subject: [Openvpn-devel] [RFC ovpn net-next v2 1/2] ovpn: extend statistics
+ with per-peer drop and event counters
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -137,178 +92,551 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "MaxF \(Code Review\) via Openvpn-devel"
- <openvpn-devel@lists.sourceforge.net>
-Reply-To: max@max-fillinger.net, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net, steffan@karger.me, gert@greenie.muc.de
-Cc: "MaxF \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>,
- plaisthos <arne-openvpn@rfc2549.org>
-Content-Type: multipart/mixed; boundary="===============5963673863200135615=="
+Cc: Antonio Quartulli <antonio@openvpn.net>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============5963673863200135615==
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="sGJZvBAJrn8="; charset=UTF-8
+Drops are currently accounted only via the undifferentiated netdev
+rx/tx_dropped counters, hiding the actual drop reason. Add per-peer
+atomic64_t counters (struct ovpn_peer_estats) for the significant
+drop reasons and events in the data path:
 
---sGJZvBAJrn8=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+* RX: decrypt errors, replay errors, unknown key-id, unsupported
+  inner protocol, RPF check failures
+* TX: encrypt errors, IV exhaustion, missing primary key, missing
+  transport, GSO segmentation errors
+* events: keepalives received/sent, endpoint floats
 
-Attention is currently required from: cron2, plaisthos, syzzer=2E
+Only ovpn-specific drop reasons are covered. Generic
+ENOMEM failures and teardown races are not accounted.
 
-MaxF has=
- posted comments on this change by MaxF=2E ( http://gerrit=2Eopenvpn=2Enet/=
-c/openvpn/+/1898?usp=3Demail )
+Export the counters in a new OVPN_A_PEER_ESTATS nest in the
+OVPN_CMD_PEER_GET reply and teach ovpn-cli to print them.
 
-Change subject: Check for \0 and RFC 2253 c=
-hars in cert subjects
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E
+Signed-off-by: Marco Baffo <marco@mandelbit.com>
+---
+Changes in v2: Rebased
 
+ Documentation/netlink/specs/ovpn.yaml       | 62 +++++++++++++++++++++
+ drivers/net/ovpn/io.c                       | 25 +++++++--
+ drivers/net/ovpn/netlink-gen.c              | 19 ++++++-
+ drivers/net/ovpn/netlink-gen.h              |  3 +-
+ drivers/net/ovpn/netlink.c                  | 37 +++++++++++-
+ drivers/net/ovpn/peer.c                     |  5 ++
+ drivers/net/ovpn/peer.h                     |  2 +
+ drivers/net/ovpn/stats.h                    | 33 +++++++++++
+ include/uapi/linux/ovpn.h                   | 20 +++++++
+ tools/testing/selftests/net/ovpn/ovpn-cli.c | 60 ++++++++++++++++++++
+ 10 files changed, 259 insertions(+), 7 deletions(-)
 
-Patch Set 2:
-
-(1 comment)
-
-Patchset:
-
-PS1: 
-> wrong `assert()` =
-used=2E=2E=2E [=E2=80=A6]
-I replaced it with assert_true() and changed the =
-commit message as you asked in Signal=2E
-
-
-
+diff --git a/Documentation/netlink/specs/ovpn.yaml b/Documentation/netlink/specs/ovpn.yaml
+index ac50d1d7c00a6..dd1bb96c312dd 100644
+--- a/Documentation/netlink/specs/ovpn.yaml
++++ b/Documentation/netlink/specs/ovpn.yaml
+@@ -175,6 +175,68 @@ attribute-sets:
+           will advertise the tx-id to be used on the link.
+         checks:
+           max: 0xFFFFFF
++      -
++        name: estats
++        type: nest
++        doc: Extended statistics, per-peer drop/event counters
++        nested-attributes: peer-estats
++  -
++    name: peer-estats
++    attributes:
++      -
++        name: rx-decrypt-errors
++        type: uint
++        doc: Number of packets dropped due to decryption failure
++      -
++        name: rx-replay-errors
++        type: uint
++        doc: Number of packets dropped by the replay protection check
++      -
++        name: rx-unknown-keyid
++        type: uint
++        doc: Number of packets dropped due to unknown key ID
++      -
++        name: rx-unsupported-proto
++        type: uint
++        doc: >-
++          Number of packets dropped due to unsupported or malformed inner
++          protocol
++      -
++        name: rx-rpf-errors
++        type: uint
++        doc: Number of packets dropped by the reverse path filtering check
++      -
++        name: tx-encrypt-errors
++        type: uint
++        doc: Number of packets dropped due to encryption failure
++      -
++        name: tx-iv-exhausted
++        type: uint
++        doc: Number of packets dropped due to packet ID (IV) exhaustion
++      -
++        name: tx-no-key
++        type: uint
++        doc: Number of packets dropped due to missing primary key
++      -
++        name: tx-no-transport
++        type: uint
++        doc: Number of packets dropped due to missing transport socket
++      -
++        name: tx-gso-errors
++        type: uint
++        doc: Number of packets dropped due to GSO segmentation failure
++      -
++        name: keepalive-rx
++        type: uint
++        doc: Number of keepalive packets received from this peer
++      -
++        name: keepalive-tx
++        type: uint
++        doc: Number of keepalive packets sent to this peer
++      -
++        name: float-count
++        type: uint
++        doc: Number of times the peer endpoint floated
+   -
+     name: peer-new-input
+     subset-of: peer
+diff --git a/drivers/net/ovpn/io.c b/drivers/net/ovpn/io.c
+index 9526f8096da60..37547f6117e9c 100644
+--- a/drivers/net/ovpn/io.c
++++ b/drivers/net/ovpn/io.c
+@@ -128,8 +128,10 @@ void ovpn_decrypt_post(void *data, int ret)
+ 	/* crypto is done, cleanup skb CB and its members */
+ 	kfree(ovpn_skb_cb(skb)->crypto_tmp);
+ 
+-	if (unlikely(ret < 0))
++	if (unlikely(ret < 0)) {
++		atomic64_inc(&peer->estats.rx_decrypt_errors);
+ 		goto drop;
++	}
+ 
+ 	/* PID sits after the op */
+ 	pid = (__force __be32 *)(skb->data + OVPN_OPCODE_SIZE);
+@@ -138,6 +140,7 @@ void ovpn_decrypt_post(void *data, int ret)
+ 		net_err_ratelimited("%s: PKT ID RX error for peer %u: %d\n",
+ 				    netdev_name(peer->ovpn->dev), peer->id,
+ 				    ret);
++		atomic64_inc(&peer->estats.rx_replay_errors);
+ 		goto drop;
+ 	}
+ 
+@@ -165,6 +168,7 @@ void ovpn_decrypt_post(void *data, int ret)
+ 			net_info_ratelimited("%s: NULL packet received from peer %u\n",
+ 					     netdev_name(peer->ovpn->dev),
+ 					     peer->id);
++			atomic64_inc(&peer->estats.rx_unsupported_proto);
+ 			goto drop;
+ 		}
+ 
+@@ -172,6 +176,7 @@ void ovpn_decrypt_post(void *data, int ret)
+ 			net_dbg_ratelimited("%s: ping received from peer %u\n",
+ 					    netdev_name(peer->ovpn->dev),
+ 					    peer->id);
++			atomic64_inc(&peer->estats.keepalive_rx);
+ 			/* we drop the packet, but this is not a failure */
+ 			consume_skb(skb);
+ 			goto drop_nocount;
+@@ -179,6 +184,7 @@ void ovpn_decrypt_post(void *data, int ret)
+ 
+ 		net_info_ratelimited("%s: unsupported protocol received from peer %u\n",
+ 				     netdev_name(peer->ovpn->dev), peer->id);
++		atomic64_inc(&peer->estats.rx_unsupported_proto);
+ 		goto drop;
+ 	}
+ 	skb->protocol = proto;
+@@ -193,6 +199,7 @@ void ovpn_decrypt_post(void *data, int ret)
+ 			net_dbg_ratelimited("%s: RPF dropped packet from peer %u, src: %pI4\n",
+ 					    netdev_name(peer->ovpn->dev),
+ 					    peer->id, &ip_hdr(skb)->saddr);
++		atomic64_inc(&peer->estats.rx_rpf_errors);
+ 		goto drop;
+ 	}
+ 
+@@ -225,6 +232,7 @@ void ovpn_recv(struct ovpn_peer *peer, struct sk_buff *skb)
+ 		net_info_ratelimited("%s: no available key for peer %u, key-id: %u\n",
+ 				     netdev_name(peer->ovpn->dev), peer->id,
+ 				     key_id);
++		atomic64_inc(&peer->estats.rx_unknown_keyid);
+ 		ovpn_dev_dstats_rx_dropped(peer->ovpn->dev);
+ 		kfree_skb(skb);
+ 		ovpn_peer_put(peer);
+@@ -266,19 +274,24 @@ void ovpn_encrypt_post(void *data, int ret)
+ 			/* let userspace know so that a new key must be negotiated */
+ 			ovpn_nl_key_swap_notify(peer, ks->key_id);
+ 
++		atomic64_inc(&peer->estats.tx_iv_exhausted);
+ 		goto err;
+ 	}
+ 
+-	if (unlikely(ret < 0))
++	if (unlikely(ret < 0)) {
++		atomic64_inc(&peer->estats.tx_encrypt_errors);
+ 		goto err;
++	}
+ 
+ 	skb_mark_not_on_list(skb);
+ 	orig_len = skb->len;
+ 
+ 	rcu_read_lock();
+ 	sock = rcu_dereference(peer->sock);
+-	if (unlikely(!sock))
++	if (unlikely(!sock)) {
++		atomic64_inc(&peer->estats.tx_no_transport);
+ 		goto err_unlock;
++	}
+ 
+ 	switch (sock->sk->sk_protocol) {
+ 	case IPPROTO_UDP:
+@@ -289,6 +302,7 @@ void ovpn_encrypt_post(void *data, int ret)
+ 		break;
+ 	default:
+ 		/* no transport configured yet */
++		atomic64_inc(&peer->estats.tx_no_transport);
+ 		goto err_unlock;
+ 	}
+ 
+@@ -315,8 +329,10 @@ static bool ovpn_encrypt_one(struct ovpn_peer *peer, struct sk_buff *skb)
+ 
+ 	/* get primary key to be used for encrypting data */
+ 	ks = ovpn_crypto_key_slot_primary(&peer->crypto);
+-	if (unlikely(!ks))
++	if (unlikely(!ks)) {
++		atomic64_inc(&peer->estats.tx_no_key);
+ 		return false;
++	}
+ 
+ 	/* take a reference to the peer because the crypto code may run async.
+ 	 * ovpn_encrypt_post() will release it upon completion
+@@ -397,6 +413,7 @@ netdev_tx_t ovpn_net_xmit(struct sk_buff *skb, struct net_device *dev)
+ 			ret = PTR_ERR(segments);
+ 			net_err_ratelimited("%s: cannot segment payload packet: %d\n",
+ 					    netdev_name(dev), ret);
++			atomic64_inc(&peer->estats.tx_gso_errors);
+ 			goto drop;
+ 		}
+ 
+diff --git a/drivers/net/ovpn/netlink-gen.c b/drivers/net/ovpn/netlink-gen.c
+index 92d2fdc17c2e8..d427db6c563fe 100644
+--- a/drivers/net/ovpn/netlink-gen.c
++++ b/drivers/net/ovpn/netlink-gen.c
+@@ -63,7 +63,7 @@ const struct nla_policy ovpn_keydir_nl_policy[OVPN_A_KEYDIR_NONCE_TAIL + 1] = {
+ 	[OVPN_A_KEYDIR_NONCE_TAIL] = NLA_POLICY_EXACT_LEN(OVPN_NONCE_TAIL_SIZE),
+ };
+ 
+-const struct nla_policy ovpn_peer_nl_policy[OVPN_A_PEER_TX_ID + 1] = {
++const struct nla_policy ovpn_peer_nl_policy[OVPN_A_PEER_ESTATS + 1] = {
+ 	[OVPN_A_PEER_ID] = NLA_POLICY_FULL_RANGE(NLA_U32, &ovpn_a_peer_id_range),
+ 	[OVPN_A_PEER_REMOTE_IPV4] = { .type = NLA_BE32, },
+ 	[OVPN_A_PEER_REMOTE_IPV6] = NLA_POLICY_EXACT_LEN(16),
+@@ -88,12 +88,29 @@ const struct nla_policy ovpn_peer_nl_policy[OVPN_A_PEER_TX_ID + 1] = {
+ 	[OVPN_A_PEER_LINK_RX_PACKETS] = { .type = NLA_UINT, },
+ 	[OVPN_A_PEER_LINK_TX_PACKETS] = { .type = NLA_UINT, },
+ 	[OVPN_A_PEER_TX_ID] = NLA_POLICY_FULL_RANGE(NLA_U32, &ovpn_a_peer_tx_id_range),
++	[OVPN_A_PEER_ESTATS] = NLA_POLICY_NESTED(ovpn_peer_estats_nl_policy),
+ };
+ 
+ const struct nla_policy ovpn_peer_del_input_nl_policy[OVPN_A_PEER_ID + 1] = {
+ 	[OVPN_A_PEER_ID] = NLA_POLICY_FULL_RANGE(NLA_U32, &ovpn_a_peer_id_range),
+ };
+ 
++const struct nla_policy ovpn_peer_estats_nl_policy[OVPN_A_PEER_ESTATS_FLOAT_COUNT + 1] = {
++	[OVPN_A_PEER_ESTATS_RX_DECRYPT_ERRORS] = { .type = NLA_UINT, },
++	[OVPN_A_PEER_ESTATS_RX_REPLAY_ERRORS] = { .type = NLA_UINT, },
++	[OVPN_A_PEER_ESTATS_RX_UNKNOWN_KEYID] = { .type = NLA_UINT, },
++	[OVPN_A_PEER_ESTATS_RX_UNSUPPORTED_PROTO] = { .type = NLA_UINT, },
++	[OVPN_A_PEER_ESTATS_RX_RPF_ERRORS] = { .type = NLA_UINT, },
++	[OVPN_A_PEER_ESTATS_TX_ENCRYPT_ERRORS] = { .type = NLA_UINT, },
++	[OVPN_A_PEER_ESTATS_TX_IV_EXHAUSTED] = { .type = NLA_UINT, },
++	[OVPN_A_PEER_ESTATS_TX_NO_KEY] = { .type = NLA_UINT, },
++	[OVPN_A_PEER_ESTATS_TX_NO_TRANSPORT] = { .type = NLA_UINT, },
++	[OVPN_A_PEER_ESTATS_TX_GSO_ERRORS] = { .type = NLA_UINT, },
++	[OVPN_A_PEER_ESTATS_KEEPALIVE_RX] = { .type = NLA_UINT, },
++	[OVPN_A_PEER_ESTATS_KEEPALIVE_TX] = { .type = NLA_UINT, },
++	[OVPN_A_PEER_ESTATS_FLOAT_COUNT] = { .type = NLA_UINT, },
++};
++
+ const struct nla_policy ovpn_peer_new_input_nl_policy[OVPN_A_PEER_TX_ID + 1] = {
+ 	[OVPN_A_PEER_ID] = NLA_POLICY_FULL_RANGE(NLA_U32, &ovpn_a_peer_id_range),
+ 	[OVPN_A_PEER_REMOTE_IPV4] = { .type = NLA_BE32, },
+diff --git a/drivers/net/ovpn/netlink-gen.h b/drivers/net/ovpn/netlink-gen.h
+index 67cd85f86173f..197e4a992d692 100644
+--- a/drivers/net/ovpn/netlink-gen.h
++++ b/drivers/net/ovpn/netlink-gen.h
+@@ -18,8 +18,9 @@ extern const struct nla_policy ovpn_keyconf_del_input_nl_policy[OVPN_A_KEYCONF_S
+ extern const struct nla_policy ovpn_keyconf_get_nl_policy[OVPN_A_KEYCONF_CIPHER_ALG + 1];
+ extern const struct nla_policy ovpn_keyconf_swap_input_nl_policy[OVPN_A_KEYCONF_PEER_ID + 1];
+ extern const struct nla_policy ovpn_keydir_nl_policy[OVPN_A_KEYDIR_NONCE_TAIL + 1];
+-extern const struct nla_policy ovpn_peer_nl_policy[OVPN_A_PEER_TX_ID + 1];
++extern const struct nla_policy ovpn_peer_nl_policy[OVPN_A_PEER_ESTATS + 1];
+ extern const struct nla_policy ovpn_peer_del_input_nl_policy[OVPN_A_PEER_ID + 1];
++extern const struct nla_policy ovpn_peer_estats_nl_policy[OVPN_A_PEER_ESTATS_FLOAT_COUNT + 1];
+ extern const struct nla_policy ovpn_peer_new_input_nl_policy[OVPN_A_PEER_TX_ID + 1];
+ extern const struct nla_policy ovpn_peer_set_input_nl_policy[OVPN_A_PEER_TX_ID + 1];
+ 
+diff --git a/drivers/net/ovpn/netlink.c b/drivers/net/ovpn/netlink.c
+index 4dad852941982..9e03b4cefceec 100644
+--- a/drivers/net/ovpn/netlink.c
++++ b/drivers/net/ovpn/netlink.c
+@@ -551,9 +551,9 @@ static int ovpn_nl_send_peer(struct sk_buff *skb, const struct genl_info *info,
+ 			     int flags)
+ {
+ 	const struct ovpn_bind *bind;
++	struct nlattr *attr, *estats;
+ 	struct ovpn_socket *sock;
+ 	int ret = -EMSGSIZE;
+-	struct nlattr *attr;
+ 	__be16 local_port;
+ 	void *hdr;
+ 	int id;
+@@ -654,6 +654,41 @@ static int ovpn_nl_send_peer(struct sk_buff *skb, const struct genl_info *info,
+ 			 atomic64_read(&peer->link_stats.tx.packets)))
+ 		goto err;
+ 
++	estats = nla_nest_start(skb, OVPN_A_PEER_ESTATS);
++	if (!estats)
++		goto err;
++
++	if (/* drop/event counters */
++	    nla_put_uint(skb, OVPN_A_PEER_ESTATS_RX_DECRYPT_ERRORS,
++			 atomic64_read(&peer->estats.rx_decrypt_errors)) ||
++	    nla_put_uint(skb, OVPN_A_PEER_ESTATS_RX_REPLAY_ERRORS,
++			 atomic64_read(&peer->estats.rx_replay_errors)) ||
++	    nla_put_uint(skb, OVPN_A_PEER_ESTATS_RX_UNKNOWN_KEYID,
++			 atomic64_read(&peer->estats.rx_unknown_keyid)) ||
++	    nla_put_uint(skb, OVPN_A_PEER_ESTATS_RX_UNSUPPORTED_PROTO,
++			 atomic64_read(&peer->estats.rx_unsupported_proto)) ||
++	    nla_put_uint(skb, OVPN_A_PEER_ESTATS_RX_RPF_ERRORS,
++			 atomic64_read(&peer->estats.rx_rpf_errors)) ||
++	    nla_put_uint(skb, OVPN_A_PEER_ESTATS_TX_ENCRYPT_ERRORS,
++			 atomic64_read(&peer->estats.tx_encrypt_errors)) ||
++	    nla_put_uint(skb, OVPN_A_PEER_ESTATS_TX_IV_EXHAUSTED,
++			 atomic64_read(&peer->estats.tx_iv_exhausted)) ||
++	    nla_put_uint(skb, OVPN_A_PEER_ESTATS_TX_NO_KEY,
++			 atomic64_read(&peer->estats.tx_no_key)) ||
++	    nla_put_uint(skb, OVPN_A_PEER_ESTATS_TX_NO_TRANSPORT,
++			 atomic64_read(&peer->estats.tx_no_transport)) ||
++	    nla_put_uint(skb, OVPN_A_PEER_ESTATS_TX_GSO_ERRORS,
++			 atomic64_read(&peer->estats.tx_gso_errors)) ||
++	    nla_put_uint(skb, OVPN_A_PEER_ESTATS_KEEPALIVE_RX,
++			 atomic64_read(&peer->estats.keepalive_rx)) ||
++	    nla_put_uint(skb, OVPN_A_PEER_ESTATS_KEEPALIVE_TX,
++			 atomic64_read(&peer->estats.keepalive_tx)) ||
++	    nla_put_uint(skb, OVPN_A_PEER_ESTATS_FLOAT_COUNT,
++			 atomic64_read(&peer->estats.floats)))
++		goto err;
++
++	nla_nest_end(skb, estats);
++
+ 	nla_nest_end(skb, attr);
+ 	genlmsg_end(skb, hdr);
+ 
+diff --git a/drivers/net/ovpn/peer.c b/drivers/net/ovpn/peer.c
+index c95656ca7c357..08cdd179de320 100644
+--- a/drivers/net/ovpn/peer.c
++++ b/drivers/net/ovpn/peer.c
+@@ -77,6 +77,10 @@ static void ovpn_peer_keepalive_send(struct work_struct *work)
+ 	struct ovpn_peer *peer = container_of(work, struct ovpn_peer,
+ 					      keepalive_work);
+ 
++	/* count attempted keepalives: if the TX path fails afterwards,
++	 * keepalive_tx will include a transmission that was not sent
++	 */
++	atomic64_inc(&peer->estats.keepalive_tx);
+ 	local_bh_disable();
+ 	ovpn_xmit_special(peer, ovpn_keepalive_message,
+ 			  sizeof(ovpn_keepalive_message));
+@@ -309,6 +313,7 @@ void ovpn_peer_endpoints_update(struct ovpn_peer *peer, struct sk_buff *skb)
+ 
+ 	spin_unlock_bh(&peer->lock);
+ 
++	atomic64_inc(&peer->estats.floats);
+ 	ovpn_nl_peer_float_notify(peer, &ss);
+ 
+ 	/* rehashing is required only in MP mode as P2P has one peer
+diff --git a/drivers/net/ovpn/peer.h b/drivers/net/ovpn/peer.h
+index dfa5c0037e02b..5667bad91c31f 100644
+--- a/drivers/net/ovpn/peer.h
++++ b/drivers/net/ovpn/peer.h
+@@ -60,6 +60,7 @@
+  * @rcu: used to free peer in an RCU safe way
+  * @release_entry: entry for the socket release list
+  * @keepalive_work: used to schedule keepalive sending
++ * @estats: per-peer drop/event counters
+  */
+ struct ovpn_peer {
+ 	struct ovpn_priv *ovpn;
+@@ -114,6 +115,7 @@ struct ovpn_peer {
+ 	struct rcu_head rcu;
+ 	struct llist_node release_entry;
+ 	struct work_struct keepalive_work;
++	struct ovpn_peer_estats estats;
+ };
+ 
+ /**
+diff --git a/drivers/net/ovpn/stats.h b/drivers/net/ovpn/stats.h
+index 3a45b97c00568..8b900e0c11210 100644
+--- a/drivers/net/ovpn/stats.h
++++ b/drivers/net/ovpn/stats.h
+@@ -25,6 +25,39 @@ struct ovpn_peer_stats {
+ 	struct ovpn_peer_stat tx;
+ };
+ 
++/**
++ * struct ovpn_peer_estats - per-peer drop/event counters
++ * @rx_decrypt_errors: packets dropped due to decryption/auth failure
++ * @rx_replay_errors: packets dropped by the replay protection check
++ * @rx_unknown_keyid: packets dropped due to unknown key ID
++ * @rx_unsupported_proto: packets dropped due to unsupported or malformed
++ *			  inner protocol
++ * @rx_rpf_errors: packets dropped by the reverse path filtering check
++ * @tx_encrypt_errors: packets dropped due to encryption failure
++ * @tx_iv_exhausted: packets dropped due to packet ID (IV) exhaustion
++ * @tx_no_key: packets dropped due to missing primary key
++ * @tx_no_transport: packets dropped due to missing transport socket
++ * @tx_gso_errors: packets dropped due to GSO segmentation failure
++ * @keepalive_rx: keepalive packets received from this peer
++ * @keepalive_tx: keepalive packets sent to this peer
++ * @floats: number of times the peer endpoint floated
++ */
++struct ovpn_peer_estats {
++	atomic64_t rx_decrypt_errors;
++	atomic64_t rx_replay_errors;
++	atomic64_t rx_unknown_keyid;
++	atomic64_t rx_unsupported_proto;
++	atomic64_t rx_rpf_errors;
++	atomic64_t tx_encrypt_errors;
++	atomic64_t tx_iv_exhausted;
++	atomic64_t tx_no_key;
++	atomic64_t tx_no_transport;
++	atomic64_t tx_gso_errors;
++	atomic64_t keepalive_rx;
++	atomic64_t keepalive_tx;
++	atomic64_t floats;
++};
++
+ void ovpn_peer_stats_init(struct ovpn_peer_stats *ps);
+ 
+ static inline void ovpn_peer_stats_increment(struct ovpn_peer_stat *stat,
+diff --git a/include/uapi/linux/ovpn.h b/include/uapi/linux/ovpn.h
+index 06690090a1a95..e5ed635c03732 100644
+--- a/include/uapi/linux/ovpn.h
++++ b/include/uapi/linux/ovpn.h
+@@ -56,11 +56,31 @@ enum {
+ 	OVPN_A_PEER_LINK_RX_PACKETS,
+ 	OVPN_A_PEER_LINK_TX_PACKETS,
+ 	OVPN_A_PEER_TX_ID,
++	OVPN_A_PEER_ESTATS,
+ 
+ 	__OVPN_A_PEER_MAX,
+ 	OVPN_A_PEER_MAX = (__OVPN_A_PEER_MAX - 1)
+ };
+ 
++enum {
++	OVPN_A_PEER_ESTATS_RX_DECRYPT_ERRORS = 1,
++	OVPN_A_PEER_ESTATS_RX_REPLAY_ERRORS,
++	OVPN_A_PEER_ESTATS_RX_UNKNOWN_KEYID,
++	OVPN_A_PEER_ESTATS_RX_UNSUPPORTED_PROTO,
++	OVPN_A_PEER_ESTATS_RX_RPF_ERRORS,
++	OVPN_A_PEER_ESTATS_TX_ENCRYPT_ERRORS,
++	OVPN_A_PEER_ESTATS_TX_IV_EXHAUSTED,
++	OVPN_A_PEER_ESTATS_TX_NO_KEY,
++	OVPN_A_PEER_ESTATS_TX_NO_TRANSPORT,
++	OVPN_A_PEER_ESTATS_TX_GSO_ERRORS,
++	OVPN_A_PEER_ESTATS_KEEPALIVE_RX,
++	OVPN_A_PEER_ESTATS_KEEPALIVE_TX,
++	OVPN_A_PEER_ESTATS_FLOAT_COUNT,
++
++	__OVPN_A_PEER_ESTATS_MAX,
++	OVPN_A_PEER_ESTATS_MAX = (__OVPN_A_PEER_ESTATS_MAX - 1)
++};
++
+ enum {
+ 	OVPN_A_KEYCONF_PEER_ID = 1,
+ 	OVPN_A_KEYCONF_SLOT,
+diff --git a/tools/testing/selftests/net/ovpn/ovpn-cli.c b/tools/testing/selftests/net/ovpn/ovpn-cli.c
+index f4effa7580c0f..ecac71db769ae 100644
+--- a/tools/testing/selftests/net/ovpn/ovpn-cli.c
++++ b/tools/testing/selftests/net/ovpn/ovpn-cli.c
+@@ -893,6 +893,66 @@ static int ovpn_handle_peer(struct nl_msg *msg, void (*arg)__always_unused)
+ 		fprintf(stderr, "\tLINK TX packets: %" PRIu64 "\n",
+ 			ovpn_nla_get_uint(pattrs[OVPN_A_PEER_LINK_TX_PACKETS]));
+ 
++	if (pattrs[OVPN_A_PEER_ESTATS]) {
++		struct nlattr *eattrs[OVPN_A_PEER_ESTATS_MAX + 1];
++
++		nla_parse(eattrs, OVPN_A_PEER_ESTATS_MAX,
++			  nla_data(pattrs[OVPN_A_PEER_ESTATS]),
++			  nla_len(pattrs[OVPN_A_PEER_ESTATS]), NULL);
++
++		if (eattrs[OVPN_A_PEER_ESTATS_RX_DECRYPT_ERRORS])
++			fprintf(stderr, "\tRX decrypt errors: %" PRIu64 "\n",
++				ovpn_nla_get_uint(eattrs[OVPN_A_PEER_ESTATS_RX_DECRYPT_ERRORS]));
++
++		if (eattrs[OVPN_A_PEER_ESTATS_RX_REPLAY_ERRORS])
++			fprintf(stderr, "\tRX replay errors: %" PRIu64 "\n",
++				ovpn_nla_get_uint(eattrs[OVPN_A_PEER_ESTATS_RX_REPLAY_ERRORS]));
++
++		if (eattrs[OVPN_A_PEER_ESTATS_RX_UNKNOWN_KEYID])
++			fprintf(stderr, "\tRX unknown key-id: %" PRIu64 "\n",
++				ovpn_nla_get_uint(eattrs[OVPN_A_PEER_ESTATS_RX_UNKNOWN_KEYID]));
++
++		if (eattrs[OVPN_A_PEER_ESTATS_RX_UNSUPPORTED_PROTO])
++			fprintf(stderr, "\tRX unsupported/malformed proto: %" PRIu64 "\n",
++				ovpn_nla_get_uint(eattrs[OVPN_A_PEER_ESTATS_RX_UNSUPPORTED_PROTO]));
++
++		if (eattrs[OVPN_A_PEER_ESTATS_RX_RPF_ERRORS])
++			fprintf(stderr, "\tRX RPF errors: %" PRIu64 "\n",
++				ovpn_nla_get_uint(eattrs[OVPN_A_PEER_ESTATS_RX_RPF_ERRORS]));
++
++		if (eattrs[OVPN_A_PEER_ESTATS_TX_ENCRYPT_ERRORS])
++			fprintf(stderr, "\tTX encrypt errors: %" PRIu64 "\n",
++				ovpn_nla_get_uint(eattrs[OVPN_A_PEER_ESTATS_TX_ENCRYPT_ERRORS]));
++
++		if (eattrs[OVPN_A_PEER_ESTATS_TX_IV_EXHAUSTED])
++			fprintf(stderr, "\tTX IV exhausted: %" PRIu64 "\n",
++				ovpn_nla_get_uint(eattrs[OVPN_A_PEER_ESTATS_TX_IV_EXHAUSTED]));
++
++		if (eattrs[OVPN_A_PEER_ESTATS_TX_NO_KEY])
++			fprintf(stderr, "\tTX no key: %" PRIu64 "\n",
++				ovpn_nla_get_uint(eattrs[OVPN_A_PEER_ESTATS_TX_NO_KEY]));
++
++		if (eattrs[OVPN_A_PEER_ESTATS_TX_NO_TRANSPORT])
++			fprintf(stderr, "\tTX no transport: %" PRIu64 "\n",
++				ovpn_nla_get_uint(eattrs[OVPN_A_PEER_ESTATS_TX_NO_TRANSPORT]));
++
++		if (eattrs[OVPN_A_PEER_ESTATS_TX_GSO_ERRORS])
++			fprintf(stderr, "\tTX GSO errors: %" PRIu64 "\n",
++				ovpn_nla_get_uint(eattrs[OVPN_A_PEER_ESTATS_TX_GSO_ERRORS]));
++
++		if (eattrs[OVPN_A_PEER_ESTATS_KEEPALIVE_RX])
++			fprintf(stderr, "\tKeepalive RX: %" PRIu64 "\n",
++				ovpn_nla_get_uint(eattrs[OVPN_A_PEER_ESTATS_KEEPALIVE_RX]));
++
++		if (eattrs[OVPN_A_PEER_ESTATS_KEEPALIVE_TX])
++			fprintf(stderr, "\tKeepalive TX: %" PRIu64 "\n",
++				ovpn_nla_get_uint(eattrs[OVPN_A_PEER_ESTATS_KEEPALIVE_TX]));
++
++		if (eattrs[OVPN_A_PEER_ESTATS_FLOAT_COUNT])
++			fprintf(stderr, "\tFloat count: %" PRIu64 "\n",
++				ovpn_nla_get_uint(eattrs[OVPN_A_PEER_ESTATS_FLOAT_COUNT]));
++	}
++
+ 	return NL_SKIP;
+ }
+ 
 -- 
-To view, visit http://gerri=
-t=2Eopenvpn=2Enet/c/openvpn/+/1898?usp=3Demail
-To unsubscribe, or for help =
-writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Dem=
-ail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: mas=
-ter
-Gerrit-Change-Id: Ic334518048d6ca57a504257e210467f9c451d268
-Gerrit-Chan=
-ge-Number: 1898
-Gerrit-PatchSet: 2
-Gerrit-Owner: MaxF <max@max-fillinger=2E=
-net>
-Gerrit-Reviewer: cron2 <gert@greenie=2Emuc=2Ede>
-Gerrit-Reviewer: plai=
-sthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Reviewer: syzzer <steffan@karger=
-=2Eme>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
-G=
-errit-Attention: syzzer <steffan@karger=2Eme>
-Gerrit-Attention: plaisthos <=
-arne-openvpn@rfc2549=2Eorg>
-Gerrit-Attention: cron2 <gert@greenie=2Emuc=2Ed=
-e>
-Gerrit-Comment-Date: Mon, 07 Sep 2026 09:07:59 +0000
-Gerrit-HasComments:=
- Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: cron2 <gert@greenie=2Emuc=
-=2Ede>
-Comment-In-Reply-To: MaxF <max@max-fillinger=2Enet>
-
---sGJZvBAJrn8=
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: cron2, plaisthos, syzzer=2E </p>
-<p><a href=3D"http:/=
-/gerrit=2Eopenvpn=2Enet/c/openvpn/+/1898?usp=3Demail">View Change</a></p><p=
->1 comment:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"mar=
-gin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style: none; padding=
-: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bott=
-om: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1898?tab=3Dc=
-omments&amp;usp=3Demail">Patch Set #1:</a> </p><p><blockquote style=3D"bord=
-er-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">wrong `assert()`=
- used=2E=2E=2E [=E2=80=A6]</blockquote></p><p class=3D"blocks" style=3D"whi=
-te-space: pre-wrap; word-wrap: break-word;">I replaced it with assert_true(=
-) and changed the commit message as you asked in Signal=2E</p></li></ul></l=
-i></ul><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn=
-/+/1898?usp=3Demail">change 1898</a>=2E To unsubscribe, or for help writing=
- mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=
-=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg=
-/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=
-=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1898?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
-ew Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: =
-comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-=
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"dis=
-play:none"> Gerrit-Change-Id: Ic334518048d6ca57a504257e210467f9c451d268 </d=
-iv>
-<div style=3D"display:none"> Gerrit-Change-Number: 1898 </div>
-<div sty=
-le=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none">=
- Gerrit-Owner: MaxF &lt;max@max-fillinger=2Enet&gt; </div>
-<div style=3D"di=
-splay:none"> Gerrit-Reviewer: cron2 &lt;gert@greenie=2Emuc=2Ede&gt; </div>
-=
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@rf=
-c2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: syzzer=
- &lt;steffan@karger=2Eme&gt; </div>
-<div style=3D"display:none"> Gerrit-CC:=
- openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
-<div =
-style=3D"display:none"> Gerrit-Attention: syzzer &lt;steffan@karger=2Eme&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-=
-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Attent=
-ion: cron2 &lt;gert@greenie=2Emuc=2Ede&gt; </div>
-<div style=3D"display:non=
-e"> Gerrit-Comment-Date: Mon, 07 Sep 2026 09:07:59 +0000 </div>
-<div style=
-=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:non=
-e"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Re=
-ply-To: cron2 &lt;gert@greenie=2Emuc=2Ede&gt; </div>
-<div style=3D"display:=
-none"> Comment-In-Reply-To: MaxF &lt;max@max-fillinger=2Enet&gt; </div>
-
-</=
-body></html>
---sGJZvBAJrn8=--
+2.43.0
 
 
---===============5963673863200135615==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============5963673863200135615==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
---===============5963673863200135615==--
-
