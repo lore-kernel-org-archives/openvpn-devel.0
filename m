@@ -4,127 +4,126 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A8AA6C79F89
-	for <openvpn-devel@archiver.kernel.org>; Mon,  7 Sep 2026 08:05:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 168AEC79FA0
+	for <openvpn-devel@archiver.kernel.org>; Mon,  7 Sep 2026 09:06:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=yifV6Z2UTAfUQM1ybQxEg0VF1389WmAFbdseTNJupPo=; b=LJiM0zXR1GMCprQ9gXPoWOW0Qs
-	iVp0MngfJpeHQ392JeZsWreSpnx2FZFqIbIjwDQ7hzGyqDE9umYyLt2p3ZyEWd7ap9nFtrqeBEDqx
-	9GJR+UwiLzwTsopx1W2st1q7TDnvhlbKUeIsXE0bOctQUYSq46OVQ/bUphYHb5WFzNYI=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=HJ52WlkC5/EXC11up9Wqgey5c2BYK5Nj8Y6/M1gJIho=; b=Wz7Cm0DVWHMfF1z8LFa3bjqDXG
+	Lu20BXb/cHjKJ2EVl4OU3FFzeadsW8D7x2Q12v3/wvuaWxQnFswVOI9uZ+RGevClCCflDjuGs1XMn
+	cJbDKFQTBkQ5znQ6FAxrFwwobOS8SyVWBltD+2FrLErPfRRWClRc+nFlY2TWANslg9ps=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x3UM4-0006Zg-VB;
-	Mon, 07 Sep 2026 08:05:29 +0000
+	id 1x3VJM-0007oC-0x;
+	Mon, 07 Sep 2026 09:06:44 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1x3ULn-0006ZO-As
+ (envelope-from <gerrit@openvpn.net>) id 1x3VJK-0007o5-IZ
  for openvpn-devel@lists.sourceforge.net;
- Mon, 07 Sep 2026 08:05:12 +0000
+ Mon, 07 Sep 2026 09:06:42 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
  :List-Post:List-Owner:List-Archive;
- bh=+h+tCGe2lNpSJqvmxwxR4xHTKVmC5Uf40zdkeCoXGYg=; b=L5M0ROOuBNjqmTrMbFqgS1s1Um
- gsUDXJbku9f7IKIj+knKmO2wUEn51jW92oJiVI+QxWL/mEpDLWa4PvI8fDmaaJTFqJYi3kIwaxYYi
- dpAiM0GLQ7sp+VFTMSrfGx+zycargvdEVkNcMdUvcaG9887vj4y44N2JkAXh1TMLF2pA=;
+ bh=8g90cvWBmBSkCd5c5Px7V3DGeyy/KXjslR1VvESaSV0=; b=OiroVgHcBkO+Mtb2snq6jHskaO
+ O8+GZsw/rKrQvptS0TAL9nD4ArZExO/otPetViJ0lZ1q9lNu8COccCb02DRI9TFx9H0LjWOVRq1ts
+ WYYK8nraXg+wnvnT6W/KIFhBvwQkE83WZkM4rfwonhyTMd5tUVAFgjULaXIsEYsqXNgQ=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
  Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=+h+tCGe2lNpSJqvmxwxR4xHTKVmC5Uf40zdkeCoXGYg=; b=G
- 1e9++C3PHxoPjJn8OMmY5nOPUnSxpTmDxyjq7NMB2wi10OtWOwxPHXeiLuOazbUcgIJJOicXbbZn7
- UIUyD6JEfA+24mAHuoayFBGHhy2wPSkz/QyVc0827JLtpqwrSudeWYCR7OOZPyDbkh4JLH8aqlqHk
- UmWnoHiBl/bugSKk=;
-Received: from mail-wr1-f52.google.com ([209.85.221.52])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ List-Owner:List-Archive; bh=8g90cvWBmBSkCd5c5Px7V3DGeyy/KXjslR1VvESaSV0=; b=S
+ esP/gUlyCdob013LFv0N+wfN4zSKX01Z32ioF3Dv/O+SqA6W72ZRKEkXpy1bMrrM6erx0840fjaJy
+ TRtNcsxoTj0lFH7X3lEhFU7kcjcHnIjiVaRdPxZwgUv8lYVMpGFws0gH0h7h59AyezFi6i8qahHtn
+ sGLVyo4mOu2S9Ec8=;
+Received: from mail-wm1-f41.google.com ([209.85.128.41])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1x3ULl-0004f0-5U for openvpn-devel@lists.sourceforge.net;
- Mon, 07 Sep 2026 08:05:11 +0000
-Received: by mail-wr1-f52.google.com with SMTP id
- ffacd0b85a97d-48589798dbbso2615485f8f.3
+ id 1x3VJH-0003fe-9e for openvpn-devel@lists.sourceforge.net;
+ Mon, 07 Sep 2026 09:06:42 +0000
+Received: by mail-wm1-f41.google.com with SMTP id
+ 5b1f17b1804b1-49b96837ca3so25990805e9.3
  for <openvpn-devel@lists.sourceforge.net>;
- Mon, 07 Sep 2026 01:05:09 -0700 (PDT)
+ Mon, 07 Sep 2026 02:06:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1788768302; x=1789373102; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1788771993; x=1789376793; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=+h+tCGe2lNpSJqvmxwxR4xHTKVmC5Uf40zdkeCoXGYg=;
- b=LMyM00qi3JMGrCuAmyZCTZltcBQbnl9xk2F+BI9nPqRe+bJwNG6/ba8LRDBDIBWb0z
- Awd5zOPKX1TQx1Kshou1/JVwrJ8E/P1NadYSgxiLB6JnhqQNWLyvjbhVAISQIOSkuV1L
- nPhJQY2+ATiJ3l5/BYn7Hn8VXNxvBrhBtdkHq4DYQVwyPxYuMaDNPH24UNSahiuolEtd
- UtQmlL24DN/W6xWj2ajDMSqA81D8xoxumXdnOA6Q1t2t/cg5k8WTt4uOdPiNKe4WiA8H
- iYp/ERG0+HBChkGeG1LKmh1QkxlPHiKWrWylbb7zpjgGfwSYb1YCOuCIqr4BPNAjUp9q
- rzMg==
+ bh=8g90cvWBmBSkCd5c5Px7V3DGeyy/KXjslR1VvESaSV0=;
+ b=Bp/VvbYjVPjpg0CONwxLfhArax8YXUQNT0o/LbL+mnf1cEbYaS6nVIAy3xhSgNIj9e
+ 7uh3pJIGT4WbI2+4TTW3skz1DMd/EOm1obmd5IRHmEqfHwpCfV/2uOuLxMmq1C71DjFH
+ RWVT4eW05Qht9mhf1P2sSCm9AaHRiB5uP94GBeBgs9sL68JrKcjxc/NRgnH+Lw9Pc200
+ MAS1jcvcGQtc+198zkDz9jFIdQhl858ltqjxFWwef+VAJPNx7syBBSCgEWDRV47Rr3H3
+ lyi+PruITLebAbJHR06O5YPhuZ+ppJVlI0by4TS7w43P2clVtqZIcvT1nBSHgOyQhMQ+
+ BIvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1788768302; x=1789373102;
+ d=1e100.net; s=20251104; t=1788771993; x=1789376793;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=+h+tCGe2lNpSJqvmxwxR4xHTKVmC5Uf40zdkeCoXGYg=;
- b=QSzH1g99fR5GvbsZ9cu1wTOzL0zoVGWC3H3yVw+1U/g9PGpHiH8n/Uz+Jd8uW0uLXC
- u2eolyywSigx3/FYCpho5Hf2DjEYgGjqV1jlkIpiX/jKqI/02uZunOX2SHdGhiib8SNV
- HrtFnl1YwGZ8M9H+34gIhKHSfSmmnYcfzgLlz7KOgIzbTfIH5SVBBTn4pi/Vk+ND/5xf
- 5TgtXJEjsjJTDtkd5QELc1On7gbvBDfai9D9GeoWQqj583XgBcFLMJFvDOZYbQwbTNds
- C9ws5pgGP2CxFXfeUM94Rp7Chtis8hl+22wrJhu3lpnLRPkZ0Rariq0eavVShosbn12a
- /5Dw==
-X-Gm-Message-State: AFuF++kpubFnbo5N0fXefYcK5BleptYZEOqaRezRMtqQb6Z6Q9FA6ghe
- ohcVMiz0Gcyl6k7Ye/NlkJiZY8I7v5pofZ+LU7gTOUc66qH5j4ysYoB+JLIihz2czA+8h4gq5Vf
- unx5PYQnAV0tQFxEpZnt6lKopPNYElr0/FShWGldd1ClizX/VuNMBJm8Ct/hfPmBnK4798ZsU1u
- TCm2CWlw==
-X-Gm-Gg: AYBFou3bv+6b0CIEXNPoBoKA95gE5iddThXKchEJ4tNdxBfhwXF5xbBVp5417vyOLUl
- fH1CjqgRgxZOCrkTCI5f7egjxNt3rYuDL9BnFITw4zLy7Ia63VW6uwKIf8sqkC2tLZe2VsqC31U
- /04SpjfLgvpar0KXfUDXIXLPSM2n+ROEN3o7xnJnz1ltIkvtL7b6MaN84sEYVmV20Vk68kzF2N8
- deIMh4FelrQ4Nzg55ySb4btHKEnVhA8cxPjU+GwRivf0UuoUf4eXCabF85asWEa+7QTrXsF29gK
- TzmBYlayeJgG/IFRc60Eh+B2s0eXC2sK9JZ6XwTNjqtmEmD4odK8VDvIY38FL2zKzM96SRHonrw
- 6VWrWb3Y2VcO96zUQkw0gFMlq4axW6VycJ7Tbj6mVemKLNrDSIsmPJCbnY+mHV77u52t9nQBrMu
- Tp/EosqLab9b6ktdO4UjnNmkbozJuHbYA0e4MORLRDuINMFBLi6OX98WzTEXMZ3PM4+RO9PeykG
- q3X/z3+ZVnOmY2n6O7/x6r3LR8VUIp44Ea8w61dEYXsphunkin0lsvkagMSspDtE8EwUFNysMXN
- GkmsQ0p6TyugutkAPkpoqDdMxn+H16dQLuersTfQIMjcKMvttFc=
-X-Received: by 2002:a05:6000:260f:b0:485:8be8:b2ba with SMTP id
- ffacd0b85a97d-4858be8b4bcmr20975059f8f.49.1788768302318; 
- Mon, 07 Sep 2026 01:05:02 -0700 (PDT)
+ bh=8g90cvWBmBSkCd5c5Px7V3DGeyy/KXjslR1VvESaSV0=;
+ b=HT64bH4oj9DFJ4soG32y7+lB975TDGd7fb6tmFDW5BNnAox/ZcnT9jPBwIIxBMUAOc
+ aiVLeYaKA7vAb/oQiorToxpbjv9DicRJQvLSyrSllHjFQNMGtROAT44BGpltlU+8Fb+2
+ qT9VsNMCvE7GNCYY7rY/E7QU0qwwglJgmpd01SAIgvSgX/8lB6/iPI6TtDVUlaQM8scY
+ tYV6e0zMtOMw/qe1grQm95pg4oGxJ4V4nWcfa1E4R+8NXpDnWP7BBjt60GpRue4Jep8I
+ k+XsMHh7ugqZ5m4W/b9Q6qBRAY5/VbhIYATJxC4olA6kJlKQeIQJEnXRBoaUP7TvFqFy
+ 1hEg==
+X-Gm-Message-State: AFuF++kwJpg40NCqCE4G+A7OaduCRCawf244UZEHvuEEQ8NDavEG+lfD
+ jDS1MBtiTljGYNi1Ss4FFh9ep+LrWyZoaFnuMqSO0pCzIm27gX2TkFezgTlk3Pe54L4RBkjcD5i
+ wQyuVNh8of1p/3uVHjdgpsLJQnCj1OmMUxMsdQbO6kdkIMWS7snUA/ydQu+HJgYBdSPdw
+X-Gm-Gg: AYBFou3PIVAi5NDymq9hwgESqS1g9zsvVriI39aV+S9ZgsQ0KkoCoVnCxibi7c3/Iv5
+ NiIfZ1eImaEUVcPsFmo2jRdOSJeAD9+5joOsEenvBfZUU2qLTtHFuFHD9zw2yaZmJvgY+HSXk2h
+ jIWSrFYBpKuzQmDWq/jZhQSfG55HHgn4++DDXLYEDdXx52m9r7RMSWPc5c18BJUeO2gP4vrPx2n
+ J2OkL/MNLiqAvcaX6k1aMrdh0WvwwK7zLfSDxkIfNroPh3wJ2ESFr9YjG0fS/j3SrS8EdkzekCP
+ 6dbrFKoqLVu/4V9k3EVOXlHeur26VMq9N3mV91HtSIGWYx6iO9S6pxYYtiz+LMJKOnGyt+V0XOq
+ JZLwmq1jRoe9YxaKxbvvUIyQZjG1lCc5HlwbxJCzYsRY1fD1sATtQvw82p6VqKZS0+YI1DofYh1
+ uR1tSqM1Sq5lZ/N0k8UOy1v7n8TMzTotE461h3UNKMaR5acmoBoqaLnA/VCC3mO4vRBPi7NgLdF
+ Karv9tdBS/1OM0R6fvMk2o9HuEhyVgOJWPzCtnR1kEctTxDxu12jsh4vby1ARYXuHx42p1e6lHi
+ rESha+Vr/gPiBVZ3KQKzkFGnBi0ZRtxlJLXC96J0QKferwCgSXk=
+X-Received: by 2002:a05:600c:474a:b0:49c:e42b:a4ac with SMTP id
+ 5b1f17b1804b1-49cf823f60amr189334705e9.11.1788771992251; 
+ Mon, 07 Sep 2026 02:06:32 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-485883acd33sm25570209f8f.18.2026.09.07.01.05.01
+ 5b1f17b1804b1-49cf755c22esm293770885e9.0.2026.09.07.02.06.31
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 07 Sep 2026 01:05:01 -0700 (PDT)
-X-Google-Original-From: "razvanc (Code Review)"
+ Mon, 07 Sep 2026 02:06:31 -0700 (PDT)
+X-Google-Original-From: "MaxF (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Mon, 7 Sep 2026 08:05:00 +0000
-To: plaisthos <arne-openvpn@rfc2549.org>
+Date: Mon, 7 Sep 2026 09:06:30 +0000
+To: syzzer <steffan@karger.me>, plaisthos <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newpatchset
 X-Gerrit-PatchSet: 2
-X-Gerrit-Change-Id: Iaf68abf0d2575ee4cd30dc4f3ef627f6b22ecb03
-X-Gerrit-Change-Number: 1899
+X-Gerrit-Change-Id: Ic334518048d6ca57a504257e210467f9c451d268
+X-Gerrit-Change-Number: 1898
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1899?usp=email>
-X-Gerrit-Commit: ff9790a5c419a1cc6430aac7aec65764b9151485
-In-Reply-To: <gerrit.1788765781000.Iaf68abf0d2575ee4cd30dc4f3ef627f6b22ecb03@gerrit.openvpn.net>
-References: <gerrit.1788765781000.Iaf68abf0d2575ee4cd30dc4f3ef627f6b22ecb03@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzg4NzY1NzgxMDAwLklhZjY4YWJmMGQyNTc1ZWU0Y2QzMGRjNGYzZWY2MjdmNmIyMmVjYjAzQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <0253cd66dfdbfd044ea5bb93abb466c7c810003f-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1898?usp=email>
+X-Gerrit-Commit: 590a76643df65c4fc73a696a83d58b90ded32af7
+In-Reply-To: <gerrit.1788519683000.Ic334518048d6ca57a504257e210467f9c451d268@gerrit.openvpn.net>
+References: <gerrit.1788519683000.Ic334518048d6ca57a504257e210467f9c451d268@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzg4NTE5NjgzMDAwLkljMzM0NTE4MDQ4ZDZjYTU3YTUwNDI1N2UyMTA0NjdmOWM0NTFkMjY4QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <d2bbc13c6e2ff397ba4de614c72f78b16105d5bb-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1x3ULl-0004f0-5U
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: reliable:
- characterize the packet id comparisons before rewriting them
+X-Headers-End: 1x3VJH-0003fe-9e
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Check for \0 and RFC
+ 2253 chars in cert subjects
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -136,1121 +135,1242 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "razvanc \(Code Review\) via Openvpn-devel"
+From: "MaxF \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
-Reply-To: razvanc@mailbox.org, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net
-Cc: "razvanc \(Code Review\)" <gerrit@openvpn.net>,
+Reply-To: max@max-fillinger.net, arne-openvpn@rfc2549.org,
+ openvpn-devel@lists.sourceforge.net, steffan@karger.me, gert@greenie.muc.de
+Cc: "MaxF \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============2908998574968004581=="
+Content-Type: multipart/mixed; boundary="===============5721277011923044112=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============2908998574968004581==
+--===============5721277011923044112==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="EPAZCuGCZ24="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="eOu2PzvqnzQ="; charset=UTF-8
 
---EPAZCuGCZ24=
+--eOu2PzvqnzQ=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos=2E
+Attention is currently required from: MaxF, cron2, plaisthos, syzzer=2E
 
-Hello plaisthos, 
+He=
+llo cron2, plaisthos, syzzer, 
 
-I'd =
-like you to reexamine a change=2E Please visit
+I'd like you to reexamine a change=2E Pleas=
+e visit
 
-    http://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1899?usp=3Demail
+    http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1898?usp=3Demail
 
-to look at the new patch set (#2)=2E
+to=
+ look at the new patch set (#2)=2E
 
-=
+The following approvals got outdated an=
+d were removed:
+Code-Review+2 by syzzer, Code-Review-1 by cron2
 
-Change subject: reliable: characterize the packet id comparisons before re=
-writing them
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+
+Change su=
+bject: Check for \0 and RFC 2253 chars in cert subjects
+=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
+Check for \0 and RFC 2253 chars=
+ in cert subjects
 
-reliable: characterize the packet id comparisons before rewriting them
+When using the OpenSSL library, we escaped embedded null=
+-bytes in a
+certificate's subject in x509_get_subject(), but in
+extract_x50=
+9_field_ssl(), we copied any null-bytes that are contained in
+the field val=
+ue=2E When using the option --verify-x509-name, this could
+lead to an incor=
+rect name being accepted=2E For example, the common name
+"admin\0impersonat=
+or" would be accepted when running with
+--verify-x509-name admin name=2E
 
 T=
-he comparisons are about to lose their 2^31 horizon helpers=2E Pin the
-acce=
-pted id set at each site first, by sweeping anchors and offsets across
-the =
-0/2^32 wrap and the 0x80000000 midpoint against reference
-implementations o=
-f the current behaviour=2E
+o fix this, this commit makes x509_get_subject() return an error if the
+sub=
+ject contains an embedded null-byte=2E This way, OpenVPN won't connect
+with=
+ peers that present such certificates=2E
 
-reliable_not_replay(), reliable_wont_break_sequ=
-entiality(), the three scans
-for the oldest unacknowledged entry and the AS=
-SERT in
-reliable_mark_active_incoming() had no coverage at all=2E
+As a defense-in-depth measure, we=
+ also check for null-bytes in
+extract_x509_field_ssl() in case a future ver=
+sion of OpenVPN has a code
+path that avoids x509_get_subject()=2E
 
-The rece=
-ive path is characterized as the verdict ssl=2Ec produces
-(drop / ack-only =
-/ store) rather than as two predicates, because a replay is
-still acknowled=
-ged while a sequentiality break is not=2E Its sweep splits at
-2^31: reliabl=
-e_wont_break_sequentiality() compares in absolute terms, so
-above that base=
- its accepted set shifts=2E
+Addition=
+ally, we escape RFC 2253 characters in the subject that would
+make parsing =
+of the resulting string ambiguous=2E For example, if the
+Common Name is "na=
+me, O=3DInjectedOrg", and the Organization is "RealOrg",
+this will now be c=
+onverted to "CN=3Dname\, O=3DInjectedOrg, O=3DRealOrg" to
+make it clear whi=
+ch "O" field is legitimate=2E
 
-Change-Id: Iaf68abf0d2575ee4cd30dc4f3ef627f6b2=
-2ecb03
-Signed-off-by: Razvan Cojocaru <razvanc@mailbox=2Eorg>
+With Mbed TLS, the x509_get_subject() functi=
+on already returned an error
+when there is an embedded null-byte=2E (As of =
+Mbed TLS 3=2E5=2E) Here too, we
+added a check for null-bytes to the functio=
+n where we extract individual
+fields from the subject=2E
+
+Also, backend_x50=
+9_get_username() is changed so that it returns the
+value of the *last* matc=
+hing field, to be consistent with the behavior
+of the OpenSSL backend=2E
+
+D=
+iscovered and reported by BreachX Zero Day Labs, using Typhon AI Mil v2=2E
+=
+Contributing Researcher: Vivek Parikh=2E
+
+CVE: 2026-84790
+Reported-by: Vive=
+k Parikh <vivek=2Eparikh@breachx=2Eai>
+Github: OpenVPN/openvpn-private-issu=
+es#163
+
+Change-Id: Ic334518048d6ca57a504257e210467f9c451d268
+Signed-off-by:=
+ Max Fillinger <maximilian=2Efillinger@sentyron=2Ecom>
 ---
-M tests/u=
-nit_tests/openvpn/test_packet_id=2Ec
-1 file changed, 348 insertions(+), 2 d=
-eletions(-)
+M Changes=2Erst
+=
+M src/openvpn/ssl_verify_mbedtls=2Ec
+M src/openvpn/ssl_verify_openssl=2Ec
+M=
+ tests/unit_tests/openvpn/test_ssl=2Ec
+4 files changed, 228 insertions(+), =
+28 deletions(-)
 
 
-  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/ch=
-anges/99/1899/2
+  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn ref=
+s/changes/98/1898/2
 
-diff --git a/tests/unit_tests/openvpn/test_packet_id=2Ec b=
-/tests/unit_tests/openvpn/test_packet_id=2Ec
-index dc77553=2E=2Eaabb555 100=
-644
---- a/tests/unit_tests/openvpn/test_packet_id=2Ec
-+++ b/tests/unit_test=
-s/openvpn/test_packet_id=2Ec
-@@ -516,6 +516,344 @@
-     reliable_free(rel);=
-
+diff --git a/Changes=2Erst b/Changes=2Erst
+index 1f992=
+b2=2E=2Efe81909 100644
+--- a/Changes=2Erst
++++ b/Changes=2Erst
+@@ -1,5 +1,2=
+5 @@
+ Overview of changes in 2=2E8
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
++User-visible Changes
++------------=
+--------
++Parsing Distinguished Names in certificates
++    (OpenSSL backend=
+:) OpenVPN now rejects certificates that have a null-byte
++    inside any o=
+f the field values of their subject=2E To avoid ambiguity in the
++    parse=
+d subject, OpenVPN escapes the following characters by prefixing them with
+=
++    a backslash:
++     * " " (space) at the start or end of a field,
++    =
+ * "#" at the start of a field,
++     * ",", "+", """, "\", "<", ">" and ";=
+" anywhere=2E
++
++    As a result, if you use the option ``--verify-x509-nam=
+e <expected subject>``,
++    you need to prefix these characters with a bac=
+kslash in your configuration=2E
++    The subject passed to a ``--tls-verify=
+`` script is escaped in the same way and
++    you may need to adjust your s=
+cript=2E
++
++    (Mbed TLS backend:) The behavior has not changed=2E Subject=
+s with null-bytes were
++    already rejected (assuming OpenVPN was built wi=
+th Mbed TLS 3=2E5 or later) and
++    the characters mentioned above were al=
+ready escaped=2E However, the behavior of
++    Mbed TLS is slightly differe=
+nt from OpenSSL in that it also escapes "=3D"=2E
+ 
+ 
+ Overview of changes i=
+n 2=2E7
+diff --git a/src/openvpn/ssl_verify_mbedtls=2Ec b/src/openvpn/ssl_v=
+erify_mbedtls=2Ec
+index 2a09e86=2E=2E9f676ed 100644
+--- a/src/openvpn/ssl_v=
+erify_mbedtls=2Ec
++++ b/src/openvpn/ssl_verify_mbedtls=2Ec
+@@ -214,6 +214,2=
+4 @@
+     }
  }
  
-+/*
-+ * Reference implementations of the packet id comparisons as the=
-y behave today=2E
-+ * The sweeps below assert reliable=2Ec agrees with them=
- at the anchors swept, so
-+ * a change to an accepted id set there fails a =
-test=2E Keep them standalone:
-+ * expressing them in terms of reliable=2Ec =
-would make the sweeps tautologies=2E
-+ */
-+
-+/* "p1 < p2" with the 2^31 hor=
-izon, i=2Ee=2E ((int32_t)(p1 - p2) < 0) */
 +static bool
-+ref_pid_min(packet=
-_id_type p1, packet_id_type p2)
++asn1_buf_is_cstr_compatible(const mbedtls_as=
+n1_buf *asn1_buf)
 +{
-+    return (packet_id_type)(p1 - p2) >=
-=3D 0x80000000u;
-+}
-+
-+/* one short of RELIABLE_CAPACITY, which is what the=
- code accepts today */
-+#define CHARACTERIZED_SEND_WINDOW 11
-+
-+/* TLS_RELI=
-ABLE_N_SEND_BUFFERS and P_CONTROL_V1, from ssl_pkt=2Eh, which this
-+ * test=
- binary does not pull in */
-+#define CHAR_N_SEND_BUFFERS    6
-+#define CHAR=
-_OPCODE_CONTROL_V1 4
-+
-+static bool
-+ref_pid_in_send_window(const struct re=
-liable *rel, packet_id_type pid)
-+{
-+    const packet_id_type dist =3D (pac=
-ket_id_type)(rel->packet_id - pid);
-+
-+    return dist >=3D 1 && dist <=3D =
-CHARACTERIZED_SEND_WINDOW;
-+}
-+
-+static bool
-+ref_wont_break_sequentiality(=
-const struct reliable *rel, packet_id_type id)
-+{
-+    const packet_id_type=
- base =3D rel->packet_id;
-+    const packet_id_type extent =3D (packet_id_t=
-ype)rel->size;
-+
-+    /* char_anchors and char_anchors_high stay clear of t=
-he overflow, where
-+     * reliable_pid_in_range2() used a 0x80000000 bias =
-instead */
-+    assert_true(base + extent >=3D base);
-+
-+    return id < ba=
-se + extent;
-+}
-+
-+static bool
-+ref_not_replay(const struct reliable *rel, =
-packet_id_type id)
-+{
-+    if (ref_pid_min(id, rel->packet_id))
++    if (!(asn1_buf->tag =3D=3D MBEDTLS_ASN1_UTF8_STRI=
+NG || asn1_buf->tag =3D=3D MBEDTLS_ASN1_PRINTABLE_STRING
++          || asn1=
+_buf->tag =3D=3D MBEDTLS_ASN1_IA5_STRING))
 +    {
-+   =
-     return false;
-+    }
-+
-+    for (int i =3D 0; i < rel->size; ++i)
-+   =
- {
-+        if (rel->array[i]=2Eactive && rel->array[i]=2Epacket_id =3D=3D =
-id)
++        return false;
++ =
+   }
++    for (size_t i =3D 0; i < asn1_buf->len; i++)
++    {
++        if (=
+asn1_buf->p[i] =3D=3D '\0')
 +        {
 +            return false;
-+        }
-+    }
-+
-+    return t=
-rue;
-+}
-+
-+/* The receive path verdict as ssl=2Ec produces it: stored only =
-if both checks
-+ * pass, a replay still ACKed, a sequentiality break droppe=
-d without an ACK=2E */
-+enum recv_verdict
-+{
-+    RECV_DROP,
-+    RECV_ACK_=
-ONLY,
-+    RECV_STORE
-+};
-+
-+static enum recv_verdict
-+recv_filter(const st=
-ruct reliable *rel, packet_id_type id)
-+{
-+    if (!reliable_wont_break_seq=
-uentiality(rel, id))
-+    {
-+        return RECV_DROP;
-+    }
-+
-+    return=
- reliable_not_replay(rel, id) ? RECV_STORE : RECV_ACK_ONLY;
-+}
-+
-+static en=
-um recv_verdict
-+ref_recv_filter(const struct reliable *rel, packet_id_type=
- id)
-+{
-+    if (!ref_wont_break_sequentiality(rel, id))
-+    {
-+        re=
-turn RECV_DROP;
-+    }
-+
-+    return ref_not_replay(rel, id) ? RECV_STORE :=
- RECV_ACK_ONLY;
-+}
-+
-+/* Anchors for rel->packet_id=2E reliable_wont_break_=
-sequentiality() compares id
-+ * against rel->packet_id + rel->size in absol=
-ute terms, so its accepted set
-+ * depends on where rel->packet_id sits: up=
- to 2^31 that leaves the composite
-+ * verdict unchanged, above it it does =
-not, hence the split=2E Bases past
-+ * 0xFFFFFFF3 are excluded, rel->packet=
-_id + rel->size overflowing there=2E */
-+static const packet_id_type char_a=
-nchors[] =3D {
-+    0x00000000,
-+    0x00000001,
-+    0x00000005,
-+    0x00=
-00000B,
-+    0x0000000C,
-+    0x0000000D,
-+    0x000001F4,
-+    0x7FFFFFF4,=
-
-+    0x7FFFFFFF,
-+    0x80000000,
-+};
-+
-+static const packet_id_type char_=
-anchors_high[] =3D {
-+    0x80000001,
-+    0x8000000C,
-+    0xFFFFFFF0,
-+  =
-  0xFFFFFFF3,
-+};
-+
-+/* offsets applied below and above each anchor */
-+sta=
-tic const packet_id_type char_offsets[] =3D {
-+    0,
-+    1,
-+    2,
-+    =
-10,
-+    11,
-+    12,
-+    13,
-+    14,
-+    100,
-+    0x3FFFFFFF,
-+    0x4=
-0000000,
-+    0x7FFFFFFE,
-+    0x7FFFFFFF,
-+    0x80000000,
-+    0x80000001=
-,
-+    0x80000002,
-+    0xFFFFFFF4,
-+    0xFFFFFFFE,
-+    0xFFFFFFFF,
-+};
-+=
-
-+static void
-+sweep_recv_filter(const packet_id_type *anchors, size_t n_an=
-chors,
-+                  enum recv_verdict (*oracle)(const struct reliable=
- *, packet_id_type))
-+{
-+    for (size_t a =3D 0; a < n_anchors; a++)
-+    =
-{
-+        for (size_t o =3D 0; o < SIZE(char_offsets); o++)
-+        {
-+  =
-          /* probe both below and above the anchor */
-+            const pa=
-cket_id_type ids[] =3D {
-+                (packet_id_type)(anchors[a] - cha=
-r_offsets[o]),
-+                (packet_id_type)(anchors[a] + char_offsets[=
-o]),
-+            };
-+
-+            for (size_t i =3D 0; i < SIZE(ids); i++=
-)
-+            {
-+                struct reliable rel =3D { 0 };
-+         =
-       rel=2Esize =3D RELIABLE_CAPACITY;
-+                rel=2Epacket_id =
-=3D anchors[a];
-+
-+                assert_int_equal(oracle(&rel, ids[i]), r=
-ecv_filter(&rel, ids[i]));
-+
-+                /* with the id already in a r=
-eceive slot it can only be
-+                 * acknowledged or dropped, nev=
-er stored again */
-+                rel=2Earray[3]=2Eactive =3D true;
-+    =
-            rel=2Earray[3]=2Epacket_id =3D ids[i];
-+
-+                asser=
-t_int_equal(oracle(&rel, ids[i]), recv_filter(&rel, ids[i]));
-+            =
-    assert_int_not_equal(RECV_STORE, recv_filter(&rel, ids[i]));
-+         =
-   }
-+        }
-+    }
-+}
-+
-+/* bases at or below 2^31, where old and new a=
-gree; never to change */
-+static void
-+test_recv_filter_characterization(vo=
-id **state)
-+{
-+    sweep_recv_filter(char_anchors, SIZE(char_anchors), ref=
-_recv_filter);
-+}
-+
-+/* bases above 2^31, where they diverge, kept apart so=
- a change confined
-+ * there touches one test */
-+static void
-+test_recv_fi=
-lter_high_base(void **state)
-+{
-+    sweep_recv_filter(char_anchors_high, S=
-IZE(char_anchors_high), ref_recv_filter);
-+}
-+
-+static void
-+sweep_send_win=
-dow(const packet_id_type *anchors, size_t n_anchors)
-+{
-+    for (size_t a =
-=3D 0; a < n_anchors; a++)
-+    {
-+        for (size_t o =3D 0; o < SIZE(ch=
-ar_offsets); o++)
-+        {
-+            const packet_id_type ids[] =3D {
-=
-+                (packet_id_type)(anchors[a] - char_offsets[o]),
-+         =
-       (packet_id_type)(anchors[a] + char_offsets[o]),
-+            };
-+
-+ =
-           for (size_t i =3D 0; i < SIZE(ids); i++)
-+            {
-+       =
-         struct reliable rel =3D { 0 };
-+                rel=2Esize =3D CHA=
-R_N_SEND_BUFFERS;
-+                rel=2Epacket_id =3D anchors[a];
-+
-+     =
-           assert_int_equal(ref_pid_in_send_window(&rel, ids[i]),
 +        =
-                         validate_packet_id_window(&rel, ids[i]) !=3D 0);
-+=
-            }
-+        }
+}
 +    }
++    return true;
 +}
 +
-+/* a pure distance test, so identical=
- at every base */
-+static void
-+test_send_window_characterization(void **st=
-ate)
-+{
-+    sweep_send_window(char_anchors, SIZE(char_anchors));
-+    swee=
-p_send_window(char_anchors_high, SIZE(char_anchors_high));
-+}
-+
-+/* reliabl=
-e_send() picks the oldest eligible entry, across the wrap and the
-+ * signe=
-d midpoint */
-+static void
-+test_reliable_send_picks_oldest(void **state)
-+=
-{
-+    now =3D 1000;
-+
-+    struct reliable rel =3D { 0 };
-+    rel=2Esize =
-=3D CHAR_N_SEND_BUFFERS;
-+    rel=2Einitial_timeout =3D 2;
-+    rel=2Epacke=
-t_id =3D 3;
-+
-+    /* 6, 2 and 1 below rel->packet_id; the first sits exact=
-ly on the window
-+     * edge, where rel->size still admits it */
-+    cons=
-t packet_id_type wrapped[] =3D { 0xFFFFFFFD, 1, 2 };
-+
-+    for (size_t i =
-=3D 0; i < SIZE(wrapped); i++)
-+    {
-+        rel=2Earray[i]=2Eactive =3D =
-true;
-+        rel=2Earray[i]=2Epacket_id =3D wrapped[i];
-+        rel=2Ear=
-ray[i]=2Etimeout =3D 2;
-+        rel=2Earray[i]=2Enext_try =3D 0;
-+    }
-+
-=
-+    int opcode =3D 0;
-+    assert_ptr_equal(&rel=2Earray[0]=2Ebuf, reliabl=
-e_send(&rel, &opcode));
-+
-+    /* same across the signed midpoint */
-+    s=
-truct reliable rel2 =3D { 0 };
-+    rel2=2Esize =3D CHAR_N_SEND_BUFFERS;
-+ =
-   rel2=2Einitial_timeout =3D 2;
-+    rel2=2Epacket_id =3D 0x80000002;
-+
-+ =
-   const packet_id_type midpoint[] =3D { 0x7FFFFFFF, 0x80000000, 0x80000001=
- };
-+
-+    for (size_t i =3D 0; i < SIZE(midpoint); i++)
-+    {
-+        re=
-l2=2Earray[i]=2Eactive =3D true;
-+        rel2=2Earray[i]=2Epacket_id =3D m=
-idpoint[i];
-+        rel2=2Earray[i]=2Etimeout =3D 2;
-+        rel2=2Earray=
-[i]=2Enext_try =3D 0;
-+    }
-+
-+    assert_ptr_equal(&rel2=2Earray[0]=2Ebuf=
-, reliable_send(&rel2, &opcode));
-+}
-+
-+/* reliable_get_buf_output_sequence=
-d() stops issuing ids once rel->packet_id is
-+ * a full window ahead of the=
- oldest unacknowledged one */
-+static void
-+test_get_buf_output_sequenced_b=
-oundary(void **state)
-+{
-+    struct reliable *rel =3D test_reliable_new();=
-
-+
-+    rel->array[0]=2Eactive =3D true;
-+    rel->array[0]=2Epacket_id =3D=
- 100;
-+
-+    /* distance 7 < size 8: still allowed */
-+    rel->packet_id =
-=3D 107;
-+    assert_non_null(reliable_get_buf_output_sequenced(rel));
-+
-+ =
-   /* distance 8 =3D=3D size 8: refused */
-+    rel->packet_id =3D 108;
-+  =
-  assert_null(reliable_get_buf_output_sequenced(rel));
-+
-+    /* same bound=
-ary across the wrap */
-+    rel->array[0]=2Epacket_id =3D 0xFFFFFFFC;
-+    =
-rel->packet_id =3D 3;
-+    assert_non_null(reliable_get_buf_output_sequence=
-d(rel));
-+
-+    rel->packet_id =3D 4;
-+    assert_null(reliable_get_buf_out=
-put_sequenced(rel));
-+
-+    reliable_free(rel);
-+}
-+
-+/* Ids at or just ahe=
-ad of rel->packet_id are accepted */
-+static void
-+test_mark_active_incomin=
-g_accepts_window(void **state)
-+{
-+    struct reliable rel =3D { 0 };
-+    =
-rel=2Esize =3D RELIABLE_CAPACITY;
-+    rel=2Epacket_id =3D 10;
-+
-+    relia=
-ble_mark_active_incoming(&rel, &rel=2Earray[0]=2Ebuf, 10, CHAR_OPCODE_CONTR=
-OL_V1);
-+    assert_true(rel=2Earray[0]=2Eactive);
-+    assert_int_equal(10=
-, rel=2Earray[0]=2Epacket_id);
-+
-+    reliable_mark_active_incoming(&rel, &=
-rel=2Earray[1]=2Ebuf, 10 + RELIABLE_CAPACITY - 1,
-+                        =
-          CHAR_OPCODE_CONTROL_V1);
-+    assert_true(rel=2Earray[1]=2Eactive=
-);
-+}
-+
-+/* Ids below rel->packet_id abort=2E The far-ahead case is left un=
-pinned: callers
-+ * cannot produce it, and the bound may legitimately tight=
-en=2E
-+ *
-+ * NOTE: expect_assert_failure() does not work with MSVC=2E It c=
-atches the ASSERT
-+ * by longjmp()ing out of assert_failed(), and MSVC's lo=
-ngjmp() unwinds the
-+ * intervening frames through RtlUnwindEx() instead of=
- just restoring the
-+ * registers, which faults=2E */
-+#ifndef _MSC_VER
-+st=
-atic void
-+test_mark_active_incoming_rejects_past_ids(void **state)
-+{
-+   =
- struct reliable rel =3D { 0 };
-+    rel=2Esize =3D RELIABLE_CAPACITY;
-+   =
- rel=2Epacket_id =3D 10;
-+
-+    expect_assert_failure(
-+        reliable_ma=
-rk_active_incoming(&rel, &rel=2Earray[0]=2Ebuf, 5, CHAR_OPCODE_CONTROL_V1))=
-;
-+    expect_assert_failure(
-+        reliable_mark_active_incoming(&rel, =
-&rel=2Earray[1]=2Ebuf, 0xFFFFFFFF, CHAR_OPCODE_CONTROL_V1));
-+}
-+#endif /* =
-ifndef _MSC_VER */
-+
-+
- int
- main(void)
+ result_t
+ backend_x509_get_username(char *=
+cn, size_t cn_len, char *x509_username_field, mbedtls_x509_crt *cert)
  {
-@@ -541,8 +879,16 @@
-         cm=
-ocka_unit_test(test_packet_id_window),
-         cmocka_unit_test(test_relia=
-ble_backoff_is_bounded),
-         cmocka_unit_test(test_reliable_purge_igno=
-res_forged_acks),
--        cmocka_unit_test(test_reliable_purge_legitimate_=
-ack)
--
-+        cmocka_unit_test(test_reliable_purge_legitimate_ack),
-+    =
-    cmocka_unit_test(test_recv_filter_characterization),
-+        cmocka_un=
-it_test(test_recv_filter_high_base),
-+        cmocka_unit_test(test_send_wi=
-ndow_characterization),
-+        cmocka_unit_test(test_reliable_send_picks_=
-oldest),
-+        cmocka_unit_test(test_get_buf_output_sequenced_boundary),=
-
-+        cmocka_unit_test(test_mark_active_incoming_accepts_window),
-+#ifn=
-def _MSC_VER
-+        cmocka_unit_test(test_mark_active_incoming_rejects_pa=
-st_ids),
-+#endif
-     };
+@@=
+ -259,16 +277,17 @@
+     }
  
-     return cmocka_run_group_tests_name("packet_=
-id tests", tests, NULL, NULL);
+     /* Find field_oid in the subject name=2E =
+*/
+-    mbedtls_x509_name *name =3D &cert->subject;
+-    while (name !=3D N=
+ULL)
++    mbedtls_x509_name *name =3D NULL;
++    mbedtls_x509_name *next =
+=3D &cert->subject;
++    while (next !=3D NULL)
+     {
+-        if (strlen(=
+field_oid) =3D=3D name->oid=2Elen
+-            && 0 =3D=3D memcmp(name->oid=
+=2Ep, field_oid, name->oid=2Elen))
++        if (strlen(field_oid) =3D=3D ne=
+xt->oid=2Elen
++            && 0 =3D=3D memcmp(next->oid=2Ep, field_oid, nex=
+t->oid=2Elen))
+         {
+-            break;
++            name =3D next;
+ =
+        }
+ 
+-        name =3D name->next;
++        next =3D next->next;
+   =
+  }
+ 
+     /* Not found, return an error if this is the peer's certificate =
+*/
+@@ -277,6 +296,11 @@
+         goto fail;
+     }
+ 
++    if (!asn1_buf_is_=
+cstr_compatible(&name->val))
++    {
++        goto fail;
++    }
++
+     /* Ch=
+eck that we have room in the buffer, including the terminating '/0' byte=2E=
+ */
+     if (cn_len <=3D name->val=2Elen)
+     {
+@@ -586,22 +610,11 @@
+ sta=
+tic char *
+ asn1_buf_to_c_string(const mbedtls_asn1_buf *orig, struct gc_ar=
+ena *gc)
+ {
+-    size_t i;
+     char *val;
+ 
+-    if (!(orig->tag =3D=3D MB=
+EDTLS_ASN1_UTF8_STRING || orig->tag =3D=3D MBEDTLS_ASN1_PRINTABLE_STRING
+- =
+         || orig->tag =3D=3D MBEDTLS_ASN1_IA5_STRING))
++    if (!asn1_buf_i=
+s_cstr_compatible(orig))
+     {
+-        /* Only support C-string compatibl=
+e types */
+-        return string_alloc("ERROR: unsupported ASN=2E1 string =
+type", gc);
+-    }
+-
+-    for (i =3D 0; i < orig->len; ++i)
+-    {
+-       =
+ if (orig->p[i] =3D=3D '\0')
+-        {
+-            return string_alloc("E=
+RROR: embedded null value", gc);
+-        }
++        return string_alloc("E=
+RROR: Unsupported string type or embedded null bytes=2E", gc);
+     }
+     =
+val =3D gc_malloc(orig->len + 1, false, gc);
+     memcpy(val, orig->p, orig=
+->len);
+diff --git a/src/openvpn/ssl_verify_openssl=2Ec b/src/openvpn/ssl_v=
+erify_openssl=2Ec
+index b8648fd=2E=2Ea6307f6 100644
+--- a/src/openvpn/ssl_v=
+erify_openssl=2Ec
++++ b/src/openvpn/ssl_verify_openssl=2Ec
+@@ -196,12 +196,=
+13 @@
+     int lastpos =3D -1;
+     int tmp =3D -1;
+     unsigned char *buf=
+ =3D NULL;
++    result_t ret =3D FAILURE;
+ 
+     ASN1_OBJECT *field_name_ob=
+j =3D OBJ_txt2obj(field_name, 0);
+     if (field_name_obj =3D=3D NULL)
+    =
+ {
+         msg(D_TLS_ERRORS, "Invalid X509 attribute name '%s'", field_nam=
+e);
+-        return FAILURE;
++        goto exit;
+     }
+ 
+     ASSERT(size =
+> 0);
+@@ -222,28 +223,31 @@
+     /* Nothing found */
+     if (lastpos =3D=
+=3D -1)
+     {
+-        return FAILURE;
++        goto exit;
+     }
+ 
+     c=
+onst X509_NAME_ENTRY *x509ne =3D X509_NAME_get_entry(x509, lastpos);
+     i=
+f (!x509ne)
+     {
+-        return FAILURE;
++        goto exit;
+     }
+ 
+  =
+   const ASN1_STRING *asn1 =3D X509_NAME_ENTRY_get_data(x509ne);
+     if (!=
+asn1)
+     {
+-        return FAILURE;
++        goto exit;
+     }
+-    if (A=
+SN1_STRING_to_UTF8(&buf, asn1) < 0)
++    int length =3D ASN1_STRING_to_UTF8=
+(&buf, asn1);
++    if (length < 0 || (size_t)length !=3D strlen((char *)buf=
+))
+     {
+-        return FAILURE;
++        goto exit;
+     }
+ 
+     strncp=
+ynt(out, (char *)buf, size);
+ 
+-    const result_t ret =3D (strlen((char *)=
+buf) < size) ? SUCCESS : FAILURE;
++    ret =3D (strlen((char *)buf) < size)=
+ ? SUCCESS : FAILURE;
++
++exit:
+     OPENSSL_free(buf);
+     return ret;
+ }
+=
+@@ -385,8 +389,7 @@
+     }
+ 
+     X509_NAME_print_ex(subject_bio, X509_get_=
+subject_name(cert), 0,
+-                       XN_FLAG_SEP_CPLUS_SPC | XN_F=
+LAG_FN_SN | ASN1_STRFLGS_UTF8_CONVERT
+-                           | ASN1_ST=
+RFLGS_ESC_CTRL);
++                       XN_FLAG_SEP_CPLUS_SPC | XN_FLAG_FN=
+_SN | ASN1_STRFLGS_ESC_2253 | ASN1_STRFLGS_UTF8_CONVERT);
+ 
+     if (BIO_eo=
+f(subject_bio))
+     {
+@@ -395,6 +398,16 @@
+ 
+     BIO_get_mem_ptr(subject_=
+bio, &subject_mem);
+ 
++    /* Check subject for '\0' bytes=2E */
++    for (=
+size_t i =3D 0; i < subject_mem->length; i++)
++    {
++        if (subject_m=
+em->data[i] =3D=3D 0)
++        {
++            msg(M_WARN, "ERROR: Certifica=
+te subject contains a '\\0' byte=2E");
++            goto err;
++        }
++ =
+   }
++
+     subject =3D gc_malloc(subject_mem->length + 1, false, gc);
+ 
+  =
+   memcpy(subject, subject_mem->data, subject_mem->length);
+diff --git a/te=
+sts/unit_tests/openvpn/test_ssl=2Ec b/tests/unit_tests/openvpn/test_ssl=2Ec=
+
+index 887c492=2E=2Efcebcdb 100644
+--- a/tests/unit_tests/openvpn/test_ssl=
+=2Ec
++++ b/tests/unit_tests/openvpn/test_ssl=2Ec
+@@ -873,6 +873,157 @@
+    =
+ free_certificate(cert);
+ }
+ 
++/* Certificate with two CNs, "foo" and "bar"=
+=2E
++ *
++ * Generated with:
++ * openssl req -x509 -newkey ec -pkeyopt ec_pa=
+ramgen_curve:secp384r1 -subj "/CN=3Dfoo/CN=3Dbar" \
++ * -noenc -out two_cns=
+=2Ecrt -keyout two_cns=2Ekey
++ */
++static const char *cert_with_two_cns =3D=
+
++    "-----BEGIN CERTIFICATE-----\n"
++    "MIIByTCCAVCgAwIBAgIUZuvd8Wfnq5j=
+eRc3ohoJ/Vza54wQwCgYIKoZIzj0EAwIw\n"
++    "HDEMMAoGA1UEAwwDZm9vMQwwCgYDVQQD=
+DANiYXIwHhcNMjYwODI4MTU1NjAwWhcN\n"
++    "MjYwOTI3MTU1NjAwWjAcMQwwCgYDVQQDD=
+ANmb28xDDAKBgNVBAMMA2JhcjB2MBAG\n"
++    "ByqGSM49AgEGBSuBBAAiA2IABERAfb210N=
+OACy+QVYAu3EXrcGhTJpZDfhpDnE/h\n"
++    "PvPMWGWzqecTYdseArxZc0T/5Xma36IKCjG=
+GsgN9ypZ5oQugQlB/NrVRCJIuHSGA\n"
++    "hGBWFvnUsqdNo765lGwVdBwhY6NTMFEwHQYD=
+VR0OBBYEFPwnD+wK9R81Syk0qyTI\n"
++    "dFT/BNoJMB8GA1UdIwQYMBaAFPwnD+wK9R81S=
+yk0qyTIdFT/BNoJMA8GA1UdEwEB\n"
++    "/wQFMAMBAf8wCgYIKoZIzj0EAwIDZwAwZAIwGx=
+azGb6RRQtXzOWCPLRKId4e+E88\n"
++    "cwoCK3UwzEr8+Ddf54w5cEZC54f5J6AKFUJjAjB=
+pT/JqF41uK57H+8i/16oZkBcm\n"
++    "OyQnlH8W/UzZo3/weTEBTcNW0iuCpIrS6im8pSk=
+=3D\n"
++    "-----END CERTIFICATE-----\n";
++
++void
++ssl_test_extract_last_m=
+atching_field(void **state)
++{
++    /* When there are multiple fields of th=
+e same type in the certificate's subject, OpenVPN
++     * should extract th=
+e value of the last matching field=2E This is essentially arbitrary and the=
+re
++     * is no correct choice here, but this test exists to make sure tha=
+t the behavior is consistent
++     * between different backends=2E
++     */=
+
++    openvpn_x509_cert_t *cert =3D get_certificate(cert_with_two_cns);
++
++=
+    char username[TLS_USERNAME_LEN + 1] =3D { 0 };
++    assert_int_equal(ba=
+ckend_x509_get_username(username, sizeof(username), "CN", cert), SUCCESS);
+=
++    assert_string_equal(username, "bar");
++    free_certificate(cert);
++}
+=
++
++/* Certificate with a null-byte embedded in the CN=2E
++ *
++ * Generated =
+with the following Python script:
++ *
++ * from cryptography import x509
++ *=
+ from cryptography=2Ex509=2Eoid import NameOID, ExtensionOID, ExtendedKeyUs=
+ageOID
++ * from cryptography=2Ehazmat=2Eprimitives import hashes, serializa=
+tion
++ * from cryptography=2Ehazmat=2Eprimitives=2Easymmetric import ec
++ *=
+ import datetime
++ *
++ * private_key =3D ec=2Egenerate_private_key(ec=2ESEC=
+P384R1())
++ * now =3D datetime=2Edatetime=2Enow(datetime=2Etimezone=2Eutc)
+=
++ * name =3D "with\x00null"
++ *
++ * cert =3D (x509=2ECertificateBuilder()
++=
+ *             =2Esubject_name(x509=2EName([x509=2ENameAttribute(NameOID=2E=
+COMMON_NAME, name)]))
++ *             =2Eissuer_name(x509=2EName([x509=2ENa=
+meAttribute(NameOID=2ECOMMON_NAME, name)]))
++ *             =2Epublic_key(p=
+rivate_key=2Epublic_key())
++ *             =2Eserial_number(x509=2Erandom_s=
+erial_number())
++ *             =2Enot_valid_before(now)
++ *             =
+=2Enot_valid_after(now + datetime=2Etimedelta(days=3D10 * 365))
++ *        =
+     =2Esign(private_key, hashes=2ESHA256()))
++ *
++ * print(str(cert=2Epubl=
+ic_bytes(serialization=2EEncoding=2EPEM), encoding=3D'utf-8'))
++ **/
++stati=
+c const char *cert_with_null =3D
++    "-----BEGIN CERTIFICATE-----\n"
++    =
+"MIIBZTCB66ADAgECAhRLWdNRl+C20KKBG4QC9HFPWlOtBzAKBggqhkjOPQQDAjAU\n"
++    "=
+MRIwEAYDVQQDDAl3aXRoAG51bGwwHhcNMjYwODI4MTQzMDA4WhcNMzYwODI1MTQz\n"
++    "M=
+DA4WjAUMRIwEAYDVQQDDAl3aXRoAG51bGwwdjAQBgcqhkjOPQIBBgUrgQQAIgNi\n"
++    "AA=
+T7PE+vJCBiB4CVHBcvJVF9n5n/dGQIn4C8HeYE8M2iXYCIRW5wg6/mlPaeiJY/\n"
++    "Ywh=
+3pa8zhto1+aczbJKTvLgRwXn6N5vNpME1c5iWMzY0WHe1dJyVtoRBvkNvy5+k\n"
++    "GuEw=
+CgYIKoZIzj0EAwIDaQAwZgIxAP2ekdQ8muG8Nv2o3PsBp0CqiaSNByGiP75i\n"
++    "k099b=
+UFvHp/3LSp8Wf4JK2iWzc5h6gIxAINBGg2xjlmMgpXxROKA9qQqaM3d92Mp\n"
++    "EzZyRy=
+PM3PGR83ZPbIaYDq8lCVxVlbYr/Q=3D=3D\n"
++    "-----END CERTIFICATE-----\n";
++=
+
++void
++ssl_test_reject_null_in_cert_subject(void **state)
++{
++    openvpn_=
+x509_cert_t *cert =3D get_certificate(cert_with_null);
++    struct gc_arena=
+ gc =3D gc_new();
++
++    /* Trying to get the subject as a whole should fai=
+l=2E */
++    assert_ptr_equal(x509_get_subject(cert, &gc), NULL);
++
++    /*=
+ Trying to extract the common name should fail=2E */
++    char username[TLS=
+_USERNAME_LEN + 1] =3D { 0 };
++    assert_int_equal(backend_x509_get_userna=
+me(username, sizeof(username), "CN", cert), FAILURE);
++    gc_free(&gc);
++ =
+   free_certificate(cert);
++}
++
++/* Cert with CN=3D"name, O=3DInjectedOrg" =
+and O=3DRealOrg=2E
++ *
++ * Generated with the following Python script:
++ *
+=
++ * from cryptography import x509
++ * from cryptography=2Ex509=2Eoid import=
+ NameOID, ExtensionOID, ExtendedKeyUsageOID
++ * from cryptography=2Ehazmat=
+=2Eprimitives import hashes, serialization
++ * from cryptography=2Ehazmat=
+=2Eprimitives=2Easymmetric import ec
++ * import datetime
++ *
++ * private_ke=
+y =3D ec=2Egenerate_private_key(ec=2ESECP384R1())
++ * now =3D datetime=2Eda=
+tetime=2Enow(datetime=2Etimezone=2Eutc)
++ * name =3D "name, O=3DInjectedOrg=
+"
++ * org =3D "RealOrg"
++ *
++ * distinguished_name =3D x509=2EName([
++ *   =
+  x509=2ENameAttribute(NameOID=2ECOMMON_NAME, name),
++ *     x509=2ENameAtt=
+ribute(NameOID=2EORGANIZATION_NAME, org)
++ * ])
++ *
++ * cert =3D (x509=2ECe=
+rtificateBuilder()
++ *             =2Esubject_name(distinguished_name)
++ * =
+            =2Eissuer_name(distinguished_name)
++ *             =2Epublic_ke=
+y(private_key=2Epublic_key())
++ *             =2Eserial_number(x509=2Erando=
+m_serial_number())
++ *             =2Enot_valid_before(now)
++ *            =
+ =2Enot_valid_after(now + datetime=2Etimedelta(days=3D10 * 365))
++ *       =
+      =2Esign(private_key, hashes=2ESHA256()))
++ *
++ * print(str(cert=2Epub=
+lic_bytes(serialization=2EEncoding=2EPEM), encoding=3D'utf-8'))
++ */
++stati=
+c const char *cert_with_rfc_2253_chars =3D
++    "-----BEGIN CERTIFICATE----=
+-\n"
++    "MIIBnTCCASOgAwIBAgIUR1IGc6A800U14v/ykZNR21aVubowCgYIKoZIzj0EAwIw=
+\n"
++    "MDEcMBoGA1UEAwwTbmFtZSwgTz1JbmplY3RlZE9yZzEQMA4GA1UECgwHUmVhbE9y\=
+n"
++    "ZzAeFw0yNjA4MjgxNTQ3NDdaFw0zNjA4MjUxNTQ3NDdaMDAxHDAaBgNVBAMME25h\n=
+"
++    "bWUsIE89SW5qZWN0ZWRPcmcxEDAOBgNVBAoMB1JlYWxPcmcwdjAQBgcqhkjOPQIB\n"=
+
++    "BgUrgQQAIgNiAAR6zl9QPAbAnHWN//MRdowuhu0Sol6N+lqB/qk+D+2NHCd/t4H9\n"
+=
++    "cJlswUh6EPsmLxgfMYgO2QwClFWEFWvtXQs8BggoidY6i9pmAPhs8+9fmIyuNVpG\n"
++=
+    "3vUWZrUBRgylwaIwCgYIKoZIzj0EAwIDaAAwZQIwKzXmR8YPQZ1pratM9meVmGkH\n"
++ =
+   "1rpHgV3U8oeg+jXmfVcZJTpDeDz4yBl4V3KBKT7HAjEAj2qkaTz7fiSwBKsxJQWH\n"
++  =
+  "dQFPBCAYU9zZJvlNnEPtmHIwaD/qHXDeClr/HRItU3B9\n"
++    "-----END CERTIFICA=
+TE-----\n";
++
++void
++ssl_test_escape_rfc_2253_chars_in_subject(void **state=
+)
++{
++    openvpn_x509_cert_t *cert =3D get_certificate(cert_with_rfc_2253_=
+chars);
++    struct gc_arena gc =3D gc_new();
++
++    char *subject =3D x509=
+_get_subject(cert, &gc);
++    assert_non_null(subject);
++
++    /* Mbed TLS =
+escapes the '=3D' character but OpenSSL does not=2E */
++    const char *exp=
+ected_subject_openssl =3D "CN=3Dname\\, O=3DInjectedOrg, O=3DRealOrg";
++   =
+ const char *expected_subject_mbedtls =3D "CN=3Dname\\, O\\=3DInjectedOrg, =
+O=3DRealOrg";
++
++    assert_true(strcmp(subject, expected_subject_openssl) =
+=3D=3D 0 || strcmp(subject, expected_subject_mbedtls) =3D=3D 0);
++    gc_fr=
+ee(&gc);
++    free_certificate(cert);
++}
++
+ void
+ ssl_test_extract_peer_inf=
+o(void **state)
+ {
+@@ -960,6 +1111,9 @@
+         cmocka_unit_test(test_data=
+_channel_known_vectors_epoch),
+         cmocka_unit_test(test_data_channel_=
+known_vectors_shortpktid),
+         cmocka_unit_test(crypto_test_print_cert=
+_details),
++        cmocka_unit_test(ssl_test_extract_last_matching_field),=
+
++        cmocka_unit_test(ssl_test_reject_null_in_cert_subject),
++        =
+cmocka_unit_test(ssl_test_escape_rfc_2253_chars_in_subject),
+         cmock=
+a_unit_test(ssl_test_extract_peer_info)
+ 
+     };
 
 -- 
-To view, visit http://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1899?usp=3Demail
-To unsubscribe, or for help writing mai=
-l filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+To view, visit http:=
+//gerrit=2Eopenvpn=2Enet/c/openvpn/+/1898?usp=3Demail
+To unsubscribe, or fo=
+r help writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?u=
+sp=3Demail
 
-Gerrit=
--MessageType: newpatchset
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
-Gerrit-Branch: master
-Ger=
-rit-Change-Id: Iaf68abf0d2575ee4cd30dc4f3ef627f6b22ecb03
-Gerrit-Change-Numb=
-er: 1899
+Gerrit-=
+Branch: master
+Gerrit-Change-Id: Ic334518048d6ca57a504257e210467f9c451d268
+=
+Gerrit-Change-Number: 1898
 Gerrit-PatchSet: 2
-Gerrit-Owner: razvanc <razvanc@mailbox=2Eorg>
-G=
-errit-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-CC: openvpn-d=
-evel <openvpn-devel@lists=2Esourceforge=2Enet>
-Gerrit-Attention: plaisthos =
-<arne-openvpn@rfc2549=2Eorg>
+Gerrit-Owner: MaxF <max@max-f=
+illinger=2Enet>
+Gerrit-Reviewer: cron2 <gert@greenie=2Emuc=2Ede>
+Gerrit-Rev=
+iewer: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Reviewer: syzzer <stef=
+fan@karger=2Eme>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforg=
+e=2Enet>
+Gerrit-Attention: syzzer <steffan@karger=2Eme>
+Gerrit-Attention: p=
+laisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Attention: cron2 <gert@greenie=
+=2Emuc=2Ede>
+Gerrit-Attention: MaxF <max@max-fillinger=2Enet>
 
---EPAZCuGCZ24=
+--eOu2PzvqnzQ=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos=2E </p>
-<p>razvanc <strong>uploaded patch s=
-et #2</strong> to this change=2E</p><p><a href=3D"http://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1899?usp=3Demail">View Change</a></p><pre class=3D"block=
-s" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">relia=
-ble: characterize the packet id comparisons before rewriting them<br><br>Th=
-e comparisons are about to lose their 2^31 horizon helpers=2E Pin the<br>ac=
-cepted id set at each site first, by sweeping anchors and offsets across<br=
->the 0/2^32 wrap and the 0x80000000 midpoint against reference<br>implement=
-ations of the current behaviour=2E<br><br>reliable_not_replay(), reliable_w=
-ont_break_sequentiality(), the three scans<br>for the oldest unacknowledged=
- entry and the ASSERT in<br>reliable_mark_active_incoming() had no coverage=
- at all=2E<br><br>The receive path is characterized as the verdict ssl=2Ec =
-produces<br>(drop / ack-only / store) rather than as two predicates, becaus=
-e a replay is<br>still acknowledged while a sequentiality break is not=2E I=
-ts sweep splits at<br>2^31: reliable_wont_break_sequentiality() compares in=
- absolute terms, so<br>above that base its accepted set shifts=2E<br><br>Ch=
-ange-Id: Iaf68abf0d2575ee4cd30dc4f3ef627f6b22ecb03<br>Signed-off-by: Razvan=
- Cojocaru &lt;razvanc@mailbox=2Eorg&gt;<br>---<br>M tests/unit_tests/openvp=
-n/test_packet_id=2Ec<br>1 file changed, 348 insertions(+), 2 deletions(-)<b=
-r><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace=
-; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openv=
-pn refs/changes/99/1899/2</pre><pre style=3D"font-family: monospace,monospa=
-ce; white-space: pre-wrap;"><span>diff --git a/tests/unit_tests/openvpn/tes=
-t_packet_id=2Ec b/tests/unit_tests/openvpn/test_packet_id=2Ec</span><br><sp=
-an>index dc77553=2E=2Eaabb555 100644</span><br><span>--- a/tests/unit_tests=
-/openvpn/test_packet_id=2Ec</span><br><span>+++ b/tests/unit_tests/openvpn/=
-test_packet_id=2Ec</span><br><span>@@ -516,6 +516,344 @@</span><br><span>  =
-   reliable_free(rel);</span><br><span> }</span><br><span> </span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ * Reference implementations of the packet id compar=
-isons as they behave today=2E</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+ * The sweeps below assert reliable=2Ec agrees with them at the a=
-nchors swept, so</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
-a change to an accepted id set there fails a test=2E Keep them standalone:<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * expressing them i=
-n terms of reliable=2Ec would make the sweeps tautologies=2E</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+/* &quot;p1 &lt; p2&quot; with the 2^31 horizon, i=2Ee=2E ((int32_t)(=
-p1 - p2) &lt; 0) */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-static bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ref_pid_=
-min(packet_id_type p1, packet_id_type p2)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    return (packet_id_type)(p1 - p2) &gt;=3D 0x80000000u;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+/* one short of RELIABLE_CAPACITY, which is what the code accepts toda=
-y */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define CHARACT=
-ERIZED_SEND_WINDOW 11</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* TLS_RELIABLE_N=
-_SEND_BUFFERS and P_CONTROL_V1, from ssl_pkt=2Eh, which this</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+ * test binary does not pull in */=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define CHAR_N_SEND=
-_BUFFERS    6</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#defin=
-e CHAR_OPCODE_CONTROL_V1 4</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static bool<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ref_pid_in_send_wind=
-ow(const struct reliable *rel, packet_id_type pid)</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    const packet_id_type dist =3D (packet_id_type)(rel-&gt;pac=
-ket_id - pid);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    return dist &gt;=3D =
-1 &amp;&amp; dist &lt;=3D CHARACTERIZED_SEND_WINDOW;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+sta=
-tic bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ref_wont_br=
-eak_sequentiality(const struct reliable *rel, packet_id_type id)</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    const packet_id_type base =3D rel-&gt;packet=
-_id;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const packe=
-t_id_type extent =3D (packet_id_type)rel-&gt;size;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    /* char_anchors and char_anchors_high stay clear of the ove=
-rflow, where</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * =
-reliable_pid_in_range2() used a 0x80000000 bias instead */</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    assert_true(base + extent &gt;=
-=3D base);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    return id &lt; base + ex=
-tent;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+static bool</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+ref_not_replay(const struct reliable *rel, packet_id_type i=
-d)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    if (ref_pid_min(id, rel-&gt;pac=
-ket_id))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        return false;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    for (int i =3D 0; i &lt; rel-&gt;size; ++i)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        if (rel-&gt;array[i]=2Eactive &am=
-p;&amp; rel-&gt;array[i]=2Epacket_id =3D=3D id)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            return false;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return true;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+/* The receive path verdict as ssl=2Ec produces it: stored =
-only if both checks</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- * pass, a replay still ACKed, a sequentiality break dropped without an ACK=
-=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+enum recv_ver=
-dict</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    RECV_DROP,</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    RECV_ACK_ONLY,</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    RECV_STORE</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+};</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+stati=
-c enum recv_verdict</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-recv_filter(const struct reliable *rel, packet_id_type id)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    if (!reliable_wont_break_sequentiality(rel, id))</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        return RECV_DROP;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    return reliable_not_replay(rel, id) ? RECV_STORE : RECV_=
-ACK_ONLY;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+static enum recv_verdict</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ref_recv_filter(const struct reliable *re=
-l, packet_id_type id)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!ref_won=
-t_break_sequentiality(rel, id))</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      return RECV_DROP;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    return ref_not_replay(rel=
-, id) ? RECV_STORE : RECV_ACK_ONLY;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Anchors for rel-&g=
-t;packet_id=2E reliable_wont_break_sequentiality() compares id</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+ * against rel-&gt;packet_id + r=
-el-&gt;size in absolute terms, so its accepted set</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+ * depends on where rel-&gt;packet_id sits: =
-up to 2^31 that leaves the composite</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ * verdict unchanged, above it it does not, hence the spli=
-t=2E Bases past</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * 0=
-xFFFFFFF3 are excluded, rel-&gt;packet_id + rel-&gt;size overflowing there=
-=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static const =
-packet_id_type char_anchors[] =3D {</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    0x00000000,</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    0x00000001,</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    0x00000005,</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    0x0000000B,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    0x0000000C,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-0x0000000D,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    0x00=
-0001F4,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    0x7FFFFF=
-F4,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    0x7FFFFFFF,<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    0x80000000,</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+};</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+static const packet_id_type char_anchors_high[] =3D {</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    0x80000001,</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    0x8000000C,</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    0xFFFFFFF0,</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    0xFFFFFFF3,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+};</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*=
- offsets applied below and above each anchor */</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+static const packet_id_type char_offsets[] =3D =
-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    0,</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    1,</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    2,</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    10,</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    11,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    12=
-,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    13,</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    14,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    100,</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    0x3FFFFFFF,</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    0x40000000,</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    0x7FFFFFFE,</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    0x7FFFFFFF,</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    0x80000000,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    0x80000001,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   0x80000002,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    0=
-xFFFFFFF4,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    0xFFF=
-FFFFE,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    0xFFFFFFF=
-F,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+};</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+sweep_recv_filter(const packet_id_type *anchors, size_t n_anc=
-hors,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-    enum recv_verdict (*oracle)(const struct reliable *, packet_id_type))</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    for (size_t a =3D 0; a &lt; n_ancho=
-rs; a++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        for (size_t o =3D=
- 0; o &lt; SIZE(char_offsets); o++)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+            /* probe both below and above the anchor */</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+            const packet_id_type =
-ids[] =3D {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-        (packet_id_type)(anchors[a] - char_offsets[o]),</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+                (packet_id_type)(anchor=
-s[a] + char_offsets[o]),</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+            };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            for (si=
-ze_t i =3D 0; i &lt; SIZE(ids); i++)</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+                struct reliable rel =3D { 0 };</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+                rel=2Esize =3D RELIAB=
-LE_CAPACITY;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-         rel=2Epacket_id =3D anchors[a];</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+                assert_int_equal(oracle(&amp;rel, ids[i]), recv_filter(&a=
-mp;rel, ids[i]));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+                /* wi=
-th the id already in a receive slot it can only be</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+                 * acknowledged or dropped, =
-never stored again */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+                rel=2Earray[3]=2Eactive =3D true;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                rel=2Earray[3]=2Epacket_i=
-d =3D ids[i];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+                assert_in=
-t_equal(oracle(&amp;rel, ids[i]), recv_filter(&amp;rel, ids[i]));</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+                assert_int_no=
-t_equal(RECV_STORE, recv_filter(&amp;rel, ids[i]));</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+/* bases at or below 2^31, where =
-old and new agree; never to change */</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+test_recv_filter_characterization(void **state)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    sweep_recv_filter(char_anchors, SIZE(char_anchors),=
- ref_recv_filter);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+/* bases above 2^31, where they diverg=
-e, kept apart so a change confined</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+ * there touches one test */</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+test_recv_filter_high_base(void **state)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    sweep_recv_filter(char_anchors_high, SIZE(char_ancho=
-rs_high), ref_recv_filter);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+sweep_send_window(const packet_id_typ=
-e *anchors, size_t n_anchors)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for =
-(size_t a =3D 0; a &lt; n_anchors; a++)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        for (size_t o =3D 0; o &lt; SIZE(char_offsets); o++)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+            const packet_id_type ids[]=
- =3D {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
-   (packet_id_type)(anchors[a] - char_offsets[o]),</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+                (packet_id_type)(anchors[a] =
-+ char_offsets[o]),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-            };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+            for (size_t =
-i =3D 0; i &lt; SIZE(ids); i++)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+                struct reliable rel =3D { 0 };</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                rel=2Esize =3D CHAR_N_SEN=
-D_BUFFERS;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-       rel=2Epacket_id =3D anchors[a];</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-                assert_int_equal(ref_pid_in_send_window(&amp;rel, ids[i]),<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
-             validate_packet_id_window(&amp;rel, ids[i]) !=3D 0);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* a pure distance te=
-st, so identical at every base */</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+test_send_window_characterization(void **state)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    sweep_send_window(char_anchors, SIZE(char_anchors));</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    sweep_send_window(=
-char_anchors_high, SIZE(char_anchors_high));</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* reliable_=
-send() picks the oldest eligible entry, across the wrap and the</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+ * signed midpoint */</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+test_reliable_send_picks_oldest(void =
-**state)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    now =3D 1000;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    struct reliable rel =3D { 0 };</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    rel=2Esize =3D CHAR_N_SEND_BUFF=
-ERS;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    rel=2Einiti=
-al_timeout =3D 2;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  rel=2Epacket_id =3D 3;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* 6, 2 an=
-d 1 below rel-&gt;packet_id; the first sits exactly on the window</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+     * edge, where rel-&gt;si=
-ze still admits it */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    const packet_id_type wrapped[] =3D { 0xFFFFFFFD, 1, 2 };</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    for (size_t i =3D 0; i &lt; SIZE(wrapped); i++)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        rel=2Earray[i]=2Eactive =
-=3D true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        re=
-l=2Earray[i]=2Epacket_id =3D wrapped[i];</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        rel=2Earray[i]=2Etimeout =3D 2;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        rel=2Earray[i]=2Enext_try =
-=3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><=
+rently required from: MaxF, cron2, plaisthos, syzzer=2E </p>
+<p>MaxF <stron=
+g>uploaded patch set #2</strong> to this change=2E</p><p><a href=3D"http://=
+gerrit=2Eopenvpn=2Enet/c/openvpn/+/1898?usp=3Demail">View Change</a></p><p>=
+The following approvals got outdated and were removed:
+Code-Review+2 by syz=
+zer, Code-Review-1 by cron2</p><pre class=3D"blocks" style=3D"font-family: =
+monospace,monospace; white-space: pre-wrap;">Check for \0 and RFC 2253 char=
+s in cert subjects<br><br>When using the OpenSSL library, we escaped embedd=
+ed null-bytes in a<br>certificate&#39;s subject in x509_get_subject(), but =
+in<br>extract_x509_field_ssl(), we copied any null-bytes that are contained=
+ in<br>the field value=2E When using the option --verify-x509-name, this co=
+uld<br>lead to an incorrect name being accepted=2E For example, the common =
+name<br>&quot;admin\0impersonator&quot; would be accepted when running with=
+<br>--verify-x509-name admin name=2E<br><br>To fix this, this commit makes =
+x509_get_subject() return an error if the<br>subject contains an embedded n=
+ull-byte=2E This way, OpenVPN won&#39;t connect<br>with peers that present =
+such certificates=2E<br><br>As a defense-in-depth measure, we also check fo=
+r null-bytes in<br>extract_x509_field_ssl() in case a future version of Ope=
+nVPN has a code<br>path that avoids x509_get_subject()=2E<br><br>Additional=
+ly, we escape RFC 2253 characters in the subject that would<br>make parsing=
+ of the resulting string ambiguous=2E For example, if the<br>Common Name is=
+ &quot;name, O=3DInjectedOrg&quot;, and the Organization is &quot;RealOrg&q=
+uot;,<br>this will now be converted to &quot;CN=3Dname\, O=3DInjectedOrg, O=
+=3DRealOrg&quot; to<br>make it clear which &quot;O&quot; field is legitimat=
+e=2E<br><br>With Mbed TLS, the x509_get_subject() function already returned=
+ an error<br>when there is an embedded null-byte=2E (As of Mbed TLS 3=2E5=
+=2E) Here too, we<br>added a check for null-bytes to the function where we =
+extract individual<br>fields from the subject=2E<br><br>Also, backend_x509_=
+get_username() is changed so that it returns the<br>value of the *last* mat=
+ching field, to be consistent with the behavior<br>of the OpenSSL backend=
+=2E<br><br>Discovered and reported by BreachX Zero Day Labs, using Typhon A=
+I Mil v2=2E<br>Contributing Researcher: Vivek Parikh=2E<br><br>CVE: 2026-84=
+790<br>Reported-by: Vivek Parikh &lt;vivek=2Eparikh@breachx=2Eai&gt;<br>Git=
+hub: OpenVPN/openvpn-private-issues#163<br><br>Change-Id: Ic334518048d6ca57=
+a504257e210467f9c451d268<br>Signed-off-by: Max Fillinger &lt;maximilian=2Ef=
+illinger@sentyron=2Ecom&gt;<br>---<br>M Changes=2Erst<br>M src/openvpn/ssl_=
+verify_mbedtls=2Ec<br>M src/openvpn/ssl_verify_openssl=2Ec<br>M tests/unit_=
+tests/openvpn/test_ssl=2Ec<br>4 files changed, 228 insertions(+), 28 deleti=
+ons(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,m=
+onospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:294=
+18/openvpn refs/changes/98/1898/2</pre><pre style=3D"font-family: monospace=
+,monospace; white-space: pre-wrap;"><span>diff --git a/Changes=2Erst b/Chan=
+ges=2Erst</span><br><span>index 1f992b2=2E=2Efe81909 100644</span><br><span=
+>--- a/Changes=2Erst</span><br><span>+++ b/Changes=2Erst</span><br><span>@@=
+ -1,5 +1,25 @@</span><br><span> Overview of changes in 2=2E8</span><br><spa=
+n> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D</span><br><span style=3D"color: hsl(120, 100%, 40%);">+User-visible =
+Changes</span><br><span style=3D"color: hsl(120, 100%, 40%);">+------------=
+--------</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Parsing Dis=
+tinguished Names in certificates</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    (OpenSSL backend:) OpenVPN now rejects certificates that h=
+ave a null-byte</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+inside any of the field values of their subject=2E To avoid ambiguity in th=
+e</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    parsed subject=
+, OpenVPN escapes the following characters by prefixing them with</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    a backslash:</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+     * &quot; &quot; (space) at =
+the start or end of a field,</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+     * &quot;#&quot; at the start of a field,</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+     * &quot;,&quot;, &quot;+&quot;, &qu=
+ot;&quot;&quot;, &quot;\&quot;, &quot;&lt;&quot;, &quot;&gt;&quot; and &quo=
+t;;&quot; anywhere=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    As a result, =
+if you use the option ``--verify-x509-name &lt;expected subject&gt;``,</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    you need to prefix t=
+hese characters with a backslash in your configuration=2E</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    The subject passed to a ``--tls-v=
+erify`` script is escaped in the same way and</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    you may need to adjust your script=2E</span><=
 br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    int opcode =3D 0;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    assert_ptr_equal(&amp;rel=2Earray[0]=2Eb=
-uf, reliable_send(&amp;rel, &amp;opcode));</span><br><span style=3D"color: =
+olor: hsl(120, 100%, 40%);">+    (Mbed TLS backend:) The behavior has not c=
+hanged=2E Subjects with null-bytes were</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    already rejected (assuming OpenVPN was built with M=
+bed TLS 3=2E5 or later) and</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    the characters mentioned above were already escaped=2E However,=
+ the behavior of</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ Mbed TLS is slightly different from OpenSSL in that it also escapes &quot;=
+=3D&quot;=2E</span><br><span> </span><br><span> </span><br><span> Overview =
+of changes in 2=2E7</span><br><span>diff --git a/src/openvpn/ssl_verify_mbe=
+dtls=2Ec b/src/openvpn/ssl_verify_mbedtls=2Ec</span><br><span>index 2a09e86=
+=2E=2E9f676ed 100644</span><br><span>--- a/src/openvpn/ssl_verify_mbedtls=
+=2Ec</span><br><span>+++ b/src/openvpn/ssl_verify_mbedtls=2Ec</span><br><sp=
+an>@@ -214,6 +214,24 @@</span><br><span>     }</span><br><span> }</span><br=
+><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+static bool=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+asn1_buf_is_cstr_co=
+mpatible(const mbedtls_asn1_buf *asn1_buf)</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    if (!(asn1_buf-&gt;tag =3D=3D MBEDTLS_ASN1_UTF8_STRING || asn1_buf=
+-&gt;tag =3D=3D MBEDTLS_ASN1_PRINTABLE_STRING</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+          || asn1_buf-&gt;tag =3D=3D MBEDTLS_ASN1=
+_IA5_STRING))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return false=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    for (size_t i =3D 0; i &lt; =
+asn1_buf-&gt;len; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if =
+(asn1_buf-&gt;p[i] =3D=3D &#39;\0&#39;)</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+            return false;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    retu=
+rn true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> result_t</s=
+pan><br><span> backend_x509_get_username(char *cn, size_t cn_len, char *x50=
+9_username_field, mbedtls_x509_crt *cert)</span><br><span> {</span><br><spa=
+n>@@ -259,16 +277,17 @@</span><br><span>     }</span><br><span> </span><br>=
+<span>     /* Find field_oid in the subject name=2E */</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    mbedtls_x509_name *name =3D &amp;cert-=
+&gt;subject;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    while=
+ (name !=3D NULL)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  mbedtls_x509_name *name =3D NULL;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    mbedtls_x509_name *next =3D &amp;cert-&gt;subject;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    while (next !=3D NUL=
+L)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-        if (strlen(field_oid) =3D=3D name-&gt;oid=2Elen</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-            &amp;&amp; 0 =3D=3D memcm=
+p(name-&gt;oid=2Ep, field_oid, name-&gt;oid=2Elen))</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        if (strlen(field_oid) =3D=3D next=
+-&gt;oid=2Elen</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+       &amp;&amp; 0 =3D=3D memcmp(next-&gt;oid=2Ep, field_oid, next-&gt;oid=
+=2Elen))</span><br><span>         {</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-            break;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+            name =3D next;</span><br><span>         }</span><b=
+r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-        name=
+ =3D name-&gt;next;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        next =3D next-&gt;next;</span><br><span>     }</span><br><span> </s=
+pan><br><span>     /* Not found, return an error if this is the peer&#39;s =
+certificate */</span><br><span>@@ -277,6 +296,11 @@</span><br><span>       =
+  goto fail;</span><br><span>     }</span><br><span> </span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (!asn1_buf_is_cstr_compatible(&amp=
+;name-&gt;val))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        goto fail;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     /* Check th=
+at we have room in the buffer, including the terminating &#39;/0&#39; byte=
+=2E */</span><br><span>     if (cn_len &lt;=3D name-&gt;val=2Elen)</span><b=
+r><span>     {</span><br><span>@@ -586,22 +610,11 @@</span><br><span> stati=
+c char *</span><br><span> asn1_buf_to_c_string(const mbedtls_asn1_buf *orig=
+, struct gc_arena *gc)</span><br><span> {</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    size_t i;</span><br><span>     char *val;</span><br=
+><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!(ori=
+g-&gt;tag =3D=3D MBEDTLS_ASN1_UTF8_STRING || orig-&gt;tag =3D=3D MBEDTLS_AS=
+N1_PRINTABLE_STRING</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+        || orig-&gt;tag =3D=3D MBEDTLS_ASN1_IA5_STRING))</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    if (!asn1_buf_is_cstr_compatible(o=
+rig))</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        /* Only support C-string compatible types */</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-        return string_alloc(&quot;ERR=
+OR: unsupported ASN=2E1 string type&quot;, gc);</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    for (i =
+=3D 0; i &lt; orig-&gt;len; ++i)</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+   if (orig-&gt;p[i] =3D=3D &#39;\0&#39;)</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-            return string_alloc(&quot;ERROR: embedded null value&qu=
+ot;, gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        return string_=
+alloc(&quot;ERROR: Unsupported string type or embedded null bytes=2E&quot;,=
+ gc);</span><br><span>     }</span><br><span>     val =3D gc_malloc(orig-&g=
+t;len + 1, false, gc);</span><br><span>     memcpy(val, orig-&gt;p, orig-&g=
+t;len);</span><br><span>diff --git a/src/openvpn/ssl_verify_openssl=2Ec b/s=
+rc/openvpn/ssl_verify_openssl=2Ec</span><br><span>index b8648fd=2E=2Ea6307f=
+6 100644</span><br><span>--- a/src/openvpn/ssl_verify_openssl=2Ec</span><br=
+><span>+++ b/src/openvpn/ssl_verify_openssl=2Ec</span><br><span>@@ -196,12 =
++196,13 @@</span><br><span>     int lastpos =3D -1;</span><br><span>     in=
+t tmp =3D -1;</span><br><span>     unsigned char *buf =3D NULL;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    result_t ret =3D FAILURE;</=
+span><br><span> </span><br><span>     ASN1_OBJECT *field_name_obj =3D OBJ_t=
+xt2obj(field_name, 0);</span><br><span>     if (field_name_obj =3D=3D NULL)=
+</span><br><span>     {</span><br><span>         msg(D_TLS_ERRORS, &quot;In=
+valid X509 attribute name &#39;%s&#39;&quot;, field_name);</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-        return FAILURE;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        goto exit;</span><br><span=
+>     }</span><br><span> </span><br><span>     ASSERT(size &gt; 0);</span><=
+br><span>@@ -222,28 +223,31 @@</span><br><span>     /* Nothing found */</sp=
+an><br><span>     if (lastpos =3D=3D -1)</span><br><span>     {</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        return FAILURE;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        goto exit;</span><br>=
+<span>     }</span><br><span> </span><br><span>     const X509_NAME_ENTRY *=
+x509ne =3D X509_NAME_get_entry(x509, lastpos);</span><br><span>     if (!x5=
+09ne)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        return FAILURE;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        goto exit;</span><br><span>     }</span><br><span> </spa=
+n><br><span>     const ASN1_STRING *asn1 =3D X509_NAME_ENTRY_get_data(x509n=
+e);</span><br><span>     if (!asn1)</span><br><span>     {</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-        return FAILURE;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        goto exit;</span><br><span=
+>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (ASN1_S=
+TRING_to_UTF8(&amp;buf, asn1) &lt; 0)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    int length =3D ASN1_STRING_to_UTF8(&amp;buf, asn1);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (length &lt; 0=
+ || (size_t)length !=3D strlen((char *)buf))</span><br><span>     {</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        return FAILURE;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        goto exit;</span>=
+<br><span>     }</span><br><span> </span><br><span>     strncpynt(out, (cha=
+r *)buf, size);</span><br><span> </span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    const result_t ret =3D (strlen((char *)buf) &lt; size) ? SU=
+CCESS : FAILURE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ ret =3D (strlen((char *)buf) &lt; size) ? SUCCESS : FAILURE;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+exit:</span><br><span>     OPENSSL_free(buf);</span>=
+<br><span>     return ret;</span><br><span> }</span><br><span>@@ -385,8 +38=
+9,7 @@</span><br><span>     }</span><br><span> </span><br><span>     X509_N=
+AME_print_ex(subject_bio, X509_get_subject_name(cert), 0,</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-                       XN_FLAG_SEP_CPLU=
+S_SPC | XN_FLAG_FN_SN | ASN1_STRFLGS_UTF8_CONVERT</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-                           | ASN1_STRFLGS_ESC_C=
+TRL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
+         XN_FLAG_SEP_CPLUS_SPC | XN_FLAG_FN_SN | ASN1_STRFLGS_ESC_2253 | AS=
+N1_STRFLGS_UTF8_CONVERT);</span><br><span> </span><br><span>     if (BIO_eo=
+f(subject_bio))</span><br><span>     {</span><br><span>@@ -395,6 +398,16 @@=
+</span><br><span> </span><br><span>     BIO_get_mem_ptr(subject_bio, &amp;s=
+ubject_mem);</span><br><span> </span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    /* Check subject for &#39;\0&#39; bytes=2E */</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    for (size_t i =3D 0; i &lt; su=
+bject_mem-&gt;length; i++)</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ if (subject_mem-&gt;data[i] =3D=3D 0)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+            msg(M_WARN, &quot;ERROR: Certificate subject contains =
+a &#39;\\0&#39; byte=2E&quot;);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            goto err;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span>     subject =3D gc_malloc(subject_mem-&gt;length + 1, false, gc);</=
+span><br><span> </span><br><span>     memcpy(subject, subject_mem-&gt;data,=
+ subject_mem-&gt;length);</span><br><span>diff --git a/tests/unit_tests/ope=
+nvpn/test_ssl=2Ec b/tests/unit_tests/openvpn/test_ssl=2Ec</span><br><span>i=
+ndex 887c492=2E=2Efcebcdb 100644</span><br><span>--- a/tests/unit_tests/ope=
+nvpn/test_ssl=2Ec</span><br><span>+++ b/tests/unit_tests/openvpn/test_ssl=
+=2Ec</span><br><span>@@ -873,6 +873,157 @@</span><br><span>     free_certif=
+icate(cert);</span><br><span> }</span><br><span> </span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+/* Certificate with two CNs, &quot;foo&quot; =
+and &quot;bar&quot;=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Generated w=
+ith:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * openssl req =
+-x509 -newkey ec -pkeyopt ec_paramgen_curve:secp384r1 -subj &quot;/CN=3Dfoo=
+/CN=3Dbar&quot; \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+ -noenc -out two_cns=2Ecrt -keyout two_cns=2Ekey</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+static const char *cert_with_two_cns =3D</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    &quot;-----BEGIN CERTIFICATE-----\n&q=
+uot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;MIIBy=
+TCCAVCgAwIBAgIUZuvd8Wfnq5jeRc3ohoJ/Vza54wQwCgYIKoZIzj0EAwIw\n&quot;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;HDEMMAoGA1UEAwwDZ=
+m9vMQwwCgYDVQQDDANiYXIwHhcNMjYwODI4MTU1NjAwWhcN\n&quot;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    &quot;MjYwOTI3MTU1NjAwWjAcMQwwCgYDV=
+QQDDANmb28xDDAKBgNVBAMMA2JhcjB2MBAG\n&quot;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    &quot;ByqGSM49AgEGBSuBBAAiA2IABERAfb210NOACy+QV=
+YAu3EXrcGhTJpZDfhpDnE/h\n&quot;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    &quot;PvPMWGWzqecTYdseArxZc0T/5Xma36IKCjGGsgN9ypZ5oQugQlB/N=
+rVRCJIuHSGA\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    &quot;hGBWFvnUsqdNo765lGwVdBwhY6NTMFEwHQYDVR0OBBYEFPwnD+wK9R81Syk0qyTI\=
+n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;dF=
+T/BNoJMB8GA1UdIwQYMBaAFPwnD+wK9R81Syk0qyTIdFT/BNoJMA8GA1UdEwEB\n&quot;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;/wQFMAMBAf8wCg=
+YIKoZIzj0EAwIDZwAwZAIwGxazGb6RRQtXzOWCPLRKId4e+E88\n&quot;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    &quot;cwoCK3UwzEr8+Ddf54w5cEZC54=
+f5J6AKFUJjAjBpT/JqF41uK57H+8i/16oZkBcm\n&quot;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    &quot;OyQnlH8W/UzZo3/weTEBTcNW0iuCpIrS6im8pS=
+k=3D\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &qu=
+ot;-----END CERTIFICATE-----\n&quot;;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+v=
+oid</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ssl_test_extract=
+_last_matching_field(void **state)</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ /* When there are multiple fields of the same type in the certificate&#39;=
+s subject, OpenVPN</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+    * should extract the value of the last matching field=2E This is essent=
+ially arbitrary and there</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+     * is no correct choice here, but this test exists to make sure t=
+hat the behavior is consistent</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+     * between different backends=2E</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+     */</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    openvpn_x509_cert_t *cert =3D get_certificate(cert_with=
+_two_cns);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    char username[TLS_USERNA=
+ME_LEN + 1] =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    assert_int_equal(backend_x509_get_username(username, sizeof(username=
+), &quot;CN&quot;, cert), SUCCESS);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    assert_string_equal(username, &quot;bar&quot;);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    free_certificate(cert);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+/* Certificate with a null-byte embedded in the CN=2E</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+ * Generated with the following Python =
+script:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ * from cryptography import x=
+509</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * from cryptogr=
+aphy=2Ex509=2Eoid import NameOID, ExtensionOID, ExtendedKeyUsageOID</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+ * from cryptography=2Ehazm=
+at=2Eprimitives import hashes, serialization</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ * from cryptography=2Ehazmat=2Eprimitives=2Easymm=
+etric import ec</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * i=
+mport datetime</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ * private_key =3D ec=
+=2Egenerate_private_key(ec=2ESECP384R1())</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+ * now =3D datetime=2Edatetime=2Enow(datetime=2Etimez=
+one=2Eutc)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * name =
+=3D &quot;with\x00null&quot;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * cert =
+=3D (x509=2ECertificateBuilder()</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+ *             =2Esubject_name(x509=2EName([x509=2ENameAttribu=
+te(NameOID=2ECOMMON_NAME, name)]))</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ *             =2Eissuer_name(x509=2EName([x509=2ENameAttrib=
+ute(NameOID=2ECOMMON_NAME, name)]))</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+ *             =2Epublic_key(private_key=2Epublic_key())</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             =2Eseri=
+al_number(x509=2Erandom_serial_number())</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ *             =2Enot_valid_before(now)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+ *             =2Enot_valid_after(=
+now + datetime=2Etimedelta(days=3D10 * 365))</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ *             =2Esign(private_key, hashes=2ESHA25=
+6()))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+ * print(str(cert=2Epublic_byte=
+s(serialization=2EEncoding=2EPEM), encoding=3D&#39;utf-8&#39;))</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+ **/</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+static const char *cert_with_null =3D</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;-----BEGIN CERTIFI=
+CATE-----\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  &quot;MIIBZTCB66ADAgECAhRLWdNRl+C20KKBG4QC9HFPWlOtBzAKBggqhkjOPQQDAjAU\n&=
+quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;MRIw=
+EAYDVQQDDAl3aXRoAG51bGwwHhcNMjYwODI4MTQzMDA4WhcNMzYwODI1MTQz\n&quot;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;MDA4WjAUMRIwEAYD=
+VQQDDAl3aXRoAG51bGwwdjAQBgcqhkjOPQIBBgUrgQQAIgNi\n&quot;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    &quot;AAT7PE+vJCBiB4CVHBcvJVF9n5n/=
+dGQIn4C8HeYE8M2iXYCIRW5wg6/mlPaeiJY/\n&quot;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    &quot;Ywh3pa8zhto1+aczbJKTvLgRwXn6N5vNpME1c5iW=
+MzY0WHe1dJyVtoRBvkNvy5+k\n&quot;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    &quot;GuEwCgYIKoZIzj0EAwIDaQAwZgIxAP2ekdQ8muG8Nv2o3PsBp0Cq=
+iaSNByGiP75i\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    &quot;k099bUFvHp/3LSp8Wf4JK2iWzc5h6gIxAINBGg2xjlmMgpXxROKA9qQqaM3d92Mp=
+\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;E=
+zZyRyPM3PGR83ZPbIaYDq8lCVxVlbYr/Q=3D=3D\n&quot;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    &quot;-----END CERTIFICATE-----\n&quot;;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ssl_test_reject_null_in_cert_subject(void **state)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    openvpn_x509_cert_t *cert =3D get_cer=
+tificate(cert_with_null);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    struct gc_arena gc =3D gc_new();</span><br><span style=3D"color: =
 hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    /* same across the signed midpoint */</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    struct reliable rel2 =3D { 0 };</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    rel2=2Esize =3D CHAR_N_SEND_B=
-UFFERS;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    rel2=2Ei=
-nitial_timeout =3D 2;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    rel2=2Epacket_id =3D 0x80000002;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    const packet_id_type midpoint[] =3D { 0x7FFFFFFF, 0x80000000, 0x8000000=
-1 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    for (size_t i =3D 0; i &lt; SI=
-ZE(midpoint); i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        rel2=2E=
-array[i]=2Eactive =3D true;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        rel2=2Earray[i]=2Epacket_id =3D midpoint[i];</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        rel2=2Earray[i]=2Etimeout =
-=3D 2;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        rel2=
-=2Earray[i]=2Enext_try =3D 0;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_ptr_equal(&a=
-mp;rel2=2Earray[0]=2Ebuf, reliable_send(&amp;rel2, &amp;opcode));</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+/* reliable_get_buf_output_sequenced() stops issuing ids once rel-=
-&gt;packet_id is</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
-a full window ahead of the oldest unacknowledged one */</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+test_get_buf_output_sequenced_boundary(void **s=
-tate)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    struct reliable *rel =3D tes=
-t_reliable_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    rel-&gt;array[0]=
-=2Eactive =3D true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    rel-&gt;array[0]=2Epacket_id =3D 100;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    /* distance 7 &lt; size 8: still allowed */</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    rel-&gt;packet_id =3D 107;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    assert_non_null(reliable_get_=
-buf_output_sequenced(rel));</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* dist=
-ance 8 =3D=3D size 8: refused */</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    rel-&gt;packet_id =3D 108;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    assert_null(reliable_get_buf_output_sequenced(r=
-el));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    /* same boundary across the w=
-rap */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    rel-&gt;a=
-rray[0]=2Epacket_id =3D 0xFFFFFFFC;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    rel-&gt;packet_id =3D 3;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    assert_non_null(reliable_get_buf_output_sequen=
-ced(rel));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    rel-&gt;packet_id =3D 4;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_null(rel=
-iable_get_buf_output_sequenced(rel));</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   reliable_free(rel);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+/* Ids at or just ahead of rel-&gt=
-;packet_id are accepted */</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+t=
-est_mark_active_incoming_accepts_window(void **state)</span><br><span style=
+;">+    /* Trying to get the subject as a whole should fail=2E */</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    assert_ptr_equal(x509_get=
+_subject(cert, &amp;gc), NULL);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* =
+Trying to extract the common name should fail=2E */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    char username[TLS_USERNAME_LEN + 1] =
+=3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    asser=
+t_int_equal(backend_x509_get_username(username, sizeof(username), &quot;CN&=
+quot;, cert), FAILURE);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    gc_free(&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    free_certificate(cert);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Cert with CN=3D&quot=
+;name, O=3DInjectedOrg&quot; and O=3DRealOrg=2E</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ * Generated with the following Python script:</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ * from cryptography import x509</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * from cryptography=2Ex509=2Eoid import =
+NameOID, ExtensionOID, ExtendedKeyUsageOID</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ * from cryptography=2Ehazmat=2Eprimitives import ha=
+shes, serialization</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ * from cryptography=2Ehazmat=2Eprimitives=2Easymmetric import ec</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ * import datetime</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+ * private_key =3D ec=2Egenerate_private_key(ec=
+=2ESECP384R1())</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * n=
+ow =3D datetime=2Edatetime=2Enow(datetime=2Etimezone=2Eutc)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+ * name =3D &quot;name, O=3DInjecte=
+dOrg&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * org =
+=3D &quot;RealOrg&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * distinguis=
+hed_name =3D x509=2EName([</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ *     x509=2ENameAttribute(NameOID=2ECOMMON_NAME, name),</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ *     x509=2ENameAttribute(Na=
+meOID=2EORGANIZATION_NAME, org)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ * ])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * cert =3D (x509=
+=2ECertificateBuilder()</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ *             =2Esubject_name(distinguished_name)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ *             =2Eissuer_name(distinguis=
+hed_name)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *        =
+     =2Epublic_key(private_key=2Epublic_key())</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ *             =2Eserial_number(x509=2Erandom_se=
+rial_number())</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *   =
+          =2Enot_valid_before(now)</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ *             =2Enot_valid_after(now + datetime=2Etimedelta=
+(days=3D10 * 365))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+*             =2Esign(private_key, hashes=2ESHA256()))</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ * print(str(cert=2Epublic_bytes(serialization=2EEncoding=
+=2EPEM), encoding=3D&#39;utf-8&#39;))</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+static const char *cert_with_rfc_2253_chars =3D</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    &quot;-----BEGIN CERTIFICATE-----\n&quot;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;MIIBnTCCA=
+SOgAwIBAgIUR1IGc6A800U14v/ykZNR21aVubowCgYIKoZIzj0EAwIw\n&quot;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    &quot;MDEcMBoGA1UEAwwTbmFtZ=
+SwgTz1JbmplY3RlZE9yZzEQMA4GA1UECgwHUmVhbE9y\n&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    &quot;ZzAeFw0yNjA4MjgxNTQ3NDdaFw0zNjA=
+4MjUxNTQ3NDdaMDAxHDAaBgNVBAMME25h\n&quot;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    &quot;bWUsIE89SW5qZWN0ZWRPcmcxEDAOBgNVBAoMB1JlYWx=
+PcmcwdjAQBgcqhkjOPQIB\n&quot;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    &quot;BgUrgQQAIgNiAAR6zl9QPAbAnHWN//MRdowuhu0Sol6N+lqB/qk+D+2=
+NHCd/t4H9\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  &quot;cJlswUh6EPsmLxgfMYgO2QwClFWEFWvtXQs8BggoidY6i9pmAPhs8+9fmIyuNVpG\n&=
+quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;3vUW=
+ZrUBRgylwaIwCgYIKoZIzj0EAwIDaAAwZQIwKzXmR8YPQZ1pratM9meVmGkH\n&quot;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;1rpHgV3U8oeg+jXm=
+fVcZJTpDeDz4yBl4V3KBKT7HAjEAj2qkaTz7fiSwBKsxJQWH\n&quot;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    &quot;dQFPBCAYU9zZJvlNnEPtmHIwaD/q=
+HXDeClr/HRItU3B9\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    &quot;-----END CERTIFICATE-----\n&quot;;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ssl_=
+test_escape_rfc_2253_chars_in_subject(void **state)</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    struct reliable rel =3D { 0 };</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    rel=2Esize =3D RELIABLE_CAPACITY;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    rel=2Epacket_id =3D 10=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    reliable_mark_active_incoming(&am=
-p;rel, &amp;rel=2Earray[0]=2Ebuf, 10, CHAR_OPCODE_CONTROL_V1);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    assert_true(rel=2Earray[0]=
-=2Eactive);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    asse=
-rt_int_equal(10, rel=2Earray[0]=2Epacket_id);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    reliable_mark_active_incoming(&amp;rel, &amp;rel=2Earray[1]=2Ebu=
-f, 10 + RELIABLE_CAPACITY - 1,</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+                                  CHAR_OPCODE_CONTROL_V1);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(rel=2Earr=
-ay[1]=2Eactive);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+/* Ids below rel-&gt;packet_id abort=2E =
-The far-ahead case is left unpinned: callers</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+ * cannot produce it, and the bound may legitimate=
-ly tighten=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+ * NOTE: expect_assert_=
-failure() does not work with MSVC=2E It catches the ASSERT</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+ * by longjmp()ing out of assert_fai=
-led(), and MSVC&#39;s longjmp() unwinds the</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+ * intervening frames through RtlUnwindEx() instead=
- of just restoring the</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+ * registers, which faults=2E */</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+#ifndef _MSC_VER</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+test_mark_active_incoming_rejects_past_ids(void **state)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    struct reliable rel =3D { 0 };</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    rel=2Esize =3D RELIABLE_CAPACITY=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    rel=2Epacket_i=
-d =3D 10;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    expect_assert_failure(</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        reliable_mark_=
-active_incoming(&amp;rel, &amp;rel=2Earray[0]=2Ebuf, 5, CHAR_OPCODE_CONTROL=
-_V1));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    expect_as=
-sert_failure(</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  reliable_mark_active_incoming(&amp;rel, &amp;rel=2Earray[1]=2Ebuf, 0xFFFF=
-FFFF, CHAR_OPCODE_CONTROL_V1));</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif=
- /* ifndef _MSC_VER */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
-> int</span><br><span> main(void)</span><br><span> {</span><br><span>@@ -54=
-1,8 +879,16 @@</span><br><span>         cmocka_unit_test(test_packet_id_win=
-dow),</span><br><span>         cmocka_unit_test(test_reliable_backoff_is_bo=
-unded),</span><br><span>         cmocka_unit_test(test_reliable_purge_ignor=
-es_forged_acks),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   cmocka_unit_test(test_reliable_purge_legitimate_ack)</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        cmocka_unit_test(test_reliable_purge_legitimate_ack)=
-,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        cmocka_uni=
-t_test(test_recv_filter_characterization),</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        cmocka_unit_test(test_recv_filter_high_base)=
-,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        cmocka_uni=
-t_test(test_send_window_characterization),</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        cmocka_unit_test(test_reliable_send_picks_ol=
-dest),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        cmock=
-a_unit_test(test_get_buf_output_sequenced_boundary),</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(test_mark_active=
-_incoming_accepts_window),</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#ifndef _MSC_VER</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        cmocka_unit_test(test_mark_active_incoming_rejects_past_ids),</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><spa=
-n>     };</span><br><span> </span><br><span>     return cmocka_run_group_te=
-sts_name(&quot;packet_id tests&quot;, tests, NULL, NULL);</span><br><span><=
-/span><br></pre><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/=
-c/openvpn/+/1899?usp=3Demail">change 1899</a>=2E To unsubscribe, or for hel=
-p writing mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/sett=
-ings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://sche=
-ma=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:=
-//schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=2Eo=
-penvpn=2Enet/c/openvpn/+/1899?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
+, 100%, 40%);">+    openvpn_x509_cert_t *cert =3D get_certificate(cert_with=
+_rfc_2253_chars);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  struct gc_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+char *subject =3D x509_get_subject(cert, &amp;gc);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    assert_non_null(subject);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    /* Mbed TLS escapes the &#39;=3D&#39; character b=
+ut OpenSSL does not=2E */</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    const char *expected_subject_openssl =3D &quot;CN=3Dname\\, O=3DI=
+njectedOrg, O=3DRealOrg&quot;;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    const char *expected_subject_mbedtls =3D &quot;CN=3Dname\\, =
+O\\=3DInjectedOrg, O=3DRealOrg&quot;;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   assert_true(strcmp(subject, expected_subject_openssl) =3D=3D 0 || strcmp=
+(subject, expected_subject_mbedtls) =3D=3D 0);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    free_certificate(cert);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span> void</span><br><span> ssl_test_extract=
+_peer_info(void **state)</span><br><span> {</span><br><span>@@ -960,6 +1111=
+,9 @@</span><br><span>         cmocka_unit_test(test_data_channel_known_vec=
+tors_epoch),</span><br><span>         cmocka_unit_test(test_data_channel_kn=
+own_vectors_shortpktid),</span><br><span>         cmocka_unit_test(crypto_t=
+est_print_cert_details),</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        cmocka_unit_test(ssl_test_extract_last_matching_field),</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(s=
+sl_test_reject_null_in_cert_subject),</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        cmocka_unit_test(ssl_test_escape_rfc_2253_chars_i=
+n_subject),</span><br><span>         cmocka_unit_test(ssl_test_extract_peer=
+_info)</span><br><span> </span><br><span>     };</span><br><span></span><br=
+></pre><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn=
+/+/1898?usp=3Demail">change 1898</a>=2E To unsubscribe, or for help writing=
+ mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=
+=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg=
+/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=
+=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=
+=2Enet/c/openvpn/+/1898?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
+ew Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-Message=
-Type: newpatchset </div>
-<div style=3D"display:none"> Gerrit-Project: openv=
-pn </div>
+<div style=3D"display:none"> Gerrit-MessageType: =
+newpatchset </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </d=
+iv>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div st=
-yle=3D"display:none"> Gerrit-Change-Id: Iaf68abf0d2575ee4cd30dc4f3ef627f6b2=
-2ecb03 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1899 </div=
->
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"disp=
-lay:none"> Gerrit-Owner: razvanc &lt;razvanc@mailbox=2Eorg&gt; </div>
-<div =
-style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@rfc2549=
-=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt=
-;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
-<div style=3D"display:n=
-one"> Gerrit-Attention: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>=
+<div style=3D=
+"display:none"> Gerrit-Change-Id: Ic334518048d6ca57a504257e210467f9c451d268=
+ </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 1898 </div>
+<div=
+ style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:no=
+ne"> Gerrit-Owner: MaxF &lt;max@max-fillinger=2Enet&gt; </div>
+<div style=
+=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@greenie=2Emuc=2Ede&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-open=
+vpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: =
+syzzer &lt;steffan@karger=2Eme&gt; </div>
+<div style=3D"display:none"> Gerr=
+it-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>=
 
+<div style=3D"display:none"> Gerrit-Attention: syzzer &lt;steffan@karger=
+=2Eme&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &=
+lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerri=
+t-Attention: cron2 &lt;gert@greenie=2Emuc=2Ede&gt; </div>
+<div style=3D"dis=
+play:none"> Gerrit-Attention: MaxF &lt;max@max-fillinger=2Enet&gt; </div>
 
+=
 </body></html>
---EPAZCuGCZ24=--
+--eOu2PzvqnzQ=--
 
 
---===============2908998574968004581==
+--===============5721277011923044112==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============2908998574968004581==
+--===============5721277011923044112==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -1261,5 +1381,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============2908998574968004581==--
+--===============5721277011923044112==--
 
