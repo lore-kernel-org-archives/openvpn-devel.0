@@ -4,126 +4,126 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A10C7C79F99
-	for <openvpn-devel@archiver.kernel.org>; Tue,  8 Sep 2026 16:34:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id BA68CC79F82
+	for <openvpn-devel@archiver.kernel.org>; Tue,  8 Sep 2026 16:34:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:Message-ID:References:Date:Sender:To:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
-	List-Owner; bh=zb7KW0FY6uRAHcwH8yVfCx3CGLYtc6CmDD6QgCws70c=; b=bLacuVkHwrm8gj
-	wrOUGW1B/eBAXfOPXaTG+vj9oFrTK75iPfnDfZd+Z1EzPA0+SGrONRiWEQidYZ6wIM5OtLk/7vdxy
-	K83a2zGLeQhoFh0JoR0v8AU27oqDeM7ruL3LvjWR16GPi1bud94mG0c+Aq1v2R72WmyFByD9NJku/
-	Zzc=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	List-Owner; bh=IS1MmapGUMtlJk/YXaZ/G9LwunEe54J2PboRsRHnx0A=; b=kLn+g8aun1f0tI
+	ps7J0apj9sT9B3pIQCv/s29vaprZXJUK1D+De7EtR1PiFDwURnee06u8G/bFQfvxD9iFLx7I2zE70
+	9mLCsUkxPDBuEedFZ8m711jDoElP/LPpHO7mEp7wYE4cqvfp+5+0bfRqrPTJhcpMoXDgyuidgFntF
+	Nwk=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x3yly-0003Qr-Tn;
-	Tue, 08 Sep 2026 16:34:14 +0000
+	id 1x3yme-0003gH-Bf;
+	Tue, 08 Sep 2026 16:34:57 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1x3ylx-0003Qi-9a
+ (envelope-from <gerrit@openvpn.net>) id 1x3ymd-0003g6-Gw
  for openvpn-devel@lists.sourceforge.net;
- Tue, 08 Sep 2026 16:34:13 +0000
+ Tue, 08 Sep 2026 16:34:56 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:Date:From
  :Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From:
  Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=pspvLF1n6X8/2GabsfdPeZquXkXfVX2s92DThMNN5po=; b=g9APqyX8pUHobwYKQ1fyJ6ZGJC
- 2YCYKpAjoiHkOXz6VW1U9Qg75pX95gfJUq+sn1R1Gx3RW+BYsheQtx6FH98esw+CrUt9AaQrJJWtg
- U620UpJQsvCMBDXyBiMwUSn8wzF9YZd/4Xr84jlxoXgDbUISGUCE2DmyDSB18k+bqhxI=;
+ bh=LA410/AFq6BUkeRwmsM/Gc+6HahzH+OihFlHK7c6/eI=; b=ONhPer9f00jfJNqPEF3VzI0BKV
+ 8MvJCHNviB9v/qORP8eCa1BQTCwSBG9SBHAO21zOu/pX59Z/Og1WMbqAKwn2ocAZ66RCLgJYbZJKD
+ nbWgy6JY0/MWgNsCRX0kg+7AU792InfqHZPJqhMVxxtTiEtbNeVU0EqPDuTDPL5jpark=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
  Subject:References:List-Unsubscribe:List-Id:Cc:Date:From:Sender:To:Content-ID
  :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
  Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=pspvLF1n6X8/2GabsfdPeZquXkXfVX2s92DThMNN5po=; b=c
- be3Y8Wo06exZ1Av7+FRyrjr+QZjKdJ3kls8+wEhyefOziPYHedsjurFA0fwFNBSQkLnivPsI8Ed5o
- a8z03rnCgczaOuzKo/GPWN9N/zJi6Pd7LbkZhXIquBYHhXOjUxxoN3yy3bpkb6+etBX5MFf29Fqbt
- Zw25LVWhv5pEhROQ=;
-Received: from mail-wr1-f50.google.com ([209.85.221.50])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ List-Owner:List-Archive; bh=LA410/AFq6BUkeRwmsM/Gc+6HahzH+OihFlHK7c6/eI=; b=h
+ YtmxRJU9fck2/FCuM8fhzwMHCkzy1HO+EDokuimhn7F+ot3KyP8jWyX8oZ6suSMRU7TDPGdBUCWgV
+ eZtljqnOOQCAQDSxh6kWatRKywwG8v88LeNKfCftTNB7fnWkUlBN3IvJaSumlRcM1O6YiUrjC7ePt
+ Xbts+82j2w7nDp9k=;
+Received: from mail-wr1-f48.google.com ([209.85.221.48])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1x3ylv-0008Tq-OV for openvpn-devel@lists.sourceforge.net;
- Tue, 08 Sep 2026 16:34:13 +0000
-Received: by mail-wr1-f50.google.com with SMTP id
- ffacd0b85a97d-47ddf7b09e5so5527265f8f.1
+ id 1x3ymc-0002on-Fu for openvpn-devel@lists.sourceforge.net;
+ Tue, 08 Sep 2026 16:34:56 +0000
+Received: by mail-wr1-f48.google.com with SMTP id
+ ffacd0b85a97d-47f96c5b722so3437499f8f.0
  for <openvpn-devel@lists.sourceforge.net>;
- Tue, 08 Sep 2026 09:34:11 -0700 (PDT)
+ Tue, 08 Sep 2026 09:34:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1788885245; x=1789490045; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1788885288; x=1789490088; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
  :date:from:from:to:cc:subject:date:message-id:reply-to:content-type;
- bh=pspvLF1n6X8/2GabsfdPeZquXkXfVX2s92DThMNN5po=;
- b=abKohxducZt+JthTd6De3QAeIsQMtxAEq+jouRlMgQR7no/g2qaxEDEz5KBo0Sthh1
- QlJB2/HYImlQ3qKbS5XwrMWQzvbUNVDU4N/pKwxsjpVcwcFo62rySDcP3WgX4SfZoDrr
- A6Qfgy3m4cg+/jwYXAl+KgPWO/Q+9xRw3OkhxFm0Hw3HazwzRporIWuuOZH0wecFJANM
- AypWHUkH/1dCKFyaLFBTTIJJK3RDT1AkNyjqMdO6s5R5PAc3kdej7olj42LhaEZXgLgh
- FOTwpJMF2WTzfFsxKShjVqYjHEJyL7GzyaFEERnLtDFA1Il0LRtf8A+gKrQ87tHZeIRT
- VxDw==
+ bh=LA410/AFq6BUkeRwmsM/Gc+6HahzH+OihFlHK7c6/eI=;
+ b=RIzP4BSnWvpSvdZzKnGv2yj9I4RuoH2ba3wXcCF3ig5Wf2xD60U7DsLUE9wQzQ55mr
+ y970Sj8dL/FD8fEcAlW+VweIvRtYmuyxDY6VAzymQVI58P1hJEg7GAzPDBV8aEUxkOVN
+ FM2QHs7HTKi61v3tsD1Tml1V66HyBiPVRZ5KEJTjbs6y7nEdQwSl65pIitRJdsMJOser
+ NCqMA14LnFVsal/vO3G8sm43fM8zkUWql1mW8AC0/ZjrOyU8NZJ3BguDsko45Kg2kDP8
+ 3MeUzMqTXLg/wVDgON/E4/UlAPhkKjTEo2iJuwSuVHSWtcQG0zsocTqCvVqd+QyxB5NQ
+ 3hnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1788885245; x=1789490045;
+ d=1e100.net; s=20251104; t=1788885288; x=1789490088;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
  :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
  :message-id:reply-to:content-type;
- bh=pspvLF1n6X8/2GabsfdPeZquXkXfVX2s92DThMNN5po=;
- b=jxRs8G1D8rgHS0PwdLMExWDg3UQvAdUpdAEXNQwo0GGPR0TvL5erKBexpG/+IOZAHx
- 8xEniBfk8dyS2KD5PR18ny8UfCjrjxS5iAgKyicj/DM1GvV6NuRUNE88KcbksYggswkp
- uta9oyEZyxcN0oUvNERZE8cBP6qbvw9xSISl2meQTCAzEpPGVFNr7icLD3PU9KmnIcdc
- G3k/wK/Y8iG0xlPCI7DFqjKrTicDPYBeVsjueIJ106ezmWzIrreGAXgGH7e31/i4jQNa
- 2Jc5Izn3dWlsvrhGQx9fx8T7ZpCr9iEyt5qyjpw20V3JPPbN5gFj3EFKIWERvZvUk+xA
- n73Q==
-X-Gm-Message-State: AFuF++n/qAhFAwH3h53iblx3UrZaUmZcOtjmHGsfFO4qc+G5oAtywmuK
- Hv/wcb8jxp4pDcoCOw8y3Ngba9vtoQFSq+HqUzh7+q0W2/vLXR9xMGGSh+bQm01g9PfQ3xFmVvV
- t9e1/n12REdgMipC6PusGlNZzdpkFG0wbwAR6qURVh/MffXyt1xM0Kmvv1YB1IjsbIb6mV9Ced+
- D3A+Cxfw==
-X-Gm-Gg: AYBFou1I6AdJf+TYCDDVUPgEIWUvxzgtkfje2btsOYh1SV6ktMFrySgBSAehUlP6NhY
- OV0mAfPhNvG2fSR6DsyJT/SX536Io/y7h7G1BZ7UiOAz//6E4WIWbl8TiUetyMmbY/cMSgI6D+q
- ydqP802sjl9ynnSWgrV1IReF0FTe/cZJ/lg4OjO1eaOysAjcnGg95v2qkj1lecaOgDHQujo8+Eh
- SMY6O0oXLcsjvJUSBoz2TlE3mlRa1wOAcoju9Oe1SIxPr/93f9DE3+JKiCtkhMae880x9P/Tbjz
- ueO+WVr0bd2SDSRJeezUId3APcWSDItgC2e0rtZPqGxn1rcbhJ+biaRW59O4ZoQsctjqqFYAwiK
- RBPiufjzHk1QKSF6YXv3yfJRAf6fqawhhMCwicYBYF5ec8FCSLUMJZDXVfQORRE7Dx97Q+S6AAK
- xkNkXEIj3IH9hL3m8qPqpI1zlmlaI+aabUtz7yQP9ryB+FM8dzP61J2jY9uDYLQ9nEdrx6ftlzr
- kUn8yx3v7nz1Vph1zZnjAxkImSe1QqZNB96iu0YPmU16/y+b0OfZEXZnRuLfQU6j3FIU1XspnyI
- fqhzSdxXfdScV4B+5V+I+z0jm4/H+7sM1j+sOXJM+oyo43eb3GY=
-X-Received: by 2002:a05:600c:3b21:b0:49c:ee01:8c53 with SMTP id
- 5b1f17b1804b1-49cf820ab3dmr303461615e9.2.1788885244942; 
- Tue, 08 Sep 2026 09:34:04 -0700 (PDT)
+ bh=LA410/AFq6BUkeRwmsM/Gc+6HahzH+OihFlHK7c6/eI=;
+ b=G3cNo9SMUGPYWHA5gvjvxdGuwqF1ggsv/GIbmcFQ7PzIJBrIgs5TbJYsRorWOUTeFR
+ TKuGdPtCBRNhplfLMyQkv0jsQOlsVEJG1bxmdzGloba5Jmws6q3d6QLVRs8KpSCm4UGA
+ kpCYfVhP1RaJj+KzomoBpQ7sMj++QoOQvLjTHk+vENcoXkh3ARaJwMOkJYyUp5XlTJ5l
+ B6GhBb/Ig5V3qXgB10iRyAUb+J7xncU1UU3sO7BZmW1Gtyzu4r82XiYGZO609RuuZ9Fo
+ AUVuGpJG+EPMgZiWAZm9oSdH5792xqbLZsMsySlW1eqCHyH8MQ/10HeLIweyWuZnPWVU
+ O1Ug==
+X-Gm-Message-State: AFuF++lD7+L/dz5Eiy216GFqP0wOvP6tcflXixyOVcDW8UzhIeQZ6Mm9
+ mtv9/nG8M9P+UzHGpd8FZIk7elTNhcmcM4zR4t/646an0hMwBYnbpHCkVyup768EXLa9Y558M/1
+ LyBL7IGV5DYb9BiHPZnl7cHVb8mObkKAGI1JY1h0TEvXguLYg8DicNKlsT0chu7Rngneh8gux5t
+ HGQHmjsA==
+X-Gm-Gg: AYBFou0xJNsFMTEX2+V5VIzp4LwE/t76DHMbhVvfB5zGD06NRXA9jhR+q+eK4yjPECW
+ 80EvWfvn89q2X8ohIPdKDvK7RH2V9y2WxB+hxlwFAR+cgu4IQzSFbMI67DotKQvtkj/MiDiEqah
+ 5l92pl9hPgaVE85U2nMkkCXdPh0jESshp5gAF5VSf6sTbGAfIqJAMkM+krwB+NUq57SIBo32pZI
+ QPByAN5oCaiinP5YayPYFUk2nNh/f/1ryI4PhyNSSrY39RbLp+mVt6xiNfliKbHaCgt8hj212s0
+ p/9d9h2U3G5fANgEcyBFMSZQckdwRTiI5w+LD9D2iEWkzcs5Ai9ey7fWbp+G/ffCwYlxh6+ycC0
+ pG6OpI04EGIps8z+HVHKEW5OnIvpcTP4s0wMBiOaRycMkkKdNM/MUvI3cmd7W7NaiWqiUI3ZFQ8
+ T4139eIn6PlRjgCDf82S5XO+0AXRoM58UVmp+p1vOgm72UaxFVwmiyd5DIyTSdxmCFJ5LDGA8tz
+ 8h4AIMANKTswdQxf7L6jjFy9TNsXS7KM8+wIbJUpsPP1qY5RYBla2NYG54nW98r/dxGGXbF7+M4
+ 5YhDxoCmqfpWFOgtG5y7Vhwa6W1unZ6ctC8xccSadRsva/iusH0=
+X-Received: by 2002:a05:6000:4710:b0:485:8a47:5b83 with SMTP id
+ ffacd0b85a97d-4858a475c60mr27598330f8f.32.1788885287675; 
+ Tue, 08 Sep 2026 09:34:47 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-49cee5f912esm503362165e9.4.2026.09.08.09.34.04
+ ffacd0b85a97d-48588392b3esm42431995f8f.12.2026.09.08.09.34.47
  for <openvpn-devel@lists.sourceforge.net>
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 08 Sep 2026 09:34:04 -0700 (PDT)
+ Tue, 08 Sep 2026 09:34:47 -0700 (PDT)
 X-Google-Original-From: "MaxF (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Tue, 8 Sep 2026 16:34:04 +0000
+Date: Tue, 8 Sep 2026 16:34:46 +0000
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newchange
 X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: Ic983a3bf1ee8d4ef98f3883d5e5ddf234696a182
-X-Gerrit-Change-Number: 1907
+X-Gerrit-Change-Id: Id8ac9c48a8f751b0df95c6436ad3fbff3c4ae4a6
+X-Gerrit-Change-Number: 1908
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1907?usp=email>
-X-Gerrit-Commit: 6701dba01aa860e64db2c91d4974589921bbcc65
-References: <gerrit.1788885240000.Ic983a3bf1ee8d4ef98f3883d5e5ddf234696a182@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzg4ODg1MjQwMDAwLkljOTgzYTNiZjFlZThkNGVmOThmMzg4M2Q1ZTVkZGYyMzQ2OTZhMTgyQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <24ba19ddb21990dcb2edbd3cb67056a2d8b337de-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1908?usp=email>
+X-Gerrit-Commit: b0394c9fa8de3a9b40f6f2c34550e3f637c50dfe
+References: <gerrit.1788885285000.Id8ac9c48a8f751b0df95c6436ad3fbff3c4ae4a6@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzg4ODg1Mjg1MDAwLklkOGFjOWM0OGE4Zjc1MWIwZGY5NWM2NDM2YWQzZmJmZjNjNGFlNGE2QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <1deadd70484fbb169201aecdf07e2f4ead3cc4b7-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1x3ylv-0008Tq-OV
-Subject: [Openvpn-devel] [XS] Change in openvpn[release/2.6]: openvpnserv:
- harden CheckConfigPath() a bit more
+X-Headers-End: 1x3ymc-0002on-Fu
+Subject: [Openvpn-devel] [M] Change in openvpn[release/2.6]: Avoid unbounded
+ reliable TLS timeout
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -140,245 +140,417 @@ From: "MaxF \(Code Review\) via Openvpn-devel"
 Reply-To: max@max-fillinger.net, openvpn-devel@lists.sourceforge.net
 Cc: "MaxF \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============5099266535168895465=="
+Content-Type: multipart/mixed; boundary="===============1775909081868911655=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============5099266535168895465==
+--===============1775909081868911655==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="/bZEMCTCPCo="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="mUe02FteShM="; charset=UTF-8
 
---/bZEMCTCPCo=
+--mUe02FteShM=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, d12fk, plaisthos, razvanc=2E
+Attention is currently required from: plaisthos, razvanc=2E
 
+MaxF has uploa=
+ded this change for review=2E ( http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1=
+908?usp=3Demail )
+
+
+Change subject: Avoid unbounded reliable TLS timeout
 =
-MaxF has uploaded this change for review=2E ( http://gerrit=2Eopenvpn=2Enet=
-/c/openvpn/+/1907?usp=3Demail )
-
-
-Change subject: openvpnserv: harden Check=
-ConfigPath() a bit more
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-openvpnserv: harden CheckConfigPath() a bit more
+Avoid unbound=
+ed reliable TLS timeout
 
-If the config_=
-path retrieved from the Registry doesn't end with a path
-sepatator, the pre=
-fix check could be satisfied by a sibling directory
-that starts with the sa=
-me substring, e=2Eg=2E "config" vs=2E "configx"=2E While
-code in common=2Ec=
- ensures this, that code could disappear in the future
-leaving the check vu=
-lnerable=2E Instead spend the few CPU cycles to be
-absolutely sure, we're d=
-oing the right thing here=2E
+Avoid an unbounded TLS retransmit timeout, which c=
+ould potentially
+trigger an integer overflow=2E
 
-Discovered and reported by BreachX Zero Day L=
-abs, using Typhon AI Mil v2=2E
-Contributing Researcher: Vivek Parikh=2E
+The maximum initial timeou=
+t is defined in reliable=2Eh and used to
+constrain --tls-timeout, so that t=
+he relation between the option range
+and RELIABLE_MAX_TIMEOUT_SHIFT is expl=
+icit and checked at compile time=2E
 
-Re=
-ported-by: Vivek Parikh <vivek=2Eparikh@breachx=2Eai>
-Tested-by: Vivek Pari=
-kh <vivek=2Eparikh@breachx=2Eai>
-CVE: 2026-78043
-Change-Id: Ic983a3bf1ee8d4=
-ef98f3883d5e5ddf234696a182
-Signed-off-by: Heiko Hund <heiko@ist=2Eeigentlic=
-h=2Enet>
-Acked-by: Razvan Cojocaru <razvanc@mailbox=2Eorg>
-Acked-by: Arne S=
-chwabe <arne@rfc2549=2Eorg>
-Gerrit URL: https://gerrit=2Eopenvpn=2Enet/c/op=
-envpn/+/1886
-Message-Id: <20260831184709=2E3359-1-gert@greenie=2Emuc=2Ede>
-=
-URL: https://www=2Email-archive=2Ecom/openvpn-devel@lists=2Esourceforge=2En=
-et/msg38854=2Ehtml
-Signed-off-by: Gert Doering <gert@greenie=2Emuc=2Ede>
-(c=
-herry picked from commit 588af513aac1d2d774fd3fde1716384e3501a5a1)
+Github: OpenVPN/openvpn-private-issues=
+#161
+Reported-By: Mark Bregman (Fox-IT) <mark=2Ebregman@fox-it=2Ecom>
+CVE: =
+2026-84732
+Change-Id: Id8ac9c48a8f751b0df95c6436ad3fbff3c4ae4a6
+Signed-off-=
+by: Arne Schwabe <arne@rfc2549=2Eorg>
+Signed-off-by: Razvan Cojocaru <razva=
+nc@mailbox=2Eorg>
+Acked-by: MaxF <max@max-fillinger=2Enet>
+(cherry picked f=
+rom commit 207ac5f47e46565881dcec385020ebdcb682caa4)
 ---
-M sr=
-c/openvpnserv/validate=2Ec
-1 file changed, 5 insertions(+), 0 deletions(-)
+M src/openvpn/opti=
+ons=2Ec
+M src/openvpn/reliable=2Ec
+M src/openvpn/reliable=2Eh
+3 files chang=
+ed, 45 insertions(+), 11 deletions(-)
+
+
+
+  git pull ssh://gerrit=2Eopenvpn=
+=2Enet:29418/openvpn refs/changes/08/1908/1
+
+diff --git a/src/openvpn/optio=
+ns=2Ec b/src/openvpn/options=2Ec
+index 9344f99=2E=2E873efaf 100644
+--- a/sr=
+c/openvpn/options=2Ec
++++ b/src/openvpn/options=2Ec
+@@ -9180,6 +9180,15 @@
 =
-
-
-
-  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/07/19=
-07/1
-
-diff --git a/src/openvpnserv/validate=2Ec b/src/openvpnserv/validate=
-=2Ec
-index a59f9b1=2E=2Ebd89205 100644
---- a/src/openvpnserv/validate=2Ec
-+=
-++ b/src/openvpnserv/validate=2Ec
-@@ -67,6 +67,11 @@
-     const WCHAR *conf=
-ig_file =3D NULL;
-     const WCHAR *config_dir =3D NULL;
- 
-+    /* config_d=
-ir must end with a '\' or the prefix check below could be satisfied by a si=
-bling directory */
-+    if (config_dir_len =3D=3D 0 || s->config_dir[config=
-_dir_len - 1] !=3D L'\\')
-+    {
-+        return FALSE;
-+    }
-     /* fnam=
-e =3D stdin is special: do not treat it as a relative path */
-     if (wcsc=
-mp(fname, L"stdin") =3D=3D 0)
      {
+         VERIFY_PERMISSION(OPT_P_TLS_PARMS);
+         options->tls_t=
+imeout =3D positive_atoi(p[1]);
++        /* Constrain the timeout to not ha=
+ve problems with
++         * RELIABLE_MAX_TIMEOUT_SHIFT creating an overflo=
+w=2E 65k seconds
++         * timeout is already way too much anyway */
++   =
+     if (options->tls_timeout < 1 || options->tls_timeout > RELIABLE_MAX_IN=
+ITIAL_TIMEOUT)
++        {
++            msg(msglevel, "tls_timeout: Must be =
+an integer between %d and %d, not %lld",
++                1, RELIABLE_MAX_I=
+NITIAL_TIMEOUT, options->tls_timeout);
++            goto err;
++        }
+  =
+   }
+     else if (streq(p[0], "reneg-bytes") && p[1] && !p[2])
+     {
+diff=
+ --git a/src/openvpn/reliable=2Ec b/src/openvpn/reliable=2Ec
+index c2b9439=
+=2E=2Ebabe4c8 100644
+--- a/src/openvpn/reliable=2Ec
++++ b/src/openvpn/relia=
+ble=2Ec
+@@ -683,11 +683,22 @@
+             }
+         }
+     }
++
+     if (b=
+est)
+     {
++        /* The initial timeout is bounded by RELIABLE_MAX_INIT=
+IAL_TIMEOUT, so
++         * shifting it cannot overflow=2E */
++        stat=
+ic_assert(RELIABLE_MAX_INITIAL_TIMEOUT <=3D (INT_MAX >> RELIABLE_MAX_TIMEOU=
+T_SHIFT),
++                      "initial reliable timeout overflows when s=
+hifted");
++        const interval_t max_timeout =3D rel->initial_timeout <<=
+ RELIABLE_MAX_TIMEOUT_SHIFT;
++
+         /* exponential backoff */
+         =
+best->next_try =3D local_now + best->timeout;
+-        best->timeout *=3D 2=
+;
++        if (best->timeout < max_timeout)
++        {
++            best->t=
+imeout *=3D 2;
++        }
++
+         best->n_acks =3D 0;
+         *opcode =
+=3D best->opcode;
+         dmsg(D_REL_DEBUG, "ACK reliable_send ID " packet=
+_id_format " (size=3D%d to=3D%d)",
+diff --git a/src/openvpn/reliable=2Eh b/=
+src/openvpn/reliable=2Eh
+index 766c07d=2E=2E5877f20 100644
+--- a/src/openvp=
+n/reliable=2Eh
++++ b/src/openvpn/reliable=2Eh
+@@ -41,18 +41,32 @@
+  *  @{ *=
+/
+ 
+ 
+-#define RELIABLE_ACK_SIZE 8     /**< The maximum number of packet ID=
+s
+-                                 *   waiting to be acknowledged which ca=
+n
+-                                 *   be stored in one \c reliable_ack
+- =
+                                *   structure=2E */
++#define RELIABLE_ACK_S=
+IZE 8
++/**< The maximum number of packet IDs
++ *   waiting to be acknowledg=
+ed which can
++ *   be stored in one \c reliable_ack
++ *   structure=2E */
+ =
+
+-#define RELIABLE_CAPACITY 12    /**< The maximum number of packets that
+-=
+                                 *   the reliability layer for one VPN
+-   =
+                              *   tunnel in one direction can store=2E */
++=
+#define RELIABLE_CAPACITY 12
++/**< The maximum number of packets that
++ *  =
+ the reliability layer for one VPN
++ *   tunnel in one direction can store=
+=2E */
+ 
+-#define N_ACK_RETRANSMIT 3      /**< We retry sending a packet ea=
+rly if
+-                                 *   this many later packets have b=
+een
+-                                 *   ACKed=2E */
++#define N_ACK_RETRAN=
+SMIT 3
++/**< We retry sending a packet early if
++ *   this many later packe=
+ts have been
++ *   ACKed=2E */
++
++#define RELIABLE_MAX_TIMEOUT_SHIFT 6
++/**=
+< Maximum shift or doubling in exponential backoff
++ * we allow=2E This is =
+a safeguard against an unbounded
++ * exponential backoff=2E With the defaul=
+t timeout of 2s this
++ * equals 128s */
++
++#define RELIABLE_MAX_INITIAL_TIM=
+EOUT (1 << 16)
++/**< Maximum initial timeout (--tls-timeout) we accept=2E
++=
+ * Bounded so that shifting it by RELIABLE_MAX_TIMEOUT_SHIFT
++ * cannot ove=
+rflow an int=2E */
+ 
+ /**
+  * The acknowledgment structure in which packet =
+IDs are stored for later
 
 -- 
-To view, visit http://gerrit=2Eop=
-envpn=2Enet/c/openvpn/+/1907?usp=3Demail
-To unsubscribe, or for help writin=
-g mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+To view, visit http://gerrit=2Eopenvpn=2Enet/=
+c/openvpn/+/1908?usp=3Demail
+To unsubscribe, or for help writing mail filte=
+rs, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-G=
-errit-MessageType: newchange
+Gerrit-Messag=
+eType: newchange
 Gerrit-Project: openvpn
-Gerrit-Branch: release=
-/2=2E6
-Gerrit-Change-Id: Ic983a3bf1ee8d4ef98f3883d5e5ddf234696a182
-Gerrit-C=
-hange-Number: 1907
+Gerrit-Branch: release/2=2E6
+Gerri=
+t-Change-Id: Id8ac9c48a8f751b0df95c6436ad3fbff3c4ae4a6
+Gerrit-Change-Number=
+: 1908
 Gerrit-PatchSet: 1
-Gerrit-Owner: MaxF <max@max-fillinger=
-=2Enet>
-Gerrit-Reviewer: cron2 <gert@greenie=2Emuc=2Ede>
-Gerrit-Reviewer: d=
-12fk <heiko@openvpn=2Enet>
-Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=
-=2Eorg>
-Gerrit-Reviewer: razvanc <razvanc@mailbox=2Eorg>
-Gerrit-CC: openvpn=
--devel <openvpn-devel@lists=2Esourceforge=2Enet>
-Gerrit-Attention: plaistho=
-s <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Attention: cron2 <gert@greenie=2Emuc=
-=2Ede>
-Gerrit-Attention: d12fk <heiko@openvpn=2Enet>
-Gerrit-Attention: razv=
-anc <razvanc@mailbox=2Eorg>
+Gerrit-Owner: MaxF <max@max-fillinger=2Enet>
+Gerr=
+it-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Reviewer: razvan=
+c <razvanc@mailbox=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Es=
+ourceforge=2Enet>
+Gerrit-Attention: plaisthos <arne-openvpn@rfc2549=2Eorg>
+=
+Gerrit-Attention: razvanc <razvanc@mailbox=2Eorg>
 
---/bZEMCTCPCo=
+--mUe02FteShM=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: cron2, d12fk, plaisthos, razvanc=2E </p>
-<p>MaxF has =
-uploaded this change for <strong>review</strong>=2E</p><p><a href=3D"http:/=
-/gerrit=2Eopenvpn=2Enet/c/openvpn/+/1907?usp=3Demail">View Change</a></p><p=
-re class=3D"blocks" style=3D"font-family: monospace,monospace; white-space:=
- pre-wrap;">openvpnserv: harden CheckConfigPath() a bit more<br><br>If the =
-config_path retrieved from the Registry doesn&#39;t end with a path<br>sepa=
-tator, the prefix check could be satisfied by a sibling directory<br>that s=
-tarts with the same substring, e=2Eg=2E &quot;config&quot; vs=2E &quot;conf=
-igx&quot;=2E While<br>code in common=2Ec ensures this, that code could disa=
-ppear in the future<br>leaving the check vulnerable=2E Instead spend the fe=
-w CPU cycles to be<br>absolutely sure, we&#39;re doing the right thing here=
-=2E<br><br>Discovered and reported by BreachX Zero Day Labs, using Typhon A=
-I Mil v2=2E<br>Contributing Researcher: Vivek Parikh=2E<br><br>Reported-by:=
- Vivek Parikh &lt;vivek=2Eparikh@breachx=2Eai&gt;<br>Tested-by: Vivek Parik=
-h &lt;vivek=2Eparikh@breachx=2Eai&gt;<br>CVE: 2026-78043<br>Change-Id: Ic98=
-3a3bf1ee8d4ef98f3883d5e5ddf234696a182<br>Signed-off-by: Heiko Hund &lt;heik=
-o@ist=2Eeigentlich=2Enet&gt;<br>Acked-by: Razvan Cojocaru &lt;razvanc@mailb=
-ox=2Eorg&gt;<br>Acked-by: Arne Schwabe &lt;arne@rfc2549=2Eorg&gt;<br>Gerrit=
- URL: https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1886<br>Message-Id: &lt;20=
-260831184709=2E3359-1-gert@greenie=2Emuc=2Ede&gt;<br>URL: https://www=2Emai=
-l-archive=2Ecom/openvpn-devel@lists=2Esourceforge=2Enet/msg38854=2Ehtml<br>=
-Signed-off-by: Gert Doering &lt;gert@greenie=2Emuc=2Ede&gt;<br>(cherry pick=
-ed from commit 588af513aac1d2d774fd3fde1716384e3501a5a1)<br>---<br>M src/op=
-envpnserv/validate=2Ec<br>1 file changed, 5 insertions(+), 0 deletions(-)<b=
-r><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace=
-; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openv=
-pn refs/changes/07/1907/1</pre><pre style=3D"font-family: monospace,monospa=
-ce; white-space: pre-wrap;"><span>diff --git a/src/openvpnserv/validate=2Ec=
- b/src/openvpnserv/validate=2Ec</span><br><span>index a59f9b1=2E=2Ebd89205 =
-100644</span><br><span>--- a/src/openvpnserv/validate=2Ec</span><br><span>+=
-++ b/src/openvpnserv/validate=2Ec</span><br><span>@@ -67,6 +67,11 @@</span>=
-<br><span>     const WCHAR *config_file =3D NULL;</span><br><span>     cons=
-t WCHAR *config_dir =3D NULL;</span><br><span> </span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    /* config_dir must end with a &#39;\&#39; o=
-r the prefix check below could be satisfied by a sibling directory */</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (config_dir_len =
-=3D=3D 0 || s-&gt;config_dir[config_dir_len - 1] !=3D L&#39;\\&#39;)</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        return FALSE;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span>     /* fname =
-=3D stdin is special: do not treat it as a relative path */</span><br><span=
->     if (wcscmp(fname, L&quot;stdin&quot;) =3D=3D 0)</span><br><span>     =
-{</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerr=
-it=2Eopenvpn=2Enet/c/openvpn/+/1907?usp=3Demail">change 1907</a>=2E To unsu=
-bscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
-=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope it=
-emtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"acti=
-on" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1907?usp=3Demail"/><meta item=
-prop=3D"name" content=3D"View Change"/></div></div>
+rently required from: plaisthos, razvanc=2E </p>
+<p>MaxF has uploaded this =
+change for <strong>review</strong>=2E</p><p><a href=3D"http://gerrit=2Eopen=
+vpn=2Enet/c/openvpn/+/1908?usp=3Demail">View Change</a></p><pre class=3D"bl=
+ocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">Av=
+oid unbounded reliable TLS timeout<br><br>Avoid an unbounded TLS retransmit=
+ timeout, which could potentially<br>trigger an integer overflow=2E<br><br>=
+The maximum initial timeout is defined in reliable=2Eh and used to<br>const=
+rain --tls-timeout, so that the relation between the option range<br>and RE=
+LIABLE_MAX_TIMEOUT_SHIFT is explicit and checked at compile time=2E<br><br>=
+Github: OpenVPN/openvpn-private-issues#161<br>Reported-By: Mark Bregman (Fo=
+x-IT) &lt;mark=2Ebregman@fox-it=2Ecom&gt;<br>CVE: 2026-84732<br>Change-Id: =
+Id8ac9c48a8f751b0df95c6436ad3fbff3c4ae4a6<br>Signed-off-by: Arne Schwabe &l=
+t;arne@rfc2549=2Eorg&gt;<br>Signed-off-by: Razvan Cojocaru &lt;razvanc@mail=
+box=2Eorg&gt;<br>Acked-by: MaxF &lt;max@max-fillinger=2Enet&gt;<br>(cherry =
+picked from commit 207ac5f47e46565881dcec385020ebdcb682caa4)<br>---<br>M sr=
+c/openvpn/options=2Ec<br>M src/openvpn/reliable=2Ec<br>M src/openvpn/reliab=
+le=2Eh<br>3 files changed, 45 insertions(+), 11 deletions(-)<br><br></pre><=
+pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-space=
+: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/chang=
+es/08/1908/1</pre><pre style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;"><span>diff --git a/src/openvpn/options=2Ec b/src/openvpn/opt=
+ions=2Ec</span><br><span>index 9344f99=2E=2E873efaf 100644</span><br><span>=
+--- a/src/openvpn/options=2Ec</span><br><span>+++ b/src/openvpn/options=2Ec=
+</span><br><span>@@ -9180,6 +9180,15 @@</span><br><span>     {</span><br><s=
+pan>         VERIFY_PERMISSION(OPT_P_TLS_PARMS);</span><br><span>         o=
+ptions-&gt;tls_timeout =3D positive_atoi(p[1]);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        /* Constrain the timeout to not have pr=
+oblems with</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+ * RELIABLE_MAX_TIMEOUT_SHIFT creating an overflow=2E 65k seconds</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+         * timeout is already=
+ way too much anyway */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        if (options-&gt;tls_timeout &lt; 1 || options-&gt;tls_timeout &=
+gt; RELIABLE_MAX_INITIAL_TIMEOUT)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+            msg(msglevel, &quot;tls_timeout: Must be an integer between=
+ %d and %d, not %lld&quot;,</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+                1, RELIABLE_MAX_INITIAL_TIMEOUT, options-&gt;tls_ti=
+meout);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+goto err;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }<=
+/span><br><span>     }</span><br><span>     else if (streq(p[0], &quot;rene=
+g-bytes&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</sp=
+an><br><span>diff --git a/src/openvpn/reliable=2Ec b/src/openvpn/reliable=
+=2Ec</span><br><span>index c2b9439=2E=2Ebabe4c8 100644</span><br><span>--- =
+a/src/openvpn/reliable=2Ec</span><br><span>+++ b/src/openvpn/reliable=2Ec</=
+span><br><span>@@ -683,11 +683,22 @@</span><br><span>             }</span><=
+br><span>         }</span><br><span>     }</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span>     if (best)</span><br><span>    =
+ {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* The in=
+itial timeout is bounded by RELIABLE_MAX_INITIAL_TIMEOUT, so</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+         * shifting it cannot over=
+flow=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        s=
+tatic_assert(RELIABLE_MAX_INITIAL_TIMEOUT &lt;=3D (INT_MAX &gt;&gt; RELIABL=
+E_MAX_TIMEOUT_SHIFT),</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+                      &quot;initial reliable timeout overflows when shift=
+ed&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        c=
+onst interval_t max_timeout =3D rel-&gt;initial_timeout &lt;&lt; RELIABLE_M=
+AX_TIMEOUT_SHIFT;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span>         /* exponential backoff */</span><br><span>         =
+best-&gt;next_try =3D local_now + best-&gt;timeout;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        best-&gt;timeout *=3D 2;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        if (best-&gt;timeout &=
+lt; max_timeout)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            b=
+est-&gt;timeout *=3D 2;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span>         best-&gt;n_acks =3D 0;</span><br><span>         *opcode=
+ =3D best-&gt;opcode;</span><br><span>         dmsg(D_REL_DEBUG, &quot;ACK =
+reliable_send ID &quot; packet_id_format &quot; (size=3D%d to=3D%d)&quot;,<=
+/span><br><span>diff --git a/src/openvpn/reliable=2Eh b/src/openvpn/reliabl=
+e=2Eh</span><br><span>index 766c07d=2E=2E5877f20 100644</span><br><span>---=
+ a/src/openvpn/reliable=2Eh</span><br><span>+++ b/src/openvpn/reliable=2Eh<=
+/span><br><span>@@ -41,18 +41,32 @@</span><br><span>  *  @{ */</span><br><s=
+pan> </span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-#define RELIABLE_ACK_SIZE 8     /**&lt; The maximum number of packet IDs<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-                      =
+           *   waiting to be acknowledged which can</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                                 *   be sto=
+red in one \c reliable_ack</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-                                 *   structure=2E */</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+#define RELIABLE_ACK_SIZE 8</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+/**&lt; The maximum number of=
+ packet IDs</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *   wai=
+ting to be acknowledged which can</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ *   be stored in one \c reliable_ack</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *   structure=2E */</span><br><span> </s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#define RELIABLE_CAPACIT=
+Y 12    /**&lt; The maximum number of packets that</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-                                 *   the relia=
+bility layer for one VPN</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-                                 *   tunnel in one direction can store=
+=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define RELIA=
+BLE_CAPACITY 12</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**&=
+lt; The maximum number of packets that</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ *   the reliability layer for one VPN</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ *   tunnel in one direction can stor=
+e=2E */</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-#define N_ACK_RETRANSMIT 3      /**&lt; We retry sending a packet early=
+ if</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                  =
+               *   this many later packets have been</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                                 *   ACKed=
+=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define N_ACK=
+_RETRANSMIT 3</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**&lt=
+; We retry sending a packet early if</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ *   this many later packets have been</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+ *   ACKed=2E */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+#define RELIABLE_MAX_TIMEOUT_SHIFT 6</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+/**&lt; Maximum shift or doubling in expo=
+nential backoff</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * w=
+e allow=2E This is a safeguard against an unbounded</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * exponential backoff=2E With the defaul=
+t timeout of 2s this</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ * equals 128s */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define RELIABLE_MAX=
+_INITIAL_TIMEOUT (1 &lt;&lt; 16)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+/**&lt; Maximum initial timeout (--tls-timeout) we accept=2E</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Bounded so that sh=
+ifting it by RELIABLE_MAX_TIMEOUT_SHIFT</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+ * cannot overflow an int=2E */</span><br><span> </span=
+><br><span> /**</span><br><span>  * The acknowledgment structure in which p=
+acket IDs are stored for later</span><br><span></span><br></pre><p>To view,=
+ visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1908?usp=3Demai=
+l">change 1908</a>=2E To unsubscribe, or for help writing mail filters, vis=
+it <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings<=
+/a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div=
+ itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction">=
+<link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/19=
+08?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></d=
+iv>
 
-<div style=3D"display:=
-none"> Gerrit-MessageType: newchange </div>
-<div style=3D"display:none"> Ge=
-rrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: re=
-lease/2=2E6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ic983a3bf=
-1ee8d4ef98f3883d5e5ddf234696a182 </div>
-<div style=3D"display:none"> Gerrit=
--Change-Number: 1907 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1=
- </div>
-<div style=3D"display:none"> Gerrit-Owner: MaxF &lt;max@max-filling=
-er=2Enet&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt=
-;gert@greenie=2Emuc=2Ede&gt; </div>
-<div style=3D"display:none"> Gerrit-Rev=
-iewer: d12fk &lt;heiko@openvpn=2Enet&gt; </div>
-<div style=3D"display:none"=
-> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 <div=
- style=3D"display:none"> Gerrit-Reviewer: razvanc &lt;razvanc@mailbox=2Eorg=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openv=
-pn-devel@lists=2Esourceforge=2Enet&gt; </div>
+ style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"displ=
+ay:none"> Gerrit-Branch: release/2=2E6 </div>
 <div style=3D"display:none"> =
-Gerrit-Attention: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+Gerrit-Change-Id: Id8ac9c48a8f751b0df95c6436ad3fbff3c4ae4a6 </div>
+<div sty=
+le=3D"display:none"> Gerrit-Change-Number: 1908 </div>
+<div style=3D"displa=
+y:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owne=
+r: MaxF &lt;max@max-fillinger=2Enet&gt; </div>
+<div style=3D"display:none">=
+ Gerrit-Reviewer: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
 <div =
-style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@greenie=2Emuc=2Ede=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@=
-openvpn=2Enet&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: raz=
-vanc &lt;razvanc@mailbox=2Eorg&gt; </div>
+style=3D"display:none"> Gerrit-Reviewer: razvanc &lt;razvanc@mailbox=2Eorg&=
+gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvp=
+n-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"display:none"> G=
+errit-Attention: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div s=
+tyle=3D"display:none"> Gerrit-Attention: razvanc &lt;razvanc@mailbox=2Eorg&=
+gt; </div>
 
 </body></html>
---/bZEMCTCPCo=--
+--mUe02FteShM=--
 
 
---===============5099266535168895465==
+--===============1775909081868911655==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============5099266535168895465==
+--===============1775909081868911655==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -389,5 +561,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============5099266535168895465==--
+--===============1775909081868911655==--
 
