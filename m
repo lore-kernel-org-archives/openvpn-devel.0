@@ -4,128 +4,126 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 950ACC79FA1
-	for <openvpn-devel@archiver.kernel.org>; Fri, 11 Sep 2026 08:20:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A45ADC88E54
+	for <openvpn-devel@archiver.kernel.org>; Fri, 11 Sep 2026 09:11:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:Date:Sender:To:
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=8PAU6WBD5NVftE7Vp4BF2MWdIUlAFeUqBSmtivgEdos=; b=l+ZJxzio2vqYuV25NiCS/bSQzK
-	chWXW9i2LUayoN7+TfumUhWV1WI9S/8WP1lyhcJdCPOzUBu0I3cV25HFLjOuokqX2Uu05N08FhXmY
-	uKqdX81IYyMU8dXzS83eU5erOjKJYZJv11Ig7IsXOhu8Hs7zsx19vYgmmcH+mQ37tveY=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=FCpkELQQzkFt8MWaEUoxJmDHqTt0yZbTmR6acx/ewok=; b=Svy6whc0Y9pjJ9BrtwTLQlzH3R
+	pxCcoj2lVt79EqTrlMp8Uo1UlYIgBN4rTEdr83/uld6EbED2bkh/4IKDBHMzg97GaXL+Dru5m6Yc7
+	WXz5pxE199pDadsb99GM+MO6erb6X8FDSOO6cBCdmmRdz/SUZVp6ueNYGJNdauIOMTJU=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x4wV7-0003zC-Vw;
-	Fri, 11 Sep 2026 08:20:50 +0000
+	id 1x4xIG-0006TD-7C;
+	Fri, 11 Sep 2026 09:11:36 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1x4wV7-0003yE-9f
+ (envelope-from <gerrit@openvpn.net>) id 1x4xIE-0006Sy-Mx
  for openvpn-devel@lists.sourceforge.net;
- Fri, 11 Sep 2026 08:20:50 +0000
+ Fri, 11 Sep 2026 09:11:34 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:Date:From:Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From
+ Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
  :List-Post:List-Owner:List-Archive;
- bh=DcM+WI9wMdAnZH6aVE7arPsSlouTttRz1HAkhaJLMgA=; b=O2iFg1Pn2t3gndKDmvo356cVZb
- rH71kut6USGEobiDzMAVz2CM4BGZr8wPzPUu3RFDIOOPMehEATSDNZJ2ReVNyyg0Mf4TKPUtAgUhh
- BpRYK9KyP8SVV5/edfSYYIXPFolJlK3/QU/edwa2ej3V3neIr0egm3732sJQvrUgPULk=;
+ bh=mXQMXDzNyG7ptGcIDN1rZcBivEcemETuqniXNN2uRyE=; b=lBmnDoKZZMYf++9/2Ld73FtJPh
+ otu0zuBBMXP2uggoNs7BiaegsjNf+ch/HuAjcp/jA9yn5/C6EWKNXi0LW8R+uR197PZRieOKtmxwo
+ OW5Qr3bkcaOwAdf6wls5t12n8fiDwwR2rGI65pb43hQWbEyuhgAISkcn+xA/n4VR1LSs=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:Date:From:Sender:
- To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
+ Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=DcM+WI9wMdAnZH6aVE7arPsSlouTttRz1HAkhaJLMgA=; b=F
- xjdpPsl8zXeOcLdp8aEd4PgEyyI1ZlOUd41lQvzRSnRBIRMpIldiao7sZESNc2jnWfVLPOQ6EkSFd
- 7TlIowZ5zqQRShfCZLEf5SMEYJu6K5V0gDDDgNQs+Y9twBB1YYehllQ9HMPi94U18nbK0KQAQ8wly
- 0bJUidN0NmiVDEl0=;
+ List-Owner:List-Archive; bh=mXQMXDzNyG7ptGcIDN1rZcBivEcemETuqniXNN2uRyE=; b=U
+ 1KttauIcW/eOsGNdsqCMmROFXbp7PV3daZR2vBuQbl1B0oP+kDGlO/q4bKEgqLhyrwShYs1h/SGte
+ ATOPY6fA+Mj0wTezyi2VwCE2k1NuBIx2ptsYIz9qRo1JUU2jC6eUGYUlXR1GCG/cHRs/UMo1YqM8J
+ GyHDO/F7zUTHtYRA=;
 Received: from mail-wm2-f12.google.com ([74.125.225.140])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1x4wUz-0005ZA-Hm for openvpn-devel@lists.sourceforge.net;
- Fri, 11 Sep 2026 08:20:42 +0000
+ id 1x4xIA-0008Cv-Kv for openvpn-devel@lists.sourceforge.net;
+ Fri, 11 Sep 2026 09:11:34 +0000
 Received: by mail-wm2-f12.google.com with SMTP id
- 5b1f17b1804b1-49b94fce6e8so4967445e9.2
+ 5b1f17b1804b1-49b94fce6e8so5389545e9.2
  for <openvpn-devel@lists.sourceforge.net>;
- Fri, 11 Sep 2026 01:20:41 -0700 (PDT)
+ Fri, 11 Sep 2026 02:11:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1789114835; x=1789719635; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1789117884; x=1789722684; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:date:from:from:to:cc:subject:date:message-id
+ :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=DcM+WI9wMdAnZH6aVE7arPsSlouTttRz1HAkhaJLMgA=;
- b=ZYUEWUr2HrN/26OXMaqRLO3nSP7yaCAtkRsMbEoDL3vRCDn0u3eOphaQ7EKeaHmBl9
- PCKrP8xRIpCNn2N8IaVHRPnVjcvngtX22dC6Qlaw0kAemQxbylp1Om20FrgteV7NP91b
- JB7ndFFGSbThTrMTxCTBOFYlqItVzdxlKNfhzxvrMZkMp2sAHI0VAPxJ852ZjHWCJiBM
- qRaTWY7MB3pWM5im8AiNiLDUYsxdCX5g6OvZoEzzLasuH1dkJ2GXp0dOJpCoZUZxOoGP
- fCf99NEEDprxoJNV09JXflZrt2WRrkY8DoR9NqB8+0rIa+cU5MKywxi78jzyvjjaOjWz
- LyrA==
+ bh=mXQMXDzNyG7ptGcIDN1rZcBivEcemETuqniXNN2uRyE=;
+ b=bCaSKDhnPOklXywzQe5YOrvt+lWf3wlsdoKybDelse+FB9tsaMzJh2gTZ7OvBmJu/i
+ JSv4S6eI3GTqOdNQ4h2/xEqz2lP+Xj8+yIE62/EyExWvj/6Kg/AEwnERNK9qQlWCo9CF
+ NyQAaxX1To6z8DGzLD1r5bueRMTvD627oVo2/W3rfol3dD35dz9fByR4lEXzWBcvaRt0
+ IA6R/rY3Y9h1zFR6Vgh/BoxiJJnbUqq1MZz1mD56ogT3BdbjxTnQgKDGRMRPS8lvCXTH
+ E1hu8mraZzFgjBqDtKDs1JLaqmtYgdqlDmRU+FvcWOA35okAnkmssknpSY71oWyk+Lsb
+ llcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1789114835; x=1789719635;
+ d=1e100.net; s=20251104; t=1789117884; x=1789722684;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:date:from:x-gm-gg:x-gm-message-state:from:to:cc
- :subject:date:message-id:reply-to:content-type;
- bh=DcM+WI9wMdAnZH6aVE7arPsSlouTttRz1HAkhaJLMgA=;
- b=jLSwVeUYsnrxtk+/0rEyidp/BAsdlS1Xh7EipuyH188GgIwbUOzRUtHrbl+4Ei91lc
- PgdlxL4OCr+pb7RyDjqtoUROEz1U/sTJjQ7FqC9Yc8bDXizI8NHyeyP9hfyQxfp0w8aY
- zTXPsCHZC5mFOQO3+VcznSvFdo46JFkIz0NnDdU5PTZzNGDknSzRQXxBaXb6U6Oudpm+
- mzQt9Bipncx4dJNYIHZ3/w/3OTeAptNVfz6Xw+6Ids69MZRHLBT8MbBO4Z7OiKlvytLR
- 1/kUT36eGKnH+Kov73dKR6Q++qJV29n7BHUrDTjrxskIuZdiWe4dF6/qEhhhxvv0s/Nq
- SHQQ==
-X-Forwarded-Encrypted: i=1;
- AKwUvByv8rTkHhx+EdHzb+b6+kMmjjp/a2TaGLJuk3uSt80uqXgvP3wVLy12fLIelMqbzkoYYzlyLwNQLUWEe5Er@lists.sourceforge.net
-X-Gm-Message-State: AFuF++mCVCtBjs+WdHEotWG8QFgu6wp9Wfwrh5LEFpK4DPKJlxBsoc2h
- Ct/en95lJ9meYN7vk7jTTP4VbMBDfY7F69uNwDrXO/znpIucM/B1/CER3v2Y3xGUYZ4gnH1ZFLT
- Qh86SFomT9WYIVxx0zJAR+S9VXaT9azG6hJSqotzHDwi63i6zzjO98K6x6Pxem9dU5Aie
-X-Gm-Gg: AYBFou3n0e+kJ1U3sia6foB1e6Fe8Gw7eZG3/W4lUWnAoebLd3+/+FdfnBZTRXo2J5j
- YmZ7dUMB1ZI5T2mjMafvXhA8ueTsGfzsdo66etx8Q4i8dGQtYNpW4XPtZ9BRXG+9Gx3oqNcftfo
- tnc78huvxc298HfuCjozZ07oTCg6SScIFL+37ZXW7DnFWR7w29Vm6vUKLb/VXSF2r5AjSZN6FZo
- i8zPuhu9eq/Bf0oKfF8yFhIx/sr4lsh75VOZ0inkguQc/mNhVwBLEKt0Tw6b+0X/+mwyohZuC3H
- 7A8My6WlOxtRGuTToYB+x7BhC9JpT7irnwa2ctmX+zsIxHRugbTjb5AO+b/g/Tg42hfCOLGxu/J
- ar+TDhSa9XXEhjLfTLiVJ+iv9n15a4xWBl2fxK2es8RprMhrTphK9uISTdl1Laa7D9HuS8u15wI
- VW50boX5rrLg+JuM4wk9UNi5u7hwCXgcwaXfbISoOqI3VI7kKIsCw3CXE+sGkadr3XAGMsABwI1
- coVeije3VCA5ftF5dQan7V/teaP5mONB3mR35c2a93nwDDFZfefWOSghcVmNJvYaARa0uZaskGV
- UgBuH45pnyAHe51crxy4O+wtOPIlxao7OciUUxJH/EY3n8udqzgUi7Tb6vNsgslPCM4vy3r1
-X-Received: by 2002:a05:600c:3e12:b0:49d:260c:a422 with SMTP id
- 5b1f17b1804b1-49e619ce817mr30220225e9.25.1789114834899; 
- Fri, 11 Sep 2026 01:20:34 -0700 (PDT)
+ :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
+ :cc:subject:date:message-id:reply-to:content-type;
+ bh=mXQMXDzNyG7ptGcIDN1rZcBivEcemETuqniXNN2uRyE=;
+ b=k/Gw0Kc9lga1RayBWHqVD6H3p8BGHb3X0o90Z6Rb4w3rzCpNazSzPfFMrcRfgqXi9r
+ 5ElmHn2JUcW8bRQkGKms8QqWhXMPpaV6kdmsu5MXyg3eCiActCAgu1o0q2ZSEc+CYJt+
+ dRDVrRIMTB/vMKgnRKxor/qBymEPdW2O5gRorp5BuyyYGd7rSWbK0dFIO6gEI7lU0Jg9
+ 6gAax2kzeZw+55Nj3gLqwIRncBU0+0OD17y1Tt62VvHXzlbQUtOw6VeeypfXHXW6s/a/
+ a7BYcxMo413R+1ucLWKz+UNQgEZCsaujxiRpSvuKGTRhyQh+nPGty1mjl+1/M1JNJK/j
+ FR5Q==
+X-Gm-Message-State: AFuF++m5zJsNynmPnHNYc2JprM9RgCT28qBCuAMGzZ+8BE9bTLhQgfLp
+ VbSopMwTobKfYVc5FJzp2c6gDJgN0LE3kkjSzdgiEwI3CnhZbPBQxHRBaVODf1PCKh0AnQEWxrK
+ JSWD5DuJucTbgV+/YJKsw75y7k22aFuPy9ZHKw9raofxzfvHtmqvy1KTuOWRME5APT0ga
+X-Gm-Gg: AYBFou1OHnuAwNG4LWsxEDhXFCwqTF5557w+tTlaI3D0upbSdVYhVGljpigMsx+uPLN
+ xSi4qH0SlqZrp61/Gxxz0NBePINYB62Do8um2XaQM4RsAsC0gYif3hxbl0hrU3BTGPBwC+6kzMp
+ RCFhq0hCLDMP5E5pCHPiCaL99aSCdVHsDzq8b8WVeP3nWlmUyswUSpGArCwW5E6TeNESBkfiDaW
+ x7ZZp2HZFlXxDa05147smJTeEXzR2NqMH1+YFnn8FcYZ0V1IwBTQP24r7+cPOIkmzhD4+aFlEg4
+ tCpxZSjXpsoBQWh836c3MpPtq+pmG+uM44ZFDkGesHmZE8AXnEMBtdAFJJjLMCNLPbYUZw44xqV
+ 4SFwVQiMozgOpgwaxVzx6XwhJJOzLfUwAyaXylOzqWeIhm4+hYugppB33OGf/pb8ONKaz8uaRo+
+ pGNGWMFkCQsVgWx3KqJMxhlZOQWI2XlezsaHEcy4qLdsP3wG2lxlLYXXwUJFMMllsMLFPCQx49P
+ rZ7Rta1SWiQL9h1TP2JPlLIwyXQEcGBOWpoRSGswZiukTaO/Whpj4F+kNMtD1mCHefc8JjVYYsK
+ Jl9VrbhVdIRbqqjocb+8+AjAUS19EpjtV2esczAwrAwanzmxzPJye+HrhyEX8g==
+X-Received: by 2002:a05:600c:c48f:b0:499:bf0e:95c8 with SMTP id
+ 5b1f17b1804b1-49e619831b6mr40154595e9.1.1789117882817; 
+ Fri, 11 Sep 2026 02:11:22 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-49e6687a1basm5864815e9.12.2026.09.11.01.20.34
+ 5b1f17b1804b1-49e60ac42b9sm58685605e9.6.2026.09.11.02.11.22
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 11 Sep 2026 01:20:34 -0700 (PDT)
+ Fri, 11 Sep 2026 02:11:22 -0700 (PDT)
 X-Google-Original-From: "stipa (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Fri, 11 Sep 2026 08:20:32 +0000
+Date: Fri, 11 Sep 2026 09:11:03 +0000
+To: plaisthos <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: comment
-X-Gerrit-PatchSet: 18
-X-Gerrit-Change-Id: I5a7e9e13b9f9548b7ff717daae2b4a9cde3c06f2
-X-Gerrit-Change-Number: 1747
+X-Gerrit-MessageType: newpatchset
+X-Gerrit-PatchSet: 15
+X-Gerrit-Change-Id: Ib2b6c2246f9d9c0a505292ee8d879f714901ffae
+X-Gerrit-Change-Number: 1768
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1747?usp=email>
-X-Gerrit-Commit: 0bafb513d396895314c155e94f0eb3df1ca7ecda
-X-Gerrit-Comment-Date: Fri, 11 Sep 2026 08:20:32 +0000
-In-Reply-To: <gerrit.1782719911000.I5a7e9e13b9f9548b7ff717daae2b4a9cde3c06f2@gerrit.openvpn.net>
-References: <gerrit.1782719911000.I5a7e9e13b9f9548b7ff717daae2b4a9cde3c06f2@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzgyNzE5OTExMDAwLkk1YTdlOWUxM2I5Zjk1NDhiN2ZmNzE3ZGFhZTJiNGE5Y2RlM2MwNmYyQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <6b5eb6978daec1203046660a0acacf80cfbb7349-EmailReviewComments-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1768?usp=email>
+X-Gerrit-Commit: 67b9effd64e7147c48159a846a03cee9682d758a
+In-Reply-To: <gerrit.1783320647000.Ib2b6c2246f9d9c0a505292ee8d879f714901ffae@gerrit.openvpn.net>
+References: <gerrit.1783320647000.Ib2b6c2246f9d9c0a505292ee8d879f714901ffae@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzgzMzIwNjQ3MDAwLkliMmI2YzIyNDZmOWQ5YzBhNTA1MjkyZWU4ZDg3OWY3MTQ5MDFmZmFlQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <84cc337d172253e36ce3ee9413b319882bb026c1-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1x4wUz-0005ZA-Hm
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: oob: Add
- --server-probe to order client remotes by probe
+X-Headers-End: 1x4xIA-0008Cv-Kv
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: oob: advertise a
+ connect_lifetime in the probe reply
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -140,271 +138,318 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 From: "stipa \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
 Reply-To: lstipakov@gmail.com, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net, ralf@mandelbit.com
+ openvpn-devel@lists.sourceforge.net
 Cc: "stipa \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>,
- plaisthos <arne-openvpn@rfc2549.org>
-Content-Type: multipart/mixed; boundary="===============4933214299605566550=="
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: multipart/mixed; boundary="===============0809913410532266291=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============4933214299605566550==
+--===============0809913410532266291==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="hNNtPHIY4bg="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="XPL3l9AiuaE="; charset=UTF-8
 
---hNNtPHIY4bg=
+--XPL3l9AiuaE=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos, ralf_lici=2E
+Attention is currently required from: plaisthos=2E
 
-stipa has po=
-sted comments on this change by stipa=2E ( http://gerrit=2Eopenvpn=2Enet/c/=
-openvpn/+/1747?usp=3Demail )
+Hello plaisthos, 
 
-Change subject: oob: Add --server-probe to or=
-der client remotes by probe
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+I'd =
+like you to reexamine a change=2E Please visit
+
+    http://gerrit=2Eopenvpn=
+=2Enet/c/openvpn/+/1768?usp=3Demail
+
+to look at the new patch set (#15)=2E
+=
+
+
+Change subject: oob: advertise a connect_lifetime in the probe reply
+=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+
+oob: advertise a=
+ connect_lifetime in the probe reply
+
+A server answering an out-of-band SER=
+VER_PROBE now also advertises a
+connect_lifetime in the PROBE_REPLY: how lo=
+ng, in seconds, a probing
+client may use the reply as the server's HARD_RES=
+ET when it starts a
+handshake=2E
+
+The value is inferred, not configurable: =
+the reply is only usable as
+that reset while its stateless SYN-cookie is va=
+lid, i=2Ee=2E the guaranteed
+cookie window of ~handshake_window (2 quantise=
+d buckets; see
+check_session_hmac_and_pkt_id), so the server advertises exa=
+ctly that=2E A
+probe that arrived as P_CONTROL_OOB_WKC_V1 also gets
+OOB_PRO=
+BE_REPLY_FLAG_RESEND_WKC, telling the client to resend the WKc
+when complet=
+ing the handshake, since the server keeps no state=2E
+
+Only the wire advert=
+isement is added here -- the server puts both values
+into the probe_reply i=
+t builds for an accepted probe=2E The client side
+that acts on them follows=
+=2E
+
+Change-Id: Ib2b6c2246f9d9c0a505292ee8d879f714901ffae
+Signed-off-by: Le=
+v Stipakov <lev@openvpn=2Enet>
+---
+M src/openvpn/mudp=2Ec
+M src/openvpn/oob=
+=2Eh
+2 files changed, 21 insertions(+), 0 deletions(-)
 
 
-Patch Set 18:
+  git pull ssh://g=
+errit=2Eopenvpn=2Enet:29418/openvpn refs/changes/68/1768/15
 
-(5 comments)
-
-File doc/man-sections/client=
--options=2Erst:
-
-http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1747/comment/7f2=
-b24dc_24286e54?usp=3Demail :
-PS17, Line 619: TCP remotes keep their configu=
-red
-              :   position
-> nit: Responders are sorted before all nonr=
-esponders=2E [=E2=80=A6]
-Done!
-
-
-File src/openvpn/oob_client=2Ec:
-
-http://g=
-errit=2Eopenvpn=2Enet/c/openvpn/+/1747/comment/3e212ea2_c77f020c?usp=3Demai=
-l :
-PS17, Line 101: so a remote is always probed on a socket that can later=
- serve as its
-              :  * connection socket
-> The raw probe sockets =
-do not go through the normal connection socket setup=2E [=E2=80=A6]
-Done in=
- 3 pieces=2E
-
- - A new commit "socket: factor out UDP socket creation and s=
-etup" moves UDP half of create_socket() into create_socket_udp_configured()=
-, which creates socket for a family and applies the options=2E Refactor onl=
-y, no functional changes=2E
+diff --git a/s=
+rc/openvpn/mudp=2Ec b/src/openvpn/mudp=2Ec
+index 43aa732=2E=2Eb89b439 10064=
+4
+--- a/src/openvpn/mudp=2Ec
++++ b/src/openvpn/mudp=2Ec
+@@ -249,12 +249,27 =
+@@
+             return false;
+         }
  
- - The prober in #1747 uses this function ins=
-tead of socket() call=2E Probing is declined when connection entries bind d=
-ifferently, and entries behind SOCKS are skipped=2E
++        /* A tls-crypt-v2 clien=
+t must resend the WKc if it later uses this reply
++         * to start a ha=
+ndshake, since we keep no state=2E */
++        uint32_t reply_flags =3D
++  =
+          (verdict =3D=3D VERDICT_VALID_OOB_WKC_V1) ? OOB_PROBE_REPLY_FLAG_=
+RESEND_WKC : 0;
++
++        /* The client's third packet validates only whil=
+e its SYN-cookie does, so
++         * the advertised connect_lifetime is in=
+ferred (not configurable): the
++         * guaranteed cookie window of ~han=
+dshake_window (2 quantised buckets; see
++         * check_session_hmac_and_=
+pkt_id)=2E Advertising more would make the client
++         * trust an alre=
+ady-expired cookie=2E (RFC: connect_lifetime is how long the
++         * se=
+rver considers the reply valid=2E) */
++        int connect_lifetime =3D min=
+_int(2 * ((handwindow + 1) / 2), 0xffff);
++
+         /* the echo of the pee=
+r's session id, plus what we advertise */
+         struct oob_probe_reply r=
+eply =3D {
+             =2Epeer_session_id =3D state->peer_session_id,
+    =
+         =2Epriority =3D (uint16_t)m->top=2Eoptions=2Eserver_probe_reply_pr=
+iority,
+             =2Eweight =3D (uint16_t)m->top=2Eoptions=2Eserver_prob=
+e_reply_weight,
+             =2Emax_latency_diff =3D (uint16_t)m->top=2Eopt=
+ions=2Eserver_probe_reply_max_latency_diff,
++            =2Econnect_lifetim=
+e =3D (uint16_t)connect_lifetime,
++            =2Eflags =3D reply_flags,
+  =
+       };
  
- - Socket adoption in=
- #1769 gets simpler - we only change ownership of the socket to the link so=
-cket, no need to apply options anymore=2E
-
-
-http://gerrit=2Eopenvpn=2Enet/c=
-/openvpn/+/1747/comment/b72e968c_538734a2?usp=3Demail :
-PS17, Line 178:    =
-                            (const struct openvpn_sockaddr *)(const void *)=
-&targets[i]=2Edest))
-> nit: What happens if 2 connection entries resolve to=
- the same addr:port? In this patch every matchin [=E2=80=A6]
-Done=2E Each u=
-nique address is probed once per round, and a reply is credited to every en=
-try probed at its address=2E The matching moved into oob=2Ec as oob_probe_n=
-ext_target_at() with unit tests=2E
-
-
-http://gerrit=2Eopenvpn=2Enet/c/openvp=
-n/+/1747/comment/5d09e190_33224d49?usp=3Demail :
-PS17, Line 343: client_pro=
-be_and_order_remotes(struct context *c)
-> Just a followup idea: could the p=
-robing phase expose its results through a one-shot/query API, rathe [=E2=80=
-=A6]
-Yeah let's do it as a follow-up=2E oob_probe_result already carries wh=
-at such an API would expose=2E
-
-
-http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/=
-1747/comment/dcf9ac77_1b93f123?usp=3Demail :
-PS17, Line 408: AF_UNSPEC
-> Re=
-solving with AF_UNSPEC seems wrong, we should probably use ce->af here=2E [=
-=E2=80=A6]
-Done, resolved with ce->af=2E
-
-
+         /* Our session id is a stateless SYN cookie (the same =
+HMAC the three-way
+diff --git a/src/openvpn/oob=2Eh b/src/openvpn/oob=2Eh
+i=
+ndex 27ae02a=2E=2E9fde094 100644
+--- a/src/openvpn/oob=2Eh
++++ b/src/openvp=
+n/oob=2Eh
+@@ -159,6 +159,12 @@
+  */
+ bool oob_timestamp_in_window(uint64_t =
+probe_ts, uint64_t now, uint64_t window_secs);
+ 
++/* probe_reply flags (the=
+ reply TLV's 32-bit flags field) */
++/* bit 0: the client must resend the w=
+rapped client key (via P_CONTROL_WKC_V1)
++ * when it completes the handshak=
+e started from this reply=2E Set
++ * by a tls-crypt-v2 server, which is sta=
+teless and discarded the WKc=2E */
++#define OOB_PROBE_REPLY_FLAG_RESEND_WKC=
+ 0x1
++
+ /**
+  * Decide whether a received SERVER_PROBE is answered=2E Combi=
+nes
+  * oob_server_probe_read() and oob_timestamp_in_window(): the probe is=
+ dropped
 
 -- 
-To view, visit http://gerri=
-t=2Eopenvpn=2Enet/c/openvpn/+/1747?usp=3Demail
-To unsubscribe, or for help =
-writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Dem=
-ail
+To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1768=
+?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http:/=
+/gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Gerrit-MessageType: comment
+Gerrit-MessageType: newpatchs=
+et
 Gerrit-Project: openvpn
-Gerrit-Branch: mas=
-ter
-Gerrit-Change-Id: I5a7e9e13b9f9548b7ff717daae2b4a9cde3c06f2
-Gerrit-Chan=
-ge-Number: 1747
-Gerrit-PatchSet: 18
-Gerrit-Owner: stipa <lstipakov@gmail=2E=
-com>
-Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Reviewe=
-r: ralf_lici <ralf@mandelbit=2Ecom>
-Gerrit-CC: openvpn-devel <openvpn-devel=
-@lists=2Esourceforge=2Enet>
-Gerrit-Attention: plaisthos <arne-openvpn@rfc25=
-49=2Eorg>
-Gerrit-Attention: ralf_lici <ralf@mandelbit=2Ecom>
-Gerrit-Comment=
--Date: Fri, 11 Sep 2026 08:20:32 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-L=
-abels: No
-Comment-In-Reply-To: ralf_lici <ralf@mandelbit=2Ecom>
+Gerrit-Branch: master
+Gerrit-Change-Id: Ib2b6c22=
+46f9d9c0a505292ee8d879f714901ffae
+Gerrit-Change-Number: 1768
+Gerrit-PatchSe=
+t: 15
+Gerrit-Owner: stipa <lstipakov@gmail=2Ecom>
+Gerrit-Reviewer: plaistho=
+s <arne-openvpn@rfc2549=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-devel@list=
+s=2Esourceforge=2Enet>
+Gerrit-Attention: plaisthos <arne-openvpn@rfc2549=2E=
+org>
 
---hNNtPHIY4bg=
+--XPL3l9AiuaE=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos, ralf_lici=2E </p>
-<p><a href=3D"http://ger=
-rit=2Eopenvpn=2Enet/c/openvpn/+/1747?usp=3Demail">View Change</a></p><p>5 c=
-omments:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin=
-: 0; padding: 0;"><p>File doc/man-sections/client-options=2Erst:</p><ul sty=
-le=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0=
- 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1747/comment/7f2b24dc_24286e54?usp=3Demail">Patch Set #1=
-7, Line 619:</a> </p><p><blockquote style=3D"border-left: 1px solid #aaa; m=
-argin: 10px 0; padding: 0 10px;"><pre class=3D"blocks" style=3D"font-family=
-: monospace,monospace; white-space: pre-wrap;">TCP remotes keep their confi=
-gured<br>  position<br></pre></blockquote></p><p><blockquote style=3D"borde=
-r-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">nit: Responders a=
-re sorted before all nonresponders=2E [=E2=80=A6]</blockquote></p><p class=
-=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Done!</=
-p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/o=
-ob_client=2Ec:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"=
-margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=
-=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1747/comment/3e212ea2_c77f020=
-c?usp=3Demail">Patch Set #17, Line 101:</a> </p><p><blockquote style=3D"bor=
-der-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;"><pre class=3D"b=
-locks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">s=
-o a remote is always probed on a socket that can later serve as its<br> * c=
-onnection socket<br></pre></blockquote></p><p><blockquote style=3D"border-l=
-eft: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">The raw probe socket=
-s do not go through the normal connection socket setup=2E [=E2=80=A6]</bloc=
-kquote></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: b=
-reak-word;">Done in 3 pieces=2E</p><pre class=3D"blocks" style=3D"font-fami=
-ly: monospace,monospace; white-space: pre-wrap;"> - A new commit &quot;sock=
-et: factor out UDP socket creation and setup&quot; moves UDP half of create=
-_socket() into create_socket_udp_configured(), which creates socket for a f=
-amily and applies the options=2E Refactor only, no functional changes=2E<br=
-> <br> - The prober in #1747 uses this function instead of socket() call=2E=
- Probing is declined when connection entries bind differently, and entries =
-behind SOCKS are skipped=2E<br> <br> - Socket adoption in #1769 gets simple=
-r - we only change ownership of the socket to the link socket, no need to a=
-pply options anymore=2E</pre></li><li style=3D"margin: 0; padding: 0 0 0 16=
-px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2E=
-net/c/openvpn/+/1747/comment/b72e968c_538734a2?usp=3Demail">Patch Set #17, =
-Line 178:</a> <code style=3D"font-family:monospace,monospace">             =
-                  (const struct openvpn_sockaddr *)(const void *)&amp;targe=
-ts[i]=2Edest))</code></p><p><blockquote style=3D"border-left: 1px solid #aa=
-a; margin: 10px 0; padding: 0 10px;">nit: What happens if 2 connection entr=
-ies resolve to the same addr:port? In this patch every matchin [=E2=80=A6]<=
-/blockquote></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wr=
-ap: break-word;">Done=2E Each unique address is probed once per round, and =
-a reply is credited to every entry probed at its address=2E The matching mo=
-ved into oob=2Ec as oob_probe_next_target_at() with unit tests=2E</p></li><=
-li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px=
-;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1747/comment/5d09e1=
-90_33224d49?usp=3Demail">Patch Set #17, Line 343:</a> <code style=3D"font-f=
-amily:monospace,monospace">client_probe_and_order_remotes(struct context *c=
-)</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10=
-px 0; padding: 0 10px;">Just a followup idea: could the probing phase expos=
-e its results through a one-shot/query API, rathe [=E2=80=A6]</blockquote><=
-/p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-wor=
-d;">Yeah let&#39;s do it as a follow-up=2E oob_probe_result already carries=
- what such an API would expose=2E</p></li><li style=3D"margin: 0; padding: =
-0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=2Eop=
-envpn=2Enet/c/openvpn/+/1747/comment/dcf9ac77_1b93f123?usp=3Demail">Patch S=
-et #17, Line 408:</a> <code style=3D"font-family:monospace,monospace">AF_UN=
-SPEC</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin:=
- 10px 0; padding: 0 10px;">Resolving with AF_UNSPEC seems wrong, we should =
-probably use ce-&gt;af here=2E [=E2=80=A6]</blockquote></p><p class=3D"bloc=
-ks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Done, resolved =
-with ce-&gt;af=2E</p></li></ul></li></ul><p>To view, visit <a href=3D"http:=
-//gerrit=2Eopenvpn=2Enet/c/openvpn/+/1747?usp=3Demail">change 1747</a>=2E T=
-o unsubscribe, or for help writing mail filters, visit <a href=3D"http://ge=
-rrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscop=
-e itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"=
-action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" =
-href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1747?usp=3Demail"/><meta =
-itemprop=3D"name" content=3D"View Change"/></div></div>
+rently required from: plaisthos=2E </p>
+<p>stipa <strong>uploaded patch set=
+ #15</strong> to this change=2E</p><p><a href=3D"http://gerrit=2Eopenvpn=2E=
+net/c/openvpn/+/1768?usp=3Demail">View Change</a></p><pre class=3D"blocks" =
+style=3D"font-family: monospace,monospace; white-space: pre-wrap;">oob: adv=
+ertise a connect_lifetime in the probe reply<br><br>A server answering an o=
+ut-of-band SERVER_PROBE now also advertises a<br>connect_lifetime in the PR=
+OBE_REPLY: how long, in seconds, a probing<br>client may use the reply as t=
+he server&#39;s HARD_RESET when it starts a<br>handshake=2E<br><br>The valu=
+e is inferred, not configurable: the reply is only usable as<br>that reset =
+while its stateless SYN-cookie is valid, i=2Ee=2E the guaranteed<br>cookie =
+window of ~handshake_window (2 quantised buckets; see<br>check_session_hmac=
+_and_pkt_id), so the server advertises exactly that=2E A<br>probe that arri=
+ved as P_CONTROL_OOB_WKC_V1 also gets<br>OOB_PROBE_REPLY_FLAG_RESEND_WKC, t=
+elling the client to resend the WKc<br>when completing the handshake, since=
+ the server keeps no state=2E<br><br>Only the wire advertisement is added h=
+ere -- the server puts both values<br>into the probe_reply it builds for an=
+ accepted probe=2E The client side<br>that acts on them follows=2E<br><br>C=
+hange-Id: Ib2b6c2246f9d9c0a505292ee8d879f714901ffae<br>Signed-off-by: Lev S=
+tipakov &lt;lev@openvpn=2Enet&gt;<br>---<br>M src/openvpn/mudp=2Ec<br>M src=
+/openvpn/oob=2Eh<br>2 files changed, 21 insertions(+), 0 deletions(-)<br><b=
+r></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; wh=
+ite-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn r=
+efs/changes/68/1768/15</pre><pre style=3D"font-family: monospace,monospace;=
+ white-space: pre-wrap;"><span>diff --git a/src/openvpn/mudp=2Ec b/src/open=
+vpn/mudp=2Ec</span><br><span>index 43aa732=2E=2Eb89b439 100644</span><br><s=
+pan>--- a/src/openvpn/mudp=2Ec</span><br><span>+++ b/src/openvpn/mudp=2Ec</=
+span><br><span>@@ -249,12 +249,27 @@</span><br><span>             return fa=
+lse;</span><br><span>         }</span><br><span> </span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        /* A tls-crypt-v2 client must resend =
+the WKc if it later uses this reply</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+         * to start a handshake, since we keep no state=2E =
+*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        uint32_t =
+reply_flags =3D</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        (verdict =3D=3D VERDICT_VALID_OOB_WKC_V1) ? OOB_PROBE_REPLY_FLAG_RE=
+SEND_WKC : 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* The client&#39=
+;s third packet validates only while its SYN-cookie does, so</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+         * the advertised connect_=
+lifetime is inferred (not configurable): the</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+         * guaranteed cookie window of ~handshake_=
+window (2 quantised buckets; see</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+         * check_session_hmac_and_pkt_id)=2E Advertising more =
+would make the client</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+         * trust an already-expired cookie=2E (RFC: connect_lifetime is h=
+ow long the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+ * server considers the reply valid=2E) */</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        int connect_lifetime =3D min_int(2 * ((handw=
+indow + 1) / 2), 0xffff);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span>         /* the echo of the peer&#39;s session id, p=
+lus what we advertise */</span><br><span>         struct oob_probe_reply re=
+ply =3D {</span><br><span>             =2Epeer_session_id =3D state-&gt;pee=
+r_session_id,</span><br><span>             =2Epriority =3D (uint16_t)m-&gt;=
+top=2Eoptions=2Eserver_probe_reply_priority,</span><br><span>             =
+=2Eweight =3D (uint16_t)m-&gt;top=2Eoptions=2Eserver_probe_reply_weight,</s=
+pan><br><span>             =2Emax_latency_diff =3D (uint16_t)m-&gt;top=2Eop=
+tions=2Eserver_probe_reply_max_latency_diff,</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+            =2Econnect_lifetime =3D (uint16_t)conn=
+ect_lifetime,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      =2Eflags =3D reply_flags,</span><br><span>         };</span><br><span=
+> </span><br><span>         /* Our session id is a stateless SYN cookie (th=
+e same HMAC the three-way</span><br><span>diff --git a/src/openvpn/oob=2Eh =
+b/src/openvpn/oob=2Eh</span><br><span>index 27ae02a=2E=2E9fde094 100644</sp=
+an><br><span>--- a/src/openvpn/oob=2Eh</span><br><span>+++ b/src/openvpn/oo=
+b=2Eh</span><br><span>@@ -159,6 +159,12 @@</span><br><span>  */</span><br><=
+span> bool oob_timestamp_in_window(uint64_t probe_ts, uint64_t now, uint64_=
+t window_secs);</span><br><span> </span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+/* probe_reply flags (the reply TLV&#39;s 32-bit flags field)=
+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* bit 0: the cl=
+ient must resend the wrapped client key (via P_CONTROL_WKC_V1)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ * when it completes the handsha=
+ke started from this reply=2E Set</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ * by a tls-crypt-v2 server, which is stateless and discarded=
+ the WKc=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#defi=
+ne OOB_PROBE_REPLY_FLAG_RESEND_WKC 0x1</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span> /**</span><br><span>  * Decide whether=
+ a received SERVER_PROBE is answered=2E Combines</span><br><span>  * oob_se=
+rver_probe_read() and oob_timestamp_in_window(): the probe is dropped</span=
+><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit=2Eop=
+envpn=2Enet/c/openvpn/+/1768?usp=3Demail">change 1768</a>=2E To unsubscribe=
+, or for help writing mail filters, visit <a href=3D"http://gerrit=2Eopenvp=
+n=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D=
+"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemt=
+ype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http:=
+//gerrit=2Eopenvpn=2Enet/c/openvpn/+/1768?usp=3Demail"/><meta itemprop=3D"n=
+ame" content=3D"View Change"/></div></div>
 
-<div style=3D"disp=
-lay:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> =
-Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: =
-master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I5a7e9e13b9f95=
-48b7ff717daae2b4a9cde3c06f2 </div>
-<div style=3D"display:none"> Gerrit-Chan=
-ge-Number: 1747 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 18 </d=
-iv>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@gmail=2E=
-com&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;=
-arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-R=
-eviewer: ralf_lici &lt;ralf@mandelbit=2Ecom&gt; </div>
-<div style=3D"displa=
-y:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2En=
-et&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;=
-arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-A=
-ttention: ralf_lici &lt;ralf@mandelbit=2Ecom&gt; </div>
-<div style=3D"displ=
-ay:none"> Gerrit-Comment-Date: Fri, 11 Sep 2026 08:20:32 +0000 </div>
+<div style=3D"display:none"> Ge=
+rrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Pr=
+oject: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </=
+div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ib2b6c2246f9d9c0a505292=
+ee8d879f714901ffae </div>
+<div style=3D"display:none"> Gerrit-Change-Number=
+: 1768 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 15 </div>
 <div =
-style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"displa=
-y:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-=
-In-Reply-To: ralf_lici &lt;ralf@mandelbit=2Ecom&gt; </div>
+style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@gmail=2Ecom&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-open=
+vpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvp=
+n-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div style=
+=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@rfc2549=2Eo=
+rg&gt; </div>
 
 </body></html>
---hNNtPHIY4bg=--
+--XPL3l9AiuaE=--
 
 
---===============4933214299605566550==
+--===============0809913410532266291==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============4933214299605566550==
+--===============0809913410532266291==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -415,5 +460,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============4933214299605566550==--
+--===============0809913410532266291==--
 
