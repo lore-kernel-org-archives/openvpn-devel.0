@@ -4,26 +4,26 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4C3ECC88E5E
-	for <openvpn-devel@archiver.kernel.org>; Fri, 11 Sep 2026 15:24:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 91332C88E5A
+	for <openvpn-devel@archiver.kernel.org>; Fri, 11 Sep 2026 15:24:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=grYWxhEp/STvb5Aa6UtoKH9AnFfQjNb5/F4IiM7PJvU=; b=GOhC5xZVMeNmafV18QPtsuYqjR
-	vyY2dqWrNYPk9BRR6dyZ+lufEzHYOJsVIS6mMswkS3VujRUt0/8SODeQ0Ez7caNXfRmscUaHGGu27
-	TkiNcqTiHUmYS9/i7WNDabURH3/9n0qrwAZoDjUeLn2PjFpixuV7iAK27y56YSvZfeUo=;
+	bh=Fj4575mJKxD6WbM3CYEVf9yNmswVcZqc94tNzb3y8jk=; b=aY9cM5hchMYtGPI5B7KBOiMoFe
+	/RjqxAPs4VumpIjWXJcSnTLRZTUtpm6XGwFpLSRjCFh82Pch2DtgOYRSpOabOF5b469LLDiIc+WOP
+	MYRcZdMnLxcA7uION7208gK3cITY42aH3dvR8isPf6YmwMFPHSzRDQ7wDUTJ3FM5641E=;
 Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
 	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x536w-0008Jk-Sa;
-	Fri, 11 Sep 2026 15:24:19 +0000
+	id 1x536z-0008KU-0B;
+	Fri, 11 Sep 2026 15:24:21 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1x536q-0008IW-7H
+ (envelope-from <gerrit@openvpn.net>) id 1x536q-0008IT-7H
  for openvpn-devel@lists.sourceforge.net;
  Fri, 11 Sep 2026 15:24:13 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
@@ -32,98 +32,98 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
  :List-Post:List-Owner:List-Archive;
- bh=AczktQiiQ708QsxLAmwJuU95f0CGYF8nNq4NM4tK2Y8=; b=Gdo41wOiJ8gUj1+8EGS+u3cA+u
- SFBbTcif+yz6hxN37IK4qVdylVtR1yFITWG741oqCAkBEn7jn756Jzb//b/dMdHFR5+u0RenrEAig
- UpG+8O8Cqm8MtOtfVWSTsMlulllSqYR2mLuppjYgHNnlNs7zL6nzSk/ABkOMOMfzBWOo=;
+ bh=mio7N37p3qe1s8z/A99eBixXA6qy6+eBDyiowAGWC3A=; b=EnFOgAo6Z2kFQRCurDy0a1ijx2
+ FwuZ4/9rF1oNQK2kE1/QxhL1DVyGV0cls6dqndvzB71vD4KlW+XUivb+CfDLdfjqPvSwB1VSBMW3g
+ 6IEa/CKpsCTcfoe+1De2ej7b9PqFuxCAsgKkaj0pSK4y2gmbMVnnR6+pq4AS4QorWYWU=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
  Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=AczktQiiQ708QsxLAmwJuU95f0CGYF8nNq4NM4tK2Y8=; b=A
- 1kbTbWeaBUSseoWg15sngjtAhBk9HWTvNH89kmYdzEe/03UU1nqbnio/nTr0oWfdTpOwU0UcrOqdl
- KH8zg0Raf1lbTtFVTL9yxlJEPCo9DJb78ThAPm6HtICepzq9FuENsC77fiGYRskBA8dxpyiKz1pjS
- QvJB7QnuqMJ761Y4=;
-Received: from mail-wm1-f47.google.com ([209.85.128.47])
+ List-Owner:List-Archive; bh=mio7N37p3qe1s8z/A99eBixXA6qy6+eBDyiowAGWC3A=; b=J
+ XpXZXeKDxvYlIJBqAM+k3mwozoqME2HojRy0aXFdQcGZZDugd3eEQZfQMAqDDFAYw+nKZpYZlwmvx
+ uPwavlI0g0Ty//wRHTFaH/xaLLelAVsaN/VBKedQV/SKxhfYtZpO3s3sw/PfcxNt+3lp7W/u/m0OW
+ DtDRUq9UvvbZt5yc=;
+Received: from mail-wm1-f52.google.com ([209.85.128.52])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1x536K-00019N-Uh for openvpn-devel@lists.sourceforge.net;
- Fri, 11 Sep 2026 15:23:46 +0000
-Received: by mail-wm1-f47.google.com with SMTP id
- 5b1f17b1804b1-4956869750eso9541575e9.2
+ id 1x536G-00019E-Lh for openvpn-devel@lists.sourceforge.net;
+ Fri, 11 Sep 2026 15:23:42 +0000
+Received: by mail-wm1-f52.google.com with SMTP id
+ 5b1f17b1804b1-495437bb891so5109535e9.1
  for <openvpn-devel@lists.sourceforge.net>;
- Fri, 11 Sep 2026 08:23:40 -0700 (PDT)
+ Fri, 11 Sep 2026 08:23:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1789140214; x=1789745014; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1789140210; x=1789745010; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=AczktQiiQ708QsxLAmwJuU95f0CGYF8nNq4NM4tK2Y8=;
- b=Xpo41BxaGFfaSRq4tF1WNOgqyiTKjXP09RsPJTg4//3tQ0aLBL6wIdP3SQMblTd7HR
- Jaw+vR+WtKdNG5VSrqq7nOGzrKJRQANtEBbad2UqteZvwh3MwFP4MRsXp3ARFSGjHKFG
- ScQoO43PgVkuk4d1+3lpMPzXSwKP3bD0o9UAwlYKnZU+nEF1bJmzR/Pd+0pItyvOlml7
- 4KJ5q5G+D8nNBzfsbpRKBlZ1rLT3ziIpClFy2Ze9cY0Qcas0Jd6uLjT8f/RKT9gFvGQ1
- XSPOlV8xkuKAKxXWO2djfa0we4Qt9738+PnrKRATVB4ShXMATJtAfM6dMlK+8y68mULy
- Bzpw==
+ bh=mio7N37p3qe1s8z/A99eBixXA6qy6+eBDyiowAGWC3A=;
+ b=B6RfEJmBWa9S5eau0kQkPTDT/9LBQEOegypaKaAeglSuqnNZi6jC4/3cFGNeRIu0LB
+ FmAsZntW1rUIKICq3B0bt925yEcHV7pm2ds00bOsTB3/OUO5cfj871RQ/SrKcHhsAljk
+ HUp+lt/A1xGz5UWPn6M9UNlbpgWTcMBytWLX+cwXCvisrh3DNeMhRYienqe3UIaBXdTF
+ BUAZ/+suRbthK61jtwL9zvJMz0rrW8221VB+F+3o0JxGqeZgcWulUWCiUtlhFnjnBWwq
+ A+CeuOMBY6Zfwc27Y2HU5Kfl9aeFQd81xNuiSmH/QN1xYBnIWttVqH6Kck2qs0dR7pwa
+ z02g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1789140214; x=1789745014;
+ d=1e100.net; s=20251104; t=1789140210; x=1789745010;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=AczktQiiQ708QsxLAmwJuU95f0CGYF8nNq4NM4tK2Y8=;
- b=kp+xnHLsxeq5RKPt8B7MYQKn93iSvY1GHxfCnXS04SsXwRDTsoFZqARKG5sYnoSd/i
- X+Rt/n3TZmx8WRee7RYpsuVl7C6lZrpmfoDszh9S2nmzHfLvhg0rrXUijr4op3OGvQDb
- RNZQbCZQwJvt6wsEnzNCJbzzprFU+pua8E4mE0Uu5JoW9sUl+8t4CG9YsG4eT7MwvFCz
- +OdZ1Il5LN5bq+9CNbLwHL+Tlz7dldM0Sgvi41l3lXpFi2i/4X7utIoYsHb2GMTd3+da
- BCg6dmd/ph8kjbsf+Va35X9TCa2b7o2uOrMtDw2cHWRa6Rzq/Q6FPetJ1+TW2xDt+vFz
- g+8Q==
-X-Gm-Message-State: AFuF++maiFEqycG/uHlU1Isj753994rZ7vmIIeemultOoFm+3jxBd2/x
- tb/aD+szma1qtsAXbPiVtq4UhXi0WW1VN6/p8ALvQlsCswijBGiqOB4rfMeU7rBJ5YjabKiR5Xp
- 4QRW6kj8nzapo8nyapvfSkzNBpGC9IT2vZzmzEhc40QJdQE/8NHc5hA0IFssn3tepeYp/
-X-Gm-Gg: AYBFou1OgG4FPoGMcCrd1aeVeeRz6DcXbeinqfYe23vlVkFxBPJd6rYRW8P+3poeRtO
- YQKpBogpsQrvL6QC0LyhfdxTLq36IwIEZGoo5VOtw7MCnVZI4FCoIjgD7uIvV8Y+UmnHI+bA/XL
- h3C/kPJWKsz/TsQRGoHbWmPNO5fKyTodxRbgdqLYvm67PflBmAV/8BwV4wTYfFEDQ+wly6x8KkH
- nNgu/Zmq29tOX57CRLVgJzQvMwSLi3DcPPOqfPWDl9CGCQyTeUg16Ie/j8a/AaB5vRMmKIrNYQY
- RaxCgdX02bcO5E53niyrE0cb/Kt0kZAInVC101gTCnJOTa7/XeqV43KxYh/DE0F6c9ZAqBXm9M9
- BZ77Dw3MjH7+iDrtmaPBtNXPapbtAO4ECTMzGGjPM3KDcIsFMJhdI5tbIS3jIgEduVWGqZCztVB
- g5dzq+ZyzrpK6S6WZcDN+XWeuube91qRnJqfoiY71ekzM2M8e/WZNAC+3f70Ksja//n/7GqA54A
- WopE1dbUnD/dV6BUjStXO8z45V7XAeKptiW9RInht3566A0Kt4KRH0yRFf87yV1jjL8gBY5Ks63
- T5VMx3s7xF7WcU2E4iu6RWYCUDvta9oT1wW/CFEljfxL3598WN/fo3wSX3PhCz2yHS9Nd2Ve
-X-Received: by 2002:a05:600c:c490:b0:49c:ffde:45ff with SMTP id
- 5b1f17b1804b1-49e619c18e0mr56416585e9.17.1789140214137; 
- Fri, 11 Sep 2026 08:23:34 -0700 (PDT)
+ bh=mio7N37p3qe1s8z/A99eBixXA6qy6+eBDyiowAGWC3A=;
+ b=H04tBhTG2QAEPPvJ0mgaBTuEVyN6nTzsYpqc3EvjseT957Bv0gbICdHvP5idYAZT/U
+ uPmDXmyijxeJSAcpU3uqV7HHB6P2cZ4vudGJ98wKIk5Lv+exzBZCDQiylmmlWbJQw0th
+ hSY/GSZtyzbeQxHGVmNmoQfhjRo+3eluy6o7fDrU3i0NoN9lXGw1ZeraoxsByg4ebNKe
+ N2+mab10GCB71VPJJxBjF4JHSNEdt08MXbdlA2npB+fsHdFKfR4JwEXF0Z/NHSoy6Rmo
+ I0fxojMpFNusIW/A50yHHj+/u4q4M1XcXEd+Wp/xCrSa6LksbESNZcm+MHQN1pgzytq4
+ qBPg==
+X-Gm-Message-State: AFuF++npkKy3luPeuTufgnBOjdpTQsxBGJkq6xgSVcNehgVnrrTIJ+Ai
+ BtoJV16p7R9sIx1ODRusbfKEuMcwSne6wyuqFpiznbzkpbw1Tm82YSIvDjE+/bsNTODZa6x0Ol7
+ s0CnCIh1f2I+ykp1mHYpJd84kjewu47uhwR7VbqFWpA/I+c33OrGO9188v8vYZCgHeCNq
+X-Gm-Gg: AYBFou1gKDAsvhKMgWWdG4bk/Yro8lKGVDmPieWvx8OAHvroS3MxjPvhzPPlbZX181W
+ bMS3/bOaoAhQUlvbEHe/NiRVohHGeQnzaNZgkoFr9/kvqlgSqrKILX6TWut7GK5DL8DoISLix1N
+ ha4JW1VuVIYsANz3TSoFBb16uYtZ2PRC0V655cSJ6sKzaA/3GeyS1RQOoMStURxHonjcuzu+6Z/
+ 5lPP6rkP2RSB9t35vFm1+Tgn0eeeNR9/4h3dMNDiz1QMCkMDTINI6ZhzQpChf5TvNoYoaA4UTD+
+ FjhzMcZIK8rKm4FoPohAVHM/t1DZ2EgQD22aQF0oqq3aE4Os6LvZizBm9nvXc/hOy89ODbAySWt
+ bSYHR++fLKBVB5/c6oS9UzMIyk5mzU5lojkiZkyg3VtJCQW4lbH9wjUsk8+c34j1SK+YJEfzOpd
+ W9yG6KOiOJdI1ZkVp70fuJBP7kpvA436DlI/2T8dvY/5ZXzCZZjLzKwUOiAg7ZagDuhl7eR6Rci
+ FJ/X01syFXy/m2h9zNqOOER0lHPNiVbPVCtpQKb/+mJxSYZMvqV6gj7THb6KUHf0+Ysj3UvkDzw
+ zOvd7PIynYYwnD9c71scqNdanjcStvi3S8cN+sQZ0nPso+E0jpLD4vleS3iojg==
+X-Received: by 2002:a05:600d:2398:b0:49d:7d4:5f0d with SMTP id
+ 5b1f17b1804b1-49d26dc6100mr87013525e9.16.1789140209787; 
+ Fri, 11 Sep 2026 08:23:29 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-486eb350686sm6996687f8f.27.2026.09.11.08.23.33
+ ffacd0b85a97d-486eb2ed106sm6382007f8f.1.2026.09.11.08.23.28
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 11 Sep 2026 08:23:33 -0700 (PDT)
+ Fri, 11 Sep 2026 08:23:29 -0700 (PDT)
 X-Google-Original-From: "stipa (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
 Date: Fri, 11 Sep 2026 15:23:13 +0000
 To: plaisthos <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newpatchset
-X-Gerrit-PatchSet: 16
-X-Gerrit-Change-Id: I454d5040cbad4d373ee4f90b8d683200d2a4c0e4
-X-Gerrit-Change-Number: 1770
+X-Gerrit-PatchSet: 18
+X-Gerrit-Change-Id: Idb8c0c660a98de8ec549b69f6692a7b41b092eaf
+X-Gerrit-Change-Number: 1758
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1770?usp=email>
-X-Gerrit-Commit: 54150d727f9a1391e12f7f28682c823dd5d9d5da
-In-Reply-To: <gerrit.1783320647000.I454d5040cbad4d373ee4f90b8d683200d2a4c0e4@gerrit.openvpn.net>
-References: <gerrit.1783320647000.I454d5040cbad4d373ee4f90b8d683200d2a4c0e4@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzgzMzIwNjQ3MDAwLkk0NTRkNTA0MGNiYWQ0ZDM3M2VlNGY5MGI4ZDY4MzIwMGQyYTRjMGU0QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <7eb0fecf136405edd70adb677ae196b2b0037476-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1758?usp=email>
+X-Gerrit-Commit: 66ce7a961bc597a230b68e241e37463885288cfe
+In-Reply-To: <gerrit.1782820043000.Idb8c0c660a98de8ec549b69f6692a7b41b092eaf@gerrit.openvpn.net>
+References: <gerrit.1782820043000.Idb8c0c660a98de8ec549b69f6692a7b41b092eaf@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzgyODIwMDQzMDAwLklkYjhjMGM2NjBhOThkZThlYzU0OWI2OWY2NjkyYTdiNDFiMDkyZWFmQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <b2be0b1e0c573a224dd9093e3352b10795176b56-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1x536K-00019N-Uh
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: oob: start the
- client handshake from the server probe
+X-Headers-End: 1x536G-00019E-Lh
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: oob: Unwrap
+ tls-crypt-v2 server probes (P_CONTROL_OOB_WKC_V1)
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -141,15 +141,15 @@ Reply-To: lstipakov@gmail.com, arne-openvpn@rfc2549.org,
  openvpn-devel@lists.sourceforge.net
 Cc: "stipa \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============0344470529323612497=="
+Content-Type: multipart/mixed; boundary="===============0082211376365536324=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============0344470529323612497==
+--===============0082211376365536324==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="gt1DgBqhHVg="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="nryJho1E6o0="; charset=UTF-8
 
---gt1DgBqhHVg=
+--nryJho1E6o0=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
@@ -161,1002 +161,1066 @@ I'd =
 like you to reexamine a change=2E Please visit
 
     http://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1770?usp=3Demail
+=2Enet/c/openvpn/+/1758?usp=3Demail
 
-to look at the new patch set (#16)=2E
+to look at the new patch set (#18)=2E
 =
 
 
-Change subject: oob: start the client handshake from the server probe
-=2E=
+Change subject: oob: Unwrap tls-crypt-v2 server probes (P_CONTROL_OOB_WKC=
+_V1)
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-oob: start the c=
-lient handshake from the server probe
+oob: Un=
+wrap tls-crypt-v2 server probes (P_CONTROL_OOB_WKC_V1)
 
-When the best remote answered a prob=
-e and advertised a connect_lifetime,
-its reply also served as the server's =
-HARD_RESET: its session id is a
-valid stateless SYN-cookie=2E The client th=
-erefore starts the handshake
-from that reply instead of running its own res=
-et exchange=2E
+A tls-crypt-v2 serv=
+er learns the per-client key only from the wrapped
+client key (WKc)=2E An o=
+ut-of-band probe belongs to no session, so the
+client must carry the WKc wi=
+th the probe for the server to unwrap it=2E
 
-Note this does not shorten the handshake itself -- the prob=
-e and its
-reply take the place of the two reset packets rather than removin=
-g them=2E
-The saving is one RTT compared with probing and then connecting; =
-a
-client that does not probe is unaffected=2E
+Add the receive/protocol side =
+of this:
 
-  - oob_client=2Ec: when the=
- winner advertised a connect_lifetime, hand
-    its probe socket, the captu=
-red server session id (cookie), our probe
-    session id, the pinned respon=
-der address, and the resend-wkc flag to
-    the connection via c2; relinqui=
-sh that socket (do not close it);
-    gate off for dco-win, which has no us=
-er-to-kernel socket handoff
-    (probing still works, only starting from th=
-e reply is skipped)=2E
-  - ssl=2Ec session_skip_to_pre_start_client(): seed=
- our session id to the
-    probe's (the cookie is an HMAC over it), the rem=
-ote session id to
-    the cookie, ack the phantom server reset (id 0) so th=
-e third packet
-    carries the cookie, set CO_RESEND_WKC for tls-crypt-v2, =
-and drop to
-    S_PRE_START so tls_process() promotes to S_START and sends =
-the
-    ClientHello (no HARD_RESET sent)=2E
-  - init=2Ec: invoke the client=
- skip after tls_multi_init_finalize when
-    adopting, and count the probe =
-reply as the initial packet received
-    (n_sessions++, as the server does =
-before its own
-    session_skip_to_pre_start) so check_server_poll_timeout(=
-) does not
-    restart the connected session=2E
+  - new opcode P_CONTROL_OOB_WKC_V1 (13): like P_CONTROL_OOB_V1 b=
+ut with
+    the WKc appended, mirroring CONTROL_HARD_RESET_CLIENT_V3 and
+  =
+  CONTROL_WKC_V1
+  - tls_wrap_control() appends the WKc for opcode 13;
+    =
+read_control_auth() runs tls_crypt_v2_extract_client_key() for it,
+    load=
+ing the per-client key before unwrapping the message
+  - tls_pre_decrypt_li=
+te() returns the new VERDICT_VALID_OOB_WKC_V1, one
+    verdict per opcode a=
+s elsewhere in the enum; do_pre_decrypt_check()
+    answers it exactly like=
+ VERDICT_VALID_OOB_V1
+  - P_LAST_OPCODE becomes 13 and opcode_is_oob() cove=
+rs both OOB opcodes
+  - tls_wrap_oob_standalone() takes the opcode; the ser=
+ver reply stays a
+    plain P_CONTROL_OOB_V1 (the server already holds the =
+key after the
+    unwrap)
+  - test_pkt: round-trip test of the wrap/extract=
+/unwrap path
 
-Change-Id: I454d5040cbad4d=
-373ee4f90b8d683200d2a4c0e4
+The client still sends plain probes; sending P_CONTROL_OOB_WK=
+C_V1 is
+added in a following commit=2E
+
+Change-Id: Idb8c0c660a98de8ec549b69=
+f6692a7b41b092eaf
 Signed-off-by: Lev Stipakov <lev@openvpn=2Enet>
-=
 ---
-M Changes=2Erst
-M src/openvpn/init=2Ec
-M src/openvpn/oob=2Eh
-M src/open=
-vpn/oob_client=2Ec
-M src/openvpn/openvpn=2Eh
-M src/openvpn/ssl=2Ec
-M src/op=
-envpn/ssl=2Eh
-7 files changed, 172 insertions(+), 10 deletions(-)
+M src=
+/openvpn/mudp=2Ec
+M src/openvpn/oob_client=2Ec
+M src/openvpn/ssl_pkt=2Ec
+M =
+src/openvpn/ssl_pkt=2Eh
+M tests/unit_tests/openvpn/test_pkt=2Ec
+5 files cha=
+nged, 165 insertions(+), 14 deletions(-)
 
 
-  git p=
-ull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/70/1770/16
+  git pull ssh://gerrit=2Eopenvp=
+n=2Enet:29418/openvpn refs/changes/58/1758/18
 
-dif=
-f --git a/Changes=2Erst b/Changes=2Erst
-index 080d928=2E=2E4d7a16c9 100644
-=
---- a/Changes=2Erst
-+++ b/Changes=2Erst
-@@ -9,6 +9,13 @@
-     measured late=
-ncy and advertised weight with DNS-SRV-like semantics=2E
-     Servers adver=
-tise these values with ``--server-probe-reply``=2E
+diff --git a/src/openvpn/mud=
+p=2Ec b/src/openvpn/mudp=2Ec
+index 1061f95=2E=2E43aa732 100644
+--- a/src/op=
+envpn/mudp=2Ec
++++ b/src/openvpn/mudp=2Ec
+@@ -109,7 +109,12 @@
+     reset_p=
+acket_id_send(&state->tls_wrap_tmp=2Eopt=2Epacket_id=2Esend);
+     state->t=
+ls_wrap_tmp=2Eopt=2Epacket_id=2Erec=2Einitialized =3D true;
  
-+Probe exchange double=
-s as the start of the handshake
-+    When a probing client picks a server t=
-hat advertises support for it,
-+    the probe and its reply take the place =
-of the client's and server's
-+    reset packets, so the client does not nee=
-d a separate reset exchange
-+    before the handshake=2E This saves one rou=
-nd trip compared with probing
-+    and then connecting, and needs no extra =
-configuration=2E
-+
+-    struct b=
+uffer buf =3D tls_wrap_oob_standalone(&state->tls_wrap_tmp, tas, own_sid, &=
+payload);
++    /* The reply carries no WKc: with tls-crypt-v2 the server ha=
+s already
++     * recovered the per-client key from the request's WKc (it i=
+s loaded into
++     * state->tls_wrap_tmp), so the reply is wrapped with th=
+at key as a plain
++     * P_CONTROL_OOB_V1 message=2E */
++    struct buffer=
+ buf =3D
++        tls_wrap_oob_standalone(&state->tls_wrap_tmp, tas, own_si=
+d, &payload, P_CONTROL_OOB_V1);
+     send_standalone_reply(m, &buf, "Server=
+ Probe", "Server probe from client, sending probe reply",
+                 =
+          sock);
  
- Overview of changes in 2=2E7
- =3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-diff --git a/src/=
-openvpn/init=2Ec b/src/openvpn/init=2Ec
-index ea85bad=2E=2E81562a7 100644
--=
--- a/src/openvpn/init=2Ec
-+++ b/src/openvpn/init=2Ec
-@@ -3483,6 +3483,21 @@=
-
-         /* Keep the max mtu also in the frame of tls multi so it can acce=
-ss
-          * it in push_peer_info */
-         c->c2=2Etls_multi->opt=2Efr=
-ame=2Etun_max_mtu =3D c->c2=2Eframe=2Etun_max_mtu;
-+
-+        /* OOB server=
- probe: the probe reply already served as the server's
-+         * HARD_RES=
-ET (it carried a valid SYN-cookie), so the handshake starts
-+         * fro=
-m that reply and we send no reset of our own=2E Count
-+         * the reply=
- as the initial packet received (as the server does before its
-+         * =
-own session_skip_to_pre_start), so tls_initial_packet_received() is true
-+ =
-        * and check_server_poll_timeout() does not restart a connected sess=
-ion=2E */
-+        if (c->c2=2Eoob_probe_adopt)
-+        {
-+            c->=
-c2=2Etls_multi->n_sessions++;
-+            session_skip_to_pre_start_client=
-(&c->c2=2Etls_multi->session[TM_ACTIVE],
-+                                 =
-            &c->c2=2Eoob_probe_client_sid,
-+                               =
-              &c->c2=2Eoob_probe_server_sid, &c->c2=2Eoob_probe_remote,
-+  =
-                                           c->c2=2Eoob_probe_resend_wkc);
-+=
-        }
-     }
-     if (c->c2=2Etls_auth_standalone)
+@@ -135,7 +140,7 @@
+     int handwindow =3D m->top=2Eopt=
+ions=2Ehandshake_window;
+ 
+     if (verdict =3D=3D VERDICT_VALID_RESET_V3 |=
+| verdict =3D=3D VERDICT_VALID_RESET_V2
+-        || verdict =3D=3D VERDICT_=
+VALID_OOB_V1)
++        || verdict =3D=3D VERDICT_VALID_OOB_V1 || verdict =
+=3D=3D VERDICT_VALID_OOB_WKC_V1)
      {
-diff --git a/=
-src/openvpn/oob=2Eh b/src/openvpn/oob=2Eh
-index 9fde094=2E=2E5568177 100644=
+         /* Check if we are still b=
+elow our limit for sending out
+          * responses */
+@@ -233,7 +238,7 @@=
 
---- a/src/openvpn/oob=2Eh
-+++ b/src/openvpn/oob=2Eh
-@@ -192,8 +192,11 @@
- =
-{
-     int index;
-     bool responded;
--    unsigned int rtt_ms;          /=
-* probe round-trip time in ms (responders only) */
--    struct oob_probe_re=
-ply reply; /* the values the server advertised */
-+    unsigned int rtt_ms;=
- /* probe round-trip time in ms (responders only) */
-+    /* Captured from =
-the packet and its reply TLV (responders only): */
-+    struct session_id s=
-erver_sid;      /* the packet's own session id =3D server SYN-cookie */
-+  =
-  struct openvpn_sockaddr responder; /* address that answered (pin the conn=
-ection to it) */
-+    struct oob_probe_reply reply;      /* the values the =
-server advertised */
- };
  
- /* Where the client probed one connection entry=
-: its resolved addresses=2E */
-diff --git a/src/openvpn/oob_client=2Ec b/sr=
-c/openvpn/oob_client=2Ec
-index fb59104=2E=2Edd9e3c6a 100644
---- a/src/openv=
-pn/oob_client=2Ec
+         return ret;
+     }
+-    else if (verdict =3D=3D VERDICT_VALID_O=
+OB_V1)
++    else if (verdict =3D=3D VERDICT_VALID_OOB_V1 || verdict =3D=3D =
+VERDICT_VALID_OOB_WKC_V1)
+     {
+         /* Out-of-band server probe=2E st=
+ate->newbuf points at the TLV payload
+          * (read_control_auth has st=
+ripped the opcode, session id and any
+diff --git a/src/openvpn/oob_client=
+=2Ec b/src/openvpn/oob_client=2Ec
+index 55db223=2E=2E286b08e 100644
+--- a/s=
+rc/openvpn/oob_client=2Ec
 +++ b/src/openvpn/oob_client=2Ec
-@@ -38,6 +38,7 @@
- #incl=
-ude "otime=2Eh"
- #include "fdmisc=2Eh"
- #include "crypto=2Eh"
-+#include "dc=
-o=2Eh"
- #include "error=2Eh"
- 
- #include "memdbg=2Eh"
-@@ -343,6 +344,13 @@
-=
+@@ -633,7 +633,8=
+ @@
          return;
      }
  
-+    /* The reply's own session id (the server's =
-stateless SYN-cookie) follows the
-+     * opcode byte=2E Capture it before =
-read_control_auth() strips it: a client may
-+     * reuse it to start the h=
-andshake from this reply (the connect_lifetime
-+     * advertisement)=2E */=
-
-+    struct session_id server_sid;
-+    memcpy(server_sid=2Eid, data + 1, =
-SID_SIZE);
-+
-     struct buffer buf;
-     buf_set_read(&buf, data, (size_t)=
-len);
- 
-@@ -386,6 +394,8 @@
- 
-         results[i]=2Eresponded =3D true;
-   =
-      results[i]=2Ertt_ms =3D (ms > 0) ? (unsigned int)ms : 0;
-+        res=
-ults[i]=2Eserver_sid =3D server_sid;
-+        results[i]=2Eresponder =3D *f=
-rom; /* pin the connection to the address that answered */
-         results=
-[i]=2Ereply =3D reply;
- 
-         i =3D oob_probe_next_target_at(from, targ=
-ets, results, n, i + 1);
-@@ -753,11 +763,6 @@
-         oob_probe_collect(&p=
-c, &probe, &client_sid, &tas->tls_wrap, targets, results, l->len,
-         =
-                  c->sig);
-     }
--    oob_probe_sockets_close(&pc);
--    i=
-f (bind_local)
--    {
--        freeaddrinfo(bind_local);
--    }
- 
-     /* L=
-og each remote's outcome while results[i] still maps to array[i]=2E */
-    =
- int responded =3D 0;
-@@ -773,10 +778,10 @@
-             int margin =3D oob=
-_effective_margin(&results[i], client_margin);
-             const char *mar=
-gin_src =3D client_margin >=3D 0 ? "client" : "server-advertised";
-        =
-     msg(D_LOW,
--                "server-probe: %s:%s answered (priority %d=
-, weight %d, rtt %u ms;"
--                " latency margin %d ms [%s])",
-+ =
-               "server-probe: %s:%s answered (priority %d, weight %d, conne=
-ct-lifetime %d s,"
-+                " rtt %u ms; latency margin %d ms [%s])=
-",
-                 ce->remote, ce->remote_port, results[i]=2Ereply=2Eprior=
-ity, results[i]=2Ereply=2Eweight,
--                results[i]=2Ertt_ms, mar=
-gin, margin_src);
-+                results[i]=2Ereply=2Econnect_lifetime, r=
-esults[i]=2Ertt_ms, margin, margin_src);
+-    struct buffer probe =3D tls_wrap_oob_sta=
+ndalone(&tas->tls_wrap, tas, &client_sid, &payload);
++    struct buffer pro=
+be =3D
++        tls_wrap_oob_standalone(&tas->tls_wrap, tas, &client_sid, &=
+payload, P_CONTROL_OOB_V1);
+     if (!BLEN(&probe))
+     {
+         msg(D_L=
+OW, "server-probe: could not wrap probe packet; using configured order");
+d=
+iff --git a/src/openvpn/ssl_pkt=2Ec b/src/openvpn/ssl_pkt=2Ec
+index 78552c4=
+=2E=2E614d599 100644
+--- a/src/openvpn/ssl_pkt=2Ec
++++ b/src/openvpn/ssl_pk=
+t=2Ec
+@@ -145,7 +145,8 @@
          }
-         else
-         =
-{
-@@ -798,6 +803,65 @@
-     msg(M_INFO, "server-probe: %d of %d remote(s) a=
-nswered; connecting best-first", responded,
-         l->len);
  
-+    /* If =
-the winner advertised a connect_lifetime, its reply also served as the
-+   =
-  * server's reset: hand its probe socket and the captured cookie to the
-+ =
-    * connection, which then starts the handshake from that reply (see
-+   =
-  * session_skip_to_pre_start_client)=2E Reusing that socket keeps the sour=
-ce
-+     * IP+port the cookie is bound to=2E dco-win cannot hand a socket t=
-o the
-+     * kernel, so it only gets the probe ordering=2E */
-+
-+    /* Si=
-ngle-use, so the RFC's connect_lifetime expiry check is not needed yet:
-+  =
-   * we probe once (c->first_time) and arm only results[0]=2E */
-+    bool =
-probe_start =3D results[0]=2Eresponded && results[0]=2Ereply=2Econnect_life=
-time > 0;
-+    bool dco_win_gate =3D false;
-+#if defined(_WIN32)
-+    if (d=
-co_enabled(&c->options))
-+    {
-+        probe_start =3D false;
-+        dc=
-o_win_gate =3D true;
-+    }
-+#endif
-+    if (probe_start)
-+    {
-+        c=
-onst int af_idx =3D probe_af_index(results[0]=2Eresponder=2Eaddr=2Esa=2Esa_=
-family);
-+        c->c2=2Eoob_probe_sd =3D pc=2Esd[af_idx];
-+        pc=2Es=
-d[af_idx] =3D SOCKET_UNDEFINED; /* relinquish: the connection owns it now *=
-/
-+
-+        c->c2=2Eoob_probe_remote =3D results[0]=2Eresponder;
-+        =
-c->c2=2Eoob_probe_client_sid =3D client_sid;
-+        c->c2=2Eoob_probe_ser=
-ver_sid =3D results[0]=2Eserver_sid;
-+        c->c2=2Eoob_probe_resend_wkc =
-=3D
-+            (results[0]=2Ereply=2Eflags & OOB_PROBE_REPLY_FLAG_RESEND_=
-WKC) !=3D 0;
-+        c->c2=2Eoob_probe_adopt =3D true;
-+
-+        msg(D_LO=
-W, "server-probe: starting handshake from probe reply of %s:%s"
-+          =
-         " (connect-lifetime %d s)",
-+            l->array[0]->remote, l->a=
-rray[0]->remote_port, results[0]=2Ereply=2Econnect_lifetime);
-+    }
-+    e=
-lse if (results[0]=2Eresponded)
-+    {
-+        /* A server answered but we=
- won't start the handshake from it -- say why=2E */
-+        if (dco_win_ga=
-te)
-+        {
-+            msg(D_LOW, "server-probe: cannot start the hand=
-shake from a probe reply"
-+                       " with dco-win;"
-+       =
-                " using a full handshake");
-+        }
-+        else if (re=
-sults[0]=2Ereply=2Econnect_lifetime =3D=3D 0)
-+        {
-+            msg(D=
-_LOW, "server-probe: %s:%s did not advertise a connect-lifetime"
-+         =
-              " (connect-lifetime 0); using a full handshake",
-+           =
-     l->array[0]->remote, l->array[0]->remote_port);
-+        }
-+    }
-+
-+ =
-   /* Close any probe sockets we did not hand off to the connection=2E */
-+=
-    oob_probe_sockets_close(&pc);
-+
-+    if (bind_local)
-+    {
-+        fr=
-eeaddrinfo(bind_local);
-+    }
-     oob_probe_free_wrap(c, tas);
-     gc_fr=
-ee(&gc);
- }
-diff --git a/src/openvpn/openvpn=2Eh b/src/openvpn/openvpn=2Eh
+         if ((header >> P_OPCODE_SHI=
+FT) =3D=3D P_CONTROL_HARD_RESET_CLIENT_V3
+-            || (header >> P_OPCO=
+DE_SHIFT) =3D=3D P_CONTROL_WKC_V1)
++            || (header >> P_OPCODE_SHIF=
+T) =3D=3D P_CONTROL_WKC_V1
++            || (header >> P_OPCODE_SHIFT) =3D=
+=3D P_CONTROL_OOB_WKC_V1)
+         {
+             if (!buf_copy(&ctx->work,=
+ ctx->tls_crypt_v2_wkc))
+             {
+@@ -199,7 +200,8 @@
+     bool ret =
+=3D false;
+ 
+     const uint8_t opcode =3D *(BPTR(buf)) >> P_OPCODE_SHIFT;
 =
-index 09c6a3c=2E=2E238eba2 100644
---- a/src/openvpn/openvpn=2Eh
-+++ b/src/o=
-penvpn/openvpn=2Eh
-@@ -250,6 +250,9 @@
-     bool oob_probe_adopt;
-     sock=
-et_descriptor_t oob_probe_sd;
-     struct openvpn_sockaddr oob_probe_remote=
+-    if ((opcode =3D=3D P_CONTROL_HARD_RESET_CLIENT_V3 || opcode =3D=3D P_C=
+ONTROL_WKC_V1)
++    if ((opcode =3D=3D P_CONTROL_HARD_RESET_CLIENT_V3 || op=
+code =3D=3D P_CONTROL_WKC_V1
++         || opcode =3D=3D P_CONTROL_OOB_WKC_V=
+1)
+         && !tls_crypt_v2_extract_client_key(buf, ctx, opt))
+     {
+    =
+     msg(D_TLS_ERRORS, "TLS Error: can not extract tls-crypt-v2 client key =
+from %s",
+@@ -390,10 +392,16 @@
+     {
+         return VERDICT_VALID_WKC_V1=
 ;
-+    struct session_id oob_probe_client_sid;  /* our probe session id (co=
-okie was minted over it) */
-+    struct session_id oob_probe_server_sid;  /=
-* the reply's session id =3D server cookie to echo back */
-+    bool oob_pr=
-obe_resend_wkc;               /* reply asked to complete with CONTROL_WKC_V=
-1 (v2) */
+     }
+-    else if (opcode_is_oob(op))
++    else if (op =3D=3D P_CONTROL=
+_OOB_V1)
+     {
+         return VERDICT_VALID_OOB_V1;
+     }
++    else if (=
+op =3D=3D P_CONTROL_OOB_WKC_V1)
++    {
++        /* The WKc was unwrapped by=
+ read_control_auth() above, so the per-client
++         * key is already lo=
+aded into state->tls_wrap_tmp=2E */
++        return VERDICT_VALID_OOB_WKC_V=
+1;
++    }
+     else
+     {
+         return VERDICT_VALID_RESET_V2;
+@@ -450,=
+8 +458,10 @@
  
-     struct link_socket_actual *to_link_addr; /* IP address of =
-remote */
-     struct link_socket_actual from;          /* address of incom=
-ing datagram */
-diff --git a/src/openvpn/ssl=2Ec b/src/openvpn/ssl=2Ec
-inde=
-x c8fc465=2E=2Eccd5fda 100644
---- a/src/openvpn/ssl=2Ec
-+++ b/src/openvpn/s=
-sl=2Ec
-@@ -2569,6 +2569,59 @@
-     return session_move_pre_start(session, k=
-s, true);
+ struct buffer
+ tls_wrap_oob_standalone(struct tls_wrap_ctx =
+*ctx, struct tls_auth_standalone *tas,
+-                        struct sess=
+ion_id *own_sid, const struct buffer *payload)
++                        str=
+uct session_id *own_sid, const struct buffer *payload, int opcode)
+ {
++    =
+ASSERT(opcode_is_oob(opcode));
++
+     /* Copy buffer here to point at the s=
+ame data but allow tls_wrap_control
+      * to potentially change buf to po=
+int to another buffer without
+      * modifying the buffer in tas */
+@@ -46=
+2,10 +472,11 @@
+      * or ACK fields=2E */
+     ASSERT(buf_copy(&buf, payl=
+oad));
+ 
+-    uint8_t header =3D (uint8_t)(P_CONTROL_OOB_V1 << P_OPCODE_SHI=
+FT);
++    uint8_t header =3D (uint8_t)(opcode << P_OPCODE_SHIFT);
+ 
+     /*=
+ Add tls-auth/tls-crypt wrapping, this might replace buf with
+-     * ctx->=
+work */
++     * ctx->work=2E For P_CONTROL_OOB_WKC_V1 the wrapped client ke=
+y is appended
++     * here too (tls-crypt-v2)=2E */
+     tls_wrap_control(c=
+tx, header, &buf, own_sid);
+ 
+     return buf;
+diff --git a/src/openvpn/ssl=
+_pkt=2Eh b/src/openvpn/ssl_pkt=2Eh
+index 581ec48=2E=2E89e9619 100644
+--- a/=
+src/openvpn/ssl_pkt=2Eh
++++ b/src/openvpn/ssl_pkt=2Eh
+@@ -67,18 +67,26 @@
+ =
+ * legal on an established session; see opcode_valid_in_session() below=2E =
+*/
+ #define P_CONTROL_OOB_V1 12
+ 
++/* Variant of P_CONTROL_OOB_V1 with an a=
+ppended wrapped client key (WKc), like
++ * P_CONTROL_HARD_RESET_CLIENT_V3 /=
+ P_CONTROL_WKC_V1=2E Used when tls-crypt-v2 is
++ * configured: an out-of-ba=
+nd message belongs to no established session, so the
++ * client must carry =
+the WKc for the server to recover the per-client key and
++ * unwrap the mes=
+sage=2E See doc/tls-crypt-v2=2Etxt and the openvpn-rfc wire
++ * protocol (C=
+ONTROL_OOB_WKC_V1)=2E */
++#define P_CONTROL_OOB_WKC_V1 13
++
+ /* define the =
+range of defined opcodes, in- and out-of-band=2E Note this is not
+  * the s=
+et of opcodes legal on an established session; see
+  * opcode_valid_in_sess=
+ion()=2E
+  * Since we do no longer support key-method 1 we consider
+  * the=
+ v1 op codes invalid */
+ #define P_FIRST_OPCODE 3
+-#define P_LAST_OPCODE  1=
+2
++#define P_LAST_OPCODE  13
+ 
+ static inline bool
+ opcode_is_oob(int op)
+ =
+{
+-    return op =3D=3D P_CONTROL_OOB_V1;
++    return op =3D=3D P_CONTROL_O=
+OB_V1 || op =3D=3D P_CONTROL_OOB_WKC_V1;
  }
  
-+bool
-+session_skip_to_pre_start_client(struct tls_session *=
-session, const struct session_id *client_sid,
-+                            =
-     const struct session_id *server_sid,
-+                                =
- const struct openvpn_sockaddr *remote, bool resend_wkc)
-+{
-+    struct key=
-_state *ks =3D &session->key[KS_PRIMARY];
+ /**
+@@ -140,6 +148,8 @@
+    =
+ /** This packet is a valid out-of-band control message (e=2Eg=2E a server
+=
+      * probe)=2E It does not belong to a session and must not create one=
+=2E */
+     VERDICT_VALID_OOB_V1,
++    /** as VERDICT_VALID_OOB_V1, with a =
+wrapped client key appended (tls-crypt-v2) */
++    VERDICT_VALID_OOB_WKC_V1=
+,
+     /** the packet failed on of the various checks */
+     VERDICT_INVAL=
+ID
+ };
+@@ -270,10 +280,14 @@
+  * @param tas       standalone auth context p=
+roviding the work buffer
+  * @param own_sid   session id to use as our sess=
+ion id in the header
+  * @param payload   the OOB message payload (TLV stre=
+am) to wrap
++ * @param opcode    the OOB opcode to use: P_CONTROL_OOB_V1, o=
+r
++ *                  P_CONTROL_OOB_WKC_V1 to append the tls-crypt-v2 wrap=
+ped
++ *                  client key (the context must then carry it)=2E
+  *=
+ @return          the wrapped packet buffer, ready to send
+  */
+ struct buf=
+fer tls_wrap_oob_standalone(struct tls_wrap_ctx *ctx, struct tls_auth_stand=
+alone *tas,
+-                                      struct session_id *own_s=
+id, const struct buffer *payload);
++                                      s=
+truct session_id *own_sid, const struct buffer *payload,
++                 =
+                     int opcode);
+ 
+ 
+ /**
+diff --git a/tests/unit_tests/op=
+envpn/test_pkt=2Ec b/tests/unit_tests/openvpn/test_pkt=2Ec
+index ca3045a=2E=
+=2E894ac4f 100644
+--- a/tests/unit_tests/openvpn/test_pkt=2Ec
++++ b/tests/u=
+nit_tests/openvpn/test_pkt=2Ec
+@@ -716,7 +716,7 @@
+      * bare payload, wi=
+th none of the reliability/ACK fields a control packet
+      * carries=2E *=
+/
+     struct buffer buf =3D
+-        tls_wrap_oob_standalone(&tas_client->=
+tls_wrap, tas_client, &sid, &payload);
++        tls_wrap_oob_standalone(&ta=
+s_client->tls_wrap, tas_client, &sid, &payload, P_CONTROL_OOB_V1);
+     ass=
+ert_int_equal((BPTR(&buf))[0] >> P_OPCODE_SHIFT, P_CONTROL_OOB_V1);
+ 
+     =
+/* Server side: the stateless first-packet path must recognise the opcode,
+=
+@@ -802,6 +802,125 @@
+     free_tas(&tas_server);
+ }
+ 
++/* A matching tls-c=
+rypt-v2 server/client key pair (the client key's WKc was
++ * wrapped with t=
+his server key), reused from the tls-crypt-v2 unit tests=2E */
++static cons=
+t char *oob_v2_server_key =3D
++    "-----BEGIN OpenVPN tls-crypt-v2 server =
+key-----\n"
++    "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpK=
+issLS4v\n"
++    "MDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWl=
+tcXV5f\n"
++    "YGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6e3x9fn8=3D\n"
++    "---=
+--END OpenVPN tls-crypt-v2 server key-----\n";
 +
-+    /* Our session id must be =
-the one used for the probe: the server's cookie
-+     * (server_sid) is an =
-HMAC over it, and the server re-derives and checks it
-+     * when it valid=
-ates our third packet=2E */
-+    session->session_id =3D *client_sid;
-+    =
-ks->session_id_remote =3D *server_sid;
-+
-+    struct link_socket_actual act=
- =3D { 0 };
-+    act=2Edest =3D *remote;
-+    ks->remote_addr =3D act;
-+   =
- session->untrusted_addr =3D act;
-+    session->burst =3D true;
-+
-+    /* t=
-ls-crypt-v2: the stateless server discarded the WKc after the probe, so
++static const char *oob_v2=
+_client_key =3D
++    "-----BEGIN OpenVPN tls-crypt-v2 client key-----\n"
++ =
+   "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4v\n"
 +  =
-   * complete the handshake with P_CONTROL_WKC_V1 (drives control_packet_ne=
-eds_wkc)=2E */
-+    if (resend_wkc)
+  "MDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWltcXV5f\n"
++   =
+ "YGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6e3x9fn+AgYKDhIWGh4iJiouMjY6P\n"
++    =
+"kJGSk5SVlpeYmZqbnJ2en6ChoqOkpaanqKmqq6ytrq+wsbKztLW2t7i5uru8vb6/\n"
++    "=
+wMHCw8TFxsfIycrLzM3Oz9DR0tPU1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v\n"
++    "8=
+PHy8/T19vf4+fr7/P3+/xd9pcB0qUYZsWvkrLcfGmzPJPM8a7r0mEWdXwbDadSV\n"
++    "LH=
+g5bv2TwlmPR3HgaMr8o9LTh9hxUTkrH3S0PfKRNwcso86ua/dBFTyXsM9tg4aw\n"
++    "3dS=
+6ogH9AkaT+kRRDgNcKWkQCbwmJK2JlfkXHBwbAtmn78AkNuho6QCFqCdqGab3\n"
++    "zh2v=
+heFqGMPdGpukbFrT3rcO3VLxUeG+RdzXiMTCpJSovFBP1lDkYwYJPnz6daEh\n"
++    "j0TzJ=
+3BVru9W3CpotdNt7u09knxAfpCxjtrP3semsDew/gTBtcfQ/OoTFyFHnN5k\n"
++    "RZ+q17=
+SC4nba3Pp8/Fs0+hSbv2tJozoD8SElFq7SIWJsciTYh8q8f5yQxjdt4Wxu\n"
++    "/Z5wtPC=
+AZ0tOzj4ItTI77fBOYRTfEayzHgEr\n"
++    "-----END OpenVPN tls-crypt-v2 client=
+ key-----\n";
++
++/* End-to-end check of the tls-crypt-v2 out-of-band probe:=
+ the client wraps an
++ * OOB payload as a P_CONTROL_OOB_WKC_V1 message (the=
+ payload encrypted with the
++ * per-client key Kc, with the wrapped client =
+key WKc appended), and the server's
++ * stateless first-packet path (tls_pr=
+e_decrypt_lite) recovers Kc from the WKc,
++ * decrypts the payload, and ret=
+urns VERDICT_VALID_OOB_WKC_V1=2E */
++static void
++test_oob_wkc_v1_roundtrip=
+(void **ut_state)
++{
++    now =3D 0x5f000000;
++
++    struct frame frame =3D=
+ { =2Ebuf =3D { =2Eheadroom =3D 200, =2Epayload_size =3D 1400 }, 0 };
++
++  =
+  /* ---- Client: wrap an OOB probe as P_CONTROL_OOB_WKC_V1 (WKc appended) =
+---- */
++    struct tls_auth_standalone tas_client =3D { 0 };
++    tas_clie=
+nt=2Eframe =3D frame;
++    tas_client=2Etls_wrap=2Emode =3D TLS_WRAP_CRYPT;=
+
++    tas_client=2Etls_wrap=2Eopt=2Eflags |=3D (CO_IGNORE_PACKET_ID | CO_PA=
+CKET_ID_LONG_FORM);
++    packet_id_init(&tas_client=2Etls_wrap=2Eopt=2Epack=
+et_id, 0, 0, "UT-CLIENT", 0);
++    tas_client=2Eworkbuf =3D alloc_buf(1600)=
+;
++    tas_client=2Etls_wrap=2Ework =3D alloc_buf(1600);
++
++    /* Load Kc =
+and obtain the WKc, exactly as a tls-crypt-v2 client does=2E */
++    struct=
+ buffer wkc =3D { 0 };
++    tls_crypt_v2_init_client_key(&tas_client=2Etls_=
+wrap=2Eopt=2Ekey_ctx_bi,
++                                 &tas_client=2Etl=
+s_wrap=2Eoriginal_wrap_keydata, &wkc, oob_v2_client_key,
++                 =
+                true);
++    tas_client=2Etls_wrap=2Etls_crypt_v2_wkc =3D &w=
+kc;
++
++    const uint8_t payload_bytes[] =3D { 0x01, 0x00, 0x02, 0x00, 0x0c=
+, 0xde,
++                                      0xad, 0xbe, 0xef, 0x00, 0x11=
+, 0x22 };
++    struct buffer payload =3D alloc_buf(64);
++    buf_write(&pay=
+load, payload_bytes, sizeof(payload_bytes));
++
++    struct session_id clien=
+t_sid =3D { { 1, 2, 3, 4, 5, 6, 7, 8 } };
++    reset_packet_id_send(&tas_cl=
+ient=2Etls_wrap=2Eopt=2Epacket_id=2Esend);
++
++    struct buffer probe =3D t=
+ls_wrap_oob_standalone(&tas_client=2Etls_wrap, &tas_client, &client_sid,
++ =
+                                                 &payload, P_CONTROL_OOB_WK=
+C_V1);
++    assert_true(BLEN(&probe) > 0);
++    assert_int_equal((BPTR(&pro=
+be))[0] >> P_OPCODE_SHIFT, P_CONTROL_OOB_WKC_V1);
++
++    /* ---- Server: st=
+ateless path recovers Kc from the WKc and decrypts ---- */
++    struct tls_=
+auth_standalone tas_server =3D { 0 };
++    tas_server=2Eframe =3D frame;
++ =
+   /* No static wrapping, only a tls-crypt-v2 server key (as a v2 server ru=
+ns)=2E */
++    tas_server=2Etls_wrap=2Emode =3D TLS_WRAP_NONE;
++    tas_ser=
+ver=2Etls_wrap=2Eopt=2Eflags |=3D (CO_IGNORE_PACKET_ID | CO_PACKET_ID_LONG_=
+FORM);
++    packet_id_init(&tas_server=2Etls_wrap=2Eopt=2Epacket_id, 0, 0, =
+"UT-SERVER", 0);
++    tls_crypt_v2_init_server_key(&tas_server=2Etls_wrap=
+=2Etls_crypt_v2_server_key, true, oob_v2_server_key,
++                     =
+            true);
++    tas_server=2Eworkbuf =3D alloc_buf(1600);
++
++    st=
+ruct link_socket_actual from =3D { 0 };
++    struct buffer srv =3D alloc_bu=
+f(1600);
++    buf_write(&srv, BPTR(&probe), BLEN(&probe));
++
++    struct tl=
+s_pre_decrypt_state state =3D { 0 };
++    enum first_packet_verdict verdict=
+ =3D tls_pre_decrypt_lite(&tas_server, &state, &from, &srv);
++    assert_in=
+t_equal(verdict, VERDICT_VALID_OOB_WKC_V1);
++
++    /* The decrypted payload=
+ must equal what the client sent, and the client's
++     * session id must =
+be recovered=2E */
++    assert_int_equal(BLEN(&state=2Enewbuf), (int)sizeof=
+(payload_bytes));
++    assert_memory_equal(BPTR(&state=2Enewbuf), payload_b=
+ytes, sizeof(payload_bytes));
++    assert_memory_equal(state=2Epeer_session=
+_id=2Eid, client_sid=2Eid, SID_SIZE);
++    free_tls_pre_decrypt_state(&stat=
+e);
++
++    /* Flipping any single byte (header, session id, ciphertext or W=
+Kc) must make
++     * the probe fail to validate=2E */
++    for (size_t i =
+=3D 0; i < (size_t)BLEN(&probe); i++)
 +    {
-+        ks->crypto_options=2Efl=
-ags |=3D CO_RESEND_WKC;
++        struct tls_pre_decryp=
+t_state tstate =3D { 0 };
++        buf_reset_len(&srv);
++        buf_write(=
+&srv, BPTR(&probe), BLEN(&probe));
++        (BPTR(&srv))[i] ^=3D 0xff;
++   =
+     enum first_packet_verdict v =3D tls_pre_decrypt_lite(&tas_server, &tst=
+ate, &from, &srv);
++        assert_int_equal(v, VERDICT_INVALID);
++        =
+free_tls_pre_decrypt_state(&tstate);
 +    }
 +
-+    /* We never received the server's HAR=
-D_RESET (id 0) -- the probe reply stood
-+     * in for it=2E Acknowledge th=
-at phantom id 0 so our third packet carries an
-+     * ACK together with th=
-e server session id (the cookie): reliable_ack_write()
-+     * only emits t=
-hat session id when at least one ACK is present, and the server
-+     * nee=
-ds it to validate the stateless cookie=2E */
-+    reliable_ack_acknowledge_=
-packet_id(ks->rec_ack, 0);
++    free_key_ctx_bi(&tas_cli=
+ent=2Etls_wrap=2Eopt=2Ekey_ctx_bi);
++    packet_id_free(&tas_client=2Etls_w=
+rap=2Eopt=2Epacket_id);
++    free_buf(&wkc);
++    free_buf(&payload);
++    =
+free_buf(&tas_client=2Eworkbuf);
++    free_buf(&tas_client=2Etls_wrap=2Ewor=
+k);
 +
-+    /* Skip one (RESET) packet in each direct=
-ion, so ids start at 1 (see
-+     * session_skip_to_pre_start)=2E */
-+    k=
-s->rec_reliable->packet_id =3D 1;
-+    session->tls_wrap=2Eopt=2Epacket_id=
-=2Esend=2Eid =3D 1;
++    free_key_ctx(&tas_server=2Etls_wrap=2Etls_crypt_v2_server_key);
+=
++    packet_id_free(&tas_server=2Etls_wrap=2Eopt=2Epacket_id);
++    free_bu=
+f(&tas_server=2Eworkbuf);
 +
-+    /* Do not send our own HARD_RESET=2E Unlike the =
-server's skip, the client must
-+     * send first: the stateless server onl=
-y replies once it sees our third
-+     * packet=2E session_move_pre_start(s=
-kip=3Dtrue) leaves us in S_PRE_START_SKIP,
-+     * which only advances when=
- a packet is *received*; instead drop to
-+     * S_PRE_START with an empty =
-send-reliable (the initial packet was generated
-+     * and immediately del=
-eted), so tls_process() promotes us to S_START and
-+     * sends the Client=
-Hello without waiting for a server reset=2E */
-+    if (!session_move_pre_s=
-tart(session, ks, true))
-+    {
-+        return false;
-+    }
-+    ks->stat=
-e =3D S_PRE_START;
-+    return true;
++    free_buf(&srv);
 +}
 +
- /**
-  * Parses the TLVs (type, l=
-ength, value) in the early negotiation
-  */
-diff --git a/src/openvpn/ssl=2E=
-h b/src/openvpn/ssl=2Eh
-index 7ddf965=2E=2Ea534007 100644
---- a/src/openvpn=
-/ssl=2Eh
-+++ b/src/openvpn/ssl=2Eh
-@@ -576,4 +576,21 @@
- bool session_skip_=
-to_pre_start(struct tls_session *session, struct tls_pre_decrypt_state *sta=
-te,
-                                struct link_socket_actual *from);
+ static void
+ test_ex=
+tract_control_message(void **ut_state)
+ {
+@@ -855,6 +974,7 @@
+         cmoc=
+ka_unit_test(test_oob_standalone_plain),
+         cmocka_unit_test(test_oob=
+_standalone_tls_auth),
+         cmocka_unit_test(test_oob_standalone_tls_cr=
+ypt),
++        cmocka_unit_test(test_oob_wkc_v1_roundtrip),
+         cmocka=
+_unit_test(test_extract_control_message)
+     };
  
-+/*=
-*
-+ * Client counterpart of session_skip_to_pre_start(): start the handshak=
-e from a
-+ * server session id (SYN-cookie) learned earlier from an OOB ser=
-ver probe
-+ * reply, which already served as the server's HARD_RESET, so we=
- send none=2E
-+ *
-+ * @param session     the (client) TLS session to fast-f=
-orward
-+ * @param client_sid  session id used for the probe (the cookie is =
-an HMAC over it)
-+ * @param server_sid  the server's cookie, echoed back to=
- complete the handshake
-+ * @param remote      the probed (pinned) server a=
-ddress to connect to
-+ * @param resend_wkc  true to complete with P_CONTROL=
-_WKC_V1 (tls-crypt-v2)
-+ * @return true if the session was fast-forwarded, =
-false on failure
-+ */
-+bool session_skip_to_pre_start_client(struct tls_ses=
-sion *session,
-+                                      const struct session_=
-id *client_sid,
-+                                      const struct session=
-_id *server_sid,
-+                                      const struct openvp=
-n_sockaddr *remote, bool resend_wkc);
-+
- #endif /* ifndef OPENVPN_SSL_H */
-=
 
 -- 
-To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1770?usp=3Dem=
-ail
-To unsubscribe, or for help writing mail filters, visit http://gerrit=
-=2Eopenvpn=2Enet/settings?usp=3Demail
+To view, visit http=
+://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1758?usp=3Demail
+To unsubscribe, or f=
+or help writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?=
+usp=3Demail
 
 Gerrit-MessageType: newpatchset
-Gerr=
-it-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I454d5040cbad4d=
-373ee4f90b8d683200d2a4c0e4
-Gerrit-Change-Number: 1770
-Gerrit-PatchSet: 16
-G=
-errit-Owner: stipa <lstipakov@gmail=2Ecom>
-Gerrit-Reviewer: plaisthos <arne=
--openvpn@rfc2549=2Eorg>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esou=
-rceforge=2Enet>
-Gerrit-Attention: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Project: openvpn
+Gerrit=
+-Branch: master
+Gerrit-Change-Id: Idb8c0c660a98de8ec549b69f6692a7b41b092eaf=
 
---gt1DgBqhHVg=
+Gerrit-Change-Number: 1758
+Gerrit-PatchSet: 18
+Gerrit-Owner: stipa <lstipa=
+kov@gmail=2Ecom>
+Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Ge=
+rrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Att=
+ention: plaisthos <arne-openvpn@rfc2549=2Eorg>
+
+--nryJho1E6o0=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: plaisthos=2E </p>
 <p>stipa <strong>uploaded patch set=
- #16</strong> to this change=2E</p><p><a href=3D"http://gerrit=2Eopenvpn=2E=
-net/c/openvpn/+/1770?usp=3Demail">View Change</a></p><pre class=3D"blocks" =
-style=3D"font-family: monospace,monospace; white-space: pre-wrap;">oob: sta=
-rt the client handshake from the server probe<br><br>When the best remote a=
-nswered a probe and advertised a connect_lifetime,<br>its reply also served=
- as the server&#39;s HARD_RESET: its session id is a<br>valid stateless SYN=
--cookie=2E The client therefore starts the handshake<br>from that reply ins=
-tead of running its own reset exchange=2E<br><br>Note this does not shorten=
- the handshake itself -- the probe and its<br>reply take the place of the t=
-wo reset packets rather than removing them=2E<br>The saving is one RTT comp=
-ared with probing and then connecting; a<br>client that does not probe is u=
-naffected=2E<br><br>  - oob_client=2Ec: when the winner advertised a connec=
-t_lifetime, hand<br>    its probe socket, the captured server session id (c=
-ookie), our probe<br>    session id, the pinned responder address, and the =
-resend-wkc flag to<br>    the connection via c2; relinquish that socket (do=
- not close it);<br>    gate off for dco-win, which has no user-to-kernel so=
-cket handoff<br>    (probing still works, only starting from the reply is s=
-kipped)=2E<br>  - ssl=2Ec session_skip_to_pre_start_client(): seed our sess=
-ion id to the<br>    probe&#39;s (the cookie is an HMAC over it), the remot=
-e session id to<br>    the cookie, ack the phantom server reset (id 0) so t=
-he third packet<br>    carries the cookie, set CO_RESEND_WKC for tls-crypt-=
-v2, and drop to<br>    S_PRE_START so tls_process() promotes to S_START and=
- sends the<br>    ClientHello (no HARD_RESET sent)=2E<br>  - init=2Ec: invo=
-ke the client skip after tls_multi_init_finalize when<br>    adopting, and =
-count the probe reply as the initial packet received<br>    (n_sessions++, =
-as the server does before its own<br>    session_skip_to_pre_start) so chec=
-k_server_poll_timeout() does not<br>    restart the connected session=2E<br=
-><br>Change-Id: I454d5040cbad4d373ee4f90b8d683200d2a4c0e4<br>Signed-off-by:=
- Lev Stipakov &lt;lev@openvpn=2Enet&gt;<br>---<br>M Changes=2Erst<br>M src/=
-openvpn/init=2Ec<br>M src/openvpn/oob=2Eh<br>M src/openvpn/oob_client=2Ec<b=
-r>M src/openvpn/openvpn=2Eh<br>M src/openvpn/ssl=2Ec<br>M src/openvpn/ssl=
-=2Eh<br>7 files changed, 172 insertions(+), 10 deletions(-)<br><br></pre><p=
-re class=3D"blocks" style=3D"font-family: monospace,monospace; white-space:=
- pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/change=
-s/70/1770/16</pre><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;"><span>diff --git a/Changes=2Erst b/Changes=2Erst</span><br><=
-span>index 080d928=2E=2E4d7a16c9 100644</span><br><span>--- a/Changes=2Erst=
-</span><br><span>+++ b/Changes=2Erst</span><br><span>@@ -9,6 +9,13 @@</span=
-><br><span>     measured latency and advertised weight with DNS-SRV-like se=
-mantics=2E</span><br><span>     Servers advertise these values with ``--ser=
-ver-probe-reply``=2E</span><br><span> </span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+Probe exchange doubles as the start of the handshake</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    When a probing clie=
-nt picks a server that advertises support for it,</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    the probe and its reply take the place of=
- the client&#39;s and server&#39;s</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    reset packets, so the client does not need a separate re=
-set exchange</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    bef=
-ore the handshake=2E This saves one round trip compared with probing</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    and then connecting, a=
-nd needs no extra configuration=2E</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span> </span><br><span> Overview of changes in 2=
-=2E7</span><br><span> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D</span><br><span>diff --git a/src/openvpn/init=
-=2Ec b/src/openvpn/init=2Ec</span><br><span>index ea85bad=2E=2E81562a7 1006=
-44</span><br><span>--- a/src/openvpn/init=2Ec</span><br><span>+++ b/src/ope=
-nvpn/init=2Ec</span><br><span>@@ -3483,6 +3483,21 @@</span><br><span>      =
-   /* Keep the max mtu also in the frame of tls multi so it can access</spa=
-n><br><span>          * it in push_peer_info */</span><br><span>         c-=
-&gt;c2=2Etls_multi-&gt;opt=2Eframe=2Etun_max_mtu =3D c-&gt;c2=2Eframe=2Etun=
-_max_mtu;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        /* OOB server probe: =
-the probe reply already served as the server&#39;s</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+         * HARD_RESET (it carried a valid SY=
-N-cookie), so the handshake starts</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+         * from that reply and we send no reset of our own=
-=2E Count</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         *=
- the reply as the initial packet received (as the server does before its</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+         * own session=
-_skip_to_pre_start), so tls_initial_packet_received() is true</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+         * and check_server_poll_=
-timeout() does not restart a connected session=2E */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        if (c-&gt;c2=2Eoob_probe_adopt)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+            c-&gt;c2=2Etls_mult=
-i-&gt;n_sessions++;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-            session_skip_to_pre_start_client(&amp;c-&gt;c2=2Etls_multi-&gt;=
-session[TM_ACTIVE],</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-                                             &amp;c-&gt;c2=2Eoob_probe_clie=
-nt_sid,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-                                 &amp;c-&gt;c2=2Eoob_probe_server_sid, &amp=
-;c-&gt;c2=2Eoob_probe_remote,</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+                                             c-&gt;c2=2Eoob_probe=
-_resend_wkc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  }</span><br><span>     }</span><br><span>     if (c-&gt;c2=2Etls_auth_sta=
-ndalone)</span><br><span>     {</span><br><span>diff --git a/src/openvpn/oo=
-b=2Eh b/src/openvpn/oob=2Eh</span><br><span>index 9fde094=2E=2E5568177 1006=
-44</span><br><span>--- a/src/openvpn/oob=2Eh</span><br><span>+++ b/src/open=
-vpn/oob=2Eh</span><br><span>@@ -192,8 +192,11 @@</span><br><span> {</span><=
-br><span>     int index;</span><br><span>     bool responded;</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    unsigned int rtt_ms;          /=
-* probe round-trip time in ms (responders only) */</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    struct oob_probe_reply reply; /* the value=
-s the server advertised */</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    unsigned int rtt_ms; /* probe round-trip time in ms (responders =
-only) */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Capt=
-ured from the packet and its reply TLV (responders only): */</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    struct session_id server_sid; =
-     /* the packet&#39;s own session id =3D server SYN-cookie */</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    struct openvpn_sockaddr re=
-sponder; /* address that answered (pin the connection to it) */</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    struct oob_probe_reply repl=
-y;      /* the values the server advertised */</span><br><span> };</span><b=
-r><span> </span><br><span> /* Where the client probed one connection entry:=
- its resolved addresses=2E */</span><br><span>diff --git a/src/openvpn/oob_=
-client=2Ec b/src/openvpn/oob_client=2Ec</span><br><span>index fb59104=2E=2E=
-dd9e3c6a 100644</span><br><span>--- a/src/openvpn/oob_client=2Ec</span><br>=
-<span>+++ b/src/openvpn/oob_client=2Ec</span><br><span>@@ -38,6 +38,7 @@</s=
-pan><br><span> #include &quot;otime=2Eh&quot;</span><br><span> #include &qu=
-ot;fdmisc=2Eh&quot;</span><br><span> #include &quot;crypto=2Eh&quot;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;dco=2Eh&quo=
-t;</span><br><span> #include &quot;error=2Eh&quot;</span><br><span> </span>=
-<br><span> #include &quot;memdbg=2Eh&quot;</span><br><span>@@ -343,6 +344,1=
-3 @@</span><br><span>         return;</span><br><span>     }</span><br><spa=
-n> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* The reply=
-&#39;s own session id (the server&#39;s stateless SYN-cookie) follows the</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * opcode byte=2E=
- Capture it before read_control_auth() strips it: a client may</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+     * reuse it to start the han=
-dshake from this reply (the connect_lifetime</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+     * advertisement)=2E */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    struct session_id server_sid;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    memcpy(server_sid=2Eid,=
- data + 1, SID_SIZE);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span>     struct buffer buf;</span><br><span>     buf_set_rea=
-d(&amp;buf, data, (size_t)len);</span><br><span> </span><br><span>@@ -386,6=
- +394,8 @@</span><br><span> </span><br><span>         results[i]=2Eresponde=
-d =3D true;</span><br><span>         results[i]=2Ertt_ms =3D (ms &gt; 0) ? =
-(unsigned int)ms : 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        results[i]=2Eserver_sid =3D server_sid;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        results[i]=2Eresponder =3D *from; /* =
-pin the connection to the address that answered */</span><br><span>        =
- results[i]=2Ereply =3D reply;</span><br><span> </span><br><span>         i=
- =3D oob_probe_next_target_at(from, targets, results, n, i + 1);</span><br>=
-<span>@@ -753,11 +763,6 @@</span><br><span>         oob_probe_collect(&amp;=
-pc, &amp;probe, &amp;client_sid, &amp;tas-&gt;tls_wrap, targets, results, l=
--&gt;len,</span><br><span>                           c-&gt;sig);</span><br>=
-<span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    oob_p=
-robe_sockets_close(&amp;pc);</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    if (bind_local)</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        fre=
-eaddrinfo(bind_local);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    }</span><br><span> </span><br><span>     /* Log each remote&#39;s outc=
-ome while results[i] still maps to array[i]=2E */</span><br><span>     int =
-responded =3D 0;</span><br><span>@@ -773,10 +778,10 @@</span><br><span>    =
-         int margin =3D oob_effective_margin(&amp;results[i], client_margin=
-);</span><br><span>             const char *margin_src =3D client_margin &g=
-t;=3D 0 ? &quot;client&quot; : &quot;server-advertised&quot;;</span><br><sp=
-an>             msg(D_LOW,</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-                &quot;server-probe: %s:%s answered (priority %d, weigh=
-t %d, rtt %u ms;&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--                &quot; latency margin %d ms [%s])&quot;,</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+                &quot;server-probe: %=
-s:%s answered (priority %d, weight %d, connect-lifetime %d s,&quot;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+                &quot; rtt =
-%u ms; latency margin %d ms [%s])&quot;,</span><br><span>                 c=
-e-&gt;remote, ce-&gt;remote_port, results[i]=2Ereply=2Epriority, results[i]=
-=2Ereply=2Eweight,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-             results[i]=2Ertt_ms, margin, margin_src);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+                results[i]=2Ereply=2Econ=
-nect_lifetime, results[i]=2Ertt_ms, margin, margin_src);</span><br><span>  =
-       }</span><br><span>         else</span><br><span>         {</span><br=
-><span>@@ -798,6 +803,65 @@</span><br><span>     msg(M_INFO, &quot;server-p=
-robe: %d of %d remote(s) answered; connecting best-first&quot;, responded,<=
-/span><br><span>         l-&gt;len);</span><br><span> </span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    /* If the winner advertised a connec=
-t_lifetime, its reply also served as the</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+     * server&#39;s reset: hand its probe socket and t=
-he captured cookie to the</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+     * connection, which then starts the handshake from that reply (s=
-ee</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * session_sk=
-ip_to_pre_start_client)=2E Reusing that socket keeps the source</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+     * IP+port the cookie is bo=
-und to=2E dco-win cannot hand a socket to the</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+     * kernel, so it only gets the probe ordering=
-=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    /* Single-use, so the RFC&#3=
-9;s connect_lifetime expiry check is not needed yet:</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+     * we probe once (c-&gt;first_time) a=
-nd arm only results[0]=2E */</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    bool probe_start =3D results[0]=2Eresponded &amp;&amp; results=
-[0]=2Ereply=2Econnect_lifetime &gt; 0;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    bool dco_win_gate =3D false;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#if defined(_WIN32)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (dco_enabled(&amp;c-&gt;options))<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        probe_start =3D false;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        dco_win_gate =
-=3D true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    if (probe_start)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        const int af_idx =3D probe_af_index(result=
-s[0]=2Eresponder=2Eaddr=2Esa=2Esa_family);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        c-&gt;c2=2Eoob_probe_sd =3D pc=2Esd[af_idx];=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        pc=2Esd[af_=
-idx] =3D SOCKET_UNDEFINED; /* relinquish: the connection owns it now */</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        c-&gt;c2=2Eoob_probe_remote =3D r=
-esults[0]=2Eresponder;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        c-&gt;c2=2Eoob_probe_client_sid =3D client_sid;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        c-&gt;c2=2Eoob_probe_server_=
-sid =3D results[0]=2Eserver_sid;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        c-&gt;c2=2Eoob_probe_resend_wkc =3D</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+            (results[0]=2Ereply=2Eflag=
-s &amp; OOB_PROBE_REPLY_FLAG_RESEND_WKC) !=3D 0;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        c-&gt;c2=2Eoob_probe_adopt =3D true;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        msg(D_LOW, &quot;server-probe: s=
-tarting handshake from probe reply of %s:%s&quot;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+                   &quot; (connect-lifetime %=
-d s)&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-    l-&gt;array[0]-&gt;remote, l-&gt;array[0]-&gt;remote_port, results[0]=
-=2Ereply=2Econnect_lifetime);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-else if (results[0]=2Eresponded)</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       /* A server answered but we won&#39;t start the handshake from it --=
- say why=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   if (dco_win_gate)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-   msg(D_LOW, &quot;server-probe: cannot start the handshake from a probe r=
-eply&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-              &quot; with dco-win;&quot;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                       &quot; using a full handshake&q=
-uot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        else if (result=
-s[0]=2Ereply=2Econnect_lifetime =3D=3D 0)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+            msg(D_LOW, &quot;server-probe: %s:%s did not advert=
-ise a connect-lifetime&quot;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+                       &quot; (connect-lifetime 0); using a full h=
-andshake&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-            l-&gt;array[0]-&gt;remote, l-&gt;array[0]-&gt;remote_port);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    /* Close any probe sockets we did not hand off to the connecti=
-on=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    oob_pro=
-be_sockets_close(&amp;pc);</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (bind=
-_local)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        freeaddrinfo(bind_=
-local);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span>=
-<br><span>     oob_probe_free_wrap(c, tas);</span><br><span>     gc_free(&a=
-mp;gc);</span><br><span> }</span><br><span>diff --git a/src/openvpn/openvpn=
-=2Eh b/src/openvpn/openvpn=2Eh</span><br><span>index 09c6a3c=2E=2E238eba2 1=
-00644</span><br><span>--- a/src/openvpn/openvpn=2Eh</span><br><span>+++ b/s=
-rc/openvpn/openvpn=2Eh</span><br><span>@@ -250,6 +250,9 @@</span><br><span>=
-     bool oob_probe_adopt;</span><br><span>     socket_descriptor_t oob_pro=
-be_sd;</span><br><span>     struct openvpn_sockaddr oob_probe_remote;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct session_id oob=
-_probe_client_sid;  /* our probe session id (cookie was minted over it) */<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct session_i=
-d oob_probe_server_sid;  /* the reply&#39;s session id =3D server cookie to=
- echo back */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    bo=
-ol oob_probe_resend_wkc;               /* reply asked to complete with CONT=
-ROL_WKC_V1 (v2) */</span><br><span> </span><br><span>     struct link_socke=
-t_actual *to_link_addr; /* IP address of remote */</span><br><span>     str=
-uct link_socket_actual from;          /* address of incoming datagram */</s=
-pan><br><span>diff --git a/src/openvpn/ssl=2Ec b/src/openvpn/ssl=2Ec</span>=
-<br><span>index c8fc465=2E=2Eccd5fda 100644</span><br><span>--- a/src/openv=
-pn/ssl=2Ec</span><br><span>+++ b/src/openvpn/ssl=2Ec</span><br><span>@@ -25=
-69,6 +2569,59 @@</span><br><span>     return session_move_pre_start(session=
-, ks, true);</span><br><span> }</span><br><span> </span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+session_skip_to_pre_start_client(struct tls_session *session=
-, const struct session_id *client_sid,</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+                                 const struct session_id=
- *server_sid,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-                           const struct openvpn_sockaddr *remote, bool rese=
-nd_wkc)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    struct key_state *ks =3D &=
-amp;session-&gt;key[KS_PRIMARY];</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /*=
- Our session id must be the one used for the probe: the server&#39;s cookie=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * (server_sid)=
- is an HMAC over it, and the server re-derives and checks it</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+     * when it validates our third=
- packet=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    se=
-ssion-&gt;session_id =3D *client_sid;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    ks-&gt;session_id_remote =3D *server_sid;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    struct link_socket_actual act =3D { 0 };</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    act=2Edest =3D *remot=
-e;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ks-&gt;remote=
-_addr =3D act;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    s=
-ession-&gt;untrusted_addr =3D act;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    session-&gt;burst =3D true;</span><br><span style=3D"col=
+ #18</strong> to this change=2E</p><p><a href=3D"http://gerrit=2Eopenvpn=2E=
+net/c/openvpn/+/1758?usp=3Demail">View Change</a></p><pre class=3D"blocks" =
+style=3D"font-family: monospace,monospace; white-space: pre-wrap;">oob: Unw=
+rap tls-crypt-v2 server probes (P_CONTROL_OOB_WKC_V1)<br><br>A tls-crypt-v2=
+ server learns the per-client key only from the wrapped<br>client key (WKc)=
+=2E An out-of-band probe belongs to no session, so the<br>client must carry=
+ the WKc with the probe for the server to unwrap it=2E<br><br>Add the recei=
+ve/protocol side of this:<br><br>  - new opcode P_CONTROL_OOB_WKC_V1 (13): =
+like P_CONTROL_OOB_V1 but with<br>    the WKc appended, mirroring CONTROL_H=
+ARD_RESET_CLIENT_V3 and<br>    CONTROL_WKC_V1<br>  - tls_wrap_control() app=
+ends the WKc for opcode 13;<br>    read_control_auth() runs tls_crypt_v2_ex=
+tract_client_key() for it,<br>    loading the per-client key before unwrapp=
+ing the message<br>  - tls_pre_decrypt_lite() returns the new VERDICT_VALID=
+_OOB_WKC_V1, one<br>    verdict per opcode as elsewhere in the enum; do_pre=
+_decrypt_check()<br>    answers it exactly like VERDICT_VALID_OOB_V1<br>  -=
+ P_LAST_OPCODE becomes 13 and opcode_is_oob() covers both OOB opcodes<br>  =
+- tls_wrap_oob_standalone() takes the opcode; the server reply stays a<br> =
+   plain P_CONTROL_OOB_V1 (the server already holds the key after the<br>  =
+  unwrap)<br>  - test_pkt: round-trip test of the wrap/extract/unwrap path<=
+br><br>The client still sends plain probes; sending P_CONTROL_OOB_WKC_V1 is=
+<br>added in a following commit=2E<br><br>Change-Id: Idb8c0c660a98de8ec549b=
+69f6692a7b41b092eaf<br>Signed-off-by: Lev Stipakov &lt;lev@openvpn=2Enet&gt=
+;<br>---<br>M src/openvpn/mudp=2Ec<br>M src/openvpn/oob_client=2Ec<br>M src=
+/openvpn/ssl_pkt=2Ec<br>M src/openvpn/ssl_pkt=2Eh<br>M tests/unit_tests/ope=
+nvpn/test_pkt=2Ec<br>5 files changed, 165 insertions(+), 14 deletions(-)<br=
+><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace;=
+ white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvp=
+n refs/changes/58/1758/18</pre><pre style=3D"font-family: monospace,monospa=
+ce; white-space: pre-wrap;"><span>diff --git a/src/openvpn/mudp=2Ec b/src/o=
+penvpn/mudp=2Ec</span><br><span>index 1061f95=2E=2E43aa732 100644</span><br=
+><span>--- a/src/openvpn/mudp=2Ec</span><br><span>+++ b/src/openvpn/mudp=2E=
+c</span><br><span>@@ -109,7 +109,12 @@</span><br><span>     reset_packet_id=
+_send(&amp;state-&gt;tls_wrap_tmp=2Eopt=2Epacket_id=2Esend);</span><br><spa=
+n>     state-&gt;tls_wrap_tmp=2Eopt=2Epacket_id=2Erec=2Einitialized =3D tru=
+e;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   struct buffer buf =3D tls_wrap_oob_standalone(&amp;state-&gt;tls_wrap_tm=
+p, tas, own_sid, &amp;payload);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    /* The reply carries no WKc: with tls-crypt-v2 the server h=
+as already</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * re=
+covered the per-client key from the request&#39;s WKc (it is loaded into</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+     * state-&gt;tls_w=
+rap_tmp), so the reply is wrapped with that key as a plain</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+     * P_CONTROL_OOB_V1 message=2E *=
+/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct buffer =
+buf =3D</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        tls_=
+wrap_oob_standalone(&amp;state-&gt;tls_wrap_tmp, tas, own_sid, &amp;payload=
+, P_CONTROL_OOB_V1);</span><br><span>     send_standalone_reply(m, &amp;buf=
+, &quot;Server Probe&quot;, &quot;Server probe from client, sending probe r=
+eply&quot;,</span><br><span>                           sock);</span><br><sp=
+an> </span><br><span>@@ -135,7 +140,7 @@</span><br><span>     int handwindo=
+w =3D m-&gt;top=2Eoptions=2Ehandshake_window;</span><br><span> </span><br><=
+span>     if (verdict =3D=3D VERDICT_VALID_RESET_V3 || verdict =3D=3D VERDI=
+CT_VALID_RESET_V2</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    || verdict =3D=3D VERDICT_VALID_OOB_V1)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        || verdict =3D=3D VERDICT_VALID_OOB_V1 || v=
+erdict =3D=3D VERDICT_VALID_OOB_WKC_V1)</span><br><span>     {</span><br><s=
+pan>         /* Check if we are still below our limit for sending out</span=
+><br><span>          * responses */</span><br><span>@@ -233,7 +238,7 @@</sp=
+an><br><span> </span><br><span>         return ret;</span><br><span>     }<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    else if (verdict =
+=3D=3D VERDICT_VALID_OOB_V1)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    else if (verdict =3D=3D VERDICT_VALID_OOB_V1 || verdict =3D=3D=
+ VERDICT_VALID_OOB_WKC_V1)</span><br><span>     {</span><br><span>         =
+/* Out-of-band server probe=2E state-&gt;newbuf points at the TLV payload</=
+span><br><span>          * (read_control_auth has stripped the opcode, sess=
+ion id and any</span><br><span>diff --git a/src/openvpn/oob_client=2Ec b/sr=
+c/openvpn/oob_client=2Ec</span><br><span>index 55db223=2E=2E286b08e 100644<=
+/span><br><span>--- a/src/openvpn/oob_client=2Ec</span><br><span>+++ b/src/=
+openvpn/oob_client=2Ec</span><br><span>@@ -633,7 +633,8 @@</span><br><span>=
+         return;</span><br><span>     }</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    struct buffer probe =3D tls_wrap_oo=
+b_standalone(&amp;tas-&gt;tls_wrap, tas, &amp;client_sid, &amp;payload);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct buffer prob=
+e =3D</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        tls_wr=
+ap_oob_standalone(&amp;tas-&gt;tls_wrap, tas, &amp;client_sid, &amp;payload=
+, P_CONTROL_OOB_V1);</span><br><span>     if (!BLEN(&amp;probe))</span><br>=
+<span>     {</span><br><span>         msg(D_LOW, &quot;server-probe: could =
+not wrap probe packet; using configured order&quot;);</span><br><span>diff =
+--git a/src/openvpn/ssl_pkt=2Ec b/src/openvpn/ssl_pkt=2Ec</span><br><span>i=
+ndex 78552c4=2E=2E614d599 100644</span><br><span>--- a/src/openvpn/ssl_pkt=
+=2Ec</span><br><span>+++ b/src/openvpn/ssl_pkt=2Ec</span><br><span>@@ -145,=
+7 +145,8 @@</span><br><span>         }</span><br><span> </span><br><span>  =
+       if ((header &gt;&gt; P_OPCODE_SHIFT) =3D=3D P_CONTROL_HARD_RESET_CLI=
+ENT_V3</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            || =
+(header &gt;&gt; P_OPCODE_SHIFT) =3D=3D P_CONTROL_WKC_V1)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            || (header &gt;&gt; P_OPC=
+ODE_SHIFT) =3D=3D P_CONTROL_WKC_V1</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+            || (header &gt;&gt; P_OPCODE_SHIFT) =3D=3D P_CON=
+TROL_OOB_WKC_V1)</span><br><span>         {</span><br><span>             if=
+ (!buf_copy(&amp;ctx-&gt;work, ctx-&gt;tls_crypt_v2_wkc))</span><br><span> =
+            {</span><br><span>@@ -199,7 +200,8 @@</span><br><span>     bool=
+ ret =3D false;</span><br><span> </span><br><span>     const uint8_t opcode=
+ =3D *(BPTR(buf)) &gt;&gt; P_OPCODE_SHIFT;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    if ((opcode =3D=3D P_CONTROL_HARD_RESET_CLIENT_V3 =
+|| opcode =3D=3D P_CONTROL_WKC_V1)</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    if ((opcode =3D=3D P_CONTROL_HARD_RESET_CLIENT_V3 || opc=
+ode =3D=3D P_CONTROL_WKC_V1</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+         || opcode =3D=3D P_CONTROL_OOB_WKC_V1)</span><br><span>   =
+      &amp;&amp; !tls_crypt_v2_extract_client_key(buf, ctx, opt))</span><br=
+><span>     {</span><br><span>         msg(D_TLS_ERRORS, &quot;TLS Error: c=
+an not extract tls-crypt-v2 client key from %s&quot;,</span><br><span>@@ -3=
+90,10 +392,16 @@</span><br><span>     {</span><br><span>         return VER=
+DICT_VALID_WKC_V1;</span><br><span>     }</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    else if (opcode_is_oob(op))</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    else if (op =3D=3D P_CONTROL_OOB_V1)<=
+/span><br><span>     {</span><br><span>         return VERDICT_VALID_OOB_V1=
+;</span><br><span>     }</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    else if (op =3D=3D P_CONTROL_OOB_WKC_V1)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        /* The WKc was unwrapped by read_control_auth() abo=
+ve, so the per-client</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+         * key is already loaded into state-&gt;tls_wrap_tmp=2E */</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        return VERDICT_VAL=
+ID_OOB_WKC_V1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }=
+</span><br><span>     else</span><br><span>     {</span><br><span>         =
+return VERDICT_VALID_RESET_V2;</span><br><span>@@ -450,8 +458,10 @@</span><=
+br><span> </span><br><span> struct buffer</span><br><span> tls_wrap_oob_sta=
+ndalone(struct tls_wrap_ctx *ctx, struct tls_auth_standalone *tas,</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-                        struct=
+ session_id *own_sid, const struct buffer *payload)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                        struct session_id=
+ *own_sid, const struct buffer *payload, int opcode)</span><br><span> {</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(opcode_is_oo=
+b(opcode));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span>     /* Copy buffer here to point at the same data but allow tls_w=
+rap_control</span><br><span>      * to potentially change buf to point to a=
+nother buffer without</span><br><span>      * modifying the buffer in tas *=
+/</span><br><span>@@ -462,10 +472,11 @@</span><br><span>      * or ACK fiel=
+ds=2E */</span><br><span>     ASSERT(buf_copy(&amp;buf, payload));</span><b=
+r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    uint8_t =
+header =3D (uint8_t)(P_CONTROL_OOB_V1 &lt;&lt; P_OPCODE_SHIFT);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    uint8_t header =3D (uint8_t=
+)(opcode &lt;&lt; P_OPCODE_SHIFT);</span><br><span> </span><br><span>     /=
+* Add tls-auth/tls-crypt wrapping, this might replace buf with</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-     * ctx-&gt;work */</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+     * ctx-&gt;work=2E For P_CO=
+NTROL_OOB_WKC_V1 the wrapped client key is appended</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+     * here too (tls-crypt-v2)=2E */</spa=
+n><br><span>     tls_wrap_control(ctx, header, &amp;buf, own_sid);</span><b=
+r><span> </span><br><span>     return buf;</span><br><span>diff --git a/src=
+/openvpn/ssl_pkt=2Eh b/src/openvpn/ssl_pkt=2Eh</span><br><span>index 581ec4=
+8=2E=2E89e9619 100644</span><br><span>--- a/src/openvpn/ssl_pkt=2Eh</span><=
+br><span>+++ b/src/openvpn/ssl_pkt=2Eh</span><br><span>@@ -67,18 +67,26 @@<=
+/span><br><span>  * legal on an established session; see opcode_valid_in_se=
+ssion() below=2E */</span><br><span> #define P_CONTROL_OOB_V1 12</span><br>=
+<span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Variant o=
+f P_CONTROL_OOB_V1 with an appended wrapped client key (WKc), like</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ * P_CONTROL_HARD_RESET_CLIE=
+NT_V3 / P_CONTROL_WKC_V1=2E Used when tls-crypt-v2 is</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * configured: an out-of-band message bel=
+ongs to no established session, so the</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ * client must carry the WKc for the server to recover t=
+he per-client key and</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ * unwrap the message=2E See doc/tls-crypt-v2=2Etxt and the openvpn-rfc w=
+ire</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * protocol (CON=
+TROL_OOB_WKC_V1)=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+#define P_CONTROL_OOB_WKC_V1 13</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span> /* define the range of defined opcodes, in=
+- and out-of-band=2E Note this is not</span><br><span>  * the set of opcode=
+s legal on an established session; see</span><br><span>  * opcode_valid_in_=
+session()=2E</span><br><span>  * Since we do no longer support key-method 1=
+ we consider</span><br><span>  * the v1 op codes invalid */</span><br><span=
+> #define P_FIRST_OPCODE 3</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-#define P_LAST_OPCODE  12</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+#define P_LAST_OPCODE  13</span><br><span> </span><br><span> sta=
+tic inline bool</span><br><span> opcode_is_oob(int op)</span><br><span> {</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return op =3D=3D P_=
+CONTROL_OOB_V1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+return op =3D=3D P_CONTROL_OOB_V1 || op =3D=3D P_CONTROL_OOB_WKC_V1;</span>=
+<br><span> }</span><br><span> </span><br><span> /**</span><br><span>@@ -140=
+,6 +148,8 @@</span><br><span>     /** This packet is a valid out-of-band co=
+ntrol message (e=2Eg=2E a server</span><br><span>      * probe)=2E It does =
+not belong to a session and must not create one=2E */</span><br><span>     =
+VERDICT_VALID_OOB_V1,</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    /** as VERDICT_VALID_OOB_V1, with a wrapped client key appended (tls-=
+crypt-v2) */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    VER=
+DICT_VALID_OOB_WKC_V1,</span><br><span>     /** the packet failed on of the=
+ various checks */</span><br><span>     VERDICT_INVALID</span><br><span> };=
+</span><br><span>@@ -270,10 +280,14 @@</span><br><span>  * @param tas      =
+ standalone auth context providing the work buffer</span><br><span>  * @par=
+am own_sid   session id to use as our session id in the header</span><br><s=
+pan>  * @param payload   the OOB message payload (TLV stream) to wrap</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param opcode    the O=
+OB opcode to use: P_CONTROL_OOB_V1, or</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ *                  P_CONTROL_OOB_WKC_V1 to append the t=
+ls-crypt-v2 wrapped</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ *                  client key (the context must then carry it)=2E</span><b=
+r><span>  * @return          the wrapped packet buffer, ready to send</span=
+><br><span>  */</span><br><span> struct buffer tls_wrap_oob_standalone(stru=
+ct tls_wrap_ctx *ctx, struct tls_auth_standalone *tas,</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-                                      stru=
+ct session_id *own_sid, const struct buffer *payload);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+                                      st=
+ruct session_id *own_sid, const struct buffer *payload,</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+                                      i=
+nt opcode);</span><br><span> </span><br><span> </span><br><span> /**</span>=
+<br><span>diff --git a/tests/unit_tests/openvpn/test_pkt=2Ec b/tests/unit_t=
+ests/openvpn/test_pkt=2Ec</span><br><span>index ca3045a=2E=2E894ac4f 100644=
+</span><br><span>--- a/tests/unit_tests/openvpn/test_pkt=2Ec</span><br><spa=
+n>+++ b/tests/unit_tests/openvpn/test_pkt=2Ec</span><br><span>@@ -716,7 +71=
+6,7 @@</span><br><span>      * bare payload, with none of the reliability/A=
+CK fields a control packet</span><br><span>      * carries=2E */</span><br>=
+<span>     struct buffer buf =3D</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-        tls_wrap_oob_standalone(&amp;tas_client-&gt;tls_wrap, ta=
+s_client, &amp;sid, &amp;payload);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        tls_wrap_oob_standalone(&amp;tas_client-&gt;tls_wrap=
+, tas_client, &amp;sid, &amp;payload, P_CONTROL_OOB_V1);</span><br><span>  =
+   assert_int_equal((BPTR(&amp;buf))[0] &gt;&gt; P_OPCODE_SHIFT, P_CONTROL_=
+OOB_V1);</span><br><span> </span><br><span>     /* Server side: the statele=
+ss first-packet path must recognise the opcode,</span><br><span>@@ -802,6 +=
+802,125 @@</span><br><span>     free_tas(&amp;tas_server);</span><br><span>=
+ }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++/* A matching tls-crypt-v2 server/client key pair (the client key&#39;s WK=
+c was</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * wrapped wit=
+h this server key), reused from the tls-crypt-v2 unit tests=2E */</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+static const char *oob_v2_ser=
+ver_key =3D</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quo=
+t;-----BEGIN OpenVPN tls-crypt-v2 server key-----\n&quot;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    &quot;AAECAwQFBgcICQoLDA0ODxAREhM=
+UFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4v\n&quot;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    &quot;MDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0x=
+NTk9QUVJTVFVWV1hZWltcXV5f\n&quot;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    &quot;YGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6e3x9fn8=3D\n&qu=
+ot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;-----E=
+ND OpenVPN tls-crypt-v2 server key-----\n&quot;;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+static const char *oob_v2_client_key =3D</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    &quot;-----BEGIN OpenVPN tls-crypt-v2 cl=
+ient key-----\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    &quot;AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4=
+v\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;=
+MDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWltcXV5f\n&quot;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;YGFiY2RlZmdo=
+aWprbG1ub3BxcnN0dXZ3eHl6e3x9fn+AgYKDhIWGh4iJiouMjY6P\n&quot;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    &quot;kJGSk5SVlpeYmZqbnJ2en6Ch=
+oqOkpaanqKmqq6ytrq+wsbKztLW2t7i5uru8vb6/\n&quot;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    &quot;wMHCw8TFxsfIycrLzM3Oz9DR0tPU1dbX2Nna=
+29zd3t/g4eLj5OXm5+jp6uvs7e7v\n&quot;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    &quot;8PHy8/T19vf4+fr7/P3+/xd9pcB0qUYZsWvkrLcfGmzPJPM8=
+a7r0mEWdXwbDadSV\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    &quot;LHg5bv2TwlmPR3HgaMr8o9LTh9hxUTkrH3S0PfKRNwcso86ua/dBFTyXsM9t=
+g4aw\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &qu=
+ot;3dS6ogH9AkaT+kRRDgNcKWkQCbwmJK2JlfkXHBwbAtmn78AkNuho6QCFqCdqGab3\n&quot;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;zh2vheFqG=
+MPdGpukbFrT3rcO3VLxUeG+RdzXiMTCpJSovFBP1lDkYwYJPnz6daEh\n&quot;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    &quot;j0TzJ3BVru9W3CpotdNt7=
+u09knxAfpCxjtrP3semsDew/gTBtcfQ/OoTFyFHnN5k\n&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    &quot;RZ+q17SC4nba3Pp8/Fs0+hSbv2tJozo=
+D8SElFq7SIWJsciTYh8q8f5yQxjdt4Wxu\n&quot;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    &quot;/Z5wtPCAZ0tOzj4ItTI77fBOYRTfEayzHgEr\n&quot=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;-----END=
+ OpenVPN tls-crypt-v2 client key-----\n&quot;;</span><br><span style=3D"col=
 or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    /* tls-crypt-v2: the stateless server discarded the WKc after t=
-he probe, so</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * =
-complete the handshake with P_CONTROL_WKC_V1 (drives control_packet_needs_w=
-kc)=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (re=
-send_wkc)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        ks-&gt;crypto_op=
-tions=2Eflags |=3D CO_RESEND_WKC;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* We never rec=
-eived the server&#39;s HARD_RESET (id 0) -- the probe reply stood</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+     * in for it=2E Acknowled=
-ge that phantom id 0 so our third packet carries an</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+     * ACK together with the server sessi=
-on id (the cookie): reliable_ack_write()</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+     * only emits that session id when at least one AC=
-K is present, and the server</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+     * needs it to validate the stateless cookie=2E */</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    reliable_ack_acknowledge_pa=
-cket_id(ks-&gt;rec_ack, 0);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Skip=
- one (RESET) packet in each direction, so ids start at 1 (see</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+     * session_skip_to_pre_start)=
-=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ks-&gt;re=
-c_reliable-&gt;packet_id =3D 1;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    session-&gt;tls_wrap=2Eopt=2Epacket_id=2Esend=2Eid =3D 1;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    /* Do not send our own HARD_RESET=2E=
- Unlike the server&#39;s skip, the client must</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+     * send first: the stateless server only rep=
-lies once it sees our third</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+     * packet=2E session_move_pre_start(skip=3Dtrue) leaves us in S=
-_PRE_START_SKIP,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-  * which only advances when a packet is *received*; instead drop to</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+     * S_PRE_START with an=
- empty send-reliable (the initial packet was generated</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+     * and immediately deleted), so tls_=
-process() promotes us to S_START and</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+     * sends the ClientHello without waiting for a server =
-reset=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (=
-!session_move_pre_start(session, ks, true))</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        return false;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  ks-&gt;state =3D S_PRE_START;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    return true;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span> /**</span><br><span>  * Parses the TLVs (type, length, value) in t=
-he early negotiation</span><br><span>  */</span><br><span>diff --git a/src/=
-openvpn/ssl=2Eh b/src/openvpn/ssl=2Eh</span><br><span>index 7ddf965=2E=2Ea5=
-34007 100644</span><br><span>--- a/src/openvpn/ssl=2Eh</span><br><span>+++ =
-b/src/openvpn/ssl=2Eh</span><br><span>@@ -576,4 +576,21 @@</span><br><span>=
- bool session_skip_to_pre_start(struct tls_session *session, struct tls_pre=
-_decrypt_state *state,</span><br><span>                                stru=
-ct link_socket_actual *from);</span><br><span> </span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+ * Client counterpart of session_skip_to_pre_start(): start the=
- handshake from a</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
- server session id (SYN-cookie) learned earlier from an OOB server probe</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ * reply, which alread=
-y served as the server&#39;s HARD_RESET, so we send none=2E</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ * @param session     the (client) TLS session to fa=
-st-forward</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param=
- client_sid  session id used for the probe (the cookie is an HMAC over it)<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param server_sid=
-  the server&#39;s cookie, echoed back to complete the handshake</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ * @param remote      the prob=
-ed (pinned) server address to connect to</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+ * @param resend_wkc  true to complete with P_CONTROL_=
-WKC_V1 (tls-crypt-v2)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ * @return true if the session was fast-forwarded, false on failure</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+bool session_skip_to_pre_start_client(str=
-uct tls_session *session,</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+                                      const struct session_id *client=
-_sid,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-                        const struct session_id *server_sid,</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+                                  =
-    const struct openvpn_sockaddr *remote, bool resend_wkc);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #endif /* ifndef=
- OPENVPN_SSL_H */</span><br><span></span><br></pre><p>To view, visit <a hre=
-f=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1770?usp=3Demail">change 177=
-0</a>=2E To unsubscribe, or for help writing mail filters, visit <a href=3D=
-"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><di=
-v itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope it=
-emprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1770?usp=3Demai=
-l"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+40%);">+/* End-to-end check of the tls-crypt-v2 out-of-band probe: the clie=
+nt wraps an</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * OOB p=
+ayload as a P_CONTROL_OOB_WKC_V1 message (the payload encrypted with the</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ * per-client key Kc, =
+with the wrapped client key WKc appended), and the server&#39;s</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+ * stateless first-packet path =
+(tls_pre_decrypt_lite) recovers Kc from the WKc,</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+ * decrypts the payload, and returns VERDICT_V=
+ALID_OOB_WKC_V1=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_o=
+ob_wkc_v1_roundtrip(void **ut_state)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   now =3D 0x5f000000;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct frame=
+ frame =3D { =2Ebuf =3D { =2Eheadroom =3D 200, =2Epayload_size =3D 1400 }, =
+0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    /* ---- Client: wrap an OOB pr=
+obe as P_CONTROL_OOB_WKC_V1 (WKc appended) ---- */</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    struct tls_auth_standalone tas_client =
+=3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    tas_c=
+lient=2Eframe =3D frame;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    tas_client=2Etls_wrap=2Emode =3D TLS_WRAP_CRYPT;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    tas_client=2Etls_wrap=2Eopt=2Efla=
+gs |=3D (CO_IGNORE_PACKET_ID | CO_PACKET_ID_LONG_FORM);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    packet_id_init(&amp;tas_client=2Etl=
+s_wrap=2Eopt=2Epacket_id, 0, 0, &quot;UT-CLIENT&quot;, 0);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    tas_client=2Eworkbuf =3D alloc_b=
+uf(1600);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    tas_cl=
+ient=2Etls_wrap=2Ework =3D alloc_buf(1600);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    /* Load Kc and obtain the WKc, exactly as a tls-crypt-v2 client do=
+es=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct =
+buffer wkc =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    tls_crypt_v2_init_client_key(&amp;tas_client=2Etls_wrap=2Eopt=2Ekey_c=
+tx_bi,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
+                    &amp;tas_client=2Etls_wrap=2Eoriginal_wrap_keydata, &am=
+p;wkc, oob_v2_client_key,</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+                                 true);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    tas_client=2Etls_wrap=2Etls_crypt_v2_wkc =3D =
+&amp;wkc;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    const uint8_t payload_byt=
+es[] =3D { 0x01, 0x00, 0x02, 0x00, 0x0c, 0xde,</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+                                      0xad, 0xbe=
+, 0xef, 0x00, 0x11, 0x22 };</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    struct buffer payload =3D alloc_buf(64);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    buf_write(&amp;payload, payload_bytes=
+, sizeof(payload_bytes));</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct se=
+ssion_id client_sid =3D { { 1, 2, 3, 4, 5, 6, 7, 8 } };</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    reset_packet_id_send(&amp;tas_clien=
+t=2Etls_wrap=2Eopt=2Epacket_id=2Esend);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    struct buffer probe =3D tls_wrap_oob_standalone(&amp;tas_client=2Etls_=
+wrap, &amp;tas_client, &amp;client_sid,</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+                                                  &amp;=
+payload, P_CONTROL_OOB_WKC_V1);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    assert_true(BLEN(&amp;probe) &gt; 0);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal((BPTR(&amp;probe))[0=
+] &gt;&gt; P_OPCODE_SHIFT, P_CONTROL_OOB_WKC_V1);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    /* ---- Server: stateless path recovers Kc from the WKc and =
+decrypts ---- */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ struct tls_auth_standalone tas_server =3D { 0 };</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    tas_server=2Eframe =3D frame;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    /* No static wrapping, only=
+ a tls-crypt-v2 server key (as a v2 server runs)=2E */</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    tas_server=2Etls_wrap=2Emode =3D TLS=
+_WRAP_NONE;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    tas_=
+server=2Etls_wrap=2Eopt=2Eflags |=3D (CO_IGNORE_PACKET_ID | CO_PACKET_ID_LO=
+NG_FORM);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    packet=
+_id_init(&amp;tas_server=2Etls_wrap=2Eopt=2Epacket_id, 0, 0, &quot;UT-SERVE=
+R&quot;, 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    tls=
+_crypt_v2_init_server_key(&amp;tas_server=2Etls_wrap=2Etls_crypt_v2_server_=
+key, true, oob_v2_server_key,</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                                 true);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    tas_server=2Eworkbuf =3D alloc_buf(1600);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    struct link_socket_actual from =3D=
+ { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct b=
+uffer srv =3D alloc_buf(1600);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    buf_write(&amp;srv, BPTR(&amp;probe), BLEN(&amp;probe));</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    struct tls_pre_decrypt_state state =
+=3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    enum =
+first_packet_verdict verdict =3D tls_pre_decrypt_lite(&amp;tas_server, &amp=
+;state, &amp;from, &amp;srv);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    assert_int_equal(verdict, VERDICT_VALID_OOB_WKC_V1);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    /* The decrypted payload must equal what th=
+e client sent, and the client&#39;s</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+     * session id must be recovered=2E */</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(BLEN(&amp;state=
+=2Enewbuf), (int)sizeof(payload_bytes));</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    assert_memory_equal(BPTR(&amp;state=2Enewbuf), pay=
+load_bytes, sizeof(payload_bytes));</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    assert_memory_equal(state=2Epeer_session_id=2Eid, clien=
+t_sid=2Eid, SID_SIZE);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    free_tls_pre_decrypt_state(&amp;state);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    /* Flipping any single byte (header, session id, ciphertext or =
+WKc) must make</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+* the probe fail to validate=2E */</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    for (size_t i =3D 0; i &lt; (size_t)BLEN(&amp;probe); i+=
++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        struct tls_pre_decrypt_=
+state tstate =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        buf_reset_len(&amp;srv);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        buf_write(&amp;srv, BPTR(&amp;probe), BLEN(&amp;pr=
+obe));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        (BPTR=
+(&amp;srv))[i] ^=3D 0xff;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        enum first_packet_verdict v =3D tls_pre_decrypt_lite(&amp;tas=
+_server, &amp;tstate, &amp;from, &amp;srv);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        assert_int_equal(v, VERDICT_INVALID);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        free_tls_pre_decr=
+ypt_state(&amp;tstate);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    free_key_ctx_bi(&amp;tas_=
+client=2Etls_wrap=2Eopt=2Ekey_ctx_bi);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    packet_id_free(&amp;tas_client=2Etls_wrap=2Eopt=2Epa=
+cket_id);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    free_b=
+uf(&amp;wkc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    fr=
+ee_buf(&amp;payload);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    free_buf(&amp;tas_client=2Eworkbuf);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    free_buf(&amp;tas_client=2Etls_wrap=2Ework);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    free_key_ctx(&amp;tas_server=2Etls_wr=
+ap=2Etls_crypt_v2_server_key);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    packet_id_free(&amp;tas_server=2Etls_wrap=2Eopt=2Epacket_id)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    free_buf(&amp;=
+tas_server=2Eworkbuf);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    free_buf(&am=
+p;srv);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static void<=
+/span><br><span> test_extract_control_message(void **ut_state)</span><br><s=
+pan> {</span><br><span>@@ -855,6 +974,7 @@</span><br><span>         cmocka_=
+unit_test(test_oob_standalone_plain),</span><br><span>         cmocka_unit_=
+test(test_oob_standalone_tls_auth),</span><br><span>         cmocka_unit_te=
+st(test_oob_standalone_tls_crypt),</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        cmocka_unit_test(test_oob_wkc_v1_roundtrip),</span><=
+br><span>         cmocka_unit_test(test_extract_control_message)</span><br>=
+<span>     };</span><br><span> </span><br><span></span><br></pre><p>To view=
+, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1758?usp=3Dema=
+il">change 1758</a>=2E To unsubscribe, or for help writing mail filters, vi=
+sit <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings=
+</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><di=
+v itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"=
+><link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1=
+758?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></=
+div>
 
-<div sty=
-le=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-<div style=3D"d=
-isplay:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<=
+div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"di=
+splay:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerr=
+it-Change-Id: Idb8c0c660a98de8ec549b69f6692a7b41b092eaf </div>
+<div style=
+=3D"display:none"> Gerrit-Change-Number: 1758 </div>
+<div style=3D"display:=
+none"> Gerrit-PatchSet: 18 </div>
+<div style=3D"display:none"> Gerrit-Owner=
+: stipa &lt;lstipakov@gmail=2Ecom&gt; </div>
 <div style=3D"display:none"> G=
-errit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: =
-I454d5040cbad4d373ee4f90b8d683200d2a4c0e4 </div>
-<div style=3D"display:none=
-"> Gerrit-Change-Number: 1770 </div>
-<div style=3D"display:none"> Gerrit-Pa=
-tchSet: 16 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lsti=
-pakov@gmail=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: =
-plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:n=
-one"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&=
-gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arn=
-e-openvpn@rfc2549=2Eorg&gt; </div>
+errit-Reviewer: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div st=
+yle=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Eso=
+urceforge=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: p=
+laisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
 
 </body></html>
---gt1DgBqhHVg=--
+--nryJho1E6o0=--
 
 
---===============0344470529323612497==
+--===============0082211376365536324==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============0344470529323612497==
+--===============0082211376365536324==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -1167,5 +1231,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============0344470529323612497==--
+--===============0082211376365536324==--
 
