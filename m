@@ -4,128 +4,126 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id CC2BDC79FBB
-	for <openvpn-devel@archiver.kernel.org>; Thu, 10 Sep 2026 23:07:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4B58FC88E4C
+	for <openvpn-devel@archiver.kernel.org>; Fri, 11 Sep 2026 08:18:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:Date:Sender:To:
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=on9N/Y00YVCtIRz/ZN8orGoPNdfJr7gAobv9teq0WCM=; b=iAAx3Ng6yoRLa4WYeCGnvrbK2Z
-	jE06nZLHAIRW0ixaA/BJLekRUGEhFDMa68cAR0mzONhNc71TBaLghaywsP7NJJZzxpdU8jqhTbkuS
-	NcjULEbpRw70WCZgPbuX9UZ6heC07G0LzUhlFXJrZnAXctE7C651NmABa/3kfW6Sk1BE=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=IBFgLUQ1+v9JzIe8+KZ/Yj9LnTveHc0Z1pgg0+L3EVo=; b=c/48v7hB17R1fovufxevxe1qkr
+	4F/d5SBP5dob7B8Xk0q+qc48oc17m7M/26LWkjUm+0ofHHA7OiYY52jYAz4jVe4NmHMnhxLcOUQ8t
+	tOPc1+jixPA4b5DZkztaYcrR4D+3y0qR6AauNpHs+O58Wm8vrpw+rd/dPqKsznQOGW6g=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x4nrd-0003dq-Kn;
-	Thu, 10 Sep 2026 23:07:30 +0000
+	id 1x4wSz-0003fo-IK;
+	Fri, 11 Sep 2026 08:18:38 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1x4nrE-0003dK-68
+ (envelope-from <gerrit@openvpn.net>) id 1x4wSy-0003fa-6b
  for openvpn-devel@lists.sourceforge.net;
- Thu, 10 Sep 2026 23:07:04 +0000
+ Fri, 11 Sep 2026 08:18:37 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:Date:From:Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From
+ Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
  :List-Post:List-Owner:List-Archive;
- bh=hQJwZawkw4NOSC1aro/vvLN5vfUf8KZBYfIJgULM6co=; b=HYvxmQJ7hjWlokj4WUQSu9D3ay
- fIMUXW0N4G+5icEmNpC1beLDXUw3t30J1Gv5Jehmidjs0JVzgroQQYt32HbqFIKPmr6fSKX8ff89t
- tlIVWfBMPB33th5E27JLSXcggQFZN/hfitjOla0RUH8YXTMVAO7OQNh2deLxvHQbMzlY=;
+ bh=1zjUJRRKshdCF+UBKr6xf2OLzx4bZCErl+2AF0yaA40=; b=Yw1FoZgbvlKkddxprk9U/56cQL
+ fRGbLb5eYwxAoiiOa+dUtX4vTE0Kf9d8YBASQUf0glfhASWlKhOJTIGCR4n5fR34ghOKIgNVCcXNP
+ qhNXGWwn5ahaLe3bErtW6I8oXVCoHyjABqcn0Uvuapgp/mrqM9+9q9oPP1R+TTeMpII8=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:Date:From:Sender:
- To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
+ Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=hQJwZawkw4NOSC1aro/vvLN5vfUf8KZBYfIJgULM6co=; b=C
- GwUhiB+mPCOq0Erv8ZSSImeWbWXU944oPVNjonsXXWNancigBwYFzrQDWo2a/X0VXQ/Rt2sNZMBKx
- 2iu9oCByvLyOzn3sW7mFuy0XtIfUVL2aNpLrW0TjTD7Hjd4XXG/Jnup/sfhAzP9amYOHHhJgp1pjV
- xv/aYcO7XdWPTIgM=;
-Received: from mail-wr2-f12.google.com ([74.125.225.76])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ List-Owner:List-Archive; bh=1zjUJRRKshdCF+UBKr6xf2OLzx4bZCErl+2AF0yaA40=; b=b
+ LnRTmTiQjaM6Dj0e9OilYKYv9wB2KqezlJgy2kXzBNUMky1lpFokcoc4xH95//nPmNo4ro2UuIopP
+ gSVWOPunrPyFKXNFyNQTBIiXAJi5wxH+I1Xq4TnHEyzhJ53xUeR7a05z2uoRrT+ov36rmTA9SAoGf
+ nZkeYA15sRJYVadw=;
+Received: from mail-wm1-f48.google.com ([209.85.128.48])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1x4nr4-0008S3-C3 for openvpn-devel@lists.sourceforge.net;
- Thu, 10 Sep 2026 23:06:57 +0000
-Received: by mail-wr2-f12.google.com with SMTP id
- ffacd0b85a97d-4843c2790ccso150128f8f.1
+ id 1x4wSt-0005Pb-QX for openvpn-devel@lists.sourceforge.net;
+ Fri, 11 Sep 2026 08:18:36 +0000
+Received: by mail-wm1-f48.google.com with SMTP id
+ 5b1f17b1804b1-49a97714f5dso5870975e9.0
  for <openvpn-devel@lists.sourceforge.net>;
- Thu, 10 Sep 2026 16:06:54 -0700 (PDT)
+ Fri, 11 Sep 2026 01:18:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1789081608; x=1789686408; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1789114705; x=1789719505; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:date:from:from:to:cc:subject:date:message-id
+ :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=hQJwZawkw4NOSC1aro/vvLN5vfUf8KZBYfIJgULM6co=;
- b=ad6N9EGcMbbUAIFJC6qyjA/paJSspjsp/puyFl0nCg6i09jBOH6zF0ceNnAlVA/bPc
- nvkd8sMSg7RC/XHz6ONK1JaVWjp+tKI7jjbi/0t8C+hFqyGVyo7zxtAnM21Npp73sq8M
- smi2jksOGR5EdPuUdCBL5PY64OsyBsoJ+ZYBCZwjLAynYrSwLYp5D6/f6du7bp9t5Bq2
- +yh1czWQnF+BNe4bNQkVKFOuvMw84GTzAvFwDp692K5tOQp6dB6m+77xxJW04fbVLXZW
- R3+bUGHfwhOGPRbqKmFZ1li+KfKk5Lz6xlbGHTaJfXF4dRFpoR/Q1iCLFS/saq5TuRLB
- xY9A==
+ bh=1zjUJRRKshdCF+UBKr6xf2OLzx4bZCErl+2AF0yaA40=;
+ b=fUUG1d2kC3Dm4MpaAmhhXWq5fsef5QTEhlTLG0H/gOG7tuZrcGLK/gc/jpL1pP6MTL
+ s3sgqnHdpWV3LnrfwcZUTw7D7F2NSw4vppwHFQlKEx3pRrZw1ZEcvpYfQA299SewSmZG
+ cv9h22tzvINpRa8zdPtU07/ZsmRLn5LM9E+4x4nuEiI8oywaXrqCr16QStX9A6al0TTn
+ FoumjvpL4xhTM52Sufih/bT1ESO6C2xbhz79ggHZePlNCTzGOYtbvwbRKcZlA5fs2Odx
+ TF+xZaxokrn9ivCKe2yulF3XNd/O7it+0YQOf3FJvhqs+afj7YjuexXCXB9zmw+hfftM
+ 8Mzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20251104; t=1789081608; x=1789686408;
+ d=1e100.net; s=20251104; t=1789114705; x=1789719505;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:date:from:x-gm-gg:x-gm-message-state:from:to:cc
- :subject:date:message-id:reply-to:content-type;
- bh=hQJwZawkw4NOSC1aro/vvLN5vfUf8KZBYfIJgULM6co=;
- b=QTfROG4ux7g9dSOmR39P0L1C0n3pNMA+a9OxxELBPHN1liFhE3dqD3X6FH4Y48mwrl
- jCg6K8QfSwyRqawu0NoYF0U/A7abw00E4ORY3YcodW43hTmm6NxQLbzMXPcmoGxnTfSq
- uMf7UO2bY9ita+la+mKjltx3BM6LWHclCGQyslY+DSiZsvjXxiy4fzourM2BgGpHNccJ
- b8DbcikgIxON8v/ctZbIicy8Xv9NYWJf4Y7xVBSkLxbD8c4lvO4EtFlGmdo/ER5KBk74
- QzkJwN24XEzDlmsY7b8eq1uGc7JZugYIZnj6ggUQiRbBvTXGjTOTcjafrzm/c/VUjrwe
- +Jsg==
-X-Forwarded-Encrypted: i=1;
- AKwUvBzrAZtZ2BDmqI48vsc9RyudrFFKbGcwhsA/W+9HHc2V3flArJPg/3Rk2qdv3Z0knoYjhw8riAHPBTsk9LUp@lists.sourceforge.net
-X-Gm-Message-State: AFuF++nU7Ka646DdKOvUEJXrG73KR7n0j/aNAcR+L7LG4LxTtoUn/1eL
- JoAF1Yk+pUJCEZ8rLJXwZVhQlHphAyOfvVjZJf592FIDG7V6YDCA+w7sFz8igcxc5CUnc8U9ch1
- irSeuzco33Nug37j2ElIXwOYH4ajDTr7qup1OwK22zLuxs1DXma/ia4ufVsqEQngpqDOy
-X-Gm-Gg: AYBFou1Sir1uiP9KjLqbSPjg90OmFm1iWGzKg5YOKGaWTjv/6PewnXON/+sZcVRMfHc
- q6jQhDIElh610dsCMERwVAUefzE/L+dsJMW1G4yRtFCiULdqts9/u5NsggJ5PhOw78HMD2LSQSV
- sEvr/XCQIUkX7l1+aXaSigAMtv0SYPOBR4z8ui8r9mlhRgmgMM1LWW5t9rpyQ930QujX235wt8u
- 09//EYHMfhKJ0HGf1B5dBr/MIpk1yHHqRW3B4AWJ/gxn3bwF3awHWIPxejfeLxbxsaGMpu0O9fq
- eMdZyw80sx2l0YWSjrk1YXUiwN7KeXf3AT/oKuQiL5Wh+7rEicMG9LqybiH0GX9XvwrFG/QuGip
- wZHLPmFukZTPJrEHoordAqGAEJ4g+bYaBBZ/dauiqD8aV5x+NMTGXwpSGKC9gBe9w5H9SojcVbB
- /t+3bh9vk1BAZRAC0IDyEAJMbpVfxUhmFqPG5N1/qh6LW7PbDhM9x7/i7V32LNTtnC9RgjDRd1E
- ToVKnw0/gG0+Pf50F3QzSGQ3Cn1y3cxjKcIyUUbvfFSN98Rvy0zsGhe8FSkNi6M1rpRYseya8bj
- u3yh5oeqMP1vDp35ez026o/+jqIUTJL2cs/mkWTYi2FwoePr/RAwr4pcPDFtUQ==
-X-Received: by 2002:a05:6000:2005:b0:486:e41c:101b with SMTP id
- ffacd0b85a97d-486eb1d35bfmr2372291f8f.6.1789081607766; 
- Thu, 10 Sep 2026 16:06:47 -0700 (PDT)
+ :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
+ :cc:subject:date:message-id:reply-to:content-type;
+ bh=1zjUJRRKshdCF+UBKr6xf2OLzx4bZCErl+2AF0yaA40=;
+ b=eqfld8Psy3YHjgAa9A1+rXDTahITI+/yozGmuFYmJXLT7ujjuKGuZqx0wj/CrvuLZt
+ /0EGchu5WrXe9KnjqF7YcPezRcLvbIEgHNhlMPS8SIqk0zziJ4tNXpLKUV/wgjTmmZyW
+ jbnLcyt7QdE1iw7IjE7YnPDmnP5fyO1M2tU4duLCTAnJu4POSByDXR71ZeMWbnax8avP
+ XNg9doExzt12Xf2nLvHUn7f91ieosPPxSLaZ/hrkjpdKxLQedN60aYs/wjJEoM5ZOj2M
+ gtdmeCSFMEFeWT1QmcQA+TFXv2QPgH9ypaYFlX9XWAFjilBObJ8qv2r4MvdU5dhj0whe
+ 42JQ==
+X-Gm-Message-State: AFuF++lK2+FIETZIYNNRSByzYJ6T4o7MgTPiyPCSOQIpvGdT3MPF4W4/
+ nFdUi0H6XMoPy5P2mUFsfeSnJQomJHMEFdWsqjLaehgHmKGhJ383UwBtIfj7+XDo5BzyR/oPYfL
+ fzLjRK8cKKaG3Ea4Wsqgi1PAfqDzgTROJqBfsbK9h/Z890fJEO+ibFvjtXI1wzgmPkiMk
+X-Gm-Gg: AYBFou0/7CDFNm4YDoliX3/ZWl8bY5vD17F3w4J6P62jCSJZmeZczqmyV8puJ9k0V4Y
+ FCKaaIu7akw7WZs/ma/0+WyNr5c/v7f2VNyd8h425b45AHn8kob/J+Ko4NhELH4l64b9bsq3Wh1
+ q1kGzgNcRNRfjbBnQhuSpkNGMuGSfW64nP9VaFesKj8CIeEAHmPQXC/qUdmnU6jZz/tZRGeLvMT
+ NLNvQqEkavTgpR0P/zdzjOjCOZpwGkPgguFNPu1lK2alAmH1y2BPkU9Tw7DWpF8u+emf/DYbKfF
+ eIoBZAYy1Tki1fbTgpLYe6zQeOGAD+KKsWYulW2a8+yOpP6xA2eENj5zWDcCxlBgP1F/qNh6sBW
+ AYLojf4K1GcPbYvUx1K4rWp7YfY0MqZSuO2sarvGEsPL+MYscPG23KxWwpSlcggusVw/BeA1s3u
+ wsIYwTuIognnX3wHA3cBsTmCQ5nYwP+zIiPrpYdGVesf254g+/SDKP/KnR+NJ9vJ8YwnunSEPOr
+ o899K/QaDskSRzzuM+wUGjWWiXkqHf2zgUp0jn7WFCBKW3hoCqWFVbq0VVcg2QRk55TRwjzX2k+
+ FUWs2NXkr+AQS/rsp9do+rbxoT57fMb7bIBBFleQfk2L3OFs6H8V4/Sntwc2IRL2cuMfs8wz
+X-Received: by 2002:a05:600c:4686:b0:49c:dadb:18a7 with SMTP id
+ 5b1f17b1804b1-49e6198f62fmr36879305e9.10.1789114705051; 
+ Fri, 11 Sep 2026 01:18:25 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-486eb33fd3bsm1628532f8f.19.2026.09.10.16.06.46
+ 5b1f17b1804b1-49e60a8a89esm56598535e9.1.2026.09.11.01.18.24
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 10 Sep 2026 16:06:47 -0700 (PDT)
-X-Google-Original-From: "MaxF (Code Review)"
+ Fri, 11 Sep 2026 01:18:24 -0700 (PDT)
+X-Google-Original-From: "stipa (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Thu, 10 Sep 2026 23:06:45 +0000
+Date: Fri, 11 Sep 2026 08:18:16 +0000
+To: plaisthos <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: comment
-X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: Iea1481e94ba1abe18c39d81cd797187c88427571
-X-Gerrit-Change-Number: 1902
+X-Gerrit-MessageType: newpatchset
+X-Gerrit-PatchSet: 18
+X-Gerrit-Change-Id: I375a41749060b7d006647bc27002c55436c8a8bb
+X-Gerrit-Change-Number: 1748
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1902?usp=email>
-X-Gerrit-Commit: efb1f77d28be164260bf4235949ee81f9aff5124
-X-Gerrit-Comment-Date: Thu, 10 Sep 2026 23:06:45 +0000
-In-Reply-To: <gerrit.1788781350000.Iea1481e94ba1abe18c39d81cd797187c88427571@gerrit.openvpn.net>
-References: <gerrit.1788781350000.Iea1481e94ba1abe18c39d81cd797187c88427571@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzg4NzgxMzUwMDAwLkllYTE0ODFlOTRiYTFhYmUxOGMzOWQ4MWNkNzk3MTg3Yzg4NDI3NTcxQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <d8d585486911b1768bc9804b83cb61a72ff97938-EmailReviewComments-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1748?usp=email>
+X-Gerrit-Commit: 3f9c4e80a5b37ef5c5e357e36ccb2c236df38af5
+In-Reply-To: <gerrit.1782719911000.I375a41749060b7d006647bc27002c55436c8a8bb@gerrit.openvpn.net>
+References: <gerrit.1782719911000.I375a41749060b7d006647bc27002c55436c8a8bb@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzgyNzE5OTExMDAwLkkzNzVhNDE3NDkwNjBiN2QwMDY2NDdiYzI3MDAyYzU1NDM2YzhhOGJiQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <c8ce056c3c082324d5eddd5293a0d11dccfadddb-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1x4nr4-0008S3-C3
-Subject: [Openvpn-devel] [M] Change in openvpn[release/2.7]: Check for
- null-bytes in certificate subjects
+X-Headers-End: 1x4wSt-0005Pb-QX
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: oob: Measure probe
+ RTT for candidate-band selection
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -137,174 +135,391 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "MaxF \(Code Review\) via Openvpn-devel"
+From: "stipa \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
-Reply-To: max@max-fillinger.net, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net, steffan@karger.me
-Cc: "MaxF \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>,
- plaisthos <arne-openvpn@rfc2549.org>
-Content-Type: multipart/mixed; boundary="===============3820379614057915559=="
+Reply-To: lstipakov@gmail.com, arne-openvpn@rfc2549.org,
+ openvpn-devel@lists.sourceforge.net
+Cc: "stipa \(Code Review\)" <gerrit@openvpn.net>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: multipart/mixed; boundary="===============0524295131111194598=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============3820379614057915559==
+--===============0524295131111194598==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="ImfgQuAR8j8="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="8q72kTuMT2I="; charset=UTF-8
 
---ImfgQuAR8j8=
+--8q72kTuMT2I=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos, syzzer=2E
+Attention is currently required from: plaisthos=2E
 
-MaxF has posted=
- comments on this change by MaxF=2E ( http://gerrit=2Eopenvpn=2Enet/c/openv=
-pn/+/1902?usp=3Demail )
+Hello plaisthos, 
 
-Change subject: Check for null-bytes in certificat=
-e subjects
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+I'd =
+like you to reexamine a change=2E Please visit
+
+    http://gerrit=2Eopenvpn=
+=2Enet/c/openvpn/+/1748?usp=3Demail
+
+to look at the new patch set (#18)=2E
+=
+
+
+Change subject: oob: Measure probe RTT for candidate-band selection
+=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
+oob: Measure pro=
+be RTT for candidate-band selection
+
+Record each probe's round-trip time (p=
+er-target send timestamp vs reply
+arrival) and feed it to oob_rank_probe_re=
+sults(), where RTT forms the
+candidate band: responders within the effectiv=
+e margin of the fastest compete
+on weight, slower ones fall behind=2E Log t=
+he measured RTT and the effective
+margin (with its source: client or server=
+-advertised) at verb 4=2E
+
+Before this the client never measured RTT, so ev=
+ery responder sat in the band
+and selection was purely weighted-random; wit=
+h real measurements the
+latency-based candidate selection takes effect=2E
 
 =
-Patch Set 1:
-
-(1 comment)
-
-File src/openvpn/ssl_verify_openssl=2Ec:
-
-http:/=
-/gerrit=2Eopenvpn=2Enet/c/openvpn/+/1902/comment/3fffd9fc_ccfa4019?usp=3Dem=
-ail :
-PS1, Line 389:                            | ASN1_STRFLGS_ESC_CTRL);
->=
- (Where that last remark about using RFC2253 is about master, not release/2=
-=2E [=E2=80=A6]
-Alternatively, we could check for "\\0" substrings=2E Seems=
- cleaner to me than parsing the subject twice=2E
-
-Since you misunderstood t=
-he change in master, would you like me to make the same change there?
+Change-Id: I375a41749060b7d006647bc27002c55436c8a8bb
+Signed-off-by: Lev Sti=
+pakov <lev@openvpn=2Enet>
+---
+M doc/man-sections/client-options=2Erst
+M src=
+/openvpn/oob=2Eh
+M src/openvpn/oob_client=2Ec
+3 files changed, 26 insertion=
+s(+), 5 deletions(-)
 
 
+  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvp=
+n refs/changes/48/1748/18
 
---=
+diff --git a/doc/man-sections/client-options=2Er=
+st b/doc/man-sections/client-options=2Erst
+index 0db010e=2E=2E76b9b9b 10064=
+4
+--- a/doc/man-sections/client-options=2Erst
++++ b/doc/man-sections/client=
+-options=2Erst
+@@ -608,9 +608,14 @@
+   remote, and each answering server re=
+plies with its advertised priority
+   and weight=2E Remotes are then reorde=
+red following DNS SRV (RFC 2782)
+   semantics: servers that answered are tr=
+ied before those that did not,
+-  grouped by priority (lowest first); withi=
+n a priority group, servers are
+-  picked by weighted-random selection=2E R=
+ound-trip time is not yet taken
+-  into account, so ``max-latency-diff`` ha=
+s no effect for now=2E
++  grouped by priority (lowest first); within a prio=
+rity group, servers
++  whose measured round-trip time is within ``max-laten=
+cy-diff``
++  milliseconds of the fastest one are picked by weighted-random
+=
++  selection, the others follow in round-trip-time order=2E When
++  ``max-l=
+atency-diff`` is not given, the margin advertised by the
++  answering serve=
+r applies; a server advertising :code:`0` asks to be
++  compared on latency=
+ alone, so only the fastest server of its priority
++  group is treated as b=
+est=2E
  
-To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1902?usp=3Demail=
+   The probe is currently sent without control-channel wrapping, s=
+o it only
+   works against a server configured without ``--tls-auth``,
+diff=
+ --git a/src/openvpn/oob=2Eh b/src/openvpn/oob=2Eh
+index b26f3a4=2E=2Eaf067=
+0a 100644
+--- a/src/openvpn/oob=2Eh
++++ b/src/openvpn/oob=2Eh
+@@ -196,6 +19=
+6,7 @@
+     struct openvpn_sockaddr dest;
+     socklen_t destlen;
+     bool=
+ sent;
++    struct timeval sent_at; /* when the probe was sent, for RTT mea=
+surement */
+ };
+ 
+ /**
+diff --git a/src/openvpn/oob_client=2Ec b/src/openvp=
+n/oob_client=2Ec
+index 75c553d=2E=2E9df8b95 100644
+--- a/src/openvpn/oob_cl=
+ient=2Ec
++++ b/src/openvpn/oob_client=2Ec
+@@ -257,10 +257,16 @@
+     /* Cre=
+dit the reply to every still-unanswered remote probed at its source
+      *=
+ address: several entries can resolve to the same address, and each takes
+ =
+     * the first reply for it=2E */
++    struct timeval rcv;
++    openvpn_g=
+ettimeofday(&rcv, NULL);
+     int i =3D oob_probe_next_target_at(from, targ=
+ets, results, n, 0);
+     while (i >=3D 0)
+     {
++        long ms =3D (lon=
+g)(rcv=2Etv_sec - targets[i]=2Esent_at=2Etv_sec) * 1000
++                  =
++ (rcv=2Etv_usec - targets[i]=2Esent_at=2Etv_usec) / 1000;
++
+         resul=
+ts[i]=2Eresponded =3D true;
++        results[i]=2Ertt_ms =3D (ms > 0) ? (un=
+signed int)ms : 0;
+         results[i]=2Ereply =3D reply;
+ 
+         i =3D =
+oob_probe_next_target_at(from, targets, results, n, i + 1);
+@@ -569,6 +575,=
+7 @@
+             }
+             pc=2Eprobed[pc=2En_probed++] =3D targets[i=
+]=2Edest;
+         }
++        openvpn_gettimeofday(&targets[i]=2Esent_at, N=
+ULL);
+         targets[i]=2Esent =3D true;
+         sent_count++;
+     }
+@@=
+ -591,8 +598,16 @@
+         if (results[i]=2Eresponded)
+         {
+        =
+     responded++;
+-            msg(D_LOW, "server-probe: %s:%s answered (pr=
+iority %d, weight %d)", ce->remote,
+-                ce->remote_port, resul=
+ts[i]=2Ereply=2Epriority, results[i]=2Ereply=2Eweight);
++            /* Eff=
+ective candidate-band margin and where it came from: the
++             * cl=
+ient's own setting wins, else the server's advertised value=2E */
++        =
+    int client_margin =3D c->options=2Eserver_probe_latency_margin;
++      =
+      int margin =3D oob_effective_margin(&results[i], client_margin);
++   =
+         const char *margin_src =3D client_margin >=3D 0 ? "client" : "serv=
+er-advertised";
++            msg(D_LOW,
++                "server-probe: %s:=
+%s answered (priority %d, weight %d, rtt %u ms;"
++                " latency=
+ margin %d ms [%s])",
++                ce->remote, ce->remote_port, results=
+[i]=2Ereply=2Epriority, results[i]=2Ereply=2Eweight,
++                resul=
+ts[i]=2Ertt_ms, margin, margin_src);
+         }
+         else
+         {
 
-To unsubscribe, or for help writing mail filters, visit http://gerrit=2Eop=
-envpn=2Enet/settings?usp=3Demail
+-=
+- 
+To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1748?usp=3Demai=
+l
+To unsubscribe, or for help writing mail filters, visit http://gerrit=2Eo=
+penvpn=2Enet/settings?usp=3Demail
 
-Gerrit-MessageType: comment
-Gerrit-Projec=
-t: openvpn
-Gerrit-Branch: release/2=2E7
-Gerrit-Change-Id: Iea1481e94ba1abe1=
-8c39d81cd797187c88427571
-Gerrit-Change-Number: 1902
-Gerrit-PatchSet: 1
-Gerr=
-it-Owner: MaxF <max@max-fillinger=2Enet>
-Gerrit-Reviewer: plaisthos <arne-o=
-penvpn@rfc2549=2Eorg>
-Gerrit-Reviewer: syzzer <steffan@karger=2Eme>
-Gerrit-=
-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
-Gerrit-Attentio=
-n: syzzer <steffan@karger=2Eme>
-Gerrit-Attention: plaisthos <arne-openvpn@r=
-fc2549=2Eorg>
-Gerrit-Comment-Date: Thu, 10 Sep 2026 23:06:45 +0000
-Gerrit-H=
-asComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: syzzer <steffan@=
-karger=2Eme>
-Comment-In-Reply-To: MaxF <max@max-fillinger=2Enet>
+Gerrit-MessageType: newpatchset
+Gerrit-P=
+roject: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I375a41749060b7d006=
+647bc27002c55436c8a8bb
+Gerrit-Change-Number: 1748
+Gerrit-PatchSet: 18
+Gerri=
+t-Owner: stipa <lstipakov@gmail=2Ecom>
+Gerrit-Reviewer: plaisthos <arne-ope=
+nvpn@rfc2549=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourcef=
+orge=2Enet>
+Gerrit-Attention: plaisthos <arne-openvpn@rfc2549=2Eorg>
 
---ImfgQuAR8j8=
+--8q72kTuMT2I=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: plaisthos, syzzer=2E </p>
-<p><a href=3D"http://gerrit=
-=2Eopenvpn=2Enet/c/openvpn/+/1902?usp=3Demail">View Change</a></p><p>1 comm=
-ent:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0;=
- padding: 0;"><p>File src/openvpn/ssl_verify_openssl=2Ec:</p><ul style=3D"l=
-ist-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"=
-><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/=
-c/openvpn/+/1902/comment/3fffd9fc_ccfa4019?usp=3Demail">Patch Set #1, Line =
-389:</a> <code style=3D"font-family:monospace,monospace">                  =
-         | ASN1_STRFLGS_ESC_CTRL);</code></p><p><blockquote style=3D"border=
--left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">(Where that last r=
-emark about using RFC2253 is about master, not release/2=2E [=E2=80=A6]</bl=
-ockquote></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap:=
- break-word;">Alternatively, we could check for &quot;\\0&quot; substrings=
-=2E Seems cleaner to me than parsing the subject twice=2E</p><p class=3D"bl=
-ocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Since you mis=
-understood the change in master, would you like me to make the same change =
-there?</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit=2E=
-openvpn=2Enet/c/openvpn/+/1902?usp=3Demail">change 1902</a>=2E To unsubscri=
-be, or for help writing mail filters, visit <a href=3D"http://gerrit=2Eopen=
-vpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=
-=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" it=
-emtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"ht=
-tp://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1902?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+rently required from: plaisthos=2E </p>
+<p>stipa <strong>uploaded patch set=
+ #18</strong> to this change=2E</p><p><a href=3D"http://gerrit=2Eopenvpn=2E=
+net/c/openvpn/+/1748?usp=3Demail">View Change</a></p><pre class=3D"blocks" =
+style=3D"font-family: monospace,monospace; white-space: pre-wrap;">oob: Mea=
+sure probe RTT for candidate-band selection<br><br>Record each probe&#39;s =
+round-trip time (per-target send timestamp vs reply<br>arrival) and feed it=
+ to oob_rank_probe_results(), where RTT forms the<br>candidate band: respon=
+ders within the effective margin of the fastest compete<br>on weight, slowe=
+r ones fall behind=2E Log the measured RTT and the effective<br>margin (wit=
+h its source: client or server-advertised) at verb 4=2E<br><br>Before this =
+the client never measured RTT, so every responder sat in the band<br>and se=
+lection was purely weighted-random; with real measurements the<br>latency-b=
+ased candidate selection takes effect=2E<br><br>Change-Id: I375a41749060b7d=
+006647bc27002c55436c8a8bb<br>Signed-off-by: Lev Stipakov &lt;lev@openvpn=2E=
+net&gt;<br>---<br>M doc/man-sections/client-options=2Erst<br>M src/openvpn/=
+oob=2Eh<br>M src/openvpn/oob_client=2Ec<br>3 files changed, 26 insertions(+=
+), 5 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: =
+monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvp=
+n=2Enet:29418/openvpn refs/changes/48/1748/18</pre><pre style=3D"font-famil=
+y: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/doc/man-=
+sections/client-options=2Erst b/doc/man-sections/client-options=2Erst</span=
+><br><span>index 0db010e=2E=2E76b9b9b 100644</span><br><span>--- a/doc/man-=
+sections/client-options=2Erst</span><br><span>+++ b/doc/man-sections/client=
+-options=2Erst</span><br><span>@@ -608,9 +608,14 @@</span><br><span>   remo=
+te, and each answering server replies with its advertised priority</span><b=
+r><span>   and weight=2E Remotes are then reordered following DNS SRV (RFC =
+2782)</span><br><span>   semantics: servers that answered are tried before =
+those that did not,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+grouped by priority (lowest first); within a priority group, servers are</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-  picked by weighted-ran=
+dom selection=2E Round-trip time is not yet taken</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-  into account, so ``max-latency-diff`` has no =
+effect for now=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+grouped by priority (lowest first); within a priority group, servers</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+  whose measured round-tri=
+p time is within ``max-latency-diff``</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+  milliseconds of the fastest one are picked by weighted-=
+random</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  selection, =
+the others follow in round-trip-time order=2E When</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+  ``max-latency-diff`` is not given, the mar=
+gin advertised by the</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+  answering server applies; a server advertising :code:`0` asks to be</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+  compared on latency a=
+lone, so only the fastest server of its priority</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+  group is treated as best=2E</span><br><span>=
+ </span><br><span>   The probe is currently sent without control-channel wr=
+apping, so it only</span><br><span>   works against a server configured wit=
+hout ``--tls-auth``,</span><br><span>diff --git a/src/openvpn/oob=2Eh b/src=
+/openvpn/oob=2Eh</span><br><span>index b26f3a4=2E=2Eaf0670a 100644</span><b=
+r><span>--- a/src/openvpn/oob=2Eh</span><br><span>+++ b/src/openvpn/oob=2Eh=
+</span><br><span>@@ -196,6 +196,7 @@</span><br><span>     struct openvpn_so=
+ckaddr dest;</span><br><span>     socklen_t destlen;</span><br><span>     b=
+ool sent;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct=
+ timeval sent_at; /* when the probe was sent, for RTT measurement */</span>=
+<br><span> };</span><br><span> </span><br><span> /**</span><br><span>diff -=
+-git a/src/openvpn/oob_client=2Ec b/src/openvpn/oob_client=2Ec</span><br><s=
+pan>index 75c553d=2E=2E9df8b95 100644</span><br><span>--- a/src/openvpn/oob=
+_client=2Ec</span><br><span>+++ b/src/openvpn/oob_client=2Ec</span><br><spa=
+n>@@ -257,10 +257,16 @@</span><br><span>     /* Credit the reply to every s=
+till-unanswered remote probed at its source</span><br><span>      * address=
+: several entries can resolve to the same address, and each takes</span><br=
+><span>      * the first reply for it=2E */</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    struct timeval rcv;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    openvpn_gettimeofday(&amp;rcv, NULL);</span=
+><br><span>     int i =3D oob_probe_next_target_at(from, targets, results, =
+n, 0);</span><br><span>     while (i &gt;=3D 0)</span><br><span>     {</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        long ms =3D (lon=
+g)(rcv=2Etv_sec - targets[i]=2Esent_at=2Etv_sec) * 1000</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+                  + (rcv=2Etv_usec - ta=
+rgets[i]=2Esent_at=2Etv_usec) / 1000;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span>         results[i]=2Eresponded =3D true=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        results[i]=
+=2Ertt_ms =3D (ms &gt; 0) ? (unsigned int)ms : 0;</span><br><span>         =
+results[i]=2Ereply =3D reply;</span><br><span> </span><br><span>         i =
+=3D oob_probe_next_target_at(from, targets, results, n, i + 1);</span><br><=
+span>@@ -569,6 +575,7 @@</span><br><span>             }</span><br><span>   =
+          pc=2Eprobed[pc=2En_probed++] =3D targets[i]=2Edest;</span><br><sp=
+an>         }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  openvpn_gettimeofday(&amp;targets[i]=2Esent_at, NULL);</span><br><span>  =
+       targets[i]=2Esent =3D true;</span><br><span>         sent_count++;</=
+span><br><span>     }</span><br><span>@@ -591,8 +598,16 @@</span><br><span>=
+         if (results[i]=2Eresponded)</span><br><span>         {</span><br><=
+span>             responded++;</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-            msg(D_LOW, &quot;server-probe: %s:%s answered (priorit=
+y %d, weight %d)&quot;, ce-&gt;remote,</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-                ce-&gt;remote_port, results[i]=2Ereply=2Ep=
+riority, results[i]=2Ereply=2Eweight);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            /* Effective candidate-band margin and where=
+ it came from: the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+            * client&#39;s own setting wins, else the server&#39;s advertis=
+ed value=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+       int client_margin =3D c-&gt;options=2Eserver_probe_latency_margin;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            int margi=
+n =3D oob_effective_margin(&amp;results[i], client_margin);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+            const char *margin_src =
+=3D client_margin &gt;=3D 0 ? &quot;client&quot; : &quot;server-advertised&=
+quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            m=
+sg(D_LOW,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+      &quot;server-probe: %s:%s answered (priority %d, weight %d, rtt %u ms=
+;&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+    &quot; latency margin %d ms [%s])&quot;,</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+                ce-&gt;remote, ce-&gt;remote_port,=
+ results[i]=2Ereply=2Epriority, results[i]=2Ereply=2Eweight,</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+                results[i]=2Ertt_m=
+s, margin, margin_src);</span><br><span>         }</span><br><span>        =
+ else</span><br><span>         {</span><br><span></span><br></pre><p>To vie=
+w, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1748?usp=3Dem=
+ail">change 1748</a>=2E To unsubscribe, or for help writing mail filters, v=
+isit <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">setting=
+s</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><d=
+iv itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction=
+"><link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/=
+1748?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div><=
+/div>
 
-<div style=3D"display:none=
-"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Gerrit-P=
-roject: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: release/=
-2=2E7 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Iea1481e94ba1ab=
-e18c39d81cd797187c88427571 </div>
-<div style=3D"display:none"> Gerrit-Chang=
-e-Number: 1902 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div=
->
-<div style=3D"display:none"> Gerrit-Owner: MaxF &lt;max@max-fillinger=2En=
-et&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;a=
-rne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Re=
-viewer: syzzer &lt;steffan@karger=2Eme&gt; </div>
-<div style=3D"display:non=
-e"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: syzzer &lt;steffan@=
-karger=2Eme&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plais=
-thos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none">=
- Gerrit-Comment-Date: Thu, 10 Sep 2026 23:06:45 +0000 </div>
-<div style=3D"=
-display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> =
-Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-=
-To: syzzer &lt;steffan@karger=2Eme&gt; </div>
-<div style=3D"display:none"> =
-Comment-In-Reply-To: MaxF &lt;max@max-fillinger=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+=
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"d=
+isplay:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Ger=
+rit-Change-Id: I375a41749060b7d006647bc27002c55436c8a8bb </div>
+<div style=
+=3D"display:none"> Gerrit-Change-Number: 1748 </div>
+<div style=3D"display:=
+none"> Gerrit-PatchSet: 18 </div>
+<div style=3D"display:none"> Gerrit-Owner=
+: stipa &lt;lstipakov@gmail=2Ecom&gt; </div>
+<div style=3D"display:none"> G=
+errit-Reviewer: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div st=
+yle=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Eso=
+urceforge=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: p=
+laisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
 
-</body></=
-html>
---ImfgQuAR8j8=--
+</body></html>
+--8q72kTuMT2I=--
 
 
---===============3820379614057915559==
+--===============0524295131111194598==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============3820379614057915559==
+--===============0524295131111194598==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -315,5 +530,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============3820379614057915559==--
+--===============0524295131111194598==--
 
