@@ -4,69 +4,69 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C634AC88E53
-	for <openvpn-devel@archiver.kernel.org>; Sat, 12 Sep 2026 10:24:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D21D2C79FB6
+	for <openvpn-devel@archiver.kernel.org>; Sat, 12 Sep 2026 12:11:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
-	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	MIME-Version:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
+	List-Unsubscribe:List-Id:Subject:References:In-Reply-To:To:From:Message-Id:
+	Date:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=wccvvQBXsw/1QCDXUhnUbhqMt5jmJAGa+vbCMrxz7ls=; b=Z2hZbE8y077xISM9CMQG/1dnN9
-	3n8mVpnVkTGymYM7qhiW7LM1QQLuVDiYyMuNoDNG4jRaakQjfPRf+lxFppYh0ON2zloyiRQZt+ipc
-	bzFaAlcssqKdA8t1cRD5kaRxLFpmqtgc5dnkG6LYK2mH0I3d79ilV7i1PnzcOG6AuewE=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=muBjtgfcyeXPmDM3mD5CMFOHVsjoqZ/rsF5ZgzA/CTA=; b=a+FaHxDfDP6+XFpPlCjvNRnzq+
+	o7UhR5xmv2O4ENt/LWVhDqyr3VUprM6X65rrR3i3V1cBJ4jzR6oOFUuqVUMcdWYu7d1uMzOBObhXK
+	pZPsfu2YteG6yiWgHdLyvw3veeOs8McbzSSCTBhFv64Y7sXB4jOb6jwXRQoMsL95jWmg=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x5Ktr-0005gG-EV;
-	Sat, 12 Sep 2026 10:23:59 +0000
+	id 1x5MaE-000129-O4;
+	Sat, 12 Sep 2026 12:11:51 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1x5Ktp-0005g9-Hj
+ (envelope-from <gert@chekov.greenie.muc.de>) id 1x5Ma8-000120-OQ
  for openvpn-devel@lists.sourceforge.net;
- Sat, 12 Sep 2026 10:23:57 +0000
+ Sat, 12 Sep 2026 12:11:45 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=+O7TGrz445XFN95lok4UPqCFaqnWznBpw5a4tXbeF2M=; b=R2rIkXpjJSKJEh5G85k6HNlKNx
- b95GO1Ii4g6poBOU/tGmcVq89XOX/GQP/hgG94s4qjlaVckCV3yDx2EJU5Kl2ihn8Dt7ldzQ1ap44
- buKvyxl3qlvme7/OmAFqX9PTEFv4/Aa8m+6qgoZfHeaf1LNX+NLSi51rR28zqHbKO4/s=;
+ d=sourceforge.net; s=x; h=References:In-Reply-To:Subject:Cc:To:From:
+ Message-Id:Date:Sender:Reply-To:MIME-Version:Content-Type:
+ Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+ List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=o3oXZSs0N4z8rxT5g/Pz+PNe4fmO1itKhKIQCFsQddc=; b=GrUYBLr5hzNlUwSkSVGkYSoQaS
+ IorH3++463xp5zoOtSnJct4Vef9ZUpYH98Qo/8m8xafOrURA2Ucj+VgIfmboQ67DXmKgDVp0KKC3b
+ 0V1/IzXnQ5YF/OdCvOhtexZGIbAm3gmgcQklMSN36szb2zH3O7ssVXCuzp6uR5/k/5EU=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ h=References:In-Reply-To:Subject:Cc:To:From:Message-Id:Date:Sender:Reply-To
+ :MIME-Version:Content-Type:Content-Transfer-Encoding:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=+O7TGrz445XFN95lok4UPqCFaqnWznBpw5a4tXbeF2M=; b=SHHGY3/yvUvCknzQEH1LKdFI2P
- +TRRo7Q9PMkSbEP6jgEwGvnc6oDLgr2LRKICJsPEJr4zZTiBX+0jPXS2YIgFuIu11nBfbiqsOvq2Y
- GgLzohzpyOl/9blof2pkKGmiqouWNkyFfTPi3P8DmTEHGCDSBvJeYLmHmW8swIXSLrX4=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ bh=o3oXZSs0N4z8rxT5g/Pz+PNe4fmO1itKhKIQCFsQddc=; b=lDBO0CQxhGag4zAgiY6aFachbt
+ l1b6HNDJkPhLyqsHJsW3x2sVkKsGdnBJcml6HVCFSlHv8l2KohA4DyHuXF9CkJFrkfHL4UnTpLOFQ
+ vUyhCxgJxWEUZuvs9CdLyPordJVQOmf27VUsxp7Eu4tmad+zP/cRI1dpkbsN5/y3Ksu8=;
+Received: from chekov.greenie.muc.de ([193.149.48.178])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1x5Kto-0005Vz-0g for openvpn-devel@lists.sourceforge.net;
- Sat, 12 Sep 2026 10:23:57 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 68CANnht000439
- for <openvpn-devel@lists.sourceforge.net>; Sat, 12 Sep 2026 12:23:49 +0200
+ id 1x5Ma7-0005ZL-Bn for openvpn-devel@lists.sourceforge.net;
+ Sat, 12 Sep 2026 12:11:45 +0000
+Received: from chekov.greenie.muc.de (localhost [IPv6:0:0:0:0:0:0:0:1])
+ by chekov.greenie.muc.de (8.18.2/8.18.1) with ESMTP id 68CCBSFe046594;
+ Sat, 12 Sep 2026 14:11:28 +0200 (CEST)
+ (envelope-from gert@chekov.greenie.muc.de)
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 68CANnK5000438
- for openvpn-devel@lists.sourceforge.net; Sat, 12 Sep 2026 12:23:49 +0200
+ by chekov.greenie.muc.de (8.18.2/8.18.1/Submit) id 68CCBS5s046593;
+ Sat, 12 Sep 2026 14:11:28 +0200 (CEST) (envelope-from gert)
+Date: Sat, 12 Sep 2026 14:11:28 +0200 (CEST)
+Message-Id: <202609121211.68CCBS5s046593@chekov.greenie.muc.de>
 From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Sat, 12 Sep 2026 12:23:42 +0200
-Message-ID: <20260912102348.423-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1789127367000.I65f8826f343822c75e789d91881c9dbac676880f@gerrit.openvpn.net>
-References: <gerrit.1789127367000.I65f8826f343822c75e789d91881c9dbac676880f@gerrit.openvpn.net>
-MIME-Version: 1.0
-X-Headers-End: 1x5Kto-0005Vz-0g
-Subject: [Openvpn-devel] [PATCH v1] cppcheck: Update suppressions for
- current master
+To: Frank Lichtenheld <frank@lichtenheld.com>
+X-Patchwork-State: Accepted
+In-Reply-To: <20260911204545.15750-1-gert@greenie.muc.de>
+References: <20260911204545.15750-1-gert@greenie.muc.de>
+X-Headers-End: 1x5Ma7-0005ZL-Bn
+Subject: [Openvpn-devel] [PATCH applied] Re: management: Remove management
+ argument to functions that do not need it
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -78,120 +78,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Cc: openvpn-devel@lists.sourceforge.net
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@lichtenheld.com>
+Nothing magic here, just getting rid of "we might eventually use that
+for something" parameters... (and creating backport challenges wrt 2.7
+and older :-) ).
 
-Trying to get to a state where it actually passes when
-merged.
+BB says this compiled fine on all platforms, we were just plagued by
+spurious connectivity issues... (re-running tests = all green).
 
-Change-Id: I65f8826f343822c75e789d91881c9dbac676880f
-Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
-Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1911
----
+Your patch has been applied to the master branch.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+commit 9689f4ebb5d6c6689fe07b32c7f20ecf78946e16
+Author: Frank Lichtenheld
+Date:   Fri Sep 11 22:45:38 2026 +0200
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1911
-This mail reflects revision 1 of this Change.
+     management: Remove management argument to functions that do not need it
 
-Acked-by according to Gerrit (reflected above):
-Razvan Cojocaru <razvanc@mailbox.org>
+     Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
+     Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1903
+     Message-Id: <20260911204545.15750-1-gert@greenie.muc.de>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg39109.html
+     Signed-off-by: Gert Doering <gert@greenie.muc.de>
 
-        
-diff --git a/dev-tools/cppcheck-suppression b/dev-tools/cppcheck-suppression
-index f4f88a3..e1ffe37 100644
---- a/dev-tools/cppcheck-suppression
-+++ b/dev-tools/cppcheck-suppression
-@@ -26,17 +26,14 @@
- getpwnamCalled
- getservbynameCalled
- localtimeCalled
--strtokCalled
- # FP: posix.cfg claims suseconds_t is unsigned for some reason
- unsignedLessThanZero:src/openvpn/otime.h:148
- # IGN: multi code does weird things with pointers to local variables...
--autoVariables:src/openvpn/multi.c:4232
-+autoVariables:src/openvpn/multi.c:4242
- autoVariables:src/openvpn/multi_io.c:324
- # IGN: the code header = 0 | (OPCODE << P_OPCODE_SHIFT) is used intentionally
- badBitmaskCheck:src/openvpn/mudp.c
- badBitmaskCheck:tests/unit_tests/openvpn/test_pkt.c
--# IGN: we store integers in pointers
--CastAddressToIntegerAtReturn:src/openvpn/multi.c
- # IGN: Windows specific (unsigned long == unsigned int)
- compareValueOutOfTypeRangeError:src/openvpn/ssl_verify.c:928
- # FP: cppcheck seems to have wrong signature of DeviceIoControl()
-@@ -78,8 +75,6 @@
- nullPointerRedundantCheck:src/openvpn/init.c:301
- # FP: cppcheck doesn't understand ZeroMemory
- redundantAssignment:src/openvpnserv/interactive.c:203
--# FP: cppcheck doesn't know the NLA macros
--redundantInitialization:src/openvpn/dco_linux.c
- # IGN: We reuse the same variable name due to macro usage
- shadowVariable:src/openvpn/options.c:1948
- shadowVariable:src/openvpn/options.c:1966
-@@ -93,12 +88,10 @@
- uninitvar:src/openvpn/options_parse.c:148
- # FP: uninit is fine when it is a return parameter
- ctuuninitvar:src/openvpn/crypto_mbedtls_legacy.c:690
--uninitvar:src/openvpnserv/interactive.c:2775
-+uninitvar:src/openvpnserv/interactive.c:2783
- uninitvar:src/tapctl/main.c:566
--# FP: we added a check but cppcheck is not convinced
--uninitvar:src/openvpnserv/interactive.c:2667
- # FP: weird parse error, the macro is fine in the rest of the file
--unknownMacro:src/openvpnserv/interactive.c:3596
-+unknownMacro:src/openvpnserv/interactive.c:3604
- # FP: cppcheck doesn't account for short-circuiting
- unreadVariable:src/openvpn/manage.c:682
- unusedFunction:src/openvpn/siphash_reference.c
-@@ -112,8 +105,6 @@
- unusedFunction:tests/unit_tests/openvpnserv/test_openvpnserv.c
- # IGN: keep mocking around for future use
- unusedFunction:tests/unit_tests/openvpn/mock_msg.c
--# FP: doesn't account for --wrap
--unusedFunction:tests/unit_tests/openvpn/test_tls_crypt.c
- unusedFunction:/usr/include/*
- # FP: cppcheck doesn't know the NLA macros
- unusedLabel:src/openvpn/dco_linux.c
-diff --git a/dev-tools/run-cppcheck.sh b/dev-tools/run-cppcheck.sh
-index fc14405..37de267 100755
---- a/dev-tools/run-cppcheck.sh
-+++ b/dev-tools/run-cppcheck.sh
-@@ -33,7 +33,7 @@
-  --suppressions-list=${SCRIPT_DIR}/cppcheck-suppression \
-  --cppcheck-build-dir=${CPPCHECK_DIR} \
-  --check-level=${CPPCHECK_CHECK_LEVEL} --max-configs=10 \
-- --error-exitcode=1"
-+ --error-exitcode=1 --showtime=summary"
- 
- set -x
- 
-@@ -53,5 +53,6 @@
-     -UTARGET_LINUX -UTARGET_FREEBSD -UTARGET_OPENBSD -UTARGET_NETBSD \
-     -UTARGET_DARWIN -UTARGET_ANDROID -UTARGET_SOLARIS -UTARGET_DRAGONFLY \
-     -UTARGET_AIX \
-+    -UOPENSSL_NO_EC \
-     src/openvpn* src/compat/ \
-     tests/unit_tests/example_test/ tests/unit_tests/openvpn*
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 71459ee..48508e5 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -3226,7 +3226,7 @@
-         return;
-     }
- 
--    uint8_t *dataptr = to_link->data;
-+    const uint8_t *dataptr = to_link->data;
- 
-     /* we don't expect send_reliable to be NULL when state is
-      * not S_UNDEF, but people have reported crashes nonetheless,
+
+--
+kind regards,
+
+Gert Doering
+
 
 
 _______________________________________________
