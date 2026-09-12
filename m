@@ -4,69 +4,129 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9940CC88E53
-	for <openvpn-devel@archiver.kernel.org>; Sat, 12 Sep 2026 09:29:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 72296C79FB6
+	for <openvpn-devel@archiver.kernel.org>; Sat, 12 Sep 2026 09:32:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=R43MbRpNNkweUgV4gMmTU7ZnknhIkNnfyeBMscxIa7s=; b=YHUvAvzpZeAKq9J6Asnp6XQDYL
-	Izh7L39r+rz/gvxzjdNREYWQ2fkszxD0C7yXhyFHduIfON0Z55U4owxqHTYnnJe43yZVS/X26BkUO
-	bGdaY5uAYxqVBdqTAWA/bUB8/VdV0MZq05ddcV5gClt+y3aaBGs6a0Bn9CnHHj3IzwjA=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=kAwNkSyi3MAvASuePMFNHl4ak34xWMfdVrrCTUS8N0k=; b=SiA47/5gfPxu9bPy+j6WKP9Agj
+	SWwlJcjI6G94+AFwcJ/lQtarI6WiZVymfIDWYq5++yzA/Fpeka+zepFbpHNGMtJnoV6OHMupeZSlz
+	Y2n/zU6oO/EmjF2RNKYkMsE/Gb0BvVLX3CJc4cPrYmgK6fwaTavEnezZV1iaWjI7bcgk=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x5K34-0006GC-Qs;
-	Sat, 12 Sep 2026 09:29:27 +0000
+	id 1x5K6N-0004hz-Kl;
+	Sat, 12 Sep 2026 09:32:51 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1x5K33-0006G6-J2
+ (envelope-from <gerrit@openvpn.net>) id 1x5K6L-0004ht-QX
  for openvpn-devel@lists.sourceforge.net;
- Sat, 12 Sep 2026 09:29:26 +0000
+ Sat, 12 Sep 2026 09:32:49 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=wMB5KUhee7jfpbry3HOmfzAnem0QWpWskk2fRf1xkpI=; b=aqI5LTA/TkyCitE+ufuP4YqrDX
- VUikCsOodZKS9Xot9BWjD/sxApzqWj6hcSfUfRK4hc6VFNnYo3UKn69Iima7ipzmE3JPh2BimhR3L
- WO1z8LMrzs6XHmdA2Fe4EmHauTD7FHX/RM8Ztsn0Rk2ULJA6KHI8zhg1Hixxlu5XF+08=;
+ d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
+ :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
+ Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
+ :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
+ :List-Post:List-Owner:List-Archive;
+ bh=5hvW4JtCt1N3bJ6rHuk+8bWjMiUxhCD5iwPpdTyrQvA=; b=fjQro5IyGob8yoRcsQmvWDbZ0B
+ Ou0JpwlQveY88qDYu+NFHL1u/pvsY2GghEsTfdxDLbYw3B4qj1ksTxanTiN6yFuxdAvkPmqi8MKEz
+ N0QPVRJFv4pnWnEfiUlS1oaxsDjKqxM3n2IKKToe6b+WC0dUoyOfZJfw2ZPaddBaM3/M=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=wMB5KUhee7jfpbry3HOmfzAnem0QWpWskk2fRf1xkpI=; b=fsGev6Y4NUih5WUMddzopHwqqr
- unXECoy1LneoZaDRIf2rFoAcFRHGj8F7LOMVQLgl7eW1HZSFYR8DSyD7rcTJtYN6F04nh+p4OuTvk
- Gni117+qfb2BXhPRJ1slRcKuDn7lf0Y1a2P2SxWVkpv5VQAevq6TSu2HDsHU0HgVvpak=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1x5K32-0004MW-Rd for openvpn-devel@lists.sourceforge.net;
- Sat, 12 Sep 2026 09:29:26 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 68C9THBl027254
- for <openvpn-devel@lists.sourceforge.net>; Sat, 12 Sep 2026 11:29:17 +0200
-Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 68C9THGR027253
- for openvpn-devel@lists.sourceforge.net; Sat, 12 Sep 2026 11:29:17 +0200
-From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Sat, 12 Sep 2026 11:29:12 +0200
-Message-ID: <20260912092917.27218-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1789114696000.I8f2bd694146aacd244a1d385ddfe9bb84ec29334@gerrit.openvpn.net>
-References: <gerrit.1789114696000.I8f2bd694146aacd244a1d385ddfe9bb84ec29334@gerrit.openvpn.net>
+ h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
+ Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=5hvW4JtCt1N3bJ6rHuk+8bWjMiUxhCD5iwPpdTyrQvA=; b=l
+ BFt6EVeMHyAfKqpspNhJyLmlvMh1I07ikwMbLNYBNBZ5FbDu6DQVobShX+3Kz4M/F7sfndv4QK1Ts
+ OhLtEFOXfAo6M8RrefrDFUMtLa5gYecju1EqrziQ//fDvKqFuqHsReUkvWx6is8GOv6evLACdJljz
+ KExfQXWGnCnxLfDk=;
+Received: from mail-wm1-f48.google.com ([209.85.128.48])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
+ id 1x5K6K-0002KM-Kc for openvpn-devel@lists.sourceforge.net;
+ Sat, 12 Sep 2026 09:32:49 +0000
+Received: by mail-wm1-f48.google.com with SMTP id
+ 5b1f17b1804b1-49b965570d7so21601355e9.0
+ for <openvpn-devel@lists.sourceforge.net>;
+ Sat, 12 Sep 2026 02:32:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=openvpn.net; s=google; t=1789205562; x=1789810362; darn=lists.sourceforge.net;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
+ :reply-to:content-type;
+ bh=5hvW4JtCt1N3bJ6rHuk+8bWjMiUxhCD5iwPpdTyrQvA=;
+ b=XiuPxS+RemnCQK95pamLYxe7OKQd2Bs8SWvipKP79COeCu3UbWfAEdYk2cxKftVgSX
+ oT2SIsPP/voflNrhFCbddf1Ge0muzefcRUZd7dedEgC8hlMK0HpLd95R95owgavOsdLM
+ ltPsATaBG/1WwsPfNASmfd7mXv3o73A0IDf8adCW8+d4IBG8t5cdhQH5WxY0qCf6gkn7
+ YBoF0heL9tuLWHP3EBp2S2F7b9HNye8RKHCvI52tSfHeMfVnLe7cayrqz6i03eham4os
+ ldKY+MUonl5vhWzKsy8O6nWdUIPsdEjEhuRp1QcLmEBFMV3H03BZvh17n9iR13S05bVE
+ Bvwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20251104; t=1789205562; x=1789810362;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
+ :cc:subject:date:message-id:reply-to:content-type;
+ bh=5hvW4JtCt1N3bJ6rHuk+8bWjMiUxhCD5iwPpdTyrQvA=;
+ b=q3WLCnGZkUlbC8Gr5O71q2WkRdiGBAt9yYq5AK5MbSQ1FBRA0Ilp4RCTOYHNaa8cMi
+ Qn3ZxZTvX/ITlRRwnMZwm2AcSv/93AFgwpCIzFI1M4YDbsfqVfssKXnMIDYKnAhlHxJv
+ UPmWT6RZfNdCo5YY/gpefWVerAX8KwRgWpGIX3dhoJPtCL9Ol9wVFyMLNjwke2xaYQrm
+ Lxu6IGar/KTQ+MV5bXVBdQrFMt5gvDS8W7bbReHkZ++svgySoBjdAJuSZ2rVIhoEKDKk
+ 6zX8XYcV7BjMvdts6n/Cg3BbnHM11p0mj9ad85caJc2VnumKg0lJxvKdFbky7HkZeoY2
+ 0/3w==
+X-Forwarded-Encrypted: i=1;
+ AKwUvBwtNo1IY848XPWLwUlOqlWYE3lIjFU0ORS16CMBVACPu7PCgSkux0QwBBJ5Rg2zcDGW5MC6lgdmOsGxlkEh@lists.sourceforge.net
+X-Gm-Message-State: AFuF++nyHndOFsnwnSVa/FQ08tOqhBwoWq6sprSBLSViKLz/l6NED7vX
+ OvxljSi7ASc9BYrGMKeetExm3vyi5/sabx05v5SZCj2JiwAMm9tpTWPF/zw/gA/v+ILLt+dsCZ/
+ r55IJLdU1SssYDt2NZD2jGVq7Znakxd5gj/VRHoH6QKFKl1KkproY02ml2WskYRIDJcp3
+X-Gm-Gg: AYBFou0iGFyeN8j52c5360a9GnDaReVdmmzH50j1DIwbj+fUYdjN2YncEAWWd+1jFma
+ AR6vab4/8+YrQN/n/+2vR7eitiZLV/tu5MK5/+wNV8AP290RhUPfWVErO0a+HyUGxOjazgieoyH
+ Gd0oRAP23T/DO2JU6tiEaBtm+9ktKfC/JW3Y0hFmcrKq5E+lBt5mtFNk83R+71VLLiCRoxkkj/z
+ jjY2HotXDi79tKP1rpLtEd05ZaC5MMe+rs/hQmKzeXqFigRrEwinN1CfRq4ZVjYdgV2NKXrGs0i
+ qbOiR5tMTwBvhY4upZfEolNOGftPyRDsVmNpmzJb2O8oZa9k5G20FDdwCTuRuSHzhGNnGecLtIF
+ kaFl8uYklEiGIOV75gOLiKWVVLR7jlz6WWUOUgfBfC7ybH3DhvrjIcLcmrcJ/7m6MiM2btMN56Z
+ 7SfuJctfglUgwJpAD4V4C/O3mwSfeHa1s8e30RIRBA38lOrPlkykD/Nqom9tr9wlsaaFKM/foP4
+ +wAKGLUGacfatQBxyioXQdgwNtofdeW2ofnVF4e5Uri4ddoLiQEPGRLqdgd4wGYizce2eW09Bvb
+ eufWnlfgdRhv8K9kr3xP29HGjW63XNvSDQp6keOiEzcPRBcafTCTHKC2Dr4hmHfcdDHQQuD5
+X-Received: by 2002:a05:600c:4fd4:b0:49d:462:6eda with SMTP id
+ 5b1f17b1804b1-49e619d1ff0mr77549915e9.28.1789205561969; 
+ Sat, 12 Sep 2026 02:32:41 -0700 (PDT)
+Received: from ip-10-18-1-162.eu-central-1.compute.internal
+ (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
+ by smtp.gmail.com with ESMTPSA id
+ 5b1f17b1804b1-49e69f02e0bsm45053905e9.2.2026.09.12.02.32.41
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Sat, 12 Sep 2026 02:32:41 -0700 (PDT)
+X-Google-Original-From: "razvanc (Code Review)"
+ <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
+Date: Sat, 12 Sep 2026 09:32:40 +0000
+To: flichtenheld <frank@lichtenheld.com>
+Auto-Submitted: auto-generated
+X-Gerrit-MessageType: comment
+X-Gerrit-PatchSet: 1
+X-Gerrit-Change-Id: I65f8826f343822c75e789d91881c9dbac676880f
+X-Gerrit-Change-Number: 1911
+X-Gerrit-Project: openvpn
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1911?usp=email>
+X-Gerrit-Commit: d351ce40ac593ceeef48eda9b0bb676be8f157ed
+X-Gerrit-Comment-Date: Sat, 12 Sep 2026 09:32:40 +0000
+In-Reply-To: <gerrit.1789127367000.I65f8826f343822c75e789d91881c9dbac676880f@gerrit.openvpn.net>
+References: <gerrit.1789127367000.I65f8826f343822c75e789d91881c9dbac676880f@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzg5MTI3MzY3MDAwLkk2NWY4ODI2ZjM0MzgyMmM3NWU3ODlkOTE4ODFjOWRiYWM2NzY4ODBmQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <ab03e6abb6eee4a1171ba688bc818006c51ad30a-EmailReviewComments-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
-X-Headers-End: 1x5K32-0004MW-Rd
-Subject: [Openvpn-devel] [PATCH v4] socket: factor out UDP socket creation
- and setup
+User-Agent: Gerrit/3.11.5
+X-Headers-End: 1x5K6K-0002KM-Kc
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: cppcheck: Update
+ suppressions for current master
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -78,207 +138,146 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+From: "razvanc \(Code Review\) via Openvpn-devel"
+ <openvpn-devel@lists.sourceforge.net>
+Reply-To: razvanc@mailbox.org, arne-openvpn@rfc2549.org,
+ openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com
+Cc: "razvanc \(Code Review\)" <gerrit@openvpn.net>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>,
+ plaisthos <arne-openvpn@rfc2549.org>
+Content-Type: multipart/mixed; boundary="===============1735306434928945587=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Lev Stipakov <lev@openvpn.net>
+--===============1735306434928945587==
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="Ycx0qWN6dDM="; charset=UTF-8
 
-create_socket() creates the UDP socket and then applies the link
-socket's options and local bind in place. Pull that sequence into
-create_socket_udp_configured(), taking the address family and the
-option values rather than a struct link_socket, and have create_socket()
-call it; the TCP path keeps its own sequence through the shared
-socket_apply_options().
+--Ycx0qWN6dDM=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
---server-probe will open its probe sockets through the same function, so
-a probe socket is set up and bound exactly like the connection socket it
-may later become. Its "optional" argument lets that caller treat a
-socket the host cannot create as "do not probe this address family"
-instead of dying; the connection path passes false and keeps the fatal
-error. No behaviour change for existing callers.
+Attention is currently required from: flichtenheld, plaisthos=2E
 
-Change-Id: I8f2bd694146aacd244a1d385ddfe9bb84ec29334
-Signed-off-by: Lev Stipakov <lev@openvpn.net>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1910
----
+razvanc h=
+as posted comments on this change by flichtenheld=2E ( http://gerrit=2Eopen=
+vpn=2Enet/c/openvpn/+/1911?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: cppcheck: Update =
+suppressions for current master
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1910
-This mail reflects revision 4 of this Change.
 
-Acked-by according to Gerrit (reflected above):
+Patch Set 1: Code-Review+2
 
-        
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 7c6217a..e9181c8 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -565,7 +565,7 @@
- }
- 
- static socket_descriptor_t
--create_socket_udp(struct addrinfo *addrinfo, const unsigned int flags)
-+create_socket_udp(struct addrinfo *addrinfo, const unsigned int flags, bool optional)
- {
-     socket_descriptor_t sd;
- 
-@@ -575,7 +575,8 @@
-     if ((sd = socket(addrinfo->ai_family, addrinfo->ai_socktype, addrinfo->ai_protocol))
-         == SOCKET_UNDEFINED)
-     {
--        msg(M_ERR, "UDP: Cannot create UDP/UDP6 socket");
-+        msg(optional ? D_LOW | M_ERRNO : M_ERR, "UDP: Cannot create UDP/UDP6 socket");
-+        return SOCKET_UNDEFINED;
-     }
- #if ENABLE_IP_PKTINFO
-     else if (flags & SF_USE_IP_PKTINFO)
-@@ -636,12 +637,70 @@
-     }
- }
- 
-+/* The per-socket options every link socket gets right after creation. */
-+static void
-+socket_apply_options(socket_descriptor_t sd, const struct socket_buffer_size *sbs, int mark,
-+                     const char *bind_dev)
-+{
-+    /* set socket buffers based on --sndbuf and --rcvbuf options */
-+    socket_set_buffers(sd, sbs, true);
-+
-+    /* set socket to --mark packets with given value */
-+    socket_set_mark(sd, mark);
-+
-+#if defined(TARGET_LINUX)
-+    if (bind_dev)
-+    {
-+        msg(M_INFO, "Using bind-dev %s", bind_dev);
-+        /* Note: We verify strlen of bind_dev in options parsing */
-+        if (setsockopt(sd, SOL_SOCKET, SO_BINDTODEVICE, bind_dev, (socklen_t)(strlen(bind_dev) + 1))
-+            != 0)
-+        {
-+            msg(M_WARN | M_ERRNO, "WARN: setsockopt SO_BINDTODEVICE=%s failed", bind_dev);
-+        }
-+    }
-+#else
-+    (void)bind_dev;
-+#endif
-+}
-+
-+socket_descriptor_t
-+create_socket_udp_configured(sa_family_t af, unsigned int sockflags, const struct socket_buffer_size *sbs,
-+                             int mark, const char *bind_dev, struct addrinfo *bind_addr,
-+                             bool bind_ipv6_only, bool optional)
-+{
-+    struct addrinfo ai = { .ai_family = af, .ai_socktype = SOCK_DGRAM, .ai_protocol = IPPROTO_UDP };
-+    socket_descriptor_t sd = create_socket_udp(&ai, sockflags, optional);
-+
-+    if (sd == SOCKET_UNDEFINED)
-+    {
-+        return SOCKET_UNDEFINED;
-+    }
-+
-+    socket_apply_options(sd, sbs, mark, bind_dev);
-+    if (bind_addr)
-+    {
-+        socket_bind(sd, bind_addr, af, "TCP/UDP", bind_ipv6_only);
-+    }
-+    return sd;
-+}
-+
- static void
- create_socket(struct link_socket *sock, struct addrinfo *addr)
- {
-+    /* Set af field of sock->info, so it always reflects the address family
-+     * of the created socket */
-+    sock->info.af = (sa_family_t)addr->ai_family;
-+
-     if (addr->ai_protocol == IPPROTO_UDP || addr->ai_socktype == SOCK_DGRAM)
-     {
--        sock->sd = create_socket_udp(addr, sock->sockflags);
-+        /* With a SOCKS proxy the local bind goes on the control socket instead
-+         * (see bind_local()), so the UDP socket is created unbound then. */
-+        struct addrinfo *bind_addr =
-+            (sock->bind_local && !sock->socks_proxy) ? sock->info.lsa->bind_local : NULL;
-+        sock->sd = create_socket_udp_configured(sock->info.af, sock->sockflags, &sock->socket_buffer_sizes,
-+                                                sock->mark, sock->bind_dev, bind_addr,
-+                                                sock->info.bind_ipv6_only, false);
-         sock->sockflags |= SF_GETADDRINFO_DGRAM;
- 
-         /* Assume that control socket and data socket to the socks proxy
-@@ -655,41 +714,19 @@
-             addrinfo_tmp.ai_socktype = SOCK_STREAM;
-             addrinfo_tmp.ai_protocol = IPPROTO_TCP;
-             sock->ctrl_sd = create_socket_tcp(&addrinfo_tmp);
-+            bind_local(sock);
-         }
-     }
-     else if (addr->ai_protocol == IPPROTO_TCP || addr->ai_socktype == SOCK_STREAM)
-     {
-         sock->sd = create_socket_tcp(addr);
-+        socket_apply_options(sock->sd, &sock->socket_buffer_sizes, sock->mark, sock->bind_dev);
-+        bind_local(sock);
-     }
-     else
-     {
-         ASSERT(0);
-     }
--    /* Set af field of sock->info, so it always reflects the address family
--     * of the created socket */
--    sock->info.af = (sa_family_t)addr->ai_family;
--
--    /* set socket buffers based on --sndbuf and --rcvbuf options */
--    socket_set_buffers(sock->sd, &sock->socket_buffer_sizes, true);
--
--    /* set socket to --mark packets with given value */
--    socket_set_mark(sock->sd, sock->mark);
--
--#if defined(TARGET_LINUX)
--    if (sock->bind_dev)
--    {
--        msg(M_INFO, "Using bind-dev %s", sock->bind_dev);
--        /* Note: We verify strlen of bind_dev in options parsing */
--        if (setsockopt(sock->sd, SOL_SOCKET, SO_BINDTODEVICE, sock->bind_dev,
--                       (socklen_t)(strlen(sock->bind_dev) + 1))
--            != 0)
--        {
--            msg(M_WARN | M_ERRNO, "WARN: setsockopt SO_BINDTODEVICE=%s failed", sock->bind_dev);
--        }
--    }
--#endif
--
--    bind_local(sock);
- }
- 
- #ifdef TARGET_ANDROID
-diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
-index 89465bc..d296d3b 100644
---- a/src/openvpn/socket.h
-+++ b/src/openvpn/socket.h
-@@ -401,6 +401,19 @@
- 
- socket_descriptor_t create_socket_tcp(struct addrinfo *);
- 
-+/**
-+ * Create a UDP socket for @p af set up the way a link socket is: --sndbuf/--rcvbuf,
-+ * --mark, --bind-dev and, when @p bind_addr is given, the local bind (IPV6_V6ONLY
-+ * per @p bind_ipv6_only). Shared by create_socket() and the --server-probe sockets,
-+ * so a probe socket is the connection socket it may become. A failed bind is
-+ * fatal; with @p optional a socket the host cannot create is not, so
-+ * --server-probe can skip that address family (SOCKET_UNDEFINED is returned).
-+ */
-+socket_descriptor_t create_socket_udp_configured(sa_family_t af, unsigned int sockflags,
-+                                                 const struct socket_buffer_size *sbs, int mark,
-+                                                 const char *bind_dev, struct addrinfo *bind_addr,
-+                                                 bool bind_ipv6_only, bool optional);
-+
- socket_descriptor_t socket_do_accept(socket_descriptor_t sd, struct link_socket_actual *act,
-                                      const bool nowait);
- 
 
+-- 
+To view, visit http:/=
+/gerrit=2Eopenvpn=2Enet/c/openvpn/+/1911?usp=3Demail
+To unsubscribe, or for=
+ help writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?us=
+p=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branc=
+h: master
+Gerrit-Change-Id: I65f8826f343822c75e789d91881c9dbac676880f
+Gerri=
+t-Change-Number: 1911
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@=
+lichtenheld=2Ecom>
+Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eorg>
+=
+Gerrit-Reviewer: razvanc <razvanc@mailbox=2Eorg>
+Gerrit-CC: openvpn-devel <=
+openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Attention: plaisthos <arne-=
+openvpn@rfc2549=2Eorg>
+Gerrit-Attention: flichtenheld <frank@lichtenheld=2E=
+com>
+Gerrit-Comment-Date: Sat, 12 Sep 2026 09:32:40 +0000
+Gerrit-HasComment=
+s: No
+Gerrit-Has-Labels: Yes
+
+--Ycx0qWN6dDM=
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: flichtenheld, plaisthos=2E </p>
+<p>Patch set 1:<span =
+style=3D"border-radius: 3px; display: inline-block; margin: 0 2px; padding:=
+ 4px;background-color: #d4ffd4;">Code-Review +2</span></p><p><a href=3D"htt=
+p://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1911?usp=3Demail">View Change</a></p=
+><ul style=3D"list-style: none; padding: 0;"></ul><p>To view, visit <a href=
+=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1911?usp=3Demail">change 1911=
+</a>=2E To unsubscribe, or for help writing mail filters, visit <a href=3D"=
+http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div=
+ itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope ite=
+mprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=
+=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1911?usp=3Demail=
+"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div styl=
+e=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"displa=
+y:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit=
+-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I65f8=
+826f343822c75e789d91881c9dbac676880f </div>
+<div style=3D"display:none"> Ge=
+rrit-Change-Number: 1911 </div>
+<div style=3D"display:none"> Gerrit-PatchSe=
+t: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;fra=
+nk@lichtenheld=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewe=
+r: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"displa=
+y:none"> Gerrit-Reviewer: razvanc &lt;razvanc@mailbox=2Eorg&gt; </div>
+<div=
+ style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=
+=2Esourceforge=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-Attenti=
+on: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"displ=
+ay:none"> Gerrit-Attention: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sat, 12 Sep 2026 09:=
+32:40 +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </di=
+v>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></htm=
+l>
+--Ycx0qWN6dDM=--
+
+
+--===============1735306434928945587==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============1735306434928945587==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+--===============1735306434928945587==--
+
