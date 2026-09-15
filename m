@@ -4,130 +4,126 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 41C3BC88E53
-	for <openvpn-devel@archiver.kernel.org>; Tue, 15 Sep 2026 10:32:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3FD87C88E53
+	for <openvpn-devel@archiver.kernel.org>; Tue, 15 Sep 2026 11:12:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=lViFCHcNWAktFmFeb6X2BnufmMyw2idXDA5Kk3j8zWI=; b=KQ6A9XQ1ZU1MzMRbpaX7wU6ae0
-	oGEwXIDCFZ1yq5DboULWjh8Bq8TLcytJr/MmPESNLD915nxPetLoroprVK57m83ySjeX0SxsB8+RQ
-	3zlVxPBbx9XfW3nuKSO3GDh5R2eNJyqJQBvAvlqpw/93YSAdroemNaVb0VxL6oRnyd3k=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=0YDzz3Hl6UrkcYmLZiLEKQ9VJ/1Xr11jUI0iWDB7Ihg=; b=U8eAwu33nobcODw3jskmUm0CRb
+	4sh7+PuqMO7AHYsCAwVvQf8tWXe6hXsk59zvMTkpmU1DzRWXXeWnqrM565NLUn14FChnqJ6vffk2z
+	GimxukkwH/XufTHq/N2oR89l0pc0TZ5RX/T3HnTw33aKacHd+adwCBwXT9K2L+MecN/g=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x6QT0-00083J-H4;
-	Tue, 15 Sep 2026 10:32:46 +0000
+	id 1x6R50-0006gt-Dy;
+	Tue, 15 Sep 2026 11:11:59 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1x6QSy-00083B-Pm
+ (envelope-from <gerrit@openvpn.net>) id 1x6R4z-0006gm-95
  for openvpn-devel@lists.sourceforge.net;
- Tue, 15 Sep 2026 10:32:44 +0000
+ Tue, 15 Sep 2026 11:11:58 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
  :List-Post:List-Owner:List-Archive;
- bh=0unUnIdIRU8FLUsU8cfs9nWoesQUM/Rm3u1VIhaU/H8=; b=UFcUBSI/eJmc6Y8PpBNmd3D6gJ
- QWLI1eiqjKwZMWxVjvJwTxIYYvPP2Sb8Fkx49vTZIXCAmrO2COXQkYQMqEIKDIul5kRnBgkWg5tOI
- 6JnssoqzMZ0QAVlSupZGfsSLiNdYNKv90mv8gkejpaC58wDnLdjvy8lBYgFbsFJAWxnE=;
+ bh=hrCKkoslP8ASbpiIIGo6xoX8ehGBbnB3GyQnkav0riE=; b=mMulk5G+MyPvbf6PGsLP6xg1Sk
+ bn2AGKErqu413vPF8QAYVSijOlm4SJrZLY2RBZBLJZ/hduHIGvQqrkPLr0QwYW1Fjz4fly5x9lRZb
+ VK/7qoqh+jDrsF0wbUMcUlwhrh6f+slwlNhIuKNqhpcVKs8hMHEOovJipdig2fH2euDw=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
  Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=0unUnIdIRU8FLUsU8cfs9nWoesQUM/Rm3u1VIhaU/H8=; b=d
- RHAGQXSi3G9cuZRB8FoIIpLjHTEyxvEJJGKaQg5SCR/bLEXrewDXVzNvsjBdrexLPBn406DwIEnoZ
- RXJapMZf0EiwSJSRYqbRn1xJRdPdz6QX/ORMjTepx91Jdh8JMrhGjMItAI6fFLCw5/2oZFBSfijP9
- 7SBhPi8yK5pXN8To=;
-Received: from mail-wm2-f13.google.com ([74.125.225.141])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ List-Owner:List-Archive; bh=hrCKkoslP8ASbpiIIGo6xoX8ehGBbnB3GyQnkav0riE=; b=F
+ ntntllOWkcPY+NknZoGSKR2csJ6YPsdTj8nb6433DQpWzClceiMD286uppwGVuY75cpweANfg7rrH
+ qqc7UrOAOMbjmdKidBe7k6eL2iKQqi8vimCKNTaQ/RcEpt5eGal6XtY0G7DP01RQ893tuEmdulCYt
+ xr/2M4hrgbtmyspc=;
+Received: from mail-wm2-f12.google.com ([74.125.225.140])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1x6QSx-0006zK-C3 for openvpn-devel@lists.sourceforge.net;
- Tue, 15 Sep 2026 10:32:44 +0000
-Received: by mail-wm2-f13.google.com with SMTP id
- 5b1f17b1804b1-49e7bcb94d3so856015e9.2
+ id 1x6R4v-0004pU-8t for openvpn-devel@lists.sourceforge.net;
+ Tue, 15 Sep 2026 11:11:58 +0000
+Received: by mail-wm2-f12.google.com with SMTP id
+ 5b1f17b1804b1-49b912e4b11so1130905e9.3
  for <openvpn-devel@lists.sourceforge.net>;
- Tue, 15 Sep 2026 03:32:43 -0700 (PDT)
+ Tue, 15 Sep 2026 04:11:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1789468357; x=1790073157; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1789470711; x=1790075511; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=0unUnIdIRU8FLUsU8cfs9nWoesQUM/Rm3u1VIhaU/H8=;
- b=J7rXUzwRuZffkCZCyPpeoMHkrc94+fcJ8ilLcPHZREDCa3rcMPqibC+SidDUaUtKNs
- rXE2tWABi40ttrthx1qqCciUEYN+IUXUrPc4vhJ+PPeOgexSaaH/JRbQ67oZ7ytdG1AS
- jelG0wj+R2mHipZENVoN7VfJ+O4eAFQDUY2azFlJfmSkm4y2QFK/3bi7ZUfzYwSohI5+
- M85inHShSJOqnvA0Osr/yDRxoi89yHAw6VFZ/ee84mOzmJcO4FD3ukB1XyZVI3MZbAFw
- H91aEW04leyAgtZN6GpOICPK5sYXfvxHOLqomB19zzjb34/xzIR7Xtw21mEH8/YzRfGk
- VFQA==
+ bh=hrCKkoslP8ASbpiIIGo6xoX8ehGBbnB3GyQnkav0riE=;
+ b=BATIX2xTyd7R6TAcX0V0q8GrXOtnSCJQP0RdbKsDoLwCiYCG04sPuJHceaouu5PJui
+ 9FMDzB1MU/C8jeKtz0cRuRqfbIk7vjU105MhJJI8B1a2r9j1pqMpFsqXF71hX59ESY0t
+ sg8HXPjy102U/RqJNezR28t1bLg6BIPoXl/eLZVvCdJgv0HQnO/jN7wnnARxSjj17tXc
+ KP+0mdb5czOpkPHQCTmaCrDXsahCDquTkNN/CAOB4aofTMGN9z6NI15xlQUfLepK4of3
+ k5G4iiyQK6+v8c2Iu9sRH/VhEEJMe4vFaF8tME+/2dmKl0hvvvt0NmaWUv0RD4UX4kCL
+ p6Rw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1789468357; x=1790073157;
+ d=1e100.net; s=20260707; t=1789470711; x=1790075511;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=0unUnIdIRU8FLUsU8cfs9nWoesQUM/Rm3u1VIhaU/H8=;
- b=hShStH2F45Po3mXTI0WCAg+hFsvAVmeuAVTDF+QRTjdIV2L+cAgXtq0sOnOAFSSF89
- YUOgKxzNdPFX0tziv+3++YI5FzBuJyPs6V6lczvqWIznykSVjnlnV0kofDhgjk95SKTK
- bYbkFw+k+P7HNI6YU0o9UNE/jUxYEi21TrbFlvIpTR2nvF9vbyAhSZ/OpDkOABakOmAG
- jL9esahEkcmKTgId4h6xl6IqhQSAE0S+2VKdUrgP7M2Ja6qKq+0uxWBgJXlnju5tw8oF
- R9FLUAO7Yp0JaMEJGM9EDPeMwolYxRjw5EMYdmYpbDeQ5WtQi7R8uAjJ8Rw8YpSLREkt
- kOww==
-X-Forwarded-Encrypted: i=1;
- AKwUvBxB5jCeYgYJjBtRXZmt1gP9vtqGTeo4zn3awnPt1/GX5m+y79bH3Rnk6ogqDio+EfkjSNDgHGxhVlxFdK1a@lists.sourceforge.net
-X-Gm-Message-State: AFuF++m//O1JLddW7KebQhHEnoNZuckZgA2WRj+cenJtiPle9DlQ1NxM
- iFmley9B+rnq/ExqQfsXpE2LSAKXK0bLvh/2rnWLdbv04j1uWQztmqks6PVcLOnokVT0szapCz4
- xCOJ8ko6mLSM+56dUhxYw7cgQj9a2AGfiwh0wpqHwWd+gHl+ERb8PHNiaUMbZvCqt0eZLtXvEWt
- MSnVedqw==
-X-Gm-Gg: AYBFou0usLEfF9vryQ6Z6Wky9hFimEBHimWW5v2xTbwdlb14Xt+0RjtPRKDTINvYCdU
- fzO+Kuvpc/bvsiFocJGVSPHYoF2HHJ3M2jZnactKB6fvvNuNWL4J0xCiUO7wqxqQuvz5NBXchwy
- Ee/xUTBllu3GrWED1auYIUAdlsNwBflfWESP2MXJnpJsm/D4zu6MyfyVUD1RnZ44x2gyLC46jSz
- hXdaJpPYSPwkl5YwPnTY5qWIHv9ZuXFgMSrRKWIfYg9TQS+6s8iW3rrnBSrD4lMdLPDkCRslDYs
- wYDd/nK2mRB5pUKLdja2jPSKUmn6XeeLwOiKBELYg3fkATG8hVX+7O8TF/+PF+epVO6EXOpcLWJ
- Vj8qRXPKndDQxaDRiR4L+/V9/cBg2Sobp+tO00L1wwlBZyVvYAu7TufTzYxthPWmstW06UmvLMq
- MUUiJUq/E3zLNYhUvZHrFLnNja5xLsF0Prh3HyI+9I7MVvS7188HbCtJcH68O7hHP/14G9Ew4p0
- igAdiPROuwSXmpCem1FR2qnQDcRo3hbx8WfSwEnp9utTNZI8eJ3iy3gplRE/AK2kA2h0A0vUb93
- 478vuO2OfwZotrcyOM4bu827VXLe3L9XTMazvY38sYsV3wbJASpq5RPZwMXohw==
-X-Received: by 2002:a05:600c:c4a2:b0:49d:1842:f001 with SMTP id
- 5b1f17b1804b1-49e8224ff79mr7777485e9.14.1789468355743; 
- Tue, 15 Sep 2026 03:32:35 -0700 (PDT)
+ bh=hrCKkoslP8ASbpiIIGo6xoX8ehGBbnB3GyQnkav0riE=;
+ b=MmgFe1z/Zo+wvnvHRNPPg85OCvEI0hKplissWXa1HoMEkqiHsTr0+SgDg0Rsg/fCAx
+ H3/AvnyPpBBr+CUlk1OddtMHYSACSfYf0vGAZ8LEASdF0rh2elPxK8SND+6NJFp6iJZc
+ rW/OtBTrZDbYi1KTJP+qCN+wxmhkpOFt2751sIJJhuK4K1uejRLjRQMyTN8zBFfvB7YH
+ Q0KiE4DK9yvN5aaCiarzqK5HeZn3jnE8vbe1A2UJ96BnStUABByxiI1rF18I7P6si8hj
+ LQfy/humdprJ1yfehfjU6MHMApgK65phQSZps6bZEvDazV4pOFcvsoczIVrxil5qo+TA
+ ETCw==
+X-Gm-Message-State: AFuF++kshMyzjRnsk3ykKbKrP4YStxLJbWqBG3IN8Ti6+8js+ufKMelK
+ Mul2nohONDLeETtuBwgmt/t8cLbmP/NEpb7/ybGwkiQEWh5iB4T36HtQV2UdfkminCxhW/aLkIq
+ pIUVBIpgggXMaCDWHvQLBsllIQ2vAIoy57uJu1TiHuqTKEx4ZkfEkdW88QvRoCdo4ABsg
+X-Gm-Gg: AYBFou12cdjY9CJuIXFCL30wFiYzQGbhy6ADEAk+OAqeELPgZ4vboMsr9XZSlo/MAsx
+ bCcdV/ZwNr4D2W9vdB/2LXiEdC8c06KD65tjEqp8kKnerC6/9hSlADhXaTSeKY1vmkMuon8TlZl
+ dc+cBAC1yk48lE6q/nkiyZoN2BOZd3rfChhfzJItuo5iDcgArgut7KFGsehnLxugmOyuJaqZSej
+ zQ93rG54xg6nQMLbauRqwVST3VolR3lYNYGguGAjvz6jrdiGhGEZ+QUtEOV0N0eKb3dq6uWh7nh
+ JivlSAZj34/CEkb606X4v/UsIJ8mN94R7FKxz37uwa+d7tOVfPWHrxrs9Ve64viUYaUsAuC8x5r
+ pHiUiaIyCf4uOroBM5MHU3H6Xyrvgyo2iKgOO60YXQ1zSfLylZfiCO2tThEOjAbENmP8KKY4a9U
+ ekQ+xJqcGS96JmhLP7cBmKUL9S22ct3VRock3Rs3G0WFoV5aNab+E5syeCCYOjqu492N7IOstia
+ 0MPvvJ0j5tyqb9HzHh9uD1c3rj2cfA8uEP8YdC3UBPd9FeDpu6oLiqhkbmt+Tnrq6LHXrS0CJy4
+ EDVMN7f+FsT8bJNhfjK/eXgkMgi19xpS5RDaQIZTzFpCy+/Ix7q1VzhLAtFY2w==
+X-Received: by 2002:a05:600c:4514:b0:49c:fc89:59cb with SMTP id
+ 5b1f17b1804b1-49e8222c7d6mr10234955e9.5.1789470710446; 
+ Tue, 15 Sep 2026 04:11:50 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-49e7d695677sm61660325e9.5.2026.09.15.03.32.35
+ 5b1f17b1804b1-49e7ef2e117sm57477295e9.1.2026.09.15.04.11.49
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 15 Sep 2026 03:32:35 -0700 (PDT)
-X-Google-Original-From: "plaisthos (Code Review)"
+ Tue, 15 Sep 2026 04:11:50 -0700 (PDT)
+X-Google-Original-From: "stipa (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Tue, 15 Sep 2026 10:32:33 +0000
-To: stipa <lstipakov@gmail.com>
+Date: Tue, 15 Sep 2026 11:11:48 +0000
+To: plaisthos <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: comment
-X-Gerrit-PatchSet: 22
-X-Gerrit-Change-Id: I5a7e9e13b9f9548b7ff717daae2b4a9cde3c06f2
-X-Gerrit-Change-Number: 1747
+X-Gerrit-MessageType: newpatchset
+X-Gerrit-PatchSet: 3
+X-Gerrit-Change-Id: Iac6d49d064215510bde9a4cd4600ab3a50a45cb4
+X-Gerrit-Change-Number: 1916
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1747?usp=email>
-X-Gerrit-Commit: 0e4f26ec62f719eb61db55882e367f47586a8483
-X-Gerrit-Comment-Date: Tue, 15 Sep 2026 10:32:33 +0000
-In-Reply-To: <gerrit.1782719911000.I5a7e9e13b9f9548b7ff717daae2b4a9cde3c06f2@gerrit.openvpn.net>
-References: <gerrit.1782719911000.I5a7e9e13b9f9548b7ff717daae2b4a9cde3c06f2@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzgyNzE5OTExMDAwLkk1YTdlOWUxM2I5Zjk1NDhiN2ZmNzE3ZGFhZTJiNGE5Y2RlM2MwNmYyQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <adaab00fabf21e1bc7298bc3409a4438309670ed-EmailReviewComments-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1916?usp=email>
+X-Gerrit-Commit: d6ce7238774423b5d4970d502c554cff1d2235b8
+In-Reply-To: <gerrit.1789456688000.Iac6d49d064215510bde9a4cd4600ab3a50a45cb4@gerrit.openvpn.net>
+References: <gerrit.1789456688000.Iac6d49d064215510bde9a4cd4600ab3a50a45cb4@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzg5NDU2Njg4MDAwLklhYzZkNDlkMDY0MjE1NTEwYmRlOWE0Y2Q0NjAwYWIzYTUwYTQ1Y2I0QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <ed6d35867f7687bff23b53dcdfba7508e5420f2f-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1x6QSx-0006zK-C3
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: oob: Add
- --server-probe to order client remotes by probe
+X-Headers-End: 1x6R4v-0004pU-8t
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: ssl: do not trust
+ the peer's request to resend the wrapped client key
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -139,356 +135,523 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "plaisthos \(Code Review\) via Openvpn-devel"
+From: "stipa \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
-Reply-To: arne-openvpn@rfc2549.org, openvpn-devel@lists.sourceforge.net,
- ralf@mandelbit.com, lstipakov@gmail.com
-Cc: "plaisthos \(Code Review\)" <gerrit@openvpn.net>,
+Reply-To: lstipakov@gmail.com, arne-openvpn@rfc2549.org,
+ openvpn-devel@lists.sourceforge.net
+Cc: "stipa \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============7660043842938838128=="
+Content-Type: multipart/mixed; boundary="===============6772696466894965542=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============7660043842938838128==
+--===============6772696466894965542==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="cuv9xgTsCgI="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="wqVgU2t7UZU="; charset=UTF-8
 
---cuv9xgTsCgI=
+--wqVgU2t7UZU=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: stipa=2E
+Attention is currently required from: plaisthos, stipa=2E
 
-plaisthos has posted commen=
-ts on this change by stipa=2E ( http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1=
-747?usp=3Demail )
+Hello plaisthos,=
+ 
 
-Change subject: oob: Add --server-probe to order client =
-remotes by probe
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+I'd like you to reexamine a change=2E Please visit
+
+    http://gerrit=2E=
+openvpn=2Enet/c/openvpn/+/1916?usp=3Demail
+
+to look at the new patch set (#=
+3)=2E
+
+The following approvals got outdated and were removed:
+Code-Review-1=
+ by plaisthos
+
+
+Change subject: ssl: do not trust the peer's request to res=
+end the wrapped client key
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E
+
+ssl: do not trust the peer's request to resend the wrapped cl=
+ient key
+
+parse_early_negotiation_tlvs() sets CO_RESEND_WKC just because th=
+e peer
+set EARLY_NEG_FLAG_RESEND_WKC in its reset packet, without checking =
+that
+this client has a wrapped client key at all=2E control_packet_needs_wk=
+c()
+then reports that our first control packet needs the key appended and
+w=
+rite_outgoing_tls_ciphertext() sizes it with
+
+    maxlen -=3D buf_len(sessi=
+on->tls_wrap=2Etls_crypt_v2_wkc);
+
+tls_crypt_v2_wkc is only set with --tls-=
+crypt-v2 and buf_len() is not
+NULL-safe, so a client without --tls-crypt-v2=
+ dies with SIGSEGV while
+processing the server's first reset packet, before=
+ the peer has been
+authenticated=2E
+
+Only set the flag if we have a key to =
+resend, and let tls_wrap_control()
+refuse to append a key it does not have=
 =2E
 
+tls_reset_standalone() drives tls_wrap_control() directly, so the test=
 
-Patch Set 22: Code-Review-1
+uses it to build the two control packets that carry a wrapped client key
+w=
+ith tls_crypt_v2_wkc unset=2E Both segfault without the fix=2E
 
-(11 comments)
-
-Patchset:
-
-PS22: 
-I did a=
- quick read through the commit but not a full review but already found a nu=
-mber of issues that should be fixed first=2E
-
-
-Commit Message:
-
-http://gerr=
-it=2Eopenvpn=2Enet/c/openvpn/+/1747/comment/5e2b0b35_46e51f5d?usp=3Demail :=
-
-PS22, Line 11: PROBE_REPLYs within a short window, and reorders the connec=
-tion list so
-Is that short window documented
-
-
-File doc/man-sections/client=
--options=2Erst:
-
-http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1747/comment/0a3=
-b73e5_829dcd00?usp=3Demail :
-PS22, Line 624:   skipped and the configured o=
-rder is used=2E Remotes that answered are tried first, in the
-so this imple=
-mentation breaks with dual stack? That sounds like a pretty big omission=2E=
-
-
-
-http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1747/comment/296e8b62_ededbb8b=
-?usp=3Demail :
-PS22, Line 627:   attempt; a restart does not probe again=2E=
-
-restart? What kind of restart are you talking about yeah, restarting the o=
-penvpn definitively will run the probe again=2E
-
-
-http://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1747/comment/a2086cb4_3cacb127?usp=3Demail :
-PS22, Line =
-632:   client whose clock is badly wrong receives no replies and keeps the
+Github: Ope=
+nVPN/openvpn-private-issues#181
+Change-Id: Iac6d49d064215510bde9a4cd4600ab3=
+a50a45cb4
+Signed-off-by: Lev Stipakov <lev@openvpn=2Enet>
+---
+M src/openvpn=
+/ssl=2Ec
+M src/openvpn/ssl_pkt=2Ec
+M tests/unit_tests/openvpn/test_pkt=2Ec
 =
-The RFC draft has a different stance on this=2E Is the implementation here =
-different from the RFC or is the documentation wrong?
+3 files changed, 62 insertions(+), 4 deletions(-)
 
 
-http://gerrit=2Eope=
-nvpn=2Enet/c/openvpn/+/1747/comment/ccb384f9_65f1fb7f?usp=3Demail :
-PS22, L=
-ine 634:   ``--remote-random`` produced=2E See ``--server-probe-reply`` for=
- the
-Yet, I see no warning for using both together=2E
+  git pull ssh://gerrit=
+=2Eopenvpn=2Enet:29418/openvpn refs/changes/16/1916/3
 
-
-File src/openvpn/oo=
-b_client=2Ec:
-
-http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1747/comment/4ab4a=
-ed0_dae8713d?usp=3Demail :
-PS22, Line 523:      * get a probe socket=2E */
+diff --git a/src/ope=
+nvpn/ssl=2Ec b/src/openvpn/ssl=2Ec
+index 76150d4=2E=2Eddbf067 100644
+--- a/=
+src/openvpn/ssl=2Ec
++++ b/src/openvpn/ssl=2Ec
+@@ -2591,7 +2591,8 @@
+  * Par=
+ses the TLVs (type, length, value) in the early negotiation
+  */
+ static bo=
+ol
+-parse_early_negotiation_tlvs(struct buffer *buf, struct key_state *ks)
 =
-This duplicates the do_preresolve code=2E What is the reason you could not =
-just set that flag when using this code but had implement your own preresol=
-ve loop here?
++parse_early_negotiation_tlvs(struct buffer *buf, const struct tls_session =
+*session,
++                             struct key_state *ks)
+ {
+     while=
+ (buf->len > 0)
+     {
+@@ -2618,7 +2619,17 @@
+ 
+                 if (flags =
+& EARLY_NEG_FLAG_RESEND_WKC)
+                 {
+-                    ks->cr=
+ypto_options=2Eflags |=3D CO_RESEND_WKC;
++                    /* Only accep=
+t the EARLY_NEG_FLAG_RESEND_WKC flag
++                     * from the serve=
+r if we are configured with tls-crypt-v2 */
++                    if (sessio=
+n->tls_wrap=2Etls_crypt_v2_wkc)
++                    {
++                   =
+     ks->crypto_options=2Eflags |=3D CO_RESEND_WKC;
++                    }
+=
++                    else
++                    {
++                        m=
+sg(D_TLS_ERRORS, "TLS Error: peer asked us to resend the wrapped "
++       =
+                                   "client key, but this is not a tls-crypt=
+-v2 client");
++                    }
+                 }
+                 br=
+eak;
+ 
+@@ -2901,7 +2912,7 @@
+          * contains early protocol negotiatio=
+n */
+         if (entry->packet_id =3D=3D 0 && is_hard_reset_method2(entry-=
+>opcode))
+         {
+-            if (!parse_early_negotiation_tlvs(&entry-=
+>buf, ks))
++            if (!parse_early_negotiation_tlvs(&entry->buf, sess=
+ion, ks))
+             {
+                 goto error;
+             }
+diff -=
+-git a/src/openvpn/ssl_pkt=2Ec b/src/openvpn/ssl_pkt=2Ec
+index 90b2aec=2E=
+=2E940f089 100644
+--- a/src/openvpn/ssl_pkt=2Ec
++++ b/src/openvpn/ssl_pkt=
+=2Ec
+@@ -147,7 +147,7 @@
+         if ((header >> P_OPCODE_SHIFT) =3D=3D P_C=
+ONTROL_HARD_RESET_CLIENT_V3
+             || (header >> P_OPCODE_SHIFT) =3D=
+=3D P_CONTROL_WKC_V1)
+         {
+-            if (!buf_copy(&ctx->work, ctx=
+->tls_crypt_v2_wkc))
++            if (!ctx->tls_crypt_v2_wkc || !buf_copy(&=
+ctx->work, ctx->tls_crypt_v2_wkc))
+             {
+                 msg(D_TL=
+S_ERRORS, "Could not append tls-crypt-v2 client key");
+                 buf=
+->len =3D 0;
+diff --git a/tests/unit_tests/openvpn/test_pkt=2Ec b/tests/uni=
+t_tests/openvpn/test_pkt=2Ec
+index a732c2b=2E=2E51c73d8 100644
+--- a/tests/=
+unit_tests/openvpn/test_pkt=2Ec
++++ b/tests/unit_tests/openvpn/test_pkt=2Ec=
 
+@@ -695,6 +695,52 @@
+     free_tas(&tas_server);
+ }
+ 
++/* A peer can ask u=
+s to append the wrapped client key (WKc) to our next
++ * control packet=2E =
+Only a tls-crypt-v2 client has one, so check that we
++ * refuse to build su=
+ch a packet when we have no key instead of walking
++ * into the NULL pointe=
+r=2E */
++static void
++test_wkc_not_appended_without_key(void **ut_state)
++{=
 
-File src/openvpn/options=2Ec:
-
-http://gerrit=2Eopenvpn=2Ene=
-t/c/openvpn/+/1747/comment/1035552f_ab991838?usp=3Demail :
-PS22, Line 818: =
-     * the built-in default) applies=2E */
-> otherwise each server's advert=
-ised margin
-
-This is again different from the RFC, in the RFC iirc we use t=
-he the margin of the best candidate=2E This sounds like you are using the m=
-argin of each server=2E 
-
-Both approaches are valid but we should either ch=
-ange the implementation or the RFC to match each other=2E
-
-
-http://gerrit=
-=2Eopenvpn=2Enet/c/openvpn/+/1747/comment/2260c1a2_ab0f0d67?usp=3Demail :
-P=
-S22, Line 5102:                 msg(msglevel, "--server-probe: max-latency-=
-diff must be 0 to 65535 ms");
-This sounds like you could have values over 1=
-000ms while the man page and documenntation says that you spend a maximum o=
-f 1000ms to actually probe servers=2E Is this for later allowing to extend =
-the window? 
-
-Otherwise it should at least give a warning that server over =
-1000ms are ignored anyway because of the short probe timeout=2E
-
-
-File src/=
-openvpn/socket=2Eh:
-
-http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1747/comment=
-/c4a7a63d_5278fcd8?usp=3Demail :
-PS22, Line 413:  * Hand @p fd to the VPNSe=
-rvice API as a protected socket, so its traffic is not
-I remember we typica=
-lly use \p instead of @p in OpenVPN 2=2Ex Not sure if we have an agreement =
-but I mostly see the \keyword variant=2E
-
-
-File tests/unit_tests/openvpn/te=
-st_oob=2Ec:
-
-http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1747/comment/c104f29=
-0_98fd8b7d?usp=3Demail :
-PS22, Line 528:  * and a second reply from that ad=
-dress credits nothing more=2E */
-> * and a second reply from that address c=
-redits nothing more=2E */
-
-Can you rephrase that? That is really hard to un=
-derstand what you mean here=2E
-
-
++    struct tls_auth_standalone tas =3D init_tas_crypt(false);
++    struct=
+ session_id own_id =3D { { 1, 2, 3, 4, 5, 6, 7, 8 } };
++    struct session_=
+id remote_id =3D { { 8, 7, 6, 5, 4, 3, 2, 1 } };
++    struct frame frame =
+=3D { =2Ebuf =3D { =2Eheadroom =3D 200, =2Epayload_size =3D 1400 }, 0 };
++ =
+   tas=2Eframe =3D frame;
++
++    packet_id_init(&tas=2Etls_wrap=2Eopt=2Epac=
+ket_id, 5, 5, "UNITTEST", 0);
++    reset_packet_id_send(&tas=2Etls_wrap=2Eo=
+pt=2Epacket_id=2Esend);
++    now =3D 0x22446688;
++
++    /* no WKc configure=
+d, so both opcodes that would append one must fail */
++    assert_null(tas=
+=2Etls_wrap=2Etls_crypt_v2_wkc);
++
++    uint8_t header =3D 0 | (P_CONTROL_W=
+KC_V1 << P_OPCODE_SHIFT);
++    struct buffer buf =3D
++        tls_reset_sta=
+ndalone(&tas=2Etls_wrap, &tas, &own_id, &remote_id, header, false);
++    as=
+sert_int_equal(BLEN(&buf), 0);
++
++    header =3D 0 | (P_CONTROL_HARD_RESET_=
+CLIENT_V3 << P_OPCODE_SHIFT);
++    buf =3D tls_reset_standalone(&tas=2Etls_=
+wrap, &tas, &own_id, &remote_id, header, false);
++    assert_int_equal(BLEN=
+(&buf), 0);
++
++    /* with a WKc the same packet is built and the key ends =
+up at its end */
++    uint8_t wkc_data[32];
++    memset(wkc_data, 0x5a, siz=
+eof(wkc_data));
++    struct buffer wkc =3D alloc_buf(sizeof(wkc_data));
++  =
+  assert_true(buf_write(&wkc, wkc_data, sizeof(wkc_data)));
++    tas=2Etls_=
+wrap=2Etls_crypt_v2_wkc =3D &wkc;
++
++    header =3D 0 | (P_CONTROL_WKC_V1 <=
+< P_OPCODE_SHIFT);
++    buf =3D tls_reset_standalone(&tas=2Etls_wrap, &tas,=
+ &own_id, &remote_id, header, false);
++    assert_true(BLEN(&buf) > (int)si=
+zeof(wkc_data));
++    assert_memory_equal(BPTR(&buf) + BLEN(&buf) - sizeof(=
+wkc_data), wkc_data, sizeof(wkc_data));
++
++    free_buf(&wkc);
++    packet_=
+id_free(&tas=2Etls_wrap=2Eopt=2Epacket_id);
++    free_tas(&tas);
++}
++
+ stat=
+ic void
+ test_extract_control_message(void **ut_state)
+ {
+@@ -745,6 +791,7 =
+@@
+         cmocka_unit_test(test_verify_hmac_none_out_of_range_ack),
+     =
+    cmocka_unit_test(test_generate_reset_packet_plain),
+         cmocka_uni=
+t_test(test_generate_reset_packet_tls_auth),
++        cmocka_unit_test(test=
+_wkc_not_appended_without_key),
+         cmocka_unit_test(test_extract_cont=
+rol_message)
+     };
+ 
 
 -- 
-To view, visit http://gerrit=2Eopenvp=
-n=2Enet/c/openvpn/+/1747?usp=3Demail
-To unsubscribe, or for help writing ma=
-il filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+To view, visit http://gerrit=2Eopenvpn=2Enet/c/=
+openvpn/+/1916?usp=3Demail
+To unsubscribe, or for help writing mail filters=
+, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Gerri=
-t-MessageType: comment
+Gerrit-MessageT=
+ype: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit=
--Change-Id: I5a7e9e13b9f9548b7ff717daae2b4a9cde3c06f2
-Gerrit-Change-Number:=
- 1747
-Gerrit-PatchSet: 22
+Gerrit-Chang=
+e-Id: Iac6d49d064215510bde9a4cd4600ab3a50a45cb4
+Gerrit-Change-Number: 1916
+=
+Gerrit-PatchSet: 3
 Gerrit-Owner: stipa <lstipakov@gmail=2Ecom>
-Gerri=
-t-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Reviewer: ralf_li=
-ci <ralf@mandelbit=2Ecom>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Es=
-ourceforge=2Enet>
+Gerrit-Revie=
+wer: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-CC: openvpn-devel <openv=
+pn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Attention: plaisthos <arne-openv=
+pn@rfc2549=2Eorg>
 Gerrit-Attention: stipa <lstipakov@gmail=2Ecom>
-Gerrit-Co=
-mment-Date: Tue, 15 Sep 2026 10:32:33 +0000
-Gerrit-HasComments: Yes
-Gerrit-=
-Has-Labels: Yes
 
---cuv9xgTsCgI=
+--wqVgU2t7UZU=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: stipa=2E </p>
-<p>Patch set 22:<span style=3D"border-r=
-adius: 3px; display: inline-block; margin: 0 2px; padding: 4px;background-c=
-olor: #ffd4d4;">Code-Review -1</span></p><p><a href=3D"http://gerrit=2Eopen=
-vpn=2Enet/c/openvpn/+/1747?usp=3Demail">View Change</a></p><p>11 comments:<=
-/p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padd=
-ing: 0;"><p>Patchset:</p><ul style=3D"list-style: none; padding: 0;"><li st=
-yle=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a=
- href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1747?tab=3Dcomments&amp;=
-usp=3Demail">Patch Set #22:</a> </p><p class=3D"blocks" style=3D"white-spac=
-e: pre-wrap; word-wrap: break-word;">I did a quick read through the commit =
-but not a full review but already found a number of issues that should be f=
-ixed first=2E</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>Com=
-mit Message:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"ma=
-rgin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"=
-http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1747/comment/5e2b0b35_46e51f5d?us=
-p=3Demail">Patch Set #22, Line 11:</a> <code style=3D"font-family:monospace=
-,monospace">PROBE_REPLYs within a short window, and reorders the connection=
- list so</code></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word=
--wrap: break-word;">Is that short window documented</p></li></ul></li><li s=
-tyle=3D"margin: 0; padding: 0;"><p>File doc/man-sections/client-options=2Er=
-st:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; =
-padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://ge=
-rrit=2Eopenvpn=2Enet/c/openvpn/+/1747/comment/0a3b73e5_829dcd00?usp=3Demail=
-">Patch Set #22, Line 624:</a> <code style=3D"font-family:monospace,monospa=
-ce">  skipped and the configured order is used=2E Remotes that answered are=
- tried first, in the</code></p><p class=3D"blocks" style=3D"white-space: pr=
-e-wrap; word-wrap: break-word;">so this implementation breaks with dual sta=
-ck? That sounds like a pretty big omission=2E</p></li><li style=3D"margin: =
-0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http:/=
-/gerrit=2Eopenvpn=2Enet/c/openvpn/+/1747/comment/296e8b62_ededbb8b?usp=3Dem=
-ail">Patch Set #22, Line 627:</a> <code style=3D"font-family:monospace,mono=
-space">  attempt; a restart does not probe again=2E</code></p><p class=3D"b=
-locks" style=3D"white-space: pre-wrap; word-wrap: break-word;">restart? Wha=
-t kind of restart are you talking about yeah, restarting the openvpn defini=
-tively will run the probe again=2E</p></li><li style=3D"margin: 0; padding:=
- 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=2Eo=
-penvpn=2Enet/c/openvpn/+/1747/comment/a2086cb4_3cacb127?usp=3Demail">Patch =
-Set #22, Line 632:</a> <code style=3D"font-family:monospace,monospace">  cl=
-ient whose clock is badly wrong receives no replies and keeps the</code></p=
-><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;=
-">The RFC draft has a different stance on this=2E Is the implementation her=
-e different from the RFC or is the documentation wrong?</p></li><li style=
-=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a hr=
-ef=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1747/comment/ccb384f9_65f1f=
-b7f?usp=3Demail">Patch Set #22, Line 634:</a> <code style=3D"font-family:mo=
-nospace,monospace">  ``--remote-random`` produced=2E See ``--server-probe-r=
-eply`` for the</code></p><p class=3D"blocks" style=3D"white-space: pre-wrap=
-; word-wrap: break-word;">Yet, I see no warning for using both together=2E<=
-/p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/=
-oob_client=2Ec:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D=
-"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=
-=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1747/comment/4ab4aed0_dae8713=
-d?usp=3Demail">Patch Set #22, Line 523:</a> <code style=3D"font-family:mono=
-space,monospace">     * get a probe socket=2E */</code></p><p class=3D"bloc=
-ks" style=3D"white-space: pre-wrap; word-wrap: break-word;">This duplicates=
- the do_preresolve code=2E What is the reason you could not just set that f=
-lag when using this code but had implement your own preresolve loop here?</=
-p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/o=
-ptions=2Ec:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"mar=
-gin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"h=
-ttp://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1747/comment/1035552f_ab991838?usp=
-=3Demail">Patch Set #22, Line 818:</a> <code style=3D"font-family:monospace=
-,monospace">     * the built-in default) applies=2E */</code></p><blockquot=
-e class=3D"blocks" style=3D"border-left: 1px solid #aaa; margin: 10px 0; pa=
-dding: 0 10px;"><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wr=
-ap: break-word;">otherwise each server&#39;s advertised margin</p></blockqu=
-ote><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-wo=
-rd;">This is again different from the RFC, in the RFC iirc we use the the m=
-argin of the best candidate=2E This sounds like you are using the margin of=
- each server=2E </p><p class=3D"blocks" style=3D"white-space: pre-wrap; wor=
-d-wrap: break-word;">Both approaches are valid but we should either change =
-the implementation or the RFC to match each other=2E</p></li><li style=3D"m=
-argin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D=
-"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1747/comment/2260c1a2_ab0f0d67?u=
-sp=3Demail">Patch Set #22, Line 5102:</a> <code style=3D"font-family:monosp=
-ace,monospace">                msg(msglevel, &quot;--server-probe: max-late=
-ncy-diff must be 0 to 65535 ms&quot;);</code></p><p class=3D"blocks" style=
-=3D"white-space: pre-wrap; word-wrap: break-word;">This sounds like you cou=
-ld have values over 1000ms while the man page and documenntation says that =
-you spend a maximum of 1000ms to actually probe servers=2E Is this for late=
-r allowing to extend the window? </p><p class=3D"blocks" style=3D"white-spa=
-ce: pre-wrap; word-wrap: break-word;">Otherwise it should at least give a w=
-arning that server over 1000ms are ignored anyway because of the short prob=
-e timeout=2E</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File=
- src/openvpn/socket=2Eh:</p><ul style=3D"list-style: none; padding: 0;"><li=
- style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"=
-><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1747/comment/c4a7a63d=
-_5278fcd8?usp=3Demail">Patch Set #22, Line 413:</a> <code style=3D"font-fam=
-ily:monospace,monospace"> * Hand @p fd to the VPNService API as a protected=
- socket, so its traffic is not</code></p><p class=3D"blocks" style=3D"white=
--space: pre-wrap; word-wrap: break-word;">I remember we typically use \p in=
-stead of @p in OpenVPN 2=2Ex Not sure if we have an agreement but I mostly =
-see the \keyword variant=2E</p></li></ul></li><li style=3D"margin: 0; paddi=
-ng: 0;"><p>File tests/unit_tests/openvpn/test_oob=2Ec:</p><ul style=3D"list=
--style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
- style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/o=
-penvpn/+/1747/comment/c104f290_98fd8b7d?usp=3Demail">Patch Set #22, Line 52=
-8:</a> <code style=3D"font-family:monospace,monospace"> * and a second repl=
-y from that address credits nothing more=2E */</code></p><blockquote class=
-=3D"blocks" style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: =
-0 10px;"><ul class=3D"blocks"><li>and a second reply from that address cred=
-its nothing more=2E */</li></ul></blockquote><p class=3D"blocks" style=3D"w=
-hite-space: pre-wrap; word-wrap: break-word;">Can you rephrase that? That i=
-s really hard to understand what you mean here=2E</p></li></ul></li></ul><p=
->To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1747?u=
-sp=3Demail">change 1747</a>=2E To unsubscribe, or for help writing mail fil=
-ters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">=
-settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMess=
-age"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/Vie=
-wAction"><link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/ope=
-nvpn/+/1747?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/>=
-</div></div>
+rently required from: plaisthos, stipa=2E </p>
+<p>stipa <strong>uploaded pa=
+tch set #3</strong> to this change=2E</p><p><a href=3D"http://gerrit=2Eopen=
+vpn=2Enet/c/openvpn/+/1916?usp=3Demail">View Change</a></p><p>The following=
+ approvals got outdated and were removed:
+Code-Review-1 by plaisthos</p><pr=
+e class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: =
+pre-wrap;">ssl: do not trust the peer&#39;s request to resend the wrapped c=
+lient key<br><br>parse_early_negotiation_tlvs() sets CO_RESEND_WKC just bec=
+ause the peer<br>set EARLY_NEG_FLAG_RESEND_WKC in its reset packet, without=
+ checking that<br>this client has a wrapped client key at all=2E control_pa=
+cket_needs_wkc()<br>then reports that our first control packet needs the ke=
+y appended and<br>write_outgoing_tls_ciphertext() sizes it with<br><br>    =
+maxlen -=3D buf_len(session-&gt;tls_wrap=2Etls_crypt_v2_wkc);<br><br>tls_cr=
+ypt_v2_wkc is only set with --tls-crypt-v2 and buf_len() is not<br>NULL-saf=
+e, so a client without --tls-crypt-v2 dies with SIGSEGV while<br>processing=
+ the server&#39;s first reset packet, before the peer has been<br>authentic=
+ated=2E<br><br>Only set the flag if we have a key to resend, and let tls_wr=
+ap_control()<br>refuse to append a key it does not have=2E<br><br>tls_reset=
+_standalone() drives tls_wrap_control() directly, so the test<br>uses it to=
+ build the two control packets that carry a wrapped client key<br>with tls_=
+crypt_v2_wkc unset=2E Both segfault without the fix=2E<br><br>Github: OpenV=
+PN/openvpn-private-issues#181<br>Change-Id: Iac6d49d064215510bde9a4cd4600ab=
+3a50a45cb4<br>Signed-off-by: Lev Stipakov &lt;lev@openvpn=2Enet&gt;<br>---<=
+br>M src/openvpn/ssl=2Ec<br>M src/openvpn/ssl_pkt=2Ec<br>M tests/unit_tests=
+/openvpn/test_pkt=2Ec<br>3 files changed, 62 insertions(+), 4 deletions(-)<=
+br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/open=
+vpn refs/changes/16/1916/3</pre><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/ssl=2Ec b/src/o=
+penvpn/ssl=2Ec</span><br><span>index 76150d4=2E=2Eddbf067 100644</span><br>=
+<span>--- a/src/openvpn/ssl=2Ec</span><br><span>+++ b/src/openvpn/ssl=2Ec</=
+span><br><span>@@ -2591,7 +2591,8 @@</span><br><span>  * Parses the TLVs (t=
+ype, length, value) in the early negotiation</span><br><span>  */</span><br=
+><span> static bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-pa=
+rse_early_negotiation_tlvs(struct buffer *buf, struct key_state *ks)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+parse_early_negotiation_tl=
+vs(struct buffer *buf, const struct tls_session *session,</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+                             struct k=
+ey_state *ks)</span><br><span> {</span><br><span>     while (buf-&gt;len &g=
+t; 0)</span><br><span>     {</span><br><span>@@ -2618,7 +2619,17 @@</span><=
+br><span> </span><br><span>                 if (flags &amp; EARLY_NEG_FLAG_=
+RESEND_WKC)</span><br><span>                 {</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-                    ks-&gt;crypto_options=2Eflags =
+|=3D CO_RESEND_WKC;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+                    /* Only accept the EARLY_NEG_FLAG_RESEND_WKC flag</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+                     * fr=
+om the server if we are configured with tls-crypt-v2 */</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+                    if (session-&gt;tls=
+_wrap=2Etls_crypt_v2_wkc)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+                    {</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+                        ks-&gt;crypto_options=2Eflags |=3D CO_RESEN=
+D_WKC;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
+       }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+         else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+              {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+                    msg(D_TLS_ERRORS, &quot;TLS Error: peer asked us to res=
+end the wrapped &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+                                          &quot;client key, but this is =
+not a tls-crypt-v2 client&quot;);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+                    }</span><br><span>                 }</spa=
+n><br><span>                 break;</span><br><span> </span><br><span>@@ -2=
+901,7 +2912,7 @@</span><br><span>          * contains early protocol negoti=
+ation */</span><br><span>         if (entry-&gt;packet_id =3D=3D 0 &amp;&am=
+p; is_hard_reset_method2(entry-&gt;opcode))</span><br><span>         {</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (!parse_ear=
+ly_negotiation_tlvs(&amp;entry-&gt;buf, ks))</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+            if (!parse_early_negotiation_tlvs(&amp=
+;entry-&gt;buf, session, ks))</span><br><span>             {</span><br><spa=
+n>                 goto error;</span><br><span>             }</span><br><sp=
+an>diff --git a/src/openvpn/ssl_pkt=2Ec b/src/openvpn/ssl_pkt=2Ec</span><br=
+><span>index 90b2aec=2E=2E940f089 100644</span><br><span>--- a/src/openvpn/=
+ssl_pkt=2Ec</span><br><span>+++ b/src/openvpn/ssl_pkt=2Ec</span><br><span>@=
+@ -147,7 +147,7 @@</span><br><span>         if ((header &gt;&gt; P_OPCODE_S=
+HIFT) =3D=3D P_CONTROL_HARD_RESET_CLIENT_V3</span><br><span>             ||=
+ (header &gt;&gt; P_OPCODE_SHIFT) =3D=3D P_CONTROL_WKC_V1)</span><br><span>=
+         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+ if (!buf_copy(&amp;ctx-&gt;work, ctx-&gt;tls_crypt_v2_wkc))</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+            if (!ctx-&gt;tls_crypt=
+_v2_wkc || !buf_copy(&amp;ctx-&gt;work, ctx-&gt;tls_crypt_v2_wkc))</span><b=
+r><span>             {</span><br><span>                 msg(D_TLS_ERRORS, &=
+quot;Could not append tls-crypt-v2 client key&quot;);</span><br><span>     =
+            buf-&gt;len =3D 0;</span><br><span>diff --git a/tests/unit_test=
+s/openvpn/test_pkt=2Ec b/tests/unit_tests/openvpn/test_pkt=2Ec</span><br><s=
+pan>index a732c2b=2E=2E51c73d8 100644</span><br><span>--- a/tests/unit_test=
+s/openvpn/test_pkt=2Ec</span><br><span>+++ b/tests/unit_tests/openvpn/test_=
+pkt=2Ec</span><br><span>@@ -695,6 +695,52 @@</span><br><span>     free_tas(=
+&amp;tas_server);</span><br><span> }</span><br><span> </span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+/* A peer can ask us to append the wrapp=
+ed client key (WKc) to our next</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ * control packet=2E Only a tls-crypt-v2 client has one, so che=
+ck that we</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * refuse=
+ to build such a packet when we have no key instead of walking</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ * into the NULL pointer=2E */</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+test_wkc_not_appended_without=
+_key(void **ut_state)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct tls_a=
+uth_standalone tas =3D init_tas_crypt(false);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    struct session_id own_id =3D { { 1, 2, 3, 4, =
+5, 6, 7, 8 } };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+struct session_id remote_id =3D { { 8, 7, 6, 5, 4, 3, 2, 1 } };</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    struct frame frame =3D { =
+=2Ebuf =3D { =2Eheadroom =3D 200, =2Epayload_size =3D 1400 }, 0 };</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    tas=2Eframe =3D frame;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    packet_id_init(&amp;tas=2Etls_wrap=
+=2Eopt=2Epacket_id, 5, 5, &quot;UNITTEST&quot;, 0);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    reset_packet_id_send(&amp;tas=2Etls_w=
+rap=2Eopt=2Epacket_id=2Esend);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    now =3D 0x22446688;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+/* no WKc configured, so both opcodes that would append one must fail */</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_null(tas=2E=
+tls_wrap=2Etls_crypt_v2_wkc);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint8=
+_t header =3D 0 | (P_CONTROL_WKC_V1 &lt;&lt; P_OPCODE_SHIFT);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    struct buffer buf =3D</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        tls_reset_standalon=
+e(&amp;tas=2Etls_wrap, &amp;tas, &amp;own_id, &amp;remote_id, header, false=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_eq=
+ual(BLEN(&amp;buf), 0);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    header =3D =
+0 | (P_CONTROL_HARD_RESET_CLIENT_V3 &lt;&lt; P_OPCODE_SHIFT);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    buf =3D tls_reset_standalone(=
+&amp;tas=2Etls_wrap, &amp;tas, &amp;own_id, &amp;remote_id, header, false);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equa=
+l(BLEN(&amp;buf), 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* with a WKc=
+ the same packet is built and the key ends up at its end */</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    uint8_t wkc_data[32];</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    memset(wkc_data, 0x5a, si=
+zeof(wkc_data));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ struct buffer wkc =3D alloc_buf(sizeof(wkc_data));</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    assert_true(buf_write(&amp;wkc, wkc_d=
+ata, sizeof(wkc_data)));</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    tas=2Etls_wrap=2Etls_crypt_v2_wkc =3D &amp;wkc;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    header =3D 0 | (P_CONTROL_WKC_V1 &lt;&lt; P_OPCODE_SH=
+IFT);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    buf =3D tl=
+s_reset_standalone(&amp;tas=2Etls_wrap, &amp;tas, &amp;own_id, &amp;remote_=
+id, header, false);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    assert_true(BLEN(&amp;buf) &gt; (int)sizeof(wkc_data));</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    assert_memory_equal(BPTR(&amp;b=
+uf) + BLEN(&amp;buf) - sizeof(wkc_data), wkc_data, sizeof(wkc_data));</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    free_buf(&amp;wkc);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    packet_id_free(&amp;tas=2Etls_wrap=
+=2Eopt=2Epacket_id);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    free_tas(&amp;tas);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan> static void</span><br><span> test_extract_control_message(void **ut_st=
+ate)</span><br><span> {</span><br><span>@@ -745,6 +791,7 @@</span><br><span=
+>         cmocka_unit_test(test_verify_hmac_none_out_of_range_ack),</span><=
+br><span>         cmocka_unit_test(test_generate_reset_packet_plain),</span=
+><br><span>         cmocka_unit_test(test_generate_reset_packet_tls_auth),<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_=
+test(test_wkc_not_appended_without_key),</span><br><span>         cmocka_un=
+it_test(test_extract_control_message)</span><br><span>     };</span><br><sp=
+an> </span><br><span></span><br></pre><p>To view, visit <a href=3D"http://g=
+errit=2Eopenvpn=2Enet/c/openvpn/+/1916?usp=3Demail">change 1916</a>=2E To u=
+nsubscribe, or for help writing mail filters, visit <a href=3D"http://gerri=
+t=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope i=
+temtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" hre=
+f=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1916?usp=3Demail"/><meta ite=
+mprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: comment </di=
-v>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=
-=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"=
-> Gerrit-Change-Id: I5a7e9e13b9f9548b7ff717daae2b4a9cde3c06f2 </div>
-<div s=
-tyle=3D"display:none"> Gerrit-Change-Number: 1747 </div>
-<div style=3D"disp=
-lay:none"> Gerrit-PatchSet: 22 </div>
-<div style=3D"display:none"> Gerrit-O=
-wner: stipa &lt;lstipakov@gmail=2Ecom&gt; </div>
-<div style=3D"display:none=
-"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<di=
-v style=3D"display:none"> Gerrit-Reviewer: ralf_lici &lt;ralf@mandelbit=2Ec=
-om&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;ope=
-nvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
-<div style=3D"display:none"=
-> Gerrit-Attention: stipa &lt;lstipakov@gmail=2Ecom&gt; </div>
-<div style=
-=3D"display:none"> Gerrit-Comment-Date: Tue, 15 Sep 2026 10:32:33 +0000 </d=
+<div style=3D"display=
+:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none">=
+ Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch:=
+ master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Iac6d49d06421=
+5510bde9a4cd4600ab3a50a45cb4 </div>
+<div style=3D"display:none"> Gerrit-Cha=
+nge-Number: 1916 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </d=
 iv>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=
-=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@gmail=2E=
+com&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;=
+arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-C=
+C: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<di=
+v style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@rfc2=
+549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &=
+lt;lstipakov@gmail=2Ecom&gt; </div>
 
 </body></html>
---cuv9xgTsCgI=--
+--wqVgU2t7UZU=--
 
 
---===============7660043842938838128==
+--===============6772696466894965542==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============7660043842938838128==
+--===============6772696466894965542==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -499,5 +662,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============7660043842938838128==--
+--===============6772696466894965542==--
 
