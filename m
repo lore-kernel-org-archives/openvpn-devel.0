@@ -4,37 +4,37 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 718FCC88E77
-	for <openvpn-devel@archiver.kernel.org>; Wed, 16 Sep 2026 08:36:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 66143C88E77
+	for <openvpn-devel@archiver.kernel.org>; Wed, 16 Sep 2026 08:36:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=iNaR5O1n2IhtDuUcLh3rSvj3kLbfBdlV/vXw1DShTYc=; b=inve/kHGtK/crmymfkSNTGc453
-	vLJdm2TMpvJOVTU2f3S026/A83O7MGI0hr0+UaZByitQqN9OBW+9fxWf5SPswoIM1waHp7SckQlQr
-	xOG5GWX/BSCqGAvCwhSWITeyL+Ut8HoMu/kShH9ExSKlJ0pXfyVz17X+k5gXl71NfWk4=;
+	bh=3nCZERF5M1HPfsFEXkxlIFnd16ySsbeCXUPBPQRggMg=; b=i1dLJOXVlK4ErS17Xb1Sp+L6V8
+	+iABHE5utCtv5DzHqTWi9ETPvJahF1STo7JEGqv2oSJxK8iiHuEs5ez1AMdKN+vK1tDSyDQg5dsYf
+	UbjRd4NCAqCRgnAH4LOKElAXiEJ7Wb6fPqCYcD9zCLgoX4NKoc7rm5jzEi0FDmCueEYI=;
 Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
 	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x6l7k-0004jN-GQ;
-	Wed, 16 Sep 2026 08:36:10 +0000
+	id 1x6l7o-0004l8-3x;
+	Wed, 16 Sep 2026 08:36:13 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <ralf@mandelbit.com>) id 1x6l7H-0004a8-Gw
+ (envelope-from <ralf@mandelbit.com>) id 1x6l7L-0004cF-Bn
  for openvpn-devel@lists.sourceforge.net;
- Wed, 16 Sep 2026 08:35:41 +0000
+ Wed, 16 Sep 2026 08:35:44 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
  In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=/EAaRb2p1+Wq/jWP26wAYJvUx90Q98xdAczu55sYetk=; b=RuqRmo983AsSFVLxqLpMfnjogm
- H7KqWcTcfayVgTgPXOL46Guakd81X2OdHPo7lm97tsct5X9BFZa2mgdUJVdK0tUHZEOJacvC2eOXk
- wG5yL7EzWJQeVLe2ffiBGGLq0/CyLX4S3yAu3jlbs3nqrvvcbY230GYgkW4MB8v34QA8=;
+ bh=/HBAEcX+VIZvYPe/5m0G2nDlCHVefic+vzCRj3Yb0Ik=; b=CGN/R75aNujCf/e5YCdQM6lrRL
+ 8ZfgLfCefusyTpQDX5DwQo+Epnjbz3D1qo8Yua3yFsz6UOGUx0rpM7SqhrjcosdaCU/JIqfYw/opd
+ 9DjEe90cpEWJqIdorXBZ4gZsU+ZUsGS+VnVcd67NGNOPMzQvJEHUi5CKg0sJy3sVZ44M=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -42,49 +42,49 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=/EAaRb2p1+Wq/jWP26wAYJvUx90Q98xdAczu55sYetk=; b=I5PLNdZ0pYxwumK5FhXbZPJCGj
- orQKjQjhIKj800CuOTwzZwtv41VBA/STu8/ErA4402jkmEE3HELIekqcvLGelPDPqaBP8G06YGd9E
- LOZHddaPWbEbl3nbd1wJmNCu1a2V7zFSEeU/S2m1OAmT7y0Hjmcqnchg34hBr0PNAEPM=;
-Received: from mout-b-106.mailbox.org ([195.10.208.46])
+ bh=/HBAEcX+VIZvYPe/5m0G2nDlCHVefic+vzCRj3Yb0Ik=; b=UjgSlJe7PFYMp25YvKqvY29fjh
+ R9uRHoG6HOzNPCA09usU1TKyfgSr0zkiuEcie5JEqa98x5yzXxzOI1NrvbW7sB8HUXzKCZIXxwY6b
+ biZcOtDYzA0jRlyFBawJckDPfJoIX3Z+vKC9nQSwEEJAzUCDzR2fuqfMSJzu3JBq1Q0o=;
+Received: from mout-b-112.mailbox.org ([195.10.208.42])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1x6l7C-00053E-2D for openvpn-devel@lists.sourceforge.net;
- Wed, 16 Sep 2026 08:35:40 +0000
+ id 1x6l7F-00053K-Tq for openvpn-devel@lists.sourceforge.net;
+ Wed, 16 Sep 2026 08:35:44 +0000
 Received: from smtp2.mailbox.org (smtp2.mailbox.org
  [IPv6:2001:67c:2050:b231:465::2])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
  (No client certificate requested)
- by mout-b-106.mailbox.org (Postfix) with ESMTPS id 4hlBzQ1djhzNlt8
+ by mout-b-112.mailbox.org (Postfix) with ESMTPS id 4hlBzT57SNz5x0c
  for <openvpn-devel@lists.sourceforge.net>;
- Wed, 16 Sep 2026 10:35:30 +0200 (CEST)
+ Wed, 16 Sep 2026 10:35:33 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
- s=MBO0001; t=1789547730;
+ s=MBO0001; t=1789547733;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:mime-version:mime-version:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=/EAaRb2p1+Wq/jWP26wAYJvUx90Q98xdAczu55sYetk=;
- b=Cz1tPqhKwNis+faAg0+qsHVcqN4bo345xW98NUTzlABJ789PoVY0iX9RUyxDIvcItpWxCo
- QFRckzLBAXblMt/+ztLd/1EDNY6c3/mTNWTFp5LzVaDHn7gBCxJ7xpnRKRi9rKpmnmL9e3
- UchlkmWQrMszmQElPE6GQ9B1K1ZZZPJCoEnqre8gj2qyOFQnQf5bTWePqcMPg4DAdh0mXq
- U+HPoZyeiy5zOcYy3zuP/8xUE1Rlh9OLvFI6XECGw4iA9TFHXOOA4vGxM8wRPrFjbb2SbY
- A9MCLcMFiauNYAQR5Sk6g2Y0N2Q08JaT6d0R7Sc+yVlsA4wgKIVnHVDhXB/KCQ==
+ bh=/HBAEcX+VIZvYPe/5m0G2nDlCHVefic+vzCRj3Yb0Ik=;
+ b=dtdHOaqUKCaalgRI0DRjK7Kxya+CoWvNNVfnEVAwAHeGPnBZjwEaFGbMFKRxRUFhN/60fu
+ 47WPAsNnmzVqH3BvX5iaegVG7DUB5XEoDBWoWAvwPVznYOU2L+GAL3oXjBKMncfNEtFWz/
+ sAKuSCdKKjaXIfMAwFbDPgfOwsgEw4dS/fCVomcNOdSVFEHmXzbm/YLAVPa2b75eRu0oBz
+ lPkWXXNC2cLc1iGQIrNTkMXPC1vCR+ffCk0tVbLokeUvGGxYo6ij38ConJSQefxrxP9gxL
+ hvVEJCYUmhS+ebMm7zOH+XktVYElMXSKVAgD9LCrHF+xWt6VvYMOYXmMxNVl1Q==
 Authentication-Results: outgoing_mbo_mout; dkim=none;
  spf=pass (outgoing_mbo_mout: domain of ralf@mandelbit.com designates
  2001:67c:2050:b231:465::2 as permitted sender)
  smtp.mailfrom=ralf@mandelbit.com
 From: Ralf Lici <ralf@mandelbit.com>
 To: openvpn-devel@lists.sourceforge.net
-Date: Wed, 16 Sep 2026 10:35:11 +0200
-Message-ID: <5baa1d94e29e7b109ffd412b4f1d5d113a319389.1789546917.git.ralf@mandelbit.com>
+Date: Wed, 16 Sep 2026 10:35:16 +0200
+Message-ID: <cc6cda4eb421a6c1ba12da441256b4dfb8438c12.1789546917.git.ralf@mandelbit.com>
 In-Reply-To: <cover.1789546917.git.ralf@mandelbit.com>
 References: <cover.1789546917.git.ralf@mandelbit.com>
 MIME-Version: 1.0
-X-Rspamd-Queue-Id: 4hlBzQ1djhzNlt8
-X-Headers-End: 1x6l7C-00053E-2D
-Subject: [Openvpn-devel] [RFC ovpn net-next v3 2/9] ovpn: accept frag-list
- GSO input
+X-Rspamd-Queue-Id: 4hlBzT57SNz5x0c
+X-Headers-End: 1x6l7F-00053K-Tq
+Subject: [Openvpn-devel] [RFC ovpn net-next v3 7/9] ovpn: prefetch GSO
+ segments before in-place encryption
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -100,68 +100,37 @@ Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-Forwarded TCP traffic can be coalesced into SKB_GSO_FRAGLIST when the
-receiving host has no local TCP socket for the flow. Although ovpn
-segments every GSO input itself, it does not advertise NETIF_F_FRAGLIST,
-so generic transmit validation segments these aggregates before calling
-ovpn_net_xmit. That segmentation is functionally correct, but causes
-ovpn_net_xmit to be invoked separately for every resulting packet.
-
-Advertise frag-list storage so ovpn receives the aggregate intact and
-performs protocol validation and destination-to-peer lookup once before
-segmenting it. Frag-list GSO segmentation recovers the complete child
-skbs, which can then be encrypted in place and transmitted
-independently. Rebuilding those children into a replacement UDP GSO
-aggregate was found to add cost rather than improve throughput.
-
-The feature also admits non-GSO frag lists, which describe one packet
-split across several skbs. Let skb_cow_data preserve small lists
-directly. If a list exceeds the AEAD scatterlist limit, linearize it and
-continue rather than rejecting an otherwise valid packet.
+Software segmentation exposes the complete skb list before encryption
+begins. While encrypting each segment, request write ownership of the
+next linear segment cache line by cache line. A single skb naturally
+skips the prefetch path.
 
 Signed-off-by: Ralf Lici <ralf@mandelbit.com>
 ---
-No changes since v2 https://lore.kernel.org/openvpn-devel/5baa1d94e29e7b109ffd412b4f1d5d113a319389.1789540779.git.ralf@mandelbit.com/
+No changes since v2 https://lore.kernel.org/openvpn-devel/3f903692549ee58887b1bb421f8b283059f66a1d.1789540779.git.ralf@mandelbit.com/
 
-No changes since v1 https://lore.kernel.org/openvpn-devel/5baa1d94e29e7b109ffd412b4f1d5d113a319389.1789485693.git.ralf@mandelbit.com/
+No changes since v1 https://lore.kernel.org/openvpn-devel/382879c187b1acca65198c467d1263266243ea50.1789485693.git.ralf@mandelbit.com/
 
- drivers/net/ovpn/crypto_aead.c | 8 ++++++--
- drivers/net/ovpn/main.c        | 3 ++-
- 2 files changed, 8 insertions(+), 3 deletions(-)
+ drivers/net/ovpn/io.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/ovpn/crypto_aead.c b/drivers/net/ovpn/crypto_aead.c
-index 74eaf6fac2f5..2af493fd5735 100644
---- a/drivers/net/ovpn/crypto_aead.c
-+++ b/drivers/net/ovpn/crypto_aead.c
-@@ -168,8 +168,12 @@ int ovpn_aead_encrypt(struct ovpn_peer *peer, struct ovpn_crypto_key_slot *ks,
- 	if (unlikely(nfrags < 0))
- 		return nfrags;
- 
--	if (unlikely(nfrags + 2 > (MAX_SKB_FRAGS + 2)))
--		return -ENOSPC;
-+	if (unlikely(nfrags > MAX_SKB_FRAGS)) {
-+		ret = skb_linearize(skb);
-+		if (unlikely(ret))
-+			return ret;
-+		nfrags = 1;
-+	}
- 
- 	/* allocate temporary memory for iv, sg and req */
- 	tmp = kmalloc(ovpn_aead_crypto_tmp_size(ks->encrypt, nfrags),
-diff --git a/drivers/net/ovpn/main.c b/drivers/net/ovpn/main.c
-index 28e1eb06e127..ac4e0d85e215 100644
---- a/drivers/net/ovpn/main.c
-+++ b/drivers/net/ovpn/main.c
-@@ -158,7 +158,8 @@ static const struct ethtool_ops ovpn_ethtool_ops = {
- static void ovpn_setup(struct net_device *dev)
- {
- 	netdev_features_t feat = NETIF_F_HW_CSUM | NETIF_F_SG | NETIF_F_GSO |
--				 NETIF_F_GSO_SOFTWARE | NETIF_F_HIGHDMA;
-+				 NETIF_F_GSO_SOFTWARE | NETIF_F_FRAGLIST |
-+				 NETIF_F_HIGHDMA;
- 
- 	dev->needs_free_netdev = true;
- 
+diff --git a/drivers/net/ovpn/io.c b/drivers/net/ovpn/io.c
+index 11f7f16d7b79..cb7503a3e79c 100644
+--- a/drivers/net/ovpn/io.c
++++ b/drivers/net/ovpn/io.c
+@@ -472,6 +472,12 @@ static void ovpn_send(struct ovpn_priv *ovpn, struct sk_buff *skb,
+ 	 * independently
+ 	 */
+ 	skb_list_walk_safe(skb, curr, next) {
++		/* encrypting this segment can hide the cost of fetching the
++		 * next segment's data into the cache
++		 */
++		if (next)
++			ovpn_skb_prefetchw(next);
++
+ 		if (unlikely(!ovpn_encrypt_one(peer, curr))) {
+ 			ovpn_dev_dstats_tx_dropped(ovpn->dev, 1);
+ 			kfree_skb(curr);
 -- 
 2.55.0
 
