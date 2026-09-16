@@ -4,26 +4,26 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1DBA3C982C9
-	for <openvpn-devel@archiver.kernel.org>; Wed, 16 Sep 2026 06:53:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D817FC88E5C
+	for <openvpn-devel@archiver.kernel.org>; Wed, 16 Sep 2026 06:53:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=ike8dvFlCoCs4CZGHyKew6Gyk/IvuxpRZmP1jz3tlZY=; b=S9n3J8kypW9ZsIGCKkQL9FWLUk
-	YyTm7spOXlEeBiT10XcWX+ptkl4xr/xmNqab8EB92bO+5XBCw22giJ+bivaGcBvw4N6PjGwuNuHsY
-	xDULlQkdTw7OrW5k2dRdgT4MU8IL7svMTgN82ubEviyN+N7xtyd99J9fAoXychUI+wMI=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=YDoVb8usf/pMXJ65JNNW7C4zjjBc9zcyVDVJSl2da3Q=; b=cMdVOIMOk4fMQY1xOFlccGFEzq
+	VS0/FTernFmp9FMVx+7CweH4CWycHGjCx/0sr/0tJVgamjtHAu/TknLi0JJkVQf4Otnii/wbaqfxS
+	/z+MbPhEx/0ode5FZlZO3+UVtc9/b+thTcKhfU/hXvQ9rsVqMPNtGGUa+T89Zk5J2lmA=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x6jW4-0001Ic-FL;
-	Wed, 16 Sep 2026 06:53:13 +0000
+	id 1x6jW6-0008EQ-ER;
+	Wed, 16 Sep 2026 06:53:14 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <ralf@mandelbit.com>) id 1x6jW2-0001IF-Ml
+ (envelope-from <ralf@mandelbit.com>) id 1x6jW3-0008E0-2P
  for openvpn-devel@lists.sourceforge.net;
  Wed, 16 Sep 2026 06:53:11 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
@@ -32,9 +32,9 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=CITsaCk4S8DnpvDeecUNjmmT1RHQUsnQPp+g5qBuw6g=; b=dTorj9e5kZUEQE6SOK9ticm3FO
- q31jKpDirq9r2TDhdbjN2GhcTAfQF2tvYtvfZyJwL+/NignmnFJzs6mxymJqDl5EMFnEN7bvR8XSb
- ZBQtlVxlCI47JxMG5atPF4taCKSMNUyNLll8S46AcEchuptTxUv2mEf8nqsJ2SNzPVeA=;
+ bh=fEJRJ1ph8y1MZmPuHybv405vLE/5gaq2qjN7MYQuQsM=; b=hWzHvkt/oKL4l+Iw7Iu2Qc6BDm
+ uWxbXW3dBb3TCDKPv0YRgadUzCWSUo5rt3iftqUiEoUkxwNcRRjyKCBSIe1JvVUVn0iUG6gCZO/+T
+ 9O7NBFKO6D3khRxfywk6uluX8DVA80AJsatfzEsdYBVcbGymq1pFul5YJJWQWQi7s3vI=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -42,43 +42,49 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=CITsaCk4S8DnpvDeecUNjmmT1RHQUsnQPp+g5qBuw6g=; b=Y5yFJkHIaKG1XFjlxbR3cKTXC/
- XtlOmIY6enun+xQ4u8BmVdF5J6gAgzZjyhcTknYkDdZr0XnOUSPu3oP5YBMs3fK9pIbLRBc0jgM/c
- 3iD4d0xfN4EwGl7qgYvWXu75kxLY5xciEs1CjPzlnqrKg4+gaCe2aT0PQYUM0LJYrx8A=;
-Received: from mout-b-105.mailbox.org ([195.10.208.50])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ bh=fEJRJ1ph8y1MZmPuHybv405vLE/5gaq2qjN7MYQuQsM=; b=YcAleR7HQ7FuoEVipBe5ZZzO0N
+ mKaqzfyCEBp7W5PJqqafEdQMbvpL2jsXUc6ASz+UwsUXbIn2jEOdvm/sR5sSCkrQe2x1S840+9t8s
+ GiWd5j9FnMUJGY/Qz9peHVKECVgXM4cs0VbGyogC348+VnzYpVL7M1N3AwMaI/fxeavE=;
+Received: from mout-b-112.mailbox.org ([195.10.208.42])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1x6jW2-0001sj-4w for openvpn-devel@lists.sourceforge.net;
- Wed, 16 Sep 2026 06:53:11 +0000
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [10.196.197.1])
+ id 1x6jW1-000674-7o for openvpn-devel@lists.sourceforge.net;
+ Wed, 16 Sep 2026 06:53:10 +0000
+Received: from smtp1.mailbox.org (smtp1.mailbox.org
+ [IPv6:2001:67c:2050:b231:465::1])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
  (No client certificate requested)
- by mout-b-105.mailbox.org (Postfix) with ESMTPS id 4hl8jB2C0cz9tLr
+ by mout-b-112.mailbox.org (Postfix) with ESMTPS id 4hl8j84XLJz5wlM
  for <openvpn-devel@lists.sourceforge.net>;
- Wed, 16 Sep 2026 08:53:02 +0200 (CEST)
+ Wed, 16 Sep 2026 08:53:00 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
- s=MBO0001; t=1789541582;
+ s=MBO0001; t=1789541580;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:mime-version:mime-version:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=CITsaCk4S8DnpvDeecUNjmmT1RHQUsnQPp+g5qBuw6g=;
- b=J+mDtb+uOSa01iDQlhLqH9nWNLjNkp/nhLEo8Tw4a/tTFDjyO2D6hlyLo7hi5jSNU9DEo4
- cr3xQeu4bOFCcuXcs9tuWgnF1yhaE/ynciMdSQkJnBc1XdrJQ4frGZ+FSADFJJb4RkGKMe
- m+2zNlH5qzYrBeLrKR8CfVCkxbTx2wcV9mezifk4Yp3y4aj4oBpy/OZ59VER3iWp6seoU1
- pMwv9NvovRb82IzU/2hydY+GI88XfbO8u/YGPH3BRCUS8kTmxl44U0jZRYu+fpAOFkefyY
- hW4x67jJBb9mYlEVCLly1Of4vbiXG39rOSAZ9IciE8xsOD7kj/m6NFuq2FP1XQ==
+ bh=fEJRJ1ph8y1MZmPuHybv405vLE/5gaq2qjN7MYQuQsM=;
+ b=mXntJ4r2MUqFONoc16e6lhjyBBxQMTLFu3oHrZoqsx5Lp305kCfgC20d159QeRP3+unEtZ
+ sk1Cjned5jc1+RSEPGSLR0/KK0qHnJgwfDHlf19COgH6FtkbeKLO0Wp8IWzCtf4sAKMhU3
+ 3Aw6HfajcBXaOoicSnIiB/fYkZlEN4ucY6c1+rsEZC00Yeg/47daATTwl2QsZRuypymvte
+ r9eFK8i0PBbTLAA2i86e0AGN2FzJ7TUHTcQx7P0qtcNmlJVLSIeg2sKI5viphc/qFzWsG0
+ qv9ZlOcrSpG5Es3Jrpub2QLgZTInORj2mZDH8PzN31Y2iavINWv/IbIwXDhs0Q==
+Authentication-Results: outgoing_mbo_mout; dkim=none;
+ spf=pass (outgoing_mbo_mout: domain of ralf@mandelbit.com designates
+ 2001:67c:2050:b231:465::1 as permitted sender)
+ smtp.mailfrom=ralf@mandelbit.com
 From: Ralf Lici <ralf@mandelbit.com>
 To: openvpn-devel@lists.sourceforge.net
-Date: Wed, 16 Sep 2026 08:52:49 +0200
-Message-ID: <3192bff7d69f958114e5fc9efe0dc5039c5be147.1789540779.git.ralf@mandelbit.com>
+Date: Wed, 16 Sep 2026 08:52:46 +0200
+Message-ID: <76cb811457ac17b519d219b13fb2a4317a6d5e74.1789540779.git.ralf@mandelbit.com>
 In-Reply-To: <cover.1789540779.git.ralf@mandelbit.com>
 References: <cover.1789540779.git.ralf@mandelbit.com>
 MIME-Version: 1.0
-X-Headers-End: 1x6jW2-0001sj-4w
-Subject: [Openvpn-devel] [RFC ovpn net-next v2 8/9] net: gro: honor skbs
- consumed by protocol callbacks
+X-Rspamd-Queue-Id: 4hl8j84XLJz5wlM
+X-Headers-End: 1x6jW1-000674-7o
+Subject: [Openvpn-devel] [RFC ovpn net-next v2 5/9] ovpn: coalesce UDP data
+ records with GRO
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -94,66 +100,318 @@ Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-XFRM's ESP GRO callbacks may consume an skb and return
-ERR_PTR(-EINPROGRESS) as an ownership marker. dev_gro_receive already
-recognizes this marker unconditionally and converts it to GRO_CONSUMED,
-so -EINPROGRESS is reserved by the generic GRO callback interface and
-cannot represent an ordinary callback error. The nested flush helpers
-currently avoid accessing a consumed skb only when XFRM offload is
-configured, because XFRM has so far been the sole user of the
-convention.
+Register UDP tunnel GRO callbacks for ovpn data sockets and coalesce
+compatible DATA_V2 records from one transport flow. Keep each encrypted
+record as a separate frag-list entry so the receive path can detach and
+authenticate records independently.
 
-Make the ownership check unconditional so other protocol callbacks can
-safely use the existing marker without acquiring an unrelated
-CONFIG_XFRM_OFFLOAD dependency. Callbacks which do not return the marker
-are unaffected.
+Match the complete opcode/key/peer header and require compatible outer-
+network and checksum state. Flush on short records, differing segment
+geometry, existing GSO input, or the 64-record limit.
+
+Export skb_gro_receive_list, which is already shared by the core UDP and
+TCP frag-list GRO paths, so modular ovpn can use the same primitive
+instead of maintaining a local copy.
+
+On two directly connected 100-Gbit/s mlx5 ports, five interleaved iperf3
+-t 60 -O 10 single-flow AES-128-GCM runs in each direction produced the
+following throughput:
+
+                         Forward          Reverse
+Without receive GRO     18.308 Gbit/s    19.233 Gbit/s
+With frag-list GRO      22.087 Gbit/s    22.962 Gbit/s
+
+The preceding UDP GSO transmit path and hardware UDP segmentation were
+enabled in both cases. The equal-weight mean of the two directional
+results increased from 18.770 to 22.524 Gbit/s, a 20.0% improvement.
 
 Signed-off-by: Ralf Lici <ralf@mandelbit.com>
 ---
-No changes since v1 https://lore.kernel.org/openvpn-devel/893f6c2b385f9df3e9617a9b7f547734061df195.1789485693.git.ralf@mandelbit.com/
+Changes since v1 https://lore.kernel.org/openvpn-devel/dd08a7a2fe0dfc88509115b5d7ee17825020c012.1789485693.git.ralf@mandelbit.com/
+- Preserve the outer network offset in ovpn_udp_gro_receive_fraglist.
+  (Sashiko)
+- Detach frag_list only from a UDP-tunnel GSO aggregate. (Sashiko)
 
- include/net/gro.h | 19 +++----------------
- 1 file changed, 3 insertions(+), 16 deletions(-)
+ drivers/net/ovpn/io.c  |   7 +-
+ drivers/net/ovpn/udp.c | 181 ++++++++++++++++++++++++++++++++++++++++-
+ net/core/gro.c         |   1 +
+ net/ipv4/udp_offload.c |   3 +-
+ 4 files changed, 185 insertions(+), 7 deletions(-)
 
-diff --git a/include/net/gro.h b/include/net/gro.h
-index 2300b6da05b2..20ddc5488789 100644
---- a/include/net/gro.h
-+++ b/include/net/gro.h
-@@ -361,9 +361,11 @@ static inline void skb_gro_remcsum_cleanup(struct sk_buff *skb,
- 	remcsum_unadjust((__sum16 *)ptr, grc->delta);
- }
+diff --git a/drivers/net/ovpn/io.c b/drivers/net/ovpn/io.c
+index 3ad4cadeeb02..11f7f16d7b79 100644
+--- a/drivers/net/ovpn/io.c
++++ b/drivers/net/ovpn/io.c
+@@ -70,11 +70,10 @@ static void ovpn_netdev_write(struct ovpn_peer *peer, struct sk_buff *skb)
+ 	unsigned int pkt_len;
+ 	int ret;
  
--#ifdef CONFIG_XFRM_OFFLOAD
- static inline void skb_gro_flush_final(struct sk_buff *skb, struct sk_buff *pp, int flush)
- {
-+	/* a GRO callback may consume skb and return this marker to prevent
-+	 * accessing the skb while unwinding through the enclosing GRO layers
+-	/*
+-	 * GSO state from the transport layer is not valid for the tunnel/data
+-	 * path. Reset all GSO fields to prevent any further GSO processing
+-	 * from entering an inconsistent state.
++	/* the transport encapsulation and its GSO metadata do not describe the
++	 * decrypted inner packet
+ 	 */
++	skb->encapsulation = 0;
+ 	skb_gso_reset(skb);
+ 
+ 	/* we can't guarantee the packet wasn't corrupted before entering the
+diff --git a/drivers/net/ovpn/udp.c b/drivers/net/ovpn/udp.c
+index 4802d982de08..adce9dd8629e 100644
+--- a/drivers/net/ovpn/udp.c
++++ b/drivers/net/ovpn/udp.c
+@@ -11,8 +11,10 @@
+ #include <linux/skbuff.h>
+ #include <linux/socket.h>
+ #include <linux/udp.h>
++#include <linux/unaligned.h>
+ #include <net/addrconf.h>
+ #include <net/dst_cache.h>
++#include <net/gro.h>
+ #include <net/route.h>
+ #include <net/transp_v6.h>
+ #include <net/udp.h>
+@@ -27,6 +29,176 @@
+ #include "socket.h"
+ #include "udp.h"
+ 
++/* like UDP and TCP frag-list GRO */
++#define OVPN_UDP_GRO_CNT_MAX 64
++
++static bool ovpn_udp_gro_header(struct sk_buff *skb, u32 *header)
++{
++	const unsigned int offset = skb_gro_offset(skb);
++
++	/* GRO replaces its frag0 pointer after holding an skb, so keep the
++	 * openvpn header linear for later candidate comparisons
 +	 */
- 	if (PTR_ERR(pp) != -EINPROGRESS)
- 		NAPI_GRO_CB(skb)->flush |= flush;
- }
-@@ -378,21 +380,6 @@ static inline void skb_gro_flush_final_remcsum(struct sk_buff *skb,
- 		skb->remcsum_offload = 0;
- 	}
- }
--#else
--static inline void skb_gro_flush_final(struct sk_buff *skb, struct sk_buff *pp, int flush)
--{
--	NAPI_GRO_CB(skb)->flush |= flush;
--}
--static inline void skb_gro_flush_final_remcsum(struct sk_buff *skb,
--					       struct sk_buff *pp,
--					       int flush,
--					       struct gro_remcsum *grc)
--{
--	NAPI_GRO_CB(skb)->flush |= flush;
--	skb_gro_remcsum_cleanup(skb, grc);
--	skb->remcsum_offload = 0;
--}
--#endif
++	if (!pskb_may_pull(skb, offset + OVPN_OPCODE_SIZE))
++		return false;
++
++	*header = get_unaligned_be32(skb->data + offset);
++	return true;
++}
++
++static struct sk_buff *ovpn_udp_gro_receive_fraglist(struct sock *sk,
++						     struct list_head *head,
++						     struct sk_buff *skb)
++{
++	const unsigned int gso_size = skb_gro_len(skb);
++	struct sk_buff *p, *pp = NULL;
++	u32 header, header2;
++	int ret = 0, nhoff;
++	bool flush;
++
++	if (!ovpn_udp_gro_header(skb, &header) ||
++	    FIELD_GET(OVPN_OPCODE_PKTTYPE_MASK, header) != OVPN_DATA_V2) {
++		NAPI_GRO_CB(skb)->flush = 1;
++		return NULL;
++	}
++
++	/* do not nest an existing GSO packet in the record list */
++	if (skb_is_gso(skb)) {
++		NAPI_GRO_CB(skb)->flush = 1;
++		return NULL;
++	}
++
++	list_for_each_entry(p, head, list) {
++		if (!NAPI_GRO_CB(p)->same_flow)
++			continue;
++
++		/* match opcode, key ID and peer ID */
++		if (!ovpn_udp_gro_header(p, &header2) || header != header2) {
++			NAPI_GRO_CB(p)->same_flow = 0;
++			continue;
++		}
++
++		/* GRO has already matched the outer addresses and UDP ports;
++		 * check the remaining outer IP fields
++		 */
++		nhoff = skb_transport_offset(p) -
++			NAPI_GRO_CB(p)->network_offset;
++		flush = __gro_receive_network_flush(udp_hdr(skb), udp_hdr(p), p,
++						    nhoff, false);
++
++		/* The first record determines the nominal GSO size. A shorter
++		 * final record may follow it, but a larger record cannot.
++		 * Checksum metadata must also be uniform because the aggregate
++		 * exposes only one checksum state.
++		 */
++		if (gso_size > skb_shinfo(p)->gso_size || flush ||
++		    skb->ip_summed != p->ip_summed ||
++		    skb->csum_level != p->csum_level) {
++			pp = p;
++		} else {
++			/* skb_gro_receive_list pulls the headers already
++			 * processed by GRO before linking this skb to the
++			 * record list so we have to manually preserve the
++			 * outer network header location for later handling
++			 */
++			nhoff = NAPI_GRO_CB(skb)->network_offset;
++			skb_set_network_header(skb, nhoff);
++			ret = skb_gro_receive_list(p, skb);
++		}
++
++		/* complete the aggregate if the append failed, or after
++		 * appending a shorter final record, or after reaching the
++		 * record-count limit
++		 */
++		if (ret || gso_size != skb_shinfo(p)->gso_size ||
++		    NAPI_GRO_CB(p)->count >= OVPN_UDP_GRO_CNT_MAX)
++			pp = p;
++
++		return pp;
++	}
++
++	return NULL;
++}
++
++static int ovpn_udp_gro_complete(struct sock *sk, struct sk_buff *skb,
++				 int nhoff)
++{
++	/* udp_gro_complete has already marked this as a UDP tunnel GSO packet.
++	 * Keep that type so UDP passes the aggregate directly to the encap cb,
++	 * where the original record skbs are detached.
++	 */
++	skb_shinfo(skb)->gso_segs = NAPI_GRO_CB(skb)->count;
++
++	/* Each outer UDP checksum was either validated (or accepted in case of
++	 * checksumless UDP) before its record was merged in
++	 * skb_gro_checksum_validate_zero_check.
++	 * The checksum in the aggregate cannot describe the concatenation of
++	 * independent UDP payloads, so we preserve the validation result.
++	 */
++	skb->ip_summed = CHECKSUM_UNNECESSARY;
++	skb->csum_level = 0;
++	skb->csum_valid = 0;
++
++	return 0;
++}
++
++/* skb_gro_receive_list keeps the first openvpn record in 'skb' and links the
++ * remaining records through frag_list. Here we segment by detaching that list
++ * before delivering the records individually, and remove the child skbs from
++ * the head skb's length and memory accounting so the head describes only the
++ * first record again.
++ */
++static struct sk_buff *ovpn_udp_gro_detach(struct sk_buff *skb)
++{
++	struct sk_buff *curr, *list;
++	unsigned int data_len = 0, truesize = 0;
++
++	/* IP reassembly may also use fraglist, but it is not a record batch */
++	if (!skb_is_gso(skb) ||
++	    !(skb_shinfo(skb)->gso_type &
++	      (SKB_GSO_UDP_TUNNEL | SKB_GSO_UDP_TUNNEL_CSUM)))
++		return NULL;
++
++	list = skb_shinfo(skb)->frag_list;
++	if (unlikely(!list))
++		return NULL;
++
++	for (curr = list; curr; curr = curr->next) {
++		data_len += curr->len;
++		truesize += curr->truesize;
++	}
++
++	skb_shinfo(skb)->frag_list = NULL;
++	skb->len -= data_len;
++	skb->data_len -= data_len;
++	skb->truesize -= truesize;
++
++	return list;
++}
++
++static void ovpn_udp_recv(struct ovpn_peer *peer, struct sk_buff *skb)
++{
++	struct sk_buff *next;
++
++	skb->next = ovpn_udp_gro_detach(skb);
++
++	skb_list_walk_safe(skb, skb, next)
++	{
++		skb_mark_not_on_list(skb);
++
++		/* keep the current reference alive for the next record before
++		 * handing this one to crypto
++		 */
++		if (next && unlikely(!ovpn_peer_hold(peer))) {
++			DEBUG_NET_WARN_ON_ONCE(1);
++			kfree_skb_list(next);
++			next = NULL;
++		}
++
++		ovpn_recv(peer, skb);
++	}
++}
++
+ /* Retrieve the corresponding ovpn object from a UDP socket
+  * rcu_read_lock must be held on entry
+  */
+@@ -121,8 +293,7 @@ static int ovpn_udp_encap_recv(struct sock *sk, struct sk_buff *skb)
  
- INDIRECT_CALLABLE_DECLARE(struct sk_buff *ipv6_gro_receive(struct list_head *,
- 							   struct sk_buff *));
+ 	/* pop off outer UDP header */
+ 	__skb_pull(skb, sizeof(struct udphdr));
+-	skb_mark_not_on_list(skb);
+-	ovpn_recv(peer, skb);
++	ovpn_udp_recv(peer, skb);
+ 	return 0;
+ 
+ drop:
+@@ -408,6 +579,8 @@ int ovpn_udp_socket_attach(struct ovpn_socket *ovpn_sock, struct socket *sock,
+ 		.encap_type = UDP_ENCAP_OVPNINUDP,
+ 		.encap_rcv = ovpn_udp_encap_recv,
+ 		.encap_destroy = ovpn_udp_encap_destroy,
++		.gro_receive = ovpn_udp_gro_receive_fraglist,
++		.gro_complete = ovpn_udp_gro_complete,
+ 	};
+ 	struct ovpn_socket *old_data;
+ 	int ret;
+@@ -454,6 +627,8 @@ void ovpn_udp_socket_detach(struct ovpn_socket *ovpn_sock)
+ {
+ 	struct sock *sk = ovpn_sock->sk;
+ 
++	udp_tunnel_cleanup_gro(sk);
++
+ 	/* Re-enable multicast loopback */
+ 	inet_set_bit(MC_LOOP, sk);
+ 	/* Disable CHECKSUM_UNNECESSARY to CHECKSUM_COMPLETE conversion */
+@@ -462,6 +637,8 @@ void ovpn_udp_socket_detach(struct ovpn_socket *ovpn_sock)
+ 	WRITE_ONCE(udp_sk(sk)->encap_type, 0);
+ 	WRITE_ONCE(udp_sk(sk)->encap_rcv, NULL);
+ 	WRITE_ONCE(udp_sk(sk)->encap_destroy, NULL);
++	WRITE_ONCE(udp_sk(sk)->gro_receive, NULL);
++	WRITE_ONCE(udp_sk(sk)->gro_complete, NULL);
+ 
+ 	rcu_assign_sk_user_data(sk, NULL);
+ }
+diff --git a/net/core/gro.c b/net/core/gro.c
+index 29b4d02bf519..b6acedc919f8 100644
+--- a/net/core/gro.c
++++ b/net/core/gro.c
+@@ -262,6 +262,7 @@ int skb_gro_receive_list(struct sk_buff *p, struct sk_buff *skb)
+ 
+ 	return 0;
+ }
++EXPORT_SYMBOL(skb_gro_receive_list);
+ 
+ static void gro_complete(struct gro_node *gro, struct sk_buff *skb)
+ {
+diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
+index cf07c3c6611a..187f108f3ee8 100644
+--- a/net/ipv4/udp_offload.c
++++ b/net/ipv4/udp_offload.c
+@@ -40,7 +40,8 @@ struct udp_tunnel_type_entry {
+ #define UDP_MAX_TUNNEL_TYPES (IS_ENABLED(CONFIG_GENEVE) + \
+ 			      IS_ENABLED(CONFIG_VXLAN) * 2 + \
+ 			      IS_ENABLED(CONFIG_NET_FOU) * 2 + \
+-			      IS_ENABLED(CONFIG_XFRM) * 2)
++			      IS_ENABLED(CONFIG_XFRM) * 2 + \
++			      IS_ENABLED(CONFIG_OVPN))
+ 
+ DEFINE_STATIC_CALL(udp_tunnel_gro_rcv, dummy_gro_rcv);
+ static DEFINE_STATIC_KEY_FALSE(udp_tunnel_static_call);
 -- 
 2.55.0
 
