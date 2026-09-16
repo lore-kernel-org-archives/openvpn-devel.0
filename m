@@ -4,37 +4,37 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6DA8FC982C9
-	for <openvpn-devel@archiver.kernel.org>; Wed, 16 Sep 2026 20:32:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 70050C982C9
+	for <openvpn-devel@archiver.kernel.org>; Wed, 16 Sep 2026 20:34:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=aLfF4ibd2uaQkGb3Squ5aTs3zIGbUvuLyx+7Ih/MBlw=; b=UgLC6O1mhBGFEIZJSWqYCDD6mT
-	jXRWwSWuwAwuxOKvlZ5rTgw10hKoTPFEvfQ5IXGAqti15VeIVEkmwqPbL5IDuJm3F3MszLlTJeukc
-	34K2emjdP0vBc5V7VvtpgiCf/vT/KuM2FpBH0dBGOB7DpJfL0qr2hRTy6Ds68rfJReIE=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=SzP4EK6BBMrdN7pwMoPT5QIvaLPuDqRtacXN51gHfS4=; b=I/bwgyfK6LnOKZVprpX3oWVW/7
+	VT7Uxh6LkksBz8CMaIozYWNVhLljK8i+p8EmJqklkFFnVvCFbgYZQRU9jcnmghrTcMFkSJM98Kn6q
+	dM9nFe3cxyMAdXbl6WnQVdtgNd9TE66uIjy4sb2/+bvKKPj/cAEOBZqpnSkn829Dow9Q=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x6wJ0-0003yW-P9;
-	Wed, 16 Sep 2026 20:32:35 +0000
+	id 1x6wL2-0000sX-GS;
+	Wed, 16 Sep 2026 20:34:40 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1x6wIn-0003xJ-0Z
+ (envelope-from <gert@blue4.greenie.muc.de>) id 1x6wKx-0000sO-Hs
  for openvpn-devel@lists.sourceforge.net;
- Wed, 16 Sep 2026 20:32:21 +0000
+ Wed, 16 Sep 2026 20:34:35 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
  In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=KGyMBDPg5hIujDTyF+CoZfiJ1fOVr6tG3wiiwmfIBW4=; b=USf8aDkVZXMV2rEpeU16Sd1Efc
- 4VGsHsP0UgLDsU/L84QH8eO4zR5He/kkk2FENZvgC4IQgkimP6At/w0Y/5x2kDiUA4+dOO55A2B81
- WravGNSfc/fXSEoIjqiryA9QMvfsw9/SxmBMG8sMR1K2CxCUojnDIFpQeEKlwteazxxw=;
+ bh=Dz5zre3qoD+aq1tG23h/KVZTvBuyCOD7qgFrTOzJofk=; b=MxDUhr0l6n5chd/LpKKmGPFmwv
+ /40vaVbaHUAqmUydPjLCXtbSRQ62C8WI4DIn6q4o9Bd7o6iG8KRHd/UEAGgPX+popZovoEWeb6fL6
+ A8xg7PlShf2PqUYMtSwIEToXgFmMhOIRlR/V54tmn9MupKm74L3Sv/oGKKC9s1tQyDIY=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -42,31 +42,30 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=KGyMBDPg5hIujDTyF+CoZfiJ1fOVr6tG3wiiwmfIBW4=; b=LPD2cshoPs/YS55wxep9+WGSOp
- uIT1xEYoQtW6MlFlC18xBxXlvfxPmrHytEK0CzQrCiC9w10AmCH5qJiu2ysHmfbgOogHETwLwjcp1
- +ccZVtCQ2vtaHpC4+6dx6+w2T25IX193QhH/enartEH+8qsGui/MZuN8XPf4bUn51PRQ=;
+ bh=Dz5zre3qoD+aq1tG23h/KVZTvBuyCOD7qgFrTOzJofk=; b=I224P18PYVw7yv0bV0oAI5fjo3
+ BTG2HzJJ3/nCZmIfxMM6ObrqaFU626bdsxbLlOyFE0E9AjIfhE18onzT+qmOb/yIRpxYFDq7t4IUF
+ Ugaok3RLJ9vqC5bGgTU4jWUzD/2jtxjl7tqRiM82RN1YZferQN3Via0ToxMeJKXW2sEY=;
 Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1x6wIm-0007vp-2C for openvpn-devel@lists.sourceforge.net;
- Wed, 16 Sep 2026 20:32:21 +0000
+ id 1x6wKu-0007yV-BI for openvpn-devel@lists.sourceforge.net;
+ Wed, 16 Sep 2026 20:34:33 +0000
 Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 68GKWCPa021297
- for <openvpn-devel@lists.sourceforge.net>; Wed, 16 Sep 2026 22:32:12 +0200
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 68GKYPHY021463
+ for <openvpn-devel@lists.sourceforge.net>; Wed, 16 Sep 2026 22:34:25 +0200
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 68GKWCib021296
- for openvpn-devel@lists.sourceforge.net; Wed, 16 Sep 2026 22:32:12 +0200
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 68GKYPAf021462
+ for openvpn-devel@lists.sourceforge.net; Wed, 16 Sep 2026 22:34:25 +0200
 From: Gert Doering <gert@greenie.muc.de>
 To: openvpn-devel@lists.sourceforge.net
-Date: Wed, 16 Sep 2026 22:32:06 +0200
-Message-ID: <20260916203212.21285-1-gert@greenie.muc.de>
+Date: Wed, 16 Sep 2026 22:34:19 +0200
+Message-ID: <20260916203425.21448-1-gert@greenie.muc.de>
 X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1789456688000.Iac6d49d064215510bde9a4cd4600ab3a50a45cb4@gerrit.openvpn.net>
-References: <gerrit.1789456688000.Iac6d49d064215510bde9a4cd4600ab3a50a45cb4@gerrit.openvpn.net>
+In-Reply-To: <gerrit.1789560307000.Ibf7238bade2aed81ac7fe4fda2af58e091dc8cd0@gerrit.openvpn.net>
+References: <gerrit.1789560307000.Ibf7238bade2aed81ac7fe4fda2af58e091dc8cd0@gerrit.openvpn.net>
 MIME-Version: 1.0
-X-Headers-End: 1x6wIm-0007vp-2C
-Subject: [Openvpn-devel] [PATCH v3] ssl: do not trust the peer's request to
- resend the wrapped client key
+X-Headers-End: 1x6wKu-0007yV-BI
+Subject: [Openvpn-devel] [PATCH v1] Improve auth token related comments
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -82,165 +81,71 @@ Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Lev Stipakov <lev@openvpn.net>
+From: Arne Schwabe <arne@rfc2549.org>
 
-parse_early_negotiation_tlvs() sets CO_RESEND_WKC just because the peer
-set EARLY_NEG_FLAG_RESEND_WKC in its reset packet, without checking that
-this client has a wrapped client key at all. control_packet_needs_wkc()
-then reports that our first control packet needs the key appended and
-write_outgoing_tls_ciphertext() sizes it with
-
-    maxlen -= buf_len(session->tls_wrap.tls_crypt_v2_wkc);
-
-tls_crypt_v2_wkc is only set with --tls-crypt-v2 and buf_len() is not
-NULL-safe, so a client without --tls-crypt-v2 dies with SIGSEGV while
-processing the server's first reset packet, before the peer has been
-authenticated.
-
-Only set the flag if we have a key to resend, and let tls_wrap_control()
-refuse to append a key it does not have.
-
-tls_reset_standalone() drives tls_wrap_control() directly, so the test
-uses it to build the two control packets that carry a wrapped client key
-with tls_crypt_v2_wkc unset. Both segfault without the fix.
-
-Github: OpenVPN/openvpn-private-issues#181
-Change-Id: Iac6d49d064215510bde9a4cd4600ab3a50a45cb4
-Signed-off-by: Lev Stipakov <lev@openvpn.net>
-Acked-by: Arne Schwabe <arne-openvpn@rfc2549.org>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1916
+Change-Id: Ibf7238bade2aed81ac7fe4fda2af58e091dc8cd0
+Signed-off-by: Arne Schwabe <arne-openvpn@rfc2549.org>
+Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1918
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1916
-This mail reflects revision 3 of this Change.
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1918
+This mail reflects revision 1 of this Change.
+
+Signed-off-by line for the author was added as per our policy.
 
 Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@rfc2549.org>
+Razvan Cojocaru <razvanc@mailbox.org>
 
         
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 76150d4..ddbf067 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -2591,7 +2591,8 @@
-  * Parses the TLVs (type, length, value) in the early negotiation
+diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c
+index f928a41..b457b6f 100644
+--- a/src/openvpn/auth_token.c
++++ b/src/openvpn/auth_token.c
+@@ -22,7 +22,7 @@
+ #define AUTH_TOKEN_SESSION_ID_BASE64_LEN (OPENVPN_BASE64_LENGTH(AUTH_TOKEN_SESSION_ID_LEN))
+ 
+ /* We want our token to be a multiple of 3 bytes to avoid the base64 padding */
+-static_assert(AUTH_TOKEN_SESSION_ID_LEN % 3 == 0, "AUTH_TOKEN_SESSION_ID_LEN needs to be multiple a 3");
++static_assert(AUTH_TOKEN_SESSION_ID_LEN % 3 == 0, "AUTH_TOKEN_SESSION_ID_LEN must be multiple of 3");
+ 
+ #define AUTH_TOKEN_HMAC_LEN   SHA256_DIGEST_LENGTH
+ /* Size of the data of the token (not b64 encoded and without prefix) */
+@@ -34,7 +34,7 @@
+ 
+ /* Ensure that TOKEN_DATA_LEN is a multiple of 3 so the we avoid the base64
+  * padding */
+-static_assert(TOKEN_DATA_LEN % 3 == 0, "TOKEN_DATA_BASE64_LEN is not a multiple of 3");
++static_assert(TOKEN_DATA_LEN % 3 == 0, "TOKEN_DATA_LEN is not a multiple of 3");
+ 
+ bool
+ is_auth_token(const char *password)
+diff --git a/src/openvpn/auth_token.h b/src/openvpn/auth_token.h
+index fd8317d..62ac012 100644
+--- a/src/openvpn/auth_token.h
++++ b/src/openvpn/auth_token.h
+@@ -109,16 +109,14 @@
+ #define SESSION_ID_PREFIX "SESS_ID_AT_"
+ 
+ /**
+- * Return if the password string has the format of a password.
++ * Return if the password string has the format of an auth token.
+  *
+- * This function will always read as many bytes as SESSION_ID_PREFIX is longer
+- * the caller needs ensure that password memory is at least that long (true for
+- * calling with struct user_pass)
+  * @param password
+  * @return whether the password string starts with the session token prefix
   */
- static bool
--parse_early_negotiation_tlvs(struct buffer *buf, struct key_state *ks)
-+parse_early_negotiation_tlvs(struct buffer *buf, const struct tls_session *session,
-+                             struct key_state *ks)
- {
-     while (buf->len > 0)
-     {
-@@ -2618,7 +2619,17 @@
- 
-                 if (flags & EARLY_NEG_FLAG_RESEND_WKC)
-                 {
--                    ks->crypto_options.flags |= CO_RESEND_WKC;
-+                    /* Only accept the EARLY_NEG_FLAG_RESEND_WKC flag
-+                     * from the server if we are configured with tls-crypt-v2 */
-+                    if (session->tls_wrap.tls_crypt_v2_wkc)
-+                    {
-+                        ks->crypto_options.flags |= CO_RESEND_WKC;
-+                    }
-+                    else
-+                    {
-+                        msg(D_TLS_ERRORS, "TLS Error: peer asked us to resend the wrapped "
-+                                          "client key, but this is not a tls-crypt-v2 client");
-+                    }
-                 }
-                 break;
- 
-@@ -2901,7 +2912,7 @@
-          * contains early protocol negotiation */
-         if (entry->packet_id == 0 && is_hard_reset_method2(entry->opcode))
-         {
--            if (!parse_early_negotiation_tlvs(&entry->buf, ks))
-+            if (!parse_early_negotiation_tlvs(&entry->buf, session, ks))
-             {
-                 goto error;
-             }
-diff --git a/src/openvpn/ssl_pkt.c b/src/openvpn/ssl_pkt.c
-index 90b2aec..940f089 100644
---- a/src/openvpn/ssl_pkt.c
-+++ b/src/openvpn/ssl_pkt.c
-@@ -147,7 +147,7 @@
-         if ((header >> P_OPCODE_SHIFT) == P_CONTROL_HARD_RESET_CLIENT_V3
-             || (header >> P_OPCODE_SHIFT) == P_CONTROL_WKC_V1)
-         {
--            if (!buf_copy(&ctx->work, ctx->tls_crypt_v2_wkc))
-+            if (!ctx->tls_crypt_v2_wkc || !buf_copy(&ctx->work, ctx->tls_crypt_v2_wkc))
-             {
-                 msg(D_TLS_ERRORS, "Could not append tls-crypt-v2 client key");
-                 buf->len = 0;
-diff --git a/tests/unit_tests/openvpn/test_pkt.c b/tests/unit_tests/openvpn/test_pkt.c
-index a732c2b..51c73d8 100644
---- a/tests/unit_tests/openvpn/test_pkt.c
-+++ b/tests/unit_tests/openvpn/test_pkt.c
-@@ -695,6 +695,52 @@
-     free_tas(&tas_server);
- }
- 
-+/* A peer can ask us to append the wrapped client key (WKc) to our next
-+ * control packet. Only a tls-crypt-v2 client has one, so check that we
-+ * refuse to build such a packet when we have no key instead of walking
-+ * into the NULL pointer. */
-+static void
-+test_wkc_not_appended_without_key(void **ut_state)
-+{
-+    struct tls_auth_standalone tas = init_tas_crypt(false);
-+    struct session_id own_id = { { 1, 2, 3, 4, 5, 6, 7, 8 } };
-+    struct session_id remote_id = { { 8, 7, 6, 5, 4, 3, 2, 1 } };
-+    struct frame frame = { .buf = { .headroom = 200, .payload_size = 1400 }, 0 };
-+    tas.frame = frame;
+ bool
+ is_auth_token(const char *password);
 +
-+    packet_id_init(&tas.tls_wrap.opt.packet_id, 5, 5, "UNITTEST", 0);
-+    reset_packet_id_send(&tas.tls_wrap.opt.packet_id.send);
-+    now = 0x22446688;
-+
-+    /* no WKc configured, so both opcodes that would append one must fail */
-+    assert_null(tas.tls_wrap.tls_crypt_v2_wkc);
-+
-+    uint8_t header = 0 | (P_CONTROL_WKC_V1 << P_OPCODE_SHIFT);
-+    struct buffer buf =
-+        tls_reset_standalone(&tas.tls_wrap, &tas, &own_id, &remote_id, header, false);
-+    assert_int_equal(BLEN(&buf), 0);
-+
-+    header = 0 | (P_CONTROL_HARD_RESET_CLIENT_V3 << P_OPCODE_SHIFT);
-+    buf = tls_reset_standalone(&tas.tls_wrap, &tas, &own_id, &remote_id, header, false);
-+    assert_int_equal(BLEN(&buf), 0);
-+
-+    /* with a WKc the same packet is built and the key ends up at its end */
-+    uint8_t wkc_data[32];
-+    memset(wkc_data, 0x5a, sizeof(wkc_data));
-+    struct buffer wkc = alloc_buf(sizeof(wkc_data));
-+    assert_true(buf_write(&wkc, wkc_data, sizeof(wkc_data)));
-+    tas.tls_wrap.tls_crypt_v2_wkc = &wkc;
-+
-+    header = 0 | (P_CONTROL_WKC_V1 << P_OPCODE_SHIFT);
-+    buf = tls_reset_standalone(&tas.tls_wrap, &tas, &own_id, &remote_id, header, false);
-+    assert_true(BLEN(&buf) > (int)sizeof(wkc_data));
-+    assert_memory_equal(BPTR(&buf) + BLEN(&buf) - sizeof(wkc_data), wkc_data, sizeof(wkc_data));
-+
-+    free_buf(&wkc);
-+    packet_id_free(&tas.tls_wrap.opt.packet_id);
-+    free_tas(&tas);
-+}
-+
- static void
- test_extract_control_message(void **ut_state)
- {
-@@ -745,6 +791,7 @@
-         cmocka_unit_test(test_verify_hmac_none_out_of_range_ack),
-         cmocka_unit_test(test_generate_reset_packet_plain),
-         cmocka_unit_test(test_generate_reset_packet_tls_auth),
-+        cmocka_unit_test(test_wkc_not_appended_without_key),
-         cmocka_unit_test(test_extract_control_message)
-     };
- 
+ /**
+  * Checks if a client should be sent a new auth token to update its
+  * current auth-token
 
 
 _______________________________________________
