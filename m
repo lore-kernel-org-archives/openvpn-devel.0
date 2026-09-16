@@ -4,126 +4,109 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 19E72C982C4
-	for <openvpn-devel@archiver.kernel.org>; Wed, 16 Sep 2026 15:08:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9C424C982C4
+	for <openvpn-devel@archiver.kernel.org>; Wed, 16 Sep 2026 15:15:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
-	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:Date:Sender:To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
-	List-Owner; bh=Q3joL3JdxGudd9HOjGfiv5mfpRiy5NczftCkYrD5+BM=; b=Udu5lVbVLUKtDi
-	/ANpsB8MTxy8WVHY9KcGHGVgmP68bzvHZMiFdUQ0Bj85SbU5GbG1ZX8JyDWkyG6IHQj3tDuriD8Uq
-	WazpMW5r6kYW1XCwDPhIytBrH40e2v1Z8eGKazQTNczUWQheB1k+YZDoTen99gFh+g0PMkMxf5lZB
-	TIY=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Reply-To:From:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:Subject:To:
+	MIME-Version:Date:Message-ID:Sender:Cc:Content-Transfer-Encoding:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Owner;
+	bh=9Js/2nh4XO0aj2zUuN4ZBWUVnVDPmmwtnJNmYcOwvrk=; b=A6w3jWH2WO7M85JitXfsc9Oq48
+	MafWEF87UfwI+S0ensDHsowNEPWbdIEIN2VCAKBdxEn38pSBIhL2xFPW3ZO5iVr5+Ib+hjyPdYJ9C
+	wX8UKIRo48ru7vXNM2HCnM4oCR0eDRUiqJboXY5yUlY5bWQxkpVNKJcnOamvArhvRG0c=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x6rFX-0005AG-Fh;
-	Wed, 16 Sep 2026 15:08:40 +0000
+	id 1x6rMW-0002Eg-Rw;
+	Wed, 16 Sep 2026 15:15:52 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1x6rFW-0005A3-5U
+ (envelope-from <johan@openvpn.com>) id 1x6rMS-0002EX-VX
  for openvpn-devel@lists.sourceforge.net;
- Wed, 16 Sep 2026 15:08:38 +0000
+ Wed, 16 Sep 2026 15:15:49 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:Date:From
- :Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From:
- Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
+ d=sourceforge.net; s=x; h=To:Subject:From:MIME-Version:Date:Message-ID:
+ Content-Type:Sender:Reply-To:Cc:Content-Transfer-Encoding:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=3mxwIZYAhENMq3qgH+2aCszaMQbCKqjF0KxQU1q+to8=; b=g3EXB/LShC1nQtt7E9Ruwt+EA6
- bFn/PnRGMhCVZuwsDlkZBIukc1jMV9DaW3oj8FPr8rUqrGZt4QfTdFgK5yeYymuNqAJur0iSDw5A2
- FGB3B/Rfcd0RPEczTMk4Vi0Rmn5HnZofS6a3uSoeuWO/JgJULRs6VYzDJpw31Eyth4Ps=;
+ bh=rnXZxzCOIBD6OazMJmwG+tnduRdMso6higXW4fmxW7k=; b=EFYoYkM389XJ70PrNtUxSJqlCa
+ PV87mrbTaX+ZyaMq/TEcP/fsb2e0lUWobm6fV2E2nmpOHKY1PcO4Ln7TuqbHQcTZis+WP5sxJd8ZF
+ pG8CLC8zSVKo/o8S1FjsKHFQg9OQx3GVeCYP4OFPhN+a4f8yVVMnjTAAMLhRu4L18Sfc=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:List-Unsubscribe:List-Id:Cc:Date:From:Sender:To:Content-ID
- :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
- Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=3mxwIZYAhENMq3qgH+2aCszaMQbCKqjF0KxQU1q+to8=; b=N
- N5gFWj5ZlO5Z6DyEu2EqL4o/xXZ+DkNOLySpsDI3I/z2zitpDZ+PArkRNS6d3sWEA9k7oJE3opdFb
- KmSMsgkOj8u+zovMLMA/68MZtsMHfSl4wmUXj2g+zQ2Tk8o4y5rYsiKUtK4n+Dv4Ce69g4n3wFhnH
- E4N/IDIOe9uJtO+4=;
-Received: from mail-ed2-f35.google.com ([74.125.228.99])
+ h=To:Subject:From:MIME-Version:Date:Message-ID:Content-Type:Sender:Reply-To
+ :Cc:Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+ References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=rnXZxzCOIBD6OazMJmwG+tnduRdMso6higXW4fmxW7k=; b=Z
+ aM1pPkBmoFnjaQE601oP0NdmnE8Rym4R+JGplGWTdIa1y2rLOCv+09sCp49T2OknLEFCgjLRpENpz
+ MK5+JyflFXPd5sTGqkitk+VHUFHhrgj5QpS7WUY1H0k9N5kMi+ZFkpCibqX1tYVz1pBXOzyc0x05V
+ ri2b1JBLlMblhQ1k=;
+Received: from mail-yx2-f13.google.com ([74.125.224.141])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1x6rFW-0007XD-0i for openvpn-devel@lists.sourceforge.net;
- Wed, 16 Sep 2026 15:08:38 +0000
-Received: by mail-ed2-f35.google.com with SMTP id
- 4fb4d7f45d1cf-6aa053900f5so1909634a12.1
+ id 1x6rMR-0007lp-Dh for openvpn-devel@lists.sourceforge.net;
+ Wed, 16 Sep 2026 15:15:47 +0000
+Received: by mail-yx2-f13.google.com with SMTP id
+ 956f58d0204a3-66e4ab222dfso1124451d50.0
  for <openvpn-devel@lists.sourceforge.net>;
- Wed, 16 Sep 2026 08:08:37 -0700 (PDT)
+ Wed, 16 Sep 2026 08:15:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1789571311; x=1790176111; darn=lists.sourceforge.net;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
- :date:from:from:to:cc:subject:date:message-id:reply-to:content-type;
- bh=3mxwIZYAhENMq3qgH+2aCszaMQbCKqjF0KxQU1q+to8=;
- b=Sl5CNRwLNsCjOCNZt+7UGcwcz/rFrXT9uT32ayMXYvy1M0xZ7F24JC6aXHMbUvY4h1
- ohZAGmvQv1oq/kwn1geXXpoTKfinMFpf4iMA94BuM59bmWi8is1/N0uf7HJjcKbaSkw4
- oUnz/3djvLciv2m8VPUNhy0QfXPm6UPxB66kidSnnZNXGqxKBmQj0tUKmHzjKZZbLcLQ
- 2oZFRmr6GPJyOHlDu+HIOrk/8wH8E3FGRXeweEM1L4RCTNYJ6+S/N7eoBjlMbHNqKgeN
- 83qeoFivMSkvD6cSQaURK3+7y0P3EVKtW1DhpmzcYkbDsot9FLTYDsn2djBzfAvzH3ZI
- aPaw==
+ d=openvpn.com; s=google; t=1789571741; x=1790176541; darn=lists.sourceforge.net;
+ h=content-language:to:subject:from:user-agent:mime-version:date
+ :message-id:content-type:from:to:cc:subject:date:message-id:reply-to
+ :content-type; bh=rnXZxzCOIBD6OazMJmwG+tnduRdMso6higXW4fmxW7k=;
+ b=FOEQQmM5MOni0v3cGGp9PWW9F+k4w7GD2DF/HXd/4AtMSVM/QLGQmqL6OfajiDi50l
+ Lf9clgyjdLn9AHpLlqAtgX1uVV9QbWyOWzmuYXpzJrgwyNyeD8S9nvBAViywkrZSC/4F
+ Vlj3j8acq0l0p69zOjCbnQzfup18Wbm8ai2No8dLghM2uNKkaVFKO7pCOMpyPHsIBwDC
+ 459fW26LiWvc6JmiAWVQ7Id1CHCd2qFDaGIHrRdu5LC0QAfS2la67OaVvtowqhveUbrQ
+ z+7Au2ucxLHLVGYmDJ9EkoHLe4dAEJORYBKVzILwyijn1EAXBHemQBGrGRGpPAoKGhxB
+ ccMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1789571311; x=1790176111;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
- :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
- :message-id:reply-to:content-type;
- bh=3mxwIZYAhENMq3qgH+2aCszaMQbCKqjF0KxQU1q+to8=;
- b=hkaMIGuSUVlyjIH0kAVcqk7RsRC+CJPXfCvDm8dNuSnxXIlb2E9txcwh1ilwGgdkJn
- YQw9ABdW16zdyrwr06JqPSP0fT+ezTUpnyxCa5lqgzefYVIASd5UE0+IL4E/VfvVcYMF
- 5VqrvcOooeK7SGTHkMIHtyN9m++u2dQowxnrr6NnMh7U6xrTuQRiG/UEfPA2Se5GdGfO
- svdjwunSdLHLe23/0WiyH+iyUAQDPFO9I07YnkmFN01LTF/zAu+ygoCQpexWvkSQRDEb
- 5CJSQ4W92lpD7naaoArMa47PJ6pqhVBin7ZPBXliv8h/igpszA8gdHGwhXVxt2hXpCY+
- OJVg==
-X-Gm-Message-State: AFuF++mMmgAsAfJntZiFh/hf6cVcmqm88OeSK8n+VYBlAIAivgS7NSmN
- UDI4dkje6Kj6DjDPTKntyoo3D83BdPa412Ksy1p4Z9Sn4SlPf3K6Iw7yStVSlASlQm0NNZKDla7
- 3xyEXtE/i7kMNsbYGqD3bZQdOdrTlqZ4Zt1JEigTpj6qAeuNveEqOoigALaCaGDXj4Pqzxlqgz2
- br0ikEHw==
-X-Gm-Gg: AYBFou3vLVgc4Wg1PZ1ctzikiimBCA9l0/8v8JIqRIVKeh2o3blmCOFYgj1VX2HkJku
- fSKaUAb4lWvSHMiqPWtnb3RXOeXs+rPAZnTeH5BpkJsINEWhtpFrNwq+s5RWGhSKBAOjMfvcrKq
- vIMYRgahHASfOjcZzYz/Ak3RPZwL9AWg32Dk7hhiNNvYhjJdcKxS0bmV7Psf3T5NZNzPzM6Lv6A
- 30QKZ05r5jvpAYDf/YBNihvD82731JFI9A9nMtvk4uNT9NB5AWsHadd7OE5vyAXjzW8U5N3bSQS
- 5+VH69IYllcDS+cj8j3129pBzT0Q3bUZ0kIvk6y2i9BwwJILHUGYiaGTCy74T2jF2XKT3qhZpDJ
- HC4SZa2ohWWa7E+8Kn0qxnA4U/WGenaW1lKWPO++BgKZccyzmyU8o+BhwBgS+CGeqZugq9LNxLL
- jOjIj/hkIMsaoA0+/vF8L5FD27u53B3msCFO5YQtXZLAW35bUV4F96YSTOKRJcAJIWd5dbMVHag
- s0u/DJCMpYNZJUv6OMjomgBUKyy516YYF4GI6XMnVEkWFz4zQPUpOIVuba11RUHWj6/paZeyt+M
- 9P0QKXpkWE5t2qoiPE5BQ0AsEHO8T+gcuddYH5FYGA+NV+B0KtO2qfYFGLYxuw==
-X-Received: by 2002:a05:600c:5493:b0:49d:286:83d5 with SMTP id
- 5b1f17b1804b1-49eaf5ff401mr25884365e9.13.1789560310391; 
- Wed, 16 Sep 2026 05:05:10 -0700 (PDT)
-Received: from ip-10-18-1-162.eu-central-1.compute.internal
- (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
+ d=1e100.net; s=20260707; t=1789571741; x=1790176541;
+ h=content-language:to:subject:from:user-agent:mime-version:date
+ :message-id:content-type:x-gm-gg:x-gm-message-state:from:to:cc
+ :subject:date:message-id:reply-to:content-type;
+ bh=rnXZxzCOIBD6OazMJmwG+tnduRdMso6higXW4fmxW7k=;
+ b=aLOxjN8GuihWn/nvz8u/QQebknGgoYQ6WiV5LcdZCCJES7c0kszVDTueKGf8gbZc8W
+ 3kmi1DkVO/ipHDlAr7TctgA0y4fNzlkMe75sLO38oehJSSX7LRZ0HL0AvqqmhxjCzsRa
+ jUNMliHJNxFznwt691FiUzA/fv7fCuboD8EKo8fWvMtazrwXV+v+I1hvpeJEe/GQWNg9
+ BffBA+jzs00Pw63zN3mrsugqi0Bw6liFv0kgwTDi7TZyWeJnKlIRV6uof2s429uv3Edd
+ 7K38S66qRspioYxO5GT8mQ/7bt3vAfsoodNnXYroy3aPe9gbf4eap0M0F6O5meQywwgY
+ VdPg==
+X-Gm-Message-State: AFuF++kSuoxrR4h9AA5n22nxlN13iu2wMv+pTQG7mEMsIuNK93nSHLSc
+ MKB/krPDshJJoUbh9vyK6/Xa4nvH5QBkyYKWMxUICrJMDOSkABeKFj+PAwG3hqJUiob45xrgYLI
+ P0hH+HjVPgL2d7p2bxFfSxCmdbJsxXyXAQqrkYpM/uxYGwnm6PpQCLupdar+ts4mCU4FS/onA5H
+ ozSh2p/ETO6aM=
+X-Gm-Gg: AYBFou3RXEhFZ8xqmdKry5ns/RM/Rz/QRLfrhPXGUSqNrICM+dohmRIwtwnqSWJNEql
+ /sYoIJ+WW4/+Oqz6jlysaOUhxEqccI96LZDBu4jISxUGE9or5UkcikUmoEkHgzAlzCjKrymga7z
+ NdS4C7f0wxnX70kJ4zAZ1pRsVfJ2Mo5sOtv5KpgTQdFaW18IFOMT+vSyAnUHnXkpo2EqvIMkdBK
+ ol6kxDXwDL+qKxXfHh3pAisvUc0bUY1/xikclBvVjBas+YtDgJZXMYfN7AT7UsYR41FGDLd1omW
+ +s06+uWil8fynsCvZE2n4n6m8mHQIYD2NddcbDr/6eY2fciMDvczFffFiugSgshSomhVwsRm8o4
+ o9RkNpB+prvZJGpH/nHYLn44HEYBO4Xp9AYhOXoz9C5W7K1c+xb8cGg3uvs//Li6iB27cZJmTrl
+ GZJ9dn5O1GRnMi7udMnUw+J1suV3Pfj/3sqN/BDWXUMwM4CC7qd6v2VhQqRWotlTKREcTtTd3ZM
+ uXU/fEbQH1TxXvVEEF2ZpNzyyTBTz9MtTvWNgDrVg==
+X-Received: by 2002:a17:90b:4d:b0:39e:433:23b3 with SMTP id
+ 98e67ed59e1d1-39e1e489edemr6158694a91.14.1789561504241; 
+ Wed, 16 Sep 2026 05:25:04 -0700 (PDT)
+Received: from ?IPV6:2001:ee0:4fc2:28e0:fa20:d19:cf9c:1c51?
+ ([2001:ee0:4fc2:28e0:fa20:d19:cf9c:1c51])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-49e83d9057dsm84041795e9.3.2026.09.16.05.05.09
+ 98e67ed59e1d1-39e1bc37f58sm4931191a91.14.2026.09.16.05.25.02
  for <openvpn-devel@lists.sourceforge.net>
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 16 Sep 2026 05:05:09 -0700 (PDT)
-X-Google-Original-From: "plaisthos (Code Review)"
- <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Wed, 16 Sep 2026 12:05:09 +0000
-Auto-Submitted: auto-generated
-X-Gerrit-MessageType: newchange
-X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: Ibf7238bade2aed81ac7fe4fda2af58e091dc8cd0
-X-Gerrit-Change-Number: 1918
-X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1918?usp=email>
-X-Gerrit-Commit: 6e48e34d118139a04976cd29a1e1400a2d58d06e
-References: <gerrit.1789560307000.Ibf7238bade2aed81ac7fe4fda2af58e091dc8cd0@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzg5NTYwMzA3MDAwLkliZjcyMzhiYWRlMmFlZDgxYWM3ZmU0ZmRhMmFmNThlMDkxZGM4Y2QwQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <2dcdf636902ec1d40638a4a75342858ea8ce40e7-HTML@gerrit.openvpn.net>
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Wed, 16 Sep 2026 05:25:03 -0700 (PDT)
+Message-ID: <2fd9e739-ab5f-4206-bfd1-0ddf33f9d800@openvpn.com>
+Date: Wed, 16 Sep 2026 19:24:35 +0700
 MIME-Version: 1.0
-User-Agent: Gerrit/3.11.5
-X-Headers-End: 1x6rFW-0007XD-0i
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Improve auth token
- related comments
+User-Agent: Mozilla Thunderbird
+To: openvpn-devel@lists.sourceforge.net
+Content-Language: en-US
+X-Headers-End: 1x6rMR-0007lp-Dh
+Subject: [Openvpn-devel]  IRC community meeting summary
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -135,233 +118,136 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "plaisthos \(Code Review\) via Openvpn-devel"
- <openvpn-devel@lists.sourceforge.net>
-Reply-To: arne-openvpn@rfc2549.org, openvpn-devel@lists.sourceforge.net
-Cc: "plaisthos \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============0387867024670667324=="
+From: Johan Draaisma via Openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Reply-To: Johan Draaisma <johan@openvpn.com>
+Content-Type: multipart/mixed; boundary="===============2864092802720836544=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============0387867024670667324==
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="r+a1lob3aAI="; charset=UTF-8
+This is a multi-part message in MIME format.
+--===============2864092802720836544==
+Content-Type: multipart/alternative;
+ boundary="------------Mn5hpBvCGnfMEix38zOS9gKD"
+Content-Language: en-US
 
---r+a1lob3aAI=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------Mn5hpBvCGnfMEix38zOS9gKD
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-plaisthos has uploaded this change for review=2E ( http://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1918?usp=3Demail )
+Meeting summary for 16 September 2026:
 
-
-Change subject: Improve auth token =
-related comments
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E
-
-Improve auth token related comments
-
-Change-Id: Ibf7238bade2aed81ac7fe=
-4fda2af58e091dc8cd0
----
-M src/openvpn/auth_token=2Ec
-M src/openvpn/auth_tok=
-en=2Eh
-2 files changed, 4 insertions(+), 6 deletions(-)
-
-
-
-  git pull ssh:/=
-/gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/18/1918/1
-
-diff --git a/=
-src/openvpn/auth_token=2Ec b/src/openvpn/auth_token=2Ec
-index f928a41=2E=2E=
-b457b6f 100644
---- a/src/openvpn/auth_token=2Ec
-+++ b/src/openvpn/auth_toke=
-n=2Ec
-@@ -22,7 +22,7 @@
- #define AUTH_TOKEN_SESSION_ID_BASE64_LEN (OPENVPN_=
-BASE64_LENGTH(AUTH_TOKEN_SESSION_ID_LEN))
- 
- /* We want our token to be a m=
-ultiple of 3 bytes to avoid the base64 padding */
--static_assert(AUTH_TOKEN=
-_SESSION_ID_LEN % 3 =3D=3D 0, "AUTH_TOKEN_SESSION_ID_LEN needs to be multip=
-le a 3");
-+static_assert(AUTH_TOKEN_SESSION_ID_LEN % 3 =3D=3D 0, "AUTH_TOKE=
-N_SESSION_ID_LEN must be multiple of 3");
- 
- #define AUTH_TOKEN_HMAC_LEN   =
-SHA256_DIGEST_LENGTH
- /* Size of the data of the token (not b64 encoded and=
- without prefix) */
-@@ -34,7 +34,7 @@
- 
- /* Ensure that TOKEN_DATA_LEN is a=
- multiple of 3 so the we avoid the base64
-  * padding */
--static_assert(TOK=
-EN_DATA_LEN % 3 =3D=3D 0, "TOKEN_DATA_BASE64_LEN is not a multiple of 3");
-=
-+static_assert(TOKEN_DATA_LEN % 3 =3D=3D 0, "TOKEN_DATA_LEN is not a multip=
-le of 3");
- 
- bool
- is_auth_token(const char *password)
-diff --git a/src/op=
-envpn/auth_token=2Eh b/src/openvpn/auth_token=2Eh
-index fd8317d=2E=2E62ac01=
-2 100644
---- a/src/openvpn/auth_token=2Eh
-+++ b/src/openvpn/auth_token=2Eh
-=
-@@ -109,16 +109,14 @@
- #define SESSION_ID_PREFIX "SESS_ID_AT_"
- 
- /**
-- * R=
-eturn if the password string has the format of a password=2E
-+ * Return if =
-the password string has the format of an auth token=2E
   *
-- * This functio=
-n will always read as many bytes as SESSION_ID_PREFIX is longer
-- * the cal=
-ler needs ensure that password memory is at least that long (true for
-- * c=
-alling with struct user_pass)
-  * @param password
-  * @return whether the p=
-assword string starts with the session token prefix
-  */
- bool
- is_auth_tok=
-en(const char *password);
-+
- /**
-  * Checks if a client should be sent a ne=
-w auth token to update its
-  * current auth-token
 
--- 
-To view, visit http:=
-//gerrit=2Eopenvpn=2Enet/c/openvpn/+/1918?usp=3Demail
-To unsubscribe, or fo=
-r help writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?u=
-sp=3Demail
+    *Updated: 2.7.x release*
+    A few more security fixes are coming in 2.7.8, and this is planned
+    for October 1st.
 
-Gerrit-MessageType: newchange
-Gerrit-Project: openvpn
-Gerrit-Br=
-anch: master
-Gerrit-Change-Id: Ibf7238bade2aed81ac7fe4fda2af58e091dc8cd0
-Ge=
-rrit-Change-Number: 1918
-Gerrit-PatchSet: 1
-Gerrit-Owner: plaisthos <arne-o=
-penvpn@rfc2549=2Eorg>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourc=
-eforge=2Enet>
+  *
 
---r+a1lob3aAI=
+    *Updated: 2.6.x release*
+    Some security fixes recently released in 2.7.7 didn't apply cleanly
+    to 2.6.x.
+    Backporting it to 2.6 is ongoing, and a release for that is expected
+    next week.
+
+  * *Updated: test latency and MTU in openvpn*
+    A new feature is proposed for adding to master; ability to do
+    latency and MTU tests in the OpenVPN protocol.
+    This would allow for a client to for example select the best
+    available server based on test results.
+    This is currently under
+    review:https://gerrit.openvpn.net/q/topic:%22oob-server-probe%22
+    The design document is
+    here:https://github.com/lstipakov/openvpn/blob/server-probe-design/design-server-probe.md
+
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 14:00 Central European Time.
+
+Kind regards,
+Johan Draaisma
+
+--------------Mn5hpBvCGnfMEix38zOS9gKD
 Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-<!DOCTYPE html><html><head><style></style></head><body><p>plaisthos has upl=
-oaded this change for <strong>review</strong>=2E</p><p><a href=3D"http://ge=
-rrit=2Eopenvpn=2Enet/c/openvpn/+/1918?usp=3Demail">View Change</a></p><pre =
-class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pr=
-e-wrap;">Improve auth token related comments<br><br>Change-Id: Ibf7238bade2=
-aed81ac7fe4fda2af58e091dc8cd0<br>---<br>M src/openvpn/auth_token=2Ec<br>M s=
-rc/openvpn/auth_token=2Eh<br>2 files changed, 4 insertions(+), 6 deletions(=
--)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/o=
-penvpn refs/changes/18/1918/1</pre><pre style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/auth_token=
-=2Ec b/src/openvpn/auth_token=2Ec</span><br><span>index f928a41=2E=2Eb457b6=
-f 100644</span><br><span>--- a/src/openvpn/auth_token=2Ec</span><br><span>+=
-++ b/src/openvpn/auth_token=2Ec</span><br><span>@@ -22,7 +22,7 @@</span><br=
-><span> #define AUTH_TOKEN_SESSION_ID_BASE64_LEN (OPENVPN_BASE64_LENGTH(AUT=
-H_TOKEN_SESSION_ID_LEN))</span><br><span> </span><br><span> /* We want our =
-token to be a multiple of 3 bytes to avoid the base64 padding */</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-static_assert(AUTH_TOKEN_SESSION=
-_ID_LEN % 3 =3D=3D 0, &quot;AUTH_TOKEN_SESSION_ID_LEN needs to be multiple =
-a 3&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static_a=
-ssert(AUTH_TOKEN_SESSION_ID_LEN % 3 =3D=3D 0, &quot;AUTH_TOKEN_SESSION_ID_L=
-EN must be multiple of 3&quot;);</span><br><span> </span><br><span> #define=
- AUTH_TOKEN_HMAC_LEN   SHA256_DIGEST_LENGTH</span><br><span> /* Size of the=
- data of the token (not b64 encoded and without prefix) */</span><br><span>=
-@@ -34,7 +34,7 @@</span><br><span> </span><br><span> /* Ensure that TOKEN_D=
-ATA_LEN is a multiple of 3 so the we avoid the base64</span><br><span>  * p=
-adding */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static_asser=
-t(TOKEN_DATA_LEN % 3 =3D=3D 0, &quot;TOKEN_DATA_BASE64_LEN is not a multipl=
-e of 3&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+stati=
-c_assert(TOKEN_DATA_LEN % 3 =3D=3D 0, &quot;TOKEN_DATA_LEN is not a multipl=
-e of 3&quot;);</span><br><span> </span><br><span> bool</span><br><span> is_=
-auth_token(const char *password)</span><br><span>diff --git a/src/openvpn/a=
-uth_token=2Eh b/src/openvpn/auth_token=2Eh</span><br><span>index fd8317d=2E=
-=2E62ac012 100644</span><br><span>--- a/src/openvpn/auth_token=2Eh</span><b=
-r><span>+++ b/src/openvpn/auth_token=2Eh</span><br><span>@@ -109,16 +109,14=
- @@</span><br><span> #define SESSION_ID_PREFIX &quot;SESS_ID_AT_&quot;</spa=
-n><br><span> </span><br><span> /**</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">- * Return if the password string has the format of a password=
-=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Return if the=
- password string has the format of an auth token=2E</span><br><span>  *</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">- * This function will alw=
-ays read as many bytes as SESSION_ID_PREFIX is longer</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">- * the caller needs ensure that password me=
-mory is at least that long (true for</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">- * calling with struct user_pass)</span><br><span>  * @param=
- password</span><br><span>  * @return whether the password string starts wi=
-th the session token prefix</span><br><span>  */</span><br><span> bool</spa=
-n><br><span> is_auth_token(const char *password);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span> /**</span><br><span>  * Che=
-cks if a client should be sent a new auth token to update its</span><br><sp=
-an>  * current auth-token</span><br><span></span><br></pre><p>To view, visi=
-t <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1918?usp=3Demail">ch=
-ange 1918</a>=2E To unsubscribe, or for help writing mail filters, visit <a=
- href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=
-=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div it=
-emscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><li=
-nk itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1918?=
-usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>=
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 16 September 2026:</p>
+    <ul
+style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            2.7.x release</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          A few more security fixes are coming in 2.7.8, and this is
+          planned for October 1st.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            2.6.x release</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Some security fixes recently released in 2.7.7 didn't apply
+          cleanly to 2.6.x.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Backporting it to 2.6 is ongoing, and a release for that is
+          expected next week.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+          test latency and MTU in openvpn</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+        A new feature is proposed for adding to master; ability to do
+        latency and MTU tests in the OpenVPN protocol.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+        This would allow for a client to for example select the best
+        available server based on test results.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+        This is currently under review:<span> </span><a
+href="https://gerrit.openvpn.net/q/topic:%22oob-server-probe%22"
+style="box-sizing: inherit; background-color: transparent; color: rgb(24, 144, 255); text-decoration: none; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"
+          class="moz-txt-link-freetext">https://gerrit.openvpn.net/q/topic:%22oob-server-probe%22</a><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+        The design document is here:<span> </span><a
+href="https://github.com/lstipakov/openvpn/blob/server-probe-design/design-server-probe.md"
+style="box-sizing: inherit; background-color: transparent; color: rgb(24, 144, 255); text-decoration: none; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"
+          class="moz-txt-link-freetext">https://github.com/lstipakov/openvpn/blob/server-probe-design/design-server-probe.md</a></li>
+    </ul>
+    <ul
+style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+    </ul>
+    <ul
+style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+    </ul>
+    As always you're welcome to join at #openvpn-meeting on Libera IRC
+    network every Wednesday at 14:00 Central European Time.
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
 
-
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
-<div st=
-yle=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:=
-none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Cha=
-nge-Id: Ibf7238bade2aed81ac7fe4fda2af58e091dc8cd0 </div>
-<div style=3D"disp=
-lay:none"> Gerrit-Change-Number: 1918 </div>
-<div style=3D"display:none"> G=
-errit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisth=
-os &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> G=
-errit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </d=
-iv>
-
-</body></html>
---r+a1lob3aAI=--
+--------------Mn5hpBvCGnfMEix38zOS9gKD--
 
 
---===============0387867024670667324==
+--===============2864092802720836544==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============0387867024670667324==
+--===============2864092802720836544==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -372,5 +258,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============0387867024670667324==--
+--===============2864092802720836544==--
 
