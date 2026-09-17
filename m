@@ -4,130 +4,69 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 403E7C88E72
-	for <openvpn-devel@archiver.kernel.org>; Thu, 17 Sep 2026 12:42:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 962DFC88E72
+	for <openvpn-devel@archiver.kernel.org>; Thu, 17 Sep 2026 12:46:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=4MfaHtuFocsjHezJo+RYWfkQVHcOJoKRuz1np/TmecE=; b=FVGIqCwGwgKuWg+SJEmcyi5orT
-	/robRGWNWbDSq84qhbB2+acpPhjJAbCo/FSDxG66q/n1suEhMVM8/tmL9cfgpcsOiMJ9d7yLgNDTN
-	y2oxI/ohMLXzOC1kFTNg49JRLh0W1+MpbZmaofXtIsv2x7/7WbmBxbMWxZrJ+Jg1ugSM=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
+	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=VmGY2CTCDjbg36UAnZ88laEITijJM/OBZcTk3cKEvWk=; b=dxRIh1L01c0nx21G9+U39YSj9o
+	0aa0YuiyEr6RXh8XN+pc7dU3gUww7zeeh4ds6P/6JIle25DHB3U4B6rX4wwy3ZH0gb81v4NsHBc6k
+	A3w0kE82e5EBtFe/Ek6SOKNLCPgvvexSvixZrhwMPC9nxXjLcgXEV0RrJnr1b+CS+I5E=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x7BRE-0006Bu-Ic;
-	Thu, 17 Sep 2026 12:42:05 +0000
+	id 1x7BVS-0008Di-MF;
+	Thu, 17 Sep 2026 12:46:24 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1x7BRC-0006Bg-T3
+ (envelope-from <gert@blue4.greenie.muc.de>) id 1x7BVO-0008Da-Me
  for openvpn-devel@lists.sourceforge.net;
- Thu, 17 Sep 2026 12:42:03 +0000
+ Thu, 17 Sep 2026 12:46:20 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
- :List-Post:List-Owner:List-Archive;
- bh=mA6ejV+dYlLZDtjGTpFDQe51wISjtp7xXg4QWFoSGac=; b=UKMCYLP4MXIaBxN7CH9UtlRcI6
- g4UqBfng7cqN4HZgLSmzB78q0JdtJtNZ8x1wH9IEgm1EdKzT2GuR9nHYyGDpROcWnhiYNtwL64+gI
- +l9FBDvO0nFfCMuER2j7hhzJu8mUjfhV2gCiHlyI6e/M3XyfyZOBzGLCNOnEpsf+/PPM=;
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
+ In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=r+kDYEhv4eqmzZJA8iyhLzIG3wyTdawXSGP46OtjVwU=; b=hSi40/tTl4mlGZc6PVlWDfYaYB
+ 6N1tyxkoW+aHAQuRtap7XYvxbF15BYCzn1QKxzoJrr0NmH5AyeXV2Ek0NTBjdKvYGI/TXYuL5TRWD
+ X7gP/MKAtPOiYwmMFPVxr9Jy46OeGLHdH/eB0QYo8qdKYMRaSP8i5bb9yZRFV3QQJC1o=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
- Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=mA6ejV+dYlLZDtjGTpFDQe51wISjtp7xXg4QWFoSGac=; b=d
- 9IRjqksaYtVkHlaCg2rJ9U0IwB/0VYo+/oeW6pBv0md0RWn6UYN1iJqfgW7LW3qpKr/9dytay7Fyh
- X6hjEeVHUYj0lO/tLhYn5CxTGu4I65visuk7uW8QLaz9cMGU4jqOrkG3QF2IC5gI7wiE7ag6idP1u
- bHbOn3QCNQksu+gU=;
-Received: from mail-wr2-f12.google.com ([74.125.225.76])
+ h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
+ Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+ List-Post:List-Owner:List-Archive;
+ bh=r+kDYEhv4eqmzZJA8iyhLzIG3wyTdawXSGP46OtjVwU=; b=j9gBTywwcuTW2KplZkbu+pQMlI
+ 8KR8v1fgaepubHUve9EWNcqriompNzgUlz0TAHeRovF9pQDZ0zmCSAjCMwDu2qasV9FKJKQWPU4YK
+ JOZZQXkoh3D/p9VPvuRUbQEfpYc31fMP4XDAUxB/rRxVh62A7TOquLOBRx/yChvmXH90=;
+Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1x7BRB-0006P2-TS for openvpn-devel@lists.sourceforge.net;
- Thu, 17 Sep 2026 12:42:03 +0000
-Received: by mail-wr2-f12.google.com with SMTP id
- ffacd0b85a97d-485b1d2874aso628404f8f.1
- for <openvpn-devel@lists.sourceforge.net>;
- Thu, 17 Sep 2026 05:42:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1789648915; x=1790253715; darn=lists.sourceforge.net;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
- :reply-to:content-type;
- bh=mA6ejV+dYlLZDtjGTpFDQe51wISjtp7xXg4QWFoSGac=;
- b=do9XCljC2lzdHrbZ3zYPpKbexVWgA0+ZQT6gAlxMxYrhBLRKyDD7n/eghBOv5iZToV
- JPBBjgnGPgJvFd0UzwgRgffAgi7oTkvQnmZRvW8PGh1bZZnYaT8ZtbQ7QdJRIfsDeaNJ
- cAJni4b53aeA2nPidfWahBY7l10Vro3ubbXYTEm7BHfPr8Gg+YOQsDfUTrFrB/72XYM1
- VeykUk6ayDBBSobSHkXoCxFIDULDmYZvNzlA6q91uxolQrHJmG5WgCJmYaDLi+4T98eN
- VXwm7Is4u1gLLTaCliIRE8u2Bk/cXymOU5lTnqubzywtOsd63yvhkTcn7gI7FpVqnBHl
- z/5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1789648915; x=1790253715;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
- :cc:subject:date:message-id:reply-to:content-type;
- bh=mA6ejV+dYlLZDtjGTpFDQe51wISjtp7xXg4QWFoSGac=;
- b=ywfpIocWpiTgoN4+OkxVe/n9k5pKsP3mYC+PTpeehNwnWZaJBJbShcehV7PNdnCIdr
- L0IRirNQTRsZLEGtXhE3bgnqQkr/j22exTvYcX5xFgo++HLl4nedZYPnbn4vkO6RiNV2
- /RjJPuPTTRnzlryOElQ03pC8bUfT1kJ1eiuyZ4Ou2S4D4SdCtEPaiCAdX6oIXTiDwTdA
- Zyac1rAc9MQnS45l6eDM16mfAYleN19Af1fuKIFshq1SANmd1Llhe/4H4ZiXDGD6/tJv
- qwjr02HI3X/FYSeFfIY8/hBgX8I+6rdxu5X5IiiTTA3ARqe1Fsj8kMrIl9ecDWg1Wx1z
- mTtQ==
-X-Forwarded-Encrypted: i=1;
- AKwUvBwNVylR6STznD38ICq6seB1lnyEnDw9fmq7HxAf3w7pt+yn7sVfRWIv+dhewJIcPQWzcgJuFksNm1rcaA7U@lists.sourceforge.net
-X-Gm-Message-State: AFuF++mKv/c4YbpOWnRpWAbtaMDZ4ecJf8CtjKUoVx0CU7JQg+Z7F1ih
- Nw00t0NiquxUGLihwiMaevW/sBB1ZlH6NSs4qSORp/J2ee8P4NLFdQph5GnFawb3zh/EG+Oheym
- Me5kXhkKT8tQojzwbWTor2zmTSJ9n2vafUOfeJm9W5jm0UFH6mu3h7yXUInCzzCqMQICt+y6ES+
- EjcSGqMw==
-X-Gm-Gg: AYBFou3WwZhyAQ7WVSAUGiqOPmwV55edNDAlr0xmOSjbcaJvT7elWUYGrQleUNbY10x
- UQ+MLPSFiisZcDqQWmfFTvmWEBqXJooWguMnNLjKS3EGK0oE5zpuhk4U502rB46+PjhMzNEFQ00
- Q0ZZwNAaWvlI1THaJQ3NXKDVxx5JHIV1j8Wrqnt/T/nEnGIDlL8xknfvIR6Pw9GPJBjQdaEAFvQ
- ah5HUV+XsrS1Ehz6Cb1XJ3z3hn2k+wxTkhqhSEbG4VJ1XTW5ApPS30tGMGovWfTSrCM3smHpQD7
- M8IQnPryGH9cCnZmYi4qJRM7+MmogRTxGLXX5DQCYnpeQx153KqjC2aAWjfnrjFilh03rbiJco9
- dCH/+rAro2Zn0wuUEwHPYGgj7AdHME9y0ABgLkTX7q+WD9t+IaryLXFEduBiJTUvr/8ijzQMu62
- 0Ut2+Weipyaly6x1vgGljzRxS5uGWAoRAhWLqWH87R1WpOP3bd53QdxX3ePGo5kL5fffkMOZna8
- YMMB+ZcS1JbiJNz07Rdw1U7YrKejWZyHd/PFXdzV8YGdzVOjpDDxdeNuKK9QmWzgqZ6+w78PI4/
- 6EGOiYWLhwACnd9Lkw2VrE9/m8zKaAV9uRrV2u2mCBlgM03w6U0ORl5W+ehBzQTBjMwypKH6
-X-Received: by 2002:a05:6000:2502:b0:487:88b:4681 with SMTP id
- ffacd0b85a97d-4870cf037d3mr14923041f8f.10.1789648915155; 
- Thu, 17 Sep 2026 05:41:55 -0700 (PDT)
-Received: from ip-10-18-1-162.eu-central-1.compute.internal
- (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
- by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-4870bf1fa70sm15162056f8f.9.2026.09.17.05.41.54
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 17 Sep 2026 05:41:54 -0700 (PDT)
-X-Google-Original-From: "plaisthos (Code Review)"
- <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Thu, 17 Sep 2026 12:41:53 +0000
-To: stipa <lstipakov@gmail.com>
-Auto-Submitted: auto-generated
-X-Gerrit-MessageType: comment
-X-Gerrit-PatchSet: 16
-X-Gerrit-Change-Id: I1c8d302ac57c5603d622a7be14be369437388268
-X-Gerrit-Change-Number: 1741
-X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1741?usp=email>
-X-Gerrit-Commit: 5b1e911f450ab09703cf02f50846d58bf66fbaeb
-X-Gerrit-Comment-Date: Thu, 17 Sep 2026 12:41:53 +0000
-In-Reply-To: <gerrit.1782719911000.I1c8d302ac57c5603d622a7be14be369437388268@gerrit.openvpn.net>
-References: <gerrit.1782719911000.I1c8d302ac57c5603d622a7be14be369437388268@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzgyNzE5OTExMDAwLkkxYzhkMzAyYWM1N2M1NjAzZDYyMmE3YmUxNGJlMzY5NDM3Mzg4MjY4QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <5536f30e3e3d18737b8229d7f86e885c4936cb1a-EmailReviewComments-HTML@gerrit.openvpn.net>
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
+ id 1x7BVK-0006YN-4i for openvpn-devel@lists.sourceforge.net;
+ Thu, 17 Sep 2026 12:46:20 +0000
+Received: from blue.greenie.muc.de (localhost [127.0.0.1])
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 68HCkBeO014309
+ for <openvpn-devel@lists.sourceforge.net>; Thu, 17 Sep 2026 14:46:11 +0200
+Received: (from gert@localhost)
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 68HCkBwU014308
+ for openvpn-devel@lists.sourceforge.net; Thu, 17 Sep 2026 14:46:11 +0200
+From: Gert Doering <gert@greenie.muc.de>
+To: openvpn-devel@lists.sourceforge.net
+Date: Thu, 17 Sep 2026 14:46:05 +0200
+Message-ID: <20260917124610.14291-1-gert@greenie.muc.de>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <gerrit.1788781350000.Iea1481e94ba1abe18c39d81cd797187c88427571@gerrit.openvpn.net>
+References: <gerrit.1788781350000.Iea1481e94ba1abe18c39d81cd797187c88427571@gerrit.openvpn.net>
 MIME-Version: 1.0
-User-Agent: Gerrit/3.11.5
-X-Headers-End: 1x7BRB-0006P2-TS
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: oob: Add control
- message TLV encoding (P_CONTROL_OOB_V1)
+X-Headers-End: 1x7BVK-0006YN-4i
+Subject: [Openvpn-devel] [PATCH v3] Check for null-bytes in certificate
+ subjects
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -139,343 +78,369 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "plaisthos \(Code Review\) via Openvpn-devel"
- <openvpn-devel@lists.sourceforge.net>
-Reply-To: arne-openvpn@rfc2549.org, openvpn-devel@lists.sourceforge.net,
- ralf@mandelbit.com, frank@lichtenheld.com, lstipakov@gmail.com
-Cc: "plaisthos \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============8817457109939876604=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============8817457109939876604==
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="LjZv+0Y0wmA="; charset=UTF-8
+From: Max Fillinger <maximilian.fillinger@sentyron.com>
 
---LjZv+0Y0wmA=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+When using the OpenSSL library, we escaped embedded null-bytes in a
+certificate's subject in x509_get_subject(), but in
+extract_x509_field_ssl(), we copied any null-bytes that are contained in
+the field value. When using the option --verify-x509-name, this could
+lead to an incorrect name being accepted. For example, the common name
+"admin\0impersonator" would be accepted when running with
+--verify-x509-name admin name.
 
-Attention is currently required from: flichtenheld, ralf_lici, stipa=2E
+To fix this, this commit makes x509_get_subject() return an error if the
+subject contains an embedded null-byte. This way, OpenVPN won't connect
+with peers that present such certificates.
 
-pl=
-aisthos has posted comments on this change by stipa=2E ( http://gerrit=2Eop=
-envpn=2Enet/c/openvpn/+/1741?usp=3Demail )
+As a defense-in-depth measure, we also check for null-bytes in
+extract_x509_field_ssl() in case a future version of OpenVPN has a code
+path that avoids x509_get_subject().
 
-Change subject: oob: Add contro=
-l message TLV encoding (P_CONTROL_OOB_V1)
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E
+With Mbed TLS, the x509_get_subject() function already returned an error
+when there is an embedded null-byte. (As of Mbed TLS 3.5.) Here too, we
+added a check for null-bytes to the function where we extract individual
+fields from the subject.
 
+Also, backend_x509_get_username() is changed so that it returns the
+value of the *last* matching field, to be consistent with the behavior
+of the OpenSSL backend.
 
-Patch Set 16: Code-Review-1
+This is a partial backport of the commit
+"Check for \0 and RFC 2253 chars in cert subjects" from the master
+branch but skipping the part about escaping RFC 2253 characters to avoid
+user-visible changes in a patch release. We do not consider the
+null-byte check "user-visible" because we don't expect users to put
+null-bytes into the common name.
 
-(10 comments)
+v2: The previous version of the commit unescaped control characters in
+the subject, so it had user-visible changes after all. This version
+escapes any control characters in the subject.
 
-C=
-ommit Message:
+Discovered and reported by BreachX Zero Day Labs, using Typhon AI Mil v2.
+Contributing Researcher: Vivek Parikh.
 
-http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741/comment/e49c=
-d08f_c4d00e95?usp=3Demail :
-PS16, Line 26: never legal on an established se=
-ssion=2E
-Commit message not updated=2E
+CVE: 2026-84790
+Reported-by: Vivek Parikh <vivek.parikh@breachx.ai>
+Github: OpenVPN/openvpn-private-issues#163
 
+Change-Id: Iea1481e94ba1abe18c39d81cd797187c88427571
+Signed-off-by: Max Fillinger <maximilian.fillinger@sentyron.com>
+Acked-by: Steffan Karger <steffan@karger.me>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1902
+---
 
-http://gerrit=2Eopenvpn=2Enet/c/op=
-envpn/+/1741/comment/02f6b113_8081e410?usp=3Demail :
-PS16, Line 28: See the=
- OOB control message section of the wire protocol specification
-Better to r=
-eference a link in the spec and/or the header under which is this is define=
-d rather than a PR that does get updated/receives documentation fixes=2E
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to release/2.7.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1902
+This mail reflects revision 3 of this Change.
 
-=
-File CMakeLists=2Etxt:
+Acked-by according to Gerrit (reflected above):
+Steffan Karger <steffan@karger.me>
 
-http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741/comm=
-ent/06bdba7f_c8c4e830?usp=3Demail :
-PS16, Line 889:     target_sources(test=
-_oob PRIVATE
-Same comment as on the Automake file=2E
+        
+diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbedtls.c
+index 66cc66e..1319c07 100644
+--- a/src/openvpn/ssl_verify_mbedtls.c
++++ b/src/openvpn/ssl_verify_mbedtls.c
+@@ -214,6 +214,24 @@
+     }
+ }
+ 
++static bool
++asn1_buf_is_cstr_compatible(const mbedtls_asn1_buf *asn1_buf)
++{
++    if (!(asn1_buf->tag == MBEDTLS_ASN1_UTF8_STRING || asn1_buf->tag == MBEDTLS_ASN1_PRINTABLE_STRING
++          || asn1_buf->tag == MBEDTLS_ASN1_IA5_STRING))
++    {
++        return false;
++    }
++    for (size_t i = 0; i < asn1_buf->len; i++)
++    {
++        if (asn1_buf->p[i] == '\0')
++        {
++            return false;
++        }
++    }
++    return true;
++}
++
+ result_t
+ backend_x509_get_username(char *cn, size_t cn_len, char *x509_username_field, mbedtls_x509_crt *cert)
+ {
+@@ -259,16 +277,17 @@
+     }
+ 
+     /* Find field_oid in the subject name. */
+-    mbedtls_x509_name *name = &cert->subject;
+-    while (name != NULL)
++    mbedtls_x509_name *name = NULL;
++    mbedtls_x509_name *next = &cert->subject;
++    while (next != NULL)
+     {
+-        if (strlen(field_oid) == name->oid.len
+-            && 0 == memcmp(name->oid.p, field_oid, name->oid.len))
++        if (strlen(field_oid) == next->oid.len
++            && 0 == memcmp(next->oid.p, field_oid, next->oid.len))
+         {
+-            break;
++            name = next;
+         }
+ 
+-        name = name->next;
++        next = next->next;
+     }
+ 
+     /* Not found, return an error if this is the peer's certificate */
+@@ -277,6 +296,11 @@
+         goto fail;
+     }
+ 
++    if (!asn1_buf_is_cstr_compatible(&name->val))
++    {
++        goto fail;
++    }
++
+     /* Check that we have room in the buffer, including the terminating '/0' byte. */
+     if (cn_len <= name->val.len)
+     {
+@@ -586,22 +610,11 @@
+ static char *
+ asn1_buf_to_c_string(const mbedtls_asn1_buf *orig, struct gc_arena *gc)
+ {
+-    size_t i;
+     char *val;
+ 
+-    if (!(orig->tag == MBEDTLS_ASN1_UTF8_STRING || orig->tag == MBEDTLS_ASN1_PRINTABLE_STRING
+-          || orig->tag == MBEDTLS_ASN1_IA5_STRING))
++    if (!asn1_buf_is_cstr_compatible(orig))
+     {
+-        /* Only support C-string compatible types */
+-        return string_alloc("ERROR: unsupported ASN.1 string type", gc);
+-    }
+-
+-    for (i = 0; i < orig->len; ++i)
+-    {
+-        if (orig->p[i] == '\0')
+-        {
+-            return string_alloc("ERROR: embedded null value", gc);
+-        }
++        return string_alloc("ERROR: Unsupported string type or embedded null bytes.", gc);
+     }
+     val = gc_malloc(orig->len + 1, false, gc);
+     memcpy(val, orig->p, orig->len);
+diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
+index a30099d..1f2804f 100644
+--- a/src/openvpn/ssl_verify_openssl.c
++++ b/src/openvpn/ssl_verify_openssl.c
+@@ -196,12 +196,13 @@
+     int lastpos = -1;
+     int tmp = -1;
+     unsigned char *buf = NULL;
++    result_t ret = FAILURE;
+ 
+     ASN1_OBJECT *field_name_obj = OBJ_txt2obj(field_name, 0);
+     if (field_name_obj == NULL)
+     {
+         msg(D_TLS_ERRORS, "Invalid X509 attribute name '%s'", field_name);
+-        return FAILURE;
++        goto exit;
+     }
+ 
+     ASSERT(size > 0);
+@@ -222,28 +223,31 @@
+     /* Nothing found */
+     if (lastpos == -1)
+     {
+-        return FAILURE;
++        goto exit;
+     }
+ 
+     const X509_NAME_ENTRY *x509ne = X509_NAME_get_entry(x509, lastpos);
+     if (!x509ne)
+     {
+-        return FAILURE;
++        goto exit;
+     }
+ 
+     const ASN1_STRING *asn1 = X509_NAME_ENTRY_get_data(x509ne);
+     if (!asn1)
+     {
+-        return FAILURE;
++        goto exit;
+     }
+-    if (ASN1_STRING_to_UTF8(&buf, asn1) < 0)
++    int length = ASN1_STRING_to_UTF8(&buf, asn1);
++    if (length < 0 || (size_t)length != strlen((char *)buf))
+     {
+-        return FAILURE;
++        goto exit;
+     }
+ 
+     strncpynt(out, (char *)buf, size);
+ 
+-    const result_t ret = (strlen((char *)buf) < size) ? SUCCESS : FAILURE;
++    ret = (strlen((char *)buf) < size) ? SUCCESS : FAILURE;
++
++exit:
+     OPENSSL_free(buf);
+     return ret;
+ }
+@@ -384,9 +388,9 @@
+         goto err;
+     }
+ 
++    /* Get the subject with unescaped control characters so that we can check for null bytes. */
+     X509_NAME_print_ex(subject_bio, X509_get_subject_name(cert), 0,
+-                       XN_FLAG_SEP_CPLUS_SPC | XN_FLAG_FN_SN | ASN1_STRFLGS_UTF8_CONVERT
+-                           | ASN1_STRFLGS_ESC_CTRL);
++                       XN_FLAG_SEP_CPLUS_SPC | XN_FLAG_FN_SN | ASN1_STRFLGS_UTF8_CONVERT);
+ 
+     if (BIO_eof(subject_bio))
+     {
+@@ -394,6 +398,25 @@
+     }
+ 
+     BIO_get_mem_ptr(subject_bio, &subject_mem);
++    if (memchr(subject_mem->data, 0, subject_mem->length) != NULL)
++    {
++        msg(M_WARN, "ERROR: Certificate subject contains a '\\0' byte.");
++        goto err;
++    }
++
++    /* Now output the subject with escaped control characters. */
++    if (BIO_reset(subject_bio) != 1)
++    {
++        goto err;
++    }
++    X509_NAME_print_ex(subject_bio, X509_get_subject_name(cert), 0,
++                       XN_FLAG_SEP_CPLUS_SPC | XN_FLAG_FN_SN | ASN1_STRFLGS_UTF8_CONVERT
++                           | ASN1_STRFLGS_ESC_CTRL);
++    if (BIO_eof(subject_bio))
++    {
++        goto err;
++    }
++    BIO_get_mem_ptr(subject_bio, &subject_mem);
+ 
+     subject = gc_malloc(subject_mem->length + 1, false, gc);
+ 
+diff --git a/tests/unit_tests/openvpn/test_ssl.c b/tests/unit_tests/openvpn/test_ssl.c
+index 7e7679c..adfc07a 100644
+--- a/tests/unit_tests/openvpn/test_ssl.c
++++ b/tests/unit_tests/openvpn/test_ssl.c
+@@ -884,6 +884,94 @@
+     free_certificate(cert);
+ }
+ 
++/* Certificate with two CNs, "foo" and "bar".
++ *
++ * Generated with:
++ * openssl req -x509 -newkey ec -pkeyopt ec_paramgen_curve:secp384r1 -subj "/CN=foo/CN=bar" \
++ * -noenc -out two_cns.crt -keyout two_cns.key
++ */
++static const char *cert_with_two_cns =
++    "-----BEGIN CERTIFICATE-----\n"
++    "MIIByTCCAVCgAwIBAgIUZuvd8Wfnq5jeRc3ohoJ/Vza54wQwCgYIKoZIzj0EAwIw\n"
++    "HDEMMAoGA1UEAwwDZm9vMQwwCgYDVQQDDANiYXIwHhcNMjYwODI4MTU1NjAwWhcN\n"
++    "MjYwOTI3MTU1NjAwWjAcMQwwCgYDVQQDDANmb28xDDAKBgNVBAMMA2JhcjB2MBAG\n"
++    "ByqGSM49AgEGBSuBBAAiA2IABERAfb210NOACy+QVYAu3EXrcGhTJpZDfhpDnE/h\n"
++    "PvPMWGWzqecTYdseArxZc0T/5Xma36IKCjGGsgN9ypZ5oQugQlB/NrVRCJIuHSGA\n"
++    "hGBWFvnUsqdNo765lGwVdBwhY6NTMFEwHQYDVR0OBBYEFPwnD+wK9R81Syk0qyTI\n"
++    "dFT/BNoJMB8GA1UdIwQYMBaAFPwnD+wK9R81Syk0qyTIdFT/BNoJMA8GA1UdEwEB\n"
++    "/wQFMAMBAf8wCgYIKoZIzj0EAwIDZwAwZAIwGxazGb6RRQtXzOWCPLRKId4e+E88\n"
++    "cwoCK3UwzEr8+Ddf54w5cEZC54f5J6AKFUJjAjBpT/JqF41uK57H+8i/16oZkBcm\n"
++    "OyQnlH8W/UzZo3/weTEBTcNW0iuCpIrS6im8pSk=\n"
++    "-----END CERTIFICATE-----\n";
++
++void
++ssl_test_extract_last_matching_field(void **state)
++{
++    /* When there are multiple fields of the same type in the certificate's subject, OpenVPN
++     * should extract the value of the last matching field. This is essentially arbitrary and there
++     * is no correct choice here, but this test exists to make sure that the behavior is consistent
++     * between different backends.
++     */
++    openvpn_x509_cert_t *cert = get_certificate(cert_with_two_cns);
++
++    char username[TLS_USERNAME_LEN + 1] = { 0 };
++    assert_int_equal(backend_x509_get_username(username, sizeof(username), "CN", cert), SUCCESS);
++    assert_string_equal(username, "bar");
++    free_certificate(cert);
++}
++
++/* Certificate with a null-byte embedded in the CN.
++ *
++ * Generated with the following Python script:
++ *
++ * from cryptography import x509
++ * from cryptography.x509.oid import NameOID, ExtensionOID, ExtendedKeyUsageOID
++ * from cryptography.hazmat.primitives import hashes, serialization
++ * from cryptography.hazmat.primitives.asymmetric import ec
++ * import datetime
++ *
++ * private_key = ec.generate_private_key(ec.SECP384R1())
++ * now = datetime.datetime.now(datetime.timezone.utc)
++ * name = "with\x00null"
++ *
++ * cert = (x509.CertificateBuilder()
++ *             .subject_name(x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, name)]))
++ *             .issuer_name(x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, name)]))
++ *             .public_key(private_key.public_key())
++ *             .serial_number(x509.random_serial_number())
++ *             .not_valid_before(now)
++ *             .not_valid_after(now + datetime.timedelta(days=10 * 365))
++ *             .sign(private_key, hashes.SHA256()))
++ *
++ * print(str(cert.public_bytes(serialization.Encoding.PEM), encoding='utf-8'))
++ **/
++static const char *cert_with_null =
++    "-----BEGIN CERTIFICATE-----\n"
++    "MIIBZTCB66ADAgECAhRLWdNRl+C20KKBG4QC9HFPWlOtBzAKBggqhkjOPQQDAjAU\n"
++    "MRIwEAYDVQQDDAl3aXRoAG51bGwwHhcNMjYwODI4MTQzMDA4WhcNMzYwODI1MTQz\n"
++    "MDA4WjAUMRIwEAYDVQQDDAl3aXRoAG51bGwwdjAQBgcqhkjOPQIBBgUrgQQAIgNi\n"
++    "AAT7PE+vJCBiB4CVHBcvJVF9n5n/dGQIn4C8HeYE8M2iXYCIRW5wg6/mlPaeiJY/\n"
++    "Ywh3pa8zhto1+aczbJKTvLgRwXn6N5vNpME1c5iWMzY0WHe1dJyVtoRBvkNvy5+k\n"
++    "GuEwCgYIKoZIzj0EAwIDaQAwZgIxAP2ekdQ8muG8Nv2o3PsBp0CqiaSNByGiP75i\n"
++    "k099bUFvHp/3LSp8Wf4JK2iWzc5h6gIxAINBGg2xjlmMgpXxROKA9qQqaM3d92Mp\n"
++    "EzZyRyPM3PGR83ZPbIaYDq8lCVxVlbYr/Q==\n"
++    "-----END CERTIFICATE-----\n";
++
++void
++ssl_test_reject_null_in_cert_subject(void **state)
++{
++    openvpn_x509_cert_t *cert = get_certificate(cert_with_null);
++    struct gc_arena gc = gc_new();
++
++    /* Trying to get the subject as a whole should fail. */
++    assert_ptr_equal(x509_get_subject(cert, &gc), NULL);
++
++    /* Trying to extract the common name should fail. */
++    char username[TLS_USERNAME_LEN + 1] = { 0 };
++    assert_int_equal(backend_x509_get_username(username, sizeof(username), "CN", cert), FAILURE);
++    gc_free(&gc);
++    free_certificate(cert);
++}
+ 
+ int
+ main(void)
+@@ -908,7 +996,9 @@
+         cmocka_unit_test(test_data_channel_roundtrip_bf_cbc),
+         cmocka_unit_test(test_data_channel_known_vectors_epoch),
+         cmocka_unit_test(test_data_channel_known_vectors_shortpktid),
+-        cmocka_unit_test(crypto_test_print_cert_details)
++        cmocka_unit_test(crypto_test_print_cert_details),
++        cmocka_unit_test(ssl_test_extract_last_matching_field),
++        cmocka_unit_test(ssl_test_reject_null_in_cert_subject)
+ 
+     };
+ 
 
-
-File src/openvpn/con=
-trol_msg=2Eh:
-
-http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741/comment/9195d=
-45f_4d95ac70?usp=3Demail :
-PS16, Line 88:  * OOB message so far: any other =
-TLV that is not marked optional invalidates
-which matches the currently sup=
-ported OOB messages=2E
-
-
-http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741/com=
-ment/97e70ce2_3d0ef64a?usp=3Demail :
-PS16, Line 89:  * the message wherever=
- it sits, so the whole sequence is walked=2E A message
-sits? 
-
-"it is prese=
-nt" perhaps
-
-
-http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741/comment/a4d071=
-d5_835ea037?usp=3Demail :
-PS16, Line 100:  * @param value        set to a b=
-uffer covering the found TLV's value
-Point out that this buffer points at a=
- portain of payload and does not have its own storage=2E
-
-
-File src/openvpn=
-/control_msg=2Ec:
-
-http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741/comment/a=
-f589fdc_2762f9ec?usp=3Demail :
-PS16, Line 81:          * we are looking for=
- and the ones we skip are bounds-checked alike=2E */
-This sounds quite comp=
-licated=2E Is there anything more than trying to say "Adavanced to the end =
-of TLV and see if the data is complete"?
-
-
-File src/openvpn/ssl_pkt=2Eh:
-
-h=
-ttp://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741/comment/b734bc70_7c5c92c6?usp=
-=3Demail :
-PS16, Line 72: /* the out-of-band opcodes, which carry no reliab=
-ility header */
-Other part of the code call this ACK array=2E I would be a =
-bit more verbose here: 
-
-OOB opcodes are part of the reliable control chann=
-el: ie no control message id and no ACK array=2E
-
-
-File src/openvpn/ssl_pkt=
-=2Ec:
-
-http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741/comment/48fd91f3_fae2=
-7106?usp=3Demail :
-PS16, Line 171:     ASSERT(!opcode_is_oob(opcode)); /* t=
-hose are built by tls_wrap_oob_standalone() */
-what does those reference he=
-re? I have a rough idea what you are trying to say but I think this comment=
- is a bit cryptic=2E
-
-
-File tests/unit_tests/openvpn/Makefile=2Eam:
-
-http:/=
-/gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741/comment/fc3a9237_5f6856aa?usp=3Dem=
-ail :
-PS16, Line 157: oob_testdriver_CFLAGS  =3D \
-Can we just add test_oob=
-=2Ec to pkt_testdriver_SOURCES and not add yet another test suite with a ve=
-ry low number tests?
-
-
-
--- 
-To view, visit http://gerrit=2Eopenvpn=2Enet/c/=
-openvpn/+/1741?usp=3Demail
-To unsubscribe, or for help writing mail filters=
-, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
-
-Gerrit-MessageT=
-ype: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id=
-: I1c8d302ac57c5603d622a7be14be369437388268
-Gerrit-Change-Number: 1741
-Gerr=
-it-PatchSet: 16
-Gerrit-Owner: stipa <lstipakov@gmail=2Ecom>
-Gerrit-Reviewer=
-: flichtenheld <frank@lichtenheld=2Ecom>
-Gerrit-Reviewer: plaisthos <arne-o=
-penvpn@rfc2549=2Eorg>
-Gerrit-Reviewer: ralf_lici <ralf@mandelbit=2Ecom>
-Ger=
-rit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
-Gerrit-Atte=
-ntion: flichtenheld <frank@lichtenheld=2Ecom>
-Gerrit-Attention: ralf_lici <=
-ralf@mandelbit=2Ecom>
-Gerrit-Attention: stipa <lstipakov@gmail=2Ecom>
-Gerri=
-t-Comment-Date: Thu, 17 Sep 2026 12:41:53 +0000
-Gerrit-HasComments: Yes
-Ger=
-rit-Has-Labels: Yes
-
---LjZv+0Y0wmA=
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, ralf_lici, stipa=2E </p>
-<p>Patch set 1=
-6:<span style=3D"border-radius: 3px; display: inline-block; margin: 0 2px; =
-padding: 4px;background-color: #ffd4d4;">Code-Review -1</span></p><p><a hre=
-f=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741?usp=3Demail">View Chang=
-e</a></p><p>10 comments:</p><ul style=3D"list-style: none; padding: 0;"><li=
- style=3D"margin: 0; padding: 0;"><p>Commit Message:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/ope=
-nvpn/+/1741/comment/e49cd08f_c4d00e95?usp=3Demail">Patch Set #16, Line 26:<=
-/a> <code style=3D"font-family:monospace,monospace">never legal on an estab=
-lished session=2E</code></p><p class=3D"blocks" style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">Commit message not updated=2E</p></li><li styl=
-e=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a h=
-ref=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741/comment/02f6b113_8081=
-e410?usp=3Demail">Patch Set #16, Line 28:</a> <code style=3D"font-family:mo=
-nospace,monospace">See the OOB control message section of the wire protocol=
- specification</code></p><p class=3D"blocks" style=3D"white-space: pre-wrap=
-; word-wrap: break-word;">Better to reference a link in the spec and/or the=
- header under which is this is defined rather than a PR that does get updat=
-ed/receives documentation fixes=2E</p></li></ul></li><li style=3D"margin: 0=
-; padding: 0;"><p>File CMakeLists=2Etxt:</p><ul style=3D"list-style: none; =
-padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"marg=
-in-bottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741/=
-comment/06bdba7f_c8c4e830?usp=3Demail">Patch Set #16, Line 889:</a> <code s=
-tyle=3D"font-family:monospace,monospace">    target_sources(test_oob PRIVAT=
-E</code></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: =
-break-word;">Same comment as on the Automake file=2E</p></li></ul></li><li =
-style=3D"margin: 0; padding: 0;"><p>File src/openvpn/control_msg=2Eh:</p><u=
-l style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: =
-0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=2Eop=
-envpn=2Enet/c/openvpn/+/1741/comment/9195d45f_4d95ac70?usp=3Demail">Patch S=
-et #16, Line 88:</a> <code style=3D"font-family:monospace,monospace"> * OOB=
- message so far: any other TLV that is not marked optional invalidates</cod=
-e></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-=
-word;">which matches the currently supported OOB messages=2E</p></li><li st=
-yle=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a=
- href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741/comment/97e70ce2_3d=
-0ef64a?usp=3Demail">Patch Set #16, Line 89:</a> <code style=3D"font-family:=
-monospace,monospace"> * the message wherever it sits, so the whole sequence=
- is walked=2E A message</code></p><p class=3D"blocks" style=3D"white-space:=
- pre-wrap; word-wrap: break-word;">sits? </p><p class=3D"blocks" style=3D"w=
-hite-space: pre-wrap; word-wrap: break-word;">&quot;it is present&quot; per=
-haps</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"marg=
-in-bottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741/=
-comment/a4d071d5_835ea037?usp=3Demail">Patch Set #16, Line 100:</a> <code s=
-tyle=3D"font-family:monospace,monospace"> * @param value        set to a bu=
-ffer covering the found TLV&#39;s value</code></p><p class=3D"blocks" style=
-=3D"white-space: pre-wrap; word-wrap: break-word;">Point out that this buff=
-er points at a portain of payload and does not have its own storage=2E</p><=
-/li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/cont=
-rol_msg=2Ec:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"ma=
-rgin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"=
-http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741/comment/af589fdc_2762f9ec?us=
-p=3Demail">Patch Set #16, Line 81:</a> <code style=3D"font-family:monospace=
-,monospace">         * we are looking for and the ones we skip are bounds-c=
-hecked alike=2E */</code></p><p class=3D"blocks" style=3D"white-space: pre-=
-wrap; word-wrap: break-word;">This sounds quite complicated=2E Is there any=
-thing more than trying to say &quot;Adavanced to the end of TLV and see if =
-the data is complete&quot;?</p></li></ul></li><li style=3D"margin: 0; paddi=
-ng: 0;"><p>File src/openvpn/ssl_pkt=2Eh:</p><ul style=3D"list-style: none; =
-padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"marg=
-in-bottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741/=
-comment/b734bc70_7c5c92c6?usp=3Demail">Patch Set #16, Line 72:</a> <code st=
-yle=3D"font-family:monospace,monospace">/* the out-of-band opcodes, which c=
-arry no reliability header */</code></p><p class=3D"blocks" style=3D"white-=
-space: pre-wrap; word-wrap: break-word;">Other part of the code call this A=
-CK array=2E I would be a bit more verbose here: </p><p class=3D"blocks" sty=
-le=3D"white-space: pre-wrap; word-wrap: break-word;">OOB opcodes are part o=
-f the reliable control channel: ie no control message id and no ACK array=
-=2E</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/open=
-vpn/ssl_pkt=2Ec:</p><ul style=3D"list-style: none; padding: 0;"><li style=
-=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a hr=
-ef=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741/comment/48fd91f3_fae27=
-106?usp=3Demail">Patch Set #16, Line 171:</a> <code style=3D"font-family:mo=
-nospace,monospace">    ASSERT(!opcode_is_oob(opcode)); /* those are built b=
-y tls_wrap_oob_standalone() */</code></p><p class=3D"blocks" style=3D"white=
--space: pre-wrap; word-wrap: break-word;">what does those reference here? I=
- have a rough idea what you are trying to say but I think this comment is a=
- bit cryptic=2E</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>F=
-ile tests/unit_tests/openvpn/Makefile=2Eam:</p><ul style=3D"list-style: non=
-e; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"m=
-argin-bottom: 4px;"><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/17=
-41/comment/fc3a9237_5f6856aa?usp=3Demail">Patch Set #16, Line 157:</a> <cod=
-e style=3D"font-family:monospace,monospace">oob_testdriver_CFLAGS  =3D \</c=
-ode></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: brea=
-k-word;">Can we just add test_oob=2Ec to pkt_testdriver_SOURCES and not add=
- yet another test suite with a very low number tests?</p></li></ul></li></u=
-l><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/17=
-41?usp=3Demail">change 1741</a>=2E To unsubscribe, or for help writing mail=
- filters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Dema=
-il">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/Email=
-Message"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg=
-/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c=
-/openvpn/+/1741?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chang=
-e"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment =
-</div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div sty=
-le=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:non=
-e"> Gerrit-Change-Id: I1c8d302ac57c5603d622a7be14be369437388268 </div>
-<div=
- style=3D"display:none"> Gerrit-Change-Number: 1741 </div>
-<div style=3D"di=
-splay:none"> Gerrit-PatchSet: 16 </div>
-<div style=3D"display:none"> Gerrit=
--Owner: stipa &lt;lstipakov@gmail=2Ecom&gt; </div>
-<div style=3D"display:no=
-ne"> Gerrit-Reviewer: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
-<=
-div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@rfc=
-2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: ralf_li=
-ci &lt;ralf@mandelbit=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-=
-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
-<d=
-iv style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@lichten=
-held=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: ralf_l=
-ici &lt;ralf@mandelbit=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit=
--Attention: stipa &lt;lstipakov@gmail=2Ecom&gt; </div>
-<div style=3D"displa=
-y:none"> Gerrit-Comment-Date: Thu, 17 Sep 2026 12:41:53 +0000 </div>
-<div s=
-tyle=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display=
-:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>
---LjZv+0Y0wmA=--
-
-
---===============8817457109939876604==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============8817457109939876604==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
---===============8817457109939876604==--
-
