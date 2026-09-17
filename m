@@ -4,84 +4,69 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6C82FC982D9
-	for <openvpn-devel@archiver.kernel.org>; Thu, 17 Sep 2026 15:30:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 374D7C88E72
+	for <openvpn-devel@archiver.kernel.org>; Thu, 17 Sep 2026 17:09:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
-	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:Date:To:From:Sender:Reply-To:Cc:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:In-Reply-To:References:List-Owner;
-	bh=RjbOgVN2jD0hO2qppD1xYaq857xqUVarzlljS0AMLjc=; b=Xq/zF1vLUvfmET+lExX01qyX75
-	yGCSwoJYa5wWHP8KPmfSL5bI5kqWkbNe+HbCJrcZrOEMV0g3PkNx39BT0OmUEyra3lhx2zQI0ym9J
-	sAucQqKnRj+j0zRw8HXncEUlFHDn1fTYTJshAwxo28UpkWiboiL33qYsRGUA5L8x62VY=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	MIME-Version:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
+	List-Unsubscribe:List-Id:Subject:References:In-Reply-To:To:From:Message-Id:
+	Date:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=LYYcutlMrQD9ltiP7EuX+sqCBy3JAbh7AAHsco6bYPM=; b=aDRIdcfckmqGiYDl7wlPltzCwK
+	scrp3I+9I7a7WJPZfDMQ9+bpqgsJxQXpbbBXm5Xnik3Y0taFCk1DIJaSsOjfQlXXTxe5blUNuYNeh
+	GoylD7lg4uuGiOX3BMm58FO0Br1gqMSO48TD3zGJzew5161xdbwz2jWtS8QKYmNsJyS8=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x7E4A-0003gg-IF;
-	Thu, 17 Sep 2026 15:30:24 +0000
+	id 1x7Fc1-00049I-Da;
+	Thu, 17 Sep 2026 17:09:30 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <ralf@mandelbit.com>) id 1x7E47-0003gX-Qt
+ (envelope-from <gert@chekov.greenie.muc.de>) id 1x7Fbz-00049B-96
  for openvpn-devel@lists.sourceforge.net;
- Thu, 17 Sep 2026 15:30:21 +0000
+ Thu, 17 Sep 2026 17:09:28 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=ft9zvP0DKGz2b8hx+GzjzacYzy76KbyxWGbo9aEIQRM=; b=BwQh/RwqN4NoiSG8pMEJQD6y+l
- RlRHdoeYZv6oVf0VlS2VPoSV4MGejmfOZfRbiX9uuzKG0xXmbS59mRz7Kp3lh/DftH79z5XvPhjwC
- bbkJpAV9Ut+UnQe2f5RlBliWjM+MnmyTzKlDeefdWB7WqH6r0bHDi6gymgEgUPDqk+Ho=;
+ d=sourceforge.net; s=x; h=References:In-Reply-To:Subject:Cc:To:From:
+ Message-Id:Date:Sender:Reply-To:MIME-Version:Content-Type:
+ Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+ List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=VoDGY5ZeMK0FyegluWtohQ7dt+kPttk//bF5sJudygw=; b=W7OlekXPa6PUPA2Kx6EDeDNII1
+ Jm5CdRaFslvjZpPEd5oLLiNbRH9ItMi2LFSPxOofo+BImmbFlelSmVk2mxinEHHZeWQrUZgnzcLAR
+ HAiuugSXd44PGb8FkpSqvKWouQOUvFWZ3PuPdKAz3jLldU/tWuVDdfOgjqHc2zEXxHsY=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:To:From:
- Sender:Reply-To:Cc:Content-Type:Content-ID:Content-Description:Resent-Date:
- Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
- References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=ft9zvP0DKGz2b8hx+GzjzacYzy76KbyxWGbo9aEIQRM=; b=U
- 46v5sLJS3F0dIe3pRkaFuUoO4PA3+mDv2Yp0WF3w2S5t08xEeMgeqosGUjwxfhSJOnHOqnnWqzAJ1
- ivMfnpGJfkqWw5eFWe3hTEDdZTtjTj00nGKWPlfdzTtbQzHxmNReGXdVXKEb+6ygoOKOe7tIIUM2w
- JhivqFy+wDmB9540=;
-Received: from mout-b-105.mailbox.org ([195.10.208.50])
+ h=References:In-Reply-To:Subject:Cc:To:From:Message-Id:Date:Sender:Reply-To
+ :MIME-Version:Content-Type:Content-Transfer-Encoding:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+ List-Post:List-Owner:List-Archive;
+ bh=VoDGY5ZeMK0FyegluWtohQ7dt+kPttk//bF5sJudygw=; b=D3WkEdzz8Mui/C0gFfrqp8Yg/z
+ bVZ9oRCGT0ocT39nkPS981tE4i/KVCZ0l6UYctTiSq75UEy/BZC+PKE8xAwd2VUt8MKLP7t+/G/5j
+ CR80vPQMIkZbmH9uTq9qw5gGOxDlKdmSjKipM/+HCaG267D+emJfeFSCy7Dy6Qa2BlI4=;
+Received: from chekov.greenie.muc.de ([193.149.48.178])
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1x7E41-0005Yj-0W for openvpn-devel@lists.sourceforge.net;
- Thu, 17 Sep 2026 15:30:21 +0000
-Received: from smtp202.mailbox.org (smtp202.mailbox.org
- [IPv6:2001:67c:2050:b231:465::202])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
- key-exchange X25519MLKEM768 server-signature RSA-PSS (4096 bits) server-digest
- SHA256) (No client certificate requested)
- by mout-b-105.mailbox.org (Postfix) with ESMTPS id 4hm07P0VY9z9sYv
- for <openvpn-devel@lists.sourceforge.net>;
- Thu, 17 Sep 2026 17:30:09 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
- s=MBO0001; t=1789659009;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:mime-version:mime-version:
- content-transfer-encoding:content-transfer-encoding;
- bh=ft9zvP0DKGz2b8hx+GzjzacYzy76KbyxWGbo9aEIQRM=;
- b=wXQzJIeNwXV6NX7JZMgHoQKPHYwXyAm/GIQFhTmnTAu3egUHMdbb7yBKrMzvLa7RV0YPFi
- zYA5re5CR81ig2di79vXgCW0opTOxbMuhdLlDSeP7SozpIaOrNiXyvkk2BgLRFcVDhy1HX
- FXNo1WUJPIzW+u//s47jKI708zNyazzMPieuLdZg6H+cYoKtLj9+a9OSYdfV/aln6o67Hj
- FjKNuVgWvNEuHBT1G+CYg22qKhoWxMMetGROA8vDK+/58qGNq2+5BG+grdwQ2cibIotURy
- 8mBMsuwB55LfGVf1RGjZE5r9/S3H10/osiTa6+gcSfWDI5IrFu3Mj7bo5z+Efw==
-Authentication-Results: outgoing_mbo_mout; dkim=none;
- spf=pass (outgoing_mbo_mout: domain of ralf@mandelbit.com designates
- 2001:67c:2050:b231:465::202 as permitted sender)
- smtp.mailfrom=ralf@mandelbit.com
-From: Ralf Lici <ralf@mandelbit.com>
-To: openvpn-devel@lists.sourceforge.net
-Date: Thu, 17 Sep 2026 17:29:54 +0200
-Message-ID: <cover.1789658051.git.ralf@mandelbit.com>
-MIME-Version: 1.0
-X-Rspamd-Queue-Id: 4hm07P0VY9z9sYv
-X-Headers-End: 1x7E41-0005Yj-0W
-Subject: [Openvpn-devel] [PATCH ovpn net-next 0/2] ovpn: reduce
- reference-count contention
+ id 1x7Fbx-0000B0-7j for openvpn-devel@lists.sourceforge.net;
+ Thu, 17 Sep 2026 17:09:27 +0000
+Received: from chekov.greenie.muc.de (localhost [IPv6:0:0:0:0:0:0:0:1])
+ by chekov.greenie.muc.de (8.18.2/8.18.1) with ESMTP id 68HH9GFO076679;
+ Thu, 17 Sep 2026 19:09:16 +0200 (CEST)
+ (envelope-from gert@chekov.greenie.muc.de)
+Received: (from gert@localhost)
+ by chekov.greenie.muc.de (8.18.2/8.18.1/Submit) id 68HH9GuC076678;
+ Thu, 17 Sep 2026 19:09:16 +0200 (CEST) (envelope-from gert)
+Date: Thu, 17 Sep 2026 19:09:16 +0200 (CEST)
+Message-Id: <202609171709.68HH9GuC076678@chekov.greenie.muc.de>
+From: Gert Doering <gert@greenie.muc.de>
+To: Lev Stipakov <lev@openvpn.net>
+X-Patchwork-State: Accepted
+In-Reply-To: <20260916203212.21285-1-gert@greenie.muc.de>
+References: <20260916203212.21285-1-gert@greenie.muc.de>
+X-Headers-End: 1x7Fbx-0000B0-7j
+Subject: [Openvpn-devel] [PATCH applied] Re: ssl: do not trust the peer's
+ request to resend the wrapped client key
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -93,49 +78,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Cc: openvpn-devel@lists.sourceforge.net
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-Hi,
+Good catch & thanks for the fix :-) - I am not commenting on the fix itself
+(Arne knows the code much better there and if he's happy, so am I).  I did
+test client/server side, with and without tls-crypt(-v2) and everything
+still works - I did not try to reproduce the crash and see if the fix
+works.  Also, unit test :-) - which passes fine on 2.6 up.
 
-Currently ovpn holds peer and key-slot references while packets are
-being processed and until asynchronous crypto completes. With traffic
-for one peer spread across CPUs, the shared kref cachelines therefore
-become contended even though both objects are normally long-lived.
+Your patch has been applied to the master, release/2.7 and release/2.6
+branch (older versions do not have dynamic tls-crypt-v2).
 
-This series converts both references to percpu_ref while preserving their
-existing RCU-delayed destruction. The individual patch messages describe
-the memory cost and cache-to-cache measurements.
+commit bc7f77ea2b6a8e5d964f6cbb403e6bbf1fe77fa4 (master)
+commit b0cb5029b2d9386568140792b5ce278a0e164ff2 (release/2.7)
+commit 75fb978f97f1e8587f0d0d35843698a3df93cf09 (release/2.6)
+Author: Lev Stipakov
+Date:   Wed Sep 16 22:32:06 2026 +0200
 
-The test used one peer, one AES-128-GCM key and 32 TCP streams on a
-32-logical-CPU Ryzen 9 9950X with a ConnectX-5 hairpin. The encrypted RX
-flow used one source port and one receive queue, so only TX exercised CPU
-fan-out. perf c2c showed that each shared reference cacheline disappeared
-after its respective conversion.
+     ssl: do not trust the peer's request to resend the wrapped client key
 
-Thanks,
-
-Ralf Lici
-Mandelbit Srl
-
----
-Ralf Lici (2):
-  ovpn: use percpu references for peers
-  ovpn: use percpu references for key slots
-
- drivers/net/ovpn/crypto.c      | 14 +++++++-------
- drivers/net/ovpn/crypto.h      | 15 +++++++++++----
- drivers/net/ovpn/crypto_aead.c |  7 ++++++-
- drivers/net/ovpn/netlink.c     |  6 +++---
- drivers/net/ovpn/peer.c        | 32 ++++++++++++++++++++------------
- drivers/net/ovpn/peer.h        | 34 ++++++++++++++++++++++++++++++----
- 6 files changed, 77 insertions(+), 31 deletions(-)
+     Signed-off-by: Lev Stipakov <lev@openvpn.net>
+     Acked-by: Arne Schwabe <arne-openvpn@rfc2549.org>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1916
+     Message-Id: <20260916203212.21285-1-gert@greenie.muc.de>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg39268.html
+     Signed-off-by: Gert Doering <gert@greenie.muc.de>
 
 
-base-commit: b8e9e7d82e7eefd5d2d528469d94ec20e96b38c3
--- 
-2.55.0
+--
+kind regards,
+
+Gert Doering
+
 
 
 _______________________________________________
