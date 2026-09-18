@@ -4,115 +4,112 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5D9C3C982D7
-	for <openvpn-devel@archiver.kernel.org>; Fri, 18 Sep 2026 21:23:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C563EC982DD
+	for <openvpn-devel@archiver.kernel.org>; Fri, 18 Sep 2026 21:23:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:Date:Sender:To:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=2/X2gxnG0XMoPpCvQ4m0lCPBlP609tA9FMoTHcL816o=; b=FBFOU54OPikJw04j47zsJAE1Bf
-	+8zm8CdZNHy+vs/i5WitgOI2NEP1h+LH/8Sr6oZh9tbEDd+CDEbiz+Cc++881C24fpDX5l9eBa7Tq
-	WWeBzlO2VOlFgEy/NxTnufyEHwiE6rsVYkdKMc+zWxVzWHG7lmExTaWyx4JIOkj0uO2c=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=c3GSfJppkom4sMu8YPsBHUc0VRwIfWrDnYG1W8OOaF4=; b=cTM+Q+oFoiF7RP9tKrrlyJ1ASD
+	t2bIYWvuFyoJggopbYM33Cn7ed3Fr4NGESuxJfuUfNxki/n110bct8Ac4UQqOmWY/0wM7bdjMuOb6
+	w3NzZ9mTGOD3qUTkMADiAnkGf1Nx2nXiQfr6yx21yIDhW5ugbXEwdrZSOYr69ApRYWDo=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x7g3G-0006qG-To;
-	Fri, 18 Sep 2026 21:23:23 +0000
+	id 1x7g3J-0005mI-51;
+	Fri, 18 Sep 2026 21:23:25 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1x7g3G-0006qA-19
+ (envelope-from <gerrit@openvpn.net>) id 1x7g3H-0005mA-Kw
  for openvpn-devel@lists.sourceforge.net;
- Fri, 18 Sep 2026 21:23:22 +0000
+ Fri, 18 Sep 2026 21:23:23 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
+ Cc:Date:From:Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
  :List-Post:List-Owner:List-Archive;
- bh=BI7zLf6UMvcGBdRzZuOdjQDU1HVn+5h1rm376GmiWi8=; b=IvJBa6nK7xSW9l1+2N++uRKF3s
- iB0LMo+M5vbSzdmbV48scyTfycgTQFq3mluaE8OnUki3iAf6i7nqdpk2FgF4KjvJ3KQgS3mzgQbzV
- pYWYxijaiREDnCvkd6ZHATiPgWBaSbo2jDiaL9O6skQ5aAhwZZN2YXYfar/3p5dYqGx8=;
+ bh=8DcMQI+af/1MlBjWJoTnje1vQrmMS2TAEm2iwWV/eo8=; b=WdqDy+uC9URO+XcVss59FEQ+Oo
+ tHFrgmE6EMJRc0Bo8eWsbfa5v+4TJgmTqPmK0ijezlSITP0MEXyjEhtv7MK9hhQFVBfILCl1iEM4Y
+ K77SF26u/nEyxjXUWEgVaOLt4ipr+rMNe3EJEHoZCQfdiNgUVgAZx3l+1kcmFfNAlYQQ=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
- Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:Date:From:Sender:
+ To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=BI7zLf6UMvcGBdRzZuOdjQDU1HVn+5h1rm376GmiWi8=; b=A
- n3nhRvMHnitmkaeeI2hjlD9+CieY78vAkqfKmq+HOsxarckOPO/gNeA1aF4gtagsSZBhG/MUh0kF4
- Dz8AmCeZPjboXIOE7HW5836LVLK6nw5VsVIsROrhRHwkht+mAzcJ+DgOpGyZzcWNlMPnWRIEc4gaY
- lFWCJ97bCklALXe0=;
-Received: from mail-wm2-f13.google.com ([74.125.225.141])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ List-Owner:List-Archive; bh=8DcMQI+af/1MlBjWJoTnje1vQrmMS2TAEm2iwWV/eo8=; b=E
+ FY2VmHBCjaGz8aSWu6HfmiepAfGoFvY06MySy9KzbkdGQW4023qw4b/J0WZaxWwn99L7R+1lYH2l5
+ yQJKVNXCM9+miwknBGoMcrD5qX+m6fSoVwJIRpmthl+7Qi88PF7nx7a6ZQ+LN7VUxDKgDsHv7r87s
+ Otocl60G3UvbQ5wk=;
+Received: from mail-wr2-f28.google.com ([74.125.225.92])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1x7g3E-0004yx-CC for openvpn-devel@lists.sourceforge.net;
- Fri, 18 Sep 2026 21:23:22 +0000
-Received: by mail-wm2-f13.google.com with SMTP id
- 5b1f17b1804b1-49e6b885ef8so6872485e9.1
+ id 1x7g3F-0005AI-91 for openvpn-devel@lists.sourceforge.net;
+ Fri, 18 Sep 2026 21:23:23 +0000
+Received: by mail-wr2-f28.google.com with SMTP id
+ ffacd0b85a97d-485b1d2874aso872360f8f.1
  for <openvpn-devel@lists.sourceforge.net>;
- Fri, 18 Sep 2026 14:23:20 -0700 (PDT)
+ Fri, 18 Sep 2026 14:23:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1789766594; x=1790371394; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1789766595; x=1790371395; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
+ :auto-submitted:cc:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=BI7zLf6UMvcGBdRzZuOdjQDU1HVn+5h1rm376GmiWi8=;
- b=M+T4k/Xpt671kGc8kJrk/10gCI8+uo7MQjkKIZXIXNkMPoeVwMpl2Ekrd8Og3pHDQv
- b5JXFPgi9AtvXSrH+Y8BkDAO71fqdBFtRhfTctOGfIFKv667USlnSBE6oL4GWv29zeaO
- oIDx5q+w9iE8RCkGvfTdjMqlkUCHXe69sVrcTgJ5Ur75U+4oeInFQ9LOtLfbFrVscJlA
- nN2SvbMAxi4vBn/NMy3ytA1VF6oAK9dWMvCN3/HmM4sCcMPn0YxcUKPA6lGMZkpnY4xA
- S1fl7SzSWNpjM3zLCJEbDLuG6hRfv+Qdo01+ILGMAgEiDuez3kwbLFPSlgBU4tIlV/Tz
- kVkA==
+ bh=8DcMQI+af/1MlBjWJoTnje1vQrmMS2TAEm2iwWV/eo8=;
+ b=Np3G3aMA3q6zGndVbCqALORUvO2Bx/qIZ0r+qIPKz2lKEkyLBWR3KKcT4fI8ae05nB
+ hUgID+gsRago3bRwYkZCenY6QmwXVZW+Kcop1ioqsFYxC98CEVb1Idj9cm1u/OpJsq/s
+ BPY3nLU4llLIsuIl6uldnHCopuH4u11C5wxz/tmhiRwYDqdZF1JV0Fh26MZlupt0lfba
+ wHpCa55Cgi0BLPNCnBMaDKTHYf35PmpdG89XP426vPoT78tYb6NvanzXz2DsK2WpGvWM
+ 0y8Z4scvPvEVT/438rU2e4UMEN2/0jSiZuU5zZscZ1WMh4HyzRzk+37+4SuHUONwYOIe
+ 4IEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1789766594; x=1790371394;
+ d=1e100.net; s=20260707; t=1789766595; x=1790371395;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
- :cc:subject:date:message-id:reply-to:content-type;
- bh=BI7zLf6UMvcGBdRzZuOdjQDU1HVn+5h1rm376GmiWi8=;
- b=X4iw9X6GYfVbhXfCstwkXLKD+bg9xy/iUYWSFEFlgcwAQprr7ZxhZK/DwYvcqLAsXq
- ftgE0FStGdTKCPkHiEoR5y3tWSEyqqtMLGh4ng9ry4GaetVyToGgw0NNy26wDfY+c/Q3
- o8gCtlP9+z16G+D8Z3l5z5Wh+kQllPybHKr08uud241KA1lCPAXe+xChdLlCNXJoH/kt
- weoBCVU2OJyVltrtlbpU0aMa4L6H9KCppcadHLvKVi2oACYnSfupvxaxceghj3RdG6Um
- v2gdoI341dyJWYMp/OvNZTU8+Sa82NOblmJw1BbrbhyZvhSC5OaLtvAOJzLV5QgC9OQD
- DTpw==
+ :auto-submitted:cc:date:from:x-gm-gg:x-gm-message-state:from:to:cc
+ :subject:date:message-id:reply-to:content-type;
+ bh=8DcMQI+af/1MlBjWJoTnje1vQrmMS2TAEm2iwWV/eo8=;
+ b=Vrc6WXjmvkC4p4InR9yenyowsdxJTrnWfyGQDu6k6Z4A1NuWo3HdaNc2TfCNRVLe+M
+ agpI/Hk+CqZJLGMiZtUFFM0cnwEw64Ps0YjwH3grk9od/WTrPelsiyRyIcYS4kyunWxJ
+ iQGBQs2Gz2xHpFUwk2O+z35x5CBgA18WAl+EdltvFFiS6vFeekJXluAbxXn+dPiHnm8l
+ tTZEMvRHt8jEEBPpWDON6Su/S9LgaAcRNDH+saAlwn44xZ0wkzezqh645d6KReNwp3Kx
+ Wv4Y3s1J4Ss064sMevOR6DCsKVHa2CRifOXladAyWxBjXFsLkM8vWrqFyFnRZmtBXXds
+ rNNw==
 X-Forwarded-Encrypted: i=1;
- AKwUvBzCQV67P2ONkZ91pzWzf3cy7LN6okWXxkT4igJIz8LtKxSA2majXVNTd7RrJ8RUn/GUSXFtQO31KtRh+5Q9@lists.sourceforge.net
-X-Gm-Message-State: AFuF++mJ9gA1N9Y9FiFw2B7MFQAUm4AXKD06u3dWkWuu+0upgHF4Ua27
- AiXaJ6JhKMFCFxDHt3nstENEp2qfXmXnXzURdhB53KiFUZiJ4dfsXKXU3W1FzddvahYqpEWEHlb
- NVxjYNeg6zqfbXlx+xehQlm0v4Tyj+b8VR2nlMuJAOsXldAg0O2bBlthhkdRbC8npuuFmCUqPWY
- v9QoDTBw==
-X-Gm-Gg: AYBFou2rkE0s5qitqTaPH7HVlODXjtj1f31zmQXEgbbhRmO/T0x7n2f31k4WnahFkma
- /IFjMovzgTilazx0U+xV02c3gDgaiEEGEHP45VdMxP0LON15J4LYdeP2quqvQaAs/OPmWN9P/tz
- TinpSawjpyXlZoCkSbbm0WStUGw/B0nHHcVnYYv5OhzKYw2BtvZBd3jdS75kB2Am3qiFtQBU2rD
- PcM8QnfDTBAPooQFl3JOIqrzV2+Sc3SYySx0PaADrTOACvhM3Zx1I3G7azCKxVkildxBYWbLTpp
- 8pLW0/hjELUyLQ7427pQaavJiw8Uw2Ym16bB0SeEL5TNC0s8v8X2J7adK/aGqd3NquU12He639D
- klwq6ADs4j9giKrkwix7EIZ+LcLG4GXtdBHeYKJTvfN6Eq2neSDGq7OwjjbL4gICyKp8TkmpaN1
- E9qPWdgh7j8asftgGcOo/5bb8T0RSQVwYYmNCymNLVcJYCJ1L2Ev6BtoeJmXuG/tB6C9GZ1IGDz
- qGYh6n0pBg4r1PfL+veGjQZhqqJmsEvWEQ4daSpF09WpC5p+A2NDH6eq2rWloo1JlfTfgeyU0MK
- xy/OUjuCbG3VF2NlNBeD5akWkrgUtw/m5dPOUPri8qelqNXMBFZ2tV12vHkiQ3YFM+YiiSM=
-X-Received: by 2002:a05:600c:530f:b0:49d:243a:e4f9 with SMTP id
- 5b1f17b1804b1-49fc56cb197mr48883045e9.10.1789766593108; 
- Fri, 18 Sep 2026 14:23:13 -0700 (PDT)
+ AKwUvBzc+jyxtgLEmsZUxiqnWh84yiTk+Oo3aq5glqt3bl7nM/M0kNej89sMGnQ3url0Pd+r5UAJJPMmiJJ3/6ON@lists.sourceforge.net
+X-Gm-Message-State: AFuF++kpywlCFydRVb6eH19FySAnhDlh/UtSFriaLyx5giWTfxSM2hkh
+ HGH+m7jd0U0KFhJj/MHapHExWW0D71QUn7irU7IPLuaSIkjktYCIQp11PlIcj9oaqVMovcRZ0E/
+ jg4grZcqF2vEz7kmUHG0SPUxfFbqmyTCqQuCLXWB1w12HEdkc+R1nwf8ROGUEY9h+cSje
+X-Gm-Gg: AYBFou0jxkuT5M+v1QWpxijLWtAhHUnoVJqiTe5ziu4rQlTKGUNYOCel1lzK+oOvJxC
+ o0KGPTgt63hXiT2QlpwqB/PAA935z0H2O18uec1sLMwq4A7PM1TgvXx4P3D3IkL/27Yh0tUsHSN
+ SensAsSwT6yPBMT2uDekGbXcg8PedRub0nLS//EES8FkAIRD+ezAhWVRC72WzxS8W0ZMq+3jIMC
+ 6xEDTjiosMUMSA2ajSOjaKzosTjJ3ihp460zKv60uFebM5G1fLq3zsS8BRYQ70qyNgtpkMEx2z+
+ rlSiICJ5liNf6qnYjULKW5FMHKIR3MVKf5NwuTM7JpAfA5RNGGOTQXhajP6QITDvIx0EujVB1gL
+ ndtU9zOTjE7XfcAocqunTcnYfCtJ8+u1iZvF21sgJ/YeiNlD4IckscEgtYpWZpjTF6k1aDEKdkw
+ FtWCCyUx6n2wbGDBo7Q1DxMgvnkwXOT12RKad+6SLYGDSjhYDVEbgwEv29w8bQPCCRkF1vGfxqW
+ Do3sGhe8hh17VIWJkHmN0KkSePlf5uqM7gyUEIKIYYNQap7cy9tGgnZ7kESeCcI2eAwYEtKM49B
+ yzeC+zaJC2LUIh/kIWu6lkSxo3SjD/lUgDprVJWNOmfGzCApPMrDZReENyl6gw==
+X-Received: by 2002:a05:6000:2401:b0:487:939:3fa9 with SMTP id
+ ffacd0b85a97d-4871e38b4a9mr10359467f8f.27.1789766594560; 
+ Fri, 18 Sep 2026 14:23:14 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-49fcd074336sm21531225e9.8.2026.09.18.14.23.12
+ ffacd0b85a97d-48724460767sm1580861f8f.13.2026.09.18.14.23.14
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 18 Sep 2026 14:23:12 -0700 (PDT)
+ Fri, 18 Sep 2026 14:23:14 -0700 (PDT)
 X-Google-Original-From: "cron2 (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Fri, 18 Sep 2026 21:23:10 +0000
-To: plaisthos <arne-openvpn@rfc2549.org>,
- ralf_lici <ralf@mandelbit.com>, stipa <lstipakov@gmail.com>
+Date: Fri, 18 Sep 2026 21:23:13 +0000
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: newpatchset
+X-Gerrit-MessageType: merged
 X-Gerrit-PatchSet: 4
 X-Gerrit-Change-Id: I564edc6e0cc179c2b8b5ddef5e80838949fe9fcd
 X-Gerrit-Change-Number: 1835
@@ -122,10 +119,10 @@ X-Gerrit-Commit: 6b5f8ff6763307e659b32a4bf47967abf8cb9311
 In-Reply-To: <gerrit.1785893242000.I564edc6e0cc179c2b8b5ddef5e80838949fe9fcd@gerrit.openvpn.net>
 References: <gerrit.1785893242000.I564edc6e0cc179c2b8b5ddef5e80838949fe9fcd@gerrit.openvpn.net>
 Thread-Index: PGdlcnJpdC4xNzg1ODkzMjQyMDAwLkk1NjRlZGM2ZTBjYzE3OWMyYjhiNWRkZWY1ZTgwODM4OTQ5ZmU5ZmNkQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <455541e98ff933e0ebbed6d5cd86b01bd668412e-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+Message-ID: <455541e98ff933e0ebbed6d5cd86b01bd668412e-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.11.5
-X-Headers-End: 1x7g3E-0004yx-CC
+X-Headers-End: 1x7g3F-0005AI-91
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: dco: do not exit the
  process when installing a DCO key fails
 X-BeenThere: openvpn-devel@lists.sourceforge.net
@@ -145,594 +142,583 @@ Reply-To: gert@greenie.muc.de, arne-openvpn@rfc2549.org,
  openvpn-devel@lists.sourceforge.net, ralf@mandelbit.com, frank@lichtenheld.com,
  lstipakov@gmail.com, antonio@mandelbit.com
 Cc: "cron2 \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============7351573557808395352=="
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>,
+ plaisthos <arne-openvpn@rfc2549.org>
+Content-Type: multipart/mixed; boundary="===============4185867452172094124=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============7351573557808395352==
+--===============4185867452172094124==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="4bWqao2jQtE="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="mBpgacdv0ag="; charset=UTF-8
 
---4bWqao2jQtE=
+--mBpgacdv0ag=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#4) to the change originally created by=
- ordex=2E ( http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1835?usp=3Demail )
+cron2 has submitted this change=2E ( http://gerrit=2Eopenvpn=2Enet/c/openvp=
+n/+/1835?usp=3Demail )
 
-T=
-he following approvals got outdated and were removed:
-Code-Review+2 by plai=
-sthos, Code-Review+2 by ralf_lici, Code-Review+2 by stipa
-
-
-Change subject:=
- dco: do not exit the process when installing a DCO key fails
-=2E=2E=2E=2E=
+Change subject: dco: do not exit the process when i=
+nstalling a DCO key fails
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E
 
-dco: do not exit the proc=
-ess when installing a DCO key fails
-
-When the DCO peer is gone from the ker=
-nel while userspace still believes
-it exists, dco_new_key() fails with ENOE=
-NT and init_key_contexts() calls
-msg(M_FATAL, =2E=2E=2E)=2E On a server thi=
-s terminates the whole daemon and
-disconnects every other client, even thou=
-gh only a single peer is
-affected=2E
-
-Propagate the failure instead=2E Sinc=
-e a DCO desync needs a different
-recovery than any other key generation err=
-or - the kernel peer has to be
-re-created, which only a reconnect can do - =
-report it as a distinct
-key_gen_status through generate_key_expansion() and=
-
-tls_session_generate_data_channel_keys(), and let tls_multi_process()
-turn=
- it into a new TLSMP_RESTART result that check_tls() dispatches as a
-SIGUSR=
-1=2E On a server this restarts only the affected client instance=2E
-
-The re=
-start request is tracked separately from 'active' because it must
-not be ov=
-erwritten by a later TLSMP_ACTIVE or TLSMP_RECONNECT
-assignment, and the re=
-turn value now applies an explicit precedence:
-killing the session supersed=
-es restarting it, which supersedes 'active'=2E
-
-tls_session_update_crypto_p=
-arams_do_work() collapses the desync back to
-a plain failure, as all of its=
- callers already turn a failure into a
-SIGUSR1=2E
-
-Note that commit ea3bb67=
-e2b1e ("dco: make key state desync recoverable")
-does not cover this case, =
-as both of its hunks are conditional on the
-key installation having succeed=
-ed=2E
-
-Github: fixes OpenVPN/openvpn#542
-Change-Id: I564edc6e0cc179c2b8b5dd=
-ef5e80838949fe9fcd
-Signed-off-by: Antonio Quartulli <antonio@mandelbit=2Eco=
-m>
-Acked-by: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit URL: https://=
-gerrit=2Eopenvpn=2Enet/c/openvpn/+/1835
-Message-Id: <20260806120220=2E3806-=
-1-gert@greenie=2Emuc=2Ede>
-URL: https://www=2Email-archive=2Ecom/openvpn-de=
-vel@lists=2Esourceforge=2Enet/msg38176=2Ehtml
-Signed-off-by: Gert Doering <=
-gert@greenie=2Emuc=2Ede>
----
-M src/openvpn/forward=2Ec
-M src/openvpn/ssl=2E=
-c
-M src/openvpn/ssl=2Eh
-3 files changed, 73 insertions(+), 22 deletions(-)
+dco: do not exit the process when installing a DCO key fails
 =
 
+When the DCO peer is gone from the kernel while userspace still believes
+i=
+t exists, dco_new_key() fails with ENOENT and init_key_contexts() calls
+msg=
+(M_FATAL, =2E=2E=2E)=2E On a server this terminates the whole daemon and
+di=
+sconnects every other client, even though only a single peer is
+affected=2E=
 
-  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/35/183=
-5/4
 
-diff --git a/src/openvpn/forward=2Ec b/src/openvpn/forward=2Ec
-index 8=
-3cd113=2E=2E6fe5849 100644
---- a/src/openvpn/forward=2Ec
-+++ b/src/openvpn/=
-forward=2Ec
+Propagate the failure instead=2E Since a DCO desync needs a different
+rec=
+overy than any other key generation error - the kernel peer has to be
+re-cr=
+eated, which only a reconnect can do - report it as a distinct
+key_gen_stat=
+us through generate_key_expansion() and
+tls_session_generate_data_channel_k=
+eys(), and let tls_multi_process()
+turn it into a new TLSMP_RESTART result =
+that check_tls() dispatches as a
+SIGUSR1=2E On a server this restarts only =
+the affected client instance=2E
+
+The restart request is tracked separately =
+from 'active' because it must
+not be overwritten by a later TLSMP_ACTIVE or=
+ TLSMP_RECONNECT
+assignment, and the return value now applies an explicit p=
+recedence:
+killing the session supersedes restarting it, which supersedes '=
+active'=2E
+
+tls_session_update_crypto_params_do_work() collapses the desync=
+ back to
+a plain failure, as all of its callers already turn a failure into=
+ a
+SIGUSR1=2E
+
+Note that commit ea3bb67e2b1e ("dco: make key state desync r=
+ecoverable")
+does not cover this case, as both of its hunks are conditional=
+ on the
+key installation having succeeded=2E
+
+Github: fixes OpenVPN/openvpn=
+#542
+Change-Id: I564edc6e0cc179c2b8b5ddef5e80838949fe9fcd
+Signed-off-by: An=
+tonio Quartulli <antonio@mandelbit=2Ecom>
+Acked-by: Arne Schwabe <arne-open=
+vpn@rfc2549=2Eorg>
+Gerrit URL: https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1=
+835
+Message-Id: <20260806120220=2E3806-1-gert@greenie=2Emuc=2Ede>
+URL: http=
+s://www=2Email-archive=2Ecom/openvpn-devel@lists=2Esourceforge=2Enet/msg381=
+76=2Ehtml
+Signed-off-by: Gert Doering <gert@greenie=2Emuc=2Ede>
+---
+M src/o=
+penvpn/forward=2Ec
+M src/openvpn/ssl=2Ec
+M src/openvpn/ssl=2Eh
+3 files chan=
+ged, 73 insertions(+), 22 deletions(-)
+
+
+
+
+diff --git a/src/openvpn/forward=
+=2Ec b/src/openvpn/forward=2Ec
+index 83cd113=2E=2E6fe5849 100644
+--- a/src/=
+openvpn/forward=2Ec
++++ b/src/openvpn/forward=2Ec
 @@ -206,6 +206,12 @@
-                 register_signal(c->sig, S=
-IGTERM, "auth-control-exit");
-             }
+    =
+             register_signal(c->sig, SIGTERM, "auth-control-exit");
+       =
+      }
          }
-+        else if (t=
-mp_status =3D=3D TLSMP_RESTART)
-+        {
-+            /* The session cann=
-ot recover on its own=2E Kill the connection so
-+             * that it is =
-set up again from scratch */
-+            register_signal(c->sig, SIGUSR1, =
-"dco key state desync");
++        else if (tmp_status =3D=3D TLSMP_RESTART)
++    =
+    {
++            /* The session cannot recover on its own=2E Kill the con=
+nection so
++             * that it is set up again from scratch */
++       =
+     register_signal(c->sig, SIGUSR1, "dco key state desync");
 +        }
- 
-         interval_future_trigger(&c->=
-c2=2Etmp_int, wakeup);
+ =
+
+         interval_future_trigger(&c->c2=2Etmp_int, wakeup);
      }
-diff --git a/src/openvpn/ssl=2Ec b/src/openvp=
-n/ssl=2Ec
-index ddbf067=2E=2E2a115d4 100644
+diff --=
+git a/src/openvpn/ssl=2Ec b/src/openvpn/ssl=2Ec
+index ddbf067=2E=2E2a115d4 =
+100644
 --- a/src/openvpn/ssl=2Ec
-+++ b=
-/src/openvpn/ssl=2Ec
-@@ -1401,7 +1401,22 @@
-     secure_memzero(&e1_recv, s=
-izeof(e1_recv));
++++ b/src/openvpn/ssl=2Ec
+@@ -1401,7 +1401=
+,22 @@
+     secure_memzero(&e1_recv, sizeof(e1_recv));
  }
  
 -static void
-+/**
-+ * Outcome of generating the data =
-channel keys of a session=2E
++/=
+**
++ * Outcome of generating the data channel keys of a session=2E
 + *
-+ * \c KEY_GEN_DCO_DESYNC is kept distinct=
- from \c KEY_GEN_FAILED because it
-+ * means userspace and kernel disagree =
-about the DCO peer: the session cannot
-+ * recover on its own and the conne=
-ction has to be restarted, while any other
-+ * failure only invalidates the=
- affected key state=2E
++ * =
+\c KEY_GEN_DCO_DESYNC is kept distinct from \c KEY_GEN_FAILED because it
++ =
+* means userspace and kernel disagree about the DCO peer: the session canno=
+t
++ * recover on its own and the connection has to be restarted, while any =
+other
++ * failure only invalidates the affected key state=2E
 + */
-+enum key_gen_status
++enum key=
+_gen_status
 +{
-+    KEY_GEN_OK,       =
-  /**< keys were generated and installed */
-+    KEY_GEN_FAILED,     /**< g=
-eneration failed, invalidate the key state */
-+    KEY_GEN_DCO_DESYNC, /**<=
- the DCO peer is gone from the kernel */
++    KEY_GEN_OK,         /**< keys were generated and instal=
+led */
++    KEY_GEN_FAILED,     /**< generation failed, invalidate the key =
+state */
++    KEY_GEN_DCO_DESYNC, /**< the DCO peer is gone from the kernel=
+ */
 +};
 +
 +static enum key_gen_status
-=
- init_key_contexts(struct key_state *ks, struct tls_multi *multi, const str=
-uct key_type *key_type,
-                   bool server, const struct key2 *=
-key2, bool dco)
+ init_key_contexts(struct key_state *=
+ks, struct tls_multi *multi, const struct key_type *key_type,
+             =
+      bool server, const struct key2 *key2, bool dco)
  {
-@@ -1420,7 +1435,16 @@
-         int ret =3D init_key_dco=
-_bi(multi, ks, key2, key_direction, key_type->cipher, server);
-         if =
-(ret < 0)
+@@ -1420,7 +1435,1=
+6 @@
+         int ret =3D init_key_dco_bi(multi, ks, key2, key_direction, k=
+ey_type->cipher, server);
+         if (ret < 0)
          {
--            msg(M_FATAL, "Impossible to install key m=
-aterial in DCO: %s", strerror(-ret));
-+            /* This normally means t=
-he DCO peer is gone from the kernel while
-+             * userspace still b=
-elieves it exists=2E Do not take the whole
-+             * process down ove=
-r a single peer: report the desync so that the
-+             * connection i=
-s restarted and the peer re-created from scratch */
-+            msg(M_WARN=
-,
-+                "Impossible to install key material in DCO: %s=2E The un=
-derlying "
-+                "DCO peer may have been deleted from the kernel=
- without "
-+                "notifying userspace=2E Restarting the session=
-=2E",
-+                strerror(-ret));
-+            return KEY_GEN_DCO_DES=
-YNC;
+-            msg=
+(M_FATAL, "Impossible to install key material in DCO: %s", strerror(-ret));=
+
++            /* This normally means the DCO peer is gone from the kernel w=
+hile
++             * userspace still believes it exists=2E Do not take the =
+whole
++             * process down over a single peer: report the desync so=
+ that the
++             * connection is restarted and the peer re-created f=
+rom scratch */
++            msg(M_WARN,
++                "Impossible to ins=
+tall key material in DCO: %s=2E The underlying "
++                "DCO peer=
+ may have been deleted from the kernel without "
++                "notifyin=
+g userspace=2E Restarting the session=2E",
++                strerror(-ret))=
+;
++            return KEY_GEN_DCO_DESYNC;
          }
  
-         /* encrypt/decrypt context are unused with DCO *=
-/
+         /* encrypt/=
+decrypt context are unused with DCO */
 @@ -1443,6 +1467,8 @@
      {
-         init_key_ctx_bi(key, key2, key_dire=
-ction, key_type, "Data Channel");
-     }
+       =
+  init_key_ctx_bi(key, key2, key_direction, key_type, "Data Channel");
+    =
+ }
 +
 +    return KEY_GEN_OK;
  }
  
- st=
-atic bool
+ static bool
 @@ -1503,11 +1529,11 @@
-  * Using source entropy from local and r=
-emote hosts, mix into
-  * master key=2E
+  * =
+Using source entropy from local and remote hosts, mix into
+  * master key=
+=2E
   */
 -static bool
-+static enum key_=
-gen_status
- generate_key_expansion(struct tls_multi *multi, struct key_stat=
-e *ks, struct tls_session *session)
++static enum key_gen_status
+ generate_key_expansion(s=
+truct tls_multi *multi, struct key_state *ks, struct tls_session *session)
+=
  {
-     const struct key_ctx_bi *key =
-=3D &ks->crypto_options=2Ekey_ctx_bi;
+     const struct key_ctx_bi *key =3D &ks->crypto_options=2Ekey_ctx_bi;
+=
 -    bool ret =3D false;
-+    enum ke=
-y_gen_status ret =3D KEY_GEN_FAILED;
-     struct key2 key2;
++    enum key_gen_status ret =3D KEY_GEN_FAILED;
+ =
+    struct key2 key2;
  
-     if (key-=
->initialized)
+     if (key->initialized)
 @@ -1552,8 +1578,8 @@
-         }
+  =
+       }
      }
  
--    init_key_conte=
-xts(ks, multi, &session->opt->key_type, server, &key2, session->opt->dco_en=
-abled);
+-    init_key_contexts(ks, multi, &session->opt->key_type=
+, server, &key2, session->opt->dco_enabled);
 -    ret =3D true;
-+    ret =3D init_key_contexts(ks, multi, &sessi=
-on->opt->key_type, server, &key2,
-+                            session->opt=
-->dco_enabled);
++    ret =
+=3D init_key_contexts(ks, multi, &session->opt->key_type, server, &key2,
++ =
+                           session->opt->dco_enabled);
  
  exit:
-     secure_memzero(&key2, sizeof(key2));
-@@ -1567=
-,10 +1593,10 @@
-  * This erases the source material used to generate the da=
-ta channel keys, and
-  * can thus be called only once per session=2E
+     secure=
+_memzero(&key2, sizeof(key2));
+@@ -1567,10 +1593,10 @@
+  * This erases the =
+source material used to generate the data channel keys, and
+  * can thus be=
+ called only once per session=2E
   */
--=
-bool
+-bool
 +static enum key_gen_status
- tls_session_generate_data_channel_keys(st=
-ruct tls_multi *multi, struct tls_session *session)
+ tl=
+s_session_generate_data_channel_keys(struct tls_multi *multi, struct tls_se=
+ssion *session)
  {
--    bool ret =3D fa=
-lse;
-+    enum key_gen_status ret =3D KEY_GEN_FAILED;
-     struct key_state=
- *ks =3D &session->key[KS_PRIMARY]; /* primary key */
+-    bool ret =3D false;
++    enum key_gen_status ret =
+=3D KEY_GEN_FAILED;
+     struct key_state *ks =3D &session->key[KS_PRIMARY]=
+; /* primary key */
  
-     if (ks->authen=
-ticated <=3D KS_AUTH_FALSE)
-@@ -1581,7 +1607,8 @@
+     if (ks->authenticated <=3D KS_AUTH_FALSE)
+@@ -15=
+81,7 +1607,8 @@
  
-     ks->crypto_options=
-=2Eflags =3D session->opt->crypto_flags;
+     ks->crypto_options=2Eflags =3D session->opt->crypto_=
+flags;
  
--    if (!generate_key_expansion=
-(multi, ks, session))
-+    ret =3D generate_key_expansion(multi, ks, sessio=
-n);
+-    if (!generate_key_expansion(multi, ks, session))
++    ret =3D=
+ generate_key_expansion(multi, ks, session);
 +    if (ret !=3D KEY_GEN_OK)
+=
      {
-         msg(D_TLS_ERRORS, "TLS Er=
-ror: generate_key_expansion failed");
+         msg(D_TLS_ERRORS, "TLS Error: generate_key_expansion failed=
+");
          goto cleanup;
-@@ -1593,7 +16=
-20,6 @@
-     /* set the state of the keys for the session to generated */
- =
-    ks->state =3D S_GENERATED_KEYS;
+@@ -1593,7 +1620,6 @@
+     /* set the state of t=
+he keys for the session to generated */
+     ks->state =3D S_GENERATED_KEYS=
+;
  
 -    ret =3D true;
  cleanup:
-     sec=
-ure_memzero(ks->key_src, sizeof(*ks->key_src));
+     secure_memzero(ks->key_src, sizeof(*k=
+s->key_src));
      return ret;
-@@ -1665,7=
- +1691,10 @@
+@@ -1665,7 +1691,10 @@
              }
-         }
+      =
+   }
      }
--    return tls_session_gener=
-ate_data_channel_keys(multi, session);
-+    /* A DCO desync is reported as =
-a plain failure here: every caller of this
-+     * function already turns a=
- failure into a SIGUSR1, which is exactly the
-+     * recovery a desync nee=
-ds */
-+    return tls_session_generate_data_channel_keys(multi, session) =
-=3D=3D KEY_GEN_OK;
+-    return tls_session_generate_data_channel_keys(multi, sessi=
+on);
++    /* A DCO desync is reported as a plain failure here: every caller=
+ of this
++     * function already turns a failure into a SIGUSR1, which is =
+exactly the
++     * recovery a desync needs */
++    return tls_session_gene=
+rate_data_channel_keys(multi, session) =3D=3D KEY_GEN_OK;
  }
  
  bool
-@@ -3336,6 +3365,9 @@
-     struct gc_arena gc=
- =3D gc_new();
-     int active =3D TLSMP_INACTIVE;
-     bool error =3D fals=
-e;
-+    /* kept separate from 'active' on purpose: a restart request must n=
-ot be
-+     * overwritten by a later TLSMP_ACTIVE/TLSMP_RECONNECT assignmen=
-t */
+@@ -33=
+36,6 +3365,9 @@
+     struct gc_arena gc =3D gc_new();
+     int active =3D T=
+LSMP_INACTIVE;
+     bool error =3D false;
++    /* kept separate from 'activ=
+e' on purpose: a restart request must not be
++     * overwritten by a later=
+ TLSMP_ACTIVE/TLSMP_RECONNECT assignment */
 +    bool restart =3D false;
  
+=
      tls_clear_error();
  
-@@ -3436,12 +=
-3468,22 @@
-             /* Session is now fully authenticated=2E
-          =
-    * tls_session_generate_data_channel_keys will move ks->state
-          =
-    * from S_ACTIVE to S_GENERATED_KEYS */
--            if (!tls_session_ge=
-nerate_data_channel_keys(multi, session))
-+            enum key_gen_status =
-status =3D tls_session_generate_data_channel_keys(multi, session);
-+       =
-     if (status !=3D KEY_GEN_OK)
-             {
-                 msg(D_TLS_=
-ERRORS, "TLS Error: generate_key_expansion failed");
-                 ks->a=
-uthenticated =3D KS_AUTH_FALSE;
-                 key_state_ssl_shutdown(&ks=
-->ks_ssl);
-                 ks->state =3D S_ERROR_PRE;
+@@ -3436,12 +3468,22 @@
+             /* Session i=
+s now fully authenticated=2E
+              * tls_session_generate_data_chan=
+nel_keys will move ks->state
+              * from S_ACTIVE to S_GENERATED_K=
+EYS */
+-            if (!tls_session_generate_data_channel_keys(multi, sess=
+ion))
++            enum key_gen_status status =3D tls_session_generate_data=
+_channel_keys(multi, session);
++            if (status !=3D KEY_GEN_OK)
+   =
+          {
+                 msg(D_TLS_ERRORS, "TLS Error: generate_key_exp=
+ansion failed");
+                 ks->authenticated =3D KS_AUTH_FALSE;
+    =
+             key_state_ssl_shutdown(&ks->ks_ssl);
+                 ks->stat=
+e =3D S_ERROR_PRE;
 +
-+                /=
-* Invalidating the key state is not enough to recover from a
++                /* Invalidating the key state is not =
+enough to recover from a
++                 * DCO desync: the kernel peer ha=
+s to be re-created, and the
++                 * key state we just invalidat=
+ed will never be retried, so ask
++                 * for a restart right aw=
+ay */
++                if (status =3D=3D KEY_GEN_DCO_DESYNC)
 +             =
-    * DCO desync: the kernel peer has to be re-created, and the
-+          =
-       * key state we just invalidated will never be retried, so ask
-+     =
-            * for a restart right away */
-+                if (status =3D=
-=3D KEY_GEN_DCO_DESYNC)
-+                {
-+                    restart =3D=
- true;
+   {
++                    restart =3D true;
 +                }
-             }
+            =
+ }
  
-             /* Update auth toke=
-n on the client if needed on renegotiation
+             /* Update auth token on the client if needed on renegotia=
+tion
 @@ -3529,7 +3571,17 @@
  
-     gc=
-_free(&gc);
+     gc_free(&gc);
  
--    return (tas =3D=3D TLS_AUTHENTICATION_FAILED) ? TLSMP_KI=
-LL : active;
-+    /* strongest outcome wins: killing the session supersedes=
- restarting it,
-+     * and restarting supersedes whatever 'active' ended u=
-p being */
-+    if (tas =3D=3D TLS_AUTHENTICATION_FAILED)
+-    return (tas =3D=3D =
+TLS_AUTHENTICATION_FAILED) ? TLSMP_KILL : active;
++    /* strongest outcome=
+ wins: killing the session supersedes restarting it,
++     * and restarting=
+ supersedes whatever 'active' ended up being */
++    if (tas =3D=3D TLS_AUT=
+HENTICATION_FAILED)
 +    {
-+        r=
-eturn TLSMP_KILL;
++        return TLSMP_KILL;
 +    }
-+    if (restart)
++    if (rest=
+art)
 +    {
-+        return TLSMP_RES=
-TART;
++        return TLSMP_RESTART;
 +    }
 +    return active;
  }
  
+=
  /**
-diff --git a/src/openvpn/ssl=2Eh=
- b/src/openvpn/ssl=2Eh
-index 7ddf965=2E=2E5483fbb 100644
---- a/src/openvpn/=
-ssl=2Eh
+diff --git a/src/openvpn/ssl=2Eh b/src/openvpn/ssl=2Eh
+index 7ddf965=
+=2E=2E5483fbb 100644
+--- a/src/openvpn/ssl=2Eh
 +++ b/src/openvpn/ssl=2Eh
-@@ -231,6 +231,8 @@
- #define TLSMP_ACTIVE=
-    1
+@@=
+ -231,6 +231,8 @@
+ #define TLSMP_ACTIVE    1
  #define TLSMP_KILL      2
- #define TLSMP_RECONNECT 3
-+/** the sessio=
-n cannot recover on its own and has to be restarted */
-+#define TLSMP_RESTA=
-RT   4
+ #d=
+efine TLSMP_RECONNECT 3
++/** the session cannot recover on its own and has =
+to be restarted */
++#define TLSMP_RESTART   4
  
  /*
-  * Called by the top-level event loop=2E
-@@ -554,15 +556,6 @@=
-
- void show_available_tls_ciphers(const char *cipher_list, const char *ciph=
-er_list_tls13,
-                                 const char *tls_cert_profil=
-e);
+  * Called by the top-l=
+evel event loop=2E
+@@ -554,15 +556,6 @@
+ void show_available_tls_ciphers(co=
+nst char *cipher_list, const char *cipher_list_tls13,
+                     =
+            const char *tls_cert_profile);
  
 -
 -/**
-- * Generate data channel keys for the supplied TLS session=2E=
-
+- * Generate data chann=
+el keys for the supplied TLS session=2E
 - *
-- * This erases the source material used to generate the data channel =
-keys, and
-- * can thus be called only once per session=2E
+- * This erases the source mate=
+rial used to generate the data channel keys, and
+- * can thus be called onl=
+y once per session=2E
 - */
--bool tls_se=
-ssion_generate_data_channel_keys(struct tls_multi *multi, struct tls_sessio=
-n *session);
+-bool tls_session_generate_data_channel_keys(str=
+uct tls_multi *multi, struct tls_session *session);
 -
- void tls_session_soft_reset(struct tls_multi *multi);
+ void tls_session_sof=
+t_reset(struct tls_multi *multi);
  
- /*=
-*
+ /**
 
 -- 
-To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1835?usp=3D=
-email
-To unsubscribe, or for help writing mail filters, visit http://gerrit=
-=2Eopenvpn=2Enet/settings?usp=3Demail
+To view, visit http://gerrit=
+=2Eopenvpn=2Enet/c/openvpn/+/1835?usp=3Demail
+To unsubscribe, or for help w=
+riting mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Dema=
+il
 
-Gerrit-MessageType: newpatchset
-Gerr=
-it-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I564edc6e0cc179=
-c2b8b5ddef5e80838949fe9fcd
-Gerrit-Change-Number: 1835
+Gerrit-MessageType: merged
+Gerrit-Project: openvpn
+Gerrit-Branch: maste=
+r
+Gerrit-Change-Id: I564edc6e0cc179c2b8b5ddef5e80838949fe9fcd
+Gerrit-Change=
+-Number: 1835
 Gerrit-PatchSet: 4
-Ge=
-rrit-Owner: ordex <antonio@mandelbit=2Ecom>
-Gerrit-Reviewer: plaisthos <arn=
-e-openvpn@rfc2549=2Eorg>
-Gerrit-Reviewer: ralf_lici <ralf@mandelbit=2Ecom>
-=
-Gerrit-Reviewer: stipa <lstipakov@gmail=2Ecom>
-Gerrit-CC: flichtenheld <fra=
-nk@lichtenheld=2Ecom>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourc=
-eforge=2Enet>
+Gerrit-Owner: ordex <antonio@mandelbit=2Ec=
+om>
+Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Reviewer=
+: ralf_lici <ralf@mandelbit=2Ecom>
+Gerrit-Reviewer: stipa <lstipakov@gmail=
+=2Ecom>
+Gerrit-CC: flichtenheld <frank@lichtenheld=2Ecom>
+Gerrit-CC: openvp=
+n-devel <openvpn-devel@lists=2Esourceforge=2Enet>
 
---4bWqao2jQtE=
+--mBpgacdv0ag=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>upl=
-oaded patch set #4</strong> to the change originally created by ordex=2E</p=
-><p><a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1835?usp=3Demail">=
-View Change</a></p><p>The following approvals got outdated and were removed=
-:
-Code-Review+2 by plaisthos, Code-Review+2 by ralf_lici, Code-Review+2 by =
-stipa</p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">dco: do not exit the process when installing a DCO k=
-ey fails<br><br>When the DCO peer is gone from the kernel while userspace s=
-till believes<br>it exists, dco_new_key() fails with ENOENT and init_key_co=
-ntexts() calls<br>msg(M_FATAL, =2E=2E=2E)=2E On a server this terminates th=
-e whole daemon and<br>disconnects every other client, even though only a si=
-ngle peer is<br>affected=2E<br><br>Propagate the failure instead=2E Since a=
- DCO desync needs a different<br>recovery than any other key generation err=
-or - the kernel peer has to be<br>re-created, which only a reconnect can do=
- - report it as a distinct<br>key_gen_status through generate_key_expansion=
-() and<br>tls_session_generate_data_channel_keys(), and let tls_multi_proce=
-ss()<br>turn it into a new TLSMP_RESTART result that check_tls() dispatches=
- as a<br>SIGUSR1=2E On a server this restarts only the affected client inst=
-ance=2E<br><br>The restart request is tracked separately from &#39;active&#=
-39; because it must<br>not be overwritten by a later TLSMP_ACTIVE or TLSMP_=
-RECONNECT<br>assignment, and the return value now applies an explicit prece=
-dence:<br>killing the session supersedes restarting it, which supersedes &#=
-39;active&#39;=2E<br><br>tls_session_update_crypto_params_do_work() collaps=
-es the desync back to<br>a plain failure, as all of its callers already tur=
-n a failure into a<br>SIGUSR1=2E<br><br>Note that commit ea3bb67e2b1e (&quo=
-t;dco: make key state desync recoverable&quot;)<br>does not cover this case=
-, as both of its hunks are conditional on the<br>key installation having su=
-cceeded=2E<br><br>Github: fixes OpenVPN/openvpn#542<br>Change-Id: I564edc6e=
-0cc179c2b8b5ddef5e80838949fe9fcd<br>Signed-off-by: Antonio Quartulli &lt;an=
-tonio@mandelbit=2Ecom&gt;<br>Acked-by: Arne Schwabe &lt;arne-openvpn@rfc254=
-9=2Eorg&gt;<br>Gerrit URL: https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1835<=
-br>Message-Id: &lt;20260806120220=2E3806-1-gert@greenie=2Emuc=2Ede&gt;<br>U=
-RL: https://www=2Email-archive=2Ecom/openvpn-devel@lists=2Esourceforge=2Ene=
-t/msg38176=2Ehtml<br>Signed-off-by: Gert Doering &lt;gert@greenie=2Emuc=2Ed=
-e&gt;<br>---<br>M src/openvpn/forward=2Ec<br>M src/openvpn/ssl=2Ec<br>M src=
-/openvpn/ssl=2Eh<br>3 files changed, 73 insertions(+), 22 deletions(-)<br><=
-br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn =
-refs/changes/35/1835/4</pre><pre style=3D"font-family: monospace,monospace;=
- white-space: pre-wrap;"><span>diff --git a/src/openvpn/forward=2Ec b/src/o=
-penvpn/forward=2Ec</span><br><span>index 83cd113=2E=2E6fe5849 100644</span>=
-<br><span>--- a/src/openvpn/forward=2Ec</span><br><span>+++ b/src/openvpn/f=
-orward=2Ec</span><br><span>@@ -206,6 +206,12 @@</span><br><span>           =
-      register_signal(c-&gt;sig, SIGTERM, &quot;auth-control-exit&quot;);</=
-span><br><span>             }</span><br><span>         }</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        else if (tmp_status =3D=3D TLS=
-MP_RESTART)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            /* The=
- session cannot recover on its own=2E Kill the connection so</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+             * that it is set up a=
-gain from scratch */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+            register_signal(c-&gt;sig, SIGUSR1, &quot;dco key state desync=
-&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</=
-span><br><span> </span><br><span>         interval_future_trigger(&amp;c-&g=
-t;c2=2Etmp_int, wakeup);</span><br><span>     }</span><br><span>diff --git =
-a/src/openvpn/ssl=2Ec b/src/openvpn/ssl=2Ec</span><br><span>index ddbf067=
-=2E=2E2a115d4 100644</span><br><span>--- a/src/openvpn/ssl=2Ec</span><br><s=
-pan>+++ b/src/openvpn/ssl=2Ec</span><br><span>@@ -1401,7 +1401,22 @@</span>=
-<br><span>     secure_memzero(&amp;e1_recv, sizeof(e1_recv));</span><br><sp=
-an> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Outcome of generati=
-ng the data channel keys of a session=2E</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+ * \c KEY_GEN_DCO_DESYNC is kept distinct from \c KEY_GEN_FAILED becaus=
-e it</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * means usersp=
-ace and kernel disagree about the DCO peer: the session cannot</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+ * recover on its own and the co=
-nnection has to be restarted, while any other</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+ * failure only invalidates the affected key stat=
-e=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+enum key_gen_status</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    KEY_GEN_OK,         /**&lt; keys were generat=
-ed and installed */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    KEY_GEN_FAILED,     /**&lt; generation failed, invalidate the key state=
- */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    KEY_GEN_DCO_=
-DESYNC, /**&lt; the DCO peer is gone from the kernel */</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+};</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-static enum key_gen_status</span><br><span> init_key_contexts(struct key_st=
-ate *ks, struct tls_multi *multi, const struct key_type *key_type,</span><b=
-r><span>                   bool server, const struct key2 *key2, bool dco)<=
-/span><br><span> {</span><br><span>@@ -1420,7 +1435,16 @@</span><br><span> =
-        int ret =3D init_key_dco_bi(multi, ks, key2, key_direction, key_typ=
-e-&gt;cipher, server);</span><br><span>         if (ret &lt; 0)</span><br><=
-span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-      msg(M_FATAL, &quot;Impossible to install key material in DCO: %s&quot=
-;, strerror(-ret));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-            /* This normally means the DCO peer is gone from the kernel whi=
-le</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             * us=
-erspace still believes it exists=2E Do not take the whole</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+             * process down over a si=
-ngle peer: report the desync so that the</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+             * connection is restarted and the peer re=
--created from scratch */</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+            msg(M_WARN,</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+                &quot;Impossible to install key material in DCO: %=
-s=2E The underlying &quot;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+                &quot;DCO peer may have been deleted from the kernel=
- without &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-            &quot;notifying userspace=2E Restarting the session=2E&quot;,</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+                strer=
-ror(-ret));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-    return KEY_GEN_DCO_DESYNC;</span><br><span>         }</span><br><span> =
-</span><br><span>         /* encrypt/decrypt context are unused with DCO */=
-</span><br><span>@@ -1443,6 +1467,8 @@</span><br><span>     {</span><br><sp=
-an>         init_key_ctx_bi(key, key2, key_direction, key_type, &quot;Data =
-Channel&quot;);</span><br><span>     }</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    return KEY_GEN_OK;</span><br><span> }</span><br><span> </span><br><span=
-> static bool</span><br><span>@@ -1503,11 +1529,11 @@</span><br><span>  * U=
-sing source entropy from local and remote hosts, mix into</span><br><span> =
- * master key=2E</span><br><span>  */</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-static bool</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+static enum key_gen_status</span><br><span> generate_key_expansion(=
-struct tls_multi *multi, struct key_state *ks, struct tls_session *session)=
-</span><br><span> {</span><br><span>     const struct key_ctx_bi *key =3D &=
-amp;ks-&gt;crypto_options=2Ekey_ctx_bi;</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    bool ret =3D false;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    enum key_gen_status ret =3D KEY_GEN_FAILED;</span=
-><br><span>     struct key2 key2;</span><br><span> </span><br><span>     if=
- (key-&gt;initialized)</span><br><span>@@ -1552,8 +1578,8 @@</span><br><spa=
-n>         }</span><br><span>     }</span><br><span> </span><br><span style=
+<!DOCTYPE html><html><head><style></style></head><body><p>cron2 <strong>sub=
+mitted</strong> this change=2E</p><p><a href=3D"http://gerrit=2Eopenvpn=2En=
+et/c/openvpn/+/1835?usp=3Demail">View Change</a></p><div style=3D"white-spa=
+ce:pre-wrap"></div><pre class=3D"blocks" style=3D"font-family: monospace,mo=
+nospace; white-space: pre-wrap;">dco: do not exit the process when installi=
+ng a DCO key fails<br><br>When the DCO peer is gone from the kernel while u=
+serspace still believes<br>it exists, dco_new_key() fails with ENOENT and i=
+nit_key_contexts() calls<br>msg(M_FATAL, =2E=2E=2E)=2E On a server this ter=
+minates the whole daemon and<br>disconnects every other client, even though=
+ only a single peer is<br>affected=2E<br><br>Propagate the failure instead=
+=2E Since a DCO desync needs a different<br>recovery than any other key gen=
+eration error - the kernel peer has to be<br>re-created, which only a recon=
+nect can do - report it as a distinct<br>key_gen_status through generate_ke=
+y_expansion() and<br>tls_session_generate_data_channel_keys(), and let tls_=
+multi_process()<br>turn it into a new TLSMP_RESTART result that check_tls()=
+ dispatches as a<br>SIGUSR1=2E On a server this restarts only the affected =
+client instance=2E<br><br>The restart request is tracked separately from &#=
+39;active&#39; because it must<br>not be overwritten by a later TLSMP_ACTIV=
+E or TLSMP_RECONNECT<br>assignment, and the return value now applies an exp=
+licit precedence:<br>killing the session supersedes restarting it, which su=
+persedes &#39;active&#39;=2E<br><br>tls_session_update_crypto_params_do_wor=
+k() collapses the desync back to<br>a plain failure, as all of its callers =
+already turn a failure into a<br>SIGUSR1=2E<br><br>Note that commit ea3bb67=
+e2b1e (&quot;dco: make key state desync recoverable&quot;)<br>does not cove=
+r this case, as both of its hunks are conditional on the<br>key installatio=
+n having succeeded=2E<br><br>Github: fixes OpenVPN/openvpn#542<br>Change-Id=
+: I564edc6e0cc179c2b8b5ddef5e80838949fe9fcd<br>Signed-off-by: Antonio Quart=
+ulli &lt;antonio@mandelbit=2Ecom&gt;<br>Acked-by: Arne Schwabe &lt;arne-ope=
+nvpn@rfc2549=2Eorg&gt;<br>Gerrit URL: https://gerrit=2Eopenvpn=2Enet/c/open=
+vpn/+/1835<br>Message-Id: &lt;20260806120220=2E3806-1-gert@greenie=2Emuc=2E=
+de&gt;<br>URL: https://www=2Email-archive=2Ecom/openvpn-devel@lists=2Esourc=
+eforge=2Enet/msg38176=2Ehtml<br>Signed-off-by: Gert Doering &lt;gert@greeni=
+e=2Emuc=2Ede&gt;<br>---<br>M src/openvpn/forward=2Ec<br>M src/openvpn/ssl=
+=2Ec<br>M src/openvpn/ssl=2Eh<br>3 files changed, 73 insertions(+), 22 dele=
+tions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; whit=
+e-space: pre-wrap;"><span>diff --git a/src/openvpn/forward=2Ec b/src/openvp=
+n/forward=2Ec</span><br><span>index 83cd113=2E=2E6fe5849 100644</span><br><=
+span>--- a/src/openvpn/forward=2Ec</span><br><span>+++ b/src/openvpn/forwar=
+d=2Ec</span><br><span>@@ -206,6 +206,12 @@</span><br><span>                =
+ register_signal(c-&gt;sig, SIGTERM, &quot;auth-control-exit&quot;);</span>=
+<br><span>             }</span><br><span>         }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        else if (tmp_status =3D=3D TLSMP_=
+RESTART)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            /* The se=
+ssion cannot recover on its own=2E Kill the connection so</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+             * that it is set up agai=
+n from scratch */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+          register_signal(c-&gt;sig, SIGUSR1, &quot;dco key state desync&qu=
+ot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</spa=
+n><br><span> </span><br><span>         interval_future_trigger(&amp;c-&gt;c=
+2=2Etmp_int, wakeup);</span><br><span>     }</span><br><span>diff --git a/s=
+rc/openvpn/ssl=2Ec b/src/openvpn/ssl=2Ec</span><br><span>index ddbf067=2E=
+=2E2a115d4 100644</span><br><span>--- a/src/openvpn/ssl=2Ec</span><br><span=
+>+++ b/src/openvpn/ssl=2Ec</span><br><span>@@ -1401,7 +1401,22 @@</span><br=
+><span>     secure_memzero(&amp;e1_recv, sizeof(e1_recv));</span><br><span>=
+ }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-s=
+tatic void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Outcome of generating =
+the data channel keys of a session=2E</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ * \c KEY_GEN_DCO_DESYNC is kept distinct from \c KEY_GEN_FAILED because i=
+t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * means userspace=
+ and kernel disagree about the DCO peer: the session cannot</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+ * recover on its own and the conne=
+ction has to be restarted, while any other</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ * failure only invalidates the affected key state=
+=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+enum key_gen_status</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    KEY_GEN_OK,         /**&lt; keys were generate=
+d and installed */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   KEY_GEN_FAILED,     /**&lt; generation failed, invalidate the key state =
+*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    KEY_GEN_DCO_D=
+ESYNC, /**&lt; the DCO peer is gone from the kernel */</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+};</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+s=
+tatic enum key_gen_status</span><br><span> init_key_contexts(struct key_sta=
+te *ks, struct tls_multi *multi, const struct key_type *key_type,</span><br=
+><span>                   bool server, const struct key2 *key2, bool dco)</=
+span><br><span> {</span><br><span>@@ -1420,7 +1435,16 @@</span><br><span>  =
+       int ret =3D init_key_dco_bi(multi, ks, key2, key_direction, key_type=
+-&gt;cipher, server);</span><br><span>         if (ret &lt; 0)</span><br><s=
+pan>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+     msg(M_FATAL, &quot;Impossible to install key material in DCO: %s&quot;=
+, strerror(-ret));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           /* This normally means the DCO peer is gone from the kernel whil=
+e</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             * use=
+rspace still believes it exists=2E Do not take the whole</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+             * process down over a sin=
+gle peer: report the desync so that the</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+             * connection is restarted and the peer re-=
+created from scratch */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+            msg(M_WARN,</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+                &quot;Impossible to install key material in DCO: %s=
+=2E The underlying &quot;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+                &quot;DCO peer may have been deleted from the kernel =
+without &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+           &quot;notifying userspace=2E Restarting the session=2E&quot;,</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                strerr=
+or(-ret));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   return KEY_GEN_DCO_DESYNC;</span><br><span>         }</span><br><span> <=
+/span><br><span>         /* encrypt/decrypt context are unused with DCO */<=
+/span><br><span>@@ -1443,6 +1467,8 @@</span><br><span>     {</span><br><spa=
+n>         init_key_ctx_bi(key, key2, key_direction, key_type, &quot;Data C=
+hannel&quot;);</span><br><span>     }</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   return KEY_GEN_OK;</span><br><span> }</span><br><span> </span><br><span>=
+ static bool</span><br><span>@@ -1503,11 +1529,11 @@</span><br><span>  * Us=
+ing source entropy from local and remote hosts, mix into</span><br><span>  =
+* master key=2E</span><br><span>  */</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-static bool</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+static enum key_gen_status</span><br><span> generate_key_expansion(s=
+truct tls_multi *multi, struct key_state *ks, struct tls_session *session)<=
+/span><br><span> {</span><br><span>     const struct key_ctx_bi *key =3D &a=
+mp;ks-&gt;crypto_options=2Ekey_ctx_bi;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    bool ret =3D false;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    enum key_gen_status ret =3D KEY_GEN_FAILED;</span>=
+<br><span>     struct key2 key2;</span><br><span> </span><br><span>     if =
+(key-&gt;initialized)</span><br><span>@@ -1552,8 +1578,8 @@</span><br><span=
+>         }</span><br><span>     }</span><br><span> </span><br><span style=
 =3D"color: hsl(0, 100%, 40%);">-    init_key_contexts(ks, multi, &amp;sessi=
 on-&gt;opt-&gt;key_type, server, &amp;key2, session-&gt;opt-&gt;dco_enabled=
 );</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ret =3D true;</=
@@ -862,44 +848,43 @@ prop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1835?usp=3De=
 mail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div =
-style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-<div style=
-=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:non=
-e"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change=
--Id: I564edc6e0cc179c2b8b5ddef5e80838949fe9fcd </div>
-<div style=3D"display=
-:none"> Gerrit-Change-Number: 1835 </div>
-<div style=3D"display:none"> Gerr=
-it-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: ordex &lt;=
-antonio@mandelbit=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Revi=
-ewer: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+style=3D"display:none"> Gerrit-MessageType: merged </div>
 <div style=3D"dis=
-play:none"> Gerrit-Reviewer: ralf_lici &lt;ralf@mandelbit=2Ecom&gt; </div>
-=
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@gmail=2Ec=
-om&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: flichtenheld &lt;fran=
-k@lichtenheld=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: open=
-vpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+play:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Ger=
+rit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I5=
+64edc6e0cc179c2b8b5ddef5e80838949fe9fcd </div>
+<div style=3D"display:none">=
+ Gerrit-Change-Number: 1835 </div>
+<div style=3D"display:none"> Gerrit-Patc=
+hSet: 4 </div>
+<div style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio=
+@mandelbit=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: p=
+laisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:no=
+ne"> Gerrit-Reviewer: ralf_lici &lt;ralf@mandelbit=2Ecom&gt; </div>
+<div st=
+yle=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@gmail=2Ecom&gt; =
+</div>
+<div style=3D"display:none"> Gerrit-CC: flichtenheld &lt;frank@licht=
+enheld=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-dev=
+el &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
 
-</body></=
-html>
---4bWqao2jQtE=--
+</body></html>
+--mBpgacdv0ag=--
 
 
---===============7351573557808395352==
+--===============4185867452172094124==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============7351573557808395352==
+--===============4185867452172094124==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -910,5 +895,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============7351573557808395352==--
+--===============4185867452172094124==--
 
