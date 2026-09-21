@@ -4,37 +4,37 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 03F43C982E1
-	for <openvpn-devel@archiver.kernel.org>; Mon, 21 Sep 2026 11:33:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 19CCAC982EE
+	for <openvpn-devel@archiver.kernel.org>; Mon, 21 Sep 2026 11:33:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:Cc:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
 	:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=f9izzokwR64lF7SSLXcjUZ/2sp4RhErRQrAl45dYVuc=; b=eNPWrj3pVtdTCVvxcPsui69/Lf
-	2eSMs9d/o9T1O/M9NQN2PX6p6rg1MGB69XEavoWvlanS9kFhqqFnGn86MwOYwd0xttOMqQoMPN0qN
-	paaGhcySNOE1yUYvF7Xl3UNKrqvQTntQoR/WlW7YgPHH5KaqPz4rSHojOhliVHc7E1BA=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=oC/vE6DQxqo68cuZZlnib+G/xuEA8ehQ0cAtkkgqEhA=; b=IxO7PqKRIfAfOnjK9cuZbR3R7+
+	PtLmO/W6jskqmZN/WDuQCESY7oh968SN0UvP7eI4HCOvw7R9hE9i8ftORyTMDQJvS1jaFV8dpLC9m
+	69pQ7jhkW+RfBk6KB/F7H0C4/I+bQVfqTU4g97hgq64jtZiwgdjvpaEGumL5jPfY2Xyc=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x8cGx-0004BM-AW;
+	id 1x8cGy-0003lU-6F;
 	Mon, 21 Sep 2026 11:33:24 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <a@unstable.cc>) id 1x8cGu-0004BD-Hy
+ (envelope-from <a@unstable.cc>) id 1x8cGw-0003lM-VD
  for openvpn-devel@lists.sourceforge.net;
- Mon, 21 Sep 2026 11:33:21 +0000
+ Mon, 21 Sep 2026 11:33:22 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:Content-Type:MIME-Version
  :References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=3LEfMJ7QksYmJMtntfWSNiuuYidg+gxOyvNM2pH7728=; b=SS7SheIKiUFyevlgUoZX/aLy7h
- OOi9w1E/T1CiPVISxonv7NrcYgh4r9Vv53dhH56KrIsFzWWrfOSwtUI36LuHs5PTsMdfz8r11ghBx
- YmZXvY8stvdzdGBkah6DRRieYpEQWBDEVeDxXnP/5WozOkpI/vfsd4cMiUUVgv/MXl3c=;
+ bh=BKmLxOD6QRqKqYIQijMgqQzcGFrq6BIlkPmtHBGge3g=; b=QlymMqVYAdgwlfh+8TvzsTf+5n
+ cuS+XGKtNEu+bDJk6StAT/x5yVrMYj2brbJ85NJPKxqpGTquz8WcnA0hJyGXRy2SYuaCR17CiypLW
+ UOjmgNkxWRG7vUY0XxBtugztV7QAn3xGUz25yOtt+aixy3ATNTbOZm8DUMc16aQ8iqWI=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:
@@ -42,48 +42,48 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=3LEfMJ7QksYmJMtntfWSNiuuYidg+gxOyvNM2pH7728=; b=CkSz2o8Pf2EKl90jhIB8mN7lem
- dOAtoDB2x66YbS7GlBaVQkSavz8KD7mBEjFCwt0KvBDTZN7qlOJ+sFT0ZJWoRwVA6iKBZGcC9bTKk
- icuog7p4jYI9ExV5QJ3mDcMZQErq9N0IOKJluUwWHuFrttA9r3Doju7L4zxwSu5pl080=;
-Received: from mout-p-102.mailbox.org ([80.241.56.152])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ bh=BKmLxOD6QRqKqYIQijMgqQzcGFrq6BIlkPmtHBGge3g=; b=Zu3t0phAlvuX/Id9RCdJJDni0O
+ XMNTsu8mqwTSrW+xAgO3XOkeXeciSczQkA7+8W/pH/RIJx1PNNOwaEqJVK07YdcGtCUqLreGAkYO/
+ mgGuR320TnPMQ6K878TWYkoGDDchtxxWlqpo4nGVP1zaA0fokBDdV+qfMmPU/noVGl8w=;
+Received: from mout-p-201.mailbox.org ([80.241.56.171])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1x8cGt-0005Cd-AW for openvpn-devel@lists.sourceforge.net;
- Mon, 21 Sep 2026 11:33:21 +0000
+ id 1x8cGv-0000VY-5o for openvpn-devel@lists.sourceforge.net;
+ Mon, 21 Sep 2026 11:33:22 +0000
 Received: from smtp202.mailbox.org (smtp202.mailbox.org
  [IPv6:2001:67c:2050:b231:465::202])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange X25519MLKEM768 server-signature RSA-PSS (4096 bits) server-digest
  SHA256) (No client certificate requested)
- by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4hpLh72jdMzKm7p;
- Mon, 21 Sep 2026 13:33:11 +0200 (CEST)
+ by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4hpLh850ZRzMlBT;
+ Mon, 21 Sep 2026 13:33:12 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=unstable.cc; s=MBO0001;
- t=1789990391;
+ t=1789990392;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=3LEfMJ7QksYmJMtntfWSNiuuYidg+gxOyvNM2pH7728=;
- b=jQ7KGfVu8eh2WNYv87rc7X6o5T9spSZXf6n2HVIrkAbsju5V2gbM4Atom16sTB7XVchxmT
- FfuZmRJK+S6riLFSPESiFygB4uUOJ1CJvPsKuEcFaEEDrtiB5bzahzykwAJGO9w+PYDoO7
- b4mJKzV8EmmPEZ7AOCjb0KEvNRyUGz0mJe2JKBEdPxZrjDD2ijgzaHgytWBHLo2VYOoT+R
- NkbcCdGj3Utq4qlP5p29YEieXvIdK4sKjZx+byKjWhPAgSu2qScTZmCdeT76mhaP7GHAH5
- cDTHIAUMoVHWj1DuJh9IpyqI2NFXjzmqehhRSC0RIKZq5/+9wt/rGpLqQBw4wQ==
+ bh=BKmLxOD6QRqKqYIQijMgqQzcGFrq6BIlkPmtHBGge3g=;
+ b=h9HAwNpyRSlnVnxzYoKqjkmUHQNk+oYYOihNquHpFu8uEP00lBnGZCW1lNGEiU1ckHJCOp
+ fNmn7Bp2+einMb6oATgo2uCUtpyfu/MhEMLKk13OUdTwfRoLZgLQt6E30+roKnfOwshqDp
+ c15nXkf2UPZD1rYHj6ibLtVOU119oTCpzA1Ha3I6wFz5oBBA7jy7SOemqPu/36KXcnFzvh
+ eOcT1k98wohWIyIG1xW1BfjMfJ9hDfxrymZRyd91WEO63niyvwSuyXGY5Eb83L4Ee2DBkv
+ Ay3p9YvSehtWBw24xmXN8t5y13ykAwKqZFcchDzU6C4KUe+CWhwZERb8V1ediA==
 Authentication-Results: outgoing_mbo_mout; dkim=none;
  spf=pass (outgoing_mbo_mout: domain of a@unstable.cc designates
  2001:67c:2050:b231:465::202 as permitted sender) smtp.mailfrom=a@unstable.cc
 From: Antonio Quartulli <a@unstable.cc>
 To: openvpn-devel@lists.sourceforge.net,
 	Ralf Lici <ralf@mandelbit.com>
-Date: Mon, 21 Sep 2026 13:33:07 +0200
-Message-ID: <178999035967.3738901.15536528256513516840.b4-ty@b4>
-In-Reply-To: <cover.1787919082.git.ralf@mandelbit.com>
-References: <cover.1787919082.git.ralf@mandelbit.com>
+Date: Mon, 21 Sep 2026 13:33:08 +0200
+Message-ID: <178999035963.3738901.1834650482099915353.b4-ty@b4>
+In-Reply-To: <cover.1787925761.git.ralf@mandelbit.com>
+References: <cover.1787925761.git.ralf@mandelbit.com>
 MIME-Version: 1.0
-X-Rspamd-Queue-Id: 4hpLh72jdMzKm7p
-X-Headers-End: 1x8cGt-0005Cd-AW
-Subject: Re: [Openvpn-devel] [PATCH ovpn net v2 0/5] ovpn: validate peer VPN
- addresses
+X-Rspamd-Queue-Id: 4hpLh850ZRzMlBT
+X-Headers-End: 1x8cGv-0000VY-5o
+Subject: Re: [Openvpn-devel] [PATCH ovpn net v3 0/6] ovpn: fix UDP route
+ cache and endpoint handling
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -103,27 +103,33 @@ Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 From: Antonio Quartulli <antonio@openvpn.net>
 
 
-On Fri, 28 Aug 2026 15:00:05 +0200, Ralf Lici wrote:
-> This is a respin of the series that enforces explicit policy rules for
-> VPN addresses, taking into account Sabrina's suggestions.
+On Fri, 28 Aug 2026 16:50:21 +0200, Ralf Lici wrote:
+> This is v3 of a net series that fixes several related issues in ovpn's
+> UDP endpoint and route-cache handling. This version was rebased on top
+> of net and includes suggestions from Sabrina. The former patch 5/5 was
+> dropped from this series and will be sent as RFC on netdev, where it is
+> more appropriate since it involves changes broader than ovpn alone.
 > 
-> In MP mode, ovpn uses peer VPN addresses as lookup keys when selecting
-> the peer for an outgoing packet. The peer configuration path should
-> therefore maintain a few basic invariants around those addresses.
+> This series preserves IPv6 scope IDs supplied through netlink, handles
+> unspecified source addresses correctly, invalidates cached routes when
+> mutable socket route inputs change and avoids in-place updates of
+> RCU-published peer binds.
 > 
 > [...]
 
 Applied, thanks!
 
-[1/5] ovpn: always unhash old VPN addresses before rehashing
+[1/6] ovpn: preserve IPv6 scope id for netlink peer endpoints
       (no commit info)
-[2/5] ovpn: reject duplicate peer VPN addresses
+[2/6] ovpn: skip UDP source validation for unspecified addresses
       (no commit info)
-[3/5] ovpn: reject multipeer peers without VPN addresses
+[3/6] ovpn: track UDP socket route key for peer dst cache
       (no commit info)
-[4/5] ovpn: reject invalid peer VPN addresses
+[4/6] ovpn: validate peer state before caching UDP dst
       (no commit info)
-[5/5] selftests: ovpn: validate peer VPN addresses
+[5/6] ovpn: replace bind when learning local endpoint
+      (no commit info)
+[6/6] ovpn: replace bind when clearing stale local source
       (no commit info)
 
 Best regards,
