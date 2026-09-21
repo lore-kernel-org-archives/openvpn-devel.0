@@ -4,68 +4,69 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6F180C982ED
-	for <openvpn-devel@archiver.kernel.org>; Mon, 21 Sep 2026 19:48:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4E464C982EE
+	for <openvpn-devel@archiver.kernel.org>; Mon, 21 Sep 2026 19:53:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
-	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	MIME-Version:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
+	List-Unsubscribe:List-Id:Subject:References:In-Reply-To:To:From:Message-Id:
+	Date:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=puJ21JkCBKx5fUG+4tOTwQDNoUP6Bln/FPpurxzWXBg=; b=QibyqUIs3KVnuySspj8Stt8b2U
-	bIKTPvG1yJ2TS0+vF01fZ4m5dKNRBFW2W4Ydvc48ecZgy3NFfyxLG9X2PruivssyMTAX3ebcj3KUM
-	L7J6m/EgUBcOq1/nfVsQTL26inJw3Ue8RJrhSI6JIShnJP1lO0FvVOly5j2uMYWSz3LM=;
+	bh=oDkzfdHsvBb+dGnRRwx9JkEgx2poVlndjoJF955df8c=; b=H6TVWxf0Y+teljBbNlhsIMm+F4
+	qR30NyvnqJT1BGI+Hhe6mQvXnQ5ixkmeQMXuSSI3GUTVA7zb/N3IEmshc5C28JyVF/Tgd2dFpmjp6
+	pnIbJv6naAwHvSyGl4FCXrB80jbnrISNlELS8x9BFHEVf6WX6HMSunZkXm9mxUwYauBk=;
 Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
 	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x8jzj-0005XH-2M;
-	Mon, 21 Sep 2026 19:48:07 +0000
+	id 1x8k4j-00060H-HO;
+	Mon, 21 Sep 2026 19:53:18 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1x8jzh-0005X4-Mq
+ (envelope-from <gert@chekov.greenie.muc.de>) id 1x8k4i-000605-9s
  for openvpn-devel@lists.sourceforge.net;
- Mon, 21 Sep 2026 19:48:06 +0000
+ Mon, 21 Sep 2026 19:53:17 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=RnCNfxJOsUsUx5REPlTG9pQOXukBr84w405ktWsnLXM=; b=NaCTC8qm5rO3epgfzEPZ/Ech7y
- r9qZsWQqFhqLytv0qRvfIp/ucZCF7nnQTxm+qDN8gurtQOftWCUe6s+uj4fDftH4uSkj3bd8oP1AH
- Ercw6V+0ssQrmN+bCvy1CbyAV8zNhgky8ZdvAHManhIrJicxLVp/PzmD+B6zwgL7LGGI=;
+ d=sourceforge.net; s=x; h=References:In-Reply-To:Subject:Cc:To:From:
+ Message-Id:Date:Sender:Reply-To:MIME-Version:Content-Type:
+ Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+ List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=3J+k58b447wd0NwhFw6H+cp5GVvpuj4iKOCXKSBCxOM=; b=hCgG5GnXCyGuZ8a3lQfF4Mv6ec
+ ZyQ/6TqgpN2h9Px/0IDs+Hpb2U6/ouwrS8o1tHCXg00Eh0rURMh7HfRQQ/FCSi5V8BZ0aCH4x8wY2
+ MweLdwBcNexbcsIUl7TBqA2375f03aohz2xF/4PnRPEumXFIRzeQ4/y03Dr8mmtIhRFA=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ h=References:In-Reply-To:Subject:Cc:To:From:Message-Id:Date:Sender:Reply-To
+ :MIME-Version:Content-Type:Content-Transfer-Encoding:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=RnCNfxJOsUsUx5REPlTG9pQOXukBr84w405ktWsnLXM=; b=FIhl8RzE7SIel9sYzfBDQ+AbZL
- MPPoB0/BqOyR39eNC99aldtAj5K4dvmRSbX7QdJZgyK5JiAbR9oqsP3nJudRrkYMZGYHVsQ5nUpuK
- K7+CxQYSXb2WUVjlUIpY5ySoxa+Uuh5NwcVGi2IvhHh41pZfJzajtTvTXyImy25uyPwY=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ bh=3J+k58b447wd0NwhFw6H+cp5GVvpuj4iKOCXKSBCxOM=; b=jHEX30pZCZtaE6t3CWwzP875Yo
+ F/us694ERWPVk7LzLGsOlDrxGqIBRzkt4krl3UJd7xrhdq/aYLy7BFClRWnHRiR4HO1CBDRTLh6LO
+ bz75XoFx8jL9NoLxddeDO4DahbwawkDNOy/a4D96O2bQ3w2HjBJ7a58H80mxU0bAim7s=;
+Received: from chekov.greenie.muc.de ([193.149.48.178])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1x8jzf-0003lp-QO for openvpn-devel@lists.sourceforge.net;
- Mon, 21 Sep 2026 19:48:06 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 68LJluxI023635
- for <openvpn-devel@lists.sourceforge.net>; Mon, 21 Sep 2026 21:47:56 +0200
+ id 1x8k4h-0003t8-Dl for openvpn-devel@lists.sourceforge.net;
+ Mon, 21 Sep 2026 19:53:17 +0000
+Received: from chekov.greenie.muc.de (localhost [IPv6:0:0:0:0:0:0:0:1])
+ by chekov.greenie.muc.de (8.18.2/8.18.1) with ESMTP id 68LJr0CT048129;
+ Mon, 21 Sep 2026 21:53:00 +0200 (CEST)
+ (envelope-from gert@chekov.greenie.muc.de)
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 68LJlu2m023630
- for openvpn-devel@lists.sourceforge.net; Mon, 21 Sep 2026 21:47:56 +0200
+ by chekov.greenie.muc.de (8.18.2/8.18.1/Submit) id 68LJr02x048128;
+ Mon, 21 Sep 2026 21:53:00 +0200 (CEST) (envelope-from gert)
+Date: Mon, 21 Sep 2026 21:53:00 +0200 (CEST)
+Message-Id: <202609211953.68LJr02x048128@chekov.greenie.muc.de>
 From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Mon, 21 Sep 2026 21:47:51 +0200
-Message-ID: <20260921194756.23610-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1790006381000.I983d67e1c90bea460f531f11d4c58d33a351d81b@gerrit.openvpn.net>
-References: <gerrit.1790006381000.I983d67e1c90bea460f531f11d4c58d33a351d81b@gerrit.openvpn.net>
-MIME-Version: 1.0
-X-Headers-End: 1x8jzf-0003lp-QO
-Subject: [Openvpn-devel] [PATCH v1] GHA: Maintenance update September 2026
+To: Frank Lichtenheld <frank@lichtenheld.com>
+X-Patchwork-State: Accepted
+In-Reply-To: <20260921170825.8046-1-gert@greenie.muc.de>
+References: <20260921170825.8046-1-gert@greenie.muc.de>
+X-Headers-End: 1x8k4h-0003t8-Dl
+Subject: [Openvpn-devel] [PATCH applied] Re: GHA: Explicitly set
+ PKG_CONFIG_PATH in Android build
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -77,279 +78,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Cc: openvpn-devel@lists.sourceforge.net
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@lichtenheld.com>
+I have no idea about all this (and so did not test it), but if you and
+Razvan say this is the way, go for it :-)
 
-Contains the following renovate updates:
-- chore(deps): update vcpkg digest to 5f96cd1
-- Update dependency ubuntu to v26
-- chore(deps): update dependency aws/aws-lc to v5.9.0
-- chore(deps): update github actions
-- Update github actions (major)
+Your patch has been applied to the master and release/2.7 branch
+(build system bugfix).
 
-Change-Id: I983d67e1c90bea460f531f11d4c58d33a351d81b
-Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1922
----
+commit 9e378318a0962a4cfad71af331ee4b193f45fef7 (master)
+commit 8ce11e8eaa8f5e77bc7776c9241b8674100e4bec (release/2.7)
+Author: Frank Lichtenheld
+Date:   Mon Sep 21 19:08:19 2026 +0200
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+     GHA: Explicitly set PKG_CONFIG_PATH in Android build
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1922
-This mail reflects revision 1 of this Change.
+     Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
+     Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1921
+     Message-Id: <20260921170825.8046-1-gert@greenie.muc.de>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg39375.html
+     Signed-off-by: Gert Doering <gert@greenie.muc.de>
 
-Acked-by according to Gerrit (reflected above):
 
-        
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index d67c215..f568a11 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -7,14 +7,14 @@
- jobs:
-   clang-format:
-     name: Check code style with clang-format
--    runs-on: ubuntu-24.04
-+    runs-on: ubuntu-26.04
-     steps:
-       - name: Install dependencies
-         run: |
-           sudo apt update && sudo apt install -y python3-pip
-           pip3 install pre-commit
-       - name: Checkout OpenVPN
--        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-       - name: Run clang-format
-         run: pre-commit run -a --show-diff-on-failure || true
-       - name: Check for changes
-@@ -34,7 +34,7 @@
-         include:
-           - abi: arm64-v8a
-             vcpkg_triplet: arm64-android
--    runs-on: ubuntu-24.04
-+    runs-on: ubuntu-26.04
-     name: "Android - ${{ matrix.abi }}"
-     # Github images already setup NDK with ANDROID_NDK_ROOT pointing to the root
-     # of the SDK
-@@ -43,17 +43,17 @@
-       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
-       VCPKG_INSTALLED_DIR: ${{ github.workspace }}/vcpkg/installed
-       VCPKG_BINARY_SOURCES: clear;default,readwrite
--      VCPKG_GIT_COMMIT_ID: 75672db6bd812b060482b0f00b5a16b18a0c0f07
-+      VCPKG_GIT_COMMIT_ID: 5f96cd15fd745122cf27e0524606d6c1efc5fd07
-     steps:
-       - name: Checkout OpenVPN
--        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-       - uses: lukka/get-cmake@591817e96fcad43505fb4eae36172462abb3a42e # v4.3.3
-       - name: Setup vcpkg
-         uses: lukka/run-vcpkg@b1a0dd252f06b9e25b3c022a9a03bd7a427fb6a2 # v11.6
-         with:
-           vcpkgGitCommitId: ${{ env.VCPKG_GIT_COMMIT_ID }}
-       - name: Set up vcpkg binary cache
--        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
-+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-         with:
-           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-           key: android-${{ matrix.abi }}-vcpkg-binary-cache-${{ env.VCPKG_GIT_COMMIT_ID }}
-@@ -82,18 +82,18 @@
-         build: [Release, Debug]
- 
-     name: "gcc-mingw - ${{ matrix.arch }} - ${{ matrix.build }} - OSSL"
--    runs-on: ubuntu-24.04
-+    runs-on: ubuntu-26.04
-     env:
-       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
-       VCPKG_BINARY_SOURCES: clear;default,readwrite
--      VCPKG_GIT_COMMIT_ID: 75672db6bd812b060482b0f00b5a16b18a0c0f07
-+      VCPKG_GIT_COMMIT_ID: 5f96cd15fd745122cf27e0524606d6c1efc5fd07
-     steps:
-       - name: Install dependencies
-         run: sudo apt update && sudo apt install -y mingw-w64 unzip build-essential wget python3-docutils man2html-base
-       - name: Checkout OpenVPN
--        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
- 
--      - uses: lukka/get-cmake@591817e96fcad43505fb4eae36172462abb3a42e # v4.3.3
-+      - uses: lukka/get-cmake@fffaaafeea488556c2c12dad60690008bc1caacb # v4.4.2
-       - name: Setup vcpkg
-         uses: lukka/run-vcpkg@b1a0dd252f06b9e25b3c022a9a03bd7a427fb6a2 # v11.6
-         with:
-@@ -101,7 +101,7 @@
-           vcpkgJsonGlob: '**/mingw/vcpkg.json'
- 
-       - name: Set up vcpkg binary cache
--        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
-+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-         with:
-           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-           key: mingw-${{ matrix.arch }}-vcpkg-binary-cache-${{ hashFiles('**/mingw/vcpkg.json') }}-${{ env.VCPKG_GIT_COMMIT_ID }}
-@@ -144,7 +144,7 @@
-     name: "mingw unittest ${{ matrix.test }} - ${{ matrix.arch }} - ${{ matrix.build }} - OSSL"
-     steps:
-       - name: Checkout OpenVPN
--        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-       - name: Retrieve mingw unittest
-         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-         with:
-@@ -185,7 +185,7 @@
-       - name: Install dependencies
-         run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev libcap-ng-dev libnl-genl-3-dev linux-libc-dev man2html libcmocka-dev python3-docutils libtool automake autoconf ${SSLPKG} ${PKCS11PKG}
-       - name: Checkout OpenVPN
--        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-       - name: autoconf
-         run: autoreconf -fvi
-       - name: configure
-@@ -215,7 +215,7 @@
-       - name: Install dependencies
-         run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev libcap-ng-dev libnl-genl-3-dev linux-libc-dev man2html clang libcmocka-dev python3-docutils libtool automake autoconf
-       - name: Checkout OpenVPN
--        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-       - name: autoconf
-         run: autoreconf -fvi
-       - name: configure
-@@ -255,7 +255,7 @@
-       - name: Install dependencies
-         run: brew install ${{matrix.ssllib}} lzo lz4 man2html cmocka libtool automake autoconf
-       - name: Checkout OpenVPN
--        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-       - name: Set environment
-         run: |
-           cat >>$GITHUB_ENV <<EOF;
-@@ -285,11 +285,11 @@
-       env:
-         BUILD_CONFIGURATION: Release
-         VCPKG_BINARY_SOURCES: clear;default,readwrite
--        VCPKG_GIT_COMMIT_ID: 75672db6bd812b060482b0f00b5a16b18a0c0f07
-+        VCPKG_GIT_COMMIT_ID: 5f96cd15fd745122cf27e0524606d6c1efc5fd07
- 
-       runs-on: windows-2025-vs2026
-       steps:
--      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-       - uses: lukka/get-cmake@591817e96fcad43505fb4eae36172462abb3a42e # v4.3.3
- 
-       - name: Install rst2html
-@@ -302,7 +302,7 @@
-           vcpkgJsonGlob: '**/windows/vcpkg.json'
- 
-       - name: Set up vcpkg binary cache
--        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
-+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-         with:
-           path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-           key: msvc-${{ matrix.arch }}-vcpkg-binary-cache-${{ hashFiles('**/windows/vcpkg.json') }}-${{ env.VCPKG_GIT_COMMIT_ID }}
-@@ -380,7 +380,7 @@
-       ovpnlibdesc: AWS-LC
-       # versioning=semver-coerced
-       ghrepo: aws/aws-lc
--      gitref: v5.0.0
-+      gitref: v5.9.0
-       libconfigure: cmake -B build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$LIBPREFIX" -DBUILD_SHARED_LIBS=1
-       libmake: cmake --build build
-       libinstall: sudo cmake --install build
-\ No newline at end of file
-diff --git a/.github/workflows/coverity-scan.yml b/.github/workflows/coverity-scan.yml
-index 105f23e..e103aec 100644
---- a/.github/workflows/coverity-scan.yml
-+++ b/.github/workflows/coverity-scan.yml
-@@ -9,11 +9,11 @@
-     # Running coverity requires the secrets.COVERITY_SCAN_TOKEN token
-     # which is only available on the main repository
-     if: github.repository_owner == 'OpenVPN'
--    runs-on: ubuntu-24.04
-+    runs-on: ubuntu-26.04
-     steps:
-       - name: Check submission cache
-         id: check_submit
--        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
-+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-         with:
-           path: |
-             cov-int
-@@ -25,7 +25,7 @@
- 
-       - name: Checkout OpenVPN
-         if: steps.check_submit.outputs.cache-hit != 'true'
--        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
- 
-       - name: Download Coverity Build Tool
-         if: steps.check_submit.outputs.cache-hit != 'true'
-@@ -65,7 +65,7 @@
- 
-       - name: Cache submission
-         if: steps.check_submit.outputs.cache-hit != 'true'
--        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
-+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-         with:
-           path: |
-             cov-int
-diff --git a/.github/workflows/doxygen.yml b/.github/workflows/doxygen.yml
-index 3755b92..379b21c 100644
---- a/.github/workflows/doxygen.yml
-+++ b/.github/workflows/doxygen.yml
-@@ -8,10 +8,10 @@
-   cancel-in-progress: false
- jobs:
-   build:
--    runs-on: ubuntu-24.04
-+    runs-on: ubuntu-26.04
-     if: ${{ github.repository_owner == 'openvpn' || github.event_name == 'workflow_dispatch' }}
-     steps:
--      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-         with:
-           path: openvpn
- 
-@@ -47,8 +47,8 @@
-     environment:
-       name: github-pages
-       url: ${{ steps.deployment.outputs.page_url }}
--    runs-on: ubuntu-24.04
-+    runs-on: ubuntu-26.04
-     steps:
-       - name: Deploy to GitHub Pages
-         id: deployment
--        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5
-+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5
-diff --git a/.github/workflows/test-ssllib.yml b/.github/workflows/test-ssllib.yml
-index d8178a7..64607cf 100644
---- a/.github/workflows/test-ssllib.yml
-+++ b/.github/workflows/test-ssllib.yml
-@@ -70,14 +70,14 @@
-       - name: Install dependencies
-         run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev linux-libc-dev man2html clang libcmocka-dev python3-docutils libtool automake autoconf pkg-config libcap-ng-dev libnl-genl-3-dev
-       - name: Restore ${{inputs.libname}} from cache
--        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
-+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-         id: ssllib-cache
-         with:
-           path: ${{env.LIBPREFIX}}
-           key: ${{matrix.os}}-${{inputs.libname}}-${{matrix.build }}-${{inputs.gitref}}
-       - name: "${{inputs.libname}}: checkout"
-         if: steps.ssllib-cache.outputs.cache-hit != 'true'
--        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-         with:
-           submodules: recursive
-           path: ${{inputs.libname}}
-@@ -98,7 +98,7 @@
-       - name: Run ldconfig
-         run: sudo ldconfig
-       - name: "OpenVPN: checkout"
--        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-       - name: "OpenVPN: autoreconf"
-         run: autoreconf -fvi
-       - name: "OpenVPN: configure"
+--
+kind regards,
+
+Gert Doering
+
 
 
 _______________________________________________
