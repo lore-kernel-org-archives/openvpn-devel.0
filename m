@@ -4,37 +4,37 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 427CBC982E1
-	for <openvpn-devel@archiver.kernel.org>; Mon, 21 Sep 2026 08:22:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 86E7BC982E1
+	for <openvpn-devel@archiver.kernel.org>; Mon, 21 Sep 2026 08:25:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=ObZibR3aYsnJmBeAjuY9/3PjD8hVxCDnIHHD3iomng4=; b=Q7j9VTFJZa5LX/cYMWwdrSWiut
-	eqPh+nA00gVLk1HgccWVfuZRPHjKxzFG3hOtVMUqhjKkVt/IiITf4G1pvQ6Aq7yRyAhw+I4/yBQpp
-	NR315t5SRAmvujorwP6r7rDLtemMKYgpLQeqJLyOFj4In/N3gP8SBgYMb4k8akiKvReE=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=QQZlAvjUDHd+cYUlArpm/uIew/DyObjUWGrukM5GyiM=; b=HzLFz4K9ftFvRMacwaMl2D7Ysj
+	aBnRczrLc4gyohmuEh0rA15A7ZYRuXrztfDCaKkJAMeGY+vM1s+cJj4LV8twaV4opVrlow6zWWoOO
+	+ekhQI+L0dGYzHQSP5f5DlZ2CFbEHVEmy3+tAXnwRfkilsfFh3RZ6FyagW+YIhDDZ5d0=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x8ZIG-0007KO-AH;
-	Mon, 21 Sep 2026 08:22:33 +0000
+	id 1x8ZKm-00005e-O6;
+	Mon, 21 Sep 2026 08:25:09 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1x8ZIF-0007KA-5i
+ (envelope-from <gert@blue4.greenie.muc.de>) id 1x8ZKk-00005X-Ko
  for openvpn-devel@lists.sourceforge.net;
- Mon, 21 Sep 2026 08:22:31 +0000
+ Mon, 21 Sep 2026 08:25:07 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
  In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=Kk2Pzq+HKUrsMOVfDRqpCS6N9NoiY8Cjun2miGmk+hU=; b=ciTC0mdwJ4yJVj2AKmlS0qJAWC
- 4H9KvIQHd1DGvMHV+ACjIcyUZAYp4mptCpPC4JQbFmq+VPnp0/8hvajFigmxWp6XhfJUVPCqxS5L6
- lwO6iZEqhf7y9RK2WDyS3aXOnhtb2p1sKVHmTspIfo015O70Ce5DsupqXOM6a/H62RbU=;
+ bh=Jci0Q81um41I/YYtRUO8MDaW2+yG1ra2bXGxMVNPaOo=; b=ZicZtRkT8lidkI/LQmOqC5WaD4
+ ArSsui6U9okd8knmAL9O0Gq87ZTsmx/7JbuOq6Wa7QDb4oIHWfpitZWfqlI3tH9rE77fhUAk0kh4H
+ 3K4bDi7LfStmlSfF2Ll48d7GcUeMDQgR+qYQOVlmA+IFbrpPmcH9xxDt4D+nuO9mak4Y=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -42,31 +42,31 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=Kk2Pzq+HKUrsMOVfDRqpCS6N9NoiY8Cjun2miGmk+hU=; b=XUu0UqJu8NdmJGbnJfZ8PcuXjC
- pJUy3h97/FemdefDj8KNBOofP8ZTJ/ea+IzaWnSVy9Gqtrcv0fytWSdrU2Cn9u9Q03R5wGMycPsPe
- ioz/31wFul3V8kd6887yor2CU205aR5Qoz2NFEyy4KOdPPa5hTTFh6+yrGGunYHOlrmw=;
+ bh=Jci0Q81um41I/YYtRUO8MDaW2+yG1ra2bXGxMVNPaOo=; b=gAkkFFPFuX25kYA/AUwf5UygrW
+ iXXxbu0oVEYG1r5zKyzQISKxBa2IICi/+aMe4PgyBosi07JMy3Svr778wXZEx1dkddoGL+J+bUxFF
+ 6EpmiqqKU5gskOrnKOaDC9/eR/V3Q2mpvQ3hRpYJF0S6knr7LKbG8+EEv8i6E1qQf2CI=;
 Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1x8ZID-0008L0-W0 for openvpn-devel@lists.sourceforge.net;
- Mon, 21 Sep 2026 08:22:31 +0000
+ id 1x8ZKj-0003Zy-DR for openvpn-devel@lists.sourceforge.net;
+ Mon, 21 Sep 2026 08:25:07 +0000
 Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 68L8MM2G017829
- for <openvpn-devel@lists.sourceforge.net>; Mon, 21 Sep 2026 10:22:22 +0200
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 68L8OwQW018203
+ for <openvpn-devel@lists.sourceforge.net>; Mon, 21 Sep 2026 10:24:58 +0200
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 68L8MMPN017828
- for openvpn-devel@lists.sourceforge.net; Mon, 21 Sep 2026 10:22:22 +0200
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 68L8OwIm018202
+ for openvpn-devel@lists.sourceforge.net; Mon, 21 Sep 2026 10:24:58 +0200
 From: Gert Doering <gert@greenie.muc.de>
 To: openvpn-devel@lists.sourceforge.net
-Date: Mon, 21 Sep 2026 10:22:16 +0200
-Message-ID: <20260921082222.17813-1-gert@greenie.muc.de>
+Date: Mon, 21 Sep 2026 10:24:52 +0200
+Message-ID: <20260921082457.18184-1-gert@greenie.muc.de>
 X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1779265416000.Ib5832dc56eaeca1b17016396769b84bdf2c1513a@gerrit.openvpn.net>
-References: <gerrit.1779265416000.Ib5832dc56eaeca1b17016396769b84bdf2c1513a@gerrit.openvpn.net>
+In-Reply-To: <gerrit.1779265416000.I0ba723d12d433e6e020588b7b0c3ba10bcf8c44f@gerrit.openvpn.net>
+References: <gerrit.1779265416000.I0ba723d12d433e6e020588b7b0c3ba10bcf8c44f@gerrit.openvpn.net>
 MIME-Version: 1.0
-X-Headers-End: 1x8ZID-0008L0-W0
-Subject: [Openvpn-devel] [PATCH v4] multi/dco: simplify dco_delete_iroutes
- call chain
+X-Headers-End: 1x8ZKj-0003Zy-DR
+Subject: [Openvpn-devel] [PATCH v6] dco: remove iroute at client exit time
+ instead of delayed exit
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -84,239 +84,200 @@ Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
 From: Antonio Quartulli <antonio@mandelbit.com>
 
-In order to be able to delete DCO iroutes from areas of the code
-where the multi_context and the multi_instance objects may not be
-available, let's simplify the call chain by passing the smallest
-scoped context required.
+When a client exits due to one of the following reasons:
+* EEN received
+* AUTH_FAILED sent
+* RESTART sent
+OpenVPN will perform some minimal cleanup and will
+then postpone the actual instance purge by 5 seconds.
 
-This is a refactoring only and does not include any functional change.
+If iroutes are configured for the exiting client, the actual DCO
+iroutes removal is also postponed.
 
-This patch is required in preparation of fixing DCO iroutes removal
-upon client exit, without waiting for the delayed exit routine
-to kick in.
+If during this time window the same client reconnects, a new
+instance is created (for example because --duplicate-cn is set or
+because the same username is provided upon authentication) and the
+same IP is assigned, then OpenVPN will:
 
-Change-Id: Ib5832dc56eaeca1b17016396769b84bdf2c1513a
+* create the new client instance;
+* attempt adding the related DCO iroutes (which will fail because
+  EEXIST);
+* 5 seconds timeout fires -> execute the delayed exit routine and
+  delete the DCO iroutes;
+* no iroutes exists anymore on the server despite the client being
+  fully connected.
+
+Note that this issue is DCO specific, because without DCO OpenVPN
+creates virtual routes (no system routing table involved) and makes
+the last connecting client own them.
+This means that the delayed exit routine won't have any iroute to
+delete.
+
+With this patch we move the DCO iroutes deletion to the actual
+client exit time in order to avoid racing with a possible addition
+being executed when the client reconnects. The new flow will be:
+
+* client exits (due to EEN or timeout)
+* DCO iroutes are immediately deleted
+* client re-connects -> new instance created
+* DCO iroutes are added -> SUCCESS
+* 5 seconds timeout fires -> old instance client is fully purged
+* client is connected and iroutes are in place as expected
+
+This issue was reported by OpenVPN Access Server developers after
+observing erratic iroutes disappearance with DCO in place.
+
+Change-Id: I0ba723d12d433e6e020588b7b0c3ba10bcf8c44f
+GitHub: closes openvpn/OpenVPN#1040
 Signed-off-by: Antonio Quartulli <antonio@mandelbit.com>
 Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1682
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1683
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1682
-This mail reflects revision 4 of this Change.
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1683
+This mail reflects revision 6 of this Change.
 
 Acked-by according to Gerrit (reflected above):
 Razvan Cojocaru <razvanc@mailbox.org>
 
         
 diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-index 8eae4bf..ba1c85f 100644
+index ba1c85f..6d88f6f 100644
 --- a/src/openvpn/dco.c
 +++ b/src/openvpn/dco.c
-@@ -741,26 +741,24 @@
- }
- 
- void
--dco_delete_iroutes(struct multi_context *m, struct multi_instance *mi)
-+dco_delete_iroutes(openvpn_net_ctx_t *net_ctx, const struct context *c)
- {
- #if defined(TARGET_LINUX) || defined(TARGET_FREEBSD) || defined(_WIN32)
--    if (!dco_enabled(&m->top.options))
-+    if (!dco_enabled(&c->options))
-     {
-         return;
+@@ -750,6 +750,8 @@
      }
--    ASSERT(TUNNEL_TYPE(mi->context.c1.tuntap) == DEV_TYPE_TUN);
-+    ASSERT(TUNNEL_TYPE(c->c1.tuntap) == DEV_TYPE_TUN);
+     ASSERT(TUNNEL_TYPE(c->c1.tuntap) == DEV_TYPE_TUN);
  
--    const struct context *c = &mi->context;
--
--    if (mi->context.c2.push_ifconfig_defined)
-+    if (c->c2.push_ifconfig_defined)
++    msg(D_DCO, "DCO: attempt removing iroutes from system table");
++
+     if (c->c2.push_ifconfig_defined)
      {
          for (const struct iroute *ir = c->options.iroutes; ir; ir = ir->next)
-         {
- #if defined(_WIN32)
-             dco_win_del_iroute_ipv4(&c->c1.tuntap->dco, htonl(ir->network), ir->netbits);
- #else
--            net_route_v4_del(&m->top.net_ctx, &ir->network, ir->netbits,
--                             &mi->context.c2.push_ifconfig_local, c->c1.tuntap->actual_name, 0,
-+            net_route_v4_del(net_ctx, &ir->network, ir->netbits,
-+                             &c->c2.push_ifconfig_local, c->c1.tuntap->actual_name, 0,
-                              DCO_IROUTE_METRIC);
- #endif
-         }
-@@ -768,27 +766,26 @@
- #if !defined(_WIN32)
-         /* Check if we added a host route as the assigned client IP address was
-          * not in the on link scope defined by --ifconfig */
--        in_addr_t ifconfig_local = mi->context.c2.push_ifconfig_local;
-+        in_addr_t ifconfig_local = c->c2.push_ifconfig_local;
- 
--        if (multi_check_push_ifconfig_extra_route(mi, htonl(ifconfig_local)))
-+        if (multi_check_push_ifconfig_extra_route(&c->options, htonl(ifconfig_local)))
-         {
-             /* On windows we do not install these routes, so we also do not need to delete them */
--            net_route_v4_del(&m->top.net_ctx, &ifconfig_local,
--                             32, NULL, c->c1.tuntap->actual_name, 0,
--                             DCO_IROUTE_METRIC);
-+            net_route_v4_del(net_ctx, &ifconfig_local, 32, NULL,
-+                             c->c1.tuntap->actual_name, 0, DCO_IROUTE_METRIC);
-         }
- #endif
-     }
- 
--    if (mi->context.c2.push_ifconfig_ipv6_defined)
-+    if (c->c2.push_ifconfig_ipv6_defined)
-     {
-         for (const struct iroute_ipv6 *ir6 = c->options.iroutes_ipv6; ir6; ir6 = ir6->next)
-         {
- #if defined(_WIN32)
-             dco_win_del_iroute_ipv6(&c->c1.tuntap->dco, ir6->network, ir6->netbits);
- #else
--            net_route_v6_del(&m->top.net_ctx, &ir6->network, ir6->netbits,
--                             &mi->context.c2.push_ifconfig_ipv6_local, c->c1.tuntap->actual_name, 0,
-+            net_route_v6_del(net_ctx, &ir6->network, ir6->netbits,
-+                             &c->c2.push_ifconfig_ipv6_local, c->c1.tuntap->actual_name, 0,
-                              DCO_IROUTE_METRIC);
- #endif
-         }
-@@ -796,11 +793,11 @@
-         /* Checked if we added a host route as the assigned client IP address was
-          * outside the --ifconfig-ipv6 tun interface config */
- #if !defined(_WIN32)
--        struct in6_addr *dest = &mi->context.c2.push_ifconfig_ipv6_local;
--        if (multi_check_push_ifconfig_ipv6_extra_route(mi, dest))
-+        const struct in6_addr *dest = &c->c2.push_ifconfig_ipv6_local;
-+        if (multi_check_push_ifconfig_ipv6_extra_route(&c->options, dest))
-         {
-             /* On windows we do not install these routes, so we also do not need to delete them */
--            net_route_v6_del(&m->top.net_ctx, dest, 128, NULL,
-+            net_route_v6_del(net_ctx, dest, 128, NULL,
-                              c->c1.tuntap->actual_name, 0, DCO_IROUTE_METRIC);
-         }
- #endif
-diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h
-index 4e5aad5..7ef75fee 100644
---- a/src/openvpn/dco.h
-+++ b/src/openvpn/dco.h
-@@ -220,10 +220,10 @@
- /**
-  * Remove all routes added through the specified client
-  *
-- * @param m         the server context
-- * @param mi        the client instance for which routes have to be removed
-+ * @param net_ctx   the iface networking context
-+ * @param c         the client context for which routes have to be removed
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 2ade321..86bc4f2 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -525,7 +525,7 @@
+  * Schedule a SIGTERM signal c->options.scheduled_exit_interval seconds from now.
   */
--void dco_delete_iroutes(struct multi_context *m, struct multi_instance *mi);
-+void dco_delete_iroutes(openvpn_net_ctx_t *net_ctx, const struct context *c);
- 
- /**
-  * Update traffic statistics for all peers
-@@ -361,7 +361,7 @@
- }
- 
- static inline void
--dco_delete_iroutes(struct multi_context *m, struct multi_instance *mi)
-+dco_delete_iroutes(openvpn_net_ctx_t *net_ctx, const struct context *c)
+ bool
+-schedule_exit(struct context *c)
++schedule_exit(openvpn_net_ctx_t *net_ctx, struct context *c)
  {
- }
+     const int n_seconds = c->options.scheduled_exit_interval;
+     /* don't reschedule if already scheduled. */
+@@ -533,6 +533,23 @@
+     {
+         return false;
+     }
++
++    /* DCO iroutes must be removed now, because the delay introduced by this
++     * timer can create a race condition:
++     * the same client may reconnect before the old instance is purged, leading
++     * to DCO iroutes removal *after* reconnection, thus killing the routes
++     * for the new instance too.
++     *
++     * Standard/virtual iroutes (non-DCO case) are not affected because the
++     * last connecting client claiming the iroutes takes ownership. Therefore
++     * they are not removed during delayed cleanup.
++     */
++    if (c->did_dco_iroutes)
++    {
++        c->did_dco_iroutes = false;
++        dco_delete_iroutes(net_ctx, c);
++    }
++
+     tls_set_single_session(c->c2.tls_multi);
+     update_time();
+     reset_coarse_timers(c);
+diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
+index 324c0b4..fd5cbc5 100644
+--- a/src/openvpn/forward.h
++++ b/src/openvpn/forward.h
+@@ -346,7 +346,7 @@
+ void process_ip_header(struct context *c, unsigned int flags, struct buffer *buf,
+                        struct link_socket *sock);
  
+-bool schedule_exit(struct context *c);
++bool schedule_exit(openvpn_net_ctx_t *net_ctx, struct context *c);
+ 
+ static inline struct link_socket_info *
+ get_link_socket_info(struct context *c)
 diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 46ff1ba..a167071 100644
+index a167071..812f12c 100644
 --- a/src/openvpn/multi.c
 +++ b/src/openvpn/multi.c
-@@ -479,7 +479,7 @@
+@@ -479,7 +479,12 @@
      const struct iroute *ir;
      const struct iroute_ipv6 *ir6;
  
--    dco_delete_iroutes(m, mi);
-+    dco_delete_iroutes(&m->top.net_ctx, &mi->context);
+-    dco_delete_iroutes(&m->top.net_ctx, &mi->context);
++    /* check if DCO iroutes were already removed when scheduling a delayed exit */
++    if (mi->context.did_dco_iroutes)
++    {
++        mi->context.did_dco_iroutes = false;
++        dco_delete_iroutes(&m->top.net_ctx, &mi->context);
++    }
  
      if (TUNNEL_TYPE(mi->context.c1.tuntap) == DEV_TYPE_TUN)
      {
-@@ -1197,7 +1197,7 @@
-         management_learn_addr(management, &mi->context.c2.mda_context, &addr, primary);
-     }
- #endif
--    if (primary && multi_check_push_ifconfig_extra_route(mi, addr.v4.addr))
-+    if (primary && multi_check_push_ifconfig_extra_route(&mi->context.options, addr.v4.addr))
+@@ -1277,6 +1282,8 @@
+     if (TUNNEL_TYPE(mi->context.c1.tuntap) == DEV_TYPE_TUN)
      {
-         /* "primary" is the VPN ifconfig address of the peer */
-         /* if it does not fall into the network defined by ifconfig_local
-@@ -1242,7 +1242,7 @@
-         management_learn_addr(management, &mi->context.c2.mda_context, &addr, primary);
-     }
- #endif
--    if (primary && multi_check_push_ifconfig_ipv6_extra_route(mi, &addr.v6.addr))
-+    if (primary && multi_check_push_ifconfig_ipv6_extra_route(&mi->context.options, &addr.v6.addr))
+         mi->did_iroutes = true;
++        /* multi_learn_in{6}_addr_t takes care of installing the DCO iroute */
++        mi->context.did_dco_iroutes = true;
+         for (ir = mi->context.options.iroutes; ir != NULL; ir = ir->next)
+         {
+             if (ir->netbits >= 0)
+diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
+index e9e18bf..cdd02b6 100644
+--- a/src/openvpn/openvpn.h
++++ b/src/openvpn/openvpn.h
+@@ -507,6 +507,8 @@
+     bool did_we_daemonize;       /**< Whether demonization has already
+                                   *   taken place. */
+ 
++    bool did_dco_iroutes;        /**< Whether DCO iroutes have been installed */
++
+     struct context_persist persist;
+     /**< Persistent %context. */
+     struct context_0 *c0; /**< Level 0 %context. */
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index fa7bf1e..d6fe442 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -202,7 +202,7 @@
+      * */
+     if (c->options.mode == MODE_SERVER)
      {
-         /* "primary" is the VPN ifconfig address of the peer */
-         /* if it does not fall into the network defined by ifconfig_local
-@@ -4438,9 +4438,8 @@
+-        if (!schedule_exit(c))
++        if (!schedule_exit(&c->net_ctx, c))
+         {
+             /* Return early when we don't need to notify management */
+             return;
+@@ -392,7 +392,7 @@
+ void
+ send_auth_failed(struct context *c, const char *client_reason)
+ {
+-    if (!schedule_exit(c))
++    if (!schedule_exit(&c->net_ctx, c))
+     {
+         msg(D_TLS_DEBUG, "exit already scheduled for context");
+         return;
+@@ -493,7 +493,7 @@
+ void
+ send_restart(struct context *c, const char *kill_msg)
+ {
+-    schedule_exit(c);
++    schedule_exit(&c->net_ctx, c);
+     send_control_channel_string(c, kill_msg ? kill_msg : "RESTART", D_PUSH);
  }
  
- bool
--multi_check_push_ifconfig_extra_route(struct multi_instance *mi, in_addr_t dest)
-+multi_check_push_ifconfig_extra_route(const struct options *o, in_addr_t dest)
- {
--    const struct options *o = &mi->context.options;
-     in_addr_t local_addr, local_netmask;
- 
-     if (!o->ifconfig_local || !o->ifconfig_remote_netmask)
-@@ -4459,11 +4458,8 @@
- }
- 
- bool
--multi_check_push_ifconfig_ipv6_extra_route(struct multi_instance *mi,
--                                           struct in6_addr *dest)
-+multi_check_push_ifconfig_ipv6_extra_route(const struct options *o, const struct in6_addr *dest)
- {
--    const struct options *o = &mi->context.options;
--
-     if (!o->ifconfig_ipv6_local || !o->ifconfig_ipv6_netbits)
-     {
-         /* If we do not have a local address, we just return false as
-diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
-index 6cb86c7..18e57b8 100644
---- a/src/openvpn/multi.h
-+++ b/src/openvpn/multi.h
-@@ -670,28 +670,27 @@
-  * Determines if the ifconfig_push_local address falls into the range of the local
-  * IP addresses of the VPN interface (ifconfig_local with ifconfig_remote_netmask)
-  *
-- * @param mi           The multi-instance to check this condition for
-+ * @param o            The instance wide options
-  * @param dest         The destination IP address to check
-  *
-  * @return Returns true if ifconfig_push is outside that range and requires an extra
-  * route to be installed.
-  */
- bool
--multi_check_push_ifconfig_extra_route(struct multi_instance *mi, in_addr_t dest);
-+multi_check_push_ifconfig_extra_route(const struct options *o, in_addr_t dest);
- 
- /**
-  * Determines if the ifconfig_ipv6_local address falls into the range of the local
-  * IP addresses of the VPN interface (ifconfig_local with ifconfig_remote_netmask)
-  *
-- * @param mi           The multi-instance to check this condition for
-+ * @param o            The instance wide options
-  * @param dest         The destination IPv6 address to check
-  *
-  * @return Returns true if ifconfig_push is outside that range and requires an extra
-  * route to be installed.
-  */
- bool
--multi_check_push_ifconfig_ipv6_extra_route(struct multi_instance *mi,
--                                           struct in6_addr *dest);
-+multi_check_push_ifconfig_ipv6_extra_route(const struct options *o, const struct in6_addr *dest);
- 
- /*
-  * Check for signals.
 
 
 _______________________________________________
