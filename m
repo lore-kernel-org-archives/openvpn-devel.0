@@ -4,129 +4,77 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 140E8C982FA
-	for <openvpn-devel@archiver.kernel.org>; Tue, 22 Sep 2026 08:16:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id BD834C982F1
+	for <openvpn-devel@archiver.kernel.org>; Tue, 22 Sep 2026 08:24:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:Cc:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=pAy5LEg3zyWfeBPzeavYrNiaGySVkp1jgx/3lo50SYA=; b=Jlf2VUt+JbbI0aXc5mwjwSVsld
-	vSp3tJAof6avuZPdFBBOyO+2lyYSpAk3ta+jGfTV+obvORzmj+CCJ1GYj2bDYEPG7pvzJGkB/gVmA
-	scIieYT5kISLAYXdbgMynDsarIoH7Vx/43PAVjP6o9tHoM3OzxFx9mEq8J44GK41pk/U=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:Message-ID:Date:To:From:Sender:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Owner;
+	bh=ZtE6BpOkBt2wOTWsMdGU3Gp03ZspuNsJK8IabkQsy/8=; b=CsLehd8x8BxdpgYqBP+Jqu4BcK
+	Roo0ysWtjd19u15PJfYZi3DUc2kYHR9UP6scyIsiNrOePp/m7clmlwiUxZhvjL5GWJ4XcaUM6Emim
+	TOqiT8fQo+ubM+CSd/TAp2qjHLgMEEce1EmirtqbsHhSTLFRvxe02yty6iEsKZccDFHY=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x8vfx-0003Nk-97;
-	Tue, 22 Sep 2026 08:16:30 +0000
+	id 1x8vnd-0003QZ-Ry;
+	Tue, 22 Sep 2026 08:24:25 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1x8vfu-0003Nb-Rm
+ (envelope-from <marco@mandelbit.com>) id 1x8vna-0003QF-Ll
  for openvpn-devel@lists.sourceforge.net;
- Tue, 22 Sep 2026 08:16:27 +0000
+ Tue, 22 Sep 2026 08:24:23 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
- :List-Post:List-Owner:List-Archive;
- bh=KJG7hXXrr59EYP4P+Gv1brmNuifvvLrRrTRnQLnug8Q=; b=UqmxkWGgBZqYeUGUnga16xQMeW
- 9DIeUB/G5GJ8vUtFJg5f8M26kKtn92bK3pckaQz/EgHQ8+UXgfWe91UBNcbZk3C7/khGb/+2aH+IY
- DcUA/RNRnXTkuErCVm7OooHZx154ylYXSsYOx/9FAroy9sBeV6qhGKzOtq3VNetZsJ5w=;
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:Message-ID:
+ Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=cD08sRUDIcgyy8v/O6jOsNYYnC+CX1WbvOBjLYg+9xo=; b=Rx5rEkLOo2jLpZs2E5Nf6mvCMF
+ 5GfmpSE51+J5XfB3mPPNsQHTCkEkQiw9uc1en642mKglFT6+l9cRkOsL/xfr3dsSRkpDpWo7LfSXc
+ TcvMhu0wKy7riv13HJveZNG0I83b8bhQAHAsd0t2q3d0JKm/W5REZ/SsBAOMIzwN5i+Q=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
- Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=KJG7hXXrr59EYP4P+Gv1brmNuifvvLrRrTRnQLnug8Q=; b=N
- uQpA42UNhRwOYHESc2un+cx4CZGYn9Qm9gsfdAxVoTr7lJ/HSXT8utvQfh2Fy11ZgsEs96lpQCXdr
- 2Vge3kkBQG6HzL057wxG33Rrg+r6xoK5+EcRom0QtimH5P6mEO1BkTwvp9gX0h6v5mT4UsSE3cF2Z
- n45h1c5G8WSPJRPc=;
-Received: from mail-wr2-f12.google.com ([74.125.225.76])
+ h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:Cc:To:From
+ :Sender:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+ References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=cD08sRUDIcgyy8v/O6jOsNYYnC+CX1WbvOBjLYg+9xo=; b=Z
+ gYClEDgxVgEgMHEu+6NWMSWR1OBb4rNXi9WVrK9yB3i9eWOx16D+3+aMp6qc1RiPbcFW2l7Feup44
+ gf2Er5WOC0gFTrWotl22q17tAji+4Vu86L0Jvme9OkXBOQocSJiXMficIVRQeTJW3pejBeorMdOnA
+ 2enBhHuTuwS+Rajk=;
+Received: from mout-b-106.mailbox.org ([195.10.208.46])
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1x8vft-00055F-Vq for openvpn-devel@lists.sourceforge.net;
- Tue, 22 Sep 2026 08:16:27 +0000
-Received: by mail-wr2-f12.google.com with SMTP id
- ffacd0b85a97d-4843cedd129so2354127f8f.0
- for <openvpn-devel@lists.sourceforge.net>;
- Tue, 22 Sep 2026 01:16:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1790064979; x=1790669779; darn=lists.sourceforge.net;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
- :reply-to:content-type;
- bh=KJG7hXXrr59EYP4P+Gv1brmNuifvvLrRrTRnQLnug8Q=;
- b=PWM2amEC1Wl/K3j7nObZNi0BWuzmjmws+va3IoRAs0A/NscTbig0fqcQJksUC6Oc5R
- WKPN9SeKBRezUMV5WUeFe4xsPPFc288xtq+K8GESh0sNJyUSCRHPeL1oNACvA0iYRMP2
- V0cxNUTQveQrP23syhyWNP+wMXoDUmjE9w32u9iq4JB3PAa8GowjNqPabApUhAUTZmB3
- tl6B7QORUjoGGITtE0hFUcjR9R42YbWgZWW0g4y5HzPlDdtJhWEt8RaoP7tyVhgTg/Uh
- Bd1/d5xLTspmEDT+rCOaMIMLSiI+qh00uTKlqfmS1rIqkBcVYk9oGYz4fXQbzHrr0soT
- qkcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1790064979; x=1790669779;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
- :cc:subject:date:message-id:reply-to:content-type;
- bh=KJG7hXXrr59EYP4P+Gv1brmNuifvvLrRrTRnQLnug8Q=;
- b=VeHaAGXYwjU7YMMjh/Mr7CY2tV/CyAglAbfNRGYz8eBp8MAbxPkMR5ssBvdnBngYl/
- g0Sxhy1M3dwkbOEUITl27R3K9KOwimjprcDZ7yaodMfpIDX68rARzdePZS0RdHcAexxS
- J2fJCop6NTaINdifs5NYgrjbtmVhkRBmBYZSEtITzWHqcfbd2D6ZGktMo7cDwGJlrz+s
- k1fL5WC/v4+adFHoE8mi6yKgQ2j/2GHWNEB2EkeaXCVoMMzJUEbMm/b/gKyzKoKuRz7x
- PkierNOt3YkXqXSSQCBxOigAB9ycfEMWYq+L4Sgse7BtK/b4chezAKFAYaT1fTTUJ3/w
- 9xdA==
-X-Forwarded-Encrypted: i=1;
- AKwUvBwuO2WwFADXZHXAYcd2gs+OUjoSxt2WsT8oRI98bOdKRmv8AoHdbQ5pgSyiksD8gUZLn5mLhfpBquJDyuiD@lists.sourceforge.net
-X-Gm-Message-State: AFuF++nPGhaMzwddo8AYbrSnsMTdwUNOTNdGl4wR9Q7GZ7hQFqS3uEsS
- WqSnR2R81cJjGvgoDA4WqWuT9Uii+GyXuNRFLqLGOT5r/r/OiHByifcoom7QY8XtnCEZZ79mCoZ
- jWI76ynYCp2ApZ/otOFh6GiOJED6ZdnvFDBdq6+VtnSqTawoEDD/yhOS9zObsLSgZ6HrZUwwh0a
- PIQ6aoMg==
-X-Gm-Gg: AYBFou2SwM401wTO2U/nmDPCzAMzquKaG7J+/VCYWV+OMxZWQ2S4PCCPdxZfdRWSRLH
- 3Ya+5UI7hTXyggOOy/X7T7UPO2k1ioshJc91rXyY2DlQm+gfa9+KCHJeieKjgwkPsOh1XR/dcfs
- KMNGHKbEaMsBxsuROZ7zt7C0ekxJf018b1gHjtW79efjOVj1VtGK2yMfbLwiObTmM+ONODMWxfL
- H4f4xc7FlAeF++DMdc7zfwqeorCAYpNE4P5iXFkbskwIrcEdzITBzd1R97IDtMWWqT8SIUWPBsG
- 0G85QfoicQQxaA1anIvLGuV/Dqskse8ysxKf3YQvC9PMzJHu8NdOdd9nfbun+p4VQwIOt/uiVBd
- 1PDXrrtjSnWfI+KUJBc+YmLD2A7E0HA4Kn7cbgjKafEXyo1L6UFnqg0d+/KLQ5B7aaMRLFrBIkM
- pnDTuGMNMa33PaCLf/1au9dfn4xWb5EzgdxRJaXSx3Nr2kGjNwEq8ijnHfswABkIBr6HBsj7OF7
- kAX6nnXiV29LKmxpcMjHeWw8gdMMNLizKzw+cZz8BGLCIHDuloTomWCDcigxviW+yoMzZZkpqdc
- nryX+ShN+4zNJ0zopPqlt1aUwLbYqj8gNNmcNyTCL0XK7m8FC5bZuS5S8jOTgw==
-X-Received: by 2002:a05:600c:83cf:b0:49f:ce78:3562 with SMTP id
- 5b1f17b1804b1-49fce783698mr106265875e9.19.1790064979000; 
- Tue, 22 Sep 2026 01:16:19 -0700 (PDT)
-Received: from ip-10-18-1-162.eu-central-1.compute.internal
- (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
- by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-49fd8cd8dd6sm54403235e9.11.2026.09.22.01.16.18
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 22 Sep 2026 01:16:18 -0700 (PDT)
-X-Google-Original-From: "uddr (Code Review)"
- <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Tue, 22 Sep 2026 08:16:17 +0000
-To: buildbot <yura.darnobyt@openvpn.net>
-Auto-Submitted: auto-generated
-X-Gerrit-MessageType: abandon
-X-Gerrit-PatchSet: 25
-X-Gerrit-Change-Id: I08d5574e5ed6098b5147357eee09fa796853efb8
-X-Gerrit-Change-Number: 261
-X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/261?usp=email>
-X-Gerrit-Commit: a26516a944ea5c85679dc0cae19eb858a64ae0eb
-In-Reply-To: <gerrit.1680209488000.I08d5574e5ed6098b5147357eee09fa796853efb8@gerrit.openvpn.net>
-References: <gerrit.1680209488000.I08d5574e5ed6098b5147357eee09fa796853efb8@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNjgwMjA5NDg4MDAwLkkwOGQ1NTc0ZTVlZDYwOThiNTE0NzM1N2VlZTA5ZmE3OTY4NTNlZmI4QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <65713775abc119e950c329a20fefd148d9c18a95-HTML@gerrit.openvpn.net>
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
+ id 1x8vnY-0005Se-Fq for openvpn-devel@lists.sourceforge.net;
+ Tue, 22 Sep 2026 08:24:22 +0000
+Received: from smtp102.mailbox.org (smtp102.mailbox.org [10.196.197.102])
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+ key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+ (No client certificate requested)
+ by mout-b-106.mailbox.org (Postfix) with ESMTPS id 4hptRc4rffzNlZq;
+ Tue, 22 Sep 2026 10:24:12 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
+ s=MBO0001; t=1790065452;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:
+ content-transfer-encoding:content-transfer-encoding;
+ bh=cD08sRUDIcgyy8v/O6jOsNYYnC+CX1WbvOBjLYg+9xo=;
+ b=jBleMtg8hr8qwwH/prQY5igYUADfB3fu/9FxeRmB9g1f9kcrYzJxIDqefMQzEIq0KSoHJy
+ 5QDaAZb/XIr5xT0JX5+z/08hwOfHGDzVcTs8Jwh/skfh5DNwDwku/XaPVEnZmPlxHppFK6
+ Hgx/CEhEtdy2jhIh+KSJDo1+0KsXyk8kbHnIqJrc3syA/3T/UsyZ/n8ymaKlV7eokwwEKa
+ YnyQx8C/OAXPIqTBtVQU8fLv60CWpKWnlWQOGtJJmeU7HEVbMGznJ3uMhf3P8mdk54cvna
+ 87ArOqlrjHA/RLlH/9jQ0Fs3zRKeSgBZ5TbZaWk4fNQnUJxQvKrAt4/h0d059g==
+From: Marco Baffo <marco@mandelbit.com>
+To: openvpn-devel@lists.sourceforge.net
+Date: Tue, 22 Sep 2026 10:24:06 +0200
+Message-ID: <20260922082408.2930734-1-marco@mandelbit.com>
 MIME-Version: 1.0
-User-Agent: Gerrit/3.14.2
-X-Headers-End: 1x8vft-00055F-Vq
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Please ignore -
- Uncrustify code check
+X-Headers-End: 1x8vnY-0005Se-Fq
+Subject: [Openvpn-devel] [RFC ovpn net-next v5 1/3] ovpn: support operations
+ on interfaces in foreign netns
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -138,121 +86,420 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "uddr \(Code Review\) via Openvpn-devel"
- <openvpn-devel@lists.sourceforge.net>
-Reply-To: yura.uddr@gmail.com, openvpn-devel@lists.sourceforge.net,
- frank@lichtenheld.com, yura.darnobyt@openvpn.net
-Cc: "uddr \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============7208962872658351808=="
+Cc: Antonio Quartulli <antonio@openvpn.net>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============7208962872658351808==
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="w9pyWXPfc8E="; charset=UTF-8
+ovpn currently looks up the target interface in the network namespace
+associated with the netlink socket. This prevents a userspace process
+from controlling an ovpn interface located in another namespace.
 
---w9pyWXPfc8E=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Add the optional OVPN_A_TARGET_NETNSID attribute. When present, it
+identifies the namespace containing the target interface relative to the
+namespace of the requesting Netlink socket. Resolve the ID and perform
+the interface lookup there. When absent, preserve the existing lookup
+behavior.
 
-uddr has abandoned this change=2E ( http://gerrit=2Eopenvpn=2Enet/c/openvpn=
-/+/261?usp=3Demail )
+Allow the attribute in all peer and key request policies, including
+peer dump requests.
 
-Change subject: Please ignore - Uncrustify code check=
+Signed-off-by: Marco Baffo <marco@mandelbit.com>
+---
+Changes in v5:
+- Fix RCT and line too long in netlink.c
 
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+Changes in v4:
+- None.
 
+Changes in v3:
+- None.
 
-Abandoned=
+Changes in v2:
+- Improved Doc.
 
+ Documentation/netlink/specs/ovpn.yaml | 27 ++++++++++++++++
+ drivers/net/ovpn/netlink-gen.c        | 45 ++++++++++++++++-----------
+ drivers/net/ovpn/netlink.c            | 20 +++++++++++-
+ include/uapi/linux/ovpn.h             |  1 +
+ 4 files changed, 74 insertions(+), 19 deletions(-)
+
+diff --git a/Documentation/netlink/specs/ovpn.yaml b/Documentation/netlink/specs/ovpn.yaml
+index ac50d1d7c00a6..3d8055282ebe5 100644
+--- a/Documentation/netlink/specs/ovpn.yaml
++++ b/Documentation/netlink/specs/ovpn.yaml
+@@ -341,12 +341,20 @@ attribute-sets:
+         type: nest
+         doc: Peer specific cipher configuration
+         nested-attributes: keyconf
++      -
++        name: target-netnsid
++        type: s32
++        doc: >-
++          ID of the network namespace containing the ovpn interface, relative to
++          the network namespace of the requesting Netlink socket
+   -
+     name: ovpn-peer-new-input
+     subset-of: ovpn
+     attributes:
+       -
+         name: ifindex
++      -
++        name: target-netnsid
+       -
+         name: peer
+         nested-attributes: peer-new-input
+@@ -356,6 +364,8 @@ attribute-sets:
+     attributes:
+       -
+         name: ifindex
++      -
++        name: target-netnsid
+       -
+         name: peer
+         nested-attributes: peer-set-input
+@@ -365,6 +375,8 @@ attribute-sets:
+     attributes:
+       -
+         name: ifindex
++      -
++        name: target-netnsid
+       -
+         name: peer
+         nested-attributes: peer-del-input
+@@ -374,6 +386,8 @@ attribute-sets:
+     attributes:
+       -
+         name: ifindex
++      -
++        name: target-netnsid
+       -
+         name: keyconf
+         nested-attributes: keyconf-get
+@@ -383,6 +397,8 @@ attribute-sets:
+     attributes:
+       -
+         name: ifindex
++      -
++        name: target-netnsid
+       -
+         name: keyconf
+         nested-attributes: keyconf-swap-input
+@@ -392,6 +408,8 @@ attribute-sets:
+     attributes:
+       -
+         name: ifindex
++      -
++        name: target-netnsid
+       -
+         name: keyconf
+         nested-attributes: keyconf-del-input
+@@ -409,6 +427,7 @@ operations:
+         request:
+           attributes:
+             - ifindex
++            - target-netnsid
+             - peer
+     -
+       name: peer-set
+@@ -421,6 +440,7 @@ operations:
+         request:
+           attributes:
+             - ifindex
++            - target-netnsid
+             - peer
+     -
+       name: peer-get
+@@ -433,6 +453,7 @@ operations:
+         request:
+           attributes:
+             - ifindex
++            - target-netnsid
+             - peer
+         reply:
+           attributes:
+@@ -441,6 +462,7 @@ operations:
+         request:
+           attributes:
+             - ifindex
++            - target-netnsid
+         reply:
+           attributes:
+             - peer
+@@ -455,6 +477,7 @@ operations:
+         request:
+           attributes:
+             - ifindex
++            - target-netnsid
+             - peer
+     -
+       name: peer-del-ntf
+@@ -473,6 +496,7 @@ operations:
+         request:
+           attributes:
+             - ifindex
++            - target-netnsid
+             - keyconf
+     -
+       name: key-get
+@@ -485,6 +509,7 @@ operations:
+         request:
+           attributes:
+             - ifindex
++            - target-netnsid
+             - keyconf
+         reply:
+           attributes:
+@@ -500,6 +525,7 @@ operations:
+         request:
+           attributes:
+             - ifindex
++            - target-netnsid
+             - keyconf
+     -
+       name: key-swap-ntf
+@@ -519,6 +545,7 @@ operations:
+         request:
+           attributes:
+             - ifindex
++            - target-netnsid
+             - keyconf
+ 
+     -
+diff --git a/drivers/net/ovpn/netlink-gen.c b/drivers/net/ovpn/netlink-gen.c
+index 92d2fdc17c2e8..7ac9de00e0206 100644
+--- a/drivers/net/ovpn/netlink-gen.c
++++ b/drivers/net/ovpn/netlink-gen.c
+@@ -126,55 +126,64 @@ const struct nla_policy ovpn_peer_set_input_nl_policy[OVPN_A_PEER_TX_ID + 1] = {
+ };
+ 
+ /* OVPN_CMD_PEER_NEW - do */
+-static const struct nla_policy ovpn_peer_new_nl_policy[OVPN_A_PEER + 1] = {
++static const struct nla_policy ovpn_peer_new_nl_policy[OVPN_A_TARGET_NETNSID + 1] = {
+ 	[OVPN_A_IFINDEX] = { .type = NLA_U32, },
++	[OVPN_A_TARGET_NETNSID] = { .type = NLA_S32, },
+ 	[OVPN_A_PEER] = NLA_POLICY_NESTED(ovpn_peer_new_input_nl_policy),
+ };
+ 
+ /* OVPN_CMD_PEER_SET - do */
+-static const struct nla_policy ovpn_peer_set_nl_policy[OVPN_A_PEER + 1] = {
++static const struct nla_policy ovpn_peer_set_nl_policy[OVPN_A_TARGET_NETNSID + 1] = {
+ 	[OVPN_A_IFINDEX] = { .type = NLA_U32, },
++	[OVPN_A_TARGET_NETNSID] = { .type = NLA_S32, },
+ 	[OVPN_A_PEER] = NLA_POLICY_NESTED(ovpn_peer_set_input_nl_policy),
+ };
+ 
+ /* OVPN_CMD_PEER_GET - do */
+-static const struct nla_policy ovpn_peer_get_do_nl_policy[OVPN_A_PEER + 1] = {
++static const struct nla_policy ovpn_peer_get_do_nl_policy[OVPN_A_TARGET_NETNSID + 1] = {
+ 	[OVPN_A_IFINDEX] = { .type = NLA_U32, },
++	[OVPN_A_TARGET_NETNSID] = { .type = NLA_S32, },
+ 	[OVPN_A_PEER] = NLA_POLICY_NESTED(ovpn_peer_nl_policy),
+ };
+ 
+ /* OVPN_CMD_PEER_GET - dump */
+-static const struct nla_policy ovpn_peer_get_dump_nl_policy[OVPN_A_IFINDEX + 1] = {
++static const struct nla_policy ovpn_peer_get_dump_nl_policy[OVPN_A_TARGET_NETNSID + 1] = {
+ 	[OVPN_A_IFINDEX] = { .type = NLA_U32, },
++	[OVPN_A_TARGET_NETNSID] = { .type = NLA_S32, },
+ };
+ 
+ /* OVPN_CMD_PEER_DEL - do */
+-static const struct nla_policy ovpn_peer_del_nl_policy[OVPN_A_PEER + 1] = {
++static const struct nla_policy ovpn_peer_del_nl_policy[OVPN_A_TARGET_NETNSID + 1] = {
+ 	[OVPN_A_IFINDEX] = { .type = NLA_U32, },
++	[OVPN_A_TARGET_NETNSID] = { .type = NLA_S32, },
+ 	[OVPN_A_PEER] = NLA_POLICY_NESTED(ovpn_peer_del_input_nl_policy),
+ };
+ 
+ /* OVPN_CMD_KEY_NEW - do */
+-static const struct nla_policy ovpn_key_new_nl_policy[OVPN_A_KEYCONF + 1] = {
++static const struct nla_policy ovpn_key_new_nl_policy[OVPN_A_TARGET_NETNSID + 1] = {
+ 	[OVPN_A_IFINDEX] = { .type = NLA_U32, },
++	[OVPN_A_TARGET_NETNSID] = { .type = NLA_S32, },
+ 	[OVPN_A_KEYCONF] = NLA_POLICY_NESTED(ovpn_keyconf_nl_policy),
+ };
+ 
+ /* OVPN_CMD_KEY_GET - do */
+-static const struct nla_policy ovpn_key_get_nl_policy[OVPN_A_KEYCONF + 1] = {
++static const struct nla_policy ovpn_key_get_nl_policy[OVPN_A_TARGET_NETNSID + 1] = {
+ 	[OVPN_A_IFINDEX] = { .type = NLA_U32, },
++	[OVPN_A_TARGET_NETNSID] = { .type = NLA_S32, },
+ 	[OVPN_A_KEYCONF] = NLA_POLICY_NESTED(ovpn_keyconf_get_nl_policy),
+ };
+ 
+ /* OVPN_CMD_KEY_SWAP - do */
+-static const struct nla_policy ovpn_key_swap_nl_policy[OVPN_A_KEYCONF + 1] = {
++static const struct nla_policy ovpn_key_swap_nl_policy[OVPN_A_TARGET_NETNSID + 1] = {
+ 	[OVPN_A_IFINDEX] = { .type = NLA_U32, },
++	[OVPN_A_TARGET_NETNSID] = { .type = NLA_S32, },
+ 	[OVPN_A_KEYCONF] = NLA_POLICY_NESTED(ovpn_keyconf_swap_input_nl_policy),
+ };
+ 
+ /* OVPN_CMD_KEY_DEL - do */
+-static const struct nla_policy ovpn_key_del_nl_policy[OVPN_A_KEYCONF + 1] = {
++static const struct nla_policy ovpn_key_del_nl_policy[OVPN_A_TARGET_NETNSID + 1] = {
+ 	[OVPN_A_IFINDEX] = { .type = NLA_U32, },
++	[OVPN_A_TARGET_NETNSID] = { .type = NLA_S32, },
+ 	[OVPN_A_KEYCONF] = NLA_POLICY_NESTED(ovpn_keyconf_del_input_nl_policy),
+ };
+ 
+@@ -186,7 +195,7 @@ static const struct genl_split_ops ovpn_nl_ops[] = {
+ 		.doit		= ovpn_nl_peer_new_doit,
+ 		.post_doit	= ovpn_nl_post_doit,
+ 		.policy		= ovpn_peer_new_nl_policy,
+-		.maxattr	= OVPN_A_PEER,
++		.maxattr	= OVPN_A_TARGET_NETNSID,
+ 		.flags		= GENL_ADMIN_PERM | GENL_CMD_CAP_DO,
+ 	},
+ 	{
+@@ -195,7 +204,7 @@ static const struct genl_split_ops ovpn_nl_ops[] = {
+ 		.doit		= ovpn_nl_peer_set_doit,
+ 		.post_doit	= ovpn_nl_post_doit,
+ 		.policy		= ovpn_peer_set_nl_policy,
+-		.maxattr	= OVPN_A_PEER,
++		.maxattr	= OVPN_A_TARGET_NETNSID,
+ 		.flags		= GENL_ADMIN_PERM | GENL_CMD_CAP_DO,
+ 	},
+ 	{
+@@ -204,14 +213,14 @@ static const struct genl_split_ops ovpn_nl_ops[] = {
+ 		.doit		= ovpn_nl_peer_get_doit,
+ 		.post_doit	= ovpn_nl_post_doit,
+ 		.policy		= ovpn_peer_get_do_nl_policy,
+-		.maxattr	= OVPN_A_PEER,
++		.maxattr	= OVPN_A_TARGET_NETNSID,
+ 		.flags		= GENL_ADMIN_PERM | GENL_CMD_CAP_DO,
+ 	},
+ 	{
+ 		.cmd		= OVPN_CMD_PEER_GET,
+ 		.dumpit		= ovpn_nl_peer_get_dumpit,
+ 		.policy		= ovpn_peer_get_dump_nl_policy,
+-		.maxattr	= OVPN_A_IFINDEX,
++		.maxattr	= OVPN_A_TARGET_NETNSID,
+ 		.flags		= GENL_ADMIN_PERM | GENL_CMD_CAP_DUMP,
+ 	},
+ 	{
+@@ -220,7 +229,7 @@ static const struct genl_split_ops ovpn_nl_ops[] = {
+ 		.doit		= ovpn_nl_peer_del_doit,
+ 		.post_doit	= ovpn_nl_post_doit,
+ 		.policy		= ovpn_peer_del_nl_policy,
+-		.maxattr	= OVPN_A_PEER,
++		.maxattr	= OVPN_A_TARGET_NETNSID,
+ 		.flags		= GENL_ADMIN_PERM | GENL_CMD_CAP_DO,
+ 	},
+ 	{
+@@ -229,7 +238,7 @@ static const struct genl_split_ops ovpn_nl_ops[] = {
+ 		.doit		= ovpn_nl_key_new_doit,
+ 		.post_doit	= ovpn_nl_post_doit,
+ 		.policy		= ovpn_key_new_nl_policy,
+-		.maxattr	= OVPN_A_KEYCONF,
++		.maxattr	= OVPN_A_TARGET_NETNSID,
+ 		.flags		= GENL_ADMIN_PERM | GENL_CMD_CAP_DO,
+ 	},
+ 	{
+@@ -238,7 +247,7 @@ static const struct genl_split_ops ovpn_nl_ops[] = {
+ 		.doit		= ovpn_nl_key_get_doit,
+ 		.post_doit	= ovpn_nl_post_doit,
+ 		.policy		= ovpn_key_get_nl_policy,
+-		.maxattr	= OVPN_A_KEYCONF,
++		.maxattr	= OVPN_A_TARGET_NETNSID,
+ 		.flags		= GENL_ADMIN_PERM | GENL_CMD_CAP_DO,
+ 	},
+ 	{
+@@ -247,7 +256,7 @@ static const struct genl_split_ops ovpn_nl_ops[] = {
+ 		.doit		= ovpn_nl_key_swap_doit,
+ 		.post_doit	= ovpn_nl_post_doit,
+ 		.policy		= ovpn_key_swap_nl_policy,
+-		.maxattr	= OVPN_A_KEYCONF,
++		.maxattr	= OVPN_A_TARGET_NETNSID,
+ 		.flags		= GENL_ADMIN_PERM | GENL_CMD_CAP_DO,
+ 	},
+ 	{
+@@ -256,7 +265,7 @@ static const struct genl_split_ops ovpn_nl_ops[] = {
+ 		.doit		= ovpn_nl_key_del_doit,
+ 		.post_doit	= ovpn_nl_post_doit,
+ 		.policy		= ovpn_key_del_nl_policy,
+-		.maxattr	= OVPN_A_KEYCONF,
++		.maxattr	= OVPN_A_TARGET_NETNSID,
+ 		.flags		= GENL_ADMIN_PERM | GENL_CMD_CAP_DO,
+ 	},
+ };
+diff --git a/drivers/net/ovpn/netlink.c b/drivers/net/ovpn/netlink.c
+index 4dad852941982..7a13c056131de 100644
+--- a/drivers/net/ovpn/netlink.c
++++ b/drivers/net/ovpn/netlink.c
+@@ -36,21 +36,37 @@ static struct ovpn_priv *
+ ovpn_get_dev_from_attrs(struct net *net, const struct genl_info *info,
+ 			netdevice_tracker *tracker)
+ {
++	struct net *target_net = NULL;
+ 	struct ovpn_priv *ovpn;
+ 	struct net_device *dev;
+-	int ifindex;
++	int ifindex, target_id;
+ 
+ 	if (GENL_REQ_ATTR_CHECK(info, OVPN_A_IFINDEX))
+ 		return ERR_PTR(-EINVAL);
+ 
+ 	ifindex = nla_get_u32(info->attrs[OVPN_A_IFINDEX]);
+ 
++	if (info->attrs[OVPN_A_TARGET_NETNSID]) {
++		/* Target netns IDs are relative to the requesting Netlink socket */
++		target_id = nla_get_s32(info->attrs[OVPN_A_TARGET_NETNSID]);
++		target_net = get_net_ns_by_id(net, target_id);
++		if (!target_net) {
++			NL_SET_ERR_MSG_MOD(info->extack,
++					   "invalid target network namespace ID");
++			NL_SET_BAD_ATTR(info->extack,
++					info->attrs[OVPN_A_TARGET_NETNSID]);
++			return ERR_PTR(-EINVAL);
++		}
++		net = target_net;
++	}
++
+ 	rcu_read_lock();
+ 	dev = dev_get_by_index_rcu(net, ifindex);
+ 	if (!dev) {
+ 		rcu_read_unlock();
+ 		NL_SET_ERR_MSG_MOD(info->extack,
+ 				   "ifindex does not match any interface");
++		put_net(target_net);
+ 		return ERR_PTR(-ENODEV);
+ 	}
+ 
+@@ -59,12 +75,14 @@ ovpn_get_dev_from_attrs(struct net *net, const struct genl_info *info,
+ 		NL_SET_ERR_MSG_MOD(info->extack,
+ 				   "specified interface is not ovpn");
+ 		NL_SET_BAD_ATTR(info->extack, info->attrs[OVPN_A_IFINDEX]);
++		put_net(target_net);
+ 		return ERR_PTR(-EINVAL);
+ 	}
+ 
+ 	ovpn = netdev_priv(dev);
+ 	netdev_hold(dev, tracker, GFP_ATOMIC);
+ 	rcu_read_unlock();
++	put_net(target_net);
+ 
+ 	return ovpn;
+ }
+diff --git a/include/uapi/linux/ovpn.h b/include/uapi/linux/ovpn.h
+index 06690090a1a95..3fdf24182df43 100644
+--- a/include/uapi/linux/ovpn.h
++++ b/include/uapi/linux/ovpn.h
+@@ -85,6 +85,7 @@ enum {
+ 	OVPN_A_IFINDEX = 1,
+ 	OVPN_A_PEER,
+ 	OVPN_A_KEYCONF,
++	OVPN_A_TARGET_NETNSID,
+ 
+ 	__OVPN_A_MAX,
+ 	OVPN_A_MAX = (__OVPN_A_MAX - 1)
 -- 
-To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/261?usp=3Dema=
-il
-To unsubscribe, or for help writing mail filters, visit http://gerrit=2E=
-openvpn=2Enet/settings?usp=3Demail
-
-Gerrit-MessageType: abandon
-Gerrit-Proj=
-ect: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I08d5574e5ed6098b51473=
-57eee09fa796853efb8
-Gerrit-Change-Number: 261
-Gerrit-PatchSet: 25
-Gerrit-Ow=
-ner: uddr <yura=2Euddr@gmail=2Ecom>
-Gerrit-Reviewer: flichtenheld <frank@li=
-chtenheld=2Ecom>
-Gerrit-Reviewer: uddr <yura=2Euddr@gmail=2Ecom>
-Gerrit-CC:=
- buildbot <yura=2Edarnobyt@openvpn=2Enet>
-Gerrit-CC: openvpn-devel <openvpn=
--devel@lists=2Esourceforge=2Enet>
-
---w9pyWXPfc8E=
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p>uddr <strong>aban=
-doned</strong> this change=2E</p><p><a href=3D"http://gerrit=2Eopenvpn=2Ene=
-t/c/openvpn/+/261?usp=3Demail">View Change</a></p><div style=3D"white-space=
-:pre-wrap">Abandoned</div><p>To view, visit <a href=3D"http://gerrit=2Eopen=
-vpn=2Enet/c/openvpn/+/261?usp=3Demail">change 261</a>=2E To unsubscribe, or=
- for help writing mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=2E=
-net/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"htt=
-p://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
-=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http://g=
-errit=2Eopenvpn=2Enet/c/openvpn/+/261?usp=3Demail"/><meta itemprop=3D"name"=
- content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit=
--MessageType: abandon </div>
-<div style=3D"display:none"> Gerrit-Project: o=
-penvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<di=
-v style=3D"display:none"> Gerrit-Change-Id: I08d5574e5ed6098b5147357eee09fa=
-796853efb8 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 261 </=
-div>
-<div style=3D"display:none"> Gerrit-PatchSet: 25 </div>
-<div style=3D"=
-display:none"> Gerrit-Owner: uddr &lt;yura=2Euddr@gmail=2Ecom&gt; </div>
-<d=
-iv style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@lichtenh=
-eld=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: uddr &lt=
-;yura=2Euddr@gmail=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-CC:=
- buildbot &lt;yura=2Edarnobyt@openvpn=2Enet&gt; </div>
-<div style=3D"displa=
-y:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2En=
-et&gt; </div>
-
-</body></html>
---w9pyWXPfc8E=--
+2.43.0
 
 
---===============7208962872658351808==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============7208962872658351808==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
---===============7208962872658351808==--
-
