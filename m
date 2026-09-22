@@ -4,111 +4,108 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C0A7EC982FE
-	for <openvpn-devel@archiver.kernel.org>; Tue, 22 Sep 2026 14:30:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9E0D8C982FE
+	for <openvpn-devel@archiver.kernel.org>; Tue, 22 Sep 2026 14:35:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=UjJLGpEFvi4gdiBD0qFmd4Y+CurZLRNFPn/A8ci86Wg=; b=SdqZPXgBr7yElByq0xZJ8uq6to
-	Nxm7bXfZvYWdzSnJzPoOy0NIpKiFbb61KSdHQQ419azIIMagvXwaIATRbinm253kpMAkf+8z+sRKc
-	H0dvZcV0l3GawHBuxtdDQAEVC4GsEET6PXvLWM7BX/Q/uYxHTndaCgnSj3bQ9/Mcl1t8=;
+	Subject:MIME-Version:Message-ID:Date:To:From:Sender:Reply-To:Cc:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Owner;
+	bh=hGcOPOVCM3tNKMvWZ16NCkn/u71RvA4jhZASXMPboMo=; b=bpa3/UCGd027juzh4NJ/fI7LEN
+	ib7WhCZ+M9efCHet0C8x+vW7RZFTSN4UsEoWqPC7wJ0QgmCMEZweASDuILbtqWLmnWRiiTkw8i6wf
+	T7jONvdjU5nsjZJSCUr3x0+ILQ/1wKhZY8KVWf7E0OeFxLSNjRXyZbK9xTFteDJh+Z1M=;
 Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
 	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x91WC-000323-4Q;
-	Tue, 22 Sep 2026 14:30:48 +0000
+	id 1x91b4-0003EW-69;
+	Tue, 22 Sep 2026 14:35:50 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <drew@linuxkids.com>) id 1x91WA-00031v-Gw
+ (envelope-from <drew@linuxkids.com>) id 1x91b3-0003EQ-1K
  for openvpn-devel@lists.sourceforge.net;
- Tue, 22 Sep 2026 14:30:47 +0000
+ Tue, 22 Sep 2026 14:35:49 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=octz7T5lr/Zu8b8f/b46E9fy3nyXMxkGosRd7FG4Osk=; b=X5YPEJw2qbBkaxgiBoy4spDIm/
- /dli5SgExbDo+1T2opOCKYe0oJEP7fRUOPgQ1A6Ogzkwe8KOgyZh9akgno189vWYGmfGxZorljzQf
- jIHX3V1hGh1gQer6Uky5Fi5SyJQtw/Az6VFjIckH7t6BoMXH0Lgm+31RcN9hEtkOnpFU=;
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
- ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:Message-ID:
  Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=octz7T5lr/Zu8b8f/b46E9fy3nyXMxkGosRd7FG4Osk=; b=FGv+65HKlUhAWPdnr8rrZ67h5t
- 6Rw7MYLb8osQURZBzwzgHhTSD/KvwaGTWjWg+Yuupak0BR+A2VHEff4HSfH6/ClcHkGmMLUhmvI8u
- nF01+ld0sptS0JLsPtabt6nmpWr+VcrrPGhkb3hw+Xewcp/mSOUtMhvtPFaxghJZpKRY=;
-Received: from mail-qk2-f12.google.com ([74.125.230.204])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=dB6hDmBP9l82kh/wQzVt5rVQ0/2bOHurqMSi6r2/P94=; b=hDqO973hIQfKBThIlEQweeQEcf
+ Ygm8PAntAcI8FpTFbSzVauaRyaCJLnUTynvkS8Lmk3sQ1HB7AjPgItjGYG84XG5BalqxBULh5br/f
+ rU8XOSR9IzFpZ6wo36TM0yD2AkhcEXoyiNvIBf2wXq7yiZxDzhfk+fYOdc8p1pjPAcwY=;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
+ ;
+ h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:Cc:To:From
+ :Sender:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+ References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=dB6hDmBP9l82kh/wQzVt5rVQ0/2bOHurqMSi6r2/P94=; b=C
+ P1dkycxvX1Q0U2cN4lf9OhJfm4G7qxTsdbduGDaQSfYz7xte5duxtyTYyRS9mXi4rT6oQx31waZtk
+ KcK+H1Rshly3i7DTCPB6MOlC4Owc/yb2Y+CzgH2DVwcTSnaAUy25XNtkC8n1nRtpNlGx0YYr3mQ/4
+ dw0iwYW1ecIhWouI=;
+Received: from mail-qk2-f13.google.com ([74.125.230.205])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1x91W9-0002cc-FG for openvpn-devel@lists.sourceforge.net;
- Tue, 22 Sep 2026 14:30:47 +0000
-Received: by mail-qk2-f12.google.com with SMTP id
- d75a77b69052e-52fb76bcb1eso8091941cf.3
+ id 1x91b2-0005mW-2m for openvpn-devel@lists.sourceforge.net;
+ Tue, 22 Sep 2026 14:35:49 +0000
+Received: by mail-qk2-f13.google.com with SMTP id
+ d75a77b69052e-530e28a62abso10401751cf.1
  for <openvpn-devel@lists.sourceforge.net>;
- Tue, 22 Sep 2026 07:30:45 -0700 (PDT)
+ Tue, 22 Sep 2026 07:35:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=linuxkids-com.20251104.gappssmtp.com; s=20251104; t=1790087439; x=1790692239;
+ d=linuxkids-com.20251104.gappssmtp.com; s=20251104; t=1790087742; x=1790692542;
  darn=lists.sourceforge.net; 
- h=content-transfer-encoding:mime-version:references:in-reply-to
- :message-id:date:subject:cc:to:from:from:to:cc:subject:date
- :message-id:reply-to:content-type;
- bh=octz7T5lr/Zu8b8f/b46E9fy3nyXMxkGosRd7FG4Osk=;
- b=n9N4zEngm4A1HZx9+6YctMVAYJGhcKAE40a7KuD4zEN6gWNUE718wrJY5SWU2UJFPq
- ywwHX/cXsrukW36RCgixduifnnimSo8oKUawROPDlG9LvdVoWZqeirItL2amlDumwIlP
- ELGVS7dPW/Z9w6VXnA1gSZjXaxsbhxH9ViTyqwkNVsavANwVwiofRL58u3CVE4YMMgIx
- Y9WD1Rvkez+yxI4PqNxAzNNdEuv9PyzoXdA28ZG4R2TVT685RuAT0DASBSvp5QiH2GqM
- WqbjUUoO4AV9Wnip/mSx6vq7piVDnu30s1PRIE1idP9XP7Er1e1u4ACFY8Y4KtHW8RQW
- F3mQ==
+ h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+ :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+ bh=dB6hDmBP9l82kh/wQzVt5rVQ0/2bOHurqMSi6r2/P94=;
+ b=CAQMrtCv71Zhfxk52zfHXkh03WZ+vKkcRKiAodcfQrbq9ldNnELcFjkiJHDmO+KrJC
+ +w68GThuYiTj6CVHdnTjUU8MJwyTPR2p3MqtFgUB89nA+HNcbLpy+CkXkFcULl4Ipe+1
+ 7gmV7qn2icX5GR9Ehnpm4CizxsCM7lCmetueSJqQ9NhPn6EM/VhpkecfMvb/O9ol7Pya
+ zqR8Y3RjjP7RT5u3LGmSM/AC2LmlensOuQUnakCmpR9GSB9WzKX7AlKG3JD2TdT+cqYw
+ mceqfdV/YlOxJ241OFe11kbEasb+IS15lN79MerISfT1ee4YkbbXJnEY9wcRBdfWuxin
+ HJzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1790087439; x=1790692239;
- h=content-transfer-encoding:mime-version:references:in-reply-to
- :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
- :to:cc:subject:date:message-id:reply-to:content-type;
- bh=octz7T5lr/Zu8b8f/b46E9fy3nyXMxkGosRd7FG4Osk=;
- b=wAgQrm9uUSfzszPAixFkcEjRjKUNmXi3kmZdbiUsnLr/Oaok3G2kdMGmzG/H9pw1dG
- T7Jn87Ail7DJXBS6Kgg8ZP5+V35dcVwPhIDn5b0S+5asY/lxJ9pLEyODuHrnesMVqwH+
- UP3mB3MX6mSXcIW8QRlRutQITClsJQOHMZCDX4E+z2iqC9VUCE0CtXSO0zp598ZUSwfS
- 3qFC+ph14lMYX2Ft334RsFTnUJjQu40Gh6mkKANh0phcAnIumPZbT7DneFxYe0BLfGAE
- 6WOAspj+kgHsxgvpQm4CdK180dg1jdmHbfkjDVM6Y+oYjYlxLNMkJ3BASGALF9C9hRcB
- KOvA==
-X-Gm-Message-State: AFuF++lRACFBhlE868KY41ePdMPOU5iIS2vg2jAKpsZUrkCsU8E8tMA3
- O+wMbLIWT9JQdrMtMCTJNfUw3qXbliv9HGSgOmkvSNSZavcCK/frEG+Y0DPV8f5Wy0e9yrBMCZ/
- 8ObkBKHs8
-X-Gm-Gg: AYBFou2ELtuUe0XnUM03shyBgTTy7aaGNXlYM3ZlSuyebNfotl3ELVt+p6eIyUwF8XI
- Onr7KQL3zq930OLLO4VG41MlrGkcM5Y3nY4qO6JzAFeDkCSYqGgfNbijhqIUhW9vZQz/b4xZj73
- r9X/oB41j9oa/2aHdyaTejfnK20eHQsYPeDy1UmWEXTUQCzB8MlPQOai49o9kezoz4aPUwfKbG6
- ya1Srm9NLzlzh/Zm1WE4aYPj1xtLorDyb968VzWhUOo40a/iPtV1nZeE2GjU8y3GhkDjP7DFwvs
- iDyFOkcfq+zRFh+ZfPRtsyrFFPRUGGKH5/P3ZaM1VAM8DOQ2scgHSLWfYtNIFDU9s/zdbBp3CKT
- 4xs2SvkB+lgJ83n0R998kKathAS7Q4zlx38q5v8uND7Q5PzJ0FBW1WpzxNa9CnqniJ5JyuVb3Bo
- WMAK8bmA46qLGQBPci6ig24iLV56teDtXYJT/HfijqrmnTBnmwpmGD4McjKIp5SFT/KM9inc0uO
- /Iuq6H5xFn9q+E21rHAEQ1SqqkJQTpU9vJh+xLcUNqpjI21vXkg073vK5YwfRgzR3XN4Nxtfw==
-X-Received: by 2002:a53:ac9b:0:b0:672:99e0:ebce with SMTP id
- 956f58d0204a3-67299e0ee21mr3124476d50.102.1790085924719; 
- Tue, 22 Sep 2026 07:05:24 -0700 (PDT)
+ d=1e100.net; s=20260707; t=1790087742; x=1790692542;
+ h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+ :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+ :message-id:reply-to:content-type;
+ bh=dB6hDmBP9l82kh/wQzVt5rVQ0/2bOHurqMSi6r2/P94=;
+ b=eUUlNSoQAwydCJssnQA0E1b9pf2d3ODCdfBUIpvd8kngGnQIWkpD6YTEExKOFFnshB
+ YVoXaxRjcWRkLv9DGApNxa/kfXvJRE6JH+zn0ynxolM19hjeh5fiv8slPCcZz+61Q8q/
+ gSmNzW+pfJ5alnDLCSOA442OQexFDqZhF9OiwjVhaspGJRdYKskrD+uvdUwjMdf4IlNy
+ XOYKnnBQySu6BliGnHWVUJG9kNLPXgDlV0vayxz+u7fHAaUml3nvNjeXklawmteO7Dit
+ njPkD2KFuPSkZ7YLsbRIJHKbiYkofFry/LO+di1flTlZSahAfxyuRdHRmvaRjxr1Kxd1
+ +eFA==
+X-Gm-Message-State: AFuF++mDVHF8JiE5hryYBDPhWlVJUfFJ6OqAuL8ilrsrBL7xJUrnqxL6
+ dbUOp2PfqTAVAeEmbrNHfZySoGfeScRkICLWIjWbOkkgW2n53D0eRaCX2mDxjKzGrZaewrDNELR
+ 30v2PpR+R
+X-Gm-Gg: AYBFou2iW3dHA3SIXUQ6SSnT6EjxOnt03d51FDgiIXOUamHsrn5jZrOSf+n06JTYagd
+ ZNiaHXniRjKXWltD1c9wo+WnJXfwdwV+kYjdYLSqXHelVGAJpnRBfGkPN/WN5rrkKteLZvwc6zH
+ me6FxU81sdEGwiNdYYiLWCbPCJ267gLLi4iZjAGPJrXvOOsqy+HWnm6sSKKaTXebHiEFWkSq9kp
+ A8xbTQCLHYfWkZ30sT0ikUz21qSrPBTa2hhAdQw4mXlL1DIFT9nX08D/QqmUPwulGlsixey698T
+ SzpH+JcjfQzXbXIgg76MEVzN78KlWYHEx08XLNCODnGw1+kpppCNNORBH1fEuc84icDAg5C9HQs
+ ZI5qN9ZXTGhW+e1utPPs9URHQTCMQo971iXr56UGJuvZBLOgws2u3LIfRN7gAkUfjF3eweL+Ko/
+ TukL6fa+mk6IsYyCAjJGa0XqyXiZKiqgIhbLzCWv9ZPv+aGlMCj5EeLx02vR6jhxe00IWeeyXIY
+ evCyiwe/REUJOlWSILBQ/m3GoasqyQ2CqWT16SaAy8d5Ch3HGZFlsiQKsr3grE=
+X-Received: by 2002:a05:690e:4553:20b0:66e:5f04:f755 with SMTP id
+ 956f58d0204a3-6717fcb2c71mr3095711d50.22.1790085923373; 
+ Tue, 22 Sep 2026 07:05:23 -0700 (PDT)
 Received: from MN-277C755CCA3B.localdomain (71-208-239-209.ftmy.qwest.net.
  [71.208.239.209]) by smtp.gmail.com with ESMTPSA id
- 956f58d0204a3-672d166300asm230404d50.3.2026.09.22.07.05.23
+ 956f58d0204a3-672d166300asm230404d50.3.2026.09.22.07.05.21
  (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
- Tue, 22 Sep 2026 07:05:23 -0700 (PDT)
+ Tue, 22 Sep 2026 07:05:22 -0700 (PDT)
 From: Drew Blokzyl <drew@linuxkids.com>
 To: openvpn-devel@lists.sourceforge.net
-Date: Tue, 22 Sep 2026 10:05:19 -0400
-Message-ID: <20260922140520.71500-2-drew@linuxkids.com>
+Date: Tue, 22 Sep 2026 10:05:18 -0400
+Message-ID: <20260922140520.71500-1-drew@linuxkids.com>
 X-Mailer: git-send-email 2.50.1
-In-Reply-To: <20260922140520.71500-1-drew@linuxkids.com>
-References: <20260922140520.71500-1-drew@linuxkids.com>
 MIME-Version: 1.0
-X-Headers-End: 1x91W9-0002cc-FG
-Subject: [Openvpn-devel] [PATCH 1/2] Drop the OpenSSL errors a failed
- cipher/digest lookup leaves behind
+X-Headers-End: 1x91b2-0005mW-2m
+Subject: [Openvpn-devel] [PATCH 0/2] Stop failed cipher/digest lookups from
+ polluting the OpenSSL error queue
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -124,122 +121,41 @@ Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-cipher_get() looks a cipher up with EVP_CIPHER_fetch() and hands the
-result, possibly NULL, to callers that only care whether it exists:
-cipher_valid_reason(), cipher_kt_mode_cbc/ofb_cfb/aead(),
-cipher_kt_block_size(), cipher_kt_insecure(). A failed fetch is a normal
-outcome for them, but under OpenSSL 3 it also pushes an
-EVP_R_UNSUPPORTED error ("digital envelope routines::unsupported,
-Algorithm (none : 0)") onto the thread's error queue, and nobody pops it.
+This is the root-cause follow-up to the "CRL: cannot read CRL from file"
+report (GitHub #1103, PR #1104, which Arne rightly called a symptom fix).
 
-The common way to get there is not exotic. A server that does not set
---cipher gets the legacy default BF-CBC, which is not in --data-ciphers,
-so do_init_crypto_tls() initialises the pre-negotiation key_type with
-cipher "none". Every new client instance then runs init_instance() ->
-do_init_crypto_tls() -> cipher_kt_mode_ofb_cfb("none"), and the frame
-and OCC calculations (calculate_crypto_overhead(), frame_calculate_*())
-walk the same key_type, each fetching "none" and failing.
-cipher_kt_block_size() adds a second case for AEAD ciphers whose CBC
-sibling does not exist (CHACHA20-POLY1305 -> "CHACHA20-CBC").
-md_valid() has the same shape for digests.
+Traced with gdb on OpenVPN 2.7.0 and master against OpenSSL 3.5.5: the
+entry that misleads the CRL reload is left by cipher_get() being asked
+for the cipher "none". That is the pre-negotiation key_type every server
+without --cipher gets (BF-CBC default, not in --data-ciphers), and every
+new client instance walks it in do_init_crypto_tls() and the frame/OCC
+calculations. cipher_kt_block_size()'s CBC-sibling probe and md_valid()
+have the same shape.
 
-The stale entry then misleads code that classifies an unrelated failure
-with ERR_peek_error(), which returns the OLDEST queued entry. The visible
-symptom is backend_tls_ctx_reload_crl() logging "CRL: cannot read CRL
-from file" on the first handshake after the CRL file changes although
-the CRL loaded fine (GitHub #1103). Traced with gdb on OpenVPN 2.7.0 and
-master with OpenSSL 3.5.5: the single entry on the queue at reload entry
-is the cipher_kt_mode_ofb_cfb("none") fetch from do_init_crypto_tls()
-of that same client instance.
+Patch 1 makes those probing lookups leave the queue as they found it
+(ERR_set_mark/ERR_pop_to_mark, with a wolfSSL fallback in
+openssl_compat.h). Patch 2 is the earlier CRL-side change, kept as
+hardening: the EOF test now looks at the error PEM_read just raised
+rather than the oldest queued one, so no other leftover can produce the
+warning either.
 
-Bracket the probing fetches with ERR_set_mark()/ERR_pop_to_mark() so a
-failed lookup leaves the queue as it found it; the return value already
-carries the answer these callers want. wolfSSL's compatibility layer has
-no error marks, so openssl_compat.h maps them to ERR_clear_error() there.
+Validated on an aarch64 Ubuntu 26.04 server (DCO) with UDP, TCP and
+CHACHA20-POLY1305 clients: the queue is empty at multi_create_instance()
+and at backend_tls_ctx_reload_crl() entry, three CRL replacements give
+three clean reloads (unpatched: three warnings), and a garbage CRL still
+fails with "loaded 0 CRLs" / "VERIFY ERROR: CRL not loaded".
 
-With this change the error queue is empty at multi_create_instance() and
-at backend_tls_ctx_reload_crl() entry for UDP, TCP and CHACHA20-POLY1305
-clients, and the spurious warning is gone: three CRL replacements, three
-handshakes, zero warnings (unpatched: three of three).
+Not compile-tested against wolfSSL; the shim is two static inlines.
 
-Signed-off-by: Drew Blokzyl <drew@linuxkids.com>
----
+Drew Blokzyl (2):
+  Drop the OpenSSL errors a failed cipher/digest lookup leaves behind
+  Make CRL reload EOF detection independent of stale error queue entries
+
  src/openvpn/crypto_openssl.c | 16 +++++++++++++++-
  src/openvpn/openssl_compat.h | 18 ++++++++++++++++++
- 2 files changed, 33 insertions(+), 1 deletion(-)
+ src/openvpn/ssl_openssl.c    | 13 +++++++++++--
+ 3 files changed, 44 insertions(+), 3 deletions(-)
 
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 29c5fa68..575db985 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -569,7 +569,17 @@ cipher_get(const char *ciphername)
-     ASSERT(ciphername);
- 
-     ciphername = translate_cipher_name_from_openvpn(ciphername);
--    return EVP_CIPHER_fetch(NULL, ciphername, NULL);
-+
-+    /* A failed fetch leaves an EVP "unsupported" error on the thread's
-+     * error queue. Callers legitimately probe names OpenSSL does not know
-+     * ("none" for the not-yet-negotiated key_type, the CBC sibling of an
-+     * AEAD cipher, user supplied names) and only look at the return value,
-+     * so drop whatever the fetch raised instead of leaving it for an
-+     * unrelated ERR_peek_error() to misinterpret later. */
-+    ERR_set_mark();
-+    evp_cipher_type *cipher = EVP_CIPHER_fetch(NULL, ciphername, NULL);
-+    ERR_pop_to_mark();
-+    return cipher;
- }
- 
- bool
-@@ -692,7 +702,9 @@ cipher_kt_block_size(const char *ciphername)
- 
-     strcpy(mode_str, "-CBC");
- 
-+    ERR_set_mark();
-     cbc_cipher = EVP_CIPHER_fetch(NULL, translate_cipher_name_from_openvpn(name), NULL);
-+    ERR_pop_to_mark();
-     if (cbc_cipher)
-     {
-         block_size = EVP_CIPHER_block_size(cbc_cipher);
-@@ -1001,7 +1013,9 @@ md_get(const char *digest)
- bool
- md_valid(const char *digest)
- {
-+    ERR_set_mark();
-     evp_md_type *md = EVP_MD_fetch(NULL, digest, NULL);
-+    ERR_pop_to_mark();
-     bool valid = (md != NULL);
-     EVP_MD_free(md);
-     return valid;
-diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-index 098bdd56..3029f7ac 100644
---- a/src/openvpn/openssl_compat.h
-+++ b/src/openvpn/openssl_compat.h
-@@ -47,6 +47,24 @@
- 
- /* Define the type of error. This is something that is less
-  * intrusive than casts everywhere */
-+#if defined(ENABLE_CRYPTO_WOLFSSL)
-+/* wolfSSL's OpenSSL compatibility layer has no error queue marks. The
-+ * callers use them to drop what a failed lookup raised, so fall back to
-+ * clearing the queue. */
-+static inline int
-+ERR_set_mark(void)
-+{
-+    return 1;
-+}
-+
-+static inline int
-+ERR_pop_to_mark(void)
-+{
-+    ERR_clear_error();
-+    return 1;
-+}
-+#endif /* defined(ENABLE_CRYPTO_WOLFSSL) */
-+
- #if defined(OPENSSL_IS_AWSLC)
- typedef uint32_t openssl_err_t;
- typedef size_t openssl_stack_size_t;
 -- 
 2.53.0
 
