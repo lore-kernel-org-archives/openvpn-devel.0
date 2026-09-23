@@ -4,69 +4,69 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 76B76C982FA
-	for <openvpn-devel@archiver.kernel.org>; Wed, 23 Sep 2026 13:08:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 12ACBC982FA
+	for <openvpn-devel@archiver.kernel.org>; Wed, 23 Sep 2026 13:26:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
-	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	MIME-Version:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
+	List-Unsubscribe:List-Id:Subject:References:In-Reply-To:To:From:Message-Id:
+	Date:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=jFdqI5BYyi+EYt06chEL+jswkbepcsgq2D6opFsGHy0=; b=lDlbI3ehFbgFa7eCOAE/soWcDe
-	2J0KpXtYI8TvnypnylnDOjd4YeE9oS4qVNLMbQklVbfZwnpKxikdjpEpxcIGyvdTzZMV9rR7egrL8
-	u4unvlZEfHb2sVZ+aJOPUCGOb4iG/br1eYzykBGhGhB8fr1eFeceslbEBapPlv6t8klY=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=7KI+kpw/OtYaTys8JCjIP0pNUkn7Dvt05Zn1UInq/eM=; b=kV/4KoK2xX7ivhlXGJSaMD6azR
+	8Mvcdntb4GGk67UUzkto9ywlpj/stWayxH4uM8KXph+5xlAb2Oj/TsRlbY64k8rf1IINnqrWJAPzL
+	b9FvsXus7mwQMIz1lZHxtiWu9HO+cBENBIV/QMs5mEgH7gOlVzqwNkH1pEBRRXCbXejU=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x9Mho-0005SF-2Z;
-	Wed, 23 Sep 2026 13:08:12 +0000
+	id 1x9Mz3-0007IY-JT;
+	Wed, 23 Sep 2026 13:26:02 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1x9Mhm-0005S9-LS
+ (envelope-from <gert@chekov.greenie.muc.de>) id 1x9Myh-0007Gs-5Q
  for openvpn-devel@lists.sourceforge.net;
- Wed, 23 Sep 2026 13:08:10 +0000
+ Wed, 23 Sep 2026 13:25:39 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=y6vGv1JsRzliRjXknLiQ1n7pztRUfRbXt/IekOiqVZo=; b=S2CHm+TxVsG8n2T2/nprSyV6Bf
- weOsCSGlLxYpi3pd3AbCw0NqKPn79lnD4t0qJzLBMhhf+X8TYU8KanJcSElMvZLuyNFIbFMtdGpw8
- kIC/1UUhwMSETCavgDIqJodbb9sA5nuff+nKT99w7399c3ZhwPGBm4mLqr6LW64uUXFE=;
+ d=sourceforge.net; s=x; h=References:In-Reply-To:Subject:Cc:To:From:
+ Message-Id:Date:Sender:Reply-To:MIME-Version:Content-Type:
+ Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+ List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=5855vC6ck73uYO4Ijd13vBPtmnBwVLFcJL8FCG0GcFI=; b=FFZBo9CP5ImRDdKT/KzcswH4Qw
+ 5uqdKoFkcMaaJmewfnqnZWSNUlN65zCX/psW1DQ+Vh7+E6lpNtC3nWki19u4hYfArGJgqJy9ueEHe
+ biLgzIUxgCyFT35gPxq+pHO7HhD1/gZAlWcq+uh0jEkmXi60liunqNc1aToTmYbj/ykc=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ h=References:In-Reply-To:Subject:Cc:To:From:Message-Id:Date:Sender:Reply-To
+ :MIME-Version:Content-Type:Content-Transfer-Encoding:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=y6vGv1JsRzliRjXknLiQ1n7pztRUfRbXt/IekOiqVZo=; b=S1zT0OK/2CsfB/eyaVkreMxR1r
- 46ct+0PRKRLSGf8rUL/6TBplxKWbAz7nuauXvDTCBB6yJjeRFVq2AMegKZuXmm4G3jIbWJbI8pc+4
- G1aVHCr80DHx2NSNvznD+hGWCZyQRkrG2Va7CLFLHl3i582myxzHyEsP62NmY2nzf2ek=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ bh=5855vC6ck73uYO4Ijd13vBPtmnBwVLFcJL8FCG0GcFI=; b=FHxuKDaY+lRWYqhXF0VxBo8/qD
+ cSFrfO0DuHRSUjqKTOAhGA6FJzcARGh0Lojm0/51pjqOWPKWQsmTl38hQfz6nWVwaTJWo/naffYiP
+ CKJRu9Zdm4xEvOmqJ7qeoXsLT88CRiVpbiNj8GBGbGdTmSc59oQJu1Uk21VODnhtc9OM=;
+Received: from chekov.greenie.muc.de ([193.149.48.178])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1x9Mhl-0000DW-GY for openvpn-devel@lists.sourceforge.net;
- Wed, 23 Sep 2026 13:08:10 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 68ND82Zu016814
- for <openvpn-devel@lists.sourceforge.net>; Wed, 23 Sep 2026 15:08:02 +0200
+ id 1x9Mya-00029K-Ii for openvpn-devel@lists.sourceforge.net;
+ Wed, 23 Sep 2026 13:25:34 +0000
+Received: from chekov.greenie.muc.de (localhost [IPv6:0:0:0:0:0:0:0:1])
+ by chekov.greenie.muc.de (8.18.2/8.18.1) with ESMTP id 68NDPICV025816;
+ Wed, 23 Sep 2026 15:25:18 +0200 (CEST)
+ (envelope-from gert@chekov.greenie.muc.de)
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 68ND82DY016813
- for openvpn-devel@lists.sourceforge.net; Wed, 23 Sep 2026 15:08:02 +0200
+ by chekov.greenie.muc.de (8.18.2/8.18.1/Submit) id 68NDPIVW025815;
+ Wed, 23 Sep 2026 15:25:18 +0200 (CEST) (envelope-from gert)
+Date: Wed, 23 Sep 2026 15:25:18 +0200 (CEST)
+Message-Id: <202609231325.68NDPIVW025815@chekov.greenie.muc.de>
 From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Wed, 23 Sep 2026 15:07:56 +0200
-Message-ID: <20260923130801.16802-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1790167275000.If276bd4c5d07fcd26f6749f514f0257eab73249f@gerrit.openvpn.net>
-References: <gerrit.1790167275000.If276bd4c5d07fcd26f6749f514f0257eab73249f@gerrit.openvpn.net>
-MIME-Version: 1.0
-X-Headers-End: 1x9Mhl-0000DW-GY
-Subject: [Openvpn-devel] [PATCH v1] proxy: Work-around spurious warning on
- mingw builds
+To: Frank Lichtenheld <frank@lichtenheld.com>
+X-Patchwork-State: Accepted
+In-Reply-To: <20260923130801.16802-1-gert@greenie.muc.de>
+References: <20260923130801.16802-1-gert@greenie.muc.de>
+X-Headers-End: 1x9Mya-00029K-Ii
+Subject: [Openvpn-devel] [PATCH applied] Re: proxy: Work-around spurious
+ warning on mingw builds
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -78,50 +78,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Cc: openvpn-devel@lists.sourceforge.net
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@lichtenheld.com>
+As discussed on IRC, this is not really changing anything, except 
+"appease a confused compiler" (%zu actually works, just the mingw gcc
+claims it doesn't).  The NTLM code is gone from master, so we do not
+need the patch there - but we want to keep the GH Actions in sync, 
+so we need to make 2.7 work with mingw-on-ubuntu26
 
-mingw in Ubuntu 26.04 has issues with checking snprintf
-format strings against original MS implementation even
-though it uses the GCC implementation.
+Your patch has been applied to the release/2.7 branch.
 
-Apply work-around that is good enough for code that is
-already gone in master.
+commit 0c12762e6b250a967c154a2a127909e2bd9d3394 (release/2.7)
+Author: Frank Lichtenheld
+Date:   Wed Sep 23 15:07:56 2026 +0200
 
-Change-Id: If276bd4c5d07fcd26f6749f514f0257eab73249f
-Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
-Acked-by: Arne Schwabe <arne-openvpn@rfc2549.org>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1945
----
+     proxy: Work-around spurious warning on mingw builds
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to release/2.7.
+     Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
+     Acked-by: Arne Schwabe <arne-openvpn@rfc2549.org>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1945
+     Message-Id: <20260923130801.16802-1-gert@greenie.muc.de>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg39441.html
+     Signed-off-by: Gert Doering <gert@greenie.muc.de>
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1945
-This mail reflects revision 1 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@rfc2549.org>
+--
+kind regards,
 
-        
-diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
-index 7101d9f..857bf03 100644
---- a/src/openvpn/proxy.c
-+++ b/src/openvpn/proxy.c
-@@ -767,7 +767,9 @@
- 
-                 char get[80];
-                 CLEAR(buf2);
--                snprintf(get, sizeof(get), "%%*s NTLM %%%zus", sizeof(buf2) - 1);
-+                /* mingw checks calls to the builtin snprintf() with the
-+                 * ms_printf archetype, which does not know the 'z' modifier */
-+                snprintf(get, sizeof(get), "%%*s NTLM %%%us", (unsigned int)(sizeof(buf2) - 1));
-                 nparms = sscanf(buf, get, buf2);
- 
-                 /* check for "Proxy-Authenticate: NTLM TlRM..." */
+Gert Doering
+
 
 
 _______________________________________________
