@@ -4,7 +4,7 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C9E0BC9830D
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id DCB2DC98304
 	for <openvpn-devel@archiver.kernel.org>; Thu, 24 Sep 2026 01:10:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
@@ -12,118 +12,118 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	Subject:MIME-Version:Message-ID:References:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
-	List-Owner; bh=/Mo8oT1MqAX09+saWyiaVUMGCiBIrOc2O5FsuAaLskA=; b=mQ7gAfzgwRFEft
-	OLf41yR3VmfvA3Zv9nA2xwLUNMRG7EBXNJnW2cGLxyruIPqZebLGt7SHji2A9/FijgyjD8x47e4tr
-	jSCD0PrQgbpSkLvVO//8n9XFY+MtVMPsLsoz2uIDEgQSitY4MkfNw23RFlW9Brs0XWffzDzhwXUZE
-	l2U=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	List-Owner; bh=2TWTHsBSBQoNDTT3aLx7q4879J+XhJCb2kSJ1PDS2Js=; b=nJh8p3GpHsjj0p
+	jlIN5/PLdggNtEA9ReLcyb5ZxXCQ78qJhSjqSzz+zpciAbXgThrh0n3oeo0UvYy0JuMWXY/VyZWke
+	0dSY90uEUuZYcyCHp1v2hwE1Jhb3d5x91VPhZsBqu4OqYb1uhdw4NPMt6J+14vKUPEz5w7L8gzdcc
+	lf4=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1x9Xyt-0004Rs-3r;
-	Thu, 24 Sep 2026 01:10:35 +0000
+	id 1x9Xyy-0001eo-Lt;
+	Thu, 24 Sep 2026 01:10:38 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1x9Xyr-0004Rm-Pb
+ (envelope-from <gerrit@openvpn.net>) id 1x9Xyw-0001ei-Ew
  for openvpn-devel@lists.sourceforge.net;
- Thu, 24 Sep 2026 01:10:34 +0000
+ Thu, 24 Sep 2026 01:10:35 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:
  From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From:
  Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=4DW6zz4PQfwnnafjad7Cq8kvJI2oIw8IBi4WqkqG22Q=; b=k1M0tThsVZa3hcnm3GxZKrgn3O
- sGv5nX2VOmIsF+YHZ+yaJyvB4d/SpcPRpqwoyebBv/3RpcZoGckWjvbsfJaR0qDkF54q4T6toh4QQ
- FqZO/e70yhQRoxKz1Po82FO+KAiVGTcVCmsenDjpWVXUbeVwkB0eNRApTcBPUvk/JQQI=;
+ bh=1wD0BJxGwyZKAY/Wvu7wFAcykiSFRb80+fJH1CK2nfg=; b=K74YR6eK4ZZBPyYqbSoWoGhMwa
+ vJbDEGzFf4reAaiFALOPG24ch6ItEz4yCj/V01fWRsm9SCxcTtznnvKifcSR5H7K+NbzmNH2a2jnv
+ WGLKAkrF1P6aRwSGHFOxSKt254DjZdxulpet9yD4JvhAelRbLs9+r9EOEkx9yYG3ktpc=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
  Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:From:Sender:Content-ID
  :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
  Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=4DW6zz4PQfwnnafjad7Cq8kvJI2oIw8IBi4WqkqG22Q=; b=P
- QyXg8FKWVhO7IiZ1sob5jHRfAHqG/3pno47XtnzZ+fJ9ztGnqplUlGnR3uuv+U3VHP8CAklpQl67U
- A5C8sWDHZFRnxlNWyLfpDT92B2wAeDjt7I3WkN/jIZIRMf2PPbTXYs7dIBDsmbr7SiM1w8ye6XRok
- Pb7pZh3udkfLPDMM=;
-Received: from mail-wm2-f12.google.com ([74.125.225.140])
+ List-Owner:List-Archive; bh=1wD0BJxGwyZKAY/Wvu7wFAcykiSFRb80+fJH1CK2nfg=; b=G
+ ETEDpTSqFCNpLtX7bLLIWGp1VOYM5zV15VuqyAJ5JoD7LAWbK5e675KEicaVScJqg57f3kTrDxGMl
+ xoY3FyiQTkxuXfc2VbkHN8OLOQY70P2YQLGsRa7ohk7fBLfcXZ8QLkYUqKlUUsVLxQnJtOaVldThd
+ gVkfJTez0NqSdfjI=;
+Received: from mail-wr2-f35.google.com ([74.125.225.99])
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1x9Xyq-0007qX-41 for openvpn-devel@lists.sourceforge.net;
- Thu, 24 Sep 2026 01:10:34 +0000
-Received: by mail-wm2-f12.google.com with SMTP id
- 5b1f17b1804b1-49b912d391aso10786015e9.2
+ id 1x9Xyr-0007qY-IH for openvpn-devel@lists.sourceforge.net;
+ Thu, 24 Sep 2026 01:10:35 +0000
+Received: by mail-wr2-f35.google.com with SMTP id
+ ffacd0b85a97d-4858bc96fabso1294554f8f.3
  for <openvpn-devel@lists.sourceforge.net>;
- Wed, 23 Sep 2026 18:10:32 -0700 (PDT)
+ Wed, 23 Sep 2026 18:10:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1790212225; x=1790817025; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1790212227; x=1790817027; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
  :to:date:from:from:to:cc:subject:date:message-id:reply-to
- :content-type; bh=4DW6zz4PQfwnnafjad7Cq8kvJI2oIw8IBi4WqkqG22Q=;
- b=I8dBJY4A2AKYaUldU8lm5BPtBRSARyRw7k+0kd/u4nLedDkH6iDscOppMvQUqNssNk
- pMe0yc2XZ50syxYlR9jRreyQTq4H/7dU1VV7D5wae1nycdgJd1In6WTqSWp8c1wSOu/G
- Slw6zvGduVIV4oHf4tdGgr53XDjIVaBqiWX2sY0P4BCpcYdf7Yy31krOuxXjY/uvZKXQ
- njuuDOlx8JmWYOFlQ3GevhjjlqLlnIWoqUV87Pv7bSLfwo4DPN2iDQFDtfk7IlbwaDN6
- H9F75HF61mswDP8/4zF+UCzswJfo3hjpKzqH10/JU7DPbedTcSrtdwJgkVgyG3aWulmm
- 1knw==
+ :content-type; bh=1wD0BJxGwyZKAY/Wvu7wFAcykiSFRb80+fJH1CK2nfg=;
+ b=b/O6itWXbVD+J0PnoaEyWq8dyQSEHUeW13Bps9ja/KBbMIk7DDiYpNUdVnfpA72vvm
+ 2E1UxpCL3S41CwzggfgalPztGaS9qT+sLxYrH37O3jwYZl3PGW/O28C7YOCa2vJYjVza
+ 6YY2t1+LWo/HF43uHp8GsjaRdlpYItZ9jXgEv0dWFgS2lzxyv3WxWX3g1+qYCFNvHGqO
+ NEZvhY1F+TKhKYbOuDrz1ZXGK/Dbxh9uenxtS2a+jEF7U3hM7sPfAEnma89v9KjwKDvv
+ McEnBz+YaY5acSz0dSJ73qzmjIz82lSHdqGBAjuD8aKxkla+WAyW1bW0L49EZfe9COTD
+ APCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1790212225; x=1790817025;
+ d=1e100.net; s=20260707; t=1790212227; x=1790817027;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
  :to:date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
  :message-id:reply-to:content-type;
- bh=4DW6zz4PQfwnnafjad7Cq8kvJI2oIw8IBi4WqkqG22Q=;
- b=HSLN18TqeBs7VpX3QKimVVBXUnwrGyYk7tZg3VZrnt6A+TJgRC0hy7qEqPxgKy7m6n
- 1nhaSF9hGBw1riBcl22RjoMcgHILHi/e562ZxNJOEz5WO7JRvPoMjA9oBFEpQxo3z+/j
- miZneT4tpvFcBMiQ25sMdXgcJbmRLXBmDoN1z/4SUsp6pr1b370ExvcRZCzpRIBA9CBY
- q3zx2I/KIhTw2FNlxfjQSKmTCd2lmGs6Ce8TqdRsqpryDmBnR3zEyQ2inieAtFI+72uh
- bUNy4l1IIWTxGPTP71jO8kBFP1i11QwvOeOfpaSWtrsAXKiowx5F+5YotjDQ8aCIc8aY
- e8Xw==
-X-Gm-Message-State: AFuF++nJCJsy7McXYopPQWd91TqW9PNKume+CaQloB6ugCbnmMpPJrTH
- rHofruxH8R1olHiHEzku8EaFxL5xEqKy4oauE3n4VbEfKEPXbQw//SIz9DK4A0lKu2a4HT5qKU7
- wAMR35iMl9qR7A2+Cny+OxR3A81hci98jL+hojmcOeJpUgr3LKfpYsrqEMZvV098S1A4lDVTyp/
- jhQBKx9A==
-X-Gm-Gg: AYBFou3877/eLcWcZbGbACutBAGRSzisugtFo7IaQhEj+iCJENoxQTbGgumebgTeSfY
- ftbpgr/W+a4Sh6IGIyKwgchgZvpngBxaqvpvyk78wwDnme5actTa3F+0QazVfrRG+1WAoFTpBx0
- 4C6nItCKu/tIq+SfYoUhliuEG2c6CU3n9xpRxT+bzhdw0Nyi+zZIEwvMMgHlXPEHO4vLQvFU8Vf
- IL1VYNuWwsoBBJh6AE1EksVp/vv+QixQUyUhAyaVW7gWOo3F2t2Smxph+ashxUr59+wuKy/64JM
- FFrUR/AiXfhKoN2NSqgAHOMxiXPXBR2p3lo0+XYBLEquZU+sSM6keL/bMxhHERbIy5WGvBC1nCv
- e1DzXeEGMmnE5BXSU3sXsFaRegzW6UsDIs6gUGl6vWuHOiX9k7BQsv2LuXp22emUZJXQ6sH4LVl
- 6ustWUVtEDQ0TsDyKKV78RFayFpGZZ/wcLIOpdBxMTdpqpRIH6BafTAvoHB6nbPML/mDByMyY5r
- oYVPATPyPG7CxCgkY6L595N7Gowgo7oT2MldBfRo0LMJfCYYo0tpNIJ9cDIrM+8b7Mf2VboC6sJ
- 7rdiR6EhoRwQOUsWfxY5SKfGN5W6afKLaiIEQUWP3UyqlNqS9S4PkGpssVTb
-X-Received: by 2002:a05:600c:8b4c:b0:49e:8184:f63b with SMTP id
- 5b1f17b1804b1-49fe66f3a68mr13716435e9.16.1790212225330; 
- Wed, 23 Sep 2026 18:10:25 -0700 (PDT)
+ bh=1wD0BJxGwyZKAY/Wvu7wFAcykiSFRb80+fJH1CK2nfg=;
+ b=d0bIYF0TLgdjuMbsD7wB+YpRJqeCD1L/+vmUtyaP4HQMfboutxVZiuNKLGkkThdhlA
+ l7A2CxCRnMjzpbvgBWU0uMCbYCJacD7G46nR7Xxnf/L9/kcAy3pknNzHO4k3tpKOoSgO
+ IDNk3kYkTrUREkhqotiLwVkoryoQpVoP7T571WZrzo2HUV+wOVH8tpbOY3NPnIc3djSB
+ iBodyYOjo2G5WkYA0E1iHlftQBe080BEdjeHIldcx2w4nBqHy01h5Av3Mc2Zbe7jzHhm
+ PbBFwToiF8HcRw62QTtHuRX4oy8v45C1UmbiMaS910frwudb3bBA/TNPTnvC6E8lkn+k
+ udpg==
+X-Gm-Message-State: AFuF++kChKjOiGmi1G84hTFpS7zQ173Y+h+c0Ab8wdbyHbc/9Z0YEKcv
+ J5Oetm6p6unzxA7z3seRUucbSB2ZX0x19nvjqliwA3sUuixz/FRUNsQX6R3pe+V07Uazo5AwzTu
+ IsHqubZiKgU64TlRZ7sTYRSLHwbV6M3kPCa6Qo7wVkuqQD+GkrPJC7s+PC/PcEEfW4iDfLya1EU
+ e4MpVebA==
+X-Gm-Gg: AYBFou2wTC7YshWFEmmQrWWwgNHUIRwmbvCKt2Xv4XBgTRxxNEQ8gBVj/3Mjo9PxLq6
+ FPJKTbGhqYlth/TmnNyXIJ+qdQv5WVsvgX1EI82htILnX1Kp+D2GedlQgavebbQj/tDN3FwLVOG
+ ivhkSIuDp7cs+F+ZzPOSqExIY/oC1sWzHhhuNIlsB/wllUnzaAHggnpIFPK6n6SIul6v3tFO0En
+ n819WRFffojkSElhN7H4bMFWeTp1hpKXDBp1bUeD0jWyM6wUlZ/AlQt2KcciA659dxmI6VNeZlt
+ Lk4Ul0LaYX96YfQ99RI6tRfodbuXtR60QizQpQ3kxVhDHBt2+8dQwauHAN9xlDXNA+KldwEjpFx
+ RXreuH+1aVO2iTjsxtFzztWVNNkjjnKaYunRzRb6d6xWBNoBLkZqAYhRqSwry/6X+Afhoygfg0c
+ /esTR3s2nGOVx+AJixEwHi07LwHlzykBiVoZUDYwgGt13A7sSVKkf5umtN1GW1Vd2vbd1YkZeYP
+ DilziGkpeJFm4hXjxJPudH3x+m74dtUW5Pkb/P9oGDBeeTvkud3e6TMB4A5kWJvIi9vy6f8/UM/
+ aXHuLlaSt5ukgfT2K2FbFLWljCSdyYxQ6hJNvZypbjJ0yUDhH07j3kedqLqJ
+X-Received: by 2002:a05:6000:98c:b0:488:6548:ff9d with SMTP id
+ ffacd0b85a97d-48872abc6eemr592892f8f.37.1790212226832; 
+ Wed, 23 Sep 2026 18:10:26 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-49fe667ae2fsm23806155e9.13.2026.09.23.18.10.23
+ ffacd0b85a97d-4886848646dsm9643874f8f.10.2026.09.23.18.10.25
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 23 Sep 2026 18:10:24 -0700 (PDT)
+ Wed, 23 Sep 2026 18:10:26 -0700 (PDT)
 X-Google-Original-From: "chugly (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Thu, 24 Sep 2026 01:10:23 +0000
+Date: Thu, 24 Sep 2026 01:10:25 +0000
 To: plaisthos <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newchange
 X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: I9085c55a7efefd31839b00ec8ec9a6f085574dde
-X-Gerrit-Change-Number: 1946
+X-Gerrit-Change-Id: I9e45c0edbd2cb237f27e349f2f9d7d9b8d826690
+X-Gerrit-Change-Number: 1947
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1946?usp=email>
-X-Gerrit-Commit: 472d1fe901e0a0261fd0cf88801d08820cd201a6
-References: <gerrit.1790212215000.I9085c55a7efefd31839b00ec8ec9a6f085574dde@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzkwMjEyMjE1MDAwLkk5MDg1YzU1YTdlZmVmZDMxODM5YjAwZWM4ZWM5YTZmMDg1NTc0ZGRlQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <85aac34a03e36deb1f4eef4d083ca6307aaa2d0c-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1947?usp=email>
+X-Gerrit-Commit: a3cbadf262ff60a37a073fc3ae0c50fb9cc7b509
+References: <gerrit.1790212215000.I9e45c0edbd2cb237f27e349f2f9d7d9b8d826690@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzkwMjEyMjE1MDAwLkk5ZTQ1YzBlZGJkMmNiMjM3ZjI3ZTM0OWYyZjlkN2Q5YjhkODI2NjkwQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <283f750a9dc2b0dd0a74a6352ca925c0a1638995-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.2
-X-Headers-End: 1x9Xyq-0007qX-41
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: tests: add a unit
- test driver for route.c
+X-Headers-End: 1x9Xyr-0007qY-IH
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: route: implement
+ net_gateway_ipv6 for --route-ipv6
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -141,15 +141,15 @@ Reply-To: charlie.vigue@openvpn.com, arne-openvpn@rfc2549.org,
  openvpn-devel@lists.sourceforge.net
 Cc: "chugly \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============2424201747717753787=="
+Content-Type: multipart/mixed; boundary="===============1495976974794351590=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============2424201747717753787==
+--===============1495976974794351590==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="49iyjccEK0c="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="0Xr5l/tTGRE="; charset=UTF-8
 
---49iyjccEK0c=
+--0Xr5l/tTGRE=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
@@ -162,503 +162,486 @@ ike you to do a code review=2E
 Please visit
 
     http://gerrit=2Eopenvpn=2E=
-net/c/openvpn/+/1946?usp=3Demail
+net/c/openvpn/+/1947?usp=3Demail
 
 to review the following change=2E
 
 
 Chang=
-e subject: tests: add a unit test driver for route=2Ec
-=2E=2E=2E=2E=2E=2E=
+e subject: route: implement net_gateway_ipv6 for --route-ipv6
+=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-tests: add a unit test driver f=
-or route=2Ec
+route: implement net_gate=
+way_ipv6 for --route-ipv6
 
-route=2Ec has no unit test coverage at all, so there is nowhe=
-re to put a
-test when touching it=2E  Add a driver and cover the pure helpe=
-rs it
-already exports: the special address predicate, both netmask-to-netbi=
-ts
-conversions, and the IPv6 prefix host-bit masking=2E
+--route has been able to name the system default=
+ gateway symbolically for
+a long time: get_special_addr() resolves net_gate=
+way, vpn_gateway and
+remote_host=2E  --route-ipv6 never gained the equivale=
+nt, so the usual IPv4
+idiom for keeping specific traffic off the tunnel has=
+ no IPv6 counterpart=2E
 
-The two conversion=
-s disagree on a full-length netmask, where
-netmask_to_netbits() reports -1 =
-and netmask_to_netbits2() reports 32=2E
-That is deliberate, callers use the=
- -1 to tell a host route from a
-network route, so pin it down rather than l=
-eave it to be "fixed" later=2E
+The failure is silent and points the wrong way=2E =
+ init_route_ipv6() hands
+the gateway parameter straight to inet_pton(), whi=
+ch rejects
+"net_gateway_ipv6" with a warning and leaves the gateway unset=
+=2E
+add_route_ipv6() then falls back to device =3D tt->actual_name, so a ro=
+ute
+meant to bypass the tunnel is installed through it instead -- the exact=
 
-The platform routing calls and the handful =
-of socket helpers route=2Ec
-references are stubbed in the test itself rathe=
-r than linked in=2E  That
-keeps the dependency list short, and it makes cer=
-tain a test can never
-reach the real routing table=2E
+opposite of what was asked for=2E
 
-Change-Id: I9085c55a=
-7efefd31839b00ec8ec9a6f085574dde
-Signed-off-by: Charlie Vigue <charlie=2Evi=
-gue@openvpn=2Ecom>
+Resolve the name from rl6->ngi6, which =
+init_route_ipv6_list() already
+fills with the system default gateway and ex=
+ports to scripts under this
+very name, and pin the route to that gateway's =
+interface so it leaves the
+host the same way the corresponding IPv4 route d=
+oes=2E  Note this is ngi6
+and not rgi6: the latter is the route towards the=
+ VPN server, which only
+coincides with the default gateway on a singly-home=
+d host=2E  An on-link
+gateway is not a next hop, so only the interface is s=
+et in that case=2E
+
+Cover the three outcomes in route_testdriver: a resolve=
+d gateway, one
+the system could not supply, and an on-link gateway where on=
+ly the
+interface is wanted=2E
+
+This revives the patch originally submitted =
+in 2021 for Trac #1161=2E
+
+Github: OpenVPN/openvpn#1015
+Change-Id: I9e45c0e=
+dbd2cb237f27e349f2f9d7d9b8d826690
+Signed-off-by: Fran=C3=A7ois Kooman <fkoo=
+man@tuxed=2Enet>
+Signed-off-by: Charlie Vigue <charlie=2Evigue@openvpn=2Eco=
+m>
 ---
-M CMakeLists=2Etxt
-M tests/unit_tests/openvpn/Makefi=
-le=2Eam
-A tests/unit_tests/openvpn/test_route=2Ec
-3 files changed, 254 inse=
-rtions(+), 0 deletions(-)
+M src/openvpn/options=2Ec
+M src/openvpn/route=2Ec
+M src/openvpn/rout=
+e=2Eh
+M tests/unit_tests/openvpn/test_route=2Ec
+4 files changed, 183 insert=
+ions(+), 3 deletions(-)
 
 
 
-  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/=
-openvpn refs/changes/46/1946/1
+  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/op=
+envpn refs/changes/47/1947/1
 
-diff --git a/CMakeLists=2Etxt b/CMakeLists=
-=2Etxt
-index 4eda75b=2E=2Ebf4a0de 100644
---- a/CMakeLists=2Etxt
-+++ b/CMake=
-Lists=2Etxt
-@@ -676,6 +676,7 @@
-         "test_packet_id"
-         "test_pk=
-t"
-         "test_provider"
-+        "test_route"
-         "test_socket"
-  =
-       "test_ssl"
-         "test_user_pass"
-@@ -900,6 +901,18 @@
-         s=
-rc/openvpn/base64=2Ec
-         )
+diff --git a/src/openvpn/options=2Ec b/src/op=
+envpn/options=2Ec
+index e899fa6=2E=2E0badd88 100644
+--- a/src/openvpn/optio=
+ns=2Ec
++++ b/src/openvpn/options=2Ec
+@@ -4661,7 +4661,7 @@
+             msg=
+(msglevel, "route-ipv6 parameter network/IP '%s' must be a valid address", =
+p[1]);
+             return false;
+         }
+-        if (p[2] && !ipv6_add=
+r_safe(p[2]))
++        if (p[2] && !ipv6_addr_safe(p[2]) && !ipv6_get_speci=
+al_addr(NULL, p[2], NULL, NULL))
+         {
+             msg(msglevel, "rou=
+te-ipv6 parameter gateway '%s' must be a valid address", p[2]);
+           =
+  return false;
+diff --git a/src/openvpn/route=2Ec b/src/openvpn/route=2Ec
+=
+index 8ea745d=2E=2E23e7e7a 100644
+--- a/src/openvpn/route=2Ec
++++ b/src/ope=
+nvpn/route=2Ec
+@@ -297,6 +297,65 @@
+     return false;
+ }
  
-+    target_link_libraries(test_route PU=
-BLIC ${RESOLV_LIBRARIES})
-+    target_sources(test_route PRIVATE
-+        t=
-ests/unit_tests/openvpn/mock_get_random=2Ec
-+        tests/unit_tests/openv=
-pn/mock_management=2Ec
-+        tests/unit_tests/openvpn/mock_win32_execve=
-=2Ec
-+        src/openvpn/env_set=2Ec
-+        src/openvpn/otime=2Ec
++/**
++ * Resolv=
+e the special IPv6 gateway name "net_gateway_ipv6"=2E
++ *
++ * The IPv6 coun=
+terpart of get_special_addr(), which handles the IPv4 names=2E
++ * There is=
+ currently only one special IPv6 name=2E
++ *
++ * @param rl        route lis=
+t carrying the system default gateway in ngi6
++ *                  (not rgi=
+6, which is the route towards the VPN server), or
++ *                  NULL=
+ to merely test whether @p string names a special
++ *                  addr=
+ess (used when validating options, where no route
++ *                  list=
+ exists yet)
++ * @param string    the --route-ipv6 gateway parameter to exa=
+mine
++ * @param out       receives the resolved gateway; only written when =
+@p rl is
++ *                  given and the system gateway is known
++ * @pa=
+ram status    set to false if @p string names a special address that
++ *   =
+               could not be resolved, so the caller can reject the route;
++=
+ *                  set to true otherwise=2E May be NULL=2E
++ *
++ * @return=
+ true if @p string is a special address name, in which case the
++ *        =
+ caller must not parse it as a literal address; false otherwise=2E
++ */
++bo=
+ol
++ipv6_get_special_addr(const struct route_ipv6_list *rl, const char *str=
+ing, struct in6_addr *out,
++                      bool *status)
++{
++    if =
+(status)
++    {
++        *status =3D true;
++    }
++
++    if (strcmp(string,=
+ "net_gateway_ipv6") !=3D 0)
++    {
++        return false;
++    }
++
++    if=
+ (rl)
++    {
++        if (rl->ngi6=2Eflags & RGI_ADDR_DEFINED)
++        {
++=
+            /* an on-link gateway is not a next hop, the interface is
++    =
+         * enough -- leave *out unspecified in that case */
++            if=
+ (!(rl->ngi6=2Eflags & RGI_ON_LINK))
++            {
++                *out =
+=3D rl->ngi6=2Egateway=2Eaddr_ipv6;
++            }
++        }
++        else=
+
++        {
++            msg(M_INFO, PACKAGE_NAME " ROUTE: net_gateway_ipv6=
+ undefined -- unable to get default "
++                                    =
+ "gateway from system");
++            if (status)
++            {
++         =
+       *status =3D false;
++            }
++        }
++    }
++    return true=
+;
++}
++
+ bool
+ is_special_addr(const char *addr_str)
+ {
+@@ -435,7 +494,7 @@
+=
+ 
+ static bool
+ init_route_ipv6(struct route_ipv6 *r6, const struct route_i=
+pv6_option *r6o,
+-                const struct route_ipv6_list *rl6)
 +     =
-   src/openvpn/route=2Ec
-+        src/openvpn/run_command=2Ec
-+        src/=
-openvpn/socket_util=2Ec
-+        )
+           struct route_ipv6_list *rl6)
+ {
+     CLEAR(*r6);
+ 
+@@ -447,7 +50=
+6,26 @@
+     /* gateway */
+     if (is_route_parm_defined(r6o->gateway))
+  =
+   {
+-        if (inet_pton(AF_INET6, r6o->gateway, &r6->gateway) !=3D 1)
++=
+        bool status =3D true;
 +
-     target_link_libraries(test_socket=
- PUBLIC ${RESOLV_LIBRARIES})
-     target_sources(test_socket PRIVATE
-      =
-   tests/unit_tests/openvpn/mock_get_random=2Ec
-diff --git a/tests/unit_tes=
-ts/openvpn/Makefile=2Eam b/tests/unit_tests/openvpn/Makefile=2Eam
-index f2c=
-7a0d=2E=2Eeb1ff52 100644
---- a/tests/unit_tests/openvpn/Makefile=2Eam
-+++ b=
-/tests/unit_tests/openvpn/Makefile=2Eam
-@@ -19,6 +19,7 @@
- 	pkt_testdriver =
-\
- 	provider_testdriver \
- 	push_update_msg_testdriver \
-+	route_testdriver=
- \
- 	socket_testdriver \
- 	ssl_testdriver \
- 	user_pass_testdriver
-@@ -420,=
-3 +421,18 @@
- 	$(top_srcdir)/src/openvpn/env_set=2Ec \
- 	$(top_srcdir)/src/=
-openvpn/run_command=2Ec \
- 	$(top_srcdir)/src/openvpn/socket_util=2Ec
-+
-+ro=
-ute_testdriver_CFLAGS  =3D -I$(top_srcdir)/src/openvpn -I$(top_srcdir)/src/=
-compat @TEST_CFLAGS@
-+route_testdriver_LDFLAGS =3D @TEST_LDFLAGS@ -L$(top_s=
-rcdir)/src/openvpn
-+route_testdriver_SOURCES =3D test_route=2Ec \
-+	mock_ms=
-g=2Ec test_common=2Eh \
-+	mock_get_random=2Ec \
-+	mock_management=2Ec \
-+	$=
-(top_srcdir)/src/openvpn/route=2Ec \
-+	$(top_srcdir)/src/openvpn/buffer=2Ec=
- \
-+	$(top_srcdir)/src/openvpn/env_set=2Ec \
-+	$(top_srcdir)/src/openvpn/ot=
-ime=2Ec \
-+	$(top_srcdir)/src/openvpn/platform=2Ec \
-+	$(top_srcdir)/src/op=
-envpn/run_command=2Ec \
-+	$(top_srcdir)/src/openvpn/socket_util=2Ec \
-+	$(t=
-op_srcdir)/src/openvpn/win32-util=2Ec
-diff --git a/tests/unit_tests/openvpn=
-/test_route=2Ec b/tests/unit_tests/openvpn/test_route=2Ec
-new file mode 100=
-644
-index 0000000=2E=2Edb039c1
---- /dev/null
-+++ b/tests/unit_tests/openvpn=
-/test_route=2Ec
-@@ -0,0 +1,225 @@
-+/*
-+ *  OpenVPN -- An application to sec=
-urely tunnel IP networks
-+ *             over a single UDP port, with suppo=
-rt for SSL/TLS-based
-+ *             session authentication and key exchang=
-e,
-+ *             packet encryption, packet authentication, and
-+ *       =
-      packet compression=2E
-+ *
-+ *  Copyright (C) 2002-2026 OpenVPN Inc <s=
-ales@openvpn=2Enet>
-+ *
-+ *  This program is free software; you can redistr=
-ibute it and/or modify
-+ *  it under the terms of the GNU General Public Li=
-cense version 2
-+ *  as published by the Free Software Foundation=2E
-+ *
-+ =
-*  This program is distributed in the hope that it will be useful,
-+ *  but=
- WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTAB=
-ILITY or FITNESS FOR A PARTICULAR PURPOSE=2E  See the
-+ *  GNU General Publ=
-ic License for more details=2E
-+ *
-+ *  You should have received a copy of =
-the GNU General Public License along
-+ *  with this program; if not, see <h=
-ttps://www=2Egnu=2Eorg/licenses/>=2E
-+ */
-+
-+#ifdef HAVE_CONFIG_H
-+#include=
- "config=2Eh"
-+#endif
-+
-+#include "syshead=2Eh"
-+
-+#include "test_common=2E=
-h"
-+
-+#include "route=2Eh"
-+#include "networking=2Eh"
-+
-+/* Stubs for funct=
-ions route=2Ec references but that no test here reaches=2E
-+ * They assert =
-rather than return quietly, so a test straying onto one
-+ * fails loudly in=
-stead of silently doing nothing=2E
-+ */
-+struct argv
-+argv_new(void)
-+{
++        if (ipv6_get_special_addr(rl6, r6o=
+->gateway, &r6->gateway, &status))
++        {
++            if (!status)
 +  =
-  assert_true(0);
-+    struct argv a =3D { 0 };
-+    return a;
-+}
-+
-+void
-+=
-argv_free(struct argv *a)
-+{
-+    assert_true(0);
-+}
-+
-+bool
-+get_ipv6_addr=
-(const char *prefix_str, struct in6_addr *network, unsigned int *netbits,
-+=
-              msglvl_t msglevel)
-+{
-+    assert_true(0);
-+    return false;=
-
-+}
-+
-+in_addr_t
-+getaddr(unsigned int flags, const char *hostname, int res=
-olve_retry, bool *succeeded,
-+        struct signal_info *sig_info)
-+{
-+   =
- assert_true(0);
-+    return 0;
-+}
-+
-+/* The routing table is never touched=
- by these tests; stub the platform
-+ * layer out so that a mistake cannot r=
-each the system routing table=2E
-+ */
-+int
-+net_route_v4_add(openvpn_net_ct=
-x_t *ctx, const in_addr_t *dst, int prefixlen, const in_addr_t *gw,
-+      =
-           const openvpn_net_iface_t *iface, uint32_t table, int metric)
-+{=
-
-+    assert_true(0);
-+    return -1;
-+}
-+
-+int
-+net_route_v6_add(openvpn_n=
-et_ctx_t *ctx, const struct in6_addr *dst, int prefixlen,
-+                =
- const struct in6_addr *gw, const openvpn_net_iface_t *iface, uint32_t tabl=
-e,
-+                 int metric)
-+{
-+    assert_true(0);
-+    return -1;
-+}=
-
-+
-+int
-+net_route_v4_del(openvpn_net_ctx_t *ctx, const in_addr_t *dst, int=
- prefixlen, const in_addr_t *gw,
-+                 const openvpn_net_iface_=
-t *iface, uint32_t table, int metric)
-+{
-+    assert_true(0);
-+    return -=
-1;
-+}
-+
-+int
-+net_route_v6_del(openvpn_net_ctx_t *ctx, const struct in6_add=
-r *dst, int prefixlen,
-+                 const struct in6_addr *gw, const o=
-penvpn_net_iface_t *iface, uint32_t table,
-+                 int metric)
-+{=
-
-+    assert_true(0);
-+    return -1;
-+}
-+
-+int
-+net_route_v4_best_gw(openv=
-pn_net_ctx_t *ctx, const in_addr_t *dst, in_addr_t *best_gw,
+          {
++                goto fail;
++            }
++            /* the =
+route has to leave via the interface the system gateway
++             * is =
+on, otherwise it would be sent down the tunnel */
++            if (rl6->ngi=
+6=2Eflags & RGI_IFACE_DEFINED)
++            {
++#ifdef _WIN32
 +             =
-        openvpn_net_iface_t *best_iface)
+   r6->adapter_index =3D rl6->ngi6=2Eadapter_index;
++#else
++               =
+ r6->iface =3D rl6->ngi6=2Eiface;
++#endif
++            }
++        }
++      =
+  else if (inet_pton(AF_INET6, r6o->gateway, &r6->gateway) !=3D 1)
+        =
+ {
+             msg(M_WARN, PACKAGE_NAME "ROUTE6: cannot parse gateway spec=
+ '%s'", r6o->gateway);
+         }
+diff --git a/src/openvpn/route=2Eh b/src/=
+openvpn/route=2Eh
+index 88107e9=2E=2E90e3ad2 100644
+--- a/src/openvpn/route=
+=2Eh
++++ b/src/openvpn/route=2Eh
+@@ -345,6 +345,8 @@
+ void setenv_routes_ip=
+v6(struct env_set *es, const struct route_ipv6_list *rl6);
+ 
+ bool is_speci=
+al_addr(const char *addr_str);
++bool ipv6_get_special_addr(const struct rou=
+te_ipv6_list *rl, const char *string,
++                           struct in=
+6_addr *out, bool *status);
+ 
+ /**
+  * @brief Retrieves the best gateway fo=
+r a given destination based on the routing table=2E
+diff --git a/tests/unit=
+_tests/openvpn/test_route=2Ec b/tests/unit_tests/openvpn/test_route=2Ec
+ind=
+ex db039c1=2E=2Ebfcccb8 100644
+--- a/tests/unit_tests/openvpn/test_route=2E=
+c
++++ b/tests/unit_tests/openvpn/test_route=2Ec
+@@ -31,6 +31,10 @@
+ #includ=
+e "route=2Eh"
+ #include "networking=2Eh"
+ 
++/* the system default IPv6 gate=
+way, and the route towards the peer */
++#define NET_GATEWAY6  "2001:db8:1::=
+1"
++#define PEER_GATEWAY6 "2001:db8:2::1"
++
+ /* Stubs for functions route=
+=2Ec references but that no test here reaches=2E
+  * They assert rather tha=
+n return quietly, so a test straying onto one
+  * fails loudly instead of s=
+ilently doing nothing=2E
+@@ -210,11 +214,107 @@
+     assert_clear_host_bits=
+("2001:db8::1", 0, "::");
+ }
+ 
++/* Set up a route list where the system def=
+ault gateway (ngi6) and the
++ * route towards the peer (rgi6) are different=
+, so a test can tell which
++ * one an answer came from=2E
++ */
++static void=
+
++init_test_route_ipv6_list(struct route_ipv6_list *rl6, unsigned int ngi6_=
+flags)
 +{
-+    assert_true(0);
-+    retur=
-n -1;
-+}
++    CLEAR(*rl6);
 +
-+int
-+net_route_v6_best_gw(openvpn_net_ctx_t *ctx, const struct =
-in6_addr *dst, struct in6_addr *best_gw,
-+                     openvpn_net_=
-iface_t *best_iface)
-+{
-+    assert_true(0);
-+    return -1;
-+}
++    assert_int_equal(inet_pton(AF_INET6, NET=
+_GATEWAY6, &rl6->ngi6=2Egateway=2Eaddr_ipv6), 1);
++    rl6->ngi6=2Eflags =
+=3D ngi6_flags;
 +
-+struct s=
-ignal_info siginfo_static; /* GLOBAL */
-+
-+int
-+signal_reset(struct signal_=
-info *si, int signum)
-+{
-+    assert_true(0);
-+    return 0;
-+}
-+
-+static v=
-oid
-+test_is_special_addr(void **state)
-+{
-+    assert_true(is_special_addr=
-("net_gateway"));
-+    assert_true(is_special_addr("vpn_gateway"));
-+    as=
-sert_true(is_special_addr("remote_host"));
-+
-+    assert_false(is_special_a=
-ddr("10=2E0=2E0=2E1"));
-+    assert_false(is_special_addr("default"));
-+   =
- assert_false(is_special_addr(NULL));
++    assert_int_equal(inet_pton(AF_INET6, PEER_GATEWAY6, =
+&rl6->rgi6=2Egateway=2Eaddr_ipv6), 1);
++    rl6->rgi6=2Eflags =3D RGI_ADDR_=
+DEFINED;
 +}
 +
 +static void
-+test_netmask_to_ne=
-tbits(void **state)
++test_ipv6_get_special_addr_resolves(void **stat=
+e)
 +{
-+    int netbits;
++    struct route_ipv6_list rl6;
++    struct in6_addr out, expect;
++ =
+   bool status =3D false;
 +
-+    assert_true(netmask_to_netb=
-its(0x0a000000, 0xff000000, &netbits)); /* 10/8 */
-+    assert_int_equal(ne=
-tbits, 8);
++    init_test_route_ipv6_list(&rl6, RGI_ADDR_D=
+EFINED);
++    CLEAR(out);
 +
-+    assert_true(netmask_to_netbits(0xc0a80100, 0xffffff00, &n=
-etbits)); /* 192=2E168=2E1/24 */
-+    assert_int_equal(netbits, 24);
++    assert_true(ipv6_get_special_addr(&rl6, "n=
+et_gateway_ipv6", &out, &status));
++    assert_true(status);
 +
-+   =
- assert_true(netmask_to_netbits(0x00000000, 0x00000000, &netbits)); /* defa=
-ult route */
-+    assert_int_equal(netbits, 0);
++    /* the =
+system default gateway, not the route towards the peer */
++    assert_int_e=
+qual(inet_pton(AF_INET6, NET_GATEWAY6, &expect), 1);
++    assert_memory_equ=
+al(&out, &expect, sizeof(out));
++}
 +
-+    /* a full-length mas=
-k reports -1 rather than 32, which is what callers
-+     * use to tell "hos=
-t route" from "network route"
++static void
++test_ipv6_get_special_ad=
+dr_not_special(void **state)
++{
++    struct route_ipv6_list rl6;
++    struc=
+t in6_addr out;
++    bool status =3D false;
++
++    init_test_route_ipv6_lis=
+t(&rl6, RGI_ADDR_DEFINED);
++    CLEAR(out);
++
++    assert_false(ipv6_get_sp=
+ecial_addr(&rl6, "2001:db8::1", &out, &status));
++    assert_true(IN6_IS_AD=
+DR_UNSPECIFIED(&out));
++
++    /* the IPv4 names are not IPv6 names */
++    =
+assert_false(ipv6_get_special_addr(&rl6, "net_gateway", &out, &status));
++
+=
++    /* a caller with no route list only learns whether the name is special=
+ */
++    assert_true(ipv6_get_special_addr(NULL, "net_gateway_ipv6", NULL, =
+NULL));
++    assert_false(ipv6_get_special_addr(NULL, "2001:db8::1", NULL, =
+NULL));
++}
++
++static void
++test_ipv6_get_special_addr_undefined(void **stat=
+e)
++{
++    struct route_ipv6_list rl6;
++    struct in6_addr out;
++    bool =
+status =3D true;
++
++    /* no IPv6 default gateway on this system */
++    i=
+nit_test_route_ipv6_list(&rl6, 0);
++    CLEAR(out);
++
++    /* still a speci=
+al name, but one that could not be resolved, so the
++     * caller must rej=
+ect the route rather than install it via the tunnel
 +     */
-+    assert_true(netmask_to_netbits(=
-0x0a010203, 0xffffffff, &netbits));
-+    assert_int_equal(netbits, -1);
++    assert_tr=
+ue(ipv6_get_special_addr(&rl6, "net_gateway_ipv6", &out, &status));
++    as=
+sert_false(status);
++    assert_true(IN6_IS_ADDR_UNSPECIFIED(&out));
++}
 +
 +=
-    /* host bits set in the network part */
-+    assert_false(netmask_to_ne=
-tbits(0x0a000001, 0xff000000, &netbits));
+static void
++test_ipv6_get_special_addr_on_link(void **state)
++{
++    struc=
+t route_ipv6_list rl6;
++    struct in6_addr out;
++    bool status =3D false=
+;
 +
-+    /* not a contiguous netmas=
-k */
-+    assert_false(netmask_to_netbits(0x0a000000, 0xff00ff00, &netbits)=
-);
++    init_test_route_ipv6_list(&rl6, RGI_ADDR_DEFINED | RGI_ON_LINK);
++=
+    CLEAR(out);
++
++    /* an on-link gateway is not a next hop: the name re=
+solves, but no
++     * gateway address is handed back
++     */
++    assert_=
+true(ipv6_get_special_addr(&rl6, "net_gateway_ipv6", &out, &status));
++    =
+assert_true(status);
++    assert_true(IN6_IS_ADDR_UNSPECIFIED(&out));
 +}
 +
-+static void
-+test_netmask_to_netbits2(void **state)
-+{
-+    assert=
-_int_equal(netmask_to_netbits2(0xff000000), 8);
-+    assert_int_equal(netma=
-sk_to_netbits2(0xffffff00), 24);
-+    assert_int_equal(netmask_to_netbits2(=
-0x00000000), 0);
-+
-+    /* unlike netmask_to_netbits(), this one reports a =
-full-length mask as 32 */
-+    assert_int_equal(netmask_to_netbits2(0xfffff=
-fff), 32);
-+
-+    assert_int_equal(netmask_to_netbits2(0xff00ff00), -1);
-+}=
-
-+
-+static void
-+assert_clear_host_bits(const char *addr, unsigned int netb=
-its, const char *expected)
-+{
-+    struct route_ipv6 r6;
-+    struct in6_ad=
-dr want;
-+
-+    CLEAR(r6);
-+    assert_int_equal(inet_pton(AF_INET6, addr, =
-&r6=2Enetwork), 1);
-+    assert_int_equal(inet_pton(AF_INET6, expected, &wa=
-nt), 1);
-+    r6=2Enetbits =3D netbits;
-+
-+    route_ipv6_clear_host_bits(&=
-r6);
-+    assert_memory_equal(&r6=2Enetwork, &want, sizeof(struct in6_addr)=
-);
-+}
-+
-+static void
-+test_route_ipv6_clear_host_bits(void **state)
-+{
-+   =
- /* whole bytes cleared */
-+    assert_clear_host_bits("2001:db8::1", 64, "=
-2001:db8::");
-+    assert_clear_host_bits("2001:db8:dead:beef::1", 32, "200=
-1:db8::");
-+
-+    /* a prefix that does not fall on a byte boundary */
-+   =
- assert_clear_host_bits("2001:db8:0:00ff::1", 60, "2001:db8:0:00f0::");
-+  =
-  assert_clear_host_bits("2001:db8::ffff", 121, "2001:db8::ff80");
-+
-+    /=
-* nothing to clear, and everything to clear */
-+    assert_clear_host_bits(=
-"2001:db8::1", 128, "2001:db8::1");
-+    assert_clear_host_bits("2001:db8::=
-1", 0, "::");
-+}
-+
-+const struct CMUnitTest route_tests[] =3D {
-+    cmocka=
-_unit_test(test_is_special_addr),
-+    cmocka_unit_test(test_netmask_to_net=
-bits),
-+    cmocka_unit_test(test_netmask_to_netbits2),
-+    cmocka_unit_te=
-st(test_route_ipv6_clear_host_bits),
-+};
-+
-+int
-+main(void)
-+{
-+    openvpn=
-_unit_test_setup();
-+    return cmocka_run_group_tests(route_tests, NULL, N=
-ULL);
-+}
+=
+ const struct CMUnitTest route_tests[] =3D {
+     cmocka_unit_test(test_is_=
+special_addr),
+     cmocka_unit_test(test_netmask_to_netbits),
+     cmocka_=
+unit_test(test_netmask_to_netbits2),
+     cmocka_unit_test(test_route_ipv6_=
+clear_host_bits),
++    cmocka_unit_test(test_ipv6_get_special_addr_resolves=
+),
++    cmocka_unit_test(test_ipv6_get_special_addr_not_special),
++    cmoc=
+ka_unit_test(test_ipv6_get_special_addr_undefined),
++    cmocka_unit_test(t=
+est_ipv6_get_special_addr_on_link),
+ };
+ 
+ int
 
 -- 
-To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1946=
-?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http:/=
-/gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+To view, visit http://g=
+errit=2Eopenvpn=2Enet/c/openvpn/+/1947?usp=3Demail
+To unsubscribe, or for h=
+elp writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=
+=3Demail
 
-Gerrit-MessageType: newchange=
-
+Gerrit-MessageType: newchange
 Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I9085c55a7=
-efefd31839b00ec8ec9a6f085574dde
-Gerrit-Change-Number: 1946
-Gerrit-PatchSet:=
- 1
-Gerrit-Owner: chugly <charlie=2Evigue@openvpn=2Ecom>
-Gerrit-Reviewer: pl=
-aisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-CC: openvpn-devel <openvpn-deve=
-l@lists=2Esourceforge=2Enet>
-Gerrit-Attention: plaisthos <arne-openvpn@rfc2=
-549=2Eorg>
+Gerrit-Bran=
+ch: master
+Gerrit-Change-Id: I9e45c0edbd2cb237f27e349f2f9d7d9b8d826690
+Gerr=
+it-Change-Number: 1947
+Gerrit-PatchSet: 1
+Gerrit-Owner: chugly <charlie=2Ev=
+igue@openvpn=2Ecom>
+Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eorg>=
 
---49iyjccEK0c=
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-=
+Attention: plaisthos <arne-openvpn@rfc2549=2Eorg>
+
+--0Xr5l/tTGRE=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
@@ -667,388 +650,354 @@ rently required from: plaisthos=2E </p>
 <p>chugly would like plaisthos to <=
 strong>review</strong> this change=2E
 </p><p><a href=3D"http://gerrit=2Eope=
-nvpn=2Enet/c/openvpn/+/1946?usp=3Demail">View Change</a></p><pre class=3D"b=
-locks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">t=
-ests: add a unit test driver for route=2Ec<br><br>route=2Ec has no unit tes=
-t coverage at all, so there is nowhere to put a<br>test when touching it=2E=
-  Add a driver and cover the pure helpers it<br>already exports: the specia=
-l address predicate, both netmask-to-netbits<br>conversions, and the IPv6 p=
-refix host-bit masking=2E<br><br>The two conversions disagree on a full-len=
-gth netmask, where<br>netmask_to_netbits() reports -1 and netmask_to_netbit=
-s2() reports 32=2E<br>That is deliberate, callers use the -1 to tell a host=
- route from a<br>network route, so pin it down rather than leave it to be &=
-quot;fixed&quot; later=2E<br><br>The platform routing calls and the handful=
- of socket helpers route=2Ec<br>references are stubbed in the test itself r=
-ather than linked in=2E  That<br>keeps the dependency list short, and it ma=
-kes certain a test can never<br>reach the real routing table=2E<br><br>Chan=
-ge-Id: I9085c55a7efefd31839b00ec8ec9a6f085574dde<br>Signed-off-by: Charlie =
-Vigue &lt;charlie=2Evigue@openvpn=2Ecom&gt;<br>---<br>M CMakeLists=2Etxt<br=
->M tests/unit_tests/openvpn/Makefile=2Eam<br>A tests/unit_tests/openvpn/tes=
-t_route=2Ec<br>3 files changed, 254 insertions(+), 0 deletions(-)<br><br></=
-pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-=
-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/=
-changes/46/1946/1</pre><pre style=3D"font-family: monospace,monospace; whit=
-e-space: pre-wrap;"><span>diff --git a/CMakeLists=2Etxt b/CMakeLists=2Etxt<=
-/span><br><span>index 4eda75b=2E=2Ebf4a0de 100644</span><br><span>--- a/CMa=
-keLists=2Etxt</span><br><span>+++ b/CMakeLists=2Etxt</span><br><span>@@ -67=
-6,6 +676,7 @@</span><br><span>         &quot;test_packet_id&quot;</span><br=
-><span>         &quot;test_pkt&quot;</span><br><span>         &quot;test_pr=
-ovider&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- &quot;test_route&quot;</span><br><span>         &quot;test_socket&quot;</s=
-pan><br><span>         &quot;test_ssl&quot;</span><br><span>         &quot;=
-test_user_pass&quot;</span><br><span>@@ -900,6 +901,18 @@</span><br><span> =
-        src/openvpn/base64=2Ec</span><br><span>         )</span><br><span> =
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    target_link_lib=
-raries(test_route PUBLIC ${RESOLV_LIBRARIES})</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    target_sources(test_route PRIVATE</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        tests/unit_tests/openvp=
-n/mock_get_random=2Ec</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        tests/unit_tests/openvpn/mock_management=2Ec</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        tests/unit_tests/openvpn/mock_wi=
-n32_execve=2Ec</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   src/openvpn/env_set=2Ec</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        src/openvpn/otime=2Ec</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        src/openvpn/route=2Ec</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        src/openvpn/run_command=2Ec</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        src/openvpn/socket_util=
-=2Ec</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        )</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     tar=
-get_link_libraries(test_socket PUBLIC ${RESOLV_LIBRARIES})</span><br><span>=
-     target_sources(test_socket PRIVATE</span><br><span>         tests/unit=
-_tests/openvpn/mock_get_random=2Ec</span><br><span>diff --git a/tests/unit_=
-tests/openvpn/Makefile=2Eam b/tests/unit_tests/openvpn/Makefile=2Eam</span>=
-<br><span>index f2c7a0d=2E=2Eeb1ff52 100644</span><br><span>--- a/tests/uni=
-t_tests/openvpn/Makefile=2Eam</span><br><span>+++ b/tests/unit_tests/openvp=
-n/Makefile=2Eam</span><br><span>@@ -19,6 +19,7 @@</span><br><span> 	pkt_tes=
-tdriver \</span><br><span> 	provider_testdriver \</span><br><span> 	push_up=
-date_msg_testdriver \</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+	route_testdriver \</span><br><span> 	socket_testdriver \</span><br><span=
-> 	ssl_testdriver \</span><br><span> 	user_pass_testdriver</span><br><span>=
-@@ -420,3 +421,18 @@</span><br><span> 	$(top_srcdir)/src/openvpn/env_set=2E=
-c \</span><br><span> 	$(top_srcdir)/src/openvpn/run_command=2Ec \</span><br=
-><span> 	$(top_srcdir)/src/openvpn/socket_util=2Ec</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+route_testdriver_CFLAGS  =3D -I$(top_srcdir)/src/openvpn -I$(to=
-p_srcdir)/src/compat @TEST_CFLAGS@</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+route_testdriver_LDFLAGS =3D @TEST_LDFLAGS@ -L$(top_srcdir)/=
-src/openvpn</span><br><span style=3D"color: hsl(120, 100%, 40%);">+route_te=
-stdriver_SOURCES =3D test_route=2Ec \</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+	mock_msg=2Ec test_common=2Eh \</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+	mock_get_random=2Ec \</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+	mock_management=2Ec \</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/route=2Ec \=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/=
-openvpn/buffer=2Ec \</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+	$(top_srcdir)/src/openvpn/env_set=2Ec \</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/otime=2Ec \</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/platfor=
-m=2Ec \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdi=
-r)/src/openvpn/run_command=2Ec \</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+	$(top_srcdir)/src/openvpn/socket_util=2Ec \</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/win32-util=
-=2Ec</span><br><span>diff --git a/tests/unit_tests/openvpn/test_route=2Ec b=
-/tests/unit_tests/openvpn/test_route=2Ec</span><br><span>new file mode 1006=
-44</span><br><span>index 0000000=2E=2Edb039c1</span><br><span>--- /dev/null=
-</span><br><span>+++ b/tests/unit_tests/openvpn/test_route=2Ec</span><br><s=
-pan>@@ -0,0 +1,225 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  OpenVPN -- =
-An application to securely tunnel IP networks</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+ *             over a single UDP port, with suppo=
-rt for SSL/TLS-based</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ *             session authentication and key exchange,</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+ *             packet encryption, pack=
-et authentication, and</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+ *             packet compression=2E</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+ *  Copyright (C) 2002-2026 OpenVPN Inc &lt;sales@openvpn=2Enet&gt;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *  This program is free software; you ca=
-n redistribute it and/or modify</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+ *  it under the terms of the GNU General Public License versio=
-n 2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  as published=
- by the Free Software Foundation=2E</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-*  This program is distributed in the hope that it will be useful,</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY=
-; without even the implied warranty of</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE=
-=2E  See the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  GNU=
- General Public License for more details=2E</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+ *  You should have received a copy of the GNU General Public Licens=
-e along</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  with thi=
-s program; if not, see &lt;https://www=2Egnu=2Eorg/licenses/&gt;=2E</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#ifdef HAVE_CONFIG_H</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+#include &quot;config=2Eh&quot;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#inc=
-lude &quot;syshead=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &=
-quot;test_common=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &qu=
-ot;route=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
-include &quot;networking=2Eh&quot;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* S=
-tubs for functions route=2Ec references but that no test here reaches=2E</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ * They assert rather =
-than return quietly, so a test straying onto one</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+ * fails loudly instead of silently doing noth=
-ing=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+struct argv</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+argv_new(void)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    assert_true(0);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    struct argv a =3D { 0 };</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    return a;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+argv_free(struct argv *a)</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    assert_true(0);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+get_ipv6_addr(const ch=
-ar *prefix_str, struct in6_addr *network, unsigned int *netbits,</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+              msglvl_t msgleve=
-l)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    assert_true(0);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    return false;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+in_addr_t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+getaddr(u=
-nsigned int flags, const char *hostname, int resolve_retry, bool *succeeded=
-,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        struct sig=
-nal_info *sig_info)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(0)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return 0;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+/* The routing table is never touched by these tests; stub t=
-he platform</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * layer=
- out so that a mistake cannot reach the system routing table=2E</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+int</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+net_route_v4_add(openvpn_net_ctx_t *ctx, const in_addr_t *dst, =
-int prefixlen, const in_addr_t *gw,</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+                 const openvpn_net_iface_t *iface, uint32_t=
- table, int metric)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(0)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return -1;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+n=
-et_route_v6_add(openvpn_net_ctx_t *ctx, const struct in6_addr *dst, int pre=
-fixlen,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-     const struct in6_addr *gw, const openvpn_net_iface_t *iface, uint32_t =
-table,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
-    int metric)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(0);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    return -1;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+net_r=
-oute_v4_del(openvpn_net_ctx_t *ctx, const in_addr_t *dst, int prefixlen, co=
-nst in_addr_t *gw,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-                const openvpn_net_iface_t *iface, uint32_t table, int metri=
-c)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    assert_true(0);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    return -1;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+in=
-t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+net_route_v6_del(o=
-penvpn_net_ctx_t *ctx, const struct in6_addr *dst, int prefixlen,</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+                 const struct=
- in6_addr *gw, const openvpn_net_iface_t *iface, uint32_t table,</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+                 int metric)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    assert_true(0);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    return -1;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+net_route_v4_best_gw(o=
-penvpn_net_ctx_t *ctx, const in_addr_t *dst, in_addr_t *best_gw,</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+                     openvpn_n=
-et_iface_t *best_iface)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_tru=
-e(0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return -1;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+net_route_v6_best_gw(openvpn_net_ctx_t *ctx, const struct in6_addr *dst,=
- struct in6_addr *best_gw,</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+                     openvpn_net_iface_t *best_iface)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    assert_true(0);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    return -1;</span><br><span style=3D"color: hsl(1=
+nvpn=2Enet/c/openvpn/+/1947?usp=3Demail">View Change</a></p><pre class=3D"b=
+locks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">r=
+oute: implement net_gateway_ipv6 for --route-ipv6<br><br>--route has been a=
+ble to name the system default gateway symbolically for<br>a long time: get=
+_special_addr() resolves net_gateway, vpn_gateway and<br>remote_host=2E  --=
+route-ipv6 never gained the equivalent, so the usual IPv4<br>idiom for keep=
+ing specific traffic off the tunnel has no IPv6 counterpart=2E<br><br>The f=
+ailure is silent and points the wrong way=2E  init_route_ipv6() hands<br>th=
+e gateway parameter straight to inet_pton(), which rejects<br>&quot;net_gat=
+eway_ipv6&quot; with a warning and leaves the gateway unset=2E<br>add_route=
+_ipv6() then falls back to device =3D tt-&gt;actual_name, so a route<br>mea=
+nt to bypass the tunnel is installed through it instead -- the exact<br>opp=
+osite of what was asked for=2E<br><br>Resolve the name from rl6-&gt;ngi6, w=
+hich init_route_ipv6_list() already<br>fills with the system default gatewa=
+y and exports to scripts under this<br>very name, and pin the route to that=
+ gateway&#39;s interface so it leaves the<br>host the same way the correspo=
+nding IPv4 route does=2E  Note this is ngi6<br>and not rgi6: the latter is =
+the route towards the VPN server, which only<br>coincides with the default =
+gateway on a singly-homed host=2E  An on-link<br>gateway is not a next hop,=
+ so only the interface is set in that case=2E<br><br>Cover the three outcom=
+es in route_testdriver: a resolved gateway, one<br>the system could not sup=
+ply, and an on-link gateway where only the<br>interface is wanted=2E<br><br=
+>This revives the patch originally submitted in 2021 for Trac #1161=2E<br><=
+br>Github: OpenVPN/openvpn#1015<br>Change-Id: I9e45c0edbd2cb237f27e349f2f9d=
+7d9b8d826690<br>Signed-off-by: Fran=C3=A7ois Kooman &lt;fkooman@tuxed=2Enet=
+&gt;<br>Signed-off-by: Charlie Vigue &lt;charlie=2Evigue@openvpn=2Ecom&gt;<=
+br>---<br>M src/openvpn/options=2Ec<br>M src/openvpn/route=2Ec<br>M src/ope=
+nvpn/route=2Eh<br>M tests/unit_tests/openvpn/test_route=2Ec<br>4 files chan=
+ged, 183 insertions(+), 3 deletions(-)<br><br></pre><pre class=3D"blocks" s=
+tyle=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull =
+ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/47/1947/1</pre><pre=
+ style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>d=
+iff --git a/src/openvpn/options=2Ec b/src/openvpn/options=2Ec</span><br><sp=
+an>index e899fa6=2E=2E0badd88 100644</span><br><span>--- a/src/openvpn/opti=
+ons=2Ec</span><br><span>+++ b/src/openvpn/options=2Ec</span><br><span>@@ -4=
+661,7 +4661,7 @@</span><br><span>             msg(msglevel, &quot;route-ipv=
+6 parameter network/IP &#39;%s&#39; must be a valid address&quot;, p[1]);</=
+span><br><span>             return false;</span><br><span>         }</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        if (p[2] &amp;&amp; =
+!ipv6_addr_safe(p[2]))</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        if (p[2] &amp;&amp; !ipv6_addr_safe(p[2]) &amp;&amp; !ipv6_get_s=
+pecial_addr(NULL, p[2], NULL, NULL))</span><br><span>         {</span><br><=
+span>             msg(msglevel, &quot;route-ipv6 parameter gateway &#39;%s&=
+#39; must be a valid address&quot;, p[2]);</span><br><span>             ret=
+urn false;</span><br><span>diff --git a/src/openvpn/route=2Ec b/src/openvpn=
+/route=2Ec</span><br><span>index 8ea745d=2E=2E23e7e7a 100644</span><br><spa=
+n>--- a/src/openvpn/route=2Ec</span><br><span>+++ b/src/openvpn/route=2Ec</=
+span><br><span>@@ -297,6 +297,65 @@</span><br><span>     return false;</spa=
+n><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
+Resolve the special IPv6 gateway name &quot;net_gateway_ipv6&quot;=2E</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * The IPv6 counterpart of get_special_ad=
+dr(), which handles the IPv4 names=2E</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ * There is currently only one special IPv6 name=2E</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * @param rl        route list carrying t=
+he system default gateway in ngi6</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ *                  (not rgi6, which is the route towards the=
+ VPN server), or</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
+                 NULL to merely test whether @p string names a special</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *                  addr=
+ess (used when validating options, where no route</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ *                  list exists yet)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ * @param string    the --ro=
+ute-ipv6 gateway parameter to examine</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ * @param out       receives the resolved gateway; only w=
+ritten when @p rl is</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ *                  given and the system gateway is known</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ * @param status    set to false if =
+@p string names a special address that</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ *                  could not be resolved, so the caller=
+ can reject the route;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ *                  set to true otherwise=2E May be NULL=2E</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+ * @return true if @p string is a special address=
+ name, in which case the</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+ *         caller must not parse it as a literal address; false otherw=
+ise=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ipv6_get_special_addr(const struct route_ipv=
+6_list *rl, const char *string, struct in6_addr *out,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                      bool *status)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (status)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        *status =3D true;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (str=
+cmp(string, &quot;net_gateway_ipv6&quot;) !=3D 0)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        return false;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (rl)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        if (rl-&gt;ngi6=2Eflags &amp;=
+ RGI_ADDR_DEFINED)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+ /* an on-link gateway is not a next hop, the interface is</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+             * enough -- leave *out =
+unspecified in that case */</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            if (!(rl-&gt;ngi6=2Eflags &amp; RGI_ON_LINK))</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+                *out =3D rl-&gt;ngi=
+6=2Egateway=2Eaddr_ipv6;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+            }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        els=
+e</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+            msg(M_INFO, PACK=
+AGE_NAME &quot; ROUTE: net_gateway_ipv6 undefined -- unable to get default =
+&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
+                        &quot;gateway from system&quot;);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            if (status)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+                *status =3D false;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    return true;</span><br><span style=3D"color: hsl(1=
 20, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+struct signal_info =
-siginfo_static; /* GLOBAL */</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+signal_reset(struct signal=
-_info *si, int signum)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true=
-(0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return 0;</=
+</span><br><span> bool</span><br><span> is_special_addr(const char *addr_st=
+r)</span><br><span> {</span><br><span>@@ -435,7 +494,7 @@</span><br><span> =
+</span><br><span> static bool</span><br><span> init_route_ipv6(struct route=
+_ipv6 *r6, const struct route_ipv6_option *r6o,</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-                const struct route_ipv6_list *rl6=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                st=
+ruct route_ipv6_list *rl6)</span><br><span> {</span><br><span>     CLEAR(*r=
+6);</span><br><span> </span><br><span>@@ -447,7 +506,26 @@</span><br><span>=
+     /* gateway */</span><br><span>     if (is_route_parm_defined(r6o-&gt;g=
+ateway))</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-        if (inet_pton(AF_INET6, r6o-&gt;gateway, &amp;r6-&gt;gate=
+way) !=3D 1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ bool status =3D true;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (ipv6=
+_get_special_addr(rl6, r6o-&gt;gateway, &amp;r6-&gt;gateway, &amp;status))<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+            if (!status)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                goto fail;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+            /* the route has t=
+o leave via the interface the system gateway</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+             * is on, otherwise it would be sent d=
+own the tunnel */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+          if (rl6-&gt;ngi6=2Eflags &amp; RGI_IFACE_DEFINED)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#ifdef _WIN32</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+                r6-&gt;adapter_index =3D rl6-&g=
+t;ngi6=2Eadapter_index;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+#else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+      r6-&gt;iface =3D rl6-&gt;ngi6=2Eiface;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    else if (inet_pton(AF_INET6, r6o-&gt;gateway, &amp;r6-&gt;gateway) !=3D=
+ 1)</span><br><span>         {</span><br><span>             msg(M_WARN, PAC=
+KAGE_NAME &quot;ROUTE6: cannot parse gateway spec &#39;%s&#39;&quot;, r6o-&=
+gt;gateway);</span><br><span>         }</span><br><span>diff --git a/src/op=
+envpn/route=2Eh b/src/openvpn/route=2Eh</span><br><span>index 88107e9=2E=2E=
+90e3ad2 100644</span><br><span>--- a/src/openvpn/route=2Eh</span><br><span>=
++++ b/src/openvpn/route=2Eh</span><br><span>@@ -345,6 +345,8 @@</span><br><=
+span> void setenv_routes_ipv6(struct env_set *es, const struct route_ipv6_l=
+ist *rl6);</span><br><span> </span><br><span> bool is_special_addr(const ch=
+ar *addr_str);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool =
+ipv6_get_special_addr(const struct route_ipv6_list *rl, const char *string,=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                   =
+        struct in6_addr *out, bool *status);</span><br><span> </span><br><s=
+pan> /**</span><br><span>  * @brief Retrieves the best gateway for a given =
+destination based on the routing table=2E</span><br><span>diff --git a/test=
+s/unit_tests/openvpn/test_route=2Ec b/tests/unit_tests/openvpn/test_route=
+=2Ec</span><br><span>index db039c1=2E=2Ebfcccb8 100644</span><br><span>--- =
+a/tests/unit_tests/openvpn/test_route=2Ec</span><br><span>+++ b/tests/unit_=
+tests/openvpn/test_route=2Ec</span><br><span>@@ -31,6 +31,10 @@</span><br><=
+span> #include &quot;route=2Eh&quot;</span><br><span> #include &quot;networ=
+king=2Eh&quot;</span><br><span> </span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+/* the system default IPv6 gateway, and the route towards the =
+peer */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define NET_=
+GATEWAY6  &quot;2001:db8:1::1&quot;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+#define PEER_GATEWAY6 &quot;2001:db8:2::1&quot;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /* Stubs for =
+functions route=2Ec references but that no test here reaches=2E</span><br><=
+span>  * They assert rather than return quietly, so a test straying onto on=
+e</span><br><span>  * fails loudly instead of silently doing nothing=2E</sp=
+an><br><span>@@ -210,11 +214,107 @@</span><br><span>     assert_clear_host_=
+bits(&quot;2001:db8::1&quot;, 0, &quot;::&quot;);</span><br><span> }</span>=
+<br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Set u=
+p a route list where the system default gateway (ngi6) and the</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ * route towards the peer (rgi6)=
+ are different, so a test can tell which</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ * one an answer came from=2E</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+init_test_route_ipv6_list(struct route_ipv6_list *rl6, unsigned int =
+ngi6_flags)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(*rl6);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    assert_int_equal(inet_pton(AF_INET6, NET_GAT=
+EWAY6, &amp;rl6-&gt;ngi6=2Egateway=2Eaddr_ipv6), 1);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    rl6-&gt;ngi6=2Eflags =3D ngi6_flags;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(inet_pton(AF_INET6=
+, PEER_GATEWAY6, &amp;rl6-&gt;rgi6=2Egateway=2Eaddr_ipv6), 1);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    rl6-&gt;rgi6=2Eflags =3D RGI=
+_ADDR_DEFINED;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+test_ipv6_get_special_addr_resolves(void **state)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    struct route_ipv6_list rl6;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct in6_addr out, =
+expect;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    bool sta=
+tus =3D false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    init_test_route_ipv6=
+_list(&amp;rl6, RGI_ADDR_DEFINED);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    CLEAR(out);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    asse=
+rt_true(ipv6_get_special_addr(&amp;rl6, &quot;net_gateway_ipv6&quot;, &amp;=
+out, &amp;status));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    assert_true(status);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* the sys=
+tem default gateway, not the route towards the peer */</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(inet_pton(AF_INET6,=
+ NET_GATEWAY6, &amp;expect), 1);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    assert_memory_equal(&amp;out, &amp;expect, sizeof(out));</=
 span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span sty=
 le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
 0, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+test_is_special_addr(void **state)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    assert_true(is_special_addr(&quot;net_gateway&quot;));</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(is_special_add=
-r(&quot;vpn_gateway&quot;));</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    assert_true(is_special_addr(&quot;remote_host&quot;));</span><=
+ 40%);">+test_ipv6_get_special_addr_not_special(void **state)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    struct route_ipv6_list rl6;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    struct in6_addr out;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    bool status =3D false;</span><=
 br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    assert_false(is_special_addr(&quot;10=2E0=
-=2E0=2E1&quot;));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  assert_false(is_special_addr(&quot;default&quot;));</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    assert_false(is_special_addr(NULL));<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+test_netmask_to_netbits(void **state)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    int netbits;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_t=
-rue(netmask_to_netbits(0x0a000000, 0xff000000, &amp;netbits)); /* 10/8 */</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(=
-netbits, 8);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(netmask_to=
-_netbits(0xc0a80100, 0xffffff00, &amp;netbits)); /* 192=2E168=2E1/24 */</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(ne=
-tbits, 24);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(netmask_to_=
-netbits(0x00000000, 0x00000000, &amp;netbits)); /* default route */</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(netbit=
-s, 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    /* a full-length mask report=
-s -1 rather than 32, which is what callers</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+     * use to tell &quot;host route&quot; from &quot=
-;network route&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+     */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_=
-true(netmask_to_netbits(0x0a010203, 0xffffffff, &amp;netbits));</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(netbits, -=
-1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    /* host bits set in the network=
- part */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_=
-false(netmask_to_netbits(0x0a000001, 0xff000000, &amp;netbits));</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    /* not a contiguous netmask */</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    assert_false(netmask_to_netbit=
-s(0x0a000000, 0xff00ff00, &amp;netbits));</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+test_netmask_to_netbits=
-2(void **state)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(n=
-etmask_to_netbits2(0xff000000), 8);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    assert_int_equal(netmask_to_netbits2(0xffffff00), 24);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal=
-(netmask_to_netbits2(0x00000000), 0);</span><br><span style=3D"color: hsl(1=
+olor: hsl(120, 100%, 40%);">+    init_test_route_ipv6_list(&amp;rl6, RGI_AD=
+DR_DEFINED);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    CLE=
+AR(out);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    assert_false(ipv6_get_spec=
+ial_addr(&amp;rl6, &quot;2001:db8::1&quot;, &amp;out, &amp;status));</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(IN6_IS_ADD=
+R_UNSPECIFIED(&amp;out));</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* the IP=
+v4 names are not IPv6 names */</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    assert_false(ipv6_get_special_addr(&amp;rl6, &quot;net_gatew=
+ay&quot;, &amp;out, &amp;status));</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+/* a caller with no route list only learns whether the name is special */</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(ipv6_=
+get_special_addr(NULL, &quot;net_gateway_ipv6&quot;, NULL, NULL));</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    assert_false(ipv6_get_sp=
+ecial_addr(NULL, &quot;2001:db8::1&quot;, NULL, NULL));</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+s=
+tatic void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_ipv6=
+_get_special_addr_undefined(void **state)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    struct route_ipv6_list rl6;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    struct in6_addr out;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    bool status =3D true;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    /* no IPv6 default gateway on this system */</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    init_test_route_ipv6_list(&amp;rl6=
+, 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(out)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    /* still a special name, but one =
+that could not be resolved, so the</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+     * caller must reject the route rather than install it v=
+ia the tunnel</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     *=
+/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(ip=
+v6_get_special_addr(&amp;rl6, &quot;net_gateway_ipv6&quot;, &amp;out, &amp;=
+status));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert=
+_false(status);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+assert_true(IN6_IS_ADDR_UNSPECIFIED(&amp;out));</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static vo=
+id</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_ipv6_get_spe=
+cial_addr_on_link(void **state)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    st=
+ruct route_ipv6_list rl6;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    struct in6_addr out;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    bool status =3D false;</span><br><span style=3D"color: hsl(1=
 20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   /* unlike netmask_to_netbits(), this one reports a full-length mask as 3=
-2 */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_=
-equal(netmask_to_netbits2(0xffffffff), 32);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    assert_int_equal(netmask_to_netbits2(0xff00ff00), -1);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+a=
-ssert_clear_host_bits(const char *addr, unsigned int netbits, const char *e=
-xpected)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    struct route_ipv6 r6;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct in6_addr wan=
-t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(r6);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(inet_pton(AF_INET6, =
-addr, &amp;r6=2Enetwork), 1);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    assert_int_equal(inet_pton(AF_INET6, expected, &amp;want), 1)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    r6=2Enetbits =
-=3D netbits;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    route_ipv6_clear_host_=
-bits(&amp;r6);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    a=
-ssert_memory_equal(&amp;r6=2Enetwork, &amp;want, sizeof(struct in6_addr));<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+test_route_ipv6_clear_host_bits(void **state)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    /* whole bytes cleared */</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    assert_clear_host_bits(&quot;2001:db8::1&qu=
-ot;, 64, &quot;2001:db8::&quot;);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    assert_clear_host_bits(&quot;2001:db8:dead:beef::1&quot;,=
- 32, &quot;2001:db8::&quot;);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* a =
-prefix that does not fall on a byte boundary */</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    assert_clear_host_bits(&quot;2001:db8:0:00f=
-f::1&quot;, 60, &quot;2001:db8:0:00f0::&quot;);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    assert_clear_host_bits(&quot;2001:db8::ffff=
-&quot;, 121, &quot;2001:db8::ff80&quot;);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    /* nothing to clear, and everything to clear */</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    assert_clear_host_bits(&quot;2001:db=
-8::1&quot;, 128, &quot;2001:db8::1&quot;);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    assert_clear_host_bits(&quot;2001:db8::1&quot;, =
-0, &quot;::&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+const struct CMUnitTest route_tests[]=
- =3D {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cmocka_un=
-it_test(test_is_special_addr),</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    cmocka_unit_test(test_netmask_to_netbits),</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    cmocka_unit_test(test_netmask_to_=
-netbits2),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cmock=
-a_unit_test(test_route_ipv6_clear_host_bits),</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+};</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+main(void)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    openvpn_unit_test_setup();</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    return cmocka_run_group_tests(route_t=
-ests, NULL, NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}=
-</span><br></pre><p>To view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet=
-/c/openvpn/+/1946?usp=3Demail">change 1946</a>=2E To unsubscribe, or for he=
-lp writing mail filters, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/set=
-tings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://sch=
-ema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http=
-://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=2E=
-openvpn=2Enet/c/openvpn/+/1946?usp=3Demail"/><meta itemprop=3D"name" conten=
-t=3D"View Change"/></div></div>
+   init_test_route_ipv6_list(&amp;rl6, RGI_ADDR_DEFINED | RGI_ON_LINK);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(out);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    /* an on-link gateway is not a next hop: t=
+he name resolves, but no</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+     * gateway address is handed back</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+     */</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    assert_true(ipv6_get_special_addr(&amp;rl6, &quot;net_gatewa=
+y_ipv6&quot;, &amp;out, &amp;status));</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    assert_true(status);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    assert_true(IN6_IS_ADDR_UNSPECIFIED(&amp;out));=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span> const struct CMUnit=
+Test route_tests[] =3D {</span><br><span>     cmocka_unit_test(test_is_spec=
+ial_addr),</span><br><span>     cmocka_unit_test(test_netmask_to_netbits),<=
+/span><br><span>     cmocka_unit_test(test_netmask_to_netbits2),</span><br>=
+<span>     cmocka_unit_test(test_route_ipv6_clear_host_bits),</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    cmocka_unit_test(test_ipv6_ge=
+t_special_addr_resolves),</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    cmocka_unit_test(test_ipv6_get_special_addr_not_special),</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    cmocka_unit_test(test_i=
+pv6_get_special_addr_undefined),</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    cmocka_unit_test(test_ipv6_get_special_addr_on_link),</spa=
+n><br><span> };</span><br><span> </span><br><span> int</span><br></pre><p>T=
+o view, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1947?usp=
+=3Demail">change 1947</a>=2E To unsubscribe, or for help writing mail filte=
+rs, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">se=
+ttings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessag=
+e"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewA=
+ction"><link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openv=
+pn/+/1947?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></=
+div></div>
 
-<div style=3D"display:none"> Gerrit-Messag=
-eType: newchange </div>
-<div style=3D"display:none"> Gerrit-Project: openvp=
-n </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div sty=
-le=3D"display:none"> Gerrit-Change-Id: I9085c55a7efefd31839b00ec8ec9a6f0855=
-74dde </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1946 </div>=
+<div style=3D"display:none"> Gerrit-MessageType: newchange </di=
+v>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=
+=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"=
+> Gerrit-Change-Id: I9e45c0edbd2cb237f27e349f2f9d7d9b8d826690 </div>
+<div s=
+tyle=3D"display:none"> Gerrit-Change-Number: 1947 </div>
+<div style=3D"disp=
+lay:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Ow=
+ner: chugly &lt;charlie=2Evigue@openvpn=2Ecom&gt; </div>
+<div style=3D"disp=
+lay:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-deve=
+l@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-=
+Attention: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
 
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"displ=
-ay:none"> Gerrit-Owner: chugly &lt;charlie=2Evigue@openvpn=2Ecom&gt; </div>=
-
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@r=
-fc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-dev=
-el &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
-<div style=3D"dis=
-play:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; =
-</div>
-
-</body></html>
---49iyjccEK0c=--
+</body></ht=
+ml>
+--0Xr5l/tTGRE=--
 
 
---===============2424201747717753787==
+--===============1495976974794351590==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============2424201747717753787==
+--===============1495976974794351590==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -1059,5 +1008,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============2424201747717753787==--
+--===============1495976974794351590==--
 
