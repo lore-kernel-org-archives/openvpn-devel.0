@@ -4,69 +4,126 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C41DAC9830E
-	for <openvpn-devel@archiver.kernel.org>; Fri, 25 Sep 2026 12:22:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id F0454C98321
+	for <openvpn-devel@archiver.kernel.org>; Fri, 25 Sep 2026 12:37:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=n64zKe8VsgNuvCiI55R8RFzHUOh2N3x2wJ1uaS4kQjA=; b=VdXYOi1B9nOkeeFI6w2eVhOMgy
-	oOgpBwS57wnYUtvx0EKVAyP3nMo3/FOhjzLpIYRxEnxbYl7LbHzhhaIudj/npHH2JTMe3WwDOaRIo
-	ywRPe6vg5HVLuX+k2A6JmTAgfRUdvhYc9pjw88u39wCO+Kr/svl8JBW2kx4Zh2z7Sj5g=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=wD+g/hSjxpvQXXbRDVhxCiwmT5BI+F8pOio1Q1HHUG4=; b=dOM7++5UBbCBHUFU7v3CstDQ3e
+	wtSKq4KRtlQ0BIrO9bp15t5Ot5X/a/ThF7pZHdGcy0Rs5uE6/hu/Ib3T/eP6a867U5mVYEAMLGfIl
+	FkYMoWrYLnm7pjuS4pW+IXkBd6C8+C3vvJhljbVf4fZ4lxYTN4ib7mfxbVgtA4iJceiA=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xA4ww-0007uK-Kk;
-	Fri, 25 Sep 2026 12:22:44 +0000
+	id 1xA5Bb-00055M-5T;
+	Fri, 25 Sep 2026 12:37:55 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1xA4wu-0007u2-Uw
+ (envelope-from <gerrit@openvpn.net>) id 1xA5Ba-00055C-5w
  for openvpn-devel@lists.sourceforge.net;
- Fri, 25 Sep 2026 12:22:42 +0000
+ Fri, 25 Sep 2026 12:37:54 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=MQSaYEzjhOD6uZwZz7UDFNreIXC+yHaJcfQXBIHxfvg=; b=aMAJUlrwsRnXhdz9k38Afn1C3v
- 4+SHmh8AxOposXInZ5jYP/za5QGCRtJTMI3mVG+Wm++h9++qVMO3T/6oSwXAZnqb+mPyV3nf1o67/
- z7bOnzT5nu9bh36cAs6xNO3i6dP4a5GJQdMz5/nZdY+nhf5k6UIwI9SoseV3i0Xl//Y0=;
+ d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
+ :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
+ Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
+ :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
+ :List-Post:List-Owner:List-Archive;
+ bh=tMTX57TT+HyTqyhB2VDsM1/aOKS5eX+W2g+SoRiOI/g=; b=es2YfNPWCVsPmhVrKPK4JRiALq
+ xVJduTAFSNsULAudSJGnlgR7iVvWrid75oaRIaJDPcRJl/JZNsKNZXaUYPQ9SnmmE2M+Gd4iICbUL
+ m4S+S+Id513+Tv7oIcQkRtSVYCacoviurdEsE+QRup74dhn64RF4kwcgZ2pYJnmkAqNw=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=MQSaYEzjhOD6uZwZz7UDFNreIXC+yHaJcfQXBIHxfvg=; b=aSvbg8Ekr+UEoMBr87a9SAoXxs
- 86pgc34k4gUlowO5sFCvWFQBeMAqjU0U52UoKZ8tGEh61uO+kZia5ieXGLFIEn/Po9zTYYLy8mHCp
- d6y8AMpRtgUyXcDnFSAWHy8ApowYhzgTtHFQmmysfGRMr34XZWD/iLcargYHjmQB0LwA=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
+ Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=tMTX57TT+HyTqyhB2VDsM1/aOKS5eX+W2g+SoRiOI/g=; b=l
+ JpGdFgEKFqkUCs+ElBLCcq3VjDNTOT9dkNu//i7SWsg7LIMMtiAoKpFYOsjd3cBRpOMV+LG7aqNuU
+ 47SMTyDvihsnp2aruwGFjrDMqS8ex7wFaeLQRQIkABq8Fjj4pQ14S14npI8+8AKZ3pdvZplEKTDYN
+ 1ze/n8dUfhJx6YOg=;
+Received: from mail-wm2-f13.google.com ([74.125.225.141])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1xA4wo-0006Pu-PV for openvpn-devel@lists.sourceforge.net;
- Fri, 25 Sep 2026 12:22:42 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 68PCMV67005818
- for <openvpn-devel@lists.sourceforge.net>; Fri, 25 Sep 2026 14:22:31 +0200
-Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 68PCMV8C005817
- for openvpn-devel@lists.sourceforge.net; Fri, 25 Sep 2026 14:22:31 +0200
-From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Fri, 25 Sep 2026 14:22:26 +0200
-Message-ID: <20260925122231.5805-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1790079868000.I3f96cd1c3488b558b8a597594d99edcba1214d27@gerrit.openvpn.net>
-References: <gerrit.1790079868000.I3f96cd1c3488b558b8a597594d99edcba1214d27@gerrit.openvpn.net>
+ (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
+ id 1xA5BZ-0006cv-95 for openvpn-devel@lists.sourceforge.net;
+ Fri, 25 Sep 2026 12:37:54 +0000
+Received: by mail-wm2-f13.google.com with SMTP id
+ 5b1f17b1804b1-49e6b885ef8so5278755e9.1
+ for <openvpn-devel@lists.sourceforge.net>;
+ Fri, 25 Sep 2026 05:37:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=openvpn.net; s=google; t=1790339867; x=1790944667; darn=lists.sourceforge.net;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
+ :reply-to:content-type;
+ bh=tMTX57TT+HyTqyhB2VDsM1/aOKS5eX+W2g+SoRiOI/g=;
+ b=QtdkJ8e+ymoIlY0bTEVFUNHO20CGBj9DAv7YkxVg+39Lsskd/kfuJ3JCxdNUXxBA7M
+ +8NWmLjklu2V4QZJesrQ/Zn68tlRZhHcY2HFgHht6znDGXBqiiKXuq77zIUaqA8x2cZE
+ qjZuQc0o88G9zEVq4ZCF0o63/fUhj2XFVLUdebsuQcrj3lV8C+Bpavg0cqqJe5As37ES
+ RJRsGeSm0xHG8nNjqlEs6crnhPHZLIGsY1A6eImtcDGEFFDFZb2DV9lYIT1Npc/JbJx0
+ Ijws/i6ItsR8XlvM/+v+aKimfpEkrSuZHObJD0KuaetwcaBVWEVbPyKkg5AmA9+KyXFE
+ 6nWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20260707; t=1790339867; x=1790944667;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
+ :cc:subject:date:message-id:reply-to:content-type;
+ bh=tMTX57TT+HyTqyhB2VDsM1/aOKS5eX+W2g+SoRiOI/g=;
+ b=xBReQTg2f50Ku925JISASFe6pywdJpiUqnm8NrYDyRiYH2Z7CGjqxDRrPFKJVKg4Iu
+ TeOZlyHbdCTYIcsnzcOWDYoGnzlrxueoTCo5jsMCgcSqOCz6PQ0/OlgyDoZLhOB+EQvS
+ HKCzs3iSDZq9538VZFaYoDskChl17/Ry2Z3cpGN9iycqTPY92zn2GYF+fq7ms+siH5tz
+ 9wpeRolH/sRS3cvC8wfA/5Xs4ElZHBJWTPSxJQhUzIUUuNEauFMYeq5NWnKx6+2iJkgB
+ 9Sj1MiNGmaBBubfsj56FrMTPt/S6ZWyIPgMJUaK1scDl6n6i/vgiRcnPT3Ji/qwsEXSr
+ m0nA==
+X-Gm-Message-State: AFuF++mCiSDJSaHsrpzV9Wn83C+p/6SoXq6yJcQd8+8S6cyZqBnDZyB0
+ DlWFSg0OIE7vR13sXLXnJZtu6YEiddA2T3SVAz2MOrhmjao7HPcI9bS0w/QppoGTD0fN/Nsu1v+
+ asfbJlsq3uXEwyajUNoJq6HXtdggcJiiJL1MpfqV2FYBwejEJccbYaa6WXvsTXwaWwBfx
+X-Gm-Gg: AYBFou3puta8otOa+Yq4XDtxKHfVcT/0kV0aUo/hlDMQWpiIy308kTgN1s9HqhfiOEy
+ hJsduTFYwTP/ic9+CzSfUUxeDbVsLDGoLGDXv70BK3w3ykoNR70PUqPFZNOFPli/sRedcsLK9ZC
+ 7TPwldj8btwp5eQzIt66SD2NLvQZwjvlPhQFHoob7D18nRhCSgbrMUCuf4YYkq97y2wWT/YVDv8
+ uaZTOscUOzlC++jCQZdv2vd8NjR2JlgW55uL5l3AxrHH8Yeg1k0IhRIB/VESGQ6pzRhAcUsdAM9
+ 3O2URcLod350Dny8fCJsfn3bvYTcuF79CQmB/wCl/J/2dkBxmwBnx6MorijdRgqv/3WXK10sT5H
+ 8xY3PhZFVuY4TTxD9WQOn8Um2dm10/bCW8WSSHp8RTNi1i6AovBCDkGrLbHkD9z34r0qbbTOvxo
+ zMMjV8yeVH1NEyYGFVhjVZEXUIil9AgY1tiQ9qyJXVTIBkoO29H34SEduUs6+9KnroUeiK+prua
+ 7DolwaojcqMDZ2jVVaLuHowEFAYXE7pzg7G8iU0PGDediX+ENbbx2nCBa3CmuNT+zTb2x6JWLMw
+ CULy0Ke0IDKEbw5W5klfqMGWYhSmVsNhtCtRDLuCbPRyStw7rzbeGyPsylq0
+X-Received: by 2002:a05:600c:6986:b0:49c:fa21:e73c with SMTP id
+ 5b1f17b1804b1-49fe66f147bmr97977025e9.18.1790339866554; 
+ Fri, 25 Sep 2026 05:37:46 -0700 (PDT)
+Received: from ip-10-18-1-162.eu-central-1.compute.internal
+ (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
+ by smtp.gmail.com with ESMTPSA id
+ 5b1f17b1804b1-49ff0f1f2e3sm90781775e9.0.2026.09.25.05.37.44
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 25 Sep 2026 05:37:45 -0700 (PDT)
+X-Google-Original-From: "ordex (Code Review)"
+ <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
+Date: Fri, 25 Sep 2026 12:37:42 +0000
+To: plaisthos <arne-openvpn@rfc2549.org>
+Auto-Submitted: auto-generated
+X-Gerrit-MessageType: newpatchset
+X-Gerrit-PatchSet: 2
+X-Gerrit-Change-Id: I46a9ef71359f42395d69cf899c948014fb72f65a
+X-Gerrit-Change-Number: 1738
+X-Gerrit-Project: openvpn
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1738?usp=email>
+X-Gerrit-Commit: 694e3b11c0e339919efd77ed7a8fe93346bfc21c
+In-Reply-To: <gerrit.1782693360000.I46a9ef71359f42395d69cf899c948014fb72f65a@gerrit.openvpn.net>
+References: <gerrit.1782693360000.I46a9ef71359f42395d69cf899c948014fb72f65a@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzgyNjkzMzYwMDAwLkk0NmE5ZWY3MTM1OWY0MjM5NWQ2OWNmODk5Yzk0ODAxNGZiNzJmNjVhQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <d14e9a259af7ed7e055195446a4b7f8ba8b7775a-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
-X-Headers-End: 1xA4wo-0006Pu-PV
-Subject: [Openvpn-devel] [PATCH v10] Change most ENABLE_DEBUG ifdefs to
- ifndef ENABLE_SMALL
+User-Agent: Gerrit/3.14.2
+X-Headers-End: 1xA5BZ-0006cv-95
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: dco_linux: drop the
+ now-redundant __is_locked re-entrancy guard
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -78,636 +135,309 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+From: "ordex \(Code Review\) via Openvpn-devel"
+ <openvpn-devel@lists.sourceforge.net>
+Reply-To: antonio@mandelbit.com, arne-openvpn@rfc2549.org,
+ openvpn-devel@lists.sourceforge.net
+Cc: "ordex \(Code Review\)" <gerrit@openvpn.net>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: multipart/mixed; boundary="===============8408662029207296811=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Arne Schwabe <arne@rfc2549.org>
+--===============8408662029207296811==
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="JqKnkAAtRgs="; charset=UTF-8
 
-Most of these are verbose logging or even enable logging at high
-verbosity level or just useful tools like --show-gateway.
+--JqKnkAAtRgs=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-We had --enabled-debug on by default forever, so these "debug"
-logs are on by default. This patch instead moves them to
-enable-small.
+Attention is currently required from: plaisthos=2E
 
-Since the verbose logging is now always enabled
-(apart from --enable-small), --enable-debug now only covers true
-debug options like gremlin.
+Hello plaisthos, 
 
-Rename the configure option from --enable-debug to
---enable-developer-debug to ensure existing build
-script/maintainer do not enable this option
-by default.
+I'd =
+like you to reexamine a change=2E Please visit
 
-This patch also adds [SMALL] and [DEBUG] as identifier in the OpenVPN
-version string more easily identify builds with this feature.
+    http://gerrit=2Eopenvpn=
+=2Enet/c/openvpn/+/1738?usp=3Demail
 
-In addition both configure and openvpn itself will add a warning
-about --enable-developer-debug to discourage users and maintainers
-from enabling this feature.
+to look at the new patch set (#2)=2E
 
-Remove dmsg macro from tapctl's error.h since it does
-not use that macro at all.
+=
 
-Change-Id: I3f96cd1c3488b558b8a597594d99edcba1214d27
-Signed-off-by: Arne Schwabe <arne-openvpn@rfc2549.org>
-Acked-by: Frank Lichtenheld <frank@lichtenheld.com>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1942
+Change subject: dco_linux: drop the now-redundant __is_locked re-entrancy =
+guard
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+
+dco_lin=
+ux: drop the now-redundant __is_locked re-entrancy guard
+
+__is_locked exist=
+ed only to stop setenv_stats() from issuing a GET_PEER
+request/reply while =
+the shared socket was still being drained for a batch
+of notifications, whi=
+ch could fail with NLE_BUSY/NLE_NOMEM or re-enter
+nl_recvmsgs() on the busy=
+ socket=2E Now that notifications are read on a
+dedicated socket and GET_PE=
+ER goes to the request/reply socket, the two
+never share an nl_recvmsgs() c=
+all: the request/reply socket no longer
+dispatches notifications, so multi_=
+process_incoming_dco() (the only path
+that reaches dco_get_peer() during me=
+ssage parsing) never runs while that
+socket is in flight, and the flag is a=
+lways false at its check=2E Remove
+the flag, its set/clear and the early re=
+turn=2E
+
+Change-Id: I46a9ef71359f42395d69cf899c948014fb72f65a
+Signed-off-by=
+: Antonio Quartulli <antonio@mandelbit=2Ecom>
 ---
+M src/openvpn/dco_linux=
+=2Ec
+1 file changed, 6 insertions(+), 18 deletions(-)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1942
-This mail reflects revision 10 of this Change.
+  git pull ssh://ge=
+rrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/38/1738/2
 
-Signed-off-by line for the author was added as per our policy.
-
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@lichtenheld.com>
-
-        
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 6eb5954..d553697 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -40,6 +40,7 @@
- option(ENABLE_PKCS11 "BUILD with pkcs11-helper" ON)
- option(USE_WERROR "Treat compiler warnings as errors (-Werror)" ON)
- option(FAKE_ANDROID "Target Android but do not use actual cross compile/Android cmake to build for simple compile checks on Linux")
-+option(ENABLE_DEBUG "Enable building with debug" OFF)
+diff --git a/src=
+/openvpn/dco_linux=2Ec b/src/openvpn/dco_linux=2Ec
+index 56f6259=2E=2Ee4d4e=
+c5 100644
+--- a/src/openvpn/dco_linux=2Ec
++++ b/src/openvpn/dco_linux=2Ec
+@=
+@ -49,16 +49,6 @@
+ #include <netlink/genl/family=2Eh>
+ #include <netlink/ge=
+nl/ctrl=2Eh>
  
- option(ENABLE_DNS_UPDOWN_BY_DEFAULT "Run --dns-updown hook by default" ON)
- set(DNS_UPDOWN_PATH "${CMAKE_INSTALL_PREFIX}/libexec/openvpn/dns-updown" CACHE STRING "Default location for the DNS up/down script")
-diff --git a/Changes.md b/Changes.md
-index 2684251..5c3270b 100644
---- a/Changes.md
-+++ b/Changes.md
-@@ -23,6 +23,12 @@
-   the characters mentioned above were already escaped. However, the behavior of
-   Mbed TLS is slightly different from OpenSSL in that it also escapes "=".
- 
-+## Maintainer-visible changes
-+
-+- The configure-time option `--enable-debug` is no longer  available
-+  and the verbose logging is now always included unless `--enable-small`
-+  is enabled.
-+
- # Overview of changes in 2.7
- 
- ## New features
-diff --git a/config.h.cmake.in b/config.h.cmake.in
-index c3bb5a5..c6c0a96 100644
---- a/config.h.cmake.in
-+++ b/config.h.cmake.in
-@@ -18,8 +18,8 @@
- /* Enable shared data channel offload */
- #cmakedefine ENABLE_DCO
- 
--/* Enable debugging support (needed for verb>=4) */
--#define ENABLE_DEBUG 1
-+/* Enable debugging support */
-+#cmakedefine ENABLE_DEBUG
- 
- /* Enable internal fragmentation support */
- #define ENABLE_FRAGMENT 1
-diff --git a/configure.ac b/configure.ac
-index 469a475..1fa0e63 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -130,10 +130,10 @@
- )
- 
- AC_ARG_ENABLE(
--	[debug],
--	[AS_HELP_STRING([--disable-debug], [disable debugging support (disable gremlin and verb 7+ messages) @<:@default=yes@:>@])],
--	,
--	[enable_debug="yes"]
-+	[developer-debug],
-+	[AS_HELP_STRING([--enable-developer-debug], [enable developer debugging support (enable gremlin) @<:@default=no@:>@])],
-+	[enable_debug="yes"],
-+	[enable_debug="no"]
- )
- 
- AC_ARG_ENABLE(
-@@ -1393,3 +1393,8 @@
- ])
- AC_CONFIG_FILES([tests/t_client.sh], [chmod +x tests/t_client.sh])
- AC_OUTPUT
-+
-+# Put the warning at the end, so it is better visible
-+if test "${enable_debug}" = "yes"; then
-+    AC_MSG_WARN([--enable-developer-debug is enabled. This should be only used for test/development builds and not for production usage])
-+fi
-\ No newline at end of file
-diff --git a/dev-tools/cppcheck-suppression b/dev-tools/cppcheck-suppression
-index 299d7a3..27c9d30 100644
---- a/dev-tools/cppcheck-suppression
-+++ b/dev-tools/cppcheck-suppression
-@@ -42,7 +42,7 @@
- intToPointerCast:src/openvpn/multi_io.c
- intToPointerCast:src/openvpn/ps.c
- # FP: constant but differs between platforms
--knownConditionTrueFalse:src/openvpn/error.h:380
-+knownConditionTrueFalse:src/openvpn/error.h:382
- knownConditionTrueFalse:src/openvpn/fdmisc.c:80
- knownConditionTrueFalse:src/openvpn/lladdr.c:64
- knownConditionTrueFalse:src/openvpn/platform.c
-@@ -73,8 +73,8 @@
- # FP: cppcheck doesn't understand ZeroMemory
- redundantAssignment:src/openvpnserv/interactive.c:204
- # IGN: We reuse the same variable name due to macro usage
--shadowVariable:src/openvpn/options.c:1948
--shadowVariable:src/openvpn/options.c:1966
-+shadowVariable:src/openvpn/options.c:1955
-+shadowVariable:src/openvpn/options.c:1973
- # FP: fun:tls_crypt_v2_wrap_unwrap_invalid: cppcheck is confused
- syntaxError:tests/unit_tests/openvpn/test_tls_crypt.c:684
- # FP: this file is never compiled on _WIN32
-diff --git a/dev-tools/openvpn-cppcheck-library.cfg b/dev-tools/openvpn-cppcheck-library.cfg
-index 1ea91f4..decac67 100644
---- a/dev-tools/openvpn-cppcheck-library.cfg
-+++ b/dev-tools/openvpn-cppcheck-library.cfg
-@@ -26,4 +26,6 @@
-   <!-- work around macro confusion -->
-   <define name="CMSG_FIRSTHDR" value="cmsg_firsthdr" />
-   <define name="CMSG_NXTHDR" value="cmsg_nxthdr" />
-+  <!-- otherwise a lot of unused variables are shown for enable-small builds -->
-+  <define name="DMSG_ALWAYS_AVAILABLE" value="1" />
- </def>
-diff --git a/src/openvpn/compstub.c b/src/openvpn/compstub.c
-index f0c89f7..2eef587 100644
---- a/src/openvpn/compstub.c
-+++ b/src/openvpn/compstub.c
-@@ -125,7 +125,7 @@
-         return;
-     }
- 
--    uint8_t *head = BPTR(buf);
-+    const uint8_t *head = BPTR(buf);
- 
-     /* no compression or packet to short*/
-     if (head[0] != COMP_ALGV2_INDICATOR_BYTE)
-diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
-index 0c5beb4..05bb60d 100644
---- a/src/openvpn/crypto_mbedtls.c
-+++ b/src/openvpn/crypto_mbedtls.c
-@@ -842,8 +842,8 @@
-     struct gc_arena gc = gc_new();
-     uint8_t A1[MAX_HMAC_KEY_LENGTH];
- 
--#ifdef ENABLE_DEBUG
--    /* used by the D_SHOW_KEY_SOURCE, guarded with ENABLE_DEBUG to avoid unused
-+#ifndef ENABLE_SMALL
-+    /* used by the D_SHOW_KEY_SOURCE, guarded with ENABLE_SMALL to avoid unused
-      * variables warnings if compiled with --enable-small */
-     const size_t olen_orig = olen;
-     const uint8_t *out_orig = out;
-diff --git a/src/openvpn/crypto_mbedtls_legacy.c b/src/openvpn/crypto_mbedtls_legacy.c
-index bbd012f6..f46d8bf 100644
---- a/src/openvpn/crypto_mbedtls_legacy.c
-+++ b/src/openvpn/crypto_mbedtls_legacy.c
-@@ -989,8 +989,8 @@
-     struct gc_arena gc = gc_new();
-     uint8_t A1[MAX_HMAC_KEY_LENGTH];
- 
--#ifdef ENABLE_DEBUG
--    /* used by the D_SHOW_KEY_SOURCE, guarded with ENABLE_DEBUG to avoid unused
-+#ifndef ENABLE_SMALL
-+    /* used by the D_SHOW_KEY_SOURCE, guarded with ENABLE_SMALL to avoid unused
-      * variables warnings if compiled with --enable-small */
-     const size_t olen_orig = olen;
-     const uint8_t *out_orig = out;
-diff --git a/src/openvpn/error.h b/src/openvpn/error.h
-index a887fc7..9f39572 100644
---- a/src/openvpn/error.h
-+++ b/src/openvpn/error.h
-@@ -158,7 +158,9 @@
-         }                                \
-         EXIT_FATAL(flags);               \
-     } while (false)
--#ifdef ENABLE_DEBUG
-+/* We have DMSG_ALWAYS_AVAILABLE here to able to silence unused warnings for
-+ * cppcheck */
-+#if !defined(ENABLE_SMALL) || defined(DMSG_ALWAYS_AVAILABLE)
- #define dmsg(flags, ...)                 \
-     do                                   \
-     {                                    \
-diff --git a/src/openvpn/event.c b/src/openvpn/event.c
-index 8b7716a..2cb4e04 100644
---- a/src/openvpn/event.c
-+++ b/src/openvpn/event.c
-@@ -398,7 +398,7 @@
- 
-     dmsg(D_EVENT_WAIT, "WE_WAIT enter n=%d to=%d", wes->n_events, timeout);
- 
--#ifdef ENABLE_DEBUG
-+#ifndef ENABLE_SMALL
-     if (check_debug_level(D_EVENT_WAIT))
-     {
-         int i;
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 6fe5849..a8a4a07 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -50,7 +50,7 @@
- 
- /* show event wait debugging info */
- 
--#ifdef ENABLE_DEBUG
-+#ifndef ENABLE_SMALL
- 
- static const char *
- wait_status_string(struct context *c, struct gc_arena *gc)
-@@ -75,7 +75,7 @@
-     gc_free(&gc);
+-/* When parsing multiple DEL_PEER notifications, openvpn tr=
+ies to request stats
+- * for each DEL_PEER message (see setenv_stats)=2E Th=
+is triggers a GET_PEER
+- * request-reply while we are still parsing the res=
+t of the initial
+- * notifications, which can lead to NLE_BUSY or even NLE_=
+NOMEM=2E
+- *
+- * This basic lock ensures we don't bite our own tail by issu=
+ing a dco_get_peer
+- * while still busy receiving and parsing other message=
+s=2E
+- */
+-static bool __is_locked =3D false;
+-
+ /* libnl < 3=2E5=2E0 does =
+not set the NLA_F_NESTED on its own, therefore we
+  * have to explicitly do=
+ it to prevent the kernel from failing upon
+  * parsing of the message
+@@ -=
+133,12 +123,16 @@
+     return NULL;
  }
  
--#endif /* ifdef ENABLE_DEBUG */
-+#endif
- 
- static void
- check_tls_errors_co(struct context *c)
-@@ -2190,7 +2190,7 @@
-         {
-             int status;
- 
--#ifdef ENABLE_DEBUG
-+#ifndef ENABLE_SMALL
-             if (check_debug_level(D_EVENT_WAIT))
-             {
-                 show_wait_status(c);
-diff --git a/src/openvpn/mroute.c b/src/openvpn/mroute.c
-index 39fa482..261d25a 100644
---- a/src/openvpn/mroute.c
-+++ b/src/openvpn/mroute.c
-@@ -501,7 +501,7 @@
-     }
-     mh->n_net_len = j;
- 
--#ifdef ENABLE_DEBUG
-+#ifndef ENABLE_SMALL
-     if (check_debug_level(D_MULTI_DEBUG))
-     {
-         struct gc_arena gc = gc_new();
-diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
-index 5d88f8a..b0125f1 100644
---- a/src/openvpn/mtcp.c
-+++ b/src/openvpn/mtcp.c
-@@ -74,7 +74,7 @@
-         mi->did_real_hash = true;
-     }
- 
--#ifdef ENABLE_DEBUG
-+#ifndef ENABLE_SMALL
-     if (mi)
-     {
-         dmsg(D_MULTI_DEBUG, "MULTI TCP: instance added: %s", mroute_addr_print(&mi->real, &gc));
-diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
-index 88b0091..4794b7e 100644
---- a/src/openvpn/mudp.c
-+++ b/src/openvpn/mudp.c
-@@ -431,7 +431,7 @@
-         }
-     }
- 
--#ifdef ENABLE_DEBUG
-+#ifndef ENABLE_SMALL
-     if (check_debug_level(D_MULTI_DEBUG))
-     {
-         struct gc_arena gc = gc_new();
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 3e72b92..67204c3 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -1145,7 +1145,7 @@
-         }
-     }
- 
--#ifdef ENABLE_DEBUG
-+#ifndef ENABLE_SMALL
-     if (check_debug_level(D_MULTI_DEBUG))
-     {
-         struct gc_arena gc = gc_new();
-diff --git a/src/openvpn/multi_io.c b/src/openvpn/multi_io.c
-index 3604684..4b96c57 100644
---- a/src/openvpn/multi_io.c
-+++ b/src/openvpn/multi_io.c
-@@ -46,7 +46,7 @@
- #define MULTI_IO_FILE_CLOSE_WRITE ((void *)5)
- #define MULTI_IO_DCO              ((void *)6)
- 
--#ifdef ENABLE_DEBUG
-+#ifndef ENABLE_SMALL
- static const char *
- pract(int action)
++/**
++ * Drain the request/reply s=
+ocket=2E Used to read command/stats replies=2E This
++ * socket is never sub=
+scribed to the multicast group, so it cannot deliver an
++ * asynchronous no=
+tification: a reply being parsed here can therefore never
++ * trigger an in=
+stance close or a re-entrant request on the same socket=2E
++ */
+ static int=
+
+ ovpn_nl_recvmsgs(dco_context_t *dco, const char *prefix)
  {
-@@ -89,7 +89,7 @@
-             return "?";
-     }
- }
--#endif /* ENABLE_DEBUG */
-+#endif
+-    __is_loc=
+ked =3D true;
+     int ret =3D nl_recvmsgs(dco->nl_sock, dco->nl_cb);
+-    =
+__is_locked =3D false;
  
- static inline struct context *
- multi_get_context(struct multi_context *m, struct multi_instance *mi)
-diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c
-index 24d6bb6..acd366d 100644
---- a/src/openvpn/openvpn.c
-+++ b/src/openvpn/openvpn.c
-@@ -252,6 +252,8 @@
- #endif
-             show_library_versions(M_INFO);
- 
-+            show_debug_warning(M_INFO);
-+
-             show_dco_version(M_INFO);
- 
-             /* misc stuff */
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index e3cd527..3c5a249 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -113,9 +113,16 @@
- #ifdef ENABLE_DCO
-     " [DCO]"
- #endif
-+#ifdef ENABLE_SMALL
-+    " [SMALL]"
-+#endif
-+#ifdef ENABLE_DEBUG
-+    " [DEBUG]"
-+#endif
- #ifdef CONFIGURE_GIT_REVISION
-     " built on " __DATE__
- #endif
-+
-     ;
- 
- #ifndef ENABLE_SMALL
-@@ -785,7 +792,7 @@
- #endif /* ENABLE_PKCS11 */
-     "\n"
-     "General Standalone Options:\n"
--#ifdef ENABLE_DEBUG
-+#ifndef ENABLE_SMALL
-     "--show-gateway [address]: Show info about gateway [to v4/v6 address].\n"
- #endif
-     ;
-@@ -3534,6 +3541,9 @@
-     msg(M_INFO | M_NOPREFIX, "special build: %s", CONFIGURE_SPECIAL_BUILD);
- #endif
- #endif
-+
-+    show_debug_warning(M_INFO | M_NOPREFIX);
-+
-     openvpn_exit(OPENVPN_EXIT_STATUS_GOOD);
- }
- 
-@@ -4229,7 +4239,7 @@
-         read_config_file(options, p[1], level, file, line, msglevel, permission_mask,
-                          option_types_found, es);
-     }
--#if defined(ENABLE_DEBUG) && !defined(ENABLE_SMALL)
-+#ifndef ENABLE_SMALL
-     else if (streq(p[0], "show-gateway") && !p[2])
+     switch (ret)
      {
-         struct route_gateway_info rgi;
-@@ -4938,12 +4948,13 @@
-              * mbed TLS always generating debug level logging */
-             options->ssl_flags |= SSLF_TLS_DEBUG_ENABLED;
-         }
--#if !defined(ENABLE_DEBUG) && !defined(ENABLE_SMALL)
-+#ifdef ENABLE_SMALL
-         /* Warn when a debug verbosity is supplied when built without debug support */
-         if (options->verbosity >= 7)
-         {
-             msg(M_WARN,
--                "NOTE: debug verbosity (--verb %d) is enabled but this build lacks debug support.",
-+                "NOTE: debug verbosity (--verb %d) is enabled but this build is "
-+                "built with --enable-small that lacks support for high --verb settings",
-                 options->verbosity);
-         }
- #endif
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index f472676..31ae17b 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -888,6 +888,16 @@
- 
- void show_library_versions(const unsigned int flags);
- 
-+static inline void
-+show_debug_warning(const unsigned int flags)
-+{
-+#ifdef ENABLE_DEBUG
-+    msg(flags, "WARNING: OpenVPN has been compiled with --enable-developer-debug. "
-+               "This should be only used for test/development builds and not for "
-+               "production usage");
-+#endif
-+}
-+
- #ifdef _WIN32
- void show_windows_version(const unsigned int flags);
- 
-diff --git a/src/openvpn/packet_id.c b/src/openvpn/packet_id.c
-index a4b627c..22c53c7 100644
---- a/src/openvpn/packet_id.c
-+++ b/src/openvpn/packet_id.c
-@@ -52,18 +52,18 @@
- #define SEQ_UNSEEN  ((time_t)0)
- #define SEQ_EXPIRED ((time_t)1)
- 
--#ifdef ENABLE_DEBUG
-+#ifndef ENABLE_SMALL
- static void packet_id_debug_print(msglvl_t msglevel, const struct packet_id_rec *p,
-                                   const struct packet_id_net *pin, const char *message,
-                                   packet_id_print_type value);
- 
--#endif /* ENABLE_DEBUG */
-+#endif
- 
- static inline void
- packet_id_debug(msglvl_t msglevel, const struct packet_id_rec *p,
-                 const struct packet_id_net *pin, const char *message, uint64_t value)
- {
--#ifdef ENABLE_DEBUG
-+#ifndef ENABLE_SMALL
-     if (unlikely(check_debug_level(msglevel)))
-     {
-         packet_id_debug_print(msglevel, p, pin, message, value);
-@@ -576,7 +576,7 @@
-     return (char *)out.data;
- }
- 
--#ifdef ENABLE_DEBUG
-+#ifndef ENABLE_SMALL
- 
- static void
- packet_id_debug_print(msglvl_t msglevel, const struct packet_id_rec *p,
-@@ -648,7 +648,7 @@
-     gc_free(&gc);
- }
- 
--#endif /* ifdef ENABLE_DEBUG */
-+#endif
- 
- uint16_t
- packet_id_read_epoch(struct packet_id_net *pin, struct buffer *buf)
-diff --git a/src/openvpn/plugin.c b/src/openvpn/plugin.c
-index f8adde5..a94f07b 100644
---- a/src/openvpn/plugin.c
-+++ b/src/openvpn/plugin.c
-@@ -993,7 +993,7 @@
-     pr->n = 0;
- }
- 
--#ifdef ENABLE_DEBUG
-+#ifndef ENABLE_SMALL
- void
- plugin_return_print(const msglvl_t msglevel, const char *prefix, const struct plugin_return *pr)
- {
-@@ -1012,5 +1012,5 @@
-         }
-     }
- }
--#endif /* ifdef ENABLE_DEBUG */
-+#endif
- #endif /* ENABLE_PLUGIN */
-diff --git a/src/openvpn/plugin.h b/src/openvpn/plugin.h
-index 7e9faf3..684632c 100644
---- a/src/openvpn/plugin.h
-+++ b/src/openvpn/plugin.h
-@@ -135,7 +135,7 @@
- 
- void plugin_return_free(struct plugin_return *pr);
- 
--#ifdef ENABLE_DEBUG
-+#ifndef ENABLE_SMALL
- void plugin_return_print(const msglvl_t msglevel, const char *prefix, const struct plugin_return *pr);
- 
- #endif
-diff --git a/src/openvpn/reliable.c b/src/openvpn/reliable.c
-index ced438e..b5315ff 100644
---- a/src/openvpn/reliable.c
-+++ b/src/openvpn/reliable.c
-@@ -462,7 +462,7 @@
-     }
- }
- 
--#ifdef ENABLE_DEBUG
-+#ifndef ENABLE_SMALL
- /* print the current sequence of active packet IDs */
- static const char *
- reliable_print_ids(const struct reliable *rel, struct gc_arena *gc)
-@@ -480,7 +480,7 @@
-     }
-     return BSTR(&out);
- }
--#endif /* ENABLE_DEBUG */
-+#endif
- 
- /* true if at least one free buffer available */
- bool
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 03a2526..e8001b3 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -81,7 +81,7 @@
- 
- static void get_bypass_addresses(struct route_bypass *rb, const unsigned int flags);
- 
--#ifdef ENABLE_DEBUG
-+#ifndef ENABLE_SMALL
- 
- static void
- print_bypass_addresses(const struct route_bypass *rb)
-@@ -617,7 +617,7 @@
-     if (rl->ngi.flags & RGI_ADDR_DEFINED)
-     {
-         setenv_route_addr(es, "net_gateway", rl->ngi.gateway.addr, -1);
--#if defined(ENABLE_DEBUG) && !defined(ENABLE_SMALL)
-+#ifndef ENABLE_SMALL
-         print_default_gateway(D_ROUTE, &rl->rgi, NULL);
- #endif
-     }
-@@ -660,7 +660,7 @@
-             add_block_local_routes(rl);
-         }
-         get_bypass_addresses(&rl->spec.bypass, rl->flags);
--#ifdef ENABLE_DEBUG
-+#ifndef ENABLE_SMALL
-         print_bypass_addresses(&rl->spec.bypass);
- #endif
-     }
-@@ -768,7 +768,7 @@
-     if (rl6->ngi6.flags & RGI_ADDR_DEFINED)
-     {
-         setenv_str(es, "net_gateway_ipv6", print_in6_addr(rl6->ngi6.gateway.addr_ipv6, 0, &gc));
--#if defined(ENABLE_DEBUG) && !defined(ENABLE_SMALL)
-+#ifndef ENABLE_SMALL
-         print_default_gateway(D_ROUTE, NULL, &rl6->rgi6);
- #endif
-     }
-diff --git a/src/openvpn/schedule.c b/src/openvpn/schedule.c
-index 6772ad6..6c60dc2 100644
---- a/src/openvpn/schedule.c
-+++ b/src/openvpn/schedule.c
-@@ -33,7 +33,7 @@
- 
- #include "memdbg.h"
- 
--#ifdef ENABLE_DEBUG
-+#ifndef ENABLE_SMALL
- static void
- schedule_entry_debug_info(const char *caller, const struct schedule_entry *e)
- {
-@@ -308,7 +308,7 @@
- void
- schedule_add_modify(struct schedule *s, struct schedule_entry *e)
- {
--#ifdef ENABLE_DEBUG
-+#ifndef ENABLE_SMALL
-     if (check_debug_level(D_SCHEDULER))
-     {
-         schedule_entry_debug_info("schedule_add_modify", e);
-@@ -355,7 +355,7 @@
-         }
-     }
- 
--#ifdef ENABLE_DEBUG
-+#ifndef ENABLE_SMALL
-     if (check_debug_level(D_SCHEDULER))
-     {
-         schedule_entry_debug_info("schedule_find_least", e);
-diff --git a/src/tapctl/error.h b/src/tapctl/error.h
-index f9586dc..4424f56 100644
---- a/src/tapctl/error.h
-+++ b/src/tapctl/error.h
-@@ -83,19 +83,6 @@
-         }                                \
-         EXIT_FATAL(flags);               \
-     } while (false)
--#ifdef ENABLE_DEBUG
--#define dmsg(flags, ...)                 \
--    do                                   \
--    {                                    \
--        if (msg_test(flags))             \
--        {                                \
--            x_msg((flags), __VA_ARGS__); \
--        }                                \
--        EXIT_FATAL(flags);               \
--    } while (false)
--#else
--#define dmsg(flags, ...)
--#endif
- 
- void x_msg(const unsigned int flags, const char *format, ...); /* should be called via msg above */
- 
+@@ -1173,12 +1167,6 @@
+ {=
 
+     ASSERT(dco);
+ 
+-    if (__is_locked)
+-    {
+-        msg(D_DCO_DEBUG,=
+ "%s: cannot request peer stats while parsing other messages", __func__);
+-=
+        return 0;
+-    }
+-
+     /* peer_id =3D=3D -1 means "dump all peers"=
+, but this is allowed in MP mode only=2E
+      * If it happens in P2P mode =
+it means that the DCO peer was deleted and we
+      * can simply bail out
+
+=
+-- 
+To view, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1738?usp=3Dema=
+il
+To unsubscribe, or for help writing mail filters, visit http://gerrit=2E=
+openvpn=2Enet/settings?usp=3Demail
+
+Gerrit-MessageType: newpatchset
+Gerrit-=
+Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I46a9ef71359f42395=
+d69cf899c948014fb72f65a
+Gerrit-Change-Number: 1738
+Gerrit-PatchSet: 2
+Gerri=
+t-Owner: ordex <antonio@mandelbit=2Ecom>
+Gerrit-Reviewer: plaisthos <arne-o=
+penvpn@rfc2549=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourc=
+eforge=2Enet>
+Gerrit-Attention: plaisthos <arne-openvpn@rfc2549=2Eorg>
+
+--JqKnkAAtRgs=
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: plaisthos=2E </p>
+<p>ordex <strong>uploaded patch set=
+ #2</strong> to this change=2E</p><p><a href=3D"http://gerrit=2Eopenvpn=2En=
+et/c/openvpn/+/1738?usp=3Demail">View Change</a></p><pre class=3D"blocks" s=
+tyle=3D"font-family: monospace,monospace; white-space: pre-wrap;">dco_linux=
+: drop the now-redundant __is_locked re-entrancy guard<br><br>__is_locked e=
+xisted only to stop setenv_stats() from issuing a GET_PEER<br>request/reply=
+ while the shared socket was still being drained for a batch<br>of notifica=
+tions, which could fail with NLE_BUSY/NLE_NOMEM or re-enter<br>nl_recvmsgs(=
+) on the busy socket=2E Now that notifications are read on a<br>dedicated s=
+ocket and GET_PEER goes to the request/reply socket, the two<br>never share=
+ an nl_recvmsgs() call: the request/reply socket no longer<br>dispatches no=
+tifications, so multi_process_incoming_dco() (the only path<br>that reaches=
+ dco_get_peer() during message parsing) never runs while that<br>socket is =
+in flight, and the flag is always false at its check=2E Remove<br>the flag,=
+ its set/clear and the early return=2E<br><br>Change-Id: I46a9ef71359f42395=
+d69cf899c948014fb72f65a<br>Signed-off-by: Antonio Quartulli &lt;antonio@man=
+delbit=2Ecom&gt;<br>---<br>M src/openvpn/dco_linux=2Ec<br>1 file changed, 6=
+ insertions(+), 18 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D=
+"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://g=
+errit=2Eopenvpn=2Enet:29418/openvpn refs/changes/38/1738/2</pre><pre style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
+git a/src/openvpn/dco_linux=2Ec b/src/openvpn/dco_linux=2Ec</span><br><span=
+>index 56f6259=2E=2Ee4d4ec5 100644</span><br><span>--- a/src/openvpn/dco_li=
+nux=2Ec</span><br><span>+++ b/src/openvpn/dco_linux=2Ec</span><br><span>@@ =
+-49,16 +49,6 @@</span><br><span> #include &lt;netlink/genl/family=2Eh&gt;</=
+span><br><span> #include &lt;netlink/genl/ctrl=2Eh&gt;</span><br><span> </s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-/* When parsing multiple=
+ DEL_PEER notifications, openvpn tries to request stats</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">- * for each DEL_PEER message (see setenv_=
+stats)=2E This triggers a GET_PEER</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">- * request-reply while we are still parsing the rest of the in=
+itial</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * notifications=
+, which can lead to NLE_BUSY or even NLE_NOMEM=2E</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">- * This basic lock ensures we don&#39;t bite our own tail by issui=
+ng a dco_get_peer</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * w=
+hile still busy receiving and parsing other messages=2E</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-static bool __is_locked =3D false;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-</span><br><span> /* libnl &lt; 3=2E5=2E0 does=
+ not set the NLA_F_NESTED on its own, therefore we</span><br><span>  * have=
+ to explicitly do it to prevent the kernel from failing upon</span><br><spa=
+n>  * parsing of the message</span><br><span>@@ -133,12 +123,16 @@</span><b=
+r><span>     return NULL;</span><br><span> }</span><br><span> </span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ * Drain the request/reply socket=2E Used to rea=
+d command/stats replies=2E This</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ * socket is never subscribed to the multicast group, so it can=
+not deliver an</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * as=
+ynchronous notification: a reply being parsed here can therefore never</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ * trigger an instance c=
+lose or a re-entrant request on the same socket=2E</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ */</span><br><span> static int</span><br><s=
+pan> ovpn_nl_recvmsgs(dco_context_t *dco, const char *prefix)</span><br><sp=
+an> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    __is_locked =
+=3D true;</span><br><span>     int ret =3D nl_recvmsgs(dco-&gt;nl_sock, dco=
+-&gt;nl_cb);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    __is_=
+locked =3D false;</span><br><span> </span><br><span>     switch (ret)</span=
+><br><span>     {</span><br><span>@@ -1173,12 +1167,6 @@</span><br><span> {=
+</span><br><span>     ASSERT(dco);</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    if (__is_locked)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        msg(D_DCO_DEBUG, &quot;%s: cannot request peer stat=
+s while parsing other messages&quot;, __func__);</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-        return 0;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-</span><br><span>     /* peer_id =3D=3D -1 means &quot;dump all peer=
+s&quot;, but this is allowed in MP mode only=2E</span><br><span>      * If =
+it happens in P2P mode it means that the DCO peer was deleted and we</span>=
+<br><span>      * can simply bail out</span><br></pre><p>To view, visit <a =
+href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1738?usp=3Demail">change =
+1738</a>=2E To unsubscribe, or for help writing mail filters, visit <a href=
+=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p>=
+<div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope=
+ itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link item=
+prop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1738?usp=3De=
+mail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div =
+style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=
+=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:non=
+e"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change=
+-Id: I46a9ef71359f42395d69cf899c948014fb72f65a </div>
+<div style=3D"display=
+:none"> Gerrit-Change-Number: 1738 </div>
+<div style=3D"display:none"> Gerr=
+it-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: ordex &lt;=
+antonio@mandelbit=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Revi=
+ewer: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"dis=
+play:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=
+=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos =
+&lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+
+</body></html>
+--JqKnkAAtRgs=--
+
+
+--===============8408662029207296811==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============8408662029207296811==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+--===============8408662029207296811==--
+
