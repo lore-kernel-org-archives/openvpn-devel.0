@@ -4,128 +4,69 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8AEE6CA5FA2
-	for <openvpn-devel@archiver.kernel.org>; Mon, 28 Sep 2026 11:35:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2B608C9833F
+	for <openvpn-devel@archiver.kernel.org>; Mon, 28 Sep 2026 11:37:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:Date:Sender:To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=c+4KuZc6ELWqFPF7kO+W49sC2a9o9vCD5jP/aXZY06g=; b=NTHBcBgo9yvhWTI5WsHt89c4dy
-	XHLxsKiANsY/JKF6qEJNpZW6WbQYceESJYg1ZdSYh4v6ZgzfMH4Ptc93PGalURUUPapZGwtnEzDfq
-	wMjs68UD2djzUoRWZ5/M0M5F7JYJy2OaQS5gq6b7pP6aLFFzB1OgfR+CiTYI8GBzfBUo=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
+	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=3GUJ4Fr2S0YeYhUNCbP64j9dXH8Znqb7WZsSqVMXcME=; b=ICuIfzeaggagUzTWHALcIz2+ZA
+	jI1YL4n/Eewl1SQT1W5svlcU9Wp6IE6roHgH38kHGklRgXStbVIMeaqA9Yf6n/Ss8zXFFRXey2O+c
+	CXWac1imigOsjSDoobI73fRl7+CwxCxN67ac8bK6G0MOjbtY84PHKkb9WUrc9LEBnT4Q=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xB9dm-0003ei-Bw;
-	Mon, 28 Sep 2026 11:35:23 +0000
+	id 1xB9g2-0006HP-1Q;
+	Mon, 28 Sep 2026 11:37:46 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1xB9dl-0003ec-Hs
+ (envelope-from <gert@blue4.greenie.muc.de>) id 1xB9ft-0006HD-Cx
  for openvpn-devel@lists.sourceforge.net;
- Mon, 28 Sep 2026 11:35:23 +0000
+ Mon, 28 Sep 2026 11:37:37 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:Date:From:Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
- :List-Post:List-Owner:List-Archive;
- bh=4ikdDgBjAIiaKDHuwDT7u4u91+XJ6N+elPazHbKaWpM=; b=JNitIRNONR6FgpkU55F7mbuFsc
- jc0sR3ZxuRtA7uyhFuaPZnZnsu++o9V/AXiCkuqXvcD7YbZE+xg6jYlgf80p7EGjma7J6hs4SLC6n
- kpYoRthXI9kT3/8MkDBE3CyikmGecwSPLKkgoy5d/QGHjjgqJI0WU5oWUX0h439DX6Ts=;
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
+ In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=za67MZAoLRwr+wGXPdM8r+3jucFB6JaI81dzzHVv444=; b=R5+nWaPTRQOKuve6vaEYLBBZuq
+ t/NyL1N4FRgXDmsM0NAk2UfH8AN5sCtcmqG39z10759LC2g7qdqUH5yDYLrhhw9aqyJnKWdiUJg8m
+ XVN572ToYPbm6nmsM+SGJJwoigZHeGvcs/SuuBBnYHg6N8M3ngFhbJVfpEDsHB7YOoJw=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:Date:From:Sender:
- To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=4ikdDgBjAIiaKDHuwDT7u4u91+XJ6N+elPazHbKaWpM=; b=k
- dkRAm2DYuN3ux7AGw1e2vpDGEdstOseCXmumCDU2PrZQsQPpG4yc7bDloJc34dftUwcBk9bzoxgWb
- FXXVdTsAeZuv7ZUqRlB86qyUEjpnVLh0wihzEdYujhEe5Vmh+MYCUcJfs5rrBIY2ZseoRGbd3lQk4
- X3sycAj2zoAB1SLs=;
-Received: from mail-wr2-f12.google.com ([74.125.225.76])
+ h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
+ Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+ List-Post:List-Owner:List-Archive;
+ bh=za67MZAoLRwr+wGXPdM8r+3jucFB6JaI81dzzHVv444=; b=fCLxnXFy8fENcl5tTyVTkWgvH7
+ rVAsJobEEzGJeymBmaFSJnxOUDgHQJA4pIPn8y6irt/ZNWF2TC5t9coer8o6mKmeyh9LxaMRN05rX
+ +dAg9AORLc5NIvkCoY3QSPg1juuygGyKH1OMbR55M/D/Wee/URIbnDQFIiThy1S6zKd0=;
+Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1xB9dh-0000M0-Bp for openvpn-devel@lists.sourceforge.net;
- Mon, 28 Sep 2026 11:35:23 +0000
-Received: by mail-wr2-f12.google.com with SMTP id
- ffacd0b85a97d-48439feca17so2218869f8f.1
- for <openvpn-devel@lists.sourceforge.net>;
- Mon, 28 Sep 2026 04:35:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1790595315; x=1791200115; darn=lists.sourceforge.net;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:date:from:from:to:cc:subject:date:message-id
- :reply-to:content-type;
- bh=4ikdDgBjAIiaKDHuwDT7u4u91+XJ6N+elPazHbKaWpM=;
- b=WttOUjWNsw7kdwX+HFLaQgnzWFEpbvPyyHrpL9wZn6oo2YoMaFNaggP1crGHam5sjP
- hTcdT2m6G3iAqjopyFu+DPJMzzr3lOp1SQX2ILWQnhdFkVmmS3mShPUNYHi2oJgIIQtB
- q17L5NXwah5SCpbEUpSbpEmoAHefV3fMZkkiQ+fkQMVJHrCIc91z+yyVVIoU2+QFxAXs
- RZv6KYwIPosVpSwV/qh0m/8mk+xvNO3FecIOEVIPRg8FKQ024tl6wF8dkVbj4rPx0eD9
- ciylf0qL0L58ubPE083JsVV53VRHgHoIjgqDthXeR/2I6OX/vhQ4o7PztXMkUkU9DkKr
- a0ow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1790595315; x=1791200115;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:date:from:x-gm-gg:x-gm-message-state:from:to:cc
- :subject:date:message-id:reply-to:content-type;
- bh=4ikdDgBjAIiaKDHuwDT7u4u91+XJ6N+elPazHbKaWpM=;
- b=Ww2f3wDJS6N9FTiNOzCOAI2vK70/MqdrUtOOLOA9pgPr0l2zU9r7AZ0qKemdr2ddBR
- R+uddPSGqzT5/bRwrzOfQ9Ilyoov3pUHJCYUpeFpsS7PvAkyGL/GWJ6NsEHmE53xwGRq
- Q//kn0m6E34ohXUlkWksD6UvPFPpJVA9mJgnznGuNWP9HQyFgsLDztfksYUjLh2ZWk/z
- PXxfTAWLAapmdD+2bDlm6OhoWXfreu9IXC7uoR5CcVXc3Br3QkmggkN+WvGR3n64paeM
- bUF1IsjzFYqchQdk4skdtwW2uydiPiqArUD6fG/flzwVdkqF/Cnxg7A3DgfvsYXYlkCn
- mGaQ==
-X-Forwarded-Encrypted: i=1;
- AKwUvBwcUsoDLIxDHCDcR9wvwt+ef5i5doUISF7pjxNPVlQlx/DQH7dqZHYtAlBxY6wOK8icACzKYCk6r2LWFJsr@lists.sourceforge.net
-X-Gm-Message-State: AFq9FYJOgs1osQFfNKvQEuSqdayp4wPMDQ4nGlTxIUsqHG7yGWJbbqTI
- gqEKtxC5zRmTiU+zMSFXlHbw30PHWk2SWa67n6QFAKyJvXDBm/+wOhU5E6/ANbRrLBur/n8OZGI
- 8ocu27BqvMAyzwa3LqsNuw9vI699m8DDZ877pLqknCZSMhnR09IUWsYDK/slFPs81m2Tt
-X-Gm-Gg: AYBFou1zEBsktRWy+WVUo2viEhZnSu6fCl2j9RzUpxZX6OUoBmb3KEjsJR3WwROn0/2
- rlLAY4dbsIRbFWHi46Kds09dT/yuGyNT1rLHxaIv5b7pKMDyoPWeCR5LxR4iEnud/HExMGg2Oa7
- eCHNZh76US0v61sWIoWBS7cTgFj+AH5ogqeZdV1XQnrx2mw5aT0ZLtUp+muh1b/n7inJE93Yc/B
- UeWB2uTX/SNo9vdApVAtr2gEWJ4BOWw55XqkqWgNHJ4ICK80qYk/wGdcS96erLrQAIFUYM2mgDK
- mb60OWZzVuL8Zv0TgGwBnt/m8WnR9SvigLH03mdxy/vPSKrKY2MS06dTCLfdZPENomjvZujp//k
- azwwEjTUE018TPtZGpx3a4FC1+JqE0BKfp26/gtMobKPHO3zQxs8kmGq/nk931bVZDLbW3tskXs
- jI8E14C6nseZy2AgZt1GNb7FHRSjsRPxDInsRJ+XS1P4ViMKWqla0ZogGJZi5yKQ9OOc9jCglS6
- mzJWpNa2vnubfsWuZwvKpLQSD+PnTP1VZ6tWwsOefduSZDKnRggyXNXuB1t+rVZbCoIrdZ3kY8x
- HBsrpMuFKoJyIKvNf9pr+tjAgeZoNXEUUtSIRTO/2+yYenEziNEWX6F1Awop
-X-Received: by 2002:a5d:5e83:0:b0:488:84bf:eedf with SMTP id
- ffacd0b85a97d-48884bff147mr11630176f8f.48.1790595314688; 
- Mon, 28 Sep 2026 04:35:14 -0700 (PDT)
-Received: from ip-10-18-1-162.eu-central-1.compute.internal
- (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
- by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-4887a640df9sm26101948f8f.24.2026.09.28.04.35.14
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 28 Sep 2026 04:35:14 -0700 (PDT)
-X-Google-Original-From: "razvanc (Code Review)"
- <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Mon, 28 Sep 2026 11:35:10 +0000
-Auto-Submitted: auto-generated
-X-Gerrit-MessageType: comment
-X-Gerrit-PatchSet: 7
-X-Gerrit-Change-Id: I0ba723d12d433e6e020588b7b0c3ba10bcf8c44f
-X-Gerrit-Change-Number: 1683
-X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1683?usp=email>
-X-Gerrit-Commit: 569eaffaf9d78054eb750d1f32982ae90fd2a75d
-X-Gerrit-Comment-Date: Mon, 28 Sep 2026 11:35:10 +0000
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
+ id 1xB9fq-0000O9-Eh for openvpn-devel@lists.sourceforge.net;
+ Mon, 28 Sep 2026 11:37:37 +0000
+Received: from blue.greenie.muc.de (localhost [127.0.0.1])
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 68SBbR48032360
+ for <openvpn-devel@lists.sourceforge.net>; Mon, 28 Sep 2026 13:37:27 +0200
+Received: (from gert@localhost)
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 68SBbRQE032359
+ for openvpn-devel@lists.sourceforge.net; Mon, 28 Sep 2026 13:37:27 +0200
+From: Gert Doering <gert@greenie.muc.de>
+To: openvpn-devel@lists.sourceforge.net
+Date: Mon, 28 Sep 2026 13:37:18 +0200
+Message-ID: <20260928113726.32340-1-gert@greenie.muc.de>
+X-Mailer: git-send-email 2.53.0
 In-Reply-To: <gerrit.1779265416000.I0ba723d12d433e6e020588b7b0c3ba10bcf8c44f@gerrit.openvpn.net>
 References: <gerrit.1779265416000.I0ba723d12d433e6e020588b7b0c3ba10bcf8c44f@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzc5MjY1NDE2MDAwLkkwYmE3MjNkMTJkNDMzZTZlMDIwNTg4YjdiMGMzYmExMGJjZjhjNDRmQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <acd5229477e1b0afeb1e5d1ba348d3f7af22dd34-EmailReviewComments-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
-User-Agent: Gerrit/3.14.2
-X-Headers-End: 1xB9dh-0000M0-Bp
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: dco: remove iroute
- at client exit time instead of delayed exit
+X-Headers-End: 1xB9fq-0000O9-Eh
+Subject: [Openvpn-devel] [PATCH v7] dco: remove iroute at client exit time
+ instead of delayed exit
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -137,155 +78,156 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "razvanc \(Code Review\) via Openvpn-devel"
- <openvpn-devel@lists.sourceforge.net>
-Reply-To: razvanc@mailbox.org, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com,
- antonio@mandelbit.com
-Cc: "razvanc \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>,
- plaisthos <arne-openvpn@rfc2549.org>
-Content-Type: multipart/mixed; boundary="===============3200710165422491467=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============3200710165422491467==
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="LFYBciDFOqg="; charset=UTF-8
+From: Antonio Quartulli <antonio@mandelbit.com>
 
---LFYBciDFOqg=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+When a client exits due to one of the following reasons:
+* EEN received
+* AUTH_FAILED sent
+* RESTART sent
+OpenVPN will perform some minimal cleanup and will
+then postpone the actual instance purge by 5 seconds.
 
-Attention is currently required from: flichtenheld, ordex, plaisthos=2E
+If iroutes are configured for the exiting client, the actual DCO
+iroutes removal is also postponed.
 
-ra=
-zvanc has posted comments on this change by ordex=2E ( http://gerrit=2Eopen=
-vpn=2Enet/c/openvpn/+/1683?usp=3Demail )
+If during this time window the same client reconnects, a new
+instance is created (for example because --duplicate-cn is set or
+because the same username is provided upon authentication) and the
+same IP is assigned, then OpenVPN will:
 
-Change subject: dco: remove irout=
-e at client exit time instead of delayed exit
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+* create the new client instance;
+* attempt adding the related DCO iroutes (which will fail because
+  EEXIST);
+* 5 seconds timeout fires -> execute the delayed exit routine and
+  delete the DCO iroutes;
+* no iroutes exists anymore on the server despite the client being
+  fully connected.
 
+Note that this issue is DCO specific, because without DCO OpenVPN
+creates virtual routes (no system routing table involved) and makes
+the last connecting client own them.
+This means that the delayed exit routine won't have any iroute to
+delete.
 
-Patch Set 7: Code-Review+2
+With this patch we move the DCO iroutes deletion to the actual
+client exit time in order to avoid racing with a possible addition
+being executed when the client reconnects. The new flow will be:
 
+* client exits (due to EEN or timeout)
+* DCO iroutes are immediately deleted
+* client re-connects -> new instance created
+* DCO iroutes are added -> SUCCESS
+* 5 seconds timeout fires -> old instance client is fully purged
+* client is connected and iroutes are in place as expected
 
--- 
-To vie=
-w, visit http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1683?usp=3Demail
-To unsu=
-bscribe, or for help writing mail filters, visit http://gerrit=2Eopenvpn=2E=
-net/settings?usp=3Demail
+This issue was reported by OpenVPN Access Server developers after
+observing erratic iroutes disappearance with DCO in place.
 
-Gerrit-MessageType: comment
-Gerrit-Project: openv=
-pn
-Gerrit-Branch: master
-Gerrit-Change-Id: I0ba723d12d433e6e020588b7b0c3ba1=
-0bcf8c44f
-Gerrit-Change-Number: 1683
-Gerrit-PatchSet: 7
-Gerrit-Owner: ordex=
- <antonio@mandelbit=2Ecom>
-Gerrit-Reviewer: flichtenheld <frank@lichtenheld=
-=2Ecom>
-Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Revi=
-ewer: razvanc <razvanc@mailbox=2Eorg>
-Gerrit-CC: openvpn-devel <openvpn-dev=
-el@lists=2Esourceforge=2Enet>
-Gerrit-Attention: ordex <antonio@mandelbit=2E=
-com>
-Gerrit-Attention: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Attent=
-ion: flichtenheld <frank@lichtenheld=2Ecom>
-Gerrit-Comment-Date: Mon, 28 Se=
-p 2026 11:35:10 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
+Change-Id: I0ba723d12d433e6e020588b7b0c3ba10bcf8c44f
+GitHub: closes openvpn/OpenVPN#1040
+Signed-off-by: Antonio Quartulli <antonio@mandelbit.com>
+Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1683
+---
 
---LFYBciDFOqg=
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, ordex, plaisthos=2E </p>
-<p>razvanc has=
- posted comments on this change by ordex=2E</p><p>Patch set 7:<span style=
-=3D"border-radius: 3px; display: inline-block; margin: 0 2px; padding: 4px;=
-background-color: #d4ffd4;">Code-Review +2</span></p><p><a href=3D"http://g=
-errit=2Eopenvpn=2Enet/c/openvpn/+/1683?usp=3Demail">View Change</a></p><ul =
-style=3D"list-style: none; padding: 0;"></ul><p>To view, visit <a href=3D"h=
-ttp://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1683?usp=3Demail">change 1683</a>=
-=2E To unsubscribe, or for help writing mail filters, visit <a href=3D"http=
-://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div ite=
-mscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itempro=
-p=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"=
-url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1683?usp=3Demail"/><=
-meta itemprop=3D"name" content=3D"View Change"/></div></div>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1683
+This mail reflects revision 7 of this Change.
 
-<div style=3D=
-"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:no=
-ne"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Bra=
-nch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I0ba723d1=
-2d433e6e020588b7b0c3ba10bcf8c44f </div>
-<div style=3D"display:none"> Gerrit=
--Change-Number: 1683 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 7=
- </div>
-<div style=3D"display:none"> Gerrit-Owner: ordex &lt;antonio@mandel=
-bit=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichten=
-held &lt;frank@lichtenheld=2Ecom&gt; </div>
-<div style=3D"display:none"> Ge=
-rrit-Reviewer: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div sty=
-le=3D"display:none"> Gerrit-Reviewer: razvanc &lt;razvanc@mailbox=2Eorg&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-d=
-evel@lists=2Esourceforge=2Enet&gt; </div>
-<div style=3D"display:none"> Gerr=
-it-Attention: ordex &lt;antonio@mandelbit=2Ecom&gt; </div>
-<div style=3D"di=
-splay:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;fra=
-nk@lichtenheld=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment=
--Date: Mon, 28 Sep 2026 11:35:10 +0000 </div>
-<div style=3D"display:none"> =
-Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Label=
-s: Yes </div>
+Acked-by according to Gerrit (reflected above):
+Razvan Cojocaru <razvanc@mailbox.org>
 
-</body></html>
---LFYBciDFOqg=--
+        
+diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
+index ba1c85f..6d88f6f 100644
+--- a/src/openvpn/dco.c
++++ b/src/openvpn/dco.c
+@@ -750,6 +750,8 @@
+     }
+     ASSERT(TUNNEL_TYPE(c->c1.tuntap) == DEV_TYPE_TUN);
+ 
++    msg(D_DCO, "DCO: attempt removing iroutes from system table");
++
+     if (c->c2.push_ifconfig_defined)
+     {
+         for (const struct iroute *ir = c->options.iroutes; ir; ir = ir->next)
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index a8a4a07..6d85c62 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -539,6 +539,23 @@
+     {
+         return false;
+     }
++
++    /* DCO iroutes must be removed now, because the delay introduced by this
++     * timer can create a race condition:
++     * the same client may reconnect before the old instance is purged, leading
++     * to DCO iroutes removal *after* reconnection, thus killing the routes
++     * for the new instance too.
++     *
++     * Standard/virtual iroutes (non-DCO case) are not affected because the
++     * last connecting client claiming the iroutes takes ownership. Therefore
++     * they are not removed during delayed cleanup.
++     */
++    if (c->did_dco_iroutes)
++    {
++        c->did_dco_iroutes = false;
++        dco_delete_iroutes(&c->net_ctx, c);
++    }
++
+     tls_set_single_session(c->c2.tls_multi);
+     update_time();
+     reset_coarse_timers(c);
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 52364f9..3bef334 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -479,7 +479,12 @@
+     const struct iroute *ir;
+     const struct iroute_ipv6 *ir6;
+ 
+-    dco_delete_iroutes(&m->top.net_ctx, &mi->context);
++    /* check if DCO iroutes were already removed when scheduling a delayed exit */
++    if (mi->context.did_dco_iroutes)
++    {
++        mi->context.did_dco_iroutes = false;
++        dco_delete_iroutes(&m->top.net_ctx, &mi->context);
++    }
+ 
+     if (TUNNEL_TYPE(mi->context.c1.tuntap) == DEV_TYPE_TUN)
+     {
+@@ -1277,6 +1282,8 @@
+     if (TUNNEL_TYPE(mi->context.c1.tuntap) == DEV_TYPE_TUN)
+     {
+         mi->did_iroutes = true;
++        /* multi_learn_in{6}_addr_t takes care of installing the DCO iroute */
++        mi->context.did_dco_iroutes = true;
+         for (ir = mi->context.options.iroutes; ir != NULL; ir = ir->next)
+         {
+             if (ir->netbits >= 0)
+diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
+index e9e18bf..cdd02b6 100644
+--- a/src/openvpn/openvpn.h
++++ b/src/openvpn/openvpn.h
+@@ -507,6 +507,8 @@
+     bool did_we_daemonize;       /**< Whether demonization has already
+                                   *   taken place. */
+ 
++    bool did_dco_iroutes;        /**< Whether DCO iroutes have been installed */
++
+     struct context_persist persist;
+     /**< Persistent %context. */
+     struct context_0 *c0; /**< Level 0 %context. */
 
-
---===============3200710165422491467==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============3200710165422491467==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
---===============3200710165422491467==--
-
