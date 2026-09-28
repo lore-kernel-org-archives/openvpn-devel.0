@@ -4,129 +4,69 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5A9F7CA5FA3
-	for <openvpn-devel@archiver.kernel.org>; Mon, 28 Sep 2026 18:58:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C13DBCA5FA3
+	for <openvpn-devel@archiver.kernel.org>; Mon, 28 Sep 2026 21:01:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=eOf33fqeco8q97zP+nN9w2qRMkcdB62zrdJLwRVsLtU=; b=OG1iSZyyGOEkuHBoYRLmBHkY77
-	zl17O/OmkPXdDbLWxq+Tz7ZkKbacqZN1iG90q9hD3D7sxpomt38KAqOLdyMXfONkC06CwSrbA8O3u
-	mQ0j0FegTH9y3mpGEDn4uftqdk+SyoUBt5MiB57vF1WqGoLgZnQIKFecnFqHiGP0eMIE=;
+	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
+	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=FrLxi5oFBi31Fe1nCgiGs/RmoijSmXiUZT4h+QmeRsA=; b=LWpyQaV81usfum1HjffshlXFf6
+	9fvshasXkSMVcu4YM3r1O8oJBtX9WprvAXClJrOtyDHZNvG5Q21wCCx5IdREHJ/v00DhjcImSgCu0
+	bKPin9W2qqgH0zkGX1cTLGuuyk5MTy4SSGNdGGJ5piSlqh95csgTAZy3TXIk/0Rem5e8=;
 Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
 	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xBGYj-0002SG-OJ;
-	Mon, 28 Sep 2026 18:58:39 +0000
+	id 1xBITl-0002aQ-Rn;
+	Mon, 28 Sep 2026 21:01:39 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1xBGYi-0002S9-3X
+ (envelope-from <gert@blue4.greenie.muc.de>) id 1xBITl-0002aJ-12
  for openvpn-devel@lists.sourceforge.net;
- Mon, 28 Sep 2026 18:58:37 +0000
+ Mon, 28 Sep 2026 21:01:38 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
- :List-Post:List-Owner:List-Archive;
- bh=HJXzQ1OUF9hWzp/CFoNdo2aCtmLau7yulWk0B9Ix398=; b=DJ1CY6YweSNYfT7iLoGo52cnBh
- w+LUaifV/8Ej/bTbFmbM+blOP5UG4nqy9z2HSMs6oDJb5xtqjZv4rG+0AmatTBFQjVK5dtTND4oZ0
- uQ8Q09kEC7z06+Uz6mcegU4lOhVs0rdD0V0dTmqYL5kk9fAKOYHEWlqpZt6RuqGEXIFo=;
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
+ In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=hxfBRagk8/+lY/7uaFIqJi/ZPI55/vCpXS0WUP/PgL4=; b=hyKrksmm0X29hxK+IYkT4lTlz8
+ ydPuCSzK/SF+KPLvTkN9z2Id8ZGSJAmPSpVjFP98Y59J8KuSSG7cTTg08WNMVucgINMJW1sBSLO0D
+ 6W546DJDUMSrh7C93P370Qh4YcnMbs7XA2KZtYWhw1uoXBTFM/ouzNjyJvJZ7Rqh+T1A=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
- Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=HJXzQ1OUF9hWzp/CFoNdo2aCtmLau7yulWk0B9Ix398=; b=e
- ng+ydK32Gvk7RZTbMY3LbffqByQEn2OX0ELtCx8EtZArwICsVFQZWQ/u56RFDP7+AK9IMRohKAhHT
- GlLqaNON7qAJgOLDAG3ZMfLHL7I0SwogXgiLsPGY3XidotIkjBbvwVBK9BDCowGlJaS2NlLxpq2/n
- dUGxN2Ke+e+SwsWs=;
-Received: from mail-wr2-f12.google.com ([74.125.225.76])
+ h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
+ Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+ List-Post:List-Owner:List-Archive;
+ bh=hxfBRagk8/+lY/7uaFIqJi/ZPI55/vCpXS0WUP/PgL4=; b=VnOVN9cIasqxxFKx4fwvzer4PN
+ xCOa4PLeZiymGBCWYgSy1tmErkFY5+EsJEUG5u60qi22XzcjAZML/Yc5luZPIEnARQ49I9zOCscyn
+ +CYZ/6dS40FbHb9EEyt5tz/uTXOqi0E7o3zxuP+RTB9d7VP+c4s64kLuyPcSjxoxlNXs=;
+Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1xBGYe-0004jw-O9 for openvpn-devel@lists.sourceforge.net;
- Mon, 28 Sep 2026 18:58:37 +0000
-Received: by mail-wr2-f12.google.com with SMTP id
- ffacd0b85a97d-4834977ae75so2024806f8f.3
- for <openvpn-devel@lists.sourceforge.net>;
- Mon, 28 Sep 2026 11:58:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1790621910; x=1791226710; darn=lists.sourceforge.net;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
- :reply-to:content-type;
- bh=HJXzQ1OUF9hWzp/CFoNdo2aCtmLau7yulWk0B9Ix398=;
- b=VBgwjhPH99HTiTX+jAFhWKT/+UdKRpDQkn731gJfeUoFaEJSSlVEdKziNxq+Y+LYJv
- T3MoloGtf648kwIqcMnbQtVa+hz07xWOt9MiT1vkyOSIxFMo8Fgr21iDSsdCst3WqCCV
- OG4ryVTwZCYHl4dq2FuezU8CI008a7CubuqQeTdeOud0T5SjasTQ8Z30tyVf21tW38PE
- 2GYOANhbeF6zjHQH1x1xvT2L6JVaVhn3jqWNQOUQxlo6L6kLiIQgNm7AdpQtfQb3Re2j
- 2FnNK7VZx39MDS8+Oip3DPL3Oly3ab6q4LjkidoXZHEF3MnIo+q7mbzaSpec5h1nrXdW
- RDkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1790621910; x=1791226710;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
- :cc:subject:date:message-id:reply-to:content-type;
- bh=HJXzQ1OUF9hWzp/CFoNdo2aCtmLau7yulWk0B9Ix398=;
- b=ZSg0haHsB3eWP0Jg4saoZyGAzu648zFW3iJVdeeNWbwTg+xed4UXpuiX8cFKK3qHyo
- N2Wjw9Ee72t61J35w1WKhTf2BjZkSwUfx/VUmbxSQ5A03BCUHUFB/JzddE9aLYcGtqIP
- Ka+0qAeRKppMMhasSAI2bmbvcWYDwNeYJJWY+BZvvkoVe6uWp3n12+vvkDG0fbsl51oy
- OlcfpmhlCkvQHcNKlKNywKlfB4GA6eJmyvAKlwharcybR//HYpKfyhCBlOXdkP5RR6ZN
- /8vKwfvkZlJ6LuuDxcOZ1QQsWbkwO9GmHzA7i7HMqM8ItNxcSynWrfqxjHhhsQa8k1Al
- zMvg==
-X-Forwarded-Encrypted: i=1;
- AKwUvBy30N19PPkxSAJxSH/5SCkYA/TWwSlApgl5aKKhKhU+jqPGtyECRHCIN0GxQiBYYZHRrORT+rqBpuqM/EHE@lists.sourceforge.net
-X-Gm-Message-State: AFuF++m75vKKnApY0ON3BG5I/0UnVMEGp9SFPlONYpBMnjKa0DsSAaeY
- VW6OmRLtn1gkB0taKa8NlbrBO87MIta6UGD7ECfXeoCG8a+AYTXiwUkdXP+leESkzdVpSemydL5
- ec9ic4WROc1/HaqvujtWc9rK/9h1ohVWTtTHe8+YKrVsiTEq5aAW6bUYrvZlU001vGVAh
-X-Gm-Gg: AYBFou3TmvODooAcfC+sicRujSzutfKfl3qKyMm8YfjXez0MP1F7QkPANLaCnmOOlyh
- PfmrvV61FmLA3alv0EoFakkT8tf2ipZbK+8aKUID5B4aLQu3OmN5AvCF9oieWVKq/gSp6R23C+H
- sk7cuwXkWB7dDAxMiLyjM/JkC02xzvkPrZ2a2MNXedcCIRHQANj3jC4EtG1vIGI5e5zMGsr4uhn
- L/rWb1TQkCqTgQJAMGQ8tNMWcBAbEh9wGciPC49+doEJkBVBdSvvfZHWUKFHuuh0eSU02Y1Lgnc
- G+VoAIYr+C4vKMdHpYVES8diqbIICIs+NgGkMC3qkKfoNeS3Iihan3h8i0T80AM1TXErkhMyVVO
- A9T1WWb5Z9WEU4z8wSzzAptr6AftYsLm8ubZnLIuSNigseSRMpGD/AHS4qV4xThC1XqPe2n+Yfz
- iDkpt7Qje73eCpUWyWBCJnwKBd3GUU9rkhfp+Hav6uGkyzz5i9sKZfo7znO4Q+yMfo0cWRQ/wai
- t7UF563xwOgQBVuoXz5wGymDxxMA7KB5rhtoCQUjbcPynOKLackGNXh39x/xHZALAVRWF6vhRyO
- kvOOcKyICbOHtHkyKg/ko3my3W52RvIMefV7/FqiXcIuzukIdGVgvYAZiNtO
-X-Received: by 2002:a05:600c:1991:b0:49f:ffef:1db with SMTP id
- 5b1f17b1804b1-49fffef0280mr100106395e9.4.1790621910063; 
- Mon, 28 Sep 2026 11:58:30 -0700 (PDT)
-Received: from ip-10-18-1-162.eu-central-1.compute.internal
- (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
- by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-4a00cf9b5e2sm20461175e9.8.2026.09.28.11.58.29
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 28 Sep 2026 11:58:29 -0700 (PDT)
-X-Google-Original-From: "razvanc (Code Review)"
- <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Mon, 28 Sep 2026 18:58:27 +0000
-To: flichtenheld <frank@lichtenheld.com>
-Auto-Submitted: auto-generated
-X-Gerrit-MessageType: comment
-X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: Ib69b6c7a5f21f8552159c94560830f182c6238b7
-X-Gerrit-Change-Number: 1963
-X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1963?usp=email>
-X-Gerrit-Commit: 1b96c0f91875317822c953a905f38c2daf635294
-X-Gerrit-Comment-Date: Mon, 28 Sep 2026 18:58:27 +0000
-In-Reply-To: <gerrit.1790613679000.Ib69b6c7a5f21f8552159c94560830f182c6238b7@gerrit.openvpn.net>
-References: <gerrit.1790613679000.Ib69b6c7a5f21f8552159c94560830f182c6238b7@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzkwNjEzNjc5MDAwLkliNjliNmM3YTVmMjFmODU1MjE1OWM5NDU2MDgzMGYxODJjNjIzOGI3QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <0dafc187f5dcc05b374cf019599c61455f19a95a-EmailReviewComments-HTML@gerrit.openvpn.net>
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
+ id 1xBITg-00076c-HM for openvpn-devel@lists.sourceforge.net;
+ Mon, 28 Sep 2026 21:01:38 +0000
+Received: from blue.greenie.muc.de (localhost [127.0.0.1])
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 68SL1TWt012401
+ for <openvpn-devel@lists.sourceforge.net>; Mon, 28 Sep 2026 23:01:29 +0200
+Received: (from gert@localhost)
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 68SL1TLv012400
+ for openvpn-devel@lists.sourceforge.net; Mon, 28 Sep 2026 23:01:29 +0200
+From: Gert Doering <gert@greenie.muc.de>
+To: openvpn-devel@lists.sourceforge.net
+Date: Mon, 28 Sep 2026 23:01:23 +0200
+Message-ID: <20260928210129.12370-1-gert@greenie.muc.de>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <gerrit.1790610390000.I39b3b31983a2d6348fd66266448f8d13e53a422c@gerrit.openvpn.net>
+References: <gerrit.1790610390000.I39b3b31983a2d6348fd66266448f8d13e53a422c@gerrit.openvpn.net>
 MIME-Version: 1.0
-User-Agent: Gerrit/3.14.2
-X-Headers-End: 1xBGYe-0004jw-O9
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Fix (almost) all
- occurrences of cppcheck variableScope
+X-Headers-End: 1xBITg-00076c-HM
+Subject: [Openvpn-devel] [PATCH v1] openvpnmscia: Fix some ugly code
+ formatting
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -138,146 +78,168 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "razvanc \(Code Review\) via Openvpn-devel"
- <openvpn-devel@lists.sourceforge.net>
-Reply-To: razvanc@mailbox.org, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com
-Cc: "razvanc \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>,
- plaisthos <arne-openvpn@rfc2549.org>
-Content-Type: multipart/mixed; boundary="===============0750527156284214777=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============0750527156284214777==
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="tdxdUmwZPc0="; charset=UTF-8
+From: Frank Lichtenheld <frank@lichtenheld.com>
 
---tdxdUmwZPc0=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Trailing comments lead to some ugliness due
+to clang-format formatting. Make nicer.
 
-Attention is currently required from: flichtenheld, plaisthos=2E
+Change-Id: I39b3b31983a2d6348fd66266448f8d13e53a422c
+Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
+Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1959
+---
 
-razvanc h=
-as posted comments on this change by flichtenheld=2E ( http://gerrit=2Eopen=
-vpn=2Enet/c/openvpn/+/1963?usp=3Demail )
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Change subject: Fix (almost) all =
-occurrences of cppcheck variableScope
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1959
+This mail reflects revision 1 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Razvan Cojocaru <razvanc@mailbox.org>
 
-Patch Set 1: Code-Review+2
+        
+diff --git a/src/openvpnmsica/openvpnmsica.c b/src/openvpnmsica/openvpnmsica.c
+index 25fa1e4..e510e4d 100644
+--- a/src/openvpnmsica/openvpnmsica.c
++++ b/src/openvpnmsica/openvpnmsica.c
+@@ -185,9 +185,9 @@
+         free(pAdapterAdresses);
+         if (ulResult != ERROR_BUFFER_OVERFLOW)
+         {
+-            SetLastError(
+-                ulResult); /* MSDN does not mention GetAdaptersAddresses() to set GetLastError().
+-                              But we do have an error code. Set last error manually. */
++            /* MSDN does not mention GetAdaptersAddresses() to set GetLastError().
++             * But we do have an error code. Set last error manually. */
++            SetLastError(ulResult);
+             msg(M_NONFATAL | M_ERRNO, "%s: GetAdaptersAddresses() failed", __FUNCTION__);
+             uiResult = ulResult;
+             goto cleanup_pAdapterList;
+@@ -290,8 +290,9 @@
+     uiResult = MsiSetProperty(hInstall, szActiveAdaptersPropertyName, szAdaptersActive);
+     if (uiResult != ERROR_SUCCESS)
+     {
+-        SetLastError(uiResult); /* MSDN does not mention MsiSetProperty() to set GetLastError(). But
+-                                   we do have an error code. Set last error manually. */
++        /* MSDN does not mention MsiSetProperty() to set GetLastError(). But
++         * we do have an error code. Set last error manually. */
++        SetLastError(uiResult);
+         msg(M_NONFATAL | M_ERRNO, "%s: MsiSetProperty(\"%s\") failed", __FUNCTION__,
+             szActiveAdaptersPropertyName);
+         goto cleanup_szAdaptersActive;
+@@ -386,8 +387,9 @@
+     uiResult = MsiRecordSetString(hRecord, 0, L"\"[#bin.openvpn_gui.exe]\"");
+     if (uiResult != ERROR_SUCCESS)
+     {
+-        SetLastError(uiResult); /* MSDN does not mention MsiRecordSetString() to set GetLastError().
+-                                   But we do have an error code. Set last error manually. */
++        /* MSDN does not mention MsiRecordSetString() to set GetLastError().
++         * But we do have an error code. Set last error manually. */
++        SetLastError(uiResult);
+         msg(M_NONFATAL | M_ERRNO, "%s: MsiRecordSetString failed", __FUNCTION__);
+         goto cleanup_MsiCreateRecord;
+     }
+@@ -412,16 +414,17 @@
+     }
+     if (uiResult != ERROR_SUCCESS)
+     {
+-        SetLastError(uiResult); /* MSDN does not mention MsiFormatRecord() to set GetLastError().
+-                                   But we do have an error code. Set last error manually. */
++        /* MSDN does not mention MsiFormatRecord() to set GetLastError().
++         * But we do have an error code. Set last error manually. */
++        SetLastError(uiResult);
+         msg(M_NONFATAL | M_ERRNO, "%s: MsiFormatRecord failed", __FUNCTION__);
+         goto cleanup_malloc_szPath;
+     }
+ 
+     /* Launch the OpenVPN GUI. */
+     SHELLEXECUTEINFO sei = { .cbSize = sizeof(SHELLEXECUTEINFO),
+-                             .fMask =
+-                                 SEE_MASK_FLAG_NO_UI, /* Don't show error UI, we'll display it. */
++                             /* Don't show error UI, we'll display it. */
++                             .fMask = SEE_MASK_FLAG_NO_UI,
+                              .lpFile = szPath,
+                              .nShow = SW_SHOWNORMAL };
+     if (!ShellExecuteEx(&sei))
+@@ -528,7 +531,8 @@
+                     break;
+                 }
+             }
+-            break; /* Adapter names are unique. There should be no other adapter with this name. */
++            /* Adapter names are unique. There should be no other adapter with this name. */
++            break;
+         }
+     }
+ 
+@@ -614,7 +618,8 @@
+             }
+ 
+             *iTicks += MSICA_ADAPTER_TICK_SIZE;
+-            break; /* Adapter names are unique. There should be no other adapter with this name. */
++            /* Adapter names are unique. There should be no other adapter with this name. */
++            break;
+         }
+     }
+ 
+@@ -678,9 +683,9 @@
+     uiResult = MsiDatabaseOpenView(hDatabase, szQuery, &hViewST);
+     if (uiResult != ERROR_SUCCESS)
+     {
+-        SetLastError(
+-            uiResult); /* MSDN does not mention MsiDatabaseOpenView() to set GetLastError(). But we
+-                          do have an error code. Set last error manually. */
++        /* MSDN does not mention MsiDatabaseOpenView() to set GetLastError(). But we
++         * do have an error code. Set last error manually. */
++        SetLastError(uiResult);
+         msg(M_NONFATAL | M_ERRNO, "%s: MsiDatabaseOpenView(\"%ls\") failed", __FUNCTION__, szQuery);
+         goto cleanup_hDatabase;
+     }
+@@ -689,8 +694,9 @@
+     uiResult = MsiViewExecute(hViewST, 0);
+     if (uiResult != ERROR_SUCCESS)
+     {
+-        SetLastError(uiResult); /* MSDN does not mention MsiViewExecute() to set GetLastError(). But
+-                                   we do have an error code. Set last error manually. */
++        /* MSDN does not mention MsiViewExecute() to set GetLastError(). But
++         * we do have an error code. Set last error manually. */
++        SetLastError(uiResult);
+         msg(M_NONFATAL | M_ERRNO, "%s: MsiViewExecute(\"%ls\") failed", __FUNCTION__, szQuery);
+         goto cleanup_hViewST;
+     }
+@@ -715,8 +721,9 @@
+         }
+         else if (uiResult != ERROR_SUCCESS)
+         {
+-            SetLastError(uiResult); /* MSDN does not mention MsiViewFetch() to set GetLastError().
+-                                       But we do have an error code. Set last error manually. */
++            /* MSDN does not mention MsiViewFetch() to set GetLastError().
++             * But we do have an error code. Set last error manually. */
++            SetLastError(uiResult);
+             msg(M_NONFATAL | M_ERRNO, "%s: MsiViewFetch failed", __FUNCTION__);
+             goto cleanup_hRecordProg;
+         }
+@@ -735,9 +742,10 @@
+             uiResult = MsiGetComponentState(hInstall, szValue, &iInstalled, &iAction);
+             if (uiResult != ERROR_SUCCESS)
+             {
+-                SetLastError(uiResult); /* MSDN does not mention MsiGetComponentState() to set
+-                                           GetLastError(). But we do have an error code. Set last
+-                                           error manually. */
++                /* MSDN does not mention MsiGetComponentState() to set
++                 * GetLastError(). But we do have an error code. Set last
++                 * error manually. */
++                SetLastError(uiResult);
+                 msg(M_NONFATAL | M_ERRNO, "%s: MsiGetComponentState(\"%ls\") failed", __FUNCTION__,
+                     szValue);
+                 free(szValue);
 
-
--- 
-To view, visit =
-http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1963?usp=3Demail
-To unsubscribe, =
-or for help writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/setti=
-ngs?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit=
--Branch: master
-Gerrit-Change-Id: Ib69b6c7a5f21f8552159c94560830f182c6238b7=
-
-Gerrit-Change-Number: 1963
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <=
-frank@lichtenheld=2Ecom>
-Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=
-=2Eorg>
-Gerrit-Reviewer: razvanc <razvanc@mailbox=2Eorg>
-Gerrit-CC: openvpn=
--devel <openvpn-devel@lists=2Esourceforge=2Enet>
-Gerrit-Attention: plaistho=
-s <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Attention: flichtenheld <frank@lichte=
-nheld=2Ecom>
-Gerrit-Comment-Date: Mon, 28 Sep 2026 18:58:27 +0000
-Gerrit-Ha=
-sComments: No
-Gerrit-Has-Labels: Yes
-
---tdxdUmwZPc0=
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: flichtenheld, plaisthos=2E </p>
-<p>razvanc has posted=
- comments on this change by flichtenheld=2E</p><p>Patch set 1:<span style=
-=3D"border-radius: 3px; display: inline-block; margin: 0 2px; padding: 4px;=
-background-color: #d4ffd4;">Code-Review +2</span></p><p><a href=3D"http://g=
-errit=2Eopenvpn=2Enet/c/openvpn/+/1963?usp=3Demail">View Change</a></p><ul =
-style=3D"list-style: none; padding: 0;"></ul><p>To view, visit <a href=3D"h=
-ttp://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1963?usp=3Demail">change 1963</a>=
-=2E To unsubscribe, or for help writing mail filters, visit <a href=3D"http=
-://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div ite=
-mscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itempro=
-p=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"=
-url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1963?usp=3Demail"/><=
-meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D=
-"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:no=
-ne"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Bra=
-nch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ib69b6c7a=
-5f21f8552159c94560830f182c6238b7 </div>
-<div style=3D"display:none"> Gerrit=
--Change-Number: 1963 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1=
- </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@l=
-ichtenheld=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: p=
-laisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:no=
-ne"> Gerrit-Reviewer: razvanc &lt;razvanc@mailbox=2Eorg&gt; </div>
-<div sty=
-le=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esou=
-rceforge=2Enet&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: pl=
-aisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:non=
-e"> Gerrit-Attention: flichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
-<=
-div style=3D"display:none"> Gerrit-Comment-Date: Mon, 28 Sep 2026 18:58:27 =
-+0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<di=
-v style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>
---tdxdUmwZPc0=--
-
-
---===============0750527156284214777==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============0750527156284214777==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
---===============0750527156284214777==--
-
