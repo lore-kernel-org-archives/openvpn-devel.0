@@ -4,106 +4,106 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8380ECA5FA1
-	for <openvpn-devel@archiver.kernel.org>; Tue, 29 Sep 2026 13:17:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E5608CA5FAE
+	for <openvpn-devel@archiver.kernel.org>; Tue, 29 Sep 2026 13:17:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=v7aZS0v1J6mSvpsIsmeIZiasQw94b/NkDDrwVsrwP5s=; b=NUxBQ7E4/4jYUOhgtD7Fg64t6v
-	fgLMCG1f0NY/VIfGRyPorsKyUpLebdNzSV7UjXj520KRvZKFVKSS8Bvku+v970hsEmjrG4wgaUOsr
-	M6YB9I9RaHxrYU84jbJ9fxWWDzIx0N9ZA7sgBoNc5ST4wmmpwj/NrDlBvwfRBNILcMgM=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=JXOPyWq5c6peXd9PjFs93CqXWupbKCQnvEmlsiXtvZo=; b=KBMEBY8Y6qx7Sk6+FlaqPvcinC
+	U0xtr0C0yHcrRNBxf41vhZemN8HG15rhIrQgaaJ/VHV9lL9WXcopFCTOkKDAhp9rRd8GB4NxPT+Zt
+	LEFASSfgbIil3GzxEidq8O0CnuJ5BgcmezenJ47WfGwDyzo0dga896V6gW9yPq47sQ1s=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xBXhf-0003ch-17;
-	Tue, 29 Sep 2026 13:17:03 +0000
+	id 1xBXhk-0002ul-CO;
+	Tue, 29 Sep 2026 13:17:05 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1xBXhc-0003cL-M7
+ (envelope-from <gerrit@openvpn.net>) id 1xBXhi-0002uV-P0
  for openvpn-devel@lists.sourceforge.net;
- Tue, 29 Sep 2026 13:17:00 +0000
+ Tue, 29 Sep 2026 13:17:04 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
  :List-Post:List-Owner:List-Archive;
- bh=6ncj/8WZD1plDMEg+PKcQwxSDSWfdAIsXOBfD8f3DNw=; b=FjsaN2r7LCe1SRMj2Y7PN3zxZ7
- 14jSpaRaRXbWpq74gxnx2DRlyou5CGLM+5mVxtJ4eg2ItH7i6H7wCy6J535KrrphfzNLtw6iYCROt
- 8p+Oqp4jqUP499I1u81+xrHEiuUuiBVZeRHHE489b4g8CN7PzaeLur09KINUdwK6SpYM=;
+ bh=Vbap3A64tOQs5zFW5zeQEQnkwvXxt5C0eBiapxqw7Zc=; b=AMsHkcEevUt9DvJ9kbJcgSrbGj
+ q73FuFCFKGzQl/pt0px1xmsHNILYxmFk2oQ4OMZkrZya7EeUXppE7u1nNw4O6SYvqWk1GcX/jhBhB
+ UxZWstx/PneebjetsHDdrONAagl8gmCrUEJCYzF2O+1kSaLHMvxegk1F4FlJuz7qXVmg=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
  Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=6ncj/8WZD1plDMEg+PKcQwxSDSWfdAIsXOBfD8f3DNw=; b=c
- hvOxeXFBu5qawUdWrtlrTPShqk+mBrjSCtSMi0N7nURpp1M1fEpIxh77EM3+TtFosfVWFXh8r3gtl
- CtUzvsSboXnzZqng0HZH0VgR1MCeZas6lfysYKpj5/6dW18Pqdw99rR9N6bWp9XnSjXHpICgPpBCY
- 6jAHz+IXDlFafiPE=;
-Received: from mail-wm2-f13.google.com ([74.125.225.141])
+ List-Owner:List-Archive; bh=Vbap3A64tOQs5zFW5zeQEQnkwvXxt5C0eBiapxqw7Zc=; b=H
+ YqB8KhusN0SPEJ4BVhFrcA2wQ/FcSklHTP3Q9nLvTg9xO0Prx7kxW5f8N42vLVf7Lxq+V291N/kV2
+ TtjA+9KFp8JE+5vaBFX+nUckr5+8j4JJ36HQ/tEm8xn54tbXtYN559I/ZuqD270Di6cSb0R3nPANn
+ /OVR3jAbE1HOsgyM=;
+Received: from mail-wr2-f12.google.com ([74.125.225.76])
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1xBXha-0001Fc-NE for openvpn-devel@lists.sourceforge.net;
- Tue, 29 Sep 2026 13:17:00 +0000
-Received: by mail-wm2-f13.google.com with SMTP id
- 5b1f17b1804b1-49e7bcb94d3so31348965e9.2
+ id 1xBXhd-0001Fm-OP for openvpn-devel@lists.sourceforge.net;
+ Tue, 29 Sep 2026 13:17:04 +0000
+Received: by mail-wr2-f12.google.com with SMTP id
+ ffacd0b85a97d-485933b24c3so2564903f8f.0
  for <openvpn-devel@lists.sourceforge.net>;
- Tue, 29 Sep 2026 06:16:58 -0700 (PDT)
+ Tue, 29 Sep 2026 06:17:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1790687812; x=1791292612; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1790687815; x=1791292615; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=6ncj/8WZD1plDMEg+PKcQwxSDSWfdAIsXOBfD8f3DNw=;
- b=f0Ub3zMBxBG+pXs+voRbBxW/vKNGWYOwwYRUpg0UheVAWMCwWmqZ3UM7CVlXBgKQ/B
- OEZtw9tAwqMYKcgRnPi7Rlsvq0bNk4lrGqSccztRhlvlZ8bn0wsQ5El75GrvNP4IPfoz
- M8zfVBIyVTbRRypkpRydhuQ6oVVd7/6uERKN7X9dzcu4ywVjQWMIk+C+60v/MsJdVKt2
- m7pl+Q9XTdPzfiZRklSYU7WKS3eJ7vpPv1Nu2Fj8MygEXMBRiBbCwoM8TVHsI/4AjniQ
- 3HdPTcIBNquEO6+6S2XwM4cUFIM+z+zmr5qcLK9nYUN0bqsZhD7sya/yNLZXqTVAO7qy
- nZYQ==
+ bh=Vbap3A64tOQs5zFW5zeQEQnkwvXxt5C0eBiapxqw7Zc=;
+ b=Kn8P9BezyN/33V2uoZ+be7GFFYdiEa9RSQT/LZUo6qWuVL4FHh+tgSnPlMgR2C0VsC
+ C3GDjKxyK3tySg/tnjFTmDpVJQlHUvWaaEwScyWwWyTLDCijxr+padNAZrxzrlN6mpCB
+ q+BhFoI0DKm9uuSzon9la1y3s97OfwNar1a1wsZJzqbXD4rLq4hU5U29FIriocvuGnd8
+ r/SDupUIH+Scia9cjSbmaPIzaJ4Xu7YGeY8O3h9AmuAXS7TeoiDvHa6tRjt9AiMxEYFJ
+ 0rzye8aeIuFKcrwN+9l9B0ywpIKir73hT0l3jCFUJfC82sJgWDw/lcHhbTCSdoUoNo3z
+ bRLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1790687812; x=1791292612;
+ d=1e100.net; s=20260707; t=1790687815; x=1791292615;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=6ncj/8WZD1plDMEg+PKcQwxSDSWfdAIsXOBfD8f3DNw=;
- b=IZSFbXeJn6qcn9Lj0jecS2zJmyUFQHZjT10i2SlSIjP3lVaZ3MaMPcePK1o4Qa+9mK
- OxKyUdoGGkrJhGedKK15KPMNur5l3CZo4P10HIUSPnDFlN+BZTfZN0XdXeue+x2ZWs6b
- ERYvLzkkoyFownbAdnANcD+MeiDkqqV1KBEpsSiUqyAnt832wr7Ha100MmfdJriU3j0p
- 3OaN4gYduV5mh8Tx0gyDukoUcekr7c8fandeZeFMlZUWsdNWHdZqHU7JJld7zcWhggWZ
- NTNqCqdarzBbtL1qoTJ8q/e8XXgBNK7NCoHyy/L4q+5S19rkbHgP6u+q5y7eMr3KQPy0
- IwQA==
-X-Gm-Message-State: AFuF++monp7T2cpJZfU6duU2NU/XFZ9/kyPJLIOAZCo8otYe+/gw6/zX
- NPwiqigYn1ALrEO5Et8zxfG8eCJHVEQg3uDpjS3Z26dbS6343TPLIoFAAQB5d3JUO6Wd+kj6ZM6
- 80nBOcYOZYrEzDZ1JArXn/qJfssi0SdIfsP5aQGpfR/6rcOAC0Atwes+zUWWZVJOYRiBGNAEcEw
- WsYXMFuw==
-X-Gm-Gg: AYBFou2LHTja1DDQ4owW3YUocPzZwnMIdreXQehyUAKBZUdBJ9nI3GCEQQZDc2weguB
- M19d2AGVvsOqB0R/tLGkg8tEFjuiPA75sS7AvEXL/rWD0VBE737Zbk+UsJ8+yNZMKFJAuMVGnRE
- /trzVmF6QntxZlVfTeWkq0zPYr2S9IDfCPy/1Ok+eqWERcMsAvYcjdjLJGezHTpZS8vId4ufAOP
- EE6v0qBiYyhHFNN6Rn2+G7HfjWyRtu7Hkxh/2g3HEm2ehNlcLVOuBufpwbRUTRMbM72T4nJnjiU
- +Wv70UQgyM9TNKgl6jwwQ3gJvzJTOTpUeE1KrEh00VmS7O/CCldRKK5CLzZd715zkugDn0ezIyV
- v4hDkFa9IutVx4S/QhDPlLORDdyGhVzLfmk9gJ7jxCBvq5ght0KuPZ3w0a8F8NIqDKnRwZJJBfS
- UDO9JOA5TPsmsZrcTcTkdY5TbXoxWzkPe3tyEIMcqNtEJqgDXo1ZYPcqfhkBkBY7AZ4yoLqKLME
- mMyFLIi0JG6qHpqOtd0QbypDNBfNdSKVeJ/Er/gdP3l796MZ+moy1WUhWKRnJrXTUS+h5atB2ce
- orpeG6dB75ChKtn5vjMIc2hBMw8oex+tDI81B8rohfeZkCCMDSqLkgYwl5cI
-X-Received: by 2002:a05:600c:4745:b0:49d:10d6:fd55 with SMTP id
- 5b1f17b1804b1-49fe66abd7fmr289236775e9.1.1790687811685; 
- Tue, 29 Sep 2026 06:16:51 -0700 (PDT)
+ bh=Vbap3A64tOQs5zFW5zeQEQnkwvXxt5C0eBiapxqw7Zc=;
+ b=obUUpDtA0qBG9Tu6+pn/h5foB+t9sQzzFGI9iEpaPWQXYbznc9B2YBEsL0MnKNF4zR
+ 1IQiTpp58N6R9f/jujVHSFgKzmnNCtFEWSrpyzi2JkWDNTRBsytSA0Yqq+1cwe27/5dn
+ ozPB36S7ZC0VQcWTtvTozGU8u0qA7Ii0qQEt2nLeSXD0VfDbPTRL63CsAWtwKEUucspe
+ VRymYFFs1M7NShSWG8Ofu5AKntelIBQ/FRuDEonp0bIOO5TOegAtHKwKs3UTEF0x75O3
+ cfC+XHqTPbeAKCffpxoFPbp9OJV5FjgNaGs1PzxHaVyZb8KEAWNouDfG6F5taNIeUyNF
+ Qjhg==
+X-Gm-Message-State: AFq9FYLECuNTe94Nm/flS/TsA1sGugaFzXEuX/94Eu6FvU6G8dQCCbBl
+ F6NmhoPd9IhUyU04p9rhvvHu9sZ3Z0y7e+gPQJgn6fCT8r6GD8A6qI77PBdK0/zF0KtBa3ZVe4q
+ RGC1TEJt6DGzpx/Nbg1RNd7PcwXZRKXoG8x8IF0DpB5r4fvNNBypQmLKF8uuEN/x6Fb4Dy0a+Az
+ wyHHtQeA==
+X-Gm-Gg: AYBFou0ib6R+BfJZKlaU1FCAj+7AiUlbN+h+kICtbXHRdK82DNfNCMT4QoFOaS8GiGS
+ QaHUKoxDFknJ0NudujOdPXB0G20qll7fpHVoxMKYu6iXhBscuOadz5+zu3W6S+GPmlRzVHt9YrL
+ wWEgw5h3KF7G/CfdMF3EiW8s2yMYguVekoJdYt/arv3geqX+9+vR/3dOHXbSbIGMDKnrmAmVAb0
+ Ib3OXdvKxEDn8mKusbDFI3rRFogFMRk9VGIj6C1sqrCyu8niChpmTJPVZzENcoYX75VrxNT9iYT
+ QrrBrKgtt7UuLdfgOh5NSQk6AXl0RdOhbpoqe/vwbdQm+EwJCfUGL7Ou7FdFMV63pbytJXsbYBj
+ 7lGGxx4gosgNp2H/AlgIYw+roR5xBJWC+jH4hA25lvMA4LkiTCh0XQ9QITsbsq33z6ZTvsx4lpj
+ 8AYSDhW3JBE8dsD+54lbOrUBufrvj/MZv2o/FtQJfcNp48tMCWmC3AklZHi3ZN64mqSAhlhqzYZ
+ IoLvcyTKy0DP7r8JN7L+DVhiMpGxe727w554yrgF0sRFxu0IQxndBhMkl6W+7uQgiTRIUa5af3s
+ 3TZGEXO3gfLWfBwyCjT88O3aSvAow3kgsouIMhg0v+oxpWNYaOjzPmpexwvj
+X-Received: by 2002:a05:6000:178c:b0:485:8ee5:5ffa with SMTP id
+ ffacd0b85a97d-48871703b57mr29694186f8f.38.1790687814049; 
+ Tue, 29 Sep 2026 06:16:54 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-48af4f8b1eesm4256484f8f.3.2026.09.29.06.16.51
+ ffacd0b85a97d-48af506fdc1sm3972886f8f.21.2026.09.29.06.16.52
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 29 Sep 2026 06:16:51 -0700 (PDT)
+ Tue, 29 Sep 2026 06:16:53 -0700 (PDT)
 X-Google-Original-From: "stipa (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
 Date: Tue, 29 Sep 2026 13:16:31 +0000
@@ -112,20 +112,20 @@ To: ralf_lici <ralf@mandelbit.com>,
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newpatchset
 X-Gerrit-PatchSet: 29
-X-Gerrit-Change-Id: I375a41749060b7d006647bc27002c55436c8a8bb
-X-Gerrit-Change-Number: 1748
+X-Gerrit-Change-Id: I7d8546da9ef06c2226ea77e461f9550d24894c61
+X-Gerrit-Change-Number: 1749
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1748?usp=email>
-X-Gerrit-Commit: a21ebd439617e669c6b67e2b1dbfbc5f82f708aa
-In-Reply-To: <gerrit.1782719911000.I375a41749060b7d006647bc27002c55436c8a8bb@gerrit.openvpn.net>
-References: <gerrit.1782719911000.I375a41749060b7d006647bc27002c55436c8a8bb@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzgyNzE5OTExMDAwLkkzNzVhNDE3NDkwNjBiN2QwMDY2NDdiYzI3MDAyYzU1NDM2YzhhOGJiQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <d0dd4f659df08f5350c7ee5214cdc8a2ceccbf7e-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <http://gerrit.openvpn.net/c/openvpn/+/1749?usp=email>
+X-Gerrit-Commit: 8ae8b68ff2e316997d1ba6d832dbcfb9cdc159ee
+In-Reply-To: <gerrit.1782719911000.I7d8546da9ef06c2226ea77e461f9550d24894c61@gerrit.openvpn.net>
+References: <gerrit.1782719911000.I7d8546da9ef06c2226ea77e461f9550d24894c61@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzgyNzE5OTExMDAwLkk3ZDg1NDZkYTllZjA2YzIyMjZlYTc3ZTQ2MWY5NTUwZDI0ODk0YzYxQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <9db640cc1909153eb7eb47eb6d850240fe1be64b-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.2
-X-Headers-End: 1xBXha-0001Fc-NE
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: oob: Measure probe
- RTT for candidate-band selection
+X-Headers-End: 1xBXhd-0001Fm-OP
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: oob: Extract
+ init_tls_wrap_ctx() control-channel wrap helper
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -143,15 +143,15 @@ Reply-To: lstipakov@gmail.com, arne-openvpn@rfc2549.org,
  openvpn-devel@lists.sourceforge.net, ralf@mandelbit.com
 Cc: "stipa \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============5873274904322567581=="
+Content-Type: multipart/mixed; boundary="===============7270930114835773834=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============5873274904322567581==
+--===============7270930114835773834==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="qqEvwoWoRqk="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="F3hcg4K7qyo="; charset=UTF-8
 
---qqEvwoWoRqk=
+--F3hcg4K7qyo=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
@@ -163,473 +163,404 @@ Hello=
 I'd like you to reexamine a change=2E Please visit=
 
 
-    http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1748?usp=3Demail
+    http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1749?usp=3Demail
 
 to look a=
 t the new patch set (#29)=2E
 
 The following approvals got outdated and were=
  removed:
-Code-Review-1 by ralf_lici
+Code-Review+1 by ralf_lici
 
 
-Change subject: oob: Measure probe R=
-TT for candidate-band selection
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+Change subject: oob: Extract init_tl=
+s_wrap_ctx() control-channel wrap helper
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-oob: Measure probe RTT for candidate-band selection
+oob: Extract init_tls_wrap_ctx() control-chann=
+el wrap helper
 
-Un=
-til now the client never measured RTT, so every responder sat in the
-candid=
-ate band and selection was purely weighted-random=2E
+Factor the tls-auth/tls-crypt wrapping-context setup out of=
 
-Record each probe's r=
-ound-trip time (the send time of the transmission a
-reply answers vs the re=
-ply's arrival) and feed it to
-oob_rank_probe_results(), where RTT forms the=
- candidate band: responders
-within the effective margin of the fastest comp=
-ete on weight, slower
-ones fall behind=2E Log the measured RTT and the effe=
-ctive margin (with
-its source: client or server-advertised) at verb 4=2E
+do_init_crypto_tls() into a reusable init_tls_wrap_ctx() helper, and
+expos=
+e it in init=2Eh together with do_init_tls_wrap_key(), which now
+takes the =
+connection entry to read its keys from instead of using
+options=2Ece=2E Bot=
+h call sites pass &c->options=2Ece, so there is no behavior
+change=2E
 
-A=
- reply names the probe it answers by its request_id, so a reply to a
-resend=
- is measured from the resend and a late reply to the first send
-still reads=
- as slow=2E A reply whose request_id names no probe sent to
-its source addr=
-ess is dropped=2E Entries that resolve to the same address
-share the one pr=
-obe, and so its RTT=2E
+This=
+ lets the client --server-probe path build the same control-channel
+wrappin=
+g context before a connection is established, so the probe can be
+wrapped w=
+ith tls-auth/tls-crypt like any other control packet=2E
 
-The RTT runs up to the moment the client reads the =
-reply: it compares
-servers, it is not a network measurement=2E
-
-Change-Id: =
-I375a41749060b7d006647bc27002c55436c8a8bb
-Signed-off-by: Lev Stipakov <lev@=
-openvpn=2Enet>
+Change-Id: I7d8546=
+da9ef06c2226ea77e461f9550d24894c61
+Signed-off-by: Lev Stipakov <lev@openvpn=
+=2Enet>
 ---
-M doc/man-sections/client-options=2Erst
-M src/openvpn/oo=
-b=2Ec
-M src/openvpn/oob=2Eh
-M src/openvpn/oob_client=2Ec
-M tests/unit_tests=
-/openvpn/test_oob=2Ec
-5 files changed, 109 insertions(+), 16 deletions(-)
+M src/openvpn/init=2Ec
+M src/openvpn/init=2Eh
+2 files changed, =
+79 insertions(+), 37 deletions(-)
 
-=
 
-  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/48/1748=
-/29
+  git pull ssh://gerrit=2Eopenvpn=2Enet=
+:29418/openvpn refs/changes/49/1749/29
 
-diff --git a/doc/man-sections/client-options=2Erst b/doc/man-sections/=
-client-options=2Erst
-index c49d184=2E=2E9835403 100644
---- a/doc/man-sectio=
-ns/client-options=2Erst
-+++ b/doc/man-sections/client-options=2Erst
-@@ -608=
-,9 +608,17 @@
-   remote, and each answering server replies with its adverti=
-sed priority
-   and weight=2E Remotes are then reordered following DNS SRV =
-(RFC 2782)
-   semantics: servers that answered are tried before those that =
-did not,
--  grouped by priority (lowest first); within a priority group, se=
-rvers are
--  picked by weighted-random selection=2E Round-trip time is not =
-yet taken
--  into account, so ``max-latency-diff`` has no effect for now=2E=
-
-+  grouped by priority (lowest first); within a priority group, servers
-+ =
- whose measured round-trip time is within ``max-latency-diff``
-+  milliseco=
-nds of the fastest one are picked by weighted-random
-+  selection, the othe=
-rs follow in round-trip-time order=2E When
-+  ``max-latency-diff`` is not g=
-iven, the margin advertised by the fastest
-+  server of a priority group ap=
-plies to that group; the margins of the
-+  slower servers play no part=2E A=
- server advertising :code:`0` thus says
-+  that, when it is the fastest, on=
-ly servers tying it count as equal=2E A
-+  value of :code:`1000` or more ma=
-kes every answering server of a
-+  priority group a candidate, since replie=
-s only arrive within the
-+  one-second probe window; the group is then orde=
-red by weight alone=2E
+diff --git a/src/openvpn/init=2Ec b=
+/src/openvpn/init=2Ec
+index 529c5a3=2E=2Efb1aa2a 100644
+--- a/src/openvpn/i=
+nit=2Ec
++++ b/src/openvpn/init=2Ec
+@@ -3056,13 +3056,13 @@
+ /*
+  * Initiali=
+ze the tls-auth/crypt key context
+  */
+-static void
+-do_init_tls_wrap_key(s=
+truct context *c)
++void
++do_init_tls_wrap_key(struct context *c, const stru=
+ct connection_entry *ce)
+ {
+     const struct options *options =3D &c->opti=
+ons;
  
-   The probe is currently sent without control-cha=
-nnel wrapping, so it only
-   works against a server configured without ``--=
-tls-auth``,
-diff --git a/src/openvpn/oob=2Ec b/src/openvpn/oob=2Ec
-index 57=
-81970=2E=2E20e3fe2 100644
---- a/src/openvpn/oob=2Ec
-+++ b/src/openvpn/oob=
-=2Ec
-@@ -133,6 +133,20 @@
-     return -1;
+     /* TLS handshake authentication (--tls-auth) */
+-    if (option=
+s->ce=2Etls_auth_file)
++    if (ce->tls_auth_file)
+     {
+         /* Initi=
+alize key_type for tls-auth with auth only */
+         CLEAR(c->c1=2Eks=2Et=
+ls_auth_key_type);
+@@ -3077,33 +3077,31 @@
+         }
+ 
+         crypto_rea=
+d_openvpn_key(&c->c1=2Eks=2Etls_auth_key_type, &c->c1=2Eks=2Etls_wrap_key,
+=
+-                                options->ce=2Etls_auth_file, options->ce=
+=2Etls_auth_file_inline,
+-                                options->ce=2Ekey=
+_direction, "Control Channel Authentication",
+-                            =
+    "tls-auth", &c->c1=2Eks=2Eoriginal_wrap_keydata);
++                    =
+            ce->tls_auth_file, ce->tls_auth_file_inline, ce->key_direction,=
+
++                                "Control Channel Authentication", "tls-au=
+th",
++                                &c->c1=2Eks=2Eoriginal_wrap_keydata);=
+
+     }
+ 
+     /* TLS handshake encryption+authentication (--tls-crypt) */
+=
+-    if (options->ce=2Etls_crypt_file)
++    if (ce->tls_crypt_file)
+     {
+=
+         tls_crypt_init_key(&c->c1=2Eks=2Etls_wrap_key, &c->c1=2Eks=2Eorigi=
+nal_wrap_keydata,
+-                           options->ce=2Etls_crypt_file,=
+ options->ce=2Etls_crypt_file_inline,
+-                           options->=
+tls_server);
++                           ce->tls_crypt_file, ce->tls_crypt_=
+file_inline, options->tls_server);
+     }
+ 
+     /* tls-crypt with client-s=
+pecific keys (--tls-crypt-v2) */
+-    if (options->ce=2Etls_crypt_v2_file)
+=
++    if (ce->tls_crypt_v2_file)
+     {
+         if (options->tls_server)
+  =
+       {
+             tls_crypt_v2_init_server_key(&c->c1=2Eks=2Etls_crypt_=
+v2_server_key, true,
+-                                         options->ce=
+=2Etls_crypt_v2_file,
+-                                         options->ce=
+=2Etls_crypt_v2_file_inline);
++                                         ce-=
+>tls_crypt_v2_file, ce->tls_crypt_v2_file_inline);
+         }
+         else=
+
+         {
+             tls_crypt_v2_init_client_key(&c->c1=2Eks=2Etls_wra=
+p_key, &c->c1=2Eks=2Eoriginal_wrap_keydata,
+-                              =
+           &c->c1=2Eks=2Etls_crypt_v2_wkc, options->ce=2Etls_crypt_v2_file,=
+
+-                                         options->ce=2Etls_crypt_v2_file_=
+inline);
++                                         &c->c1=2Eks=2Etls_crypt_=
+v2_wkc, ce->tls_crypt_v2_file,
++                                         ce=
+->tls_crypt_v2_file_inline);
+         }
+         /* We have to ensure that =
+the loaded tls-crypt key is small enough
+          * to fit into the initia=
+l hard reset v3 packet */
+@@ -3112,18 +3110,45 @@
+         /* empty ACK/mes=
+sage id, tls-crypt, Opcode, UDP, ipv6 */
+         int required_size =3D 5 +=
+ wkc_len + tls_crypt_buf_overhead() + 1 + 8 + 40;
+ 
+-        if (required_s=
+ize > c->options=2Ece=2Etls_mtu)
++        if (required_size > ce->tls_mtu)
+=
+         {
+             msg(M_WARN,
+                 "ERROR: tls-crypt-v2 c=
+lient key too large to work with "
+                 "requested --max-packet=
+-size %d, requires at least "
+                 "--max-packet-size %d=2E Pac=
+kets will ignore requested "
+                 "maximum packet size",
+-     =
+           c->options=2Ece=2Etls_mtu, required_size);
++                ce->=
+tls_mtu, required_size);
+         }
+     }
  }
  
-+int
-+oob_probe_rtt_ms(const=
- struct oob_probe_send *sends, int n_sends, uint32_t index,
-+              =
-   const struct openvpn_sockaddr *from, const struct timeval *rcv)
++void
++init_tls_wrap_ctx(st=
+ruct tls_wrap_ctx *tls_wrap, const struct connection_entry *ce, bool tls_cl=
+ient,
++                  const struct key_schedule *ks, struct packet_id_pe=
+rsist *pid_persist)
 +{
-+    =
-if (index >=3D (uint32_t)n_sends || !addr_port_match(from, &sends[index]=2E=
-dest))
++    CLEAR(*tls_wrap);
++
++    /* TLS handshake authe=
+ntication (--tls-auth) */
++    if (ce->tls_auth_file)
 +    {
-+        return -1; /* not a probe we sent, or not to where t=
-he reply came from */
++        tls_w=
+rap->mode =3D TLS_WRAP_AUTH;
 +    }
-+    const struct timeval *sent_at =3D &sends[=
-index]=2Esent_at;
-+    const long ms =3D (long)(rcv->tv_sec - sent_at->tv_s=
-ec) * 1000
-+                    + (rcv->tv_usec - sent_at->tv_usec) / 1000;=
-
-+    return (ms > 0) ? (int)ms : 0;
++
++    /* TLS handshake encryption (--t=
+ls-crypt) */
++    if (ce->tls_crypt_file || (ce->tls_crypt_v2_file && tls_c=
+lient))
++    {
++        tls_wrap->mode =3D TLS_WRAP_CRYPT;
++    }
++
++    if=
+ (tls_wrap->mode =3D=3D TLS_WRAP_AUTH || tls_wrap->mode =3D=3D TLS_WRAP_CRY=
+PT)
++    {
++        tls_wrap->opt=2Ekey_ctx_bi =3D ks->tls_wrap_key;
++     =
+   tls_wrap->opt=2Epid_persist =3D pid_persist;
++        tls_wrap->opt=2Efl=
+ags |=3D CO_PACKET_ID_LONG_FORM;
++        tls_wrap->original_wrap_keydata =
+=3D ks->original_wrap_keydata;
++    }
 +}
 +
- /* Base ordering: responders bef=
-ore non-responders, then by priority (lower
-  * first), then by RTT (lower =
-first), then by original index for determinism=2E
-  * This groups responder=
-s into priority runs pre-sorted by RTT, which the
-diff --git a/src/openvpn/=
-oob=2Eh b/src/openvpn/oob=2Eh
-index 4260703=2E=2E0070904 100644
---- a/src/o=
-penvpn/oob=2Eh
-+++ b/src/openvpn/oob=2Eh
-@@ -184,9 +184,25 @@
- struct oob_p=
-robe_send
- {
-     struct openvpn_sockaddr dest;
-+    struct timeval sent_at=
-;
- };
+ /*
+  * Initialize the persisten=
+t component of OpenVPN's TLS mode,
+  * which is preserved across SIGUSR1 re=
+sets=2E
+@@ -3195,7 +3220,7 @@
+         init_key_type(&c->c1=2Eks=2Ekey_type=
+, ciphername, options->authname, true, warn);
  
- /**
-+ * Round-trip time of a reply, measured from the transmission=
- it answers=2E
+         /* initialize tls-=
+auth/crypt/crypt-v2 key */
+-        do_init_tls_wrap_key(c);
++        do_in=
+it_tls_wrap_key(c, &c->options=2Ece);
+ 
+         /* initialise auth-token c=
+rypto support */
+         if (c->options=2Eauth_token_generate)
+@@ -3220,7 =
++3245,7 @@
+          * tls-auth/crypt key can be configured per connection =
+block, therefore
+          * we must reload it as it may have changed
+     =
+     */
+-        do_init_tls_wrap_key(c);
++        do_init_tls_wrap_key(c, =
+&c->options=2Ece);
+     }
+ }
+ 
+@@ -3396,25 +3421,9 @@
+         to=2Eekm_siz=
+e =3D 0;
+     }
+ 
+-    /* TLS handshake authentication (--tls-auth) */
+-   =
+ if (options->ce=2Etls_auth_file)
+-    {
+-        to=2Etls_wrap=2Emode =3D =
+TLS_WRAP_AUTH;
+-    }
+-
+-    /* TLS handshake encryption (--tls-crypt) */
+-=
+    if (options->ce=2Etls_crypt_file || (options->ce=2Etls_crypt_v2_file &&=
+ options->tls_client))
+-    {
+-        to=2Etls_wrap=2Emode =3D TLS_WRAP_CR=
+YPT;
+-    }
+-
+-    if (to=2Etls_wrap=2Emode =3D=3D TLS_WRAP_AUTH || to=2Etl=
+s_wrap=2Emode =3D=3D TLS_WRAP_CRYPT)
+-    {
+-        to=2Etls_wrap=2Eopt=2E=
+key_ctx_bi =3D c->c1=2Eks=2Etls_wrap_key;
+-        to=2Etls_wrap=2Eopt=2Epi=
+d_persist =3D &c->c1=2Epid_persist;
+-        to=2Etls_wrap=2Eopt=2Eflags |=
+=3D CO_PACKET_ID_LONG_FORM;
+-        to=2Etls_wrap=2Eoriginal_wrap_keydata =
+=3D c->c1=2Eks=2Eoriginal_wrap_keydata;
+-    }
++    /* Control-channel wrap=
+ping (--tls-auth / --tls-crypt) */
++    init_tls_wrap_ctx(&to=2Etls_wrap, &=
+c->options=2Ece, options->tls_client, &c->c1=2Eks,
++                      &=
+c->c1=2Epid_persist);
+ 
+     if (options->ce=2Etls_crypt_v2_file)
+     {
+di=
+ff --git a/src/openvpn/init=2Eh b/src/openvpn/init=2Eh
+index ce8f74e=2E=2Ef=
+be461b 100644
+--- a/src/openvpn/init=2Eh
++++ b/src/openvpn/init=2Eh
+@@ -73,=
+6 +73,39 @@
+ 
+ void do_test_crypto(struct context *o);
+ 
++/**
++ * @brief Lo=
+ad the tls-auth/tls-crypt(-v2) key material into c->c1=2Eks=2E
 + *
-+ * @param sends    every transmission so far
-+ * @param=
- n_sends  number of transmissions
-+ * @param index    the transmission the =
-reply names: its request_id minus the
-+ *                 run's base
-+ * @p=
-aram from     source address of the reply
-+ * @param rcv      when the repl=
-y arrived
-+ * @return milliseconds (0 if the clock went backwards), or -1 i=
-f index names
-+ *         no transmission to from
++ * Read=
+s the key from the file configured on connection entry ce (--tls-auth,
++ * =
+--tls-crypt or --tls-crypt-v2); a no-op when none of them is set=2E May be
+=
++ * called more than once (the key can be configured per connection block, =
+so it
++ * is reloaded for each connection)=2E
++ *
++ * @param c  The context=
+ whose c1=2Eks key schedule is populated=2E
++ * @param ce The connection en=
+try whose tls-wrap key file is loaded=2E
 + */
-+int oob_probe_rtt_m=
-s(const struct oob_probe_send *sends, int n_sends, uint32_t index,
-+       =
-              const struct openvpn_sockaddr *from, const struct timeval *rc=
-v);
++void do_init_tls_wrap_key(st=
+ruct context *c, const struct connection_entry *ce);
 +
 +/**
-  * Find the next entry, from index \p start on, that was probed=
- at \p from and
-  * has not answered yet=2E Several entries can resolve to =
-the same address, so a
-  * reply is credited to each of them: call again wi=
-th the returned index + 1
-diff --git a/src/openvpn/oob_client=2Ec b/src/ope=
-nvpn/oob_client=2Ec
-index bae2c74=2E=2E960acd2 100644
---- a/src/openvpn/oob=
-_client=2Ec
-+++ b/src/openvpn/oob_client=2Ec
-@@ -115,21 +115,29 @@
-     ret=
-urn false;
- }
- 
--/* Send a probe with the next request_id to dest; false if=
- it did not go out=2E */
-+/* Send a probe with the next request_id to dest,=
- recording when it went out so
-+ * a reply's RTT is measured from the trans=
-mission it answers; false if it did
-+ * not go out=2E */
- static bool
- oob_=
-probe_send_to(struct probe_ctx *pc, socket_descriptor_t sd,
-               =
-    const struct openvpn_sockaddr *dest, socklen_t destlen)
- {
-     ASSERT(=
-pc->n_sends < pc->max_sends);
-+    struct oob_probe_send *s =3D &pc->sends[=
-pc->n_sends];
-     struct buffer probe;
--    if (!oob_probe_build(pc, pc->i=
-d_base + (uint32_t)pc->n_sends, &probe)
--        || sendto(sd, (const char =
-*)BPTR(&probe), (int)BLEN(&probe), 0,
--                  (const struct sock=
-addr *)dest, destlen)
--               < 0)
-+    if (!oob_probe_build(pc, pc=
-->id_base + (uint32_t)pc->n_sends, &probe))
-     {
-         return false;
- =
-    }
--    pc->sends[pc->n_sends++]=2Edest =3D *dest;
-+    openvpn_gettimeo=
-fday(&s->sent_at, NULL);
-+    if (sendto(sd, (const char *)BPTR(&probe), (i=
-nt)BLEN(&probe), 0,
-+               (const struct sockaddr *)dest, destlen)=
-
-+        < 0)
-+    {
-+        return false;
-+    }
-+    s->dest =3D *dest;=
-
-+    pc->n_sends++;
-     return true;
- }
- 
-@@ -284,7 +292,7 @@
-     }
- }
- =
-
--/* Parse one received datagram as a PROBE_REPLY and, if valid and matchin=
-g one
-+/* Parse one received datagram as a PROBE_REPLY and, if valid and an=
-swering one
-  * of the probes we sent, record the reply in results=2E */
- s=
-tatic void
- oob_probe_handle_reply(const struct probe_ctx *pc, const uint8_=
-t *data, int len,
-@@ -308,11 +316,16 @@
-     }
- 
-     /* The reply must ech=
-o the request_id of a probe sent to the address it came
--     * from; with =
-a random id_base that also rejects spoofed replies=2E */
--    const uint32_=
-t index =3D reply=2Erequest_id - pc->id_base;
--    if (index >=3D (uint32_t=
-)pc->n_sends || !addr_port_match(from, &pc->sends[index]=2Edest))
-+     * f=
-rom; with a random id_base that also rejects spoofed replies=2E The RTT
-+  =
-   * runs from that transmission to now, i=2Ee=2E including any time the re=
-ply
-+     * waited in the receive queue while we were still sending=2E */
-+=
-    struct timeval rcv;
-+    openvpn_gettimeofday(&rcv, NULL);
-+    const i=
-nt ms =3D
-+        oob_probe_rtt_ms(pc->sends, pc->n_sends, reply=2Erequest=
-_id - pc->id_base, from, &rcv);
-+    if (ms < 0)
-     {
--        return;
-+ =
-       return; /* answers no probe we sent to that address */
-     }
- 
-    =
- /* Credit the reply to every still-unanswered remote probed at its source
-=
-@@ -322,6 +335,7 @@
-     while (i >=3D 0)
-     {
-         results[i]=2Eresp=
-onded =3D true;
-+        results[i]=2Ertt_ms =3D (unsigned int)ms;
-        =
- results[i]=2Ereply =3D reply;
- 
-         i =3D oob_probe_next_target_at(fr=
-om, targets, results, n, i + 1);
-@@ -662,8 +676,16 @@
-         if (results[=
-i]=2Eresponded)
-         {
-             responded++;
--            msg(D_LOW=
-, "server-probe: %s:%s answered (priority %d, weight %d)", ce->remote,
--   =
-             ce->remote_port, results[i]=2Ereply=2Epriority, results[i]=2Er=
-eply=2Eweight);
-+            /* The margin this server advertised, or the c=
-lient's override; only
-+             * the fastest server's margin applies =
-to its priority group=2E */
-+            int client_margin =3D c->options=
-=2Eserver_probe_latency_margin;
-+            int margin =3D oob_effective_m=
-argin(&results[i], client_margin);
-+            const char *margin_src =3D =
-client_margin >=3D 0 ? "client" : "server-advertised";
-+            msg(D_L=
-OW,
-+                "server-probe: %s:%s answered (priority %d, weight %d,=
- rtt %u ms;"
-+                " latency margin %d ms [%s])",
-+             =
-   ce->remote, ce->remote_port, results[i]=2Ereply=2Epriority, results[i]=
-=2Ereply=2Eweight,
-+                results[i]=2Ertt_ms, margin, margin_src=
-);
-         }
-         else
-         {
-diff --git a/tests/unit_tests/openvp=
-n/test_oob=2Ec b/tests/unit_tests/openvpn/test_oob=2Ec
-index ce5b0ab=2E=2Ee=
-0fae4b 100644
---- a/tests/unit_tests/openvpn/test_oob=2Ec
-+++ b/tests/unit_=
-tests/openvpn/test_oob=2Ec
-@@ -607,6 +607,38 @@
-     assert_int_equal(oob_p=
-robe_next_target_at(&a_other_port, targets, results, 3, 0), -1);
- }
- 
-+/* T=
-he RTT of a reply is measured from the transmission its request_id names (a=
-s
-+ * an index into the transmissions), which must have gone to the address=
- the
-+ * reply came from=2E */
-+static void
-+test_probe_rtt_from_answered_s=
-end(void **state)
-+{
-+    struct openvpn_sockaddr a =3D v4_addr(0x7f000001,=
- 1194);
-+    struct openvpn_sockaddr b =3D v4_addr(0x7f000002, 1194);
-+    =
-/* A at t=3D0 ms, B at t=3D20 ms, then A again at t=3D500 ms (a resend) */
-=
-+    const struct oob_probe_send sends[3] =3D {
-+        { =2Edest =3D a, =
-=2Esent_at =3D { =2Etv_sec =3D 1000, =2Etv_usec =3D 0 } },
-+        { =2Ede=
-st =3D b, =2Esent_at =3D { =2Etv_sec =3D 1000, =2Etv_usec =3D 20000 } },
-+ =
-       { =2Edest =3D a, =2Esent_at =3D { =2Etv_sec =3D 1000, =2Etv_usec =3D=
- 500000 } },
-+    };
-+    struct timeval rcv =3D { =2Etv_sec =3D 1000, =2Et=
-v_usec =3D 520000 };
++ * @brief Conf=
+igure a control-channel wrapping context from a connection entry
++ *       =
+ and previously loaded tls-wrap key material=2E
++ *
++ * Sets tls_wrap to TL=
+S_WRAP_AUTH (--tls-auth) or TLS_WRAP_CRYPT
++ * (--tls-crypt / client --tls-=
+crypt-v2) and installs the key context, or
++ * leaves it in TLS_WRAP_NONE w=
+hen neither is configured=2E The key material must
++ * already have been lo=
+aded with do_init_tls_wrap_key()=2E tls-crypt-v2 specifics
++ * (the wrapped=
+ client key and the server key) are left to the caller=2E
++ *
++ * @param tl=
+s_wrap    The wrapping context to configure=2E
++ * @param ce          The c=
+onnection entry selecting the wrapping mode=2E
++ * @param tls_client  Wheth=
+er this is a TLS client (selects tls-crypt-v2 mode)=2E
++ * @param ks       =
+   Key schedule holding the loaded tls-wrap key material=2E
++ * @param pid_=
+persist Packet-id persistence object to attach to the context=2E
++ */
++void=
+ init_tls_wrap_ctx(struct tls_wrap_ctx *tls_wrap, const struct connection_e=
+ntry *ce,
++                       bool tls_client, const struct key_schedul=
+e *ks,
++                       struct packet_id_persist *pid_persist);
 +
-+    assert_int_equal(oob_probe_rtt_ms(sends, 3, 2, =
-&a, &rcv), 20);  /* the resend */
-+    assert_int_equal(oob_probe_rtt_ms(se=
-nds, 3, 0, &a, &rcv), 520); /* the first send */
-+    assert_int_equal(oob_=
-probe_rtt_ms(sends, 3, 1, &b, &rcv), 500);
-+
-+    /* a transmission to anot=
-her address, and ids we never sent (below the
-+     * base, an id wraps to =
-a huge index) */
-+    assert_int_equal(oob_probe_rtt_ms(sends, 3, 1, &a, &r=
-cv), -1);
-+    assert_int_equal(oob_probe_rtt_ms(sends, 3, 3, &a, &rcv), -1=
-);
-+    assert_int_equal(oob_probe_rtt_ms(sends, 3, UINT32_MAX, &a, &rcv), =
--1);
-+    assert_int_equal(oob_probe_rtt_ms(sends, 2, 2, &a, &rcv), -1);
-+
-=
-+    /* a clock that went backwards reads as 0, not as a huge value */
-+   =
- rcv=2Etv_usec =3D 0;
-+    assert_int_equal(oob_probe_rtt_ms(sends, 3, 2, &=
-a, &rcv), 0);
-+}
-+
- /* A PROBE_REPLY carrying a probe reply is found by the=
- client scan, with all
-  * fields surviving=2E */
- static void
-@@ -996,6 +1=
-028,7 @@
-         cmocka_unit_test(test_server_probe_check_no_request),
-   =
-      cmocka_unit_test(test_probe_reply_credits_every_entry_at_address),
-  =
-       cmocka_unit_test(test_probe_reply_matches_only_its_address),
-+      =
-  cmocka_unit_test(test_probe_rtt_from_answered_send),
-         cmocka_unit=
-_test(test_client_reply_read_finds_reply),
-         cmocka_unit_test(test_c=
-lient_reply_read_skips_unknown),
-         cmocka_unit_test(test_client_repl=
-y_read_rejects_unknown_mandatory),
+ v=
+oid context_gc_free(struct context *c);
+ 
+ bool do_up(struct context *c, bo=
+ol pulled_options, uint64_t option_types_found);
 
 -- 
-To view, visit http://gerrit=2Eopen=
-vpn=2Enet/c/openvpn/+/1748?usp=3Demail
-To unsubscribe, or for help writing =
-mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+To view, visit http:/=
+/gerrit=2Eopenvpn=2Enet/c/openvpn/+/1749?usp=3Demail
+To unsubscribe, or for=
+ help writing mail filters, visit http://gerrit=2Eopenvpn=2Enet/settings?us=
+p=3Demail
 
-Ger=
-rit-MessageType: newpatchset
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
-Gerrit-Branch: master
-=
-Gerrit-Change-Id: I375a41749060b7d006647bc27002c55436c8a8bb
-Gerrit-Change-N=
-umber: 1748
+Gerrit-B=
+ranch: master
+Gerrit-Change-Id: I7d8546da9ef06c2226ea77e461f9550d24894c61
+G=
+errit-Change-Number: 1749
 Gerrit-PatchSet: 29
-Gerrit-Owner: stipa <lstipakov@gmail=2Ecom>=
-
+Gerrit-Owner: stipa <lstipako=
+v@gmail=2Ecom>
 Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Reviewer: r=
-alf_lici <ralf@mandelbit=2Ecom>
-Gerrit-CC: openvpn-devel <openvpn-devel@lis=
-ts=2Esourceforge=2Enet>
-Gerrit-Attention: ralf_lici <ralf@mandelbit=2Ecom>
-=
+Gerr=
+it-Reviewer: ralf_lici <ralf@mandelbit=2Ecom>
+Gerrit-CC: openvpn-devel <ope=
+nvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Attention: ralf_lici <ralf@man=
+delbit=2Ecom>
 Gerrit-Attention: stipa <lstipakov@gmail=2Ecom>
-Gerrit-Attention: plaisthos=
- <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Attent=
+ion: plaisthos <arne-openvpn@rfc2549=2Eorg>
 
---qqEvwoWoRqk=
+--F3hcg4K7qyo=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
@@ -637,337 +568,295 @@ Content-Transfer-Encoding: quoted-printable
 rently required from: plaisthos, ralf_lici, stipa=2E </p>
 <p>stipa <strong>=
 uploaded patch set #29</strong> to this change=2E</p><p><a href=3D"http://g=
-errit=2Eopenvpn=2Enet/c/openvpn/+/1748?usp=3Demail">View Change</a></p><p>T=
+errit=2Eopenvpn=2Enet/c/openvpn/+/1749?usp=3Demail">View Change</a></p><p>T=
 he following approvals got outdated and were removed:
-Code-Review-1 by ralf=
+Code-Review+1 by ralf=
 _lici</p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">oob: Measure probe RTT for candidate-band selection<=
-br><br>Until now the client never measured RTT, so every responder sat in t=
-he<br>candidate band and selection was purely weighted-random=2E<br><br>Rec=
-ord each probe&#39;s round-trip time (the send time of the transmission a<b=
-r>reply answers vs the reply&#39;s arrival) and feed it to<br>oob_rank_prob=
-e_results(), where RTT forms the candidate band: responders<br>within the e=
-ffective margin of the fastest compete on weight, slower<br>ones fall behin=
-d=2E Log the measured RTT and the effective margin (with<br>its source: cli=
-ent or server-advertised) at verb 4=2E<br><br>A reply names the probe it an=
-swers by its request_id, so a reply to a<br>resend is measured from the res=
-end and a late reply to the first send<br>still reads as slow=2E A reply wh=
-ose request_id names no probe sent to<br>its source address is dropped=2E E=
-ntries that resolve to the same address<br>share the one probe, and so its =
-RTT=2E<br><br>The RTT runs up to the moment the client reads the reply: it =
-compares<br>servers, it is not a network measurement=2E<br><br>Change-Id: I=
-375a41749060b7d006647bc27002c55436c8a8bb<br>Signed-off-by: Lev Stipakov &lt=
-;lev@openvpn=2Enet&gt;<br>---<br>M doc/man-sections/client-options=2Erst<br=
->M src/openvpn/oob=2Ec<br>M src/openvpn/oob=2Eh<br>M src/openvpn/oob_client=
-=2Ec<br>M tests/unit_tests/openvpn/test_oob=2Ec<br>5 files changed, 109 ins=
-ertions(+), 16 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"fon=
-t-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerri=
-t=2Eopenvpn=2Enet:29418/openvpn refs/changes/48/1748/29</pre><pre style=3D"=
-font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git =
-a/doc/man-sections/client-options=2Erst b/doc/man-sections/client-options=
-=2Erst</span><br><span>index c49d184=2E=2E9835403 100644</span><br><span>--=
-- a/doc/man-sections/client-options=2Erst</span><br><span>+++ b/doc/man-sec=
-tions/client-options=2Erst</span><br><span>@@ -608,9 +608,17 @@</span><br><=
-span>   remote, and each answering server replies with its advertised prior=
-ity</span><br><span>   and weight=2E Remotes are then reordered following D=
-NS SRV (RFC 2782)</span><br><span>   semantics: servers that answered are t=
-ried before those that did not,</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-  grouped by priority (lowest first); within a priority group, se=
-rvers are</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  picked by =
-weighted-random selection=2E Round-trip time is not yet taken</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-  into account, so ``max-latency-di=
-ff`` has no effect for now=2E</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+  grouped by priority (lowest first); within a priority group, se=
-rvers</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  whose measur=
-ed round-trip time is within ``max-latency-diff``</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+  milliseconds of the fastest one are picked =
-by weighted-random</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
- selection, the others follow in round-trip-time order=2E When</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+  ``max-latency-diff`` is not gi=
-ven, the margin advertised by the fastest</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+  server of a priority group applies to that group; t=
-he margins of the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-slower servers play no part=2E A server advertising :code:`0` thus says</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+  that, when it is the =
-fastest, only servers tying it count as equal=2E A</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+  value of :code:`1000` or more makes every =
-answering server of a</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+  priority group a candidate, since replies only arrive within the</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+  one-second probe window;=
- the group is then ordered by weight alone=2E</span><br><span> </span><br><=
-span>   The probe is currently sent without control-channel wrapping, so it=
- only</span><br><span>   works against a server configured without ``--tls-=
-auth``,</span><br><span>diff --git a/src/openvpn/oob=2Ec b/src/openvpn/oob=
-=2Ec</span><br><span>index 5781970=2E=2E20e3fe2 100644</span><br><span>--- =
-a/src/openvpn/oob=2Ec</span><br><span>+++ b/src/openvpn/oob=2Ec</span><br><=
-span>@@ -133,6 +133,20 @@</span><br><span>     return -1;</span><br><span> =
-}</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+oob_probe_rtt_ms=
-(const struct oob_probe_send *sends, int n_sends, uint32_t index,</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+                 const struct=
- openvpn_sockaddr *from, const struct timeval *rcv)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    if (index &gt;=3D (uint32_t)n_sends || !addr_port_match=
-(from, &amp;sends[index]=2Edest))</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        return -1; /* not a probe we sent, or not to where the reply came f=
-rom */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    const struct timeval *s=
-ent_at =3D &amp;sends[index]=2Esent_at;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    const long ms =3D (long)(rcv-&gt;tv_sec - sent_at-&=
-gt;tv_sec) * 1000</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-                  + (rcv-&gt;tv_usec - sent_at-&gt;tv_usec) / 1000;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    return (ms &gt; 0) ? (i=
-nt)ms : 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /* Base o=
-rdering: responders before non-responders, then by priority (lower</span><b=
-r><span>  * first), then by RTT (lower first), then by original index for d=
-eterminism=2E</span><br><span>  * This groups responders into priority runs=
- pre-sorted by RTT, which the</span><br><span>diff --git a/src/openvpn/oob=
-=2Eh b/src/openvpn/oob=2Eh</span><br><span>index 4260703=2E=2E0070904 10064=
-4</span><br><span>--- a/src/openvpn/oob=2Eh</span><br><span>+++ b/src/openv=
-pn/oob=2Eh</span><br><span>@@ -184,9 +184,25 @@</span><br><span> struct oob=
-_probe_send</span><br><span> {</span><br><span>     struct openvpn_sockaddr=
- dest;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct ti=
-meval sent_at;</span><br><span> };</span><br><span> </span><br><span> /**</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Round-trip time of=
- a reply, measured from the transmission it answers=2E</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+ * @param sends    every transmission so far</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+ * @param n_sends  number of tra=
-nsmissions</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param=
- index    the transmission the reply names: its request_id minus the</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+ *                 run&#39=
-;s base</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param fr=
-om     source address of the reply</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+ * @param rcv      when the reply arrived</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+ * @return milliseconds (0 if the cloc=
-k went backwards), or -1 if index names</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+ *         no transmission to from</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+int oob_probe_rtt_ms(const struct oob_probe_send *sends,=
- int n_sends, uint32_t index,</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+                     const struct openvpn_sockaddr *from, const s=
-truct timeval *rcv);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><spa=
-n>  * Find the next entry, from index \p start on, that was probed at \p fr=
-om and</span><br><span>  * has not answered yet=2E Several entries can reso=
-lve to the same address, so a</span><br><span>  * reply is credited to each=
- of them: call again with the returned index + 1</span><br><span>diff --git=
- a/src/openvpn/oob_client=2Ec b/src/openvpn/oob_client=2Ec</span><br><span>=
-index bae2c74=2E=2E960acd2 100644</span><br><span>--- a/src/openvpn/oob_cli=
-ent=2Ec</span><br><span>+++ b/src/openvpn/oob_client=2Ec</span><br><span>@@=
- -115,21 +115,29 @@</span><br><span>     return false;</span><br><span> }</=
-span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-/* Se=
-nd a probe with the next request_id to dest; false if it did not go out=2E =
-*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Send a probe w=
-ith the next request_id to dest, recording when it went out so</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+ * a reply&#39;s RTT is measured=
- from the transmission it answers; false if it did</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+ * not go out=2E */</span><br><span> static =
-bool</span><br><span> oob_probe_send_to(struct probe_ctx *pc, socket_descri=
-ptor_t sd,</span><br><span>                   const struct openvpn_sockaddr=
- *dest, socklen_t destlen)</span><br><span> {</span><br><span>     ASSERT(p=
-c-&gt;n_sends &lt; pc-&gt;max_sends);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    struct oob_probe_send *s =3D &amp;pc-&gt;sends[pc-&gt=
-;n_sends];</span><br><span>     struct buffer probe;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    if (!oob_probe_build(pc, pc-&gt;id_base=
- + (uint32_t)pc-&gt;n_sends, &amp;probe)</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-        || sendto(sd, (const char *)BPTR(&amp;probe), (i=
-nt)BLEN(&amp;probe), 0,</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-                  (const struct sockaddr *)dest, destlen)</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-               &lt; 0)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    if (!oob_probe_build(pc, pc-&g=
-t;id_base + (uint32_t)pc-&gt;n_sends, &amp;probe))</span><br><span>     {</=
-span><br><span>         return false;</span><br><span>     }</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    pc-&gt;sends[pc-&gt;n_sends++]=
-=2Edest =3D *dest;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   openvpn_gettimeofday(&amp;s-&gt;sent_at, NULL);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    if (sendto(sd, (const char *)BPTR(&amp;p=
-robe), (int)BLEN(&amp;probe), 0,</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+               (const struct sockaddr *)dest, destlen)</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        &lt; 0)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        return false;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    s-&gt;dest =3D *dest;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    pc-&gt;n_sends++;</span><br><span>     return=
- true;</span><br><span> }</span><br><span> </span><br><span>@@ -284,7 +292,=
-7 @@</span><br><span>     }</span><br><span> }</span><br><span> </span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-/* Parse one received datagram a=
-s a PROBE_REPLY and, if valid and matching one</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+/* Parse one received datagram as a PROBE_REPLY =
-and, if valid and answering one</span><br><span>  * of the probes we sent, =
-record the reply in results=2E */</span><br><span> static void</span><br><s=
-pan> oob_probe_handle_reply(const struct probe_ctx *pc, const uint8_t *data=
-, int len,</span><br><span>@@ -308,11 +316,16 @@</span><br><span>     }</sp=
-an><br><span> </span><br><span>     /* The reply must echo the request_id o=
-f a probe sent to the address it came</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-     * from; with a random id_base that also rejects spoofe=
-d replies=2E */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    co=
-nst uint32_t index =3D reply=2Erequest_id - pc-&gt;id_base;</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    if (index &gt;=3D (uint32_t)pc-&g=
-t;n_sends || !addr_port_match(from, &amp;pc-&gt;sends[index]=2Edest))</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+     * from; with a rando=
-m id_base that also rejects spoofed replies=2E The RTT</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+     * runs from that transmission to no=
-w, i=2Ee=2E including any time the reply</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+     * waited in the receive queue while we were still=
- sending=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    s=
-truct timeval rcv;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   openvpn_gettimeofday(&amp;rcv, NULL);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    const int ms =3D</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        oob_probe_rtt_ms(pc-&gt;sends, pc-&gt;n_sends=
-, reply=2Erequest_id - pc-&gt;id_base, from, &amp;rcv);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    if (ms &lt; 0)</span><br><span>    =
- {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        return; /* answ=
-ers no probe we sent to that address */</span><br><span>     }</span><br><s=
-pan> </span><br><span>     /* Credit the reply to every still-unanswered re=
-mote probed at its source</span><br><span>@@ -322,6 +335,7 @@</span><br><sp=
-an>     while (i &gt;=3D 0)</span><br><span>     {</span><br><span>        =
- results[i]=2Eresponded =3D true;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        results[i]=2Ertt_ms =3D (unsigned int)ms;</span><br><=
-span>         results[i]=2Ereply =3D reply;</span><br><span> </span><br><sp=
-an>         i =3D oob_probe_next_target_at(from, targets, results, n, i + 1=
-);</span><br><span>@@ -662,8 +676,16 @@</span><br><span>         if (result=
-s[i]=2Eresponded)</span><br><span>         {</span><br><span>             r=
-esponded++;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
-  msg(D_LOW, &quot;server-probe: %s:%s answered (priority %d, weight %d)&qu=
-ot;, ce-&gt;remote,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-              ce-&gt;remote_port, results[i]=2Ereply=2Epriority, results[i]=
-=2Ereply=2Eweight);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-            /* The margin this server advertised, or the client&#39;s overr=
-ide; only</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-   * the fastest server&#39;s margin applies to its priority group=2E */</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            int client=
-_margin =3D c-&gt;options=2Eserver_probe_latency_margin;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+            int margin =3D oob_effecti=
-ve_margin(&amp;results[i], client_margin);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+            const char *margin_src =3D client_margin=
- &gt;=3D 0 ? &quot;client&quot; : &quot;server-advertised&quot;;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+            msg(D_LOW,</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+                &quot;serve=
-r-probe: %s:%s answered (priority %d, weight %d, rtt %u ms;&quot;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+                &quot; latenc=
-y margin %d ms [%s])&quot;,</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+                ce-&gt;remote, ce-&gt;remote_port, results[i]=2Erep=
-ly=2Epriority, results[i]=2Ereply=2Eweight,</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+                results[i]=2Ertt_ms, margin, margin=
-_src);</span><br><span>         }</span><br><span>         else</span><br><=
-span>         {</span><br><span>diff --git a/tests/unit_tests/openvpn/test_=
-oob=2Ec b/tests/unit_tests/openvpn/test_oob=2Ec</span><br><span>index ce5b0=
-ab=2E=2Ee0fae4b 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_=
-oob=2Ec</span><br><span>+++ b/tests/unit_tests/openvpn/test_oob=2Ec</span><=
-br><span>@@ -607,6 +607,38 @@</span><br><span>     assert_int_equal(oob_pro=
-be_next_target_at(&amp;a_other_port, targets, results, 3, 0), -1);</span><b=
-r><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+/* The RTT of a reply is measured from the transmission its reques=
-t_id names (as</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * an=
- index into the transmissions), which must have gone to the address the</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+ * reply came from=2E *=
-/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+test_probe_rtt_from_answer=
-ed_send(void **state)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct openv=
-pn_sockaddr a =3D v4_addr(0x7f000001, 1194);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    struct openvpn_sockaddr b =3D v4_addr(0x7f0000=
-02, 1194);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* A =
-at t=3D0 ms, B at t=3D20 ms, then A again at t=3D500 ms (a resend) */</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    const struct oob_prob=
-e_send sends[3] =3D {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        { =2Edest =3D a, =2Esent_at =3D { =2Etv_sec =3D 1000, =2Etv_usec =
-=3D 0 } },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {=
- =2Edest =3D b, =2Esent_at =3D { =2Etv_sec =3D 1000, =2Etv_usec =3D 20000 }=
- },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        { =2Edes=
-t =3D a, =2Esent_at =3D { =2Etv_sec =3D 1000, =2Etv_usec =3D 500000 } },</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    };</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    struct timeval rcv =3D { =2Etv_=
-sec =3D 1000, =2Etv_usec =3D 520000 };</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    assert_int_equal(oob_probe_rtt_ms(sends, 3, 2, &amp;a, &amp;rcv), 20); =
- /* the resend */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  assert_int_equal(oob_probe_rtt_ms(sends, 3, 0, &amp;a, &amp;rcv), 520); /=
-* the first send */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    assert_int_equal(oob_probe_rtt_ms(sends, 3, 1, &amp;b, &amp;rcv), 500);=
+hite-space: pre-wrap;">oob: Extract init_tls_wrap_ctx() control-channel wra=
+p helper<br><br>Factor the tls-auth/tls-crypt wrapping-context setup out of=
+<br>do_init_crypto_tls() into a reusable init_tls_wrap_ctx() helper, and<br=
+>expose it in init=2Eh together with do_init_tls_wrap_key(), which now<br>t=
+akes the connection entry to read its keys from instead of using<br>options=
+=2Ece=2E Both call sites pass &amp;c-&gt;options=2Ece, so there is no behav=
+ior<br>change=2E<br><br>This lets the client --server-probe path build the =
+same control-channel<br>wrapping context before a connection is established=
+, so the probe can be<br>wrapped with tls-auth/tls-crypt like any other con=
+trol packet=2E<br><br>Change-Id: I7d8546da9ef06c2226ea77e461f9550d24894c61<=
+br>Signed-off-by: Lev Stipakov &lt;lev@openvpn=2Enet&gt;<br>---<br>M src/op=
+envpn/init=2Ec<br>M src/openvpn/init=2Eh<br>2 files changed, 79 insertions(=
++), 37 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family=
+: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopen=
+vpn=2Enet:29418/openvpn refs/changes/49/1749/29</pre><pre style=3D"font-fam=
+ily: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/op=
+envpn/init=2Ec b/src/openvpn/init=2Ec</span><br><span>index 529c5a3=2E=2Efb=
+1aa2a 100644</span><br><span>--- a/src/openvpn/init=2Ec</span><br><span>+++=
+ b/src/openvpn/init=2Ec</span><br><span>@@ -3056,13 +3056,13 @@</span><br><=
+span> /*</span><br><span>  * Initialize the tls-auth/crypt key context</spa=
+n><br><span>  */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-stati=
+c void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-do_init_tls_wra=
+p_key(struct context *c)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+do_init_tl=
+s_wrap_key(struct context *c, const struct connection_entry *ce)</span><br>=
+<span> {</span><br><span>     const struct options *options =3D &amp;c-&gt;=
+options;</span><br><span> </span><br><span>     /* TLS handshake authentica=
+tion (--tls-auth) */</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   if (options-&gt;ce=2Etls_auth_file)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    if (ce-&gt;tls_auth_file)</span><br><span>     {</sp=
+an><br><span>         /* Initialize key_type for tls-auth with auth only */=
+</span><br><span>         CLEAR(c-&gt;c1=2Eks=2Etls_auth_key_type);</span><=
+br><span>@@ -3077,33 +3077,31 @@</span><br><span>         }</span><br><span=
+> </span><br><span>         crypto_read_openvpn_key(&amp;c-&gt;c1=2Eks=2Etl=
+s_auth_key_type, &amp;c-&gt;c1=2Eks=2Etls_wrap_key,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                                options-&gt=
+;ce=2Etls_auth_file, options-&gt;ce=2Etls_auth_file_inline,</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-                                optio=
+ns-&gt;ce=2Ekey_direction, &quot;Control Channel Authentication&quot;,</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-                          =
+      &quot;tls-auth&quot;, &amp;c-&gt;c1=2Eks=2Eoriginal_wrap_keydata);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                      =
+          ce-&gt;tls_auth_file, ce-&gt;tls_auth_file_inline, ce-&gt;key_dir=
+ection,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+                    &quot;Control Channel Authentication&quot;, &quot;tls-a=
+uth&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+                       &amp;c-&gt;c1=2Eks=2Eoriginal_wrap_keydata);</span><=
+br><span>     }</span><br><span> </span><br><span>     /* TLS handshake enc=
+ryption+authentication (--tls-crypt) */</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    if (options-&gt;ce=2Etls_crypt_file)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    if (ce-&gt;tls_crypt_file)</span=
+><br><span>     {</span><br><span>         tls_crypt_init_key(&amp;c-&gt;c1=
+=2Eks=2Etls_wrap_key, &amp;c-&gt;c1=2Eks=2Eoriginal_wrap_keydata,</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-                           opti=
+ons-&gt;ce=2Etls_crypt_file, options-&gt;ce=2Etls_crypt_file_inline,</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-                           o=
+ptions-&gt;tls_server);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                           ce-&gt;tls_crypt_file, ce-&gt;tls_crypt_file=
+_inline, options-&gt;tls_server);</span><br><span>     }</span><br><span> <=
+/span><br><span>     /* tls-crypt with client-specific keys (--tls-crypt-v2=
+) */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (options-&=
+gt;ce=2Etls_crypt_v2_file)</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    if (ce-&gt;tls_crypt_v2_file)</span><br><span>     {</span><br><=
+span>         if (options-&gt;tls_server)</span><br><span>         {</span>=
+<br><span>             tls_crypt_v2_init_server_key(&amp;c-&gt;c1=2Eks=2Etl=
+s_crypt_v2_server_key, true,</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-                                         options-&gt;ce=2Etls_crypt_=
+v2_file,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
+                            options-&gt;ce=2Etls_crypt_v2_file_inline);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+                       =
+                  ce-&gt;tls_crypt_v2_file, ce-&gt;tls_crypt_v2_file_inline=
+);</span><br><span>         }</span><br><span>         else</span><br><span=
+>         {</span><br><span>             tls_crypt_v2_init_client_key(&amp;=
+c-&gt;c1=2Eks=2Etls_wrap_key, &amp;c-&gt;c1=2Eks=2Eoriginal_wrap_keydata,</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-                       =
+                  &amp;c-&gt;c1=2Eks=2Etls_crypt_v2_wkc, options-&gt;ce=2Et=
+ls_crypt_v2_file,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+                                     options-&gt;ce=2Etls_crypt_v2_file_inl=
+ine);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
+                           &amp;c-&gt;c1=2Eks=2Etls_crypt_v2_wkc, ce-&gt;tl=
+s_crypt_v2_file,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+                                      ce-&gt;tls_crypt_v2_file_inline);</sp=
+an><br><span>         }</span><br><span>         /* We have to ensure that =
+the loaded tls-crypt key is small enough</span><br><span>          * to fit=
+ into the initial hard reset v3 packet */</span><br><span>@@ -3112,18 +3110=
+,45 @@</span><br><span>         /* empty ACK/message id, tls-crypt, Opcode,=
+ UDP, ipv6 */</span><br><span>         int required_size =3D 5 + wkc_len + =
+tls_crypt_buf_overhead() + 1 + 8 + 40;</span><br><span> </span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-        if (required_size &gt; c-&gt;opt=
+ions=2Ece=2Etls_mtu)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        if (required_size &gt; ce-&gt;tls_mtu)</span><br><span>         {<=
+/span><br><span>             msg(M_WARN,</span><br><span>                 &=
+quot;ERROR: tls-crypt-v2 client key too large to work with &quot;</span><br=
+><span>                 &quot;requested --max-packet-size %d, requires at l=
+east &quot;</span><br><span>                 &quot;--max-packet-size %d=2E =
+Packets will ignore requested &quot;</span><br><span>                 &quot=
+;maximum packet size&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-                c-&gt;options=2Ece=2Etls_mtu, required_size);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                ce-&gt;tls_=
+mtu, required_size);</span><br><span>         }</span><br><span>     }</spa=
+n><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+in=
+it_tls_wrap_ctx(struct tls_wrap_ctx *tls_wrap, const struct connection_entr=
+y *ce, bool tls_client,</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                  const struct key_schedule *ks, struct packet_id_persi=
+st *pid_persist)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(*tls_wrap);=
 </span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    /* a transmission to another addre=
-ss, and ids we never sent (below the</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+     * base, an id wraps to a huge index) */</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(oob_probe_rt=
-t_ms(sends, 3, 1, &amp;a, &amp;rcv), -1);</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    assert_int_equal(oob_probe_rtt_ms(sends, 3, 3, &a=
-mp;a, &amp;rcv), -1);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    assert_int_equal(oob_probe_rtt_ms(sends, 3, UINT32_MAX, &amp;a, &amp;=
-rcv), -1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    asser=
-t_int_equal(oob_probe_rtt_ms(sends, 2, 2, &amp;a, &amp;rcv), -1);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    /* a clock that went backwards reads as 0, n=
-ot as a huge value */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    rcv=2Etv_usec =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    assert_int_equal(oob_probe_rtt_ms(sends, 3, 2, &amp;a, &amp;rcv)=
-, 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /* A PROBE_REP=
-LY carrying a probe reply is found by the client scan, with all</span><br><=
-span>  * fields surviving=2E */</span><br><span> static void</span><br><spa=
-n>@@ -996,6 +1028,7 @@</span><br><span>         cmocka_unit_test(test_serve=
-r_probe_check_no_request),</span><br><span>         cmocka_unit_test(test_p=
-robe_reply_credits_every_entry_at_address),</span><br><span>         cmocka=
-_unit_test(test_probe_reply_matches_only_its_address),</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(test_probe_rtt_=
-from_answered_send),</span><br><span>         cmocka_unit_test(test_client_=
-reply_read_finds_reply),</span><br><span>         cmocka_unit_test(test_cli=
-ent_reply_read_skips_unknown),</span><br><span>         cmocka_unit_test(te=
-st_client_reply_read_rejects_unknown_mandatory),</span><br></pre><p>To view=
-, visit <a href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1748?usp=3Dema=
-il">change 1748</a>=2E To unsubscribe, or for help writing mail filters, vi=
-sit <a href=3D"http://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings=
-</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><di=
-v itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"=
-><link itemprop=3D"url" href=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1=
-748?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></=
-div>
+yle=3D"color: hsl(120, 100%, 40%);">+    /* TLS handshake authentication (-=
+-tls-auth) */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if=
+ (ce-&gt;tls_auth_file)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        tl=
+s_wrap-&gt;mode =3D TLS_WRAP_AUTH;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* TLS handsha=
+ke encryption (--tls-crypt) */</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    if (ce-&gt;tls_crypt_file || (ce-&gt;tls_crypt_v2_file &amp;=
+&amp; tls_client))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        tls_wra=
+p-&gt;mode =3D TLS_WRAP_CRYPT;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (tls_wrap-&gt;m=
+ode =3D=3D TLS_WRAP_AUTH || tls_wrap-&gt;mode =3D=3D TLS_WRAP_CRYPT)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        tls_wrap-&gt;opt=2Ekey_ctx_bi =
+=3D ks-&gt;tls_wrap_key;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        tls_wrap-&gt;opt=2Epid_persist =3D pid_persist;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        tls_wrap-&gt;opt=2Eflags |=
+=3D CO_PACKET_ID_LONG_FORM;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        tls_wrap-&gt;original_wrap_keydata =3D ks-&gt;original_wrap=
+_keydata;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /*</span><br><span>  * =
+Initialize the persistent component of OpenVPN&#39;s TLS mode,</span><br><s=
+pan>  * which is preserved across SIGUSR1 resets=2E</span><br><span>@@ -319=
+5,7 +3220,7 @@</span><br><span>         init_key_type(&amp;c-&gt;c1=2Eks=2E=
+key_type, ciphername, options-&gt;authname, true, warn);</span><br><span> <=
+/span><br><span>         /* initialize tls-auth/crypt/crypt-v2 key */</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        do_init_tls_wrap_ke=
+y(c);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        do_ini=
+t_tls_wrap_key(c, &amp;c-&gt;options=2Ece);</span><br><span> </span><br><sp=
+an>         /* initialise auth-token crypto support */</span><br><span>    =
+     if (c-&gt;options=2Eauth_token_generate)</span><br><span>@@ -3220,7 +3=
+245,7 @@</span><br><span>          * tls-auth/crypt key can be configured p=
+er connection block, therefore</span><br><span>          * we must reload i=
+t as it may have changed</span><br><span>          */</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        do_init_tls_wrap_key(c);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        do_init_tls_wrap_key(c=
+, &amp;c-&gt;options=2Ece);</span><br><span>     }</span><br><span> }</span=
+><br><span> </span><br><span>@@ -3396,25 +3421,9 @@</span><br><span>       =
+  to=2Eekm_size =3D 0;</span><br><span>     }</span><br><span> </span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    /* TLS handshake authenticati=
+on (--tls-auth) */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ if (options-&gt;ce=2Etls_auth_file)</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       to=2Etls_wrap=2Emode =3D TLS_WRAP_AUTH;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* TLS h=
+andshake encryption (--tls-crypt) */</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    if (options-&gt;ce=2Etls_crypt_file || (options-&gt;ce=
+=2Etls_crypt_v2_file &amp;&amp; options-&gt;tls_client))</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-        to=2Etls_wrap=2Emode =3D TLS_WRAP_CRYPT;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    if (to=2Etls_wrap=2Emode =3D=3D TLS_WRAP_AUTH || to=2Etls_wr=
+ap=2Emode =3D=3D TLS_WRAP_CRYPT)</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+   to=2Etls_wrap=2Eopt=2Ekey_ctx_bi =3D c-&gt;c1=2Eks=2Etls_wrap_key;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        to=2Etls_wrap=2Eopt=
+=2Epid_persist =3D &amp;c-&gt;c1=2Epid_persist;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-        to=2Etls_wrap=2Eopt=2Eflags |=3D CO_PACKE=
+T_ID_LONG_FORM;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+  to=2Etls_wrap=2Eoriginal_wrap_keydata =3D c-&gt;c1=2Eks=2Eoriginal_wrap_k=
+eydata;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    /* Control-channel wrapp=
+ing (--tls-auth / --tls-crypt) */</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    init_tls_wrap_ctx(&amp;to=2Etls_wrap, &amp;c-&gt;options=
+=2Ece, options-&gt;tls_client, &amp;c-&gt;c1=2Eks,</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+                      &amp;c-&gt;c1=2Epid_pe=
+rsist);</span><br><span> </span><br><span>     if (options-&gt;ce=2Etls_cry=
+pt_v2_file)</span><br><span>     {</span><br><span>diff --git a/src/openvpn=
+/init=2Eh b/src/openvpn/init=2Eh</span><br><span>index ce8f74e=2E=2Efbe461b=
+ 100644</span><br><span>--- a/src/openvpn/init=2Eh</span><br><span>+++ b/sr=
+c/openvpn/init=2Eh</span><br><span>@@ -73,6 +73,39 @@</span><br><span> </sp=
+an><br><span> void do_test_crypto(struct context *o);</span><br><span> </sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+ * @brief Load the tls-auth/tls-crypt(-=
+v2) key material into c-&gt;c1=2Eks=2E</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ * Reads the key from the file configured on connection entry ce (--tls-a=
+uth,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * --tls-crypt =
+or --tls-crypt-v2); a no-op when none of them is set=2E May be</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ * called more than once (the ke=
+y can be configured per connection block, so it</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+ * is reloaded for each connection)=2E</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ * @param c  The context whose c1=2Eks key sc=
+hedule is populated=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ * @param ce The connection entry whose tls-wrap key file is loaded=2E</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+void do_init_tls_wrap_key(struct cont=
+ext *c, const struct connection_entry *ce);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @brief C=
+onfigure a control-channel wrapping context from a connection entry</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+ *        and previously lo=
+aded tls-wrap key material=2E</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Sets=
+ tls_wrap to TLS_WRAP_AUTH (--tls-auth) or TLS_WRAP_CRYPT</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ * (--tls-crypt / client --tls-crypt-=
+v2) and installs the key context, or</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ * leaves it in TLS_WRAP_NONE when neither is configured=
+=2E The key material must</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+ * already have been loaded with do_init_tls_wrap_key()=2E tls-crypt-=
+v2 specifics</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * (the=
+ wrapped client key and the server key) are left to the caller=2E</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+ * @param tls_wrap    The wrapping context to =
+configure=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @par=
+am ce          The connection entry selecting the wrapping mode=2E</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ * @param tls_client  Whethe=
+r this is a TLS client (selects tls-crypt-v2 mode)=2E</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * @param ks          Key schedule holdin=
+g the loaded tls-wrap key material=2E</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ * @param pid_persist Packet-id persistence object to att=
+ach to the context=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void init_tls_=
+wrap_ctx(struct tls_wrap_ctx *tls_wrap, const struct connection_entry *ce,<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
+   bool tls_client, const struct key_schedule *ks,</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+                       struct packet_id_pers=
+ist *pid_persist);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span> void context_gc_free(struct context *c);</span><br><span> =
+</span><br><span> bool do_up(struct context *c, bool pulled_options, uint64=
+_t option_types_found);</span><br></pre><p>To view, visit <a href=3D"http:/=
+/gerrit=2Eopenvpn=2Enet/c/openvpn/+/1749?usp=3Demail">change 1749</a>=2E To=
+ unsubscribe, or for help writing mail filters, visit <a href=3D"http://ger=
+rit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope=
+ itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"a=
+ction" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" h=
+ref=3D"http://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1749?usp=3Demail"/><meta i=
+temprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-<=
-div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"di=
-splay:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerr=
-it-Change-Id: I375a41749060b7d006647bc27002c55436c8a8bb </div>
-<div style=
-=3D"display:none"> Gerrit-Change-Number: 1748 </div>
-<div style=3D"display:=
-none"> Gerrit-PatchSet: 29 </div>
-<div style=3D"display:none"> Gerrit-Owner=
-: stipa &lt;lstipakov@gmail=2Ecom&gt; </div>
-<div style=3D"display:none"> G=
-errit-Reviewer: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div st=
-yle=3D"display:none"> Gerrit-Reviewer: ralf_lici &lt;ralf@mandelbit=2Ecom&g=
-t; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn=
--devel@lists=2Esourceforge=2Enet&gt; </div>
-<div style=3D"display:none"> Ge=
-rrit-Attention: ralf_lici &lt;ralf@mandelbit=2Ecom&gt; </div>
-<div style=3D=
-"display:none"> Gerrit-Attention: stipa &lt;lstipakov@gmail=2Ecom&gt; </div=
->
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn=
-@rfc2549=2Eorg&gt; </div>
+<div style=3D"displ=
+ay:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none=
+"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branc=
+h: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I7d8546da9e=
+f06c2226ea77e461f9550d24894c61 </div>
+<div style=3D"display:none"> Gerrit-C=
+hange-Number: 1749 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 29 =
+</div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@gmail=
+=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &=
+lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerri=
+t-Reviewer: ralf_lici &lt;ralf@mandelbit=2Ecom&gt; </div>
+<div style=3D"dis=
+play:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=
+=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: ralf_lici =
+&lt;ralf@mandelbit=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Att=
+ention: stipa &lt;lstipakov@gmail=2Ecom&gt; </div>
+<div style=3D"display:no=
+ne"> Gerrit-Attention: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+=
 
 </body></html>
---qqEvwoWoRqk=--
+--F3hcg4K7qyo=--
 
 
---===============5873274904322567581==
+--===============7270930114835773834==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============5873274904322567581==
+--===============7270930114835773834==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -978,5 +867,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============5873274904322567581==--
+--===============7270930114835773834==--
 
