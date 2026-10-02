@@ -4,87 +4,129 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 16283CA5FD9
-	for <openvpn-devel@archiver.kernel.org>; Thu,  1 Oct 2026 08:41:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C76ABCA5FC4
+	for <openvpn-devel@archiver.kernel.org>; Fri,  2 Oct 2026 09:55:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=4QgqkDZBvZZSISlG7aAgZD0nINpJx3jkIcaVzlANk3w=; b=ej9SvIepLxwa7ZUnH8FWxHaL5f
-	R8m/zneAalL1BSStS2GY6jLCWSmHYifzz/9FCW2bJdYQZDUUhwOPFEo5rOOKLJVpWySTcXiopasj9
-	Zt0/zc2VxD9I1IQEXObUg2BAe9xzON5Q+62okT1jG/tJtJwqdGGESRKwupYM12JEneGI=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=PlZ74hb5yCqYe9P5L1p3cwWinavK4mpuUnFS6sqyfqk=; b=jReAmkG61ufhp/dX1f6hseftqm
+	/6ZnI3Of2Qii1gdut4frpyE7zKpA/ZImquoG7szWgHeIoD5vnKh9kn1HFIDT0Mlhm4oVSwsvGkwZg
+	ByRyqfJKqmufb4vE5KbXr34S03qHuI8phaHa/Q/A5NkKMYqbV7z46rpOyyIMloRHGUBo=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xCCMZ-0003YG-8E;
-	Thu, 01 Oct 2026 08:41:56 +0000
+	id 1xCZyl-000535-4P;
+	Fri, 02 Oct 2026 09:54:59 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <ralf@mandelbit.com>) id 1xCCMS-0003Um-Ox
+ (envelope-from <gerrit@openvpn.net>) id 1xCZyj-00052y-M4
  for openvpn-devel@lists.sourceforge.net;
- Thu, 01 Oct 2026 08:41:50 +0000
+ Fri, 02 Oct 2026 09:54:58 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=ZOsy4WeQY2zuAKUTFvvOLHZJMBr9SESMUtL4y+ypHkE=; b=Z3JvaYJDIOfjdhZrBvw3BuUcx3
- nnKKTucIHCGafBA6wzAIJrNbmrMoO/TGtkXBqMpgf4jVVOQ6NPr0UzReTcRvwnm7kf4z9XKm6u9/F
- 2hYB/GqmRfE1IUzRz4FbzkuH31C0ebSlIYPZ/R/unpCPTEW/UJ9rg3eGowivJ+mmWv7I=;
+ d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
+ :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
+ Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
+ :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
+ :List-Post:List-Owner:List-Archive;
+ bh=KrBnG2RHnFQ566f2+WiNO4+rzau6VS1p/JBx1iACftQ=; b=EUnCAQ5FG8Uf+HNsL4eGfTcbPp
+ 5fwRo5aNmWsOmuefxO88bSSQJuKO+tykt2pECNTy+ba9UR4V738DyBXIhoapFe64d9J7BkX253gHD
+ KQwN+J8ZCFmAa1CCZEpdf5FT/95ElyEUzjkGfkrIRgcUlNDNMk2arqZrhb1kAqPoO6QM=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=ZOsy4WeQY2zuAKUTFvvOLHZJMBr9SESMUtL4y+ypHkE=; b=Wvj42WXEivk7GL8wZIjEXFw1uw
- BsABS8Ge/5wl5IExG2wSaaA4dKrerSwbE3e9xufxSdU8bBoV9N84Aa19y5N1Z37DdlUR2IEqfA6en
- yELsJF2cV2vVxAf9bNc0ME72RZ0XGmM7iEe9C2qwpBrHpq1foFkAKwnutwuj2ZQPno9s=;
-Received: from mout-b-203.mailbox.org ([195.10.208.52])
+ h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
+ Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=KrBnG2RHnFQ566f2+WiNO4+rzau6VS1p/JBx1iACftQ=; b=b
+ iq0xe3tbVgIt2iw7dr8+DTOERg54hXl5Lj6bq+fqPggREf2+XUW6Yg4QMW17LvY3ak+MGbWt/fnlu
+ gL0byW0gxCvM/8rUCDwXrJkg/qLcMBvA0MaGRXtjdw1Gkn/c2TT2FYE42u47co3IFaERYHZajzBwZ
+ tsxJsdjmuvoXyXBs=;
+Received: from mail-wr2-f34.google.com ([74.125.225.98])
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1xCCMM-0002x8-Su for openvpn-devel@lists.sourceforge.net;
- Thu, 01 Oct 2026 08:41:50 +0000
-Received: from smtp102.mailbox.org (smtp102.mailbox.org
- [IPv6:2001:67c:2050:b231:465::102])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
- key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
- (No client certificate requested)
- by mout-b-203.mailbox.org (Postfix) with ESMTPS id 4hwQPb0C5tzLm8j
+ (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
+ id 1xCZyh-0003hK-3b for openvpn-devel@lists.sourceforge.net;
+ Fri, 02 Oct 2026 09:54:58 +0000
+Received: by mail-wr2-f34.google.com with SMTP id
+ ffacd0b85a97d-48af4663da5so3027452f8f.3
  for <openvpn-devel@lists.sourceforge.net>;
- Thu, 01 Oct 2026 10:41:39 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
- s=MBO0001; t=1790844099;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:mime-version:mime-version:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=ZOsy4WeQY2zuAKUTFvvOLHZJMBr9SESMUtL4y+ypHkE=;
- b=xnz+7hHNrWJHWpvxmooYXp0BRc8/sRfTdOJtigxhttyR29enJNlxRpDEzbg/ULjENq/s/2
- 39JYuA+erRrz/TvOutX5pGnMNQV8QQN4m8uzBHCWGYvA8GDS2Ci7pibqs3PiabynxYWXj3
- jW9dCzbbUl8X/3ws666DSCW26j/LIyJO3H/gD2n08ReI9GK2dm9v5st6rZv9Z6becxwPHg
- jcdRvVrhyrBfSCdHU6xg29TNBVlpcduenC5v3BizIhqvsZta1v64ZkdLo5I145NU38btH/
- CqMRgo3grCmG6F25VEL494t3w+PfhrtHNsOcsvKWIb3ES+iSl8we4MkuH31gEA==
-Authentication-Results: outgoing_mbo_mout; dkim=none;
- spf=pass (outgoing_mbo_mout: domain of ralf@mandelbit.com designates
- 2001:67c:2050:b231:465::102 as permitted sender)
- smtp.mailfrom=ralf@mandelbit.com
-From: Ralf Lici <ralf@mandelbit.com>
-To: openvpn-devel@lists.sourceforge.net
-Date: Thu,  1 Oct 2026 10:41:25 +0200
-Message-ID: <0431607b16294b9521e908f4d29a524698e39bb7.1790843153.git.ralf@mandelbit.com>
-In-Reply-To: <cover.1790843153.git.ralf@mandelbit.com>
-References: <cover.1790843153.git.ralf@mandelbit.com>
+ Fri, 02 Oct 2026 02:54:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=openvpn.net; s=google; t=1790934888; x=1791539688; darn=lists.sourceforge.net;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
+ :reply-to:content-type;
+ bh=KrBnG2RHnFQ566f2+WiNO4+rzau6VS1p/JBx1iACftQ=;
+ b=LohwD3fyeeCQnyVMi6JUCGnj+FMWOaVH+3d882GbH4TJB1y80wkE2/TCLroQI3+fit
+ wvEEOU7J4Ohn+58T6MDAtA9kl/UwCU2X5IHN8Mk0G/0LkuilfsU+TotCQ2aaAxLFKtWN
+ sb3k+PQtnnp0jY40gNC7bqAwh6Cu/gd3bE2kblSpud6sj/TVCPUySz4oMx9i/9SBQ8f3
+ r7crRQN1nFbL10WaeIzxDCzEVpOib3nh8wmwvoPUPZ5K+ddlj4+M79UdvV53lJddboKU
+ KdXh3WQlBhBdFCtqSsg7PAl9SMOW4BB2viBLrdkMdr2aAG0PQsnGwMdjbcj/fePpcT5b
+ SrEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20260707; t=1790934888; x=1791539688;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
+ :cc:subject:date:message-id:reply-to:content-type;
+ bh=KrBnG2RHnFQ566f2+WiNO4+rzau6VS1p/JBx1iACftQ=;
+ b=YPeUm/W2iE+ljPcjXJG9VhXMtO6RB9NOgTuVzLYsg2y1WV0tbnFXZIaw4hU+0ZTTbW
+ 1oZNgFAJDsOLTxH9ymDhOL2cnd5lhhpHFLE+wDEBJRiApgNUwMw6o9wFWnldiAMXwR7z
+ yBToZ2NBz7gOw6Gz3ByBLAJX7k3emMZXU7q8TcSpI+HnYBg8Q0Eszvs2cnoi06Za0Fn1
+ SPuYgIjLVgsQ4fB9fHho0Ks2F1VNIWKEd9TSbRVlcQuB8emvejYYivpdFp1PhbBGHuHh
+ QjKd45rLvmfaxAmAZAcmkNn0I5XTI4CfFce1aHkuuV1qEVy/y+IZ25gTg1Va9wIg9vFG
+ cZXg==
+X-Forwarded-Encrypted: i=1;
+ AKwUvBxht5He0MedO5oBXkV/qokZS2UnJ0ofp6Dv/dTpWO1O5b5kL25eX9gxr50c3vsehgoUsD1WfvOROGVbjMIG@lists.sourceforge.net
+X-Gm-Message-State: AFq9FYIE7EKe9Rgmq4nR+XCa128yJMWRCyonTtutaSAvmgoAi2qhejq+
+ dYeHfRUdQE/6BOCf4vldel/BuCr4mHisMRW59XKM1SB0uu4WtI7HE+jBsc8BAm300egBGppvVnT
+ qk5hMuVgupA5b0H5YRjpOOjLiER59uGK6zzK04HuWUysadFcY+/l4aOPMsRYNYRr13s7a
+X-Gm-Gg: AYBFou2ZAJFJnhzLMYP8/JYvcXjHdep00yGz2UCeX9Q8kHF4s4uE9V5+mruomAKLgAN
+ mrWypdlLHtBN2ds789kFdg/E6rdxZ/m28BGlnJzq3NnsG8m6VslN7Lm7tsfjV8m+96R6i7QeLZ2
+ nnmesfFVC9xJ+/GjLGxREvd9uwcceVFatx9ZUQWKvjG3D+ujO7ROZlMLKEZ8ir/LockLmgCVa4C
+ exwo0zlo6qTvSQvyqVghbog4PXdyQXANYNSYKyN2bb6Sgvju9WuK9ckoRM612hk0Km1tDLGDztA
+ 2eJohgrRDgov4ejuft+liQzaGoZKxeclulXbNculzzNNNFGICe8B3rXuJhw5s8V4Qw4mM3DruCC
+ 7jEOavTBZIIHLNwMkInLoykqJoj2OoocIx/+PWQ6Ug6TlGzN9Co+snhwclIf+pZHvaGvXysnvPI
+ QjUjPZa2OANPh7//csGtw8BzVfbBxql6hhskE/f9GJEaST4cqaqUlCzaxLMsjxeMV3PAcvqX7fu
+ /dCvknr+v6PLE1b0cqyLt8zUB5VNHPyXHoonS55GUjaGvz3hMIzTSSCSBAyvsyRbG5PqrBubS8V
+ kom2OoDc1cWZKc/GlVRolLKRFXk3E2uHfrgctkxq0X66XDG5uY0euWjIvsnN
+X-Received: by 2002:a05:6000:2c05:b0:488:84ba:ae2e with SMTP id
+ ffacd0b85a97d-48b12567730mr4045859f8f.0.1790934888294; 
+ Fri, 02 Oct 2026 02:54:48 -0700 (PDT)
+Received: from ip-10-18-1-162.eu-central-1.compute.internal
+ (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
+ by smtp.gmail.com with ESMTPSA id
+ ffacd0b85a97d-48b38104f89sm5053754f8f.30.2026.10.02.02.54.47
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 02 Oct 2026 02:54:47 -0700 (PDT)
+X-Google-Original-From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?=
+ <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
+Date: Fri, 2 Oct 2026 09:54:43 +0000
+To: Frank Lichtenheld <frank@lichtenheld.com>
+Auto-Submitted: auto-generated
+X-Gerrit-MessageType: comment
+X-Gerrit-PatchSet: 28
+X-Gerrit-Change-Id: I56248cf6d199c2da770774b8fd1e5daf2b116f58
+X-Gerrit-Change-Number: 1663
+X-Gerrit-Project: openvpn
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/1663?usp=email>
+X-Gerrit-Commit: 7fa8dee66ae7df3684ff1a1cb6689c7a9e867863
+X-Gerrit-Comment-Date: Fri, 2 Oct 2026 09:54:43 +0000
+In-Reply-To: <gerrit.1778068501000.I56248cf6d199c2da770774b8fd1e5daf2b116f58@gerrit.openvpn.net>
+References: <gerrit.1778068501000.I56248cf6d199c2da770774b8fd1e5daf2b116f58@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzc4MDY4NTAxMDAwLkk1NjI0OGNmNmQxOTljMmRhNzcwNzc0YjhmZDFlNWRhZjJiMTE2ZjU4QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <97d1e22063a2ee9b600977cbb328751711fea49d-EmailReviewComments-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
-X-Rspamd-Queue-Id: 4hwQPb0C5tzLm8j
-X-Headers-End: 1xCCMM-0002x8-Su
-Subject: [Openvpn-devel] [PATCH ovpn net-next 6/8] ovpn: coalesce UDP data
- records with GRO
+User-Agent: Gerrit/3.14.2
+X-Headers-End: 1xCZyh-0003hK-3b
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Remove instances of
+ constParameterPointer cppcheck warnings
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -96,364 +138,310 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= via Openvpn-devel
+ <openvpn-devel@lists.sourceforge.net>
+Reply-To: razvanc@mailbox.org, arne-openvpn@rfc2549.org,
+ openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com
+Cc: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= <gerrit@openvpn.net>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>,
+ plaisthos <arne-openvpn@rfc2549.org>
+Content-Type: multipart/mixed; boundary="===============4738824668250932046=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-Register UDP tunnel GRO callbacks for ovpn data sockets and coalesce
-compatible DATA_V2 records from one transport flow. Keep each encrypted
-record as a separate frag-list entry so the receive path can detach and
-authenticate records independently.
+--===============4738824668250932046==
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="C+eCFo0XVOQ="; charset=UTF-8
 
-Match the complete opcode/key/peer header and require compatible outer-
-network and checksum state. Flush on short records, differing segment
-geometry, existing GSO input, or the 64-record limit.
+--C+eCFo0XVOQ=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Export skb_gro_receive_list, which is already shared by the core UDP and
-TCP frag-list GRO paths, so modular ovpn can use the same primitive
-instead of maintaining a local copy.
+Attention is currently required from: Frank Lichtenheld, plaisthos=2E
 
-Packet taps may clone a completed aggregate before UDP receives it.
-Making the aggregate head private retains shared references to its child
-skbs, so also clone and unshare each shared child before detaching the
-list and handing its records to crypto.
+R=C4=
+=83zvan Cojocaru has posted comments on this change by Frank Lichtenheld=2E=
+ ( https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1663?usp=3Demail )
 
-On two directly connected 100-Gbit/s mlx5 ports, five interleaved
-iperf3 -t 60 -O 10 single-flow AES-128-GCM runs in each direction
-produced the following mean throughput:
+Change su=
+bject: Remove instances of constParameterPointer cppcheck warnings
+=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-                         Forward          Reverse
-Without receive GRO     19.279 Gbit/s    19.819 Gbit/s
-With frag-list GRO      22.773 Gbit/s    22.796 Gbit/s
 
-The preceding UDP GSO transmit path and hardware UDP segmentation were
-enabled in both cases. Frag-list GRO improved throughput by 18.1%
-forward and 15.0% reverse.
+Patch Set 28: Code=
+-Review-1
 
-Signed-off-by: Ralf Lici <ralf@mandelbit.com>
----
-Changes since RFC v4 https://lore.kernel.org/openvpn-devel/e8f042bbdaeca7d9993cae49b08c4aedd8b2cbb9.1789558856.git.ralf@mandelbit.com/
-- Refresh the performance measurements.
+(8 comments)
 
- drivers/net/ovpn/io.c  |   7 +-
- drivers/net/ovpn/udp.c | 214 ++++++++++++++++++++++++++++++++++++++++-
- net/core/gro.c         |   1 +
- net/ipv4/udp_offload.c |   3 +-
- 4 files changed, 218 insertions(+), 7 deletions(-)
+File sample/sample-plugins/keying-material-exporte=
+r-demo/keyingmaterialexporter=2Ec:
 
-diff --git a/drivers/net/ovpn/io.c b/drivers/net/ovpn/io.c
-index d76d48d945c5..c6f24b5d85dd 100644
---- a/drivers/net/ovpn/io.c
-+++ b/drivers/net/ovpn/io.c
-@@ -70,11 +70,10 @@ static void ovpn_netdev_write(struct ovpn_peer *peer, struct sk_buff *skb)
- 	unsigned int pkt_len;
- 	int ret;
- 
--	/*
--	 * GSO state from the transport layer is not valid for the tunnel/data
--	 * path. Reset all GSO fields to prevent any further GSO processing
--	 * from entering an inconsistent state.
-+	/* the transport encapsulation and its GSO metadata do not describe the
-+	 * decrypted inner packet
- 	 */
-+	skb->encapsulation = 0;
- 	skb_gso_reset(skb);
- 
- 	/* we can't guarantee the packet wasn't corrupted before entering the
-diff --git a/drivers/net/ovpn/udp.c b/drivers/net/ovpn/udp.c
-index 4802d982de08..20143eee351f 100644
---- a/drivers/net/ovpn/udp.c
-+++ b/drivers/net/ovpn/udp.c
-@@ -11,8 +11,10 @@
- #include <linux/skbuff.h>
- #include <linux/socket.h>
- #include <linux/udp.h>
-+#include <linux/unaligned.h>
- #include <net/addrconf.h>
- #include <net/dst_cache.h>
-+#include <net/gro.h>
- #include <net/route.h>
- #include <net/transp_v6.h>
- #include <net/udp.h>
-@@ -27,6 +29,209 @@
- #include "socket.h"
- #include "udp.h"
- 
-+/* like UDP and TCP frag-list GRO */
-+#define OVPN_UDP_GRO_CNT_MAX 64
-+
-+static bool ovpn_udp_gro_header(struct sk_buff *skb, u32 *header)
-+{
-+	const unsigned int offset = skb_gro_offset(skb);
-+
-+	/* GRO replaces its frag0 pointer after holding an skb, so keep the
-+	 * openvpn header linear for later candidate comparisons
-+	 */
-+	if (!pskb_may_pull(skb, offset + OVPN_OPCODE_SIZE))
-+		return false;
-+
-+	*header = get_unaligned_be32(skb->data + offset);
-+	return true;
-+}
-+
-+static struct sk_buff *ovpn_udp_gro_receive_fraglist(struct sock *sk,
-+						     struct list_head *head,
-+						     struct sk_buff *skb)
-+{
-+	const unsigned int gso_size = skb_gro_len(skb);
-+	struct sk_buff *p, *pp = NULL;
-+	u32 header, header2;
-+	int ret = 0, nhoff;
-+	bool flush;
-+
-+	if (!ovpn_udp_gro_header(skb, &header) ||
-+	    FIELD_GET(OVPN_OPCODE_PKTTYPE_MASK, header) != OVPN_DATA_V2) {
-+		NAPI_GRO_CB(skb)->flush = 1;
-+		return NULL;
-+	}
-+
-+	/* do not nest an existing GSO packet in the record list */
-+	if (skb_is_gso(skb)) {
-+		NAPI_GRO_CB(skb)->flush = 1;
-+		return NULL;
-+	}
-+
-+	list_for_each_entry(p, head, list) {
-+		if (!NAPI_GRO_CB(p)->same_flow)
-+			continue;
-+
-+		/* match opcode, key ID and peer ID */
-+		if (!ovpn_udp_gro_header(p, &header2) || header != header2) {
-+			NAPI_GRO_CB(p)->same_flow = 0;
-+			continue;
-+		}
-+
-+		/* GRO has already matched the outer addresses and UDP ports;
-+		 * check the remaining outer IP fields
-+		 */
-+		nhoff = skb_transport_offset(p) -
-+			NAPI_GRO_CB(p)->network_offset;
-+		flush = __gro_receive_network_flush(udp_hdr(skb), udp_hdr(p), p,
-+						    nhoff, false);
-+
-+		/* The first record determines the nominal GSO size. A shorter
-+		 * final record may follow it, but a larger record cannot.
-+		 * Checksum metadata must also be uniform because the aggregate
-+		 * exposes only one checksum state.
-+		 */
-+		if (gso_size > skb_shinfo(p)->gso_size || flush ||
-+		    skb->ip_summed != p->ip_summed ||
-+		    skb->csum_level != p->csum_level) {
-+			pp = p;
-+		} else {
-+			/* skb_gro_receive_list pulls the headers already
-+			 * processed by GRO before linking this skb to the
-+			 * record list so we have to manually preserve the
-+			 * outer network header location for later handling
-+			 */
-+			nhoff = NAPI_GRO_CB(skb)->network_offset;
-+			skb_set_network_header(skb, nhoff);
-+			ret = skb_gro_receive_list(p, skb);
-+		}
-+
-+		/* complete the aggregate if the append failed, or after
-+		 * appending a shorter final record, or after reaching the
-+		 * record-count limit
-+		 */
-+		if (ret || gso_size != skb_shinfo(p)->gso_size ||
-+		    NAPI_GRO_CB(p)->count >= OVPN_UDP_GRO_CNT_MAX)
-+			pp = p;
-+
-+		return pp;
-+	}
-+
-+	return NULL;
-+}
-+
-+static int ovpn_udp_gro_complete(struct sock *sk, struct sk_buff *skb,
-+				 int nhoff)
-+{
-+	/* udp_gro_complete has already marked this as a UDP tunnel GSO packet.
-+	 * Keep that type so UDP passes the aggregate directly to the encap cb,
-+	 * where the original record skbs are detached.
-+	 */
-+	skb_shinfo(skb)->gso_segs = NAPI_GRO_CB(skb)->count;
-+
-+	/* Each outer UDP checksum was either validated (or accepted in case of
-+	 * checksumless UDP) before its record was merged in
-+	 * skb_gro_checksum_validate_zero_check.
-+	 * The checksum in the aggregate cannot describe the concatenation of
-+	 * independent UDP payloads, so we preserve the validation result.
-+	 */
-+	skb->ip_summed = CHECKSUM_UNNECESSARY;
-+	skb->csum_level = 0;
-+	skb->csum_valid = 0;
-+
-+	return 0;
-+}
-+
-+/* skb_gro_receive_list keeps the first openvpn record in 'skb' and links the
-+ * remaining records through fraglist. Here we segment by detaching that list
-+ * before delivering the records individually, and remove the child skbs from
-+ * the head skb's length and memory accounting so the head describes only the
-+ * first record again.
-+ */
-+static struct sk_buff *ovpn_udp_gro_detach(struct sk_buff *skb)
-+{
-+	unsigned int data_len = 0, truesize = 0;
-+	struct sk_buff *curr, *list;
-+	int ret;
-+
-+	/* IP reassembly may also use fraglist, but it is not a record batch */
-+	if (!skb_is_gso(skb) ||
-+	    !(skb_shinfo(skb)->gso_type &
-+	      (SKB_GSO_UDP_TUNNEL | SKB_GSO_UDP_TUNNEL_CSUM)))
-+		return NULL;
-+
-+	if (unlikely(!skb_shinfo(skb)->frag_list))
-+		return NULL;
-+
-+	/* packet taps may have cloned the aggregate before it reached UDP, so
-+	 * make shared info private before removing its fraglist
-+	 */
-+	ret = skb_unclone(skb, GFP_ATOMIC);
-+	if (unlikely(ret))
-+		return ERR_PTR(ret);
-+
-+	list = skb_shinfo(skb)->frag_list;
-+
-+	for (curr = list; curr; curr = curr->next) {
-+		data_len += curr->len;
-+		truesize += curr->truesize;
-+	}
-+
-+	skb_shinfo(skb)->frag_list = NULL;
-+	skb->len -= data_len;
-+	skb->data_len -= data_len;
-+	skb->truesize -= truesize;
-+
-+	return list;
-+}
-+
-+static void ovpn_udp_recv(struct ovpn_peer *peer, struct sk_buff *skb)
-+{
-+	struct sk_buff *list, *next;
-+
-+	list = ovpn_udp_gro_detach(skb);
-+	if (IS_ERR(list)) {
-+		ovpn_dev_dstats_rx_dropped(peer->ovpn->dev);
-+		kfree_skb(skb);
-+		ovpn_peer_put(peer);
-+		return;
-+	}
-+	skb->next = list;
-+
-+	skb_list_walk_safe(skb, skb, next)
-+	{
-+		/* skb_unclone can leave fraglist children shared with a packet
-+		 * tap, so make each skb header private before changing its
-+		 * list pointer or control block. skb_cow_data makes the packet
-+		 * data writable later in the decrypt path.
-+		 */
-+		skb = skb_share_check(skb, GFP_ATOMIC);
-+		if (unlikely(!skb)) {
-+			ovpn_dev_dstats_rx_dropped(peer->ovpn->dev);
-+
-+			/* carry the current record's peer reference to the
-+			 * next record or release it at the end of the list
-+			 */
-+			if (!next)
-+				ovpn_peer_put(peer);
-+			continue;
-+		}
-+
-+		skb_mark_not_on_list(skb);
-+
-+		/* keep the current reference alive for the next record before
-+		 * handing this one to crypto
-+		 */
-+		if (next && unlikely(!ovpn_peer_hold(peer))) {
-+			DEBUG_NET_WARN_ON_ONCE(1);
-+			kfree_skb_list(next);
-+			next = NULL;
-+		}
-+
-+		ovpn_recv(peer, skb);
-+	}
-+}
-+
- /* Retrieve the corresponding ovpn object from a UDP socket
-  * rcu_read_lock must be held on entry
-  */
-@@ -121,8 +326,7 @@ static int ovpn_udp_encap_recv(struct sock *sk, struct sk_buff *skb)
- 
- 	/* pop off outer UDP header */
- 	__skb_pull(skb, sizeof(struct udphdr));
--	skb_mark_not_on_list(skb);
--	ovpn_recv(peer, skb);
-+	ovpn_udp_recv(peer, skb);
- 	return 0;
- 
- drop:
-@@ -408,6 +612,8 @@ int ovpn_udp_socket_attach(struct ovpn_socket *ovpn_sock, struct socket *sock,
- 		.encap_type = UDP_ENCAP_OVPNINUDP,
- 		.encap_rcv = ovpn_udp_encap_recv,
- 		.encap_destroy = ovpn_udp_encap_destroy,
-+		.gro_receive = ovpn_udp_gro_receive_fraglist,
-+		.gro_complete = ovpn_udp_gro_complete,
- 	};
- 	struct ovpn_socket *old_data;
- 	int ret;
-@@ -454,6 +660,8 @@ void ovpn_udp_socket_detach(struct ovpn_socket *ovpn_sock)
- {
- 	struct sock *sk = ovpn_sock->sk;
- 
-+	udp_tunnel_cleanup_gro(sk);
-+
- 	/* Re-enable multicast loopback */
- 	inet_set_bit(MC_LOOP, sk);
- 	/* Disable CHECKSUM_UNNECESSARY to CHECKSUM_COMPLETE conversion */
-@@ -462,6 +670,8 @@ void ovpn_udp_socket_detach(struct ovpn_socket *ovpn_sock)
- 	WRITE_ONCE(udp_sk(sk)->encap_type, 0);
- 	WRITE_ONCE(udp_sk(sk)->encap_rcv, NULL);
- 	WRITE_ONCE(udp_sk(sk)->encap_destroy, NULL);
-+	WRITE_ONCE(udp_sk(sk)->gro_receive, NULL);
-+	WRITE_ONCE(udp_sk(sk)->gro_complete, NULL);
- 
- 	rcu_assign_sk_user_data(sk, NULL);
- }
-diff --git a/net/core/gro.c b/net/core/gro.c
-index 29b4d02bf519..b6acedc919f8 100644
---- a/net/core/gro.c
-+++ b/net/core/gro.c
-@@ -262,6 +262,7 @@ int skb_gro_receive_list(struct sk_buff *p, struct sk_buff *skb)
- 
- 	return 0;
- }
-+EXPORT_SYMBOL(skb_gro_receive_list);
- 
- static void gro_complete(struct gro_node *gro, struct sk_buff *skb)
- {
-diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
-index cf07c3c6611a..187f108f3ee8 100644
---- a/net/ipv4/udp_offload.c
-+++ b/net/ipv4/udp_offload.c
-@@ -40,7 +40,8 @@ struct udp_tunnel_type_entry {
- #define UDP_MAX_TUNNEL_TYPES (IS_ENABLED(CONFIG_GENEVE) + \
- 			      IS_ENABLED(CONFIG_VXLAN) * 2 + \
- 			      IS_ENABLED(CONFIG_NET_FOU) * 2 + \
--			      IS_ENABLED(CONFIG_XFRM) * 2)
-+			      IS_ENABLED(CONFIG_XFRM) * 2 + \
-+			      IS_ENABLED(CONFIG_OVPN))
- 
- DEFINE_STATIC_CALL(udp_tunnel_gro_rcv, dummy_gro_rcv);
- static DEFINE_STATIC_KEY_FALSE(udp_tunnel_static_call);
+https://gerrit=2Eopenvpn=2Enet/c/openvp=
+n/+/1663/comment/4dbe5817_e02e497f?usp=3Demail :
+PS28, Line 205:     const =
+struct session *sess =3D (struct session *)args->per_client_context;
+Why no=
+t `(const struct session *)args->per_client_context;`? Or just remove the c=
+ast, since we're casting from `void *`=2E
+
+
+https://gerrit=2Eopenvpn=2Enet/=
+c/openvpn/+/1663/comment/0312945f_976992e9?usp=3Demail :
+PS28, Line 217:   =
+  const struct session *sess =3D (struct session *)args->per_client_context=
+;
+Here too, why not `(const struct session *)args->per_client_context;`? Or=
+ just remove the cast, since we're casting from `void *`=2E
+
+
+File src/open=
+vpn/socket=2Eh:
+
+https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1663/comment/bd=
+8b0e79_711f6721?usp=3Demail :
+PS28, Line 835:  * sock is modified on Window=
+s via &sock->listen_handle */
+I think these comments apply to literally the=
+ next line, which here is `static inline void`=2E If that's correct, this d=
+oesn't suppress anything=2E
+
+
+File src/openvpn/ssl_backend=2Eh:
+
+https://ge=
+rrit=2Eopenvpn=2Enet/c/openvpn/+/1663/comment/24e39df0_f7eab14e?usp=3Demail=
+ :
+PS28, Line 173: void tls_ctx_restrict_ciphers_tls13(const struct tls_roo=
+t_ctx *ctx, const char *ciphers);
+It looks like this will end up calling `S=
+SL_CTX_set_ciphersuites()` which uses a non-const `SSL_CTX *`=2E Might be b=
+etter to leave this as it was (also in line with the unchanged `tls_ctx_res=
+trict_ciphers()` above)=2E
+
+
+File src/openvpn/ssl_openssl=2Ec:
+
+https://ger=
+rit=2Eopenvpn=2Enet/c/openvpn/+/1663/comment/327e11bc_51191074?usp=3Demail =
+:
+PS28, Line 1150:     ret =3D SSL_CTX_use_certificate(tls_ctx->ctx, x);
+Th=
+is actually uses a non-const pointer in `tls_ctx->ctx` (`int SSL_CTX_use_ce=
+rtificate(SSL_CTX *ctx, X509 *x);` according to my man page), so it makes c=
+onstifying `tls_ctx` debatable=2E
+
+
+File src/openvpn/tun=2Ec:
+
+https://gerr=
+it=2Eopenvpn=2Enet/c/openvpn/+/1663/comment/7d136cf7_e6fd2455?usp=3Demail :=
+
+PS28, Line 1729:         const struct ip *iph =3D (struct ip *)buf;
+Since =
+we're here, why not `const struct ip *iph =3D (const struct ip *)buf;`?
+
+
+F=
+ile src/openvpn/tun_afunix=2Ec:
+
+https://gerrit=2Eopenvpn=2Enet/c/openvpn/+=
+/1663/comment/2dffa8e3_05f4b481?usp=3Demail :
+PS28, Line 192: write_tun_afu=
+nix(struct tuntap *tt, uint8_t *buf, int len)
+This no longer matches the he=
+ader=2E
+
+
+File tests/unit_tests/openvpn/siphash_openssl=2Ec:
+
+https://gerri=
+t=2Eopenvpn=2Enet/c/openvpn/+/1663/comment/1519f9a8_32d694d1?usp=3Demail :
+=
+PS28, Line 129: siphash_openssl_available(void *sip_context)
+This no longer=
+ matches the header=2E
+
+
+
 -- 
-2.55.0
+To view, visit https://gerrit=2Eopenvpn=2Enet=
+/c/openvpn/+/1663?usp=3Demail
+To unsubscribe, or for help writing mail filt=
+ers, visit https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+
+Gerrit-Mess=
+ageType: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Chang=
+e-Id: I56248cf6d199c2da770774b8fd1e5daf2b116f58
+Gerrit-Change-Number: 1663
+=
+Gerrit-PatchSet: 28
+Gerrit-Owner: Frank Lichtenheld <frank@lichtenheld=2Eco=
+m>
+Gerrit-Reviewer: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
+Gerrit-Rev=
+iewer: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-CC: openvpn-devel <ope=
+nvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Attention: plaisthos <arne-ope=
+nvpn@rfc2549=2Eorg>
+Gerrit-Attention: Frank Lichtenheld <frank@lichtenheld=
+=2Ecom>
+Gerrit-Comment-Date: Fri, 02 Oct 2026 09:54:43 +0000
+Gerrit-HasComm=
+ents: Yes
+Gerrit-Has-Labels: Yes
+
+--C+eCFo0XVOQ=
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: Frank Lichtenheld, plaisthos=2E </p>
+<p>R=C4=83zvan C=
+ojocaru has posted comments on this change by Frank Lichtenheld=2E</p><p>Pa=
+tch set 28:<span style=3D"border-radius: 3px; display: inline-block; margin=
+: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span></p>=
+<p><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1663?usp=3Demail">=
+View Change</a></p><p>8 comments:</p><ul style=3D"list-style: none; padding=
+: 0;"><li style=3D"margin: 0; padding: 0;"><p>File sample/sample-plugins/ke=
+ying-material-exporter-demo/keyingmaterialexporter=2Ec:</p><ul style=3D"lis=
+t-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><=
+p style=3D"margin-bottom: 4px;"><a href=3D"https://gerrit=2Eopenvpn=2Enet/c=
+/openvpn/+/1663/comment/4dbe5817_e02e497f?usp=3Demail">Patch Set #28, Line =
+205:</a> <code style=3D"font-family:monospace,monospace">    const struct s=
+ession *sess =3D (struct session *)args-&gt;per_client_context;</code></p><=
+p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">=
+Why not `(const struct session *)args-&gt;per_client_context;`? Or just rem=
+ove the cast, since we&#39;re casting from `void *`=2E</p></li><li style=3D=
+"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=
+=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1663/comment/0312945f_976992=
+e9?usp=3Demail">Patch Set #28, Line 217:</a> <code style=3D"font-family:mon=
+ospace,monospace">    const struct session *sess =3D (struct session *)args=
+-&gt;per_client_context;</code></p><p class=3D"blocks" style=3D"white-space=
+: pre-wrap; word-wrap: break-word;">Here too, why not `(const struct sessio=
+n *)args-&gt;per_client_context;`? Or just remove the cast, since we&#39;re=
+ casting from `void *`=2E</p></li></ul></li><li style=3D"margin: 0; padding=
+: 0;"><p>File src/openvpn/socket=2Eh:</p><ul style=3D"list-style: none; pad=
+ding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-=
+bottom: 4px;"><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1663/co=
+mment/bd8b0e79_711f6721?usp=3Demail">Patch Set #28, Line 835:</a> <code sty=
+le=3D"font-family:monospace,monospace"> * sock is modified on Windows via &=
+amp;sock-&gt;listen_handle */</code></p><p class=3D"blocks" style=3D"white-=
+space: pre-wrap; word-wrap: break-word;">I think these comments apply to li=
+terally the next line, which here is `static inline void`=2E If that&#39;s =
+correct, this doesn&#39;t suppress anything=2E</p></li></ul></li><li style=
+=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl_backend=2Eh:</p><ul sty=
+le=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0=
+ 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"https://gerrit=2Eopenvp=
+n=2Enet/c/openvpn/+/1663/comment/24e39df0_f7eab14e?usp=3Demail">Patch Set #=
+28, Line 173:</a> <code style=3D"font-family:monospace,monospace">void tls_=
+ctx_restrict_ciphers_tls13(const struct tls_root_ctx *ctx, const char *ciph=
+ers);</code></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wr=
+ap: break-word;">It looks like this will end up calling `SSL_CTX_set_cipher=
+suites()` which uses a non-const `SSL_CTX *`=2E Might be better to leave th=
+is as it was (also in line with the unchanged `tls_ctx_restrict_ciphers()` =
+above)=2E</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File sr=
+c/openvpn/ssl_openssl=2Ec:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px=
+;"><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1663/comment/327e1=
+1bc_51191074?usp=3Demail">Patch Set #28, Line 1150:</a> <code style=3D"font=
+-family:monospace,monospace">    ret =3D SSL_CTX_use_certificate(tls_ctx-&g=
+t;ctx, x);</code></p><p class=3D"blocks" style=3D"white-space: pre-wrap; wo=
+rd-wrap: break-word;">This actually uses a non-const pointer in `tls_ctx-&g=
+t;ctx` (`int SSL_CTX_use_certificate(SSL_CTX *ctx, X509 *x);` according to =
+my man page), so it makes constifying `tls_ctx` debatable=2E</p></li></ul><=
+/li><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/tun=2Ec:</p><u=
+l style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: =
+0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"https://gerrit=2Eo=
+penvpn=2Enet/c/openvpn/+/1663/comment/7d136cf7_e6fd2455?usp=3Demail">Patch =
+Set #28, Line 1729:</a> <code style=3D"font-family:monospace,monospace">   =
+     const struct ip *iph =3D (struct ip *)buf;</code></p><p class=3D"block=
+s" style=3D"white-space: pre-wrap; word-wrap: break-word;">Since we&#39;re =
+here, why not `const struct ip *iph =3D (const struct ip *)buf;`?</p></li><=
+/ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/tun_afuni=
+x=2Ec:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: =
+0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"https:=
+//gerrit=2Eopenvpn=2Enet/c/openvpn/+/1663/comment/2dffa8e3_05f4b481?usp=3De=
+mail">Patch Set #28, Line 192:</a> <code style=3D"font-family:monospace,mon=
+ospace">write_tun_afunix(struct tuntap *tt, uint8_t *buf, int len)</code></=
+p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word=
+;">This no longer matches the header=2E</p></li></ul></li><li style=3D"marg=
+in: 0; padding: 0;"><p>File tests/unit_tests/openvpn/siphash_openssl=2Ec:</=
+p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; paddi=
+ng: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"https://gerrit=
+=2Eopenvpn=2Enet/c/openvpn/+/1663/comment/1519f9a8_32d694d1?usp=3Demail">Pa=
+tch Set #28, Line 129:</a> <code style=3D"font-family:monospace,monospace">=
+siphash_openssl_available(void *sip_context)</code></p><p class=3D"blocks" =
+style=3D"white-space: pre-wrap; word-wrap: break-word;">This no longer matc=
+hes the header=2E</p></li></ul></li></ul><p>To view, visit <a href=3D"https=
+://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1663?usp=3Demail">change 1663</a>=2E =
+To unsubscribe, or for help writing mail filters, visit <a href=3D"https://=
+gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemsc=
+ope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=
+=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"u=
+rl" href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1663?usp=3Demail"/><=
+meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D=
+"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:no=
+ne"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Bra=
+nch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I56248cf6=
+d199c2da770774b8fd1e5daf2b116f58 </div>
+<div style=3D"display:none"> Gerrit=
+-Change-Number: 1663 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2=
+8 </div>
+<div style=3D"display:none"> Gerrit-Owner: Frank Lichtenheld &lt;f=
+rank@lichtenheld=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Revie=
+wer: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt; </div>
+<div style=
+=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@rfc2549=2Eor=
+g&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;open=
+vpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"display:none">=
+ Gerrit-Attention: plaisthos &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div=
+ style=3D"display:none"> Gerrit-Attention: Frank Lichtenheld &lt;frank@lich=
+tenheld=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: =
+Fri, 02 Oct 2026 09:54:43 +0000 </div>
+<div style=3D"display:none"> Gerrit-=
+HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes=
+ </div>
+
+</body></html>
+--C+eCFo0XVOQ=--
 
 
+--===============4738824668250932046==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============4738824668250932046==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+--===============4738824668250932046==--
+
