@@ -4,129 +4,69 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 32898CA5FEC
-	for <openvpn-devel@archiver.kernel.org>; Sat,  3 Oct 2026 18:22:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 47457CA5FDD
+	for <openvpn-devel@archiver.kernel.org>; Sat,  3 Oct 2026 20:42:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=jmaPrAQXLaB60BjMkBKsk47AYnLZyhuHXXn9+pEprts=; b=Q0fYWBuyH3g7CWxzBoToYcx9+6
-	EfA09Qa4bHPJvwCWfBYyXEq7VSWntStJ5j4EZhgkk1jN7x3w+b0Hq5HJNrURCkb2aVF3mQC+wzcZ8
-	xEi/9yapQMk61EuJTu2fA+0kaUVwDzKfOOY4HTElOb6RZ05e/AFz3pkWKAmHw+Z4Vd0U=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
+	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=aexai2GgChRWXPyUmVTVhB2NtvZixT8T6lTpAWCFMlM=; b=gjPCjn6kc/iYDxQiI4oupwSrRR
+	RpDljDxrFmZ3xDat6cTaepEmca1ldc+0IPFxI0Jnga9TAoUwDDq9rzNXoX6sgJw7mY7LuNb0xU+Mr
+	gveHTCYJMeO22ts2DWOH6B4Q/56LARmCJdLcKhEb5rPovynpmX/Or0QffZeWXocUmkAQ=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xD4Nk-00083d-1W;
-	Sat, 03 Oct 2026 18:22:48 +0000
+	id 1xD6YX-0001VA-8w;
+	Sat, 03 Oct 2026 20:42:02 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1xD4Ni-00083X-Rk
+ (envelope-from <gert@blue4.greenie.muc.de>) id 1xD6YV-0001Ul-Fo
  for openvpn-devel@lists.sourceforge.net;
- Sat, 03 Oct 2026 18:22:46 +0000
+ Sat, 03 Oct 2026 20:42:01 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
- :List-Post:List-Owner:List-Archive;
- bh=4Yl6ABLrc6vtpJlkaywrtBcpZjGYDaU8fB4rdvqZByA=; b=nWZ02k2EKWmiRfyNH6f5E6dFGi
- apOtu7sX/ipp+Poj9BwtG0RPVqXph/ud8Xf8p1J6HHhxSkrbaerDHF6PxjJ+lWwVOGdJiV/kuWSK4
- r4W+qVvXDzLl+jGcJIlzBi+XUYInJbxf39XOHSHyTv8w0aHZ3t9gYpfsjvyS1NtezP4k=;
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
+ In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=2Z86Ng7R9kwirgQM+ESfxlvwms8HQH4V6GK+JpkrnsE=; b=XnGMukb+XkYjRf/4D2hYg4Uc71
+ fJB7BAMh5FvEgwu/o1kRZmtZUHlSfRFn4mSWLWYEuPARdU/7l7HqPKzokYZR1Yf408M7FgFD+ChXQ
+ PfVrg80jo+hTaRJkMohIaRVuCfoVsS0IDRC3tvDgRGkgCINnpTEzpB4Eaqv0OZw7SGGc=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
- Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=4Yl6ABLrc6vtpJlkaywrtBcpZjGYDaU8fB4rdvqZByA=; b=f
- 2Duaj3/bVkX2g5fDvUD5PvzHx0D+aplS92uSaek32QZJSqUTVLer3qWKzgCntCAmdszW3MBP0vhAp
- kep2NMdsNlMEwBuIRJ+o8LA0wxcRI0z6AaHbZGuLLqg1WMMhpzrZVtxtxSjDsItXJBHBuM1GPej0u
- x8V9uzc57faWwpU0=;
-Received: from mail-wm2-f12.google.com ([74.125.225.140])
+ h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
+ Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+ List-Post:List-Owner:List-Archive;
+ bh=2Z86Ng7R9kwirgQM+ESfxlvwms8HQH4V6GK+JpkrnsE=; b=ZDomLu0x4YDi9/M4vr1vp6lS3U
+ X3y1tYJL5+ZtFXkrZS7Gv2NRReoVFHQvSYarXDJFG0SMvywO//J8ip1PBed8uCYQKf+4b3oUgvPU4
+ gmXnydm09CTmTOkEHwk5Qx0qjO/EBq27UTGfaLi73PFL+4rNamUbF8nbN/aDYUbA6dkQ=;
+Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1xD4Ng-0007xy-4F for openvpn-devel@lists.sourceforge.net;
- Sat, 03 Oct 2026 18:22:46 +0000
-Received: by mail-wm2-f12.google.com with SMTP id
- 5b1f17b1804b1-49b912d822dso6009945e9.2
- for <openvpn-devel@lists.sourceforge.net>;
- Sat, 03 Oct 2026 11:22:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1791051757; x=1791656557; darn=lists.sourceforge.net;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
- :reply-to:content-type;
- bh=4Yl6ABLrc6vtpJlkaywrtBcpZjGYDaU8fB4rdvqZByA=;
- b=OlxIofhhzEPZdcc4l10ye2SfFVcwcSSv0c4x0J3jeTMZYxCWUG5PYRDb98eAM66B8v
- 2dnKBpMEzFk2cjj1AKWeQMtCe3k8INGpYiOHC/Zs7+bnFIOlb3La+dbkO+/qGLoWlMT8
- Z6uIWHhPPLD8w2+P+sab+aF9G7ztrJSQWCExOevEOjxD7/aVAscSuq7DuDwR9IwUv1ZV
- r8GAUzrmMiZ77SQ4XcqFq0coW1vivv/FJ87PdKB4G0tD00Mi0a+fyUXL7X8ol50XLUyE
- 5B/LeTS+UVlC235Ang9duLJ7YejUyhrOrxW87hXYUKHhSYE+wzTOcvxZqRwHCfVNb3n1
- Gcdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1791051757; x=1791656557;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
- :cc:subject:date:message-id:reply-to:content-type;
- bh=4Yl6ABLrc6vtpJlkaywrtBcpZjGYDaU8fB4rdvqZByA=;
- b=tQlSbEO75eVO50uC0jA7rLOlL0eLtz92WU+JljKkejinGLYMMkHwWWy4YTRbGz3xgk
- XXUz4iO1zVFczmkGZFfWMG4FuXoyT7GIYVqDIwZbCbocTYuraSbC4pxXSGLhwPkzgOot
- Cn73vatd+efxXAdob4FhxUy97peUl8lJb0RYsOBTGkW3tZU7Y2qm1+eoTkkicgDYc6Uf
- CcsxohsrThx5pNmD99m+cylKOp+Mcmpz0g6Hvg68Fbqm41cJosD/cCfzhjQ9LlLgqFow
- ltHLWmZC2FL7PDPhjJ6DS5vIEs+cMBfKy+6iy1uYE1zybfSGJdNyCoZmZhLDEuh5KH5e
- 0VtQ==
-X-Forwarded-Encrypted: i=1;
- AKwUvBz+YEMNjyLSDucZp7man8AiiM1T+vCEKRvHgnaaL3u2b7913vNbH3cSWOEwwqHTpeEg4tzL5Lo+jUXo2tt2@lists.sourceforge.net
-X-Gm-Message-State: AFuF++n+LOi3xGcjUoVgxFXQ622FbIaZYEvcNZmMAxnLwPn+N4taItv1
- TZItWLKW+rJfPJXSXGLd2hF3Xx65/EjOnGB+baS4WdT3I9TcBKDVRqc7kY4AEu5BD+o67/JP7M8
- P6BMveyleRZKcUsoLjwxoy9qjyz7SnLU1B2M4pbPlitrFnxcNq15xOKfgWSaTGvsKD3vP
-X-Gm-Gg: AYBFou31WLdGZRw4G9n8GadooGEt6WOpxtRWHa7XYuIZrsE1Xwo/q+6XUTutfhAnOeL
- iF5b31tzBx0AbXzaV7y00GxTZ/9/BNxXfgtHRT7MSerKfTok6XQOugkedFFHUlgUR0HEM3s/4W4
- ROWmpOLsfZreUOJIPDh/ZfSYUD1F4cZ72BKGP2NLC5apt5BCbygrYgevKRzXMG8ho77ivSEuzAh
- mTyeIbboqN9BZDqY9Y0/6ppccYjL3/waM9DaMgfEAQPDTzC2kGz1Vwv72keid7n9oa21ZximQtP
- +6xgdPTGEk7PfTJiL49FCJJxNB0ZeGQkZsIabGXRvfBzG0/kmXRf8gbMXLqLMxoBowLTCyhKwxD
- 1nTLHYs47ZIxl6pogn4vURZu4D6ITIevvFGqGJo59HMnAUwR4iyU2gDS0dAqnP8HM7Z//5QGJ/4
- rSewwrTje7fPhj9MMO5IR1kBfidO5NfEBKweIMrrijdvBQZ5N6oSvHQIoE3YdkF5lRWt/MHp4Qv
- p3spT0NB4MmxDkRQtGHP7cl72LImyTo5Cp+2rISdMslLISJR9tp+36W9MiQM00L/gbDBx3ZTJTp
- /5IFj/ns2n1Vif0kq30Dk7cojoMeEULzgEakV7leSFxO0vByC6GMZdPYv2cM
-X-Received: by 2002:a05:600c:c3ce:10b0:4a0:317:1996 with SMTP id
- 5b1f17b1804b1-4a02769f2a5mr75821445e9.27.1791051757486; 
- Sat, 03 Oct 2026 11:22:37 -0700 (PDT)
-Received: from ip-10-18-1-162.eu-central-1.compute.internal
- (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
- by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-48b380facfesm14548848f8f.23.2026.10.03.11.22.36
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sat, 03 Oct 2026 11:22:37 -0700 (PDT)
-X-Google-Original-From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?=
- <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Sat, 3 Oct 2026 18:22:35 +0000
-To: Frank Lichtenheld <frank@lichtenheld.com>
-Auto-Submitted: auto-generated
-X-Gerrit-MessageType: comment
-X-Gerrit-PatchSet: 3
-X-Gerrit-Change-Id: I0b39d6a0fb2e6dbb683e9555f0365353c4eda8d3
-X-Gerrit-Change-Number: 1958
-X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/1958?usp=email>
-X-Gerrit-Commit: df550547ae61be0d65a72108b91014709809fd59
-X-Gerrit-Comment-Date: Sat, 3 Oct 2026 18:22:35 +0000
-In-Reply-To: <gerrit.1790610390000.I0b39d6a0fb2e6dbb683e9555f0365353c4eda8d3@gerrit.openvpn.net>
-References: <gerrit.1790610390000.I0b39d6a0fb2e6dbb683e9555f0365353c4eda8d3@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzkwNjEwMzkwMDAwLkkwYjM5ZDZhMGZiMmU2ZGJiNjgzZTk1NTVmMDM2NTM1M2M0ZWRhOGQzQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <0326d5ef29aa9f8bf4a82c5e3c75b8a7643bbe4a-EmailReviewComments-HTML@gerrit.openvpn.net>
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
+ id 1xD6YR-0001Ns-0L for openvpn-devel@lists.sourceforge.net;
+ Sat, 03 Oct 2026 20:42:00 +0000
+Received: from blue.greenie.muc.de (localhost [127.0.0.1])
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 693KfquY019365
+ for <openvpn-devel@lists.sourceforge.net>; Sat, 3 Oct 2026 22:41:52 +0200
+Received: (from gert@localhost)
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 693KfqqB019364
+ for openvpn-devel@lists.sourceforge.net; Sat, 3 Oct 2026 22:41:52 +0200
+From: Gert Doering <gert@greenie.muc.de>
+To: openvpn-devel@lists.sourceforge.net
+Date: Sat,  3 Oct 2026 22:41:45 +0200
+Message-ID: <20261003204151.19347-1-gert@greenie.muc.de>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <gerrit.1790610390000.I7f910599f0f4005f06a88a93b40417ffa37022a8@gerrit.openvpn.net>
+References: <gerrit.1790610390000.I7f910599f0f4005f06a88a93b40417ffa37022a8@gerrit.openvpn.net>
 MIME-Version: 1.0
-User-Agent: Gerrit/3.14.2
-X-Headers-End: 1xD4Ng-0007xy-4F
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Fix all occurrences
- of cppcheck invalidPrintfArgType_sint
+X-Headers-End: 1xD6YR-0001Ns-0L
+Subject: [Openvpn-devel] [PATCH v3] Fix all occurrences of cppcheck
+ invalidPrintfArgType_uint
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -138,148 +78,421 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= via Openvpn-devel
- <openvpn-devel@lists.sourceforge.net>
-Reply-To: razvanc@mailbox.org, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com
-Cc: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>,
- plaisthos <arne-openvpn@rfc2549.org>
-Content-Type: multipart/mixed; boundary="===============0712794310313281997=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============0712794310313281997==
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="XS0VV8Fy6zY="; charset=UTF-8
+From: Frank Lichtenheld <frank@lichtenheld.com>
 
---XS0VV8Fy6zY=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Mostly trivially correct. There are some exceptions, though:
+- cppcheck treats all numerical literals as "signed" even
+  though the compilers would probably be more intelligent.
+  Chose different work-arounds for different occurrences.
+- Needed to override PRIx64 again for Windows, since there
+  it needs to be "llx", not "lx".
 
-Attention is currently required from: Frank Lichtenheld, plaisthos=2E
+Change-Id: I7f910599f0f4005f06a88a93b40417ffa37022a8
+Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
+Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1960
+---
 
-R=C4=
-=83zvan Cojocaru has posted comments on this change by Frank Lichtenheld=2E=
- ( https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1958?usp=3Demail )
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Change su=
-bject: Fix all occurrences of cppcheck invalidPrintfArgType_sint
-=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1960
+This mail reflects revision 3 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Razvan Cojocaru <razvanc@mailbox.org>
 
-Patch Set 3: Code-Rev=
-iew+2
+        
+diff --git a/dev-tools/cppcheck-suppressions.xml b/dev-tools/cppcheck-suppressions.xml
+index 12521e1..38de5f2a 100644
+--- a/dev-tools/cppcheck-suppressions.xml
++++ b/dev-tools/cppcheck-suppressions.xml
+@@ -9,9 +9,6 @@
+     <id>constParameterCallback</id>
+   </suppress>
+   <suppress>
+-    <id>invalidPrintfArgType_uint</id>
+-  </suppress>
+-  <suppress>
+     <id>unusedFunction</id>
+   </suppress>
+   <suppress>
+diff --git a/dev-tools/openvpn-cppcheck-windows.cfg b/dev-tools/openvpn-cppcheck-windows.cfg
+index 9ac7282..932d586 100644
+--- a/dev-tools/openvpn-cppcheck-windows.cfg
++++ b/dev-tools/openvpn-cppcheck-windows.cfg
+@@ -7,4 +7,7 @@
+        understand our likely()/unlikely() macros. -->
+   <define name="__builtin_expect(X,Y)" value="(X)" />
+   <define name="__builtin_expect_with_probability(exp,c,probability)" value="(exp)" />
++  <!-- cppcheck understands it directly in format string, but not
++       indirectly when the format string is constructed earlier -->
++  <define name="PRIx64" value="&quot;llx&quot;" />
+ </def>
+diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
+index c01a4e5..7abd06b 100644
+--- a/src/openvpn/dco_win.c
++++ b/src/openvpn/dco_win.c
+@@ -835,7 +835,7 @@
+         struct multi_instance *mi = dco->c->multi->instances[stat->PeerId];
+         if (!mi)
+         {
+-            msg(M_WARN, "%s: received data for a non-existing peer %u", __func__, stat->PeerId);
++            msg(M_WARN, "%s: received data for a non-existing peer %d", __func__, stat->PeerId);
+             continue;
+         }
+ 
+diff --git a/src/openvpn/dns.h b/src/openvpn/dns.h
+index 51bc2de..2c20b0e 100644
+--- a/src/openvpn/dns.h
++++ b/src/openvpn/dns.h
+@@ -89,7 +89,7 @@
+ };
+ 
+ #ifndef N_DHCP_ADDR
+-#define N_DHCP_ADDR 4
++#define N_DHCP_ADDR 4u
+ #endif
+ 
+ #ifndef N_SEARCH_LIST_LEN
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index e7d3a24..178c43f 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1305,7 +1305,7 @@
+             break;
+ 
+         default:
+-            msg(D_DCO_DEBUG, "%s: received message of type %u - ignoring", __func__,
++            msg(D_DCO_DEBUG, "%s: received message of type %d - ignoring", __func__,
+                 dco->dco_message_type);
+             return;
+     }
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 81890d4..3c2ebf9 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -258,7 +258,7 @@
+         gc = gc_new();
+         {
+             struct buffer out = alloc_buf_gc(256, &gc);
+-            buf_printf(&out, ">PROXY:%u,%s,%s", (l ? l->current : 0) + 1,
++            buf_printf(&out, ">PROXY:%d,%s,%s", (l ? l->current : 0) + 1,
+                        (proto_is_udp(ce->proto) ? "UDP" : "TCP"), np(ce->remote));
+             management_notify_generic(BSTR(&out));
+             management->persist.special_state_msg = BSTR(&out);
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 95e93da..5a57c0a 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -5139,7 +5139,7 @@
+         }
+         else
+         {
+-            msg(msglevel, "argument to --bind-dev is longer than allowed %u", IFNAMSIZ - 1);
++            msg(msglevel, "argument to --bind-dev is longer than allowed %d", IFNAMSIZ - 1);
+             goto err;
+         }
+     }
+diff --git a/src/openvpn/platform.c b/src/openvpn/platform.c
+index ab581f4..ccdd43d 100644
+--- a/src/openvpn/platform.c
++++ b/src/openvpn/platform.c
+@@ -551,7 +551,7 @@
+         ++attempts;
+ 
+         if (!checked_snprintf(fname, sizeof(fname), fname_fmt, max_prefix_len, prefix,
+-                              get_random(), get_random()))
++                              (uint64_t)get_random(), (uint64_t)get_random()))
+         {
+             msg(M_WARN, "ERROR: temporary filename too long");
+             return NULL;
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index d72596e..a514d92a 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -351,7 +351,7 @@
+     parse_auth_pending_keywords(buffer, &server_timeout);
+ 
+     msg(D_PUSH,
+-        "AUTH_PENDING received, extending handshake timeout from %us "
++        "AUTH_PENDING received, extending handshake timeout from %ds "
+         "to %us",
+         c->options.handshake_window, min_uint(max_timeout, server_timeout));
+ 
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 469edb3..b8bac7a 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -2822,7 +2822,7 @@
+         ret = (ack.error_number == ERROR_OBJECT_ALREADY_EXISTS) ? RTA_EEXIST : RTA_ERROR;
+         if (ret == RTA_ERROR)
+         {
+-            msg(M_WARN, "ERROR: route %s failed using service: %s [status=%u if_index=%lu]",
++            msg(M_WARN, "ERROR: route %s failed using service: %s [status=%d if_index=%lu]",
+                 (add ? "addition" : "deletion"), strerror_win32(ack.error_number, &gc),
+                 ack.error_number, rt->iface.index);
+         }
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 6a8e78e..3594871 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1690,7 +1690,7 @@
+                                    options->ping_rec_timeout, frame->mss_fix);
+             if (ret < 0)
+             {
+-                msg(D_DCO, "Cannot set DCO peer parameters for peer (id=%u): %s",
++                msg(D_DCO, "Cannot set DCO peer parameters for peer (id=%d): %s",
+                     multi->dco_peer_id, strerror(-ret));
+                 return false;
+             }
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 2d8f36d..85b3074 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -153,7 +153,7 @@
+ 
+     if (ack.error_number != NO_ERROR)
+     {
+-        msg(M_WARN, "TUN: %s address failed using service: %s [status=%u if_index=%lu]",
++        msg(M_WARN, "TUN: %s address failed using service: %s [status=%d if_index=%lu]",
+             (add ? "adding" : "deleting"), strerror_win32(ack.error_number, &gc), ack.error_number,
+             addr.iface.index);
+         goto out;
+@@ -224,7 +224,7 @@
+ 
+     if (ack.error_number != NO_ERROR)
+     {
+-        msg(M_WARN, "TUN: %s DNS domains failed using service: %s [status=%u if_name=%s]",
++        msg(M_WARN, "TUN: %s DNS domains failed using service: %s [status=%d if_name=%s]",
+             (add ? "adding" : "deleting"), strerror_win32(ack.error_number, &gc), ack.error_number,
+             dns.iface.name);
+         goto out;
+@@ -294,7 +294,7 @@
+ 
+     if (ack.error_number != NO_ERROR)
+     {
+-        msg(M_WARN, "TUN: %s %s dns failed using service: %s [status=%u if_name=%s]",
++        msg(M_WARN, "TUN: %s %s dns failed using service: %s [status=%d if_name=%s]",
+             (add ? "adding" : "deleting"), ip_proto_name, strerror_win32(ack.error_number, &gc),
+             ack.error_number, dns.iface.name);
+         goto out;
+@@ -351,7 +351,7 @@
+ 
+     if (ack.error_number != NO_ERROR)
+     {
+-        msg(M_WARN, "TUN: %s WINS failed using service: %s [status=%u if_name=%s]",
++        msg(M_WARN, "TUN: %s WINS failed using service: %s [status=%d if_name=%s]",
+             (add ? "adding" : "deleting"), strerror_win32(ack.error_number, &gc),
+             ack.error_number, wins.iface.name);
+         goto out;
+@@ -389,7 +389,7 @@
+ 
+     if (ack.error_number != NO_ERROR)
+     {
+-        msg(M_NONFATAL, "TUN: setting %s mtu using service failed: %s [status=%u if_index=%lu]",
++        msg(M_NONFATAL, "TUN: setting %s mtu using service failed: %s [status=%d if_index=%lu]",
+             family_name, strerror_win32(ack.error_number, &gc), ack.error_number,
+             mtu_msg.iface.index);
+     }
+@@ -467,7 +467,7 @@
+ 
+     if (ack.error_number != NO_ERROR)
+     {
+-        msg(M_NONFATAL, "TUN: creating %s adapter using service failed: %s [status=%u]",
++        msg(M_NONFATAL, "TUN: creating %s adapter using service failed: %s [status=%d]",
+             print_tun_backend_driver(driver_type), strerror_win32(ack.error_number, &gc),
+             ack.error_number);
+     }
+@@ -5192,7 +5192,7 @@
+ 
+     if (ack.error_number != NO_ERROR)
+     {
+-        msg(M_NONFATAL, "TUN: enabling dhcp using service failed: %s [status=%u if_index=%lu]",
++        msg(M_NONFATAL, "TUN: enabling dhcp using service failed: %s [status=%d if_index=%lu]",
+             strerror_win32(ack.error_number, &gc), ack.error_number, dhcp.iface.index);
+     }
+     else
+@@ -5441,7 +5441,7 @@
+     {
+         msg(M_FATAL,
+             "ERROR:  This version of " PACKAGE_NAME
+-            " requires a TAP-Windows driver that is at least version %u.%u -- If you recently upgraded your " PACKAGE_NAME
++            " requires a TAP-Windows driver that is at least version %d.%d -- If you recently upgraded your " PACKAGE_NAME
+             " distribution, a reboot is probably required at this point to get Windows to see the new driver.",
+             TAP_WIN_MIN_MAJOR, TAP_WIN_MIN_MINOR);
+     }
+diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+index 0ff2a0b..393e856 100644
+--- a/src/openvpn/tun.h
++++ b/src/openvpn/tun.h
+@@ -105,7 +105,7 @@
+     uint8_t netbios_node_type; /* NBT 1,2,4,8 (46) */
+ 
+ /* Max # of addresses allowed for  DNS, WINS, etc. */
+-#define N_DHCP_ADDR 4
++#define N_DHCP_ADDR 4u
+ 
+     /* DNS (6) */
+     in_addr_t dns[N_DHCP_ADDR];
+diff --git a/src/openvpnmsica/msica_arg.c b/src/openvpnmsica/msica_arg.c
+index d763d93..c1809f0 100644
+--- a/src/openvpnmsica/msica_arg.c
++++ b/src/openvpnmsica/msica_arg.c
+@@ -57,7 +57,7 @@
+     struct msica_arg *p = malloc(sizeof(struct msica_arg) + argument_size);
+     if (p == NULL)
+     {
+-        msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__,
++        msg(M_FATAL, "%s: malloc(%zu) failed", __FUNCTION__,
+             sizeof(struct msica_arg) + argument_size);
+     }
+     memcpy(p->val, argument, argument_size);
+@@ -77,7 +77,7 @@
+     struct msica_arg *p = malloc(sizeof(struct msica_arg) + argument_size);
+     if (p == NULL)
+     {
+-        msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__,
++        msg(M_FATAL, "%s: malloc(%zu) failed", __FUNCTION__,
+             sizeof(struct msica_arg) + argument_size);
+     }
+     memcpy(p->val, argument, argument_size);
+@@ -102,7 +102,7 @@
+     LPWSTR str = malloc(size);
+     if (str == NULL)
+     {
+-        msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__, size);
++        msg(M_FATAL, "%s: malloc(%zu) failed", __FUNCTION__, size);
+         return NULL;
+     }
+ 
+diff --git a/src/openvpnmsica/msiex.c b/src/openvpnmsica/msiex.c
+index 4d48f06..c6bc648 100644
+--- a/src/openvpnmsica/msiex.c
++++ b/src/openvpnmsica/msiex.c
+@@ -51,7 +51,7 @@
+         *pszValue = (LPWSTR)malloc(++dwLength * sizeof(WCHAR));
+         if (*pszValue == NULL)
+         {
+-            msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__, dwLength * sizeof(WCHAR));
++            msg(M_FATAL, "%s: malloc(%zu) failed", __FUNCTION__, dwLength * sizeof(WCHAR));
+             return ERROR_OUTOFMEMORY;
+         }
+ 
+@@ -64,7 +64,7 @@
+         LPWSTR szBufHeap = (LPWSTR)malloc(++dwLength * sizeof(WCHAR));
+         if (szBufHeap == NULL)
+         {
+-            msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__, dwLength * sizeof(WCHAR));
++            msg(M_FATAL, "%s: malloc(%zu) failed", __FUNCTION__, dwLength * sizeof(WCHAR));
+             return ERROR_OUTOFMEMORY;
+         }
+ 
+@@ -107,7 +107,7 @@
+         *pszValue = (LPWSTR)malloc(++dwLength * sizeof(WCHAR));
+         if (*pszValue == NULL)
+         {
+-            msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__, dwLength * sizeof(WCHAR));
++            msg(M_FATAL, "%s: malloc(%zu) failed", __FUNCTION__, dwLength * sizeof(WCHAR));
+             return ERROR_OUTOFMEMORY;
+         }
+ 
+@@ -120,7 +120,7 @@
+         LPWSTR szBufHeap = (LPWSTR)malloc(++dwLength * sizeof(WCHAR));
+         if (szBufHeap == NULL)
+         {
+-            msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__, dwLength * sizeof(WCHAR));
++            msg(M_FATAL, "%s: malloc(%zu) failed", __FUNCTION__, dwLength * sizeof(WCHAR));
+             return ERROR_OUTOFMEMORY;
+         }
+ 
+@@ -163,7 +163,7 @@
+         *pszValue = (LPWSTR)malloc(++dwLength * sizeof(WCHAR));
+         if (*pszValue == NULL)
+         {
+-            msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__, dwLength * sizeof(WCHAR));
++            msg(M_FATAL, "%s: malloc(%zu) failed", __FUNCTION__, dwLength * sizeof(WCHAR));
+             return ERROR_OUTOFMEMORY;
+         }
+ 
+@@ -176,7 +176,7 @@
+         LPWSTR szBufHeap = (LPWSTR)malloc(++dwLength * sizeof(WCHAR));
+         if (szBufHeap == NULL)
+         {
+-            msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__, dwLength * sizeof(WCHAR));
++            msg(M_FATAL, "%s: malloc(%zu) failed", __FUNCTION__, dwLength * sizeof(WCHAR));
+             return ERROR_OUTOFMEMORY;
+         }
+ 
+diff --git a/src/openvpnmsica/openvpnmsica.c b/src/openvpnmsica/openvpnmsica.c
+index e510e4d..d2fd9af 100644
+--- a/src/openvpnmsica/openvpnmsica.c
++++ b/src/openvpnmsica/openvpnmsica.c
+@@ -165,7 +165,7 @@
+         pAdapterAdresses = (PIP_ADAPTER_ADDRESSES)malloc(ulAdapterAdressesSize);
+         if (pAdapterAdresses == NULL)
+         {
+-            msg(M_NONFATAL, "%s: malloc(%u) failed", __FUNCTION__, ulAdapterAdressesSize);
++            msg(M_NONFATAL, "%s: malloc(%lu) failed", __FUNCTION__, ulAdapterAdressesSize);
+             uiResult = ERROR_OUTOFMEMORY;
+             goto cleanup_pAdapterList;
+         }
+@@ -208,7 +208,7 @@
+     szAdaptersTail = szAdapters;
+     if (szAdapters == NULL)
+     {
+-        msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__,
++        msg(M_FATAL, "%s: malloc(%zu) failed", __FUNCTION__,
+             adapter_count * (38 /*GUID*/ + 1 /*separator/terminator*/) * sizeof(WCHAR));
+         uiResult = ERROR_OUTOFMEMORY;
+         goto cleanup_pAdapterAdresses;
+@@ -220,7 +220,7 @@
+     szAdaptersActiveTail = szAdaptersActive;
+     if (szAdaptersActive == NULL)
+     {
+-        msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__,
++        msg(M_FATAL, "%s: malloc(%zu) failed", __FUNCTION__,
+             adapter_count * (38 /*GUID*/ + 1 /*separator/terminator*/) * sizeof(WCHAR));
+         uiResult = ERROR_OUTOFMEMORY;
+         goto cleanup_szAdapters;
+@@ -405,7 +405,7 @@
+         szPath = (LPWSTR)malloc((++dwPathSize) * sizeof(WCHAR));
+         if (szPath == NULL)
+         {
+-            msg(M_FATAL, "%s: malloc(%u) failed", __FUNCTION__, dwPathSize * sizeof(WCHAR));
++            msg(M_FATAL, "%s: malloc(%zu) failed", __FUNCTION__, dwPathSize * sizeof(WCHAR));
+             uiResult = ERROR_OUTOFMEMORY;
+             goto cleanup_MsiCreateRecord;
+         }
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index 82b24f4..026d5aa 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -311,7 +311,7 @@
+      * Same format as error messages (3 line string) with error = 0 in
+      * 0x%08x format, PID on line 2 and a description "Process ID" on line 3
+      */
+-    swprintf(buf, _countof(buf), L"0x%08x\n0x%08x\n%ls", 0, pid, msg);
++    swprintf(buf, _countof(buf), L"0x%08x\n0x%08lx\n%ls", 0, pid, msg);
+ 
+     WritePipeAsync(pipe, buf, (DWORD)(wcslen(buf) * 2), count, events);
+ }
+@@ -380,7 +380,7 @@
+     if (!argv)
+     {
+         swprintf(errmsg, capacity,
+-                 L"Cannot validate options: CommandLineToArgvW failed with error = 0x%08x",
++                 L"Cannot validate options: CommandLineToArgvW failed with error = 0x%08lx",
+                  GetLastError());
+         goto out;
+     }
 
-
--- 
-To view, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1958?=
-usp=3Demail
-To unsubscribe, or for help writing mail filters, visit https:/=
-/gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-G=
-errit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I0b39d6a0fb2=
-e6dbb683e9555f0365353c4eda8d3
-Gerrit-Change-Number: 1958
-Gerrit-PatchSet: 3=
-
-Gerrit-Owner: Frank Lichtenheld <frank@lichtenheld=2Ecom>
-Gerrit-Reviewer:=
- R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
-Gerrit-Reviewer: plaisthos <a=
-rne-openvpn@rfc2549=2Eorg>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2E=
-sourceforge=2Enet>
-Gerrit-Attention: plaisthos <arne-openvpn@rfc2549=2Eorg>=
-
-Gerrit-Attention: Frank Lichtenheld <frank@lichtenheld=2Ecom>
-Gerrit-Comme=
-nt-Date: Sat, 03 Oct 2026 18:22:35 +0000
-Gerrit-HasComments: No
-Gerrit-Has-=
-Labels: Yes
-
---XS0VV8Fy6zY=
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: Frank Lichtenheld, plaisthos=2E </p>
-<p>R=C4=83zvan C=
-ojocaru has posted comments on this change by Frank Lichtenheld=2E</p><p>Pa=
-tch set 3:<span style=3D"border-radius: 3px; display: inline-block; margin:=
- 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span></p><=
-p><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1958?usp=3Demail">V=
-iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
-ew, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1958?usp=3D=
-email">change 1958</a>=2E To unsubscribe, or for help writing mail filters,=
- visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">sett=
-ings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"=
-><div itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAct=
-ion"><link itemprop=3D"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvp=
-n/+/1958?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></d=
-iv></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-=
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"d=
-isplay:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Ger=
-rit-Change-Id: I0b39d6a0fb2e6dbb683e9555f0365353c4eda8d3 </div>
-<div style=
-=3D"display:none"> Gerrit-Change-Number: 1958 </div>
-<div style=3D"display:=
-none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner:=
- Frank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
-<div style=3D"dis=
-play:none"> Gerrit-Reviewer: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eorg=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arn=
-e-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: =
-openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
-<div s=
-tyle=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@rfc2549=
-=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: Frank Lich=
-tenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
-<div style=3D"display:none">=
- Gerrit-Comment-Date: Sat, 03 Oct 2026 18:22:35 +0000 </div>
-<div style=3D"=
-display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> G=
-errit-Has-Labels: Yes </div>
-
-</body></html>
---XS0VV8Fy6zY=--
-
-
---===============0712794310313281997==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============0712794310313281997==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
---===============0712794310313281997==--
-
