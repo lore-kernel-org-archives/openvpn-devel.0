@@ -4,69 +4,129 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A0215CA5FED
-	for <openvpn-devel@archiver.kernel.org>; Sat,  3 Oct 2026 17:57:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 10637CA5FEC
+	for <openvpn-devel@archiver.kernel.org>; Sat,  3 Oct 2026 18:14:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=TnCjNZtb0LnT7Q3LQ5wHNTNOqaMV0CJBRNwyhEK1jeQ=; b=FtQeKdpd/vJu9TK8hNLBehMbFo
-	RPmbjK+TL1HaJ7sgCmvqWfTrWQJYv8PLtVP0ywDmKdvLq7/iy8xx6KAWbEfBCfts6SSAkv2QzIedm
-	w+zDhy+eQT44eEkMmH3aZ/4MUtBUWnE46CVY+f6KeWsl/r3B7WvSgz4NoodSLDorrJUY=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=7XjxPl3reeHeqTOuEXPfgaCqsvI853g6Sh/bJfxHAzM=; b=eTtI1EwOAzKWOHEZ9c0ued+NZS
+	ozsVGErVuBt7K7FA+3xHp+vj0XbJLGh0laIIYvc+aZLLnXybqYxg0pG8yMVCbvdOkjfwSF9qLL5We
+	0zk4RUeLsPbvTxWZUT0KBx5MBqvwi7+9SomkwQxM49deRnLYWObjuZy9gp9bo3p0E/Fk=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xD3zC-0001IW-SS;
-	Sat, 03 Oct 2026 17:57:27 +0000
+	id 1xD4FP-0004z7-Nu;
+	Sat, 03 Oct 2026 18:14:12 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1xD3zB-0001IP-SL
+ (envelope-from <gerrit@openvpn.net>) id 1xD4FO-0004yv-Nu
  for openvpn-devel@lists.sourceforge.net;
- Sat, 03 Oct 2026 17:57:26 +0000
+ Sat, 03 Oct 2026 18:14:11 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=dwjJwHvOAqC3mKL1e8cymtN9fPR0MIbKf2kqZw7HQnA=; b=QCeIXsGauho/dPV1j0kx+M/ao8
- IRApLnGXEhjzWtuoBtpFxmYUfb7/tjD8FdfGqnWyhPrUjnkksm4/eKcqhdSJQZ0U99TLohR0+Dyao
- T9yXZNfEs1Kph3yNCy9VqqaU/FjU1XcmEhIhX5R+T4jfr8T7uHFH8UjDk+b1/1D+aAjA=;
+ d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
+ :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
+ Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
+ :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
+ :List-Post:List-Owner:List-Archive;
+ bh=rdVCpSshYXr67Ky6dokzzIKGYDj4ifAugrUaOUW3jqU=; b=jLg15lrogTLq5NKw8GF7MmKzol
+ whcA9fQ4cY8wG82MclLNFQvZ8cFL3MgHU5UfimhQFpMSHDcYwTNmC1naUlUN/rraONCSwhx+oRKsY
+ 2BWMhBahuocNPkguAEfIL4mv0t37eH15SknCX7a8F5lkxU77WQ8c2CkbV4IdVHemJHfI=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=dwjJwHvOAqC3mKL1e8cymtN9fPR0MIbKf2kqZw7HQnA=; b=Gng+KLP0IAJdqlOsD55ToazU41
- she63FBl8VIJVD9F7+m/gP5+1+431YYkHrS4z8OWQYOIvPT44WxHVrdXqAabR6k+4RStVAaITD0Xd
- Rw1E8k1ZwsmRk9jdPHfoxNGNMO+w9xGMya5ntZFq4npR4jRAZEANcoRsp5fy1Cv8EGbA=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
+ Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=rdVCpSshYXr67Ky6dokzzIKGYDj4ifAugrUaOUW3jqU=; b=d
+ /dbM05PQCLrvb0c8ETsN/8gHoNe099MuaggVUGFggZvIBQFyWAKxXeglGKijiY1ZSNGqbYX3P262r
+ 51kSKKlYs2s4KllFD7fi+AhRSxmwFD0FVBUtlQsdAM9+n05Q5g/KTigz5haYc1IMInh9kakSbNakw
+ oq+XrKlywSCGkYwY=;
+Received: from mail-wr2-f34.google.com ([74.125.225.98])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1xD3zB-0003WC-3v for openvpn-devel@lists.sourceforge.net;
- Sat, 03 Oct 2026 17:57:26 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 693HvI6e006559
- for <openvpn-devel@lists.sourceforge.net>; Sat, 3 Oct 2026 19:57:18 +0200
-Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 693HvIIb006558
- for openvpn-devel@lists.sourceforge.net; Sat, 3 Oct 2026 19:57:18 +0200
-From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Sat,  3 Oct 2026 19:57:12 +0200
-Message-ID: <20261003175718.6544-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1790599668000.I44d7171c7e4f8497bf8b902380df92a58bf8a79a@gerrit.openvpn.net>
-References: <gerrit.1790599668000.I44d7171c7e4f8497bf8b902380df92a58bf8a79a@gerrit.openvpn.net>
+ (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
+ id 1xD4FO-0003qm-Sj for openvpn-devel@lists.sourceforge.net;
+ Sat, 03 Oct 2026 18:14:11 +0000
+Received: by mail-wr2-f34.google.com with SMTP id
+ ffacd0b85a97d-48afd5b1678so263187f8f.2
+ for <openvpn-devel@lists.sourceforge.net>;
+ Sat, 03 Oct 2026 11:14:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=openvpn.net; s=google; t=1791051244; x=1791656044; darn=lists.sourceforge.net;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
+ :reply-to:content-type;
+ bh=rdVCpSshYXr67Ky6dokzzIKGYDj4ifAugrUaOUW3jqU=;
+ b=FwEq2nO5VPENfTmMceNpTDZ/QXJWofGtdU29VyQ7h8U0o3QcCmeQr5AGzHR3xsW+xM
+ NaON7xJOoh2buOV4LYMul4tm3RnohXNKpFwrcejyt5l46c9l0mV11d2UpLGrCVnBSThF
+ rDoG/tAjwabCvpXbseDiqLX8+JBCZx6EZLMe5tQPN3YiDqa6fP4JrUA0rBec0O6O2kES
+ eVQ/QI3g/KZUyEpvqFkR6KQiR9B9W51BNEVIl8br4AunfE7Psg8bsCf7jeNU5ALrhNIy
+ kyvr8wx4Ps2aJpe0f5xHgFo7/fy8eXakWXIwv11P0KdbFwg4igLGKNWZ1BMaWJpI54vx
+ +8rQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20260707; t=1791051244; x=1791656044;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
+ :cc:subject:date:message-id:reply-to:content-type;
+ bh=rdVCpSshYXr67Ky6dokzzIKGYDj4ifAugrUaOUW3jqU=;
+ b=JppzTMXyx8hGVp2J26l0s1gpu5+dBCLTK/t6NlqP0HVt38e39Qh3OUWOgsmWnCSp60
+ wNdCSuUFC7wZUmcJ0rAgjUAfnqYXvAg8T6l31eAHu+KGdv8/ZtGYRlDR5NkGuS/qClT3
+ 9dTscNy7aGllI9cXP5f48+V3BbmUj6i5knRY3mHaa0EQkG+zld/gwu89+B5PORCv+GYB
+ T+yQ33LluEbP0EZDJyqVoyjlfa3VtRlS6FIb01UgbvSCh/4j97yRMnjnWbqCdoGDMAGa
+ /ymMxcIJ9ABKvT/b3/DjuS9GKJCKgRn0a7VKpSaBPvWIubKlc6P2pRkBZsElGY9/L8A8
+ u5YA==
+X-Forwarded-Encrypted: i=1;
+ AKwUvBytWTH4w22YzkqLn8+uDq73obcmgFuTA09wfakoTrt3n6FtMBFnLoGO1qY/jZhV5CninU4dVcMUsj1dfR72@lists.sourceforge.net
+X-Gm-Message-State: AFq9FYI4eFDL75dGbXQ68kYn5G4frpm0kEUIN02tgh/I+o9JqHQjMe+b
+ 2JwnFpLRIKXhEG3epZOToIlAU4y5oXz/HTjy5QXrcg+zxu9dcIycdwbfMvTYk6bjA9/6EKc8Mwf
+ bqpU8o8A6c1xY1p6d8KKjT2s+gEAwPTEu+uOqKSafzZFhlppOs1FSUkxeSzsDjg3nOY9m
+X-Gm-Gg: AYBFou0vC7Ha3qfGv9XXP181e9FNwGZlK3Dt4uUq5h5Fe2YL+aQKCA6mEt/2B70Wl7J
+ XMdEiIcot8zJXrmvHLcLuDSRsI+djayNOCnYIC816AbSLx3ljzFkbOk26QLnjsjj0Z9Dam6Ycvq
+ nXo9cYwkwYW8+EvlS+EE+/xdmat57F5kC/i3SpOzkPH4g34Id90d1YyeaeiebM81XwJ3jI2LN4e
+ wBJo3fcfp1WwMH79/icDzhqqL19hRLnWzKu8nB+UiKO5Qy2SE3wBdnFg7urFJwgTU1BFJQik1Tj
+ 9iEhT/DVppydIC9cKzzvPadYWSavhT9L6aejzJW52p75XjWBHdZbuh2AI9hXBLq9l7I0z4jUNF5
+ AwICaHSR5MfYRgLtMY2FvIXGszIDPbudilILXaP4iuzfr9JaxOIgZdPvP1ipt9DEzybPKwAFRnO
+ 2A+fOle3CRYfXhS9wQYw80b9Puk6uFTJumA5kofFJu5EAjpM+224bWrzFCmAuKcAxGVj7mCXgj0
+ EPTIV2hvql1Mb8Gb/stiIucNkaiJKukA+0xQ1G6lUb/k4aSyIUAK41eTwm1Glg7z8OWWix60cz0
+ Bz0NWXRblVIbKgziwEANBy81rhasoIDIQsdfqORuPDBh+3abgW2rVxBZrF/8S0UOg9dYfTY=
+X-Received: by 2002:a05:6000:2486:b0:48c:4664:4c70 with SMTP id
+ ffacd0b85a97d-48c46644d44mr6394174f8f.45.1791051244162; 
+ Sat, 03 Oct 2026 11:14:04 -0700 (PDT)
+Received: from ip-10-18-1-162.eu-central-1.compute.internal
+ (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
+ by smtp.gmail.com with ESMTPSA id
+ ffacd0b85a97d-48b380f04f8sm13777074f8f.9.2026.10.03.11.14.03
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Sat, 03 Oct 2026 11:14:03 -0700 (PDT)
+X-Google-Original-From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?=
+ <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
+Date: Sat, 3 Oct 2026 18:14:01 +0000
+To: Frank Lichtenheld <frank@lichtenheld.com>
+Auto-Submitted: auto-generated
+X-Gerrit-MessageType: comment
+X-Gerrit-PatchSet: 3
+X-Gerrit-Change-Id: I7f910599f0f4005f06a88a93b40417ffa37022a8
+X-Gerrit-Change-Number: 1960
+X-Gerrit-Project: openvpn
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/1960?usp=email>
+X-Gerrit-Commit: ac3160d4d9adbce01eb3e3ac1004d5f3901187c8
+X-Gerrit-Comment-Date: Sat, 3 Oct 2026 18:14:01 +0000
+In-Reply-To: <gerrit.1790610390000.I7f910599f0f4005f06a88a93b40417ffa37022a8@gerrit.openvpn.net>
+References: <gerrit.1790610390000.I7f910599f0f4005f06a88a93b40417ffa37022a8@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzkwNjEwMzkwMDAwLkk3ZjkxMDU5OWYwZjQwMDVmMDZhODhhOTNiNDA0MTdmZmEzNzAyMmE4QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <cef9ebd6503c36003abb880be4dd6c5189287f57-EmailReviewComments-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
-X-Headers-End: 1xD3zB-0003WC-3v
-Subject: [Openvpn-devel] [PATCH v4] Build against Windows 10 API and remove
- some backwards compatility code
+User-Agent: Gerrit/3.14.2
+X-Headers-End: 1xD4FO-0003qm-Sj
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Fix all occurrences
+ of cppcheck invalidPrintfArgType_uint
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -78,359 +138,148 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= via Openvpn-devel
+ <openvpn-devel@lists.sourceforge.net>
+Reply-To: razvanc@mailbox.org, arne-openvpn@rfc2549.org,
+ openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com
+Cc: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= <gerrit@openvpn.net>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>,
+ plaisthos <arne-openvpn@rfc2549.org>
+Content-Type: multipart/mixed; boundary="===============3303835413454188700=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@lichtenheld.com>
+--===============3303835413454188700==
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="9LG/iQICs0s="; charset=UTF-8
 
-Originally prompted by some cppcheck complaint about
-win32_get_arch(). Looking at the code I decided to
-propose removing the various work-arounds from pre-Win10
-times. Microsoft certainly doesn't support these
-versions anymore, so let's also remove that.
+--9LG/iQICs0s=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Note that this does not remove all instances of GetProcAddress:
-- One is required due to a issue in MinGW toolchain (DiInstallDevice)
-- One is used to avoid a dependency on WDK headers (RtlGetVersion)
-- One is required due to using an undocumented function that is
-  not available in MinGW (RtlPublishWnfStateData)
+Attention is currently required from: Frank Lichtenheld, plaisthos=2E
 
-Change-Id: I44d7171c7e4f8497bf8b902380df92a58bf8a79a
-Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
-Acked-by: Gert Doering <gert@greenie.muc.de>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1955
----
+R=C4=
+=83zvan Cojocaru has posted comments on this change by Frank Lichtenheld=2E=
+ ( https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1960?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change su=
+bject: Fix all occurrences of cppcheck invalidPrintfArgType_uint
+=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1955
-This mail reflects revision 4 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@greenie.muc.de>
+Patch Set 3: Code-Rev=
+iew+2
 
-        
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index d553697..2d9b546 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -251,6 +251,14 @@
- check_symbol_exists(strsep string.h HAVE_STRSEP)
- check_symbol_exists(strtok_r string.h HAVE_STRTOK_R)
- 
-+if (WIN32)
-+    # Required due to a bug in MinGW where the .h file is correct
-+    # but the symbol is missing from newdev.dll
-+    set(CMAKE_REQUIRED_LIBRARIES newdev.lib)
-+    check_symbol_exists(DiInstallDevice "windows.h;newdev.h" HAVE_DIINSTALLDEVICE)
-+    unset(CMAKE_REQUIRED_LIBRARIES)
-+endif ()
-+
- # Some OS (e.g. FreeBSD) need some basic headers to allow
- # including network headers
- set(NETEXTRA sys/types.h)
-@@ -344,7 +352,7 @@
-     if (MINGW)
-         target_compile_definitions(${target} PRIVATE
-                 WIN32_LEAN_AND_MEAN
--                NTDDI_VERSION=NTDDI_VISTA _WIN32_WINNT=_WIN32_WINNT_VISTA
-+                NTDDI_VERSION=NTDDI_WIN10 _WIN32_WINNT=_WIN32_WINNT_WIN10
-         )
-     endif()
- 
-diff --git a/config.h.cmake.in b/config.h.cmake.in
-index c6c0a96..6c8660c 100644
---- a/config.h.cmake.in
-+++ b/config.h.cmake.in
-@@ -330,6 +330,9 @@
- /* Define to 1 if you have the <valgrind/memcheck.h> header file. */
- #undef HAVE_VALGRIND_MEMCHECK_H
- 
-+/* Define to 1 if you have the `DiInstallDevice' function. */
-+#cmakedefine HAVE_DIINSTALLDEVICE
-+
- /* Availability of different mbed TLS features and APIs */
- #cmakedefine HAVE_PSA_CRYPTO_H
- 
-diff --git a/configure.ac b/configure.ac
-index 1fa0e63..a06c4c9 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -346,7 +346,7 @@
- 		AM_CONDITIONAL([ENABLE_DNS_UPDOWN], [false])
- 		AC_SUBST([DNS_UPDOWN_TYPE], ["windows"])
- 		CPPFLAGS="${CPPFLAGS} -DWIN32_LEAN_AND_MEAN"
--		CPPFLAGS="${CPPFLAGS} -DNTDDI_VERSION=NTDDI_VISTA -D_WIN32_WINNT=_WIN32_WINNT_VISTA"
-+		CPPFLAGS="${CPPFLAGS} -DNTDDI_VERSION=NTDDI_WIN10 -D_WIN32_WINNT=_WIN32_WINNT_WIN10"
- 		WIN32=yes
- 		;;
- 	*-*-dragonfly*)
-@@ -1397,4 +1397,4 @@
- # Put the warning at the end, so it is better visible
- if test "${enable_debug}" = "yes"; then
-     AC_MSG_WARN([--enable-developer-debug is enabled. This should be only used for test/development builds and not for production usage])
--fi
-\ No newline at end of file
-+fi
-diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
-index 90cff8c..bd94c1a 100644
---- a/src/openvpn/dco_win.c
-+++ b/src/openvpn/dco_win.c
-@@ -35,6 +35,7 @@
- #include "openvpn.h"
- 
- #include <bcrypt.h>
-+#include <ioapiset.h>
- #include <winsock2.h>
- #include <ws2tcpip.h>
- 
-@@ -222,17 +223,6 @@
- dco_connect_wait(HANDLE handle, OVERLAPPED *ov, int timeout, struct signal_info *sig_info)
- {
-     volatile int *signal_received = &sig_info->signal_received;
--    /* GetOverlappedResultEx is available starting from Windows 8 */
--    typedef BOOL(WINAPI * get_overlapped_result_ex_t)(HANDLE, LPOVERLAPPED, LPDWORD, DWORD, BOOL);
--    get_overlapped_result_ex_t get_overlapped_result_ex =
--        (get_overlapped_result_ex_t)GetProcAddress(GetModuleHandle("Kernel32.dll"),
--                                                   "GetOverlappedResultEx");
--
--    if (get_overlapped_result_ex == NULL)
--    {
--        msg(M_ERR, "Failed to load GetOverlappedResult()");
--    }
--
-     DWORD timeout_msec = timeout * 1000;
-     const int poll_interval_ms = 50;
- 
-@@ -241,7 +231,7 @@
-         timeout_msec -= poll_interval_ms;
- 
-         DWORD transferred;
--        if (get_overlapped_result_ex(handle, ov, &transferred, poll_interval_ms, FALSE) != 0)
-+        if (GetOverlappedResultEx(handle, ov, &transferred, poll_interval_ms, FALSE) != 0)
-         {
-             /* TCP connection established by dco */
-             return;
-diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
-index 618772d..4c511a9 100644
---- a/src/openvpn/win32.c
-+++ b/src/openvpn/win32.c
-@@ -37,6 +37,7 @@
- #include <winsock2.h>
- #include <accctrl.h>
- #include <aclapi.h>
-+#include <wow64apiset.h>
- 
- #include "buffer.h"
- #include "error.h"
-@@ -1333,67 +1334,47 @@
- static void
- win32_get_arch(arch_t *process_arch, arch_t *host_arch)
- {
--    *process_arch = ARCH_UNKNOWN;
--    *host_arch = ARCH_NATIVE;
--
--    typedef BOOL(WINAPI * is_wow64_process2_t)(HANDLE, USHORT *, USHORT *);
--    is_wow64_process2_t is_wow64_process2 =
--        (is_wow64_process2_t)GetProcAddress(GetModuleHandle("Kernel32.dll"), "IsWow64Process2");
--
- #ifdef _ARM64_
-     *process_arch = ARCH_ARM64;
- #elif defined(_WIN64)
-     *process_arch = ARCH_AMD64;
--    if (is_wow64_process2)
--    {
--        /* this could be amd64 on arm64 */
--        USHORT process_machine = 0;
--        USHORT native_machine = 0;
--        BOOL is_wow64 = is_wow64_process2(GetCurrentProcess(), &process_machine, &native_machine);
--        if (is_wow64 && native_machine == IMAGE_FILE_MACHINE_ARM64)
--        {
--            *host_arch = ARCH_ARM64;
--        }
--    }
--#elif defined(_WIN32)
-+#else
-     *process_arch = ARCH_X86;
-+#endif
- 
--    if (is_wow64_process2)
-+    *host_arch = ARCH_NATIVE;
-+    /* Determine if we're running on a different host-arch */
-+    USHORT process_machine = 0;
-+    USHORT native_machine = 0;
-+
-+    if (!IsWow64Process2(GetCurrentProcess(), &process_machine, &native_machine))
-     {
--        /* check if we're running on arm64 or amd64 machine */
--        USHORT process_machine = 0;
--        USHORT native_machine = 0;
--        BOOL is_wow64 = is_wow64_process2(GetCurrentProcess(), &process_machine, &native_machine);
--        if (is_wow64)
--        {
--            switch (native_machine)
--            {
--                case IMAGE_FILE_MACHINE_ARM64:
--                    *host_arch = ARCH_ARM64;
--                    break;
--
--                case IMAGE_FILE_MACHINE_AMD64:
--                    *host_arch = ARCH_AMD64;
--                    break;
--
--                default:
--                    *host_arch = ARCH_UNKNOWN;
--                    break;
--            }
--        }
-+        return;
-     }
--    else
-+
-+    switch (native_machine)
-     {
--        BOOL w64 = FALSE;
--        BOOL is_wow64 = IsWow64Process(GetCurrentProcess(), &w64) && w64;
--        if (is_wow64)
--        {
--            /* we are unable to differentiate between arm64 and amd64
--             * machines here, so assume we are running on amd64 */
-+        case IMAGE_FILE_MACHINE_ARM64:
-+            *host_arch = ARCH_ARM64;
-+            break;
-+
-+        case IMAGE_FILE_MACHINE_AMD64:
-             *host_arch = ARCH_AMD64;
--        }
-+            break;
-+
-+        case IMAGE_FILE_MACHINE_I386:
-+            *host_arch = ARCH_X86;
-+            break;
-+
-+        default:
-+            *host_arch = ARCH_UNKNOWN;
-+            break;
-     }
--#endif /* _ARM64_ */
-+
-+    if (*host_arch == *process_arch)
-+    {
-+        *host_arch = ARCH_NATIVE;
-+    }
- }
- 
- static void
-diff --git a/src/openvpnmsica/CMakeLists.txt b/src/openvpnmsica/CMakeLists.txt
-index 9126b80..06889c8 100644
---- a/src/openvpnmsica/CMakeLists.txt
-+++ b/src/openvpnmsica/CMakeLists.txt
-@@ -24,7 +24,7 @@
- target_compile_options(openvpnmsica PRIVATE
-     -D_UNICODE
-     -UNTDDI_VERSION
--    -D_WIN32_WINNT=_WIN32_WINNT_VISTA
-+    -D_WIN32_WINNT=_WIN32_WINNT_WIN10
-     )
- 
- if (MSVC)
-diff --git a/src/openvpnmsica/Makefile.am b/src/openvpnmsica/Makefile.am
-index 87bf9a7..5e7838f 100644
---- a/src/openvpnmsica/Makefile.am
-+++ b/src/openvpnmsica/Makefile.am
-@@ -34,8 +34,7 @@
- lib_LTLIBRARIES = libopenvpnmsica.la
- libopenvpnmsica_la_CFLAGS = \
- 	-municode -D_UNICODE \
--	-UNTDDI_VERSION -U_WIN32_WINNT \
--	-D_WIN32_WINNT=_WIN32_WINNT_VISTA \
-+	-UNTDDI_VERSION -D_WIN32_WINNT=_WIN32_WINNT_WIN10 \
- 	-Wl,--kill-at
- libopenvpnmsica_la_LDFLAGS = -ladvapi32 -lole32 -lmsi -lsetupapi -liphlpapi -lshell32 -lshlwapi -lversion -lnewdev -no-undefined -avoid-version
- endif
-diff --git a/src/openvpnserv/CMakeLists.txt b/src/openvpnserv/CMakeLists.txt
-index fc15382..2cc4a93 100644
---- a/src/openvpnserv/CMakeLists.txt
-+++ b/src/openvpnserv/CMakeLists.txt
-@@ -21,7 +21,7 @@
-     target_compile_options(${target} PRIVATE
-         -D_UNICODE
-         -UNTDDI_VERSION
--        -D_WIN32_WINNT=_WIN32_WINNT_VISTA
-+        -D_WIN32_WINNT=_WIN32_WINNT_WIN10
-     )
-     target_link_libraries(${target} PRIVATE
-         advapi32.lib userenv.lib iphlpapi.lib fwpuclnt.lib rpcrt4.lib
-diff --git a/src/openvpnserv/Makefile.am b/src/openvpnserv/Makefile.am
-index ac97eb4..447fb10 100644
---- a/src/openvpnserv/Makefile.am
-+++ b/src/openvpnserv/Makefile.am
-@@ -23,8 +23,7 @@
- sbin_PROGRAMS = openvpnserv
- openvpnserv_CFLAGS = \
- 	-municode -D_UNICODE \
--	-UNTDDI_VERSION -U_WIN32_WINNT \
--	-D_WIN32_WINNT=_WIN32_WINNT_VISTA
-+	-UNTDDI_VERSION -D_WIN32_WINNT=_WIN32_WINNT_WIN10
- openvpnserv_LDADD = \
- 	-ladvapi32 -luserenv -liphlpapi -lfwpuclnt -lrpcrt4 \
- 	-lshlwapi -lnetapi32 -lws2_32 -lntdll -lole32 -lpathcch
-diff --git a/src/tapctl/CMakeLists.txt b/src/tapctl/CMakeLists.txt
-index 97702c0..94453ed 100644
---- a/src/tapctl/CMakeLists.txt
-+++ b/src/tapctl/CMakeLists.txt
-@@ -21,10 +21,10 @@
- target_compile_options(tapctl PRIVATE
-     -D_UNICODE
-     -UNTDDI_VERSION
--    -D_WIN32_WINNT=_WIN32_WINNT_VISTA
-+    -D_WIN32_WINNT=_WIN32_WINNT_WIN10
-     )
- target_link_libraries(tapctl
--    advapi32.lib ole32.lib setupapi.lib)
-+    advapi32.lib newdev.lib ole32.lib setupapi.lib)
- if (MINGW)
-     target_compile_options(tapctl PRIVATE -municode)
-     target_link_options(tapctl PRIVATE -municode)
-diff --git a/src/tapctl/Makefile.am b/src/tapctl/Makefile.am
-index 58cd580..5d1f851 100644
---- a/src/tapctl/Makefile.am
-+++ b/src/tapctl/Makefile.am
-@@ -35,8 +35,7 @@
- sbin_PROGRAMS = tapctl
- tapctl_CFLAGS = \
- 	-municode -D_UNICODE \
--	-UNTDDI_VERSION -U_WIN32_WINNT \
--	-D_WIN32_WINNT=_WIN32_WINNT_VISTA
-+	-UNTDDI_VERSION	-D_WIN32_WINNT=_WIN32_WINNT_WIN10
- tapctl_LDADD = -ladvapi32 -lole32 -lsetupapi
- endif
- 
-diff --git a/src/tapctl/tap.c b/src/tapctl/tap.c
-index dd22cc5..ac1ecd2 100644
---- a/src/tapctl/tap.c
-+++ b/src/tapctl/tap.c
-@@ -50,6 +50,7 @@
-     (_countof(L"SYSTEM\\CurrentControlSet\\Control\\Network\\") - 1 + 38 + _countof(L"\\") - 1 \
-      + 38 + _countof(L"\\Connection"))
- 
-+#ifndef HAVE_DIINSTALLDEVICE
- /**
-  * Dynamically load a library and find a function in it
-  *
-@@ -99,6 +100,7 @@
-     }
-     return fptr;
- }
-+#endif
- 
- /**
-  * Returns length of string of strings
 
+-- 
+To view, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1960?=
+usp=3Demail
+To unsubscribe, or for help writing mail filters, visit https:/=
+/gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+G=
+errit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I7f910599f0f=
+4005f06a88a93b40417ffa37022a8
+Gerrit-Change-Number: 1960
+Gerrit-PatchSet: 3=
+
+Gerrit-Owner: Frank Lichtenheld <frank@lichtenheld=2Ecom>
+Gerrit-Reviewer:=
+ R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
+Gerrit-Reviewer: plaisthos <a=
+rne-openvpn@rfc2549=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2E=
+sourceforge=2Enet>
+Gerrit-Attention: plaisthos <arne-openvpn@rfc2549=2Eorg>=
+
+Gerrit-Attention: Frank Lichtenheld <frank@lichtenheld=2Ecom>
+Gerrit-Comme=
+nt-Date: Sat, 03 Oct 2026 18:14:01 +0000
+Gerrit-HasComments: No
+Gerrit-Has-=
+Labels: Yes
+
+--9LG/iQICs0s=
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: Frank Lichtenheld, plaisthos=2E </p>
+<p>R=C4=83zvan C=
+ojocaru has posted comments on this change by Frank Lichtenheld=2E</p><p>Pa=
+tch set 3:<span style=3D"border-radius: 3px; display: inline-block; margin:=
+ 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span></p><=
+p><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1960?usp=3Demail">V=
+iew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vi=
+ew, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1960?usp=3D=
+email">change 1960</a>=2E To unsubscribe, or for help writing mail filters,=
+ visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">sett=
+ings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"=
+><div itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAct=
+ion"><link itemprop=3D"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvp=
+n/+/1960?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></d=
+iv></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+=
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"d=
+isplay:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Ger=
+rit-Change-Id: I7f910599f0f4005f06a88a93b40417ffa37022a8 </div>
+<div style=
+=3D"display:none"> Gerrit-Change-Number: 1960 </div>
+<div style=3D"display:=
+none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner:=
+ Frank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<div style=3D"dis=
+play:none"> Gerrit-Reviewer: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eorg=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arn=
+e-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: =
+openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div s=
+tyle=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@rfc2549=
+=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: Frank Lich=
+tenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<div style=3D"display:none">=
+ Gerrit-Comment-Date: Sat, 03 Oct 2026 18:14:01 +0000 </div>
+<div style=3D"=
+display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> G=
+errit-Has-Labels: Yes </div>
+
+</body></html>
+--9LG/iQICs0s=--
+
+
+--===============3303835413454188700==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============3303835413454188700==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+--===============3303835413454188700==--
+
