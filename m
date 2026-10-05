@@ -4,69 +4,130 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4DF40CA5FCE
-	for <openvpn-devel@archiver.kernel.org>; Mon,  5 Oct 2026 13:02:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5F606CA5FF0
+	for <openvpn-devel@archiver.kernel.org>; Mon,  5 Oct 2026 13:03:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=Y9M4mfYw6hSLTGQOwHsUU+FcLsyrN33JAknMb6HirM8=; b=O5KdVwt50eIpnmGNAwl/uhQaH1
-	OF23WP++sE90NENeg1uW6+Doms7GHvbyyOfpiYu5eIX1l0s2CtFWM8LmCs5upBqUVWbt411C0lpuc
-	DM3eYYzGnqd7cURM4r/GQHZpWdunI7/8+e0770RR0FpnLuNqJVRvq5ZDcMR9VVKzUTvk=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=ANydHeRvxc4JM6XGaMvK2uql7zE7rPffktkMrynPdWc=; b=QMUyIZ+fADADKNb+eyNCYtTlCT
+	QMJ4rimB1N/miLTQLUO7EXv8zmIYRZxiKI3Co+E7/+CZ9gJCoGJ1xHG9PWmdk8HHwOYxQPtIruZKj
+	4SAcQxOgxIBMHgl0yw6zLcmvxU6Qvx8r2gkvMZy5f5EeFh0ReilUsSi84HmpY9VY4fyQ=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xDiKn-0003cx-Fl;
-	Mon, 05 Oct 2026 13:02:26 +0000
+	id 1xDiLo-0007r7-K1;
+	Mon, 05 Oct 2026 13:03:28 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1xDiKl-0003ck-VY
+ (envelope-from <gerrit@openvpn.net>) id 1xDiLn-0007r0-DM
  for openvpn-devel@lists.sourceforge.net;
- Mon, 05 Oct 2026 13:02:24 +0000
+ Mon, 05 Oct 2026 13:03:27 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=lh3jQqjt25zGYgZkarUfnBWdjNmY904fXLmSDA+qD4c=; b=SLc9v9sMZS5YHwxhDcmBql/9F7
- sRoN4B5MeRrK4GTyPcE8oY8GVareYaXm6cmLFgE9hB5D/wFSBFE67RQwq9NWkh1J/oSZhwenm1Pug
- 0uB+kHQNa2DlYDDByWw0a8OoR8FCppX9UmesP/74PZl9oZDeTmvKN7B5NEao8T6uWzso=;
+ d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
+ :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
+ Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
+ :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
+ :List-Post:List-Owner:List-Archive;
+ bh=+F2SoJdigYRYk3iJ8FP8uBjDSclBWVNJLXVkLhKcDYI=; b=JCeUYFFAO4ufeBmLw37oj8JJ6p
+ /0Pg1S9FbvOEfW7VttVTnEUrmvCxnuv7KAt4EBjO9WbD/F0FmshMEYjGfN815FM6qTd/aLsXkSqxS
+ Gxi/403xwGEFZ7aK1HKbw3AlfjWQBiAQL0nAbzISkjtosKjK+4X9m2NkrGYGRy3DdpAw=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=lh3jQqjt25zGYgZkarUfnBWdjNmY904fXLmSDA+qD4c=; b=USwsUjpA1AAt22I8kD1Gw6kFPk
- 28R+7nOFd9taHLF/aR64UBHWjQBexFkbLGF3IaWqITTWfed4aokRJm8PdMA0zsAqFvumnvWsJPJnv
- /pc77bYlqNC6NNv2GVuKlzL/cCmv+5Z8WtvvyZ8o24z0Qmw82decutZPUvpYZlcmFrmw=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
+ Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=+F2SoJdigYRYk3iJ8FP8uBjDSclBWVNJLXVkLhKcDYI=; b=c
+ xsP4dtBWDcxvv4U4E93oRSweCE2htr6iwrD2JYmgH/EKefmZKrtH5z6b9+8gHuB8pUnH92aPP+dpt
+ nU8gyJHSzWjIFKHToqubOADvcfUv9p19OSc4hjLmHfwWmgxe2dXfd9Uo/SnwWcLe/MeuUNZj5Ojw5
+ FeyCMpdy5zdmGfPY=;
+Received: from mail-wr1-f52.google.com ([209.85.221.52])
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1xDiKl-0007lY-D1 for openvpn-devel@lists.sourceforge.net;
- Mon, 05 Oct 2026 13:02:24 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 695D2G6g025854
- for <openvpn-devel@lists.sourceforge.net>; Mon, 5 Oct 2026 15:02:16 +0200
-Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 695D2GH2025852
- for openvpn-devel@lists.sourceforge.net; Mon, 5 Oct 2026 15:02:16 +0200
-From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Mon,  5 Oct 2026 15:02:08 +0200
-Message-ID: <20261005130215.25812-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1790611935000.I9579ab9a3f588a3841bb90c9a4b930b7690e0b71@gerrit.openvpn.net>
-References: <gerrit.1790611935000.I9579ab9a3f588a3841bb90c9a4b930b7690e0b71@gerrit.openvpn.net>
+ (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
+ id 1xDiLm-0007nt-I4 for openvpn-devel@lists.sourceforge.net;
+ Mon, 05 Oct 2026 13:03:27 +0000
+Received: by mail-wr1-f52.google.com with SMTP id
+ ffacd0b85a97d-48b9d8055dfso1456297f8f.3
+ for <openvpn-devel@lists.sourceforge.net>;
+ Mon, 05 Oct 2026 06:03:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=openvpn.net; s=google; t=1791205400; x=1791810200; darn=lists.sourceforge.net;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
+ :reply-to:content-type;
+ bh=+F2SoJdigYRYk3iJ8FP8uBjDSclBWVNJLXVkLhKcDYI=;
+ b=c0IJt2rNwNm+vTrWdDskrudwcU/zc6OTgTg7mX4q1iYAqKKBg/uB+WbHCNZ07euWIo
+ /EFh3ewWuqZVpcHfQ97q0pntv6KWEoGaEyPJX/EQVz2iY0ARDjC+oRaIQzv6Nx8HKh2c
+ l3gGAzc2+Etl02w/rm5NZDjEUlLkmzftv2PYZ908gmK3xIaH2R56Sv/E2NrP/btlMZOA
+ 4DK6yfGtdkvT6vYaQ2QuQ597y3jGO/sQXoaMKtepLlPz7BOFPHF05fj6g55IEpm8vLIp
+ rc4aC+IgofnHviaq+XHRHDW5olZm4prENep2zwKo08hIPc+dwJ4D9gSn3emFjf8XiusO
+ FMiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20260707; t=1791205400; x=1791810200;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
+ :cc:subject:date:message-id:reply-to:content-type;
+ bh=+F2SoJdigYRYk3iJ8FP8uBjDSclBWVNJLXVkLhKcDYI=;
+ b=RNUJohoEHTGajTqH7Lrc5iCoGmymr9KjM7MRxj1yPlcJE2WJYsJ+di37nCHAq2BgF+
+ hru5jnzDSuR9W3/qGUXxGcoEMpCWFiDF/wHcwc3yU8xdsjsgzGOPvSs/mUc7u5H4VMCj
+ FR7ybkD8CZ3BMyhLbF4ueoGXDCl7iKSdNGuwzhIOFeWbNTNNOIkozHIVAYYr7im4MT8y
+ Io9mUpBQROBdLr7m6YSzvIoELVE4oVBz8qZdeclW+Sj9fy9dtQi02mM/0XWlpsfsCZyy
+ LbANXJeJpWI2y+opWY53ZqfspJOSVac4O276xKBYu1KnPg9GBdN9nZJDwbb6IuNNDUrq
+ 2FYQ==
+X-Forwarded-Encrypted: i=1;
+ AKwUvBy1z0pSKtwmffUfoRFcE7L1ZoEm8EegENsYwA9q15uPPBM96ogkB7s84nnp1jkFb+CJrfGkcCC1Fnn+EFzw@lists.sourceforge.net
+X-Gm-Message-State: AFq9FYKMrcI+00mpVefDQcu4GJlDbkpObPBRcjYS9PBoNdce+4DMhj3j
+ 7wTMR88BIuE8IXJ/lk1KI/spFSkK6hTWloKk2v/Bg1bQfxma+ANqkPhvV2KF4uu8XbQjm7zkbzs
+ JXeQruRepholKhMHt3fYsjwJCUcaMbbZNPsj88mrqOaCwQeynfzUwFvEH9k8bOqChfnsF1s4S//
+ JVvB4frA==
+X-Gm-Gg: AYBFou0qn1Z1ncjalBCRKiCSbDUKMBqkOyrfRgOiXhI7dGjQQGUFzw2/HAnzstV1b/J
+ e0IJvQfxPevZLVfN4Ljxq5TPBRVMX7rvdnCs2UKskpoxTazOnPk5Leuif90MqnWcO8MWEpKbOmO
+ yFUKxasDBzdMUF+nTbCt7N1CotgkPKVCndNVsDdWewnywrnYTCqd0slXl4jElxR5hHudnD2wDAK
+ qKXtv/l3KxQIljcEhm0XbfSokuVbumV8u6y+SfhjG3WafR6vEcet5mzn4H9n6s+62dGYMKED5vu
+ RF/S+d7x9LbsEbuqi9xUqRbHxFvLBvMZP0szWgJ4ffpaIHMMqxW+PC8g3sOaApo3MpYYF/iEfLn
+ dHAZBFCm8gt0KjCu2OObOdNtXMEzfvo4nOaA+F7SjDpQP5DKlYGxrVIVcktUdZrsEipxm9JwFBT
+ MDL+9yuN9iBDQiFpX5sXtbmryxhbqB/Aq+veXVdDK5aKgvnvhzz8Ig0xh/l7ZCfIlNjuNyvb3/m
+ pqthtfrllW/6HKXVDAx/HtsX5K6PALPZRTx5S0nwgtNT+siihXLwOkVDqN072c3wfYwhCtLrlY4
+ kwggpO3erBBjCAXb0Is86tJEoYCOtlT+bChx6GjkND6EfH7oXV8CNWEPr8Ba
+X-Received: by 2002:a05:6000:230a:b0:48b:848:3a48 with SMTP id
+ ffacd0b85a97d-48c4801ac5emr15096983f8f.46.1791205399742; 
+ Mon, 05 Oct 2026 06:03:19 -0700 (PDT)
+Received: from ip-10-18-1-162.eu-central-1.compute.internal
+ (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
+ by smtp.gmail.com with ESMTPSA id
+ ffacd0b85a97d-48c62289e77sm3726025f8f.21.2026.10.05.06.03.18
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 05 Oct 2026 06:03:18 -0700 (PDT)
+X-Google-Original-From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?=
+ <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
+Date: Mon, 5 Oct 2026 13:03:17 +0000
+To: Gianmarco De Gregori <gianmarco@mandelbit.com>
+Auto-Submitted: auto-generated
+X-Gerrit-MessageType: comment
+X-Gerrit-PatchSet: 2
+X-Gerrit-Change-Id: I165c632da6a837d0cca55bee4c2cc390b91d1e54
+X-Gerrit-Change-Number: 1962
+X-Gerrit-Project: openvpn
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/1962?usp=email>
+X-Gerrit-Commit: ee5a484f5ed3ead1661e14d2f0b009139fd3d6a7
+X-Gerrit-Comment-Date: Mon, 5 Oct 2026 13:03:17 +0000
+In-Reply-To: <gerrit.1790611935000.I165c632da6a837d0cca55bee4c2cc390b91d1e54@gerrit.openvpn.net>
+References: <gerrit.1790611935000.I165c632da6a837d0cca55bee4c2cc390b91d1e54@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzkwNjExOTM1MDAwLkkxNjVjNjMyZGE2YTgzN2QwY2NhNTViZWU0YzJjYzM5MGI5MWQxZTU0QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <6749d48e0ead4fcb1818ceab0224510530d43356-EmailReviewComments-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
-X-Headers-End: 1xDiKl-0007lY-D1
-Subject: [Openvpn-devel] [PATCH v2] mbuf: don't count dereferenced items in
- the queue length
+User-Agent: Gerrit/3.14.2
+X-Headers-End: 1xDiLm-0007nt-I4
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: multi_io: drop
+ IOW_MBUF
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -78,258 +139,147 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= via Openvpn-devel
+ <openvpn-devel@lists.sourceforge.net>
+Reply-To: razvanc@mailbox.org, arne-openvpn@rfc2549.org,
+ gianmarco@mandelbit.com, openvpn-devel@lists.sourceforge.net
+Cc: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= <gerrit@openvpn.net>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>,
+ plaisthos <arne-openvpn@rfc2549.org>
+Content-Type: multipart/mixed; boundary="===============5724153758442329348=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Gianmarco De Gregori <gianmarco@mandelbit.com>
+--===============5724153758442329348==
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="HU6Hpl4UUCU="; charset=UTF-8
 
-Items of a closed instance are cleared in place, because head + len is
-the ring's insertion point.  mbuf_extract_item() reclaims such holes as
-it walks past them, but nothing does once no live item is left behind
-them, so ms->len keeps counting slots that can never be sent.
+--HU6Hpl4UUCU=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-mbuf_defined() and mbuf_peek() then disagree about whether the queue
-holds anything, and a ring made of nothing but holes still looks full
-to mbuf_add_item(), which tries to make room by dropping the oldest
-packet and finds nothing it can drop.
+Attention is currently required from: Gianmarco De Gregori, plaisthos=2E
 
-A UDP socket hides this, as the IOW_MBUF write event reclaims the holes
-on its way out; a TCP-only server has nothing that does.
+R=
+=C4=83zvan Cojocaru has posted comments on this change by Gianmarco De Greg=
+ori=2E ( https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1962?usp=3Demail )
 
-Reclaim the holes once they reach the head, so a ring that holds no live
-item at all cannot keep looking full.  Holes sitting behind a live item
-are still counted, but an extract walking past them takes them along,
-and mbuf_add_item() always has the live head left to evict.
+Cha=
+nge subject: multi_io: drop IOW_MBUF
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E
 
-Change-Id: I9579ab9a3f588a3841bb90c9a4b930b7690e0b71
-Signed-off-by: Gianmarco De Gregori <gianmarco@mandelbit.com>
-Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1961
----
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Patch Set 2: Code-Review+2
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1961
-This mail reflects revision 2 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Razvan Cojocaru <razvanc@mailbox.org>
+-- 
+To view, visit =
+https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1962?usp=3Demail
+To unsubscribe,=
+ or for help writing mail filters, visit https://gerrit=2Eopenvpn=2Enet/set=
+tings?usp=3Demail
 
-        
-diff --git a/src/openvpn/mbuf.c b/src/openvpn/mbuf.c
-index 7b790ed..5bb397f 100644
---- a/src/openvpn/mbuf.c
-+++ b/src/openvpn/mbuf.c
-@@ -85,6 +85,21 @@
-     }
- }
- 
-+/*
-+ * Dereferenced items cannot be removed from the middle of the ring, so
-+ * reclaim them once they reach the head: a ring left without any live
-+ * item must not keep looking full.
-+ */
-+static void
-+mbuf_reclaim_head(struct mbuf_set *ms)
-+{
-+    while (ms->len && !ms->array[ms->head].instance)
-+    {
-+        ms->head = MBUF_INDEX(ms->head, 1, ms->capacity);
-+        --ms->len;
-+    }
-+}
-+
- void
- mbuf_add_item(struct mbuf_set *ms, const struct mbuf_item *item)
- {
-@@ -125,6 +140,7 @@
-                 break;
-             }
-         }
-+        mbuf_reclaim_head(ms);
-     }
-     return ret;
- }
-@@ -164,5 +180,6 @@
-                 msg(D_MBUF, "MBUF: dereferenced queued packet");
-             }
-         }
-+        mbuf_reclaim_head(ms);
-     }
- }
-diff --git a/tests/unit_tests/openvpn/test_mbuf.c b/tests/unit_tests/openvpn/test_mbuf.c
-index cba4da7..61d438b 100644
---- a/tests/unit_tests/openvpn/test_mbuf.c
-+++ b/tests/unit_tests/openvpn/test_mbuf.c
-@@ -136,9 +136,9 @@
-     mbuf_dereference_instance(ms, &mi2);
-     assert_int_equal(mbuf_buf->refcount, 2);
-     assert_int_equal(mbuf_buf2->refcount, 1);
--    assert_int_equal(mbuf_len(ms), 3);
-+    assert_int_equal(mbuf_len(ms), 1);
-     assert_int_equal(mbuf_maximum_queued(ms), 4);
--    assert_int_equal(ms->head, 3);
-+    assert_int_equal(ms->head, 1);
-     assert_ptr_equal(mbuf_peek(ms), &mi);
- 
-     mbuf_free(ms);
-@@ -148,12 +148,151 @@
-     mbuf_free_buf(mbuf_buf2);
- }
- 
-+/* a queue holding nothing but dereferenced items is an empty queue */
-+static void
-+test_mbuf_dereference_reclaims_queue(void **state)
-+{
-+    struct mbuf_set *ms = mbuf_init(4);
-+    struct multi_instance mi = { 0 };
-+    struct buffer buf = alloc_buf(16);
-+    struct mbuf_buffer *mbuf_buf = mbuf_alloc_buf(&buf);
-+    struct mbuf_item item = { .buffer = mbuf_buf, .instance = &mi };
-+    free_buf(&buf);
-+
-+    for (int i = 0; i < 4; ++i)
-+    {
-+        mbuf_add_item(ms, &item);
-+    }
-+    assert_int_equal(mbuf_len(ms), 4);
-+    assert_int_equal(mbuf_buf->refcount, 5);
-+
-+    mbuf_dereference_instance(ms, &mi);
-+
-+    assert_int_equal(mbuf_len(ms), 0);
-+    assert_false(mbuf_defined(ms));
-+    assert_null(mbuf_peek(ms));
-+    assert_int_equal(mbuf_buf->refcount, 1);
-+
-+    /* the queue is empty, so this must be queued and not dropped */
-+    mbuf_add_item(ms, &item);
-+    assert_int_equal(mbuf_len(ms), 1);
-+    assert_ptr_equal(mbuf_peek(ms), &mi);
-+
-+    mbuf_free(ms);
-+    mbuf_free_buf(mbuf_buf);
-+}
-+
-+/* extracting the last live item must not leave a trailing hole behind */
-+static void
-+test_mbuf_extract_reclaims_tail(void **state)
-+{
-+    struct mbuf_set *ms = mbuf_init(4);
-+    struct multi_instance mi = { 0 };
-+    struct multi_instance mi2 = { 0 };
-+    struct buffer buf = alloc_buf(16);
-+    struct mbuf_buffer *mbuf_buf = mbuf_alloc_buf(&buf);
-+    struct mbuf_item item = { .buffer = mbuf_buf, .instance = &mi };
-+    struct mbuf_item item2 = { .buffer = mbuf_buf, .instance = &mi2 };
-+    free_buf(&buf);
-+
-+    mbuf_add_item(ms, &item);
-+    mbuf_add_item(ms, &item2);
-+    mbuf_dereference_instance(ms, &mi2);
-+    assert_int_equal(mbuf_len(ms), 2); /* head is still live, nothing to reclaim */
-+
-+    struct mbuf_item out;
-+    assert_true(mbuf_extract_item(ms, &out));
-+    assert_ptr_equal(out.instance, &mi);
-+    mbuf_free_buf(out.buffer);
-+
-+    assert_int_equal(mbuf_len(ms), 0);
-+    assert_false(mbuf_defined(ms));
-+    assert_null(mbuf_peek(ms));
-+
-+    mbuf_free(ms);
-+    mbuf_free_buf(mbuf_buf);
-+}
-+
-+/* reclaiming stops at the first live item, it does not walk the whole ring */
-+static void
-+test_mbuf_extract_reclaims_up_to_live(void **state)
-+{
-+    struct mbuf_set *ms = mbuf_init(4);
-+    struct multi_instance mi = { 0 };
-+    struct multi_instance mi2 = { 0 };
-+    struct buffer buf = alloc_buf(16);
-+    struct mbuf_buffer *mbuf_buf = mbuf_alloc_buf(&buf);
-+    struct mbuf_item item = { .buffer = mbuf_buf, .instance = &mi };
-+    struct mbuf_item item2 = { .buffer = mbuf_buf, .instance = &mi2 };
-+    free_buf(&buf);
-+
-+    /* [mi][mi2][mi] -> dereferencing mi2 leaves [mi][hole][mi] */
-+    mbuf_add_item(ms, &item);
-+    mbuf_add_item(ms, &item2);
-+    mbuf_add_item(ms, &item);
-+    mbuf_dereference_instance(ms, &mi2);
-+    assert_int_equal(mbuf_len(ms), 3); /* head is live, nothing to reclaim yet */
-+
-+    /* extracting the head leaves the hole in front: it must be reclaimed, and
-+     * the walk must stop at the live item behind it */
-+    struct mbuf_item out;
-+    assert_true(mbuf_extract_item(ms, &out));
-+    assert_ptr_equal(out.instance, &mi);
-+    mbuf_free_buf(out.buffer);
-+
-+    assert_int_equal(mbuf_len(ms), 1);
-+    assert_true(mbuf_defined(ms));
-+    assert_ptr_equal(mbuf_peek(ms), &mi);
-+
-+    mbuf_free(ms);
-+    mbuf_free_buf(mbuf_buf);
-+}
-+
-+/* Holes behind a live item are not reclaimed, so a full ring can still hold
-+ * them. mbuf_add_item() must cope: it evicts the live head, which drags the
-+ * holes with it, rather than finding nothing to drop. */
-+static void
-+test_mbuf_add_on_full_queue_with_holes(void **state)
-+{
-+    struct mbuf_set *ms = mbuf_init(4);
-+    struct multi_instance mi = { 0 };
-+    struct multi_instance mi2 = { 0 };
-+    struct multi_instance mi3 = { 0 };
-+    struct buffer buf = alloc_buf(16);
-+    struct mbuf_buffer *mbuf_buf = mbuf_alloc_buf(&buf);
-+    struct mbuf_item item = { .buffer = mbuf_buf, .instance = &mi };
-+    struct mbuf_item item2 = { .buffer = mbuf_buf, .instance = &mi2 };
-+    struct mbuf_item item3 = { .buffer = mbuf_buf, .instance = &mi3 };
-+    free_buf(&buf);
-+
-+    /* [mi][mi2][mi2][mi2] -> dereferencing mi2 leaves [mi][hole][hole][hole],
-+     * which mbuf_reclaim_head() cannot touch: the head is still live */
-+    mbuf_add_item(ms, &item);
-+    mbuf_add_item(ms, &item2);
-+    mbuf_add_item(ms, &item2);
-+    mbuf_add_item(ms, &item2);
-+    mbuf_dereference_instance(ms, &mi2);
-+    assert_int_equal(mbuf_len(ms), 4);
-+    assert_int_equal(mbuf_len(ms), ms->capacity); /* still counts as full */
-+
-+    mbuf_add_item(ms, &item3);
-+    assert_int_equal(mbuf_len(ms), 1);
-+    assert_ptr_equal(mbuf_peek(ms), &mi3);
-+
-+    mbuf_free(ms);
-+    mbuf_free_buf(mbuf_buf);
-+}
-+
- int
- main(void)
- {
-     const struct CMUnitTest tests[] = {
-         cmocka_unit_test(test_mbuf_init),
-         cmocka_unit_test(test_mbuf_add_remove),
-+        cmocka_unit_test(test_mbuf_dereference_reclaims_queue),
-+        cmocka_unit_test(test_mbuf_extract_reclaims_tail),
-+        cmocka_unit_test(test_mbuf_extract_reclaims_up_to_live),
-+        cmocka_unit_test(test_mbuf_add_on_full_queue_with_holes),
-     };
- 
-     return cmocka_run_group_tests_name("mbuf", tests, NULL, NULL);
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerr=
+it-Branch: master
+Gerrit-Change-Id: I165c632da6a837d0cca55bee4c2cc390b91d1e=
+54
+Gerrit-Change-Number: 1962
+Gerrit-PatchSet: 2
+Gerrit-Owner: Gianmarco De=
+ Gregori <gianmarco@mandelbit=2Ecom>
+Gerrit-Reviewer: R=C4=83zvan Cojocaru =
+<razvanc@mailbox=2Eorg>
+Gerrit-Reviewer: plaisthos <arne-openvpn@rfc2549=2E=
+org>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Ger=
+rit-Attention: plaisthos <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Attention: Gia=
+nmarco De Gregori <gianmarco@mandelbit=2Ecom>
+Gerrit-Comment-Date: Mon, 05 =
+Oct 2026 13:03:17 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
 
+--HU6Hpl4UUCU=
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: Gianmarco De Gregori, plaisthos=2E </p>
+<p>R=C4=83zva=
+n Cojocaru has posted comments on this change by Gianmarco De Gregori=2E</p=
+><p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; m=
+argin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span=
+></p><p><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1962?usp=3Dem=
+ail">View Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p=
+>To view, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1962?=
+usp=3Demail">change 1962</a>=2E To unsubscribe, or for help writing mail fi=
+lters, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail=
+">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMe=
+ssage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/V=
+iewAction"><link itemprop=3D"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/=
+openvpn/+/1962?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change=
+"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment <=
+/div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div styl=
+e=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none=
+"> Gerrit-Change-Id: I165c632da6a837d0cca55bee4c2cc390b91d1e54 </div>
+<div =
+style=3D"display:none"> Gerrit-Change-Number: 1962 </div>
+<div style=3D"dis=
+play:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-O=
+wner: Gianmarco De Gregori &lt;gianmarco@mandelbit=2Ecom&gt; </div>
+<div st=
+yle=3D"display:none"> Gerrit-Reviewer: R=C4=83zvan Cojocaru &lt;razvanc@mai=
+lbox=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisth=
+os &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> G=
+errit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </d=
+iv>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openv=
+pn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: =
+Gianmarco De Gregori &lt;gianmarco@mandelbit=2Ecom&gt; </div>
+<div style=3D=
+"display:none"> Gerrit-Comment-Date: Mon, 05 Oct 2026 13:03:17 +0000 </div>=
+
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"d=
+isplay:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>
+--HU6Hpl4UUCU=--
+
+
+--===============5724153758442329348==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============5724153758442329348==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+--===============5724153758442329348==--
+
