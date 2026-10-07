@@ -4,128 +4,127 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5BCDDCA6002
-	for <openvpn-devel@archiver.kernel.org>; Wed,  7 Oct 2026 15:30:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 42C02CA6002
+	for <openvpn-devel@archiver.kernel.org>; Wed,  7 Oct 2026 15:30:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=YSdety17mJbz8EiIeB+UdVJCiKKuccX4XPG5qyV/my0=; b=DkQfURpRFBuVzyjU6ZgsZFyltu
-	rnC4J3+SUcshM6tSMdEDmZYeA0jfLy05CZzrmfL4vOY9WpD016hZi5rtHGjmwjOj35gr/3YWXgJAy
-	wdQMsCGyNyRHFfzj5ifQmc3dsTxxoYmKuBM3tgpWI4iIOLvGJ1Q7zoyEVZW8hHrLU8XY=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=szqpQechbGZJsrfwnxZf/LfxXlHFvbFtvvnz+NvXw+k=; b=MEOmbBXwC9bfsMGuXrLf2/A52y
+	SuLDW8rNu+RHnAeWCDec5oWz9STdBqPuVONBoLtDhPrabC48+nPr3DtD37qQfVm/2/nPAraXnHglr
+	OOjhzY8xGS7Wk8c9IDFpSdRMJ2kf6719NfRg6CeXN5/nZANpfqaTYZQCiSvQyUSZOH1Y=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xETb1-0001vN-Sq;
-	Wed, 07 Oct 2026 15:30:17 +0000
+	id 1xETb4-0004MN-Bj;
+	Wed, 07 Oct 2026 15:30:23 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1xETb0-0001vG-Bp
+ (envelope-from <gerrit@openvpn.net>) id 1xETb2-0004MA-Ns
  for openvpn-devel@lists.sourceforge.net;
- Wed, 07 Oct 2026 15:30:15 +0000
+ Wed, 07 Oct 2026 15:30:21 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
  :List-Post:List-Owner:List-Archive;
- bh=VhezKp/uX4NT6ExqWSRTbPQNldFfG/uJU1xaP0sD8TU=; b=Yk977l2I7JYN2WpVtHzzihpGiY
- 17HDnVEWhImArtKYRZOeBzkJFgGt2OVeE4LxdBhOQynigRQKcgmlYq/a1BsMoxaD2HZLcm3bYQLmV
- su/OFygn7pnGw6Gk42WLbYp6QZ7Dflx120Gu/BF75o9rMw1JKojIY4bw8nPdueLaHWso=;
+ bh=E909jiXOQwn6nlmQMPGjpLuxm34FKxZUQov3KHOFi/U=; b=lj4Fc+wlhwHekoSpggAnTJVHPm
+ MEWj3jeVxfi/l8V1RN1d6A5m3Z7Vtf13nuN3nt5ElBxcDe8MIBd5g5rDsQp7OCo30VHcG/bg3/z2h
+ xwUHyR8m5z8Whm7d8XWxxye3PX1pihJBXH6mYdlV4pInqegYilWz1xBFjRmRlr+GyuRg=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
  Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=VhezKp/uX4NT6ExqWSRTbPQNldFfG/uJU1xaP0sD8TU=; b=D
- QNnHkzsaPEMg+wQT0oKcq3gkKniez+ym7oMZXNcneDOJDYKt11ddGz1ZLaPg27ykg2uoCOLqWDO7W
- 8cSBa5ZclP9Xd1llz8IbJ5D1/3qYCW5NvNngsSJ0LHbtawPyBCaYfXn2Dc8PNF37u40K/hyWxjMR4
- ytvneqOF/VhewbmQ=;
-Received: from mail-wr1-f48.google.com ([209.85.221.48])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ List-Owner:List-Archive; bh=E909jiXOQwn6nlmQMPGjpLuxm34FKxZUQov3KHOFi/U=; b=K
+ Augoz+7GBYikhAbSeJ2mYC8+Qk+jpTjAqUwdyrO8dWlR9DNhto1cTMqZM82veSQiqnjKsQsmp4AXN
+ UTECNNbrXMl+GbVC0GtCSC4ouNpxavMWxYB8HOyCn2Ww4Ko+bJYrxyfdwGEb3NmPEUoVodehs4hkS
+ ofollgLBrAXNfJk0=;
+Received: from mail-wm1-f51.google.com ([209.85.128.51])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1xETav-0006Ws-Se for openvpn-devel@lists.sourceforge.net;
- Wed, 07 Oct 2026 15:30:15 +0000
-Received: by mail-wr1-f48.google.com with SMTP id
- ffacd0b85a97d-48c4207ac26so1454107f8f.0
+ id 1xETb2-0002Bh-1s for openvpn-devel@lists.sourceforge.net;
+ Wed, 07 Oct 2026 15:30:21 +0000
+Received: by mail-wm1-f51.google.com with SMTP id
+ 5b1f17b1804b1-4a16c1608faso23601745e9.0
  for <openvpn-devel@lists.sourceforge.net>;
- Wed, 07 Oct 2026 08:30:13 -0700 (PDT)
+ Wed, 07 Oct 2026 08:30:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1791387007; x=1791991807; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1791387013; x=1791991813; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=VhezKp/uX4NT6ExqWSRTbPQNldFfG/uJU1xaP0sD8TU=;
- b=DqAaUwOZw9Tc+Eml15aMbxUeuv9dMhFQqVLH+55LAgM98UEIO+2U43Pr/mO+N+1fJe
- arI1z2ePLkRUDu0js4DVvvArFjdk9Grc+3Layhx9acJH2fGGgUC+bXCh4zzINdPj/u42
- 8tHGXuusK4G0MVd/sn/ziyKLBQGXFwt0yoaMF1Ovcv3Gch2dU/lMTcZheBRw6MKL1TZX
- htkGVQZqln5NzGYuGXIwlU+g53yr+AzzoY/smk4/pgAK+WQLriEnT/oInhjR/q6wlR8e
- fST+9FfLDH5GIj938K5XJYLt3oP+bIyIf+Uv4kPekwUmSq/ZHPOdTGv6vCSRoykndopd
- 8+AA==
+ bh=E909jiXOQwn6nlmQMPGjpLuxm34FKxZUQov3KHOFi/U=;
+ b=JYqUbKGfaFJkOUvAZ9iDhxWNRI3l/ceYtboEZ4RVGtFVOoducqmWVn/R/BYrHeL049
+ OEXrkvWz2DjdV5aT11Iw8tv8QIF6cqBSS9oEGNei7LgOAVGeUgNAU1XTndYyo7xbfvu7
+ /F4eqqgxrPhcShD1MjWrOLP5ewkIYgvtFVBiBMQwEWQkFen1m/hMfRdnNcCrE9ZNg6gP
+ f+QMdgeY7bf2ZvmaYMMx44flfpAbysEkeiAH6yyuq+qxHE3wAEwdAFPM1Gyq9uZUVljK
+ bls/CR8PpiuZKqKQ8CMut4L5q6jxflBUh55wOPr2qif+pZNvViY3OHF0bgBHY968UIns
+ 75aw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1791387007; x=1791991807;
+ d=1e100.net; s=20260707; t=1791387013; x=1791991813;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=VhezKp/uX4NT6ExqWSRTbPQNldFfG/uJU1xaP0sD8TU=;
- b=HFO790g2/WHjCFEQPi8Nz+iFQFaHyVPJ58HGt+slTEjMp3Xu2jFQcUJM9ErrvMHJVT
- 6pm95yS1ATiTFcGxsBKaOgzMBLCwSakzL9qpeSAlSm8QIhrIMSTMNGILiHskRyYdysi5
- YkOa9prmI0QjGK78Khnt2ZMo3SVugRbt8PBqGtV/7AULiA2XbUE24SbRQe5jbTwgHNOu
- tH8rDyjdAOH1a38aTqY3pxQNmg4F3RtjOPyMQr4Ny/Ggy9IGMv8oBn4D6g8536HF+CXV
- WO9AG8gDHur7c5b3fFMWRCpJw2/xn9L8JhY6fDM0MdUu8Nhg9x4upUDIAb4/kg9tgX2B
- mKeQ==
-X-Gm-Message-State: AFq9FYIdQuTJdPMQiy8hXnYyhyycnNbow2NzPR5/sscbqk0wz34dFLd3
- liKEXRp0uPkewIrh1WsSy/mFZHjIOWTQT9e/JtoJxCYbJmBFr7XrS4DmnfCNxck5nPa10eAedVB
- Ej/aUqllM3Qk/TLIMzky/b6dCr1gvPy7qcwB/J4GO8IoV2wvCCrlRFT8mtN5IusLn1ETpBy+8K3
- BVsNGzRw==
-X-Gm-Gg: AYBFou3OB7PkF8LuhKrXCJtJEQ+mT8kOuTztw8n1xMvIIuaeHGOR1qWbZdHd2vTMdov
- +GL5EJCmF5Rj6d7SJGjYo/mlCQu2yrAaa4hWKacjh2iFe72OIfQr3IOiWaS7dhzEWID7QE5BG62
- 1uN2yKVu3nYgZ9S9arhB7+HwJAtO+Cxls8Lo44ZEqU9BC4OrEMmKEaKWmkPxlh8umawZYN+BA4f
- N7kwHlodPbzu2cpoE4trw29K37SUAV5OsN/T0me6EImhxt5+xV/fNJODlUKsGrrQ7jNMD7CDxtW
- HH3k6gFXI4OmhAvDAimR3atmjSLY25G0wQ0qaXOstB15ymDsW+fajlzMYExesFZ8y1beoCzykhe
- Tyj4zBjlrDvwGyeaKw6kzz025NMSAMBaOXclqNW6UZlyiHcwSZeEz9TKGChbv8eBz1u0TiyFNih
- nSyEvLplkrnl30IB4YZVA5NZ34zeXv588fjG5GcD9+/5BIMHrRHoy/NoiYKV5nlkOEO6ASFZY0b
- t7HxaYDo2o6PscLhoCEAzfKwEXFTvRcp9wW1vMTQT7/Ny+E5fKEoYok+0j4ERDG2PQYhuIFOwqq
- RsOWMewFfviYMBwLGw/YPr2y4CO26s0M8tfAIDTAgTXkCp4itrvtQ4lrnA3y
-X-Received: by 2002:adf:e186:0:b0:48b:1b6:3df8 with SMTP id
- ffacd0b85a97d-48c7288e4bemr5412688f8f.35.1791387006710; 
- Wed, 07 Oct 2026 08:30:06 -0700 (PDT)
+ bh=E909jiXOQwn6nlmQMPGjpLuxm34FKxZUQov3KHOFi/U=;
+ b=ICCjLcOUP9NYR4vqGLj/UtAbbrxZVND+q8zEJLVzC0WO7TfYf6BE4Dt7WOIqtjGNVQ
+ I8mmyihqV3RLns1IrSz1qi37Z3CxkdjkyQ5jHJ9F5Rca0iroirjDIDlh3Hk+6mpuVyF7
+ T8zHz0YB97NFyXcje/YCtqJbD3zkrkgHDJinQRfpratdSCRStZkMmI1rZXJn1Jp33bia
+ 5ngdB7O8495lQS6y9+UK98oow9TOBc2yN7YvZC+CdwXpHQfF9bpuqfcUOIYxb99KvZxZ
+ TMXcKK647cRBR2WYKhcUY0RvGVG+PEmMulTjL5JYaaIleF5tNGA3zHSJgxK5DcvcYFbb
+ NP5w==
+X-Gm-Message-State: AFuF++lBOthUY/zKy4UPtQ5fN1KZv2XRCgqCpjeG8esi3qaEa+j6BP1N
+ PT6eSdxCezXRHPubgTKklEGqihVJaUyrwjmu3vybwNjxLGsQQhySMDStSZ7BkBiGT+QnYzoFf5S
+ DloU3voPmgltfJkIri5/WWyp8p4hbK/LjC6KMe0t2vQWIpErzYcBDnQ1ODOf9uADfDBKGTtba5j
+ +dyG5mAA==
+X-Gm-Gg: AYBFou3LckBBRLCFs2EIcy4FREQbgOHr7eENTBhFDm1SjnOj6M4H1U8uaL2ASFp7MAt
+ Brgq3BeNgwwoGE8EvOV+QzqO41dsQc333Wd3RMB+Cr+qpiZm1cMpIq4bfW7oitKEOPfNmS6Q1EC
+ 0/TAa7i+Hc8MevsNWGVTtJiHQxm/uMXZ3lHaj8KWgeKMqFUaw2NhpBBWHORAH/5H22n0xR4cHzO
+ lTFHsDeI0lgH7uniL2aC57x+8xV/00E93tjpZA7Wi6932I+LIl2ITsdmvYlKVcLRhVn02/oXq5f
+ CWPQ6rhwlwknCaUBkp63FPmiLyrgZq/vcyz7Pz1tjRfF5e1uei0Lsoa4BI3YPcZ4aQ1WQQddKkB
+ dWQPDnY1sErboNAxKXk0u6IhtwsjyGUjwL+9j5LAnESBlgOVbJSvl00cmzyWiflHmsZ7oQi0QVl
+ 5DiKsSCC/ZGBGzyM2yd7206av6WuFwa1j5amavwxr3ztVsrr9zcEzVebqgUFMBXiRlFHO0IH+Qa
+ LT+RLf6LjlIfQk4T9RMxI3iU+ub2s8+sElFbWA3deCsPNEwOB4gS6bR1/41etnhHr1mizrUacDg
+ acXmYnoD7h0WCbcudLbNsf2NgM+DimjmkqHMfKm7tRHnrxOhUYqg6nPepy1VH94XvxD0r2cB
+X-Received: by 2002:a05:600c:860b:b0:49f:fc4f:9efb with SMTP id
+ 5b1f17b1804b1-4a1803112fdmr42204645e9.7.1791387012508; 
+ Wed, 07 Oct 2026 08:30:12 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-48c7256434bsm5666394f8f.15.2026.10.07.08.30.04
+ 5b1f17b1804b1-4a17f557bcbsm114953355e9.9.2026.10.07.08.30.10
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 07 Oct 2026 08:30:05 -0700 (PDT)
+ Wed, 07 Oct 2026 08:30:11 -0700 (PDT)
 X-Google-Original-From: "Frank Lichtenheld (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
 Date: Wed, 7 Oct 2026 15:30:00 +0000
-To: =?UTF-8?Q?R=C4=83zvan_Cojocaru?= <razvanc@mailbox.org>,
- Arne Schwabe <arne-openvpn@rfc2549.org>
+To: Arne Schwabe <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newpatchset
-X-Gerrit-PatchSet: 2
-X-Gerrit-Change-Id: I33b246dea9eb9383e1ca928e1330ba840b7f990c
-X-Gerrit-Change-Number: 1984
+X-Gerrit-PatchSet: 5
+X-Gerrit-Change-Id: I76c310f9e69276d4f21a4ad31a24490553d6d5c4
+X-Gerrit-Change-Number: 1966
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/1984?usp=email>
-X-Gerrit-Commit: 84f915fba8ac11629f5a9845013a41e0ec000dd5
-In-Reply-To: <gerrit.1791289136000.I33b246dea9eb9383e1ca928e1330ba840b7f990c@gerrit.openvpn.net>
-References: <gerrit.1791289136000.I33b246dea9eb9383e1ca928e1330ba840b7f990c@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzkxMjg5MTM2MDAwLkkzM2IyNDZkZWE5ZWI5MzgzZTFjYTkyOGUxMzMwYmE4NDBiN2Y5OTBjQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <7f32d5b381898d634d136a0bc5d34b1789cc949f-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/1966?usp=email>
+X-Gerrit-Commit: 7ef264b91e555791cc7fa6d1e83375968e6652df
+In-Reply-To: <gerrit.1790774523000.I76c310f9e69276d4f21a4ad31a24490553d6d5c4@gerrit.openvpn.net>
+References: <gerrit.1790774523000.I76c310f9e69276d4f21a4ad31a24490553d6d5c4@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzkwNzc0NTIzMDAwLkk3NmMzMTBmOWU2OTI3NmQ0ZjIxYTRhZDMxYTI0NDkwNTUzZDZkNWM0QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <7cf4041d5315346a1fb1057d9446cbc178dd5f16-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.2
-X-Headers-End: 1xETav-0006Ws-Se
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Add missing includes
- for C files and their own headers
+X-Headers-End: 1xETb2-0002Bh-1s
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: cppcheck: Review
+ suppressions for constParameter and constParameterCa...
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -139,381 +138,374 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 From: "Frank Lichtenheld \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
-Reply-To: frank@lichtenheld.com, arne-openvpn@rfc2549.org, razvanc@mailbox.org,
- openvpn-devel@lists.sourceforge.net
+Reply-To: frank@lichtenheld.com, arne-openvpn@rfc2549.org,
+ openvpn-devel@lists.sourceforge.net, gert@greenie.muc.de
 Cc: "Frank Lichtenheld \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============7143279967028489605=="
+Content-Type: multipart/mixed; boundary="===============7160956228132102557=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============7143279967028489605==
+--===============7160956228132102557==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="XmPXFhlxl90="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="q/tYQN0X2Lw="; charset=UTF-8
 
---XmPXFhlxl90=
+--q/tYQN0X2Lw=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: Arne Schwabe, Frank Lichtenheld=2E
 
 H=
-ello Arne Schwabe, R=C4=83zvan Cojocaru, 
+ello Arne Schwabe, Gert Doering, 
 
-I'd like you to reexamine a chan=
-ge=2E Please visit
+I'd like you to reexamine a change=2E Pl=
+ease visit
 
-    https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1984?usp=
-=3Demail
-
-to look at the new patch set (#2)=2E
-
-The change is no longer sub=
-mittable: checks~ChecksSubmitRule is unsatisfied now=2E
+    https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1966?usp=3Demail=
 
 
-Change subject: A=
-dd missing includes for C files and their own headers
-=2E=2E=2E=2E=2E=2E=2E=
+to look at the new patch set (#5)=2E
+
+The change is no longer submittable=
+: checks~ChecksSubmitRule is unsatisfied now=2E
+
+
+Change subject: cppcheck:=
+ Review suppressions for constParameter and constParameterCallback
+=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-Add missing includes for C files a=
-nd their own headers
+cppcheck: Review su=
+ppressions for constParameter and constParameterCallback
 
-We don't strictly need those, but it is much better t=
-o
-have them since the compiler will then ensure that we
-do not have subtle =
-differences between declarations and
-definitions=2E
+I reviewed all th=
+e occurrences of the two cppcheck
+errors constParameter and constParameterC=
+allback=2E
 
-Also fix
-- socks=2Eh n=
-ot being able to be included on its own
-- open_tun_afunix stub for Windows =
-having wrong
-  parameters
+All of constParameterCallback occurences were bogus and
+I think=
+ in most cases they will be=2E So continue to ignore
+it completely but docu=
+ment that we considered it and it
+is not useful=2E
 
-Change-Id: I33b246dea9eb9383e1ca928e1330ba840b7f=
-990c
-Signed-off-by: Frank Lichtenheld <frank@lichtenheld=2Ecom>
+All existing cases of c=
+onstParameter were bogus, but
+there might be useful hits in the future so I=
+ only
+suppress the existing occurrences=2E
+
+Change-Id: I76c310f9e69276d4f21=
+a4ad31a24490553d6d5c4
+Signed-off-by: Frank Lichtenheld <frank@lichtenheld=
+=2Ecom>
 ---
-M src/o=
-penvpn/comp-lz4=2Ec
-M src/openvpn/cryptoapi=2Ec
-M src/openvpn/dco_win=2Ec
-M=
- src/openvpn/socks=2Ec
-M src/openvpn/socks=2Eh
-M src/openvpn/tun_afunix=2Ec=
-
-M tests/unit_tests/openvpn/siphash_openssl=2Ec
-7 files changed, 9 insertio=
-ns(+), 2 deletions(-)
+M dev-tools/cppcheck-suppressions=2Exml
+1 file changed, 20 inse=
+rtions(+), 11 deletions(-)
 
 
-  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openv=
-pn refs/changes/84/1984/2
+  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/=
+openvpn refs/changes/66/1966/5
 
-diff --git a/src/openvpn/comp-lz4=2Ec b/src/open=
-vpn/comp-lz4=2Ec
-index 48797b0=2E=2E57c6bb3 100644
---- a/src/openvpn/comp-l=
-z4=2Ec
-+++ b/src/openvpn/comp-lz4=2Ec
-@@ -31,6 +31,7 @@
- #include <lz4=2Eh>=
+diff --git a/dev-tools/cppcheck-suppression=
+s=2Exml b/dev-tools/cppcheck-suppressions=2Exml
+index bd24c3b=2E=2E33337cf =
+100644
+--- a/dev-tools/cppcheck-suppressions=2Exml
++++ b/dev-tools/cppcheck=
+-suppressions=2Exml
+@@ -3,23 +3,20 @@
+   <!-- We start with enable=3Dall, b=
+ut then suppress some issues that have too many
+        occurences right no=
+w=2E They still should be fixed at some point -->
+   <suppress>
+-    <id>co=
+nstParameter</id>
+-  </suppress>
+-  <suppress>
+-    <id>constParameterCallb=
+ack</id>
+-  </suppress>
+-  <suppress>
+     <id>unusedFunction</id>
+   </sup=
+press>
+   <suppress>
+     <id>usleepCalled</id>
+   </suppress>
+-  <!-- We h=
+ave a lot of library includes, not all of them are really required,
++  <!--=
+ These are specific false-positives (FP) or ignored (IGN) issues
++       We=
+ might want to move some of them to inline-suppression to avoid
++       the=
+ static line-numbers -->
++  <!-- IGN: We have a lot of library includes, no=
+t all of them are really required,
+        so ignore them -->
+   <suppress>=
 
- 
- #include "comp=2Eh"
-+#include "comp-lz4=2Eh"
- #include "error=2Eh"
- 
- #=
-include "memdbg=2Eh"
-diff --git a/src/openvpn/cryptoapi=2Ec b/src/openvpn/c=
-ryptoapi=2Ec
-index ad2706c=2E=2Eef3c94c 100644
---- a/src/openvpn/cryptoapi=
-=2Ec
-+++ b/src/openvpn/cryptoapi=2Ec
-@@ -47,6 +47,7 @@
- #include <ctype=2Eh=
->
- 
- #include "buffer=2Eh"
-+#include "cryptoapi=2Eh"
- #include "openssl_com=
-pat=2Eh"
- #include "win32=2Eh"
- #include "xkey_common=2Eh"
-diff --git a/src=
-/openvpn/dco_win=2Ec b/src/openvpn/dco_win=2Ec
-index c230a90=2E=2E6e5e295 1=
-00644
---- a/src/openvpn/dco_win=2Ec
-+++ b/src/openvpn/dco_win=2Ec
-@@ -27,6 =
-+27,7 @@
- #include "syshead=2Eh"
- 
- #include "dco=2Eh"
-+#include "dco_win=
-=2Eh"
- #include "forward=2Eh"
- #include "tun=2Eh"
- #include "crypto=2Eh"
-di=
-ff --git a/src/openvpn/socks=2Ec b/src/openvpn/socks=2Ec
-index 65ecb3c=2E=
-=2Eb84da24 100644
---- a/src/openvpn/socks=2Ec
-+++ b/src/openvpn/socks=2Ec
-@=
-@ -34,6 +34,7 @@
- 
- #include "syshead=2Eh"
- 
-+#include "socks=2Eh"
- #includ=
-e "common=2Eh"
- #include "misc=2Eh"
- #include "win32=2Eh"
-diff --git a/src/=
-openvpn/socks=2Eh b/src/openvpn/socks=2Eh
-index 846113d=2E=2Ecaed18c 100644=
-
---- a/src/openvpn/socks=2Eh
-+++ b/src/openvpn/socks=2Eh
-@@ -29,6 +29,8 @@
-=
- #define SOCKS_H
- 
- #include "buffer=2Eh"
-+#include "interval=2Eh"
-+#includ=
-e "sig=2Eh"
- 
- struct openvpn_sockaddr;
- struct link_socket_actual;
-diff --=
-git a/src/openvpn/tun_afunix=2Ec b/src/openvpn/tun_afunix=2Ec
-index a67a472=
-=2E=2Ef494d42 100644
---- a/src/openvpn/tun_afunix=2Ec
-+++ b/src/openvpn/tun=
-_afunix=2Ec
-@@ -35,6 +35,7 @@
- #include "argv=2Eh"
- #include "options=2Eh"
-=
- #include "socket=2Eh"
-+#include "tun_afunix=2Eh"
- 
- #ifndef WIN32
- /* Wind=
-ows does implement some AF_UNIX functionality but key features
-@@ -172,8 +1=
-73,7 @@
- }
- #else  /* ifndef WIN32 */
- void
--open_tun_afunix(const char *de=
-v, const char *dev_type, int mtu, struct tuntap *tt,
--                struc=
-t env_set env)
-+open_tun_afunix(struct options *o, int mtu, struct tuntap *=
-tt, struct env_set *orig_env)
- {
-     msg(M_ERR, "AF_UNIX socket support no=
-t available on this platform");
- }
-diff --git a/tests/unit_tests/openvpn/si=
-phash_openssl=2Ec b/tests/unit_tests/openvpn/siphash_openssl=2Ec
-index 99a7=
-763=2E=2E52f13b8 100644
---- a/tests/unit_tests/openvpn/siphash_openssl=2Ec
-=
-+++ b/tests/unit_tests/openvpn/siphash_openssl=2Ec
-@@ -26,6 +26,7 @@
- #endi=
-f
- 
- #include "siphash=2Eh"
-+#include "siphash_openssl=2Eh"
- 
- #ifdef ENABL=
-E_CRYPTO_OPENSSL
- #include <openssl/opensslv=2Eh>
+     <id>missingIncludeSystem</id>
+   </suppress>
+-  <!-- cppcheck doesn't=
+ understand about check_malloc_return, so these are
++  <!-- FP: cppcheck do=
+esn't understand about check_malloc_return, so these are
+        usually mi=
+sleading -->
+   <suppress>
+     <id>nullPointerOutOfMemory</id>
+@@ -27,9 +2=
+4,6 @@
+   <suppress>
+     <id>nullPointerArithmeticOutOfMemory</id>
+   </su=
+ppress>
+-  <!-- These are specific false-positives (FP) or ignored (IGN) is=
+sues
+-       We might want to move some of them to inline-suppression to av=
+oid
+-       the static line-numbers -->
+   <!-- IGN: posix=2Ecfg: We are no=
+t threadsafe -->
+   <suppress>
+     <id>getgrnamCalled</id>
+@@ -62,6 +56,11=
+ @@
+     <id>badBitmaskCheck</id>
+     <fileName>tests/unit_tests/openvpn/t=
+est_pkt=2Ec</fileName>
+   </suppress>
++  <!-- FP: All occurrences are eithe=
+r external types or types that
++       explicitly need to be non-const in s=
+ome variants of the callback -->
++  <suppress>
++    <id>constParameterCallb=
+ack</id>
++  </suppress>
+   <!-- IGN: we use casts to remove const -->
+   <s=
+uppress>
+     <id>constParameterPointer</id>
+@@ -74,6 +73,12 @@
+     <fileN=
+ame>src/openvpn/buffer=2Ec</fileName>
+     <symbolName>buf</symbolName>
+   =
+</suppress>
++  <!-- FP: can't change the signature of wmain -->
++  <suppres=
+s>
++    <id>constParameter</id>
++    <fileName>src/openvpn/openvpn=2Ec</fil=
+eName>
++    <symbolName>wargv</symbolName>
++  </suppress>
+   <!-- IGN: exte=
+rnal -->
+   <suppress>
+     <id>constParameterPointer</id>
+@@ -81,6 +86,10 =
+@@
+   </suppress>
+   <!-- IGN: too many false-positives due to stubs -->
+  =
+ <suppress>
++    <id>constParameter</id>
++    <fileName>tests/unit_tests/op=
+envpn*/test_*</fileName>
++  </suppress>
++  <suppress>
+     <id>constParamet=
+erPointer</id>
+     <fileName>tests/unit_tests/openvpn*/test_*</fileName>
+ =
+  </suppress>
 
 -- 
-To view, visit https=
-://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1984?usp=3Demail
-To unsubscribe, or f=
-or help writing mail filters, visit https://gerrit=2Eopenvpn=2Enet/settings=
-?usp=3Demail
+To view, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/=
++/1966?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit =
+https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: ne=
+wpatchset
 Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I=
+76c310f9e69276d4f21a4ad31a24490553d6d5c4
+Gerrit-Change-Number: 1966
+Gerrit-=
+PatchSet: 5
+Gerrit-Owner: Frank Lichtenheld <frank@lichtenheld=2Ecom>
 Gerri=
-t-Branch: master
-Gerrit-Change-Id: I33b246dea9eb9383e1ca928e1330ba840b7f990=
-c
-Gerrit-Change-Number: 1984
-Gerrit-PatchSet: 2
-Gerrit-Owner: Frank Lichten=
-held <frank@lichtenheld=2Ecom>
-Gerrit-Reviewer: Arne Schwabe <arne-openvpn@=
-rfc2549=2Eorg>
-Gerrit-Reviewer: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg=
->
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
-Gerrit=
--Attention: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Attention: Fra=
-nk Lichtenheld <frank@lichtenheld=2Ecom>
+t-Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Reviewer: Gert=
+ Doering <gert@greenie=2Emuc=2Ede>
+Gerrit-CC: openvpn-devel <openvpn-devel@=
+lists=2Esourceforge=2Enet>
+Gerrit-Attention: Arne Schwabe <arne-openvpn@rfc=
+2549=2Eorg>
+Gerrit-Attention: Frank Lichtenheld <frank@lichtenheld=2Ecom>
 
---XmPXFhlxl90=
+--q/tYQN0X2Lw=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: Arne Schwabe, Frank Lichtenheld=2E </p>
 <p>Frank Lich=
-tenheld <strong>uploaded patch set #2</strong> to this change=2E</p><p><a h=
-ref=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1984?usp=3Demail">View Ch=
+tenheld <strong>uploaded patch set #5</strong> to this change=2E</p><p><a h=
+ref=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1966?usp=3Demail">View Ch=
 ange</a></p><p>The change is no longer submittable: checks~ChecksSubmitRule=
  is unsatisfied now=2E</p><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">Add missing includes for C files an=
-d their own headers<br><br>We don&#39;t strictly need those, but it is much=
- better to<br>have them since the compiler will then ensure that we<br>do n=
-ot have subtle differences between declarations and<br>definitions=2E<br><b=
-r>Also fix<br>- socks=2Eh not being able to be included on its own<br>- ope=
-n_tun_afunix stub for Windows having wrong<br>  parameters<br><br>Change-Id=
-: I33b246dea9eb9383e1ca928e1330ba840b7f990c<br>Signed-off-by: Frank Lichten=
-held &lt;frank@lichtenheld=2Ecom&gt;<br>---<br>M src/openvpn/comp-lz4=2Ec<b=
-r>M src/openvpn/cryptoapi=2Ec<br>M src/openvpn/dco_win=2Ec<br>M src/openvpn=
-/socks=2Ec<br>M src/openvpn/socks=2Eh<br>M src/openvpn/tun_afunix=2Ec<br>M =
-tests/unit_tests/openvpn/siphash_openssl=2Ec<br>7 files changed, 9 insertio=
-ns(+), 2 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-fami=
-ly: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eop=
-envpn=2Enet:29418/openvpn refs/changes/84/1984/2</pre><pre style=3D"font-fa=
-mily: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/o=
-penvpn/comp-lz4=2Ec b/src/openvpn/comp-lz4=2Ec</span><br><span>index 48797b=
-0=2E=2E57c6bb3 100644</span><br><span>--- a/src/openvpn/comp-lz4=2Ec</span>=
-<br><span>+++ b/src/openvpn/comp-lz4=2Ec</span><br><span>@@ -31,6 +31,7 @@<=
-/span><br><span> #include &lt;lz4=2Eh&gt;</span><br><span> </span><br><span=
-> #include &quot;comp=2Eh&quot;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+#include &quot;comp-lz4=2Eh&quot;</span><br><span> #include &qu=
-ot;error=2Eh&quot;</span><br><span> </span><br><span> #include &quot;memdbg=
-=2Eh&quot;</span><br><span>diff --git a/src/openvpn/cryptoapi=2Ec b/src/ope=
-nvpn/cryptoapi=2Ec</span><br><span>index ad2706c=2E=2Eef3c94c 100644</span>=
-<br><span>--- a/src/openvpn/cryptoapi=2Ec</span><br><span>+++ b/src/openvpn=
-/cryptoapi=2Ec</span><br><span>@@ -47,6 +47,7 @@</span><br><span> #include =
-&lt;ctype=2Eh&gt;</span><br><span> </span><br><span> #include &quot;buffer=
-=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include =
-&quot;cryptoapi=2Eh&quot;</span><br><span> #include &quot;openssl_compat=2E=
-h&quot;</span><br><span> #include &quot;win32=2Eh&quot;</span><br><span> #i=
-nclude &quot;xkey_common=2Eh&quot;</span><br><span>diff --git a/src/openvpn=
-/dco_win=2Ec b/src/openvpn/dco_win=2Ec</span><br><span>index c230a90=2E=2E6=
-e5e295 100644</span><br><span>--- a/src/openvpn/dco_win=2Ec</span><br><span=
->+++ b/src/openvpn/dco_win=2Ec</span><br><span>@@ -27,6 +27,7 @@</span><br>=
-<span> #include &quot;syshead=2Eh&quot;</span><br><span> </span><br><span> =
-#include &quot;dco=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+#include &quot;dco_win=2Eh&quot;</span><br><span> #include &quot;f=
-orward=2Eh&quot;</span><br><span> #include &quot;tun=2Eh&quot;</span><br><s=
-pan> #include &quot;crypto=2Eh&quot;</span><br><span>diff --git a/src/openv=
-pn/socks=2Ec b/src/openvpn/socks=2Ec</span><br><span>index 65ecb3c=2E=2Eb84=
-da24 100644</span><br><span>--- a/src/openvpn/socks=2Ec</span><br><span>+++=
- b/src/openvpn/socks=2Ec</span><br><span>@@ -34,6 +34,7 @@</span><br><span>=
- </span><br><span> #include &quot;syshead=2Eh&quot;</span><br><span> </span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;socks=2Eh&=
-quot;</span><br><span> #include &quot;common=2Eh&quot;</span><br><span> #in=
-clude &quot;misc=2Eh&quot;</span><br><span> #include &quot;win32=2Eh&quot;<=
-/span><br><span>diff --git a/src/openvpn/socks=2Eh b/src/openvpn/socks=2Eh<=
-/span><br><span>index 846113d=2E=2Ecaed18c 100644</span><br><span>--- a/src=
-/openvpn/socks=2Eh</span><br><span>+++ b/src/openvpn/socks=2Eh</span><br><s=
-pan>@@ -29,6 +29,8 @@</span><br><span> #define SOCKS_H</span><br><span> </s=
-pan><br><span> #include &quot;buffer=2Eh&quot;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+#include &quot;interval=2Eh&quot;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+#include &quot;sig=2Eh&quot;</span=
-><br><span> </span><br><span> struct openvpn_sockaddr;</span><br><span> str=
-uct link_socket_actual;</span><br><span>diff --git a/src/openvpn/tun_afunix=
-=2Ec b/src/openvpn/tun_afunix=2Ec</span><br><span>index a67a472=2E=2Ef494d4=
-2 100644</span><br><span>--- a/src/openvpn/tun_afunix=2Ec</span><br><span>+=
-++ b/src/openvpn/tun_afunix=2Ec</span><br><span>@@ -35,6 +35,7 @@</span><br=
-><span> #include &quot;argv=2Eh&quot;</span><br><span> #include &quot;optio=
-ns=2Eh&quot;</span><br><span> #include &quot;socket=2Eh&quot;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+#include &quot;tun_afunix=2Eh&quo=
-t;</span><br><span> </span><br><span> #ifndef WIN32</span><br><span> /* Win=
-dows does implement some AF_UNIX functionality but key features</span><br><=
-span>@@ -172,8 +173,7 @@</span><br><span> }</span><br><span> #else  /* ifnd=
-ef WIN32 */</span><br><span> void</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-open_tun_afunix(const char *dev, const char *dev_type, int mtu,=
- struct tuntap *tt,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-              struct env_set env)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+open_tun_afunix(struct options *o, int mtu, struct tuntap *tt=
-, struct env_set *orig_env)</span><br><span> {</span><br><span>     msg(M_E=
-RR, &quot;AF_UNIX socket support not available on this platform&quot;);</sp=
-an><br><span> }</span><br><span>diff --git a/tests/unit_tests/openvpn/sipha=
-sh_openssl=2Ec b/tests/unit_tests/openvpn/siphash_openssl=2Ec</span><br><sp=
-an>index 99a7763=2E=2E52f13b8 100644</span><br><span>--- a/tests/unit_tests=
-/openvpn/siphash_openssl=2Ec</span><br><span>+++ b/tests/unit_tests/openvpn=
-/siphash_openssl=2Ec</span><br><span>@@ -26,6 +26,7 @@</span><br><span> #en=
-dif</span><br><span> </span><br><span> #include &quot;siphash=2Eh&quot;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;siphash_=
-openssl=2Eh&quot;</span><br><span> </span><br><span> #ifdef ENABLE_CRYPTO_O=
-PENSSL</span><br><span> #include &lt;openssl/opensslv=2Eh&gt;</span><br></p=
-re><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/=
-1984?usp=3Demail">change 1984</a>=2E To unsubscribe, or for help writing ma=
-il filters, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=3D=
-email">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/Em=
-ailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=2E=
-org/ViewAction"><link itemprop=3D"url" href=3D"https://gerrit=2Eopenvpn=2En=
-et/c/openvpn/+/1984?usp=3Demail"/><meta itemprop=3D"name" content=3D"View C=
-hange"/></div></div>
+pace,monospace; white-space: pre-wrap;">cppcheck: Review suppressions for c=
+onstParameter and constParameterCallback<br><br>I reviewed all the occurren=
+ces of the two cppcheck<br>errors constParameter and constParameterCallback=
+=2E<br><br>All of constParameterCallback occurences were bogus and<br>I thi=
+nk in most cases they will be=2E So continue to ignore<br>it completely but=
+ document that we considered it and it<br>is not useful=2E<br><br>All exist=
+ing cases of constParameter were bogus, but<br>there might be useful hits i=
+n the future so I only<br>suppress the existing occurrences=2E<br><br>Chang=
+e-Id: I76c310f9e69276d4f21a4ad31a24490553d6d5c4<br>Signed-off-by: Frank Lic=
+htenheld &lt;frank@lichtenheld=2Ecom&gt;<br>---<br>M dev-tools/cppcheck-sup=
+pressions=2Exml<br>1 file changed, 20 insertions(+), 11 deletions(-)<br><br=
+></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; whi=
+te-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn re=
+fs/changes/66/1966/5</pre><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;"><span>diff --git a/dev-tools/cppcheck-suppressions=
+=2Exml b/dev-tools/cppcheck-suppressions=2Exml</span><br><span>index bd24c3=
+b=2E=2E33337cf 100644</span><br><span>--- a/dev-tools/cppcheck-suppressions=
+=2Exml</span><br><span>+++ b/dev-tools/cppcheck-suppressions=2Exml</span><b=
+r><span>@@ -3,23 +3,20 @@</span><br><span>   &lt;!-- We start with enable=
+=3Dall, but then suppress some issues that have too many</span><br><span>  =
+      occurences right now=2E They still should be fixed at some point --&g=
+t;</span><br><span>   &lt;suppress&gt;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    &lt;id&gt;constParameter&lt;/id&gt;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-  &lt;/suppress&gt;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-  &lt;suppress&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;id&gt;constParameterCallback&lt;/id=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/suppress&g=
+t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;suppress&gt;<=
+/span><br><span>     &lt;id&gt;unusedFunction&lt;/id&gt;</span><br><span>  =
+ &lt;/suppress&gt;</span><br><span>   &lt;suppress&gt;</span><br><span>    =
+ &lt;id&gt;usleepCalled&lt;/id&gt;</span><br><span>   &lt;/suppress&gt;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;!-- We have a lot o=
+f library includes, not all of them are really required,</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+  &lt;!-- These are specific false-pos=
+itives (FP) or ignored (IGN) issues</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+       We might want to move some of them to inline-suppres=
+sion to avoid</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+ the static line-numbers --&gt;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+  &lt;!-- IGN: We have a lot of library includes, not all of th=
+em are really required,</span><br><span>        so ignore them --&gt;</span=
+><br><span>   &lt;suppress&gt;</span><br><span>     &lt;id&gt;missingInclud=
+eSystem&lt;/id&gt;</span><br><span>   &lt;/suppress&gt;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-  &lt;!-- cppcheck doesn&#39;t understand=
+ about check_malloc_return, so these are</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+  &lt;!-- FP: cppcheck doesn&#39;t understand about ch=
+eck_malloc_return, so these are</span><br><span>        usually misleading =
+--&gt;</span><br><span>   &lt;suppress&gt;</span><br><span>     &lt;id&gt;n=
+ullPointerOutOfMemory&lt;/id&gt;</span><br><span>@@ -27,9 +24,6 @@</span><b=
+r><span>   &lt;suppress&gt;</span><br><span>     &lt;id&gt;nullPointerArith=
+meticOutOfMemory&lt;/id&gt;</span><br><span>   &lt;/suppress&gt;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-  &lt;!-- These are specific fal=
+se-positives (FP) or ignored (IGN) issues</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-       We might want to move some of them to inline-sup=
+pression to avoid</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+   the static line-numbers --&gt;</span><br><span>   &lt;!-- IGN: posix=2Ec=
+fg: We are not threadsafe --&gt;</span><br><span>   &lt;suppress&gt;</span>=
+<br><span>     &lt;id&gt;getgrnamCalled&lt;/id&gt;</span><br><span>@@ -62,6=
+ +56,11 @@</span><br><span>     &lt;id&gt;badBitmaskCheck&lt;/id&gt;</span>=
+<br><span>     &lt;fileName&gt;tests/unit_tests/openvpn/test_pkt=2Ec&lt;/fi=
+leName&gt;</span><br><span>   &lt;/suppress&gt;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+  &lt;!-- FP: All occurrences are either extern=
+al types or types that</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+       explicitly need to be non-const in some variants of the callback =
+--&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  &lt;suppres=
+s&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &lt;id&gt;=
+constParameterCallback&lt;/id&gt;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+  &lt;/suppress&gt;</span><br><span>   &lt;!-- IGN: we use ca=
+sts to remove const --&gt;</span><br><span>   &lt;suppress&gt;</span><br><s=
+pan>     &lt;id&gt;constParameterPointer&lt;/id&gt;</span><br><span>@@ -74,=
+6 +73,12 @@</span><br><span>     &lt;fileName&gt;src/openvpn/buffer=2Ec&lt;=
+/fileName&gt;</span><br><span>     &lt;symbolName&gt;buf&lt;/symbolName&gt;=
+</span><br><span>   &lt;/suppress&gt;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+  &lt;!-- FP: can&#39;t change the signature of wmain --&=
+gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  &lt;suppress&g=
+t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &lt;id&gt;con=
+stParameter&lt;/id&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    &lt;fileName&gt;src/openvpn/openvpn=2Ec&lt;/fileName&gt;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    &lt;symbolName&gt;wargv&lt;=
+/symbolName&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  &l=
+t;/suppress&gt;</span><br><span>   &lt;!-- IGN: external --&gt;</span><br><=
+span>   &lt;suppress&gt;</span><br><span>     &lt;id&gt;constParameterPoint=
+er&lt;/id&gt;</span><br><span>@@ -81,6 +86,10 @@</span><br><span>   &lt;/su=
+ppress&gt;</span><br><span>   &lt;!-- IGN: too many false-positives due to =
+stubs --&gt;</span><br><span>   &lt;suppress&gt;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    &lt;id&gt;constParameter&lt;/id&gt;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    &lt;fileName&gt;tests/=
+unit_tests/openvpn*/test_*&lt;/fileName&gt;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+  &lt;/suppress&gt;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+  &lt;suppress&gt;</span><br><span>     &lt;id&gt;c=
+onstParameterPointer&lt;/id&gt;</span><br><span>     &lt;fileName&gt;tests/=
+unit_tests/openvpn*/test_*&lt;/fileName&gt;</span><br><span>   &lt;/suppres=
+s&gt;</span><br></pre><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=
+=2Enet/c/openvpn/+/1966?usp=3Demail">change 1966</a>=2E To unsubscribe, or =
+for help writing mail filters, visit <a href=3D"https://gerrit=2Eopenvpn=2E=
+net/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"htt=
+p://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
+=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https://=
+gerrit=2Eopenvpn=2Enet/c/openvpn/+/1966?usp=3Demail"/><meta itemprop=3D"nam=
+e" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newp=
-atchset </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-=
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"dis=
-play:none"> Gerrit-Change-Id: I33b246dea9eb9383e1ca928e1330ba840b7f990c </d=
-iv>
-<div style=3D"display:none"> Gerrit-Change-Number: 1984 </div>
+<div style=3D"display:none"> Gerr=
+it-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Proj=
+ect: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </di=
+v>
+<div style=3D"display:none"> Gerrit-Change-Id: I76c310f9e69276d4f21a4ad3=
+1a24490553d6d5c4 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: =
+1966 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
 <div sty=
-le=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none">=
- Gerrit-Owner: Frank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
-<di=
-v style=3D"display:none"> Gerrit-Reviewer: Arne Schwabe &lt;arne-openvpn@rf=
-c2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: R=C4=
-=83zvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt; </div>
-<div style=3D"display=
-:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Ene=
-t&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: Arne Schwabe &l=
-t;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit=
--Attention: Frank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+le=3D"display:none"> Gerrit-Owner: Frank Lichtenheld &lt;frank@lichtenheld=
+=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: Arne Schwab=
+e &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Ge=
+rrit-Reviewer: Gert Doering &lt;gert@greenie=2Emuc=2Ede&gt; </div>
+<div sty=
+le=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esou=
+rceforge=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: Ar=
+ne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:=
+none"> Gerrit-Attention: Frank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt; =
+</div>
 
-</bod=
-y></html>
---XmPXFhlxl90=--
+</body></html>
+--q/tYQN0X2Lw=--
 
 
---===============7143279967028489605==
+--===============7160956228132102557==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============7143279967028489605==
+--===============7160956228132102557==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -524,5 +516,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============7143279967028489605==--
+--===============7160956228132102557==--
 
