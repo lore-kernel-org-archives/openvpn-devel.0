@@ -4,72 +4,194 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E6128CA5FFC
-	for <openvpn-devel@archiver.kernel.org>; Wed,  7 Oct 2026 17:22:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 91EA4CA5FFC
+	for <openvpn-devel@archiver.kernel.org>; Wed,  7 Oct 2026 19:03:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=Q8ctK5gFmBTTkaIQcOr0pNA20+XD3FyVRBG60EdT2As=; b=UrWd8XbSbwRf3LoiF2v+PqWBV/
-	v0PaDkcKOzZEeM8pPRHjsXu59uht+vmBt0/VlV6I87aTM9O6mcxPiqsr4xmQIIa0f7mgKM0SetPTl
-	NjmAU5Ns1/jvL3KKFfREBP/tcF49o6Cawo2P+3lGy3fgnUwFIe46BruETXfcVR8uk2Xw=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:Message-ID:To:From:Date:Sender:Reply-To:Cc:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Owner;
+	bh=U22UmH28PbBXLWl1Pi2K9d72P4ZBSdm+cz1L0yVntXw=; b=RfG5vVaPWIyUrJfHRfNItd1Gkt
+	3Pfc2rW0ZNjtC7KH9vee3t/dmvGsDIdh8EQ1I1TolNkraUSXM1ND2gg9HdqRpVMdVB/j6MktSOfqo
+	/OQX8Q8CUIA0z2FxqvEAbcTEvEVswvhK4m/OKP1kk4mriJ2tB+IiRB9UxB2sD7Tn3MGo=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xEVL8-0001qg-Rq;
-	Wed, 07 Oct 2026 17:22:00 +0000
+	id 1xEWv0-0003MD-U2;
+	Wed, 07 Oct 2026 19:03:11 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1xEVKr-0001qL-K3
- for openvpn-devel@lists.sourceforge.net;
- Wed, 07 Oct 2026 17:21:43 +0000
+ (envelope-from <root@relay.chelinvest.ru>) id 1xEWuz-0003Ll-9w;
+ Wed, 07 Oct 2026 19:03:10 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=4znPwuYRwaDb6sz2jJwzfRJbAiPPJpRLvhEBkYzZlF8=; b=QM3v8qSsuU4L9Hlhj5Zr9+AG6e
- YpVjeYqzGPacJEoYUueQxZ7mNW910lOfkruBBPlBcm5oDRacixELYNuWS6oXyw3yDJ9qGS7B8pz+e
- hw6pl/QSU9wrUTKn06Kadm2hXR+y3USrXz2d/BKzFhfOPca9bo9cEdHjETeIhGwaJThQ=;
+ d=sourceforge.net; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:
+ List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
+ MIME-Version:Message-ID:To:From:Date:Sender:Reply-To:Cc:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:In-Reply-To:References:List-Owner;
+ bh=a3gQ97fr8qKEqHLvvD7fiKA+hLwyPDEJU9FDTnQVSkU=; b=IUusd8jXmmNq1F4tZ0Lo/8vqtN
+ XMGlLjfuDUigrPL+Mg/SiHqkggWJmeqmugsWBLRovsaouFmet4quCKTtFyfw7KqoT7eOXHZvls1re
+ ZtIRwNblvOHu5Y6BwFGBlU8h4R2SyXjrj4MXqiJbKGZImd1wKFzmeijWHBqiXP2KjWpk=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ h=Subject:Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:
+ List-Post:List-Archive:List-Unsubscribe:List-Id:MIME-Version:Message-ID:To:
+ From:Date:Sender:Reply-To:Cc:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+ References:List-Owner; bh=a3gQ97fr8qKEqHLvvD7fiKA+hLwyPDEJU9FDTnQVSkU=; b=Nko
+ wvHITAdxP9VyIFGK055QT9RmwKYfB9DtHTLIIZqluf6LFwx6qIeIglPBmnFySvr/qSZoMz0KbBx/y
+ Du14qJsDSdC+eZXmHlu8C2Xi024ikZhGdxWW1923OjaUoycWbZrgAEM7RgXmp/dgbRJorDLqz+pke
+ ljZjZOg+EkLpLc=;
+Received: from relay.chelinvest.ru ([195.54.10.10])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps (TLS1:DHE-RSA-AES256-SHA:256)
+ (Exim 4.95) id 1xEWuw-0007G5-KU; Wed, 07 Oct 2026 19:03:10 +0000
+Received: from relay.chelinvest.ru (localhost.localdomain [127.0.0.1])
+ by relay.chelinvest.ru (8.14.3/8.14.3/Debian-9.4) with ESMTP id 697J2vJV012938
+ (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
+ Thu, 8 Oct 2026 00:02:58 +0500
+Received: (from root@localhost)
+ by relay.chelinvest.ru (8.14.3/8.14.3/Submit) id 697J2vQ5012937;
+ Thu, 8 Oct 2026 00:02:57 +0500
+Received: from ksmg2.chelinvest.ru ( ksmg2.chelinvest.ru [193.105.39.121] ) 
+ by relay (Dr.Web (R) milter module ver.6.0.2.8)
+ ; Wed, 07 Oct 2026 21:51:37 +0500
+Received: from ksmg2.chelinvest.ru (localhost [127.0.0.1])
+ by ksmg2.chelinvest.ru (Postfix) with ESMTP id 3E33D180094
+ for <virus@chelinvest.ru>; Wed,  7 Oct 2026 21:44:07 +0500 (+05)
+Received: from lists.sourceforge.net (unknown [216.105.38.7])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by ksmg2.chelinvest.ru (Postfix) with ESMTPS
+ for <virus@chelinvest.ru>; Wed,  7 Oct 2026 21:43:54 +0500 (+05)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=lists.sourceforge.net; s=beta;
+ h=Content-Transfer-Encoding:Content-Type:
+ List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
+ Subject:MIME-Version:Message-ID:To:From:Date:Sender:Reply-To:Cc:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=4znPwuYRwaDb6sz2jJwzfRJbAiPPJpRLvhEBkYzZlF8=; b=BzwblsnJRR78SdERVxonkxCXsD
- gsXDGRRR27O6eWtElyGTPvTMpqzKh1YtG+BTxYiDr1vPQ2TFnhc0tQgq8MQq03+vgkxkJUCr474yF
- sJlTdyk+TWpWCmHchiUHGiDiVrvBOvRdkdl42kLa2U6E0q9xeblTL/2F80ViaHjs30N8=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ :Resent-Message-ID:In-Reply-To:References:List-Owner;
+ bh=a3gQ97fr8qKEqHLvvD7fiKA+hLwyPDEJU9FDTnQVSkU=;
+ b=dPfGpXbUY6FkbICUGQLO45UX26
+ c3w7aFv51UE1k++GMWIXm8W9VG1wOvI+QOsZ4GRjqgyYY4aRUghZgufxtAYAP4639YeZP+UlXhk/m
+ Ddf0Qb+GZVfcwV5TCEjgC4oM+7/lCM57KSCuqMg5jz2D6S2Bdk09V7UL6UyHLc9QoZFE=
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+ (envelope-from <openvpn-announce-bounces@lists.sourceforge.net>)
+ id 1xEUiG-0003y3-D7; Wed, 07 Oct 2026 16:41:53 +0000
+Received: from [172.30.29.66] (helo=mx.sourceforge.net)
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
+ (envelope-from <frank@lichtenheld.com>) id 1xEUgn-0002Mo-BQ;
+ Wed, 07 Oct 2026 16:40:22 +0000
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=sourceforge.net; s=x;
+ h=Content-Type:MIME-Version:Message-ID:Subject:To:
+ From:Date:Sender:Reply-To:Cc:Content-Transfer-Encoding:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=69RTuYMdUgoL85mgr0GKGOZuCJd6UHFhPUia+3G5umQ=;
+ b=lY+9rwq76SD74rwHgkI38bzSg7
+ eORUgSkEJupRxGckLsA8TKURDGaKJ2PWlBv3rJp63SU4Ag7AenNEUxJcaZxnLBO8Wt6YjgAChmQ96
+ L8ftWYNAiCXR5c5L1Yq2/fnc7BxP6aiakowu+qIfcdHHAtWI3AvFLQStnqiAWxIoecl8=
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x;
+ h=Content-Type:MIME-Version:Message-ID:Subject:To:From:Date:Sender:Reply-To
+ :Cc:Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+ References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
+ List-Owner:List-Archive;
+ bh=69RTuYMdUgoL85mgr0GKGOZuCJd6UHFhPUia+3G5umQ=; b=J
+ GeSicZj94//7cpFqoqRjpDbZSMThxc6N7L3WLfyn1k+zxlf/Bp0oWriQCHTS8Tf9uJthnEwvmwtLr
+ cOAONwumKu9hF7ucO2w30Uo9hravxyakWqbV8MCJIa18bjas3m+MKFn2wr58pLBUbseP1PW1+zTTT
+ U8+qNrZxyXLbgzXI=
+Received: from mout-p-102.mailbox.org ([80.241.56.152])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1xEVKe-0004iW-52 for openvpn-devel@lists.sourceforge.net;
- Wed, 07 Oct 2026 17:21:33 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 697HLPob023590
- for <openvpn-devel@lists.sourceforge.net>; Wed, 7 Oct 2026 19:21:25 +0200
-Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 697HLPig023589
- for openvpn-devel@lists.sourceforge.net; Wed, 7 Oct 2026 19:21:25 +0200
-From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Wed,  7 Oct 2026 19:21:18 +0200
-Message-ID: <20261007172125.23573-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1790774523000.I76c310f9e69276d4f21a4ad31a24490553d6d5c4@gerrit.openvpn.net>
-References: <gerrit.1790774523000.I76c310f9e69276d4f21a4ad31a24490553d6d5c4@gerrit.openvpn.net>
+ id 1xEUgb-0003jo-8i; Wed, 07 Oct 2026 16:40:11 +0000
+Received: from smtp202.mailbox.org (smtp202.mailbox.org
+ [IPv6:2001:67c:2050:b231:465::202])
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+ key-exchange X25519MLKEM768 server-signature RSA-PSS (4096 bits) server-digest
+ SHA256) (No client certificate requested)
+ by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4j0Jkm183hzKvhm;
+ Wed, 07 Oct 2026 18:40:00 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lichtenheld.com;
+ s=MBO0001; t=1791391200;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:mime-version:mime-version:content-type:content-type;
+ bh=69RTuYMdUgoL85mgr0GKGOZuCJd6UHFhPUia+3G5umQ=;
+ b=tUdJorPxcwz2ISj/N2H8GwJuTDS68IOLaLwCyQGaRSx4M4xI3oVTG7LjlZpAQhhoF6wW6J
+ pLxV+rXBdzfYKaPIQ6DuXN74CNPbYOQgimT/Q4w9XBxJSbb7UJBBZVVRs3Xw3zmXjlD1YC
+ Wjrpn6/EFynBQD1xTJrDwvlr+4/GkRU8dGIjQxdrzo+kD6+tuzEovr5g5RAIHb5MusaJvW
+ UQAbhXG661OupKY+1Xu4eIOLwzyuQuFSSBWTUBZ/HC8fSNi8zKAMQiG//S1Bs8cgXMzr4z;
+ qCz9DYwSWJaIKa6u4tGuc9CFsLsAowIPuurBfEMWa4yPBtFMbAFkXAoXSx6tBQ==
+Authentication-Results: outgoing_mbo_mout; dkim=none; spf=pass;
+ smtp.mailfrom=frank@lichtenheld.com
+Date: Wed, 7 Oct 2026 18:39:58 +0200
+From: Frank Lichtenheld <frank@lichtenheld.com>
+To: Openvpn-announce@lists.sourceforge.net,
+ Openvpn-devel@lists.sourceforge.net, Openvpn-users@lists.sourceforge.net
+Message-ID: <asZ13tD1_12Cbd6Z@flichtenheld-TUXEDO-InfinityBook-S-15-17-Gen7>
 MIME-Version: 1.0
-X-Headers-End: 1xEVKe-0004iW-52
-Subject: [Openvpn-devel] [PATCH v5] cppcheck: Review suppressions for
- constParameter and constParameterCallback
-X-BeenThere: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+X-Rspamd-Queue-Id: 4j0Jkm183hzKvhm
+X-Headers-End: 1xEUgb-0003jo-8i
+X-Mailman-Approved-At: Wed, 07 Oct 2026 16:41:52 +0000
+X-BeenThere: openvpn-announce@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
+X-KSMG-AntiPhishing: NotDetected, bases: 2026/10/07 15:45:00
+X-KSMG-AntiSpam-Auth: dmarc=none header.from=lichtenheld.com;
+ spf=pass smtp.mailfrom=lists.sourceforge.net;
+ dkim=pass header.d=lists.sourceforge.net; dkim=fail header.d=sourceforge.net;
+ dkim=neutral header.d=sf.net; dkim=fail header.d=lichtenheld.com
+X-KSMG-AntiSpam-Envelope-From: openvpn-announce-bounces@lists.sourceforge.net
+X-KSMG-AntiSpam-Info: LuaCore: 127 0.3.127
+ 0884f7b061fa529b810563f359267cd65d2ec05c
+X-KSMG-AntiSpam-Info: {rep_avail}
+X-KSMG-AntiSpam-Info: {dkim_exist_silent}
+X-KSMG-AntiSpam-Info: {Tracking_phishing_bb}
+X-KSMG-AntiSpam-Info: {Tracking_cat_phish}
+X-KSMG-AntiSpam-Info: {Tracking_smtp_not_equal_from}
+X-KSMG-AntiSpam-Info: {Tracking_list_headers}
+X-KSMG-AntiSpam-Info: {Tracking_uf_ne_domains}
+X-KSMG-AntiSpam-Info: {Tracking_marketers}
+X-KSMG-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSMG-AntiSpam-Info: community.openvpn.net:7.1.1; github.com:7.1.1;
+ d41d8cd98f00b204e9800998ecf8427e.com:7.1.1; lists.sourceforge.net:7.1.1,5.0.1;
+ openvpn.net:7.1.1; 216.105.38.7:7.1.2; 127.0.0.199:7.1.2;
+ lichtenheld.com:7.1.1
+X-KSMG-AntiSpam-Info: {Tracking_smtp_domain_mismatch}
+X-KSMG-AntiSpam-Info: {Tracking_smtp_domain_2level_mismatch}
+X-KSMG-AntiSpam-Info: {Tracking_white_helo}
+X-KSMG-AntiSpam-Info: FromAlignment: n
+X-KSMG-AntiSpam-Info: ApMailHostAddress: 216.105.38.7
+X-KSMG-AntiSpam-Info: {DNS response errors}
+X-KSMG-AntiSpam-Interceptor-Info: scan successful
+X-KSMG-AntiSpam-Lua-Profiles: 206508 [Oct 07 2026]
+X-KSMG-AntiSpam-Method: none
+X-KSMG-AntiSpam-Rate: 0
+X-KSMG-AntiSpam-Status: not_detected
+X-KSMG-AntiSpam-Version: 6.1.1.27
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 3.1.0.9599,
+ bases: 2026/10/07 12:29:00 #28661701
+X-KSMG-AntiVirus-Status: NotDetected, skipped
+X-KSMG-KATA-Status: Not Scanned
+X-KSMG-LinksScanning: NotDetected, bases: 2026/10/07 15:46:00
+X-KSMG-Message-Action: skipped
+X-KSMG-Rule-ID: 7
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.3.7
+ (relay.chelinvest.ru [127.0.0.1]); Thu, 08 Oct 2026 00:02:58 +0500 (YEKT)
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.3.7
+ (relay.chelinvest.ru [193.105.39.10]); Wed, 07 Oct 2026 21:51:38 +0500 (YEKT)
+X-Antivirus: Dr.Web (R) for Unix mail servers drweb plugin ver.6.0.2.8
+X-Antivirus-Code: 0x100000
+X-Headers-End: 1xEWuw-0007G5-KU
+Subject: [Openvpn-devel] [DKIM bad!] [Openvpn-announce] OpenVPN 2.7.8
+ released
+X-BeenThere: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -81,116 +203,94 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
+Message-ID: <20261007163958.PgHMQi3QE1q7itfpydZraTYIZR1l-jYJywMd_Ou41T8@z>
 
-From: Frank Lichtenheld <frank@lichtenheld.com>
+The OpenVPN community project team is proud to release OpenVPN 2.7.8.
+This is a bugfix release fixing several security issues.
 
-I reviewed all the occurrences of the two cppcheck
-errors constParameter and constParameterCallback.
+Security fixes:
 
-All of constParameterCallback occurences were bogus and
-I think in most cases they will be. So continue to ignore
-it completely but document that we considered it and it
-is not useful.
+* Check for NULL-Bytes in certificate subjects - refuse all such certificates now as 
+  "invalid" (CVE-2026-84790).
+  (Bug reported by Vivek Parikh)
+* TLS handshake with tls-crypt-v2: do not try to add a wrapped client key if no key 
+  material is available (client bug in response to an ill-behaving server).
+  (No CVE assigned as "a malicious server can stop the client from working properly" 
+  is not considered a CVE-worthy security issue according to the CRA guidelines)
+* options: fix unsigned underflow when clearing domain_search_list (CVE-2026-88964)
+  (Bug reported and fix contributed by Cole Munz)
+* win32: stop cmd.exe from expanding variables in quoted arguments (CVE-2026-84256)
+  (Bug reported by Darren Carreras)
 
-All existing cases of constParameter were bogus, but
-there might be useful hits in the future so I only
-suppress the existing occurrences.
+User-visible Changes:
 
-Change-Id: I76c310f9e69276d4f21a4ad31a24490553d6d5c4
-Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
-Acked-by: Gert Doering <gert@greenie.muc.de>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1966
----
+* Certificate validation is now stricter regarding NULL bytes in strings (see 
+  above). This might break existing installations if such certificates exist and 
+  OpenSSL builds are used. mbedTLS builds always rejected this.
+* On a certificate with duplicate fields (multiple CN, for example) OpenSSL builds 
+  would use the last one, mbedTLS builds use the first one - changed in the mbedTLS 
+  build so behaviour is identical.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Bugfixes:
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1966
-This mail reflects revision 5 of this Change.
+* DCO: remove installed iroutes at client exit time, not at delayed multi instance 
+  cleanup time - otherwise there is a race with reconnecting clients, possibly ending 
+  up having "no iroutes installed in the system at all". Bug reported by OpenVPN Inc 
+  Access Server team.
+* DCO Linux: fix remaining races between synchronous netlink operations and incoming 
+  asynchronous notifications, by adding a second netlink socket and strictly
+  separating sync/async operations.
+* Client: refuse incoming pushed option combination of epoch data format with non-AEAD ciphers 
+  (restart session instead of aborting with a fatal error).
+* DCO (Linux and Windows): on failures to set up a new peer or install key materials for a 
+  peer, do not exit OpenVPN with a fatal error. Instead, signal the error up the call-chain and 
+  restart the (multi) instance.
+* The handshake is inherently racy when a peer is removed kernel-side due to transport errors 
+  or timeouts, and userland does not yet know this and wants to, for example, install new keys. 
+  This is fatal for the particular client instance, but must not end the whole server process.
+* DCO: stop fetching peer stats during client disconnect The intention of the original code 
+  was to ensure reported counters are always correct, but it did not work (because at query 
+  time, the peer in kernel is already gone, so we only got an error message) - and very 
+  inefficiently so (because we queried all the peers all the time). End-of-session final counter 
+  values will be implemented properly by a followup patch leveraging counters piggybacked on the 
+  kernel's "DEL_PEER" notification message.
+* p2mp server: improve handling of mbuf lists in the face of broadcast or multicast traffic, 
+  and fix a bug on client exit that could lead to a server queue deadlock in very particular 
+  scenarios.
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@greenie.muc.de>
+Windows MSI changes since 2.7.7-I001:
 
-        
-diff --git a/dev-tools/cppcheck-suppressions.xml b/dev-tools/cppcheck-suppressions.xml
-index bd24c3b..33337cf 100644
---- a/dev-tools/cppcheck-suppressions.xml
-+++ b/dev-tools/cppcheck-suppressions.xml
-@@ -3,23 +3,20 @@
-   <!-- We start with enable=all, but then suppress some issues that have too many
-        occurences right now. They still should be fixed at some point -->
-   <suppress>
--    <id>constParameter</id>
--  </suppress>
--  <suppress>
--    <id>constParameterCallback</id>
--  </suppress>
--  <suppress>
-     <id>unusedFunction</id>
-   </suppress>
-   <suppress>
-     <id>usleepCalled</id>
-   </suppress>
--  <!-- We have a lot of library includes, not all of them are really required,
-+  <!-- These are specific false-positives (FP) or ignored (IGN) issues
-+       We might want to move some of them to inline-suppression to avoid
-+       the static line-numbers -->
-+  <!-- IGN: We have a lot of library includes, not all of them are really required,
-        so ignore them -->
-   <suppress>
-     <id>missingIncludeSystem</id>
-   </suppress>
--  <!-- cppcheck doesn't understand about check_malloc_return, so these are
-+  <!-- FP: cppcheck doesn't understand about check_malloc_return, so these are
-        usually misleading -->
-   <suppress>
-     <id>nullPointerOutOfMemory</id>
-@@ -27,9 +24,6 @@
-   <suppress>
-     <id>nullPointerArithmeticOutOfMemory</id>
-   </suppress>
--  <!-- These are specific false-positives (FP) or ignored (IGN) issues
--       We might want to move some of them to inline-suppression to avoid
--       the static line-numbers -->
-   <!-- IGN: posix.cfg: We are not threadsafe -->
-   <suppress>
-     <id>getgrnamCalled</id>
-@@ -62,6 +56,11 @@
-     <id>badBitmaskCheck</id>
-     <fileName>tests/unit_tests/openvpn/test_pkt.c</fileName>
-   </suppress>
-+  <!-- FP: All occurrences are either external types or types that
-+       explicitly need to be non-const in some variants of the callback -->
-+  <suppress>
-+    <id>constParameterCallback</id>
-+  </suppress>
-   <!-- IGN: we use casts to remove const -->
-   <suppress>
-     <id>constParameterPointer</id>
-@@ -74,6 +73,12 @@
-     <fileName>src/openvpn/buffer.c</fileName>
-     <symbolName>buf</symbolName>
-   </suppress>
-+  <!-- FP: can't change the signature of wmain -->
-+  <suppress>
-+    <id>constParameter</id>
-+    <fileName>src/openvpn/openvpn.c</fileName>
-+    <symbolName>wargv</symbolName>
-+  </suppress>
-   <!-- IGN: external -->
-   <suppress>
-     <id>constParameterPointer</id>
-@@ -81,6 +86,10 @@
-   </suppress>
-   <!-- IGN: too many false-positives due to stubs -->
-   <suppress>
-+    <id>constParameter</id>
-+    <fileName>tests/unit_tests/openvpn*/test_*</fileName>
-+  </suppress>
-+  <suppress>
-     <id>constParameterPointer</id>
-     <fileName>tests/unit_tests/openvpn*/test_*</fileName>
-   </suppress>
+* Update included dco-win driver to v2.8.13
+  * CVE-2026-105390 - a locking flaw allowed a local user with access to the driver's device 
+    to cause a system deadlock and denial of service, hanging the host until it was 
+    power-cycled.
+  * Performance improvements by moving to multi-core data processing.
+  * See <https://github.com/OpenVPN/ovpn-dco-win/releases/tag/2.8.13> for details.
+* Update included OpenSSL to 3.6.5
+* Update included Easy-RSA to 3.2.7
+
+More details can be found in the Changes document:
+
+<https://github.com/OpenVPN/openvpn/blob/v2.7.8/Changes.rst>
+
+Source code and Windows installers can be downloaded from our download page:
+
+<https://openvpn.net/community/>
+
+Packages for Debian, Ubuntu, Fedora, RHEL, and openSUSE are available in the various
+official Community repositories:
+
+<https://community.openvpn.net/Pages/OpenVPN%20software%20repos>
+
+Kind regards,
+-- 
+  Frank Lichtenheld
+
+
+_______________________________________________
+Openvpn-announce mailing list
+Openvpn-announce@lists.sourceforge.net
+https://lists.sourceforge.net/lists/listinfo/openvpn-announce
 
 
 _______________________________________________
