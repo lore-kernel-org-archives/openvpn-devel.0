@@ -4,86 +4,125 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 21466CA6007
-	for <openvpn-devel@archiver.kernel.org>; Thu,  8 Oct 2026 14:14:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 99A96CA600B
+	for <openvpn-devel@archiver.kernel.org>; Thu,  8 Oct 2026 14:36:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=3IXt5uvcmMKbns4xUkxkvtCojzuucG+XQGEOiNINQZ0=; b=Jl95KX3VwItU6SoF5Qq16SCWSy
-	4XyRx3OKcAU/nXLLQBpuBvk8W/eJ1hHvU59zb7yZFSvIwp/wOlrI8q0brwPAkkYqmtW2k2+no7vQJ
-	02H3j8LUFOgl74hYEFLLDb3CqU2Gw5PbGhV+W7FmdwzMBpCYZzrB7d2HMyTSK0hj81vM=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:Message-ID:References:To:Date:Sender:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+	List-Owner; bh=wc0WQE0BPDTcNAZjNgdWgWN0mANTN1KZll21kkLfLkg=; b=AIjcBKgFGFjo95
+	ScWIlCHGomYBHjAqmLBkWYHw6UglmoWNO/imoveQUqRB5sHLVsma5NbjQrEQUIZuOAHyURUnOLtpq
+	bjr5FiDyAid4ON/Ui+IVNXSaxSzk5rrMdU4Swng9UbYDo5rtNjlXg/o2OqS95bTulxsGcKgF1Iv/N
+	Xk4=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xEosk-0006cq-D5;
-	Thu, 08 Oct 2026 14:13:59 +0000
+	id 1xEpEJ-0005go-Bn;
+	Thu, 08 Oct 2026 14:36:20 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <marco@mandelbit.com>) id 1xEosh-0006cg-LN
+ (envelope-from <gerrit@openvpn.net>) id 1xEpEH-0005gg-MK
  for openvpn-devel@lists.sourceforge.net;
- Thu, 08 Oct 2026 14:13:57 +0000
+ Thu, 08 Oct 2026 14:36:18 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
+ :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:
+ From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From:
+ Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=9dXBMqKRJqds65ZetVUyQ+xHWvl7cY8dv+8shcSCK3o=; b=L4awlI1k01uo4D6XImSY6BtG3x
- qDMFcjt+ML1VIM4zzSQWHxif14wnlHohWtXDW1YECAqEwb46RTr5VoI4KKH9e90XYLFsXf249RWXS
- Jt0ywvqkJDH/N9kUpHmvnFFRmosgLt6dpMK1stBCb3Rf9a/kjmIJQ5VG/Em8dVEALFNU=;
+ bh=Lw7Xx7sfCrTZ2KWZzFkBb2GsElbxJE37kNNg4dXxMKs=; b=VZ3Ou5JRwumBmDc+MLJLMA2oU9
+ R2v9BPgN9ByhE/FKn0I8zF7CtO6ozY3ui3MA19g7ZVQ/4umQ85o9+vqUfWaPX4QxSK/C7NgtcOCo2
+ fQX+s0qy6P7/meDUfA9WKoIn6kEuqv1OEolNEJz2Jvxnul2qkR5oIx+LD9Rx4yAqv9RI=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=9dXBMqKRJqds65ZetVUyQ+xHWvl7cY8dv+8shcSCK3o=; b=PjFqzBUBe7/nskvqA2H0KwRzoh
- Zsur6zCUUIXydJlx3T0BO5eF1DMJic2NzeENxnY7TooTpSD5mHqcU6bV7MiqkUCKPrUJoTueOyo8p
- JGIEF7EtLJvlN3xrJevzKwZHybI9W8SVTz9nyTSIDoH1PnzvTux5f41IntdlrisNC7pA=;
-Received: from mout-b-106.mailbox.org ([195.10.208.46])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1xEosd-0000ka-Ti for openvpn-devel@lists.sourceforge.net;
- Thu, 08 Oct 2026 14:13:57 +0000
-Received: from smtp1.mailbox.org (smtp1.mailbox.org
- [IPv6:2001:67c:2050:b231:465::1])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
- key-exchange X25519MLKEM768 server-signature RSA-PSS (4096 bits) server-digest
- SHA256) (No client certificate requested)
- by mout-b-106.mailbox.org (Postfix) with ESMTPS id 4j0sRc0y10zNlgx;
- Thu, 08 Oct 2026 16:13:48 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
- s=MBO0001; t=1791468828;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=9dXBMqKRJqds65ZetVUyQ+xHWvl7cY8dv+8shcSCK3o=;
- b=wggb1eLxLCM6LRIFuhjswTpo0LNWXpDxDv8GRE/o7sijlOrLkv5be/3iHTaxLxYyCQijsN
- bE4CcUQoHU7E8eBjkYSlC8+D3HsPWgC9F1FyuLNQF9/qOIVXgtvSHXiGWDE9CFsz3MknT+
- flayTl3XnD+0FF3w65G3kuMpFsScW8IhIfXv+m0Tsvoph9CzGSwnxzD1v/EJvl9UwA7hix
- 4N/kDsGs6MtYge/a15o+7ECyXvxp7DgQDotYJhEt+Xt7rFxMaoS+7ofUL7esF47sTgXV21
- vi6kJUKfx9r66FB0sUXvB1+NvgulgKW6cP7tIAXTHtKAVHxrlm62URedEXuqHA==
-Authentication-Results: outgoing_mbo_mout; dkim=none;
- spf=pass (outgoing_mbo_mout: domain of marco@mandelbit.com designates
- 2001:67c:2050:b231:465::1 as permitted sender)
- smtp.mailfrom=marco@mandelbit.com
-From: Marco Baffo <marco@mandelbit.com>
-To: openvpn-devel@lists.sourceforge.net
-Date: Thu,  8 Oct 2026 16:13:41 +0200
-Message-ID: <20261008141343.553249-2-marco@mandelbit.com>
-In-Reply-To: <20261008141343.553249-1-marco@mandelbit.com>
-References: <20261008141343.553249-1-marco@mandelbit.com>
+ h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
+ Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:From:Sender:Content-ID
+ :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+ Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=Lw7Xx7sfCrTZ2KWZzFkBb2GsElbxJE37kNNg4dXxMKs=; b=c
+ /rMCLOhz/jfH2Bv7GDpKW0BFajC01KzB60COiJRXfKBtAwZ2zwwzDq/T5OupBMPhR/8++lD4WuR/F
+ Y2H+hSUmuoaXhxAkIrjT6oYZzbTlMlHd2ZxYkwSRX6zUaqQZHQdDqz15lVzUt3XTPdhsNj6DrtiXk
+ 1M0xhD7vMOTfh4Uk=;
+Received: from mail-wm1-f48.google.com ([209.85.128.48])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
+ id 1xEpEG-0004RP-RK for openvpn-devel@lists.sourceforge.net;
+ Thu, 08 Oct 2026 14:36:18 +0000
+Received: by mail-wm1-f48.google.com with SMTP id
+ 5b1f17b1804b1-4a018792ab3so28480015e9.0
+ for <openvpn-devel@lists.sourceforge.net>;
+ Thu, 08 Oct 2026 07:36:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=openvpn.net; s=google; t=1791470170; x=1792074970; darn=lists.sourceforge.net;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
+ :to:date:from:from:to:cc:subject:date:message-id:reply-to
+ :content-type; bh=Lw7Xx7sfCrTZ2KWZzFkBb2GsElbxJE37kNNg4dXxMKs=;
+ b=UyuzEfXBeYQI2ucUV/ptblxP5PyEMYF3re4OO4XYFxFCCFJmZnN6FZABUTME0CYbDi
+ SlK6xNLcaX4to7XF4EogFooombRDDf9BGcvXbz5msolfKcdb8Hk9/UKuMiEncNjntRdP
+ JMGs7efu1lla4+c808j1Py6wWgkQvWrfRG5vdagTK2cNFf2+wZ6Auu1YBj+JicUE1sKb
+ 27CgsdreXQswJLXzA177EUCXTPRcEv55RcD72ef+o4hR9sTXVowfPb2Y4zBhY2Jwfgbn
+ ocDqUXGvo1lQ0cKTLMvPyHJNrjMLGfCKIurdJSXWbx7mp81PT8AhhzI9gpwfaVv+6r+y
+ XQHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20260707; t=1791470170; x=1792074970;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
+ :to:date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+ :message-id:reply-to:content-type;
+ bh=Lw7Xx7sfCrTZ2KWZzFkBb2GsElbxJE37kNNg4dXxMKs=;
+ b=Ck69B3pbGfw+dgnasduBiHHfQr796juwgJeA7etM9M0lqCPUlIHnX5yDj8g4bwibZ1
+ mjyv2YbB9fGXG0649wL2uLZo9xXHHTuFpH6sntiyhkQMCjpNoba7VGfqMSY4rdqJ45XV
+ HxgrY4uSRnAVB4CJqiE8uHxvKvc8vCyqejSugTmdcKkTlgsqCmq5ZfKnIdIQFuTCFrEF
+ jDAwdlwuLGRe6fI+Olb1x6k8CVuWXgzH6fBVX8oKX+MakwWJftpxsAFxer/6q4SQcM+7
+ Ycgb1AAReondJckwZUihN4U3xkTPkaO/jNvRuQqYgIR315n2DxBaD6mCp4yOq/DmBfHN
+ ucyQ==
+X-Gm-Message-State: AFuF++nNVHsoWuRVOYiJDmCe5CGXeJ5sReb+U+2Us+lO313yLktbfl7N
+ R+2HYB793DFeVDL7u9HSODbOQHwwrVaxrteJkggysxg91Ati0J/jI6NJX2giVKs8bks/AI0occF
+ Ym/bwA7/bYI1TCAroHxkDgpqCEIq9tS4XEBioB/qtfpnsGNize/yFFMQz7eZDhyUgTboF
+X-Gm-Gg: AYBFou2+FbYYaR0nGvQK2les0MndMlypJl68UeGoP/rCeSyuYb/1MC3DyGd13Yv8l9l
+ Y07PSOcgTWJXut4zLL00cRopON/zL12V9ImvPrggHa/WsIFa0/gxi/TJwvXEjS0pgCoJUBCiHh2
+ t1il6XZpBqIvPRK+KUEpkzcdJOGUWHOXWi7sz7XR/SutjcJ8J1D9uT9plUEzM7XyP4aqbvE3rlV
+ bQMVK1n0M1cD+8pXorrjxy03K4Wj/Pt1n3HiqpPlUGTXNswIqQlIzQPfm+qL4bRxn9XUJ9PeGM5
+ fZi1SAlyB+yXo6YM3FaXAhKwzQaRYwRVSichxQ/xZkTF/LLM6enD0q/m3uL9ssBXYhM63ZmILbr
+ rPjEDh4Xaf4kN97901UWvwDhLMiweXh2qmyl345Aftib3iTE3kBAZrckW2lrzyJVOeZRc28z4sM
+ 1Ytt28fjA5oduPdgoSa1aLEOZh4/MmNs6htlivRkO0p9NQJICpbxHBNICn79v9DHAwUOfd3OMKU
+ BoE0IXsEEgZdUrRQMAE/zQGZb/A7Or4AunV2sjD98QoGUws4NIRoR2nAx4m+qr3ZIM489M/pNlk
+ inze8+LF7uPKVOQ/VZaqKVojMnaoqJEAF9rQ53JbbfAcrQ7aS0OYduxF6m3E
+X-Received: by 2002:a05:600c:810c:b0:49f:ff73:9971 with SMTP id
+ 5b1f17b1804b1-4a180420274mr103986455e9.18.1791470169275; 
+ Thu, 08 Oct 2026 07:36:09 -0700 (PDT)
+Received: from ip-10-18-1-162.eu-central-1.compute.internal
+ (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
+ by smtp.gmail.com with ESMTPSA id
+ 5b1f17b1804b1-4a17f4482c4sm267700275e9.0.2026.10.08.07.36.08
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 08 Oct 2026 07:36:08 -0700 (PDT)
+X-Google-Original-From: "Frank Lichtenheld (Code Review)"
+ <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
+Date: Thu, 8 Oct 2026 14:36:08 +0000
+To: Arne Schwabe <arne-openvpn@rfc2549.org>
+Auto-Submitted: auto-generated
+X-Gerrit-MessageType: newchange
+X-Gerrit-PatchSet: 1
+X-Gerrit-Change-Id: I47e0741c75832a8f3fe161769feb27ddbfba3cdd
+X-Gerrit-Change-Number: 1987
+X-Gerrit-Project: openvpn
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/1987?usp=email>
+X-Gerrit-Commit: f4ece820dcfb9a84c3ba309abf687f1990e98f59
+References: <gerrit.1791470166000.I47e0741c75832a8f3fe161769feb27ddbfba3cdd@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzkxNDcwMTY2MDAwLkk0N2UwNzQxYzc1ODMyYThmM2ZlMTYxNzY5ZmViMjdkZGJmYmEzY2RkQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <156cec3eec9f475d1b1ee98c5181a6023d6a13c4-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
-X-Rspamd-Queue-Id: 4j0sRc0y10zNlgx
-X-Headers-End: 1xEosd-0000ka-Ti
-Subject: [Openvpn-devel] [PATCH ovpn net-next 1/3] ovpn: use percpu
- references for peers
+User-Agent: Gerrit/3.14.2
+X-Headers-End: 1xEpEG-0004RP-RK
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: buffer: Clean up
+ rm_trailing_chars
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -95,382 +134,376 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+From: "Frank Lichtenheld \(Code Review\) via Openvpn-devel"
+ <openvpn-devel@lists.sourceforge.net>
+Reply-To: frank@lichtenheld.com, arne-openvpn@rfc2549.org,
+ openvpn-devel@lists.sourceforge.net
+Cc: "Frank Lichtenheld \(Code Review\)" <gerrit@openvpn.net>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: multipart/mixed; boundary="===============7847513709359305788=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Ralf Lici <ralf@mandelbit.com>
+--===============7847513709359305788==
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="gGOfprLA6ao="; charset=UTF-8
 
-Each packet holds its peer across packet processing and asynchronous
-crypto completion. When traffic for one peer is spread across several
-CPUs, the shared kref cache line therefore moves between those CPUs for
-every packet.
+--gGOfprLA6ao=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Replace the peer kref with percpu_ref and kill the initial reference
-exactly once after the peer has been removed from its lookup structures
-and detached from its socket. Keep the existing RCU-delayed destruction
-and release the percpu_ref storage in the final RCU callback.
+Attention is currently required from: Arne Schwabe=2E
 
-Use an unconditional percpu_ref_get where the caller already owns a peer
-reference or otherwise excludes teardown. Such callers must remain able
-to extend their existing ownership while the killed reference drains.
-RCU-protected lookup paths instead use percpu_ref_tryget_live_rcu, so
-they stop admitting new users as soon as teardown starts. This
-deliberately makes stale TCP socket lookups fail earlier than
-kref_get_unless_zero, which continued succeeding until the count reached
-zero.
+Hello Arne Schwabe,
+=
 
-percpu_ref_init can fail, so propagate allocation failure from peer
-creation.
+I'd like you to do a code review=2E
+Please visit
 
-This trades a per-CPU counter allocation for a cheaper live data path on
-these long-lived, heavily shared objects. Specifically, in terms of
-memory, this costs: 8 bytes per possible CPU for the counters, a 56-byte
-control object, and 8 additional bytes in struct ovpn_peer.
+    https://gerrit=2Eope=
+nvpn=2Enet/c/openvpn/+/1987?usp=3Demail
 
-In a 32-stream test using one peer and one key, perf c2c placed the peer
-kref cacheline second among system-wide shared cachelines, with 37
-sampled HITM loads attributed to the locked reference update. After this
-change that shared reference line was no longer sampled, while the
-untouched key-slot kref addressed by the next commit remained visible.
-RX used a single receive queue, so only TX exercised CPU fan-out in this
-test.
+to review the following change=2E
+=
 
-Signed-off-by: Ralf Lici <ralf@mandelbit.com>
+
+Change subject: buffer: Clean up rm_trailing_chars
+=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+
+buffer: Clean up rm_trailing_chars=
+
+
+This is very weird code=2E We re-run strlen for
+every char that we delete=
+, even though we actually
+know which char to test next=2E Avoid this=2E
+
+Al=
+so add unit tests to make sure I did not break it=2E
+
+Change-Id: I47e0741c7=
+5832a8f3fe161769feb27ddbfba3cdd
+Signed-off-by: Frank Lichtenheld <frank@lic=
+htenheld=2Ecom>
 ---
- drivers/net/ovpn/io.c      |  6 +-----
- drivers/net/ovpn/netlink.c |  6 +++---
- drivers/net/ovpn/peer.c    | 37 +++++++++++++++++++++++--------------
- drivers/net/ovpn/peer.h    | 37 +++++++++++++++++++++++++++++++------
- drivers/net/ovpn/tcp.c     | 23 +++++++++++------------
- 5 files changed, 69 insertions(+), 40 deletions(-)
+M src/openvpn/buffer=2Ec
+M tests/unit_tests/openvpn/tes=
+t_buffer=2Ec
+2 files changed, 48 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/ovpn/io.c b/drivers/net/ovpn/io.c
-index 9526f8096da60..15072ce960fa4 100644
---- a/drivers/net/ovpn/io.c
-+++ b/drivers/net/ovpn/io.c
-@@ -321,11 +321,7 @@ static bool ovpn_encrypt_one(struct ovpn_peer *peer, struct sk_buff *skb)
- 	/* take a reference to the peer because the crypto code may run async.
- 	 * ovpn_encrypt_post() will release it upon completion
- 	 */
--	if (unlikely(!ovpn_peer_hold(peer))) {
--		DEBUG_NET_WARN_ON_ONCE(1);
--		ovpn_crypto_key_slot_put(ks);
--		return false;
--	}
-+	ovpn_peer_hold(peer);
- 
- 	memset(ovpn_skb_cb(skb), 0, sizeof(struct ovpn_cb));
- 	ovpn_encrypt_post(skb, ovpn_aead_encrypt(peer, ks, skb));
-diff --git a/drivers/net/ovpn/netlink.c b/drivers/net/ovpn/netlink.c
-index 4dad852941982..8cdf46b611425 100644
---- a/drivers/net/ovpn/netlink.c
-+++ b/drivers/net/ovpn/netlink.c
-@@ -463,11 +463,11 @@ int ovpn_nl_peer_new_doit(struct sk_buff *skb, struct genl_info *info)
- 	ovpn_socket_release(peer);
- peer_release:
- 	/* For UDP, the peer is unreachable until added to the hashtables, so
--	 * dropping the initial reference is enough. For TCP, the peer may be
-+	 * killing the initial reference is enough. For TCP, the peer may be
- 	 * concurrently reachable via sk_user_data->peer until
--	 * ovpn_socket_release() detaches; rely on the refcount.
-+	 * ovpn_socket_release() detaches; rely on the percpu reference.
- 	 */
--	ovpn_peer_put(peer);
-+	ovpn_peer_kill(peer);
- 
- 	return ret;
- }
-diff --git a/drivers/net/ovpn/peer.c b/drivers/net/ovpn/peer.c
-index c95656ca7c357..970ca7232ae45 100644
---- a/drivers/net/ovpn/peer.c
-+++ b/drivers/net/ovpn/peer.c
-@@ -22,6 +22,8 @@
- #include "peer.h"
- #include "socket.h"
- 
-+static void ovpn_peer_release_ref(struct percpu_ref *ref);
-+
- static void unlock_ovpn(struct ovpn_priv *ovpn,
- 			 struct llist_head *release_list)
- 	__releases(&ovpn->lock)
-@@ -33,7 +35,7 @@ static void unlock_ovpn(struct ovpn_priv *ovpn,
- 	llist_for_each_entry_safe(peer, next, release_list->first,
- 				  release_entry) {
- 		ovpn_socket_release(peer);
--		ovpn_peer_put(peer);
-+		ovpn_peer_kill(peer);
- 	}
- }
- 
-@@ -113,7 +115,6 @@ struct ovpn_peer *ovpn_peer_new(struct ovpn_priv *ovpn, u32 id)
- 	RCU_INIT_POINTER(peer->bind, NULL);
- 	ovpn_crypto_state_init(&peer->crypto);
- 	spin_lock_init(&peer->lock);
--	kref_init(&peer->refcount);
- 	ovpn_peer_stats_init(&peer->vpn_stats);
- 	ovpn_peer_stats_init(&peer->link_stats);
- 	INIT_WORK(&peer->keepalive_work, ovpn_peer_keepalive_send);
-@@ -127,6 +128,14 @@ struct ovpn_peer *ovpn_peer_new(struct ovpn_priv *ovpn, u32 id)
- 		return ERR_PTR(ret);
- 	}
- 
-+	ret = percpu_ref_init(&peer->refcount, ovpn_peer_release_ref, 0,
-+			      GFP_KERNEL);
-+	if (ret < 0) {
-+		dst_cache_destroy(&peer->dst_cache);
-+		kfree(peer);
-+		return ERR_PTR(ret);
-+	}
-+
- 	netdev_hold(ovpn->dev, &peer->dev_tracker, GFP_KERNEL);
- 
- 	return peer;
-@@ -348,6 +357,7 @@ static void ovpn_peer_release_rcu(struct rcu_head *head)
- 	 * perform it in the RCU callback, when all contexts are done
- 	 */
- 	dst_cache_destroy(&peer->dst_cache);
-+	percpu_ref_exit(&peer->refcount);
- 	kfree(peer);
- }
- 
-@@ -366,12 +376,12 @@ static void ovpn_peer_release(struct ovpn_peer *peer)
- }
- 
- /**
-- * ovpn_peer_release_kref - callback for kref_put
-- * @kref: the kref object belonging to the peer
-+ * ovpn_peer_release_ref - callback for the peer percpu reference
-+ * @ref: the percpu_ref object belonging to the peer
-  */
--void ovpn_peer_release_kref(struct kref *kref)
-+static void ovpn_peer_release_ref(struct percpu_ref *ref)
+
+
+  git pu=
+ll ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/87/1987/1
+
+diff =
+--git a/src/openvpn/buffer=2Ec b/src/openvpn/buffer=2Ec
+index 8f558b1=2E=2E=
+9b87f42 100644
+--- a/src/openvpn/buffer=2Ec
++++ b/src/openvpn/buffer=2Ec
+@@=
+ -592,21 +592,18 @@
+ void
+ rm_trailing_chars(char *str, const char *what_to=
+_delete)
  {
--	struct ovpn_peer *peer = container_of(kref, struct ovpn_peer, refcount);
-+	struct ovpn_peer *peer = container_of(ref, struct ovpn_peer, refcount);
- 
- 	ovpn_peer_release(peer);
+-    bool modified;
+-    do
++    size_t len =3D strlen(str);
++ =
+   while (len > 0)
+     {
+-        const size_t len =3D strlen(str);
+-     =
+   modified =3D false;
+-        if (len > 0)
++        if (strchr(what_to_de=
+lete, str[len - 1]) !=3D NULL)
+         {
+-            char *cp =3D str + (=
+len - 1);
+-            if (strchr(what_to_delete, *cp) !=3D NULL)
+-        =
+    {
+-                *cp =3D '\0';
+-                modified =3D true;
+- =
+           }
++            str[--len] =3D '\0';
+         }
+-    } while (mod=
+ified);
++        else
++        {
++            return;
++        }
++    }
  }
-@@ -569,7 +579,7 @@ ovpn_peer_get_by_transp_addr_p2p(struct ovpn_priv *ovpn,
- 	rcu_read_lock();
- 	tmp = rcu_dereference(ovpn->peer);
- 	if (likely(tmp && ovpn_peer_transp_match(tmp, ss) &&
--		   ovpn_peer_hold(tmp)))
-+		   ovpn_peer_hold_rcu(tmp)))
- 		peer = tmp;
- 	rcu_read_unlock();
+=
  
-@@ -610,7 +620,7 @@ struct ovpn_peer *ovpn_peer_get_by_transp_addr(struct ovpn_priv *ovpn,
- 		if (!ovpn_peer_transp_match(tmp, &ss))
- 			continue;
- 
--		if (!ovpn_peer_hold(tmp))
-+		if (!ovpn_peer_hold_rcu(tmp))
- 			continue;
- 
- 		peer = tmp;
-@@ -641,7 +651,7 @@ static struct ovpn_peer *ovpn_peer_get_by_id_p2p(struct ovpn_priv *ovpn,
- 
- 	rcu_read_lock();
- 	tmp = rcu_dereference(ovpn->peer);
--	if (likely(tmp && tmp->id == peer_id && ovpn_peer_hold(tmp)))
-+	if (likely(tmp && tmp->id == peer_id && ovpn_peer_hold_rcu(tmp)))
- 		peer = tmp;
- 	rcu_read_unlock();
- 
-@@ -671,7 +681,7 @@ struct ovpn_peer *ovpn_peer_get_by_id(struct ovpn_priv *ovpn, u32 peer_id)
- 		if (tmp->id != peer_id)
- 			continue;
- 
--		if (!ovpn_peer_hold(tmp))
-+		if (!ovpn_peer_hold_rcu(tmp))
- 			continue;
- 
- 		peer = tmp;
-@@ -745,7 +755,7 @@ struct ovpn_peer *ovpn_peer_get_by_dst(struct ovpn_priv *ovpn,
- 	if (ovpn->mode == OVPN_MODE_P2P) {
- 		rcu_read_lock();
- 		peer = rcu_dereference(ovpn->peer);
--		if (unlikely(peer && !ovpn_peer_hold(peer)))
-+		if (unlikely(peer && !ovpn_peer_hold_rcu(peer)))
- 			peer = NULL;
- 		rcu_read_unlock();
- 		return peer;
-@@ -763,7 +773,7 @@ struct ovpn_peer *ovpn_peer_get_by_dst(struct ovpn_priv *ovpn,
- 		break;
- 	}
- 
--	if (unlikely(peer && !ovpn_peer_hold(peer)))
-+	if (unlikely(peer && !ovpn_peer_hold_rcu(peer)))
- 		peer = NULL;
- 	rcu_read_unlock();
- 
-@@ -1369,8 +1379,7 @@ static time64_t ovpn_peer_keepalive_work_single(struct ovpn_peer *peer,
- 		netdev_dbg(peer->ovpn->dev,
- 			   "sending keepalive to peer %u\n",
- 			   peer->id);
--		if (WARN_ON(!ovpn_peer_hold(peer)))
--			return 0;
-+		ovpn_peer_hold(peer);
- 		if (!queue_work(ovpn_wq, &peer->keepalive_work))
- 			ovpn_peer_put(peer);
- 	}
-diff --git a/drivers/net/ovpn/peer.h b/drivers/net/ovpn/peer.h
-index dfa5c0037e02b..489bf26466847 100644
---- a/drivers/net/ovpn/peer.h
-+++ b/drivers/net/ovpn/peer.h
-@@ -10,6 +10,7 @@
- #ifndef _NET_OVPN_OVPNPEER_H_
- #define _NET_OVPN_OVPNPEER_H_
- 
-+#include <linux/percpu-refcount.h>
- #include <net/dst_cache.h>
- #include <net/strparser.h>
- 
-@@ -110,7 +111,7 @@ struct ovpn_peer {
- 	struct ovpn_peer_stats link_stats;
- 	enum ovpn_del_peer_reason delete_reason;
- 	spinlock_t lock; /* protects bind  and keepalive* */
--	struct kref refcount;
-+	struct percpu_ref refcount;
- 	struct rcu_head rcu;
- 	struct llist_node release_entry;
- 	struct work_struct keepalive_work;
-@@ -120,14 +121,26 @@ struct ovpn_peer {
-  * ovpn_peer_hold - increase reference counter
-  * @peer: the peer whose counter should be increased
-  *
-- * Return: true if the counter was increased or false if it was zero already
-+ * The caller must already own a peer reference or otherwise guarantee that
-+ * teardown cannot complete while the new reference is acquired.
-  */
--static inline bool ovpn_peer_hold(struct ovpn_peer *peer)
-+static inline void ovpn_peer_hold(struct ovpn_peer *peer)
- {
--	return kref_get_unless_zero(&peer->refcount);
-+	percpu_ref_get(&peer->refcount);
+ /*
+diff --git a/tests/unit_tests/openvpn/test_buffer=2Ec b/tests/unit_te=
+sts/openvpn/test_buffer=2Ec
+index 2945e8a=2E=2Ebf486e0 100644
+--- a/tests/u=
+nit_tests/openvpn/test_buffer=2Ec
++++ b/tests/unit_tests/openvpn/test_buffe=
+r=2Ec
+@@ -435,6 +435,44 @@
  }
  
--void ovpn_peer_release_kref(struct kref *kref);
-+/**
-+ * ovpn_peer_hold_rcu - acquire a live peer reference under RCU
-+ * @peer: peer to acquire
-+ *
-+ * The caller must hold rcu_read_lock.
-+ *
-+ * Return: true if the reference was acquired, false if teardown has started
-+ */
-+static inline bool ovpn_peer_hold_rcu(struct ovpn_peer *peer)
+ void
++test_string_chomp(void **state)
 +{
-+	return percpu_ref_tryget_live_rcu(&peer->refcount);
-+}
- 
- /**
-  * ovpn_peer_put - decrease reference counter
-@@ -135,7 +148,19 @@ void ovpn_peer_release_kref(struct kref *kref);
-  */
- static inline void ovpn_peer_put(struct ovpn_peer *peer)
- {
--	kref_put(&peer->refcount, ovpn_peer_release_kref);
-+	percpu_ref_put(&peer->refcount);
++=
+    char string[10];
++
++    strcpy(string, "Foo\n");
++    chomp(string);
++ =
+   assert_string_equal(string, "Foo");
++
++    strcpy(string, "Foo\r\n\n\r")=
+;
++    chomp(string);
++    assert_string_equal(string, "Foo");
++
++    strcp=
+y(string, "Foo");
++    chomp(string);
++    assert_string_equal(string, "Foo=
+");
++
++    strcpy(string, "F\ro\no");
++    chomp(string);
++    assert_strin=
+g_equal(string, "F\ro\no");
++
++    string[2] =3D '\0';
++    chomp(string);
+=
++    assert_string_equal(string, "F");
++
++    strcpy(string, "");
++    chom=
+p(string);
++    assert_string_equal(string, "");
++
++    strcpy(string, "Foo=
+");
++    rm_trailing_chars(string, "o");
++    assert_string_equal(string, "=
+F");
++
++    strcpy(string, "Foo");
++    rm_trailing_chars(string, "oF");
++ =
+   assert_string_equal(string, "");
 +}
 +
-+/**
-+ * ovpn_peer_kill - drop the peer's initial reference
-+ * @peer: peer which has been unpublished and is being destroyed
-+ *
-+ * This must be called exactly once, after the peer is no longer reachable
-+ * through its owning ovpn instance.
-+ */
-+static inline void ovpn_peer_kill(struct ovpn_peer *peer)
-+{
-+	percpu_ref_kill(&peer->refcount);
- }
- 
- struct ovpn_peer *ovpn_peer_new(struct ovpn_priv *ovpn, u32 id);
-diff --git a/drivers/net/ovpn/tcp.c b/drivers/net/ovpn/tcp.c
-index 8fe8a8e750a40..29981c0279e27 100644
---- a/drivers/net/ovpn/tcp.c
-+++ b/drivers/net/ovpn/tcp.c
-@@ -140,21 +140,18 @@ static void ovpn_tcp_rcv(struct strparser *strp, struct sk_buff *skb)
- 	/* hold reference to peer as required by ovpn_recv().
- 	 *
- 	 * NOTE: in this context we should already be holding a reference to
--	 * this peer, therefore ovpn_peer_hold() is not expected to fail
-+	 * this peer
- 	 */
--	if (WARN_ON(!ovpn_peer_hold(peer)))
--		goto err_nopeer;
-+	ovpn_peer_hold(peer);
- 
- 	ovpn_recv(peer, skb);
- 	return;
- err:
--	/* take reference for deferred peer deletion. should never fail */
--	if (WARN_ON(!ovpn_peer_hold(peer)))
--		goto err_nopeer;
-+	/* take reference for deferred peer deletion */
-+	ovpn_peer_hold(peer);
- 	if (!queue_work(ovpn_wq, &peer->tcp.defer_del_work))
- 		ovpn_peer_put(peer);
- 	ovpn_dev_dstats_rx_dropped(peer->ovpn->dev);
--err_nopeer:
- 	kfree_skb(skb);
- }
- 
-@@ -168,7 +165,8 @@ static int ovpn_tcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 
- 	rcu_read_lock();
- 	sock = rcu_dereference_sk_user_data(sk);
--	if (unlikely(!sock || !sock->peer || !ovpn_peer_hold(sock->peer))) {
-+	if (unlikely(!sock || !sock->peer ||
-+		     !ovpn_peer_hold_rcu(sock->peer))) {
- 		rcu_read_unlock();
- 		return -EBADF;
- 	}
-@@ -385,7 +383,7 @@ static void ovpn_tcp_release(struct sock *sk)
- 	/* during initialization this function is called before
- 	 * assigning sock->peer
- 	 */
--	if (unlikely(!peer || !ovpn_peer_hold(peer))) {
-+	if (unlikely(!peer || !ovpn_peer_hold_rcu(peer))) {
- 		rcu_read_unlock();
- 		return;
- 	}
-@@ -411,7 +409,8 @@ static int ovpn_tcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
- 	lock_sock(sk);
- 	rcu_read_lock();
- 	sock = rcu_dereference_sk_user_data(sk);
--	if (unlikely(!sock || !sock->peer || !ovpn_peer_hold(sock->peer))) {
-+	if (unlikely(!sock || !sock->peer ||
-+		     !ovpn_peer_hold_rcu(sock->peer))) {
- 		rcu_read_unlock();
- 		release_sock(sk);
- 		return -EIO;
-@@ -588,7 +587,7 @@ static void ovpn_tcp_close(struct sock *sk, long timeout)
- 	}
- 
- 	peer = sock->peer;
--	if (!peer || !ovpn_peer_hold(peer)) {
-+	if (!peer || !ovpn_peer_hold_rcu(peer)) {
- 		rcu_read_unlock();
- 		return;
- 	}
-@@ -619,7 +618,7 @@ static __poll_t ovpn_tcp_poll(struct file *file, struct socket *sock,
- 		return 0;
- 	}
- 
--	if (ovpn_peer_hold(ovpn_sock->peer)) {
-+	if (ovpn_peer_hold_rcu(ovpn_sock->peer)) {
- 		peer = ovpn_sock->peer;
- 		queue = &peer->tcp.user_queue;
- 	}
++void
+ test_buffer_chomp(void **st=
+ate)
+ {
+     struct gc_arena gc =3D gc_new();
+@@ -616,6 +654,7 @@
+         =
+cmocka_unit_test(test_character_string_mod_buf),
+         cmocka_unit_test(=
+test_snprintf),
+         cmocka_unit_test(test_checked_snprintf),
++        =
+cmocka_unit_test(test_string_chomp),
+         cmocka_unit_test(test_buffer_=
+chomp),
+         cmocka_unit_test(test_buffer_null_terminate),
+         cmo=
+cka_unit_test(test_buffer_null_predicates),
+
 -- 
-2.43.0
+To view, visit https://ger=
+rit=2Eopenvpn=2Enet/c/openvpn/+/1987?usp=3Demail
+To unsubscribe, or for hel=
+p writing mail filters, visit https://gerrit=2Eopenvpn=2Enet/settings?usp=
+=3Demail
+
+Gerrit-MessageType: newchange
+Gerrit-Project: openvpn
+Gerrit-Bran=
+ch: master
+Gerrit-Change-Id: I47e0741c75832a8f3fe161769feb27ddbfba3cdd
+Gerr=
+it-Change-Number: 1987
+Gerrit-PatchSet: 1
+Gerrit-Owner: Frank Lichtenheld <=
+frank@lichtenheld=2Ecom>
+Gerrit-Reviewer: Arne Schwabe <arne-openvpn@rfc254=
+9=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>=
+
+Gerrit-Attention: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
+
+--gGOfprLA6ao=
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: Arne Schwabe=2E </p>
+<p>Frank Lichtenheld would like =
+Arne Schwabe to <strong>review</strong> this change=2E
+</p><p><a href=3D"ht=
+tps://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1987?usp=3Demail">View Change</a><=
+/p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-s=
+pace: pre-wrap;">buffer: Clean up rm_trailing_chars<br><br>This is very wei=
+rd code=2E We re-run strlen for<br>every char that we delete, even though w=
+e actually<br>know which char to test next=2E Avoid this=2E<br><br>Also add=
+ unit tests to make sure I did not break it=2E<br><br>Change-Id: I47e0741c7=
+5832a8f3fe161769feb27ddbfba3cdd<br>Signed-off-by: Frank Lichtenheld &lt;fra=
+nk@lichtenheld=2Ecom&gt;<br>---<br>M src/openvpn/buffer=2Ec<br>M tests/unit=
+_tests/openvpn/test_buffer=2Ec<br>2 files changed, 48 insertions(+), 12 del=
+etions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospac=
+e,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:=
+29418/openvpn refs/changes/87/1987/1</pre><pre style=3D"font-family: monosp=
+ace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/buffe=
+r=2Ec b/src/openvpn/buffer=2Ec</span><br><span>index 8f558b1=2E=2E9b87f42 1=
+00644</span><br><span>--- a/src/openvpn/buffer=2Ec</span><br><span>+++ b/sr=
+c/openvpn/buffer=2Ec</span><br><span>@@ -592,21 +592,18 @@</span><br><span>=
+ void</span><br><span> rm_trailing_chars(char *str, const char *what_to_del=
+ete)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    bool modified;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   do</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    size_t len=
+ =3D strlen(str);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  while (len &gt; 0)</span><br><span>     {</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-        const size_t len =3D strlen(str);</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        modified =3D false;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (len &gt; 0)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (strchr(what=
+_to_delete, str[len - 1]) !=3D NULL)</span><br><span>         {</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-            char *cp =3D str + (l=
+en - 1);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            i=
+f (strchr(what_to_delete, *cp) !=3D NULL)</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-                *cp =3D &#39;\0&#39;;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-                modified =3D true;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+            str[--len] =3D &#39;\0&#39;;=
+</span><br><span>         }</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    } while (modified);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        else</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+     return;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><=
+span> }</span><br><span> </span><br><span> /*</span><br><span>diff --git a/=
+tests/unit_tests/openvpn/test_buffer=2Ec b/tests/unit_tests/openvpn/test_bu=
+ffer=2Ec</span><br><span>index 2945e8a=2E=2Ebf486e0 100644</span><br><span>=
+--- a/tests/unit_tests/openvpn/test_buffer=2Ec</span><br><span>+++ b/tests/=
+unit_tests/openvpn/test_buffer=2Ec</span><br><span>@@ -435,6 +435,44 @@</sp=
+an><br><span> }</span><br><span> </span><br><span> void</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+test_string_chomp(void **state)</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    char string[10];</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    strcpy(string, &quot;Foo\n&quot;);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    chomp(string);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    assert_string_equal(string, &quot;Foo&quo=
+t;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    strcpy(string, &quot;Foo\r\n\n=
+\r&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    chomp=
+(string);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert=
+_string_equal(string, &quot;Foo&quot;);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    strcpy(string, &quot;Foo&quot;);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    chomp(string);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    assert_string_equal(string, &quot;Foo&quot;);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    strcpy(string, &quot;F\ro\no&quot;);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    chomp(string);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(str=
+ing, &quot;F\ro\no&quot;);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    string[2=
+] =3D &#39;\0&#39;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    chomp(string);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   assert_string_equal(string, &quot;F&quot;);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    strcpy(string, &quot;&quot;);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    chomp(string);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    assert_string_equal(string, &quot;&quot;);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    strcpy(string, &quot;Foo&quot;);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    rm_trailing_chars(string,=
+ &quot;o&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ assert_string_equal(string, &quot;F&quot;);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    strcpy(string, &quot;Foo&quot;);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    rm_trailing_chars(string, &quot;oF&quot;);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(s=
+tring, &quot;&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span> test_buffer_c=
+homp(void **state)</span><br><span> {</span><br><span>     struct gc_arena =
+gc =3D gc_new();</span><br><span>@@ -616,6 +654,7 @@</span><br><span>      =
+   cmocka_unit_test(test_character_string_mod_buf),</span><br><span>       =
+  cmocka_unit_test(test_snprintf),</span><br><span>         cmocka_unit_tes=
+t(test_checked_snprintf),</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        cmocka_unit_test(test_string_chomp),</span><br><span>        =
+ cmocka_unit_test(test_buffer_chomp),</span><br><span>         cmocka_unit_=
+test(test_buffer_null_terminate),</span><br><span>         cmocka_unit_test=
+(test_buffer_null_predicates),</span><br></pre><p>To view, visit <a href=3D=
+"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1987?usp=3Demail">change 1987</=
+a>=2E To unsubscribe, or for help writing mail filters, visit <a href=3D"ht=
+tps://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div =
+itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope item=
+prop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=
+=3D"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1987?usp=3Demai=
+l"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div sty=
+le=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"dis=
+play:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Ger=
+rit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I4=
+7e0741c75832a8f3fe161769feb27ddbfba3cdd </div>
+<div style=3D"display:none">=
+ Gerrit-Change-Number: 1987 </div>
+<div style=3D"display:none"> Gerrit-Patc=
+hSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: Frank Lichtenheld=
+ &lt;frank@lichtenheld=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit=
+-Reviewer: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div styl=
+e=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esour=
+ceforge=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: Arn=
+e Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+
+</body></html>
+--gGOfprLA6ao=--
 
 
+--===============7847513709359305788==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============7847513709359305788==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+--===============7847513709359305788==--
+
