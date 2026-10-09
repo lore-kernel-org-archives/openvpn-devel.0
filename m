@@ -4,86 +4,67 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 549C2CA6015
-	for <openvpn-devel@archiver.kernel.org>; Fri,  9 Oct 2026 16:18:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 59859CA9EBD
+	for <openvpn-devel@archiver.kernel.org>; Fri,  9 Oct 2026 17:05:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=AFIRoYXSP9ojy158tQ809DUgdxGA+gyaqUIygVvXQPE=; b=gVKmWMq/FaVP5TGk1rar6ObTcE
-	WC/eKeJckN4Rtnp3fVa/XoHUF5DnhGT5e2P6zblUjcsrjFvCQur9LNacDAKVGn5L6EQo0KL62fbLp
-	YCKcUrv/iYA0t/5uLuVWgRIE6KIMPO8hB/Tanp8NHmi2vrgo4QEUq1mI+BMM0KQ/3i3A=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=AwblQdjBXFGQVIJ0ubglvnys4XpfNGJLw0WZXVIMgic=; b=bYrPqBOYmiGpxkV3OjRn+YB68O
+	n0eS72mSB25WNqIpiz09MVxU60ucNl2NgcsfUF142wR+2xFwC7iWxEFAF5h87+LUVkPOMqGy2zHzf
+	pR3Cen3a5qPeJpNOeDRzQILeH/eOqmYLkhWf8GQmLSc7Jq8UBcVCfH8a73M354D9ZIvQ=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xFDIK-0003w1-U4;
-	Fri, 09 Oct 2026 16:18:05 +0000
+	id 1xFE1y-0003rf-15;
+	Fri, 09 Oct 2026 17:05:11 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <frank@lichtenheld.com>) id 1xFDI8-0003vb-9f
+ (envelope-from <gert@blue4.greenie.muc.de>) id 1xFE1v-0003rW-3K
  for openvpn-devel@lists.sourceforge.net;
- Fri, 09 Oct 2026 16:17:53 +0000
+ Fri, 09 Oct 2026 17:05:08 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+ In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=2Z5KaH/6hotUsdOkhxhUjMnKmDtljGRc8x+L1LlpurY=; b=kD7voPRMlbensyZBDSp5miapbC
- MjgQf/tORjwwrozAnQUCUIl5YgPq2TyhK9/NrZbAkc1e9sK6TeARxbtcRRGcGzSIsOLPNQ3WAByMD
- uEEStOKUri84AD+gE9SzYkbR+mR7Z0pg5Ubsc7zDTWnuEGMyhF4gAo7YLpGLz5E+FDdo=;
+ bh=00+qj1lbPPK86bBpoGYJvT2fTdUI/QctV25BDN31skE=; b=EO3+c7tWlD0A4WOrTklC+FXSZs
+ E2gWcNTPP1EC+lGRmQZ6PlWoBEtCYahbTjqWLV/U4Dhu0H7/uh9YDI6J+QmG+fLhjmTiaMYTOC1/J
+ F9DRHOOo+Po4uH0bhSVU8xxOoPL/rbb2pk8MoAsVBq2QdFYrVj05QUACG5UqTADw6/o8=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+ Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=2Z5KaH/6hotUsdOkhxhUjMnKmDtljGRc8x+L1LlpurY=; b=NRNOMHby2xaExAtRJIkEGpN3YX
- 4pXqmt89ZW4mYtYstNsY9zsDF8a58o0p1E9xk/ppiZM7u1ge1BocxMJMtBFAYIANnCtmIhM9piV47
- MH4Ej4sYRArKbEcBOK0NSdnDx2sjS5deN/V2N+mPsMLcZy3+APgbSTiTQE/iMdQS4i7A=;
-Received: from mout-p-103.mailbox.org ([80.241.56.161])
+ bh=00+qj1lbPPK86bBpoGYJvT2fTdUI/QctV25BDN31skE=; b=nWAaHO2DfZTFs8HVkz7j94b5Ef
+ eky0jg4KOfqw6dEr4LeVUyFjDKCbF5IYu0Uf/UHf1vAItaAw3x1TqktVZ95aPwpP3GicAg4nIYcA1
+ 8AIT6FeyfraF0rgoMUirWNCKsQyW/4UhnMgJm1P5oLRXhdMyFdrquxxaF2emC/YK5j+g=;
+Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1xFDI7-0005Fh-AB for openvpn-devel@lists.sourceforge.net;
- Fri, 09 Oct 2026 16:17:52 +0000
-Received: from smtp102.mailbox.org (smtp102.mailbox.org
- [IPv6:2001:67c:2050:b231:465::102])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
- key-exchange X25519MLKEM768 server-signature RSA-PSS (4096 bits) server-digest
- SHA256) (No client certificate requested)
- by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4j1X865R27zKnT6
- for <openvpn-devel@lists.sourceforge.net>;
- Fri, 09 Oct 2026 18:17:42 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lichtenheld.com;
- s=MBO0001; t=1791562662;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=2Z5KaH/6hotUsdOkhxhUjMnKmDtljGRc8x+L1LlpurY=;
- b=IlrsbZ9XxiOxOAOt7fMxLKWUYXXu7QzkdnhGF81uutMxrkPTCHQ91PrHE2miTFsU2nF933
- +PS1CoCsvw6M7FEMkW+kXnzDu0tUAPTPnT/eqxMo+AK44XUxvis5J6bRcAeopy0DugmqOb
- c3101sk8WX77LPd/+GjvKXPbtlpxyk0J8MJ6oVJ9ILzH0it2GqetNW0fOGKqXUWb8Md+da
- TSKYIJo9KoTB2NqFJUicsWZ8zgFZIRl9BpbPiFT4AY/gfmZpNkg+EeWQTaD95PsxpWxaxi
- Jwrg+sSGs8E9YwR8RtL0OUMG3AIX6Nih5fTaYe3aPS1DcGoykONVn49/aifFeA==
-Authentication-Results: outgoing_mbo_mout; dkim=none;
- spf=pass (outgoing_mbo_mout: domain of frank@lichtenheld.com designates
- 2001:67c:2050:b231:465::102 as permitted sender)
- smtp.mailfrom=frank@lichtenheld.com
-From: Frank Lichtenheld <frank@lichtenheld.com>
+ id 1xFE1q-0006I0-FU for openvpn-devel@lists.sourceforge.net;
+ Fri, 09 Oct 2026 17:05:08 +0000
+Received: from blue.greenie.muc.de (localhost [127.0.0.1])
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 699H4xec016645
+ for <openvpn-devel@lists.sourceforge.net>; Fri, 9 Oct 2026 19:04:59 +0200
+Received: (from gert@localhost)
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 699H4x0h016644
+ for openvpn-devel@lists.sourceforge.net; Fri, 9 Oct 2026 19:04:59 +0200
+From: Gert Doering <gert@greenie.muc.de>
 To: openvpn-devel@lists.sourceforge.net
-Date: Fri,  9 Oct 2026 18:17:41 +0200
-Message-ID: <20261009161741.79370-1-frank@lichtenheld.com>
-X-Mailer: git-send-email 2.43.0
+Date: Fri,  9 Oct 2026 19:04:52 +0200
+Message-ID: <20261009170458.16623-1-gert@greenie.muc.de>
+X-Mailer: git-send-email 2.53.0
 In-Reply-To: <gerrit.1787928357000.I07b373851175d865abdb1513f90655b3fa31d5fa@gerrit.openvpn.net>
 References: <gerrit.1787928357000.I07b373851175d865abdb1513f90655b3fa31d5fa@gerrit.openvpn.net>
 MIME-Version: 1.0
-X-Rspamd-Queue-Id: 4j1X865R27zKnT6
-X-Headers-End: 1xFDI7-0005Fh-AB
+X-Headers-End: 1xFE1q-0006I0-FU
 Subject: [Openvpn-devel] [PATCH v2] t_client.sh.in: Check whether addresses
  are in "tentative" state
 X-BeenThere: openvpn-devel@lists.sourceforge.net
@@ -100,6 +81,8 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
+
+From: Frank Lichtenheld <frank@lichtenheld.com>
 
 We see this sometimes with IPv6 addresses (especially
 in t_server context). Make sure we wait until the
