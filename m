@@ -4,69 +4,69 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 59859CA9EBD
-	for <openvpn-devel@archiver.kernel.org>; Fri,  9 Oct 2026 17:05:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E6D60CA9EC7
+	for <openvpn-devel@archiver.kernel.org>; Sun, 11 Oct 2026 14:20:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
-	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	MIME-Version:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
+	List-Unsubscribe:List-Id:Subject:References:In-Reply-To:To:From:Message-Id:
+	Date:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=AwblQdjBXFGQVIJ0ubglvnys4XpfNGJLw0WZXVIMgic=; b=bYrPqBOYmiGpxkV3OjRn+YB68O
-	n0eS72mSB25WNqIpiz09MVxU60ucNl2NgcsfUF142wR+2xFwC7iWxEFAF5h87+LUVkPOMqGy2zHzf
-	pR3Cen3a5qPeJpNOeDRzQILeH/eOqmYLkhWf8GQmLSc7Jq8UBcVCfH8a73M354D9ZIvQ=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=pcTcLVfAhWqRP9B8yQ96IROHSL3KLR94c3NnVSuoK0E=; b=ebhnoFOgrsAeU0VbjPgM226lfq
+	3sjr09HkSoYPPguCuygkdXTgSrqhhNdAhwIrhK0Y0uhOtmUDVzg4MVwg8yqVVinS6Z2ePk/SG45JK
+	lgs8JiYG0y7pijZqStUBN3RlZOS111vtHBRP6dLU8/IABS5UnPxw1p+TVX4zciYelMEQ=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xFE1y-0003rf-15;
-	Fri, 09 Oct 2026 17:05:11 +0000
+	id 1xFuPm-0005RY-2G;
+	Sun, 11 Oct 2026 14:20:38 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1xFE1v-0003rW-3K
+ (envelope-from <gert@chekov.greenie.muc.de>) id 1xFuPT-0005Pv-JV
  for openvpn-devel@lists.sourceforge.net;
- Fri, 09 Oct 2026 17:05:08 +0000
+ Sun, 11 Oct 2026 14:20:20 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=00+qj1lbPPK86bBpoGYJvT2fTdUI/QctV25BDN31skE=; b=EO3+c7tWlD0A4WOrTklC+FXSZs
- E2gWcNTPP1EC+lGRmQZ6PlWoBEtCYahbTjqWLV/U4Dhu0H7/uh9YDI6J+QmG+fLhjmTiaMYTOC1/J
- F9DRHOOo+Po4uH0bhSVU8xxOoPL/rbb2pk8MoAsVBq2QdFYrVj05QUACG5UqTADw6/o8=;
+ d=sourceforge.net; s=x; h=References:In-Reply-To:Subject:Cc:To:From:
+ Message-Id:Date:Sender:Reply-To:MIME-Version:Content-Type:
+ Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+ List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=yAWVD10gyG4UekG3W+NkZn1ofbkq0PIJRUKf02lkuwc=; b=gFLRA2RNWR3GAtkYMEXDfGh5tT
+ z0u4FBc8Epwxp1Tqx0uXjhid1Ao/nIqBRZAITwTNU6apzpvYwDD1V6Vf1Ok6ABvJqe8blmM+UQhr2
+ 157dEVBbr3MHRZpbyF7dTzqq5LUu9jpS82b4RaXqZU6xqeMpYoH4SnN1pxyj5psS7k3s=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ h=References:In-Reply-To:Subject:Cc:To:From:Message-Id:Date:Sender:Reply-To
+ :MIME-Version:Content-Type:Content-Transfer-Encoding:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=00+qj1lbPPK86bBpoGYJvT2fTdUI/QctV25BDN31skE=; b=nWAaHO2DfZTFs8HVkz7j94b5Ef
- eky0jg4KOfqw6dEr4LeVUyFjDKCbF5IYu0Uf/UHf1vAItaAw3x1TqktVZ95aPwpP3GicAg4nIYcA1
- 8AIT6FeyfraF0rgoMUirWNCKsQyW/4UhnMgJm1P5oLRXhdMyFdrquxxaF2emC/YK5j+g=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ bh=yAWVD10gyG4UekG3W+NkZn1ofbkq0PIJRUKf02lkuwc=; b=BTgjgaylfccZoO0aqRv+z3qSFH
+ 1G5r6DOv/oKPeMIRPuob5PJb4+l5GWYda8qnuft96MjJo9Qu+GfU3CgvVZ/5YarBQVRlXbSkrY6g8
+ d+xON4GusLGiGgrAr855sBizgjQlL5ni4dQ5f6UCokGFVFL8McmkaIniI0U/1Vf80GkY=;
+Received: from chekov.greenie.muc.de ([193.149.48.178])
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1xFE1q-0006I0-FU for openvpn-devel@lists.sourceforge.net;
- Fri, 09 Oct 2026 17:05:08 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 699H4xec016645
- for <openvpn-devel@lists.sourceforge.net>; Fri, 9 Oct 2026 19:04:59 +0200
+ id 1xFuPS-0003mT-G3 for openvpn-devel@lists.sourceforge.net;
+ Sun, 11 Oct 2026 14:20:20 +0000
+Received: from chekov.greenie.muc.de (localhost [IPv6:0:0:0:0:0:0:0:1])
+ by chekov.greenie.muc.de (8.18.2/8.18.1) with ESMTP id 69BEKBpr029969;
+ Sun, 11 Oct 2026 16:20:11 +0200 (CEST)
+ (envelope-from gert@chekov.greenie.muc.de)
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 699H4x0h016644
- for openvpn-devel@lists.sourceforge.net; Fri, 9 Oct 2026 19:04:59 +0200
+ by chekov.greenie.muc.de (8.18.2/8.18.1/Submit) id 69BEKBmF029968;
+ Sun, 11 Oct 2026 16:20:11 +0200 (CEST) (envelope-from gert)
+Date: Sun, 11 Oct 2026 16:20:11 +0200 (CEST)
+Message-Id: <202610111420.69BEKBmF029968@chekov.greenie.muc.de>
 From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Fri,  9 Oct 2026 19:04:52 +0200
-Message-ID: <20261009170458.16623-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <gerrit.1787928357000.I07b373851175d865abdb1513f90655b3fa31d5fa@gerrit.openvpn.net>
-References: <gerrit.1787928357000.I07b373851175d865abdb1513f90655b3fa31d5fa@gerrit.openvpn.net>
-MIME-Version: 1.0
-X-Headers-End: 1xFE1q-0006I0-FU
-Subject: [Openvpn-devel] [PATCH v2] t_client.sh.in: Check whether addresses
- are in "tentative" state
+To: Arne Schwabe <arne@rfc2549.org>
+X-Patchwork-State: Accepted
+In-Reply-To: <20261009101429.10505-1-gert@greenie.muc.de>
+References: <20261009101429.10505-1-gert@greenie.muc.de>
+X-Headers-End: 1xFuPS-0003mT-G3
+Subject: [Openvpn-devel] [PATCH applied] Re: Add lookup of multi session by
+ session id
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -78,98 +78,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Cc: openvpn-devel@lists.sourceforge.net
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@lichtenheld.com>
+I have lightly stared at the code changes.  Antonio has very carefully
+stared before +2'ing :-) - testing on the t_server testbed and on a
+Linux/DCO system against a gremlin horde did not show any problems.
 
-We see this sometimes with IPv6 addresses (especially
-in t_server context). Make sure we wait until the
-tentative state is removed. Otherwise we might get
-spurious failures on comparing state.
+I also did "make distcheck" since new files appeared (sid_hash.h) ;-)
+- all good there.
 
-Change-Id: I07b373851175d865abdb1513f90655b3fa31d5fa
-Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
-Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1882
----
+Good stuff, needs to get more exposure!
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+(And now we can make room for Giaan & Antonio to do more fixes related
+to multi.c, multi_io.c, mudp.c, mtcp.c, what-goes-where, etc.)
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1882
-This mail reflects revision 2 of this Change.
+Your patch has been applied to the master branch.
 
-Acked-by according to Gerrit (reflected above):
-Razvan Cojocaru <razvanc@mailbox.org>
+commit 66f8cdb9fd0b0334b6d79016b9d02cfceb6887d7
+Author: Arne Schwabe
+Date:   Fri Oct 9 12:14:23 2026 +0200
 
-        
-diff --git a/tests/t_client.sh.in b/tests/t_client.sh.in
-index 0568007..5e924bb 100755
---- a/tests/t_client.sh.in
-+++ b/tests/t_client.sh.in
-@@ -264,6 +264,27 @@
- }
- 
- # ----------------------------------------------------------
-+# check ifconfig output on whether some address is in "tentative" state
-+# repeats calling get_ifconfig_route until it does not
-+#  arg1: log file
-+check_tentative_state()
-+{
-+    logfile="$1"
-+    network_tentative_check=0
-+    while grep -q tentative $logfile; do
-+        output "waiting for tentative state to end ($network_tentative_check)"
-+        if [ "$network_tentative_check" -ge 30 ]; then
-+            fail "network interface stuck in tentative state"
-+            return 1
-+        fi
-+        sleep 1
-+        network_tentative_check=$((network_tentative_check + 1))
-+        get_ifconfig_route >$logfile
-+    done
-+    return 0
-+}
-+
-+# ----------------------------------------------------------
- # check ifconfig
- #  arg1: "4" or "6" -> for message
- #  arg2: IPv4/IPv6 address that must show up in out of "get_ifconfig_route"
-@@ -392,6 +413,10 @@
- 
-     output "save pre-openvpn ifconfig + route"
-     get_ifconfig_route >$LOGDIR/$SUF:ifconfig_route_pre.txt
-+    if ! check_tentative_state $LOGDIR/$SUF:ifconfig_route_pre.txt; then
-+        printf "$outbuf"
-+        exit 1
-+    fi
- 
-     output "\nrun pre-openvpn ping tests - targets must not be reachable..."
-     run_ping_tests 4 want_fail "$ping4_hosts"
-@@ -498,6 +523,10 @@
-     # compare whether anything changed in ifconfig/route setup?
-     output "save ifconfig+route"
-     get_ifconfig_route >$LOGDIR/$SUF:ifconfig_route.txt
-+    if ! check_tentative_state $LOGDIR/$SUF:ifconfig_route.txt; then
-+        printf "$outbuf"
-+        exit 1
-+    fi
- 
-     if [ "$expect_ifconfig4" = "-" ]; then
-         output "skip ifconfig+route check"
-@@ -535,6 +564,10 @@
- 
-     output "\nsave post-openvpn ifconfig + route..."
-     get_ifconfig_route >$LOGDIR/$SUF:ifconfig_route_post.txt
-+    if ! check_tentative_state $LOGDIR/$SUF:ifconfig_route_post.txt; then
-+        printf "$outbuf"
-+        exit 1
-+    fi
- 
-     output -n "compare pre- and post-openvpn ifconfig + route..."
-     if diff $LOGDIR/$SUF:ifconfig_route_pre.txt \
+     Add lookup of multi session by session id
+
+     Signed-off-by: Arne Schwabe <arne@rfc2549.org>
+     Acked-by: Antonio Quartulli <antonio@mandelbit.com>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1727
+     Message-Id: <20261009101429.10505-1-gert@greenie.muc.de>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg39817.html
+     Signed-off-by: Gert Doering <gert@greenie.muc.de>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
 
 _______________________________________________
