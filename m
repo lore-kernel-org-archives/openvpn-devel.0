@@ -4,68 +4,129 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 123B4CCA462
-	for <openvpn-devel@archiver.kernel.org>; Fri, 16 Oct 2026 08:07:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D8F4CCCA464
+	for <openvpn-devel@archiver.kernel.org>; Fri, 16 Oct 2026 08:44:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=YzoUSCmmlWbAojv74M6It/pV+AQUqP0ej2I2w4WEHjM=; b=M/4I5jRHcxsii2WkLDub8mA958
-	2e+R2Y6H2W4YhSj1vOsUVGIVXTDTZ6Z9e/+4sSLIC9PNzcnzPGZbJbWAEG6QH7hMcKG/EURI6igh9
-	8rqAZCdaReIkOyWjVLPF1a86bEPmAPfEL1LBpJHR/p1DPcrRXu9jayOsYUaOoehYajF8=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	bh=MRPygsTEc9deMeRwuluyg5SfD11U9EqkEH6+iX/OYqs=; b=GBUxTrqtx15whetfyM09x57dz9
+	mIeO4snwMNsKeypvCFJ6k77C+SxLTRzXfTK39tyIYucOEcdDkoYHVqFxKKLs7wT6plkIEg6yI0YOc
+	qEP0s3R3wzwyUQ3XwsI90ROUtOZiMqSk+S5H2cL0vbUTAp/ficw3eaRmpbvp7l+oVlx0=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xHcyH-0003wI-Dc;
-	Fri, 16 Oct 2026 08:07:22 +0000
+	id 1xHdYC-0003Rb-Ex;
+	Fri, 16 Oct 2026 08:44:28 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1xHcxw-0003vl-LL
+ (envelope-from <gerrit@openvpn.net>) id 1xHdXz-0003RO-QV
  for openvpn-devel@lists.sourceforge.net;
- Fri, 16 Oct 2026 08:07:01 +0000
+ Fri, 16 Oct 2026 08:44:15 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=VvjfeOKL3sZYEmwMTIa2x1m+dmhPha2V7tKjogZrOyo=; b=feDm9XhwTSxpMqVmnOAGogspkW
- M4UViTS7CNL3eHM+AezQ+A3CMVszQHC+8GdKbz1q2taBnmcFXfakUYUgzp075rdechvJa9amdtwNc
- enWEYvDOQkLDiaP3ji2iLEirZ+6D8BcWdlF2/49ZB0WAZMOOaU0QNl+k+4mj9/G7aWX8=;
+ d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
+ :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
+ Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
+ :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
+ :List-Post:List-Owner:List-Archive;
+ bh=mOZZe1Jz0B1odZBJYTELQdJ+yQ/5SxS2vYwIr7DsXRc=; b=mpa5FbKglt/Anva1JuqBWwyvs3
+ UjJADhNBdzehq2to4byIeIa7T+fbATdLN+659LFsuBvCJxvB3jXg10x0r0EqzXX+xedAfSTPgfH6Z
+ MDYZyleyI+U8O5yxxhlBDhbxkzKeeoJWZb4mL13qxM/cs/rAfuoBT4agK5y5JXbC8Lm4=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=VvjfeOKL3sZYEmwMTIa2x1m+dmhPha2V7tKjogZrOyo=; b=crWiJQ5TBKvC966LanX4E664nb
- KX9TxA2fxtEa+T1WeRN3vxLsof978o9FzPMe981GQvacEmO/R4ajIiaAlsjagy8r4sdumJDFLkFF8
- ncekNxrwgcR6/HvFIVkOKG+pBMS0dbW6aJk8FLVr/3lPXeBJmE1l+q+bGkYl5hZTiaAg=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
+ Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=mOZZe1Jz0B1odZBJYTELQdJ+yQ/5SxS2vYwIr7DsXRc=; b=h
+ 4tRiDtDHZ3DF1lRQjXunMj/hrGmes6wQwQL/cXCI33qF/vzTmthz//SJjKm2fxvNVkREkfn7sjjc2
+ BSF1UxK2PM0Cn3i7CjzO0VuhuEEBGb4Rs+GcD2VMwbB+RhpvvAYNA6srqdn0KzQve/B6ICQNMyREg
+ 18uVKVj9egmSCBho=;
+Received: from mail-wm1-f50.google.com ([209.85.128.50])
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1xHcxn-0007Nf-OD for openvpn-devel@lists.sourceforge.net;
- Fri, 16 Oct 2026 08:06:55 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 69G86ifr023205
- for <openvpn-devel@lists.sourceforge.net>; Fri, 16 Oct 2026 10:06:44 +0200
-Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 69G86i7f023204
- for openvpn-devel@lists.sourceforge.net; Fri, 16 Oct 2026 10:06:44 +0200
-From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Fri, 16 Oct 2026 10:06:38 +0200
-Message-ID: <20261016080644.23188-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <gerrit.1774451380000.I79b2dc4a550b1c5068a45407976b0dfc2f765b33@gerrit.openvpn.net>
-References: <gerrit.1774451380000.I79b2dc4a550b1c5068a45407976b0dfc2f765b33@gerrit.openvpn.net>
+ (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
+ id 1xHdXx-0001AI-Ui for openvpn-devel@lists.sourceforge.net;
+ Fri, 16 Oct 2026 08:44:15 +0000
+Received: by mail-wm1-f50.google.com with SMTP id
+ 5b1f17b1804b1-4a1635f7c89so28948775e9.2
+ for <openvpn-devel@lists.sourceforge.net>;
+ Fri, 16 Oct 2026 01:44:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=openvpn.net; s=google; t=1792140247; x=1792745047; darn=lists.sourceforge.net;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
+ :reply-to:content-type;
+ bh=mOZZe1Jz0B1odZBJYTELQdJ+yQ/5SxS2vYwIr7DsXRc=;
+ b=EczKl4H2+w+NaaHPG1ux2qQis/bAouM91OQVRmqTCgXCndbf+fV2Hm+sy/wfcD2Q7U
+ vmj39U221SeL1o068c14zvcszphE9D0Ade5FOwKIH+90TlBSb6xnPr/JiiER1HU2nkaM
+ AFpoF+BdT+BHS/pUli3K1nqqDXkBUWpjQ6Y+rPXnYheUdfbjr9hLK0Giv2OkHEbeFMUe
+ +Enkj1OtShBbSpGGaJce1XlbamIZ06I6WJ5TKW+hDTQyxt1J21fejLCfddb7saE7Zrqe
+ Xu0ol9pRan3P+MpnQNN7kidBFVMTQLROg2/uU1qYw6bB/QlhFBgrWsBfmQEgzhKjOqiB
+ UWqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20260707; t=1792140247; x=1792745047;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
+ :cc:subject:date:message-id:reply-to:content-type;
+ bh=mOZZe1Jz0B1odZBJYTELQdJ+yQ/5SxS2vYwIr7DsXRc=;
+ b=dp+R/CXXwQL4WXwFPrmh0PKTcP8/fepBS4CDXrmUao7yxQFwxaLrHXWQI1RW7Bpbnx
+ 2zBdEbsBAZV+xN1j3SnOHamG2vEulXDCwmDwIh6py1IO+tOQpf9M+kyVwBEy9ArPEXOE
+ mZxH29bOXKfRNvOsUeRbid/NcnkfAvVEVuHDXyW8+pr5QZYNXL9xMlSPpxcSIHxe9kfI
+ 8e+c32EGc1YcMQ1xupiNsynT55GrJGUr1Rg02mO4Qa0tAQJ9IxYpkskQdVjGUqQBA2sB
+ WmseGDnKiZQJbKT2cmi3gFCG+T4bfl4H5462rV586wL5JFLS/zqcfzOdyTdd4K/nFwJD
+ jWug==
+X-Forwarded-Encrypted: i=1;
+ AKwUvByf1CXIAzRRP0AHK4EtJTwspORqA1HQBizD7yBcoTqiSTSyBAGrX6jENVlCQhfcbcELYLOjoK/+Ji6ZOc4V@lists.sourceforge.net
+X-Gm-Message-State: AFq9FYKpIqLJ+vzW4EiPCpynfmoa3u3o5qSzGeyhHLK+02ipy4np5BSU
+ zkGYLXPkeeQHFfwh8lH51oqlFSbB9l78nTpo7ASkx4/JOS8v4hF/fh4nGuQ21SioHLFBsKppk8E
+ CKjQpftlv9ioJrwYqmdgnrx6AK6FKHgpn5N+TpBRmHyh+xOyQ56nu3GoVaRyIjMFt5Tj7
+X-Gm-Gg: AYBFou0Ph4/ZBarfhdUJJQiOaI6yC6dSBbw3AdSCWFJouKM1xpFdbBa0uKSFJ8hAYpq
+ PplobehU8mf8eQzQGPiMsmruoyUz/d2/sTV0p+OQVembnReJysJot8I/gtOvw4OiV3GCkpX26P9
+ 63Rv+BGnGGSNzrozNsmdtj6TIzaQIhHPRMaPim4GiyJgxqCYqvojF1Z1siIwhSttVofuAu6D5E+
+ nLcrUnV6XlmZJMqr95cijY30LzqF7wCU3OqkFBctACVzAmBFT/QYnt+4cKL+KelwztwFiiz8WeG
+ O0npJMxTUPqbSrJpPcSrZBXj/hASkmcsPsjAnHMxhwZq5tsaSRDtEECFRvaE07vHKogBDBDOdRz
+ K/IpGMCohpQKE+THJbdldxQZG7pt7xfZA1HuuZROxbjZ0TtK3Gmdsdo7rSEq/0++VUhJiXDTONG
+ d5zmzy6ALXpp0YyKPk1oz6nO64ZQej2DGRFBukN2tTWdzKt333BTQzH7c9T+DuazyttX2x1LNBB
+ w1LQpvFsPFwHDxsXN8O1prMPKCXTK7cBDELxNFIsAztsGE2Nuny2a/nyQZUYgd1ZPsZR2+lVSdg
+ D8JJD6xAiNPe4LeFViAt1w2rmNeIBeYLMmgsxSXpH2Uzbp0xiw0K+xtW1ku+
+X-Received: by 2002:a05:600c:8106:b0:4a0:c02:938c with SMTP id
+ 5b1f17b1804b1-4a18e4d683dmr446510725e9.25.1792140247176; 
+ Fri, 16 Oct 2026 01:44:07 -0700 (PDT)
+Received: from ip-10-18-1-162.eu-central-1.compute.internal
+ (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
+ by smtp.gmail.com with ESMTPSA id
+ 5b1f17b1804b1-4a1c1eb3907sm111299265e9.7.2026.10.16.01.44.06
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 16 Oct 2026 01:44:06 -0700 (PDT)
+X-Google-Original-From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?=
+ <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
+Date: Fri, 16 Oct 2026 08:44:05 +0000
+To: Frank Lichtenheld <frank@lichtenheld.com>
+Auto-Submitted: auto-generated
+X-Gerrit-MessageType: comment
+X-Gerrit-PatchSet: 2
+X-Gerrit-Change-Id: I5ee597fb3b9efb93dbe19458ae6e7580d27ae3d2
+X-Gerrit-Change-Number: 1993
+X-Gerrit-Project: openvpn
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/1993?usp=email>
+X-Gerrit-Commit: 11b250dbd82023fa9a4f88d55d293046a961600a
+X-Gerrit-Comment-Date: Fri, 16 Oct 2026 08:44:05 +0000
+In-Reply-To: <gerrit.1791901394000.I5ee597fb3b9efb93dbe19458ae6e7580d27ae3d2@gerrit.openvpn.net>
+References: <gerrit.1791901394000.I5ee597fb3b9efb93dbe19458ae6e7580d27ae3d2@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzkxOTAxMzk0MDAwLkk1ZWU1OTdmYjNiOWVmYjkzZGJlMTk0NThhZTZlNzU4MGQyN2FlM2QyQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <55a8363aa84ba6ea2eb8aed8e765dc6eae868c31-EmailReviewComments-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
-X-Headers-End: 1xHcxn-0007Nf-OD
-Subject: [Openvpn-devel] [PATCH v6] configure: Add --enable-code-coverage
+User-Agent: Gerrit/3.14.2
+X-Headers-End: 1xHdXx-0001AI-Ui
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Review usage of
+ strncpy
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -77,392 +138,179 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= via Openvpn-devel
+ <openvpn-devel@lists.sourceforge.net>
+Reply-To: razvanc@mailbox.org, arne-openvpn@rfc2549.org,
+ openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com
+Cc: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= <gerrit@openvpn.net>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>,
+ Arne Schwabe <arne-openvpn@rfc2549.org>
+Content-Type: multipart/mixed; boundary="===============5995929212800301880=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Frank Lichtenheld <frank@lichtenheld.com>
+--===============5995929212800301880==
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="sHMcu8YF9+I="; charset=UTF-8
 
-Can be used like this
-./configure --enable-code-coverage
-make
-make check
-make code-coverage-capture
+--sHMcu8YF9+I=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-We heavily patch ax_code_coverage.m4, mostly to
-achieve better compatibility with non-Linux systems.
-- Do not depend on autoconf-archive
-- Do not depend on GNU make
-- Use more modern --coverage flag to better support
-  different compilers
+Attention is currently required from: Arne Schwabe, Frank Lichtenheld=2E
 
-Change-Id: I79b2dc4a550b1c5068a45407976b0dfc2f765b33
-Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
-Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1592
----
+R=
+=C4=83zvan Cojocaru has posted comments on this change by Frank Lichtenheld=
+=2E ( https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1993?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change=
+ subject: Review usage of strncpy
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1592
-This mail reflects revision 6 of this Change.
 
-Acked-by according to Gerrit (reflected above):
-Razvan Cojocaru <razvanc@mailbox.org>
+Patch Set 2: Code-Review+2
 
-        
-diff --git a/.gitignore b/.gitignore
-index 04523af..2749739 100644
---- a/.gitignore
-+++ b/.gitignore
-@@ -1,5 +1,9 @@
- *.[oa]
- *.l[oa]
-+*.gcda
-+*.gcno
-+*-coverage/
-+*-coverage.info
- *.dll
- *.exe
- *.exe.*
-@@ -18,6 +22,7 @@
- Makefile
- Makefile.in
- aclocal.m4
-+aminclude_static.am
- autodefs.h
- autom4te.cache
- config.guess
-diff --git a/Makefile.am b/Makefile.am
-index 125fe84..d3910ed 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -22,6 +22,8 @@
- #  with this program; if not, see <https://www.gnu.org/licenses/>.
- #
- 
-+include $(top_srcdir)/aminclude_static.am
-+
- ACLOCAL_AMFLAGS = -I m4
- 
- MAINTAINERCLEANFILES = \
-@@ -45,7 +47,8 @@
- 	CMakeLists.txt \
- 	CMakePresets.json \
- 	config.h.cmake.in \
--	forked-test-driver
-+	forked-test-driver \
-+	lcovrc
- 
- .PHONY: config-version.h doxygen
- 
-@@ -98,3 +101,7 @@
- 	INCLUDE_FLAGS="$(LIBNL_GENL_CFLAGS)" \
- 	CPPCHECK_VERBOSE="$(AM_V_P)" \
- 		"$(top_srcdir)/dev-tools/run-cppcheck.sh"
-+
-+CODE_COVERAGE_LCOV_SHOPTS=--config-file $(srcdir)/lcovrc
-+clean-local: code-coverage-clean
-+distclean-local: code-coverage-dist-clean
-diff --git a/configure.ac b/configure.ac
-index 56109af..7d646c5 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -59,6 +59,8 @@
- AC_CANONICAL_HOST
- AC_USE_SYSTEM_EXTENSIONS
- 
-+AX_CODE_COVERAGE
-+
- AC_ARG_ENABLE(
- 	[lzo],
- 	[AS_HELP_STRING([--disable-lzo], [disable LZO compression support @<:@default=yes@:>@])],
-@@ -1236,6 +1238,11 @@
- 	ACL_CHECK_ADD_COMPILE_FLAGS([-Wno-cast-function-type])
- fi
- 
-+# If coverage is enabled remove -O arguments from CFLAGS
-+if test "$enable_code_coverage" = "yes"; then
-+   [CFLAGS="`echo $CFLAGS | $SED -e 's/-O[a-z0-9]*//g'`"]
-+fi
-+
- if test "${enable_pedantic}" = "yes"; then
- 	CFLAGS="${CFLAGS} -pedantic"
- 	AC_DEFINE([PEDANTIC], [1], [Enable pedantic mode])
-@@ -1355,10 +1362,10 @@
- 
- TEST_LDFLAGS="${OPTIONAL_CRYPTO_LIBS} ${OPTIONAL_PKCS11_HELPER_LIBS} ${OPTIONAL_LIBCAPNG_LIBS}"
- TEST_LDFLAGS="${TEST_LDFLAGS} ${OPTIONAL_LIBNL_GENL_LIBS}"
--TEST_LDFLAGS="${TEST_LDFLAGS} ${OPTIONAL_LZO_LIBS} ${CMOCKA_LIBS}"
-+TEST_LDFLAGS="${TEST_LDFLAGS} ${OPTIONAL_LZO_LIBS} ${CMOCKA_LIBS} ${CODE_COVERAGE_LIBS}"
- TEST_CFLAGS="${OPTIONAL_CRYPTO_CFLAGS} ${OPTIONAL_PKCS11_HELPER_CFLAGS} ${OPTIONAL_LIBCAPNG_CFLAGS}"
- TEST_CFLAGS="${TEST_CFLAGS} ${OPTIONAL_LIBNL_GENL_CFLAGS} ${OPTIONAL_LZO_CFLAGS}"
--TEST_CFLAGS="${TEST_CFLAGS} -I\$(top_srcdir)/include ${CMOCKA_CFLAGS}"
-+TEST_CFLAGS="${TEST_CFLAGS} -I\$(top_srcdir)/include ${CMOCKA_CFLAGS} ${CODE_COVERAGE_CFLAGS}"
- 
- AC_SUBST([TEST_LDFLAGS])
- AC_SUBST([TEST_CFLAGS])
-diff --git a/lcovrc b/lcovrc
-new file mode 100644
-index 0000000..f8b4138
---- /dev/null
-+++ b/lcovrc
-@@ -0,0 +1,2 @@
-+geninfo_external = 1
-+geninfo_unexecuted_blocks = 1
-diff --git a/m4/ax_code_coverage.m4 b/m4/ax_code_coverage.m4
-index 216708a4..f156d4d 100644
---- a/m4/ax_code_coverage.m4
-+++ b/m4/ax_code_coverage.m4
-@@ -42,8 +42,8 @@
- #     clean-local: code-coverage-clean
- #     distclean-local: code-coverage-dist-clean
- #
--#   This results in a "check-code-coverage" rule being added to any
--#   Makefile.am which do "include $(top_srcdir)/aminclude_static.am"
-+#   This results in a "check-code-coverage" rule being added to the
-+#   Makefile.am which does "include $(top_srcdir)/aminclude_static.am"
- #   (assuming the module has been configured with --enable-code-coverage).
- #   Running `make check-code-coverage` in that directory will run the
- #   module's test suite (`make check`) and build a code coverage report
-@@ -76,10 +76,51 @@
- 
- #serial 37
- 
-+dnl Local modifications compared to the autoconf-archive version:
-+dnl
-+dnl  - AX_ADD_AM_MACRO_STATIC (from autoconf-archive) is replaced by a
-+dnl    minimal local equivalent, OPENVPN_ADD_AM_MACRO_STATIC, so that we do
-+dnl    not depend on autoconf-archive being installed.
-+dnl  - The generated rules no longer require GNU make.  The AX_CHECK_GNU_MAKE
-+dnl    check is gone (which also removed the last autoconf-archive
-+dnl    dependency) and the GNU make specific constructs in the rules were
-+dnl    replaced:
-+dnl      * the "ifeq ($(abs_builddir), $(abs_top_builddir))" guard is gone,
-+dnl        aminclude_static.am may only be included by the top level
-+dnl        Makefile.am now (which is the only place it was ever included
-+dnl        from in this project),
-+dnl      * $(addprefix ...) and $(if ...) are replaced by shell code inside
-+dnl        the recipes,
-+dnl      * $(call ...)/$(subst ...) for the lcov test name is replaced by
-+dnl        CODE_COVERAGE_TEST_NAME, computed at configure time,
-+dnl      * "find ... -delete" is replaced by "find ... -exec rm -f {} +".
-+dnl    The only remaining non-POSIX construct is the nested variable
-+dnl    expansion used for the silent rules ($(foo_$(V))), which is the same
-+dnl    idiom automake itself uses for AM_V_at and friends and which is
-+dnl    understood by BSD make as well.
-+
-+AC_DEFUN([OPENVPN_PRINT_TO_FILE],[
-+m4_esyscmd(
-+[
-+printf "%s" "$2" > "$1"
-+])
-+])
-+
-+AC_DEFUN([OPENVPN_ADD_AM_MACRO_STATIC],[
-+  OPENVPN_PRINT_TO_FILE([aminclude_static.am],[$1])
-+])
-+
- m4_define(_AX_CODE_COVERAGE_RULES,[
--AX_ADD_AM_MACRO_STATIC([
-+OPENVPN_ADD_AM_MACRO_STATIC([
-+# This file was generated by ax_code_coverage
- # Code coverage
- #
-+# This file must only be included by the top level Makefile.am: the rules
-+# below always report on the complete build tree.
-+#
-+# The rules avoid GNU make specific syntax so that they also work with
-+# other make implementations, e.g. BSD make.
-+#
- # Optional:
- #  - CODE_COVERAGE_DIRECTORY: Top-level directory for code coverage reporting.
- #    Multiple directories may be specified, separated by whitespace.
-@@ -90,51 +131,51 @@
- #  - CODE_COVERAGE_OUTPUT_DIRECTORY: Directory for generated code coverage
- #    reports to be created. (Default:
- #    \$(PACKAGE_NAME)-\$(PACKAGE_VERSION)-coverage)
-+#  - CODE_COVERAGE_TEST_NAME: Test name to record in the .info file.  It is
-+#    computed by configure (\$(PACKAGE_NAME)-\$(PACKAGE_VERSION), with dashes
-+#    and dots replaced by underscores) and can be overridden by defining it
-+#    in Makefile.am.
- #  - CODE_COVERAGE_BRANCH_COVERAGE: Set to 1 to enforce branch coverage,
- #    set to 0 to disable it and leave empty to stay with the default.
--#    (Default: empty)
-+#    The corresponding --rc option is passed to lcov and genhtml in
-+#    addition to the options below. (Default: empty)
- #  - CODE_COVERAGE_LCOV_SHOPTS_DEFAULT: Extra options shared between both lcov
--#    instances. (Default: based on $CODE_COVERAGE_BRANCH_COVERAGE)
-+#    instances. (Default: empty)
- #  - CODE_COVERAGE_LCOV_SHOPTS: Extra options to shared between both lcov
--#    instances. (Default: $CODE_COVERAGE_LCOV_SHOPTS_DEFAULT)
-+#    instances. (Default: \$CODE_COVERAGE_LCOV_SHOPTS_DEFAULT)
- #  - CODE_COVERAGE_LCOV_OPTIONS_GCOVPATH: --gcov-tool pathtogcov
- #  - CODE_COVERAGE_LCOV_OPTIONS_DEFAULT: Extra options to pass to the
--#    collecting lcov instance. (Default: $CODE_COVERAGE_LCOV_OPTIONS_GCOVPATH)
-+#    collecting lcov instance. (Default: \$CODE_COVERAGE_LCOV_OPTIONS_GCOVPATH)
- #  - CODE_COVERAGE_LCOV_OPTIONS: Extra options to pass to the collecting lcov
--#    instance. (Default: $CODE_COVERAGE_LCOV_OPTIONS_DEFAULT)
-+#    instance. (Default: \$CODE_COVERAGE_LCOV_OPTIONS_DEFAULT)
- #  - CODE_COVERAGE_LCOV_RMOPTS_DEFAULT: Extra options to pass to the filtering
- #    lcov instance. (Default: empty)
--#  - CODE_COVERAGE_LCOV_RMOPTS: Extra options to pass to the filtering lcov
--#    instance. (Default: $CODE_COVERAGE_LCOV_RMOPTS_DEFAULT)
-+#  - CODE_COVERAGE_LCOV_RMOPTS: Extra options to pass to the filtering
-+#    lcov instance. (Default: \$CODE_COVERAGE_LCOV_RMOPTS_DEFAULT)
- #  - CODE_COVERAGE_GENHTML_OPTIONS_DEFAULT: Extra options to pass to the
--#    genhtml instance. (Default: based on $CODE_COVERAGE_BRANCH_COVERAGE)
-+#    genhtml instance. (Default: empty)
- #  - CODE_COVERAGE_GENHTML_OPTIONS: Extra options to pass to the genhtml
--#    instance. (Default: $CODE_COVERAGE_GENHTML_OPTIONS_DEFAULT)
-+#    instance. (Default: \$CODE_COVERAGE_GENHTML_OPTIONS_DEFAULT)
- #  - CODE_COVERAGE_IGNORE_PATTERN: Extra glob pattern of files to ignore
- #
- # The generated report will be titled using the \$(PACKAGE_NAME) and
- # \$(PACKAGE_VERSION). In order to add the current git hash to the title,
- # use the git-version-gen script, available online.
- # Optional variables
--# run only on top dir
- if CODE_COVERAGE_ENABLED
-- ifeq (\$(abs_builddir), \$(abs_top_builddir))
- CODE_COVERAGE_DIRECTORY ?= \$(top_builddir)
- CODE_COVERAGE_OUTPUT_FILE ?= \$(PACKAGE_NAME)-\$(PACKAGE_VERSION)-coverage.info
- CODE_COVERAGE_OUTPUT_DIRECTORY ?= \$(PACKAGE_NAME)-\$(PACKAGE_VERSION)-coverage
- 
- CODE_COVERAGE_BRANCH_COVERAGE ?=
--CODE_COVERAGE_LCOV_SHOPTS_DEFAULT ?= \$(if \$(CODE_COVERAGE_BRANCH_COVERAGE),\
----rc lcov_branch_coverage=\$(CODE_COVERAGE_BRANCH_COVERAGE))
-+CODE_COVERAGE_LCOV_SHOPTS_DEFAULT ?=
- CODE_COVERAGE_LCOV_SHOPTS ?= \$(CODE_COVERAGE_LCOV_SHOPTS_DEFAULT)
- CODE_COVERAGE_LCOV_OPTIONS_GCOVPATH ?= --gcov-tool \"\$(GCOV)\"
- CODE_COVERAGE_LCOV_OPTIONS_DEFAULT ?= \$(CODE_COVERAGE_LCOV_OPTIONS_GCOVPATH)
- CODE_COVERAGE_LCOV_OPTIONS ?= \$(CODE_COVERAGE_LCOV_OPTIONS_DEFAULT)
- CODE_COVERAGE_LCOV_RMOPTS_DEFAULT ?=
- CODE_COVERAGE_LCOV_RMOPTS ?= \$(CODE_COVERAGE_LCOV_RMOPTS_DEFAULT)
--CODE_COVERAGE_GENHTML_OPTIONS_DEFAULT ?=\
--\$(if \$(CODE_COVERAGE_BRANCH_COVERAGE),\
----rc genhtml_branch_coverage=\$(CODE_COVERAGE_BRANCH_COVERAGE))
-+CODE_COVERAGE_GENHTML_OPTIONS_DEFAULT ?=
- CODE_COVERAGE_GENHTML_OPTIONS ?= \$(CODE_COVERAGE_GENHTML_OPTIONS_DEFAULT)
- CODE_COVERAGE_IGNORE_PATTERN ?=
- 
-@@ -152,8 +193,15 @@
- code_coverage_quiet_ = \$(code_coverage_quiet_\$(AM_DEFAULT_VERBOSITY))
- code_coverage_quiet_0 = --quiet
- 
--# sanitizes the test-name: replaces with underscores: dashes and dots
--code_coverage_sanitize = \$(subst -,_,\$(subst .,_,\$(1)))
-+# Shell fragments used by the recipes below.  They are portable
-+# replacements for the GNU make functions \$(addprefix ...) and \$(if ...):
-+# code_coverage_dirs_opt sets \$cc_dirs to a list of --directory options,
-+# code_coverage_prefix_opt sets \$cc_prefix to a list of --prefix options and
-+# code_coverage_*_branch_opt set \$cc_branch to the branch coverage option.
-+code_coverage_dirs_opt = cc_dirs=; for cc_dir in \$(CODE_COVERAGE_DIRECTORY); do cc_dirs=\"\$\$cc_dirs --directory \$\$cc_dir\"; done
-+code_coverage_prefix_opt = cc_prefix=; for cc_dir in \$(CODE_COVERAGE_DIRECTORY); do cc_prefix=\"\$\$cc_prefix --prefix \$\$cc_dir\"; done
-+code_coverage_lcov_branch_opt = cc_branch=; test -z \"\$(CODE_COVERAGE_BRANCH_COVERAGE)\" || cc_branch=\"--rc lcov_branch_coverage=\$(CODE_COVERAGE_BRANCH_COVERAGE)\"
-+code_coverage_genhtml_branch_opt = cc_branch=; test -z \"\$(CODE_COVERAGE_BRANCH_COVERAGE)\" || cc_branch=\"--rc genhtml_branch_coverage=\$(CODE_COVERAGE_BRANCH_COVERAGE)\"
- 
- # Use recursive makes in order to ignore errors during check
- check-code-coverage:
-@@ -162,29 +210,26 @@
- 
- # Capture code coverage data
- code-coverage-capture: code-coverage-capture-hook
--	\$(code_coverage_v_lcov_cap)\$(LCOV) \$(code_coverage_quiet) \$(addprefix --directory ,\$(CODE_COVERAGE_DIRECTORY)) --capture --output-file \"\$(CODE_COVERAGE_OUTPUT_FILE).tmp\" --test-name \"\$(call code_coverage_sanitize,\$(PACKAGE_NAME)-\$(PACKAGE_VERSION))\" --no-checksum --compat-libtool \$(CODE_COVERAGE_LCOV_SHOPTS) \$(CODE_COVERAGE_LCOV_OPTIONS)
--	\$(code_coverage_v_lcov_ign)\$(LCOV) \$(code_coverage_quiet) \$(addprefix --directory ,\$(CODE_COVERAGE_DIRECTORY)) --remove \"\$(CODE_COVERAGE_OUTPUT_FILE).tmp\" \$(CODE_COVERAGE_IGNORE_PATTERN) --output-file \"\$(CODE_COVERAGE_OUTPUT_FILE)\" \$(CODE_COVERAGE_LCOV_SHOPTS) \$(CODE_COVERAGE_LCOV_RMOPTS)
-+	\$(code_coverage_v_lcov_cap)\$(code_coverage_dirs_opt); \\
-+	\$(code_coverage_lcov_branch_opt); \\
-+	\$(LCOV) \$(code_coverage_quiet) \$\$cc_dirs --capture --output-file \"\$(CODE_COVERAGE_OUTPUT_FILE).tmp\" --test-name \"\$(CODE_COVERAGE_TEST_NAME)\" --no-checksum --compat-libtool \$\$cc_branch \$(CODE_COVERAGE_LCOV_SHOPTS) \$(CODE_COVERAGE_LCOV_OPTIONS)
-+	\$(code_coverage_v_lcov_ign)\$(code_coverage_dirs_opt); \\
-+	\$(code_coverage_lcov_branch_opt); \\
-+	\$(LCOV) \$(code_coverage_quiet) \$\$cc_dirs --remove \"\$(CODE_COVERAGE_OUTPUT_FILE).tmp\" \$(CODE_COVERAGE_IGNORE_PATTERN) --output-file \"\$(CODE_COVERAGE_OUTPUT_FILE)\" \$\$cc_branch \$(CODE_COVERAGE_LCOV_SHOPTS) \$(CODE_COVERAGE_LCOV_RMOPTS)
- 	-@rm -f \"\$(CODE_COVERAGE_OUTPUT_FILE).tmp\"
--	\$(code_coverage_v_genhtml)LANG=C \$(GENHTML) \$(code_coverage_quiet) \$(addprefix --prefix ,\$(CODE_COVERAGE_DIRECTORY)) --output-directory \"\$(CODE_COVERAGE_OUTPUT_DIRECTORY)\" --title \"\$(PACKAGE_NAME)-\$(PACKAGE_VERSION) Code Coverage\" --legend --show-details \"\$(CODE_COVERAGE_OUTPUT_FILE)\" \$(CODE_COVERAGE_GENHTML_OPTIONS)
-+	\$(code_coverage_v_genhtml)\$(code_coverage_prefix_opt); \\
-+	\$(code_coverage_genhtml_branch_opt); \\
-+	LANG=C \$(GENHTML) \$(code_coverage_quiet) \$\$cc_prefix --output-directory \"\$(CODE_COVERAGE_OUTPUT_DIRECTORY)\" --title \"\$(PACKAGE_NAME)-\$(PACKAGE_VERSION) Code Coverage\" --legend --show-details \"\$(CODE_COVERAGE_OUTPUT_FILE)\" \$\$cc_branch \$(CODE_COVERAGE_GENHTML_OPTIONS)
- 	@echo \"file://\$(abs_builddir)/\$(CODE_COVERAGE_OUTPUT_DIRECTORY)/index.html\"
- 
- code-coverage-clean:
- 	-\$(LCOV) --directory \$(top_builddir) -z
- 	-rm -rf \"\$(CODE_COVERAGE_OUTPUT_FILE)\" \"\$(CODE_COVERAGE_OUTPUT_FILE).tmp\" \"\$(CODE_COVERAGE_OUTPUT_DIRECTORY)\"
--	-find . \\( -name \"*.gcda\" -o -name \"*.gcno\" -o -name \"*.gcov\" \\) -delete
-+	-find . \\( -name \"*.gcda\" -o -name \"*.gcno\" -o -name \"*.gcov\" \\) -exec rm -f '{}' +
- 
- code-coverage-dist-clean:
- 
- A][M_DISTCHECK_CONFIGURE_FLAGS := \$(A][M_DISTCHECK_CONFIGURE_FLAGS) --disable-code-coverage
-- else # ifneq (\$(abs_builddir), \$(abs_top_builddir))
--check-code-coverage:
--
--code-coverage-capture: code-coverage-capture-hook
--
--code-coverage-clean:
--
--code-coverage-dist-clean:
-- endif # ifeq (\$(abs_builddir), \$(abs_top_builddir))
- else #! CODE_COVERAGE_ENABLED
- # Use recursive makes in order to ignore errors during check
- check-code-coverage:
-@@ -206,8 +251,7 @@
- ])
- 
- AC_DEFUN([_AX_CODE_COVERAGE_ENABLED],[
--	AX_CHECK_GNU_MAKE([],[AC_MSG_ERROR([not using GNU make that is needed for coverage])])
--	AC_REQUIRE([AX_ADD_AM_MACRO_STATIC])
-+	AC_REQUIRE([OPENVPN_ADD_AM_MACRO_STATIC])
- 	# check for gcov
- 	AC_CHECK_TOOL([GCOV],
- 		  [$_AX_CODE_COVERAGE_GCOV_PROG_WITH],
-@@ -232,13 +276,12 @@
- 		AC_MSG_ERROR([Could not find genhtml from the lcov package])
- 	])
- 
--	AC_CHECK_LIB([gcov], [_gcov_init], [CODE_COVERAGE_LIBS="-lgcov"], [CODE_COVERAGE_LIBS=""])
--
- 	dnl Build the code coverage flags
- 	dnl Define CODE_COVERAGE_LDFLAGS for backwards compatibility
- 	CODE_COVERAGE_CPPFLAGS="-DNDEBUG"
--	CODE_COVERAGE_CFLAGS="-O0 -g -fprofile-arcs -ftest-coverage"
--	CODE_COVERAGE_CXXFLAGS="-O0 -g -fprofile-arcs -ftest-coverage"
-+	CODE_COVERAGE_CFLAGS="-O0 -g --coverage"
-+	CODE_COVERAGE_CXXFLAGS="-O0 -g --coverage"
-+	CODE_COVERAGE_LIBS="--coverage"
- 
- 	AC_SUBST([CODE_COVERAGE_CPPFLAGS])
- 	AC_SUBST([CODE_COVERAGE_CFLAGS])
-@@ -265,6 +308,10 @@
- 	AC_SUBST([CODE_COVERAGE_ENABLED], [$enable_code_coverage])
- 	AC_MSG_RESULT($enable_code_coverage)
- 
-+	dnl The lcov test name must not contain dashes or dots
-+	CODE_COVERAGE_TEST_NAME=`echo "$PACKAGE_NAME-$PACKAGE_VERSION" | tr '.-' '__'`
-+	AC_SUBST([CODE_COVERAGE_TEST_NAME])
-+
- 	AS_IF([ test "x$enable_code_coverage" = xyes ], [
- 		_AX_CODE_COVERAGE_ENABLED
- 	      ])
-diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-index 7ecddff..9424801 100644
---- a/src/openvpn/Makefile.am
-+++ b/src/openvpn/Makefile.am
-@@ -31,9 +31,12 @@
- 	$(OPTIONAL_SYSTEMD_CFLAGS) \
- 	$(OPTIONAL_PKCS11_HELPER_CFLAGS) \
- 	$(OPTIONAL_INOTIFY_CFLAGS) \
-+	$(CODE_COVERAGE_CFLAGS) \
- 	-DPLUGIN_LIBDIR=\"${plugindir}\" \
- 	-DDEFAULT_DNS_UPDOWN=\"${scriptdir}/dns-updown\"
- 
-+AM_LDFLAGS = $(CODE_COVERAGE_LIBS)
-+
- if WIN32
- # we want unicode entry point but not the macro
- AM_CFLAGS += -municode -UUNICODE
+(2 comments)
 
+Commit Me=
+ssage:
+
+https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1993/comment/446e80d8_bb=
+fc0cc8?usp=3Demail :
+PS2, Line 9: - Some users where re-creating strcpynt
+"=
+were"
+
+
+https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1993/comment/fc7a2210_15=
+92fdf5?usp=3Demail :
+PS2, Line 12: - Some users where actually using it lik=
+e memcpy
+"were"
+
+
+
+-- 
+To view, visit https://gerrit=2Eopenvpn=2Enet/c/open=
+vpn/+/1993?usp=3Demail
+To unsubscribe, or for help writing mail filters, vi=
+sit https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+
+Gerrit-MessageType=
+: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I=
+5ee597fb3b9efb93dbe19458ae6e7580d27ae3d2
+Gerrit-Change-Number: 1993
+Gerrit-=
+PatchSet: 2
+Gerrit-Owner: Frank Lichtenheld <frank@lichtenheld=2Ecom>
+Gerri=
+t-Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Reviewer: R=C4=
+=83zvan Cojocaru <razvanc@mailbox=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-=
+devel@lists=2Esourceforge=2Enet>
+Gerrit-Attention: Arne Schwabe <arne-openv=
+pn@rfc2549=2Eorg>
+Gerrit-Attention: Frank Lichtenheld <frank@lichtenheld=2E=
+com>
+Gerrit-Comment-Date: Fri, 16 Oct 2026 08:44:05 +0000
+Gerrit-HasComment=
+s: Yes
+Gerrit-Has-Labels: Yes
+
+--sHMcu8YF9+I=
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: Arne Schwabe, Frank Lichtenheld=2E </p>
+<p>R=C4=83zva=
+n Cojocaru has posted comments on this change by Frank Lichtenheld=2E</p><p=
+>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; marg=
+in: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span></=
+p><p><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1993?usp=3Demail=
+">View Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; paddi=
+ng: 0;"><li style=3D"margin: 0; padding: 0;"><p>Commit Message:</p><ul styl=
+e=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 =
+16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"https://gerrit=2Eopenvpn=
+=2Enet/c/openvpn/+/1993/comment/446e80d8_bbfc0cc8?usp=3Demail">Patch Set #2=
+, Line 9:</a> <code style=3D"font-family:monospace,monospace">- Some users =
+where re-creating strcpynt</code></p><p class=3D"blocks" style=3D"white-spa=
+ce: pre-wrap; word-wrap: break-word;">&quot;were&quot;</p></li><li style=3D=
+"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=
+=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1993/comment/fc7a2210_1592fd=
+f5?usp=3Demail">Patch Set #2, Line 12:</a> <code style=3D"font-family:monos=
+pace,monospace">- Some users where actually using it like memcpy</code></p>=
+<p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;"=
+>&quot;were&quot;</p></li></ul></li></ul><p>To view, visit <a href=3D"https=
+://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1993?usp=3Demail">change 1993</a>=2E =
+To unsubscribe, or for help writing mail filters, visit <a href=3D"https://=
+gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemsc=
+ope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=
+=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"u=
+rl" href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1993?usp=3Demail"/><=
+meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D=
+"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:no=
+ne"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Bra=
+nch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I5ee597fb=
+3b9efb93dbe19458ae6e7580d27ae3d2 </div>
+<div style=3D"display:none"> Gerrit=
+-Change-Number: 1993 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2=
+ </div>
+<div style=3D"display:none"> Gerrit-Owner: Frank Lichtenheld &lt;fr=
+ank@lichtenheld=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Review=
+er: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"di=
+splay:none"> Gerrit-Reviewer: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eor=
+g&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;open=
+vpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"display:none">=
+ Gerrit-Attention: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<=
+div style=3D"display:none"> Gerrit-Attention: Frank Lichtenheld &lt;frank@l=
+ichtenheld=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Dat=
+e: Fri, 16 Oct 2026 08:44:05 +0000 </div>
+<div style=3D"display:none"> Gerr=
+it-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: =
+Yes </div>
+
+</body></html>
+--sHMcu8YF9+I=--
+
+
+--===============5995929212800301880==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============5995929212800301880==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+--===============5995929212800301880==--
+
