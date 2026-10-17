@@ -4,69 +4,90 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1EFFACCF2C1
-	for <openvpn-devel@archiver.kernel.org>; Sat, 17 Oct 2026 16:33:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7B3E5CCF2C1
+	for <openvpn-devel@archiver.kernel.org>; Sat, 17 Oct 2026 16:40:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Content-Transfer-Encoding:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
+	Subject:In-Reply-To:From:References:To:MIME-Version:Date:Message-ID:Sender:
 	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=Gk4Gaefc9C8o4EITBESOa/Gf+Q84bJ11IziNIpXWzps=; b=KKELh9uJRa72C3z/K4h2hG/tBW
-	4vlN4MO/KnHgiDyIKxNH2AEw91XqoMHp1kR8luZO3YFE0bQMDUFR8SfGvGkU5lkkk41NmHumPK/yl
-	nsHKghoqXbMp1xb3K0dv5nx+PgTNtqNiVxeorJoSbYCISAmeXjrShoo/ZLf2WgL6XhLw=;
+	bh=w8stby5HNBfuoDWMeUIjUFB337KjDeICQ4ZBUTPeVwk=; b=Xka3GFkiqBBnm2QU4JgX39fjJR
+	MDlCwNb+J/PWtSpI8iiLmHuLLfAtJhuVevwTbdkQGyRtHDzNWzVqe6XmdczgfTjXYTteWPNByHXjt
+	iWzHJGuArh41yMdPkPCXgpNGjl/XZdurf7NpS4obnh9qOhCUC7JiKk9oTcdUnY5YXFt8=;
 Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
 	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xI7Ln-0001Di-B6;
-	Sat, 17 Oct 2026 16:33:40 +0000
+	id 1xI7Rt-0001LT-C5;
+	Sat, 17 Oct 2026 16:39:58 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@blue4.greenie.muc.de>) id 1xI7Ll-0001DY-3h
+ (envelope-from <a@unstable.cc>) id 1xI7Rr-0001LI-DO
  for openvpn-devel@lists.sourceforge.net;
- Sat, 17 Oct 2026 16:33:37 +0000
+ Sat, 17 Oct 2026 16:39:56 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
+ From:References:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:Cc:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=U+kXW4fIukMzsW36vw/uqGG15gGVzOE1VVnJ/ld7chw=; b=Lf7nIZhjMBHEhTAsaQnh+gMHg3
- HJsYXGM4cQCqPdn3FeuWLAHtqC/ddX/RzdTV2IDsu/ztFyhOr0QPclsbyIOgs3k3ynf0S16G908Wh
- jULZaQAzm6UwxlhV1G+shIpKYwdwZGy5WTp/BxbOGWiRcU8ANf8mbGESmBtOjng2cuYE=;
+ bh=TqscyUY0/Sv0g+5Ny7w+IXfFZx3AHtX5OmSIBTKHbto=; b=DAp6NhPxrRWBT7dwI1g0TH9ESR
+ n7DJnaO4buCrFKNNiz3Kuu2wdcKncFzBdUzR+6Qw3vEj/7iEohVdT+qlcsxmzhq+b0VARqpimYqaf
+ 0/OUpgQ17H/9OdF5FqB9vNBagG4RS3o5sKx4zubxSlcIs/6C8JEy1jSwRw45fOMSlwz0=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:References:To:
+ Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:Cc:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=U+kXW4fIukMzsW36vw/uqGG15gGVzOE1VVnJ/ld7chw=; b=TznhYz7aLluuvyFX6wvZ4U+s8U
- 3uHBJwE6xX0JQHjqE82UPorVL+D9iHcLtJsfgaysC3DdzB5ETcX5ThTHhwWn0s5JLeYBA5NAXudKq
- ROYsfgjQtiFIV81ynCsdVAPiPiNk82ekSyuMt36O17LcWa3WXBxnSdjGn4HL6jOIXpyo=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ bh=TqscyUY0/Sv0g+5Ny7w+IXfFZx3AHtX5OmSIBTKHbto=; b=G6w5SfRhSIoYo8pLPnzY1R6fNQ
+ b+MqC4xoQxncs4KCkI1Ta/ICFr4soIX/RfiFSMEow/PjzR6jNjkM8SoDmm+mZwpfFN89PwXLtWs4F
+ TSTJGW9Mc9vEMD7gQjDdM1ionZnWbEp+0FPcq3J8zsRnV3Uw77rM6HUdP/Clb5L/VUg4=;
+Received: from mout-p-103.mailbox.org ([80.241.56.161])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1xI7Lk-0006hd-7O for openvpn-devel@lists.sourceforge.net;
- Sat, 17 Oct 2026 16:33:37 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 69HGXSqc012849
- for <openvpn-devel@lists.sourceforge.net>; Sat, 17 Oct 2026 18:33:28 +0200
-Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 69HGXSi0012848
- for openvpn-devel@lists.sourceforge.net; Sat, 17 Oct 2026 18:33:28 +0200
-From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Sat, 17 Oct 2026 18:33:23 +0200
-Message-ID: <20261017163328.12832-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <gerrit.1790072398000.Iecffd01567376960c9393770ffe05665073b067a@gerrit.openvpn.net>
-References: <gerrit.1790072398000.Iecffd01567376960c9393770ffe05665073b067a@gerrit.openvpn.net>
+ id 1xI7Rr-0005xi-DJ for openvpn-devel@lists.sourceforge.net;
+ Sat, 17 Oct 2026 16:39:56 +0000
+Received: from smtp202.mailbox.org (smtp202.mailbox.org
+ [IPv6:2001:67c:2050:b231:465::202])
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+ key-exchange X25519MLKEM768 server-signature RSA-PSS (4096 bits) server-digest
+ SHA256) (No client certificate requested)
+ by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4j6SFt48ywzKnTX;
+ Sat, 17 Oct 2026 18:39:46 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=unstable.cc; s=MBO0001;
+ t=1792255186;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=TqscyUY0/Sv0g+5Ny7w+IXfFZx3AHtX5OmSIBTKHbto=;
+ b=YkcsNCkNidK2cA8dofb6rBHNHfhNNzdpYfY41DuhBIQG8N337EvLXK/+48TkgEf0FlRTLt
+ iz7sNDo4WdsqwJNdK5UlQpEwFBQfpMFRXu32Prm0fh7lLhc2YmpQCIoVADmFp5IUpjZ8Vm
+ hB7gdddFHvMnxmBHd5jVMzdx47a54w99wFTIFlGAg07/rwNffpnOPVlM/XhZUycG+nNBGy
+ VWeCx4x8qFZdJb9Kt2f75cKNVeq/BD+D95sWCOi0vt710pWljALxP0ZkgIcDtzXeNLAE8U
+ HN3Tj0j229lHV8Vr5tiolJFCQOYG1peTXfyefunj8ZMYMzhQuPKU1t3Hhbuq4A==
+Authentication-Results: outgoing_mbo_mout; dkim=none;
+ spf=pass (outgoing_mbo_mout: domain of a@unstable.cc designates
+ 2001:67c:2050:b231:465::202 as permitted sender) smtp.mailfrom=a@unstable.cc
+Message-ID: <2189140d-92e1-4df2-a2fa-ab9053140fb1@unstable.cc>
+Date: Sat, 17 Oct 2026 18:39:44 +0200
 MIME-Version: 1.0
-X-Headers-End: 1xI7Lk-0006hd-7O
-Subject: [Openvpn-devel] [PATCH v5] Add --debug-aead-usage-limit-override
- option
+User-Agent: Mozilla Thunderbird
+To: Alejandro Pacheco <alepacheco99@gmail.com>,
+ openvpn-devel@lists.sourceforge.net
+References: <CAB8Pm=y=qDzUMhAA0-FVL8gce-2can1tkXTU8GFozZXZD58mQQ@mail.gmail.com>
+ <eba2bbbc-ac1a-453a-a46e-1fad8e664b35@unstable.cc>
+ <CAB8Pm=xTnNDcex7s9X_fjKPc-6V2GBfjFWOO2qNJ8o3ZG99dDQ@mail.gmail.com>
+Content-Language: en-US
+From: Antonio Quartulli <a@unstable.cc>
+In-Reply-To: <CAB8Pm=xTnNDcex7s9X_fjKPc-6V2GBfjFWOO2qNJ8o3ZG99dDQ@mail.gmail.com>
+X-Rspamd-Queue-Id: 4j6SFt48ywzKnTX
+X-Headers-End: 1xI7Rr-0005xi-DJ
+Subject: Re: [Openvpn-devel] [PATCH RESEND] Keep the outgoing control packet
+ in a buffer owned by tls_multi
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -78,154 +99,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-From: Arne Schwabe <arne@rfc2549.org>
+On 17/10/26 6:22 PM, Alejandro Pacheco wrote:
+> Hi Antonio,
+> 
+> Thanks for the pointers.  I have pushed the same commit to Gerrit, so
+> review can happen there:
+> 
+>    https://gerrit.openvpn.net/c/openvpn/+/2002
 
-Normal users should not touch this option since there is normally
-no reason to mess with the number of safely encrypted packets.
+Thanks a lot!
+It's in the pipe now :-) Bear with us while we get there..
 
-However, during to check if the epoch key rollover works as expected
-it is helpful to trigger this mechanism early. Since constantly
-patching OpenVPN to do this in tests is messy, introduce an undocumented
-option to allow enabling this behaviour.
+Cheers!
 
-Change-Id: Iecffd01567376960c9393770ffe05665073b067a
-Signed-off-by: Arne Schwabe <arne@rfc2549.org>
-Acked-by: Antonio Quartulli <antonio@mandelbit.com>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1941
----
+> 
+> Thanks,
+> Alejandro
+> 
+> 
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
-
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1941
-This mail reflects revision 5 of this Change.
-
-Acked-by according to Gerrit (reflected above):
-Antonio Quartulli <antonio@mandelbit.com>
-
-        
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 3c2ebf9..06effe2 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -3286,6 +3286,7 @@
-     to.packet_timeout = options->tls_timeout;
-     to.renegotiate_bytes = options->renegotiate_bytes;
-     to.renegotiate_packets = options->renegotiate_packets;
-+    to.aead_usage_limit_override = options->aead_usage_limit_override;
-     if (options->renegotiate_seconds_min < 0)
-     {
-         /* Add 10% jitter to reneg-sec by default (server side only) */
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 7fc8614..1630731 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -7609,6 +7609,20 @@
-             options->renegotiate_seconds_min = positive_atoi(p[2], msglevel);
-         }
-     }
-+#ifdef ENABLE_DEBUG
-+    else if (streq(p[0], "debug-aead-usage-limit-override"))
-+    {
-+        /* This option is undocumented since it should not be used by normal
-+         * users */
-+        VERIFY_PERMISSION(OPT_P_TLS_PARMS);
-+        if (!positive_atoll(p[1], &options->aead_usage_limit_override, p[0], msglevel))
-+        {
-+            msg(M_VERB0, "Warning: --debug-aead-usage-limit-override should "
-+                         "only be used by developers and in specific tests.");
-+            goto err;
-+        }
-+    }
-+#endif
-     else if (streq(p[0], "hand-window") && p[1] && !p[2])
-     {
-         VERIFY_PERMISSION(OPT_P_TLS_PARMS);
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index d347830..693d9cf 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -647,6 +647,9 @@
-     int renegotiate_seconds;
-     int renegotiate_seconds_min;
- 
-+    /** Debug override to trigger AEAD usage limit early */
-+    int64_t aead_usage_limit_override;
-+
-     /* Data channel key handshake must finalize
-      * within n seconds of handshake initiation. */
-     int handshake_window;
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 3594871..3fd52f0 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -126,11 +126,11 @@
- }
- 
- static uint64_t
--tls_get_limit_aead(const char *ciphername)
-+tls_get_limit_aead(const char *ciphername, uint64_t override)
- {
-     uint64_t limit = cipher_get_aead_limits(ciphername);
- 
--    if (limit == 0)
-+    if (limit == 0 && override == 0)
-     {
-         return 0;
-     }
-@@ -139,6 +139,11 @@
-      * we go over the limit */
-     limit = limit / 8 * 7;
- 
-+    if (override > 0)
-+    {
-+        limit = override;
-+    }
-+
-     msg(D_SHOW_KEYS,
-         "Note: AEAD cipher %s will trigger a renegotiation"
-         " at a sum of %" PRIi64 " blocks and packets.",
-@@ -1397,6 +1402,11 @@
-      * */
-     epoch_init_key_ctx(co, key_type, &e1_send, &e1_recv, future_key_count);
- 
-+    if (multi->opt.aead_usage_limit_override)
-+    {
-+        co->aead_usage_limit = multi->opt.aead_usage_limit_override;
-+    }
-+
-     secure_memzero(&e1_send, sizeof(e1_send));
-     secure_memzero(&e1_recv, sizeof(e1_recv));
- }
-@@ -1619,7 +1629,7 @@
-     }
-     tls_limit_reneg_bytes(session->opt->key_type.cipher, &session->opt->renegotiate_bytes);
- 
--    session->opt->aead_usage_limit = tls_get_limit_aead(session->opt->key_type.cipher);
-+    session->opt->aead_usage_limit = tls_get_limit_aead(session->opt->key_type.cipher, session->opt->aead_usage_limit_override);
- 
-     /* set the state of the keys for the session to generated */
-     ks->state = S_GENERATED_KEYS;
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index f6392f9..579f46c 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -346,6 +346,11 @@
-     /** limit for AEAD cipher when not running in epoch data key mode,
-      *  this is the sum of packets + blocks that are allowed to be used */
-     uint64_t aead_usage_limit;
-+    /**
-+     * Debug only option that allows overriding the usage limit
-+     * This allows testing key rotation by using very small limits
-+     */
-+    uint64_t aead_usage_limit_override;
-     interval_t renegotiate_seconds;
- 
-     /* cert verification parms */
 
 
 _______________________________________________
