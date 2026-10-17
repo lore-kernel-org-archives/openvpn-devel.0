@@ -4,127 +4,127 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A2A8ACCF2C7
-	for <openvpn-devel@archiver.kernel.org>; Sat, 17 Oct 2026 23:54:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 63A0BCCF2C4
+	for <openvpn-devel@archiver.kernel.org>; Sat, 17 Oct 2026 23:54:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=zOsxjryz8BV2u6xE8W0s42mKi8fBtSbY7TKQM0+prDc=; b=dvTAXk6g2szZb6y0rhfBT+v1Jt
-	89WPRtFoWB6iJ7EIqZJR77w7/T3iRkM7Rv/cdOk9cOl7mOvLfQPl02GYCy3xUFMcDLXuAw3yz5ar+
-	okBRzfUItiOkb4HewiIW9N9S8ThUhpy6w8WzmzYsO+YeTxtyLkwrMO+ls3+5QFp/fQlc=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=zvdvnMBrKjVf+oqsPw8k+Xzuz/tq5HjwaogsY4P41I4=; b=BScYTse5UEyFuS6i1q4hCzmWG9
+	UBz6lxEX7SIe65027T74ruSdCA6hNRnDPglktnjdGAXieUOW7LkXPrtZWQVgWFX2LLI4b1z9DxZeU
+	Rto48iNdewXg6Z/Ld5H199hu7p7td4XhQNktE8FnIWX5GC7lI9FZNaM1q8QeDun54EoI=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xIEE4-0001T4-VR;
-	Sat, 17 Oct 2026 23:54:09 +0000
+	id 1xIEEA-0007tz-BV;
+	Sat, 17 Oct 2026 23:54:14 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1xIEE3-0001Sy-FH
+ (envelope-from <gerrit@openvpn.net>) id 1xIEE8-0007tt-Cv
  for openvpn-devel@lists.sourceforge.net;
- Sat, 17 Oct 2026 23:54:08 +0000
+ Sat, 17 Oct 2026 23:54:12 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
  :List-Post:List-Owner:List-Archive;
- bh=Gk7ZfvtK4wzH7VlrLAGAXlTDe8F9GNnglKpDm1IcuDE=; b=jAqdhWGU6KtLDhuXU70ugOP7Dd
- 2UdB8pRugwgCb3rDZK9kV5mqFPISQqKqrSAKc/RqP3g0PHc+K7X+1fq1yGj2o36RHLpiDw8eVUXGH
- 3G20acim1dWVLTq1P4IVe2B08MpFfoQS9HCjqK57Zzv19PSu7eh87mBb8lpmqdwaXTNU=;
+ bh=HhDAkMWWptSxUGoQrtnECq56Rwp/yO0E6KNR9BZ2N7c=; b=Nji+OyqDCWrwXE1sOjNnAH5N/1
+ sAT3rFRjra/xKrFD0ulvY+CE8VBf6Y9PlZ55t7/KF2yZuO6bcXn089WBPGmn5nDj1K+FyyHoAuTNC
+ MFOm0GKbe5SI0hJCdQ3aKFJjrZjOrcp8E34MjbDnSRvMFp2OerVUAZ9SuKJXdWQevXDM=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
  Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=Gk7ZfvtK4wzH7VlrLAGAXlTDe8F9GNnglKpDm1IcuDE=; b=F
- YvWOVt22NJ8TKzTjBk1NsA9lLBMIOx8UdmcITvlWg42/AZAw3zo4dcrr0R0sxVY1BEZbNg0MTvcC2
- Tw6wVt5uhnyLg5sfc9b4K5HfxsMeUFKK+r+158HFnsfGr4TyqDLHyV/1WMTnQcpK8s2wG/LWTgqrs
- EW8ZDNisJ9X48TUI=;
-Received: from mail-wm1-f43.google.com ([209.85.128.43])
+ List-Owner:List-Archive; bh=HhDAkMWWptSxUGoQrtnECq56Rwp/yO0E6KNR9BZ2N7c=; b=d
+ oJzNa61t6WtTmxBO/RDJ3yyptPOpAqjGyutTm5e0YOSEkaGC1LAzYwi3T9GywcHyMR6bugFLhbasq
+ 6FFt/h8Dn2eBEkFRCFkYHZCHQyaYtkeVWRupUk7Cml588AbqW+kJbgvJazWZV1x9NEPfBMiwaXo0n
+ Dgb/rz0WkVIvgTug=;
+Received: from mail-wm1-f42.google.com ([209.85.128.42])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1xIEE0-0006lU-Gb for openvpn-devel@lists.sourceforge.net;
- Sat, 17 Oct 2026 23:54:08 +0000
-Received: by mail-wm1-f43.google.com with SMTP id
- 5b1f17b1804b1-4a1dfd49525so3067285e9.0
+ id 1xIEE2-0006lV-4B for openvpn-devel@lists.sourceforge.net;
+ Sat, 17 Oct 2026 23:54:12 +0000
+Received: by mail-wm1-f42.google.com with SMTP id
+ 5b1f17b1804b1-4a16c1608faso12315875e9.0
  for <openvpn-devel@lists.sourceforge.net>;
- Sat, 17 Oct 2026 16:54:04 -0700 (PDT)
+ Sat, 17 Oct 2026 16:54:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1792281238; x=1792886038; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1792281239; x=1792886039; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=Gk7ZfvtK4wzH7VlrLAGAXlTDe8F9GNnglKpDm1IcuDE=;
- b=FXu6gOoH6e1z8cDJvO1VkWwC4S/RNJ/T8tAhP8M6YZzZu6uZeDh6qG8iDcGA0tXkuZ
- toPz2fHV9yUAaxnQbgfw29S+bBb8OQOH8vPZdPj9qDsIk4zT8L/vIujrGS2RLoNo+1Ih
- xo0BvZP2d2d0LOwxTSuysmDHAhbqjffUtPLTje9a4TdiPDvA0EhmrwzExyCJ0o0Bn47D
- FT60wNr4YREfV9VFVzxhDf4erFpMWS6zE+HhxAZYagKlC+P6GBTfeGDI/ktHpeuNkHvk
- PSO8ACNnaGEZJDAESQx0ewvMfOpIn5NToTWzzsXjZOdyb5i8vTAotdMlQU55CB6rLE8Y
- PDzQ==
+ bh=HhDAkMWWptSxUGoQrtnECq56Rwp/yO0E6KNR9BZ2N7c=;
+ b=HkpGtl7AzXGv+2vdxa+W00355gAVxglx8dVGh25XctQQVdR7Wlq03U1trKw0U82zlG
+ P5SOqaF2/XKBOrRlmba/ZZQQcBzIiKOBIf/kV1rklGG1ZsHxTppVet/yIarSLHGL9mHq
+ jBeYZYkVOgxLWU+/LkLnBscPLD6V9MYHgDb7UiPxoOP+XjyvjmvCR89DO57z9NRG2gVw
+ DaXLT78VaP0DZKID4OxY2kAKsSVUMeJZIqQmwI41epsxY7kOqNFJY1O1byr4OCva5rAA
+ oQnfYkRw91NKEf/7jV+o2KdjROd2QmY2XTIM1XsaeWlDAahNlLI8KrzhOXVaPz3U4a1d
+ nqNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1792281238; x=1792886038;
+ d=1e100.net; s=20260707; t=1792281239; x=1792886039;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=Gk7ZfvtK4wzH7VlrLAGAXlTDe8F9GNnglKpDm1IcuDE=;
- b=kwJQFu9+J7ZX0zglbdUVAa1oue4h1pCMMVTH6M467YVHffrefUuKkSZr63M4QfVwYC
- /PqPCuVHui4UIBwkyd+QjzvTeYrJWu6wJO8c5vuAV3++ptcAM/hveStu7OzKLqn4RaZh
- omq2EQiN6AMjpdNWy6c6kmrzyjc1JLXPqimbaUUI0Qs0IcfTVTYp+rZeoxgEMeQFuqeT
- TGlZhLx7HREQN8vrqYNuETRVsV6XQeuRIsZUagtJktkBmzwjL4TqsO21pMXguVGoMgCy
- KfRGwpnvwgpCV2IqcluExZn2jPr9caZNp7IXkYxynQc9q9K+Ww7ZRXzQOIv8qKA5r6aq
- vrWw==
-X-Gm-Message-State: AFq9FYJc2+6Reu5jrMXw2zNRlAtuhguurxFTRGfZYTRVcqIbzMkvmVW4
- 3PL1AA/UZsh7a6PxE9foott4do7QEL5MBpsIRnIdyH+0t/hnQ5DS3mgJVeSqGtPKeMtoWSf+kEQ
- LpE3C2cl7ZUXvV2Jb5ek+/RL4KTgSo0hTnuvugNp0+rgm7NFVy1QA3lWcDPHsVH6Y/DvGpZuTM6
- EXPSeZ7Q==
-X-Gm-Gg: AYBFou01FdNu3oOkqOkLyNZSL1E3gwGqAJoeNihHE6cqHlEgFK5lRX5oiDfNuneD6Hf
- 2F6RwpeLPMCPe/j3GsZ0ZF+gAeAaBXE7EygKTEO79gUJhAMsVzN1hBk0oFOeXgSL+nnEx8x2o5F
- Y/U8X/MxZntkImfmYAWBfNKzdvzp9P56f43T6vn5D3q+TddB8aLyq3tHh/sy8cY/V5BrWCAeAmb
- kxDEDOjC7X00Aoh6K1wJ6PS+NCgMRt4TvzuXtrzd/WUyq6ep+Z8YZpf2Jv8xVHXgW1Wf1JBYn7c
- AWknEJH32br8Q2UJpSbhzY2rDYpc/0xmBYawLkEEYFkZGxtG7z0v6OGyF1d3SP6WoD8putiBxTM
- 8cU9F0xMVek2nl5/6v/8OkDhEzZ1Ddp4TuKq7P1uK+Sl0SiHMwxnlrRxWb/BEbZOuVYm7gKFlt4
- JdWsc8asvdyQYC/hcNYFJ9DY3lK4KTeGoM2q+TBNtVvSmvUYtIrxXFRnTZYXBc+F7idAwvX7v3Y
- +zHEpAbcDcSMZ0wQMirFQjUqNRIxeC2D5MJXMbhhePNTrxsSUzZhfelw1E5/Hovbr0/1+knG1OJ
- 0dtDNeLc1XlS6I3/Yfj1dEoIbwE15H6hh3PKyU5WcwcTdjSHncwMMnsoe2jcKOLfctyUd4c=
-X-Received: by 2002:a05:600c:b86:b0:4a1:d459:db4b with SMTP id
- 5b1f17b1804b1-4a1d7610722mr70037405e9.24.1792281237522; 
- Sat, 17 Oct 2026 16:53:57 -0700 (PDT)
+ bh=HhDAkMWWptSxUGoQrtnECq56Rwp/yO0E6KNR9BZ2N7c=;
+ b=RS5IH5uw4VZGQju8fUa1gPbfubCguPoH0YkGU/n2sP31OFw+FheY1kASRa6IGwa9sJ
+ 2rjOaUOlLdw32ae8IkrnbpnF7tWlsxjmlVNAvtcCFD8JkMcuPkPXR74ZneycTEEG099j
+ iVUo6irjg3L/ekomBhY3qonjPyC5b1JPkALQDfQsLnDRbTRM8pPlol6W2PKIg3TFGYPn
+ QXmDXcTjG6trU6EYWAZgbX7RKDuhhISFL/0B9Y1T3nbgEyJNfxg9loJo7Pu+jXXQ7uqp
+ n+6F/XdIRegtED6+JZ8D8xOrlhrtlcAwnNYCM0uI6mASbnPh5grrCFhEkUm7GoV648Nw
+ AGZA==
+X-Gm-Message-State: AFq9FYJe1yc7BDlSPZjSoSSTGnl71dCmY2MI1XhVElWjurzyQclzScZN
+ 5Pc+8HbtUEsWEdNb0Pw7N+K/Y3qi8GqFz/OdMCvieeeeKM3k3Yn2xY2/UI0/qNPLy3vXOOWGYZE
+ ibwrisqGiWxoy4Gl0x2TYcoPmMJmiQjNXqdd/NTeENMMTObp6mfoRBA/dOmbS8Fs8S22S
+X-Gm-Gg: AYBFou0v4j9cU9xEr3oCns4M9EGnLbN1PUDUUpGc4EoyxDa+QuPXsyIGU+fRwuBRw5B
+ N/BnmvjLYtDAlQM9xyK8Z3f3CXSOZ+LGNR0b4wK+5XybDj8gkeAczhP7l3JFOehzV8X1Dr21lvv
+ 4miydKePlfMpYHGgZwCnva2yTqTbSJfKSJQVao82V0ASeu3Q6gklSTJcxDuzlT9t48GndLBVboR
+ 95QRQ5p7eD1MPqSwm44ev6ioQpTbkBSPSz/LU5pFJEUlvsJbCrb2uYgLznYlzKrxGsfK/Gjj7OL
+ p/eTn3KuNT04jOMEabp3qdWvqiR6qh16q4H4H/R0lsRNo14M/lgDNOmQqiwqobZzCm/v4HmIH7u
+ G2sf9AozKj+Lkiq5SvbMJmL+mMeVYYGyucs7XbxrKTxWaaNVpPsg5a1i3Rwac+jeWYI9qWPHL3I
+ tYIlrx12owQoGauqSFJyfPFRK/CX8/fI+KwyQrYcUMRooHMiIJqtP732EXvTKwudEa4rKEIFI6w
+ WUOblfu0ofa/t009CGKltUFU1sz6i60QIi4p780zYB0orN1x2q0Kn4F2D4lNOy9W1UM493A7SHk
+ 3MbzZZFyqAVf4V72K+f+w+Zhn6sD7f+zewuMXfhf3zqA0l/tcRK86TaTflBV
+X-Received: by 2002:a05:600c:630d:b0:49f:c5aa:9ef4 with SMTP id
+ 5b1f17b1804b1-4a1d75fe0fbmr72733145e9.8.1792281239118; 
+ Sat, 17 Oct 2026 16:53:59 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-48dfd5ad06bsm14029843f8f.14.2026.10.17.16.53.56
+ 5b1f17b1804b1-4a1cdf2f0d1sm91105585e9.2.2026.10.17.16.53.58
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sat, 17 Oct 2026 16:53:57 -0700 (PDT)
+ Sat, 17 Oct 2026 16:53:58 -0700 (PDT)
 X-Google-Original-From: "Antonio Quartulli (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
 Date: Sat, 17 Oct 2026 23:53:52 +0000
-To: Arne Schwabe <arne-openvpn@rfc2549.org>
+To: Arne Schwabe <arne-openvpn@rfc2549.org>,
+ Frank Lichtenheld <frank@lichtenheld.com>
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newpatchset
-X-Gerrit-PatchSet: 5
-X-Gerrit-Change-Id: I64e0850d48647a2c0e3d385c2f20a9f445931727
-X-Gerrit-Change-Number: 1786
+X-Gerrit-PatchSet: 4
+X-Gerrit-Change-Id: I0bff8d0a549a65b7da01ea0e785b7ec8bea17f05
+X-Gerrit-Change-Number: 1790
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/1786?usp=email>
-X-Gerrit-Commit: 8a3b7286141a31ae051b81d827cb398480f3394e
-In-Reply-To: <gerrit.1784067448000.I64e0850d48647a2c0e3d385c2f20a9f445931727@gerrit.openvpn.net>
-References: <gerrit.1784067448000.I64e0850d48647a2c0e3d385c2f20a9f445931727@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzg0MDY3NDQ4MDAwLkk2NGUwODUwZDQ4NjQ3YTJjMGUzZDM4NWMyZjIwYTlmNDQ1OTMxNzI3QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <ac35d8ce42788b64f24e76bad14c1c5c71d1b132-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/1790?usp=email>
+X-Gerrit-Commit: db260d1a93b5ce161b963d944e75bbf26538d74e
+In-Reply-To: <gerrit.1784150390000.I0bff8d0a549a65b7da01ea0e785b7ec8bea17f05@gerrit.openvpn.net>
+References: <gerrit.1784150390000.I0bff8d0a549a65b7da01ea0e785b7ec8bea17f05@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzg0MTUwMzkwMDAwLkkwYmZmOGQwYTU0OWE2NWI3ZGEwMWVhMGU3ODViN2VjOGJlYTE3ZjA1QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <f1209c349d379de322acb0afc985d8ace093a100-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.2
-X-Headers-End: 1xIEE0-0006lU-Gb
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: multi: assign IPv6
- addresses from a tagged subnet-pool
+X-Headers-End: 1xIEE2-0006lV-4B
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: pool,
+ multi: persist subnet pools via --ifconfig-pool-persist
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -139,1880 +139,1919 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 From: "Antonio Quartulli \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
 Reply-To: antonio@mandelbit.com, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net
+ openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com
 Cc: "Antonio Quartulli \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============7664813502211445413=="
+Content-Type: multipart/mixed; boundary="===============2408923754597247360=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============7664813502211445413==
+--===============2408923754597247360==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="mn11nZO5KFo="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="A9wbPNixL3U="; charset=UTF-8
 
---mn11nZO5KFo=
+--A9wbPNixL3U=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: Arne Schwabe=2E
+Attention is currently required from: Arne Schwabe, Frank Lichtenheld=2E
 
-Hello Arne Schwabe, =
+H=
+ello Arne Schwabe, Frank Lichtenheld, 
+
+I'd like you to reexamine a change=
+=2E Please visit
+
+    https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1790?usp=
+=3Demail
+
+to look at the new patch set (#4)=2E
 
 
-I'd like you to reexamine a change=2E Please visit
-
-    https://gerrit=2E=
-openvpn=2Enet/c/openvpn/+/1786?usp=3Demail
-
-to look at the new patch set (#=
-5)=2E
-
-
-Change subject: multi: assign IPv6 addresses from a tagged subnet-p=
-ool
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+Change subject: pool, mult=
+i: persist subnet pools via --ifconfig-pool-persist
+=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-multi: =
-assign IPv6 addresses from a tagged subnet-pool
+pool, multi: persist subnet pools =
+via --ifconfig-pool-persist
 
-Add the IPv6 counterpart o=
-f --subnet-pool:
+Extend --ifconfig-pool-persist so its single f=
+ile covers the global pool
+and every --subnet-pool=2E ifconfig_pool_read()/=
+ifconfig_pool_write() now
+operate on the set of pools: each persisted entry=
+ is routed to the pool
+whose address range owns it, and an entry matching n=
+o configured pool
+(e=2Eg=2E a --subnet-pool that was removed) is ignored wi=
+th a warning=2E The
+subnet pools already exist at startup, so their saved a=
+llocations are
+reloaded before the first client connects; a persisted entry=
+ cannot take
+over a reserved pool gateway=2E
 
-  subnet-pool-ipv6 <tag> <network>/<bits> [<gateway>]   (=
-main config)
-
-selected by the same per-client --subnet-pool-tag=2E A client=
-'s tag is
-resolved against the IPv6 pool list too and, when it matches, an =
-IPv6
-address is handed out from the group's pool alongside any IPv4 one (a
-=
-single dual-stack ifconfig_pool per tag)=2E The pool gateway is pushed as
-t=
-he remote end of the client's ifconfig-ipv6, as the server's own
-address is=
- off-link for it=2E A tag matching neither family is still
-declined with AU=
-TH_FAILED=2E
-
-As for IPv4 the pools are checked when the config is loaded (=
-network
-between /64 and /124 without host bits, gateway a host address insi=
-de
-it, unique tags, no overlap with another pool or the --server-ipv6
-netwo=
-rk), created at startup with their gateway reserved, and routed
-into the se=
-rver's tun device=2E
-
-Change-Id: I64e0850d48647a2c0e3d385c2f20a9f445931727
-=
+Change-Id: I0bff8d0a549a65b7d=
+a01ea0e785b7ec8bea17f05
 GitHub: closes openvpn/OpenVPN#987
-Signed-off-by: Antonio Quartulli <antoni=
-o@mandelbit=2Ecom>
+Signed-off-by: A=
+ntonio Quartulli <antonio@mandelbit=2Ecom>
 ---
-M doc/man-sections/server-options=2Erst
-M src/openvp=
-n/multi=2Ec
-M src/openvpn/options=2Ec
-M src/openvpn/options=2Eh
-M src/openv=
-pn/options_util=2Ec
-M src/openvpn/options_util=2Eh
+M CMakeLists=2Etxt
+M doc/man=
+-sections/server-options=2Erst
+M src/openvpn/multi=2Ec
+M src/openvpn/option=
+s=2Ec
 M src/openvpn/pool=2Ec
-M=
- src/openvpn/pool=2Eh
-M tests/unit_tests/openvpn/test_subnet_pool=2Ec
-9 fil=
-es changed, 389 insertions(+), 29 deletions(-)
+M src/openvpn/pool=2Eh
+M tests/unit_tests/open=
+vpn/Makefile=2Eam
+A tests/unit_tests/openvpn/test_pool=2Ec
+8 files changed,=
+ 453 insertions(+), 34 deletions(-)
 
 
-  git pull ssh://gerrit=2E=
-openvpn=2Enet:29418/openvpn refs/changes/86/1786/5
+  git pull ssh://gerrit=2Eopenvpn=2En=
+et:29418/openvpn refs/changes/90/1790/4
 
-diff --git a/doc/man-se=
-ctions/server-options=2Erst b/doc/man-sections/server-options=2Erst
-index d=
-868d09=2E=2Eb3e687f 100644
---- a/doc/man-sections/server-options=2Erst
-+++ =
-b/doc/man-sections/server-options=2Erst
-@@ -359,11 +359,32 @@
-   and FreeBS=
-D the IPv4 route is installed on-link, without a gateway, so its
-   ``route=
-_gateway_{n}`` is not set for ``--route-up`` scripts=2E
- 
-+--subnet-pool-ip=
-v6 args
-+  The IPv6 counterpart of ``--subnet-pool``=2E Repeatable main-con=
-fig directive=2E
-+
-+  Valid syntax:
-+  ::
-+
-+     subnet-pool-ipv6 tag netw=
-ork/bits [gateway]
-+
-+  ``bits`` must be between 64 and 124; ``gateway`` de=
-faults to the first
-+  address of the network, is never assigned to a clien=
-t, and is pushed to the
-+  pool's clients as the remote end of their ``ifco=
-nfig-ipv6``=2E A tag may name
-+  an IPv4 pool, an IPv6 pool, or both; a cli=
-ent referencing it with
-+  ``--subnet-pool-tag`` is then assigned an addres=
-s from each family the tag
-+  defines=2E
-+
-+  Requires ``--server-ipv6`` wi=
-th ``--dev tun``=2E ``network`` must have no host
-+  bits set, ``gateway`` =
-must be a host address inside it, each ``tag`` may be
-+  defined only once =
-and no pool may overlap another one or the
-+  ``--server-ipv6`` network=2E =
-As for ``--subnet-pool``, the server routes each
-+  pool's network into the=
- tun device=2E
-+
- --subnet-pool-tag tag
--  Assign this client to the ``--su=
-bnet-pool`` named ``tag``=2E Must be
--  associated with a specific client i=
-nstance via ``--client-config-dir`` or
--  ``--client-connect``=2E Several c=
-lients may reference the same tag and are
--  then served from the same shar=
-ed pool=2E
-+  Assign this client to the ``--subnet-pool`` / ``--subnet-pool=
--ipv6`` named
-+  ``tag``=2E Must be associated with a specific client insta=
-nce via
-+  ``--client-config-dir`` or ``--client-connect``=2E Several clien=
-ts may
-+  reference the same tag and are then served from the same shared p=
-ool(s)=2E
- 
- --ifconfig-ipv6-push args
-   for ``--client-config-dir`` per-c=
-lient static IPv6 interface
-diff --git a/src/openvpn/multi=2Ec b/src/openvp=
-n/multi=2Ec
-index 86fd9c0=2E=2Eac3962d 100644
---- a/src/openvpn/multi=2Ec
-+=
-++ b/src/openvpn/multi=2Ec
-@@ -392,6 +392,10 @@
-     {
-         multi_get_g=
-roup_pool(m, &t->options, d->tag);
-     }
-+    for (const struct subnet_poo=
-l6_def *d =3D t->options=2Esubnet_pools_ipv6; d; d =3D d->next)
-+    {
-+   =
-     multi_get_group_pool(m, &t->options, d->tag);
-+    }
- 
-     /*
-      *=
- Help us keep track of routing table=2E
-@@ -1469,14 +1473,24 @@
-     }
- 
-  =
-   const struct subnet_pool_def *d4 =3D subnet_pool_by_tag(o->subnet_pools,=
- tag);
--    ASSERT(d4);
-+    const struct subnet_pool6_def *d6 =3D subnet_p=
-ool6_by_tag(o->subnet_pools_ipv6, tag);
-+    ASSERT(d4 || d6);
-     ALLOC_O=
-BJ_CLEAR(sp, struct subnet_pool);
--    sp->tag =3D d4->tag;
--    /* every h=
-ost address of the subnet, minus the gateway reserved below */
--    sp->poo=
-l =3D ifconfig_pool_init(true, IFCONFIG_POOL_INDIV, d4->network + 1,
--     =
-                             (d4->network | ~d4->netmask) - 1, o->duplicate=
-_cn, false,
--                                  in6addr_any, 0);
--    ifconf=
-ig_pool_reserve_ip(sp->pool, d4->gateway);
-+    sp->tag =3D d4 ? d4->tag : =
-d6->tag;
-+    /* every host address of each subnet, minus the gateways rese=
-rved below
-+     * (the IPv4 and the IPv6 address of a client share one poo=
-l handle) */
-+    sp->pool =3D ifconfig_pool_init(d4 !=3D NULL, IFCONFIG_PO=
-OL_INDIV, d4 ? d4->network + 1 : 0,
-+                                  d4 ?=
- (d4->network | ~d4->netmask) - 1 : 0, o->duplicate_cn,
-+                  =
-                d6 !=3D NULL, d6 ? add_in6_addr(d6->network, 1) : in6addr_a=
-ny,
-+                                  d6 ? (int)d6->netbits : 0);
-+    if =
-(d4)
-+    {
-+        ifconfig_pool_reserve_ip(sp->pool, d4->gateway);
-+    =
-}
-+    if (d6)
-+    {
-+        ifconfig_pool_reserve_ipv6(sp->pool, &d6->ga=
-teway);
-+    }
-     sp->next =3D m->subnet_pools;
-     m->subnet_pools =3D =
-sp;
-     return sp->pool;
-@@ -1510,6 +1524,19 @@
-             mi->context=
-=2Eoptions=2Esubnet_pool_gateway =3D d->gateway;
-         }
-     }
-+    if =
-(mi->context=2Eoptions=2Esubnet_pool_tag)
-+    {
-+        const struct subn=
-et_pool6_def *d =3D subnet_pool6_by_tag(
-+            m->top=2Eoptions=2Esu=
-bnet_pools_ipv6, mi->context=2Eoptions=2Esubnet_pool_tag);
-+
-+        mi->c=
-ontext=2Eoptions=2Esubnet_pool_ipv6_defined =3D d !=3D NULL;
-+        if (d=
-)
-+        {
-+            mi->context=2Eoptions=2Esubnet_pool_ipv6_network =
-=3D d->network;
-+            mi->context=2Eoptions=2Esubnet_pool_ipv6_netbi=
-ts =3D d->netbits;
-+            mi->context=2Eoptions=2Esubnet_pool_ipv6_ga=
-teway =3D d->gateway;
-+        }
-+    }
- 
-     /*
-      * If ifconfig addre=
-sses were set by dynamic config file,
-@@ -1544,15 +1571,16 @@
-             =
-    "MULTI_sva: WARNING: if --ifconfig-push is used for IPv4, automatic IPv=
-6 assignment from --ifconfig-ipv6-pool does not work=2E  Use --ifconfig-ipv=
-6-push for IPv6 then=2E");
-         }
-     }
--    else if (mi->context=2Eop=
-tions=2Esubnet_pool_defined)
-+    else if (mi->context=2Eoptions=2Esubnet_p=
-ool_defined
-+             || mi->context=2Eoptions=2Esubnet_pool_ipv6_defin=
-ed)
-     {
--        /* dynamic address from this client's --subnet-pool gro=
-up */
-+        /* dynamic address(es) from this client's --subnet-pool grou=
-p */
-         struct ifconfig_pool *group =3D
-             multi_get_group_=
-pool(m, &m->top=2Eoptions, mi->context=2Eoptions=2Esubnet_pool_tag);
- 
-    =
-     /* the address may have been acquired before the tag was known (from
- =
-         * the global pool) or for a tag that a later handler overrode: dro=
-p
--         * it so we serve this client from its current group */
-+       =
-  * it so we serve this client from its current group only */
-         if (=
-mi->vaddr_handle >=3D 0 && mi->vaddr_pool !=3D group)
-         {
-          =
-   ifconfig_pool_release(mi->vaddr_pool ? mi->vaddr_pool : m->ifconfig_pool=
-,
-@@ -1560,32 +1588,50 @@
-             mi->vaddr_handle =3D -1;
-           =
-  mi->vaddr_pool =3D NULL;
-             mi->context=2Ec2=2Epush_ifconfig_de=
-fined =3D false;
-+            mi->context=2Ec2=2Epush_ifconfig_ipv6_defined=
- =3D false;
-         }
- 
-         if (mi->vaddr_handle < 0)
-         {
-    =
-         in_addr_t local =3D 0, remote =3D 0;
-+            struct in6_addr =
-remote_ipv6;
-             const char *cn =3D NULL;
- 
-+            CLEAR(rem=
-ote_ipv6);
-             if (!mi->context=2Eoptions=2Eduplicate_cn)
-        =
-     {
-                 cn =3D tls_common_name(mi->context=2Ec2=2Etls_multi=
-, true);
-             }
- 
-             mi->vaddr_pool =3D group;
--         =
-   mi->vaddr_handle =3D ifconfig_pool_acquire(mi->vaddr_pool, &local, &remo=
-te, NULL, cn);
--            if (mi->vaddr_handle >=3D 0)
--            {
--  =
-              mi->context=2Ec2=2Epush_ifconfig_local =3D remote;
--         =
-       mi->context=2Ec2=2Epush_ifconfig_remote_netmask =3D
--               =
-     mi->context=2Eoptions=2Esubnet_pool_netmask;
--                mi->cont=
-ext=2Ec2=2Epush_ifconfig_defined =3D true;
--            }
--            else=
+diff --git a/CMakeLists=2Etxt b/CM=
+akeLists=2Etxt
+index 4e87a6a=2E=2E1f5f244 100644
+--- a/CMakeLists=2Etxt
++++=
+ b/CMakeLists=2Etxt
+@@ -691,6 +691,7 @@
+         "test_options_parse"
+     =
+    "test_packet_id"
+         "test_pkt"
++        "test_pool"
+         "tes=
+t_provider"
+         "test_socket"
+         "test_ssl"
+@@ -874,6 +875,15 @@=
 
-+            mi->vaddr_handle =3D
-+                ifconfig_pool_acquire(m=
-i->vaddr_pool, &local, &remote, &remote_ipv6, cn);
-+            if (mi->vad=
-dr_handle < 0)
-             {
-                 msg(D_MULTI_ERRORS, "MULTI: =
-no free --subnet-pool addresses are available for %s",
-                    =
- multi_instance_string(mi, false, &gc));
-             }
-+            else
-+=
-            {
-+                if (mi->context=2Eoptions=2Esubnet_pool_defi=
-ned)
-+                {
-+                    mi->context=2Ec2=2Epush_ifconf=
-ig_local =3D remote;
-+                    mi->context=2Ec2=2Epush_ifconfig_=
-remote_netmask =3D
-+                        mi->context=2Eoptions=2Esubnet_=
-pool_netmask;
-+                    mi->context=2Ec2=2Epush_ifconfig_defined=
- =3D true;
-+                }
-+                if (mi->context=2Eoptions=2E=
-subnet_pool_ipv6_defined)
-+                {
-+                    /* the se=
-rver's own address is off-link for this client:
-+                     * han=
-d out the pool gateway as the remote end instead */
-+                    mi=
-->context=2Ec2=2Epush_ifconfig_ipv6_local =3D remote_ipv6;
-+               =
-     mi->context=2Ec2=2Epush_ifconfig_ipv6_remote =3D
-+                    =
-    mi->context=2Eoptions=2Esubnet_pool_ipv6_gateway;
-+                    =
-mi->context=2Ec2=2Epush_ifconfig_ipv6_netbits =3D
-+                        =
-mi->context=2Eoptions=2Esubnet_pool_ipv6_netbits;
-+                    mi->=
-context=2Ec2=2Epush_ifconfig_ipv6_defined =3D true;
-+                }
-+   =
-         }
-         }
-     }
-     else if (m->ifconfig_pool && mi->vaddr_ha=
-ndle < 0) /* otherwise, choose a pool address */
-@@ -2926,7 +2972,9 @@
-    =
- }
+         src/openvpn/options_util=2Ec
+         )
  
-     if (mi->context=2Eoptions=2Esubnet_pool_tag
--        && !subnet_p=
-ool_by_tag(m->top=2Eoptions=2Esubnet_pools, mi->context=2Eoptions=2Esubnet_=
-pool_tag))
-+        && !subnet_pool_by_tag(m->top=2Eoptions=2Esubnet_pools,=
- mi->context=2Eoptions=2Esubnet_pool_tag)
-+        && !subnet_pool6_by_tag(=
-m->top=2Eoptions=2Esubnet_pools_ipv6,
-+                                mi->=
-context=2Eoptions=2Esubnet_pool_tag))
-     {
-         msg(D_MULTI_ERRORS, "=
-MULTI: client has been rejected due to unknown --subnet-pool-tag '%s'",
-   =
-          mi->context=2Eoptions=2Esubnet_pool_tag);
-diff --git a/src/openvp=
-n/options=2Ec b/src/openvpn/options=2Ec
-index d5666b8=2E=2E414680c 100644
--=
--- a/src/openvpn/options=2Ec
-+++ b/src/openvpn/options=2Ec
-@@ -455,6 +455,8=
- @@
-     "--subnet-pool tag network netmask [gateway] : Define a named pool=
- of\n"
-     "                  addresses outside the --server network, sele=
-cted per\n"
-     "                  client with --subnet-pool-tag=2E\n"
-+  =
-  "--subnet-pool-ipv6 tag network/bits [gateway] : IPv6 counterpart of\n"
-+=
-    "                  --subnet-pool=2E\n"
-     "--subnet-pool-tag tag : As=
-sign this client to the --subnet-pool named tag=2E\n"
-     "               =
-   Only valid in a client-specific config file=2E\n"
-     "--ifconfig-push =
-local remote-netmask : Push an ifconfig option to remote,\n"
-@@ -1944,6 +19=
-46,20 @@
-             subnet_pools_check(options->subnet_pools, options->se=
-rver_network,
-                                options->server_netmask, M_US=
-AGE);
-         }
-+        if (options->subnet_pools_ipv6)
-+        {
++    target_sources(tes=
+t_pool PRIVATE
++        tests/unit_tests/openvpn/mock_get_random=2Ec
 +     =
-       if (!options->server_ipv6_defined)
-+            {
-+                m=
-sg(M_USAGE, "--subnet-pool-ipv6 requires --server-ipv6");
-+            }
-+ =
-           if (dev_type_enum(options->dev, options->dev_type) !=3D DEV_TYPE=
-_TUN
-+                || options->topology !=3D TOP_SUBNET)
-+            {
-=
-+                msg(M_USAGE, "--subnet-pool-ipv6 requires --dev tun and --=
-topology subnet");
-+            }
-+            subnet_pools6_check(options-=
->subnet_pools_ipv6, &options->server_network_ipv6,
-+                       =
-         options->server_netbits_ipv6, M_USAGE);
-+        }
-         MUST_B=
-E_UNDEF(allow_recursive_routing, "allow-recursive-routing");
-         if (o=
-ptions->auth_user_pass_file)
-         {
-@@ -2011,6 +2027,7 @@
-         MUST=
-_BE_UNDEF(ifconfig_pool_persist_filename, "ifconfig-pool-persist");
-       =
-  MUST_BE_UNDEF(ifconfig_ipv6_pool_defined, "ifconfig-ipv6-pool");
-        =
- MUST_BE_UNDEF(subnet_pools, "subnet-pool");
-+        MUST_BE_UNDEF(subnet_=
-pools_ipv6, "subnet-pool-ipv6");
-         MUST_BE_UNDEF(real_hash_size, "ha=
-sh-size");
-         MUST_BE_UNDEF(virtual_hash_size, "hash-size");
-        =
- MUST_BE_UNDEF(learn_address_script, "learn-address");
-@@ -3144,8 +3161,9 @=
-@
- }
+   src/openvpn/pool=2Ec
++        src/openvpn/status=2Ec
++        src/openvp=
+n/otime=2Ec
++        src/openvpn/fdmisc=2Ec
++        src/openvpn/interval=
+=2Ec
++        )
++
+     target_sources(test_ncp PRIVATE
+         src/openvpn=
+/crypto_epoch=2Ec
+         src/openvpn/crypto_mbedtls=2Ec
+diff --git a/doc/=
+man-sections/server-options=2Erst b/doc/man-sections/server-options=2Erst
+i=
+ndex 5fd05fd=2E=2E6a3961f 100644
+--- a/doc/man-sections/server-options=2Ers=
+t
++++ b/doc/man-sections/server-options=2Erst
+@@ -275,6 +275,11 @@
+   ``fil=
+e`` is a comma-delimited ASCII file, formatted as
+   :code:`<Common-Name>,<=
+IP-address>`=2E
  
- /*
-- * The server's tun device is only configured with the --server=
- network, so
-- * route each --subnet-pool network into it as well: without =
-this the server
-+ * The server's tun device is only configured with the --s=
-erver and
-+ * --server-ipv6 networks, so route each --subnet-pool and --sub=
-net-pool-ipv6
-+ * network into it as well: without this the server
-  * coul=
-d not reach its subnet-pool clients when the data channel runs in
-  * users=
-pace=2E  Under DCO on Linux and FreeBSD the routes are installed on-link,
- =
- * see subnet_pool_routes_onlink()=2E
-@@ -3163,6 +3181,16 @@
-              =
-                         o->route_default_table_id);
-         ro->on_link =
-=3D subnet_pool_routes_onlink(o);
-     }
++  A single ``file`` covers the global pool and every ``-=
+-subnet-pool``: each
++  entry is associated with a pool by its address, and=
+ on load an entry whose
++  address falls in no configured pool (for example=
+ a ``--subnet-pool`` that is
++  no longer defined) is ignored with a warnin=
+g=2E
 +
-+    for (const struct subnet_po=
-ol6_def *d =3D o->subnet_pools_ipv6; d; d =3D d->next)
-+    {
-+        stru=
-ct buffer prefix =3D alloc_buf_gc(64, &o->gc);
-+
-+        buf_printf(&prefi=
-x, "%s/%u", print_in6_addr(d->network, 0, &o->gc), d->netbits);
-+        ro=
-l6_check_alloc(o);
-+        add_route_ipv6_to_option_list(o->routes_ipv6, B=
-STR(&prefix), NULL, NULL,
-+                                      o->route_d=
-efault_table_id);
-+    }
- }
+   If ``seconds`` =3D :code:`0`, ``file`` will be treated as read-on=
+ly=2E This
+   is useful if you would like to treat ``file`` as a configurat=
+ion file=2E
  
- static void
-@@ -6325,6 +6353,37 @@
-         =
-sp->next =3D options->subnet_pools;
-         options->subnet_pools =3D sp;
-=
-     }
-+    else if (streq(p[0], "subnet-pool-ipv6") && p[1] && p[2] && !p[=
-4])
-+    {
-+        struct subnet_pool6_def *sp;
-+        struct in6_addr n=
-etwork, gateway;
-+        unsigned int netbits =3D 0;
-+
-+        VERIFY_PER=
-MISSION(OPT_P_GENERAL);
-+        if (!get_ipv6_addr(p[2], &network, &netbit=
-s, msglevel))
-+        {
-+            msg(msglevel, "cannot parse --subnet-=
-pool-ipv6 network");
-+            goto err;
-+        }
-+        if (netbits=
- < 64 || netbits > 124)
-+        {
-+            msg(msglevel, "--subnet-poo=
-l-ipv6 network must be between /64 and /124 (not /%d)",
-+                ne=
-tbits);
-+            goto err;
-+        }
-+        if (p[3] && !get_ipv6_ad=
-dr(p[3], &gateway, NULL, msglevel))
-+        {
-+            msg(msglevel, "=
-cannot parse --subnet-pool-ipv6 gateway");
-+            goto err;
-+        =
-}
-+        ALLOC_OBJ_GC(sp, struct subnet_pool6_def, &options->gc);
-+      =
-  sp->tag =3D p[1];
-+        sp->network =3D network;
-+        sp->netbits =
-=3D netbits;
-+        sp->gateway =3D p[3] ? gateway : add_in6_addr(network=
-, 1);
-+        sp->next =3D options->subnet_pools_ipv6;
-+        options->s=
-ubnet_pools_ipv6 =3D sp;
-+    }
-     else if (streq(p[0], "subnet-pool-tag"=
-) && p[1] && !p[2])
-     {
-         VERIFY_PERMISSION(OPT_P_INSTANCE);
-diff=
- --git a/src/openvpn/options=2Eh b/src/openvpn/options=2Eh
-index ff26066=2E=
-=2Ec758943 100644
---- a/src/openvpn/options=2Eh
-+++ b/src/openvpn/options=
-=2Eh
-@@ -263,6 +263,16 @@
-     in_addr_t gateway;
- };
+diff --git a/src/openvpn/multi=2Ec b/src/openvpn/multi=2Ec
+in=
+dex ac3962d=2E=2E8d43894 100644
+--- a/src/openvpn/multi=2Ec
++++ b/src/openv=
+pn/multi=2Ec
+@@ -69,6 +69,38 @@
+ static struct ifconfig_pool *multi_get_gro=
+up_pool(struct multi_context *m,
+                                          =
+         const struct options *o, const char *tag);
  
-+/* The IPv6 counte=
-rpart of struct subnet_pool_def (--subnet-pool-ipv6)=2E */
-+struct subnet_p=
-ool6_def
++/*
++ * Collect every=
+ address pool (the global one plus each --subnet-pool group)
++ * into a gc-=
+allocated array, for the single combined --ifconfig-pool-persist
++ * file=
+=2E  Returns the number of pools=2E
++ */
++static int
++multi_all_pools(struc=
+t multi_context *m, struct gc_arena *gc, struct ifconfig_pool ***pools)
 +{
-+    struct subnet_pool6_def *next;
-+    const char *tag;
-+    =
-struct in6_addr network;
-+    unsigned int netbits;
-+    struct in6_addr ga=
-teway;
-+};
-+
- /* Command line options */
- struct options
- {
-@@ -529,12 +539=
-,17 @@
-     bool push_ifconfig_constraint_defined;
-     in_addr_t push_ifco=
-nfig_constraint_network;
-     in_addr_t push_ifconfig_constraint_netmask;
--=
-    struct subnet_pool_def *subnet_pools; /* named pools (server config) */=
-
--    const char *subnet_pool_tag;          /* which pool this client uses =
-(CCD) */
--    bool subnet_pool_defined;             /* resolved from the ta=
-g at connect */
-+    struct subnet_pool_def *subnet_pools;       /* named I=
-Pv4 pools (server config) */
-+    struct subnet_pool6_def *subnet_pools_ipv=
-6; /* named IPv6 pools (server config) */
-+    const char *subnet_pool_tag;=
-                /* which pool this client uses (CCD) */
-+    bool subnet_po=
-ol_defined;                   /* resolved from the tag at connect */
-     i=
-n_addr_t subnet_pool_network;
-     in_addr_t subnet_pool_netmask;
-     in_a=
-ddr_t subnet_pool_gateway;
-+    bool subnet_pool_ipv6_defined; /* resolved =
-from the tag at connect */
-+    struct in6_addr subnet_pool_ipv6_network;
-+=
-    unsigned int subnet_pool_ipv6_netbits;
-+    struct in6_addr subnet_pool=
-_ipv6_gateway;
-     bool push_ifconfig_ipv4_blocked;           /* IPv4 */
- =
-    bool push_ifconfig_ipv6_defined;           /* IPv6 */
-     struct in6_a=
-ddr push_ifconfig_ipv6_local;  /* IPv6 */
-diff --git a/src/openvpn/options_=
-util=2Ec b/src/openvpn/options_util=2Ec
-index 744ad4c=2E=2Efb38cfa 100644
--=
--- a/src/openvpn/options_util=2Ec
-+++ b/src/openvpn/options_util=2Ec
-@@ -11=
-6,6 +116,108 @@
-     return true;
- }
- 
-+/* value of bit <i> (0 =3D most sig=
-nificant) of an IPv6 address */
-+static bool
-+in6_bit(const struct in6_addr=
- *a, unsigned int i)
-+{
-+    return a->s6_addr[i / 8] & (0x80 >> (i % 8));
 =
-+}
-+
-+/* true if the first <bits> bits of the two addresses are equal */
-+s=
-tatic bool
-+in6_prefix_equal(const struct in6_addr *a, const struct in6_add=
-r *b, unsigned int bits)
-+{
-+    for (unsigned int i =3D 0; i < bits; ++i)
-=
-+    {
-+        if (in6_bit(a, i) !=3D in6_bit(b, i))
-+        {
-+         =
-   return false;
-+        }
-+    }
-+    return true;
-+}
-+
-+/* true if every=
- bit of <a> from bit <from> on is zero */
-+static bool
-+in6_suffix_zero(con=
-st struct in6_addr *a, unsigned int from)
-+{
-+    for (unsigned int i =3D f=
-rom; i < 128; ++i)
-+    {
-+        if (in6_bit(a, i))
-+        {
-+         =
-   return false;
-+        }
-+    }
-+    return true;
-+}
-+
-+bool
-+subnet_poo=
-ls6_check(const struct subnet_pool6_def *pools, const struct in6_addr *serv=
-er_network,
-+                    unsigned int server_netbits, msglvl_t msgl=
-evel)
-+{
-+    for (const struct subnet_pool6_def *d =3D pools; d; d =3D d->=
-next)
-+    {
-+        if (d->netbits < 64 || d->netbits > 124)
-+        {
-+=
-            msg(msglevel, "--subnet-pool-ipv6 %s: network must be between /=
-64 and /124 (not /%u)",
-+                d->tag, d->netbits);
-+            =
-return false;
-+        }
-+
-+        if (!in6_suffix_zero(&d->network, d->ne=
-tbits))
-+        {
-+            msg(msglevel, "--subnet-pool-ipv6 %s: netwo=
-rk has host bits set", d->tag);
-+            return false;
-+        }
++    struct subnet_pool *sp;
++    int n =3D m->ifconfig_pool ? 1 : 0;
 +
 +  =
-      if (!in6_prefix_equal(&d->gateway, &d->network, d->netbits)
-+        =
-    || in6_suffix_zero(&d->gateway, d->netbits))
-+        {
-+            ms=
-g(msglevel,
-+                "--subnet-pool-ipv6 %s: gateway must be a host=
- address inside the network",
-+                d->tag);
-+            return=
- false;
-+        }
+  for (sp =3D m->subnet_pools; sp; sp =3D sp->next)
++    {
++        n++;
++ =
+   }
 +
-+        if (server_netbits
-+            && in6_prefix=
-_equal(&d->network, server_network, min_uint(d->netbits, server_netbits)))
++    struct ifconfig_pool **arr =3D gc_malloc(n * sizeof(struct ifco=
+nfig_pool *), true, gc);
++    int i =3D 0;
++
++    if (m->ifconfig_pool)
++  =
+  {
++        arr[i++] =3D m->ifconfig_pool;
++    }
++    for (sp =3D m->subn=
+et_pools; sp; sp =3D sp->next)
++    {
++        arr[i++] =3D sp->pool;
++    =
+}
++
++    *pools =3D arr;
++    return n;
++}
++
+ /*#define MULTI_DEBUG_EVENT_L=
+OOP*/
+ 
+ #ifdef MULTI_DEBUG_EVENT_LOOP
+@@ -165,11 +197,16 @@
+ void
+ multi_i=
+fconfig_pool_persist(struct multi_context *m, bool force)
+ {
+-    /* write =
+pool data to file */
+-    if (m->ifconfig_pool && m->top=2Ec1=2Eifconfig_po=
+ol_persist
++    /* write the global pool and every --subnet-pool to the one=
+ persist file */
++    if (m->top=2Ec1=2Eifconfig_pool_persist
+         && (=
+force || ifconfig_pool_write_trigger(m->top=2Ec1=2Eifconfig_pool_persist)))=
+
+     {
+-        ifconfig_pool_write(m->top=2Ec1=2Eifconfig_pool_persist, m=
+->ifconfig_pool);
++        struct gc_arena gc =3D gc_new();
++        struct=
+ ifconfig_pool **pools;
++        int n =3D multi_all_pools(m, &gc, &pools);=
+
++
++        ifconfig_pool_write(m->top=2Ec1=2Eifconfig_pool_persist, pools,=
+ n);
++        gc_free(&gc);
+     }
+ }
+ 
+@@ -378,12 +415,6 @@
+             t=
+->options=2Eifconfig_pool_end, t->options=2Eduplicate_cn,
+             t->o=
+ptions=2Eifconfig_ipv6_pool_defined, t->options=2Eifconfig_ipv6_pool_base,
 =
-+        {
-+            msg(msglevel, "--subnet-pool-ipv6 %s: network overl=
-aps the --server-ipv6 network",
-+                d->tag);
-+            retu=
-rn false;
-+        }
+             t->options=2Eifconfig_ipv6_pool_netbits);
+-
+-        /* reload=
+ pool data from file */
+-        if (t->c1=2Eifconfig_pool_persist)
+-      =
+  {
+-            ifconfig_pool_read(t->c1=2Eifconfig_pool_persist, m->ifcon=
+fig_pool);
+-        }
+     }
+ 
+     /* create every --subnet-pool group up =
+front rather than on first use, so
+@@ -397,6 +428,18 @@
+         multi_get_=
+group_pool(m, &t->options, d->tag);
+     }
+ 
++    /* With --ifconfig-pool-p=
+ersist the single file covers the global pool and
++     * every configured =
+--subnet-pool: reload them all in one pass */
++    if (t->c1=2Eifconfig_poo=
+l_persist)
++    {
++        struct gc_arena gc =3D gc_new();
++        struct=
+ ifconfig_pool **pools;
++        int n =3D multi_all_pools(m, &gc, &pools);=
+
 +
-+        for (const struct subnet_pool6_def *e =3D d=
-->next; e; e =3D e->next)
-+        {
-+            if (!strcmp(d->tag, e->ta=
-g))
-+            {
-+                msg(msglevel, "--subnet-pool-ipv6 %s: t=
-ag defined more than once", d->tag);
-+                return false;
-+      =
-      }
-+            if (in6_prefix_equal(&d->network, &e->network, min_uin=
-t(d->netbits, e->netbits)))
-+            {
-+                msg(msglevel, "=
---subnet-pool-ipv6 %s and %s: networks overlap", d->tag, e->tag);
++        ifconfig_pool_read(t->c1=2Eifconfig_pool_persist, pools, n);
++ =
+       gc_free(&gc);
++    }
++
+     /*
+      * Help us keep track of routing=
+ table=2E
+      */
+diff --git a/src/openvpn/options=2Ec b/src/openvpn/optio=
+ns=2Ec
+index 414680c=2E=2Ea775372 100644
+--- a/src/openvpn/options=2Ec
++++ =
+b/src/openvpn/options=2Ec
+@@ -450,6 +450,7 @@
+     "--ifconfig-pool-persist=
+ file [seconds] : Persist/unpersist ifconfig-pool\n"
+     "                =
+  data to file, at seconds intervals (default=3D600)=2E\n"
+     "          =
+        If seconds=3D0, file will be treated as read-only=2E\n"
++    "     =
+             Covers the global pool and every --subnet-pool=2E\n"
+     "--i=
+fconfig-ipv6-pool base-IP/bits : set aside an IPv6 network block\n"
+     " =
+                 to be dynamically allocated to connecting clients=2E\n"
+  =
+   "--subnet-pool tag network netmask [gateway] : Define a named pool of\n"=
+
+@@ -1923,10 +1924,11 @@
+         MUST_BE_UNDEF(route_delay_defined, "route=
+-delay");
+         MUST_BE_UNDEF(up_delay, "up-delay");
+         if (!optio=
+ns->ifconfig_pool_defined && !options->ifconfig_ipv6_pool_defined
 +        =
-        return false;
+    && !options->subnet_pools && !options->subnet_pools_ipv6
+             &=
+& options->ifconfig_pool_persist_filename)
+         {
+-            msg(M_US=
+AGE,
+-                "--ifconfig-pool-persist must be used with --ifconfig=
+-pool or --ifconfig-ipv6-pool");
++            msg(M_USAGE, "--ifconfig-pool=
+-persist must be used with --ifconfig-pool, "
++                         "--=
+ifconfig-ipv6-pool or --subnet-pool");
+         }
+         if (options->ifc=
+onfig_ipv6_pool_defined && !options->ifconfig_ipv6_local)
+         {
+diff -=
+-git a/src/openvpn/pool=2Ec b/src/openvpn/pool=2Ec
+index 8f899d3=2E=2E2e4f2=
+94 100644
+--- a/src/openvpn/pool=2Ec
++++ b/src/openvpn/pool=2Ec
+@@ -621,13 =
++621,14 @@
+ }
+ 
+ void
+-ifconfig_pool_read(struct ifconfig_pool_persist *per=
+sist, struct ifconfig_pool *pool)
++ifconfig_pool_read(struct ifconfig_pool_=
+persist *persist, struct ifconfig_pool **pools,
++                   int n_p=
+ools)
+ {
+     const int buf_size =3D 128;
+ 
+     update_time();
+ 
+-    if (=
+persist && persist->file && pool)
++    if (persist && persist->file && n_po=
+ols > 0)
+     {
+         struct gc_arena gc =3D gc_new();
+         struct b=
+uffer in =3D alloc_buf_gc(256, &gc);
+@@ -672,6 +673,9 @@
+                 c=
+ontinue;
+             }
+ 
++            /* the address selects which pool th=
+is entry belongs to; an entry
++             * matching none of the configur=
+ed pools is ignored */
++            struct ifconfig_pool *pool =3D NULL;
+  =
+           ifconfig_pool_handle h =3D -1, h6 =3D -1;
+ 
+             if (str=
+len(ip_buf) > 0)
+@@ -685,10 +689,18 @@
+                 }
+                 =
+else
+                 {
+-                    h =3D ifconfig_pool_ip_base_to=
+_handle(pool, addr);
+-                    if (h < 0)
++                    f=
+or (int i =3D 0; i < n_pools && !pool; ++i)
+                     {
+-       =
+                 msg(M_WARN, "pool: IPv4 (%s) out of pool range for CN=3D%s=
+", ip_buf, cn_buf);
++                        h =3D ifconfig_pool_ip_base_to=
+_handle(pools[i], addr);
++                        if (h >=3D 0)
++          =
+              {
++                            pool =3D pools[i];
++          =
+              }
++                    }
++                    if (!pool)
++   =
+                 {
++                        msg(M_WARN, "pool: IPv4 (%s) fo=
+r CN=3D%s is outside every configured pool",
++                            i=
+p_buf, cn_buf);
+                     }
+                 }
+             }
+@@=
+ -701,12 +713,30 @@
+                 {
+                     msg(M_WARN, "po=
+ol: invalid IPv6 (%s) for CN=3D%s", ip6_buf, cn_buf);
+                 }
+- =
+               else
++                else if (pool)
+                 {
++   =
+                 /* IPv4 already picked the pool; v4 and v6 share the handl=
+e */
+                     h6 =3D ifconfig_pool_ipv6_base_to_handle(pool, &a=
+ddr6);
+                     if (h6 < 0)
+                     {
+-           =
+             msg(M_WARN, "pool: IPv6 (%s) out of pool range for CN=3D%s", i=
+p6_buf, cn_buf);
++                        msg(M_WARN, "pool: IPv6 (%s) for =
+CN=3D%s is outside the pool of IPv4 (%s)",
++                            ip6=
+_buf, cn_buf, ip_buf);
++                    }
++                }
++         =
+       else
++                {
++                    for (int i =3D 0; i < n=
+_pools && !pool; ++i)
++                    {
++                        h6 =
+=3D ifconfig_pool_ipv6_base_to_handle(pools[i], &addr6);
++                 =
+       if (h6 >=3D 0)
++                        {
++                         =
+   pool =3D pools[i];
++                        }
++                    }
++  =
+                  if (!pool)
++                    {
++                      =
+  msg(M_WARN, "pool: IPv6 (%s) for CN=3D%s is outside every configured pool=
+",
++                            ip6_buf, cn_buf);
+                     }
+ 
+=
+                     /* Rely on IPv6 if no IPv4 was provided or the one pro=
+vided
+@@ -719,40 +749,44 @@
+                 }
+             }
+ 
+-          =
+  /* at the moment IPv4 and IPv6 share the same pool, therefore offsets
+-  =
+           * have to match for the same client=2E
+-             *
+-        =
+     * If offsets differ we use the IPv4, therefore warn the user about thi=
+s=2E
+-             */
++            /* IPv4 and IPv6 share the same pool han=
+dle, so their offsets have
++             * to match; if they differ we use =
+the IPv4 and warn */
+             if ((h6 >=3D 0) && (h !=3D h6))
+         =
+    {
+                 msg(M_WARN, "pool: IPv4 (%s) and IPv6 (%s) have diff=
+erent offsets! Relying on IPv4",
+                     ip_buf, ip6_buf);
+   =
+          }
+ 
+-            /* if at least one among v4 and v6 was properly =
+parsed, attempt
+-             * setting an handle for this client
+-        =
+     */
+-            if (h >=3D 0)
++            /* set the handle if the en=
+try belongs to one of the pools */
++            if (pool && h >=3D 0)
+     =
+        {
+-                msg(M_INFO, "succeeded -> ifconfig_pool_set(hand=
+=3D%d)", h);
+                 ifconfig_pool_set(pool, cn_buf, h, persist->f=
+ixed);
+             }
+         }
+ 
+-        ifconfig_pool_msg(pool, D_IFCON=
+FIG_POOL);
++        for (int i =3D 0; i < n_pools; ++i)
++        {
++       =
+     ifconfig_pool_msg(pools[i], D_IFCONFIG_POOL);
++        }
+ 
+         gc=
+_free(&gc);
+     }
+ }
+ 
+ void
+-ifconfig_pool_write(struct ifconfig_pool_per=
+sist *persist, const struct ifconfig_pool *pool)
++ifconfig_pool_write(struc=
+t ifconfig_pool_persist *persist, struct ifconfig_pool *const *pools,
++    =
+                int n_pools)
+ {
+-    if (persist && persist->file && (statu=
+s_rw_flags(persist->file) & STATUS_OUTPUT_WRITE) && pool)
++    if (persist =
+&& persist->file && (status_rw_flags(persist->file) & STATUS_OUTPUT_WRITE))=
+
+     {
+         status_reset(persist->file);
+-        ifconfig_pool_list(p=
+ool, persist->file);
++        for (int i =3D 0; i < n_pools; ++i)
++        =
+{
++            if (pools[i])
++            {
++                ifconfig_pool_=
+list(pools[i], persist->file);
 +            }
 +        }
-+    }
-+
-+    return true;
-=
-+}
-+
-+const struct subnet_pool6_def *
-+subnet_pool6_by_tag(const struct sub=
-net_pool6_def *pools, const char *tag)
-+{
-+    for (const struct subnet_poo=
-l6_def *d =3D pools; d; d =3D d->next)
-+    {
-+        if (!strcmp(d->tag, =
-tag))
-+        {
-+            return d;
-+        }
-+    }
-+    return NULL;=
-
-+}
-+
- const char *
- parse_auth_failed_temp(struct options *o, const char *=
-reason)
- {
-diff --git a/src/openvpn/options_util=2Eh b/src/openvpn/options_=
-util=2Eh
-index d60759a=2E=2Ebffcddb 100644
---- a/src/openvpn/options_util=
-=2Eh
-+++ b/src/openvpn/options_util=2Eh
-@@ -53,6 +53,25 @@
- bool subnet_poo=
-ls_check(const struct subnet_pool_def *pools, in_addr_t server_network,
-   =
-                      in_addr_t server_netmask, msglvl_t msglevel);
+         status_fl=
+ush(persist->file);
+     }
+ }
+diff --git a/src/openvpn/pool=2Eh b/src/openv=
+pn/pool=2Eh
+index fda87ed=2E=2E8e50020 100644
+--- a/src/openvpn/pool=2Eh
+++=
++ b/src/openvpn/pool=2Eh
+@@ -107,9 +107,17 @@
  
+ bool ifconfig_pool_write_t=
+rigger(struct ifconfig_pool_persist *persist);
+ 
+-void ifconfig_pool_read(s=
+truct ifconfig_pool_persist *persist, struct ifconfig_pool *pool);
 +/**
++ *=
+ Read a persist file into a set of pools, routing each entry to the pool
++ =
+* whose address range owns it=2E  Entries matching no pool (e=2Eg=2E a --su=
+bnet-pool
++ * that is no longer configured) are ignored with a warning=2E
++=
+ */
++void ifconfig_pool_read(struct ifconfig_pool_persist *persist, struct =
+ifconfig_pool **pools,
++                        int n_pools);
+ 
+-void ifcon=
+fig_pool_write(struct ifconfig_pool_persist *persist, const struct ifconfig=
+_pool *pool);
++/* Write a set of pools to a single persist file=2E */
++void=
+ ifconfig_pool_write(struct ifconfig_pool_persist *persist,
++              =
+           struct ifconfig_pool *const *pools, int n_pools);
+ 
+ #ifdef IFCO=
+NFIG_POOL_TEST
+ void ifconfig_pool_test(in_addr_t start, in_addr_t end);
+di=
+ff --git a/tests/unit_tests/openvpn/Makefile=2Eam b/tests/unit_tests/openvp=
+n/Makefile=2Eam
+index 78f4b6c=2E=2E20bfd6c 100644
+--- a/tests/unit_tests/op=
+envpn/Makefile=2Eam
++++ b/tests/unit_tests/openvpn/Makefile=2Eam
+@@ -17,6 +=
+17,7 @@
+ 	options_parse_testdriver \
+ 	packet_id_testdriver \
+ 	pkt_testdri=
+ver \
++	pool_testdriver \
+ 	provider_testdriver \
+ 	push_update_msg_testdri=
+ver \
+ 	socket_testdriver \
+@@ -385,6 +386,23 @@
+ 	$(top_srcdir)/src/openvp=
+n/platform=2Ec \
+ 	$(top_srcdir)/src/openvpn/mbuf=2Ec
+ 
++pool_testdriver_CF=
+LAGS  =3D \
++	-I$(top_srcdir)/include -I$(top_srcdir)/src/compat -I$(top_sr=
+cdir)/src/openvpn \
++	@TEST_CFLAGS@
++
++pool_testdriver_LDFLAGS =3D @TEST_LD=
+FLAGS@
++
++pool_testdriver_SOURCES =3D test_pool=2Ec \
++	mock_msg=2Ec test_c=
+ommon=2Eh \
++	mock_get_random=2Ec \
++	$(top_srcdir)/src/openvpn/pool=2Ec \
 =
-+ * IPv6 counterpart of subnet_pools_check(): network between /64 and /124
-=
-+ * without host bits, gateway a host address inside it, unique tags, and n=
-o
-+ * network overlapping another pool or the --server-ipv6 network=2E
++	$(top_srcdir)/src/openvpn/status=2Ec \
++	$(top_srcdir)/src/openvpn/buffer=
+=2Ec \
++	$(top_srcdir)/src/openvpn/otime=2Ec \
++	$(top_srcdir)/src/openvpn/=
+platform=2Ec \
++	$(top_srcdir)/src/openvpn/fdmisc=2Ec \
++	$(top_srcdir)/src=
+/openvpn/interval=2Ec
++
+ subnet_pool_testdriver_CFLAGS  =3D \
+ 	-I$(top_src=
+dir)/include -I$(top_srcdir)/src/compat -I$(top_srcdir)/src/openvpn \
+ 	@TE=
+ST_CFLAGS@
+diff --git a/tests/unit_tests/openvpn/test_pool=2Ec b/tests/unit=
+_tests/openvpn/test_pool=2Ec
+new file mode 100644
+index 0000000=2E=2E16008d=
+f
+--- /dev/null
++++ b/tests/unit_tests/openvpn/test_pool=2Ec
+@@ -0,0 +1,299=
+ @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *  =
+           over a single UDP port, with support for SSL/TLS-based
++ *      =
+       session authentication and key exchange,
++ *             packet encr=
+yption, packet authentication, and
++ *             packet compression=2E
++ =
+*
++ *  Copyright (C) 2026 OpenVPN Inc <sales@openvpn=2Enet>
++ *
++ *  This p=
+rogram is free software; you can redistribute it and/or modify
++ *  it unde=
+r the terms of the GNU General Public License version 2
++ *  as published b=
+y the Free Software Foundation=2E
++ *
++ *  This program is distributed in t=
+he hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even=
+ the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR P=
+URPOSE=2E  See the
++ *  GNU General Public License for more details=2E
 + *
 =
-+ * @param pools           head of the --subnet-pool-ipv6 list (may be NULL=
-)
-+ * @param server_network  the --server-ipv6 network
-+ * @param server_ne=
-tbits  the --server-ipv6 prefix length, or 0 if there is none
-+ * @param ms=
-glevel        level of the message logged on the first error
-+ * @return   =
-             true if every definition is valid
++ *  You should have received a copy of the GNU General Public License alon=
+g
++ *  with this program; if not, see <https://www=2Egnu=2Eorg/licenses/>=
+=2E
 + */
-+bool subnet_pools6_che=
-ck(const struct subnet_pool6_def *pools,
-+                         const st=
-ruct in6_addr *server_network, unsigned int server_netbits,
-+              =
-           msglvl_t msglevel);
 +
-+/** IPv6 counterpart of subnet_pool_by_ta=
-g()=2E */
-+const struct subnet_pool6_def *subnet_pool6_by_tag(const struct =
-subnet_pool6_def *pools,
-+                                                 =
-  const char *tag);
++#ifdef HAVE_CONFIG_H
++#include "config=2Eh"
++#endif
 +
- 
- /** Checks if the string is a valid integer by che=
-cking if it can be
-  *  converted to an integer */
-diff --git a/src/openvpn=
-/pool=2Ec b/src/openvpn/pool=2Ec
-index fa04d9c=2E=2E8f899d3 100644
---- a/sr=
-c/openvpn/pool=2Ec
-+++ b/src/openvpn/pool=2Ec
-@@ -445,6 +445,22 @@
-     ret=
-urn true;
- }
- 
-+bool
-+ifconfig_pool_reserve_ipv6(struct ifconfig_pool *pool=
-, const struct in6_addr *addr)
++#include=
+ "syshead=2Eh"
++
++#include <stdlib=2Eh>
++#include <setjmp=2Eh>
++#include <c=
+mocka=2Eh>
++
++#include "pool=2Eh"
++#include "buffer=2Eh"
++#include "platfor=
+m=2Eh"
++#include "test_common=2Eh"
++#include "mock_msg=2Eh"
++
++/*
++ * pool=
+=2Ec pulls in a few socket=2Ec/socket_util=2Ec helpers for address parsing =
+and
++ * formatting=2E  The pool logic under test does not need the full soc=
+ket stack,
++ * so provide small IPv4 implementations here (the IPv6 ones ar=
+e not reached by
++ * these IPv4-only pools, but must exist to link)=2E
++ */=
+
++struct signal_info;
++
++in_addr_t
++getaddr(unsigned int flags, const char =
+*hostname, int resolve_retry_seconds, bool *succeeded,
++        struct sign=
+al_info *sig_info)
 +{
-+    const ifconfig_pool_handle h =3D ifc=
-onfig_pool_ipv6_base_to_handle(pool, addr);
++    struct in_addr a;
++    int ok =3D inet_pton(AF_I=
+NET, hostname, &a) =3D=3D 1;
 +
-+    if (h < 0)
++    if (succeeded)
++    {
++        *succeed=
+ed =3D ok;
++    }
++    return ok ? ntohl(a=2Es_addr) : 0;
++}
++
++const char =
+*
++print_in_addr_t(in_addr_t addr, unsigned int flags, struct gc_arena *gc)=
+
++{
++    struct in_addr a =3D { =2Es_addr =3D htonl(addr) };
++    char buf[=
+INET_ADDRSTRLEN] =3D { 0 };
++
++    inet_ntop(AF_INET, &a, buf, sizeof(buf))=
+;
++    return string_alloc(buf, gc);
++}
++
++bool
++get_ipv6_addr(const char *=
+hostname, struct in6_addr *network, unsigned int *netbits,
++              m=
+sglvl_t msglevel)
++{
++    return false;
++}
++
++const char *
++print_in6_addr(=
+struct in6_addr a6, unsigned int flags, struct gc_arena *gc)
++{
++    return=
+ "";
++}
++
++struct in6_addr
++add_in6_addr(struct in6_addr base, uint32_t add=
+)
++{
++    return base;
++}
++
++#define IP(a, b, c, d) (((in_addr_t)(a) << 24)=
+ | ((b) << 16) | ((c) << 8) | (d))
++
++/* three non-overlapping /24 pools: t=
+he global one and two --subnet-pool groups */
++#define GLOBAL_START IP(10, =
+1, 1, 2)
++#define GLOBAL_END   IP(10, 1, 1, 254)
++#define A_START      IP(1=
+0, 2, 1, 2)
++#define A_END        IP(10, 2, 1, 254)
++#define B_START      I=
+P(10, 2, 2, 2)
++#define B_END        IP(10, 2, 2, 254)
++
++static struct ifc=
+onfig_pool *
++make_pool(in_addr_t start, in_addr_t end)
++{
++    struct in6_=
+addr any =3D { 0 };
++
++    return ifconfig_pool_init(true, IFCONFIG_POOL_IN=
+DIV, start, end, false, false, any, 0);
++}
++
++static in_addr_t
++acquire(str=
+uct ifconfig_pool *pool, const char *cn)
++{
++    in_addr_t local =3D 0, rem=
+ote =3D 0;
++
++    ifconfig_pool_acquire(pool, &local, &remote, NULL, cn);
++=
+    return remote;
++}
++
++/* whether any entry of the pool is reserved for c=
+ommon name cn */
++static bool
++pool_has_cn(const struct ifconfig_pool *pool=
+, const char *cn)
++{
++    for (int i =3D 0; i < pool->size; ++i)
++    {
++  =
+      if (pool->list[i]=2Ecommon_name && !strcmp(pool->list[i]=2Ecommon_nam=
+e, cn))
++        {
++            return true;
++        }
++    }
++    return =
+false;
++}
++
++static const char *persist_file;
++
++/* Write {global, A, B} to=
+ one persist file, reload into a fresh set, and check
++ * that every entry =
+was routed back to the pool that owns its address=2E */
++static void
++test_=
+persist_roundtrip(void **state)
++{
++    struct ifconfig_pool *g =3D make_po=
+ol(GLOBAL_START, GLOBAL_END);
++    struct ifconfig_pool *a =3D make_pool(A_=
+START, A_END);
++    struct ifconfig_pool *b =3D make_pool(B_START, B_END);
+=
++
++    assert_int_equal(acquire(g, "alice"), GLOBAL_START);
++    assert_int=
+_equal(acquire(a, "bob"), A_START);
++    assert_int_equal(acquire(b, "carol=
+"), B_START);
++
++    struct ifconfig_pool *pools[] =3D { g, a, b };
++    st=
+ruct ifconfig_pool_persist *wp =3D ifconfig_pool_persist_init(persist_file,=
+ 5);
++    ifconfig_pool_write(wp, pools, 3);
++    ifconfig_pool_persist_clo=
+se(wp);
++
++    struct ifconfig_pool *g2 =3D make_pool(GLOBAL_START, GLOBAL_=
+END);
++    struct ifconfig_pool *a2 =3D make_pool(A_START, A_END);
++    str=
+uct ifconfig_pool *b2 =3D make_pool(B_START, B_END);
++    struct ifconfig_p=
+ool *pools2[] =3D { g2, a2, b2 };
++    struct ifconfig_pool_persist *rp =3D=
+ ifconfig_pool_persist_init(persist_file, 0);
++    ifconfig_pool_read(rp, p=
+ools2, 3);
++    ifconfig_pool_persist_close(rp);
++
++    /* each client was =
+routed to its own pool (handle 0 =3D=3D the pool's base) */
++    assert_str=
+ing_equal(g2->list[0]=2Ecommon_name, "alice");
++    assert_string_equal(a2-=
+>list[0]=2Ecommon_name, "bob");
++    assert_string_equal(b2->list[0]=2Ecomm=
+on_name, "carol");
++
++    /* and nowhere else */
++    assert_false(pool_has=
+_cn(g2, "bob"));
++    assert_false(pool_has_cn(g2, "carol"));
++    assert_f=
+alse(pool_has_cn(a2, "alice"));
++
++    /* the reservation is honoured: the =
+same CN gets its persisted address back */
++    assert_int_equal(acquire(a2=
+, "bob"), A_START);
++
++    ifconfig_pool_free(g);
++    ifconfig_pool_free(a=
+);
++    ifconfig_pool_free(b);
++    ifconfig_pool_free(g2);
++    ifconfig_p=
+ool_free(a2);
++    ifconfig_pool_free(b2);
++}
++
++/* An entry whose address =
+matches no configured pool (here: B's, when B is not
++ * in the set) is ign=
+ored on load and does not disturb the other pools=2E */
++static void
++test_=
+persist_ignore_unknown(void **state)
++{
++    struct ifconfig_pool *g =3D ma=
+ke_pool(GLOBAL_START, GLOBAL_END);
++    struct ifconfig_pool *a =3D make_po=
+ol(A_START, A_END);
++    struct ifconfig_pool *b =3D make_pool(B_START, B_E=
+ND);
++
++    acquire(g, "alice");
++    acquire(a, "bob");
++    acquire(b, "c=
+arol");
++
++    struct ifconfig_pool *pools[] =3D { g, a, b };
++    struct i=
+fconfig_pool_persist *wp =3D ifconfig_pool_persist_init(persist_file, 5);
++=
+    ifconfig_pool_write(wp, pools, 3);
++    ifconfig_pool_persist_close(wp)=
+;
++
++    /* reload into a set WITHOUT pool B: carol's entry now matches no =
+pool */
++    struct ifconfig_pool *g2 =3D make_pool(GLOBAL_START, GLOBAL_EN=
+D);
++    struct ifconfig_pool *a2 =3D make_pool(A_START, A_END);
++    struc=
+t ifconfig_pool *pools2[] =3D { g2, a2 };
++    struct ifconfig_pool_persist=
+ *rp =3D ifconfig_pool_persist_init(persist_file, 0);
++    ifconfig_pool_re=
+ad(rp, pools2, 2);
++    ifconfig_pool_persist_close(rp);
++
++    assert_stri=
+ng_equal(g2->list[0]=2Ecommon_name, "alice");
++    assert_string_equal(a2->=
+list[0]=2Ecommon_name, "bob");
++    assert_false(pool_has_cn(g2, "carol"));=
+
++    assert_false(pool_has_cn(a2, "carol"));
++
++    ifconfig_pool_free(g);=
+
++    ifconfig_pool_free(a);
++    ifconfig_pool_free(b);
++    ifconfig_pool=
+_free(g2);
++    ifconfig_pool_free(a2);
++}
++
++/* A --subnet-pool gateway is=
+ reserved inside the pool range (here in the
++ * middle of a /29): it is ne=
+ver handed out, nor released=2E */
++static void
++test_reserve_gateway(void =
+**state)
++{
++    struct ifconfig_pool *p =3D make_pool(IP(10, 2, 3, 1), IP(=
+10, 2, 3, 6));
++    const char *cns[] =3D { "c1", "c2", "c3", "c4", "c5" };=
+
++    in_addr_t local =3D 0, remote =3D 0;
++
++    assert_false(ifconfig_poo=
+l_reserve_ip(p, IP(10, 2, 4, 1)));
++    assert_true(ifconfig_pool_reserve_i=
+p(p, IP(10, 2, 3, 4)));
++
++    /* the five other addresses go to five clien=
+ts, the gateway to none */
++    for (int i =3D 0; i < 5; ++i)
 +    {
 +     =
-   return false;
+   const in_addr_t a =3D acquire(p, cns[i]);
++
++        assert_true(a >=3D =
+IP(10, 2, 3, 1) && a <=3D IP(10, 2, 3, 6));
++        assert_int_not_equal(a=
+, IP(10, 2, 3, 4));
 +    }
++    assert_true(ifconfig_pool_acquire(p, &local=
+, &remote, NULL, "c6") < 0);
 +
-+    ifconfig_pool_entry_free(&pool->list[h], tru=
-e);
-+    pool->list[h]=2Ein_use =3D true;
-+    pool->list[h]=2Ereserved =3D=
- true;
-+    return true;
++    /* releasing the reserved slot is refus=
+ed */
++    assert_false(ifconfig_pool_release(p, 3, true));
++    assert_tru=
+e(ifconfig_pool_acquire(p, &local, &remote, NULL, "c6") < 0);
++
++    ifconf=
+ig_pool_free(p);
 +}
 +
- static in_addr_t
- ifconfig_pool_handle_to_ip=
-_base(const struct ifconfig_pool *pool, ifconfig_pool_handle hand)
- {
-diff =
---git a/src/openvpn/pool=2Eh b/src/openvpn/pool=2Eh
-index 497dcda=2E=2Efda8=
-7ed 100644
---- a/src/openvpn/pool=2Eh
-+++ b/src/openvpn/pool=2Eh
-@@ -98,6 +=
-98,9 @@
-  */
- bool ifconfig_pool_reserve_ip(struct ifconfig_pool *pool, in_=
-addr_t addr);
- 
-+/** IPv6 counterpart of ifconfig_pool_reserve_ip()=2E */
-+=
-bool ifconfig_pool_reserve_ipv6(struct ifconfig_pool *pool, const struct in=
-6_addr *addr);
-+
- struct ifconfig_pool_persist *ifconfig_pool_persist_init(=
-const char *filename, int refresh_freq);
- 
- void ifconfig_pool_persist_clos=
-e(struct ifconfig_pool_persist *persist);
-diff --git a/tests/unit_tests/ope=
-nvpn/test_subnet_pool=2Ec b/tests/unit_tests/openvpn/test_subnet_pool=2Ec
-i=
-ndex 1bb9e4c=2E=2Ef3d58cb 100644
---- a/tests/unit_tests/openvpn/test_subnet=
-_pool=2Ec
-+++ b/tests/unit_tests/openvpn/test_subnet_pool=2Ec
-@@ -131,11 +1=
-31,88 @@
-     assert_false(subnet_pools_check(&a, 0, 0, M_WARN));
- }
- 
-+/* =
-the IPv6 counterpart resolves independently: a tag may name a v4 pool, a
-+ =
-* v6 pool, or both=2E */
++/* A persisted entry pointing at a now-reserved addr=
+ess (e=2Eg=2E a gateway that
++ * was handed out before the pool definition =
+changed) does not take it over=2E */
 +static void
-+test_subnet_pool6_by_tag(void **stat=
-e)
++test_reserve_survives_pe=
+rsist(void **state)
 +{
-+    struct subnet_pool6_def c =3D { =2Enext =3D NULL, =2Etag =3D "gr=
-pC", =2Enetbits =3D 64 };
-+    struct subnet_pool6_def b =3D { =2Enext =3D =
-&c, =2Etag =3D "grpB", =2Enetbits =3D 96 };
-+    struct subnet_pool6_def a =
-=3D { =2Enext =3D &b, =2Etag =3D "grpA", =2Enetbits =3D 64 };
++    struct ifconfig_pool *p =3D make_pool(IP(10, 2,=
+ 3, 1), IP(10, 2, 3, 6));
 +
-+    assert=
-_ptr_equal(subnet_pool6_by_tag(&a, "grpA"), &a);
-+    assert_ptr_equal(subn=
-et_pool6_by_tag(&a, "grpB"), &b);
-+    assert_ptr_equal(subnet_pool6_by_tag=
-(&a, "grpC"), &c);
-+    assert_int_equal(subnet_pool6_by_tag(&a, "grpB")->n=
-etbits, 96);
-+    assert_null(subnet_pool6_by_tag(&a, "nope"));
-+    assert=
-_null(subnet_pool6_by_tag(NULL, "grpA"));
-+}
++    assert_int_equal(acquire(p, "alice"), IP(1=
+0, 2, 3, 1));
++    assert_int_equal(acquire(p, "mallory"), IP(10, 2, 3, 2))=
+;
 +
-+/* <prefix>::<host> as an i=
-n6_addr */
-+static struct in6_addr
-+in6(const char *addr)
-+{
-+    struct in=
-6_addr a;
++    struct ifconfig_pool *pools[] =3D { p };
++    struct ifconfig_pool=
+_persist *wp =3D ifconfig_pool_persist_init(persist_file, 5);
++    ifconfig=
+_pool_write(wp, pools, 1);
++    ifconfig_pool_persist_close(wp);
 +
-+    assert_int_equal(inet_pton(AF_INET6, addr, &a), 1);
-+    r=
-eturn a;
-+}
-+
-+/* a single IPv6 pool, checked against the fd00:8::/64 --ser=
-ver-ipv6 network */
-+static bool
-+check6_one(const char *net, unsigned int =
-bits, const char *gw)
-+{
-+    const struct in6_addr server =3D in6("fd00:8:=
-:");
-+    struct subnet_pool6_def d =3D { =2Enext =3D NULL, =2Etag =3D "grp=
-", =2Enetwork =3D in6(net), =2Enetbits =3D bits, =2Egateway =3D in6(gw) };
-=
-+
-+    return subnet_pools6_check(&d, &server, 64, M_WARN);
-+}
-+
-+static vo=
-id
-+test_subnet_pools6_check(void **state)
-+{
-+    /* /64 =2E=2E /124, any =
-host address of the network as gateway */
-+    assert_true(check6_one("fd00=
-:9::", 64, "fd00:9::1"));
-+    assert_true(check6_one("fd00:9::", 124, "fd0=
-0:9::1"));
-+    assert_true(check6_one("fd00:9::", 112, "fd00:9::ffff"));
-+=
-    assert_false(check6_one("fd00:9::", 63, "fd00:9::1"));
-+    assert_fals=
-e(check6_one("fd00:9::", 125, "fd00:9::1"));
-+
-+    /* host bits in the net=
-work, gateway =3D network or outside it */
-+    assert_false(check6_one("fd=
-00:9::5", 64, "fd00:9::1"));
-+    assert_false(check6_one("fd00:9::", 64, "=
-fd00:9::"));
-+    assert_false(check6_one("fd00:9::", 64, "fd00:a::1"));
-+
-=
-+    /* overlapping the --server-ipv6 network, inside or covering it */
-+  =
-  assert_false(check6_one("fd00:8::", 96, "fd00:8::1"));
-+
-+    /* two pool=
-s: disjoint, overlapping, same tag */
-+    const struct in6_addr server =3D=
- in6("fd00:8::");
-+    struct subnet_pool6_def b =3D { =2Enext =3D NULL, =
-=2Etag =3D "grpB", =2Enetwork =3D in6("fd00:a::"), =2Enetbits =3D 64, =2Ega=
-teway =3D in6("fd00:a::1") };
-+    struct subnet_pool6_def a =3D { =2Enext =
-=3D &b, =2Etag =3D "grpA", =2Enetwork =3D in6("fd00:9::"), =2Enetbits =3D 6=
-4, =2Egateway =3D in6("fd00:9::1") };
-+
-+    assert_true(subnet_pools6_chec=
-k(&a, &server, 64, M_WARN));
-+    assert_true(subnet_pools6_check(&a, &serv=
-er, 0, M_WARN));
-+
-+    b=2Enetwork =3D in6("fd00:9::100");
-+    b=2Enetbit=
-s =3D 120;
-+    b=2Egateway =3D in6("fd00:9::101");
-+    assert_false(subne=
-t_pools6_check(&a, &server, 64, M_WARN));
-+
-+    b=2Enetwork =3D in6("fd00:=
-a::");
-+    b=2Enetbits =3D 64;
-+    b=2Egateway =3D in6("fd00:a::1");
++    str=
+uct ifconfig_pool *p2 =3D make_pool(IP(10, 2, 3, 1), IP(10, 2, 3, 6));
 +   =
- b=2Etag =3D "grpA";
-+    assert_false(subnet_pools6_check(&a, &server, 64,=
- M_WARN));
+ assert_true(ifconfig_pool_reserve_ip(p2, IP(10, 2, 3, 2)));
++    struct if=
+config_pool *pools2[] =3D { p2 };
++    struct ifconfig_pool_persist *rp =3D=
+ ifconfig_pool_persist_init(persist_file, 0);
++    ifconfig_pool_read(rp, p=
+ools2, 1);
++    ifconfig_pool_persist_close(rp);
++
++    assert_true(pool_ha=
+s_cn(p2, "alice"));
++    assert_false(pool_has_cn(p2, "mallory"));
++    ass=
+ert_int_equal(acquire(p2, "alice"), IP(10, 2, 3, 1));
++    assert_int_not_e=
+qual(acquire(p2, "mallory"), IP(10, 2, 3, 2));
++
++    ifconfig_pool_free(p)=
+;
++    ifconfig_pool_free(p2);
 +}
 +
- const struct CMUnitTest subnet_pool_tests[] =3D {
-     cmo=
-cka_unit_test(test_subnet_pool_by_tag),
-     cmocka_unit_test(test_subnet_p=
-ools_check_netmask),
-     cmocka_unit_test(test_subnet_pools_check_gateway)=
-,
-     cmocka_unit_test(test_subnet_pools_check_overlap),
-+    cmocka_unit_=
-test(test_subnet_pool6_by_tag),
-+    cmocka_unit_test(test_subnet_pools6_ch=
-eck),
- };
- 
- int
++const struct CMUnitTest pool_tests[] =
+=3D {
++    cmocka_unit_test(test_persist_roundtrip),
++    cmocka_unit_test(=
+test_persist_ignore_unknown),
++    cmocka_unit_test(test_reserve_gateway),
+=
++    cmocka_unit_test(test_reserve_survives_persist),
++};
++
++int
++main(void=
+)
++{
++    struct gc_arena gc =3D gc_new();
++
++    persist_file =3D platform=
+_create_temp_file(NULL, "pool_persist_ut", &gc);
++    assert_non_null(persi=
+st_file);
++
++    openvpn_unit_test_setup();
++    int ret =3D cmocka_run_gro=
+up_tests(pool_tests, NULL, NULL);
++
++    platform_unlink(persist_file);
++  =
+  gc_free(&gc);
++    return ret;
++}
 
 -- 
-To view, visit https://gerrit=2Eopenvpn=2Enet/c/openv=
-pn/+/1786?usp=3Demail
-To unsubscribe, or for help writing mail filters, vis=
-it https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+To view, visit https://gerrit=2Eop=
+envpn=2Enet/c/openvpn/+/1790?usp=3Demail
+To unsubscribe, or for help writin=
+g mail filters, visit https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Gerrit-MessageType:=
- newpatchset
+=
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id=
-: I64e0850d48647a2c0e3d385c2f20a9f445931727
-Gerrit-Change-Number: 1786
-Gerr=
-it-PatchSet: 5
-Gerrit-Owner: Antonio Quartulli <antonio@mandelbit=2Ecom>
-Ge=
-rrit-Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-CC: openvpn=
--devel <openvpn-devel@lists=2Esourceforge=2Enet>
-Gerrit-Attention: Arne Sch=
-wabe <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Branch: mast=
+er
+Gerrit-Change-Id: I0bff8d0a549a65b7da01ea0e785b7ec8bea17f05
+Gerrit-Chang=
+e-Number: 1790
+Gerrit-PatchSet: 4
+Gerrit-Owner: Antonio Quartulli <antonio@=
+mandelbit=2Ecom>
+Gerrit-Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>=
 
---mn11nZO5KFo=
+Gerrit-Reviewer: Frank Lichtenheld <frank@lichtenheld=2Ecom>
+Gerrit-CC: op=
+envpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Attention: Arn=
+e Schwabe <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Attention: Frank Lichtenheld =
+<frank@lichtenheld=2Ecom>
+
+--A9wbPNixL3U=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: Arne Schwabe=2E </p>
-<p>Antonio Quartulli <strong>upl=
-oaded patch set #5</strong> to this change=2E</p><p><a href=3D"https://gerr=
-it=2Eopenvpn=2Enet/c/openvpn/+/1786?usp=3Demail">View Change</a></p><pre cl=
-ass=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-=
-wrap;">multi: assign IPv6 addresses from a tagged subnet-pool<br><br>Add th=
-e IPv6 counterpart of --subnet-pool:<br><br>  subnet-pool-ipv6 &lt;tag&gt; =
-&lt;network&gt;/&lt;bits&gt; [&lt;gateway&gt;]   (main config)<br><br>selec=
-ted by the same per-client --subnet-pool-tag=2E A client&#39;s tag is<br>re=
-solved against the IPv6 pool list too and, when it matches, an IPv6<br>addr=
-ess is handed out from the group&#39;s pool alongside any IPv4 one (a<br>si=
-ngle dual-stack ifconfig_pool per tag)=2E The pool gateway is pushed as<br>=
-the remote end of the client&#39;s ifconfig-ipv6, as the server&#39;s own<b=
-r>address is off-link for it=2E A tag matching neither family is still<br>d=
-eclined with AUTH_FAILED=2E<br><br>As for IPv4 the pools are checked when t=
-he config is loaded (network<br>between /64 and /124 without host bits, gat=
-eway a host address inside<br>it, unique tags, no overlap with another pool=
- or the --server-ipv6<br>network), created at startup with their gateway re=
-served, and routed<br>into the server&#39;s tun device=2E<br><br>Change-Id:=
- I64e0850d48647a2c0e3d385c2f20a9f445931727<br>GitHub: closes openvpn/OpenVP=
-N#987<br>Signed-off-by: Antonio Quartulli &lt;antonio@mandelbit=2Ecom&gt;<b=
-r>---<br>M doc/man-sections/server-options=2Erst<br>M src/openvpn/multi=2Ec=
-<br>M src/openvpn/options=2Ec<br>M src/openvpn/options=2Eh<br>M src/openvpn=
-/options_util=2Ec<br>M src/openvpn/options_util=2Eh<br>M src/openvpn/pool=
-=2Ec<br>M src/openvpn/pool=2Eh<br>M tests/unit_tests/openvpn/test_subnet_po=
-ol=2Ec<br>9 files changed, 389 insertions(+), 29 deletions(-)<br><br></pre>=
-<pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/chan=
-ges/86/1786/5</pre><pre style=3D"font-family: monospace,monospace; white-sp=
-ace: pre-wrap;"><span>diff --git a/doc/man-sections/server-options=2Erst b/=
-doc/man-sections/server-options=2Erst</span><br><span>index d868d09=2E=2Eb3=
-e687f 100644</span><br><span>--- a/doc/man-sections/server-options=2Erst</s=
-pan><br><span>+++ b/doc/man-sections/server-options=2Erst</span><br><span>@=
-@ -359,11 +359,32 @@</span><br><span>   and FreeBSD the IPv4 route is insta=
-lled on-link, without a gateway, so its</span><br><span>   ``route_gateway_=
-{n}`` is not set for ``--route-up`` scripts=2E</span><br><span> </span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+--subnet-pool-ipv6 args</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+  The IPv6 counterpart of =
-``--subnet-pool``=2E Repeatable main-config directive=2E</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+  Valid syntax:</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+  ::</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+     subnet-pool-ipv=
-6 tag network/bits [gateway]</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  ``bits``=
- must be between 64 and 124; ``gateway`` defaults to the first</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+  address of the network, is nev=
-er assigned to a client, and is pushed to the</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+  pool&#39;s clients as the remote end of their `=
-`ifconfig-ipv6``=2E A tag may name</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+  an IPv4 pool, an IPv6 pool, or both; a client referencing =
-it with</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  ``--subnet=
--pool-tag`` is then assigned an address from each family the tag</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+  defines=2E</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+  Requires ``--server-ipv6`` with ``--dev tun``=2E ``net=
-work`` must have no host</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+  bits set, ``gateway`` must be a host address inside it, each ``tag``=
- may be</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  defined on=
-ly once and no pool may overlap another one or the</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+  ``--server-ipv6`` network=2E As for ``--su=
-bnet-pool``, the server routes each</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+  pool&#39;s network into the tun device=2E</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> --subnet-pool-tag=
- tag</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  Assign this cli=
-ent to the ``--subnet-pool`` named ``tag``=2E Must be</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-  associated with a specific client instanc=
-e via ``--client-config-dir`` or</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-  ``--client-connect``=2E Several clients may reference the same=
- tag and are</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  then se=
-rved from the same shared pool=2E</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+  Assign this client to the ``--subnet-pool`` / ``--subnet-po=
-ol-ipv6`` named</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  ``=
-tag``=2E Must be associated with a specific client instance via</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+  ``--client-config-dir`` or ``=
---client-connect``=2E Several clients may</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+  reference the same tag and are then served from the=
- same shared pool(s)=2E</span><br><span> </span><br><span> --ifconfig-ipv6-=
-push args</span><br><span>   for ``--client-config-dir`` per-client static =
-IPv6 interface</span><br><span>diff --git a/src/openvpn/multi=2Ec b/src/ope=
-nvpn/multi=2Ec</span><br><span>index 86fd9c0=2E=2Eac3962d 100644</span><br>=
-<span>--- a/src/openvpn/multi=2Ec</span><br><span>+++ b/src/openvpn/multi=
-=2Ec</span><br><span>@@ -392,6 +392,10 @@</span><br><span>     {</span><br>=
-<span>         multi_get_group_pool(m, &amp;t-&gt;options, d-&gt;tag);</spa=
-n><br><span>     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   for (const struct subnet_pool6_def *d =3D t-&gt;options=2Esubnet_pools_i=
-pv6; d; d =3D d-&gt;next)</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-multi_get_group_pool(m, &amp;t-&gt;options, d-&gt;tag);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span> </span><br><span=
->     /*</span><br><span>      * Help us keep track of routing table=2E</sp=
-an><br><span>@@ -1469,14 +1473,24 @@</span><br><span>     }</span><br><span=
-> </span><br><span>     const struct subnet_pool_def *d4 =3D subnet_pool_by=
-_tag(o-&gt;subnet_pools, tag);</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    ASSERT(d4);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    const struct subnet_pool6_def *d6 =3D subnet_pool6_by_tag(o-&gt;su=
-bnet_pools_ipv6, tag);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    ASSERT(d4 || d6);</span><br><span>     ALLOC_OBJ_CLEAR(sp, struct su=
-bnet_pool);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    sp-&gt=
-;tag =3D d4-&gt;tag;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   /* every host address of the subnet, minus the gateway reserved below */=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    sp-&gt;pool =3D i=
-fconfig_pool_init(true, IFCONFIG_POOL_INDIV, d4-&gt;network + 1,</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-                                =
-  (d4-&gt;network | ~d4-&gt;netmask) - 1, o-&gt;duplicate_cn, false,</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-                            =
-      in6addr_any, 0);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    ifconfig_pool_reserve_ip(sp-&gt;pool, d4-&gt;gateway);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    sp-&gt;tag =3D d4 ? d4-&gt;tag =
-: d6-&gt;tag;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /*=
- every host address of each subnet, minus the gateways reserved below</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+     * (the IPv4 and the =
-IPv6 address of a client share one pool handle) */</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    sp-&gt;pool =3D ifconfig_pool_init(d4 !=
-=3D NULL, IFCONFIG_POOL_INDIV, d4 ? d4-&gt;network + 1 : 0,</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+                                  d=
-4 ? (d4-&gt;network | ~d4-&gt;netmask) - 1 : 0, o-&gt;duplicate_cn,</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+                           =
-       d6 !=3D NULL, d6 ? add_in6_addr(d6-&gt;network, 1) : in6addr_any,</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                      =
-            d6 ? (int)d6-&gt;netbits : 0);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    if (d4)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        ifconfig_pool_reserve_ip(sp-&gt;pool, d4-&gt;gateway);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    if (d6)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        ifconfig_pool_reserve_ipv6(sp-&gt;pool, &amp;d6-&gt;gateway=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><=
-span>     sp-&gt;next =3D m-&gt;subnet_pools;</span><br><span>     m-&gt;su=
-bnet_pools =3D sp;</span><br><span>     return sp-&gt;pool;</span><br><span=
->@@ -1510,6 +1524,19 @@</span><br><span>             mi-&gt;context=2Eoptio=
-ns=2Esubnet_pool_gateway =3D d-&gt;gateway;</span><br><span>         }</spa=
-n><br><span>     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   if (mi-&gt;context=2Eoptions=2Esubnet_pool_tag)</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        const struct subnet_pool6_def *d =3D subnet_pool6_=
-by_tag(</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-m-&gt;top=2Eoptions=2Esubnet_pools_ipv6, mi-&gt;context=2Eoptions=2Esubnet_=
-pool_tag);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        mi-&gt;context=2Eopt=
-ions=2Esubnet_pool_ipv6_defined =3D d !=3D NULL;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        if (d)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+            mi-&gt;context=2Eoptions=2Esubnet_pool_ipv6_netwo=
-rk =3D d-&gt;network;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+            mi-&gt;context=2Eoptions=2Esubnet_pool_ipv6_netbits =3D d-&gt=
-;netbits;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-  mi-&gt;context=2Eoptions=2Esubnet_pool_ipv6_gateway =3D d-&gt;gateway;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span> </span><b=
-r><span>     /*</span><br><span>      * If ifconfig addresses were set by d=
-ynamic config file,</span><br><span>@@ -1544,15 +1571,16 @@</span><br><span=
->                 &quot;MULTI_sva: WARNING: if --ifconfig-push is used for =
-IPv4, automatic IPv6 assignment from --ifconfig-ipv6-pool does not work=2E =
- Use --ifconfig-ipv6-push for IPv6 then=2E&quot;);</span><br><span>        =
- }</span><br><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    else if (mi-&gt;context=2Eoptions=2Esubnet_pool_defined)</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    else if (mi-&gt;context=2E=
-options=2Esubnet_pool_defined</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+             || mi-&gt;context=2Eoptions=2Esubnet_pool_ipv6_defin=
-ed)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-        /* dynamic address from this client&#39;s --subnet-pool group =
-*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* dynami=
-c address(es) from this client&#39;s --subnet-pool group */</span><br><span=
->         struct ifconfig_pool *group =3D</span><br><span>             mult=
-i_get_group_pool(m, &amp;m-&gt;top=2Eoptions, mi-&gt;context=2Eoptions=2Esu=
-bnet_pool_tag);</span><br><span> </span><br><span>         /* the address m=
-ay have been acquired before the tag was known (from</span><br><span>      =
-    * the global pool) or for a tag that a later handler overrode: drop</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-         * it so we serve=
- this client from its current group */</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+         * it so we serve this client from its current g=
-roup only */</span><br><span>         if (mi-&gt;vaddr_handle &gt;=3D 0 &am=
-p;&amp; mi-&gt;vaddr_pool !=3D group)</span><br><span>         {</span><br>=
-<span>             ifconfig_pool_release(mi-&gt;vaddr_pool ? mi-&gt;vaddr_p=
-ool : m-&gt;ifconfig_pool,</span><br><span>@@ -1560,32 +1588,50 @@</span><b=
-r><span>             mi-&gt;vaddr_handle =3D -1;</span><br><span>          =
-   mi-&gt;vaddr_pool =3D NULL;</span><br><span>             mi-&gt;context=
-=2Ec2=2Epush_ifconfig_defined =3D false;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+            mi-&gt;context=2Ec2=2Epush_ifconfig_ipv6_d=
-efined =3D false;</span><br><span>         }</span><br><span> </span><br><s=
-pan>         if (mi-&gt;vaddr_handle &lt; 0)</span><br><span>         {</sp=
-an><br><span>             in_addr_t local =3D 0, remote =3D 0;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            struct in6_addr remo=
-te_ipv6;</span><br><span>             const char *cn =3D NULL;</span><br><s=
-pan> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+            CL=
-EAR(remote_ipv6);</span><br><span>             if (!mi-&gt;context=2Eoption=
-s=2Eduplicate_cn)</span><br><span>             {</span><br><span>          =
-       cn =3D tls_common_name(mi-&gt;context=2Ec2=2Etls_multi, true);</span=
-><br><span>             }</span><br><span> </span><br><span>             mi=
--&gt;vaddr_pool =3D group;</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-            mi-&gt;vaddr_handle =3D ifconfig_pool_acquire(mi-&gt;vaddr=
-_pool, &amp;local, &amp;remote, NULL, cn);</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-            if (mi-&gt;vaddr_handle &gt;=3D 0)</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-                mi-&gt;context=2Ec2=
-=2Epush_ifconfig_local =3D remote;</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-                mi-&gt;context=2Ec2=2Epush_ifconfig_remote_net=
-mask =3D</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
-       mi-&gt;context=2Eoptions=2Esubnet_pool_netmask;</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-                mi-&gt;context=2Ec2=2Epush=
-_ifconfig_defined =3D true;</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-            }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-          else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-       mi-&gt;vaddr_handle =3D</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+                ifconfig_pool_acquire(mi-&gt;vaddr_pool, &amp;lo=
-cal, &amp;remote, &amp;remote_ipv6, cn);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+            if (mi-&gt;vaddr_handle &lt; 0)</span><br>=
-<span>             {</span><br><span>                 msg(D_MULTI_ERRORS, &=
-quot;MULTI: no free --subnet-pool addresses are available for %s&quot;,</sp=
-an><br><span>                     multi_instance_string(mi, false, &amp;gc)=
-);</span><br><span>             }</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+            else</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+                if (mi-&gt;context=2Eoptions=2Esubnet_pool_defined)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                {</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+                    mi-&=
-gt;context=2Ec2=2Epush_ifconfig_local =3D remote;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+                    mi-&gt;context=2Ec2=2Epus=
-h_ifconfig_remote_netmask =3D</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+                        mi-&gt;context=2Eoptions=2Esubnet_pool_ne=
-tmask;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
-       mi-&gt;context=2Ec2=2Epush_ifconfig_defined =3D true;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+                }</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+                if (mi-&gt;context=
-=2Eoptions=2Esubnet_pool_ipv6_defined)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+                {</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+                    /* the server&#39;s own address is off=
--link for this client:</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+                     * hand out the pool gateway as the remote end inste=
-ad */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
-      mi-&gt;context=2Ec2=2Epush_ifconfig_ipv6_local =3D remote_ipv6;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+                    mi-&g=
-t;context=2Ec2=2Epush_ifconfig_ipv6_remote =3D</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+                        mi-&gt;context=2Eoptions=
-=2Esubnet_pool_ipv6_gateway;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+                    mi-&gt;context=2Ec2=2Epush_ifconfig_ipv6_netbi=
-ts =3D</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
-           mi-&gt;context=2Eoptions=2Esubnet_pool_ipv6_netbits;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+                    mi-&gt;cont=
-ext=2Ec2=2Epush_ifconfig_ipv6_defined =3D true;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+                }</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+            }</span><br><span>         }</span><b=
-r><span>     }</span><br><span>     else if (m-&gt;ifconfig_pool &amp;&amp;=
- mi-&gt;vaddr_handle &lt; 0) /* otherwise, choose a pool address */</span><=
-br><span>@@ -2926,7 +2972,9 @@</span><br><span>     }</span><br><span> </sp=
-an><br><span>     if (mi-&gt;context=2Eoptions=2Esubnet_pool_tag</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-        &amp;&amp; !subnet_pool_=
-by_tag(m-&gt;top=2Eoptions=2Esubnet_pools, mi-&gt;context=2Eoptions=2Esubne=
-t_pool_tag))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- &amp;&amp; !subnet_pool_by_tag(m-&gt;top=2Eoptions=2Esubnet_pools, mi-&gt;=
-context=2Eoptions=2Esubnet_pool_tag)</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        &amp;&amp; !subnet_pool6_by_tag(m-&gt;top=2Eoption=
-s=2Esubnet_pools_ipv6,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+                                mi-&gt;context=2Eoptions=2Esubnet_pool_t=
-ag))</span><br><span>     {</span><br><span>         msg(D_MULTI_ERRORS, &q=
-uot;MULTI: client has been rejected due to unknown --subnet-pool-tag &#39;%=
-s&#39;&quot;,</span><br><span>             mi-&gt;context=2Eoptions=2Esubne=
-t_pool_tag);</span><br><span>diff --git a/src/openvpn/options=2Ec b/src/ope=
-nvpn/options=2Ec</span><br><span>index d5666b8=2E=2E414680c 100644</span><b=
-r><span>--- a/src/openvpn/options=2Ec</span><br><span>+++ b/src/openvpn/opt=
-ions=2Ec</span><br><span>@@ -455,6 +455,8 @@</span><br><span>     &quot;--s=
-ubnet-pool tag network netmask [gateway] : Define a named pool of\n&quot;</=
-span><br><span>     &quot;                  addresses outside the --server =
-network, selected per\n&quot;</span><br><span>     &quot;                  =
-client with --subnet-pool-tag=2E\n&quot;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    &quot;--subnet-pool-ipv6 tag network/bits [gateway=
-] : IPv6 counterpart of\n&quot;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    &quot;                  --subnet-pool=2E\n&quot;</span><br>=
-<span>     &quot;--subnet-pool-tag tag : Assign this client to the --subnet=
--pool named tag=2E\n&quot;</span><br><span>     &quot;                  Onl=
-y valid in a client-specific config file=2E\n&quot;</span><br><span>     &q=
-uot;--ifconfig-push local remote-netmask : Push an ifconfig option to remot=
-e,\n&quot;</span><br><span>@@ -1944,6 +1946,20 @@</span><br><span>         =
-    subnet_pools_check(options-&gt;subnet_pools, options-&gt;server_network=
-,</span><br><span>                                options-&gt;server_netmas=
-k, M_USAGE);</span><br><span>         }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        if (options-&gt;subnet_pools_ipv6)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            if (!options-&gt;server_ipv6_=
-defined)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
- {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                m=
-sg(M_USAGE, &quot;--subnet-pool-ipv6 requires --server-ipv6&quot;);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+            if (dev_type_enum(opt=
-ions-&gt;dev, options-&gt;dev_type) !=3D DEV_TYPE_TUN</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                || options-&gt;topology !=
-=3D TOP_SUBNET)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-      msg(M_USAGE, &quot;--subnet-pool-ipv6 requires --dev tun and --topolo=
-gy subnet&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-          }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-    subnet_pools6_check(options-&gt;subnet_pools_ipv6, &amp;options-&gt;ser=
-ver_network_ipv6,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-                              options-&gt;server_netbits_ipv6, M_USAGE);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><s=
-pan>         MUST_BE_UNDEF(allow_recursive_routing, &quot;allow-recursive-r=
-outing&quot;);</span><br><span>         if (options-&gt;auth_user_pass_file=
-)</span><br><span>         {</span><br><span>@@ -2011,6 +2027,7 @@</span><b=
-r><span>         MUST_BE_UNDEF(ifconfig_pool_persist_filename, &quot;ifconf=
-ig-pool-persist&quot;);</span><br><span>         MUST_BE_UNDEF(ifconfig_ipv=
-6_pool_defined, &quot;ifconfig-ipv6-pool&quot;);</span><br><span>         M=
-UST_BE_UNDEF(subnet_pools, &quot;subnet-pool&quot;);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        MUST_BE_UNDEF(subnet_pools_ipv6, =
-&quot;subnet-pool-ipv6&quot;);</span><br><span>         MUST_BE_UNDEF(real_=
-hash_size, &quot;hash-size&quot;);</span><br><span>         MUST_BE_UNDEF(v=
-irtual_hash_size, &quot;hash-size&quot;);</span><br><span>         MUST_BE_=
-UNDEF(learn_address_script, &quot;learn-address&quot;);</span><br><span>@@ =
--3144,8 +3161,9 @@</span><br><span> }</span><br><span> </span><br><span> /*=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * The server&#39;s t=
-un device is only configured with the --server network, so</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">- * route each --subnet-pool network in=
-to it as well: without this the server</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+ * The server&#39;s tun device is only configured with t=
-he --server and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * -=
--server-ipv6 networks, so route each --subnet-pool and --subnet-pool-ipv6</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * network into it as=
- well: without this the server</span><br><span>  * could not reach its subn=
-et-pool clients when the data channel runs in</span><br><span>  * userspace=
-=2E  Under DCO on Linux and FreeBSD the routes are installed on-link,</span=
-><br><span>  * see subnet_pool_routes_onlink()=2E</span><br><span>@@ -3163,=
-6 +3181,16 @@</span><br><span>                                       o-&gt;=
-route_default_table_id);</span><br><span>         ro-&gt;on_link =3D subnet=
-_pool_routes_onlink(o);</span><br><span>     }</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    for (const struct subnet_pool6_def *d =3D o-&gt;subnet_pools_ip=
-v6; d; d =3D d-&gt;next)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        s=
-truct buffer prefix =3D alloc_buf_gc(64, &amp;o-&gt;gc);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        buf_printf(&amp;prefix, &quot;%s/%u&quot;, print_=
-in6_addr(d-&gt;network, 0, &amp;o-&gt;gc), d-&gt;netbits);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        rol6_check_alloc(o);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        add_route_ipv6_to_o=
-ption_list(o-&gt;routes_ipv6, BSTR(&amp;prefix), NULL, NULL,</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+                                  =
-    o-&gt;route_default_table_id);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    }</span><br><span> }</span><br><span> </span><br><span> =
-static void</span><br><span>@@ -6325,6 +6353,37 @@</span><br><span>        =
- sp-&gt;next =3D options-&gt;subnet_pools;</span><br><span>         options=
--&gt;subnet_pools =3D sp;</span><br><span>     }</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    else if (streq(p[0], &quot;subnet-pool-ipv=
-6&quot;) &amp;&amp; p[1] &amp;&amp; p[2] &amp;&amp; !p[4])</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        struct subnet_pool6_def *sp;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        struct in6_addr network, =
-gateway;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        uns=
-igned int netbits =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        VERIFY=
-_PERMISSION(OPT_P_GENERAL);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        if (!get_ipv6_addr(p[2], &amp;network, &amp;netbits, msglev=
-el))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            msg(msglevel,=
- &quot;cannot parse --subnet-pool-ipv6 network&quot;);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            goto err;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        if (netbits &lt; 64 || netbits &gt; 124)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+            msg(msglevel, &qu=
-ot;--subnet-pool-ipv6 network must be between /64 and /124 (not /%d)&quot;,=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                net=
-bits);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            g=
-oto err;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (p[3] &amp=
-;&amp; !get_ipv6_addr(p[3], &amp;gateway, NULL, msglevel))</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+            msg(msglevel, &quot;cannot parse -=
--subnet-pool-ipv6 gateway&quot;);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+            goto err;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        ALLOC_OBJ_GC(sp, struct subnet_pool6_def, &amp;options-&gt;gc=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        sp-&gt;ta=
-g =3D p[1];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-sp-&gt;network =3D network;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        sp-&gt;netbits =3D netbits;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        sp-&gt;gateway =3D p[3] ? gateway : add_in6=
-_addr(network, 1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       sp-&gt;next =3D options-&gt;subnet_pools_ipv6;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        options-&gt;subnet_pools_ipv6 =3D=
- sp;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br=
-><span>     else if (streq(p[0], &quot;subnet-pool-tag&quot;) &amp;&amp; p[=
-1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>         VERIFY=
-_PERMISSION(OPT_P_INSTANCE);</span><br><span>diff --git a/src/openvpn/optio=
-ns=2Eh b/src/openvpn/options=2Eh</span><br><span>index ff26066=2E=2Ec758943=
- 100644</span><br><span>--- a/src/openvpn/options=2Eh</span><br><span>+++ b=
-/src/openvpn/options=2Eh</span><br><span>@@ -263,6 +263,16 @@</span><br><sp=
-an>     in_addr_t gateway;</span><br><span> };</span><br><span> </span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+/* The IPv6 counterpart of str=
-uct subnet_pool_def (--subnet-pool-ipv6)=2E */</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+struct subnet_pool6_def</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    struct subnet_pool6_def *next;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    const char *tag;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    struct in6_addr network;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    unsigned int netbits;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    struct in6_addr gateway;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+};</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /* Command line optio=
-ns */</span><br><span> struct options</span><br><span> {</span><br><span>@@=
- -529,12 +539,17 @@</span><br><span>     bool push_ifconfig_constraint_defi=
-ned;</span><br><span>     in_addr_t push_ifconfig_constraint_network;</span=
-><br><span>     in_addr_t push_ifconfig_constraint_netmask;</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    struct subnet_pool_def *subnet_po=
-ols; /* named pools (server config) */</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    const char *subnet_pool_tag;          /* which pool th=
-is client uses (CCD) */</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-    bool subnet_pool_defined;             /* resolved from the tag at con=
-nect */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct s=
-ubnet_pool_def *subnet_pools;       /* named IPv4 pools (server config) */<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct subnet_po=
-ol6_def *subnet_pools_ipv6; /* named IPv6 pools (server config) */</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    const char *subnet_pool_=
-tag;                /* which pool this client uses (CCD) */</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    bool subnet_pool_defined;      =
-             /* resolved from the tag at connect */</span><br><span>     in=
-_addr_t subnet_pool_network;</span><br><span>     in_addr_t subnet_pool_net=
-mask;</span><br><span>     in_addr_t subnet_pool_gateway;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    bool subnet_pool_ipv6_defined; /*=
- resolved from the tag at connect */</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    struct in6_addr subnet_pool_ipv6_network;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    unsigned int subnet_pool_ipv=
-6_netbits;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struc=
-t in6_addr subnet_pool_ipv6_gateway;</span><br><span>     bool push_ifconfi=
-g_ipv4_blocked;           /* IPv4 */</span><br><span>     bool push_ifconfi=
-g_ipv6_defined;           /* IPv6 */</span><br><span>     struct in6_addr p=
-ush_ifconfig_ipv6_local;  /* IPv6 */</span><br><span>diff --git a/src/openv=
-pn/options_util=2Ec b/src/openvpn/options_util=2Ec</span><br><span>index 74=
-4ad4c=2E=2Efb38cfa 100644</span><br><span>--- a/src/openvpn/options_util=2E=
-c</span><br><span>+++ b/src/openvpn/options_util=2Ec</span><br><span>@@ -11=
-6,6 +116,108 @@</span><br><span>     return true;</span><br><span> }</span>=
-<br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* value=
- of bit &lt;i&gt; (0 =3D most significant) of an IPv6 address */</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+static bool</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+in6_bit(const struct in6_addr *a, unsi=
-gned int i)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    return a-&gt;s6_addr[i=
- / 8] &amp; (0x80 &gt;&gt; (i % 8));</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* true if the first=
- &lt;bits&gt; bits of the two addresses are equal */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+static bool</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+in6_prefix_equal(const struct in6_addr *a, const =
-struct in6_addr *b, unsigned int bits)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    for (unsigned int i =3D 0; i &lt; bits; ++i)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        if (in6_bit(a, i) !=3D in6_bit(b, i))</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            return false;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    return true;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+/* true if every bit of =
-&lt;a&gt; from bit &lt;from&gt; on is zero */</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+static bool</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+in6_suffix_zero(const struct in6_addr *a, unsigned int fr=
-om)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    for (unsigned int i =3D from; =
-i &lt; 128; ++i)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (in6_b=
-it(a, i))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            return f=
-alse;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    return true;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+boo=
-l</span><br><span style=3D"color: hsl(120, 100%, 40%);">+subnet_pools6_chec=
-k(const struct subnet_pool6_def *pools, const struct in6_addr *server_netwo=
-rk,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
-    unsigned int server_netbits, msglvl_t msglevel)</span><br><span style=
+rently required from: Arne Schwabe, Frank Lichtenheld=2E </p>
+<p>Antonio Qu=
+artulli <strong>uploaded patch set #4</strong> to this change=2E</p><p><a h=
+ref=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1790?usp=3Demail">View Ch=
+ange</a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospace=
+; white-space: pre-wrap;">pool, multi: persist subnet pools via --ifconfig-=
+pool-persist<br><br>Extend --ifconfig-pool-persist so its single file cover=
+s the global pool<br>and every --subnet-pool=2E ifconfig_pool_read()/ifconf=
+ig_pool_write() now<br>operate on the set of pools: each persisted entry is=
+ routed to the pool<br>whose address range owns it, and an entry matching n=
+o configured pool<br>(e=2Eg=2E a --subnet-pool that was removed) is ignored=
+ with a warning=2E The<br>subnet pools already exist at startup, so their s=
+aved allocations are<br>reloaded before the first client connects; a persis=
+ted entry cannot take<br>over a reserved pool gateway=2E<br><br>Change-Id: =
+I0bff8d0a549a65b7da01ea0e785b7ec8bea17f05<br>GitHub: closes openvpn/OpenVPN=
+#987<br>Signed-off-by: Antonio Quartulli &lt;antonio@mandelbit=2Ecom&gt;<br=
+>---<br>M CMakeLists=2Etxt<br>M doc/man-sections/server-options=2Erst<br>M =
+src/openvpn/multi=2Ec<br>M src/openvpn/options=2Ec<br>M src/openvpn/pool=2E=
+c<br>M src/openvpn/pool=2Eh<br>M tests/unit_tests/openvpn/Makefile=2Eam<br>=
+A tests/unit_tests/openvpn/test_pool=2Ec<br>8 files changed, 453 insertions=
+(+), 34 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-famil=
+y: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eope=
+nvpn=2Enet:29418/openvpn refs/changes/90/1790/4</pre><pre style=3D"font-fam=
+ily: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/CMakeL=
+ists=2Etxt b/CMakeLists=2Etxt</span><br><span>index 4e87a6a=2E=2E1f5f244 10=
+0644</span><br><span>--- a/CMakeLists=2Etxt</span><br><span>+++ b/CMakeList=
+s=2Etxt</span><br><span>@@ -691,6 +691,7 @@</span><br><span>         &quot;=
+test_options_parse&quot;</span><br><span>         &quot;test_packet_id&quot=
+;</span><br><span>         &quot;test_pkt&quot;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        &quot;test_pool&quot;</span><br><span> =
+        &quot;test_provider&quot;</span><br><span>         &quot;test_socke=
+t&quot;</span><br><span>         &quot;test_ssl&quot;</span><br><span>@@ -8=
+74,6 +875,15 @@</span><br><span>         src/openvpn/options_util=2Ec</span=
+><br><span>         )</span><br><span> </span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    target_sources(test_pool PRIVATE</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        tests/unit_tests/openvpn/mock_=
+get_random=2Ec</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   src/openvpn/pool=2Ec</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        src/openvpn/status=2Ec</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        src/openvpn/otime=2Ec</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        src/openvpn/fdmisc=2Ec</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        src/openvpn/interval=2Ec</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        )</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     target_sources=
+(test_ncp PRIVATE</span><br><span>         src/openvpn/crypto_epoch=2Ec</sp=
+an><br><span>         src/openvpn/crypto_mbedtls=2Ec</span><br><span>diff -=
+-git a/doc/man-sections/server-options=2Erst b/doc/man-sections/server-opti=
+ons=2Erst</span><br><span>index 5fd05fd=2E=2E6a3961f 100644</span><br><span=
+>--- a/doc/man-sections/server-options=2Erst</span><br><span>+++ b/doc/man-=
+sections/server-options=2Erst</span><br><span>@@ -275,6 +275,11 @@</span><b=
+r><span>   ``file`` is a comma-delimited ASCII file, formatted as</span><br=
+><span>   :code:`&lt;Common-Name&gt;,&lt;IP-address&gt;`=2E</span><br><span=
+> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+  A single ``file=
+`` covers the global pool and every ``--subnet-pool``: each</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+  entry is associated with a pool b=
+y its address, and on load an entry whose</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+  address falls in no configured pool (for example a =
+``--subnet-pool`` that is</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+  no longer defined) is ignored with a warning=2E</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span>   If ``seconds`` =3D =
+:code:`0`, ``file`` will be treated as read-only=2E This</span><br><span>  =
+ is useful if you would like to treat ``file`` as a configuration file=2E</=
+span><br><span> </span><br><span>diff --git a/src/openvpn/multi=2Ec b/src/o=
+penvpn/multi=2Ec</span><br><span>index ac3962d=2E=2E8d43894 100644</span><b=
+r><span>--- a/src/openvpn/multi=2Ec</span><br><span>+++ b/src/openvpn/multi=
+=2Ec</span><br><span>@@ -69,6 +69,38 @@</span><br><span> static struct ifco=
+nfig_pool *multi_get_group_pool(struct multi_context *m,</span><br><span>  =
+                                                 const struct options *o, c=
+onst char *tag);</span><br><span> </span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+ Collect every address pool (the global one plus each --subnet-pool group)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * into a gc-allocat=
+ed array, for the single combined --ifconfig-pool-persist</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ * file=2E  Returns the number of poo=
+ls=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+static int</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+multi_all_pools(struct multi_context *m=
+, struct gc_arena *gc, struct ifconfig_pool ***pools)</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    for (const struct subnet_pool6_def *d =3D pools; d; d =
-=3D d-&gt;next)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (d-&gt;=
-netbits &lt; 64 || d-&gt;netbits &gt; 124)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+            msg(msglevel, &quot;--subnet-pool-ipv6 %s: network=
- must be between /64 and /124 (not /%u)&quot;,</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+                d-&gt;tag, d-&gt;netbits);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            return false;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        if (!in6_suffix_zero(&amp;d-&gt;network,=
- d-&gt;netbits))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            m=
-sg(msglevel, &quot;--subnet-pool-ipv6 %s: network has host bits set&quot;, =
-d-&gt;tag);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-    return false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        if (!in6_prefix_equal(&=
-amp;d-&gt;gateway, &amp;d-&gt;network, d-&gt;netbits)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            || in6_suffix_zero(&amp;d-&gt=
-;gateway, d-&gt;netbits))</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-        msg(msglevel,</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+                &quot;--subnet-pool-ipv6 %s: gateway must be a host addre=
-ss inside the network&quot;,</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+                d-&gt;tag);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+            return false;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  if (server_netbits</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+            &amp;&amp; in6_prefix_equal(&amp;d-&gt;network, server_network=
-, min_uint(d-&gt;netbits, server_netbits)))</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+            msg(msglevel, &quot;--subnet-pool-ipv6 %s: networ=
-k overlaps the --server-ipv6 network&quot;,</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+                d-&gt;tag);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            return false;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        for (const struct subnet_pool6_def *e =3D d-&gt;next; e;=
- e =3D e-&gt;next)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
- if (!strcmp(d-&gt;tag, e-&gt;tag))</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+                msg(msglevel, &quot;--subnet-pool-ipv6 %s: tag de=
-fined more than once&quot;, d-&gt;tag);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+                return false;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            if (in6_prefix_equal(&amp;d-&gt;network=
-, &amp;e-&gt;network, min_uint(d-&gt;netbits, e-&gt;netbits)))</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+                msg(msglevel, &quot;--=
-subnet-pool-ipv6 %s and %s: networks overlap&quot;, d-&gt;tag, e-&gt;tag);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                retu=
-rn false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    return true;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+const struct subnet_pool=
-6_def *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+subnet_pool6=
-_by_tag(const struct subnet_pool6_def *pools, const char *tag)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    for (const struct subnet_pool6_def *d =3D pool=
-s; d; d =3D d-&gt;next)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if=
- (!strcmp(d-&gt;tag, tag))</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         return d;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    return NULL;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span> const char *</span><br><span=
-> parse_auth_failed_temp(struct options *o, const char *reason)</span><br><=
-span> {</span><br><span>diff --git a/src/openvpn/options_util=2Eh b/src/ope=
-nvpn/options_util=2Eh</span><br><span>index d60759a=2E=2Ebffcddb 100644</sp=
-an><br><span>--- a/src/openvpn/options_util=2Eh</span><br><span>+++ b/src/o=
-penvpn/options_util=2Eh</span><br><span>@@ -53,6 +53,25 @@</span><br><span>=
- bool subnet_pools_check(const struct subnet_pool_def *pools, in_addr_t ser=
-ver_network,</span><br><span>                         in_addr_t server_netm=
-ask, msglvl_t msglevel);</span><br><span> </span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+ * IPv6 counterpart of subnet_pools_check(): network between /64 and=
- /124</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * without hos=
-t bits, gateway a host address inside it, unique tags, and no</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ * network overlapping another po=
-ol or the --server-ipv6 network=2E</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
- @param pools           head of the --subnet-pool-ipv6 list (may be NULL)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param server_netw=
-ork  the --server-ipv6 network</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+ * @param server_netbits  the --server-ipv6 prefix length, or 0 =
-if there is none</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
-@param msglevel        level of the message logged on the first error</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return               =
- true if every definition is valid</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+b=
-ool subnet_pools6_check(const struct subnet_pool6_def *pools,</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+                         const st=
-ruct in6_addr *server_network, unsigned int server_netbits,</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+                         msglvl_t m=
-sglevel);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+/** IPv6 counterpart of subne=
-t_pool_by_tag()=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+const struct subnet_pool6_def *subnet_pool6_by_tag(const struct subnet_po=
-ol6_def *pools,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-                                               const char *tag);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> </span><br><=
-span> /** Checks if the string is a valid integer by checking if it can be<=
-/span><br><span>  *  converted to an integer */</span><br><span>diff --git =
-a/src/openvpn/pool=2Ec b/src/openvpn/pool=2Ec</span><br><span>index fa04d9c=
-=2E=2E8f899d3 100644</span><br><span>--- a/src/openvpn/pool=2Ec</span><br><=
-span>+++ b/src/openvpn/pool=2Ec</span><br><span>@@ -445,6 +445,22 @@</span>=
-<br><span>     return true;</span><br><span> }</span><br><span> </span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+ifconfig_pool_reserve_ipv6(struct ifconfig_po=
-ol *pool, const struct in6_addr *addr)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    const ifconfig_pool_handle h =3D ifconfig_pool_ipv6_base_to_handle(poo=
-l, addr);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    if (h &lt; 0)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        return false;</span><br><span style=
+, 100%, 40%);">+    struct subnet_pool *sp;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    int n =3D m-&gt;ifconfig_pool ? 1 : 0;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    for (sp =3D m-&gt;subnet_pools; sp; sp =3D =
+sp-&gt;next)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        n++;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    struct ifconfig_pool **arr =3D gc_malloc(n * sizeof(stru=
+ct ifconfig_pool *), true, gc);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    int i =3D 0;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (m-=
+&gt;ifconfig_pool)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        arr[i++=
+] =3D m-&gt;ifconfig_pool;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for=
+ (sp =3D m-&gt;subnet_pools; sp; sp =3D sp-&gt;next)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        arr[i++] =3D sp-&gt;pool;</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
 (120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    ifconfig_pool_entry_free(&amp;pool-&gt;list[h], true);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    pool-&gt;list[h]=2Ein_use =3D t=
-rue;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    pool-&gt;li=
-st[h]=2Ereserved =3D true;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    return true;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an> static in_addr_t</span><br><span> ifconfig_pool_handle_to_ip_base(const=
- struct ifconfig_pool *pool, ifconfig_pool_handle hand)</span><br><span> {<=
-/span><br><span>diff --git a/src/openvpn/pool=2Eh b/src/openvpn/pool=2Eh</s=
-pan><br><span>index 497dcda=2E=2Efda87ed 100644</span><br><span>--- a/src/o=
-penvpn/pool=2Eh</span><br><span>+++ b/src/openvpn/pool=2Eh</span><br><span>=
-@@ -98,6 +98,9 @@</span><br><span>  */</span><br><span> bool ifconfig_pool_=
-reserve_ip(struct ifconfig_pool *pool, in_addr_t addr);</span><br><span> </=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+/** IPv6 counterpart =
-of ifconfig_pool_reserve_ip()=2E */</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+bool ifconfig_pool_reserve_ipv6(struct ifconfig_pool *pool,=
- const struct in6_addr *addr);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span> struct ifconfig_pool_persist *ifconfig_pool_pe=
-rsist_init(const char *filename, int refresh_freq);</span><br><span> </span=
-><br><span> void ifconfig_pool_persist_close(struct ifconfig_pool_persist *=
-persist);</span><br><span>diff --git a/tests/unit_tests/openvpn/test_subnet=
-_pool=2Ec b/tests/unit_tests/openvpn/test_subnet_pool=2Ec</span><br><span>i=
-ndex 1bb9e4c=2E=2Ef3d58cb 100644</span><br><span>--- a/tests/unit_tests/ope=
-nvpn/test_subnet_pool=2Ec</span><br><span>+++ b/tests/unit_tests/openvpn/te=
-st_subnet_pool=2Ec</span><br><span>@@ -131,11 +131,88 @@</span><br><span>  =
-   assert_false(subnet_pools_check(&amp;a, 0, 0, M_WARN));</span><br><span>=
- }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+/* the IPv6 counterpart resolves independently: a tag may name a v4 pool, =
-a</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * v6 pool, or bot=
-h=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_subnet_pool6_by=
-_tag(void **state)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct subnet_p=
-ool6_def c =3D { =2Enext =3D NULL, =2Etag =3D &quot;grpC&quot;, =2Enetbits =
-=3D 64 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct=
- subnet_pool6_def b =3D { =2Enext =3D &amp;c, =2Etag =3D &quot;grpB&quot;, =
-=2Enetbits =3D 96 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    struct subnet_pool6_def a =3D { =2Enext =3D &amp;b, =2Etag =3D &quot;g=
-rpA&quot;, =2Enetbits =3D 64 };</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ass=
-ert_ptr_equal(subnet_pool6_by_tag(&amp;a, &quot;grpA&quot;), &amp;a);</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_ptr_equal(subn=
-et_pool6_by_tag(&amp;a, &quot;grpB&quot;), &amp;b);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    assert_ptr_equal(subnet_pool6_by_tag(=
-&amp;a, &quot;grpC&quot;), &amp;c);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    assert_int_equal(subnet_pool6_by_tag(&amp;a, &quot;grpB=
-&quot;)-&gt;netbits, 96);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    assert_null(subnet_pool6_by_tag(&amp;a, &quot;nope&quot;));</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_null(subnet_po=
-ol6_by_tag(NULL, &quot;grpA&quot;));</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* &lt;prefix&gt;::&=
-lt;host&gt; as an in6_addr */</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+static struct in6_addr</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+in6(const char *addr)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- struct in6_addr a;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equa=
-l(inet_pton(AF_INET6, addr, &amp;a), 1);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    return a;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+/* a single IPv6 pool,=
- checked against the fd00:8::/64 --server-ipv6 network */</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+static bool</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+check6_one(const char *net, unsigned int bits=
-, const char *gw)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const struct in6=
-_addr server =3D in6(&quot;fd00:8::&quot;);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    struct subnet_pool6_def d =3D { =2Enext =3D NUL=
-L, =2Etag =3D &quot;grp&quot;, =2Enetwork =3D in6(net), =2Enetbits =3D bits=
-, =2Egateway =3D in6(gw) };</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return =
-subnet_pools6_check(&amp;d, &amp;server, 64, M_WARN);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+sta=
-tic void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_subnet=
-_pools6_check(void **state)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* /64=
- =2E=2E /124, any host address of the network as gateway */</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    assert_true(check6_one(&quot;fd=
-00:9::&quot;, 64, &quot;fd00:9::1&quot;));</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    assert_true(check6_one(&quot;fd00:9::&quot;, 124=
-, &quot;fd00:9::1&quot;));</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    assert_true(check6_one(&quot;fd00:9::&quot;, 112, &quot;fd00:9::=
-ffff&quot;));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    as=
-sert_false(check6_one(&quot;fd00:9::&quot;, 63, &quot;fd00:9::1&quot;));</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_false(check=
-6_one(&quot;fd00:9::&quot;, 125, &quot;fd00:9::1&quot;));</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    /* host bits in the network, gateway =3D network or =
-outside it */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    as=
-sert_false(check6_one(&quot;fd00:9::5&quot;, 64, &quot;fd00:9::1&quot;));</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_false(chec=
-k6_one(&quot;fd00:9::&quot;, 64, &quot;fd00:9::&quot;));</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    assert_false(check6_one(&quot;fd00=
-:9::&quot;, 64, &quot;fd00:a::1&quot;));</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    /* overlapping the --server-ipv6 network, inside or covering it */</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_false(check=
-6_one(&quot;fd00:8::&quot;, 96, &quot;fd00:8::1&quot;));</span><br><span st=
++    *pools =3D arr;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    return n;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /*#de=
+fine MULTI_DEBUG_EVENT_LOOP*/</span><br><span> </span><br><span> #ifdef MUL=
+TI_DEBUG_EVENT_LOOP</span><br><span>@@ -165,11 +197,16 @@</span><br><span> =
+void</span><br><span> multi_ifconfig_pool_persist(struct multi_context *m, =
+bool force)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    /* write pool data to file */</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    if (m-&gt;ifconfig_pool &amp;&amp; m-&gt;top=2Ec1=
+=2Eifconfig_pool_persist</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    /* write the global pool and every --subnet-pool to the one persis=
+t file */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (m-=
+&gt;top=2Ec1=2Eifconfig_pool_persist</span><br><span>         &amp;&amp; (f=
+orce || ifconfig_pool_write_trigger(m-&gt;top=2Ec1=2Eifconfig_pool_persist)=
+))</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-        ifconfig_pool_write(m-&gt;top=2Ec1=2Eifconfig_pool_persist, m-&=
+gt;ifconfig_pool);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       struct gc_arena gc =3D gc_new();</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        struct ifconfig_pool **pools;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        int n =3D multi_all_pools(m, =
+&amp;gc, &amp;pools);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ifconfig_=
+pool_write(m-&gt;top=2Ec1=2Eifconfig_pool_persist, pools, n);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        gc_free(&amp;gc);</span><=
+br><span>     }</span><br><span> }</span><br><span> </span><br><span>@@ -37=
+8,12 +415,6 @@</span><br><span>             t-&gt;options=2Eifconfig_pool_e=
+nd, t-&gt;options=2Eduplicate_cn,</span><br><span>             t-&gt;option=
+s=2Eifconfig_ipv6_pool_defined, t-&gt;options=2Eifconfig_ipv6_pool_base,</s=
+pan><br><span>             t-&gt;options=2Eifconfig_ipv6_pool_netbits);</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-        /* reload pool data from file */</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (t-&gt;c1=2Eifco=
+nfig_pool_persist)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            ifc=
+onfig_pool_read(t-&gt;c1=2Eifconfig_pool_persist, m-&gt;ifconfig_pool);</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span=
+>     }</span><br><span> </span><br><span>     /* create every --subnet-poo=
+l group up front rather than on first use, so</span><br><span>@@ -397,6 +42=
+8,18 @@</span><br><span>         multi_get_group_pool(m, &amp;t-&gt;options=
+, d-&gt;tag);</span><br><span>     }</span><br><span> </span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    /* With --ifconfig-pool-persist the =
+single file covers the global pool and</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+     * every configured --subnet-pool: reload them all i=
+n one pass */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if=
+ (t-&gt;c1=2Eifconfig_pool_persist)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        struct gc_arena gc =3D gc_new();</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        struct ifconfig_pool **pools;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        int n =3D multi_all_pools(=
+m, &amp;gc, &amp;pools);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ifconf=
+ig_pool_read(t-&gt;c1=2Eifconfig_pool_persist, pools, n);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        gc_free(&amp;gc);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span>     /*</span><br><span>    =
+  * Help us keep track of routing table=2E</span><br><span>      */</span><=
+br><span>diff --git a/src/openvpn/options=2Ec b/src/openvpn/options=2Ec</sp=
+an><br><span>index 414680c=2E=2Ea775372 100644</span><br><span>--- a/src/op=
+envpn/options=2Ec</span><br><span>+++ b/src/openvpn/options=2Ec</span><br><=
+span>@@ -450,6 +450,7 @@</span><br><span>     &quot;--ifconfig-pool-persist=
+ file [seconds] : Persist/unpersist ifconfig-pool\n&quot;</span><br><span> =
+    &quot;                  data to file, at seconds intervals (default=3D6=
+00)=2E\n&quot;</span><br><span>     &quot;                  If seconds=3D0,=
+ file will be treated as read-only=2E\n&quot;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    &quot;                  Covers the global poo=
+l and every --subnet-pool=2E\n&quot;</span><br><span>     &quot;--ifconfig-=
+ipv6-pool base-IP/bits : set aside an IPv6 network block\n&quot;</span><br>=
+<span>     &quot;                  to be dynamically allocated to connectin=
+g clients=2E\n&quot;</span><br><span>     &quot;--subnet-pool tag network n=
+etmask [gateway] : Define a named pool of\n&quot;</span><br><span>@@ -1923,=
+10 +1924,11 @@</span><br><span>         MUST_BE_UNDEF(route_delay_defined, =
+&quot;route-delay&quot;);</span><br><span>         MUST_BE_UNDEF(up_delay, =
+&quot;up-delay&quot;);</span><br><span>         if (!options-&gt;ifconfig_p=
+ool_defined &amp;&amp; !options-&gt;ifconfig_ipv6_pool_defined</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+            &amp;&amp; !options-=
+&gt;subnet_pools &amp;&amp; !options-&gt;subnet_pools_ipv6</span><br><span>=
+             &amp;&amp; options-&gt;ifconfig_pool_persist_filename)</span><=
+br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+          msg(M_USAGE,</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-                &quot;--ifconfig-pool-persist must be used with --ifconfig=
+-pool or --ifconfig-ipv6-pool&quot;);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+            msg(M_USAGE, &quot;--ifconfig-pool-persist mu=
+st be used with --ifconfig-pool, &quot;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+                         &quot;--ifconfig-ipv6-pool or =
+--subnet-pool&quot;);</span><br><span>         }</span><br><span>         i=
+f (options-&gt;ifconfig_ipv6_pool_defined &amp;&amp; !options-&gt;ifconfig_=
+ipv6_local)</span><br><span>         {</span><br><span>diff --git a/src/ope=
+nvpn/pool=2Ec b/src/openvpn/pool=2Ec</span><br><span>index 8f899d3=2E=2E2e4=
+f294 100644</span><br><span>--- a/src/openvpn/pool=2Ec</span><br><span>+++ =
+b/src/openvpn/pool=2Ec</span><br><span>@@ -621,13 +621,14 @@</span><br><spa=
+n> }</span><br><span> </span><br><span> void</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-ifconfig_pool_read(struct ifconfig_pool_persist *per=
+sist, struct ifconfig_pool *pool)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ifconfig_pool_read(struct ifconfig_pool_persist *persist, str=
+uct ifconfig_pool **pools,</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+                   int n_pools)</span><br><span> {</span><br><span> =
+    const int buf_size =3D 128;</span><br><span> </span><br><span>     upda=
+te_time();</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    if (persist &amp;&amp; persist-&gt;file &amp;&amp; pool)</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    if (persist &amp;&amp; =
+persist-&gt;file &amp;&amp; n_pools &gt; 0)</span><br><span>     {</span><b=
+r><span>         struct gc_arena gc =3D gc_new();</span><br><span>         =
+struct buffer in =3D alloc_buf_gc(256, &amp;gc);</span><br><span>@@ -672,6 =
++673,9 @@</span><br><span>                 continue;</span><br><span>      =
+       }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+            /* the address selects which pool this entry belongs to;=
+ an entry</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+   * matching none of the configured pools is ignored */</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            struct ifconfig_pool *pool=
+ =3D NULL;</span><br><span>             ifconfig_pool_handle h =3D -1, h6 =
+=3D -1;</span><br><span> </span><br><span>             if (strlen(ip_buf) &=
+gt; 0)</span><br><span>@@ -685,10 +689,18 @@</span><br><span>              =
+   }</span><br><span>                 else</span><br><span>                =
+ {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                   =
+ h =3D ifconfig_pool_ip_base_to_handle(pool, addr);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                    if (h &lt; 0)</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                    for (int =
+i =3D 0; i &lt; n_pools &amp;&amp; !pool; ++i)</span><br><span>            =
+         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+             msg(M_WARN, &quot;pool: IPv4 (%s) out of pool range for CN=3D%=
+s&quot;, ip_buf, cn_buf);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+                        h =3D ifconfig_pool_ip_base_to_handle(pools[i=
+], addr);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+              if (h &gt;=3D 0)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+                        {</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+                            pool =3D pools[i];</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                        }</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+                    }</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+                    if =
+(!pool)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+              msg(M_WARN, &quot;pool: IPv4 (%s) for CN=3D%s is outside ever=
+y configured pool&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+                            ip_buf, cn_buf);</span><br><span>         =
+            }</span><br><span>                 }</span><br><span>          =
+   }</span><br><span>@@ -701,12 +713,30 @@</span><br><span>                =
+ {</span><br><span>                     msg(M_WARN, &quot;pool: invalid IPv=
+6 (%s) for CN=3D%s&quot;, ip6_buf, cn_buf);</span><br><span>               =
+  }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                el=
+se</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                e=
+lse if (pool)</span><br><span>                 {</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+                    /* IPv4 already picked the=
+ pool; v4 and v6 share the handle */</span><br><span>                     h=
+6 =3D ifconfig_pool_ipv6_base_to_handle(pool, &amp;addr6);</span><br><span>=
+                     if (h6 &lt; 0)</span><br><span>                     {<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-                      =
+  msg(M_WARN, &quot;pool: IPv6 (%s) out of pool range for CN=3D%s&quot;, ip=
+6_buf, cn_buf);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+                    msg(M_WARN, &quot;pool: IPv6 (%s) for CN=3D%s is outsid=
+e the pool of IPv4 (%s)&quot;,</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+                            ip6_buf, cn_buf, ip_buf);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+                    }</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+                }</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+                else</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                    for (int i =
+=3D 0; i &lt; n_pools &amp;&amp; !pool; ++i)</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+                    {</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+                        h6 =3D ifconfig_pool_ipv=
+6_base_to_handle(pools[i], &amp;addr6);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+                        if (h6 &gt;=3D 0)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+                        {</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                           =
+ pool =3D pools[i];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+                        }</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+                    }</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+                    if (!pool)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+                    {</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                        msg(M_WARN, &quot;pool: IPv6 (=
+%s) for CN=3D%s is outside every configured pool&quot;,</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+                            ip6_buf, cn=
+_buf);</span><br><span>                     }</span><br><span> </span><br><=
+span>                     /* Rely on IPv6 if no IPv4 was provided or the on=
+e provided</span><br><span>@@ -719,40 +749,44 @@</span><br><span>          =
+       }</span><br><span>             }</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-            /* at the moment IPv4 and I=
+Pv6 share the same pool, therefore offsets</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-             * have to match for the same client=2E</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-             *</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-             * If offsets diffe=
+r we use the IPv4, therefore warn the user about this=2E</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-             */</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+            /* IPv4 and IPv6 share the same =
+pool handle, so their offsets have</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+             * to match; if they differ we use the IPv4 and =
+warn */</span><br><span>             if ((h6 &gt;=3D 0) &amp;&amp; (h !=3D =
+h6))</span><br><span>             {</span><br><span>                 msg(M_=
+WARN, &quot;pool: IPv4 (%s) and IPv6 (%s) have different offsets! Relying o=
+n IPv4&quot;,</span><br><span>                     ip_buf, ip6_buf);</span>=
+<br><span>             }</span><br><span> </span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-            /* if at least one among v4 and v6 was pro=
+perly parsed, attempt</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+             * setting an handle for this client</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-             */</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-            if (h &gt;=3D 0)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+            /* set the handle if the entry be=
+longs to one of the pools */</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+            if (pool &amp;&amp; h &gt;=3D 0)</span><br><span>     =
+        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+    msg(M_INFO, &quot;succeeded -&gt; ifconfig_pool_set(hand=3D%d)&quot;, h=
+);</span><br><span>                 ifconfig_pool_set(pool, cn_buf, h, pers=
+ist-&gt;fixed);</span><br><span>             }</span><br><span>         }</=
+span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+   ifconfig_pool_msg(pool, D_IFCONFIG_POOL);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        for (int i =3D 0; i &lt; n_pools; ++i)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+            ifconfig_pool_msg(poo=
+ls[i], D_IFCONFIG_POOL);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        }</span><br><span> </span><br><span>         gc_free(&amp;gc);=
+</span><br><span>     }</span><br><span> }</span><br><span> </span><br><spa=
+n> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-ifconfig_pool_=
+write(struct ifconfig_pool_persist *persist, const struct ifconfig_pool *po=
+ol)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ifconfig_pool_wr=
+ite(struct ifconfig_pool_persist *persist, struct ifconfig_pool *const *poo=
+ls,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
+    int n_pools)</span><br><span> {</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    if (persist &amp;&amp; persist-&gt;file &amp;&amp; (statu=
+s_rw_flags(persist-&gt;file) &amp; STATUS_OUTPUT_WRITE) &amp;&amp; pool)</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (persist &amp;&=
+amp; persist-&gt;file &amp;&amp; (status_rw_flags(persist-&gt;file) &amp; S=
+TATUS_OUTPUT_WRITE))</span><br><span>     {</span><br><span>         status=
+_reset(persist-&gt;file);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-        ifconfig_pool_list(pool, persist-&gt;file);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        for (int i =3D 0; i &lt; n_pool=
+s; ++i)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (pools[=
+i])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                ifconf=
+ig_pool_list(pools[i], persist-&gt;file);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        }</span><br><span>         status_flush(persist-&gt=
+;file);</span><br><span>     }</span><br><span> }</span><br><span>diff --gi=
+t a/src/openvpn/pool=2Eh b/src/openvpn/pool=2Eh</span><br><span>index fda87=
+ed=2E=2E8e50020 100644</span><br><span>--- a/src/openvpn/pool=2Eh</span><br=
+><span>+++ b/src/openvpn/pool=2Eh</span><br><span>@@ -107,9 +107,17 @@</spa=
+n><br><span> </span><br><span> bool ifconfig_pool_write_trigger(struct ifco=
+nfig_pool_persist *persist);</span><br><span> </span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-void ifconfig_pool_read(struct ifconfig_pool_persi=
+st *persist, struct ifconfig_pool *pool);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+ * Read a persist file into a set of pools, routing each entry to the=
+ pool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * whose addre=
+ss range owns it=2E  Entries matching no pool (e=2Eg=2E a --subnet-pool</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ * that is no longer co=
+nfigured) are ignored with a warning=2E</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+void ifconfig_pool_read(struct ifconfig_pool_persist *persist, struct i=
+fconfig_pool **pools,</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+                        int n_pools);</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-void ifconfig_pool_write(struct ifconfi=
+g_pool_persist *persist, const struct ifconfig_pool *pool);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+/* Write a set of pools to a single=
+ persist file=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+void ifconfig_pool_write(struct ifconfig_pool_persist *persist,</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                         struct=
+ ifconfig_pool *const *pools, int n_pools);</span><br><span> </span><br><sp=
+an> #ifdef IFCONFIG_POOL_TEST</span><br><span> void ifconfig_pool_test(in_a=
+ddr_t start, in_addr_t end);</span><br><span>diff --git a/tests/unit_tests/=
+openvpn/Makefile=2Eam b/tests/unit_tests/openvpn/Makefile=2Eam</span><br><s=
+pan>index 78f4b6c=2E=2E20bfd6c 100644</span><br><span>--- a/tests/unit_test=
+s/openvpn/Makefile=2Eam</span><br><span>+++ b/tests/unit_tests/openvpn/Make=
+file=2Eam</span><br><span>@@ -17,6 +17,7 @@</span><br><span> 	options_parse=
+_testdriver \</span><br><span> 	packet_id_testdriver \</span><br><span> 	pk=
+t_testdriver \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	pool=
+_testdriver \</span><br><span> 	provider_testdriver \</span><br><span> 	pus=
+h_update_msg_testdriver \</span><br><span> 	socket_testdriver \</span><br><=
+span>@@ -385,6 +386,23 @@</span><br><span> 	$(top_srcdir)/src/openvpn/platf=
+orm=2Ec \</span><br><span> 	$(top_srcdir)/src/openvpn/mbuf=2Ec</span><br><s=
+pan> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+pool_testdrive=
+r_CFLAGS  =3D \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	-I$=
+(top_srcdir)/include -I$(top_srcdir)/src/compat -I$(top_srcdir)/src/openvpn=
+ \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	@TEST_CFLAGS@</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+pool_testdriver_LDFLAGS =3D @TEST_LDFLAGS=
+@</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+pool_testdriver_SOURCES =3D test_pool=
+=2Ec \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	mock_msg=2Ec=
+ test_common=2Eh \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	=
+mock_get_random=2Ec \</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+	$(top_srcdir)/src/openvpn/pool=2Ec \</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/status=2Ec \</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/buffer=
+=2Ec \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir=
+)/src/openvpn/otime=2Ec \</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+	$(top_srcdir)/src/openvpn/platform=2Ec \</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/fdmisc=2Ec \</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/=
+interval=2Ec</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span> subnet_pool_testdriver_CFLAGS  =3D \</span><br><span> 	-I$(top_s=
+rcdir)/include -I$(top_srcdir)/src/compat -I$(top_srcdir)/src/openvpn \</sp=
+an><br><span> 	@TEST_CFLAGS@</span><br><span>diff --git a/tests/unit_tests/=
+openvpn/test_pool=2Ec b/tests/unit_tests/openvpn/test_pool=2Ec</span><br><s=
+pan>new file mode 100644</span><br><span>index 0000000=2E=2E16008df</span><=
+br><span>--- /dev/null</span><br><span>+++ b/tests/unit_tests/openvpn/test_=
+pool=2Ec</span><br><span>@@ -0,0 +1,299 @@</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+ *  OpenVPN -- An application to securely tunnel IP networks</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ *             over a single=
+ UDP port, with support for SSL/TLS-based</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+ *             session authentication and key exchang=
+e,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             pa=
+cket encryption, packet authentication, and</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+ *             packet compression=2E</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+ *  Copyright (C) 2026 OpenVPN Inc &lt;sales@openvp=
+n=2Enet&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This program is free =
+software; you can redistribute it and/or modify</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+ *  it under the terms of the GNU General Publi=
+c License version 2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ *  as published by the Free Software Foundation=2E</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ *  This program is distributed in the hope that it will b=
+e useful,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  but WI=
+THOUT ANY WARRANTY; without even the implied warranty of</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ *  MERCHANTABILITY or FITNESS FOR A P=
+ARTICULAR PURPOSE=2E  See the</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ *  GNU General Public License for more details=2E</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+ *  You should have received a copy of the GNU Gene=
+ral Public License along</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+ *  with this program; if not, see &lt;https://www=2Egnu=2Eorg/license=
+s/&gt;=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+#ifdef HAVE_CONFIG_H</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+#include &quot;config=2Eh&quot;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+#include &quot;syshead=2Eh&quot;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+#include &lt;stdlib=2Eh&gt;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+#include &lt;setjmp=2Eh&gt;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+#include &lt;cmocka=2Eh&gt;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+#include &quot;pool=2Eh&quot;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+#include &quot;buffer=2Eh&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#include &quot;platform=2Eh&quot;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;test_common=
+=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include =
+&quot;mock_msg=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+ * pool=2Ec pulls in a few sock=
+et=2Ec/socket_util=2Ec helpers for address parsing and</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ * formatting=2E  The pool logic under t=
+est does not need the full socket stack,</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ * so provide small IPv4 implementations here (the IPv=
+6 ones are not reached by</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+ * these IPv4-only pools, but must exist to link)=2E</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+struct signal_info;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+in_addr_t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+getadd=
+r(unsigned int flags, const char *hostname, int resolve_retry_seconds, bool=
+ *succeeded,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+ struct signal_info *sig_info)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    str=
+uct in_addr a;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i=
+nt ok =3D inet_pton(AF_INET, hostname, &amp;a) =3D=3D 1;</span><br><span st=
 yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    /* two pools: disjoint, overlapping, same tag */</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    const struct in6_add=
-r server =3D in6(&quot;fd00:8::&quot;);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    struct subnet_pool6_def b =3D { =2Enext =3D NULL, =
-=2Etag =3D &quot;grpB&quot;, =2Enetwork =3D in6(&quot;fd00:a::&quot;), =2En=
-etbits =3D 64, =2Egateway =3D in6(&quot;fd00:a::1&quot;) };</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    struct subnet_pool6_def a =3D {=
- =2Enext =3D &amp;b, =2Etag =3D &quot;grpA&quot;, =2Enetwork =3D in6(&quot;=
-fd00:9::&quot;), =2Enetbits =3D 64, =2Egateway =3D in6(&quot;fd00:9::1&quot=
-;) };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    assert_true(subnet_pools6_che=
-ck(&amp;a, &amp;server, 64, M_WARN));</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    assert_true(subnet_pools6_check(&amp;a, &amp;server, =
-0, M_WARN));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    b=2Enetwork =3D in6(&q=
-uot;fd00:9::100&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    b=2Enetbits =3D 120;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    b=2Egateway =3D in6(&quot;fd00:9::101&quot;);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    assert_false(subnet_pools6_check=
-(&amp;a, &amp;server, 64, M_WARN));</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- b=2Enetwork =3D in6(&quot;fd00:a::&quot;);</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    b=2Enetbits =3D 64;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    b=2Egateway =3D in6(&quot;fd00:a::1&quot;);=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    b=2Etag =3D &qu=
-ot;grpA&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    a=
-ssert_false(subnet_pools6_check(&amp;a, &amp;server, 64, M_WARN));</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span> const struct CMUnitTest subn=
-et_pool_tests[] =3D {</span><br><span>     cmocka_unit_test(test_subnet_poo=
-l_by_tag),</span><br><span>     cmocka_unit_test(test_subnet_pools_check_ne=
-tmask),</span><br><span>     cmocka_unit_test(test_subnet_pools_check_gatew=
-ay),</span><br><span>     cmocka_unit_test(test_subnet_pools_check_overlap)=
-,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cmocka_unit_te=
-st(test_subnet_pool6_by_tag),</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    cmocka_unit_test(test_subnet_pools6_check),</span><br><span> =
-};</span><br><span> </span><br><span> int</span><br></pre><p>To view, visit=
- <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1786?usp=3Demail">ch=
-ange 1786</a>=2E To unsubscribe, or for help writing mail filters, visit <a=
- href=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=
-=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div it=
-emscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><li=
-nk itemprop=3D"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1786=
-?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div=
->
+20, 100%, 40%);">+    if (succeeded)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        *succeeded =3D ok;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+return ok ? ntohl(a=2Es_addr) : 0;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+const char *</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+print_in_addr_t(in_addr_t add=
+r, unsigned int flags, struct gc_arena *gc)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    struct in_addr a =3D { =2Es_addr =3D htonl(addr) };</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    char buf[INET_ADDRSTRLEN] =3D=
+ { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    inet_ntop(AF_INET, &amp;a, =
+buf, sizeof(buf));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   return string_alloc(buf, gc);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+get_ipv6_addr(const char *hostname, str=
+uct in6_addr *network, unsigned int *netbits,</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+              msglvl_t msglevel)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    return false;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+const char *</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+print_in6_addr(struct in6=
+_addr a6, unsigned int flags, struct gc_arena *gc)</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    return &quot;&quot;;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+struct in6_addr</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+add_in6_addr(struct in6=
+_addr base, uint32_t add)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return b=
+ase;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+#define IP(a, b, c, d) (((in_addr_t)(a) &lt;&lt; 24)=
+ | ((b) &lt;&lt; 16) | ((c) &lt;&lt; 8) | (d))</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+/* three non-overlapping /24 pools: the global one and two --subnet=
+-pool groups */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#def=
+ine GLOBAL_START IP(10, 1, 1, 2)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+#define GLOBAL_END   IP(10, 1, 1, 254)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#define A_START      IP(10, 2, 1, 2)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+#define A_END        IP(=
+10, 2, 1, 254)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#defi=
+ne B_START      IP(10, 2, 2, 2)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+#define B_END        IP(10, 2, 2, 254)</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+static struct ifconfig_pool *</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+make_pool(in_addr_t start, in_addr_t end)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    struct in6_addr any =3D { 0 };</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    return ifconfig_pool_init(true, IFCONFIG_POOL_IND=
+IV, start, end, false, false, any, 0);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static in_addr_t</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+acquire(struct ifconf=
+ig_pool *pool, const char *cn)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    in_=
+addr_t local =3D 0, remote =3D 0;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i=
+fconfig_pool_acquire(pool, &amp;local, &amp;remote, NULL, cn);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    return remote;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+/* whether any entry of the pool is reserved for common name cn */</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+static bool</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+pool_has_cn(const struct ifconf=
+ig_pool *pool, const char *cn)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for=
+ (int i =3D 0; i &lt; pool-&gt;size; ++i)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        if (pool-&gt;list[i]=2Ecommon_name &amp;&amp; !strcmp(pool-=
+&gt;list[i]=2Ecommon_name, cn))</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+            return true;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return false;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+static const char *persist_file;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+/* Write {global, A, B} to one persist file, reload into a f=
+resh set, and check</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ * that every entry was routed back to the pool that owns its address=2E */=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+test_persist_roundtrip(void=
+ **state)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    struct ifconfig_pool *g =
+=3D make_pool(GLOBAL_START, GLOBAL_END);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    struct ifconfig_pool *a =3D make_pool(A_START, A_E=
+ND);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct ifco=
+nfig_pool *b =3D make_pool(B_START, B_END);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    assert_int_equal(acquire(g, &quot;alice&quot;), GLOBAL_START);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(ac=
+quire(a, &quot;bob&quot;), A_START);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    assert_int_equal(acquire(b, &quot;carol&quot;), B_STAR=
+T);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    struct ifconfig_pool *pools[] =
+=3D { g, a, b };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ struct ifconfig_pool_persist *wp =3D ifconfig_pool_persist_init(persist_fi=
+le, 5);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ifconfig=
+_pool_write(wp, pools, 3);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    ifconfig_pool_persist_close(wp);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    struct ifconfig_pool *g2 =3D make_pool(GLOBAL_START, GLOBAL_END);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct ifconfig_=
+pool *a2 =3D make_pool(A_START, A_END);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    struct ifconfig_pool *b2 =3D make_pool(B_START, B_E=
+ND);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct ifco=
+nfig_pool *pools2[] =3D { g2, a2, b2 };</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    struct ifconfig_pool_persist *rp =3D ifconfig_pool_=
+persist_init(persist_file, 0);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    ifconfig_pool_read(rp, pools2, 3);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    ifconfig_pool_persist_close(rp);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    /* each client was routed to its own pool (=
+handle 0 =3D=3D the pool&#39;s base) */</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    assert_string_equal(g2-&gt;list[0]=2Ecommon_name, &=
+quot;alice&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   assert_string_equal(a2-&gt;list[0]=2Ecommon_name, &quot;bob&quot;);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(=
+b2-&gt;list[0]=2Ecommon_name, &quot;carol&quot;);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    /* and nowhere else */</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    assert_false(pool_has_cn(g2, &quot;bob&quot;));</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_false(pool_has=
+_cn(g2, &quot;carol&quot;));</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    assert_false(pool_has_cn(a2, &quot;alice&quot;));</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    /* the reservation is honoured: the same CN get=
+s its persisted address back */</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    assert_int_equal(acquire(a2, &quot;bob&quot;), A_START);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    ifconfig_pool_free(g);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    ifconfig_pool_free(a);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    ifconfig_pool_free(b);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ifconfig_pool_fr=
+ee(g2);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ifconfig=
+_pool_free(a2);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+ifconfig_pool_free(b2);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+/* An entry whose address matches=
+ no configured pool (here: B&#39;s, when B is not</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ * in the set) is ignored on load and does no=
+t disturb the other pools=2E */</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+test_persist_ignore_unknown(void **state)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    struct ifconfig_pool *g =3D make_pool(GLOBAL_START, GLOBAL_END)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct ifconfi=
+g_pool *a =3D make_pool(A_START, A_END);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    struct ifconfig_pool *b =3D make_pool(B_START, B_E=
+ND);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    acquire(g, &quot;alice&quot;);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    acquire(a, &quo=
+t;bob&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ac=
+quire(b, &quot;carol&quot;);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct=
+ ifconfig_pool *pools[] =3D { g, a, b };</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    struct ifconfig_pool_persist *wp =3D ifconfig_pool=
+_persist_init(persist_file, 5);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    ifconfig_pool_write(wp, pools, 3);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    ifconfig_pool_persist_close(wp);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    /* reload into a set WITHOUT pool B: carol=
+&#39;s entry now matches no pool */</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    struct ifconfig_pool *g2 =3D make_pool(GLOBAL_START, GL=
+OBAL_END);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struc=
+t ifconfig_pool *a2 =3D make_pool(A_START, A_END);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    struct ifconfig_pool *pools2[] =3D { g2,=
+ a2 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct if=
+config_pool_persist *rp =3D ifconfig_pool_persist_init(persist_file, 0);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    ifconfig_pool_read=
+(rp, pools2, 2);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ ifconfig_pool_persist_close(rp);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    a=
+ssert_string_equal(g2-&gt;list[0]=2Ecommon_name, &quot;alice&quot;);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(a2=
+-&gt;list[0]=2Ecommon_name, &quot;bob&quot;);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    assert_false(pool_has_cn(g2, &quot;carol&quot=
+;));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_fals=
+e(pool_has_cn(a2, &quot;carol&quot;));</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    ifconfig_pool_free(g);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    ifconfig_pool_free(a);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    ifconfig_pool_free(b);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    ifconfig_pool_free(g2);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    ifconfig_pool_free(a2);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+/* A --subnet-pool gateway is reserved inside the pool range (here in the</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * middle of a /29): =
+it is never handed out, nor released=2E */</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+test_reserve_gateway(void **state)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    struct ifconfig_pool *p =3D make_pool(IP(10, 2, 3, 1), IP(1=
+0, 2, 3, 6));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    co=
+nst char *cns[] =3D { &quot;c1&quot;, &quot;c2&quot;, &quot;c3&quot;, &quot=
+;c4&quot;, &quot;c5&quot; };</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    in_addr_t local =3D 0, remote =3D 0;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    assert_false(ifconfig_pool_reserve_ip(p, IP(10, 2, 4, 1)));<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(ifco=
+nfig_pool_reserve_ip(p, IP(10, 2, 3, 4)));</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    /* the five other addresses go to five clients, the gateway to none=
+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (int i =
+=3D 0; i &lt; 5; ++i)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        cons=
+t in_addr_t a =3D acquire(p, cns[i]);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       assert_true(a &gt;=3D IP(10, 2, 3, 1) &amp;&amp; a &lt;=3D IP(10, 2,=
+ 3, 6));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ass=
+ert_int_not_equal(a, IP(10, 2, 3, 4));</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    assert_true(ifconfig_pool_acquire(p, &amp;local, &amp;remote, NULL=
+, &quot;c6&quot;) &lt; 0);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* relea=
+sing the reserved slot is refused */</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    assert_false(ifconfig_pool_release(p, 3, true));</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(ifconfig_=
+pool_acquire(p, &amp;local, &amp;remote, NULL, &quot;c6&quot;) &lt; 0);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    ifconfig_pool_free(p);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+/* A persisted entry pointing at a now-reserved address (e=2Eg=2E a gat=
+eway that</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * was han=
+ded out before the pool definition changed) does not take it over=2E */</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+test_reserve_survives_persist(v=
+oid **state)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct ifconfig_pool =
+*p =3D make_pool(IP(10, 2, 3, 1), IP(10, 2, 3, 6));</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    assert_int_equal(acquire(p, &quot;alice&quot;), IP(10, 2=
+, 3, 1));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert=
+_int_equal(acquire(p, &quot;mallory&quot;), IP(10, 2, 3, 2));</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    struct ifconfig_pool *pools[] =3D { p };</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    struct ifconfig_pool_pe=
+rsist *wp =3D ifconfig_pool_persist_init(persist_file, 5);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    ifconfig_pool_write(wp, pools, 1=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ifconfig_pool=
+_persist_close(wp);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct ifconfig=
+_pool *p2 =3D make_pool(IP(10, 2, 3, 1), IP(10, 2, 3, 6));</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    assert_true(ifconfig_pool_reserv=
+e_ip(p2, IP(10, 2, 3, 2)));</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    struct ifconfig_pool *pools2[] =3D { p2 };</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    struct ifconfig_pool_persist *rp =3D=
+ ifconfig_pool_persist_init(persist_file, 0);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    ifconfig_pool_read(rp, pools2, 1);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    ifconfig_pool_persist_clos=
+e(rp);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    assert_true(pool_has_cn(p2, =
+&quot;alice&quot;));</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    assert_false(pool_has_cn(p2, &quot;mallory&quot;));</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(acquire(p2, &quot=
+;alice&quot;), IP(10, 2, 3, 1));</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    assert_int_not_equal(acquire(p2, &quot;mallory&quot;), IP(=
+10, 2, 3, 2));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    ifconfig_pool_free(p=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ifconfig_pool=
+_free(p2);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+const struct CMUnitTest pool_tests[] =3D {</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    cmocka_unit_test(te=
+st_persist_roundtrip),</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    cmocka_unit_test(test_persist_ignore_unknown),</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    cmocka_unit_test(test_reserve_gateway=
+),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cmocka_unit_t=
+est(test_reserve_survives_persist),</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+};</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+main(void)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    struct gc_arena gc =3D gc_new();</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    persist_file =3D platform_create_temp_file(NULL, &quot;pool_p=
+ersist_ut&quot;, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    assert_non_null(persist_file);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    openvpn_unit_test_setup();</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    int ret =3D cmocka_run_group_tests(pool_tests, NULL, NULL=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    platform_unlink(persist_file);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return ret;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br></pre><p>To=
+ view, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1790?usp=
+=3Demail">change 1790</a>=2E To unsubscribe, or for help writing mail filte=
+rs, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">s=
+ettings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessa=
+ge"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/View=
+Action"><link itemprop=3D"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/ope=
+nvpn/+/1790?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/>=
+</div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset =
+</div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div sty=
+le=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:non=
+e"> Gerrit-Change-Id: I0bff8d0a549a65b7da01ea0e785b7ec8bea17f05 </div>
 <div=
- style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"displ=
-ay:none"> Gerrit-Branch: master </div>
+ style=3D"display:none"> Gerrit-Change-Number: 1790 </div>
+<div style=3D"di=
+splay:none"> Gerrit-PatchSet: 4 </div>
 <div style=3D"display:none"> Gerrit-=
-Change-Id: I64e0850d48647a2c0e3d385c2f20a9f445931727 </div>
-<div style=3D"d=
-isplay:none"> Gerrit-Change-Number: 1786 </div>
-<div style=3D"display:none"=
-> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: Anto=
-nio Quartulli &lt;antonio@mandelbit=2Ecom&gt; </div>
-<div style=3D"display:=
-none"> Gerrit-Reviewer: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </d=
-iv>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel=
-@lists=2Esourceforge=2Enet&gt; </div>
-<div style=3D"display:none"> Gerrit-A=
-ttention: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+Owner: Antonio Quartulli &lt;antonio@mandelbit=2Ecom&gt; </div>
+<div style=
+=3D"display:none"> Gerrit-Reviewer: Arne Schwabe &lt;arne-openvpn@rfc2549=
+=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: Frank Licht=
+enheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<div style=3D"display:none"> =
+Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Attention: Arne Schwabe &lt;arne-o=
+penvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Attenti=
+on: Frank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
 
-</body></=
-html>
---mn11nZO5KFo=--
+</body></html=
+>
+--A9wbPNixL3U=--
 
 
---===============7664813502211445413==
+--===============2408923754597247360==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============7664813502211445413==
+--===============2408923754597247360==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -2023,5 +2062,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============7664813502211445413==--
+--===============2408923754597247360==--
 
