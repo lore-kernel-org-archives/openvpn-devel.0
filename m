@@ -4,128 +4,124 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 23C6ACCA46C
-	for <openvpn-devel@archiver.kernel.org>; Fri, 16 Oct 2026 15:14:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3E6D6CC6B2A
+	for <openvpn-devel@archiver.kernel.org>; Sat, 17 Oct 2026 06:07:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=c/KVuunWVvEppZlNSkYqfAnrdMZpuy/WuaA55Cg2XvM=; b=J85y5R2lTvGwy0iTOiHJsOW8Bg
-	iIoDVr68RC+EwLbJc1fh6QuL50GYsKRW/xZ75V/zFhbDhRdYXBwMq/CoD6lJqz8IyQQZ6mqKN2b4C
-	hQC6ubFCeQJIBg7pd0mGuYh0d4Bky/HuQrF+9LwFh/rqk415o1kw/t6+4YA8QH4MCn5M=;
+	Subject:To:Message-ID:Date:MIME-Version:From:Sender:Reply-To:Cc:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Owner;
+	bh=khipbOWrYHShKSX6JdiidoTQJg4KZszfYjEYOhRHbpY=; b=ODP4HbJ4tembRRExH7BUiHpgRM
+	LZieKhVdrNMjaC4CvQGvRPcaRS005yfYIxCXn8nzpxdAl3ByIMyZDTaUSriKvR1qIc2AjD33VZ2Lt
+	jD8/oc360fIAffhavtx5qPxXt57v6OnRTyZgZ7Jjqz6WttecJ6XRnILlD7nmz35ltNEI=;
 Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
 	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xHjdx-0004YL-Jh;
-	Fri, 16 Oct 2026 15:14:50 +0000
+	id 1xHxZz-0005Fd-Ag;
+	Sat, 17 Oct 2026 06:07:40 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1xHjdw-0004YF-M2
+ (envelope-from <alepacheco99@gmail.com>) id 1xHxZx-0005FW-8Z
  for openvpn-devel@lists.sourceforge.net;
- Fri, 16 Oct 2026 15:14:49 +0000
+ Sat, 17 Oct 2026 06:07:37 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
- :List-Post:List-Owner:List-Archive;
- bh=3WUh+VSt6vORfu83mLDg5k2egXNoV2OzD7TKFRTRwos=; b=SWpchu/eicLSCmBbXhXqqFHeQZ
- 4UgQq810n8aHWKqDW69TLg22T1KhDaUPPIUaw1E7LJsfP3uzAbKoDrsCCQydjKF70vIXBF915a84q
- j2h7xJ3bELm6yGuUGA2rFusfGVzae5VtC3z/JBsAraZIzROi+IyhRBJG08vhKzNb/05s=;
+ d=sourceforge.net; s=x; h=Content-Type:To:Subject:Message-ID:Date:
+ MIME-Version:From:Sender:Reply-To:Cc:Content-Transfer-Encoding:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=ppQ5r8WBuYP3TbhI1YxP779966BZbS4oYJa8j7lc6RY=; b=gZJ1dzHQ2y9y+nZSGD8M7ZxOAV
+ T/Qgn10/FnuTbmdG+QdaB8jTaL8KHtRYNjFndCjGbDNmeEHvMNlGYqdgDNa1+JnxrUB6Q1NpBA3bh
+ 0SWSB4CDvEcDbGrwe9HATCPh97od0rG6STw837rPNSnkT6Y8l3TH0fHTNWz5mf5Tlsao=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
- Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=3WUh+VSt6vORfu83mLDg5k2egXNoV2OzD7TKFRTRwos=; b=B
- 0ZjIIOdO1BeTO5dWLcvq85gb5oCEktOLPyoIFn/ZMS1q0R6d71kd5/I4pfagLhWK37ih8xbbqZZ7C
- DLdIBIIqh2lV/bs7Wqz2uJlCFWWWZiAm2I/AxEwtsovkm6nyyIEfWkBWhc+dWReL3/yslwpPAFLYB
- ufUc6/OjIj7/N2YA=;
-Received: from mail-wr1-f48.google.com ([209.85.221.48])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ h=Content-Type:To:Subject:Message-ID:Date:MIME-Version:From:Sender:Reply-To
+ :Cc:Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+ References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=ppQ5r8WBuYP3TbhI1YxP779966BZbS4oYJa8j7lc6RY=; b=e
+ BlKtJWVwte/jAIZkYOr6iz2GNijEMRyzLO9b/wx2SccMB+YOyJb0HnM6G20mNRmC4o/iDnra0gOov
+ ZboLU2I/sPTABT7iydOWv/fydRFFEu01IvDMNe7ci3a+wMsRNIh6T2zmnWI4xe53cGceDVFENX8Km
+ PPDqaGJwWEbiaKXY=;
+Received: from mail-pg1-f175.google.com ([209.85.215.175])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1xHjds-0000zD-Ag for openvpn-devel@lists.sourceforge.net;
- Fri, 16 Oct 2026 15:14:49 +0000
-Received: by mail-wr1-f48.google.com with SMTP id
- ffacd0b85a97d-48c5358fc28so1395803f8f.0
+ id 1xHxZw-0000o8-JM for openvpn-devel@lists.sourceforge.net;
+ Sat, 17 Oct 2026 06:07:37 +0000
+Received: by mail-pg1-f175.google.com with SMTP id
+ 41be03b00d2f7-cd60d155070so301339a12.2
  for <openvpn-devel@lists.sourceforge.net>;
- Fri, 16 Oct 2026 08:14:44 -0700 (PDT)
+ Fri, 16 Oct 2026 23:07:36 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1792217251; cv=none;
+ d=google.com; s=arc-20260327;
+ b=GsVDB6qeXv7BieD39RYI5B94IMIHTbYJyFtgjCrSQtzoD9h04JL9+lsbNtoPgP8JRm
+ D3QQQ8MdEZenferNgzrMDz6xedWdIiV4Mo3TozNUPGjmcnovDwktXC0FWcNTsz7hm5Ir
+ EsyhEVTDxwg6rL2K4xroRjnMPkF/l3Gpih4j0i4G1mCeesgcjOhvV3ZJgnNmI8n+eIQz
+ TUbnUB1Ozo+kC3ylOkyFP2uwBg7Et8bVIhTvl7xGcpUB62x5hcerdO7WmKOpubhex1YJ
+ DqFOFxZII/zHEWk+HYQIZNSZLZ6Lw1HhZtetD0ZNJ3mV8EjldTHUAdISwDzjrB9WPnYm
+ s0iA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com;
+ s=arc-20260327; 
+ h=to:subject:message-id:date:mime-version:from:dkim-signature;
+ bh=ppQ5r8WBuYP3TbhI1YxP779966BZbS4oYJa8j7lc6RY=;
+ fh=4NbAC/LsuMLI0S0hprUlLSLCiHwg6SCAifhH718Jh0Q=;
+ b=ssnOx011rGt5xvLf2uRq6RoJG6GNSyfwBGTQ4kjVQhRUnf0WcuV8WIor2qW8c0rK47
+ GMlLiwMAMnoaLO0D+/NxDMkfZiN6nRb5sxNPguhp0mIHvyvYrw31bGPCTYFUmfmUezp2
+ 6HCjleUzh/d/7UNjP7zGePTW/AScjU70BrSylbSd6AvaRxVwEXCIfFHRxbOztTzluOEp
+ TzebBfXJBfobMRpz1sGFanvixd9uyOIxYjLyklRSxSp3OUrAzoueCGm2n4u1TZ80ysYw
+ AYL1TkgufcXuLBR3xPT5tiAN8Laf7Aw30CRXY+28NiDupY730HEq6OqYf2pc7LVbzqb+
+ z6bQ==; darn=lists.sourceforge.net
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1792163678; x=1792768478; darn=lists.sourceforge.net;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
- :reply-to:content-type;
- bh=3WUh+VSt6vORfu83mLDg5k2egXNoV2OzD7TKFRTRwos=;
- b=UhlPm7GB4xrOBevEJaGyo5SItAQ4Gtq3PLRgbpIBFQ7LzSVSA0PUdtW0JR2SYvqA1w
- CaNFlC5oR9EdEsVi6BqpVz99gM0m0peGskwnaNhQVgH18VYmkhkDsAAh9EBe3E+YLH/8
- rBgLfOInGzZal55adHyLe4Ss4BDIycZZ23HiCXe6C2umx0mz0mg9Kc/oA3NtBOuoFUAn
- yPa+TV1XFKsgp16YOieNQr1W71lr21J2ASdmboExABexvZzXJBY3FaXRuOqtQuKVEZFQ
- 9ac/g3zJi5QRNCNQMMFBrgdEKK7gyG72q/PQHvPEg9S/5WIH8mLCEMS2Gu9FhRQ19yU/
- IZ7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1792163678; x=1792768478;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
+ d=gmail.com; s=20251104; t=1792217251; x=1792822051; darn=lists.sourceforge.net;
+ h=content-type:to:subject:message-id:date:mime-version:from:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=3WUh+VSt6vORfu83mLDg5k2egXNoV2OzD7TKFRTRwos=;
- b=a+k6FWhOZf1ztL6CZeES+YGnNz/+ltozvPKS2GQOdGP26/YocFnYXslnvvheEw1nWF
- DsgZZEC9PFtOsqnPQVnYRzwr1TuNh0g82aj9lJyj+EEr/uYKWaw2y9vR/H/Q0NOiM7Zd
- JpRtUV7Eynl9WuiaIekwF8+LqIOauAasY2lPM1D6uOzCpm+K8+ps9cwvvk+Zo+WL9Ygy
- m8L9X+tp4izEiaFH8FWaw3shYPzyFpO5oDmlgkpecgO0Suue7v5+GrmkzNJufcVmrQ/f
- rI+nFFa1z8KQ+18Cwag/QV/ytLGyufTKQIe08UPlaGXJMZ1D18q1e290NXjFGzbFHPtx
- bonw==
-X-Gm-Message-State: AFq9FYJiPriSIWvIK/c+7elynPwksR54wG7ArTzvUznH1w0i59kUDlrx
- zkwJElCvXKl+OxoywnTmXboznfszj7NgcKXIDyCXhY9TqD4V8tep/JlxvbTiFBoxQr0Kig6XJIj
- 3iYeXvjRfoxFAi6IoKKpVEWCR5THAFPxUN6Wb5jE45fDp80rlT87uRiYG6LmQJI97ZAsJ
-X-Gm-Gg: AYBFou370/wurLE1y/vQ1B60iicZ5bTgRj2JKBz8VL4PHgxz8xFoSdHKIJNfYLN9xD5
- j/6L/C/zsF83uXJGvo7yGOawUabolpZfr2cwm6HczmqZAb2rayXQ7Sm/tBc3LDieFPNkeq3YzXZ
- 546wxHsbL3x249jcPXuZnFvwSskKPbOKbbWIfdL1o8U9YRWW6eZ5TYXbYPQK1/EkqaGkfCukmn5
- 5NcJX14cKDkrFj9wbqiwO/EyFFXWhkclQNhR56Zxn5BeQ4GYCy5aFZOpCykMN73g8063b95baKl
- pS697orv7M4EABlkkIL2kf2OXG5xki4tZ1O8Hrj7SbKmuUKGpjdvVuCNkFQba5tIW7gV3Z252bW
- JJT5CVRjQOD6ZLx2SE5/VoXGLNP1BCjEVvNuQaM5dsuB5Ll8zSE1JVyuquyq+QmKIQEQZtKfzZk
- rRFJjzLF8wUFZgBfUwl4zdtioaNq2dhyGh0qMzRCpmUEuhCPOvzej6e7FBFXlblP1jJaK3Nneib
- gPkZ/TqKUCSGnxMTQzYunFq6fzgcAJdpV/yacKrOFPv8Gz27Q/iIOo9AcfzyMD7RBmwhsw4RgPj
- LTlBpIs7TJlfU3D7BBlWo2+kQc63nfR/ypGPUYxLoOXHbqkFZZ/eFy2SNdF5
-X-Received: by 2002:a05:600c:540f:b0:4a1:97c6:d2e8 with SMTP id
- 5b1f17b1804b1-4a1d7633b35mr1742305e9.32.1792163677354; 
- Fri, 16 Oct 2026 08:14:37 -0700 (PDT)
-Received: from ip-10-18-1-162.eu-central-1.compute.internal
- (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
- by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-4a1cf04ffe9sm37057815e9.0.2026.10.16.08.14.36
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 16 Oct 2026 08:14:36 -0700 (PDT)
-X-Google-Original-From: "Gert Doering (Code Review)"
- <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Fri, 16 Oct 2026 15:14:34 +0000
-To: Frank Lichtenheld <frank@lichtenheld.com>,
- =?UTF-8?Q?R=C4=83zvan_Cojocaru?= <razvanc@mailbox.org>,
- Arne Schwabe <arne-openvpn@rfc2549.org>
-Auto-Submitted: auto-generated
-X-Gerrit-MessageType: newpatchset
-X-Gerrit-PatchSet: 7
-X-Gerrit-Change-Id: I79b2dc4a550b1c5068a45407976b0dfc2f765b33
-X-Gerrit-Change-Number: 1592
-X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/1592?usp=email>
-X-Gerrit-Commit: dda75df387f83ae10741d74a516495466ca78964
-In-Reply-To: <gerrit.1774451380000.I79b2dc4a550b1c5068a45407976b0dfc2f765b33@gerrit.openvpn.net>
-References: <gerrit.1774451380000.I79b2dc4a550b1c5068a45407976b0dfc2f765b33@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzc0NDUxMzgwMDAwLkk3OWIyZGM0YTU1MGIxYzUwNjhhNDU0MDc5NzZiMGRmYzJmNzY1YjMzQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <3ceb2e3c514a00c17ed9a4b28b8e88051850e87c-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+ bh=ppQ5r8WBuYP3TbhI1YxP779966BZbS4oYJa8j7lc6RY=;
+ b=QT8CR6/LogWyD7cvh3VUN5t2J2kcVbRG0hxn2cegugufIePuYXHEGM4h23Ra/xH2f3
+ D1IcbaEWJ6dOZxfyPH92s3j+Dra2FqNa5oFzENrrCJfll3UB6y27hPB+0CoF4gWlOFtk
+ r8EtDcgjQDCUwhHjGdSn/Pnqo989bO6yhJVUJ4lBJN0RzxRgNx1w5dbXeiv47g2BUMgH
+ 6NFL48ljteozCj2iHBSvglCbuMzXg2u0FpahksAbk+51oIQmko/2CuLo94LQ3Fwuna27
+ twM0X8m/Ucy5imwye1eCGQsf6dX0YYCRWWwElbBYO666Ywl+OsW4K7Hf+dvjPGfX/J+I
+ DvFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20260707; t=1792217251; x=1792822051;
+ h=content-type:to:subject:message-id:date:mime-version:from:x-gm-gg
+ :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+ :content-type;
+ bh=ppQ5r8WBuYP3TbhI1YxP779966BZbS4oYJa8j7lc6RY=;
+ b=QkFZLJdWvs04f3hq4ZHLeQi9N02uLC/+sDEoGJyIfmxaA8Qua3Tnr1cTb2pp/nYay4
+ /GZ2f5mjdCS8EwJbTtTXjH37AmzLKU7j6eobuHhN9DOHcFwD7d15cM+biHKGFC2tza77
+ ah7d4nLKbKOa5MzFAPBpHC4aL3/eSS34zF9OFJTpLSfnClIr4djob1jVs+JnIQjQ/f9i
+ tZIwqv5ofSQuE4kfw10rQUJ+R6kOHxxsohg/FyPWy90Xe6g9T9Nl4fQf3cRzLC3WaeW6
+ IpM7bTpJ5XlmNyBGYbF3jjzznYPN7cBMT5sD8QbG5bKaw2WendvfGAb4jRL6JyEj0vrP
+ 7xbA==
+X-Gm-Message-State: AFq9FYKTVAy+D3R9nCM5I3kRdSrUTqdEL3uE0z+5g1lNIWngq3eNFI7k
+ JjD/Z5JNNfSv1lJHZ3oUnF3pmeD5Tnlg62UT5eyboKyFtab3a2QG5ZoqT3si0jm0vD7hPv0/ZnY
+ gDTB6nQjZLm3VstkKeDydWjMUD23fgOglgQ8ArbCStmMK
+X-Gm-Gg: AYBFou04hIpE22dn3zr6NY4wIEl4QnMjGV4uWVUGEZ9RILL74fmzGixLCz/v8Xih7HV
+ mSc3Pt55uhN8L17UrRYjp4UUcc/Ueglnw8y6/ARF/PVPVm5qLvLsZFnLxKPD9IgKNw1d/VxLj++
+ B0T32Zv9Kih0nMLYvHJGDnc1ye6dAzrvWi3qpqvtqbhaj3Hs0jiFwVw6G88TLTq9n5Gfy4qJSV9
+ jjeU8pfO5EGBdDvZxgibGEKGU5ZWbR3UX6+Zy80IxQOrK3/WZakhEz7aa/FMVX1BHkxcrNW6t7B
+ JCfFPannM+zDl2QvpGuilIvjXAToURQPPbw2uX1rc+4ksUjOkDdhpIes/4kNCXG/7i+kz9fQ1eY
+ CfqF/p2Su3Brl3Pd8bLNf7n2W1OvNdqGecMIjlw==
+X-Received: by 2002:a05:6a20:cd8f:b0:3e1:482c:77ca with SMTP id
+ adf61e73a8af0-3e225d22ccamr1259794637.5.1792217250574; Fri, 16 Oct 2026
+ 23:07:30 -0700 (PDT)
+Received: from 1077388689865 named unknown by gmailapi.google.com with
+ HTTPREST; Sat, 17 Oct 2026 02:07:30 -0400
+Received: from 1077388689865 named unknown by gmailapi.google.com with
+ HTTPREST; Sat, 17 Oct 2026 02:07:30 -0400
+From: Alejandro Pacheco <alepacheco99@gmail.com>
 MIME-Version: 1.0
-User-Agent: Gerrit/3.14.2
-X-Headers-End: 1xHjds-0000zD-Ag
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: configure: Add
- --enable-code-coverage
+Date: Sat, 17 Oct 2026 02:07:30 -0400
+X-Gm-Features: AclHuK_rkkklcGBi202Wx2Zl8T0qU1jTZNdAukGJIsEgJ5u55plDinvQQ7QmL1A
+Message-ID: <CAB8Pm=zZCRoNH8ZkbOWbawmvHUd9+AgY+yas5p_5N6695weFTQ@mail.gmail.com>
+To: openvpn-devel@lists.sourceforge.net
+X-Headers-End: 1xHxZw-0000o8-JM
+Subject: [Openvpn-devel] [PATCH] Keep the outgoing control packet in a
+ buffer owned by tls_multi
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -137,1139 +133,673 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "Gert Doering \(Code Review\) via Openvpn-devel"
- <openvpn-devel@lists.sourceforge.net>
-Reply-To: gert@greenie.muc.de, arne-openvpn@rfc2549.org, razvanc@mailbox.org,
- openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com
-Cc: "Gert Doering \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============8363723328883185347=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============8363723328883185347==
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="+hh5mK9u7kg="; charset=UTF-8
+tls_multi_process() returns the outgoing control packet in to_link.
+Until now to_link pointed into memory owned by a session or key state:
+the reliable send buffer, ks->ack_write_buf, or the tls_wrap or
+tls_wrap_reneg work buffer.  When that session or key state was freed
+or reset before the packet was written to the link, to_link was left
+pointing to freed memory.  This caused CVE-2023-46850, CVE-2026-40215,
+CVE-2026-12996, CVE-2026-13117 and CVE-2026-84471.
 
---+hh5mK9u7kg=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+The fixes so far added check_session_buf_not_used() and
+check_keystate_buf_not_used(), which compare to_link against a list of
+the buffers of a session or key state before it is freed and drop the
+packet on a match.  This only works as long as the list names every
+buffer a packet can end up in and every caller that frees a session or
+key state passes to_link down: key_state_soft_reset() is called without
+it from tls_pre_decrypt() and tls_session_soft_reset().
 
-Gert Doering has uploaded a new patch set (#7) to the change originally cre=
-ated by Frank Lichtenheld=2E ( https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1=
-592?usp=3Demail )
+Fix the ownership instead.  write_control_auth() now copies the
+finished packet into a buffer the caller owns, and tls_multi_process()
+returns it in multi->to_link_buf, which lives as long as the tls_multi,
+like multi->to_link_addr already does for the address.  Freeing or
+moving sessions and key states no longer affects a pending packet, so
+the checks and the to_link parameters of key_state_free(),
+tls_session_free(), move_session(), reset_session() and
+key_state_soft_reset() are removed.  A packet that is pending when its
+session is freed is now sent instead of dropped; the peer handles it
+like any late packet of that session.
 
-The following approvals got outdated and were removed:
-C=
-ode-Review+2 by R=C4=83zvan Cojocaru
+The copy costs one memcpy of a control channel packet.  The new unit
+test checks that the packet written by write_control_auth() stays
+intact and valid after the buffers it was built from are overwritten,
+with no wrapping, tls-auth and tls-crypt.
 
+Signed-off-by: Alejandro Pacheco <alepacheco99@gmail.com>
+---
+64fae9d8 ("Ensure that buffer of freed session are not used") and
+2a881d73 ("Move check_session_buf_not_used method into the method that
+free the buffer") call the check_*_buf_not_used() checks a band-aid that
+a real fix would replace with more refactoring.  This patch does that for
+the to_link buffer only: it does not remove TM_INITIAL or change how
+sessions are moved.
 
-Change subject: configure: Add --ena=
-ble-code-coverage
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E
+Tested on an ASan/UBSan build with OpenSSL 3.5.4: all unit tests,
+t_lpback.sh, and t_cltsrv.sh, whose loopback configs renegotiate every
+10 seconds with tls-auth (22 renegotiations, no sanitizer reports).
 
-configure: Add --enable-code-coverage
+ src/openvpn/ssl.c                   | 169 +++++-----------------------
+ src/openvpn/ssl_common.h            |   8 ++
+ src/openvpn/ssl_pkt.c               |  20 +++-
+ src/openvpn/ssl_pkt.h               |  25 +++-
+ tests/unit_tests/openvpn/test_pkt.c | 103 +++++++++++++++++
+ 5 files changed, 178 insertions(+), 147 deletions(-)
 
-Can be used like this
-=2E/confi=
-gure --enable-code-coverage
-make
-make check
-make code-coverage-capture
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 35948715..d52d539c 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -96,14 +96,6 @@ show_tls_performance_stats(void)
 
-We =
-heavily patch ax_code_coverage=2Em4, mostly to
-achieve better compatibility=
- with non-Linux systems=2E
-- Do not depend on autoconf-archive
-- Do not dep=
-end on GNU make
-- Use more modern --coverage flag to better support
-  diffe=
-rent compilers
+ #endif /* ifdef MEASURE_TLS_HANDSHAKE_STATS */
 
-Change-Id: I79b2dc4a550b1c5068a45407976b0dfc2f765b33
-Signed=
--off-by: Frank Lichtenheld <frank@lichtenheld=2Ecom>
-Acked-by: Razvan Cojoc=
-aru <razvanc@mailbox=2Eorg>
-Gerrit URL: https://gerrit=2Eopenvpn=2Enet/c/op=
-envpn/+/1592
-Message-Id: <20261016080644=2E23188-1-gert@greenie=2Emuc=2Ede>=
-
-URL: https://www=2Email-archive=2Ecom/openvpn-devel@lists=2Esourceforge=2E=
-net/msg39917=2Ehtml
-Signed-off-by: Gert Doering <gert@greenie=2Emuc=2Ede>
--=
---
-M =2Egitignore
-M Makefile=2Eam
-M configure=2Eac
-A lcovrc
-M m4/ax_code_co=
-verage=2Em4
-M src/openvpn/Makefile=2Eam
-6 files changed, 114 insertions(+),=
- 43 deletions(-)
-
-
-  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn re=
-fs/changes/92/1592/7
-
-diff --git a/=2Egitignore b/=2Egitignore
-index 04523a=
-f=2E=2E2749739 100644
---- a/=2Egitignore
-+++ b/=2Egitignore
-@@ -1,5 +1,9 @@=
-
- *=2E[oa]
- *=2El[oa]
-+*=2Egcda
-+*=2Egcno
-+*-coverage/
-+*-coverage=2Einfo
- =
-*=2Edll
- *=2Eexe
- *=2Eexe=2E*
-@@ -18,6 +22,7 @@
- Makefile
- Makefile=2Ein
- a=
-clocal=2Em4
-+aminclude_static=2Eam
- autodefs=2Eh
- autom4te=2Ecache
- config=
-=2Eguess
-diff --git a/Makefile=2Eam b/Makefile=2Eam
-index 125fe84=2E=2Ed391=
-0ed 100644
---- a/Makefile=2Eam
-+++ b/Makefile=2Eam
-@@ -22,6 +22,8 @@
- #  wi=
-th this program; if not, see <https://www=2Egnu=2Eorg/licenses/>=2E
- #
- 
-+i=
-nclude $(top_srcdir)/aminclude_static=2Eam
-+
- ACLOCAL_AMFLAGS =3D -I m4
- 
- =
-MAINTAINERCLEANFILES =3D \
-@@ -45,7 +47,8 @@
- 	CMakeLists=2Etxt \
- 	CMakePr=
-esets=2Ejson \
- 	config=2Eh=2Ecmake=2Ein \
--	forked-test-driver
-+	forked-te=
-st-driver \
-+	lcovrc
- 
- =2EPHONY: config-version=2Eh doxygen
- 
-@@ -98,3 +10=
-1,7 @@
- 	INCLUDE_FLAGS=3D"$(LIBNL_GENL_CFLAGS)" \
- 	CPPCHECK_VERBOSE=3D"$(A=
-M_V_P)" \
- 		"$(top_srcdir)/dev-tools/run-cppcheck=2Esh"
-+
-+CODE_COVERAGE_L=
-COV_SHOPTS=3D--config-file $(srcdir)/lcovrc
-+clean-local: code-coverage-cle=
-an
-+distclean-local: code-coverage-dist-clean
-diff --git a/configure=2Eac b=
-/configure=2Eac
-index ad3f8f1=2E=2E6617c8d 100644
---- a/configure=2Eac
-+++ =
-b/configure=2Eac
-@@ -59,6 +59,8 @@
- AC_CANONICAL_HOST
- AC_USE_SYSTEM_EXTENS=
-IONS
- 
-+AX_CODE_COVERAGE
-+
- AC_ARG_ENABLE(
- 	[lzo],
- 	[AS_HELP_STRING([--di=
-sable-lzo], [disable LZO compression support @<:@default=3Dyes@:>@])],
-@@ -=
-1236,6 +1238,11 @@
- 	ACL_CHECK_ADD_COMPILE_FLAGS([-Wno-cast-function-type])=
-
- fi
- 
-+# If coverage is enabled remove -O arguments from CFLAGS
-+if test "=
-$enable_code_coverage" =3D "yes"; then
-+   [CFLAGS=3D"`echo $CFLAGS | $SED =
--e 's/-O[a-z0-9]*//g'`"]
-+fi
-+
- if test "${enable_pedantic}" =3D "yes"; the=
-n
- 	CFLAGS=3D"${CFLAGS} -pedantic"
- 	AC_DEFINE([PEDANTIC], [1], [Enable ped=
-antic mode])
-@@ -1355,10 +1362,10 @@
- 
- TEST_LDFLAGS=3D"${OPTIONAL_CRYPTO_L=
-IBS} ${OPTIONAL_PKCS11_HELPER_LIBS} ${OPTIONAL_LIBCAPNG_LIBS}"
- TEST_LDFLAG=
-S=3D"${TEST_LDFLAGS} ${OPTIONAL_LIBNL_GENL_LIBS}"
--TEST_LDFLAGS=3D"${TEST_L=
-DFLAGS} ${OPTIONAL_LZO_LIBS} ${CMOCKA_LIBS}"
-+TEST_LDFLAGS=3D"${TEST_LDFLAG=
-S} ${OPTIONAL_LZO_LIBS} ${CMOCKA_LIBS} ${CODE_COVERAGE_LIBS}"
- TEST_CFLAGS=
-=3D"${OPTIONAL_CRYPTO_CFLAGS} ${OPTIONAL_PKCS11_HELPER_CFLAGS} ${OPTIONAL_L=
-IBCAPNG_CFLAGS}"
- TEST_CFLAGS=3D"${TEST_CFLAGS} ${OPTIONAL_LIBNL_GENL_CFLAG=
-S} ${OPTIONAL_LZO_CFLAGS}"
--TEST_CFLAGS=3D"${TEST_CFLAGS} -I\$(top_srcdir)/=
-include ${CMOCKA_CFLAGS}"
-+TEST_CFLAGS=3D"${TEST_CFLAGS} -I\$(top_srcdir)/i=
-nclude ${CMOCKA_CFLAGS} ${CODE_COVERAGE_CFLAGS}"
- 
- AC_SUBST([TEST_LDFLAGS]=
-)
- AC_SUBST([TEST_CFLAGS])
-diff --git a/lcovrc b/lcovrc
-new file mode 10064=
-4
-index 0000000=2E=2Ef8b4138
---- /dev/null
-+++ b/lcovrc
-@@ -0,0 +1,2 @@
-+ge=
-ninfo_external =3D 1
-+geninfo_unexecuted_blocks =3D 1
-diff --git a/m4/ax_co=
-de_coverage=2Em4 b/m4/ax_code_coverage=2Em4
-index 216708a4=2E=2Ef156d4d 100=
-644
---- a/m4/ax_code_coverage=2Em4
-+++ b/m4/ax_code_coverage=2Em4
-@@ -42,8 =
-+42,8 @@
- #     clean-local: code-coverage-clean
- #     distclean-local: co=
-de-coverage-dist-clean
- #
--#   This results in a "check-code-coverage" rule=
- being added to any
--#   Makefile=2Eam which do "include $(top_srcdir)/amin=
-clude_static=2Eam"
-+#   This results in a "check-code-coverage" rule being =
-added to the
-+#   Makefile=2Eam which does "include $(top_srcdir)/aminclude=
-_static=2Eam"
- #   (assuming the module has been configured with --enable-c=
-ode-coverage)=2E
- #   Running `make check-code-coverage` in that directory =
-will run the
- #   module's test suite (`make check`) and build a code cover=
-age report
-@@ -76,10 +76,51 @@
- 
- #serial 37
- 
-+dnl Local modifications com=
-pared to the autoconf-archive version:
-+dnl
-+dnl  - AX_ADD_AM_MACRO_STATIC =
-(from autoconf-archive) is replaced by a
-+dnl    minimal local equivalent, =
-OPENVPN_ADD_AM_MACRO_STATIC, so that we do
-+dnl    not depend on autoconf-a=
-rchive being installed=2E
-+dnl  - The generated rules no longer require GNU=
- make=2E  The AX_CHECK_GNU_MAKE
-+dnl    check is gone (which also removed t=
-he last autoconf-archive
-+dnl    dependency) and the GNU make specific cons=
-tructs in the rules were
-+dnl    replaced:
-+dnl      * the "ifeq ($(abs_bui=
-lddir), $(abs_top_builddir))" guard is gone,
-+dnl        aminclude_static=
-=2Eam may only be included by the top level
-+dnl        Makefile=2Eam now (=
-which is the only place it was ever included
-+dnl        from in this proje=
-ct),
-+dnl      * $(addprefix =2E=2E=2E) and $(if =2E=2E=2E) are replaced by=
- shell code inside
-+dnl        the recipes,
-+dnl      * $(call =2E=2E=2E)/$=
-(subst =2E=2E=2E) for the lcov test name is replaced by
-+dnl        CODE_CO=
-VERAGE_TEST_NAME, computed at configure time,
-+dnl      * "find =2E=2E=2E -=
-delete" is replaced by "find =2E=2E=2E -exec rm -f {} +"=2E
-+dnl    The onl=
-y remaining non-POSIX construct is the nested variable
-+dnl    expansion us=
-ed for the silent rules ($(foo_$(V))), which is the same
-+dnl    idiom auto=
-make itself uses for AM_V_at and friends and which is
-+dnl    understood by=
- BSD make as well=2E
-+
-+AC_DEFUN([OPENVPN_PRINT_TO_FILE],[
-+m4_esyscmd(
-+[
-=
-+printf "%s" "$2" > "$1"
-+])
-+])
-+
-+AC_DEFUN([OPENVPN_ADD_AM_MACRO_STATIC],=
-[
-+  OPENVPN_PRINT_TO_FILE([aminclude_static=2Eam],[$1])
-+])
-+
- m4_define(_=
-AX_CODE_COVERAGE_RULES,[
--AX_ADD_AM_MACRO_STATIC([
-+OPENVPN_ADD_AM_MACRO_ST=
-ATIC([
-+# This file was generated by ax_code_coverage
- # Code coverage
- #
-+=
-# This file must only be included by the top level Makefile=2Eam: the rules=
-
-+# below always report on the complete build tree=2E
-+#
-+# The rules avoid=
- GNU make specific syntax so that they also work with
-+# other make impleme=
-ntations, e=2Eg=2E BSD make=2E
-+#
- # Optional:
- #  - CODE_COVERAGE_DIRECTOR=
-Y: Top-level directory for code coverage reporting=2E
- #    Multiple direct=
-ories may be specified, separated by whitespace=2E
-@@ -90,51 +131,51 @@
- # =
- - CODE_COVERAGE_OUTPUT_DIRECTORY: Directory for generated code coverage
- #=
-    reports to be created=2E (Default:
- #    \$(PACKAGE_NAME)-\$(PACKAGE_VE=
-RSION)-coverage)
-+#  - CODE_COVERAGE_TEST_NAME: Test name to record in the =
-=2Einfo file=2E  It is
-+#    computed by configure (\$(PACKAGE_NAME)-\$(PAC=
-KAGE_VERSION), with dashes
-+#    and dots replaced by underscores) and can =
-be overridden by defining it
-+#    in Makefile=2Eam=2E
- #  - CODE_COVERAGE_=
-BRANCH_COVERAGE: Set to 1 to enforce branch coverage,
- #    set to 0 to dis=
-able it and leave empty to stay with the default=2E
--#    (Default: empty)
-=
-+#    The corresponding --rc option is passed to lcov and genhtml in
-+#    =
-addition to the options below=2E (Default: empty)
- #  - CODE_COVERAGE_LCOV_=
-SHOPTS_DEFAULT: Extra options shared between both lcov
--#    instances=2E (=
-Default: based on $CODE_COVERAGE_BRANCH_COVERAGE)
-+#    instances=2E (Defau=
-lt: empty)
- #  - CODE_COVERAGE_LCOV_SHOPTS: Extra options to shared between=
- both lcov
--#    instances=2E (Default: $CODE_COVERAGE_LCOV_SHOPTS_DEFAULT)=
-
-+#    instances=2E (Default: \$CODE_COVERAGE_LCOV_SHOPTS_DEFAULT)
- #  - CO=
-DE_COVERAGE_LCOV_OPTIONS_GCOVPATH: --gcov-tool pathtogcov
- #  - CODE_COVERA=
-GE_LCOV_OPTIONS_DEFAULT: Extra options to pass to the
--#    collecting lcov=
- instance=2E (Default: $CODE_COVERAGE_LCOV_OPTIONS_GCOVPATH)
-+#    collecti=
-ng lcov instance=2E (Default: \$CODE_COVERAGE_LCOV_OPTIONS_GCOVPATH)
- #  - =
-CODE_COVERAGE_LCOV_OPTIONS: Extra options to pass to the collecting lcov
--#=
-    instance=2E (Default: $CODE_COVERAGE_LCOV_OPTIONS_DEFAULT)
-+#    instan=
-ce=2E (Default: \$CODE_COVERAGE_LCOV_OPTIONS_DEFAULT)
- #  - CODE_COVERAGE_L=
-COV_RMOPTS_DEFAULT: Extra options to pass to the filtering
- #    lcov insta=
-nce=2E (Default: empty)
--#  - CODE_COVERAGE_LCOV_RMOPTS: Extra options to p=
-ass to the filtering lcov
--#    instance=2E (Default: $CODE_COVERAGE_LCOV_R=
-MOPTS_DEFAULT)
-+#  - CODE_COVERAGE_LCOV_RMOPTS: Extra options to pass to th=
-e filtering
-+#    lcov instance=2E (Default: \$CODE_COVERAGE_LCOV_RMOPTS_DE=
-FAULT)
- #  - CODE_COVERAGE_GENHTML_OPTIONS_DEFAULT: Extra options to pass t=
-o the
--#    genhtml instance=2E (Default: based on $CODE_COVERAGE_BRANCH_CO=
-VERAGE)
-+#    genhtml instance=2E (Default: empty)
- #  - CODE_COVERAGE_GENH=
-TML_OPTIONS: Extra options to pass to the genhtml
--#    instance=2E (Defaul=
-t: $CODE_COVERAGE_GENHTML_OPTIONS_DEFAULT)
-+#    instance=2E (Default: \$CO=
-DE_COVERAGE_GENHTML_OPTIONS_DEFAULT)
- #  - CODE_COVERAGE_IGNORE_PATTERN: Ex=
-tra glob pattern of files to ignore
- #
- # The generated report will be titl=
-ed using the \$(PACKAGE_NAME) and
- # \$(PACKAGE_VERSION)=2E In order to add=
- the current git hash to the title,
- # use the git-version-gen script, avai=
-lable online=2E
- # Optional variables
--# run only on top dir
- if CODE_COVER=
-AGE_ENABLED
-- ifeq (\$(abs_builddir), \$(abs_top_builddir))
- CODE_COVERAGE_=
-DIRECTORY ?=3D \$(top_builddir)
- CODE_COVERAGE_OUTPUT_FILE ?=3D \$(PACKAGE_=
-NAME)-\$(PACKAGE_VERSION)-coverage=2Einfo
- CODE_COVERAGE_OUTPUT_DIRECTORY ?=
-=3D \$(PACKAGE_NAME)-\$(PACKAGE_VERSION)-coverage
- 
- CODE_COVERAGE_BRANCH_C=
-OVERAGE ?=3D
--CODE_COVERAGE_LCOV_SHOPTS_DEFAULT ?=3D \$(if \$(CODE_COVERAGE=
-_BRANCH_COVERAGE),\
----rc lcov_branch_coverage=3D\$(CODE_COVERAGE_BRANCH_CO=
-VERAGE))
-+CODE_COVERAGE_LCOV_SHOPTS_DEFAULT ?=3D
- CODE_COVERAGE_LCOV_SHOPTS=
- ?=3D \$(CODE_COVERAGE_LCOV_SHOPTS_DEFAULT)
- CODE_COVERAGE_LCOV_OPTIONS_GCO=
-VPATH ?=3D --gcov-tool \"\$(GCOV)\"
- CODE_COVERAGE_LCOV_OPTIONS_DEFAULT ?=
-=3D \$(CODE_COVERAGE_LCOV_OPTIONS_GCOVPATH)
- CODE_COVERAGE_LCOV_OPTIONS ?=
-=3D \$(CODE_COVERAGE_LCOV_OPTIONS_DEFAULT)
- CODE_COVERAGE_LCOV_RMOPTS_DEFAU=
-LT ?=3D
- CODE_COVERAGE_LCOV_RMOPTS ?=3D \$(CODE_COVERAGE_LCOV_RMOPTS_DEFAUL=
-T)
--CODE_COVERAGE_GENHTML_OPTIONS_DEFAULT ?=3D\
--\$(if \$(CODE_COVERAGE_BRA=
-NCH_COVERAGE),\
----rc genhtml_branch_coverage=3D\$(CODE_COVERAGE_BRANCH_COV=
-ERAGE))
-+CODE_COVERAGE_GENHTML_OPTIONS_DEFAULT ?=3D
- CODE_COVERAGE_GENHTML_=
-OPTIONS ?=3D \$(CODE_COVERAGE_GENHTML_OPTIONS_DEFAULT)
- CODE_COVERAGE_IGNOR=
-E_PATTERN ?=3D
- 
-@@ -152,8 +193,15 @@
- code_coverage_quiet_ =3D \$(code_cov=
-erage_quiet_\$(AM_DEFAULT_VERBOSITY))
- code_coverage_quiet_0 =3D --quiet
- 
-=
--# sanitizes the test-name: replaces with underscores: dashes and dots
--cod=
-e_coverage_sanitize =3D \$(subst -,_,\$(subst =2E,_,\$(1)))
-+# Shell fragme=
-nts used by the recipes below=2E  They are portable
-+# replacements for the=
- GNU make functions \$(addprefix =2E=2E=2E) and \$(if =2E=2E=2E):
-+# code_c=
-overage_dirs_opt sets \$cc_dirs to a list of --directory options,
-+# code_c=
-overage_prefix_opt sets \$cc_prefix to a list of --prefix options and
-+# co=
-de_coverage_*_branch_opt set \$cc_branch to the branch coverage option=2E
-+=
-code_coverage_dirs_opt =3D cc_dirs=3D; for cc_dir in \$(CODE_COVERAGE_DIREC=
-TORY); do cc_dirs=3D\"\$\$cc_dirs --directory \$\$cc_dir\"; done
-+code_cove=
-rage_prefix_opt =3D cc_prefix=3D; for cc_dir in \$(CODE_COVERAGE_DIRECTORY)=
-; do cc_prefix=3D\"\$\$cc_prefix --prefix \$\$cc_dir\"; done
-+code_coverage=
-_lcov_branch_opt =3D cc_branch=3D; test -z \"\$(CODE_COVERAGE_BRANCH_COVERA=
-GE)\" || cc_branch=3D\"--rc lcov_branch_coverage=3D\$(CODE_COVERAGE_BRANCH_=
-COVERAGE)\"
-+code_coverage_genhtml_branch_opt =3D cc_branch=3D; test -z \"\=
-$(CODE_COVERAGE_BRANCH_COVERAGE)\" || cc_branch=3D\"--rc genhtml_branch_cov=
-erage=3D\$(CODE_COVERAGE_BRANCH_COVERAGE)\"
- 
- # Use recursive makes in ord=
-er to ignore errors during check
- check-code-coverage:
-@@ -162,29 +210,26 @=
-@
- 
- # Capture code coverage data
- code-coverage-capture: code-coverage-cap=
-ture-hook
--	\$(code_coverage_v_lcov_cap)\$(LCOV) \$(code_coverage_quiet) \$=
-(addprefix --directory ,\$(CODE_COVERAGE_DIRECTORY)) --capture --output-fil=
-e \"\$(CODE_COVERAGE_OUTPUT_FILE)=2Etmp\" --test-name \"\$(call code_covera=
-ge_sanitize,\$(PACKAGE_NAME)-\$(PACKAGE_VERSION))\" --no-checksum --compat-=
-libtool \$(CODE_COVERAGE_LCOV_SHOPTS) \$(CODE_COVERAGE_LCOV_OPTIONS)
--	\$(c=
-ode_coverage_v_lcov_ign)\$(LCOV) \$(code_coverage_quiet) \$(addprefix --dir=
-ectory ,\$(CODE_COVERAGE_DIRECTORY)) --remove \"\$(CODE_COVERAGE_OUTPUT_FIL=
-E)=2Etmp\" \$(CODE_COVERAGE_IGNORE_PATTERN) --output-file \"\$(CODE_COVERAG=
-E_OUTPUT_FILE)\" \$(CODE_COVERAGE_LCOV_SHOPTS) \$(CODE_COVERAGE_LCOV_RMOPTS=
-)
-+	\$(code_coverage_v_lcov_cap)\$(code_coverage_dirs_opt); \\
-+	\$(code_co=
-verage_lcov_branch_opt); \\
-+	\$(LCOV) \$(code_coverage_quiet) \$\$cc_dirs =
---capture --output-file \"\$(CODE_COVERAGE_OUTPUT_FILE)=2Etmp\" --test-name=
- \"\$(CODE_COVERAGE_TEST_NAME)\" --no-checksum --compat-libtool \$\$cc_bran=
-ch \$(CODE_COVERAGE_LCOV_SHOPTS) \$(CODE_COVERAGE_LCOV_OPTIONS)
-+	\$(code_c=
-overage_v_lcov_ign)\$(code_coverage_dirs_opt); \\
-+	\$(code_coverage_lcov_b=
-ranch_opt); \\
-+	\$(LCOV) \$(code_coverage_quiet) \$\$cc_dirs --remove \"\$=
-(CODE_COVERAGE_OUTPUT_FILE)=2Etmp\" \$(CODE_COVERAGE_IGNORE_PATTERN) --outp=
-ut-file \"\$(CODE_COVERAGE_OUTPUT_FILE)\" \$\$cc_branch \$(CODE_COVERAGE_LC=
-OV_SHOPTS) \$(CODE_COVERAGE_LCOV_RMOPTS)
- 	-@rm -f \"\$(CODE_COVERAGE_OUTPU=
-T_FILE)=2Etmp\"
--	\$(code_coverage_v_genhtml)LANG=3DC \$(GENHTML) \$(code_c=
-overage_quiet) \$(addprefix --prefix ,\$(CODE_COVERAGE_DIRECTORY)) --output=
--directory \"\$(CODE_COVERAGE_OUTPUT_DIRECTORY)\" --title \"\$(PACKAGE_NAME=
-)-\$(PACKAGE_VERSION) Code Coverage\" --legend --show-details \"\$(CODE_COV=
-ERAGE_OUTPUT_FILE)\" \$(CODE_COVERAGE_GENHTML_OPTIONS)
-+	\$(code_coverage_v=
-_genhtml)\$(code_coverage_prefix_opt); \\
-+	\$(code_coverage_genhtml_branch=
-_opt); \\
-+	LANG=3DC \$(GENHTML) \$(code_coverage_quiet) \$\$cc_prefix --ou=
-tput-directory \"\$(CODE_COVERAGE_OUTPUT_DIRECTORY)\" --title \"\$(PACKAGE_=
-NAME)-\$(PACKAGE_VERSION) Code Coverage\" --legend --show-details \"\$(CODE=
-_COVERAGE_OUTPUT_FILE)\" \$\$cc_branch \$(CODE_COVERAGE_GENHTML_OPTIONS)
- 	=
-@echo \"file://\$(abs_builddir)/\$(CODE_COVERAGE_OUTPUT_DIRECTORY)/index=2E=
-html\"
- 
- code-coverage-clean:
- 	-\$(LCOV) --directory \$(top_builddir) -z
-=
- 	-rm -rf \"\$(CODE_COVERAGE_OUTPUT_FILE)\" \"\$(CODE_COVERAGE_OUTPUT_FILE)=
-=2Etmp\" \"\$(CODE_COVERAGE_OUTPUT_DIRECTORY)\"
--	-find =2E \\( -name \"*=
-=2Egcda\" -o -name \"*=2Egcno\" -o -name \"*=2Egcov\" \\) -delete
-+	-find =
-=2E \\( -name \"*=2Egcda\" -o -name \"*=2Egcno\" -o -name \"*=2Egcov\" \\) =
--exec rm -f '{}' +
- 
- code-coverage-dist-clean:
- 
- A][M_DISTCHECK_CONFIGURE=
-_FLAGS :=3D \$(A][M_DISTCHECK_CONFIGURE_FLAGS) --disable-code-coverage
-- el=
-se # ifneq (\$(abs_builddir), \$(abs_top_builddir))
--check-code-coverage:
--=
-
--code-coverage-capture: code-coverage-capture-hook
+-/* forward decleration since tls_process needs this function prototype */
+-static void
+-check_session_buf_not_used(struct buffer *to_link, struct tls_session
+*session);
 -
--code-coverage-clean:=
+-static void
+-check_keystate_buf_not_used(struct buffer *to_link, const struct
+key_state *ks);
+-
+-
+ /**
+  * Limit the reneg_bytes value when using a small-block (<128 bytes) cipher.
+  *
+@@ -904,15 +896,10 @@ key_state_init(struct tls_session *session,
+struct key_state *ks)
+  *                       cleaned up.
+  * @param clear        - Whether the memory allocated for the \a ks object
+  *                       should be overwritten with 0s.
+- *
+- * @param to_link      - if not NULL, check that the buffer does not contain
+- *                       any pointer to one of the internal structs of ks
+  */
+ static void
+-key_state_free(struct key_state *ks, bool clear, struct buffer *to_link)
++key_state_free(struct key_state *ks, bool clear)
+ {
+-    check_keystate_buf_not_used(to_link, ks);
+-
+     ks->state = S_UNDEF;
 
--
--code-coverage-dist-clean:
-- endif # ifeq (\$(abs_builddir), \$(abs_top_=
-builddir))
- else #! CODE_COVERAGE_ENABLED
- # Use recursive makes in order t=
-o ignore errors during check
- check-code-coverage:
-@@ -206,8 +251,7 @@
- ])
-=
- 
- AC_DEFUN([_AX_CODE_COVERAGE_ENABLED],[
--	AX_CHECK_GNU_MAKE([],[AC_MSG_ER=
-ROR([not using GNU make that is needed for coverage])])
--	AC_REQUIRE([AX_AD=
-D_AM_MACRO_STATIC])
-+	AC_REQUIRE([OPENVPN_ADD_AM_MACRO_STATIC])
- 	# check f=
-or gcov
- 	AC_CHECK_TOOL([GCOV],
- 		  [$_AX_CODE_COVERAGE_GCOV_PROG_WITH],
-@=
-@ -232,13 +276,12 @@
- 		AC_MSG_ERROR([Could not find genhtml from the lcov =
-package])
- 	])
- 
--	AC_CHECK_LIB([gcov], [_gcov_init], [CODE_COVERAGE_LIBS=
-=3D"-lgcov"], [CODE_COVERAGE_LIBS=3D""])
--
- 	dnl Build the code coverage fl=
-ags
- 	dnl Define CODE_COVERAGE_LDFLAGS for backwards compatibility
- 	CODE_C=
-OVERAGE_CPPFLAGS=3D"-DNDEBUG"
--	CODE_COVERAGE_CFLAGS=3D"-O0 -g -fprofile-ar=
-cs -ftest-coverage"
--	CODE_COVERAGE_CXXFLAGS=3D"-O0 -g -fprofile-arcs -ftes=
-t-coverage"
-+	CODE_COVERAGE_CFLAGS=3D"-O0 -g --coverage"
-+	CODE_COVERAGE_CX=
-XFLAGS=3D"-O0 -g --coverage"
-+	CODE_COVERAGE_LIBS=3D"--coverage"
- 
- 	AC_SUB=
-ST([CODE_COVERAGE_CPPFLAGS])
- 	AC_SUBST([CODE_COVERAGE_CFLAGS])
-@@ -265,6 +=
-308,10 @@
- 	AC_SUBST([CODE_COVERAGE_ENABLED], [$enable_code_coverage])
- 	AC=
-_MSG_RESULT($enable_code_coverage)
- 
-+	dnl The lcov test name must not cont=
-ain dashes or dots
-+	CODE_COVERAGE_TEST_NAME=3D`echo "$PACKAGE_NAME-$PACKAG=
-E_VERSION" | tr '=2E-' '__'`
-+	AC_SUBST([CODE_COVERAGE_TEST_NAME])
+     key_state_ssl_free(&ks->ks_ssl);
+@@ -1056,14 +1043,10 @@ tls_session_init(struct tls_multi *multi,
+struct tls_session *session)
+  *                       object should be overwritten with 0s. This
+  *                       implicitly sets many states to 0/false,
+  *                       e.g. the validity of the keys in the structure
+- * @param to_link      - if not NULL, check that the buffer does not contain
+- *                       any pointer to one of the internal structs of ks
+- *
+  */
+ static void
+-tls_session_free(struct tls_session *session, bool clear, struct
+buffer *to_link)
++tls_session_free(struct tls_session *session, bool clear)
+ {
+-    check_session_buf_not_used(to_link, session);
+     tls_wrap_free(&session->tls_wrap);
+     tls_wrap_free(&session->tls_wrap_reneg);
+
+@@ -1072,7 +1055,7 @@ tls_session_free(struct tls_session *session,
+bool clear, struct buffer *to_link
+         /* we don't need clear=true for this call since
+          * the structs are part of session and get cleared
+          * as part of session */
+-        key_state_free(&session->key[i], false, to_link);
++        key_state_free(&session->key[i], false);
+     }
+
+     free(session->common_name);
+@@ -1091,16 +1074,14 @@ tls_session_free(struct tls_session *session,
+bool clear, struct buffer *to_link
+
+
+ static void
+-move_session(struct tls_multi *multi, int dest, int src, bool reinit_src,
+-             struct buffer *to_link)
++move_session(struct tls_multi *multi, int dest, int src, bool reinit_src)
+ {
+-    check_session_buf_not_used(to_link, &multi->session[dest]);
+     msg(D_TLS_DEBUG_LOW, "TLS: move_session: dest=%s src=%s reinit_src=%d",
+         session_index_name(dest), session_index_name(src), reinit_src);
+     ASSERT(src != dest);
+     ASSERT(src >= 0 && src < TM_SIZE);
+     ASSERT(dest >= 0 && dest < TM_SIZE);
+-    tls_session_free(&multi->session[dest], false, to_link);
++    tls_session_free(&multi->session[dest], false);
+     multi->session[dest] = multi->session[src];
+
+     if (reinit_src)
+@@ -1116,9 +1097,9 @@ move_session(struct tls_multi *multi, int dest,
+int src, bool reinit_src,
+ }
+
+ static void
+-reset_session(struct tls_multi *multi, struct tls_session *session,
+struct buffer *to_link)
++reset_session(struct tls_multi *multi, struct tls_session *session)
+ {
+-    tls_session_free(session, false, to_link);
++    tls_session_free(session, false);
+     tls_session_init(multi, session);
+ }
+
+@@ -1192,6 +1173,8 @@ void
+ tls_multi_init_finalize(struct tls_multi *multi, int tls_mtu)
+ {
+     tls_init_control_channel_frame_parameters(&multi->opt.frame, tls_mtu);
++    multi->to_link_buf = alloc_buf(BUF_SIZE(&multi->opt.frame));
 +
- 	AS_I=
-F([ test "x$enable_code_coverage" =3D xyes ], [
- 		_AX_CODE_COVERAGE_ENABLE=
-D
- 	      ])
-diff --git a/src/openvpn/Makefile=2Eam b/src/openvpn/Makefile=
-=2Eam
-index 7ecddff=2E=2E9424801 100644
---- a/src/openvpn/Makefile=2Eam
-+++=
- b/src/openvpn/Makefile=2Eam
-@@ -31,9 +31,12 @@
- 	$(OPTIONAL_SYSTEMD_CFLAGS=
-) \
- 	$(OPTIONAL_PKCS11_HELPER_CFLAGS) \
- 	$(OPTIONAL_INOTIFY_CFLAGS) \
-+	$=
-(CODE_COVERAGE_CFLAGS) \
- 	-DPLUGIN_LIBDIR=3D\"${plugindir}\" \
- 	-DDEFAULT=
-_DNS_UPDOWN=3D\"${scriptdir}/dns-updown\"
- 
-+AM_LDFLAGS =3D $(CODE_COVERAGE=
-_LIBS)
+     /* initialize the active and untrusted sessions */
+
+     tls_session_init(multi, &multi->session[TM_ACTIVE]);
+@@ -1283,9 +1266,11 @@ tls_multi_free(struct tls_multi *multi, bool clear)
+
+     for (int i = 0; i < TM_SIZE; ++i)
+     {
+-        tls_session_free(&multi->session[i], false, NULL);
++        tls_session_free(&multi->session[i], false);
+     }
+
++    free_buf(&multi->to_link_buf);
 +
- if WIN32
- # we want unicode entry point but not the macro
- AM_CFL=
-AGS +=3D -municode -UUNICODE
+     if (clear)
+     {
+         secure_memzero(multi, sizeof(*multi));
+@@ -1816,13 +1801,13 @@ flush_payload_buffer(struct key_state *ks)
+  * active key.
+  */
+ static void
+-key_state_soft_reset(struct tls_session *session, struct buffer *to_link)
++key_state_soft_reset(struct tls_session *session)
+ {
+     struct key_state *ks = &session->key[KS_PRIMARY];        /* primary key */
+     struct key_state *ks_lame = &session->key[KS_LAME_DUCK]; /* retiring key */
+
+     ks->must_die = now + session->opt->transition_window;    /*
+remaining lifetime of old key */
+-    key_state_free(ks_lame, false, to_link);
++    key_state_free(ks_lame, false);
+     *ks_lame = *ks;
+
+     key_state_init(session, ks);
+@@ -1833,7 +1818,7 @@ key_state_soft_reset(struct tls_session
+*session, struct buffer *to_link)
+ void
+ tls_session_soft_reset(struct tls_multi *tls_multi)
+ {
+-    key_state_soft_reset(&tls_multi->session[TM_ACTIVE], NULL);
++    key_state_soft_reset(&tls_multi->session[TM_ACTIVE]);
+ }
+
+ /*
+@@ -2914,18 +2899,15 @@ tls_process_state(struct tls_multi *multi,
+struct tls_session *session, struct b
+
+         const struct buffer *buf = reliable_send(ks->send_reliable, &opcode);
+         ASSERT(buf);
+-        struct buffer b = *buf;
+         INCR_SENT;
+
+-        write_control_auth(session, ks, &b, to_link_addr, opcode,
+CONTROL_SEND_ACK_MAX, true);
+-        *to_link = b;
++        write_control_auth(session, ks, buf, &multi->to_link_buf,
+to_link_addr, opcode,
++                           CONTROL_SEND_ACK_MAX, true);
++        *to_link = multi->to_link_buf;
+         dmsg(D_TLS_DEBUG, "Reliable -> TCP/UDP");
+
+-        /* This changed the state of the outgoing buffer. In order to avoid
+-         * running this function again/further and invalidating the key_state
+-         * buffer and accessing the buffer that is now in to_link
+after it being
+-         * freed for a potential error, we shortcircuit exiting of the outer
+-         * process here. */
++        /* This changed the state of the outgoing buffer. Stop this
++         * processing pass so that the event loop can send the packet. */
+         return false;
+     }
+
+@@ -3165,13 +3147,13 @@ tls_process(struct tls_multi *multi, struct
+tls_session *session, struct buffer
+             session->opt->aead_usage_limit,
+             ks->crypto_options.key_ctx_bi.decrypt.plaintext_blocks +
+ks->n_packets,
+             session->opt->aead_usage_limit);
+-        key_state_soft_reset(session, to_link);
++        key_state_soft_reset(session);
+     }
+
+     /* Kill lame duck key transition_window seconds after primary key
+negotiation */
+     if (lame_duck_must_die(session, wakeup))
+     {
+-        key_state_free(ks_lame, true, to_link);
++        key_state_free(ks_lame, true);
+         msg(D_TLS_DEBUG_LOW, "TLS: tls_process: killed expiring key");
+     }
+
+@@ -3220,8 +3202,9 @@ tls_process(struct tls_multi *multi, struct
+tls_session *session, struct buffer
+         {
+             struct buffer buf = ks->ack_write_buf;
+             ASSERT(buf_init(&buf, multi->opt.frame.buf.headroom));
+-            write_control_auth(session, ks, &buf, to_link_addr,
+P_ACK_V1, RELIABLE_ACK_SIZE, false);
+-            *to_link = buf;
++            write_control_auth(session, ks, &buf,
+&multi->to_link_buf, to_link_addr, P_ACK_V1,
++                               RELIABLE_ACK_SIZE, false);
++            *to_link = multi->to_link_buf;
+             dmsg(D_TLS_DEBUG, "Dedicated ACK -> TCP/UDP");
+         }
+     }
+@@ -3264,98 +3247,6 @@ tls_process(struct tls_multi *multi, struct
+tls_session *session, struct buffer
+     return false;
+ }
+
+-static void
+-check_keystate_buf_not_used(struct buffer *to_link, const struct key_state *ks)
+-{
+-    if (ks->state == S_UNDEF || !to_link || !to_link->data)
+-    {
+-        return;
+-    }
+-
+-    const uint8_t *dataptr = to_link->data;
+-
+-    /* we don't expect send_reliable to be NULL when state is
+-     * not S_UNDEF, but people have reported crashes nonetheless,
+-     * therefore we better catch this event, report and exit.
+-     */
+-    if (!ks->send_reliable)
+-    {
+-        msg(M_FATAL,
+-            "ERROR: ks.send_reliable (key-id %d), is NULL "
+-            "while key state is %s. Exiting.",
+-            ks->key_id, state_name(ks->state));
+-    }
+-
+-    for (int j = 0; j < ks->send_reliable->size; j++)
+-    {
+-        if (ks->send_reliable->array[j].buf.data == dataptr)
+-        {
+-            msg(M_INFO,
+-                "Warning buffer of freed TLS session is still in"
+-                " use (key-id %d, ks.send_reliable->array[%d])",
+-                ks->key_id, j);
+-
+-            goto used;
+-        }
+-    }
+-
+-    if (ks->ack_write_buf.data == dataptr)
+-    {
+-        msg(M_INFO, "Warning buffer of freed TLS session is still in use "
+-                    "(ks.ack_write_buf, key-id %d)",
+-            ks->key_id);
+-
+-        goto used;
+-    }
+-    return;
+-
+-used:
+-    to_link->len = 0;
+-    to_link->data = 0;
+-}
+-
+-/**
+- * This is a safe guard function to double check that a buffer from a
+session is
+- * not used in a session to avoid a use after free.
+- *
+- * @param to_link
+- * @param session
+- */
+-static void
+-check_session_buf_not_used(struct buffer *to_link, struct tls_session *session)
+-{
+-    if (!to_link || !to_link->data)
+-    {
+-        return;
+-    }
+-    const uint8_t *dataptr = to_link->data;
+-
+-    /* Checks buffers in tls_wrap */
+-    if (session->tls_wrap.work.data == dataptr)
+-    {
+-        msg(M_INFO, "Warning buffer of freed TLS session is "
+-                    "still in use (tls_wrap.work.data)");
+-        goto used;
+-    }
+-    if (session->tls_wrap_reneg.work.data == dataptr)
+-    {
+-        msg(M_INFO, "Warning buffer of freed TLS session is "
+-                    "still in use (tls_wrap_reneg.work.data)");
+-        goto used;
+-    }
+-
+-    for (int i = 0; i < KS_SIZE; i++)
+-    {
+-        const struct key_state *ks = &session->key[i];
+-        check_keystate_buf_not_used(to_link, ks);
+-    }
+-    return;
+-
+-used:
+-    to_link->len = 0;
+-    to_link->data = 0;
+-    /* for debugging, you can add an ASSERT(0); here to trigger an abort */
+-}
+ /*
+  * Called by the top-level event loop.
+  *
+@@ -3444,11 +3335,11 @@ tls_multi_process(struct tls_multi *multi,
+struct buffer *to_link,
+                 if (i == TM_ACTIVE && ks_lame->state >= S_GENERATED_KEYS
+                     && !multi->opt.single_session)
+                 {
+-                    move_session(multi, TM_LAME_DUCK, TM_ACTIVE,
+true, to_link);
++                    move_session(multi, TM_LAME_DUCK, TM_ACTIVE, true);
+                 }
+                 else
+                 {
+-                    reset_session(multi, session, to_link);
++                    reset_session(multi, session);
+                 }
+             }
+         }
+@@ -3511,7 +3402,7 @@ tls_multi_process(struct tls_multi *multi,
+struct buffer *to_link,
+      */
+     if (lame_duck_must_die(&multi->session[TM_LAME_DUCK], wakeup))
+     {
+-        tls_session_free(&multi->session[TM_LAME_DUCK], true, to_link);
++        tls_session_free(&multi->session[TM_LAME_DUCK], true);
+         msg(D_TLS_DEBUG_LOW, "TLS: tls_multi_process: killed expiring key");
+     }
+
+@@ -3526,7 +3417,7 @@ tls_multi_process(struct tls_multi *multi,
+struct buffer *to_link,
+      */
+     if (TLS_AUTHENTICATED(multi, &multi->session[TM_INITIAL].key[KS_PRIMARY]))
+     {
+-        move_session(multi, TM_ACTIVE, TM_INITIAL, true, to_link);
++        move_session(multi, TM_ACTIVE, TM_INITIAL, true);
+         tas = tls_authentication_status(multi);
+         msg(D_TLS_DEBUG_LOW,
+             "TLS: tls_multi_process: initial untrusted "
+@@ -3938,7 +3829,7 @@ tls_pre_decrypt(struct tls_multi *multi, const
+struct link_socket_actual *from,
+                 goto error;
+             }
+
+-            key_state_soft_reset(session, NULL);
++            key_state_soft_reset(session);
+
+             dmsg(D_TLS_DEBUG, "TLS: received P_CONTROL_SOFT_RESET_V1
+s=%d sid=%s", i,
+                  session_id_print(&sid, &gc));
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index f6392f9a..a0f677ec 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -627,6 +627,14 @@ struct tls_multi
+      */
+     struct link_socket_actual to_link_addr;
+
++    /**
++     * Holds the outgoing control packet returned by tls_multi_process.
++     * It belongs to the tls_multi and not to a session or key state, so
++     * it stays valid when these are freed or moved before the packet is
++     * written to the link.
++     */
++    struct buffer to_link_buf;
++
+     int n_sessions; /**< Number of sessions negotiated thus
+                      *   far. */
+     enum multi_status multi_state;
+diff --git a/src/openvpn/ssl_pkt.c b/src/openvpn/ssl_pkt.c
+index f78782fa..d8a1cefa 100644
+--- a/src/openvpn/ssl_pkt.c
++++ b/src/openvpn/ssl_pkt.c
+@@ -163,10 +163,14 @@ tls_wrap_control(struct tls_wrap_ctx *ctx,
+uint8_t header, struct buffer *buf,
+ }
+
+ void
+-write_control_auth(struct tls_session *session, struct key_state *ks,
+struct buffer *buf,
+-                   struct link_socket_actual **to_link_addr, int
+opcode, int max_ack,
+-                   bool prepend_ack)
++write_control_auth(struct tls_session *session, struct key_state *ks,
+const struct buffer *payload,
++                   struct buffer *out, struct link_socket_actual
+**to_link_addr, int opcode,
++                   int max_ack, bool prepend_ack)
+ {
++    /* Work on a copy so that tls_wrap_control can point it at another
++     * buffer without modifying the caller's buffer */
++    struct buffer buf = *payload;
++
+     ASSERT(ks->key_id >= 0 && ks->key_id <= P_KEY_ID_MASK);
+     ASSERT(opcode >= 0 && opcode <= P_LAST_OPCODE);
+     uint8_t header = (uint8_t)(ks->key_id | (opcode << P_OPCODE_SHIFT));
+@@ -181,14 +185,20 @@ write_control_auth(struct tls_session *session,
+struct key_state *ks, struct buf
+     }
+
+     ASSERT(link_socket_actual_defined(&ks->remote_addr));
+-    ASSERT(reliable_ack_write(ks->rec_ack, ks->lru_acks, buf,
+&ks->session_id_remote, max_ack,
++    ASSERT(reliable_ack_write(ks->rec_ack, ks->lru_acks, &buf,
+&ks->session_id_remote, max_ack,
+                               prepend_ack));
+
+     msg(D_TLS_DEBUG, "%s(): %s", __func__, packet_opcode_name(opcode));
+
+-    tls_wrap_control(tls_session_get_tls_wrap(session, ks->key_id),
+header, buf,
++    tls_wrap_control(tls_session_get_tls_wrap(session, ks->key_id),
+header, &buf,
+                      &session->session_id);
+
++    /* buf now points into memory owned by ks or session (the payload's
++     * buffer or the tls_wrap work buffer).  Either can be freed before
++     * the packet is written to the link, so copy the packet to out. */
++    ASSERT(buf_init(out, buf.offset));
++    ASSERT(buf_copy(out, &buf));
++
+     *to_link_addr = &ks->remote_addr;
+ }
+
+diff --git a/src/openvpn/ssl_pkt.h b/src/openvpn/ssl_pkt.h
+index 8203e4ac..d02b4b09 100644
+--- a/src/openvpn/ssl_pkt.h
++++ b/src/openvpn/ssl_pkt.h
+@@ -185,10 +185,29 @@ struct session_id
+calculate_session_id_hmac(struct session_id client_sid,
+ bool check_session_hmac_and_pkt_id(struct tls_pre_decrypt_state
+*state, const struct openvpn_sockaddr *from,
+                                    const uint8_t *key, int
+handwindow, bool pkt_is_ack);
+
+-/*
+- * Write a control channel authentication record.
++/**
++ * Write a control channel packet: add the ACKs, the opcode and session id
++ * header and the tls-auth/tls-crypt wrapping to \c payload.
++ *
++ * @param session           the TLS session the packet belongs to
++ * @param ks                the key state the packet belongs to
++ * @param payload           the packet payload. Its data is left
++ *                          unchanged, but the space around it in its
++ *                          buffer is used to build the packet.
++ * @param out               buffer the finished packet is written to, at
++ *                          the offset it was built at. It must be owned
++ *                          by the caller, not share memory with \c payload
++ *                          or the tls_wrap work buffers, and have room for
++ *                          the packet at that offset (a buffer of
++ *                          BUF_SIZE() of the session's frame does).
++ * @param to_link_addr      set to the address the packet is sent to
++ * @param opcode            opcode of the packet
++ * @param max_ack           maximum number of ACKs to add
++ * @param prepend_ack       add the ACKs in front of the payload instead
++ *                          of writing them into it
+  */
+-void write_control_auth(struct tls_session *session, struct key_state
+*ks, struct buffer *buf,
++void write_control_auth(struct tls_session *session, struct key_state *ks,
++                        const struct buffer *payload, struct buffer *out,
+                         struct link_socket_actual **to_link_addr, int
+opcode, int max_ack,
+                         bool prepend_ack);
+
+diff --git a/tests/unit_tests/openvpn/test_pkt.c
+b/tests/unit_tests/openvpn/test_pkt.c
+index 51c73d8e..120f98f6 100644
+--- a/tests/unit_tests/openvpn/test_pkt.c
++++ b/tests/unit_tests/openvpn/test_pkt.c
+@@ -741,6 +741,108 @@ test_wkc_not_appended_without_key(void **ut_state)
+     free_tas(&tas);
+ }
+
++/* write_control_auth() writes the finished packet to the out buffer of the
++ * caller, so the packet stays valid when the buffers of the session and key
++ * state are reused or freed before it is sent. */
++static void
++check_write_control_auth_out_buf(struct tls_wrap_ctx *wrap, struct
+tls_wrap_ctx *peer_wrap)
++{
++    struct tls_options opt = { 0 };
++    opt.server = true;
++
++    struct tls_session session = { 0 };
++    session.opt = &opt;
++    session.tls_wrap = *wrap;
++    session.session_id = (struct session_id){ { 1, 2, 3, 4, 5, 6, 7, 8 } };
++
++    struct reliable_ack rec_ack = { .len = 1, .packet_id = { 7 } };
++    struct reliable_ack lru_acks = { 0 };
++    struct key_state ks = { 0 };
++    ks.rec_ack = &rec_ack;
++    ks.lru_acks = &lru_acks;
++    ks.session_id_remote = (struct session_id){ { 8, 7, 6, 5, 4, 3, 2, 1 } };
++    ks.remote_addr.dest.addr.sa.sa_family = AF_INET;
++    ks.remote_addr.dest.addr.in4.sin_addr.s_addr = htonl(0x01020304);
++
++    const uint8_t data[] = "control channel payload";
++    struct buffer payload = alloc_buf(1600);
++    struct buffer out = alloc_buf(1600);
++
++    /* a control packet with the ACK in front of its payload, as sent from
++     * the reliability layer, and a dedicated ACK packet */
++    for (int i = 0; i < 2; i++)
++    {
++        const bool dedicated_ack = (i == 1);
++        const size_t len = dedicated_ack ? 0 : sizeof(data);
++
++        assert_true(buf_init(&payload, 200));
++        assert_true(buf_write(&payload, data, len));
++
++        struct link_socket_actual *to_link_addr = NULL;
++        write_control_auth(&session, &ks, &payload, &out, &to_link_addr,
++                           dedicated_ack ? P_ACK_V1 : P_CONTROL_V1,
+RELIABLE_ACK_SIZE,
++                           !dedicated_ack);
++
++        assert_ptr_equal(to_link_addr, &ks.remote_addr);
++        assert_int_equal(BLEN(&payload), len);
++        assert_memory_equal(BPTR(&payload), data, len);
++        assert_true(BLENZ(&out) > len);
++
++        /* the packet is still intact after the session buffers are
+overwritten */
++        memset(payload.data, 0x55, payload.capacity);
++        if (session.tls_wrap.work.data)
++        {
++            memset(session.tls_wrap.work.data, 0x55,
+session.tls_wrap.work.capacity);
++        }
++
++        struct link_socket_actual from = { 0 };
++        assert_true(read_control_auth(&out, peer_wrap, &from, &opt));
++
++        struct reliable_ack ack;
++        struct session_id sid;
++        assert_true(reliable_ack_parse(&out, &ack, &sid));
++        assert_int_equal(ack.len, 1);
++        assert_int_equal(ack.packet_id[0], 7);
++        assert_memory_equal(&sid, &ks.session_id_remote, SID_SIZE);
++        assert_int_equal(BLEN(&out), len);
++        assert_memory_equal(BPTR(&out), data, len);
++    }
++
++    free_buf(&out);
++    free_buf(&payload);
++}
++
++static void
++test_write_control_auth_out_buf(void **ut_state)
++{
++    now = 0x22446688;
++
++    struct tls_wrap_ctx none = { .mode = TLS_WRAP_NONE };
++    check_write_control_auth_out_buf(&none, &none);
++
++    struct tls_auth_standalone tas_client =
+init_tas_auth(KEY_DIRECTION_INVERSE);
++    struct tls_auth_standalone tas_server =
+init_tas_auth(KEY_DIRECTION_NORMAL);
++    packet_id_init(&tas_client.tls_wrap.opt.packet_id, 5, 5, "UNITTEST", 0);
++    packet_id_init(&tas_server.tls_wrap.opt.packet_id, 5, 5, "UNITTEST", 0);
++    reset_packet_id_send(&tas_client.tls_wrap.opt.packet_id.send);
++    check_write_control_auth_out_buf(&tas_client.tls_wrap,
+&tas_server.tls_wrap);
++    packet_id_free(&tas_client.tls_wrap.opt.packet_id);
++    packet_id_free(&tas_server.tls_wrap.opt.packet_id);
++    free_tas(&tas_client);
++    free_tas(&tas_server);
++
++    tas_client = init_tas_crypt(false);
++    tas_server = init_tas_crypt(true);
++    packet_id_init(&tas_client.tls_wrap.opt.packet_id, 5, 5, "UNITTEST", 0);
++    packet_id_init(&tas_server.tls_wrap.opt.packet_id, 5, 5, "UNITTEST", 0);
++    reset_packet_id_send(&tas_client.tls_wrap.opt.packet_id.send);
++    check_write_control_auth_out_buf(&tas_client.tls_wrap,
+&tas_server.tls_wrap);
++    packet_id_free(&tas_client.tls_wrap.opt.packet_id);
++    packet_id_free(&tas_server.tls_wrap.opt.packet_id);
++    free_tas(&tas_client);
++    free_tas(&tas_server);
++}
++
+ static void
+ test_extract_control_message(void **ut_state)
+ {
+@@ -792,6 +894,7 @@ main(void)
+         cmocka_unit_test(test_generate_reset_packet_plain),
+         cmocka_unit_test(test_generate_reset_packet_tls_auth),
+         cmocka_unit_test(test_wkc_not_appended_without_key),
++        cmocka_unit_test(test_write_control_auth_out_buf),
+         cmocka_unit_test(test_extract_control_message)
+     };
 
 -- 
-To view, visit https://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1592?usp=3Demail
-To unsubscribe, or for help writing mai=
-l filters, visit https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+2.53.0
 
-Gerri=
-t-MessageType: newpatchset
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Ge=
-rrit-Change-Id: I79b2dc4a550b1c5068a45407976b0dfc2f765b33
-Gerrit-Change-Num=
-ber: 1592
-Gerrit-PatchSet: 7
-Gerrit-Owner: Frank Lichtenheld <frank@lichten=
-held=2Ecom>
-Gerrit-Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerr=
-it-Reviewer: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
-Gerrit-CC: openvp=
-n-devel <openvpn-devel@lists=2Esourceforge=2Enet>
-
---+hh5mK9u7kg=
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p>Gert Doering <str=
-ong>uploaded patch set #7</strong> to the change originally created by Fran=
-k Lichtenheld=2E</p><p><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/=
-+/1592?usp=3Demail">View Change</a></p><p>The following approvals got outda=
-ted and were removed:
-Code-Review+2 by R=C4=83zvan Cojocaru</p><pre class=
-=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
-p;">configure: Add --enable-code-coverage<br><br>Can be used like this<br>=
-=2E/configure --enable-code-coverage<br>make<br>make check<br>make code-cov=
-erage-capture<br><br>We heavily patch ax_code_coverage=2Em4, mostly to<br>a=
-chieve better compatibility with non-Linux systems=2E<br>- Do not depend on=
- autoconf-archive<br>- Do not depend on GNU make<br>- Use more modern --cov=
-erage flag to better support<br>  different compilers<br><br>Change-Id: I79=
-b2dc4a550b1c5068a45407976b0dfc2f765b33<br>Signed-off-by: Frank Lichtenheld =
-&lt;frank@lichtenheld=2Ecom&gt;<br>Acked-by: Razvan Cojocaru &lt;razvanc@ma=
-ilbox=2Eorg&gt;<br>Gerrit URL: https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1=
-592<br>Message-Id: &lt;20261016080644=2E23188-1-gert@greenie=2Emuc=2Ede&gt;=
-<br>URL: https://www=2Email-archive=2Ecom/openvpn-devel@lists=2Esourceforge=
-=2Enet/msg39917=2Ehtml<br>Signed-off-by: Gert Doering &lt;gert@greenie=2Emu=
-c=2Ede&gt;<br>---<br>M =2Egitignore<br>M Makefile=2Eam<br>M configure=2Eac<=
-br>A lcovrc<br>M m4/ax_code_coverage=2Em4<br>M src/openvpn/Makefile=2Eam<br=
->6 files changed, 114 insertions(+), 43 deletions(-)<br><br></pre><pre clas=
-s=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wr=
-ap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/92/15=
-92/7</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-=
-wrap;"><span>diff --git a/=2Egitignore b/=2Egitignore</span><br><span>index=
- 04523af=2E=2E2749739 100644</span><br><span>--- a/=2Egitignore</span><br><=
-span>+++ b/=2Egitignore</span><br><span>@@ -1,5 +1,9 @@</span><br><span> *=
-=2E[oa]</span><br><span> *=2El[oa]</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+*=2Egcda</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+*=2Egcno</span><br><span style=3D"color: hsl(120, 100%, 40%);">+*-cover=
-age/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+*-coverage=2Ein=
-fo</span><br><span> *=2Edll</span><br><span> *=2Eexe</span><br><span> *=2Ee=
-xe=2E*</span><br><span>@@ -18,6 +22,7 @@</span><br><span> Makefile</span><b=
-r><span> Makefile=2Ein</span><br><span> aclocal=2Em4</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+aminclude_static=2Eam</span><br><span> au=
-todefs=2Eh</span><br><span> autom4te=2Ecache</span><br><span> config=2Egues=
-s</span><br><span>diff --git a/Makefile=2Eam b/Makefile=2Eam</span><br><spa=
-n>index 125fe84=2E=2Ed3910ed 100644</span><br><span>--- a/Makefile=2Eam</sp=
-an><br><span>+++ b/Makefile=2Eam</span><br><span>@@ -22,6 +22,8 @@</span><b=
-r><span> #  with this program; if not, see &lt;https://www=2Egnu=2Eorg/lice=
-nses/&gt;=2E</span><br><span> #</span><br><span> </span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+include $(top_srcdir)/aminclude_static=2Eam</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> ACL=
-OCAL_AMFLAGS =3D -I m4</span><br><span> </span><br><span> MAINTAINERCLEANFI=
-LES =3D \</span><br><span>@@ -45,7 +47,8 @@</span><br><span> 	CMakeLists=2E=
-txt \</span><br><span> 	CMakePresets=2Ejson \</span><br><span> 	config=2Eh=
-=2Ecmake=2Ein \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	forke=
-d-test-driver</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	forke=
-d-test-driver \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	lco=
-vrc</span><br><span> </span><br><span> =2EPHONY: config-version=2Eh doxygen=
-</span><br><span> </span><br><span>@@ -98,3 +101,7 @@</span><br><span> 	INC=
-LUDE_FLAGS=3D&quot;$(LIBNL_GENL_CFLAGS)&quot; \</span><br><span> 	CPPCHECK_=
-VERBOSE=3D&quot;$(AM_V_P)&quot; \</span><br><span> 		&quot;$(top_srcdir)/de=
-v-tools/run-cppcheck=2Esh&quot;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+CODE_CO=
-VERAGE_LCOV_SHOPTS=3D--config-file $(srcdir)/lcovrc</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+clean-local: code-coverage-clean</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+distclean-local: code-covera=
-ge-dist-clean</span><br><span>diff --git a/configure=2Eac b/configure=2Eac<=
-/span><br><span>index ad3f8f1=2E=2E6617c8d 100644</span><br><span>--- a/con=
-figure=2Eac</span><br><span>+++ b/configure=2Eac</span><br><span>@@ -59,6 +=
-59,8 @@</span><br><span> AC_CANONICAL_HOST</span><br><span> AC_USE_SYSTEM_E=
-XTENSIONS</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+AX_CODE_COVERAGE</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span> AC_ARG_ENABLE(</span><br><span> 	[lzo],</span><br><s=
-pan> 	[AS_HELP_STRING([--disable-lzo], [disable LZO compression support @&l=
-t;:@default=3Dyes@:&gt;@])],</span><br><span>@@ -1236,6 +1238,11 @@</span><=
-br><span> 	ACL_CHECK_ADD_COMPILE_FLAGS([-Wno-cast-function-type])</span><br=
-><span> fi</span><br><span> </span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+# If coverage is enabled remove -O arguments from CFLAGS</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+if test &quot;$enable_code_co=
-verage&quot; =3D &quot;yes&quot;; then</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+   [CFLAGS=3D&quot;`echo $CFLAGS | $SED -e &#39;s/-O[a-z=
-0-9]*//g&#39;`&quot;]</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+fi</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n> if test &quot;${enable_pedantic}&quot; =3D &quot;yes&quot;; then</span><=
-br><span> 	CFLAGS=3D&quot;${CFLAGS} -pedantic&quot;</span><br><span> 	AC_DE=
-FINE([PEDANTIC], [1], [Enable pedantic mode])</span><br><span>@@ -1355,10 +=
-1362,10 @@</span><br><span> </span><br><span> TEST_LDFLAGS=3D&quot;${OPTION=
-AL_CRYPTO_LIBS} ${OPTIONAL_PKCS11_HELPER_LIBS} ${OPTIONAL_LIBCAPNG_LIBS}&qu=
-ot;</span><br><span> TEST_LDFLAGS=3D&quot;${TEST_LDFLAGS} ${OPTIONAL_LIBNL_=
-GENL_LIBS}&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-TEST_=
-LDFLAGS=3D&quot;${TEST_LDFLAGS} ${OPTIONAL_LZO_LIBS} ${CMOCKA_LIBS}&quot;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+TEST_LDFLAGS=3D&quot;=
-${TEST_LDFLAGS} ${OPTIONAL_LZO_LIBS} ${CMOCKA_LIBS} ${CODE_COVERAGE_LIBS}&q=
-uot;</span><br><span> TEST_CFLAGS=3D&quot;${OPTIONAL_CRYPTO_CFLAGS} ${OPTIO=
-NAL_PKCS11_HELPER_CFLAGS} ${OPTIONAL_LIBCAPNG_CFLAGS}&quot;</span><br><span=
-> TEST_CFLAGS=3D&quot;${TEST_CFLAGS} ${OPTIONAL_LIBNL_GENL_CFLAGS} ${OPTION=
-AL_LZO_CFLAGS}&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-T=
-EST_CFLAGS=3D&quot;${TEST_CFLAGS} -I\$(top_srcdir)/include ${CMOCKA_CFLAGS}=
-&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+TEST_CFLAGS=
-=3D&quot;${TEST_CFLAGS} -I\$(top_srcdir)/include ${CMOCKA_CFLAGS} ${CODE_CO=
-VERAGE_CFLAGS}&quot;</span><br><span> </span><br><span> AC_SUBST([TEST_LDFL=
-AGS])</span><br><span> AC_SUBST([TEST_CFLAGS])</span><br><span>diff --git a=
-/lcovrc b/lcovrc</span><br><span>new file mode 100644</span><br><span>index=
- 0000000=2E=2Ef8b4138</span><br><span>--- /dev/null</span><br><span>+++ b/l=
-covrc</span><br><span>@@ -0,0 +1,2 @@</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+geninfo_external =3D 1</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+geninfo_unexecuted_blocks =3D 1</span><br><span>diff -=
--git a/m4/ax_code_coverage=2Em4 b/m4/ax_code_coverage=2Em4</span><br><span>=
-index 216708a4=2E=2Ef156d4d 100644</span><br><span>--- a/m4/ax_code_coverag=
-e=2Em4</span><br><span>+++ b/m4/ax_code_coverage=2Em4</span><br><span>@@ -4=
-2,8 +42,8 @@</span><br><span> #     clean-local: code-coverage-clean</span>=
-<br><span> #     distclean-local: code-coverage-dist-clean</span><br><span>=
- #</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#   This results in=
- a &quot;check-code-coverage&quot; rule being added to any</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-#   Makefile=2Eam which do &quot;inclu=
-de $(top_srcdir)/aminclude_static=2Eam&quot;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+#   This results in a &quot;check-code-coverage&qu=
-ot; rule being added to the</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#   Makefile=2Eam which does &quot;include $(top_srcdir)/aminclude_=
-static=2Eam&quot;</span><br><span> #   (assuming the module has been config=
-ured with --enable-code-coverage)=2E</span><br><span> #   Running `make che=
-ck-code-coverage` in that directory will run the</span><br><span> #   modul=
-e&#39;s test suite (`make check`) and build a code coverage report</span><b=
-r><span>@@ -76,10 +76,51 @@</span><br><span> </span><br><span> #serial 37</=
-span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl=
- Local modifications compared to the autoconf-archive version:</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+dnl</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+dnl  - AX_ADD_AM_MACRO_STATIC (from autoconf-arc=
-hive) is replaced by a</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+dnl    minimal local equivalent, OPENVPN_ADD_AM_MACRO_STATIC, so that we=
- do</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl    not depen=
-d on autoconf-archive being installed=2E</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+dnl  - The generated rules no longer require GNU make=
-=2E  The AX_CHECK_GNU_MAKE</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+dnl    check is gone (which also removed the last autoconf-archive</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl    dependency) an=
-d the GNU make specific constructs in the rules were</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+dnl    replaced:</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+dnl      * the &quot;ifeq ($(abs_builddir), =
-$(abs_top_builddir))&quot; guard is gone,</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+dnl        aminclude_static=2Eam may only be included=
- by the top level</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dn=
-l        Makefile=2Eam now (which is the only place it was ever included</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl        from in thi=
-s project),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl     =
- * $(addprefix =2E=2E=2E) and $(if =2E=2E=2E) are replaced by shell code in=
-side</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl        the =
-recipes,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl      * =
-$(call =2E=2E=2E)/$(subst =2E=2E=2E) for the lcov test name is replaced by<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl        CODE_COVE=
-RAGE_TEST_NAME, computed at configure time,</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+dnl      * &quot;find =2E=2E=2E -delete&quot; is re=
-placed by &quot;find =2E=2E=2E -exec rm -f {} +&quot;=2E</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+dnl    The only remaining non-POSIX co=
-nstruct is the nested variable</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+dnl    expansion used for the silent rules ($(foo_$(V))), which =
-is the same</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dnl    i=
-diom automake itself uses for AM_V_at and friends and which is</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+dnl    understood by BSD make as=
- well=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+AC_DEFUN([OPENVPN_PRINT_TO_FIL=
-E],[</span><br><span style=3D"color: hsl(120, 100%, 40%);">+m4_esyscmd(</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+[</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+printf &quot;%s&quot; &quot;$2&quot; &gt;=
- &quot;$1&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+])</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+])</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+AC_DEFUN([OPENVPN_ADD_AM_MACRO_STATIC],[</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+  OPENVPN_PRINT_TO_FILE([aminclude_s=
-tatic=2Eam],[$1])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+])=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> m=
-4_define(_AX_CODE_COVERAGE_RULES,[</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-AX_ADD_AM_MACRO_STATIC([</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+OPENVPN_ADD_AM_MACRO_STATIC([</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+# This file was generated by ax_code_coverage</=
-span><br><span> # Code coverage</span><br><span> #</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+# This file must only be included by the top=
- level Makefile=2Eam: the rules</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+# below always report on the complete build tree=2E</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+#</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+# The rules avoid GNU make specific syntax so tha=
-t they also work with</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+# other make implementations, e=2Eg=2E BSD make=2E</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#</span><br><span> # Optional:</span><br>=
-<span> #  - CODE_COVERAGE_DIRECTORY: Top-level directory for code coverage =
-reporting=2E</span><br><span> #    Multiple directories may be specified, s=
-eparated by whitespace=2E</span><br><span>@@ -90,51 +131,51 @@</span><br><s=
-pan> #  - CODE_COVERAGE_OUTPUT_DIRECTORY: Directory for generated code cove=
-rage</span><br><span> #    reports to be created=2E (Default:</span><br><sp=
-an> #    \$(PACKAGE_NAME)-\$(PACKAGE_VERSION)-coverage)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+#  - CODE_COVERAGE_TEST_NAME: Test name=
- to record in the =2Einfo file=2E  It is</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+#    computed by configure (\$(PACKAGE_NAME)-\$(PACKAG=
-E_VERSION), with dashes</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+#    and dots replaced by underscores) and can be overridden by definin=
-g it</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#    in Makefil=
-e=2Eam=2E</span><br><span> #  - CODE_COVERAGE_BRANCH_COVERAGE: Set to 1 to =
-enforce branch coverage,</span><br><span> #    set to 0 to disable it and l=
-eave empty to stay with the default=2E</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-#    (Default: empty)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+#    The corresponding --rc option is passed to lcov and=
- genhtml in</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#    add=
-ition to the options below=2E (Default: empty)</span><br><span> #  - CODE_C=
-OVERAGE_LCOV_SHOPTS_DEFAULT: Extra options shared between both lcov</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-#    instances=2E (Default: b=
-ased on $CODE_COVERAGE_BRANCH_COVERAGE)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+#    instances=2E (Default: empty)</span><br><span> #  =
-- CODE_COVERAGE_LCOV_SHOPTS: Extra options to shared between both lcov</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-#    instances=2E (Default=
-: $CODE_COVERAGE_LCOV_SHOPTS_DEFAULT)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+#    instances=2E (Default: \$CODE_COVERAGE_LCOV_SHOPTS_D=
-EFAULT)</span><br><span> #  - CODE_COVERAGE_LCOV_OPTIONS_GCOVPATH: --gcov-t=
-ool pathtogcov</span><br><span> #  - CODE_COVERAGE_LCOV_OPTIONS_DEFAULT: Ex=
-tra options to pass to the</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-#    collecting lcov instance=2E (Default: $CODE_COVERAGE_LCOV_OPTIONS=
-_GCOVPATH)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#    coll=
-ecting lcov instance=2E (Default: \$CODE_COVERAGE_LCOV_OPTIONS_GCOVPATH)</s=
-pan><br><span> #  - CODE_COVERAGE_LCOV_OPTIONS: Extra options to pass to th=
-e collecting lcov</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#   =
- instance=2E (Default: $CODE_COVERAGE_LCOV_OPTIONS_DEFAULT)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+#    instance=2E (Default: \$CODE_C=
-OVERAGE_LCOV_OPTIONS_DEFAULT)</span><br><span> #  - CODE_COVERAGE_LCOV_RMOP=
-TS_DEFAULT: Extra options to pass to the filtering</span><br><span> #    lc=
-ov instance=2E (Default: empty)</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-#  - CODE_COVERAGE_LCOV_RMOPTS: Extra options to pass to the filt=
-ering lcov</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#    instan=
-ce=2E (Default: $CODE_COVERAGE_LCOV_RMOPTS_DEFAULT)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#  - CODE_COVERAGE_LCOV_RMOPTS: Extra opt=
-ions to pass to the filtering</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+#    lcov instance=2E (Default: \$CODE_COVERAGE_LCOV_RMOPTS_DEFAU=
-LT)</span><br><span> #  - CODE_COVERAGE_GENHTML_OPTIONS_DEFAULT: Extra opti=
-ons to pass to the</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#  =
-  genhtml instance=2E (Default: based on $CODE_COVERAGE_BRANCH_COVERAGE)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#    genhtml instance=
-=2E (Default: empty)</span><br><span> #  - CODE_COVERAGE_GENHTML_OPTIONS: E=
-xtra options to pass to the genhtml</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-#    instance=2E (Default: $CODE_COVERAGE_GENHTML_OPTIONS_DEF=
-AULT)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#    instance=
-=2E (Default: \$CODE_COVERAGE_GENHTML_OPTIONS_DEFAULT)</span><br><span> #  =
-- CODE_COVERAGE_IGNORE_PATTERN: Extra glob pattern of files to ignore</span=
-><br><span> #</span><br><span> # The generated report will be titled using =
-the \$(PACKAGE_NAME) and</span><br><span> # \$(PACKAGE_VERSION)=2E In order=
- to add the current git hash to the title,</span><br><span> # use the git-v=
-ersion-gen script, available online=2E</span><br><span> # Optional variable=
-s</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# run only on top di=
-r</span><br><span> if CODE_COVERAGE_ENABLED</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">- ifeq (\$(abs_builddir), \$(abs_top_builddir))</span>=
-<br><span> CODE_COVERAGE_DIRECTORY ?=3D \$(top_builddir)</span><br><span> C=
-ODE_COVERAGE_OUTPUT_FILE ?=3D \$(PACKAGE_NAME)-\$(PACKAGE_VERSION)-coverage=
-=2Einfo</span><br><span> CODE_COVERAGE_OUTPUT_DIRECTORY ?=3D \$(PACKAGE_NAM=
-E)-\$(PACKAGE_VERSION)-coverage</span><br><span> </span><br><span> CODE_COV=
-ERAGE_BRANCH_COVERAGE ?=3D</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-CODE_COVERAGE_LCOV_SHOPTS_DEFAULT ?=3D \$(if \$(CODE_COVERAGE_BRANCH_C=
-OVERAGE),\</span><br><span>---rc lcov_branch_coverage=3D\$(CODE_COVERAGE_BR=
-ANCH_COVERAGE))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+CODE=
-_COVERAGE_LCOV_SHOPTS_DEFAULT ?=3D</span><br><span> CODE_COVERAGE_LCOV_SHOP=
-TS ?=3D \$(CODE_COVERAGE_LCOV_SHOPTS_DEFAULT)</span><br><span> CODE_COVERAG=
-E_LCOV_OPTIONS_GCOVPATH ?=3D --gcov-tool \&quot;\$(GCOV)\&quot;</span><br><=
-span> CODE_COVERAGE_LCOV_OPTIONS_DEFAULT ?=3D \$(CODE_COVERAGE_LCOV_OPTIONS=
-_GCOVPATH)</span><br><span> CODE_COVERAGE_LCOV_OPTIONS ?=3D \$(CODE_COVERAG=
-E_LCOV_OPTIONS_DEFAULT)</span><br><span> CODE_COVERAGE_LCOV_RMOPTS_DEFAULT =
-?=3D</span><br><span> CODE_COVERAGE_LCOV_RMOPTS ?=3D \$(CODE_COVERAGE_LCOV_=
-RMOPTS_DEFAULT)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-CODE_C=
-OVERAGE_GENHTML_OPTIONS_DEFAULT ?=3D\</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-\$(if \$(CODE_COVERAGE_BRANCH_COVERAGE),\</span><br><span>-=
---rc genhtml_branch_coverage=3D\$(CODE_COVERAGE_BRANCH_COVERAGE))</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+CODE_COVERAGE_GENHTML_OPTIONS=
-_DEFAULT ?=3D</span><br><span> CODE_COVERAGE_GENHTML_OPTIONS ?=3D \$(CODE_C=
-OVERAGE_GENHTML_OPTIONS_DEFAULT)</span><br><span> CODE_COVERAGE_IGNORE_PATT=
-ERN ?=3D</span><br><span> </span><br><span>@@ -152,8 +193,15 @@</span><br><=
-span> code_coverage_quiet_ =3D \$(code_coverage_quiet_\$(AM_DEFAULT_VERBOSI=
-TY))</span><br><span> code_coverage_quiet_0 =3D --quiet</span><br><span> </=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-# sanitizes the test-na=
-me: replaces with underscores: dashes and dots</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-code_coverage_sanitize =3D \$(subst -,_,\$(subst =
-=2E,_,\$(1)))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# Shel=
-l fragments used by the recipes below=2E  They are portable</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+# replacements for the GNU make fun=
-ctions \$(addprefix =2E=2E=2E) and \$(if =2E=2E=2E):</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+# code_coverage_dirs_opt sets \$cc_dirs t=
-o a list of --directory options,</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+# code_coverage_prefix_opt sets \$cc_prefix to a list of --pre=
-fix options and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# co=
-de_coverage_*_branch_opt set \$cc_branch to the branch coverage option=2E</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+code_coverage_dirs_op=
-t =3D cc_dirs=3D; for cc_dir in \$(CODE_COVERAGE_DIRECTORY); do cc_dirs=3D\=
-&quot;\$\$cc_dirs --directory \$\$cc_dir\&quot;; done</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+code_coverage_prefix_opt =3D cc_prefix=3D=
-; for cc_dir in \$(CODE_COVERAGE_DIRECTORY); do cc_prefix=3D\&quot;\$\$cc_p=
-refix --prefix \$\$cc_dir\&quot;; done</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+code_coverage_lcov_branch_opt =3D cc_branch=3D; test -z =
-\&quot;\$(CODE_COVERAGE_BRANCH_COVERAGE)\&quot; || cc_branch=3D\&quot;--rc =
-lcov_branch_coverage=3D\$(CODE_COVERAGE_BRANCH_COVERAGE)\&quot;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+code_coverage_genhtml_branch_op=
-t =3D cc_branch=3D; test -z \&quot;\$(CODE_COVERAGE_BRANCH_COVERAGE)\&quot;=
- || cc_branch=3D\&quot;--rc genhtml_branch_coverage=3D\$(CODE_COVERAGE_BRAN=
-CH_COVERAGE)\&quot;</span><br><span> </span><br><span> # Use recursive make=
-s in order to ignore errors during check</span><br><span> check-code-covera=
-ge:</span><br><span>@@ -162,29 +210,26 @@</span><br><span> </span><br><span=
-> # Capture code coverage data</span><br><span> code-coverage-capture: code=
--coverage-capture-hook</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--	\$(code_coverage_v_lcov_cap)\$(LCOV) \$(code_coverage_quiet) \$(addprefix=
- --directory ,\$(CODE_COVERAGE_DIRECTORY)) --capture --output-file \&quot;\=
-$(CODE_COVERAGE_OUTPUT_FILE)=2Etmp\&quot; --test-name \&quot;\$(call code_c=
-overage_sanitize,\$(PACKAGE_NAME)-\$(PACKAGE_VERSION))\&quot; --no-checksum=
- --compat-libtool \$(CODE_COVERAGE_LCOV_SHOPTS) \$(CODE_COVERAGE_LCOV_OPTIO=
-NS)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	\$(code_coverage_=
-v_lcov_ign)\$(LCOV) \$(code_coverage_quiet) \$(addprefix --directory ,\$(CO=
-DE_COVERAGE_DIRECTORY)) --remove \&quot;\$(CODE_COVERAGE_OUTPUT_FILE)=2Etmp=
-\&quot; \$(CODE_COVERAGE_IGNORE_PATTERN) --output-file \&quot;\$(CODE_COVER=
-AGE_OUTPUT_FILE)\&quot; \$(CODE_COVERAGE_LCOV_SHOPTS) \$(CODE_COVERAGE_LCOV=
-_RMOPTS)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	\$(code_co=
-verage_v_lcov_cap)\$(code_coverage_dirs_opt); \\</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+	\$(code_coverage_lcov_branch_opt); \\</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+	\$(LCOV) \$(code_coverage_=
-quiet) \$\$cc_dirs --capture --output-file \&quot;\$(CODE_COVERAGE_OUTPUT_F=
-ILE)=2Etmp\&quot; --test-name \&quot;\$(CODE_COVERAGE_TEST_NAME)\&quot; --n=
-o-checksum --compat-libtool \$\$cc_branch \$(CODE_COVERAGE_LCOV_SHOPTS) \$(=
-CODE_COVERAGE_LCOV_OPTIONS)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+	\$(code_coverage_v_lcov_ign)\$(code_coverage_dirs_opt); \\</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+	\$(code_coverage_lcov_bran=
-ch_opt); \\</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	\$(LCOV=
-) \$(code_coverage_quiet) \$\$cc_dirs --remove \&quot;\$(CODE_COVERAGE_OUTP=
-UT_FILE)=2Etmp\&quot; \$(CODE_COVERAGE_IGNORE_PATTERN) --output-file \&quot=
-;\$(CODE_COVERAGE_OUTPUT_FILE)\&quot; \$\$cc_branch \$(CODE_COVERAGE_LCOV_S=
-HOPTS) \$(CODE_COVERAGE_LCOV_RMOPTS)</span><br><span> 	-@rm -f \&quot;\$(CO=
-DE_COVERAGE_OUTPUT_FILE)=2Etmp\&quot;</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-	\$(code_coverage_v_genhtml)LANG=3DC \$(GENHTML) \$(code_co=
-verage_quiet) \$(addprefix --prefix ,\$(CODE_COVERAGE_DIRECTORY)) --output-=
-directory \&quot;\$(CODE_COVERAGE_OUTPUT_DIRECTORY)\&quot; --title \&quot;\=
-$(PACKAGE_NAME)-\$(PACKAGE_VERSION) Code Coverage\&quot; --legend --show-de=
-tails \&quot;\$(CODE_COVERAGE_OUTPUT_FILE)\&quot; \$(CODE_COVERAGE_GENHTML_=
-OPTIONS)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	\$(code_co=
-verage_v_genhtml)\$(code_coverage_prefix_opt); \\</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+	\$(code_coverage_genhtml_branch_opt); \\</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+	LANG=3DC \$(GENHTML) \=
-$(code_coverage_quiet) \$\$cc_prefix --output-directory \&quot;\$(CODE_COVE=
-RAGE_OUTPUT_DIRECTORY)\&quot; --title \&quot;\$(PACKAGE_NAME)-\$(PACKAGE_VE=
-RSION) Code Coverage\&quot; --legend --show-details \&quot;\$(CODE_COVERAGE=
-_OUTPUT_FILE)\&quot; \$\$cc_branch \$(CODE_COVERAGE_GENHTML_OPTIONS)</span>=
-<br><span> 	@echo \&quot;file://\$(abs_builddir)/\$(CODE_COVERAGE_OUTPUT_DI=
-RECTORY)/index=2Ehtml\&quot;</span><br><span> </span><br><span> code-covera=
-ge-clean:</span><br><span> 	-\$(LCOV) --directory \$(top_builddir) -z</span=
-><br><span> 	-rm -rf \&quot;\$(CODE_COVERAGE_OUTPUT_FILE)\&quot; \&quot;\$(=
-CODE_COVERAGE_OUTPUT_FILE)=2Etmp\&quot; \&quot;\$(CODE_COVERAGE_OUTPUT_DIRE=
-CTORY)\&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	-find =
-=2E \\( -name \&quot;*=2Egcda\&quot; -o -name \&quot;*=2Egcno\&quot; -o -na=
-me \&quot;*=2Egcov\&quot; \\) -delete</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+	-find =2E \\( -name \&quot;*=2Egcda\&quot; -o -name \&qu=
-ot;*=2Egcno\&quot; -o -name \&quot;*=2Egcov\&quot; \\) -exec rm -f &#39;{}&=
-#39; +</span><br><span> </span><br><span> code-coverage-dist-clean:</span><=
-br><span> </span><br><span> A][M_DISTCHECK_CONFIGURE_FLAGS :=3D \$(A][M_DIS=
-TCHECK_CONFIGURE_FLAGS) --disable-code-coverage</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">- else # ifneq (\$(abs_builddir), \$(abs_top_build=
-dir))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check-code-cover=
-age:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-code-coverage-capture: code-coverage-c=
-apture-hook</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-code-coverage-clean:</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-code-coverage-dist-clean:</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">- endif # ifeq (\$(abs_builddir), \$(abs_top_build=
-dir))</span><br><span> else #! CODE_COVERAGE_ENABLED</span><br><span> # Use=
- recursive makes in order to ignore errors during check</span><br><span> ch=
-eck-code-coverage:</span><br><span>@@ -206,8 +251,7 @@</span><br><span> ])<=
-/span><br><span> </span><br><span> AC_DEFUN([_AX_CODE_COVERAGE_ENABLED],[</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-	AX_CHECK_GNU_MAKE([],[=
-AC_MSG_ERROR([not using GNU make that is needed for coverage])])</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-	AC_REQUIRE([AX_ADD_AM_MACRO_STA=
-TIC])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	AC_REQUIRE([O=
-PENVPN_ADD_AM_MACRO_STATIC])</span><br><span> 	# check for gcov</span><br><=
-span> 	AC_CHECK_TOOL([GCOV],</span><br><span> 		  [$_AX_CODE_COVERAGE_GCOV_=
-PROG_WITH],</span><br><span>@@ -232,13 +276,12 @@</span><br><span> 		AC_MSG=
-_ERROR([Could not find genhtml from the lcov package])</span><br><span> 	])=
-</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-	AC=
-_CHECK_LIB([gcov], [_gcov_init], [CODE_COVERAGE_LIBS=3D&quot;-lgcov&quot;],=
- [CODE_COVERAGE_LIBS=3D&quot;&quot;])</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-</span><br><span> 	dnl Build the code coverage flags</span>=
-<br><span> 	dnl Define CODE_COVERAGE_LDFLAGS for backwards compatibility</s=
-pan><br><span> 	CODE_COVERAGE_CPPFLAGS=3D&quot;-DNDEBUG&quot;</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-	CODE_COVERAGE_CFLAGS=3D&quot;-O0 -=
-g -fprofile-arcs -ftest-coverage&quot;</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-	CODE_COVERAGE_CXXFLAGS=3D&quot;-O0 -g -fprofile-arcs -fte=
-st-coverage&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	C=
-ODE_COVERAGE_CFLAGS=3D&quot;-O0 -g --coverage&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+	CODE_COVERAGE_CXXFLAGS=3D&quot;-O0 -g --=
-coverage&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	CODE=
-_COVERAGE_LIBS=3D&quot;--coverage&quot;</span><br><span> </span><br><span> =
-	AC_SUBST([CODE_COVERAGE_CPPFLAGS])</span><br><span> 	AC_SUBST([CODE_COVERA=
-GE_CFLAGS])</span><br><span>@@ -265,6 +308,10 @@</span><br><span> 	AC_SUBST=
-([CODE_COVERAGE_ENABLED], [$enable_code_coverage])</span><br><span> 	AC_MSG=
-_RESULT($enable_code_coverage)</span><br><span> </span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+	dnl The lcov test name must not contain dashe=
-s or dots</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	CODE_COVE=
-RAGE_TEST_NAME=3D`echo &quot;$PACKAGE_NAME-$PACKAGE_VERSION&quot; | tr &#39=
-;=2E-&#39; &#39;__&#39;`</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+	AC_SUBST([CODE_COVERAGE_TEST_NAME])</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span> 	AS_IF([ test &quot;x$enable_code_c=
-overage&quot; =3D xyes ], [</span><br><span> 		_AX_CODE_COVERAGE_ENABLED</s=
-pan><br><span> 	      ])</span><br><span>diff --git a/src/openvpn/Makefile=
-=2Eam b/src/openvpn/Makefile=2Eam</span><br><span>index 7ecddff=2E=2E942480=
-1 100644</span><br><span>--- a/src/openvpn/Makefile=2Eam</span><br><span>++=
-+ b/src/openvpn/Makefile=2Eam</span><br><span>@@ -31,9 +31,12 @@</span><br>=
-<span> 	$(OPTIONAL_SYSTEMD_CFLAGS) \</span><br><span> 	$(OPTIONAL_PKCS11_HE=
-LPER_CFLAGS) \</span><br><span> 	$(OPTIONAL_INOTIFY_CFLAGS) \</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+	$(CODE_COVERAGE_CFLAGS) \</span>=
-<br><span> 	-DPLUGIN_LIBDIR=3D\&quot;${plugindir}\&quot; \</span><br><span>=
- 	-DDEFAULT_DNS_UPDOWN=3D\&quot;${scriptdir}/dns-updown\&quot;</span><br><s=
-pan> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+AM_LDFLAGS =3D=
- $(CODE_COVERAGE_LIBS)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span> if WIN32</span><br><span> # we want unicode entry poin=
-t but not the macro</span><br><span> AM_CFLAGS +=3D -municode -UUNICODE</sp=
-an><br></pre><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/=
-openvpn/+/1592?usp=3Demail">change 1592</a>=2E To unsubscribe, or for help =
-writing mail filters, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/setti=
-ngs?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schem=
-a=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:/=
-/schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https://gerrit=2Eo=
-penvpn=2Enet/c/openvpn/+/1592?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Message=
-Type: newpatchset </div>
-<div style=3D"display:none"> Gerrit-Project: openv=
-pn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div st=
-yle=3D"display:none"> Gerrit-Change-Id: I79b2dc4a550b1c5068a45407976b0dfc2f=
-765b33 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1592 </div=
->
-<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
-<div style=3D"disp=
-lay:none"> Gerrit-Owner: Frank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt; =
-</div>
-<div style=3D"display:none"> Gerrit-Reviewer: Arne Schwabe &lt;arne-=
-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Review=
-er: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt; </div>
-<div style=3D=
-"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourcefo=
-rge=2Enet&gt; </div>
-
-</body></html>
---+hh5mK9u7kg=--
-
-
---===============8363723328883185347==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============8363723328883185347==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
---===============8363723328883185347==--
-
