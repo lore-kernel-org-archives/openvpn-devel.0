@@ -4,128 +4,130 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 58C26CCF2CA
-	for <openvpn-devel@archiver.kernel.org>; Sun, 18 Oct 2026 19:58:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E416ECCF2DA
+	for <openvpn-devel@archiver.kernel.org>; Mon, 19 Oct 2026 06:37:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=/aNrju+T40loFEbwjjIsimaXzbmAMgDoXi+QNzHFoEs=; b=YRF1ukColPh8uZ4uL/tfHDnmsD
-	bVJRA/vkaCp8Ef25pea633eFE+OZTCp14DFkvxqvfzuU9OdpnTOVO0NYj8TNCylQNuEJJUtopQzgL
-	DEeyy+oToxiV5Qcsr6wOoaG8VjvGEM/IBmikN59/kPqmbLe85DNfRePaabDY05NoVbaY=;
+	bh=bRhluR+JxnEqu8D8dCAIc2gquukHQ8k81KOas7VD4DA=; b=eG16cz1nesXyg6WKSE2XzCGN49
+	9KBSlDN7sNkCH5ZCl482YN/3al2ACCKRQCayDVSfFUmvLM4BNQ4tLZhRL7uD5AawP4Gpl88V9Awb7
+	q+1+Mb4pRyyevWT55+EgwV0vH86UgSxXVW+ISPYqPSZzuqzAccHuk4zEIiTrUhvJt2aM=;
 Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
 	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xIX1O-0007DI-OL;
-	Sun, 18 Oct 2026 19:58:18 +0000
+	id 1xIh02-0002Tr-6W;
+	Mon, 19 Oct 2026 06:37:34 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gerrit@openvpn.net>) id 1xIX1M-0007DC-Ok
+ (envelope-from <gerrit@openvpn.net>) id 1xIh00-0002Tk-Dq
  for openvpn-devel@lists.sourceforge.net;
- Sun, 18 Oct 2026 19:58:16 +0000
+ Mon, 19 Oct 2026 06:37:32 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe
  :List-Post:List-Owner:List-Archive;
- bh=vtoM7kX3MOnYpewgFukY/uY7y3ObLp7Zm7YHCirRNv0=; b=E/ic2MDigQCU2tvJqJtJRg2vxR
- +TisYqDKc/Yh7s94AjNHg0q0ndJewXRQHqZKwu/CKSROlsfWSn1DmWdeTPv9LUOQschoM+yi3YMiX
- BEpyFy/StiPzSttQALvt+wrHLqtkIWgbggzjWJ2kSYBilvxHSLyLuUTRcyhLn1binbuU=;
+ bh=LsDuFhRPnpwnACvs1U20W2bSGylvMd6lidbn1Bph1ns=; b=I9asy4jx5Kl9tSfBh+puIuCyrg
+ pMvjrf9Oi6vQQ3gPElXf0i1uebwBw5LIcdarJ+WoPOOqQUBZtXeR+VewFdemqcEuIYzB8a8Y8jRUy
+ 9+5ZBpNZb5PGevUmQVPrh2a4JdOJrZQRCZjGYjsL3/4SBi0/j0Iwry2VO+6o/Zj6Mx7g=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
  Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=vtoM7kX3MOnYpewgFukY/uY7y3ObLp7Zm7YHCirRNv0=; b=d
- 6+D90Tcw7Q+JKDMyVZjfaV8SBQoalMTInfI4lT6amTb+aSrSFvIRPKvglYBt+OJ/S+9bp1jSVAuuf
- 0Ea+wZiSUSkzSYUco63dk+rqBdEfPu+O+9vVXbyF/9oJKGG2GNCt2EgvvKVNlYMUCRTkKeVUUv3ah
- pxD0HqB56p+uKnhE=;
-Received: from mail-wm1-f54.google.com ([209.85.128.54])
+ List-Owner:List-Archive; bh=LsDuFhRPnpwnACvs1U20W2bSGylvMd6lidbn1Bph1ns=; b=O
+ 3t+lEnDjd8N/yUtLWcvufDf7DEnWQJmcNOLg6eaFkN+mOSgUCVh+h1cPojEdbC9jKAGsGgH8SEEWx
+ 9XgweFN7sJaOuX5Y1mVZxv5uT7SRJqotMwGsvHa1AUwZ/SfzexUN2dnWyddUpNo1OvzEpw7xNBRJ8
+ lUEtkbZC6vtaYcOA=;
+Received: from mail-wr1-f53.google.com ([209.85.221.53])
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.95)
- id 1xIX1L-0004J1-Us for openvpn-devel@lists.sourceforge.net;
- Sun, 18 Oct 2026 19:58:16 +0000
-Received: by mail-wm1-f54.google.com with SMTP id
- 5b1f17b1804b1-4a1e3098ee2so6033715e9.3
+ id 1xIgzv-0005es-Ep for openvpn-devel@lists.sourceforge.net;
+ Mon, 19 Oct 2026 06:37:32 +0000
+Received: by mail-wr1-f53.google.com with SMTP id
+ ffacd0b85a97d-48e0d1c095dso762985f8f.1
  for <openvpn-devel@lists.sourceforge.net>;
- Sun, 18 Oct 2026 12:58:15 -0700 (PDT)
+ Sun, 18 Oct 2026 23:37:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1792353489; x=1792958289; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1792391841; x=1792996641; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=vtoM7kX3MOnYpewgFukY/uY7y3ObLp7Zm7YHCirRNv0=;
- b=eQHxtHRdEKrAdqGnuTvhdMjvJypICkY+UMMgZ6MBTp1Llgii7bgCL7a5ou1vlBgx3j
- I4faT9qkyfDX0wgCzMtnrLfHlLb5+0t+w+gB3j5RkEadPksmonHQPM2zWEremRxmhE9e
- nWoTI9K9jVeYLb1Kt4j/QGY3/6dsyaGGH9YthLNXNV8erHXGSiUe+WH+f8gVac3cWMVR
- gam8AxxAB5R64k16MW3BVBy/EVuJ7bKrDwmOLq8B29Z/+hD7C6RRvtp5WfxXRcfVrm9S
- chNw9zDb7251hocxnA4QWlHjKMF7Dz1yC7p+Uj4r+tQWrF8Csft0ZpIrlRvpo0w7sRwm
- Q6KQ==
+ bh=LsDuFhRPnpwnACvs1U20W2bSGylvMd6lidbn1Bph1ns=;
+ b=ffz7Spon/aXSvdGvQOxZ+oNoKpRfPLbMz34NmNXZzmSG/uGEpGfZLd/ZtsQnytqpSB
+ 4mJ1tUiIrKefC5MngBreShSbppfDMeWyV8/V9WJj+/rhCTtkuBfhchiMDMgQH/H+Du03
+ Yr0B8t7XLYYfpKd3qAA5fdbyNGvuT8AxulCLUyXxaGzgcbsXTfMeNZDhVgUOcC5r7TgT
+ +xO7G4pwNTcHntUi5EPbOnmDKdXgqkTRlK89kFXKZh/+LUnlS3gAR2b/qXZc+vCPsVaL
+ kcm1SCwepK3zwqkbWzxOWljWihITM5lx+fkdSR4LK24hLSnF58kS48FAhH+auhaWd2ai
+ M9KQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1792353489; x=1792958289;
+ d=1e100.net; s=20260707; t=1792391841; x=1792996641;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=vtoM7kX3MOnYpewgFukY/uY7y3ObLp7Zm7YHCirRNv0=;
- b=0ZCOffV37b57uQsSpvVlbsAQYSfetsgAj3I7vUiwRXZ3q6dxGTsYZ7eWPEFfy6NK/A
- Bt81uacs8EtQ92Of+zy3wtEtfvGMaw0yVwHOiT3CyxT2rkhLaX88GbVjgRjn445tW2I0
- QVwAYYLBNXDlqG5JMHSlzthQZ+kng5P2J2H32JIC0frtQS3wf86/o7nwGgRQHTRYX8iI
- MLF1VLp+EwFGErh9H7oinhk+Z2MYBAfYR3UoB/P9qtpf336Mo/lp7J4ij15YPpz3Q+5N
- 52PsjVX+10NHDNYgVTuo/UE1CzA86nRhiP5kjMqSg4Mp8FpbemHKEu86wjFwZiO0hRkY
- Y1wg==
+ bh=LsDuFhRPnpwnACvs1U20W2bSGylvMd6lidbn1Bph1ns=;
+ b=xcVPPOPkaij8AIakzkKE9GdkSn2WPJOCVkKzyJyXk8dyLEPC1GFaxAR6wot/eDShGC
+ dTwAwwidC0aWrP5Mb97XRhaL402RJ3NhHKbulgYVpGSjPHs2trbkoIM5GQzGbox948Wf
+ Jno+CEsSG4wXkeOYyJySB6KCTkvK9pbKx4EMKwmwmqs2dggQdW0iji7ziBkWUFvWfCxB
+ w4bmLbWRBn70NQ1RIZVx+oIg8ti5mF6pXaeFM9/WE5N0TVZfuOyCMbpCZKFWm74PC/R1
+ Pwy1TDOEeYs6IZj6xRqVfAN/UQR4f16ndjMbGTVpz9NxPz64VpficR7oQKr+FSxFtA15
+ YRqQ==
 X-Forwarded-Encrypted: i=1;
- AKwUvBwctuKnTx5jpIJgfu+1YA9Z1Ek+mk41Be4UESJuRW5Kkkt01G2oUi2a07GZQBZ1laE+EpbBR+jJWwRuInUA@lists.sourceforge.net
-X-Gm-Message-State: AFq9FYItpjvuhUPcaLIMXC/hwzItcUs/r2zzp0+DtEoC+Krth2ZdqaQS
- Uo1mHF5d/h1YWOWnt9m0hlpZ804HJHi819y51t52XdazNX9pAN1NwV7NhohKh9IVuGm0um7Rmla
- S2+xJ4A9bwZCkt2Ne4wdwbl7KKK3/pHuu+9izopQSwWXvR4kOsGTGKNuOKSZtw8v4uotz
-X-Gm-Gg: AYBFou0B+A0iViLGqqIiLgvpB4sof7j/qzdkwW/0NY5NGFsWdrvkf0lWxt0dX0ToaMR
- VDxjGaHnmZg5JruVgAgbVWQiy+ib0mv+oLn8yQ5d4ERyAWEOooN+qlZJfNj8ZU6lOMHubF4iN55
- Ci6J+ggHvFEO1alng83D5bK4KHBqO0q8GdHv9YpcMH1DQeLL5O6ouxLL0bmOxX3UejDuDFrfOT3
- XtMBJLfZs6bB26fC4zCE0qfPkHRW2aaQa18dIxIhM6Z4848xiMbcajAc40UtTx4oQXlgy9tSNts
- bFJ3uCb2oh2U4GPDYoI8ZyMmAsxPwROTbmpaxrYoMXlXUqmsNGQdqxAxU95+45e5pQKH9t3voHa
- zF5mNB6SytmS6gPsF8Wn13vW665oufdoZcxFox/K4u48FwFn4dlKUV/2l/3rSHXH2fs0tF66LEi
- xPj+/nalQOpwUR/9rc5ryfJsklbwmp2Xii+XZR2iQRh5C0QVj+tTq7b7Ylc95jfsCd5rAe2cJ6f
- qsJs2pAOXe4l3xAVNPevoTh2E309Rem4bXzb2Qocn6ZAN9V85Q3ufk6WSAknwPIJNyq/lB8DoXg
- eN6N2SpsSasUJEV0AlsWxtDVwOqk8CYWp7rJvakm3om7ohmGfwPsOY1km24k
-X-Received: by 2002:a05:600c:190e:b0:4a1:90d7:88a8 with SMTP id
- 5b1f17b1804b1-4a1d76106c0mr127692125e9.25.1792353489270; 
- Sun, 18 Oct 2026 12:58:09 -0700 (PDT)
+ AKwUvByi2z5E8Rq25HDklZU4eha5TmFJKCf7yB55tQXFOFqpZmpJ42WWWjbE9KGrPZl77nhixzY7uLyyVZWtmPJd@lists.sourceforge.net
+X-Gm-Message-State: AFq9FYJgRuB71oSxazIiYaICjtOFGaxusD5OnKyz8kCFF3IqNKIz02Ed
+ wHExMsmeytgvFtr4aJ9h6G+jAI94HbpJyLX7HZ/bmD4ZknPfk0u4p9GSw5rhvWC/LsP3Bo9syMy
+ EXSWI6U50Ms5FSBmisxDxTVUMrHY8rGKJNrk/sbqdyhilg4VbthwJhVK5tfWlLKCrhq6mQMh1Yz
+ f7/wJG/A==
+X-Gm-Gg: AYBFou3is4W4Ijjn0L8I4VTOgrECJotDeVoh1JQmg/h3R1Q/7Tsx8mYH2DbiqX3Fhnm
+ GrE7w+K3hcTqbpJ7iOP4Bo1k1CdkTbTiReSGMj1kGVhvnFuJahci7ysh4naTJr0ejoKGLk6/N+g
+ kq4surZrTg/DaDYHBaoFahvq8JQjMvenFXQN1wWFDjbMKMPeQTnUehDVfJJNMDuhwfLwpxaK/wJ
+ YVZw0LUkpg8mawCjea7yu3k08j9PeiEclieypKXCObz6J+p5bMsLctaapWEhVIW1PUbNkebn38w
+ pPeHL5rAUmIUTtp7NXHvF36b2NwGhn8PDm7BBxQ3JTUhwiA8rScF3Ck8vLjcDQuky89i88rNmtC
+ gkT/HnAhemL4QA6IABQ702o7+gWQ6n7h7l5kMKteQTh3zw6x0u5a2FH4xEHqhTkp/Q2AB3Tgp5T
+ 1lcbOx7iLsV7zHwSrTkAHsY7QeL8S4r/TZ2K0fxd9/fEnSOMmOwlozDeJ6MZ5JsKEBHimlm31sX
+ MbYtd1mmzQGdHVCRXiN8gze9J5GkLx3LmKyOAc3amh9gv5F7LYeEsc6M7Jj5Umgmf0LPTy/nMPD
+ PWnHgUcj5zxK+Czb6oxhJmQupJY1K18MB+PA4bdwey2pZWIoX2S7OEznFrTa
+X-Received: by 2002:adf:f8c2:0:b0:48d:fbf4:895e with SMTP id
+ ffacd0b85a97d-48e07fb31demr7921992f8f.11.1792391840519; 
+ Sun, 18 Oct 2026 23:37:20 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-4a1bd9b8ebdsm348573245e9.10.2026.10.18.12.58.08
+ ffacd0b85a97d-48dfd4fe9d9sm19959642f8f.40.2026.10.18.23.37.19
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sun, 18 Oct 2026 12:58:08 -0700 (PDT)
-X-Google-Original-From: "Gert Doering (Code Review)"
+ Sun, 18 Oct 2026 23:37:19 -0700 (PDT)
+X-Google-Original-From: "chugly (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Sun, 18 Oct 2026 19:58:08 +0000
-To: Gianmarco De Gregori <gianmarco@mandelbit.com>
+Date: Mon, 19 Oct 2026 06:37:18 +0000
+To: Lev Stipakov <lstipakov@gmail.com>
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: merged
-X-Gerrit-PatchSet: 2
-X-Gerrit-Change-Id: I33e55d88d561393ebfbc73a995f700056e19a436
-X-Gerrit-Change-Number: 1628
+X-Gerrit-MessageType: comment
+X-Gerrit-PatchSet: 21
+X-Gerrit-Change-Id: I1c8d302ac57c5603d622a7be14be369437388268
+X-Gerrit-Change-Number: 1741
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/1628?usp=email>
-X-Gerrit-Commit: 8f3f66f79264acbd13d539bdcec1c12e24e2e7f7
-In-Reply-To: <gerrit.1776267299000.I33e55d88d561393ebfbc73a995f700056e19a436@gerrit.openvpn.net>
-References: <gerrit.1776267299000.I33e55d88d561393ebfbc73a995f700056e19a436@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzc2MjY3Mjk5MDAwLkkzM2U1NWQ4OGQ1NjEzOTNlYmZiYzczYTk5NWY3MDAwNTZlMTlhNDM2QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <99cb76928e447b479e89ebbb0f9c4833479a49b5-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/1741?usp=email>
+X-Gerrit-Commit: ae129436e9cf54ad395798a24ed7fbb13a15708a
+X-Gerrit-Comment-Date: Mon, 19 Oct 2026 06:37:18 +0000
+In-Reply-To: <gerrit.1782719911000.I1c8d302ac57c5603d622a7be14be369437388268@gerrit.openvpn.net>
+References: <gerrit.1782719911000.I1c8d302ac57c5603d622a7be14be369437388268@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzgyNzE5OTExMDAwLkkxYzhkMzAyYWM1N2M1NjAzZDYyMmE3YmUxNGJlMzY5NDM3Mzg4MjY4QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <5259f394f430bec75fa0c45c61b670a5f3934893-EmailReviewComments-HTML@gerrit.openvpn.net>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.2
-X-Headers-End: 1xIX1L-0004J1-Us
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: sitnl: use
- RTM_SETLINK for updating existing interfaces
+X-Headers-End: 1xIgzv-0005es-Ep
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: oob: Add
+ P_CONTROL_OOB_V1 and the probe request and reply TLVs
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -137,235 +139,273 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "Gert Doering \(Code Review\) via Openvpn-devel"
+From: "chugly \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
-Reply-To: gert@greenie.muc.de, arne-openvpn@rfc2549.org,
- gianmarco@mandelbit.com, openvpn-devel@lists.sourceforge.net
-Cc: "Gert Doering \(Code Review\)" <gerrit@openvpn.net>,
+Reply-To: charlie.vigue@openvpn.com, arne-openvpn@rfc2549.org,
+ openvpn-devel@lists.sourceforge.net, ralf@mandelbit.com, frank@lichtenheld.com,
+ lstipakov@gmail.com
+Cc: "chugly \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>,
  Arne Schwabe <arne-openvpn@rfc2549.org>
-Content-Type: multipart/mixed; boundary="===============7546031404209254306=="
+Content-Type: multipart/mixed; boundary="===============3477405791733999046=="
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
---===============7546031404209254306==
+--===============3477405791733999046==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="kJjHEKfNcAw="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="lgHfPU8mEmM="; charset=UTF-8
 
---kJjHEKfNcAw=
+--lgHfPU8mEmM=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Gert Doering has submitted this change=2E ( https://gerrit=2Eopenvpn=2Enet/=
-c/openvpn/+/1628?usp=3Demail )
+Attention is currently required from: Arne Schwabe, Frank Lichtenheld, Lev =
+Stipakov, Ralf Lici=2E
 
-Change subject: sitnl: use RTM_SETLINK for =
-updating existing interfaces
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+chugly has posted comments on this change by Lev St=
+ipakov=2E ( https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741?usp=3Demail )
+
+=
+Change subject: oob: Add P_CONTROL_OOB_V1 and the probe request and reply T=
+LVs
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E
-
-sitnl: use RTM_SETLINK for updating existing interfaces
-
-R=
-TM_NEWLINK is primarily intended for link creation and initialization,
-whil=
-e RTM_SETLINK is the canonical interface for modifying attributes of
-an alr=
-eady existing link=2E
-
-Even though the kernel may accept RTM_NEWLINK for up=
-dates, using
-RTM_SETLINK better reflects the intended netlink semantics and=
- follows
-the dedicated update path in the kernel=2E
-
-This makes the behavio=
-r more explicit and consistent with how link
-configuration changes are expe=
-cted to be performed=2E
-
-Change-Id: I33e55d88d561393ebfbc73a995f700056e19a4=
-36
-Signed-off-by: Gianmarco De Gregori <gianmarco@mandelbit=2Ecom>
-Acked-by=
-: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit URL: https://gerrit=2Eop=
-envpn=2Enet/c/openvpn/+/1628
-Message-Id: <20261011202439=2E15128-1-gert@gre=
-enie=2Emuc=2Ede>
-URL: https://www=2Email-archive=2Ecom/openvpn-devel@lists=
-=2Esourceforge=2Enet/msg39831=2Ehtml
-Signed-off-by: Gert Doering <gert@gree=
-nie=2Emuc=2Ede>
----
-M src/openvpn/networking_sitnl=2Ec
-1 file changed, 3 in=
-sertions(+), 3 deletions(-)
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
 
+Patch =
+Set 21:
+
+(6 comments)
+
+File src/openvpn/oob=2Eh:
+
+https://gerrit=2Eopenvpn=
+=2Enet/c/openvpn/+/1741/comment/40e53d39_3d7df312?usp=3Demail :
+PS21, Line =
+40: #include "session_id=2Eh"
+session_id=2Eh doesn't seem to be used=2E
 
 
-diff --git a/src/openvpn/networking_sitnl=
-=2Ec b/src/openvpn/networking_sitnl=2Ec
-index bbdfcb7=2E=2E0c99d38 100644
--=
--- a/src/openvpn/networking_sitnl=2Ec
-+++ b/src/openvpn/networking_sitnl=2E=
-c
-@@ -691,7 +691,7 @@
- 
-     req=2En=2Enlmsg_len =3D NLMSG_LENGTH(sizeof(re=
-q=2Ei));
-     req=2En=2Enlmsg_flags =3D NLM_F_REQUEST;
--    req=2En=2Enlmsg=
-_type =3D RTM_NEWLINK;
-+    req=2En=2Enlmsg_type =3D RTM_SETLINK;
- 
-     re=
-q=2Ei=2Eifi_family =3D AF_PACKET;
-     req=2Ei=2Eifi_index =3D ifindex;
-@@ =
--727,7 +727,7 @@
- 
-     req=2En=2Enlmsg_len =3D NLMSG_LENGTH(sizeof(req=2Ei=
-));
-     req=2En=2Enlmsg_flags =3D NLM_F_REQUEST;
--    req=2En=2Enlmsg_type=
- =3D RTM_NEWLINK;
-+    req=2En=2Enlmsg_type =3D RTM_SETLINK;
- 
-     req=2Ei=
-=2Eifi_family =3D AF_PACKET;
-     req=2Ei=2Eifi_index =3D ifindex;
-@@ -758,=
-7 +758,7 @@
- 
-     req=2En=2Enlmsg_len =3D NLMSG_LENGTH(sizeof(req=2Ei));
- =
-    req=2En=2Enlmsg_flags =3D NLM_F_REQUEST;
--    req=2En=2Enlmsg_type =3D =
-RTM_NEWLINK;
-+    req=2En=2Enlmsg_type =3D RTM_SETLINK;
- 
-     req=2Ei=2Eif=
-i_family =3D AF_PACKET;
-     req=2Ei=2Eifi_index =3D ifindex;
+h=
+ttps://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741/comment/3c48c8e6_fa76c30d?us=
+p=3Demail :
+PS21, Line 57:     uint64_t timestamp;  /**< client clock as a =
+UNIX timestamp */
+What is the timestamp used for? The reply doesn't echo it=
+, so the client can't get an RTT from the reply alone=2E Is it for the serv=
+er, e=2Eg=2E replay or skew checks? If so, worth a line here=2E
+
+
+https://g=
+errit=2Eopenvpn=2Enet/c/openvpn/+/1741/comment/2035f108_d087efc5?usp=3Demai=
+l :
+PS21, Line 58:     uint32_t flags;      /**< client capability flags, c=
+urrently must be 0 */
+oob_probe_request_read() doesn't check this=2E If the=
+ intent is "send 0, ignore unknown bits on receive", maybe say that, since =
+rejecting non-zero would make adding flags later harder=2E
+
+
+https://gerrit=
+=2Eopenvpn=2Enet/c/openvpn/+/1741/comment/cfb71fcf_77406b58?usp=3Demail :
+P=
+S21, Line 69:     uint16_t connect_lifetime; /**< seconds the reply stays v=
+alid as the handshake reset */
+I don't understand "stays valid as the hands=
+hake reset"=2E Is this how long the client may reuse the reply before probi=
+ng again, or how long it has to send its hard reset after the reply?
+
+
+File=
+ src/openvpn/ssl=2Ec:
+
+https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741/comm=
+ent/318898e6_505aa142?usp=3Demail :
+PS21, Line 3712:         msg(D_TLS_ERRO=
+RS, "TLS Error: unknown opcode received from %s op=3D%d",
+Opcode 12 is defi=
+ned now, so "unknown opcode" is a bit misleading in the log=2E Maybe a sepa=
+rate message for OOB arriving here=2E
+
+
+File src/openvpn/ssl_pkt=2Eh:
+
+http=
+s://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741/comment/21aa5dad_11e20135?usp=
+=3Demail :
+PS21, Line 62:  * control channel: no control message id and no =
+ACK array, just TLVs
+"just TLVs after the session id": is this wrapped by t=
+ls-auth/tls-crypt like the other control packets, or sent in the clear? Pro=
+bably for the follow-up, but the wire format should be pinned down somewher=
+e (the protocol RFC draft?)=2E
+
+
 
 -- 
-To view,=
- visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1628?usp=3Demail
-To unsub=
-scribe, or for help writing mail filters, visit https://gerrit=2Eopenvpn=2E=
-net/settings?usp=3Demail
+To view, visit https://gerrit=2Eopenv=
+pn=2Enet/c/openvpn/+/1741?usp=3Demail
+To unsubscribe, or for help writing m=
+ail filters, visit https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Gerrit-MessageType: merged
-Gerrit-Project: openvp=
-n
+Ger=
+rit-MessageType: comment
+Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I33e55d88d561393ebfbc73a995f70005=
-6e19a436
-Gerrit-Change-Number: 1628
-Gerrit-PatchSet: 2
-Gerrit-Owner: Gianma=
-rco De Gregori <gianmarco@mandelbit=2Ecom>
-Gerrit-Reviewer: Arne Schwabe <a=
-rne-openvpn@rfc2549=2Eorg>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2E=
-sourceforge=2Enet>
+Gerr=
+it-Change-Id: I1c8d302ac57c5603d622a7be14be369437388268
+Gerrit-Change-Numbe=
+r: 1741
+Gerrit-PatchSet: 21
+Gerrit-Owner: Lev Stipakov <lstipakov@gmail=2Ec=
+om>
+Gerrit-Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Revie=
+wer: Frank Lichtenheld <frank@lichtenheld=2Ecom>
+Gerrit-Reviewer: Ralf Lici=
+ <ralf@mandelbit=2Ecom>
+Gerrit-CC: chugly <charlie=2Evigue@openvpn=2Ecom>
+G=
+errit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-At=
+tention: Ralf Lici <ralf@mandelbit=2Ecom>
+Gerrit-Attention: Lev Stipakov <l=
+stipakov@gmail=2Ecom>
+Gerrit-Attention: Arne Schwabe <arne-openvpn@rfc2549=
+=2Eorg>
+Gerrit-Attention: Frank Lichtenheld <frank@lichtenheld=2Ecom>
+Gerri=
+t-Comment-Date: Mon, 19 Oct 2026 06:37:18 +0000
+Gerrit-HasComments: Yes
+Ger=
+rit-Has-Labels: No
 
---kJjHEKfNcAw=
+--lgHfPU8mEmM=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>Gert Doering <str=
-ong>submitted</strong> this change=2E</p><p><a href=3D"https://gerrit=2Eope=
-nvpn=2Enet/c/openvpn/+/1628?usp=3Demail">View Change</a></p><div style=3D"w=
-hite-space:pre-wrap"></div><pre class=3D"blocks" style=3D"font-family: mono=
-space,monospace; white-space: pre-wrap;">sitnl: use RTM_SETLINK for updatin=
-g existing interfaces<br><br>RTM_NEWLINK is primarily intended for link cre=
-ation and initialization,<br>while RTM_SETLINK is the canonical interface f=
-or modifying attributes of<br>an already existing link=2E<br><br>Even thoug=
-h the kernel may accept RTM_NEWLINK for updates, using<br>RTM_SETLINK bette=
-r reflects the intended netlink semantics and follows<br>the dedicated upda=
-te path in the kernel=2E<br><br>This makes the behavior more explicit and c=
-onsistent with how link<br>configuration changes are expected to be perform=
-ed=2E<br><br>Change-Id: I33e55d88d561393ebfbc73a995f700056e19a436<br>Signed=
--off-by: Gianmarco De Gregori &lt;gianmarco@mandelbit=2Ecom&gt;<br>Acked-by=
-: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt;<br>Gerrit URL: https://ge=
-rrit=2Eopenvpn=2Enet/c/openvpn/+/1628<br>Message-Id: &lt;20261011202439=2E1=
-5128-1-gert@greenie=2Emuc=2Ede&gt;<br>URL: https://www=2Email-archive=2Ecom=
-/openvpn-devel@lists=2Esourceforge=2Enet/msg39831=2Ehtml<br>Signed-off-by: =
-Gert Doering &lt;gert@greenie=2Emuc=2Ede&gt;<br>---<br>M src/openvpn/networ=
-king_sitnl=2Ec<br>1 file changed, 3 insertions(+), 3 deletions(-)<br><br></=
-pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
-"><span>diff --git a/src/openvpn/networking_sitnl=2Ec b/src/openvpn/network=
-ing_sitnl=2Ec</span><br><span>index bbdfcb7=2E=2E0c99d38 100644</span><br><=
-span>--- a/src/openvpn/networking_sitnl=2Ec</span><br><span>+++ b/src/openv=
-pn/networking_sitnl=2Ec</span><br><span>@@ -691,7 +691,7 @@</span><br><span=
-> </span><br><span>     req=2En=2Enlmsg_len =3D NLMSG_LENGTH(sizeof(req=2Ei=
-));</span><br><span>     req=2En=2Enlmsg_flags =3D NLM_F_REQUEST;</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    req=2En=2Enlmsg_type =3D RT=
-M_NEWLINK;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    req=
-=2En=2Enlmsg_type =3D RTM_SETLINK;</span><br><span> </span><br><span>     r=
-eq=2Ei=2Eifi_family =3D AF_PACKET;</span><br><span>     req=2Ei=2Eifi_index=
- =3D ifindex;</span><br><span>@@ -727,7 +727,7 @@</span><br><span> </span><=
-br><span>     req=2En=2Enlmsg_len =3D NLMSG_LENGTH(sizeof(req=2Ei));</span>=
-<br><span>     req=2En=2Enlmsg_flags =3D NLM_F_REQUEST;</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    req=2En=2Enlmsg_type =3D RTM_NEWLINK;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    req=2En=2Enlmsg=
-_type =3D RTM_SETLINK;</span><br><span> </span><br><span>     req=2Ei=2Eifi=
-_family =3D AF_PACKET;</span><br><span>     req=2Ei=2Eifi_index =3D ifindex=
-;</span><br><span>@@ -758,7 +758,7 @@</span><br><span> </span><br><span>   =
-  req=2En=2Enlmsg_len =3D NLMSG_LENGTH(sizeof(req=2Ei));</span><br><span>  =
-   req=2En=2Enlmsg_flags =3D NLM_F_REQUEST;</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    req=2En=2Enlmsg_type =3D RTM_NEWLINK;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    req=2En=2Enlmsg_type =3D RT=
-M_SETLINK;</span><br><span> </span><br><span>     req=2Ei=2Eifi_family =3D =
-AF_PACKET;</span><br><span>     req=2Ei=2Eifi_index =3D ifindex;</span><br>=
-</pre><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn=
-/+/1628?usp=3Demail">change 1628</a>=2E To unsubscribe, or for help writing=
- mail filters, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=
-=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg=
-/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=
-=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1628?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
-ew Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: Arne Schwabe, Frank Lichtenheld, Lev Stipakov, Ralf L=
+ici=2E </p>
+<p>chugly has posted comments on this change by Lev Stipakov=2E=
+</p><p><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741?usp=3Dema=
+il">View Change</a></p><p>6 comments:</p><ul style=3D"list-style: none; pad=
+ding: 0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/oob=2Eh:=
+</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; pad=
+ding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"https://gerr=
+it=2Eopenvpn=2Enet/c/openvpn/+/1741/comment/40e53d39_3d7df312?usp=3Demail">=
+Patch Set #21, Line 40:</a> <code style=3D"font-family:monospace,monospace"=
+>#include &quot;session_id=2Eh&quot;</code></p><p class=3D"blocks" style=3D=
+"white-space: pre-wrap; word-wrap: break-word;">session_id=2Eh doesn&#39;t =
+seem to be used=2E</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
+ style=3D"margin-bottom: 4px;"><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/=
+openvpn/+/1741/comment/3c48c8e6_fa76c30d?usp=3Demail">Patch Set #21, Line 5=
+7:</a> <code style=3D"font-family:monospace,monospace">    uint64_t timesta=
+mp;  /**&lt; client clock as a UNIX timestamp */</code></p><p class=3D"bloc=
+ks" style=3D"white-space: pre-wrap; word-wrap: break-word;">What is the tim=
+estamp used for? The reply doesn&#39;t echo it, so the client can&#39;t get=
+ an RTT from the reply alone=2E Is it for the server, e=2Eg=2E replay or sk=
+ew checks? If so, worth a line here=2E</p></li><li style=3D"margin: 0; padd=
+ing: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"https://gerri=
+t=2Eopenvpn=2Enet/c/openvpn/+/1741/comment/2035f108_d087efc5?usp=3Demail">P=
+atch Set #21, Line 58:</a> <code style=3D"font-family:monospace,monospace">=
+    uint32_t flags;      /**&lt; client capability flags, currently must be=
+ 0 */</code></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wr=
+ap: break-word;">oob_probe_request_read() doesn&#39;t check this=2E If the =
+intent is &quot;send 0, ignore unknown bits on receive&quot;, maybe say tha=
+t, since rejecting non-zero would make adding flags later harder=2E</p></li=
+><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4=
+px;"><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741/comment/cfb=
+71fcf_77406b58?usp=3Demail">Patch Set #21, Line 69:</a> <code style=3D"font=
+-family:monospace,monospace">    uint16_t connect_lifetime; /**&lt; seconds=
+ the reply stays valid as the handshake reset */</code></p><p class=3D"bloc=
+ks" style=3D"white-space: pre-wrap; word-wrap: break-word;">I don&#39;t und=
+erstand &quot;stays valid as the handshake reset&quot;=2E Is this how long =
+the client may reuse the reply before probing again, or how long it has to =
+send its hard reset after the reply?</p></li></ul></li><li style=3D"margin:=
+ 0; padding: 0;"><p>File src/openvpn/ssl=2Ec:</p><ul style=3D"list-style: n=
+one; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D=
+"margin-bottom: 4px;"><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+=
+/1741/comment/318898e6_505aa142?usp=3Demail">Patch Set #21, Line 3712:</a> =
+<code style=3D"font-family:monospace,monospace">        msg(D_TLS_ERRORS, &=
+quot;TLS Error: unknown opcode received from %s op=3D%d&quot;,</code></p><p=
+ class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">O=
+pcode 12 is defined now, so &quot;unknown opcode&quot; is a bit misleading =
+in the log=2E Maybe a separate message for OOB arriving here=2E</p></li></u=
+l></li><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl_pkt=2Eh=
+:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; pa=
+dding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"https://ger=
+rit=2Eopenvpn=2Enet/c/openvpn/+/1741/comment/21aa5dad_11e20135?usp=3Demail"=
+>Patch Set #21, Line 62:</a> <code style=3D"font-family:monospace,monospace=
+"> * control channel: no control message id and no ACK array, just TLVs</co=
+de></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break=
+-word;">&quot;just TLVs after the session id&quot;: is this wrapped by tls-=
+auth/tls-crypt like the other control packets, or sent in the clear? Probab=
+ly for the follow-up, but the wire format should be pinned down somewhere (=
+the protocol RFC draft?)=2E</p></li></ul></li></ul><p>To view, visit <a hre=
+f=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741?usp=3Demail">change 17=
+41</a>=2E To unsubscribe, or for help writing mail filters, visit <a href=
+=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p=
+><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscop=
+e itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link ite=
+mprop=3D"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1741?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: =
-merged </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <=
-div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"disp=
-lay:none"> Gerrit-Change-Id: I33e55d88d561393ebfbc73a995f700056e19a436 </di=
-v>
-<div style=3D"display:none"> Gerrit-Change-Number: 1628 </div>
-<div styl=
-e=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> =
-Gerrit-Owner: Gianmarco De Gregori &lt;gianmarco@mandelbit=2Ecom&gt; </div>=
+div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=
+=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:non=
+e"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change=
+-Id: I1c8d302ac57c5603d622a7be14be369437388268 </div>
+<div style=3D"display=
+:none"> Gerrit-Change-Number: 1741 </div>
+<div style=3D"display:none"> Gerr=
+it-PatchSet: 21 </div>
+<div style=3D"display:none"> Gerrit-Owner: Lev Stipa=
+kov &lt;lstipakov@gmail=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerri=
+t-Reviewer: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div sty=
+le=3D"display:none"> Gerrit-Reviewer: Frank Lichtenheld &lt;frank@lichtenhe=
+ld=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: Ralf Lici=
+ &lt;ralf@mandelbit=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-CC=
+: chugly &lt;charlie=2Evigue@openvpn=2Ecom&gt; </div>
+<div style=3D"display=
+:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Ene=
+t&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: Ralf Lici &lt;r=
+alf@mandelbit=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Attentio=
+n: Lev Stipakov &lt;lstipakov@gmail=2Ecom&gt; </div>
+<div style=3D"display:=
+none"> Gerrit-Attention: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Attention: Frank Lichtenheld &lt;f=
+rank@lichtenheld=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Comme=
+nt-Date: Mon, 19 Oct 2026 06:37:18 +0000 </div>
+<div style=3D"display:none"=
+> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-La=
+bels: No </div>
 
-<div style=3D"display:none"> Gerrit-Reviewer: Arne Schwabe &lt;arne-openvp=
-n@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-=
-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
-
-</body></html=
->
---kJjHEKfNcAw=--
+</body></html>
+--lgHfPU8mEmM=--
 
 
---===============7546031404209254306==
+--===============3477405791733999046==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============7546031404209254306==
+--===============3477405791733999046==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -376,5 +416,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============7546031404209254306==--
+--===============3477405791733999046==--
 
