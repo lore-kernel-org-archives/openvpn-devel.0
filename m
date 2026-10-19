@@ -4,37 +4,37 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 45657CCF2DE
-	for <openvpn-devel@archiver.kernel.org>; Mon, 19 Oct 2026 13:06:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 88B81CCF2DE
+	for <openvpn-devel@archiver.kernel.org>; Mon, 19 Oct 2026 13:09:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	MIME-Version:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
 	List-Unsubscribe:List-Id:Subject:References:In-Reply-To:To:From:Message-Id:
 	Date:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=k3tTbSYMLZezCU3I46QA7yQ/FKmtHK8u7q/fbEVIAs8=; b=gM1K8XmqBWwipQ1yWigErYHp7b
-	wGVAY2k5jQWAvRR3vIwmYx9sZlwUhfxvbb2lA2s6Qgz6eeQghJGYWLkqxu+EnJmeJajiFnH4rqSIg
-	csFb1WbRYAJ2nbfdExELvZ/D+D4GLRFG45z7NZoimkxNvVUj0s0ozLjvO78H3BeHbuvo=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.95)
+	bh=FO+2e0imwty877jfUmqrhy9vGXJWVpde8PpnsTVxbyw=; b=A3kLBhYHFf32l7MxzjNH4xhTMZ
+	EM7vYsyrWu5fr/ZouRZWsX1VOVwA7j5wpbDF4/xiBramszyugOQr/8Wds+zQMVQGXr+rhUgpyiV6e
+	hMnTKWzAM5FTtycmXzlTCTIclMl6faEGgnOpuNDNYVZkiIypEvRyswWAHyKG2oGfA8/k=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.95)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xIn4l-00061d-Pe;
-	Mon, 19 Oct 2026 13:06:49 +0000
+	id 1xIn6j-0004Pv-Ex;
+	Mon, 19 Oct 2026 13:08:54 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.95)
- (envelope-from <gert@chekov.greenie.muc.de>) id 1xIn4Y-00061P-MK
+ (envelope-from <gert@chekov.greenie.muc.de>) id 1xIn6i-0004Pp-Cc
  for openvpn-devel@lists.sourceforge.net;
- Mon, 19 Oct 2026 13:06:36 +0000
+ Mon, 19 Oct 2026 13:08:53 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=References:In-Reply-To:Subject:Cc:To:From:
  Message-Id:Date:Sender:Reply-To:MIME-Version:Content-Type:
  Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
  Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
  List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=+LxLq0rhC/Otstqdr6z4qm0Z87Oz2U+6KqL4mXfAK0U=; b=PKtLe47xNgaezNgse08KRqh3Rq
- AG6avqZFDIWb1d7ZZaFhr1oSqCNZm8mrwcsd9AWdNRJD42WqTFQS+V44W9Un6vdZ8RwI9NN775Qjb
- NdjCwbEZrlzXe7Q2zvJwmY5S+YoXbKRqEJ4+TcR2Iawta69bFOqoUbJ9bWPcXtwk/74Q=;
+ bh=qgjAb8nznfkwslrUVPktknkEGGVpXGWPFwcMKr3pRyw=; b=mtQRSBM+gmI18ZkpW6r8P5u+HI
+ 45aSQFUqZJXQR88LSCM2sQAQ5bY6D71iw+dv7lVK2czIbixMrO3WXiygaxsW40xuKKl+Xl9B6LqNj
+ fFZHZMMQy3LPvrG7Pxq0lURrAsLrk2T75sUiLrLrQvyxnnfJp6Po5cB6F7mXldCOkORY=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=References:In-Reply-To:Subject:Cc:To:From:Message-Id:Date:Sender:Reply-To
@@ -42,31 +42,30 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=+LxLq0rhC/Otstqdr6z4qm0Z87Oz2U+6KqL4mXfAK0U=; b=PAk1luwtZfb3e7BAmnefWuJVti
- IFrFpaUzo1faSezm+546uHTjSlHIYlOKgtZ/ZtGb11q1r5cdkcEJ7mxmvqXY73MROUmMrDfoEU2rz
- fb+eyWwI1ewAKvJKRhCbNYdMmd3lGeU9Y74JOVNc65HNvQspW/+GYBROhcWf0bksDBrU=;
+ bh=qgjAb8nznfkwslrUVPktknkEGGVpXGWPFwcMKr3pRyw=; b=dOSDRl9Hy9DnnRiAHIPX49z6/v
+ dS47QscmF1ax2n18qjkNMtPlixJwr9wCDPab6r4gAtxJk3Bnyoos4ebRUHVudZec+cr2P/LdADvTj
+ 0OFjJTKH0rMUEi7KB4laS1qfvAmVH7DduFP3NVRjycKAbFXwNTdq4qApYDF8RiCxJQOE=;
 Received: from chekov.greenie.muc.de ([193.149.48.178])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.95)
- id 1xIn4T-0002Ix-9H for openvpn-devel@lists.sourceforge.net;
- Mon, 19 Oct 2026 13:06:35 +0000
+ id 1xIn6h-0002M2-Eb for openvpn-devel@lists.sourceforge.net;
+ Mon, 19 Oct 2026 13:08:53 +0000
 Received: from chekov.greenie.muc.de (localhost [IPv6:0:0:0:0:0:0:0:1])
- by chekov.greenie.muc.de (8.18.2/8.18.1) with ESMTP id 69JD6J8w056100;
- Mon, 19 Oct 2026 15:06:19 +0200 (CEST)
+ by chekov.greenie.muc.de (8.18.2/8.18.1) with ESMTP id 69JD8iJT056223;
+ Mon, 19 Oct 2026 15:08:44 +0200 (CEST)
  (envelope-from gert@chekov.greenie.muc.de)
 Received: (from gert@localhost)
- by chekov.greenie.muc.de (8.18.2/8.18.1/Submit) id 69JD6JkV056099;
- Mon, 19 Oct 2026 15:06:19 +0200 (CEST) (envelope-from gert)
-Date: Mon, 19 Oct 2026 15:06:19 +0200 (CEST)
-Message-Id: <202610191306.69JD6JkV056099@chekov.greenie.muc.de>
+ by chekov.greenie.muc.de (8.18.2/8.18.1/Submit) id 69JD8iac056222;
+ Mon, 19 Oct 2026 15:08:44 +0200 (CEST) (envelope-from gert)
+Date: Mon, 19 Oct 2026 15:08:44 +0200 (CEST)
+Message-Id: <202610191308.69JD8iac056222@chekov.greenie.muc.de>
 From: Gert Doering <gert@greenie.muc.de>
-To: Frank Lichtenheld <frank@lichtenheld.com>
+To: Arne Schwabe <arne@rfc2549.org>
 X-Patchwork-State: Accepted
-In-Reply-To: <20261018154604.24008-1-gert@greenie.muc.de>
-References: <20261018154604.24008-1-gert@greenie.muc.de>
-X-Headers-End: 1xIn4T-0002Ix-9H
-Subject: [Openvpn-devel] [PATCH applied] Re: ssl_verify_mbedtls: Avoid
- conversion warning in x509_get_fingerprint
+In-Reply-To: <20261018145411.19775-1-gert@greenie.muc.de>
+References: <20261018145411.19775-1-gert@greenie.muc.de>
+X-Headers-End: 1xIn6h-0002M2-Eb
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix cppcheck warnings on macOS
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -84,21 +83,27 @@ Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: openvpn-devel-bounces@lists.sourceforge.net
 
-What it says on the lid...
+So, yes, bzero() has been officially replaced by memset() 400 years ago,
+but now cppcheck is making a big fuzz about it... - since CLEAR() is what
+we use in most other places where we want to "zero a structure", this
+brings the code more in line with the rest, and appeases cppcheck...
+
+This and the %u / const changes bring no functional changes, so not
+running my own checks, relying on BB.
 
 Your patch has been applied to the master branch.
 
-commit 9f5effdbe1734fb24de01e439ac2276e11f5987d
-Author: Frank Lichtenheld
-Date:   Sun Oct 18 17:45:58 2026 +0200
+commit 340b9021f401b6638392193db933c2af6c9e0db5
+Author: Arne Schwabe
+Date:   Sun Oct 18 16:54:06 2026 +0200
 
-     ssl_verify_mbedtls: Avoid conversion warning in x509_get_fingerprint
+     Fix cppcheck warnings on macOS
 
-     Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
-     Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
-     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2007
-     Message-Id: <20261018154604.24008-1-gert@greenie.muc.de>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg40020.html
+     Signed-off-by: Arne Schwabe <arne-openvpn@rfc2549.org>
+     Acked-by: Gert Doering <gert@greenie.muc.de>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2014
+     Message-Id: <20261018145411.19775-1-gert@greenie.muc.de>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg40015.html
      Signed-off-by: Gert Doering <gert@greenie.muc.de>
 
 
