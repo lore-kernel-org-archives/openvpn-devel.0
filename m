@@ -1,136 +1,134 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D22E606A31B
-	for <openvpn-devel@archiver.kernel.org>; Tue, 27 Oct 2026 09:46:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23971606A31A
+	for <openvpn-devel@archiver.kernel.org>; Tue, 27 Oct 2026 09:46:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=JCk0osVX;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=CjaiI/rh;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=fGkRug4P;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=OXHla8XS
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=W9RBQxIc;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=RtWT+0oL;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=QYNScRek;
+	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=WynJ/jnB
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
+	Subject:MIME-Version:Message-ID:References:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
 	List-Unsubscribe-Post:List-Owner;
-	bh=Wr6pNQdeIkGXkaA5MQyIu6cIGz/Va1va02lH3Y3+Hc4=; b=JCk0osVX/vW/1k/CIUB88C4KUb
-	6niIVE/Z/6SrSh3VbRCPM0MiEqnGYLfCrPtpgjFgjwovS9nk/09/M9HDYa1m0i5m6+EFWB3zT23bT
-	T9m3dPmeLUZgvNCBx7Hw5xQ0fYs8TpAJOeRzMKGAOFE+B5FBUGO2NZu9E9Evt6irMGT0=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	bh=iL0z6mjXjJI2UGA9H8sFd7MqAnWxjhj83HvkjQ0dOEw=; b=W9RBQxIcZYaxC2+1raYgSnob4p
+	788fSqxuIRuuVhodknO526O7i0dG4kCmjExt18cZ5t303flahfZ5OVaQv21+JN/alY5DhZH5vIvzk
+	V4uYftcFwo6H+ZtAKO1yuWw/6VEYiQI1DJRxR99JP80e2Jw2sp7dYuRCwnzO3we+x400=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xLdkr-000000001ci-3Qbq;
-	Tue, 27 Oct 2026 09:46:05 +0000
+	id 1xLdld-000000006XH-2lNx;
+	Tue, 27 Oct 2026 09:46:53 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xLdkq-000000001cc-3ttQ
+ (envelope-from <gerrit@openvpn.net>) id 1xLdlc-000000006X9-30OC
  for openvpn-devel@lists.sourceforge.net;
- Tue, 27 Oct 2026 09:46:04 +0000
+ Tue, 27 Oct 2026 09:46:52 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
+ :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:
+ From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From:
+ Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=SPle3k2riGvICBe9WvMQiFelNiRKdZN4rnF+IcTm3/s=; b=CjaiI/rhiX+zAtqpwzEKMjQSXk
- HduS8cNaell4Hx67eHC1M+UOS6c+JkIbqejLRpCbolA+kQsnq7dncsT6vU9Pyz8LgZxN3I14IGu5u
- 6ZNTkJ+geJta7CpOW2ptRHEifakfZdbnT6Tv0k74g01PK2Vy2nti+CsaoauIR18Ho5M0=;
+ bh=M3OH79v3emRZg5f8newyhGNr3o4Zl2BetGIYc8RJWa4=; b=RtWT+0oLriGdmtlaAIx4U8Prav
+ ltwPI9ZXoKJCdr0vQ48qAsz0b92RGd+hhJpt3HrFQJbgzhETsGXJ1Y3CQFXFI0U5LOpFeJ1D/WasN
+ UyFRd5gFbKYYbnuyR+5QyHno1gPN7BLHC8pH1e6L/h5h2qRaejSawyWCquTgtzKrHjnw=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
- Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
+ Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:From:Sender:Content-ID
+ :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+ Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=SPle3k2riGvICBe9WvMQiFelNiRKdZN4rnF+IcTm3/s=; b=fGkRug4P22Ui9rmFbPzYyphs02
- 6/DP8rIm/afjHepvtwEqnQYOK4tqBEsqqP+uB5aUZ5Rf7WIULckI6Icz+cEjVojHwiXlZ9RxWAHw6
- 0VjMvuMEhGQrYf88+sB1ryS1A1gbMYwTBcBEP/BLHzZsHYn+r/P26WSk41DKTF3vN3ak=;
-Received: from mail-wr1-f47.google.com ([209.85.221.47])
+ bh=M3OH79v3emRZg5f8newyhGNr3o4Zl2BetGIYc8RJWa4=; b=QYNScRekUfReoZV0SbANb7tnNv
+ x0C6/Bb69u43Hn1T2Ws51hGvY2/t1GDNnZFTxTJlJKkd2B9X4e+7o8Ci6kpeu9RVcU8rRMM8fA97z
+ 7ztEnJSeK+izH0qs23AcNC7ixGKb2XMgyXGnWxUtYA//yDnzFcvGXcoYo8fjl0LPu9wI=;
+Received: from mail-wm1-f51.google.com ([209.85.128.51])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xLdko-000000001CL-0idC for openvpn-devel@lists.sourceforge.net;
- Tue, 27 Oct 2026 09:46:04 +0000
-Received: by mail-wr1-f47.google.com with SMTP id
- ffacd0b85a97d-48b042c0759so2159355f8f.2
+ id 1xLdlZ-000000001Dl-1TLm for openvpn-devel@lists.sourceforge.net;
+ Tue, 27 Oct 2026 09:46:52 +0000
+Received: by mail-wm1-f51.google.com with SMTP id
+ 5b1f17b1804b1-4a2153c8525so25404755e9.3
  for <openvpn-devel@lists.sourceforge.net>;
- Tue, 27 Oct 2026 02:46:02 -0700 (PDT)
+ Tue, 27 Oct 2026 02:46:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1793094355; x=1793699155; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1793094403; x=1793699203; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
- :reply-to:content-type;
- bh=SPle3k2riGvICBe9WvMQiFelNiRKdZN4rnF+IcTm3/s=;
- b=OXHla8XSpw8CKkWIWmMF6zgPAbvNT9CFL64uz2KHK8EzIi7f2SHu0xCJ1gGpPpIGTe
- jThZ9xw1ZPbgmhJdRabytz7jWKURjm3KkyH4FMshU5ylA8NaTNhnY3WmG9yUKrfYC4or
- EHZJvuTVFSA1YlEWf0pjSdX8zEw0NtUIi+pADj9CWHOqY40C894KyluSqbc+nKdxvcgP
- K2q1t3AXtaGZBb0WeNPAACClwponR8IBy1eDt+gOEPobVRjSmHgBtUu19bYYj6t/DoXM
- +ZNcK/9s6ZJCj6HbD+Foq3zYN50dcCk3DxExkw2kQsbGeS+l+YQDLzkvWcExBdu9teQ6
- 0zPQ==
+ :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
+ :to:date:from:from:to:cc:subject:date:message-id:reply-to
+ :content-type; bh=M3OH79v3emRZg5f8newyhGNr3o4Zl2BetGIYc8RJWa4=;
+ b=WynJ/jnBXokhcfT/3R49RcSxxB3YwIGacaRXpFmmPRAsI9I9fDfYV4Bhdpns1skxTU
+ oEqSBwjMDgn5T9SKG/25T4ZNGoK/E6bYY50ewvmZ8TxBWISYX5VIXDy9NJgvP6GDox4j
+ 7L9DDp4KdaRL/AuwVpQ9TXwxp/QWnqWRF6+WyS4KVEuPZVxwX0z7JYyoDx1kaIu1bdxj
+ zxvQjRehNObIHyYx80sZJCGYFVtPxL4TA57ZNEEumVizshTC6bX9vIV4AmCEUU4qX1yF
+ Yb9XSgMDcZX3pblCz+hyGYEsCgVxdeYdLa+Mtoc5eq708+tpl05pPLzhVzyg1i4BgBgK
+ XbBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1793094355; x=1793699155;
+ d=1e100.net; s=20260707; t=1793094403; x=1793699203;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
- :cc:subject:date:message-id:reply-to:content-type;
- bh=SPle3k2riGvICBe9WvMQiFelNiRKdZN4rnF+IcTm3/s=;
- b=PxV6VcEQl9Egiwo47+rVqYzCXJCOmyHgeO0RuUBYkLZZTPibUmQOPc1jKHkDihgXqT
- rodSgM90tGTw6WRDHSAoKpvVspUFXHDRozZqwG0LZLkpw0dV/nJY67RZb9dMipAnGRmM
- Dq8GE0DKWPCu+v4qaJeN+WMuBUqJk+nAU8PXpkq7CXRT1KgaEt+/BdM07CtF7KFyRmf9
- O4T42nVnkZIS5IJ9w6JGlXrHaFR/IS4CZjGKvp4x0/Ma/8i5gkhwlSCpCWl6Zylp+na7
- S96v15a2/DXcaXhds1A+9x434crWWQtPMH4ClD6cfNnKct37YRf3CLQMz2Sy+JxQt7Sh
- JYXQ==
-X-Gm-Message-State: AFq9FYIVqxRmdJaNWTFIYwJT9PvRDnQFnVSKTsUU6M9NBubPe2Jk+25n
- TUfPwLoYNGNQQvZcvaynnQE9kPxPgqCePtDxK7p6q5/RMa/78QQLZSUebH30a+PJm8wSQ3QkF6z
- lFK6v4WHScHHvUb4YfFfLVUDziJ12JtHkWO/h9lKNg2FQBaTezdgczgUMx5agxfqLYIDS22FsvK
- 5CXmMhew==
-X-Gm-Gg: AYBFou3lKKFWesIHVQLRudDX38MHRw2AvaYNDpF7lyWMEVctFrhIfingS/hmIjr9JsI
- HXGOUFrc2njT5eRfj0q4h7vetKEso53uI9ZRqYthh3A/xrFvy/+bYb5FZCUDzu4RUo0K14Q1I26
- siM4q3rfcQg+H77xtQOKEP96D+D1WMP+0j/Nbyh2iwkIu9xTGcaWtbg+kzVncy5rwPAcjGaZ3gz
- 4Qet4wfaklGa2sYL7KjXJuS+zcFfs/Z4MGlSs+RNX9cI7F+/nHb6N2WR6boyn2qtr1Ci8syCPYt
- fsXAL7LfYSiJwmnpSPM8afKz5WP18xQAzs517ZOqPda3RZEKjQ8VNTrY7CeI8czzW3RFWXkqfW4
- JIQhJWqmU9FsQY4QkQM7WIW97XYfU41oCW+7Fse/ndlimnEQvhgli5UnkGHFtuDBIaoOvmP+YbI
- IhxaWbfUVWGKNd5eGX+gd4x/sWB90IuQXapDqj/xQCd6Hdltsmpl16rdvKEXcCHrlw9FTVH4xPs
- bS9941iOKxOY6jB5PQjisfna7k3zx0i54qyzChUKGZ/XwYAxs03yGJ7FT5heGY6c+hXNEXOcV0d
- kfl/vgTWLzDaXGKMROcQlbN522ZQWdNC7Ejl5EMSUUmnf23y3+zK5W073t9QooaxOE0K/I9Hj9R
- 0ITeLvguPbVqIzz7CvE4PwOt30WMwYZ0df51qod1Mrg==
-X-Received: by 2002:a05:6000:481b:b0:48e:82f:48fc with SMTP id
- ffacd0b85a97d-48e3eb971ccmr20290073f8f.31.1793094355296; 
- Tue, 27 Oct 2026 02:45:55 -0700 (PDT)
+ :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
+ :to:date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+ :message-id:reply-to:content-type;
+ bh=M3OH79v3emRZg5f8newyhGNr3o4Zl2BetGIYc8RJWa4=;
+ b=N8ShJRNLP88Fb96n7Dnmj683XTGn9NOhd/ZFcdNDuh+kYSX0WrHYhglsghoklhECO5
+ 21Wp+vE2cNVfRZqtL6SSZM5JBByqfNSGWab+dfWaj5F+l6RR5kPr41jbYwiF/F21Q2y7
+ GWup54eS9gL1nirDa0hlz7liPDFAsmMY4tR8pzXMVZGvovjOZk9B5hrVkKOOXNIlNnoB
+ ouB0C9CdC/zquoSxKd+1/KcGhgkVtswhsptqE5ntqPWK8dmuRK7Kn9V0MA8xBiAE96nu
+ VVkGlgT2GSjAimeHSDd8stk4vuSlzP+S3Sv85hvgNFHTY6WF4zlY5S6dCrR9l30Pakz4
+ pQ8w==
+X-Gm-Message-State: AFq9FYL+7JjwF4pz+j3zW4GDA+JlLy3oZ09NxKA9p7Zjt9HsXyKAUPeV
+ /lrjHRUw4G1boBRVedYpZOkph/6Ig2wYIScAddDiE1/9fgOMIqGK1J7tGA9fUJM0kRos6xhssjM
+ D5wethBSlvffK4RQPXOj6McsGfTtt/mQ10Z+ASIfUB7hX9Et9ToivsIPzhOUZCBz8HDBA8WDz6+
+ e322NYEw==
+X-Gm-Gg: AYBFou2aey2UC1MvNgQwElhLGj1VbOSdwDkLlCLewQi8LYv1qoDH55FynxUvb46+oIz
+ KZnNeIJGxZGX3j7Mr8Ase0h6SEPPP3fJLgGywbN2v5E1VWlMq5+EwIO3ZnShWJ978WIaRe2CDKv
+ /NP/Q9ev7bTFiSk0A23m5Om7H8j7SqHHBcPtUNPZhppj7mRt8YrH2Vr+mQ/OTe0B4uo0sET8rSW
+ womkC6DKgQxYpT0VUI3pJSehwnvY0gq5LBhhPfzEti/FDdBhDy0Jbl98ZGjqV4JWYzGmtkdY5ra
+ cVIk4HVdPA/X4snH6FTDzFtR+oR/jbRhGEYZwXhCYdIp9Fg2Koc5QoctE0Akq1eSoPJKpCSok4o
+ TWcRcbDRQB4XCNcN8SWXozskt7TrZpH2otl2Kv+LEqj1IZYiclo0HaOQBWH+cgM5uYaUu3CGBBs
+ i144OOg/4sE1P6LVAIFQd2J/dtewRkKCc/RbZF8JhRiVwYvE4RuBIwrccC6dGHmnimgehLqgxL/
+ P6FkoLbWh0p7DHKiZMa5sFfCNDwNPPuMmNnr22csb+UkKIjcBOT5HgXK1+GSxqCh+uzSPhH1lnb
+ wRjKegdPpe4r6RX1ckulVl2h6K072qUi0yD40gxONfLvgbcnQqUBeiBKsSeR3p9QdLu0MvLwmcG
+ Or2OB831gnJJlYcla50+l2yNGD6JDWCruR1D2xHsya95Ve+n3xMh9B5bhO1p2TcE=
+X-Received: by 2002:a05:600c:3b2a:b0:4a1:71e5:9420 with SMTP id
+ 5b1f17b1804b1-4a35aca4e4emr171086815e9.13.1793094402592; 
+ Tue, 27 Oct 2026 02:46:42 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-48e3ebcb99esm21091516f8f.23.2026.10.27.02.45.54
+ 5b1f17b1804b1-4a35a04ad39sm663805765e9.1.2026.10.27.02.46.41
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 27 Oct 2026 02:45:54 -0700 (PDT)
-X-Google-Original-From: "Antonio Quartulli (Code Review)"
+ Tue, 27 Oct 2026 02:46:41 -0700 (PDT)
+X-Google-Original-From: "Gianmarco De Gregori (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Tue, 27 Oct 2026 09:45:52 +0000
+Date: Tue, 27 Oct 2026 09:46:41 +0000
 To: Arne Schwabe <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: newpatchset
-X-Gerrit-PatchSet: 3
-X-Gerrit-Change-Id: Iea151988f2fa120b1262051572604e3f42ef4b1c
-X-Gerrit-Change-Number: 2040
+X-Gerrit-MessageType: newchange
+X-Gerrit-PatchSet: 1
+X-Gerrit-Change-Id: I89303975dd559d7cc06484a99f15c7062d3a3437
+X-Gerrit-Change-Number: 2042
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2040?usp=email>
-X-Gerrit-Commit: b88f198569da0953b6e64fcc5886f04d35802f9d
-In-Reply-To: <gerrit.1793051829000.Iea151988f2fa120b1262051572604e3f42ef4b1c@gerrit.openvpn.net>
-References: <gerrit.1793051829000.Iea151988f2fa120b1262051572604e3f42ef4b1c@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzkzMDUxODI5MDAwLkllYTE1MTk4OGYyZmExMjBiMTI2MjA1MTU3MjYwNGUzZjQyZWY0YjFjQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <6d8aa249c03ca203dee32f62267a6275a70e8e26-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2042?usp=email>
+X-Gerrit-Commit: 4d2c93730319150472232bc261bff896f4e3b340
+References: <gerrit.1793094393000.I89303975dd559d7cc06484a99f15c7062d3a3437@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzkzMDk0MzkzMDAwLkk4OTMwMzk3NWRkNTU5ZDdjYzA2NDg0YTk5ZjE1YzcwNjJkM2EzNDM3QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <658bcb84ac10c1898e9155ff0338df346f2d74b2-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.2
 X-Spam-Score: -0.2 (/)
-X-Headers-End: 1xLdko-000000001CL-0idC
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: p2p: don't report
- WAIT/AUTH for a new session while connected
+X-Headers-End: 1xLdlZ-000000001Dl-1TLm
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: multi_io: move the
+ tun write functions to multi_io.c
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -140,13 +138,13 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "Antonio Quartulli \(Code Review\) via Openvpn-devel"
+From: "Gianmarco De Gregori \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
-Reply-To: antonio@mandelbit.com, arne-openvpn@rfc2549.org,
+Reply-To: gianmarco@mandelbit.com, arne-openvpn@rfc2549.org,
  openvpn-devel@lists.sourceforge.net
-Cc: "Antonio Quartulli \(Code Review\)" <gerrit@openvpn.net>,
+Cc: "Gianmarco De Gregori \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============3128184456725619370=="
+Content-Type: multipart/mixed; boundary="===============0729753214884157174=="
 X-Spam-Status: No, score=-12.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
 	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
@@ -156,378 +154,584 @@ X-Spam-Status: No, score=-12.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============3128184456725619370==
+--===============0729753214884157174==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="V//gR0Hlb0M="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="p4xgsVXQMWs="; charset=UTF-8
 
---V//gR0Hlb0M=
+--p4xgsVXQMWs=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: Arne Schwabe=2E
 
-Hello Arne Schwabe, =
-
-
-I'd like you to reexamine a change=2E Please visit
-
-    https://gerrit=2E=
-openvpn=2Enet/c/openvpn/+/2040?usp=3Demail
-
-to look at the new patch set (#=
-3)=2E
-
-
-Change subject: p2p: don't report WAIT/AUTH for a new session while=
- connected
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
-
-p=
-2p: don't report WAIT/AUTH for a new session while connected
-
-In p2p mode, =
-a hard reset that starts a new session moves the management
-state to AUTH a=
-nd WAIT even while the tunnel is up=2E If that session
-never completes (e=
-=2Eg=2E an unauthenticated probe without tls-auth/tls-crypt,
-or a peer that=
- gives up), CONNECTED is never announced again and the
-state stays WAIT alt=
-hough the tunnel works fine=2E
-
-Don't announce AUTH/WAIT when an establishe=
-d session already exists=2E
-A successful new session still re-announces CON=
-NECTED via
-CAS_RECONNECT_PENDING=2E
-
-Also document that WAIT and AUTH are r=
-eported in p2p mode too=2E
-
-Change-Id: Iea151988f2fa120b1262051572604e3f42e=
-f4b1c
-Link: https://bugzilla=2Eipfire=2Eorg/show_bug=2Ecgi?id=3D13897
-Repor=
-ted-by: Neil Chittenden <neilchittenden@quintessa=2Eorg>
-Signed-off-by: Ant=
-onio Quartulli <antonio@mandelbit=2Ecom>
----
-M doc/management-notes=2Etxt
-M=
- src/openvpn/ssl=2Ec
-2 files changed, 32 insertions(+), 10 deletions(-)
-
-
- =
- git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/40/2040/3=
-
-
-diff --git a/doc/management-notes=2Etxt b/doc/management-notes=2Etxt
-inde=
-x a28a1a8=2E=2E5b32ba6 100644
---- a/doc/management-notes=2Etxt
-+++ b/doc/ma=
-nagement-notes=2Etxt
-@@ -427,9 +427,10 @@
- These are the OpenVPN states:
- 
+Hello Arne Schwabe,
 =
- CONNECTING    -- OpenVPN's initial state=2E
--WAIT          -- (Client only=
-) Waiting for initial response
--                 from server=2E
--AUTH      =
-    -- (Client only) Authenticating with server=2E
-+WAIT          -- (Clien=
-t and point-to-point only) Waiting for
-+                 initial response f=
-rom server or peer=2E
-+AUTH          -- (Client and point-to-point only) Au=
-thenticating
-+                 with server or peer=2E
- GET_CONFIG    -- (Cl=
-ient only) Downloading configuration options
-                  from server=
-=2E
- ASSIGN_IP     -- Assigning IP address to virtual network
-diff --git a/=
-src/openvpn/ssl=2Ec b/src/openvpn/ssl=2Ec
-index 086a6fc=2E=2E264a17f 100644=
 
---- a/src/openvpn/ssl=2Ec
-+++ b/src/openvpn/ssl=2Ec
-@@ -2516,6 +2516,20 @@=
+I'd like you to do a code review=2E
+Please visit
 
-     return ret;
+    https://gerrit=2Eope=
+nvpn=2Enet/c/openvpn/+/2042?usp=3Demail
+
+to review the following change=2E
+=
+
+
+Change subject: multi_io: move the tun write functions to multi_io=2Ec
+=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+
+multi_io: mov=
+e the tun write functions to multi_io=2Ec
+
+multi_process_outgoing_tun() liv=
+ed as a static inline in multi=2Eh and
+multi_process_drop_outgoing_tun() in=
+ multi=2Ec, while their only caller
+is multi_io_dispatch()=2E Move both nex=
+t to it, as static functions named
+multi_io_write_tun() and multi_io_drop_t=
+un(), so that writing to the
+tun device is found where the state machine de=
+cides to do it=2E
+
+No functional change=2E
+
+Change-Id: I89303975dd559d7cc06=
+484a99f15c7062d3a3437
+Signed-off-by: Gianmarco De Gregori <gianmarco@mandel=
+bit=2Ecom>
+---
+M src/openvpn/multi=2Ec
+M src/openvpn/multi=2Eh
+M src/openvp=
+n/multi_io=2Ec
+3 files changed, 59 insertions(+), 61 deletions(-)
+
+
+
+  git =
+pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/42/2042/1
+
+dif=
+f --git a/src/openvpn/multi=2Ec b/src/openvpn/multi=2Ec
+index e302a81=2E=2E=
+2e804ff 100644
+--- a/src/openvpn/multi=2Ec
++++ b/src/openvpn/multi=2Ec
+@@ -=
+3766,27 +3766,6 @@
  }
  
-+#ifdef ENABLE_MANAGEMENT
+ /*
+- * Drop a TUN/TAP outgoing packet=2E=2E
+- */
+-=
+void
+-multi_process_drop_outgoing_tun(struct multi_context *m, const unsign=
+ed int mpp_flags)
+-{
+-    struct multi_instance *mi =3D m->pending;
+-
+-    =
+ASSERT(mi);
+-
+-    set_prefix(mi);
+-
+-    msg(D_MULTI_ERRORS, "MULTI: Outgo=
+ing TUN queue full, dropped packet len=3D%d",
+-        mi->context=2Ec2=2Et=
+o_tun=2Elen);
+-
+-    buf_reset(&mi->context=2Ec2=2Eto_tun);
+-
+-    multi_pr=
+ocess_post(m, mi, mpp_flags);
+-    clear_prefix();
+-}
+-
+-/*
+  * Per-client =
+route quota management
+  */
+ 
+diff --git a/src/openvpn/multi=2Eh b/src/open=
+vpn/multi=2Eh
+index 5db7147=2E=2E2d4983c 100644
+--- a/src/openvpn/multi=2Eh=
+
++++ b/src/openvpn/multi=2Eh
+@@ -295,7 +295,7 @@
+  * function controls the =
+necessary postprocessing=2E  It is called by many
+  * other functions that =
+handle VPN tunnel related activity, such as \c
+  * multi_process_incoming_l=
+ink(), \c multi_process_outgoing_link(), \c
+- * multi_process_incoming_tun(=
+), \c multi_process_outgoing_tun(), and \c
++ * multi_process_incoming_tun()=
+, \c multi_io_write_tun(), and \c
+  * multi_process_timeout(), among others=
+=2E
+  *
+  * @param m            - The single \c multi_context structure=2E
+=
+@@ -364,8 +364,6 @@
+ bool multi_process_incoming_tun(struct multi_context *=
+m, const unsigned int mpp_flags);
+ 
+ 
+-void multi_process_drop_outgoing_tun=
+(struct multi_context *m, const unsigned int mpp_flags);
+-
+ struct multi_in=
+stance *multi_get_queue(struct mbuf_set *ms);
+ 
+ void multi_ifconfig_pool_p=
+ersist(struct multi_context *m, bool force);
+@@ -627,41 +625,6 @@
+ }
+ 
+ 
+-/=
+**
+- * Send a packet over the virtual tun/tap network interface to its loca=
+lly
+- * reachable destination=2E
+- * @ingroup internal_multiplexer
+- *
+- * =
+This function calls \c process_outgoing_tun() to perform the actual
+- * sen=
+ding of the packet=2E  Afterwards, it calls \c multi_process_post() to
+- * =
+perform server-mode postprocessing=2E
+- *
+- * @param m            - The sin=
+gle \c multi_context structure=2E
+- * @param mpp_flags    - Fast I/O optimi=
+zation flags=2E
+- *
+- * @return
+- *  - True, if the \c multi_instance assoc=
+iated with the packet sent was
+- *    not closed due to a signal during pro=
+cessing=2E
+- *  - Falls, if the \c multi_instance was closed=2E
+- */
+-stati=
+c inline bool
+-multi_process_outgoing_tun(struct multi_context *m, const un=
+signed int mpp_flags)
+-{
+-    struct multi_instance *mi =3D m->pending;
+-  =
+  bool ret =3D true;
+-
+-    ASSERT(mi);
+-#ifdef MULTI_DEBUG_EVENT_LOOP
+-   =
+ printf("%s -> TUN len=3D%d\n", id(mi), mi->context=2Ec2=2Eto_tun=2Elen);
+-=
+#endif
+-    set_prefix(mi);
+-    vlan_process_outgoing_tun(m, mi);
+-    pro=
+cess_outgoing_tun(&mi->context, mi->context=2Ec2=2Elink_sockets[0]);
+-    r=
+et =3D multi_process_post(m, mi, mpp_flags);
+-    clear_prefix();
+-    retu=
+rn ret;
+-}
+-
+ #define CLIENT_CONNECT_OPT_MASK                              =
+                              \
+     (OPT_P_INSTANCE | OPT_P_INHERIT | OPT_=
+P_PUSH | OPT_P_TIMER | OPT_P_CONFIG | OPT_P_ECHO \
+      | OPT_P_COMP | OPT=
+_P_SOCKFLAGS)
+diff --git a/src/openvpn/multi_io=2Ec b/src/openvpn/multi_io=
+=2Ec
+index ebee86c=2E=2E164b214 100644
+--- a/src/openvpn/multi_io=2Ec
++++ b=
+/src/openvpn/multi_io=2Ec
+@@ -290,6 +290,62 @@
+     }
+ }
+ 
 +/**
-+ * Returns true if t=
-his multi context has an established session, i=2Ee=2E the
-+ * initial conn=
-ection has completed and the tunnel is up=2E  A new session
-+ * that is bei=
-ng negotiated in TM_INITIAL in this state does not change the
-+ * state of =
-the tunnel until it is promoted to TM_ACTIVE=2E
++ * Send a =
+packet over the virtual tun/tap network interface to its locally
++ * reacha=
+ble destination=2E
++ * @ingroup internal_multiplexer
++ *
++ * This function =
+calls \c process_outgoing_tun() to perform the actual
++ * sending of the pa=
+cket=2E  Afterwards, it calls \c multi_process_post() to
++ * perform server=
+-mode postprocessing=2E
++ *
++ * @param m            - The single \c multi_c=
+ontext structure=2E
++ * @param mpp_flags    - Fast I/O optimization flags=
+=2E
++ *
++ * @return
++ *  - True, if the \c multi_instance associated with t=
+he packet sent was
++ *    not closed due to a signal during processing=2E
++=
+ *  - Falls, if the \c multi_instance was closed=2E
 + */
 +static bool
-+tls_mult=
-i_established(const struct tls_multi *multi)
++mult=
+i_io_write_tun(struct multi_context *m, const unsigned int mpp_flags)
 +{
-+    return multi->multi_st=
-ate >=3D CAS_CONNECT_DONE;
-+}
-+#endif
++ =
+   struct multi_instance *mi =3D m->pending;
++    bool ret =3D true;
 +
- /**
-  * Move the session from S_IN=
-ITIAL to S_PRE_START=2E This will also generate
-  * the initial message bas=
-ed on ks->initial_opcode
-@@ -2554,12 +2568,6 @@
-          session_id_print(=
-&session->session_id, &gc));
-     gc_free(&gc);
- 
--#ifdef ENABLE_MANAGEMENT=
++   =
+ ASSERT(mi);
++#ifdef MULTI_DEBUG_EVENT_LOOP
++    printf("%s -> TUN len=3D%d=
+\n", id(mi), mi->context=2Ec2=2Eto_tun=2Elen);
++#endif
++    set_prefix(mi);=
 
--    if (management && ks->initial_opcode !=3D P_CONTROL_SOFT_RESET_V1)
-- =
-   {
--        management_set_state(management, OPENVPN_STATE_WAIT, NULL, NU=
-LL, NULL, NULL, NULL);
--    }
--#endif
-     return true;
- }
- 
-@@ -2883,6 +28=
-91,18 @@
-     if (ks->state =3D=3D S_INITIAL)
-     {
-         continue_tls_=
-process =3D session_move_pre_start(session, ks, false);
-+#ifdef ENABLE_MANA=
-GEMENT
-+        /* Do not report a new session attempt (e=2Eg=2E a peer res=
-tart in p2p
-+         * mode or a stray hard reset packet) as WAIT when we =
-already have
-+         * an established session: the tunnel is still up and=
-, unless the
-+         * new session succeeds, nothing would ever report CO=
-NNECTED again */
-+        if (continue_tls_process && management
-+         =
-   && ks->initial_opcode !=3D P_CONTROL_SOFT_RESET_V1
-+            && !tls_=
-multi_established(multi))
-+        {
-+            management_set_state(mana=
-gement, OPENVPN_STATE_WAIT, NULL, NULL, NULL, NULL, NULL);
-+        }
-+#end=
-if
-     }
- 
-     /* Are we timed out on receive? */
-@@ -3891,7 +3911,8 @@
- =
-        }
- 
- #ifdef ENABLE_MANAGEMENT
--        if (management)
-+        /* =
-see the WAIT state in tls_process_state() */
-+        if (management && !tl=
-s_multi_established(multi))
-         {
-             management_set_state(ma=
-nagement, OPENVPN_STATE_AUTH, NULL, NULL, NULL, NULL, NULL);
-         }
++    vlan_process_outgoing_tun(m, mi);
++    process_outgoing_tun(&mi->cont=
+ext, mi->context=2Ec2=2Elink_sockets[0]);
++    ret =3D multi_process_post(m=
+, mi, mpp_flags);
++    clear_prefix();
++    return ret;
++}
++
++/*
++ * Drop a=
+ TUN/TAP outgoing packet=2E=2E
++ */
++static void
++multi_io_drop_tun(struct =
+multi_context *m, const unsigned int mpp_flags)
++{
++    struct multi_instan=
+ce *mi =3D m->pending;
++
++    ASSERT(mi);
++
++    set_prefix(mi);
++
++    msg=
+(D_MULTI_ERRORS, "MULTI: Outgoing TUN queue full, dropped packet len=3D%d",=
 
---=
++        mi->context=2Ec2=2Eto_tun=2Elen);
++
++    buf_reset(&mi->context=
+=2Ec2=2Eto_tun);
++
++    multi_process_post(m, mi, mpp_flags);
++    clear_pr=
+efix();
++}
++
+ static struct multi_instance *
+ multi_io_dispatch(struct mult=
+i_context *m, struct multi_instance *mi, const int action)
+ {
+@@ -334,11 +3=
+90,11 @@
+             break;
  
-To view, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2040?usp=3Demai=
-l
-To unsubscribe, or for help writing mail filters, visit https://gerrit=2E=
-openvpn=2Enet/settings?usp=3Demail
+         case TA_TUN_WRITE:
+-            mul=
+ti_process_outgoing_tun(m, mpp_flags);
++            multi_io_write_tun(m, m=
+pp_flags);
+             break;
+ 
+         case TA_TUN_WRITE_TIMEOUT:
+-     =
+       multi_process_drop_outgoing_tun(m, mpp_flags);
++            multi_io=
+_drop_tun(m, mpp_flags);
+             break;
+ 
+         case TA_SOCKET_WRIT=
+E_READY:
 
-Gerrit-MessageType: newpatchset
-Gerrit-=
-Project: openvpn
+-- 
+To view, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/204=
+2?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit https=
+://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+
+Gerrit-MessageType: newchan=
+ge
+Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Iea151988f2fa120b1=
-262051572604e3f42ef4b1c
-Gerrit-Change-Number: 2040
-Gerrit-PatchSet: 3
-Gerri=
-t-Owner: Antonio Quartulli <antonio@mandelbit=2Ecom>
-Gerrit-Reviewer: Arne =
-Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-CC: openvpn-devel <openvpn-deve=
-l@lists=2Esourceforge=2Enet>
-Gerrit-Attention: Arne Schwabe <arne-openvpn@r=
-fc2549=2Eorg>
+Gerrit-Change-Id: I8930397=
+5dd559d7cc06484a99f15c7062d3a3437
+Gerrit-Change-Number: 2042
+Gerrit-PatchSe=
+t: 1
+Gerrit-Owner: Gianmarco De Gregori <gianmarco@mandelbit=2Ecom>
+Gerrit-=
+Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
+Gerrit-CC: openvpn-deve=
+l <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Attention: Arne Schwabe =
+<arne-openvpn@rfc2549=2Eorg>
 
---V//gR0Hlb0M=
+--p4xgsVXQMWs=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: Arne Schwabe=2E </p>
-<p>Antonio Quartulli <strong>upl=
-oaded patch set #3</strong> to this change=2E</p><p><a href=3D"https://gerr=
-it=2Eopenvpn=2Enet/c/openvpn/+/2040?usp=3Demail">View Change</a></p><pre cl=
-ass=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-=
-wrap;">p2p: don&#39;t report WAIT/AUTH for a new session while connected<br=
-><br>In p2p mode, a hard reset that starts a new session moves the manageme=
-nt<br>state to AUTH and WAIT even while the tunnel is up=2E If that session=
-<br>never completes (e=2Eg=2E an unauthenticated probe without tls-auth/tls=
--crypt,<br>or a peer that gives up), CONNECTED is never announced again and=
- the<br>state stays WAIT although the tunnel works fine=2E<br><br>Don&#39;t=
- announce AUTH/WAIT when an established session already exists=2E<br>A succ=
-essful new session still re-announces CONNECTED via<br>CAS_RECONNECT_PENDIN=
-G=2E<br><br>Also document that WAIT and AUTH are reported in p2p mode too=
-=2E<br><br>Change-Id: Iea151988f2fa120b1262051572604e3f42ef4b1c<br>Link: ht=
-tps://bugzilla=2Eipfire=2Eorg/show_bug=2Ecgi?id=3D13897<br>Reported-by: Nei=
-l Chittenden &lt;neilchittenden@quintessa=2Eorg&gt;<br>Signed-off-by: Anton=
-io Quartulli &lt;antonio@mandelbit=2Ecom&gt;<br>---<br>M doc/management-not=
-es=2Etxt<br>M src/openvpn/ssl=2Ec<br>2 files changed, 32 insertions(+), 10 =
-deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2En=
-et:29418/openvpn refs/changes/40/2040/3</pre><pre style=3D"font-family: mon=
-ospace,monospace; white-space: pre-wrap;"><span>diff --git a/doc/management=
--notes=2Etxt b/doc/management-notes=2Etxt</span><br><span>index a28a1a8=2E=
-=2E5b32ba6 100644</span><br><span>--- a/doc/management-notes=2Etxt</span><b=
-r><span>+++ b/doc/management-notes=2Etxt</span><br><span>@@ -427,9 +427,10 =
-@@</span><br><span> These are the OpenVPN states:</span><br><span> </span><=
-br><span> CONNECTING    -- OpenVPN&#39;s initial state=2E</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-WAIT          -- (Client only) Waiting =
-for initial response</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-                from server=2E</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-AUTH          -- (Client only) Authenticating with server=2E</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+WAIT          -- (Client =
-and point-to-point only) Waiting for</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+                 initial response from server or peer=2E</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+AUTH          -- (Cli=
-ent and point-to-point only) Authenticating</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+                 with server or peer=2E</span><br><=
-span> GET_CONFIG    -- (Client only) Downloading configuration options</spa=
-n><br><span>                  from server=2E</span><br><span> ASSIGN_IP    =
- -- Assigning IP address to virtual network</span><br><span>diff --git a/sr=
-c/openvpn/ssl=2Ec b/src/openvpn/ssl=2Ec</span><br><span>index 086a6fc=2E=2E=
-264a17f 100644</span><br><span>--- a/src/openvpn/ssl=2Ec</span><br><span>++=
-+ b/src/openvpn/ssl=2Ec</span><br><span>@@ -2516,6 +2516,20 @@</span><br><s=
-pan>     return ret;</span><br><span> }</span><br><span> </span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+#ifdef ENABLE_MANAGEMENT</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+ * Returns true if this multi context has an est=
-ablished session, i=2Ee=2E the</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+ * initial connection has completed and the tunnel is up=2E  A n=
-ew session</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * that i=
-s being negotiated in TM_INITIAL in this state does not change the</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+ * state of the tunnel until=
- it is promoted to TM_ACTIVE=2E</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+stat=
-ic bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+tls_multi_es=
-tablished(const struct tls_multi *multi)</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    return multi-&gt;multi_state &gt;=3D CAS_CONNECT_DONE;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span> /**</span><br><span>  * Move the session from =
-S_INITIAL to S_PRE_START=2E This will also generate</span><br><span>  * the=
- initial message based on ks-&gt;initial_opcode</span><br><span>@@ -2554,12=
- +2568,6 @@</span><br><span>          session_id_print(&amp;session-&gt;ses=
-sion_id, &amp;gc));</span><br><span>     gc_free(&amp;gc);</span><br><span>=
- </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef ENABLE_MANAGE=
-MENT</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (managemen=
-t &amp;&amp; ks-&gt;initial_opcode !=3D P_CONTROL_SOFT_RESET_V1)</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-        management_set_state(management, OPENVPN=
-_STATE_WAIT, NULL, NULL, NULL, NULL, NULL);</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-#endif</span><br><span>     return true;</span><br><span> }</span><br=
-><span> </span><br><span>@@ -2883,6 +2891,18 @@</span><br><span>     if (ks=
--&gt;state =3D=3D S_INITIAL)</span><br><span>     {</span><br><span>       =
-  continue_tls_process =3D session_move_pre_start(session, ks, false);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef ENABLE_MANAGEMENT=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* Do not r=
-eport a new session attempt (e=2Eg=2E a peer restart in p2p</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+         * mode or a stray hard res=
-et packet) as WAIT when we already have</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+         * an established session: the tunnel is still =
-up and, unless the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-        * new session succeeds, nothing would ever report CONNECTED again *=
-/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (contin=
-ue_tls_process &amp;&amp; management</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+            &amp;&amp; ks-&gt;initial_opcode !=3D P_CONTRO=
-L_SOFT_RESET_V1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-        &amp;&amp; !tls_multi_established(multi))</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+            management_set_state(management, OPENVPN_ST=
-ATE_WAIT, NULL, NULL, NULL, NULL, NULL);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+#endif</span><br><span>     }</span><br><span> </span><br><span>=
-     /* Are we timed out on receive? */</span><br><span>@@ -3891,7 +3911,8 =
-@@</span><br><span>         }</span><br><span> </span><br><span> #ifdef ENA=
-BLE_MANAGEMENT</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
- if (management)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     /* see the WAIT state in tls_process_state() */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        if (management &amp;&amp; !tls_mu=
-lti_established(multi))</span><br><span>         {</span><br><span>        =
-     management_set_state(management, OPENVPN_STATE_AUTH, NULL, NULL, NULL,=
- NULL, NULL);</span><br><span>         }</span><br></pre><p>To view, visit =
-<a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2040?usp=3Demail">cha=
-nge 2040</a>=2E To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=
-=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div it=
-emscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><li=
-nk itemprop=3D"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2040=
-?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div=
+<p>Gianmarco De Gregori would li=
+ke Arne Schwabe to <strong>review</strong> this change=2E
+</p><p><a href=3D=
+"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2042?usp=3Demail">View Change</=
+a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; whit=
+e-space: pre-wrap;">multi_io: move the tun write functions to multi_io=2Ec<=
+br><br>multi_process_outgoing_tun() lived as a static inline in multi=2Eh a=
+nd<br>multi_process_drop_outgoing_tun() in multi=2Ec, while their only call=
+er<br>is multi_io_dispatch()=2E Move both next to it, as static functions n=
+amed<br>multi_io_write_tun() and multi_io_drop_tun(), so that writing to th=
+e<br>tun device is found where the state machine decides to do it=2E<br><br=
+>No functional change=2E<br><br>Change-Id: I89303975dd559d7cc06484a99f15c70=
+62d3a3437<br>Signed-off-by: Gianmarco De Gregori &lt;gianmarco@mandelbit=2E=
+com&gt;<br>---<br>M src/openvpn/multi=2Ec<br>M src/openvpn/multi=2Eh<br>M s=
+rc/openvpn/multi_io=2Ec<br>3 files changed, 59 insertions(+), 61 deletions(=
+-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/o=
+penvpn refs/changes/42/2042/1</pre><pre style=3D"font-family: monospace,mon=
+ospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/multi=2Ec b/=
+src/openvpn/multi=2Ec</span><br><span>index e302a81=2E=2E2e804ff 100644</sp=
+an><br><span>--- a/src/openvpn/multi=2Ec</span><br><span>+++ b/src/openvpn/=
+multi=2Ec</span><br><span>@@ -3766,27 +3766,6 @@</span><br><span> }</span><=
+br><span> </span><br><span> /*</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">- * Drop a TUN/TAP outgoing packet=2E=2E</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-multi_pr=
+ocess_drop_outgoing_tun(struct multi_context *m, const unsigned int mpp_fla=
+gs)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    struct multi_instance *mi =3D m-&g=
+t;pending;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(mi);</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    set_prefix(mi);</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    msg=
+(D_MULTI_ERRORS, &quot;MULTI: Outgoing TUN queue full, dropped packet len=
+=3D%d&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        m=
+i-&gt;context=2Ec2=2Eto_tun=2Elen);</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    buf=
+_reset(&amp;mi-&gt;context=2Ec2=2Eto_tun);</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    multi_process_post(m, mi, mpp_flags);</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    clear_prefix();</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*</span><br><span>  * =
+Per-client route quota management</span><br><span>  */</span><br><span> </s=
+pan><br><span>diff --git a/src/openvpn/multi=2Eh b/src/openvpn/multi=2Eh</s=
+pan><br><span>index 5db7147=2E=2E2d4983c 100644</span><br><span>--- a/src/o=
+penvpn/multi=2Eh</span><br><span>+++ b/src/openvpn/multi=2Eh</span><br><spa=
+n>@@ -295,7 +295,7 @@</span><br><span>  * function controls the necessary p=
+ostprocessing=2E  It is called by many</span><br><span>  * other functions =
+that handle VPN tunnel related activity, such as \c</span><br><span>  * mul=
+ti_process_incoming_link(), \c multi_process_outgoing_link(), \c</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">- * multi_process_incoming_tun(),=
+ \c multi_process_outgoing_tun(), and \c</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ * multi_process_incoming_tun(), \c multi_io_write_tun=
+(), and \c</span><br><span>  * multi_process_timeout(), among others=2E</sp=
+an><br><span>  *</span><br><span>  * @param m            - The single \c mu=
+lti_context structure=2E</span><br><span>@@ -364,8 +364,6 @@</span><br><spa=
+n> bool multi_process_incoming_tun(struct multi_context *m, const unsigned =
+int mpp_flags);</span><br><span> </span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-void multi_process_drop_outgoing_tun(struct=
+ multi_context *m, const unsigned int mpp_flags);</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-</span><br><span> struct multi_instance *multi_=
+get_queue(struct mbuf_set *ms);</span><br><span> </span><br><span> void mul=
+ti_ifconfig_pool_persist(struct multi_context *m, bool force);</span><br><s=
+pan>@@ -627,41 +625,6 @@</span><br><span> }</span><br><span> </span><br><sp=
+an> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-/**</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">- * Send a packet over the virtual t=
+un/tap network interface to its locally</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">- * reachable destination=2E</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">- * @ingroup internal_multiplexer</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">- * This function calls \c process_outgoing_tun() to perform=
+ the actual</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * sending=
+ of the packet=2E  Afterwards, it calls \c multi_process_post() to</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">- * perform server-mode postpro=
+cessing=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">- * @param m            - The s=
+ingle \c multi_context structure=2E</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">- * @param mpp_flags    - Fast I/O optimization flags=2E</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">- * @return</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">- *  - True, if the \c multi_instance associated with the =
+packet sent was</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *    =
+not closed due to a signal during processing=2E</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">- *  - Falls, if the \c multi_instance was closed=
+=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-static inline bool</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-multi_process_outgoing_tun(struct multi=
+_context *m, const unsigned int mpp_flags)</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    struct multi_instance *mi =3D m-&gt;pending;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    bool ret =3D true;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    ASSERT(mi);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-#ifdef MULTI_DEBUG_EVENT_LOOP</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    printf(&quot;%s -&gt; TUN len=3D%d\n&quot;, id(mi), mi-&gt;co=
+ntext=2Ec2=2Eto_tun=2Elen);</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    set_p=
+refix(mi);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    vlan_pr=
+ocess_outgoing_tun(m, mi);</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    process_outgoing_tun(&amp;mi-&gt;context, mi-&gt;context=2Ec2=2Eli=
+nk_sockets[0]);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    re=
+t =3D multi_process_post(m, mi, mpp_flags);</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    clear_prefix();</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    return ret;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
+><br><span> #define CLIENT_CONNECT_OPT_MASK                                =
+                            \</span><br><span>     (OPT_P_INSTANCE | OPT_P_=
+INHERIT | OPT_P_PUSH | OPT_P_TIMER | OPT_P_CONFIG | OPT_P_ECHO \</span><br>=
+<span>      | OPT_P_COMP | OPT_P_SOCKFLAGS)</span><br><span>diff --git a/sr=
+c/openvpn/multi_io=2Ec b/src/openvpn/multi_io=2Ec</span><br><span>index ebe=
+e86c=2E=2E164b214 100644</span><br><span>--- a/src/openvpn/multi_io=2Ec</sp=
+an><br><span>+++ b/src/openvpn/multi_io=2Ec</span><br><span>@@ -290,6 +290,=
+62 @@</span><br><span>     }</span><br><span> }</span><br><span> </span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ * Send a packet over the virtual tun/tap net=
+work interface to its locally</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ * reachable destination=2E</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ * @ingroup internal_multiplexer</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ * This function calls \c process_outgoing_tun() to perform t=
+he actual</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * sending=
+ of the packet=2E  Afterwards, it calls \c multi_process_post() to</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ * perform server-mode postp=
+rocessing=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param m            -=
+ The single \c multi_context structure=2E</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+ * @param mpp_flags    - Fast I/O optimization flags=
+=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+ * @return</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *  - True, if the \c multi_instance asso=
+ciated with the packet sent was</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ *    not closed due to a signal during processing=2E</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ *  - Falls, if the \c multi_=
+instance was closed=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static bool</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+multi_io_write_tun(st=
+ruct multi_context *m, const unsigned int mpp_flags)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    struct multi_instance *mi =3D m-&gt;pending;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    bool ret =3D true;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    ASSERT(mi);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+#ifdef MULTI_DEBUG_EVENT_LOOP</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    printf(&quot;%s -&gt; TUN len=3D%d\n=
+&quot;, id(mi), mi-&gt;context=2Ec2=2Eto_tun=2Elen);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    set_prefix(mi);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    vlan_process_outgoing_tun(m, mi);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    process_outgoing_tun(&amp;mi-&gt=
+;context, mi-&gt;context=2Ec2=2Elink_sockets[0]);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    ret =3D multi_process_post(m, mi, mpp_fla=
+gs);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    clear_prefi=
+x();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return ret;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ * Drop a TUN/TAP outgoing packet=2E=2E</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+mu=
+lti_io_drop_tun(struct multi_context *m, const unsigned int mpp_flags)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    struct multi_instance *mi =3D m-&gt;p=
+ending;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(mi);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    set_prefix(mi);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    msg(D_MULTI_ERRORS, &quot;MULTI: Outgoing TUN queue full, dropped pac=
+ket len=3D%d&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        mi-&gt;context=2Ec2=2Eto_tun=2Elen);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    buf_reset(&amp;mi-&gt;context=2Ec2=2Eto_tun);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    multi_process_post(m, mi, mpp_flags);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    clear_prefix();</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span> static struct multi_instance *</span=
+><br><span> multi_io_dispatch(struct multi_context *m, struct multi_instanc=
+e *mi, const int action)</span><br><span> {</span><br><span>@@ -334,11 +390=
+,11 @@</span><br><span>             break;</span><br><span> </span><br><spa=
+n>         case TA_TUN_WRITE:</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-            multi_process_outgoing_tun(m, mpp_flags);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+            multi_io_write_tun(m,=
+ mpp_flags);</span><br><span>             break;</span><br><span> </span><b=
+r><span>         case TA_TUN_WRITE_TIMEOUT:</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-            multi_process_drop_outgoing_tun(m, mpp_fl=
+ags);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            mu=
+lti_io_drop_tun(m, mpp_flags);</span><br><span>             break;</span><b=
+r><span> </span><br><span>         case TA_SOCKET_WRITE_READY:</span><br></=
+pre><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+=
+/2042?usp=3Demail">change 2042</a>=2E To unsubscribe, or for help writing m=
+ail filters, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=
+=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg=
+/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=
+=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https://gerrit=2Eopenvpn=
+=2Enet/c/openvpn/+/2042?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
+ew Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: =
+newchange </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div=
 >
-
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-<div=
- style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"displ=
-ay:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-=
-Change-Id: Iea151988f2fa120b1262051572604e3f42ef4b1c </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"d=
-isplay:none"> Gerrit-Change-Number: 2040 </div>
-<div style=3D"display:none"=
-> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: Anto=
-nio Quartulli &lt;antonio@mandelbit=2Ecom&gt; </div>
-<div style=3D"display:=
-none"> Gerrit-Reviewer: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </d=
+isplay:none"> Gerrit-Change-Id: I89303975dd559d7cc06484a99f15c7062d3a3437 <=
+/div>
+<div style=3D"display:none"> Gerrit-Change-Number: 2042 </div>
+<div s=
+tyle=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none=
+"> Gerrit-Owner: Gianmarco De Gregori &lt;gianmarco@mandelbit=2Ecom&gt; </d=
 iv>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel=
-@lists=2Esourceforge=2Enet&gt; </div>
-<div style=3D"display:none"> Gerrit-A=
-ttention: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: Arne Schwabe &lt;arne-ope=
+nvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openv=
+pn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div style=
+=3D"display:none"> Gerrit-Attention: Arne Schwabe &lt;arne-openvpn@rfc2549=
+=2Eorg&gt; </div>
 
-</body></=
-html>
---V//gR0Hlb0M=--
+</body></html>
+--p4xgsVXQMWs=--
 
 
---===============3128184456725619370==
+--===============0729753214884157174==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============3128184456725619370==
+--===============0729753214884157174==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -538,5 +742,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============3128184456725619370==--
+--===============0729753214884157174==--
 
