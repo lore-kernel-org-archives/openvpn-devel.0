@@ -1,42 +1,42 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7111606A31A
-	for <openvpn-devel@archiver.kernel.org>; Tue, 27 Oct 2026 12:44:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F8F4606A327
+	for <openvpn-devel@archiver.kernel.org>; Tue, 27 Oct 2026 12:45:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=Pr8SddmJ;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=OB0T64b0;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=gXtqMByV
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=Y8cRvi5n;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=AiHUh5Nz;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=Nrx+yFnF
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
-	List-Owner; bh=5C3gv5w2sJJnUqhm+E9GGKWheYy7yXyif3PX73CPw2c=; b=Pr8SddmJlKjWtH
-	CUTnU1Tr6T2U5SAQQhfCIyW8jvDA/CK+LJksCbyzZnZd0mCQ+Ja9fCKwZt7BHnWm1sqMlR6UXNgLY
-	TSk0Gu72qHnUAucCjzsLXXa7MMuPbdN2XI8pdPtyqfpqjjbkRRN6sLq6foUJsagavbzKeP7aZAyH5
-	WiQ=;
+	List-Owner; bh=CGe0p6NV/AHBVkpAJCZnEyRG55v9kZVXZ64KiGQP2UM=; b=Y8cRvi5nIMSeCd
+	eX+XyEpmZQRvBAsZFKt9WrUlRvn+X3iJZCEF19JXMdpQICWQJ5o+GmWuTNncxrOCrvUF7Kw+UilzY
+	dmRQqNAuHB05xYZHHFVCQKRLcV9L71wgTE9EksM3j31kzK7wPfk+/snL1knuyLiNoxk4hOgHjalav
+	I1E=;
 Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
 	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xLgXJ-000000008B4-0CTz;
-	Tue, 27 Oct 2026 12:44:17 +0000
+	id 1xLgYC-000000008ES-1DyI;
+	Tue, 27 Oct 2026 12:45:12 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
  (envelope-from <gert@blue4.greenie.muc.de>)
- id 1xLgXI-000000008Ay-1Zyt for openvpn-devel@lists.sourceforge.net;
- Tue, 27 Oct 2026 12:44:16 +0000
+ id 1xLgYB-000000008EL-0KGj for openvpn-devel@lists.sourceforge.net;
+ Tue, 27 Oct 2026 12:45:11 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
  In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=MPTouUUW5iMyRT1y9zWj7nCE28qoj5bCdQMMAMtORw4=; b=OB0T64b0as4ycjc79eHOeFTW/0
- JAJXOTOjCiapm1+PxvxNCEOX06MmA7qWKH3/lJkbjWOqqlQbC2+iNo7wWV+WZesgWdogzH4xyOUli
- EKKsP4qD3H/yNehhJ6YPEP7c0t3c8R4Um75Q08gSMm/ZCkInreGXX6m4FGzFdds5LqBc=;
+ bh=+ri7qRQzgSusfu7eM3qNoH0HWq9fdLws/sfeK6tP6fA=; b=AiHUh5Nz6GqnSBKodF+zEcNd9l
+ vU4Z7CAVFqReqJdXY4eRsDCfiZV+iqHqLoi5gZOYfoz6HRWoxUJ65gej6pU2aKstkRn1+x7WBJG+Q
+ 0eH2IUs1rz8Ilr2bunB6Pp1Gca0t6rkwFr2OsVkd1M/fPVWeFiANca/ykAZ/mMe3CBg8=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -44,33 +44,33 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=MPTouUUW5iMyRT1y9zWj7nCE28qoj5bCdQMMAMtORw4=; b=gXtqMByV3OPZklV6nAqOzrL8cX
- Fyq+U6yHrb3y/E07tbuI+t64n2R7lkPFeKCAIKsuYhYttY/iNfwUoJnc7krvLjcr58uXRr6yE4V2X
- Wz8d34hA91tz2efngaRDJwomYyg0EQxe2QDz6VRu32ghWDxf4Uv1NxC57SMP1XyiHUEY=;
+ bh=+ri7qRQzgSusfu7eM3qNoH0HWq9fdLws/sfeK6tP6fA=; b=Nrx+yFnF+O0YIh87usqZKLqPvM
+ uBBCvrS6nqTTVRZd67n93y9apGflUKw108ru/xauG/PukAhwupdcdwHGJIAhnvWRVGIcbKKYEkIWF
+ EBb0SiwAshurifMUfCT4fSqQCiTjvYNu5Xl8oQ4zTPxaUha+1NoKEW81A49Fqg7X/HAQ=;
 Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
- id 1xLgXH-000000005gI-1mn7 for openvpn-devel@lists.sourceforge.net;
- Tue, 27 Oct 2026 12:44:16 +0000
+ id 1xLgY7-000000005hY-41U6 for openvpn-devel@lists.sourceforge.net;
+ Tue, 27 Oct 2026 12:45:11 +0000
 Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 69RCi8pE000561
- for <openvpn-devel@lists.sourceforge.net>; Tue, 27 Oct 2026 13:44:08 +0100
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 69RCj1mW000699
+ for <openvpn-devel@lists.sourceforge.net>; Tue, 27 Oct 2026 13:45:01 +0100
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 69RCi82A000560
- for openvpn-devel@lists.sourceforge.net; Tue, 27 Oct 2026 13:44:08 +0100
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 69RCj14v000698
+ for openvpn-devel@lists.sourceforge.net; Tue, 27 Oct 2026 13:45:01 +0100
 From: Gert Doering <gert@greenie.muc.de>
 To: openvpn-devel@lists.sourceforge.net
-Date: Tue, 27 Oct 2026 13:44:02 +0100
-Message-ID: <20261027124408.526-1-gert@greenie.muc.de>
+Date: Tue, 27 Oct 2026 13:44:55 +0100
+Message-ID: <20261027124501.682-1-gert@greenie.muc.de>
 X-Mailer: git-send-email 2.55.0
-In-Reply-To: <gerrit.1793094393000.I1abb10515665e1d6351689d2c2dd9d4aba8bb98e@gerrit.openvpn.net>
-References: <gerrit.1793094393000.I1abb10515665e1d6351689d2c2dd9d4aba8bb98e@gerrit.openvpn.net>
+In-Reply-To: <gerrit.1793094393000.I2f49f40e49af8503f5c08c5575ffc9a8b4c9aa20@gerrit.openvpn.net>
+References: <gerrit.1793094393000.I2f49f40e49af8503f5c08c5575ffc9a8b4c9aa20@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 X-Spam-Score: 1.3 (+)
-X-Headers-End: 1xLgXH-000000005gI-1mn7
-Subject: [Openvpn-devel] [PATCH v1] multi_io: drop the read cases from
- multi_io_wait_lite()
+X-Headers-End: 1xLgY7-000000005hY-41U6
+Subject: [Openvpn-devel] [PATCH v1] multi_io: walk the link sockets once in
+ multi_io_wait()
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -91,21 +91,25 @@ X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 
 From: Gianmarco De Gregori <gianmarco@mandelbit.com>
 
-multi_io_action() only polls before writes: reads are dispatched with
-poll false, both from the event loop and when chaining a tun read
-after a write. The TA_TUN_READ and TA_SOCKET_READ cases of
-multi_io_wait_lite() are never reached.
+multi_io_wait() went over the link sockets twice: first to register
+every socket as a listening socket, then, if a UDP socket is configured,
+again to arm the UDP ones. The UDP sockets were thus registered twice,
+and on Windows the first pass created an FD_ACCEPT event for them.
 
-Change-Id: I1abb10515665e1d6351689d2c2dd9d4aba8bb98e
+Walk the sockets once, arming the UDP sockets and registering only the
+TCP ones as listening sockets. Drop the mode check as well, since
+multi_io_wait() only runs in server mode.
+
+Change-Id: I2f49f40e49af8503f5c08c5575ffc9a8b4c9aa20
 Signed-off-by: Gianmarco De Gregori <gianmarco@mandelbit.com>
 Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2044
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2045
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2044
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2045
 This mail reflects revision 1 of this Change.
 
 Acked-by according to Gerrit (reflected above):
@@ -113,28 +117,44 @@ Razvan Cojocaru <razvanc@mailbox.org>
 
         
 diff --git a/src/openvpn/multi_io.c b/src/openvpn/multi_io.c
-index ac730b4..56216d4 100644
+index 56216d4..fb4810b 100644
 --- a/src/openvpn/multi_io.c
 +++ b/src/openvpn/multi_io.c
-@@ -235,18 +235,6 @@
+@@ -168,27 +168,17 @@
+     int status;
+     unsigned int *persistent = &m->multi_io->tun_rwflags;
  
-     switch (action)
+-    if (!tuntap_is_dco_win(m->top.c1.tuntap))
++    for (int i = 0; i < m->top.c1.link_sockets_num; i++)
      {
--        case TA_TUN_READ:
--            looking_for = TUN_READ;
--            tun_input_pending = NULL;
--            io_wait(c, IOW_READ_TUN);
--            break;
+-        for (int i = 0; i < m->top.c1.link_sockets_num; i++)
++        struct link_socket *sock = m->top.c2.link_sockets[i];
++
++        if (proto_is_dgram(sock->info.proto))
+         {
+-            socket_set_listen_persistent(m->top.c2.link_sockets[i], m->multi_io->es,
+-                                         &m->top.c2.link_sockets[i]->ev_arg);
++            multi_io_process_flags(&m->top, m->multi_io->es, sock, p2mp_iow_flags(m, sock));
+         }
+-    }
 -
--        case TA_SOCKET_READ:
--            looking_for = SOCKET_READ;
--            tun_input_pending = NULL;
--            io_wait(c, IOW_READ_LINK);
--            break;
+-    if (has_udp_in_local_list(&m->top.options))
+-    {
+-        for (int i = 0; i < m->top.c1.link_sockets_num; i++)
++        else if (!tuntap_is_dco_win(m->top.c1.tuntap))
+         {
+-            struct link_socket *sock = m->top.c2.link_sockets[i];
 -
-         case TA_TUN_WRITE:
-             looking_for = TUN_WRITE;
-             tun_input_pending = NULL;
+-            if ((m->top.options.mode == MODE_SERVER) && proto_is_dgram(sock->info.proto))
+-            {
+-                unsigned int flags = p2mp_iow_flags(m, sock);
+-
+-                multi_io_process_flags(&m->top, m->multi_io->es, sock, flags);
+-            }
++            socket_set_listen_persistent(sock, m->multi_io->es, &sock->ev_arg);
+         }
+     }
+ 
 
 
 _______________________________________________
