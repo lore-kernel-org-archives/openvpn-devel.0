@@ -1,135 +1,134 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA6A7606A321
-	for <openvpn-devel@archiver.kernel.org>; Tue, 27 Oct 2026 13:18:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 921E3606A31A
+	for <openvpn-devel@archiver.kernel.org>; Tue, 27 Oct 2026 13:24:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=JdtTfyDW;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=fIMBjiFp;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=ONJAnNXA;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=Xx60VYGQ
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=XVpqdFo1;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=CAXfAU64;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=I/JfmST2;
+	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=gLcuNpPe
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:Date:Sender:To:
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
 	List-Unsubscribe-Post:List-Owner;
-	bh=RHHmlwHIeBqZtV4ixLS7BsxBy7v4OIuVjQkb/QpSYss=; b=JdtTfyDWFQR9CFyTtDHKeuv66j
-	+9hPlnX4SQ2sJS9W8KzvJVT+AzpqjxPpI05Ul5smNA4vtZKQ6gEQWeAQGyaie1WsZqqebFf8jEe4h
-	YXZaMLLVC+hjzXx/KF11o4gxAy0VQ0m2jiG5GAqoj7jFRig3Sisj9tOHvubD3CHTyDm0=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	bh=AhwGLpwup/ticismxxeCmLQmU/P50obXNaZMpQ8SyWQ=; b=XVpqdFo1qiiUxCdFtBDE6CPzmg
+	jRIw6iYXPGC2CZHl1OSNkQMiHP/skUa8h2M/xF0Y3E/KQI7GsQvpYbzgl/hGyyyaDOQca03++qTnF
+	UZvKPGdYRXZ6RazCt+5RCI3ZBylpH0NrChzrc4vtbzKQzVNzm/K72Epph4UbzzGeM7fM=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xLh4V-000000006eH-07AF;
-	Tue, 27 Oct 2026 13:18:35 +0000
+	id 1xLhAY-000000003Rt-0MtN;
+	Tue, 27 Oct 2026 13:24:50 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xLh4T-000000006e3-0SsW
+ (envelope-from <gerrit@openvpn.net>) id 1xLhAF-000000003RU-2Xzy
  for openvpn-devel@lists.sourceforge.net;
- Tue, 27 Oct 2026 13:18:33 +0000
+ Tue, 27 Oct 2026 13:24:31 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:Date:From:Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From
+ Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=nMPj2ppS21jLEJLvzVMVJBKb4DfR1yzJLDf3gcwc9pc=; b=fIMBjiFpxaZc6Gy7BFba8PvYNz
- 6//5v4lM//0n6tskrRwfQ8OqIjfoxVRhd3LiX5rE6nWSWuRyIXsnNUn3kASoR95s128p0nljanJYu
- rrhYuzgbDVHxTn+J6pJP4uvKskJOMTJyFwsF3DscXkpIEhvTmgq7XdRfaDxzKfRMtNF4=;
+ bh=ii5F54ytg0UGAXaGHaVJAgFuMZbYwHDcmHmkvQAGzrs=; b=CAXfAU64PwDZrxNODTkwxYoM3e
+ QM8HIIBBfbAhOEPoYPWVfiDe5tqN49favr5clRv6ZTl5G6aTei4pmedWC9O4akUmnjYrDke1Ko4j0
+ JR5Hf+HAuvggoWFvdIwNdW7XqWCTa/fD4fJUQolRl5CpHqmxoZT2uNtKBV5dKPY9Y9G4=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:Date:From:Sender:
- To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
+ Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=nMPj2ppS21jLEJLvzVMVJBKb4DfR1yzJLDf3gcwc9pc=; b=ONJAnNXA92EjJUoyGh7+7QRkev
- alGhMc50aC14oJYVnEp1MQv43w136Rzsv0MklY+rRe/TkPcuyMJIEA5oU1KcFBMIka8DMgYrJ1WP4
- Pv7+JoyLYr7zaqccJAkOxTTZas4OoGEAA1sU78Xo84jvzFn+qXRxvRUBDYNETjOTAQ1I=;
-Received: from mail-wr1-f42.google.com ([209.85.221.42])
+ bh=ii5F54ytg0UGAXaGHaVJAgFuMZbYwHDcmHmkvQAGzrs=; b=I/JfmST2chG6hYVBijJ6rVximj
+ bCYjwmirqb2+A9WSMA2A6wDNpkiG8Ghvjht7GzoioOntdTC08Jyv2tAbNbSnRUoInvE5rFDkHZyPv
+ TLUT9aOkCcY70NfQa5ZfLJDhaAgVn5avNKsDo13pctZRfaaDEhk4jmQ2m+aqTRnxe09U=;
+Received: from mail-wm1-f53.google.com ([209.85.128.53])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xLh4Q-000000006sF-0tpY for openvpn-devel@lists.sourceforge.net;
- Tue, 27 Oct 2026 13:18:33 +0000
-Received: by mail-wr1-f42.google.com with SMTP id
- ffacd0b85a97d-48dfc0421d9so3482764f8f.1
+ id 1xLhA2-0000000075Y-2akF for openvpn-devel@lists.sourceforge.net;
+ Tue, 27 Oct 2026 13:24:20 +0000
+Received: by mail-wm1-f53.google.com with SMTP id
+ 5b1f17b1804b1-4a20bde60a0so36326055e9.3
  for <openvpn-devel@lists.sourceforge.net>;
- Tue, 27 Oct 2026 06:18:30 -0700 (PDT)
+ Tue, 27 Oct 2026 06:24:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1793107104; x=1793711904; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1793107452; x=1793712252; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:date:from:from:to:cc:subject:date:message-id
+ :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=nMPj2ppS21jLEJLvzVMVJBKb4DfR1yzJLDf3gcwc9pc=;
- b=Xx60VYGQlyVozjlcXU5UXEVrn8f7ZL8DueSIQe3usMYqa9hPttKn7c0rVmBM97sPBv
- 9A17VUsF+Eeio+IMiW2VRimiGxoO2+WMhN27HhnahyuwTCfN28GWMLOd024yZ9gzbTsC
- ZUmDxrPi9C1m3vaNSU0mf8MIi7mdTtvn6NROhsfhMcpxZFA/jkRDPrTOEm19zttIU0AU
- NZ3dTroICJCATwEgaPKsTVZiYtImJpv/d2waFSTBdma5MBM8XSrZSGVyZ5efd77PQvqc
- TlBH8y8PXuiaXnoRjBXv7bOBim/qxs0r8iYGYi7QGVi9hdYLaFr4yxztd70XYxljQf1N
- Y10Q==
+ bh=ii5F54ytg0UGAXaGHaVJAgFuMZbYwHDcmHmkvQAGzrs=;
+ b=gLcuNpPe35pussjbnjhsMgYm5oSCe/rvSShKaRqn8zZSi0sX2q2AwdJTuKpnxb9uMO
+ gTrvInJtQOcfUFAZq9aeuoO2VbgIIfVbO8h90dUUN6l+sdCpxVJ7uGolNYolRZXUdDkq
+ ayfHOh6huQffMd7K3Kq9vup9iAV/HvnY4zTYuFiT2A/BjBAnXwLKAORcEnN9TjS52y2+
+ Nq0n7Ll2V8rpgEPREUY8j9RSkTYd9BKGnDexfP/nDHRELyi7yUS/m6cAtACEmqgM9L5e
+ VzkM3euhZUutoiGqhEi99E23h2F5ALaaQTlM/HfeM80wBp4Tl1E0wA8TRbhCCRSPZhQj
+ S1Dg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1793107104; x=1793711904;
+ d=1e100.net; s=20260707; t=1793107452; x=1793712252;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:date:from:x-gm-gg:x-gm-message-state:from:to:cc
- :subject:date:message-id:reply-to:content-type;
- bh=nMPj2ppS21jLEJLvzVMVJBKb4DfR1yzJLDf3gcwc9pc=;
- b=HB2dCPIlZdZzYCPhKxZqhu+oziMWDSX08IfkDYuqMt4vED/5YETTSp3UO2n3pvmSEX
- +7w82tdfy0eFsMDrhkRdXMh4Tx+L4dH8xAguvY60/WO6PR7tVvtKVOJlxaMN8jOd7R9y
- h/NAZyqUeFq6WQ5GvF4aTOpyXLSKCynmmHLm0O+4xgjZlMM/iXBUPaTBK2MPl49KEqbP
- KCz44hIyr+T3jFMHJuP5zNKFpTJyiqjtWjUTTq6unDgTrnIk8J9bSEC5JhEM3jqzLHZ9
- pFqCOPsFzVCwtJJ5eyVH2x64HTg2EOmbggxdPfotQvIJ3EeeAuVIeFlgOlglVjD+YMlN
- aawA==
-X-Forwarded-Encrypted: i=1;
- AKwUvBxFXnEkJm1ly5pxgUoBPKZOzouv6iDoRmVu+mSLhR3ZwHO4p+IZxegiyRXS56L6RybUVdxyEOOWpYu2F7Fx@lists.sourceforge.net
-X-Gm-Message-State: AFq9FYKqwQwEEhNq2j8m3oV0RuQTQ55JS1dkYV46xta5zSbYWjkksEdQ
- eB4OCz3ohxb6d6wHjPAL5PXMoqyadgsKQ/B55bqjWhHZdyE5JjoEfOAv+7Ou1lK6Tei38L8M2dV
- WZ6i6+aPjHCrcaEoWHnb94D2uJLf0wM3D72ZUX9F5w1rpzvUXOWV3b3X+zUcT80pQsGfU
-X-Gm-Gg: AYBFou3dQWT6HbZiyrbFw3+zJyfAVWiBp17S/jBq76Sx6/e3oNbAxIQ7OkJ5BrPNAC6
- dDENqhdcFWxshWe5nbNhTHj6XUOYFb8iJhl8sI0j9xZlM3ZBgjcsZ4BkF6AKYis5+3cn6CmUOTS
- ecLEpoYSSJfXR2gT2m05yIOkLogO3u5Pu/WJH6P/Heb1of5sAXfEHcML9hJ8+lXZ+j8DCIWQS3h
- UWRuo4L9h+vq6eyrBL3IQcSV2u7VVe7RDyRL3LpqXbkNgAVSegqhriBC8fICj+aCuQxPq/9rENt
- qFX/FjGSFhD3Ps5JznjzoBPVLdNNIxIAF6ZdrKKlUJCK8VOrSIuHAn3ZJX0J+8C1jfK5QytoU/8
- HyRnQYzaFVU/ZokruFv3sCOPO+HRaBGm7Ao/EO70IjdQuX09p7pE5LsHJli3LKPnNe5VCGxL+mJ
- w+9Yms+tUuV0yPOs6DybT+BmmRx2CLZxi0yw2eq1rqRVf/U0aFRc5AXYchoNv0JaxCK3l/Cbaef
- pz887WNRzOlg0wEpqyNf4fOddSLsRhThBELYEe9R03+3zSCM45LQC5Yzb7Y4i/I6xE1vo2ao+Zf
- xA0tnrIgNvd3lQv2vf8/KjQmLWxi22AUm4m+bCW7EXQxqxzbbaISx6hYNFDxSmfYZ4MSueplXwR
- vrfGNmlmRsXs6cDK+s+x4jel4HMPgalfAI2aNvdH0BQ==
-X-Received: by 2002:a05:600c:4704:b0:4a2:190f:cf6a with SMTP id
- 5b1f17b1804b1-4a35acc2ea1mr182042035e9.35.1793107102452; 
- Tue, 27 Oct 2026 06:18:22 -0700 (PDT)
+ :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
+ :cc:subject:date:message-id:reply-to:content-type;
+ bh=ii5F54ytg0UGAXaGHaVJAgFuMZbYwHDcmHmkvQAGzrs=;
+ b=M6UA8fgqWwOVB1S+x4n0jtZgXtxfECgTRAmH8SCqpCdAHHXG2XPjS6NSVIRUdq5IbY
+ Q7VIz5mMW5IqL9GryYzGpLJJcOdOPVVDrCobrTaX4QBb8pwQeNkq5sZFX88R57DmG8E6
+ QVTiRe9nRSghAtX3dzx6uHv3fx1DVltL1wHt3y9iBztWvP39RyhbywerJpB+vl75ryhA
+ LS80uJ3KFYsJ+nzkPmHXz1r/P4pU5Gol06GM4J6ZK54orFdgnuIUvR0yKGA88dMEEbm3
+ ncTg6/xLJ0NuEQ8B3tM5lnpWP4hY4kCWMKxZVtLp7NxIY1dezzFaaTy9K8B2tJU4T3y0
+ knJQ==
+X-Gm-Message-State: AFq9FYJwNDVXont/MvLKy5DhP1heBhZO+MLjE7K58E4wCO4rSt1urNRq
+ 5kKYWGh/GFFD+2MvmSfDED4DwOF3PwdxXKn6z8ANw2KapdocEzbxnWoGde2BrA72ycUmoEADySi
+ KhtHQ7JKcskX6ir761q26+LCMHhSrS6adMejyvEw3t36JgGZGvDu3qEDMkpueb9LRt1tt
+X-Gm-Gg: AYBFou2eLP8D6VVkMmWrzXOjqHmjrDeU/k4gNmzv7ubdtei0ppdwtvrEp/PtIbacLmB
+ eVT2mVS6BpcnTeCnu3xX2XhB/M5b/sqA8Cj+ETTREGgVTVBLyDbXT9G1ecUo8QrVaNrZrBxobSz
+ /eD2JgMaNMm8LVNJDMQ997oQjQczucVoZoIV4ssmpe9k1OEcd0RgZemIG5U1+jxxbmAJh0/1GpQ
+ v4L1Aexzf8pEI8ok7zARl77XSXC6ubdA0v+eRkj2O7k2CjQkt8AQQEY9Cu84WKQVHlN2QBJL7sr
+ 0IsmKAzZ/sXCZBF61YZLf5XaLzz99OyOJVJE2msy0/U97dTySwnNGKNazhRX1Ww3VcRc35REvRt
+ UlahHHTO6d2Pq+V0xFHKaZvLJixBsQJbJK6Jy4BBC/usykzOv52iNBkzFjHVs/voRbPwdd6TQrS
+ 5X9cmq4935AS1cZDx2N1QH1kYBOXbHarkutTkoorOzNr7mf+usHx12SOZhofGgQY7EzU37wFXuL
+ aFnbm9PSwLMJrg783kC+xDsnl9g2/quzyZX+dNLOcuawTlv80HsieF0oDktJeO8rm3NDidrsJ3E
+ wAo87hgYxM4J0CYHBdh+wLlnUbXQr0H3CwtIHuIz4A2N9TRuPIeKVjvY4ENLSZeE/xR2xvODVbl
+ y5juawShK/5inkExXR6efWrt3S+naOSCVE6g6m/Wr/Q==
+X-Received: by 2002:a05:600c:4e87:b0:4a1:a2c0:7b73 with SMTP id
+ 5b1f17b1804b1-4a35acaa6c3mr195406285e9.30.1793107451679; 
+ Tue, 27 Oct 2026 06:24:11 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-4a35a0bae01sm328946425e9.7.2026.10.27.06.18.21
+ ffacd0b85a97d-48e3eb8f387sm22595756f8f.4.2026.10.27.06.24.10
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 27 Oct 2026 06:18:22 -0700 (PDT)
+ Tue, 27 Oct 2026 06:24:11 -0700 (PDT)
 X-Google-Original-From: "Arne Schwabe (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Tue, 27 Oct 2026 13:18:20 +0000
+Date: Tue, 27 Oct 2026 13:24:06 +0000
+To: =?UTF-8?Q?R=C4=83zvan_Cojocaru?= <razvanc@mailbox.org>,
+ Frank Lichtenheld <frank@lichtenheld.com>
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: comment
-X-Gerrit-PatchSet: 15
+X-Gerrit-MessageType: newpatchset
+X-Gerrit-PatchSet: 16
 X-Gerrit-Change-Id: I307e64079f436aa782f7e24bfff665a545ad2fa0
 X-Gerrit-Change-Number: 1852
 X-Gerrit-Project: openvpn
 X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/1852?usp=email>
-X-Gerrit-Commit: 8599bbe2a80721125ceef7b527c44548eb2c53bf
-X-Gerrit-Comment-Date: Tue, 27 Oct 2026 13:18:20 +0000
+X-Gerrit-Commit: fb08f2ed58217017e53f66a5bae20280bd48bf1d
 In-Reply-To: <gerrit.1787327336000.I307e64079f436aa782f7e24bfff665a545ad2fa0@gerrit.openvpn.net>
 References: <gerrit.1787327336000.I307e64079f436aa782f7e24bfff665a545ad2fa0@gerrit.openvpn.net>
 Thread-Index: PGdlcnJpdC4xNzg3MzI3MzM2MDAwLkkzMDdlNjQwNzlmNDM2YWE3ODJmN2UyNGJmZmY2NjVhNTQ1YWQyZmEwQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <c1c2d7cfffede2d1b1a3cd37615118b3d230465e-EmailReviewComments-HTML@gerrit.openvpn.net>
+Message-ID: <7a6b79b157d8d447d12a09b137a4856e4a980e1e-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.2
-X-Spam-Score: 1.0 (+)
-X-Headers-End: 1xLh4Q-000000006sF-0tpY
+X-Spam-Score: -0.2 (/)
+X-Headers-End: 1xLhA2-0000000075Y-2akF
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Add unix-script
  functionality to the --management feature
 X-BeenThere: openvpn-devel@lists.sourceforge.net
@@ -147,242 +146,887 @@ Reply-To: arne-openvpn@rfc2549.org, razvanc@mailbox.org,
  openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com
 Cc: "Arne Schwabe \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============2089496750146206025=="
-X-Spam-Status: No, score=-1.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+Content-Type: multipart/mixed; boundary="===============3450466280248070889=="
+X-Spam-Status: No, score=-12.3 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
-	MAILING_LIST_MULTI,MISSING_HEADERS,MXG_THREAD_INDEX_BAD,
-	PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,SPF_PASS autolearn=no
-	autolearn_force=no version=4.0.1
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,MIME_HTML_MOSTLY,
+	MXG_THREAD_INDEX_BAD,PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,SPF_PASS,
+	T_KAM_HTML_FONT_INVALID,WEIRD_PORT autolearn=ham autolearn_force=no
+	version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============2089496750146206025==
+--===============3450466280248070889==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="58xM8NQZJTI="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="l8RhuQFbGlI="; charset=UTF-8
 
---58xM8NQZJTI=
+--l8RhuQFbGlI=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: Frank Lichtenheld, R=C4=83zvan Cojoca=
 ru=2E
 
-Arne Schwabe has posted comments on this change by Arne Schwabe=2E (=
- https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1852?usp=3Demail )
+Hello Frank Lichtenheld, R=C4=83zvan Cojocaru, 
 
-Change subj=
-ect: Add unix-script functionality to the --management feature
-=2E=2E=2E=2E=
+I'd like you to ree=
+xamine a change=2E Please visit
+
+    https://gerrit=2Eopenvpn=2Enet/c/openv=
+pn/+/1852?usp=3Demail
+
+to look at the new patch set (#16)=2E
+
+The following=
+ approvals got outdated and were removed:
+Code-Review-1 by R=C4=83zvan Cojo=
+caru
+
+
+Change subject: Add unix-script functionality to the --management fe=
+ature
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+
+Add uni=
+x-script functionality to the --management feature
+
+This allows a script th=
+at handles management input/output to
+be started alongside OpenVPN simpler =
+in small deployments=2E
+
+Change-Id: I307e64079f436aa782f7e24bfff665a545ad2f=
+a0
+Signed-off-by: Arne Schwabe <arne@rfc2549=2Eorg>
+---
+M doc/man-sections/=
+management-options=2Erst
+M doc/management-notes=2Etxt
+M src/openvpn/init=2E=
+c
+M src/openvpn/manage=2Ec
+M src/openvpn/manage=2Eh
+M src/openvpn/options=
+=2Ec
+M src/openvpn/options=2Eh
+7 files changed, 121 insertions(+), 9 deleti=
+ons(-)
 
 
-Patch Set 15:
+  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes=
+/52/1852/16
 
-(5 commen=
-ts)
+diff --git a/doc/man-sections/management-options=2Erst b/doc/m=
+an-sections/management-options=2Erst
+index 8dad52b=2E=2E2c79d05 100644
+--- =
+a/doc/man-sections/management-options=2Erst
++++ b/doc/man-sections/manageme=
+nt-options=2Erst
+@@ -14,6 +14,7 @@
+     management socket-name unix pw-file=
+  # (recommended)
+     management IP port                   # (INSECURE)
+  =
+   management IP port pw-file           #
++    management script unix-scrip=
+t
+ 
+   ``pw-file``, if specified, is a password file where the password mus=
+t
+   be on first line=2E Instead of a filename it can use the keyword stdin=
 
-File doc/man-sections/management-options=2Erst:
-
-https://gerrit=2Eopen=
-vpn=2Enet/c/openvpn/+/1852/comment/057f282c_feff05fe?usp=3Demail :
-PS15, Li=
-ne 142:   :code:`unixscript` this option has no effect since a disconnect w=
-ill
-> "unixscript" should be "unix-script"=2E
-Done
-
-
-File src/openvpn/init=
-=2Ec:
-
-https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1852/comment/b9187f79_649=
-62386?usp=3Demail :
-PS15, Line 4388:                      PACKAGE_NAME "_om=
-i_%08" PRIx64 "%08" PRIx64 "=2Esock",
-> This prints out a 64-bit value so i=
-t could theoretically exceed the 8 digits zero-padding=2E [=E2=80=A6]
-Chang=
-ed it to %016=2E 64 bit are enough here, we don't need 128 bit=2E
-
-
-File sr=
-c/openvpn/manage=2Ec:
-
-https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1852/comm=
-ent/51b095c9_66ed99fa?usp=3Demail :
-PS15, Line 343: 
-> Stray newline added?=
-
-Acknowledged
-
-
-https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1852/comment/390=
-0ef1c_0e74cedf?usp=3Demail :
-PS15, Line 2213:             }
-> The extra `{}=
-` block seems unnecessary=2E
-Done
-
-
-https://gerrit=2Eopenvpn=2Enet/c/openvp=
-n/+/1852/comment/18656af7_a7e19f71?usp=3Demail :
-PS15, Line 3484:          =
-       && !openvpn_waitpid_check(man->connection=2Eunix_script_pid, msg_pre=
-fix, M_FATAL))
-> `openvpn_waitpid_check()` calls `msg(msglevel, "%scould no=
-t execute external program (exit code 127) [=E2=80=A6]
-Acknowledged
-
-
+@@ -25,6 +26,14 @@
+   ``--management-client-user`` and ``--management-clie=
+nt-group``
+   directives to restrict access=2E
+ 
++  When the variant :code:=
+`unix-script` is used, OpenVPN will start the
++  specified script on startu=
+p and enable ``--management-hold``=2E
++  OpenVPN will generate a random pat=
+h for the unix socket
++  and management password=2E These are passed as env=
+ironment
++  variables :code:`MANAGEMENT_SOCKET`, :code:`MANAGEMENT_PASSWORD=
+`
++  to the script when being started=2E When OpenVPN terminates it sends
++=
+  a :code:`SIGINT` signal to the running script=2E
++
+   The management inte=
+rface provides a special mode where the TCP
+   management link can operate =
+over the tunnel itself=2E To enable this mode,
+   set IP to ``tunnel``=2E T=
+unnel mode will cause the management interface to
+@@ -127,10 +136,11 @@
+   =
+(client-only)=2E
+ 
+ --management-signal
+-  Send SIGUSR1 signal to OpenVPN i=
+f management session disconnects=2E This
+-  is useful when you wish to disc=
+onnect an OpenVPN session on user logoff=2E
+-  For ``--management-client`` =
+this option is not needed since a disconnect
+-  will always generate a :cod=
+e:`SIGTERM`=2E
++  Send :code:`SIGUSR1` signal to OpenVPN if management sess=
+ion disconnects=2E
++  This is useful when you wish to disconnect an OpenVPN=
+ session on user
++  logoff=2E For ``--management-client`` or ``--management=
+`` with
++  :code:`unix-script` this option has no effect since a disconnect=
+ will
++  always trigger sending a :code:`SIGTERM`=2E
+ 
+ --management-up-dow=
+n
+   Report tunnel up/down events to management interface=2E
+diff --git a/d=
+oc/management-notes=2Etxt b/doc/management-notes=2Etxt
+index a28a1a8=2E=2E4=
+d726c4 100644
+--- a/doc/management-notes=2Etxt
++++ b/doc/management-notes=
+=2Etxt
+@@ -35,6 +35,10 @@
+ you can telnet to the management port (make sure=
+ to use
+ a telnet client which understands "raw" mode)=2E
+ 
++When password =
+authentication is enabled, the management interface
++will require sending t=
+he password on its own line after establishing
++the connection=2E
++
+ Once c=
+onnected to the management port, you can use
+ the "help" command to list al=
+l commands=2E
+ 
+diff --git a/src/openvpn/init=2Ec b/src/openvpn/init=2Ec
+in=
+dex 24cf532=2E=2E1b8b2a5 100644
+--- a/src/openvpn/init=2Ec
++++ b/src/openvp=
+n/init=2Ec
+@@ -4343,19 +4343,60 @@
+     }
+ }
+ 
++static void
++run_management=
+_script(const struct context *c)
++{
++#if UNIX_SOCK_SUPPORT
++    struct gc_a=
+rena gc =3D gc_new();
++    struct argv argv =3D argv_new();
++    struct env=
+_set *env =3D env_set_create(&gc);
++
++    setenv_str(env, "MANAGEMENT_PASSW=
+ORD", management->settings=2Eup=2Epassword);
++    setenv_str(env, "MANAGEME=
+NT_SOCKET", c->options=2Emanagement_addr);
++
++    argv_parse_cmd(&argv, c->=
+options=2Emanagement_script);
++
++    int flags =3D S_NOWAITPID | S_SCRIPT |=
+ S_FATAL;
++    int *pid =3D &management->connection=2Eunix_script_pid;
++   =
+ const char *msg_prefix =3D "ERROR: Failed running management unix-script: =
+";
++    *pid =3D openvpn_execve_check(&argv, env, flags, msg_prefix);
++
++  =
+  if (!openvpn_waitpid_check(*pid, msg_prefix, M_FATAL))
++    {
++        *p=
+id =3D 0;
++    }
++
++    argv_free(&argv);
++    gc_free(&gc);
++#else
++    ms=
+g(M_FATAL, "ERROR: Management unix-socket support is not available on this =
+platform");
++#endif
++}
++
+ bool
+ open_management(struct context *c)
+ {
+     =
+/* initialize management layer */
+     if (management)
+     {
++        unsi=
+gned int flags =3D c->options=2Emanagement_flags;
++        if (flags & MF_U=
+NIX_SOCK_SCRIPT)
++        {
++            /* This creates a filename that sh=
+ould be unguessable */
++            char sockname[64] =3D { 0 };
++         =
+   snprintf(sockname, sizeof(sockname),
++                     PACKAGE_NAME =
+"_omi_%016" PRIx64 "=2Esock", get_random());
++
++            c->options=2Ema=
+nagement_addr =3D platform_gen_path(c->options=2Etmp_dir, sockname, &c->gc)=
+;
++        }
++
+         if (c->options=2Emanagement_addr)
+         {
+-     =
+       unsigned int flags =3D c->options=2Emanagement_flags;
+             i=
+f (c->options=2Emode =3D=3D MODE_SERVER)
+             {
+                 fl=
+ags |=3D MF_SERVER;
+             }
++
+             if (management_open(
+    =
+                 management, c->options=2Emanagement_addr, c->options=2Eman=
+agement_port,
+                     c->options=2Emanagement_user_pass, c->op=
+tions=2Emanagement_client_user,
+@@ -4367,6 +4408,11 @@
+                    =
+                  NULL);
+             }
+ 
++            if (flags & MF_UNIX_=
+SOCK_SCRIPT)
++            {
++                run_management_script(c);
++   =
+         }
++
+             /* initial management hold, called early, before =
+first context initialization */
+             do_hold(0);
+             if (I=
+S_SIG(c))
+diff --git a/src/openvpn/manage=2Ec b/src/openvpn/manage=2Ec
+inde=
+x 0fc9ee2=2E=2Eac3d4b7 100644
+--- a/src/openvpn/manage=2Ec
++++ b/src/openvp=
+n/manage=2Ec
+@@ -47,6 +47,7 @@
+ #include "resolve=2Eh"
+ 
+ #include "memdbg=
+=2Eh"
++#include "run_command=2Eh"
+ 
+ #ifdef ENABLE_PKCS11
+ #include "pkcs11=
+=2Eh"
+@@ -334,7 +335,8 @@
+ man_delete_unix_socket(const struct management *=
+man)
+ {
+ #if UNIX_SOCK_SUPPORT
+-    if ((man->settings=2Eflags & (MF_UNIX_S=
+OCK | MF_CONNECT_AS_CLIENT)) =3D=3D MF_UNIX_SOCK)
++    if ((man->settings=
+=2Eflags & (MF_UNIX_SOCK | MF_CONNECT_AS_CLIENT)) =3D=3D MF_UNIX_SOCK
++    =
+    || man->settings=2Eflags & MF_UNIX_SOCK_SCRIPT)
+     {
+         socket_=
+delete_unix(&man->settings=2Elocal_unix);
+     }
+@@ -2196,6 +2198,12 @@
+   =
+          }
+         }
+ 
++        if (man->settings=2Eflags & MF_UNIX_SOCK_=
+SCRIPT && !man_password_needed(man))
++        {
++            msg(D_MANAGEME=
+NT, "MANAGEMENT: Triggering exit on unix-script disconnect");
++            =
+throw_signal_soft(SIGTERM, "management-exit");
++        }
++
+         if (ma=
+n->settings=2Eflags & MF_CONNECT_AS_CLIENT)
+         {
+             msg(D_M=
+ANAGEMENT, "MANAGEMENT: Triggering management exit");
+@@ -2644,6 +2652,15 @=
+@
+         {
+             get_user_pass(&ms->up, pass_file, "Management", G=
+ET_USER_PASS_PASSWORD_ONLY);
+         }
++        else if (ms->flags & MF_UN=
+IX_SOCK_SCRIPT)
++        {
++            /* Set random password=2E The passw=
+ord is only
++             * alphanumerical [0-9a-f] but still has 128 bit o=
+f randomness,
++             * which is more than enough */
++            snp=
+rintf(ms->up=2Epassword, sizeof(ms->up=2Epassword),
++                     "=
+%" PRIx64 "%" PRIx64, get_random(), get_random());
++            ms->up=2Ede=
+fined =3D true;
++        }
+ 
+ #if UNIX_SOCK_SUPPORT
+         /*
+@@ -2789,6 =
++2806,13 @@
+         man_close_socket(man, mc->sd_cli);
+     }
+ 
++#if UNIX_=
+SOCK_SUPPORT
++    if (mc->unix_script_pid)
++    {
++        kill(mc->unix_sc=
+ript_pid, SIGINT);
++    }
++#endif
++
+     command_line_free(mc->in);
+     bu=
+ffer_list_free(mc->out);
+ 
+@@ -3448,6 +3472,19 @@
+                 break;
+ =
+            }
+ 
++#if UNIX_SOCK_SUPPORT
++            /* if unix-script is in=
+ use, the script might have exited
++             * while we are waiting for=
+ it to connect */
++            const char *msg_prefix =3D "ERROR: Failed ru=
+nning management unix-script: ";
++
++            if (man->connection=2Eunix_=
+script_pid
++                && !openvpn_waitpid_check(man->connection=2Euni=
+x_script_pid, msg_prefix, M_FATAL))
++            {
++                status =
+=3D -1;
++                break;
++            }
++#endif
++
+             if (s=
+tatus > 0)
+             {
+                 break;
+diff --git a/src/openvpn/=
+manage=2Eh b/src/openvpn/manage=2Eh
+index f2c6916=2E=2E157039d 100644
+--- a=
+/src/openvpn/manage=2Eh
++++ b/src/openvpn/manage=2Eh
+@@ -42,6 +42,7 @@
+ #de=
+fine MF_EXTERNAL_CERT          (1u << 15)
+ #define MF_EXTERNAL_KEY_PSSPAD  =
+  (1u << 16)
+ #define MF_EXTERNAL_KEY_DIGEST    (1u << 17)
++#define MF_UNIX=
+_SOCK_SCRIPT       (1u << 18)
+ 
+ #ifdef ENABLE_MANAGEMENT
+ 
+@@ -327,6 +328,=
+9 @@
+     int fdtosend;
+     int lastfdreceived;
+ #endif
++#if UNIX_SOCK_SUP=
+PORT
++    pid_t unix_script_pid;
++#endif
+     int client_version;
+ };
+ 
+dif=
+f --git a/src/openvpn/options=2Ec b/src/openvpn/options=2Ec
+index 8e0c602=
+=2E=2Efb319ae 100644
+--- a/src/openvpn/options=2Ec
++++ b/src/openvpn/option=
+s=2Ec
+@@ -1700,7 +1700,7 @@
+      * Check for consistency of management opt=
+ions
+      */
+ #ifdef ENABLE_MANAGEMENT
+-    if (!options->management_addr
+=
++    if (!options->management_addr && !(options->management_flags & MF_UNIX=
+_SOCK_SCRIPT)
+         && (options->management_flags
+             || option=
+s->management_log_history_cache !=3D defaults=2Emanagement_log_history_cach=
+e))
+     {
+@@ -4285,7 +4285,7 @@
+     else if (streq(p[0], "management") &&=
+ p[1] && p[2] && !p[4])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+-=
+        if (streq(p[2], "unix"))
++        if (streq(p[2], "unix") || streq(=
+p[2], "unix-script"))
+         {
+ #if UNIX_SOCK_SUPPORT
+             option=
+s->management_flags |=3D MF_UNIX_SOCK;
+@@ -4295,7 +4295,16 @@
+ #endif
+     =
+    }
+ 
+-        options->management_addr =3D p[1];
++        if (streq(p[2]=
+, "unix-script"))
++        {
++            options->management_flags |=3D MF=
+_UNIX_SOCK_SCRIPT | MF_HOLD;
++            set_user_script(options, &options=
+->management_script, p[1],
++                            "management unix-sc=
+ript", false);
++        }
++        else
++        {
++            options->ma=
+nagement_addr =3D p[1];
++        }
+         options->management_port =3D p[=
+2];
+         if (p[3])
+         {
+diff --git a/src/openvpn/options=2Eh b/sr=
+c/openvpn/options=2Eh
+index c58530a=2E=2E6a3bf61 100644
+--- a/src/openvpn/o=
+ptions=2Eh
++++ b/src/openvpn/options=2Eh
+@@ -446,6 +446,8 @@
+     const cha=
+r *management_addr;
+     const char *management_port;
+     const char *mana=
+gement_user_pass;
++    /** Script executed to talk to the management interf=
+ace */
++    const char *management_script;
+     int management_log_history_=
+cache;
+     int management_echo_buffer_size;
+     int management_state_buff=
+er_size;
 
 -- 
-=
-To view, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1852?usp=3Demail
-=
-To unsubscribe, or for help writing mail filters, visit https://gerrit=2Eop=
-envpn=2Enet/settings?usp=3Demail
+To view, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/185=
+2?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit https=
+://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Gerrit-MessageType: comment
-Gerrit-Projec=
-t: openvpn
+Gerrit-MessageType: newpatc=
+hset
+Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I307e64079f436aa782f7e24=
-bfff665a545ad2fa0
+Gerrit-Change-Id: I307e6=
+4079f436aa782f7e24bfff665a545ad2fa0
 Gerrit-Change-Number: 1852
-Gerrit-PatchSet: 15
-Gerrit-Own=
-er: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Reviewer: Frank Lichte=
-nheld <frank@lichtenheld=2Ecom>
-Gerrit-Reviewer: R=C4=83zvan Cojocaru <razv=
-anc@mailbox=2Eorg>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourcefo=
-rge=2Enet>
-Gerrit-Attention: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
-G=
-errit-Attention: Frank Lichtenheld <frank@lichtenheld=2Ecom>
-Gerrit-Comment=
--Date: Tue, 27 Oct 2026 13:18:20 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-L=
-abels: No
-Comment-In-Reply-To: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>=
+Gerrit-Patch=
+Set: 16
+Gerrit-Owner: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Revi=
+ewer: Frank Lichtenheld <frank@lichtenheld=2Ecom>
+Gerrit-Reviewer: R=C4=83z=
+van Cojocaru <razvanc@mailbox=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-deve=
+l@lists=2Esourceforge=2Enet>
+Gerrit-Attention: R=C4=83zvan Cojocaru <razvan=
+c@mailbox=2Eorg>
+Gerrit-Attention: Frank Lichtenheld <frank@lichtenheld=2Ec=
+om>
 
-
---58xM8NQZJTI=
+--l8RhuQFbGlI=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: Frank Lichtenheld, R=C4=83zvan Cojocaru=2E </p>
 <p>Ar=
-ne Schwabe has posted comments on this change by Arne Schwabe=2E</p><p><a h=
-ref=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1852?usp=3Demail">View Ch=
-ange</a></p><p>5 comments:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>File doc/man-sections/management-opt=
-ions=2Erst:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"mar=
-gin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"h=
-ttps://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1852/comment/057f282c_feff05fe?us=
-p=3Demail">Patch Set #15, Line 142:</a> <code style=3D"font-family:monospac=
-e,monospace">  :code:`unixscript` this option has no effect since a disconn=
-ect will</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; mar=
-gin: 10px 0; padding: 0 10px;">&quot;unixscript&quot; should be &quot;unix-=
-script&quot;=2E</blockquote></p><p class=3D"blocks" style=3D"white-space: p=
-re-wrap; word-wrap: break-word;">Done</p></li></ul></li><li style=3D"margin=
-: 0; padding: 0;"><p>File src/openvpn/init=2Ec:</p><ul style=3D"list-style:=
- none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
-=3D"margin-bottom: 4px;"><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvp=
-n/+/1852/comment/b9187f79_64962386?usp=3Demail">Patch Set #15, Line 4388:</=
-a> <code style=3D"font-family:monospace,monospace">                     PAC=
-KAGE_NAME &quot;_omi_%08&quot; PRIx64 &quot;%08&quot; PRIx64 &quot;=2Esock&=
-quot;,</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margi=
-n: 10px 0; padding: 0 10px;">This prints out a 64-bit value so it could the=
-oretically exceed the 8 digits zero-padding=2E [=E2=80=A6]</blockquote></p>=
-<p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;"=
->Changed it to %016=2E 64 bit are enough here, we don&#39;t need 128 bit=2E=
-</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn=
-/manage=2Ec:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"ma=
-rgin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"=
-https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1852/comment/51b095c9_66ed99fa?u=
-sp=3Demail">Patch Set #15, Line 343:</a> <code style=3D"font-family:monospa=
-ce,monospace"></code></p><p><blockquote style=3D"border-left: 1px solid #aa=
-a; margin: 10px 0; padding: 0 10px;">Stray newline added?</blockquote></p><=
-p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">=
-Acknowledged</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
-=3D"margin-bottom: 4px;"><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvp=
-n/+/1852/comment/3900ef1c_0e74cedf?usp=3Demail">Patch Set #15, Line 2213:</=
-a> <code style=3D"font-family:monospace,monospace">            }</code></p>=
-<p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; paddin=
-g: 0 10px;">The extra `{}` block seems unnecessary=2E</blockquote></p><p cl=
-ass=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Done=
-</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-b=
-ottom: 4px;"><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1852/com=
-ment/18656af7_a7e19f71?usp=3Demail">Patch Set #15, Line 3484:</a> <code sty=
-le=3D"font-family:monospace,monospace">                &amp;&amp; !openvpn_=
-waitpid_check(man-&gt;connection=2Eunix_script_pid, msg_prefix, M_FATAL))</=
-code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px =
-0; padding: 0 10px;">`openvpn_waitpid_check()` calls `msg(msglevel, &quot;%=
-scould not execute external program (exit code 127) [=E2=80=A6]</blockquote=
-></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-w=
-ord;">Acknowledged</p></li></ul></li></ul><p>To view, visit <a href=3D"http=
-s://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1852?usp=3Demail">change 1852</a>=2E=
- To unsubscribe, or for help writing mail filters, visit <a href=3D"https:/=
-/gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div items=
-cope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=
-=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"u=
-rl" href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1852?usp=3Demail"/><=
-meta itemprop=3D"name" content=3D"View Change"/></div></div>
+ne Schwabe <strong>uploaded patch set #16</strong> to this change=2E</p><p>=
+<a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1852?usp=3Demail">Vie=
+w Change</a></p><p>The following approvals got outdated and were removed:
+C=
+ode-Review-1 by R=C4=83zvan Cojocaru</p><pre class=3D"blocks" style=3D"font=
+-family: monospace,monospace; white-space: pre-wrap;">Add unix-script funct=
+ionality to the --management feature<br><br>This allows a script that handl=
+es management input/output to<br>be started alongside OpenVPN simpler in sm=
+all deployments=2E<br><br>Change-Id: I307e64079f436aa782f7e24bfff665a545ad2=
+fa0<br>Signed-off-by: Arne Schwabe &lt;arne@rfc2549=2Eorg&gt;<br>---<br>M d=
+oc/man-sections/management-options=2Erst<br>M doc/management-notes=2Etxt<br=
+>M src/openvpn/init=2Ec<br>M src/openvpn/manage=2Ec<br>M src/openvpn/manage=
+=2Eh<br>M src/openvpn/options=2Ec<br>M src/openvpn/options=2Eh<br>7 files c=
+hanged, 121 insertions(+), 9 deletions(-)<br><br></pre><pre class=3D"blocks=
+" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pu=
+ll ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/52/1852/16</pre>=
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/doc/man-sections/management-options=2Erst b/doc/man-section=
+s/management-options=2Erst</span><br><span>index 8dad52b=2E=2E2c79d05 10064=
+4</span><br><span>--- a/doc/man-sections/management-options=2Erst</span><br=
+><span>+++ b/doc/man-sections/management-options=2Erst</span><br><span>@@ -=
+14,6 +14,7 @@</span><br><span>     management socket-name unix pw-file  # (=
+recommended)</span><br><span>     management IP port                   # (I=
+NSECURE)</span><br><span>     management IP port pw-file           #</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    management script unix=
+-script</span><br><span> </span><br><span>   ``pw-file``, if specified, is =
+a password file where the password must</span><br><span>   be on first line=
+=2E Instead of a filename it can use the keyword stdin</span><br><span>@@ -=
+25,6 +26,14 @@</span><br><span>   ``--management-client-user`` and ``--mana=
+gement-client-group``</span><br><span>   directives to restrict access=2E</=
+span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+  W=
+hen the variant :code:`unix-script` is used, OpenVPN will start the</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+  specified script on start=
+up and enable ``--management-hold``=2E</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+  OpenVPN will generate a random path for the unix socke=
+t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  and management p=
+assword=2E These are passed as environment</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+  variables :code:`MANAGEMENT_SOCKET`, :code:`MANAGE=
+MENT_PASSWORD`</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  to =
+the script when being started=2E When OpenVPN terminates it sends</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+  a :code:`SIGINT` signal to =
+the running script=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span>   The management interface provides a special mode wher=
+e the TCP</span><br><span>   management link can operate over the tunnel it=
+self=2E To enable this mode,</span><br><span>   set IP to ``tunnel``=2E Tun=
+nel mode will cause the management interface to</span><br><span>@@ -127,10 =
++136,11 @@</span><br><span>   (client-only)=2E</span><br><span> </span><br>=
+<span> --management-signal</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-  Send SIGUSR1 signal to OpenVPN if management session disconnects=2E =
+This</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  is useful when =
+you wish to disconnect an OpenVPN session on user logoff=2E</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-  For ``--management-client`` this op=
+tion is not needed since a disconnect</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-  will always generate a :code:`SIGTERM`=2E</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+  Send :code:`SIGUSR1` signal to Op=
+enVPN if management session disconnects=2E</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+  This is useful when you wish to disconnect an Open=
+VPN session on user</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+  logoff=2E For ``--management-client`` or ``--management`` with</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+  :code:`unix-script` this opt=
+ion has no effect since a disconnect will</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+  always trigger sending a :code:`SIGTERM`=2E</span><=
+br><span> </span><br><span> --management-up-down</span><br><span>   Report =
+tunnel up/down events to management interface=2E</span><br><span>diff --git=
+ a/doc/management-notes=2Etxt b/doc/management-notes=2Etxt</span><br><span>=
+index a28a1a8=2E=2E4d726c4 100644</span><br><span>--- a/doc/management-note=
+s=2Etxt</span><br><span>+++ b/doc/management-notes=2Etxt</span><br><span>@@=
+ -35,6 +35,10 @@</span><br><span> you can telnet to the management port (ma=
+ke sure to use</span><br><span> a telnet client which understands &quot;raw=
+&quot; mode)=2E</span><br><span> </span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+When password authentication is enabled, the management inter=
+face</span><br><span style=3D"color: hsl(120, 100%, 40%);">+will require se=
+nding the password on its own line after establishing</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+the connection=2E</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span> Once connected to the m=
+anagement port, you can use</span><br><span> the &quot;help&quot; command t=
+o list all commands=2E</span><br><span> </span><br><span>diff --git a/src/o=
+penvpn/init=2Ec b/src/openvpn/init=2Ec</span><br><span>index 24cf532=2E=2E1=
+b8b2a5 100644</span><br><span>--- a/src/openvpn/init=2Ec</span><br><span>++=
++ b/src/openvpn/init=2Ec</span><br><span>@@ -4343,19 +4343,60 @@</span><br>=
+<span>     }</span><br><span> }</span><br><span> </span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+run_management_script(const struct context *c)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+#if UNIX_SOCK_SUPPORT</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena gc =3D gc_new();</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct argv argv =3D=
+ argv_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    str=
+uct env_set *env =3D env_set_create(&amp;gc);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    setenv_str(env, &quot;MANAGEMENT_PASSWORD&quot;, management-&gt;=
+settings=2Eup=2Epassword);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    setenv_str(env, &quot;MANAGEMENT_SOCKET&quot;, c-&gt;options=2Em=
+anagement_addr);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    argv_parse_cmd(&am=
+p;argv, c-&gt;options=2Emanagement_script);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    int flags =3D S_NOWAITPID | S_SCRIPT | S_FATAL;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    int *pid =3D &amp;management-&gt;c=
+onnection=2Eunix_script_pid;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    const char *msg_prefix =3D &quot;ERROR: Failed running managem=
+ent unix-script: &quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    *pid =3D openvpn_execve_check(&amp;argv, env, flags, msg_prefix);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    if (!openvpn_waitpid_check(*pid, ms=
+g_prefix, M_FATAL))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        *pid =
+=3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    argv_free(&amp;argv);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+#else</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    msg(M_FATAL, &quot;ERROR: Management unix-socket=
+ support is not available on this platform&quot;);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span> bool</span><br><span> open_management(struct context *c)<=
+/span><br><span> {</span><br><span>     /* initialize management layer */</=
+span><br><span>     if (management)</span><br><span>     {</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        unsigned int flags =3D c-&gt=
+;options=2Emanagement_flags;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        if (flags &amp; MF_UNIX_SOCK_SCRIPT)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            /* This creates a filename that should =
+be unguessable */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+          char sockname[64] =3D { 0 };</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            snprintf(sockname, sizeof(sockname),</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+                     PACKAG=
+E_NAME &quot;_omi_%016&quot; PRIx64 &quot;=2Esock&quot;, get_random());</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            c-&gt;options=2Emanagement_ad=
+dr =3D platform_gen_path(c-&gt;options=2Etmp_dir, sockname, &amp;c-&gt;gc);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>         if =
+(c-&gt;options=2Emanagement_addr)</span><br><span>         {</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-            unsigned int flags =3D c=
+-&gt;options=2Emanagement_flags;</span><br><span>             if (c-&gt;opt=
+ions=2Emode =3D=3D MODE_SERVER)</span><br><span>             {</span><br><s=
+pan>                 flags |=3D MF_SERVER;</span><br><span>             }</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>    =
+         if (management_open(</span><br><span>                     manageme=
+nt, c-&gt;options=2Emanagement_addr, c-&gt;options=2Emanagement_port,</span=
+><br><span>                     c-&gt;options=2Emanagement_user_pass, c-&gt=
+;options=2Emanagement_client_user,</span><br><span>@@ -4367,6 +4408,11 @@</=
+span><br><span>                                      NULL);</span><br><span=
+>             }</span><br><span> </span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+            if (flags &amp; MF_UNIX_SOCK_SCRIPT)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+                run_management_script(=
+c);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     =
+        /* initial management hold, called early, before first context init=
+ialization */</span><br><span>             do_hold(0);</span><br><span>    =
+         if (IS_SIG(c))</span><br><span>diff --git a/src/openvpn/manage=2Ec=
+ b/src/openvpn/manage=2Ec</span><br><span>index 0fc9ee2=2E=2Eac3d4b7 100644=
+</span><br><span>--- a/src/openvpn/manage=2Ec</span><br><span>+++ b/src/ope=
+nvpn/manage=2Ec</span><br><span>@@ -47,6 +47,7 @@</span><br><span> #include=
+ &quot;resolve=2Eh&quot;</span><br><span> </span><br><span> #include &quot;=
+memdbg=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#in=
+clude &quot;run_command=2Eh&quot;</span><br><span> </span><br><span> #ifdef=
+ ENABLE_PKCS11</span><br><span> #include &quot;pkcs11=2Eh&quot;</span><br><=
+span>@@ -334,7 +335,8 @@</span><br><span> man_delete_unix_socket(const stru=
+ct management *man)</span><br><span> {</span><br><span> #if UNIX_SOCK_SUPPO=
+RT</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if ((man-&gt;se=
+ttings=2Eflags &amp; (MF_UNIX_SOCK | MF_CONNECT_AS_CLIENT)) =3D=3D MF_UNIX_=
+SOCK)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if ((man-&=
+gt;settings=2Eflags &amp; (MF_UNIX_SOCK | MF_CONNECT_AS_CLIENT)) =3D=3D MF_=
+UNIX_SOCK</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ||=
+ man-&gt;settings=2Eflags &amp; MF_UNIX_SOCK_SCRIPT)</span><br><span>     {=
+</span><br><span>         socket_delete_unix(&amp;man-&gt;settings=2Elocal_=
+unix);</span><br><span>     }</span><br><span>@@ -2196,6 +2198,12 @@</span>=
+<br><span>             }</span><br><span>         }</span><br><span> </span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (man-&gt;setti=
+ngs=2Eflags &amp; MF_UNIX_SOCK_SCRIPT &amp;&amp; !man_password_needed(man))=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+            msg(D_MANAGEMENT,=
+ &quot;MANAGEMENT: Triggering exit on unix-script disconnect&quot;);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+            throw_signal_s=
+oft(SIGTERM, &quot;management-exit&quot;);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span>         if (man-&gt;settings=2Eflags &amp; M=
+F_CONNECT_AS_CLIENT)</span><br><span>         {</span><br><span>           =
+  msg(D_MANAGEMENT, &quot;MANAGEMENT: Triggering management exit&quot;);</s=
+pan><br><span>@@ -2644,6 +2652,15 @@</span><br><span>         {</span><br><=
+span>             get_user_pass(&amp;ms-&gt;up, pass_file, &quot;Management=
+&quot;, GET_USER_PASS_PASSWORD_ONLY);</span><br><span>         }</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        else if (ms-&gt;flags =
+&amp; MF_UNIX_SOCK_SCRIPT)</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         /* Set random password=2E The password is only</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+             * alphanumerical [0-9a-f] =
+but still has 128 bit of randomness,</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+             * which is more than enough */</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+            snprintf(ms-&gt;up=2Ep=
+assword, sizeof(ms-&gt;up=2Epassword),</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+                     &quot;%&quot; PRIx64 &quot;%&quot; =
+PRIx64, get_random(), get_random());</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+            ms-&gt;up=2Edefined =3D true;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span> </span><b=
+r><span> #if UNIX_SOCK_SUPPORT</span><br><span>         /*</span><br><span>=
+@@ -2789,6 +2806,13 @@</span><br><span>         man_close_socket(man, mc-&g=
+t;sd_cli);</span><br><span>     }</span><br><span> </span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#if UNIX_SOCK_SUPPORT</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    if (mc-&gt;unix_script_pid)</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        kill(mc-&gt;unix_script_pid, SIGI=
+NT);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     command_line_free(m=
+c-&gt;in);</span><br><span>     buffer_list_free(mc-&gt;out);</span><br><sp=
+an> </span><br><span>@@ -3448,6 +3472,19 @@</span><br><span>               =
+  break;</span><br><span>             }</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+#if UNIX_SOCK_SUPPORT</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+            /* if unix-script is in=
+ use, the script might have exited</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+             * while we are waiting for it to connect */</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+            const char =
+*msg_prefix =3D &quot;ERROR: Failed running management unix-script: &quot;;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            if (man-&gt;connection=2Eu=
+nix_script_pid</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+           &amp;&amp; !openvpn_waitpid_check(man-&gt;connection=2Eunix_scri=
+pt_pid, msg_prefix, M_FATAL))</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                status =3D -1;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+                break;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span>             if (status &gt; 0)</span><br><span>           =
+  {</span><br><span>                 break;</span><br><span>diff --git a/sr=
+c/openvpn/manage=2Eh b/src/openvpn/manage=2Eh</span><br><span>index f2c6916=
+=2E=2E157039d 100644</span><br><span>--- a/src/openvpn/manage=2Eh</span><br=
+><span>+++ b/src/openvpn/manage=2Eh</span><br><span>@@ -42,6 +42,7 @@</span=
+><br><span> #define MF_EXTERNAL_CERT          (1u &lt;&lt; 15)</span><br><s=
+pan> #define MF_EXTERNAL_KEY_PSSPAD    (1u &lt;&lt; 16)</span><br><span> #d=
+efine MF_EXTERNAL_KEY_DIGEST    (1u &lt;&lt; 17)</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+#define MF_UNIX_SOCK_SCRIPT       (1u &lt;&lt;=
+ 18)</span><br><span> </span><br><span> #ifdef ENABLE_MANAGEMENT</span><br>=
+<span> </span><br><span>@@ -327,6 +328,9 @@</span><br><span>     int fdtose=
+nd;</span><br><span>     int lastfdreceived;</span><br><span> #endif</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+#if UNIX_SOCK_SUPPORT</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    pid_t unix_script_pi=
+d;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br>=
+<span>     int client_version;</span><br><span> };</span><br><span> </span>=
+<br><span>diff --git a/src/openvpn/options=2Ec b/src/openvpn/options=2Ec</s=
+pan><br><span>index 8e0c602=2E=2Efb319ae 100644</span><br><span>--- a/src/o=
+penvpn/options=2Ec</span><br><span>+++ b/src/openvpn/options=2Ec</span><br>=
+<span>@@ -1700,7 +1700,7 @@</span><br><span>      * Check for consistency o=
+f management options</span><br><span>      */</span><br><span> #ifdef ENABL=
+E_MANAGEMENT</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!=
+options-&gt;management_addr</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    if (!options-&gt;management_addr &amp;&amp; !(options-&gt;manag=
+ement_flags &amp; MF_UNIX_SOCK_SCRIPT)</span><br><span>         &amp;&amp; =
+(options-&gt;management_flags</span><br><span>             || options-&gt;m=
+anagement_log_history_cache !=3D defaults=2Emanagement_log_history_cache))<=
+/span><br><span>     {</span><br><span>@@ -4285,7 +4285,7 @@</span><br><spa=
+n>     else if (streq(p[0], &quot;management&quot;) &amp;&amp; p[1] &amp;&a=
+mp; p[2] &amp;&amp; !p[4])</span><br><span>     {</span><br><span>         =
+VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-        if (streq(p[2], &quot;unix&quot;))</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        if (streq(p[2], &quot;unix&quot;=
+) || streq(p[2], &quot;unix-script&quot;))</span><br><span>         {</span=
+><br><span> #if UNIX_SOCK_SUPPORT</span><br><span>             options-&gt;=
+management_flags |=3D MF_UNIX_SOCK;</span><br><span>@@ -4295,7 +4295,16 @@<=
+/span><br><span> #endif</span><br><span>         }</span><br><span> </span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        options-&gt;manageme=
+nt_addr =3D p[1];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      if (streq(p[2], &quot;unix-script&quot;))</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+            options-&gt;management_flags |=3D MF_UNIX_SOC=
+K_SCRIPT | MF_HOLD;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+            set_user_script(options, &amp;options-&gt;management_script, p[=
+1],</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
+            &quot;management unix-script&quot;, false);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        else</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+            options-&gt;management_addr =3D p[1];</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span>         o=
+ptions-&gt;management_port =3D p[2];</span><br><span>         if (p[3])</sp=
+an><br><span>         {</span><br><span>diff --git a/src/openvpn/options=2E=
+h b/src/openvpn/options=2Eh</span><br><span>index c58530a=2E=2E6a3bf61 1006=
+44</span><br><span>--- a/src/openvpn/options=2Eh</span><br><span>+++ b/src/=
+openvpn/options=2Eh</span><br><span>@@ -446,6 +446,8 @@</span><br><span>   =
+  const char *management_addr;</span><br><span>     const char *management_=
+port;</span><br><span>     const char *management_user_pass;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    /** Script executed to talk to=
+ the management interface */</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    const char *management_script;</span><br><span>     int manage=
+ment_log_history_cache;</span><br><span>     int management_echo_buffer_siz=
+e;</span><br><span>     int management_state_buffer_size;</span><br></pre><=
+p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1852=
+?usp=3Demail">change 1852</a>=2E To unsubscribe, or for help writing mail f=
+ilters, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demai=
+l">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailM=
+essage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/=
+ViewAction"><link itemprop=3D"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c=
+/openvpn/+/1852?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chang=
+e"/></div></div>
 
-<div style=3D=
-"display:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:no=
-ne"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Bra=
-nch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I307e6407=
-9f436aa782f7e24bfff665a545ad2fa0 </div>
-<div style=3D"display:none"> Gerrit=
--Change-Number: 1852 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1=
-5 </div>
-<div style=3D"display:none"> Gerrit-Owner: Arne Schwabe &lt;arne-o=
-penvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewe=
-r: Frank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
-<div style=3D"d=
-isplay:none"> Gerrit-Reviewer: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eo=
-rg&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;ope=
-nvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
-<div style=3D"display:none"=
-> Gerrit-Attention: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt; </di=
-v>
-<div style=3D"display:none"> Gerrit-Attention: Frank Lichtenheld &lt;fra=
-nk@lichtenheld=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment=
--Date: Tue, 27 Oct 2026 13:18:20 +0000 </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatch=
+set </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div=
+ style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display=
+:none"> Gerrit-Change-Id: I307e64079f436aa782f7e24bfff665a545ad2fa0 </div>
+=
+<div style=3D"display:none"> Gerrit-Change-Number: 1852 </div>
+<div style=
+=3D"display:none"> Gerrit-PatchSet: 16 </div>
 <div style=3D"display:none"> =
-Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labe=
-ls: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: R=C4=83zvan=
- Cojocaru &lt;razvanc@mailbox=2Eorg&gt; </div>
+Gerrit-Owner: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div s=
+tyle=3D"display:none"> Gerrit-Reviewer: Frank Lichtenheld &lt;frank@lichten=
+held=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: R=C4=83=
+zvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt; </div>
+<div style=3D"display:no=
+ne"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&g=
+t; </div>
+<div style=3D"display:none"> Gerrit-Attention: R=C4=83zvan Cojoca=
+ru &lt;razvanc@mailbox=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit=
+-Attention: Frank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
 
-</body></html>
---58xM8NQZJTI=--
+</bod=
+y></html>
+--l8RhuQFbGlI=--
 
 
---===============2089496750146206025==
+--===============3450466280248070889==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============2089496750146206025==
+--===============3450466280248070889==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -393,5 +1037,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============2089496750146206025==--
+--===============3450466280248070889==--
 
