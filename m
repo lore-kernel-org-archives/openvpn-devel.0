@@ -1,138 +1,76 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F4C0606A31A
-	for <openvpn-devel@archiver.kernel.org>; Tue, 27 Oct 2026 10:22:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA310606A31A
+	for <openvpn-devel@archiver.kernel.org>; Tue, 27 Oct 2026 10:23:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=hvtlqoz8;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=YxOfWPW7;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=AoT57S6g;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=D3IbBbF+
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=gFDkr+xH;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=a2nnaoGC;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=mZeE8Sgs
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Unsubscribe-Post:List-Owner;
-	bh=JZCSU5vT1JvmCTEVR9b7xqQHRuvCpkZubs/PX7AX7jk=; b=hvtlqoz8T3BlDOXur7Yojf0KIl
-	MSKdbjHT+lcxiUHkiYQkh/FR0jVItLfmYpVHPxuABzV0seL7ivA/YKRjGwQMr/RIdkVukJFrZvrHA
-	mw/g6a21GCb2j0Y1eytT/hssKiRQm8h9gGoSQuaLaE6ggr0/h6ktLpwGDx9Ue+GrZk+o=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
+	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
+	List-Owner; bh=aBqhicanApuvAQJIquQnlmSzb2hGZ7JRcyh1OClIjps=; b=gFDkr+xHFdO5qh
+	4KwngpolGAtNhQPBzWOWTRHRcwh4A4WycwKxTxNEpn8iUNcTIxch8bNAi1QToRSjNP3jme2autjgD
+	/v5p3sFVRe7OiPJdSUJ1KFa4hvhrS0P7mVjDZBVpumoe5+sau9JJf5IlvIMbB2J6IG4WYi9nTC4G7
+	qCE=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xLeKI-000000005tG-3VfY;
-	Tue, 27 Oct 2026 10:22:42 +0000
+	id 1xLeLD-000000004RH-1mec;
+	Tue, 27 Oct 2026 10:23:39 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xLeK6-000000005t3-2XSx
- for openvpn-devel@lists.sourceforge.net;
- Tue, 27 Oct 2026 10:22:30 +0000
+ (envelope-from <gert@blue4.greenie.muc.de>)
+ id 1xLeLB-000000004RA-33gI for openvpn-devel@lists.sourceforge.net;
+ Tue, 27 Oct 2026 10:23:37 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
+ In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=J24Pu6IPOW12cRHNAV7LJwnatnAI0vORdA3b5bOf4Vw=; b=YxOfWPW7cAUWD7drq4QSGq7TAY
- +Jo/+jLaNCQTFC+l4X2lZk2pvEqyXVapItkUJMk7jialyiykk+5jXxa6WqpEccY6Knp/uDG1Ef4/O
- VPjg8PK2pp6UBxp8Ke1ZBYrMCjSGfRa0Wh4e5OBwJ3RYDmwC2NHHcomAIPgnjMlwcVfc=;
+ bh=WQvyUFX1aX1DCmz9ltV6ASovzI/RHI6eWiHR/v1fxuA=; b=a2nnaoGCIHooFtSq7m8GIDLr3+
+ 26P3YnWIVqqPHvGXrq2I+dtypMfDrafPMFGTXLIDiugh8IlzzjF/+dKFyon8RnEJ2VXNGYISdzedW
+ B5U90cbs/DX1SLW1G5IascHp/xswmxwtqoYMZD0NEJUmUAS+Y2wdegyP7guqRu8IvpuQ=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
- Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
+ h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
+ Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=J24Pu6IPOW12cRHNAV7LJwnatnAI0vORdA3b5bOf4Vw=; b=AoT57S6g1MclNn5bX40YOBcbOs
- fEjvSjgKUkhPHvyrk916mPKHQoVetDl8g5Jafgapt2a4be1divyp4Hg8BU5xY9i5+uvTgbTjgTuTG
- K8HkzyMrMyHozmPPtSpquhb5SiW/BRvNgM/6JjPMUbbPz9qcsmBuS/FgMx3nqV66GItY=;
-Received: from mail-wr1-f42.google.com ([209.85.221.42])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xLeK4-000000002t8-1GH4 for openvpn-devel@lists.sourceforge.net;
- Tue, 27 Oct 2026 10:22:30 +0000
-Received: by mail-wr1-f42.google.com with SMTP id
- ffacd0b85a97d-48e00eee27dso2507389f8f.0
- for <openvpn-devel@lists.sourceforge.net>;
- Tue, 27 Oct 2026 03:22:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1793096542; x=1793701342; darn=lists.sourceforge.net;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
- :reply-to:content-type;
- bh=J24Pu6IPOW12cRHNAV7LJwnatnAI0vORdA3b5bOf4Vw=;
- b=D3IbBbF+9V2Rd9xfEF3vWEgvYwhOiYq162w4OR7RMOQ2U9ooYemfaqON5yExiG+gUl
- ttNzfxc/dKw6+W26q9kfhwQdUpWBSWp4QfWOui4I60DegU4Rw7MlFU2HISLzHW5xZW/s
- fLRrHz8QMgsQ/tfkIdJj+ArxMpTlo3qirGtlnjDZGwG62t/DZ9U1d7cdPPxEBZZgpJvC
- /G4g/T+WFGrfRfq9n4+Ok+KM9dVKDfVQGB1+QjKe0t+NM2K39t466qbXAy08mQJeSoZt
- vtJ5nVXbxO8/OpyJNGbbyL9pX3puxstDV/A9kmJqgqY4u3U9Fz0bkaG+fDqOC1tvr3rg
- yUxg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1793096542; x=1793701342;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
- :cc:subject:date:message-id:reply-to:content-type;
- bh=J24Pu6IPOW12cRHNAV7LJwnatnAI0vORdA3b5bOf4Vw=;
- b=ZRfB/t2LvIc5ylJv7rW/4AWk7x6YblikBjX1FxpgIQJzmWxDMsLdoVhbtn0LcRXC30
- QedEatc9C/wdByNMpMRjDwtZZuHuE3RBuEkeBryJkMQbg3LQFYsnaBfNANjTwGQX9+7C
- SM/vxActLynDU2S4yaXZqeaes9fsce7fGP42LHyZJ/ukEAz4froNblYDCiyZP4HiK7bH
- 2MHhTFS2AX9UtS8YuTNK2sak0VS2dELJHp3UgGGinCpX+fBdWHCTw5y4W8FKdln0pZkY
- n6T8dQDZiwyy0hZoilZW2cfEvG0yoHRFoLROenEIAs416E8dVZ2e4fdIz2QBfzKtbc4Z
- aPow==
-X-Forwarded-Encrypted: i=1;
- AKwUvBxU2+7EsmStB1e4E6jcp/5Dgthff6REGCFLX4D6S1ITiCVXA41Sf28R/J4q4Iev4QMfMTFEpmdGqXteByEo@lists.sourceforge.net
-X-Gm-Message-State: AFq9FYK6n67cHPRNAxyIhgua2KQnuWJK+RnMLeaXnrmqxW22dRXZ5YkR
- m3CYDaEkpqk5K6LDVUO5hshfu+euxu5kWorxke6kLM6yWEEp59zsvbihe5ytcqa3SlfqgGcQr4b
- ZdHSSNGmDxOXzziGg9mr9viESKC1nGOiOCg201Ux64iOg66sOjyB3WL3x5FwPBCfCgKhu
-X-Gm-Gg: AYBFou1fTOIDxcuws0keWq4gBi6gJiZ+6r6TeSkGsfQ4mpKF6iH0Y3EEuzY9vo1thVG
- pGsfD49xopfU2CxcZ5+fJNv8HS3UklL+MffDmvxmbYCEb/O1oMoVrSaSyxUkcdhFKwBZZeoRtwY
- S3f7goTzHKiyPu1Ryq9HJ/J8Hg7Z7Ruhn7RvNX8hxDEKSlDpqkwlXSZwGrOl9KVdCF4IE6UthSQ
- dxPvEHy5kpNKxLaHdZBqc2qGQmVzdV0iUqhDqcxNENJwxDu1gTqCKR3zKYg8JlyAQjK2E0Kj87E
- tALoIkO3Arbc7JFco9Mt928KgcX/QsPoWMUqoyE7Z4YDy11GqD6XpLuea0nEixBcTax/lvA1nea
- AhhHkyQczcGXnCRH9DnGyY44uGS67phhFW9MfkFVsndnbw5Iu6LmX9gNil2VU07pT5c4anBo7VS
- g1Mi5iT6tY3HlmI5JFhQwp9C0lR9nKi/qRIlRTeNmoIcIvdbeoQuwr7ptdsUK1ZCJ0H+M5hNHpE
- mF8P2HvM6BCqv4/RiOP/m9+zV6ZyAZBCm5JbmXKrozFRzAICV1OptR8xu9icQtVq02QHSX7Pr21
- MVh7XjTmHIdCxqqPtQO6CIeRlddV7XylC2rf8QdXzP458vjJSzcTV8xuxwFI27g78T2D5aETta/
- 4tfig59RHGzS0gL2vuZ+ZuwYM12YH+TnEvw2NcUV5XQ==
-X-Received: by 2002:a05:6000:25ee:b0:48e:5444:a1d3 with SMTP id
- ffacd0b85a97d-48e5444a203mr7330282f8f.11.1793096541504; 
- Tue, 27 Oct 2026 03:22:21 -0700 (PDT)
-Received: from ip-10-18-1-162.eu-central-1.compute.internal
- (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
- by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-48e3ebc3a1csm22201797f8f.16.2026.10.27.03.22.21
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 27 Oct 2026 03:22:21 -0700 (PDT)
-X-Google-Original-From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?=
- <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Tue, 27 Oct 2026 10:22:17 +0000
-To: Gianmarco De Gregori <gianmarco@mandelbit.com>
-Auto-Submitted: auto-generated
-X-Gerrit-MessageType: comment
-X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: I89303975dd559d7cc06484a99f15c7062d3a3437
-X-Gerrit-Change-Number: 2042
-X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2042?usp=email>
-X-Gerrit-Commit: 4d2c93730319150472232bc261bff896f4e3b340
-X-Gerrit-Comment-Date: Tue, 27 Oct 2026 10:22:17 +0000
+ bh=WQvyUFX1aX1DCmz9ltV6ASovzI/RHI6eWiHR/v1fxuA=; b=mZeE8SgsaJKIU1vJp3A3n/NBs0
+ 27Bm6vNx6NFqr5B5afEqT4Bm97Sf1+W4Y9cbmfJnU9cWpdV39vrFL/Gz9QIa9LTiGsf1I6jhFulh9
+ ek0ujhhggNGWSbKaqs1vfY1OYQh9I+abCJ/7wDzvdq2vFV9BJEpPo5mGrEcc2dMaHUW0=;
+Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
+ id 1xLeL7-000000002F5-1eTg for openvpn-devel@lists.sourceforge.net;
+ Tue, 27 Oct 2026 10:23:37 +0000
+Received: from blue.greenie.muc.de (localhost [127.0.0.1])
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 69RANQsH019461
+ for <openvpn-devel@lists.sourceforge.net>; Tue, 27 Oct 2026 11:23:26 +0100
+Received: (from gert@localhost)
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 69RANQih019460
+ for openvpn-devel@lists.sourceforge.net; Tue, 27 Oct 2026 11:23:26 +0100
+From: Gert Doering <gert@greenie.muc.de>
+To: openvpn-devel@lists.sourceforge.net
+Date: Tue, 27 Oct 2026 11:23:20 +0100
+Message-ID: <20261027102325.19448-1-gert@greenie.muc.de>
+X-Mailer: git-send-email 2.55.0
 In-Reply-To: <gerrit.1793094393000.I89303975dd559d7cc06484a99f15c7062d3a3437@gerrit.openvpn.net>
 References: <gerrit.1793094393000.I89303975dd559d7cc06484a99f15c7062d3a3437@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzkzMDk0MzkzMDAwLkk4OTMwMzk3NWRkNTU5ZDdjYzA2NDg0YTk5ZjE1YzcwNjJkM2EzNDM3QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <afce9eb75e3c1e784757cb9f5c4f40fbd549e59d-EmailReviewComments-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
-User-Agent: Gerrit/3.14.2
-X-Spam-Score: -0.2 (/)
-X-Headers-End: 1xLeK4-000000002t8-1GH4
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: multi_io: move the
- tun write functions to multi_io.c
+X-Spam-Score: 1.3 (+)
+X-Headers-End: 1xLeL7-000000002F5-1eTg
+Subject: [Openvpn-devel] [PATCH v1] multi_io: move the tun write functions
+ to multi_io.c
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -142,154 +80,221 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= via Openvpn-devel
- <openvpn-devel@lists.sourceforge.net>
-Reply-To: razvanc@mailbox.org, arne-openvpn@rfc2549.org,
- gianmarco@mandelbit.com, openvpn-devel@lists.sourceforge.net
-Cc: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>,
- Arne Schwabe <arne-openvpn@rfc2549.org>
-Content-Type: multipart/mixed; boundary="===============6226240037015861160=="
-X-Spam-Status: No, score=-2.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
-	MAILING_LIST_MULTI,MXG_THREAD_INDEX_BAD,PDS_BAD_THREAD_QP_64,
-	SPF_HELO_PASS,SPF_PASS autolearn=no autolearn_force=no version=4.0.1
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-17.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_PASS,
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============6226240037015861160==
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="szC5nop1hhk="; charset=UTF-8
+From: Gianmarco De Gregori <gianmarco@mandelbit.com>
 
---szC5nop1hhk=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+multi_process_outgoing_tun() lived as a static inline in multi.h and
+multi_process_drop_outgoing_tun() in multi.c, while their only caller
+is multi_io_dispatch(). Move both next to it, as static functions named
+multi_io_write_tun() and multi_io_drop_tun(), so that writing to the
+tun device is found where the state machine decides to do it.
 
-Attention is currently required from: Arne Schwabe, Gianmarco De Gregori=2E=
+No functional change.
 
+Change-Id: I89303975dd559d7cc06484a99f15c7062d3a3437
+Signed-off-by: Gianmarco De Gregori <gianmarco@mandelbit.com>
+Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2042
+---
 
-R=C4=83zvan Cojocaru has posted comments on this change by Gianmarco De G=
-regori=2E ( https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2042?usp=3Demail )
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-=
-Change subject: multi_io: move the tun write functions to multi_io=2Ec
-=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2042
+This mail reflects revision 1 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Razvan Cojocaru <razvanc@mailbox.org>
 
-Patch Set 1: Co=
-de-Review+2
+        
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index e302a81..2e804ff 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -3766,27 +3766,6 @@
+ }
+ 
+ /*
+- * Drop a TUN/TAP outgoing packet..
+- */
+-void
+-multi_process_drop_outgoing_tun(struct multi_context *m, const unsigned int mpp_flags)
+-{
+-    struct multi_instance *mi = m->pending;
+-
+-    ASSERT(mi);
+-
+-    set_prefix(mi);
+-
+-    msg(D_MULTI_ERRORS, "MULTI: Outgoing TUN queue full, dropped packet len=%d",
+-        mi->context.c2.to_tun.len);
+-
+-    buf_reset(&mi->context.c2.to_tun);
+-
+-    multi_process_post(m, mi, mpp_flags);
+-    clear_prefix();
+-}
+-
+-/*
+  * Per-client route quota management
+  */
+ 
+diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
+index 5db7147..2d4983c 100644
+--- a/src/openvpn/multi.h
++++ b/src/openvpn/multi.h
+@@ -295,7 +295,7 @@
+  * function controls the necessary postprocessing.  It is called by many
+  * other functions that handle VPN tunnel related activity, such as \c
+  * multi_process_incoming_link(), \c multi_process_outgoing_link(), \c
+- * multi_process_incoming_tun(), \c multi_process_outgoing_tun(), and \c
++ * multi_process_incoming_tun(), \c multi_io_write_tun(), and \c
+  * multi_process_timeout(), among others.
+  *
+  * @param m            - The single \c multi_context structure.
+@@ -364,8 +364,6 @@
+ bool multi_process_incoming_tun(struct multi_context *m, const unsigned int mpp_flags);
+ 
+ 
+-void multi_process_drop_outgoing_tun(struct multi_context *m, const unsigned int mpp_flags);
+-
+ struct multi_instance *multi_get_queue(struct mbuf_set *ms);
+ 
+ void multi_ifconfig_pool_persist(struct multi_context *m, bool force);
+@@ -627,41 +625,6 @@
+ }
+ 
+ 
+-/**
+- * Send a packet over the virtual tun/tap network interface to its locally
+- * reachable destination.
+- * @ingroup internal_multiplexer
+- *
+- * This function calls \c process_outgoing_tun() to perform the actual
+- * sending of the packet.  Afterwards, it calls \c multi_process_post() to
+- * perform server-mode postprocessing.
+- *
+- * @param m            - The single \c multi_context structure.
+- * @param mpp_flags    - Fast I/O optimization flags.
+- *
+- * @return
+- *  - True, if the \c multi_instance associated with the packet sent was
+- *    not closed due to a signal during processing.
+- *  - Falls, if the \c multi_instance was closed.
+- */
+-static inline bool
+-multi_process_outgoing_tun(struct multi_context *m, const unsigned int mpp_flags)
+-{
+-    struct multi_instance *mi = m->pending;
+-    bool ret = true;
+-
+-    ASSERT(mi);
+-#ifdef MULTI_DEBUG_EVENT_LOOP
+-    printf("%s -> TUN len=%d\n", id(mi), mi->context.c2.to_tun.len);
+-#endif
+-    set_prefix(mi);
+-    vlan_process_outgoing_tun(m, mi);
+-    process_outgoing_tun(&mi->context, mi->context.c2.link_sockets[0]);
+-    ret = multi_process_post(m, mi, mpp_flags);
+-    clear_prefix();
+-    return ret;
+-}
+-
+ #define CLIENT_CONNECT_OPT_MASK                                                            \
+     (OPT_P_INSTANCE | OPT_P_INHERIT | OPT_P_PUSH | OPT_P_TIMER | OPT_P_CONFIG | OPT_P_ECHO \
+      | OPT_P_COMP | OPT_P_SOCKFLAGS)
+diff --git a/src/openvpn/multi_io.c b/src/openvpn/multi_io.c
+index ebee86c..164b214 100644
+--- a/src/openvpn/multi_io.c
++++ b/src/openvpn/multi_io.c
+@@ -290,6 +290,62 @@
+     }
+ }
+ 
++/**
++ * Send a packet over the virtual tun/tap network interface to its locally
++ * reachable destination.
++ * @ingroup internal_multiplexer
++ *
++ * This function calls \c process_outgoing_tun() to perform the actual
++ * sending of the packet.  Afterwards, it calls \c multi_process_post() to
++ * perform server-mode postprocessing.
++ *
++ * @param m            - The single \c multi_context structure.
++ * @param mpp_flags    - Fast I/O optimization flags.
++ *
++ * @return
++ *  - True, if the \c multi_instance associated with the packet sent was
++ *    not closed due to a signal during processing.
++ *  - Falls, if the \c multi_instance was closed.
++ */
++static bool
++multi_io_write_tun(struct multi_context *m, const unsigned int mpp_flags)
++{
++    struct multi_instance *mi = m->pending;
++    bool ret = true;
++
++    ASSERT(mi);
++#ifdef MULTI_DEBUG_EVENT_LOOP
++    printf("%s -> TUN len=%d\n", id(mi), mi->context.c2.to_tun.len);
++#endif
++    set_prefix(mi);
++    vlan_process_outgoing_tun(m, mi);
++    process_outgoing_tun(&mi->context, mi->context.c2.link_sockets[0]);
++    ret = multi_process_post(m, mi, mpp_flags);
++    clear_prefix();
++    return ret;
++}
++
++/*
++ * Drop a TUN/TAP outgoing packet..
++ */
++static void
++multi_io_drop_tun(struct multi_context *m, const unsigned int mpp_flags)
++{
++    struct multi_instance *mi = m->pending;
++
++    ASSERT(mi);
++
++    set_prefix(mi);
++
++    msg(D_MULTI_ERRORS, "MULTI: Outgoing TUN queue full, dropped packet len=%d",
++        mi->context.c2.to_tun.len);
++
++    buf_reset(&mi->context.c2.to_tun);
++
++    multi_process_post(m, mi, mpp_flags);
++    clear_prefix();
++}
++
+ static struct multi_instance *
+ multi_io_dispatch(struct multi_context *m, struct multi_instance *mi, const int action)
+ {
+@@ -334,11 +390,11 @@
+             break;
+ 
+         case TA_TUN_WRITE:
+-            multi_process_outgoing_tun(m, mpp_flags);
++            multi_io_write_tun(m, mpp_flags);
+             break;
+ 
+         case TA_TUN_WRITE_TIMEOUT:
+-            multi_process_drop_outgoing_tun(m, mpp_flags);
++            multi_io_drop_tun(m, mpp_flags);
+             break;
+ 
+         case TA_SOCKET_WRITE_READY:
 
-
--- 
-To view, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+=
-/2042?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit h=
-ttps://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
-
-Gerrit-MessageType: com=
-ment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I89303=
-975dd559d7cc06484a99f15c7062d3a3437
-Gerrit-Change-Number: 2042
-Gerrit-Patch=
-Set: 1
-Gerrit-Owner: Gianmarco De Gregori <gianmarco@mandelbit=2Ecom>
-Gerri=
-t-Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Reviewer: R=C4=
-=83zvan Cojocaru <razvanc@mailbox=2Eorg>
-Gerrit-CC: openvpn-devel <openvpn-=
-devel@lists=2Esourceforge=2Enet>
-Gerrit-Attention: Arne Schwabe <arne-openv=
-pn@rfc2549=2Eorg>
-Gerrit-Attention: Gianmarco De Gregori <gianmarco@mandelb=
-it=2Ecom>
-Gerrit-Comment-Date: Tue, 27 Oct 2026 10:22:17 +0000
-Gerrit-HasCo=
-mments: No
-Gerrit-Has-Labels: Yes
-
---szC5nop1hhk=
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: Arne Schwabe, Gianmarco De Gregori=2E </p>
-<p>R=C4=83=
-zvan Cojocaru has posted comments on this change by Gianmarco De Gregori=2E=
-</p><p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block=
-; margin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</s=
-pan></p><p><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2042?usp=
-=3Demail">View Change</a></p><ul style=3D"list-style: none; padding: 0;"></=
-ul><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/=
-2042?usp=3Demail">change 2042</a>=2E To unsubscribe, or for help writing ma=
-il filters, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=3D=
-email">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/Em=
-ailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=2E=
-org/ViewAction"><link itemprop=3D"url" href=3D"https://gerrit=2Eopenvpn=2En=
-et/c/openvpn/+/2042?usp=3Demail"/><meta itemprop=3D"name" content=3D"View C=
-hange"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comm=
-ent </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div=
- style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display=
-:none"> Gerrit-Change-Id: I89303975dd559d7cc06484a99f15c7062d3a3437 </div>
-=
-<div style=3D"display:none"> Gerrit-Change-Number: 2042 </div>
-<div style=
-=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> G=
-errit-Owner: Gianmarco De Gregori &lt;gianmarco@mandelbit=2Ecom&gt; </div>
-=
-<div style=3D"display:none"> Gerrit-Reviewer: Arne Schwabe &lt;arne-openvpn=
-@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: R=
-=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt; </div>
-<div style=3D"disp=
-lay:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=
-=2Enet&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: Arne Schwa=
-be &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> G=
-errit-Attention: Gianmarco De Gregori &lt;gianmarco@mandelbit=2Ecom&gt; </d=
-iv>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 27 Oct 2026 10:2=
-2:17 +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div=
->
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html=
->
---szC5nop1hhk=--
-
-
---===============6226240037015861160==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============6226240037015861160==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
---===============6226240037015861160==--
-
