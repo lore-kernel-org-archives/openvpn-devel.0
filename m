@@ -1,138 +1,96 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50CA3606A322
-	for <openvpn-devel@archiver.kernel.org>; Wed, 28 Oct 2026 19:30:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E47B606A320
+	for <openvpn-devel@archiver.kernel.org>; Wed, 28 Oct 2026 19:46:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=XZMdR3wR;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=bOupzaDO;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=O1U6K0TG;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=KjO/yfGQ
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=V+i7MBIH;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=lfnr8CsW;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=HSNnmt/k;
+	dkim=neutral header.d=unstable.cc header.i=@unstable.cc header.a=rsa-sha256 header.s=MBO0001 header.b=hb7zzFmo
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Content-Transfer-Encoding:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Unsubscribe-Post:List-Owner;
-	bh=VUO3OQ5eHUmqbYU4QFYXQuBAlsva5M+yXgLNwuDU0iI=; b=XZMdR3wRM3ArB81a/ydrI/25SA
-	KAvUE0VBZNNTyq1SDkkzfLGxil08SmSYQCILhprCMUbTgfj4W09VmbUvYOFPxPvAWzXeot4IQ6OiG
-	bjygqNRN8KehCNEGTuC9m/QvAarJ9xtDobMDULTnJl8gi30oubjvjYOrVajnMDPFxg10=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	Subject:In-Reply-To:From:References:To:MIME-Version:Date:Message-ID:Sender:
+	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
+	List-Owner; bh=O0dTkPWvcFM9k1l0ARRMayJOFpbgTnPEKgv1VjwxRxE=; b=V+i7MBIHOjFaZT
+	xmN8Y0sDxrTvJ2L93UMlt1UGKSW7jBtKuuTlmjuVrmt64zVrI1OxpWVqbFKY+EfBLhsC8tiHI//Lm
+	zKmtsD8rn4fpqfleGdd1WdwETMnWh9CSblDBovtUOHhcfmfi5TYJgUdP+cfw6RhSDayhVfNitML49
+	Wag=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xM9M1-000000005im-0GLg;
-	Wed, 28 Oct 2026 19:30:33 +0000
+	id 1xM9az-0000000029d-3MC6;
+	Wed, 28 Oct 2026 19:46:01 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xM9Lx-000000005ie-2T2D
+ (envelope-from <a@unstable.cc>) id 1xM9ax-0000000029S-279U
  for openvpn-devel@lists.sourceforge.net;
- Wed, 28 Oct 2026 19:30:29 +0000
+ Wed, 28 Oct 2026 19:45:59 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
+ From:References:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:Cc:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=qmwuuuTyStEnK6PvGcLKHc9Oc/mSkaq3Le7C/XrN3U4=; b=bOupzaDOWvWfYXXkHC+O9Nl2z7
- mfXBFOJTQIclxICLJnNc95QN5CTmA5TrkMVdtayTiROXPJLwbqmrKXipNkvGHYTXZhcvZkJSvGIlR
- TPxrrevn0/6oJJLRm/KPNtt1mzfBTFXKm43FpBBnfmPGjZaEZgBF2cFNT4FG6wKRWoP4=;
+ bh=A/UH32k1ykW/VmD2bq5Qh9vyMtVjAdQF5ZQzIzeXpEA=; b=lfnr8CsWMvDnKPkiiKSptDILqL
+ kyorNJw71CbPu1v6TXEpjhM8jPHLUFSpod9pqX9jiL0gySoLmbE1cCrhCSTSgpuIMIllkYP8ouYYk
+ 33mEf+ZGGuJ80FA90NbR1DBDH78vjG70l6gLRzG5UQCU6D3eky1Km6qLNXxjQmRhpz3M=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
- Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
+ h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:References:To:
+ Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:Cc:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=qmwuuuTyStEnK6PvGcLKHc9Oc/mSkaq3Le7C/XrN3U4=; b=O1U6K0TGS+qh+0PdsJszNWQ6uI
- LzCdSO+bjr0W97O/4dZrEH03aRdunDA5EzOYQoVYsuqWVe1Kq6mFtloU4rmt0Md3AgV137kLR1irO
- NMx3j0UiCienKvEDVWiZMRDHGCecKkKRDcnxt3cdEJdwFisqES6J5TmK4m6TRgdvhks8=;
-Received: from mail-lj1-f175.google.com ([209.85.208.175])
+ bh=A/UH32k1ykW/VmD2bq5Qh9vyMtVjAdQF5ZQzIzeXpEA=; b=HSNnmt/klRodcLOCzXuva38ABK
+ FI/RdzKwUopQxBcvf/qSj+DYkuCpjnCa/+Jy7VI47uU9VaDfSiWUBgJOZ6X8hm8p2CJU8krPkjrYt
+ 0Hb68ypLEL9vbdxToGN6tfnuWChJhQQxt1NdTi30PfI2uP5IHE7kTeqOZZ9QWKYlNg84=;
+Received: from mout-p-103.mailbox.org ([80.241.56.161])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xM9Lw-000000002FY-3cec for openvpn-devel@lists.sourceforge.net;
- Wed, 28 Oct 2026 19:30:29 +0000
-Received: by mail-lj1-f175.google.com with SMTP id
- 38308e7fff4ca-3ab4c608a6dso14097111fa.1
- for <openvpn-devel@lists.sourceforge.net>;
- Wed, 28 Oct 2026 12:30:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1793215822; x=1793820622; darn=lists.sourceforge.net;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
- :reply-to:content-type;
- bh=qmwuuuTyStEnK6PvGcLKHc9Oc/mSkaq3Le7C/XrN3U4=;
- b=KjO/yfGQ8cl5HT33p7tw30hyp4LItKah5F5tac5BQHk/lGTtTxdT0FPhERZ+UBHCa5
- W/3qUMXp4MWyh4DGc/t1QM6+8zdIIhqQ175rNWspZIOox0TXhtsmtVAXZABYiHUcF1gC
- NaPlG6jORY6sPZ8EOlI6svn0HkHQBXzbweGWr5WjN/GSqkZLVFibLfy68qSSMDlPdEIB
- P4Wzl7Lb9lYdf/Y0reUrzgAJ3wMaPEXstUeOJKVorTM/QGFMj+CzSJqCAm1EvR4GNgom
- JogWGXzxGN/E9Ty0tfKnK3FujZW0U16KYBJNasTCh6g8qbBfnL17rs/7dDK00PiDaqjV
- zp6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1793215822; x=1793820622;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
- :cc:subject:date:message-id:reply-to:content-type;
- bh=qmwuuuTyStEnK6PvGcLKHc9Oc/mSkaq3Le7C/XrN3U4=;
- b=ObKILpzhCamrlGymjjUPJMYBPn5SkDaiDDnFQewiWyU/QVSRvfFWETfbtjJcmwQMvK
- vn313gKuHYZRyR1YEzVyBTt/HJU81sXlweVKzKVgVHMtpEkk6CofuhTkrLjq3cy5tTdF
- 2Q0kpOioO432Z48c/pARrwBiEAgZG+HGtuNNUzhIicnHQ+DGWDuv7d7PMBTEhE5plPy1
- sCoC4Rn6zxPjo0BjxMsvSHrdPTj3gNwh2/gqgPmNUebTw6kbB3v9ovImhdpbuZl38Mk4
- 8g2OgRK+VUwXPN/pVcbZNbn32ar5cqyzbVVFNUv2dAzjmAPaR4tMsYYl+PKmAT5kJAEh
- /FFQ==
-X-Gm-Message-State: AFq9FYKh1pePzpgZeIrvNcXYUYn5OAtbwiwcEaI7RHTfaSXsienWvCYL
- qIjCeMojjoJyJHfbIB8pog7UPcJgWCgfYmnJdNQMy/EQ214NEpDLidd6Rb53CfNNdKI5vo7CA7f
- 3EdTbFF3wf1wYiqM2QnFX6A0SJeBf8ht9xxSmGIbFUAc4HqosTQWrhmiYsC4AKAsRfFlUBVZWXx
- xHcp+sXA==
-X-Gm-Gg: AYBFou08/+RrtdWt4vvU/GO/lCXchu1ZbFBzD6E5esyb+fHlk1SxqWqAqyUhMJ3/eDu
- GBnFOkKa+m5bsdWUskwFaCIn+7igXH+vTbCCfQBL9drakZeygHvBCsnxPEKmREd4bxPqrRYi3xK
- X8N1ZH7R0lsWwPbs4isE0kcBGRd1Av6ImEl8bKZX/Ap/2Wwp9Pu8VKUo5h+zYoB1CwblCTkiHJy
- IQcet3y2p9Jem9V6Vxmg8d+H1mR9eVvrodA+EBt9gE6wAxeysOKcfM++f90mVbWLOCd42WtrtVz
- sDs6c8fXgx2uYHolh17sG7BewS2WsUN8A//TD4aVibFyrl/W+nXGNKaVXhphnjJo1CiiHkNbbfg
- XfB3vX3lt9eqSIJN034qJl+essH77KBuDboXGHBJOZr2mUWJvYZv/PZGc8UOPJBrA+1o3BwJFt5
- +hiZMV++3q1Kv+u3KqAmVLJFhXFGHI74KZYF7mlYHRFxEmijpmVg6fFtg+rXFDUbPNm7+nXBiWJ
- zBW26P5gd8YgDETrAxWjTEdNTQpcB2M/jUE0kDtFBfpho7zAPzBAPOLbyGhLhiTjwdC6NZz98P/
- odRV5enG6JV/GcuBXh9tM8espo4Isnp6d+SCePXdcHMWEejp5b8LjW3juo6emn+h6MmybrvZsU0
- yfHs6YN2dgmkj7aBlFDrS2GPFnHFywGtPbht84EP6S2apui2pmuBoo7OKuSI0LYaDJYs9E4f58U
- 4TOT4a7Cw2+6Tjajk=
-X-Received: by 2002:a05:6402:528f:b0:6b4:12df:3ee0 with SMTP id
- 4fb4d7f45d1cf-6b49cb8e260mr2308631a12.34.1793214208398; 
- Wed, 28 Oct 2026 12:03:28 -0700 (PDT)
-Received: from ip-10-18-1-162.eu-central-1.compute.internal
- (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
- by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-48e3ecdd5b3sm29910993f8f.53.2026.10.28.12.03.26
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 28 Oct 2026 12:03:26 -0700 (PDT)
-X-Google-Original-From: "Arne Schwabe (Code Review)"
- <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Wed, 28 Oct 2026 19:03:24 +0000
-To: Selva Nair <selva.nair@gmail.com>
-Auto-Submitted: auto-generated
-X-Gerrit-MessageType: comment
-X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: I464672facb34de83930eddc4e86826d3b1cd3edd
-X-Gerrit-Change-Number: 2068
-X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2068?usp=email>
-X-Gerrit-Commit: 988fdee9ddb81d4e5d54232365c1345975ceb0b6
-X-Gerrit-Comment-Date: Wed, 28 Oct 2026 19:03:24 +0000
-In-Reply-To: <gerrit.1793212962000.I464672facb34de83930eddc4e86826d3b1cd3edd@gerrit.openvpn.net>
-References: <gerrit.1793212962000.I464672facb34de83930eddc4e86826d3b1cd3edd@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzkzMjEyOTYyMDAwLkk0NjQ2NzJmYWNiMzRkZTgzOTMwZWRkYzRlODY4MjZkM2IxY2QzZWRkQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <b5717b2d1d666ac86ae1fe3e990e57bfeee4769b-EmailReviewComments-HTML@gerrit.openvpn.net>
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
+ id 1xM9au-000000002cV-0s1L for openvpn-devel@lists.sourceforge.net;
+ Wed, 28 Oct 2026 19:45:59 +0000
+Received: from smtp1.mailbox.org (smtp1.mailbox.org
+ [IPv6:2001:67c:2050:b231:465::1])
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+ key-exchange X25519MLKEM768 server-signature RSA-PSS (4096 bits) server-digest
+ SHA256) (No client certificate requested)
+ by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4jFHsR4kqDzKnl8;
+ Wed, 28 Oct 2026 20:45:47 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=unstable.cc; s=MBO0001;
+ t=1793216747;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=A/UH32k1ykW/VmD2bq5Qh9vyMtVjAdQF5ZQzIzeXpEA=;
+ b=hb7zzFmoIzHrpIEdMgUm+1hZKwKPRlyTRg1Sellgoe4KzuYl7SBSbwXp2Q48lyopdytB2D
+ W31YZe2vMvUztH85Ny7CiQ5M99XvWtcQ0qTuHQb5hz3VCAOHstpJ1JJFprglyufaEZRS71
+ bMInlhjtoNS+p84yPFFV5WsLPS0TYOv8Lj/7pTLi8mMlghMcAODymlHjtRPeXQX5il/pLk
+ tvoX7EsLxEw39HUhDPGhQnJ7z/GfBbu4Y+ted7Dxq4ArXYU/ZhAeyZeY4F4L+Em5Agw/rR
+ XhmSGXGyawB5lRn93rl0ZhXLdmvHrOAw2D9RYEj2LiEHR5YlwXgDPM1PuC3wIA==
+Authentication-Results: outgoing_mbo_mout; dkim=none;
+ spf=pass (outgoing_mbo_mout: domain of a@unstable.cc designates
+ 2001:67c:2050:b231:465::1 as permitted sender) smtp.mailfrom=a@unstable.cc
+Message-ID: <f121a6de-cc2f-45a9-b0d3-62df4cd7c906@unstable.cc>
+Date: Wed, 28 Oct 2026 20:45:44 +0100
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
-User-Agent: Gerrit/3.14.2
+User-Agent: Mozilla Thunderbird
+To: Simon Schippers <simon.schippers@tu-dortmund.de>,
+ openvpn-devel@lists.sourceforge.net
+References: <20261028144643.647448-1-simon.schippers@tu-dortmund.de>
+Content-Language: en-US
+From: Antonio Quartulli <a@unstable.cc>
+In-Reply-To: <20261028144643.647448-1-simon.schippers@tu-dortmund.de>
+X-Rspamd-Queue-Id: 4jFHsR4kqDzKnl8
 X-Spam-Score: -0.2 (/)
-X-Headers-End: 1xM9Lw-000000002FY-3cec
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix numbering of
- examples in management-notes.txt
+X-Headers-End: 1xM9au-000000002cV-0s1L
+Subject: Re: [Openvpn-devel] [PATCH] tun: add --tun-backpressure option for
+ Linux
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -142,142 +100,167 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "Arne Schwabe \(Code Review\) via Openvpn-devel"
- <openvpn-devel@lists.sourceforge.net>
-Reply-To: arne-openvpn@rfc2549.org, selva.nair@gmail.com,
- openvpn-devel@lists.sourceforge.net
-Cc: "Arne Schwabe \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============3554935042869737111=="
-X-Spam-Status: No, score=-3.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
-	MAILING_LIST_MULTI,SPF_HELO_PASS,SPF_PASS autolearn=no
-	autolearn_force=no version=4.0.1
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+X-Spam-Status: No, score=-15.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_PASS,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============3554935042869737111==
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="DT726zKCOJQ="; charset=UTF-8
+Hi Simon,
 
---DT726zKCOJQ=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+thank you for your patch and congratulations for the research work!
 
-Attention is currently required from: Selva Nair=2E
+On 28/10/2026 15:46, Simon Schippers wrote:
+> When the internal ring of a TUN/TAP device is full, the kernel silently
+> drops packets, bypassing any qdisc. TCP then sees loss, retransmits and
+> shrinks its congestion window.
+> 
+> My series "tun/tap & vhost-net: apply qdisc backpressure on full
+> ptr_ring to reduce TX drops" [1] adds IFF_BACKPRESSURE in Linux 7.3
+> (commit d00c7369ef24 "tun/tap & vhost-net: stop tail-drop when
+> IFF_BACKPRESSURE is set"). It stops the TX queue instead, so the qdisc
+> holds the packets and applies its AQM and fairness.
 
-Arne Schwabe has poste=
-d comments on this change by Selva Nair=2E ( https://gerrit=2Eopenvpn=2Enet=
-/c/openvpn/+/2068?usp=3Demail )
+Inside the linux kernel this works reasonably well.
+We are just playing with several of this knobs in DCO at the moment.
 
-Change subject: Fix numbering of examples =
-in management-notes=2Etxt
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E
+> 
+> Our paper [2] evaluated this with OpenVPN: over a 120 ms RTT link
+> between Germany and the USA, TCP throughput without the patch was up to
+> 36% worse, and with it no retransmissions occurred. With higher
+> latencies, throughput without the patch can be even worse.
+> 
+> Unfortunately, stopping and waking the queue can reduce throughput with
+> many parallel senders: in a synthetic test with eight iperf3 senders,
+> throughput dropped from 13.5 to 9.13 Gbit/s [3]. The flag is therefore
+> disabled by default and can be enabled with the new --tun-backpressure
+> option.
+
+Given what you just said above, don't you think users will normally want 
+this off all the time?
+
+A VPN tunnel spends most of its time forwarding multiple streams from 
+the host (in case of a roadwarrior setup) or from its LAN clients (in 
+case of a VPN client installed on a router).
+
+Do you foresee any reasonable scenario when a user would enable this 
+flag and keep it on all the time?
 
 
-Patch Set 1: Code-Review+2
+Regards,
 
+> 
+> The option is only available when the headers define IFF_BACKPRESSURE,
+> and older kernels ignore the flag. The DCO path uses no TUN device and
+> is unaffected.
+> 
+> Tested on Linux 7.3-rc3: with --tun-backpressure,
+> /sys/class/net/<dev>/tun_flags has IFF_BACKPRESSURE set, without it the
+> flag stays clear. Builds without warnings with and without
+> IFF_BACKPRESSURE in the headers, and make check passes.
+> 
+> [1] https://lore.kernel.org/netdev/20260803183641.96882-1-simon.schippers@tu-dortmund.de/T/#u
+> [2] https://cni.etit.tu-dortmund.de/storages/cni-etit/r/Research/Publications/2025/Gebauer_2025_VTCFall/Gebauer_VTCFall2025_AuthorsVersion.pdf
+> [3] https://lore.kernel.org/netdev/akVnoOYQOrt8k-Gu@karahi.librecast.net/
+> 
+> Assisted-by: Claude:claude-opus-5-5
+> Signed-off-by: Simon Schippers <simon.schippers@tu-dortmund.de>
+> ---
+>   doc/man-sections/advanced-options.rst |  7 +++++++
+>   src/openvpn/options.c                 | 12 ++++++++++++
+>   src/openvpn/tun.c                     |  7 +++++++
+>   src/openvpn/tun.h                     |  1 +
+>   4 files changed, 27 insertions(+)
+> 
+> diff --git a/doc/man-sections/advanced-options.rst b/doc/man-sections/advanced-options.rst
+> index 32008d58f..c578a5c2c 100644
+> --- a/doc/man-sections/advanced-options.rst
+> +++ b/doc/man-sections/advanced-options.rst
+> @@ -100,6 +100,13 @@ used when debugging or testing out special usage scenarios.
+>     *(Linux only)* Set the TX queue length on the TUN/TAP interface.
+>     Currently defaults to operating system default.
+>   
+> +--tun-backpressure
+> +  *(Linux only)* Set :code:`IFF_BACKPRESSURE` on the TUN/TAP interface.
+> +  When OpenVPN falls behind reading from the interface, the kernel then
+> +  stops the TX queue instead of dropping packets, so the attached qdisc
+> +  can apply its queue management. This can reduce throughput with many
+> +  parallel senders. Requires Linux 7.3 or later; older kernels ignore it.
+> +
+>   --disable-dco
+>     Disables the opportunistic use of data channel offloading if available.
+>     Without this option, OpenVPN will opportunistically use DCO mode if
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index 8e0c6029e..241f3891c 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -333,6 +333,8 @@ static const char usage_message[] =
+>       "                  via a VRF present on the system.\n"
+>   #endif
+>       "--txqueuelen n  : Set the tun/tap TX queue length to n (Linux only).\n"
+> +    "--tun-backpressure : Apply qdisc backpressure instead of dropping packets\n"
+> +    "                  on the tun/tap device (Linux only).\n"
+>       "--mlock         : Disable Paging -- ensures key material and tunnel\n"
+>       "                  data will never be written to disk.\n"
+>       "--up cmd        : Run command cmd after successful tun device open.\n"
+> @@ -5129,6 +5131,16 @@ add_option(struct options *options, char *p[], bool is_inline, const char *file,
+>   #else
+>           msg(msglevel, "--txqueuelen not supported on this OS");
+>           goto err;
+> +#endif
+> +    }
+> +    else if (streq(p[0], "tun-backpressure") && !p[1])
+> +    {
+> +        VERIFY_PERMISSION(OPT_P_GENERAL);
+> +#if defined(TARGET_LINUX) && defined(IFF_BACKPRESSURE)
+> +        options->tuntap_options.backpressure = true;
+> +#else
+> +        msg(msglevel, "--tun-backpressure not supported on this platform");
+> +        goto err;
+>   #endif
+>       }
+>       else if (streq(p[0], "shaper") && p[1] && !p[2])
+> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+> index fdd13ae7e..5d6184e55 100644
+> --- a/src/openvpn/tun.c
+> +++ b/src/openvpn/tun.c
+> @@ -2100,6 +2100,13 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+>           ifr.ifr_flags |= IFF_ONE_QUEUE;
+>   #endif
+>   
+> +#ifdef IFF_BACKPRESSURE
+> +        if (tt->options.backpressure)
+> +        {
+> +            ifr.ifr_flags |= IFF_BACKPRESSURE;
+> +        }
+> +#endif
+> +
+>           /*
+>            * Figure out if tun or tap device
+>            */
+> diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+> index 61fe943b0..bd2107a78 100644
+> --- a/src/openvpn/tun.h
+> +++ b/src/openvpn/tun.h
+> @@ -150,6 +150,7 @@ struct tuntap_options
+>   struct tuntap_options
+>   {
+>       int txqueuelen;
+> +    bool backpressure;
+>   };
+>   
+>   #else  /* if defined(_WIN32) || defined(TARGET_ANDROID) */
 
 -- 
-To view, visit https://gerr=
-it=2Eopenvpn=2Enet/c/openvpn/+/2068?usp=3Demail
-To unsubscribe, or for help=
- writing mail filters, visit https://gerrit=2Eopenvpn=2Enet/settings?usp=3D=
-email
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: m=
-aster
-Gerrit-Change-Id: I464672facb34de83930eddc4e86826d3b1cd3edd
-Gerrit-Ch=
-ange-Number: 2068
-Gerrit-PatchSet: 1
-Gerrit-Owner: Selva Nair <selva=2Enair=
-@gmail=2Ecom>
-Gerrit-Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Ge=
-rrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
-Gerrit-Att=
-ention: Selva Nair <selva=2Enair@gmail=2Ecom>
-Gerrit-Comment-Date: Wed, 28 =
-Oct 2026 19:03:24 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---DT726zKCOJQ=
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: Selva Nair=2E </p>
-<p>Arne Schwabe has posted comment=
-s on this change by Selva Nair=2E</p><p>Patch set 1:<span style=3D"border-r=
-adius: 3px; display: inline-block; margin: 0 2px; padding: 4px;background-c=
-olor: #d4ffd4;">Code-Review +2</span></p><p><a href=3D"https://gerrit=2Eope=
-nvpn=2Enet/c/openvpn/+/2068?usp=3Demail">View Change</a></p><ul style=3D"li=
-st-style: none; padding: 0;"></ul><p>To view, visit <a href=3D"https://gerr=
-it=2Eopenvpn=2Enet/c/openvpn/+/2068?usp=3Demail">change 2068</a>=2E To unsu=
-bscribe, or for help writing mail filters, visit <a href=3D"https://gerrit=
-=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope it=
-emtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"acti=
-on" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=
-=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2068?usp=3Demail"/><meta ite=
-mprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display=
-:none"> Gerrit-MessageType: comment </div>
-<div style=3D"display:none"> Ger=
-rit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: mas=
-ter </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I464672facb34de83=
-930eddc4e86826d3b1cd3edd </div>
-<div style=3D"display:none"> Gerrit-Change-=
-Number: 2068 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-=
-<div style=3D"display:none"> Gerrit-Owner: Selva Nair &lt;selva=2Enair@gmai=
-l=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: Arne Schwa=
-be &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> G=
-errit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </d=
-iv>
-<div style=3D"display:none"> Gerrit-Attention: Selva Nair &lt;selva=2En=
-air@gmail=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date=
-: Wed, 28 Oct 2026 19:03:24 +0000 </div>
-<div style=3D"display:none"> Gerri=
-t-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Ye=
-s </div>
-
-</body></html>
---DT726zKCOJQ=--
+Antonio Quartulli
 
 
---===============3554935042869737111==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============3554935042869737111==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
---===============3554935042869737111==--
-
