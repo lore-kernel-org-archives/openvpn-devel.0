@@ -1,13 +1,13 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02799606A332
-	for <openvpn-devel@archiver.kernel.org>; Wed, 28 Oct 2026 18:42:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B2BF606A336
+	for <openvpn-devel@archiver.kernel.org>; Wed, 28 Oct 2026 18:42:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=I7dFK9Ju;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=ahkl7Vwp;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=kRARPE14;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=CxAuvZE4
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=ERzTHexQ;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=QDT0rNHO;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=MyoQwz7U;
+	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=TCQC+R4o
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
@@ -15,29 +15,29 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
 	List-Unsubscribe-Post:List-Owner;
-	bh=6WIBTa4nmls6ArDF93Y2kBsqiiEC6GnYWe5V8CQgSRY=; b=I7dFK9JuhZDz0JWLKJu/j943EB
-	czV/E4dufk21tfA1UeR1HcRmF9PM+uRbvMai9QI53xUaYnyut7T+tmiYhfODnyA9x0zgwfxcTA4o4
-	4NcCumveC+sVPy1lK65lNS1C6fTOczfbBm7ZVfoc5cKx7ulNvByHUIOsbalzSGOfWxfs=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	bh=2FKpr7Vtz2+WIVgh7OPpskVwRFL/T4l6+rhCAUGcNmc=; b=ERzTHexQwlW4kgsgs+/kdAyFpY
+	QuQxYt54uvP11LEwShRjgbpe6sFWyAtQbgAwVWA7SqfMKvyijp6K7lg+mMdC7JY/1+43I6DNVq9LS
+	wB4nQp6qGiy0pEUyH4c80q7/G2VNuOn/lox9Dhbowqyk7mV74iZS3CmkWYF2Ll2ZCk/M=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xM8bx-000000004s5-1Y8Q;
-	Wed, 28 Oct 2026 18:42:57 +0000
+	id 1xM8bz-000000001sG-0UA5;
+	Wed, 28 Oct 2026 18:42:59 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xM8bv-000000004ru-3h1Y
+ (envelope-from <gerrit@openvpn.net>) id 1xM8bx-000000001sA-04w5
  for openvpn-devel@lists.sourceforge.net;
- Wed, 28 Oct 2026 18:42:55 +0000
+ Wed, 28 Oct 2026 18:42:57 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:
  From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From:
  Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=rSGKsXoT4biGobVPG6y02HmqguIGCHH0IgQ9taw9XAo=; b=ahkl7VwpkB+R3gk4A4dkfodeWC
- gX/UnyhVP3E2Jy1DS/qbYneqD3B28GpNALowvikKDNGvz63ajhni6B+j+Ww8acariFXINbRc+h8tZ
- rVjEajym6fP51RVi8yFTwKh71/Vfz0V9/qAsLZRRZnwkXSaxWnNt5GOaZYAFDFxPTNZA=;
+ bh=1p5OOz7s19pNAyYtfgYrk6ECJEj2HU4L/97Ymp0ztPU=; b=QDT0rNHOGZz+82HR9Z68vhjM4G
+ GqyBo+H4iYMrr0bbLkAA1m055zFhfQsuKl/AxnDa2J5eD2PzmAdC6J+vDRSBTbklb8h6cZyRU7BQK
+ cuDQkwh0Tiv1Jo9hZ4kT46SZ7DY69KIWNSB67a0ZU+oqLzzGFcKkX8olm9KnVeSVx+l4=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
@@ -45,91 +45,91 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
  Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=rSGKsXoT4biGobVPG6y02HmqguIGCHH0IgQ9taw9XAo=; b=kRARPE143Pna3dGY4FeOqSyqTo
- wdgVGRb4ZO2yayKUq6rRnpiMqEt4OI7tc0PVZ//bc12q4vhj1FTkinC4vMxAOmPmz5OJ41rjjMyG3
- rU1d5dKcBrgmWJr80AoDH9nunw3izP2UZZ5frP5jfgUqKbUk9mJdhh32Q7gp2NtCUTDk=;
-Received: from mail-wr1-f45.google.com ([209.85.221.45])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ bh=1p5OOz7s19pNAyYtfgYrk6ECJEj2HU4L/97Ymp0ztPU=; b=MyoQwz7U5hXhBrCkrYGz29W5DN
+ Figs+28iKqitcmXdUvhUaEJvOiLLTMtHqon7hC50w6tQkHtTgYf/Iqvltv89bf9fwbwm8RiltBNEu
+ e5+bD7q3OwZuGMcH+PlSki1Tsuhxq3OEXoAEmDdbgRwtPyPkHXw+GVI2nAmzlE1kCp6k=;
+Received: from mail-wm1-f54.google.com ([209.85.128.54])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xM8bu-0000000018S-1NOY for openvpn-devel@lists.sourceforge.net;
- Wed, 28 Oct 2026 18:42:55 +0000
-Received: by mail-wr1-f45.google.com with SMTP id
- ffacd0b85a97d-48df0fa43c5so905808f8f.0
+ id 1xM8bv-0000000084E-27ac for openvpn-devel@lists.sourceforge.net;
+ Wed, 28 Oct 2026 18:42:56 +0000
+Received: by mail-wm1-f54.google.com with SMTP id
+ 5b1f17b1804b1-4956869750eso9379635e9.2
  for <openvpn-devel@lists.sourceforge.net>;
- Wed, 28 Oct 2026 11:42:54 -0700 (PDT)
+ Wed, 28 Oct 2026 11:42:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1793212968; x=1793817768; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1793212969; x=1793817769; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
  :to:date:from:from:to:cc:subject:date:message-id:reply-to
- :content-type; bh=rSGKsXoT4biGobVPG6y02HmqguIGCHH0IgQ9taw9XAo=;
- b=CxAuvZE4sOIQfFmPgvSaKYRgzwWchgFfL/Gh+op9ue9dTCBuO4NKJlH/FWW9D4yfml
- Tjr9ANiCBMwTUwdX6sQ8LgtMduMi3aHQk8lotHJZjhu6J/bfgi/Dfc4NDk5P+Q8/QgWd
- 5Co1xtBWJKqd6TmHXdw05Dh3YGypxLgWr2Mj2emeSl2vTPuRYxTXN5GUiCH0ukhdYk1V
- 1f7IGq6QihVS6Vo87NJdT188JbKoTwaZvHkTScF8kGUOmOOhHhI481hlMlp4HxnYsZ0D
- CqE47Fw8sXLFowcsqQ3XsQjefAybTWIOKiUnP+r6/3SVHrZAl1ve8Zs2EO8ltfm1JdO8
- cpNw==
+ :content-type; bh=1p5OOz7s19pNAyYtfgYrk6ECJEj2HU4L/97Ymp0ztPU=;
+ b=TCQC+R4oQHVHw1raxtCUS2crOftyj7ZsFbDn6INZw3FCvLuQ1UlGS5zELht/qsunAr
+ gvox0vhq2priBXXCZhtiXLzutKZI7JoKgr91c1bQrGj6t/4A9RpwnB/wzmaz/uPcg9Ce
+ Yx81CXjWNMC6NPRGHQu6i/z9hP9XNchm+5XILBefgPbOLWSVh7HmEgoUWX24m2Ld+KBp
+ hcDWcaqvQXZo+fauU4MTeteF2TnZ4VvJBfda5l7ArEsIY8Ejn3SKybE4bS/4mqLUq3S8
+ 1baGgiojDvbJBr1+OizajuVau6Qed1loSJSyjn5Er0njlEn+azd1Js6T6ClIXPVKfj0B
+ J2Hw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1793212968; x=1793817768;
+ d=1e100.net; s=20260707; t=1793212969; x=1793817769;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
  :to:date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
  :message-id:reply-to:content-type;
- bh=rSGKsXoT4biGobVPG6y02HmqguIGCHH0IgQ9taw9XAo=;
- b=sbzxYfuGPWe9QNOwEPiEocM5H0xrj1TL+VqR7Ir6rDStcJ8STrfOI4lBxUboS4Bigq
- XcSqlaiiA7byeCs0hUT55gE7EHhHhqDg2O7v06qiAbcewF99KhEjhGcLFNIJz664r0CP
- pukAQXhDvoQru2wVS4YTtwLI7hgFReOa+/2xVBJUDZ7GGRlZD72m5Fk422zGNtJmEqAo
- mBDt3uAUa0UxHgVPi36OUymUtPGTyLlEi2aNMxK4jY2Ns3sRqEv/9wr4XVdFuR8gfdoN
- KIfloDRRBLM/nzZ1/UgPNGoAEet8GuMSWVk4QY58+FmTfJuj6oKChnEFugr/FvGeZDbD
- 8ZOg==
-X-Gm-Message-State: AFq9FYKZBdkoimYPNjjHA32VcEBkqLdsBUG6+NIZtU2BYdkR/wyXJAtm
- +0pSdRBn71FQinSrhqAIvfiZ7ITubtF6RswkWo+v84dHjV6FOWkKbfPFVLChBbyavsTPY5UJC5A
- Q9wiAfDjtOo5CVfhtzslN+shTkaqYhhhh/57K4/8k51A/3tMRvuWLGetg45tF9UlsRv2vnWUoaY
- +Cq0/mTg==
-X-Gm-Gg: AYBFou1kjwCnAWnvsm3to0W2ZYX5fr9mCDwv1xVje/2sC4gVuh963LFch332VeYsh64
- whVrty20ceimM3yzZfwYc6rhrYMU8s06Dtyd5prZR1B0/ru5P+HXJQFAXP3RcKAWyJ7OxwUu98z
- 51AC0/10o2cOmvwyWcRy3A8vyrMK9E8YV9PpGpUKWA9voO/20wqrymVnpoTv1VzqAmmowr3qdks
- MzRIFvWFvR6jKvs7WSPLdjUyp9U2ZDy2oLqZcyWY0/BALI3i9ZP7RjJ6mfTXWiSERtx6f05Wpqp
- xa5THSc1ZWUs3N/eUmlbBzz9uqhAvP81F8Bb+a8ZOxKZnrNXsrEoUJ29pFkpyqPUWF+osTY0k67
- 0rYULQ19ux2iXbC5VdAUWWXb8ZsbqieZci1x0IC7nHLZW1+rxJeMFM5RFLm6yzwSGTSpwAu8pc9
- Nz4fKrnn+7UNQ3KnYcw9J/VWHkpUtjd544RuVJfUgee7eM6da3hohs5CfTq/Pah6Ibwcgau2QAc
- /YgWL8fSM6P4UBFMUSx75nCQdLC6vyPpPWG3cqQCA+Qu938fzoNYkeeoWwWfPyA0U7sm4Dvcbbe
- FxMIHfuaj0ysEAU9ztuaTUQpq5dA48BJVjy9kYyGZqVN6aCMc+jF1tBwlCO92mR/sQAfjOy+iMR
- xkygvN+hAjwPeT+tPfig3T46Kz2f+p9mKfBPpK8KCDOlYezuZHZC+M35NLe3lM3nIuduMVRDD+J
- nihXqLskOHG5z4wtRf2ivtsBOIZSIF5qD1/P5B
-X-Received: by 2002:a5d:5f86:0:b0:48a:fe00:ad1 with SMTP id
- ffacd0b85a97d-48e64953d4amr1194834f8f.6.1793212967605; 
- Wed, 28 Oct 2026 11:42:47 -0700 (PDT)
+ bh=1p5OOz7s19pNAyYtfgYrk6ECJEj2HU4L/97Ymp0ztPU=;
+ b=cOfRwQzh7Qt1Hd2grfHNHKBMQCFMoTIakzRG+ki2AIi/yrbtSlPGozl5I2aKRPtYiE
+ +6TPFOTsKdMFDB1U+R4pBHpVj2jRsLy2dL6nZplELWr3/nhavs8bwAY0AWKuihmjI6JT
+ EeZW15fq51nILnTGzU2f6lHXmXIkOpcRfqzfw7wicr11FOkLBxBTg6hFYsAM7aIo0rKa
+ QMFj3Tn1CLhemQkEsIvHWDMSj08HmWt5h2Mms8zmaRbQ+ywWe2w+RwXMbM/qaay2MB/O
+ PQQCfZ/MkhauHV+NVYFP4zfbJgVo1lp0EIdbtNuLNAh/aIxInp+J+Od0bW1FArY0y31F
+ CfPw==
+X-Gm-Message-State: AFq9FYLucalmMS7grXkteIIARlKcXThgsweeHt0IToqgE5s9meI/R8vi
+ a7uIiEgWmsSnQ5kcN0xOrXCEj6N8p/BOYxvVKc+HLNnWsrS2p8LTclDF4xl3905S0LhS5pfOFDO
+ 8rJAXZXLUPQ3ZACuiHUe4gJaoprrjVylqQeXH5g06LZLgFvj27lgn6gO2BKdtXU/ZOOP7NFDz7k
+ py7NA6MA==
+X-Gm-Gg: AYBFou0QjVWc4B9SGxhMMLbZN5VySBRYK+JTtD6OmEaz3lVvwTgTM1Y/HkcHUloCZHm
+ 7jDpwkvHqukoVKZXY5JXmKF45NugRRQxER0oJu6Z4UvxJvIp1Vp8+aa3yfRoUsjuaf0WW475oNh
+ y+etlgnR5J6lLWyhZDtqU8ULOFbvPMjlBUa+F++QsPOK6SAjo39/TJEUe/IDV+4i4ubj/HoH1Ha
+ xKzgPm3ax+IGyd1yMyoUpwrLFNBUCe1k81vK9OblMR5QMuIIWSWEDVhOmZrH3D4JDXbwftlhwlG
+ WxE8Km2a4TvFDdH3onB3Au3CmwCShav3HlTZDTAyhCdCMhGS8/7so5oBh3MPDmLeCFMWp0H1Ufr
+ dHLt0GoeNuQ/lH5e94aUfxv7kjeBTIUo6wGXq/sXbDQJtymuk1DR29xNuyYsTuYplbZnbZEXz0d
+ +691opkVG74vV6Y0CXfUyKMf59wRNEJ8fz2EvqUxWU5nsBg/cMXUCXCchWdtJcuWHqQ+tpzM+tK
+ S/fAGPDVljII89NJVvaD07fzU0ErcgQuZReLmj048CgcB1U35N43ZAulR6UB2I6tszm7luXYhjz
+ VSv58GG+Pv17tPQuzPcKmKQd2+ttAxGt4McyrRI/e48v2DaEJhDdQvDIi32AY9sHSh7EEn9Ld1X
+ 8ppqDhSP9QiyecRiGIgiOlk0s2F1obCaVlzYYuRRMSS5C8sVB08Vf0AmgPhf14UQdzo6CzxReT8
+ YNlND6Jld/MP3LWRWlhU7IKscjRQ4n+jJh5l6F
+X-Received: by 2002:a05:600c:6206:b0:4a2:59:f568 with SMTP id
+ 5b1f17b1804b1-4a9661ab56dmr66687345e9.14.1793212968582; 
+ Wed, 28 Oct 2026 11:42:48 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-48e3eb40733sm23419268f8f.0.2026.10.28.11.42.46
+ 5b1f17b1804b1-4aa7c5063e3sm10945985e9.0.2026.10.28.11.42.48
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 28 Oct 2026 11:42:47 -0700 (PDT)
+ Wed, 28 Oct 2026 11:42:48 -0700 (PDT)
 X-Google-Original-From: "Selva Nair (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Wed, 28 Oct 2026 18:42:46 +0000
+Date: Wed, 28 Oct 2026 18:42:47 +0000
 To: Arne Schwabe <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newchange
 X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: I464672facb34de83930eddc4e86826d3b1cd3edd
-X-Gerrit-Change-Number: 2068
+X-Gerrit-Change-Id: Iac23d5141a8c29e239d0f2aeea497d3a002e609b
+X-Gerrit-Change-Number: 2069
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2068?usp=email>
-X-Gerrit-Commit: 988fdee9ddb81d4e5d54232365c1345975ceb0b6
-References: <gerrit.1793212962000.I464672facb34de83930eddc4e86826d3b1cd3edd@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzkzMjEyOTYyMDAwLkk0NjQ2NzJmYWNiMzRkZTgzOTMwZWRkYzRlODY4MjZkM2IxY2QzZWRkQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <82427f2f5905fdba3a8b58f8a8d03f3698c1844e-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2069?usp=email>
+X-Gerrit-Commit: ad26ba310eb387d5558d527898bda4e17a0c2783
+References: <gerrit.1793212962000.Iac23d5141a8c29e239d0f2aeea497d3a002e609b@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzkzMjEyOTYyMDAwLklhYzIzZDUxNDFhOGMyOWUyMzlkMGYyYWVlYTQ5N2QzYTAwMmU2MDliQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <520536f9bbbcad46826c56979d051414ed9a1188-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.2
 X-Spam-Score: -0.2 (/)
-X-Headers-End: 1xM8bu-0000000018S-1NOY
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix numbering of
- examples in management-notes.txt
+X-Headers-End: 1xM8bv-0000000084E-27ac
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Optionally indicate
+ username in >PASSWORD 'Auth' prompt
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -145,7 +145,7 @@ Reply-To: selva.nair@gmail.com, arne-openvpn@rfc2549.org,
  openvpn-devel@lists.sourceforge.net
 Cc: "Selva Nair \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============3818970732827721882=="
+Content-Type: multipart/mixed; boundary="===============2086731550288703586=="
 X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
 	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_PASS,
@@ -154,12 +154,12 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============3818970732827721882==
+--===============2086731550288703586==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="11Yv/iQHLk4="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="Yp4ZdbNiVH8="; charset=UTF-8
 
---11Yv/iQHLk4=
+--Yp4ZdbNiVH8=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
@@ -172,145 +172,207 @@ I'd like you to do a code review=2E
 Please visit
 
     https://gerrit=2Eope=
-nvpn=2Enet/c/openvpn/+/2068?usp=3Demail
+nvpn=2Enet/c/openvpn/+/2069?usp=3Demail
 
 to review the following change=2E
 =
 
 
-Change subject: Fix numbering of examples in management-notes=2Etxt
-=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
-
-Fix numbering of=
- examples in management-notes=2Etxt
-
-Change-Id: I464672facb34de83930eddc4e8=
-6826d3b1cd3edd
-Signed-off-by: Selva Nair <selva=2Enair@gmail=2Ecom>
----
-M d=
-oc/management-notes=2Etxt
-1 file changed, 7 insertions(+), 7 deletions(-)
-
+Change subject: Optionally indicate username in >PASSWORD 'Auth' prompt
 =
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+
+Optionally in=
+dicate username in >PASSWORD 'Auth' prompt
+
+When username is included in th=
+e config file as inlined or
+read from a file, indicate it as a preferred-us=
+ername in
+>PASSWORD Need 'Auth' username/password prompt=2E The prompt
+is a=
+ppended with "UN:foo64" where foo64 is the pre-defined
+username, base64 enc=
+oded=2E
+
+This is treated as a hint, not an enforced value=2E The management=
+
+client still responds with both username and password obtained
+from the us=
+er=2E Whether the the management client allows the
+user to input a differen=
+t username is left to the client
+implementation=2E
+
+Only clients that annou=
+nce version >=3D6 are prompted this way=2E
+
+This helps to fix user reports =
+on OpenVPN-GUI not respecting username
+set in the config file=2E
+
+Change-Id=
+: Iac23d5141a8c29e239d0f2aeea497d3a002e609b
+Signed-off-by: Selva Nair <selv=
+a=2Enair@gmail=2Ecom>
+---
+M doc/management-notes=2Etxt
+M src/openvpn/manage=
+=2Ec
+2 files changed, 43 insertions(+), 0 deletions(-)
 
 
-  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/68/206=
-8/1
 
-diff --git a/doc/management-notes=2Etxt b/doc/management-notes=2Etxt
-i=
-ndex a28a1a8=2E=2Eeac91a4 100644
+  git pull ssh://=
+gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/69/2069/1
+
+diff --git a/d=
+oc/management-notes=2Etxt b/doc/management-notes=2Etxt
+index eac91a4=2E=2E0=
+757c75 100644
 --- a/doc/management-notes=2Etxt
-+++ b/doc=
-/management-notes=2Etxt
-@@ -345,29 +345,29 @@
-   The PASSWORD real-time mes=
-sage type can also be used to
-   indicate password or other types of authen=
-tication failure:
++++ b/doc/management-notes=
+=2Etxt
+@@ -394,6 +394,28 @@
+   response along with the username and passwor=
+d formatted as described
+   in the Challenge/Response Protocol section belo=
+w
  
--  Example 3: The private key password is incorrect and=
- OpenVPN
-+  Example 4: The private key password is incorrect and OpenVPN
-  =
- is exiting:
++  Example 10:
++
++    >PASSWORD:Need 'Auth' username/password UN:<user-=
+base64>
++    >PASSWORD:Need 'Auth' username/password UN:<user-base64> SC:1,=
+Please enter token PIN
++
++  These work exactly as Examples 3 and 8, resepct=
+ively, with the following
++  difference=2E The prompt has an addiitonal wor=
+d "UN:<user-base64>" where
++  <user-base64> is the base64 encoded form a pr=
+e-defined username=2E This
++  may be a username inlined in the config file =
+or read from an external
++  user-pass file=2E
++
++  The management client is=
+ expected to show the base64 decoded value to
++  the user=2E Whether the us=
+er can change this username or not is left to
++  the client implementation=
+=2E
++
++  The response from the management client should follow the same for=
+mat
++  as in example 3 or example 8, as applicable=2E
++
++  This prompt is s=
+hown only if the management-client announces a
++  version >=3D 6=2E Older c=
+lients will see the prompt shown in Example 3
++  or 8=2E
++
+ See the "Challe=
+nge/Response Protocol" section below for more details
+ about examples 8 and=
+ 9, including how the management interface client
+ should respond=2E
+@@ -53=
+0,6 +552,7 @@
+     >PK_SIGN:[base64],[alg]     -- version 3 or greater
+    =
+ >PASSWORD:Need 'Auth' username -- version 4 or greater
+     multiline pass=
+word from client -- version 5 or greater
++    preferred username in >PASSWO=
+RD prompt -- version 6 or greater
  
-     >PASSWORD:Verification Failed: 'Private Key'
+ COMMAND -- auth-retry
+ ---------------=
+------
+diff --git a/src/openvpn/manage=2Ec b/src/openvpn/manage=2Ec
+index 0=
+fc9ee2=2E=2Ec5344cb 100644
+--- a/src/openvpn/manage=2Ec
++++ b/src/openvpn/m=
+anage=2Ec
+@@ -71,6 +71,7 @@
+     MCV_PKSIGN_ALG =3D 3,
+     MCV_USERNAME_ON=
+LY =3D 4,
+     MCV_MULTILINE_PASSWORD =3D 5,
++    MCV_PREFERRED_USERNAME =
+=3D 6,
+ };
  
--  Examp=
-le 4: The --auth-user-pass username/password failed,
-+  Example 5: The --au=
-th-user-pass username/password failed,
-   and OpenVPN will exit with a fata=
-l error if '--auth-retry none'
-   (which is the default) is in effect:
+ struct management *management; /* GLOBAL */
+@@ -3670,6 +3671,=
+25 @@
+             buf_printf(&alert_msg, " MSG:%s", up->username);
+       =
+  }
  
-  =
-   >PASSWORD:Verification Failed: 'Auth'
- 
--  Example 5: The --auth-user-pa=
-ss username/password failed,
-+  Example 6: The --auth-user-pass username/pa=
-ssword failed,
-   and the server provided a custom client-reason-text strin=
-g
-   using the client-deny server-side management interface command=2E
- 
-  =
-   >PASSWORD:Verification Failed: 'custom server-generated string'
- 
--  Exa=
-mple 6: If server pushes --auth-token to the client, the OpenVPN
-+  Example=
- 7: If server pushes --auth-token to the client, the OpenVPN
-   will produc=
-e a real-time PASSWORD message:
- 
-     >PASSWORD:Auth-Token:foobar
- 
--  Exa=
-mple 7: Static challenge/response:
-+  Example 8: Static challenge/response:=
++        if (up_query_mode =3D=3D UP_QUERY_USER_PASS
++            && =
+(man->connection=2Eclient_version >=3D MCV_PREFERRED_USERNAME)
++           =
+ && up->username[0])
++        {
++            /*
++             * The buffer =
+up is prefilled with username from auth-file or inline=2E
++             * I=
+ndicate it in the prompt as base64 encoded=2E
++             */
++           =
+ char *user64 =3D NULL;
++            if (openvpn_base64_encode(up->username=
+, (int)strlen(up->username), &user64) !=3D -1)
++            {
++            =
+    buf_printf(&alert_msg, " UN:%s", user64);
++            }
++            e=
+lse
++            {
++                msg(M_NONFATAL, "ERROR: could not base6=
+4-encode username");
++            }
++            free(user64);
++        }
+ =
+        if (sc)
+         {
+             buf_printf(&alert_msg, " SC:%d,%s",=
 
- 
-     >PASSWORD:Need 'Auth' username/password SC:1,Please enter token PIN=
-
- 
-@@ -378,7 +378,7 @@
-   formatted as described in the Challenge/Response =
-Protocol section
-   below=2E
- 
--  Example 8: Dynamic challenge/response:
-+ =
- Example 9: Dynamic challenge/response:
- 
-     >PASSWORD:Verification Faile=
-d: ['CRV1:R,E:Om01u7Fh4LrGBS7uh0SWmzwabUiGiW6l:Y3Ix:Please enter token PIN'=
-]
- 
-@@ -395,7 +395,7 @@
-   in the Challenge/Response Protocol section below=
-
- 
- See the "Challenge/Response Protocol" section below for more details
--a=
-bout examples 7 and 8, including how the management interface client
-+about=
- examples 8 and 9, including how the management interface client
- should re=
-spond=2E
- 
- COMMAND -- forget-passwords
 
 -- 
-To view, visit https://gerrit=
-=2Eopenvpn=2Enet/c/openvpn/+/2068?usp=3Demail
-To unsubscribe, or for help w=
-riting mail filters, visit https://gerrit=2Eopenvpn=2Enet/settings?usp=3Dem=
-ail
+To view, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2069?usp=3D=
+email
+To unsubscribe, or for help writing mail filters, visit https://gerri=
+t=2Eopenvpn=2Enet/settings?usp=3Demail
 
 Gerrit-MessageType: newchange
-Gerrit-Project: openvpn
-Gerrit-Branch: m=
-aster
-Gerrit-Change-Id: I464672facb34de83930eddc4e86826d3b1cd3edd
-Gerrit-Ch=
-ange-Number: 2068
+Gerri=
+t-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Iac23d5141a8c29e=
+239d0f2aeea497d3a002e609b
+Gerrit-Change-Number: 2069
 Gerrit-PatchSet: 1
-Gerrit-Owner: Selva Nair <selva=2Enair=
-@gmail=2Ecom>
-Gerrit-Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Ge=
-rrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
-Gerrit-Att=
-ention: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
+Ger=
+rit-Owner: Selva Nair <selva=2Enair@gmail=2Ecom>
+Gerrit-Reviewer: Arne Schw=
+abe <arne-openvpn@rfc2549=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-devel@li=
+sts=2Esourceforge=2Enet>
+Gerrit-Attention: Arne Schwabe <arne-openvpn@rfc25=
+49=2Eorg>
 
---11Yv/iQHLk4=
+--Yp4ZdbNiVH8=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
@@ -319,106 +381,150 @@ rently required from: Arne Schwabe=2E </p>
 <p>Selva Nair would like Arne Sc=
 hwabe to <strong>review</strong> this change=2E
 </p><p><a href=3D"https://g=
-errit=2Eopenvpn=2Enet/c/openvpn/+/2068?usp=3Demail">View Change</a></p><pre=
+errit=2Eopenvpn=2Enet/c/openvpn/+/2069?usp=3Demail">View Change</a></p><pre=
  class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: p=
-re-wrap;">Fix numbering of examples in management-notes=2Etxt<br><br>Change=
--Id: I464672facb34de83930eddc4e86826d3b1cd3edd<br>Signed-off-by: Selva Nair=
- &lt;selva=2Enair@gmail=2Ecom&gt;<br>---<br>M doc/management-notes=2Etxt<br=
->1 file changed, 7 insertions(+), 7 deletions(-)<br><br></pre><pre class=3D=
-"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;"=
->git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/68/2068/1=
-</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
-;"><span>diff --git a/doc/management-notes=2Etxt b/doc/management-notes=2Et=
-xt</span><br><span>index a28a1a8=2E=2Eeac91a4 100644</span><br><span>--- a/=
-doc/management-notes=2Etxt</span><br><span>+++ b/doc/management-notes=2Etxt=
-</span><br><span>@@ -345,29 +345,29 @@</span><br><span>   The PASSWORD real=
--time message type can also be used to</span><br><span>   indicate password=
- or other types of authentication failure:</span><br><span> </span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-  Example 3: The private key passwor=
-d is incorrect and OpenVPN</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+  Example 4: The private key password is incorrect and OpenVPN</span=
-><br><span>   is exiting:</span><br><span> </span><br><span>     &gt;PASSWO=
-RD:Verification Failed: &#39;Private Key&#39;</span><br><span> </span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-  Example 4: The --auth-user-pass=
- username/password failed,</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+  Example 5: The --auth-user-pass username/password failed,</span><b=
-r><span>   and OpenVPN will exit with a fatal error if &#39;--auth-retry no=
-ne&#39;</span><br><span>   (which is the default) is in effect:</span><br><=
-span> </span><br><span>     &gt;PASSWORD:Verification Failed: &#39;Auth&#39=
-;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-Example 5: The --auth-user-pass username/password failed,</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+  Example 6: The --auth-user-pass use=
-rname/password failed,</span><br><span>   and the server provided a custom =
-client-reason-text string</span><br><span>   using the client-deny server-s=
-ide management interface command=2E</span><br><span> </span><br><span>     =
-&gt;PASSWORD:Verification Failed: &#39;custom server-generated string&#39;<=
-/span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-  Ex=
-ample 6: If server pushes --auth-token to the client, the OpenVPN</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+  Example 7: If server pushes=
- --auth-token to the client, the OpenVPN</span><br><span>   will produce a =
-real-time PASSWORD message:</span><br><span> </span><br><span>     &gt;PASS=
-WORD:Auth-Token:foobar</span><br><span> </span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-  Example 7: Static challenge/response:</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+  Example 8: Static challenge/respon=
-se:</span><br><span> </span><br><span>     &gt;PASSWORD:Need &#39;Auth&#39;=
- username/password SC:1,Please enter token PIN</span><br><span> </span><br>=
-<span>@@ -378,7 +378,7 @@</span><br><span>   formatted as described in the =
-Challenge/Response Protocol section</span><br><span>   below=2E</span><br><=
-span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-  Example 8: Dy=
-namic challenge/response:</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+  Example 9: Dynamic challenge/response:</span><br><span> </span><br>=
-<span>     &gt;PASSWORD:Verification Failed: [&#39;CRV1:R,E:Om01u7Fh4LrGBS7=
-uh0SWmzwabUiGiW6l:Y3Ix:Please enter token PIN&#39;]</span><br><span> </span=
-><br><span>@@ -395,7 +395,7 @@</span><br><span>   in the Challenge/Response=
- Protocol section below</span><br><span> </span><br><span> See the &quot;Ch=
-allenge/Response Protocol&quot; section below for more details</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-about examples 7 and 8, including =
-how the management interface client</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+about examples 8 and 9, including how the management interf=
-ace client</span><br><span> should respond=2E</span><br><span> </span><br><=
-span> COMMAND -- forget-passwords</span><br></pre><p>To view, visit <a href=
-=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2068?usp=3Demail">change 206=
-8</a>=2E To unsubscribe, or for help writing mail filters, visit <a href=3D=
-"https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><d=
-iv itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope i=
-temprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itempr=
-op=3D"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2068?usp=3Dem=
-ail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+re-wrap;">Optionally indicate username in &gt;PASSWORD &#39;Auth&#39; promp=
+t<br><br>When username is included in the config file as inlined or<br>read=
+ from a file, indicate it as a preferred-username in<br>&gt;PASSWORD Need &=
+#39;Auth&#39; username/password prompt=2E The prompt<br>is appended with &q=
+uot;UN:foo64&quot; where foo64 is the pre-defined<br>username, base64 encod=
+ed=2E<br><br>This is treated as a hint, not an enforced value=2E The manage=
+ment<br>client still responds with both username and password obtained<br>f=
+rom the user=2E Whether the the management client allows the<br>user to inp=
+ut a different username is left to the client<br>implementation=2E<br><br>O=
+nly clients that announce version &gt;=3D6 are prompted this way=2E<br><br>=
+This helps to fix user reports on OpenVPN-GUI not respecting username<br>se=
+t in the config file=2E<br><br>Change-Id: Iac23d5141a8c29e239d0f2aeea497d3a=
+002e609b<br>Signed-off-by: Selva Nair &lt;selva=2Enair@gmail=2Ecom&gt;<br>-=
+--<br>M doc/management-notes=2Etxt<br>M src/openvpn/manage=2Ec<br>2 files c=
+hanged, 43 insertions(+), 0 deletions(-)<br><br></pre><pre class=3D"blocks"=
+ style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pul=
+l ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/69/2069/1</pre><p=
+re style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span=
+>diff --git a/doc/management-notes=2Etxt b/doc/management-notes=2Etxt</span=
+><br><span>index eac91a4=2E=2E0757c75 100644</span><br><span>--- a/doc/mana=
+gement-notes=2Etxt</span><br><span>+++ b/doc/management-notes=2Etxt</span><=
+br><span>@@ -394,6 +394,28 @@</span><br><span>   response along with the us=
+ername and password formatted as described</span><br><span>   in the Challe=
+nge/Response Protocol section below</span><br><span> </span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  Example 10:</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    &gt;PASSWORD:Need &#39;Auth&#39; username/password UN:&lt;user=
+-base64&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &gt;=
+PASSWORD:Need &#39;Auth&#39; username/password UN:&lt;user-base64&gt; SC:1,=
+Please enter token PIN</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  These work exa=
+ctly as Examples 3 and 8, resepctively, with the following</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+  difference=2E The prompt has an ad=
+diitonal word &quot;UN:&lt;user-base64&gt;&quot; where</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+  &lt;user-base64&gt; is the base64 enco=
+ded form a pre-defined username=2E This</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+  may be a username inlined in the config file or read =
+from an external</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  u=
+ser-pass file=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+  The management clien=
+t is expected to show the base64 decoded value to</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+  the user=2E Whether the user can change thi=
+s username or not is left to</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+  the client implementation=2E</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++  The response from the management client should follow the same format</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+  as in example 3 or e=
+xample 8, as applicable=2E</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  This promp=
+t is shown only if the management-client announces a</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+  version &gt;=3D 6=2E Older clients will=
+ see the prompt shown in Example 3</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+  or 8=2E</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span> See the &quot;Challenge/Response Protocol&quot; sect=
+ion below for more details</span><br><span> about examples 8 and 9, includi=
+ng how the management interface client</span><br><span> should respond=2E</=
+span><br><span>@@ -530,6 +552,7 @@</span><br><span>     &gt;PK_SIGN:[base64=
+],[alg]     -- version 3 or greater</span><br><span>     &gt;PASSWORD:Need =
+&#39;Auth&#39; username -- version 4 or greater</span><br><span>     multil=
+ine password from client -- version 5 or greater</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    preferred username in &gt;PASSWORD prompt =
+-- version 6 or greater</span><br><span> </span><br><span> COMMAND -- auth-=
+retry</span><br><span> ---------------------</span><br><span>diff --git a/s=
+rc/openvpn/manage=2Ec b/src/openvpn/manage=2Ec</span><br><span>index 0fc9ee=
+2=2E=2Ec5344cb 100644</span><br><span>--- a/src/openvpn/manage=2Ec</span><b=
+r><span>+++ b/src/openvpn/manage=2Ec</span><br><span>@@ -71,6 +71,7 @@</spa=
+n><br><span>     MCV_PKSIGN_ALG =3D 3,</span><br><span>     MCV_USERNAME_ON=
+LY =3D 4,</span><br><span>     MCV_MULTILINE_PASSWORD =3D 5,</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    MCV_PREFERRED_USERNAME =3D 6,<=
+/span><br><span> };</span><br><span> </span><br><span> struct management *m=
+anagement; /* GLOBAL */</span><br><span>@@ -3670,6 +3671,25 @@</span><br><s=
+pan>             buf_printf(&amp;alert_msg, &quot; MSG:%s&quot;, up-&gt;use=
+rname);</span><br><span>         }</span><br><span> </span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        if (up_query_mode =3D=3D UP_QUERY=
+_USER_PASS</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   &amp;&amp; (man-&gt;connection=2Eclient_version &gt;=3D MCV_PREFERRED_US=
+ERNAME)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+&amp;&amp; up-&gt;username[0])</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++            /*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+         * The buffer up is prefilled with username from auth-file or inlin=
+e=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             * =
+Indicate it in the prompt as base64 encoded=2E</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+             */</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+            char *user64 =3D NULL;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            if (openvpn_base64_encode=
+(up-&gt;username, (int)strlen(up-&gt;username), &amp;user64) !=3D -1)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                buf_printf(&amp=
+;alert_msg, &quot; UN:%s&quot;, user64);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+            else</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+                msg(M_NONFATAL, &quot;ERROR: could not base64-encode =
+username&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   free(user64);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     }</span><br><span>         if (sc)</span><br><span>         {</span><b=
+r><span>             buf_printf(&amp;alert_msg, &quot; SC:%d,%s&quot;,</spa=
+n><br></pre><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/o=
+penvpn/+/2069?usp=3Demail">change 2069</a>=2E To unsubscribe, or for help w=
+riting mail filters, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settin=
+gs?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=
+=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://=
+schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https://gerrit=2Eop=
+envpn=2Enet/c/openvpn/+/2069?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
 
-<div s=
-tyle=3D"display:none"> Gerrit-MessageType: newchange </div>
-<div style=3D"d=
-isplay:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> G=
-errit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: =
-I464672facb34de83930eddc4e86826d3b1cd3edd </div>
-<div style=3D"display:none=
-"> Gerrit-Change-Number: 2068 </div>
-<div style=3D"display:none"> Gerrit-Pa=
-tchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: Selva Nair &lt;=
-selva=2Enair@gmail=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Rev=
-iewer: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D=
-"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourcefo=
-rge=2Enet&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: Arne Sc=
-hwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Message=
+Type: newchange </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn=
+ </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div styl=
+e=3D"display:none"> Gerrit-Change-Id: Iac23d5141a8c29e239d0f2aeea497d3a002e=
+609b </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 2069 </div>
+=
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"displa=
+y:none"> Gerrit-Owner: Selva Nair &lt;selva=2Enair@gmail=2Ecom&gt; </div>
+<=
+div style=3D"display:none"> Gerrit-Reviewer: Arne Schwabe &lt;arne-openvpn@=
+rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-de=
+vel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"di=
+splay:none"> Gerrit-Attention: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&=
+gt; </div>
 
 </body></html>
---11Yv/iQHLk4=--
+--Yp4ZdbNiVH8=--
 
 
---===============3818970732827721882==
+--===============2086731550288703586==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============3818970732827721882==
+--===============2086731550288703586==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -429,5 +535,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============3818970732827721882==--
+--===============2086731550288703586==--
 
