@@ -1,139 +1,95 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63919606A31A
-	for <openvpn-devel@archiver.kernel.org>; Wed, 28 Oct 2026 21:39:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C58C606A31D
+	for <openvpn-devel@archiver.kernel.org>; Wed, 28 Oct 2026 21:42:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=ewsfZNDH;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=AO83zqg4;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=DGCnj1BQ;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=LTNQJPJ3
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=jrX+EOBg;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=F9Ufe1vY;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=C0IBzSEM;
+	dkim=neutral header.d=unstable.cc header.i=@unstable.cc header.a=rsa-sha256 header.s=MBO0001 header.b=D8V0j0hh
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Content-Transfer-Encoding:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:Date:Sender:To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Unsubscribe-Post:List-Owner;
-	bh=IckxbtzXLalyB9mhSm5dlUdNLolAxklVI+tDP9sopOQ=; b=ewsfZNDH3Hzcp1CWF47/jjwYVn
-	Jni3WTfrzfHGM41+Jnl6x+Mf4ODsuO2aWCjaye5D411TqeZMrDmo4RNGlrSNSzbrqtL7uI4bjNBVf
-	LVQRGUACqmEz+GFiiySZ2kddgN9+SvBpxotVkgHNhzwQSGLhyxPFwCdrI5UakiX1VDFE=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	Subject:In-Reply-To:From:References:To:MIME-Version:Date:Message-ID:Sender:
+	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
+	List-Owner; bh=wBpuGNJSKdCDrcAMC+vMuwrtdCfSlD8XYj2iWqjscSE=; b=jrX+EOBga2hdGz
+	s3Pb52EvjxiNq6gOa0SqsyrYEdZplelituEBJgUuZKVyL/gvKSfZecD+Xaa64wIMUMElmPEaswLNH
+	oDzlcYrmJhkoq8Nk45jKNCK3Ug3mthfZ6q5E3OkZOB529RoOZXKTIJPuN+XGqcAFcH7b4fi94tyW2
+	dCM=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xMBMq-000000008Nh-2SSg;
-	Wed, 28 Oct 2026 21:39:32 +0000
+	id 1xMBPb-00000000224-2L9L;
+	Wed, 28 Oct 2026 21:42:23 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xMBMk-000000008NX-0f1X
+ (envelope-from <a@unstable.cc>) id 1xMBPZ-0000000021v-3drC
  for openvpn-devel@lists.sourceforge.net;
- Wed, 28 Oct 2026 21:39:26 +0000
+ Wed, 28 Oct 2026 21:42:22 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:Date:From:Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
+ From:References:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:Cc:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=JPz5aPyPxH7eAsAUZfN2TXXvzAKpbmLuynDwOdw3qfU=; b=AO83zqg4cmjwQdZ0fHr4nbwK25
- 2GXlHjIDLc+7zzRvAjFnBHYsJKbvtMqjnzYObCmg2z85/5fG8vdd0gvurmcWytF1rVEaAlCgZbQhB
- bdlq+zBxaySwZ/lPkGNKAU30+6lmlCnjsSwHf0ONJdnesQqg+MG7rQ8r6qodqyf1XK70=;
+ bh=yRHUo2vUpu7lEnWeMASg9i4j4Kuo9iVQE7icWr/BXSE=; b=F9Ufe1vY9bf71YmsMi8RJTsEip
+ XNs2WZrQYBV46Vwwb3fRsr8CW9lQf8FgS7I5xKPINWLAyZRaCjDhXiXBhra1mMoSIvgbr+A0PBCXj
+ U9ESeZFEPg4P/9MoP6yDMK01taED5bmaGkp7XvjSp/B6Zp1L+7UlpmxRzYaZYA8bXU3M=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:Date:From:Sender:
- To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
+ h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:References:To:
+ Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:Cc:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=JPz5aPyPxH7eAsAUZfN2TXXvzAKpbmLuynDwOdw3qfU=; b=DGCnj1BQmBw1aUm7DGICu7u+4Q
- rqBsMSnjnGICc98yXZP15X9Zh5yAJRgWeHFaXomEKXk2nqC+Dz5RGxbTJGQiBFC2wysMOVZapl7LU
- 3RPYkJvUlYADYRWJHLp8DVHQvYb/lLcYv8MGzJBffQ6yBLtN1Sa0ZK6+txucgfPMkTp8=;
-Received: from mail-wr1-f44.google.com ([209.85.221.44])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xMBMj-000000005Ab-2IHQ for openvpn-devel@lists.sourceforge.net;
- Wed, 28 Oct 2026 21:39:26 +0000
-Received: by mail-wr1-f44.google.com with SMTP id
- ffacd0b85a97d-48dfdd0678dso939158f8f.0
- for <openvpn-devel@lists.sourceforge.net>;
- Wed, 28 Oct 2026 14:39:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1793223559; x=1793828359; darn=lists.sourceforge.net;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:date:from:from:to:cc:subject:date:message-id
- :reply-to:content-type;
- bh=JPz5aPyPxH7eAsAUZfN2TXXvzAKpbmLuynDwOdw3qfU=;
- b=LTNQJPJ3VFnm1bW4m2MRpOXv2tZYbhnRFrMPfXWAl/Bav+k3G+ss60NT8r4cDE34YZ
- MgiR6Ox6kfgxQWu5c5V7fQF4QlCJmyt5M5MFuSxX5V8lXLI6KmUd9Ka/49MIHbiXPUw9
- r1wYoEzDXh7oEBcaaCyNuU29JHkyBgIyH5p3Nzcayv6I4MKUvBcxRxU96YTGtGRnMj8O
- gK76JsFule0rrfDyfwCdz64wsCZz7ln51XzEJWZrvtX0ZfZolTyJX9frQP+osy9YYPXk
- YkhMdwCEvT/Zb6M8CAviGOYemL4YLBXxCFvYBjkRlHsEh4lmhEW11rQb2nXxiV+9woDg
- Lxuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1793223559; x=1793828359;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:date:from:x-gm-gg:x-gm-message-state:from:to:cc
- :subject:date:message-id:reply-to:content-type;
- bh=JPz5aPyPxH7eAsAUZfN2TXXvzAKpbmLuynDwOdw3qfU=;
- b=Zmd7D/Bi63aJ7Lz4xN+wqkmS8m68425QIUUvqMlQxzdSQwttdLkSSr1SWaDx9rZyoc
- +SVH8XDVkGKufSte9ma4ERweYRKQlYyyYk67QLibxY6QBtv995Z36DwxOwEU2KnE5xQq
- N+xp7z+URXy8wcLcIS+cwdcvZslBrRuTEFWUS/Fp5/gg10JRpioLI4VfWuFe2SFb1xAc
- Xel9ElrUlEO0OzPlCeO9L9mu5ECy45YAl4G+v8tv3eOGdVJmbx/sFKWbiPHHT2ciQIMk
- TjBV2zeGDT3c1j6Lz4QHAzzFvCk6lppEoh50zzo2wiUag5+lBDcgJOaG12CAnxZ3gfmT
- uvyQ==
-X-Forwarded-Encrypted: i=1;
- AKwUvBxOKJxlAaojY93PSBwU7Tyrm11O9cZpyiP6+oqfx5MSMJZezBaIz6ulN2Bto6P5u3upbcTAbBUeHFonKT3M@lists.sourceforge.net
-X-Gm-Message-State: AFq9FYLRbofQqi476x9iRrk42Gjl5L0cOujADo5vTkQi7RG/ecYgFAMX
- qdkLBEpSw7UELAgoKqYZFzknKIFi4XmnyU3tfKmaqwA84K23TMQYqZyWedff+wI2ITKDoHGkXnZ
- ukhQTarBD3nuvl3k+Vq+Oz4w464BDLDIP3P44mpf2dM11Fs0XML/cZxkcxC/iws1fQSoWeuRi12
- tGNQYwBg==
-X-Gm-Gg: AYBFou0iKv670jXfElntICxn62cCkkLU6D6LCaTt44v0Q7lv0T6u1NylqYAUN0T8L1z
- WDA5kF3ekxCM6JJTd6g/wWAbGbVD1mLtxajBJfBSVLQMFGpWcygIno59zNrTWNgCtuGUJTmoHkb
- eUIdpbYSU6FrOVhZVTrcR5ug+i/pGiIO5IxWAq81AH6yd03puW0Wdbmz89777ns1YO2RjHpIcVs
- aAnIokhsGr+pX9HrjuMpDef1aKbCx1UCtxEB8C594W05zikPc5pG9ZQvLwhQBz5hoMW0q6N1V7l
- tjT7pQZV2MxLOQX0XN6p8aBaS6Mc98vKx/6aUsz19MF8oD7P2NsEFMZb/K+cICux5xa1lC83z+G
- 6SQNegkK1ZH44urVyoSBd0UfwPN+np2h8nIghVY5L4mhAWl3jEDCQogrh95lcforQY6zN7jmDTw
- cb4wgTVL6E0V+fhyn/FmcpbwHw0tC/UwfZJqMv4FaK5CuSZxjb2I+UlNQXqbg0hZK6VtESUydhr
- SBHjtOwUVunygAWBWthrGooo0EYDqFPetGJZi+9Xq+0FgTg0coG+tr6naA9eKUJAwfUESttCAuZ
- QjKK4QEukin8srs9GeBAhzkvUxHYenpmdWnIL7D8Adoh5Cf+ekJ3zyFXIa3Kai0zLjWih+8g7OM
- faiKDPRdWHTX4GwGGX/GIo4CdXAUFdxwoymIkNeN4viIpxjp12KoUr9fkuyuconNpoMNRqSnlUf
- Lb2aX2rQMScpPvMR1G0vzqKUATBt1b5A7qzXDk
-X-Received: by 2002:a05:600c:3e8c:b0:4a3:59c9:a750 with SMTP id
- 5b1f17b1804b1-4a965dd3285mr81566195e9.9.1793223558872; 
- Wed, 28 Oct 2026 14:39:18 -0700 (PDT)
-Received: from ip-10-18-1-162.eu-central-1.compute.internal
- (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
- by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-4a94f05f168sm55848575e9.4.2026.10.28.14.39.17
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 28 Oct 2026 14:39:17 -0700 (PDT)
-X-Google-Original-From: "Arne Schwabe (Code Review)"
- <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Wed, 28 Oct 2026 21:39:15 +0000
-Auto-Submitted: auto-generated
-X-Gerrit-MessageType: comment
-X-Gerrit-PatchSet: 19
-X-Gerrit-Change-Id: I4a6a6ef41e15896b8b79d795b2a6de86b8ae4c84
-X-Gerrit-Change-Number: 1858
-X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/1858?usp=email>
-X-Gerrit-Commit: 3f0211e80590dc0a4b7a4b972877b12fc58deaed
-X-Gerrit-Comment-Date: Wed, 28 Oct 2026 21:39:15 +0000
-In-Reply-To: <gerrit.1787327336000.I4a6a6ef41e15896b8b79d795b2a6de86b8ae4c84@gerrit.openvpn.net>
-References: <gerrit.1787327336000.I4a6a6ef41e15896b8b79d795b2a6de86b8ae4c84@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzg3MzI3MzM2MDAwLkk0YTZhNmVmNDFlMTU4OTZiOGI3OWQ3OTViMmE2ZGU4NmI4YWU0Yzg0QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <5837f9cfbd91f6b405c85e43af5c3be7658e1c47-EmailReviewComments-HTML@gerrit.openvpn.net>
+ bh=yRHUo2vUpu7lEnWeMASg9i4j4Kuo9iVQE7icWr/BXSE=; b=C0IBzSEM2LPamuIvb7rDMKMOAA
+ DZ1eNsdXBnPMbGxItKzWepnXdKRF2AcbRBXQdSAKkSURop6NfSg0jtc82VUOjjlmGzZTXtyHhaUyG
+ fi+8189rWKkQpbxVYJliMF/2ZZzGCcc4h8L9rNS01aMjWOJSwgiBtaFvMABth6PIjV/I=;
+Received: from mout-p-103.mailbox.org ([80.241.56.161])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
+ id 1xMBPY-000000003uh-2ZwQ for openvpn-devel@lists.sourceforge.net;
+ Wed, 28 Oct 2026 21:42:21 +0000
+Received: from smtp2.mailbox.org (smtp2.mailbox.org
+ [IPv6:2001:67c:2050:b231:465::2])
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+ key-exchange X25519MLKEM768 server-signature RSA-PSS (4096 bits) server-digest
+ SHA256) (No client certificate requested)
+ by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4jFLRl4hffzKnnx;
+ Wed, 28 Oct 2026 22:42:11 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=unstable.cc; s=MBO0001;
+ t=1793223731;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=yRHUo2vUpu7lEnWeMASg9i4j4Kuo9iVQE7icWr/BXSE=;
+ b=D8V0j0hhrQ8jtbLECOLiLBI9GdJ+CbIAmnFqWkdoXlCFaUxN84WMnFWVNiFC2Y3nNAfT9s
+ OLM0H3o33RIpeczANpOVRB9W1hURRKw9WpqSotJZuUPhQHT6MKj3sFb3hW1pZckgqCiz9n
+ gcmoFMRscXp9juSUQq3Qb6ZBMtgoCpf3JsYRuiTIq9WxkUVUAM4w095EWdfcdQG2DpbE/4
+ YhSnamZXWZJzOFx3CR0zbZEp4SICK/nxBp76qcNCiMxfwa3cf3rGFeinfFdDfS7B0R8nCe
+ UyP2YBFdqlLyFkFBHFCVPx5rGSAnI6uaMFjW0M+Xw9gFgqHy4MerZdUqp30IIQ==
+Authentication-Results: outgoing_mbo_mout; dkim=none;
+ spf=pass (outgoing_mbo_mout: domain of a@unstable.cc designates
+ 2001:67c:2050:b231:465::2 as permitted sender) smtp.mailfrom=a@unstable.cc
+Message-ID: <60758dd9-bc8e-4cda-b62c-11aeca9230a1@unstable.cc>
+Date: Wed, 28 Oct 2026 22:42:08 +0100
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
-User-Agent: Gerrit/3.14.2
-X-Spam-Score: 1.0 (+)
-X-Headers-End: 1xMBMj-000000005Ab-2IHQ
-Subject: [Openvpn-devel] [XL] Change in openvpn[master]: Implement
- sending/receiving app custom control protocol messages
+User-Agent: Mozilla Thunderbird
+To: Bernhard Schmidt <berni@birkenwald.de>, openvpn-devel@lists.sourceforge.net
+References: <ea6e57f3-3d91-4d3f-9c28-471dc1021bcd@birkenwald.de>
+ <auJj5Ld6uMjPb2eS@fliwatuet.svr02.mucip.net>
+Content-Language: en-US
+From: Antonio Quartulli <a@unstable.cc>
+In-Reply-To: <auJj5Ld6uMjPb2eS@fliwatuet.svr02.mucip.net>
+X-Rspamd-Queue-Id: 4jFLRl4hffzKnnx
+X-Spam-Score: -0.2 (/)
+X-Headers-End: 1xMBPY-000000003uh-2ZwQ
+Subject: Re: [Openvpn-devel] Kernel lockup in ovpn ovpn_tcp_send_skb
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -143,192 +99,191 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "Arne Schwabe \(Code Review\) via Openvpn-devel"
- <openvpn-devel@lists.sourceforge.net>
-Reply-To: arne-openvpn@rfc2549.org, razvanc@mailbox.org,
- openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com,
- charlie.vigue@openvpn.com
-Cc: "Arne Schwabe \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>,
- chugly <charlie.vigue@openvpn.com>
-Content-Type: multipart/mixed; boundary="===============0642072581349239020=="
-X-Spam-Status: No, score=-2.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
-	MAILING_LIST_MULTI,MISSING_HEADERS,SPF_HELO_PASS,SPF_PASS autolearn=no
-	autolearn_force=no version=4.0.1
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+X-Spam-Status: No, score=-5.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_PASS,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============0642072581349239020==
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="AkEQbmPE8us="; charset=UTF-8
+Hi Bernhard,
 
---AkEQbmPE8us=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+On 28/10/2026 22:06, Bernhard Schmidt wrote:
+> On 09/10/26 04:34 PM, Bernhard Schmidt wrote:
+> 
+>> We have seen two segfaults during the night, but I hope they go away
+>> upgrading to 2.7.8. If not I will report here. The process was restarted by
+>> systemd and noone noticed.
+> 
+> Segfaults have not reappeared, but we now have a node that exhibits
+> frequent (sometimes after < 10 minutes of uptime) kernel lockups.
 
-Attention is currently required from: Arne Schwabe, Frank Lichtenheld=2E
+One you'll tell us what's your secret...but please, keep reporting stuff 
+so we can keep fixing them :-)
 
-A=
-rne Schwabe has posted comments on this change by Arne Schwabe=2E ( https:/=
-/gerrit=2Eopenvpn=2Enet/c/openvpn/+/1858?usp=3Demail )
+> 
+> Oct 28 21:56:56 eduvpn-n14 kernel: rcu: INFO: rcu_preempt self-detected stall on CPU
+> Oct 28 21:56:56 eduvpn-n14 kernel: rcu:         1-....: (1 GPs behind) idle=acbc/1/0x4000000000000000 softirq=21504/21505 fqs=2625
+> Oct 28 21:56:56 eduvpn-n14 kernel: rcu:         (t=5251 jiffies g=30829 q=183 ncpus=2)
+> Oct 28 21:56:56 eduvpn-n14 kernel: CPU: 1 UID: 65534 PID: 1140 Comm: openvpn Not tainted 7.2.9+deb13-amd64 #1 PREEMPT(lazy)  Debian 7.2.9-1~bpo13+1
+> Oct 28 21:56:56 eduvpn-n14 kernel: Hardware name: Nutanix AHV/RHEL, BIOS edk2-20241117-11.0s9c17r2.el9 11/17/2024
+> Oct 28 21:56:56 eduvpn-n14 kernel: RIP: 0010:pv_native_safe_halt+0xf/0x20
+> Oct 28 21:56:56 eduvpn-n14 kernel: Code: 20 d0 c3 cc cc cc cc 0f 1f 40 00 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 f3 0f 1e fa eb 07 0f 00 2d b5 12 09 00 fb f4 <e9> fc 33 01 00 66 66 2e 0f 1f 84 00 00 00 00 00 90 90 90 9>
+> Oct 28 21:56:56 eduvpn-n14 kernel: RSP: 0018:ff791788423871f0 EFLAGS: 00000246
+> Oct 28 21:56:56 eduvpn-n14 kernel: RAX: 0000000000000003 RBX: ff3c4bb82a4e1f44 RCX: 0000000000000009
+> Oct 28 21:56:56 eduvpn-n14 kernel: RDX: 0000000000000000 RSI: 0000000000000003 RDI: ff3c4bb82a4e1f44
+> Oct 28 21:56:56 eduvpn-n14 kernel: RBP: ff3c4bb877c73480 R08: 0000000000000200 R09: ff3c4bb8683928c0
+> Oct 28 21:56:56 eduvpn-n14 kernel: R10: 0000000000000020 R11: 0000000000000020 R12: 0000000000080000
+> Oct 28 21:56:56 eduvpn-n14 kernel: R13: 0000000000000001 R14: 0000000000000100 R15: 0000000000000000
+> Oct 28 21:56:56 eduvpn-n14 kernel: FS:  00007f6422242cc0(0000) GS:ff3c4bb8ceb2a000(0000) knlGS:0000000000000000
+> Oct 28 21:56:56 eduvpn-n14 kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> Oct 28 21:56:56 eduvpn-n14 kernel: CR2: 0000557856fdba60 CR3: 0000000108724003 CR4: 0000000000371ef0
+> Oct 28 21:56:56 eduvpn-n14 kernel: Call Trace:
+> Oct 28 21:56:56 eduvpn-n14 kernel:  <TASK>
+> Oct 28 21:56:56 eduvpn-n14 kernel:  kvm_wait+0x4f/0x60
+> Oct 28 21:56:56 eduvpn-n14 kernel:  __pv_queued_spin_lock_slowpath+0x264/0x370
+> Oct 28 21:56:56 eduvpn-n14 kernel:  _raw_spin_lock+0x29/0x30
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ovpn_tcp_send_skb+0x4a/0x120 [ovpn]
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ovpn_encrypt_post+0x141/0x1d0 [ovpn]
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ovpn_send+0x171/0x220 [ovpn]
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ? ovpn_send+0x31/0x220 [ovpn]
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ovpn_net_xmit+0x2aa/0x570 [ovpn]
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ? ovpn_net_xmit+0x1ee/0x570 [ovpn]
+> Oct 28 21:56:56 eduvpn-n14 kernel:  dev_hard_start_xmit+0x63/0x1d0
+> Oct 28 21:56:56 eduvpn-n14 kernel:  __dev_queue_xmit+0x729/0x1090
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ? __dev_queue_xmit+0x2cc/0x1090
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ip6_finish_output+0x182/0x3a0
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ip6_output+0x84/0x170
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ? __pfx_ip6_finish_output+0x10/0x10
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ip6_xmit+0x2d8/0x6f0
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ? __pfx_dst_output+0x10/0x10
+> Oct 28 21:56:56 eduvpn-n14 kernel:  inet6_csk_xmit+0xbb/0x140
+> Oct 28 21:56:56 eduvpn-n14 kernel:  __tcp_transmit_skb+0x6ca/0x1140
+> Oct 28 21:56:56 eduvpn-n14 kernel:  tcp_write_xmit+0x5c3/0x1780
+> Oct 28 21:56:56 eduvpn-n14 kernel:  __tcp_push_pending_frames+0x38/0x100
+> Oct 28 21:56:56 eduvpn-n14 kernel:  tcp_sendmsg_locked+0xe35/0x13c0
+> Oct 28 21:56:56 eduvpn-n14 kernel:  __skb_send_sock+0x128/0x4e0
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ? __pfx_sendmsg_locked+0x10/0x10
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ovpn_tcp_send_sock+0x75/0x1c0 [ovpn]
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ovpn_tcp_release+0x14a/0x1f0 [ovpn]
+> Oct 28 21:56:56 eduvpn-n14 kernel:  release_sock+0x80/0xc0
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ovpn_tcp_sendmsg+0xc4/0x220 [ovpn]
+> Oct 28 21:56:56 eduvpn-n14 kernel:  __sys_sendto+0x17e/0x1e0
+> Oct 28 21:56:56 eduvpn-n14 kernel:  __x64_sys_sendto+0x24/0x30
+> Oct 28 21:56:56 eduvpn-n14 kernel:  do_syscall_64+0xea/0x640
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ? do_epoll_ctl+0x8d/0x100
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ? __x64_sys_epoll_ctl+0x72/0xa0
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ? vm_normal_page+0x37/0x100
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ? _raw_spin_unlock+0xe/0x30
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ? wp_page_reuse+0x8d/0xa0
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ? do_wp_page+0x1ff/0xf20
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ? sock_poll+0x54/0xe0
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ? ep_item_poll.isra.0+0x53/0x90
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ? __handle_mm_fault+0xa8c/0xf80
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ? count_memcg_events+0xd9/0x1a0
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ? handle_mm_fault+0x1e2/0x2e0
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ? do_user_addr_fault+0x2c3/0x7f0
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ? irqentry_exit+0x48/0x740
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ? do_syscall_64+0x9f/0x640
+> Oct 28 21:56:56 eduvpn-n14 kernel:  ? clear_bhb_loop+0x60/0xb0
+> Oct 28 21:56:56 eduvpn-n14 kernel:  entry_SYSCALL_64_after_hwframe+0x76/0x7e
 
-Change subject: Imp=
-lement sending/receiving app custom control protocol messages
-=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+So, it seems this is a deadlock due to an OpenVPN TCP transport packet 
+that is routed back into the ovpn device, thus hitting the lock that was 
+already held on the TCP socket.
+
+We just confirmed the theory locally in a VM by artificially forcing the 
+above scenario.
 
 
-Patch Set 19:
+It may happen when a client with an already established tunnel attempts 
+a reconnection to the same server over the existing tunnel (i.e. due to 
+traffic redirection).
 
-(1 commen=
-t)
+This scenario should lead to what you have witnessed because the server 
+records the VPN IP as transport IP, thus triggering the re-injection.
 
-File src/openvpn/acc=2Ec:
+But this is just speculation - you may have hit another case that 
+triggers the same "re-injection" behaviour.
 
-https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1=
-858/comment/50ef7d53_f67c201b?usp=3Demail :
-PS18, Line 206:     if (!payloa=
-d_len_str || !((payload_len =3D atoi(payload_len_str))))
-> I don't really f=
-eel atoi_constraint really fits here since it comes with own logging and we=
- don't re [=E2=80=A6]
-On the other hand the double error message for a case=
- that should never happen with a well behaved peer is probably nothing to w=
-orry about=2E
+In any case, what triggers it is not important for fixing the bug.
+We basically lack a loop avoidance mechanism for TCP.
 
 
+
+Thanks!
+Cheers,
+
+
+
+> Oct 28 21:56:56 eduvpn-n14 kernel: RIP: 0033:0x7f6421a9b3a7
+> Oct 28 21:56:56 eduvpn-n14 kernel: Code: 48 89 fa 4c 89 df e8 78 b3 00 00 8b 93 08 03 00 00 59 5e 48 83 f8 fc 74 1a 5b c3 0f 1f 84 00 00 00 00 00 48 8b 44 24 10 0f 05 <5b> c3 0f 1f 80 00 00 00 00 83 e2 39 83 fa 08 75 de e8 23 f>
+> Oct 28 21:56:56 eduvpn-n14 kernel: RSP: 002b:00007ffcc6032010 EFLAGS: 00000202 ORIG_RAX: 000000000000002c
+> Oct 28 21:56:56 eduvpn-n14 kernel: RAX: ffffffffffffffda RBX: 00007f6422242cc0 RCX: 00007f6421a9b3a7
+> Oct 28 21:56:56 eduvpn-n14 kernel: RDX: 00000000000004a4 RSI: 000055785553810f RDI: 0000000000000062
+> Oct 28 21:56:56 eduvpn-n14 kernel: RBP: 000055785555bf30 R08: 0000000000000000 R09: 0000000000000000
+> Oct 28 21:56:56 eduvpn-n14 kernel: R10: 0000000000004000 R11: 0000000000000202 R12: 0000557855552e28
+> Oct 28 21:56:56 eduvpn-n14 kernel: R13: 0000000000000000 R14: 00007ffcc6032130 R15: 0000557839c66e54
+> Oct 28 21:56:56 eduvpn-n14 kernel:  </TASK>
+> Oct 28 21:57:23 eduvpn-n14 kernel: watchdog: BUG: soft lockup - CPU#1 stuck for 48s! [openvpn:1140]
+> Oct 28 21:57:23 eduvpn-n14 kernel: Modules linked in: rpcsec_gss_krb5 krb5 auth_rpcgss nfsv4 dns_resolver nfs lockd grace netfs cpuid wireguard libcurve25519 libchacha20poly1305 ovpn libchacha libpoly1305 ip6_udp_tunnel udp_tun>
+> Oct 28 21:57:23 eduvpn-n14 kernel: CPU: 1 UID: 65534 PID: 1140 Comm: openvpn Not tainted 7.2.9+deb13-amd64 #1 PREEMPT(lazy)  Debian 7.2.9-1~bpo13+1
+> Oct 28 21:57:23 eduvpn-n14 kernel: Hardware name: Nutanix AHV/RHEL, BIOS edk2-20241117-11.0s9c17r2.el9 11/17/2024
+> Oct 28 21:57:23 eduvpn-n14 kernel: RIP: 0010:pv_native_safe_halt+0xf/0x20
+> Oct 28 21:57:23 eduvpn-n14 kernel: Code: 20 d0 c3 cc cc cc cc 0f 1f 40 00 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 f3 0f 1e fa eb 07 0f 00 2d b5 12 09 00 fb f4 <e9> fc 33 01 00 66 66 2e 0f 1f 84 00 00 00 00 00 90 90 90 9>
+> Oct 28 21:57:23 eduvpn-n14 kernel: RSP: 0018:ff791788423871f0 EFLAGS: 00000246
+> Oct 28 21:57:23 eduvpn-n14 kernel: RAX: 0000000000000003 RBX: ff3c4bb82a4e1f44 RCX: 0000000000000009
+> Oct 28 21:57:23 eduvpn-n14 kernel: RDX: 0000000000000000 RSI: 0000000000000003 RDI: ff3c4bb82a4e1f44
+> Oct 28 21:57:23 eduvpn-n14 kernel: RBP: ff3c4bb877c73480 R08: 0000000000000200 R09: ff3c4bb8683928c0
+> Oct 28 21:57:23 eduvpn-n14 kernel: R10: 0000000000000020 R11: 0000000000000020 R12: 0000000000080000
+> Oct 28 21:57:23 eduvpn-n14 kernel: R13: 0000000000000001 R14: 0000000000000100 R15: 0000000000000000
+> Oct 28 21:57:23 eduvpn-n14 kernel: FS:  00007f6422242cc0(0000) GS:ff3c4bb8ceb2a000(0000) knlGS:0000000000000000
+> Oct 28 21:57:23 eduvpn-n14 kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> Oct 28 21:57:23 eduvpn-n14 kernel: CR2: 0000557856fdba60 CR3: 0000000108724003 CR4: 0000000000371ef0
+> Oct 28 21:57:23 eduvpn-n14 kernel: Call Trace:
+> Oct 28 21:57:23 eduvpn-n14 kernel:  <TASK>
+> Oct 28 21:57:23 eduvpn-n14 kernel:  kvm_wait+0x4f/0x60
+> Oct 28 21:57:23 eduvpn-n14 kernel:  __pv_queued_spin_lock_slowpath+0x264/0x370
+> Oct 28 21:57:23 eduvpn-n14 kernel:  _raw_spin_lock+0x29/0x30
+> Oct 28 21:57:23 eduvpn-n14 kernel:  ovpn_tcp_send_skb+0x4a/0x120 [ovpn]
+> Oct 28 21:57:23 eduvpn-n14 kernel:  ovpn_encrypt_post+0x141/0x1d0 [ovpn]
+> Oct 28 21:57:23 eduvpn-n14 kernel:  ovpn_send+0x171/0x220 [ovpn]
+> Oct 28 21:57:23 eduvpn-n14 kernel:  ? ovpn_send+0x31/0x220 [ovpn]
+> Oct 28 21:57:23 eduvpn-n14 kernel:  ovpn_net_xmit+0x2aa/0x570 [ovpn]
+> Oct 28 21:57:23 eduvpn-n14 kernel:  ? ovpn_net_xmit+0x1ee/0x570 [ovpn]
+> Oct 28 21:57:23 eduvpn-n14 kernel:  dev_hard_start_xmit+0x63/0x1d0
+> Oct 28 21:57:23 eduvpn-n14 kernel:  __dev_queue_xmit+0x729/0x1090
+> 
+> This is the last message that is written to the journal before the machine
+> becomes unresponsive, even on the Nutanix console.
+> 
+> I have upgraded to 7.2.11 now, but there was nothing in the changes pointing
+> to ovpn related fixes.
+> 
+> Bernhard
+> 
+>>
+>> Thank you all for making OpenVPN 2.7 and ovpn DCO and all the surrounding
+>> stuff possible! And kudos to the EduVPN maintainers as well of course.
+>>
+>> Best Regards and have a nice weekend,
+>> Bernhard
+>>
+>>
+>> _______________________________________________
+>> Openvpn-devel mailing list
+>> Openvpn-devel@lists.sourceforge.net
+>> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+> 
 
 -- 
-To view, visit https://gerrit=2Eopenvpn=2Enet/c/openvp=
-n/+/1858?usp=3Demail
-To unsubscribe, or for help writing mail filters, visi=
-t https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
-
-Gerrit-MessageType: =
-comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I4a=
-6a6ef41e15896b8b79d795b2a6de86b8ae4c84
-Gerrit-Change-Number: 1858
-Gerrit-Pa=
-tchSet: 19
-Gerrit-Owner: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-R=
-eviewer: Frank Lichtenheld <frank@lichtenheld=2Ecom>
-Gerrit-Reviewer: R=C4=
-=83zvan Cojocaru <razvanc@mailbox=2Eorg>
-Gerrit-CC: chugly <charlie=2Evigue=
-@openvpn=2Ecom>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=
-=2Enet>
-Gerrit-Attention: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-=
-Attention: Frank Lichtenheld <frank@lichtenheld=2Ecom>
-Gerrit-Comment-Date:=
- Wed, 28 Oct 2026 21:39:15 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels:=
- No
-Comment-In-Reply-To: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
-Comme=
-nt-In-Reply-To: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-
---AkEQbmPE8us=
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: Arne Schwabe, Frank Lichtenheld=2E </p>
-<p>Arne Schwa=
-be has posted comments on this change by Arne Schwabe=2E</p><p><a href=3D"h=
-ttps://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1858?usp=3Demail">View Change</a>=
-</p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><li style=
-=3D"margin: 0; padding: 0;"><p>File src/openvpn/acc=2Ec:</p><ul style=3D"li=
-st-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;">=
-<p style=3D"margin-bottom: 4px;"><a href=3D"https://gerrit=2Eopenvpn=2Enet/=
-c/openvpn/+/1858/comment/50ef7d53_f67c201b?usp=3Demail">Patch Set #18, Line=
- 206:</a> <code style=3D"font-family:monospace,monospace">    if (!payload_=
-len_str || !((payload_len =3D atoi(payload_len_str))))</code></p><p><blockq=
-uote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;=
-">I don&#39;t really feel atoi_constraint really fits here since it comes w=
-ith own logging and we don&#39;t re [=E2=80=A6]</blockquote></p><p class=3D=
-"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">On the oth=
-er hand the double error message for a case that should never happen with a=
- well behaved peer is probably nothing to worry about=2E</p></li></ul></li>=
-</ul><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/=
-+/1858?usp=3Demail">change 1858</a>=2E To unsubscribe, or for help writing =
-mail filters, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=
-=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg=
-/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=
-=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1858?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
-ew Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: =
-comment </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-=
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"dis=
-play:none"> Gerrit-Change-Id: I4a6a6ef41e15896b8b79d795b2a6de86b8ae4c84 </d=
-iv>
-<div style=3D"display:none"> Gerrit-Change-Number: 1858 </div>
-<div sty=
-le=3D"display:none"> Gerrit-PatchSet: 19 </div>
-<div style=3D"display:none"=
-> Gerrit-Owner: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div=
- style=3D"display:none"> Gerrit-Reviewer: Frank Lichtenheld &lt;frank@licht=
-enheld=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: R=C4=
-=83zvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt; </div>
-<div style=3D"display=
-:none"> Gerrit-CC: chugly &lt;charlie=2Evigue@openvpn=2Ecom&gt; </div>
-<div=
- style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=
-=2Esourceforge=2Enet&gt; </div>
-<div style=3D"display:none"> Gerrit-Attenti=
-on: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"di=
-splay:none"> Gerrit-Attention: Frank Lichtenheld &lt;frank@lichtenheld=2Eco=
-m&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 28 Oct =
-2026 21:39:15 +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments:=
- Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div =
-style=3D"display:none"> Comment-In-Reply-To: R=C4=83zvan Cojocaru &lt;razva=
-nc@mailbox=2Eorg&gt; </div>
-<div style=3D"display:none"> Comment-In-Reply-T=
-o: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-
-</body></html>
---AkEQbmPE8us=--
+Antonio Quartulli
 
 
---===============0642072581349239020==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============0642072581349239020==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
---===============0642072581349239020==--
-
