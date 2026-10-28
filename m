@@ -1,136 +1,135 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F15B606A31C
-	for <openvpn-devel@archiver.kernel.org>; Wed, 28 Oct 2026 13:29:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 662D4606A31C
+	for <openvpn-devel@archiver.kernel.org>; Wed, 28 Oct 2026 13:36:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=AkCRq8dU;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=NVoEUzLd;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=SHf/cOBw;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=JAS7bwBa
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=HjbANwrA;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=UC8wxoqV;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=d7Y+KoO2;
+	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=BjSWkyCh
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:Date:Sender:To:
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
 	List-Unsubscribe-Post:List-Owner;
-	bh=yE/VTfKWP8fX8FWj7Ovr/no19nKC/CIw43VXSh7xHho=; b=AkCRq8dUA8Paoz/MP0jj1K7OCQ
-	rKObwspwJesp07cBMOh0kjAagxUbyVQQJnqRYvpMzDh5nxL7MzibfHCTZsLmrWJ6mrHUGxuncGjOd
-	WpzDILh6q3q5cTmSVzBvQ9iC9MFltx0j1aq55Zo13dXsKfA5GnYRSxWKX8LV4ZhW9WYA=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	bh=JjjNhHhkX3/cd8VKGlRwWRDHVcojQQyLrq8OB6t2z9g=; b=HjbANwrAR58Sf5Ki1O+cPfTstZ
+	LdS+r1QZBKjF3UfSFnAioAQgsNGf/D42Vro7uccmljmglQk0cu68G2WNpbciAjB2zF1Zdi6uX+bCW
+	+tPsXW0cREp1NciLry9EyWBclaWPB7CS8at+ShY/VAqNepm2TuQCR5Oc0rk+H5Q42BxY=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xM3i5-0000000070D-1kOg;
-	Wed, 28 Oct 2026 13:28:57 +0000
+	id 1xM3pj-000000004o0-1zPp;
+	Wed, 28 Oct 2026 13:36:51 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xM3i3-00000000706-2d7H
+ (envelope-from <gerrit@openvpn.net>) id 1xM3pc-000000004nd-34hq
  for openvpn-devel@lists.sourceforge.net;
- Wed, 28 Oct 2026 13:28:55 +0000
+ Wed, 28 Oct 2026 13:36:44 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:Date:From:Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From
+ Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=enLcYPQ6oxnjIPcYH5St5qXtI0AanwMFf/c4P0tlbKo=; b=NVoEUzLdZxpAbG1GNWyDJ3DiwJ
- UUjjO7LN04/hXDvFRtPErmGpVffmrsQm/8wEClC8QSbW47zYTZuIDYeBmWoDMM4Bd3R590QvzE5Ay
- vABF+E2btbwbpgjhL1yjZymy9/UnOzjB8JcaGM+v3hifJB+pExjyJAT+7HRb0qQPtaaE=;
+ bh=35p9N7SViPgP2RFXaqbbOyWkoB1XvjnECTARo5yhVdI=; b=UC8wxoqVzT97V32n/UBO0k2gBi
+ 4UCa4Y2TlxQMyaMCgmo6VxqBK2uw117ZqwhZ35W5siXJBBDZjScm8aZzykjjTnDsqrOl47suc/aSw
+ sT8K9Aktpknsb0vnZpQXnmHqV8jtYz7RmBPs+kVIpF2fm/YRJDZnZfYVM78tRT/LU/94=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:Date:From:Sender:
- To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
+ Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=enLcYPQ6oxnjIPcYH5St5qXtI0AanwMFf/c4P0tlbKo=; b=SHf/cOBw/AaQEFO6j78Vi0sapC
- R0qIkKnGzVtcu9WooUoI6AyRY6wGYifbba4vbujLdNbzSmGWato27kSSzHFPrDd94SjNxzc08NYfD
- 7Nwlw+eKgxHMi9qC2W4PmVPH1x9B3l3el08Wi4LxVrOqCvi83C/JH5jWONw6cew0H+54=;
-Received: from mail-wm1-f48.google.com ([209.85.128.48])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ bh=35p9N7SViPgP2RFXaqbbOyWkoB1XvjnECTARo5yhVdI=; b=d7Y+KoO2++63t+ahvBL8Mnhd5Y
+ on0GAhaog53PlBkYR8xtyrXau0pBNflHl+3hhZ740iLPCJ52LkbWsJMmcqxU4dRVWyYkvx7ycGbAO
+ hxA+RsJcKwhGlX+Vdny28AZtNgvdvfGvHqq9c6zxg/0eagCeC2s6IP2lRNXmroafRDIA=;
+Received: from mail-wr1-f44.google.com ([209.85.221.44])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xM3i1-000000007xx-1tS1 for openvpn-devel@lists.sourceforge.net;
- Wed, 28 Oct 2026 13:28:55 +0000
-Received: by mail-wm1-f48.google.com with SMTP id
- 5b1f17b1804b1-4a9a8d6cea8so7683515e9.1
+ id 1xM3pV-0000000072V-3lDr for openvpn-devel@lists.sourceforge.net;
+ Wed, 28 Oct 2026 13:36:44 +0000
+Received: by mail-wr1-f44.google.com with SMTP id
+ ffacd0b85a97d-48b042c0728so320803f8f.1
  for <openvpn-devel@lists.sourceforge.net>;
- Wed, 28 Oct 2026 06:28:53 -0700 (PDT)
+ Wed, 28 Oct 2026 06:36:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1793194127; x=1793798927; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1793194591; x=1793799391; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:date:from:from:to:cc:subject:date:message-id
+ :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=enLcYPQ6oxnjIPcYH5St5qXtI0AanwMFf/c4P0tlbKo=;
- b=JAS7bwBaAUBUhV9FOGVasN7vcoJMXNrP42Hrp/+KXUuMwmFdVzTCeXQ6wPX3LGQVNa
- x/jp7QKUD3KB8uEr5NNMl4/zWoieOvMyhVobP2/pNr0tTYNAGIrGoxpqhR+2VdgA6BVy
- pLXq3UwzWjkL5pr87XUEmdoPb0+glGFq3c99eNLKyLR5INvilZ549g725sUmHZ+O/yfZ
- 0zdVTJJHg2xlBc6s7SZDI44DXSUCf7aknH2QbTUnnd/3iQZx+v0AT+kOmHQz4PFTrTRM
- 9PCzKBZT2CKGvRbQQYT7kp9a/ExnOn24JxlvaFxsYhQvBlyhmxZBj+XBRH4VTq6KwjUs
- oGPg==
+ bh=35p9N7SViPgP2RFXaqbbOyWkoB1XvjnECTARo5yhVdI=;
+ b=BjSWkyChCPYMvM1DGg0Y3nvWDGCB4ENb3WyomAvJll+QeR0it3k+ocm1s5vid4Vl/G
+ ZSaNLf1oeZ8uVAoMN+Hz5Jy+bY5XUmJpHpOUmTnFR385VDWcHXeNOFaapuVnFAffL555
+ sLwRjvGcEVgm3n1zSdDEvIeRHmK1Zw66pm1Ek3ToQ09iCx7Yyazt5+aCBn/32vsl8EBk
+ 1E1hwb5UQ4bUsm0hX5MzZnxB4E1u3vPTSEQRod9gOjPvhLwfF9FPbBu8Kg3mHzSglERH
+ ghHUPd9pd6pQ9PUR1Rt8M48pv7rCubDzGFAhZ2/a0vtMlPhoqrwdaAWF/mep3m+QRxkD
+ HUdg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1793194127; x=1793798927;
+ d=1e100.net; s=20260707; t=1793194591; x=1793799391;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:date:from:x-gm-gg:x-gm-message-state:from:to:cc
- :subject:date:message-id:reply-to:content-type;
- bh=enLcYPQ6oxnjIPcYH5St5qXtI0AanwMFf/c4P0tlbKo=;
- b=UWYve5ksEhqI+1KO9LH42KYyRsKREjpprElxxFGyZ4cH3OiaalSCVKRCWRD7sYnqZt
- 8HrL08yXZu+Gs+gZ5XG3tiwQGhCMvgpeiwCY8DzE39ghLi5C4zXu40p0pYeffWED7UE3
- ZBP6DHRIlIgxVxkwmUMlSlxeoV6No2YLi57B6XrA8AmbVGCbGR3Sw1ZZAVV+V2ME/yVQ
- aDW4evlDHbycLtxv7EjKueKUrZ+XGAcaDRAnRJzV9w69JByxKjq5cCVGhIS4M59ODyKv
- cWEobNfy+OxfasudSOYbLlvbXZ5w2wjxCwCtwIxbEnRs5fBucsdrCZf+Wzct+0VLZiPx
- gWEA==
-X-Forwarded-Encrypted: i=1;
- AKwUvBy+wH7Hq/lTM9blneSis4ByS4pWGVO+AySFycThgElbw3DpFT0PXlrM2HGDaER1nW0qcnUDyAUSdyfurUNn@lists.sourceforge.net
-X-Gm-Message-State: AFq9FYIDnYNIeuqUKMbDv71MDy4zpl4ou1IQCszFhPq7miBB53K5hNXi
- clr6V/ZDrLCewUzU7s4skD4C8XhV8l8JLYEf6JfhuO1Do6Ejy0D8lYY+GCogEUp8/af9VzHR8rG
- KaGnMFc8sZlm8HJrH1VyzOpc7sQ/mJtMjKlE1CcWqrDD+DQQ2q8R/465EDSVc590J6uqJ
-X-Gm-Gg: AYBFou1Nd33xFpx6lYcoy2b4gwXzkKra1dRgggMqxmUB6Wm2514hjWI5fQcvP2cM7MC
- PCVJmK7MvrtvFD04Z9rCvSu0KEdl4GD1DwgZlFyikgBbxqvk/MdZXncilSovK3qylQj0WxBcDoj
- 2DPnQmPgxpqxhhUnMyqEGt3JPZVClQ+MHAld6tf5ByWebdplOmFdjlYhAx9wxHkFOIaBJjgAh7y
- yWRWgOb4HxUvGqJ6mT/4AtwCgJmyhU/gEikGmz8bUcpNsIUTQwM2++su+uk6N58nMXgzu5FE21u
- NTZvKZx8OTCw0fZFn5nssnUjXfjHZjTpBxLZA1d/R5vuTiPka+yvdG0rZObaBii2x1J600hggq/
- Q+CuQrhB8x4yYD0eZOQy2g/U9c16Wo0i9DRweMb5w1CKL47JQ+tV7a/gtBDf5KPY1wpAai101Hf
- mNcuPAdzCQ8YDM5kIwnhECQpwVM5NuAT8R4cLe6N7oj3uz4RM0zTAWeq9KPIzUU5FEpx8dkTc/d
- ZoraOdj5Ig6qBbU54xj0tsxbDRk8QqplGBHiiPQrQ2I73+grPVW4upCvMIGY+1stZJrQBoGwCxa
- OeoEqHenFrUPB5us/8m3AEdb+USZVQhORkTiQi7/umyhv26HqCEB+EAsDj72yIB3LNVtvJYnnQi
- e6BGdpTI/qzuHkz9U6HWnwCU8ZTASG3WzK9PTdxKGSOVpm3IeA5hooFj5iJCtRpipvKGCIzzhkX
- BkK5z06c3j2poYFlYzPg2h/GhkZ3HpWcsHlyRD
-X-Received: by 2002:a05:600c:3b29:b0:4a0:20b4:ba93 with SMTP id
- 5b1f17b1804b1-4a997bfaa4fmr39972945e9.16.1793194125556; 
- Wed, 28 Oct 2026 06:28:45 -0700 (PDT)
+ :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
+ :cc:subject:date:message-id:reply-to:content-type;
+ bh=35p9N7SViPgP2RFXaqbbOyWkoB1XvjnECTARo5yhVdI=;
+ b=wnNekM8LxHYmFiWFRfh83QGzniVKJ5W8/AQZxngA3tNziVYmK0R1xux4hb0CFxUIdo
+ qXCLUSKiAbRLb2QM8b+OvUGZQYVDTiWpDveY5uPojs38MucjR3bGOU4lHh6ct0Q3SB6M
+ qDH1xhHfqudhvN/4tdqxJiWAdDk6UCYmbJfKzGyh6Ie2xv0I41U8CcnOAXVggpvyGo5a
+ xZdHcCGz3BeyfAiOmsYjQlyJ3t9IDMfyNkqWdvtdzR8ST+W2FvooQ5Yey1pPe6bUIk+g
+ JrJ8OU2SSa1gisxd+/VtgPRCucxbj1X2iELjvLGgE3AaZ7uP6xUsTpVfeWg1nbCeeajH
+ 16oQ==
+X-Gm-Message-State: AFq9FYJ6ZqmHtLnSYRsAUE4fr3HnX+cOPtReZDjwgMckJoaEyQGibfdr
+ 4W42kPgOW3DpOfIBg/9ABhb1CGqARL8fu6/7/7ksMJXOZmVnXXXffvt4UJt07PaNobhNlxNxMZP
+ JBTyehPkztN+P0iW897w/YJcfrCzJemzmZcid/FmTiXBaZY0nPROECLv+6JgB+9wXM0lF
+X-Gm-Gg: AYBFou3WSGbkZ83bAhsdJN609ISnC1xz6A3G1QSqdK8eJa1AORw5+A/ntJhxklZQnfq
+ PYFeDQGc+DBK3AqFmq540i/9uy1szyDtrUgEd6ert+9DpY2f5VO7tAx+CgjoRqvC4B7ahfFGGjO
+ cZiocV1ikGhN316nUF+kQ4yv57Fqaju3v/VJcAnr/fQlFFTbP+AYCNMzUYSHsUG3svaY2S2ka6y
+ IYlhZHmQAT5/2Qf16gXY75zRBvI6wjRLLsq52pO7Fz+8opcDk+cP1+HRwzuLSvc8MhbH3QQzsf1
+ 3eg+XHso9eYwqO8Ymlv2N6U4NrJ3bPjf4iHIQmodyLlCXhynYwHhDhQROyWQ4QqpJOJ9fYTorZk
+ GfgBrO+G6dVP0u0frh5vs3CBHx90GB6VAQ4sbMF/qpBrQmjfJk+DDiwbhFEkFqQdSI7hdYIUivu
+ C7H11UVzij58pMhBVA/hfCIBF0R9EkRnSo5N+wpRuj2BpyCwtzSUOeDrmgNxlV7xPJXlxYMZAXH
+ ti56vVKE3g7Ho31s4etRuwvrcv1/KtsHrUeE42a6R4W19WjOYk6awcQxwZvHSmCjIQ9xnViSt6z
+ kGQHyMuIQfgcqtW+a4jYvbao/5xhyjsB29O/JdwaKRJhM3vXHu41fvEswmA5Op8li68tauKnPp4
+ +wJwkgN1mAk/YDx0jMkLaWwJoKkpwOd7av423yFqAi9S/6w8aHqdMshz8P9DBSSZJNMHgCqqH5Y
+ aGKBTEIXiqLw2NKxo=
+X-Received: by 2002:a05:600c:8589:b0:4a1:e57b:667c with SMTP id
+ 5b1f17b1804b1-4a966e2b8e3mr34527045e9.26.1793194588953; 
+ Wed, 28 Oct 2026 06:36:28 -0700 (PDT)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-4a978d57b39sm75154295e9.10.2026.10.28.06.28.44
+ ffacd0b85a97d-48e3ecde7easm28869448f8f.52.2026.10.28.06.36.27
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 28 Oct 2026 06:28:45 -0700 (PDT)
+ Wed, 28 Oct 2026 06:36:28 -0700 (PDT)
 X-Google-Original-From: "Arne Schwabe (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Wed, 28 Oct 2026 13:28:37 +0000
+Date: Wed, 28 Oct 2026 13:36:23 +0000
+To: =?UTF-8?Q?R=C4=83zvan_Cojocaru?= <razvanc@mailbox.org>,
+ Frank Lichtenheld <frank@lichtenheld.com>
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: comment
-X-Gerrit-PatchSet: 16
+X-Gerrit-MessageType: newpatchset
+X-Gerrit-PatchSet: 17
 X-Gerrit-Change-Id: I4a6a6ef41e15896b8b79d795b2a6de86b8ae4c84
 X-Gerrit-Change-Number: 1858
 X-Gerrit-Project: openvpn
 X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/1858?usp=email>
-X-Gerrit-Commit: 6380386c5690d29661f083b8501d2f65ee967f24
-X-Gerrit-Comment-Date: Wed, 28 Oct 2026 13:28:37 +0000
+X-Gerrit-Commit: 058fa762f3ecb2d77ed2ef43d84a10343232cc4a
 In-Reply-To: <gerrit.1787327336000.I4a6a6ef41e15896b8b79d795b2a6de86b8ae4c84@gerrit.openvpn.net>
 References: <gerrit.1787327336000.I4a6a6ef41e15896b8b79d795b2a6de86b8ae4c84@gerrit.openvpn.net>
 Thread-Index: PGdlcnJpdC4xNzg3MzI3MzM2MDAwLkk0YTZhNmVmNDFlMTU4OTZiOGI3OWQ3OTViMmE2ZGU4NmI4YWU0Yzg0QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <c0e9cb7a714dc67dddd65549cdce82147035be59-EmailReviewComments-HTML@gerrit.openvpn.net>
+Message-ID: <77fcee568d3238b59bf6da97351db9a2b6173682-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.2
-X-Spam-Score: 1.0 (+)
-X-Headers-End: 1xM3i1-000000007xx-1tS1
+X-Spam-Score: -0.2 (/)
+X-Headers-End: 1xM3pV-0000000072V-3lDr
 Subject: [Openvpn-devel] [XL] Change in openvpn[master]: Implement
  sending/receiving app custom control protocol messages
 X-BeenThere: openvpn-devel@lists.sourceforge.net
@@ -148,404 +147,5775 @@ Reply-To: arne-openvpn@rfc2549.org, razvanc@mailbox.org,
  openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com,
  charlie.vigue@openvpn.com
 Cc: "Arne Schwabe \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>,
- chugly <charlie.vigue@openvpn.com>
-Content-Type: multipart/mixed; boundary="===============5078925698199730133=="
-X-Spam-Status: No, score=-2.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+ chugly <charlie.vigue@openvpn.com>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: multipart/mixed; boundary="===============3555380544497878165=="
+X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
-	MAILING_LIST_MULTI,MISSING_HEADERS,SPF_HELO_PASS,SPF_PASS autolearn=no
-	autolearn_force=no version=4.0.1
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,MIME_HTML_MOSTLY,
+	SPF_HELO_PASS,SPF_PASS,T_KAM_HTML_FONT_INVALID,WEIRD_PORT
+	autolearn=ham autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============5078925698199730133==
+--===============3555380544497878165==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="A0dcIMyXPzU="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="Fx8YGq/fG3Q="; charset=UTF-8
 
---A0dcIMyXPzU=
+--Fx8YGq/fG3Q=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: Frank Lichtenheld, R=C4=83zvan Cojoca=
 ru=2E
 
-Arne Schwabe has posted comments on this change by Arne Schwabe=2E (=
- https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1858?usp=3Demail )
+Hello Frank Lichtenheld, R=C4=83zvan Cojocaru, 
 
-Change subj=
-ect: Implement sending/receiving app custom control protocol messages
-=2E=
+I'd like you to ree=
+xamine a change=2E Please visit
+
+    https://gerrit=2Eopenvpn=2Enet/c/openv=
+pn/+/1858?usp=3Demail
+
+to look at the new patch set (#17)=2E
+
+The following=
+ approvals got outdated and were removed:
+Code-Review-1 by R=C4=83zvan Cojo=
+caru
+
+
+Change subject: Implement sending/receiving app custom control proto=
+col messages
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
 
-Patch Set 16:
+Implement sending/receiving app custom control protocol messages
 
-=
-(12 comments)
+This al=
+lows openvpn GUI/front-ends and server via management
+to use the OpenVPN co=
+ntrol channel to pass messages between each other
+while OpenVPN handles the=
+ marshalling/unmarshalling of these and
+negotiate the common app custom con=
+trol protocols=2E
 
-File doc/management-notes=2Etxt:
+This provides an easy to use secure channel that does no=
+t depend on
+the network itself to work and can also used before fully authe=
+nticating
+the client=2E See the management-notes=2Etxt for more details how=
+ to use
+this feature=2E An upcoming patch will also add some example python=
 
-https://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1858/comment/97aa9591_cb515ed1?usp=3Demail :
-PS15, Line =
-838: The server should then use acc-msg command to send app custom control =
-messages
-> client-acc-msg?
-Acknowledged
+script that showcase this feature=2E
 
-
-https://gerrit=2Eopenvpn=2Enet/c/=
-openvpn/+/1858/comment/d429c14a_385298f5?usp=3Demail :
-PS15, Line 882: >>>>=
->>> fd23ffa35a (Implement sending/receiving app custom control protocol mes=
-sages)
-> Leftover conflict marker=2E
-Done
-
-
-File src/openvpn/acc=2Ec:
-
-http=
-s://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1858/comment/adf6fb7b_6a94ffd9?usp=
-=3Demail :
-PS16, Line 207:     log_acc_message(c, &buf, payload_len, protoc=
-ol, flags);
-> Should we drop ACC messages that are not within `acc_max_mess=
-age_length`, or from a peer than never  [=E2=80=A6]
-I added dropping ACC me=
-ssage that are not in the negotiated protocol list (that also cover if a cl=
-ient/server never configured ACC) but did not implement a message 
-length c=
-heck but added comment in the source code and management-notes=2Etxt that p=
-oints out the reasoning for this (robustness principle)=2E
-
-
-https://gerrit=
-=2Eopenvpn=2Enet/c/openvpn/+/1858/comment/c463697b_aefd4c38?usp=3Demail :
-P=
-S16, Line 372:          * again would just add an extra string allocation t=
-o options->gc */
-> We're no longer allocating to options-gc=2E
-Yepp=2E I wi=
-ll that part of the comment=2E
-
-
-File src/openvpn/init=2Ec:
-
-https://gerrit=
-=2Eopenvpn=2Enet/c/openvpn/+/1858/comment/baca3bba_59eca459?usp=3Demail :
-P=
-S16, Line 2283:     if (multi->acc_negotiated_protocols)
-> There's a line h=
-igher up in this function that checks `if (c->c2=2Etls_multi && c->c2=2E [=
-=E2=80=A6]
-Yeah=2E Although we are removing --secret so that will not happe=
-n in the future=2E
-
-
-File src/openvpn/multi=2Ec:
-
-https://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1858/comment/3c66338b_3d94e771?usp=3Demail :
-PS16, Line =
-1741:     struct context *c =3D &mi->context;
-> This function only uses `&m=
-i->context` but now takes `mi` as a parameter=2E [=E2=80=A6]
-It is a leftov=
-er=2E I will revert it=2E
-
-
-File src/openvpn/push=2Ec:
-
-https://gerrit=2Eop=
-envpn=2Enet/c/openvpn/+/1858/comment/e774eb3e_383c269c?usp=3Demail :
-PS15, =
-Line 235:                            "without client announcing support for=
- it");
-> This is missing a space (will print "control listwithout")=2E
-Done=
-
-
-
-https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1858/comment/72b6b737_f529d37=
-0?usp=3Demail :
-PS15, Line 247:     struct buffer common_list =3D get_list_=
-intersection(&gc, protocols, multi->opt=2Eacc_protocols);
-> Isn't the `if (=
-protocols)` check below too late if we're already using `protocols` here?
+Change-Id: I4a6a6ef41e15896b8b79d795=
+b2a6de86b8ae4c84
+Signed-off-by: Arne Schwabe <arne@rfc2549=2Eorg>
+---
+M CMa=
+keLists=2Etxt
+M doc/man-sections/client-options=2Erst
+M doc/man-sections/ma=
+nagement-options=2Erst
+M doc/man-sections/script-options=2Erst
+M doc/manage=
+ment-notes=2Etxt
+M src/openvpn/Makefile=2Eam
+A src/openvpn/acc=2Ec
+A src/op=
+envpn/acc=2Eh
+M src/openvpn/forward=2Ec
+M src/openvpn/init=2Ec
+M src/openvp=
+n/manage=2Ec
+M src/openvpn/manage=2Eh
+M src/openvpn/multi=2Ec
+M src/openvpn=
+/options=2Ec
+M src/openvpn/options=2Eh
+M src/openvpn/push=2Ec
+M src/openvpn=
+/push=2Eh
+M src/openvpn/ssl=2Ec
+M src/openvpn/ssl_common=2Eh
+M tests/unit_t=
+ests/openvpn/Makefile=2Eam
+M tests/unit_tests/openvpn/mock_management=2Ec
 A=
-cknowledged=2E That should be way earlier=2E
+ tests/unit_tests/openvpn/mock_management=2Eh
+M tests/unit_tests/openvpn/mo=
+ck_push_dependencies=2Ec
+A tests/unit_tests/openvpn/test_acc=2Ec
+A tests/un=
+it_tests/openvpn/test_acc=2Eh
+M tests/unit_tests/openvpn/test_common=2Eh
+M =
+tests/unit_tests/openvpn/test_misc=2Ec
+M tests/unit_tests/openvpn/test_ssl=
+=2Ec
+28 files changed, 1,547 insertions(+), 24 deletions(-)
 
 
-https://gerrit=2Eopenvpn=2En=
-et/c/openvpn/+/1858/comment/aae4fa55_84bdf5f2?usp=3Demail :
-PS15, Line 260:=
-         multi->acc_negotiated_protocols =3D string_alloc(protocols, &c->op=
-tions=2Egc);
-> This is use after free=2E There's a `gc_free()` before `stri=
-ng_alloc(protocols, &c->options=2Egc);`=2E
-Acknowledged
+  git pull ss=
+h://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/58/1858/17
 
-
-https://gerrit=2E=
-openvpn=2Enet/c/openvpn/+/1858/comment/6a66ba9f_b793c9f3?usp=3Demail :
-PS15=
-, Line 260:         multi->acc_negotiated_protocols =3D string_alloc(protoc=
-ols, &c->options=2Egc);
-> This also allocates `acc_negotiated_protocols` on=
- `&c->options=2E [=E2=80=A6]
-yeah this is a double free then=2E Fixed=2E
-
-
+diff --gi=
+t a/CMakeLists=2Etxt b/CMakeLists=2Etxt
+index 184a95a=2E=2E00caa2d 100644
+-=
+-- a/CMakeLists=2Etxt
++++ b/CMakeLists=2Etxt
+@@ -435,6 +435,8 @@
+     src/c=
+ompat/compat-strlcpy=2Ec
+     src/compat/compat-strsep=2Ec
+     src/compat/=
+compat-strtok_r=2Ec
++    src/openvpn/acc=2Ec
++    src/openvpn/acc=2Eh
+     =
+src/openvpn/argv=2Ec
+     src/openvpn/argv=2Eh
+     src/openvpn/base64=2Ec
 =
-File src/openvpn/push=2Ec:
+@@ -571,8 +573,8 @@
+     src/openvpn/ps=2Ec
+     src/openvpn/ps=2Eh
+     sr=
+c/openvpn/push=2Ec
+-    src/openvpn/push_util=2Ec
+     src/openvpn/push=2Eh=
 
-https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1858=
-/comment/88db7f51_11455ac4?usp=3Demail :
-PS16, Line 262:     multi->acc_neg=
-otiated_protocols =3D string_alloc(protocols, NULL);
-> If `acc_negotiated_p=
-rotocols` has previously already been set, this leaks=2E [=E2=80=A6]
-Yeah, =
-or ignore further INFO messages=2E
++    src/openvpn/push_util=2Ec
+     src/openvpn/pushlist=2Eh
+     src/open=
+vpn/reflect_filter=2Ec
+     src/openvpn/reflect_filter=2Eh
+@@ -826,7 +828,1=
+0 @@
+             tests/unit_tests/openvpn/mock_management=2Ec
+            =
+ tests/unit_tests/openvpn/mock_ssl_dependencies=2Ec
+             tests/unit=
+_tests/openvpn/mock_win32_execve=2Ec
++            tests/unit_tests/openvpn/=
+test_acc=2Ec
++            src/openvpn/acc=2Ec
+             src/openvpn/argv=
+=2Ec
++            src/openvpn/auth_token=2Ec
+             src/openvpn/base6=
+4=2Ec
+             src/openvpn/crypto_epoch=2Ec
+             src/openvpn/cr=
+ypto_mbedtls=2Ec
+@@ -840,8 +845,11 @@
+             src/openvpn/options_util=
+=2Ec
+             src/openvpn/otime=2Ec
+             src/openvpn/packet_id=
+=2Ec
++            src/openvpn/reliable=2Ec
++            src/openvpn/session=
+_id=2Ec
+             src/openvpn/run_command=2Ec
+             src/openvpn/s=
+sl_mbedtls=2Ec
++            src/openvpn/ssl_ncp=2Ec
+             src/openvp=
+n/ssl_openssl=2Ec
+             src/openvpn/ssl_util=2Ec
+             src/op=
+envpn/ssl_verify_mbedtls=2Ec
+@@ -858,6 +866,8 @@
+     target_sources(test_m=
+isc PRIVATE
+         tests/unit_tests/openvpn/mock_get_random=2Ec
+         =
+tests/unit_tests/openvpn/test_schedule=2Ec
++        tests/unit_tests/openvp=
+n/mock_management=2Ec
++        src/openvpn/base64=2Ec
+         src/openvpn/=
+options_util=2Ec
+         src/openvpn/otime=2Ec
+         src/openvpn/ssl_ut=
+il=2Ec
+diff --git a/doc/man-sections/client-options=2Erst b/doc/man-section=
+s/client-options=2Erst
+index 87c138a=2E=2Eb204d6a 100644
+--- a/doc/man-sect=
+ions/client-options=2Erst
++++ b/doc/man-sections/client-options=2Erst
+@@ -1=
+2,6 +12,17 @@
+   When this option is set, OpenVPN will not drop incoming tu=
+n packets with
+   same destination as host=2E
+ 
++--app-custom-control proto=
+collist
++  Sets the list of supported app custom control protocols=2E
++  Th=
+ese protocols are announced to the server when this option is used
++  as a =
+client=2E If the option is set on a server it will negotiate the
++  common =
+protocols with the client=2E
++
++  The protocollist is a : separated list of=
+ protocol identifiers=2E
++
++  See management-notes=2Etxt in the OpenVPN dis=
+tribution and the OpenVPN RFC
++  draft for a description of app custom cont=
+rol protocol support=2E
++
+ --auth-token token
+   This is not an option to b=
+e used directly in any configuration files,
+   but rather push this option =
+from a ``--client-connect`` script or a
+@@ -437,6 +448,12 @@
+         Addit=
+ional authentication methods supported by the client=2E
+         This may b=
+e set by the client UI/GUI using ``--setenv``=2E
+ 
++  :code:`IV_ACC=3D<max_=
+msg_len>,<flags>,<protocols>`
++        If the option ``--app-custom-control=
+`` is set, the client will
++        send the supported max ACC message leng=
+th, the supported formats
++        as (:code:`A:6`) and the list of configu=
+red protocols (e=2Eg=2E
++        :code:`flower:happy:power`)
++
+   The follo=
+wing flags depend on which compression formats are compiled in
+   and wheth=
+er compression is allowed by options=2E See `Protocol options`_
+   for more=
+ details=2E
+diff --git a/doc/man-sections/management-options=2Erst b/doc/ma=
+n-sections/management-options=2Erst
+index 2c79d05=2E=2Ea7f7ead 100644
+--- a=
+/doc/man-sections/management-options=2Erst
++++ b/doc/man-sections/managemen=
+t-options=2Erst
+@@ -144,3 +144,9 @@
+ 
+ --management-up-down
+   Report tunne=
+l up/down events to management interface=2E
++
++--app-custom-control protoco=
+l-list
++  Sets the app custom control protocols that are supported and shou=
+ld be
++  negotiated=2E protocol-list is a list of allowed protocols separat=
+ed by :
++  A client will announce these protocols via the IV_ACC variable a=
+nd the
++  server will notify the client about the common protocols=2E
+diff =
+--git a/doc/man-sections/script-options=2Erst b/doc/man-sections/script-opt=
+ions=2Erst
+index f420380f=2E=2E9c17c3b 100644
+--- a/doc/man-sections/script=
+-options=2Erst
++++ b/doc/man-sections/script-options=2Erst
+@@ -1006,3 +1006=
+,12 @@
+        X509_1_L=3DBISHKEK
+        X509_1_ST=3DNA
+        X509_1_C=
+=3DKG
++
++:code:`acc_protocols`
++    If ``--app-custom-control`` is configur=
+ed and the client supports any of the
++    protocols that server also suppo=
+rts, this variable contains a list of
++    common protocols separated by :=
+=2E
++
++:code:`acc_message_len`
++    if :code:`acc_protocols` is set, this v=
+ariable contains the maximum
++    message length for app custom protocol me=
+ssage=2E
+\ No newline at end of file
+diff --git a/doc/management-notes=2Etx=
+t b/doc/management-notes=2Etxt
+index 4d726c4=2E=2Ec255d1d 100644
+--- a/doc/=
+management-notes=2Etxt
++++ b/doc/management-notes=2Etxt
+@@ -828,6 +828,58 @=
+@
+ that is required to continue the connection (unlike MFA or opening a bro=
+wser)
+ this message is not negotiated but can just be sent as a gratuitous =
+message=2E
+ 
++app custom control
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D
++If the special string "ACC" is passed as {EXTRA} OpenVPN w=
+ill determine
++the common app custom protocols between the client and the s=
+erver and instruct
++the client that the server will send control messages t=
+o the client using
++the ACC protocol=2E
++
++The server should then use clien=
+t-acc-msg command to send app custom
++control messages to the client to fac=
+ilitate the pending authentication=2E
++
++COMMAND -- client-acc-msg (OpenVPN=
+ 2=2E8 or higher)
++------------------------------------------
++
++On an Open=
+VPN instance running in server mode this command sends an
++app custom contr=
+ol message to a client=2E The format of the command is:
++
++  client-acc-msg=
+ {CID} {KID}
++  {protocol}
++  {flags}
++  {message}
++  END
++
++CID,KID -- cli=
+ent ID and Key ID=2E See documentation for ">CLIENT:"
++notification for mor=
+e info=2E
++
++protocol -- the ACC protocol identifier that this message shou=
+ld be
++            tagged with=2E
++
++flags    -- a colon separated list of =
+the encoding and the flag if
++            the message is a fragment=2E E=2E=
+g=2E "6:F" for a base64 encoded
++            message that is also a fragmen=
+t and not complete yet=2E
++
++message  -- The message encoded in the encodin=
+g specified in flags
++
++
++COMMAND -- acc-msg (OpenVPN 2=2E8 or higher)
++---=
+---------------------------------------
++
++When OpenVPN is running in --cli=
+ent mode this command sends an app
++custom command to the server=2E The for=
+mat of the command is
++
++  acc-msg
++  {protocol}
++  {flags}
++  {message}
++ =
+ END
++
++See the client-acc-msg command for more details about the format of=
+ the
++message=2E Since a client has only one peer there is no need to speci=
+fy the
++client id and key id=2E
++
++
+ COMMAND -- client-deny  (OpenVPN 2=2E1=
+ or higher)
+ -----------------------------------------------
+ 
+@@ -1302,6 +=
+1354,46 @@
+    response=2E Mechanisms that need multiple rounds or more com=
+plex answers
+    should implement a different response type than CR_RESPONS=
+E=2E
+ 
++(6) App custom control message
++
++    This message is an applicatio=
+n specific payload message that is transported
++    over the OpenVPN contro=
+l channel=2E
++
++    In server mode:
++
++    >CLIENT:ACC,{CID},{KID},{protoco=
+l},{fragment},{msg_base64}
++
++    In client mode:
++
++    >ACC:{protocol},{f=
+ragment},{msg_base64}
++
++    The protocol is a short ascii string identifyi=
+ng the app specific custom
++    protocol=2E If fragment is set to 1, the me=
+ssage is not complete and the
++    next message should be concatenated to t=
+his message to form a complete
++    message=2E
++
++    Note that the OpenVPN=
+ implementation operates here with the robustness
++    principle ("be conse=
+rvative in what you send, be liberal in what you
++    accept" - RFC 793 and=
+ others) and allows receiving messages longer than
++    maximum allowed mes=
+sage length=2E Implementations should be prepared to
++    handle messages t=
+hat are longer than the maximum allowed message length=2E
++
++
++(7) App cust=
+om control protocol message
++
++   This message informs the client about the=
+ common ACC
++   protocols and the maximum message length for an ACC message=
+=2E
++
++   In client mode:
++
++   >ACC_PROTOCOLS:protocols=3D{protocol_list},=
+message_len=3D{max_msg_len}
++
++   protocol_list is a list of supported prot=
+ocols by the client=2E For example
++   flower:power:sys_info would indicate=
+ these three protocols to be supported=2E
++   max_msg_len specifies the max=
+imum message length that the peer supports=2E
++
++   In server mode these ar=
+e available in the acc_protocols and
++   acc_message_len variables of the c=
+lient environment=2E
+ 
+ Variables:
+ 
+diff --git a/src/openvpn/Makefile=2Eam=
+ b/src/openvpn/Makefile=2Eam
+index 8a60a94=2E=2Eebc4db6 100644
+--- a/src/op=
+envpn/Makefile=2Eam
++++ b/src/openvpn/Makefile=2Eam
+@@ -45,6 +45,7 @@
+ sbin=
+_PROGRAMS =3D openvpn
+ 
+ openvpn_SOURCES =3D \
++	acc=2Ec acc=2Eh \
+ 	argv=
+=2Ec argv=2Eh \
+ 	auth_token=2Ec auth_token=2Eh \
+ 	base64=2Ec base64=2Eh \=
 
+@@ -124,7 +125,8 @@
+ 	proto=2Ec proto=2Eh \
+ 	proxy=2Ec proxy=2Eh \
+ 	ps=
+=2Ec ps=2Eh \
+-	push=2Ec push_util=2Ec push=2Eh \
++	push=2Ec push=2Eh \
++	p=
+ush_util=2Ec \
+ 	pushlist=2Eh \
+ 	reflect_filter=2Ec reflect_filter=2Eh \
+ =
+	reliable=2Ec reliable=2Eh \
+diff --git a/src/openvpn/acc=2Ec b/src/openvpn=
+/acc=2Ec
+new file mode 100644
+index 0000000=2E=2E4404e45
+--- /dev/null
++++ =
+b/src/openvpn/acc=2Ec
+@@ -0,0 +1,437 @@
++/*
++ *  OpenVPN -- An application =
+to securely tunnel IP networks
++ *             over a single TCP/UDP port, =
+with support for SSL/TLS-based
++ *             session authentication and k=
+ey exchange,
++ *             packet encryption, packet authentication, and
+=
++ *             packet compression=2E
++ *
++ *  Copyright (C) 2025 OpenVPN I=
+nc <sales@openvpn=2Enet>
++ *  Copyright (C) 2025 Arne Schwabe <arne@rfc2549=
+=2Eorg>
++ *
++ *
++ *  This program is free software; you can redistribute it=
+ and/or modify
++ *  it under the terms of the GNU General Public License ve=
+rsion 2
++ *  as published by the Free Software Foundation=2E
++ *
++ *  This =
+program is distributed in the hope that it will be useful,
++ *  but WITHOUT=
+ ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or=
+ FITNESS FOR A PARTICULAR PURPOSE=2E  See the
++ *  GNU General Public Licen=
+se for more details=2E
++ *
++ *  You should have received a copy of the GNU =
+General Public License along
++ *  with this program; if not, write to the F=
+ree Software Foundation, Inc=2E,
++ *  51 Franklin Street, Fifth Floor, Bost=
+on, MA 02110-1301 USA=2E
++ */
++
++#ifdef HAVE_CONFIG_H
++#include "config=2Eh=
+"
++#endif
++
++#include "syshead=2Eh"
++
++#include <string=2Eh>
++#include "buf=
+fer=2Eh"
++#include "error=2Eh"
++#include "acc=2Eh"
++#include "forward=2Eh"
+=
++#include "options_util=2Eh"
++#include "ssl_util=2Eh"
++#include "ssl_ncp=2E=
+h"
++#include "multi=2Eh"
++
++enum acc_message_flag
++{
++    ACC_MESSAGE_FLAGS=
+_ASCII =3D 1,
++    ACC_MESSAGE_FLAGS_BASE64 =3D 2,
++    ACC_MESSAGE_FLAGS_F=
+RAGMENT =3D 4,
++};
++
++
++static void
++log_acc_message(struct context *c, con=
+st struct buffer *buf, int payload_len,
++                const char *protoc=
+ol, int flags)
++{
++    bool fragment =3D flags & ACC_MESSAGE_FLAGS_FRAGMENT=
+;
++#ifdef ENABLE_MANAGEMENT
++    struct gc_arena gc =3D gc_new();
++    cons=
+t char *payload_msg =3D NULL;
++
++    /* For simplicity, we always encode pa=
+yload to be base64 encoded
++     * if not already in base64 format */
++    =
+if (flags & ACC_MESSAGE_FLAGS_ASCII)
++    {
++        char *b64out =3D NULL;=
 
-File tests/unit_tests/openvpn/test_mis=
-c=2Ec:
++        ASSERT(openvpn_base64_encode(CBPTR(buf), payload_len, &b64out) >=
+=3D 0);
++        gc_addspecial(b64out, free, &gc);
++        payload_msg =3D=
+ b64out;
++    }
++    else
++    {
++        payload_msg =3D CBSTR(buf);
++    =
+}
++
++    if (management)
++    {
++        struct tls_session *session =3D &c=
+->c2=2Etls_multi->session[TM_ACTIVE];
++
++        if (c->options=2Emode =3D=
+=3D MODE_SERVER)
++        {
++            /* server mode=2E Report client co=
+ntext */
++            struct man_def_auth_context *mda =3D session->opt->md=
+a_context;
++            unsigned int mda_key_id =3D get_primary_key(c->c2=
+=2Etls_multi)->mda_key_id;
++            msg(M_CLIENT, ">CLIENT:ACC,%lu,%u,%=
+s,%d,%s",
++                mda->cid, mda_key_id, protocol, fragment, payloa=
+d_msg);
++        }
++        else
++        {
++            /* Client mode=2E =
+Do not a report a CLIENT id */
++            msg(M_CLIENT, ">ACC:%s,%d,%s", =
+protocol, fragment, payload_msg);
++        }
++    }
++    gc_free(&gc);
++#en=
+dif /* ifdef ENABLE_MANAGEMENT */
++    msg(D_PUSH, "Received custom app con=
+trol message (protocol '%s'%s)",
++        protocol, fragment ? ", fragment"=
+ : "");
++}
++
++
++/**
++ *  Parses the flags field of an app control message a=
+nd moves the
++ *  buffer past the flags string=2E If there is an
++ *  error=
+ parsing the flags field the method returns -1 and
++ *  puts the error reas=
+on in err_reason
++ */
++static int
++parse_acc_message_flags(struct buffer *b=
+uf, const char **err_reason, struct gc_arena *gc)
++{
++    const char *flags=
+ =3D buf_extract_field(buf, ',', gc);
++
++    if (!flags)
++    {
++        *e=
+rr_reason =3D "could not extract flags field";
++        return -1;
++    }
++=
 
-https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1858/comment/6e56644d_f5=
-3e4078?usp=3Demail :
-PS16, Line 71: }
-> These new mocks don't appear to be =
-used anywhere?
-Hm yeah=2E It looks like that is really not needed=2E
++
++    int acc_flags =3D 0;
++
++    for (const char *flag =3D flags; *flag =
+!=3D '\0'; flag++)
++    {
++        if (*flag =3D=3D 'A')
++        {
++      =
+      acc_flags |=3D ACC_MESSAGE_FLAGS_ASCII;
++        }
++        else if (=
+*flag =3D=3D '6')
++        {
++            acc_flags |=3D ACC_MESSAGE_FLAGS_=
+BASE64;
++        }
++        else if (*flag =3D=3D 'F')
++        {
++        =
+    acc_flags |=3D ACC_MESSAGE_FLAGS_FRAGMENT;
++        }
++        else
++  =
+      {
++            *err_reason =3D "Unknown flag in flags";
++            =
+return -1;
++        }
++    }
++    /* The message should be encoded with exa=
+ctly one encoding=2E Ensure that
++     * only one of the flags is present *=
+/
++    bool asciienc =3D (bool)(acc_flags & ACC_MESSAGE_FLAGS_ASCII);
++    =
+bool base64enc =3D (bool)(acc_flags & ACC_MESSAGE_FLAGS_BASE64);
++
++    if =
+(base64enc + asciienc !=3D 1)
++    {
++        char *tmp =3D gc_malloc(512, =
+1, gc);
++        snprintf(tmp, 512, "number of encodings must be exactly on=
+e "
++                           "(B64=3D%d, ASCII=3D%d)",
++                =
+ base64enc, asciienc);
++        *err_reason =3D tmp;
++        return -1;
++ =
+   }
++
++    return acc_flags;
++}
++
++
++void
++receive_acc_message(struct cont=
+ext *c, const struct buffer *buffer)
++{
++    struct gc_arena gc =3D gc_new(=
+);
++    const char *err_reason =3D "";
++
++    /* Example message: ACC,muppe=
+ts,15,A,I am Miss Piggy */
++    struct buffer buf =3D *buffer;
++
++    const=
+ struct tls_multi *multi =3D c->c2=2Etls_multi;
++    if (!multi->acc_negoti=
+ated_protocols)
++    {
++        err_reason =3D "ACC not enabled or no negot=
+iated protocols";
++        goto err;
++    }
++
++
++    if (!buf_advance(&buf,=
+ strlen("ACC")) || buf_read_u8(&buf) !=3D ',')
++    {
++        err_reason =
+=3D "missing , after ACC";
++        goto err;
++    }
++
++    /* extract prot=
+ocol, payload length, flags substrings */
++    const char *protocol =3D buf=
+_extract_field(&buf, ',', &gc);
++    if (!protocol)
++    {
++        err_rea=
+son =3D "could not extract protocol field";
++        goto err;
++    }
++
++  =
+  if (!tls_item_in_cipher_list(protocol, multi->acc_negotiated_protocols))
+=
++    {
++        struct buffer buf =3D alloc_buf_gc(1024, &gc);
++        buf=
+_printf(&buf, "protocol '%s' not in list of negotiated protocols '%s'",
++  =
+                 protocol, multi->acc_negotiated_protocols);
++        err_r=
+eason =3D buf_cstr(&buf);
++
++
++        goto err;
++    }
++
++    /* We do not=
+ check the length here=2E We make no promises to support
++     * anything l=
+arger than our announced message length but according to
++     * the robust=
+ness principle
++     * ("be conservative in what you send, be liberal in wh=
+at you accept" - RFC 793 and others)
++     * we accept also longer messages=
+ */
++
++    int payload_len;
++    const char *payload_len_str =3D buf_extrac=
+t_field(&buf, ',', &gc);
++    if (!payload_len_str || !((payload_len =3D at=
+oi(payload_len_str))))
++    {
++        err_reason =3D "could not extract pa=
+yload length field";
++        goto err;
++    }
++
++    int flags =3D parse_a=
+cc_message_flags(&buf, &err_reason, &gc);
++
++    if (flags < 0)
++    {
++   =
+     goto err;
++    }
++
++    /* We should have a final NUL byte in the cont=
+rol message buffer
++     * and thus the length of the buffer should be payl=
+oad_len + 1 */
++    if (buf_len(&buf) !=3D payload_len + 1)
++    {
++       =
+ char *tmp =3D gc_malloc(512, 1, &gc);
++        snprintf(tmp, 512, "field l=
+ength %d, payload length %d mismatch",
++                 payload_len, buf_l=
+en(&buf) - 1);
++        err_reason =3D tmp;
++        goto err;
++    }
++
++
++=
+    log_acc_message(c, &buf, payload_len, protocol, flags);
++    gc_free(&g=
+c);
++    return;
++
++err:
++    msg(D_PUSH_ERRORS, "WARNING: Received malform=
+ed custom app control channel "
++                       "(%s) message contr=
+ol message: %s",
++        err_reason,
++        format_hex(BPTR(&buf), BLEN(=
+&buf), 80, &gc));
++    gc_free(&gc);
++}
++
++
++bool
++send_acc_message(struct =
+context *c,
++                 struct tls_multi *multi,
++                 st=
+ruct tls_session *session,
++                 const char *protocol, bool fra=
+gment,
++                 const char *msg, bool base64)
++{
++    /*
++     * l=
+ength of the protocol string + one ','
++     * 2 for the encoding (A or 6),=
+ potential F (fragment), and 1 for the ',',
++     * 4 for the message size =
+itself and one comma
++     * 1 for the comma before the message itself */
++=
+    const size_t max_header_size =3D strlen("ACC,") + strlen(protocol) + 1 =
++ 4 + 1 + 2 + 1;
++    size_t len =3D max_header_size + strlen(msg);
++
++    =
+if (len > TLS_CHANNEL_BUF_SIZE)
++    {
++        msg(M_CLIENT, "message leng=
+th (%zu) exceeds maximum possible message length (%d)", len, TLS_CHANNEL_BU=
+F_SIZE);
++        return false;
++    }
++
++    if ((int)len > multi->acc_max=
+_message_length)
++    {
++        msg(M_CLIENT, "header (%zu) + message size=
+ (%zu) length (%zu) exceeds "
++                      "maximum allowed lengt=
+h negotiated with peer (%d)",
++            max_header_size, strlen(msg), le=
+n,
++            multi->acc_max_message_length);
++        return false;
++   =
+ }
++
++    struct gc_arena gc =3D gc_new();
++    /* add 1 for the final \0 *=
+/
++    struct buffer buf =3D alloc_buf_gc(len + 1, &gc);
++
++    /* Example =
+message: ACC,muppets,15,A,I am Miss Piggy */
++    buf_printf(&buf, "ACC,%s,=
+%zu,%s%s,%s", protocol,
++               strlen(msg),
++               base64=
+ ? "6" : "A",
++               fragment ? "F" : "",
++               msg);
++
+=
++    send_control_channel_string_dowork(session, BSTR(&buf), D_PUSH);
++    =
+reschedule_multi_process(c);
++    gc_free(&gc);
++    return true;
++}
++
++cha=
+r *
++parse_acc_parameters(const char *capabilities,
++                     c=
+onst char *delim,
++                     int *max_acc_len,
++                =
+     bool server,
++                     struct gc_arena *gc)
++{
++    char *=
+tmp_message =3D string_alloc(capabilities, NULL);
++    char *tmp_message_or=
+ig =3D tmp_message;
++    char *lasts =3D NULL;
++
++    const char *token =3D=
+ strtok_r(tmp_message, delim, &lasts);
++
++    int p =3D 0;
++    int acclen =
+=3D 0;
++    const char *protocols =3D NULL;
++    char *ret =3D NULL;
++
++   =
+ /* In server mode we allow more capabilities than our own, in client
++    =
+ * mode we reject if we should use capabilities that we do not support */
++=
+    int allowed_acc_len =3D server ? INT_MAX : ACC_MAX_MSG_LEN;
++
++    whil=
+e (token)
++    {
++        if (p =3D=3D 0 && !atoi_constrained(token, &accle=
+n, "ACC message length", ACC_MIN_MSG_LEN, allowed_acc_len, D_PUSH_ERRORS))
+=
++        {
++            goto done;
++        }
++
++        if (p =3D=3D 1 && =
+(!tls_item_in_cipher_list("A", token) || !tls_item_in_cipher_list("6", toke=
+n)))
++        {
++            msg(D_PUSH_ERRORS, "App custom control encodin=
+g must include base64 and ascii");
++            goto done;
++        }
++
++  =
+      if (p =3D=3D 1 && !server && strcmp(token, "A:6") && strcmp(token, "6=
+:A"))
++        {
++            msg(D_PUSH_ERRORS, "App custom control encodi=
+ng must exactly base64 and ascii");
++            goto done;
++        }
++
++ =
+       if (p =3D=3D 2)
++        {
++            protocols =3D token;
++      =
+  }
++
++        if (p =3D=3D 3)
++        {
++            msg(D_PUSH_ERRORS, "=
+Too many parameters for INFO ACC message/IV_ACC=2E");
++            goto don=
+e;
++        }
++
++        token =3D strtok_r(NULL, delim, &lasts);
++        =
+p++;
++    }
++
++    *max_acc_len =3D min_int(acclen, ACC_MAX_MSG_LEN);
++    =
+ret =3D string_alloc(protocols, gc);
++
++done:
++    free(tmp_message_orig);
+=
++    return ret;
++}
++
++struct buffer
++get_list_intersection(struct gc_arena=
+ *gc, const char *list1, const char *list2)
++{
++    char *tmp =3D strdup(li=
+st1);
++    char *lasts =3D NULL;
++    const char *token =3D strtok_r(tmp, "=
+:", &lasts);
++
++    /* The maximum possible length is the shorter of the tw=
+o input lists */
++    size_t max_len =3D min_size(strlen(list1), strlen(lis=
+t2));
++
++    struct buffer common_protocols =3D alloc_buf_gc(max_len + 1, g=
+c);
++
++    while (token)
++    {
++        if (tls_item_in_cipher_list(token,=
+ list2))
++        {
++            /* protocol is in both server and client l=
+ist */
++            if (buf_len(&common_protocols) > 0)
++            {
++   =
+             buf_write_u8(&common_protocols, ':');
++            }
++        =
+    buf_printf(&common_protocols, "%s", token);
++        }
++        token =
+=3D strtok_r(NULL, ":", &lasts);
++    }
++    free(tmp);
++    return common_=
+protocols;
++}
++
++void
++determine_common_acc_protocols(struct tls_multi *mul=
+ti, struct tls_session *session)
++{
++    if (!multi->opt=2Eacc_protocols)
++=
+    {
++        /* No app custom protocols have been configured server-side=
+=2E */
++        return;
++    }
++
++    if (multi->acc_negotiated_protocols)
+=
++    {
++        /* We already have determined the common protocols=2E */
++ =
+       return;
++    }
++
++    struct gc_arena gc =3D gc_new();
++
++    /* exa=
+mple IV_ACC: IV_ACC=3D2048,6:A,flower:power */
++    const char *peer_info =
+=3D multi->peer_info;
++    const char *iv_acc =3D extract_var_peer_info(pee=
+r_info, "IV_ACC=3D", &gc);
++    if (!iv_acc)
++    {
++        gc_free(&gc);
+=
++        return;
++    }
++
++    int max_acc_len =3D 0;
++    const char *prot=
+ocols =3D parse_acc_parameters(iv_acc, ",", &max_acc_len, true, &gc);
++
++  =
+  if (!protocols)
++    {
++        gc_free(&gc);
++        msg(D_PUSH_ERRORS,=
+ "WARNING: IV_ACC peer info variable of peer is malformed");
++        retur=
+n;
++    }
++
++    struct buffer common_protocols =3D get_list_intersection(&=
+gc, session->opt->acc_protocols, protocols);
++
++    if (buf_len(&common_pro=
+tocols) =3D=3D 0)
++    {
++        msg(D_PUSH_DEBUG, "WARNING: No common app=
+ custom control protocol=2E");
++        gc_free(&gc);
++        return;
++   =
+ }
++
++    multi->acc_negotiated_protocols =3D string_alloc(buf_str(&common_=
+protocols), NULL);
++    multi->acc_max_message_length =3D max_acc_len;
++
++ =
+   setenv_str(session->opt->es, "acc_protocols", multi->acc_negotiated_prot=
+ocols);
++    setenv_int(session->opt->es, "acc_message_len", multi->acc_max=
+_message_length);
++
++    gc_free(&gc);
++}
+diff --git a/src/openvpn/acc=2Eh =
+b/src/openvpn/acc=2Eh
+new file mode 100644
+index 0000000=2E=2E4a388f7
+--- /=
+dev/null
++++ b/src/openvpn/acc=2Eh
+@@ -0,0 +1,105 @@
++/*
++ *  OpenVPN -- An=
+ application to securely tunnel IP networks
++ *             over a single T=
+CP/UDP port, with support for SSL/TLS-based
++ *             session authent=
+ication and key exchange,
++ *             packet encryption, packet authent=
+ication, and
++ *             packet compression=2E
++ *
++ *  Copyright (C) 2=
+025 OpenVPN Inc <sales@openvpn=2Enet>
++ *  Copyright (C) 2025 Arne Schwabe =
+<arne@rfc2549=2Eorg>
++ *
++ *
++ *  This program is free software; you can re=
+distribute it and/or modify
++ *  it under the terms of the GNU General Publ=
+ic License version 2
++ *  as published by the Free Software Foundation=2E
++=
+ *
++ *  This program is distributed in the hope that it will be useful,
++ *=
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCH=
+ANTABILITY or FITNESS FOR A PARTICULAR PURPOSE=2E  See the
++ *  GNU General=
+ Public License for more details=2E
++ *
++ *  You should have received a cop=
+y of the GNU General Public License along
++ *  with this program; if not, w=
+rite to the Free Software Foundation, Inc=2E,
++ *  51 Franklin Street, Fift=
+h Floor, Boston, MA 02110-1301 USA=2E
++ */
++
++#ifndef ACC_H
++#define ACC_H
+=
++
++#include "openvpn=2Eh"
++
++#define ACC_MIN_MSG_LEN 64
++#define ACC_MAX_MS=
+G_LEN 1280
++
++/**
++ * This method parses an app custom control message and =
+delivers it to the
++ * management interface=2E We leave reassembly of fragm=
+ented messages to the
++ * management interface=2E
++ *
++ * @param c         =
+   The context struct
++ * @param buffer       Buffer containing the control=
+ message with ACC
++ */
++void
++receive_acc_message(struct context *c, const =
+struct buffer *buffer);
++
++
++bool
++send_acc_message(struct context *c,
++   =
+              struct tls_multi *tls_multi,
++                 struct tls_ses=
+sion *session,
++                 const char *protocol, bool fragment,
++    =
+             const char *msg, bool base64);
++
++
++/**
++ * Parses an info mes=
+sage from the server that contains app custom control info
++ * information =
+prior to the PUSH_REPLY to be able to use app custom control
++ * protocols =
+before sending
++ *
++ * In client mode only allow what we support ourselves=
+=2E In server mode
++ * allow also capabilities that we not support ourselve=
+s=2E
++ *
++ * @param capabilities      The string to parse
++ * @param delim =
+            The delimiter to use when parsing the string=2E
++ *            =
+              IV_ACC uses "," as delimiter while the
++ *                   =
+       custom-control PUSH message uses " " as "," is
++ *                  =
+        already used to separate different push directives
++ * @param max_a=
+cc_len       Set to the maximum ACC message length
++ * @param server       =
+     Whether we are server or client
++ * @param gc                The gc ar=
+ena to use for allocating the resulting string
++ * @return                 =
+ The resulting protocol string or NULL on error
++ */
++char *
++parse_acc_par=
+ameters(const char *capabilities,
++                     const char *delim,
+=
++                     int *max_acc_len,
++                     bool server,
+=
++                     struct gc_arena *gc);
++
++/**
++ * Parses the IV_ACC of=
+ the peer and sets multi=2Eacc_negotiated_protocols
++ * to the common proto=
+cols of server and client and
++ * multi=2Eacc_max_message_length  to the ma=
+ximum length of the ACC message
++ * support by both server and client=2E
++ =
+*
++ * If there is no common protocol or the client does not support any app=
+ custom
++ * protocol multi=2Eacc_negotiated_protocols will be set to NULL=
+=2E
++ *
++ * @param multi      the multi instance to use the set the app cus=
+tom protocols=2E
++ * @param session    the session to read the client env f=
+rom
++ */
++void
++determine_common_acc_protocols(struct tls_multi *multi, str=
+uct tls_session *session);
++
++/**
++ * Calculates the intersection of two li=
+st that are both separated by :
++ * Items in the result will have the same =
+ordering as in the list1
++ * parameters
++ * @param gc            Returned b=
+uffer will be allocated in this gc
++ * @param list1         First list to i=
+ntersect
++ * @param list2         Second list to intersect=2E
++ * @return A=
+ (potentially empty) buffer containing an intersection list
++ */
++struct bu=
+ffer
++get_list_intersection(struct gc_arena *gc, const char *list1, const c=
+har *list2);
++#endif
+diff --git a/src/openvpn/forward=2Ec b/src/openvpn/for=
+ward=2Ec
+index 681210d=2E=2E7923b5e 100644
+--- a/src/openvpn/forward=2Ec
+++=
++ b/src/openvpn/forward=2Ec
+@@ -42,6 +42,7 @@
+ #include "dco=2Eh"
+ #include=
+ "auth_token=2Eh"
+ #include "tun_afunix=2Eh"
++#include "acc=2Eh"
+ 
+ #includ=
+e "memdbg=2Eh"
+ 
+@@ -257,11 +258,11 @@
+     }
+     else if (buf_string_matc=
+h_head_str(buf, "INFO_PRE"))
+     {
+-        server_pushed_info(buf, 8);
++ =
+       server_pushed_info(c, buf, 8);
+     }
+     else if (buf_string_match=
+_head_str(buf, "INFO"))
+     {
+-        server_pushed_info(buf, 4);
++      =
+  server_pushed_info(c, buf, 4);
+     }
+     else if (buf_string_match_head=
+_str(buf, "CR_RESPONSE"))
+     {
+@@ -271,6 +272,10 @@
+     {
+         recei=
+ve_auth_pending(c, buf);
+     }
++    else if (buf_string_match_head_str(buf=
+, "ACC"))
++    {
++        receive_acc_message(c, buf);
++    }
+     else if =
+(buf_string_match_head_str(buf, "EXIT"))
+     {
+         receive_exit_messa=
+ge(c);
+diff --git a/src/openvpn/init=2Ec b/src/openvpn/init=2Ec
+index 1b8b2=
+a5=2E=2Ecfcd5b7 100644
+--- a/src/openvpn/init=2Ec
++++ b/src/openvpn/init=2E=
+c
+@@ -2279,6 +2279,13 @@
+         }
+     }
+ 
++    struct tls_multi *multi =
+=3D c->c2=2Etls_multi;
++    if (multi && multi->acc_negotiated_protocols)
++=
+    {
++        buf_printf(&out, " custom-control %d,A:6,%s",
++             =
+      multi->acc_max_message_length, multi->acc_negotiated_protocols);
++   =
+ }
++
+     if (BLENZ(&out) > strlen(header))
+     {
+         msg(D_HANDSHAKE=
+, "%s", BSTR(&out));
+@@ -2522,6 +2529,11 @@
+         flags |=3D (OPT_P_ROUT=
+E | OPT_P_DHCPDNS);
+     }
+ 
++    if (c->options=2Eacc_protocols)
++    {
++ =
+       flags |=3D OPT_P_ACC;
++    }
++
+     return flags;
+ }
+ 
+@@ -2730,6 +2=
+742,17 @@
+         frame->tun_mtu =3D min_int(frame->tun_max_mtu, c->option=
+s=2Ece=2Etun_mtu);
+     }
+ 
++    if (found & OPT_P_ACC && c->options=2Epush=
+ed_acc_negotiated_protocols)
++    {
++        struct tls_multi *multi =3D c-=
+>c2=2Etls_multi;
++        free(multi->acc_negotiated_protocols);
++        m=
+ulti->acc_negotiated_protocols =3D string_alloc(c->options=2Epushed_acc_neg=
+otiated_protocols, NULL);
++        multi->acc_max_message_length =3D c->opt=
+ions=2Epushed_acc_max_message_length;
++
++        msg(D_PUSH, "OPTIONS IMPOR=
+T: ACC protocols: %s, msg len: %d",
++            multi->acc_negotiated_prot=
+ocols, multi->acc_max_message_length);
++    }
++
+     return true;
+ }
+ 
+@@ -=
+3352,6 +3375,7 @@
+     to=2Everify_hash_depth =3D options->verify_hash_dept=
+h;
+     to=2Everify_hash_no_ca =3D options->verify_hash_no_ca;
+     memcpy(=
+to=2Ex509_username_field, options->x509_username_field, sizeof(to=2Ex509_us=
+ername_field));
++    to=2Eacc_protocols =3D options->acc_protocols;
+     to=
+=2Ees =3D c->c2=2Ees;
+     to=2Enet_ctx =3D &c->net_ctx;
+ 
+@@ -4306,6 +4330=
+,24 @@
+ }
+ #endif /* ifdef TARGET_ANDROID */
+ 
++static bool
++management_acc=
+_msg(void *arg,
++                   struct buffer_list *input) /* ownership=
+ transferred */
++{
++    struct context *c =3D arg;
++
++    bool ret =3D fals=
+e;
++    if (buffer_list_defined(input) && c->c2=2Etls_multi)
++    {
++      =
+  struct tls_multi *multi =3D c->c2=2Etls_multi;
++        struct tls_sessio=
+n *session =3D &multi->session[TM_ACTIVE];
++
++        ret =3D management_se=
+nd_acc_message(c, multi, session, input);
++    }
++
++    buffer_list_free(in=
+put);
++    return ret;
++}
+ #endif /* ifdef ENABLE_MANAGEMENT */
+ 
+ void
+@@ =
+-4322,6 +4364,7 @@
+         cb=2Eproxy_cmd =3D management_callback_proxy_cm=
+d;
+         cb=2Eremote_cmd =3D management_callback_remote_cmd;
+         cb=
+=2Esend_cc_message =3D management_callback_send_cc_message;
++        cb=2Ea=
+cc_msg =3D management_acc_msg;
+ #ifdef TARGET_ANDROID
+         cb=2Enetwork=
+_change =3D management_callback_network_change;
+ #endif
+diff --git a/src/op=
+envpn/manage=2Ec b/src/openvpn/manage=2Ec
+index ac3d4b7=2E=2E5e4e416 100644=
 
+--- a/src/openvpn/manage=2Ec
++++ b/src/openvpn/manage=2Ec
+@@ -45,9 +45,11 =
+@@
+ #include "push=2Eh"
+ #include "multi=2Eh"
+ #include "resolve=2Eh"
++#inc=
+lude "acc=2Eh"
+ 
+ #include "memdbg=2Eh"
+ #include "run_command=2Eh"
++#inclu=
+de "ssl_ncp=2Eh"
+ 
+ #ifdef ENABLE_PKCS11
+ #include "pkcs11=2Eh"
+@@ -1081,6 =
++1083,35 @@
+             }
+             break;
+ 
++        case IEC_CLIENT_A=
+CC_MSG:
++            if (man->persist=2Ecallback=2Eclient_acc_msg)
++       =
+     {
++                bool status =3D (*man->persist=2Ecallback=2Eclient_=
+acc_msg)(man->persist=2Ecallback=2Earg,
++                                  =
+                                    man->connection=2Ein_extra_cid,
++      =
+                                                                man->connec=
+tion=2Ein_extra_kid,
++                                                     =
+                 man->connection=2Ein_extra);
++                man->connect=
+ion=2Ein_extra =3D NULL;
++                report_command_status(status, "cl=
+ient-acc-msg");
++            }
++            else
++            {
++          =
+      man_command_unsupported("client-acc-msg");
++            }
++          =
+  break;
++
++        case IEC_ACC_MSG:
++            if (man->persist=2Ecallb=
+ack=2Eacc_msg)
++            {
++                bool status =3D (*man->persi=
+st=2Ecallback=2Eacc_msg)(man->persist=2Ecallback=2Earg,
++                  =
+                                             man->connection=2Ein_extra);
++=
+                man->connection=2Ein_extra =3D NULL;
++                repor=
+t_command_status(status, "acc-msg");
++            }
++            else
++    =
+        {
++                man_command_unsupported("acc-msg");
++           =
+ }
++            break;
+         case IEC_PK_SIGN:
+             man->connect=
+ion=2Eext_key_state =3D EKS_READY;
+             buffer_list_free(man->conne=
+ction=2Eext_key_input);
+@@ -1205,6 +1236,29 @@
+ }
+ 
+ static void
++man_clien=
+t_acc_msg(struct management *man, const char *cid_str,
++                   =
+const char *kid_str)
++{
++    struct man_connection *mc =3D &man->connection=
+;
++    mc->in_extra_cid =3D 0;
++    mc->in_extra_kid =3D 0;
++    if (parse_=
+cid(cid_str, &mc->in_extra_cid)
++        && parse_uint(kid_str, "KID", &mc-=
+>in_extra_kid))
++    {
++        mc->in_extra_cmd =3D IEC_CLIENT_ACC_MSG;
++ =
+       in_extra_reset(mc, IER_NEW);
++    }
++}
++
++static void
++man_acc_msg(s=
+truct management *man)
++{
++    struct man_connection *mc =3D &man->connecti=
+on;
++    mc->in_extra_cmd =3D IEC_ACC_MSG;
++    in_extra_reset(mc, IER_NEW)=
+;
++}
++
++static void
+ man_client_auth(struct management *man, const char *ci=
+d_str, const char *kid_str, const bool extra)
+ {
+     struct man_connection=
+ *mc =3D &man->connection;
+@@ -1759,6 +1813,17 @@
+             man_client_p=
+ending_auth(man, p[1], p[2], p[3], p[4]);
+         }
+     }
++    else if (s=
+treq(p[0], "client-acc-msg"))
++    {
++        if (man_need(p, 2, 0))
++     =
+   {
++            man_client_acc_msg(man, p[1], p[2]);
++        }
++    }
++ =
+   else if (streq(p[0], "acc-msg"))
++    {
++        man_acc_msg(man);
++    =
+}
+     else if (streq(p[0], "rsa-sig"))
+     {
+         man_pk_sig(man, "rs=
+a-sig");
+@@ -2975,7 +3040,9 @@
+                                        "byt=
+es_sent=3D",
+                                        "bytes_received=3D",
+ =
+                                       "session_id=3D",
+-                  =
+                     "session_state=3D" };
++                               =
+        "session_state=3D",
++                                       "acc_pr=
+otocols=3D",
++                                       "acc_message_len=3D" }=
+;
+ 
+     if (env_filter_level =3D=3D 0)
+     {
+@@ -3130,6 +3197,7 @@
+     }=
 
+ }
+ 
++
+ void
+ management_connection_established(struct management *man, st=
+ruct man_def_auth_context *mdac,
+                                   const s=
+truct env_set *es)
+@@ -4372,6 +4440,64 @@
+     }
+ }
+ 
++bool
++management_sen=
+d_acc_message(struct context *c, struct tls_multi *multi, struct tls_sessio=
+n *session,
++                            struct buffer_list *input)
++{
++   =
+ /* also ensures that are enough inputs in the list to safely call
++     * =
+buffer_list_peek without extra NULL checks */
++    if (!input || input->siz=
+e < 3)
++    {
++        msg(M_CLIENT, "not enough input lines for sending ac=
+c message, "
++                      "missing protocol, flag and/or messages=
+ lines");
++        return false;
++    }
++
++    struct gc_arena gc =3D gc_ne=
+w();
++
++    const struct buffer *proto_buf =3D buffer_list_peek(input);
++  =
+  const char *protocol =3D string_alloc(CBSTR(proto_buf), &gc);
++    buffer=
+_list_pop(input);
++
++    struct buffer *encoding_buf =3D buffer_list_peek(i=
+nput);
++    char *encoding =3D buf_str(encoding_buf);
++    const char *flag=
+ =3D NULL;
++    bool b64encoding =3D false;
++    bool fragment =3D false;
++=
 
--- =
++    while ((flag =3D strsep(&encoding, ":")))
++    {
++        if (!strcmp=
+(flag, "6"))
++        {
++            b64encoding =3D true;
++        }
++    =
+    else if (!strcmp(flag, "F"))
++        {
++            fragment =3D true;=
 
-To view, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1858?usp=3Demail=
++        }
++    }
++    buffer_list_pop(input);
++
++    buffer_list_aggregat=
+e_separator(input, 10000, "");
++    const struct buffer *acc_msg_buf =3D bu=
+ffer_list_peek(input);
++
++    if (!multi->acc_negotiated_protocols
++       =
+ || !tls_item_in_cipher_list(protocol, multi->acc_negotiated_protocols))
++ =
+   {
++        msg(M_CLIENT, "protocol not in the list of negotiated protoco=
+ls: %s",
++            np(multi->acc_negotiated_protocols));
++        goto e=
+rror;
++    }
++
++    bool ret =3D send_acc_message(c, multi, session, protoc=
+ol,
++                                fragment, buf_cstr(acc_msg_buf),
++    =
+                            b64encoding);
++    gc_free(&gc);
++    return re=
+t;
++error:
++    gc_free(&gc);
++    return false;
++}
+ #else /* ifdef ENABLE_=
+MANAGEMENT */
+ 
+ #include "win32=2Eh"
+diff --git a/src/openvpn/manage=2Eh b=
+/src/openvpn/manage=2Eh
+index 157039d=2E=2Ecc9c264 100644
+--- a/src/openvpn=
+/manage=2Eh
++++ b/src/openvpn/manage=2Eh
+@@ -184,12 +184,19 @@
+     int (*n=
+_clients)(void *arg);
+     bool (*send_cc_message)(void *arg, const char *m=
+essage, const char *parameter);
+     bool (*kill_by_cid)(void *arg, const u=
+nsigned long cid, const char *kill_msg);
++
+     bool (*client_auth)(void *a=
+rg, const unsigned long cid, const unsigned int mda_key_id,
+               =
+          const bool auth, const char *reason, const char *client_reason,
+ =
+                        struct buffer_list *cc_config); /* ownership transf=
+erred */
+     bool (*client_pending_auth)(void *arg, const unsigned long ci=
+d, const unsigned int kid,
+                                 const char *ext=
+ra, unsigned int timeout);
+     char *(*get_peer_info)(void *arg, const uns=
+igned long cid);
++    bool (*client_acc_msg)(void *arg,
++                  =
+         const unsigned long cid,
++                           const unsigne=
+d int mda_key_id,
++                           struct buffer_list *msg);
++  =
+  bool (*acc_msg)(void *arg,
++                    struct buffer_list *msg);=
 
-To unsubscribe, or for help writing mail filters, visit https://gerrit=2Eo=
-penvpn=2Enet/settings?usp=3Demail
+     bool (*proxy_cmd)(void *arg, const char **p);
+     bool (*remote_cmd)=
+(void *arg, const char **p);
+ #ifdef TARGET_ANDROID
+@@ -292,13 +299,15 @@
+ =
+    struct command_line *in;
+     struct buffer_list *out;
+ 
+-#define IEC_U=
+NDEF       0
+-#define IEC_CLIENT_AUTH 1
++#define IEC_UNDEF          0
++#def=
+ine IEC_CLIENT_AUTH    1
+ /* #define IEC_CLIENT_PF   2 *REMOVED FEATURE* */=
 
-Gerrit-MessageType: comment
-Gerrit-Proje=
-ct: openvpn
+-#define IEC_RSA_SIGN    3
+-#define IEC_CERTIFICATE 4
+-#define IEC_PK_SIGN=
+     5
+-#define IEC_PASSWORD    6
++#define IEC_RSA_SIGN       3
++#define IE=
+C_CERTIFICATE    4
++#define IEC_PK_SIGN        5
++#define IEC_PASSWORD     =
+  6
++#define IEC_CLIENT_ACC_MSG 7
++#define IEC_ACC_MSG        8
+     int in=
+_extra_cmd;
+     struct buffer_list *in_extra;
+     unsigned long in_extra_=
+cid;
+@@ -503,6 +512,14 @@
+ 
+ void man_persist_client_stats(struct managemen=
+t *man, struct context *c);
+ 
++/** Parses the ACC message from the input bu=
+ffer_list and send to the
++ * session identified by session and multi
++ */
+=
++struct tls_session;
++struct tls_multi;
++bool
++management_send_acc_message(=
+struct context *c, struct tls_multi *multi,
++                            st=
+ruct tls_session *session, struct buffer_list *input);
+ #endif /* ifdef ENA=
+BLE_MANAGEMENT */
+ 
+ /**
+diff --git a/src/openvpn/multi=2Ec b/src/openvpn/m=
+ulti=2Ec
+index e302a81=2E=2Ea3eb3ca 100644
+--- a/src/openvpn/multi=2Ec
++++ =
+b/src/openvpn/multi=2Ec
+@@ -53,6 +53,7 @@
+ #include "ssl_util=2Eh"
+ #includ=
+e "dco=2Eh"
+ #include "reflect_filter=2Eh"
++#include "acc=2Eh"
+ 
+ /*#define=
+ MULTI_DEBUG_EVENT_LOOP*/
+ 
+@@ -4085,6 +4086,26 @@
+     }
+ }
+ 
++static cons=
+t char *
++calculate_app_control_extra(struct multi_instance *mi, struct gc_=
+arena *gc)
++{
++    struct context *c =3D &mi->context;
++    struct tls_mult=
+i *multi =3D c->c2=2Etls_multi;
++
++    if (!multi->acc_negotiated_protocols=
+)
++    {
++        msg(M_CLIENT, "ACC: No negotiated protocols");
++        r=
+eturn NULL;
++    }
++
++    struct buffer buf =3D alloc_buf_gc(1024, gc);
++
++=
+    buf_printf(&buf, "ACC:%d A:6 %s", multi->acc_max_message_length,
++     =
+          multi->acc_negotiated_protocols);
++    return buf_str(&buf);
++}
++=
+
++
+ static bool
+ management_client_pending_auth(void *arg, const unsigned l=
+ong cid, const unsigned int mda_key_id,
+                                con=
+st char *extra, unsigned int timeout)
+@@ -4095,10 +4116,22 @@
+     if (mi)
+=
+     {
+         struct tls_multi *multi =3D mi->context=2Ec2=2Etls_multi;
++=
+
++        struct gc_arena gc =3D gc_new();
++        if (!strcmp(extra, "ACC=
+"))
++        {
++            extra =3D calculate_app_control_extra(mi, &gc);=
+
++            if (!extra)
++            {
++                gc_free(&gc);
++  =
+              return false;
++            }
++        }
+         struct tls_s=
+ession *session =3D lookup_session_by_mda_key_id(multi, mda_key_id);
+ 
+    =
+     if (!session)
+         {
++            gc_free(&gc);
+             retur=
+n false;
+         }
+ 
+@@ -4106,6 +4139,7 @@
+         bool ret =3D send_auth=
+_pending_messages(multi, session, extra, timeout);
+         reschedule_mult=
+i_process(&mi->context);
+         multi_schedule_context_wakeup(m, mi);
++  =
+      gc_free(&gc);
+         return ret;
+     }
+     return false;
+@@ -4149=
+,6 +4183,37 @@
+     return ret;
+ }
+ 
++
++static bool
++management_client_acc_=
+msg(void *arg,
++                          const unsigned long cid,
++       =
+                   const unsigned int mda_key_id,
++                        =
+  struct buffer_list *input) /* ownership transferred */
++{
++    struct mul=
+ti_context *m =3D (struct multi_context *)arg;
++    struct multi_instance *=
+mi =3D lookup_by_cid(m, cid);
++
++    bool ret =3D false;
++    if (mi && buf=
+fer_list_defined(input))
++    {
++        struct tls_multi *multi =3D mi->co=
+ntext=2Ec2=2Etls_multi;
++        struct tls_session *session =3D lookup_ses=
+sion_by_mda_key_id(multi, mda_key_id);
++        if (!session)
++        {
++ =
+           msg(M_CLIENT, "client session not found");
++            buffer_l=
+ist_free(input);
++            return false;
++        }
++
++        ret =3D m=
+anagement_send_acc_message(&mi->context, multi, session, input);
++        m=
+ulti_schedule_context_wakeup(m, mi);
++    }
++
++    buffer_list_free(input);=
+
++    return ret;
++}
++
++
+ static char *
+ management_get_peer_info(void *arg=
+, const unsigned long cid)
+ {
+@@ -4185,6 +4250,7 @@
+         cb=2En_clients=
+ =3D management_callback_n_clients;
+         cb=2Ekill_by_cid =3D managemen=
+t_kill_by_cid;
+         cb=2Eclient_auth =3D management_client_auth;
++     =
+   cb=2Eclient_acc_msg =3D management_client_acc_msg;
+         cb=2Eclient_=
+pending_auth =3D management_client_pending_auth;
+         cb=2Eget_peer_inf=
+o =3D management_get_peer_info;
+         cb=2Epush_update_broadcast =3D man=
+agement_callback_send_push_update_broadcast;
+diff --git a/src/openvpn/optio=
+ns=2Ec b/src/openvpn/options=2Ec
+index fb319ae=2E=2Ebb854da 100644
+--- a/sr=
+c/openvpn/options=2Ec
++++ b/src/openvpn/options=2Ec
+@@ -35,6 +35,7 @@
+ 
+ #i=
+nclude "syshead=2Eh"
+ 
++#include "acc=2Eh"
+ #include "buffer=2Eh"
+ #include=
+ "error=2Eh"
+ #include "common=2Eh"
+@@ -7107,6 +7108,41 @@
+         VERIFY_=
+PERMISSION(OPT_P_GENERAL);
+         options->force_key_material_export =3D =
+true;
+     }
++    else if (streq(p[0], "app-custom-control") && p[1] && !p[=
+2])
++    {
++        VERIFY_PERMISSION(OPT_P_GENERAL);
++        options->acc=
+_protocols =3D p[1];
++    }
++    else if (streq(p[0], "custom-control") && =
+p[1] && p[2] && p[3] && !p[4])
++    {
++        VERIFY_PERMISSION(OPT_P_ACC)=
+;
++
++        /* check if the list from the server is a real subset of our l=
+ist */
++        struct gc_arena gc_local =3D gc_new();
++        struct buff=
+er common_list =3D get_list_intersection(&gc_local, p[3], options->acc_prot=
+ocols);
++
++        if (buf_len(&common_list) =3D=3D 0 || !streq(p[3], buf_c=
+str(&common_list)))
++        {
++            msg(msglevel, "App custom contr=
+ol list from server contains "
++                          "unsupported prot=
+ocols");
++            gc_free(&gc_local);
++            goto err;
++        }=
+
++        gc_free(&gc_local);
++
++        if (!streq(p[2], "A:6") && !streq(=
+p[2], "6:A"))
++        {
++            msg(msglevel, "App custom control enc=
+oding must be base64 and ascii");
++            goto err;
++        }
++
++    =
+    if (!atoi_constrained(p[1], &options->pushed_acc_max_message_length,
++ =
+                             "app custom message message length", ACC_MIN_M=
+SG_LEN, ACC_MAX_MSG_LEN, msglevel))
++        {
++            goto err;
++    =
+    }
++        options->pushed_acc_negotiated_protocols =3D p[3];
++    }
+  =
+   else if (streq(p[0], "prng") && p[1] && !p[3])
+     {
+         msg(M_WAR=
+N, "NOTICE: --prng option ignored (SSL library PRNG is used)");
+diff --git =
+a/src/openvpn/options=2Eh b/src/openvpn/options=2Eh
+index 6a3bf61=2E=2Eb794=
+5e0 100644
+--- a/src/openvpn/options=2Eh
++++ b/src/openvpn/options=2Eh
+@@ -=
+715,6 +715,18 @@
+     /* force using TLS key material export for data chann=
+el key generation */
+     bool force_key_material_export;
+ 
++    /** The ap=
+p custom control protocols we should announce as supported */
++    const ch=
+ar *acc_protocols;
++
++    /** the protocols that are negotiated with the pe=
+er=2E This is a
++     *  a temporary variable since options=2Ec push parser=
+ cannot access
++     *  tls multi struct */
++    const char *pushed_acc_neg=
+otiated_protocols;
++
++    /** the maximum length of an ACC control channel =
+message via push message
++     * */
++    int pushed_acc_max_message_length;=
+
++
+     bool vlan_tagging;
+     enum vlan_acceptable_frames vlan_accept;
+  =
+   uint16_t vlan_pvid;
+@@ -764,8 +776,10 @@
+ #define OPT_P_INLINE          =
+(1u << 29)
+ #define OPT_P_PUSH_MTU        (1u << 30)
+ #define OPT_P_ROUTE_T=
+ABLE     (1u << 31)
++#define OPT_P_ACC             (1ull << 32)
+ 
+-#define =
+OPT_P_DEFAULT (~(OPT_P_INSTANCE | OPT_P_PULL_MODE | OPT_P_PEER_ID | 0x0ull)=
+)
++/* Options allowed in the normal configuration file (vs pushed options o=
+r in ccd files) */
++#define OPT_P_DEFAULT (~(OPT_P_INSTANCE | OPT_P_PULL_MO=
+DE | OPT_P_PEER_ID | OPT_P_ACC))
+ 
+ #define PULL_DEFINED(opt) ((opt)->pull)=
+
+ 
+diff --git a/src/openvpn/push=2Ec b/src/openvpn/push=2Ec
+index 42259c3=
+=2E=2Ec4c4cd4 100644
+--- a/src/openvpn/push=2Ec
++++ b/src/openvpn/push=2Ec
+=
+@@ -27,6 +27,8 @@
+ #include "syshead=2Eh"
+ 
+ #include "push=2Eh"
++
++#includ=
+e "acc=2Eh"
+ #include "options=2Eh"
+ #include "crypto=2Eh"
+ #include "ssl=
+=2Eh"
+@@ -221,9 +223,61 @@
+ #endif
+ }
+ 
++static void
++parse_server_pushed_i=
+nfo_acc(struct context *c, struct buffer *buf)
++{
++    int max_acc_len =3D =
+0;
++    struct tls_multi *multi =3D c->c2=2Etls_multi;
++
++    if (multi->ac=
+c_negotiated_protocols)
++    {
++        return;
++    }
++
++    if (!multi->o=
+pt=2Eacc_protocols)
++    {
++        msg(D_PUSH_ERRORS, "Server tried to pus=
+h app custom control list "
++                           "without client ann=
+ouncing support for it");
++        return;
++    }
++
++    /* example string =
+to parse: ACC:1400 A:6 flower:happy */
++    /* Skip over the ACC: prefix */=
+
++    buf_advance(buf, 4);
++
++    struct gc_arena gc =3D gc_new();
++    con=
+st char *protocols =3D parse_acc_parameters(buf_cstr(buf), " ", &max_acc_le=
+n, false, &gc);
++    if (!protocols)
++    {
++        msg(D_PUSH_ERRORS, "WA=
+RNING: Received ACC info command with invalid parameters");
++        return=
+;
++    }
++
++    /* check if the list from the server is a real subset of ou=
+r list */
++    struct buffer common_list =3D get_list_intersection(&gc, pro=
+tocols, multi->opt=2Eacc_protocols);
++
++    if (buf_len(&common_list) =3D=
+=3D 0 || !streq(protocols, buf_cstr(&common_list)))
++    {
++        msg(D_P=
+USH_ERRORS, "App custom control list from server contains "
++              =
+             "unsupported protocols");
++        gc_free(&gc);
++        retu=
+rn;
++    }
++
++    multi->acc_negotiated_protocols =3D string_alloc(protocol=
+s, NULL);
++    multi->acc_max_message_length =3D max_acc_len;
++
++#ifdef ENA=
+BLE_MANAGEMENT
++    if (management)
++    {
++        msg(M_CLIENT, ">ACC_PRO=
+TOCOLS:protocols=3D%s,message_len=3D%d", protocols, max_acc_len);
++    }
++#=
+endif
++    gc_free(&gc);
++}
+ 
+ void
+-server_pushed_info(const struct buffer=
+ *buffer, const int adv)
++server_pushed_info(struct context *c, const struc=
+t buffer *buffer, const int adv)
+ {
+     const char *m =3D "";
+     struct =
+buffer buf =3D *buffer;
+@@ -233,6 +287,12 @@
+         m =3D BSTR(&buf);
+   =
+  }
+ 
++    if (strncmp(m, "ACC:", 4) =3D=3D 0)
++    {
++        parse_server=
+_pushed_info_acc(c, &buf);
++        return;
++    }
++
+ #ifdef ENABLE_MANAGEM=
+ENT
+     struct gc_arena gc;
+     if (management)
+@@ -285,6 +345,7 @@
+     =
+msg(D_PUSH, "CR response was sent by client ('%s')", m);
+ }
+ 
++
+ /**
+  * Pa=
+rse the keyword for the AUTH_PENDING request
+  * @param buffer             =
+   buffer containing the keywords, the buffer's
+@@ -441,7 +502,6 @@
+     co=
+nst char *const peer_info =3D tls_multi->peer_info;
+     unsigned int proto=
+ =3D extract_iv_proto(peer_info);
+ 
+-
+     /* Calculate the maximum timeout=
+ and subtract the time we already waited */
+     unsigned int max_timeout =
+=3D
+         max_uint(tls_multi->opt=2Erenegotiate_seconds / 2, tls_multi->=
+opt=2Ehandshake_window);
+@@ -732,6 +792,12 @@
+                 client_max_m=
+tu, o->ce=2Etun_mtu, o->ce=2Etun_mtu);
+         }
+     }
++
++    if (tls_mul=
+ti->acc_negotiated_protocols)
++    {
++        push_option_fmt(gc, push_list=
+, M_USAGE, "custom-control %d A:6 %s",
++                        tls_multi->=
+acc_max_message_length, tls_multi->acc_negotiated_protocols);
++    }
+ }
+ 
+ =
+static bool
+diff --git a/src/openvpn/push=2Eh b/src/openvpn/push=2Eh
+index =
+39302f6=2E=2Eb6695bc 100644
+--- a/src/openvpn/push=2Eh
++++ b/src/openvpn/pu=
+sh=2Eh
+@@ -52,6 +52,7 @@
+ 
+ int process_incoming_push_request(struct contex=
+t *c);
+ 
++
+ /**
+  * @brief Handles the receiving of a push-update message a=
+nd applies updates to the specified
+  * options=2E
+@@ -92,7 +93,7 @@
+ 
+ voi=
+d receive_exit_message(struct context *c);
+ 
+-void server_pushed_info(const=
+ struct buffer *buffer, const int adv);
++void server_pushed_info(struct con=
+text *c, const struct buffer *buffer, const int adv);
+ 
+ void receive_cr_re=
+sponse(struct context *c, const struct buffer *buffer);
+ 
+diff --git a/src/=
+openvpn/ssl=2Ec b/src/openvpn/ssl=2Ec
+index 086a6fc=2E=2Ee84d32d 100644
+---=
+ a/src/openvpn/ssl=2Ec
++++ b/src/openvpn/ssl=2Ec
+@@ -55,6 +55,7 @@
+ 
+ #incl=
+ude "crypto_epoch=2Eh"
+ #include "ssl=2Eh"
++#include "acc=2Eh"
+ #include "s=
+sl_verify=2Eh"
+ #include "ssl_backend=2Eh"
+ #include "ssl_ncp=2Eh"
+@@ -1279=
+,6 +1280,7 @@
+     free(multi->locked_cn);
+     free(multi->locked_username=
+);
+     free(multi->locked_original_username);
++    free(multi->acc_negotia=
+ted_protocols);
+ 
+     cert_hash_free(multi->locked_cert_hash_set);
+ 
+@@ -2=
+117,6 +2119,11 @@
+                     }
+                 }
+             }
+=
++
++            if (session->opt->acc_protocols)
++            {
++           =
+     buf_printf(&out, "IV_ACC=3D%d,6:A,%s\n", ACC_MAX_MSG_LEN, session->opt=
+->acc_protocols);
++            }
+         }
+     }
+ 
+@@ -2398,6 +2405,8 @@
+=
+         multi->remote_ciphername =3D string_alloc("none", NULL);
+     }
+ 
+=
++    determine_common_acc_protocols(multi, session);
++
+     if (username_le=
+n < 0 || password_len < 0)
+     {
+         msg(D_TLS_ERRORS, "TLS Error: Us=
+ername (%d) or password (%d) too long", abs(username_len),
+diff --git a/src=
+/openvpn/ssl_common=2Eh b/src/openvpn/ssl_common=2Eh
+index 9a55ead=2E=2E436=
+770b 100644
+--- a/src/openvpn/ssl_common=2Eh
++++ b/src/openvpn/ssl_common=
+=2Eh
+@@ -457,6 +457,9 @@
+     size_t ekm_size;
+ 
+     bool dco_enabled; /**=
+< Whether keys have to be installed in DCO or not */
++
++    /** The app cus=
+tom control protocols we should announce as supported */
++    const char *a=
+cc_protocols;
+ };
+ 
+ /** @addtogroup control_processor
+@@ -730,6 +733,12 @@=
+
+     int dco_peer_id;
+ 
+     dco_context_t *dco;
++
++    /** the protocols =
+that are negotiated with the peer=2E */
++    char *acc_negotiated_protocols=
+;
++
++    /** the maximum length of an ACC control channel message */
++    i=
+nt acc_max_message_length;
+ };
+ 
+ /**  gets an item  of \c key_state object=
+s in the
+diff --git a/tests/unit_tests/openvpn/Makefile=2Eam b/tests/unit_t=
+ests/openvpn/Makefile=2Eam
+index 43a6743=2E=2E86326af 100644
+--- a/tests/un=
+it_tests/openvpn/Makefile=2Eam
++++ b/tests/unit_tests/openvpn/Makefile=2Eam=
+
+@@ -107,10 +107,12 @@
+ 	@TEST_CFLAGS@
+ ssl_testdriver_LDFLAGS =3D @TEST_LD=
+FLAGS@  $(OPTIONAL_CRYPTO_LIBS)
+ ssl_testdriver_SOURCES =3D test_ssl=2Ec \
+=
++	test_acc=2Ec test_acc=2Eh \
+ 	mock_msg=2Ec mock_msg=2Eh test_common=2Eh \=
+
+ 	mock_management=2Ec \
+ 	mock_ssl_dependencies=2Ec mock_win32_execve=2Ec =
+\
+ 	$(top_srcdir)/src/compat/compat-strlcpy=2Ec \
++	$(top_srcdir)/src/openv=
+pn/acc=2Ec \
+ 	$(top_srcdir)/src/openvpn/argv=2Ec \
+ 	$(top_srcdir)/src/ope=
+nvpn/base64=2Ec \
+ 	$(top_srcdir)/src/openvpn/buffer=2Ec \
+@@ -132,6 +134,7=
+ @@
+ 	$(top_srcdir)/src/openvpn/run_command=2Ec \
+ 	$(top_srcdir)/src/openv=
+pn/ssl_openssl=2Ec \
+ 	$(top_srcdir)/src/openvpn/ssl_mbedtls=2Ec \
++	$(top_=
+srcdir)/src/openvpn/ssl_ncp=2Ec \
+ 	$(top_srcdir)/src/openvpn/ssl_util=2Ec =
+\
+ 	$(top_srcdir)/src/openvpn/ssl_verify_mbedtls=2Ec \
+ 	$(top_srcdir)/src/=
+openvpn/ssl_verify_openssl=2Ec \
+@@ -392,9 +395,11 @@
+ 
+ misc_testdriver_SO=
+URCES =3D test_misc=2Ec \
+ 	test_schedule=2Ec test_schedule=2Eh \
++	mock_ma=
+nagement=2Ec mock_management=2Eh \
+ 	mock_msg=2Ec test_common=2Eh  \
+ 	mock=
+_get_random=2Ec \
+ 	$(top_srcdir)/src/compat/compat-strlcpy=2Ec \
++	$(top_s=
+rcdir)/src/openvpn/base64=2Ec \
+ 	$(top_srcdir)/src/openvpn/buffer=2Ec \
+ 	=
+$(top_srcdir)/src/openvpn/options_util=2Ec \
+ 	$(top_srcdir)/src/openvpn/ss=
+l_util=2Ec \
+@@ -407,6 +412,7 @@
+ 	$(top_srcdir)/src/openvpn/siphash_refere=
+nce=2Ec \
+ 	$(top_srcdir)/src/openvpn/session_id=2Ec
+ 
++
+ push_update_msg_t=
+estdriver_CFLAGS =3D -I$(top_srcdir)/src/openvpn \
+ 	-I$(top_srcdir)/src/co=
+mpat \
+ 	-I$(top_srcdir)/tests/unit_tests/openvpn \
+diff --git a/tests/unit=
+_tests/openvpn/mock_management=2Ec b/tests/unit_tests/openvpn/mock_manageme=
+nt=2Ec
+index fff4c2b=2E=2Ef572dbb 100644
+--- a/tests/unit_tests/openvpn/moc=
+k_management=2Ec
++++ b/tests/unit_tests/openvpn/mock_management=2Ec
+@@ -29,=
+6 +29,7 @@
+ 
+ #include "syshead=2Eh"
+ 
++#include <stdlib=2Eh>
+ #include "ma=
+nage=2Eh"
+ 
+ #ifdef ENABLE_MANAGEMENT
+diff --git a/tests/unit_tests/openvpn=
+/mock_management=2Eh b/tests/unit_tests/openvpn/mock_management=2Eh
+new fil=
+e mode 100644
+index 0000000=2E=2E80dcfc2
+--- /dev/null
++++ b/tests/unit_tes=
+ts/openvpn/mock_management=2Eh
+@@ -0,0 +1,29 @@
++/*
++ *  OpenVPN -- An appl=
+ication to securely tunnel IP networks
++ *             over a single UDP po=
+rt, with support for SSL/TLS-based
++ *             session authentication a=
+nd key exchange,
++ *             packet encryption, packet authentication, =
+and
++ *             packet compression=2E
++ *
++ *  Copyright (C) 2002-2026 =
+OpenVPN Inc <sales@openvpn=2Enet>
++ *
++ *  This program is free software; y=
+ou can redistribute it and/or modify
++ *  it under the terms of the GNU Gen=
+eral Public License version 2
++ *  as published by the Free Software Founda=
+tion=2E
++ *
++ *  This program is distributed in the hope that it will be us=
+eful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++=
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE=2E  See the
++ *  GN=
+U General Public License for more details=2E
++ *
++ *  You should have recei=
+ved a copy of the GNU General Public License along
++ *  with this program; =
+if not, see <https://www=2Egnu=2Eorg/licenses/>=2E
++ */
++
++#ifndef MOCK_MAN=
+AGEMENT_H
++#define MOCK_MANAGEMENT_H
++void init_mock_management(void);
++
++v=
+oid uninit_mock_management(void);
++
++#endif
+diff --git a/tests/unit_tests/o=
+penvpn/mock_push_dependencies=2Ec b/tests/unit_tests/openvpn/mock_push_depe=
+ndencies=2Ec
+index bf2ccf3=2E=2Ef083f89 100644
+--- a/tests/unit_tests/openv=
+pn/mock_push_dependencies=2Ec
++++ b/tests/unit_tests/openvpn/mock_push_depe=
+ndencies=2Ec
+@@ -43,7 +43,8 @@
+     uint64_t flags =3D OPT_P_UP | OPT_P_ROU=
+TE_EXTRAS | OPT_P_SOCKBUF | OPT_P_SOCKFLAGS
+                      | OPT_P_S=
+ETENV | OPT_P_SHAPER | OPT_P_TIMER | OPT_P_COMP | OPT_P_PERSIST
+           =
+           | OPT_P_MESSAGES | OPT_P_EXPLICIT_NOTIFY | OPT_P_ECHO | OPT_P_PU=
+LL_MODE
+-                     | OPT_P_PEER_ID | OPT_P_NCP | OPT_P_PUSH_MTU =
+| OPT_P_ROUTE | OPT_P_DHCPDNS;
++                     | OPT_P_PEER_ID | OPT_=
+P_NCP | OPT_P_PUSH_MTU | OPT_P_ROUTE | OPT_P_DHCPDNS
++                     =
+| OPT_P_ACC;
+     return flags;
+ }
+ 
+diff --git a/tests/unit_tests/openvpn/=
+test_acc=2Ec b/tests/unit_tests/openvpn/test_acc=2Ec
+new file mode 100644
+i=
+ndex 0000000=2E=2E762baa4
+--- /dev/null
++++ b/tests/unit_tests/openvpn/test=
+_acc=2Ec
+@@ -0,0 +1,341 @@
++/*
++ *  OpenVPN -- An application to securely t=
+unnel IP networks
++ *             over a single TCP/UDP port, with support =
+for SSL/TLS-based
++ *             session authentication and key exchange,
+=
++ *             packet encryption, packet authentication, and
++ *          =
+   packet compression=2E
++ *
++ *  Copyright (C) 2025 OpenVPN Inc <sales@ope=
+nvpn=2Enet>
++ *  Copyright (C) 2025 Arne Schwabe <arne@rfc2549=2Eorg>
++ *
++=
+ *
++ *  This program is free software; you can redistribute it and/or modif=
+y
++ *  it under the terms of the GNU General Public License version 2
++ *  =
+as published by the Free Software Foundation=2E
++ *
++ *  This program is di=
+stributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY=
+; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR =
+A PARTICULAR PURPOSE=2E  See the
++ *  GNU General Public License for more d=
+etails=2E
++ *
++ *  You should have received a copy of the GNU General Publi=
+c License along
++ *  with this program; if not, write to the Free Software =
+Foundation, Inc=2E,
++ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-=
+1301 USA=2E
++ */
++
++#ifdef HAVE_CONFIG_H
++#include "config=2Eh"
++#endif
++
++=
+#include "syshead=2Eh"
++
++#include <stdio=2Eh>
++#include <stdlib=2Eh>
++#inc=
+lude <stdarg=2Eh>
++#include <string=2Eh>
++#include <setjmp=2Eh>
++#include <=
+cmocka=2Eh>
++
++#include "acc=2Eh"
++#include "test_acc=2Eh"
++#include "test_=
+common=2Eh"
++
++#include "mock_msg=2Eh"
++#include "multi=2Eh"
++
++char contro=
+l_channel_mesage_sent[2048];
++
++/* Mock functions */
++bool
++send_control_ch=
+annel_string_dowork(struct tls_session *session,
++                         =
+          const char *str, unsigned int msglevel)
++{
++    assert_int_in_ran=
+ge(strlen(str), 0, 2048);
++
++    memcpy(control_channel_mesage_sent, str, s=
+trlen(str));
++    return true;
++}
++
++void
++send_push_reply_auth_token(struc=
+t tls_multi *multi)
++{
++}
++
++void
++auth_set_client_reason(struct tls_multi =
+*multi, const char *reason)
++{
++}
++
++#define MSG_PAYLOAD "FgMBARkBAAEVAwNan=
+UalkEDDxLBpZw9JnjI3tBM"                \
++                    "r4engpg/cDgS=
+48DMaxyCdbzofNjQJU9Y0DD66z/notFT0cF1d60nTS" \
++                    "4md4OJw=
+oQAwEwITAxMBwCzAMACfzKnMqMyqwCvALwCewCTAKABrwCP" \
++                    "AJ=
+wBnwArAFAA5wAnAEwAzAQAAnP8BAAEAAAsABAMAAQIACgAWABQAH" \
++                  =
+  "QAXAB4AGQAYAQABAQECAQMBBAAWAAAAFwAAAA0AMAAuBAMFAwYDCAc" \
++             =
+       "ICAgaCBsIHAgJCAoICwgECAUIBgQBBQEGAQMDAwEDAgQCBQIGAgArA" \
++        =
+            "AUEAwQDAwAtAAIBAQAzACYAJAAdACCk4Tz2PB/2FsxOfOIV4gn/NyJ" \
++   =
+                 "93rQwityP9eKSijXgcQ=3D=3D"
++
++void
++test_acc_parse_client=
+_messages(void **state)
++{
++#ifndef ENABLE_MANAGEMENT
++    skip();
++#else
++=
+    /* ensure that the messages get to mock_msg */
++    x_debug_level =3D 3=
+;
++    management =3D (void *)0x12345678;
++    struct gc_arena gc =3D gc_ne=
+w();
++
++    /* contains a TLS 1=2E3 ClientHello */
++    const char msg[] =
+=3D "ACC,cck1,384,6," MSG_PAYLOAD;
++
++    struct buffer msg_buf;
++    struc=
+t context c =3D { 0 };
++    c=2Eoptions=2Emode =3D MODE_SERVER;
++
++    ALLO=
+C_OBJ_CLEAR_GC(c=2Ec2=2Etls_multi, struct tls_multi, &gc);
++
++    c=2Ec2=2E=
+tls_multi->session[TM_ACTIVE]=2Eopt =3D &c=2Ec2=2Etls_multi->opt;
++    c=2E=
+c2=2Etls_multi->session[TM_ACTIVE]=2Eopt->mda_context =3D &c=2Ec2=2Emda_con=
+text;
++    buf_set_read(&msg_buf, (void *)msg, sizeof(msg));
++    receive_a=
+cc_message(&c, &msg_buf);
++
++    assert_string_equal(mock_msg_buf, "Receive=
+d custom app control message (protocol 'cck1')");
++    assert_string_equal(=
+mock_managment_buf, ">CLIENT:ACC,0,0,cck1,0," MSG_PAYLOAD);
++
++    const ch=
+ar flower_msg[] =3D "ACC,flower,48,6,SSBhbSAAIEtlcm1pdCD//SB0aGUg77+94oCPZn=
+JvZyEAAA=3D=3D";
++    buf_set_read(&msg_buf, (void *)flower_msg, sizeof(flo=
+wer_msg));
++    receive_acc_message(&c, &msg_buf);
++    assert_string_equal=
+(mock_msg_buf, "Received custom app control message (protocol 'flower')");
+=
++    assert_string_equal(mock_managment_buf, ">CLIENT:ACC,0,0,flower,0,SSBh=
+bSAAIEtlcm1pdCD//SB0aGUg77+94oCPZnJvZyEAAA=3D=3D");
++
++    CLEAR(mock_manag=
+ment_buf);
++    const char msg_incorrect_len[] =3D "ACC,fortune,62,6,InsgIm=
+1lIjogImZyb2ciLCAAeGZm/SJtc2ciOiAiSSBhbSAAS2VybWl0IiB9Ig=3D=3D";
++    buf_s=
+et_read(&msg_buf, (void *)msg_incorrect_len, sizeof(msg_incorrect_len));
++ =
+   receive_acc_message(&c, &msg_buf);
++    const char *error =3D "WARNING: =
+Received malformed custom app control channel "
++                        "(=
+field length 62, payload length 64 mismatch) message "
++                   =
+     "control message: 496e7367 496d316c 496a6f67 496d5a79 "
++             =
+           "62326369 4c434141 65475a6d 2f534a7[more=2E=2E=2E]";
++
++    asse=
+rt_string_equal(mock_msg_buf, error);
++    assert_string_equal(mock_managme=
+nt_buf, "");
++
++    CLEAR(mock_managment_buf);
++    const char msg_fragment=
+[] =3D "ACC,power,12,6F,aGVsbG8gdw=3D=3D";
++    buf_set_read(&msg_buf, (voi=
+d *)msg_fragment, sizeof(msg_fragment));
++    receive_acc_message(&c, &msg_=
+buf);
++    assert_string_equal(mock_msg_buf, "Received custom app control m=
+essage (protocol 'power', fragment)");
++    assert_string_equal(mock_managm=
+ent_buf, ">CLIENT:ACC,0,0,power,1,aGVsbG8gdw=3D=3D");
++
++    CLEAR(mock_man=
+agment_buf);
++    /* check two encoding present */
++    const char flower_m=
+sg_two_encs[] =3D "ACC,flower,48,6A,SSBhbSAAIEtlcm1pdCD//SB0aGUg77+94oCPZnJ=
+vZyEAAA=3D=3D";
++    buf_set_read(&msg_buf, (void *)flower_msg_two_encs, si=
+zeof(flower_msg_two_encs));
++    receive_acc_message(&c, &msg_buf);
++
++    =
+error =3D "WARNING: Received malformed custom app control channel (number o=
+f "
++            "encodings must be exactly one (B64=3D1, ASCII=3D1)) messa=
+ge control "
++            "message: 53534268 62534141 4945746c 636d3170 644=
+3442f 2f534230 "
++            "61475567 37372b3[more=2E=2E=2E]";
++    asser=
+t_string_equal(mock_msg_buf, error);
++    assert_string_equal(mock_managmen=
+t_buf, "");
++
++    /* no encoding present */
++    const char flower_msg_no_=
+encs[] =3D "ACC,flower,48,,SSBhbSAAIEtlcm1pdCD//SB0aGUg77+94oCPZnJvZyEAAA=
+=3D=3D";
++    buf_set_read(&msg_buf, (void *)flower_msg_no_encs, sizeof(flo=
+wer_msg_no_encs));
++    receive_acc_message(&c, &msg_buf);
++
++    error =3D=
+ "WARNING: Received malformed custom app control channel (number of "
++    =
+        "encodings must be exactly one (B64=3D0, ASCII=3D0)) message contro=
+l "
++            "message: 53534268 62534141 4945746c 636d3170 6443442f 2f5=
+34230 "
++            "61475567 37372b3[more=2E=2E=2E]";
++    assert_string_=
+equal(mock_msg_buf, error);
++    assert_string_equal(mock_managment_buf, ""=
+);
++
++    x_debug_level =3D 0;
++    management =3D NULL;
++    gc_free(&gc);=
+
++#endif
++}
++
++void
++test_parse_acc_parameters(void **state)
++{
++    struct=
+ gc_arena gc =3D gc_new();
++    /* parameters to INFO message */
++    const=
+ char *info_acc_msg =3D "4096 A:6 flower:happy";
++
++    int max_len =3D 0;
+=
++    const char *protocols =3D parse_acc_parameters(info_acc_msg, " ", &max=
+_len, true, &gc);
++    assert_string_equal(protocols, "flower:happy");
++   =
+ assert_int_equal(max_len, 1280);
++
++    /* a client does not accept a leng=
+th longer than it supports */
++    protocols =3D parse_acc_parameters(info_=
+acc_msg, " ", &max_len, false, &gc);
++    assert_null(protocols);
++
++    /*=
+ message with lower limit than our, should work for client and server */
++ =
+   info_acc_msg =3D "1111 A:6 flower:happy";
++    protocols =3D parse_acc_p=
+arameters(info_acc_msg, " ", &max_len, false, &gc);
++    assert_string_equa=
+l(protocols, "flower:happy");
++    assert_int_equal(max_len, 1111);
++
++    =
+protocols =3D parse_acc_parameters(info_acc_msg, " ", &max_len, true, &gc);=
+
++    assert_string_equal(protocols, "flower:happy");
++    assert_int_equal=
+(max_len, 1111);
++
++    /* more encodings than supported=2E Server should b=
+e okay, client should fail */
++    info_acc_msg =3D "1200 A:6:B flower:happ=
+y";
++    protocols =3D parse_acc_parameters(info_acc_msg, " ", &max_len, fa=
+lse, &gc);
++    assert_null(protocols);
++
++    protocols =3D parse_acc_para=
+meters(info_acc_msg, " ", &max_len, true, &gc);
++    assert_string_equal(pr=
+otocols, "flower:happy");
++    assert_int_equal(max_len, 1200);
++
++    /* e=
+xtra parameter */
++    info_acc_msg =3D "1400 A:6 flower:happy 77";
++    pr=
+otocols =3D parse_acc_parameters(info_acc_msg, " ", &max_len, true, &gc);
++=
+    assert_null(protocols);
++
++    protocols =3D parse_acc_parameters(info_=
+acc_msg, " ", &max_len, false, &gc);
++    assert_null(protocols);
++
++
++    =
+const char *iv_acc_capabilities =3D "1400,A:6,flower:happy:power";
++    pro=
+tocols =3D parse_acc_parameters(iv_acc_capabilities, ",", &max_len, true, &=
+gc);
++    assert_string_equal(protocols, "flower:happy:power");
++
++    /* t=
+oo small protocol length */
++    info_acc_msg =3D "32 A:6 flower:happy";
++ =
+   protocols =3D parse_acc_parameters(info_acc_msg, ",", &max_len, true, &g=
+c);
++    assert_null(protocols);
++
++    /* non-numerical protocol length */=
+
++    info_acc_msg =3D "abff A:6 flower:happy 77";
++    protocols =3D parse=
+_acc_parameters(info_acc_msg, ",", &max_len, true, &gc);
++    assert_null(p=
+rotocols);
++
++    /* non-numerical protocol length */
++    info_acc_msg =3D=
+ "abff A:6 flower:happy 77";
++    protocols =3D parse_acc_parameters(info_a=
+cc_msg, ",", &max_len, true, &gc);
++    assert_null(protocols);
++
++    gc_f=
+ree(&gc);
++}
++
++void
++test_acc_common_protocols(void **state)
++{
++    struc=
+t multi_instance mi =3D { 0 };
++    struct context *c =3D &mi=2Econtext;
++ =
+   c->options=2Egc =3D gc_new();
++
++    ALLOC_OBJ_CLEAR_GC(c->c2=2Etls_mult=
+i, struct tls_multi, &c->options=2Egc);
++
++    c->c2=2Etls_multi->peer_info=
+ =3D "IV_PROTO=3D4321\nIV_ACC=3D1400,A:6,flower:happy:power";
++    c->optio=
+ns=2Eacc_protocols =3D "power:flower:star";
++    struct tls_multi *multi =
+=3D c->c2=2Etls_multi;
++    multi->opt=2Eacc_protocols =3D c->options=2Eacc=
+_protocols;
++    multi->session[TM_ACTIVE]=2Eopt =3D &multi->opt;
++    mult=
+i->opt=2Ees =3D env_set_create(&c->options=2Egc);
++
++    determine_common_a=
+cc_protocols(multi, &c->c2=2Etls_multi->session[TM_ACTIVE]);
++
++    assert_=
+int_equal(multi->acc_max_message_length, ACC_MAX_MSG_LEN);
++    assert_stri=
+ng_equal(multi->acc_negotiated_protocols, "power:flower");
++
++    assert_st=
+ring_equal(env_set_get(multi->opt=2Ees, "acc_protocols"), "acc_protocols=3D=
+power:flower");
++    assert_string_equal(env_set_get(multi->opt=2Ees, "acc_=
+message_len"), "acc_message_len=3D1280");
++
++    free(multi->acc_negotiated=
+_protocols);
++    gc_free(&c->options=2Egc);
++}
++
++void
++test_acc_send_mess=
+age(void **state)
++{
++    struct multi_instance mi =3D { 0 };
++    struct c=
+ontext *c =3D &mi=2Econtext;
++    c->options=2Egc =3D gc_new();
++
++    ALLO=
+C_OBJ_CLEAR_GC(c->c2=2Etls_multi, struct tls_multi, &c->options=2Egc);
++   =
+ bool ret;
++    struct tls_multi *multi =3D c->c2=2Etls_multi;
++    c->opti=
+ons=2Eacc_protocols =3D "power:flower:emergency";
++    multi->opt=2Eacc_pro=
+tocols =3D c->options=2Eacc_protocols;
++    multi->session[TM_ACTIVE]=2Eopt=
+ =3D &multi->opt;
++    multi->opt=2Ees =3D env_set_create(&c->options=2Egc)=
+;
++
++    c->c2=2Etls_multi->peer_info =3D "IV_PROTO=3D4321\nIV_ACC=3D1400,A=
+:6,flower:emergency:power";
++    determine_common_acc_protocols(multi, &c->=
+c2=2Etls_multi->session[TM_ACTIVE]);
++
++    struct tls_session *session =3D=
+ &c->c2=2Etls_multi->session[TM_ACTIVE];
++
++    ret =3D send_acc_message(c,=
+ c->c2=2Etls_multi, session, "emergency", true,
++                          =
+ "EMERGENCY BROADCAST MESSAGE - THIS IS NOT A DRILL:", false);
++
++    asser=
+t_true(ret);
++    assert_string_equal(control_channel_mesage_sent,
++       =
+                 "ACC,emergency,50,AF,EMERGENCY BROADCAST MESSAGE - THIS IS=
+ NOT A DRILL:");
++
++    ret =3D send_acc_message(c, c->c2=2Etls_multi, sess=
+ion, "emergency", false,
++                           "THE GOVERNMENT HAS IS=
+SUED A RAINBOW COLOURED ALERT FOR YOUR AREA=2E", false);
++    assert_true(r=
+et);
++    assert_string_equal(control_channel_mesage_sent,
++               =
+         "ACC,emergency,65,A,THE GOVERNMENT HAS ISSUED A RAINBOW COLOURED A=
+LERT FOR YOUR AREA=2E");
++
++
++    /* test a long message (> 1000) with frag=
+ment to get the maximum header size */
++    char long_message[1200] =3D { 0=
+ };
++
++    for (int i =3D 0; i < 1024; i++)
++    {
++        long_message[i]=
+ =3D (char)(' ' + (i % 95));
++    }
++
++    /* last char of the message is a=
+ i and then a \0 */
++    assert_int_equal(long_message[1023], 'i');
++    as=
+sert_int_equal(long_message[1024], '\0');
++
++    ret =3D send_acc_message(c=
+, c->c2=2Etls_multi, session, "emergency", true,
++                         =
+  long_message, false);
++
++    assert_true(ret);
++    size_t cc_len =3D str=
+len(control_channel_mesage_sent);
++    assert_int_equal(control_channel_mes=
+age_sent[cc_len - 1], 'i');
++    const char *expected_start_cc =3D "ACC,eme=
+rgency,1024,AF, !\"#$%&'()*+,-=2E/012345";
++    assert_memory_equal(control=
+_channel_mesage_sent, expected_start_cc, sizeof(expected_start_cc));
++
++   =
+ free(multi->acc_negotiated_protocols);
++    gc_free(&c->options=2Egc);
++}
+=
++
++void
++test_list_intersection(void **state)
++{
++    const char *empty =3D=
+ "";
++    const char *protos =3D "power:flower:emergency";
++
++    struct gc=
+_arena gc =3D gc_new();
++
++    struct buffer t1 =3D get_list_intersection(&=
+gc, empty, protos);
++    assert_int_equal(buf_len(&t1), 0);
++
++    struct b=
+uffer t2 =3D get_list_intersection(&gc, protos, empty);
++    assert_int_equ=
+al(buf_len(&t2), 0);
++
++    struct buffer t3 =3D get_list_intersection(&gc,=
+ protos, protos);
++    assert_string_equal(buf_cstr(&t3), protos);
++
++    c=
+onst char *protos2 =3D "flower:emergency:power:mario";
++    struct buffer t=
+4 =3D get_list_intersection(&gc, protos2, protos);
++    assert_string_equal=
+(buf_cstr(&t4), "flower:emergency:power");
++
++    const char *protos3 =3D "=
+super:paper:mario:flower";
++    struct buffer t5 =3D get_list_intersection(=
+&gc, protos2, protos3);
++    assert_string_equal(buf_cstr(&t5), "flower:mar=
+io");
++
++    gc_free(&gc);
++}
+diff --git a/tests/unit_tests/openvpn/test_ac=
+c=2Eh b/tests/unit_tests/openvpn/test_acc=2Eh
+new file mode 100644
+index 00=
+00000=2E=2E32421fb
+--- /dev/null
++++ b/tests/unit_tests/openvpn/test_acc=2E=
+h
+@@ -0,0 +1,35 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP=
+ networks
++ *             over a single UDP port, with support for SSL/TLS-=
+based
++ *             session authentication and key exchange,
++ *         =
+    packet encryption, packet authentication, and
++ *             packet co=
+mpression=2E
++ *
++ *  Copyright (C) 2002-2026 OpenVPN Inc <sales@openvpn=2E=
+net>
++ *
++ *  This program is free software; you can redistribute it and/or=
+ modify
++ *  it under the terms of the GNU General Public License version 2=
+
++ *  as published by the Free Software Foundation=2E
++ *
++ *  This program=
+ is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WA=
+RRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNES=
+S FOR A PARTICULAR PURPOSE=2E  See the
++ *  GNU General Public License for =
+more details=2E
++ *
++ *  You should have received a copy of the GNU General=
+ Public License along
++ *  with this program; if not, see <https://www=2Egn=
+u=2Eorg/licenses/>=2E
++ */
++
++
++#ifndef TEST_ACC_H
++#define TEST_ACC_H
++voi=
+d test_acc_parse_client_messages(void **state);
++
++void test_parse_acc_para=
+meters(void **state);
++
++void test_acc_common_protocols(void **state);
++
++v=
+oid test_acc_send_message(void **state);
++
++void test_list_intersection(voi=
+d **state);
++#endif
+diff --git a/tests/unit_tests/openvpn/test_common=2Eh b=
+/tests/unit_tests/openvpn/test_common=2Eh
+index 8db4ea6=2E=2Ec865142 100644=
+
+--- a/tests/unit_tests/openvpn/test_common=2Eh
++++ b/tests/unit_tests/open=
+vpn/test_common=2Eh
+@@ -43,11 +43,13 @@
+ #define LargestIntegralType uintma=
+x_t
+ #endif
+ /* redefine 2=2Ex API in terms of 1=2Ex API */
+-#define CMocka=
+ValueData             LargestIntegralType
+-#define check_expected_uint     =
+    check_expected
+-#define expect_uint_value           expect_value
+-#defi=
+ne expect_check_data           expect_check
+-#define cast_ptr_to_cmocka_val=
+ue(x) (x)
++#define CMockaValueData                       LargestIntegralTyp=
+e
++#define check_expected_uint                   check_expected
++#define ex=
+pect_uint_value                     expect_value
++#define expect_check_data=
+                     expect_check
++#define cast_ptr_to_cmocka_value(x)     =
+      (x)
++#define assert_int_in_range(value, min, max)  assert_in_range((v=
+alue), (min), (max))
++#define assert_uint_in_range(value, min, max) assert_=
+in_range((value), (min), (max))
+ #endif
+ 
+ /**
+diff --git a/tests/unit_test=
+s/openvpn/test_misc=2Ec b/tests/unit_tests/openvpn/test_misc=2Ec
+index aea4=
+0f0=2E=2Ed30c0bc 100644
+--- a/tests/unit_tests/openvpn/test_misc=2Ec
++++ b/=
+tests/unit_tests/openvpn/test_misc=2Ec
+@@ -41,10 +41,28 @@
+ #include "mock_=
+msg=2Eh"
+ #include "crypto=2Eh"
+ #include "sid_hash=2Eh"
++#include "test_sc=
+hedule=2Eh"
++#include "multi=2Eh"
++
+ #ifdef _WIN32
+ #include "win32-util=2E=
+h"
+ #endif
+-#include "test_schedule=2Eh"
++
++/* extra mocks */
++bool
++apply_=
+push_options(struct context *c, struct options *options, struct buffer *buf=
+,
++                   uint64_t permission_mask, uint64_t *option_types_foun=
+d,
++                   struct env_set *es, bool is_update)
++{
++    return t=
+rue;
++}
++
++bool
++send_control_channel_string(struct context *c, const char =
+*str, msglvl_t msglevel)
++{
++    check_expected_ptr(str);
++    return true;=
+
++}
+ 
+ static void
+ test_compat_lzo_string(void **state)
+diff --git a/tests=
+/unit_tests/openvpn/test_ssl=2Ec b/tests/unit_tests/openvpn/test_ssl=2Ec
+in=
+dex 4baf8cc=2E=2E4987dd0 100644
+--- a/tests/unit_tests/openvpn/test_ssl=2Ec=
+
++++ b/tests/unit_tests/openvpn/test_ssl=2Ec
+@@ -52,6 +52,8 @@
+ #include "s=
+sl_verify=2Eh"
+ #include "openvpn=2Eh"
+ 
++#include "test_acc=2Eh"
++
+ /* Moc=
+k function to be allowed to include win32=2Ec which is required for
+  * get=
+ting the temp directory */
+ #ifdef _WIN32
+@@ -86,6 +88,20 @@
+ {
+     return=
+;
+ }
++void
++reschedule_multi_process(struct context *c)
++{
++}
++
++/* Define =
+a dummy dco cipher option to avoid linking against all the DCO
++ * units */=
+
++#if defined(ENABLE_DCO)
++const char *
++dco_get_supported_ciphers(void)
++{=
+
++    return "AES-192-GCM:AES-128-CBC:AES-256-GCM:AES-128-GCM:CHACHA20-POLY=
+1305";
++}
++#endif
+ 
+ /* generated using
+  * openssl req -x509 -newkey ec -p=
+keyopt ec_paramgen_curve:secp384r1 -keyout - \
+@@ -1111,8 +1127,12 @@
+     =
+    cmocka_unit_test(ssl_test_extract_last_matching_field),
+         cmocka=
+_unit_test(ssl_test_reject_null_in_cert_subject),
+         cmocka_unit_test=
+(ssl_test_escape_rfc_2253_chars_in_subject),
+-        cmocka_unit_test(ssl_=
+test_extract_peer_info)
+-
++        cmocka_unit_test(ssl_test_extract_peer_i=
+nfo),
++        cmocka_unit_test(test_acc_parse_client_messages),
++        c=
+mocka_unit_test(test_parse_acc_parameters),
++        cmocka_unit_test(test_=
+acc_common_protocols),
++        cmocka_unit_test(test_acc_send_message),
++ =
+       cmocka_unit_test(test_list_intersection)
+     };
+ 
+ #if defined(ENAB=
+LE_CRYPTO_OPENSSL)
+
+-- 
+To view, visit https://gerrit=2Eopenvpn=2Enet/c/ope=
+nvpn/+/1858?usp=3Demail
+To unsubscribe, or for help writing mail filters, v=
+isit https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+
+Gerrit-MessageTyp=
+e: newpatchset
+Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I4a6a6ef41e15896b8b79d7=
-95b2a6de86b8ae4c84
+Gerrit-Change-=
+Id: I4a6a6ef41e15896b8b79d795b2a6de86b8ae4c84
 Gerrit-Change-Number: 1858
-Gerrit-PatchSet: 16
-Gerrit-Ow=
-ner: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Reviewer: Frank Licht=
-enheld <frank@lichtenheld=2Ecom>
-Gerrit-Reviewer: R=C4=83zvan Cojocaru <raz=
-vanc@mailbox=2Eorg>
-Gerrit-CC: chugly <charlie=2Evigue@openvpn=2Ecom>
-Gerri=
-t-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
-Gerrit-Attent=
-ion: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
-Gerrit-Attention: Frank L=
-ichtenheld <frank@lichtenheld=2Ecom>
-Gerrit-Comment-Date: Wed, 28 Oct 2026 =
-13:28:37 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Rep=
-ly-To: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
+Ge=
+rrit-PatchSet: 17
+Gerrit-Owner: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
+G=
+errit-Reviewer: Frank Lichtenheld <frank@lichtenheld=2Ecom>
+Gerrit-Reviewer=
+: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
+Gerrit-CC: chugly <charlie=
+=2Evigue@openvpn=2Ecom>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esou=
+rceforge=2Enet>
+Gerrit-Attention: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eo=
+rg>
+Gerrit-Attention: Frank Lichtenheld <frank@lichtenheld=2Ecom>
 
---A0dcIMyXPzU=
+--Fx8YGq/fG3Q=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: Frank Lichtenheld, R=C4=83zvan Cojocaru=2E </p>
 <p>Ar=
-ne Schwabe has posted comments on this change by Arne Schwabe=2E</p><p><a h=
-ref=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1858?usp=3Demail">View Ch=
-ange</a></p><p>12 comments:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File doc/management-notes=2Etxt:</p=
-><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; paddin=
-g: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"https://gerrit=
-=2Eopenvpn=2Enet/c/openvpn/+/1858/comment/97aa9591_cb515ed1?usp=3Demail">Pa=
-tch Set #15, Line 838:</a> <code style=3D"font-family:monospace,monospace">=
-The server should then use acc-msg command to send app custom control messa=
-ges</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: =
-10px 0; padding: 0 10px;">client-acc-msg?</blockquote></p><p class=3D"block=
-s" style=3D"white-space: pre-wrap; word-wrap: break-word;">Acknowledged</p>=
-</li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-botto=
-m: 4px;"><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1858/comment=
-/d429c14a_385298f5?usp=3Demail">Patch Set #15, Line 882:</a> <code style=3D=
-"font-family:monospace,monospace">&gt;&gt;&gt;&gt;&gt;&gt;&gt; fd23ffa35a (=
-Implement sending/receiving app custom control protocol messages)</code></p=
-><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; paddi=
-ng: 0 10px;">Leftover conflict marker=2E</blockquote></p><p class=3D"blocks=
-" style=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul=
-></li><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/acc=2Ec:</p>=
-<ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding=
-: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"https://gerrit=
-=2Eopenvpn=2Enet/c/openvpn/+/1858/comment/adf6fb7b_6a94ffd9?usp=3Demail">Pa=
-tch Set #16, Line 207:</a> <code style=3D"font-family:monospace,monospace">=
-    log_acc_message(c, &amp;buf, payload_len, protocol, flags);</code></p><=
-p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding=
-: 0 10px;">Should we drop ACC messages that are not within `acc_max_message=
-_length`, or from a peer than never  [=E2=80=A6]</blockquote></p><p class=
-=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">I added=
- dropping ACC message that are not in the negotiated protocol list (that al=
-so cover if a client/server never configured ACC) but did not implement a m=
-essage <br>length check but added comment in the source code and management=
--notes=2Etxt that points out the reasoning for this (robustness principle)=
-=2E</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margi=
-n-bottom: 4px;"><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1858/=
-comment/c463697b_aefd4c38?usp=3Demail">Patch Set #16, Line 372:</a> <code s=
-tyle=3D"font-family:monospace,monospace">         * again would just add an=
- extra string allocation to options-&gt;gc */</code></p><p><blockquote styl=
-e=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">We&#39;=
-re no longer allocating to options-gc=2E</blockquote></p><p class=3D"blocks=
-" style=3D"white-space: pre-wrap; word-wrap: break-word;">Yepp=2E I will th=
-at part of the comment=2E</p></li></ul></li><li style=3D"margin: 0; padding=
-: 0;"><p>File src/openvpn/init=2Ec:</p><ul style=3D"list-style: none; paddi=
-ng: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bo=
-ttom: 4px;"><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1858/comm=
-ent/baca3bba_59eca459?usp=3Demail">Patch Set #16, Line 2283:</a> <code styl=
-e=3D"font-family:monospace,monospace">    if (multi-&gt;acc_negotiated_prot=
-ocols)</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margi=
-n: 10px 0; padding: 0 10px;">There&#39;s a line higher up in this function =
-that checks `if (c-&gt;c2=2Etls_multi &amp;&amp; c-&gt;c2=2E [=E2=80=A6]</b=
-lockquote></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap=
-: break-word;">Yeah=2E Although we are removing --secret so that will not h=
-appen in the future=2E</p></li></ul></li><li style=3D"margin: 0; padding: 0=
-;"><p>File src/openvpn/multi=2Ec:</p><ul style=3D"list-style: none; padding=
-: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bott=
-om: 4px;"><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1858/commen=
-t/3c66338b_3d94e771?usp=3Demail">Patch Set #16, Line 1741:</a> <code style=
-=3D"font-family:monospace,monospace">    struct context *c =3D &amp;mi-&gt;=
-context;</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; mar=
-gin: 10px 0; padding: 0 10px;">This function only uses `&amp;mi-&gt;context=
-` but now takes `mi` as a parameter=2E [=E2=80=A6]</blockquote></p><p class=
-=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">It is a=
- leftover=2E I will revert it=2E</p></li></ul></li><li style=3D"margin: 0; =
-padding: 0;"><p>File src/openvpn/push=2Ec:</p><ul style=3D"list-style: none=
-; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"ma=
-rgin-bottom: 4px;"><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/18=
-58/comment/e774eb3e_383c269c?usp=3Demail">Patch Set #15, Line 235:</a> <cod=
-e style=3D"font-family:monospace,monospace">                           &quo=
-t;without client announcing support for it&quot;);</code></p><p><blockquote=
- style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Th=
-is is missing a space (will print &quot;control listwithout&quot;)=2E</bloc=
-kquote></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: b=
-reak-word;">Done</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/op=
-envpn/+/1858/comment/72b6b737_f529d370?usp=3Demail">Patch Set #15, Line 247=
-:</a> <code style=3D"font-family:monospace,monospace">    struct buffer com=
-mon_list =3D get_list_intersection(&amp;gc, protocols, multi-&gt;opt=2Eacc_=
-protocols);</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; =
-margin: 10px 0; padding: 0 10px;">Isn&#39;t the `if (protocols)` check belo=
-w too late if we&#39;re already using `protocols` here?</blockquote></p><p =
-class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Ac=
-knowledged=2E That should be way earlier=2E</p></li><li style=3D"margin: 0;=
- padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"https://=
-gerrit=2Eopenvpn=2Enet/c/openvpn/+/1858/comment/aae4fa55_84bdf5f2?usp=3Dema=
-il">Patch Set #15, Line 260:</a> <code style=3D"font-family:monospace,monos=
-pace">        multi-&gt;acc_negotiated_protocols =3D string_alloc(protocols=
-, &amp;c-&gt;options=2Egc);</code></p><p><blockquote style=3D"border-left: =
-1px solid #aaa; margin: 10px 0; padding: 0 10px;">This is use after free=2E=
- There&#39;s a `gc_free()` before `string_alloc(protocols, &amp;c-&gt;optio=
-ns=2Egc);`=2E</blockquote></p><p class=3D"blocks" style=3D"white-space: pre=
--wrap; word-wrap: break-word;">Acknowledged</p></li><li style=3D"margin: 0;=
- padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"https://=
-gerrit=2Eopenvpn=2Enet/c/openvpn/+/1858/comment/6a66ba9f_b793c9f3?usp=3Dema=
-il">Patch Set #15, Line 260:</a> <code style=3D"font-family:monospace,monos=
-pace">        multi-&gt;acc_negotiated_protocols =3D string_alloc(protocols=
-, &amp;c-&gt;options=2Egc);</code></p><p><blockquote style=3D"border-left: =
-1px solid #aaa; margin: 10px 0; padding: 0 10px;">This also allocates `acc_=
-negotiated_protocols` on `&amp;c-&gt;options=2E [=E2=80=A6]</blockquote></p=
-><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;=
-">yeah this is a double free then=2E Fixed=2E</p></li></ul></li><li style=
-=3D"margin: 0; padding: 0;"><p>File src/openvpn/push=2Ec:</p><ul style=3D"l=
-ist-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"=
-><p style=3D"margin-bottom: 4px;"><a href=3D"https://gerrit=2Eopenvpn=2Enet=
-/c/openvpn/+/1858/comment/88db7f51_11455ac4?usp=3Demail">Patch Set #16, Lin=
-e 262:</a> <code style=3D"font-family:monospace,monospace">    multi-&gt;ac=
-c_negotiated_protocols =3D string_alloc(protocols, NULL);</code></p><p><blo=
-ckquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10=
-px;">If `acc_negotiated_protocols` has previously already been set, this le=
-aks=2E [=E2=80=A6]</blockquote></p><p class=3D"blocks" style=3D"white-space=
-: pre-wrap; word-wrap: break-word;">Yeah, or ignore further INFO messages=
-=2E</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File tests/un=
-it_tests/openvpn/test_misc=2Ec:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom=
-: 4px;"><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1858/comment/=
-6e56644d_f53e4078?usp=3Demail">Patch Set #16, Line 71:</a> <code style=3D"f=
-ont-family:monospace,monospace">}</code></p><p><blockquote style=3D"border-=
-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">These new mocks don=
-&#39;t appear to be used anywhere?</blockquote></p><p class=3D"blocks" styl=
-e=3D"white-space: pre-wrap; word-wrap: break-word;">Hm yeah=2E It looks lik=
-e that is really not needed=2E</p></li></ul></li></ul><p>To view, visit <a =
-href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1858?usp=3Demail">change=
- 1858</a>=2E To unsubscribe, or for help writing mail filters, visit <a hre=
-f=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</=
-p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemsco=
-pe itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link it=
-emprop=3D"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1858?usp=
-=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+ne Schwabe <strong>uploaded patch set #17</strong> to this change=2E</p><p>=
+<a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1858?usp=3Demail">Vie=
+w Change</a></p><p>The following approvals got outdated and were removed:
+C=
+ode-Review-1 by R=C4=83zvan Cojocaru</p><pre class=3D"blocks" style=3D"font=
+-family: monospace,monospace; white-space: pre-wrap;">Implement sending/rec=
+eiving app custom control protocol messages<br><br>This allows openvpn GUI/=
+front-ends and server via management<br>to use the OpenVPN control channel =
+to pass messages between each other<br>while OpenVPN handles the marshallin=
+g/unmarshalling of these and<br>negotiate the common app custom control pro=
+tocols=2E<br><br>This provides an easy to use secure channel that does not =
+depend on<br>the network itself to work and can also used before fully auth=
+enticating<br>the client=2E See the management-notes=2Etxt for more details=
+ how to use<br>this feature=2E An upcoming patch will also add some example=
+ python<br>script that showcase this feature=2E<br><br>Change-Id: I4a6a6ef4=
+1e15896b8b79d795b2a6de86b8ae4c84<br>Signed-off-by: Arne Schwabe &lt;arne@rf=
+c2549=2Eorg&gt;<br>---<br>M CMakeLists=2Etxt<br>M doc/man-sections/client-o=
+ptions=2Erst<br>M doc/man-sections/management-options=2Erst<br>M doc/man-se=
+ctions/script-options=2Erst<br>M doc/management-notes=2Etxt<br>M src/openvp=
+n/Makefile=2Eam<br>A src/openvpn/acc=2Ec<br>A src/openvpn/acc=2Eh<br>M src/=
+openvpn/forward=2Ec<br>M src/openvpn/init=2Ec<br>M src/openvpn/manage=2Ec<b=
+r>M src/openvpn/manage=2Eh<br>M src/openvpn/multi=2Ec<br>M src/openvpn/opti=
+ons=2Ec<br>M src/openvpn/options=2Eh<br>M src/openvpn/push=2Ec<br>M src/ope=
+nvpn/push=2Eh<br>M src/openvpn/ssl=2Ec<br>M src/openvpn/ssl_common=2Eh<br>M=
+ tests/unit_tests/openvpn/Makefile=2Eam<br>M tests/unit_tests/openvpn/mock_=
+management=2Ec<br>A tests/unit_tests/openvpn/mock_management=2Eh<br>M tests=
+/unit_tests/openvpn/mock_push_dependencies=2Ec<br>A tests/unit_tests/openvp=
+n/test_acc=2Ec<br>A tests/unit_tests/openvpn/test_acc=2Eh<br>M tests/unit_t=
+ests/openvpn/test_common=2Eh<br>M tests/unit_tests/openvpn/test_misc=2Ec<br=
+>M tests/unit_tests/openvpn/test_ssl=2Ec<br>28 files changed, 1,547 inserti=
+ons(+), 24 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-fa=
+mily: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2E=
+openvpn=2Enet:29418/openvpn refs/changes/58/1858/17</pre><pre style=3D"font=
+-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/CM=
+akeLists=2Etxt b/CMakeLists=2Etxt</span><br><span>index 184a95a=2E=2E00caa2=
+d 100644</span><br><span>--- a/CMakeLists=2Etxt</span><br><span>+++ b/CMake=
+Lists=2Etxt</span><br><span>@@ -435,6 +435,8 @@</span><br><span>     src/co=
+mpat/compat-strlcpy=2Ec</span><br><span>     src/compat/compat-strsep=2Ec</=
+span><br><span>     src/compat/compat-strtok_r=2Ec</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    src/openvpn/acc=2Ec</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/acc=2Eh</span><br><span>=
+     src/openvpn/argv=2Ec</span><br><span>     src/openvpn/argv=2Eh</span><=
+br><span>     src/openvpn/base64=2Ec</span><br><span>@@ -571,8 +573,8 @@</s=
+pan><br><span>     src/openvpn/ps=2Ec</span><br><span>     src/openvpn/ps=
+=2Eh</span><br><span>     src/openvpn/push=2Ec</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    src/openvpn/push_util=2Ec</span><br><span>    =
+ src/openvpn/push=2Eh</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    src/openvpn/push_util=2Ec</span><br><span>     src/openvpn/pushlist=
+=2Eh</span><br><span>     src/openvpn/reflect_filter=2Ec</span><br><span>  =
+   src/openvpn/reflect_filter=2Eh</span><br><span>@@ -826,7 +828,10 @@</spa=
+n><br><span>             tests/unit_tests/openvpn/mock_management=2Ec</span=
+><br><span>             tests/unit_tests/openvpn/mock_ssl_dependencies=2Ec<=
+/span><br><span>             tests/unit_tests/openvpn/mock_win32_execve=2Ec=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            tests/u=
+nit_tests/openvpn/test_acc=2Ec</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+            src/openvpn/acc=2Ec</span><br><span>             src=
+/openvpn/argv=2Ec</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+          src/openvpn/auth_token=2Ec</span><br><span>             src/openv=
+pn/base64=2Ec</span><br><span>             src/openvpn/crypto_epoch=2Ec</sp=
+an><br><span>             src/openvpn/crypto_mbedtls=2Ec</span><br><span>@@=
+ -840,8 +845,11 @@</span><br><span>             src/openvpn/options_util=2E=
+c</span><br><span>             src/openvpn/otime=2Ec</span><br><span>      =
+       src/openvpn/packet_id=2Ec</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+            src/openvpn/reliable=2Ec</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+            src/openvpn/session_id=2Ec</span>=
+<br><span>             src/openvpn/run_command=2Ec</span><br><span>        =
+     src/openvpn/ssl_mbedtls=2Ec</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+            src/openvpn/ssl_ncp=2Ec</span><br><span>          =
+   src/openvpn/ssl_openssl=2Ec</span><br><span>             src/openvpn/ssl=
+_util=2Ec</span><br><span>             src/openvpn/ssl_verify_mbedtls=2Ec</=
+span><br><span>@@ -858,6 +866,8 @@</span><br><span>     target_sources(test=
+_misc PRIVATE</span><br><span>         tests/unit_tests/openvpn/mock_get_ra=
+ndom=2Ec</span><br><span>         tests/unit_tests/openvpn/test_schedule=2E=
+c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        tests/unit=
+_tests/openvpn/mock_management=2Ec</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        src/openvpn/base64=2Ec</span><br><span>         src/=
+openvpn/options_util=2Ec</span><br><span>         src/openvpn/otime=2Ec</sp=
+an><br><span>         src/openvpn/ssl_util=2Ec</span><br><span>diff --git a=
+/doc/man-sections/client-options=2Erst b/doc/man-sections/client-options=2E=
+rst</span><br><span>index 87c138a=2E=2Eb204d6a 100644</span><br><span>--- a=
+/doc/man-sections/client-options=2Erst</span><br><span>+++ b/doc/man-sectio=
+ns/client-options=2Erst</span><br><span>@@ -12,6 +12,17 @@</span><br><span>=
+   When this option is set, OpenVPN will not drop incoming tun packets with=
+</span><br><span>   same destination as host=2E</span><br><span> </span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+--app-custom-control protocol=
+list</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Sets the list=
+ of supported app custom control protocols=2E</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+  These protocols are announced to the server whe=
+n this option is used</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+  as a client=2E If the option is set on a server it will negotiate the</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+  common protocols wi=
+th the client=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+  The protocollist is =
+a : separated list of protocol identifiers=2E</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+  See management-notes=2Etxt in the OpenVPN distribution and the Ope=
+nVPN RFC</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  draft for=
+ a description of app custom control protocol support=2E</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span> --auth-token token</=
+span><br><span>   This is not an option to be used directly in any configur=
+ation files,</span><br><span>   but rather push this option from a ``--clie=
+nt-connect`` script or a</span><br><span>@@ -437,6 +448,12 @@</span><br><sp=
+an>         Additional authentication methods supported by the client=2E</s=
+pan><br><span>         This may be set by the client UI/GUI using ``--seten=
+v``=2E</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+  :code:`IV_ACC=3D&lt;max_msg_len&gt;,&lt;flags&gt;,&lt;protocols&gt;`=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        If the opti=
+on ``--app-custom-control`` is set, the client will</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        send the supported max ACC messag=
+e length, the supported formats</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        as (:code:`A:6`) and the list of configured protocols (=
+e=2Eg=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        :co=
+de:`flower:happy:power`)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span>   The following flags depend on which compression fo=
+rmats are compiled in</span><br><span>   and whether compression is allowed=
+ by options=2E See `Protocol options`_</span><br><span>   for more details=
+=2E</span><br><span>diff --git a/doc/man-sections/management-options=2Erst =
+b/doc/man-sections/management-options=2Erst</span><br><span>index 2c79d05=
+=2E=2Ea7f7ead 100644</span><br><span>--- a/doc/man-sections/management-opti=
+ons=2Erst</span><br><span>+++ b/doc/man-sections/management-options=2Erst</=
+span><br><span>@@ -144,3 +144,9 @@</span><br><span> </span><br><span> --man=
+agement-up-down</span><br><span>   Report tunnel up/down events to manageme=
+nt interface=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+--app-custom-control pr=
+otocol-list</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  Sets t=
+he app custom control protocols that are supported and should be</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+  negotiated=2E protocol-list =
+is a list of allowed protocols separated by :</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+  A client will announce these protocols via the =
+IV_ACC variable and the</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+  server will notify the client about the common protocols=2E</span><br=
+><span>diff --git a/doc/man-sections/script-options=2Erst b/doc/man-section=
+s/script-options=2Erst</span><br><span>index f420380f=2E=2E9c17c3b 100644</=
+span><br><span>--- a/doc/man-sections/script-options=2Erst</span><br><span>=
++++ b/doc/man-sections/script-options=2Erst</span><br><span>@@ -1006,3 +100=
+6,12 @@</span><br><span>        X509_1_L=3DBISHKEK</span><br><span>        =
+X509_1_ST=3DNA</span><br><span>        X509_1_C=3DKG</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+:code:`acc_protocols`</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    If ``--app-custom-control`` is configured and the clie=
+nt supports any of the</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    protocols that server also supports, this variable contains a list o=
+f</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    common protoco=
+ls separated by :=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+:code:`acc_message=
+_len`</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if :code:`=
+acc_protocols` is set, this variable contains the maximum</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    message length for app custom pro=
+tocol message=2E</span><br><span>\ No newline at end of file</span><br><spa=
+n>diff --git a/doc/management-notes=2Etxt b/doc/management-notes=2Etxt</spa=
+n><br><span>index 4d726c4=2E=2Ec255d1d 100644</span><br><span>--- a/doc/man=
+agement-notes=2Etxt</span><br><span>+++ b/doc/management-notes=2Etxt</span>=
+<br><span>@@ -828,6 +828,58 @@</span><br><span> that is required to continu=
+e the connection (unlike MFA or opening a browser)</span><br><span> this me=
+ssage is not negotiated but can just be sent as a gratuitous message=2E</sp=
+an><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+app c=
+ustom control</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+If the special string &quot;ACC&quot; is passe=
+d as {EXTRA} OpenVPN will determine</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+the common app custom protocols between the client and the =
+server and instruct</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+the client that the server will send control messages to the client using</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+the ACC protocol=2E</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+The server should then use client-acc-ms=
+g command to send app custom</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+control messages to the client to facilitate the pending authentic=
+ation=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+COMMAND -- client-acc-msg (Ope=
+nVPN 2=2E8 or higher)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+------------------------------------------</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+On an OpenVPN instance running in server mode this command sends an</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+app custom control me=
+ssage to a client=2E The format of the command is:</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+  client-acc-msg {CID} {KID}</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+  {protocol}</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+  {flags}</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+  {message}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  EN=
+D</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+CID,KID -- client ID and Key ID=2E Se=
+e documentation for &quot;&gt;CLIENT:&quot;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+notification for more info=2E</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+protocol -- the ACC protocol identifier that this message sh=
+ould be</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+tagged with=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+flags    -- a colon sepa=
+rated list of the encoding and the flag if</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+            the message is a fragment=2E E=2Eg=2E &q=
+uot;6:F&quot; for a base64 encoded</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+            message that is also a fragment and not complete=
+ yet=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+message  -- The message encoded=
+ in the encoding specified in flags</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+COMMAND -- acc-msg (Op=
+enVPN 2=2E8 or higher)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+------------------------------------------</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+When OpenVPN is running in --client mode this command sends an app</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+custom command to the=
+ server=2E The format of the command is</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++  acc-msg</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  {protoc=
+ol}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  {flags}</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+  {message}</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+  END</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+See the client-acc-msg command for more details about the format of=
+ the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+message=2E Sinc=
+e a client has only one peer there is no need to specify the</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+client id and key id=2E</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span> COMMAND -- client-deny  (OpenVP=
+N 2=2E1 or higher)</span><br><span> ---------------------------------------=
+--------</span><br><span> </span><br><span>@@ -1302,6 +1354,46 @@</span><br=
+><span>    response=2E Mechanisms that need multiple rounds or more complex=
+ answers</span><br><span>    should implement a different response type tha=
+n CR_RESPONSE=2E</span><br><span> </span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+(6) App custom control message</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    This message is an application specific payload message that is =
+transported</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    over=
+ the OpenVPN control channel=2E</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    In =
+server mode:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    &gt;CLIENT:ACC,{CID},{=
+KID},{protocol},{fragment},{msg_base64}</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    In client mode:</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &gt;ACC:{proto=
+col},{fragment},{msg_base64}</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    The pr=
+otocol is a short ascii string identifying the app specific custom</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    protocol=2E If fragment =
+is set to 1, the message is not complete and the</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    next message should be concatenated to thi=
+s message to form a complete</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    message=2E</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    Note that t=
+he OpenVPN implementation operates here with the robustness</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    principle (&quot;be conservativ=
+e in what you send, be liberal in what you</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    accept&quot; - RFC 793 and others) and allows re=
+ceiving messages longer than</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    maximum allowed message length=2E Implementations should be pr=
+epared to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    handle=
+ messages that are longer than the maximum allowed message length=2E</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+(7) App custom control protocol message</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+   This message informs the client about the common ACC</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+   protocols and the maximu=
+m message length for an ACC message=2E</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+   In client mode:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+   &gt;ACC_PROTOCOLS=
+:protocols=3D{protocol_list},message_len=3D{max_msg_len}</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+   protocol_list is a list of supported protocols by the =
+client=2E For example</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+   flower:power:sys_info would indicate these three protocols to be suppo=
+rted=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   max_msg_l=
+en specifies the maximum message length that the peer supports=2E</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+   In server mode these are available in the acc=
+_protocols and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   ac=
+c_message_len variables of the client environment=2E</span><br><span> </spa=
+n><br><span> Variables:</span><br><span> </span><br><span>diff --git a/src/=
+openvpn/Makefile=2Eam b/src/openvpn/Makefile=2Eam</span><br><span>index 8a6=
+0a94=2E=2Eebc4db6 100644</span><br><span>--- a/src/openvpn/Makefile=2Eam</s=
+pan><br><span>+++ b/src/openvpn/Makefile=2Eam</span><br><span>@@ -45,6 +45,=
+7 @@</span><br><span> sbin_PROGRAMS =3D openvpn</span><br><span> </span><br=
+><span> openvpn_SOURCES =3D \</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+	acc=2Ec acc=2Eh \</span><br><span> 	argv=2Ec argv=2Eh \</span><b=
+r><span> 	auth_token=2Ec auth_token=2Eh \</span><br><span> 	base64=2Ec base=
+64=2Eh \</span><br><span>@@ -124,7 +125,8 @@</span><br><span> 	proto=2Ec pr=
+oto=2Eh \</span><br><span> 	proxy=2Ec proxy=2Eh \</span><br><span> 	ps=2Ec =
+ps=2Eh \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	push=2Ec pus=
+h_util=2Ec push=2Eh \</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+	push=2Ec push=2Eh \</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+	push_util=2Ec \</span><br><span> 	pushlist=2Eh \</span><br><span> 	refl=
+ect_filter=2Ec reflect_filter=2Eh \</span><br><span> 	reliable=2Ec reliable=
+=2Eh \</span><br><span>diff --git a/src/openvpn/acc=2Ec b/src/openvpn/acc=
+=2Ec</span><br><span>new file mode 100644</span><br><span>index 0000000=2E=
+=2E4404e45</span><br><span>--- /dev/null</span><br><span>+++ b/src/openvpn/=
+acc=2Ec</span><br><span>@@ -0,0 +1,437 @@</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+ *  OpenVPN -- An application to securely tunnel IP networks</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ *             over a single =
+TCP/UDP port, with support for SSL/TLS-based</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ *             session authentication and key exch=
+ange,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *            =
+ packet encryption, packet authentication, and</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ *             packet compression=2E</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ *  Copyright (C) 2025 OpenVPN Inc &lt;sales@ope=
+nvpn=2Enet&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  C=
+opyright (C) 2025 Arne Schwabe &lt;arne@rfc2549=2Eorg&gt;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ *  This program is free software; you can redistribute it and/or modif=
+y</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  it under the t=
+erms of the GNU General Public License version 2</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+ *  as published by the Free Software Foundati=
+on=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+ *  This program is distributed=
+ in the hope that it will be useful,</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY; without even the implied war=
+ranty of</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  MERCHAN=
+TABILITY or FITNESS FOR A PARTICULAR PURPOSE=2E  See the</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ *  GNU General Public License for mor=
+e details=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  You should have rece=
+ived a copy of the GNU General Public License along</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *  with this program; if not, write to t=
+he Free Software Foundation, Inc=2E,</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301=
+ USA=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#ifdef HAVE_CONFIG_H</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+#include &quot;config=2Eh&quot;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+#include &quot;syshead=2Eh&quot;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+#include &lt;string=2Eh&gt;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+#include &quot;buffer=2Eh&quot;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+#include &quot;error=2Eh&quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#include &quot;acc=2Eh&quot;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+#include &quot;forward=2Eh&quot;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;opti=
+ons_util=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
+include &quot;ssl_util=2Eh&quot;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+#include &quot;ssl_ncp=2Eh&quot;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+#include &quot;multi=2Eh&quot;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+enum acc_message_flag</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    ACC_MESSAGE_FLAGS_ASCII =3D 1,</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    ACC_MESSAGE_FLAGS_BASE64 =3D 2,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    ACC_MESSAGE_FLAGS_FRAGMENT =3D 4,</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+};</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+sta=
+tic void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+log_acc_mes=
+sage(struct context *c, const struct buffer *buf, int payload_len,</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+                const char *=
+protocol, int flags)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    bool fragment=
+ =3D flags &amp; ACC_MESSAGE_FLAGS_FRAGMENT;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+#ifdef ENABLE_MANAGEMENT</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    struct gc_arena gc =3D gc_new();</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    const char *payload_msg =
+=3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    /* For simplicity, we alw=
+ays encode payload to be base64 encoded</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+     * if not already in base64 format */</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    if (flags &amp; ACC_MESSAGE_F=
+LAGS_ASCII)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        char *b64out =
+=3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        AS=
+SERT(openvpn_base64_encode(CBPTR(buf), payload_len, &amp;b64out) &gt;=3D 0)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        gc_addspec=
+ial(b64out, free, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        payload_msg =3D b64out;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        payload_msg=
+ =3D CBSTR(buf);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    if (management)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        struct tls_session *session =3D &amp;c-&gt=
+;c2=2Etls_multi-&gt;session[TM_ACTIVE];</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        if (c-&gt;options=2Emode =3D=3D MODE_SERVER)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            /* server mode=2E Report client context=
+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            stru=
+ct man_def_auth_context *mda =3D session-&gt;opt-&gt;mda_context;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+            unsigned int mda_=
+key_id =3D get_primary_key(c-&gt;c2=2Etls_multi)-&gt;mda_key_id;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+            msg(M_CLIENT, &quo=
+t;&gt;CLIENT:ACC,%lu,%u,%s,%d,%s&quot;,</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+                mda-&gt;cid, mda_key_id, protocol, frag=
+ment, payload_msg);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        el=
+se</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+            /* Client mode=
+=2E Do not a report a CLIENT id */</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+            msg(M_CLIENT, &quot;&gt;ACC:%s,%d,%s&quot;, prot=
+ocol, fragment, payload_msg);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    gc_free(&a=
+mp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* if=
+def ENABLE_MANAGEMENT */</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    msg(D_PUSH, &quot;Received custom app control message (protocol &#=
+39;%s&#39;%s)&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        protocol, fragment ? &quot;, fragment&quot; : &quot;&quot;);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  Parses the flags=
+ field of an app control message and moves the</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ *  buffer past the flags string=2E If there is =
+an</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  error parsing=
+ the flags field the method returns -1 and</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ *  puts the error reason in err_reason</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+static int</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+parse_acc_message_flags(struct buffer *buf, const char **=
+err_reason, struct gc_arena *gc)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    c=
+onst char *flags =3D buf_extract_field(buf, &#39;,&#39;, gc);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    if (!flags)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        *err_reason =3D &quot;could not extract flags field&quot;;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        return -1;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   int acc_flags =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (const =
+char *flag =3D flags; *flag !=3D &#39;\0&#39;; flag++)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        if (*flag =3D=3D &#39;A&#39;)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+            acc_flags |=3D ACC_MESSAGE_FLAGS_A=
+SCII;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        else if (*flag =
+=3D=3D &#39;6&#39;)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+  acc_flags |=3D ACC_MESSAGE_FLAGS_BASE64;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        else if (*flag =3D=3D &#39;F&#39;)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            acc_flags |=3D ACC_MESSAGE_FLAGS_FRAG=
+MENT;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        else</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            *err_reason =3D &quot;Unknown=
+ flag in flags&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+            return -1;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* The message =
+should be encoded with exactly one encoding=2E Ensure that</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+     * only one of the flags is pres=
+ent */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    bool asci=
+ienc =3D (bool)(acc_flags &amp; ACC_MESSAGE_FLAGS_ASCII);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    bool base64enc =3D (bool)(acc_fla=
+gs &amp; ACC_MESSAGE_FLAGS_BASE64);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ if (base64enc + asciienc !=3D 1)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        char *tmp =3D gc_malloc(512, 1, gc);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        snprintf(tmp, 512, &quot;number of encodin=
+gs must be exactly one &quot;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                           &quot;(B64=3D%d, ASCII=3D%d)&quot;,</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                 base6=
+4enc, asciienc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     *err_reason =3D tmp;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        return -1;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    return acc_flags;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+receive_acc_message(st=
+ruct context *c, const struct buffer *buffer)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    struct gc_arena gc =3D gc_new();</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    const char *err_reason =3D &quot;&quot;;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    /* Example message: ACC,muppets,15,A,I a=
+m Miss Piggy */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+struct buffer buf =3D *buffer;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cons=
+t struct tls_multi *multi =3D c-&gt;c2=2Etls_multi;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (!multi-&gt;acc_negotiated_protoco=
+ls)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        err_reason =3D &quot;A=
+CC not enabled or no negotiated protocols&quot;;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        goto err;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!buf_advance(&amp=
+;buf, strlen(&quot;ACC&quot;)) || buf_read_u8(&amp;buf) !=3D &#39;,&#39;)</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        err_reason =3D &quot;missin=
+g , after ACC&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        goto err;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    /* extract protocol, payload l=
+ength, flags substrings */</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    const char *protocol =3D buf_extract_field(&amp;buf, &#39;,&#39;=
+, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (=
+!protocol)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        err_reason =3D =
+&quot;could not extract protocol field&quot;;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        goto err;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!=
+tls_item_in_cipher_list(protocol, multi-&gt;acc_negotiated_protocols))</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        struct buffer buf =3D alloc_bu=
+f_gc(1024, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        buf_printf(&amp;buf, &quot;protocol &#39;%s&#39; not in list of ne=
+gotiated protocols &#39;%s&#39;&quot;,</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+                   protocol, multi-&gt;acc_negotiated_pr=
+otocols);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        er=
+r_reason =3D buf_cstr(&amp;buf);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        goto err;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    /* We do not check the length here=2E We make no promise=
+s to support</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * =
+anything larger than our announced message length but according to</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+     * the robustness princi=
+ple</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * (&quot;be=
+ conservative in what you send, be liberal in what you accept&quot; - RFC 7=
+93 and others)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+* we accept also longer messages */</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ int payload_len;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  const char *payload_len_str =3D buf_extract_field(&amp;buf, &#39;,&#39;, =
+&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!p=
+ayload_len_str || !((payload_len =3D atoi(payload_len_str))))</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        err_reason =3D &quot;could not extract =
+payload length field&quot;;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        goto err;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    int flags =3D parse_acc=
+_message_flags(&amp;buf, &amp;err_reason, &amp;gc);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    if (flags &lt; 0)</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        goto err;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    /* We should have a final NU=
+L byte in the control message buffer</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+     * and thus the length of the buffer should be payload=
+_len + 1 */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (=
+buf_len(&amp;buf) !=3D payload_len + 1)</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        char *tmp =3D gc_malloc(512, 1, &amp;gc);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+        snprintf(tmp, 512, &quot;field =
+length %d, payload length %d mismatch&quot;,</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+                 payload_len, buf_len(&amp;buf) - =
+1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        err_reas=
+on =3D tmp;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+goto err;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    log_acc_message(c, &amp;buf, payload_len, protocol, flag=
+s);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp=
+;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+err:</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    msg(D_PUSH_ERRORS, &quot;WARNING: Received malformed=
+ custom app control channel &quot;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+                       &quot;(%s) message control message: %=
+s&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        err=
+_reason,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        for=
+mat_hex(BPTR(&amp;buf), BLEN(&amp;buf), 80, &amp;gc));</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+send_acc_message(struct context *c=
+,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                 s=
+truct tls_multi *multi,</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                 struct tls_session *session,</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+                 const char *protocol, bool f=
+ragment,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+      const char *msg, bool base64)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  /*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * length o=
+f the protocol string + one &#39;,&#39;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+     * 2 for the encoding (A or 6), potential F (fragme=
+nt), and 1 for the &#39;,&#39;,</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+     * 4 for the message size itself and one comma</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+     * 1 for the comma before th=
+e message itself */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    const size_t max_header_size =3D strlen(&quot;ACC,&quot;) + strlen(prot=
+ocol) + 1 + 4 + 1 + 2 + 1;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    size_t len =3D max_header_size + strlen(msg);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    if (len &gt; TLS_CHANNEL_BUF_SIZE)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        msg(M_CLIENT, &quot;message length (%zu) exc=
+eeds maximum possible message length (%d)&quot;, len, TLS_CHANNEL_BUF_SIZE)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return fal=
+se;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    if ((int)len &gt; multi-&gt;acc_max_message_l=
+ength)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_CLIENT, &quot=
+;header (%zu) + message size (%zu) length (%zu) exceeds &quot;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+                      &quot;maxi=
+mum allowed length negotiated with peer (%d)&quot;,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            max_header_size, strlen(msg),=
+ len,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            mu=
+lti-&gt;acc_max_message_length);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        return false;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct gc_aren=
+a gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   /* add 1 for the final \0 */</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    struct buffer buf =3D alloc_buf_gc(len + 1, &amp;gc);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    /* Example message: ACC,muppets,15,A,I a=
+m Miss Piggy */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+buf_printf(&amp;buf, &quot;ACC,%s,%zu,%s%s,%s&quot;, protocol,</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+               strlen(msg),</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+               base64 ? =
+&quot;6&quot; : &quot;A&quot;,</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+               fragment ? &quot;F&quot; : &quot;&quot;,</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+               msg);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    send_control_channel_string_dowork(session=
+, BSTR(&amp;buf), D_PUSH);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    reschedule_multi_process(c);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    return true;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+char *</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+parse_acc_parameters(const char=
+ *capabilities,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+                 const char *delim,</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+                     int *max_acc_len,</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+                     bool server,</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+                     struc=
+t gc_arena *gc)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    char *tmp_message =
+=3D string_alloc(capabilities, NULL);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    char *tmp_message_orig =3D tmp_message;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    char *lasts =3D NULL;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    const char *token =3D strtok_r(tmp_message=
+, delim, &amp;lasts);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int p =3D 0;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int acclen =3D 0=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const char *pr=
+otocols =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  char *ret =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* In server =
+mode we allow more capabilities than our own, in client</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+     * mode we reject if we should use =
+capabilities that we do not support */</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    int allowed_acc_len =3D server ? INT_MAX : ACC_MAX_M=
+SG_LEN;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    while (token)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        if (p =3D=3D 0 &amp;&amp; !atoi_constra=
+ined(token, &amp;acclen, &quot;ACC message length&quot;, ACC_MIN_MSG_LEN, a=
+llowed_acc_len, D_PUSH_ERRORS))</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+            goto done;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (p =3D=3D 1 &=
+amp;&amp; (!tls_item_in_cipher_list(&quot;A&quot;, token) || !tls_item_in_c=
+ipher_list(&quot;6&quot;, token)))</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+            msg(D_PUSH_ERRORS, &quot;App custom control encoding must =
+include base64 and ascii&quot;);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+            goto done;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (p=
+ =3D=3D 1 &amp;&amp; !server &amp;&amp; strcmp(token, &quot;A:6&quot;) &amp=
+;&amp; strcmp(token, &quot;6:A&quot;))</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+            msg(D_PUSH_ERRORS, &quot;App custom control encoding m=
+ust exactly base64 and ascii&quot;);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+            goto done;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        i=
+f (p =3D=3D 2)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            pro=
+tocols =3D token;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        if (p =3D=3D 3)</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            msg(D_PUSH_ERRORS, &quot;=
+Too many parameters for INFO ACC message/IV_ACC=2E&quot;);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+            goto done;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        token =3D strtok_r(NULL, delim, &amp;lasts);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        p++;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    *max_acc_len =3D min_int(acclen, ACC_MAX_MSG_LEN);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    ret =3D string_alloc(protoco=
+ls, gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+done:</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    free(tmp_message_orig);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    return ret;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+st=
+ruct buffer</span><br><span style=3D"color: hsl(120, 100%, 40%);">+get_list=
+_intersection(struct gc_arena *gc, const char *list1, const char *list2)</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    char *tmp =3D strdup(list1);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    char *lasts =3D NULL;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const char *token=
+ =3D strtok_r(tmp, &quot;:&quot;, &amp;lasts);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    /* The maximum possible length is the shorter of the two input =
+lists */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    size_t =
+max_len =3D min_size(strlen(list1), strlen(list2));</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    struct buffer common_protocols =3D alloc_buf_gc(max_len =
++ 1, gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    while (token)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        if (tls_item_in_cipher_list(token, li=
+st2))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+            /* protocol =
+is in both server and client list */</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+            if (buf_len(&amp;common_protocols) &gt; 0)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                buf_write_u8(=
+&amp;common_protocols, &#39;:&#39;);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+            buf_printf(&amp;common_protocols, &quot;%s&quot;, to=
+ken);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        token =3D strtok=
+_r(NULL, &quot;:&quot;, &amp;lasts);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    free(tmp);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  return common_protocols;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+determine_common_acc_protocols(struct tls_mul=
+ti *multi, struct tls_session *session)</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    if (!multi-&gt;opt=2Eacc_protocols)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        /* No app custom protocols have been configured server-side=
+=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        retur=
+n;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    if (multi-&gt;acc_negotiated_protocols)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        /* We already have determined th=
+e common protocols=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        return;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena gc =3D gc_ne=
+w();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    /* example IV_ACC: IV_ACC=3D20=
+48,6:A,flower:power */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    const char *peer_info =3D multi-&gt;peer_info;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    const char *iv_acc =3D extract_var_pe=
+er_info(peer_info, &quot;IV_ACC=3D&quot;, &amp;gc);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (!iv_acc)</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        gc_free(&amp;gc);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        return;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int max_ac=
+c_len =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    con=
+st char *protocols =3D parse_acc_parameters(iv_acc, &quot;,&quot;, &amp;max=
+_acc_len, true, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!prot=
+ocols)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        gc_free(&amp;gc);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(D_PUSH_ER=
+RORS, &quot;WARNING: IV_ACC peer info variable of peer is malformed&quot;);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    struct buffer common_protocols =3D get_list_intersec=
+tion(&amp;gc, session-&gt;opt-&gt;acc_protocols, protocols);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    if (buf_len(&amp;common_protocols) =3D=3D 0)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        msg(D_PUSH_DEBUG, &quot;WARNIN=
+G: No common app custom control protocol=2E&quot;);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        gc_free(&amp;gc);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        return;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    multi-&gt;acc_negotiated_protocols =3D string_alloc(buf_str(&amp;com=
+mon_protocols), NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    multi-&gt;acc_max_message_length =3D max_acc_len;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    setenv_str(session-&gt;opt-&gt;es, &quot;acc_protocol=
+s&quot;, multi-&gt;acc_negotiated_protocols);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    setenv_int(session-&gt;opt-&gt;es, &quot;acc_=
+message_len&quot;, multi-&gt;acc_max_message_length);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    gc_free(&amp;gc);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+}</span><br><span>diff --git a/src/openvpn/acc=2Eh b/src/o=
+penvpn/acc=2Eh</span><br><span>new file mode 100644</span><br><span>index 0=
+000000=2E=2E4a388f7</span><br><span>--- /dev/null</span><br><span>+++ b/src=
+/openvpn/acc=2Eh</span><br><span>@@ -0,0 +1,105 @@</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ *  OpenVPN -- An application to securely tunnel IP networks<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             over =
+a single TCP/UDP port, with support for SSL/TLS-based</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *             session authentication and=
+ key exchange,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *   =
+          packet encryption, packet authentication, and</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+ *             packet compression=2E</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+ *  Copyright (C) 2025 OpenVPN Inc &lt;=
+sales@openvpn=2Enet&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ *  Copyright (C) 2025 Arne Schwabe &lt;arne@rfc2549=2Eorg&gt;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+ *  This program is free software; you can redistribute it and=
+/or modify</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  it un=
+der the terms of the GNU General Public License version 2</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ *  as published by the Free Software=
+ Foundation=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This program is di=
+stributed in the hope that it will be useful,</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY; without even the im=
+plied warranty of</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE=2E  See the</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ *  GNU General Public Licens=
+e for more details=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  You should =
+have received a copy of the GNU General Public License along</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+ *  with this program; if not, wri=
+te to the Free Software Foundation, Inc=2E,</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+ *  51 Franklin Street, Fifth Floor, Boston, MA 021=
+10-1301 USA=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+#ifndef ACC_H</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+#define ACC_H</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+#include &quot;openvpn=2Eh&quot;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#d=
+efine ACC_MIN_MSG_LEN 64</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+#define ACC_MAX_MSG_LEN 1280</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * This method parses=
+ an app custom control message and delivers it to the</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * management interface=2E We leave reass=
+embly of fragmented messages to the</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+ * management interface=2E</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+ * @param c            The context struct</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+ * @param buffer       Buffer containing the co=
+ntrol message with ACC</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+receive_acc_message(struct c=
+ontext *c, const struct buffer *buffer);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+send_acc_message(struct context =
+*c,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
+ struct tls_multi *tls_multi,</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                 struct tls_session *session,</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+                 const char *protocol, =
+bool fragment,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+            const char *msg, bool base64);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+ * Parses an info message from =
+the server that contains app custom control info</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+ * information prior to the PUSH_REPLY to be a=
+ble to use app custom control</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ * protocols before sending</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ * In client mode only allow what we support ourselves=2E In server mode</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * allow also capabil=
+ities that we not support ourselves=2E</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ * @param capabilities      The string to parse</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ * @param delim             The delimiter to =
+use when parsing the string=2E</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ *                          IV_ACC uses &quot;,&quot; as delimit=
+er while the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *     =
+                     custom-control PUSH message uses &quot; &quot; as &quo=
+t;,&quot; is</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *     =
+                     already used to separate different push directives</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param max_acc_len  =
+     Set to the maximum ACC message length</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ * @param server            Whether we are server or=
+ client</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param gc=
+                The gc arena to use for allocating the resulting string</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return             =
+     The resulting protocol string or NULL on error</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+char *</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+parse_acc_parameters(const char *capabilities,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                     const char *delim,</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                     =
+int *max_acc_len,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+                   bool server,</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+                     struct gc_arena *gc);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ * Parses the IV_ACC of the peer and sets multi=2Eacc_negotiated_protocols<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * to the common pro=
+tocols of server and client and</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ * multi=2Eacc_max_message_length  to the maximum length of the=
+ ACC message</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * supp=
+ort by both server and client=2E</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * I=
+f there is no common protocol or the client does not support any app custom=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * protocol multi=
+=2Eacc_negotiated_protocols will be set to NULL=2E</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ * @param multi      the multi instance to use the set the ap=
+p custom protocols=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ * @param session    the session to read the client env from</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+determine_common_acc_protocols(struct tls_multi *multi, struct =
+tls_session *session);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ * Calculates the intersection o=
+f two list that are both separated by :</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+ * Items in the result will have the same ordering as i=
+n the list1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * param=
+eters</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param gc  =
+          Returned buffer will be allocated in this gc</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ * @param list1         First list to in=
+tersect</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param li=
+st2         Second list to intersect=2E</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+ * @return A (potentially empty) buffer containing an i=
+ntersection list</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+struct buffer</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+get_list_intersection(str=
+uct gc_arena *gc, const char *list1, const char *list2);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span>diff --git a/sr=
+c/openvpn/forward=2Ec b/src/openvpn/forward=2Ec</span><br><span>index 68121=
+0d=2E=2E7923b5e 100644</span><br><span>--- a/src/openvpn/forward=2Ec</span>=
+<br><span>+++ b/src/openvpn/forward=2Ec</span><br><span>@@ -42,6 +42,7 @@</=
+span><br><span> #include &quot;dco=2Eh&quot;</span><br><span> #include &quo=
+t;auth_token=2Eh&quot;</span><br><span> #include &quot;tun_afunix=2Eh&quot;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;acc=
+=2Eh&quot;</span><br><span> </span><br><span> #include &quot;memdbg=2Eh&quo=
+t;</span><br><span> </span><br><span>@@ -257,11 +258,11 @@</span><br><span>=
+     }</span><br><span>     else if (buf_string_match_head_str(buf, &quot;I=
+NFO_PRE&quot;))</span><br><span>     {</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-        server_pushed_info(buf, 8);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        server_pushed_info(c, buf, 8);</s=
+pan><br><span>     }</span><br><span>     else if (buf_string_match_head_st=
+r(buf, &quot;INFO&quot;))</span><br><span>     {</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-        server_pushed_info(buf, 4);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        server_pushed_info(c, bu=
+f, 4);</span><br><span>     }</span><br><span>     else if (buf_string_matc=
+h_head_str(buf, &quot;CR_RESPONSE&quot;))</span><br><span>     {</span><br>=
+<span>@@ -271,6 +272,10 @@</span><br><span>     {</span><br><span>         =
+receive_auth_pending(c, buf);</span><br><span>     }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    else if (buf_string_match_head_str(bu=
+f, &quot;ACC&quot;))</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        recei=
+ve_acc_message(c, buf);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    }</span><br><span>     else if (buf_string_match_head_str(buf, &quo=
+t;EXIT&quot;))</span><br><span>     {</span><br><span>         receive_exit=
+_message(c);</span><br><span>diff --git a/src/openvpn/init=2Ec b/src/openvp=
+n/init=2Ec</span><br><span>index 1b8b2a5=2E=2Ecfcd5b7 100644</span><br><spa=
+n>--- a/src/openvpn/init=2Ec</span><br><span>+++ b/src/openvpn/init=2Ec</sp=
+an><br><span>@@ -2279,6 +2279,13 @@</span><br><span>         }</span><br><s=
+pan>     }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    struct tls_multi *multi =3D c-&gt;c2=2Etls_multi;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    if (multi &amp;&amp; multi-&=
+gt;acc_negotiated_protocols)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   buf_printf(&amp;out, &quot; custom-control %d,A:6,%s&quot;,</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+                   multi-&gt;acc=
+_max_message_length, multi-&gt;acc_negotiated_protocols);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span>     if (BLENZ(&amp;out) &gt; strl=
+en(header))</span><br><span>     {</span><br><span>         msg(D_HANDSHAKE=
+, &quot;%s&quot;, BSTR(&amp;out));</span><br><span>@@ -2522,6 +2529,11 @@</=
+span><br><span>         flags |=3D (OPT_P_ROUTE | OPT_P_DHCPDNS);</span><br=
+><span>     }</span><br><span> </span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    if (c-&gt;options=2Eacc_protocols)</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        flags |=3D OPT_P_ACC;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span>     return flags;</span><br><span> }</span><=
+br><span> </span><br><span>@@ -2730,6 +2742,17 @@</span><br><span>         =
+frame-&gt;tun_mtu =3D min_int(frame-&gt;tun_max_mtu, c-&gt;options=2Ece=2Et=
+un_mtu);</span><br><span>     }</span><br><span> </span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    if (found &amp; OPT_P_ACC &amp;&amp; c-&g=
+t;options=2Epushed_acc_negotiated_protocols)</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        struct tls_multi *multi =3D c-&gt;c2=2Etls_multi;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        free(multi-&gt;acc=
+_negotiated_protocols);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        multi-&gt;acc_negotiated_protocols =3D string_alloc(c-&gt;optio=
+ns=2Epushed_acc_negotiated_protocols, NULL);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        multi-&gt;acc_max_message_length =3D c-&gt=
+;options=2Epushed_acc_max_message_length;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        msg(D_PUSH, &quot;OPTIONS IMPORT: ACC protocols: %s, msg len: %d=
+&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+multi-&gt;acc_negotiated_protocols, multi-&gt;acc_max_message_length);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     return true;</sp=
+an><br><span> }</span><br><span> </span><br><span>@@ -3352,6 +3375,7 @@</sp=
+an><br><span>     to=2Everify_hash_depth =3D options-&gt;verify_hash_depth;=
+</span><br><span>     to=2Everify_hash_no_ca =3D options-&gt;verify_hash_no=
+_ca;</span><br><span>     memcpy(to=2Ex509_username_field, options-&gt;x509=
+_username_field, sizeof(to=2Ex509_username_field));</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    to=2Eacc_protocols =3D options-&gt;ac=
+c_protocols;</span><br><span>     to=2Ees =3D c-&gt;c2=2Ees;</span><br><spa=
+n>     to=2Enet_ctx =3D &amp;c-&gt;net_ctx;</span><br><span> </span><br><sp=
+an>@@ -4306,6 +4330,24 @@</span><br><span> }</span><br><span> #endif /* ifd=
+ef TARGET_ANDROID */</span><br><span> </span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+static bool</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+management_acc_msg(void *arg,</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                   struct buffer_list *input) /* owner=
+ship transferred */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct context=
+ *c =3D arg;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    bool ret =3D false;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (buffer_list_de=
+fined(input) &amp;&amp; c-&gt;c2=2Etls_multi)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        struct tls_multi *multi =3D c-&gt;c2=2Etls_multi;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        struct tls_sessio=
+n *session =3D &amp;multi-&gt;session[TM_ACTIVE];</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        ret =3D management_send_acc_message(c, multi, session, i=
+nput);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    buffer_list_free(input);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    return ret;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+}</span><br><span> #endif /* ifdef ENABLE=
+_MANAGEMENT */</span><br><span> </span><br><span> void</span><br><span>@@ -=
+4322,6 +4364,7 @@</span><br><span>         cb=2Eproxy_cmd =3D management_ca=
+llback_proxy_cmd;</span><br><span>         cb=2Eremote_cmd =3D management_c=
+allback_remote_cmd;</span><br><span>         cb=2Esend_cc_message =3D manag=
+ement_callback_send_cc_message;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        cb=2Eacc_msg =3D management_acc_msg;</span><br><span> #=
+ifdef TARGET_ANDROID</span><br><span>         cb=2Enetwork_change =3D manag=
+ement_callback_network_change;</span><br><span> #endif</span><br><span>diff=
+ --git a/src/openvpn/manage=2Ec b/src/openvpn/manage=2Ec</span><br><span>in=
+dex ac3d4b7=2E=2E5e4e416 100644</span><br><span>--- a/src/openvpn/manage=2E=
+c</span><br><span>+++ b/src/openvpn/manage=2Ec</span><br><span>@@ -45,9 +45=
+,11 @@</span><br><span> #include &quot;push=2Eh&quot;</span><br><span> #inc=
+lude &quot;multi=2Eh&quot;</span><br><span> #include &quot;resolve=2Eh&quot=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;acc=
+=2Eh&quot;</span><br><span> </span><br><span> #include &quot;memdbg=2Eh&quo=
+t;</span><br><span> #include &quot;run_command=2Eh&quot;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+#include &quot;ssl_ncp=2Eh&quot;</span=
+><br><span> </span><br><span> #ifdef ENABLE_PKCS11</span><br><span> #includ=
+e &quot;pkcs11=2Eh&quot;</span><br><span>@@ -1081,6 +1083,35 @@</span><br><=
+span>             }</span><br><span>             break;</span><br><span> </=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        case IEC_CLIE=
+NT_ACC_MSG:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+    if (man-&gt;persist=2Ecallback=2Eclient_acc_msg)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+                bool status =3D (*man-&gt;persi=
+st=2Ecallback=2Eclient_acc_msg)(man-&gt;persist=2Ecallback=2Earg,</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                             =
+                                         man-&gt;connection=2Ein_extra_cid,=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                   =
+                                                   man-&gt;connection=2Ein_=
+extra_kid,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+                                                             man-&gt;connec=
+tion=2Ein_extra);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+              man-&gt;connection=2Ein_extra =3D NULL;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                report_command_status(sta=
+tus, &quot;client-acc-msg&quot;);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            else</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+               man_command_unsupported(&quot;client-acc-msg&quot;);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+            break;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        case IEC_ACC_MSG:</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+            if (man-&gt;persist=2Ecallback=2Eac=
+c_msg)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                boo=
+l status =3D (*man-&gt;persist=2Ecallback=2Eacc_msg)(man-&gt;persist=2Ecall=
+back=2Earg,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+                                                       man-&gt;connection=
+=2Ein_extra);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+          man-&gt;connection=2Ein_extra =3D NULL;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+                report_command_status(status,=
+ &quot;acc-msg&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+            }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+    man_command_unsupported(&quot;acc-msg&quot;);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            break;</span><br><span>         case IE=
+C_PK_SIGN:</span><br><span>             man-&gt;connection=2Eext_key_state =
+=3D EKS_READY;</span><br><span>             buffer_list_free(man-&gt;connec=
+tion=2Eext_key_input);</span><br><span>@@ -1205,6 +1236,29 @@</span><br><sp=
+an> }</span><br><span> </span><br><span> static void</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+man_client_acc_msg(struct management *man=
+, const char *cid_str,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+                   const char *kid_str)</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    struct man_connection *mc =3D &amp;man-&gt;connection;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    mc-&gt;in_extra_cid =3D 0;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    mc-&gt;in_extra_=
+kid =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (p=
+arse_cid(cid_str, &amp;mc-&gt;in_extra_cid)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        &amp;&amp; parse_uint(kid_str, &quot;KID&qu=
+ot;, &amp;mc-&gt;in_extra_kid))</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      mc-&gt;in_extra_cmd =3D IEC_CLIENT_ACC_MSG;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        in_extra_reset(mc, IER_NEW);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+sta=
+tic void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+man_acc_msg=
+(struct management *man)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct ma=
+n_connection *mc =3D &amp;man-&gt;connection;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    mc-&gt;in_extra_cmd =3D IEC_ACC_MSG;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    in_extra_reset(mc, IER_N=
+EW);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+static void</span><br><span> man_client_auth(struct =
+management *man, const char *cid_str, const char *kid_str, const bool extra=
+)</span><br><span> {</span><br><span>     struct man_connection *mc =3D &am=
+p;man-&gt;connection;</span><br><span>@@ -1759,6 +1813,17 @@</span><br><spa=
+n>             man_client_pending_auth(man, p[1], p[2], p[3], p[4]);</span>=
+<br><span>         }</span><br><span>     }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    else if (streq(p[0], &quot;client-acc-msg&quot;=
+))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        if (man_need(p, 2, 0))<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+            man_client_acc_msg=
+(man, p[1], p[2]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (streq(p[0], =
+&quot;acc-msg&quot;))</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        man_=
+acc_msg(man);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }<=
+/span><br><span>     else if (streq(p[0], &quot;rsa-sig&quot;))</span><br><=
+span>     {</span><br><span>         man_pk_sig(man, &quot;rsa-sig&quot;);<=
+/span><br><span>@@ -2975,7 +3040,9 @@</span><br><span>                     =
+                   &quot;bytes_sent=3D&quot;,</span><br><span>             =
+                           &quot;bytes_received=3D&quot;,</span><br><span> =
+                                       &quot;session_id=3D&quot;,</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-                               =
+        &quot;session_state=3D&quot; };</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+                                       &quot;session_st=
+ate=3D&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+                                 &quot;acc_protocols=3D&quot;,</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+                                =
+       &quot;acc_message_len=3D&quot; };</span><br><span> </span><br><span>=
+     if (env_filter_level =3D=3D 0)</span><br><span>     {</span><br><span>=
+@@ -3130,6 +3197,7 @@</span><br><span>     }</span><br><span> }</span><br><=
+span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan> void</span><br><span> management_connection_established(struct managem=
+ent *man, struct man_def_auth_context *mdac,</span><br><span>              =
+                     const struct env_set *es)</span><br><span>@@ -4372,6 +=
+4440,64 @@</span><br><span>     }</span><br><span> }</span><br><span> </spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+management_send_acc_message(struct cont=
+ext *c, struct tls_multi *multi, struct tls_session *session,</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+                            struc=
+t buffer_list *input)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* also ensu=
+res that are enough inputs in the list to safely call</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+     * buffer_list_peek without extra NUL=
+L checks */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (=
+!input || input-&gt;size &lt; 3)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       msg(M_CLIENT, &quot;not enough input lines for sending acc message, =
+&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
+         &quot;missing protocol, flag and/or messages lines&quot;);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        return false;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    struct gc_arena gc =3D gc_new();</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    const struct buffer *proto_buf =3D buffer_list_peek(inpu=
+t);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const char *=
+protocol =3D string_alloc(CBSTR(proto_buf), &amp;gc);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    buffer_list_pop(input);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    struct buffer *encoding_buf =3D buffer_list_peek=
+(input);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    char *e=
+ncoding =3D buf_str(encoding_buf);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    const char *flag =3D NULL;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    bool b64encoding =3D false;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    bool fragment =3D false;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    while ((flag =3D strsep(&amp;encoding, &quo=
+t;:&quot;)))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!strcmp(f=
+lag, &quot;6&quot;))</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+   b64encoding =3D true;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   else if (!strcmp(flag, &quot;F&quot;))</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            fragment =3D true;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   buffer_list_pop(input);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    buffer_l=
+ist_aggregate_separator(input, 10000, &quot;&quot;);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    const struct buffer *acc_msg_buf =3D =
+buffer_list_peek(input);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!multi=
+-&gt;acc_negotiated_protocols</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        || !tls_item_in_cipher_list(protocol, multi-&gt;acc_negot=
+iated_protocols))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_CL=
+IENT, &quot;protocol not in the list of negotiated protocols: %s&quot;,</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+            np(multi-&g=
+t;acc_negotiated_protocols));</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        goto error;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    bool ret =3D send_a=
+cc_message(c, multi, session, protocol,</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+                                fragment, buf_cstr(acc_=
+msg_buf),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+                      b64encoding);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    return ret;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+error:</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    gc_free(&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    return false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++}</span><br><span> #else /* ifdef ENABLE_MANAGEMENT */</span><br><span> </=
+span><br><span> #include &quot;win32=2Eh&quot;</span><br><span>diff --git a=
+/src/openvpn/manage=2Eh b/src/openvpn/manage=2Eh</span><br><span>index 1570=
+39d=2E=2Ecc9c264 100644</span><br><span>--- a/src/openvpn/manage=2Eh</span>=
+<br><span>+++ b/src/openvpn/manage=2Eh</span><br><span>@@ -184,12 +184,19 @=
+@</span><br><span>     int (*n_clients)(void *arg);</span><br><span>     bo=
+ol (*send_cc_message)(void *arg, const char *message, const char *parameter=
+);</span><br><span>     bool (*kill_by_cid)(void *arg, const unsigned long =
+cid, const char *kill_msg);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span>     bool (*client_auth)(void *arg, const unsigned=
+ long cid, const unsigned int mda_key_id,</span><br><span>                 =
+        const bool auth, const char *reason, const char *client_reason,</sp=
+an><br><span>                         struct buffer_list *cc_config); /* ow=
+nership transferred */</span><br><span>     bool (*client_pending_auth)(voi=
+d *arg, const unsigned long cid, const unsigned int kid,</span><br><span>  =
+                               const char *extra, unsigned int timeout);</s=
+pan><br><span>     char *(*get_peer_info)(void *arg, const unsigned long ci=
+d);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    bool (*clien=
+t_acc_msg)(void *arg,</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+                           const unsigned long cid,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                           const unsigned=
+ int mda_key_id,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+                        struct buffer_list *msg);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    bool (*acc_msg)(void *arg,</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+                    struct buffer_=
+list *msg);</span><br><span>     bool (*proxy_cmd)(void *arg, const char **=
+p);</span><br><span>     bool (*remote_cmd)(void *arg, const char **p);</sp=
+an><br><span> #ifdef TARGET_ANDROID</span><br><span>@@ -292,13 +299,15 @@</=
+span><br><span>     struct command_line *in;</span><br><span>     struct bu=
+ffer_list *out;</span><br><span> </span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-#define IEC_UNDEF       0</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-#define IEC_CLIENT_AUTH 1</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+#define IEC_UNDEF          0</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+#define IEC_CLIENT_AUTH    1</span><br><span=
+> /* #define IEC_CLIENT_PF   2 *REMOVED FEATURE* */</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#define IEC_RSA_SIGN    3</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-#define IEC_CERTIFICATE 4</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-#define IEC_PK_SIGN     5</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-#define IEC_PASSWORD    6</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+#define IEC_RSA_SIGN     =
+  3</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define IEC_CERT=
+IFICATE    4</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define=
+ IEC_PK_SIGN        5</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+#define IEC_PASSWORD       6</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+#define IEC_CLIENT_ACC_MSG 7</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+#define IEC_ACC_MSG        8</span><br><span>     int i=
+n_extra_cmd;</span><br><span>     struct buffer_list *in_extra;</span><br><=
+span>     unsigned long in_extra_cid;</span><br><span>@@ -503,6 +512,14 @@<=
+/span><br><span> </span><br><span> void man_persist_client_stats(struct man=
+agement *man, struct context *c);</span><br><span> </span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+/** Parses the ACC message from the input=
+ buffer_list and send to the</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+ * session identified by session and multi</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+struct tls_session;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+struct tls_multi;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++management_send_acc_message(struct context *c, struct tls_multi *multi,</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                      =
+      struct tls_session *session, struct buffer_list *input);</span><br><s=
+pan> #endif /* ifdef ENABLE_MANAGEMENT */</span><br><span> </span><br><span=
+> /**</span><br><span>diff --git a/src/openvpn/multi=2Ec b/src/openvpn/mult=
+i=2Ec</span><br><span>index e302a81=2E=2Ea3eb3ca 100644</span><br><span>---=
+ a/src/openvpn/multi=2Ec</span><br><span>+++ b/src/openvpn/multi=2Ec</span>=
+<br><span>@@ -53,6 +53,7 @@</span><br><span> #include &quot;ssl_util=2Eh&qu=
+ot;</span><br><span> #include &quot;dco=2Eh&quot;</span><br><span> #include=
+ &quot;reflect_filter=2Eh&quot;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+#include &quot;acc=2Eh&quot;</span><br><span> </span><br><span>=
+ /*#define MULTI_DEBUG_EVENT_LOOP*/</span><br><span> </span><br><span>@@ -4=
+085,6 +4086,26 @@</span><br><span>     }</span><br><span> }</span><br><span=
+> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+static const char=
+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+calculate_app_con=
+trol_extra(struct multi_instance *mi, struct gc_arena *gc)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    struct context *c =3D &amp;mi-&gt;context;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    struct tls_multi *multi=
+ =3D c-&gt;c2=2Etls_multi;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!mul=
+ti-&gt;acc_negotiated_protocols)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       msg(M_CLIENT, &quot;ACC: No negotiated protocols&quot;);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        return NULL;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    struct buffer buf =3D alloc_buf_gc(1024, gc);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    buf_printf(&amp;buf, &quot;ACC:%d A:6 %s&quot;, =
+multi-&gt;acc_max_message_length,</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+               multi-&gt;acc_negotiated_protocols);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    return buf_str(&amp;buf);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span> static bool</span><br><span> managemen=
+t_client_pending_auth(void *arg, const unsigned long cid, const unsigned in=
+t mda_key_id,</span><br><span>                                const char *e=
+xtra, unsigned int timeout)</span><br><span>@@ -4095,10 +4116,22 @@</span><=
+br><span>     if (mi)</span><br><span>     {</span><br><span>         struc=
+t tls_multi *multi =3D mi-&gt;context=2Ec2=2Etls_multi;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        struct gc_arena gc =3D gc_new();</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        if (!strcmp(extra, &quot;ACC&=
+quot;))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            extra =3D =
+calculate_app_control_extra(mi, &amp;gc);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+            if (!extra)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+                gc_free(&amp;gc);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                return false;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span>         st=
+ruct tls_session *session =3D lookup_session_by_mda_key_id(multi, mda_key_i=
+d);</span><br><span> </span><br><span>         if (!session)</span><br><spa=
+n>         {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+     gc_free(&amp;gc);</span><br><span>             return false;</span><br=
+><span>         }</span><br><span> </span><br><span>@@ -4106,6 +4139,7 @@</=
+span><br><span>         bool ret =3D send_auth_pending_messages(multi, sess=
+ion, extra, timeout);</span><br><span>         reschedule_multi_process(&am=
+p;mi-&gt;context);</span><br><span>         multi_schedule_context_wakeup(m=
+, mi);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        gc_fr=
+ee(&amp;gc);</span><br><span>         return ret;</span><br><span>     }</s=
+pan><br><span>     return false;</span><br><span>@@ -4149,6 +4183,37 @@</sp=
+an><br><span>     return ret;</span><br><span> }</span><br><span> </span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+static bool</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+management_client_acc_msg(void *arg,</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+                          const unsign=
+ed long cid,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+                   const unsigned int mda_key_id,</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+                          struct buffer_list =
+*input) /* ownership transferred */</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  struct multi_context *m =3D (struct multi_context *)arg;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    struct multi_instance *mi =3D lo=
+okup_by_cid(m, cid);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    bool ret =3D f=
+alse;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (mi &am=
+p;&amp; buffer_list_defined(input))</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        struct tls_multi *multi =3D mi-&gt;context=2Ec2=2Etls_multi;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        struct tls_sessi=
+on *session =3D lookup_session_by_mda_key_id(multi, mda_key_id);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        if (!session)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            msg(M_CLIENT, &quot;client=
+ session not found&quot;);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+            buffer_list_free(input);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            return false;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++        ret =3D management_send_acc_message(&amp;mi-&gt;context, multi, se=
+ssion, input);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   multi_schedule_context_wakeup(m, mi);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    buffer_l=
+ist_free(input);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ return ret;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span> static char *</span><br><s=
+pan> management_get_peer_info(void *arg, const unsigned long cid)</span><br=
+><span> {</span><br><span>@@ -4185,6 +4250,7 @@</span><br><span>         cb=
+=2En_clients =3D management_callback_n_clients;</span><br><span>         cb=
+=2Ekill_by_cid =3D management_kill_by_cid;</span><br><span>         cb=2Ecl=
+ient_auth =3D management_client_auth;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        cb=2Eclient_acc_msg =3D management_client_acc_msg=
+;</span><br><span>         cb=2Eclient_pending_auth =3D management_client_p=
+ending_auth;</span><br><span>         cb=2Eget_peer_info =3D management_get=
+_peer_info;</span><br><span>         cb=2Epush_update_broadcast =3D managem=
+ent_callback_send_push_update_broadcast;</span><br><span>diff --git a/src/o=
+penvpn/options=2Ec b/src/openvpn/options=2Ec</span><br><span>index fb319ae=
+=2E=2Ebb854da 100644</span><br><span>--- a/src/openvpn/options=2Ec</span><b=
+r><span>+++ b/src/openvpn/options=2Ec</span><br><span>@@ -35,6 +35,7 @@</sp=
+an><br><span> </span><br><span> #include &quot;syshead=2Eh&quot;</span><br>=
+<span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &qu=
+ot;acc=2Eh&quot;</span><br><span> #include &quot;buffer=2Eh&quot;</span><br=
+><span> #include &quot;error=2Eh&quot;</span><br><span> #include &quot;comm=
+on=2Eh&quot;</span><br><span>@@ -7107,6 +7108,41 @@</span><br><span>       =
+  VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span>         options-&gt;fo=
+rce_key_material_export =3D true;</span><br><span>     }</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    else if (streq(p[0], &quot;app-cus=
+tom-control&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;acc_protocols=
+ =3D p[1];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    else if (streq(p[0]=
+, &quot;custom-control&quot;) &amp;&amp; p[1] &amp;&amp; p[2] &amp;&amp; p[=
+3] &amp;&amp; !p[4])</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        VERIF=
+Y_PERMISSION(OPT_P_ACC);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* che=
+ck if the list from the server is a real subset of our list */</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        struct gc_arena gc_local=
+ =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   struct buffer common_list =3D get_list_intersection(&amp;gc_local, p[3],=
+ options-&gt;acc_protocols);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if=
+ (buf_len(&amp;common_list) =3D=3D 0 || !streq(p[3], buf_cstr(&amp;common_l=
+ist)))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+            msg(msgleve=
+l, &quot;App custom control list from server contains &quot;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+                          &quot;un=
+supported protocols&quot;);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            gc_free(&amp;gc_local);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            goto err;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        gc_free(&amp;gc_local);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+        if (!streq(p[2], &quot;A:6&quot;) &amp;&amp; !streq(p[2], =
+&quot;6:A&quot;))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+msg(msglevel, &quot;App custom control encoding must be base64 and ascii&qu=
+ot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            go=
+to err;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        if (!atoi_constrained(p[1], &amp;=
+options-&gt;pushed_acc_max_message_length,</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                              &quot;app custom messa=
+ge message length&quot;, ACC_MIN_MSG_LEN, ACC_MAX_MSG_LEN, msglevel))</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+            goto err;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        options-&gt;pushed_acc_negotiated=
+_protocols =3D p[3];</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    }</span><br><span>     else if (streq(p[0], &quot;prng&quot;) &amp;&am=
+p; p[1] &amp;&amp; !p[3])</span><br><span>     {</span><br><span>         m=
+sg(M_WARN, &quot;NOTICE: --prng option ignored (SSL library PRNG is used)&q=
+uot;);</span><br><span>diff --git a/src/openvpn/options=2Eh b/src/openvpn/o=
+ptions=2Eh</span><br><span>index 6a3bf61=2E=2Eb7945e0 100644</span><br><spa=
+n>--- a/src/openvpn/options=2Eh</span><br><span>+++ b/src/openvpn/options=
+=2Eh</span><br><span>@@ -715,6 +715,18 @@</span><br><span>     /* force usi=
+ng TLS key material export for data channel key generation */</span><br><sp=
+an>     bool force_key_material_export;</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    /** The app custom control protoc=
+ols we should announce as supported */</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    const char *acc_protocols;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    /** the protocols that are negotiated with the peer=2E This =
+is a</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     *  a tempo=
+rary variable since options=2Ec push parser cannot access</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+     *  tls multi struct */</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    const char *pushed_acc_ne=
+gotiated_protocols;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /** the maximum=
+ length of an ACC control channel message via push message</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+     * */</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    int pushed_acc_max_message_length;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     bool =
+vlan_tagging;</span><br><span>     enum vlan_acceptable_frames vlan_accept;=
+</span><br><span>     uint16_t vlan_pvid;</span><br><span>@@ -764,8 +776,10=
+ @@</span><br><span> #define OPT_P_INLINE          (1u &lt;&lt; 29)</span><=
+br><span> #define OPT_P_PUSH_MTU        (1u &lt;&lt; 30)</span><br><span> #=
+define OPT_P_ROUTE_TABLE     (1u &lt;&lt; 31)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+#define OPT_P_ACC             (1ull &lt;&lt; 32)<=
+/span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#def=
+ine OPT_P_DEFAULT (~(OPT_P_INSTANCE | OPT_P_PULL_MODE | OPT_P_PEER_ID | 0x0=
+ull))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Options all=
+owed in the normal configuration file (vs pushed options or in ccd files) *=
+/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define OPT_P_DEFA=
+ULT (~(OPT_P_INSTANCE | OPT_P_PULL_MODE | OPT_P_PEER_ID | OPT_P_ACC))</span=
+><br><span> </span><br><span> #define PULL_DEFINED(opt) ((opt)-&gt;pull)</s=
+pan><br><span> </span><br><span>diff --git a/src/openvpn/push=2Ec b/src/ope=
+nvpn/push=2Ec</span><br><span>index 42259c3=2E=2Ec4c4cd4 100644</span><br><=
+span>--- a/src/openvpn/push=2Ec</span><br><span>+++ b/src/openvpn/push=2Ec<=
+/span><br><span>@@ -27,6 +27,8 @@</span><br><span> #include &quot;syshead=
+=2Eh&quot;</span><br><span> </span><br><span> #include &quot;push=2Eh&quot;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+#include &quot;acc=2Eh&quot;</span><br=
+><span> #include &quot;options=2Eh&quot;</span><br><span> #include &quot;cr=
+ypto=2Eh&quot;</span><br><span> #include &quot;ssl=2Eh&quot;</span><br><spa=
+n>@@ -221,9 +223,61 @@</span><br><span> #endif</span><br><span> }</span><br=
+><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+parse_server_pushed=
+_info_acc(struct context *c, struct buffer *buf)</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    int max_acc_len =3D 0;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    struct tls_multi *multi =3D c-&gt;c2=2Etls_multi;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (multi-&gt;acc_negotiated_protocol=
+s)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        return;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    if (!multi-&gt;opt=2Eacc_protocols)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        msg(D_PUSH_ERRORS, &quot;Server tried to push app cust=
+om control list &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+                           &quot;without client announcing support for i=
+t&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        re=
+turn;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    /* example string to parse: ACC:1400 A:6 fl=
+ower:happy */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /*=
+ Skip over the ACC: prefix */</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    buf_advance(buf, 4);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+struct gc_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    const char *protocols =3D parse_acc_parameters(buf_cstr(bu=
+f), &quot; &quot;, &amp;max_acc_len, false, &amp;gc);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (!protocols)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        msg(D_PUSH_ERRORS, &quot;WARNING: Received ACC =
+info command with invalid parameters&quot;);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        return;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* check=
+ if the list from the server is a real subset of our list */</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    struct buffer common_list =3D =
+get_list_intersection(&amp;gc, protocols, multi-&gt;opt=2Eacc_protocols);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    if (buf_len(&amp;common_list) =3D=3D=
+ 0 || !streq(protocols, buf_cstr(&amp;common_list)))</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        msg(D_PUSH_ERRORS, &quot;App custom control lis=
+t from server contains &quot;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                           &quot;unsupported protocols&quot;);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        gc_free(&amp;g=
+c);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    multi-&gt;acc_negotiated_protocols =3D string_all=
+oc(protocols, NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    multi-&gt;acc_max_message_length =3D max_acc_len;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+#ifdef ENABLE_MANAGEMENT</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    if (management)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        msg(M_CLIENT, &quot;&gt;ACC_PROTOCOLS:protocols=3D%s,message=
+_len=3D%d&quot;, protocols, max_acc_len);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    g=
+c_free(&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</=
+span><br><span> </span><br><span> void</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-server_pushed_info(const struct buffer *buffer, const int =
+adv)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+server_pushed_i=
+nfo(struct context *c, const struct buffer *buffer, const int adv)</span><b=
+r><span> {</span><br><span>     const char *m =3D &quot;&quot;;</span><br><=
+span>     struct buffer buf =3D *buffer;</span><br><span>@@ -233,6 +287,12 =
+@@</span><br><span>         m =3D BSTR(&amp;buf);</span><br><span>     }</s=
+pan><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+if (strncmp(m, &quot;ACC:&quot;, 4) =3D=3D 0)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        parse_server_pushed_info_acc(c, &amp;buf);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        return;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span> #ifdef ENABLE_MANAGEMENT</span><=
+br><span>     struct gc_arena gc;</span><br><span>     if (management)</spa=
+n><br><span>@@ -285,6 +345,7 @@</span><br><span>     msg(D_PUSH, &quot;CR r=
+esponse was sent by client (&#39;%s&#39;)&quot;, m);</span><br><span> }</sp=
+an><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span> /**</span><br><span>  * Parse the keyword for the AUTH_PENDING=
+ request</span><br><span>  * @param buffer                buffer containing=
+ the keywords, the buffer&#39;s</span><br><span>@@ -441,7 +502,6 @@</span><=
+br><span>     const char *const peer_info =3D tls_multi-&gt;peer_info;</spa=
+n><br><span>     unsigned int proto =3D extract_iv_proto(peer_info);</span>=
+<br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
+><span>     /* Calculate the maximum timeout and subtract the time we alrea=
+dy waited */</span><br><span>     unsigned int max_timeout =3D</span><br><s=
+pan>         max_uint(tls_multi-&gt;opt=2Erenegotiate_seconds / 2, tls_mult=
+i-&gt;opt=2Ehandshake_window);</span><br><span>@@ -732,6 +792,12 @@</span><=
+br><span>                 client_max_mtu, o-&gt;ce=2Etun_mtu, o-&gt;ce=2Etu=
+n_mtu);</span><br><span>         }</span><br><span>     }</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    if (tls_multi-&gt;acc_negotiated_protocols)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        push_option_fmt(gc, push_list, M_=
+USAGE, &quot;custom-control %d A:6 %s&quot;,</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+                        tls_multi-&gt;acc_max_mess=
+age_length, tls_multi-&gt;acc_negotiated_protocols);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span> }</span><br><span>=
+ </span><br><span> static bool</span><br><span>diff --git a/src/openvpn/pus=
+h=2Eh b/src/openvpn/push=2Eh</span><br><span>index 39302f6=2E=2Eb6695bc 100=
+644</span><br><span>--- a/src/openvpn/push=2Eh</span><br><span>+++ b/src/op=
+envpn/push=2Eh</span><br><span>@@ -52,6 +52,7 @@</span><br><span> </span><b=
+r><span> int process_incoming_push_request(struct context *c);</span><br><s=
+pan> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an> /**</span><br><span>  * @brief Handles the receiving of a push-update m=
+essage and applies updates to the specified</span><br><span>  * options=2E<=
+/span><br><span>@@ -92,7 +93,7 @@</span><br><span> </span><br><span> void r=
+eceive_exit_message(struct context *c);</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-void server_pushed_info(const struct bu=
+ffer *buffer, const int adv);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+void server_pushed_info(struct context *c, const struct buffer *b=
+uffer, const int adv);</span><br><span> </span><br><span> void receive_cr_r=
+esponse(struct context *c, const struct buffer *buffer);</span><br><span> <=
+/span><br><span>diff --git a/src/openvpn/ssl=2Ec b/src/openvpn/ssl=2Ec</spa=
+n><br><span>index 086a6fc=2E=2Ee84d32d 100644</span><br><span>--- a/src/ope=
+nvpn/ssl=2Ec</span><br><span>+++ b/src/openvpn/ssl=2Ec</span><br><span>@@ -=
+55,6 +55,7 @@</span><br><span> </span><br><span> #include &quot;crypto_epoc=
+h=2Eh&quot;</span><br><span> #include &quot;ssl=2Eh&quot;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+#include &quot;acc=2Eh&quot;</span><b=
+r><span> #include &quot;ssl_verify=2Eh&quot;</span><br><span> #include &quo=
+t;ssl_backend=2Eh&quot;</span><br><span> #include &quot;ssl_ncp=2Eh&quot;</=
+span><br><span>@@ -1279,6 +1280,7 @@</span><br><span>     free(multi-&gt;lo=
+cked_cn);</span><br><span>     free(multi-&gt;locked_username);</span><br><=
+span>     free(multi-&gt;locked_original_username);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    free(multi-&gt;acc_negotiated_protoco=
+ls);</span><br><span> </span><br><span>     cert_hash_free(multi-&gt;locked=
+_cert_hash_set);</span><br><span> </span><br><span>@@ -2117,6 +2119,11 @@</=
+span><br><span>                     }</span><br><span>                 }</s=
+pan><br><span>             }</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+  if (session-&gt;opt-&gt;acc_protocols)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+                buf_printf(&amp;out, &quot;IV_ACC=3D%d,6:A,%=
+s\n&quot;, ACC_MAX_MSG_LEN, session-&gt;opt-&gt;acc_protocols);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span> =
+        }</span><br><span>     }</span><br><span> </span><br><span>@@ -2398=
+,6 +2405,8 @@</span><br><span>         multi-&gt;remote_ciphername =3D stri=
+ng_alloc(&quot;none&quot;, NULL);</span><br><span>     }</span><br><span> <=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    determine_common=
+_acc_protocols(multi, session);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+</span><br><span>     if (username_len &lt; 0 || password_len &=
+lt; 0)</span><br><span>     {</span><br><span>         msg(D_TLS_ERRORS, &q=
+uot;TLS Error: Username (%d) or password (%d) too long&quot;, abs(username_=
+len),</span><br><span>diff --git a/src/openvpn/ssl_common=2Eh b/src/openvpn=
+/ssl_common=2Eh</span><br><span>index 9a55ead=2E=2E436770b 100644</span><br=
+><span>--- a/src/openvpn/ssl_common=2Eh</span><br><span>+++ b/src/openvpn/s=
+sl_common=2Eh</span><br><span>@@ -457,6 +457,9 @@</span><br><span>     size=
+_t ekm_size;</span><br><span> </span><br><span>     bool dco_enabled; /**&l=
+t; Whether keys have to be installed in DCO or not */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    /** The app custom control protocols we should announce =
+as supported */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+const char *acc_protocols;</span><br><span> };</span><br><span> </span><br>=
+<span> /** @addtogroup control_processor</span><br><span>@@ -730,6 +733,12 =
+@@</span><br><span>     int dco_peer_id;</span><br><span> </span><br><span>=
+     dco_context_t *dco;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /** the pr=
+otocols that are negotiated with the peer=2E */</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    char *acc_negotiated_protocols;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    /** the maximum length of an ACC control chann=
+el message */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    in=
+t acc_max_message_length;</span><br><span> };</span><br><span> </span><br><=
+span> /**  gets an item  of \c key_state objects in the</span><br><span>dif=
+f --git a/tests/unit_tests/openvpn/Makefile=2Eam b/tests/unit_tests/openvpn=
+/Makefile=2Eam</span><br><span>index 43a6743=2E=2E86326af 100644</span><br>=
+<span>--- a/tests/unit_tests/openvpn/Makefile=2Eam</span><br><span>+++ b/te=
+sts/unit_tests/openvpn/Makefile=2Eam</span><br><span>@@ -107,10 +107,12 @@<=
+/span><br><span> 	@TEST_CFLAGS@</span><br><span> ssl_testdriver_LDFLAGS =3D=
+ @TEST_LDFLAGS@  $(OPTIONAL_CRYPTO_LIBS)</span><br><span> ssl_testdriver_SO=
+URCES =3D test_ssl=2Ec \</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+	test_acc=2Ec test_acc=2Eh \</span><br><span> 	mock_msg=2Ec mock_msg=
+=2Eh test_common=2Eh \</span><br><span> 	mock_management=2Ec \</span><br><s=
+pan> 	mock_ssl_dependencies=2Ec mock_win32_execve=2Ec \</span><br><span> 	$=
+(top_srcdir)/src/compat/compat-strlcpy=2Ec \</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/acc=2Ec \</span><br><sp=
+an> 	$(top_srcdir)/src/openvpn/argv=2Ec \</span><br><span> 	$(top_srcdir)/s=
+rc/openvpn/base64=2Ec \</span><br><span> 	$(top_srcdir)/src/openvpn/buffer=
+=2Ec \</span><br><span>@@ -132,6 +134,7 @@</span><br><span> 	$(top_srcdir)/=
+src/openvpn/run_command=2Ec \</span><br><span> 	$(top_srcdir)/src/openvpn/s=
+sl_openssl=2Ec \</span><br><span> 	$(top_srcdir)/src/openvpn/ssl_mbedtls=2E=
+c \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/s=
+rc/openvpn/ssl_ncp=2Ec \</span><br><span> 	$(top_srcdir)/src/openvpn/ssl_ut=
+il=2Ec \</span><br><span> 	$(top_srcdir)/src/openvpn/ssl_verify_mbedtls=2Ec=
+ \</span><br><span> 	$(top_srcdir)/src/openvpn/ssl_verify_openssl=2Ec \</sp=
+an><br><span>@@ -392,9 +395,11 @@</span><br><span> </span><br><span> misc_t=
+estdriver_SOURCES =3D test_misc=2Ec \</span><br><span> 	test_schedule=2Ec t=
+est_schedule=2Eh \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	=
+mock_management=2Ec mock_management=2Eh \</span><br><span> 	mock_msg=2Ec te=
+st_common=2Eh  \</span><br><span> 	mock_get_random=2Ec \</span><br><span> 	=
+$(top_srcdir)/src/compat/compat-strlcpy=2Ec \</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/base64=2Ec \</span><br=
+><span> 	$(top_srcdir)/src/openvpn/buffer=2Ec \</span><br><span> 	$(top_src=
+dir)/src/openvpn/options_util=2Ec \</span><br><span> 	$(top_srcdir)/src/ope=
+nvpn/ssl_util=2Ec \</span><br><span>@@ -407,6 +412,7 @@</span><br><span> 	$=
+(top_srcdir)/src/openvpn/siphash_reference=2Ec \</span><br><span> 	$(top_sr=
+cdir)/src/openvpn/session_id=2Ec</span><br><span> </span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span> push_update_msg_testdriver=
+_CFLAGS =3D -I$(top_srcdir)/src/openvpn \</span><br><span> 	-I$(top_srcdir)=
+/src/compat \</span><br><span> 	-I$(top_srcdir)/tests/unit_tests/openvpn \<=
+/span><br><span>diff --git a/tests/unit_tests/openvpn/mock_management=2Ec b=
+/tests/unit_tests/openvpn/mock_management=2Ec</span><br><span>index fff4c2b=
+=2E=2Ef572dbb 100644</span><br><span>--- a/tests/unit_tests/openvpn/mock_ma=
+nagement=2Ec</span><br><span>+++ b/tests/unit_tests/openvpn/mock_management=
+=2Ec</span><br><span>@@ -29,6 +29,7 @@</span><br><span> </span><br><span> #=
+include &quot;syshead=2Eh&quot;</span><br><span> </span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+#include &lt;stdlib=2Eh&gt;</span><br><span> =
+#include &quot;manage=2Eh&quot;</span><br><span> </span><br><span> #ifdef E=
+NABLE_MANAGEMENT</span><br><span>diff --git a/tests/unit_tests/openvpn/mock=
+_management=2Eh b/tests/unit_tests/openvpn/mock_management=2Eh</span><br><s=
+pan>new file mode 100644</span><br><span>index 0000000=2E=2E80dcfc2</span><=
+br><span>--- /dev/null</span><br><span>+++ b/tests/unit_tests/openvpn/mock_=
+management=2Eh</span><br><span>@@ -0,0 +1,29 @@</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ *  OpenVPN -- An application to securely tunnel IP networks</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             over a s=
+ingle UDP port, with support for SSL/TLS-based</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ *             session authentication and key ex=
+change,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *          =
+   packet encryption, packet authentication, and</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+ *             packet compression=2E</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+ *  Copyright (C) 2002-2026 OpenVPN Inc &lt;sa=
+les@openvpn=2Enet&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This progra=
+m is free software; you can redistribute it and/or modify</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ *  it under the terms of the GNU Gen=
+eral Public License version 2</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ *  as published by the Free Software Foundation=2E</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ *  This program is distributed in the hope that i=
+t will be useful,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+  but WITHOUT ANY WARRANTY; without even the implied warranty of</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ *  MERCHANTABILITY or FITNESS=
+ FOR A PARTICULAR PURPOSE=2E  See the</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ *  GNU General Public License for more details=2E</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *  You should have received a copy of th=
+e GNU General Public License along</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ *  with this program; if not, see &lt;https://www=2Egnu=2Eo=
+rg/licenses/&gt;=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+#ifndef MOCK_MANAGEMENT_H</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+#define MOCK_MANAGEMENT_H</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+void init_mock_manageme=
+nt(void);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+void uninit_mock_management(v=
+oid);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span>diff --git=
+ a/tests/unit_tests/openvpn/mock_push_dependencies=2Ec b/tests/unit_tests/o=
+penvpn/mock_push_dependencies=2Ec</span><br><span>index bf2ccf3=2E=2Ef083f8=
+9 100644</span><br><span>--- a/tests/unit_tests/openvpn/mock_push_dependenc=
+ies=2Ec</span><br><span>+++ b/tests/unit_tests/openvpn/mock_push_dependenci=
+es=2Ec</span><br><span>@@ -43,7 +43,8 @@</span><br><span>     uint64_t flag=
+s =3D OPT_P_UP | OPT_P_ROUTE_EXTRAS | OPT_P_SOCKBUF | OPT_P_SOCKFLAGS</span=
+><br><span>                      | OPT_P_SETENV | OPT_P_SHAPER | OPT_P_TIME=
+R | OPT_P_COMP | OPT_P_PERSIST</span><br><span>                      | OPT_=
+P_MESSAGES | OPT_P_EXPLICIT_NOTIFY | OPT_P_ECHO | OPT_P_PULL_MODE</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-                     | OPT_P_PE=
+ER_ID | OPT_P_NCP | OPT_P_PUSH_MTU | OPT_P_ROUTE | OPT_P_DHCPDNS;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                     | OPT_P_=
+PEER_ID | OPT_P_NCP | OPT_P_PUSH_MTU | OPT_P_ROUTE | OPT_P_DHCPDNS</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+                     | OPT_P=
+_ACC;</span><br><span>     return flags;</span><br><span> }</span><br><span=
+> </span><br><span>diff --git a/tests/unit_tests/openvpn/test_acc=2Ec b/tes=
+ts/unit_tests/openvpn/test_acc=2Ec</span><br><span>new file mode 100644</sp=
+an><br><span>index 0000000=2E=2E762baa4</span><br><span>--- /dev/null</span=
+><br><span>+++ b/tests/unit_tests/openvpn/test_acc=2Ec</span><br><span>@@ -=
+0,0 +1,341 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  OpenVPN -- An appli=
+cation to securely tunnel IP networks</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ *             over a single TCP/UDP port, with support f=
+or SSL/TLS-based</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
+            session authentication and key exchange,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *             packet encryption, packet =
+authentication, and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ *             packet compression=2E</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ *  Copyright (C) 2025 OpenVPN Inc &lt;sales@openvpn=2Enet&gt;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ *  Copyright (C) 2025 Arne Schw=
+abe &lt;arne@rfc2549=2Eorg&gt;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This program is fre=
+e software; you can redistribute it and/or modify</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ *  it under the terms of the GNU General Pub=
+lic License version 2</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ *  as published by the Free Software Foundation=2E</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ *  This program is distributed in the hope that it will b=
+e useful,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  but WI=
+THOUT ANY WARRANTY; without even the implied warranty of</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ *  MERCHANTABILITY or FITNESS FOR A P=
+ARTICULAR PURPOSE=2E  See the</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ *  GNU General Public License for more details=2E</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+ *  You should have received a copy of the GNU Gene=
+ral Public License along</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+ *  with this program; if not, write to the Free Software Foundation, =
+Inc=2E,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  51 Frank=
+lin Street, Fifth Floor, Boston, MA 02110-1301 USA=2E</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
+ifdef HAVE_CONFIG_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+#include &quot;config=2Eh&quot;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;syshe=
+ad=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;stdio=2Eh&gt;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;stdlib=
+=2Eh&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &l=
+t;stdarg=2Eh&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#in=
+clude &lt;string=2Eh&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+#include &lt;setjmp=2Eh&gt;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+#include &lt;cmocka=2Eh&gt;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+#include &quot;acc=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+#include &quot;test_acc=2Eh&quot;</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+#include &quot;test_common=2Eh&quot;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+#include &quot;mock_msg=2Eh&quot;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+#include &quot;multi=2Eh&quot;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+char control_channel_mesage_sent[2048];</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+/* Mock functions */</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+send_control_channel_string_dowork(struct tls_session *sess=
+ion,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
+                    const char *str, unsigned int msglevel)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    assert_int_in_range(strlen(str), 0, 2048);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    memcpy(control_channel_mesage_sent, str, =
+strlen(str));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    re=
+turn true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+send_push_reply_auth_token(struct tls_multi *multi)</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+auth_set_client_reason(s=
+truct tls_multi *multi, const char *reason)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+#define MSG_PAYLOAD &quot;FgMBA=
+RkBAAEVAwNanUalkEDDxLBpZw9JnjI3tBM&quot;                \</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+                    &quot;r4engpg/cDg=
+S48DMaxyCdbzofNjQJU9Y0DD66z/notFT0cF1d60nTS&quot; \</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                    &quot;4md4OJwoQAwEwIT=
+AxMBwCzAMACfzKnMqMyqwCvALwCewCTAKABrwCP&quot; \</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+                    &quot;AJwBnwArAFAA5wAnAEwAz=
+AQAAnP8BAAEAAAsABAMAAQIACgAWABQAH&quot; \</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+                    &quot;QAXAB4AGQAYAQABAQECAQMBBAAW=
+AAAAFwAAAA0AMAAuBAMFAwYDCAc&quot; \</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+                    &quot;ICAgaCBsIHAgJCAoICwgECAUIBgQBBQEG=
+AQMDAwEDAgQCBQIGAgArA&quot; \</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                    &quot;AUEAwQDAwAtAAIBAQAzACYAJAAdACCk4Tz2PB/2=
+FsxOfOIV4gn/NyJ&quot; \</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                    &quot;93rQwityP9eKSijXgcQ=3D=3D&quot;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+test_acc_parse_client_messages(void **state)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+#ifndef ENABLE_MANAGEMENT</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    skip();</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+#else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    /* ensure that the messages get to mock_msg */</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    x_debug_level =3D 3;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    management =3D (void *)0x12345678;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena =
+gc =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* contains a TLS =
+1=2E3 ClientHello */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    const char msg[] =3D &quot;ACC,cck1,384,6,&quot; MSG_PAYLOAD;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    struct buffer msg_buf;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    struct context c =3D { 0 };</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    c=2Eoptions=2Emode =3D M=
+ODE_SERVER;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    ALLOC_OBJ_CLEAR_GC(c=2E=
+c2=2Etls_multi, struct tls_multi, &amp;gc);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    c=2Ec2=2Etls_multi-&gt;session[TM_ACTIVE]=2Eopt =3D &amp;c=2Ec2=2E=
+tls_multi-&gt;opt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   c=2Ec2=2Etls_multi-&gt;session[TM_ACTIVE]=2Eopt-&gt;mda_context =3D &amp=
+;c=2Ec2=2Emda_context;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    buf_set_read(&amp;msg_buf, (void *)msg, sizeof(msg));</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    receive_acc_message(&amp;c, &a=
+mp;msg_buf);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(mo=
+ck_msg_buf, &quot;Received custom app control message (protocol &#39;cck1&#=
+39;)&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ass=
+ert_string_equal(mock_managment_buf, &quot;&gt;CLIENT:ACC,0,0,cck1,0,&quot;=
+ MSG_PAYLOAD);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    const char flower_ms=
+g[] =3D &quot;ACC,flower,48,6,SSBhbSAAIEtlcm1pdCD//SB0aGUg77+94oCPZnJvZyEAA=
+A=3D=3D&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    b=
+uf_set_read(&amp;msg_buf, (void *)flower_msg, sizeof(flower_msg));</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    receive_acc_message(&amp=
+;c, &amp;msg_buf);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   assert_string_equal(mock_msg_buf, &quot;Received custom app control mess=
+age (protocol &#39;flower&#39;)&quot;);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    assert_string_equal(mock_managment_buf, &quot;&gt;C=
+LIENT:ACC,0,0,flower,0,SSBhbSAAIEtlcm1pdCD//SB0aGUg77+94oCPZnJvZyEAAA=3D=3D=
+&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(mock_managment_buf);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const char msg_=
+incorrect_len[] =3D &quot;ACC,fortune,62,6,InsgIm1lIjogImZyb2ciLCAAeGZm/SJt=
+c2ciOiAiSSBhbSAAS2VybWl0IiB9Ig=3D=3D&quot;;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    buf_set_read(&amp;msg_buf, (void *)msg_incorrec=
+t_len, sizeof(msg_incorrect_len));</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    receive_acc_message(&amp;c, &amp;msg_buf);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    const char *error =3D &quot;W=
+ARNING: Received malformed custom app control channel &quot;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+                        &quot;(fie=
+ld length 62, payload length 64 mismatch) message &quot;</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+                        &quot;control =
+message: 496e7367 496d316c 496a6f67 496d5a79 &quot;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                        &quot;62326369 4c=
+434141 65475a6d 2f534a7[more=2E=2E=2E]&quot;;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    assert_string_equal(mock_msg_buf, error);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(mock_managment_bu=
+f, &quot;&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(mock_managm=
+ent_buf);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const =
+char msg_fragment[] =3D &quot;ACC,power,12,6F,aGVsbG8gdw=3D=3D&quot;;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    buf_set_read(&amp;msg=
+_buf, (void *)msg_fragment, sizeof(msg_fragment));</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    receive_acc_message(&amp;c, &amp;msg_buf=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_string=
+_equal(mock_msg_buf, &quot;Received custom app control message (protocol &#=
+39;power&#39;, fragment)&quot;);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    assert_string_equal(mock_managment_buf, &quot;&gt;CLIENT:A=
+CC,0,0,power,1,aGVsbG8gdw=3D=3D&quot;);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    CLEAR(mock_managment_buf);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    /* check two encoding present */</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    const char flower_msg_two_encs[] =3D &quot=
+;ACC,flower,48,6A,SSBhbSAAIEtlcm1pdCD//SB0aGUg77+94oCPZnJvZyEAAA=3D=3D&quot=
+;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    buf_set_read(=
+&amp;msg_buf, (void *)flower_msg_two_encs, sizeof(flower_msg_two_encs));</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    receive_acc_messag=
+e(&amp;c, &amp;msg_buf);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    error =3D =
+&quot;WARNING: Received malformed custom app control channel (number of &qu=
+ot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quo=
+t;encodings must be exactly one (B64=3D1, ASCII=3D1)) message control &quot=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;=
+message: 53534268 62534141 4945746c 636d3170 6443442f 2f534230 &quot;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;6147556=
+7 37372b3[more=2E=2E=2E]&quot;;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    assert_string_equal(mock_msg_buf, error);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(mock_managmen=
+t_buf, &quot;&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* no encodin=
+g present */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    con=
+st char flower_msg_no_encs[] =3D &quot;ACC,flower,48,,SSBhbSAAIEtlcm1pdCD//=
+SB0aGUg77+94oCPZnJvZyEAAA=3D=3D&quot;;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    buf_set_read(&amp;msg_buf, (void *)flower_msg_no_enc=
+s, sizeof(flower_msg_no_encs));</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    receive_acc_message(&amp;c, &amp;msg_buf);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    error =3D &quot;WARNING: Received malformed custom =
+app control channel (number of &quot;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+            &quot;encodings must be exactly one (B64=3D0,=
+ ASCII=3D0)) message control &quot;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+            &quot;message: 53534268 62534141 4945746c 636d3=
+170 6443442f 2f534230 &quot;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+            &quot;61475567 37372b3[more=2E=2E=2E]&quot;;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(mock_=
+msg_buf, error);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ assert_string_equal(mock_managment_buf, &quot;&quot;);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    x_debug_level =3D 0;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    management =3D NULL;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+test_parse_acc_parameters(void **sta=
+te)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena gc =3D gc_new(=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* parameters=
+ to INFO message */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    const char *info_acc_msg =3D &quot;4096 A:6 flower:happy&quot;;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    int max_len =3D 0;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    const char *protocols =3D parse_acc_p=
+arameters(info_acc_msg, &quot; &quot;, &amp;max_len, true, &amp;gc);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(pr=
+otocols, &quot;flower:happy&quot;);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    assert_int_equal(max_len, 1280);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    /* a client does not accept a length longer than it supp=
+orts */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    protocol=
+s =3D parse_acc_parameters(info_acc_msg, &quot; &quot;, &amp;max_len, false=
+, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    asse=
+rt_null(protocols);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* message with=
+ lower limit than our, should work for client and server */</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    info_acc_msg =3D &quot;1111 A:6=
+ flower:happy&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    protocols =3D parse_acc_parameters(info_acc_msg, &quot; &quot;, &amp;m=
+ax_len, false, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    assert_string_equal(protocols, &quot;flower:happy&quot;);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(max_len=
+, 1111);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    protocols =3D parse_acc_pa=
+rameters(info_acc_msg, &quot; &quot;, &amp;max_len, true, &amp;gc);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(pro=
+tocols, &quot;flower:happy&quot;);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    assert_int_equal(max_len, 1111);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    /* more encodings than supported=2E Server should be oka=
+y, client should fail */</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    info_acc_msg =3D &quot;1200 A:6:B flower:happy&quot;;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    protocols =3D parse_acc_para=
+meters(info_acc_msg, &quot; &quot;, &amp;max_len, false, &amp;gc);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    assert_null(protocols);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    protocols =3D parse_acc_parameters(=
+info_acc_msg, &quot; &quot;, &amp;max_len, true, &amp;gc);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(protocols, &=
+quot;flower:happy&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    assert_int_equal(max_len, 1200);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    /* extra parameter */</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    info_acc_msg =3D &quot;1400 A:6 flower:happy 77&quot;;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    protocols =3D parse_ac=
+c_parameters(info_acc_msg, &quot; &quot;, &amp;max_len, true, &amp;gc);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_null(protoco=
+ls);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    protocols =3D parse_acc_parame=
+ters(info_acc_msg, &quot; &quot;, &amp;max_len, false, &amp;gc);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    assert_null(protocols);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    const char *iv_acc_capabilities =3D &quot;1400,A:6,flowe=
+r:happy:power&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    protocols =3D parse_acc_parameters(iv_acc_capabilities, &quot;,&quot;,=
+ &amp;max_len, true, &amp;gc);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    assert_string_equal(protocols, &quot;flower:happy:power&quot=
+;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    /* too small protocol length */=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    info_acc_msg =
+=3D &quot;32 A:6 flower:happy&quot;;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    protocols =3D parse_acc_parameters(info_acc_msg, &quot=
+;,&quot;, &amp;max_len, true, &amp;gc);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    assert_null(protocols);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    /* non-numerical protocol length */</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    info_acc_msg =3D &quot;abff A:6 flower:hap=
+py 77&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    pro=
+tocols =3D parse_acc_parameters(info_acc_msg, &quot;,&quot;, &amp;max_len, =
+true, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+assert_null(protocols);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* non-nume=
+rical protocol length */</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    info_acc_msg =3D &quot;abff A:6 flower:happy 77&quot;;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    protocols =3D parse_acc_par=
+ameters(info_acc_msg, &quot;,&quot;, &amp;max_len, true, &amp;gc);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    assert_null(protocols);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_acc_commo=
+n_protocols(void **state)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct m=
+ulti_instance mi =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    struct context *c =3D &amp;mi=2Econtext;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    c-&gt;options=2Egc =3D gc_new();</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    ALLOC_OBJ_CLEAR_GC(c-&gt;c2=2Etls_mul=
+ti, struct tls_multi, &amp;c-&gt;options=2Egc);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    c-&gt;c2=2Etls_multi-&gt;peer_info =3D &quot;IV_PROTO=3D4321\n=
+IV_ACC=3D1400,A:6,flower:happy:power&quot;;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    c-&gt;options=2Eacc_protocols =3D &quot;power:f=
+lower:star&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  struct tls_multi *multi =3D c-&gt;c2=2Etls_multi;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    multi-&gt;opt=2Eacc_protocols =3D c-&=
+gt;options=2Eacc_protocols;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    multi-&gt;session[TM_ACTIVE]=2Eopt =3D &amp;multi-&gt;opt;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    multi-&gt;opt=2Ees =
+=3D env_set_create(&amp;c-&gt;options=2Egc);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    determine_common_acc_protocols(multi, &amp;c-&gt;c2=2Etls_multi-&=
+gt;session[TM_ACTIVE]);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_=
+equal(multi-&gt;acc_max_message_length, ACC_MAX_MSG_LEN);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(multi-&gt;acc=
+_negotiated_protocols, &quot;power:flower&quot;);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    assert_string_equal(env_set_get(multi-&gt;opt=2Ees, &quot;ac=
+c_protocols&quot;), &quot;acc_protocols=3Dpower:flower&quot;);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(env_set_=
+get(multi-&gt;opt=2Ees, &quot;acc_message_len&quot;), &quot;acc_message_len=
+=3D1280&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    free(multi-&gt;acc_=
+negotiated_protocols);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    gc_free(&amp;c-&gt;options=2Egc);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+test_acc_send_message(void **st=
+ate)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    struct multi_instance mi =3D =
+{ 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct co=
+ntext *c =3D &amp;mi=2Econtext;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    c-&gt;options=2Egc =3D gc_new();</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    ALLOC_OBJ_CLEAR_GC(c-&gt;c2=2Etls_multi, struct tls_multi, &a=
+mp;c-&gt;options=2Egc);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    bool ret;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  struct tls_multi *multi =3D c-&gt;c2=2Etls_multi;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    c-&gt;options=2Eacc_protocols =3D &qu=
+ot;power:flower:emergency&quot;;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    multi-&gt;opt=2Eacc_protocols =3D c-&gt;options=2Eacc_prot=
+ocols;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    multi-&gt=
+;session[TM_ACTIVE]=2Eopt =3D &amp;multi-&gt;opt;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    multi-&gt;opt=2Ees =3D env_set_create(&am=
+p;c-&gt;options=2Egc);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    c-&gt;c2=2Et=
+ls_multi-&gt;peer_info =3D &quot;IV_PROTO=3D4321\nIV_ACC=3D1400,A:6,flower:=
+emergency:power&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    determine_common_acc_protocols(multi, &amp;c-&gt;c2=2Etls_multi-&gt;=
+session[TM_ACTIVE]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct tls_ses=
+sion *session =3D &amp;c-&gt;c2=2Etls_multi-&gt;session[TM_ACTIVE];</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    ret =3D send_acc_message(c, c-&gt;c2=2Etls=
+_multi, session, &quot;emergency&quot;, true,</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+                           &quot;EMERGENCY BROADC=
+AST MESSAGE - THIS IS NOT A DRILL:&quot;, false);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    assert_true(ret);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    assert_string_equal(control_channel_mesage_sent,</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                        &quot=
+;ACC,emergency,50,AF,EMERGENCY BROADCAST MESSAGE - THIS IS NOT A DRILL:&quo=
+t;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    ret =3D send_acc_message(c, c-=
+&gt;c2=2Etls_multi, session, &quot;emergency&quot;, false,</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+                           &quot;THE=
+ GOVERNMENT HAS ISSUED A RAINBOW COLOURED ALERT FOR YOUR AREA=2E&quot;, fal=
+se);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true=
+(ret);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_st=
+ring_equal(control_channel_mesage_sent,</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+                        &quot;ACC,emergency,65,A,THE GO=
+VERNMENT HAS ISSUED A RAINBOW COLOURED ALERT FOR YOUR AREA=2E&quot;);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    /* test a long message (&gt; 1000) with fragment to get the=
+ maximum header size */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    char long_message[1200] =3D { 0 };</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    for (int i =3D 0; i &lt; 1024; i++)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        long_message[i] =3D (char)(&#39; &#39; + (i % 95));</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    /* last char of the message is a i and then a \0 */</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(l=
+ong_message[1023], &#39;i&#39;);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    assert_int_equal(long_message[1024], &#39;\0&#39;);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    ret =3D send_acc_message(c, c-&gt;c2=2Etl=
+s_multi, session, &quot;emergency&quot;, true,</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+                           long_message, false);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    assert_true(ret);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    size_t cc_len =3D strlen(control=
+_channel_mesage_sent);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    assert_int_equal(control_channel_mesage_sent[cc_len - 1], &#39;i&#39=
+;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const char *=
+expected_start_cc =3D &quot;ACC,emergency,1024,AF, !\&quot;#$%&amp;&#39;()*=
++,-=2E/012345&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    assert_memory_equal(control_channel_mesage_sent, expected_start_cc, si=
+zeof(expected_start_cc));</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    free(mult=
+i-&gt;acc_negotiated_protocols);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    gc_free(&amp;c-&gt;options=2Egc);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_list_intersectio=
+n(void **state)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    const char *empty =
+=3D &quot;&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  const char *protos =3D &quot;power:flower:emergency&quot;;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    struct gc_arena gc =3D gc_new();</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    struct buffer t1 =3D get_list_intersection(&amp;gc,=
+ empty, protos);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ assert_int_equal(buf_len(&amp;t1), 0);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    struct buffer t2 =3D get_list_intersection(&amp;gc, protos, empty);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(b=
+uf_len(&amp;t2), 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct buffer =
+t3 =3D get_list_intersection(&amp;gc, protos, protos);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(buf_cstr(&amp;t3=
+), protos);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    const char *protos2 =3D=
+ &quot;flower:emergency:power:mario&quot;;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    struct buffer t4 =3D get_list_intersection(&amp;=
+gc, protos2, protos);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    assert_string_equal(buf_cstr(&amp;t4), &quot;flower:emergency:power&q=
+uot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    const char *protos3 =3D &quo=
+t;super:paper:mario:flower&quot;;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    struct buffer t5 =3D get_list_intersection(&amp;gc, proto=
+s2, protos3);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    as=
+sert_string_equal(buf_cstr(&amp;t5), &quot;flower:mario&quot;);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+}</span><br><span>diff --git a/tests/unit_tests/=
+openvpn/test_acc=2Eh b/tests/unit_tests/openvpn/test_acc=2Eh</span><br><spa=
+n>new file mode 100644</span><br><span>index 0000000=2E=2E32421fb</span><br=
+><span>--- /dev/null</span><br><span>+++ b/tests/unit_tests/openvpn/test_ac=
+c=2Eh</span><br><span>@@ -0,0 +1,35 @@</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ *  OpenVPN -- An application to securely tunnel IP networks</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ *             over a single UDP=
+ port, with support for SSL/TLS-based</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ *             session authentication and key exchange,</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             packet=
+ encryption, packet authentication, and</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+ *             packet compression=2E</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+ *  Copyright (C) 2002-2026 OpenVPN Inc &lt;sales@openv=
+pn=2Enet&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This program is free=
+ software; you can redistribute it and/or modify</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+ *  it under the terms of the GNU General Publ=
+ic License version 2</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ *  as published by the Free Software Foundation=2E</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ *  This program is distributed in the hope that it will b=
+e useful,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  but WI=
+THOUT ANY WARRANTY; without even the implied warranty of</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ *  MERCHANTABILITY or FITNESS FOR A P=
+ARTICULAR PURPOSE=2E  See the</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ *  GNU General Public License for more details=2E</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+ *  You should have received a copy of the GNU Gene=
+ral Public License along</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+ *  with this program; if not, see &lt;https://www=2Egnu=2Eorg/license=
+s/&gt;=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+#ifndef TEST_ACC_H</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+#define TEST_ACC_H</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+void test_acc_parse_client_messages(void **state);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+void test_parse_acc_parameters(void **state);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+void test_acc_common_protocols(void **state);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+void test_acc_send_message(void **state)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+void test_list_intersection(void **st=
+ate);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><=
+br><span>diff --git a/tests/unit_tests/openvpn/test_common=2Eh b/tests/unit=
+_tests/openvpn/test_common=2Eh</span><br><span>index 8db4ea6=2E=2Ec865142 1=
+00644</span><br><span>--- a/tests/unit_tests/openvpn/test_common=2Eh</span>=
+<br><span>+++ b/tests/unit_tests/openvpn/test_common=2Eh</span><br><span>@@=
+ -43,11 +43,13 @@</span><br><span> #define LargestIntegralType uintmax_t</s=
+pan><br><span> #endif</span><br><span> /* redefine 2=2Ex API in terms of 1=
+=2Ex API */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define CM=
+ockaValueData             LargestIntegralType</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-#define check_expected_uint         check_expected<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define expect_uint_va=
+lue           expect_value</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-#define expect_check_data           expect_check</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#define cast_ptr_to_cmocka_value(x) (x)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+#define CMockaValueData=
+                       LargestIntegralType</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+#define check_expected_uint                   check_=
+expected</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define exp=
+ect_uint_value                     expect_value</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#define expect_check_data                     e=
+xpect_check</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define =
+cast_ptr_to_cmocka_value(x)           (x)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+#define assert_int_in_range(value, min, max)  assert_=
+in_range((value), (min), (max))</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+#define assert_uint_in_range(value, min, max) assert_in_range((=
+value), (min), (max))</span><br><span> #endif</span><br><span> </span><br><=
+span> /**</span><br><span>diff --git a/tests/unit_tests/openvpn/test_misc=
+=2Ec b/tests/unit_tests/openvpn/test_misc=2Ec</span><br><span>index aea40f0=
+=2E=2Ed30c0bc 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_mi=
+sc=2Ec</span><br><span>+++ b/tests/unit_tests/openvpn/test_misc=2Ec</span><=
+br><span>@@ -41,10 +41,28 @@</span><br><span> #include &quot;mock_msg=2Eh&q=
+uot;</span><br><span> #include &quot;crypto=2Eh&quot;</span><br><span> #inc=
+lude &quot;sid_hash=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+#include &quot;test_schedule=2Eh&quot;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+#include &quot;multi=2Eh&quot;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #ifdef _WIN32</sp=
+an><br><span> #include &quot;win32-util=2Eh&quot;</span><br><span> #endif</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;test_sch=
+edule=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+/* extra mocks */</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+apply_push_options(struct context *c, st=
+ruct options *options, struct buffer *buf,</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                   uint64_t permission_mask, uint64_=
+t *option_types_found,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+                   struct env_set *es, bool is_update)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    return true;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+send_control_channel_string(struct =
+context *c, const char *str, msglvl_t msglevel)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    check_expected_ptr(str);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    return true;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+}</span><br><span> </span><br><span> static void</span><br>=
+<span> test_compat_lzo_string(void **state)</span><br><span>diff --git a/te=
+sts/unit_tests/openvpn/test_ssl=2Ec b/tests/unit_tests/openvpn/test_ssl=2Ec=
+</span><br><span>index 4baf8cc=2E=2E4987dd0 100644</span><br><span>--- a/te=
+sts/unit_tests/openvpn/test_ssl=2Ec</span><br><span>+++ b/tests/unit_tests/=
+openvpn/test_ssl=2Ec</span><br><span>@@ -52,6 +52,8 @@</span><br><span> #in=
+clude &quot;ssl_verify=2Eh&quot;</span><br><span> #include &quot;openvpn=2E=
+h&quot;</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+#include &quot;test_acc=2Eh&quot;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span> /* Mock function to be allowed to inc=
+lude win32=2Ec which is required for</span><br><span>  * getting the temp d=
+irectory */</span><br><span> #ifdef _WIN32</span><br><span>@@ -86,6 +88,20 =
+@@</span><br><span> {</span><br><span>     return;</span><br><span> }</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+reschedule_multi_process(struct context =
+*c)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+/* Define a dummy dco cipher option to avoid linking against all the DC=
+O</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * units */</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(ENABLE_DCO)</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+const char *</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+dco_get_supported_ciphers(voi=
+d)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    return &quot;AES-192-GCM:AES-12=
+8-CBC:AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305&quot;;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+#endif</span><br><span> </span><br><span> /* generated usi=
+ng</span><br><span>  * openssl req -x509 -newkey ec -pkeyopt ec_paramgen_cu=
+rve:secp384r1 -keyout - \</span><br><span>@@ -1111,8 +1127,12 @@</span><br>=
+<span>         cmocka_unit_test(ssl_test_extract_last_matching_field),</spa=
+n><br><span>         cmocka_unit_test(ssl_test_reject_null_in_cert_subject)=
+,</span><br><span>         cmocka_unit_test(ssl_test_escape_rfc_2253_chars_=
+in_subject),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        c=
+mocka_unit_test(ssl_test_extract_peer_info)</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        cmocka_unit_test(ssl_test_extract_peer_info),</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(test_acc_pars=
+e_client_messages),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        cmocka_unit_test(test_parse_acc_parameters),</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(test_acc_common_=
+protocols),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+cmocka_unit_test(test_acc_send_message),</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+        cmocka_unit_test(test_list_intersection)</span=
+><br><span>     };</span><br><span> </span><br><span> #if defined(ENABLE_CR=
+YPTO_OPENSSL)</span><br></pre><p>To view, visit <a href=3D"https://gerrit=
+=2Eopenvpn=2Enet/c/openvpn/+/1858?usp=3Demail">change 1858</a>=2E To unsubs=
+cribe, or for help writing mail filters, visit <a href=3D"https://gerrit=2E=
+openvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemt=
+ype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action"=
+ itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D=
+"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1858?usp=3Demail"/><meta itempr=
+op=3D"name" content=3D"View Change"/></div></div>
 
-<=
-div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div style=
-=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:non=
-e"> Gerrit-Branch: master </div>
+<div style=3D"display:no=
+ne"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Ge=
+rrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: ma=
+ster </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I4a6a6ef41e15896=
+b8b79d795b2a6de86b8ae4c84 </div>
 <div style=3D"display:none"> Gerrit-Change=
--Id: I4a6a6ef41e15896b8b79d795b2a6de86b8ae4c84 </div>
-<div style=3D"display=
-:none"> Gerrit-Change-Number: 1858 </div>
-<div style=3D"display:none"> Gerr=
-it-PatchSet: 16 </div>
-<div style=3D"display:none"> Gerrit-Owner: Arne Schw=
-abe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> =
-Gerrit-Reviewer: Frank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
-<=
-div style=3D"display:none"> Gerrit-Reviewer: R=C4=83zvan Cojocaru &lt;razva=
-nc@mailbox=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: chugly =
-&lt;charlie=2Evigue@openvpn=2Ecom&gt; </div>
-<div style=3D"display:none"> G=
-errit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </d=
-iv>
-<div style=3D"display:none"> Gerrit-Attention: R=C4=83zvan Cojocaru &lt=
-;razvanc@mailbox=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Atten=
-tion: Frank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
-<div style=
-=3D"display:none"> Gerrit-Comment-Date: Wed, 28 Oct 2026 13:28:37 +0000 </d=
-iv>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=
-=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"=
-> Comment-In-Reply-To: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt; <=
-/div>
+-Number: 1858 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 17 </div=
+>
+<div style=3D"display:none"> Gerrit-Owner: Arne Schwabe &lt;arne-openvpn@=
+rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: Fran=
+k Lichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<div style=3D"display:=
+none"> Gerrit-Reviewer: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt; =
+</div>
+<div style=3D"display:none"> Gerrit-CC: chugly &lt;charlie=2Evigue@o=
+penvpn=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-dev=
+el &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"dis=
+play:none"> Gerrit-Attention: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eor=
+g&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: Frank Lichtenhe=
+ld &lt;frank@lichtenheld=2Ecom&gt; </div>
 
 </body></html>
---A0dcIMyXPzU=--
+--Fx8YGq/fG3Q=--
 
 
---===============5078925698199730133==
+--===============3555380544497878165==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============5078925698199730133==
+--===============3555380544497878165==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -556,5 +5926,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============5078925698199730133==--
+--===============3555380544497878165==--
 
