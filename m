@@ -1,93 +1,140 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0E95606A31A
-	for <openvpn-devel@archiver.kernel.org>; Thu, 29 Oct 2026 14:43:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44AE9606A31E
+	for <openvpn-devel@archiver.kernel.org>; Thu, 29 Oct 2026 15:01:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=d5F5tYlH;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=MDokajBY;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=e3mPXskr;
-	dkim=neutral header.d=unstable.cc header.i=@unstable.cc header.a=rsa-sha256 header.s=MBO0001 header.b=qo1XQKaR
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=nRZC4rwT;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=MjGAoLpo;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=KNrgVcxa;
+	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=Bc7cDMhE
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:Cc:
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
-	:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:List-Owner;
-	bh=oRswk3Q65+dMbDANbd9Km2mLzfEirWOIsEf7uKrQ18E=; b=d5F5tYlHRa2PEgPE0nTemJJPeu
-	nw1U0h/HvNLGY5Xwq05k6laK1j86mqxglkPlyKC9TIW6C9jQNj2wJ2ZHN7SrPEhOokfN6L8RhJVpm
-	tFxZy9ZRTK3gc8k/YtJc3GnPSFYSdY6Jf6l+YgCK+q6cb6xfj14QqD5ONQ5mQQjGAFis=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Unsubscribe-Post:List-Owner;
+	bh=BypjvXsUKlww+nPFwxcxu95oM9lf16AGFF7OSEo5uBU=; b=nRZC4rwTRz7P/B44jgp7zC4VsW
+	mb26CqWd5sNsEhDmO/NXfY4q4p3/ViXvMx6hgRs8wDekOh7RvEY7fcRyyeO5xddz4ZLURBHrt8Wq2
+	ZTLx8Emz/y84K/ZF2NivShtYQntvtUBD4lKiKaeOIAgjZOriRVmPzZWkwqrJgCwB/MRk=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xMRLL-00000000841-0K8a;
-	Thu, 29 Oct 2026 14:43:03 +0000
+	id 1xMRcv-000000005Py-2UAl;
+	Thu, 29 Oct 2026 15:01:13 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <a@unstable.cc>) id 1xMRLJ-0000000083k-2wiu
+ (envelope-from <gerrit@openvpn.net>) id 1xMRce-000000005PJ-01gD
  for openvpn-devel@lists.sourceforge.net;
- Thu, 29 Oct 2026 14:43:02 +0000
+ Thu, 29 Oct 2026 15:00:56 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
+ :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
+ Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
+ :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=wpR25D6imO2DJ7yDitSZEKCJ1Iw8qp6WHinhugLGXBk=; b=MDokajBYcSjBRUYNG5zhwHnNTY
- 7zt94jZm0azAAGoZ17r0RLlu606dggqZA402R+NE3XTYy+KRiicVP5NMt0bi6L4CBvsOKytGRcjdV
- 2+/V920pAEM7E3KlkWfys0GPqclcKECrJ0UZBDIuEFwADV5tg9g5ec4r/iE5hr9DItsg=;
+ bh=7MQAIyUE/tGsaHgjVyff+UsE6mYW2S6KA8jvYwdljlA=; b=MjGAoLpo6PlW/tRO1I/vobCrWZ
+ tuN1mc13WBdlRNwusjGKiA8ddF3ccI3fm/KftetxpK7s+H78IAmDzAzynO/dnqpRx2SzDXjNjWnJO
+ K6R0NUjgYAyMKwxa/UxaCPUC+hBA7FSQB7dHYwur8bDX/7rf5k9yW2jGIi9qh7ChWXqQ=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
+ h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
+ Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=wpR25D6imO2DJ7yDitSZEKCJ1Iw8qp6WHinhugLGXBk=; b=e3mPXskronzHxT4dWufCT12ZGl
- 3X12lhQKFBYAwTLpiEmOcpr65KO9REzJf0VL+IghLSRgaSiyu9ziU/2Qk+DCZxq/nYxmTMypMld9n
- GEoj6rmCmaM87hEcCMb5byGELjQYCxhERHy4XwXF4QjL4RbZ7Oi12sh/ZX9IvVc5f7sE=;
-Received: from mout-p-103.mailbox.org ([80.241.56.161])
+ bh=7MQAIyUE/tGsaHgjVyff+UsE6mYW2S6KA8jvYwdljlA=; b=KNrgVcxai2JWo1n8Qmgrd93Z39
+ DY/1oWDng0W2+UnjcCY40HBECBi+WaWjZsk71aCZij3uJf4LWTHG/IA0RXos5fKB2cdKfbFY43404
+ X74i0kpTs6BgCr634+y49wyixNfZVKk4pHlOd3qUwcX6eTB+cy/8e2rvoLjw5bTDYa9k=;
+Received: from mail-wm1-f49.google.com ([209.85.128.49])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
- id 1xMRLH-000000004mG-35aD for openvpn-devel@lists.sourceforge.net;
- Thu, 29 Oct 2026 14:43:01 +0000
-Received: from smtp1.mailbox.org (smtp1.mailbox.org
- [IPv6:2001:67c:2050:b231:465::1])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
- key-exchange X25519MLKEM768 server-signature RSA-PSS (4096 bits) server-digest
- SHA256) (No client certificate requested)
- by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4jFn5Q4zxczKnX3;
- Thu, 29 Oct 2026 15:42:50 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=unstable.cc; s=MBO0001;
- t=1793284970;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=wpR25D6imO2DJ7yDitSZEKCJ1Iw8qp6WHinhugLGXBk=;
- b=qo1XQKaRUE8DSnLuENHq6SawI42OzkxO4e/FcodiFxFgjNftfOknj+lY5cJ7EkBEQSLw2F
- W+ywOeHWMaV8SC2c3zNphhxPvvf8qScIr3xO9NzcT65+1hiyRjjlCwSovcw2/CM0QuQiXG
- 6X9h6jROUFsteRJ0v4LMrtsakWfjgTYc2NLq/s95bPangVBWczj5xylBL0IjQcPYICJL/o
- ENuLeOJZnvaUEl+T+ir1JcPbDj9D8q1u6ahQlevPtbsFZieABQ80RQdwQOGJV3f/XGyD+k
- OscbwlEAhKXIqeSz3CCGoJQLUMae8I8nxfJxJlSd1yHFvkAoslvr0gLEMRjrwA==
-Authentication-Results: outgoing_mbo_mout; dkim=none;
- spf=pass (outgoing_mbo_mout: domain of a@unstable.cc designates
- 2001:67c:2050:b231:465::1 as permitted sender) smtp.mailfrom=a@unstable.cc
-From: Antonio Quartulli <a@unstable.cc>
-To: openvpn-devel@lists.sourceforge.net
-Date: Thu, 29 Oct 2026 15:42:41 +0100
-Message-ID: <20261029144241.1671514-1-a@unstable.cc>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <20261028220430.968756-1-a@unstable.cc>
-References: <20261028220430.968756-1-a@unstable.cc>
+ (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
+ id 1xMRcY-000000005Af-3P7E for openvpn-devel@lists.sourceforge.net;
+ Thu, 29 Oct 2026 15:00:52 +0000
+Received: by mail-wm1-f49.google.com with SMTP id
+ 5b1f17b1804b1-4a5b2be99a8so19022005e9.2
+ for <openvpn-devel@lists.sourceforge.net>;
+ Thu, 29 Oct 2026 08:00:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=openvpn.net; s=google; t=1793286044; x=1793890844; darn=lists.sourceforge.net;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
+ :reply-to:content-type;
+ bh=7MQAIyUE/tGsaHgjVyff+UsE6mYW2S6KA8jvYwdljlA=;
+ b=Bc7cDMhEgpS2tCrrrDOW8DxKNdADUUWbqcULgNhPe68V00sRMRBR82yg3EhaDiv0wo
+ x6DDvwnwU6TNhSAZuZixvm2689AZoxppOW/puket56aiqe4q8PvIVPMo/I/uTgxJHsra
+ RXi5qhnc+Dpn3Txtx6WMK0HUtQcXKRDu6OfMqb6gayRMSRi0FAv8r+WvDzivPzt8hjJA
+ geyqzE/D86wm5dRSW7J1MHNlgbG1xFs063z09a4Jk9cpWRuYfxyW1Mc1FUcMVQOBrWQX
+ w5BXD/kUubQKdQBmU7eRnbcddT31RkFa/MtjS2J4bNSmEOZzbCOuPBmGCTaVU8o5yYMI
+ kkMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20260707; t=1793286044; x=1793890844;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
+ :cc:subject:date:message-id:reply-to:content-type;
+ bh=7MQAIyUE/tGsaHgjVyff+UsE6mYW2S6KA8jvYwdljlA=;
+ b=rAlBZwvi0sgp2XGDkuDEO4PFnF7foGqgiDsFopgu6XGPfk/bQgCrtks9vAXRJQ68L0
+ nGmYNfDs395nNOgRt1dQz1S4I9mCwGmXe2+sh3dP3XzxwElDGUqhZxNg3ZQYkgzFqi0p
+ Pk2wqwF7W0yc/iw0IzH+wogqNytAOEVh4MvJufmmFRg93S4tN42ugJUjDicQRgMWqHJ8
+ m7VtAg2rR6FC9N0EK97P3MwtE/MpFJt6O8rK8gu8W62L07Rz2msjJRjKXIrejMX4eR5y
+ PytSKSrx1MZThSoTxsJuxG1MBdXHoll8V+uLk6x1fl6bueOptdepTqTXlX8oGa/gmGtE
+ THYA==
+X-Forwarded-Encrypted: i=1;
+ AKwUvBzzZV94NBe/816JlVwnjFpK22ezWHQEjYnTvGfnzshLoxZwFVM4MetbcM28SmjAeJzhmy5GSQaa5u1kPPa7@lists.sourceforge.net
+X-Gm-Message-State: AFq9FYLb37YDSxn0Spwv4MBwU809I6DCRE0ofvRDzqvsuTo7KA636WBr
+ NfMfZzD14vNqCExACeLJhUbiIczlFCK8+4NNmIlVX3veELx901JQvVQbHa+7Vi1+4NTp/UiPNIf
+ zXq4oDhMF7EASCDpjjBknqYZkvEI82ixqDeLbr21/DTI7PPRa+jTmW5xFsylMGk/JlqQxKNWPwV
+ yhHidkZA==
+X-Gm-Gg: AYBFou1qkp1h/UrCS/k/vxftNWhpRPpXRzSfeuVftPuaYCchFjKG9XtzndLvbQSuA9G
+ VP0HPIBRu2ZeHAhNkdSy5KLBkuJoQq+dW4Szh8bMNwU5cag7qvBQzbXbo9KQBeOor16UL1N6Lda
+ 1++ULlD3R1IfAVV12/xzXQcDgCq8i/hDfr3B7DYKgEz6pe6SNXnFgCBWZZh0WIJdCcZcW4vnPyD
+ xAA1OGDA58WaxmBDjRL/pxENdBNaoQ2rU0gHFF4qwulWRdzf8hikPH9c2JTrqTLxZgXUnFBp/BG
+ wC8Ru1lQIyXYJJo+t8ECvACY2xSM739+H4Orxg51a6ucVTmBexiCvKjkSzX60j1WA5EEc6w7CRz
+ FiHim9Y/AEq4AngpJKTSorSvV6mmil6PPUicyqUVATOTxbgOCoAGMOqeatBhm+L8FxaPkQWoRTy
+ wIs96bhOVlkDTJS0hq1TFPwGl2SfiLQ4w49tblk1w8XYSiHKvES9AbeBkgYwo/wo02//xgtx/uv
+ VaY0AOa8GBTMyqMo8m5MC3V6q4iL7y+qzb3ARqWGz37GVF84F+Azb0ydyf/cT80kFrwnuHrccM9
+ kBEJ8k8jLtY90ZAsuMWUYqhm7GwHLFOEvmELZoS6if9X6EyYFTB17yTDlxwsZCq1naXh6VOwxYK
+ PjRiplVyd0uVXo23XKCnacD5MCJGt31JeI0HhnyMi3MhZ0r2MAlqQo/vAHjg8LZTF5kSDNA1ef5
+ NcgIANEib7cdJBn2c=
+X-Received: by 2002:a05:600c:348f:b0:4a7:a5db:a93e with SMTP id
+ 5b1f17b1804b1-4a9643d380dmr135388985e9.4.1793286044069; 
+ Thu, 29 Oct 2026 08:00:44 -0700 (PDT)
+Received: from ip-10-18-1-162.eu-central-1.compute.internal
+ (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
+ by smtp.gmail.com with ESMTPSA id
+ 5b1f17b1804b1-4aa80f04785sm71877135e9.4.2026.10.29.08.00.43
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 29 Oct 2026 08:00:43 -0700 (PDT)
+X-Google-Original-From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?=
+ <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
+Date: Thu, 29 Oct 2026 15:00:41 +0000
+To: Selva Nair <selva.nair@gmail.com>
+Auto-Submitted: auto-generated
+X-Gerrit-MessageType: comment
+X-Gerrit-PatchSet: 2
+X-Gerrit-Change-Id: Iac23d5141a8c29e239d0f2aeea497d3a002e609b
+X-Gerrit-Change-Number: 2069
+X-Gerrit-Project: openvpn
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2069?usp=email>
+X-Gerrit-Commit: 08b058611ff00638cee31f0eb2da092826e34c5f
+X-Gerrit-Comment-Date: Thu, 29 Oct 2026 15:00:41 +0000
+In-Reply-To: <gerrit.1793212962000.Iac23d5141a8c29e239d0f2aeea497d3a002e609b@gerrit.openvpn.net>
+References: <gerrit.1793212962000.Iac23d5141a8c29e239d0f2aeea497d3a002e609b@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzkzMjEyOTYyMDAwLklhYzIzZDUxNDFhOGMyOWUyMzlkMGYyYWVlYTQ5N2QzYTAwMmU2MDliQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <ad4f6c72861d327a4bdee4a0846f71b383d2e951-EmailReviewComments-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
-X-Rspamd-Queue-Id: 4jFn5Q4zxczKnX3
+User-Agent: Gerrit/3.14.2
 X-Spam-Score: -0.2 (/)
-X-Headers-End: 1xMRLH-000000004mG-35aD
-Subject: [Openvpn-devel] [PATCH ovpn net v2] ovpn: avoid nesting TCP
- transport socket locks
+X-Headers-End: 1xMRcY-000000005Af-3P7E
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Optionally indicate
+ username in >PASSWORD 'Auth' prompt
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -97,249 +144,228 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: Antonio Quartulli <antonio@openvpn.net>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-16.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_PASS,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=4.0.1
+From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= via Openvpn-devel
+ <openvpn-devel@lists.sourceforge.net>
+Reply-To: razvanc@mailbox.org, arne-openvpn@rfc2549.org, selva.nair@gmail.com,
+ openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com
+Cc: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= <gerrit@openvpn.net>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>,
+ Arne Schwabe <arne-openvpn@rfc2549.org>
+Content-Type: multipart/mixed; boundary="===============2697920747159703295=="
+X-Spam-Status: No, score=-3.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
+	MAILING_LIST_MULTI,SPF_HELO_PASS,SPF_PASS autolearn=no
+	autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
-From: Antonio Quartulli <antonio@openvpn.net>
+--===============2697920747159703295==
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="pfrviitKt+0="; charset=UTF-8
 
-ovpn_tcp_send_skb() and ovpn_tcp_release() transmit while holding the
-transport socket spinlock. If the outer packet is routed into an ovpn
-interface, ovpn_tcp_send_skb() takes the spinlock of the selected peer's
-socket while the first one is still held. This deadlocks when it is the
-same socket or when two peers are routed through each other.
+--pfrviitKt+0=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Defer transmission to the TX worker when the skb comes from an ovpn TCP
-transport socket.
+Attention is currently required from: Arne Schwabe, Frank Lichtenheld, Selv=
+a Nair=2E
 
-Fixes: 11851cbd60ea ("ovpn: implement TCP transport")
-Reported-by: Bernhard Schmidt <berni@birkenwald.de>
-Closes: https://lore.kernel.org/openvpn-devel/auJj5Ld6uMjPb2eS@fliwatuet.svr02.mucip.net/
-Signed-off-by: Antonio Quartulli <antonio@openvpn.net>
----
+R=C4=83zvan Cojocaru has posted comments on this change by Selva=
+ Nair=2E ( https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2069?usp=3Demail )
 
-v2:
-- handle nesting across different transport sockets too (two peers routed
-  through each other, cross-CPU ABBA, lockdep splat), as pointed out by Sashiko
-- defer such transmissions to the TX worker instead of dropping self-looped
-  packets in ovpn_net_xmit()
+C=
+hange subject: Optionally indicate username in >PASSWORD 'Auth' prompt
+=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
 
- drivers/net/ovpn/io.c   |   2 +-
- drivers/net/ovpn/peer.h |   2 +-
- drivers/net/ovpn/tcp.c  | 103 +++++++++++++++++++++++++++++-----------
- drivers/net/ovpn/tcp.h  |   2 +-
- 4 files changed, 79 insertions(+), 30 deletions(-)
+Patch Set 2: Co=
+de-Review-1
 
-diff --git a/drivers/net/ovpn/io.c b/drivers/net/ovpn/io.c
-index f14eb4e6c46a..3282c3b0bf58 100644
---- a/drivers/net/ovpn/io.c
-+++ b/drivers/net/ovpn/io.c
-@@ -284,7 +284,7 @@ void ovpn_encrypt_post(void *data, int ret)
- 		ovpn_udp_send_skb(peer, sock->sk, skb);
- 		break;
- 	case IPPROTO_TCP:
--		ovpn_tcp_send_skb(peer, sock->sk, skb);
-+		ovpn_tcp_send_skb(peer, sock, skb);
- 		break;
- 	default:
- 		/* no transport configured yet */
-diff --git a/drivers/net/ovpn/peer.h b/drivers/net/ovpn/peer.h
-index 1879bfb76992..8256c628f769 100644
---- a/drivers/net/ovpn/peer.h
-+++ b/drivers/net/ovpn/peer.h
-@@ -45,7 +45,7 @@ struct ovpn_route_key {
-  * @tcp: keeps track of TCP specific state
-  * @tcp.strp: stream parser context (TCP only)
-  * @tcp.user_queue: received packets that have to go to userspace (TCP only)
-- * @tcp.out_queue: packets on hold while socket is taken by user (TCP only)
-+ * @tcp.out_queue: packets deferred for later transmission (TCP only)
-  * @tcp.tx_in_progress: true if TX is already ongoing (TCP only)
-  * @tcp.out_msg.skb: packet scheduled for sending (TCP only)
-  * @tcp.out_msg.offset: offset where next send should start (TCP only)
-diff --git a/drivers/net/ovpn/tcp.c b/drivers/net/ovpn/tcp.c
-index 8fe8a8e750a4..81cfeb104b15 100644
---- a/drivers/net/ovpn/tcp.c
-+++ b/drivers/net/ovpn/tcp.c
-@@ -313,6 +313,35 @@ static void ovpn_tcp_send_sock(struct ovpn_peer *peer, struct sock *sk)
- 	peer->tcp.tx_in_progress = false;
- }
- 
-+static void ovpn_tcp_send_sock_skb(struct ovpn_peer *peer, struct sock *sk,
-+				   struct sk_buff *skb)
-+{
-+	if (peer->tcp.out_msg.skb)
-+		ovpn_tcp_send_sock(peer, sk);
-+
-+	if (peer->tcp.out_msg.skb) {
-+		ovpn_dev_dstats_tx_dropped(peer->ovpn->dev);
-+		kfree_skb(skb);
-+		return;
-+	}
-+
-+	peer->tcp.out_msg.skb = skb;
-+	peer->tcp.out_msg.len = skb->len;
-+	peer->tcp.out_msg.offset = 0;
-+	ovpn_tcp_send_sock(peer, sk);
-+}
-+
-+/* send queued packets, stop if one remains pending */
-+static void ovpn_tcp_flush_queue(struct ovpn_peer *peer, struct sock *sk)
-+{
-+	unsigned int n = skb_queue_len_lockless(&peer->tcp.out_queue);
-+	struct sk_buff *skb;
-+
-+	while (n-- && !peer->tcp.out_msg.skb &&
-+	       (skb = skb_dequeue(&peer->tcp.out_queue)))
-+		ovpn_tcp_send_sock_skb(peer, sk, skb);
-+}
-+
- void ovpn_tcp_tx_work(struct work_struct *work)
- {
- 	struct ovpn_socket *sock;
-@@ -320,58 +349,82 @@ void ovpn_tcp_tx_work(struct work_struct *work)
- 	sock = container_of(work, struct ovpn_socket, tcp_tx_work);
- 
- 	lock_sock(sock->sk);
--	if (sock->peer)
-+	if (sock->peer) {
- 		ovpn_tcp_send_sock(sock->peer, sock->sk);
-+		ovpn_tcp_flush_queue(sock->peer, sock->sk);
-+	}
- 	release_sock(sock->sk);
- }
- 
--static void ovpn_tcp_send_sock_skb(struct ovpn_peer *peer, struct sock *sk,
--				   struct sk_buff *skb)
-+static bool ovpn_tcp_enqueue(struct ovpn_peer *peer, struct sk_buff *skb)
- {
--	if (peer->tcp.out_msg.skb)
--		ovpn_tcp_send_sock(peer, sk);
-+	struct sk_buff_head *queue = &peer->tcp.out_queue;
-+	unsigned long flags;
-+	bool ret = false;
-+
-+	spin_lock_irqsave(&queue->lock, flags);
-+	if (skb_queue_len(queue) < READ_ONCE(net_hotdata.max_backlog)) {
-+		__skb_queue_tail(queue, skb);
-+		ret = true;
-+	}
-+	spin_unlock_irqrestore(&queue->lock, flags);
- 
--	if (peer->tcp.out_msg.skb) {
-+	if (!ret) {
- 		ovpn_dev_dstats_tx_dropped(peer->ovpn->dev);
- 		kfree_skb(skb);
--		return;
- 	}
- 
--	peer->tcp.out_msg.skb = skb;
--	peer->tcp.out_msg.len = skb->len;
--	peer->tcp.out_msg.offset = 0;
--	ovpn_tcp_send_sock(peer, sk);
-+	return ret;
-+}
-+
-+/**
-+ * ovpn_tcp_skb_from_transport - check if skb comes from an ovpn TCP socket
-+ * @skb: the packet to check
-+ *
-+ * Return: true if @skb was generated by an ovpn TCP transport socket
-+ */
-+static bool ovpn_tcp_skb_from_transport(const struct sk_buff *skb)
-+{
-+	const struct proto *prot;
-+
-+	if (!skb->sk)
-+		return false;
-+
-+	prot = READ_ONCE(skb->sk->sk_prot);
-+	return prot == &ovpn_tcp_prot || prot == &ovpn_tcp6_prot;
- }
- 
--void ovpn_tcp_send_skb(struct ovpn_peer *peer, struct sock *sk,
-+void ovpn_tcp_send_skb(struct ovpn_peer *peer, struct ovpn_socket *sock,
- 		       struct sk_buff *skb)
- {
-+	struct sock *sk = sock->sk;
- 	u16 len = skb->len;
- 
- 	*(__be16 *)__skb_push(skb, sizeof(u16)) = htons(len);
- 
-+	/* the spinlock of the originating transport socket may be held:
-+	 * defer to the worker to avoid nesting socket locks
-+	 */
-+	if (ovpn_tcp_skb_from_transport(skb)) {
-+		if (ovpn_tcp_enqueue(peer, skb))
-+			queue_work(ovpn_wq, &sock->tcp_tx_work);
-+		return;
-+	}
-+
- 	spin_lock_nested(&sk->sk_lock.slock, OVPN_TCP_DEPTH_NESTING);
- 	if (sock_owned_by_user(sk)) {
--		if (skb_queue_len(&peer->tcp.out_queue) >=
--		    READ_ONCE(net_hotdata.max_backlog)) {
--			ovpn_dev_dstats_tx_dropped(peer->ovpn->dev);
--			kfree_skb(skb);
--			goto unlock;
--		}
--		__skb_queue_tail(&peer->tcp.out_queue, skb);
-+		/* flushed by ovpn_tcp_release() */
-+		ovpn_tcp_enqueue(peer, skb);
- 	} else {
- 		ovpn_tcp_send_sock_skb(peer, sk, skb);
- 	}
--unlock:
- 	spin_unlock(&sk->sk_lock.slock);
- }
- 
- static void ovpn_tcp_release(struct sock *sk)
- {
--	struct sk_buff_head queue;
- 	struct ovpn_socket *sock;
- 	struct ovpn_peer *peer;
--	struct sk_buff *skb;
- 
- 	rcu_read_lock();
- 	sock = rcu_dereference_sk_user_data(sk);
-@@ -391,11 +444,7 @@ static void ovpn_tcp_release(struct sock *sk)
- 	}
- 	rcu_read_unlock();
- 
--	__skb_queue_head_init(&queue);
--	skb_queue_splice_init(&peer->tcp.out_queue, &queue);
--
--	while ((skb = __skb_dequeue(&queue)))
--		ovpn_tcp_send_sock_skb(peer, sk, skb);
-+	ovpn_tcp_flush_queue(peer, sk);
- 
- 	peer->tcp.sk_cb.prot->release_cb(sk);
- 	ovpn_peer_put(peer);
-diff --git a/drivers/net/ovpn/tcp.h b/drivers/net/ovpn/tcp.h
-index a3aa3570ae5e..9f2b5efcbd3a 100644
---- a/drivers/net/ovpn/tcp.h
-+++ b/drivers/net/ovpn/tcp.h
-@@ -30,7 +30,7 @@ void ovpn_tcp_socket_wait_finish(struct ovpn_socket *sock);
-  * Required by the OpenVPN protocol in order to extract packets from
-  * the TCP stream on the receiver side.
-  */
--void ovpn_tcp_send_skb(struct ovpn_peer *peer, struct sock *sk,
-+void ovpn_tcp_send_skb(struct ovpn_peer *peer, struct ovpn_socket *sock,
- 		       struct sk_buff *skb);
- void ovpn_tcp_tx_work(struct work_struct *work);
- 
+(4 comments)
+
+File doc/management-notes=2Etxt:
+
+https://gerrit=
+=2Eopenvpn=2Enet/c/openvpn/+/2069/comment/564f4843_7455126f?usp=3Demail :
+P=
+S2, Line 402:   These work exactly as Examples 3 and 8, respectively, with =
+the following
+Example 2?
+
+
+https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2069/=
+comment/e0e44b38_cc0f41bd?usp=3Demail :
+PS2, Line 413:   as in example 3 or=
+ example 8, as applicable=2E
+Example 2?
+
+
+File src/openvpn/manage=2Ec:
+
+htt=
+ps://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2069/comment/26d06886_1972b437?usp=
+=3Demail :
+PS2, Line 3675:             && (man->connection=2Eclient_version=
+ >=3D MCV_PREFERRED_USERNAME)
+Should this check `type` as well?
+
+
+https://g=
+errit=2Eopenvpn=2Enet/c/openvpn/+/2069/comment/d94a2e88_e6dc99d7?usp=3Demai=
+l :
+PS2, Line 3685:                 buf_printf(&alert_msg, " UN:%s", user64=
+);
+Are we sure `alert_msg` can hold everything it's supposed to legitimatel=
+y contain? I see it's allocated as 128 bytes=2E
+
+
+
 -- 
-2.55.0
+To view, visit https=
+://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2069?usp=3Demail
+To unsubscribe, or f=
+or help writing mail filters, visit https://gerrit=2Eopenvpn=2Enet/settings=
+?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: openvpn
+Gerrit-Br=
+anch: master
+Gerrit-Change-Id: Iac23d5141a8c29e239d0f2aeea497d3a002e609b
+Ge=
+rrit-Change-Number: 2069
+Gerrit-PatchSet: 2
+Gerrit-Owner: Selva Nair <selva=
+=2Enair@gmail=2Ecom>
+Gerrit-Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2E=
+org>
+Gerrit-Reviewer: Frank Lichtenheld <frank@lichtenheld=2Ecom>
+Gerrit-Re=
+viewer: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
+Gerrit-CC: openvpn-dev=
+el <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Attention: Selva Nair <=
+selva=2Enair@gmail=2Ecom>
+Gerrit-Attention: Arne Schwabe <arne-openvpn@rfc2=
+549=2Eorg>
+Gerrit-Attention: Frank Lichtenheld <frank@lichtenheld=2Ecom>
+Ge=
+rrit-Comment-Date: Thu, 29 Oct 2026 15:00:41 +0000
+Gerrit-HasComments: Yes
+=
+Gerrit-Has-Labels: Yes
+
+--pfrviitKt+0=
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: Arne Schwabe, Frank Lichtenheld, Selva Nair=2E </p>
+<=
+p>R=C4=83zvan Cojocaru has posted comments on this change by Selva Nair=2E<=
+/p><p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block;=
+ margin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</sp=
+an></p><p><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2069?usp=3D=
+email">View Change</a></p><p>4 comments:</p><ul style=3D"list-style: none; =
+padding: 0;"><li style=3D"margin: 0; padding: 0;"><p>File doc/management-no=
+tes=2Etxt:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"marg=
+in: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"ht=
+tps://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2069/comment/564f4843_7455126f?usp=
+=3Demail">Patch Set #2, Line 402:</a> <code style=3D"font-family:monospace,=
+monospace">  These work exactly as Examples 3 and 8, respectively, with the=
+ following</code></p><p class=3D"blocks" style=3D"white-space: pre-wrap; wo=
+rd-wrap: break-word;">Example 2?</p></li><li style=3D"margin: 0; padding: 0=
+ 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"https://gerrit=2Eop=
+envpn=2Enet/c/openvpn/+/2069/comment/e0e44b38_cc0f41bd?usp=3Demail">Patch S=
+et #2, Line 413:</a> <code style=3D"font-family:monospace,monospace">  as i=
+n example 3 or example 8, as applicable=2E</code></p><p class=3D"blocks" st=
+yle=3D"white-space: pre-wrap; word-wrap: break-word;">Example 2?</p></li></=
+ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/manage=2Ec=
+:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; pa=
+dding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"https://ger=
+rit=2Eopenvpn=2Enet/c/openvpn/+/2069/comment/26d06886_1972b437?usp=3Demail"=
+>Patch Set #2, Line 3675:</a> <code style=3D"font-family:monospace,monospac=
+e">            &amp;&amp; (man-&gt;connection=2Eclient_version &gt;=3D MCV_=
+PREFERRED_USERNAME)</code></p><p class=3D"blocks" style=3D"white-space: pre=
+-wrap; word-wrap: break-word;">Should this check `type` as well?</p></li><l=
+i style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;=
+"><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2069/comment/d94a2e=
+88_e6dc99d7?usp=3Demail">Patch Set #2, Line 3685:</a> <code style=3D"font-f=
+amily:monospace,monospace">                buf_printf(&amp;alert_msg, &quot=
+; UN:%s&quot;, user64);</code></p><p class=3D"blocks" style=3D"white-space:=
+ pre-wrap; word-wrap: break-word;">Are we sure `alert_msg` can hold everyth=
+ing it&#39;s supposed to legitimately contain? I see it&#39;s allocated as =
+128 bytes=2E</p></li></ul></li></ul><p>To view, visit <a href=3D"https://ge=
+rrit=2Eopenvpn=2Enet/c/openvpn/+/2069?usp=3Demail">change 2069</a>=2E To un=
+subscribe, or for help writing mail filters, visit <a href=3D"https://gerri=
+t=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope i=
+temtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" hre=
+f=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2069?usp=3Demail"/><meta it=
+emprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"displa=
+y:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Ge=
+rrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: ma=
+ster </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Iac23d5141a8c29e=
+239d0f2aeea497d3a002e609b </div>
+<div style=3D"display:none"> Gerrit-Change=
+-Number: 2069 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>=
+
+<div style=3D"display:none"> Gerrit-Owner: Selva Nair &lt;selva=2Enair@gma=
+il=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: Arne Schw=
+abe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> =
+Gerrit-Reviewer: Frank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<=
+div style=3D"display:none"> Gerrit-Reviewer: R=C4=83zvan Cojocaru &lt;razva=
+nc@mailbox=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn=
+-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D=
+"display:none"> Gerrit-Attention: Selva Nair &lt;selva=2Enair@gmail=2Ecom&g=
+t; </div>
+<div style=3D"display:none"> Gerrit-Attention: Arne Schwabe &lt;a=
+rne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-At=
+tention: Frank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<div styl=
+e=3D"display:none"> Gerrit-Comment-Date: Thu, 29 Oct 2026 15:00:41 +0000 </=
+div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=
+=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>
+--pfrviitKt+0=--
 
 
+--===============2697920747159703295==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============2697920747159703295==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+--===============2697920747159703295==--
+
