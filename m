@@ -1,139 +1,76 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DD5D606A31A
-	for <openvpn-devel@archiver.kernel.org>; Fri, 30 Oct 2026 12:56:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFC72606A320
+	for <openvpn-devel@archiver.kernel.org>; Fri, 30 Oct 2026 13:08:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=MN/of4xZ;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=ObI0cytM;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=Cay+fwpC;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=DbKmULHr
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=UZUUlQHk;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=Yytd0wc0;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=NWbCmHJX
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Unsubscribe-Post:List-Owner;
-	bh=KO7epGgnA8Ehy7QsExr2qJxyTzZ2AGAfgKfA9A8NrY4=; b=MN/of4xZmXKmwOdKacSle2Ekbg
-	692XfW8Dd17EuJw70S/BcIRYNAo1RbSVZyIqgG1coETwdn97Wzgc5G2fdml3H0GedR9q++zJAifk+
-	pqimlZIl0vwoU3g6t3XeHNv1a6psnfA6I3UND/rk5SNVZ7nuaD3mKAAi5dEksYqye4Hg=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
+	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
+	List-Owner; bh=GClCeYo0iMJEakxoRTOiJhQgj+ill7/GJZOMdib+XVs=; b=UZUUlQHkPavOAk
+	+zs9UXuS8G1PNmkHV4yI+i9wQpWemS0Su1oVyjS60ZWB2y4DKtJmmiRcLyyZB7L2VnRxXB+i8bUyo
+	AaiNc5NUB1iOe2tkiWy8WM/PKQ4zYuUlivG5pI1Koud/ThMJJb6KazTsIDvc/6ZDHphZdg+GVK9fX
+	Jkc=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xMm9u-000000003tR-0btf;
-	Fri, 30 Oct 2026 12:56:38 +0000
+	id 1xMmLD-000000008Gs-3oUs;
+	Fri, 30 Oct 2026 13:08:19 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xMm9e-000000003sA-2PWo
- for openvpn-devel@lists.sourceforge.net;
- Fri, 30 Oct 2026 12:56:22 +0000
+ (envelope-from <gert@blue4.greenie.muc.de>)
+ id 1xMmL7-000000008Gh-1jOQ for openvpn-devel@lists.sourceforge.net;
+ Fri, 30 Oct 2026 13:08:13 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
+ In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=rDLsF5HwDVvRq81EOfea6kBK4XCWuHM0gyWmRY21U5U=; b=ObI0cytMau3y2dw/0cUSZJsLM3
- 7OtciT/NzDQ094RJdYCZK2N85LZha4V67qieoUnigWhOAZUI0FICfyn4og7zWj0cFhzaynKEZIzBS
- Bl2Mct09UNckF5q5QCZHZIQQHj/OGQCaWi/Nlr2vSSlJXw2Gq3SGeMo9qKNpmPzArj78=;
+ bh=GPcr+ac/HO/dTFmz0f9C9fCGNLWxRy9OlPodwEGUqt4=; b=Yytd0wc0Le+Ew/fuMLRnB9q/ev
+ M2852SpmxjlVzps67gvxO+0xBWuzJFjrxvUhkf24APEEWSrnKc14nBxLh4QiJGlovxmM9t+kVFx84
+ PYbbEmYahyaJEy5mZIoLkrnKA0C7PnblqPdx8Bmszkj0nyGp82UCyrUboXS5wOdpI4vE=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
- Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
+ h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
+ Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=rDLsF5HwDVvRq81EOfea6kBK4XCWuHM0gyWmRY21U5U=; b=Cay+fwpC3X/JSkHZd3j3dUTeQL
- Uyd4CTDKilj3IhmETZENXaIQSru2a/8FQo0fAdAC5NX2W4XkCZiaHc4DXOoeo07SElS5bneLcbge3
- Sm9iWsiutPGtgj6muIQAvESfN1scZVcLxrHMTdI/+oniFWGYjGvy29UHHqRmedDdhfR4=;
-Received: from mail-wr1-f48.google.com ([209.85.221.48])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xMm9c-000000005Lk-1E3C for openvpn-devel@lists.sourceforge.net;
- Fri, 30 Oct 2026 12:56:22 +0000
-Received: by mail-wr1-f48.google.com with SMTP id
- ffacd0b85a97d-48df4f540ebso327979f8f.3
- for <openvpn-devel@lists.sourceforge.net>;
- Fri, 30 Oct 2026 05:56:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1793364974; x=1793969774; darn=lists.sourceforge.net;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
- :reply-to:content-type;
- bh=rDLsF5HwDVvRq81EOfea6kBK4XCWuHM0gyWmRY21U5U=;
- b=DbKmULHr6UK9zVLUqQr9FLvw1jQ/fO5/jpJex0D82ZMxbNmAw+BTmB5YqdWTeQxDoz
- gJjYU2Ooi2YToFNOgGDaSqpZCSn9gPaIR4HfXQWHslOuNGaeGzXcYUVxmAZY7JcGPFwH
- 0bjutRK1wa5Ds20ahHYxiq1oxqA5cHLG0H5OXkESmQbqIPqXMnQ7U+v/PHw1D0s0DVvz
- F6I44NEYODSnzG0QdR5nOrZ6bXatLf7lYFTvO6Ozx/6QImJws4Wu5EaPEv5pW3oF1xmq
- KmsbD/PZHN+nNcn921Ca57ADI2JN5Yi/kZEixw4mj182HIUirINXXwpodL0DQdki30yB
- 3uFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1793364974; x=1793969774;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
- :cc:subject:date:message-id:reply-to:content-type;
- bh=rDLsF5HwDVvRq81EOfea6kBK4XCWuHM0gyWmRY21U5U=;
- b=BGIs1mQuQTlHYCGamT2U89o5TRulWveBmVTlwifosjZe9wCM1Sp4dxFRSr2PPJYLMQ
- +QXu5aGz8d+5tOblfmnTMA2X/bze0NUKdvZ8SKzN9qFvO2iUJ1WsFOjqvY+qfuyPJlcP
- 8bApvV4YPm0/fmpoN/uegRD8woUtwung1B/bg7taK8+VDh+QEPsWhgTfy9f368aAYOeM
- +8S4F0qH1Mw6hr1D6qeyF4cg/sZGuzg3K3wEiEyyfW3Q19qsuIBdIZYKxq4O93Asey55
- rdU7pfZf/5OTSkjNZaVgVhetQ3m2A2ah18mQqnxgzp8J2VxPCLUfsE7CRxLMUTrSvd3m
- HKzA==
-X-Forwarded-Encrypted: i=1;
- AKwUvBz1zmGzjh7MjO5OkRXDZdUFrW5Od1Jl/Ylan8qdfdTB+IFvAZmXofhWGImZXSVrMOmckYq+7UbB1pYGfMlo@lists.sourceforge.net
-X-Gm-Message-State: AFq9FYJrnHQYzqSM8mnwgRFEFOA2C+p4kzAzZYtJDC0Qr3RccVTI9G1M
- LHvW7BOHxlr4e/0SABsZRbDNShWz9pg89kMytY3lj8Ka7+Z+SsHgFrbf0I2fc45yhgHSaLiIiW5
- IzdMq+Xib53OGGC/MZg1qTYrt3PZS3XZO60o5MSkivnuwatrcOctR2s3IwARI8IWLhK9E
-X-Gm-Gg: AYBFou2wdL3Y8aOD7VmUW7ggNrNqW3uiYdUsPZDXxIrRCC06xVScrhCMa7C4k3NcRLn
- z5RiWYjrqwJEFEdzglVLBiR3DFPQIyZ+cAlFElNG1AwSu7NnUnxOA57o2hbo0ALBFH3Gt4gAtca
- dWYrrxttqYlLo4Bt/zArgT773WstYhQs2/NgHOw4+4bE07Iqub3XiYiJ7Wg0GVA+JYMS6+DelZA
- 4v/IUr8E+bpYX4eVFGBwHgMT7RT0qLeLmhuqZ7dHXMWuHnQKRy8Fcqyr4eKMqPXzNIpkhVQ89a8
- yC/phmcL9Bkt49M5A/ghkT/Ved+dmwkQ4iZ/BYbnwr5tUhtQWRjaPQCug32f4EtYhN3UejFlCU8
- RnsqAlGH4V4Ogxy+0WG8MWgB8okETL1BFJh0w1hXTwo7PCXz98SrSrdMkNlNY98OoMEoejuzWqg
- oWSwgv9jXq9m0eGw611jAYh6v9NNWntbE7P+dmTrCv75fAs+EuK2DXeftKyvIdGogrjb2VJ+C5n
- 3qQPKY0X0CPbM30QTk5BTn4X6Py3S1yNAcWrcek4oZ9aq3jw57oDPBzCawzvf3WLuj4ZZuZb7H1
- TGAR0WFVEq0Gu9BmGgFqufDtoNeDUupFHD1WeUJzkVNEY5JRlH2mYL1kqNX+T6uXpGwRqxYscdI
- VXStHDxY1bTlUmpgSrjabDhk2teT/Ouz79Er0yk0UiI2mJfoOHfu0zDl/Z6Bv98fRLvsjBeKJmg
- cG7pQS78CAIFoLnU4e00ljVgyggEuVol/ZY+qC
-X-Received: by 2002:a05:6000:d8c:b0:48e:1c72:abc with SMTP id
- ffacd0b85a97d-48e6e5066a2mr4134601f8f.35.1793364973328; 
- Fri, 30 Oct 2026 05:56:13 -0700 (PDT)
-Received: from ip-10-18-1-162.eu-central-1.compute.internal
- (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
- by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-48e71bae25dsm2736597f8f.59.2026.10.30.05.56.12
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 30 Oct 2026 05:56:12 -0700 (PDT)
-X-Google-Original-From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?=
- <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Fri, 30 Oct 2026 12:56:10 +0000
-To: David Sarkisyan <david@srkyn.com>
-Auto-Submitted: auto-generated
-X-Gerrit-MessageType: comment
-X-Gerrit-PatchSet: 6
-X-Gerrit-Change-Id: Iacd56d245e9ab30cfb25b2b364ca661fa289dc55
-X-Gerrit-Change-Number: 1881
-X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/1881?usp=email>
-X-Gerrit-Commit: aa282bbb84187cc76c48f8a8805e14eb31ed95a7
-X-Gerrit-Comment-Date: Fri, 30 Oct 2026 12:56:10 +0000
+ bh=GPcr+ac/HO/dTFmz0f9C9fCGNLWxRy9OlPodwEGUqt4=; b=NWbCmHJXAAzpZBRDQS7UFUWazv
+ 3JCNRBubtwjhceHpMduYmHTidrf9ietaKC9lFH2DbRUYJdmjMhM8sVJhBy2XLGuddI9xcbqkfZUO7
+ t+bPqcPziOd4lfExBqPuqeXWWApNYxRWuhDhayDTCB39W419Di/wk25dLsZQBz3+1F04=;
+Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
+ id 1xMmL4-000000001h9-1ij9 for openvpn-devel@lists.sourceforge.net;
+ Fri, 30 Oct 2026 13:08:13 +0000
+Received: from blue.greenie.muc.de (localhost [127.0.0.1])
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 69UD83jK016557
+ for <openvpn-devel@lists.sourceforge.net>; Fri, 30 Oct 2026 14:08:03 +0100
+Received: (from gert@localhost)
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 69UD83O4016556
+ for openvpn-devel@lists.sourceforge.net; Fri, 30 Oct 2026 14:08:03 +0100
+From: Gert Doering <gert@greenie.muc.de>
+To: openvpn-devel@lists.sourceforge.net
+Date: Fri, 30 Oct 2026 14:07:47 +0100
+Message-ID: <20261030130802.16535-1-gert@greenie.muc.de>
+X-Mailer: git-send-email 2.55.0
 In-Reply-To: <gerrit.1787849678000.Iacd56d245e9ab30cfb25b2b364ca661fa289dc55@gerrit.openvpn.net>
 References: <gerrit.1787849678000.Iacd56d245e9ab30cfb25b2b364ca661fa289dc55@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzg3ODQ5Njc4MDAwLklhY2Q1NmQyNDVlOWFiMzBjZmIyNWIyYjM2NGNhNjYxZmEyODlkYzU1QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <ec9cc892398aaec639ba243efbcbaa443eafa67e-EmailReviewComments-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
-User-Agent: Gerrit/3.14.2
-X-Spam-Score: -0.2 (/)
-X-Headers-End: 1xMm9c-000000005Lk-1E3C
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: compat: close all
- unrelated fds in forked helpers
+X-Spam-Score: 1.3 (+)
+X-Headers-End: 1xMmL4-000000001h9-1ij9
+Subject: [Openvpn-devel] [PATCH v6] compat: close all unrelated fds in
+ forked helpers
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -143,161 +80,614 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= via Openvpn-devel
- <openvpn-devel@lists.sourceforge.net>
-Reply-To: razvanc@mailbox.org, arne-openvpn@rfc2549.org, david@srkyn.com,
- openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com,
- gert@greenie.muc.de
-Cc: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>,
- Arne Schwabe <arne-openvpn@rfc2549.org>
-Content-Type: multipart/mixed; boundary="===============3779571281275336771=="
-X-Spam-Status: No, score=-3.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
-	MAILING_LIST_MULTI,SPF_HELO_PASS,SPF_PASS autolearn=no
-	autolearn_force=no version=4.0.1
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-16.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_PASS,
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============3779571281275336771==
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="i7ovB7gTwvM="; charset=UTF-8
+From: David Sarkisyan <david@srkyn.com>
 
---i7ovB7gTwvM=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+The forked auth-pam, down-root, and port-share helpers only closed
+descriptor numbers 3 through 100. Descriptors above that range could
+remain open in long-lived helper processes, including helpers that
+intentionally retain privilege.
 
-Attention is currently required from: David Sarkisyan, Gert Doering=2E
+Add a shared compatibility helper that uses close_range() when available
+and falls back to the process descriptor limit. Preserve the helper
+command socket and add coverage for both low and high preserved
+descriptors.
 
-R=
-=C4=83zvan Cojocaru has posted comments on this change by David Sarkisyan=
-=2E ( https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1881?usp=3Demail )
+Change-Id: Iacd56d245e9ab30cfb25b2b364ca661fa289dc55
+Signed-off-by: David Sarkisyan <david@srkyn.com>
+Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1881
+---
 
-Change=
- subject: compat: close all unrelated fds in forked helpers
-=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1881
+This mail reflects revision 6 of this Change.
 
-Patch Set 6: Code-Review+2
-=
+Acked-by according to Gerrit (reflected above):
+Razvan Cojocaru <razvanc@mailbox.org>
 
+        
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 184a95a..e842317 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -19,6 +19,7 @@
+ include(CheckLinkerFlag OPTIONAL)
+ include(CheckTypeSize)
+ include(CheckStructHasMember)
++include(CMakePushCheckState)
+ include(CTest)
+ 
+ option(UNSUPPORTED_BUILDS "Allow unsupported builds" OFF)
+@@ -197,6 +198,10 @@
+     check_symbol_exists(fork unistd.h HAVE_FORK)
+     check_symbol_exists(execve unistd.h HAVE_EXECVE)
+     check_symbol_exists(ftruncate unistd.h HAVE_FTRUNCATE)
++    cmake_push_check_state()
++    list(APPEND CMAKE_REQUIRED_DEFINITIONS -D_GNU_SOURCE)
++    check_symbol_exists(close_range unistd.h HAVE_CLOSE_RANGE)
++    cmake_pop_check_state()
+     check_symbol_exists(nice unistd.h HAVE_NICE)
+     check_symbol_exists(setgid unistd.h HAVE_SETGID)
+     check_symbol_exists(setuid unistd.h HAVE_SETUID)
+@@ -435,6 +440,8 @@
+     src/compat/compat-strlcpy.c
+     src/compat/compat-strsep.c
+     src/compat/compat-strtok_r.c
++    src/compat/compat-close-fds.c
++    src/compat/compat-close-fds.h
+     src/openvpn/argv.c
+     src/openvpn/argv.h
+     src/openvpn/base64.c
+@@ -869,6 +876,11 @@
+         src/openvpn/siphash_reference.c
+         src/openvpn/session_id.c
+     )
++    if (NOT WIN32)
++        target_sources(test_misc PRIVATE
++            src/compat/compat-close-fds.c
++        )
++    endif ()
+ 
+     target_sources(test_ncp PRIVATE
+         src/openvpn/crypto_epoch.c
+diff --git a/config.h.cmake.in b/config.h.cmake.in
+index 483de45..d87d298 100644
+--- a/config.h.cmake.in
++++ b/config.h.cmake.in
+@@ -75,6 +75,9 @@
+ /* Define to 1 if you have the `chsize' function. */
+ #cmakedefine HAVE_CHSIZE
+ 
++/* Define to 1 if you have the `close_range' function. */
++#cmakedefine HAVE_CLOSE_RANGE
++
+ /* struct cmsghdr needed for extended socket error support */
+ #cmakedefine HAVE_CMSGHDR
+ 
+diff --git a/configure.ac b/configure.ac
+index 0ac61b4..da5ffb6 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -563,7 +563,7 @@
+ 	syslog openlog mlockall getrlimit getgrnam setgid \
+ 	setgroups flock gettimeofday \
+ 	setsid chdir \
+-	chsize ftruncate execve getpeereid basename dirname \
++	chsize ftruncate execve getpeereid basename dirname close_range \
+ 	epoll_create strlcpy strsep strtok_r \
+ ])
+ 
+diff --git a/src/compat/Makefile.am b/src/compat/Makefile.am
+index 8b1d44a..db65edd 100644
+--- a/src/compat/Makefile.am
++++ b/src/compat/Makefile.am
+@@ -16,6 +16,7 @@
+ 
+ libcompat_la_SOURCES = \
+ 	compat.h \
++	compat-close-fds.c compat-close-fds.h \
+ 	compat-dirname.c \
+ 	compat-basename.c \
+ 	compat-gettimeofday.c \
+diff --git a/src/compat/compat-close-fds.c b/src/compat/compat-close-fds.c
+new file mode 100644
+index 0000000..f3a266c
+--- /dev/null
++++ b/src/compat/compat-close-fds.c
+@@ -0,0 +1,74 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2026 David Sarkisyan
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, see <https://www.gnu.org/licenses/>.
++ */
++
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
++
++#ifndef _WIN32
++
++#include "compat-close-fds.h"
++
++#include <limits.h>
++#include <stdbool.h>
++#include <unistd.h>
++#include <syslog.h>
++
++void
++close_fds_except(int keep)
++{
++    closelog();
++
++#ifdef HAVE_CLOSE_RANGE
++    bool closed = true;
++    unsigned int first = 3;
++    if (keep >= 3)
++    {
++        if (keep > 3)
++        {
++            closed = close_range(3, (unsigned int)keep - 1, 0) == 0;
++        }
++        first = (unsigned int)keep + 1;
++    }
++    closed = close_range(first, ~0U, 0) == 0 && closed;
++    if (closed)
++    {
++        return;
++    }
++#endif
++
++    const long open_max = sysconf(_SC_OPEN_MAX);
++    int max_fd = 1024;
++    if (open_max > 0)
++    {
++        max_fd = open_max > INT_MAX ? INT_MAX : (int)open_max;
++    }
++    for (int fd = 3; fd < max_fd; ++fd)
++    {
++        if (fd != keep)
++        {
++            close(fd);
++        }
++    }
++}
++
++#endif /* !_WIN32 */
+diff --git a/src/compat/compat-close-fds.h b/src/compat/compat-close-fds.h
+new file mode 100644
+index 0000000..8480941
+--- /dev/null
++++ b/src/compat/compat-close-fds.h
+@@ -0,0 +1,38 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2026 David Sarkisyan
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, see <https://www.gnu.org/licenses/>.
++ */
++
++#ifndef COMPAT_CLOSE_FDS_H
++#define COMPAT_CLOSE_FDS_H
++
++#ifndef _WIN32
++/**
++ * Close descriptors inherited across fork that are unrelated to a helper.
++ *
++ * Standard input, standard output, standard error, and @p keep remain open.
++ * All other file descriptors starting at 3 are closed.
++ *
++ * @param keep file descriptor used for communication with the parent process
++ */
++void close_fds_except(int keep);
++#endif
++
++#endif /* COMPAT_CLOSE_FDS_H */
+diff --git a/src/openvpn/ps.c b/src/openvpn/ps.c
+index 03c6f48..986f0d2 100644
+--- a/src/openvpn/ps.c
++++ b/src/openvpn/ps.c
+@@ -34,6 +34,7 @@
+ #include "crypto.h"
+ #include "resolve.h"
+ #include "ps.h"
++#include "compat-close-fds.h"
+ 
+ #include "memdbg.h"
+ 
+@@ -86,30 +87,6 @@
+ }
+ 
+ /*
+- * Close most of parent's fds.
+- * Keep stdin/stdout/stderr, plus one
+- * other fd which is presumed to be
+- * our pipe back to parent.
+- * Admittedly, a bit of a kludge,
+- * but posix doesn't give us a kind
+- * of FD_CLOEXEC which will stop
+- * fds from crossing a fork().
+- */
+-static void
+-close_fds_except(int keep)
+-{
+-    socket_descriptor_t i;
+-    closelog();
+-    for (i = 3; i <= 100; ++i)
+-    {
+-        if (i != keep)
+-        {
+-            openvpn_close_socket(i);
+-        }
+-    }
+-}
+-
+-/*
+  * Usually we ignore signals, because our parent will
+  * deal with them.
+  */
+diff --git a/src/plugins/auth-pam/Makefile.am b/src/plugins/auth-pam/Makefile.am
+index e6dc27e..fb7fd30 100644
+--- a/src/plugins/auth-pam/Makefile.am
++++ b/src/plugins/auth-pam/Makefile.am
+@@ -9,6 +9,7 @@
+ 
+ AM_CFLAGS = \
+ 	-I$(top_srcdir)/include \
++	-I$(top_srcdir)/src/compat \
+ 	$(PLUGIN_AUTH_PAM_CFLAGS) \
+ 	$(OPTIONAL_CRYPTO_CFLAGS)
+ 
+@@ -23,6 +24,7 @@
+ 	pamdl.c  pamdl.h \
+ 	auth-pam.exports
+ openvpn_plugin_auth_pam_la_LIBADD = \
++	$(top_builddir)/src/compat/libcompat.la \
+ 	$(PLUGIN_AUTH_PAM_LIBS)
+ openvpn_plugin_auth_pam_la_LDFLAGS = $(AM_LDFLAGS) \
+ 	-export-symbols "$(srcdir)/auth-pam.exports" \
+diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
+index 948b6af..a3fd3aa 100644
+--- a/src/plugins/auth-pam/auth-pam.c
++++ b/src/plugins/auth-pam/auth-pam.c
+@@ -51,6 +51,8 @@
+ #include <arpa/inet.h>
+ #include <openvpn-plugin.h>
+ 
++#include "compat-close-fds.h"
++
+ #define DEBUG(verb) ((verb) >= 4)
+ 
+ /* Command codes for foreground -> background communication */
+@@ -240,30 +242,6 @@
+ #endif /* ifdef DO_DAEMONIZE */
+ 
+ /*
+- * Close most of parent's fds.
+- * Keep stdin/stdout/stderr, plus one
+- * other fd which is presumed to be
+- * our pipe back to parent.
+- * Admittedly, a bit of a kludge,
+- * but posix doesn't give us a kind
+- * of FD_CLOEXEC which will stop
+- * fds from crossing a fork().
+- */
+-static void
+-close_fds_except(int keep)
+-{
+-    int i;
+-    closelog();
+-    for (i = 3; i <= 100; ++i)
+-    {
+-        if (i != keep)
+-        {
+-            close(i);
+-        }
+-    }
+-}
+-
+-/*
+  * Usually we ignore signals, because our parent will
+  * deal with them.
+  */
+diff --git a/src/plugins/down-root/Makefile.am b/src/plugins/down-root/Makefile.am
+index 7ca5a4e..83bc04f 100644
+--- a/src/plugins/down-root/Makefile.am
++++ b/src/plugins/down-root/Makefile.am
+@@ -9,6 +9,7 @@
+ 
+ AM_CFLAGS = \
+ 	-I$(top_srcdir)/include \
++	-I$(top_srcdir)/src/compat \
+ 	$(OPTIONAL_CRYPTO_CFLAGS)
+ 
+ if ENABLE_PLUGIN_DOWN_ROOT
+@@ -19,6 +20,8 @@
+ openvpn_plugin_down_root_la_SOURCES = \
+ 	down-root.c \
+ 	down-root.exports
++openvpn_plugin_down_root_la_LIBADD = \
++	$(top_builddir)/src/compat/libcompat.la
+ openvpn_plugin_down_root_la_LDFLAGS = $(AM_LDFLAGS) \
+ 	-export-symbols "$(srcdir)/down-root.exports" \
+ 	-module -shared -avoid-version -no-undefined
+diff --git a/src/plugins/down-root/down-root.c b/src/plugins/down-root/down-root.c
+index cd57189..3f71cdd 100644
+--- a/src/plugins/down-root/down-root.c
++++ b/src/plugins/down-root/down-root.c
+@@ -44,6 +44,8 @@
+ 
+ #include <openvpn-plugin.h>
+ 
++#include "compat-close-fds.h"
++
+ #define DEBUG(verb) ((verb) >= 7)
+ 
+ /* Command codes for foreground -> background communication */
+@@ -191,30 +193,6 @@
+ }
+ 
+ /*
+- * Close most of parent's fds.
+- * Keep stdin/stdout/stderr, plus one
+- * other fd which is presumed to be
+- * our pipe back to parent.
+- * Admittedly, a bit of a kludge,
+- * but posix doesn't give us a kind
+- * of FD_CLOEXEC which will stop
+- * fds from crossing a fork().
+- */
+-static void
+-close_fds_except(int keep)
+-{
+-    int i;
+-    closelog();
+-    for (i = 3; i <= 100; ++i)
+-    {
+-        if (i != keep)
+-        {
+-            close(i);
+-        }
+-    }
+-}
+-
+-/*
+  * Usually we ignore signals, because our parent will
+  * deal with them.
+  */
+diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
+index 43a6743..16d1613 100644
+--- a/tests/unit_tests/openvpn/Makefile.am
++++ b/tests/unit_tests/openvpn/Makefile.am
+@@ -407,6 +407,10 @@
+ 	$(top_srcdir)/src/openvpn/siphash_reference.c \
+ 	$(top_srcdir)/src/openvpn/session_id.c
+ 
++if !WIN32
++misc_testdriver_SOURCES += $(top_srcdir)/src/compat/compat-close-fds.c
++endif
++
+ push_update_msg_testdriver_CFLAGS = -I$(top_srcdir)/src/openvpn \
+ 	-I$(top_srcdir)/src/compat \
+ 	-I$(top_srcdir)/tests/unit_tests/openvpn \
+diff --git a/tests/unit_tests/openvpn/test_misc.c b/tests/unit_tests/openvpn/test_misc.c
+index aea40f0..ee16682 100644
+--- a/tests/unit_tests/openvpn/test_misc.c
++++ b/tests/unit_tests/openvpn/test_misc.c
+@@ -43,6 +43,14 @@
+ #include "sid_hash.h"
+ #ifdef _WIN32
+ #include "win32-util.h"
++#else
++#include "compat-close-fds.h"
++
++#include <errno.h>
++#include <fcntl.h>
++#include <sys/socket.h>
++#include <sys/wait.h>
++#include <unistd.h>
+ #endif
+ #include "test_schedule.h"
+ 
+@@ -550,9 +558,154 @@
+     gc_free(&gc);
+ }
+ 
++#ifndef _WIN32
++static bool
++fd_is_closed(int fd)
++{
++    errno = 0;
++    return fcntl(fd, F_GETFD) == -1 && errno == EBADF;
++}
++
++static bool
++fd_is_open(int fd)
++{
++    return fcntl(fd, F_GETFD) != -1;
++}
++
++static int
++run_close_fds_case(int keep_target)
++{
++    int control[2];
++    if (socketpair(AF_UNIX, SOCK_STREAM, 0, control) < 0)
++    {
++        return EXIT_FAILURE;
++    }
++
++    const pid_t pid = fork();
++    if (pid < 0)
++    {
++        close(control[0]);
++        close(control[1]);
++        return EXIT_FAILURE;
++    }
++
++    if (pid == 0)
++    {
++        close(control[0]);
++
++        int keep = control[1];
++        const long open_max = sysconf(_SC_OPEN_MAX);
++        if (open_max > 3 && keep_target >= open_max)
++        {
++            keep_target = (int)open_max - 1;
++        }
++        if (keep_target >= 3 && keep_target != keep)
++        {
++            if (dup2(keep, keep_target) < 0)
++            {
++                _exit(EXIT_FAILURE);
++            }
++            close(keep);
++            keep = keep_target;
++        }
++
++        const int source = open("/dev/null", O_RDWR);
++        if (source < 0)
++        {
++            _exit(EXIT_FAILURE);
++        }
++        for (int fd = STDIN_FILENO; fd <= STDERR_FILENO; ++fd)
++        {
++            if (dup2(source, fd) < 0)
++            {
++                _exit(EXIT_FAILURE);
++            }
++        }
++        const int close_fd_1 = dup(source);
++        const int close_fd_2 = dup(source);
++        if (close_fd_1 < 0 || close_fd_2 < 0)
++        {
++            _exit(EXIT_FAILURE);
++        }
++
++        const int close_target = 101;
++        int close_fd_high = -1;
++        if (open_max > close_target && keep != close_target)
++        {
++            close_fd_high = dup2(source, close_target);
++            if (close_fd_high < 0)
++            {
++                _exit(EXIT_FAILURE);
++            }
++        }
++        if (source > STDERR_FILENO && source != keep)
++        {
++            close(source);
++        }
++
++        close_fds_except(keep);
++
++        const char result = fd_is_open(STDIN_FILENO) && fd_is_open(STDOUT_FILENO)
++                                    && fd_is_open(STDERR_FILENO)
++                                    && fd_is_closed(close_fd_1)
++                                    && fd_is_closed(close_fd_2)
++                                    && (close_fd_high < 0 || fd_is_closed(close_fd_high))
++                                ? '1'
++                                : '0';
++        if (write(keep, &result, sizeof(result)) != sizeof(result))
++        {
++            _exit(EXIT_FAILURE);
++        }
++        close(keep);
++        _exit(result == '1' ? EXIT_SUCCESS : EXIT_FAILURE);
++    }
++
++    close(control[1]);
++    char result = '0';
++    const ssize_t size = read(control[0], &result, sizeof(result));
++    close(control[0]);
++
++    int status = 0;
++    if (waitpid(pid, &status, 0) != pid)
++    {
++        return EXIT_FAILURE;
++    }
++
++    return size == sizeof(result) && result == '1' && WIFEXITED(status)
++                   && WEXITSTATUS(status) == EXIT_SUCCESS
++               ? EXIT_SUCCESS
++               : EXIT_FAILURE;
++}
++
++static void
++test_close_fds_default_keep(void **state)
++{
++    (void)state;
++    assert_int_equal(run_close_fds_case(-1), EXIT_SUCCESS);
++}
++
++static void
++test_close_fds_keep_three(void **state)
++{
++    (void)state;
++    assert_int_equal(run_close_fds_case(3), EXIT_SUCCESS);
++}
++
++static void
++test_close_fds_keep_middle(void **state)
++{
++    (void)state;
++    assert_int_equal(run_close_fds_case(150), EXIT_SUCCESS);
++}
++#endif /* !_WIN32 */
++
+ const struct CMUnitTest misc_tests[] = {
+ #ifdef _WIN32
+     cmocka_unit_test(test_win_path_in_dir),
++#else
++    cmocka_unit_test(test_close_fds_default_keep),
++    cmocka_unit_test(test_close_fds_keep_three),
++    cmocka_unit_test(test_close_fds_keep_middle),
+ #endif
+     cmocka_unit_test(test_compat_lzo_string),
+     cmocka_unit_test(test_auth_fail_temp_no_flags),
 
--- 
-To view, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1881?usp=3D=
-email
-To unsubscribe, or for help writing mail filters, visit https://gerri=
-t=2Eopenvpn=2Enet/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-=
-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Iacd56d245e9ab30cf=
-b25b2b364ca661fa289dc55
-Gerrit-Change-Number: 1881
-Gerrit-PatchSet: 6
-Gerri=
-t-Owner: David Sarkisyan <david@srkyn=2Ecom>
-Gerrit-Reviewer: Arne Schwabe =
-<arne-openvpn@rfc2549=2Eorg>
-Gerrit-Reviewer: R=C4=83zvan Cojocaru <razvanc=
-@mailbox=2Eorg>
-Gerrit-CC: Frank Lichtenheld <frank@lichtenheld=2Ecom>
-Gerr=
-it-CC: Gert Doering <gert@greenie=2Emuc=2Ede>
-Gerrit-CC: openvpn-devel <ope=
-nvpn-devel@lists=2Esourceforge=2Enet>
-Gerrit-Attention: David Sarkisyan <da=
-vid@srkyn=2Ecom>
-Gerrit-Attention: Gert Doering <gert@greenie=2Emuc=2Ede>
-G=
-errit-Comment-Date: Fri, 30 Oct 2026 12:56:10 +0000
-Gerrit-HasComments: No
-=
-Gerrit-Has-Labels: Yes
-
---i7ovB7gTwvM=
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: David Sarkisyan, Gert Doering=2E </p>
-<p>R=C4=83zvan =
-Cojocaru has posted comments on this change by David Sarkisyan=2E</p><p>Pat=
-ch set 6:<span style=3D"border-radius: 3px; display: inline-block; margin: =
-0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span></p><p=
-><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1881?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1881?usp=3De=
-mail">change 1881</a>=2E To unsubscribe, or for help writing mail filters, =
-visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">setti=
-ngs</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage">=
-<div itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewActi=
-on"><link itemprop=3D"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn=
-/+/1881?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></di=
-v></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<=
-div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"di=
-splay:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerr=
-it-Change-Id: Iacd56d245e9ab30cfb25b2b364ca661fa289dc55 </div>
-<div style=
-=3D"display:none"> Gerrit-Change-Number: 1881 </div>
-<div style=3D"display:=
-none"> Gerrit-PatchSet: 6 </div>
-<div style=3D"display:none"> Gerrit-Owner:=
- David Sarkisyan &lt;david@srkyn=2Ecom&gt; </div>
-<div style=3D"display:non=
-e"> Gerrit-Reviewer: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>=
-
-<div style=3D"display:none"> Gerrit-Reviewer: R=C4=83zvan Cojocaru &lt;raz=
-vanc@mailbox=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: Frank=
- Lichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
-<div style=3D"display:n=
-one"> Gerrit-CC: Gert Doering &lt;gert@greenie=2Emuc=2Ede&gt; </div>
-<div s=
-tyle=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Es=
-ourceforge=2Enet&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: =
-David Sarkisyan &lt;david@srkyn=2Ecom&gt; </div>
-<div style=3D"display:none=
-"> Gerrit-Attention: Gert Doering &lt;gert@greenie=2Emuc=2Ede&gt; </div>
-<d=
-iv style=3D"display:none"> Gerrit-Comment-Date: Fri, 30 Oct 2026 12:56:10 +=
-0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div=
- style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>
---i7ovB7gTwvM=--
-
-
---===============3779571281275336771==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============3779571281275336771==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
---===============3779571281275336771==--
-
