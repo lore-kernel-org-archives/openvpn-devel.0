@@ -1,76 +1,90 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F221606A31C
-	for <openvpn-devel@archiver.kernel.org>; Sat, 31 Oct 2026 22:56:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 643F3606A31C
+	for <openvpn-devel@archiver.kernel.org>; Sat, 31 Oct 2026 22:56:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=hmwrkmID;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=GHgKHMOt;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=Uq0pQUMx
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=PVCx+QK/;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=G3B9E1Uf;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=QZrFsvAm;
+	dkim=neutral header.d=unstable.cc header.i=@unstable.cc header.a=rsa-sha256 header.s=MBO0001 header.b=NgK+ryRC
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:Cc:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
-	List-Owner; bh=rpX2bCbIWgydgoJURJs6RdOjw1hAXyokWU3bOJOApnA=; b=hmwrkmID1wWZOX
-	sw3UUBM7SnDdAjYDsNy1bJvoC0VFiKxfe7x9pl3v4X/RMPplfaHAOPp3aA9oHpl4FBjF703Hk7nzd
-	nu86RDPbb/GgW/yeq5Yvz3miiqywLiSIHAC3kmjxaKcapWlkXtIa4aGGV6JECMHWNP79MAwXZRI/u
-	+Q8=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	Subject:MIME-Version:Message-ID:Date:To:From:Sender:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Unsubscribe-Post:List-Owner;
+	bh=N/SUQEo7iUr8CbvI/0+vQrWewEGbpkkgKYm+/+M/CBM=; b=PVCx+QK/ch95J3JdL8FruNwR+M
+	kyUe53OEgpCupjr+WGlXtoTYCEU54fv/5FcxDiZU1xjinUc09iZ9DP3z6TmdRDgj4kADYkrl5zF3g
+	tfI6v0ulYAdw8JOG82cjhA1VjeGwCdQjRGAnMDB4FCuq8b1w8p+NcLzwkz4qADH5dN/w=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xNI01-000000000oF-1usZ;
-	Sat, 31 Oct 2026 22:56:33 +0000
+	id 1xNI0J-000000003vs-4AYF;
+	Sat, 31 Oct 2026 22:56:52 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gert@blue4.greenie.muc.de>)
- id 1xNHzz-000000000la-3cyo for openvpn-devel@lists.sourceforge.net;
- Sat, 31 Oct 2026 22:56:31 +0000
+ (envelope-from <a@unstable.cc>) id 1xNI0I-000000003vh-2pKg
+ for openvpn-devel@lists.sourceforge.net;
+ Sat, 31 Oct 2026 22:56:50 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:Message-ID:
+ Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=9MLDqBGlypKCVuNAZyrT/gW0unbNo1C4boAe3AiJMU0=; b=GHgKHMOtmcJAtCr+52NSHVzhum
- nU/36CcLkxRvPfm+R93ySTNWfs+Ofvhq+05DAVzjYGIqdT7qIFHt7RCcfGV0xyy8O8qTLMuzZp2CF
- 8rkl3qHeQ5tuK9dgQQIjt+FZPH2Qt4/saoz40UO8Cqd+p499rGVTKwTJxD0Wu0huMvK0=;
+ bh=Psh/4zp5EZ1LBP6jzNps3lqPEkDN7l5Ew1PQTqRiQ3k=; b=G3B9E1UfoqgzYH228z4dk7rzmA
+ q+4MulJ3lRWMV4Pxt5PmECpIBHa94XaVU1Z9DLki3OBnKR+3hRsoreKWyZX9FqdgYfB183O1vDc6b
+ AMfE8Ro942tUhf76fFA/JSdJZxDdw/0KGs0QVdXbFFmNb+kz8x9YjYPgDpyqoG1ROuv4=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
+ h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:Cc:To:From
+ :Sender:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+ References:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=9MLDqBGlypKCVuNAZyrT/gW0unbNo1C4boAe3AiJMU0=; b=Uq0pQUMxAjlubKi0HpnV1JeBfe
- D97zSFhIgvIT3qPL4bD3jH+fO0zlMJON7nCarosmn81v5AiW1tWyhAsHJDx+d8hpDR514FgKzUT4C
- lhcELQiXkc9SGpXAZWKrnFkJMnC8KGx6MzmyUgGDOneAFJKZg+AewtTQfBRoAH3ytcQY=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ bh=Psh/4zp5EZ1LBP6jzNps3lqPEkDN7l5Ew1PQTqRiQ3k=; b=QZrFsvAmFlePZdHAvtRmoCkOwl
+ CDjCw704Nh7uocaRc5Y0BXSCWhYba8SmOY7lMw8zJ5dpCESzE2xAjEspouuZ4cQNQuy6OdpJGY3EB
+ Oy478CkIAswfcNFqOCi5c3/IN6NM/UBjlziDFk54tKicx9egYGH2Zc7HDdYjF7jSKJS8=;
+Received: from mout-p-102.mailbox.org ([80.241.56.152])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
- id 1xNHzq-000000002Tr-3SXu for openvpn-devel@lists.sourceforge.net;
- Sat, 31 Oct 2026 22:56:24 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 69VMuFq5018631
- for <openvpn-devel@lists.sourceforge.net>; Sat, 31 Oct 2026 23:56:15 +0100
-Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 69VMuF36018628
- for openvpn-devel@lists.sourceforge.net; Sat, 31 Oct 2026 23:56:15 +0100
-From: Gert Doering <gert@greenie.muc.de>
+ id 1xNI0G-000000005Dv-2X3V for openvpn-devel@lists.sourceforge.net;
+ Sat, 31 Oct 2026 22:56:50 +0000
+Received: from smtp202.mailbox.org (smtp202.mailbox.org
+ [IPv6:2001:67c:2050:b231:465::202])
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+ key-exchange X25519MLKEM768 server-signature RSA-PSS (4096 bits) server-digest
+ SHA256) (No client certificate requested)
+ by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4jHCyK6RZdzKvmZ;
+ Sat, 31 Oct 2026 23:56:41 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=unstable.cc; s=MBO0001;
+ t=1793487401;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:
+ content-transfer-encoding:content-transfer-encoding;
+ bh=Psh/4zp5EZ1LBP6jzNps3lqPEkDN7l5Ew1PQTqRiQ3k=;
+ b=NgK+ryRC1leOLGCmXtSIKxxztHJdflfVHY1S7s0OgN9e4/6v/0sesAFoGZccZlcaCak4oC
+ 1dt03Wl7G9jHMB5SSwtS2lSX7XSmeg46gCfC1Hku9LFNOEWfaKgr7gTvTJXsG1wfx060rf
+ GYkhJUqrUiZU0pGJvmjBHwlLcNObao3wyIU2pG6fYi6CflyjjMDHjRKmF+xrBB6le0dO/v
+ 41LAxNKr3cHl7qHqhZYP3sJ+dgaDeFC46UaKWcqKH0Yvfp5KsiD2xPQLdVvDjK+v2Ta2tx
+ UFBuVV0Ca+dYqg4TR342+KcZaXCKIWJD7apG63+EYNsrdjJ+7OTxfB+5QHYGEw==
+Authentication-Results: outgoing_mbo_mout; dkim=none;
+ spf=pass (outgoing_mbo_mout: domain of a@unstable.cc designates
+ 2001:67c:2050:b231:465::202 as permitted sender) smtp.mailfrom=a@unstable.cc
+From: Antonio Quartulli <a@unstable.cc>
 To: openvpn-devel@lists.sourceforge.net
-Date: Sat, 31 Oct 2026 23:56:09 +0100
-Message-ID: <20261031225615.18613-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <gerrit.1792329007000.Id21a6b106c49d6647783e09a506add0726a1a6d2@gerrit.openvpn.net>
-References: <gerrit.1792329007000.Id21a6b106c49d6647783e09a506add0726a1a6d2@gerrit.openvpn.net>
+Date: Sat, 31 Oct 2026 23:56:40 +0100
+Message-ID: <20261031225640.1436694-1-a@unstable.cc>
+X-Mailer: git-send-email 2.56.0
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
-X-Spam-Score: 1.3 (+)
-X-Headers-End: 1xNHzq-000000002Tr-3SXu
-Subject: [Openvpn-devel] [PATCH v2] openvpnserv: skip conversion of empty
- domain names
+X-Rspamd-Queue-Id: 4jHCyK6RZdzKvmZ
+X-Spam-Score: -0.2 (/)
+X-Headers-End: 1xNI0G-000000005Dv-2X3V
+Subject: [Openvpn-devel] [PATCH net v3] ovpn: avoid nesting TCP transport
+ socket locks
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -80,6 +94,7 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Cc: antonio@openvpn.net
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-16.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -89,250 +104,240 @@ X-Spam-Status: No, score=-16.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
-From: Heiko Hund <heiko@ist.eigentlich.net>
+From: Antonio Quartulli <antonio@openvpn.net>
 
-Empty entries in an interface's comma separated domain list, were
-converted to "." in the resulting MULTI_SZ and used as a match all
-in the resulting NRPT rules, so all DNS queries would be sent
-to that adapter's name server(s) instead of only the ones for its
-domains. Such lists are not expected to be found in the registry,
-but skip empty entries anyway, just to be sure.
+ovpn_tcp_send_skb() and ovpn_tcp_release() transmit while holding the
+transport socket spinlock. If the outer packet is routed into an ovpn
+interface, ovpn_tcp_send_skb() takes the spinlock of the selected peer's
+socket while the first one is still held. This deadlocks when it is the
+same socket or when two peers are routed through each other.
 
-Also rework the ConvertItfDnsDomains() unit tests to use a helper
-that runs the conversion on an individually sized heap buffer with
-everything after the input poisoned. This detects terminators that
-are counted but not written, which zero-initialized stack buffers
-hid. Also add more tests for empty entries and buffer size boundaries.
+Defer transmission to the TX worker when the skb comes from an ovpn TCP
+transport socket.
 
-Bonus: fix typo in related doxygen comment.
-
-Reported-by: Marc Heuse <marc@srlabs.de>
-Change-Id: Id21a6b106c49d6647783e09a506add0726a1a6d2
-Signed-off-by: Heiko Hund <heiko@ist.eigentlich.net>
-Acked-by: Gert Doering <gert@greenie.muc.de>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2016
+Fixes: 11851cbd60ea ("ovpn: implement TCP transport")
+Cc: stable@vger.kernel.org
+Reported-by: Bernhard Schmidt <berni@birkenwald.de>
+Closes: https://lore.kernel.org/openvpn-devel/auJj5Ld6uMjPb2eS@fliwatuet.svr02.mucip.net/
+Signed-off-by: Antonio Quartulli <antonio@openvpn.net>
 ---
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+v3:
+- queue new packets behind already deferred ones to preserve ordering (Sashiko)
+v2: https://lore.kernel.org/all/20261029144241.1671514-1-a@unstable.cc/
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2016
-This mail reflects revision 2 of this Change.
+ drivers/net/ovpn/io.c   |   2 +-
+ drivers/net/ovpn/peer.h |   2 +-
+ drivers/net/ovpn/tcp.c  | 109 ++++++++++++++++++++++++++++++----------
+ drivers/net/ovpn/tcp.h  |   2 +-
+ 4 files changed, 85 insertions(+), 30 deletions(-)
 
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@greenie.muc.de>
-
-        
-diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index ed163a4..1a441ec 100644
---- a/src/openvpnserv/interactive.c
-+++ b/src/openvpnserv/interactive.c
-@@ -2272,6 +2272,7 @@
-  * In case of an error \p size is set to 0 and the contents of \p domains
-  * are invalid.
-  * Note that domains are deleted from the string if they match a search domain.
-+ * Empty entries (e.g. from leading, trailing or double commas) are skipped.
-  *
-  * @param[in]     search_domains  optional string of comma separated search domains
-  * @param[in,out] domains         buffer that contains the input comma-separated
-@@ -2313,7 +2314,7 @@
-         PWCHAR comma = wcschr(domain, L',');
-         size_t domain_len = comma ? (size_t)(comma - domain) : wcslen(domain);
- 
--        if (ListContainsDomain(search_domains, domain, domain_len))
-+        if (domain_len == 0 || ListContainsDomain(search_domains, domain, domain_len))
-         {
-             /* Skip this domain */
-             domain = comma ? comma + 1 : domain + domain_len;
-@@ -2366,7 +2367,7 @@
- /**
-  * Return interface specific domain suffix(es)
-  *
-- * The \p domains paramter will be set to a MULTI_SZ domains string.
-+ * The \p domains parameter will be set to a MULTI_SZ domains string.
-  * In case of an error or if no domains are found for the interface
-  * \p size is set to 0 and the contents of \p domains are invalid.
-  * Note that the domains could have been set by DHCP or manually.
-diff --git a/tests/unit_tests/openvpnserv/test_openvpnserv.c b/tests/unit_tests/openvpnserv/test_openvpnserv.c
-index 4ca715b..a99a6f1 100644
---- a/tests/unit_tests/openvpnserv/test_openvpnserv.c
-+++ b/tests/unit_tests/openvpnserv/test_openvpnserv.c
-@@ -56,101 +56,102 @@
-     assert_false(ListContainsDomain(L"internal.openvpn.net,openvpn.com", domain, domain_len));
+diff --git a/drivers/net/ovpn/io.c b/drivers/net/ovpn/io.c
+index f14eb4e6c46a..3282c3b0bf58 100644
+--- a/drivers/net/ovpn/io.c
++++ b/drivers/net/ovpn/io.c
+@@ -284,7 +284,7 @@ void ovpn_encrypt_post(void *data, int ret)
+ 		ovpn_udp_send_skb(peer, sock->sk, skb);
+ 		break;
+ 	case IPPROTO_TCP:
+-		ovpn_tcp_send_skb(peer, sock->sk, skb);
++		ovpn_tcp_send_skb(peer, sock, skb);
+ 		break;
+ 	default:
+ 		/* no transport configured yet */
+diff --git a/drivers/net/ovpn/peer.h b/drivers/net/ovpn/peer.h
+index 1879bfb76992..8256c628f769 100644
+--- a/drivers/net/ovpn/peer.h
++++ b/drivers/net/ovpn/peer.h
+@@ -45,7 +45,7 @@ struct ovpn_route_key {
+  * @tcp: keeps track of TCP specific state
+  * @tcp.strp: stream parser context (TCP only)
+  * @tcp.user_queue: received packets that have to go to userspace (TCP only)
+- * @tcp.out_queue: packets on hold while socket is taken by user (TCP only)
++ * @tcp.out_queue: packets deferred for later transmission (TCP only)
+  * @tcp.tx_in_progress: true if TX is already ongoing (TCP only)
+  * @tcp.out_msg.skb: packet scheduled for sending (TCP only)
+  * @tcp.out_msg.offset: offset where next send should start (TCP only)
+diff --git a/drivers/net/ovpn/tcp.c b/drivers/net/ovpn/tcp.c
+index 8fe8a8e750a4..815d5523c43b 100644
+--- a/drivers/net/ovpn/tcp.c
++++ b/drivers/net/ovpn/tcp.c
+@@ -313,6 +313,35 @@ static void ovpn_tcp_send_sock(struct ovpn_peer *peer, struct sock *sk)
+ 	peer->tcp.tx_in_progress = false;
  }
  
-+/*
-+ * Run ConvertItfDnsDomains() on a heap buffer of exactly capacity bytes,
-+ * so that ASAN can detect overruns, with everything after the input string
-+ * poisoned, so that terminators which are counted but not written show.
-+ */
-+static void
-+check_convert(PCWSTR search_domains, PCWSTR input, DWORD capacity,
-+              LSTATUS expected_err, PCWSTR expected)
++static void ovpn_tcp_send_sock_skb(struct ovpn_peer *peer, struct sock *sk,
++				   struct sk_buff *skb)
 +{
-+    const DWORD glyph_size = sizeof(wchar_t);
++	if (peer->tcp.out_msg.skb)
++		ovpn_tcp_send_sock(peer, sk);
 +
-+    /* Size of the expected MULTI_SZ including both terminators, or 0 */
-+    DWORD expected_size = 0;
-+    if (expected)
-+    {
-+        PCWSTR end = expected;
-+        while (*end)
-+        {
-+            end += wcslen(end) + 1;
-+        }
-+        expected_size = (DWORD)(end - expected + 1) * glyph_size;
-+    }
++	if (peer->tcp.out_msg.skb) {
++		ovpn_dev_dstats_tx_dropped(peer->ovpn->dev);
++		kfree_skb(skb);
++		return;
++	}
 +
-+    DWORD size = (DWORD)(wcslen(input) + 1) * glyph_size;
-+    assert_true(size <= capacity);
-+
-+    wchar_t *domains = malloc(capacity);
-+    assert_non_null(domains);
-+    memset(domains, 0x41, capacity);
-+    memcpy(domains, input, size);
-+
-+    LSTATUS err = ConvertItfDnsDomains(search_domains, domains, &size, capacity);
-+    assert_int_equal(err, expected_err);
-+    assert_int_equal(size, expected_size);
-+    if (expected_size)
-+    {
-+        assert_memory_equal(domains, expected, expected_size);
-+    }
-+    free(domains);
++	peer->tcp.out_msg.skb = skb;
++	peer->tcp.out_msg.len = skb->len;
++	peer->tcp.out_msg.offset = 0;
++	ovpn_tcp_send_sock(peer, sk);
 +}
 +
- #define BUF_SIZE 64
- static void
- test_convert_itf_dns_domains(void **state)
++/* send queued packets, stop if one remains pending */
++static void ovpn_tcp_flush_queue(struct ovpn_peer *peer, struct sock *sk)
++{
++	unsigned int n = skb_queue_len_lockless(&peer->tcp.out_queue);
++	struct sk_buff *skb;
++
++	while (n-- && !peer->tcp.out_msg.skb &&
++	       (skb = skb_dequeue(&peer->tcp.out_queue)))
++		ovpn_tcp_send_sock_skb(peer, sk, skb);
++}
++
+ void ovpn_tcp_tx_work(struct work_struct *work)
  {
--    DWORD size, len;
--    LSTATUS err;
-     const DWORD glyph_size = sizeof(wchar_t);
-+    const DWORD cap = BUF_SIZE * glyph_size;
+ 	struct ovpn_socket *sock;
+@@ -320,58 +349,88 @@ void ovpn_tcp_tx_work(struct work_struct *work)
+ 	sock = container_of(work, struct ovpn_socket, tcp_tx_work);
  
-     /* Remove the domain from a single-entry list */
--    wchar_t domains_0[BUF_SIZE] = L"openvpn.com";
--    len = (DWORD)wcslen(domains_0) + 1;
--    size = len * glyph_size;
--    err = ConvertItfDnsDomains(L"openvpn.com", domains_0, &size, sizeof(domains_0));
--    assert_int_equal(size, 0);
--    assert_int_equal(err, ERROR_FILE_NOT_FOUND);
-+    check_convert(L"openvpn.com", L"openvpn.com", cap, ERROR_FILE_NOT_FOUND, NULL);
- 
-     /* Remove no domain from a single-entry list */
--    wchar_t domains_1[BUF_SIZE] = L"openvpn.com";
--    len = (DWORD)wcslen(domains_1) + 1;
--    size = len * glyph_size;
--    wchar_t domains_1_res[] = L".openvpn.com\0";
--    err = ConvertItfDnsDomains(L"openvpn.net", domains_1, &size, sizeof(domains_1));
--    assert_memory_equal(domains_1, domains_1_res, size);
--    assert_int_equal(size, sizeof(domains_1_res));
--    assert_int_equal(err, NO_ERROR);
-+    check_convert(L"openvpn.net", L"openvpn.com", cap, NO_ERROR, L".openvpn.com\0");
- 
-     /* Remove the second domain from a two-entry list */
--    wchar_t domains_2[BUF_SIZE] = L"openvpn.com,openvpn.net";
--    len = (DWORD)wcslen(domains_2) + 1;
--    size = len * glyph_size;
--    wchar_t domains_2_res[] = L".openvpn.com\0";
--    err = ConvertItfDnsDomains(L"openvpn.net", domains_2, &size, sizeof(domains_2));
--    assert_memory_equal(domains_2, domains_2_res, size);
--    assert_int_equal(size, sizeof(domains_2_res));
--    assert_int_equal(err, NO_ERROR);
-+    check_convert(L"openvpn.net", L"openvpn.com,openvpn.net", cap, NO_ERROR, L".openvpn.com\0");
- 
-     /* Remove the first domain from a two-entry list */
--    wchar_t domains_3[BUF_SIZE] = L"openvpn.com,openvpn.net";
--    len = (DWORD)wcslen(domains_3) + 1;
--    size = len * glyph_size;
--    wchar_t domains_3_res[] = L".openvpn.net\0";
--    err = ConvertItfDnsDomains(L"openvpn.com", domains_3, &size, sizeof(domains_3));
--    assert_memory_equal(domains_3, domains_3_res, size);
--    assert_int_equal(size, sizeof(domains_3_res));
--    assert_int_equal(err, NO_ERROR);
-+    check_convert(L"openvpn.com", L"openvpn.com,openvpn.net", cap, NO_ERROR, L".openvpn.net\0");
- 
-     /* Remove no domain from a two-entry list */
--    wchar_t domains_4[BUF_SIZE] = L"openvpn.com,openvpn.net";
--    len = (DWORD)wcslen(domains_4) + 1;
--    size = len * glyph_size;
--    wchar_t domains_4_res[] = L".openvpn.com\0.openvpn.net\0";
--    err = ConvertItfDnsDomains(NULL, domains_4, &size, sizeof(domains_4));
--    assert_memory_equal(domains_4, domains_4_res, size);
--    assert_int_equal(size, sizeof(domains_4_res));
--    assert_int_equal(err, NO_ERROR);
-+    check_convert(NULL, L"openvpn.com,openvpn.net", cap, NO_ERROR, L".openvpn.com\0.openvpn.net\0");
- 
-     /* Remove the first domain from a three-entry list */
--    wchar_t domains_5[BUF_SIZE] = L"openvpn.com,openvpn.net,openvpn.org";
--    len = (DWORD)wcslen(domains_5) + 1;
--    size = len * glyph_size;
--    wchar_t domains_5_res[] = L".openvpn.net\0.openvpn.org\0";
--    err = ConvertItfDnsDomains(L"openvpn.com", domains_5, &size, sizeof(domains_5));
--    assert_memory_equal(domains_5, domains_5_res, size);
--    assert_int_equal(size, sizeof(domains_5_res));
--    assert_int_equal(err, NO_ERROR);
-+    check_convert(L"openvpn.com", L"openvpn.com,openvpn.net,openvpn.org", cap, NO_ERROR,
-+                  L".openvpn.net\0.openvpn.org\0");
- 
-     /* Remove the middle domain from a three-entry list */
--    wchar_t domains_6[BUF_SIZE] = L"openvpn.com,openvpn.net,openvpn.org";
--    len = (DWORD)wcslen(domains_6) + 1;
--    size = len * glyph_size;
--    wchar_t domains_6_res[] = L".openvpn.com\0.openvpn.org\0";
--    err = ConvertItfDnsDomains(L"openvpn.net", domains_6, &size, sizeof(domains_6));
--    assert_memory_equal(domains_6, domains_6_res, size);
--    assert_int_equal(size, sizeof(domains_6_res));
--    assert_int_equal(err, NO_ERROR);
-+    check_convert(L"openvpn.net", L"openvpn.com,openvpn.net,openvpn.org", cap, NO_ERROR,
-+                  L".openvpn.com\0.openvpn.org\0");
- 
-     /* Remove the last domain from a three-entry list */
--    wchar_t domains_7[BUF_SIZE] = L"openvpn.com,openvpn.net,openvpn.org";
--    len = (DWORD)wcslen(domains_7) + 1;
--    size = len * glyph_size;
--    wchar_t domains_7_res[] = L".openvpn.com\0.openvpn.net\0";
--    err = ConvertItfDnsDomains(L"openvpn.org", domains_7, &size, sizeof(domains_7));
--    assert_memory_equal(domains_7, domains_7_res, size);
--    assert_int_equal(size, sizeof(domains_7_res));
--    assert_int_equal(err, NO_ERROR);
-+    check_convert(L"openvpn.org", L"openvpn.com,openvpn.net,openvpn.org", cap, NO_ERROR,
-+                  L".openvpn.com\0.openvpn.net\0");
- 
--    /* Remove the last domain from a four-entry list because of size constraints*/
--    wchar_t domains_8[BUF_SIZE] = L"openvpn.com,openvpn.net,openvpn.org,am-ende-noch-eine-lange.de";
--    len = (DWORD)wcslen(domains_8) + 1;
--    size = len * glyph_size;
--    wchar_t domains_8_res[] = L".openvpn.com\0.openvpn.net\0.openvpn.org\0";
--    err = ConvertItfDnsDomains(NULL, domains_8, &size, sizeof(domains_8));
--    assert_memory_equal(domains_8, domains_8_res, size);
--    assert_int_equal(size, sizeof(domains_8_res));
--    assert_int_equal(err, ERROR_MORE_DATA);
-+    /* Empty entries are skipped */
-+    check_convert(NULL, L",a.com", cap, NO_ERROR, L".a.com\0");
-+    check_convert(NULL, L"a.com,", cap, NO_ERROR, L".a.com\0");
-+    check_convert(NULL, L"a.com,,b.com", cap, NO_ERROR, L".a.com\0.b.com\0");
-+    check_convert(L"a.com", L",a.com,", cap, ERROR_FILE_NOT_FOUND, NULL);
-+    check_convert(NULL, L",,,", cap, ERROR_FILE_NOT_FOUND, NULL);
-+    check_convert(NULL, L"", cap, ERROR_FILE_NOT_FOUND, NULL);
-+
-+    /* Size is 0 if all domains are removed */
-+    check_convert(L"a.com,b.com", L"b.com,a.com", cap, ERROR_FILE_NOT_FOUND, NULL);
-+
-+    /* Output exactly fills the buffer: 2 * (dot + 5 + NUL) + NUL */
-+    check_convert(NULL, L"a.com,b.com", 15 * glyph_size, NO_ERROR, L".a.com\0.b.com\0");
-+
-+    /* Remove the last domain from a four-entry list because of size constraints,
-+     * all four would need 3 * 13 + 28 + 1 = 68 glyphs, the buffer is one glyph short */
-+    check_convert(NULL, L"openvpn.com,openvpn.net,openvpn.org,am-ende-noch-eine-lange.de",
-+                  67 * glyph_size, ERROR_MORE_DATA, L".openvpn.com\0.openvpn.net\0.openvpn.org\0");
-+
-+    /* Input fills the buffer, no space for dot and terminators */
-+    check_convert(NULL, L"a.com", 6 * glyph_size, ERROR_MORE_DATA, NULL);
+ 	lock_sock(sock->sk);
+-	if (sock->peer)
++	if (sock->peer) {
+ 		ovpn_tcp_send_sock(sock->peer, sock->sk);
++		ovpn_tcp_flush_queue(sock->peer, sock->sk);
++	}
+ 	release_sock(sock->sk);
  }
  
- static void
+-static void ovpn_tcp_send_sock_skb(struct ovpn_peer *peer, struct sock *sk,
+-				   struct sk_buff *skb)
++static bool ovpn_tcp_enqueue(struct ovpn_peer *peer, struct sk_buff *skb)
+ {
+-	if (peer->tcp.out_msg.skb)
+-		ovpn_tcp_send_sock(peer, sk);
++	struct sk_buff_head *queue = &peer->tcp.out_queue;
++	unsigned long flags;
++	bool ret = false;
++
++	spin_lock_irqsave(&queue->lock, flags);
++	if (skb_queue_len(queue) < READ_ONCE(net_hotdata.max_backlog)) {
++		__skb_queue_tail(queue, skb);
++		ret = true;
++	}
++	spin_unlock_irqrestore(&queue->lock, flags);
+ 
+-	if (peer->tcp.out_msg.skb) {
++	if (!ret) {
+ 		ovpn_dev_dstats_tx_dropped(peer->ovpn->dev);
+ 		kfree_skb(skb);
+-		return;
+ 	}
+ 
+-	peer->tcp.out_msg.skb = skb;
+-	peer->tcp.out_msg.len = skb->len;
+-	peer->tcp.out_msg.offset = 0;
+-	ovpn_tcp_send_sock(peer, sk);
++	return ret;
++}
++
++/**
++ * ovpn_tcp_skb_from_transport - check if skb comes from an ovpn TCP socket
++ * @skb: the packet to check
++ *
++ * Return: true if @skb was generated by an ovpn TCP transport socket
++ */
++static bool ovpn_tcp_skb_from_transport(const struct sk_buff *skb)
++{
++	const struct proto *prot;
++
++	if (!skb->sk)
++		return false;
++
++	prot = READ_ONCE(skb->sk->sk_prot);
++	return prot == &ovpn_tcp_prot || prot == &ovpn_tcp6_prot;
+ }
+ 
+-void ovpn_tcp_send_skb(struct ovpn_peer *peer, struct sock *sk,
++void ovpn_tcp_send_skb(struct ovpn_peer *peer, struct ovpn_socket *sock,
+ 		       struct sk_buff *skb)
+ {
++	struct sock *sk = sock->sk;
+ 	u16 len = skb->len;
+ 
+ 	*(__be16 *)__skb_push(skb, sizeof(u16)) = htons(len);
+ 
++	/* the spinlock of the originating transport socket may be held:
++	 * defer to the worker to avoid nesting socket locks
++	 */
++	if (ovpn_tcp_skb_from_transport(skb)) {
++		if (ovpn_tcp_enqueue(peer, skb))
++			queue_work(ovpn_wq, &sock->tcp_tx_work);
++		return;
++	}
++
+ 	spin_lock_nested(&sk->sk_lock.slock, OVPN_TCP_DEPTH_NESTING);
+ 	if (sock_owned_by_user(sk)) {
+-		if (skb_queue_len(&peer->tcp.out_queue) >=
+-		    READ_ONCE(net_hotdata.max_backlog)) {
+-			ovpn_dev_dstats_tx_dropped(peer->ovpn->dev);
+-			kfree_skb(skb);
+-			goto unlock;
+-		}
+-		__skb_queue_tail(&peer->tcp.out_queue, skb);
++		/* flushed by ovpn_tcp_release() */
++		ovpn_tcp_enqueue(peer, skb);
++	} else if (!skb_queue_empty_lockless(&peer->tcp.out_queue)) {
++		/* preserve ordering with deferred packets.
++		 * If out_msg is pending, write_space resumes TX
++		 */
++		if (ovpn_tcp_enqueue(peer, skb) && !peer->tcp.out_msg.skb)
++			queue_work(ovpn_wq, &sock->tcp_tx_work);
+ 	} else {
+ 		ovpn_tcp_send_sock_skb(peer, sk, skb);
+ 	}
+-unlock:
+ 	spin_unlock(&sk->sk_lock.slock);
+ }
+ 
+ static void ovpn_tcp_release(struct sock *sk)
+ {
+-	struct sk_buff_head queue;
+ 	struct ovpn_socket *sock;
+ 	struct ovpn_peer *peer;
+-	struct sk_buff *skb;
+ 
+ 	rcu_read_lock();
+ 	sock = rcu_dereference_sk_user_data(sk);
+@@ -391,11 +450,7 @@ static void ovpn_tcp_release(struct sock *sk)
+ 	}
+ 	rcu_read_unlock();
+ 
+-	__skb_queue_head_init(&queue);
+-	skb_queue_splice_init(&peer->tcp.out_queue, &queue);
+-
+-	while ((skb = __skb_dequeue(&queue)))
+-		ovpn_tcp_send_sock_skb(peer, sk, skb);
++	ovpn_tcp_flush_queue(peer, sk);
+ 
+ 	peer->tcp.sk_cb.prot->release_cb(sk);
+ 	ovpn_peer_put(peer);
+diff --git a/drivers/net/ovpn/tcp.h b/drivers/net/ovpn/tcp.h
+index a3aa3570ae5e..9f2b5efcbd3a 100644
+--- a/drivers/net/ovpn/tcp.h
++++ b/drivers/net/ovpn/tcp.h
+@@ -30,7 +30,7 @@ void ovpn_tcp_socket_wait_finish(struct ovpn_socket *sock);
+  * Required by the OpenVPN protocol in order to extract packets from
+  * the TCP stream on the receiver side.
+  */
+-void ovpn_tcp_send_skb(struct ovpn_peer *peer, struct sock *sk,
++void ovpn_tcp_send_skb(struct ovpn_peer *peer, struct ovpn_socket *sock,
+ 		       struct sk_buff *skb);
+ void ovpn_tcp_tx_work(struct work_struct *work);
+ 
+-- 
+2.56.0
+
 
 
 _______________________________________________
