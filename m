@@ -1,137 +1,135 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D1D6606A324
-	for <openvpn-devel@archiver.kernel.org>; Mon,  2 Nov 2026 10:55:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F6D4606A326
+	for <openvpn-devel@archiver.kernel.org>; Mon,  2 Nov 2026 11:17:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=jNEC1fep;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=hUqdw9dJ;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=miXgfbjw;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=hF3d+1s3
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=Gs05/smd;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=a0/ZWf17;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=bjZs4dAY;
+	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=XsPNPuAB
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
+	Subject:MIME-Version:Message-ID:References:Date:Sender:To:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
 	List-Unsubscribe-Post:List-Owner;
-	bh=pIZZkq+2aEA3jSUr4TaPCQUNRHlzb0HacBmPFJgZV5s=; b=jNEC1fepnzp3WcgFOyQnaAC99/
-	ZYxwqt8ou61j8wFLA7ZMXX9jU+1FTupnW5oHbaaO9dUuxQfeHnwOo3qqWJc00tbfEc5EiK0QywQ3n
-	cxin0OqFI4k4dsNURyi9OJb2RYjPySHmXkDz9JBIicHGCfEzq4nwbBdDriq14Ef9+Pjs=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	bh=vP40hG74ewmnaGkKAfIXhxTcXqViiHrU6RTdIzOgXe8=; b=Gs05/smd9xLezntG3WxS2sLKmX
+	aJEBVwVOWUqeY3MDQ2Qoq5nwX2FH/CcP0Y1R6+e0tiSkytoBultVw8koCg317Aowi6yhaAHsIIKvp
+	iWoLPVOo34lcbM4/WLpmIi9esftwOlfkiKtjjuQPOuxCGHr4LLb00KJQ9zaQ2DEeubhw=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xNpgy-000000000x1-334R;
-	Mon, 02 Nov 2026 10:55:08 +0000
+	id 1xNq2a-000000005JZ-25b7;
+	Mon, 02 Nov 2026 11:17:28 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xNpgx-000000000wq-3jW8
+ (envelope-from <gerrit@openvpn.net>) id 1xNq2Y-000000005JS-1iUL
  for openvpn-devel@lists.sourceforge.net;
- Mon, 02 Nov 2026 10:55:07 +0000
+ Mon, 02 Nov 2026 11:17:26 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
+ :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:Date:From
+ :Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From:
+ Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=EdyEDxDLx2P8YWjeCevwyhrX+gpFGQW7RQ4ywfErrS8=; b=hUqdw9dJQUlEGJ5QxeSTNLnTdD
- SDe4Vw9+S9VdMYDRK3Oq6UzWhrxFHgEXkBA5z9Ucu9MZe/nfxU66VERjtn2xVBWkyrKTFsTi611wl
- lxgVx7mUBc7FnoCBYUCdDY5stFJgxGa78gEwIsQ4nmrXVMKKXhmjPhwnV5ltJhRGjtwc=;
+ bh=2lpX1hZD2fWugnLeq9RoMoa2M0zAlYVgOzGI5RSV3DI=; b=a0/ZWf17kCkzKVGLsSq4Fk/iKq
+ 1lrTCaJsxB3zoyJRosjtwaOxz9kkYl6ygfVeP+0uyG46L4fHqojmnD7oLOTd1NGNjZkGqzkQ6HCp5
+ dAw0zf3dtagjIqSnKo72SovSJVJ2z937HE++yhrV5mRzbmiSwVQO9MmodgZS0e6/MMjM=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
- Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
+ Subject:References:List-Unsubscribe:List-Id:Cc:Date:From:Sender:To:Content-ID
+ :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+ Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=EdyEDxDLx2P8YWjeCevwyhrX+gpFGQW7RQ4ywfErrS8=; b=miXgfbjwPrncyuEd3Id39sMB1e
- aRwyJIgfT/rmlT1TyoOCKq7odHzy87IbIlc3Xz5Nv0KS4osNCRld3v9wRzPx2GpE8L7x7mF5JD9T8
- rauPi8K1CUe1aCC4E+tXg6OaOaa5m3W4T0jRBkKEiqZlZRWbfLeUoi4lKD0xK6aUBcmE=;
+ bh=2lpX1hZD2fWugnLeq9RoMoa2M0zAlYVgOzGI5RSV3DI=; b=bjZs4dAYiDkkbxhy/5a4Zg2S5p
+ YUrWN5dk9Zql64q9JB86woVawX9WGwNsoYZsOofososNQk1ZUD/ECtOmWjq1fltG3YxiaSVuF8QXq
+ Zn+oR2XEoBt9Nd/8M1Lm/IAo4Q3msUIuyvodLwEO/ndWSi2yUHDNh/CV439zN7nlF6dQ=;
 Received: from mail-wm1-f44.google.com ([209.85.128.44])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xNpgw-000000003r7-17sQ for openvpn-devel@lists.sourceforge.net;
- Mon, 02 Nov 2026 10:55:07 +0000
+ id 1xNq2W-000000004VT-2VlQ for openvpn-devel@lists.sourceforge.net;
+ Mon, 02 Nov 2026 11:17:26 +0000
 Received: by mail-wm1-f44.google.com with SMTP id
- 5b1f17b1804b1-4a9a8d6cea8so36820335e9.1
+ 5b1f17b1804b1-4a2153c8525so17890545e9.3
  for <openvpn-devel@lists.sourceforge.net>;
- Mon, 02 Nov 2026 02:55:06 -0800 (PST)
+ Mon, 02 Nov 2026 03:17:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1793616900; x=1794221700; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1793618238; x=1794223038; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
- :reply-to:content-type;
- bh=EdyEDxDLx2P8YWjeCevwyhrX+gpFGQW7RQ4ywfErrS8=;
- b=hF3d+1s3kd/x2TZEY8ueitFG/iCUAih0frSxmdkJ5qI1GF/zSBdTHaRs1waY/DASuG
- T0uRACmKM2W2f57SpAKBi2VBLFnrsjzledwVTPgYBUll9CaRFHaIfH7ho8prH+pW+Rei
- hGqGOQogKQK71K2zopnrWfdr8HWjLp1I055p82yQ9V3GUaP4XibYeWP8xCpcykKd4apK
- GaWFPYvwlSOnfe1bFzvZUqPgB7TfcwgtfAHlKMDZ/Q00qaKH2W0V2NEjmoVtnay9fxVG
- x0Fmxdq/WiM+C85K029fY5ykH+1M9mFE7uRmS9UMvZhCaTtw4glir6nWtEiZB8gMHFN3
- SxlA==
+ :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
+ :date:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+ bh=2lpX1hZD2fWugnLeq9RoMoa2M0zAlYVgOzGI5RSV3DI=;
+ b=XsPNPuABV0UkX8PwGOsRRd+ntU0L82/cZJi2BKLwJgPGH+86rhe4VuO+u0IapPbDg4
+ LivxOulDLtUloGvh0vk/EohM6TfoXDbYr0qwrfACKfN1oDWLfbRDu+0b29UQ9SIrRWxP
+ LWZ3eYubmo3CRDvdK4Xl8i2LZGVMbM6y2c5xl1oJyXU6UU6kfWxQNtYF2spaLsqWUa4k
+ xORTnMcyZzqqJ9qPxcFgR9Pnk75PYvkEz6gPzbZ03vgUIV0MAwBC72Fn2moN4qUIJyXk
+ Lfpv74jwYQL8APJAxmJ+ian/0Q9YH/zdr6SMj/P8TDDttsVZVypKG4yNSrGpITeMGACI
+ /IYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1793616900; x=1794221700;
+ d=1e100.net; s=20260707; t=1793618238; x=1794223038;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
- :cc:subject:date:message-id:reply-to:content-type;
- bh=EdyEDxDLx2P8YWjeCevwyhrX+gpFGQW7RQ4ywfErrS8=;
- b=Nit9uwMq8iCvmADZjaso0/qVE5P2YZL2TMR51GkDUvGKItF2H5x3wJsJuEKxiGaPr/
- pziFdT776+k2nnUjo4fjVevDhjVw0XywvtvUl3VPYapW2iitTtr+nX4+dCKh7BL+sLQ8
- Phf+bTekFKXjmrxAwnE6iuXP8sS9WuMW7WDVl2l0mSSt3KOD+KK6cUnhc2kq4y4f2l3S
- ZP/jGIVv2dw6nSHuo0Pehlo6LNdkckhWtQiNvjAaXcj3NpZ2iJ7JPSYkbTnTYAPouK2C
- GLvLwU7yBQ+3kNrd6TZhkvY9k5M8rHMVMJlFR63EU7v1ks1C3llpQBVGlOR2x5efaVPB
- jojQ==
-X-Gm-Message-State: AFq9FYIH4KGCS3JRjJHH0z5mBvNcTuxUIGdW0fnoXY+0yyLf8OD3S/SQ
- Ec/cWSuy2PWhmP9CaAMNNN/VaLfvMPdp8LMmnRVWAVAKcSlSz2dR2k0OeRd7ieiuCnF4PY+RV6X
- hZkWjtuu/icPi9ivOK29cmsHWn2cZqTfzFHLQD8Z6F3pgI9RLv4/eV7GNm5oAgupwf1Um
-X-Gm-Gg: AYBFou1MP7b3bdekWG9GL1DYnmGpFlrVVrv11LzTsUHy/KZXLQ8nGpKsiG48NzoB4QO
- scYZ/4cIJbRCHEfqMkhbhM22IlSBo1p3AQIluVnRocggMZJJ+vl74QA9reE6KVutsNV4IHLzwMQ
- BkGUfD4oBh75u6HwtbnpoolF2zHzuCo+4MGSTSUHB+8X9HMrXgqNBgmZCUEAmHbjQYhWOgiBIdx
- l97gxBnkz8WMy2NnvpeuwpRYV91Ov3Tu1RpJDhgQWnfdVVpyx8Vv8C69tKLIPq/FvOIv/LdtKXd
- IvboorMQIok8wyc2SzCDeUz6hKA/YSyt80VFKcGXSHxUoyLoqbKGEL0I3w1Odn70x4B3JlgjhUb
- gRu/uCzW0Tx3ivEhgRd3OYC2LU24enWVphUD2HaEOK55op12paVEfv7swtwZqnGo4AdZRjlohbg
- Wnz3Cq8LwhiGAyLKjpH8wd5zOw/aJq2TNldTs4dwPfEPLNSKb4OgXvqSr0qwW+MTYOGapPFLJf2
- 1ca/kwtgbWvfSELcmah4sZ6TC3wGmVhk4nNMC5bVKV07Ig+YQAsBFzaZkuSY6SRVCcTU2Too28X
- /LHoD+Zcwyi2mZkGl7pCyv5MWm3lnlbBDUIkM+lZ34h8Oe7gUc2tVzCFrlrph8zBRU2nO+RuBCO
- 9pfd7tGeZSf0caqbK+3EqVISac6ExZsUs7gD/kBMuPI8zOxSIFju4mIOdEpvBrTYliRj44oh2ig
- kZKA9TkrxQiiNekw==
-X-Received: by 2002:a05:600c:64c9:b0:4a2:180a:3417 with SMTP id
- 5b1f17b1804b1-4ac14dd1debmr230539255e9.1.1793616899407; 
- Mon, 02 Nov 2026 02:54:59 -0800 (PST)
+ :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
+ :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+ :message-id:reply-to:content-type;
+ bh=2lpX1hZD2fWugnLeq9RoMoa2M0zAlYVgOzGI5RSV3DI=;
+ b=NNjY4Hjfa+NYG01nla+hF5V1zJWveUBlG0TEp0V0HB4t7DhCt54vDFC3MdSSGLeQwP
+ 1ZfQfkYALrVRM6PAPIxpQYWBa1ChkWt2GT8BlqmCUlWKnpalmvjizCNtN9aBq86YCkjY
+ v3IXzP0crxLnwJ6Qt9TcKfegyyKSc7DEET27RqXtbmgHPUjBzgHlZZHrfYLCqdUtFuSC
+ RL2gmKEhG6/J7i+joh8ezAqaLU1X3hAHmZMHRpCgHQZWAfZe7+0CSCvlsaOuGuumX9b+
+ 5P4sDe4ffyAUAwIUEIiFQYipRpWGY7czBNuNU8/4USk/IjV9dr6WSiycg/gARgMcDAOY
+ vItQ==
+X-Gm-Message-State: AFq9FYLQo64VFdzOQKmkpCkxWyeMoKt+BUmlcpcB7pLFUe/KQ0+3lRG5
+ s547E6Pmjik6tFQFfUd0VP2slW0Po9wENhEwrZMTohVEKo5FVJaYiUt6qqfQ0QdyvB6Amu8zHGS
+ fCPhtFf9j+LoJo5nfk8e22jmfTyWELATkpflCdy4FVbOQwgdP7EmZaPXC80n4pJ+z9kbmqHiKQD
+ L6it8e9w==
+X-Gm-Gg: AYBFou1h8JjiFq1xHlAf9HEe9G+1jQ20oH0o9aNF0JOzFQBSsHl7MmJzWegW8icnGHd
+ bmu8bsnjnCEvmtqonEswdVl41BUSD8xmQ/nJcMeH0Ar5HE8jhwlDbIAigy71bW8BssTAp868bCa
+ z06jPnwuaavCh4ItgLGu/Tmj3nLbIQUolntBDOAmA2Vl9XhFoUZhCGNJlvDPxPM3jax1iwiFl1g
+ jI/681GcU5d9dtTeLDG4ClKqKN8ZG4lrplq/Z/Oeyc+H1oV1T6UbsM+yfKpD7xwpgYKdM9Y9oIH
+ hxdEyq+Ip3XXC2XXBZrYL2P1QHX1FFPbLL2PNEorUz27SyQ9LU8QeouF/8+T8BSTiAUtq4N3Zq8
+ rnNlI9VVeDY+4KRceiGCORAARNBsO1gk+TnGsIYRIIwkWSOqA4ypIA3OyJ0fOvGlh89NLM2kM3b
+ OcZdG7K80csepS/8nthu0DTXPabPvl1HcTGcKOcjdNO/m+I0SMDpyaqTeaNS3Cv/8tB9NoQR8a3
+ SGNIf8CFlgnQ7AcU3Ec3K1dUXzB2tYLcgA1Qh9fU/lK3VEgSIERwxBI2RbMVClDIVmgUdUSqCRr
+ /hP5FDEFEBBWeuwO7pS1T1NlLWjfboVHWJXkfWbgI6aHbuNCkHjzw+2a2/tn5ko9Syq49qNzIQz
+ guE2ieIUk0jCHIKwvEi7e48Fhu7oszI9kdaHuDKZyPNn42cE3ypYGfCQKagDQnK7tj/16g9UB3t
+ 0KcDpsTKHx1kxOJQ==
+X-Received: by 2002:a05:600c:6285:b0:4a1:fa27:df7c with SMTP id
+ 5b1f17b1804b1-4ac182dc8f6mr218771095e9.34.1793618237799; 
+ Mon, 02 Nov 2026 03:17:17 -0800 (PST)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-4ac0a66caefsm213911455e9.5.2026.11.02.02.54.58
+ ffacd0b85a97d-48e71a4d3e9sm21852410f8f.6.2026.11.02.03.17.17
+ for <openvpn-devel@lists.sourceforge.net>
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 02 Nov 2026 02:54:58 -0800 (PST)
-X-Google-Original-From: "Gert Doering (Code Review)"
+ Mon, 02 Nov 2026 03:17:17 -0800 (PST)
+X-Google-Original-From: "Arne Schwabe (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Mon, 2 Nov 2026 10:54:57 +0000
-To: Laptops <jeff@incrediblybased.co>, Arne Schwabe <arne-openvpn@rfc2549.org>,
- Frank Lichtenheld <frank@lichtenheld.com>
+Date: Mon, 2 Nov 2026 11:17:16 +0000
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: newpatchset
-X-Gerrit-PatchSet: 2
-X-Gerrit-Change-Id: Icf890b018b9950c698e46cc44b39edaa0c6ec566
-X-Gerrit-Change-Number: 2034
+X-Gerrit-MessageType: newchange
+X-Gerrit-PatchSet: 1
+X-Gerrit-Change-Id: Ic5cf5ef723a33ad304b080ef19db2e4a0f4bb2eb
+X-Gerrit-Change-Number: 2080
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2034?usp=email>
-X-Gerrit-Commit: 16c3f4df69f51ffcf403527fbe0bc8c0bffd9417
-In-Reply-To: <gerrit.1793032811000.Icf890b018b9950c698e46cc44b39edaa0c6ec566@gerrit.openvpn.net>
-References: <gerrit.1793032811000.Icf890b018b9950c698e46cc44b39edaa0c6ec566@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzkzMDMyODExMDAwLkljZjg5MGIwMThiOTk1MGM2OThlNDZjYzQ0YjM5ZWRhYTBjNmVjNTY2QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <f4adfc053d25af43c34be58ee2dfb28200ccd3dc-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2080?usp=email>
+X-Gerrit-Commit: 2de62e2fe5ed7b35cfb8bc64155e9256d4b7954f
+References: <gerrit.1793618230000.Ic5cf5ef723a33ad304b080ef19db2e4a0f4bb2eb@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzkzNjE4MjMwMDAwLkljNWNmNWVmNzIzYTMzYWQzMDRiMDgwZWYxOWRiMmU0YTBmNGJiMmViQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <9f23cdf760d7fae65cad2b9c90381c75b771ebc2-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.2
-X-Spam-Score: 0.8 (/)
-X-Headers-End: 1xNpgw-000000003r7-17sQ
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: buffer: restructure
- some loops and assignments
+X-Spam-Score: 2.0 (++)
+X-Headers-End: 1xNq2W-000000004VT-2VlQ
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Clean up weak key
+ check
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -141,594 +139,441 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "Gert Doering \(Code Review\) via Openvpn-devel"
+From: "Arne Schwabe \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
-Reply-To: gert@greenie.muc.de, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com,
- jeff@incrediblybased.co
-Cc: "Gert Doering \(Code Review\)" <gerrit@openvpn.net>,
+Reply-To: arne-openvpn@rfc2549.org, openvpn-devel@lists.sourceforge.net
+Cc: "Arne Schwabe \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============9201025385707837150=="
-X-Spam-Status: No, score=-12.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+Content-Type: multipart/mixed; boundary="===============3384860788285791817=="
+X-Spam-Status: No, score=-11.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,MISSING_HEADERS,
 	PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,SPF_PASS,T_KAM_HTML_FONT_INVALID,
 	WEIRD_PORT autolearn=ham autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============9201025385707837150==
+--===============3384860788285791817==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="hxFY9tO0+To="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="HMYU2kayTmE="; charset=UTF-8
 
---hxFY9tO0+To=
+--HMYU2kayTmE=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: Arne Schwabe, Frank Lichtenheld, Lapt=
-ops=2E
-
-Gert Doering has uploaded a new patch set (#2) to the change origin=
-ally created by Laptops=2E ( https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/203=
-4?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Cod=
-e-Review+2 by Arne Schwabe, Code-Review+2 by Frank Lichtenheld
-
-The change =
-is no longer submittable: Code-Review and checks~ChecksSubmitRule are unsat=
-isfied now=2E
+Arne Schwabe has uploaded this change for review=2E ( https://gerrit=2Eopen=
+vpn=2Enet/c/openvpn/+/2080?usp=3Demail )
 
 
-Change subject: buffer: restructure some loops and assignme=
-nts
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+Change subject: Clean up weak ke=
+y check
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-buffer:=
- restructure some loops and assignments
+Clea=
+n up weak key check
 
-Small cleanups in buffer=2Ec that =
-do not change behaviour, in preparation
-for building it with -fbounds-safet=
-y:
+These methods only check for zero keys after weak DES =
+checks were removed=2E
+Simplify all this to always the first 32 bytes of ke=
+y and hmac and ensure
+that they are not zero=2E
 
-- alloc_buf(), alloc_buf_gc(), clone_buf(): assign buf=2Edata before
-  =
-buf=2Ecapacity and drop the redundant casts of the allocator result
-- free_=
-buf_gc(): compare the entry address arithmetically instead of
-  stepping a =
-struct gc_entry pointer past its object
-- buf_printf(): bound the length of=
- the written string by the capacity
-  passed to vsnprintf()
-- string_array_=
-len(), print_argv(), string_class(), string_substitute():
-  walk NUL-termin=
-ated strings and arrays by advancing the pointer
-- string_mod(): write thro=
-ugh a separate output pointer
-- string_alloc_buf(): use a temporary for the=
- copied string
-- buf_parse(): check for an empty line without strlen()
+This now always raises a F=
+ATAL alert instead of handling this error
+gracefully but a all zeros keys s=
+hould never ever happen=2E
 
-Cha=
-nge-Id: Icf890b018b9950c698e46cc44b39edaa0c6ec566
-Signed-off-by: Jeff Binde=
-l <jeff@incrediblybased=2Eco>
-Acked-by: Frank Lichtenheld <frank@lichtenhel=
-d=2Ecom>
-Gerrit URL: https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2034
-Messag=
-e-Id: <20261027130252=2E2457-1-gert@greenie=2Emuc=2Ede>
-URL: https://www=2E=
-mail-archive=2Ecom/openvpn-devel@lists=2Esourceforge=2Enet/msg40197=2Ehtml
-=
-Signed-off-by: Gert Doering <gert@greenie=2Emuc=2Ede>
+Change-Id: Ic5cf5ef723a33ad304b080ef19db2e4a0f4=
+bb2eb
+Signed-off-by: Arne Schwabe <arne@rfc2549=2Eorg>
 ---
-M src/openvpn/buf=
-fer=2Ec
-1 file changed, 26 insertions(+), 34 deletions(-)
+M src/openvpn/cr=
+ypto=2Ec
+M src/openvpn/crypto=2Eh
+M src/openvpn/ssl=2Ec
+3 files changed, 14=
+ insertions(+), 57 deletions(-)
 
 
-  git pull ssh:=
-//gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/34/2034/2
 
-diff --git a=
-/src/openvpn/buffer=2Ec b/src/openvpn/buffer=2Ec
-index c683f8e=2E=2E8813fa5=
- 100644
---- a/src/openvpn/buffer=2Ec
-+++ b/src/openvpn/buffer=2Ec
-@@ -66,8 =
-+66,8 @@
-     {
-         buf_size_error(size);
-     }
--    buf=2Ecapacity =
-=3D (int)size;
-     buf=2Edata =3D calloc(1, size);
-+    buf=2Ecapacity =3D=
- (int)size;
-     check_malloc_return(buf=2Edata);
- 
-     return buf;
-@@ -83=
-,8 +83,8 @@
-     {
-         buf_size_error(size);
-     }
-+    buf=2Edata =
-=3D gc_malloc(size, false, gc);
-     buf=2Ecapacity =3D (int)size;
--    buf=
-=2Edata =3D (uint8_t *)gc_malloc(size, false, gc);
-     if (size)
-     {
-  =
-       *buf=2Edata =3D 0;
-@@ -100,15 +100,15 @@
- #endif
- {
-     struct buff=
-er ret;
-+    ret=2Edata =3D malloc(buf->capacity);
-     ret=2Ecapacity =3D =
-buf->capacity;
-+    check_malloc_return(ret=2Edata);
-     ret=2Eoffset =3D =
-buf->offset;
-     ret=2Elen =3D buf->len;
- #ifdef BUF_INIT_TRACKING
-     re=
-t=2Edebug_file =3D buf->debug_file;
-     ret=2Edebug_line =3D buf->debug_li=
-ne;
- #endif
--    ret=2Edata =3D (uint8_t *)malloc(buf->capacity);
--    chec=
-k_malloc_return(ret=2Edata);
-     memcpy(BPTR(&ret), CBPTR(buf), BLENZ(buf)=
-);
-     return ret;
- }
-@@ -182,7 +182,7 @@
-         while (*e)
-         {
- =
-            /* check if this object is the one we want to delete */
--      =
-      if ((uint8_t *)(*e + 1) =3D=3D buf->data)
-+            if ((uintptr_t=
-)*e + sizeof(struct gc_entry) =3D=3D (uintptr_t)buf->data)
-             {
- =
-                struct gc_entry *to_delete =3D *e;
- 
-@@ -238,7 +238,7 @@
-  =
-           va_start(arglist, format);
-             stat =3D vsnprintf(ptr, =
-cap, format, arglist);
-             va_end(arglist);
--            buf->len =
-+=3D (int)strlen(ptr);
-+            buf->len +=3D (int)strnlen(ptr, cap);
- =
-            if (stat >=3D 0 && stat < cap)
-             {
-                 =
-ret =3D true;
-@@ -607,7 +607,7 @@
- 
-         if (gc)
-         {
--          =
-  ret =3D (char *)gc_malloc(n, false, gc);
-+            ret =3D gc_malloc(n=
-, false, gc);
-         }
-         else
-         {
-@@ -648,7 +648,7 @@
-     =
-int i =3D 0;
-     if (array)
-     {
--        while (array[i])
-+        for =
-(; *array; ++array)
-         {
-             ++i;
-         }
-@@ -661,13 +661=
-,9 @@
- {
-     struct buffer out =3D alloc_buf_gc(256, gc);
-     int i =3D 0=
-;
--    for (;;)
-+    for (; *p; ++p)
-     {
--        const char *cp =3D *p+=
-+;
--        if (!cp)
--        {
--            break;
--        }
-+        con=
-st char *cp =3D *p;
-         if (i)
-         {
-             buf_printf(&out=
-, " ");
-@@ -695,7 +691,8 @@
- 
-     ASSERT(str);
- 
--    buf_set_read(&buf, (=
-uint8_t *)string_alloc(str, gc), strlen(str) + 1);
-+    const char *copy =
-=3D string_alloc(str, gc);
-+    buf_set_read(&buf, (const uint8_t *)copy, s=
-trlen(str) + 1);
- 
-     if (buf=2Elen > 0) /* Don't count trailing '\0' as =
-part of length */
-     {
-@@ -789,7 +786,7 @@
-     } while (c);
- 
-     line[=
-size - 1] =3D '\0';
--    return !(eol && !strlen(line));
-+    return !(eol =
-&& line[0] =3D=3D '\0');
+  git pull ssh://gerrit=2Eopenvpn=2Enet:=
+29418/openvpn refs/changes/80/2080/1
+
+diff --git a/src/openvpn/crypto=2Ec b=
+/src/openvpn/crypto=2Ec
+index 3d3ab0c=2E=2Ec5a5c55 100644
+--- a/src/openvpn=
+/crypto=2Ec
++++ b/src/openvpn/crypto=2Ec
+@@ -1104,40 +1104,6 @@
+     ctx->i=
+nitialized =3D false;
  }
  
- /*
-@@ -970,11 +967,10 @@
- bool
- string_class=
-(const char *str, const unsigned int inclusive, const unsigned int exclusiv=
-e)
- {
--    char c;
-     ASSERT(str);
--    while ((c =3D *str++))
-+    for (=
-; *str; ++str)
-     {
--        if (!char_inc_exc(c, inclusive, exclusive))
+-static bool
+-key_is_zero(const struct key *key,=
+ const struct key_type *kt)
+-{
+-    size_t cipher_length =3D cipher_kt_key_=
+size(kt->cipher);
+-    for (size_t i =3D 0; i < cipher_length; ++i)
+-    {
 =
-+        if (!char_inc_exc(*str, inclusive, exclusive))
-         {
-        =
-     return false;
-         }
-@@ -990,11 +986,12 @@
- string_mod(char *str, =
-const unsigned int inclusive, const unsigned int exclusive,
-            con=
-st char replace)
- {
--    const char *in =3D str;
--    bool ret =3D true;
+-        if (key->cipher[i])
+-        {
+-            return false;
+-       =
+ }
+-    }
+-    msg(D_CRYPT_ERRORS, "CRYPTO INFO: WARNING: zero key detected=
+");
+-    return true;
+-}
 -
-=
-     ASSERT(str);
- 
-+    char *out =3D str;
-+    const char *in =3D out;
-+ =
-   bool ret =3D true;
-+
-     while (true)
-     {
-         char c =3D *in++;=
-
-@@ -1007,12 +1004,12 @@
-             }
-             if (c)
-             {
-=
--                *str++ =3D c;
-+                *out++ =3D c;
-             =
-}
-         }
-         else
-         {
--            *str =3D '\0';
-+        =
-    *out =3D '\0';
-             break;
-         }
-     }
-@@ -1103,19 +1100,=
-14 @@
- char *
- string_substitute(const char *src, char from, char to, struc=
-t gc_arena *gc)
- {
--    char *ret =3D (char *)gc_malloc(strlen(src) + 1, tr=
-ue, gc);
-+    char *ret =3D gc_malloc(strlen(src) + 1, true, gc);
-     char=
- *dest =3D ret;
--    char c;
- 
--    do
-+    for (; *src; ++src)
-     {
--   =
-     c =3D *src++;
--        if (c =3D=3D from)
+-/*
+- * Make sure that cipher key is a valid key=
+ for current key_type=2E
+- */
+-bool
+-check_key(const struct key *key, const=
+ struct key_type *kt)
+-{
+-    if (cipher_defined(kt->cipher))
+-    {
+-     =
+   /*
+-         * Check for zero key
+-         */
+-        if (key_is_zero(=
+key, kt))
 -        {
--            c =
-=3D to;
+-            return false;
 -        }
--        *dest++ =3D c;
--    } while (c);
-+        *dest=
-++ =3D (*src =3D=3D from) ? to : *src;
-+    }
-+    *dest =3D '\0';
-     ret=
-urn ret;
+-    }
+-    retu=
+rn true;
+-}
+-
+ /*
+  * Generate a random key=2E
+  */
+@@ -1307,8 +1273,8 @@
+ =
+            print_key_filename(key_file, key_inline));
+     }
+ 
+-    /* che=
+ck for and fix highly unlikely key problems */
+-    verify_fix_key2(&key2, =
+key_type, key_file);
++    /* check for highly unlikely key problems */
++   =
+ check_key2(&key2);
+ 
+     /* handle key direction */
+     key_direction_st=
+ate_init(&kds, key_direction);
+@@ -1708,18 +1674,19 @@
  }
+ 
+ void
+-verify_f=
+ix_key2(struct key2 *key2, const struct key_type *kt, const char *shared_se=
+cret_file)
++check_key2(struct key2 *key2)
+ {
+-    int i;
++    /* Check the =
+first 128 bit of every key slot to be not 0=2E This is
++     * not a compre=
+ssive check, but no valid key should fail this check */
+ 
+-    for (i =3D 0=
+; i < key2->n; ++i)
++    uint8_t zero_key[16] =3D { 0 };
++
++    if (memcmp(=
+key2->keys[0]=2Ecipher, zero_key, sizeof(zero_key)) =3D=3D 0
++        || me=
+mcmp(key2->keys[1]=2Ecipher, zero_key, sizeof(zero_key)) =3D=3D 0
++        =
+|| memcmp(key2->keys[0]=2Ehmac, zero_key, sizeof(zero_key)) =3D=3D 0
++     =
+   || memcmp(key2->keys[0]=2Ehmac, zero_key, sizeof(zero_key)) =3D=3D 0)
+  =
+   {
+-        /* This should be a very improbable failure */
+-        if (!=
+check_key(&key2->keys[i], kt))
+-        {
+-            msg(M_FATAL, "Key #%=
+d in '%s' is bad=2E  Try making a new key with --genkey=2E", i + 1,
+-      =
+          shared_secret_file);
+-        }
++        msg(M_FATAL, "One key in=
+ static key/generated key  is all zero=2E");
+     }
+ }
+ 
+diff --git a/src/o=
+penvpn/crypto=2Eh b/src/openvpn/crypto=2Eh
+index e3c1c6a=2E=2Edbe0802 10064=
+4
+--- a/src/openvpn/crypto=2Eh
++++ b/src/openvpn/crypto=2Eh
+@@ -414,8 +414,=
+6 @@
+  */
+ int write_key_file(const int nkeys, const char *filename);
+ 
+-bo=
+ol check_key(const struct key *key, const struct key_type *kt);
+-
+ /**
+  * =
+Initialize a key_type structure with=2E
+  *
+@@ -621,7 +619,7 @@
+ 
+ void key=
+_direction_state_init(struct key_direction_state *kds, int key_direction);
+=
+ 
+-void verify_fix_key2(struct key2 *key2, const struct key_type *kt, const=
+ char *shared_secret_file);
++void check_key2(struct key2 *key2);
+ 
+ void mu=
+st_have_n_keys(const char *filename, const char *option, const struct key2 =
+*key2, int n);
+ 
+diff --git a/src/openvpn/ssl=2Ec b/src/openvpn/ssl=2Ec
+ind=
+ex 086a6fc=2E=2Eddee3eb 100644
+--- a/src/openvpn/ssl=2Ec
++++ b/src/openvpn/=
+ssl=2Ec
+@@ -1583,15 +1583,7 @@
+     key2_print(&key2, &session->opt->key_ty=
+pe, "Master Encrypt", "Master Decrypt");
+ 
+     /* check for weak keys */
+-=
+    for (int i =3D 0; i < 2; ++i)
+-    {
+-        if (!check_key(&key2=2Eke=
+ys[i], &session->opt->key_type))
+-        {
+-            msg(D_TLS_ERRORS, =
+"TLS Error: Bad dynamic key generated");
+-            goto exit;
+-        }=
+
+-    }
+-
++    check_key2(&key2);
+     ret =3D init_key_contexts(ks, multi,=
+ &session->opt->key_type, server, &key2,
+                             sessi=
+on->opt->dco_enabled);
  
 
 -- 
-To view, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/=
-+/2034?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit =
-https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+To view, visit https://gerrit=2Eopenvpn=2Enet=
+/c/openvpn/+/2080?usp=3Demail
+To unsubscribe, or for help writing mail filt=
+ers, visit https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Gerrit-MessageType: ne=
-wpatchset
+Gerrit-Mess=
+ageType: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I=
-cf890b018b9950c698e46cc44b39edaa0c6ec566
-Gerrit-Change-Number: 2034
-Gerrit-=
-PatchSet: 2
-Gerrit-Owner: Laptops <jeff@incrediblybased=2Eco>
-Gerrit-Review=
-er: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Reviewer: Frank Lichte=
-nheld <frank@lichtenheld=2Ecom>
-Gerrit-CC: openvpn-devel <openvpn-devel@lis=
-ts=2Esourceforge=2Enet>
-Gerrit-Attention: Laptops <jeff@incrediblybased=2Ec=
-o>
-Gerrit-Attention: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Atten=
-tion: Frank Lichtenheld <frank@lichtenheld=2Ecom>
+Gerrit-Cha=
+nge-Id: Ic5cf5ef723a33ad304b080ef19db2e4a0f4bb2eb
+Gerrit-Change-Number: 208=
+0
+Gerrit-PatchSet: 1
+Gerrit-Owner: Arne Schwabe <arne-openvpn@rfc2549=2Eorg=
+>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
 
---hxFY9tO0+To=
+--HMYU2kayTmE=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: Arne Schwabe, Frank Lichtenheld, Laptops=2E </p>
-<p>G=
-ert Doering <strong>uploaded patch set #2</strong> to the change originally=
- created by Laptops=2E</p><p><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/op=
-envpn/+/2034?usp=3Demail">View Change</a></p><p>The following approvals got=
- outdated and were removed:
-Code-Review+2 by Arne Schwabe, Code-Review+2 by=
- Frank Lichtenheld</p><p>The change is no longer submittable: Code-Review a=
-nd checks~ChecksSubmitRule are unsatisfied now=2E</p><pre class=3D"blocks" =
-style=3D"font-family: monospace,monospace; white-space: pre-wrap;">buffer: =
-restructure some loops and assignments<br><br>Small cleanups in buffer=2Ec =
-that do not change behaviour, in preparation<br>for building it with -fboun=
-ds-safety:<br><br>- alloc_buf(), alloc_buf_gc(), clone_buf(): assign buf=2E=
-data before<br>  buf=2Ecapacity and drop the redundant casts of the allocat=
-or result<br>- free_buf_gc(): compare the entry address arithmetically inst=
-ead of<br>  stepping a struct gc_entry pointer past its object<br>- buf_pri=
-ntf(): bound the length of the written string by the capacity<br>  passed t=
-o vsnprintf()<br>- string_array_len(), print_argv(), string_class(), string=
-_substitute():<br>  walk NUL-terminated strings and arrays by advancing the=
- pointer<br>- string_mod(): write through a separate output pointer<br>- st=
-ring_alloc_buf(): use a temporary for the copied string<br>- buf_parse(): c=
-heck for an empty line without strlen()<br><br>Change-Id: Icf890b018b9950c6=
-98e46cc44b39edaa0c6ec566<br>Signed-off-by: Jeff Bindel &lt;jeff@incrediblyb=
-ased=2Eco&gt;<br>Acked-by: Frank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt=
-;<br>Gerrit URL: https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2034<br>Message=
--Id: &lt;20261027130252=2E2457-1-gert@greenie=2Emuc=2Ede&gt;<br>URL: https:=
-//www=2Email-archive=2Ecom/openvpn-devel@lists=2Esourceforge=2Enet/msg40197=
-=2Ehtml<br>Signed-off-by: Gert Doering &lt;gert@greenie=2Emuc=2Ede&gt;<br>-=
---<br>M src/openvpn/buffer=2Ec<br>1 file changed, 26 insertions(+), 34 dele=
-tions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace=
-,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:2=
-9418/openvpn refs/changes/34/2034/2</pre><pre style=3D"font-family: monospa=
-ce,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/buffer=
-=2Ec b/src/openvpn/buffer=2Ec</span><br><span>index c683f8e=2E=2E8813fa5 10=
-0644</span><br><span>--- a/src/openvpn/buffer=2Ec</span><br><span>+++ b/src=
-/openvpn/buffer=2Ec</span><br><span>@@ -66,8 +66,8 @@</span><br><span>     =
-{</span><br><span>         buf_size_error(size);</span><br><span>     }</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    buf=2Ecapacity =3D (i=
-nt)size;</span><br><span>     buf=2Edata =3D calloc(1, size);</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    buf=2Ecapacity =3D (int)size;=
-</span><br><span>     check_malloc_return(buf=2Edata);</span><br><span> </s=
-pan><br><span>     return buf;</span><br><span>@@ -83,8 +83,8 @@</span><br>=
-<span>     {</span><br><span>         buf_size_error(size);</span><br><span=
->     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    buf=2Eda=
-ta =3D gc_malloc(size, false, gc);</span><br><span>     buf=2Ecapacity =3D =
-(int)size;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    buf=2Ed=
-ata =3D (uint8_t *)gc_malloc(size, false, gc);</span><br><span>     if (siz=
-e)</span><br><span>     {</span><br><span>         *buf=2Edata =3D 0;</span=
-><br><span>@@ -100,15 +100,15 @@</span><br><span> #endif</span><br><span> {=
-</span><br><span>     struct buffer ret;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    ret=2Edata =3D malloc(buf-&gt;capacity);</span><br=
-><span>     ret=2Ecapacity =3D buf-&gt;capacity;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    check_malloc_return(ret=2Edata);</span><br=
-><span>     ret=2Eoffset =3D buf-&gt;offset;</span><br><span>     ret=2Elen=
- =3D buf-&gt;len;</span><br><span> #ifdef BUF_INIT_TRACKING</span><br><span=
->     ret=2Edebug_file =3D buf-&gt;debug_file;</span><br><span>     ret=2Ed=
-ebug_line =3D buf-&gt;debug_line;</span><br><span> #endif</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    ret=2Edata =3D (uint8_t *)malloc(bu=
-f-&gt;capacity);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    c=
-heck_malloc_return(ret=2Edata);</span><br><span>     memcpy(BPTR(&amp;ret),=
- CBPTR(buf), BLENZ(buf));</span><br><span>     return ret;</span><br><span>=
- }</span><br><span>@@ -182,7 +182,7 @@</span><br><span>         while (*e)<=
-/span><br><span>         {</span><br><span>             /* check if this ob=
-ject is the one we want to delete */</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-            if ((uint8_t *)(*e + 1) =3D=3D buf-&gt;data)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+            if ((uintpt=
-r_t)*e + sizeof(struct gc_entry) =3D=3D (uintptr_t)buf-&gt;data)</span><br>=
-<span>             {</span><br><span>                 struct gc_entry *to_d=
-elete =3D *e;</span><br><span> </span><br><span>@@ -238,7 +238,7 @@</span><=
-br><span>             va_start(arglist, format);</span><br><span>          =
-   stat =3D vsnprintf(ptr, cap, format, arglist);</span><br><span>         =
-    va_end(arglist);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-           buf-&gt;len +=3D (int)strlen(ptr);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+            buf-&gt;len +=3D (int)strnlen(ptr, ca=
-p);</span><br><span>             if (stat &gt;=3D 0 &amp;&amp; stat &lt; ca=
-p)</span><br><span>             {</span><br><span>                 ret =3D =
-true;</span><br><span>@@ -607,7 +607,7 @@</span><br><span> </span><br><span=
->         if (gc)</span><br><span>         {</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-            ret =3D (char *)gc_malloc(n, false, gc);=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            ret =3D=
- gc_malloc(n, false, gc);</span><br><span>         }</span><br><span>      =
-   else</span><br><span>         {</span><br><span>@@ -648,7 +648,7 @@</spa=
-n><br><span>     int i =3D 0;</span><br><span>     if (array)</span><br><sp=
-an>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        whil=
-e (array[i])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- for (; *array; ++array)</span><br><span>         {</span><br><span>       =
-      ++i;</span><br><span>         }</span><br><span>@@ -661,13 +661,9 @@<=
-/span><br><span> {</span><br><span>     struct buffer out =3D alloc_buf_gc(=
-256, gc);</span><br><span>     int i =3D 0;</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    for (;;)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    for (; *p; ++p)</span><br><span>     {</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        const char *cp =3D *p++;</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-        if (!cp)</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            break;</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        const char *cp =3D *p;</span><br><span>         =
-if (i)</span><br><span>         {</span><br><span>             buf_printf(&=
-amp;out, &quot; &quot;);</span><br><span>@@ -695,7 +691,8 @@</span><br><spa=
-n> </span><br><span>     ASSERT(str);</span><br><span> </span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    buf_set_read(&amp;buf, (uint8_t *)str=
-ing_alloc(str, gc), strlen(str) + 1);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    const char *copy =3D string_alloc(str, gc);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    buf_set_read(&amp;buf, (c=
-onst uint8_t *)copy, strlen(str) + 1);</span><br><span> </span><br><span>  =
-   if (buf=2Elen &gt; 0) /* Don&#39;t count trailing &#39;\0&#39; as part o=
-f length */</span><br><span>     {</span><br><span>@@ -789,7 +786,7 @@</spa=
-n><br><span>     } while (c);</span><br><span> </span><br><span>     line[s=
-ize - 1] =3D &#39;\0&#39;;</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    return !(eol &amp;&amp; !strlen(line));</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    return !(eol &amp;&amp; line[0] =3D=3D &#3=
-9;\0&#39;);</span><br><span> }</span><br><span> </span><br><span> /*</span>=
-<br><span>@@ -970,11 +967,10 @@</span><br><span> bool</span><br><span> stri=
-ng_class(const char *str, const unsigned int inclusive, const unsigned int =
-exclusive)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    char c;</span><br><span>     ASSERT(str);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    while ((c =3D *str++))</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    for (; *str; ++str)</span><br><s=
-pan>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if =
-(!char_inc_exc(c, inclusive, exclusive))</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        if (!char_inc_exc(*str, inclusive, exclusive))=
-</span><br><span>         {</span><br><span>             return false;</spa=
-n><br><span>         }</span><br><span>@@ -990,11 +986,12 @@</span><br><spa=
-n> string_mod(char *str, const unsigned int inclusive, const unsigned int e=
-xclusive,</span><br><span>            const char replace)</span><br><span> =
-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const char *in =
-=3D str;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    bool ret =
-=3D true;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
-span>     ASSERT(str);</span><br><span> </span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    char *out =3D str;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    const char *in =3D out;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    bool ret =3D true;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     while (true)</sp=
-an><br><span>     {</span><br><span>         char c =3D *in++;</span><br><s=
-pan>@@ -1007,12 +1004,12 @@</span><br><span>             }</span><br><span>=
-             if (c)</span><br><span>             {</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-                *str++ =3D c;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+                *out++ =3D c;</span>=
-<br><span>             }</span><br><span>         }</span><br><span>       =
-  else</span><br><span>         {</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-            *str =3D &#39;\0&#39;;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            *out =3D &#39;\0&#39;;</span><br><sp=
-an>             break;</span><br><span>         }</span><br><span>     }</s=
-pan><br><span>@@ -1103,19 +1100,14 @@</span><br><span> char *</span><br><sp=
-an> string_substitute(const char *src, char from, char to, struct gc_arena =
-*gc)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-    char *ret =3D (char *)gc_malloc(strlen(src) + 1, true, gc);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    char *ret =3D gc_malloc(s=
-trlen(src) + 1, true, gc);</span><br><span>     char *dest =3D ret;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    char c;</span><br><span> =
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    do</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    for (; *src; ++src)</span><br>=
-<span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        c=
- =3D *src++;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        i=
-f (c =3D=3D from)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            c =
-=3D to;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        *dest++ =3D c;</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    } while (c);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        *dest++ =3D (*src =
-=3D=3D from) ? to : *src;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    *des=
-t =3D &#39;\0&#39;;</span><br><span>     return ret;</span><br><span> }</sp=
-an><br></pre><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/=
-openvpn/+/2034?usp=3Demail">change 2034</a>=2E To unsubscribe, or for help =
-writing mail filters, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/setti=
-ngs?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schem=
-a=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:/=
-/schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https://gerrit=2Eo=
-penvpn=2Enet/c/openvpn/+/2034?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p>Arne Schwabe has =
+uploaded this change for <strong>review</strong>=2E</p><p><a href=3D"https:=
+//gerrit=2Eopenvpn=2Enet/c/openvpn/+/2080?usp=3Demail">View Change</a></p><=
+pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-space=
+: pre-wrap;">Clean up weak key check<br><br>These methods only check for ze=
+ro keys after weak DES checks were removed=2E<br>Simplify all this to alway=
+s the first 32 bytes of key and hmac and ensure<br>that they are not zero=
+=2E<br><br>This now always raises a FATAL alert instead of handling this er=
+ror<br>gracefully but a all zeros keys should never ever happen=2E<br><br>C=
+hange-Id: Ic5cf5ef723a33ad304b080ef19db2e4a0f4bb2eb<br>Signed-off-by: Arne =
+Schwabe &lt;arne@rfc2549=2Eorg&gt;<br>---<br>M src/openvpn/crypto=2Ec<br>M =
+src/openvpn/crypto=2Eh<br>M src/openvpn/ssl=2Ec<br>3 files changed, 14 inse=
+rtions(+), 57 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font=
+-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=
+=2Eopenvpn=2Enet:29418/openvpn refs/changes/80/2080/1</pre><pre style=3D"fo=
+nt-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/=
+src/openvpn/crypto=2Ec b/src/openvpn/crypto=2Ec</span><br><span>index 3d3ab=
+0c=2E=2Ec5a5c55 100644</span><br><span>--- a/src/openvpn/crypto=2Ec</span><=
+br><span>+++ b/src/openvpn/crypto=2Ec</span><br><span>@@ -1104,40 +1104,6 @=
+@</span><br><span>     ctx-&gt;initialized =3D false;</span><br><span> }</s=
+pan><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-static=
+ bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-key_is_zero(cons=
+t struct key *key, const struct key_type *kt)</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    size_t cipher_length =3D cipher_kt_key_size(kt-&gt;cipher);</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    for (size_t i =3D 0; i &l=
+t; cipher_length; ++i)</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (key=
+-&gt;cipher[i])</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+  {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            return=
+ false;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    msg(D_CRYPT_ERRORS, &quot;CRYPTO INFO:=
+ WARNING: zero key detected&quot;);</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    return true;</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-/*</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">- * Make sure that cipher key is a valid key for cur=
+rent key_type=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-bool</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-check_key(const struct key *key, const s=
+truct key_type *kt)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (cipher_defined=
+(kt-&gt;cipher))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        /*</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-         * Check for zero key</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-         */</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-        if (key_is_zero(key, kt))<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-            return false;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    return true;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
+br><span> /*</span><br><span>  * Generate a random key=2E</span><br><span> =
+ */</span><br><span>@@ -1307,8 +1273,8 @@</span><br><span>             prin=
+t_key_filename(key_file, key_inline));</span><br><span>     }</span><br><sp=
+an> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* check for =
+and fix highly unlikely key problems */</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    verify_fix_key2(&amp;key2, key_type, key_file);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* check for highly u=
+nlikely key problems */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    check_key2(&amp;key2);</span><br><span> </span><br><span>     /* ha=
+ndle key direction */</span><br><span>     key_direction_state_init(&amp;kd=
+s, key_direction);</span><br><span>@@ -1708,18 +1674,19 @@</span><br><span>=
+ }</span><br><span> </span><br><span> void</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-verify_fix_key2(struct key2 *key2, const struct key_ty=
+pe *kt, const char *shared_secret_file)</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+check_key2(struct key2 *key2)</span><br><span> {</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    int i;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    /* Check the first 128 bit of eve=
+ry key slot to be not 0=2E This is</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+     * not a compressive check, but no valid key should fail=
+ this check */</span><br><span> </span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    for (i =3D 0; i &lt; key2-&gt;n; ++i)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    uint8_t zero_key[16] =3D { 0 };</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    if (memcmp(key2-&gt;keys[0]=2Ecipher, ze=
+ro_key, sizeof(zero_key)) =3D=3D 0</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        || memcmp(key2-&gt;keys[1]=2Ecipher, zero_key, sizeo=
+f(zero_key)) =3D=3D 0</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        || memcmp(key2-&gt;keys[0]=2Ehmac, zero_key, sizeof(zero_key)) =
+=3D=3D 0</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        || =
+memcmp(key2-&gt;keys[0]=2Ehmac, zero_key, sizeof(zero_key)) =3D=3D 0)</span=
+><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    /* This should be a very improbable failure */</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-        if (!check_key(&amp;key2-&gt;keys[i], =
+kt))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(M_FATAL, &quo=
+t;Key #%d in &#39;%s&#39; is bad=2E  Try making a new key with --genkey=2E&=
+quot;, i + 1,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+        shared_secret_file);</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     msg(M_FATAL, &quot;One key in static key/generated key  is all zero=2E=
+&quot;);</span><br><span>     }</span><br><span> }</span><br><span> </span>=
+<br><span>diff --git a/src/openvpn/crypto=2Eh b/src/openvpn/crypto=2Eh</spa=
+n><br><span>index e3c1c6a=2E=2Edbe0802 100644</span><br><span>--- a/src/ope=
+nvpn/crypto=2Eh</span><br><span>+++ b/src/openvpn/crypto=2Eh</span><br><spa=
+n>@@ -414,8 +414,6 @@</span><br><span>  */</span><br><span> int write_key_f=
+ile(const int nkeys, const char *filename);</span><br><span> </span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-bool check_key(const struct key *ke=
+y, const struct key_type *kt);</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-</span><br><span> /**</span><br><span>  * Initialize a key_type st=
+ructure with=2E</span><br><span>  *</span><br><span>@@ -621,7 +619,7 @@</sp=
+an><br><span> </span><br><span> void key_direction_state_init(struct key_di=
+rection_state *kds, int key_direction);</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-void verify_fix_key2(struct key2 *key2,=
+ const struct key_type *kt, const char *shared_secret_file);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+void check_key2(struct key2 *key2)=
+;</span><br><span> </span><br><span> void must_have_n_keys(const char *file=
+name, const char *option, const struct key2 *key2, int n);</span><br><span>=
+ </span><br><span>diff --git a/src/openvpn/ssl=2Ec b/src/openvpn/ssl=2Ec</s=
+pan><br><span>index 086a6fc=2E=2Eddee3eb 100644</span><br><span>--- a/src/o=
+penvpn/ssl=2Ec</span><br><span>+++ b/src/openvpn/ssl=2Ec</span><br><span>@@=
+ -1583,15 +1583,7 @@</span><br><span>     key2_print(&amp;key2, &amp;sessio=
+n-&gt;opt-&gt;key_type, &quot;Master Encrypt&quot;, &quot;Master Decrypt&qu=
+ot;);</span><br><span> </span><br><span>     /* check for weak keys */</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    for (int i =3D 0; i &l=
+t; 2; ++i)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (!check_key(&amp=
+;key2=2Ekeys[i], &amp;session-&gt;opt-&gt;key_type))</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-            msg(D_TLS_ERRORS, &quot;TLS Error: Bad dyna=
+mic key generated&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-            goto exit;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    check_key2(&amp;key2);</span><br><spa=
+n>     ret =3D init_key_contexts(ks, multi, &amp;session-&gt;opt-&gt;key_ty=
+pe, server, &amp;key2,</span><br><span>                             session=
+-&gt;opt-&gt;dco_enabled);</span><br></pre><p>To view, visit <a href=3D"htt=
+ps://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2080?usp=3Demail">change 2080</a>=
+=2E To unsubscribe, or for help writing mail filters, visit <a href=3D"http=
+s://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div it=
+emscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itempr=
+op=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D=
+"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2080?usp=3Demail"/=
+><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-Message=
-Type: newpatchset </div>
-<div style=3D"display:none"> Gerrit-Project: openv=
-pn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div st=
-yle=3D"display:none"> Gerrit-Change-Id: Icf890b018b9950c698e46cc44b39edaa0c=
-6ec566 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 2034 </div=
->
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"disp=
-lay:none"> Gerrit-Owner: Laptops &lt;jeff@incrediblybased=2Eco&gt; </div>
-<=
-div style=3D"display:none"> Gerrit-Reviewer: Arne Schwabe &lt;arne-openvpn@=
-rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: Fran=
-k Lichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
-<div style=3D"display:=
-none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: Laptops &lt;jeff=
-@incrediblybased=2Eco&gt; </div>
-<div style=3D"display:none"> Gerrit-Attent=
-ion: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"d=
-isplay:none"> Gerrit-Attention: Frank Lichtenheld &lt;frank@lichtenheld=2Ec=
-om&gt; </div>
+<div style=
+=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"displ=
+ay:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerri=
+t-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ic5c=
+f5ef723a33ad304b080ef19db2e4a0f4bb2eb </div>
+<div style=3D"display:none"> G=
+errit-Change-Number: 2080 </div>
+<div style=3D"display:none"> Gerrit-PatchS=
+et: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: Arne Schwabe &lt;ar=
+ne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-CC:=
+ openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
 
-</body></html>
---hxFY9tO0+To=--
+</bo=
+dy></html>
+--HMYU2kayTmE=--
 
 
---===============9201025385707837150==
+--===============3384860788285791817==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============9201025385707837150==
+--===============3384860788285791817==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -739,5 +584,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============9201025385707837150==--
+--===============3384860788285791817==--
 
