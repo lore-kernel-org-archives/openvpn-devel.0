@@ -1,13 +1,13 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F145606A329
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACCBE606A32F
 	for <openvpn-devel@archiver.kernel.org>; Mon,  2 Nov 2026 21:51:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=PF9AcfXL;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=iZNiRO/B;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=heW1yNC+;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=ThFtIHUf
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=Eq9+7/dA;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=lZRyER/V;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=XWxPA5Ee;
+	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=ep7ROshQ
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
@@ -15,18 +15,18 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
 	List-Unsubscribe-Post:List-Owner;
-	bh=AX9h7MNZKXXXFAYJD1DX4vc8UG1+9OMsNgeHWB/yDJ4=; b=PF9AcfXLP9L79oy/FKr3dLm2wU
-	2opfz4+hUI2K4SJ7UElPlwAG2Sd4OqxjtQ2ocHCY18jIxk5V3Pn36Ple/7Uj/O1Isi1EB8qRchCoU
-	4Ff4i4i0OYof05XNrBey0z0pQeyZRwCOCrW/hcygqSQtsKuPzCquV73/tL/twfouCePg=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	bh=JEIl7NMBolkKalN5dyGsQG+qOc6tUH5yX+yY7Sx8iY8=; b=Eq9+7/dA6BF9uhDrNOZdUuwlEx
+	2+RLITGeuuzswh4zxyLfSefi/2TeDKBmo91xlrNMh7BrMnkV4xYch7Lqhx1UtX13TkBmTMmybG6ij
+	kss6pEjgXh5/cZ6rEGRUh93MkWntkF+3ZbZYxQpjJnSie7zLOAzFOpQVsvi974cuDGp4=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xNzwO-000000007YW-0eBn;
+	id 1xNzwO-000000003AD-1isB;
 	Mon, 02 Nov 2026 21:51:44 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xNzwN-000000007YP-0Dc5
+ (envelope-from <gerrit@openvpn.net>) id 1xNzwN-000000003A7-3IrF
  for openvpn-devel@lists.sourceforge.net;
  Mon, 02 Nov 2026 21:51:43 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
@@ -35,9 +35,9 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=8V5DXVrZAJdzvcTcpvGodW3hLn2CHQfcbCECe7HMrFA=; b=iZNiRO/BnJXstq4Fu4V5AFJyRW
- zuI8q0PiWhB/gONzRCwm+EiqdZIg7uARNiYPKM3yWqku9nwLPrUmUwXQomXUsKaQuUuznZB5aSrGR
- Qb2cuCMN9JBiNGYG66rhobInrdf14TubjG69Dqm5PC4fXgsd6xoDyewtjKD/bXEQhqPI=;
+ bh=WjE+O6p5hLRybbBo5G3I8WYrEjJN2x3MgL+Tw0kOBOE=; b=lZRyER/Vv1BcIRUqJVmid08XeO
+ gk/FMbh4D8X+MpzUzfLWyHc8CNGh95eZ5Bx3WBYuXlkg+sWAcHkvUuIYW3lokVAfSRXv1OnFx43gm
+ c/zhErWJHl6A2dmVawzn4bBnSGyQ9AQUheYYR0wC4NmnMeIr6sjuzDJARR036DfuHUfM=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
@@ -45,94 +45,94 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=8V5DXVrZAJdzvcTcpvGodW3hLn2CHQfcbCECe7HMrFA=; b=heW1yNC+dzpoQkglMMbkgz8Z1/
- KxgWEo+x8FLsNzzgdRu4UUL9Hy/hs0qjZPMpDRk6wMMsLbnBHrhrJ/21kV0cfa9ZUPYGEJI8ps5Xd
- LPocs+SEYFGjjnV5/YXholIjemQRKa+zdqbnosDW/jjcs5ME6tjpX9J+VtwwutIgk0CU=;
-Received: from mail-wm1-f42.google.com ([209.85.128.42])
+ bh=WjE+O6p5hLRybbBo5G3I8WYrEjJN2x3MgL+Tw0kOBOE=; b=XWxPA5Ee8gUBbFGErOKtl2XAg0
+ RsgmBE62qfzeQDgjqy1pr/KYixQHnKrU2AJpho87Snr7ytzSkplp6lOjjtMUVUPdTmi36ZXz7a0Vc
+ QSOjwntaBEGMyPwkysb7nMZ0IDbLf4RsvWuQndbtgdnxp/PShfrcOkzbL3frMPEwtvac=;
+Received: from mail-wm1-f45.google.com ([209.85.128.45])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xNzwK-000000006Yz-3g3l for openvpn-devel@lists.sourceforge.net;
- Mon, 02 Nov 2026 21:51:42 +0000
-Received: by mail-wm1-f42.google.com with SMTP id
- 5b1f17b1804b1-4a35a60499eso34263955e9.0
+ id 1xNzwL-000000006Z0-3Dbe for openvpn-devel@lists.sourceforge.net;
+ Mon, 02 Nov 2026 21:51:43 +0000
+Received: by mail-wm1-f45.google.com with SMTP id
+ 5b1f17b1804b1-4a2000d5fb1so23358335e9.1
  for <openvpn-devel@lists.sourceforge.net>;
- Mon, 02 Nov 2026 13:51:40 -0800 (PST)
+ Mon, 02 Nov 2026 13:51:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1793656294; x=1794261094; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1793656295; x=1794261095; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=8V5DXVrZAJdzvcTcpvGodW3hLn2CHQfcbCECe7HMrFA=;
- b=ThFtIHUfR3eyoqgQEvRGtwQyGxVreYpBzwHfv6LDFEZ9tntR3j7pXnsFQOyUPoSwB5
- ey0NHttlgIjl6ut9Zhp4TT/DttcD2oeVV3yOP8SeHWJ9rtsb9X1EHqqOwwEHvzoOcPgC
- ulfFC7lmqbO/SDao+sVcke9uY11ECFQDmVMo8HFBJ72/NIt3FGRk3urcoP2TpW/k1sSR
- l36YajpFzp0kveJIoZPsFRTajnbnDW4noJsNkp6/i1+P6qqfcccxoHTyHO/kksEtwCDR
- z0jB7PbZHbi76Bljs44yzi+NY40R/3Q9XW6VCrI3IljivbgtIXEUhzt1Af2YdZCHkShi
- cQ2w==
+ bh=WjE+O6p5hLRybbBo5G3I8WYrEjJN2x3MgL+Tw0kOBOE=;
+ b=ep7ROshQyMKzJZQIVZLGofwqQRI1o5275zPVWcNzXf3lQflN0WjnLj2hLw7iqM0hpi
+ v4mXbbot6PUoeFKVoVEgJPDMSRPYYP0CZVQPB1VGIFP3sGg0wYwo6mKGCDp18PHxj33L
+ icOACZd/GzANws+6sVtRYv0Ig2xd8GfjHCGV0VOAVWPopgkiN+UY3pKVo4zYBj4wwdv/
+ s8+tJ/RlpY36iFDb5NgigBhu+ZDP5IxvbYpM0xuCSTZ+vSb0sbUWI2Z1X+eTIfmXJNS5
+ HT+YiK8UQxECYoGX/XbjJKDEifQWu9df59XM+VfofViehrp4lBRpGwhZ65Y4jpc+Novl
+ 6Ngw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1793656294; x=1794261094;
+ d=1e100.net; s=20260707; t=1793656295; x=1794261095;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=8V5DXVrZAJdzvcTcpvGodW3hLn2CHQfcbCECe7HMrFA=;
- b=r+CVdMElotlt/rffwUOuF+ZtgDWDyBvJKWfYku5fagENCz3c2TI1SUvJk0q7eER/8Z
- 6plICysRXVW4YmTIVqHGgQUsZWHk7Enei+FnPx3/Xe9b5AsOMdG1BGpI6/d7iOHpJNQP
- /WO1m/24OUjf59ROGSj09OtFB4iq12jfQB1U7HPmBDply4dioXMr12JJExkrYIk2wNAA
- CBjDLKBVrXEMEhRhAIngT6o4ivYKV/vtx7MIC8VBuyJjL0u2icioM6kucMnzA3VIsmg7
- J8ZCpY7HgJ2xPfV1e6bec3yj3eOAhOWyqL7OjMgVP89ZldyvtnCry7kylobCrASCiUNQ
- 4ReA==
-X-Forwarded-Encrypted: i=1;
- AKwUvBxHw1TrnxWiNDVLNJ6u0qRHzxJVwsmY4Xy21UmIW6URKABy+a3vkXe2Nmv5AteOoBehIfLSx/KV8csebCA8@lists.sourceforge.net
-X-Gm-Message-State: AFq9FYJnKy/Ezg01meSUSFh1CG4whquS63e/Z9PGHnuScVi1p9q0kTFB
- NY9Df5zdG4oNmU1Lb8K0RJR1bK7THqDU4X5095Fkpr8SU734Snj7fM03IwPnhOq0MX5jEFeVi4G
- U2Iy5HUcTyiGs7nGlcqAHmDpVossVYcEw/2dx+TL8b+sXxtm/Sl1G1c7pUls8moTU2JJB
-X-Gm-Gg: AYBFou1bsvsTjokDbb9qgHx2DKrVl+s2axKKqytqokwklgu1aKpLHdv6LQ1xJ1WGsqi
- 6xesksqM4Ifsfx9OfpPFwwZQbVyJnvY8bslR0fT6DglMtofp0C3g9rL36TKnWo/LHWW6JXWlhQj
- hS69LmTSymx4DguOAKR39lONdbGdR0JwA+aOarIyNOCpZTwcyUXRJRfBcyT1wC0AzoY1vPG9jTu
- WgfWg2Mp8E+/HcBu1Gm1fBMsAmSHsVXc/7UsmRNznvaWKSRjMvBRRycyTnM8E8thFwYmn3fzskG
- PoD3TUM9wt05EBKgolUNZtt2mFCpBdpC7HI/ZkW228FifbEfKEeRxm84/vrWLJ1i3yQUyOdRPga
- F/TIMUPlDc8W/SlWLMkAwitlU+dqkcEJsRSfswCGZmQ445NTdyyneFINRO+cV3g12vhZeci899W
- tnEYQadNU7QXn9RFivyNj7Udwk41bEt+ohcS+950SSOkKCVp0oqymTcON6xKIXnRRwJAKTReSY9
- qdP+g5lty8/cgmgS9uGmLowvwwtfa2vyaqrC3K/Bklx1mT9+SDkIIZqxfp7121KVRmobrYoJX8B
- Q1G/IYgVw38SoJcTL7i+XnsN3TUoH/NwezOJ62DmGmcy+7kOs3Hhc+W2KOqW0/DHyVPP5aSkgYC
- zQqIN+IXXvnl/esQ6/sFGb52jRvcFQs0FtNr48krVAyWS42zUJRk3mGHREksnrtAa10jL863CFq
- am6mBR2qYWlBCfqg==
-X-Received: by 2002:a05:600c:524c:b0:4a1:e6c5:e44c with SMTP id
- 5b1f17b1804b1-4ac17470f97mr266216495e9.10.1793656294183; 
- Mon, 02 Nov 2026 13:51:34 -0800 (PST)
+ bh=WjE+O6p5hLRybbBo5G3I8WYrEjJN2x3MgL+Tw0kOBOE=;
+ b=pC7C6dFnULwA0aRhCEdX03XwgtMX9w6Rjh0rD2DJPytp3r2hXmbAJUc62iylSsQOly
+ qzAa9Dwe8ZDjkpbSALdUyMb+cmeL60Qcmf/INcODBhqWWj+K1y/YuUBxui6CtO3kccGo
+ 1VZYNQW9rWlpsxszxQaxBQuyWQ8vDCLogBby9Uaz563c/h74wamPMs0bcDHe4ALa6oCJ
+ SvmqcVWuOFdh+f2hAT4fsZAsqeWvRmo/XVfk11mYcZbQriHDNNbFY19ZRCANZQ6GkYje
+ 74ZJPNbH/7FZiiTKhiGsHLBhhR2f5ZKrenR8vbKpaGrQdBAFtklKKJB27HtjM+Dh6D7p
+ yIEQ==
+X-Gm-Message-State: AFq9FYJ5uOjD0nvlifTtCxj1g8j2yWyKFdWbUxPPQDUJrRcO7RmrBdDr
+ D+3OyQ9bhGISIPeNbKRzgXiwEdnhYkjkHzAmEIoRu6dpeinXRLLNxRE17uh5TkiPSSDBFHXlC5f
+ C07Ybsxhjws98s/gm27Bso7s4NfzsBoblRwj3F/puoCcjZEOX6ulGT08UwvrksJL8eRkyYZp4IE
+ 3aQLZBAQ==
+X-Gm-Gg: AYBFou3jERClb9+qY8k0D6eWjgmjPKuSlxPuTz7klOi04iJWvUPsXDZJoe98TD1W14z
+ zwK1N4kZ0oLgvd2LOntsn8MIDCsPX/2pLYnsAjyaUs8BTJmyP096/G8+THimJYxHeIvTEjLJeJU
+ psE5vCWZS0T+Pp5DzFKYWGNVzVLA9vl2o+Po/6Cngw9us5g7XrjiRty0PrOJ0SM65C+W7O7g8gt
+ EXxYFyOgo6MdJKEuaegt5JThsZlhYeAU+kXtzH7g5QaesH963ApfLeI8Ff/gXjTF/DcpL6P9MPc
+ d/eotDfgaFceg/OSYGZggbK5ELGjejW1pIma3/GY/BtkkPaD8mZJH7wgvn+0E6XtPLUlKp1toQL
+ G6jSLBn3IWUtmpwP5bLKqIhPPPdyI81CeSslSuoEK2M3KRHzXvHm8pnUvKjlVcm0g0bpkHJq119
+ 7T5IOmdhjy/ZDbPuoWmbGdpD4QDekyUEG0SZCD3LrvQwILfdl+WheBmy3QRtCBFyrIAG+RkcUBo
+ lZdtkWGZNNaGpJxsTjvqc9fPtvLr3OalWT7/wPHYqaM8Y9Lj4cHaDs+9gki1ZRc7sZ8xHF/dQdI
+ hOdVIQGRfxS0tW3B7qUzzzvDxz5wF4iFiAvUfsDeUVRNl9Yo2dhClWMtyk0GWHgxSPzcLY6kXyo
+ 6raDce7Y0EUPqHaIzWerRBSoxgme9jU+94DscUEWwD1yu6EIbABNfcRuAE1lL7oY4XOgcIZFHP9
+ CeMos0KmXHFqGDPw==
+X-Received: by 2002:a05:600c:4708:b0:4a2:167a:c93b with SMTP id
+ 5b1f17b1804b1-4ac19234ad8mr258982305e9.30.1793656295113; 
+ Mon, 02 Nov 2026 13:51:35 -0800 (PST)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-4abebe33e79sm219238055e9.2.2026.11.02.13.51.33
+ ffacd0b85a97d-48e71b80ecbsm22438037f8f.35.2026.11.02.13.51.34
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 02 Nov 2026 13:51:33 -0800 (PST)
+ Mon, 02 Nov 2026 13:51:34 -0800 (PST)
 X-Google-Original-From: "Gert Doering (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Mon, 2 Nov 2026 21:51:33 +0000
-To: Arne Schwabe <arne-openvpn@rfc2549.org>
+Date: Mon, 2 Nov 2026 21:51:31 +0000
+To: =?UTF-8?Q?R=C4=83zvan_Cojocaru?= <razvanc@mailbox.org>,
+ Arne Schwabe <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: merged
-X-Gerrit-PatchSet: 4
-X-Gerrit-Change-Id: Ic5cf5ef723a33ad304b080ef19db2e4a0f4bb2eb
-X-Gerrit-Change-Number: 2080
+X-Gerrit-MessageType: newpatchset
+X-Gerrit-PatchSet: 3
+X-Gerrit-Change-Id: I70ebdadd660e41b40ed53f4238be6885f0a7bb8b
+X-Gerrit-Change-Number: 2074
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2080?usp=email>
-X-Gerrit-Commit: b6cfa6924986c5371097b09034e25878a1868ee4
-In-Reply-To: <gerrit.1793618230000.Ic5cf5ef723a33ad304b080ef19db2e4a0f4bb2eb@gerrit.openvpn.net>
-References: <gerrit.1793618230000.Ic5cf5ef723a33ad304b080ef19db2e4a0f4bb2eb@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzkzNjE4MjMwMDAwLkljNWNmNWVmNzIzYTMzYWQzMDRiMDgwZWYxOWRiMmU0YTBmNGJiMmViQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <bee2edea1707aa521d38bdde39605a1e65349868-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2074?usp=email>
+X-Gerrit-Commit: 24946176aed52c23c52c956df43fd052c232f652
+In-Reply-To: <gerrit.1793450471000.I70ebdadd660e41b40ed53f4238be6885f0a7bb8b@gerrit.openvpn.net>
+References: <gerrit.1793450471000.I70ebdadd660e41b40ed53f4238be6885f0a7bb8b@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzkzNDUwNDcxMDAwLkk3MGViZGFkZDY2MGU0MWI0MGVkNTNmNDIzOGJlNjg4NWYwYTdiYjhiQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <83f80f6500bee959d005b03d0d30da0d4e7b1802-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.2
 X-Spam-Score: 0.8 (/)
-X-Headers-End: 1xNzwK-000000006Yz-3g3l
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Clean up weak key
- check
+X-Headers-End: 1xNzwL-000000006Z0-3Dbe
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: port-share: do not
+ write journal file through symlinks or hardlinks
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -144,460 +144,306 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 From: "Gert Doering \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
-Reply-To: gert@greenie.muc.de, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com, steffan@karger.me
+Reply-To: gert@greenie.muc.de, arne-openvpn@rfc2549.org, razvanc@mailbox.org,
+ openvpn-devel@lists.sourceforge.net
 Cc: "Gert Doering \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============4600986550729008307=="
+Content-Type: multipart/mixed; boundary="===============3871738418548249423=="
 X-Spam-Status: No, score=-12.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
 	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,SPF_PASS,T_KAM_HTML_FONT_INVALID
-	autolearn=ham autolearn_force=no version=4.0.1
+	PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,SPF_PASS,T_KAM_HTML_FONT_INVALID,
+	WEIRD_PORT autolearn=ham autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============4600986550729008307==
+--===============3871738418548249423==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="LHD0uojUyhA="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="c6nQ0sM3v2c="; charset=UTF-8
 
---LHD0uojUyhA=
+--c6nQ0sM3v2c=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Gert Doering has submitted this change=2E ( https://gerrit=2Eopenvpn=2Enet/=
-c/openvpn/+/2080?usp=3Demail )
+Hello Arne Schwabe, R=C4=83zvan Cojocaru, 
 
-Change subject: Clean up weak key check
-=2E=
+I'd like you to reexamine a cha=
+nge=2E Please visit
+
+    https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2074?us=
+p=3Demail
+
+to look at the new patch set (#3)=2E
+
+The following approvals go=
+t outdated and were removed:
+Code-Review+2 by R=C4=83zvan Cojocaru
+
+
+Change=
+ subject: port-share: do not write journal file through symlinks or hardlin=
+ks
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-Clean up weak ke=
-y check
+port-share=
+: do not write journal file through symlinks or hardlinks
 
-These methods only check for zero keys after weak DES checks were =
-removed=2E
-Simplify all this to always the first 32 bytes of key and hmac a=
-nd ensure
-that they are not zero=2E
+journal_add() cr=
+eates <journal dir>/<local ip:port> with
+O_CREAT | O_TRUNC and writes the r=
+emote client's address into it=2E
+The name is predictable (the proxy connec=
+tion's ephemeral local port)
+and the write is triggered by any TCP client s=
+ending non-OpenVPN data
+to the shared port=2E Anyone who can create entries=
+ in the journal
+directory can therefore plant symlinks or hardlinks and hav=
+e the
+port-share process, which runs as root unless --user is used, truncat=
+e
+and overwrite an arbitrary file with the client address=2E
 
-This now always raises a FATAL alert i=
-nstead of handling this error
-gracefully but a all zeros keys should never =
-ever happen=2E
+Create the jo=
+urnal file with O_EXCL | O_NOFOLLOW instead=2E Entries are
+removed as soon =
+as the proxied connection is closed, so an existing
+entry is either a lefto=
+ver from a proxy process that exited without
+cleaning up, or something plan=
+ted=2E Unlink it and retry the exclusive
+create once, which keeps the old b=
+ehavior of replacing stale entries=2E
 
-Change-Id: Ic5cf5ef723a33ad304b080ef19db2e4a0f4bb2eb
-Signed=
--off-by: Arne Schwabe <arne@rfc2549=2Eorg>
-Acked-by: Steffan Karger <steffa=
-n@karger=2Eme>
-Gerrit URL: https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2080
-=
-Message-Id: <20261102134915=2E26599-1-gert@greenie=2Emuc=2Ede>
-URL: https:/=
-/lore=2Ekernel=2Eorg/openvpn-devel/20261102134915=2E26599-1-gert@greenie=2E=
-muc=2Ede
+Also document that the journal direc=
+tory must not be writable by other
+users=2E
+
+Github: closes OpenVPN/openvpn=
+#1124
+Change-Id: I70ebdadd660e41b40ed53f4238be6885f0a7bb8b
+Signed-off-by: N=
+aveed Khan <dxbnaveed=2Ek@gmail=2Ecom>
+Acked-by: Razvan Cojocaru <razvanc@m=
+ailbox=2Eorg>
+Gerrit URL: https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2074
+M=
+essage-Id: <20261102093834=2E29593-1-gert@greenie=2Emuc=2Ede>
+URL: https://=
+lore=2Ekernel=2Eorg/openvpn-devel/20261102093834=2E29593-1-gert@greenie=2Em=
+uc=2Ede
 Signed-off-by: Gert Doering <gert@greenie=2Emuc=2Ede>
 ---
-M src/op=
-envpn/crypto=2Ec
-M src/openvpn/crypto=2Eh
-M src/openvpn/ssl=2Ec
-3 files cha=
-nged, 14 insertions(+), 57 deletions(-)
+M doc/man=
+-sections/server-options=2Erst
+M src/openvpn/ps=2Ec
+2 files changed, 13 ins=
+ertions(+), 1 deletion(-)
 
 
+  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/o=
+penvpn refs/changes/74/2074/3
 
-
-diff --git a/src/openvpn/crypto=
-=2Ec b/src/openvpn/crypto=2Ec
-index 3d3ab0c=2E=2Eff17b22 100644
---- a/src/o=
-penvpn/crypto=2Ec
-+++ b/src/openvpn/crypto=2Ec
-@@ -1104,40 +1104,6 @@
-     =
-ctx->initialized =3D false;
- }
+diff --git a/doc/man-sections/server-options=
+=2Erst b/doc/man-sections/server-options=2Erst
+index 9dfa6bd=2E=2E7a09809 1=
+00644
+--- a/doc/man-sections/server-options=2Erst
++++ b/doc/man-sections/se=
+rver-options=2Erst
+@@ -489,6 +489,10 @@
+   the origin of the connection=2E =
+Each generated file will be automatically
+   deleted when the proxied conne=
+ction is torn down=2E
  
--static bool
--key_is_zero(const struct key=
- *key, const struct key_type *kt)
--{
--    size_t cipher_length =3D cipher_k=
-t_key_size(kt->cipher);
--    for (size_t i =3D 0; i < cipher_length; ++i)
--=
-    {
--        if (key->cipher[i])
--        {
--            return false;
-- =
-       }
--    }
--    msg(D_CRYPT_ERRORS, "CRYPTO INFO: WARNING: zero key de=
-tected");
--    return true;
--}
--
--/*
-- * Make sure that cipher key is a val=
-id key for current key_type=2E
-- */
--bool
--check_key(const struct key *key,=
- const struct key_type *kt)
--{
--    if (cipher_defined(kt->cipher))
--    {
-=
--        /*
--         * Check for zero key
--         */
--        if (key_is=
-_zero(key, kt))
--        {
--            return false;
--        }
--    }
--  =
-  return true;
--}
--
- /*
-  * Generate a random key=2E
-  */
-@@ -1307,8 +1273,=
-8 @@
-             print_key_filename(key_file, key_inline));
-     }
- 
--    =
-/* check for and fix highly unlikely key problems */
--    verify_fix_key2(&=
-key2, key_type, key_file);
-+    /* check for highly unlikely key problems *=
-/
-+    check_key2(&key2);
- 
-     /* handle key direction */
-     key_direct=
-ion_state_init(&kds, key_direction);
-@@ -1708,18 +1674,19 @@
- }
- 
- void
--ve=
-rify_fix_key2(struct key2 *key2, const struct key_type *kt, const char *sha=
-red_secret_file)
-+check_key2(struct key2 *key2)
- {
--    int i;
-+    /* Chec=
-k the first 128 bit of every key slot to be not 0=2E This is
-+     * not a =
-comprehensive check, but no valid key should fail this check */
- 
--    for =
-(i =3D 0; i < key2->n; ++i)
-+    uint8_t zero_key[16] =3D { 0 };
++  The files in ``dir`` are created and removed wit=
+h the privileges of the
++  OpenVPN process, so ``dir`` must not be writable=
+ by any user other than
++  the one OpenVPN runs as=2E
 +
-+    if =
-(memcmp_constant_time(key2->keys[0]=2Ecipher, zero_key, sizeof(zero_key)) =
-=3D=3D 0
-+        || memcmp_constant_time(key2->keys[1]=2Ecipher, zero_key,=
- sizeof(zero_key)) =3D=3D 0
-+        || memcmp_constant_time(key2->keys[0]=
-=2Ehmac, zero_key, sizeof(zero_key)) =3D=3D 0
-+        || memcmp_constant_t=
-ime(key2->keys[1]=2Ehmac, zero_key, sizeof(zero_key)) =3D=3D 0)
-     {
--   =
-     /* This should be a very improbable failure */
--        if (!check_key=
-(&key2->keys[i], kt))
--        {
--            msg(M_FATAL, "Key #%d in '%s'=
- is bad=2E  Try making a new key with --genkey=2E", i + 1,
--               =
- shared_secret_file);
--        }
-+        msg(M_FATAL, "One key in static k=
-ey/generated key  is all zero=2E");
-     }
- }
+   Not implemented =
+on Windows=2E
  
-diff --git a/src/openvpn/cr=
-ypto=2Eh b/src/openvpn/crypto=2Eh
-index e3c1c6a=2E=2Edbe0802 100644
---- a/s=
-rc/openvpn/crypto=2Eh
-+++ b/src/openvpn/crypto=2Eh
-@@ -414,8 +414,6 @@
-  */=
-
- int write_key_file(const int nkeys, const char *filename);
- 
--bool check_=
-key(const struct key *key, const struct key_type *kt);
--
- /**
-  * Initializ=
-e a key_type structure with=2E
-  *
-@@ -621,7 +619,7 @@
- 
- void key_directio=
-n_state_init(struct key_direction_state *kds, int key_direction);
- 
--void v=
-erify_fix_key2(struct key2 *key2, const struct key_type *kt, const char *sh=
-ared_secret_file);
-+void check_key2(struct key2 *key2);
- 
- void must_have_n=
-_keys(const char *filename, const char *option, const struct key2 *key2, in=
-t n);
- 
-diff --git a/src/openvpn/ssl=2Ec b/src/openvpn/ssl=2Ec
-index 086a6f=
-c=2E=2Eddee3eb 100644
---- a/src/openvpn/ssl=2Ec
-+++ b/src/openvpn/ssl=2Ec
-@=
-@ -1583,15 +1583,7 @@
-     key2_print(&key2, &session->opt->key_type, "Mast=
-er Encrypt", "Master Decrypt");
- 
-     /* check for weak keys */
--    for (=
-int i =3D 0; i < 2; ++i)
--    {
--        if (!check_key(&key2=2Ekeys[i], &s=
-ession->opt->key_type))
--        {
--            msg(D_TLS_ERRORS, "TLS Erro=
-r: Bad dynamic key generated");
--            goto exit;
--        }
--    }
--=
-
-+    check_key2(&key2);
-     ret =3D init_key_contexts(ks, multi, &session=
-->opt->key_type, server, &key2,
-                             session->opt->=
-dco_enabled);
- 
+ --push option
+diff --git a/src/openvpn/ps=2Ec b/src/openvp=
+n/ps=2Ec
+index 03c6f48=2E=2Ef8cfe1c5 100644
+--- a/src/openvpn/ps=2Ec
++++ b/=
+src/openvpn/ps=2Ec
+@@ -341,7 +341,15 @@
+         check_malloc_return(jfn);
+=
+         snprintf(jfn, fnlen, "%s/%s", journal_dir, t);
+         dmsg(D_PS_=
+PROXY_DEBUG, "PORT SHARE PROXY: client origin %s -> %s", jfn, f);
+-        =
+int fd =3D platform_open(jfn, O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWU=
+SR | S_IRGRP);
++        /* never write through a pre-existing symlink or ha=
+rdlink */
++        const int flags =3D O_CREAT | O_EXCL | O_WRONLY | O_NOFO=
+LLOW;
++        int fd =3D platform_open(jfn, flags, S_IRUSR | S_IWUSR | S_I=
+RGRP);
++        if (fd =3D=3D -1 && errno =3D=3D EEXIST)
++        {
++      =
+      /* stale entry, e=2Eg=2E left behind by a killed proxy process */
++  =
+          unlink(jfn);
++            fd =3D platform_open(jfn, flags, S_IRUS=
+R | S_IWUSR | S_IRGRP);
++        }
+         if (fd !=3D -1)
+         {
+    =
+         ssize_t write_len =3D strlen(f);
 
 -- 
-To view, visit https://gerrit=2Eopenvpn=2Enet/c/openvp=
-n/+/2080?usp=3Demail
-To unsubscribe, or for help writing mail filters, visi=
-t https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+To view, visit https://gerri=
+t=2Eopenvpn=2Enet/c/openvpn/+/2074?usp=3Demail
+To unsubscribe, or for help =
+writing mail filters, visit https://gerrit=2Eopenvpn=2Enet/settings?usp=3De=
+mail
 
-Gerrit-MessageType: =
-merged
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ic5c=
-f5ef723a33ad304b080ef19db2e4a0f4bb2eb
-Gerrit-Change-Number: 2080
-Gerrit-Pat=
-chSet: 4
-Gerrit-Owner: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Rev=
-iewer: Frank Lichtenheld <frank@lichtenheld=2Ecom>
-Gerrit-Reviewer: Steffan=
- Karger <steffan@karger=2Eme>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=
-=2Esourceforge=2Enet>
+Gerrit-Branch=
+: master
+Gerrit-Change-Id: I70ebdadd660e41b40ed53f4238be6885f0a7bb8b
+Gerrit=
+-Change-Number: 2074
+Gerrit-PatchSet: 3
+Gerrit-Owner: Gert Doering <gert@gr=
+eenie=2Emuc=2Ede>
+Gerrit-Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2Eorg=
+>
+Gerrit-Reviewer: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
+Gerrit-CC: =
+openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
 
---LHD0uojUyhA=
+--c6nQ0sM3v2c=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p>Gert Doering <str=
-ong>submitted</strong> this change=2E</p><p><a href=3D"https://gerrit=2Eope=
-nvpn=2Enet/c/openvpn/+/2080?usp=3Demail">View Change</a></p><div style=3D"w=
-hite-space:pre-wrap"></div><pre class=3D"blocks" style=3D"font-family: mono=
-space,monospace; white-space: pre-wrap;">Clean up weak key check<br><br>The=
-se methods only check for zero keys after weak DES checks were removed=2E<b=
-r>Simplify all this to always the first 32 bytes of key and hmac and ensure=
-<br>that they are not zero=2E<br><br>This now always raises a FATAL alert i=
-nstead of handling this error<br>gracefully but a all zeros keys should nev=
-er ever happen=2E<br><br>Change-Id: Ic5cf5ef723a33ad304b080ef19db2e4a0f4bb2=
-eb<br>Signed-off-by: Arne Schwabe &lt;arne@rfc2549=2Eorg&gt;<br>Acked-by: S=
-teffan Karger &lt;steffan@karger=2Eme&gt;<br>Gerrit URL: https://gerrit=2Eo=
-penvpn=2Enet/c/openvpn/+/2080<br>Message-Id: &lt;20261102134915=2E26599-1-g=
-ert@greenie=2Emuc=2Ede&gt;<br>URL: https://lore=2Ekernel=2Eorg/openvpn-deve=
-l/20261102134915=2E26599-1-gert@greenie=2Emuc=2Ede<br>Signed-off-by: Gert D=
-oering &lt;gert@greenie=2Emuc=2Ede&gt;<br>---<br>M src/openvpn/crypto=2Ec<b=
-r>M src/openvpn/crypto=2Eh<br>M src/openvpn/ssl=2Ec<br>3 files changed, 14 =
-insertions(+), 57 deletions(-)<br><br></pre>
-<pre style=3D"font-family: mon=
-ospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/cr=
-ypto=2Ec b/src/openvpn/crypto=2Ec</span><br><span>index 3d3ab0c=2E=2Eff17b2=
-2 100644</span><br><span>--- a/src/openvpn/crypto=2Ec</span><br><span>+++ b=
-/src/openvpn/crypto=2Ec</span><br><span>@@ -1104,40 +1104,6 @@</span><br><s=
-pan>     ctx-&gt;initialized =3D false;</span><br><span> }</span><br><span>=
- </span><br><span style=3D"color: hsl(0, 100%, 40%);">-static bool</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-key_is_zero(const struct key *=
-key, const struct key_type *kt)</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    size_t=
- cipher_length =3D cipher_kt_key_size(kt-&gt;cipher);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    for (size_t i =3D 0; i &lt; cipher_leng=
-th; ++i)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-        if (key-&gt;cipher[i]=
-)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-            return false;</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    msg(D_CRYPT_ERRORS, &quot;CRYPTO INFO: WARNING: zero=
- key detected&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    return true;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">- * Make sure that cipher key is a valid key for current key_type=
-=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-bool</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-check_key(const struct key *key, const struct key_typ=
-e *kt)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    if (cipher_defined(kt-&gt;ciphe=
-r))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-        /*</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-         * Check for zero key</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-         */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        if (key_is_zero(key, kt))</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            return false;</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    return true;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>=
- /*</span><br><span>  * Generate a random key=2E</span><br><span>  */</span=
-><br><span>@@ -1307,8 +1273,8 @@</span><br><span>             print_key_fil=
-ename(key_file, key_inline));</span><br><span>     }</span><br><span> </spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* check for and fix h=
-ighly unlikely key problems */</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    verify_fix_key2(&amp;key2, key_type, key_file);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    /* check for highly unlikely k=
-ey problems */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    c=
-heck_key2(&amp;key2);</span><br><span> </span><br><span>     /* handle key =
-direction */</span><br><span>     key_direction_state_init(&amp;kds, key_di=
-rection);</span><br><span>@@ -1708,18 +1674,19 @@</span><br><span> }</span>=
-<br><span> </span><br><span> void</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-verify_fix_key2(struct key2 *key2, const struct key_type *kt, c=
-onst char *shared_secret_file)</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+check_key2(struct key2 *key2)</span><br><span> {</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    int i;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    /* Check the first 128 bit of every key sl=
-ot to be not 0=2E This is</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+     * not a comprehensive check, but no valid key should fail this c=
-heck */</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    for (i =3D 0; i &lt; key2-&gt;n; ++i)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    uint8_t zero_key[16] =3D { 0 };</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    if (memcmp_constant_time(key2-&gt;keys[0]=2Eciph=
-er, zero_key, sizeof(zero_key)) =3D=3D 0</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        || memcmp_constant_time(key2-&gt;keys[1]=2Ecip=
-her, zero_key, sizeof(zero_key)) =3D=3D 0</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        || memcmp_constant_time(key2-&gt;keys[0]=2Ehm=
-ac, zero_key, sizeof(zero_key)) =3D=3D 0</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        || memcmp_constant_time(key2-&gt;keys[1]=2Ehma=
-c, zero_key, sizeof(zero_key)) =3D=3D 0)</span><br><span>     {</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        /* This should be a very =
-improbable failure */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        if (!check_key(&amp;key2-&gt;keys[i], kt))</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-            msg(M_FATAL, &quot;Key #%d in &#39;%s&#39; is =
-bad=2E  Try making a new key with --genkey=2E&quot;, i + 1,</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-                shared_secret_file);<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        msg(M_FATAL, &quot;One k=
-ey in static key/generated key  is all zero=2E&quot;);</span><br><span>    =
- }</span><br><span> }</span><br><span> </span><br><span>diff --git a/src/op=
-envpn/crypto=2Eh b/src/openvpn/crypto=2Eh</span><br><span>index e3c1c6a=2E=
-=2Edbe0802 100644</span><br><span>--- a/src/openvpn/crypto=2Eh</span><br><s=
-pan>+++ b/src/openvpn/crypto=2Eh</span><br><span>@@ -414,8 +414,6 @@</span>=
-<br><span>  */</span><br><span> int write_key_file(const int nkeys, const c=
-har *filename);</span><br><span> </span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-bool check_key(const struct key *key, const struct key_type *kt=
-);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /=
-**</span><br><span>  * Initialize a key_type structure with=2E</span><br><s=
-pan>  *</span><br><span>@@ -621,7 +619,7 @@</span><br><span> </span><br><sp=
-an> void key_direction_state_init(struct key_direction_state *kds, int key_=
-direction);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-void verify_fix_key2(struct key2 *key2, const struct key_type *kt, =
-const char *shared_secret_file);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+void check_key2(struct key2 *key2);</span><br><span> </span><b=
-r><span> void must_have_n_keys(const char *filename, const char *option, co=
-nst struct key2 *key2, int n);</span><br><span> </span><br><span>diff --git=
- a/src/openvpn/ssl=2Ec b/src/openvpn/ssl=2Ec</span><br><span>index 086a6fc=
-=2E=2Eddee3eb 100644</span><br><span>--- a/src/openvpn/ssl=2Ec</span><br><s=
-pan>+++ b/src/openvpn/ssl=2Ec</span><br><span>@@ -1583,15 +1583,7 @@</span>=
-<br><span>     key2_print(&amp;key2, &amp;session-&gt;opt-&gt;key_type, &qu=
-ot;Master Encrypt&quot;, &quot;Master Decrypt&quot;);</span><br><span> </sp=
-an><br><span>     /* check for weak keys */</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    for (int i =3D 0; i &lt; 2; ++i)</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-        if (!check_key(&amp;key2=2Ekeys[i], &amp;sessi=
-on-&gt;opt-&gt;key_type))</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-    msg(D_TLS_ERRORS, &quot;TLS Error: Bad dynamic key generated&quot;);</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            goto exit;</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    check_key2(&amp;key2);</span><br><span>     ret =3D init_key_conte=
-xts(ks, multi, &amp;session-&gt;opt-&gt;key_type, server, &amp;key2,</span>=
-<br><span>                             session-&gt;opt-&gt;dco_enabled);</s=
-pan><br></pre><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c=
-/openvpn/+/2080?usp=3Demail">change 2080</a>=2E To unsubscribe, or for help=
- writing mail filters, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/sett=
-ings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://sche=
-ma=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:=
-//schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https://gerrit=2E=
-openvpn=2Enet/c/openvpn/+/2080?usp=3Demail"/><meta itemprop=3D"name" conten=
-t=3D"View Change"/></div></div>
+ong>uploaded patch set #3</strong> to this change=2E</p><p><a href=3D"https=
+://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2074?usp=3Demail">View Change</a></p>=
+<p>The following approvals got outdated and were removed:
+Code-Review+2 by =
+R=C4=83zvan Cojocaru</p><pre class=3D"blocks" style=3D"font-family: monospa=
+ce,monospace; white-space: pre-wrap;">port-share: do not write journal file=
+ through symlinks or hardlinks<br><br>journal_add() creates &lt;journal dir=
+&gt;/&lt;local ip:port&gt; with<br>O_CREAT | O_TRUNC and writes the remote =
+client&#39;s address into it=2E<br>The name is predictable (the proxy conne=
+ction&#39;s ephemeral local port)<br>and the write is triggered by any TCP =
+client sending non-OpenVPN data<br>to the shared port=2E Anyone who can cre=
+ate entries in the journal<br>directory can therefore plant symlinks or har=
+dlinks and have the<br>port-share process, which runs as root unless --user=
+ is used, truncate<br>and overwrite an arbitrary file with the client addre=
+ss=2E<br><br>Create the journal file with O_EXCL | O_NOFOLLOW instead=2E En=
+tries are<br>removed as soon as the proxied connection is closed, so an exi=
+sting<br>entry is either a leftover from a proxy process that exited withou=
+t<br>cleaning up, or something planted=2E Unlink it and retry the exclusive=
+<br>create once, which keeps the old behavior of replacing stale entries=2E=
+<br><br>Also document that the journal directory must not be writable by ot=
+her<br>users=2E<br><br>Github: closes OpenVPN/openvpn#1124<br>Change-Id: I7=
+0ebdadd660e41b40ed53f4238be6885f0a7bb8b<br>Signed-off-by: Naveed Khan &lt;d=
+xbnaveed=2Ek@gmail=2Ecom&gt;<br>Acked-by: Razvan Cojocaru &lt;razvanc@mailb=
+ox=2Eorg&gt;<br>Gerrit URL: https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2074=
+<br>Message-Id: &lt;20261102093834=2E29593-1-gert@greenie=2Emuc=2Ede&gt;<br=
+>URL: https://lore=2Ekernel=2Eorg/openvpn-devel/20261102093834=2E29593-1-ge=
+rt@greenie=2Emuc=2Ede<br>Signed-off-by: Gert Doering &lt;gert@greenie=2Emuc=
+=2Ede&gt;<br>---<br>M doc/man-sections/server-options=2Erst<br>M src/openvp=
+n/ps=2Ec<br>2 files changed, 13 insertions(+), 1 deletion(-)<br><br></pre><=
+pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-space=
+: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/chang=
+es/74/2074/3</pre><pre style=3D"font-family: monospace,monospace; white-spa=
+ce: pre-wrap;"><span>diff --git a/doc/man-sections/server-options=2Erst b/d=
+oc/man-sections/server-options=2Erst</span><br><span>index 9dfa6bd=2E=2E7a0=
+9809 100644</span><br><span>--- a/doc/man-sections/server-options=2Erst</sp=
+an><br><span>+++ b/doc/man-sections/server-options=2Erst</span><br><span>@@=
+ -489,6 +489,10 @@</span><br><span>   the origin of the connection=2E Each =
+generated file will be automatically</span><br><span>   deleted when the pr=
+oxied connection is torn down=2E</span><br><span> </span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+  The files in ``dir`` are created and remov=
+ed with the privileges of the</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+  OpenVPN process, so ``dir`` must not be writable by any user ot=
+her than</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  the one O=
+penVPN runs as=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span>   Not implemented on Windows=2E</span><br><span> </span><br=
+><span> --push option</span><br><span>diff --git a/src/openvpn/ps=2Ec b/src=
+/openvpn/ps=2Ec</span><br><span>index 03c6f48=2E=2Ef8cfe1c5 100644</span><b=
+r><span>--- a/src/openvpn/ps=2Ec</span><br><span>+++ b/src/openvpn/ps=2Ec</=
+span><br><span>@@ -341,7 +341,15 @@</span><br><span>         check_malloc_r=
+eturn(jfn);</span><br><span>         snprintf(jfn, fnlen, &quot;%s/%s&quot;=
+, journal_dir, t);</span><br><span>         dmsg(D_PS_PROXY_DEBUG, &quot;PO=
+RT SHARE PROXY: client origin %s -&gt; %s&quot;, jfn, f);</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-        int fd =3D platform_open(jfn, O=
+_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        /* never write through a pre=
+-existing symlink or hardlink */</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        const int flags =3D O_CREAT | O_EXCL | O_WRONLY | O_NO=
+FOLLOW;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        int =
+fd =3D platform_open(jfn, flags, S_IRUSR | S_IWUSR | S_IRGRP);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        if (fd =3D=3D -1 &amp;&a=
+mp; errno =3D=3D EEXIST)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+       /* stale entry, e=2Eg=2E left behind by a killed proxy process */</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            unlink(jfn=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            fd =
+=3D platform_open(jfn, flags, S_IRUSR | S_IWUSR | S_IRGRP);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span>         =
+if (fd !=3D -1)</span><br><span>         {</span><br><span>             ssi=
+ze_t write_len =3D strlen(f);</span><br></pre><p>To view, visit <a href=3D"=
+https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2074?usp=3Demail">change 2074</a=
+>=2E To unsubscribe, or for help writing mail filters, visit <a href=3D"htt=
+ps://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div i=
+temscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemp=
+rop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=
+=3D"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2074?usp=3Demai=
+l"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-Messag=
-eType: merged </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn <=
-/div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div sty=
+le=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"d=
+isplay:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> G=
+errit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: =
+I70ebdadd660e41b40ed53f4238be6885f0a7bb8b </div>
+<div style=3D"display:none=
+"> Gerrit-Change-Number: 2074 </div>
+<div style=3D"display:none"> Gerrit-Pa=
+tchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: Gert Doering &l=
+t;gert@greenie=2Emuc=2Ede&gt; </div>
+<div style=3D"display:none"> Gerrit-Re=
+viewer: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
 <div style=
-=3D"display:none"> Gerrit-Change-Id: Ic5cf5ef723a33ad304b080ef19db2e4a0f4bb=
-2eb </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 2080 </div>
-<=
-div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display=
-:none"> Gerrit-Owner: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div=
->
-<div style=3D"display:none"> Gerrit-Reviewer: Frank Lichtenheld &lt;frank=
-@lichtenheld=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer:=
- Steffan Karger &lt;steffan@karger=2Eme&gt; </div>
-<div style=3D"display:no=
-ne"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&g=
-t; </div>
+=3D"display:none"> Gerrit-Reviewer: R=C4=83zvan Cojocaru &lt;razvanc@mailbo=
+x=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &l=
+t;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
 
 </body></html>
---LHD0uojUyhA=--
+--c6nQ0sM3v2c=--
 
 
---===============4600986550729008307==
+--===============3871738418548249423==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============4600986550729008307==
+--===============3871738418548249423==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -608,5 +454,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============4600986550729008307==--
+--===============3871738418548249423==--
 
