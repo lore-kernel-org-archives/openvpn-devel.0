@@ -1,13 +1,13 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 230AB606A32C
-	for <openvpn-devel@archiver.kernel.org>; Tue,  3 Nov 2026 13:22:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41591606A329
+	for <openvpn-devel@archiver.kernel.org>; Tue,  3 Nov 2026 13:26:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=l4o9PmoS;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=S+MCmpWL;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=CwKmHY8n;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=LcYqciOQ
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=YHKq+Fag;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=JEHIw25O;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=LISpXZNU;
+	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=WWZWRDza
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
@@ -15,29 +15,29 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
 	List-Unsubscribe-Post:List-Owner;
-	bh=nRdVLLmV/udt+aIDWvLKguHcqVbj6A86nOnYpeRE31Q=; b=l4o9PmoSDlaXUTBi/usXPgVbdn
-	/WAGu/ZcC7fM6DHs2HxQb0gwSlTGfMMnDuHNlskJWiuAnUaDvRkXyxuyjiR8siIRW1cqMVOg46lyf
-	8PjOfBdgY/8VjNXRbfGMw413u8cE4+d2IOZSJtnw7v7fd7UAPKsDHifBitbK60qxuJ04=;
+	bh=L06t3T3fzuwNkWGU9naEy/BlTwnaufXTGhMbEhIi1mE=; b=YHKq+FagEWv6vD5Z0mTvFBVz40
+	g9XLoAIQARIthHZw2IE23hRf9NCEyibOp9+sViDHhx5s5lLhxZxA74b8WF8b8d3WrXRXgMASGMldT
+	9smeDA/aZP74G3mKMN1+8EnC5DeKuOVcl1depXI5ae73K0I+zjXc8RBU37JTjyjKNXps=;
 Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
 	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xOESz-000000002to-0N3e;
-	Tue, 03 Nov 2026 13:22:21 +0000
+	id 1xOEWW-000000002zN-2ZN7;
+	Tue, 03 Nov 2026 13:26:00 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xOESi-000000002tF-19CB
+ (envelope-from <gerrit@openvpn.net>) id 1xOEWV-000000002zG-2y6I
  for openvpn-devel@lists.sourceforge.net;
- Tue, 03 Nov 2026 13:22:04 +0000
+ Tue, 03 Nov 2026 13:25:59 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=0E5jOXXArkahF0KvFQpUq7K5SZuMQCo13eWjwFunVK4=; b=S+MCmpWLWaHuX40P5yvNm7Lgc3
- gFxCKcupFdIGUUsEBiXe7BxKKFYMkSFjrXVIWPPTFmsTWssbdFDcxa2r76JrjynwtIdDBXbQ3p5qk
- wkreJ5/c7DBoD9Z8X7yROXnWjofvSAWSjmfjcxRcchxIorPjYaj+VdqHL2njwqhR+nb8=;
+ bh=89FZjp6/Ai2/T0c2X+7lBc8nlgp7dYs7NCzbbZzF7kE=; b=JEHIw25O1cv+kfttKfngNNQnX7
+ wevJfeNDn+jxoYYhs6W3nEjdTRtqevgwJqiFceUS3JHRhnpZtKJk970P+LscVSOBiFokDEiPHjOa8
+ VOLzXKUg01CKR3W0Q2noimxiVCsQYyf4WGq2MmJP3uy6W+bK6gTLUN9D7fprUu8DCdTc=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
@@ -45,92 +45,92 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=0E5jOXXArkahF0KvFQpUq7K5SZuMQCo13eWjwFunVK4=; b=CwKmHY8nXxx5aGth5g6ssOYl5k
- iN8akW/Z1ek771D01vep7DCNcyqkRaPLacxBb9GdHJ3YwkZdHWLV3W+4CNag/9fkOIxf6cvOWCDSo
- IuJH98lfmNGyyqSmgAHzUHR1ha3VxUVtAUQof8HiOiB2/al7eYvx6loY/CIUNRNspYC0=;
-Received: from mail-wm1-f49.google.com ([209.85.128.49])
+ bh=89FZjp6/Ai2/T0c2X+7lBc8nlgp7dYs7NCzbbZzF7kE=; b=LISpXZNUPIzqePAGYpUbf9+9RO
+ 4h1aOM0Xb+vs+ftE56HJpKVymHDISfz9llOUh0wnarjLtUuGsMaLCMfkjLLNiLPjRgAVYwPzyw6b5
+ vynlrrp2mkfMTk3DXQkC50tbbAXbX6L9s6KOqZmU7Zdr4azyveXszz8AdZOKZZZ2ocaA=;
+Received: from mail-wm1-f45.google.com ([209.85.128.45])
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xOESV-000000003M4-0cW3 for openvpn-devel@lists.sourceforge.net;
- Tue, 03 Nov 2026 13:21:56 +0000
-Received: by mail-wm1-f49.google.com with SMTP id
- 5b1f17b1804b1-4a60f9474c4so42422115e9.0
+ id 1xOEWT-000000003Qq-0YDE for openvpn-devel@lists.sourceforge.net;
+ Tue, 03 Nov 2026 13:25:59 +0000
+Received: by mail-wm1-f45.google.com with SMTP id
+ 5b1f17b1804b1-4a2153c8525so28374605e9.3
  for <openvpn-devel@lists.sourceforge.net>;
- Tue, 03 Nov 2026 05:21:51 -0800 (PST)
+ Tue, 03 Nov 2026 05:25:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1793712104; x=1794316904; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1793712350; x=1794317150; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=0E5jOXXArkahF0KvFQpUq7K5SZuMQCo13eWjwFunVK4=;
- b=LcYqciOQkFb8krfAv/Iqv07FLHwtcdcdHcoc+4VIZ9C4VlRUwN1B4FIuE3hH5YO4Xr
- OndMp779xdetkos+zQU8CVHJj1MAMuXEun8IWnInh6mgr6QpOJ1t5aR5c40Q+1rlPHBP
- JNB7vrq0eUBrb44i+pEAeu663nveIqqyPRuU30NNuD66HzMK3iEPpbhwktjohOhlxzey
- 0UvoVl+JKaFuHWmOb9k+vjyFjk7JjbkRj2M6s7TUiGQ6qov//UZb9lH1Qy9UZkvo7lbN
- 1JeTv/VbAhPn+XC+f1dKKTxHfH5Tt9b96xLiktMwkG3HUa9MtXIG6+SRA/KvA0kqWeZm
- KqeQ==
+ bh=89FZjp6/Ai2/T0c2X+7lBc8nlgp7dYs7NCzbbZzF7kE=;
+ b=WWZWRDzaIavZU6eyKfpnXneiQPP4Tcs1b2+qd89Mx9Wy1dnnFz8CEMj9VUFoiHiHZw
+ z+vd/W/pPDj7EFoQzCfrB8xXvgyPsL0YABNe5XJjuei67A9Vl0lU+KvrImYcCP2PENPF
+ +QjjOv1JZhQ6lI9mifIel6weOx4vnAvlDbi84SSjUAO1L5/TULoMQ0RZmy5rsXXvzdbm
+ C6qUMc+ni/8kJRoguXJOhO3PDhFRqbaGifErs7/g3/QzR2yh+tL3ryHMS1ppxlmeymMG
+ T3UKI5vOdnH4Aw4Hqj9j1JkgIdJRzpuN779SQyvXs+s5tgC7HZs4yB9UEU7l1bKMwniy
+ xeeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1793712104; x=1794316904;
+ d=1e100.net; s=20260707; t=1793712350; x=1794317150;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=0E5jOXXArkahF0KvFQpUq7K5SZuMQCo13eWjwFunVK4=;
- b=I0OEotFYotYe5fbfrqyjLd7RMvV/npbLuVxTkEj8IeFFhsCKRiMA13zLW4nbLAm03b
- KrtQV6HLyZTFkIdmALrIfbHRhA5gmkd43BAs29QsolI8tp9yr3IoBD9ZkflMXX1OHeJD
- yDYnf7hW+ukKYXgnoQObzuppiPO64LRgi14A8F9Wy0uVT5QJ6Bs6X+fe1ltNG39cvKcw
- x/XxtOc1V1NA6/ha1hZd5YuFedO8klHhEZpGQ3+Ts/aK4cTfAZOIXsr7bVlpTQ5CvG2Z
- 7pg7cE/YGBk3Pjvjh6X9/KZdNUxQwkv4xffAi7aCVOMaFbIO4ZbKE5DtUzarsJ0I7gzo
- BY1A==
-X-Gm-Message-State: APuU4Z+w40o7GT0YroxcufpP3xj7mPZVpBKaTdHMAKvHBn33HBgAif9H
- Al9ZCcQIvjsCmPivbFkBpHoFGcr9kQ4vavGUmHG3Hgd+CPEgprEx/zAceFQbgHHxqKULRdleymf
- oeHaTw2lLkrSGgY6IVi/u+Ql7z6O9SuPnhG+TKOv+WKrlJvtevPZDT01n+2aK9fme4Q2q
-X-Gm-Gg: AYBFou11XccykYxEX0ms2O/TeOsq4WR5feqBlDxy07mg+RvDnzEZe7cT9pD9CuQgPyd
- /cx8tRqo2iILczqIsa9GqxZDaFZHqhvxV2eJ6Thcf1ckCjoL4/bvrNtoHHO7RWHCDubKvh0RsPT
- X7GeAKpoBmLCOcossF6jIiims/49rc6nHM3EYRsFJkKhcMDJ8qLcJ21dSLwAobheXmYu6jbXz0y
- M6VapX0uEgrCuivuaMri9UZdimweOgkbsX/H1iqEzn6exBoXgyum6g46KygOZV7ZnS2B/qe/X82
- COY5/Qb+7z80ViriK3VsoDfTzpAjOWn7L4NdFmxk68A6nSLA7XofLEkCj8+oMBllts8hh/Yzkwt
- YdAPB6rVfRx4MSuh/MbYvxY0ptIfIb81ICTxCi6cQ2H2mSuuJWo7UixnZTGr8VxVzoHrOcHxz6G
- Fk8kF6vnQhaxEGORMq3AwCLEUzgvf9BdROtOSZY39z4adMozI1FieXA05c+1tmlx3d4OzbnWDgx
- KhSFh8oMCHsHuZsLBhfvksJRln4F0nv+wd+ihpbsPSZy2wmh934keSUf17m0DfsHa8MLe54Vom3
- DCDUvGEN7Miode7sxP0SrwrDQ16AZw9WTqfaugmTa3fdEiLOqntF1OdPM5P3/f3R9OHXH/wuhgy
- +WILpZP8CUlTU3oBnk5LRo7UNTqMXGZO7iXG2+dDUP5Sz/n9YCamTWOINYYZGLx6aB/Qf8ImCrH
- 7iE7Hdc5MNtKtKhA==
-X-Received: by 2002:a05:600c:609a:b0:4a1:7c56:d4e2 with SMTP id
- 5b1f17b1804b1-4ac1709aa77mr282551135e9.16.1793712103681; 
- Tue, 03 Nov 2026 05:21:43 -0800 (PST)
+ bh=89FZjp6/Ai2/T0c2X+7lBc8nlgp7dYs7NCzbbZzF7kE=;
+ b=fK2iDtDBAqBq5ZMjVdSAmVYJodQC/fFHM4Wxz7wCa/Yg4OJw0sTq2s5Aylb66eOz0n
+ cKWkh7Fz7vJuqEWrOSkbV0EYk+MmIRrfKduvIxFynl7H90V6LOY/N0OJOefG+Ix4H1KW
+ iVsOfGczOfjhXfVv4fVNf63PgSwQkQElcs/B05saAneIIQiPK8uA1vG6edbagW/H3ElF
+ aV1U2li9R3MwbGjBBK8Hl+0J30W2Ljcr/zCjlIgCyQ155NK5eYTSxtRtgZ1GI2nsFR2P
+ 00JO0ITs1LkuwZ20Z2fF5kOtiBRZm3FG/iQm+Npi3HPw2i1OWRJCU74Mbyy1hJ95Hq7y
+ RC2A==
+X-Gm-Message-State: APuU4Z/Dn2eZWDJ3nTqfAepeg/6XkZq+ZbyXUc6kB/ZXzQw4yzkTaJDJ
+ zrL459JCpYJbDjlb8h6Q4VlCh9lIAOsCnMIsnq2UkEpQ5gNLl8poQ2nfV+mErSz+HCR+4eLJMmk
+ Xi1kzLCReTzTSpuhI7eIBlr2IXUpOUMB1g0i01MgLPF8B6Qyf2zfdvW8pLEyYjdYsbnlz
+X-Gm-Gg: AYBFou3pbBuJhX8wwQJYnX2N+W7nn5qUm7OWMZl5WQqGKPJycHSaNOcX1Rw2MUou2dt
+ 4RVLWed9oSPvjJKjT2Eok3Tu6hxVIwYPhwItoPW8oAFAsMmF7LA9rCVtVKCt3K3QJ6kr1xfWAPb
+ j7FBNNPQYVN6c3xEedVJDyMx+Jg2kK4NTq+X04ANMdsNfGIQgqpqtTJW1r13nMCtjXeuO9bJ0kG
+ DXinKcp0EPnvgXXwniXdwDRNAHdnPgvbiNJq+44e8Z9NQZVJ/wKYlyTvWzZP/CFwvbnKVrz0zB8
+ kHNMSRjbiQJgfL2lRhHTe8weJG3RvEQnYrzRwUYYZ7ofWei8+++atoyzWEONPeEovvBYx5ZESq8
+ OxWCNmPHtyBoICObrAafw5AbulNgh/DzpRfC2ZkVPzZ1eVs6s0etytWnJaBv0V30wnmGsooYHKT
+ XSJHsXQ0BVs15Nx4TwknzoPWCacEYYN7fVpoLY+b0evNj3s9dunkZBNS5Ns/+wZNyjYaesK8l5O
+ B38bobPhQpgzSqy28Vxe6s4B/fU4HVj6GRq0uBQV5PsrCDcnCUjmX3T4UCZ2wjgrAhmPJrVg0oJ
+ uZLpOSu2thIQRiDLImvv6zPNNGCXHXGWwiaen0ld2UyByE3359kw0P+3CpaMx9djwU1SHr+Qw4H
+ eFYBNY6EPwlT+Fw/4IPaiDwEjOYz8i2fJU7EaH/oWOn/u7Xv3VVkM6PyMnbtGL75mhLZRaJ9OCL
+ Jt33i8kZIBn3J2bQ==
+X-Received: by 2002:a05:600c:3554:b0:4a1:f7f4:7cf2 with SMTP id
+ 5b1f17b1804b1-4ac1737c474mr286739095e9.17.1793712350172; 
+ Tue, 03 Nov 2026 05:25:50 -0800 (PST)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-4b2a8d60bc5sm59511765e9.8.2026.11.03.05.21.43
+ 5b1f17b1804b1-4ac09ad35fdsm233816645e9.2.2026.11.03.05.25.49
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 03 Nov 2026 05:21:43 -0800 (PST)
-X-Google-Original-From: "Arne Schwabe (Code Review)"
+ Tue, 03 Nov 2026 05:25:49 -0800 (PST)
+X-Google-Original-From: "Ralf Lici (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Tue, 3 Nov 2026 13:21:42 +0000
-To: =?UTF-8?Q?R=C4=83zvan_Cojocaru?= <razvanc@mailbox.org>,
- Frank Lichtenheld <frank@lichtenheld.com>
+Date: Tue, 3 Nov 2026 13:25:47 +0000
+To: Arne Schwabe <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newpatchset
-X-Gerrit-PatchSet: 5
-X-Gerrit-Change-Id: I5ee231d157459e6406f1f4c12cd6c6e0fce93815
-X-Gerrit-Change-Number: 2082
+X-Gerrit-PatchSet: 4
+X-Gerrit-Change-Id: I72302403bddee4b0b0ee2441ae9e246f48d0bc81
+X-Gerrit-Change-Number: 1734
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2082?usp=email>
-X-Gerrit-Commit: 840af248f93e85d29d3f314fa6cdb24535b780f5
-In-Reply-To: <gerrit.1793618230000.I5ee231d157459e6406f1f4c12cd6c6e0fce93815@gerrit.openvpn.net>
-References: <gerrit.1793618230000.I5ee231d157459e6406f1f4c12cd6c6e0fce93815@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzkzNjE4MjMwMDAwLkk1ZWUyMzFkMTU3NDU5ZTY0MDZmMWY0YzEyY2Q2YzZlMGZjZTkzODE1QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <ce206a7fbfe1cee16ee37d43efc48af788d47eb4-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/1734?usp=email>
+X-Gerrit-Commit: d7e3be14be2994a2e888ad050c024efd00bed756
+In-Reply-To: <gerrit.1782545314000.I72302403bddee4b0b0ee2441ae9e246f48d0bc81@gerrit.openvpn.net>
+References: <gerrit.1782545314000.I72302403bddee4b0b0ee2441ae9e246f48d0bc81@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzgyNTQ1MzE0MDAwLkk3MjMwMjQwM2JkZGVlNGIwYjBlZTI0NDFhZTllMjQ2ZjQ4ZDBiYzgxQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <8b8aaeb0ebd4f99e8888413944921a27e15a0ca8-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.2
 X-Spam-Score: 0.8 (/)
-X-Headers-End: 1xOESV-000000003M4-0cW3
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Remove replay-persist
+X-Headers-End: 1xOEWT-000000003Qq-0YDE
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Support pre-existing
+ Linux DCO interfaces
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -140,14 +140,13 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "Arne Schwabe \(Code Review\) via Openvpn-devel"
+From: "Ralf Lici \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
-Reply-To: arne-openvpn@rfc2549.org, razvanc@mailbox.org,
- openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com,
- gert@greenie.muc.de
-Cc: "Arne Schwabe \(Code Review\)" <gerrit@openvpn.net>,
+Reply-To: ralf@mandelbit.com, arne-openvpn@rfc2549.org,
+ openvpn-devel@lists.sourceforge.net, antonio@mandelbit.com
+Cc: "Ralf Lici \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============8103612374127496354=="
+Content-Type: multipart/mixed; boundary="===============8557897042834915259=="
 X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
 	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,MIME_HTML_MOSTLY,
@@ -156,1955 +155,939 @@ X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============8103612374127496354==
+--===============8557897042834915259==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="+8MMANUaWe0="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="oQxz1apPGQo="; charset=UTF-8
 
---+8MMANUaWe0=
+--oQxz1apPGQo=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: Arne Schwabe, Frank Lichtenheld, Gert=
- Doering, R=C4=83zvan Cojocaru=2E
+Attention is currently required from: Arne Schwabe, Ralf Lici=2E
 
-Hello Frank Lichtenheld, Gert Doering, R=
-=C4=83zvan Cojocaru, 
+Hello Ant=
+onio Quartulli, Arne Schwabe, 
 
-I'd like you to reexamine a change=2E Please visit
+I'd like you to reexamine a change=2E Pleas=
+e visit
 
-=
-    https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2082?usp=3Demail
+    https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1734?usp=3Demail
 
-to look at=
- the new patch set (#5)=2E
+t=
+o look at the new patch set (#4)=2E
 
-The following approvals got outdated and were r=
-emoved:
-Code-Review-1 by R=C4=83zvan Cojocaru
+The change is no longer submittable: c=
+hecks~ChecksSubmitRule is unsatisfied now=2E
 
 
-Change subject: Remove repl=
-ay-persist
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+Change subject: Support pre-=
+existing Linux DCO interfaces
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E
 
-R=
-emove replay-persist
+Support pre-existing Linux DCO interfaces
 
-This feature is very niche and we do not think it is =
-something we
-should maintain and support going forward=2E
+When creating a=
+n ovpn interface returns -EEXIST, still retrieve the
+ifindex and return the=
+ error to the generic DCO open path=2E This lets the
+caller mark the interf=
+ace as pre-existing and avoid deleting it on
+close=2E
 
-This feature sav=
-es a single packet id to persist-replay file=2E
-This makes the feature only=
- properly work in a p2p setup where both
-sides use replay-persist to save t=
-he last known packet id from the
-peer=2E Even then it will only prevent som=
-e packet replays until the
-legitimate peer sends a packet again=2E
+Before accepting the=
+ existing interface, query its rtnetlink link info
+and verify that it is an=
+ ovpn device with the expected mode=2E The ovpn
+mode is fixed at interface =
+creation time, so attaching to an interface
+created for the other mode cann=
+ot work=2E
 
-In serv=
-er mode (p2mp) each client context has its own replay state
-and saving a si=
-ngle packet id is also not very useful with multiple
-clients and multiple s=
-tates=2E
+Honor the pre-existing state on close by skipping net_iface_del=
+() for
+persistent interfaces=2E
 
-Change-Id: I5ee231d157459e6406f1f4c12cd6c6e0fce93815
-Signed-off-b=
-y: Arne Schwabe <arne@rfc2549=2Eorg>
+Github: closes OpenVPN/openvpn#1064
+Change=
+-Id: I72302403bddee4b0b0ee2441ae9e246f48d0bc81
+Signed-off-by: Ralf Lici <ra=
+lf@mandelbit=2Ecom>
 ---
-M Changes=2Emd
-M config=2Eh=2Ecmak=
-e=2Ein
-M configure=2Eac
-M doc/man-sections/link-options=2Erst
-M doc/man-sec=
-tions/tls-options=2Erst
-M doc/man-sections/unsupported-options=2Erst
-M src/=
-openvpn/check_file_access=2Ec
-M src/openvpn/crypto=2Ec
-M src/openvpn/crypto=
-=2Eh
-M src/openvpn/errlevel=2Eh
-M src/openvpn/forward=2Ec
-M src/openvpn/ini=
-t=2Ec
-M src/openvpn/openvpn=2Eh
-M src/openvpn/options=2Ec
-M src/openvpn/opt=
-ions=2Eh
-M src/openvpn/options_show=2Ec
-M src/openvpn/packet_id=2Ec
-M src/o=
-penvpn/packet_id=2Eh
-M src/openvpn/ssl=2Ec
-M src/openvpn/syshead=2Eh
-M src/=
-openvpn/tls_crypt=2Ec
-21 files changed, 33 insertions(+), 330 deletions(-)
-=
+M src/openvpn/dco=2Eh
+M src/openvpn/dco_linux=2Ec
+M=
+ src/openvpn/dco_linux=2Eh
+M src/openvpn/networking=2Eh
+M src/openvpn/netwo=
+rking_iproute2=2Ec
+M src/openvpn/networking_sitnl=2Ec
+M src/openvpn/network=
+ing_sitnl=2Eh
+7 files changed, 185 insertions(+), 29 deletions(-)
 
 
-  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/82/208=
-2/5
+  git p=
+ull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/34/1734/4
 
-diff --git a/Changes=2Emd b/Changes=2Emd
-index 7f47f77=2E=2E89a72fe 10=
-0644
---- a/Changes=2Emd
-+++ b/Changes=2Emd
-@@ -30,6 +30,12 @@
-   "too compl=
-icated", using `--peer-fingerprint` makes TLS mode about as easy as
-   usin=
-g `--secret`=2E
+diff=
+ --git a/src/openvpn/dco=2Eh b/src/openvpn/dco=2Eh
+index c435f8c=2E=2E02ff9=
+b3 100644
+--- a/src/openvpn/dco=2Eh
++++ b/src/openvpn/dco=2Eh
+@@ -109,7 +10=
+9,8 @@
+ bool ovpn_dco_init(struct context *c);
  
-+* **`replay-persist` has been removed**
-+
-+  This featur=
-e has been removed as it was never properly implemented for
-+  server mode =
-and generally was a niche feature=2E If the option is present
-+  it will be=
- ignored=2E
-+
- ## Maintainer-visible changes
- 
- - The configure-time option=
- `--enable-debug` is no longer  available
-diff --git a/config=2Eh=2Ecmake=
-=2Ein b/config=2Eh=2Ecmake=2Ein
-index 5e06a63=2E=2Ef7818cf 100644
---- a/con=
-fig=2Eh=2Ecmake=2Ein
-+++ b/config=2Eh=2Ecmake=2Ein
-@@ -285,9 +285,6 @@
- /* =
-Define to 1 if you have the <sys/epoll=2Eh> header file=2E */
- #cmakedefine=
- HAVE_SYS_EPOLL_H
- 
--/* Define to 1 if you have the <sys/file=2Eh> header f=
-ile=2E */
--#undef HAVE_SYS_FILE_H
--
- /* Define to 1 if you have the <sys/in=
-otify=2Eh> header file=2E */
- #cmakedefine HAVE_SYS_INOTIFY_H
- 
-diff --git =
-a/configure=2Eac b/configure=2Eac
-index 5f18798=2E=2E9326c4e 100644
---- a/c=
-onfigure=2Eac
-+++ b/configure=2Eac
-@@ -453,7 +453,7 @@
- ])
- AC_CHECK_HEADER=
-S([ \
- 	sys/time=2Eh sys/ioctl=2Eh sys/stat=2Eh \
--	sys/mman=2Eh sys/file=
-=2Eh sys/wait=2Eh \
-+	sys/mman=2Eh sys/wait=2Eh \
- 	libgen=2Eh stropts=2Eh =
-\
- 	syslog=2Eh pwd=2Eh grp=2Eh \
- 	sys/sockio=2Eh sys/uio=2Eh \
-@@ -561,8 +=
-561,7 @@
- AC_CHECK_FUNCS([ \
- 	daemon chroot getpwnam setuid nice dup dup2 =
-\
- 	syslog openlog mlockall getrlimit getgrnam setgid \
--	setgroups flock g=
-ettimeofday \
--	setsid chdir \
-+	setgroups gettimeofday setsid chdir \
- 	ch=
-size ftruncate execve getpeereid basename dirname \
- 	epoll_create strlcpy =
-strsep strtok_r \
- ])
-diff --git a/doc/man-sections/link-options=2Erst b/do=
-c/man-sections/link-options=2Erst
-index 735ee51=2E=2Ebbdcf7f 100644
---- a/d=
-oc/man-sections/link-options=2Erst
-+++ b/doc/man-sections/link-options=2Ers=
-t
-@@ -440,19 +440,6 @@
-   physical IP layer=2E The problem is easily fixed =
-by simply using TCP as
-   the VPN transport layer=2E
- 
----replay-persist fi=
-le
--  Persist replay-protection state across sessions using ``file`` to sav=
-e
--  and reload the state=2E
--
--  This option will keep a disk copy of the =
-current replay protection state
--  (i=2Ee=2E the most recent packet timesta=
-mp and sequence number received from
--  the remote peer), so that if an Ope=
-nVPN session is stopped and
--  restarted, it will reject any replays of pac=
-kets which were already
--  received by the prior session=2E
--
--  This optio=
-n only makes sense when replay protection is enabled (the
--  default) and y=
-ou are using TLS mode with ``--tls-auth``=2E
--
- --session-timeout n
-   Rais=
-es :code:`SIGTERM` for the client instance after ``n`` seconds since
-   the=
- beginning of the session, forcing OpenVPN to disconnect=2E
-diff --git a/do=
-c/man-sections/tls-options=2Erst b/doc/man-sections/tls-options=2Erst
-index=
- c4aa810=2E=2Ede4d324 100644
---- a/doc/man-sections/tls-options=2Erst
-+++ b=
-/doc/man-sections/tls-options=2Erst
-@@ -370,10 +370,7 @@
-   level has had a=
- chance to authenticate the peer=2E The result is that
-   packets without t=
-he correct signature can be dropped immediately upon
-   reception, before t=
-hey have a chance to consume additional system
--  resources such as by init=
-iating a TLS handshake=2E ``--tls-auth`` can be
--  strengthened by adding t=
-he ``--replay-persist`` option which will keep
--  OpenVPN's replay protecti=
-on state in a file so that it is not lost
--  across restarts=2E
-+  resource=
-s such as by initiating a TLS handshake=2E
- 
-   It should be emphasized tha=
-t this feature is optional and that the key
-   file used with ``--tls-auth`=
-` gives a peer nothing more than the power
-diff --git a/doc/man-sections/un=
-supported-options=2Erst b/doc/man-sections/unsupported-options=2Erst
-index =
-2794f12=2E=2E368805e 100644
---- a/doc/man-sections/unsupported-options=2Ers=
-t
-+++ b/doc/man-sections/unsupported-options=2Erst
-@@ -79,3 +79,8 @@
- 
- --a=
-llow-deprecated-insecure-static-crypto
-   Removed in OpenVPN 2=2E8 as --sec=
-ret was also removed=2E
-+
-+--replay-persist
-+  Removed in OpenVPN 2=2E8=2E =
-This option never really worked well with ``--server``
-+  and the usefulnes=
-s of this option in p2p setups is not very high either=2E
-+  It is now igno=
-red if present in the configuration file=2E
-diff --git a/src/openvpn/check_=
-file_access=2Ec b/src/openvpn/check_file_access=2Ec
-index 90dbb4e=2E=2E0963=
-5cb 100644
---- a/src/openvpn/check_file_access=2Ec
-+++ b/src/openvpn/check_=
-file_access=2Ec
-@@ -312,9 +312,6 @@
-                                       =
-   ce->tls_crypt_v2_file, R_OK, "--tls-crypt-v2");
-     }
- 
--    errs |=3D =
-check_file_access(CHKACC_DIRPATH | CHKACC_FILEXSTWR, options->packet_id_fil=
-e,
--                              R_OK | W_OK, "--replay-persist");
--
-     =
-/* ** Password files ** */
-     errs |=3D check_file_access(CHKACC_FILE | C=
-HKACC_ACPTSTDIN | CHKACC_PRIVATE,
-                               options->k=
-ey_pass_file, R_OK, "--askpass");
-diff --git a/src/openvpn/crypto=2Ec b/src=
-/openvpn/crypto=2Ec
-index d375273=2E=2E9b8c7aaa 100644
---- a/src/openvpn/cr=
-ypto=2Ec
-+++ b/src/openvpn/crypto=2Ec
-@@ -403,10 +403,6 @@
-     if (packet_=
-id_test(recv, pin))
-     {
-         packet_id_add(recv, pin);
--        if (=
-opt->pid_persist && (opt->flags & CO_PACKET_ID_LONG_FORM))
--        {
--    =
-        packet_id_persist_save_obj(opt->pid_persist, &opt->packet_id);
--   =
-     }
-         ret =3D true;
-     }
-     else
-diff --git a/src/openvpn/cry=
-pto=2Eh b/src/openvpn/crypto=2Eh
-index 203f77b=2E=2E4962835 100644
---- a/sr=
-c/openvpn/crypto=2Eh
-+++ b/src/openvpn/crypto=2Eh
-@@ -339,11 +339,6 @@
-    =
-                              *   The packet id also used as the IV
-       =
-                           *   for AEAD/OFB/CFG ciphers=2E
-                =
-                  */
--    struct packet_id_persist *pid_persist;
--    /**< =
-Persistent packet ID state for
--     *   keeping state between successive
--=
-     *   OpenVPN process startups=2E */
--
- #define CO_PACKET_ID_LONG_FORM  =
-       (1u << 0)
-     /**< Bit-flag indicating whether to use
-      *   Ope=
-nVPN's long packet ID format=2E */
-diff --git a/src/openvpn/errlevel=2Eh b/=
-src/openvpn/errlevel=2Eh
-index d79efbb=2E=2E60d20ad 100644
---- a/src/openvp=
-n/errlevel=2Eh
-+++ b/src/openvpn/errlevel=2Eh
-@@ -64,7 +64,6 @@
- #define D_=
-MULTI_ERRORS   LOGLEV(1, 9, M_NONFATAL)   /* show multi-client server error=
-s */
- #define D_EVENT_ERRORS   LOGLEV(1, 10, M_NONFATAL)  /* show event=2E[=
-ch] errors */
- #define D_PUSH_ERRORS    LOGLEV(1, 11, M_NONFATAL)  /* show =
-push/pull errors */
--#define D_PID_PERSIST    LOGLEV(1, 12, M_NONFATAL)  /*=
- show packet_id persist errors */
- #define D_FRAG_ERRORS    LOGLEV(1, 13, M=
-_NONFATAL)  /* show fragmentation errors */
- #define D_ALIGN_ERRORS   LOGLE=
-V(1, 14, M_NONFATAL)  /* show bad struct alignments */
- 
-@@ -161,16 +160,15=
- @@
- #define D_EVENT_WAIT        LOGLEV(8, 70, M_DEBUG)      /* show detail=
-ed info from event waits */
- #define D_MULTI_TCP         LOGLEV(8, 70, M_DE=
-BUG)      /* show debug info from mtcp=2Ec */
- 
--#define D_TLS_DEBUG       =
-  LOGLEV(9, 70, M_DEBUG)      /* show detailed info from TLS routines */
--#=
-define D_COMP              LOGLEV(9, 70, M_DEBUG)      /* show compression =
-info */
--#define D_READ_WRITE        LOGLEV(9, 70, M_DEBUG)      /* show al=
-l tun/tcp/udp reads/writes/opens */
--#define D_PACKET_CONTENT    LOGLEV(9, =
-70, M_DEBUG)      /* show before/after encryption packet content */
--#defin=
-e D_TLS_NO_SEND_KEY   LOGLEV(9, 70, M_DEBUG)      /* show when no data chan=
-nel send-key exists */
--#define D_PID_PERSIST_DEBUG LOGLEV(9, 70, M_DEBUG) =
-     /* show packet-id persist debugging info */
--#define D_LINK_RW_VERBOSE=
-   LOGLEV(9, 70, M_DEBUG)      /* increase link reads/writes verbosity */
--=
-#define D_STREAM_DEBUG      LOGLEV(9, 70, M_DEBUG)      /* show TCP stream =
-debug info */
--#define D_WIN32_IO          LOGLEV(9, 70, M_DEBUG)      /* w=
-in32 I/O debugging info */
--#define D_PKCS11_DEBUG      LOGLEV(9, 70, M_DEB=
-UG)      /* show PKCS#11 debugging */
-+#define D_TLS_DEBUG       LOGLEV(9, =
-70, M_DEBUG)        /* show detailed info from TLS routines */
-+#define D_C=
-OMP            LOGLEV(9, 70, M_DEBUG)        /* show compression info */
-+#=
-define D_READ_WRITE      LOGLEV(9, 70, M_DEBUG)        /* show all tun/tcp/=
-udp reads/writes/opens */
-+#define D_PACKET_CONTENT  LOGLEV(9, 70, M_DEBUG)=
-        /* show before/after encryption packet content */
-+#define D_TLS_NO=
-_SEND_KEY LOGLEV(9, 70, M_DEBUG)        /* show when no data channel send-k=
-ey exists */
-+#define D_LINK_RW_VERBOSE LOGLEV(9, 70, M_DEBUG)        /* in=
-crease link reads/writes verbosity */
-+#define D_STREAM_DEBUG    LOGLEV(9, =
-70, M_DEBUG)        /* show TCP stream debug info */
-+#define D_WIN32_IO   =
-     LOGLEV(9, 70, M_DEBUG)        /* win32 I/O debugging info */
-+#define =
-D_PKCS11_DEBUG    LOGLEV(9, 70, M_DEBUG)        /* show PKCS#11 debugging *=
-/
- 
- #define D_SHAPER_DEBUG LOGLEV(10, 70, M_DEBUG)          /* show traffi=
-c shaper info */
- 
-diff --git a/src/openvpn/forward=2Ec b/src/openvpn/forwa=
-rd=2Ec
-index 681210d=2E=2E0db0584 100644
---- a/src/openvpn/forward=2Ec
-+++ =
-b/src/openvpn/forward=2Ec
-@@ -744,14 +744,6 @@
- static void
- process_coarse=
-_timers(struct context *c)
- {
--    /* flush current packet-id to file once =
-per 60
--     * seconds if --replay-persist was specified */
--    if (packet=
-_id_persist_enabled(&c->c1=2Epid_persist)
--        && event_timeout_trigger=
-(&c->c2=2Epacket_id_persist_interval, &c->c2=2Etimeval, ETT_DEFAULT))
--    =
-{
--        packet_id_persist_save(&c->c1=2Epid_persist);
--    }
--
-     /* S=
-hould we write timer-triggered status file */
-     if (c->c1=2Estatus_outpu=
-t
-         && event_timeout_trigger(&c->c1=2Estatus_output->et, &c->c2=2Eti=
-meval, ETT_DEFAULT))
-diff --git a/src/openvpn/init=2Ec b/src/openvpn/init=
-=2Ec
-index ff00151=2E=2E525df7e 100644
---- a/src/openvpn/init=2Ec
-+++ b/src=
-/openvpn/init=2Ec
-@@ -66,7 +66,6 @@
- /*
-  * Crypto initialization flags
-  *=
-/
--#define CF_LOAD_PERSISTED_PACKET_ID (1 << 0)
- #define CF_INIT_TLS_MULTI =
-          (1 << 1)
- #define CF_INIT_TLS_AUTH_STANDALONE (1 << 2)
- 
-@@ -741,=
-8 +740,6 @@
- {
-     context_clear_1(c);
- 
--    packet_id_persist_init(&c->c=
-1=2Epid_persist);
--
-     init_connection_list(c);
- 
-     c->c1=2Elink_socke=
-ts_num =3D c->options=2Ece=2Elocal_list->len;
-@@ -1350,12 +1347,6 @@
-      =
-                          now);
-         }
- 
--        /* initialize packet_=
-id persistence timer */
--        if (c->options=2Epacket_id_file)
--        =
-{
--            event_timeout_init(&c->c2=2Epacket_id_persist_interval, 60, =
-now);
--        }
--
-         /* initialize tmp_int optimization that limits =
-the number of times we call
-          * tls_multi_process in the main event=
- loop */
-         interval_init(&c->c2=2Etmp_int, TLS_MULTI_HORIZON, TLS_MU=
-LTI_REFRESH);
-@@ -2955,31 +2946,15 @@
- }
- 
- static void
--init_crypto_pre(st=
-ruct context *c, const unsigned int flags)
--{
--    if (c->options=2Eengine)=
-
--    {
--        crypto_init_lib_engine(c->options=2Eengine);
--    }
--
--   =
- if (flags & CF_LOAD_PERSISTED_PACKET_ID)
--    {
--        /* load a persist=
-ed packet-id for cross-session replay-protection */
--        if (c->options=
-=2Epacket_id_file)
--        {
--            packet_id_persist_load(&c->c1=2E=
-pid_persist, c->options=2Epacket_id_file);
--        }
--    }
--}
--
--
--static=
- void
- do_init_crypto_test(struct context *c)
- {
-     const struct options =
-*options =3D &c->options;
-     ASSERT(options->test_crypto);
- 
--    init_cr=
-ypto_pre(c, 0);
-+    if (c->options=2Eengine)
-+    {
-+        crypto_init_l=
-ib_engine(c->options=2Eengine);
-+    }
- 
-     c->c2=2Ecrypto_options=2Eflag=
-s |=3D CO_PACKET_ID_LONG_FORM;
- 
-@@ -3180,7 +3155,10 @@
-     ASSERT(options=
-->tls_server || options->tls_client);
-     ASSERT(!options->test_crypto);
- =
-
--    init_crypto_pre(c, flags);
-+    if (c->options=2Eengine)
-+    {
-+    =
-    crypto_init_lib_engine(c->options=2Eengine);
-+    }
- 
-     /* Make sure=
- we are either a TLS client or server but not both */
-     ASSERT(options->=
-tls_server =3D=3D !options->tls_client);
-@@ -3358,7 +3336,6 @@
-     if (to=
-=2Etls_wrap=2Emode =3D=3D TLS_WRAP_AUTH || to=2Etls_wrap=2Emode =3D=3D TLS_=
-WRAP_CRYPT)
-     {
-         to=2Etls_wrap=2Eopt=2Ekey_ctx_bi =3D c->c1=2Eks=
-=2Etls_wrap_key;
--        to=2Etls_wrap=2Eopt=2Epid_persist =3D &c->c1=2Epi=
-d_persist;
-         to=2Etls_wrap=2Eopt=2Eflags |=3D CO_PACKET_ID_LONG_FORM=
-;
-         to=2Etls_wrap=2Eoriginal_wrap_keydata =3D c->c1=2Eks=2Eoriginal_=
-wrap_keydata;
-     }
-@@ -3917,11 +3894,6 @@
- do_close_packet_id(struct cont=
-ext *c)
- {
-     packet_id_free(&c->c2=2Ecrypto_options=2Epacket_id);
--    p=
-acket_id_persist_save(&c->c1=2Epid_persist);
--    if (!(c->sig->signal_rece=
-ived =3D=3D SIGUSR1))
--    {
--        packet_id_persist_close(&c->c1=2Epid_=
-persist);
--    }
- }
- 
- #ifdef ENABLE_FRAGMENT
-@@ -4457,7 +4429,7 @@
-       =
-  }
-         else if (c->mode =3D=3D CM_P2P)
-         {
--            crypto=
-_flags =3D CF_LOAD_PERSISTED_PACKET_ID | CF_INIT_TLS_MULTI;
-+            cr=
-ypto_flags =3D CF_INIT_TLS_MULTI;
-         }
-         else if (child)
-     =
-    {
-@@ -4715,7 +4687,6 @@
-     ALLOC_OBJ_CLEAR_GC(dest->sig, struct signa=
-l_info, &dest->gc);
- 
-     /* c1 init */
--    packet_id_persist_init(&dest-=
->c1=2Epid_persist);
-     dest->c1=2Elink_sockets_num =3D 1;
-     do_link_so=
-cket_addr_new(dest);
- 
-diff --git a/src/openvpn/openvpn=2Eh b/src/openvpn/o=
-penvpn=2Eh
-index cdd02b6=2E=2E52f298b 100644
---- a/src/openvpn/openvpn=2Eh
-=
-+++ b/src/openvpn/openvpn=2Eh
-@@ -75,21 +75,6 @@
- };
- 
- /*
-- * struct packe=
-t_id_persist should be empty if we are not
-- * building with crypto=2E
-- */=
-
--#ifndef PACKET_ID_H
--struct packet_id_persist
--{
--    int dummy;
--};
--sta=
-tic inline void
--packet_id_persist_init(struct packet_id_persist *p)
--{
--}
-=
--#endif
--
--/*
-  * Packet processing buffers=2E
-  */
- struct context_buffers=
-
-@@ -167,9 +152,6 @@
-     /* preresolved and cached host names */
-     stru=
-ct cached_dns_entry *dns_cache;
- 
--    /* persist crypto sequence number to=
-/from file */
--    struct packet_id_persist pid_persist;
--
-     struct tunt=
-ap *tuntap; /**< Tun/tap virtual network interface=2E */
-     bool tuntap_o=
-wned;     /**< Whether the tun/tap interface should
-                       =
-      *   be cleaned up when this %context is
-@@ -352,8 +334,6 @@
-      *  =
- Channel Crypto module\endlink to
-      *   process data channel packet=2E =
-*/
- 
--    struct event_timeout packet_id_persist_interval;
--
- #ifdef USE_CO=
-MP
-     struct compress_context *comp_context;
-     /**< Compression contex=
-t used by the
-diff --git a/src/openvpn/options=2Ec b/src/openvpn/options=2E=
-c
-index a3c7601=2E=2E7032637 100644
---- a/src/openvpn/options=2Ec
-+++ b/src=
-/openvpn/options=2Ec
-@@ -573,8 +573,6 @@
-     "--replay-window n [t]  : Use=
- a replay protection sliding window of size n\n"
-     "                    =
-     and a time window of t seconds=2E\n"
-     "                         De=
-fault n=3D%d t=3D%d\n"
--    "--replay-persist file : Persist replay-protect=
-ion state across sessions\n"
--    "                  using file=2E\n"
-     =
-"--test-crypto   : Run a self-test of crypto features enabled=2E\n"
-     " =
-                 For debugging only=2E\n"
-     "\n"
-@@ -7047,7 +7045,7 @@
- =
-    else if (streq(p[0], "replay-persist") && p[1] && !p[2])
-     {
-       =
-  VERIFY_PERMISSION(OPT_P_GENERAL);
--        options->packet_id_file =3D p[=
-1];
-+        msg(M_WARN, "DEPRECATED OPTION: --replay-persist option ignore=
-d=2E");
-     }
-     else if (streq(p[0], "test-crypto") && !p[1])
-     {
-di=
-ff --git a/src/openvpn/options=2Eh b/src/openvpn/options=2Eh
-index 129267f=
-=2E=2Edd8b75a 100644
---- a/src/openvpn/options=2Eh
-+++ b/src/openvpn/option=
-s=2Eh
-@@ -582,7 +582,6 @@
-     bool mute_replay_warnings;
-     int replay_w=
-indow;
-     int replay_time;
--    const char *packet_id_file;
-     bool tes=
-t_crypto;
- 
-     /* TLS (control channel) parms */
-diff --git a/src/openvpn=
-/options_show=2Ec b/src/openvpn/options_show=2Ec
-index 321a37b=2E=2E54f9c4c=
- 100644
---- a/src/openvpn/options_show=2Ec
-+++ b/src/openvpn/options_show=
-=2Ec
-@@ -501,7 +501,6 @@
-     SHOW_BOOL(mute_replay_warnings);
-     SHOW_IN=
-T(replay_window);
-     SHOW_INT(replay_time);
--    SHOW_STR(packet_id_file)=
-;
-     SHOW_BOOL(test_crypto);
- 
-     SHOW_BOOL(tls_server);
-diff --git a/s=
-rc/openvpn/packet_id=2Ec b/src/openvpn/packet_id=2Ec
-index 9dd6ce3=2E=2Ef1f=
-add6 100644
---- a/src/openvpn/packet_id=2Ec
-+++ b/src/openvpn/packet_id=2Ec=
-
-@@ -426,146 +426,6 @@
-     return BSTR(&out);
- }
- 
--/* initialize the pack=
-et_id_persist structure in a disabled state */
--void
--packet_id_persist_ini=
-t(struct packet_id_persist *p)
--{
--    p->filename =3D NULL;
--    p->fd =3D=
- -1;
--    p->time =3D p->time_last_written =3D 0;
--    p->id =3D p->id_last=
-_written =3D 0;
--}
--
--/* close the file descriptor if it is open, and switc=
-h to disabled state */
--void
--packet_id_persist_close(struct packet_id_pers=
-ist *p)
--{
--    if (packet_id_persist_enabled(p))
--    {
--        if (close=
-(p->fd))
--        {
--            msg(D_PID_PERSIST | M_ERRNO, "Close error =
-on --replay-persist file %s", p->filename);
--        }
--        packet_id_p=
-ersist_init(p);
--    }
--}
--
--/* load persisted rec packet_id (time and id) =
-only once from file, and set state to enabled */
--void
--packet_id_persist_l=
-oad(struct packet_id_persist *p, const char *filename)
--{
--    struct gc_ar=
-ena gc =3D gc_new();
--    if (!packet_id_persist_enabled(p))
--    {
--      =
-  /* open packet-id persist file for both read and write */
--        p->fd =
-=3D platform_open(filename, O_CREAT | O_RDWR | O_BINARY, S_IRUSR | S_IWUSR)=
-;
--        if (p->fd =3D=3D -1)
--        {
--            msg(D_PID_PERSIST |=
- M_ERRNO, "Cannot open --replay-persist file %s for read/write",
--         =
-       filename);
--        }
--        else
--        {
--            struct p=
-acket_id_persist_file_image image;
--            ssize_t n;
--
--#if defined(H=
-AVE_FLOCK) && defined(LOCK_EX) && defined(LOCK_NB)
--            if (flock(p=
-->fd, LOCK_EX | LOCK_NB))
--            {
--                msg(M_ERR, "Canno=
-t obtain exclusive lock on --replay-persist file %s", filename);
--         =
-   }
--#endif
--
--            p->filename =3D filename;
--            n =3D re=
-ad(p->fd, &image, sizeof(image));
--            if (n =3D=3D sizeof(image))
-=
--            {
--                p->time =3D p->time_last_written =3D image=
-=2Etime;
--                p->id =3D p->id_last_written =3D image=2Eid;
--   =
-             dmsg(D_PID_PERSIST_DEBUG, "PID Persist Read from %s: %s", p->f=
-ilename,
--                     packet_id_persist_print(p, &gc));
--         =
-   }
--            else if (n =3D=3D -1)
--            {
--                msg=
-(D_PID_PERSIST | M_ERRNO, "Read error on --replay-persist file %s", p->file=
-name);
--            }
--        }
--    }
--    gc_free(&gc);
--}
--
--/* save pe=
-rsisted rec packet_id (time and id) to file (only if enabled state) */
--voi=
-d
--packet_id_persist_save(struct packet_id_persist *p)
--{
--    if (packet_i=
-d_persist_enabled(p) && p->time
--        && (p->time !=3D p->time_last_writ=
-ten || p->id !=3D p->id_last_written))
--    {
--        struct packet_id_per=
-sist_file_image image;
--        CLEAR(image);
--        off_t seek_ret;
--   =
-     struct gc_arena gc =3D gc_new();
--
--        image=2Etime =3D p->time;
-=
--        image=2Eid =3D p->id;
--        seek_ret =3D lseek(p->fd, (off_t)0,=
- SEEK_SET);
--        if (seek_ret =3D=3D (off_t)0)
--        {
--            =
-const ssize_t n =3D write(p->fd, &image, sizeof(image));
--            if (n=
- =3D=3D sizeof(image))
--            {
--                p->time_last_written=
- =3D p->time;
--                p->id_last_written =3D p->id;
--             =
-   dmsg(D_PID_PERSIST_DEBUG, "PID Persist Write to %s: %s", p->filename,
-- =
-                    packet_id_persist_print(p, &gc));
--            }
--     =
-       else
--            {
--                msg(D_PID_PERSIST | M_ERRNO, "C=
-annot write to --replay-persist file %s",
--                    p->filename)=
-;
--            }
--        }
--        else
--        {
--            msg(D_PID=
-_PERSIST | M_ERRNO, "Cannot seek to beginning of --replay-persist file %s",=
-
--                p->filename);
--        }
--        gc_free(&gc);
--    }
--}=
-
--
--/* transfer packet_id_persist -> packet_id */
--void
--packet_id_persist_=
-load_obj(const struct packet_id_persist *p, struct packet_id *pid)
--{
--    =
-if (p && pid && packet_id_persist_enabled(p) && p->time)
--    {
--        pi=
-d->rec=2Etime =3D p->time;
--        pid->rec=2Eid =3D p->id;
--    }
--}
--
--c=
-onst char *
--packet_id_persist_print(const struct packet_id_persist *p, str=
-uct gc_arena *gc)
--{
--    struct buffer out =3D alloc_buf_gc(256, gc);
--
-- =
-   buf_printf(&out, "[");
--
--    if (packet_id_persist_enabled(p))
--    {
--=
-        buf_printf(&out, " #" packet_id_format, (packet_id_print_type)p->id=
-);
--        if (p->time)
--        {
--            buf_printf(&out, " / time =
-=3D (" packet_id_format ") %s", (packet_id_print_type)p->time,
--           =
-            time_string(p->time, 0, false, gc));
--        }
--    }
--
--    b=
-uf_printf(&out, " ]");
--    return (char *)out=2Edata;
--}
--
- #ifndef ENABLE=
-_SMALL
- 
- static void
-diff --git a/src/openvpn/packet_id=2Eh b/src/openvpn/=
-packet_id=2Eh
-index 48752d3=2E=2Ec374ccb 100644
---- a/src/openvpn/packet_id=
-=2Eh
-+++ b/src/openvpn/packet_id=2Eh
-@@ -125,26 +125,6 @@
- };
- 
- /*
-- * fil=
-e to facilitate cross-session persistence
-- * of time/id
-- */
--struct packe=
-t_id_persist
--{
--    const char *filename;
--    int fd;
--    time_t time;  =
-     /* time stamp */
--    packet_id_type id; /* sequence number */
--    ti=
-me_t time_last_written;
--    packet_id_type id_last_written;
--};
--
--struct =
-packet_id_persist_file_image
--{
--    time_t time;       /* time stamp */
-- =
-   packet_id_type id; /* sequence number */
--};
--
--/*
-  * Keep a record of =
-our current packet-id state
-  * on the sending side=2E
-  */
-@@ -222,28 +202=
-,6 @@
- void packet_id_reap(struct packet_id_rec *p);
- 
- /*
-- * packet ID pe=
-rsistence
-- */
--
--/* initialize the packet_id_persist structure in a disabl=
-ed state */
--void packet_id_persist_init(struct packet_id_persist *p);
--
--/=
-* close the file descriptor if it is open, and switch to disabled state */
-=
--void packet_id_persist_close(struct packet_id_persist *p);
--
--/* load pers=
-isted rec packet_id (time and id) only once from file, and set state to ena=
-bled */
--void packet_id_persist_load(struct packet_id_persist *p, const cha=
-r *filename);
--
--/* save persisted rec packet_id (time and id) to file (onl=
-y if enabled state) */
--void packet_id_persist_save(struct packet_id_persis=
-t *p);
--
--/* transfer packet_id_persist -> packet_id */
--void packet_id_per=
-sist_load_obj(const struct packet_id_persist *p, struct packet_id *pid);
--
-=
--/* return an ascii string representing a packet_id_persist object */
--cons=
-t char *packet_id_persist_print(const struct packet_id_persist *p, struct g=
-c_arena *gc);
--
--/*
-  * Read/write a packet ID to/from the buffer=2E  Short=
- form is sequence number
-  * only=2E  Long form is sequence number and time=
-stamp=2E
-  */
-@@ -273,27 +231,6 @@
-     return pid->rec=2Einitialized;
- }
- =
-
--/* are we in enabled state? */
--static inline bool
--packet_id_persist_ena=
-bled(const struct packet_id_persist *p)
--{
--    return p->fd >=3D 0;
--}
--
--=
-/* transfer packet_id -> packet_id_persist
--   Note: Only supported for non=
--epoch format (i=2Ee=2E 32bit ID, not 64bit format),
--   must be enforced a=
-t the caller=2E
-- */
--static inline void
--packet_id_persist_save_obj(struct=
- packet_id_persist *p, const struct packet_id *pid)
--{
--    if (packet_id_p=
-ersist_enabled(p) && pid->rec=2Etime && pid->rec=2Eid <=3D PACKET_ID_MAX)
--=
-    {
--        p->time =3D pid->rec=2Etime;
--        p->id =3D (packet_id_t=
-ype)pid->rec=2Eid;
--    }
--}
--
  /**
-  * Reset the current send packet id to=
- its initial state=2E
-  * Use very carefully (e=2Eg=2E in the standalone re=
-set packet context) to
-diff --git a/src/openvpn/ssl=2Ec b/src/openvpn/ssl=
-=2Ec
-index 55043e5=2E=2E67df7c2 100644
---- a/src/openvpn/ssl=2Ec
-+++ b/src/=
-openvpn/ssl=2Ec
-@@ -878,8 +878,6 @@
-     packet_id_init(&ks->crypto_options=
-=2Epacket_id, session->opt->replay_window,
-                    session->opt=
-->replay_time, "SSL", ks->key_id);
- 
--    ks->crypto_options=2Epid_persist =
-=3D NULL;
--
- #ifdef ENABLE_MANAGEMENT
-     ks->mda_key_id =3D session->opt-=
->mda_context->mda_key_id_counter++;
- #endif
-@@ -1037,9 +1035,6 @@
-         =
-session->tls_wrap=2Eopt=2Epacket_id=2Esend=2Eid =3D EARLY_NEG_START;
-     }=
+- * Open/create a DCO=
+ interface
++ * Open/create a DCO interface and store its ifindex=2E
++ * If =
+the interface already exists, save the ifindex anyway and return -EEXIST=2E=
 
+  *
+  * @param tt        the tuntap context
+  * @param ctx       the netwo=
+rking API context
+diff --git a/src/openvpn/dco_linux=2Ec b/src/openvpn/dco_=
+linux=2Ec
+index 4412ad0=2E=2Ee9cf0b7 100644
+--- a/src/openvpn/dco_linux=2Ec=
+
++++ b/src/openvpn/dco_linux=2Ec
+@@ -540,6 +540,19 @@
+     CLEAR(dco);
+ }
+ =
+
++static const char *
++ovpn_mode_to_str(enum ovpn_mode mode)
++{
++    switch=
+ (mode)
++    {
++        case OVPN_MODE_P2P:
++            return "p2p";
++   =
+     case OVPN_MODE_MP:
++            return "server";
++    }
++    return "u=
+nknown";
++}
++
+ int
+ open_tun_dco(struct tuntap *tt, openvpn_net_ctx_t *ctx,=
+ const char *dev)
+ {
+@@ -547,11 +560,30 @@
+     ASSERT(tt->type =3D=3D DEV_=
+TYPE_TUN);
  
--    /* load most recent packet-id to replay protect on --tls-auth */
-- =
-   packet_id_persist_load_obj(session->tls_wrap=2Eopt=2Epid_persist, &sessi=
-on->tls_wrap=2Eopt=2Epacket_id);
+     int ret =3D net_iface_new(ctx, dev, OVPN_FAMILY_NAME, &tt=
+->dco);
+-    if (ret < 0)
++    if (ret < 0 && ret !=3D -EEXIST)
+     {
+    =
+     msg(D_DCO_DEBUG, "Cannot create DCO interface %s: %d", dev, ret);
+    =
+     return ret;
+     }
++    if (ret =3D=3D -EEXIST)
++    {
++        enum o=
+vpn_mode mode;
++        int mode_ret =3D net_iface_ovpn_mode(ctx, dev, &mod=
+e);
++
++        if (mode_ret < 0)
++        {
++            msg(M_WARN, "DCO: =
+cannot retrieve mode of existing interface %s: %s (%d)", dev,
++            =
+    strerror(-mode_ret), mode_ret);
++            return mode_ret;
++        =
+}
++
++        if (mode !=3D tt->dco=2Eifmode)
++        {
++            msg(M_=
+WARN, "DCO: existing interface %s is in %s mode, expected %s mode",
++      =
+          dev, ovpn_mode_to_str(mode), ovpn_mode_to_str(tt->dco=2Eifmode));=
+
++            return -EINVAL;
++        }
++    }
+ 
+     tt->dco=2Eifindex =
+=3D if_nametoindex(dev);
+     if (!tt->dco=2Eifindex)
+@@ -559,7 +591,7 @@
+ =
+        msg(M_FATAL, "DCO: cannot retrieve ifindex for interface %s", dev);=
+
+     }
+ 
+-    return 0;
++    return ret;
+ }
+ 
+ void
+@@ -567,7 +599,10 @@
+ =
+{
+     msg(D_DCO_DEBUG, __func__);
+ 
+-    net_iface_del(ctx, tt->actual_nam=
+e);
++    if (!tt->persistent_if)
++    {
++        net_iface_del(ctx, tt->act=
+ual_name);
++    }
+     ovpn_dco_uninit_netlink(&tt->dco);
+ }
+ 
+diff --git a=
+/src/openvpn/dco_linux=2Eh b/src/openvpn/dco_linux=2Eh
+index c487581=2E=2Ea=
+999d77 100644
+--- a/src/openvpn/dco_linux=2Eh
++++ b/src/openvpn/dco_linux=
+=2Eh
+@@ -24,6 +24,7 @@
+ #if defined(ENABLE_DCO) && defined(TARGET_LINUX)
+ 
+=
+ #include "event=2Eh"
++#include "networking_sitnl=2Eh"
+ 
+ #include "ovpn_dc=
+o_linux=2Eh"
+ 
+@@ -38,28 +39,6 @@
+ typedef enum ovpn_key_slot dco_key_slot_=
+t;
+ typedef enum ovpn_cipher_alg dco_cipher_t;
+ 
+-/* OVPN section */
 -
-     key_state_init(session, &session->k=
-ey[KS_PRIMARY]);
+-#if=
+ndef IFLA_OVPN_MAX
+-
+-enum ovpn_mode
+-{
+-    OVPN_MODE_P2P,
+-    OVPN_MODE_=
+MP,
+-};
+-
+-enum ovpn_ifla_attrs
+-{
+-    IFLA_OVPN_UNSPEC =3D 0,
+-    IFLA_O=
+VPN_MODE,
+-
+-    __IFLA_OVPN_MAX,
+-};
+-
+-#define IFLA_OVPN_MAX (__IFLA_OVPN=
+_MAX - 1)
+-
+-#endif /* ifndef IFLA_OVPN_MAX */
+-
+ typedef struct
+ {
+     /*=
+ socket used for synchronous request/reply transactions (commands and
+diff =
+--git a/src/openvpn/networking=2Eh b/src/openvpn/networking=2Eh
+index 25233=
+c8=2E=2E2423637 100644
+--- a/src/openvpn/networking=2Eh
++++ b/src/openvpn/n=
+etworking=2Eh
+@@ -115,6 +115,19 @@
+  */
+ int net_iface_type(openvpn_net_ctx=
+_t *ctx, const char *iface, char type[IFACE_TYPE_LEN_MAX]);
  
-     dmsg(D_TLS_DEBUG, "TLS: tls_session_init: new sessi=
-on object, sid=3D%s",
-diff --git a/src/openvpn/syshead=2Eh b/src/openvpn/sy=
-shead=2Eh
-index 1d6cdc2=2E=2E65baee3 100644
---- a/src/openvpn/syshead=2Eh
++#if defined(=
+ENABLE_DCO) && defined(TARGET_LINUX)
++/**
++ * Retrieve the ovpn interface m=
+ode
++ *
++ * @param ctx       the implementation specific context
++ * @param=
+ iface     interface to query
++ * @param mode      variable where the ovpn =
+mode attribute will be stored
++ *
++ * @return          0 on success, a nega=
+tive error code otherwise
++ */
++int net_iface_ovpn_mode(openvpn_net_ctx_t *=
+ctx, const char *iface, enum ovpn_mode *mode);
++#endif
++
+ /**
+  * Remove an=
+ interface
+  *
+diff --git a/src/openvpn/networking_iproute2=2Ec b/src/openv=
+pn/networking_iproute2=2Ec
+index f091fb3=2E=2E3fc7bc1 100644
+--- a/src/open=
+vpn/networking_iproute2=2Ec
++++ b/src/openvpn/networking_iproute2=2Ec
+@@ -8=
+2,6 +82,16 @@
+     return -1;
+ }
+ 
++#if defined(ENABLE_DCO)
++int
++net_iface=
+_ovpn_mode(openvpn_net_ctx_t *ctx, const char *iface, enum ovpn_mode *mode)=
+
++{
++    /* not supported by iproute2 */
++    msg(M_WARN, "%s: operation no=
+t supported by iproute2 backend", __func__);
++    return -EOPNOTSUPP;
++}
++#=
+endif
++
+ int
+ net_iface_del(openvpn_net_ctx_t *ctx, const char *iface)
+ {
+d=
+iff --git a/src/openvpn/networking_sitnl=2Ec b/src/openvpn/networking_sitnl=
+=2Ec
+index 0c99d38=2E=2E756eefa 100644
+--- a/src/openvpn/networking_sitnl=
+=2Ec
++++ b/src/openvpn/networking_sitnl=2Ec
+@@ -1430,8 +1430,18 @@
+     ret=
+urn 0;
+ }
+ 
+-int
+-net_iface_type(openvpn_net_ctx_t *ctx, const char *iface,=
+ char type[IFACE_TYPE_LEN_MAX])
++/**
++ * Issue an RTM_GETLINK query for an =
+interface and feed the reply to the given
++ * parsing callback=2E
++ *
++ * @=
+param iface     name of the interface to query
++ * @param cb        callbac=
+k invoked with the netlink reply
++ * @param arg       opaque argument passe=
+d through to the callback
++ *
++ * @return          0 on success, a negative=
+ error code otherwise
++ */
++static int
++sitnl_link_get(const char *iface, s=
+itnl_parse_reply_cb cb, void *arg)
+ {
+     struct sitnl_link_req req =3D {}=
+;
+     int ifindex =3D if_nametoindex(iface);
+@@ -1448,9 +1458,15 @@
+     r=
+eq=2Ei=2Eifi_family =3D AF_PACKET;
+     req=2Ei=2Eifi_index =3D ifindex;
+ 
+=
++    return sitnl_send(&req=2En, 0, 0, cb, arg);
++}
++
++int
++net_iface_type(=
+openvpn_net_ctx_t *ctx, const char *iface, char type[IFACE_TYPE_LEN_MAX])
 +=
-++ b/src/openvpn/syshead=2Eh
-@@ -127,10 +127,6 @@
- #include <fcntl=2Eh>
- #e=
-ndif
+{
+     memset(type, 0, IFACE_TYPE_LEN_MAX);
  
--#ifdef HAVE_SYS_FILE_H
--#include <sys/file=2Eh>
--#endif
--
- /* These=
- headers belong to C99 and should be always be present */
- #include <stdlib=
-=2Eh>
- #include <inttypes=2Eh>
-diff --git a/src/openvpn/tls_crypt=2Ec b/src=
-/openvpn/tls_crypt=2Ec
-index 23c7975=2E=2Ee7fb865 100644
---- a/src/openvpn/=
-tls_crypt=2Ec
-+++ b/src/openvpn/tls_crypt=2Ec
-@@ -109,7 +109,6 @@
-     sess=
-ion->tls_wrap_reneg=2Emode =3D TLS_WRAP_CRYPT;
-     session->tls_wrap_reneg=
-=2Ecleanup_key_ctx =3D true;
-     session->tls_wrap_reneg=2Ework =3D alloc_=
-buf(BUF_SIZE(&session->opt->frame));
--    session->tls_wrap_reneg=2Eopt=2Ep=
-id_persist =3D NULL;
+-    int ret =3D sitnl_send(&=
+req=2En, 0, 0, sitnl_type_save, type);
++    int ret =3D sitnl_link_get(ifac=
+e, sitnl_type_save, type);
+     if (ret < 0)
+     {
+         msg(D_ROUTE, "=
+%s: cannot retrieve iface %s: %s (%d)", __func__, iface, strerror(-ret), re=
+t);
+@@ -1462,6 +1478,82 @@
+     return 0;
+ }
  
-     packet_id_init(&session->tls_wrap_reneg=2Eopt=
-=2Epacket_id, session->opt->replay_window,
-                    session->opt=
-->replay_time, "TLS_WRAP_RENEG", session->key_id);
++#if defined(ENABLE_DCO)
++st=
+atic int
++sitnl_ovpn_mode_save(struct nlmsghdr *n, void *arg)
++{
++    struc=
+t ifinfomsg *ifi =3D NLMSG_DATA(n);
++    struct rtattr *tb[IFLA_MAX + 1];
++=
+    struct rtattr *tb_link[IFLA_INFO_MAX + 1];
++    struct rtattr *tb_data[=
+IFLA_OVPN_MAX + 1];
++    enum ovpn_mode *mode =3D arg;
++    uint8_t raw_mod=
+e;
++
++    if (n->nlmsg_type !=3D RTM_NEWLINK)
++    {
++        return -EINVA=
+L;
++    }
++
++    if (n->nlmsg_len < NLMSG_LENGTH(sizeof(*ifi)))
++    {
++   =
+     return -EINVAL;
++    }
++
++    sitnl_parse_rtattr(tb, IFLA_MAX, IFLA_RT=
+A(ifi), IFLA_PAYLOAD(n));
++
++    if (!tb[IFLA_LINKINFO])
++    {
++        re=
+turn -ENOENT;
++    }
++
++    sitnl_parse_rtattr_nested(tb_link, IFLA_INFO_MA=
+X, tb[IFLA_LINKINFO]);
++
++    if (!tb_link[IFLA_INFO_KIND]
++        || strc=
+mp(RTA_DATA(tb_link[IFLA_INFO_KIND]), OVPN_FAMILY_NAME) !=3D 0)
++    {
++   =
+     return -EINVAL;
++    }
++
++    if (!tb_link[IFLA_INFO_DATA])
++    {
++  =
+      return -ENOENT;
++    }
++
++    sitnl_parse_rtattr_nested(tb_data, IFLA=
+_OVPN_MAX, tb_link[IFLA_INFO_DATA]);
++
++    if (!tb_data[IFLA_OVPN_MODE])
++=
+    {
++        return -ENOENT;
++    }
++
++    if (RTA_PAYLOAD(tb_data[IFLA_O=
+VPN_MODE]) < sizeof(raw_mode))
++    {
++        return -EINVAL;
++    }
++
++  =
+  raw_mode =3D *(uint8_t *)RTA_DATA(tb_data[IFLA_OVPN_MODE]);
++    *mode =
+=3D (enum ovpn_mode)raw_mode;
++
++    return 0;
++}
++
++int
++net_iface_ovpn_mo=
+de(openvpn_net_ctx_t *ctx, const char *iface, enum ovpn_mode *mode)
++{
++   =
+ int ret =3D sitnl_link_get(iface, sitnl_ovpn_mode_save, mode);
++    if (re=
+t < 0)
++    {
++        msg(D_ROUTE, "%s: cannot retrieve ovpn mode for ifac=
+e %s: %s (%d)", __func__, iface,
++            strerror(-ret), ret);
++      =
+  return ret;
++    }
++
++    msg(D_ROUTE, "%s: mode of %s: %d", __func__, if=
+ace, *mode);
++
++    return 0;
++}
++#endif /* defined(ENABLE_DCO) */
++
+ int
+ =
+net_iface_del(openvpn_net_ctx_t *ctx, const char *iface)
+ {
+diff --git a/sr=
+c/openvpn/networking_sitnl=2Eh b/src/openvpn/networking_sitnl=2Eh
+index 481=
+cc36=2E=2E7a2d964 100644
+--- a/src/openvpn/networking_sitnl=2Eh
++++ b/src/o=
+penvpn/networking_sitnl=2Eh
+@@ -24,4 +24,30 @@
+ typedef char openvpn_net_if=
+ace_t;
+ typedef void *openvpn_net_ctx_t;
+ 
++#if defined(TARGET_LINUX)
++
++#i=
+nclude <linux/if_link=2Eh>
++
++#ifndef IFLA_OVPN_MAX
++
++enum ovpn_mode
++{
++ =
+   OVPN_MODE_P2P,
++    OVPN_MODE_MP,
++};
++
++enum ovpn_ifla_attrs
++{
++    IF=
+LA_OVPN_UNSPEC =3D 0,
++    IFLA_OVPN_MODE,
++
++    __IFLA_OVPN_MAX,
++};
++
++#=
+define IFLA_OVPN_MAX (__IFLA_OVPN_MAX - 1)
++
++#endif /* ifndef IFLA_OVPN_MA=
+X */
++
++#endif /* if defined(TARGET_LINUX) */
++
+ #endif /* NETWORKING_SITNL=
+_H_ */
 
 -- 
-To view, visit http=
-s://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2082?usp=3Demail
-To unsubscribe, or =
-for help writing mail filters, visit https://gerrit=2Eopenvpn=2Enet/setting=
-s?usp=3Demail
+To view, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1734?=
+usp=3Demail
+To unsubscribe, or for help writing mail filters, visit https:/=
+/gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: newpatchs=
+et
 Gerrit-Project: openvpn
-Gerr=
-it-Branch: master
-Gerrit-Change-Id: I5ee231d157459e6406f1f4c12cd6c6e0fce938=
-15
-Gerrit-Change-Number: 2082
-Gerrit-PatchSet: 5
-Gerrit-Owner: Arne Schwabe=
- <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Reviewer: Frank Lichtenheld <frank@lic=
-htenheld=2Ecom>
-Gerrit-Reviewer: Gert Doering <gert@greenie=2Emuc=2Ede>
-Ger=
-rit-Reviewer: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
-Gerrit-CC: openv=
-pn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
-Gerrit-Attention: R=C4=
-=83zvan Cojocaru <razvanc@mailbox=2Eorg>
-Gerrit-Attention: Arne Schwabe <ar=
-ne-openvpn@rfc2549=2Eorg>
-Gerrit-Attention: Gert Doering <gert@greenie=2Emu=
-c=2Ede>
-Gerrit-Attention: Frank Lichtenheld <frank@lichtenheld=2Ecom>
+Gerrit-Branch: master
+Gerrit-Change-Id: I7230240=
+3bddee4b0b0ee2441ae9e246f48d0bc81
+Gerrit-Change-Number: 1734
+Gerrit-PatchSe=
+t: 4
+Gerrit-Owner: Ralf Lici <ralf@mandelbit=2Ecom>
+Gerrit-Reviewer: Antoni=
+o Quartulli <antonio@mandelbit=2Ecom>
+Gerrit-Reviewer: Arne Schwabe <arne-o=
+penvpn@rfc2549=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourc=
+eforge=2Enet>
+Gerrit-Attention: Ralf Lici <ralf@mandelbit=2Ecom>
+Gerrit-Att=
+ention: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
 
---+8MMANUaWe0=
+--oQxz1apPGQo=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: Arne Schwabe, Frank Lichtenheld, Gert Doering, R=C4=
-=83zvan Cojocaru=2E </p>
-<p>Arne Schwabe <strong>uploaded patch set #5</str=
-ong> to this change=2E</p><p><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/op=
-envpn/+/2082?usp=3Demail">View Change</a></p><p>The following approvals got=
- outdated and were removed:
-Code-Review-1 by R=C4=83zvan Cojocaru</p><pre c=
-lass=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre=
--wrap;">Remove replay-persist<br><br>This feature is very niche and we do n=
-ot think it is something we<br>should maintain and support going forward=2E=
-<br><br>This feature saves a single packet id to persist-replay file=2E<br>=
-This makes the feature only properly work in a p2p setup where both<br>side=
-s use replay-persist to save the last known packet id from the<br>peer=2E E=
-ven then it will only prevent some packet replays until the<br>legitimate p=
-eer sends a packet again=2E<br><br>In server mode (p2mp) each client contex=
-t has its own replay state<br>and saving a single packet id is also not ver=
-y useful with multiple<br>clients and multiple states=2E<br><br>Change-Id: =
-I5ee231d157459e6406f1f4c12cd6c6e0fce93815<br>Signed-off-by: Arne Schwabe &l=
-t;arne@rfc2549=2Eorg&gt;<br>---<br>M Changes=2Emd<br>M config=2Eh=2Ecmake=
-=2Ein<br>M configure=2Eac<br>M doc/man-sections/link-options=2Erst<br>M doc=
-/man-sections/tls-options=2Erst<br>M doc/man-sections/unsupported-options=
-=2Erst<br>M src/openvpn/check_file_access=2Ec<br>M src/openvpn/crypto=2Ec<b=
-r>M src/openvpn/crypto=2Eh<br>M src/openvpn/errlevel=2Eh<br>M src/openvpn/f=
-orward=2Ec<br>M src/openvpn/init=2Ec<br>M src/openvpn/openvpn=2Eh<br>M src/=
-openvpn/options=2Ec<br>M src/openvpn/options=2Eh<br>M src/openvpn/options_s=
-how=2Ec<br>M src/openvpn/packet_id=2Ec<br>M src/openvpn/packet_id=2Eh<br>M =
-src/openvpn/ssl=2Ec<br>M src/openvpn/syshead=2Eh<br>M src/openvpn/tls_crypt=
-=2Ec<br>21 files changed, 33 insertions(+), 330 deletions(-)<br><br></pre><=
-pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-space=
-: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/chang=
-es/82/2082/5</pre><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;"><span>diff --git a/Changes=2Emd b/Changes=2Emd</span><br><sp=
-an>index 7f47f77=2E=2E89a72fe 100644</span><br><span>--- a/Changes=2Emd</sp=
-an><br><span>+++ b/Changes=2Emd</span><br><span>@@ -30,6 +30,12 @@</span><b=
-r><span>   &quot;too complicated&quot;, using `--peer-fingerprint` makes TL=
-S mode about as easy as</span><br><span>   using `--secret`=2E</span><br><s=
-pan> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+* **`replay-pe=
-rsist` has been removed**</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  This featur=
-e has been removed as it was never properly implemented for</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+  server mode and generally was a n=
-iche feature=2E If the option is present</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+  it will be ignored=2E</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+</span><br><span> ## Maintainer-visible changes</s=
-pan><br><span> </span><br><span> - The configure-time option `--enable-debu=
-g` is no longer  available</span><br><span>diff --git a/config=2Eh=2Ecmake=
-=2Ein b/config=2Eh=2Ecmake=2Ein</span><br><span>index 5e06a63=2E=2Ef7818cf =
-100644</span><br><span>--- a/config=2Eh=2Ecmake=2Ein</span><br><span>+++ b/=
-config=2Eh=2Ecmake=2Ein</span><br><span>@@ -285,9 +285,6 @@</span><br><span=
-> /* Define to 1 if you have the &lt;sys/epoll=2Eh&gt; header file=2E */</s=
-pan><br><span> #cmakedefine HAVE_SYS_EPOLL_H</span><br><span> </span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-/* Define to 1 if you have the &lt=
-;sys/file=2Eh&gt; header file=2E */</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-#undef HAVE_SYS_FILE_H</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-</span><br><span> /* Define to 1 if you have the &lt;sys/ino=
-tify=2Eh&gt; header file=2E */</span><br><span> #cmakedefine HAVE_SYS_INOTI=
-FY_H</span><br><span> </span><br><span>diff --git a/configure=2Eac b/config=
-ure=2Eac</span><br><span>index 5f18798=2E=2E9326c4e 100644</span><br><span>=
---- a/configure=2Eac</span><br><span>+++ b/configure=2Eac</span><br><span>@=
-@ -453,7 +453,7 @@</span><br><span> ])</span><br><span> AC_CHECK_HEADERS([ =
-\</span><br><span> 	sys/time=2Eh sys/ioctl=2Eh sys/stat=2Eh \</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-	sys/mman=2Eh sys/file=2Eh sys/wait=
-=2Eh \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	sys/mman=2Eh=
- sys/wait=2Eh \</span><br><span> 	libgen=2Eh stropts=2Eh \</span><br><span>=
- 	syslog=2Eh pwd=2Eh grp=2Eh \</span><br><span> 	sys/sockio=2Eh sys/uio=2Eh=
- \</span><br><span>@@ -561,8 +561,7 @@</span><br><span> AC_CHECK_FUNCS([ \<=
-/span><br><span> 	daemon chroot getpwnam setuid nice dup dup2 \</span><br><=
-span> 	syslog openlog mlockall getrlimit getgrnam setgid \</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-	setgroups flock gettimeofday \</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-	setsid chdir \</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+	setgroups gettimeofday setsid c=
-hdir \</span><br><span> 	chsize ftruncate execve getpeereid basename dirnam=
-e \</span><br><span> 	epoll_create strlcpy strsep strtok_r \</span><br><spa=
-n> ])</span><br><span>diff --git a/doc/man-sections/link-options=2Erst b/do=
-c/man-sections/link-options=2Erst</span><br><span>index 735ee51=2E=2Ebbdcf7=
-f 100644</span><br><span>--- a/doc/man-sections/link-options=2Erst</span><b=
-r><span>+++ b/doc/man-sections/link-options=2Erst</span><br><span>@@ -440,1=
-9 +440,6 @@</span><br><span>   physical IP layer=2E The problem is easily f=
-ixed by simply using TCP as</span><br><span>   the VPN transport layer=2E</=
-span><br><span> </span><br><span>---replay-persist file</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-  Persist replay-protection state across =
-sessions using ``file`` to save</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-  and reload the state=2E</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  This =
-option will keep a disk copy of the current replay protection state</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-  (i=2Ee=2E the most recent p=
-acket timestamp and sequence number received from</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-  the remote peer), so that if an OpenVPN sessi=
-on is stopped and</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  re=
-started, it will reject any replays of packets which were already</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-  received by the prior session=
-=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-  This option only makes sense when rep=
-lay protection is enabled (the</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-  default) and you are using TLS mode with ``--tls-auth``=2E</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> --session=
--timeout n</span><br><span>   Raises :code:`SIGTERM` for the client instanc=
-e after ``n`` seconds since</span><br><span>   the beginning of the session=
-, forcing OpenVPN to disconnect=2E</span><br><span>diff --git a/doc/man-sec=
-tions/tls-options=2Erst b/doc/man-sections/tls-options=2Erst</span><br><spa=
-n>index c4aa810=2E=2Ede4d324 100644</span><br><span>--- a/doc/man-sections/=
-tls-options=2Erst</span><br><span>+++ b/doc/man-sections/tls-options=2Erst<=
-/span><br><span>@@ -370,10 +370,7 @@</span><br><span>   level has had a cha=
-nce to authenticate the peer=2E The result is that</span><br><span>   packe=
-ts without the correct signature can be dropped immediately upon</span><br>=
-<span>   reception, before they have a chance to consume additional system<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-  resources such as by=
- initiating a TLS handshake=2E ``--tls-auth`` can be</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-  strengthened by adding the ``--replay-per=
-sist`` option which will keep</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-  OpenVPN&#39;s replay protection state in a file so that it is not=
- lost</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  across restart=
-s=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  resources suc=
-h as by initiating a TLS handshake=2E</span><br><span> </span><br><span>   =
-It should be emphasized that this feature is optional and that the key</spa=
-n><br><span>   file used with ``--tls-auth`` gives a peer nothing more than=
- the power</span><br><span>diff --git a/doc/man-sections/unsupported-option=
-s=2Erst b/doc/man-sections/unsupported-options=2Erst</span><br><span>index =
-2794f12=2E=2E368805e 100644</span><br><span>--- a/doc/man-sections/unsuppor=
-ted-options=2Erst</span><br><span>+++ b/doc/man-sections/unsupported-option=
-s=2Erst</span><br><span>@@ -79,3 +79,8 @@</span><br><span> </span><br><span=
-> --allow-deprecated-insecure-static-crypto</span><br><span>   Removed in O=
-penVPN 2=2E8 as --secret was also removed=2E</span><br><span style=3D"color=
+rently required from: Arne Schwabe, Ralf Lici=2E </p>
+<p>Ralf Lici <strong>=
+uploaded patch set #4</strong> to this change=2E</p><p><a href=3D"https://g=
+errit=2Eopenvpn=2Enet/c/openvpn/+/1734?usp=3Demail">View Change</a></p><p>T=
+he change is no longer submittable: checks~ChecksSubmitRule is unsatisfied =
+now=2E</p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; =
+white-space: pre-wrap;">Support pre-existing Linux DCO interfaces<br><br>Wh=
+en creating an ovpn interface returns -EEXIST, still retrieve the<br>ifinde=
+x and return the error to the generic DCO open path=2E This lets the<br>cal=
+ler mark the interface as pre-existing and avoid deleting it on<br>close=2E=
+<br><br>Before accepting the existing interface, query its rtnetlink link i=
+nfo<br>and verify that it is an ovpn device with the expected mode=2E The o=
+vpn<br>mode is fixed at interface creation time, so attaching to an interfa=
+ce<br>created for the other mode cannot work=2E<br><br>Honor the pre-existi=
+ng state on close by skipping net_iface_del() for<br>persistent interfaces=
+=2E<br><br>Github: closes OpenVPN/openvpn#1064<br>Change-Id: I72302403bddee=
+4b0b0ee2441ae9e246f48d0bc81<br>Signed-off-by: Ralf Lici &lt;ralf@mandelbit=
+=2Ecom&gt;<br>---<br>M src/openvpn/dco=2Eh<br>M src/openvpn/dco_linux=2Ec<b=
+r>M src/openvpn/dco_linux=2Eh<br>M src/openvpn/networking=2Eh<br>M src/open=
+vpn/networking_iproute2=2Ec<br>M src/openvpn/networking_sitnl=2Ec<br>M src/=
+openvpn/networking_sitnl=2Eh<br>7 files changed, 185 insertions(+), 29 dele=
+tions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace=
+,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:2=
+9418/openvpn refs/changes/34/1734/4</pre><pre style=3D"font-family: monospa=
+ce,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/dco=2E=
+h b/src/openvpn/dco=2Eh</span><br><span>index c435f8c=2E=2E02ff9b3 100644</=
+span><br><span>--- a/src/openvpn/dco=2Eh</span><br><span>+++ b/src/openvpn/=
+dco=2Eh</span><br><span>@@ -109,7 +109,8 @@</span><br><span> bool ovpn_dco_=
+init(struct context *c);</span><br><span> </span><br><span> /**</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">- * Open/create a DCO interface</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Open/create a DCO i=
+nterface and store its ifindex=2E</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ * If the interface already exists, save the ifindex anyway a=
+nd return -EEXIST=2E</span><br><span>  *</span><br><span>  * @param tt     =
+   the tuntap context</span><br><span>  * @param ctx       the networking A=
+PI context</span><br><span>diff --git a/src/openvpn/dco_linux=2Ec b/src/ope=
+nvpn/dco_linux=2Ec</span><br><span>index 4412ad0=2E=2Ee9cf0b7 100644</span>=
+<br><span>--- a/src/openvpn/dco_linux=2Ec</span><br><span>+++ b/src/openvpn=
+/dco_linux=2Ec</span><br><span>@@ -540,6 +540,19 @@</span><br><span>     CL=
+EAR(dco);</span><br><span> }</span><br><span> </span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+static const char *</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ovpn_mode_to_str(enum ovpn_mode mode)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    switch (mode)</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        case OVPN_MODE_P2P:</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            return &quot;p2p&quot;;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        case OVPN_MODE_MP:</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+            return &quot;server&q=
+uot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    return &quot;unknown&quo=
+t;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> int</span><br><s=
+pan> open_tun_dco(struct tuntap *tt, openvpn_net_ctx_t *ctx, const char *de=
+v)</span><br><span> {</span><br><span>@@ -547,11 +560,30 @@</span><br><span=
+>     ASSERT(tt-&gt;type =3D=3D DEV_TYPE_TUN);</span><br><span> </span><br>=
+<span>     int ret =3D net_iface_new(ctx, dev, OVPN_FAMILY_NAME, &amp;tt-&g=
+t;dco);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (ret &l=
+t; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (ret &l=
+t; 0 &amp;&amp; ret !=3D -EEXIST)</span><br><span>     {</span><br><span>  =
+       msg(D_DCO_DEBUG, &quot;Cannot create DCO interface %s: %d&quot;, dev=
+, ret);</span><br><span>         return ret;</span><br><span>     }</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    if (ret =3D=3D -EEXIST)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        enum ovpn_mode mode;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        int mode_ret =3D=
+ net_iface_ovpn_mode(ctx, dev, &amp;mode);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        if (mode_ret &lt; 0)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+            msg(M_WARN, &quot;DCO: cannot retrieve mode of existing inte=
+rface %s: %s (%d)&quot;, dev,</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                strerror(-mode_ret), mode_ret);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            return mode_ret;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        if (mode !=3D tt-&gt;dco=2Eifmode)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+            msg(M_WARN, &quot;DCO: existing =
+interface %s is in %s mode, expected %s mode&quot;,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                dev, ovpn_mode_to_str(mod=
+e), ovpn_mode_to_str(tt-&gt;dco=2Eifmode));</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            return -EINVAL;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    }</span><br><span> </span><br><span>     tt-&gt=
+;dco=2Eifindex =3D if_nametoindex(dev);</span><br><span>     if (!tt-&gt;dc=
+o=2Eifindex)</span><br><span>@@ -559,7 +591,7 @@</span><br><span>         m=
+sg(M_FATAL, &quot;DCO: cannot retrieve ifindex for interface %s&quot;, dev)=
+;</span><br><span>     }</span><br><span> </span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    return 0;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    return ret;</span><br><span> }</span><br><span> </span><=
+br><span> void</span><br><span>@@ -567,7 +599,10 @@</span><br><span> {</spa=
+n><br><span>     msg(D_DCO_DEBUG, __func__);</span><br><span> </span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    net_iface_del(ctx, tt-&gt;actu=
+al_name);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!t=
+t-&gt;persistent_if)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        net_i=
+face_del(ctx, tt-&gt;actual_name);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    }</span><br><span>     ovpn_dco_uninit_netlink(&amp;tt-&=
+gt;dco);</span><br><span> }</span><br><span> </span><br><span>diff --git a/=
+src/openvpn/dco_linux=2Eh b/src/openvpn/dco_linux=2Eh</span><br><span>index=
+ c487581=2E=2Ea999d77 100644</span><br><span>--- a/src/openvpn/dco_linux=2E=
+h</span><br><span>+++ b/src/openvpn/dco_linux=2Eh</span><br><span>@@ -24,6 =
++24,7 @@</span><br><span> #if defined(ENABLE_DCO) &amp;&amp; defined(TARGET=
+_LINUX)</span><br><span> </span><br><span> #include &quot;event=2Eh&quot;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;networ=
+king_sitnl=2Eh&quot;</span><br><span> </span><br><span> #include &quot;ovpn=
+_dco_linux=2Eh&quot;</span><br><span> </span><br><span>@@ -38,28 +39,6 @@</=
+span><br><span> typedef enum ovpn_key_slot dco_key_slot_t;</span><br><span>=
+ typedef enum ovpn_cipher_alg dco_cipher_t;</span><br><span> </span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-/* OVPN section */</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-#ifndef IFLA_OVPN_MAX</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-enum =
+ovpn_mode</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    OVPN_MODE_P2P,</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    OVPN_MODE_MP,</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-};</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-enum=
+ ovpn_ifla_attrs</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    IFLA_OVPN_UNSPEC =3D =
+0,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    IFLA_OVPN_MODE,=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    __IFLA_OVPN_MAX,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-};</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define =
+IFLA_OVPN_MAX (__IFLA_OVPN_MAX - 1)</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif =
+/* ifndef IFLA_OVPN_MAX */</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-</span><br><span> typedef struct</span><br><span> {</span><br><span>  =
+   /* socket used for synchronous request/reply transactions (commands and<=
+/span><br><span>diff --git a/src/openvpn/networking=2Eh b/src/openvpn/netwo=
+rking=2Eh</span><br><span>index 25233c8=2E=2E2423637 100644</span><br><span=
+>--- a/src/openvpn/networking=2Eh</span><br><span>+++ b/src/openvpn/network=
+ing=2Eh</span><br><span>@@ -115,6 +115,19 @@</span><br><span>  */</span><br=
+><span> int net_iface_type(openvpn_net_ctx_t *ctx, const char *iface, char =
+type[IFACE_TYPE_LEN_MAX]);</span><br><span> </span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+#if defined(ENABLE_DCO) &amp;&amp; defined(TARGET_=
+LINUX)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ * Retrieve the ovpn interfac=
+e mode</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ * @param ctx       the implem=
+entation specific context</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+ * @param iface     interface to query</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ * @param mode      variable where the ovpn mode a=
+ttribute will be stored</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return   =
+       0 on success, a negative error code otherwise</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+int net_iface_ovpn_mode(openvpn_net_ctx_t *ctx, const cha=
+r *iface, enum ovpn_mode *mode);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span> /**</span><br><span>  * Remove an interface</span><br><sp=
+an>  *</span><br><span>diff --git a/src/openvpn/networking_iproute2=2Ec b/s=
+rc/openvpn/networking_iproute2=2Ec</span><br><span>index f091fb3=2E=2E3fc7b=
+c1 100644</span><br><span>--- a/src/openvpn/networking_iproute2=2Ec</span><=
+br><span>+++ b/src/openvpn/networking_iproute2=2Ec</span><br><span>@@ -82,6=
+ +82,16 @@</span><br><span>     return -1;</span><br><span> }</span><br><sp=
+an> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(ENA=
+BLE_DCO)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+net_iface_ovpn_mode(openvpn=
+_net_ctx_t *ctx, const char *iface, enum ovpn_mode *mode)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    /* not supported by iproute2 */</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    msg(M_WARN, &quot;%s: operation not=
+ supported by iproute2 backend&quot;, __func__);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    return -EOPNOTSUPP;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span> int</span><br><span> net_iface_del(openvpn_net_ctx_t *=
+ctx, const char *iface)</span><br><span> {</span><br><span>diff --git a/src=
+/openvpn/networking_sitnl=2Ec b/src/openvpn/networking_sitnl=2Ec</span><br>=
+<span>index 0c99d38=2E=2E756eefa 100644</span><br><span>--- a/src/openvpn/n=
+etworking_sitnl=2Ec</span><br><span>+++ b/src/openvpn/networking_sitnl=2Ec<=
+/span><br><span>@@ -1430,8 +1430,18 @@</span><br><span>     return 0;</span=
+><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-net_ifac=
+e_type(openvpn_net_ctx_t *ctx, const char *iface, char type[IFACE_TYPE_LEN_=
+MAX])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ * Issue an RTM_GETLINK query =
+for an interface and feed the reply to the given</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+ * parsing callback=2E</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ * @param iface     name of the interface to query</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param cb        callbac=
+k invoked with the netlink reply</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+ * @param arg       opaque argument passed through to the call=
+back</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ * @return          0 on success=
+, a negative error code otherwise</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+st=
+atic int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+sitnl_link_=
+get(const char *iface, sitnl_parse_reply_cb cb, void *arg)</span><br><span>=
+ {</span><br><span>     struct sitnl_link_req req =3D {};</span><br><span> =
+    int ifindex =3D if_nametoindex(iface);</span><br><span>@@ -1448,9 +1458=
+,15 @@</span><br><span>     req=2Ei=2Eifi_family =3D AF_PACKET;</span><br><=
+span>     req=2Ei=2Eifi_index =3D ifindex;</span><br><span> </span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    return sitnl_send(&amp;req=2En=
+, 0, 0, cb, arg);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+int</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+net_iface_type(openvpn_net_ctx_t *ctx, const char *ifac=
+e, char type[IFACE_TYPE_LEN_MAX])</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+{</span><br><span>     memset(type, 0, IFACE_TYPE_LEN_MAX);</=
+span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    i=
+nt ret =3D sitnl_send(&amp;req=2En, 0, 0, sitnl_type_save, type);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    int ret =3D sitnl_link_ge=
+t(iface, sitnl_type_save, type);</span><br><span>     if (ret &lt; 0)</span=
+><br><span>     {</span><br><span>         msg(D_ROUTE, &quot;%s: cannot re=
+trieve iface %s: %s (%d)&quot;, __func__, iface, strerror(-ret), ret);</spa=
+n><br><span>@@ -1462,6 +1478,82 @@</span><br><span>     return 0;</span><br=
+><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+#if defined(ENABLE_DCO)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+static int</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+sitnl_ovpn_mode_save(struct nlmsghdr *n, void *arg)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    struct ifinfomsg *ifi =3D NLMSG_DATA(n);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    struct rtattr *tb[IFLA_MAX + =
+1];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct rtatt=
+r *tb_link[IFLA_INFO_MAX + 1];</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    struct rtattr *tb_data[IFLA_OVPN_MAX + 1];</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    enum ovpn_mode *mode =3D arg;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint8_t raw_mode;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    if (n-&gt;nlmsg_type !=3D RTM_NEWLIN=
+K)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        return -EINVAL;</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    if (n-&gt;nlmsg_len &lt; NLMSG_LENGTH(sizeof(*ifi)))</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        return -EINVAL;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    sitnl_parse_rtattr(tb, IFLA_MAX, IFLA_RTA(ifi), IFLA_PAYLOAD(n=
+));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    if (!tb[IFLA_LINKINFO])</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        return -ENOENT;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    sitnl_parse_rtattr_nested(tb_link, IFLA_INFO_MAX, tb[IFLA_LINKINFO=
+]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    if (!tb_link[IFLA_INFO_KIND]</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        || strcmp(RTA_=
+DATA(tb_link[IFLA_INFO_KIND]), OVPN_FAMILY_NAME) !=3D 0)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        return -EINVAL;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if=
+ (!tb_link[IFLA_INFO_DATA])</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  return -ENOENT;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    sitnl_parse_rtattr_nested(tb_da=
+ta, IFLA_OVPN_MAX, tb_link[IFLA_INFO_DATA]);</span><br><span style=3D"color=
 : hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+--replay-persist</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+  Removed in OpenVPN 2=2E8=2E This option never really worked well with =
-``--server``</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  and t=
-he usefulness of this option in p2p setups is not very high either=2E</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+  It is now ignored if pr=
-esent in the configuration file=2E</span><br><span>diff --git a/src/openvpn=
-/check_file_access=2Ec b/src/openvpn/check_file_access=2Ec</span><br><span>=
-index 90dbb4e=2E=2E09635cb 100644</span><br><span>--- a/src/openvpn/check_f=
-ile_access=2Ec</span><br><span>+++ b/src/openvpn/check_file_access=2Ec</spa=
-n><br><span>@@ -312,9 +312,6 @@</span><br><span>                           =
-               ce-&gt;tls_crypt_v2_file, R_OK, &quot;--tls-crypt-v2&quot;);=
-</span><br><span>     }</span><br><span> </span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    errs |=3D check_file_access(CHKACC_DIRPATH | CHKACC=
-_FILEXSTWR, options-&gt;packet_id_file,</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-                              R_OK | W_OK, &quot;--replay=
--persist&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
-n><br><span>     /* ** Password files ** */</span><br><span>     errs |=3D =
-check_file_access(CHKACC_FILE | CHKACC_ACPTSTDIN | CHKACC_PRIVATE,</span><b=
-r><span>                               options-&gt;key_pass_file, R_OK, &qu=
-ot;--askpass&quot;);</span><br><span>diff --git a/src/openvpn/crypto=2Ec b/=
-src/openvpn/crypto=2Ec</span><br><span>index d375273=2E=2E9b8c7aaa 100644</=
-span><br><span>--- a/src/openvpn/crypto=2Ec</span><br><span>+++ b/src/openv=
-pn/crypto=2Ec</span><br><span>@@ -403,10 +403,6 @@</span><br><span>     if =
-(packet_id_test(recv, pin))</span><br><span>     {</span><br><span>        =
- packet_id_add(recv, pin);</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-        if (opt-&gt;pid_persist &amp;&amp; (opt-&gt;flags &amp; CO_PAC=
-KET_ID_LONG_FORM))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            pac=
-ket_id_persist_save_obj(opt-&gt;pid_persist, &amp;opt-&gt;packet_id);</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span> =
-        ret =3D true;</span><br><span>     }</span><br><span>     else</spa=
-n><br><span>diff --git a/src/openvpn/crypto=2Eh b/src/openvpn/crypto=2Eh</s=
-pan><br><span>index 203f77b=2E=2E4962835 100644</span><br><span>--- a/src/o=
-penvpn/crypto=2Eh</span><br><span>+++ b/src/openvpn/crypto=2Eh</span><br><s=
-pan>@@ -339,11 +339,6 @@</span><br><span>                                  =
-*   The packet id also used as the IV</span><br><span>                     =
-             *   for AEAD/OFB/CFG ciphers=2E</span><br><span>              =
-                    */</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    struct packet_id_persist *pid_persist;</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    /**&lt; Persistent packet ID state for</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-     *   keeping state between s=
-uccessive</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     *   Ope=
-nVPN process startups=2E */</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-</span><br><span> #define CO_PACKET_ID_LONG_FORM         (1u &lt;&lt;=
- 0)</span><br><span>     /**&lt; Bit-flag indicating whether to use</span><=
-br><span>      *   OpenVPN&#39;s long packet ID format=2E */</span><br><spa=
-n>diff --git a/src/openvpn/errlevel=2Eh b/src/openvpn/errlevel=2Eh</span><b=
-r><span>index d79efbb=2E=2E60d20ad 100644</span><br><span>--- a/src/openvpn=
-/errlevel=2Eh</span><br><span>+++ b/src/openvpn/errlevel=2Eh</span><br><spa=
-n>@@ -64,7 +64,6 @@</span><br><span> #define D_MULTI_ERRORS   LOGLEV(1, 9, =
-M_NONFATAL)   /* show multi-client server errors */</span><br><span> #defin=
-e D_EVENT_ERRORS   LOGLEV(1, 10, M_NONFATAL)  /* show event=2E[ch] errors *=
-/</span><br><span> #define D_PUSH_ERRORS    LOGLEV(1, 11, M_NONFATAL)  /* s=
-how push/pull errors */</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-#define D_PID_PERSIST    LOGLEV(1, 12, M_NONFATAL)  /* show packet_id per=
-sist errors */</span><br><span> #define D_FRAG_ERRORS    LOGLEV(1, 13, M_NO=
-NFATAL)  /* show fragmentation errors */</span><br><span> #define D_ALIGN_E=
-RRORS   LOGLEV(1, 14, M_NONFATAL)  /* show bad struct alignments */</span><=
-br><span> </span><br><span>@@ -161,16 +160,15 @@</span><br><span> #define D=
-_EVENT_WAIT        LOGLEV(8, 70, M_DEBUG)      /* show detailed info from e=
-vent waits */</span><br><span> #define D_MULTI_TCP         LOGLEV(8, 70, M_=
-DEBUG)      /* show debug info from mtcp=2Ec */</span><br><span> </span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-#define D_TLS_DEBUG         LOG=
-LEV(9, 70, M_DEBUG)      /* show detailed info from TLS routines */</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-#define D_COMP              L=
-OGLEV(9, 70, M_DEBUG)      /* show compression info */</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-#define D_READ_WRITE        LOGLEV(9, 70, =
-M_DEBUG)      /* show all tun/tcp/udp reads/writes/opens */</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-#define D_PACKET_CONTENT    LOGLEV(9,=
- 70, M_DEBUG)      /* show before/after encryption packet content */</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-#define D_TLS_NO_SEND_KEY   =
-LOGLEV(9, 70, M_DEBUG)      /* show when no data channel send-key exists */=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define D_PID_PERSIST=
-_DEBUG LOGLEV(9, 70, M_DEBUG)      /* show packet-id persist debugging info=
- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define D_LINK_RW_=
-VERBOSE   LOGLEV(9, 70, M_DEBUG)      /* increase link reads/writes verbosi=
-ty */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define D_STREAM=
-_DEBUG      LOGLEV(9, 70, M_DEBUG)      /* show TCP stream debug info */</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#define D_WIN32_IO      =
-    LOGLEV(9, 70, M_DEBUG)      /* win32 I/O debugging info */</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-#define D_PKCS11_DEBUG      LOGLEV=
-(9, 70, M_DEBUG)      /* show PKCS#11 debugging */</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+#define D_TLS_DEBUG       LOGLEV(9, 70, M_DE=
-BUG)        /* show detailed info from TLS routines */</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+#define D_COMP            LOGLEV(9, 70, =
-M_DEBUG)        /* show compression info */</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+#define D_READ_WRITE      LOGLEV(9, 70, M_DEBUG)   =
-     /* show all tun/tcp/udp reads/writes/opens */</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+#define D_PACKET_CONTENT  LOGLEV(9, 70, M_DE=
-BUG)        /* show before/after encryption packet content */</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+#define D_TLS_NO_SEND_KEY LOGLEV(=
-9, 70, M_DEBUG)        /* show when no data channel send-key exists */</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+#define D_LINK_RW_VERBOS=
-E LOGLEV(9, 70, M_DEBUG)        /* increase link reads/writes verbosity */<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define D_STREAM_DEB=
-UG    LOGLEV(9, 70, M_DEBUG)        /* show TCP stream debug info */</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+#define D_WIN32_IO        =
-LOGLEV(9, 70, M_DEBUG)        /* win32 I/O debugging info */</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+#define D_PKCS11_DEBUG    LOGLEV(9=
-, 70, M_DEBUG)        /* show PKCS#11 debugging */</span><br><span> </span>=
-<br><span> #define D_SHAPER_DEBUG LOGLEV(10, 70, M_DEBUG)          /* show =
-traffic shaper info */</span><br><span> </span><br><span>diff --git a/src/o=
-penvpn/forward=2Ec b/src/openvpn/forward=2Ec</span><br><span>index 681210d=
-=2E=2E0db0584 100644</span><br><span>--- a/src/openvpn/forward=2Ec</span><b=
-r><span>+++ b/src/openvpn/forward=2Ec</span><br><span>@@ -744,14 +744,6 @@<=
-/span><br><span> static void</span><br><span> process_coarse_timers(struct =
-context *c)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    /* flush current packet-id to file once per 60</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-     * seconds if --replay-persist wa=
-s specified */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if =
-(packet_id_persist_enabled(&amp;c-&gt;c1=2Epid_persist)</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-        &amp;&amp; event_timeout_trigger(=
-&amp;c-&gt;c2=2Epacket_id_persist_interval, &amp;c-&gt;c2=2Etimeval, ETT_DE=
-FAULT))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        packet_id_persist_save=
-(&amp;c-&gt;c1=2Epid_persist);</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
-<br><span>     /* Should we write timer-triggered status file */</span><br>=
-<span>     if (c-&gt;c1=2Estatus_output</span><br><span>         &amp;&amp;=
- event_timeout_trigger(&amp;c-&gt;c1=2Estatus_output-&gt;et, &amp;c-&gt;c2=
-=2Etimeval, ETT_DEFAULT))</span><br><span>diff --git a/src/openvpn/init=2Ec=
- b/src/openvpn/init=2Ec</span><br><span>index ff00151=2E=2E525df7e 100644</=
-span><br><span>--- a/src/openvpn/init=2Ec</span><br><span>+++ b/src/openvpn=
-/init=2Ec</span><br><span>@@ -66,7 +66,6 @@</span><br><span> /*</span><br><=
-span>  * Crypto initialization flags</span><br><span>  */</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-#define CF_LOAD_PERSISTED_PACKET_ID (1 =
-&lt;&lt; 0)</span><br><span> #define CF_INIT_TLS_MULTI           (1 &lt;&lt=
-; 1)</span><br><span> #define CF_INIT_TLS_AUTH_STANDALONE (1 &lt;&lt; 2)</s=
-pan><br><span> </span><br><span>@@ -741,8 +740,6 @@</span><br><span> {</spa=
-n><br><span>     context_clear_1(c);</span><br><span> </span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    packet_id_persist_init(&amp;c-&gt;c1=
-=2Epid_persist);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
-n><br><span>     init_connection_list(c);</span><br><span> </span><br><span=
->     c-&gt;c1=2Elink_sockets_num =3D c-&gt;options=2Ece=2Elocal_list-&gt;l=
-en;</span><br><span>@@ -1350,12 +1347,6 @@</span><br><span>                =
-                now);</span><br><span>         }</span><br><span> </span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        /* initialize packet_i=
-d persistence timer */</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--        if (c-&gt;options=2Epacket_id_file)</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-            event_timeout_init(&amp;c-&gt;c2=2Epacket_id_persist=
-_interval, 60, now);</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-       }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
-pan>         /* initialize tmp_int optimization that limits the number of t=
-imes we call</span><br><span>          * tls_multi_process in the main even=
-t loop */</span><br><span>         interval_init(&amp;c-&gt;c2=2Etmp_int, T=
-LS_MULTI_HORIZON, TLS_MULTI_REFRESH);</span><br><span>@@ -2955,31 +2946,15 =
-@@</span><br><span> }</span><br><span> </span><br><span> static void</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-init_crypto_pre(struct conte=
-xt *c, const unsigned int flags)</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (c=
--&gt;options=2Eengine)</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        crypto_=
-init_lib_engine(c-&gt;options=2Eengine);</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (flags &amp=
-; CF_LOAD_PERSISTED_PACKET_ID)</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
- /* load a persisted packet-id for cross-session replay-protection */</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (c-&gt;options=
-=2Epacket_id_file)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            pac=
-ket_id_persist_load(&amp;c-&gt;c1=2Epid_persist, c-&gt;options=2Epacket_id_=
-file);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-static void</span><br><span> d=
-o_init_crypto_test(struct context *c)</span><br><span> {</span><br><span>  =
-   const struct options *options =3D &amp;c-&gt;options;</span><br><span>  =
-   ASSERT(options-&gt;test_crypto);</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    init_crypto_pre(c, 0);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    if (c-&gt;options=2Eengine)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        crypto_init_lib_engine(c-&gt;o=
-ptions=2Eengine);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  }</span><br><span> </span><br><span>     c-&gt;c2=2Ecrypto_options=2Eflag=
-s |=3D CO_PACKET_ID_LONG_FORM;</span><br><span> </span><br><span>@@ -3180,7=
- +3155,10 @@</span><br><span>     ASSERT(options-&gt;tls_server || options-=
-&gt;tls_client);</span><br><span>     ASSERT(!options-&gt;test_crypto);</sp=
-an><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ini=
-t_crypto_pre(c, flags);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    if (c-&gt;options=2Eengine)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        crypto_init_lib_engine(c-&gt;options=2Eengine);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span> </span><br><sp=
-an>     /* Make sure we are either a TLS client or server but not both */</=
-span><br><span>     ASSERT(options-&gt;tls_server =3D=3D !options-&gt;tls_c=
-lient);</span><br><span>@@ -3358,7 +3336,6 @@</span><br><span>     if (to=
-=2Etls_wrap=2Emode =3D=3D TLS_WRAP_AUTH || to=2Etls_wrap=2Emode =3D=3D TLS_=
-WRAP_CRYPT)</span><br><span>     {</span><br><span>         to=2Etls_wrap=
-=2Eopt=2Ekey_ctx_bi =3D c-&gt;c1=2Eks=2Etls_wrap_key;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        to=2Etls_wrap=2Eopt=2Epid_persist =
-=3D &amp;c-&gt;c1=2Epid_persist;</span><br><span>         to=2Etls_wrap=2Eo=
-pt=2Eflags |=3D CO_PACKET_ID_LONG_FORM;</span><br><span>         to=2Etls_w=
-rap=2Eoriginal_wrap_keydata =3D c-&gt;c1=2Eks=2Eoriginal_wrap_keydata;</spa=
-n><br><span>     }</span><br><span>@@ -3917,11 +3894,6 @@</span><br><span> =
-do_close_packet_id(struct context *c)</span><br><span> {</span><br><span>  =
-   packet_id_free(&amp;c-&gt;c2=2Ecrypto_options=2Epacket_id);</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    packet_id_persist_save(&amp;c-=
-&gt;c1=2Epid_persist);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    if (!(c-&gt;sig-&gt;signal_received =3D=3D SIGUSR1))</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        packet_id_persist_close(&amp;c-&gt;c1=2Epid_per=
-sist);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br=
-><span> }</span><br><span> </span><br><span> #ifdef ENABLE_FRAGMENT</span><=
-br><span>@@ -4457,7 +4429,7 @@</span><br><span>         }</span><br><span> =
-        else if (c-&gt;mode =3D=3D CM_P2P)</span><br><span>         {</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-            crypto_flags =
-=3D CF_LOAD_PERSISTED_PACKET_ID | CF_INIT_TLS_MULTI;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            crypto_flags =3D CF_INIT_TLS_=
-MULTI;</span><br><span>         }</span><br><span>         else if (child)<=
-/span><br><span>         {</span><br><span>@@ -4715,7 +4687,6 @@</span><br>=
-<span>     ALLOC_OBJ_CLEAR_GC(dest-&gt;sig, struct signal_info, &amp;dest-&=
-gt;gc);</span><br><span> </span><br><span>     /* c1 init */</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    packet_id_persist_init(&amp;dest=
--&gt;c1=2Epid_persist);</span><br><span>     dest-&gt;c1=2Elink_sockets_num=
- =3D 1;</span><br><span>     do_link_socket_addr_new(dest);</span><br><span=
-> </span><br><span>diff --git a/src/openvpn/openvpn=2Eh b/src/openvpn/openv=
-pn=2Eh</span><br><span>index cdd02b6=2E=2E52f298b 100644</span><br><span>--=
-- a/src/openvpn/openvpn=2Eh</span><br><span>+++ b/src/openvpn/openvpn=2Eh</=
-span><br><span>@@ -75,21 +75,6 @@</span><br><span> };</span><br><span> </sp=
-an><br><span> /*</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * st=
-ruct packet_id_persist should be empty if we are not</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">- * building with crypto=2E</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-#ifndef PACKET_ID_H</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-struct packet_id_persist</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    int dummy;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-};</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-static inline void</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-packet_id_persist_init(struct=
- packet_id_persist *p)</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-/*</span><br><span>  * Packet processing buffers=2E</span><br><span>  */</s=
-pan><br><span> struct context_buffers</span><br><span>@@ -167,9 +152,6 @@</=
-span><br><span>     /* preresolved and cached host names */</span><br><span=
->     struct cached_dns_entry *dns_cache;</span><br><span> </span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    /* persist crypto sequence number=
- to/from file */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    s=
-truct packet_id_persist pid_persist;</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-</span><br><span>     struct tuntap *tuntap; /**&lt; Tun/tap=
- virtual network interface=2E */</span><br><span>     bool tuntap_owned;   =
-  /**&lt; Whether the tun/tap interface should</span><br><span>            =
-                 *   be cleaned up when this %context is</span><br><span>@@=
- -352,8 +334,6 @@</span><br><span>      *   Channel Crypto module\endlink t=
-o</span><br><span>      *   process data channel packet=2E */</span><br><sp=
-an> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct event_=
-timeout packet_id_persist_interval;</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-</span><br><span> #ifdef USE_COMP</span><br><span>     struct=
- compress_context *comp_context;</span><br><span>     /**&lt; Compression c=
-ontext used by the</span><br><span>diff --git a/src/openvpn/options=2Ec b/s=
-rc/openvpn/options=2Ec</span><br><span>index a3c7601=2E=2E7032637 100644</s=
-pan><br><span>--- a/src/openvpn/options=2Ec</span><br><span>+++ b/src/openv=
-pn/options=2Ec</span><br><span>@@ -573,8 +573,6 @@</span><br><span>     &qu=
-ot;--replay-window n [t]  : Use a replay protection sliding window of size =
-n\n&quot;</span><br><span>     &quot;                         and a time wi=
-ndow of t seconds=2E\n&quot;</span><br><span>     &quot;                   =
-      Default n=3D%d t=3D%d\n&quot;</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    &quot;--replay-persist file : Persist replay-protection s=
-tate across sessions\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    &quot;                  using file=2E\n&quot;</span><br><span>  =
-   &quot;--test-crypto   : Run a self-test of crypto features enabled=2E\n&=
-quot;</span><br><span>     &quot;                  For debugging only=2E\n&=
-quot;</span><br><span>     &quot;\n&quot;</span><br><span>@@ -7047,7 +7045,=
-7 @@</span><br><span>     else if (streq(p[0], &quot;replay-persist&quot;) =
-&amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>  =
-       VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-        options-&gt;packet_id_file =3D p[1];</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_WARN, &quot;DEPRE=
-CATED OPTION: --replay-persist option ignored=2E&quot;);</span><br><span>  =
-   }</span><br><span>     else if (streq(p[0], &quot;test-crypto&quot;) &am=
-p;&amp; !p[1])</span><br><span>     {</span><br><span>diff --git a/src/open=
-vpn/options=2Eh b/src/openvpn/options=2Eh</span><br><span>index 129267f=2E=
-=2Edd8b75a 100644</span><br><span>--- a/src/openvpn/options=2Eh</span><br><=
-span>+++ b/src/openvpn/options=2Eh</span><br><span>@@ -582,7 +582,6 @@</spa=
-n><br><span>     bool mute_replay_warnings;</span><br><span>     int replay=
-_window;</span><br><span>     int replay_time;</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    const char *packet_id_file;</span><br><span>  =
-   bool test_crypto;</span><br><span> </span><br><span>     /* TLS (control=
- channel) parms */</span><br><span>diff --git a/src/openvpn/options_show=2E=
-c b/src/openvpn/options_show=2Ec</span><br><span>index 321a37b=2E=2E54f9c4c=
- 100644</span><br><span>--- a/src/openvpn/options_show=2Ec</span><br><span>=
-+++ b/src/openvpn/options_show=2Ec</span><br><span>@@ -501,7 +501,6 @@</spa=
-n><br><span>     SHOW_BOOL(mute_replay_warnings);</span><br><span>     SHOW=
-_INT(replay_window);</span><br><span>     SHOW_INT(replay_time);</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    SHOW_STR(packet_id_file);</s=
-pan><br><span>     SHOW_BOOL(test_crypto);</span><br><span> </span><br><spa=
-n>     SHOW_BOOL(tls_server);</span><br><span>diff --git a/src/openvpn/pack=
-et_id=2Ec b/src/openvpn/packet_id=2Ec</span><br><span>index 9dd6ce3=2E=2Ef1=
-fadd6 100644</span><br><span>--- a/src/openvpn/packet_id=2Ec</span><br><spa=
-n>+++ b/src/openvpn/packet_id=2Ec</span><br><span>@@ -426,146 +426,6 @@</sp=
-an><br><span>     return BSTR(&amp;out);</span><br><span> }</span><br><span=
-> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-/* initialize the p=
-acket_id_persist structure in a disabled state */</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-void</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-packet_id_persist_init(struct packet_id_persist *p)</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    p-&gt;filename =3D NULL;</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    p-&gt;fd =3D -1;</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    p-&gt;time =3D p-&gt;time_last_written =3D 0=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    p-&gt;id =3D p-&=
-gt;id_last_written =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-/* close the file descriptor if it is=
- open, and switch to disabled state */</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-packet_id_persist_close(struct packet_id_persist *p)</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    if (packet_id_persist_enabled(p))</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-        if (close(p-&gt;fd))</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-            msg(D_PID_PERSIST | M_ERRNO, &quot;Close error on --repl=
-ay-persist file %s&quot;, p-&gt;filename);</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-        packet_id_persist_init(p);</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-/* load persisted rec packet_id (ti=
-me and id) only once from file, and set state to enabled */</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-void</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-packet_id_persist_load(struct packet_id_persist *p, co=
-nst char *filename)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct gc_arena gc=
- =3D gc_new();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if =
-(!packet_id_persist_enabled(p))</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  /* open packet-id persist file for both read and write */</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-        p-&gt;fd =3D platform_open(fi=
-lename, O_CREAT | O_RDWR | O_BINARY, S_IRUSR | S_IWUSR);</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-        if (p-&gt;fd =3D=3D -1)</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-            msg(D_PID_PERSIST | M_ERRNO, &=
-quot;Cannot open --replay-persist file %s for read/write&quot;,</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-                filename);</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-        else</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-            struct packet_id_persist_file_image image;</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-            ssize_t n;</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-#if defined(HAVE_FLOCK) &amp;&amp; defined(LOCK_=
-EX) &amp;&amp; defined(LOCK_NB)</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-            if (flock(p-&gt;fd, LOCK_EX | LOCK_NB))</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-                msg(M_ERR, &quot;Cannot obt=
-ain exclusive lock on --replay-persist file %s&quot;, filename);</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-           p-&gt;filename =3D filename;</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-            n =3D read(p-&gt;fd, &amp;image, sizeof(image=
-));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (n =
-=3D=3D sizeof(image))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-        p-&gt;time =3D p-&gt;time_last_written =3D image=2Etime;</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-                p-&gt;id =3D p-&=
-gt;id_last_written =3D image=2Eid;</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-                dmsg(D_PID_PERSIST_DEBUG, &quot;PID Persist Re=
-ad from %s: %s&quot;, p-&gt;filename,</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-                     packet_id_persist_print(p, &amp;gc));<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-            else if (n =3D=3D =
--1)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-                msg(D_PID_=
-PERSIST | M_ERRNO, &quot;Read error on --replay-persist file %s&quot;, p-&g=
-t;filename);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-   }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    gc_free(&amp;gc);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/* save p=
-ersisted rec packet_id (time and id) to file (only if enabled state) */</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-void</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-packet_id_persist_save(struct packet_id_pe=
-rsist *p)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    if (packet_id_persist_enable=
-d(p) &amp;&amp; p-&gt;time</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-        &amp;&amp; (p-&gt;time !=3D p-&gt;time_last_written || p-&gt;i=
-d !=3D p-&gt;id_last_written))</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
- struct packet_id_persist_file_image image;</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-        CLEAR(image);</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-        off_t seek_ret;</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-        struct gc_arena gc =3D gc_new();</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-        image=2Etime =3D p-&gt;time;</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        image=2Eid =3D p-&gt;id;</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        seek_ret =3D lseek(=
-p-&gt;fd, (off_t)0, SEEK_SET);</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-        if (seek_ret =3D=3D (off_t)0)</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-            const ssize_t n =3D write(p-&gt;fd, &amp;image, si=
-zeof(image));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-    if (n =3D=3D sizeof(image))</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-                p-&gt;time_last_written =3D p-&gt;time;</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-                p-&gt;id_last_written =
-=3D p-&gt;id;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-        dmsg(D_PID_PERSIST_DEBUG, &quot;PID Persist Write to %s: %s&quot;, =
-p-&gt;filename,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-               packet_id_persist_print(p, &amp;gc));</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-            else</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-                msg(D_PID_PERSIST | M_ERRNO, &quot;Cannot write =
-to --replay-persist file %s&quot;,</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-                    p-&gt;filename);</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-        else</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-       {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            m=
-sg(D_PID_PERSIST | M_ERRNO, &quot;Cannot seek to beginning of --replay-pers=
-ist file %s&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-             p-&gt;filename);</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-    gc_free(&amp;gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-/* transfer packet_id_persist -&gt; packet_id */</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-void</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-packet_id_persist_load_obj(const struct packet_=
-id_persist *p, struct packet_id *pid)</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-if (p &amp;&amp; pid &amp;&amp; packet_id_persist_enabled(p) &amp;&amp; p-&=
-gt;time)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-        pid-&gt;rec=2Etime =
-=3D p-&gt;time;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  pid-&gt;rec=2Eid =3D p-&gt;id;</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-const char *</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-packet_id_persist_print(const struct packet_id_persist =
-*p, struct gc_arena *gc)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct buffer=
- out =3D alloc_buf_gc(256, gc);</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    buf_pri=
-ntf(&amp;out, &quot;[&quot;);</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (packe=
-t_id_persist_enabled(p))</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        buf_p=
-rintf(&amp;out, &quot; #&quot; packet_id_format, (packet_id_print_type)p-&g=
-t;id);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (p-&=
-gt;time)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-            buf_printf(&a=
-mp;out, &quot; / time =3D (&quot; packet_id_format &quot;) %s&quot;, (packe=
-t_id_print_type)p-&gt;time,</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-                       time_string(p-&gt;time, 0, false, gc));</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  buf_printf(&amp;out, &quot; ]&quot;);</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    return (char *)out=2Edata;</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-</span><br><span> #ifndef ENABLE_SMALL</span><br><span> </span><br><=
-span> static void</span><br><span>diff --git a/src/openvpn/packet_id=2Eh b/=
-src/openvpn/packet_id=2Eh</span><br><span>index 48752d3=2E=2Ec374ccb 100644=
-</span><br><span>--- a/src/openvpn/packet_id=2Eh</span><br><span>+++ b/src/=
-openvpn/packet_id=2Eh</span><br><span>@@ -125,26 +125,6 @@</span><br><span>=
- };</span><br><span> </span><br><span> /*</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">- * file to facilitate cross-session persistence</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">- * of time/id</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-struct packet_id_persist</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    const char *filename;</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    int fd;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- time_t time;       /* time stamp */</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    packet_id_type id; /* sequence number */</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    time_t time_last_written;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    packet_id_type id_last_wr=
-itten;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-};</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-struct packet_id_persist_file_image</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    time_t time;       /* time stamp */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    packet_id_type id; /* sequence number *=
-/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-};</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-/*</span><br><span>  * Keep a record of our current packet-i=
-d state</span><br><span>  * on the sending side=2E</span><br><span>  */</sp=
-an><br><span>@@ -222,28 +202,6 @@</span><br><span> void packet_id_reap(stru=
-ct packet_id_rec *p);</span><br><span> </span><br><span> /*</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">- * packet ID persistence</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-/* initialize the packet_id_persist structure in a disabled state */</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-void packet_id_persist_ini=
-t(struct packet_id_persist *p);</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/* close th=
-e file descriptor if it is open, and switch to disabled state */</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-void packet_id_persist_close(str=
-uct packet_id_persist *p);</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/* load persiste=
-d rec packet_id (time and id) only once from file, and set state to enabled=
- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-void packet_id_per=
-sist_load(struct packet_id_persist *p, const char *filename);</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-/* save persisted rec packet_id (time and id) to file (o=
-nly if enabled state) */</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-void packet_id_persist_save(struct packet_id_persist *p);</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-/* transfer packet_id_persist -&gt; packet_id */</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-void packet_id_persist_load_ob=
-j(const struct packet_id_persist *p, struct packet_id *pid);</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-/* return an ascii string representing a packet_id_persis=
-t object */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-const char=
- *packet_id_persist_print(const struct packet_id_persist *p, struct gc_aren=
-a *gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-/*</span><br><span>  * Read/write a=
- packet ID to/from the buffer=2E  Short form is sequence number</span><br><=
-span>  * only=2E  Long form is sequence number and timestamp=2E</span><br><=
-span>  */</span><br><span>@@ -273,27 +231,6 @@</span><br><span>     return =
-pid-&gt;rec=2Einitialized;</span><br><span> }</span><br><span> </span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-/* are we in enabled state? */</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-static inline bool</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-packet_id_persist_enabled(c=
-onst struct packet_id_persist *p)</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    retu=
-rn p-&gt;fd &gt;=3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-/* transfer packet_id -&gt; packet_id_pe=
-rsist</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   Note: Only su=
-pported for non-epoch format (i=2Ee=2E 32bit ID, not 64bit format),</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-   must be enforced at the ca=
-ller=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-static inline void</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-packet_id_persist_save_obj(struct p=
-acket_id_persist *p, const struct packet_id *pid)</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    if (packet_id_persist_enabled(p) &amp;&amp; pid-&gt;rec=2Etime =
-&amp;&amp; pid-&gt;rec=2Eid &lt;=3D PACKET_ID_MAX)</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        p-&gt;time =3D pid-&gt;rec=2Etime;</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-        p-&gt;id =3D (packet_id_type)pid-=
-&gt;rec=2Eid;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /**</span><br><span>  * R=
-eset the current send packet id to its initial state=2E</span><br><span>  *=
- Use very carefully (e=2Eg=2E in the standalone reset packet context) to</s=
-pan><br><span>diff --git a/src/openvpn/ssl=2Ec b/src/openvpn/ssl=2Ec</span>=
-<br><span>index 55043e5=2E=2E67df7c2 100644</span><br><span>--- a/src/openv=
-pn/ssl=2Ec</span><br><span>+++ b/src/openvpn/ssl=2Ec</span><br><span>@@ -87=
-8,8 +878,6 @@</span><br><span>     packet_id_init(&amp;ks-&gt;crypto_option=
-s=2Epacket_id, session-&gt;opt-&gt;replay_window,</span><br><span>         =
-           session-&gt;opt-&gt;replay_time, &quot;SSL&quot;, ks-&gt;key_id)=
-;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  ks-&gt;crypto_options=2Epid_persist =3D NULL;</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-</span><br><span> #ifdef ENABLE_MANAGEMENT</span>=
-<br><span>     ks-&gt;mda_key_id =3D session-&gt;opt-&gt;mda_context-&gt;md=
-a_key_id_counter++;</span><br><span> #endif</span><br><span>@@ -1037,9 +103=
-5,6 @@</span><br><span>         session-&gt;tls_wrap=2Eopt=2Epacket_id=2Ese=
-nd=2Eid =3D EARLY_NEG_START;</span><br><span>     }</span><br><span> </span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* load most recent pac=
-ket-id to replay protect on --tls-auth */</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    packet_id_persist_load_obj(session-&gt;tls_wrap=2Eo=
-pt=2Epid_persist, &amp;session-&gt;tls_wrap=2Eopt=2Epacket_id);</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     key_state_i=
-nit(session, &amp;session-&gt;key[KS_PRIMARY]);</span><br><span> </span><br=
-><span>     dmsg(D_TLS_DEBUG, &quot;TLS: tls_session_init: new session obje=
-ct, sid=3D%s&quot;,</span><br><span>diff --git a/src/openvpn/syshead=2Eh b/=
-src/openvpn/syshead=2Eh</span><br><span>index 1d6cdc2=2E=2E65baee3 100644</=
-span><br><span>--- a/src/openvpn/syshead=2Eh</span><br><span>+++ b/src/open=
-vpn/syshead=2Eh</span><br><span>@@ -127,10 +127,6 @@</span><br><span> #incl=
-ude &lt;fcntl=2Eh&gt;</span><br><span> #endif</span><br><span> </span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-#ifdef HAVE_SYS_FILE_H</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-#include &lt;sys/file=2Eh&gt;</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /* These headers belo=
-ng to C99 and should be always be present */</span><br><span> #include &lt;=
-stdlib=2Eh&gt;</span><br><span> #include &lt;inttypes=2Eh&gt;</span><br><sp=
-an>diff --git a/src/openvpn/tls_crypt=2Ec b/src/openvpn/tls_crypt=2Ec</span=
-><br><span>index 23c7975=2E=2Ee7fb865 100644</span><br><span>--- a/src/open=
-vpn/tls_crypt=2Ec</span><br><span>+++ b/src/openvpn/tls_crypt=2Ec</span><br=
-><span>@@ -109,7 +109,6 @@</span><br><span>     session-&gt;tls_wrap_reneg=
-=2Emode =3D TLS_WRAP_CRYPT;</span><br><span>     session-&gt;tls_wrap_reneg=
-=2Ecleanup_key_ctx =3D true;</span><br><span>     session-&gt;tls_wrap_rene=
-g=2Ework =3D alloc_buf(BUF_SIZE(&amp;session-&gt;opt-&gt;frame));</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    session-&gt;tls_wrap_reneg=
-=2Eopt=2Epid_persist =3D NULL;</span><br><span> </span><br><span>     packe=
-t_id_init(&amp;session-&gt;tls_wrap_reneg=2Eopt=2Epacket_id, session-&gt;op=
-t-&gt;replay_window,</span><br><span>                    session-&gt;opt-&g=
-t;replay_time, &quot;TLS_WRAP_RENEG&quot;, session-&gt;key_id);</span><br><=
-/pre><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/=
-+/2082?usp=3Demail">change 2082</a>=2E To unsubscribe, or for help writing =
-mail filters, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=
-=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg=
-/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=
-=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/2082?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
-ew Change"/></div></div>
+%);">+    if (!tb_data[IFLA_OVPN_MODE])</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        return -ENOENT;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (RTA_PAYLOAD(tb_=
+data[IFLA_OVPN_MODE]) &lt; sizeof(raw_mode))</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        return -EINVAL;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    raw_mode =3D *=
+(uint8_t *)RTA_DATA(tb_data[IFLA_OVPN_MODE]);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    *mode =3D (enum ovpn_mode)raw_mode;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    return 0;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+net_iface_ovpn_mode(openvpn_net_=
+ctx_t *ctx, const char *iface, enum ovpn_mode *mode)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    int ret =3D sitnl_link_get(iface, sitnl_ovpn_mode_save,=
+ mode);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (ret =
+&lt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(D_ROUTE, &quot=
+;%s: cannot retrieve ovpn mode for iface %s: %s (%d)&quot;, __func__, iface=
+,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            strerr=
+or(-ret), ret);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    return ret;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    msg(D_ROUTE, &quot;%s: mode of %s=
+: %d&quot;, __func__, iface, *mode);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* defined(ENABLE_D=
+CO) */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan> int</span><br><span> net_iface_del(openvpn_net_ctx_t *ctx, const char =
+*iface)</span><br><span> {</span><br><span>diff --git a/src/openvpn/network=
+ing_sitnl=2Eh b/src/openvpn/networking_sitnl=2Eh</span><br><span>index 481c=
+c36=2E=2E7a2d964 100644</span><br><span>--- a/src/openvpn/networking_sitnl=
+=2Eh</span><br><span>+++ b/src/openvpn/networking_sitnl=2Eh</span><br><span=
+>@@ -24,4 +24,30 @@</span><br><span> typedef char openvpn_net_iface_t;</spa=
+n><br><span> typedef void *openvpn_net_ctx_t;</span><br><span> </span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+#if defined(TARGET_LINUX)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+#include &lt;linux/if_link=2Eh&gt;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+#ifndef IFLA_OVPN_MAX</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+enum ovpn_mode</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    OVPN_MODE=
+_P2P,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    OVPN_MODE_=
+MP,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+};</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+enum ovpn_ifla_attrs</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    IFLA_OVPN_UNSPEC =3D 0,</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    IFLA_OVPN_MODE,</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    _=
+_IFLA_OVPN_MAX,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+};</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+#define IFLA_OVPN_MAX (__IFLA_OVPN_MAX -=
+ 1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+#endif /* ifndef IFLA_OVPN_MAX */</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+#endif /* if defined(TARGET_LINUX) */</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #end=
+if /* NETWORKING_SITNL_H_ */</span><br></pre><p>To view, visit <a href=3D"h=
+ttps://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1734?usp=3Demail">change 1734</a>=
+=2E To unsubscribe, or for help writing mail filters, visit <a href=3D"http=
+s://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div it=
+emscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itempr=
+op=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D=
+"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1734?usp=3Demail"/=
+><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: =
-newpatchset </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </d=
-iv>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D=
-"display:none"> Gerrit-Change-Id: I5ee231d157459e6406f1f4c12cd6c6e0fce93815=
+<div style=
+=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"dis=
+play:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Ger=
+rit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I7=
+2302403bddee4b0b0ee2441ae9e246f48d0bc81 </div>
+<div style=3D"display:none">=
+ Gerrit-Change-Number: 1734 </div>
+<div style=3D"display:none"> Gerrit-Patc=
+hSet: 4 </div>
+<div style=3D"display:none"> Gerrit-Owner: Ralf Lici &lt;ral=
+f@mandelbit=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: =
+Antonio Quartulli &lt;antonio@mandelbit=2Ecom&gt; </div>
+<div style=3D"disp=
+lay:none"> Gerrit-Reviewer: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt;=
  </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 2082 </div>
-<div=
- style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:no=
-ne"> Gerrit-Owner: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<=
-div style=3D"display:none"> Gerrit-Reviewer: Frank Lichtenheld &lt;frank@li=
-chtenheld=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: Ge=
-rt Doering &lt;gert@greenie=2Emuc=2Ede&gt; </div>
-<div style=3D"display:non=
-e"> Gerrit-Reviewer: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt; </d=
-iv>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel=
-@lists=2Esourceforge=2Enet&gt; </div>
-<div style=3D"display:none"> Gerrit-A=
-ttention: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt; </div>
-<div st=
-yle=3D"display:none"> Gerrit-Attention: Arne Schwabe &lt;arne-openvpn@rfc25=
-49=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: Gert Doe=
-ring &lt;gert@greenie=2Emuc=2Ede&gt; </div>
-<div style=3D"display:none"> Ge=
-rrit-Attention: Frank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-d=
+evel@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"display:none"> Gerr=
+it-Attention: Ralf Lici &lt;ralf@mandelbit=2Ecom&gt; </div>
+<div style=3D"d=
+isplay:none"> Gerrit-Attention: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg=
+&gt; </div>
 
-<=
-/body></html>
---+8MMANUaWe0=--
+</body></html>
+--oQxz1apPGQo=--
 
 
---===============8103612374127496354==
+--===============8557897042834915259==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============8103612374127496354==
+--===============8557897042834915259==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -2115,5 +1098,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============8103612374127496354==--
+--===============8557897042834915259==--
 
