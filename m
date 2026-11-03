@@ -1,139 +1,75 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BF15606C543
-	for <openvpn-devel@archiver.kernel.org>; Tue,  3 Nov 2026 11:22:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40174606A33E
+	for <openvpn-devel@archiver.kernel.org>; Tue,  3 Nov 2026 11:36:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=hqHQuHdL;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=VcsSi+HV;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=DVC/VFlY;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=SBswwPvm
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=VvTsiO9K;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=kFoFG2WI;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=P4xfNci+
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Unsubscribe-Post:List-Owner;
-	bh=7BuKAG/zwBE+LIjLVMwxCepMuUbxaQbg0pXWbDgAeoE=; b=hqHQuHdLR74X36f+u1N12Mt06O
-	kotwFAP0YIqEPKfXUFu8kLmkKedjUGl/4TT7311DgMlVoqtRrvWivVFNfJ4qWOfS6nLMT7wIKcCPw
-	lWX6t3RikvBFRJJKqSGVOkHRKS5eSMfPprGgFwm545pPg7XoksHkaWNr3OY6VEBGVUE8=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
+	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
+	List-Owner; bh=T02yRt0BbOF43xxGiPYhhEoYsmLCNCZE5jmxQCHX48c=; b=VvTsiO9KNXEuJH
+	1+1saQbx2yhqyzK/3EZHOZVV+BJt281FDuZ1SeaM4pYUrtXXKvfon5JyBlGZt/b4Ub1nPllT0EqfH
+	UXwg/RFwaWYPV8j+yjpnT94uBDGuOUh9OFnSpMOhEF65RbrwE/w9eROmLbOgwRaRRHn6HcgbTgkMZ
+	JQ8=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xOCaU-00000000534-2tZ3;
-	Tue, 03 Nov 2026 11:21:58 +0000
+	id 1xOCoF-000000005Cc-2S9A;
+	Tue, 03 Nov 2026 11:36:11 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xOCaU-0000000052y-162K
- for openvpn-devel@lists.sourceforge.net;
- Tue, 03 Nov 2026 11:21:58 +0000
+ (envelope-from <gert@blue4.greenie.muc.de>)
+ id 1xOCoD-000000005CO-3WyK for openvpn-devel@lists.sourceforge.net;
+ Tue, 03 Nov 2026 11:36:09 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
+ In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=PKAYgkk9c2ii6ZDouDguYPTp1n8Tt8sKqSsfqFlY1w0=; b=VcsSi+HVEc8Tefqk5o8nEboSLC
- OpVES51woI4qvhgBwfTe7uMLRsylHBRkZX2RXBLU6Dkm2aQc4i12Uuv57LBVqWtu8hvvlJrGQVQro
- tYrkmFMMBN3y8XdhJln5TvKk+UbVyJIOkpRBcnAreqL+IgNZ5T1Ie6/bQpZo9B1s9OSw=;
+ bh=/QPnxcj/c8J07WP3GgRPZ6ORzslQR9p7xIt9hM5Rx5A=; b=kFoFG2WIaAtP8wXL8mQBGsOpV3
+ H+VtcBNpMInROOlukYiXFYA/ARs5WpCsPYfY5uiUA/vKVaWLvo7tBwXjTmYPFo5gMaTKMlgOJXZcT
+ h7n2GKjG78D8cu+StXpyZwV7l660YWWwiwUH2tlnGAfitv3Ce8gA8UVNP4qzcjWMF61U=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
- Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
+ h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
+ Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=PKAYgkk9c2ii6ZDouDguYPTp1n8Tt8sKqSsfqFlY1w0=; b=DVC/VFlYu+5AAy3JX8d9HgW44P
- fjOGivJovnOFxW8LLGkdNCQ3o3+Zwn3xJbogJdWfPwE9E8ZXI7WogIozMRiOL0Vffh4fJTCE9pqTU
- BCAwSCSSZ8JL2QQIZgTTfcCo0GBpHRgmGIrEMdWw+nSWjUdIgqkGwGnq20VByl3wpUvw=;
-Received: from mail-wr1-f41.google.com ([209.85.221.41])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xOCaS-0000000021k-3VIa for openvpn-devel@lists.sourceforge.net;
- Tue, 03 Nov 2026 11:21:58 +0000
-Received: by mail-wr1-f41.google.com with SMTP id
- ffacd0b85a97d-48e20ed3b9dso3560844f8f.2
- for <openvpn-devel@lists.sourceforge.net>;
- Tue, 03 Nov 2026 03:21:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1793704910; x=1794309710; darn=lists.sourceforge.net;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
- :reply-to:content-type;
- bh=PKAYgkk9c2ii6ZDouDguYPTp1n8Tt8sKqSsfqFlY1w0=;
- b=SBswwPvm/fZWq33b3pQsv+oLgFB14Gnb7j+HU0YBNSycRQGDdIMwzMRNRz6xtoeL9u
- wE4WfNLSdCtFacMZNdhNqmslGCIg1Znm8hCT/yqwZl9nW6bUsZXUo/Vs5ZVoxOXJphxv
- r7XlKLb90OkepD9X5bmqonwl2hhB32YHv2cRgpH1t40mtrI4kLFR9PZHFDvAQLn2um5f
- 6SEGjtlFzJy9IWdBb4QuK7wQ+jfnB9emXq1c6mBGVWB067MvE7gi6kj/llUnA9+eYB+9
- t1Kf3ZqGBw9KdD0MhXBliK/SE2DqPE9L5kafLJx3FzUSp5ehiqp/Qx3VfwhOIRlj+iiH
- BTsw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1793704910; x=1794309710;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
- :cc:subject:date:message-id:reply-to:content-type;
- bh=PKAYgkk9c2ii6ZDouDguYPTp1n8Tt8sKqSsfqFlY1w0=;
- b=eEJ4ycCj3K9VgIf0Tm5QY9SCGDaEk739dv72/2vrkBF4Iyb7QRCzyNpxWqBo51FQ24
- WI1fLis24Q7dUr5jw3TMKrLlyu+g5Mcb/kexDLW/B4wXnQyuGe7Luif6fnuYDGDQuzbI
- lYebRuL/C3K1SAusDMYAZF0db2q7yJe6UxwgP9ehG/UQTBVVNyjlJsrVsu8iW4HqIPrz
- REKFiYKd+9xkLsgnn2u45VlIdAZF541IX1ebnsUdExxNcY7ax/dO/P1eG/K2BWvTO//1
- DrA0kOQRZua65mFi9b3+GPkkK8/lag6Yxlw/xsxu5stG7Ub+hcx0DYYuR8pgbtqPsgX7
- itrg==
-X-Forwarded-Encrypted: i=1;
- AKwUvBxICM0yhjRQRhfmkuESQ8aLelObPBnoatxvmzKirmIwPmaEUPRV1x6tWRvQQQCaXJR4etWXeYwuMuxo2Hu6@lists.sourceforge.net
-X-Gm-Message-State: APuU4Z/KvL+gifcXz/nnlqTCbfemgcwUkwQMT7R2knmQysEjzJlxlI15
- p7BS+nCCjZE7xp57aqWVVGHF0QYMuZWgOy+3o9WRVejdRgTlndj3wa8kelWZIc/35M+u6NqjvZc
- lwteo1Yf/yg3a6qcajF3LBWrVkgc2g34PY65u7Qn8LqMkFfHyN4vlElem+c0GX6nZ1F0H
-X-Gm-Gg: AYBFou3tympzVFws+hOM/NEo3XcTn+QYSaxK+PMKobmpL8y8nmCzIuZFjZos0AuJJ73
- d5uIJM8vpPEP806BCRtgV0lLLVA9uplKDrUXG750uS7zahMHM5nfpUGwY4d85MBTcSB9+3O9Kww
- ITDl/MihdMMCfEDpK0XCeHg4W5So7BzYNqXCPrDSZ/qBlecB8Evacjz0gGAWlSp85R3wV8XdpGV
- Q2Gfr5AK4BOaYeFxGAsP8Oui4R6SWcSnA/pL5ru0bZRmFaqXKgFuBABahY21Jfon/8c9lD5exwP
- 4LK7ws8mY+RJWR25xuu4q0oYPoZGryR+6IU9mAAp/44cLhv3aj4uqFuu9eghdohXwMCBABGo7C/
- GppjE4DovV59TtcXPPlUpnSjXvqLmGx0C61YDLerDiuptLyupXJ0BhLCRb997wTQgcIHghtgdYD
- ifoT/GJo91NSDGBtwnB55zoPE+SU5UueRehWs6SgHgCyZdL0zVNL9ajGsKnT4mMRtLpEtQz/h3u
- 7WOmjLbgapGfOP5lKoD/Dk5IUBc0OPdqdtjIjSzRe1gYUw51vxOhwPgTDp7XNS1LxlP7URCYPSo
- sYysI6om7hxGm5FMcySIgZMaCRX2ZchrHIsB+IaffJSW+ItzgR85yOl1RGzvU1wmvEhhfb4QqyK
- Zw/RIARUL1EanK6W4fEhLLgkFdYXd+PVwRidNcfTiAOnR4bF7Q9S4BtRcM8A3OGFyM8oYDhVq/E
- drRgYoXE3ovTMugQ==
-X-Received: by 2002:a05:6000:400a:b0:48e:4115:f3e8 with SMTP id
- ffacd0b85a97d-48e6e50096emr30222308f8f.27.1793704910048; 
- Tue, 03 Nov 2026 03:21:50 -0800 (PST)
-Received: from ip-10-18-1-162.eu-central-1.compute.internal
- (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
- by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-48e71b78f95sm22929338f8f.28.2026.11.03.03.21.49
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 03 Nov 2026 03:21:49 -0800 (PST)
-X-Google-Original-From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?=
- <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Tue, 3 Nov 2026 11:21:48 +0000
-To: Gianmarco De Gregori <gianmarco@mandelbit.com>
-Auto-Submitted: auto-generated
-X-Gerrit-MessageType: comment
-X-Gerrit-PatchSet: 3
-X-Gerrit-Change-Id: Ia7a31ff1c3792104101cb2e828be3b7fd8f44156
-X-Gerrit-Change-Number: 2046
-X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2046?usp=email>
-X-Gerrit-Commit: 2c83d9e5d30c38ea1aa872ddb2a7d78de2920b95
-X-Gerrit-Comment-Date: Tue, 3 Nov 2026 11:21:48 +0000
-In-Reply-To: <gerrit.1793094393000.Ia7a31ff1c3792104101cb2e828be3b7fd8f44156@gerrit.openvpn.net>
-References: <gerrit.1793094393000.Ia7a31ff1c3792104101cb2e828be3b7fd8f44156@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzkzMDk0MzkzMDAwLklhN2EzMWZmMWMzNzkyMTA0MTAxY2IyZTgyOGJlM2I3ZmQ4ZjQ0MTU2QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <79a596803aea1f899950aa658423a8e354d2d22d-EmailReviewComments-HTML@gerrit.openvpn.net>
+ bh=/QPnxcj/c8J07WP3GgRPZ6ORzslQR9p7xIt9hM5Rx5A=; b=P4xfNci+Cib3rwrwQfKlkz42mD
+ p4DekfvQMFoptSOamBawc63qVFAW2EBu3ne/00D11/RMHNZl6+zKaacGdUGrcLmxRGfyDU8h/PlkI
+ 5U52wAVNn0glqjXEOo/pNyUsfGqSwcAqWVSzGakRaaKX0nKb3kOS+2r2kTo4NqW73tGE=;
+Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
+ id 1xOCoB-000000000xD-35jn for openvpn-devel@lists.sourceforge.net;
+ Tue, 03 Nov 2026 11:36:09 +0000
+Received: from blue.greenie.muc.de (localhost [127.0.0.1])
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 6A3Ba0ol030504
+ for <openvpn-devel@lists.sourceforge.net>; Tue, 3 Nov 2026 12:36:00 +0100
+Received: (from gert@localhost)
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 6A3Ba00x030503
+ for openvpn-devel@lists.sourceforge.net; Tue, 3 Nov 2026 12:36:00 +0100
+From: Gert Doering <gert@greenie.muc.de>
+To: openvpn-devel@lists.sourceforge.net
+Date: Tue,  3 Nov 2026 12:35:54 +0100
+Message-ID: <20261103113600.30488-1-gert@greenie.muc.de>
+X-Mailer: git-send-email 2.55.0
+In-Reply-To: <gerrit.1790212215000.I9085c55a7efefd31839b00ec8ec9a6f085574dde@gerrit.openvpn.net>
+References: <gerrit.1790212215000.I9085c55a7efefd31839b00ec8ec9a6f085574dde@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
-User-Agent: Gerrit/3.14.2
-X-Spam-Score: 0.8 (/)
-X-Headers-End: 1xOCaS-0000000021k-3VIa
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: multi_io: dispatch
- UDP events through TA_SOCKET_READ/TA_SOCKET_WRITE
+X-Spam-Score: 1.3 (+)
+X-Headers-End: 1xOCoB-000000000xD-35jn
+Subject: [Openvpn-devel] [PATCH v6] tests: add unit tests for route.c
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -143,154 +79,362 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= via Openvpn-devel
- <openvpn-devel@lists.sourceforge.net>
-Reply-To: razvanc@mailbox.org, arne-openvpn@rfc2549.org,
- gianmarco@mandelbit.com, openvpn-devel@lists.sourceforge.net
-Cc: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>,
- Arne Schwabe <arne-openvpn@rfc2549.org>
-Content-Type: multipart/mixed; boundary="===============0974521331806198642=="
-X-Spam-Status: No, score=-2.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
-	MAILING_LIST_MULTI,PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,SPF_PASS
-	autolearn=no autolearn_force=no version=4.0.1
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-16.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_PASS,
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============0974521331806198642==
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="DBAzWfVtAjg="; charset=UTF-8
+From: Charlie Vigue <charlie.vigue@openvpn.com>
 
---DBAzWfVtAjg=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+route.c has no unit test coverage at all, so there is nowhere to put a
+test when touching it.  Cover the pure helpers it already exports: the
+special address predicate, both netmask-to-netbits conversions, and the
+IPv6 prefix host-bit masking.
 
-Attention is currently required from: Arne Schwabe, Gianmarco De Gregori=2E=
+The two conversions disagree on a full-length netmask:
+netmask_to_netbits() reports -1 and netmask_to_netbits2() reports 32.
+--server relies on the -1 to reject a /32, so pin it down.
 
+Rather than add a driver of its own, the tests are hosted by
+networking_testdriver as case 9, alongside its existing cases.  That
+driver is already gated on HAVE_SITNL, which is what route.c needs: it
+reaches the routing table through net_route_* on Linux and through
+argv/execve elsewhere, so one set of stubs cannot link on both.
+t_net.sh runs the cases above LAST_AUTO_TEST after it has removed its
+dummy interface, so the route tests need no interface and no particular
+network state.
 
-R=C4=83zvan Cojocaru has posted comments on this change by Gianmarco De G=
-regori=2E ( https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2046?usp=3Demail )
+route.c links against the real networking_sitnl.c that the driver
+already carries.  Only the socket and argv helpers that route.c
+references but no test here reaches are stubbed, and those assert rather
+than return quietly, so a test straying onto one fails loudly.
 
-=
-Change subject: multi_io: dispatch UDP events through TA_SOCKET_READ/TA_SOC=
-KET_WRITE
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+Change-Id: I9085c55a7efefd31839b00ec8ec9a6f085574dde
+Signed-off-by: Charlie Vigue <charlie.vigue@openvpn.com>
+Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1946
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-=
-Patch Set 3: Code-Review+2
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1946
+This mail reflects revision 6 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Razvan Cojocaru <razvanc@mailbox.org>
 
--- 
-To view, visit https://gerrit=2Eopenvpn=2E=
-net/c/openvpn/+/2046?usp=3Demail
-To unsubscribe, or for help writing mail f=
-ilters, visit https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+        
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 184a95a..a68e37c 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -976,7 +976,14 @@
+     if (TARGET test_networking)
+         target_link_options(test_networking PRIVATE -Wl,--wrap=parse_line)
+         target_compile_options(test_networking PRIVATE -UNDEBUG)
++        target_link_libraries(test_networking PUBLIC ${RESOLV_LIBRARIES})
+         target_sources(test_networking PRIVATE
++            tests/unit_tests/openvpn/test_route.c
++            tests/unit_tests/openvpn/mock_management.c
++            src/openvpn/route.c
++            src/openvpn/env_set.c
++            src/openvpn/run_command.c
++            src/openvpn/socket_util.c
+             src/openvpn/networking_sitnl.c
+             src/openvpn/crypto_epoch.c
+             src/openvpn/crypto_mbedtls.c
+diff --git a/tests/t_net.sh b/tests/t_net.sh
+index d63f648..fd07277 100755
+--- a/tests/t_net.sh
++++ b/tests/t_net.sh
+@@ -3,7 +3,7 @@
+ IFACE="ovpn-dummy0"
+ UNIT_TEST="./unit_tests/openvpn/networking_testdriver"
+ LAST_AUTO_TEST=7
+-LAST_TEST=8
++LAST_TEST=9
+ 
+ srcdir="${srcdir:-.}"
+ top_builddir="${top_builddir:-..}"
+diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
+index 43a6743..5abe497 100644
+--- a/tests/unit_tests/openvpn/Makefile.am
++++ b/tests/unit_tests/openvpn/Makefile.am
+@@ -220,8 +220,14 @@
+ networking_testdriver_LDFLAGS = @TEST_LDFLAGS@ -L$(top_srcdir)/src/openvpn \
+ 	$(OPTIONAL_CRYPTO_LIBS)
+ networking_testdriver_SOURCES = test_networking.c mock_msg.c \
++	test_route.c test_route.h test_common.h \
++	mock_management.c \
+ 	$(top_srcdir)/src/compat/compat-strlcpy.c \
+ 	$(top_srcdir)/src/openvpn/networking_sitnl.c \
++	$(top_srcdir)/src/openvpn/route.c \
++	$(top_srcdir)/src/openvpn/env_set.c \
++	$(top_srcdir)/src/openvpn/run_command.c \
++	$(top_srcdir)/src/openvpn/socket_util.c \
+ 	$(top_srcdir)/src/openvpn/buffer.c \
+ 	$(top_srcdir)/src/openvpn/crypto.c \
+ 	$(top_srcdir)/src/openvpn/crypto_epoch.c \
+diff --git a/tests/unit_tests/openvpn/test_networking.c b/tests/unit_tests/openvpn/test_networking.c
+index 1c9cac1..849f247 100644
+--- a/tests/unit_tests/openvpn/test_networking.c
++++ b/tests/unit_tests/openvpn/test_networking.c
+@@ -2,6 +2,8 @@
+ #include "syshead.h"
+ #include "networking.h"
+ 
++#include "test_route.h"
++
+ #include <setjmp.h>
+ #include <cmocka.h>
+ 
+@@ -212,7 +214,7 @@
+ static void
+ usage(char *name)
+ {
+-    printf("Usage: %s <0-8>\n", name);
++    printf("Usage: %s <0-9>\n", name);
+ }
+ 
+ int
+@@ -272,6 +274,9 @@
+             assert_int_equal(net__iface_type("dummy0815", NULL), -ENODEV);
+             return 0;
+ 
++        case 9:
++            return route_tests();
++
+         default:
+             printf("invalid test: %d\n", test);
+             break;
+diff --git a/tests/unit_tests/openvpn/test_route.c b/tests/unit_tests/openvpn/test_route.c
+new file mode 100644
+index 0000000..3cfee9b
+--- /dev/null
++++ b/tests/unit_tests/openvpn/test_route.c
+@@ -0,0 +1,181 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2002-2026 OpenVPN Inc <sales@openvpn.net>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, see <https://www.gnu.org/licenses/>.
++ */
++
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
++
++#include "syshead.h"
++
++#include "test_common.h"
++
++#include "route.h"
++#include "networking.h"
++
++#include "test_route.h"
++
++/* Stubs for functions route.c references but that no test here reaches.
++ * They assert rather than return quietly, so a test straying onto one
++ * fails loudly instead of silently doing nothing.
++ */
++struct argv
++argv_new(void)
++{
++    assert_true(0);
++    struct argv a = { 0 };
++    return a;
++}
++
++void
++argv_free(struct argv *a)
++{
++    assert_true(0);
++}
++
++bool
++get_ipv6_addr(const char *prefix_str, struct in6_addr *network, unsigned int *netbits,
++              msglvl_t msglevel)
++{
++    assert_true(0);
++    return false;
++}
++
++in_addr_t
++getaddr(unsigned int flags, const char *hostname, int resolve_retry, bool *succeeded,
++        struct signal_info *sig_info)
++{
++    assert_true(0);
++    return 0;
++}
++
++int
++openvpn_getaddrinfo(unsigned int flags, const char *hostname, const char *servname,
++                    int resolve_retry_seconds, struct signal_info *sig_info, int ai_family,
++                    struct addrinfo **res)
++{
++    assert_true(0);
++    return 0;
++}
++
++struct signal_info siginfo_static; /* GLOBAL */
++
++int
++signal_reset(struct signal_info *si, int signum)
++{
++    assert_true(0);
++    return 0;
++}
++
++static void
++test_is_special_addr(void **state)
++{
++    assert_true(is_special_addr("net_gateway"));
++    assert_true(is_special_addr("vpn_gateway"));
++    assert_true(is_special_addr("remote_host"));
++
++    assert_false(is_special_addr("10.0.0.1"));
++    assert_false(is_special_addr("default"));
++    assert_false(is_special_addr(NULL));
++}
++
++static void
++test_netmask_to_netbits(void **state)
++{
++    int netbits;
++
++    assert_true(netmask_to_netbits(0x0a000000, 0xff000000, &netbits)); /* 10/8 */
++    assert_int_equal(netbits, 8);
++
++    assert_true(netmask_to_netbits(0xc0a80100, 0xffffff00, &netbits)); /* 192.168.1/24 */
++    assert_int_equal(netbits, 24);
++
++    assert_true(netmask_to_netbits(0x00000000, 0x00000000, &netbits)); /* default route */
++    assert_int_equal(netbits, 0);
++
++    /* a full-length mask reports -1 rather than 32 */
++    assert_true(netmask_to_netbits(0x0a010203, 0xffffffff, &netbits));
++    assert_int_equal(netbits, -1);
++
++    /* host bits set in the network part */
++    assert_false(netmask_to_netbits(0x0a000001, 0xff000000, &netbits));
++
++    /* not a contiguous netmask */
++    assert_false(netmask_to_netbits(0x0a000000, 0xff00ff00, &netbits));
++}
++
++static void
++test_netmask_to_netbits2(void **state)
++{
++    assert_int_equal(netmask_to_netbits2(0xff000000), 8);
++    assert_int_equal(netmask_to_netbits2(0xffffff00), 24);
++    assert_int_equal(netmask_to_netbits2(0x00000000), 0);
++
++    /* unlike netmask_to_netbits(), this one reports a full-length mask as 32 */
++    assert_int_equal(netmask_to_netbits2(0xffffffff), 32);
++
++    assert_int_equal(netmask_to_netbits2(0xff00ff00), -1);
++}
++
++static void
++assert_clear_host_bits(const char *addr, unsigned int netbits, const char *expected)
++{
++    struct route_ipv6 r6;
++    struct in6_addr want;
++
++    CLEAR(r6);
++    assert_int_equal(inet_pton(AF_INET6, addr, &r6.network), 1);
++    assert_int_equal(inet_pton(AF_INET6, expected, &want), 1);
++    r6.netbits = netbits;
++
++    route_ipv6_clear_host_bits(&r6);
++    assert_memory_equal(&r6.network, &want, sizeof(struct in6_addr));
++}
++
++static void
++test_route_ipv6_clear_host_bits(void **state)
++{
++    /* whole bytes cleared */
++    assert_clear_host_bits("2001:db8::1", 64, "2001:db8::");
++    assert_clear_host_bits("2001:db8:dead:beef::1", 32, "2001:db8::");
++
++    /* a prefix that does not fall on a byte boundary */
++    assert_clear_host_bits("2001:db8:0:00ff::1", 60, "2001:db8:0:00f0::");
++    assert_clear_host_bits("2001:db8::ffff", 121, "2001:db8::ff80");
++
++    /* nothing to clear, and everything to clear */
++    assert_clear_host_bits("2001:db8::1", 128, "2001:db8::1");
++    assert_clear_host_bits("2001:db8::1", 0, "::");
++}
++
++static const struct CMUnitTest route_test_list[] = {
++    cmocka_unit_test(test_is_special_addr),
++    cmocka_unit_test(test_netmask_to_netbits),
++    cmocka_unit_test(test_netmask_to_netbits2),
++    cmocka_unit_test(test_route_ipv6_clear_host_bits),
++};
++
++int
++route_tests(void)
++{
++    openvpn_unit_test_setup();
++    return cmocka_run_group_tests(route_test_list, NULL, NULL);
++}
+diff --git a/tests/unit_tests/openvpn/test_route.h b/tests/unit_tests/openvpn/test_route.h
+new file mode 100644
+index 0000000..caa5c3c
+--- /dev/null
++++ b/tests/unit_tests/openvpn/test_route.h
+@@ -0,0 +1,27 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2002-2026 OpenVPN Inc <sales@openvpn.net>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, see <https://www.gnu.org/licenses/>.
++ */
++#ifndef TEST_ROUTE_H
++#define TEST_ROUTE_H
++/** Runs the route.c unit tests, returns the number of failures */
++int
++route_tests(void);
++#endif
 
-Gerrit-M=
-essageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Ch=
-ange-Id: Ia7a31ff1c3792104101cb2e828be3b7fd8f44156
-Gerrit-Change-Number: 20=
-46
-Gerrit-PatchSet: 3
-Gerrit-Owner: Gianmarco De Gregori <gianmarco@mandelb=
-it=2Ecom>
-Gerrit-Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit=
--Reviewer: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
-Gerrit-CC: openvpn-=
-devel <openvpn-devel@lists=2Esourceforge=2Enet>
-Gerrit-Attention: Arne Schw=
-abe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Attention: Gianmarco De Gregori <gi=
-anmarco@mandelbit=2Ecom>
-Gerrit-Comment-Date: Tue, 03 Nov 2026 11:21:48 +00=
-00
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---DBAzWfVtAjg=
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: Arne Schwabe, Gianmarco De Gregori=2E </p>
-<p>R=C4=83=
-zvan Cojocaru has posted comments on this change by Gianmarco De Gregori=2E=
-</p><p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block=
-; margin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</s=
-pan></p><p><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2046?usp=
-=3Demail">View Change</a></p><ul style=3D"list-style: none; padding: 0;"></=
-ul><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/=
-2046?usp=3Demail">change 2046</a>=2E To unsubscribe, or for help writing ma=
-il filters, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=3D=
-email">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/Em=
-ailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=2E=
-org/ViewAction"><link itemprop=3D"url" href=3D"https://gerrit=2Eopenvpn=2En=
-et/c/openvpn/+/2046?usp=3Demail"/><meta itemprop=3D"name" content=3D"View C=
-hange"/></div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comm=
-ent </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div=
- style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display=
-:none"> Gerrit-Change-Id: Ia7a31ff1c3792104101cb2e828be3b7fd8f44156 </div>
-=
-<div style=3D"display:none"> Gerrit-Change-Number: 2046 </div>
-<div style=
-=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> G=
-errit-Owner: Gianmarco De Gregori &lt;gianmarco@mandelbit=2Ecom&gt; </div>
-=
-<div style=3D"display:none"> Gerrit-Reviewer: Arne Schwabe &lt;arne-openvpn=
-@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: R=
-=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt; </div>
-<div style=3D"disp=
-lay:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=
-=2Enet&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: Arne Schwa=
-be &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> G=
-errit-Attention: Gianmarco De Gregori &lt;gianmarco@mandelbit=2Ecom&gt; </d=
-iv>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 03 Nov 2026 11:2=
-1:48 +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div=
->
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html=
->
---DBAzWfVtAjg=--
-
-
---===============0974521331806198642==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============0974521331806198642==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
---===============0974521331806198642==--
-
