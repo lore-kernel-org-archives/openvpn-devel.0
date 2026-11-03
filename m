@@ -1,139 +1,76 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52305606A32C
-	for <openvpn-devel@archiver.kernel.org>; Tue,  3 Nov 2026 08:12:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73BE1606A324
+	for <openvpn-devel@archiver.kernel.org>; Tue,  3 Nov 2026 08:14:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=Hog0x3qZ;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=Z3wOiaO1;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=FHjw3GCD;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=Vh9CHckR
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=CTiNO1hg;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=HYUl3AlM;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=fOucoD35
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Unsubscribe-Post:List-Owner;
-	bh=2Al+CwYdXs+OIcbAeMYqTngBdN8EFXzXrQ9QGVUbWT8=; b=Hog0x3qZHCagGhMlJsq6Xgu+so
-	PpI3C2D5fULrD/uT08uM6KrdtUrkA8Ib+KIJ54dit4sbEz5rD3jpP5G/KxjX9PyLMuVIOdwh4hXzE
-	DwAWA8y2kGhbPRdxvAnXoOgZGHRIJ/IPj5hUYMvY5d1nCrtOF8ds1RoKD2dqECcz4EO4=;
+	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
+	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
+	List-Owner; bh=mGaqXL7u8Rf6DzEfDA43+M0ffrvn1N4J6MrfE129rDI=; b=CTiNO1hgOn4Wug
+	VpeRY+un0bwOcID7GBH6iiFx0btIwKoRR00BAFB+3vP6QVstr1VWYtxgXxFc48RKIlNYXUT/q6RHx
+	sEzU/VtJaH/RMhg+v2JM0I8pytcbuMuWqetnfkud4nZjPd60v9ZvqWq2n27UT/aq3MyXVz5aY1StW
+	XzM=;
 Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
 	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xO9dN-000000005eD-4ASo;
-	Tue, 03 Nov 2026 08:12:46 +0000
+	id 1xO9eg-000000005n8-3aq7;
+	Tue, 03 Nov 2026 08:14:06 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xO9dM-000000005dx-14DX
- for openvpn-devel@lists.sourceforge.net;
- Tue, 03 Nov 2026 08:12:44 +0000
+ (envelope-from <gert@blue4.greenie.muc.de>)
+ id 1xO9eg-000000005my-04Jf for openvpn-devel@lists.sourceforge.net;
+ Tue, 03 Nov 2026 08:14:06 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
+ In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=vgPi+98hflHNKevKjiLsGfNcdrwtYbB5qJQBcxnEyhQ=; b=Z3wOiaO1ggOJmgyHvziHc7pRa8
- 4xzMpsh/Skkj429j0oBhlKHg09HOLElv/c8SKW5jGW+6xsFW/udlBLdDklN3v4P7OuyBTEp1UkDpo
- OY0uuDKL2ajmMmwe06BjRTnYGnUhmB/5HLJWxH5/0edA7xKIYVzCNOYB9VUM1s/wT0b4=;
+ bh=6zUTbYO3/+4rchEd1q9c9MA019vkTVh8yj3iw5K+CyA=; b=HYUl3AlMy1ODTHKbcj+pQB3ANP
+ 0Dh9mrlcxDvZy6yuXBF3X3i7qdTewAGXz1ANXNJRKALPqm92APRWYeHXRGvRyCOuTIsJD+1tKIvsR
+ qulwR01adEsrYNXgQzsD8Q69Jpy0+OLzxJ0i7xRHSoLgWgRCDPReNHvpxGnuDWrDpKR8=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
- Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
+ h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
+ Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=vgPi+98hflHNKevKjiLsGfNcdrwtYbB5qJQBcxnEyhQ=; b=FHjw3GCDePEUVEuFxbUAaly609
- ftusRK+8ai1b/UyqAoT2A8oOYa3X8ZVh+QMEZ3nYl4ny2zE6u6ZmhI1cuJZs9n3P26ZlkbbOW4HzQ
- ZJjq0D6Lgajn3fyu8aq3q6E8A39ArMd9AbeR+8UKW5A5OPNd5TggWzzslpOYIOBhBMO0=;
-Received: from mail-wr1-f41.google.com ([209.85.221.41])
+ bh=6zUTbYO3/+4rchEd1q9c9MA019vkTVh8yj3iw5K+CyA=; b=fOucoD35kFQ3mPqcuF/1W383OV
+ knGQog2eQLOGBhJcrsJvne84havjVAuigHf66c1r0oQ6N9vP6FqoS8MERod8LP2ni80sVAvhP6Cms
+ lNuWVTGKmpOj6y5U3wk7VOoDJnIlnAEH1SGmwfLFyBN6roecU5hFBk0eT+M7p9Lk8MXY=;
+Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xO9dI-000000003VQ-1Tii for openvpn-devel@lists.sourceforge.net;
- Tue, 03 Nov 2026 08:12:44 +0000
-Received: by mail-wr1-f41.google.com with SMTP id
- ffacd0b85a97d-48c4d870d54so2291612f8f.2
- for <openvpn-devel@lists.sourceforge.net>;
- Tue, 03 Nov 2026 00:12:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1793693554; x=1794298354; darn=lists.sourceforge.net;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
- :reply-to:content-type;
- bh=vgPi+98hflHNKevKjiLsGfNcdrwtYbB5qJQBcxnEyhQ=;
- b=Vh9CHckRRWPhsYMWj+qQhidlqjEiZNXrfE+3s0sEjA4fUcrTo0r0SB5OesYiYQAN/A
- Lcy7iu6DvTtgRjR702XO+YrgHbi+aBqRbgE44d/D5wt1iJsY7iFeeCYFvbcM68CFNT72
- c1WEtBoNhH2qX8j2Z6P905HVrAKdmEPUkkWCcJtxdgasCuiZYmWPEgr1KoCO2ZK2WiF8
- YFjMdaIXa0m1pUCIDswz4RgbDBn9mshDLK8w3K8cJOC5Vhv1tbJehOBKZvlp4TrKrEv2
- CJkponWGefjFI690E4bZoZHH1mV4kfpYLlM7tnkOsW79BFytNXI0HLEGE12/Cm4TjlNH
- 71Zg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1793693554; x=1794298354;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
- :cc:subject:date:message-id:reply-to:content-type;
- bh=vgPi+98hflHNKevKjiLsGfNcdrwtYbB5qJQBcxnEyhQ=;
- b=kgwxMCm97wTm7pwJl09HQE991XwaoMuDpjkqlgQwRnbRRoaDyg3mmz13+0DRhl3yqo
- EbumENqK5sOtzq4kE2d9WczFDyax8d4sTKqcw/7zvastgcFx0FJxSN/TQPsfDgxnmr9x
- kdCKYWdGRUp3Rb+dY1Ryz5H0m5nneuCTUQUOa/+OjUYl1n010qHuK5m+eUi8YRRR6dwc
- 42curvgm4e7Ms27ui6REtuTs5Lqdt72h+8Kc5WfxDC8vB9N3PrzzAS9lY9VJJM3V/Ua6
- nhSs+Ei+QrUDFRiGBm/6mh/rb736OsHoHISSnpy5wuPI2pbCg/G4ZtzUeGryyTSO8qhz
- 97Hg==
-X-Forwarded-Encrypted: i=1;
- AKwUvBzme6a792FeCLLPiiXL77+TYjDmuJ4bbRAnLtQ4adnYBKodsLHZ1mFVViDKzAib2sPzmk11THzRiYjVQsQZ@lists.sourceforge.net
-X-Gm-Message-State: APuU4Z8V8CVGoJly9pgaLaO2cU2JJtml3NV9iKLsFdb71opH1ZD9LbxH
- 7xMpW1BHpsl1RjZTPGbsFWxGG8NLmxh2miEvg8/T/XnbrOUO0BZExJpPLXFQDgJi7V3uVf2f7hN
- IyQxVp6BR9L75Yqwosk1Sxkh7fpBzkZa6nM+gG/QcTZWLSZaF/GqrebtHthV0nG0YKSJJ
-X-Gm-Gg: AYBFou0bUEpnPxzEu78vL+NfhQ7gDC7el+hBV67MnHRefgCsCbAc0P2hU5dbvS5FNDU
- eqzU3nDBx0ecy2Noo1AaWyjff0/Vdm8nFeGxJyWikAV2vX4MwwUUbNGtC6lnCmpuy+Wn28VQ3nL
- 7U8NLykFkj6Rz2AxeXyBU8RdQ4m7P0k63ewR4q5SUK1FJWCW7BVH01LDxKlziKN1ki8zQZTzByi
- JPOvOBTGlEmaVeo4a5Tv97Tch8ezzkCb20l7W/hUWc0Zbfov1renZ/gKYLMdgGlx7vtqTb/BK6m
- nHIN8ww0+SXqdUgIDIdMSkme/jQUrZO1NB0ODstrf0a7TH1fACRmW/hdWCUuSTjPbcGqCirPRL8
- UfRYakLZ9rFV0aLEhYGcLmkK69Catr96HJwESvnfifdBgtO3s+CJsLd1wzjinwHlQAfs8cPp7To
- suRiZybQoEfgaR7dqa1GaH3G675cLeV0QnL5Qe3MOWt1Oqk59+lQGN2qGtz4r3mZpZW4mUvR95C
- 4ZmGtuGLHHUhRnpdImqnj5ds141cceeAvMhTPzsxkkOiD1/Sn6P8ipx10yWK2xoFV+FjDE8YXTB
- Z40tAH7B3De1KEHAvHNyOh2KhlCzHXO1nVm2o4HpjQTyBmpk0tVhN1JpzCHJNy+IjKG4bitO8VL
- OcRHxALACBTx4YQp4Wx2Kmyx6PMfZwKvdxuZin5SdTfdySc89fa5KYJmYOBgxaNG3mGTNx0CPYL
- k1lr0WDb2uKr2nSQ==
-X-Received: by 2002:a05:600c:6087:b0:49f:f099:6fb1 with SMTP id
- 5b1f17b1804b1-4ac17753befmr276121315e9.15.1793693553742; 
- Tue, 03 Nov 2026 00:12:33 -0800 (PST)
-Received: from ip-10-18-1-162.eu-central-1.compute.internal
- (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
- by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-4abe7706516sm213786575e9.0.2026.11.03.00.12.33
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 03 Nov 2026 00:12:33 -0800 (PST)
-X-Google-Original-From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?=
- <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Tue, 3 Nov 2026 08:12:31 +0000
-To: Selva Nair <selva.nair@gmail.com>
-Auto-Submitted: auto-generated
-X-Gerrit-MessageType: comment
-X-Gerrit-PatchSet: 2
-X-Gerrit-Change-Id: I3c8c62c7d90c2b94dd1cd149b4c13b383a2303e9
-X-Gerrit-Change-Number: 2096
-X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2096?usp=email>
-X-Gerrit-Commit: eb4fd0629a34094437f4e3d3f0d0816fa9649114
-X-Gerrit-Comment-Date: Tue, 3 Nov 2026 08:12:31 +0000
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
+ id 1xO9ee-000000003aE-2pmD for openvpn-devel@lists.sourceforge.net;
+ Tue, 03 Nov 2026 08:14:05 +0000
+Received: from blue.greenie.muc.de (localhost [127.0.0.1])
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 6A38Dwrv008599
+ for <openvpn-devel@lists.sourceforge.net>; Tue, 3 Nov 2026 09:13:58 +0100
+Received: (from gert@localhost)
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 6A38Dw4g008598
+ for openvpn-devel@lists.sourceforge.net; Tue, 3 Nov 2026 09:13:58 +0100
+From: Gert Doering <gert@greenie.muc.de>
+To: openvpn-devel@lists.sourceforge.net
+Date: Tue,  3 Nov 2026 09:13:52 +0100
+Message-ID: <20261103081357.8587-1-gert@greenie.muc.de>
+X-Mailer: git-send-email 2.55.0
 In-Reply-To: <gerrit.1793666730000.I3c8c62c7d90c2b94dd1cd149b4c13b383a2303e9@gerrit.openvpn.net>
 References: <gerrit.1793666730000.I3c8c62c7d90c2b94dd1cd149b4c13b383a2303e9@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzkzNjY2NzMwMDAwLkkzYzhjNjJjN2Q5MGMyYjk0ZGQxY2QxNDliNGMxM2IzODNhMjMwM2U5QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <e87bd646d7cde8245a25767b58dc4286e01f5bb2-EmailReviewComments-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
-User-Agent: Gerrit/3.14.2
-X-Spam-Score: 0.8 (/)
-X-Headers-End: 1xO9dI-000000003VQ-1Tii
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: misc: Fix username
- overflow spilling into password
+X-Spam-Score: 1.3 (+)
+X-Headers-End: 1xO9ee-000000003aE-2pmD
+Subject: [Openvpn-devel] [PATCH v2] misc: Fix username overflow spilling
+ into password
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -143,152 +80,149 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= via Openvpn-devel
- <openvpn-devel@lists.sourceforge.net>
-Reply-To: razvanc@mailbox.org, arne-openvpn@rfc2549.org, selva.nair@gmail.com,
- openvpn-devel@lists.sourceforge.net
-Cc: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>,
- Arne Schwabe <arne-openvpn@rfc2549.org>
-Content-Type: multipart/mixed; boundary="===============7484519215181539327=="
-X-Spam-Status: No, score=-2.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
-	MAILING_LIST_MULTI,PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,SPF_PASS
-	autolearn=no autolearn_force=no version=4.0.1
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-16.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_PASS,
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============7484519215181539327==
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="da921u3mWOw="; charset=UTF-8
+From: Selva Nair <selva.nair@gmail.com>
 
---da921u3mWOw=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Consume the complete username line before reading the password
+from an auth file or inline credentials. This also fixes an
+exactly full username buffer leaving its newline to be read as
+an empty password in auth files.
 
-Attention is currently required from: Arne Schwabe, Selva Nair=2E
+Existing credential truncation behaviour is unchanged.
 
-R=C4=83z=
-van Cojocaru has posted comments on this change by Selva Nair=2E ( https://=
-gerrit=2Eopenvpn=2Enet/c/openvpn/+/2096?usp=3Demail )
+Tests: Add regression coverage for long and boundary-length
+usernames with missing, blank, or supplied passwords in both
+inlined and external file inputs.
 
-Change subject: misc=
-: Fix username overflow spilling into password
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+Github: OpenVPN/openvpn#1140
+Change-Id: I3c8c62c7d90c2b94dd1cd149b4c13b383a2303e9
+Signed-off-by: Selva Nair <selva.nair@gmail.com>
+Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2096
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Patch Set 2: Code-Review+2
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2096
+This mail reflects revision 2 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Razvan Cojocaru <razvanc@mailbox.org>
 
--- 
-To vie=
-w, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2096?usp=3Demail
-To uns=
-ubscribe, or for help writing mail filters, visit https://gerrit=2Eopenvpn=
-=2Enet/settings?usp=3Demail
+        
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index 304a87e..8c9ad08 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -250,6 +250,10 @@
+                 if (!(flags & GET_USER_PASS_PASSWORD_ONLY))
+                 {
+                     buf_parse(&buf, '\n', up->username, USER_PASS_LEN);
++                    /* The password starts on the next line, even if the username was truncated. */
++                    const char *password = strchr(auth_file, '\n');
++                    password = password ? password + 1 : "";
++                    buf_set_read(&buf, (uint8_t *)password, strlen(password) + 1);
+                 }
+                 buf_parse(&buf, '\n', up->password, USER_PASS_LEN);
+ 
+@@ -283,6 +287,14 @@
+                         msg(M_FATAL, "Error reading username from %s authfile: %s", prefix,
+                             auth_file);
+                     }
++                    if (!strchr(up->username, '\n'))
++                    {
++                        /* Consume the rest of the username line before reading the password. */
++                        int c;
++                        while ((c = fgetc(fp)) != '\n' && c != EOF)
++                        {
++                        }
++                    }
+                 }
+                 chomp(up->username);
+ 
+diff --git a/tests/unit_tests/openvpn/test_user_pass.c b/tests/unit_tests/openvpn/test_user_pass.c
+index adcf74a..776a86a 100644
+--- a/tests/unit_tests/openvpn/test_user_pass.c
++++ b/tests/unit_tests/openvpn/test_user_pass.c
+@@ -366,6 +366,58 @@
+     assert_string_equal(up.password, "fuser");
+ }
+ 
++static void
++test_get_user_pass_long_username(void **state)
++{
++    struct gc_arena gc = gc_new();
++    const char *authfile = platform_create_temp_file(platform_get_tmp_dir(), "user_pass", &gc);
++    assert_non_null(authfile);
++    const size_t lengths[] = { USER_PASS_LEN - 2, USER_PASS_LEN - 1, USER_PASS_LEN + 10 };
++    const char *endings[] = { "", "\n", "\n\n", "\nfpassword\n", "\r\nfpassword\r\n" };
++
++    const bool inline_mode[] = { false, true };
++    for (size_t mode = 0; mode < SIZE(inline_mode); mode++)
++    {
++        const bool use_inline_creds = inline_mode[mode];
++        for (size_t i = 0; i < SIZE(lengths); i++)
++        {
++            for (size_t j = 0; j < SIZE(endings); j++)
++            {
++                struct user_pass up = { 0 };
++                char creds[USER_PASS_LEN + 64];
++                memset(creds, 'u', lengths[i]);
++                strcpy(creds + lengths[i], endings[j]);
++                if (!use_inline_creds)
++                {
++                    FILE *fp = platform_fopen(authfile, "w");
++                    assert_non_null(fp);
++                    assert_true(fputs(creds, fp) >= 0);
++                    assert_int_equal(fclose(fp), 0);
++                }
++
++                const bool missing_password = j < 3;
++                if (missing_password)
++                {
++                    expect_string(query_user_exec_builtin, query_user[i].prompt,
++                                  "Enter UT Password:");
++                    will_return(query_user_exec_builtin, "cpassword");
++                }
++                will_return(query_user_exec_builtin, true);
++                assert_true(get_user_pass_cr(&up, use_inline_creds ? creds : authfile, "UT",
++                                             use_inline_creds ? GET_USER_PASS_INLINE_CREDS : 0, NULL));
++                /* Truncation must not change where the password line starts. */
++                creds[lengths[i] < USER_PASS_LEN ? lengths[i] : USER_PASS_LEN - 1] = '\0';
++                assert_true(up.defined);
++                assert_string_equal(up.username, creds);
++                assert_string_equal(up.password,
++                                    missing_password ? "cpassword" : "fpassword");
++            }
++        }
++    }
++    assert_true(platform_unlink(authfile));
++    gc_free(&gc);
++}
++
+ #ifdef ENABLE_MANAGEMENT
+ static void
+ test_get_user_pass_dynamic_challenge(void **state)
+@@ -474,6 +526,7 @@
+     cmocka_unit_test(test_get_user_pass_inline_creds),
+     cmocka_unit_test(test_get_user_pass_authfile_stdin),
+     cmocka_unit_test(test_get_user_pass_authfile_file),
++    cmocka_unit_test(test_get_user_pass_long_username),
+ #ifdef ENABLE_MANAGEMENT
+     cmocka_unit_test(test_get_user_pass_dynamic_challenge),
+     cmocka_unit_test(test_get_user_pass_static_challenge),
 
-Gerrit-MessageType: comment
-Gerrit-Project: op=
-envpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I3c8c62c7d90c2b94dd1cd149b4c1=
-3b383a2303e9
-Gerrit-Change-Number: 2096
-Gerrit-PatchSet: 2
-Gerrit-Owner: Se=
-lva Nair <selva=2Enair@gmail=2Ecom>
-Gerrit-Reviewer: Arne Schwabe <arne-ope=
-nvpn@rfc2549=2Eorg>
-Gerrit-Reviewer: R=C4=83zvan Cojocaru <razvanc@mailbox=
-=2Eorg>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
-=
-Gerrit-Attention: Selva Nair <selva=2Enair@gmail=2Ecom>
-Gerrit-Attention: A=
-rne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Comment-Date: Tue, 03 Nov 2=
-026 08:12:31 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---da921u3mWOw=
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: Arne Schwabe, Selva Nair=2E </p>
-<p>R=C4=83zvan Cojoc=
-aru has posted comments on this change by Selva Nair=2E</p><p>Patch set 2:<=
-span style=3D"border-radius: 3px; display: inline-block; margin: 0 2px; pad=
-ding: 4px;background-color: #d4ffd4;">Code-Review +2</span></p><p><a href=
-=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2096?usp=3Demail">View Chang=
-e</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To view, visit=
- <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2096?usp=3Demail">ch=
-ange 2096</a>=2E To unsubscribe, or for help writing mail filters, visit <a=
- href=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=
-=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div it=
-emscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><li=
-nk itemprop=3D"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2096=
-?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div=
->
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-<div sty=
-le=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:n=
-one"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Chan=
-ge-Id: I3c8c62c7d90c2b94dd1cd149b4c13b383a2303e9 </div>
-<div style=3D"displ=
-ay:none"> Gerrit-Change-Number: 2096 </div>
-<div style=3D"display:none"> Ge=
-rrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: Selva Na=
-ir &lt;selva=2Enair@gmail=2Ecom&gt; </div>
-<div style=3D"display:none"> Ger=
-rit-Reviewer: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div s=
-tyle=3D"display:none"> Gerrit-Reviewer: R=C4=83zvan Cojocaru &lt;razvanc@ma=
-ilbox=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-deve=
-l &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
-<div style=3D"disp=
-lay:none"> Gerrit-Attention: Selva Nair &lt;selva=2Enair@gmail=2Ecom&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Attention: Arne Schwabe &lt;arne-o=
-penvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment=
--Date: Tue, 03 Nov 2026 08:12:31 +0000 </div>
-<div style=3D"display:none"> =
-Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Label=
-s: Yes </div>
-
-</body></html>
---da921u3mWOw=--
-
-
---===============7484519215181539327==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============7484519215181539327==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
---===============7484519215181539327==--
-
