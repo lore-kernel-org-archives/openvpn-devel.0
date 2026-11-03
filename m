@@ -1,13 +1,13 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 322C2606A326
-	for <openvpn-devel@archiver.kernel.org>; Tue,  3 Nov 2026 15:48:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 129F8606A326
+	for <openvpn-devel@archiver.kernel.org>; Tue,  3 Nov 2026 15:49:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=Lo/cwPOB;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=LuO4GFW4;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=G2kjdxiW;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=LfGLz0xo
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=WpJhou7c;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=m97yHVgq;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=GMIRydWb;
+	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=HckrJOIb
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
@@ -15,29 +15,29 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
 	List-Unsubscribe-Post:List-Owner;
-	bh=QnH7s5WWGtSFKgjdt2QUunHxh7Fcomkb6VvwneQyJbg=; b=Lo/cwPOB0jItGf2khsADFjYCzA
-	Wr0s5qZGCHYEiay36QthIlgIbsqBJb8e40QytBaq9+Nw7mBc8lLtz8RcXt5tysVeiK1BaP4MoEvhJ
-	yXaMAcqs+S+5qJo2eLTlVGsoZ8tvCxZ/3JERf0n9M8aMx8sNer3QsSACZWwuMbBc4/g4=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	bh=Fip1/w1k+8gbkoPj1YdHDyCRsf7HU8+k4PzsYW0iT5k=; b=WpJhou7c2nTsSnbyS57fmqJUVT
+	wML8VShuA5GJChoHFgpoWfQJpQ/jokMSHwCQyT8guiQE3XrJ2FGFJ/WcUwaN1y5HD6C9pyjKxYuT9
+	B4Cqes4Bn3/48Iy5gzTVsfg56nBpTm/SUHYd9fy/6qt8MXrjW3xEjd8zTsPfZAuMK1hw=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xOGk5-000000006DB-0ZZe;
-	Tue, 03 Nov 2026 15:48:09 +0000
+	id 1xOGl9-000000003sX-1Adi;
+	Tue, 03 Nov 2026 15:49:15 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xOGk3-000000006D4-2Wz4
+ (envelope-from <gerrit@openvpn.net>) id 1xOGl8-000000003sR-1bFi
  for openvpn-devel@lists.sourceforge.net;
- Tue, 03 Nov 2026 15:48:07 +0000
+ Tue, 03 Nov 2026 15:49:14 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=t0gqmiIvIy+ghkqbxFkxw3a/8mvItibeaSZaQIY53EE=; b=LuO4GFW4kBgK8kFZTT1wTxarH3
- dveh1JS1TzDuimUYjWedyiH3kc2Wt7iu3BB1Ypw8KjsIDVC6evet9OYc8NAsibUFi+/LZmjkJJIoZ
- Ra4q/nbj4v0fIhHDwAUFx+DpqDutBxd8FnqtN8UcRUwdJJuDbVnV7WVXgWUX3X/1djJc=;
+ bh=fmP2e//yea3APB1C6lTRUvVUmEWyLeY2tUoYln3P0Eg=; b=m97yHVgqN+djlgQt9k4FzBg84+
+ /FuqKC7gleuNS4lFCQtSN+yVGAlSW5F58h7vkaBuLmlZgW1PBgR/wWsIbxF0e76R7N3Cl8Bt64kPa
+ C2A4xQoLFeFXMsZB0GldGEuFjXvYFL16EGyKKHKMHfDwrSavjvhUvuzDGAZd7G675WWg=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
@@ -45,93 +45,93 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=t0gqmiIvIy+ghkqbxFkxw3a/8mvItibeaSZaQIY53EE=; b=G2kjdxiWH+805woaYrepYtK2gh
- sNw+GEi9kBO+XN1naGW+fHIoCD7vxi9GYGdm6w1+DeyVtsLMK/9LlcGJBzUl2Ft4YTGv/bMx1gY1D
- m63Qp9wJggB4YoGNNOA4U7u4h4ux8DuBfgFz3U4eUOGsErNTVkVEfCAq6zwixTLXaV7Q=;
-Received: from mail-wm1-f51.google.com ([209.85.128.51])
+ bh=fmP2e//yea3APB1C6lTRUvVUmEWyLeY2tUoYln3P0Eg=; b=GMIRydWb5oW5Ox453rdQRlWIaA
+ I7MLir/3tQRoPMynqd/Ac1av4e43ufnBbTe3Gaip7J/M26V8/i4aiBu70HdScN5Iw63AIOBBt9FaY
+ 1pn6KNjRYeNJeL3neH+a0gXEsfP1Ob/61vIlXWZa8htsnFSjJzIFmlZh6fRALoLituy0=;
+Received: from mail-wr1-f41.google.com ([209.85.221.41])
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xOGk1-000000006ow-0ytI for openvpn-devel@lists.sourceforge.net;
- Tue, 03 Nov 2026 15:48:07 +0000
-Received: by mail-wm1-f51.google.com with SMTP id
- 5b1f17b1804b1-4a5720b0a57so5485475e9.0
+ id 1xOGl6-000000006q5-0bhZ for openvpn-devel@lists.sourceforge.net;
+ Tue, 03 Nov 2026 15:49:14 +0000
+Received: by mail-wr1-f41.google.com with SMTP id
+ ffacd0b85a97d-48e3b22e971so2225721f8f.0
  for <openvpn-devel@lists.sourceforge.net>;
- Tue, 03 Nov 2026 07:48:05 -0800 (PST)
+ Tue, 03 Nov 2026 07:49:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1793720879; x=1794325679; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1793720945; x=1794325745; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=t0gqmiIvIy+ghkqbxFkxw3a/8mvItibeaSZaQIY53EE=;
- b=LfGLz0xoCZ2Syy87+zropSuFfeRBLbLjbsX5iEWdq+VoHr2LTisKo5Ptvqkl4Wxqms
- R/m7DDScs37e07zR/98M5og9454oia77nLsj2ORC+yL67GTJKM2HSX9qTgOXjLFMDrjN
- wpY2dTbSONWjugLM9pVudP16Iv/si2ElgLzb7He3KME0G+Nlrph3OPkuK6he44bHkpRG
- HXzWzIKb3fLyVlUuvT8uFnSwwJzS97BotqzHlqqLrT35q1GZMCeNy1KQXUFtVRiRxRUg
- sb0D7oX9vTWWeV11k3iREYcoD7wbKcOT681panMlI8X8YrGNqxsMMcKqbKaNN3U/7JNj
- yBGA==
+ bh=fmP2e//yea3APB1C6lTRUvVUmEWyLeY2tUoYln3P0Eg=;
+ b=HckrJOIbXutEfGuBhgsARUvpHwGTuyoDd6DA+ACnW7UzFODibCvu75BP43IogCRr3r
+ vBif1KuauupqsPdop2aHI3pBUKqgTUZ3fmBSp3oHSRjo0vV8XpBMGUHEazFNfd9JEwmq
+ /4FAV4xCM/SvKQxi1bUtWOcePqFFIpDHmoPoltKB2qUkO6MdBnV47AqQPPPu3vOqEtNa
+ UDP3hItjZb8mPNeAsxc4v2gIhKfS+GGrOaYA80BOEGIwN3KnSb3DNyz/qunzqkPxdbtN
+ OnTktX7rGBpLaLGKlJ/2KyVB0hUNmtpvVQD/rgkfyGwUpat7XftD25tBTGIcCbJqwPv3
+ f1LA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1793720879; x=1794325679;
+ d=1e100.net; s=20260707; t=1793720945; x=1794325745;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=t0gqmiIvIy+ghkqbxFkxw3a/8mvItibeaSZaQIY53EE=;
- b=1vT+ukei/wlezbKaYbhThb40KlMd9TqkZIKaS81KurlSIq5FWeooQ2IMpsgGBNDMnr
- +PUi0nyiLRScHwciQ68iLXZLPA8aitXMer9Ux+6Pjpm/HBfeHYlc5awKFk1p45UrxGDG
- DtD3enursCNV0fNrLymHwbCBin103A2Y98IwUqBDtlKjMHwavaVi8Qmi0gdiVn8TxZeq
- LtTE/759vZokezmMNiezepXKYMeTeiD02VMYI7In3GTR0ipxrpm9Vu38crxq7vYgeDUI
- HtKX4eTEv0Qid8DAUj4lIiMH4JSUFWhiL7Vf42T5MfpMrCNbK6prkBnyUFFUgddN71gZ
- f1XQ==
-X-Gm-Message-State: APuU4Z/YrK4hVeVDCk/6oCUt0/LouDgfJ3pVVLicA34m3hyv8HPANlBy
- /t01eeubbGrroZF4sERu9glHvgZlLJlxjiJ+fGk669fQrZE2QEjHujuVaH4UcmFjxD2Wn8sT+5h
- pHfYU+RgMakV9jxJ8MWR23CQHIsRcuP57p8pPrlAtVLUPbRgCBMSGVixpQwD5eLdwW8ND
-X-Gm-Gg: AYBFou0F08/WcG9GnW62GhCXSls/BY+zB8uy86ubnAlaBhwzvKgLcBFhAVWAwg0QoMc
- TANwGPE1saa6a7VNkomn48U1Px7/oXquysd/NsKKoYvAQiaP1565aEqHL81MIaM0VEi/uN3uTyt
- OVuM1pWaEzeTSXlmRG1fjM8iPh8J8KeHNz4sVRhXhqiA1/8Rr9DXzWIS8OqNcBYfUZoaYioVUYN
- 1Aq7TGLS8eZWZobbx++7dh1RB2vo0yM5zRhrdTNRGNiTl39Wn25j9TowcUsTG7GnXK48AQbRHJG
- jCxsYjV1t4tp7F3poRIBCLMA4oFMwZ6hVF6/cHXRxujp0iuRJ9Vya0lzXUb9Xn5nOYLn15JlXoJ
- R9RGQuea/cfSvXxG30K+yqT8AVHowovLgr6HdKc81MCQYQNuLXmybyzgn2P7DWxXmF9yMBinWlf
- ggEPp2i45q/oTFMrd/GP0a1YMkMXeunsQVgcJ0vONSyu1oU++O78nwbcjMtz97Te5rDkYH9vtQk
- gXfssNyElmhr7Hv2RiBWSAasAdRY+NVbTzhmcYBnVpUjfDKUuc7olbr+WS/qrhQ2in2mDbqDOLT
- lGV/K2C7Tn0W4dJkhfYYUUJ24Xkh4LvEVZZKGiEHQVbv+iz9CSEL/PUpTd5Xtb/p9ttXzvbxK9H
- fvHbGIe7DWmIZpDCqAXBjyXZy5L2nraTpk6PXCRRmwjwvP1JLUAOG1KqsjT+pZhGI4bemkkDWKX
- tyR/xcFDjyIAlRDl8NMC31XSUbGP7BOCru5SQ=
-X-Received: by 2002:a05:600c:8116:b0:4a0:20b4:ba93 with SMTP id
- 5b1f17b1804b1-4ac17e10724mr311151255e9.16.1793720878370; 
- Tue, 03 Nov 2026 07:47:58 -0800 (PST)
+ bh=fmP2e//yea3APB1C6lTRUvVUmEWyLeY2tUoYln3P0Eg=;
+ b=GnKAf7wdRmdJH64W63i5JKrlDMTIgF9g3CWXYGoVcpCWvEw3YBLWqY2jPF7Rh35yyG
+ TDrNhhtbgVqKrGh8TVlxxUXZfXeKgXhTAn6ElPaF8ElIxwez/kJzcLcOZWKc2mG4mz3K
+ O/CG5xd9OSolifqlmWMfKCIIzPSs4Qiutuj1k02rud/GVju3OF6k4w4kCnv0u2Ao1x9q
+ +lWshi/+zPiH0y64vIZOn7stO/coeaLl1xbFGGU9fJUSUbK+mMZQONrhlN9M+X6XwFLF
+ 4mKtJv5BcNWh6LfShHUuo8dme72fTvNOCkPoabEqG7sf/Tie9IS91JlwiD+KweFUrXmV
+ DtAA==
+X-Gm-Message-State: APuU4Z9aHhTod7VDqH2xLBYJAJ+bnKoiYuPk33tD/lQd8bBItGAubFTe
+ SsjWLIbTppojlNbEwV9j0LgLacw7VoKO3lChCNyuSpxFCnHrrCoFkMvnUaE7MhkR3wDjyXb4QLt
+ nPYGKNRYFoqOiJFAfcgi0gbdnaGYLB+Lsu6yuyVDeeFEB/6ngpqLclDNhiJPJW2UJ3JmE
+X-Gm-Gg: AYBFou1PMeKMU/fUq/vo0U2bZPnIvu/JJXcH+WGUxTJWI14lsfgMje8LyV3ZtpmZHKZ
+ rgL+SDPdAxElSXkO/JHF3Nb5nGmFArQ2GJMFsgQ0w0dXyM1PMTUIRkMofqKOhP/R3vYrs5egVnq
+ GEn+5k8Wn7hOfOo2ZIgmTyq9tNWLtMtX1xAKPEM0wTBznIlocWOtNGfDlnYZdpU9S/OfpFb3IhK
+ B/4gvoIhMYftS6HIdahM3Y3Vgnq4rkpwF3tX75nqOWEcbFeIyBAYaZ/WuEwl2YW5OKRJsE/yYWn
+ oer4MGZM7VQbiRdqZWwwst7kmfSGOavQyBdn3b+VzDVPr1cL+eTxKXNZ2X+GAXvs0QR/SchXzr1
+ BAzHiwrZhpMPdLGDTlJVSWyof6g774vp6snGcfTfJavqXY1EI+dnmIOtnVJP/1xcIqBGzAK2/Bn
+ /BZuDqDOHVp4jLJTRjjBlJehaNkWl9Qjv0obT/rJpvSBvP3Pl2GCbCJ2gagOoj3nsDulxgRaaX9
+ dzMBrh3vC5vt69AyiAG6+jfnbCcV8ei/RiJeh9YwefnT4THZh9v11zmI5IZQKr2fITyBWaRDrl9
+ vFvKAZcZq4DGs4tEOol+Bq0ZCi1jMPLrhLR09NYHbIoOMO/ASa3jku4ykuWGr3fuaJlrihuSm2y
+ /pd4l4UPKWm8GR8141TaZIqMEgtY6goeFCVRl6CkSr6DgrY5W+VkAxPT0y09vEj/+vLlUsNrCZZ
+ xIKbmxwa2ppjSUjA==
+X-Received: by 2002:a05:6000:240e:b0:48e:76ab:78f7 with SMTP id
+ ffacd0b85a97d-48e76ab7f2bmr23189894f8f.20.1793720945177; 
+ Tue, 03 Nov 2026 07:49:05 -0800 (PST)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-4ac09bcc967sm262763255e9.3.2026.11.03.07.47.57
+ ffacd0b85a97d-48e71b80eb1sm27431399f8f.34.2026.11.03.07.49.04
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 03 Nov 2026 07:47:57 -0800 (PST)
+ Tue, 03 Nov 2026 07:49:04 -0800 (PST)
 X-Google-Original-From: "Ralf Lici (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Tue, 3 Nov 2026 15:47:56 +0000
+Date: Tue, 3 Nov 2026 15:49:03 +0000
 To: Arne Schwabe <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: comment
-X-Gerrit-PatchSet: 4
-X-Gerrit-Change-Id: I695967524bb9e83887b8c07d0d09baff6e41acf4
-X-Gerrit-Change-Number: 2037
+X-Gerrit-PatchSet: 5
+X-Gerrit-Change-Id: Ie20289737d502a25eedc60677d3c350ddc3b3c22
+X-Gerrit-Change-Number: 1860
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2037?usp=email>
-X-Gerrit-Commit: 4a23150505228078a7fcc42382596d377ea766f8
-X-Gerrit-Comment-Date: Tue, 3 Nov 2026 15:47:56 +0000
-In-Reply-To: <gerrit.1793043747000.I695967524bb9e83887b8c07d0d09baff6e41acf4@gerrit.openvpn.net>
-References: <gerrit.1793043747000.I695967524bb9e83887b8c07d0d09baff6e41acf4@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzkzMDQzNzQ3MDAwLkk2OTU5Njc1MjRiYjllODM4ODdiOGMwN2QwZDA5YmFmZjZlNDFhY2Y0QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <42e09b7376f667375c3a29f67b90b9d7344ae822-EmailReviewComments-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/1860?usp=email>
+X-Gerrit-Commit: 45fb330724493f03fbc54f182f6fea53283f1a5d
+X-Gerrit-Comment-Date: Tue, 3 Nov 2026 15:49:03 +0000
+In-Reply-To: <gerrit.1787345416000.Ie20289737d502a25eedc60677d3c350ddc3b3c22@gerrit.openvpn.net>
+References: <gerrit.1787345416000.Ie20289737d502a25eedc60677d3c350ddc3b3c22@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzg3MzQ1NDE2MDAwLkllMjAyODk3MzdkNTAyYTI1ZWVkYzYwNjc3ZDNjMzUwZGRjM2IzYzIyQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <8c7145a50244d1e547f757167a92962b95917d84-EmailReviewComments-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.2
 X-Spam-Score: 0.8 (/)
-X-Headers-End: 1xOGk1-000000006ow-0ytI
+X-Headers-End: 1xOGl6-000000006q5-0bhZ
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: Add python scripts
- that demonstrate the ACC protocol
+ that demonstrate using the dpc1 ACC protocol
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -147,20 +147,21 @@ Reply-To: ralf@mandelbit.com, arne-openvpn@rfc2549.org,
  openvpn-devel@lists.sourceforge.net
 Cc: "Ralf Lici \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============0305732587538470164=="
-X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+Content-Type: multipart/mixed; boundary="===============0014313942465233658=="
+X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,
-	SPF_PASS autolearn=no autolearn_force=no version=4.0.1
+	INCLUDES_PATCH,MAILING_LIST_MULTI,MIME_HTML_MOSTLY,
+	PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,SPF_PASS autolearn=no
+	autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============0305732587538470164==
+--===============0014313942465233658==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="2aP0sQiFCs4="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="KXFj8nNDh1w="; charset=UTF-8
 
---2aP0sQiFCs4=
+--KXFj8nNDh1w=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
@@ -168,332 +169,482 @@ Attention is currently required from: Arne Schwabe, Name of user not set #1=
 000061=2E
 
 Ralf Lici has posted comments on this change by Arne Schwabe=2E =
-( https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2037?usp=3Demail )
+( https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1860?usp=3Demail )
 
 Change sub=
-ject: Add python scripts that demonstrate the ACC protocol
-=2E=2E=2E=2E=2E=
+ject: Add python scripts that demonstrate using the dpc1 ACC protocol
+=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
 
-Patch Set 4:
+Patch Set 5:
 
-(1 comment)
+(=
+1 comment)
 
-=
 Patchset:
 
-PS4: 
-Pasting here Sashiko's findings (the AI bot accidentally p=
-icked this patch for review):
+PS5: 
+Pasting here Sashiko's findings (the AI bot ac=
+cidentally picked this patch for review):
 
 ```
-Thank you for your contribution! Sashiko=
- AI review found 4 potential issue(s) to consider:
-- [High] sample/manageme=
-nt: undefined DpcConnectedClient in client_event_REAUTH()
-- [Medium] sample=
-/management: unhandled OSError from os=2Egetlogin() in send_info_response()=
-
-- [Medium] sample/management: leaked child process on timeout in get_route=
-s()
-- [Low] sample/management: unused socket import and truncated comment i=
-n client demo
+Thank you for your contribut=
+ion! Sashiko AI review found 5 potential issue(s) to consider:
+- [Medium] s=
+ample/management: inconsistent sync and awaited calls to queue_command()
+- =
+[Medium] sample/management: dpc_completed not reset or tracked per kid on R=
+EAUTH
+- [Medium] sample/management: missing omi_tools and protocol modules =
+in demo scripts
+- [Low] sample/management: DpcConnectedClient uses field() =
+without @dataclass
+- [Low] sample/management: non-executable mode 0644 and =
+header errors in demo scripts
 --
 
-commit 59f0e39cb91ec113a14b2f7981e12a71495246d9
-Author: A=
-rne Schwabe (Code Review) via Openvpn-devel <openvpn-devel@lists=2Esourcefo=
-rge=2Enet>
+commit 62ec41043b0ac3e7de9a64fa8a8139f0cf=
+01f720
+Author: Arne Schwabe (Code Review) via Openvpn-devel <openvpn-devel@=
+lists=2Esourceforge=2Enet>
 
-Change in openvpn[master]: Add python scripts that demonstrate =
-the ACC protocol
+Change in openvpn[master]: Add python scripts t=
+hat demonstrate using the dpc1 ACC protocol
 
-This commit adds client and server Python demonstration s=
-cripts for the
-OpenVPN management interface that implement the sys_info app=
- custom control
-(ACC) protocol to query client system details from the serv=
-er=2E
+This commit adds client and se=
+rver Python demonstration scripts for the
+OpenVPN management interface and =
+the dpc1 app custom control protocol=2E
 
-> diff --git a/sample/management/acc_sysinfo_client_demo=2Epy b/samp=
-le/management/acc_sysinfo_client_demo=2Epy
-> new file mode 100755
-> index 0=
-000000000000=2E=2E99e994e6fd3f1
-> --- /dev/null
-> +++ b/sample/management/a=
-cc_sysinfo_client_demo=2Epy
-> @@ -0,0 +1,150 @@
+> diff --git a/sample/management/a=
+cc_dpc1_client_demo=2Epy b/sample/management/acc_dpc1_client_demo=2Epy
+> ne=
+w file mode 100755
+> index 0000000000000=2E=2E1ae074d5c31a9
+> --- /dev/null=
 
-[ =2E=2E=2E ]
+> +++ b/sample/management/acc_dpc1_client_demo=2Epy
+> @@ -0,0 +1,114 @@
 
-> +import o=
-s
-> +import platform
-> +import socket
-> +import subprocess
-> +from asyncio =
-import CancelledError
+[=
+ =2E=2E=2E ]
 
-[ =2E=2E=2E ]
-
-> +class OmiSysInfoClientProtocol(OMI=
-ClientProtocol):
-> +    def __init__(self, finish_future, connect_data: Con=
-nectData):
-> +        super()=2E__init__(finish_future, connect_data)
+> +# This implements a small demonstration of using the
+> +# =
+OpenVPN Access Server Management Interface (OMI) and an app Custom Control
+=
+> +# protocol (dpc1)=2E To use this use on the client use
 > +
+> +# --manage=
+ment-client-auth
+> +# --app-custom-control dpc1
+> +# --management /path/to/=
+acc_dpc1_client_demo=2Epy unix-script
+> +
+> +import base64
+> +import json
 >=
- +
-> +    def receive_acc_sys_info(self, acc_message):
-> +        print(f"R=
-eceived sys_info message: {acc_message!r}")
+ +import logging
+> +import platform
+> +from asyncio import CancelledError, =
+Future
 > +
-> +        logger=2Edebug(f=
-"Received sys_info message: {acc_message!r}")
-> +        msg =3D json=2Eloa=
-ds(acc_message)
+> +logging=2EbasicConfig()
 > +
-> +        asyncio=2Ecreate_task(self=2Esend_info_respo=
-nse(msg))
-> +
-> +    async def send_info_response(self, msg):
-> +        re=
-sponse =3D {}
-> +        if msg=2Eget("uname", False):
-> +            respo=
-nse['uname'] =3D platform=2Euname()=2E_asdict()
-> +
-> +        if msg=2Eget=
-("username", False):
-> +            response['username'] =3D os=2Egetlogin(=
-)
+> +from omi_tools import run_main=
+, start_management_protocol, ConnectData
+> +from omi_client_protocol import=
+ OMIClientProtocol
 
 [Severity: Medium]
-When OpenVPN spawns acc_sysinfo_client_demo=2Epy via =
---management =2E=2E=2E
-unix-script or runs in a daemon, service, or contain=
-er environment without a
-controlling terminal, won't os=2Egetlogin() in
-Omi=
-SysInfoClientProtocol=2Esend_info_response() raise an unhandled OSError?
+Are the omi_tools, omi_client_protoc=
+ol, and omi_server_protocol modules
+missing from this commit?
 
-B=
-ecause OmiSysInfoClientProtocol=2Ereceive_acc_sys_info() schedules
-send_inf=
-o_response() as a background task via asyncio=2Ecreate_task(), an
-uncaught =
-OSError aborts the coroutine before self=2Esend_acc_msg() is reached,
-preve=
-nting the client from sending any sys_info response back to the server
-when=
-ever username is requested=2E
-
-Would catching OSError or falling back to ge=
-tpass=2Egetuser() avoid aborting
-the response task?
-
-> +
-> +        if msg=
-=2Eget("hostname", False):
-> +            response['hostname'] =3D platform=
-=2Enode()
-> +
-> +        if msg=2Eget("dns-google=2Ecom", False):
-> +      =
-      try:
-> +                loop =3D asyncio=2Eget_running_loop()
-> +    =
-            # getaddrinfo is a blocking call=2E This is okay for the demo
->=
- +                # here but
-> +                addrs =3D [x[4][0] for x in=
- await loop=2Egetaddrinfo('google=2Ecom', 443)]
-
-[Severity: Low]
-This isn't=
- a bug, but the comment in
-OmiSysInfoClientProtocol=2Esend_info_response() =
-is cut off mid-sentence and
-describes a blocking getaddrinfo call right abo=
-ve await loop=2Egetaddrinfo(),
-while the socket module imported at the top =
-of the file is unused=2E Should the
-unused import be removed and the commen=
-t completed or updated?
-
-> +                response["dns-google=2Ecom"] =
-=3D addrs
-> +
-> +            except Exception as e:
-> +                logg=
-er=2Eerror(f"Error resolving DNS for google=2Ecom: {e}", exc_info=3DTrue)
->=
- +                response["dns-google=2Ecom"] =3D None
-> +
-> +        if m=
-sg=2Eget("route", False):
-> +            response['route'] =3D await self=
-=2Eget_routes(False)
-> +
-> +        if msg=2Eget("route6", False):
-> +     =
-       response['route6'] =3D await self=2Eget_routes(True)
-> +
-> +        =
-msg =3D json=2Edumps(response)=2Eencode()
-> +
-> +        await self=2Esend_=
-acc_msg("sys_info", msg)
-> +
-> +    async def get_routes(self, v6):
-
-[ =2E=
-=2E=2E ]
-
-> +        proc =3D await asyncio=2Esubprocess=2Ecreate_subproces=
-s_exec(cmd, *args, stdout=3Dsubprocess=2EPIPE)
-> +        try:
-> +         =
-   output, _ =3D await asyncio=2Ewait_for(proc=2Ecommunicate(), timeout=3D1=
-5)
-> +        except asyncio=2ETimeoutError:
-> +            return "Timeout=
- while waiting for command output"
-> +        return output=2Edecode()
-
-[Se=
-verity: Medium]
-If the route command in OmiSysInfoClientProtocol=2Eget_rout=
-es() exceeds the
-15-second timeout, asyncio=2Ewait_for() cancels proc=2Ecom=
-municate(), but does
-returning immediately from the asyncio=2ETimeoutError =
-handler leak the running
-child process proc and its stdout pipe without cal=
-ling proc=2Ekill() and
-awaiting proc=2Ewait()?
-
-Also, if the hardcoded bina=
-ry path (/usr/sbin/ip or netstat) does not exist
-on the client host, create=
-_subprocess_exec() will raise an uncaught
-FileNotFoundError that aborts Omi=
-SysInfoClientProtocol=2Esend_info_response()=2E
-
-> diff --git a/sample/mana=
-gement/acc_sysinfo_server_demo=2Epy b/sample/management/acc_sysinfo_server_=
-demo=2Epy
-> new file mode 100755
-> index 0000000000000=2E=2Ea2ab0c1b05a92
->=
- --- /dev/null
-> +++ b/sample/management/acc_sysinfo_server_demo=2Epy
-> @@ =
--0,0 +1,122 @@
+Neither samp=
+le/management/ nor the rest of the repository contains
+omi_tools=2Epy, omi_=
+client_protocol=2Epy, or omi_server_protocol=2Epy, so running
+either acc_dp=
+c1_client_demo=2Epy or acc_dpc1_server_demo=2Epy fails immediately at
+start=
+up with ModuleNotFoundError=2E
 
 [ =2E=2E=2E ]
 
-> +class SysInfoConnectedClient(ConnectedCli=
-ent):
-> +    # Remember the key-id that we authenticated
-> +    authenticat=
-ed_kid =3D None
-> +
-> +class OMISysInfoServerProtocol(OMIServerProtocol):
->=
- +    def __init__(self, finish_future, connect_data: ConnectData =3D None)=
-:
-> +        super()=2E__init__(finish_future, connect_data)
-> +        sel=
-f=2E_connected_client_class =3D SysInfoConnectedClient
-> +
-> +    def clien=
-t_event_ESTABLISHED(self, client, kid, env, extra):
-> +        print(f"CLie=
-nt connected: {client}")
-> +
-> +        kid =3D client=2Eauthenticated_kid
+> --- /dev/null
+> +++ b/samp=
+le/management/acc_dpc1_server_demo=2Epy
+> @@ -0,0 +1,157 @@
+> +#!/usr/bin/e=
+nv python3
+> +# Copyright (c) 2026 OpenVPN Inc <sales@openvpn=2Enet>
+> +# C=
+opyright (c) 2026 Arne Schwabe <arne@rfc2549=2Eorg>
+> +#
+> +# Permission is=
+ hereby granted, free of charge, to any person obtaining a copy
+> +# of thi=
+s software and associated documentation files (the "Software"), to deal
+> +=
+# in the Software without restriction, including without limitation the rig=
+hts
+> +# to use, copy, modify, merge, publish, distribute, sublicense, and/=
+or sell
+> +# copies of the Software, and to permit persons to whom the Soft=
+ware is
+> +# furnished to do so, subject to the following conditions:
+> +#
 =
-> +        asyncio=2Ecreate_task(self=2E_send_sys_info_command(client, kid)=
+> +# The above copyright notice and this permission notice shall be include=
+d in all
+> +# copies or substantial portions of the Software=2E
+> +#
+> +# T=
+HE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+>=
+ +# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY=
+,
+> +# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT=2E IN NO EVENT =
+SHALL THE
+> +# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGE=
+S OR OTHER
+> +# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERW=
+ISE, ARISING FROM,
+> +# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE US=
+E OR OTHER DEALINGS IN THE
+> +# SOFTWARE=2E
+> +
+> +#
+> +#  You should have =
+received a copy of the GNU General Public License along
+> +#  with this pro=
+gram; if not, see <https://www=2Egnu=2Eorg/licenses/>=2E
+> +
+> +# This impl=
+ements a small demonstration of using the
+> +# OpenVPN Access Server Manage=
+ment Interface (OMI) and an app Custom Control
+> +# protocol (dpc1)=2E To u=
+se this use on the server
+> +
+> +# --management-client-auth
+> +# --app-cust=
+om-control dpc1
+> +# --management /path/to/acc_dpc1_server_demo=2Epy unix-s=
+cript
+
+[Severity: Low]
+Should sample/management/acc_dpc1_server_demo=2Epy b=
+e committed with executable
+file mode 100755 instead of 100644?
+
+Because th=
+e usage instructions specify running it via --management
+/path/to/acc_dpc1_=
+server_demo=2Epy unix-script, invoking it directly without
+executable permi=
+ssions fails with permission denied=2E
+
+Also, in the headers of these two s=
+cripts:
+- acc_dpc1_server_demo=2Epy has a stray GNU General Public License =
+paragraph
+  immediately following the MIT license header=2E
+- acc_dpc1_clie=
+nt_demo=2Epy instructs passing --management-client-auth on the
+  client, wh=
+ich OpenVPN rejects because it is a server-only option=2E
+
+[ =2E=2E=2E ]
+
+>=
+ +class DpcConnectedClient(ConnectedClient):
+> +    # Remember the key-id t=
+hat we authenticated
+> +    dpc_completed: bool =3D False
+> +    env: Dict[=
+str, str] =3D field(default_factory=3Ddict)
+
+[Severity: Low]
+Is DpcConnecte=
+dClient missing the @dataclass decorator?
+
+In Python, a subclass is not pro=
+cessed by the dataclasses module unless the
+subclass itself is decorated wi=
+th @dataclass=2E Without @dataclass on
+DpcConnectedClient, env =3D field(de=
+fault_factory=3Ddict) is not initialized to a
+per-instance dict upon instan=
+tiation and instead remains a raw
+dataclasses=2EField descriptor object on =
+the class until overwritten by
+client_event_CONNECT() or client_event_REAUT=
+H()=2E
+
+> +
+> +
+> +class OmiDPCServerProtocol(OMIServerProtocol):
+> +    de=
+f __init__(self, finish_future: Future, connect_data: ConnectData):
+> +    =
+    super()=2E__init__(finish_future, connect_data)
+> +        self=2E_conn=
+ected_client_class =3D DpcConnectedClient
+> +
+> +    def receive_acc_client=
+_dpc1(self, client: DpcConnectedClient, kid: int, acc_message: str):
+> +   =
+     print(f"Received DPC1 message: {acc_message!r}")
+> +        msg =3D js=
+on=2Eloads(acc_message)
+> +        pprint(msg)
+> +
+> +        dpc_response =
+=3D msg["dpc_response"]
+> +        ver =3D dpc_response["ver"]
+> +        i=
+f ver !=3D "1=2E0":
+> +            logger=2Eerror(f"Received unknown ACC pr=
+otocol version: {ver}")
+> +            return
+> +
+> +        client_info =
+=3D dpc_response=2Eget("client_info", {})
+> +        antivirus =3D "antivir=
+us" in dpc_response
+> +        disk_encryption =3D "disk_encryption" in dpc=
+_response
+> +
+> +        logger=2Einfo(
+> +            f"Received DPC1 resp=
+onse: antivirus=3D{antivirus}, disk_encryption=3D{disk_encryption}, client_=
+info=3D{client_info}")
+> +
+> +        # Normally here would be a check that=
+ the response matches the policy
+> +        # this demo script just allows =
+everyone with a response to pass
+> +        client=2Edpc_completed =3D True=
+
+> +
+> +        self=2Equeue_command(f"client-auth-nt {client=2Ecid} {kid}"=
 )
 > +
-> +    def client_event_CONNECT(self, client, kid, env, extra):
-> +  =
-      print(f"Authenticating client {client=2Ecid}, {kid}")
-> +        self=
-=2Equeue_command(f"client-auth-nt {client=2Ecid} {kid}")
-> +        client=
-=2Eauthenticated_kid =3D kid
+> +    async def dpc_request_timeout(self, client: DpcConnectedClient=
+, kid: int, timeout: int):
+> +        await asyncio=2Esleep(timeout)
+> +   =
+     if client=2Edpc_completed:
+> +            return
 > +
-> +    def client_event_REAUTH(self, clien=
-t: DpcConnectedClient, kid: int, env: dict, extra: str):
-> +        print(f=
-"Re-authenticating client {client} on re-negotiation")
-> +        _ =3D sel=
-f=2Equeue_command(f"client-auth-nt {client=2Ecid} {kid}")
+> +        client=
+_deny =3D f'client-deny {client=2Ecid} {kid} "dpc1 timeout" "Timeout on dev=
+ice posture"'
+> +        await self=2Equeue_command(client_deny)
 
-[Severity: High]=
+[Severity=
+: Medium]
+Should self=2Equeue_command() be called consistently as either a =
+synchronous
+method or an awaited coroutine across both scripts?
 
-When acc_sysinfo_server_demo=2Epy is executed, Python evaluates the parame=
-ter
-annotations of OMISysInfoServerProtocol=2Eclient_event_REAUTH() at clas=
-s
-definition time=2E Because the script defines SysInfoConnectedClient rath=
-er
-than DpcConnectedClient, doesn't this immediately crash on startup with
+In OmiDPCS=
+erverProtocol, check_client_posture(), dpc_request_timeout(), and
+send_clie=
+nt_deny_no_dpc1() all use await self=2Equeue_command(=2E=2E=2E):
+
+    await=
+ self=2Equeue_command(client_deny)
+
+However, OmiDPCServerProtocol=2Ereceive=
+_acc_client_dpc1() and
+OmiDpc1ClientProtocol=2E_send_dpc1_client_info() (in=
+ acc_dpc1_client_demo=2Epy)
+are synchronous methods and call self=2Equeue_c=
+ommand(=2E=2E=2E) without await:
+
+    self=2Equeue_command(f"client-auth-nt=
+ {client=2Ecid} {kid}")
+
+    command =3D f"acc-msg\ndpc1\n6\n{b64msg}\nEND"=
+
+    self=2Equeue_command(command)
+
+If queue_command() is an async coroutin=
+e, the unawaited calls in
+receive_acc_client_dpc1() and _send_dpc1_client_i=
+nfo() create coroutine
+objects that are never executed, silently dropping b=
+oth the client posture
+response and the server client-auth-nt command=2E Co=
+nversely, if queue_command()
+is a regular synchronous function returning No=
+ne, awaiting it in
+check_client_posture(), dpc_request_timeout(), and send_=
+client_deny_no_dpc1()
+raises a TypeError at runtime=2E
+
+> +
+> +    def clie=
+nt_event_ESTABLISHED(self, client: DpcConnectedClient, kid: int, env: dict,=
+ extra: str):
+> +        print(f"CLient connected: {client}")
+> +
+> +    as=
+ync def send_client_deny_no_dpc1(self, client: DpcConnectedClient, kid: int=
+):
+> +        client_reason =3D "ACC[protocol dpc1]: To connect to this ser=
+ver you " \
+> +                        "need to upgrade to a client that su=
+pports the " \
+> +                        "OpenVPN Inc device posture proto=
+col and has it " \
+> +                        "enabled, e=2Eg=2E OpenVPN fo=
+r Android, openvpn3-linux, " \
+> +                        "or OpenVPN Conne=
+ct"
+> +        client_deny =3D f'client-deny {client=2Ecid} {kid} "no dpc1 =
+support" "{client_reason}"'
+> +        await self=2Equeue_command(client_de=
+ny)
+> +
+> +    def client_event_CONNECT(self, client: DpcConnectedClient, k=
+id: int, env: dict, extra: str):
+> +        print(f"Authenticating client {=
+client}, {kid}, protos: {client=2Eacc_negotiated_protocols}")
+> +        cl=
+ient=2Eenv =3D env
+> +        asyncio=2Ecreate_task(self=2Echeck_client_pos=
+ture(client, kid))
+> +
+> +    def client_event_REAUTH(self, client: DpcConn=
+ectedClient, kid: int, env: dict, extra: str):
+> +        print(f"Re-authen=
+ticating client {client}, {kid}, protos: {client=2Eacc_negotiated_protocols=
+}")
+> +        client=2Eenv =3D env
+> +        # Check client posture again=
+ on renegotiation
+> +        asyncio=2Ecreate_task(self=2Echeck_client_post=
+ure(client, kid))
+> +
+> +    async def check_client_posture(self, client: D=
+pcConnectedClient, kid: int):
+> +        await self=2Equeue_command(
+> +   =
+         f"client-pending-auth {client=2Ecid} {kid} \"NOTIFY::Checking your=
+ device posture, please wait\" 180")
+> +
+> +        await self=2Equeue_comm=
+and(f"client-pending-auth {client=2Ecid} {kid} ACC 180")
+> +        # In th=
+is example we wait for 20 seconds to simulate a posture check on the server=
+
+> +        await asyncio=2Esleep(20)
+> +
+> +        if "dpc1" not in clien=
+t=2Eacc_negotiated_protocols:
+> +            await self=2Esend_client_deny_=
+no_dpc1(client, kid)
+> +            return
+> +
+> +        dpc_cmd =3D {"dpc=
+_request": {"ver": "1=2E0", "correlation_id": "n/a", "timestamp": "yesterda=
+y", "client_info": True,
+> +                                   "disk_encryp=
+tion": {"full": True}, "antivirus": {}}}
+> +
+> +        dpc_cmd_str =3D jso=
+n=2Edumps(dpc_cmd)
+> +        acc_protocol =3D "dpc1"
+> +
+> +        await =
+self=2Esend_acc_msg(client, kid, acc_protocol, dpc_cmd_str=2Eencode())
+> + =
+       asyncio=2Ecreate_task(self=2Edpc_request_timeout(client, kid, 60))
+
 =
-NameError: name 'DpcConnectedClient' is not defined?
+[Severity: Medium]
+Does keeping a single boolean client=2Edpc_completed wit=
+hout resetting it or
+tracking the key-id break posture timeouts on renegoti=
+ation?
 
-In addition, when a c=
-lient renegotiates its key in client_event_REAUTH(),
-should client=2Eauthen=
-ticated_kid also be updated to kid, matching
-OMISysInfoServerProtocol=2Ecli=
-ent_event_CONNECT()?
+When a client connects via client_event_CONNECT() and responds to t=
+he initial
+posture check, receive_acc_client_dpc1() sets:
+
+    client=2Edpc=
+_completed =3D True
+
+When the client later renegotiates via client_event_RE=
+AUTH() with a new kid,
+check_client_posture() is spawned without resetting =
+client=2Edpc_completed, and
+schedules dpc_request_timeout(client, kid, 60)=
+=2E If the client never responds
+to the renegotiation posture request, dpc_=
+request_timeout() sees
+client=2Edpc_completed is still True from the initia=
+l connection and returns
+early without sending client-deny=2E
+
+In addition,=
+ because posture completion is not tracked per kid and the tasks
+created wi=
+th asyncio=2Ecreate_task() in client_event_CONNECT(),
+client_event_REAUTH()=
+, and check_client_posture() are not tracked or canceled,
+overlapping postu=
+re checks or unsolicited responses during the 20-second delay
+in check_clie=
+nt_posture() can race on client=2Edpc_completed=2E
 
 -- 
-Sashiko AI review =C2=B7 https://sashiko=2Edev/#/=
-patchset/0e153ba9c81e52ff9debee73e09f2dd317817c81-EmailReplacePatchSet-HTML=
-@gerrit=2Eopenvpn=2Enet?part=3D1
+Sashiko AI review =
+=C2=B7 https://sashiko=2Edev/#/patchset/24699879debec5f95ada94bb416c09306a5=
+2b09c-EmailReplacePatchSet-HTML@gerrit=2Eopenvpn=2Enet?part=3D1
 ```
 
 
 
 -- 
-To view, visit https://gerrit=
-=2Eopenvpn=2Enet/c/openvpn/+/2037?usp=3Demail
-To unsubscribe, or for help w=
-riting mail filters, visit https://gerrit=2Eopenvpn=2Enet/settings?usp=3Dem=
-ail
+=
+To view, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1860?usp=3Demail
+=
+To unsubscribe, or for help writing mail filters, visit https://gerrit=2Eop=
+envpn=2Enet/settings?usp=3Demail
 
 Gerrit-MessageType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: mas=
-ter
-Gerrit-Change-Id: I695967524bb9e83887b8c07d0d09baff6e41acf4
-Gerrit-Chan=
-ge-Number: 2037
-Gerrit-PatchSet: 4
-Gerrit-Owner: Arne Schwabe <arne-openvpn=
-@rfc2549=2Eorg>
-Gerrit-CC: Name of user not set #1000061
-Gerrit-CC: Ralf Li=
-ci <ralf@mandelbit=2Ecom>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Es=
-ourceforge=2Enet>
-Gerrit-Attention: Name of user not set #1000061
-Gerrit-At=
-tention: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Comment-Date: Tue=
-, 03 Nov 2026 15:47:56 +0000
-Gerrit-HasComments: Yes
+Gerrit-Projec=
+t: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ie20289737d502a25eedc606=
+77d3c350ddc3b3c22
+Gerrit-Change-Number: 1860
+Gerrit-PatchSet: 5
+Gerrit-Owne=
+r: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
+Gerrit-CC: Name of user not se=
+t #1000061
+Gerrit-CC: Ralf Lici <ralf@mandelbit=2Ecom>
+Gerrit-CC: openvpn-d=
+evel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Attention: Name of us=
+er not set #1000061
+Gerrit-Attention: Arne Schwabe <arne-openvpn@rfc2549=2E=
+org>
+Gerrit-Comment-Date: Tue, 03 Nov 2026 15:49:03 +0000
+Gerrit-HasComment=
+s: Yes
 Gerrit-Has-Labels: No
 
---2aP0sQiFCs4=
+--KXFj8nNDh1w=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
@@ -501,209 +652,283 @@ Content-Transfer-Encoding: quoted-printable
 rently required from: Arne Schwabe, Name of user not set #1000061=2E </p>
 <=
 p>Ralf Lici has posted comments on this change by Arne Schwabe=2E</p><p><a =
-href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2037?usp=3Demail">View C=
+href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1860?usp=3Demail">View C=
 hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
 li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
 : none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
 =3D"margin-bottom: 4px;"><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvp=
-n/+/2037?tab=3Dcomments&amp;usp=3Demail">Patch Set #4:</a> </p><p class=3D"=
+n/+/1860?tab=3Dcomments&amp;usp=3Demail">Patch Set #5:</a> </p><p class=3D"=
 blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Pasting her=
 e Sashiko&#39;s findings (the AI bot accidentally picked this patch for rev=
 iew):</p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: bre=
-ak-word;">``` Thank you for your contribution! Sashiko AI review found 4 po=
-tential issue(s) to consider:</p><ul class=3D"blocks"><li>[High] sample/man=
-agement: undefined DpcConnectedClient in client_event_REAUTH()</li><li>[Med=
-ium] sample/management: unhandled OSError from os=2Egetlogin() in send_info=
-_response()</li><li>[Medium] sample/management: leaked child process on tim=
-eout in get_routes()</li><li>[Low] sample/management: unused socket import =
-and truncated comment in client demo</li><li>-</li></ul><p class=3D"blocks"=
- style=3D"white-space: pre-wrap; word-wrap: break-word;">commit 59f0e39cb91=
-ec113a14b2f7981e12a71495246d9<br>Author: Arne Schwabe (Code Review) via Ope=
-nvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt;</p><p class=3D"b=
-locks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Change in op=
-envpn[master]: Add python scripts that demonstrate the ACC protocol</p><p c=
-lass=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Thi=
-s commit adds client and server Python demonstration scripts for the<br>Ope=
-nVPN management interface that implement the sys_info app custom control<br=
->(ACC) protocol to query client system details from the server=2E</p><block=
-quote class=3D"blocks" style=3D"border-left: 1px solid #aaa; margin: 10px 0=
-; padding: 0 10px;"><p class=3D"blocks" style=3D"white-space: pre-wrap; wor=
-d-wrap: break-word;">diff --git a/sample/management/acc_sysinfo_client_demo=
-=2Epy b/sample/management/acc_sysinfo_client_demo=2Epy<br>new file mode 100=
-755<br>index 0000000000000=2E=2E99e994e6fd3f1<br>--- /dev/null<br>+++ b/sam=
-ple/management/acc_sysinfo_client_demo=2Epy<br>@@ -0,0 +1,150 @@</p></block=
-quote><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-=
-word;">[ =2E=2E=2E ]</p><blockquote class=3D"blocks" style=3D"border-left: =
-1px solid #aaa; margin: 10px 0; padding: 0 10px;"><p class=3D"blocks" style=
-=3D"white-space: pre-wrap; word-wrap: break-word;">+import os<br>+import pl=
-atform<br>+import socket<br>+import subprocess<br>+from asyncio import Canc=
-elledError</p></blockquote><p class=3D"blocks" style=3D"white-space: pre-wr=
-ap; word-wrap: break-word;">[ =2E=2E=2E ]</p><blockquote class=3D"blocks" s=
-tyle=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;"><p c=
-lass=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">+cl=
-ass OmiSysInfoClientProtocol(OMIClientProtocol):<br>+    def __init__(self,=
- finish_future, connect_data: ConnectData):<br>+        super()=2E__init__(=
-finish_future, connect_data)<br>+<br>+<br>+    def receive_acc_sys_info(sel=
-f, acc_message):<br>+        print(f&quot;Received sys_info message: {acc_m=
-essage!r}&quot;)<br>+<br>+        logger=2Edebug(f&quot;Received sys_info m=
-essage: {acc_message!r}&quot;)<br>+        msg =3D json=2Eloads(acc_message=
-)<br>+<br>+        asyncio=2Ecreate_task(self=2Esend_info_response(msg))<br=
->+<br>+    async def send_info_response(self, msg):<br>+        response =
-=3D {}<br>+        if msg=2Eget(&quot;uname&quot;, False):<br>+            =
-response[&#39;uname&#39;] =3D platform=2Euname()=2E_asdict()<br>+<br>+     =
-   if msg=2Eget(&quot;username&quot;, False):<br>+            response[&#39=
-;username&#39;] =3D os=2Egetlogin()</p></blockquote><p class=3D"blocks" sty=
-le=3D"white-space: pre-wrap; word-wrap: break-word;">[Severity: Medium]<br>=
-When OpenVPN spawns acc_sysinfo_client_demo=2Epy via --management =2E=2E=2E=
-<br>unix-script or runs in a daemon, service, or container environment with=
-out a<br>controlling terminal, won&#39;t os=2Egetlogin() in<br>OmiSysInfoCl=
-ientProtocol=2Esend_info_response() raise an unhandled OSError?</p><p class=
-=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Because=
- OmiSysInfoClientProtocol=2Ereceive_acc_sys_info() schedules<br>send_info_r=
-esponse() as a background task via asyncio=2Ecreate_task(), an<br>uncaught =
-OSError aborts the coroutine before self=2Esend_acc_msg() is reached,<br>pr=
-eventing the client from sending any sys_info response back to the server<b=
-r>whenever username is requested=2E</p><p class=3D"blocks" style=3D"white-s=
-pace: pre-wrap; word-wrap: break-word;">Would catching OSError or falling b=
-ack to getpass=2Egetuser() avoid aborting<br>the response task?</p><blockqu=
-ote class=3D"blocks" style=3D"border-left: 1px solid #aaa; margin: 10px 0; =
-padding: 0 10px;"><p class=3D"blocks" style=3D"white-space: pre-wrap; word-=
-wrap: break-word;">+<br>+        if msg=2Eget(&quot;hostname&quot;, False):=
-<br>+            response[&#39;hostname&#39;] =3D platform=2Enode()<br>+<br=
->+        if msg=2Eget(&quot;dns-google=2Ecom&quot;, False):<br>+          =
-  try:<br>+                loop =3D asyncio=2Eget_running_loop()<br>+      =
-          # getaddrinfo is a blocking call=2E This is okay for the demo<br>=
-+                # here but<br>+                addrs =3D [x[4][0] for x in=
- await loop=2Egetaddrinfo(&#39;google=2Ecom&#39;, 443)]</p></blockquote><p =
-class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">[S=
-everity: Low]<br>This isn&#39;t a bug, but the comment in<br>OmiSysInfoClie=
-ntProtocol=2Esend_info_response() is cut off mid-sentence and<br>describes =
-a blocking getaddrinfo call right above await loop=2Egetaddrinfo(),<br>whil=
-e the socket module imported at the top of the file is unused=2E Should the=
-<br>unused import be removed and the comment completed or updated?</p><bloc=
-kquote class=3D"blocks" style=3D"border-left: 1px solid #aaa; margin: 10px =
-0; padding: 0 10px;"><p class=3D"blocks" style=3D"white-space: pre-wrap; wo=
-rd-wrap: break-word;">+                response[&quot;dns-google=2Ecom&quot=
-;] =3D addrs<br>+<br>+            except Exception as e:<br>+              =
-  logger=2Eerror(f&quot;Error resolving DNS for google=2Ecom: {e}&quot;, ex=
-c_info=3DTrue)<br>+                response[&quot;dns-google=2Ecom&quot;] =
-=3D None<br>+<br>+        if msg=2Eget(&quot;route&quot;, False):<br>+     =
-       response[&#39;route&#39;] =3D await self=2Eget_routes(False)<br>+<br=
->+        if msg=2Eget(&quot;route6&quot;, False):<br>+            response=
-[&#39;route6&#39;] =3D await self=2Eget_routes(True)<br>+<br>+        msg =
-=3D json=2Edumps(response)=2Eencode()<br>+<br>+        await self=2Esend_ac=
-c_msg(&quot;sys_info&quot;, msg)<br>+<br>+    async def get_routes(self, v6=
-):</p></blockquote><p class=3D"blocks" style=3D"white-space: pre-wrap; word=
--wrap: break-word;">[ =2E=2E=2E ]</p><blockquote class=3D"blocks" style=3D"=
-border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;"><p class=3D"=
-blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">+        pr=
-oc =3D await asyncio=2Esubprocess=2Ecreate_subprocess_exec(cmd, *args, stdo=
-ut=3Dsubprocess=2EPIPE)<br>+        try:<br>+            output, _ =3D awai=
-t asyncio=2Ewait_for(proc=2Ecommunicate(), timeout=3D15)<br>+        except=
- asyncio=2ETimeoutError:<br>+            return &quot;Timeout while waiting=
- for command output&quot;<br>+        return output=2Edecode()</p></blockqu=
+ak-word;">``` Thank you for your contribution! Sashiko AI review found 5 po=
+tential issue(s) to consider:</p><ul class=3D"blocks"><li>[Medium] sample/m=
+anagement: inconsistent sync and awaited calls to queue_command()</li><li>[=
+Medium] sample/management: dpc_completed not reset or tracked per kid on RE=
+AUTH</li><li>[Medium] sample/management: missing omi_tools and protocol mod=
+ules in demo scripts</li><li>[Low] sample/management: DpcConnectedClient us=
+es field() without @dataclass</li><li>[Low] sample/management: non-executab=
+le mode 0644 and header errors in demo scripts</li><li>-</li></ul><p class=
+=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">commit =
+62ec41043b0ac3e7de9a64fa8a8139f0cf01f720<br>Author: Arne Schwabe (Code Revi=
+ew) via Openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt;</p><p=
+ class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">C=
+hange in openvpn[master]: Add python scripts that demonstrate using the dpc=
+1 ACC protocol</p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-=
+wrap: break-word;">This commit adds client and server Python demonstration =
+scripts for the<br>OpenVPN management interface and the dpc1 app custom con=
+trol protocol=2E</p><blockquote class=3D"blocks" style=3D"border-left: 1px =
+solid #aaa; margin: 10px 0; padding: 0 10px;"><p class=3D"blocks" style=3D"=
+white-space: pre-wrap; word-wrap: break-word;">diff --git a/sample/manageme=
+nt/acc_dpc1_client_demo=2Epy b/sample/management/acc_dpc1_client_demo=2Epy<=
+br>new file mode 100755<br>index 0000000000000=2E=2E1ae074d5c31a9<br>--- /d=
+ev/null<br>+++ b/sample/management/acc_dpc1_client_demo=2Epy<br>@@ -0,0 +1,=
+114 @@</p></blockquote><p class=3D"blocks" style=3D"white-space: pre-wrap; =
+word-wrap: break-word;">[ =2E=2E=2E ]</p><blockquote class=3D"blocks" style=
+=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;"><p class=
+=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">+# This=
+ implements a small demonstration of using the<br>+# OpenVPN Access Server =
+Management Interface (OMI) and an app Custom Control<br>+# protocol (dpc1)=
+=2E To use this use on the client use<br>+<br>+# --management-client-auth<b=
+r>+# --app-custom-control dpc1<br>+# --management /path/to/acc_dpc1_client_=
+demo=2Epy unix-script<br>+<br>+import base64<br>+import json<br>+import log=
+ging<br>+import platform<br>+from asyncio import CancelledError, Future<br>=
++<br>+logging=2EbasicConfig()<br>+<br>+from omi_tools import run_main, star=
+t_management_protocol, ConnectData<br>+from omi_client_protocol import OMIC=
+lientProtocol</p></blockquote><p class=3D"blocks" style=3D"white-space: pre=
+-wrap; word-wrap: break-word;">[Severity: Medium]<br>Are the omi_tools, omi=
+_client_protocol, and omi_server_protocol modules<br>missing from this comm=
+it?</p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break=
+-word;">Neither sample/management/ nor the rest of the repository contains<=
+br>omi_tools=2Epy, omi_client_protocol=2Epy, or omi_server_protocol=2Epy, s=
+o running<br>either acc_dpc1_client_demo=2Epy or acc_dpc1_server_demo=2Epy =
+fails immediately at<br>startup with ModuleNotFoundError=2E</p><p class=3D"=
+blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">[ =2E=2E=2E=
+ ]</p><blockquote class=3D"blocks" style=3D"border-left: 1px solid #aaa; ma=
+rgin: 10px 0; padding: 0 10px;"><p class=3D"blocks" style=3D"white-space: p=
+re-wrap; word-wrap: break-word;">--- /dev/null<br>+++ b/sample/management/a=
+cc_dpc1_server_demo=2Epy<br>@@ -0,0 +1,157 @@<br>+#!/usr/bin/env python3<br=
+>+# Copyright (c) 2026 OpenVPN Inc &lt;sales@openvpn=2Enet&gt;<br>+# Copyri=
+ght (c) 2026 Arne Schwabe &lt;arne@rfc2549=2Eorg&gt;<br>+#<br>+# Permission=
+ is hereby granted, free of charge, to any person obtaining a copy<br>+# of=
+ this software and associated documentation files (the &quot;Software&quot;=
+), to deal<br>+# in the Software without restriction, including without lim=
+itation the rights<br>+# to use, copy, modify, merge, publish, distribute, =
+sublicense, and/or sell<br>+# copies of the Software, and to permit persons=
+ to whom the Software is<br>+# furnished to do so, subject to the following=
+ conditions:<br>+#<br>+# The above copyright notice and this permission not=
+ice shall be included in all<br>+# copies or substantial portions of the So=
+ftware=2E<br>+#<br>+# THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT W=
+ARRANTY OF ANY KIND, EXPRESS OR<br>+# IMPLIED, INCLUDING BUT NOT LIMITED TO=
+ THE WARRANTIES OF MERCHANTABILITY,<br>+# FITNESS FOR A PARTICULAR PURPOSE =
+AND NONINFRINGEMENT=2E IN NO EVENT SHALL THE<br>+# AUTHORS OR COPYRIGHT HOL=
+DERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER<br>+# LIABILITY, WHETHER IN =
+AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,<br>+# OUT OF OR IN =
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE<br>+# SOFT=
+WARE=2E<br>+<br>+#<br>+#  You should have received a copy of the GNU Genera=
+l Public License along<br>+#  with this program; if not, see &lt;https://ww=
+w=2Egnu=2Eorg/licenses/&gt;=2E<br>+<br>+# This implements a small demonstra=
+tion of using the<br>+# OpenVPN Access Server Management Interface (OMI) an=
+d an app Custom Control<br>+# protocol (dpc1)=2E To use this use on the ser=
+ver<br>+<br>+# --management-client-auth<br>+# --app-custom-control dpc1<br>=
++# --management /path/to/acc_dpc1_server_demo=2Epy unix-script</p></blockqu=
 ote><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-wo=
-rd;">[Severity: Medium]<br>If the route command in OmiSysInfoClientProtocol=
-=2Eget_routes() exceeds the<br>15-second timeout, asyncio=2Ewait_for() canc=
-els proc=2Ecommunicate(), but does<br>returning immediately from the asynci=
-o=2ETimeoutError handler leak the running<br>child process proc and its std=
-out pipe without calling proc=2Ekill() and<br>awaiting proc=2Ewait()?</p><p=
- class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">A=
-lso, if the hardcoded binary path (/usr/sbin/ip or netstat) does not exist<=
-br>on the client host, create_subprocess_exec() will raise an uncaught<br>F=
-ileNotFoundError that aborts OmiSysInfoClientProtocol=2Esend_info_response(=
-)=2E</p><blockquote class=3D"blocks" style=3D"border-left: 1px solid #aaa; =
-margin: 10px 0; padding: 0 10px;"><p class=3D"blocks" style=3D"white-space:=
- pre-wrap; word-wrap: break-word;">diff --git a/sample/management/acc_sysin=
-fo_server_demo=2Epy b/sample/management/acc_sysinfo_server_demo=2Epy<br>new=
- file mode 100755<br>index 0000000000000=2E=2Ea2ab0c1b05a92<br>--- /dev/nul=
-l<br>+++ b/sample/management/acc_sysinfo_server_demo=2Epy<br>@@ -0,0 +1,122=
- @@</p></blockquote><p class=3D"blocks" style=3D"white-space: pre-wrap; wor=
-d-wrap: break-word;">[ =2E=2E=2E ]</p><blockquote class=3D"blocks" style=3D=
-"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;"><p class=3D=
-"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">+class Sys=
-InfoConnectedClient(ConnectedClient):<br>+    # Remember the key-id that we=
- authenticated<br>+    authenticated_kid =3D None<br>+<br>+class OMISysInfo=
-ServerProtocol(OMIServerProtocol):<br>+    def __init__(self, finish_future=
-, connect_data: ConnectData =3D None):<br>+        super()=2E__init__(finis=
-h_future, connect_data)<br>+        self=2E_connected_client_class =3D SysI=
-nfoConnectedClient<br>+<br>+    def client_event_ESTABLISHED(self, client, =
-kid, env, extra):<br>+        print(f&quot;CLient connected: {client}&quot;=
-)<br>+<br>+        kid =3D client=2Eauthenticated_kid<br>+        asyncio=
-=2Ecreate_task(self=2E_send_sys_info_command(client, kid))<br>+<br>+    def=
- client_event_CONNECT(self, client, kid, env, extra):<br>+        print(f&q=
-uot;Authenticating client {client=2Ecid}, {kid}&quot;)<br>+        self=2Eq=
-ueue_command(f&quot;client-auth-nt {client=2Ecid} {kid}&quot;)<br>+        =
-client=2Eauthenticated_kid =3D kid<br>+<br>+    def client_event_REAUTH(sel=
-f, client: DpcConnectedClient, kid: int, env: dict, extra: str):<br>+      =
-  print(f&quot;Re-authenticating client {client} on re-negotiation&quot;)<b=
-r>+        _ =3D self=2Equeue_command(f&quot;client-auth-nt {client=2Ecid} =
-{kid}&quot;)</p></blockquote><p class=3D"blocks" style=3D"white-space: pre-=
-wrap; word-wrap: break-word;">[Severity: High]<br>When acc_sysinfo_server_d=
-emo=2Epy is executed, Python evaluates the parameter<br>annotations of OMIS=
-ysInfoServerProtocol=2Eclient_event_REAUTH() at class<br>definition time=2E=
- Because the script defines SysInfoConnectedClient rather<br>than DpcConnec=
-tedClient, doesn&#39;t this immediately crash on startup with<br>NameError:=
- name &#39;DpcConnectedClient&#39; is not defined?</p><p class=3D"blocks" s=
-tyle=3D"white-space: pre-wrap; word-wrap: break-word;">In addition, when a =
-client renegotiates its key in client_event_REAUTH(),<br>should client=2Eau=
-thenticated_kid also be updated to kid, matching<br>OMISysInfoServerProtoco=
-l=2Eclient_event_CONNECT()?</p><p class=3D"blocks" style=3D"white-space: pr=
-e-wrap; word-wrap: break-word;">-- <br>Sashiko AI review =C2=B7 https://sas=
-hiko=2Edev/#/patchset/0e153ba9c81e52ff9debee73e09f2dd317817c81-EmailReplace=
-PatchSet-HTML@gerrit=2Eopenvpn=2Enet?part=3D1<br>```</p></li></ul></li></ul=
-><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/20=
-37?usp=3Demail">change 2037</a>=2E To unsubscribe, or for help writing mail=
- filters, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=3Dem=
-ail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/Emai=
-lMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eor=
-g/ViewAction"><link itemprop=3D"url" href=3D"https://gerrit=2Eopenvpn=2Enet=
-/c/openvpn/+/2037?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Cha=
-nge"/></div></div>
+rd;">[Severity: Low]<br>Should sample/management/acc_dpc1_server_demo=2Epy =
+be committed with executable<br>file mode 100755 instead of 100644?</p><p c=
+lass=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Bec=
+ause the usage instructions specify running it via --management<br>/path/to=
+/acc_dpc1_server_demo=2Epy unix-script, invoking it directly without<br>exe=
+cutable permissions fails with permission denied=2E</p><pre class=3D"blocks=
+" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">Also, =
+in the headers of these two scripts:<br>- acc_dpc1_server_demo=2Epy has a s=
+tray GNU General Public License paragraph<br>  immediately following the MI=
+T license header=2E<br>- acc_dpc1_client_demo=2Epy instructs passing --mana=
+gement-client-auth on the<br>  client, which OpenVPN rejects because it is =
+a server-only option=2E</pre><p class=3D"blocks" style=3D"white-space: pre-=
+wrap; word-wrap: break-word;">[ =2E=2E=2E ]</p><blockquote class=3D"blocks"=
+ style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;"><p=
+ class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">+=
+class DpcConnectedClient(ConnectedClient):<br>+    # Remember the key-id th=
+at we authenticated<br>+    dpc_completed: bool =3D False<br>+    env: Dict=
+[str, str] =3D field(default_factory=3Ddict)</p></blockquote><p class=3D"bl=
+ocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">[Severity: Lo=
+w]<br>Is DpcConnectedClient missing the @dataclass decorator?</p><p class=
+=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">In Pyth=
+on, a subclass is not processed by the dataclasses module unless the<br>sub=
+class itself is decorated with @dataclass=2E Without @dataclass on<br>DpcCo=
+nnectedClient, env =3D field(default_factory=3Ddict) is not initialized to =
+a<br>per-instance dict upon instantiation and instead remains a raw<br>data=
+classes=2EField descriptor object on the class until overwritten by<br>clie=
+nt_event_CONNECT() or client_event_REAUTH()=2E</p><blockquote class=3D"bloc=
+ks" style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;"=
+><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;=
+">+<br>+<br>+class OmiDPCServerProtocol(OMIServerProtocol):<br>+    def __i=
+nit__(self, finish_future: Future, connect_data: ConnectData):<br>+        =
+super()=2E__init__(finish_future, connect_data)<br>+        self=2E_connect=
+ed_client_class =3D DpcConnectedClient<br>+<br>+    def receive_acc_client_=
+dpc1(self, client: DpcConnectedClient, kid: int, acc_message: str):<br>+   =
+     print(f&quot;Received DPC1 message: {acc_message!r}&quot;)<br>+       =
+ msg =3D json=2Eloads(acc_message)<br>+        pprint(msg)<br>+<br>+       =
+ dpc_response =3D msg[&quot;dpc_response&quot;]<br>+        ver =3D dpc_res=
+ponse[&quot;ver&quot;]<br>+        if ver !=3D &quot;1=2E0&quot;:<br>+     =
+       logger=2Eerror(f&quot;Received unknown ACC protocol version: {ver}&q=
+uot;)<br>+            return<br>+<br>+        client_info =3D dpc_response=
+=2Eget(&quot;client_info&quot;, {})<br>+        antivirus =3D &quot;antivir=
+us&quot; in dpc_response<br>+        disk_encryption =3D &quot;disk_encrypt=
+ion&quot; in dpc_response<br>+<br>+        logger=2Einfo(<br>+            f=
+&quot;Received DPC1 response: antivirus=3D{antivirus}, disk_encryption=3D{d=
+isk_encryption}, client_info=3D{client_info}&quot;)<br>+<br>+        # Norm=
+ally here would be a check that the response matches the policy<br>+       =
+ # this demo script just allows everyone with a response to pass<br>+      =
+  client=2Edpc_completed =3D True<br>+<br>+        self=2Equeue_command(f&q=
+uot;client-auth-nt {client=2Ecid} {kid}&quot;)<br>+<br>+    async def dpc_r=
+equest_timeout(self, client: DpcConnectedClient, kid: int, timeout: int):<b=
+r>+        await asyncio=2Esleep(timeout)<br>+        if client=2Edpc_compl=
+eted:<br>+            return<br>+<br>+        client_deny =3D f&#39;client-=
+deny {client=2Ecid} {kid} &quot;dpc1 timeout&quot; &quot;Timeout on device =
+posture&quot;&#39;<br>+        await self=2Equeue_command(client_deny)</p><=
+/blockquote><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: =
+break-word;">[Severity: Medium]<br>Should self=2Equeue_command() be called =
+consistently as either a synchronous<br>method or an awaited coroutine acro=
+ss both scripts?</p><p class=3D"blocks" style=3D"white-space: pre-wrap; wor=
+d-wrap: break-word;">In OmiDPCServerProtocol, check_client_posture(), dpc_r=
+equest_timeout(), and<br>send_client_deny_no_dpc1() all use await self=2Equ=
+eue_command(=2E=2E=2E):</p><pre class=3D"blocks" style=3D"font-family: mono=
+space,monospace; white-space: pre-wrap;">    await self=2Equeue_command(cli=
+ent_deny)</pre><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wra=
+p: break-word;">However, OmiDPCServerProtocol=2Ereceive_acc_client_dpc1() a=
+nd<br>OmiDpc1ClientProtocol=2E_send_dpc1_client_info() (in acc_dpc1_client_=
+demo=2Epy)<br>are synchronous methods and call self=2Equeue_command(=2E=2E=
+=2E) without await:</p><pre class=3D"blocks" style=3D"font-family: monospac=
+e,monospace; white-space: pre-wrap;">    self=2Equeue_command(f&quot;client=
+-auth-nt {client=2Ecid} {kid}&quot;)</pre><pre class=3D"blocks" style=3D"fo=
+nt-family: monospace,monospace; white-space: pre-wrap;">    command =3D f&q=
+uot;acc-msg\ndpc1\n6\n{b64msg}\nEND&quot;<br>    self=2Equeue_command(comma=
+nd)</pre><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: bre=
+ak-word;">If queue_command() is an async coroutine, the unawaited calls in<=
+br>receive_acc_client_dpc1() and _send_dpc1_client_info() create coroutine<=
+br>objects that are never executed, silently dropping both the client postu=
+re<br>response and the server client-auth-nt command=2E Conversely, if queu=
+e_command()<br>is a regular synchronous function returning None, awaiting i=
+t in<br>check_client_posture(), dpc_request_timeout(), and send_client_deny=
+_no_dpc1()<br>raises a TypeError at runtime=2E</p><blockquote class=3D"bloc=
+ks" style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;"=
+><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;=
+">+<br>+    def client_event_ESTABLISHED(self, client: DpcConnectedClient, =
+kid: int, env: dict, extra: str):<br>+        print(f&quot;CLient connected=
+: {client}&quot;)<br>+<br>+    async def send_client_deny_no_dpc1(self, cli=
+ent: DpcConnectedClient, kid: int):<br>+        client_reason =3D &quot;ACC=
+[protocol dpc1]: To connect to this server you &quot; \<br>+               =
+         &quot;need to upgrade to a client that supports the &quot; \<br>+ =
+                       &quot;OpenVPN Inc device posture protocol and has it=
+ &quot; \<br>+                        &quot;enabled, e=2Eg=2E OpenVPN for A=
+ndroid, openvpn3-linux, &quot; \<br>+                        &quot;or OpenV=
+PN Connect&quot;<br>+        client_deny =3D f&#39;client-deny {client=2Eci=
+d} {kid} &quot;no dpc1 support&quot; &quot;{client_reason}&quot;&#39;<br>+ =
+       await self=2Equeue_command(client_deny)<br>+<br>+    def client_even=
+t_CONNECT(self, client: DpcConnectedClient, kid: int, env: dict, extra: str=
+):<br>+        print(f&quot;Authenticating client {client}, {kid}, protos: =
+{client=2Eacc_negotiated_protocols}&quot;)<br>+        client=2Eenv =3D env=
+<br>+        asyncio=2Ecreate_task(self=2Echeck_client_posture(client, kid)=
+)<br>+<br>+    def client_event_REAUTH(self, client: DpcConnectedClient, ki=
+d: int, env: dict, extra: str):<br>+        print(f&quot;Re-authenticating =
+client {client}, {kid}, protos: {client=2Eacc_negotiated_protocols}&quot;)<=
+br>+        client=2Eenv =3D env<br>+        # Check client posture again o=
+n renegotiation<br>+        asyncio=2Ecreate_task(self=2Echeck_client_postu=
+re(client, kid))<br>+<br>+    async def check_client_posture(self, client: =
+DpcConnectedClient, kid: int):<br>+        await self=2Equeue_command(<br>+=
+            f&quot;client-pending-auth {client=2Ecid} {kid} \&quot;NOTIFY::=
+Checking your device posture, please wait\&quot; 180&quot;)<br>+<br>+      =
+  await self=2Equeue_command(f&quot;client-pending-auth {client=2Ecid} {kid=
+} ACC 180&quot;)<br>+        # In this example we wait for 20 seconds to si=
+mulate a posture check on the server<br>+        await asyncio=2Esleep(20)<=
+br>+<br>+        if &quot;dpc1&quot; not in client=2Eacc_negotiated_protoco=
+ls:<br>+            await self=2Esend_client_deny_no_dpc1(client, kid)<br>+=
+            return<br>+<br>+        dpc_cmd =3D {&quot;dpc_request&quot;: {=
+&quot;ver&quot;: &quot;1=2E0&quot;, &quot;correlation_id&quot;: &quot;n/a&q=
+uot;, &quot;timestamp&quot;: &quot;yesterday&quot;, &quot;client_info&quot;=
+: True,<br>+                                   &quot;disk_encryption&quot;:=
+ {&quot;full&quot;: True}, &quot;antivirus&quot;: {}}}<br>+<br>+        dpc=
+_cmd_str =3D json=2Edumps(dpc_cmd)<br>+        acc_protocol =3D &quot;dpc1&=
+quot;<br>+<br>+        await self=2Esend_acc_msg(client, kid, acc_protocol,=
+ dpc_cmd_str=2Eencode())<br>+        asyncio=2Ecreate_task(self=2Edpc_reque=
+st_timeout(client, kid, 60))</p></blockquote><p class=3D"blocks" style=3D"w=
+hite-space: pre-wrap; word-wrap: break-word;">[Severity: Medium]<br>Does ke=
+eping a single boolean client=2Edpc_completed without resetting it or<br>tr=
+acking the key-id break posture timeouts on renegotiation?</p><p class=3D"b=
+locks" style=3D"white-space: pre-wrap; word-wrap: break-word;">When a clien=
+t connects via client_event_CONNECT() and responds to the initial<br>postur=
+e check, receive_acc_client_dpc1() sets:</p><pre class=3D"blocks" style=3D"=
+font-family: monospace,monospace; white-space: pre-wrap;">    client=2Edpc_=
+completed =3D True</pre><p class=3D"blocks" style=3D"white-space: pre-wrap;=
+ word-wrap: break-word;">When the client later renegotiates via client_even=
+t_REAUTH() with a new kid,<br>check_client_posture() is spawned without res=
+etting client=2Edpc_completed, and<br>schedules dpc_request_timeout(client,=
+ kid, 60)=2E If the client never responds<br>to the renegotiation posture r=
+equest, dpc_request_timeout() sees<br>client=2Edpc_completed is still True =
+from the initial connection and returns<br>early without sending client-den=
+y=2E</p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: brea=
+k-word;">In addition, because posture completion is not tracked per kid and=
+ the tasks<br>created with asyncio=2Ecreate_task() in client_event_CONNECT(=
+),<br>client_event_REAUTH(), and check_client_posture() are not tracked or =
+canceled,<br>overlapping posture checks or unsolicited responses during the=
+ 20-second delay<br>in check_client_posture() can race on client=2Edpc_comp=
+leted=2E</p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: =
+break-word;">-- <br>Sashiko AI review =C2=B7 https://sashiko=2Edev/#/patchs=
+et/24699879debec5f95ada94bb416c09306a52b09c-EmailReplacePatchSet-HTML@gerri=
+t=2Eopenvpn=2Enet?part=3D1<br>```</p></li></ul></li></ul><p>To view, visit =
+<a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1860?usp=3Demail">cha=
+nge 1860</a>=2E To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=
+=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div it=
+emscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><li=
+nk itemprop=3D"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1860=
+?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div=
+>
 
-<div style=3D"display:none"> Gerrit-MessageType: commen=
-t </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div s=
-tyle=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:n=
-one"> Gerrit-Change-Id: I695967524bb9e83887b8c07d0d09baff6e41acf4 </div>
-<d=
-iv style=3D"display:none"> Gerrit-Change-Number: 2037 </div>
-<div style=3D"=
-display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerri=
-t-Owner: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=
-=3D"display:none"> Gerrit-CC: Name of user not set #1000061 </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 <div sty=
-le=3D"display:none"> Gerrit-CC: Ralf Lici &lt;ralf@mandelbit=2Ecom&gt; </di=
-v>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@=
-lists=2Esourceforge=2Enet&gt; </div>
-<div style=3D"display:none"> Gerrit-At=
-tention: Name of user not set #1000061 </div>
-<div style=3D"display:none"> =
-Gerrit-Attention: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<d=
-iv style=3D"display:none"> Gerrit-Comment-Date: Tue, 03 Nov 2026 15:47:56 +=
-0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<di=
-v style=3D"display:none"> Gerrit-Has-Labels: No </div>
+le=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:n=
+one"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Chan=
+ge-Id: Ie20289737d502a25eedc60677d3c350ddc3b3c22 </div>
+<div style=3D"displ=
+ay:none"> Gerrit-Change-Number: 1860 </div>
+<div style=3D"display:none"> Ge=
+rrit-PatchSet: 5 </div>
+<div style=3D"display:none"> Gerrit-Owner: Arne Sch=
+wabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none">=
+ Gerrit-CC: Name of user not set #1000061 </div>
+<div style=3D"display:none=
+"> Gerrit-CC: Ralf Lici &lt;ralf@mandelbit=2Ecom&gt; </div>
+<div style=3D"d=
+isplay:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforg=
+e=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: Name of u=
+ser not set #1000061 </div>
+<div style=3D"display:none"> Gerrit-Attention: =
+Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"displa=
+y:none"> Gerrit-Comment-Date: Tue, 03 Nov 2026 15:49:03 +0000 </div>
+<div s=
+tyle=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display=
+:none"> Gerrit-Has-Labels: No </div>
 
 </body></html>
---2aP0sQiFCs4=--
+--KXFj8nNDh1w=--
 
 
---===============0305732587538470164==
+--===============0014313942465233658==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============0305732587538470164==
+--===============0014313942465233658==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -714,5 +939,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============0305732587538470164==--
+--===============0014313942465233658==--
 
