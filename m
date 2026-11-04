@@ -1,42 +1,42 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF135606A31B
-	for <openvpn-devel@archiver.kernel.org>; Wed,  4 Nov 2026 17:43:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3283606A31B
+	for <openvpn-devel@archiver.kernel.org>; Wed,  4 Nov 2026 17:43:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=cypdpOZQ;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=OEKPiVgf;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=elArV7R3
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=Pc/cHcse;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=OKIUXR+x;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=RzX1HL6j
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
-	List-Owner; bh=qAX+MiLOjUgvHN8bxnZ9X4pLrJqGSamFFTAqA31E1yc=; b=cypdpOZQzkjsPU
-	bteFkz6BBDgzIlkQeAW1s8mWb9E7WbDuTxWDGYE1xDyOKXgPN3mtsuVb58TYHn+mr74j89JYBvNry
-	48gf3byklSVkpqZ4IZn/fcaPJb7oAMBKasxawt/+r/Xkfp3kVb/9ZI7DdgUjIRQ9ABPeO9v3RcBd+
-	ihs=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	List-Owner; bh=dPNU7pfGHMdzIK3jGCkwW/T6xCwMh2vaz7QiG0Tg8y4=; b=Pc/cHcseSPuhxZ
+	hh0Guf3N36RiK/BjkWHyregd5QZAG6koiXkFQjNFDbyGPi3LBRILVOhYMVz0jQ01u0pzEU6UnFiaB
+	MqUUXVtpyTJz5spOobXsUdP3Upfzmrf7WDZu9k+RMLgSiX3kDvyniT5ve2vJFk/rT+fnm6KQ31kM4
+	8w4=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xOf1N-00000000816-0hd7;
-	Wed, 04 Nov 2026 17:43:37 +0000
+	id 1xOf1Q-000000008PQ-22YG;
+	Wed, 04 Nov 2026 17:43:40 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
  (envelope-from <gert@blue4.greenie.muc.de>)
- id 1xOf15-000000007xE-2Czz for openvpn-devel@lists.sourceforge.net;
- Wed, 04 Nov 2026 17:43:19 +0000
+ id 1xOf1N-000000008PH-3iQb for openvpn-devel@lists.sourceforge.net;
+ Wed, 04 Nov 2026 17:43:37 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
  In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=2LxkfXB+Vbf9IfLu74Invb/S2BShx6HrD1MUdY1Ye9Y=; b=OEKPiVgfunB5YgYpC9pG1v+ZCv
- EIB+2WYcGNb+LnVXpIju4F55yawDzDnBFrcOL+fORhHGPYLZQMp2IRxieIAqBhLu8rHnUltT/Eyln
- uNvUgpFgGMP6aXF2BkULAnkYkOPOUMmfZ9dleXQ8wvqIJqE533lQbvYXT2HspU1o+dhw=;
+ bh=P8Mz5vQt/sFQDkYCvgkLMqDEk6EpjR/jbWjRrX2o//k=; b=OKIUXR+xY7n/h9TQfN4RsWJzQc
+ PP1vsogdIfOFlsYMD44yn5YZaM31fR+MaHhtKLp7AYublH+DScIDlTSHdnbQrzHh0Ak8nneHWOmam
+ DuvAkirOE0pEwUSnVIs1oV8t0lmxbmaD3NU8PBCJcBG6EJhw01ACJIPBOo61lOqm3C34=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -44,33 +44,33 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=2LxkfXB+Vbf9IfLu74Invb/S2BShx6HrD1MUdY1Ye9Y=; b=elArV7R3QjuhgCX89D9ivZCM9L
- hhbvTMJeKxAjKXTJwgijbIz5RMHpvCRvrLL27bbLK5KsJH5ry8kXFBMLERrz3E4idB5D2l9ojaMw2
- yGZjWPgK1cGOnRDiIrBChxUyRA0HWmilzfPeyE0lGFKzZLN6RiFSe7+ZA7zM372AaSnU=;
+ bh=P8Mz5vQt/sFQDkYCvgkLMqDEk6EpjR/jbWjRrX2o//k=; b=RzX1HL6j32T9ECdnyuFsi/lp9e
+ uNwF4XfnNxK4DUWdEmFAK/6OzEkxTpRixbTTV0O+yh5kputKrzCJ3yfAdw8Wy24ZEuzDCxqNuOXz6
+ yFJcTRb7kwegUSfgA/GE3vuATuKoyG1IIznrFY38GmjzQeE/QnQCUR38OIovghe+ezlU=;
 Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
- id 1xOf10-000000002tl-0nC9 for openvpn-devel@lists.sourceforge.net;
- Wed, 04 Nov 2026 17:43:16 +0000
+ id 1xOf1L-000000000OH-0XuW for openvpn-devel@lists.sourceforge.net;
+ Wed, 04 Nov 2026 17:43:36 +0000
 Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 6A4Hh7U9015185
- for <openvpn-devel@lists.sourceforge.net>; Wed, 4 Nov 2026 18:43:07 +0100
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 6A4HhSdR015235
+ for <openvpn-devel@lists.sourceforge.net>; Wed, 4 Nov 2026 18:43:28 +0100
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 6A4Hh7LY015184
- for openvpn-devel@lists.sourceforge.net; Wed, 4 Nov 2026 18:43:07 +0100
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 6A4HhSwb015234
+ for openvpn-devel@lists.sourceforge.net; Wed, 4 Nov 2026 18:43:28 +0100
 From: Gert Doering <gert@greenie.muc.de>
 To: openvpn-devel@lists.sourceforge.net
-Date: Wed,  4 Nov 2026 18:43:01 +0100
-Message-ID: <20261104174306.15159-1-gert@greenie.muc.de>
+Date: Wed,  4 Nov 2026 18:43:22 +0100
+Message-ID: <20261104174327.15221-1-gert@greenie.muc.de>
 X-Mailer: git-send-email 2.55.0
-In-Reply-To: <gerrit.1793802273000.Iba1db32cd130d092e34a31159f14d3aa37db96f2@gerrit.openvpn.net>
-References: <gerrit.1793802273000.Iba1db32cd130d092e34a31159f14d3aa37db96f2@gerrit.openvpn.net>
+In-Reply-To: <gerrit.1793800715000.Ib33ce23448959673affdfd462b4c2cfa9a015f55@gerrit.openvpn.net>
+References: <gerrit.1793800715000.Ib33ce23448959673affdfd462b4c2cfa9a015f55@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 X-Spam-Score: 1.3 (+)
-X-Headers-End: 1xOf10-000000002tl-0nC9
-Subject: [Openvpn-devel] [PATCH v1] multi: use multi_io_delete_event() and
- drop multi_tcp_delete_event()
+X-Headers-End: 1xOf1L-000000000OH-0XuW
+Subject: [Openvpn-devel] [PATCH v1] push_util: use string_alloc() instead of
+ a local gc_strdup()
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -91,72 +91,58 @@ X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 
 From: Razvan Cojocaru <razvanc@mailbox.org>
 
-cbb0440e ("multiproto: move generic event handling code in dedicated
-files") added multi_io_delete_event() as a copy of
-multi_tcp_delete_event() but kept the old function and its only
-caller. Switch management_delete_event() to the new one and remove the
-old copy.
+gc_strdup() duplicated string_alloc() for its only caller. While here,
+fix the typos in the message_splitter() comment.
 
-Change-Id: Iba1db32cd130d092e34a31159f14d3aa37db96f2
+Change-Id: Ib33ce23448959673affdfd462b4c2cfa9a015f55
 Signed-off-by: Razvan Cojocaru <razvanc@mailbox.org>
-Acked-by: Gianmarco De Gregori <gianmarco@mandelbit.com>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2133
+Acked-by: Frank Lichtenheld <frank@lichtenheld.com>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2132
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2133
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2132
 This mail reflects revision 1 of this Change.
 
 Acked-by according to Gerrit (reflected above):
-Gianmarco De Gregori <gianmarco@mandelbit.com>
+Frank Lichtenheld <frank@lichtenheld.com>
 
         
-diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
-index 2d0af06..62d059e 100644
---- a/src/openvpn/mtcp.c
-+++ b/src/openvpn/mtcp.c
-@@ -95,15 +95,6 @@
+diff --git a/src/openvpn/push_util.c b/src/openvpn/push_util.c
+index 34cb26c..0c27575 100644
+--- a/src/openvpn/push_util.c
++++ b/src/openvpn/push_util.c
+@@ -78,17 +78,8 @@
+     return buf;
  }
  
- void
--multi_tcp_delete_event(struct multi_io *multi_io, event_t event)
+-static char *
+-gc_strdup(const char *src, struct gc_arena *gc)
 -{
--    if (multi_io && multi_io->es)
--    {
--        event_del(multi_io->es, event);
--    }
+-    char *ret = gc_malloc((strlen(src) + 1) * sizeof(char), true, gc);
+-
+-    strcpy(ret, src);
+-    return ret;
 -}
 -
--void
- multi_tcp_dereference_instance(struct multi_io *multi_io, struct multi_instance *mi)
- {
-     const struct link_socket *sock = mi->context.c2.link_sockets[0];
-diff --git a/src/openvpn/mtcp.h b/src/openvpn/mtcp.h
-index 47c6308..b4ec1f9 100644
---- a/src/openvpn/mtcp.h
-+++ b/src/openvpn/mtcp.h
-@@ -43,6 +43,4 @@
- 
- struct multi_instance *multi_create_instance_tcp(struct multi_context *m, struct link_socket *sock);
- 
--void multi_tcp_delete_event(struct multi_io *multi_io, event_t event);
--
- #endif /* ifndef MTCP_H */
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 3f514d6..741b3d1 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -4025,7 +4025,7 @@
-     struct multi_context *m = (struct multi_context *)arg;
-     if (m->multi_io)
-     {
--        multi_tcp_delete_event(m->multi_io, event);
-+        multi_io_delete_event(m->multi_io, event);
+-/* It split the messagge (if necessary) and fill msgs with the message chunks.
+- * Return `false` on failure an `true` on success.
++/* Split the message (if necessary) and fill msgs with the message chunks.
++ * Return `false` on failure and `true` on success.
+  */
+ static bool
+ message_splitter(const char *s, struct buffer_list *msgs, struct gc_arena *gc, const size_t safe_cap)
+@@ -98,7 +89,7 @@
+         return false;
      }
- }
  
+-    char *str = gc_strdup(s, gc);
++    char *str = string_alloc(s, gc);
+ 
+     while (*str)
+     {
 
 
 _______________________________________________
