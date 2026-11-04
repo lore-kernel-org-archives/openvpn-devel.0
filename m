@@ -1,13 +1,13 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6954606D824
-	for <openvpn-devel@archiver.kernel.org>; Wed,  4 Nov 2026 22:07:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B052606E822
+	for <openvpn-devel@archiver.kernel.org>; Wed,  4 Nov 2026 22:07:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=VI86G6vw;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=ga+YMWqY;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=Ippt00u7;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=OdXQKiAv
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=Np0jKuWd;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=Hkd/C/aA;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=T2F9inKx;
+	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=ecwV/Cvv
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
@@ -15,18 +15,18 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
 	List-Unsubscribe-Post:List-Owner;
-	bh=UVawtMg2vb8ISfuPG2koxHzIgJcJdKvj8HYiaVREluE=; b=VI86G6vwkEk64czndLyMzWJ5f8
-	I7NEmQjjDARE2V4N04riMqz0S6q30g5O0mWi+1c7mxP1IeAjAgFwjJEz0QintoC+WUWCL/tluf5kt
-	Z6pp7UTMXf46c6Z0I3d2O7oQFnt8lEY9qLqM1wwkBxZp0N3ZcGVn/ilv4HqmyTSPnFig=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	bh=F6TCN6UWhuyNfKpD5URkxBMWZywA8SiLE3gfztCCp8E=; b=Np0jKuWdX6xZCDn20d0oKUzHz1
+	6YjWyK3xWOxvHxmDzs1P9rJVArvMFcxrwDKKla7aNbrbjMn1ssEMWB8tIp3jksovGGD9RL9lA2ILC
+	5OrCY7H6E0yjHMc8E9g+jM1aTZH4o1WdcVL01BXudko7C8QnAJOHqgYudEpkv5QGHk0w=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xOj94-000000007me-1MVv;
-	Wed, 04 Nov 2026 22:07:50 +0000
+	id 1xOj96-000000003or-337N;
+	Wed, 04 Nov 2026 22:07:52 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xOj93-000000007mW-1xaS
+ (envelope-from <gerrit@openvpn.net>) id 1xOj93-000000003nS-2Zqo
  for openvpn-devel@lists.sourceforge.net;
  Wed, 04 Nov 2026 22:07:49 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
@@ -35,9 +35,9 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=9LqToO85DQjjTzHiVlP0FAZyq9nPcYT6G5mZ23qsGHM=; b=ga+YMWqYyZ/Fzrxgc8DDi6IZxr
- NF5gWL7veA9XztXzvWNHilpKvxX93U+yQpHCisv0hA5RbDWxz3w3CBrf8ECUEX9wBiqTBwupT0CBe
- az4WO24xjIdoyAzj2g6K2dQagHWqdX5zeWe+g1r1gtKWcAu3FRqrc8IcHvkVEl8DBOGQ=;
+ bh=UtIjdzicOLdzViDk3Rr3EnTD1KbOMYeFk11XsNkpjJY=; b=Hkd/C/aAgyQgTB7R6ChgxqCgHl
+ HnfZOhJ1+Fe8H13JqqVSTq+5bqRAP5K/RqE/jDY6eLB+7DLVbo4peQMdLBU2jtS5LO7gG9XS6rJCU
+ /8yeSSvexOg84xRCt/wwS6QgprEBHCc2zno/sx+y07NljcV5BF9/GS6n8geodE87PFkw=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
@@ -45,16 +45,16 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=9LqToO85DQjjTzHiVlP0FAZyq9nPcYT6G5mZ23qsGHM=; b=Ippt00u7ZZd3g3z3cA4Of4Rtbx
- fdsZ9rJdk1ZfD65Wvhb8evsxziXmlSVBkjjGh6zyRmwqPK/4A2HM92JQL2U6JD2yqo03J/LkDFeR8
- QezNulJRbrER0+qhha6Akw2FDvBNN4whcbHaLYqhfh6eDlbhKcXat8rkJSeWVKK7zn8w=;
-Received: from mail-wm1-f42.google.com ([209.85.128.42])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ bh=UtIjdzicOLdzViDk3Rr3EnTD1KbOMYeFk11XsNkpjJY=; b=T2F9inKxkTUMh3uVYvIaXflswo
+ oGDsUZyWPJDtW43YH1fstwsW5PhwQACaXKmMvDwzaZju6NRt2lquDDw1R1jZOnhnP3u53ElQI+Wg8
+ 0btBBgs4URTuFXraKvHnJNA+lxXbBqqksCIVyOWGU2FoNqe0SwjjZHEFzZjFJLjncnKo=;
+Received: from mail-wm1-f53.google.com ([209.85.128.53])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xOj91-000000002Ad-19JX for openvpn-devel@lists.sourceforge.net;
+ id 1xOj91-000000007x8-40oT for openvpn-devel@lists.sourceforge.net;
  Wed, 04 Nov 2026 22:07:49 +0000
-Received: by mail-wm1-f42.google.com with SMTP id
- 5b1f17b1804b1-4a2167bd087so10054385e9.3
+Received: by mail-wm1-f53.google.com with SMTP id
+ 5b1f17b1804b1-4a4dc547987so6632215e9.0
  for <openvpn-devel@lists.sourceforge.net>;
  Wed, 04 Nov 2026 14:07:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
@@ -64,13 +64,13 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=9LqToO85DQjjTzHiVlP0FAZyq9nPcYT6G5mZ23qsGHM=;
- b=OdXQKiAvly//pQ9cPtUam2u5Mg3fciOqSVIZFKpCfNCXwMVV867a5t2yPCy+Oim8yP
- HOcRoMRanj2Yte6lvNT2Wv1tjpythceYytrbOc5WrSblPKgThAcwVr93G1xJy3/qihmA
- 2aiYCkzBvxyQRssDs2/Wm8Z00nm1VTvdGQiuGwHO1QGUSPraaCu8BbsrCFAeF9iM5OB6
- 01mRB8jKQNwW943z7t3UigRP7j0QEK3YuA103n4PY2Htigw4PXlW/r5FXPfF0EAAIaqQ
- b6139VIVomsR7zZBdWFGK6n7azdZ96E2xzCliRYqAm7QCEBXpiJvpdW2wtXQpBz/31Uz
- fYPw==
+ bh=UtIjdzicOLdzViDk3Rr3EnTD1KbOMYeFk11XsNkpjJY=;
+ b=ecwV/CvvG+m0cTwRs8SGHS7+EaGDpVA+a180HpMqpdT82RtLq6piSgLGcNQb9WYaOt
+ kLqC+hg/reST7FKXNxMtxnrCTpbUWovS3oUV6994D3FAJfef7n8EsToZ57yMlofSlts0
+ 2+Z02oCRw4x5RQXjj2hsht+C9IxyREXCVLv+EZv3ml5zjsUhqRwsxgFG0BNwVM+2uCHJ
+ U5hDaXnB3RHlHSjWkunB1kUGSKHPejNDKauE2yFpdkjhRtc7COtWopnfVnnB2lxF/7Vh
+ mrxWsshNkUarmDx84EZ+dYJXHpis6w0ZyJiIcPpV4xwfG8gHDoElUR3V1D6TI3b8ZP+I
+ qmYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20260707; t=1793830061; x=1794434861;
  h=content-type:user-agent:content-disposition
@@ -78,44 +78,44 @@ X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=9LqToO85DQjjTzHiVlP0FAZyq9nPcYT6G5mZ23qsGHM=;
- b=13+d6GBk0LouBEahY9WOYIe2b3lDOsuddKkLZ7YwET0WS7qMNV6DcboT4BNzpLdXFL
- TV3VpYoEgOvZAyUwl3eH5AWQCIubWDuO6k4KpaB9ra6EGDllf/0kRQqU4uAc9Cj5qGJ4
- q7vy1IV4QBsrZnv9I8JRjEhJS6iJE5p/Y9UGK9mBNQV03U50qrFUHLXrxQYPBpM5wP8q
- 5ip/smPtpI972oIOVZQuaoEgioUS4rsET2KVIM3x/WnG86JTWEvl5ZaKeXAjc3smH03n
- hPjjpvbfwokcsjE2Mjiaa/tImhg2BEQAGzyALcPiqmvnWwvmbq9A2yVi0WxDF4O1gYxN
- fo6Q==
-X-Gm-Message-State: APuU4Z+S35/bn2wOTyKCAdYupEMQQDOKSTc/w+cAVKzV7f+a8h0pO1DZ
- I7dw+teOL+NOOeKWaLQnd7TCY1cspeMTw7zDkTTuQ6L4nLxT4aWBgi7WSH/P2bqJ6PdwK20c2wA
- 6iD9gSAGlElvDV6xbY+5bNtvYYt6LMfKii765fN4typNjBUUR1kBywdu/8tfd/uij9+oR
-X-Gm-Gg: AYBFou2BmUdqwChkTlox7NwDizr1KY5QW1VZBZ+Vo+x0Gt18f++F7AGngP8mSoaEfGI
- LjGG/Da4rwGwbp7rn/n+S4JLJfz7llIwIc72FAppWutZJtgMkNQrln0F86yZwkSYF/wFv8PB6KT
- sM7zyuxiUZfQpe6LNfTugFDIWv27YJ+k6jlC9pZGUCWKW/rOANMMj+mZ+Kq24mqyTG3/0BYgPl7
- BXAqgW7C4vQPggYZ5fKsaZC9UsU4EzvFyOAGHEtKevqU70KTB0BmCDL9wALqdZWt4PYyYhwOBa6
- B/1FYDi6tZC8tmtCrTG/DuutaKZTi+3jyq9Mrh9gFCihEXK5yU9UKpZRlp9rWEC5SWoYV8GilYj
- ShsTVhQr9Ux/hHaiPs1tla7FzUrxPDwpwQgIKh4fItQKiYg4QWSh8Yph+ci5vhaq4MYQZCgitEC
- QisBNjYFFTQbBRhAkeAenlTgPV4A3rtlvZEHluuKiM+0FILWOH/TN4j2kT4n0itCd4CV1hW05E5
- Y1YMyS81aIjP7bazCHpXtjMP8Le2jSXuKpjGeDwZN9/ZLi3rcptbHOElnQE0dF+A39ILJhDdO4K
- kljAha/5UDe/yITt6pn3xPx12CBhZP23ZGjA2g/OIizbibfLk11a09X0ALXlJgX0oylhxe9UnSR
- SivGugIKfuwDXb4XKT5nkZ8HGU3tNKvBFtAzqgW/aUkAuiWwE/jwLQt0mRv8ptz2F3eM7dQYFbR
- 68ZLJAsmz888FapQ==
-X-Received: by 2002:a05:600c:811a:b0:4a2:1e1:d55 with SMTP id
- 5b1f17b1804b1-4ac187a6b30mr379371005e9.28.1793830060408; 
- Wed, 04 Nov 2026 14:07:40 -0800 (PST)
+ bh=UtIjdzicOLdzViDk3Rr3EnTD1KbOMYeFk11XsNkpjJY=;
+ b=HU5Frq5wSyE5AN9+0ylc+Q38/goUzyaaUer/xdEjFobBfPtgtFjzUH1O/v7ICVJFq2
+ Owdm0fEZB9t7uYbHZ3NRWlcuzIoIOscKT+M6vDxQ9jvB6iqRUuZasuMV0PYAJAqbNQFo
+ +P9PkCCfrOmJLvq8fZzlj1zmON63w9MWBTegilEjdAJUI1CWlxw+M8UZe3F1VqMNwF9d
+ s+0o5UpuYvmYOByDq+MjAWaDVd3yaYBaljsHXWKiUVqI7ZMafZRlioThYR5f4q0m5bSy
+ ccvs1jHpuLlWXzGmzQ+Uq16oa71QLtRCVqtPkwdVcxU1lWZwNKC5htmdI9iMHJWjSJ8D
+ YJew==
+X-Forwarded-Encrypted: i=1;
+ AKwUvBwaKNK5y0CsSa5NZIBLYNkHEaFh7mcvnlIibnSYcmLuwulnz0kWIsWkguDvygJnGemQvQ5f2GwJ7L2XcrxK@lists.sourceforge.net
+X-Gm-Message-State: APuU4Z+pJvGSVS0mF93KsbrQJGvbgGuCMc+0PcT2nvCdvIMBamVDrbSv
+ FR5lYYw7f0qlYa5U57mNi1iMpcdPsU5jjiE7xTsKkDM5GVxrz4dFOIJ6LjkYUzEJdNJZLPBAaWv
+ aq/4/fzwN+weUhBtSfe1VWn3PpR5JkE/JQ44yN07sEsTQOQQbbJpsN0lg0M1Lhlouns0v
+X-Gm-Gg: AYBFou2BQRwNIGfpgyoPSz7HKanLxUvN1HpgD/aykDkmv1xatfYQOOUhRSM4Ri+yCP5
+ GsHWjTDzaJfLEntFFbMxbbxPqcWjYH7wyTAmZqVMc3quTZ8ujJgGyc6dErWv9d938l8swvkVZ/O
+ i2JqjsakBkEMo7CGR9X3pfbIB6fy3UfZFpbIMBj97rU+JAa7Vg3N20tMhO1QjWGdhQ5H7vhSLGl
+ fdzUn41RbV4bwZ0a7hx/0DDw9xuiOZ8WZDVzIkMypA/RSDSJgkpD621jrvgd2OT643XAY15XDOz
+ YtvFwijtEoR/fZada2kCkuRQ2ciyZs36UHgkaHZzvMn3qroae5HOM9/mR0uRiOqy+PKdc0mxVRy
+ 4U9MlkDGAdj3pgIjhAitsAqFg4REO2rLVS6CMJ5JQxFjQgBvSi61Gv7WRFRpyz4XvZQjeH3LkH8
+ XB9KKtm35gr3+xKFbJMEovlt72CGsLlXKh0CV4/1TvCaBUnc3TPqOQpkPBJ6DUlnyaMNhYtiTCt
+ qTep9dEYfUcrU964b7oGL6jAW6AOM/aX/8fxXluH5SRVcC36CSfmAP6bJV0xyfoP5hD5f+ytMft
+ EUrYjkMFadd1x/WP+KSpq3ob8JoUCqRjM4TEt5aFQYjcG0Xps4+yCzxGvx0aIiZQ9QDNvyKOzJx
+ XcJ/UY9eLa1b3BzREOtGU8g5CMYyb73u9kVZ+WxZVv05TYLTLmOJ0ouOda1b4GxW++fd3S7f1O+
+ bShcv3h7LkhGi255+1BJbiAleQa+ERL+tlEvg=
+X-Received: by 2002:a05:600c:890b:b0:4b3:8529:eb27 with SMTP id
+ 5b1f17b1804b1-4b38529eb48mr85534845e9.27.1793830061273; 
+ Wed, 04 Nov 2026 14:07:41 -0800 (PST)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-4b56f5e59d3sm15188265e9.10.2026.11.04.14.07.39
+ 5b1f17b1804b1-4b56fca22f4sm24969055e9.13.2026.11.04.14.07.40
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
  Wed, 04 Nov 2026 14:07:40 -0800 (PST)
 X-Google-Original-From: "Gert Doering (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Wed, 4 Nov 2026 22:07:38 +0000
-To: Selva Nair <selva.nair@gmail.com>,
- =?UTF-8?Q?R=C4=83zvan_Cojocaru?= <razvanc@mailbox.org>,
- Arne Schwabe <arne-openvpn@rfc2549.org>
+Date: Wed, 4 Nov 2026 22:07:40 +0000
+To: Selva Nair <selva.nair@gmail.com>
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: newpatchset
+X-Gerrit-MessageType: merged
 X-Gerrit-PatchSet: 3
 X-Gerrit-Change-Id: I3c8c62c7d90c2b94dd1cd149b4c13b383a2303e9
 X-Gerrit-Change-Number: 2096
@@ -125,12 +125,12 @@ X-Gerrit-Commit: 4333525868d68593bbdb5c4270f21275d6a35466
 In-Reply-To: <gerrit.1793666730000.I3c8c62c7d90c2b94dd1cd149b4c13b383a2303e9@gerrit.openvpn.net>
 References: <gerrit.1793666730000.I3c8c62c7d90c2b94dd1cd149b4c13b383a2303e9@gerrit.openvpn.net>
 Thread-Index: PGdlcnJpdC4xNzkzNjY2NzMwMDAwLkkzYzhjNjJjN2Q5MGMyYjk0ZGQxY2QxNDliNGMxM2IzODNhMjMwM2U5QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <ce94520a0cbc4a220924666cbd0ef5aba381de14-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+Message-ID: <ce94520a0cbc4a220924666cbd0ef5aba381de14-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.2
 X-Spam-Score: 0.8 (/)
-X-Headers-End: 1xOj91-000000002Ad-19JX
+X-Headers-End: 1xOj91-000000007x8-40oT
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: misc: Fix username
  overflow spilling into password
 X-BeenThere: openvpn-devel@lists.sourceforge.net
@@ -147,33 +147,28 @@ From: "Gert Doering \(Code Review\) via Openvpn-devel"
 Reply-To: gert@greenie.muc.de, arne-openvpn@rfc2549.org, selva.nair@gmail.com,
  razvanc@mailbox.org, openvpn-devel@lists.sourceforge.net
 Cc: "Gert Doering \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============8582149571408819303=="
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>,
+ Arne Schwabe <arne-openvpn@rfc2549.org>
+Content-Type: multipart/mixed; boundary="===============1390769686533958219=="
 X-Spam-Status: No, score=-12.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
 	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,SPF_PASS,T_KAM_HTML_FONT_INVALID,
-	WEIRD_PORT autolearn=ham autolearn_force=no version=4.0.1
+	PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,SPF_PASS,T_KAM_HTML_FONT_INVALID
+	autolearn=ham autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============8582149571408819303==
+--===============1390769686533958219==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="ql6UtFAD4xQ="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="08ve4rYDxk4="; charset=UTF-8
 
---ql6UtFAD4xQ=
+--08ve4rYDxk4=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Gert Doering has uploaded a new patch set (#3) to the change originally cre=
-ated by Selva Nair=2E ( https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2096?usp=
-=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Rev=
-iew+2 by R=C4=83zvan Cojocaru
-
+Gert Doering has submitted this change=2E ( https://gerrit=2Eopenvpn=2Enet/=
+c/openvpn/+/2096?usp=3Demail )
 
 Change subject: misc: Fix username overflow=
  spilling into password
@@ -223,11 +218,10 @@ M tests/unit_tests/openvpn/test_user_pass=2Ec
  insertions(+), 0 deletions(-)
 
 
-  git pull ssh://gerrit=2Eopenvpn=2Enet:29=
-418/openvpn refs/changes/96/2096/3
 
-diff --git a/src/openvpn/misc=2Ec b/src=
-/openvpn/misc=2Ec
+
+diff --git a/src/openvpn/misc=2Ec b/src/=
+openvpn/misc=2Ec
 index 304a87e=2E=2E8c9ad08 100644
 --- a/src/openvpn/misc=
 =2Ec
@@ -395,213 +389,209 @@ To unsubscribe, or for help writing =
 mail filters, visit https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
 Ge=
-rrit-MessageType: newpatchset
+rrit-MessageType: merged
 Gerrit-Project: openvpn
-Gerrit-Branch: master=
-
-Gerrit-Change-Id: I3c8c62c7d90c2b94dd1cd149b4c13b383a2303e9
-Gerrit-Change-=
-Number: 2096
+Gerrit-Branch: master
+Gerr=
+it-Change-Id: I3c8c62c7d90c2b94dd1cd149b4c13b383a2303e9
+Gerrit-Change-Numbe=
+r: 2096
 Gerrit-PatchSet: 3
-Gerrit-Owner: Selva Nair <selva=2Enair@gmai=
-l=2Ecom>
+Gerrit-Owner: Selva Nair <selva=2Enair@gmail=2Ec=
+om>
 Gerrit-Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-=
-Reviewer: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
-Gerrit-CC: openvpn-d=
-evel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Revie=
+wer: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
+Gerrit-CC: openvpn-devel =
+<openvpn-devel@lists=2Esourceforge=2Enet>
 
---ql6UtFAD4xQ=
+--08ve4rYDxk4=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p>Gert Doering <str=
-ong>uploaded patch set #3</strong> to the change originally created by Selv=
-a Nair=2E</p><p><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2096?=
-usp=3Demail">View Change</a></p><p>The following approvals got outdated and=
- were removed:
-Code-Review+2 by R=C4=83zvan Cojocaru</p><pre class=3D"block=
-s" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">misc:=
- Fix username overflow spilling into password<br><br>Consume the complete u=
-sername line before reading the password<br>from an auth file or inline cre=
-dentials=2E This also fixes an<br>exactly full username buffer leaving its =
-newline to be read as<br>an empty password in auth files=2E<br><br>Existing=
- credential truncation behaviour is unchanged=2E<br><br>Tests: Add regressi=
-on coverage for long and boundary-length<br>usernames with missing, blank, =
-or supplied passwords in both<br>inlined and external file inputs=2E<br><br=
->Github: OpenVPN/openvpn#1140<br>Change-Id: I3c8c62c7d90c2b94dd1cd149b4c13b=
-383a2303e9<br>Signed-off-by: Selva Nair &lt;selva=2Enair@gmail=2Ecom&gt;<br=
->Acked-by: Razvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt;<br>Gerrit URL: htt=
-ps://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2096<br>Message-Id: &lt;20261103081=
-357=2E8587-1-gert@greenie=2Emuc=2Ede&gt;<br>URL: https://www=2Email-archive=
-=2Ecom/openvpn-devel@lists=2Esourceforge=2Enet/msg40555=2Ehtml<br>Signed-of=
-f-by: Gert Doering &lt;gert@greenie=2Emuc=2Ede&gt;<br>---<br>M src/openvpn/=
-misc=2Ec<br>M tests/unit_tests/openvpn/test_user_pass=2Ec<br>2 files change=
-d, 65 insertions(+), 0 deletions(-)<br><br></pre><pre class=3D"blocks" styl=
-e=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh=
-://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/96/2096/3</pre><pre st=
-yle=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff=
- --git a/src/openvpn/misc=2Ec b/src/openvpn/misc=2Ec</span><br><span>index =
-304a87e=2E=2E8c9ad08 100644</span><br><span>--- a/src/openvpn/misc=2Ec</spa=
-n><br><span>+++ b/src/openvpn/misc=2Ec</span><br><span>@@ -250,6 +250,10 @@=
-</span><br><span>                 if (!(flags &amp; GET_USER_PASS_PASSWORD_=
-ONLY))</span><br><span>                 {</span><br><span>                 =
-    buf_parse(&amp;buf, &#39;\n&#39;, up-&gt;username, USER_PASS_LEN);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+                    /* T=
-he password starts on the next line, even if the username was truncated=2E =
-*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                 =
-   const char *password =3D strchr(auth_file, &#39;\n&#39;);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+                    password =3D p=
-assword ? password + 1 : &quot;&quot;;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+                    buf_set_read(&amp;buf, (uint8_t *)pa=
-ssword, strlen(password) + 1);</span><br><span>                 }</span><br=
-><span>                 buf_parse(&amp;buf, &#39;\n&#39;, up-&gt;password, =
-USER_PASS_LEN);</span><br><span> </span><br><span>@@ -283,6 +287,14 @@</spa=
-n><br><span>                         msg(M_FATAL, &quot;Error reading usern=
-ame from %s authfile: %s&quot;, prefix,</span><br><span>                   =
-          auth_file);</span><br><span>                     }</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+                    if (!strchr(up=
--&gt;username, &#39;\n&#39;))</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+                    {</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+                        /* Consume the rest of the username lin=
-e before reading the password=2E */</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+                        int c;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+                        while ((c =3D fgetc(fp))=
- !=3D &#39;\n&#39; &amp;&amp; c !=3D EOF)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+                        {</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+                        }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                    }</span><br><span>   =
-              }</span><br><span>                 chomp(up-&gt;username);</s=
-pan><br><span> </span><br><span>diff --git a/tests/unit_tests/openvpn/test_=
-user_pass=2Ec b/tests/unit_tests/openvpn/test_user_pass=2Ec</span><br><span=
->index adcf74a=2E=2E776a86a 100644</span><br><span>--- a/tests/unit_tests/o=
-penvpn/test_user_pass=2Ec</span><br><span>+++ b/tests/unit_tests/openvpn/te=
-st_user_pass=2Ec</span><br><span>@@ -366,6 +366,58 @@</span><br><span>     =
-assert_string_equal(up=2Epassword, &quot;fuser&quot;);</span><br><span> }</=
-span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+sta=
-tic void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_get_us=
-er_pass_long_username(void **state)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  struct gc_arena gc =3D gc_new();</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    const char *authfile =3D platform_create_temp_file(platf=
-orm_get_tmp_dir(), &quot;user_pass&quot;, &amp;gc);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    assert_non_null(authfile);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    const size_t lengths[] =3D=
- { USER_PASS_LEN - 2, USER_PASS_LEN - 1, USER_PASS_LEN + 10 };</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    const char *endings[] =3D { =
-&quot;&quot;, &quot;\n&quot;, &quot;\n\n&quot;, &quot;\nfpassword\n&quot;, =
-&quot;\r\nfpassword\r\n&quot; };</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    co=
-nst bool inline_mode[] =3D { false, true };</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    for (size_t mode =3D 0; mode &lt; SIZE(inline_m=
-ode); mode++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        const bool u=
-se_inline_creds =3D inline_mode[mode];</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        for (size_t i =3D 0; i &lt; SIZE(lengths); i++)<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+            for (size_t j =3D =
-0; j &lt; SIZE(endings); j++)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+                struct user_pass up =3D { 0 };</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+                char creds[USER_PASS_LEN + 6=
-4];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
-memset(creds, &#39;u&#39;, lengths[i]);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+                strcpy(creds + lengths[i], endings[j]);=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                if =
-(!use_inline_creds)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-                {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-                  FILE *fp =3D platform_fopen(authfile, &quot;w&quot;);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+                    ass=
-ert_non_null(fp);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-                  assert_true(fputs(creds, fp) &gt;=3D 0);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+                    assert_int_equal=
-(fclose(fp), 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-             }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+                const bo=
-ol missing_password =3D j &lt; 3;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+                if (missing_password)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                    expect_string(query_u=
-ser_exec_builtin, query_user[i]=2Eprompt,</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+                                  &quot;Enter UT Pass=
-word:&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-              will_return(query_user_exec_builtin, &quot;cpassword&quot;);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                }</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                will_r=
-eturn(query_user_exec_builtin, true);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+                assert_true(get_user_pass_cr(&amp;up, use=
-_inline_creds ? creds : authfile, &quot;UT&quot;,</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+                                             =
-use_inline_creds ? GET_USER_PASS_INLINE_CREDS : 0, NULL));</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+                /* Truncation must n=
-ot change where the password line starts=2E */</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+                creds[lengths[i] &lt; USER_PASS_=
-LEN ? lengths[i] : USER_PASS_LEN - 1] =3D &#39;\0&#39;;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+                assert_true(up=2Edefine=
-d);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
-assert_string_equal(up=2Eusername, creds);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+                assert_string_equal(up=2Epassword,</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+                     =
-               missing_password ? &quot;cpassword&quot; : &quot;fpassword&q=
-uot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    assert_true(platform_unlink(authfile)=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    gc_free(&amp;=
-gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #ifdef ENABLE_M=
-ANAGEMENT</span><br><span> static void</span><br><span> test_get_user_pass_=
-dynamic_challenge(void **state)</span><br><span>@@ -474,6 +526,7 @@</span><=
-br><span>     cmocka_unit_test(test_get_user_pass_inline_creds),</span><br>=
-<span>     cmocka_unit_test(test_get_user_pass_authfile_stdin),</span><br><=
-span>     cmocka_unit_test(test_get_user_pass_authfile_file),</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    cmocka_unit_test(test_get_use=
-r_pass_long_username),</span><br><span> #ifdef ENABLE_MANAGEMENT</span><br>=
-<span>     cmocka_unit_test(test_get_user_pass_dynamic_challenge),</span><b=
-r><span>     cmocka_unit_test(test_get_user_pass_static_challenge),</span><=
-br></pre><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/open=
-vpn/+/2096?usp=3Demail">change 2096</a>=2E To unsubscribe, or for help writ=
-ing mail filters, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settings?=
-usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2E=
-org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sch=
-ema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https://gerrit=2Eopenv=
-pn=2Enet/c/openvpn/+/2096?usp=3Demail"/><meta itemprop=3D"name" content=3D"=
-View Change"/></div></div>
+ong>submitted</strong> this change=2E</p><p><a href=3D"https://gerrit=2Eope=
+nvpn=2Enet/c/openvpn/+/2096?usp=3Demail">View Change</a></p><div style=3D"w=
+hite-space:pre-wrap"></div><pre class=3D"blocks" style=3D"font-family: mono=
+space,monospace; white-space: pre-wrap;">misc: Fix username overflow spilli=
+ng into password<br><br>Consume the complete username line before reading t=
+he password<br>from an auth file or inline credentials=2E This also fixes a=
+n<br>exactly full username buffer leaving its newline to be read as<br>an e=
+mpty password in auth files=2E<br><br>Existing credential truncation behavi=
+our is unchanged=2E<br><br>Tests: Add regression coverage for long and boun=
+dary-length<br>usernames with missing, blank, or supplied passwords in both=
+<br>inlined and external file inputs=2E<br><br>Github: OpenVPN/openvpn#1140=
+<br>Change-Id: I3c8c62c7d90c2b94dd1cd149b4c13b383a2303e9<br>Signed-off-by: =
+Selva Nair &lt;selva=2Enair@gmail=2Ecom&gt;<br>Acked-by: Razvan Cojocaru &l=
+t;razvanc@mailbox=2Eorg&gt;<br>Gerrit URL: https://gerrit=2Eopenvpn=2Enet/c=
+/openvpn/+/2096<br>Message-Id: &lt;20261103081357=2E8587-1-gert@greenie=2Em=
+uc=2Ede&gt;<br>URL: https://www=2Email-archive=2Ecom/openvpn-devel@lists=2E=
+sourceforge=2Enet/msg40555=2Ehtml<br>Signed-off-by: Gert Doering &lt;gert@g=
+reenie=2Emuc=2Ede&gt;<br>---<br>M src/openvpn/misc=2Ec<br>M tests/unit_test=
+s/openvpn/test_user_pass=2Ec<br>2 files changed, 65 insertions(+), 0 deleti=
+ons(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-=
+space: pre-wrap;"><span>diff --git a/src/openvpn/misc=2Ec b/src/openvpn/mis=
+c=2Ec</span><br><span>index 304a87e=2E=2E8c9ad08 100644</span><br><span>---=
+ a/src/openvpn/misc=2Ec</span><br><span>+++ b/src/openvpn/misc=2Ec</span><b=
+r><span>@@ -250,6 +250,10 @@</span><br><span>                 if (!(flags &=
+amp; GET_USER_PASS_PASSWORD_ONLY))</span><br><span>                 {</span=
+><br><span>                     buf_parse(&amp;buf, &#39;\n&#39;, up-&gt;us=
+ername, USER_PASS_LEN);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                    /* The password starts on the next line, even if th=
+e username was truncated=2E */</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+                    const char *password =3D strchr(auth_file, &=
+#39;\n&#39;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+              password =3D password ? password + 1 : &quot;&quot;;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+                    buf_set_=
+read(&amp;buf, (uint8_t *)password, strlen(password) + 1);</span><br><span>=
+                 }</span><br><span>                 buf_parse(&amp;buf, &#3=
+9;\n&#39;, up-&gt;password, USER_PASS_LEN);</span><br><span> </span><br><sp=
+an>@@ -283,6 +287,14 @@</span><br><span>                         msg(M_FATA=
+L, &quot;Error reading username from %s authfile: %s&quot;, prefix,</span><=
+br><span>                             auth_file);</span><br><span>         =
+            }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+              if (!strchr(up-&gt;username, &#39;\n&#39;))</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+                    {</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+                        /* Consume =
+the rest of the username line before reading the password=2E */</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                        int c;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
+    while ((c =3D fgetc(fp)) !=3D &#39;\n&#39; &amp;&amp; c !=3D EOF)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+                        {=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                   =
+     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
+       }</span><br><span>                 }</span><br><span>               =
+  chomp(up-&gt;username);</span><br><span> </span><br><span>diff --git a/te=
+sts/unit_tests/openvpn/test_user_pass=2Ec b/tests/unit_tests/openvpn/test_u=
+ser_pass=2Ec</span><br><span>index adcf74a=2E=2E776a86a 100644</span><br><s=
+pan>--- a/tests/unit_tests/openvpn/test_user_pass=2Ec</span><br><span>+++ b=
+/tests/unit_tests/openvpn/test_user_pass=2Ec</span><br><span>@@ -366,6 +366=
+,58 @@</span><br><span>     assert_string_equal(up=2Epassword, &quot;fuser&=
+quot;);</span><br><span> }</span><br><span> </span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+test_get_user_pass_long_username(void **state)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    struct gc_arena gc =3D gc_new();</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    const char *authfile =3D pla=
+tform_create_temp_file(platform_get_tmp_dir(), &quot;user_pass&quot;, &amp;=
+gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_non_=
+null(authfile);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+const size_t lengths[] =3D { USER_PASS_LEN - 2, USER_PASS_LEN - 1, USER_PAS=
+S_LEN + 10 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    co=
+nst char *endings[] =3D { &quot;&quot;, &quot;\n&quot;, &quot;\n\n&quot;, &=
+quot;\nfpassword\n&quot;, &quot;\r\nfpassword\r\n&quot; };</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    const bool inline_mode[] =3D { false, true };</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    for (size_t mode =3D =
+0; mode &lt; SIZE(inline_mode); mode++)</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        const bool use_inline_creds =3D inline_mode[mode];</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        for (size_t i =3D 0; i=
+ &lt; SIZE(lengths); i++)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        for (size_t j =3D 0; j &lt; SIZE(endings); j++)</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+                struct user_pass up =3D { 0 }=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                ch=
+ar creds[USER_PASS_LEN + 64];</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                memset(creds, &#39;u&#39;, lengths[i]);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                strcpy(creds =
++ lengths[i], endings[j]);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+                if (!use_inline_creds)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+                {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+                    FILE *fp =3D platform_fopen(aut=
+hfile, &quot;w&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+                    assert_non_null(fp);</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+                    assert_true(fputs(creds, fp) &g=
+t;=3D 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+          assert_int_equal(fclose(fp), 0);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                }</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+                const bool missing_password =3D j &lt; 3;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+                if (missing_passwor=
+d)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                {=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                   =
+ expect_string(query_user_exec_builtin, query_user[i]=2Eprompt,</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                               =
+   &quot;Enter UT Password:&quot;);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+                    will_return(query_user_exec_builtin, &q=
+uot;cpassword&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+                }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+                will_return(query_user_exec_builtin, true);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+                assert_true(get_use=
+r_pass_cr(&amp;up, use_inline_creds ? creds : authfile, &quot;UT&quot;,</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+                       =
+                      use_inline_creds ? GET_USER_PASS_INLINE_CREDS : 0, NU=
+LL));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
+  /* Truncation must not change where the password line starts=2E */</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+                creds[leng=
+ths[i] &lt; USER_PASS_LEN ? lengths[i] : USER_PASS_LEN - 1] =3D &#39;\0&#39=
+;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                a=
+ssert_true(up=2Edefined);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+                assert_string_equal(up=2Eusername, creds);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+                assert_string_=
+equal(up=2Epassword,</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++                                    missing_password ? &quot;cpassword&quo=
+t; : &quot;fpassword&quot;);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+            }</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(platf=
+orm_unlink(authfile));</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    gc_free(&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan> #ifdef ENABLE_MANAGEMENT</span><br><span> static void</span><br><span>=
+ test_get_user_pass_dynamic_challenge(void **state)</span><br><span>@@ -474=
+,6 +526,7 @@</span><br><span>     cmocka_unit_test(test_get_user_pass_inlin=
+e_creds),</span><br><span>     cmocka_unit_test(test_get_user_pass_authfile=
+_stdin),</span><br><span>     cmocka_unit_test(test_get_user_pass_authfile_=
+file),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cmocka_un=
+it_test(test_get_user_pass_long_username),</span><br><span> #ifdef ENABLE_M=
+ANAGEMENT</span><br><span>     cmocka_unit_test(test_get_user_pass_dynamic_=
+challenge),</span><br><span>     cmocka_unit_test(test_get_user_pass_static=
+_challenge),</span><br></pre><p>To view, visit <a href=3D"https://gerrit=2E=
+openvpn=2Enet/c/openvpn/+/2096?usp=3Demail">change 2096</a>=2E To unsubscri=
+be, or for help writing mail filters, visit <a href=3D"https://gerrit=2Eope=
+nvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=
+=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" it=
+emtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"ht=
+tps://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2096?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType=
-: newpatchset </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn <=
-/div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=
-=3D"display:none"> Gerrit-Change-Id: I3c8c62c7d90c2b94dd1cd149b4c13b383a230=
-3e9 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 2096 </div>
-<=
-div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display=
-:none"> Gerrit-Owner: Selva Nair &lt;selva=2Enair@gmail=2Ecom&gt; </div>
-<d=
-iv style=3D"display:none"> Gerrit-Reviewer: Arne Schwabe &lt;arne-openvpn@r=
-fc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: R=C4=
-=83zvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt; </div>
-<div style=3D"display=
-:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Ene=
-t&gt; </div>
+<div style=3D"display:none=
+"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-Pr=
+oject: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </=
+div>
+<div style=3D"display:none"> Gerrit-Change-Id: I3c8c62c7d90c2b94dd1cd1=
+49b4c13b383a2303e9 </div>
+<div style=3D"display:none"> Gerrit-Change-Number=
+: 2096 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div s=
+tyle=3D"display:none"> Gerrit-Owner: Selva Nair &lt;selva=2Enair@gmail=2Eco=
+m&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: Arne Schwabe &lt=
+;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-=
+Reviewer: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt; </div>
+<div st=
+yle=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Eso=
+urceforge=2Enet&gt; </div>
 
 </body></html>
---ql6UtFAD4xQ=--
+--08ve4rYDxk4=--
 
 
---===============8582149571408819303==
+--===============1390769686533958219==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============8582149571408819303==
+--===============1390769686533958219==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -612,5 +602,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============8582149571408819303==--
+--===============1390769686533958219==--
 
