@@ -1,13 +1,13 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5475606A32E
-	for <openvpn-devel@archiver.kernel.org>; Wed,  4 Nov 2026 11:18:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF503606A326
+	for <openvpn-devel@archiver.kernel.org>; Wed,  4 Nov 2026 11:32:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=DueGrEpW;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=PHTVcGdp;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=iHycpQqa;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=efO3Ci60
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=X/nwe+ha;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=Eky+smj4;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=gCRPoLWc;
+	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=XjHf/tAX
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
@@ -15,29 +15,29 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
 	List-Unsubscribe-Post:List-Owner;
-	bh=UqrJrUHnSRKbvzv1AJ7K2OS/JmZTs8jkcRp63Gh5nOQ=; b=DueGrEpWmq0cdIrs9eq8lh48Qm
-	AvsQaxeP+nJc5BRL40juau61XtcwRy1xXX9mR7kgJAEl3tTquxJn+qLn7+84UFqPfGgVGgVYTAHON
-	vcqpDdr1JPd6Rb3mjtZ92fKhbaSL2mLWpeOG+xbNidJgUpTz8asBr0wzxMS160Npzn4c=;
+	bh=DWxz4+K++WBnt97Cf8aSOoTU97efzzXkl3xRmwZgvDQ=; b=X/nwe+hahyCKcRtMr4bhqRwB52
+	bO+9rriSFv3rgqc6xzSPkDidRJEEVka6cgrV5N2LQarYNUAVQtOflha/xtUCiq8q8a25m3SkZYxRg
+	rlbmpAs3gLlkiqwEG+d9IEikn62U9eiDY3XhVJHWnmRqTVSri9NlyrRcoaqbTv6Y4CY0=;
 Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
 	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xOZ0v-000000006h9-0r47;
-	Wed, 04 Nov 2026 11:18:45 +0000
+	id 1xOZDz-000000006xH-0Czk;
+	Wed, 04 Nov 2026 11:32:15 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xOZ0g-000000006gs-1nxB
+ (envelope-from <gerrit@openvpn.net>) id 1xOZDy-000000006xA-0mti
  for openvpn-devel@lists.sourceforge.net;
- Wed, 04 Nov 2026 11:18:30 +0000
+ Wed, 04 Nov 2026 11:32:14 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=nmaIO1fyuwu5C6bgi4alCNNsT13DeTgaOV1ZqBw/8ks=; b=PHTVcGdpGAKuuQNL8dFP8LE4OH
- pxiWEhsL6kwly8XEFxKXFj7dgSdQmHepYSagqy0U5OjAY8EUKjg4k0wTDPCcS0lVh/gF6h0xhkVJr
- h3sGxaK5AYYPQEmHiplSSS9Rze9jAIODP9PZ37HEI614tfC0+XL1ICuuUU1GnVHXnRJA=;
+ bh=ZYfq0JOuputjxKmKEAvg229C+5Pi7jb/2T10WGqKmA0=; b=Eky+smj4JfCR6jh0a7RbHrkGVX
+ JnqKq1+NoVsjwIGH3eQIe8jIuCrP6klZTPp2PRSmOYLDnwCmMN76Wkkl7SkkZjUL2jm79cuCpxOBP
+ Z41SJrCzH3oB+YDDvHQVuJDOvQA1lCnIc/oB/82Z4Ez++IK3AgEqI981h9HaBOWduVLE=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
@@ -45,93 +45,92 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=nmaIO1fyuwu5C6bgi4alCNNsT13DeTgaOV1ZqBw/8ks=; b=iHycpQqa88QuDzmZ650b5McpvU
- ZgUPe+EI845GiEvAdc12gjdTiD2ooGkE5dbKYvAYQ68aN8SoE9ck7xFRzhCLzZ2ZiLSxB9AMW0UFg
- amwxqX9A/ajtFocOwMGaZlWNk6kwEt+KX9RXHgadU644f49PjErFAi/0y0zo7YLNRaW4=;
-Received: from mail-wr1-f54.google.com ([209.85.221.54])
+ bh=ZYfq0JOuputjxKmKEAvg229C+5Pi7jb/2T10WGqKmA0=; b=gCRPoLWcgUKseXJT7+brX9WUfz
+ jefe8to2vKuySkfvzrEU5rcld5+Me6z6T+Q/xT0xHnd1v5cGhvt2Ea2zYAkQHp3a5sTS4yu6TbDQq
+ bP3RyPSwTWLgRms8m/5N07/zDwSAYZt/1+zZZCbG79lN1zQZaV1URiNvU2wqN6zY5dYo=;
+Received: from mail-wm1-f52.google.com ([209.85.128.52])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xOZ0d-000000000YE-3G7d for openvpn-devel@lists.sourceforge.net;
- Wed, 04 Nov 2026 11:18:30 +0000
-Received: by mail-wr1-f54.google.com with SMTP id
- ffacd0b85a97d-48e0d885929so460197f8f.3
+ id 1xOZDv-000000000uD-3qje for openvpn-devel@lists.sourceforge.net;
+ Wed, 04 Nov 2026 11:32:14 +0000
+Received: by mail-wm1-f52.google.com with SMTP id
+ 5b1f17b1804b1-4a35a60499eso4444375e9.0
  for <openvpn-devel@lists.sourceforge.net>;
- Wed, 04 Nov 2026 03:18:27 -0800 (PST)
+ Wed, 04 Nov 2026 03:32:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1793791101; x=1794395901; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1793791925; x=1794396725; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=nmaIO1fyuwu5C6bgi4alCNNsT13DeTgaOV1ZqBw/8ks=;
- b=efO3Ci600jesN6EdJuHrs/kp4Nj2zOvmD0Oby+JT2OW5V2JYBijuqgwdw+wi4zHiG8
- TxweekiJncth/hUEltLGHnkA8Ig5250lcUviKXUTntJ5CYzBJILyfDZ1bW0TO4Dc/MqG
- isMguWzvnCCNyRM5jB+4KMWLLlD0F9ZJBIbqY4t4G7jLY1u94l9oLvbAaVIcLnNDx9Zy
- b4cV0s+XUFjmvfWrChjZ4QS0JaN7ejakinm6d3dydJO6qO+hfB3oqudp6Jx8Zt6WjNJD
- tKx4Uox1J+dMvQP1KqgBKzGMjqllmS2MeiQ2uXNoB0EHxD96BZBT7OWIwfENNdVU1iXs
- zWqQ==
+ bh=ZYfq0JOuputjxKmKEAvg229C+5Pi7jb/2T10WGqKmA0=;
+ b=XjHf/tAXkBYWEya0wmoTQc0V7nXSAyr2QjHJQjdQ0+daYjeX4C+pkCHe1rqbreNBcL
+ ctnbRTHSFn7F8MCWheP4cVvk/kNao/lUszQSPBZvFJ2PsYvN8GUy6wbwqVkfdJEnxTpx
+ +kfcMzPrQJbr81zHQFj0EPHNdOvCYZpqMLlGlCD+CWbNQPkJeHmDiZgD8VisiLfGFkpo
+ ySNAu9jqLB7pMEo4wxvfgAEOWCjD8jKwb8t/DCmxSVUr6FqZkquRYy/WSN6RopfpvhLC
+ Ve4cJua+Zkbl5W2q2EHLPR3/Oc1PKKy6T05bUnb13cy204UsiEeZyQvuL01tKqnwm7F0
+ g+Jg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1793791101; x=1794395901;
+ d=1e100.net; s=20260707; t=1793791925; x=1794396725;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=nmaIO1fyuwu5C6bgi4alCNNsT13DeTgaOV1ZqBw/8ks=;
- b=UzGT3ZwuMMyON2GXbIuGrcyuJUEj+U4mB67JTc4IUML83lGU+B2z+HF2dwUnClEn/U
- ayllswhtxJe5NDSUyMQ3HQCFTMUevo8stc0+lp0A7+CoWSxSAfXUMvw9T3vt5Bhhcz+h
- /a5tDN2jeHCO68OWIIsSANChhHY6ZX+e1BqMunMpLbaRAFpyKQAQjhKjfM9HZbnhAf2e
- RdtA4nfntvS32TieDKpiQrBfQM/Els5HX6+OtrjOF7kAgNNHutYN1+1/zxsTqY/kr05l
- M39i4CMcsu7Bnpdxqn6Xmc1WmPHpjrR52vTMMBx3LZSkaTrVv3qWR9SHcd4mVQf9ehjK
- rg3w==
-X-Gm-Message-State: APuU4Z/KftCF+JoTxl1OBepf1bo0o1YgT5wpp4zQ0WI517BT+kpIVFDP
- Kom6ch8NdWLXBSiEQVA9cPENHfQq9xl2bxEauQSkKqhSBVf5d8i65JKfRok/tX2dcJQKZxuccDI
- dhGHBLY/+t5RSIWGE0OmwEIVNSOz68y0uCSZepW/Vtxz/i0CAIRXYhUjuBBhENLr1QL7MGW8h8j
- j2ZnN6+Q==
-X-Gm-Gg: AYBFou3BlilPsr2E4W+5efWqJFF3vUapJcmW81rCrSvE6Tp6cErPwlL2855KNJIAbN+
- dFKRGG9qr0/xqp9iY2Q8nr2+4HtO+70++gVEvXa01KiTzYQlrw6A4bDF9JWJhvPTuxqsXRcml6k
- 3bqJvYgQ3BDJ4Ze9zmXzShqGqUyxYYVQ4/+w28IhqpREVrCwnpDlc3+72dbxUWawOy2KPh7Oubw
- ICmJJn6dH2mbuiciXPLvTa2vLTSuiifxjThnjJxA8q6UKnfqDh+hGyDjgVhBkiBIIpdxDNPL5Qw
- SLwtxsjQ2JxeEoZ87nSWjPhnJX50lEgfj8+N/ycp8Y3zXbS6DK9a4h+Z3K8YiwY3tzWDADy2NMV
- 3yM8PH/j3hNCejGttFcOgBlQlylsG6ho+Kt5hFiQwH/h5yUZsOkBOfclzoAUsldsZkkQGlMKSpI
- 7Le5zZ3aIz8o8HROlzDq5YOKiW48Oimkl5gwh7g3pa0Vwl8C6V5JBD1OGaPWXAK+ZPbJjoa0nw8
- j3ZqJDcMeZRCch+6Zc16aG4mCG2C+1zrk2mUtK3oehroI1+iCEYWsOPb1hLuE93WxlzbakhVpWo
- rx96VKCVc3OOmufd0Z/20RBrpvyI46gLlau89lHTlRIbjbSMepIqQdYGpaDJW3DOXuLK0BF3Xjw
- BnV+HSFs9oTKfBwiM+xKw6B51+6GfDBXJr2w1waO8pBo+m9gJt3fa3nSoeAKQlQtuJTrFxlgByE
- Zgt3y84psltwM1aA==
-X-Received: by 2002:a5d:64a7:0:b0:48e:5e1f:9a36 with SMTP id
- ffacd0b85a97d-48e6e50191cmr26802862f8f.42.1793791100782; 
- Wed, 04 Nov 2026 03:18:20 -0800 (PST)
+ bh=ZYfq0JOuputjxKmKEAvg229C+5Pi7jb/2T10WGqKmA0=;
+ b=bFwZGoz1nUn0z7M7DYSM9ILd5poIx4x9b7RRPITzUIxfNAOjC0NJ1JFWHIiOP7hH2h
+ 9znIU4Dy1dNTlKrvpqDBQmQzKcLCGMyVghjwzS5f7AklEkcn1ypyG3Iwz3HxHJh7L1UG
+ zEyU8iwTeqRoq3KFVSLxsF6qNGrr0ozBUq4j2pXfVpdIaDrOF5+gn2MQnREZVObSTFTj
+ lkQCQrNmRuFrpRcV01tcmNNZCjGs0UQQ7ipHy/VbS+6KBPXaYMWdQi8Je8/CtRC3YhTy
+ TW1FIeCdfbdWDmvojNCFNS4YYz3GJtx+BvIH4gd44nH+hmht8oNd4kv/SO/dCl15YuBx
+ jq3A==
+X-Gm-Message-State: APuU4Z/jnXk1zhcHFnkLm3+FPXublNBUmR8xdIOMLMWyNuDPqQ242G4J
+ 3r53Vpj+gheK88Mv+u5/MMcQ3U93k8fduGOyGgxTTSm9XTx93t/riozNG5gpTTb/LDI25fBkdSS
+ UZYhDc21HYwfzFDTK3eYO/pxkXi2TeGgTJNBtEndWYS8kaQjjC/do09o0B1IeGS6Cup3C
+X-Gm-Gg: AYBFou0AEGR4JDpcBOoEAA1m0/QyMTfvSdlBxvYZa0D7HgP21x47FcCdmEv/LA7DqDA
+ rwSferNbrq12SrzUlD/88z47Fmhui0RrMNIKASAC+yM4dKHRUMk6p+vFc6oqwvBdNtictAkXn8+
+ EdUfyeSaQxbLegiSaBHS64tWVvvnRx6RSdpUkgadLtjL1+tkn03Be/Fst+xv/bL/iHZiH2aXJIt
+ wjjbLfpU7TBH84nI/427fX0Lv4/F8UE++rJ9cAGzvENf6kMaTchR7Ty7GWpuBQY3uLbLF2ZdvvE
+ +vk9PPf3TBEPSGL0GsXv5vxEZHv3ZGYN34GbTS8XbYFyt1yKjkRln/+T64tuK452Sd0BlB7f5Sf
+ EOuKkpVm4QNfWlno03NddC8UE+jdWDW9/toGS7hl68K+/Mm9w21Ngrk30wx7fwNckjIsn1WqFOD
+ YsY7E8n9lyen/J2EPAOhz514uYyUGguIPA5s2ZDgxY+YAow14ViXDLeFKVAT9oWsgN/alOC/aqw
+ CFNyTbJ6KQxDz+MVisgsRCl7J/v6EZxKuEmR4bQE+X6VC/7c6I3q94SLr+6IRJQhpKhFhRxlR5V
+ 4uDF2TcPaFC+YizdCfzB+HQciAom3nsDwFh8CSZlnfltjIQ/JldI7lB6NdHrd0zOmSqCP2pdP89
+ Tpi4Z5WisfNkn6OCZ4z15C4tq6UCClXqyC1n2DLdSau1BF2504WRnSvxXgsjfznZk1xoRF3/8gd
+ vYUf7uAohuGS52VvgSix4LJO+e/swXY6uh47Q=
+X-Received: by 2002:a05:600c:3ba5:b0:4a2:a6e:80f5 with SMTP id
+ 5b1f17b1804b1-4ac16fa356cmr433069945e9.11.1793791925153; 
+ Wed, 04 Nov 2026 03:32:05 -0800 (PST)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-48fece99d67sm3333000f8f.24.2026.11.04.03.18.20
+ 5b1f17b1804b1-4b4533873f0sm43655885e9.4.2026.11.04.03.32.04
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 04 Nov 2026 03:18:20 -0800 (PST)
+ Wed, 04 Nov 2026 03:32:04 -0800 (PST)
 X-Google-Original-From: "Ralf Lici (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Wed, 4 Nov 2026 11:18:18 +0000
+Date: Wed, 4 Nov 2026 11:32:03 +0000
 To: Arne Schwabe <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newpatchset
-X-Gerrit-PatchSet: 3
-X-Gerrit-Change-Id: I97c55e211f9113d090808724ab43cb3c94099fb0
-X-Gerrit-Change-Number: 1991
+X-Gerrit-PatchSet: 5
+X-Gerrit-Change-Id: I72302403bddee4b0b0ee2441ae9e246f48d0bc81
+X-Gerrit-Change-Number: 1734
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/1991?usp=email>
-X-Gerrit-Commit: f2a3322f598f643c1703ef68907877800d776594
-In-Reply-To: <gerrit.1791885896000.I97c55e211f9113d090808724ab43cb3c94099fb0@gerrit.openvpn.net>
-References: <gerrit.1791885896000.I97c55e211f9113d090808724ab43cb3c94099fb0@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzkxODg1ODk2MDAwLkk5N2M1NWUyMTFmOTExM2QwOTA4MDg3MjRhYjQzY2IzYzk0MDk5ZmIwQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <e0cbd9e5bb3655193693ec821626665cbcfc843e-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/1734?usp=email>
+X-Gerrit-Commit: 3a483bb3abcdc7f7b80d59956cef6b90faf8fbd4
+In-Reply-To: <gerrit.1782545314000.I72302403bddee4b0b0ee2441ae9e246f48d0bc81@gerrit.openvpn.net>
+References: <gerrit.1782545314000.I72302403bddee4b0b0ee2441ae9e246f48d0bc81@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzgyNTQ1MzE0MDAwLkk3MjMwMjQwM2JkZGVlNGIwYjBlZTI0NDFhZTllMjQ2ZjQ4ZDBiYzgxQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <72ff667e23907d77de32e5d21e8a57ed4c6bff10-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.2
 X-Spam-Score: 0.8 (/)
-X-Headers-End: 1xOZ0d-000000000YE-3G7d
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: dco_linux: enable
- RPS on newly created DCO interfaces
+X-Headers-End: 1xOZDv-000000000uD-3qje
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Support pre-existing
+ Linux DCO interfaces
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -147,7 +146,7 @@ Reply-To: ralf@mandelbit.com, arne-openvpn@rfc2549.org,
  openvpn-devel@lists.sourceforge.net, antonio@mandelbit.com
 Cc: "Ralf Lici \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============2073737894522920099=="
+Content-Type: multipart/mixed; boundary="===============7479146354965820328=="
 X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
 	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,MIME_HTML_MOSTLY,
@@ -156,901 +155,939 @@ X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============2073737894522920099==
+--===============7479146354965820328==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="x0FpCBbHcV8="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="SYmJCCdUA7Q="; charset=UTF-8
 
---x0FpCBbHcV8=
+--SYmJCCdUA7Q=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: Antonio Quartulli, Arne Schwabe=2E
+Attention is currently required from: Arne Schwabe, Ralf Lici=2E
 
-H=
-ello Antonio Quartulli, Arne Schwabe, 
+Hello Ant=
+onio Quartulli, Arne Schwabe, 
 
-I'd like you to reexamine a change=
-=2E Please visit
+I'd like you to reexamine a change=2E Pleas=
+e visit
 
-    https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1991?usp=
-=3Demail
+    https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1734?usp=3Demail
 
-to look at the new patch set (#3)=2E
+t=
+o look at the new patch set (#5)=2E
+
+The change is no longer submittable: c=
+hecks~ChecksSubmitRule is unsatisfied now=2E
 
 
-Change subject: dco_linux:=
- enable RPS on newly created DCO interfaces
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+Change subject: Support pre-=
+existing Linux DCO interfaces
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E
 
-dco_linux: enable RPS on newly created DCO =
-interfaces
+Support pre-existing Linux DCO interfaces
 
-When multiple TCP streams share an OpenVPN tunnel, their ACKs a=
-rrive
-through the same outer flow and can be processed on a single NIC RX C=
-PU=2E
-Delivering the decrypted ACKs can also drain TCP transmit queues inli=
-ne,
-concentrating receive processing, transmission and crypto work on that
-=
-CPU despite the parallelism available between inner flows=2E
+When creating a=
+n ovpn interface returns -EEXIST, still retrieve the
+ifindex and return the=
+ error to the generic DCO open path=2E This lets the
+caller mark the interf=
+ace as pre-existing and avoid deleting it on
+close=2E
 
-Enable Receiv=
-e Packet Steering (RPS) on newly created DCO interfaces to
-distribute inner=
- flow processing across CPUs, after decryption=2E Build a
-mask covering all=
- possible CPU IDs and let the kernel filter out offline
-CPUs=2E
+Before accepting the=
+ existing interface, query its rtnetlink link info
+and verify that it is an=
+ ovpn device with the expected mode=2E The ovpn
+mode is fixed at interface =
+creation time, so attaching to an interface
+created for the other mode cann=
+ot work=2E
 
-Add --disa=
-ble-rps to skip automatic RPS configuration=2E Document the
-option and the =
-limitation that RPS may not be re-enabled if the
-interface is recreated aft=
-er privileges have been dropped=2E
+Honor the pre-existing state on close by skipping net_iface_del=
+() for
+persistent interfaces=2E
 
-Leave pre-existing interfaces and nonze=
-ro RPS masks unchanged, including
-masks inherited from net=2Ecore=2Erps_def=
-ault_mask=2E Failure to configure RPS
-is nonfatal=2E
-
-Tested on a Ryzen 9 9=
-950X with Fedora's stock ovpn module from kernel
-7=2E2=2E5-200=2Efc44=2Ex86=
-_64 and two ConnectX-4 Lx ports were cabled at 25
-Gb/s, The tunnel used IPv=
-4/UDP, AES-256-GCM and MTU 1448=2E Values are
-medians across three 20 secon=
-ds iperf3 runs, after a 3-second warmup:
-
-flows    RPS off     RPS on      =
-change
-  1         9=2E01      12=2E06      +33=2E9%
-  4         9=2E41    =
-  16=2E90      +79=2E6%
-
-At four streams, the sender NIC IRQ CPU's average =
-softirq utilization
-was 98=2E7-99=2E5% off and 4=2E7-47=2E2% on=2E
-
-Change-=
-Id: I97c55e211f9113d090808724ab43cb3c94099fb0
-Reported-By: Lev Stipakov <le=
-v@openvpn=2Enet>
-Signed-off-by: Ralf Lici <ralf@mandelbit=2Ecom>
+Github: closes OpenVPN/openvpn#1064
+Change=
+-Id: I72302403bddee4b0b0ee2441ae9e246f48d0bc81
+Signed-off-by: Ralf Lici <ra=
+lf@mandelbit=2Ecom>
 ---
-M READ=
-ME=2Edco=2Emd
-M doc/man-sections/advanced-options=2Erst
-M src/openvpn/dco_l=
-inux=2Ec
-M src/openvpn/options=2Ec
-M src/openvpn/options=2Eh
-M src/openvpn/=
-options_show=2Ec
-6 files changed, 184 insertions(+), 0 deletions(-)
+M src/openvpn/dco=2Eh
+M src/openvpn/dco_linux=2Ec
+M=
+ src/openvpn/dco_linux=2Eh
+M src/openvpn/networking=2Eh
+M src/openvpn/netwo=
+rking_iproute2=2Ec
+M src/openvpn/networking_sitnl=2Ec
+M src/openvpn/network=
+ing_sitnl=2Eh
+7 files changed, 185 insertions(+), 29 deletions(-)
 
 
-  git=
- pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/91/1991/3
+  git p=
+ull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/34/1734/5
 
-di=
-ff --git a/README=2Edco=2Emd b/README=2Edco=2Emd
-index a93dc94=2E=2E6ece2b7=
- 100644
---- a/README=2Edco=2Emd
-+++ b/README=2Edco=2Emd
-@@ -52,6 +52,20 @@
-=
+diff=
+ --git a/src/openvpn/dco=2Eh b/src/openvpn/dco=2Eh
+index c435f8c=2E=2E02ff9=
+b3 100644
+--- a/src/openvpn/dco=2Eh
++++ b/src/openvpn/dco=2Eh
+@@ -109,7 +10=
+9,8 @@
+ bool ovpn_dco_init(struct context *c);
  
- in your log=2E
- 
-+On Linux, OpenVPN enables Receive Packet Steering (RPS=
-) on DCO interfaces it
-+creates, distributing inner-flow processing across =
-online CPUs=2E Use
-+`--disable-rps` to opt out of this automatic configurat=
-ion if its overhead
-+outweighs the performance benefit on your system=2E Pr=
-e-existing interfaces and
-+nonzero RPS masks (including masks inherited fro=
-m `net=2Ecore=2Erps_default_mask`)
-+are preserved and `--disable-rps` does =
-not clear administrator-configured masks=2E
-+
-+RPS is configured before Ope=
-nVPN drops privileges during initial setup=2E If the
-+interface is recreate=
-d after dropping privileges, for example when pulled
-+options change on rec=
-onnect, OpenVPN may be unable to re-enable RPS because the
-+sysfs file is n=
-ot writable by the new user=2E This failure is logged and is
-+nonfatal=2E `=
---persist-tun` normally preserves the interface and its RPS mask,
-+but chan=
-ges to certain pulled options can still force recreation=2E
-+
- 
- Getting st=
-arted (Windows)
- -------------------------
-diff --git a/doc/man-sections/ad=
-vanced-options=2Erst b/doc/man-sections/advanced-options=2Erst
-index 32008d=
-5=2E=2E6581657 100644
---- a/doc/man-sections/advanced-options=2Erst
-+++ b/d=
-oc/man-sections/advanced-options=2Erst
-@@ -115,3 +115,17 @@
-   is enabled=
-=2E
- 
-   On platforms that do not support DCO ``disable-dco`` has no effect=
-=2E
-+
-+--disable-rps
-+  Do not automatically enable Receive Packet Steering=
- (RPS) on newly created
-+  Linux DCO interfaces=2E This option is local and=
- cannot be pushed by a server=2E
-+  It is accepted on all platforms, but ha=
-s no effect outside Linux DCO=2E
-+
-+  By default, OpenVPN enables RPS to di=
-stribute inner-flow processing across
-+  online CPUs=2E This can improve th=
-roughput, but the additional processing
-+  overhead may outweigh the benefi=
-t on some systems or workloads=2E
-+  ``--disable-rps`` skips this automatic=
- configuration=2E
-+
-+  Pre-existing interfaces and nonzero RPS masks, inclu=
-ding masks inherited
-+  from ``net=2Ecore=2Erps_default_mask``, are left un=
-changed even without
-+  ``--disable-rps``=2E
-diff --git a/src/openvpn/dco_l=
-inux=2Ec b/src/openvpn/dco_linux=2Ec
-index e9cf0b7=2E=2E8c2f666 100644
---- =
-a/src/openvpn/dco_linux=2Ec
+ /**
+- * Open/create a DCO=
+ interface
++ * Open/create a DCO interface and store its ifindex=2E
++ * If =
+the interface already exists, save the ifindex anyway and return -EEXIST=2E=
+
+  *
+  * @param tt        the tuntap context
+  * @param ctx       the netwo=
+rking API context
+diff --git a/src/openvpn/dco_linux=2Ec b/src/openvpn/dco_=
+linux=2Ec
+index 4412ad0=2E=2Ee9cf0b7 100644
+--- a/src/openvpn/dco_linux=2Ec=
+
 +++ b/src/openvpn/dco_linux=2Ec
-@@ -33,6 +33,7 =
-@@
- #include "buffer=2Eh"
- #include "networking=2Eh"
- #include "openvpn=2Eh=
-"
-+#include "options_util=2Eh"
- 
- #include "socket=2Eh"
- #include "tun=2Eh"=
-
-@@ -553,6 +554,145 @@
-     return "unknown";
+@@ -540,6 +540,19 @@
+     CLEAR(dco);
  }
- 
-+/**
-+ * Build an RPS ma=
-sk covering all possible CPU IDs=2E The kernel filters out
-+ * offline CPUs=
- when installing the mask, so only the last ID in the sorted
-+ * sysfs CPU =
-list is needed, even when the list has gaps=2E
-+ * Removes the trailing new=
-line from cpus before parsing the last ID=2E
-+ */
-+static bool
-+ovpn_rps_ma=
-sk_full(char *cpus, struct buffer *mask)
+ =
+
++static const char *
++ovpn_mode_to_str(enum ovpn_mode mode)
 +{
-+    /* the cpus string contain=
-s range formats like "0-31" or "0-15,32-47" */
-+    size_t len =3D strspn(c=
-pus, "0123456789,-");
-+    if (!len || cpus[len] !=3D '\n' || cpus[len + 1]=
- !=3D '\0')
++    switch=
+ (mode)
 +    {
-+        return false;
-+    }
-+
-+    /* walk backwards o=
-ver the trailing digits to find the beginning of the
-+     * last number, s=
-topping at a separator or the beginning of the string
-+     */
-+    const c=
-har *last =3D cpus + len;
-+    while (last > cpus && last[-1] >=3D '0' && l=
-ast[-1] <=3D '9')
-+    {
-+        --last;
-+    }
-+    if (last =3D=3D cpus =
-+ len)
-+    {
-+        return false;
-+    }
-+
-+    cpus[len] =3D '\0';
++        case OVPN_MODE_P2P:
++            return "p2p";
 +   =
- int last_cpu;
-+    if (!atoi_constrained(last, &last_cpu, "last possible C=
-PU", 0, INT_MAX, M_WARN))
-+    {
-+        return false;
+     case OVPN_MODE_MP:
++            return "server";
 +    }
-+
-+    /* th=
-e most significant group may contain fewer than 32 bits */
-+    unsigned in=
-t word =3D UINT32_MAX >> (31 - last_cpu % 32);
-+    /* first handle the mos=
-t significant, potentially partial group */
-+    if (!buf_printf(mask, "%x"=
-, word))
-+    {
-+        return false;
-+    }
-+    /* then write the other =
-chunks, comma-separated as required by bitmap_parse
-+     * in linux/lib/bi=
-tmap-str=2Ec
-+     */
-+    for (int i =3D last_cpu / 32; i > 0; --i)
-+    {=
-
-+        if (!buf_printf(mask, ",ffffffff"))
-+        {
-+            retur=
-n false;
-+        }
-+    }
-+    return buf_printf(mask, "\n");
-+}
-+
-+static=
- void
-+ovpn_enable_rps(const char *dev)
-+{
-+    char rps_path[PATH_MAX];
-+ =
-   /* ovpn interfaces have a single RX queue */
-+    if (!checked_snprintf(=
-rps_path, sizeof(rps_path),
-+                          "/sys/class/net/%s/q=
-ueues/rx-0/rps_cpus", dev))
-+    {
-+        msg(M_WARN, "DCO: cannot build =
-RPS path for %s", dev);
-+        return;
-+    }
-+
-+    struct gc_arena gc =
-=3D gc_new();
-+    struct buffer current =3D buffer_read_from_file(rps_path=
-, &gc);
-+    /* buffer_read_from_file counts the terminating NUL as content=
- */
-+    buf_rmtail(&current, '\0');
-+    if (!buf_defined(&current) || BLE=
-N(&current) < 2 || *BLAST(&current) !=3D '\n')
-+    {
-+        /* RPS may b=
-e unavailable, for example with CONFIG_RPS disabled */
-+        msg(D_DCO_D=
-EBUG, "DCO: cannot read RPS mask from %s", rps_path);
-+        goto out;
-+ =
-   }
-+    if (strspn(BSTR(&current), "0,") !=3D (size_t)BLEN(&current) - 1)=
-
-+    {
-+        /* new devices can still inherit an administrator's rps_de=
-fault_mask */
-+        msg(D_DCO_DEBUG, "DCO: preserving existing RPS mask =
-in %s: %=2E*s", rps_path,
-+            BLEN(&current) - 1, BSTR(&current));=
-
-+        goto out;
-+    }
-+
-+    const char *cpus_path =3D "/sys/devices/s=
-ystem/cpu/possible";
-+    struct buffer cpus =3D buffer_read_from_file(cpus=
-_path, &gc);
-+    if (!buf_defined(&cpus))
-+    {
-+        msg(M_WARN, "DCO=
-: cannot read possible CPUs from %s", cpus_path);
-+        goto out;
-+    }=
-
-+
-+    struct buffer mask =3D alloc_buf_gc(4096, &gc);
-+    if (!ovpn_rps_=
-mask_full(BSTR(&cpus), &mask))
-+    {
-+        msg(M_WARN, "DCO: cannot bui=
-ld RPS mask from %s", cpus_path);
-+        goto out;
-+    }
-+
-+    /* recre=
-ating the interface after dropping privileges may leave us unable
-+     * t=
-o open this root-owned file, even with CAP_NET_ADMIN retained
-+     */
-+   =
- int fd =3D open(rps_path, O_WRONLY);
-+    if (fd < 0)
-+    {
-+        msg(=
-M_WARN | M_ERRNO, "DCO: cannot open %s for enabling RPS", rps_path);
-+     =
-   goto out;
-+    }
-+    /* submit the complete mask in one write and retry=
- only on interruption */
-+    ssize_t written;
-+    do
-+    {
-+        writ=
-ten =3D write(fd, BPTR(&mask), (size_t)BLEN(&mask));
-+    } while (written =
-< 0 && errno =3D=3D EINTR);
-+
-+    if (written < 0)
-+    {
-+        msg(M_W=
-ARN | M_ERRNO, "DCO: cannot enable RPS on %s", dev);
-+    }
-+    else if (w=
-ritten !=3D BLEN(&mask))
-+    {
-+        msg(M_WARN, "DCO: incomplete RPS m=
-ask write to %s", rps_path);
-+    }
-+    else
-+    {
-+        msg(D_DCO, "D=
-CO: RPS enabled on %s with CPU mask %=2E*s", dev, BLEN(&mask) - 1,
-+       =
-     BSTR(&mask));
-+    }
-+    if (close(fd) < 0)
-+    {
-+        msg(M_WAR=
-N | M_ERRNO, "DCO: cannot close %s", rps_path);
-+    }
-+
-+out:
-+    gc_free=
-(&gc);
++    return "u=
+nknown";
 +}
 +
  int
- open_tun_dco(struct tuntap *tt, openvpn_net_ctx_t *ctx, c=
-onst char *dev)
+ open_tun_dco(struct tuntap *tt, openvpn_net_ctx_t *ctx,=
+ const char *dev)
  {
-@@ -584,6 +724,11 @@
-             return -EINVAL;
-      =
-   }
-     }
-+    /* configure RPS only on newly created devices unless expl=
-icitly disabled */
-+    if (ret =3D=3D 0 && !tt->dco=2Ec->options=2Edisable=
-_rps)
-+    {
-+        ovpn_enable_rps(dev);
-+    }
+@@ -547,11 +560,30 @@
+     ASSERT(tt->type =3D=3D DEV_=
+TYPE_TUN);
  
-     tt->dco=2Eifindex=
- =3D if_nametoindex(dev);
-     if (!tt->dco=2Eifindex)
-diff --git a/src/ope=
-nvpn/options=2Ec b/src/openvpn/options=2Ec
-index 8e0c602=2E=2E62e21d5 10064=
-4
---- a/src/openvpn/options=2Ec
-+++ b/src/openvpn/options=2Ec
-@@ -207,6 +20=
-7,9 @@
-     "                  /dev/net/tun, /dev/tun, /dev/tap, etc=2E\n"
-=
- #if defined(ENABLE_DCO)
-     "--disable-dco   : Do not attempt using Data =
-Channel Offload=2E\n"
-+#ifdef TARGET_LINUX
-+    "--disable-rps   : Do not a=
-utomatically enable Receive Packet Steering on DCO interfaces=2E\n"
-+#endif=
-
- #endif
-     "--lladdr hw     : Set the link layer address of the tap devi=
-ce=2E\n"
-     "--topology t    : Set --dev tun topology: 'net30', 'p2p', or=
- 'subnet'=2E\n"
-@@ -4464,6 +4467,11 @@
+     int ret =3D net_iface_new(ctx, dev, OVPN_FAMILY_NAME, &tt=
+->dco);
+-    if (ret < 0)
++    if (ret < 0 && ret !=3D -EEXIST)
      {
-         options->disable_dco=
- =3D true;
+    =
+     msg(D_DCO_DEBUG, "Cannot create DCO interface %s: %d", dev, ret);
+    =
+     return ret;
      }
-+    else if (streq(p[0], "disable-rps") && !p[1])
-+    {=
++    if (ret =3D=3D -EEXIST)
++    {
++        enum o=
+vpn_mode mode;
++        int mode_ret =3D net_iface_ovpn_mode(ctx, dev, &mod=
+e);
++
++        if (mode_ret < 0)
++        {
++            msg(M_WARN, "DCO: =
+cannot retrieve mode of existing interface %s: %s (%d)", dev,
++            =
+    strerror(-mode_ret), mode_ret);
++            return mode_ret;
++        =
+}
++
++        if (mode !=3D tt->dco=2Eifmode)
++        {
++            msg(M_=
+WARN, "DCO: existing interface %s is in %s mode, expected %s mode",
++      =
+          dev, ovpn_mode_to_str(mode), ovpn_mode_to_str(tt->dco=2Eifmode));=
 
-+        VERIFY_PERMISSION(OPT_P_GENERAL);
-+        options->disable_rps =
-=3D true;
++            return -EINVAL;
++        }
 +    }
-     else if (streq(p[0], "dev-node") && p[1] && !p[2])
-  =
-   {
-         VERIFY_PERMISSION(OPT_P_GENERAL);
-diff --git a/src/openvpn/op=
-tions=2Eh b/src/openvpn/options=2Eh
-index c58530a=2E=2Eb88ccd6 100644
---- a=
-/src/openvpn/options=2Eh
-+++ b/src/openvpn/options=2Eh
-@@ -372,6 +372,8 @@
-=
-     /* DCO is disabled and should not be used as backend driver for the
-  =
-    * tun/tap device */
-     bool disable_dco;
-+    /* Do not automatically=
- enable RPS on Linux DCO interfaces */
-+    bool disable_rps;
  
-     /* Mis=
-c parms */
-     const char *username;
-diff --git a/src/openvpn/options_show=
-=2Ec b/src/openvpn/options_show=2Ec
-index 80d36f0=2E=2E4d01f28 100644
---- a=
-/src/openvpn/options_show=2Ec
-+++ b/src/openvpn/options_show=2Ec
-@@ -375,6 =
-+375,7 @@
- #if defined(ENABLE_DCO)
-     SHOW_BOOL(disable_dco);
- #endif
-+  =
-  SHOW_BOOL(disable_rps);
-     SHOW_STR(lladdr);
-     SHOW_INT(topology);
+     tt->dco=2Eifindex =
+=3D if_nametoindex(dev);
+     if (!tt->dco=2Eifindex)
+@@ -559,7 +591,7 @@
  =
-    SHOW_STR(ifconfig_local);
+        msg(M_FATAL, "DCO: cannot retrieve ifindex for interface %s", dev);=
+
+     }
+ 
+-    return 0;
++    return ret;
+ }
+ 
+ void
+@@ -567,7 +599,10 @@
+ =
+{
+     msg(D_DCO_DEBUG, __func__);
+ 
+-    net_iface_del(ctx, tt->actual_nam=
+e);
++    if (!tt->persistent_if)
++    {
++        net_iface_del(ctx, tt->act=
+ual_name);
++    }
+     ovpn_dco_uninit_netlink(&tt->dco);
+ }
+ 
+diff --git a=
+/src/openvpn/dco_linux=2Eh b/src/openvpn/dco_linux=2Eh
+index c487581=2E=2Ea=
+999d77 100644
+--- a/src/openvpn/dco_linux=2Eh
++++ b/src/openvpn/dco_linux=
+=2Eh
+@@ -24,6 +24,7 @@
+ #if defined(ENABLE_DCO) && defined(TARGET_LINUX)
+ 
+=
+ #include "event=2Eh"
++#include "networking_sitnl=2Eh"
+ 
+ #include "ovpn_dc=
+o_linux=2Eh"
+ 
+@@ -38,28 +39,6 @@
+ typedef enum ovpn_key_slot dco_key_slot_=
+t;
+ typedef enum ovpn_cipher_alg dco_cipher_t;
+ 
+-/* OVPN section */
+-
+-#if=
+ndef IFLA_OVPN_MAX
+-
+-enum ovpn_mode
+-{
+-    OVPN_MODE_P2P,
+-    OVPN_MODE_=
+MP,
+-};
+-
+-enum ovpn_ifla_attrs
+-{
+-    IFLA_OVPN_UNSPEC =3D 0,
+-    IFLA_O=
+VPN_MODE,
+-
+-    __IFLA_OVPN_MAX,
+-};
+-
+-#define IFLA_OVPN_MAX (__IFLA_OVPN=
+_MAX - 1)
+-
+-#endif /* ifndef IFLA_OVPN_MAX */
+-
+ typedef struct
+ {
+     /*=
+ socket used for synchronous request/reply transactions (commands and
+diff =
+--git a/src/openvpn/networking=2Eh b/src/openvpn/networking=2Eh
+index 25233=
+c8=2E=2E2423637 100644
+--- a/src/openvpn/networking=2Eh
++++ b/src/openvpn/n=
+etworking=2Eh
+@@ -115,6 +115,19 @@
+  */
+ int net_iface_type(openvpn_net_ctx=
+_t *ctx, const char *iface, char type[IFACE_TYPE_LEN_MAX]);
+ 
++#if defined(=
+ENABLE_DCO) && defined(TARGET_LINUX)
++/**
++ * Retrieve the ovpn interface m=
+ode
++ *
++ * @param ctx       the implementation specific context
++ * @param=
+ iface     interface to query
++ * @param mode      variable where the ovpn =
+mode attribute will be stored
++ *
++ * @return          0 on success, a nega=
+tive error code otherwise
++ */
++int net_iface_ovpn_mode(openvpn_net_ctx_t *=
+ctx, const char *iface, enum ovpn_mode *mode);
++#endif
++
+ /**
+  * Remove an=
+ interface
+  *
+diff --git a/src/openvpn/networking_iproute2=2Ec b/src/openv=
+pn/networking_iproute2=2Ec
+index f091fb3=2E=2E3fc7bc1 100644
+--- a/src/open=
+vpn/networking_iproute2=2Ec
++++ b/src/openvpn/networking_iproute2=2Ec
+@@ -8=
+2,6 +82,16 @@
+     return -1;
+ }
+ 
++#if defined(ENABLE_DCO)
++int
++net_iface=
+_ovpn_mode(openvpn_net_ctx_t *ctx, const char *iface, enum ovpn_mode *mode)=
+
++{
++    /* not supported by iproute2 */
++    msg(M_WARN, "%s: operation no=
+t supported by iproute2 backend", __func__);
++    return -EOPNOTSUPP;
++}
++#=
+endif
++
+ int
+ net_iface_del(openvpn_net_ctx_t *ctx, const char *iface)
+ {
+d=
+iff --git a/src/openvpn/networking_sitnl=2Ec b/src/openvpn/networking_sitnl=
+=2Ec
+index 0c99d38=2E=2E756eefa 100644
+--- a/src/openvpn/networking_sitnl=
+=2Ec
++++ b/src/openvpn/networking_sitnl=2Ec
+@@ -1430,8 +1430,18 @@
+     ret=
+urn 0;
+ }
+ 
+-int
+-net_iface_type(openvpn_net_ctx_t *ctx, const char *iface,=
+ char type[IFACE_TYPE_LEN_MAX])
++/**
++ * Issue an RTM_GETLINK query for an =
+interface and feed the reply to the given
++ * parsing callback=2E
++ *
++ * @=
+param iface     name of the interface to query
++ * @param cb        callbac=
+k invoked with the netlink reply
++ * @param arg       opaque argument passe=
+d through to the callback
++ *
++ * @return          0 on success, a negative=
+ error code otherwise
++ */
++static int
++sitnl_link_get(const char *iface, s=
+itnl_parse_reply_cb cb, void *arg)
+ {
+     struct sitnl_link_req req =3D {}=
+;
+     int ifindex =3D if_nametoindex(iface);
+@@ -1448,9 +1458,15 @@
+     r=
+eq=2Ei=2Eifi_family =3D AF_PACKET;
+     req=2Ei=2Eifi_index =3D ifindex;
+ 
+=
++    return sitnl_send(&req=2En, 0, 0, cb, arg);
++}
++
++int
++net_iface_type(=
+openvpn_net_ctx_t *ctx, const char *iface, char type[IFACE_TYPE_LEN_MAX])
++=
+{
+     memset(type, 0, IFACE_TYPE_LEN_MAX);
+ 
+-    int ret =3D sitnl_send(&=
+req=2En, 0, 0, sitnl_type_save, type);
++    int ret =3D sitnl_link_get(ifac=
+e, sitnl_type_save, type);
+     if (ret < 0)
+     {
+         msg(D_ROUTE, "=
+%s: cannot retrieve iface %s: %s (%d)", __func__, iface, strerror(-ret), re=
+t);
+@@ -1462,6 +1478,82 @@
+     return 0;
+ }
+ 
++#if defined(ENABLE_DCO)
++st=
+atic int
++sitnl_ovpn_mode_save(struct nlmsghdr *n, void *arg)
++{
++    struc=
+t ifinfomsg *ifi =3D NLMSG_DATA(n);
++    struct rtattr *tb[IFLA_MAX + 1];
++=
+    struct rtattr *tb_link[IFLA_INFO_MAX + 1];
++    struct rtattr *tb_data[=
+IFLA_OVPN_MAX + 1];
++    enum ovpn_mode *mode =3D arg;
++    uint8_t raw_mod=
+e;
++
++    if (n->nlmsg_type !=3D RTM_NEWLINK)
++    {
++        return -EINVA=
+L;
++    }
++
++    if (n->nlmsg_len < NLMSG_LENGTH(sizeof(*ifi)))
++    {
++   =
+     return -EINVAL;
++    }
++
++    sitnl_parse_rtattr(tb, IFLA_MAX, IFLA_RT=
+A(ifi), IFLA_PAYLOAD(n));
++
++    if (!tb[IFLA_LINKINFO])
++    {
++        re=
+turn -ENOENT;
++    }
++
++    sitnl_parse_rtattr_nested(tb_link, IFLA_INFO_MA=
+X, tb[IFLA_LINKINFO]);
++
++    if (!tb_link[IFLA_INFO_KIND]
++        || strc=
+mp(RTA_DATA(tb_link[IFLA_INFO_KIND]), OVPN_FAMILY_NAME) !=3D 0)
++    {
++   =
+     return -EINVAL;
++    }
++
++    if (!tb_link[IFLA_INFO_DATA])
++    {
++  =
+      return -ENOENT;
++    }
++
++    sitnl_parse_rtattr_nested(tb_data, IFLA=
+_OVPN_MAX, tb_link[IFLA_INFO_DATA]);
++
++    if (!tb_data[IFLA_OVPN_MODE])
++=
+    {
++        return -ENOENT;
++    }
++
++    if (RTA_PAYLOAD(tb_data[IFLA_O=
+VPN_MODE]) < sizeof(raw_mode))
++    {
++        return -EINVAL;
++    }
++
++  =
+  raw_mode =3D *(uint8_t *)RTA_DATA(tb_data[IFLA_OVPN_MODE]);
++    *mode =
+=3D (enum ovpn_mode)raw_mode;
++
++    return 0;
++}
++
++int
++net_iface_ovpn_mo=
+de(openvpn_net_ctx_t *ctx, const char *iface, enum ovpn_mode *mode)
++{
++   =
+ int ret =3D sitnl_link_get(iface, sitnl_ovpn_mode_save, mode);
++    if (re=
+t < 0)
++    {
++        msg(D_ROUTE, "%s: cannot retrieve ovpn mode for ifac=
+e %s: %s (%d)", __func__, iface,
++            strerror(-ret), ret);
++      =
+  return ret;
++    }
++
++    msg(D_ROUTE, "%s: mode of %s: %d", __func__, if=
+ace, *mode);
++
++    return 0;
++}
++#endif /* defined(ENABLE_DCO) */
++
+ int
+ =
+net_iface_del(openvpn_net_ctx_t *ctx, const char *iface)
+ {
+diff --git a/sr=
+c/openvpn/networking_sitnl=2Eh b/src/openvpn/networking_sitnl=2Eh
+index 481=
+cc36=2E=2E7a2d964 100644
+--- a/src/openvpn/networking_sitnl=2Eh
++++ b/src/o=
+penvpn/networking_sitnl=2Eh
+@@ -24,4 +24,30 @@
+ typedef char openvpn_net_if=
+ace_t;
+ typedef void *openvpn_net_ctx_t;
+ 
++#if defined(TARGET_LINUX)
++
++#i=
+nclude <linux/if_link=2Eh>
++
++#ifndef IFLA_OVPN_MAX
++
++enum ovpn_mode
++{
++ =
+   OVPN_MODE_P2P,
++    OVPN_MODE_MP,
++};
++
++enum ovpn_ifla_attrs
++{
++    IF=
+LA_OVPN_UNSPEC =3D 0,
++    IFLA_OVPN_MODE,
++
++    __IFLA_OVPN_MAX,
++};
++
++#=
+define IFLA_OVPN_MAX (__IFLA_OVPN_MAX - 1)
++
++#endif /* ifndef IFLA_OVPN_MA=
+X */
++
++#endif /* if defined(TARGET_LINUX) */
++
+ #endif /* NETWORKING_SITNL=
+_H_ */
 
 -- 
-To view, visit https://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/1991?usp=3Demail
-To unsubscribe, or for help writing mai=
-l filters, visit https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+To view, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1734?=
+usp=3Demail
+To unsubscribe, or for help writing mail filters, visit https:/=
+/gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Gerri=
-t-MessageType: newpatchset
+Gerrit-MessageType: newpatchs=
+et
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Ge=
-rrit-Change-Id: I97c55e211f9113d090808724ab43cb3c94099fb0
-Gerrit-Change-Num=
-ber: 1991
-Gerrit-PatchSet: 3
-Gerrit-Owner: Ralf Lici <ralf@mandelbit=2Ecom>=
+Gerrit-Change-Id: I7230240=
+3bddee4b0b0ee2441ae9e246f48d0bc81
+Gerrit-Change-Number: 1734
+Gerrit-PatchSe=
+t: 5
+Gerrit-Owner: Ralf Lici <ralf@mandelbit=2Ecom>
+Gerrit-Reviewer: Antoni=
+o Quartulli <antonio@mandelbit=2Ecom>
+Gerrit-Reviewer: Arne Schwabe <arne-o=
+penvpn@rfc2549=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourc=
+eforge=2Enet>
+Gerrit-Attention: Ralf Lici <ralf@mandelbit=2Ecom>
+Gerrit-Att=
+ention: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
 
-Gerrit-Reviewer: Antonio Quartulli <antonio@mandelbit=2Ecom>
-Gerrit-Review=
-er: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-CC: openvpn-devel <ope=
-nvpn-devel@lists=2Esourceforge=2Enet>
-Gerrit-Attention: Antonio Quartulli <=
-antonio@mandelbit=2Ecom>
-Gerrit-Attention: Arne Schwabe <arne-openvpn@rfc25=
-49=2Eorg>
-
---x0FpCBbHcV8=
+--SYmJCCdUA7Q=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: Antonio Quartulli, Arne Schwabe=2E </p>
-<p>Ralf Lici =
-<strong>uploaded patch set #3</strong> to this change=2E</p><p><a href=3D"h=
-ttps://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1991?usp=3Demail">View Change</a>=
-</p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-=
-space: pre-wrap;">dco_linux: enable RPS on newly created DCO interfaces<br>=
-<br>When multiple TCP streams share an OpenVPN tunnel, their ACKs arrive<br=
->through the same outer flow and can be processed on a single NIC RX CPU=2E=
-<br>Delivering the decrypted ACKs can also drain TCP transmit queues inline=
-,<br>concentrating receive processing, transmission and crypto work on that=
-<br>CPU despite the parallelism available between inner flows=2E<br><br>Ena=
-ble Receive Packet Steering (RPS) on newly created DCO interfaces to<br>dis=
-tribute inner flow processing across CPUs, after decryption=2E Build a<br>m=
-ask covering all possible CPU IDs and let the kernel filter out offline<br>=
-CPUs=2E<br><br>Add --disable-rps to skip automatic RPS configuration=2E Doc=
-ument the<br>option and the limitation that RPS may not be re-enabled if th=
-e<br>interface is recreated after privileges have been dropped=2E<br><br>Le=
-ave pre-existing interfaces and nonzero RPS masks unchanged, including<br>m=
-asks inherited from net=2Ecore=2Erps_default_mask=2E Failure to configure R=
-PS<br>is nonfatal=2E<br><br>Tested on a Ryzen 9 9950X with Fedora&#39;s sto=
-ck ovpn module from kernel<br>7=2E2=2E5-200=2Efc44=2Ex86_64 and two Connect=
-X-4 Lx ports were cabled at 25<br>Gb/s, The tunnel used IPv4/UDP, AES-256-G=
-CM and MTU 1448=2E Values are<br>medians across three 20 seconds iperf3 run=
-s, after a 3-second warmup:<br><br>flows    RPS off     RPS on      change<=
-br>  1         9=2E01      12=2E06      +33=2E9%<br>  4         9=2E41     =
- 16=2E90      +79=2E6%<br><br>At four streams, the sender NIC IRQ CPU&#39;s=
- average softirq utilization<br>was 98=2E7-99=2E5% off and 4=2E7-47=2E2% on=
-=2E<br><br>Change-Id: I97c55e211f9113d090808724ab43cb3c94099fb0<br>Reported=
--By: Lev Stipakov &lt;lev@openvpn=2Enet&gt;<br>Signed-off-by: Ralf Lici &lt=
-;ralf@mandelbit=2Ecom&gt;<br>---<br>M README=2Edco=2Emd<br>M doc/man-sectio=
-ns/advanced-options=2Erst<br>M src/openvpn/dco_linux=2Ec<br>M src/openvpn/o=
-ptions=2Ec<br>M src/openvpn/options=2Eh<br>M src/openvpn/options_show=2Ec<b=
-r>6 files changed, 184 insertions(+), 0 deletions(-)<br><br></pre><pre clas=
-s=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wr=
-ap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/91/19=
-91/3</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-=
-wrap;"><span>diff --git a/README=2Edco=2Emd b/README=2Edco=2Emd</span><br><=
-span>index a93dc94=2E=2E6ece2b7 100644</span><br><span>--- a/README=2Edco=
-=2Emd</span><br><span>+++ b/README=2Edco=2Emd</span><br><span>@@ -52,6 +52,=
-20 @@</span><br><span> </span><br><span> in your log=2E</span><br><span> </=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+On Linux, OpenVPN ena=
-bles Receive Packet Steering (RPS) on DCO interfaces it</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+creates, distributing inner-flow proces=
-sing across online CPUs=2E Use</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+`--disable-rps` to opt out of this automatic configuration if it=
-s overhead</span><br><span style=3D"color: hsl(120, 100%, 40%);">+outweighs=
- the performance benefit on your system=2E Pre-existing interfaces and</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+nonzero RPS masks (inclu=
-ding masks inherited from `net=2Ecore=2Erps_default_mask`)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+are preserved and `--disable-rps` do=
-es not clear administrator-configured masks=2E</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+RPS is configured before OpenVPN drops privileges during initial se=
-tup=2E If the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+interf=
-ace is recreated after dropping privileges, for example when pulled</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+options change on reconnect=
-, OpenVPN may be unable to re-enable RPS because the</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+sysfs file is not writable by the new use=
-r=2E This failure is logged and is</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+nonfatal=2E `--persist-tun` normally preserves the interface=
- and its RPS mask,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+b=
-ut changes to certain pulled options can still force recreation=2E</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> </span><br=
-><span> Getting started (Windows)</span><br><span> ------------------------=
--</span><br><span>diff --git a/doc/man-sections/advanced-options=2Erst b/do=
-c/man-sections/advanced-options=2Erst</span><br><span>index 32008d5=2E=2E65=
-81657 100644</span><br><span>--- a/doc/man-sections/advanced-options=2Erst<=
-/span><br><span>+++ b/doc/man-sections/advanced-options=2Erst</span><br><sp=
-an>@@ -115,3 +115,17 @@</span><br><span>   is enabled=2E</span><br><span> <=
-/span><br><span>   On platforms that do not support DCO ``disable-dco`` has=
- no effect=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+--disable-rps</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+  Do not automatically enable R=
-eceive Packet Steering (RPS) on newly created</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+  Linux DCO interfaces=2E This option is local an=
-d cannot be pushed by a server=2E</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+  It is accepted on all platforms, but has no effect outside =
-Linux DCO=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+  By default, OpenVPN enab=
-les RPS to distribute inner-flow processing across</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+  online CPUs=2E This can improve throughput=
-, but the additional processing</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+  overhead may outweigh the benefit on some systems or workload=
-s=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  ``--disable-r=
-ps`` skips this automatic configuration=2E</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+  Pre-existing interfaces and nonzero RPS masks, including masks inheri=
-ted</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  from ``net=2Ec=
-ore=2Erps_default_mask``, are left unchanged even without</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+  ``--disable-rps``=2E</span><br><spa=
-n>diff --git a/src/openvpn/dco_linux=2Ec b/src/openvpn/dco_linux=2Ec</span>=
-<br><span>index e9cf0b7=2E=2E8c2f666 100644</span><br><span>--- a/src/openv=
-pn/dco_linux=2Ec</span><br><span>+++ b/src/openvpn/dco_linux=2Ec</span><br>=
-<span>@@ -33,6 +33,7 @@</span><br><span> #include &quot;buffer=2Eh&quot;</s=
-pan><br><span> #include &quot;networking=2Eh&quot;</span><br><span> #includ=
-e &quot;openvpn=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+#include &quot;options_util=2Eh&quot;</span><br><span> </span><br><sp=
-an> #include &quot;socket=2Eh&quot;</span><br><span> #include &quot;tun=2Eh=
-&quot;</span><br><span>@@ -553,6 +554,145 @@</span><br><span>     return &q=
-uot;unknown&quot;;</span><br><span> }</span><br><span> </span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+ * Build an RPS mask covering all possible CPU IDs=2E T=
-he kernel filters out</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ * offline CPUs when installing the mask, so only the last ID in the sort=
-ed</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * sysfs CPU list=
- is needed, even when the list has gaps=2E</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ * Removes the trailing newline from cpus before par=
-sing the last ID=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static bool</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+ovpn_rps_mask_full(char =
-*cpus, struct buffer *mask)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* the=
- cpus string contains range formats like &quot;0-31&quot; or &quot;0-15,32-=
-47&quot; */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    size=
-_t len =3D strspn(cpus, &quot;0123456789,-&quot;);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    if (!len || cpus[len] !=3D &#39;\n&#39; =
-|| cpus[len + 1] !=3D &#39;\0&#39;)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        return false;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    /* walk backwards over th=
-e trailing digits to find the beginning of the</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+     * last number, stopping at a separator or t=
-he beginning of the string</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+     */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    c=
-onst char *last =3D cpus + len;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    while (last &gt; cpus &amp;&amp; last[-1] &gt;=3D &#39;0&#3=
-9; &amp;&amp; last[-1] &lt;=3D &#39;9&#39;)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        --last;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (=
-last =3D=3D cpus + len)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        re=
-turn false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    cpus[len] =3D &#39;\0&#39;;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    int last_cpu;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    if (!atoi_constrained(last,=
- &amp;last_cpu, &quot;last possible CPU&quot;, 0, INT_MAX, M_WARN))</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        return false;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    /* the most significant group may contain fewer than 32 bits */</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    unsigned int word =
-=3D UINT32_MAX &gt;&gt; (31 - last_cpu % 32);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    /* first handle the most significant, potenti=
-ally partial group */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    if (!buf_printf(mask, &quot;%x&quot;, word))</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        return false;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    /* then write the other chunks, comma-separated as required by bit=
-map_parse</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * in =
-linux/lib/bitmap-str=2Ec</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+     */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    for=
- (int i =3D last_cpu / 32; i &gt; 0; --i)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        if (!buf_printf(mask, &quot;,ffffffff&quot;))</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            return false;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    return buf_printf(mask, &quot;\n&quot;);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ovpn=
-_enable_rps(const char *dev)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    char =
-rps_path[PATH_MAX];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    /* ovpn interfaces have a single RX queue */</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    if (!checked_snprintf(rps_path, sizeof(rps=
-_path),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-              &quot;/sys/class/net/%s/queues/rx-0/rps_cpus&quot;, dev))</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        msg(M_WARN, &quot;DCO: cannot=
- build RPS path for %s&quot;, dev);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        return;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena g=
-c =3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-struct buffer current =3D buffer_read_from_file(rps_path, &amp;gc);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    /* buffer_read_from_fil=
-e counts the terminating NUL as content */</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    buf_rmtail(&amp;current, &#39;\0&#39;);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    if (!buf_defined(&amp;cu=
-rrent) || BLEN(&amp;current) &lt; 2 || *BLAST(&amp;current) !=3D &#39;\n&#3=
-9;)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        /* RPS may be unavaila=
-ble, for example with CONFIG_RPS disabled */</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        msg(D_DCO_DEBUG, &quot;DCO: cannot read RP=
-S mask from %s&quot;, rps_path);</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        goto out;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- if (strspn(BSTR(&amp;current), &quot;0,&quot;) !=3D (size_t)BLEN(&amp;curr=
-ent) - 1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* new devices c=
-an still inherit an administrator&#39;s rps_default_mask */</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        msg(D_DCO_DEBUG, &quot;DCO:=
- preserving existing RPS mask in %s: %=2E*s&quot;, rps_path,</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+            BLEN(&amp;current) - 1=
-, BSTR(&amp;current));</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        goto out;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    const char *cpus_path =3D &q=
-uot;/sys/devices/system/cpu/possible&quot;;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    struct buffer cpus =3D buffer_read_from_file(cp=
-us_path, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   if (!buf_defined(&amp;cpus))</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      msg(M_WARN, &quot;DCO: cannot read possible CPUs from %s&quot;, cpus_=
-path);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        goto =
-out;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    struct buffer mask =3D alloc_buf_gc(4096, &a=
-mp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!ovp=
-n_rps_mask_full(BSTR(&amp;cpus), &amp;mask))</span><br><span style=3D"color=
+rently required from: Arne Schwabe, Ralf Lici=2E </p>
+<p>Ralf Lici <strong>=
+uploaded patch set #5</strong> to this change=2E</p><p><a href=3D"https://g=
+errit=2Eopenvpn=2Enet/c/openvpn/+/1734?usp=3Demail">View Change</a></p><p>T=
+he change is no longer submittable: checks~ChecksSubmitRule is unsatisfied =
+now=2E</p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; =
+white-space: pre-wrap;">Support pre-existing Linux DCO interfaces<br><br>Wh=
+en creating an ovpn interface returns -EEXIST, still retrieve the<br>ifinde=
+x and return the error to the generic DCO open path=2E This lets the<br>cal=
+ler mark the interface as pre-existing and avoid deleting it on<br>close=2E=
+<br><br>Before accepting the existing interface, query its rtnetlink link i=
+nfo<br>and verify that it is an ovpn device with the expected mode=2E The o=
+vpn<br>mode is fixed at interface creation time, so attaching to an interfa=
+ce<br>created for the other mode cannot work=2E<br><br>Honor the pre-existi=
+ng state on close by skipping net_iface_del() for<br>persistent interfaces=
+=2E<br><br>Github: closes OpenVPN/openvpn#1064<br>Change-Id: I72302403bddee=
+4b0b0ee2441ae9e246f48d0bc81<br>Signed-off-by: Ralf Lici &lt;ralf@mandelbit=
+=2Ecom&gt;<br>---<br>M src/openvpn/dco=2Eh<br>M src/openvpn/dco_linux=2Ec<b=
+r>M src/openvpn/dco_linux=2Eh<br>M src/openvpn/networking=2Eh<br>M src/open=
+vpn/networking_iproute2=2Ec<br>M src/openvpn/networking_sitnl=2Ec<br>M src/=
+openvpn/networking_sitnl=2Eh<br>7 files changed, 185 insertions(+), 29 dele=
+tions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace=
+,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:2=
+9418/openvpn refs/changes/34/1734/5</pre><pre style=3D"font-family: monospa=
+ce,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/dco=2E=
+h b/src/openvpn/dco=2Eh</span><br><span>index c435f8c=2E=2E02ff9b3 100644</=
+span><br><span>--- a/src/openvpn/dco=2Eh</span><br><span>+++ b/src/openvpn/=
+dco=2Eh</span><br><span>@@ -109,7 +109,8 @@</span><br><span> bool ovpn_dco_=
+init(struct context *c);</span><br><span> </span><br><span> /**</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">- * Open/create a DCO interface</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Open/create a DCO i=
+nterface and store its ifindex=2E</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ * If the interface already exists, save the ifindex anyway a=
+nd return -EEXIST=2E</span><br><span>  *</span><br><span>  * @param tt     =
+   the tuntap context</span><br><span>  * @param ctx       the networking A=
+PI context</span><br><span>diff --git a/src/openvpn/dco_linux=2Ec b/src/ope=
+nvpn/dco_linux=2Ec</span><br><span>index 4412ad0=2E=2Ee9cf0b7 100644</span>=
+<br><span>--- a/src/openvpn/dco_linux=2Ec</span><br><span>+++ b/src/openvpn=
+/dco_linux=2Ec</span><br><span>@@ -540,6 +540,19 @@</span><br><span>     CL=
+EAR(dco);</span><br><span> }</span><br><span> </span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+static const char *</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ovpn_mode_to_str(enum ovpn_mode mode)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    switch (mode)</span><br><span style=3D"color=
 : hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        msg(M_WARN, &quot;DCO: cannot build RPS mask from %s&quo=
-t;, cpus_path);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    goto out;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }<=
+%, 40%);">+        case OVPN_MODE_P2P:</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            return &quot;p2p&quot;;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        case OVPN_MODE_MP:</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+            return &quot;server&q=
+uot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    return &quot;unknown&quo=
+t;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> int</span><br><s=
+pan> open_tun_dco(struct tuntap *tt, openvpn_net_ctx_t *ctx, const char *de=
+v)</span><br><span> {</span><br><span>@@ -547,11 +560,30 @@</span><br><span=
+>     ASSERT(tt-&gt;type =3D=3D DEV_TYPE_TUN);</span><br><span> </span><br>=
+<span>     int ret =3D net_iface_new(ctx, dev, OVPN_FAMILY_NAME, &amp;tt-&g=
+t;dco);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (ret &l=
+t; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (ret &l=
+t; 0 &amp;&amp; ret !=3D -EEXIST)</span><br><span>     {</span><br><span>  =
+       msg(D_DCO_DEBUG, &quot;Cannot create DCO interface %s: %d&quot;, dev=
+, ret);</span><br><span>         return ret;</span><br><span>     }</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    if (ret =3D=3D -EEXIST)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        enum ovpn_mode mode;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        int mode_ret =3D=
+ net_iface_ovpn_mode(ctx, dev, &amp;mode);</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        if (mode_ret &lt; 0)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+            msg(M_WARN, &quot;DCO: cannot retrieve mode of existing inte=
+rface %s: %s (%d)&quot;, dev,</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                strerror(-mode_ret), mode_ret);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            return mode_ret;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        if (mode !=3D tt-&gt;dco=2Eifmode)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+            msg(M_WARN, &quot;DCO: existing =
+interface %s is in %s mode, expected %s mode&quot;,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                dev, ovpn_mode_to_str(mod=
+e), ovpn_mode_to_str(tt-&gt;dco=2Eifmode));</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            return -EINVAL;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    }</span><br><span> </span><br><span>     tt-&gt=
+;dco=2Eifindex =3D if_nametoindex(dev);</span><br><span>     if (!tt-&gt;dc=
+o=2Eifindex)</span><br><span>@@ -559,7 +591,7 @@</span><br><span>         m=
+sg(M_FATAL, &quot;DCO: cannot retrieve ifindex for interface %s&quot;, dev)=
+;</span><br><span>     }</span><br><span> </span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    return 0;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    return ret;</span><br><span> }</span><br><span> </span><=
+br><span> void</span><br><span>@@ -567,7 +599,10 @@</span><br><span> {</spa=
+n><br><span>     msg(D_DCO_DEBUG, __func__);</span><br><span> </span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    net_iface_del(ctx, tt-&gt;actu=
+al_name);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!t=
+t-&gt;persistent_if)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        net_i=
+face_del(ctx, tt-&gt;actual_name);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    }</span><br><span>     ovpn_dco_uninit_netlink(&amp;tt-&=
+gt;dco);</span><br><span> }</span><br><span> </span><br><span>diff --git a/=
+src/openvpn/dco_linux=2Eh b/src/openvpn/dco_linux=2Eh</span><br><span>index=
+ c487581=2E=2Ea999d77 100644</span><br><span>--- a/src/openvpn/dco_linux=2E=
+h</span><br><span>+++ b/src/openvpn/dco_linux=2Eh</span><br><span>@@ -24,6 =
++24,7 @@</span><br><span> #if defined(ENABLE_DCO) &amp;&amp; defined(TARGET=
+_LINUX)</span><br><span> </span><br><span> #include &quot;event=2Eh&quot;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;networ=
+king_sitnl=2Eh&quot;</span><br><span> </span><br><span> #include &quot;ovpn=
+_dco_linux=2Eh&quot;</span><br><span> </span><br><span>@@ -38,28 +39,6 @@</=
+span><br><span> typedef enum ovpn_key_slot dco_key_slot_t;</span><br><span>=
+ typedef enum ovpn_cipher_alg dco_cipher_t;</span><br><span> </span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-/* OVPN section */</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-#ifndef IFLA_OVPN_MAX</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-enum =
+ovpn_mode</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    OVPN_MODE_P2P,</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    OVPN_MODE_MP,</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-};</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-enum=
+ ovpn_ifla_attrs</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    IFLA_OVPN_UNSPEC =3D =
+0,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    IFLA_OVPN_MODE,=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    __IFLA_OVPN_MAX,</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-};</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define =
+IFLA_OVPN_MAX (__IFLA_OVPN_MAX - 1)</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif =
+/* ifndef IFLA_OVPN_MAX */</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-</span><br><span> typedef struct</span><br><span> {</span><br><span>  =
+   /* socket used for synchronous request/reply transactions (commands and<=
+/span><br><span>diff --git a/src/openvpn/networking=2Eh b/src/openvpn/netwo=
+rking=2Eh</span><br><span>index 25233c8=2E=2E2423637 100644</span><br><span=
+>--- a/src/openvpn/networking=2Eh</span><br><span>+++ b/src/openvpn/network=
+ing=2Eh</span><br><span>@@ -115,6 +115,19 @@</span><br><span>  */</span><br=
+><span> int net_iface_type(openvpn_net_ctx_t *ctx, const char *iface, char =
+type[IFACE_TYPE_LEN_MAX]);</span><br><span> </span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+#if defined(ENABLE_DCO) &amp;&amp; defined(TARGET_=
+LINUX)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ * Retrieve the ovpn interfac=
+e mode</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ * @param ctx       the implem=
+entation specific context</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+ * @param iface     interface to query</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ * @param mode      variable where the ovpn mode a=
+ttribute will be stored</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return   =
+       0 on success, a negative error code otherwise</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+int net_iface_ovpn_mode(openvpn_net_ctx_t *ctx, const cha=
+r *iface, enum ovpn_mode *mode);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span> /**</span><br><span>  * Remove an interface</span><br><sp=
+an>  *</span><br><span>diff --git a/src/openvpn/networking_iproute2=2Ec b/s=
+rc/openvpn/networking_iproute2=2Ec</span><br><span>index f091fb3=2E=2E3fc7b=
+c1 100644</span><br><span>--- a/src/openvpn/networking_iproute2=2Ec</span><=
+br><span>+++ b/src/openvpn/networking_iproute2=2Ec</span><br><span>@@ -82,6=
+ +82,16 @@</span><br><span>     return -1;</span><br><span> }</span><br><sp=
+an> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(ENA=
+BLE_DCO)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+net_iface_ovpn_mode(openvpn=
+_net_ctx_t *ctx, const char *iface, enum ovpn_mode *mode)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    /* not supported by iproute2 */</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    msg(M_WARN, &quot;%s: operation not=
+ supported by iproute2 backend&quot;, __func__);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    return -EOPNOTSUPP;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span> int</span><br><span> net_iface_del(openvpn_net_ctx_t *=
+ctx, const char *iface)</span><br><span> {</span><br><span>diff --git a/src=
+/openvpn/networking_sitnl=2Ec b/src/openvpn/networking_sitnl=2Ec</span><br>=
+<span>index 0c99d38=2E=2E756eefa 100644</span><br><span>--- a/src/openvpn/n=
+etworking_sitnl=2Ec</span><br><span>+++ b/src/openvpn/networking_sitnl=2Ec<=
+/span><br><span>@@ -1430,8 +1430,18 @@</span><br><span>     return 0;</span=
+><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-net_ifac=
+e_type(openvpn_net_ctx_t *ctx, const char *iface, char type[IFACE_TYPE_LEN_=
+MAX])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ * Issue an RTM_GETLINK query =
+for an interface and feed the reply to the given</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+ * parsing callback=2E</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ * @param iface     name of the interface to query</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param cb        callbac=
+k invoked with the netlink reply</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+ * @param arg       opaque argument passed through to the call=
+back</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ * @return          0 on success=
+, a negative error code otherwise</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+st=
+atic int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+sitnl_link_=
+get(const char *iface, sitnl_parse_reply_cb cb, void *arg)</span><br><span>=
+ {</span><br><span>     struct sitnl_link_req req =3D {};</span><br><span> =
+    int ifindex =3D if_nametoindex(iface);</span><br><span>@@ -1448,9 +1458=
+,15 @@</span><br><span>     req=2Ei=2Eifi_family =3D AF_PACKET;</span><br><=
+span>     req=2Ei=2Eifi_index =3D ifindex;</span><br><span> </span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    return sitnl_send(&amp;req=2En=
+, 0, 0, cb, arg);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}<=
 /span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    /* recreating the interface after d=
-ropping privileges may leave us unable</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+     * to open this root-owned file, even with CAP_NET_A=
-DMIN retained</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     *=
-/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int fd =3D ope=
-n(rps_path, O_WRONLY);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    if (fd &lt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(=
-M_WARN | M_ERRNO, &quot;DCO: cannot open %s for enabling RPS&quot;, rps_pat=
-h);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        goto out=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    /* submit the complete mask =
-in one write and retry only on interruption */</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    ssize_t written;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    do</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        written =3D write(fd, BPTR(&amp;mask), (size_t)BLEN(&amp;mask));</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    } while (written =
-&lt; 0 &amp;&amp; errno =3D=3D EINTR);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    if (written &lt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ms=
-g(M_WARN | M_ERRNO, &quot;DCO: cannot enable RPS on %s&quot;, dev);</span><=
+le=3D"color: hsl(120, 100%, 40%);">+int</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+net_iface_type(openvpn_net_ctx_t *ctx, const char *ifac=
+e, char type[IFACE_TYPE_LEN_MAX])</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+{</span><br><span>     memset(type, 0, IFACE_TYPE_LEN_MAX);</=
+span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    i=
+nt ret =3D sitnl_send(&amp;req=2En, 0, 0, sitnl_type_save, type);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    int ret =3D sitnl_link_ge=
+t(iface, sitnl_type_save, type);</span><br><span>     if (ret &lt; 0)</span=
+><br><span>     {</span><br><span>         msg(D_ROUTE, &quot;%s: cannot re=
+trieve iface %s: %s (%d)&quot;, __func__, iface, strerror(-ret), ret);</spa=
+n><br><span>@@ -1462,6 +1478,82 @@</span><br><span>     return 0;</span><br=
+><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+#if defined(ENABLE_DCO)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+static int</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+sitnl_ovpn_mode_save(struct nlmsghdr *n, void *arg)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    struct ifinfomsg *ifi =3D NLMSG_DATA(n);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    struct rtattr *tb[IFLA_MAX + =
+1];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct rtatt=
+r *tb_link[IFLA_INFO_MAX + 1];</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    struct rtattr *tb_data[IFLA_OVPN_MAX + 1];</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    enum ovpn_mode *mode =3D arg;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint8_t raw_mode;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    if (n-&gt;nlmsg_type !=3D RTM_NEWLIN=
+K)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        return -EINVAL;</span><=
 br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    else if (written !=3D BLEN(&amp;mask)=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        msg(M_WARN, &quot;DCO: i=
-ncomplete RPS mask write to %s&quot;, rps_path);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    else</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ms=
-g(D_DCO, &quot;DCO: RPS enabled on %s with CPU mask %=2E*s&quot;, dev, BLEN=
-(&amp;mask) - 1,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         BSTR(&amp;mask));</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if =
-(close(fd) &lt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_W=
-ARN | M_ERRNO, &quot;DCO: cannot close %s&quot;, rps_path);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+out:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    gc_f=
-ree(&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> int</s=
-pan><br><span> open_tun_dco(struct tuntap *tt, openvpn_net_ctx_t *ctx, cons=
-t char *dev)</span><br><span> {</span><br><span>@@ -584,6 +724,11 @@</span>=
-<br><span>             return -EINVAL;</span><br><span>         }</span><br=
-><span>     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /*=
- configure RPS only on newly created devices unless explicitly disabled */<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (ret =3D=3D 0=
- &amp;&amp; !tt-&gt;dco=2Ec-&gt;options=2Edisable_rps)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        ovpn_enable_rps(dev);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    }</span><br><span> </span><br><span>    =
- tt-&gt;dco=2Eifindex =3D if_nametoindex(dev);</span><br><span>     if (!tt=
--&gt;dco=2Eifindex)</span><br><span>diff --git a/src/openvpn/options=2Ec b/=
-src/openvpn/options=2Ec</span><br><span>index 8e0c602=2E=2E62e21d5 100644</=
-span><br><span>--- a/src/openvpn/options=2Ec</span><br><span>+++ b/src/open=
-vpn/options=2Ec</span><br><span>@@ -207,6 +207,9 @@</span><br><span>     &q=
-uot;                  /dev/net/tun, /dev/tun, /dev/tap, etc=2E\n&quot;</spa=
-n><br><span> #if defined(ENABLE_DCO)</span><br><span>     &quot;--disable-d=
-co   : Do not attempt using Data Channel Offload=2E\n&quot;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+#ifdef TARGET_LINUX</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    &quot;--disable-rps   : Do not =
-automatically enable Receive Packet Steering on DCO interfaces=2E\n&quot;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><spa=
-n> #endif</span><br><span>     &quot;--lladdr hw     : Set the link layer a=
-ddress of the tap device=2E\n&quot;</span><br><span>     &quot;--topology t=
-    : Set --dev tun topology: &#39;net30&#39;, &#39;p2p&#39;, or &#39;subne=
-t&#39;=2E\n&quot;</span><br><span>@@ -4464,6 +4467,11 @@</span><br><span>  =
-   {</span><br><span>         options-&gt;disable_dco =3D true;</span><br><=
-span>     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else=
- if (streq(p[0], &quot;disable-rps&quot;) &amp;&amp; !p[1])</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        VERIFY_PERMISSION(OPT_P_GENERAL);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        options-&gt;disable=
-_rps =3D true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }=
-</span><br><span>     else if (streq(p[0], &quot;dev-node&quot;) &amp;&amp;=
- p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span>         VER=
-IFY_PERMISSION(OPT_P_GENERAL);</span><br><span>diff --git a/src/openvpn/opt=
-ions=2Eh b/src/openvpn/options=2Eh</span><br><span>index c58530a=2E=2Eb88cc=
-d6 100644</span><br><span>--- a/src/openvpn/options=2Eh</span><br><span>+++=
- b/src/openvpn/options=2Eh</span><br><span>@@ -372,6 +372,8 @@</span><br><s=
-pan>     /* DCO is disabled and should not be used as backend driver for th=
-e</span><br><span>      * tun/tap device */</span><br><span>     bool disab=
-le_dco;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Do no=
-t automatically enable RPS on Linux DCO interfaces */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    bool disable_rps;</span><br><span> </=
-span><br><span>     /* Misc parms */</span><br><span>     const char *usern=
-ame;</span><br><span>diff --git a/src/openvpn/options_show=2Ec b/src/openvp=
-n/options_show=2Ec</span><br><span>index 80d36f0=2E=2E4d01f28 100644</span>=
-<br><span>--- a/src/openvpn/options_show=2Ec</span><br><span>+++ b/src/open=
-vpn/options_show=2Ec</span><br><span>@@ -375,6 +375,7 @@</span><br><span> #=
-if defined(ENABLE_DCO)</span><br><span>     SHOW_BOOL(disable_dco);</span><=
-br><span> #endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- SHOW_BOOL(disable_rps);</span><br><span>     SHOW_STR(lladdr);</span><br><=
-span>     SHOW_INT(topology);</span><br><span>     SHOW_STR(ifconfig_local)=
-;</span><br></pre><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=2En=
-et/c/openvpn/+/1991?usp=3Demail">change 1991</a>=2E To unsubscribe, or for =
-help writing mail filters, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/=
-settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://=
-schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"h=
-ttp://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https://gerri=
-t=2Eopenvpn=2Enet/c/openvpn/+/1991?usp=3Demail"/><meta itemprop=3D"name" co=
-ntent=3D"View Change"/></div></div>
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    if (n-&gt;nlmsg_len &lt; NLMSG_LENGTH(sizeof(*ifi)))</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        return -EINVAL;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    sitnl_parse_rtattr(tb, IFLA_MAX, IFLA_RTA(ifi), IFLA_PAYLOAD(n=
+));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    if (!tb[IFLA_LINKINFO])</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        return -ENOENT;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    sitnl_parse_rtattr_nested(tb_link, IFLA_INFO_MAX, tb[IFLA_LINKINFO=
+]);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    if (!tb_link[IFLA_INFO_KIND]</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        || strcmp(RTA_=
+DATA(tb_link[IFLA_INFO_KIND]), OVPN_FAMILY_NAME) !=3D 0)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        return -EINVAL;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if=
+ (!tb_link[IFLA_INFO_DATA])</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  return -ENOENT;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    sitnl_parse_rtattr_nested(tb_da=
+ta, IFLA_OVPN_MAX, tb_link[IFLA_INFO_DATA]);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    if (!tb_data[IFLA_OVPN_MODE])</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        return -ENOENT;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (RTA_PAYLOAD(tb_=
+data[IFLA_OVPN_MODE]) &lt; sizeof(raw_mode))</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        return -EINVAL;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    raw_mode =3D *=
+(uint8_t *)RTA_DATA(tb_data[IFLA_OVPN_MODE]);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    *mode =3D (enum ovpn_mode)raw_mode;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    return 0;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+net_iface_ovpn_mode(openvpn_net_=
+ctx_t *ctx, const char *iface, enum ovpn_mode *mode)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    int ret =3D sitnl_link_get(iface, sitnl_ovpn_mode_save,=
+ mode);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (ret =
+&lt; 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(D_ROUTE, &quot=
+;%s: cannot retrieve ovpn mode for iface %s: %s (%d)&quot;, __func__, iface=
+,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            strerr=
+or(-ret), ret);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    return ret;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    msg(D_ROUTE, &quot;%s: mode of %s=
+: %d&quot;, __func__, iface, *mode);</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* defined(ENABLE_D=
+CO) */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan> int</span><br><span> net_iface_del(openvpn_net_ctx_t *ctx, const char =
+*iface)</span><br><span> {</span><br><span>diff --git a/src/openvpn/network=
+ing_sitnl=2Eh b/src/openvpn/networking_sitnl=2Eh</span><br><span>index 481c=
+c36=2E=2E7a2d964 100644</span><br><span>--- a/src/openvpn/networking_sitnl=
+=2Eh</span><br><span>+++ b/src/openvpn/networking_sitnl=2Eh</span><br><span=
+>@@ -24,4 +24,30 @@</span><br><span> typedef char openvpn_net_iface_t;</spa=
+n><br><span> typedef void *openvpn_net_ctx_t;</span><br><span> </span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+#if defined(TARGET_LINUX)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+#include &lt;linux/if_link=2Eh&gt;</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+#ifndef IFLA_OVPN_MAX</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+enum ovpn_mode</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    OVPN_MODE=
+_P2P,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    OVPN_MODE_=
+MP,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+};</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+enum ovpn_ifla_attrs</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    IFLA_OVPN_UNSPEC =3D 0,</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    IFLA_OVPN_MODE,</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    _=
+_IFLA_OVPN_MAX,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+};</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+#define IFLA_OVPN_MAX (__IFLA_OVPN_MAX -=
+ 1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+#endif /* ifndef IFLA_OVPN_MAX */</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+#endif /* if defined(TARGET_LINUX) */</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #end=
+if /* NETWORKING_SITNL_H_ */</span><br></pre><p>To view, visit <a href=3D"h=
+ttps://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1734?usp=3Demail">change 1734</a>=
+=2E To unsubscribe, or for help writing mail filters, visit <a href=3D"http=
+s://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div it=
+emscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itempr=
+op=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D=
+"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1734?usp=3Demail"/=
+><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-Me=
-ssageType: newpatchset </div>
-<div style=3D"display:none"> Gerrit-Project: =
-openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<d=
-iv style=3D"display:none"> Gerrit-Change-Id: I97c55e211f9113d090808724ab43c=
-b3c94099fb0 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1991 =
-</div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D=
-"display:none"> Gerrit-Owner: Ralf Lici &lt;ralf@mandelbit=2Ecom&gt; </div>=
-
-<div style=3D"display:none"> Gerrit-Reviewer: Antonio Quartulli &lt;antoni=
-o@mandelbit=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: =
-Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"displa=
-y:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2En=
-et&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: Antonio Quartu=
-lli &lt;antonio@mandelbit=2Ecom&gt; </div>
+<div style=
+=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"dis=
+play:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Ger=
-rit-Attention: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+rit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I7=
+2302403bddee4b0b0ee2441ae9e246f48d0bc81 </div>
+<div style=3D"display:none">=
+ Gerrit-Change-Number: 1734 </div>
+<div style=3D"display:none"> Gerrit-Patc=
+hSet: 5 </div>
+<div style=3D"display:none"> Gerrit-Owner: Ralf Lici &lt;ral=
+f@mandelbit=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: =
+Antonio Quartulli &lt;antonio@mandelbit=2Ecom&gt; </div>
+<div style=3D"disp=
+lay:none"> Gerrit-Reviewer: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-d=
+evel@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"display:none"> Gerr=
+it-Attention: Ralf Lici &lt;ralf@mandelbit=2Ecom&gt; </div>
+<div style=3D"d=
+isplay:none"> Gerrit-Attention: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg=
+&gt; </div>
 
-</bo=
-dy></html>
---x0FpCBbHcV8=--
+</body></html>
+--SYmJCCdUA7Q=--
 
 
---===============2073737894522920099==
+--===============7479146354965820328==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============2073737894522920099==
+--===============7479146354965820328==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -1061,5 +1098,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============2073737894522920099==--
+--===============7479146354965820328==--
 
