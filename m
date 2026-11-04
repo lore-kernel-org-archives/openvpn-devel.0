@@ -1,13 +1,13 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3715606D814
-	for <openvpn-devel@archiver.kernel.org>; Wed,  4 Nov 2026 16:28:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC931606A31B
+	for <openvpn-devel@archiver.kernel.org>; Wed,  4 Nov 2026 16:28:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=JCzCMPLr;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=mMkoo+LL;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=huELYXpj;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=CNih3egG
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=HcblnC/g;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=Uupf9oHo;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=armS3e5M;
+	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=IM0v+/vf
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
@@ -15,29 +15,29 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
 	List-Unsubscribe-Post:List-Owner;
-	bh=a3o446vMvKkqopRgds9gLwGKzNxu8vIf/16tEHciZ4A=; b=JCzCMPLrywa9tGK5iG7uLDoww/
-	VB7MhMbgMLuEFt9nVVbZwCbDhvWAiss4VnOwfbClnxwNVQ9TGy4KEbi56erlQmCDv7GQNhIDXguzE
-	rgSo1ifzwcgxMXjIou0dWlzXjVlE8KadXwZKhPeSovfN5CeRRrPV8G2ufAmJEkbd+o0Y=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	bh=AG97agVdnMRRHxgFZSBJ4v/nUaFZ7CclXQAurv+h7DU=; b=HcblnC/guxp4/TgRnct3Rpvfxr
+	dsUkWXFWcB+niaeYFY52kWe4nOnHixq8Xc43BJDl8aDrfoCRaag1htVkYhTb5PrnmPH2ijTnKJUFc
+	xh/ik3KZJ48ymyoanTy+L9UNTQmfeCUhmSD3QtpQbXTpOwAC3WrAUqVtsMpU18ZZlQq4=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xOdqH-000000006eP-21dq;
-	Wed, 04 Nov 2026 16:28:05 +0000
+	id 1xOdqJ-000000005CV-2oJI;
+	Wed, 04 Nov 2026 16:28:07 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xOdqF-000000006eH-3RAi
+ (envelope-from <gerrit@openvpn.net>) id 1xOdqH-000000005CM-1i7K
  for openvpn-devel@lists.sourceforge.net;
- Wed, 04 Nov 2026 16:28:03 +0000
+ Wed, 04 Nov 2026 16:28:05 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=mJZkFqGUoQxflDk2l7frKgfOmrHoqT+BDLE2EGy4sWg=; b=mMkoo+LLGjFEfFbZ01Pxk/puKe
- UEs1JE+edW+khYp50KdSUZf52nri9NriQUOe7ZyxMyTBEroF0D6apA6rfF0Iy4815VwhdOnyUKRfY
- oecHHTvjpe9WtaGirUN4j6IPvEA0W2AcJ/xqCs8F6K6OmL8vhyDjKH2Z63QO7qvZvmGQ=;
+ bh=afWKRZstFOy4vSDTcNxhqBHGRlayzl5iPfZzjMeSb+U=; b=Uupf9oHoLe7F4HTXl6ny81jMCe
+ dMAFXfg88HzCuhzCtoXXcIW6ZwRtbY/JDrZug0yEmPvGs93MQcFTIRTQu1B9Vo59+x6FleFFZ31U1
+ q5+rzXWt+FK9FCVaO7lQPl5y6FWpOVEUT7pTAyY0Gv8kpvNxaPgp7LSuMRbmzzE3FiIA=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
@@ -45,69 +45,69 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=mJZkFqGUoQxflDk2l7frKgfOmrHoqT+BDLE2EGy4sWg=; b=huELYXpjWerjy19z/pNrfmlepP
- 61wnCaZVeFx9XTdl+WBwJRO+IjEDSlzGgZJ405895njw8AEhEEYdL4U+J+pl9rkNOkPZAIOkHMpYc
- 3/nTyBimmDGEDZO6hUd0D957RuImelPfQVJwDumdwamtylIvGRQ779Wly1WrkkF8TYKc=;
-Received: from mail-wm1-f49.google.com ([209.85.128.49])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ bh=afWKRZstFOy4vSDTcNxhqBHGRlayzl5iPfZzjMeSb+U=; b=armS3e5M5V73zliSNN3UN79tTC
+ s02p8QaC636SCAgBL/kEp+S/65B9N+R9x7uqEJr8xfftEASXzXLYvY0e7hV1jZ1DcdP1UawDj66RH
+ +hF5SPf6gtvn5muFB0bI+CIgflRn7Q+mB+vdFir0dps+QIj2gcc/D/poxoczx0ja3r4Q=;
+Received: from mail-wr1-f51.google.com ([209.85.221.51])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xOdqD-000000000a1-32Lo for openvpn-devel@lists.sourceforge.net;
- Wed, 04 Nov 2026 16:28:03 +0000
-Received: by mail-wm1-f49.google.com with SMTP id
- 5b1f17b1804b1-4a549cd7fd2so8614395e9.0
+ id 1xOdqF-000000006Nl-3yUk for openvpn-devel@lists.sourceforge.net;
+ Wed, 04 Nov 2026 16:28:05 +0000
+Received: by mail-wr1-f51.google.com with SMTP id
+ ffacd0b85a97d-48df54150dfso628562f8f.0
  for <openvpn-devel@lists.sourceforge.net>;
- Wed, 04 Nov 2026 08:28:01 -0800 (PST)
+ Wed, 04 Nov 2026 08:28:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1793809675; x=1794414475; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1793809677; x=1794414477; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=mJZkFqGUoQxflDk2l7frKgfOmrHoqT+BDLE2EGy4sWg=;
- b=CNih3egGNcch6twhYzQdusOnHWpeY2YcrAadGnWfWS4kXXLjnKaCF9fx1qODmITAS7
- jhCKPQ6xWUEBg1rI1qNgkjbiGHn85PfZnN743rTb/rhDHwj/fU0THkJPitycgK6fE23X
- CeN1dlNkAs2UEFG7+OtR7r//G22/ARlRi795lQ4u5oIBGn+l1dYo7yiLi2lP4BrFuemG
- Ic4zsOUJitBj2J8LY6XyX1T/by7QI9AvAMv1muwZZxQu4bRS8YoBRN3LkwHzxsTD4YiJ
- OPxrFe2NdC9WEK5eQyGK3f/1ZuyRaEIMzS9Akc+a3bjg28hv/EklV7hMeROo/EY/xY4R
- GOgQ==
+ bh=afWKRZstFOy4vSDTcNxhqBHGRlayzl5iPfZzjMeSb+U=;
+ b=IM0v+/vfjA9Q120Ye/VekdJ70JcRUCCmRU7bXrBXYfB1qSypmbh0gKksr/rFbIxLgH
+ Jhf+TSLc/58CX5SgDwDYvkZeR9Cld7zU/oJnRbncBJ7ZaKzm08mwQFxnquAO+7bJI4Pz
+ Z9YsgQC1GwxB/jNi9GRopyYATA0glUFHXCI/cphGliGekY+ePvsBPezT8MgV/iN5Kfy/
+ I7i+1dfq+zfiDlonj+KP+Ix25t/6P5twNyG9u4VEnPnPiYINhrfju1w7izsTMoRI/8dS
+ LZou+3R8VrqN/HlCbCMBJ6RBoDVyLr+W7nyFBCu/49CR8PufuqMWkJZ/JrNxcCdM4kjB
+ LQhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1793809675; x=1794414475;
+ d=1e100.net; s=20260707; t=1793809677; x=1794414477;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=mJZkFqGUoQxflDk2l7frKgfOmrHoqT+BDLE2EGy4sWg=;
- b=VMnrqgpvzzSo/0ey+bexNEWQ81+/CSxZxU6bU6Eqsc/wTrc4t0iEvXWBfJUfSN0Ons
- RQItUA0xjXnGNhKwnUF9pO/vZnxVE4onDL77SCIk3C3jIXrH43ihk4X0eMhEwYaRIHRc
- Yzp9M0hYwvE4tGVB6Bwp38Z0VWv7hF3S3Pa5YiLsBKT2XfqtWthIPeu/KeoKQCuAj6MX
- dSjGVmKicffrx6hFdBUPOPqtydAf2vx9LlAohSPyEdXOqGQ4j1QFe3s1VIu+8KpcGb/0
- EotjmfYm0ZaKJDVT3Sf5ecy7nklismChQrmp1mzkdKw/sOWSZFck06SN+YOdyZFoacoU
- bmGw==
-X-Gm-Message-State: APuU4Z9YV4ymsxQOlbJ36RbyDj4FsKSLYzoTXewu9um2kO69Gn8OlDdx
- FcCIIjlpQo8vqDXqLgI9pBeBwM8z/st/veaN+KqrxAHi/TxV2cUH8GOE2hwezkkFJ4aYMTBBL/O
- I8f23mvPMMOFFZ+sb038pJiVWXCgjUalIKokj0aWiJyNln9FvBWSeI9/iuLHGdU8ynDJQ
-X-Gm-Gg: AYBFou0DdOz3O+VyEsX8qxtJs3ONZaG9ktq2QJI6CBzV6rHTVGXF26GQtNTO8TBWgsh
- wlMmTIcVTmIHE2nPSlqQ90DOUMK902CskDGmSyE4H+p31/oNzp3uNmuPDrdSyEwBJ/iQ7d3Kwng
- luW8YVKwHRhuqTgCYdlAKPsKrOOhEFvs8LSYU0LZWHlAXYycP+qnQJGlbmvlbRwm+zRdWw0uG8D
- eZs+TrNIY8JDJU0j/Y9N6bHP3r3zrpXKHbSx7CmuGTRydKgmquiOkr9Erz3kq+MYKkfYu9aVzGO
- AN0Q0oEg3QewwSsmAmciL4Qs8kTs09vKUEPDNNSTVTa0iizy726WC22RxdU3icfWfcekyN4TMyK
- Bkcyd1lOPqFoo7UwsLok1jsE7bJ70h8OMVW/LTnHglNHxgczHftiSb+gcu3HwprUjfCI/KqNJOZ
- 4gC9GvsH3E80InSWqlAUHJ945uMoEV+qnPanEqLHVp9e7I++4vUyShbUKA5PlTOqQwtHnU2AFtl
- oKBJIYUChYzesVj59Coox1vQNENXHlsP/WTGyD4U2IwSRHczWrpJTnEJxIrqsRo/krzfJsaIbL1
- E5vzyGA0mIVfweOsnwdhNwTdx6nH8uxN6KPwEj5g+PBuGuxNsejguBJ3CXYkMTieeZ9QWOVHhct
- j5wym60KlwNgarSakdpYD/K6c/AgURYxFBsQEURDVhTF/IowwVph8nq09bMA44sudNEnraIyH/a
- fFa0HNW5SXVjMM4w==
-X-Received: by 2002:a05:600c:5d6:b0:49e:795e:ba89 with SMTP id
- 5b1f17b1804b1-4aa8a0f4e16mr308015675e9.6.1793809674883; 
- Wed, 04 Nov 2026 08:27:54 -0800 (PST)
+ bh=afWKRZstFOy4vSDTcNxhqBHGRlayzl5iPfZzjMeSb+U=;
+ b=FGYcghZLbMJxM0xTfb3mmJgL5veuYVvyRVVIwodrj8qjAN5GPTRA2V3JDGWPQOaY+A
+ MGonuUmM2f3aAIXkHDSV6srsgyc6BYBRAgHr5FmaUKVJOkp4zjvqwkYmD7HVnqFTQQQ6
+ KbEAn+jekthw+antjwpYmXFMdjYR4Fa6yuA486IEbUYMU00fw48Bw7jRiXh83ApWA5Ck
+ IpzNEF3o7hKd6tF4zDU/GKKMh/f0+RX5gubiW03oMIAVfO+ldvrBtBFqE83Nlv/eYUHf
+ e5yTkWoo1OTTSTMEhbben05JjYuBQ3uy1OwZLC7yS7WBxNwuBsNj6/newCMMHpgx9rAl
+ 1CqA==
+X-Gm-Message-State: APuU4Z/wf1zd+5jA7p3Hq3zupqfSsP7UEzkPqyecw6wZFDLIgzLG7pJN
+ fbPQGBETIPctaMX5oGZZU/pvdY5IPSDF0xw8SQP692zKxzpn85mKr2Wwv1bHa5cle2kZFLbiWDT
+ MxAkvPsYA3Zg9GwndRP87JM/d8xo0hGCIMtbiFG7H6dPPgEU+9r3NuOes5ogFsFqIP6qD
+X-Gm-Gg: AYBFou29CP5tudaKeucEoeCjAnFUhkcgGtfXEoyXiZEBPHLhpKrsjf7IajTD9yPrOFF
+ AF7nlMQyVDBgI+ycF5lj+YCWixKizfPRwAdfB0iCdlx7vLu0BnKiMQMkhxMaLo/Ad0/sSoNCyhl
+ BDlYwuK9Q80k17bpbC17OvgUE43XM/4HmX6AK1iFlcrIBhTR5TX9niTXk/wu/o0rpfDFtpL7CpL
+ rnAFxL8ek5zXo+UYttF2EXv7vWekFHd+Ky8vT5JX43zDHtMrk3Ric5FKZgylgp1w+8BbS8YpMw3
+ GOxUE8k4GQGBmXdHrgDwoJezDoNC4SXcHyBeVsGDDyvix9KBHtII/uZFU+fijXM4lbSEtFv/MtY
+ S9OJ1XRslSwNXTXauB/s8IigX47tE/AG6+8ZmtvkdM79hWR/cxu66Gcq+x17/JCefBAUtzty7Qs
+ xXDlYnTvroMlvgwJemMkxioR6TSg4B3xE6dvArjPBHLGQNA5mLSR0S1wJ+QYr4HMNg/Fnociien
+ Xt2/BjC1isS2QIKayvznBJDsDAZ/7cAb8pkMUUivqOvc2lNzY0fCPkZWIkauJZEBAc9L0KS14uA
+ a0R8LMdj+j1/AeZ4YhWctHuitgZu6dYRgWL2sRkspW/6pGI5I4mDjEwOWRe1gXPR5MDc3oRdlfk
+ EgIB9HfbCKUFGtYSGFqyZvnrE2Uc4WPCIXhB9zDjAFHNA2Rgcl+7WzDVIvTpRcWxJ78u8lqttvX
+ P/xCaR3ScJGIwiuw==
+X-Received: by 2002:a05:600d:84ca:10b0:4b4:49d7:bc25 with SMTP id
+ 5b1f17b1804b1-4b449d7be7fmr30153795e9.21.1793809677257; 
+ Wed, 04 Nov 2026 08:27:57 -0800 (PST)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-48feea5d4e4sm4626764f8f.57.2026.11.04.08.27.54
+ 5b1f17b1804b1-4b2ab00ff3dsm275088175e9.14.2026.11.04.08.27.56
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 04 Nov 2026 08:27:54 -0800 (PST)
+ Wed, 04 Nov 2026 08:27:56 -0800 (PST)
 X-Google-Original-From: "Marco Baffo (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
 Date: Wed, 4 Nov 2026 16:27:50 +0000
@@ -116,22 +116,22 @@ To: =?UTF-8?Q?R=C4=83zvan_Cojocaru?= <razvanc@mailbox.org>,
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newpatchset
 X-Gerrit-PatchSet: 2
-X-Gerrit-Change-Id: I75ba77fcbb11790c7cc86cc436fc75ff99bd1c9e
-X-Gerrit-Change-Number: 2060
+X-Gerrit-Change-Id: I133e9368f9dfa9f10b4df8e503c3cf42f3a6d582
+X-Gerrit-Change-Number: 2062
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2060?usp=email>
-X-Gerrit-Commit: d05b45d95c175c9b892c157f6c4e3fa6283a7ba6
-In-Reply-To: <gerrit.1793194671000.I75ba77fcbb11790c7cc86cc436fc75ff99bd1c9e@gerrit.openvpn.net>
-References: <gerrit.1793194671000.I75ba77fcbb11790c7cc86cc436fc75ff99bd1c9e@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzkzMTk0NjcxMDAwLkk3NWJhNzdmY2JiMTE3OTBjN2NjODZjYzQzNmZjNzVmZjk5YmQxYzllQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <7b5a2f88f89d7963d57966374f7abcae84623593-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2062?usp=email>
+X-Gerrit-Commit: 0f9aee8b28e108ec3bcd9fc3d9bff32ba2e8684c
+In-Reply-To: <gerrit.1793194671000.I133e9368f9dfa9f10b4df8e503c3cf42f3a6d582@gerrit.openvpn.net>
+References: <gerrit.1793194671000.I133e9368f9dfa9f10b4df8e503c3cf42f3a6d582@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzkzMTk0NjcxMDAwLkkxMzNlOTM2OGY5ZGZhOWYxMGI0ZGY4ZTUwM2MzY2Y0MmYzYTZkNTgyQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <11bd18ea8af51056c168ebc06867ce74aa430f9b-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.2
 X-Spam-Score: 0.8 (/)
-X-Headers-End: 1xOdqD-000000000a1-32Lo
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: PUSH_UPDATE:
- centralize virtual address changes in update_vaddr
+X-Headers-End: 1xOdqF-000000006Nl-3yUk
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: dco: add an API to
+ update peer virtual addresses on Linux
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -147,7 +147,7 @@ Reply-To: marco@mandelbit.com, arne-openvpn@rfc2549.org, razvanc@mailbox.org,
  openvpn-devel@lists.sourceforge.net
 Cc: "Marco Baffo \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============6441849290084605371=="
+Content-Type: multipart/mixed; boundary="===============1574782686885693128=="
 X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
 	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,MIME_HTML_MOSTLY,
@@ -156,897 +156,617 @@ X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============6441849290084605371==
+--===============1574782686885693128==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="ZHfFFFQgwW4="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="5k8T2hx9RUo="; charset=UTF-8
 
---ZHfFFFQgwW4=
+--5k8T2hx9RUo=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: Arne Schwabe, R=C4=83zvan Cojocaru=2E=
+Attention is currently required from: Arne Schwabe, Marco Baffo=2E
 
+Hello A=
+rne Schwabe, R=C4=83zvan Cojocaru, 
 
-Hello Arne Schwabe, R=C4=83zvan Cojocaru, 
+I'd like you to reexamine a change=2E =
+Please visit
 
-I'd like you to reexamine a c=
-hange=2E Please visit
-
-    https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2060?=
-usp=3Demail
+    https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2062?usp=3Dema=
+il
 
 to look at the new patch set (#2)=2E
 
-The following approvals =
-got outdated and were removed:
-Code-Review-1 by R=C4=83zvan Cojocaru
+The change is no longer submittab=
+le: checks~ChecksSubmitRule is unsatisfied now=2E
 
 
-Chan=
-ge subject: PUSH_UPDATE: centralize virtual address changes in update_vaddr=
-
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+Change subject: dco: ad=
+d an API to update peer virtual addresses on Linux
+=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-PUSH_UPDAT=
-E: centralize virtual address changes in update_vaddr
+dco: add an API to update peer virtua=
+l addresses on Linux
 
-Use the current virt=
-ual addresses as parser defaults so omitted options
-remain unchanged and NU=
-LL consistently means address removal=2E Move removal
-into update_vaddr(), =
-skip unchanged addresses, and set the new address before
-learning its route=
-=2E If learning either new address fails, restart the client
-since the PUSH=
-_UPDATE is already queued=2E Report the scheduled exit as a failed
-update s=
-o management does not count the client as successfully updated=2E
+Add a context wrapper and a Linux OVPN_CMD_PEER_SET i=
+mplementation that
+updates or clears only the requested address families=2E=
+ Supply no-op stubs
+for non-DCO builds, FreeBSD and Windows=2E
 
-Change-I=
-d: I75ba77fcbb11790c7cc86cc436fc75ff99bd1c9e
-Signed-off-by: Marco Baffo <ma=
-rco@mandelbit=2Ecom>
+Change-Id: =
+I133e9368f9dfa9f10b4df8e503c3cf42f3a6d582
+Signed-off-by: Marco Baffo <marco=
+@mandelbit=2Ecom>
 ---
-M src/openvpn/multi=2Ec
-M src/openvpn/multi=2Eh
-M =
-src/openvpn/push_util=2Ec
-M tests/unit_tests/openvpn/mock_push_dependencies=
-=2Ec
-4 files changed, 111 insertions(+), 77 deletions(-)
+M src/openvpn/dco=2Ec
+M src/openvpn/dco=2Eh
+M src/ope=
+nvpn/dco_freebsd=2Ec
+M src/openvpn/dco_linux=2Ec
+M src/openvpn/dco_win=2Ec
+=
+5 files changed, 129 insertions(+), 0 deletions(-)
 
 
-  git pull ssh:/=
-/gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/60/2060/2
+  git pull ssh://gerri=
+t=2Eopenvpn=2Enet:29418/openvpn refs/changes/62/2062/2
 
-diff --git a/=
-src/openvpn/multi=2Ec b/src/openvpn/multi=2Ec
-index af8b1c7=2E=2E0027550 10=
-0644
---- a/src/openvpn/multi=2Ec
-+++ b/src/openvpn/multi=2Ec
-@@ -4477,7 +44=
-77,7 @@
+diff --git a/src/op=
+envpn/dco=2Ec b/src/openvpn/dco=2Ec
+index f807002=2E=2Eaaf074b 100644
+--- a=
+/src/openvpn/dco=2Ec
++++ b/src/openvpn/dco=2Ec
+@@ -676,6 +676,40 @@
+     re=
+turn 0;
  }
  
- /* Function to unlearn previous ifconfig of a client in the s=
-erver multi_context after a PUSH_UPDATE */
--void
-+static void
- unlearn_ifco=
-nfig(struct multi_context *m, struct multi_instance *mi)
++int
++dco_multi_update_peer_addr(struct context *c, int flags)=
+
++{
++    if (!flags || c->c2=2Etls_multi->dco_peer_id =3D=3D -1)
++    {
++  =
+      return 0;
++    }
++
++    int peer_id =3D c->c2=2Etls_multi->dco_peer_i=
+d;
++
++    /* In server mode we need to fetch the remote addresses from the =
+push config */
++    struct in_addr vpn_ip4 =3D { 0 };
++    const struct in_=
+addr *vpn_addr4 =3D NULL;
++    if (c->c2=2Epush_ifconfig_defined)
++    {
++ =
+       vpn_ip4=2Es_addr =3D htonl(c->c2=2Epush_ifconfig_local);
++        vp=
+n_addr4 =3D &vpn_ip4;
++    }
++
++    const struct in6_addr *vpn_addr6 =3D NU=
+LL;
++    if (c->c2=2Epush_ifconfig_ipv6_defined)
++    {
++        vpn_addr6 =
+=3D &c->c2=2Epush_ifconfig_ipv6_local;
++    }
++
++    int ret =3D dco_update=
+_peer_addr(&c->c1=2Etuntap->dco, peer_id, vpn_addr4, vpn_addr6, flags);
++  =
+  if (ret < 0)
++    {
++        return ret;
++    }
++
++    return 0;
++}
++
+ vo=
+id
+ dco_install_iroute(struct multi_context *m, struct multi_instance *mi, =
+const struct mroute_addr *addr)
  {
-     in_addr_t =
-old_addr =3D 0;
-@@ -4489,7 +4489,7 @@
- }
- 
- /* Function to unlearn previous=
- ifconfig-ipv6 of a client in the server multi_context after a PUSH_UPDATE =
-*/
--void
-+static void
- unlearn_ifconfig_ipv6(struct multi_context *m, struc=
-t multi_instance *mi)
- {
-     struct in6_addr old_addr6;
-@@ -4502,59 +4502,=
-102 @@
- }
+diff --git a/src/openvpn/dco=2Eh b/src/o=
+penvpn/dco=2Eh
+index ce44331=2E=2E7005bd2 100644
+--- a/src/openvpn/dco=2Eh
+=
++++ b/src/openvpn/dco=2Eh
+@@ -191,6 +191,31 @@
+                  int keepal=
+ive_timeout, int mss);
  
  /**
-- * Update the vhash with new IP/IPv6 addresses in the mul=
-ti_context when a
-- * push-update message containing ifconfig/ifconfig-ipv6=
- options is sent
-- * from the server=2E
-+ * Update the vhash when a push-up=
-date message containing
-+ * ifconfig/ifconfig-ipv6 options is sent from the=
- server=2E
-  *
-  * @param m         The multi_context
-  * @param mi        =
-The multi_instance of the client we are updating
-- * @param new_ip    The n=
-ew IPv4 address or NULL if no change
-- * @param new_ipv6  The new IPv6 addr=
-ess or NULL if no change
-+ * @param new_ip    The new IPv4 address, NULL to=
- remove, current address to keep
-+ * @param new_ipv6  The new IPv6 address,=
- NULL to remove, current address to keep
-+ * @return          false if the =
-update failed, true otherwise=2E On failure the
-+ *                  client=
- is restarted
-  */
--void
--update_vhash(struct multi_context *m, struct mult=
-i_instance *mi, const char *new_ip, const char *new_ipv6)
-+bool
-+update_vad=
-dr(struct multi_context *m, struct multi_instance *mi, const char *new_ip, =
-const char *new_ipv6)
- {
-+    /* -ifconfig */
-+    if (!new_ip && mi->conte=
-xt=2Ec2=2Epush_ifconfig_defined)
-+    {
-+        unlearn_ifconfig(m, mi);
-+=
-    }
-+    /* -ifconfig-ipv6 */
-+    if (!new_ipv6 && mi->context=2Ec2=2Epu=
-sh_ifconfig_ipv6_defined)
-+    {
-+        unlearn_ifconfig_ipv6(m, mi);
-+  =
-  }
-+
-     if (new_ip)
-     {
--        /* Remove old IP */
--        if (mi-=
->context=2Ec2=2Epush_ifconfig_defined)
--        {
--            unlearn_ifco=
-nfig(m, mi);
--        }
--
--        /* Add new IP */
-         struct in_addr=
- new_addr;
--        CLEAR(new_addr);
-         if (inet_pton(AF_INET, new_ip=
-, &new_addr) =3D=3D 1
--            && multi_learn_in_addr_t(m, mi, ntohl(ne=
-w_addr=2Es_addr), -1, true))
-+            && (!mi->context=2Ec2=2Epush_ifco=
-nfig_defined
-+                || ntohl(new_addr=2Es_addr) !=3D mi->context=
-=2Ec2=2Epush_ifconfig_local))
-         {
-+            /* Remove old IP */
-+=
-            if (mi->context=2Ec2=2Epush_ifconfig_defined)
-+            {
-+ =
-               unlearn_ifconfig(m, mi);
-+            }
-+
-+            /* DC=
-O needs the new address while installing its on-link route=2E */
-          =
-   mi->context=2Ec2=2Epush_ifconfig_defined =3D true;
-             mi->cont=
-ext=2Ec2=2Epush_ifconfig_local =3D ntohl(new_addr=2Es_addr);
--            /=
-* set our client's VPN endpoint for status reporting purposes */
--         =
-   mi->reporting_addr =3D mi->context=2Ec2=2Epush_ifconfig_local;
-+        =
-    if (multi_learn_in_addr_t(m, mi, mi->context=2Ec2=2Epush_ifconfig_local=
-, -1, true) =3D=3D mi)
-+            {
-+                /* set our client's =
-VPN endpoint for status reporting purposes */
-+                mi->reportin=
-g_addr =3D mi->context=2Ec2=2Epush_ifconfig_local;
-+            }
-+        =
-    else
-+            {
-+                mi->context=2Ec2=2Epush_ifconfig_d=
-efined =3D false;
-+                mi->context=2Ec2=2Epush_ifconfig_local =
-=3D 0;
-+
-+                msg(M_WARN, "MULTI: failed to learn PUSH_UPDATE I=
-Pv4 address %s, restarting client",
-+                    new_ip);
-+        =
-        /* PUSH_UPDATE is already queued, so reconnect to restore consisten=
-t state=2E */
-+                send_restart(&mi->context, NULL);
-+         =
-       multi_schedule_context_wakeup(m, mi);
-+                return false;=
++ * Update the peer's virtual address(es) in =
+the DCO to the current value(s)
++ *
++ * @param dco       DCO device context=
 
-+            }
-         }
-     }
- 
-     if (new_ipv6)
-     {
--        /* R=
-emove old IPv6 */
--        if (mi->context=2Ec2=2Epush_ifconfig_ipv6_define=
-d)
--        {
--            unlearn_ifconfig_ipv6(m, mi);
--        }
--
--    =
-    /* Add new IPv6 */
-         struct in6_addr new_addr6;
--        CLEAR(n=
-ew_addr6);
-         if (inet_pton(AF_INET6, new_ipv6, &new_addr6) =3D=3D 1
++ * @param peerid    the ID of the peer to be modified
++ * @param vpn_ipv4=
+  new IPv4 or NULL to remove the outdated one, only used when `(1 << AF_INE=
+T)` flag is present
++ * @param vpn_ipv6  new IPv6 or NULL to remove the out=
+dated one, only used when `(1 << AF_INET6)` flag is present
++ * @param flag=
+s     `(1 << AF_INET)`, `(1 << AF_INET6)` or `(1 << AF_INET) | (1 << AF_INE=
+T6)` depending on which address has changed
++ * @return int      the DCO me=
+ssage status on success or a negative error code otherwise
++ */
++int
++dco_u=
+pdate_peer_addr(dco_context_t *dco, unsigned int peerid,
++                 =
+    const struct in_addr *vpn_ipv4, const struct in6_addr *vpn_ipv6,
++     =
+                int flags);
++
++/**
++ * Update the peer's virtual address(es=
+) in the DCO to the current value(s)
++ *
++ * @param c         peer context
 =
--            && multi_learn_in6_addr(m, mi, new_addr6, -1, true))
-+        =
-    && (!mi->context=2Ec2=2Epush_ifconfig_ipv6_defined
-+                || =
-memcmp(&new_addr6, &mi->context=2Ec2=2Epush_ifconfig_ipv6_local, sizeof(new=
-_addr6))))
-         {
-+            /* Remove old IPv6 */
-+            if (m=
-i->context=2Ec2=2Epush_ifconfig_ipv6_defined)
-+            {
-+             =
-   unlearn_ifconfig_ipv6(m, mi);
-+            }
++ * @param flags     `(1 << AF_INET)`, `(1 << AF_INET6)` or `(1 << AF_INET)=
+ | (1 << AF_INET6)` depending on which address has changed
++ * @return int =
+     0 on success or a negative error code otherwise
++ */
++int
++dco_multi_u=
+pdate_peer_addr(struct context *c, int flags);
 +
-+            /* DCO needs=
- the new address while installing its on-link route=2E */
-             mi->=
-context=2Ec2=2Epush_ifconfig_ipv6_defined =3D true;
-             mi->contex=
-t=2Ec2=2Epush_ifconfig_ipv6_local =3D new_addr6;
--            /* set our cl=
-ient's VPN endpoint for status reporting purposes */
--            mi->repor=
-ting_addr_ipv6 =3D mi->context=2Ec2=2Epush_ifconfig_ipv6_local;
++/**
+  * Remove a peer fro=
+m DCO
+  *
+  * @param c         the main instance context of the peer to rem=
+ove
+@@ -352,6 +377,20 @@
+     return 0;
+ }
+ 
++static inline int
++dco_update=
+_peer_addr(dco_context_t *dco, unsigned int peerid,
++                     c=
+onst struct in_addr *vpn_ipv4, const struct in6_addr *vpn_ipv6,
 +          =
-  if (multi_learn_in6_addr(m, mi, new_addr6, -1, true) =3D=3D mi)
-+        =
-    {
-+                /* set our client's VPN endpoint for status reportin=
-g purposes */
-+                mi->reporting_addr_ipv6 =3D mi->context=2Ec2=
-=2Epush_ifconfig_ipv6_local;
-+            }
-+            else
-+            =
-{
-+                mi->context=2Ec2=2Epush_ifconfig_ipv6_defined =3D false;=
-
-+                CLEAR(mi->context=2Ec2=2Epush_ifconfig_ipv6_local);
+           int flags)
++{
++    return 0;
++}
 +
-+  =
-              msg(M_WARN, "MULTI: failed to learn PUSH_UPDATE IPv6 address =
-%s, restarting client",
-+                    new_ipv6);
-+                /*=
- PUSH_UPDATE is already queued, so reconnect to restore consistent state=2E=
- */
-+                send_restart(&mi->context, NULL);
-+                mul=
-ti_schedule_context_wakeup(m, mi);
-+                return false;
-+        =
-    }
-         }
-     }
-+    return true;
++static inline int
++dco_multi_=
+update_peer_addr(struct context *c, int flags)
++{
++    return 0;
++}
++
+ stat=
+ic inline void
+ dco_remove_peer(struct context *c)
+ {
+diff --git a/src/open=
+vpn/dco_freebsd=2Ec b/src/openvpn/dco_freebsd=2Ec
+index 3148f10=2E=2Ed85104=
+a 100644
+--- a/src/openvpn/dco_freebsd=2Ec
++++ b/src/openvpn/dco_freebsd=2E=
+c
+@@ -559,6 +559,12 @@
+     return ret;
  }
  
- bool
-diff --git a/src/openv=
-pn/multi=2Eh b/src/openvpn/multi=2Eh
-index 3d2e932=2E=2Ef5a1a6f 100644
---- =
-a/src/openvpn/multi=2Eh
-+++ b/src/openvpn/multi=2Eh
-@@ -661,9 +661,7 @@
- lo=
-okup_by_cid(struct multi_context *m, const unsigned long cid);
- #endif
- 
--v=
-oid
--update_vhash(struct multi_context *m, struct multi_instance *mi, const=
- char *new_ip, const char *new_ipv6);
--void unlearn_ifconfig(struct multi_c=
-ontext *m, struct multi_instance *mi);
--void unlearn_ifconfig_ipv6(struct m=
-ulti_context *m, struct multi_instance *mi);
-+bool
-+update_vaddr(struct mul=
-ti_context *m, struct multi_instance *mi, const char *new_ip, const char *n=
-ew_ipv6);
- 
- #endif /* MULTI_H */
-diff --git a/src/openvpn/push_util=2Ec b/=
-src/openvpn/push_util=2Ec
-index 34cb26c=2E=2Ecd940fb 100644
---- a/src/openv=
-pn/push_util=2Ec
-+++ b/src/openvpn/push_util=2Ec
-@@ -149,14 +149,35 @@
-    =
- struct options o;
-     CLEAR(o);
- 
--    /* Set canary values to detect ifc=
-onfig options in push-update messages=2E
--     * These placeholder strings =
-will be overwritten to NULL by the option
--     * parser if -ifconfig or -i=
-fconfig-ipv6 options are present in the
--     * push-update=2E
-+    /* Set =
-canary values to detect -ifconfig and -ifconfig-ipv6 options in
-+     * pus=
-h-update messages=2E These placeholder strings will be overwritten
-+     * =
-to NULL by the option parser if -ifconfig or -ifconfig-ipv6 options
-+     *=
- are present in the push-update, to the new value if present, or
-+     * th=
-ey will remain equal to the current values otherwise=2E
-+     * If the curr=
-ent values are not defined they will remain NULL=2E
-      */
--    const cha=
-r *canary =3D "canary";
--    o=2Eifconfig_local =3D canary;
--    o=2Eifconf=
-ig_ipv6_local =3D canary;
++int
++dco_update_peer_addr(dco=
+_context_t *dco, unsigned int peerid, const struct in_addr *vpn_ipv4, const=
+ struct in6_addr *vpn_ipv6, int flags)
++{
++    return 0;
++}
 +
-+    char ifconfig_local[INET_ADDRSTRLEN];
+ static void
+=
+ dco_update_peer_stat(struct multi_context *m, uint32_t peerid, const nvlis=
+t_t *nvl)
+ {
+diff --git a/src/openvpn/dco_linux=2Ec b/src/openvpn/dco_linux=
+=2Ec
+index 4412ad0=2E=2E744d687 100644
+--- a/src/openvpn/dco_linux=2Ec
++++ =
+b/src/openvpn/dco_linux=2Ec
+@@ -724,6 +724,50 @@
+     return ret;
+ }
+ 
++int=
+
++dco_update_peer_addr(dco_context_t *dco, unsigned int peerid, const struc=
+t in_addr *vpn_ipv4, const struct in6_addr *vpn_ipv6, int flags)
++{
++    ms=
+g(D_DCO_DEBUG, "%s: peer-id %u", __func__, peerid);
++
++    if (!flags)
 +   =
- if (mi->context=2Ec2=2Epush_ifconfig_defined)
+ {
++        return 0;
++    }
++
++    struct nl_msg *nl_msg =3D ovpn_dco_nlms=
+g_create(dco, OVPN_CMD_PEER_SET);
++    if (!nl_msg)
 +    {
-+        struct in_ad=
-dr addr4 =3D { =2Es_addr =3D htonl(mi->context=2Ec2=2Epush_ifconfig_local) =
-};
-+        if (!inet_ntop(AF_INET, &addr4, ifconfig_local, sizeof(ifconfig=
-_local)))
-+        {
-+            return false;
-+        }
-+        o=2Eifc=
-onfig_local =3D ifconfig_local;
++        return =
+-ENOMEM;
 +    }
 +
-+    char ifconfig_ipv6_local[INET=
-6_ADDRSTRLEN];
-+    if (mi->context=2Ec2=2Epush_ifconfig_ipv6_defined)
-+   =
- {
-+        if (!inet_ntop(AF_INET6, &mi->context=2Ec2=2Epush_ifconfig_ipv6=
-_local,
-+                       ifconfig_ipv6_local, sizeof(ifconfig_ipv6_l=
-ocal)))
-+        {
-+            return false;
-+        }
-+        o=2Eifcon=
-fig_ipv6_local =3D ifconfig_ipv6_local;
++    struct nlattr *attr =3D nla_nest_start(nl_msg, OVPN_=
+A_PEER);
++    int ret =3D -EMSGSIZE;
++    NLA_PUT_U32(nl_msg, OVPN_A_PEER_I=
+D, peerid);
++
++    if (flags & (1 << AF_INET))
++    {
++        NLA_PUT_U32(=
+nl_msg, OVPN_A_PEER_VPN_IPV4, vpn_ipv4 ? vpn_ipv4->s_addr : 0);
 +    }
- 
-     struct buffer_entry *=
-e =3D msgs->head;
-     while (e)
-@@ -192,34 +213,15 @@
-         e =3D e->ne=
-xt;
-     }
- 
-+    bool success =3D true;
-     if (option_types_found & OPT_=
-P_UP)
-     {
--        /* -ifconfig */
--        if (!o=2Eifconfig_local && m=
-i->context=2Ec2=2Epush_ifconfig_defined)
--        {
--            unlearn_if=
-config(m, mi);
--        }
--        /* -ifconfig-ipv6 */
--        if (!o=2Ei=
-fconfig_ipv6_local && mi->context=2Ec2=2Epush_ifconfig_ipv6_defined)
--     =
-   {
--            unlearn_ifconfig_ipv6(m, mi);
--        }
--
--        if (o=
-=2Eifconfig_local && !strcmp(o=2Eifconfig_local, canary))
--        {
--     =
-       o=2Eifconfig_local =3D NULL;
--        }
--        if (o=2Eifconfig_ip=
-v6_local && !strcmp(o=2Eifconfig_ipv6_local, canary))
--        {
--         =
-   o=2Eifconfig_ipv6_local =3D NULL;
--        }
--
--        /* new ifconfig =
-or new ifconfig-ipv6 */
--        update_vhash(m, mi, o=2Eifconfig_local, o=
-=2Eifconfig_ipv6_local);
-+        /* ifconfig or ifconfig-ipv6 */
-+        =
-success =3D update_vaddr(m, mi, o=2Eifconfig_local, o=2Eifconfig_ipv6_local=
++
++ =
+   if (flags & (1 << AF_INET6))
++    {
++        struct in6_addr addr6;
++   =
+     if (!vpn_ipv6)
++        {
++            CLEAR(addr6);
++            vpn_=
+ipv6 =3D &addr6;
++        }
++        NLA_PUT(nl_msg, OVPN_A_PEER_VPN_IPV6, =
+sizeof(struct in6_addr), vpn_ipv6);
++    }
++
++    nla_nest_end(nl_msg, attr=
 );
-     }
- 
-     uninit_options(&o);
--    return true;
-+    return success;=
-
++    ret =3D ovpn_nl_msg_send(dco, nl_msg, __func__);
++
++nla_put_failure=
+:
++    nlmsg_free(nl_msg);
++    return ret;
++}
++
+ /* This function parses t=
+he reply provided by the kernel to the CTRL_CMD_GETFAMILY
+  * message=2E We=
+ parse the reply and we retrieve the multicast group ID associated
+  * with=
+ the "ovpn-dco" netlink family=2E
+diff --git a/src/openvpn/dco_win=2Ec b/sr=
+c/openvpn/dco_win=2Ec
+index 68ae7c5=2E=2E8f7c8f62 100644
+--- a/src/openvpn/=
+dco_win=2Ec
++++ b/src/openvpn/dco_win=2Ec
+@@ -519,6 +519,12 @@
  }
  
- /* Return true if the client supports push-update */
-diff --git a/te=
-sts/unit_tests/openvpn/mock_push_dependencies=2Ec b/tests/unit_tests/openvp=
-n/mock_push_dependencies=2Ec
-index f083f89=2E=2E041a5e6 100644
---- a/tests/=
-unit_tests/openvpn/mock_push_dependencies=2Ec
-+++ b/tests/unit_tests/openvp=
-n/mock_push_dependencies=2Ec
-@@ -48,19 +48,10 @@
-     return flags;
- }
- 
--v=
-oid
--unlearn_ifconfig(struct multi_context *m, struct multi_instance *mi)
-+=
-bool
-+update_vaddr(struct multi_context *m, struct multi_instance *mi, cons=
-t char *new_ip, const char *new_ipv6)
- {
--}
--
--void
--unlearn_ifconfig_ipv6(=
-struct multi_context *m, struct multi_instance *mi)
--{
--}
--
--void
--update_v=
-hash(struct multi_context *m, struct multi_instance *mi, const char *new_ip=
-, const char *new_ipv6)
--{
-+    return true;
- }
- 
- void
+ int
++d=
+co_update_peer_addr(dco_context_t *dco, unsigned int peerid, const struct i=
+n_addr *vpn_ipv4, const struct in6_addr *vpn_ipv6, int flags)
++{
++    retur=
+n 0;
++}
++
++int
+ dco_new_key(dco_context_t *dco, unsigned int peerid, int ke=
+yid, dco_key_slot_t slot,
+             const uint8_t *encrypt_key, const ui=
+nt8_t *encrypt_iv, const uint8_t *decrypt_key,
+             const uint8_t *=
+decrypt_iv, const char *ciphername, bool epoch)
 
 -- 
-To view, visit=
- https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2060?usp=3Demail
-To unsubscribe=
-, or for help writing mail filters, visit https://gerrit=2Eopenvpn=2Enet/se=
-ttings?usp=3Demail
+To view, visit https:/=
+/gerrit=2Eopenvpn=2Enet/c/openvpn/+/2062?usp=3Demail
+To unsubscribe, or for=
+ help writing mail filters, visit https://gerrit=2Eopenvpn=2Enet/settings?u=
+sp=3Demail
 
 Gerrit-MessageType: newpatchset
-Gerrit-Project: openvpn=
-
-Gerrit-Branch: master
-Gerrit-Change-Id: I75ba77fcbb11790c7cc86cc436fc75ff9=
-9bd1c9e
-Gerrit-Change-Number: 2060
-Gerrit-PatchSet: 2
-Gerrit-Owner: Marco B=
-affo <marco@mandelbit=2Ecom>
-Gerrit-Reviewer: Arne Schwabe <arne-openvpn@rf=
-c2549=2Eorg>
-Gerrit-Reviewer: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
+Gerrit-Project: openvpn
+Gerrit-=
+Branch: master
+Gerrit-Change-Id: I133e9368f9dfa9f10b4df8e503c3cf42f3a6d582
 =
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
-Gerrit-A=
-ttention: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
-Gerrit-Attention: Ar=
-ne Schwabe <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Change-Number: 2062
+Gerrit-PatchSet: 2
+Gerrit-Owner: Marco Baffo <ma=
+rco@mandelbit=2Ecom>
+Gerrit-Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2E=
+org>
+Gerrit-Reviewer: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
+Gerrit-C=
+C: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Attention=
+: Marco Baffo <marco@mandelbit=2Ecom>
+Gerrit-Attention: Arne Schwabe <arne-=
+openvpn@rfc2549=2Eorg>
 
---ZHfFFFQgwW4=
+--5k8T2hx9RUo=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: Arne Schwabe, R=C4=83zvan Cojocaru=2E </p>
-<p>Marco B=
-affo <strong>uploaded patch set #2</strong> to this change=2E</p><p><a href=
-=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2060?usp=3Demail">View Chang=
-e</a></p><p>The following approvals got outdated and were removed:
-Code-Rev=
-iew-1 by R=C4=83zvan Cojocaru</p><pre class=3D"blocks" style=3D"font-family=
-: monospace,monospace; white-space: pre-wrap;">PUSH_UPDATE: centralize virt=
-ual address changes in update_vaddr<br><br>Use the current virtual addresse=
-s as parser defaults so omitted options<br>remain unchanged and NULL consis=
-tently means address removal=2E Move removal<br>into update_vaddr(), skip u=
-nchanged addresses, and set the new address before<br>learning its route=2E=
- If learning either new address fails, restart the client<br>since the PUSH=
-_UPDATE is already queued=2E Report the scheduled exit as a failed<br>updat=
-e so management does not count the client as successfully updated=2E<br><br=
->Change-Id: I75ba77fcbb11790c7cc86cc436fc75ff99bd1c9e<br>Signed-off-by: Mar=
-co Baffo &lt;marco@mandelbit=2Ecom&gt;<br>---<br>M src/openvpn/multi=2Ec<br=
->M src/openvpn/multi=2Eh<br>M src/openvpn/push_util=2Ec<br>M tests/unit_tes=
-ts/openvpn/mock_push_dependencies=2Ec<br>4 files changed, 111 insertions(+)=
-, 77 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: =
-monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvp=
-n=2Enet:29418/openvpn refs/changes/60/2060/2</pre><pre style=3D"font-family=
-: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openv=
-pn/multi=2Ec b/src/openvpn/multi=2Ec</span><br><span>index af8b1c7=2E=2E002=
-7550 100644</span><br><span>--- a/src/openvpn/multi=2Ec</span><br><span>+++=
- b/src/openvpn/multi=2Ec</span><br><span>@@ -4477,7 +4477,7 @@</span><br><s=
-pan> }</span><br><span> </span><br><span> /* Function to unlearn previous i=
-fconfig of a client in the server multi_context after a PUSH_UPDATE */</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-void</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span> unlearn_ifco=
-nfig(struct multi_context *m, struct multi_instance *mi)</span><br><span> {=
-</span><br><span>     in_addr_t old_addr =3D 0;</span><br><span>@@ -4489,7 =
-+4489,7 @@</span><br><span> }</span><br><span> </span><br><span> /* Functio=
-n to unlearn previous ifconfig-ipv6 of a client in the server multi_context=
- after a PUSH_UPDATE */</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</=
-span><br><span> unlearn_ifconfig_ipv6(struct multi_context *m, struct multi=
-_instance *mi)</span><br><span> {</span><br><span>     struct in6_addr old_=
-addr6;</span><br><span>@@ -4502,59 +4502,102 @@</span><br><span> }</span><b=
-r><span> </span><br><span> /**</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">- * Update the vhash with new IP/IPv6 addresses in the multi_contex=
-t when a</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * push-updat=
-e message containing ifconfig/ifconfig-ipv6 options is sent</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">- * from the server=2E</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+ * Update the vhash when a push-upd=
-ate message containing</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+ * ifconfig/ifconfig-ipv6 options is sent from the server=2E</span><br><=
-span>  *</span><br><span>  * @param m         The multi_context</span><br><=
-span>  * @param mi        The multi_instance of the client we are updating<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param new_ip    Th=
-e new IPv4 address or NULL if no change</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">- * @param new_ipv6  The new IPv6 address or NULL if no ch=
-ange</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param new_i=
-p    The new IPv4 address, NULL to remove, current address to keep</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+ * @param new_ipv6  The new =
-IPv6 address, NULL to remove, current address to keep</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * @return          false if the update f=
-ailed, true otherwise=2E On failure the</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+ *                  client is restarted</span><br><span=
->  */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-void</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-update_vhash(struct multi_context=
- *m, struct multi_instance *mi, const char *new_ip, const char *new_ipv6)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+update_vaddr(struct multi_context *m=
-, struct multi_instance *mi, const char *new_ip, const char *new_ipv6)</spa=
-n><br><span> {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /=
-* -ifconfig */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i=
-f (!new_ip &amp;&amp; mi-&gt;context=2Ec2=2Epush_ifconfig_defined)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        unlearn_ifconfig(m, mi);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    /* -ifconfig-ipv6 */</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    if (!new_ipv6 &amp;&amp; mi-&gt;=
-context=2Ec2=2Epush_ifconfig_ipv6_defined)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        unlearn_ifconfig_ipv6(m, mi);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span>     if (new_ip)</span><br><span>     {</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        /* Remove old IP */=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (mi-&gt;co=
-ntext=2Ec2=2Epush_ifconfig_defined)</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-            unlearn_ifconfig(m, mi);</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        /* Add n=
-ew IP */</span><br><span>         struct in_addr new_addr;</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        CLEAR(new_addr);</span><br><sp=
-an>         if (inet_pton(AF_INET, new_ip, &amp;new_addr) =3D=3D 1</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-            &amp;&amp; multi_l=
-earn_in_addr_t(m, mi, ntohl(new_addr=2Es_addr), -1, true))</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+            &amp;&amp; (!mi-&gt;cont=
-ext=2Ec2=2Epush_ifconfig_defined</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+                || ntohl(new_addr=2Es_addr) !=3D mi-&gt;contex=
-t=2Ec2=2Epush_ifconfig_local))</span><br><span>         {</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+            /* Remove old IP */</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (mi-&gt;co=
-ntext=2Ec2=2Epush_ifconfig_defined)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+                unlearn_ifconfig(m, mi);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+            /* DCO needs the new address while installing its on-link=
- route=2E */</span><br><span>             mi-&gt;context=2Ec2=2Epush_ifconf=
-ig_defined =3D true;</span><br><span>             mi-&gt;context=2Ec2=2Epus=
-h_ifconfig_local =3D ntohl(new_addr=2Es_addr);</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-            /* set our client&#39;s VPN endpoint f=
-or status reporting purposes */</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-            mi-&gt;reporting_addr =3D mi-&gt;context=2Ec2=2Epush_=
-ifconfig_local;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-        if (multi_learn_in_addr_t(m, mi, mi-&gt;context=2Ec2=2Epush_ifconfi=
-g_local, -1, true) =3D=3D mi)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+                /* set our client&#39;s VPN endpoint for status reporti=
-ng purposes */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-           mi-&gt;reporting_addr =3D mi-&gt;context=2Ec2=2Epush_ifconfig_lo=
-cal;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+            else</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+                mi-&gt;context=
-=2Ec2=2Epush_ifconfig_defined =3D false;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                mi-&gt;context=2Ec2=2Epush_ifconfig_lo=
-cal =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+                msg(M_WARN, =
-&quot;MULTI: failed to learn PUSH_UPDATE IPv4 address %s, restarting client=
-&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-        new_ip);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-             /* PUSH_UPDATE is already queued, so reconnect to restore cons=
-istent state=2E */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-               send_restart(&amp;mi-&gt;context, NULL);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+                multi_schedule_context_=
-wakeup(m, mi);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-           return false;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+            }</span><br><span>         }</span><br><span>     }</span>=
-<br><span> </span><br><span>     if (new_ipv6)</span><br><span>     {</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        /* Remove old IPv6 =
-*/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (mi-&gt;=
-context=2Ec2=2Epush_ifconfig_ipv6_defined)</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-            unlearn_ifconfig_ipv6(m, mi);</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-    /* Add new IPv6 */</span><br><span>         struct in6_addr new_addr6;<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        CLEAR(new_addr=
-6);</span><br><span>         if (inet_pton(AF_INET6, new_ipv6, &amp;new_add=
-r6) =3D=3D 1</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-   &amp;&amp; multi_learn_in6_addr(m, mi, new_addr6, -1, true))</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+            &amp;&amp; (!mi-&gt=
-;context=2Ec2=2Epush_ifconfig_ipv6_defined</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+                || memcmp(&amp;new_addr6, &amp;mi-&g=
-t;context=2Ec2=2Epush_ifconfig_ipv6_local, sizeof(new_addr6))))</span><br><=
-span>         {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-        /* Remove old IPv6 */</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+            if (mi-&gt;context=2Ec2=2Epush_ifconfig_ipv6_defined)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+                unlearn_i=
-fconfig_ipv6(m, mi);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+            }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+            /* DCO needs=
- the new address while installing its on-link route=2E */</span><br><span> =
-            mi-&gt;context=2Ec2=2Epush_ifconfig_ipv6_defined =3D true;</spa=
-n><br><span>             mi-&gt;context=2Ec2=2Epush_ifconfig_ipv6_local =3D=
- new_addr6;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
-  /* set our client&#39;s VPN endpoint for status reporting purposes */</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-            mi-&gt;report=
-ing_addr_ipv6 =3D mi-&gt;context=2Ec2=2Epush_ifconfig_ipv6_local;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+            if (multi_learn_i=
-n6_addr(m, mi, new_addr6, -1, true) =3D=3D mi)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                /* set our client&#39;s VPN endpoint f=
-or status reporting purposes */</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+                mi-&gt;reporting_addr_ipv6 =3D mi-&gt;context=
-=2Ec2=2Epush_ifconfig_ipv6_local;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+            else</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-               mi-&gt;context=2Ec2=2Epush_ifconfig_ipv6_defined =3D false;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                CLEA=
-R(mi-&gt;context=2Ec2=2Epush_ifconfig_ipv6_local);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+                msg(M_WARN, &quot;MULTI: failed to learn PUSH_U=
-PDATE IPv6 address %s, restarting client&quot;,</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+                    new_ipv6);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+                /* PUSH_UPDATE is al=
-ready queued, so reconnect to restore consistent state=2E */</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+                send_restart(&amp;=
-mi-&gt;context, NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+                multi_schedule_context_wakeup(m, mi);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+                return false;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><spa=
-n>         }</span><br><span>     }</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    return true;</span><br><span> }</span><br><span> </span=
-><br><span> bool</span><br><span>diff --git a/src/openvpn/multi=2Eh b/src/o=
-penvpn/multi=2Eh</span><br><span>index 3d2e932=2E=2Ef5a1a6f 100644</span><b=
-r><span>--- a/src/openvpn/multi=2Eh</span><br><span>+++ b/src/openvpn/multi=
-=2Eh</span><br><span>@@ -661,9 +661,7 @@</span><br><span> lookup_by_cid(str=
-uct multi_context *m, const unsigned long cid);</span><br><span> #endif</sp=
-an><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-void</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-update_vhash(struct mult=
-i_context *m, struct multi_instance *mi, const char *new_ip, const char *ne=
-w_ipv6);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-void unlearn_=
-ifconfig(struct multi_context *m, struct multi_instance *mi);</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-void unlearn_ifconfig_ipv6(struct m=
-ulti_context *m, struct multi_instance *mi);</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+update_vaddr(struct multi_context *m, struct multi_instance *mi, =
-const char *new_ip, const char *new_ipv6);</span><br><span> </span><br><spa=
-n> #endif /* MULTI_H */</span><br><span>diff --git a/src/openvpn/push_util=
-=2Ec b/src/openvpn/push_util=2Ec</span><br><span>index 34cb26c=2E=2Ecd940fb=
- 100644</span><br><span>--- a/src/openvpn/push_util=2Ec</span><br><span>+++=
- b/src/openvpn/push_util=2Ec</span><br><span>@@ -149,14 +149,35 @@</span><b=
-r><span>     struct options o;</span><br><span>     CLEAR(o);</span><br><sp=
-an> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* Set canary=
- values to detect ifconfig options in push-update messages=2E</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-     * These placeholder strings wi=
-ll be overwritten to NULL by the option</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-     * parser if -ifconfig or -ifconfig-ipv6 options are =
-present in the</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     * =
-push-update=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /=
-* Set canary values to detect -ifconfig and -ifconfig-ipv6 options in</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+     * push-update messag=
-es=2E These placeholder strings will be overwritten</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+     * to NULL by the option parser if -i=
-fconfig or -ifconfig-ipv6 options</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+     * are present in the push-update, to the new value if pr=
-esent, or</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * the=
-y will remain equal to the current values otherwise=2E</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+     * If the current values are not def=
-ined they will remain NULL=2E</span><br><span>      */</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    const char *canary =3D &quot;canary&qu=
-ot;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    o=2Eifconfig_=
-local =3D canary;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-o=2Eifconfig_ipv6_local =3D canary;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- char ifconfig_local[INET_ADDRSTRLEN];</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    if (mi-&gt;context=2Ec2=2Epush_ifconfig_defined)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        struct in_addr addr4 =3D { =
-=2Es_addr =3D htonl(mi-&gt;context=2Ec2=2Epush_ifconfig_local) };</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        if (!inet_ntop(AF_INE=
-T, &amp;addr4, ifconfig_local, sizeof(ifconfig_local)))</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+            return false;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        o=2Eifconfig_local =3D ifconfig_local;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    char ifconfig_ipv6_local[INET6_ADDRSTRLEN];</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    if (mi-&gt;context=2Ec2=
-=2Epush_ifconfig_ipv6_defined)</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     if (!inet_ntop(AF_INET6, &amp;mi-&gt;context=2Ec2=2Epush_ifconfig_ipv6=
-_local,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-           ifconfig_ipv6_local, sizeof(ifconfig_ipv6_local)))</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            return false;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        o=2Eifconfig_ipv6_local =3D ifconfig_=
-ipv6_local;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</s=
-pan><br><span> </span><br><span>     struct buffer_entry *e =3D msgs-&gt;he=
-ad;</span><br><span>     while (e)</span><br><span>@@ -192,34 +213,15 @@</s=
-pan><br><span>         e =3D e-&gt;next;</span><br><span>     }</span><br><=
-span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    bool succ=
-ess =3D true;</span><br><span>     if (option_types_found &amp; OPT_P_UP)</=
-span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        /* -ifconfig */</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-        if (!o=2Eifconfig_local &amp;&amp; mi-&gt;context=2Ec2=2Epush_ifc=
-onfig_defined)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
- {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            unlearn=
-_ifconfig(m, mi);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        /* -ifco=
-nfig-ipv6 */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        i=
-f (!o=2Eifconfig_ipv6_local &amp;&amp; mi-&gt;context=2Ec2=2Epush_ifconfig_=
-ipv6_defined)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            unlearn_=
-ifconfig_ipv6(m, mi);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        if (o=2Eifconfig_local &a=
-mp;&amp; !strcmp(o=2Eifconfig_local, canary))</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-            o=2Eifconfig_local =3D NULL;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        if (o=2Eifconfig_ipv6_local &amp;&amp; !strcmp(=
-o=2Eifconfig_ipv6_local, canary))</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-            o=2Eifconfig_ipv6_local =3D NULL;</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        /=
-* new ifconfig or new ifconfig-ipv6 */</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-        update_vhash(m, mi, o=2Eifconfig_local, o=2Eifconf=
-ig_ipv6_local);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    /* ifconfig or ifconfig-ipv6 */</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        success =3D update_vaddr(m, mi, o=2Eifconfig_local,=
- o=2Eifconfig_ipv6_local);</span><br><span>     }</span><br><span> </span><=
-br><span>     uninit_options(&amp;o);</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    return true;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    return success;</span><br><span> }</span><br><span> </span=
-><br><span> /* Return true if the client supports push-update */</span><br>=
-<span>diff --git a/tests/unit_tests/openvpn/mock_push_dependencies=2Ec b/te=
-sts/unit_tests/openvpn/mock_push_dependencies=2Ec</span><br><span>index f08=
-3f89=2E=2E041a5e6 100644</span><br><span>--- a/tests/unit_tests/openvpn/moc=
-k_push_dependencies=2Ec</span><br><span>+++ b/tests/unit_tests/openvpn/mock=
-_push_dependencies=2Ec</span><br><span>@@ -48,19 +48,10 @@</span><br><span>=
-     return flags;</span><br><span> }</span><br><span> </span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-void</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-unlearn_ifconfig(struct multi_context *m, struct multi_ins=
-tance *mi)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+update_vaddr(struct mult=
-i_context *m, struct multi_instance *mi, const char *new_ip, const char *ne=
-w_ipv6)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-void</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-unlearn_ifconfig_ipv6(struct multi_context *m, struct=
- multi_instance *mi)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-upda=
-te_vhash(struct multi_context *m, struct multi_instance *mi, const char *ne=
-w_ip, const char *new_ipv6)</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return t=
-rue;</span><br><span> }</span><br><span> </span><br><span> void</span><br><=
-/pre><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/=
-+/2060?usp=3Demail">change 2060</a>=2E To unsubscribe, or for help writing =
-mail filters, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=
-=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg=
-/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=
-=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/2060?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
-ew Change"/></div></div>
+rently required from: Arne Schwabe, Marco Baffo=2E </p>
+<p>Marco Baffo <str=
+ong>uploaded patch set #2</strong> to this change=2E</p><p><a href=3D"https=
+://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2062?usp=3Demail">View Change</a></p>=
+<p>The change is no longer submittable: checks~ChecksSubmitRule is unsatisf=
+ied now=2E</p><pre class=3D"blocks" style=3D"font-family: monospace,monospa=
+ce; white-space: pre-wrap;">dco: add an API to update peer virtual addresse=
+s on Linux<br><br>Add a context wrapper and a Linux OVPN_CMD_PEER_SET imple=
+mentation that<br>updates or clears only the requested address families=2E =
+Supply no-op stubs<br>for non-DCO builds, FreeBSD and Windows=2E<br><br>Cha=
+nge-Id: I133e9368f9dfa9f10b4df8e503c3cf42f3a6d582<br>Signed-off-by: Marco B=
+affo &lt;marco@mandelbit=2Ecom&gt;<br>---<br>M src/openvpn/dco=2Ec<br>M src=
+/openvpn/dco=2Eh<br>M src/openvpn/dco_freebsd=2Ec<br>M src/openvpn/dco_linu=
+x=2Ec<br>M src/openvpn/dco_win=2Ec<br>5 files changed, 129 insertions(+), 0=
+ deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: mono=
+space,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2E=
+net:29418/openvpn refs/changes/62/2062/2</pre><pre style=3D"font-family: mo=
+nospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/d=
+co=2Ec b/src/openvpn/dco=2Ec</span><br><span>index f807002=2E=2Eaaf074b 100=
+644</span><br><span>--- a/src/openvpn/dco=2Ec</span><br><span>+++ b/src/ope=
+nvpn/dco=2Ec</span><br><span>@@ -676,6 +676,40 @@</span><br><span>     retu=
+rn 0;</span><br><span> }</span><br><span> </span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+int</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+dco_multi_update_peer_addr(struct context *c, int flags)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    if (!flags || c-&gt;c2=2Etls_multi-&gt;dco_pe=
+er_id =3D=3D -1)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return 0;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    int peer_id =3D c-&gt;c2=2Etls_multi-&gt;dco_pee=
+r_id;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    /* In server mode we need to =
+fetch the remote addresses from the push config */</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    struct in_addr vpn_ip4 =3D { 0 };</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    const struct in_addr *=
+vpn_addr4 =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    if (c-&gt;c2=2Epush_ifconfig_defined)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        vpn_ip4=2Es_addr =3D htonl(c-&gt;c2=2Epush_ifconfig_local);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        vpn_addr4 =
+=3D &amp;vpn_ip4;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    const struct in6_addr *vpn_addr=
+6 =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (=
+c-&gt;c2=2Epush_ifconfig_ipv6_defined)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        vpn_addr6 =3D &amp;c-&gt;c2=2Epush_ifconfig_ipv6_local;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    int ret =3D dco_update_peer_addr(&amp;c-&gt;c1=2Etuntap=
+-&gt;dco, peer_id, vpn_addr4, vpn_addr6, flags);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    if (ret &lt; 0)</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        return ret;</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return 0;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span> void</span><br><span> d=
+co_install_iroute(struct multi_context *m, struct multi_instance *mi, const=
+ struct mroute_addr *addr)</span><br><span> {</span><br><span>diff --git a/=
+src/openvpn/dco=2Eh b/src/openvpn/dco=2Eh</span><br><span>index ce44331=2E=
+=2E7005bd2 100644</span><br><span>--- a/src/openvpn/dco=2Eh</span><br><span=
+>+++ b/src/openvpn/dco=2Eh</span><br><span>@@ -191,6 +191,31 @@</span><br><=
+span>                  int keepalive_timeout, int mss);</span><br><span> </=
+span><br><span> /**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ * Update the peer&#39;s virtual address(es) in the DCO to the current valu=
+e(s)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ * @param dco       DCO device c=
+ontext</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param pee=
+rid    the ID of the peer to be modified</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ * @param vpn_ipv4  new IPv4 or NULL to remove the out=
+dated one, only used when `(1 &lt;&lt; AF_INET)` flag is present</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ * @param vpn_ipv6  new IPv6 o=
+r NULL to remove the outdated one, only used when `(1 &lt;&lt; AF_INET6)` f=
+lag is present</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @p=
+aram flags     `(1 &lt;&lt; AF_INET)`, `(1 &lt;&lt; AF_INET6)` or `(1 &lt;&=
+lt; AF_INET) | (1 &lt;&lt; AF_INET6)` depending on which address has change=
+d</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return int    =
+  the DCO message status on success or a negative error code otherwise</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+int</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+dco_update_peer_addr(dco_context_t *dco, unsigned int pe=
+erid,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+              =
+       const struct in_addr *vpn_ipv4, const struct in6_addr *vpn_ipv6,</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+                     in=
+t flags);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ * Update the peer&#39;s virtual address(es) =
+in the DCO to the current value(s)</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+ @param c         peer context</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+ * @param flags     `(1 &lt;&lt; AF_INET)`, `(1 &lt;&lt; AF_INET=
+6)` or `(1 &lt;&lt; AF_INET) | (1 &lt;&lt; AF_INET6)` depending on which ad=
+dress has changed</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+ @return int      0 on success or a negative error code otherwise</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+int</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+dco_multi_update_peer_addr(struct context *c, int flags);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span>  * Remove a peer fro=
+m DCO</span><br><span>  *</span><br><span>  * @param c         the main ins=
+tance context of the peer to remove</span><br><span>@@ -352,6 +377,20 @@</s=
+pan><br><span>     return 0;</span><br><span> }</span><br><span> </span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+static inline int</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+dco_update_peer_addr(dco_contex=
+t_t *dco, unsigned int peerid,</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+                     const struct in_addr *vpn_ipv4, const struc=
+t in6_addr *vpn_ipv6,</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+                     int flags)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+static inline int</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+dco_multi_update_peer_addr(struct context *c, int=
+ flags)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    return 0;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span> static inline void</span><br><span> =
+dco_remove_peer(struct context *c)</span><br><span> {</span><br><span>diff =
+--git a/src/openvpn/dco_freebsd=2Ec b/src/openvpn/dco_freebsd=2Ec</span><br=
+><span>index 3148f10=2E=2Ed85104a 100644</span><br><span>--- a/src/openvpn/=
+dco_freebsd=2Ec</span><br><span>+++ b/src/openvpn/dco_freebsd=2Ec</span><br=
+><span>@@ -559,6 +559,12 @@</span><br><span>     return ret;</span><br><spa=
+n> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_update_pe=
+er_addr(dco_context_t *dco, unsigned int peerid, const struct in_addr *vpn_=
+ipv4, const struct in6_addr *vpn_ipv6, int flags)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    return 0;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span> static void</span><br><span> dco_update_peer_stat(struct multi_contex=
+t *m, uint32_t peerid, const nvlist_t *nvl)</span><br><span> {</span><br><s=
+pan>diff --git a/src/openvpn/dco_linux=2Ec b/src/openvpn/dco_linux=2Ec</spa=
+n><br><span>index 4412ad0=2E=2E744d687 100644</span><br><span>--- a/src/ope=
+nvpn/dco_linux=2Ec</span><br><span>+++ b/src/openvpn/dco_linux=2Ec</span><b=
+r><span>@@ -724,6 +724,50 @@</span><br><span>     return ret;</span><br><sp=
+an> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_update_p=
+eer_addr(dco_context_t *dco, unsigned int peerid, const struct in_addr *vpn=
+_ipv4, const struct in6_addr *vpn_ipv6, int flags)</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    msg(D_DCO_DEBUG, &quot;%s: peer-id %u&quot;, __func__, pee=
+rid);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    if (!flags)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        return 0;</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct =
+nl_msg *nl_msg =3D ovpn_dco_nlmsg_create(dco, OVPN_CMD_PEER_SET);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    if (!nl_msg)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        return -ENOMEM;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    struct nlattr *attr =3D nla_nest_start(nl_msg, OVPN_A_PEER);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    int ret =3D -EMSGSIZE;</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    NLA_PUT_U32(nl_msg=
+, OVPN_A_PEER_ID, peerid);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (flag=
+s &amp; (1 &lt;&lt; AF_INET))</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    NLA_PUT_U32(nl_msg, OVPN_A_PEER_VPN_IPV4, vpn_ipv4 ? vpn_ipv4-&gt;s_add=
+r : 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    if (flags &amp; (1 &lt;&lt; AF_INET6))</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+        struct in6_addr addr6;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!vpn_ipv6)</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+            CLEAR(addr6);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+            vpn_ipv6 =3D &=
+amp;addr6;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        NLA_PUT(nl_=
+msg, OVPN_A_PEER_VPN_IPV6, sizeof(struct in6_addr), vpn_ipv6);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    nla_nest_end(nl_msg, attr);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    ret =3D ovpn_nl_msg_send(dco, nl_msg, __func__);<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+nla_put_failure:</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    nlmsg_free(nl_msg);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    return ret;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span> /* This function parses the reply provide=
+d by the kernel to the CTRL_CMD_GETFAMILY</span><br><span>  * message=2E We=
+ parse the reply and we retrieve the multicast group ID associated</span><b=
+r><span>  * with the &quot;ovpn-dco&quot; netlink family=2E</span><br><span=
+>diff --git a/src/openvpn/dco_win=2Ec b/src/openvpn/dco_win=2Ec</span><br><=
+span>index 68ae7c5=2E=2E8f7c8f62 100644</span><br><span>--- a/src/openvpn/d=
+co_win=2Ec</span><br><span>+++ b/src/openvpn/dco_win=2Ec</span><br><span>@@=
+ -519,6 +519,12 @@</span><br><span> }</span><br><span> </span><br><span> in=
+t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+dco_update_peer_ad=
+dr(dco_context_t *dco, unsigned int peerid, const struct in_addr *vpn_ipv4,=
+ const struct in6_addr *vpn_ipv6, int flags)</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+int</span><br><span> dco_new_key(dco=
+_context_t *dco, unsigned int peerid, int keyid, dco_key_slot_t slot,</span=
+><br><span>             const uint8_t *encrypt_key, const uint8_t *encrypt_=
+iv, const uint8_t *decrypt_key,</span><br><span>             const uint8_t =
+*decrypt_iv, const char *ciphername, bool epoch)</span><br></pre><p>To view=
+, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2062?usp=3Dem=
+ail">change 2062</a>=2E To unsubscribe, or for help writing mail filters, v=
+isit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settin=
+gs</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><=
+div itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewActio=
+n"><link itemprop=3D"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/=
++/2062?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div=
+></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: =
-newpatchset </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </d=
-iv>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div=
+>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D=
-"display:none"> Gerrit-Change-Id: I75ba77fcbb11790c7cc86cc436fc75ff99bd1c9e=
- </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 2060 </div>
-<div=
- style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> G=
+errit-Change-Id: I133e9368f9dfa9f10b4df8e503c3cf42f3a6d582 </div>
+<div styl=
+e=3D"display:none"> Gerrit-Change-Number: 2062 </div>
+<div style=3D"display=
+:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner=
+: Marco Baffo &lt;marco@mandelbit=2Ecom&gt; </div>
 <div style=3D"display:no=
-ne"> Gerrit-Owner: Marco Baffo &lt;marco@mandelbit=2Ecom&gt; </div>
-<div st=
-yle=3D"display:none"> Gerrit-Reviewer: Arne Schwabe &lt;arne-openvpn@rfc254=
-9=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: R=C4=83zva=
-n Cojocaru &lt;razvanc@mailbox=2Eorg&gt; </div>
-<div style=3D"display:none"=
-> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; =
-</div>
-<div style=3D"display:none"> Gerrit-Attention: R=C4=83zvan Cojocaru =
-&lt;razvanc@mailbox=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-At=
-tention: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+ne"> Gerrit-Reviewer: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div=
+>
+<div style=3D"display:none"> Gerrit-Reviewer: R=C4=83zvan Cojocaru &lt;ra=
+zvanc@mailbox=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: open=
+vpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div style=
+=3D"display:none"> Gerrit-Attention: Marco Baffo &lt;marco@mandelbit=2Ecom&=
+gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: Arne Schwabe &lt;=
+arne-openvpn@rfc2549=2Eorg&gt; </div>
 
-</body></h=
-tml>
---ZHfFFFQgwW4=--
+</body></html>
+--5k8T2hx9RUo=--
 
 
---===============6441849290084605371==
+--===============1574782686885693128==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============6441849290084605371==
+--===============1574782686885693128==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -1057,5 +777,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============6441849290084605371==--
+--===============1574782686885693128==--
 
