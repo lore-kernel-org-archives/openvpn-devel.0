@@ -1,138 +1,76 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71B98606A31B
-	for <openvpn-devel@archiver.kernel.org>; Thu,  5 Nov 2026 17:03:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E400606A31B
+	for <openvpn-devel@archiver.kernel.org>; Thu,  5 Nov 2026 17:16:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=Se6HRim2;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=NhS0JwEf;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=lXP1Q84q;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=OxO8M7cN
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=Efay2IoL;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=DqPUPMWe;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=KEKUJqfW
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Unsubscribe-Post:List-Owner;
-	bh=8EPDChKLFhOk52gJhYk/BMnXCgI1bR2syaBA9rO5Obg=; b=Se6HRim2ZeieGIhANveXTWCjts
-	yEoNY3yO8kt8TFtaxJJ9nEGjfb2P3LjtiJiFbcASlm47dEOYv1d9whPPcHDP/Kcq9nrJFiyyQyanf
-	tDwMRRahCJVyxanHz0BzNblO9nVinrIV3hVMmy1uan9RfoAcPilbMYou5YQQGUjp/Qy8=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
+	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
+	List-Owner; bh=KhHG4e1WBzNhUgi4OeTJnaFh9OE7pkdh1XBahm6NBfw=; b=Efay2IoL7OcBVs
+	GPEGCwpRmqm2JT1Oz+CiZ0EIfTpPY95dvHOh5F/1iCqvmiQXL1sYhAAezYYeKpUjlYsk8HsTdU79F
+	VMbshGa6uQL47zGoEfkf8alfMpv6N4M2AFR/WsVXp/NO1LTdr8E/mDiKXrVlbFLKbTi3nviaIvYka
+	ffU=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xP0sK-000000006s1-0cIT;
-	Thu, 05 Nov 2026 17:03:44 +0000
+	id 1xP14I-000000005sD-3vmF;
+	Thu, 05 Nov 2026 17:16:06 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xP0sI-000000006rt-2Nar
- for openvpn-devel@lists.sourceforge.net;
- Thu, 05 Nov 2026 17:03:42 +0000
+ (envelope-from <gert@blue4.greenie.muc.de>)
+ id 1xP14H-000000005s5-3Isa for openvpn-devel@lists.sourceforge.net;
+ Thu, 05 Nov 2026 17:16:05 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
+ In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=8HSMOcGZ8ke40DTqnfzvl9fUMFZLd/LxLw3muQx0A+I=; b=NhS0JwEfv1pRXNIh4zfHBpqQps
- dW7tIJLwIr3+WAALRRSrEcjNnTkFb61kNQutk3llzQbHBRCv9/b4anh9KuYHQrRUpiaFG7zzb/Mmk
- Wx/9+9uee4nr5lxKwJlzbm5WBaa7ixCmqaSWV+N4W90rCGT+QEgzS1GYJtz5qot7nnMU=;
+ bh=GGqXfqP7GVLJJ/mvGHzl2z9WcdNFCO35p6fY/fdkAhM=; b=DqPUPMWe2bSTDXx+TZPCLxLA1a
+ obmcaurfgv6lSSiuYbu5R+x3IiHoJohVgT4779RHzZVs0D2vuOZjHgCcAC+sNxho12V9Edw2FIhXF
+ 3db14rZbIF87N03QE2a+mL27YFyXPOqUU0qNNJAayd/V+hnm29+cCuYVZiNUSzAR5GrI=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
- Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
+ h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
+ Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=8HSMOcGZ8ke40DTqnfzvl9fUMFZLd/LxLw3muQx0A+I=; b=lXP1Q84qH0xTYEL+eGcvG/xcWq
- 4qoxYot8v2ezu24v9Uj/QGw13AGl/dNoMjtu87zeDmRmOUSdymVk3scWa+FHKmJO7FSktkthlPxCV
- 8Oe7MYqIAM7Sy8b/oePkXkWhof9M12/LUvB7VtC2Vfw1KT4yG3GZx3o84r1VKSkB4A2k=;
-Received: from mail-wr1-f49.google.com ([209.85.221.49])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xP0sG-000000002AE-3ocP for openvpn-devel@lists.sourceforge.net;
- Thu, 05 Nov 2026 17:03:42 +0000
-Received: by mail-wr1-f49.google.com with SMTP id
- ffacd0b85a97d-4910b863b84so655749f8f.0
- for <openvpn-devel@lists.sourceforge.net>;
- Thu, 05 Nov 2026 09:03:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1793898214; x=1794503014; darn=lists.sourceforge.net;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
- :reply-to:content-type;
- bh=8HSMOcGZ8ke40DTqnfzvl9fUMFZLd/LxLw3muQx0A+I=;
- b=OxO8M7cNhM/m4uHA4BQkqHyOlu56PufApUec1sjFEwcuWpGbmXyMP6A+7cdYwHSukT
- 531/MQflz5yj/CK6Kg6C/7QduE0FaXe3AcDKO2HVPFqDevADv5Fen+ZRHOI2qMwKngXv
- Ds3/B8lWQFDMNjs+9P/MTgrMAUOsro+2raIvQKkSoImkfHiD2ySNbEH4zy8BTAKbxaj5
- 1suvJptQf6tb2AkkHjXXXW4tWTCz+LjcSvx4P4gxUcSC2WXyRJwJ05/IcktM/Mn5/9JQ
- 3tB/v3YPt5APjXGMjl5a+fxZd9vZFhUskpKKcOhBVmgfvTflSrsg2DVfudvg750vMr8C
- O6ww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1793898214; x=1794503014;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
- :cc:subject:date:message-id:reply-to:content-type;
- bh=8HSMOcGZ8ke40DTqnfzvl9fUMFZLd/LxLw3muQx0A+I=;
- b=yFQOMo2ijg91QlnSCE+NDkiyuIgG7EKPXfHwUf824mm2QOBMNQZHZ55OVZvnsFKoKJ
- TOZv5CuN/RkXtjz/R+qXMjNFHUkaqk4JfKjBhPDWG5YDIz1duxMkjgv17yg8wPMXqkJe
- SOOPew+9f2q9XCV3YmAGE+/i+k7nBL04w1wDqwTUzO+P+mFfIODipEUzajoPF7d1CPeQ
- LQD8cvdQUUOYorJL4/uePDaNigphIinHElEDTS1HWclQx0a7QQkCcOYOl5dQugh0mgUT
- aWUFmoS5Ygrw3esa6PY07LMtkRjv24aN2kIn6ure8dVSbrDGB3u28t2XVJAqbvWcIZ2C
- 2Dmg==
-X-Forwarded-Encrypted: i=1;
- AKwUvBz38syFzzABx4S/93rTe4AIzUgZ9ksHzkA6PNssXR7EivhCUCm6xPgIDBgyDPkRVIlItdcyg9+afsbO2HP6@lists.sourceforge.net
-X-Gm-Message-State: APuU4Z/EqSRfqRpFKQ13h2cbmDaZX7VPwQV3UGZPdQQ3933lc56U0buT
- kTM761JxHr39eMiexBWQBnVO+FhAW/UX1xJDrzfK2KgJkzoXUopEdDxfrUUPEqbN/7EcJU/vYEy
- hkir0gQ4YFqUiaShhfOcRXVx25MbL/eczMuu4JvocXVcZJNl6qM+PW88IwMSvuwHayaSe
-X-Gm-Gg: AYBFou2unbL66IR3DItFnlZRcVgst4H8su5DHo3DvzgpwniajstaIhlrzoly8uIA/vT
- dL7fiIBopmRpYYt85c/vhPQVSiriotcQQ5Daa/rolFN8PHYMWnifJMitXPor8xr2QfMrT8D6/hw
- wok2cPawLUBi0adlBAhMayMBOq+GWK5kUcEdwdT8eto75e1p8ZH0xR644IVYGWXVh2YTaAqcGpN
- 3cevz/CQd8ImFLvZ3hISFb/9yx6etptTg4NGpGutdReSb5oZq31fV/Es/RQunLTkb8r9T2kFu1J
- 4PZWd3GYmQ9qo7VpzSSSC6Xxf5Xq2yVfxkVBLyZaRLRpdYEl/+Tpy31TObgASXPbxhiyUyFutnC
- pJqc6s5RNwr4RX7su62sBAMxveK6mqCJdHq4Uw6GIrV5U6PqjkoF04X2KLeY+l1TewdtiuCwm/p
- hMWqfBPc00JQa+2HvPDrqWKAZ31T3eglM5xujYTdFiEJx9/fXoQG2jQdzYFA9qEjd+RrKL93o3X
- o0I9RCITr/wHWju545iEA8bzcH4r+ZnxfPXaNqUx5bAI7SR+OBlyiUc07msFR+EZRnMV8g6R+yA
- WazWWyxDPfR5QI6z25lK7cuPJjd7HQPrQvOWbbcU/WJGmqOkm1NZsVJAa1BVEopvk4kQsSC8ZHK
- 7DpAG69De7cFXSYacVrsZkNdJvUWQICSphrRyuA2lr6OM4g0WXOGPT6UArI23wyk3SqMqMJ0jxy
- 1uM2T51//xbVQ/FIpSU6AIsuOlpF820GuADh0=
-X-Received: by 2002:a05:600c:3b04:b0:4a1:efbe:529c with SMTP id
- 5b1f17b1804b1-4b55d8cfdbbmr55591075e9.12.1793898213565; 
- Thu, 05 Nov 2026 09:03:33 -0800 (PST)
-Received: from ip-10-18-1-162.eu-central-1.compute.internal
- (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
- by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-4b57373f7f1sm89266965e9.15.2026.11.05.09.03.32
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 05 Nov 2026 09:03:32 -0800 (PST)
-X-Google-Original-From: "Gert Doering (Code Review)"
- <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Thu, 5 Nov 2026 17:03:32 +0000
-To: Hansaem Wi <hansaemw@gmail.com>
-Auto-Submitted: auto-generated
-X-Gerrit-MessageType: merged
-X-Gerrit-PatchSet: 2
-X-Gerrit-Change-Id: Ic4243377c96a3b460d69050386cddcb30535de27
-X-Gerrit-Change-Number: 2078
-X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2078?usp=email>
-X-Gerrit-Commit: 09fd5ac8e4f679a58b02ed2f883ebf4a4d7205a7
-In-Reply-To: <gerrit.1793580377000.Ic4243377c96a3b460d69050386cddcb30535de27@gerrit.openvpn.net>
-References: <gerrit.1793580377000.Ic4243377c96a3b460d69050386cddcb30535de27@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzkzNTgwMzc3MDAwLkljNDI0MzM3N2M5NmEzYjQ2MGQ2OTA1MDM4NmNkZGNiMzA1MzVkZTI3QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <36c720a995e1ab7cedf5fb2e883df9a7c53abbf3-HTML@gerrit.openvpn.net>
+ bh=GGqXfqP7GVLJJ/mvGHzl2z9WcdNFCO35p6fY/fdkAhM=; b=KEKUJqfWee2iHuCyk9L3G5fqPj
+ 0bFHSZ0fZjPICm30GBo1lcRMVEnKpnZJelC1LNdj5fYFSzaM0ZMboVoLX0QotE/M9aZKKUpsRwuzd
+ 10uUkLPXNVftsYOZXVdNngCjPSzX8noR0OQHLH7grKBUy8bUOZIiTmLafEbIE5+0jP5g=;
+Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
+ id 1xP14G-000000007qz-0JR1 for openvpn-devel@lists.sourceforge.net;
+ Thu, 05 Nov 2026 17:16:05 +0000
+Received: from blue.greenie.muc.de (localhost [127.0.0.1])
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 6A5HFvOn028237
+ for <openvpn-devel@lists.sourceforge.net>; Thu, 5 Nov 2026 18:15:57 +0100
+Received: (from gert@localhost)
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 6A5HFvLN028234
+ for openvpn-devel@lists.sourceforge.net; Thu, 5 Nov 2026 18:15:57 +0100
+From: Gert Doering <gert@greenie.muc.de>
+To: openvpn-devel@lists.sourceforge.net
+Date: Thu,  5 Nov 2026 18:15:52 +0100
+Message-ID: <20261105171557.28206-1-gert@greenie.muc.de>
+X-Mailer: git-send-email 2.55.0
+In-Reply-To: <gerrit.1793194671000.I75ba77fcbb11790c7cc86cc436fc75ff99bd1c9e@gerrit.openvpn.net>
+References: <gerrit.1793194671000.I75ba77fcbb11790c7cc86cc436fc75ff99bd1c9e@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
-User-Agent: Gerrit/3.14.5
-X-Spam-Score: 0.8 (/)
-X-Headers-End: 1xP0sG-000000002AE-3ocP
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: crypto: Wipe the
- struct key_parameters copies after use
+X-Spam-Score: 1.3 (+)
+X-Headers-End: 1xP14G-000000007qz-0JR1
+Subject: [Openvpn-devel] [PATCH v2] PUSH_UPDATE: centralize virtual address
+ changes in update_vaddr
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -142,241 +80,326 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "Gert Doering \(Code Review\) via Openvpn-devel"
- <openvpn-devel@lists.sourceforge.net>
-Reply-To: gert@greenie.muc.de, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net, steffan@karger.me, hansaemw@gmail.com
-Cc: "Gert Doering \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>,
- Arne Schwabe <arne-openvpn@rfc2549.org>
-Content-Type: multipart/mixed; boundary="===============6303934451362535432=="
-X-Spam-Status: No, score=-12.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,SPF_PASS,T_KAM_HTML_FONT_INVALID
-	autolearn=ham autolearn_force=no version=4.0.1
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-16.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_PASS,
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============6303934451362535432==
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="XDFrt5OMs6k="; charset=UTF-8
+From: Marco Baffo <marco@mandelbit.com>
 
---XDFrt5OMs6k=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Use the current virtual addresses as parser defaults so omitted options
+remain unchanged and NULL consistently means address removal. Move removal
+into update_vaddr(), skip unchanged addresses, and set the new address before
+learning its route. If learning either new address fails, restart the client
+since the PUSH_UPDATE is already queued. Report the scheduled exit as a failed
+update so management does not count the client as successfully updated.
 
-Gert Doering has submitted this change=2E ( https://gerrit=2Eopenvpn=2Enet/=
-c/openvpn/+/2078?usp=3Demail )
-
-Change subject: crypto: Wipe the struct key=
-_parameters copies after use
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E
-
-crypto: Wipe the struct key_parameters copies after use
-
-i=
-nit_key_ctx_bi() and tls_crypt_v2_init_server_key() convert the key
-into a =
-struct key_parameters on the stack and return without clearing
-it=2E init_k=
-ey_ctx_bi() sets up the data channel keys (when epoch keys
-are not used), t=
-ls-auth, tls-crypt and static keys, so the cipher and
-HMAC keys stay on the=
- stack after every key setup=2E
-epoch_init_send_key() and epoch_init_recv_k=
-ey() already clear their
-struct key_parameters after use; do the same in th=
-ese two places=2E
-
-Assisted-by: Claude Code:claude-opus-5-5
-Change-Id: Ic42=
-43377c96a3b460d69050386cddcb30535de27
-Signed-off-by: Hansaem Wi <hansaemw@g=
-mail=2Ecom>
-Acked-by: Steffan Karger <steffan@karger=2Eme>
-Gerrit URL: http=
-s://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2078
-Message-Id: <20261105093736=2E1=
-1814-1-gert@greenie=2Emuc=2Ede>
-URL: https://www=2Email-archive=2Ecom/openv=
-pn-devel@lists=2Esourceforge=2Enet/msg40749=2Ehtml
-Signed-off-by: Gert Doer=
-ing <gert@greenie=2Emuc=2Ede>
+Change-Id: I75ba77fcbb11790c7cc86cc436fc75ff99bd1c9e
+Signed-off-by: Marco Baffo <marco@mandelbit.com>
+Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2060
 ---
-M src/openvpn/crypto=2Ec
-M src/openvpn/tl=
-s_crypt=2Ec
-2 files changed, 4 insertions(+), 0 deletions(-)
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2060
+This mail reflects revision 2 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Razvan Cojocaru <razvanc@mailbox.org>
 
-diff --git=
- a/src/openvpn/crypto=2Ec b/src/openvpn/crypto=2Ec
-index 2d91c60=2E=2Ef5e59=
-04 100644
---- a/src/openvpn/crypto=2Ec
-+++ b/src/openvpn/crypto=2Ec
-@@ -107=
-5,6 +1075,9 @@
-     init_key_bi_ctx_send(&ctx->encrypt, &send_key, kt, name=
-);
-     init_key_bi_ctx_recv(&ctx->decrypt, &recv_key, kt, name);
-     ctx-=
->initialized =3D true;
+        
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index af8b1c7..0027550 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -4477,7 +4477,7 @@
+ }
+ 
+ /* Function to unlearn previous ifconfig of a client in the server multi_context after a PUSH_UPDATE */
+-void
++static void
+ unlearn_ifconfig(struct multi_context *m, struct multi_instance *mi)
+ {
+     in_addr_t old_addr = 0;
+@@ -4489,7 +4489,7 @@
+ }
+ 
+ /* Function to unlearn previous ifconfig-ipv6 of a client in the server multi_context after a PUSH_UPDATE */
+-void
++static void
+ unlearn_ifconfig_ipv6(struct multi_context *m, struct multi_instance *mi)
+ {
+     struct in6_addr old_addr6;
+@@ -4502,59 +4502,102 @@
+ }
+ 
+ /**
+- * Update the vhash with new IP/IPv6 addresses in the multi_context when a
+- * push-update message containing ifconfig/ifconfig-ipv6 options is sent
+- * from the server.
++ * Update the vhash when a push-update message containing
++ * ifconfig/ifconfig-ipv6 options is sent from the server.
+  *
+  * @param m         The multi_context
+  * @param mi        The multi_instance of the client we are updating
+- * @param new_ip    The new IPv4 address or NULL if no change
+- * @param new_ipv6  The new IPv6 address or NULL if no change
++ * @param new_ip    The new IPv4 address, NULL to remove, current address to keep
++ * @param new_ipv6  The new IPv6 address, NULL to remove, current address to keep
++ * @return          false if the update failed, true otherwise. On failure the
++ *                  client is restarted
+  */
+-void
+-update_vhash(struct multi_context *m, struct multi_instance *mi, const char *new_ip, const char *new_ipv6)
++bool
++update_vaddr(struct multi_context *m, struct multi_instance *mi, const char *new_ip, const char *new_ipv6)
+ {
++    /* -ifconfig */
++    if (!new_ip && mi->context.c2.push_ifconfig_defined)
++    {
++        unlearn_ifconfig(m, mi);
++    }
++    /* -ifconfig-ipv6 */
++    if (!new_ipv6 && mi->context.c2.push_ifconfig_ipv6_defined)
++    {
++        unlearn_ifconfig_ipv6(m, mi);
++    }
 +
-+    secure_memzero(&send_key, sizeof(send_key));
-=
-+    secure_memzero(&recv_key, sizeof(recv_key));
+     if (new_ip)
+     {
+-        /* Remove old IP */
+-        if (mi->context.c2.push_ifconfig_defined)
+-        {
+-            unlearn_ifconfig(m, mi);
+-        }
+-
+-        /* Add new IP */
+         struct in_addr new_addr;
+-        CLEAR(new_addr);
+         if (inet_pton(AF_INET, new_ip, &new_addr) == 1
+-            && multi_learn_in_addr_t(m, mi, ntohl(new_addr.s_addr), -1, true))
++            && (!mi->context.c2.push_ifconfig_defined
++                || ntohl(new_addr.s_addr) != mi->context.c2.push_ifconfig_local))
+         {
++            /* Remove old IP */
++            if (mi->context.c2.push_ifconfig_defined)
++            {
++                unlearn_ifconfig(m, mi);
++            }
++
++            /* DCO needs the new address while installing its on-link route. */
+             mi->context.c2.push_ifconfig_defined = true;
+             mi->context.c2.push_ifconfig_local = ntohl(new_addr.s_addr);
+-            /* set our client's VPN endpoint for status reporting purposes */
+-            mi->reporting_addr = mi->context.c2.push_ifconfig_local;
++            if (multi_learn_in_addr_t(m, mi, mi->context.c2.push_ifconfig_local, -1, true) == mi)
++            {
++                /* set our client's VPN endpoint for status reporting purposes */
++                mi->reporting_addr = mi->context.c2.push_ifconfig_local;
++            }
++            else
++            {
++                mi->context.c2.push_ifconfig_defined = false;
++                mi->context.c2.push_ifconfig_local = 0;
++
++                msg(M_WARN, "MULTI: failed to learn PUSH_UPDATE IPv4 address %s, restarting client",
++                    new_ip);
++                /* PUSH_UPDATE is already queued, so reconnect to restore consistent state. */
++                send_restart(&mi->context, NULL);
++                multi_schedule_context_wakeup(m, mi);
++                return false;
++            }
+         }
+     }
+ 
+     if (new_ipv6)
+     {
+-        /* Remove old IPv6 */
+-        if (mi->context.c2.push_ifconfig_ipv6_defined)
+-        {
+-            unlearn_ifconfig_ipv6(m, mi);
+-        }
+-
+-        /* Add new IPv6 */
+         struct in6_addr new_addr6;
+-        CLEAR(new_addr6);
+         if (inet_pton(AF_INET6, new_ipv6, &new_addr6) == 1
+-            && multi_learn_in6_addr(m, mi, new_addr6, -1, true))
++            && (!mi->context.c2.push_ifconfig_ipv6_defined
++                || memcmp(&new_addr6, &mi->context.c2.push_ifconfig_ipv6_local, sizeof(new_addr6))))
+         {
++            /* Remove old IPv6 */
++            if (mi->context.c2.push_ifconfig_ipv6_defined)
++            {
++                unlearn_ifconfig_ipv6(m, mi);
++            }
++
++            /* DCO needs the new address while installing its on-link route. */
+             mi->context.c2.push_ifconfig_ipv6_defined = true;
+             mi->context.c2.push_ifconfig_ipv6_local = new_addr6;
+-            /* set our client's VPN endpoint for status reporting purposes */
+-            mi->reporting_addr_ipv6 = mi->context.c2.push_ifconfig_ipv6_local;
++            if (multi_learn_in6_addr(m, mi, new_addr6, -1, true) == mi)
++            {
++                /* set our client's VPN endpoint for status reporting purposes */
++                mi->reporting_addr_ipv6 = mi->context.c2.push_ifconfig_ipv6_local;
++            }
++            else
++            {
++                mi->context.c2.push_ifconfig_ipv6_defined = false;
++                CLEAR(mi->context.c2.push_ifconfig_ipv6_local);
++
++                msg(M_WARN, "MULTI: failed to learn PUSH_UPDATE IPv6 address %s, restarting client",
++                    new_ipv6);
++                /* PUSH_UPDATE is already queued, so reconnect to restore consistent state. */
++                send_restart(&mi->context, NULL);
++                multi_schedule_context_wakeup(m, mi);
++                return false;
++            }
+         }
+     }
++    return true;
+ }
+ 
+ bool
+diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
+index 3d2e932..f5a1a6f 100644
+--- a/src/openvpn/multi.h
++++ b/src/openvpn/multi.h
+@@ -661,9 +661,7 @@
+ lookup_by_cid(struct multi_context *m, const unsigned long cid);
+ #endif
+ 
+-void
+-update_vhash(struct multi_context *m, struct multi_instance *mi, const char *new_ip, const char *new_ipv6);
+-void unlearn_ifconfig(struct multi_context *m, struct multi_instance *mi);
+-void unlearn_ifconfig_ipv6(struct multi_context *m, struct multi_instance *mi);
++bool
++update_vaddr(struct multi_context *m, struct multi_instance *mi, const char *new_ip, const char *new_ipv6);
+ 
+ #endif /* MULTI_H */
+diff --git a/src/openvpn/push_util.c b/src/openvpn/push_util.c
+index 34cb26c..cd940fb 100644
+--- a/src/openvpn/push_util.c
++++ b/src/openvpn/push_util.c
+@@ -149,14 +149,35 @@
+     struct options o;
+     CLEAR(o);
+ 
+-    /* Set canary values to detect ifconfig options in push-update messages.
+-     * These placeholder strings will be overwritten to NULL by the option
+-     * parser if -ifconfig or -ifconfig-ipv6 options are present in the
+-     * push-update.
++    /* Set canary values to detect -ifconfig and -ifconfig-ipv6 options in
++     * push-update messages. These placeholder strings will be overwritten
++     * to NULL by the option parser if -ifconfig or -ifconfig-ipv6 options
++     * are present in the push-update, to the new value if present, or
++     * they will remain equal to the current values otherwise.
++     * If the current values are not defined they will remain NULL.
+      */
+-    const char *canary = "canary";
+-    o.ifconfig_local = canary;
+-    o.ifconfig_ipv6_local = canary;
++
++    char ifconfig_local[INET_ADDRSTRLEN];
++    if (mi->context.c2.push_ifconfig_defined)
++    {
++        struct in_addr addr4 = { .s_addr = htonl(mi->context.c2.push_ifconfig_local) };
++        if (!inet_ntop(AF_INET, &addr4, ifconfig_local, sizeof(ifconfig_local)))
++        {
++            return false;
++        }
++        o.ifconfig_local = ifconfig_local;
++    }
++
++    char ifconfig_ipv6_local[INET6_ADDRSTRLEN];
++    if (mi->context.c2.push_ifconfig_ipv6_defined)
++    {
++        if (!inet_ntop(AF_INET6, &mi->context.c2.push_ifconfig_ipv6_local,
++                       ifconfig_ipv6_local, sizeof(ifconfig_ipv6_local)))
++        {
++            return false;
++        }
++        o.ifconfig_ipv6_local = ifconfig_ipv6_local;
++    }
+ 
+     struct buffer_entry *e = msgs->head;
+     while (e)
+@@ -192,34 +213,15 @@
+         e = e->next;
+     }
+ 
++    bool success = true;
+     if (option_types_found & OPT_P_UP)
+     {
+-        /* -ifconfig */
+-        if (!o.ifconfig_local && mi->context.c2.push_ifconfig_defined)
+-        {
+-            unlearn_ifconfig(m, mi);
+-        }
+-        /* -ifconfig-ipv6 */
+-        if (!o.ifconfig_ipv6_local && mi->context.c2.push_ifconfig_ipv6_defined)
+-        {
+-            unlearn_ifconfig_ipv6(m, mi);
+-        }
+-
+-        if (o.ifconfig_local && !strcmp(o.ifconfig_local, canary))
+-        {
+-            o.ifconfig_local = NULL;
+-        }
+-        if (o.ifconfig_ipv6_local && !strcmp(o.ifconfig_ipv6_local, canary))
+-        {
+-            o.ifconfig_ipv6_local = NULL;
+-        }
+-
+-        /* new ifconfig or new ifconfig-ipv6 */
+-        update_vhash(m, mi, o.ifconfig_local, o.ifconfig_ipv6_local);
++        /* ifconfig or ifconfig-ipv6 */
++        success = update_vaddr(m, mi, o.ifconfig_local, o.ifconfig_ipv6_local);
+     }
+ 
+     uninit_options(&o);
+-    return true;
++    return success;
+ }
+ 
+ /* Return true if the client supports push-update */
+diff --git a/tests/unit_tests/openvpn/mock_push_dependencies.c b/tests/unit_tests/openvpn/mock_push_dependencies.c
+index f083f89..041a5e6 100644
+--- a/tests/unit_tests/openvpn/mock_push_dependencies.c
++++ b/tests/unit_tests/openvpn/mock_push_dependencies.c
+@@ -48,19 +48,10 @@
+     return flags;
+ }
+ 
+-void
+-unlearn_ifconfig(struct multi_context *m, struct multi_instance *mi)
++bool
++update_vaddr(struct multi_context *m, struct multi_instance *mi, const char *new_ip, const char *new_ipv6)
+ {
+-}
+-
+-void
+-unlearn_ifconfig_ipv6(struct multi_context *m, struct multi_instance *mi)
+-{
+-}
+-
+-void
+-update_vhash(struct multi_context *m, struct multi_instance *mi, const char *new_ip, const char *new_ipv6)
+-{
++    return true;
  }
  
  void
-diff --git a/s=
-rc/openvpn/tls_crypt=2Ec b/src/openvpn/tls_crypt=2Ec
-index 99e2411=2E=2Ed66=
-b96d 100644
---- a/src/openvpn/tls_crypt=2Ec
-+++ b/src/openvpn/tls_crypt=2Ec=
 
-@@ -356,6 +356,7 @@
- 
-     init_key_ctx(key_ctx, &srv_key_params, &kt, enc=
-rypt, "tls-crypt-v2 server key");
-     secure_memzero(&srv_key, sizeof(srv_=
-key));
-+    secure_memzero(&srv_key_params, sizeof(srv_key_params));
- }
- 
- =
-static bool
-
--- 
-To view, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/=
-2078?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit ht=
-tps://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
-
-Gerrit-MessageType: merg=
-ed
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ic424337=
-7c96a3b460d69050386cddcb30535de27
-Gerrit-Change-Number: 2078
-Gerrit-PatchSe=
-t: 2
-Gerrit-Owner: Hansaem Wi <hansaemw@gmail=2Ecom>
-Gerrit-Reviewer: Arne =
-Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Reviewer: Steffan Karger <steff=
-an@karger=2Eme>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=
-=2Enet>
-
---XDFrt5OMs6k=
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p>Gert Doering <str=
-ong>submitted</strong> this change=2E</p><p><a href=3D"https://gerrit=2Eope=
-nvpn=2Enet/c/openvpn/+/2078?usp=3Demail">View Change</a></p><div style=3D"w=
-hite-space:pre-wrap"></div><pre class=3D"blocks" style=3D"font-family: mono=
-space,monospace; white-space: pre-wrap;">crypto: Wipe the struct key_parame=
-ters copies after use<br><br>init_key_ctx_bi() and tls_crypt_v2_init_server=
-_key() convert the key<br>into a struct key_parameters on the stack and ret=
-urn without clearing<br>it=2E init_key_ctx_bi() sets up the data channel ke=
-ys (when epoch keys<br>are not used), tls-auth, tls-crypt and static keys, =
-so the cipher and<br>HMAC keys stay on the stack after every key setup=2E<b=
-r>epoch_init_send_key() and epoch_init_recv_key() already clear their<br>st=
-ruct key_parameters after use; do the same in these two places=2E<br><br>As=
-sisted-by: Claude Code:claude-opus-5-5<br>Change-Id: Ic4243377c96a3b460d690=
-50386cddcb30535de27<br>Signed-off-by: Hansaem Wi &lt;hansaemw@gmail=2Ecom&g=
-t;<br>Acked-by: Steffan Karger &lt;steffan@karger=2Eme&gt;<br>Gerrit URL: h=
-ttps://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2078<br>Message-Id: &lt;202611050=
-93736=2E11814-1-gert@greenie=2Emuc=2Ede&gt;<br>URL: https://www=2Email-arch=
-ive=2Ecom/openvpn-devel@lists=2Esourceforge=2Enet/msg40749=2Ehtml<br>Signed=
--off-by: Gert Doering &lt;gert@greenie=2Emuc=2Ede&gt;<br>---<br>M src/openv=
-pn/crypto=2Ec<br>M src/openvpn/tls_crypt=2Ec<br>2 files changed, 4 insertio=
-ns(+), 0 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,mo=
-nospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/crypto=2Ec =
-b/src/openvpn/crypto=2Ec</span><br><span>index 2d91c60=2E=2Ef5e5904 100644<=
-/span><br><span>--- a/src/openvpn/crypto=2Ec</span><br><span>+++ b/src/open=
-vpn/crypto=2Ec</span><br><span>@@ -1075,6 +1075,9 @@</span><br><span>     i=
-nit_key_bi_ctx_send(&amp;ctx-&gt;encrypt, &amp;send_key, kt, name);</span><=
-br><span>     init_key_bi_ctx_recv(&amp;ctx-&gt;decrypt, &amp;recv_key, kt,=
- name);</span><br><span>     ctx-&gt;initialized =3D true;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    secure_memzero(&amp;send_key, sizeof(send_key));</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    secure_memzero(&am=
-p;recv_key, sizeof(recv_key));</span><br><span> }</span><br><span> </span><=
-br><span> void</span><br><span>diff --git a/src/openvpn/tls_crypt=2Ec b/src=
-/openvpn/tls_crypt=2Ec</span><br><span>index 99e2411=2E=2Ed66b96d 100644</s=
-pan><br><span>--- a/src/openvpn/tls_crypt=2Ec</span><br><span>+++ b/src/ope=
-nvpn/tls_crypt=2Ec</span><br><span>@@ -356,6 +356,7 @@</span><br><span> </s=
-pan><br><span>     init_key_ctx(key_ctx, &amp;srv_key_params, &amp;kt, encr=
-ypt, &quot;tls-crypt-v2 server key&quot;);</span><br><span>     secure_memz=
-ero(&amp;srv_key, sizeof(srv_key));</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    secure_memzero(&amp;srv_key_params, sizeof(srv_key_para=
-ms));</span><br><span> }</span><br><span> </span><br><span> static bool</sp=
-an><br></pre><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/=
-openvpn/+/2078?usp=3Demail">change 2078</a>=2E To unsubscribe, or for help =
-writing mail filters, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/setti=
-ngs?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schem=
-a=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:/=
-/schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https://gerrit=2Eo=
-penvpn=2Enet/c/openvpn/+/2078?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Message=
-Type: merged </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </=
-div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=
-=3D"display:none"> Gerrit-Change-Id: Ic4243377c96a3b460d69050386cddcb30535d=
-e27 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 2078 </div>
-<=
-div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display=
-:none"> Gerrit-Owner: Hansaem Wi &lt;hansaemw@gmail=2Ecom&gt; </div>
-<div s=
-tyle=3D"display:none"> Gerrit-Reviewer: Arne Schwabe &lt;arne-openvpn@rfc25=
-49=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: Steffan K=
-arger &lt;steffan@karger=2Eme&gt; </div>
-<div style=3D"display:none"> Gerri=
-t-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
-=
-
-</body></html>
---XDFrt5OMs6k=--
-
-
---===============6303934451362535432==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============6303934451362535432==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
---===============6303934451362535432==--
-
