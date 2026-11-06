@@ -1,138 +1,137 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94C90606A906
-	for <openvpn-devel@archiver.kernel.org>; Fri,  6 Nov 2026 09:40:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D963C606A334
+	for <openvpn-devel@archiver.kernel.org>; Fri,  6 Nov 2026 09:44:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=jU4InvaL;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=DI9DxWdL;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=NmwX1hTR;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=ThjfmZZZ
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=Fow2O4bV;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=J8krokkE;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=CVJs4AVx;
+	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=I6TK/MGz
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:Date:Sender:To:
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
 	List-Unsubscribe-Post:List-Owner;
-	bh=+UEMvKAPXer59kLOx6JUsVBJoBVocj3BjrlYM2Bfshs=; b=jU4InvaLifjRphFM5aft4vOQqm
-	risLyI/nh6CzTDrgpDM8HiFpqK0+WRL+Oo5ha1NOvy01aAuwgdXq3b7YtNnjEUelllUN6os0GXCv2
-	53iJgtaVBZv0hSlrsBv1KAZ863zPGMuh3hVCgr4D052jKFxW/YAOgNY45TqO+MJODpl4=;
+	bh=k/MGA3y1yPyL1u1h2M0NjsgM6VS2JAZJBScCAxSw7aA=; b=Fow2O4bVjIOEfbnCRcMTdd6IJ6
+	LD81NIoUgTMj5CRUemUCJWdgjN7nPlzz2xFzwhdUL+GS09+TCoNJWNPOOI+ckmiglMFNlE4iPc+Ka
+	tpBKGgOu3EXZ3LP7FgiPin4Ao1hbT7xhW1nFQ93MDm8k6XdigbJ3LCdbnawO3/o/qPSo=;
 Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
 	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xPGQa-000000001iz-1Ci5;
-	Fri, 06 Nov 2026 09:40:08 +0000
+	id 1xPGUp-000000001p7-2HgW;
+	Fri, 06 Nov 2026 09:44:31 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xPGQZ-000000001is-1l33
+ (envelope-from <gerrit@openvpn.net>) id 1xPGUn-000000001p1-3CNI
  for openvpn-devel@lists.sourceforge.net;
- Fri, 06 Nov 2026 09:40:07 +0000
+ Fri, 06 Nov 2026 09:44:29 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:Date:From:Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From
+ Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=IDPsxYOIqc3ZE1KOHmMx4vFeEL53csAlsb5k4sHt6MI=; b=DI9DxWdLdNS6JgLswWZOS55Kj4
- rwqMKKl6LwKUayrG1eZguSK9O3EC38GAKlQgpnShO/QeytMJ3RXLMVuJxUDgxPOb/RTxt7Gp9cC63
- ZXzd5jH9qboX7dMJjzmld1iA/QfyO1j2L/hZ8pItCluPNwvUkh3QSMja5BpyKTpa82Q8=;
+ bh=hcuUjQJbnssEOZVFSiP2X86ypnYvPXkj8jJCd7MfGng=; b=J8krokkEjvwqhG5pCntQq2cjRN
+ TZwE3wDXSiiSRTDr+hwZ9+nM1iZdB5zz8h+TZPeRCwb5KsJY1+eOvcxBk6GAKzWteqL2mwuteVoS8
+ nUfrpgz2gYUyYKka9yNs0a6uctKt6d+OQYmXW46NZYBxuHtvJA4gfdYyycFGtn5zxINk=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:Date:From:Sender:
- To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
+ Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=IDPsxYOIqc3ZE1KOHmMx4vFeEL53csAlsb5k4sHt6MI=; b=NmwX1hTRo/VYZav1m2rIcb0l2i
- FtgWxfSwhyvhykmt1EfK4JjdmHDVS6I3020Pn8IvjNc48Vs39XrTZUmgctbasKFMtUQ3dfQ6RPLH9
- PSzEPLVODuCigcQxRyPUTL4upKEWSLp6gzzYeBSwxEqUWihcRib9e2coEb+IAYhqFvVM=;
-Received: from mail-wr1-f41.google.com ([209.85.221.41])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ bh=hcuUjQJbnssEOZVFSiP2X86ypnYvPXkj8jJCd7MfGng=; b=CVJs4AVxN6vKZvZx5lkbi+3rFT
+ ESeUUKlN+hiTkl0TFsb9VoH7A5TuNCkCOB9CPMPiCRJd0iCTuEASYZgIukicLnFB+kW/XPdqB9nja
+ QjlBdc/T9Xu/L98PGIo0rC4VngIcQu3WUqoY3ioqEjsLiXCxTEyHyw90rGhCtHWffT80=;
+Received: from mail-wm1-f43.google.com ([209.85.128.43])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xPGQS-0000000015N-3Fo7 for openvpn-devel@lists.sourceforge.net;
- Fri, 06 Nov 2026 09:40:07 +0000
-Received: by mail-wr1-f41.google.com with SMTP id
- ffacd0b85a97d-492f563d1c6so105731f8f.3
+ id 1xPGUl-000000006Tr-1yXF for openvpn-devel@lists.sourceforge.net;
+ Fri, 06 Nov 2026 09:44:29 +0000
+Received: by mail-wm1-f43.google.com with SMTP id
+ 5b1f17b1804b1-4a2167bd087so3678715e9.3
  for <openvpn-devel@lists.sourceforge.net>;
- Fri, 06 Nov 2026 01:40:00 -0800 (PST)
+ Fri, 06 Nov 2026 01:44:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1793957994; x=1794562794; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1793958261; x=1794563061; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:date:from:from:to:cc:subject:date:message-id
+ :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=IDPsxYOIqc3ZE1KOHmMx4vFeEL53csAlsb5k4sHt6MI=;
- b=ThjfmZZZ9rrLWVVvHPVjmLAbvdbhHzEoLd2T92nTYqh1PmCggPuYCQIwqnYQcsfP/v
- IKMZCX+nxXRxPbHAFnFNBFmBtBdGu9vSkabIe0qtp/WIosGDCrfobU7Won5xae5kXMkx
- kuIfhziMgJ/yN3DMB6nf5UlcgtOWtnN8TWjDVKTS1W6g/8nbrdKk1jSti6bi++OwIc31
- joLqVzv/uM0gEN7SOSyEjTtHnHMNreiTrQV6jOwG+62mDHwh97JEW1Gikd5gWSY8Re05
- oSK9Tuz2/OvvVWhXtrLEuPpMwkOv4gaUCMrKOSaKfAt7xJLTTktjQg5Hx6a/4oQ9DiLC
- 4k6A==
+ bh=hcuUjQJbnssEOZVFSiP2X86ypnYvPXkj8jJCd7MfGng=;
+ b=I6TK/MGzoMADD0SH4r1eWunnO3WQIVhKxfHgTygBhMNo+TRtUdUrB5MfsAU7auoIlS
+ /viLGmYw0mfYFCTDDWMV+6rAHqxEvcU92Zvom2nfT3m7fvS6LmUjAtTUPb66tgzeNbYF
+ cgCe8JfSYBl59Qh6m5a/D17RATzm65Ss3TCR9RpMf0GGEhLUtOcL+lJIK/6XfyboVKbX
+ RIEdPfrsPGXhhf/hrcrkAE7XXygf0QjXaW3RPBGybKsaR6qUEhJzNRkgA3llRJaKqiuR
+ LUJbS9/aIebhEg7oRBOyENI13PhPgfp2GDHVuRUk9sX+McnLvGKFWwKAXVsbvjkSbiSn
+ izXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1793957994; x=1794562794;
+ d=1e100.net; s=20260707; t=1793958261; x=1794563061;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:date:from:x-gm-gg:x-gm-message-state:from:to:cc
- :subject:date:message-id:reply-to:content-type;
- bh=IDPsxYOIqc3ZE1KOHmMx4vFeEL53csAlsb5k4sHt6MI=;
- b=V7QgrH/7T4uA4Iq1vu4ElH0XQ+BJ3UYGGEip04ZFJZKhecRiVammhOsPj/MMUQc+fA
- mhBf6z/Bh1F3twpZAfY64UVQnUcj9PCfmIySE/fMh9ezsDhK7GAEvUVzBaBQ961wBAYj
- Fh3Z3bM62CtvmxVOkLBlT0/l5T43lFHz+js0G60/CD9/xV7HThb/7324AsehZ+v1tOFQ
- a7Igl63QUz9trUOmpWHsrI/yXpk/NwDh6EDLW5/bstO+QHrxh5xEftM+zdNXaO5qJ9FH
- zj3AuBipflBp3/FytZaP9QKGf4uWDDssHDeyLQ/pmKxDyULiwHQVs47NpLbq3P0bIAtX
- 1FQw==
-X-Forwarded-Encrypted: i=1;
- AL+hErHlGuc5sVy9I3ofjKH/rpIYqnI4GNPFkRxwQHdDa9q9vHIM+Vsw7fwvJBns2tfRwEfzgWc9LwHHLzjdLvEc@lists.sourceforge.net
-X-Gm-Message-State: APuU4Z/Lyx6Mt85saqC5Zw6yvTP+NXB4IlqQucJlZ0Lazm5FAddxFepS
- cEtiApWMMpePOQ89Wmf1FDC2K9/j6GwIHNjFfxz5APnI4Q0yZUygbHnKeOZn5EyBC55cPL0tEM5
- mAfF5hR5XEdXUwG7KnCLkV90cdEQdXvtmxqze/a9N++Do5u4y6BrTmHwIPJbaKYDuihE3b2BPH+
- EgK8yOFQ==
-X-Gm-Gg: AYBFou0Al1JGnHk2vLYdxP3UG0Jo8wFg27byrtbg+q+6uABWAwzGd/pco4cWrcNDER5
- 5cSSC307buXZJqVYesn6K86f8ArdNe7zrywuWG+H832d55N8MghzXCukYadgx7zUFLL2z3lF0Ai
- 2NlNkHoqdETDCm+adS3eAU+sppqUgVBs+y87Tl49RvegRUyDMRaEItb3Go8k23m7VDmpUKHVmnp
- fNkd36JMEe1v4VoZ3wX+XiRLg2u6CqTRsaeB8Lfvbrn2e5aKE/GBZno6GFICG9pnXAo020kkOXX
- sOEEeBhWet16wfVh7CHLli+qSFjdOAyMQvnBjRUEIqDskFbSQShTGJmpLnZbAXxPyKkVrrzC+fc
- gDHcl166hh5SznhBK0xpELyf+/GbzG8mZ6kkbgnd20kxJA1nD6fdvl5P8+eYS8dvjiL5WxceYle
- qVWpDr6DMl84BmKpRmcoJtxV9iorkoAs16Ad/UaG8oeBcZAnL41LYHH2ZHFRgbMOnywMy3rr0Pe
- 0mlBjHvoQrHW+jbOgjgbCLzlVJpzzqhjs7DVFt2cIYmAnPBu4rDnSbBT8h+3m8SG56g1iBzoyoh
- z25nNDoTcWUiGYySth31fDvnz+0C5/fYFhd5lw7zxi1Iz+RqM3h/PlqBT945cHZ2GjZjegN+tSU
- 8rlgup6VomUkqeZof5olShJp8Wq8Ka7wGVT65UkXBQlYsLMW4gN564+05zCIDu7fz95Og7dvt/Q
- iZc3BFpcseko1XQw==
-X-Received: by 2002:a5d:6f1a:0:b0:492:820d:107e with SMTP id
- ffacd0b85a97d-492820d114amr3425503f8f.47.1793957993741; 
- Fri, 06 Nov 2026 01:39:53 -0800 (PST)
+ :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
+ :cc:subject:date:message-id:reply-to:content-type;
+ bh=hcuUjQJbnssEOZVFSiP2X86ypnYvPXkj8jJCd7MfGng=;
+ b=nH2VMkUI7dyMcOz1D28kfj8BTn7MM5erNSKpIspxgsOjs78H/UGrq6x5D3qawu4TSL
+ U2TfISioCZDZCKExD0aXHTO7Y69eQLLYJK6w1IrB/b8V4KXndAcrw1ziWsUAtGeYRHuS
+ ClVLYhDgR46xSjhA1NtGmvD7fVEiCMsDoTlhbeVJ+y1oYq0yUmv1wOvTmyx/QkvnhD9K
+ o7ydsVQmvcUScshIUQ8FYwW0jWWN54ZQQbVzF9TKCKWwQ0UNyF0T9y59dEMcZlFdeycH
+ sQYwgUoCeX8uP3oPh/Ni+JUD2TAl0urXsxOxeA770+xqWsSwoic7XNyEbfpJ5sDGX5hm
+ fMhQ==
+X-Gm-Message-State: APuU4Z/dISlRlioYvO54XL6bsfG2ajTzFIY273UofkBHpCd1RetjELfC
+ FZWJ9yW8IjUH2j2bb/EpImtkQr8L08MDBywky+LvyddJCA8/GcB2fZzTaQ9g1KaRC1hEcMkQzsb
+ syuoxtRWyWpkq8GGsXOsTXvzzX3xklBs10LajqnkSh2iYglC7p6QknscsL4bcXDgN+gbMwB9Upu
+ mWtKpYWw==
+X-Gm-Gg: AYBFou3vqOBs8ik1ILkPXftAKJ63AAttLheDU4wXafpF6MW4WsbD+BVpstO0G45wOZo
+ m/UxpZ30uAEKFiRaw6U3h7zeGJVbai2CsFLtkZg+rvOLw5z5+AoY5+Cu/L6gxSxnfXsAfHnxyei
+ dVTB6xagsiCKNROxj2jfjE2QjFRIQ5J0NEuUTPkfZZIdHLo2TY8JABBRb1yVdRANzrQc8Ph5HQC
+ 6iVjJ6wKpD4izpETGbW7LXfUfutVRyFDIiSxaE6pKeOikYXSlzUK9mwou6j4/ilPb2X++WS72Ny
+ 0vCpdytmdpfI9ZI14fltXyPMan0qJsOAi85FrXqr6dFtQCPgpQE7LJ/WvDvIRP36OQxr/Rj7hrx
+ JKMGkgt57zET9yZseB8kuwuk2uLe+8Qcj+C8n/O1L/4FAJBLR9yGMy5iG0oglF8F/71RSHIUPKd
+ HipTeZBvR7Q1QFlepXyPhSPpqEIH4ycCmybusEn7bHiSvRTVswbW7Na3gq/Bl1E4+DxqB7HIwRB
+ a8NaCsb5HnYubykZRnqTS7Lmx9+uQBfjhEgADth/kuiowYXQh3cP9GzodhuKTulqYC6bMKXZLS2
+ jAHKB6IbwN/vOAI3XJX52a6PjO/HnAi1T2qD1RisZGu8wWtAfR0N8//g97WZvLJOYWyNVSkitp9
+ zo3ubjdncmDRYWNZFYvFMToXUwmGFnqZkIofELhDU9Xn8RPCx/SclMbU5Bxm/rLXuw5DKjMYDto
+ xW4LYu0bFvHD/r2gnBi6EnWJtnKNPjPR432pU=
+X-Received: by 2002:a05:600c:8b23:b0:4a1:6517:ccf1 with SMTP id
+ 5b1f17b1804b1-4b6dea6984emr31740515e9.9.1793958260549; 
+ Fri, 06 Nov 2026 01:44:20 -0800 (PST)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-493070bde9bsm2348333f8f.36.2026.11.06.01.39.53
+ 5b1f17b1804b1-4b6e28cce1fsm54106625e9.15.2026.11.06.01.44.19
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 06 Nov 2026 01:39:53 -0800 (PST)
-X-Google-Original-From: "Gert Doering (Code Review)"
+ Fri, 06 Nov 2026 01:44:20 -0800 (PST)
+X-Google-Original-From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?=
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Fri, 6 Nov 2026 09:39:52 +0000
+Date: Fri, 6 Nov 2026 09:44:18 +0000
+To: Arne Schwabe <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: merged
-X-Gerrit-PatchSet: 3
-X-Gerrit-Change-Id: I13f9f7dd61d7a4cc986155629f6a3c792aaac6d2
-X-Gerrit-Change-Number: 2141
+X-Gerrit-MessageType: newpatchset
+X-Gerrit-PatchSet: 2
+X-Gerrit-Change-Id: I76cd424b34e91f07a6d187b23a258d9dcbf7ed0f
+X-Gerrit-Change-Number: 2145
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2141?usp=email>
-X-Gerrit-Commit: 7804cf0170ecc8019c7eff79db9fa13a6108d080
-In-Reply-To: <gerrit.1793872784000.I13f9f7dd61d7a4cc986155629f6a3c792aaac6d2@gerrit.openvpn.net>
-References: <gerrit.1793872784000.I13f9f7dd61d7a4cc986155629f6a3c792aaac6d2@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzkzODcyNzg0MDAwLkkxM2Y5ZjdkZDYxZDdhNGNjOTg2MTU1NjI5ZjZhM2M3OTJhYWFjNmQyQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <1cb13e2fee7998f017f6c932478f485dbbcee573-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2145?usp=email>
+X-Gerrit-Commit: f78670921980cd9e5b9e1339a12d9a57238038e6
+In-Reply-To: <gerrit.1793957909000.I76cd424b34e91f07a6d187b23a258d9dcbf7ed0f@gerrit.openvpn.net>
+References: <gerrit.1793957909000.I76cd424b34e91f07a6d187b23a258d9dcbf7ed0f@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzkzOTU3OTA5MDAwLkk3NmNkNDI0YjM0ZTkxZjA3YTZkMTg3YjIzYTI1OGQ5ZGNiZjdlZDBmQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <2b444e6a7a3ff3335b802ab331705f2ca14590d7-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.5
-X-Spam-Score: 2.0 (++)
-X-Headers-End: 1xPGQS-0000000015N-3Fo7
-Subject: [Openvpn-devel] [L] Change in openvpn[release/2.7]: backport
- t_client.sh changes from master
+X-Spam-Score: 0.8 (/)
+X-Headers-End: 1xPGUl-000000006Tr-1yXF
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: ssl_verify: share
+ fingerprint and x509 env helpers between backends
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -142,2015 +141,1052 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "Gert Doering \(Code Review\) via Openvpn-devel"
+From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= via Openvpn-devel
  <openvpn-devel@lists.sourceforge.net>
-Reply-To: gert@greenie.muc.de, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com
-Cc: "Gert Doering \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>,
- Arne Schwabe <arne-openvpn@rfc2549.org>
-Content-Type: multipart/mixed; boundary="===============2176936756730419263=="
-X-Spam-Status: No, score=-11.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+Reply-To: razvanc@mailbox.org, arne-openvpn@rfc2549.org,
+ openvpn-devel@lists.sourceforge.net
+Cc: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= <gerrit@openvpn.net>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: multipart/mixed; boundary="===============5079565466749875962=="
+X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
 	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,MIME_HTML_MOSTLY,
-	MISSING_HEADERS,PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,SPF_PASS,
-	T_KAM_HTML_FONT_INVALID autolearn=ham autolearn_force=no version=4.0.1
+	PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,SPF_PASS,T_KAM_HTML_FONT_INVALID,
+	WEIRD_PORT autolearn=ham autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============2176936756730419263==
+--===============5079565466749875962==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="g/Wgqu7PTuQ="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="jYUkxDImXF4="; charset=UTF-8
 
---g/Wgqu7PTuQ=
+--jYUkxDImXF4=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Gert Doering has submitted this change=2E ( https://gerrit=2Eopenvpn=2Enet/=
-c/openvpn/+/2141?usp=3Demail )
+Attention is currently required from: Arne Schwabe=2E
 
-Change subject: backport t_client=2Esh chan=
-ges from master
+Hello Arne Schwabe, =
+
+
+I'd like you to reexamine a change=2E Please visit
+
+    https://gerrit=2E=
+openvpn=2Enet/c/openvpn/+/2145?usp=3Demail
+
+to look at the new patch set (#=
+2)=2E
+
+
+Change subject: ssl_verify: share fingerprint and x509 env helpers =
+between backends
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E
 
-backport t_client=2Esh changes from master
+ssl_verify: share fingerprint and x509 env helpers between backends
 
-This is basically just cop=
-ying in the current t_client=2Esh=2Ein script from
-master, with a number of=
- changes that are not in 2=2E7 yet - most notably
-support for "expect failu=
-re" cases=2E
+R=
+eplace x509_get_sha1_fingerprint() and x509_get_sha256_fingerprint()
+with x=
+509_get_fingerprint(cert, algo, gc) in both backends=2E This also
+removes t=
+he switch in verify_cert(), whose default case could not be
+reached, as ver=
+ify_hash_algo is always MD_SHA1 or MD_SHA256=2E The
+backends now switch ove=
+r the enum without a default, so a new
+algorithm gets a -Wswitch warning, a=
+nd ASSERT on unknown values=2E
 
-Given that this is a test support script with no dependencies=
- into the
-OpenVPN core, and the large number of non-backported scripts that=
- touch
-one line or the other, or re-indent things, copying the whole script=
+Move the identical do_setenv_x509() copies =
+from the backends to
+ssl_verify=2Ec, with a stub for test_ssl as for verify=
+_cert()=2E
 
-instead of trying to cherry-pick all the individual change seemed like
-a m=
-uch better idea=2E=2E=2E
-
-Besides t_client=2Esh, this also brings tests/upd=
-ate_t_client_ips=2Esh
-from master, because the dc16248523 commit will break=
- functionality
-otherwise=2E
-
-Here's the list:
-
-commit e2548f6e3b7f9ed3d2402=
-0319117b17f30743656
-    t_client=2Esh=2Ein: Check whether addresses are in =
-"tentative" state
-
-commit af6a79c6a83739ca9542e52a02a3449a2f292758
-    t_cl=
-ient=2Esh=2Ein: Add ability to filter by test group
-
-commit dc162485236b70e=
-cfe1be639dbd9db8244a85d54
-    t_client=2Esh=2Ein: Allow to override the loc=
-ation of t_client_ips=2Erc
-    (needs updated update_t_client_ips=2Esh)
-
-co=
-mmit 8b392d642eb4c9b9135dc6a442d943159467e058
-    t_client=2Esh=2Ein: Add u=
-tility function needs_openvpn()
-
-commit dc162485236b70ecfe1be639dbd9db8244a=
-85d54
-    t_client=2Esh=2Ein: Allow to override the location of t_client_ip=
-s=2Erc
-
-commit 37ea1c7683ccb464f80d6e7e8fbcd4b8baf2ac60
-    t_client=2Esh=
-=2Ein: Add support for expected test failures
-
-commit ed427eab1683af3adf215=
-53dd1c6b6e4b8b2f10d
-    reformat-shell=2Esh: Add --simplify argument
-
-commi=
-t f781227c92a3d1017e9d8a67e83e4465b43edf66
-    Reformat all shell-scripts w=
-ith shfmt
-    (touches update_t_client_ips=2Esh)
-
-commit b32d1ab45ec9378619=
-1e0dac2c8f5549d6c04258
-    t_client=2Esh=2Ein: Do not try to guess the abso=
-lute path to LOGDIR
-
-commit da1b2a7081eb2791f3a675945c42d7f3189ef752
-    t_=
-client=2Esh=2Ein: Use printf instead of echo -e
-
-commit 162f19112702d1c8045=
-efd17c5b09022fe1e04fb
-    t_client=2Esh=2Ein: Do not run resolvectl if syst=
-emd is not running
-
-commit 841ab0b216a424eb0100448362f76a2c12b3a516
-    t_c=
-lient=2Esh: Do not use CA_CERT variable as indicator for good =2Erc file
-
-C=
-hange-Id: I13f9f7dd61d7a4cc986155629f6a3c792aaac6d2
-Signed-off-by: Gert Doe=
-ring <gert@greenie=2Emuc=2Ede>
-Acked-by: Frank Lichtenheld <frank@lichtenhe=
-ld=2Ecom>
-Gerrit URL: https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2141
-Messa=
-ge-Id: <20261105164926=2E24646-1-gert@greenie=2Emuc=2Ede>
-URL: https://www=
-=2Email-archive=2Ecom/openvpn-devel@lists=2Esourceforge=2Enet/msg40756=2Eht=
-ml
-Signed-off-by: Gert Doering <gert@greenie=2Emuc=2Ede>
+Change-Id: I76cd424b34e91f07a6d187b23a258d9dcbf7ed0f
+Signed-off=
+-by: Razvan Cojocaru <razvanc@mailbox=2Eorg>
 ---
-M tests/t_clie=
-nt=2Esh=2Ein
-M tests/update_t_client_ips=2Esh
-2 files changed, 257 insertio=
-ns(+), 185 deletions(-)
+M src/openvpn/ssl_verify=
+=2Ec
+M src/openvpn/ssl_verify_backend=2Eh
+M src/openvpn/ssl_verify_mbedtls=
+=2Ec
+M src/openvpn/ssl_verify_openssl=2Ec
+M tests/unit_tests/openvpn/mock_s=
+sl_dependencies=2Ec
+5 files changed, 82 insertions(+), 131 deletions(-)
 
 
+ =
+ git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/45/2145/2=
 
 
-diff --git a/tests/t_client=2Esh=2Ein b/tests/t=
-_client=2Esh=2Ein
-index 876e84a=2E=2E5e924bb 100755
---- a/tests/t_client=2E=
-sh=2Ein
-+++ b/tests/t_client=2Esh=2Ein
-@@ -19,57 +19,82 @@
- srcdir=3D"${src=
-dir:-=2E}"
- top_builddir=3D"${top_builddir:-=2E=2E}"
- openvpn=3D"${openvpn:=
--${top_builddir}/src/openvpn/openvpn}"
--if [ -r "${top_builddir}"/t_client=
-=2Erc ] ; then
--    =2E "${top_builddir}"/t_client=2Erc
--elif [ -r "${srcdi=
-r}"/t_client=2Erc ] ; then
--    =2E "${srcdir}"/t_client=2Erc
--else
--    ec=
-ho "$0: cannot find 't_client=2Erc' in build dir ('${top_builddir}')" >&2
--=
-    echo "$0: or source directory ('${srcdir}')=2E SKIPPING TEST=2E" >&2
-- =
-   exit "${TCLIENT_SKIP_RC}"
-+t_client_ips_rc=3D"${t_client_ips_rc:-${top_b=
-uilddir}/t_client_ips=2Erc}"
-+update_t_client_ips=3D"${update_t_client_ips:=
--${srcdir}/update_t_client_ips=2Esh}"
-+
-+if [ -z "${t_client_rc}" ]; then
-+=
-    if [ -r "${top_builddir}"/t_client=2Erc ]; then
-+        t_client_rc=3D=
-"${top_builddir}"/t_client=2Erc
-+    elif [ -r "${srcdir}"/t_client=2Erc ];=
- then
-+        t_client_rc=3D"${srcdir}"/t_client=2Erc
-+    else
-+        e=
-cho "$0: cannot find 't_client=2Erc' in build dir ('${top_builddir}')" >&2
-=
-+        echo "$0: or source directory ('${srcdir}')=2E SKIPPING TEST=2E" >=
-&2
-+        exit "${TCLIENT_SKIP_RC}"
-+    fi
- fi
+diff --git a/src/openvpn/ssl_verify=2Ec b/src/openvpn/ssl_verify=2Ec
+inde=
+x 0cdec1e=2E=2E3cbc632 100644
+--- a/src/openvpn/ssl_verify=2Ec
++++ b/src/op=
+envpn/ssl_verify=2Ec
+@@ -53,6 +53,19 @@
+     string_mod(str, CC_PRINT, CC_C=
+RLF, '_');
+ }
  
- # Check for external d=
-ependencies
- FPING=3D"fping"
- FPING6=3D"fping6"
--which fping > /dev/null
-+w=
-hich fping >/dev/null
- if [ $? -ne 0 ]; then
-     echo "$0: fping is not av=
-ailable in \$PATH" >&2
-     exit "${TCLIENT_SKIP_RC}"
- fi
--which fping6 > /=
-dev/null
-+which fping6 >/dev/null
- if [ $? -ne 0 ]; then
-     echo "$0: fpi=
-ng6 is not available in \$PATH, assuming fping 4=2E0 or later" >&2
-     FPI=
-NG=3D"fping -4"
-     FPING6=3D"fping -6"
- fi
- 
--KILL_EXEC=3D`which kill`
-+K=
-ILL_EXEC=3D$(which kill)
- if [ $? -ne 0 ]; then
-     echo "$0: kill not fou=
-nd in \$PATH" >&2
-     exit "${TCLIENT_SKIP_RC}"
- fi
- 
--if [ ! -x "${openvp=
-n}" ]
--then
-+if [ ! -x "${openvpn}" ]; then
-     echo "no (executable) open=
-vpn binary in current build tree=2E FAIL=2E" >&2
-     exit 1
- fi
- 
--if [ ! =
--w =2E ]
--then
-+if [ ! -w =2E ]; then
-     echo "current directory is not w=
-ritable (required for logging)=2E FAIL=2E" >&2
-     exit 1
- fi
- 
--if [ -z "=
-$CA_CERT" ] ; then
--    echo "CA_CERT not defined in 't_client=2Erc'=2E SKI=
-P test=2E" >&2
-+openvpn_version=3D$(${openvpn} --version | head -n 1 | cut =
--f2 -d" " | sed -E 's/^2\=2E([0123456789]+)=2E*$/2\1/')
-+
-+needs_openvpn()
-=
++void
++do_setenv_x509(struct env_set *es, const char *name,=
+ char *value, int depth)
 +{
-+    needs_version=3D$1
-+
-+    [ "$openvpn_version" -ge "$needs_version"=
- ]
-+    return $?
++    string_mod(value, CC_ANY, CC_CRLF, '?');
++=
+    msg(D_X509_ATTR, "X509 ATTRIBUTE name=3D'%s' value=3D'%s' depth=3D%d", =
+name, value, depth);
++    const size_t name_expand_size =3D 64 + strlen(nam=
+e);
++    char *name_expand =3D (char *)malloc(name_expand_size);
++    check=
+_malloc_return(name_expand);
++    snprintf(name_expand, name_expand_size, "=
+X509_%d_%s", depth, name);
++    setenv_str(es, name_expand, value);
++    fr=
+ee(name_expand);
 +}
 +
-+=2E "${t_client_rc}"
-+
-+if [ -z "$TEST_RUN_LIST" ];=
- then
-+    echo "TEST_RUN_LIST empty, no tests defined=2E  SKIP test=2E" >&=
-2
-     exit "${TCLIENT_SKIP_RC}"
- fi
+ /*
+  * Export the untrusted IP address and port to t=
+he environment
+  */
+@@ -428,8 +441,8 @@
  
--if [ -z "$TEST_RUN_LIST" ] ; then
+     /* export X509 cert fingerpr=
+ints */
+     {
+-        struct buffer sha1 =3D x509_get_sha1_fingerprint(pe=
+er_cert, &gc);
+-        struct buffer sha256 =3D x509_get_sha256_fingerprin=
+t(peer_cert, &gc);
++        struct buffer sha1 =3D x509_get_fingerprint(pee=
+r_cert, MD_SHA1, &gc);
++        struct buffer sha256 =3D x509_get_fingerpri=
+nt(peer_cert, MD_SHA256, &gc);
+ 
+         snprintf(envname, sizeof(envname)=
+, "tls_digest_%d", cert_depth);
+         setenv_str(es, envname, format_hex=
+_ex(BPTR(&sha1), BLEN(&sha1), 0, 1, ":", &gc));
+@@ -671,32 +684,7 @@
+ 
+    =
+ if (cert_depth =3D=3D opt->verify_hash_depth && opt->verify_hash)
+     {
 -=
-    echo "TEST_RUN_LIST empty, no tests defined=2E  SKIP test=2E" >&2
--    =
-exit "${TCLIENT_SKIP_RC}"
-+if [ -n "$TEST_RUN_GROUP" ]; then
-+    FILTERED_=
-LIST=3D
-+    for test in $TEST_RUN_LIST; do
-+        group=3D$(echo $test |=
- sed -E 's/^([0123456789]+)=2E*/\1/')
-+        if [ "$group" =3D "$TEST_RUN=
-_GROUP" ]; then
-+            FILTERED_LIST=3D"$FILTERED_LIST $test"
-+      =
-  fi
-+    done
-+    if [ -z "$FILTERED_LIST" ]; then
-+        echo "Filtere=
-d TEST_RUN_LIST empty (group=3D$TEST_RUN_GROUP), no tests defined=2E  SKIP =
-test=2E" >&2
-+        exit "${TCLIENT_SKIP_RC}"
-+    fi
-+    TEST_RUN_LIST=
-=3D$FILTERED_LIST
- fi
- 
- # Ensure PREFER_KSU is in a known state
-@@ -77,16 =
-+102,14 @@
- 
- # make sure we have permissions to run ifconfig/route from Op=
-enVPN
- # can't use "id -u" here - doesn't work on Solaris
--ID=3D`id`
--if ex=
-pr "$ID" : "uid=3D0" >/dev/null
--then :
-+ID=3D$(id)
-+if expr "$ID" : "uid=
-=3D0" >/dev/null; then
-+    :
- else
--    if [ "${PREFER_KSU}" -eq 1 ];
--   =
- then
-+    if [ "${PREFER_KSU}" -eq 1 ]; then
-         # Check if we have a=
- valid kerberos ticket
-         klist -l 1>/dev/null 2>/dev/null
--        i=
-f [ $? -ne 0 ];
--        then
-+        if [ $? -ne 0 ]; then
-             #=
- No kerberos ticket found, skip ksu and fallback to RUN_SUDO
-             P=
-REFER_KSU=3D0
-             echo "$0: No Kerberos ticket available=2E  Will =
-not use ksu=2E"
-@@ -95,8 +118,7 @@
-         fi
-     fi
- 
--    if [ -z "$RUN=
-_SUDO" ]
--    then
-+    if [ -z "$RUN_SUDO" ]; then
-         echo "$0: this=
- test must run be as root, or RUN_SUDO=3D=2E=2E=2E " >&2
-         echo "   =
-   must be set correctly in 't_client=2Erc'=2E SKIP=2E" >&2
-         exit "=
-${TCLIENT_SKIP_RC}"
-@@ -104,20 +126,22 @@
-         # We have to use sudo=2E=
- Make sure that we (hopefully) do not have
-         # to ask the users pass=
-word during the test=2E This is done to
-         # prevent timing issues, e=
-=2Eg=2E when the waits for openvpn to start
--	if $RUN_SUDO $KILL_EXEC -0 $$=
-
--	then
--	    echo "$0: $RUN_SUDO $KILL_EXEC -0 succeeded, good=2E"
--	else
-=
--	    echo "$0: $RUN_SUDO $KILL_EXEC -0 failed, cannot go on=2E SKIP=2E" >&=
-2
--	    exit "${TCLIENT_SKIP_RC}"
--	fi
-+        if $RUN_SUDO $KILL_EXEC -0 =
-$$; then
-+            echo "$0: $RUN_SUDO $KILL_EXEC -0 succeeded, good=2E"=
-
-+        else
-+            echo "$0: $RUN_SUDO $KILL_EXEC -0 failed, canno=
-t go on=2E SKIP=2E" >&2
-+            exit "${TCLIENT_SKIP_RC}"
-+        fi
-=
-     fi
- fi
- 
--LOGDIR=3Dt_client-`hostname`-`date +%Y%m%d-%H%M%S`
-+LOGDIR=
-=3Dt_client-$(hostname)-$(date +%Y%m%d-%H%M%S)
-+if [ -n "$TEST_RUN_GROUP" ]=
-; then
-+    LOGDIR=3D"${LOGDIR}-${TEST_RUN_GROUP}"
-+fi
- LOGDIR_ABS=3D"$PWD/=
-$LOGDIR"
--if mkdir $LOGDIR
--then :
-+if mkdir $LOGDIR; then
-+    :
- else
-   =
-  echo "can't create log directory '$LOGDIR'=2E FAIL=2E" >&2
-     exit 1
-@@=
- -137,21 +161,28 @@
- output_start()
- {
-     case $V in
--	0) outbuf=3D"" ;;	=
-		# no per-test output at all
--	1) printf "$@\n"			# compact, details only =
-on failure
--           outbuf=3D"\n" ;;
--	*) printf "\n$@\n" ;;		# print al=
-l, with a bit formatting
-+        0) outbuf=3D"" ;; # no per-test output at=
- all
-+        1)
-+            printf "$@\n" # compact, details only on fail=
-ure
-+            outbuf=3D"\n"
-+            ;;
-+        *) printf "\n$@\n" =
-;; # print all, with a bit formatting
-     esac
- }
- 
- output()
- {
--    END_=
-NL=3D"\n"; if [ "X$1" =3D "X-n" ] ; then END_NL=3D"" ; shift ; fi
-+    END_=
-NL=3D"\n"
-+    if [ "X$1" =3D "X-n" ]; then
-+        END_NL=3D""
-+        s=
-hift
-+    fi
-     case $V in
--	0) ;;				# no per-test output at all
--	1) ou=
-tbuf=3D"$outbuf$@${END_NL}"	# print details only on failure
--           ;;
-=
--	*) printf "$@${END_NL}" ;;	# print everything
-+        0) ;; # no per-tes=
-t output at all
-+        1)
-+            outbuf=3D"$outbuf$@${END_NL}" # pr=
-int details only on failure
-+            ;;
-+        *) printf "$@${END_NL}=
-" ;; # print everything
-     esac
- }
- 
-@@ -159,62 +190,61 @@
- fail()
- {
-   =
-  output "FAIL: $@\n"
--    fail_count=3D$(( $fail_count + 1 ))
-+    fail_co=
-unt=3D$((fail_count + 1))
- }
- 
- # print "all interface IP addresses" + "all=
- routes"
- # this is higly system dependent=2E=2E=2E
- get_ifconfig_route()
- =
-{
--    UNAME=3D`uname -s`
-+    UNAME=3D$(uname -s)
-     case $UNAME in
--	Li=
-nux)
-+        Linux)
-             # linux / iproute2? (-> if configure got =
-a path)
--            if [ -n "@IPROUTE@" ]
--            then
-+            i=
-f [ -n "@IPROUTE@" ]; then
-                 echo "-- linux iproute2 --"
--  =
-              @IPROUTE@ addr show     | grep -v valid_lft
-+                =
-@IPROUTE@ addr show | grep -v valid_lft
-                 @IPROUTE@ route sh=
-ow
-                 @IPROUTE@ -o -6 route show | grep -v ' cache' | sed -E =
--e 's/ expires [0-9]*sec//' -e 's/ (mtu|hoplimit|cwnd|ssthresh) [0-9]+//g' =
--e 's/ (rtt|rttvar) [0-9]+ms//g'
-             else
--	        echo "-- linux=
- / ifconfig --"
--	        LANG=3DC @IFCONFIG@ -a |egrep  "( addr:|encap:)"
-=
--	        LANG=3DC @NETSTAT@ -rn -4 -6
-+                echo "-- linux / if=
-config --"
-+                LANG=3DC @IFCONFIG@ -a | egrep "( addr:|encap:)=
-"
-+                LANG=3DC @NETSTAT@ -rn -4 -6
-             fi
-           =
-  ;;
--	FreeBSD|NetBSD|Darwin)
--	   echo "-- FreeBSD/NetBSD/Darwin [MacOS X]=
- --"
--	   @IFCONFIG@ -a | egrep "(flags=3D|inet)"
--	   @NETSTAT@ -rn | awk =
-'$3 !~ /^UHL/ { print $1,$2,$3,$NF }'
--	   ;;
--	OpenBSD)
--	   echo "-- Open=
-BSD --"
--	   @IFCONFIG@ -a | egrep "(flags=3D|inet)" | \
--		sed -e 's/pltim=
-e [0-9]*//' -e 's/vltime [0-9]*//'
--	   @NETSTAT@ -rn | awk '$3 !~ /^UHL/ {=
- print $1,$2,$3,$NF }'
--	   ;;
--	SunOS)
--	   echo "-- Solaris --"
--	   @IFC=
-ONFIG@ -a | egrep "(flags=3D|inet)"
--	   @NETSTAT@ -rn | awk '$3 !~ /^UHL/ =
-{ print $1,$2,$3,$6 }'
--	   ;;
--	AIX)
--	   echo "-- AIX --"
--	   @IFCONFIG@=
- -a | egrep "(flags=3D|inet)"
--	   @NETSTAT@ -rn | awk '$3 !~ /^UHL/ { prin=
-t $1,$2,$3,$6 }'
--	   ;;
-+        FreeBSD | NetBSD | Darwin)
-+            e=
-cho "-- FreeBSD/NetBSD/Darwin [MacOS X] --"
-+            @IFCONFIG@ -a | eg=
-rep "(flags=3D|inet)"
-+            @NETSTAT@ -rn | awk '$3 !~ /^UHL/ { prin=
-t $1,$2,$3,$NF }'
-+            ;;
-+        OpenBSD)
-+            echo "-- O=
-penBSD --"
-+            @IFCONFIG@ -a | egrep "(flags=3D|inet)" |
-+        =
-        sed -e 's/pltime [0-9]*//' -e 's/vltime [0-9]*//'
-+            @NET=
-STAT@ -rn | awk '$3 !~ /^UHL/ { print $1,$2,$3,$NF }'
-+            ;;
-+    =
-    SunOS)
-+            echo "-- Solaris --"
-+            @IFCONFIG@ -a | e=
-grep "(flags=3D|inet)"
-+            @NETSTAT@ -rn | awk '$3 !~ /^UHL/ { pri=
-nt $1,$2,$3,$6 }'
-+            ;;
-+        AIX)
-+            echo "-- AIX -=
--"
-+            @IFCONFIG@ -a | egrep "(flags=3D|inet)"
-+            @NETST=
-AT@ -rn | awk '$3 !~ /^UHL/ { print $1,$2,$3,$6 }'
-+            ;;
-        =
- *)
--           echo "get_ifconfig_route(): no idea how to get info on your=
- OS (`uname -s`)=2E  FAIL=2E" >&2
--           exit 20
--           ;;
-+     =
-       echo "get_ifconfig_route(): no idea how to get info on your OS ($(un=
-ame -s))=2E  FAIL=2E" >&2
-+            exit 20
-+            ;;
-     esac
- 
-=
-     # another round of per-platform information gathering, for DNS info
-  =
-   # for most of the platforms "cat /etc/resolv=2Econf" is good enough
-    =
- # except Linux and MacOS
-     case $UNAME in
--	Linux)
--            if [ -x=
- /usr/bin/resolvectl -a -d /run/systemd/system ] ; then
-+        Linux)
-+  =
-          if [ -x /usr/bin/resolvectl -a -d /run/systemd/system ]; then
-   =
-              echo "-- linux resolvectl --"
-                 resolvectl sta=
-tus
-             else
-@@ -222,7 +252,7 @@
-                 cat /etc/resolv=
-=2Econf
-             fi
-             ;;
--	Darwin)
-+        Darwin)
-        =
-     echo "-- MacOS scutil --dns"
-             scutil --dns
-             ;;=
-
-@@ -260,19 +290,19 @@
- #  arg2: IPv4/IPv6 address that must show up in out=
- of "get_ifconfig_route"
- check_ifconfig()
- {
--    proto=3D$1 ; shift
-+    =
-proto=3D$1
-+    shift
-     expect_list=3D"$@"
- 
--    if [ -z "$expect_list"=
- ] ; then return ; fi
--    if [ "$expect_list" =3D "-" ] ; then return ; fi=
-
-+    if [ -z "$expect_list" ]; then return; fi
-+    if [ "$expect_list" =
-=3D "-" ]; then return; fi
- 
--    for expect in $expect_list
--    do
--	if g=
-et_ifconfig_route | fgrep "$expect" >/dev/null
--	then :
--	else
--	    fail "=
-check_ifconfig(): expected IPv$proto address '$expect' not found in ifconfi=
-g output=2E"
--	fi
-+    for expect in $expect_list; do
-+        if get_ifcon=
-fig_route | fgrep "$expect" >/dev/null; then
-+            :
-+        else
-+=
-            fail "check_ifconfig(): expected IPv$proto address '$expect' no=
-t found in ifconfig output=2E"
-+        fi
-     done
- }
- 
-@@ -283,47 +313,4=
-8 @@
- #  arg3=2E=2E=2E -> fping arguments (host list)
- run_ping_tests()
- {
-=
--    proto=3D$1 ; want=3D$2 ; shift ; shift
-+    proto=3D$1
-+    want=3D$2
-=
-+    shift
-+    shift
-     targetlist=3D"$@"
- 
-     # "no targets" is fine
-=
--    if [ -z "$targetlist" ] ; then return ; fi
-+    if [ -z "$targetlist" =
-]; then return; fi
- 
-     case $proto in
--	4) cmd=3D"$FPING" ;;
--	6) cmd=3D=
-"$FPING6" ;;
--	*) echo "internal error in run_ping_tests arg 1: '$proto'" >=
-&2
--	   exit 1 ;;
-+        4) cmd=3D"$FPING" ;;
-+        6) cmd=3D"$FPING6"=
- ;;
-+        *)
-+            echo "internal error in run_ping_tests arg 1: =
-'$proto'" >&2
-+            exit 1
-+            ;;
-     esac
- 
-     case $wa=
-nt in
--	want_ok)   sizes_list=3D"64 1440 3000" ;;
--	want_fail) sizes_list=
-=3D"64" ;;
-+        want_ok) sizes_list=3D"64 1440 3000" ;;
-+        want_f=
-ail) sizes_list=3D"64" ;;
-     esac
- 
--    for bytes in $sizes_list
--    do=
-
--	output "run IPv$proto ping tests ($want), $bytes byte packets=2E=2E=2E"
-=
-+    for bytes in $sizes_list; do
-+        output "run IPv$proto ping tests=
- ($want), $bytes byte packets=2E=2E=2E"
- 
--	echo "$cmd -b $bytes -C 20 -p 2=
-50 -q $fping_args $targetlist" >>$LOGDIR/$SUF:fping=2Eout
--	$cmd -b $bytes =
--C 20 -p 250 -q $fping_args $targetlist >>$LOGDIR/$SUF:fping=2Eout 2>&1
-+  =
-      echo "$cmd -b $bytes -C 20 -p 250 -q $fping_args $targetlist" >>$LOGD=
-IR/$SUF:fping=2Eout
-+        $cmd -b $bytes -C 20 -p 250 -q $fping_args $ta=
-rgetlist >>$LOGDIR/$SUF:fping=2Eout 2>&1
- 
--	# while OpenVPN is running, pi=
-ngs must succeed (want=3D'want_ok')
--	# before OpenVPN is up, pings must NO=
-T succeed (want=3D'want_fail')
-+        # while OpenVPN is running, pings m=
-ust succeed (want=3D'want_ok')
-+        # before OpenVPN is up, pings must =
-NOT succeed (want=3D'want_fail')
- 
--	rc=3D$?
--	if [ $rc =3D 0 ] 				# all p=
-ing OK
--	then
--	    if [ $want =3D "want_fail" ]		# not what we want
--	    =
-then
--		fail "IPv$proto ping test succeeded, but needs to *fail*=2E"
--	    =
-fi
--	else					# ping failed
--	    if [ $want =3D "want_ok" ]		# not what we=
- wanted
--	    then
--		fail "IPv$proto ping test ($bytes bytes) failed, but =
-should succeed=2E"
--	    fi
--	fi
-+        rc=3D$?
-+        if [ $rc =3D 0 ]=
-; then                 # all ping OK
-+            if [ $want =3D "want_fail=
-" ]; then # not what we want
-+                fail "IPv$proto ping test suc=
-ceeded, but needs to *fail*=2E"
-+            fi
-+        else              =
-                 # ping failed
-+            if [ $want =3D "want_ok" ]; the=
-n # not what we wanted
-+                fail "IPv$proto ping test ($bytes b=
-ytes) failed, but should succeed=2E"
-+            fi
-+        fi
-     done
-=
- }
- 
-@@ -334,8 +365,7 @@
- SUMMARY_SKIP=3D
- SUMMARY_FAIL=3D
- 
--for SUF in $T=
-EST_RUN_LIST
--do
-+for SUF in $TEST_RUN_LIST; do
-     # get config variables=
-
-     eval test_prep=3D\"\$PREPARE_$SUF\"
-     eval test_check_skip=3D\"\$C=
-HECK_SKIP_$SUF\"
-@@ -347,26 +377,32 @@
-     eval expect_ifconfig6=3D\"\$EXP=
-ECT_IFCONFIG6_$SUF\"
-     eval ping4_hosts=3D\"\$PING4_HOSTS_$SUF\"
-     ev=
-al ping6_hosts=3D\"\$PING6_HOSTS_$SUF\"
-+    eval expect_fail=3D\"\$EXPECT_=
-FAIL_$SUF\"
-     eval fping_args=3D\"\$FPING_EXTRA_ARGS \$FPING_ARGS_$SUF\"=
-
- 
-     # If EXCEPT_IFCONFIG* variables for this test are missing, run an -=
--up
-     # script to generate them dynamically=2E
-     if [ -z "$expect_ifc=
-onfig4" ] || [ -z "$expect_ifconfig6" ]; then
--        up=3D"--setenv TESTN=
-UM $SUF --setenv TOP_BUILDDIR ${top_builddir} --script-security 2 --up ${sr=
-cdir}/update_t_client_ips=2Esh"
-+        up=3D"--setenv TESTNUM $SUF --sete=
-nv RC ${t_client_ips_rc} --script-security 2 --up ${update_t_client_ips}"
- =
-    else
-         up=3D""
-     fi
- 
-     output_start "### test run $SUF: '=
-$test_run_title' ###"
-+    if [ -n "$expect_fail" ]; then
-+        output "=
-### expect failure: '$expect_fail'"
-+    fi
-     fail_count=3D0
- 
-     if [=
- -n "$test_check_skip" ]; then
-         output "check whether we need to sk=
-ip: '$test_check_skip'"
--        if eval $test_check_skip; then :
-+        =
-if eval $test_check_skip; then
-+            :
-         else
-             ou=
-tput "skip check failed, SKIP test $SUF=2E"
--	    SUMMARY_SKIP=3D"$SUMMARY_=
-SKIP $SUF"
--	    printf "$outbuf" ; continue
-+            SUMMARY_SKIP=3D"$=
-SUMMARY_SKIP $SUF"
-+            printf "$outbuf"
-+            continue
-    =
-     fi
-     fi
- 
-@@ -385,13 +421,14 @@
-     output "\nrun pre-openvpn ping=
- tests - targets must not be reachable=2E=2E=2E"
-     run_ping_tests 4 want=
-_fail "$ping4_hosts"
-     run_ping_tests 6 want_fail "$ping6_hosts"
--    if=
- [ "$fail_count" =3D 0 ] ; then
-+    if [ "$fail_count" =3D 0 ]; then
-     =
-    output "OK=2E\n"
-     else
--	fail "make sure that ping hosts are ONLY r=
-eachable via VPN, SKIP test $SUF=2E"
--	SUMMARY_FAIL=3D"$SUMMARY_FAIL $SUF"
-=
--	exit_code=3D31
--	printf "$outbuf" ; continue
-+        fail "make sure tha=
-t ping hosts are ONLY reachable via VPN, SKIP test $SUF=2E"
-+        SUMMAR=
-Y_FAIL=3D"$SUMMARY_FAIL $SUF"
-+        exit_code=3D31
-+        printf "$out=
-buf"
-+        continue
-     fi
- 
-     pidfile=3D"$LOGDIR_ABS/openvpn-$SUF=
-=2Epid"
-@@ -406,38 +443,77 @@
-     # to $ovpn_init_check times=2E
-     ovpn=
-_init_check=3D30
-     ovpn_init_success=3D0
--    while [ $ovpn_init_check -=
-gt 0 ];
--    do
--       sleep 1  # Wait for OpenVPN to initialize and have =
-had time to write the pid file
--       grep "Initialization Sequence Comple=
-ted" $LOGDIR/$SUF:openvpn=2Elog >/dev/null
--       if [ $? -eq 0 ]; then
-- =
-          ovpn_init_check=3D0
--           ovpn_init_success=3D1
--       fi
-=
--       ovpn_init_check=3D$(( $ovpn_init_check - 1 ))
-+    while [ $ovpn_in=
-it_check -gt 0 ]; do
-+        sleep 1 # Wait for OpenVPN to initialize and =
-to write the pid file
-+        if [ -n "$expect_fail" ]; then
-+            =
-grep "$expect_fail" $LOGDIR/$SUF:openvpn=2Elog >/dev/null
-+            if [=
- $? -eq 0 ]; then
-+                ovpn_init_check=3D0
-+                ovp=
-n_init_success=3D1
-+                sleep 5 # give openvpn time to quit
-+  =
-          fi
-+        else
-+            grep "Initialization Sequence Compl=
-eted" $LOGDIR/$SUF:openvpn=2Elog >/dev/null
-+            if [ $? -eq 0 ]; t=
-hen
-+                ovpn_init_check=3D0
-+                ovpn_init_success=
-=3D1
-+            fi
-+        fi
-+        ovpn_init_check=3D$((ovpn_init_ch=
-eck - 1))
-     done
- 
--    opid=3D`cat $pidfile`
-+    opid=3D$([ -e $pidfil=
-e ] && cat $pidfile)
-     if [ -n "$opid" ]; then
-         output "  OpenVP=
-N running with PID $opid"
-     else
--        output "  Could not read OpenV=
-PN PID file"
-+        if [ -z "$expect_fail" ]; then # print this only if u=
-nexpected
-+            output "  Could not read OpenVPN PID file"
-+        =
-fi
-     fi
- 
--    # If OpenVPN did not start
-+    # did we expect a failure=
-?
-+    if [ -n "$expect_fail" ]; then
-+        if [ -n "$opid" ]; then # Op=
-enVPN did start!
-+            output "$0: OpenVPN did start up, expected fa=
-ilure"
-+            $RUN_SUDO $KILL_EXEC $opid $sudopid
-+            output=
- "tail -5 $SUF:openvpn=2Elog"
-+            output "$(tail -5 $LOGDIR/$SUF:o=
-penvpn=2Elog)"
-+            fail "skip rest of sub-tests for test run $SUF=
-=2E"
-+            trap - 0 1 2 3 15
-+            SUMMARY_FAIL=3D"$SUMMARY_F=
-AIL $SUF"
-+            exit_code=3D32
-+            printf "$outbuf"
-+      =
-      continue
-+        elif [ $ovpn_init_success -eq 0 ]; then
-+          =
-  output "$0: OpenVPN failure did not match expected failure"
-+            =
-output "tail -5 $SUF:openvpn=2Elog"
-+            output "$(tail -5 $LOGDIR/=
-$SUF:openvpn=2Elog)"
-+            SUMMARY_FAIL=3D"$SUMMARY_FAIL $SUF"
-+    =
-        exit_code=3D33
-+            printf "$outbuf"
-+            continue
-=
-+        else
-+            output "test run $SUF: all tests OK (saw expecte=
-d failure)=2E"
-+            SUMMARY_OK=3D"$SUMMARY_OK $SUF"
-+            co=
-ntinue
-+        fi
-+    fi
-+
-+    # If OpenVPN did not start but should hav=
-e
-     if [ $ovpn_init_success -ne 1 -o -z "$opid" ]; then
-         output =
-"$0:  OpenVPN did not initialize in a reasonable time"
-         if [ -n "$o=
-pid" ]; then
--           $RUN_SUDO $KILL_EXEC $opid
-+            $RUN_SUDO =
-$KILL_EXEC $opid
-         fi
-         $RUN_SUDO $KILL_EXEC $sudopid
--	outpu=
-t "tail -5 $SUF:openvpn=2Elog"
--	output "`tail -5 $LOGDIR/$SUF:openvpn=2Elo=
-g`"
--	fail "skip rest of sub-tests for test run $SUF=2E"
--	trap - 0 1 2 3 1=
-5
--	SUMMARY_FAIL=3D"$SUMMARY_FAIL $SUF"
--	exit_code=3D30
--	printf "$outbuf"=
- ; continue
-+        output "tail -5 $SUF:openvpn=2Elog"
-+        output "$=
-(tail -5 $LOGDIR/$SUF:openvpn=2Elog)"
-+        fail "skip rest of sub-tests=
- for test run $SUF=2E"
-+        trap - 0 1 2 3 15
-+        SUMMARY_FAIL=3D"=
-$SUMMARY_FAIL $SUF"
-+        exit_code=3D30
-+        printf "$outbuf"
-+    =
-    continue
-     fi
- 
-     # make sure openvpn client is terminated in cas=
-e shell exits
-@@ -452,17 +528,16 @@
-         exit 1
-     fi
- 
--    if [ "$e=
-xpect_ifconfig4" =3D "-" ] ; then
-+    if [ "$expect_ifconfig4" =3D "-" ]; =
-then
-         output "skip ifconfig+route check"
-     else
--	output -n "com=
-pare pre-openvpn ifconfig+route with current values=2E=2E=2E"
--	if diff $LO=
-GDIR/$SUF:ifconfig_route_pre=2Etxt \
--		$LOGDIR/$SUF:ifconfig_route=2Etxt >=
-/dev/null
--	then
--	    fail "no differences between ifconfig/route before O=
-penVPN start and now=2E"
--	else
--	    output " OK!\n"
--	fi
-+        output =
--n "compare pre-openvpn ifconfig+route with current values=2E=2E=2E"
-+     =
-   if diff $LOGDIR/$SUF:ifconfig_route_pre=2Etxt \
-+            $LOGDIR/$SU=
-F:ifconfig_route=2Etxt >/dev/null; then
-+            fail "no differences b=
-etween ifconfig/route before OpenVPN start and now=2E"
-+        else
-+     =
-       output " OK!\n"
-+        fi
-     fi
- 
-     # post init script needed=
-?
-@@ -483,8 +558,8 @@
-     $RUN_SUDO $KILL_EXEC $opid
-     wait $!
-     rc=
-=3D$?
--    if [ $rc !=3D 0 ] ; then
--	fail "OpenVPN return code $rc, expect=
- 0"
-+    if [ $rc !=3D 0 ]; then
-+        fail "OpenVPN return code $rc, ex=
-pect 0"
-     fi
- 
-     output "\nsave post-openvpn ifconfig + route=2E=2E=
-=2E"
-@@ -496,23 +571,22 @@
- 
-     output -n "compare pre- and post-openvpn =
-ifconfig + route=2E=2E=2E"
-     if diff $LOGDIR/$SUF:ifconfig_route_pre=2Et=
-xt \
--	    $LOGDIR/$SUF:ifconfig_route_post=2Etxt >$LOGDIR/$SUF:ifconfig_ro=
-ute_diff=2Etxt
--    then
--	output " OK=2E\n"
-+        $LOGDIR/$SUF:ifconfig=
-_route_post=2Etxt >$LOGDIR/$SUF:ifconfig_route_diff=2Etxt; then
-+        ou=
-tput " OK=2E\n"
-     else
--	output "\n\n" "`cat $LOGDIR/$SUF:ifconfig_route=
-_diff=2Etxt`" "\n"
--	fail "differences between pre- and post-ifconfig/route=
-=2E"
-+        output "\n\n" "$(cat $LOGDIR/$SUF:ifconfig_route_diff=2Etxt)"=
- "\n"
-+        fail "differences between pre- and post-ifconfig/route=2E"
- =
-    fi
--    if [ "$fail_count" =3D 0 ] ; then
-+    if [ "$fail_count" =3D 0=
- ]; then
-         output "test run $SUF: all tests OK=2E\n"
--	SUMMARY_OK=3D=
-"$SUMMARY_OK $SUF"
-+        SUMMARY_OK=3D"$SUMMARY_OK $SUF"
-     else
--	if =
-[ "$V" -gt 0 ] ; then
--	    printf "$outbuf"
--	    echo "test run $SUF: $fa=
-il_count test failures=2E FAIL=2E"
-+        if [ "$V" -gt 0 ]; then
-+      =
-      printf "$outbuf"
-+            echo "test run $SUF: $fail_count test f=
-ailures=2E FAIL=2E"
-         fi
--	SUMMARY_FAIL=3D"$SUMMARY_FAIL $SUF"
--	exi=
-t_code=3D30
-+        SUMMARY_FAIL=3D"$SUMMARY_FAIL $SUF"
-+        exit_code=
-=3D30
-     fi
- 
-     if [ -n "$test_cleanup" ]; then
-@@ -522,9 +596,9 @@
- 
-=
- done
- 
--if [ -z "$SUMMARY_OK" ] ; then SUMMARY_OK=3D" none"; fi
--if [ -z "=
-$SUMMARY_SKIP" ] ; then SUMMARY_SKIP=3D" none"; fi
--if [ -z "$SUMMARY_FAIL"=
- ] ; then SUMMARY_FAIL=3D" none"; fi
-+if [ -z "$SUMMARY_OK" ]; then SUMMARY=
-_OK=3D" none"; fi
-+if [ -z "$SUMMARY_SKIP" ]; then SUMMARY_SKIP=3D" none"; =
-fi
-+if [ -z "$SUMMARY_FAIL" ]; then SUMMARY_FAIL=3D" none"; fi
- echo "Test =
-sets succeeded:$SUMMARY_OK=2E"
- echo "Test sets skipped:$SUMMARY_SKIP=2E"
- =
-echo "Test sets failed:$SUMMARY_FAIL=2E"
-diff --git a/tests/update_t_client=
-_ips=2Esh b/tests/update_t_client_ips=2Esh
-index 96e3826=2E=2Ef02dc7f 10075=
-5
---- a/tests/update_t_client_ips=2Esh
-+++ b/tests/update_t_client_ips=2Esh=
-
-@@ -3,14 +3,12 @@
- # This --up script caches the IPs handed out by the tes=
-t VPN server to a file
- # for later use=2E
- 
--RC=3D"$TOP_BUILDDIR/t_client_=
-ips=2Erc"
+        struct buffer cert_fp =3D { 0 };
 -
--grep EXPECT_IFCONFIG4_$TESTNUM=3D $RC > /dev/null 2>&1
-+grep E=
-XPECT_IFCONFIG4_$TESTNUM=3D $RC >/dev/null 2>&1
- if [ $? -ne 0 ]; then
--   =
- echo "EXPECT_IFCONFIG4_$TESTNUM=3D$ifconfig_local" >> $RC
-+    echo "EXPEC=
-T_IFCONFIG4_$TESTNUM=3D$ifconfig_local" >>$RC
- fi
+-        switch (opt->verify_has=
+h_algo)
+-        {
+-            case MD_SHA1:
+-                cert_fp =3D =
+x509_get_sha1_fingerprint(cert, &gc);
+-                break;
+-
+-          =
+  case MD_SHA256:
+-                cert_fp =3D x509_get_sha256_fingerprint(=
+cert, &gc);
+-                break;
+-
+-            default:
+-              =
+  /* This should normally not happen at all; the algorithm used
+-          =
+       * is parsed by add_option() [options=2Ec] and set to a predefined
+- =
+                * value in an enumerated type=2E  So if this unlikely scena=
+rio
+-                 * happens, consider this a failure
+-                 =
+*/
+-                msg(M_WARN,
+-                    "Unexpected invalid al=
+gorithm used with "
+-                    "--verify-hash (%i)",
+-           =
+         opt->verify_hash_algo);
+-                ret =3D FAILURE;
+-       =
+         goto cleanup;
+-        }
+-
++        struct buffer cert_fp =3D x509=
+_get_fingerprint(cert, opt->verify_hash_algo, &gc);
+         const struct v=
+erify_hash_list *current_hash =3D opt->verify_hash;
  
--grep EXPECT_IFCONFIG6_=
-$TESTNUM=3D $RC > /dev/null 2>&1
-+grep EXPECT_IFCONFIG6_$TESTNUM=3D $RC >/d=
-ev/null 2>&1
- if [ $? -ne 0 ]; then
--    echo "EXPECT_IFCONFIG6_$TESTNUM=3D=
-$ifconfig_ipv6_local" >> $RC
-+    echo "EXPECT_IFCONFIG6_$TESTNUM=3D$ifconf=
-ig_ipv6_local" >>$RC
- fi
+         while (curre=
+nt_hash)
+diff --git a/src/openvpn/ssl_verify_backend=2Eh b/src/openvpn/ssl_=
+verify_backend=2Eh
+index 46720d6=2E=2E93916b7 100644
+--- a/src/openvpn/ssl_=
+verify_backend=2Eh
++++ b/src/openvpn/ssl_verify_backend=2Eh
+@@ -75,6 +75,17=
+ @@
+                         const struct buffer *cert_hash);
+ 
+ /*
++ * Exp=
+ort an X509 attribute as the X509_<depth>_<name> environment variable,
++ * =
+replacing CR and LF in value with '?'=2E
++ *
++ * @param es            Envir=
+onment set to add the variable to
++ * @param name          Attribute name
++=
+ * @param value         Attribute value, modified in place
++ * @param depth=
+         Depth of the certificate the attribute belongs to
++ */
++void do_se=
+tenv_x509(struct env_set *es, const char *name, char *value, int depth);
++
+=
++/*
+  * Library-specific functions=2E
+  *
+  * The following functions must =
+be implemented on a library-specific basis=2E
+@@ -91,24 +102,16 @@
+ char *x=
+509_get_subject(openvpn_x509_cert_t *cert, struct gc_arena *gc);
+ 
+ /**
+- *=
+ Retrieve the certificate's SHA1 fingerprint=2E
++ * Retrieve the certificat=
+e's fingerprint=2E
+  *
+  * @param cert          Certificate to retrieve the=
+ fingerprint from=2E
++ * @param algo          Hash algorithm to use=2E
+  * =
+@param gc            Garbage collection arena to use when allocating string=
+=2E
+  *
+- * @return              a string containing the certificate finger=
+print
++ * @return              a buffer containing the certificate fingerpr=
+int
+  */
+-struct buffer x509_get_sha1_fingerprint(openvpn_x509_cert_t *cert=
+, struct gc_arena *gc);
+-
+-/**
+- * Retrieve the certificate's SHA256 finger=
+print=2E
+- *
+- * @param cert          Certificate to retrieve the fingerpri=
+nt from=2E
+- * @param gc            Garbage collection arena to use when al=
+locating string=2E
+- *
+- * @return              a string containing the cer=
+tificate fingerprint
+- */
+-struct buffer x509_get_sha256_fingerprint(openvp=
+n_x509_cert_t *cert, struct gc_arena *gc);
++struct buffer x509_get_fingerpr=
+int(openvpn_x509_cert_t *cert, hash_algo_type algo,
++                      =
+             struct gc_arena *gc);
+ 
+ /*
+  * Retrieve the certificate's use=
+rname from the specified field=2E
+diff --git a/src/openvpn/ssl_verify_mbedt=
+ls=2Ec b/src/openvpn/ssl_verify_mbedtls=2Ec
+index a132f12=2E=2E376e7c7 1006=
+44
+--- a/src/openvpn/ssl_verify_mbedtls=2Ec
++++ b/src/openvpn/ssl_verify_mb=
+edtls=2Ec
+@@ -55,7 +55,7 @@
+     session->verified =3D false;
+ 
+     /* Rem=
+ember certificate hash */
+-    struct buffer cert_fingerprint =3D x509_get_=
+sha256_fingerprint(cert, &gc);
++    const struct buffer cert_fingerprint =
+=3D x509_get_fingerprint(cert, MD_SHA256, &gc);
+     cert_hash_remember(ses=
+sion, cert_depth, &cert_fingerprint);
+ 
+     if (session->opt->verify_hash_=
+no_ca)
+@@ -502,9 +502,23 @@
+     return FAILURE;
+ }
+ 
+-static struct buffer=
+
+-x509_get_fingerprint(const mbedtls_md_info_t *md_info, mbedtls_x509_crt *=
+cert, struct gc_arena *gc)
++struct buffer
++x509_get_fingerprint(mbedtls_x50=
+9_crt *cert, hash_algo_type algo, struct gc_arena *gc)
+ {
++    mbedtls_md_t=
+ype_t md_type =3D MBEDTLS_MD_NONE;
++    switch (algo)
++    {
++        case =
+MD_SHA1:
++            md_type =3D MBEDTLS_MD_SHA1;
++            break;
++
++ =
+       case MD_SHA256:
++            md_type =3D MBEDTLS_MD_SHA256;
++       =
+     break;
++    }
++    ASSERT(md_type !=3D MBEDTLS_MD_NONE);
++
++    const =
+mbedtls_md_info_t *md_info =3D mbedtls_md_info_from_type(md_type);
+     con=
+st size_t md_size =3D mbedtls_md_get_size(md_info);
+     struct buffer fing=
+erprint =3D alloc_buf_gc(md_size, gc);
+     mbedtls_md(md_info, cert->raw=
+=2Ep, cert->raw=2Elen, BPTR(&fingerprint));
+@@ -512,18 +526,6 @@
+     retur=
+n fingerprint;
+ }
+ 
+-struct buffer
+-x509_get_sha1_fingerprint(mbedtls_x509_=
+crt *cert, struct gc_arena *gc)
+-{
+-    return x509_get_fingerprint(mbedtls=
+_md_info_from_type(MBEDTLS_MD_SHA1), cert, gc);
+-}
+-
+-struct buffer
+-x509_g=
+et_sha256_fingerprint(mbedtls_x509_crt *cert, struct gc_arena *gc)
+-{
+-    =
+return x509_get_fingerprint(mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), c=
+ert, gc);
+-}
+-
+ char *
+ x509_get_subject(mbedtls_x509_crt *cert, struct gc_=
+arena *gc)
+ {
+@@ -542,22 +544,6 @@
+     return subject;
+ }
+ 
+-static void
+-=
+do_setenv_x509(struct env_set *es, const char *name, char *value, int depth=
+)
+-{
+-    char *name_expand;
+-    size_t name_expand_size;
+-
+-    string_mo=
+d(value, CC_ANY, CC_CRLF, '?');
+-    msg(D_X509_ATTR, "X509 ATTRIBUTE name=
+=3D'%s' value=3D'%s' depth=3D%d", name, value, depth);
+-    name_expand_siz=
+e =3D 64 + strlen(name);
+-    name_expand =3D (char *)malloc(name_expand_si=
+ze);
+-    check_malloc_return(name_expand);
+-    snprintf(name_expand, name=
+_expand_size, "X509_%d_%s", depth, name);
+-    setenv_str(es, name_expand, =
+value);
+-    free(name_expand);
+-}
+-
+ static char *
+ asn1_buf_to_c_string(c=
+onst mbedtls_asn1_buf *orig, struct gc_arena *gc)
+ {
+@@ -701,22 +687,13 @@
+=
+     {
+         if (depth =3D=3D 0 || (xt->flags & XT_FULL_CHAIN))
+        =
+ {
+-            if (0 =3D=3D strcmp(xt->name, "SHA1") || 0 =3D=3D strcmp(xt=
+->name, "SHA256"))
++            const bool sha1 =3D strcmp(xt->name, "SHA1"=
+) =3D=3D 0;
++            if (sha1 || strcmp(xt->name, "SHA256") =3D=3D 0)
+ =
+            {
+                 /* Fingerprint is not part of X509 structure=
+ */
+-                struct buffer cert_hash;
+-                char *finger=
+print;
+-
+-                if (0 =3D=3D strcmp(xt->name, "SHA1"))
+-         =
+       {
+-                    cert_hash =3D x509_get_sha1_fingerprint(cert,=
+ &gc);
+-                }
+-                else
+-                {
+-       =
+             cert_hash =3D x509_get_sha256_fingerprint(cert, &gc);
+-       =
+         }
+-
+-                fingerprint =3D
++                const hash_a=
+lgo_type algo =3D sha1 ? MD_SHA1 : MD_SHA256;
++                struct buffe=
+r cert_hash =3D x509_get_fingerprint(cert, algo, &gc);
++                cha=
+r *fingerprint =3D
+                     format_hex_ex(BPTR(&cert_hash), BLE=
+N(&cert_hash), 0, 1 | FHE_CAPS, ":", &gc);
+                 do_setenv_x509(=
+es, xt->name, fingerprint, depth);
+             }
+diff --git a/src/openvpn/=
+ssl_verify_openssl=2Ec b/src/openvpn/ssl_verify_openssl=2Ec
+index 0c36cf2=
+=2E=2Ea278854 100644
+--- a/src/openvpn/ssl_verify_openssl=2Ec
++++ b/src/ope=
+nvpn/ssl_verify_openssl=2Ec
+@@ -61,7 +61,7 @@
+     ASSERT(session);
+ 
+     =
+X509 *current_cert =3D X509_STORE_CTX_get_current_cert(ctx);
+-    struct bu=
+ffer cert_hash =3D x509_get_sha256_fingerprint(current_cert, &gc);
++    con=
+st struct buffer cert_hash =3D x509_get_fingerprint(current_cert, MD_SHA256=
+, &gc);
+     cert_hash_remember(session, X509_STORE_CTX_get_error_depth(ctx=
+), &cert_hash);
+ 
+     /* did peer present cert which was signed by our roo=
+t cert? */
+@@ -356,22 +356,25 @@
+ }
+ 
+ struct buffer
+-x509_get_sha1_fingerp=
+rint(X509 *cert, struct gc_arena *gc)
++x509_get_fingerprint(X509 *cert, has=
+h_algo_type algo, struct gc_arena *gc)
+ {
+-    const EVP_MD *sha1 =3D EVP_s=
+ha1();
+-    struct buffer hash =3D alloc_buf_gc((size_t)EVP_MD_size(sha1), =
+gc);
+-    X509_digest(cert, EVP_sha1(), BPTR(&hash), NULL);
+-    ASSERT(buf=
+_inc_len(&hash, (int)EVP_MD_size(sha1)));
+-    return hash;
+-}
++    const E=
+VP_MD *md =3D NULL;
++    switch (algo)
++    {
++        case MD_SHA1:
++     =
+       md =3D EVP_sha1();
++            break;
+ 
+-struct buffer
+-x509_get_sh=
+a256_fingerprint(X509 *cert, struct gc_arena *gc)
+-{
+-    const EVP_MD *sha=
+256 =3D EVP_sha256();
+-    struct buffer hash =3D alloc_buf_gc((size_t)EVP_=
+MD_size(sha256), gc);
+-    X509_digest(cert, EVP_sha256(), BPTR(&hash), NUL=
+L);
+-    ASSERT(buf_inc_len(&hash, (int)EVP_MD_size(sha256)));
++        cas=
+e MD_SHA256:
++            md =3D EVP_sha256();
++            break;
++    }
++=
+    ASSERT(md);
++
++    const int md_size =3D EVP_MD_size(md);
++    struct b=
+uffer hash =3D alloc_buf_gc((size_t)md_size, gc);
++    X509_digest(cert, md=
+, BPTR(&hash), NULL);
++    ASSERT(buf_inc_len(&hash, md_size));
+     return=
+ hash;
+ }
+ 
+@@ -464,23 +467,6 @@
+     }
+ }
+ 
+-/* worker method for setenv_x=
+509_track */
+-static void
+-do_setenv_x509(struct env_set *es, const char *n=
+ame, char *value, int depth)
+-{
+-    char *name_expand;
+-    size_t name_ex=
+pand_size;
+-
+-    string_mod(value, CC_ANY, CC_CRLF, '?');
+-    msg(D_X509_=
+ATTR, "X509 ATTRIBUTE name=3D'%s' value=3D'%s' depth=3D%d", name, value, de=
+pth);
+-    name_expand_size =3D 64 + strlen(name);
+-    name_expand =3D (ch=
+ar *)malloc(name_expand_size);
+-    check_malloc_return(name_expand);
+-    =
+snprintf(name_expand, name_expand_size, "X509_%d_%s", depth, name);
+-    se=
+tenv_str(es, name_expand, value);
+-    free(name_expand);
+-}
+-
+ void
+ x509_=
+setenv_track(const struct x509_track *xt, struct env_set *es, const int dep=
+th, X509 *x509)
+ {
+@@ -502,19 +488,10 @@
+                 case NID_sha1:
+  =
+               case NID_sha256:
+                 {
+-                    str=
+uct buffer fp_buf;
+-                    char *fp_str =3D NULL;
+-
+-         =
+           if (xt->nid =3D=3D NID_sha1)
+-                    {
+-           =
+             fp_buf =3D x509_get_sha1_fingerprint(x509, &gc);
+-            =
+        }
+-                    else
+-                    {
+-               =
+         fp_buf =3D x509_get_sha256_fingerprint(x509, &gc);
+-              =
+      }
+-
+-                    fp_str =3D format_hex_ex(BPTR(&fp_buf), BLEN=
+(&fp_buf), 0, 1 | FHE_CAPS, ":", &gc);
++                    const hash_algo=
+_type algo =3D xt->nid =3D=3D NID_sha1 ? MD_SHA1 : MD_SHA256;
++            =
+        struct buffer fp_buf =3D x509_get_fingerprint(x509, algo, &gc);
++  =
+                  char *fp_str =3D
++                        format_hex_ex(B=
+PTR(&fp_buf), BLEN(&fp_buf), 0, 1 | FHE_CAPS, ":", &gc);
+                  =
+   do_setenv_x509(es, xt->name, fp_str, depth);
+                 }
+        =
+         break;
+diff --git a/tests/unit_tests/openvpn/mock_ssl_dependencies=
+=2Ec b/tests/unit_tests/openvpn/mock_ssl_dependencies=2Ec
+index b22dd89=2E=
+=2E65e4635 100644
+--- a/tests/unit_tests/openvpn/mock_ssl_dependencies=2Ec
+=
++++ b/tests/unit_tests/openvpn/mock_ssl_dependencies=2Ec
+@@ -64,3 +64,9 @@
+=
+ {
+     return FAILURE;
+ }
++
++void
++do_setenv_x509(struct env_set *es, cons=
+t char *name, char *value, int depth)
++{
++    assert_false(true);
++}
 
 -- 
-To view, visit https://gerrit=2Eopenvpn=2Enet=
-/c/openvpn/+/2141?usp=3Demail
-To unsubscribe, or for help writing mail filt=
-ers, visit https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+T=
+o view, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2145?usp=3Demail
+T=
+o unsubscribe, or for help writing mail filters, visit https://gerrit=2Eope=
+nvpn=2Enet/settings?usp=3Demail
 
-Gerrit-Mess=
-ageType: merged
-Gerrit-Project: openvpn
-Gerrit-Branch: release/2=2E7
-Gerrit=
--Change-Id: I13f9f7dd61d7a4cc986155629f6a3c792aaac6d2
-Gerrit-Change-Number:=
- 2141
-Gerrit-PatchSet: 3
-Gerrit-Owner: Gert Doering <gert@greenie=2Emuc=2Ed=
-e>
-Gerrit-Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Review=
-er: Frank Lichtenheld <frank@lichtenheld=2Ecom>
-Gerrit-CC: openvpn-devel <o=
-penvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-MessageType: newpatchset
+Gerrit-Pro=
+ject: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I76cd424b34e91f07a6d1=
+87b23a258d9dcbf7ed0f
+Gerrit-Change-Number: 2145
+Gerrit-PatchSet: 2
+Gerrit-O=
+wner: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
+Gerrit-Reviewer: Arne Sc=
+hwabe <arne-openvpn@rfc2549=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-devel@=
+lists=2Esourceforge=2Enet>
+Gerrit-Attention: Arne Schwabe <arne-openvpn@rfc=
+2549=2Eorg>
 
---g/Wgqu7PTuQ=
+--jYUkxDImXF4=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>Gert Doering <str=
-ong>submitted</strong> this change=2E</p><p><a href=3D"https://gerrit=2Eope=
-nvpn=2Enet/c/openvpn/+/2141?usp=3Demail">View Change</a></p><div style=3D"w=
-hite-space:pre-wrap"></div><pre class=3D"blocks" style=3D"font-family: mono=
-space,monospace; white-space: pre-wrap;">backport t_client=2Esh changes fro=
-m master<br><br>This is basically just copying in the current t_client=2Esh=
-=2Ein script from<br>master, with a number of changes that are not in 2=2E7=
- yet - most notably<br>support for &quot;expect failure&quot; cases=2E<br><=
-br>Given that this is a test support script with no dependencies into the<b=
-r>OpenVPN core, and the large number of non-backported scripts that touch<b=
-r>one line or the other, or re-indent things, copying the whole script<br>i=
-nstead of trying to cherry-pick all the individual change seemed like<br>a =
-much better idea=2E=2E=2E<br><br>Besides t_client=2Esh, this also brings te=
-sts/update_t_client_ips=2Esh<br>from master, because the dc16248523 commit =
-will break functionality<br>otherwise=2E<br><br>Here&#39;s the list:<br><br=
->commit e2548f6e3b7f9ed3d24020319117b17f30743656<br>    t_client=2Esh=2Ein:=
- Check whether addresses are in &quot;tentative&quot; state<br><br>commit a=
-f6a79c6a83739ca9542e52a02a3449a2f292758<br>    t_client=2Esh=2Ein: Add abil=
-ity to filter by test group<br><br>commit dc162485236b70ecfe1be639dbd9db824=
-4a85d54<br>    t_client=2Esh=2Ein: Allow to override the location of t_clie=
-nt_ips=2Erc<br>    (needs updated update_t_client_ips=2Esh)<br><br>commit 8=
-b392d642eb4c9b9135dc6a442d943159467e058<br>    t_client=2Esh=2Ein: Add util=
-ity function needs_openvpn()<br><br>commit dc162485236b70ecfe1be639dbd9db82=
-44a85d54<br>    t_client=2Esh=2Ein: Allow to override the location of t_cli=
-ent_ips=2Erc<br><br>commit 37ea1c7683ccb464f80d6e7e8fbcd4b8baf2ac60<br>    =
-t_client=2Esh=2Ein: Add support for expected test failures<br><br>commit ed=
-427eab1683af3adf21553dd1c6b6e4b8b2f10d<br>    reformat-shell=2Esh: Add --si=
-mplify argument<br><br>commit f781227c92a3d1017e9d8a67e83e4465b43edf66<br> =
-   Reformat all shell-scripts with shfmt<br>    (touches update_t_client_ip=
-s=2Esh)<br><br>commit b32d1ab45ec93786191e0dac2c8f5549d6c04258<br>    t_cli=
-ent=2Esh=2Ein: Do not try to guess the absolute path to LOGDIR<br><br>commi=
-t da1b2a7081eb2791f3a675945c42d7f3189ef752<br>    t_client=2Esh=2Ein: Use p=
-rintf instead of echo -e<br><br>commit 162f19112702d1c8045efd17c5b09022fe1e=
-04fb<br>    t_client=2Esh=2Ein: Do not run resolvectl if systemd is not run=
-ning<br><br>commit 841ab0b216a424eb0100448362f76a2c12b3a516<br>    t_client=
-=2Esh: Do not use CA_CERT variable as indicator for good =2Erc file<br><br>=
-Change-Id: I13f9f7dd61d7a4cc986155629f6a3c792aaac6d2<br>Signed-off-by: Gert=
- Doering &lt;gert@greenie=2Emuc=2Ede&gt;<br>Acked-by: Frank Lichtenheld &lt=
-;frank@lichtenheld=2Ecom&gt;<br>Gerrit URL: https://gerrit=2Eopenvpn=2Enet/=
-c/openvpn/+/2141<br>Message-Id: &lt;20261105164926=2E24646-1-gert@greenie=
-=2Emuc=2Ede&gt;<br>URL: https://www=2Email-archive=2Ecom/openvpn-devel@list=
-s=2Esourceforge=2Enet/msg40756=2Ehtml<br>Signed-off-by: Gert Doering &lt;ge=
-rt@greenie=2Emuc=2Ede&gt;<br>---<br>M tests/t_client=2Esh=2Ein<br>M tests/u=
-pdate_t_client_ips=2Esh<br>2 files changed, 257 insertions(+), 185 deletion=
-s(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-sp=
-ace: pre-wrap;"><span>diff --git a/tests/t_client=2Esh=2Ein b/tests/t_clien=
-t=2Esh=2Ein</span><br><span>index 876e84a=2E=2E5e924bb 100755</span><br><sp=
-an>--- a/tests/t_client=2Esh=2Ein</span><br><span>+++ b/tests/t_client=2Esh=
-=2Ein</span><br><span>@@ -19,57 +19,82 @@</span><br><span> srcdir=3D&quot;$=
-{srcdir:-=2E}&quot;</span><br><span> top_builddir=3D&quot;${top_builddir:-=
-=2E=2E}&quot;</span><br><span> openvpn=3D&quot;${openvpn:-${top_builddir}/s=
-rc/openvpn/openvpn}&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-if [ -r &quot;${top_builddir}&quot;/t_client=2Erc ] ; then</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    =2E &quot;${top_builddir}&quot=
-;/t_client=2Erc</span><br><span style=3D"color: hsl(0, 100%, 40%);">-elif [=
- -r &quot;${srcdir}&quot;/t_client=2Erc ] ; then</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    =2E &quot;${srcdir}&quot;/t_client=2Erc</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-else</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    echo &quot;$0: cannot find &#39;t_clien=
-t=2Erc&#39; in build dir (&#39;${top_builddir}&#39;)&quot; &gt;&amp;2</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    echo &quot;$0: or sourc=
-e directory (&#39;${srcdir}&#39;)=2E SKIPPING TEST=2E&quot; &gt;&amp;2</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    exit &quot;${TCLIENT_S=
-KIP_RC}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+t_clie=
-nt_ips_rc=3D&quot;${t_client_ips_rc:-${top_builddir}/t_client_ips=2Erc}&quo=
-t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+update_t_client_i=
-ps=3D&quot;${update_t_client_ips:-${srcdir}/update_t_client_ips=2Esh}&quot;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+if [ -z &quot;${t_client_rc}&quot; ]; =
-then</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if [ -r &qu=
-ot;${top_builddir}&quot;/t_client=2Erc ]; then</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        t_client_rc=3D&quot;${top_builddir}&quot=
-;/t_client=2Erc</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-elif [ -r &quot;${srcdir}&quot;/t_client=2Erc ]; then</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        t_client_rc=3D&quot;${srcdir}&quo=
-t;/t_client=2Erc</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        echo &=
-quot;$0: cannot find &#39;t_client=2Erc&#39; in build dir (&#39;${top_build=
-dir}&#39;)&quot; &gt;&amp;2</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        echo &quot;$0: or source directory (&#39;${srcdir}&#39;)=2E=
- SKIPPING TEST=2E&quot; &gt;&amp;2</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        exit &quot;${TCLIENT_SKIP_RC}&quot;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    fi</span><br><span> fi</span><br=
-><span> </span><br><span> # Check for external dependencies</span><br><span=
-> FPING=3D&quot;fping&quot;</span><br><span> FPING6=3D&quot;fping6&quot;</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-which fping &gt; /dev/nu=
-ll</span><br><span style=3D"color: hsl(120, 100%, 40%);">+which fping &gt;/=
-dev/null</span><br><span> if [ $? -ne 0 ]; then</span><br><span>     echo &=
-quot;$0: fping is not available in \$PATH&quot; &gt;&amp;2</span><br><span>=
-     exit &quot;${TCLIENT_SKIP_RC}&quot;</span><br><span> fi</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-which fping6 &gt; /dev/null</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+which fping6 &gt;/dev/null</=
-span><br><span> if [ $? -ne 0 ]; then</span><br><span>     echo &quot;$0: f=
-ping6 is not available in \$PATH, assuming fping 4=2E0 or later&quot; &gt;&=
-amp;2</span><br><span>     FPING=3D&quot;fping -4&quot;</span><br><span>   =
-  FPING6=3D&quot;fping -6&quot;</span><br><span> fi</span><br><span> </span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-KILL_EXEC=3D`which kill`</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+KILL_EXEC=3D$(which ki=
-ll)</span><br><span> if [ $? -ne 0 ]; then</span><br><span>     echo &quot;=
-$0: kill not found in \$PATH&quot; &gt;&amp;2</span><br><span>     exit &qu=
-ot;${TCLIENT_SKIP_RC}&quot;</span><br><span> fi</span><br><span> </span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-if [ ! -x &quot;${openvpn}&quot=
-; ]</span><br><span style=3D"color: hsl(0, 100%, 40%);">-then</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+if [ ! -x &quot;${openvpn}&quot; =
-]; then</span><br><span>     echo &quot;no (executable) openvpn binary in c=
-urrent build tree=2E FAIL=2E&quot; &gt;&amp;2</span><br><span>     exit 1</=
-span><br><span> fi</span><br><span> </span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-if [ ! -w =2E ]</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-then</span><br><span style=3D"color: hsl(120, 100%, 40%);">+if [ !=
- -w =2E ]; then</span><br><span>     echo &quot;current directory is not wr=
-itable (required for logging)=2E FAIL=2E&quot; &gt;&amp;2</span><br><span> =
-    exit 1</span><br><span> fi</span><br><span> </span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-if [ -z &quot;$CA_CERT&quot; ] ; then</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    echo &quot;CA_CERT not defin=
-ed in &#39;t_client=2Erc&#39;=2E SKIP test=2E&quot; &gt;&amp;2</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+openvpn_version=3D$(${openvpn} -=
--version | head -n 1 | cut -f2 -d&quot; &quot; | sed -E &#39;s/^2\=2E([0123=
-456789]+)=2E*$/2\1/&#39;)</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+needs_openvpn=
-()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    needs_version=3D$1</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    [ &quot;$openvpn_version&quot; -ge &quot;$needs=
-_version&quot; ]</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- return $?</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+=2E &quot;${t_client_rc}&quot;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+if [ -z &quot;$TEST_RUN_LIST&quot; ]; then</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    echo &quot;TEST_RUN_LIST em=
-pty, no tests defined=2E  SKIP test=2E&quot; &gt;&amp;2</span><br><span>   =
-  exit &quot;${TCLIENT_SKIP_RC}&quot;</span><br><span> fi</span><br><span> =
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-if [ -z &quot;$TEST_R=
-UN_LIST&quot; ] ; then</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    echo &quot;TEST_RUN_LIST empty, no tests defined=2E  SKIP test=2E&quot=
-; &gt;&amp;2</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    exit =
-&quot;${TCLIENT_SKIP_RC}&quot;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+if [ -n &quot;$TEST_RUN_GROUP&quot; ]; then</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    FILTERED_LIST=3D</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    for test in $TEST_RUN_LIST; do</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        group=3D$(echo $=
-test | sed -E &#39;s/^([0123456789]+)=2E*/\1/&#39;)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        if [ &quot;$group&quot; =3D &quot=
-;$TEST_RUN_GROUP&quot; ]; then</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+            FILTERED_LIST=3D&quot;$FILTERED_LIST $test&quot;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        fi</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    done</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if [ -z &quot;$FILTERED_LIST&quot; ];=
- then</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        echo &=
-quot;Filtered TEST_RUN_LIST empty (group=3D$TEST_RUN_GROUP), no tests defin=
-ed=2E  SKIP test=2E&quot; &gt;&amp;2</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        exit &quot;${TCLIENT_SKIP_RC}&quot;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    fi</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    TEST_RUN_LIST=3D$FILTERED_LIST</span><br><s=
-pan> fi</span><br><span> </span><br><span> # Ensure PREFER_KSU is in a know=
-n state</span><br><span>@@ -77,16 +102,14 @@</span><br><span> </span><br><s=
-pan> # make sure we have permissions to run ifconfig/route from OpenVPN</sp=
-an><br><span> # can&#39;t use &quot;id -u&quot; here - doesn&#39;t work on =
-Solaris</span><br><span style=3D"color: hsl(0, 100%, 40%);">-ID=3D`id`</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-if expr &quot;$ID&quot; : =
-&quot;uid=3D0&quot; &gt;/dev/null</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-then :</span><br><span style=3D"color: hsl(120, 100%, 40%);">+I=
-D=3D$(id)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+if expr &q=
-uot;$ID&quot; : &quot;uid=3D0&quot; &gt;/dev/null; then</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    :</span><br><span> else</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    if [ &quot;${PREFER_KSU}&quot=
-; -eq 1 ];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    then</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    if [ &quot;${PREFE=
-R_KSU}&quot; -eq 1 ]; then</span><br><span>         # Check if we have a va=
-lid kerberos ticket</span><br><span>         klist -l 1&gt;/dev/null 2&gt;/=
-dev/null</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if [ =
-$? -ne 0 ];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        th=
-en</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if [ $? -=
-ne 0 ]; then</span><br><span>             # No kerberos ticket found, skip =
-ksu and fallback to RUN_SUDO</span><br><span>             PREFER_KSU=3D0</s=
-pan><br><span>             echo &quot;$0: No Kerberos ticket available=2E  =
-Will not use ksu=2E&quot;</span><br><span>@@ -95,8 +118,7 @@</span><br><spa=
-n>         fi</span><br><span>     fi</span><br><span> </span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    if [ -z &quot;$RUN_SUDO&quot; ]</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    then</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    if [ -z &quot;$RUN_SUDO&quot; ]; t=
-hen</span><br><span>         echo &quot;$0: this test must run be as root, =
-or RUN_SUDO=3D=2E=2E=2E &quot; &gt;&amp;2</span><br><span>         echo &qu=
-ot;      must be set correctly in &#39;t_client=2Erc&#39;=2E SKIP=2E&quot; =
-&gt;&amp;2</span><br><span>         exit &quot;${TCLIENT_SKIP_RC}&quot;</sp=
-an><br><span>@@ -104,20 +126,22 @@</span><br><span>         # We have to us=
-e sudo=2E Make sure that we (hopefully) do not have</span><br><span>       =
-  # to ask the users password during the test=2E This is done to</span><br>=
-<span>         # prevent timing issues, e=2Eg=2E when the waits for openvpn=
- to start</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	if $RUN_SUD=
-O $KILL_EXEC -0 $$</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	th=
-en</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	    echo &quot;$0:=
- $RUN_SUDO $KILL_EXEC -0 succeeded, good=2E&quot;</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-	else</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-	    echo &quot;$0: $RUN_SUDO $KILL_EXEC -0 failed, cannot go o=
-n=2E SKIP=2E&quot; &gt;&amp;2</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-	    exit &quot;${TCLIENT_SKIP_RC}&quot;</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-	fi</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        if $RUN_SUDO $KILL_EXEC -0 $$; then</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            echo &quot;$0: $RUN_SUDO $KI=
-LL_EXEC -0 succeeded, good=2E&quot;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        else</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+            echo &quot;$0: $RUN_SUDO $KILL_EXEC -0 failed, cannot =
-go on=2E SKIP=2E&quot; &gt;&amp;2</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+            exit &quot;${TCLIENT_SKIP_RC}&quot;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        fi</span><br><span>     f=
-i</span><br><span> fi</span><br><span> </span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-LOGDIR=3Dt_client-`hostname`-`date +%Y%m%d-%H%M%S`</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+LOGDIR=3Dt_client-$(hostna=
-me)-$(date +%Y%m%d-%H%M%S)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+if [ -n &quot;$TEST_RUN_GROUP&quot; ]; then</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    LOGDIR=3D&quot;${LOGDIR}-${TEST_RUN_GROU=
-P}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+fi</span><b=
-r><span> LOGDIR_ABS=3D&quot;$PWD/$LOGDIR&quot;</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-if mkdir $LOGDIR</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-then :</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+if mkdir $LOGDIR; then</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    :</span><br><span> else</span><br><span>     echo &quot;can&#=
-39;t create log directory &#39;$LOGDIR&#39;=2E FAIL=2E&quot; &gt;&amp;2</sp=
-an><br><span>     exit 1</span><br><span>@@ -137,21 +161,28 @@</span><br><s=
-pan> output_start()</span><br><span> {</span><br><span>     case $V in</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-	0) outbuf=3D&quot;&quot; =
-;;			# no per-test output at all</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-	1) printf &quot;$@\n&quot;			# compact, details only on failure=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           outbuf=3D&=
-quot;\n&quot; ;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	*) p=
-rintf &quot;\n$@\n&quot; ;;		# print all, with a bit formatting</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        0) outbuf=3D&quot;&quot=
-; ;; # no per-test output at all</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        1)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            printf &quot;$@\n&quot; # compact, details only on failure<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            outbuf=
-=3D&quot;\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-          ;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- *) printf &quot;\n$@\n&quot; ;; # print all, with a bit formatting</span><=
-br><span>     esac</span><br><span> }</span><br><span> </span><br><span> ou=
-tput()</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    END_NL=3D&quot;\n&quot;; if [ &quot;X$1&quot; =3D &quot;X-n&quot; ]=
- ; then END_NL=3D&quot;&quot; ; shift ; fi</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    END_NL=3D&quot;\n&quot;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    if [ &quot;X$1&quot; =3D &quot;X-n&quot;=
- ]; then</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        END=
-_NL=3D&quot;&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       shift</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    fi<=
-/span><br><span>     case $V in</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-	0) ;;				# no per-test output at all</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-	1) outbuf=3D&quot;$outbuf$@${END_NL}&quot;	# pri=
-nt details only on failure</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-           ;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	*)=
- printf &quot;$@${END_NL}&quot; ;;	# print everything</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        0) ;; # no per-test output at all=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        1)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+            outbuf=3D&quot;$=
-outbuf$@${END_NL}&quot; # print details only on failure</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+            ;;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        *) printf &quot;$@${END_NL}&quot; ;;=
- # print everything</span><br><span>     esac</span><br><span> }</span><br>=
-<span> </span><br><span>@@ -159,62 +190,61 @@</span><br><span> fail()</span=
-><br><span> {</span><br><span>     output &quot;FAIL: $@\n&quot;</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    fail_count=3D$(( $fail_count=
- + 1 ))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    fail_cou=
-nt=3D$((fail_count + 1))</span><br><span> }</span><br><span> </span><br><sp=
-an> # print &quot;all interface IP addresses&quot; + &quot;all routes&quot;=
-</span><br><span> # this is higly system dependent=2E=2E=2E</span><br><span=
-> get_ifconfig_route()</span><br><span> {</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    UNAME=3D`uname -s`</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    UNAME=3D$(uname -s)</span><br><span>     case $U=
-NAME in</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	Linux)</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        Linux)</span><br><=
-span>             # linux / iproute2? (-&gt; if configure got a path)</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-            if [ -n &quot;@=
-IPROUTE@&quot; ]</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-       then</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-    if [ -n &quot;@IPROUTE@&quot; ]; then</span><br><span>                 =
-echo &quot;-- linux iproute2 --&quot;</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-                @IPROUTE@ addr show     | grep -v valid_lft=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                @IP=
-ROUTE@ addr show | grep -v valid_lft</span><br><span>                 @IPRO=
-UTE@ route show</span><br><span>                 @IPROUTE@ -o -6 route show=
- | grep -v &#39; cache&#39; | sed -E -e &#39;s/ expires [0-9]*sec//&#39; -e=
- &#39;s/ (mtu|hoplimit|cwnd|ssthresh) [0-9]+//g&#39; -e &#39;s/ (rtt|rttvar=
-) [0-9]+ms//g&#39;</span><br><span>             else</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-	        echo &quot;-- linux / ifconfig --&=
-quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	        LANG=3D=
-C @IFCONFIG@ -a |egrep  &quot;( addr:|encap:)&quot;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-	        LANG=3DC @NETSTAT@ -rn -4 -6</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+                echo &quo=
-t;-- linux / ifconfig --&quot;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+                LANG=3DC @IFCONFIG@ -a | egrep &quot;( addr:|enc=
-ap:)&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-       LANG=3DC @NETSTAT@ -rn -4 -6</span><br><span>             fi</span><=
-br><span>             ;;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-	FreeBSD|NetBSD|Darwin)</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-	   echo &quot;-- FreeBSD/NetBSD/Darwin [MacOS X] --&quot;</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-	   @IFCONFIG@ -a | egrep &quot;(=
-flags=3D|inet)&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	=
-   @NETSTAT@ -rn | awk &#39;$3 !~ /^UHL/ { print $1,$2,$3,$NF }&#39;</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-	   ;;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-	OpenBSD)</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-	   echo &quot;-- OpenBSD --&quot;</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-	   @IFCONFIG@ -a | egrep &quot;(flags=3D|=
-inet)&quot; | \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		sed =
--e &#39;s/pltime [0-9]*//&#39; -e &#39;s/vltime [0-9]*//&#39;</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-	   @NETSTAT@ -rn | awk &#39;$3 !~ =
-/^UHL/ { print $1,$2,$3,$NF }&#39;</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-	   ;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	S=
-unOS)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	   echo &quot;-=
-- Solaris --&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	  =
- @IFCONFIG@ -a | egrep &quot;(flags=3D|inet)&quot;</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-	   @NETSTAT@ -rn | awk &#39;$3 !~ /^UHL/ { pr=
-int $1,$2,$3,$6 }&#39;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--	   ;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	AIX)</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-	   echo &quot;-- AIX --&quot;=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	   @IFCONFIG@ -a | e=
-grep &quot;(flags=3D|inet)&quot;</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-	   @NETSTAT@ -rn | awk &#39;$3 !~ /^UHL/ { print $1,$2,$3,$6 }&=
-#39;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	   ;;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        FreeBSD | NetBSD | Dar=
-win)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            ech=
-o &quot;-- FreeBSD/NetBSD/Darwin [MacOS X] --&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            @IFCONFIG@ -a | egrep &quot;(=
-flags=3D|inet)&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+            @NETSTAT@ -rn | awk &#39;$3 !~ /^UHL/ { print $1,$2,$3,$NF }&#=
-39;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            ;;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        OpenBSD)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+            echo &quot;-=
-- OpenBSD --&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-           @IFCONFIG@ -a | egrep &quot;(flags=3D|inet)&quot; |</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+                sed -e &#39;s/pl=
-time [0-9]*//&#39; -e &#39;s/vltime [0-9]*//&#39;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            @NETSTAT@ -rn | awk &#39;$3 !~ /^=
-UHL/ { print $1,$2,$3,$NF }&#39;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+            ;;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        SunOS)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+            echo &quot;-- Solaris --&quot;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+            @IFCONFIG@ -a | egrep &quot;(flags=3D=
-|inet)&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     @NETSTAT@ -rn | awk &#39;$3 !~ /^UHL/ { print $1,$2,$3,$6 }&#39;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            ;;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        AIX)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+            echo &quot;-- AIX --&quot=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            @IFCON=
-FIG@ -a | egrep &quot;(flags=3D|inet)&quot;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            @NETSTAT@ -rn | awk &#39;$3 !~ /^UHL/ {=
- print $1,$2,$3,$6 }&#39;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+            ;;</span><br><span>         *)</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-           echo &quot;get_ifconfig_route(): no i=
-dea how to get info on your OS (`uname -s`)=2E  FAIL=2E&quot; &gt;&amp;2</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-           exit 20</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-           ;;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+            echo &quot;get_ifconf=
-ig_route(): no idea how to get info on your OS ($(uname -s))=2E  FAIL=2E&qu=
-ot; &gt;&amp;2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-       exit 20</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-       ;;</span><br><span>     esac</span><br><span> </span><br><span>     =
-# another round of per-platform information gathering, for DNS info</span><=
-br><span>     # for most of the platforms &quot;cat /etc/resolv=2Econf&quot=
-; is good enough</span><br><span>     # except Linux and MacOS</span><br><s=
-pan>     case $UNAME in</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-	Linux)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
-if [ -x /usr/bin/resolvectl -a -d /run/systemd/system ] ; then</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        Linux)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+            if [ -x /usr/bin/resolvec=
-tl -a -d /run/systemd/system ]; then</span><br><span>                 echo =
-&quot;-- linux resolvectl --&quot;</span><br><span>                 resolve=
-ctl status</span><br><span>             else</span><br><span>@@ -222,7 +252=
-,7 @@</span><br><span>                 cat /etc/resolv=2Econf</span><br><sp=
-an>             fi</span><br><span>             ;;</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-	Darwin)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        Darwin)</span><br><span>             echo &quot;-=
-- MacOS scutil --dns&quot;</span><br><span>             scutil --dns</span>=
-<br><span>             ;;</span><br><span>@@ -260,19 +290,19 @@</span><br><=
-span> #  arg2: IPv4/IPv6 address that must show up in out of &quot;get_ifco=
-nfig_route&quot;</span><br><span> check_ifconfig()</span><br><span> {</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    proto=3D$1 ; shift</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    proto=3D$1</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    shift</span><br><span>   =
-  expect_list=3D&quot;$@&quot;</span><br><span> </span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    if [ -z &quot;$expect_list&quot; ] ; then re=
-turn ; fi</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if [ &qu=
-ot;$expect_list&quot; =3D &quot;-&quot; ] ; then return ; fi</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    if [ -z &quot;$expect_list&quo=
-t; ]; then return; fi</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    if [ &quot;$expect_list&quot; =3D &quot;-&quot; ]; then return; fi</s=
-pan><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    fo=
-r expect in $expect_list</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    do</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	if get_ifco=
-nfig_route | fgrep &quot;$expect&quot; &gt;/dev/null</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-	then :</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-	else</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-	    fail &quot;check_ifconfig(): expected IPv$proto address &#39;$expect=
-&#39; not found in ifconfig output=2E&quot;</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-	fi</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    for expect in $expect_list; do</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        if get_ifconfig_route | fgrep &quot;$expect&qu=
-ot; &gt;/dev/null; then</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            :</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-   fail &quot;check_ifconfig(): expected IPv$proto address &#39;$expect&#39=
-; not found in ifconfig output=2E&quot;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        fi</span><br><span>     done</span><br><span> }=
-</span><br><span> </span><br><span>@@ -283,47 +313,48 @@</span><br><span> #=
-  arg3=2E=2E=2E -&gt; fping arguments (host list)</span><br><span> run_ping=
-_tests()</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    proto=3D$1 ; want=3D$2 ; shift ; shift</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    proto=3D$1</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    want=3D$2</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    shift</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    shift</span><br><span>     targetlist=3D&quot;$@&quot;</span><b=
-r><span> </span><br><span>     # &quot;no targets&quot; is fine</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    if [ -z &quot;$targetlist&quo=
-t; ] ; then return ; fi</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    if [ -z &quot;$targetlist&quot; ]; then return; fi</span><br><span>=
- </span><br><span>     case $proto in</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-	4) cmd=3D&quot;$FPING&quot; ;;</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-	6) cmd=3D&quot;$FPING6&quot; ;;</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-	*) echo &quot;internal error in run_p=
-ing_tests arg 1: &#39;$proto&#39;&quot; &gt;&amp;2</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-	   exit 1 ;;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        4) cmd=3D&quot;$FPING&quot; ;;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        6) cmd=3D&quot;$FPING6&qu=
-ot; ;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        *)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            echo &quot=
-;internal error in run_ping_tests arg 1: &#39;$proto&#39;&quot; &gt;&amp;2<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            exit 1</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+            ;;</span>=
-<br><span>     esac</span><br><span> </span><br><span>     case $want in</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-	want_ok)   sizes_list=
-=3D&quot;64 1440 3000&quot; ;;</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-	want_fail) sizes_list=3D&quot;64&quot; ;;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        want_ok) sizes_list=3D&quot;64 14=
-40 3000&quot; ;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     want_fail) sizes_list=3D&quot;64&quot; ;;</span><br><span>     esac</s=
-pan><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    fo=
-r bytes in $sizes_list</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    do</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	output &quot;=
-run IPv$proto ping tests ($want), $bytes byte packets=2E=2E=2E&quot;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    for bytes in $sizes_li=
-st; do</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        outpu=
-t &quot;run IPv$proto ping tests ($want), $bytes byte packets=2E=2E=2E&quot=
-;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-	e=
-cho &quot;$cmd -b $bytes -C 20 -p 250 -q $fping_args $targetlist&quot; &gt;=
-&gt;$LOGDIR/$SUF:fping=2Eout</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-	$cmd -b $bytes -C 20 -p 250 -q $fping_args $targetlist &gt;&gt;$LOG=
-DIR/$SUF:fping=2Eout 2&gt;&amp;1</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        echo &quot;$cmd -b $bytes -C 20 -p 250 -q $fping_args =
-$targetlist&quot; &gt;&gt;$LOGDIR/$SUF:fping=2Eout</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        $cmd -b $bytes -C 20 -p 250 -q $fpin=
-g_args $targetlist &gt;&gt;$LOGDIR/$SUF:fping=2Eout 2&gt;&amp;1</span><br><=
-span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-	# while OpenVP=
-N is running, pings must succeed (want=3D&#39;want_ok&#39;)</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-	# before OpenVPN is up, pings must N=
-OT succeed (want=3D&#39;want_fail&#39;)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        # while OpenVPN is running, pings must succeed =
-(want=3D&#39;want_ok&#39;)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        # before OpenVPN is up, pings must NOT succeed (want=3D&#39;=
-want_fail&#39;)</span><br><span> </span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-	rc=3D$?</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	=
-if [ $rc =3D 0 ] 				# all ping OK</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-	then</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	  =
-  if [ $want =3D &quot;want_fail&quot; ]		# not what we want</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-	    then</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-		fail &quot;IPv$proto ping test succeeded, but =
-needs to *fail*=2E&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-	    fi</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	else					#=
- ping failed</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	    if [=
- $want =3D &quot;want_ok&quot; ]		# not what we wanted</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-	    then</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-		fail &quot;IPv$proto ping test ($bytes bytes) failed=
-, but should succeed=2E&quot;</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-	    fi</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	fi</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        rc=3D$?</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        if [ $rc =3D 0 ]; =
-then                 # all ping OK</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            if [ $want =3D &quot;want_fail&quot; ]; then # n=
-ot what we want</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-            fail &quot;IPv$proto ping test succeeded, but needs to *fail*=
-=2E&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-  fi</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        else   =
-                            # ping failed</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+            if [ $want =3D &quot;want_ok&quot; ]; the=
-n # not what we wanted</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+                fail &quot;IPv$proto ping test ($bytes bytes) failed, bu=
-t should succeed=2E&quot;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+            fi</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        fi</span><br><span>     done</span><br><span> }</span><br><span> <=
-/span><br><span>@@ -334,8 +365,7 @@</span><br><span> SUMMARY_SKIP=3D</span>=
-<br><span> SUMMARY_FAIL=3D</span><br><span> </span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-for SUF in $TEST_RUN_LIST</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-do</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+for SUF in $TEST_RUN_LIST; do</span><br><span>     # get config v=
-ariables</span><br><span>     eval test_prep=3D\&quot;\$PREPARE_$SUF\&quot;=
-</span><br><span>     eval test_check_skip=3D\&quot;\$CHECK_SKIP_$SUF\&quot=
-;</span><br><span>@@ -347,26 +377,32 @@</span><br><span>     eval expect_if=
-config6=3D\&quot;\$EXPECT_IFCONFIG6_$SUF\&quot;</span><br><span>     eval p=
-ing4_hosts=3D\&quot;\$PING4_HOSTS_$SUF\&quot;</span><br><span>     eval pin=
-g6_hosts=3D\&quot;\$PING6_HOSTS_$SUF\&quot;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    eval expect_fail=3D\&quot;\$EXPECT_FAIL_$SUF\&q=
-uot;</span><br><span>     eval fping_args=3D\&quot;\$FPING_EXTRA_ARGS \$FPI=
-NG_ARGS_$SUF\&quot;</span><br><span> </span><br><span>     # If EXCEPT_IFCO=
-NFIG* variables for this test are missing, run an --up</span><br><span>    =
- # script to generate them dynamically=2E</span><br><span>     if [ -z &quo=
-t;$expect_ifconfig4&quot; ] || [ -z &quot;$expect_ifconfig6&quot; ]; then</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-        up=3D&quot;--se=
-tenv TESTNUM $SUF --setenv TOP_BUILDDIR ${top_builddir} --script-security 2=
- --up ${srcdir}/update_t_client_ips=2Esh&quot;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        up=3D&quot;--setenv TESTNUM $SUF --seten=
-v RC ${t_client_ips_rc} --script-security 2 --up ${update_t_client_ips}&quo=
-t;</span><br><span>     else</span><br><span>         up=3D&quot;&quot;</sp=
-an><br><span>     fi</span><br><span> </span><br><span>     output_start &q=
-uot;### test run $SUF: &#39;$test_run_title&#39; ###&quot;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    if [ -n &quot;$expect_fail&quot;=
- ]; then</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        out=
-put &quot;### expect failure: &#39;$expect_fail&#39;&quot;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    fi</span><br><span>     fail_cou=
-nt=3D0</span><br><span> </span><br><span>     if [ -n &quot;$test_check_ski=
-p&quot; ]; then</span><br><span>         output &quot;check whether we need=
- to skip: &#39;$test_check_skip&#39;&quot;</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-        if eval $test_check_skip; then :</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        if eval $test_check_skip;=
- then</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            :<=
-/span><br><span>         else</span><br><span>             output &quot;ski=
-p check failed, SKIP test $SUF=2E&quot;</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-	    SUMMARY_SKIP=3D&quot;$SUMMARY_SKIP $SUF&quot;</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-	    printf &quot;$outbuf&qu=
-ot; ; continue</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-       SUMMARY_SKIP=3D&quot;$SUMMARY_SKIP $SUF&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            printf &quot;$outbuf&quot;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            continue</=
-span><br><span>         fi</span><br><span>     fi</span><br><span> </span>=
-<br><span>@@ -385,13 +421,14 @@</span><br><span>     output &quot;\nrun pre=
--openvpn ping tests - targets must not be reachable=2E=2E=2E&quot;</span><b=
-r><span>     run_ping_tests 4 want_fail &quot;$ping4_hosts&quot;</span><br>=
-<span>     run_ping_tests 6 want_fail &quot;$ping6_hosts&quot;</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    if [ &quot;$fail_count&quot; =
-=3D 0 ] ; then</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i=
-f [ &quot;$fail_count&quot; =3D 0 ]; then</span><br><span>         output &=
-quot;OK=2E\n&quot;</span><br><span>     else</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-	fail &quot;make sure that ping hosts are ONLY reach=
-able via VPN, SKIP test $SUF=2E&quot;</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-	SUMMARY_FAIL=3D&quot;$SUMMARY_FAIL $SUF&quot;</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-	exit_code=3D31</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-	printf &quot;$outbuf&quot; ; continue</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        fail &quot;ma=
-ke sure that ping hosts are ONLY reachable via VPN, SKIP test $SUF=2E&quot;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        SUMMARY_FAI=
-L=3D&quot;$SUMMARY_FAIL $SUF&quot;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        exit_code=3D31</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        printf &quot;$outbuf&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        continue</span><br><span>     fi<=
-/span><br><span> </span><br><span>     pidfile=3D&quot;$LOGDIR_ABS/openvpn-=
-$SUF=2Epid&quot;</span><br><span>@@ -406,38 +443,77 @@</span><br><span>    =
- # to $ovpn_init_check times=2E</span><br><span>     ovpn_init_check=3D30</=
-span><br><span>     ovpn_init_success=3D0</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    while [ $ovpn_init_check -gt 0 ];</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    do</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-       sleep 1  # Wait for OpenVPN to initialize and h=
-ave had time to write the pid file</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-       grep &quot;Initialization Sequence Completed&quot; $LOG=
-DIR/$SUF:openvpn=2Elog &gt;/dev/null</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-       if [ $? -eq 0 ]; then</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-           ovpn_init_check=3D0</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-           ovpn_init_success=3D1</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-       fi</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-       ovpn_init_check=3D$(( $ovpn_init_che=
-ck - 1 ))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    while =
-[ $ovpn_init_check -gt 0 ]; do</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        sleep 1 # Wait for OpenVPN to initialize and to write th=
-e pid file</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        i=
-f [ -n &quot;$expect_fail&quot; ]; then</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+            grep &quot;$expect_fail&quot; $LOGDIR/$SUF:=
-openvpn=2Elog &gt;/dev/null</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+            if [ $? -eq 0 ]; then</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+                ovpn_init_check=3D0</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+                ovpn_init_success=3D1=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                sle=
-ep 5 # give openvpn time to quit</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+            fi</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        else</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+            grep &quot;Initialization Sequence Completed&quot; $LOGDIR/$SU=
-F:openvpn=2Elog &gt;/dev/null</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+            if [ $? -eq 0 ]; then</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+                ovpn_init_check=3D0</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+                ovpn_init_success=
-=3D1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            fi<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        fi</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        ovpn_init_check=3D$((=
-ovpn_init_check - 1))</span><br><span>     done</span><br><span> </span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    opid=3D`cat $pidfile`</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    opid=3D$([ -e $pidfil=
-e ] &amp;&amp; cat $pidfile)</span><br><span>     if [ -n &quot;$opid&quot;=
- ]; then</span><br><span>         output &quot;  OpenVPN running with PID $=
-opid&quot;</span><br><span>     else</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-        output &quot;  Could not read OpenVPN PID file&quot;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if [ -z &qu=
-ot;$expect_fail&quot; ]; then # print this only if unexpected</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+            output &quot;  Could =
-not read OpenVPN PID file&quot;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        fi</span><br><span>     fi</span><br><span> </span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    # If OpenVPN did not start</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    # did we expect a=
- failure?</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if [ -=
-n &quot;$expect_fail&quot; ]; then</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        if [ -n &quot;$opid&quot; ]; then # OpenVPN did star=
-t!</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            outpu=
-t &quot;$0: OpenVPN did start up, expected failure&quot;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+            $RUN_SUDO $KILL_EXEC $opid=
- $sudopid</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-  output &quot;tail -5 $SUF:openvpn=2Elog&quot;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+            output &quot;$(tail -5 $LOGDIR/$SUF=
-:openvpn=2Elog)&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+            fail &quot;skip rest of sub-tests for test run $SUF=2E&quot;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            trap - 0=
- 1 2 3 15</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-  SUMMARY_FAIL=3D&quot;$SUMMARY_FAIL $SUF&quot;</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+            exit_code=3D32</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            printf &quot;$outbuf&quot;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+            continue<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        elif [ $ovpn=
-_init_success -eq 0 ]; then</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+            output &quot;$0: OpenVPN failure did not match expected=
- failure&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-       output &quot;tail -5 $SUF:openvpn=2Elog&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            output &quot;$(tail -5 $LOGDI=
-R/$SUF:openvpn=2Elog)&quot;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+            SUMMARY_FAIL=3D&quot;$SUMMARY_FAIL $SUF&quot;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+            exit_code=3D33</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            printf &qu=
-ot;$outbuf&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         continue</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-   output &quot;test run $SUF: all tests OK (saw expected failure)=2E&quot;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            SUMMARY=
-_OK=3D&quot;$SUMMARY_OK $SUF&quot;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            continue</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        fi</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    fi</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    # If OpenVPN did not =
-start but should have</span><br><span>     if [ $ovpn_init_success -ne 1 -o=
- -z &quot;$opid&quot; ]; then</span><br><span>         output &quot;$0:  Op=
-enVPN did not initialize in a reasonable time&quot;</span><br><span>       =
-  if [ -n &quot;$opid&quot; ]; then</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-           $RUN_SUDO $KILL_EXEC $opid</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            $RUN_SUDO $KILL_EXEC $opid</s=
-pan><br><span>         fi</span><br><span>         $RUN_SUDO $KILL_EXEC $su=
-dopid</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	output &quot;ta=
-il -5 $SUF:openvpn=2Elog&quot;</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-	output &quot;`tail -5 $LOGDIR/$SUF:openvpn=2Elog`&quot;</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-	fail &quot;skip rest of sub-te=
-sts for test run $SUF=2E&quot;</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-	trap - 0 1 2 3 15</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-	SUMMARY_FAIL=3D&quot;$SUMMARY_FAIL $SUF&quot;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-	exit_code=3D30</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-	printf &quot;$outbuf&quot; ; continue</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        output &quot;tail -5 $=
-SUF:openvpn=2Elog&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        output &quot;$(tail -5 $LOGDIR/$SUF:openvpn=2Elog)&quot;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        fail &quot;skip re=
-st of sub-tests for test run $SUF=2E&quot;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        trap - 0 1 2 3 15</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        SUMMARY_FAIL=3D&quot;$SUMMARY_FAIL $SU=
-F&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        exit=
-_code=3D30</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        p=
-rintf &quot;$outbuf&quot;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        continue</span><br><span>     fi</span><br><span> </span><br>=
-<span>     # make sure openvpn client is terminated in case shell exits</sp=
-an><br><span>@@ -452,17 +528,16 @@</span><br><span>         exit 1</span><b=
-r><span>     fi</span><br><span> </span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    if [ &quot;$expect_ifconfig4&quot; =3D &quot;-&quot; ] ; th=
-en</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if [ &quot;$e=
-xpect_ifconfig4&quot; =3D &quot;-&quot; ]; then</span><br><span>         ou=
-tput &quot;skip ifconfig+route check&quot;</span><br><span>     else</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-	output -n &quot;compare pre=
--openvpn ifconfig+route with current values=2E=2E=2E&quot;</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-	if diff $LOGDIR/$SUF:ifconfig_route_p=
-re=2Etxt \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		$LOGDIR/$=
-SUF:ifconfig_route=2Etxt &gt;/dev/null</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-	then</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--	    fail &quot;no differences between ifconfig/route before OpenVPN start=
- and now=2E&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	els=
-e</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	    output &quot; O=
-K!\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	fi</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        output -n &quot;com=
-pare pre-openvpn ifconfig+route with current values=2E=2E=2E&quot;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        if diff $LOGDIR/$SUF=
-:ifconfig_route_pre=2Etxt \</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+            $LOGDIR/$SUF:ifconfig_route=2Etxt &gt;/dev/null; then</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+            fail &quo=
-t;no differences between ifconfig/route before OpenVPN start and now=2E&quo=
-t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        else</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+            output &quot=
-; OK!\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  fi</span><br><span>     fi</span><br><span> </span><br><span>     # post =
-init script needed?</span><br><span>@@ -483,8 +558,8 @@</span><br><span>   =
-  $RUN_SUDO $KILL_EXEC $opid</span><br><span>     wait $!</span><br><span> =
-    rc=3D$?</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if [ $=
-rc !=3D 0 ] ; then</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	fa=
-il &quot;OpenVPN return code $rc, expect 0&quot;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    if [ $rc !=3D 0 ]; then</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        fail &quot;OpenVPN return code=
- $rc, expect 0&quot;</span><br><span>     fi</span><br><span> </span><br><s=
-pan>     output &quot;\nsave post-openvpn ifconfig + route=2E=2E=2E&quot;</=
-span><br><span>@@ -496,23 +571,22 @@</span><br><span> </span><br><span>    =
- output -n &quot;compare pre- and post-openvpn ifconfig + route=2E=2E=2E&qu=
-ot;</span><br><span>     if diff $LOGDIR/$SUF:ifconfig_route_pre=2Etxt \</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-	    $LOGDIR/$SUF:ifconf=
-ig_route_post=2Etxt &gt;$LOGDIR/$SUF:ifconfig_route_diff=2Etxt</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    then</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-	output &quot; OK=2E\n&quot;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        $LOGDIR/$SUF:ifconfig_route_po=
-st=2Etxt &gt;$LOGDIR/$SUF:ifconfig_route_diff=2Etxt; then</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        output &quot; OK=2E\n&quot;</=
-span><br><span>     else</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-	output &quot;\n\n&quot; &quot;`cat $LOGDIR/$SUF:ifconfig_route_diff=2Et=
-xt`&quot; &quot;\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-	fail &quot;differences between pre- and post-ifconfig/route=2E&quot;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        output &quot;\=
-n\n&quot; &quot;$(cat $LOGDIR/$SUF:ifconfig_route_diff=2Etxt)&quot; &quot;\=
-n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        fail=
- &quot;differences between pre- and post-ifconfig/route=2E&quot;</span><br>=
-<span>     fi</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if [=
- &quot;$fail_count&quot; =3D 0 ] ; then</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    if [ &quot;$fail_count&quot; =3D 0 ]; then</span><b=
-r><span>         output &quot;test run $SUF: all tests OK=2E\n&quot;</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-	SUMMARY_OK=3D&quot;$SUMMARY=
-_OK $SUF&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   SUMMARY_OK=3D&quot;$SUMMARY_OK $SUF&quot;</span><br><span>     else</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-	if [ &quot;$V&quot; -gt 0=
- ] ; then</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	    printf =
-&quot;$outbuf&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	 =
-   echo &quot;test run $SUF: $fail_count test failures=2E FAIL=2E&quot;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        if [ &quot;$V&q=
-uot; -gt 0 ]; then</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-           printf &quot;$outbuf&quot;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            echo &quot;test run $SUF: $fail_count test fa=
-ilures=2E FAIL=2E&quot;</span><br><span>         fi</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-	SUMMARY_FAIL=3D&quot;$SUMMARY_FAIL $SUF&qu=
-ot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	exit_code=3D30</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        SUMMARY_FAIL=
-=3D&quot;$SUMMARY_FAIL $SUF&quot;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        exit_code=3D30</span><br><span>     fi</span><br><spa=
-n> </span><br><span>     if [ -n &quot;$test_cleanup&quot; ]; then</span><b=
-r><span>@@ -522,9 +596,9 @@</span><br><span> </span><br><span> done</span><=
-br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-if [ -z &qu=
-ot;$SUMMARY_OK&quot; ] ; then SUMMARY_OK=3D&quot; none&quot;; fi</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-if [ -z &quot;$SUMMARY_SKIP&quot=
-; ] ; then SUMMARY_SKIP=3D&quot; none&quot;; fi</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-if [ -z &quot;$SUMMARY_FAIL&quot; ] ; then SUMMAR=
-Y_FAIL=3D&quot; none&quot;; fi</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+if [ -z &quot;$SUMMARY_OK&quot; ]; then SUMMARY_OK=3D&quot; none=
-&quot;; fi</span><br><span style=3D"color: hsl(120, 100%, 40%);">+if [ -z &=
-quot;$SUMMARY_SKIP&quot; ]; then SUMMARY_SKIP=3D&quot; none&quot;; fi</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+if [ -z &quot;$SUMMARY_FA=
-IL&quot; ]; then SUMMARY_FAIL=3D&quot; none&quot;; fi</span><br><span> echo=
- &quot;Test sets succeeded:$SUMMARY_OK=2E&quot;</span><br><span> echo &quot=
-;Test sets skipped:$SUMMARY_SKIP=2E&quot;</span><br><span> echo &quot;Test =
-sets failed:$SUMMARY_FAIL=2E&quot;</span><br><span>diff --git a/tests/updat=
-e_t_client_ips=2Esh b/tests/update_t_client_ips=2Esh</span><br><span>index =
-96e3826=2E=2Ef02dc7f 100755</span><br><span>--- a/tests/update_t_client_ips=
-=2Esh</span><br><span>+++ b/tests/update_t_client_ips=2Esh</span><br><span>=
-@@ -3,14 +3,12 @@</span><br><span> # This --up script caches the IPs handed=
- out by the test VPN server to a file</span><br><span> # for later use=2E</=
-span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-RC=3D=
-&quot;$TOP_BUILDDIR/t_client_ips=2Erc&quot;</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--grep EXPECT_IFCONFIG4_$TESTNUM=3D $RC &gt; /dev/null 2&gt;&amp;1</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+grep EXPECT_IFCONFIG4_$TESTNU=
-M=3D $RC &gt;/dev/null 2&gt;&amp;1</span><br><span> if [ $? -ne 0 ]; then</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    echo &quot;EXPECT_I=
-FCONFIG4_$TESTNUM=3D$ifconfig_local&quot; &gt;&gt; $RC</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    echo &quot;EXPECT_IFCONFIG4_$TESTNUM=
-=3D$ifconfig_local&quot; &gt;&gt;$RC</span><br><span> fi</span><br><span> <=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-grep EXPECT_IFCONFIG6_=
-$TESTNUM=3D $RC &gt; /dev/null 2&gt;&amp;1</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+grep EXPECT_IFCONFIG6_$TESTNUM=3D $RC &gt;/dev/null =
-2&gt;&amp;1</span><br><span> if [ $? -ne 0 ]; then</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    echo &quot;EXPECT_IFCONFIG6_$TESTNUM=3D$if=
-config_ipv6_local&quot; &gt;&gt; $RC</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    echo &quot;EXPECT_IFCONFIG6_$TESTNUM=3D$ifconfig_ipv6_=
-local&quot; &gt;&gt;$RC</span><br><span> fi</span><br></pre><p>To view, vis=
-it <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2141?usp=3Demail">=
-change 2141</a>=2E To unsubscribe, or for help writing mail filters, visit =
-<a href=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a=
->=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div i=
-temscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><l=
-ink itemprop=3D"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/214=
-1?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></di=
-v>
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: Arne Schwabe=2E </p>
+<p>R=C4=83zvan Cojocaru <strong>=
+uploaded patch set #2</strong> to this change=2E</p><p><a href=3D"https://g=
+errit=2Eopenvpn=2Enet/c/openvpn/+/2145?usp=3Demail">View Change</a></p><pre=
+ class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: p=
+re-wrap;">ssl_verify: share fingerprint and x509 env helpers between backen=
+ds<br><br>Replace x509_get_sha1_fingerprint() and x509_get_sha256_fingerpri=
+nt()<br>with x509_get_fingerprint(cert, algo, gc) in both backends=2E This =
+also<br>removes the switch in verify_cert(), whose default case could not b=
+e<br>reached, as verify_hash_algo is always MD_SHA1 or MD_SHA256=2E The<br>=
+backends now switch over the enum without a default, so a new<br>algorithm =
+gets a -Wswitch warning, and ASSERT on unknown values=2E<br><br>Move the id=
+entical do_setenv_x509() copies from the backends to<br>ssl_verify=2Ec, wit=
+h a stub for test_ssl as for verify_cert()=2E<br><br>Change-Id: I76cd424b34=
+e91f07a6d187b23a258d9dcbf7ed0f<br>Signed-off-by: Razvan Cojocaru &lt;razvan=
+c@mailbox=2Eorg&gt;<br>---<br>M src/openvpn/ssl_verify=2Ec<br>M src/openvpn=
+/ssl_verify_backend=2Eh<br>M src/openvpn/ssl_verify_mbedtls=2Ec<br>M src/op=
+envpn/ssl_verify_openssl=2Ec<br>M tests/unit_tests/openvpn/mock_ssl_depende=
+ncies=2Ec<br>5 files changed, 82 insertions(+), 131 deletions(-)<br><br></p=
+re><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-s=
+pace: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/c=
+hanges/45/2145/2</pre><pre style=3D"font-family: monospace,monospace; white=
+-space: pre-wrap;"><span>diff --git a/src/openvpn/ssl_verify=2Ec b/src/open=
+vpn/ssl_verify=2Ec</span><br><span>index 0cdec1e=2E=2E3cbc632 100644</span>=
+<br><span>--- a/src/openvpn/ssl_verify=2Ec</span><br><span>+++ b/src/openvp=
+n/ssl_verify=2Ec</span><br><span>@@ -53,6 +53,19 @@</span><br><span>     st=
+ring_mod(str, CC_PRINT, CC_CRLF, &#39;_&#39;);</span><br><span> }</span><br=
+><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+do_setenv_x509(struct env_=
+set *es, const char *name, char *value, int depth)</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    string_mod(value, CC_ANY, CC_CRLF, &#39;?&#39;);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    msg(D_X509_ATTR, &quot;X5=
+09 ATTRIBUTE name=3D&#39;%s&#39; value=3D&#39;%s&#39; depth=3D%d&quot;, nam=
+e, value, depth);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  const size_t name_expand_size =3D 64 + strlen(name);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    char *name_expand =3D (char *)malloc=
+(name_expand_size);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    check_malloc_return(name_expand);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    snprintf(name_expand, name_expand_size, &quot;X509_%d=
+_%s&quot;, depth, name);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    setenv_str(es, name_expand, value);</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    free(name_expand);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span> /*</span><br><span>  * Export the untrusted IP =
+address and port to the environment</span><br><span>  */</span><br><span>@@=
+ -428,8 +441,8 @@</span><br><span> </span><br><span>     /* export X509 cer=
+t fingerprints */</span><br><span>     {</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-        struct buffer sha1 =3D x509_get_sha1_fingerprint=
+(peer_cert, &amp;gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+        struct buffer sha256 =3D x509_get_sha256_fingerprint(peer_cert, &am=
+p;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        struc=
+t buffer sha1 =3D x509_get_fingerprint(peer_cert, MD_SHA1, &amp;gc);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+        struct buffer sha2=
+56 =3D x509_get_fingerprint(peer_cert, MD_SHA256, &amp;gc);</span><br><span=
+> </span><br><span>         snprintf(envname, sizeof(envname), &quot;tls_di=
+gest_%d&quot;, cert_depth);</span><br><span>         setenv_str(es, envname=
+, format_hex_ex(BPTR(&amp;sha1), BLEN(&amp;sha1), 0, 1, &quot;:&quot;, &amp=
+;gc));</span><br><span>@@ -671,32 +684,7 @@</span><br><span> </span><br><sp=
+an>     if (cert_depth =3D=3D opt-&gt;verify_hash_depth &amp;&amp; opt-&gt;=
+verify_hash)</span><br><span>     {</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        struct buffer cert_fp =3D { 0 };</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-        switch (opt-&gt;verify_hash_algo)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-            case MD_SHA1:</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-                cert_fp =3D x509_get_sha1_fingerpri=
+nt(cert, &amp;gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+             break;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-            case MD_SHA=
+256:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                c=
+ert_fp =3D x509_get_sha256_fingerprint(cert, &amp;gc);</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-                break;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-            default:</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-                /* This should normally not happen at all; the =
+algorithm used</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+          * is parsed by add_option() [options=2Ec] and set to a predefined=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                 * va=
+lue in an enumerated type=2E  So if this unlikely scenario</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-                 * happens, consider t=
+his a failure</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+         */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          =
+      msg(M_WARN,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+                &quot;Unexpected invalid algorithm used with &quot;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-                    &quot;--v=
+erify-hash (%i)&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-                    opt-&gt;verify_hash_algo);</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-                ret =3D FAILURE;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-                goto cleanup;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        struct buffer cert_fp =3D x509_get_fingerprint(cert, =
+opt-&gt;verify_hash_algo, &amp;gc);</span><br><span>         const struct v=
+erify_hash_list *current_hash =3D opt-&gt;verify_hash;</span><br><span> </s=
+pan><br><span>         while (current_hash)</span><br><span>diff --git a/sr=
+c/openvpn/ssl_verify_backend=2Eh b/src/openvpn/ssl_verify_backend=2Eh</span=
+><br><span>index 46720d6=2E=2E93916b7 100644</span><br><span>--- a/src/open=
+vpn/ssl_verify_backend=2Eh</span><br><span>+++ b/src/openvpn/ssl_verify_bac=
+kend=2Eh</span><br><span>@@ -75,6 +75,17 @@</span><br><span>               =
+          const struct buffer *cert_hash);</span><br><span> </span><br><spa=
+n> /*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Export an X=
+509 attribute as the X509_&lt;depth&gt;_&lt;name&gt; environment variable,<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * replacing CR and =
+LF in value with &#39;?&#39;=2E</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @p=
+aram es            Environment set to add the variable to</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+ * @param name          Attribute nam=
+e</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param value   =
+      Attribute value, modified in place</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ * @param depth         Depth of the certificate the a=
+ttribute belongs to</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void do_setenv_x=
+509(struct env_set *es, const char *name, char *value, int depth);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+/*</span><br><span>  * Library-specific functio=
+ns=2E</span><br><span>  *</span><br><span>  * The following functions must =
+be implemented on a library-specific basis=2E</span><br><span>@@ -91,24 +10=
+2,16 @@</span><br><span> char *x509_get_subject(openvpn_x509_cert_t *cert, =
+struct gc_arena *gc);</span><br><span> </span><br><span> /**</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">- * Retrieve the certificate&#39;s SH=
+A1 fingerprint=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
+ Retrieve the certificate&#39;s fingerprint=2E</span><br><span>  *</span><b=
+r><span>  * @param cert          Certificate to retrieve the fingerprint fr=
+om=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param algo=
+          Hash algorithm to use=2E</span><br><span>  * @param gc           =
+ Garbage collection arena to use when allocating string=2E</span><br><span>=
+  *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @return        =
+      a string containing the certificate fingerprint</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * @return              a buffer containi=
+ng the certificate fingerprint</span><br><span>  */</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-struct buffer x509_get_sha1_fingerprint(ope=
+nvpn_x509_cert_t *cert, struct gc_arena *gc);</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-/**</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Retrieve the=
+ certificate&#39;s SHA256 fingerprint=2E</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+ * @param cert          Certificate to retrieve the fingerprint from=2E</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param gc            G=
+arbage collection arena to use when allocating string=2E</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">- * @return              a string containing the certificate=
+ fingerprint</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-struct buffer x509_get_sha2=
+56_fingerprint(openvpn_x509_cert_t *cert, struct gc_arena *gc);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+struct buffer x509_get_fingerpr=
+int(openvpn_x509_cert_t *cert, hash_algo_type algo,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                                   struct=
+ gc_arena *gc);</span><br><span> </span><br><span> /*</span><br><span>  * R=
+etrieve the certificate&#39;s username from the specified field=2E</span><b=
+r><span>diff --git a/src/openvpn/ssl_verify_mbedtls=2Ec b/src/openvpn/ssl_v=
+erify_mbedtls=2Ec</span><br><span>index a132f12=2E=2E376e7c7 100644</span><=
+br><span>--- a/src/openvpn/ssl_verify_mbedtls=2Ec</span><br><span>+++ b/src=
+/openvpn/ssl_verify_mbedtls=2Ec</span><br><span>@@ -55,7 +55,7 @@</span><br=
+><span>     session-&gt;verified =3D false;</span><br><span> </span><br><sp=
+an>     /* Remember certificate hash */</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    struct buffer cert_fingerprint =3D x509_get_sha256_fi=
+ngerprint(cert, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    const struct buffer cert_fingerprint =3D x509_get_fingerprint(cer=
+t, MD_SHA256, &amp;gc);</span><br><span>     cert_hash_remember(session, ce=
+rt_depth, &amp;cert_fingerprint);</span><br><span> </span><br><span>     if=
+ (session-&gt;opt-&gt;verify_hash_no_ca)</span><br><span>@@ -502,9 +502,23 =
+@@</span><br><span>     return FAILURE;</span><br><span> }</span><br><span>=
+ </span><br><span style=3D"color: hsl(0, 100%, 40%);">-static struct buffer=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-x509_get_fingerprint(=
+const mbedtls_md_info_t *md_info, mbedtls_x509_crt *cert, struct gc_arena *=
+gc)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+struct buffer</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+x509_get_fingerprint(m=
+bedtls_x509_crt *cert, hash_algo_type algo, struct gc_arena *gc)</span><br>=
+<span> {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    mbedtls=
+_md_type_t md_type =3D MBEDTLS_MD_NONE;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    switch (algo)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        case MD_SHA1:</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+            md_type =3D MBEDTLS_MD_SHA1;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+            break;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        case MD_SHA256:</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+            md_type =3D MBEDTLS_MD_SHA256;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            break;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    ASSERT(md_type !=3D MBEDTLS_MD_NONE);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    const mbedtls_md_info_t *md_info =3D mbedtls_md_=
+info_from_type(md_type);</span><br><span>     const size_t md_size =3D mbed=
+tls_md_get_size(md_info);</span><br><span>     struct buffer fingerprint =
+=3D alloc_buf_gc(md_size, gc);</span><br><span>     mbedtls_md(md_info, cer=
+t-&gt;raw=2Ep, cert-&gt;raw=2Elen, BPTR(&amp;fingerprint));</span><br><span=
+>@@ -512,18 +526,6 @@</span><br><span>     return fingerprint;</span><br><s=
+pan> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-struct buffer</span><br><span style=3D"color: hsl(0, 100%, 40%);">-x509_=
+get_sha1_fingerprint(mbedtls_x509_crt *cert, struct gc_arena *gc)</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    return x509_get_fingerprint(mbedtls_md_info_fro=
+m_type(MBEDTLS_MD_SHA1), cert, gc);</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-struct buffer</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-x509_get_sha256_fingerprint(mbedtls=
+_x509_crt *cert, struct gc_arena *gc)</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+return x509_get_fingerprint(mbedtls_md_info_from_type(MBEDTLS_MD_SHA256), c=
+ert, gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> char *</span><=
+br><span> x509_get_subject(mbedtls_x509_crt *cert, struct gc_arena *gc)</sp=
+an><br><span> {</span><br><span>@@ -542,22 +544,6 @@</span><br><span>     r=
+eturn subject;</span><br><span> }</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-static void</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-do_setenv_x509(struct env_set *es, const char *name, =
+char *value, int depth)</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    char *name_exp=
+and;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    size_t name_e=
+xpand_size;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    string_mod(value, CC_ANY, C=
+C_CRLF, &#39;?&#39;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    msg(D_X509_ATTR, &quot;X509 ATTRIBUTE name=3D&#39;%s&#39; value=3D&#39;=
+%s&#39; depth=3D%d&quot;, name, value, depth);</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    name_expand_size =3D 64 + strlen(name);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    name_expand =3D (char *)=
+malloc(name_expand_size);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    check_malloc_return(name_expand);</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    snprintf(name_expand, name_expand_size, &quot;X509_=
+%d_%s&quot;, depth, name);</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    setenv_str(es, name_expand, value);</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    free(name_expand);</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-</span><br><span> static char *</span><br><span> asn1_buf_to_c_string(c=
+onst mbedtls_asn1_buf *orig, struct gc_arena *gc)</span><br><span> {</span>=
+<br><span>@@ -701,22 +687,13 @@</span><br><span>     {</span><br><span>    =
+     if (depth =3D=3D 0 || (xt-&gt;flags &amp; XT_FULL_CHAIN))</span><br><s=
+pan>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+     if (0 =3D=3D strcmp(xt-&gt;name, &quot;SHA1&quot;) || 0 =3D=3D strcmp(=
+xt-&gt;name, &quot;SHA256&quot;))</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+            const bool sha1 =3D strcmp(xt-&gt;name, &quot;SHA=
+1&quot;) =3D=3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           if (sha1 || strcmp(xt-&gt;name, &quot;SHA256&quot;) =3D=3D 0)</s=
+pan><br><span>             {</span><br><span>                 /* Fingerprin=
+t is not part of X509 structure */</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-                struct buffer cert_hash;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                char *fingerprint;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-                if (0 =3D=3D strcmp(xt-&gt;name, &q=
+uot;SHA1&quot;))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+           {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+           cert_hash =3D x509_get_sha1_fingerprint(cert, &amp;gc);</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-                }</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-                else</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-                {</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-                    cert_hash =3D x509_=
+get_sha256_fingerprint(cert, &amp;gc);</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-                }</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+        fingerprint =3D</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                const hash_algo_type algo =3D sha1 ? MD_SHA1 : MD_SHA25=
+6;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                s=
+truct buffer cert_hash =3D x509_get_fingerprint(cert, algo, &amp;gc);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+                char *fin=
+gerprint =3D</span><br><span>                     format_hex_ex(BPTR(&amp;c=
+ert_hash), BLEN(&amp;cert_hash), 0, 1 | FHE_CAPS, &quot;:&quot;, &amp;gc);<=
+/span><br><span>                 do_setenv_x509(es, xt-&gt;name, fingerprin=
+t, depth);</span><br><span>             }</span><br><span>diff --git a/src/=
+openvpn/ssl_verify_openssl=2Ec b/src/openvpn/ssl_verify_openssl=2Ec</span><=
+br><span>index 0c36cf2=2E=2Ea278854 100644</span><br><span>--- a/src/openvp=
+n/ssl_verify_openssl=2Ec</span><br><span>+++ b/src/openvpn/ssl_verify_opens=
+sl=2Ec</span><br><span>@@ -61,7 +61,7 @@</span><br><span>     ASSERT(sessio=
+n);</span><br><span> </span><br><span>     X509 *current_cert =3D X509_STOR=
+E_CTX_get_current_cert(ctx);</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    struct buffer cert_hash =3D x509_get_sha256_fingerprint(current_=
+cert, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+const struct buffer cert_hash =3D x509_get_fingerprint(current_cert, MD_SHA=
+256, &amp;gc);</span><br><span>     cert_hash_remember(session, X509_STORE_=
+CTX_get_error_depth(ctx), &amp;cert_hash);</span><br><span> </span><br><spa=
+n>     /* did peer present cert which was signed by our root cert? */</span=
+><br><span>@@ -356,22 +356,25 @@</span><br><span> }</span><br><span> </span=
+><br><span> struct buffer</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-x509_get_sha1_fingerprint(X509 *cert, struct gc_arena *gc)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+x509_get_fingerprint(X509 *cert,=
+ hash_algo_type algo, struct gc_arena *gc)</span><br><span> {</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    const EVP_MD *sha1 =3D EVP_sha1=
+();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct buffer =
+hash =3D alloc_buf_gc((size_t)EVP_MD_size(sha1), gc);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    X509_digest(cert, EVP_sha1(), BPTR(&amp=
+;hash), NULL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASS=
+ERT(buf_inc_len(&amp;hash, (int)EVP_MD_size(sha1)));</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    return hash;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    const EVP_MD *md =3D NULL;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    switch (algo)</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        case MD_SHA1:</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+            md =3D EVP_sha1();</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+            break;</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-struct buffer</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-x509_get_sha256_fingerprint(X509 *cert, struct gc_a=
+rena *gc)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    const EVP_MD *sha256 =3D EVP=
+_sha256();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct =
+buffer hash =3D alloc_buf_gc((size_t)EVP_MD_size(sha256), gc);</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    X509_digest(cert, EVP_sha256()=
+, BPTR(&amp;hash), NULL);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    ASSERT(buf_inc_len(&amp;hash, (int)EVP_MD_size(sha256)));</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        case MD_SHA256:</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            md =3D EVP_sh=
+a256();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(md);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    const int md_size =3D EVP_MD_size(md);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    struct buffer hash =3D =
+alloc_buf_gc((size_t)md_size, gc);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    X509_digest(cert, md, BPTR(&amp;hash), NULL);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(buf_inc_len(&amp;ha=
+sh, md_size));</span><br><span>     return hash;</span><br><span> }</span><=
+br><span> </span><br><span>@@ -464,23 +467,6 @@</span><br><span>     }</spa=
+n><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-/* worker method for setenv_x509_track */</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-static void</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-do_setenv_x509(struct env_set *es, const char *name, =
+char *value, int depth)</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    char *name_exp=
+and;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    size_t name_e=
+xpand_size;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    string_mod(value, CC_ANY, C=
+C_CRLF, &#39;?&#39;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    msg(D_X509_ATTR, &quot;X509 ATTRIBUTE name=3D&#39;%s&#39; value=3D&#39;=
+%s&#39; depth=3D%d&quot;, name, value, depth);</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    name_expand_size =3D 64 + strlen(name);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    name_expand =3D (char *)=
+malloc(name_expand_size);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    check_malloc_return(name_expand);</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    snprintf(name_expand, name_expand_size, &quot;X509_=
+%d_%s&quot;, depth, name);</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    setenv_str(es, name_expand, value);</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    free(name_expand);</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-</span><br><span> void</span><br><span> x509_setenv_track(const struct =
+x509_track *xt, struct env_set *es, const int depth, X509 *x509)</span><br>=
+<span> {</span><br><span>@@ -502,19 +488,10 @@</span><br><span>            =
+     case NID_sha1:</span><br><span>                 case NID_sha256:</span=
+><br><span>                 {</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-                    struct buffer fp_buf;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-                    char *fp_str =3D NULL;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-                    if (xt-&gt;nid =3D=3D NID_s=
+ha1)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                 =
+   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                 =
+       fp_buf =3D x509_get_sha1_fingerprint(x509, &amp;gc);</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-                    }</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-                    else</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-                    {</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-                        fp_buf =3D=
+ x509_get_sha256_fingerprint(x509, &amp;gc);</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-                    }</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-                    fp_str =3D format_hex_ex(BPTR(&amp;fp_buf), BLEN(&amp=
+;fp_buf), 0, 1 | FHE_CAPS, &quot;:&quot;, &amp;gc);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                    const hash_algo_type =
+algo =3D xt-&gt;nid =3D=3D NID_sha1 ? MD_SHA1 : MD_SHA256;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+                    struct buffer fp=
+_buf =3D x509_get_fingerprint(x509, algo, &amp;gc);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                    char *fp_str =3D</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+                        =
+format_hex_ex(BPTR(&amp;fp_buf), BLEN(&amp;fp_buf), 0, 1 | FHE_CAPS, &quot;=
+:&quot;, &amp;gc);</span><br><span>                     do_setenv_x509(es, =
+xt-&gt;name, fp_str, depth);</span><br><span>                 }</span><br><=
+span>                 break;</span><br><span>diff --git a/tests/unit_tests/=
+openvpn/mock_ssl_dependencies=2Ec b/tests/unit_tests/openvpn/mock_ssl_depen=
+dencies=2Ec</span><br><span>index b22dd89=2E=2E65e4635 100644</span><br><sp=
+an>--- a/tests/unit_tests/openvpn/mock_ssl_dependencies=2Ec</span><br><span=
+>+++ b/tests/unit_tests/openvpn/mock_ssl_dependencies=2Ec</span><br><span>@=
+@ -64,3 +64,9 @@</span><br><span> {</span><br><span>     return FAILURE;</s=
+pan><br><span> }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+do_setenv_x509(struct env_set *es, co=
+nst char *name, char *value, int depth)</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    assert_false(true);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+}</span><br></pre><p>To view, visit <a href=3D"https://gerrit=2Eopenv=
+pn=2Enet/c/openvpn/+/2145?usp=3Demail">change 2145</a>=2E To unsubscribe, o=
+r for help writing mail filters, visit <a href=3D"https://gerrit=2Eopenvpn=
+=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"=
+http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemty=
+pe=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https:=
+//gerrit=2Eopenvpn=2Enet/c/openvpn/+/2145?usp=3Demail"/><meta itemprop=3D"n=
+ame" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
-<div sty=
-le=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:n=
-one"> Gerrit-Branch: release/2=2E7 </div>
-<div style=3D"display:none"> Gerr=
-it-Change-Id: I13f9f7dd61d7a4cc986155629f6a3c792aaac6d2 </div>
-<div style=
-=3D"display:none"> Gerrit-Change-Number: 2141 </div>
-<div style=3D"display:=
-none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner:=
- Gert Doering &lt;gert@greenie=2Emuc=2Ede&gt; </div>
-<div style=3D"display:=
-none"> Gerrit-Reviewer: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </d=
-iv>
-<div style=3D"display:none"> Gerrit-Reviewer: Frank Lichtenheld &lt;fra=
-nk@lichtenheld=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: ope=
-nvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"display:none"> Ge=
+rrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Pr=
+oject: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </=
+div>
+<div style=3D"display:none"> Gerrit-Change-Id: I76cd424b34e91f07a6d187=
+b23a258d9dcbf7ed0f </div>
+<div style=3D"display:none"> Gerrit-Change-Number=
+: 2145 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div s=
+tyle=3D"display:none"> Gerrit-Owner: R=C4=83zvan Cojocaru &lt;razvanc@mailb=
+ox=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: Arne Schw=
+abe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> =
+Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Attention: Arne Schwabe &lt;arne-o=
+penvpn@rfc2549=2Eorg&gt; </div>
 
-</body><=
-/html>
---g/Wgqu7PTuQ=--
+</body></html>
+--jYUkxDImXF4=--
 
 
---===============2176936756730419263==
+--===============5079565466749875962==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============2176936756730419263==
+--===============5079565466749875962==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -2161,5 +1197,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============2176936756730419263==--
+--===============5079565466749875962==--
 
