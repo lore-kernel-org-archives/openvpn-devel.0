@@ -1,13 +1,13 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31E60606A326
-	for <openvpn-devel@archiver.kernel.org>; Sat,  7 Nov 2026 16:40:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35B1C606A326
+	for <openvpn-devel@archiver.kernel.org>; Sat,  7 Nov 2026 17:11:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=k1RoMv//;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=AALf6SEv;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=Lt62D0Az;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=fP5obKSN
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=LeFMkUcr;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=SkIObL52;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=b1MKH5GN;
+	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=P2cDC5Lt
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
@@ -15,29 +15,29 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
 	List-Unsubscribe-Post:List-Owner;
-	bh=dJo2in7qz6NtV0Yvey63G53WeR2xMISYWdDiXN6ABeo=; b=k1RoMv//q1NKYUnPlnXHWB+HRj
-	esVud9DcMz4GLH6Mjv62OLJZo0MOrYKK13JvtAnbqEfcQ5jk98IqgBxAJzZvNE4GlKWEAfjhz2/4D
-	5sEsMg6FF1AXEonwDPu0qXm5TuGfIMjxD0dU1GyMKUVOeAyUfsD5Fbt3s9j9FFmHu1dE=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	bh=o4J7BPuYWVuJNUbPoyycBDFC6GFlP4rOMIVMnX6gQEs=; b=LeFMkUcrqd7kVUladFNUwci+CJ
+	AN2wM+lpPo2+V2mc2qHjWMyneejEsIiW7QYzxneK7wp0mVVszN8kTA3yjZ7JdXfA5rEA7Ckjzx8IS
+	IAYUUmL8E0Rt7useO8ioUK/bTbFBX/yzTRsjxRY/e/UtdORFPKpcUKMyxE+jFDsvBptE=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xPjTL-000000008Mn-3RnM;
-	Sat, 07 Nov 2026 16:40:55 +0000
+	id 1xPjwW-000000003vf-0fn3;
+	Sat, 07 Nov 2026 17:11:04 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xPjTL-000000008Mh-00lu
+ (envelope-from <gerrit@openvpn.net>) id 1xPjwT-000000003vP-2j7Y
  for openvpn-devel@lists.sourceforge.net;
- Sat, 07 Nov 2026 16:40:55 +0000
+ Sat, 07 Nov 2026 17:11:01 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=WBcAVpE3vTa2U0XKimP/Ucc2OAmrLnW8PoPVy40ErN8=; b=AALf6SEvPILxsIv58AQmeh8gze
- ncwkqlsFvk3nLTurKNcC54Gnpv1DEWUWO7AQNIxy1OgLeMbAW/y2LBLsQi6bP1MpOBqVaj0JD0vz1
- pD1MixNEE9pFPz1KZYsKBulkEZAf3Eu/5yLaGf9x82bCVdCfLyfEhj3KpUGtiDu4BBgA=;
+ bh=/MLpQMQsUaKGez5gFV6ssMMR5lrctL7aY++Cmk61fcM=; b=SkIObL52QjTrVcR7hTiH0k+zb+
+ +wX0Lezh28rkY533JMZeGUjM3Zw2UitdstGqVTGsJKevpqQZHIeX9+lUzn4V8SbHvAU/5sKzVp68F
+ v3d5MQDkPtTTdkjWLfRRa0MdeQ/ohw/Z/G0YiBedyhrisXlrIvXrK0sjv++Ao4G6udSo=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
@@ -45,95 +45,96 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=WBcAVpE3vTa2U0XKimP/Ucc2OAmrLnW8PoPVy40ErN8=; b=Lt62D0AzMvnYKDG4rMs/CMMExW
- L8z7n9BNBjHvOvYGTh5Y9xWz1u4Q0zP37otDhESsnN5uT/0ZleZVbab9BVgpFveeu74JufDHEib8Q
- 3zljR4IMYqHbKu3P4MdWnHzbRjrAktdGFNy7E4AUO6MbiFZ0R9eyFNxLFeG3lKJi9Jek=;
-Received: from mail-wr1-f41.google.com ([209.85.221.41])
+ bh=/MLpQMQsUaKGez5gFV6ssMMR5lrctL7aY++Cmk61fcM=; b=b1MKH5GNUkskasULJHFS7uQVPv
+ kON0uzagrb0HlPlzFleK3qa+dwDlVAZnbHT3JUdt/+SDIeHl3D2Q9VJGp4R9ibYDpQEO/94KWeVpS
+ ZcBhdNVkYWftIlj9oFqn/8ftuZqLt77G/9IhlmwxJlNOmU7gHOoqKEfZB4olx9E5k+VQ=;
+Received: from mail-wm1-f50.google.com ([209.85.128.50])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xPjTI-000000002Js-1ve4 for openvpn-devel@lists.sourceforge.net;
- Sat, 07 Nov 2026 16:40:54 +0000
-Received: by mail-wr1-f41.google.com with SMTP id
- ffacd0b85a97d-490c3ae81d3so954947f8f.2
+ id 1xPjwS-000000002we-238P for openvpn-devel@lists.sourceforge.net;
+ Sat, 07 Nov 2026 17:11:01 +0000
+Received: by mail-wm1-f50.google.com with SMTP id
+ 5b1f17b1804b1-4a35db1f202so12814885e9.3
  for <openvpn-devel@lists.sourceforge.net>;
- Sat, 07 Nov 2026 08:40:52 -0800 (PST)
+ Sat, 07 Nov 2026 09:11:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1794069646; x=1794674446; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1794071454; x=1794676254; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=WBcAVpE3vTa2U0XKimP/Ucc2OAmrLnW8PoPVy40ErN8=;
- b=fP5obKSNmp2SxlxnQyzNv5nPb5cBV4HSb0otH/2zXQIfCccKsFVI6VFVpBQY+3A67o
- qb5mychjLj91fiPUxYQJSwHEDxj/bwDrALrbv9A3vRVv8+D/SbLYesNYOvmd74XBAeHw
- HcC6oQT63KM0OpgPNSxcNvRTDS7MuLgmWfrEBNitAxLWMqL7+E3pCR5qw5o0M5KjIMIe
- h+g2I6n1fQQdgAI0P6u+oRgbXU+7DeobI+L7hTRqiWjlQVfPOqVLks18t7V3J2Vq4Fi2
- WRSZzlYw1+UPkdcypIr2YPjDt+Czmbgwgpq210OtI4X/j6rwf88QBdxuWJpsctDeBIUl
- Ja/g==
+ bh=/MLpQMQsUaKGez5gFV6ssMMR5lrctL7aY++Cmk61fcM=;
+ b=P2cDC5LtLau3vzDUdP+2YyLFe12K/HsRJ2kDL7d72ssbyZQpXxHbTm0KijaND74bMy
+ dJxe8+pIJMyBF1MIdPOidNqyDZcRb3wZK51A1TfzF94AOI4v0JOeB//o9RyW8aT7tCMA
+ +nYswXGxUAas/b567mgn9rYBYVrJ8nx04bDzlC4p+kE3ENwHoCLnt9OGoSurPqB7tD8A
+ tUbqLAE6KdJythXo/X9S8Kmz8Hx6sLNlTbU0zpAdI2s0D8lWp57OqoP+nVlbTz7q38N4
+ tur/OreguKad+bMbBUfZsYmks0m9cnYokX712kVJ88Mh/mYlclQSDs5tJPqdrcYgaONm
+ /Wcg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1794069646; x=1794674446;
+ d=1e100.net; s=20260707; t=1794071454; x=1794676254;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=WBcAVpE3vTa2U0XKimP/Ucc2OAmrLnW8PoPVy40ErN8=;
- b=2mEwWRKStXkU0nChGYYANx1TpzUmp/+Vn+59401knATb3cAcvNmolGiiG4993GSiPS
- iFQGOvmggtah4EH2zaIYy6t5tt9isdk69Exj7zzfjDTWQC9VGGK9TypBLXMXZ+x1JAwO
- t13A4J9eIwH1Gbeg9B/ERZzqdAscrC2OvyujUrwxg/aj7n7tMiGrtqLIaffSho+mGyWU
- RC+mFoVwhQNENF4swLM9p8jE1F/fXL7qyBcXpZMsoRJ5T3CweAnhS09Z2xr5E2vZzXWQ
- UM1GjqBgIXUsQkwjuJOij0KHeB35i2TtkZxU5q4Z8fPG2vEfOKjnku3sJng8xwyv6vFZ
- WPyQ==
+ bh=/MLpQMQsUaKGez5gFV6ssMMR5lrctL7aY++Cmk61fcM=;
+ b=22NAqsQj0cqUxb8yoOArCEI9x2JZcypAqnYLsAC+erUTBe5JP8hIGuKPl/DOfejG1b
+ WKI7e+/OhN0j7yjO6ULqW9sKWy++XZwuI9lcOUUwVC++ov2wtdHR5dtFUiDvptwZxkeK
+ BYKYv5as7rrmPTY99P+MNLgp+ybDdFNY+DnbL+mFllvlq+nCBxyxQQrdHioEacbmytpL
+ /WSyqhzKJ4qCkzinNBcLgQ3pGclqsIuK7y4L9XOD0fhBZMf+dgnF7UwTaU09Tm69kVJM
+ nilUEwn3ztFHimpD8gBmmyTlpk2kR1GqLA798dQSHVXx1FF45WhkB/k5ACmDZ81IlXf9
+ nvKw==
 X-Forwarded-Encrypted: i=1;
- AL+hErFnQGSgeeL8y+/ilGg/A3DA4rOaGtKN6F0W1xwvaIeMjTmAuO/skC6sFvq26GIT6Re/m9e+ogxdsqWjcfeI@lists.sourceforge.net
-X-Gm-Message-State: APuU4Z+wtVMWAR4+wUmZRuqjkIOBshZIJjWnh9E/0ceaH1pM2oEcbPqQ
- 7QtI+y6Luyk8rTX5of7n1A1+JfTSXusDY6iPrS6YgJfy4smB/+ongoeCPtL9lD5z+dY5JC3kq8S
- rcFIRBWlhRwj3rjsGmB1GBuxN6HPXu81Xwk5RDLM5WnJg4kJHsPc7OX52cQBnz5zKB5o668isIu
- vfmCBVBg==
-X-Gm-Gg: AYBFou3ny3+p1mNw/YLsOOKi4pTEOJwiSD9AamvzUL350T6OgmESuZD2P6rkO+FNYYE
- 9It5EOROfwdyFMZIF7lGzrIvU9HMaq4n760G+9oeGVX23pcv1Imoqyu/LxUJasKp4Qj8j4Ss7md
- 8onlKJdFHvFQ0j523Sr45+nLWVqlUmehDqgxx2mmvufm2FzYU8/ah8gzsIUwRj9zuuAvFkRrQ4U
- j9IGiPUebEcIjVzwq98P/LOFXc9cUDJnScn9o3w3gtudBgze9tK/8qlJ+nHomoYwuklTbyWjahg
- yfY5WaIxIXBCtm6JAZTmgdKEZMZ4bGD9q8MlOV8MRdCmp0OLHzMiN9UxzDW6dtHjFyac50+rOBa
- N765NtXdm8ePZuYPZka0rWDP5YJLvWfLP2qhOVRPyZi40zLOvXQYFWE9GomrweBNifb8JCmdf7H
- vX1JcnCctgC6iWMpayURDiRdH/SqguLn62rBKex7qs5bTJZhxP+N0oqctNWeoEdTSijvSd1tMMI
- uwySPo3xceuZ5svggo/CWJ4IBOAbvvz66fx/3ydPdBo+qnrxvz7xsxkBWPn8KEs7LbKSrw2VkTz
- RItOEWEo8rJSXBuBGV6uAKM+n85UzLvLPEJcJJ1M+ihps6b2nSRzfBis5ETH91/WX7YiVyO7/+z
- Suu44fIvut9WuJy8AFviidxVnhF90ZFvGLzHs0eZB+eIYqsYV5QVxY8wnMByRm83OkAxEvcc+0B
- OMW7UFONl7yC9TkmzFLqbqDO9NezFJbiFI06U=
-X-Received: by 2002:a05:6000:4b0b:b0:48e:4300:c6d8 with SMTP id
- ffacd0b85a97d-49275a271acmr10364780f8f.35.1794069645360; 
- Sat, 07 Nov 2026 08:40:45 -0800 (PST)
+ AKwUvByIawdGH8dtw3GsCb30tOts498tIsd/JSUpBNIe8dMqiMnMJaugCRZ9kkbgJO6LshBQFLBV8mrTioFdoh/0@lists.sourceforge.net
+X-Gm-Message-State: APuU4Z8ZHHyUd/J29V7t+Oo1anq5+LDa4L+l5gbsGgEvHdMXS9IGO0rG
+ NDUa8mxmnCFBPzXtD7EVBHvxo/51LModmfg/YwMK5iFfw4ptPKDMn7VD+wxavBg+hGX2G//qYwa
+ 4raBnhziZq3eZnwiXdYxPlgDMCaij8VvWtdzt8ZIyL+pZN3RnOu+arPsPSRuxZqUc1T6gK73Wvp
+ bMxVMX4A==
+X-Gm-Gg: AYBFou3yYRBD4DqvYy3DXd6fGGAk8CVnRCKp/5yP2lePK682pm+6Ar3yW9PsrpRxSdN
+ AwZQXliBxeR58vbb0hZhqLYjFEpWWSiyKs8rr6oVLLmXnFqKryxKUUoiCMoSPNZkfzfZLsc9544
+ LYG9HmmiTB65y8ExS3CMBax/6vdJqtnc7ery8GBwLS+Va+ZudniRTspEU/KBh+nshh0VLs+OcyU
+ iBg35bJUn5M+NBUaaFb9KNoE78DEDb8vK5Gh9xAjzmzywlPw//T1bkRwU5bxdawjDwdi/13lnvJ
+ e6IT3IlHfdIyDIs8a2TtOyE+CiM9tmj5Fcgys1brNH9YuatAy8IgQ+OFRPxd7XVd4Q6wKU+qCr+
+ rSn+Olb8BkLvRm8tIBbSLfJbkaZ/q7wSnOh3u6EMTFPleXHL+GmhQ/p7T3+AHxCXPCUE4zWOrqW
+ yF5pZ1fXCVdldkkRvN1i265xG6gVs7MfG7G6pDsSnJPOes8q8KiiZ/lUpA0DHkzHZPH+8pBEwu9
+ Q2Osxh77qaf36a7HUEXwhopH6AWiXoH5ybiYg8CTpxp8hZL+ULguVPzliJipmKEzAYkh/ZfIU2G
+ pDn0Q+K/TpC8nUYPyUkheclR/ZNmrG29VFzSVLuX9JMY7Dk7mhzjpSTb6ghcekhnFMHPzhbVD2r
+ WhjCrgvHUFLCjwOX7OjbWj9poyVNf57fscnM/j8YkY9Tp2UTzkGlxSZ5vW/U3V3rI/i0R6OVnmU
+ P3h+WGBoW6Z+A3SIznu4PnVsbSS0sJfst2Yic=
+X-Received: by 2002:a05:600c:6992:b0:4a1:992f:d0e7 with SMTP id
+ 5b1f17b1804b1-4b6de4a6c7amr100696195e9.16.1794071453818; 
+ Sat, 07 Nov 2026 09:10:53 -0800 (PST)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-4948e90965csm3720022f8f.6.2026.11.07.08.40.44
+ 5b1f17b1804b1-4b7950206e3sm61576995e9.3.2026.11.07.09.10.53
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sat, 07 Nov 2026 08:40:44 -0800 (PST)
-X-Google-Original-From: "buildbot (Code Review)"
+ Sat, 07 Nov 2026 09:10:53 -0800 (PST)
+X-Google-Original-From: "Selva Nair (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Sat, 7 Nov 2026 16:40:44 +0000
-To: =?UTF-8?Q?R=C4=83zvan_Cojocaru?= <razvanc@mailbox.org>
+Date: Sat, 7 Nov 2026 17:10:52 +0000
+To: opidopiopi@gmail.com
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: combinedCheckStateUpdate
+X-Gerrit-MessageType: comment
 X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: I1d545f0a6de5ab795a0c80447002f5cb54b48b32
-X-Gerrit-Change-Number: 2151
+X-Gerrit-Change-Id: I09e55085cde6dbc0040e111a42128527d59832b8
+X-Gerrit-Change-Number: 2148
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2151?usp=email>
-X-Gerrit-Commit: c0f3f3916c8909732e773f4e17f46e2ad88cbf4e
-In-Reply-To: <gerrit.1794064436000.I1d545f0a6de5ab795a0c80447002f5cb54b48b32@gerrit.openvpn.net>
-References: <gerrit.1794064436000.I1d545f0a6de5ab795a0c80447002f5cb54b48b32@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzk0MDY0NDM2MDAwLkkxZDU0NWYwYTZkZTVhYjc5NWEwYzgwNDQ3MDAyZjVjYjU0YjQ4YjMyQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <d31a14ae4e30a7eb9544b292ecf21f247ed378bf-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2148?usp=email>
+X-Gerrit-Commit: 589b59dd314e72affe07497b2172199f194e3347
+X-Gerrit-Comment-Date: Sat, 7 Nov 2026 17:10:52 +0000
+In-Reply-To: <gerrit.1794059437000.I09e55085cde6dbc0040e111a42128527d59832b8@gerrit.openvpn.net>
+References: <gerrit.1794059437000.I09e55085cde6dbc0040e111a42128527d59832b8@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzk0MDU5NDM3MDAwLkkwOWU1NTA4NWNkZTZkYmMwMDQwZTExMWE0MjEyODUyN2Q1OTgzMmI4QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <4084760aef4f18565c47e484a7256f970de1fd9b-EmailReviewComments-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.5
 X-Spam-Score: 0.8 (/)
-X-Headers-End: 1xPjTI-000000002Js-1ve4
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: route: merge the
- FreeBSD and DragonFly IPv4 route branches
+X-Headers-End: 1xPjwS-000000002we-238P
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Implement multiline
+ responses for pkcs11-id commands
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -143,598 +144,310 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "buildbot \(Code Review\) via Openvpn-devel"
+From: "Selva Nair \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
-Reply-To: yura.darnobyt@openvpn.net, arne-openvpn@rfc2549.org,
- razvanc@mailbox.org, openvpn-devel@lists.sourceforge.net, gert@greenie.muc.de
-Cc: "buildbot \(Code Review\)" <gerrit@openvpn.net>,
+Reply-To: selva.nair@gmail.com, arne-openvpn@rfc2549.org, opidopiopi@gmail.com,
+ openvpn-devel@lists.sourceforge.net
+Cc: "Selva Nair \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>,
  Arne Schwabe <arne-openvpn@rfc2549.org>
-Content-Type: multipart/mixed; boundary="===============0553028239435076098=="
-X-Spam-Status: No, score=-2.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+Content-Type: multipart/mixed; boundary="===============1496869079049537208=="
+X-Spam-Status: No, score=-2.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
-	MAILING_LIST_MULTI,MIME_HTML_MOSTLY,PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,
-	SPF_PASS,WEIRD_PORT autolearn=no autolearn_force=no version=4.0.1
+	MAILING_LIST_MULTI,PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,SPF_PASS
+	autolearn=no autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
-Message-ID: <20261107164044.IE-2F8LeiN0wAC7U-h6CVlz5ibq5HqeC-0AKnWdDS3w@z>
 
---===============0553028239435076098==
+--===============1496869079049537208==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="IfBNmZXnbbg="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="WiEV9ofbxCY="; charset=UTF-8
 
---IfBNmZXnbbg=
+--WiEV9ofbxCY=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-The combined check state has been updated to SUCCESSFUL for patch set 1 of =
-this change ( https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2151?usp=3Demail )=
+Attention is currently required from: Arne Schwabe, opidopiopi@gmail=2Ecom=
 =2E
 
-All checks:
-Successful: Code Format Check, alpine-factory--disable-lz4=
-, alpine-factory--disable-lzo, alpine-factory--disable-lzo--disable-lz4--en=
-able-comp-stub, alpine-factory--disable-lzo--disable-management, alpine-fac=
-tory--disable-management, alpine-factory--enable-developer-debug, alpine-fa=
-ctory--enable-small, alpine-factory--with-crypto-librarymbedtls, alpine-fac=
-tory-default, arch-factory--disable-lz4, arch-factory--disable-lzo, arch-fa=
-ctory--disable-lzo--disable-lz4--enable-comp-stub, arch-factory--disable-lz=
-o--disable-management, arch-factory--disable-management, arch-factory--enab=
-le-developer-debug, arch-factory--enable-small, arch-factory--with-crypto-l=
-ibrarymbedtls, arch-factory-default, cron2-fbsd14-factory--disable-lz4, cro=
-n2-fbsd14-factory--disable-lzo, cron2-fbsd14-factory--disable-lzo--disable-=
-lz4--enable-comp-stub, cron2-fbsd14-factory--disable-lzo--disable-managemen=
-t, cron2-fbsd14-factory--disable-management, cron2-fbsd14-factory--enable-d=
-eveloper-debug, cron2-fbsd14-factory--enable-small, cron2-fbsd14-factory-de=
-fault, cron2-fbsd15-factory--disable-lz4, cron2-fbsd15-factory--disable-lzo=
-, cron2-fbsd15-factory--disable-lzo--disable-lz4--enable-comp-stub, cron2-f=
-bsd15-factory--disable-lzo--disable-management, cron2-fbsd15-factory--disab=
-le-management, cron2-fbsd15-factory--enable-developer-debug, cron2-fbsd15-f=
-actory--enable-small, cron2-fbsd15-factory-default, cron2-fbsd15-smoketest,=
- cron2-nbsd10-factory--disable-lz4, cron2-nbsd10-factory--disable-lzo, cron=
-2-nbsd10-factory--disable-lzo--disable-lz4--enable-comp-stub, cron2-nbsd10-=
-factory--disable-lzo--disable-management, cron2-nbsd10-factory--disable-man=
-agement, cron2-nbsd10-factory--enable-developer-debug, cron2-nbsd10-factory=
---enable-small, cron2-nbsd10-factory--with-crypto-librarymbedtls, cron2-nbs=
-d10-factory-default, cron2-obsd-factory--disable-lz4, cron2-obsd-factory--d=
-isable-lzo, cron2-obsd-factory--disable-lzo--disable-lz4--enable-comp-stub,=
- cron2-obsd-factory--disable-lzo--disable-management, cron2-obsd-factory--d=
-isable-management, cron2-obsd-factory--enable-developer-debug, cron2-obsd-f=
-actory--enable-small, cron2-obsd-factory--with-crypto-librarymbedtls, cron2=
--obsd-factory-default, cron2-obsd75-factory--disable-lz4, cron2-obsd75-fact=
-ory--disable-lzo, cron2-obsd75-factory--disable-lzo--disable-lz4--enable-co=
-mp-stub, cron2-obsd75-factory--disable-lzo--disable-management, cron2-obsd7=
-5-factory--disable-management, cron2-obsd75-factory--enable-developer-debug=
-, cron2-obsd75-factory--enable-small, cron2-obsd75-factory-default, cron2-o=
-i2024-factory--disable-lz4, cron2-oi2024-factory--disable-lzo, cron2-oi2024=
--factory--disable-lzo--disable-lz4--enable-comp-stub, cron2-oi2024-factory-=
--disable-lzo--disable-management, cron2-oi2024-factory--disable-management,=
- cron2-oi2024-factory--enable-developer-debug, cron2-oi2024-factory--enable=
--small, cron2-oi2024-factory-default, debian-12-factory--disable-lz4, debia=
-n-12-factory--disable-lzo, debian-12-factory--disable-lzo--disable-lz4--ena=
-ble-comp-stub, debian-12-factory--disable-lzo--disable-management, debian-1=
-2-factory--disable-management, debian-12-factory--enable-developer-debug, d=
-ebian-12-factory--enable-small, debian-12-factory-default, debian-12-factor=
-y-package, debian-12-openvpn-legacy-factory-default, debian-13-factory--dis=
-able-lz4, debian-13-factory--disable-lzo, debian-13-factory--disable-lzo--d=
-isable-lz4--enable-comp-stub, debian-13-factory--disable-lzo--disable-manag=
-ement, debian-13-factory--disable-management, debian-13-factory--enable-dev=
-eloper-debug, debian-13-factory--enable-small, debian-13-factory-default, d=
-ebian-13-factory-package, debian-13-static-factory-default, debian-unstable=
--cppcheck, debian-unstable-factory--disable-lz4, debian-unstable-factory--d=
-isable-lzo, debian-unstable-factory--disable-lzo--disable-lz4--enable-comp-=
-stub, debian-unstable-factory--disable-lzo--disable-management, debian-unst=
-able-factory--disable-management, debian-unstable-factory--enable-developer=
--debug, debian-unstable-factory--enable-small, debian-unstable-factory-defa=
-ult, debian-unstable-factory-package, fedora-45-arm64-factory--disable-lz4,=
- fedora-45-arm64-factory--disable-lzo, fedora-45-arm64-factory--disable-lzo=
---disable-lz4--enable-comp-stub, fedora-45-arm64-factory--disable-lzo--disa=
-ble-management, fedora-45-arm64-factory--disable-management, fedora-45-arm6=
-4-factory--enable-developer-debug, fedora-45-arm64-factory--enable-small, f=
-edora-45-arm64-factory-default, fedora-45-factory--disable-lz4, fedora-45-f=
-actory--disable-lzo, fedora-45-factory--disable-lzo--disable-lz4--enable-co=
-mp-stub, fedora-45-factory--disable-lzo--disable-management, fedora-45-fact=
-ory--disable-management, fedora-45-factory--enable-developer-debug, fedora-=
-45-factory--enable-small, fedora-45-factory-default, macos-m1-cmake, macos-=
-m1-factory--disable-lz4, macos-m1-factory--disable-lzo, macos-m1-factory--d=
-isable-lzo--disable-lz4--enable-comp-stub, macos-m1-factory--disable-lzo--d=
-isable-management, macos-m1-factory--disable-management, macos-m1-factory--=
-enable-developer-debug, macos-m1-factory--enable-small, macos-m1-factory--w=
-ith-crypto-librarymbedtls, macos-m1-factory-default, opensuse-leap-16-facto=
-ry--disable-lz4, opensuse-leap-16-factory--disable-lzo, opensuse-leap-16-fa=
-ctory--disable-lzo--disable-lz4--enable-comp-stub, opensuse-leap-16-factory=
---disable-lzo--disable-management, opensuse-leap-16-factory--disable-manage=
-ment, opensuse-leap-16-factory--enable-developer-debug, opensuse-leap-16-fa=
-ctory--enable-small, opensuse-leap-16-factory-default, t-server-factory-tse=
-rver, ubuntu-2204-factory--disable-lz4, ubuntu-2204-factory--disable-lzo, u=
-buntu-2204-factory--disable-lzo--disable-lz4--enable-comp-stub, ubuntu-2204=
--factory--disable-lzo--disable-management, ubuntu-2204-factory--disable-man=
-agement, ubuntu-2204-factory--enable-developer-debug, ubuntu-2204-factory--=
-enable-small, ubuntu-2204-factory-default, ubuntu-2204-factory-package, ubu=
-ntu-2404-android, ubuntu-2404-arm64-factory--disable-lz4, ubuntu-2404-arm64=
--factory--disable-lzo, ubuntu-2404-arm64-factory--disable-lzo--disable-lz4-=
--enable-comp-stub, ubuntu-2404-arm64-factory--disable-lzo--disable-manageme=
-nt, ubuntu-2404-arm64-factory--disable-management, ubuntu-2404-arm64-factor=
-y--enable-developer-debug, ubuntu-2404-arm64-factory--enable-small, ubuntu-=
-2404-arm64-factory-default, ubuntu-2404-arm64-factory-package, ubuntu-2404-=
-cmake, ubuntu-2404-doxygen, ubuntu-2404-factory--disable-lz4, ubuntu-2404-f=
-actory--disable-lzo, ubuntu-2404-factory--disable-lzo--disable-lz4--enable-=
-comp-stub, ubuntu-2404-factory--disable-lzo--disable-management, ubuntu-240=
-4-factory--disable-management, ubuntu-2404-factory--enable-developer-debug,=
- ubuntu-2404-factory--enable-small, ubuntu-2404-factory-default, ubuntu-240=
-4-factory-package, ubuntu-2404-mingw, ubuntu-2404-smoketest, ubuntu-2404-st=
-atic-factory-default, ubuntu-2604-clang-factory--disable-lz4, ubuntu-2604-c=
-lang-factory--disable-lzo, ubuntu-2604-clang-factory--disable-lzo--disable-=
-lz4--enable-comp-stub, ubuntu-2604-clang-factory--disable-lzo--disable-mana=
-gement, ubuntu-2604-clang-factory--disable-management, ubuntu-2604-clang-fa=
-ctory--enable-developer-debug, ubuntu-2604-clang-factory--enable-small, ubu=
-ntu-2604-clang-factory-default, ubuntu-2604-cmake, ubuntu-2604-factory--dis=
-able-lz4, ubuntu-2604-factory--disable-lzo, ubuntu-2604-factory--disable-lz=
-o--disable-lz4--enable-comp-stub, ubuntu-2604-factory--disable-lzo--disable=
--management, ubuntu-2604-factory--disable-management, ubuntu-2604-factory--=
-enable-developer-debug, ubuntu-2604-factory--enable-small, ubuntu-2604-fact=
-ory-default, ubuntu-2604-factory-package, ubuntu-2610-cmake, ubuntu-2610-fa=
-ctory--disable-lz4, ubuntu-2610-factory--disable-lzo, ubuntu-2610-factory--=
-disable-lzo--disable-lz4--enable-comp-stub, ubuntu-2610-factory--disable-lz=
-o--disable-management, ubuntu-2610-factory--disable-management, ubuntu-2610=
--factory--enable-developer-debug, ubuntu-2610-factory--enable-small, ubuntu=
--2610-factory-default, ubuntu-2610-factory-package, windows-server-2025-lat=
-ent-ec2-msbuild-amd64, windows-server-2025-latent-ec2-msbuild-amd64-clang, =
-windows-server-2025-latent-ec2-msbuild-arm64, windows-server-2025-latent-ec=
-2-msbuild-x86, windows-server-2025-latent-ec2-msbuild-x86-clang
+Selva Nair has posted comments on this change by opidopiopi@gmail=2Eco=
+m=2E ( https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2148?usp=3Demail )
 
-Change sub=
-ject: route: merge the FreeBSD and DragonFly IPv4 route branches
+Chang=
+e subject: Implement multiline responses for pkcs11-id commands
 =2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+
+
+Patch Set 1: Code-Rev=
+iew-1
+
+(4 comments)
+
+Patchset:
+
+PS1: 
+Apart from comments below, in managem=
+ent-notes=2Etxt, under OUTPUT_FORMAT no=2E (2), we say 'the last line will =
+be "END"'=2E Add 'or "ERROR"' to it=2E
+
+
+File doc/management-notes=2Etxt:
+
+=
+https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2148/comment/5cc4461f_a8ffdb34?u=
+sp=3Demail :
+PS1, Line 631:      END
+Describe the protocol in the both case=
+s separately from examples? Like:
+
+For management client versions < 7:
+
+  p=
+kcs11-id-count
+
+The reply is ">PKCS11ID-COUNT:<count>"=2E
+
+Example:
+
+  pkcs=
+11-id-count
+  \>PKCS11ID-COUNT:5
+
+For management client versions >=3D 7:
+
+ =
+ pkcs11-id-count
+
+The reply is a decimal count followed by "END" on a line =
+of its own=2E
+
+Example:
+
+  pkcs11-id-count
+  5
+  END
+
+
+https://gerrit=2Eope=
+nvpn=2Enet/c/openvpn/+/2148/comment/c76c252a_87366f38?usp=3Demail :
+PS1, Li=
+ne 641: Example for client version < 7:
+This section is confusing=2E Separa=
+te client version < 7 and >=3D 7 cleanly and provide protocol description s=
+eparately from examples?
+
+For management client versions < 7:
+
+  pkcs11-id-=
+get <index>
+
+=2E=2E desccribe legacy reply format=2E
+
+Example:
+=2E=2E=2E
+
+F=
+or management client versions >=3D 7:
+
+  pkcs11-id-get <index>
+  pkcs11-id-=
+get <start> <end>
+  pkcs11-id-get all
+
+=2E=2E=2Eindex/range semantics, reco=
+rd format, END/ERROR termination=2E=2E=2E
+
+Examples:
+=2E=2E=2E
+
+Also no nee=
+d to retain the original '<snip>' as that's not how other examples are writ=
+ten=2E ID:'<id>', BLOB:'<blob>' is better=2E
+
+
+File src/openvpn/manage=2Ec:=
+
+
+https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2148/comment/049a071a_702e63d8=
+?usp=3Demail :
+PS1, Line 918: 
+Two helpers split a small parsing operation,=
+ interpret the start argument twice, and mix parsing with bounds clamping=
+=2E A poor abstraction=2E I don=E2=80=99t see sufficient maintenance benefi=
+t from this=2E 
+Better to leave remote-entry-get unchanged and use similar =
+parsing logic here=2E
+  
+A better range parsing and validation could be a f=
+ollow up=2E
+
+
+
 -- 
-To view, visit http=
-s://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2151?usp=3Demail
-To unsubscribe, or =
-for help writing mail filters, visit https://gerrit=2Eopenvpn=2Enet/setting=
-s?usp=3Demail
+To view, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/=
++/2148?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit =
+https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Gerrit-MessageType: combinedCheckStateUpdate
-Gerrit-Project:=
- openvpn
+Gerrit-MessageType: co=
+mment
+Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I1d545f0a6de5ab795a0c80447=
-002f5cb54b48b32
-Gerrit-Change-Number: 2151
-Gerrit-PatchSet: 1
-Gerrit-Owner:=
- R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
-Gerrit-Reviewer: Arne Schwabe=
- <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Reviewer: Gert Doering <gert@greenie=
-=2Emuc=2Ede>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2E=
-net>
+Gerrit-Change-Id: I09e5=
+5085cde6dbc0040e111a42128527d59832b8
+Gerrit-Change-Number: 2148
+Gerrit-Patc=
+hSet: 1
+Gerrit-Owner: opidopiopi@gmail=2Ecom
+Gerrit-Reviewer: Arne Schwabe =
+<arne-openvpn@rfc2549=2Eorg>
+Gerrit-Reviewer: Selva Nair <selva=2Enair@gmai=
+l=2Ecom>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>=
 
---IfBNmZXnbbg=
+Gerrit-Attention: opidopiopi@gmail=2Ecom
+Gerrit-Attention: Arne Schwabe <a=
+rne-openvpn@rfc2549=2Eorg>
+Gerrit-Comment-Date: Sat, 07 Nov 2026 17:10:52 +=
+0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+
+--WiEV9ofbxCY=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>The combined chec=
-k state has been updated to <strong>SUCCESSFUL</strong> for patch set 1 of =
-this <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2151?usp=3Demail=
-">change</a>=2E</p><p><u><strong>All checks:</strong></u><br><strong>Succes=
-sful:</strong> <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:=
-8010/#/builders/1/builds/5681">Code Format Check</a>, <a href=3D"http://bui=
-ldbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/188/builds/5851">alp=
-ine-factory--disable-lz4</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=
-=2Eopenvpn=2Ein:8010/#/builders/226/builds/5787">alpine-factory--disable-lz=
-o</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/b=
-uilders/183/builds/5764">alpine-factory--disable-lzo--disable-lz4--enable-c=
-omp-stub</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8=
-010/#/builders/178/builds/5747">alpine-factory--disable-lzo--disable-manage=
-ment</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/=
-#/builders/238/builds/5729">alpine-factory--disable-management</a>, <a href=
-=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/679/bu=
-ilds/26">alpine-factory--enable-developer-debug</a>, <a href=3D"http://buil=
-dbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/136/builds/5715">alpi=
-ne-factory--enable-small</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=
-=2Eopenvpn=2Ein:8010/#/builders/8/builds/5758">alpine-factory--with-crypto-=
-librarymbedtls</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=
-=2Ein:8010/#/builders/235/builds/5623">alpine-factory-default</a>, <a href=
-=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/141/bu=
-ilds/5826">arch-factory--disable-lz4</a>, <a href=3D"http://buildbot=2Ecomm=
-unity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/164/builds/5768">arch-factory--d=
-isable-lzo</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein=
-:8010/#/builders/38/builds/5753">arch-factory--disable-lzo--disable-lz4--en=
-able-comp-stub</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=
-=2Ein:8010/#/builders/112/builds/5729">arch-factory--disable-lzo--disable-m=
-anagement</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:=
-8010/#/builders/84/builds/5714">arch-factory--disable-management</a>, <a hr=
-ef=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/665/=
-builds/25">arch-factory--enable-developer-debug</a>, <a href=3D"http://buil=
-dbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/13/builds/5706">arch-=
-factory--enable-small</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eo=
-penvpn=2Ein:8010/#/builders/102/builds/5719">arch-factory--with-crypto-libr=
-arymbedtls</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein=
-:8010/#/builders/81/builds/5609">arch-factory-default</a>, <a href=3D"http:=
-//buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/275/builds/5581=
-">cron2-fbsd14-factory--disable-lz4</a>, <a href=3D"http://buildbot=2Ecommu=
-nity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/270/builds/5537">cron2-fbsd14-fac=
-tory--disable-lzo</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenv=
-pn=2Ein:8010/#/builders/277/builds/5509">cron2-fbsd14-factory--disable-lzo-=
--disable-lz4--enable-comp-stub</a>, <a href=3D"http://buildbot=2Ecommunity=
-=2Eaws=2Eopenvpn=2Ein:8010/#/builders/273/builds/5497">cron2-fbsd14-factory=
---disable-lzo--disable-management</a>, <a href=3D"http://buildbot=2Ecommuni=
-ty=2Eaws=2Eopenvpn=2Ein:8010/#/builders/278/builds/5476">cron2-fbsd14-facto=
-ry--disable-management</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2E=
-openvpn=2Ein:8010/#/builders/678/builds/25">cron2-fbsd14-factory--enable-de=
-veloper-debug</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=
-=2Ein:8010/#/builders/272/builds/5456">cron2-fbsd14-factory--enable-small</=
-a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/buil=
-ders/276/builds/5514">cron2-fbsd14-factory-default</a>, <a href=3D"http://b=
-uildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/610/builds/1088">c=
-ron2-fbsd15-factory--disable-lz4</a>, <a href=3D"http://buildbot=2Ecommunit=
-y=2Eaws=2Eopenvpn=2Ein:8010/#/builders/606/builds/1082">cron2-fbsd15-factor=
-y--disable-lzo</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=
-=2Ein:8010/#/builders/614/builds/1079">cron2-fbsd15-factory--disable-lzo--d=
-isable-lz4--enable-comp-stub</a>, <a href=3D"http://buildbot=2Ecommunity=2E=
-aws=2Eopenvpn=2Ein:8010/#/builders/615/builds/1074">cron2-fbsd15-factory--d=
-isable-lzo--disable-management</a>, <a href=3D"http://buildbot=2Ecommunity=
-=2Eaws=2Eopenvpn=2Ein:8010/#/builders/611/builds/1072">cron2-fbsd15-factory=
---disable-management</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eop=
-envpn=2Ein:8010/#/builders/677/builds/25">cron2-fbsd15-factory--enable-deve=
-loper-debug</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ei=
-n:8010/#/builders/613/builds/1069">cron2-fbsd15-factory--enable-small</a>, =
-<a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders=
-/609/builds/1080">cron2-fbsd15-factory-default</a>, <a href=3D"http://build=
-bot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/612/builds/1184">cron2=
--fbsd15-smoketest</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenv=
-pn=2Ein:8010/#/builders/524/builds/2861">cron2-nbsd10-factory--disable-lz4<=
-/a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/bui=
-lders/518/builds/2852">cron2-nbsd10-factory--disable-lzo</a>, <a href=3D"ht=
-tp://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/526/builds/2=
-840">cron2-nbsd10-factory--disable-lzo--disable-lz4--enable-comp-stub</a>, =
-<a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders=
-/520/builds/2829">cron2-nbsd10-factory--disable-lzo--disable-management</a>=
-, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builde=
-rs/519/builds/2816">cron2-nbsd10-factory--disable-management</a>, <a href=
-=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/668/bu=
-ilds/25">cron2-nbsd10-factory--enable-developer-debug</a>, <a href=3D"http:=
-//buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/523/builds/2807=
-">cron2-nbsd10-factory--enable-small</a>, <a href=3D"http://buildbot=2Ecomm=
-unity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/522/builds/2775">cron2-nbsd10-fa=
-ctory--with-crypto-librarymbedtls</a>, <a href=3D"http://buildbot=2Ecommuni=
-ty=2Eaws=2Eopenvpn=2Ein:8010/#/builders/521/builds/2699">cron2-nbsd10-facto=
-ry-default</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein=
-:8010/#/builders/636/builds/307">cron2-obsd-factory--disable-lz4</a>, <a hr=
-ef=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/635/=
-builds/305">cron2-obsd-factory--disable-lzo</a>, <a href=3D"http://buildbot=
-=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/640/builds/303">cron2-obs=
-d-factory--disable-lzo--disable-lz4--enable-comp-stub</a>, <a href=3D"http:=
-//buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/634/builds/301"=
->cron2-obsd-factory--disable-lzo--disable-management</a>, <a href=3D"http:/=
-/buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/639/builds/298">=
-cron2-obsd-factory--disable-management</a>, <a href=3D"http://buildbot=2Eco=
-mmunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/676/builds/25">cron2-obsd-fact=
-ory--enable-developer-debug</a>, <a href=3D"http://buildbot=2Ecommunity=2Ea=
-ws=2Eopenvpn=2Ein:8010/#/builders/633/builds/294">cron2-obsd-factory--enabl=
-e-small</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:80=
-10/#/builders/638/builds/271">cron2-obsd-factory--with-crypto-librarymbedtl=
-s</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/b=
-uilders/637/builds/263">cron2-obsd-factory-default</a>, <a href=3D"http://b=
-uildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/285/builds/5507">c=
-ron2-obsd75-factory--disable-lz4</a>, <a href=3D"http://buildbot=2Ecommunit=
-y=2Eaws=2Eopenvpn=2Ein:8010/#/builders/279/builds/5470">cron2-obsd75-factor=
-y--disable-lzo</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=
-=2Ein:8010/#/builders/284/builds/5440">cron2-obsd75-factory--disable-lzo--d=
-isable-lz4--enable-comp-stub</a>, <a href=3D"http://buildbot=2Ecommunity=2E=
-aws=2Eopenvpn=2Ein:8010/#/builders/287/builds/5409">cron2-obsd75-factory--d=
-isable-lzo--disable-management</a>, <a href=3D"http://buildbot=2Ecommunity=
-=2Eaws=2Eopenvpn=2Ein:8010/#/builders/283/builds/5362">cron2-obsd75-factory=
---disable-management</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eop=
-envpn=2Ein:8010/#/builders/661/builds/25">cron2-obsd75-factory--enable-deve=
-loper-debug</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ei=
-n:8010/#/builders/282/builds/5333">cron2-obsd75-factory--enable-small</a>, =
-<a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders=
-/280/builds/5277">cron2-obsd75-factory-default</a>, <a href=3D"http://build=
-bot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/293/builds/5531">cron2=
--oi2024-factory--disable-lz4</a>, <a href=3D"http://buildbot=2Ecommunity=2E=
-aws=2Eopenvpn=2Ein:8010/#/builders/292/builds/5480">cron2-oi2024-factory--d=
-isable-lzo</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein=
-:8010/#/builders/291/builds/5459">cron2-oi2024-factory--disable-lzo--disabl=
-e-lz4--enable-comp-stub</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=
-=2Eopenvpn=2Ein:8010/#/builders/289/builds/5440">cron2-oi2024-factory--disa=
-ble-lzo--disable-management</a>, <a href=3D"http://buildbot=2Ecommunity=2Ea=
-ws=2Eopenvpn=2Ein:8010/#/builders/290/builds/5407">cron2-oi2024-factory--di=
-sable-management</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvp=
-n=2Ein:8010/#/builders/667/builds/25">cron2-oi2024-factory--enable-develope=
-r-debug</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:80=
-10/#/builders/296/builds/5380">cron2-oi2024-factory--enable-small</a>, <a h=
-ref=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/294=
-/builds/5319">cron2-oi2024-factory-default</a>, <a href=3D"http://buildbot=
-=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/242/builds/5823">debian-1=
-2-factory--disable-lz4</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2E=
-openvpn=2Ein:8010/#/builders/54/builds/5766">debian-12-factory--disable-lzo=
-</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/bu=
-ilders/196/builds/5737">debian-12-factory--disable-lzo--disable-lz4--enable=
--comp-stub</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein=
-:8010/#/builders/55/builds/5716">debian-12-factory--disable-lzo--disable-ma=
-nagement</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8=
-010/#/builders/163/builds/5707">debian-12-factory--disable-management</a>, =
-<a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders=
-/662/builds/25">debian-12-factory--enable-developer-debug</a>, <a href=3D"h=
-ttp://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/4/builds/57=
-10">debian-12-factory--enable-small</a>, <a href=3D"http://buildbot=2Ecommu=
-nity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/97/builds/5756">debian-12-factory=
--default</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8=
-010/#/builders/63/builds/5674">debian-12-factory-package</a>, <a href=3D"ht=
-tp://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/328/builds/5=
-064">debian-12-openvpn-legacy-factory-default</a>, <a href=3D"http://buildb=
-ot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/438/builds/3785">debian=
--13-factory--disable-lz4</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=
-=2Eopenvpn=2Ein:8010/#/builders/436/builds/3733">debian-13-factory--disable=
--lzo</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/=
-#/builders/441/builds/3713">debian-13-factory--disable-lzo--disable-lz4--en=
-able-comp-stub</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=
-=2Ein:8010/#/builders/440/builds/3697">debian-13-factory--disable-lzo--disa=
-ble-management</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=
-=2Ein:8010/#/builders/437/builds/3686">debian-13-factory--disable-managemen=
-t</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/b=
-uilders/681/builds/25">debian-13-factory--enable-developer-debug</a>, <a hr=
-ef=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/435/=
-builds/3680">debian-13-factory--enable-small</a>, <a href=3D"http://buildbo=
-t=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/447/builds/3624">debian-=
-13-factory-default</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopen=
-vpn=2Ein:8010/#/builders/445/builds/3666">debian-13-factory-package</a>, <a=
- href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/4=
-49/builds/3602">debian-13-static-factory-default</a>, <a href=3D"http://bui=
-ldbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/630/builds/416">debi=
-an-unstable-cppcheck</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eop=
-envpn=2Ein:8010/#/builders/28/builds/5807">debian-unstable-factory--disable=
--lz4</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/=
-#/builders/104/builds/5749">debian-unstable-factory--disable-lzo</a>, <a hr=
-ef=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/80/b=
-uilds/5714">debian-unstable-factory--disable-lzo--disable-lz4--enable-comp-=
-stub</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/=
-#/builders/36/builds/5699">debian-unstable-factory--disable-lzo--disable-ma=
-nagement</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8=
-010/#/builders/75/builds/5681">debian-unstable-factory--disable-management<=
-/a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/bui=
-lders/666/builds/25">debian-unstable-factory--enable-developer-debug</a>, <=
-a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/=
-76/builds/5662">debian-unstable-factory--enable-small</a>, <a href=3D"http:=
-//buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/216/builds/5636=
-">debian-unstable-factory-default</a>, <a href=3D"http://buildbot=2Ecommuni=
-ty=2Eaws=2Eopenvpn=2Ein:8010/#/builders/37/builds/5651">debian-unstable-fac=
-tory-package</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2E=
-in:8010/#/builders/669/builds/27">fedora-45-arm64-factory--disable-lz4</a>,=
- <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builder=
-s/673/builds/27">fedora-45-arm64-factory--disable-lzo</a>, <a href=3D"http:=
-//buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/659/builds/27">=
-fedora-45-arm64-factory--disable-lzo--disable-lz4--enable-comp-stub</a>, <a=
- href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/6=
-54/builds/27">fedora-45-arm64-factory--disable-lzo--disable-management</a>,=
- <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builder=
-s/675/builds/26">fedora-45-arm64-factory--disable-management</a>, <a href=
-=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/664/bu=
-ilds/24">fedora-45-arm64-factory--enable-developer-debug</a>, <a href=3D"ht=
-tp://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/652/builds/2=
-6">fedora-45-arm64-factory--enable-small</a>, <a href=3D"http://buildbot=2E=
-community=2Eaws=2Eopenvpn=2Ein:8010/#/builders/656/builds/28">fedora-45-arm=
-64-factory-default</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopen=
-vpn=2Ein:8010/#/builders/648/builds/39">fedora-45-factory--disable-lz4</a>,=
- <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builder=
-s/644/builds/38">fedora-45-factory--disable-lzo</a>, <a href=3D"http://buil=
-dbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/651/builds/36">fedora=
--45-factory--disable-lzo--disable-lz4--enable-comp-stub</a>, <a href=3D"htt=
-p://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/641/builds/36=
-">fedora-45-factory--disable-lzo--disable-management</a>, <a href=3D"http:/=
-/buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/650/builds/36">f=
-edora-45-factory--disable-management</a>, <a href=3D"http://buildbot=2Ecomm=
-unity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/663/builds/25">fedora-45-factory=
---enable-developer-debug</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=
-=2Eopenvpn=2Ein:8010/#/builders/643/builds/36">fedora-45-factory--enable-sm=
-all</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#=
-/builders/645/builds/39">fedora-45-factory-default</a>, <a href=3D"http://b=
-uildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/365/builds/5135">m=
-acos-m1-cmake</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=
-=2Ein:8010/#/builders/190/builds/5786">macos-m1-factory--disable-lz4</a>, <=
-a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/=
-179/builds/5752">macos-m1-factory--disable-lzo</a>, <a href=3D"http://build=
-bot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/90/builds/5730">macos-=
-m1-factory--disable-lzo--disable-lz4--enable-comp-stub</a>, <a href=3D"http=
-://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/6/builds/5733"=
->macos-m1-factory--disable-lzo--disable-management</a>, <a href=3D"http://b=
-uildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/160/builds/5697">m=
-acos-m1-factory--disable-management</a>, <a href=3D"http://buildbot=2Ecommu=
-nity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/660/builds/25">macos-m1-factory--=
-enable-developer-debug</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2E=
-openvpn=2Ein:8010/#/builders/191/builds/5683">macos-m1-factory--enable-smal=
-l</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/b=
-uilders/200/builds/5774">macos-m1-factory--with-crypto-librarymbedtls</a>, =
-<a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders=
-/131/builds/5674">macos-m1-factory-default</a>, <a href=3D"http://buildbot=
-=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/507/builds/3149">opensuse=
--leap-16-factory--disable-lz4</a>, <a href=3D"http://buildbot=2Ecommunity=
-=2Eaws=2Eopenvpn=2Ein:8010/#/builders/496/builds/3113">opensuse-leap-16-fac=
-tory--disable-lzo</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenv=
-pn=2Ein:8010/#/builders/514/builds/3098">opensuse-leap-16-factory--disable-=
-lzo--disable-lz4--enable-comp-stub</a>, <a href=3D"http://buildbot=2Ecommun=
-ity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/516/builds/3096">opensuse-leap-16-=
-factory--disable-lzo--disable-management</a>, <a href=3D"http://buildbot=2E=
-community=2Eaws=2Eopenvpn=2Ein:8010/#/builders/506/builds/3088">opensuse-le=
-ap-16-factory--disable-management</a>, <a href=3D"http://buildbot=2Ecommuni=
-ty=2Eaws=2Eopenvpn=2Ein:8010/#/builders/671/builds/25">opensuse-leap-16-fac=
-tory--enable-developer-debug</a>, <a href=3D"http://buildbot=2Ecommunity=2E=
-aws=2Eopenvpn=2Ein:8010/#/builders/501/builds/3083">opensuse-leap-16-factor=
-y--enable-small</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=
-=2Ein:8010/#/builders/492/builds/2991">opensuse-leap-16-factory-default</a>=
-, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builde=
-rs/592/builds/1593">t-server-factory-tserver</a>, <a href=3D"http://buildbo=
-t=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/129/builds/5806">ubuntu-=
-2204-factory--disable-lz4</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=
-=2Eopenvpn=2Ein:8010/#/builders/151/builds/5737">ubuntu-2204-factory--disab=
-le-lzo</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:801=
-0/#/builders/130/builds/5709">ubuntu-2204-factory--disable-lzo--disable-lz4=
---enable-comp-stub</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopen=
-vpn=2Ein:8010/#/builders/230/builds/5697">ubuntu-2204-factory--disable-lzo-=
--disable-management</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eope=
-nvpn=2Ein:8010/#/builders/12/builds/5682">ubuntu-2204-factory--disable-mana=
-gement</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:801=
-0/#/builders/653/builds/25">ubuntu-2204-factory--enable-developer-debug</a>=
-, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builde=
-rs/194/builds/5659">ubuntu-2204-factory--enable-small</a>, <a href=3D"http:=
-//buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/232/builds/5737=
-">ubuntu-2204-factory-default</a>, <a href=3D"http://buildbot=2Ecommunity=
-=2Eaws=2Eopenvpn=2Ein:8010/#/builders/202/builds/5651">ubuntu-2204-factory-=
-package</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:80=
-10/#/builders/367/builds/4357">ubuntu-2404-android</a>, <a href=3D"http://b=
-uildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/587/builds/1874">u=
-buntu-2404-arm64-factory--disable-lz4</a>, <a href=3D"http://buildbot=2Ecom=
-munity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/565/builds/1860">ubuntu-2404-ar=
-m64-factory--disable-lzo</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=
-=2Eopenvpn=2Ein:8010/#/builders/568/builds/1853">ubuntu-2404-arm64-factory-=
--disable-lzo--disable-lz4--enable-comp-stub</a>, <a href=3D"http://buildbot=
-=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/570/builds/1854">ubuntu-2=
-404-arm64-factory--disable-lzo--disable-management</a>, <a href=3D"http://b=
-uildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/588/builds/1843">u=
-buntu-2404-arm64-factory--disable-management</a>, <a href=3D"http://buildbo=
-t=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/682/builds/24">ubuntu-24=
-04-arm64-factory--enable-developer-debug</a>, <a href=3D"http://buildbot=2E=
-community=2Eaws=2Eopenvpn=2Ein:8010/#/builders/571/builds/1843">ubuntu-2404=
--arm64-factory--enable-small</a>, <a href=3D"http://buildbot=2Ecommunity=2E=
-aws=2Eopenvpn=2Ein:8010/#/builders/569/builds/1934">ubuntu-2404-arm64-facto=
-ry-default</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein=
-:8010/#/builders/583/builds/1843">ubuntu-2404-arm64-factory-package</a>, <a=
- href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/3=
-64/builds/5030">ubuntu-2404-cmake</a>, <a href=3D"http://buildbot=2Ecommuni=
-ty=2Eaws=2Eopenvpn=2Ein:8010/#/builders/412/builds/3824">ubuntu-2404-doxyge=
-n</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/b=
-uilders/253/builds/5472">ubuntu-2404-factory--disable-lz4</a>, <a href=3D"h=
-ttp://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/260/builds/=
-5438">ubuntu-2404-factory--disable-lzo</a>, <a href=3D"http://buildbot=2Eco=
-mmunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/256/builds/5431">ubuntu-2404-f=
-actory--disable-lzo--disable-lz4--enable-comp-stub</a>, <a href=3D"http://b=
-uildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/258/builds/5423">u=
-buntu-2404-factory--disable-lzo--disable-management</a>, <a href=3D"http://=
-buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/268/builds/5408">=
-ubuntu-2404-factory--disable-management</a>, <a href=3D"http://buildbot=2Ec=
-ommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/655/builds/25">ubuntu-2404-fa=
-ctory--enable-developer-debug</a>, <a href=3D"http://buildbot=2Ecommunity=
-=2Eaws=2Eopenvpn=2Ein:8010/#/builders/269/builds/5393">ubuntu-2404-factory-=
--enable-small</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=
-=2Ein:8010/#/builders/246/builds/5392">ubuntu-2404-factory-default</a>, <a =
-href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/25=
-4/builds/5373">ubuntu-2404-factory-package</a>, <a href=3D"http://buildbot=
-=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/363/builds/4866">ubuntu-2=
-404-mingw</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:=
-8010/#/builders/582/builds/2135">ubuntu-2404-smoketest</a>, <a href=3D"http=
-://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/451/builds/369=
-9">ubuntu-2404-static-factory-default</a>, <a href=3D"http://buildbot=2Ecom=
-munity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/605/builds/1492">ubuntu-2604-cl=
-ang-factory--disable-lz4</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=
-=2Eopenvpn=2Ein:8010/#/builders/604/builds/1489">ubuntu-2604-clang-factory-=
--disable-lzo</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2E=
-in:8010/#/builders/600/builds/1486">ubuntu-2604-clang-factory--disable-lzo-=
--disable-lz4--enable-comp-stub</a>, <a href=3D"http://buildbot=2Ecommunity=
-=2Eaws=2Eopenvpn=2Ein:8010/#/builders/598/builds/1485">ubuntu-2604-clang-fa=
-ctory--disable-lzo--disable-management</a>, <a href=3D"http://buildbot=2Eco=
-mmunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/593/builds/1483">ubuntu-2604-c=
-lang-factory--disable-management</a>, <a href=3D"http://buildbot=2Ecommunit=
-y=2Eaws=2Eopenvpn=2Ein:8010/#/builders/674/builds/25">ubuntu-2604-clang-fac=
-tory--enable-developer-debug</a>, <a href=3D"http://buildbot=2Ecommunity=2E=
-aws=2Eopenvpn=2Ein:8010/#/builders/594/builds/1481">ubuntu-2604-clang-facto=
-ry--enable-small</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvp=
-n=2Ein:8010/#/builders/597/builds/1443">ubuntu-2604-clang-factory-default</=
-a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/buil=
-ders/551/builds/2250">ubuntu-2604-cmake</a>, <a href=3D"http://buildbot=2Ec=
-ommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/548/builds/2211">ubuntu-2604-=
-factory--disable-lz4</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eop=
-envpn=2Ein:8010/#/builders/537/builds/2205">ubuntu-2604-factory--disable-lz=
-o</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/b=
-uilders/547/builds/2204">ubuntu-2604-factory--disable-lzo--disable-lz4--ena=
-ble-comp-stub</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=
-=2Ein:8010/#/builders/543/builds/2198">ubuntu-2604-factory--disable-lzo--di=
-sable-management</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvp=
-n=2Ein:8010/#/builders/542/builds/2194">ubuntu-2604-factory--disable-manage=
-ment</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/=
-#/builders/680/builds/25">ubuntu-2604-factory--enable-developer-debug</a>, =
-<a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders=
-/550/builds/2185">ubuntu-2604-factory--enable-small</a>, <a href=3D"http://=
-buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/549/builds/2130">=
-ubuntu-2604-factory-default</a>, <a href=3D"http://buildbot=2Ecommunity=2Ea=
-ws=2Eopenvpn=2Ein:8010/#/builders/538/builds/2170">ubuntu-2604-factory-pack=
-age</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#=
-/builders/631/builds/473">ubuntu-2610-cmake</a>, <a href=3D"http://buildbot=
-=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/624/builds/467">ubuntu-26=
-10-factory--disable-lz4</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=
-=2Eopenvpn=2Ein:8010/#/builders/620/builds/461">ubuntu-2610-factory--disabl=
-e-lzo</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010=
-/#/builders/621/builds/461">ubuntu-2610-factory--disable-lzo--disable-lz4--=
-enable-comp-stub</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvp=
-n=2Ein:8010/#/builders/618/builds/457">ubuntu-2610-factory--disable-lzo--di=
-sable-management</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvp=
-n=2Ein:8010/#/builders/629/builds/456">ubuntu-2610-factory--disable-managem=
-ent</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#=
-/builders/657/builds/25">ubuntu-2610-factory--enable-developer-debug</a>, <=
-a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/=
-622/builds/458">ubuntu-2610-factory--enable-small</a>, <a href=3D"http://bu=
-ildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/625/builds/456">ubu=
-ntu-2610-factory-default</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=
-=2Eopenvpn=2Ein:8010/#/builders/628/builds/452">ubuntu-2610-factory-package=
-</a>, <a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/bu=
-ilders/398/builds/4196">windows-server-2025-latent-ec2-msbuild-amd64</a>, <=
-a href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/=
-396/builds/3910">windows-server-2025-latent-ec2-msbuild-amd64-clang</a>, <a=
- href=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/3=
-95/builds/4018">windows-server-2025-latent-ec2-msbuild-arm64</a>, <a href=
-=3D"http://buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/397/bu=
-ilds/3983">windows-server-2025-latent-ec2-msbuild-x86</a>, <a href=3D"http:=
-//buildbot=2Ecommunity=2Eaws=2Eopenvpn=2Ein:8010/#/builders/399/builds/3814=
-">windows-server-2025-latent-ec2-msbuild-x86-clang</a><br></p><p><a href=3D=
-"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2151?usp=3Demail">View Change</=
-a></p><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn=
-/+/2151?usp=3Demail">change 2151</a>=2E To unsubscribe, or for help writing=
- mail filters, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=
-=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg=
-/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=
-=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/2151?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
-ew Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: Arne Schwabe, opidopiopi@gmail=2Ecom=2E </p>
+<p>Selva=
+ Nair has posted comments on this change by opidopiopi@gmail=2Ecom=2E</p><p=
+>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; marg=
+in: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span></=
+p><p><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2148?usp=3Demail=
+">View Change</a></p><p>4 comments:</p><ul style=3D"list-style: none; paddi=
+ng: 0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"l=
+ist-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"=
+><p style=3D"margin-bottom: 4px;"><a href=3D"https://gerrit=2Eopenvpn=2Enet=
+/c/openvpn/+/2148?tab=3Dcomments&amp;usp=3Demail">Patch Set #1:</a> </p><p =
+class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Ap=
+art from comments below, in management-notes=2Etxt, under OUTPUT_FORMAT no=
+=2E (2), we say &#39;the last line will be &quot;END&quot;&#39;=2E Add &#39=
+;or &quot;ERROR&quot;&#39; to it=2E</p></li></ul></li><li style=3D"margin: =
+0; padding: 0;"><p>File doc/management-notes=2Etxt:</p><ul style=3D"list-st=
+yle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p st=
+yle=3D"margin-bottom: 4px;"><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/ope=
+nvpn/+/2148/comment/5cc4461f_a8ffdb34?usp=3Demail">Patch Set #1, Line 631:<=
+/a> <code style=3D"font-family:monospace,monospace">     END</code></p><p c=
+lass=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Des=
+cribe the protocol in the both cases separately from examples? Like:</p><p =
+class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Fo=
+r management client versions &lt; 7:</p><pre class=3D"blocks" style=3D"font=
+-family: monospace,monospace; white-space: pre-wrap;">  pkcs11-id-count</pr=
+e><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word=
+;">The reply is &quot;&gt;PKCS11ID-COUNT:&lt;count&gt;&quot;=2E</p><p class=
+=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Example=
+:</p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white=
+-space: pre-wrap;">  pkcs11-id-count<br>  \&gt;PKCS11ID-COUNT:5</pre><p cla=
+ss=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">For m=
+anagement client versions &gt;=3D 7:</p><pre class=3D"blocks" style=3D"font=
+-family: monospace,monospace; white-space: pre-wrap;">  pkcs11-id-count</pr=
+e><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word=
+;">The reply is a decimal count followed by &quot;END&quot; on a line of it=
+s own=2E</p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: =
+break-word;">Example:</p><pre class=3D"blocks" style=3D"font-family: monosp=
+ace,monospace; white-space: pre-wrap;">  pkcs11-id-count<br>  5<br>  END</p=
+re></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bo=
+ttom: 4px;"><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2148/comm=
+ent/c76c252a_87366f38?usp=3Demail">Patch Set #1, Line 641:</a> <code style=
+=3D"font-family:monospace,monospace">Example for client version &lt; 7:</co=
+de></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break=
+-word;">This section is confusing=2E Separate client version &lt; 7 and &gt=
+;=3D 7 cleanly and provide protocol description separately from examples?</=
+p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap: break-word=
+;">For management client versions &lt; 7:</p><pre class=3D"blocks" style=3D=
+"font-family: monospace,monospace; white-space: pre-wrap;">  pkcs11-id-get =
+&lt;index&gt;</pre><p class=3D"blocks" style=3D"white-space: pre-wrap; word=
+-wrap: break-word;">=2E=2E desccribe legacy reply format=2E</p><p class=3D"=
+blocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Example:<br=
+>=2E=2E=2E</p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap=
+: break-word;">For management client versions &gt;=3D 7:</p><pre class=3D"b=
+locks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;"> =
+ pkcs11-id-get &lt;index&gt;<br>  pkcs11-id-get &lt;start&gt; &lt;end&gt;<b=
+r>  pkcs11-id-get all</pre><p class=3D"blocks" style=3D"white-space: pre-wr=
+ap; word-wrap: break-word;">=2E=2E=2Eindex/range semantics, record format, =
+END/ERROR termination=2E=2E=2E</p><p class=3D"blocks" style=3D"white-space:=
+ pre-wrap; word-wrap: break-word;">Examples:<br>=2E=2E=2E</p><p class=3D"bl=
+ocks" style=3D"white-space: pre-wrap; word-wrap: break-word;">Also no need =
+to retain the original &#39;&lt;snip&gt;&#39; as that&#39;s not how other e=
+xamples are written=2E ID:&#39;&lt;id&gt;&#39;, BLOB:&#39;&lt;blob&gt;&#39;=
+ is better=2E</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>Fil=
+e src/openvpn/manage=2Ec:</p><ul style=3D"list-style: none; padding: 0;"><l=
+i style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;=
+"><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2148/comment/049a07=
+1a_702e63d8?usp=3Demail">Patch Set #1, Line 918:</a> <code style=3D"font-fa=
+mily:monospace,monospace"></code></p><pre class=3D"blocks" style=3D"font-fa=
+mily: monospace,monospace; white-space: pre-wrap;">Two helpers split a smal=
+l parsing operation, interpret the start argument twice, and mix parsing wi=
+th bounds clamping=2E A poor abstraction=2E I don=E2=80=99t see sufficient =
+maintenance benefit from this=2E <br>Better to leave remote-entry-get uncha=
+nged and use similar parsing logic here=2E<br>  <br>A better range parsing =
+and validation could be a follow up=2E</pre></li></ul></li></ul><p>To view,=
+ visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2148?usp=3Dema=
+il">change 2148</a>=2E To unsubscribe, or for help writing mail filters, vi=
+sit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">setting=
+s</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><d=
+iv itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction=
+"><link itemprop=3D"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+=
+/2148?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div>=
+</div>
 
-<div style=3D"display:none"> Gerrit-MessageType: =
-combinedCheckStateUpdate </div>
-<div style=3D"display:none"> Gerrit-Project=
-: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<di=
+v style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"disp=
+lay:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit=
+-Change-Id: I09e55085cde6dbc0040e111a42128527d59832b8 </div>
+<div style=3D"=
+display:none"> Gerrit-Change-Number: 2148 </div>
+<div style=3D"display:none=
+"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: opi=
+dopiopi@gmail=2Ecom </div>
+<div style=3D"display:none"> Gerrit-Reviewer: Ar=
+ne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:=
+none"> Gerrit-Reviewer: Selva Nair &lt;selva=2Enair@gmail=2Ecom&gt; </div>
 =
-<div style=3D"display:none"> Gerrit-Change-Id: I1d545f0a6de5ab795a0c8044700=
-2f5cb54b48b32 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 215=
-1 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lis=
+ts=2Esourceforge=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-Atten=
+tion: opidopiopi@gmail=2Ecom </div>
+<div style=3D"display:none"> Gerrit-Att=
+ention: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
 <div style=
-=3D"display:none"> Gerrit-Owner: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=
-=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: Arne Schwab=
-e &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Ge=
-rrit-Reviewer: Gert Doering &lt;gert@greenie=2Emuc=2Ede&gt; </div>
-<div sty=
-le=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esou=
-rceforge=2Enet&gt; </div>
+=3D"display:none"> Gerrit-Comment-Date: Sat, 07 Nov 2026 17:10:52 +0000 </d=
+iv>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=
+=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
 </body></html>
---IfBNmZXnbbg=--
+--WiEV9ofbxCY=--
 
 
---===============0553028239435076098==
+--===============1496869079049537208==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============0553028239435076098==
+--===============1496869079049537208==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -745,5 +458,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============0553028239435076098==--
+--===============1496869079049537208==--
 
