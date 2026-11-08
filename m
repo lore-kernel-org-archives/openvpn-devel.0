@@ -1,137 +1,139 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D15EA606A31C
-	for <openvpn-devel@archiver.kernel.org>; Sun,  8 Nov 2026 20:14:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98370606A326
+	for <openvpn-devel@archiver.kernel.org>; Sun,  8 Nov 2026 20:30:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=h7NW4/8J;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=aFuA9SSS;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=Bu83i74H;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=hR7yL7Xq
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=WRZcl488;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=NzqBjHRj;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=bcwO1Rvt;
+	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=ZjWM7vbv
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:Date:Sender:To:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
 	List-Unsubscribe-Post:List-Owner;
-	bh=8ya4nX7BbQnGOVhReam761z3+mJZdeC1PUF3j5BQffo=; b=h7NW4/8JuAYskdVmbsLix1rQoM
-	SHDrcP5hT/3/zThObN+R+8whk+DTxeb5qSlwgwslsXvQTR/8XzLR4rOnaXPjBIalCAjsGvB3PGBfQ
-	h5F7Ud8GNRpq3NJHqK5fMe2OaxowqhOBTuj+YQQdDnoHqLrtX4YO/S9ZH7hhWIeQOu9o=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	bh=ldRq6c/2rDXihlPaTA1iO+eFhbd7FyIKPwr6C6VJmcY=; b=WRZcl488tMGZDm4GxwVhFEA9C7
+	w5AfPxVgXIO5XcVtoM0rDjRZ57F+ooJ3mUGjvfNguyEi67u5x98LoJxrzL3KunxPvnsq+rEG4AJ4n
+	lSraHB9EgS5hcKnoLYDqGgr9B1vcY3k5auCijb7OOLHt29HbBqNJP8ueR82bJYw8+5mM=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xQ9HO-0000000040f-2oPc;
-	Sun, 08 Nov 2026 20:14:18 +0000
+	id 1xQ9WZ-000000000ih-2o0W;
+	Sun, 08 Nov 2026 20:29:59 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xQ9HN-0000000040R-0scI
+ (envelope-from <gerrit@openvpn.net>) id 1xQ9WY-000000000ib-1lAq
  for openvpn-devel@lists.sourceforge.net;
- Sun, 08 Nov 2026 20:14:17 +0000
+ Sun, 08 Nov 2026 20:29:58 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
+ Cc:Date:From:Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=aJJKNtTGCTWuAOWlCKmA20W/M3ENSdS4yXQphwnFfEU=; b=aFuA9SSSGZMcHooKFxCfJqYlRo
- 0GkXecf10tNZlazrd1OceFigmqPEqjhUb4smLwfGTSNY6UXmZ2rpagjUrfLLAAgMlpL2GlWsQ9agU
- dLxanTsaX/lLDmkL1dfh4bYN8x8MT0OmTNSGDiKXRKo41jEFKcCKqfldkjtUw7UoBjIM=;
+ bh=0HO77s8B/gXjoRFi+4mv8kc443Tfh+kNBlDZDaSqR0Q=; b=NzqBjHRjyTrMP3JqKQf4oGrsuN
+ LW2k+ALsc/Jxt8s2qcc9fAo6Mtuo6LUodr+ujFv0hQ8FgdXl963xAGqxIWuQVyGzfjliiC674oPJ7
+ q6D6epNDy8XkmOpSKIDtz7K7zib0nfUf87OKOQQmXIFRft0f9wVchb0qAG51z9J/MAfU=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
- Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:Date:From:Sender:
+ To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=aJJKNtTGCTWuAOWlCKmA20W/M3ENSdS4yXQphwnFfEU=; b=Bu83i74Hl4tTRLWRfq3Y2vyhuJ
- +6xFpImQ3RIRsPjDzccZzVRrDODhGAOhmIgp7O4s0RpzxlkpByfiLY8jlDlUYZ5L2oaJgT8pQHuUB
- yd22wwNzw2NKp7DCdhu4No6xEQkdoYF7ewfxSUoV5UD7WFHrGfOS3wPRAYgJ3Sgkyf08=;
-Received: from mail-wm1-f43.google.com ([209.85.128.43])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ bh=0HO77s8B/gXjoRFi+4mv8kc443Tfh+kNBlDZDaSqR0Q=; b=bcwO1RvtDMf16WBlgXBZlILmJK
+ WQOWh/di7dats079JTOULGoLrOmP8B4VLqe4QfQ7p7y7dTEVmJtSGzsqUIohiHVzGSttOc5IcEFSQ
+ LpRoa9rpqfSI/1K8Vu2eOhfv1NOuwwetA9A0N35LbV/oOC5sVzc2zC6TzM+NGRJls0T4=;
+Received: from mail-wm1-f52.google.com ([209.85.128.52])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xQ9HK-000000004PS-1mGF for openvpn-devel@lists.sourceforge.net;
- Sun, 08 Nov 2026 20:14:17 +0000
-Received: by mail-wm1-f43.google.com with SMTP id
- 5b1f17b1804b1-4a1b07c3c5fso2284235e9.1
+ id 1xQ9WX-000000007db-1vbf for openvpn-devel@lists.sourceforge.net;
+ Sun, 08 Nov 2026 20:29:58 +0000
+Received: by mail-wm1-f52.google.com with SMTP id
+ 5b1f17b1804b1-4a1b07c3c5fso2376965e9.1
  for <openvpn-devel@lists.sourceforge.net>;
- Sun, 08 Nov 2026 12:14:14 -0800 (PST)
+ Sun, 08 Nov 2026 12:29:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1794168848; x=1794773648; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1794169791; x=1794774591; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
+ :auto-submitted:cc:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=aJJKNtTGCTWuAOWlCKmA20W/M3ENSdS4yXQphwnFfEU=;
- b=hR7yL7XqUO9OvKy7t5MTUwrGYkipKIAglqBGPxxBP8BS5QoVvds/o5xiMz34No8ezp
- HheRuOgYD6TgdzLgHllC27D9jRJJpjPUuww1gZU98DctJKg/dJJsrDEIMZ27q7X18WsZ
- cFu/v2ByTpjpTpU6gHNdVoWd0rQR70kRHCcd2u9rdSzwkEi+NkD0rRo5jADmECQg4ZkY
- bDJS8Uvj2aMoGpTjbrnG4plzcwSkpMROHamWtMFtzvPSSJ9oFdhwpK3S6bJ+Ub0VeZzS
- 8JRX+YGppQ50rBw1BtMss8/K4qi31njdaW3iMeTIIAxfld30cEptcyySDzQMBYY/HzAi
- kwcQ==
+ bh=0HO77s8B/gXjoRFi+4mv8kc443Tfh+kNBlDZDaSqR0Q=;
+ b=ZjWM7vbv9Dy+au6CGp6QhVqcrdqebDXXzhHkorNs5N5+5EqC8kmGJBXwzJZWBq8s3B
+ rWEOpYYOKgFvYYGbKooKKrJywmFt/0dYGwgM81PJiqCqjiBqRdXrDid51Kb1kmgZ6+2f
+ MLyMHgPgBl6Q28GQu41VSYExCt8S+blOF+ZY8CszXRuOSLQgJl9klJFuNvulN1eNPCOJ
+ rkxuuQsTxbL4O7Y0DsdzQEQfYhewXudzMYaFGzFzL6OjEr1pEBs2h0OXyC5i6p38yCjR
+ EYR+1bDeisoKQ/pxMj1I+saiucTEhA/7XW7E+K66aHekaGBHFaHIIov1wWpuR/NovRjK
+ yJKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1794168848; x=1794773648;
+ d=1e100.net; s=20260707; t=1794169791; x=1794774591;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
- :cc:subject:date:message-id:reply-to:content-type;
- bh=aJJKNtTGCTWuAOWlCKmA20W/M3ENSdS4yXQphwnFfEU=;
- b=A+eOP0nt+xeTo8VIvUZ2vlR834SMn3zXIZh7UwW6NBVbKixJ243HCNL7fevSbHTLKn
- F8f77OVkeAkkKidhzVYqm9lKZjYouONwmeNXSmKr10nBVVm4YLw1eta+XTz6W2PGJWZs
- d2vvqzkF9BkrBgEaTLSX2EOA1FC/ymfKzQePE4dNQiz/DcyzVYzlvGvso3R3PPkUOmjd
- ujlfENbh6qApBZhiQsXsGRExiaqRmwMQg9lweHazSstR14gJciM9TFqkXZTrZSWxTWEt
- S0elIcOsOcie3xD+Spooh+POj4STPjfpshMJQ2GklEJtCjHdg+tX7d+zOasaUVZuc6QI
- GdIQ==
-X-Gm-Message-State: APuU4Z8eGJtDqa0yWHapyrhOy33/Y/Lp6IQotFRTKWvyyx0NNGthragA
- qcTg/qUSQlUXtCb6e0XUcPOsYNBS0vTXErUIlSSzqWVy+6TgRUq5CuCgkbR0HVluWDrdfeqC7RR
- X4OCljznyoLpg7rU2bFli5Ag1TfPeiLJLjHewri+73OveqGI9dLI+76+xa652WxUlv738T6VaNH
- WfM9/o0w==
-X-Gm-Gg: AYBFou1BzM1w/hdCvzaFD/eBFjE1UT3wrR6UZtbOcS555jDUgwumTWffyc6R4nCvBUI
- Y7YKt76s0nWW9A84hQIRk3A9lZ8CCBRjULvH4Ro+1KBqfdGRpAdqt2DviGI9gsB4ZxjFeKXWBhB
- /HxU5EWWmPpXkCHy/v6UdEyi21er6l8RgnMv+NFpi/pdSy4P3xmjkKao9nsg5zpoQgVnR0ZU5kh
- 8V5EnbaPhteciaKJW3OS1zgjWsQYRn1wpBx6iz9DzMJX/Rb0PVEOmqSmhcazNjEnGnVoUu7lgTL
- rSdKpXod+PUSulJT16j2ewLlZ9ZGROaQNCQpKT0RMIvv8m0a+m2Iy/+EiTgSAxmdL0yZYnbZPVc
- ePIHbN6jh9YcQwWddcz6DhDWulvvAZO4osY+areUv7lvCSy/e14y977pyrNBmtIhLIWkK1pvWgm
- oo2Pt8kkIffm1KwgWRFWj0VS8+n/Y56rZssFvZ/AeRYWgo6fI262l68Q9qjQxMTPCRhvv23cbVq
- qX5Llp/76DI8gEcBCTZhS/m8sKtkt7JMW28erqSm18MiyJ7XlLtsQruAh7B472WqjEPhdHKZKeQ
- Fm2R8DPp0zE/CQXbNMMISVDI+dX/8BO18XB/gsZ3AZ9Gh6o9KrJzjTVewDPbDV/lDrL/jD6tIEe
- Up5DZfe4+BYPjsmsWC0EIEyKOvGDbDk7+Z28l4HXXrIrbKCJydeUexl2I64CPSS4C1JkDBOtNqe
- UZiY3/S/lcb0FGyw==
-X-Received: by 2002:a05:600c:8712:b0:4a2:150f:1610 with SMTP id
- 5b1f17b1804b1-4b963c76bd1mr38890045e9.23.1794168847310; 
- Sun, 08 Nov 2026 12:14:07 -0800 (PST)
+ :auto-submitted:cc:date:from:x-gm-gg:x-gm-message-state:from:to:cc
+ :subject:date:message-id:reply-to:content-type;
+ bh=0HO77s8B/gXjoRFi+4mv8kc443Tfh+kNBlDZDaSqR0Q=;
+ b=1p49aezdvj/+6sziB7rnyGHUM8iqH6eTBGFVHOXUmO8yGaVvSterWgXiLwFtgpBA7i
+ V2LQIKkw6ziTr2nLH6HESNOa0oQrc9oVnA2qT+o+mrNLBoOxD7hJRqQYC6mFY+XZAXuL
+ GZBYP5Oh7dwabqFhh0mS/iUYfMi7E836meLc4TOgY9RsJRrS86hunx6fHhjzYrjpR/4A
+ alPOeL3hprMi1DNMfwIm0HNnuR6rKPyP4tXMv7I8WBIPdCz3T+K8Ggazw3nurVS1qGQc
+ 8IBuQqCeoT4ifmM2jRPKl4CVCOwt/Zo3YK8Vi781Ftl991sHvdSnSn+rm81Y7AUzoick
+ emiA==
+X-Forwarded-Encrypted: i=1;
+ AL+hErE4UvQCSuIZw8wHLWCMZhJZU7LwEnJciofeVU6Uvl+GK2LI5J18Wifq3Q0WWfZGX/+p/+upon6kK+tCIjhF@lists.sourceforge.net
+X-Gm-Message-State: APuU4Z+l/snqFwo6c6VVCSLRtNQOm8HvwqbBfy/I5qcfeLiebRt5px30
+ ga1n+PWBvz1e7NJlYMGCwAgSB3ancwCkaPazV4FOC8akv0Hks1NVTVTD5OQT4JJA8qCrcYUZ2+9
+ lomrYDaMe+eK2RSqW9FrAthG+SN8wmPY3ooAUoLBpsAl63YAtySGVXS9YAh8CIvvXp8kUTbdY8W
+ Xi0GBcwg==
+X-Gm-Gg: AYBFou0/ZobhZyFNkwKyrIxn4HvBT0upd4upnC2eF4pF3wqLnVzNzeu82t0eJFee5rY
+ DIupbEr0zpH2Tpp/DWIao+0V30BmfK3AaOHpVi9NYCvK/nEHXG7vgKRaTp9PwAPR+x7qjPF4C47
+ 2NNSpT5UB4tle3CyhqUOhfUD1F3lsgf+dT0TQNlHPbe4Mlxd82medTL4YoU9s7n7yK7NfcYk9CW
+ kYsTXHctTZK8gkog0zhkIWHATK7pGn+WmSW4e2p0XlSEWFBHqzs6Jx401Uqs8GcskqrY2yyrGFQ
+ Lm2tAkTaFVt3m2KM3AUxNzmMplcs7bC2ovWlbVT0EuDRo96WUJZS70DfxE3I5biLMksWOdIG4kY
+ BvB8zXfrq5sHkLDdIXRUfS9RAihGHXHNsOSadJzcclc/JAiUC7ze0U6DPhymYjIfWEw4cLFcHCb
+ 1piAOXRvBzRRq8DxmgDC1Afqi5CKbTZqfbAna4ydJIqBB00Ck1jcDozGiQbKWSPZh1E1VEr/M/A
+ G1ZiZtDwnur9ed1UjHHqS1nP/tPL9HDhBIhXRv5GeTvXxcYKdKWvxG2oEKep/yFiBWSVVqLFDsz
+ UbsSJtWSHklbnxB60/MVESTEwxFlkmqKeohjqN3yG5FxlvjkwbQmu6/hdwWb5CcoJGqF5pNbzqb
+ PeTiSh95jwJ1wUDfFsVdZcsmRaAGEUq4xdEYfaAWnjF9fh12aBcGLEOtZOY1T5WKqBk0qYEDpFi
+ jtdfffYVYyo3Neq8Y=
+X-Received: by 2002:a05:600c:6092:b0:4a1:f625:2108 with SMTP id
+ 5b1f17b1804b1-4b963c8722emr40258005e9.33.1794169790722; 
+ Sun, 08 Nov 2026 12:29:50 -0800 (PST)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-4b90619bc91sm79445265e9.2.2026.11.08.12.14.00
+ 5b1f17b1804b1-4b7efb1f3acsm190691125e9.14.2026.11.08.12.29.50
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sun, 08 Nov 2026 12:14:03 -0800 (PST)
-X-Google-Original-From: "Name of user not set (Code Review)"
+ Sun, 08 Nov 2026 12:29:50 -0800 (PST)
+X-Google-Original-From: "Antonio Quartulli (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Sun, 8 Nov 2026 20:13:59 +0000
-To: Selva Nair <selva.nair@gmail.com>, Arne Schwabe <arne-openvpn@rfc2549.org>
+Date: Sun, 8 Nov 2026 20:29:49 +0000
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: newpatchset
-X-Gerrit-PatchSet: 3
-X-Gerrit-Change-Id: I09e55085cde6dbc0040e111a42128527d59832b8
-X-Gerrit-Change-Number: 2148
+X-Gerrit-MessageType: comment
+X-Gerrit-PatchSet: 1
+X-Gerrit-Change-Id: Idb22f731a00158ff020a819081a07e1235d8323d
+X-Gerrit-Change-Number: 2156
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2148?usp=email>
-X-Gerrit-Commit: 36dcf6f35ec90f79dc2a9621e065eb7be869b5b2
-In-Reply-To: <gerrit.1794059437000.I09e55085cde6dbc0040e111a42128527d59832b8@gerrit.openvpn.net>
-References: <gerrit.1794059437000.I09e55085cde6dbc0040e111a42128527d59832b8@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzk0MDU5NDM3MDAwLkkwOWU1NTA4NWNkZTZkYmMwMDQwZTExMWE0MjEyODUyN2Q1OTgzMmI4QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <ecc8f1e0e5924e8a6e49071537473a36d956e449-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2156?usp=email>
+X-Gerrit-Commit: fdef240d2d2daac61ffb09e68e85847df01cfbcb
+X-Gerrit-Comment-Date: Sun, 8 Nov 2026 20:29:49 +0000
+In-Reply-To: <gerrit.1794139716000.Idb22f731a00158ff020a819081a07e1235d8323d@gerrit.openvpn.net>
+References: <gerrit.1794139716000.Idb22f731a00158ff020a819081a07e1235d8323d@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzk0MTM5NzE2MDAwLklkYjIyZjczMWEwMDE1OGZmMDIwYTgxOTA4MWEwN2UxMjM1ZDgzMjNkQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <7ed8d4ebae3ad580a62113ab6d623af752a291e9-EmailReviewComments-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.5
-X-Spam-Score: 0.8 (/)
-X-Headers-End: 1xQ9HK-000000004PS-1mGF
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Implement multiline
- responses for pkcs11-id commands
+X-Spam-Score: 2.0 (++)
+X-Headers-End: 1xQ9WX-000000007db-1vbf
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: dco_linux: clear
+ the context, not the pointer, in ovpn_dco_uninit_net...
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -141,843 +143,156 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "Name of user not set \(Code Review\) via Openvpn-devel"
+From: "Antonio Quartulli \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
-Reply-To: opidopiopi@gmail.com, arne-openvpn@rfc2549.org, selva.nair@gmail.com,
- openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com,
- gert@greenie.muc.de
-Cc: "Name of user not set \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============7443646869160337429=="
-X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+Reply-To: antonio@mandelbit.com, arne-openvpn@rfc2549.org,
+ openvpn-devel@lists.sourceforge.net
+Cc: "Antonio Quartulli \(Code Review\)" <gerrit@openvpn.net>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>,
+ Arne Schwabe <arne-openvpn@rfc2549.org>
+Content-Type: multipart/mixed; boundary="===============5356458638900085273=="
+X-Spam-Status: No, score=-1.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,MIME_HTML_MOSTLY,
-	PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,SPF_PASS,T_KAM_HTML_FONT_INVALID,
-	WEIRD_PORT autolearn=ham autolearn_force=no version=4.0.1
+	MAILING_LIST_MULTI,MISSING_HEADERS,PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,
+	SPF_PASS autolearn=no autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============7443646869160337429==
+--===============5356458638900085273==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="JxMCICa5JuU="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="6mUrm0kUplo="; charset=UTF-8
 
---JxMCICa5JuU=
+--6mUrm0kUplo=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: Arne Schwabe, Frank Lichtenheld, opid=
-opiopi@gmail=2Ecom=2E
+Attention is currently required from: Alexandre Laroche=2E
 
-Hello Arne Schwabe, Selva Nair, 
+Antonio Quartul=
+li has posted comments on this change by Alexandre Laroche=2E ( https://ger=
+rit=2Eopenvpn=2Enet/c/openvpn/+/2156?usp=3Demail )
 
-I'd like you to re=
-examine a change=2E Please visit
-
-    https://gerrit=2Eopenvpn=2Enet/c/open=
-vpn/+/2148?usp=3Demail
-
-to look at the new patch set (#3)=2E
-
-
-Change subje=
-ct: Implement multiline responses for pkcs11-id commands
-=2E=2E=2E=2E=2E=2E=
+Change subject: dco_lin=
+ux: clear the context, not the pointer, in ovpn_dco_uninit_netlink()
+=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
-
-Implement multiline responses f=
-or pkcs11-id commands
-
-Responses to the management interface commands pkcs1=
-1-id-[get|count] did
-not follow the standard syntax, but instead looked lik=
-e notifications=2E
-
-Introduce a new management interface version so that cl=
-ients announcing
-versions >=3D 7 will receive responses in the new format w=
-hile keeping
-compatibility for older client versions=2E
-
-If a client announ=
-ces a management version >=3D 7 the responses conform to
-the common multili=
-ne + END syntax=2E At the same time, it is now possible
-to query all PKCS#1=
-1 ids using "all" or a range from "start" to
-"end" - 1=2E Failures to retri=
-eve an id will return a partial response
-terminated by an "ERROR" message i=
-ncluding the erroneous index=2E
-The response format for pkcs11-id-get was c=
-hanged to return a comma
-separated list (index,id,cert_blob) which is easie=
-r to parse=2E
-
-Change-Id: I09e55085cde6dbc0040e111a42128527d59832b8
-Signed-=
-off-by: Marvin Wunderlich <opdopiopi@gmail=2Ecom>
----
-M doc/management-note=
-s=2Etxt
-M src/openvpn/manage=2Ec
-M src/openvpn/manage=2Eh
-3 files changed, =
-164 insertions(+), 21 deletions(-)
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
 
-  git pull ssh://gerrit=2Eopenvpn=2Ene=
-t:29418/openvpn refs/changes/48/2148/3
+Patch Set 1: Code-=
+Review+2
 
-diff --git a/doc/management-notes=
-=2Etxt b/doc/management-notes=2Etxt
-index 6c798c0=2E=2E42ea644 100644
---- a=
-/doc/management-notes=2Etxt
-+++ b/doc/management-notes=2Etxt
-@@ -617,23 +61=
-7,109 @@
- COMMAND -- pkcs11-id-count  (OpenVPN 2=2E1 or higher)
- ----------=
------------------------------------------
- 
--Retrieve available number of c=
-ertificates=2E
-+Retrieve available number of PKCS#11 certificates=2E
-+
-+For=
- management client versions <7:
-+
-+     pkcs11-id-count
-+
-+The reply is ">P=
-KCS11ID-COUNT:<count>"=2E
- 
- Example:
- 
-      pkcs11-id-count
-      >PKCS11=
-ID-COUNT:5
- 
-+For management client versions >=3D 7:
-+
-+     pkcs11-id-coun=
-t
-+
-+The reply is a decimal count followed by "END" on a separate line=2E
-+=
+(1 comment)
 
-+Example:
-+
-+     pkcs11-id-count
-+     5
-+     END
-+
- COMMAND -- pkcs11-i=
-d-get  (OpenVPN 2=2E1 or higher)
- -----------------------------------------=
---------
- 
-+Retrieve PKCS#11 certificates=2E
-+
-+For management client versi=
-ons < 7:
-+
-+  pkcs11-id-get <index>
-+
- Retrieve certificate by index, the I=
-D string should be provided
- as PKCS#11 identity, the blob is a base 64 enc=
-oded certificate=2E
- 
- Example:
- 
-      pkcs11-id-get 1
--     PKCS11ID-ENTR=
-Y:'1', ID:'<snip>', BLOB:'<snip>'
-+     >PKCS11ID-ENTRY:'1', ID:'<id>', BLO=
-B:'<blob>'
-+
-+For management client versions >=3D 7:
-+
-+  pkcs11-id-get <in=
-dex>
-+  pkcs11-id-get <start> <end>
-+  pkcs11-id-get all
-+
-+Retrieve a sing=
-le PKCS#11 certificate at index <index> or multiple
-+PKCS#11 certificates f=
-rom index <start> to <end>-1=2E Alternatively
-+<start> =3D "all" retrieves =
-all PKCS#11 certificates=2E A comma separated
-+list including index, PKCS#1=
-1 id and the base 64 encoded certificate
-+will be returned=2E If any id ret=
-rieval results in a failure, the returned
-+list will be partial and termina=
-ted by "ERROR: =2E=2E" instead of "END"=2E
-+The "ERROR" message will includ=
-e the index of failure=2E
-+
-+Example 1:
-+
-+  Management interface client se=
-nds:
-+
-+    pkcs11-id-get 1
-+
-+  OpenVPN daemon responds with:
-+
-+    1,<id=
->,<blob>
-+    END
-+
-+Example 2:
-+
-+  Management interface client sends:
-+
-+=
-    pkcs11-id-get 1 3
-+
-+  OpenVPN daemon responds with:
-+
-+    1,<id_a>,<b=
-lob_a>
-+    2,<id_b>,<blob_b>
-+    END
-+
-+Example 3:
-+
-+  Management interf=
-ace client sends:
-+
-+    pkcs11-id-get all
-+
-+  OpenVPN daemon with 3 PKCS#=
-11 certificates responds with:
-+
-+    0,<id_a>,<blob_a>
-+    1,<id_b>,<blob=
-_b>
-+    2,<id_c>,<blob_c>
-+    END
-+
-+Example 4:
-+
-+  Management interface=
- client sends:
-+
-+    pkcs11-id-get all
-+
-+  OpenVPN daemon with 3 PKCS#11 =
-certificates fails to retrieve index 1
-+
-+    0,<id_a>,<blob_a>
-+    ERROR:=
- Failed to load PKCS#11 id at index: 1
-+
- 
- COMMAND -- client-auth  (OpenVP=
-N 2=2E1 or higher)
- -----------------------------------------------
-@@ -124=
-0,7 +1326,7 @@
-     "ERROR: [text]"=2E
- 
- (2) For commands which print mult=
-iple lines of output,
--    the last line will be "END"=2E
-+    the last lin=
-e will be "END" or "ERROR: [text]"=2E
- 
- (3) Real-time messages will be in =
-the form ">[source]:[text]",
-     where source is "CLIENT", "ECHO", "FATAL"=
-, "HOLD", "INFO", "LOG",
-diff --git a/src/openvpn/manage=2Ec b/src/openvpn/=
-manage=2Ec
-index 58f63e6=2E=2Ef00eb30 100644
---- a/src/openvpn/manage=2Ec
-+=
-++ b/src/openvpn/manage=2Ec
-@@ -74,6 +74,7 @@
-     MCV_USERNAME_ONLY =3D 4,=
+Patchset:
 
-     MCV_MULTILINE_PASSWORD =3D 5,
-     MCV_PREFERRED_USERNAME =3D 6,
-+   =
- MCV_MULTILINE_PKCS11_RESPONSE =3D 7,
- };
- 
- struct management *management;=
- /* GLOBAL */
-@@ -120,7 +121,8 @@
-     msg(M_CLIENT, "pid                  =
-  : Show process ID of the current OpenVPN process=2E");
- #ifdef ENABLE_PKC=
-S11
-     msg(M_CLIENT, "pkcs11-id-count        : Get number of available PK=
-CS#11 identities=2E");
--    msg(M_CLIENT, "pkcs11-id-get index    : Get PKC=
-S#11 identity at index=2E");
-+    msg(M_CLIENT, "pkcs11-id-get i|all [j] : =
-Get PKCS#11 identity at index =3D i=2E");
-+    msg(M_CLIENT, "             =
-             For version >=3D 7 also i to j-1 or all=2E");
- #endif
-     msg=
-(M_CLIENT, "client-auth CID KID    : Authenticate client-id/key-id CID/KID =
-(MULTILINE)");
-     msg(M_CLIENT, "client-auth-nt CID KID : Authenticate cl=
-ient-id/key-id CID/KID");
-@@ -894,26 +896,81 @@
- static void
- man_pkcs11_id=
-_count(const struct management *man)
- {
--    msg(M_CLIENT, ">PKCS11ID-COUNT=
-:%d", pkcs11_management_id_count());
--}
--
--static void
--man_pkcs11_id_get(s=
-truct management *man, const int index)
--{
--    char *id =3D NULL;
--    cha=
-r *base64 =3D NULL;
--
--    if (pkcs11_management_id_get(index, &id, &base64=
-))
-+    if (man->connection=2Eclient_version >=3D MCV_MULTILINE_PKCS11_RESP=
-ONSE)
-     {
--        msg(M_CLIENT, ">PKCS11ID-ENTRY:'%d', ID:'%s', BLOB:'%=
-s'", index, id, base64);
-+        msg(M_CLIENT, "%d", pkcs11_management_id_=
-count());
-+        msg(M_CLIENT, "END");
-     }
-     else
-     {
--        m=
-sg(M_CLIENT, ">PKCS11ID-ENTRY:'%d'", index);
-+        msg(M_CLIENT, ">PKCS1=
-1ID-COUNT:%d", pkcs11_management_id_count());
-+    }
-+}
-+
-+static void
-+man=
-_pkcs11_id_get(struct management *man, const char *p1, const char *p2)
-+{
-+=
-    ASSERT(p1);
-+
-+    if ((streq(p1, "all") || p2 !=3D NULL) && man->conne=
-ction=2Eclient_version < MCV_MULTILINE_PKCS11_RESPONSE)
-+    {
-+        msg=
-(M_CLIENT, "ERROR: Listing multiple ids is only supported for version >=3D =
-%d", MCV_MULTILINE_PKCS11_RESPONSE);
-+        return;
-     }
- 
--    free(id=
-);
--    free(base64);
-+    if (man->connection=2Eclient_version >=3D MCV_MU=
-LTILINE_PKCS11_RESPONSE)
-+    {
-+        unsigned int count =3D pkcs11_mana=
-gement_id_count();
-+        unsigned int from =3D (unsigned int)atoi(p1);
-+=
-        unsigned int to =3D p2 ? (unsigned int)atoi(p2) : from + 1;
-+
-+    =
-    if (streq(p1, "all"))
-+        {
-+            from =3D 0;
-+            =
-to =3D count;
-+        }
-+
-+        bool error =3D false;
-+        for (uns=
-igned int i =3D from; i < min_uint(to, count) && !error; i++)
-+        {
-+ =
-           char *id =3D NULL;
-+            char *base64 =3D NULL;
-+
-+      =
-      if (pkcs11_management_id_get(i, &id, &base64))
-+            {
-+      =
-          msg(M_CLIENT, "%u,%s,%s", i, id, base64);
-+            }
-+       =
-     else
-+            {
-+                error =3D true;
-+                =
-msg(M_CLIENT, "ERROR: Failed to load PKCS#11 id at index: %u", i);
-+       =
-     }
-+            free(id);
-+            free(base64);
-+        }
-+      =
-  if (!error)
-+        {
-+            msg(M_CLIENT, "END");
-+        }
-+   =
- }
-+    else
-+    {
-+        int index =3D atoi(p1);
-+
-+        char *id =
-=3D NULL;
-+        char *base64 =3D NULL;
-+
-+        if (pkcs11_management_=
-id_get(index, &id, &base64))
-+        {
-+            msg(M_CLIENT, ">PKCS11=
-ID-ENTRY:'%d', ID:'%s', BLOB:'%s'", index, id, base64);
-+        }
-+       =
- else
-+        {
-+            msg(M_CLIENT, ">PKCS11ID-ENTRY:'%d'", index);=
+PS1: 
+Next time I'd suggest pruning the b=
+lah blah coming from Opus, but the patch looks good=2E
+Thanks!
 
-+        }
-+        free(id);
-+        free(base64);
-+    }
- }
- 
- #endif /=
-* ifdef ENABLE_PKCS11 */
-@@ -1838,9 +1895,9 @@
-     }
-     else if (streq(p=
-[0], "pkcs11-id-get"))
-     {
--        if (man_need(p, 1, 0))
-+        if (=
-man_need(p, 1, MN_AT_LEAST))
-         {
--            man_pkcs11_id_get(man,=
- atoi(p[1]));
-+            man_pkcs11_id_get(man, p[1], p[2]);
-         }
- =
-    }
- #endif
-diff --git a/src/openvpn/manage=2Eh b/src/openvpn/manage=2Eh
-=
-index 82c0caa=2E=2E1d2aff1 100644
---- a/src/openvpn/manage=2Eh
-+++ b/src/op=
-envpn/manage=2Eh
-@@ -50,7 +50,7 @@
- #include "socket_util=2Eh"
- #include "m=
-route=2Eh"
- 
--#define MANAGEMENT_VERSION                  6
-+#define MANAGE=
-MENT_VERSION                  7
- #define MANAGEMENT_N_PASSWORD_RETRIES     =
-  3
- #define MANAGEMENT_LOG_HISTORY_INITIAL_SIZE 100
- #define MANAGEMENT_EC=
-HO_BUFFER_SIZE         100
+
 
 -- 
-To view, visit https://gerrit=2Eopenvpn=2En=
-et/c/openvpn/+/2148?usp=3Demail
-To unsubscribe, or for help writing mail fi=
-lters, visit https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+To vi=
+ew, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2156?usp=3Demail
+To un=
+subscribe, or for help writing mail filters, visit https://gerrit=2Eopenvpn=
+=2Enet/settings?usp=3Demail
 
-Gerrit-Me=
-ssageType: newpatchset
-Gerrit-Project: openvpn
+Gerrit-MessageType: comment
+Gerrit-Project: op=
+envpn
 Gerrit-Branch: master
-Gerrit=
--Change-Id: I09e55085cde6dbc0040e111a42128527d59832b8
-Gerrit-Change-Number:=
- 2148
-Gerrit-PatchSet: 3
-Gerrit-Owner: opidopiopi@gmail=2Ecom
-Gerrit-Review=
-er: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Reviewer: Selva Nair <=
-selva=2Enair@gmail=2Ecom>
-Gerrit-CC: Frank Lichtenheld <frank@lichtenheld=
-=2Ecom>
-Gerrit-CC: Gert Doering <gert@greenie=2Emuc=2Ede>
-Gerrit-CC: openvp=
-n-devel <openvpn-devel@lists=2Esourceforge=2Enet>
-Gerrit-Attention: opidopi=
-opi@gmail=2Ecom
-Gerrit-Attention: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>=
+Gerrit-Change-Id: Idb22f731a00158ff020a819081a0=
+7e1235d8323d
+Gerrit-Change-Number: 2156
+Gerrit-PatchSet: 1
+Gerrit-Owner: Al=
+exandre Laroche
+Gerrit-Reviewer: Antonio Quartulli <antonio@mandelbit=2Ecom=
+>
+Gerrit-Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
+Gerrit-CC: ope=
+nvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Attention: Alex=
+andre Laroche
+Gerrit-Comment-Date: Sun, 08 Nov 2026 20:29:49 +0000
+Gerrit-H=
+asComments: Yes
+Gerrit-Has-Labels: Yes
 
-Gerrit-Attention: Frank Lichtenheld <frank@lichtenheld=2Ecom>
-
---JxMCICa5JuU=
+--6mUrm0kUplo=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: Arne Schwabe, Frank Lichtenheld, opidopiopi@gmail=2Ec=
-om=2E </p>
-<p>opidopiopi@gmail=2Ecom <strong>uploaded patch set #3</strong>=
- to this change=2E</p><p><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvp=
-n/+/2148?usp=3Demail">View Change</a></p><pre class=3D"blocks" style=3D"fon=
-t-family: monospace,monospace; white-space: pre-wrap;">Implement multiline =
-responses for pkcs11-id commands<br><br>Responses to the management interfa=
-ce commands pkcs11-id-[get|count] did<br>not follow the standard syntax, bu=
-t instead looked like notifications=2E<br><br>Introduce a new management in=
-terface version so that clients announcing<br>versions &gt;=3D 7 will recei=
-ve responses in the new format while keeping<br>compatibility for older cli=
-ent versions=2E<br><br>If a client announces a management version &gt;=3D 7=
- the responses conform to<br>the common multiline + END syntax=2E At the sa=
-me time, it is now possible<br>to query all PKCS#11 ids using &quot;all&quo=
-t; or a range from &quot;start&quot; to<br>&quot;end&quot; - 1=2E Failures =
-to retrieve an id will return a partial response<br>terminated by an &quot;=
-ERROR&quot; message including the erroneous index=2E<br>The response format=
- for pkcs11-id-get was changed to return a comma<br>separated list (index,i=
-d,cert_blob) which is easier to parse=2E<br><br>Change-Id: I09e55085cde6dbc=
-0040e111a42128527d59832b8<br>Signed-off-by: Marvin Wunderlich &lt;opdopiopi=
-@gmail=2Ecom&gt;<br>---<br>M doc/management-notes=2Etxt<br>M src/openvpn/ma=
-nage=2Ec<br>M src/openvpn/manage=2Eh<br>3 files changed, 164 insertions(+),=
- 21 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: m=
-onospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=
-=2Enet:29418/openvpn refs/changes/48/2148/3</pre><pre style=3D"font-family:=
- monospace,monospace; white-space: pre-wrap;"><span>diff --git a/doc/manage=
-ment-notes=2Etxt b/doc/management-notes=2Etxt</span><br><span>index 6c798c0=
-=2E=2E42ea644 100644</span><br><span>--- a/doc/management-notes=2Etxt</span=
-><br><span>+++ b/doc/management-notes=2Etxt</span><br><span>@@ -617,23 +617=
-,109 @@</span><br><span> COMMAND -- pkcs11-id-count  (OpenVPN 2=2E1 or high=
-er)</span><br><span> ---------------------------------------------------</s=
-pan><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-Retrie=
-ve available number of certificates=2E</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+Retrieve available number of PKCS#11 certificates=2E</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+For management client versions &lt;7:</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+     pkcs11-id-count</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+The reply is &quot;&gt;PKCS11ID-COUNT:&lt;count&gt;&quot;=
-=2E</span><br><span> </span><br><span> Example:</span><br><span> </span><br=
-><span>      pkcs11-id-count</span><br><span>      &gt;PKCS11ID-COUNT:5</sp=
-an><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+For m=
-anagement client versions &gt;=3D 7:</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-   pkcs11-id-count</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+The reply is a decim=
-al count followed by &quot;END&quot; on a separate line=2E</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+Example:</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     pkcs1=
-1-id-count</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     5</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+     END</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> COMMAND -- pkcs=
-11-id-get  (OpenVPN 2=2E1 or higher)</span><br><span> ---------------------=
-----------------------------</span><br><span> </span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+Retrieve PKCS#11 certificates=2E</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+For management client versions &lt; 7:</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+  pkcs11-id-get &lt;index&gt;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span> Retrieve certificate by in=
-dex, the ID string should be provided</span><br><span> as PKCS#11 identity,=
- the blob is a base 64 encoded certificate=2E</span><br><span> </span><br><=
-span> Example:</span><br><span> </span><br><span>      pkcs11-id-get 1</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-     PKCS11ID-ENTRY:&#39;1=
-&#39;, ID:&#39;&lt;snip&gt;&#39;, BLOB:&#39;&lt;snip&gt;&#39;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+     &gt;PKCS11ID-ENTRY:&#39;1&#3=
-9;, ID:&#39;&lt;id&gt;&#39;, BLOB:&#39;&lt;blob&gt;&#39;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+For management client versions &gt;=3D 7:</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+  pkcs11-id-get &lt;index&gt;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+  pkcs11-id-get &lt;start&gt; &lt;end&gt;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+  pkcs11-id-get all</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+Retrieve a single PKCS#11 certificate at =
-index &lt;index&gt; or multiple</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+PKCS#11 certificates from index &lt;start&gt; to &lt;end&gt;-1=
-=2E Alternatively</span><br><span style=3D"color: hsl(120, 100%, 40%);">+&l=
-t;start&gt; =3D &quot;all&quot; retrieves all PKCS#11 certificates=2E A com=
-ma separated</span><br><span style=3D"color: hsl(120, 100%, 40%);">+list in=
-cluding index, PKCS#11 id and the base 64 encoded certificate</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+will be returned=2E If any id ret=
-rieval results in a failure, the returned</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+list will be partial and terminated by &quot;ERROR: =
-=2E=2E&quot; instead of &quot;END&quot;=2E</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+The &quot;ERROR&quot; message will include the index=
- of failure=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+Example 1:</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+  Management interface client sends:</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    pkcs11-id-get 1</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+  OpenVPN daemon responds with:</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    1=
-,&lt;id&gt;,&lt;blob&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    END</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+Example 2:</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+  Management interface client sends:</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    pkcs11-id-get 1 3</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+  OpenVPN daemon responds with:</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    1=
-,&lt;id_a&gt;,&lt;blob_a&gt;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    2,&lt;id_b&gt;,&lt;blob_b&gt;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    END</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Example =
-3:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+  Management interface client sends:=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    pkcs11-id-get all</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+  OpenVPN daemon with 3 PKCS#11 certificates responds w=
-ith:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    0,&lt;id_a&gt;,&lt;blob_a&gt;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    1,&lt;id_b&gt;,&=
-lt;blob_b&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    2,=
-&lt;id_c&gt;,&lt;blob_c&gt;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    END</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+Example 4:</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+  Management interface client sends:</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    pkcs11-id-get all</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+  OpenVPN daemon with 3 PKCS#11 certificates fails to retrieve index 1=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    0,&lt;id_a&gt;,&lt;blob_a&gt;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    ERROR: Failed to loa=
-d PKCS#11 id at index: 1</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span> </span><br><span> COMMAND -- client-auth  (OpenVPN 2=
-=2E1 or higher)</span><br><span> ------------------------------------------=
------</span><br><span>@@ -1240,7 +1326,7 @@</span><br><span>     &quot;ERRO=
-R: [text]&quot;=2E</span><br><span> </span><br><span> (2) For commands whic=
-h print multiple lines of output,</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    the last line will be &quot;END&quot;=2E</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    the last line will be &quot;END&qu=
-ot; or &quot;ERROR: [text]&quot;=2E</span><br><span> </span><br><span> (3) =
-Real-time messages will be in the form &quot;&gt;[source]:[text]&quot;,</sp=
-an><br><span>     where source is &quot;CLIENT&quot;, &quot;ECHO&quot;, &qu=
-ot;FATAL&quot;, &quot;HOLD&quot;, &quot;INFO&quot;, &quot;LOG&quot;,</span>=
-<br><span>diff --git a/src/openvpn/manage=2Ec b/src/openvpn/manage=2Ec</spa=
-n><br><span>index 58f63e6=2E=2Ef00eb30 100644</span><br><span>--- a/src/ope=
-nvpn/manage=2Ec</span><br><span>+++ b/src/openvpn/manage=2Ec</span><br><spa=
-n>@@ -74,6 +74,7 @@</span><br><span>     MCV_USERNAME_ONLY =3D 4,</span><br=
-><span>     MCV_MULTILINE_PASSWORD =3D 5,</span><br><span>     MCV_PREFERRE=
-D_USERNAME =3D 6,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  MCV_MULTILINE_PKCS11_RESPONSE =3D 7,</span><br><span> };</span><br><span>=
- </span><br><span> struct management *management; /* GLOBAL */</span><br><s=
-pan>@@ -120,7 +121,8 @@</span><br><span>     msg(M_CLIENT, &quot;pid       =
-             : Show process ID of the current OpenVPN process=2E&quot;);</s=
-pan><br><span> #ifdef ENABLE_PKCS11</span><br><span>     msg(M_CLIENT, &quo=
-t;pkcs11-id-count        : Get number of available PKCS#11 identities=2E&qu=
-ot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(M_CLIENT=
-, &quot;pkcs11-id-get index    : Get PKCS#11 identity at index=2E&quot;);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(M_CLIENT, &qu=
-ot;pkcs11-id-get i|all [j] : Get PKCS#11 identity at index =3D i=2E&quot;);=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(M_CLIENT, &=
-quot;                          For version &gt;=3D 7 also i to j-1 or all=
-=2E&quot;);</span><br><span> #endif</span><br><span>     msg(M_CLIENT, &quo=
-t;client-auth CID KID    : Authenticate client-id/key-id CID/KID (MULTILINE=
-)&quot;);</span><br><span>     msg(M_CLIENT, &quot;client-auth-nt CID KID :=
- Authenticate client-id/key-id CID/KID&quot;);</span><br><span>@@ -894,26 +=
-896,81 @@</span><br><span> static void</span><br><span> man_pkcs11_id_count=
-(const struct management *man)</span><br><span> {</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    msg(M_CLIENT, &quot;&gt;PKCS11ID-COUNT:%d&q=
-uot;, pkcs11_management_id_count());</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-static void</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-man_pkcs11_id_get(struct management =
-*man, const int index)</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    char *id =3D NU=
-LL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    char *base64 =
-=3D NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    if (pkcs11_management_id_get(=
-index, &amp;id, &amp;base64))</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    if (man-&gt;connection=2Eclient_version &gt;=3D MCV_MULTILINE=
-_PKCS11_RESPONSE)</span><br><span>     {</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-        msg(M_CLIENT, &quot;&gt;PKCS11ID-ENTRY:&#39;%d&#=
-39;, ID:&#39;%s&#39;, BLOB:&#39;%s&#39;&quot;, index, id, base64);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_CLIENT, &quot;=
-%d&quot;, pkcs11_management_id_count());</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        msg(M_CLIENT, &quot;END&quot;);</span><br><spa=
-n>     }</span><br><span>     else</span><br><span>     {</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        msg(M_CLIENT, &quot;&gt;PKCS11I=
-D-ENTRY:&#39;%d&#39;&quot;, index);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        msg(M_CLIENT, &quot;&gt;PKCS11ID-COUNT:%d&quot;, pk=
-cs11_management_id_count());</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+man_pkcs11_id_get(struct management *man, const c=
-har *p1, const char *p2)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(p1=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    if ((streq(p1, &quot;all&quot;) =
-|| p2 !=3D NULL) &amp;&amp; man-&gt;connection=2Eclient_version &lt; MCV_MU=
-LTILINE_PKCS11_RESPONSE)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        m=
-sg(M_CLIENT, &quot;ERROR: Listing multiple ids is only supported for versio=
-n &gt;=3D %d&quot;, MCV_MULTILINE_PKCS11_RESPONSE);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        return;</span><br><span>     }</s=
-pan><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    fr=
-ee(id);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    free(base6=
-4);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (man-&gt;=
-connection=2Eclient_version &gt;=3D MCV_MULTILINE_PKCS11_RESPONSE)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        unsigned int count =3D pkcs11_man=
-agement_id_count();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        unsigned int from =3D (unsigned int)atoi(p1);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        unsigned int to =3D p2 ? (unsigne=
-d int)atoi(p2) : from + 1;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (=
-streq(p1, &quot;all&quot;))</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-          from =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+            to =3D count;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        bool error =
-=3D false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        f=
-or (unsigned int i =3D from; i &lt; min_uint(to, count) &amp;&amp; !error; =
-i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            char *id =3D =
-NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            ch=
-ar *base64 =3D NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (pk=
-cs11_management_id_get(i, &amp;id, &amp;base64))</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+                msg(M_CLIENT, &quot;%u,%s,%s&quot;, =
-i, id, base64);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-  else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            {=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                err=
-or =3D true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-         msg(M_CLIENT, &quot;ERROR: Failed to load PKCS#11 id at index: %u&=
-quot;, i);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            fre=
-e(id);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            f=
-ree(base64);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!erro=
-r)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+            msg(M_CLIENT, &=
-quot;END&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        int index =3D atoi(p1);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        char *id =3D NULL;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        char *base64 =3D NULL;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        if (pkcs11_management_id_get(index, &amp;id, &amp;ba=
-se64))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+            msg(M_CLIEN=
-T, &quot;&gt;PKCS11ID-ENTRY:&#39;%d&#39;, ID:&#39;%s&#39;, BLOB:&#39;%s&#39=
-;&quot;, index, id, base64);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            msg(M_=
-CLIENT, &quot;&gt;PKCS11ID-ENTRY:&#39;%d&#39;&quot;, index);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        free(id);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        free(base64);</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    }</span><br><span> }</span><br><span> </=
-span><br><span> #endif /* ifdef ENABLE_PKCS11 */</span><br><span>@@ -1838,9=
- +1895,9 @@</span><br><span>     }</span><br><span>     else if (streq(p[0]=
-, &quot;pkcs11-id-get&quot;))</span><br><span>     {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        if (man_need(p, 1, 0))</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        if (man_need(p, 1, MN_AT=
-_LEAST))</span><br><span>         {</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-            man_pkcs11_id_get(man, atoi(p[1]));</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+            man_pkcs11_id_get(man=
-, p[1], p[2]);</span><br><span>         }</span><br><span>     }</span><br>=
-<span> #endif</span><br><span>diff --git a/src/openvpn/manage=2Eh b/src/ope=
-nvpn/manage=2Eh</span><br><span>index 82c0caa=2E=2E1d2aff1 100644</span><br=
-><span>--- a/src/openvpn/manage=2Eh</span><br><span>+++ b/src/openvpn/manag=
-e=2Eh</span><br><span>@@ -50,7 +50,7 @@</span><br><span> #include &quot;soc=
-ket_util=2Eh&quot;</span><br><span> #include &quot;mroute=2Eh&quot;</span><=
-br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define MAN=
-AGEMENT_VERSION                  6</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#define MANAGEMENT_VERSION                  7</span><br><spa=
-n> #define MANAGEMENT_N_PASSWORD_RETRIES       3</span><br><span> #define M=
-ANAGEMENT_LOG_HISTORY_INITIAL_SIZE 100</span><br><span> #define MANAGEMENT_=
-ECHO_BUFFER_SIZE         100</span><br></pre><p>To view, visit <a href=3D"h=
-ttps://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2148?usp=3Demail">change 2148</a>=
-=2E To unsubscribe, or for help writing mail filters, visit <a href=3D"http=
-s://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div it=
-emscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itempr=
-op=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D=
-"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2148?usp=3Demail"/=
-><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+rently required from: Alexandre Laroche=2E </p>
+<p>Antonio Quartulli has po=
+sted comments on this change by Alexandre Laroche=2E</p><p>Patch set 1:<spa=
+n style=3D"border-radius: 3px; display: inline-block; margin: 0 2px; paddin=
+g: 4px;background-color: #d4ffd4;">Code-Review +2</span></p><p><a href=3D"h=
+ttps://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2156?usp=3Demail">View Change</a>=
+</p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><li style=
+=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style: none; =
+padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"marg=
+in-bottom: 4px;"><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2156=
+?tab=3Dcomments&amp;usp=3Demail">Patch Set #1:</a> </p><p class=3D"blocks" =
+style=3D"white-space: pre-wrap; word-wrap: break-word;">Next time I&#39;d s=
+uggest pruning the blah blah coming from Opus, but the patch looks good=2E<=
+br>Thanks!</p></li></ul></li></ul><p>To view, visit <a href=3D"https://gerr=
+it=2Eopenvpn=2Enet/c/openvpn/+/2156?usp=3Demail">change 2156</a>=2E To unsu=
+bscribe, or for help writing mail filters, visit <a href=3D"https://gerrit=
+=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope it=
+emtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"acti=
+on" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=
+=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2156?usp=3Demail"/><meta ite=
+mprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=
-=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-<div style=3D"dis=
-play:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display=
+:none"> Gerrit-MessageType: comment </div>
 <div style=3D"display:none"> Ger=
-rit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I0=
-9e55085cde6dbc0040e111a42128527d59832b8 </div>
+rit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: mas=
+ter </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Idb22f731a00158ff=
+020a819081a07e1235d8323d </div>
+<div style=3D"display:none"> Gerrit-Change-=
+Number: 2156 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+=
+<div style=3D"display:none"> Gerrit-Owner: Alexandre Laroche </div>
+<div st=
+yle=3D"display:none"> Gerrit-Reviewer: Antonio Quartulli &lt;antonio@mandel=
+bit=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: Arne Sch=
+wabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
 <div style=3D"display:none">=
- Gerrit-Change-Number: 2148 </div>
-<div style=3D"display:none"> Gerrit-Patc=
-hSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: opidopiopi@gmail=
-=2Ecom </div>
-<div style=3D"display:none"> Gerrit-Reviewer: Arne Schwabe &l=
-t;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit=
--Reviewer: Selva Nair &lt;selva=2Enair@gmail=2Ecom&gt; </div>
-<div style=3D=
-"display:none"> Gerrit-CC: Frank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-CC: Gert Doering &lt;gert@gree=
-nie=2Emuc=2Ede&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-d=
-evel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
-<div style=3D"d=
-isplay:none"> Gerrit-Attention: opidopiopi@gmail=2Ecom </div>
-<div style=3D=
-"display:none"> Gerrit-Attention: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eo=
-rg&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: Frank Lichtenh=
-eld &lt;frank@lichtenheld=2Ecom&gt; </div>
+ Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Attention: Alexandre Laroche </di=
+v>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 08 Nov 2026 20:29=
+:49 +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div=
+>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 
-</body></html>
---JxMCICa5JuU=--
+</body></html=
+>
+--6mUrm0kUplo=--
 
 
---===============7443646869160337429==
+--===============5356458638900085273==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============7443646869160337429==
+--===============5356458638900085273==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -988,5 +303,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============7443646869160337429==--
+--===============5356458638900085273==--
 
