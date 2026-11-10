@@ -1,135 +1,75 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DF1F606A321
-	for <openvpn-devel@archiver.kernel.org>; Mon,  9 Nov 2026 22:02:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48A6B606A326
+	for <openvpn-devel@archiver.kernel.org>; Tue, 10 Nov 2026 07:00:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=kdLxYw7G;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=cII7jAZJ;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=bhq5shxR;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=OeivqkWO
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=SC0kithn;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=PVENWF1L;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=demwNiVK
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:To:Date:Sender:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
-	List-Unsubscribe-Post:List-Owner;
-	bh=OjMZcjHtAJZYGxZ05R/2pvbaiCh44IFUclKlvFKDndQ=; b=kdLxYw7GN3mpY8v/zkOph1l4c2
-	AU81IVdkCmrGee43YQFtI0Nu4fRGikA33mcIvtRxE6apo8vy4t0t6ep2QAYdKJNJIKVrZm9eFI1lp
-	sEoudiobQyiGgKVPqAD7aP9cl9Js09pDnGkjq18hHAYqMxKlGYcLhPjsqhJ5LqrG1cCo=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
+	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
+	List-Owner; bh=WQaLFUAPa/HC4I+KmSW1Dwtwm5Pxk7S5YHe7PqKImCw=; b=SC0kithngK2NgH
+	vOTufaexU8aHuqaBfEcG+azlPPQD3RomdRk138W+otpOieYAiMx81Zl4PogaS8jfLuSLMzdAOAk/D
+	T9rM0oofN9is0gj0jwkJLs7zIWM78H/MaeUxEoLyq/7n1YLH9SF2xV1mhuJD42n9jEWPT7opAYasa
+	Clg=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xQXRp-000000007WA-3hJd;
-	Mon, 09 Nov 2026 22:02:41 +0000
+	id 1xQfpn-000000000In-3oLC;
+	Tue, 10 Nov 2026 06:59:59 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xQXRo-000000007W2-1MfY
- for openvpn-devel@lists.sourceforge.net;
- Mon, 09 Nov 2026 22:02:40 +0000
+ (envelope-from <gert@blue4.greenie.muc.de>)
+ id 1xQfpl-000000000Ie-0XcF for openvpn-devel@lists.sourceforge.net;
+ Tue, 10 Nov 2026 06:59:57 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:
- From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From:
- Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
+ In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=4xRn00bheyMSQ/Hv1ZhtPHUDfw5nweDRWFTcAxdgVHE=; b=cII7jAZJSOGa8RuuE1CYAVW/P2
- swB2BAYyWDtKzWZdEXTGFHQHxSVLQeB65zGdtHbXuHccqyxk1RnNSSEPENRx/0XDHKrdUf/T2ZG/A
- k+5kWlNbP5SFTv6t/F0wb29zN7rkIn2YxNGgfVlkw8vZG3dRjQ8OFA6rP5sJnKq3NG5w=;
+ bh=4r06PspmZ8d6szaXOP3hFfCyqpiW1h6rnmRGisGXT1w=; b=PVENWF1LOxS1lkTrrgBcFgVDkL
+ BPtFY+hyixHiw5fWfbgSAfQJFTjJnLpNHmMTCaaSQK9rmu9Z4yPhzL/uG2qd6Oh/nIBkvpZMoqq5H
+ Vvr39jeAQWV7/QRCv5i4i9CI0LmS3yjVCnYeu8WefSLTPiJz5W89Q6vV/jR3L/B1pOHA=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:From:Sender:Content-ID
- :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
- Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Unsubscribe-Post:
+ h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
+ Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=4xRn00bheyMSQ/Hv1ZhtPHUDfw5nweDRWFTcAxdgVHE=; b=bhq5shxRa0Ux79YXk/9bkF3+ww
- iN2Dqluj1pReyaSi7XyERuwKRrGD5e/DKIaKjUn20tGcdRXsWPcR1R/j4q0rUtWFdxGP8pmOmlkFw
- mdxPptO10HTLue0GFKCXVX2jRYYVqyPMky20aSjmjjDZLxmWWL4/rpliBS8hyOsEjnI4=;
-Received: from mail-wr1-f41.google.com ([209.85.221.41])
+ bh=4r06PspmZ8d6szaXOP3hFfCyqpiW1h6rnmRGisGXT1w=; b=demwNiVK6QYu6P17alAIgFMYBx
+ C0fkN43aXYFr29zYINwrU6QmU6NKTuUlEHo1jxKsnVm9Zf0A9u0pYkr9tGAqLkecroWnhUnnPwmNH
+ e1ITofQH23aY1cY77ZtUksy9LdS+7aEFQnuqvu8F5z9us+KgpnO+R8TsEkaC/93nKpKA=;
+Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xQXRl-000000001l8-2wpl for openvpn-devel@lists.sourceforge.net;
- Mon, 09 Nov 2026 22:02:40 +0000
-Received: by mail-wr1-f41.google.com with SMTP id
- ffacd0b85a97d-4919a880834so882230f8f.0
- for <openvpn-devel@lists.sourceforge.net>;
- Mon, 09 Nov 2026 14:02:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1794261751; x=1794866551; darn=lists.sourceforge.net;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
- :to:date:from:from:to:cc:subject:date:message-id:reply-to
- :content-type; bh=4xRn00bheyMSQ/Hv1ZhtPHUDfw5nweDRWFTcAxdgVHE=;
- b=OeivqkWOY3f978FmdwUq76+B9uNLTanCV44LAw4pLRVbOd5DAb5MTqe5gqAKei4xJN
- A8cAPsx+297e/FVKJzLCd166K7IMx1170vBDo8j/7+yz1/7MmcSwF4FZfSu4MYAI0gLZ
- EUn2mf2MMV5G8GoJ01HDGguuFaezMw4WnYGzh4KDMfNoW3WbuwiBNvgQI2Qb/N3wY1Wn
- GdqMYoLglRTWpVsluHSjM+0rcO4RCp/ptYDWU64sxgWSq6sSxR1nnBPo7dNGajCi2tYp
- js7dP3rNretcY9OvaphQkUHAuA+eGix5CpcGKFePH5VSTZdqTv/bIsauEnavh3z2CEd0
- f7NA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1794261751; x=1794866551;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
- :to:date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
- :message-id:reply-to:content-type;
- bh=4xRn00bheyMSQ/Hv1ZhtPHUDfw5nweDRWFTcAxdgVHE=;
- b=O4iuE/dBumykjdsOAh+AXlhn5VWN2q17Du4ss4uxe4alFCraGBdVQhhNL8j2ZeUi0X
- lQ1WZLFDkHE9H6nHWzP27/CIr+p9vKjL2ChxM4NymDlsaovLBe+OwQ7j6gdw36sGTB4W
- yIJ4DI7yvfoymKK9yPx7ANw1MIDomvXIvmtWncNFlXabyKHgPMxUXMLju0ORBSHAfino
- 4XjY2p5YYGXkcpn1HXzwljcsJT4053DSodfVcpl8QU5iadFN2dTJHhoC7+0OyIKvWpAV
- 6c30asNRo327GH1irbnILaqO1kdoSomnFaqPD69lRJYQ1V0oHmtlV/0AN8ACkHHYNCT2
- 8CEw==
-X-Gm-Message-State: APuU4Z8271haDckF/wfJarOnKEIuStlCfzaIYHZFrMXWL0mhZmCtr0OQ
- +VtniZikxkmkGDY6Kn0Q5q29a0mRBj/JyKmAXuhnR4LBKgWeMKRQQ2MvjE0toCHaY3XYPtjLKcm
- qGcScASovTSoUf/zdmwmmEyiuXO3IAO+UWIjuDiC6nxJwSH533cKjJMYFc+4+93YmTEzL1VuIT9
- jlrfxjfA==
-X-Gm-Gg: AYBFou0n1+xyBjxKC9SxiIkEAo6GwLI+j/U//6rk6Dg0V7QmxihP+Xm/NJNbsyk2v4+
- e3jOJr2KK+Xfrg7AqqDcsidsQwu2n9hnZd9WsTpF2hKo/Rlk9rEDGUOnyy+NYJ0wdg9inMs6bFA
- kHetARLelHk6vCVU7JcqxWz6bKznZA9/jk8zCllhf2qPXvF9E7GFPU4Whu4Lpimss07F7ROiw4B
- nxSAWx5UMSYW12yNZCSKcvkih1TUZnLYgzG/wlp0Cu6bX2COd3x1S5sP2uIadKx/nm+UHC38ABe
- SGuvpRgp9uYQdi9WipYgv2CDfpYD8zV01/6rWxlEfaF7eHw+YQo4I8ClOd7PxBpnVXm0b6jdBkI
- DHlYsmitPQ4JEdYMPS5sWHPNrCWRsouHWx2dx00Saq9wc2m82MlnPYAcKisVT4AC/+kihkbxYV2
- ajjEKL2lT6xEKlMifOFBwGQrTyISxzcLzuZVNyl/SJRApg2UGRudqOZwozJxSH5s2r1CoDMvF/8
- 4KKZAsyukopXoeM8lFv3axkTKlxc/b4hFmEHi6kleivm4594ICxU7zLu1bUHZpV/n64ycxszRvO
- R1Yt2/iLWKRS57nBprwq8K814x2nAtSN5cvOCQaS3m8wXTyt6ug+IKEZCWRXB1KgeOVrvTLLcTQ
- ngpcu0pLRfQ/Zz61PcO1joDqWtFMU00xM7/8JGF5ATsuuo9o+9LrNoRKVi8Y5m56P6iSg5+G711
- Ax28+S4Jhb/4bJxA==
-X-Received: by 2002:a05:600c:3e14:b0:4a1:ce33:1536 with SMTP id
- 5b1f17b1804b1-4ba0233fa1dmr7631325e9.9.1794261750837; 
- Mon, 09 Nov 2026 14:02:30 -0800 (PST)
-Received: from ip-10-18-1-162.eu-central-1.compute.internal
- (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
- by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-4ba01ff3428sm19670305e9.15.2026.11.09.14.02.30
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 09 Nov 2026 14:02:30 -0800 (PST)
-X-Google-Original-From: "Frank Lichtenheld (Code Review)"
- <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Mon, 9 Nov 2026 22:02:30 +0000
-To: Arne Schwabe <arne-openvpn@rfc2549.org>
-Auto-Submitted: auto-generated
-X-Gerrit-MessageType: newchange
-X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: I02f8df01f8f33cb9cd04cd844d1f1893688f51e8
-X-Gerrit-Change-Number: 2157
-X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2157?usp=email>
-X-Gerrit-Commit: 29bfe04c375fa07c0ce3ac3284b7ae4695b47b50
-References: <gerrit.1794261747000.I02f8df01f8f33cb9cd04cd844d1f1893688f51e8@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzk0MjYxNzQ3MDAwLkkwMmY4ZGYwMWY4ZjMzY2I5Y2QwNGNkODQ0ZDFmMTg5MzY4OGY1MWU4QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <67e7844197d0db341f195350f1f323f7abdb151d-HTML@gerrit.openvpn.net>
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
+ id 1xQfph-000000003yu-0yg1 for openvpn-devel@lists.sourceforge.net;
+ Tue, 10 Nov 2026 06:59:57 +0000
+Received: from blue.greenie.muc.de (localhost [127.0.0.1])
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 6AA6xkAt005923
+ for <openvpn-devel@lists.sourceforge.net>; Tue, 10 Nov 2026 07:59:46 +0100
+Received: (from gert@localhost)
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 6AA6xk3v005922
+ for openvpn-devel@lists.sourceforge.net; Tue, 10 Nov 2026 07:59:46 +0100
+From: Gert Doering <gert@greenie.muc.de>
+To: openvpn-devel@lists.sourceforge.net
+Date: Tue, 10 Nov 2026 07:59:39 +0100
+Message-ID: <20261110065945.5905-1-gert@greenie.muc.de>
+X-Mailer: git-send-email 2.55.0
+In-Reply-To: <gerrit.1793618230000.Icadbee50a3af55f0f2069f6d6f1ccc746180f368@gerrit.openvpn.net>
+References: <gerrit.1793618230000.Icadbee50a3af55f0f2069f6d6f1ccc746180f368@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
-User-Agent: Gerrit/3.14.5
-X-Spam-Score: 0.8 (/)
-X-Headers-End: 1xQXRl-000000001l8-2wpl
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Various trivial
- -Wsign-conversion fixes
+X-Spam-Score: 1.3 (+)
+X-Headers-End: 1xQfph-000000003yu-0yg1
+Subject: [Openvpn-devel] [PATCH v8] Remove support for --secret
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -139,999 +79,1425 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "Frank Lichtenheld \(Code Review\) via Openvpn-devel"
- <openvpn-devel@lists.sourceforge.net>
-Reply-To: frank@lichtenheld.com, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net
-Cc: "Frank Lichtenheld \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============0192627008313446418=="
-X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,MIME_HTML_MOSTLY,
-	PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,SPF_PASS,T_KAM_HTML_FONT_INVALID,
-	WEIRD_PORT autolearn=ham autolearn_force=no version=4.0.1
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-16.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_PASS,
+	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============0192627008313446418==
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="dFGWpH9kO+8="; charset=UTF-8
+From: Arne Schwabe <arne@rfc2549.org>
 
---dFGWpH9kO+8=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+This has been announced for a long time and good alternatives exist.
 
-Attention is currently required from: Arne Schwabe=2E
-
-Hello Arne Schwabe,
-=
-
-I'd like you to do a code review=2E
-Please visit
-
-    https://gerrit=2Eope=
-nvpn=2Enet/c/openvpn/+/2157?usp=3Demail
-
-to review the following change=2E
-=
-
-
-Change subject: Various trivial -Wsign-conversion fixes
-=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
-
-Various trivial -Wsign-conve=
-rsion fixes
-
-* Continue BLEN -> BLENZ replacement
-* Remove some unneeded ca=
-sts
-* Some trivial type fixes
-
-Change-Id: I02f8df01f8f33cb9cd04cd844d1f1893=
-688f51e8
-Signed-off-by: Frank Lichtenheld <frank@lichtenheld=2Ecom>
+Change-Id: Icadbee50a3af55f0f2069f6d6f1ccc746180f368
+Signed-off-by: Arne Schwabe <arne@rfc2549.org>
+Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2081
 ---
-M s=
-rc/openvpn/acc=2Ec
-M src/openvpn/auth_token=2Ec
-M src/openvpn/base64=2Eh
-M =
-src/openvpn/console_builtin=2Ec
-M src/openvpn/crypto=2Ec
-M src/openvpn/cryp=
-to=2Eh
-M src/openvpn/crypto_epoch=2Ec
-M src/openvpn/manage=2Ec
-M src/openvp=
-n/ssl_mbedtls=2Ec
-9 files changed, 33 insertions(+), 52 deletions(-)
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2081
+This mail reflects revision 8 of this Change.
 
-  g=
-it pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/57/2157/1
+Acked-by according to Gerrit (reflected above):
+Razvan Cojocaru <razvanc@mailbox.org>
 
-=
-diff --git a/src/openvpn/acc=2Ec b/src/openvpn/acc=2Ec
-index e21891d=2E=2Eb=
-8d7c3d 100644
---- a/src/openvpn/acc=2Ec
-+++ b/src/openvpn/acc=2Ec
-@@ -148,1=
-1 +148,6 @@
-     return parse_acc_message_flags(flags, err_reason, gc);
- }
-=
+        
+diff --git a/Changes.md b/Changes.md
+index b5ae881..7f47f77 100644
+--- a/Changes.md
++++ b/Changes.md
+@@ -23,6 +23,13 @@
+   the characters mentioned above were already escaped. However, the behavior of
+   Mbed TLS is slightly different from OpenSSL in that it also escapes "=".
  
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push=
-
--#pragma GCC diagnostic ignored "-Wsign-conversion"
--#endif
++* **`secret` has been removed**
++
++  Static key mode (non-TLS) is no longer considered "good and secure enough" for
++  today's requirements. Use TLS mode instead. If deploying a PKI CA is considered
++  "too complicated", using `--peer-fingerprint` makes TLS mode about as easy as
++  using `--secret`.
++
+ ## Maintainer-visible changes
+ 
+ - The configure-time option `--enable-debug` is no longer  available
+diff --git a/INSTALL b/INSTALL
+index 486b1ae..d0ffaf0 100644
+--- a/INSTALL
++++ b/INSTALL
+@@ -144,8 +144,7 @@
+ 
+ Test Crypto:
+ 
+-./openvpn --genkey secret key
+-./openvpn --test-crypto --secret key
++./openvpn --test-crypto
+ 
+ Test SSL/TLS negotiations (runs for 2 minutes):
+ 
+diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/generic-options.rst
+index 6815dc2..17e4372 100644
+--- a/doc/man-sections/generic-options.rst
++++ b/doc/man-sections/generic-options.rst
+@@ -108,7 +108,7 @@
+   For example on Windows, use double backslashes to represent pathnames:
+   ::
+ 
+-      secret "c:\\OpenVPN\\secret.key"
++      tls-auth "c:\\OpenVPN\\secret.key"
+ 
+ 
+   For examples of configuration files, see
+@@ -119,7 +119,7 @@
+ 
+       #
+       # Sample OpenVPN configuration file for
+-      # using a pre-shared static key.
++      # using a p2p connection.
+       #
+       # '#' or ';' may be used to delimit comments.
+ 
+@@ -133,8 +133,11 @@
+       # 10.1.0.2 is our remote VPN endpoint
+       ifconfig 10.1.0.1 10.1.0.2
+ 
+-      # Our pre-shared static key
+-      secret static.key
++      # Our TLS configuration
++      tls-client
++      key mynode.key
++      cert mynode.crt
++      ca myca.crt
+ 
+ --daemon progname
+   Become a daemon after all initialization functions are completed.
+diff --git a/doc/man-sections/protocol-options.rst b/doc/man-sections/protocol-options.rst
+index 52ce5a8..9e14787 100644
+--- a/doc/man-sections/protocol-options.rst
++++ b/doc/man-sections/protocol-options.rst
+@@ -44,12 +44,10 @@
+   of the AEAD cipher is used instead. Note that ``alg`` still specifies
+   the digest used for ``tls-auth``.
+ 
+-  In static-key encryption mode, the HMAC key is included in the key file
+-  generated by ``--genkey``. In TLS mode, the HMAC key is dynamically
+-  generated and shared between peers via the TLS control channel. If
+-  OpenVPN receives a packet with a bad HMAC it will drop the packet. HMAC
+-  usually adds 16 or 20 bytes per packet. Set ``alg=none`` to disable
+-  authentication.
++  The HMAC key is dynamically generated and shared between peers via the
++  TLS control channel. If OpenVPN receives a packet with a bad HMAC it
++  will drop the packet. HMAC usually adds 16 or 20 bytes per packet. Set
++  ``alg=none`` to disable authentication.
+ 
+   For more information on HMAC see
+   https://tools.ietf.org/html/rfc2104
+@@ -212,11 +210,6 @@
+   have been configured with ``--enable-small``
+   (typically used on routers or other embedded devices).
+ 
 -
- void
- recei=
-ve_acc_message(struct context *c, const struct buffer *buffer)
- {
-@@ -236,1=
-5 +231,10 @@
-     msg(D_PUSH_ERRORS, "WARNING: Received malformed custom ap=
-p control channel "
-                        "message (%s): %s",
-         er=
-r_reason,
--        format_hex(CBPTR(buffer), BLEN(buffer), 80, &gc));
-+    =
-    format_hex(CBPTR(buffer), BLENZ(buffer), 80, &gc));
-     gc_free(&gc);
-=
- }
- 
+---allow-deprecated-insecure-static-crypto
+-   **DEPRECATED** This allow using OpenVPN without TLS. This is deprecated
+-   and will be removed in OpenVPN 2.8.
 -
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic=
- pop
--#endif
+ --tran-window n
+   Transition window -- our old key can live this many seconds after a new
+   a key renegotiation begins (default :code:`3600` seconds). This feature
+diff --git a/doc/man-sections/unsupported-options.rst b/doc/man-sections/unsupported-options.rst
+index c273905..2794f12 100644
+--- a/doc/man-sections/unsupported-options.rst
++++ b/doc/man-sections/unsupported-options.rst
+@@ -70,3 +70,12 @@
+   Removed in OpenVPN 2.8. This option caused the Mbed TLS 3 random number
+   generator to be reseeded on every call. It has been removed because this
+   is excessive.
++
++--secret
++  Removed in OpenVPN 2.8. Static encryption without a transient key
++  (generated by DH or ECDH) has been considered problematic for many
++  years. Please use ``--peer-fingerprint`` and self-signed certificates
++  for small setups.
++
++--allow-deprecated-insecure-static-crypto
++  Removed in OpenVPN 2.8 as --secret was also removed.
+diff --git a/doc/openvpn.8.rst b/doc/openvpn.8.rst
+index 65130b1..2ca9b62 100644
+--- a/doc/openvpn.8.rst
++++ b/doc/openvpn.8.rst
+@@ -48,10 +48,8 @@
+ OpenVPN is tightly bound to the OpenSSL library, and derives much of its
+ crypto capabilities from it.
+ 
+-OpenVPN supports conventional encryption using a pre-shared secret key
+-**(Static Key mode)** or public key security **(SSL/TLS mode)** using
+-client & server certificates. OpenVPN also supports non-encrypted
+-TCP/UDP tunnels.
++OpenVPN supports conventional encryption using public key security
++with TLS **(SSL/TLS mode)** using client & server certificates.
+ 
+ OpenVPN is designed to work with the **TUN/TAP** virtual networking
+ interface that exists on most platforms.
+diff --git a/src/openvpn/check_file_access.c b/src/openvpn/check_file_access.c
+index 25d7f90..ab2535d 100644
+--- a/src/openvpn/check_file_access.c
++++ b/src/openvpn/check_file_access.c
+@@ -312,10 +312,6 @@
+                                          ce->tls_crypt_v2_file, R_OK, "--tls-crypt-v2");
+     }
+ 
+-    errs |=
+-        check_file_access_inline(options->shared_secret_file_inline, CHKACC_FILE | CHKACC_PRIVATE,
+-                                 options->shared_secret_file, R_OK, "--secret");
 -
- bool
- send_acc_message(struct context *c,
-                 =
- struct tls_multi *multi,
-diff --git a/src/openvpn/auth_token=2Ec b/src/ope=
-nvpn/auth_token=2Ec
-index 211af90=2E=2E736ad67 100644
---- a/src/openvpn/aut=
-h_token=2Ec
-+++ b/src/openvpn/auth_token=2Ec
-@@ -36,11 +36,6 @@
-  * padding=
- */
- static_assert(TOKEN_DATA_LEN % 3 =3D=3D 0, "TOKEN_DATA_LEN is not a mu=
-ltiple of 3");
+     errs |= check_file_access(CHKACC_DIRPATH | CHKACC_FILEXSTWR, options->packet_id_file,
+                               R_OK | W_OK, "--replay-persist");
  
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC =
-diagnostic push
--#pragma GCC diagnostic ignored "-Wsign-conversion"
--#endif=
-
--
- bool
- is_auth_token(const char *password)
- {
-@@ -67,7 +62,7 @@
-        =
- return;
-     }
- 
--    int auth_token_state_flags =3D session->key[KS_PRIMA=
-RY]=2Eauth_token_state_flags;
-+    unsigned int auth_token_state_flags =3D =
-session->key[KS_PRIMARY]=2Eauth_token_state_flags;
- 
-     const char *state=
-;
- 
-@@ -273,7 +268,7 @@
-         alloc_buf_gc(strlen(SESSION_ID_PREFIX) + s=
-trlen(b64output) + 1, &gc);
- 
-     ASSERT(buf_write(&session_token, SESSION=
-_ID_PREFIX, strlen(SESSION_ID_PREFIX)));
--    ASSERT(buf_write(&session_tok=
-en, b64output, (int)strlen(b64output)));
-+    ASSERT(buf_write(&session_tok=
-en, b64output, strlen(b64output)));
-     ASSERT(buf_write_u8(&session_token=
-, 0));
- 
-     free(b64output);
-@@ -296,10 +291,6 @@
-     gc_free(&gc);
- }
- =
-
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--=
-#endif
--
- static bool
- check_hmac_token(hmac_ctx_t *ctx, const uint8_t *b64=
-decoded, const char *username)
- {
-diff --git a/src/openvpn/base64=2Eh b/src=
-/openvpn/base64=2Eh
-index be7aa64=2E=2E800e569 100644
---- a/src/openvpn/bas=
-e64=2Eh
-+++ b/src/openvpn/base64=2Eh
-@@ -35,7 +35,7 @@
- #define _BASE64_H_
-=
- 
- /** Compute resulting base64 length=2E  6 bits per byte, padded to 4 byt=
-es=2E */
--#define OPENVPN_BASE64_LENGTH(binary_length) ((((8 * binary_lengt=
-h) / 6) + 3) & ~3)
-+#define OPENVPN_BASE64_LENGTH(binary_length) ((((8 * bi=
-nary_length) / 6) + 3) & ~3u)
- 
- /** Compute the maximal number of bytes en=
-coded in a base64 string=2E */
- #define OPENVPN_BASE64_DECODED_LENGTH(base6=
-4_length) ((base64_length / 4) * 3)
-diff --git a/src/openvpn/console_builti=
-n=2Ec b/src/openvpn/console_builtin=2Ec
-index dc71d12=2E=2E0353ade 100644
--=
--- a/src/openvpn/console_builtin=2Ec
-+++ b/src/openvpn/console_builtin=2Ec
-=
-@@ -234,7 +234,7 @@
-     if (!echo && (tcgetattr(fileno(fp), &tty_tmp) =3D=
-=3D 0))
-     {
-         tty_save =3D tty_tmp;
--        tty_tmp=2Ec_lflag &=
-=3D ~(ECHO | ECHOE | ECHOK | ECHONL | ISIG);
-+        tty_tmp=2Ec_lflag &=
-=3D ~(unsigned int)(ECHO | ECHOE | ECHOK | ECHONL | ISIG);
-         restore=
-_tty =3D (tcsetattr(fileno(fp), TCSAFLUSH, &tty_tmp) =3D=3D 0);
-     }
- 
-di=
-ff --git a/src/openvpn/crypto=2Ec b/src/openvpn/crypto=2Ec
-index 88c2c52=2E=
-=2Effdf8c4 100644
---- a/src/openvpn/crypto=2Ec
-+++ b/src/openvpn/crypto=2Ec=
-
-@@ -139,7 +139,7 @@
-         ASSERT(cipher_ctx_reset(ctx->cipher, iv));
-  =
-   }
- 
--    dmsg(D_PACKET_CONTENT, "ENCRYPT FROM: %s", format_hex(BPTR(buf)=
-, BLEN(buf), 80, &gc));
-+    dmsg(D_PACKET_CONTENT, "ENCRYPT FROM: %s", for=
-mat_hex(BPTR(buf), BLENZ(buf), 80, &gc));
- 
-     /* Buffer overflow check *=
-/
-     if (!buf_safe(&work, buf->len + mac_len + cipher_ctx_block_size(ctx-=
->cipher)))
-@@ -151,7 +151,7 @@
- 
-     /* For AEAD ciphers, authenticate Add=
-itional Data, including opcode */
-     ASSERT(cipher_ctx_update_ad(ctx->cip=
-her, BPTR(&work), BLEN(&work)));
--    dmsg(D_PACKET_CONTENT, "ENCRYPT AD: %=
-s", format_hex(BPTR(&work), BLEN(&work), 0, &gc));
-+    dmsg(D_PACKET_CONTE=
-NT, "ENCRYPT AD: %s", format_hex(BPTR(&work), BLENZ(&work), 0, &gc));
- 
-   =
-  if (!use_epoch_data_format)
-     {
-@@ -170,8 +170,8 @@
- 
-     /* update n=
-umber of plaintext blocks encrypted=2E Use the (x + (n-1))/n trick
-      * =
-to round up the result to the number of blocks used */
--    const int block=
-size =3D AEAD_LIMIT_BLOCKSIZE;
--    opt->key_ctx_bi=2Eencrypt=2Eplaintext_b=
-locks +=3D (BLEN(&work) + (blocksize - 1)) / blocksize;
-+    const unsigned=
- int blocksize =3D AEAD_LIMIT_BLOCKSIZE;
-+    opt->key_ctx_bi=2Eencrypt=2Ep=
-laintext_blocks +=3D (BLENZ(&work) + (blocksize - 1)) / blocksize;
- 
-     /=
-* if the tag is at end the end, allocate it now */
-     if (use_epoch_data_=
-format)
-@@ -186,7 +186,7 @@
- 
-     *buf =3D work;
- 
--    dmsg(D_PACKET_CONT=
-ENT, "ENCRYPT TO: %s", format_hex(BPTR(buf), BLEN(buf), 80, &gc));
-+    dms=
-g(D_PACKET_CONTENT, "ENCRYPT TO: %s", format_hex(BPTR(buf), BLENZ(buf), 80,=
- &gc));
- 
-     gc_free(&gc);
-     return;
-@@ -257,13 +257,13 @@
-           =
-  ASSERT(buf_write(&work, iv_buf, iv_size));
-             dmsg(D_PACKET_CON=
-TENT, "ENCRYPT IV: %s", format_hex(iv_buf, iv_size, 0, &gc));
- 
--          =
-  dmsg(D_PACKET_CONTENT, "ENCRYPT FROM: %s", format_hex(BPTR(buf), BLEN(buf=
-), 80, &gc));
-+            dmsg(D_PACKET_CONTENT, "ENCRYPT FROM: %s", forma=
-t_hex(BPTR(buf), BLENZ(buf), 80, &gc));
- 
-             /* cipher_ctx was al=
-ready initialized with key & keylen */
-             ASSERT(cipher_ctx_reset=
-(ctx->cipher, iv_buf));
- 
-             /* Buffer overflow check */
--       =
-     if (!buf_safe(&work, buf->len + cipher_ctx_block_size(ctx->cipher)))
-+=
-            if (!buf_safe(&work, BLENZ(buf) + cipher_ctx_block_size(ctx->ci=
-pher)))
-             {
-                 msg(D_CRYPT_ERRORS,
-               =
-      "ENCRYPT: buffer size error, bc=3D%d bo=3D%d bl=3D%d wc=3D%d wo=3D%d =
-wl=3D%d cbs=3D%u",
-@@ -317,7 +317,7 @@
- 
-         *buf =3D work;
- 
--       =
- dmsg(D_PACKET_CONTENT, "ENCRYPT TO: %s", format_hex(BPTR(&work), BLEN(&wor=
-k), 80, &gc));
-+        dmsg(D_PACKET_CONTENT, "ENCRYPT TO: %s", format_hex=
-(BPTR(&work), BLENZ(&work), 80, &gc));
-     }
- 
-     gc_free(&gc);
-@@ -460,=
-7 +460,7 @@
-     ASSERT(buf->len > 0);
-     ASSERT(ctx->cipher);
- 
--    dms=
-g(D_PACKET_CONTENT, "DECRYPT FROM: %s", format_hex(BPTR(buf), BLEN(buf), 80=
-, &gc));
-+    dmsg(D_PACKET_CONTENT, "DECRYPT FROM: %s", format_hex(BPTR(bu=
-f), BLENZ(buf), 80, &gc));
- 
-     ASSERT(ad_start >=3D buf->data && ad_star=
-t <=3D BPTR(buf));
- 
-@@ -558,10 +558,10 @@
-     }
- 
-     dmsg(D_PACKET_CONT=
-ENT, "DECRYPT MAC: %s", format_hex(tag_ptr, tag_size, 0, &gc));
--    dmsg(D=
-_PACKET_CONTENT, "DECRYPT FROM: %s", format_hex(BPTR(buf), BLEN(buf), 0, &g=
-c));
-+    dmsg(D_PACKET_CONTENT, "DECRYPT FROM: %s", format_hex(BPTR(buf), =
-BLENZ(buf), 0, &gc));
- 
-     /* Buffer overflow check (should never fail) *=
-/
--    if (!buf_safe(&work, buf->len + cipher_ctx_block_size(ctx->cipher)))=
-
-+    if (!buf_safe(&work, BLENZ(buf) + cipher_ctx_block_size(ctx->cipher))=
-)
-     {
-         CRYPT_ERROR("potential buffer overflow");
-     }
-@@ -585,=
-7 +585,7 @@
-     }
-     ASSERT(buf_inc_len(&work, outlen));
- 
--    dmsg(D_P=
-ACKET_CONTENT, "DECRYPT TO: %s", format_hex(BPTR(&work), BLEN(&work), 80, &=
-gc));
-+    dmsg(D_PACKET_CONTENT, "DECRYPT TO: %s", format_hex(BPTR(&work),=
- BLENZ(&work), 80, &gc));
- 
-     if (!crypto_check_replay(opt, &pin, epoch,=
- error_prefix, &gc))
-     {
-@@ -594,8 +594,8 @@
- 
-     /* update number of =
-plaintext blocks decrypted=2E Use the (x + (n-1))/n trick
-      * to round =
-up the result to the number of blocks used=2E */
--    const int blocksize =
-=3D AEAD_LIMIT_BLOCKSIZE;
--    opt->key_ctx_bi=2Edecrypt=2Eplaintext_blocks=
- +=3D (BLEN(&work) + (blocksize - 1)) / blocksize;
-+    const unsigned int =
-blocksize =3D AEAD_LIMIT_BLOCKSIZE;
-+    opt->key_ctx_bi=2Edecrypt=2Eplaint=
-ext_blocks +=3D (BLENZ(&work) + (blocksize - 1)) / blocksize;
- 
-     *buf =
-=3D work;
- 
-@@ -631,7 +631,7 @@
-         struct packet_id_net pin;
-        =
- bool have_pin =3D false;
- 
--        dmsg(D_PACKET_CONTENT, "DECRYPT FROM: =
-%s", format_hex(BPTR(buf), BLEN(buf), 80, &gc));
-+        dmsg(D_PACKET_CON=
-TENT, "DECRYPT FROM: %s", format_hex(BPTR(buf), BLENZ(buf), 80, &gc));
- 
-  =
-       /* Verify the HMAC */
-         if (ctx->hmac)
-@@ -694,7 +694,7 @@
-  =
-           }
- 
-             /* Buffer overflow check (should never happen) =
-*/
--            if (!buf_safe(&work, buf->len + cipher_ctx_block_size(ctx->=
-cipher)))
-+            if (!buf_safe(&work, BLENZ(buf) + cipher_ctx_block_s=
-ize(ctx->cipher)))
-             {
-                 CRYPT_ERROR("packet too =
-big to decrypt");
-             }
-@@ -713,7 +713,7 @@
-             }
-       =
-      ASSERT(buf_inc_len(&work, outlen));
- 
--            dmsg(D_PACKET_CONT=
-ENT, "DECRYPT TO: %s", format_hex(BPTR(&work), BLEN(&work), 80, &gc));
-+   =
-         dmsg(D_PACKET_CONTENT, "DECRYPT TO: %s", format_hex(BPTR(&work), B=
-LENZ(&work), 80, &gc));
- 
-             /* Get packet ID from plaintext buff=
-er or IV, depending on cipher mode */
-             {
-@@ -855,7 +855,7 @@
- c=
-rypto_max_overhead(void)
- {
-     return packet_id_size(true) + OPENVPN_MAX_=
-IV_LENGTH + OPENVPN_MAX_CIPHER_BLOCK_SIZE
--           + max_int(OPENVPN_MAX=
-_HMAC_SIZE, OPENVPN_AEAD_TAG_LENGTH);
-+           + max_uint(OPENVPN_MAX_HM=
-AC_SIZE, OPENVPN_AEAD_TAG_LENGTH);
- }
- 
- static void
-@@ -1366,7 +1366,7 @@
-=
-         size_t buf_size =3D strlen(file) + 1;
-         ASSERT(buf_size <=
-=3D INT_MAX);
-         size =3D (int)buf_size;
--        buf_set_read(&in, (=
-const uint8_t *)file, size);
-+        buf_set_read(&in, (const uint8_t *)fi=
-le, buf_size);
-     }
-     else /* 'file' is a filename which refers to a f=
-ile containing the ascii key */
-     {
-@@ -1535,7 +1535,7 @@
-     struct bu=
-ffer out =3D alloc_buf_gc(2048, &gc);
- 
-     /* how to format the ascii fil=
-e representation of key */
--    const int bytes_per_line =3D 16;
-+    const=
- size_t bytes_per_line =3D 16;
- 
-     /* write header */
-     buf_printf(&o=
-ut, "#\n# %d bit OpenVPN static key\n#\n", nbits);
-diff --git a/src/openvpn=
-/crypto=2Eh b/src/openvpn/crypto=2Eh
-index dbe0802=2E=2Efd632be 100644
---- =
-a/src/openvpn/crypto=2Eh
-+++ b/src/openvpn/crypto=2Eh
-@@ -760,12 +760,12 @@=
-
-  * to read=2E
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index f5e5904..a8ad7f0 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -872,7 +872,7 @@
+  * Build a struct key_type.
   */
- static inline bool
--aead_usage_limit_reached(const ui=
-nt64_t limit, const struct key_ctx *key_ctx, int64_t higest_pid)
-+aead_usag=
-e_limit_reached(const uint64_t limit, const struct key_ctx *key_ctx, uint64=
-_t higest_pid)
+ void
+-init_key_type(struct key_type *kt, const char *ciphername, const char *authname, bool tls_mode,
++init_key_type(struct key_type *kt, const char *ciphername, const char *authname,
+               bool warn)
  {
-     /* This is the  q + s <=3D  p^(1/2) * 2^(129/2) - 1 =
-calculation where
-      * q is the number of protected messages (highest_pi=
-d)
-      * s Total plaintext length in all messages (in blocks) */
--    ret=
-urn (limit > 0 && key_ctx->plaintext_blocks + (uint64_t)higest_pid > limit)=
-;
-+    return (limit > 0 && key_ctx->plaintext_blocks + higest_pid > limit)=
-;
+     bool aead_cipher = false;
+@@ -891,9 +891,9 @@
+ 
+         /* check legal cipher mode */
+         aead_cipher = cipher_kt_mode_aead(kt->cipher);
+-        if (!(cipher_kt_mode_cbc(kt->cipher) || (tls_mode && aead_cipher)
++        if (!(cipher_kt_mode_cbc(kt->cipher) || aead_cipher
+ #ifdef ENABLE_OFB_CFB_MODE
+-              || (tls_mode && cipher_kt_mode_ofb_cfb(kt->cipher))
++              || cipher_kt_mode_ofb_cfb(kt->cipher)
+ #endif
+                   ))
+         {
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index dbe0802..a03c5ce 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -58,16 +58,12 @@
+  * <tt>[ * xxx * ]</tt> = encrypted and authenticated
+  *
+  * @par
+- * <b>CBC data channel cypto format</b> \n
+- * In CBC mode, both TLS-mode and static key mode are supported. The IV
+- * consists of random bits to provide unpredictable IVs. \n
++ * <b>CBC data channel crypto format</b> \n
++ * The IV consists of random bits to provide unpredictable IVs. \n
+  * <i>CBC IV format:</i> \n
+  * <tt> [ - random - ] </tt> \n
+- * <i>CBC data channel crypto format in TLS-mode:</i> \n
++ * <i>CBC data channel crypto format:</i> \n
+  * <tt> [ HMAC ] [ - IV - ] [ * packet ID * ] [ * packet payload * ] </tt> \n
+- * <i>CBC data channel crypto format in static key mode:</i> \n
+- * <tt> [ HMAC ] [ - IV - ] [ * packet ID * ] [ * timestamp * ]
+- * [ * packet payload * ] </tt>
+  *
+  * @par
+  * <b>CFB/OFB data channel crypto format</b> \n
+@@ -109,14 +105,11 @@
+  *
+  * @par
+  * <b>No-crypto data channel format</b> \n
+- * In no-crypto mode (\c \-\-cipher \c none is specified), both TLS-mode and
+- * static key mode are supported. No encryption will be performed on the packet,
+- * but packets can still be authenticated. This mode does not require an IV.\n
+- * <i>No-crypto data channel crypto format in TLS-mode:</i> \n
++ * In no-crypto mode (\c \-\-cipher \c none is specified), no encryption
++ * will be performed on the packet,  but packets can still be authenticated.
++ * This mode does not require an IV.\n
++ * <i>No-crypto data channel crypto format:</i> \n
+  * <tt> [ HMAC ] [ - packet ID - ] [ - packet payload - ] </tt> \n
+- * <i>No-crypto data channel crypto format in static key mode:</i> \n
+- * <tt> [ HMAC ] [ - packet ID - ] [ - timestamp - ] [ - packet payload - ] </tt>
+- *
+  */
+ 
+ #ifndef CRYPTO_H
+@@ -420,11 +413,9 @@
+  * @param kt          The struct key_type to initialize
+  * @param ciphername  The name of the cipher to use
+  * @param authname    The name of the HMAC digest to use
+- * @param tls_mode    Specifies whether we are running in TLS mode, which allows
+- *                    more ciphers than static key mode.
+  * @param warn        Print warnings when null cipher / auth is used.
+  */
+-void init_key_type(struct key_type *kt, const char *ciphername, const char *authname, bool tls_mode,
++void init_key_type(struct key_type *kt, const char *ciphername, const char *authname,
+                    bool warn);
+ 
+ /*
+diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
+index 0ea2375..3a2a8c6 100644
+--- a/src/openvpn/crypto_mbedtls.c
++++ b/src/openvpn/crypto_mbedtls.c
+@@ -1013,8 +1013,7 @@
+     printf("The following ciphers and cipher modes are available for use\n"
+            "with " PACKAGE_NAME ".  Each cipher shown below may be used as a\n"
+            "parameter to the --data-ciphers (or --cipher) option.  Using a\n"
+-           "GCM or CBC mode is recommended.  In static key mode only CBC\n"
+-           "mode is allowed.\n\n");
++           "GCM or CBC mode is recommended.\n\n");
+ #endif
+ 
+     for (size_t i = 0; i < cipher_info_table_entries; i++)
+diff --git a/src/openvpn/helper.c b/src/openvpn/helper.c
+index d29895b..6b5fcee6 100644
+--- a/src/openvpn/helper.c
++++ b/src/openvpn/helper.c
+@@ -266,12 +266,6 @@
+             msg(M_USAGE, "--server and --server-bridge cannot be used together");
+         }
+ 
+-        if (o->shared_secret_file)
+-        {
+-            msg(M_USAGE,
+-                "--server and --secret cannot be used together (you must use SSL/TLS keys)");
+-        }
+-
+         if (!(o->server_flags & SF_NOPOOL) && o->ifconfig_pool_defined)
+         {
+             msg(M_USAGE,
+@@ -461,12 +455,6 @@
+                 "--server-bridge already defines an ifconfig-pool, so you can't also specify --ifconfig-pool explicitly");
+         }
+ 
+-        if (o->shared_secret_file)
+-        {
+-            msg(M_USAGE,
+-                "--server-bridge and --secret cannot be used together (you must use SSL/TLS keys)");
+-        }
+-
+         if (dev != DEV_TYPE_TAP)
+         {
+             msg(M_USAGE, "--server-bridge directive only makes sense with --dev tap");
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 3bc4de4..29c24f2 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -997,35 +997,10 @@
+         platform_mlockall(true);
+     }
+ 
+-    /*
+-     * We do not want user to use --genkey with --secret. In the transistion
+-     * phase we for secret.
+-     */
+-    if (options->genkey && options->genkey_type != GENKEY_SECRET && options->shared_secret_file)
+-    {
+-        msg(M_USAGE, "Using --genkey type with --secret filename is "
+-                     "not supported.  Use --genkey type filename instead.");
+-    }
+     if (options->genkey && options->genkey_type == GENKEY_SECRET)
+     {
+         int nbits_written;
+         const char *genkey_filename = options->genkey_filename;
+-        if (options->shared_secret_file && options->genkey_filename)
+-        {
+-            msg(M_USAGE, "You must provide a filename to either --genkey "
+-                         "or --secret, not both");
+-        }
+-
+-        /*
+-         * Copy filename from shared_secret_file to genkey_filename to support
+-         * the old --genkey --secret foo.file syntax.
+-         */
+-        if (options->shared_secret_file)
+-        {
+-            msg(M_WARN, "WARNING: Using --genkey --secret filename is "
+-                        "DEPRECATED.  Use --genkey secret filename instead.");
+-            genkey_filename = options->shared_secret_file;
+-        }
+ 
+         nbits_written = write_key_file(2, genkey_filename);
+         if (nbits_written < 0)
+@@ -1034,7 +1009,7 @@
+         }
+ 
+         msg(D_GENKEY | M_NOPREFIX, "Randomly generated %d bit key written to %s", nbits_written,
+-            options->shared_secret_file);
++            genkey_filename ? genkey_filename : "stdout");
+         return true;
+     }
+     else if (options->genkey && options->genkey_type == GENKEY_TLS_CRYPTV2_SERVER)
+@@ -1080,7 +1055,7 @@
+     /* sanity check on options for --mktun or --rmtun */
+     notnull(options->dev, "TUN/TAP device (--dev)");
+     if (options->ce.remote || options->ifconfig_local || options->ifconfig_remote_netmask
+-        || options->shared_secret_file || options->tls_server || options->tls_client)
++        || options->tls_server || options->tls_client)
+     {
+         msg(M_FATAL | M_OPTERR,
+             "options --mktun or --rmtun should only be used together with --dev");
+@@ -3036,8 +3011,7 @@
+     ASSERT(!key_ctx_bi_defined(&c->c1.ks.static_key));
+ 
+     /* Init cipher and hash algorithm */
+-    init_key_type(&c->c1.ks.key_type, options->ciphername, options->authname,
+-                  options->test_crypto, true);
++    init_key_type(&c->c1.ks.key_type, options->ciphername, options->authname, true);
+ 
+     generate_test_crypto_random_key(&c->c1.ks.key_type, &c->c1.ks.static_key,
+                                     "test crypto key");
+@@ -3047,50 +3021,6 @@
  }
  
- #endif /* CRYPTO_H */
-diff --git a/src/openvpn/crypto_epoch=2Ec b/s=
-rc/openvpn/crypto_epoch=2Ec
-index 312cf6f=2E=2E243b5a2 100644
---- a/src/ope=
-nvpn/crypto_epoch=2Ec
-+++ b/src/openvpn/crypto_epoch=2Ec
-@@ -98,7 +98,7 @@
-=
-     const uint8_t *label_prefix =3D (const uint8_t *)("ovpn ");
-     uint8=
-_t prefix_len =3D 5;
+ /*
+- * Static Key Mode (using a pre-shared key)
+- */
+-static void
+-do_init_crypto_static(struct context *c, const unsigned int flags)
+-{
+-    const struct options *options = &c->options;
+-    ASSERT(options->shared_secret_file);
+-
+-    init_crypto_pre(c, flags);
+-
+-    /* Initialize flags */
+-    if (c->options.mute_replay_warnings)
+-    {
+-        c->c2.crypto_options.flags |= CO_MUTE_REPLAY_WARNINGS;
+-    }
+-
+-    /* Initialize packet ID tracking */
+-    packet_id_init(&c->c2.crypto_options.packet_id, options->replay_window, options->replay_time,
+-                   "STATIC", 0);
+-    c->c2.crypto_options.pid_persist = &c->c1.pid_persist;
+-    c->c2.crypto_options.flags |= CO_PACKET_ID_LONG_FORM;
+-    packet_id_persist_load_obj(&c->c1.pid_persist, &c->c2.crypto_options.packet_id);
+-
+-    if (!key_ctx_bi_defined(&c->c1.ks.static_key))
+-    {
+-        /* Get cipher & hash algorithms */
+-        init_key_type(&c->c1.ks.key_type, options->ciphername, options->authname,
+-                      options->test_crypto, true);
+-
+-        /* Read cipher and hmac keys from shared secret file */
+-        crypto_read_openvpn_key(&c->c1.ks.key_type, &c->c1.ks.static_key,
+-                                options->shared_secret_file, options->shared_secret_file_inline,
+-                                options->key_direction, "Static Key Encryption", "secret", NULL);
+-    }
+-    else
+-    {
+-        msg(M_INFO, "Re-using pre-shared static key");
+-    }
+-
+-    /* Get key schedule */
+-    c->c2.crypto_options.key_ctx_bi = c->c1.ks.static_key;
+-}
+-
+-/*
+  * Initialize the tls-auth/crypt key context
+  */
+ static void
+@@ -3229,7 +3159,7 @@
  
--    size_t hkdf_label_len =3D 2 + prefix_len + 1 + =
-label_len + 1 + context_len;
-+    size_t hkdf_label_len =3D 2u + prefix_len=
- + 1u + label_len + 1u + context_len;
-     struct buffer hkdf_label =3D all=
-oc_buf_gc(hkdf_label_len, &gc);
+         /* Do not warn if the cipher is used only in OCC */
+         bool warn = options->enable_ncp_fallback;
+-        init_key_type(&c->c1.ks.key_type, ciphername, options->authname, true, warn);
++        init_key_type(&c->c1.ks.key_type, ciphername, options->authname, warn);
  
-     buf_write_u16(&hkdf_label, (uint16_t=
-)out_len);
-diff --git a/src/openvpn/manage=2Ec b/src/openvpn/manage=2Ec
-ind=
-ex 4809532=2E=2E1760c90 100644
---- a/src/openvpn/manage=2Ec
-+++ b/src/openv=
-pn/manage=2Ec
-@@ -2758,7 +2758,7 @@
-             else
-             {
-      =
-           int status;
--                int resolve_flags =3D GETADDR_RESOL=
-VE | GETADDR_WARN_ON_SIGNAL | GETADDR_FATAL;
-+                unsigned int =
-resolve_flags =3D GETADDR_RESOLVE | GETADDR_WARN_ON_SIGNAL | GETADDR_FATAL;=
-
+         /* initialize tls-auth/crypt/crypt-v2 key */
+         do_init_tls_wrap_key(c);
+@@ -3518,41 +3448,6 @@
+     }
+ }
  
-                 if (!(flags & MF_CONNECT_AS_CLIENT))
-                 {=
-
-@@ -4001,11 +4001,11 @@
-         desc =3D "rsa-sign";
+-/*
+- * No encryption or authentication.
+- */
+-static void
+-do_init_crypto_none(struct context *c)
+-{
+-    ASSERT(!c->options.test_crypto);
+-
+-    /* Initialise key_type with auth/cipher "none", so the key_type struct is
+-     * valid */
+-    init_key_type(&c->c1.ks.key_type, "none", "none", c->options.test_crypto, true);
+-
+-    msg(M_WARN, "******* WARNING *******: All encryption and authentication features "
+-                "disabled -- All data will be tunnelled as clear text and will not be "
+-                "protected against man-in-the-middle changes. "
+-                "PLEASE DO RECONSIDER THIS CONFIGURATION!");
+-}
+-
+-static void
+-do_init_crypto(struct context *c, const unsigned int flags)
+-{
+-    if (c->options.shared_secret_file)
+-    {
+-        do_init_crypto_static(c, flags);
+-    }
+-    else if (c->options.tls_server || c->options.tls_client)
+-    {
+-        do_init_crypto_tls(c, flags);
+-    }
+-    else /* no encryption or authentication. */
+-    {
+-        do_init_crypto_none(c);
+-    }
+-}
+-
+ static void
+ do_init_frame(struct context *c)
+ {
+@@ -4609,7 +4504,7 @@
+         {
+             crypto_flags = CF_INIT_TLS_MULTI;
+         }
+-        do_init_crypto(c, crypto_flags);
++        do_init_crypto_tls(c, crypto_flags);
+         if (IS_SIG(c) && !child)
+         {
+             goto sig;
+diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
+index f3c2874..5ce40c8 100644
+--- a/src/openvpn/mtu.c
++++ b/src/openvpn/mtu.c
+@@ -51,7 +51,6 @@
+ unsigned int
+ calc_packet_id_size_dc(const struct options *options, const struct key_type *kt)
+ {
+-    bool tlsmode = options->tls_server || options->tls_client;
+     bool epoch = options->imported_protocol_flags & CO_EPOCH_DATA_KEY_FORMAT;
+ 
+     /* epoch format uses a 64-bit packet id: 16 bit epoch + 48 bit per-epoch counter */
+@@ -60,7 +59,7 @@
+         return sizeof(uint64_t);
      }
  
--    buf_wr=
-ite(&buf_data, b64_data, (int)strlen(b64_data));
-+    buf_write(&buf_data, =
-b64_data, strlen(b64_data));
-     if (man->connection=2Eclient_version >=3D=
- MCV_PKSIGN_ALG)
+-    bool packet_id_long_form = !tlsmode || cipher_kt_mode_ofb_cfb(kt->cipher);
++    bool packet_id_long_form = cipher_kt_mode_ofb_cfb(kt->cipher);
+ 
+     return packet_id_size(packet_id_long_form);
+ }
+@@ -72,8 +71,6 @@
+     /* Sum of all the overhead that reduces the usable packet size */
+     size_t header_size = 0;
+ 
+-    bool tlsmode = options->tls_server || options->tls_client;
+-
+     /* A socks proxy adds extra header to each packet
+      * (we only support Socks with IPv4, this value is different for IPv6) */
+     if (options->ce.socks_proxy_server && proto_is_udp(options->ce.proto))
+@@ -88,10 +85,7 @@
+     }
+ 
+     /* Add the opcode and peerid */
+-    if (tlsmode)
+-    {
+-        header_size += options->use_peer_id ? 4 : 1;
+-    }
++    header_size += options->use_peer_id ? 4 : 1;
+ 
+     unsigned int pkt_id_size = calc_packet_id_size_dc(options, kt);
+ 
+@@ -156,13 +150,6 @@
+ {
+     struct key_type occ_kt;
+ 
+-    /* neither --secret nor TLS mode */
+-    if (!o->tls_client && !o->tls_server && !o->shared_secret_file)
+-    {
+-        init_key_type(&occ_kt, "none", "none", false, false);
+-        return frame_calculate_payload_size(frame, o, &occ_kt);
+-    }
+-
+     /* o->ciphername might be BF-CBC even though the underlying SSL library
+      * does not support it. For this reason we workaround this corner case
+      * by pretending to have no encryption enabled and by manually adding
+@@ -184,9 +171,7 @@
+         ciphername = "none";
+     }
+ 
+-    /* We pass tlsmode always true here since as we do not need to check if
+-     * the ciphers are actually valid for non tls in occ calucation */
+-    init_key_type(&occ_kt, ciphername, o->authname, true, false);
++    init_key_type(&occ_kt, ciphername, o->authname, false);
+ 
+     size_t payload = frame_calculate_payload_size(frame, o, &occ_kt);
+     overhead += frame_calculate_protocol_header_size(&occ_kt, o, true);
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 4dfc719..454d2d6 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -558,14 +558,11 @@
+     "                  server/remote. n = # of retries, default=1.\n"
+     "\n"
+     "Data Channel Encryption Options (must be compatible between peers):\n"
+-    "(These options are meaningful for both Static Key & TLS-mode)\n"
+     "--auth alg      : Authenticate packets with HMAC using message\n"
+     "                  digest algorithm alg (default=%s).\n"
+     "                  (usually adds 16 or 20 bytes per packet)\n"
+     "                  Set alg=none to disable authentication.\n"
+-    "--cipher alg    : Encrypt packets with cipher algorithm alg.\n"
+-    "                  You should usually use --data-ciphers instead.\n"
+-    "                  Set alg=none to disable encryption.\n"
++    "--cipher alg    : Ignored. You should usually use --data-ciphers instead.\n"
+     "--data-ciphers list : List of ciphers that are allowed to be negotiated.\n"
+ #ifndef ENABLE_CRYPTO_MBEDTLS
+     "--engine [name] : Enable OpenSSL hardware crypto engine functionality.\n"
+@@ -1588,16 +1585,17 @@
+ static void
+ options_postprocess_verify_ce(const struct options *options, const struct connection_entry *ce)
+ {
++    if (options->test_crypto)
++    {
++        return;
++    }
+     struct options defaults;
+     int dev = DEV_TYPE_UNDEF;
+     bool pull = false;
+ 
+     init_options(&defaults);
+ 
+-    if (!options->test_crypto)
+-    {
+-        notnull(options->dev, "TUN/TAP device (--dev)");
+-    }
++    notnull(options->dev, "TUN/TAP device (--dev)");
+ 
+     /*
+      * Get tun/tap/null device type
+@@ -2013,27 +2011,9 @@
+     /*
+      * SSL/TLS mode sanity checks.
+      */
+-    if (options->tls_server + options->tls_client + (options->shared_secret_file != NULL) > 1)
++    if (options->tls_server == options->tls_client)
      {
--        buf_write(&buf_data, ",", (int)strlen(",")=
-);
--        buf_write(&buf_data, algorithm, (int)strlen(algorithm));
-+     =
-   buf_write(&buf_data, ",", strlen(","));
-+        buf_write(&buf_data, al=
-gorithm, strlen(algorithm));
-     }
-     char *ret =3D management_query_mul=
-tiline_flatten(man, (char *)buf_bptr(&buf_data), prompt, desc,
-            =
-                                        &man->connection=2Eext_key_state,
-d=
-iff --git a/src/openvpn/ssl_mbedtls=2Ec b/src/openvpn/ssl_mbedtls=2Ec
-index=
- cbc3118=2E=2Ef4e142b 100644
---- a/src/openvpn/ssl_mbedtls=2Ec
-+++ b/src/op=
-envpn/ssl_mbedtls=2Ec
-@@ -1119,7 +1119,7 @@
-         return 0;
+-        msg(M_USAGE, "specify only one of --tls-server, --tls-client, or --secret");
+-    }
+-
+-    if (!options->tls_server && !options->tls_client && !options->test_crypto)
+-    {
+-        msglvl_t msglevel = M_USAGE;
+-        if (options->allow_deprecated_insecure_static_crypto)
+-        {
+-            msglevel = M_INFO;
+-        }
+-
+-        msg(msglevel, "DEPRECATION: No tls-client or tls-server option in "
+-                      "configuration detected. OpenVPN 2.8 will remove the "
+-                      "functionality to run a VPN without TLS. "
+-                      "See the examples section in the manual page for "
+-                      "examples of a similar quick setup with peer-fingerprint. "
+-                      "OpenVPN 2.7 allows using this configuration when using "
+-                      "--allow-deprecated-insecure-static-crypto but you should move "
+-                      "to a proper configuration using TLS as soon as possible.");
++        msg(M_USAGE, "OpenVPN configuration must use either --tls-server or --tls-client");
      }
  
--  =
-  retval =3D endless_buf_write(&ks->bio_ctx->in, BPTR(buf), buf->len);
-+   =
- retval =3D endless_buf_write(&ks->bio_ctx->in, BPTR(buf), BLENZ(buf));
+     if (options->ssl_flags & (SSLF_CLIENT_CERT_NOT_REQUIRED | SSLF_CLIENT_CERT_OPTIONAL))
+@@ -2053,188 +2033,135 @@
+         msg(M_USAGE, "--tls-version-min bigger than --tls-version-max");
+     }
  
- =
-    if (retval < 0)
+-    if (options->tls_server || options->tls_client)
+-    {
+-        check_ca_required(options);
++    check_ca_required(options);
+ #ifdef ENABLE_PKCS11
+-        if (!options->pkcs11_providers[0] && options->pkcs11_id)
+-        {
+-            msg(M_WARN, "Option pkcs11-id is ignored as no pkcs11-providers are specified");
+-        }
+-        else if (!options->pkcs11_providers[0] && options->pkcs11_id_management)
+-        {
+-            msg(M_WARN,
+-                "Option pkcs11-id-management is ignored as no pkcs11-providers are specified");
+-        }
++    if (!options->pkcs11_providers[0] && options->pkcs11_id)
++    {
++        msg(M_WARN, "Option pkcs11-id is ignored as no pkcs11-providers are specified");
++    }
++    else if (!options->pkcs11_providers[0] && options->pkcs11_id_management)
++    {
++        msg(M_WARN,
++            "Option pkcs11-id-management is ignored as no pkcs11-providers are specified");
++    }
+ 
+-        if (options->pkcs11_providers[0])
+-        {
+-            if (options->pkcs11_id_management && options->pkcs11_id != NULL)
+-            {
+-                msg(M_USAGE,
+-                    "Parameter --pkcs11-id cannot be used when --pkcs11-id-management is also specified.");
+-            }
+-            if (!options->pkcs11_id_management && options->pkcs11_id == NULL)
+-            {
+-                msg(M_USAGE,
+-                    "Parameter --pkcs11-id or --pkcs11-id-management should be specified.");
+-            }
+-            const char use_err[] =
+-                "Parameter --%s cannot be used when --pkcs11-provider is also specified.";
+-            MUST_BE_UNDEF(cert_file, "cert");
+-            MUST_BE_UNDEF(priv_key_file, "key");
+-            MUST_BE_UNDEF(pkcs12_file, "pkcs12");
+-            MUST_BE_FALSE(options->management_flags & MF_EXTERNAL_KEY, "management-external-key");
+-            MUST_BE_FALSE(options->management_flags & MF_EXTERNAL_CERT, "management-external-cert");
+-#ifdef ENABLE_CRYPTOAPI
+-            MUST_BE_UNDEF(cryptoapi_cert, "cryptoapicert");
+-#endif
+-        }
+-        else
+-#endif /* ifdef ENABLE_PKCS11 */
+-#ifdef ENABLE_CRYPTOAPI
+-            if (options->cryptoapi_cert)
+-        {
+-            const char use_err[] =
+-                "Parameter --%s cannot be used when --cryptoapicert is also specified.";
+-            MUST_BE_UNDEF(cert_file, "cert");
+-            MUST_BE_UNDEF(priv_key_file, "key");
+-            MUST_BE_UNDEF(pkcs12_file, "pkcs12");
+-            MUST_BE_FALSE(options->management_flags & MF_EXTERNAL_KEY, "management-external-key");
+-            MUST_BE_FALSE(options->management_flags & MF_EXTERNAL_CERT, "management-external-cert");
+-        }
+-        else
+-#endif
+-            if (options->pkcs12_file)
+-        {
+-#ifdef ENABLE_CRYPTO_MBEDTLS
+-            msg(M_USAGE, "Parameter --pkcs12 cannot be used with the mbed TLS version of OpenVPN.");
+-#else
+-            const char use_err[] = "Parameter --%s cannot be used when --pkcs12 is also specified.";
+-            MUST_BE_UNDEF(ca_path, "capath");
+-            MUST_BE_UNDEF(cert_file, "cert");
+-            MUST_BE_UNDEF(priv_key_file, "key");
+-            MUST_BE_FALSE(options->management_flags & MF_EXTERNAL_KEY, "management-external-key");
+-            MUST_BE_FALSE(options->management_flags & MF_EXTERNAL_CERT, "management-external-cert");
+-#endif       /* ifdef ENABLE_CRYPTO_MBEDTLS */
+-        }
+-        else /* cert/key from none of pkcs11, pkcs12, cryptoapi */
+-        {
+-            if ((options->management_flags & MF_EXTERNAL_KEY) && options->priv_key_file)
+-            {
+-                msg(M_USAGE, "--key and --management-external-key are mutually exclusive");
+-            }
+-            if ((options->management_flags & MF_EXTERNAL_CERT))
+-            {
+-                if (options->cert_file)
+-                {
+-                    msg(M_USAGE, "--cert and --management-external-cert are mutually exclusive");
+-                }
+-                else if (!(options->management_flags & MF_EXTERNAL_KEY))
+-                {
+-                    msg(M_USAGE,
+-                        "--management-external-cert must be used with --management-external-key");
+-                }
+-            }
+-            if (pull)
+-            {
+-                const int sum =
+-                    ((options->cert_file != NULL) || (options->management_flags & MF_EXTERNAL_CERT))
+-                    + ((options->priv_key_file != NULL)
+-                       || (options->management_flags & MF_EXTERNAL_KEY));
+-
+-                if (sum == 0)
+-                {
+-                    if (!options->auth_user_pass_file)
+-                    {
+-                        msg(M_USAGE, "No client-side authentication method is "
+-                                     "specified.  You must use either "
+-                                     "--cert/--key, --pkcs12, or "
+-                                     "--auth-user-pass");
+-                    }
+-                }
+-                else if (sum != 2)
+-                {
+-                    msg(M_USAGE, "If you use one of --cert or --key, you must use them both");
+-                }
+-            }
+-            else
+-            {
+-                if (!(options->management_flags & MF_EXTERNAL_CERT))
+-                {
+-                    notnull(options->cert_file,
+-                            "certificate file (--cert) or PKCS#12 file (--pkcs12)");
+-                }
+-                if (!(options->management_flags & MF_EXTERNAL_KEY))
+-                {
+-                    notnull(options->priv_key_file,
+-                            "private key file (--key) or PKCS#12 file (--pkcs12)");
+-                }
+-            }
+-        }
+-        if (ce->tls_auth_file && ce->tls_crypt_file)
+-        {
+-            msg(M_USAGE, "--tls-auth and --tls-crypt are mutually exclusive");
+-        }
+-        if (options->tls_client && ce->tls_crypt_v2_file
+-            && (ce->tls_auth_file || ce->tls_crypt_file))
++    if (options->pkcs11_providers[0])
++    {
++        if (options->pkcs11_id_management && options->pkcs11_id != NULL)
+         {
+             msg(M_USAGE,
+-                "--tls-crypt-v2, --tls-auth and --tls-crypt are mutually exclusive in client mode");
++                "Parameter --pkcs11-id cannot be used when --pkcs11-id-management is also specified.");
+         }
+-    }
+-    else
+-    {
+-        /*
+-         * Make sure user doesn't specify any TLS options
+-         * when in non-TLS mode.
+-         */
+-
+-        const char use_err[] = "Parameter %s can only be specified in TLS-mode, "
+-                               "i.e. where --tls-server or --tls-client is also specified.";
+-
+-        MUST_BE_UNDEF(ca_file, "ca");
+-        MUST_BE_UNDEF(ca_path, "capath");
+-        MUST_BE_UNDEF(dh_file, "dh");
++        if (!options->pkcs11_id_management && options->pkcs11_id == NULL)
++        {
++            msg(M_USAGE,
++                "Parameter --pkcs11-id or --pkcs11-id-management should be specified.");
++        }
++        const char use_err[] =
++            "Parameter --%s cannot be used when --pkcs11-provider is also specified.";
+         MUST_BE_UNDEF(cert_file, "cert");
+         MUST_BE_UNDEF(priv_key_file, "key");
+-#ifndef ENABLE_CRYPTO_MBEDTLS
+         MUST_BE_UNDEF(pkcs12_file, "pkcs12");
++        MUST_BE_FALSE(options->management_flags & MF_EXTERNAL_KEY, "management-external-key");
++        MUST_BE_FALSE(options->management_flags & MF_EXTERNAL_CERT, "management-external-cert");
++#ifdef ENABLE_CRYPTOAPI
++        MUST_BE_UNDEF(cryptoapi_cert, "cryptoapicert");
+ #endif
+-        MUST_BE_UNDEF(cipher_list, "tls-cipher");
+-        MUST_BE_UNDEF(cipher_list_tls13, "tls-ciphersuites");
+-        MUST_BE_UNDEF(tls_cert_profile, "tls-cert-profile");
+-        MUST_BE_UNDEF(tls_verify, "tls-verify");
+-        MUST_BE_UNDEF(tls_export_peer_cert_dir, "tls-export-cert");
+-        MUST_BE_UNDEF(verify_x509_name, "verify-x509-name");
+-        MUST_BE_UNDEF(tls_timeout, "tls-timeout");
+-        MUST_BE_UNDEF(renegotiate_bytes, "reneg-bytes");
+-        MUST_BE_UNDEF(renegotiate_packets, "reneg-pkts");
+-        MUST_BE_UNDEF(renegotiate_seconds, "reneg-sec");
+-        MUST_BE_UNDEF(handshake_window, "hand-window");
+-        MUST_BE_UNDEF(transition_window, "tran-window");
+-        MUST_BE_UNDEF(tls_auth_file, "tls-auth");
+-        MUST_BE_UNDEF(tls_crypt_file, "tls-crypt");
+-        MUST_BE_UNDEF(tls_crypt_v2_file, "tls-crypt-v2");
+-        MUST_BE_UNDEF(single_session, "single-session");
+-        MUST_BE_UNDEF(push_peer_info, "push-peer-info");
+-        MUST_BE_UNDEF(tls_exit, "tls-exit");
+-        MUST_BE_UNDEF(crl_file, "crl-verify");
+-        MUST_BE_UNDEF(ns_cert_type, "ns-cert-type");
+-        MUST_BE_UNDEF(remote_cert_ku[0], "remote-cert-ku");
+-        MUST_BE_UNDEF(remote_cert_eku, "remote-cert-eku");
+-#ifdef ENABLE_PKCS11
+-        MUST_BE_UNDEF(pkcs11_providers[0], "pkcs11-providers");
+-        MUST_BE_UNDEF(pkcs11_private_mode[0], "pkcs11-private-mode");
+-        MUST_BE_UNDEF(pkcs11_id, "pkcs11-id");
+-        MUST_BE_UNDEF(pkcs11_id_management, "pkcs11-id-management");
++    }
++    else
++#endif /* ifdef ENABLE_PKCS11 */
++#ifdef ENABLE_CRYPTOAPI
++        if (options->cryptoapi_cert)
++    {
++        const char use_err[] =
++            "Parameter --%s cannot be used when --cryptoapicert is also specified.";
++        MUST_BE_UNDEF(cert_file, "cert");
++        MUST_BE_UNDEF(priv_key_file, "key");
++        MUST_BE_UNDEF(pkcs12_file, "pkcs12");
++        MUST_BE_FALSE(options->management_flags & MF_EXTERNAL_KEY, "management-external-key");
++        MUST_BE_FALSE(options->management_flags & MF_EXTERNAL_CERT, "management-external-cert");
++    }
++    else
+ #endif
+-
++        if (options->pkcs12_file)
++    {
++#ifdef ENABLE_CRYPTO_MBEDTLS
++        msg(M_USAGE, "Parameter --pkcs12 cannot be used with the mbed TLS version of OpenVPN.");
++#else
++        const char use_err[] = "Parameter --%s cannot be used when --pkcs12 is also specified.";
++        MUST_BE_UNDEF(ca_path, "capath");
++        MUST_BE_UNDEF(cert_file, "cert");
++        MUST_BE_UNDEF(priv_key_file, "key");
++        MUST_BE_FALSE(options->management_flags & MF_EXTERNAL_KEY, "management-external-key");
++        MUST_BE_FALSE(options->management_flags & MF_EXTERNAL_CERT, "management-external-cert");
++#endif   /* ifdef ENABLE_CRYPTO_MBEDTLS */
++    }
++    else /* cert/key from none of pkcs11, pkcs12, cryptoapi */
++    {
++        if ((options->management_flags & MF_EXTERNAL_KEY) && options->priv_key_file)
++        {
++            msg(M_USAGE, "--key and --management-external-key are mutually exclusive");
++        }
++        if ((options->management_flags & MF_EXTERNAL_CERT))
++        {
++            if (options->cert_file)
++            {
++                msg(M_USAGE, "--cert and --management-external-cert are mutually exclusive");
++            }
++            else if (!(options->management_flags & MF_EXTERNAL_KEY))
++            {
++                msg(M_USAGE,
++                    "--management-external-cert must be used with --management-external-key");
++            }
++        }
+         if (pull)
+         {
+-            msg(M_USAGE, use_err, "--pull");
++            const int sum =
++                ((options->cert_file != NULL) || (options->management_flags & MF_EXTERNAL_CERT))
++                + ((options->priv_key_file != NULL)
++                   || (options->management_flags & MF_EXTERNAL_KEY));
++
++            if (sum == 0)
++            {
++                if (!options->auth_user_pass_file)
++                {
++                    msg(M_USAGE, "No client-side authentication method is "
++                                 "specified.  You must use either "
++                                 "--cert/--key, --pkcs12, or "
++                                 "--auth-user-pass");
++                }
++            }
++            else if (sum != 2)
++            {
++                msg(M_USAGE, "If you use one of --cert or --key, you must use them both");
++            }
++        }
++        else
++        {
++            if (!(options->management_flags & MF_EXTERNAL_CERT))
++            {
++                notnull(options->cert_file,
++                        "certificate file (--cert) or PKCS#12 file (--pkcs12)");
++            }
++            if (!(options->management_flags & MF_EXTERNAL_KEY))
++            {
++                notnull(options->priv_key_file,
++                        "private key file (--key) or PKCS#12 file (--pkcs12)");
++            }
+         }
+     }
++    if (ce->tls_auth_file && ce->tls_crypt_file)
++    {
++        msg(M_USAGE, "--tls-auth and --tls-crypt are mutually exclusive");
++    }
++    if (options->tls_client && ce->tls_crypt_v2_file
++        && (ce->tls_auth_file || ce->tls_crypt_file))
++    {
++        msg(M_USAGE,
++            "--tls-crypt-v2, --tls-auth and --tls-crypt are mutually exclusive in client mode");
++    }
++
++
+     if (options->auth_user_pass_file && !options->pull)
      {
+         msg(M_USAGE, "--auth-user-pass requires --pull");
+@@ -6960,32 +6887,6 @@
+             goto err;
+         }
+     }
+-    else if (streq(p[0], "secret") && p[1] && !p[3])
+-    {
+-        msg(M_WARN, "DEPRECATED OPTION: The option --secret is deprecated.");
+-        VERIFY_PERMISSION(OPT_P_GENERAL | OPT_P_INLINE);
+-        options->shared_secret_file = p[1];
+-        options->shared_secret_file_inline = is_inline;
+-        if (!is_inline && p[2])
+-        {
+-            int key_direction;
+-
+-            key_direction = ascii2keydirection(msglevel, p[2]);
+-            if (key_direction >= 0)
+-            {
+-                options->key_direction = key_direction;
+-            }
+-            else
+-            {
+-                goto err;
+-            }
+-        }
+-    }
+-    else if (streq(p[0], "allow-deprecated-insecure-static-crypto"))
+-    {
+-        VERIFY_PERMISSION(OPT_P_GENERAL);
+-        options->allow_deprecated_insecure_static_crypto = true;
+-    }
+     else if (streq(p[0], "genkey") && !p[4])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 33b50b2..38554a1 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -569,9 +569,6 @@
+     struct static_challenge_info sc_info;
+ #endif
+     /* Cipher parms */
+-    const char *shared_secret_file;
+-    bool shared_secret_file_inline;
+-    bool allow_deprecated_insecure_static_crypto;
+     int key_direction;
+     const char *ciphername;
+     bool enable_ncp_fallback; /**< If defined fall back to
+diff --git a/src/openvpn/options_show.c b/src/openvpn/options_show.c
+index 80d36f0..321a37b 100644
+--- a/src/openvpn/options_show.c
++++ b/src/openvpn/options_show.c
+@@ -491,7 +491,6 @@
+     }
+ #endif
+ 
+-    SHOW_STR_INLINE(shared_secret_file);
+     SHOW_PARM(key_direction, keydirection2ascii(o->key_direction, false, true), "%s");
+     SHOW_STR(ciphername);
+     SHOW_STR(ncp_ciphers);
+diff --git a/src/openvpn/options_string.c b/src/openvpn/options_string.c
+index ed4d742..4a43fce4 100644
+--- a/src/openvpn/options_string.c
++++ b/src/openvpn/options_string.c
+@@ -140,83 +140,72 @@
+     /*
+      * Crypto Options
+      */
+-    if (o->shared_secret_file || TLS_CLIENT || TLS_SERVER)
++    struct key_type kt;
++
++    ASSERT((TLS_CLIENT == true) + (TLS_SERVER == true) <= 1);
++
++    /* Skip resolving BF-CBC to allow SSL libraries without BF-CBC
++     * to work here in the default configuration */
++    const char *ciphername = o->ciphername;
++    size_t keysize = 0;
++
++    if (strcmp(o->ciphername, "BF-CBC") == 0)
+     {
+-        struct key_type kt;
+-
+-        ASSERT((o->shared_secret_file != NULL) + (TLS_CLIENT == true) + (TLS_SERVER == true) <= 1);
+-
+-        /* Skip resolving BF-CBC to allow SSL libraries without BF-CBC
+-         * to work here in the default configuration */
+-        const char *ciphername = o->ciphername;
+-        size_t keysize = 0;
+-
+-        if (strcmp(o->ciphername, "BF-CBC") == 0)
++        init_key_type(&kt, "none", o->authname, false);
++        keysize = 128;
++    }
++    else
++    {
++        init_key_type(&kt, o->ciphername, o->authname, false);
++        ciphername = cipher_kt_name(kt.cipher);
++        if (cipher_defined(o->ciphername))
+         {
+-            init_key_type(&kt, "none", o->authname, true, false);
+-            keysize = 128;
+-        }
+-        else
+-        {
+-            init_key_type(&kt, o->ciphername, o->authname, true, false);
+-            ciphername = cipher_kt_name(kt.cipher);
+-            if (cipher_defined(o->ciphername))
+-            {
+-                keysize = cipher_kt_key_size(kt.cipher) * 8;
+-            }
+-        }
+-        /* Only announce the cipher to our peer if we are willing to
+-         * support it */
+-        if (p2p_nopull || tls_item_in_cipher_list(ciphername, o->ncp_ciphers))
+-        {
+-            buf_printf(&out, ",cipher %s", ciphername);
+-        }
+-        buf_printf(&out, ",auth %s", md_kt_name(kt.digest));
+-        buf_printf(&out, ",keysize %zu", keysize);
+-        if (o->shared_secret_file)
+-        {
+-            buf_printf(&out, ",secret");
++            keysize = cipher_kt_key_size(kt.cipher) * 8;
+         }
+     }
++    /* Only announce the cipher to our peer if we are willing to
++     * support it */
++    if (p2p_nopull || tls_item_in_cipher_list(ciphername, o->ncp_ciphers))
++    {
++        buf_printf(&out, ",cipher %s", ciphername);
++    }
++    buf_printf(&out, ",auth %s", md_kt_name(kt.digest));
++    buf_printf(&out, ",keysize %zu", keysize);
+ 
+     /*
+      * SSL Options
+      */
++    if (o->ce.tls_auth_file)
+     {
+-        if (TLS_CLIENT || TLS_SERVER)
+-        {
+-            if (o->ce.tls_auth_file)
+-            {
+-                buf_printf(&out, ",tls-auth");
+-            }
+-            /* Not adding tls-crypt here, because we won't reach this code if
+-             * tls-auth/tls-crypt does not match.  Removing tls-auth here would
+-             * break stuff, so leaving that in place. */
++        buf_printf(&out, ",tls-auth");
++    }
++    /* Not adding tls-crypt here, because we won't reach this code if
++     * tls-auth/tls-crypt does not match.  Removing tls-auth here would
++     * break stuff, so leaving that in place. */
+ 
+-            buf_printf(&out, ",key-method %d", KEY_METHOD_2);
+-        }
++    buf_printf(&out, ",key-method %d", KEY_METHOD_2);
+ 
+-        if (remote)
++
++    if (remote)
++    {
++        if (TLS_CLIENT)
+         {
+-            if (TLS_CLIENT)
+-            {
+-                buf_printf(&out, ",tls-server");
+-            }
+-            else if (TLS_SERVER)
+-            {
+-                buf_printf(&out, ",tls-client");
+-            }
++            buf_printf(&out, ",tls-server");
+         }
+-        else
++        else if (TLS_SERVER)
+         {
+-            if (TLS_CLIENT)
+-            {
+-                buf_printf(&out, ",tls-client");
+-            }
+-            else if (TLS_SERVER)
+-            {
+-                buf_printf(&out, ",tls-server");
+-            }
++            buf_printf(&out, ",tls-client");
++        }
++    }
++    else
++    {
++        if (TLS_CLIENT)
++        {
++            buf_printf(&out, ",tls-client");
++        }
++        else if (TLS_SERVER)
++        {
++            buf_printf(&out, ",tls-server");
+         }
+     }
+ 
+diff --git a/src/openvpn/options_string.h b/src/openvpn/options_string.h
+index 02efed3..6d5518a 100644
+--- a/src/openvpn/options_string.h
++++ b/src/openvpn/options_string.h
+@@ -59,7 +59,6 @@
+  *
+  * --cipher
+  * --auth
+- * --secret
+  *
+  * SSL Options:
+  *
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 420daef..a538b52 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1648,7 +1648,7 @@
+         return true;
+     }
+ 
+-    init_key_type(&session->opt->key_type, options->ciphername, options->authname, true, true);
++    init_key_type(&session->opt->key_type, options->ciphername, options->authname, true);
+ 
+     bool packet_id_long_form = cipher_kt_mode_ofb_cfb(session->opt->key_type.cipher);
+     session->opt->crypto_flags &= ~(CO_PACKET_ID_LONG_FORM);
+diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.c
+index 07c54b4..f86aca8 100644
+--- a/tests/unit_tests/openvpn/test_crypto.c
++++ b/tests/unit_tests/openvpn/test_crypto.c
+@@ -237,70 +237,58 @@
+     /* common defaults */
+     o.ce.tun_mtu = 1400;
+     o.ce.proto = PROTO_UDP;
++    o.tls_client = true;
++    o.pull = true;
+ 
+-    /* No crypto at all */
++    /*  auth none, cipher none */
+     o.ciphername = "none";
+     o.authname = "none";
+     linkmtu = calc_options_string_link_mtu(&o, &f);
+-    assert_int_equal(linkmtu, 1400);
++    assert_int_equal(linkmtu, 1405);
+ 
+-    /* Static key OCC examples */
+-    o.shared_secret_file = "not null";
+-
+-    /* secret, auth none, cipher none */
+-    o.ciphername = "none";
+-    o.authname = "none";
+-    linkmtu = calc_options_string_link_mtu(&o, &f);
+-    assert_int_equal(linkmtu, 1408);
+-
+-    /* secret, cipher AES-128-CBC, auth none */
++    /* cipher AES-128-CBC, auth none */
+     o.ciphername = "AES-128-CBC";
+     o.authname = "none";
+     linkmtu = calc_options_string_link_mtu(&o, &f);
+-    assert_int_equal(linkmtu, 1440);
++    assert_int_equal(linkmtu, 1437);
+ 
+-    /* secret, cipher none, auth SHA256 */
++    /* cipher none, auth SHA256 */
+     o.ciphername = "none";
+     o.authname = "SHA256";
+     linkmtu = calc_options_string_link_mtu(&o, &f);
+-    assert_int_equal(linkmtu, 1440);
++    assert_int_equal(linkmtu, 1437);
+ 
+-    /* secret, cipher BF-CBC, auth SHA1 */
++    /* cipher BF-CBC, auth SHA1 */
+     o.ciphername = "BF-CBC";
+     o.authname = "SHA1";
+     linkmtu = calc_options_string_link_mtu(&o, &f);
+-    assert_int_equal(linkmtu, 1444);
++    assert_int_equal(linkmtu, 1441);
+ 
+-    /* secret, cipher BF-CBC, auth SHA1, tcp-client */
++    /* cipher BF-CBC, auth SHA1, tcp-client */
+     o.ce.proto = PROTO_TCP_CLIENT;
+     linkmtu = calc_options_string_link_mtu(&o, &f);
+-    assert_int_equal(linkmtu, 1446);
++    assert_int_equal(linkmtu, 1443);
+ 
+     o.ce.proto = PROTO_UDP;
+ 
+ #if defined(USE_COMP)
+     o.comp.alg = COMP_ALG_LZO;
+ 
+-    /* secret, comp-lzo yes, cipher BF-CBC, auth SHA1 */
++    /*  comp-lzo yes, cipher BF-CBC, auth SHA1 */
+     linkmtu = calc_options_string_link_mtu(&o, &f);
+-    assert_int_equal(linkmtu, 1445);
++    assert_int_equal(linkmtu, 1442);
+ 
+ #if defined(ENABLE_FRAGMENT)
+-    /* secret, comp-lzo yes, cipher BF-CBC, auth SHA1, fragment 1200 */
++    /* comp-lzo yes, cipher BF-CBC, auth SHA1, fragment 1200 */
+     o.ce.fragment = 1200;
+     linkmtu = calc_options_string_link_mtu(&o, &f);
+-    assert_int_equal(linkmtu, 1449);
++    assert_int_equal(linkmtu, 1446);
+     o.ce.fragment = 0;
+ #endif
+ 
+     o.comp.alg = COMP_ALG_UNDEF;
+ #endif
+ 
+-    /* TLS mode */
+-    o.shared_secret_file = NULL;
+-    o.tls_client = true;
+-    o.pull = true;
+-
+     /* tls client, cipher AES-128-CBC, auth SHA1, tls-auth */
+     o.authname = "SHA1";
+     o.ciphername = "AES-128-CBC";
+@@ -315,15 +303,8 @@
+     linkmtu = calc_options_string_link_mtu(&o, &f);
+     assert_int_equal(linkmtu, 1457);
+ 
+-    /* tls client, cipher none, auth none */
++    /* tls client, auth none, cipher AES-256-GCM */
+     o.authname = "none";
+-    o.ciphername = "none";
+-
+-    linkmtu = calc_options_string_link_mtu(&o, &f);
+-    assert_int_equal(linkmtu, 1405);
+-
+-    /* tls client, auth SHA1, cipher AES-256-GCM */
+-    o.authname = "SHA1";
+     o.ciphername = "AES-256-GCM";
+     linkmtu = calc_options_string_link_mtu(&o, &f);
+     assert_int_equal(linkmtu, 1449);
+@@ -332,12 +313,12 @@
+ #if defined(USE_COMP) && defined(ENABLE_FRAGMENT)
+     o.comp.alg = COMP_ALG_LZO;
+ 
+-    /* tls client, auth SHA1, cipher AES-256-GCM, fragment, comp-lzo yes */
++    /* tls client, auth none, cipher AES-256-GCM, fragment, comp-lzo yes */
+     o.ce.fragment = 1200;
+     linkmtu = calc_options_string_link_mtu(&o, &f);
+     assert_int_equal(linkmtu, 1454);
+ 
+-    /* tls client, auth SHA1, cipher AES-256-GCM, fragment, comp-lzo yes, socks */
++    /* tls client, auth none, cipher AES-256-GCM, fragment, comp-lzo yes, socks */
+     o.ce.socks_proxy_server = "socks.example.com";
+     linkmtu = calc_options_string_link_mtu(&o, &f);
+     assert_int_equal(linkmtu, 1464);
+@@ -358,50 +339,41 @@
+     o.ce.tun_mtu = 1400;
+     o.ce.mssfix = 1000;
+     o.ce.proto = PROTO_UDP;
++    o.tls_client = true;
+ 
+-    /* No crypto at all */
++    /*auth none, cipher none */
+     o.ciphername = "none";
+     o.authname = "none";
+     struct key_type kt;
+-    init_key_type(&kt, o.ciphername, o.authname, false, false);
++    init_key_type(&kt, o.ciphername, o.authname, false);
+ 
+-    /* No encryption, just packet id (8) + TCP payload(20) + IP payload(20) */
++    /* No encryption, just packet id (4) + opcode (1) + TCP payload(20) + IP payload(20) */
+     frame_calculate_dynamic(&f, &kt, &o, NULL);
+-    assert_int_equal(f.mss_fix, 952);
++    assert_int_equal(f.mss_fix, 955);
+ 
+-    /* Static key OCC examples */
+-    o.shared_secret_file = "not null";
+-
+-    /* secret, auth none, cipher none */
+-    o.ciphername = "none";
+-    o.authname = "none";
+-    init_key_type(&kt, o.ciphername, o.authname, false, false);
+-    frame_calculate_dynamic(&f, &kt, &o, NULL);
+-    assert_int_equal(f.mss_fix, 952);
+-
+-    /* secret, cipher AES-128-CBC, auth none */
++    /* cipher AES-128-CBC, auth none */
+     o.ciphername = "AES-128-CBC";
+     o.authname = "none";
+-    init_key_type(&kt, o.ciphername, o.authname, false, false);
++    init_key_type(&kt, o.ciphername, o.authname, false);
+ 
+-    for (int i = 990; i <= 1010; i++)
++    for (int i = 990; i <= 1015; i++)
+     {
+         /* 992 - 1008 should end up with the same mssfix value all they
+-         * all result in the same CBC block size/padding and <= 991 and >=1008
++         * all result in the same CBC block size/padding and <= 992 and >=1009
+          * should be one block less and more respectively */
+         o.ce.mssfix = i;
+         frame_calculate_dynamic(&f, &kt, &o, NULL);
+-        if (i <= 991)
++        if (i <= 992)
+         {
+-            assert_int_equal(f.mss_fix, 911);
++            assert_int_equal(f.mss_fix, 915);
+         }
+-        else if (i >= 1008)
++        else if (i >= 1009)
+         {
+-            assert_int_equal(f.mss_fix, 943);
++            assert_int_equal(f.mss_fix, 947);
+         }
+         else
+         {
+-            assert_int_equal(f.mss_fix, 927);
++            assert_int_equal(f.mss_fix, 931);
+         }
+     }
+ #ifdef USE_COMP
+@@ -410,36 +382,35 @@
+     /* Same but with compression added. Compression adds one byte extra to the
+      * payload so the payload should be reduced by compared to the no
+      * compression calculation before */
+-    for (int i = 990; i <= 1010; i++)
++    for (int i = 990; i <= 1015; i++)
+     {
+         /* 992 - 1008 should end up with the same mssfix value all they
+-         * all result in the same CBC block size/padding and <= 991 and >=1008
++         * all result in the same CBC block size/padding and <= 992 and >=1009
+          * should be one block less and more respectively */
+         o.ce.mssfix = i;
+         frame_calculate_dynamic(&f, &kt, &o, NULL);
+-        if (i <= 991)
++        if (i <= 992)
+         {
+-            assert_int_equal(f.mss_fix, 910);
++            assert_int_equal(f.mss_fix, 914);
+         }
+-        else if (i >= 1008)
++        else if (i >= 1009)
+         {
+-            assert_int_equal(f.mss_fix, 942);
++            assert_int_equal(f.mss_fix, 946);
+         }
+         else
+         {
+-            assert_int_equal(f.mss_fix, 926);
++            assert_int_equal(f.mss_fix, 930);
+         }
+     }
+     o.comp.alg = COMP_ALG_UNDEF;
+ #endif /* ifdef USE_COMP */
+ 
+-    /* tls client, auth SHA1, cipher AES-256-GCM */
++    /*  auth SHA1, cipher AES-256-GCM */
+     o.authname = "SHA1";
+     o.ciphername = "AES-256-GCM";
+-    o.tls_client = true;
+     o.peer_id = 77;
+     o.use_peer_id = true;
+-    init_key_type(&kt, o.ciphername, o.authname, true, false);
++    init_key_type(&kt, o.ciphername, o.authname, false);
+ 
+     for (int i = 900; i <= 1200; i++)
+     {
+@@ -685,7 +656,7 @@
+ 
+     data->gc = gc_new();
+ 
+-    init_key_type(&data->kt, "AES-128-GCM", "none", true, false);
++    init_key_type(&data->kt, "AES-128-GCM", "none", false);
+ 
+     /* have an epoch key that uses 0x23 for the key for all bytes */
+     struct epoch_key epoch1send = { .epoch = 1, .epoch_key = { 0x23 } };
+@@ -907,7 +878,7 @@
+     struct epoch_key e17 = { .epoch = 17, .epoch_key = { 19, 12 } };
+     struct key_type kt = { 0 };
+     struct key_parameters key_parameters = { 0 };
+-    init_key_type(&kt, "AES-192-GCM", "none", true, false);
++    init_key_type(&kt, "AES-192-GCM", "none", false);
+ 
+ 
+     epoch_data_key_derive(&key_parameters, &e17, &kt);
+diff --git a/tests/unit_tests/openvpn/test_pkt.c b/tests/unit_tests/openvpn/test_pkt.c
+index fbbb40f..49ba833 100644
+--- a/tests/unit_tests/openvpn/test_pkt.c
++++ b/tests/unit_tests/openvpn/test_pkt.c
+@@ -173,7 +173,7 @@
+     tas.tls_wrap.opt.flags |= (CO_IGNORE_PACKET_ID | CO_PACKET_ID_LONG_FORM);
+ 
+     struct key_type tls_crypt_kt;
+-    init_key_type(&tls_crypt_kt, "none", "SHA1", true, false);
++    init_key_type(&tls_crypt_kt, "none", "SHA1", false);
+ 
+     crypto_read_openvpn_key(&tls_crypt_kt, &tas.tls_wrap.opt.key_ctx_bi, static_key, true,
+                             key_direction, "Control Channel Authentication", "tls-auth", NULL);
 
--- 
-To view, visit https://gerrit=2Eopenvpn=2En=
-et/c/openvpn/+/2157?usp=3Demail
-To unsubscribe, or for help writing mail fi=
-lters, visit https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
-
-Gerrit-Me=
-ssageType: newchange
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-C=
-hange-Id: I02f8df01f8f33cb9cd04cd844d1f1893688f51e8
-Gerrit-Change-Number: 2=
-157
-Gerrit-PatchSet: 1
-Gerrit-Owner: Frank Lichtenheld <frank@lichtenheld=
-=2Ecom>
-Gerrit-Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-C=
-C: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
-Gerrit-Attention=
-: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-
---dFGWpH9kO+8=
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: Arne Schwabe=2E </p>
-<p>Frank Lichtenheld would like =
-Arne Schwabe to <strong>review</strong> this change=2E
-</p><p><a href=3D"ht=
-tps://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2157?usp=3Demail">View Change</a><=
-/p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-s=
-pace: pre-wrap;">Various trivial -Wsign-conversion fixes<br><br>* Continue =
-BLEN -&gt; BLENZ replacement<br>* Remove some unneeded casts<br>* Some triv=
-ial type fixes<br><br>Change-Id: I02f8df01f8f33cb9cd04cd844d1f1893688f51e8<=
-br>Signed-off-by: Frank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt;<br>---<=
-br>M src/openvpn/acc=2Ec<br>M src/openvpn/auth_token=2Ec<br>M src/openvpn/b=
-ase64=2Eh<br>M src/openvpn/console_builtin=2Ec<br>M src/openvpn/crypto=2Ec<=
-br>M src/openvpn/crypto=2Eh<br>M src/openvpn/crypto_epoch=2Ec<br>M src/open=
-vpn/manage=2Ec<br>M src/openvpn/ssl_mbedtls=2Ec<br>9 files changed, 33 inse=
-rtions(+), 52 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font=
--family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=
-=2Eopenvpn=2Enet:29418/openvpn refs/changes/57/2157/1</pre><pre style=3D"fo=
-nt-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/=
-src/openvpn/acc=2Ec b/src/openvpn/acc=2Ec</span><br><span>index e21891d=2E=
-=2Eb8d7c3d 100644</span><br><span>--- a/src/openvpn/acc=2Ec</span><br><span=
->+++ b/src/openvpn/acc=2Ec</span><br><span>@@ -148,11 +148,6 @@</span><br><=
-span>     return parse_acc_message_flags(flags, err_reason, gc);</span><br>=
-<span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wsig=
-n-conversion&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#en=
-dif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> =
-void</span><br><span> receive_acc_message(struct context *c, const struct b=
-uffer *buffer)</span><br><span> {</span><br><span>@@ -236,15 +231,10 @@</sp=
-an><br><span>     msg(D_PUSH_ERRORS, &quot;WARNING: Received malformed cust=
-om app control channel &quot;</span><br><span>                        &quot=
-;message (%s): %s&quot;,</span><br><span>         err_reason,</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-        format_hex(CBPTR(buffer), B=
-LEN(buffer), 80, &amp;gc));</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        format_hex(CBPTR(buffer), BLENZ(buffer), 80, &amp;gc));</sp=
-an><br><span>     gc_free(&amp;gc);</span><br><span> }</span><br><span> </s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnosti=
-c pop</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> bool</span><b=
-r><span> send_acc_message(struct context *c,</span><br><span>              =
-    struct tls_multi *multi,</span><br><span>diff --git a/src/openvpn/auth_=
-token=2Ec b/src/openvpn/auth_token=2Ec</span><br><span>index 211af90=2E=2E7=
-36ad67 100644</span><br><span>--- a/src/openvpn/auth_token=2Ec</span><br><s=
-pan>+++ b/src/openvpn/auth_token=2Ec</span><br><span>@@ -36,11 +36,6 @@</sp=
-an><br><span>  * padding */</span><br><span> static_assert(TOKEN_DATA_LEN %=
- 3 =3D=3D 0, &quot;TOKEN_DATA_LEN is not a multiple of 3&quot;);</span><br>=
-<span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(__=
-GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wsign-conversion&quot;<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> bool</span><br><spa=
-n> is_auth_token(const char *password)</span><br><span> {</span><br><span>@=
-@ -67,7 +62,7 @@</span><br><span>         return;</span><br><span>     }</s=
-pan><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    in=
-t auth_token_state_flags =3D session-&gt;key[KS_PRIMARY]=2Eauth_token_state=
-_flags;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    unsigned=
- int auth_token_state_flags =3D session-&gt;key[KS_PRIMARY]=2Eauth_token_st=
-ate_flags;</span><br><span> </span><br><span>     const char *state;</span>=
-<br><span> </span><br><span>@@ -273,7 +268,7 @@</span><br><span>         al=
-loc_buf_gc(strlen(SESSION_ID_PREFIX) + strlen(b64output) + 1, &amp;gc);</sp=
-an><br><span> </span><br><span>     ASSERT(buf_write(&amp;session_token, SE=
-SSION_ID_PREFIX, strlen(SESSION_ID_PREFIX)));</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    ASSERT(buf_write(&amp;session_token, b64output,=
- (int)strlen(b64output)));</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    ASSERT(buf_write(&amp;session_token, b64output, strlen(b64output=
-)));</span><br><span>     ASSERT(buf_write_u8(&amp;session_token, 0));</spa=
-n><br><span> </span><br><span>     free(b64output);</span><br><span>@@ -296=
-,10 +291,6 @@</span><br><span>     gc_free(&amp;gc);</span><br><span> }</sp=
-an><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if def=
-ined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-</span><br><span> static bool</span><br><span> check_hmac_token(hmac_c=
-tx_t *ctx, const uint8_t *b64decoded, const char *username)</span><br><span=
-> {</span><br><span>diff --git a/src/openvpn/base64=2Eh b/src/openvpn/base6=
-4=2Eh</span><br><span>index be7aa64=2E=2E800e569 100644</span><br><span>---=
- a/src/openvpn/base64=2Eh</span><br><span>+++ b/src/openvpn/base64=2Eh</spa=
-n><br><span>@@ -35,7 +35,7 @@</span><br><span> #define _BASE64_H_</span><br=
-><span> </span><br><span> /** Compute resulting base64 length=2E  6 bits pe=
-r byte, padded to 4 bytes=2E */</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-#define OPENVPN_BASE64_LENGTH(binary_length) ((((8 * binary_lengt=
-h) / 6) + 3) &amp; ~3)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+#define OPENVPN_BASE64_LENGTH(binary_length) ((((8 * binary_length) / 6)=
- + 3) &amp; ~3u)</span><br><span> </span><br><span> /** Compute the maximal=
- number of bytes encoded in a base64 string=2E */</span><br><span> #define =
-OPENVPN_BASE64_DECODED_LENGTH(base64_length) ((base64_length / 4) * 3)</spa=
-n><br><span>diff --git a/src/openvpn/console_builtin=2Ec b/src/openvpn/cons=
-ole_builtin=2Ec</span><br><span>index dc71d12=2E=2E0353ade 100644</span><br=
-><span>--- a/src/openvpn/console_builtin=2Ec</span><br><span>+++ b/src/open=
-vpn/console_builtin=2Ec</span><br><span>@@ -234,7 +234,7 @@</span><br><span=
->     if (!echo &amp;&amp; (tcgetattr(fileno(fp), &amp;tty_tmp) =3D=3D 0))<=
-/span><br><span>     {</span><br><span>         tty_save =3D tty_tmp;</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        tty_tmp=2Ec_lflag &=
-amp;=3D ~(ECHO | ECHOE | ECHOK | ECHONL | ISIG);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        tty_tmp=2Ec_lflag &amp;=3D ~(unsigned =
-int)(ECHO | ECHOE | ECHOK | ECHONL | ISIG);</span><br><span>         restor=
-e_tty =3D (tcsetattr(fileno(fp), TCSAFLUSH, &amp;tty_tmp) =3D=3D 0);</span>=
-<br><span>     }</span><br><span> </span><br><span>diff --git a/src/openvpn=
-/crypto=2Ec b/src/openvpn/crypto=2Ec</span><br><span>index 88c2c52=2E=2Effd=
-f8c4 100644</span><br><span>--- a/src/openvpn/crypto=2Ec</span><br><span>++=
-+ b/src/openvpn/crypto=2Ec</span><br><span>@@ -139,7 +139,7 @@</span><br><s=
-pan>         ASSERT(cipher_ctx_reset(ctx-&gt;cipher, iv));</span><br><span>=
-     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    dmsg(D_PACKET_CONTENT, &quot;ENCRYPT FROM: %s&quot;, format_hex(BPTR=
-(buf), BLEN(buf), 80, &amp;gc));</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    dmsg(D_PACKET_CONTENT, &quot;ENCRYPT FROM: %s&quot;, forma=
-t_hex(BPTR(buf), BLENZ(buf), 80, &amp;gc));</span><br><span> </span><br><sp=
-an>     /* Buffer overflow check */</span><br><span>     if (!buf_safe(&amp=
-;work, buf-&gt;len + mac_len + cipher_ctx_block_size(ctx-&gt;cipher)))</spa=
-n><br><span>@@ -151,7 +151,7 @@</span><br><span> </span><br><span>     /* F=
-or AEAD ciphers, authenticate Additional Data, including opcode */</span><b=
-r><span>     ASSERT(cipher_ctx_update_ad(ctx-&gt;cipher, BPTR(&amp;work), B=
-LEN(&amp;work)));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-dmsg(D_PACKET_CONTENT, &quot;ENCRYPT AD: %s&quot;, format_hex(BPTR(&amp;wor=
-k), BLEN(&amp;work), 0, &amp;gc));</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    dmsg(D_PACKET_CONTENT, &quot;ENCRYPT AD: %s&quot;, forma=
-t_hex(BPTR(&amp;work), BLENZ(&amp;work), 0, &amp;gc));</span><br><span> </s=
-pan><br><span>     if (!use_epoch_data_format)</span><br><span>     {</span=
-><br><span>@@ -170,8 +170,8 @@</span><br><span> </span><br><span>     /* up=
-date number of plaintext blocks encrypted=2E Use the (x + (n-1))/n trick</s=
-pan><br><span>      * to round up the result to the number of blocks used *=
-/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const int blocks=
-ize =3D AEAD_LIMIT_BLOCKSIZE;</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    opt-&gt;key_ctx_bi=2Eencrypt=2Eplaintext_blocks +=3D (BLEN(&amp=
-;work) + (blocksize - 1)) / blocksize;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    const unsigned int blocksize =3D AEAD_LIMIT_BLOCKSIZ=
-E;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    opt-&gt;key_c=
-tx_bi=2Eencrypt=2Eplaintext_blocks +=3D (BLENZ(&amp;work) + (blocksize - 1)=
-) / blocksize;</span><br><span> </span><br><span>     /* if the tag is at e=
-nd the end, allocate it now */</span><br><span>     if (use_epoch_data_form=
-at)</span><br><span>@@ -186,7 +186,7 @@</span><br><span> </span><br><span> =
-    *buf =3D work;</span><br><span> </span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    dmsg(D_PACKET_CONTENT, &quot;ENCRYPT TO: %s&quot;, forma=
-t_hex(BPTR(buf), BLEN(buf), 80, &amp;gc));</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    dmsg(D_PACKET_CONTENT, &quot;ENCRYPT TO: %s&quot=
-;, format_hex(BPTR(buf), BLENZ(buf), 80, &amp;gc));</span><br><span> </span=
-><br><span>     gc_free(&amp;gc);</span><br><span>     return;</span><br><s=
-pan>@@ -257,13 +257,13 @@</span><br><span>             ASSERT(buf_write(&am=
-p;work, iv_buf, iv_size));</span><br><span>             dmsg(D_PACKET_CONTE=
-NT, &quot;ENCRYPT IV: %s&quot;, format_hex(iv_buf, iv_size, 0, &amp;gc));</=
-span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-       dmsg(D_PACKET_CONTENT, &quot;ENCRYPT FROM: %s&quot;, format_hex(BPTR=
-(buf), BLEN(buf), 80, &amp;gc));</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+            dmsg(D_PACKET_CONTENT, &quot;ENCRYPT FROM: %s&quot=
-;, format_hex(BPTR(buf), BLENZ(buf), 80, &amp;gc));</span><br><span> </span=
-><br><span>             /* cipher_ctx was already initialized with key &amp=
-; keylen */</span><br><span>             ASSERT(cipher_ctx_reset(ctx-&gt;ci=
-pher, iv_buf));</span><br><span> </span><br><span>             /* Buffer ov=
-erflow check */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-      if (!buf_safe(&amp;work, buf-&gt;len + cipher_ctx_block_size(ctx-&gt;=
-cipher)))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-  if (!buf_safe(&amp;work, BLENZ(buf) + cipher_ctx_block_size(ctx-&gt;ciphe=
-r)))</span><br><span>             {</span><br><span>                 msg(D_=
-CRYPT_ERRORS,</span><br><span>                     &quot;ENCRYPT: buffer si=
-ze error, bc=3D%d bo=3D%d bl=3D%d wc=3D%d wo=3D%d wl=3D%d cbs=3D%u&quot;,</=
-span><br><span>@@ -317,7 +317,7 @@</span><br><span> </span><br><span>      =
-   *buf =3D work;</span><br><span> </span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-        dmsg(D_PACKET_CONTENT, &quot;ENCRYPT TO: %s&quot;, fo=
-rmat_hex(BPTR(&amp;work), BLEN(&amp;work), 80, &amp;gc));</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        dmsg(D_PACKET_CONTENT, &quot;=
-ENCRYPT TO: %s&quot;, format_hex(BPTR(&amp;work), BLENZ(&amp;work), 80, &am=
-p;gc));</span><br><span>     }</span><br><span> </span><br><span>     gc_fr=
-ee(&amp;gc);</span><br><span>@@ -460,7 +460,7 @@</span><br><span>     ASSER=
-T(buf-&gt;len &gt; 0);</span><br><span>     ASSERT(ctx-&gt;cipher);</span><=
-br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    dmsg(D_=
-PACKET_CONTENT, &quot;DECRYPT FROM: %s&quot;, format_hex(BPTR(buf), BLEN(bu=
-f), 80, &amp;gc));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   dmsg(D_PACKET_CONTENT, &quot;DECRYPT FROM: %s&quot;, format_hex(BPTR(buf=
-), BLENZ(buf), 80, &amp;gc));</span><br><span> </span><br><span>     ASSERT=
-(ad_start &gt;=3D buf-&gt;data &amp;&amp; ad_start &lt;=3D BPTR(buf));</spa=
-n><br><span> </span><br><span>@@ -558,10 +558,10 @@</span><br><span>     }<=
-/span><br><span> </span><br><span>     dmsg(D_PACKET_CONTENT, &quot;DECRYPT=
- MAC: %s&quot;, format_hex(tag_ptr, tag_size, 0, &amp;gc));</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    dmsg(D_PACKET_CONTENT, &quot;DECR=
-YPT FROM: %s&quot;, format_hex(BPTR(buf), BLEN(buf), 0, &amp;gc));</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    dmsg(D_PACKET_CONTENT, &=
-quot;DECRYPT FROM: %s&quot;, format_hex(BPTR(buf), BLENZ(buf), 0, &amp;gc))=
-;</span><br><span> </span><br><span>     /* Buffer overflow check (should n=
-ever fail) */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (=
-!buf_safe(&amp;work, buf-&gt;len + cipher_ctx_block_size(ctx-&gt;cipher)))<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!buf_safe(&a=
-mp;work, BLENZ(buf) + cipher_ctx_block_size(ctx-&gt;cipher)))</span><br><sp=
-an>     {</span><br><span>         CRYPT_ERROR(&quot;potential buffer overf=
-low&quot;);</span><br><span>     }</span><br><span>@@ -585,7 +585,7 @@</spa=
-n><br><span>     }</span><br><span>     ASSERT(buf_inc_len(&amp;work, outle=
-n));</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    dmsg(D_PACKET_CONTENT, &quot;DECRYPT TO: %s&quot;, format_hex(BPTR(&am=
-p;work), BLEN(&amp;work), 80, &amp;gc));</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    dmsg(D_PACKET_CONTENT, &quot;DECRYPT TO: %s&quot;,=
- format_hex(BPTR(&amp;work), BLENZ(&amp;work), 80, &amp;gc));</span><br><sp=
-an> </span><br><span>     if (!crypto_check_replay(opt, &amp;pin, epoch, er=
-ror_prefix, &amp;gc))</span><br><span>     {</span><br><span>@@ -594,8 +594=
-,8 @@</span><br><span> </span><br><span>     /* update number of plaintext =
-blocks decrypted=2E Use the (x + (n-1))/n trick</span><br><span>      * to =
-round up the result to the number of blocks used=2E */</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    const int blocksize =3D AEAD_LIMIT_BLO=
-CKSIZE;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    opt-&gt;ke=
-y_ctx_bi=2Edecrypt=2Eplaintext_blocks +=3D (BLEN(&amp;work) + (blocksize - =
-1)) / blocksize;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- const unsigned int blocksize =3D AEAD_LIMIT_BLOCKSIZE;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    opt-&gt;key_ctx_bi=2Edecrypt=2Eplai=
-ntext_blocks +=3D (BLENZ(&amp;work) + (blocksize - 1)) / blocksize;</span><=
-br><span> </span><br><span>     *buf =3D work;</span><br><span> </span><br>=
-<span>@@ -631,7 +631,7 @@</span><br><span>         struct packet_id_net pin=
-;</span><br><span>         bool have_pin =3D false;</span><br><span> </span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        dmsg(D_PACKET_CONTE=
-NT, &quot;DECRYPT FROM: %s&quot;, format_hex(BPTR(buf), BLEN(buf), 80, &amp=
-;gc));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        dmsg(=
-D_PACKET_CONTENT, &quot;DECRYPT FROM: %s&quot;, format_hex(BPTR(buf), BLENZ=
-(buf), 80, &amp;gc));</span><br><span> </span><br><span>         /* Verify =
-the HMAC */</span><br><span>         if (ctx-&gt;hmac)</span><br><span>@@ -=
-694,7 +694,7 @@</span><br><span>             }</span><br><span> </span><br>=
-<span>             /* Buffer overflow check (should never happen) */</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-            if (!buf_safe(&a=
-mp;work, buf-&gt;len + cipher_ctx_block_size(ctx-&gt;cipher)))</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            if (!buf_safe(&amp;w=
-ork, BLENZ(buf) + cipher_ctx_block_size(ctx-&gt;cipher)))</span><br><span> =
-            {</span><br><span>                 CRYPT_ERROR(&quot;packet too=
- big to decrypt&quot;);</span><br><span>             }</span><br><span>@@ -=
-713,7 +713,7 @@</span><br><span>             }</span><br><span>            =
- ASSERT(buf_inc_len(&amp;work, outlen));</span><br><span> </span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-            dmsg(D_PACKET_CONTENT, &qu=
-ot;DECRYPT TO: %s&quot;, format_hex(BPTR(&amp;work), BLEN(&amp;work), 80, &=
-amp;gc));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-  dmsg(D_PACKET_CONTENT, &quot;DECRYPT TO: %s&quot;, format_hex(BPTR(&amp;w=
-ork), BLENZ(&amp;work), 80, &amp;gc));</span><br><span> </span><br><span>  =
-           /* Get packet ID from plaintext buffer or IV, depending on ciphe=
-r mode */</span><br><span>             {</span><br><span>@@ -855,7 +855,7 @=
-@</span><br><span> crypto_max_overhead(void)</span><br><span> {</span><br><=
-span>     return packet_id_size(true) + OPENVPN_MAX_IV_LENGTH + OPENVPN_MAX=
-_CIPHER_BLOCK_SIZE</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-        + max_int(OPENVPN_MAX_HMAC_SIZE, OPENVPN_AEAD_TAG_LENGTH);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+           + max_uint(OPENVP=
-N_MAX_HMAC_SIZE, OPENVPN_AEAD_TAG_LENGTH);</span><br><span> }</span><br><sp=
-an> </span><br><span> static void</span><br><span>@@ -1366,7 +1366,7 @@</sp=
-an><br><span>         size_t buf_size =3D strlen(file) + 1;</span><br><span=
->         ASSERT(buf_size &lt;=3D INT_MAX);</span><br><span>         size =
-=3D (int)buf_size;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-     buf_set_read(&amp;in, (const uint8_t *)file, size);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        buf_set_read(&amp;in, (const u=
-int8_t *)file, buf_size);</span><br><span>     }</span><br><span>     else =
-/* &#39;file&#39; is a filename which refers to a file containing the ascii=
- key */</span><br><span>     {</span><br><span>@@ -1535,7 +1535,7 @@</span>=
-<br><span>     struct buffer out =3D alloc_buf_gc(2048, &amp;gc);</span><br=
-><span> </span><br><span>     /* how to format the ascii file representatio=
-n of key */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const =
-int bytes_per_line =3D 16;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    const size_t bytes_per_line =3D 16;</span><br><span> </span><br>=
-<span>     /* write header */</span><br><span>     buf_printf(&amp;out, &qu=
-ot;#\n# %d bit OpenVPN static key\n#\n&quot;, nbits);</span><br><span>diff =
---git a/src/openvpn/crypto=2Eh b/src/openvpn/crypto=2Eh</span><br><span>ind=
-ex dbe0802=2E=2Efd632be 100644</span><br><span>--- a/src/openvpn/crypto=2Eh=
-</span><br><span>+++ b/src/openvpn/crypto=2Eh</span><br><span>@@ -760,12 +7=
-60,12 @@</span><br><span>  * to read=2E</span><br><span>  */</span><br><spa=
-n> static inline bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-aead_usage_limit_reached(const uint64_t limit, const struct key_ctx *key_ct=
-x, int64_t higest_pid)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+aead_usage_limit_reached(const uint64_t limit, const struct key_ctx *key=
-_ctx, uint64_t higest_pid)</span><br><span> {</span><br><span>     /* This =
-is the  q + s &lt;=3D  p^(1/2) * 2^(129/2) - 1 calculation where</span><br>=
-<span>      * q is the number of protected messages (highest_pid)</span><br=
-><span>      * s Total plaintext length in all messages (in blocks) */</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    return (limit &gt; 0 &=
-amp;&amp; key_ctx-&gt;plaintext_blocks + (uint64_t)higest_pid &gt; limit);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return (limit &g=
-t; 0 &amp;&amp; key_ctx-&gt;plaintext_blocks + higest_pid &gt; limit);</spa=
-n><br><span> }</span><br><span> </span><br><span> #endif /* CRYPTO_H */</sp=
-an><br><span>diff --git a/src/openvpn/crypto_epoch=2Ec b/src/openvpn/crypto=
-_epoch=2Ec</span><br><span>index 312cf6f=2E=2E243b5a2 100644</span><br><spa=
-n>--- a/src/openvpn/crypto_epoch=2Ec</span><br><span>+++ b/src/openvpn/cryp=
-to_epoch=2Ec</span><br><span>@@ -98,7 +98,7 @@</span><br><span>     const u=
-int8_t *label_prefix =3D (const uint8_t *)(&quot;ovpn &quot;);</span><br><s=
-pan>     uint8_t prefix_len =3D 5;</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    size_t hkdf_label_len =3D 2 + prefix_le=
-n + 1 + label_len + 1 + context_len;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    size_t hkdf_label_len =3D 2u + prefix_len + 1u + label=
-_len + 1u + context_len;</span><br><span>     struct buffer hkdf_label =3D =
-alloc_buf_gc(hkdf_label_len, &amp;gc);</span><br><span> </span><br><span>  =
-   buf_write_u16(&amp;hkdf_label, (uint16_t)out_len);</span><br><span>diff =
---git a/src/openvpn/manage=2Ec b/src/openvpn/manage=2Ec</span><br><span>ind=
-ex 4809532=2E=2E1760c90 100644</span><br><span>--- a/src/openvpn/manage=2Ec=
-</span><br><span>+++ b/src/openvpn/manage=2Ec</span><br><span>@@ -2758,7 +2=
-758,7 @@</span><br><span>             else</span><br><span>             {</=
-span><br><span>                 int status;</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-                int resolve_flags =3D GETADDR_RESOLVE=
- | GETADDR_WARN_ON_SIGNAL | GETADDR_FATAL;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+                unsigned int resolve_flags =3D GETAD=
-DR_RESOLVE | GETADDR_WARN_ON_SIGNAL | GETADDR_FATAL;</span><br><span> </spa=
-n><br><span>                 if (!(flags &amp; MF_CONNECT_AS_CLIENT))</span=
-><br><span>                 {</span><br><span>@@ -4001,11 +4001,11 @@</span=
-><br><span>         desc =3D &quot;rsa-sign&quot;;</span><br><span>     }</=
-span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    b=
-uf_write(&amp;buf_data, b64_data, (int)strlen(b64_data));</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    buf_write(&amp;buf_data, b64_data=
-, strlen(b64_data));</span><br><span>     if (man-&gt;connection=2Eclient_v=
-ersion &gt;=3D MCV_PKSIGN_ALG)</span><br><span>     {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        buf_write(&amp;buf_data, &quot;,&qu=
-ot;, (int)strlen(&quot;,&quot;));</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-        buf_write(&amp;buf_data, algorithm, (int)strlen(algorit=
-hm));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        buf_wr=
-ite(&amp;buf_data, &quot;,&quot;, strlen(&quot;,&quot;));</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        buf_write(&amp;buf_data, algo=
-rithm, strlen(algorithm));</span><br><span>     }</span><br><span>     char=
- *ret =3D management_query_multiline_flatten(man, (char *)buf_bptr(&amp;buf=
-_data), prompt, desc,</span><br><span>                                     =
-               &amp;man-&gt;connection=2Eext_key_state,</span><br><span>dif=
-f --git a/src/openvpn/ssl_mbedtls=2Ec b/src/openvpn/ssl_mbedtls=2Ec</span><=
-br><span>index cbc3118=2E=2Ef4e142b 100644</span><br><span>--- a/src/openvp=
-n/ssl_mbedtls=2Ec</span><br><span>+++ b/src/openvpn/ssl_mbedtls=2Ec</span><=
-br><span>@@ -1119,7 +1119,7 @@</span><br><span>         return 0;</span><br=
-><span>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    retval =3D endless_buf_write(&amp;ks-&gt;bio_ctx-&gt;in, BPTR=
-(buf), buf-&gt;len);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    retval =3D endless_buf_write(&amp;ks-&gt;bio_ctx-&gt;in, BPTR(buf), BL=
-ENZ(buf));</span><br><span> </span><br><span>     if (retval &lt; 0)</span>=
-<br><span>     {</span><br></pre><p>To view, visit <a href=3D"https://gerri=
-t=2Eopenvpn=2Enet/c/openvpn/+/2157?usp=3Demail">change 2157</a>=2E To unsub=
-scribe, or for help writing mail filters, visit <a href=3D"https://gerrit=
-=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope it=
-emtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"acti=
-on" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=
-=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2157?usp=3Demail"/><meta ite=
-mprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display=
-:none"> Gerrit-MessageType: newchange </div>
-<div style=3D"display:none"> G=
-errit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: m=
-aster </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I02f8df01f8f33c=
-b9cd04cd844d1f1893688f51e8 </div>
-<div style=3D"display:none"> Gerrit-Chang=
-e-Number: 2157 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div=
->
-<div style=3D"display:none"> Gerrit-Owner: Frank Lichtenheld &lt;frank@li=
-chtenheld=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: Ar=
-ne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:=
-none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: Arne Schwabe &lt=
-;arne-openvpn@rfc2549=2Eorg&gt; </div>
-
-</body></html>
---dFGWpH9kO+8=--
-
-
---===============0192627008313446418==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============0192627008313446418==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
---===============0192627008313446418==--
-
