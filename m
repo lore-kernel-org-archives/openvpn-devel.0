@@ -1,75 +1,140 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B86BE606A31C
-	for <openvpn-devel@archiver.kernel.org>; Tue, 10 Nov 2026 14:37:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C145E606A31C
+	for <openvpn-devel@archiver.kernel.org>; Tue, 10 Nov 2026 14:50:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=kS3bYnWU;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=fT78HmRe;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=m6kxRvUM
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=GX2UmspI;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=ljLSkUHm;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=U4uHiwvB;
+	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=RvCpH8SL
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
-	List-Owner; bh=5Nnrj4LrF1Qm5u05a0EFVeoD7Uz2hysas5WITHP+2zE=; b=kS3bYnWU3odANa
-	j/TqFNRPXLZ6RvgStD/4SNP4dMJJzu+4Tha2GtcJfUSYJ4nyker1HpkAhzTjE2r0yzxrnRu48nYaA
-	ZvZno7+Rwaz/ZTOJ/HoIWmA4DyrJvbP5+fkH0fPUyuGy1IVxDBs/PcQ/0PW/CTLJ2GwGHDlcd3w2h
-	1+U=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Unsubscribe-Post:List-Owner;
+	bh=BPDGjZSFoxtJGdt+3YZqQggXiOiRwkwjiYCXsXjOrEg=; b=GX2UmspIe5nnwWPfl6MNLReQeg
+	3BlwkZ31AYCrmLUVd7z26h/YFb52XOzUvIytTmAcTaeZ1S5SYOI1nd6efAi2ZcEQp4ypKJ7tlz1pD
+	PJr08RC+K3VWWzFCbhOi+rPnogAB4uNJVjNoO0MfwrfdgCweMwnOHzCC9oyeA2L5j1AE=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xQmyu-000000000dL-1pFB;
-	Tue, 10 Nov 2026 14:37:52 +0000
+	id 1xQnAh-000000005mM-0ObB;
+	Tue, 10 Nov 2026 14:50:03 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gert@blue4.greenie.muc.de>)
- id 1xQmyr-000000000d3-1KMe for openvpn-devel@lists.sourceforge.net;
- Tue, 10 Nov 2026 14:37:49 +0000
+ (envelope-from <gerrit@openvpn.net>) id 1xQnAN-000000005l6-0uAN
+ for openvpn-devel@lists.sourceforge.net;
+ Tue, 10 Nov 2026 14:49:43 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
+ :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
+ Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
+ :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=1kZPDB2v/b+H4XU07qvQRC3Aw7ov1zh0AwHi/Q5CtNI=; b=fT78HmReBZHPFIMRA95FJ8OZHh
- vhR7o5nsTxc8hQFKN6edGj4Oa2gbixZxmdFRlFzR2EIpvaQ++n9N8qHCuOGCvwuCTiNHvxypja1Qx
- lViUhoKSx5T3Rp1dTslhdlxMnUzJTuOQmInuVRG0V14DhmwN7osZn53qLSLiVIbsmpM4=;
+ bh=BrfIPAJ+y9XQsxy5QYsF9vwndAi0JvHukuL7lxho8E8=; b=ljLSkUHmdz7xCzrFnWwNsjUAb8
+ nUzWxs8bpnYTW6zGdFKipRCCwyNxa/+Cc5px9QqYcSxYAzKNgEQmFSUaKOoM9Y4Nc7Z/7/UQDI22C
+ QlU+TfyhvAx8IpwiwJrNwdv0jOcJsEpQITohgGL/QcblVDhG2HFinzzm623MdVpLPlUU=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
+ h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
+ Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=1kZPDB2v/b+H4XU07qvQRC3Aw7ov1zh0AwHi/Q5CtNI=; b=m6kxRvUM39mq8to5VMKkWx7aHO
- 4EjRHlVPUHP9rb+uAPl3Td00aLerZiy6QKzMpbbP9VIFg1UVtwUYgN1F2f3sPjMUc5aaYhrlohobp
- eGEWe5CzFO4wKJP1QE0j35yJ6w8RMnaIyvmRJPlS6Hma9Ufpk94PLNYut4DTMDihlTQ0=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ bh=BrfIPAJ+y9XQsxy5QYsF9vwndAi0JvHukuL7lxho8E8=; b=U4uHiwvB6qtQahjFu6kdpSnTCs
+ b8urvjGwrL8L91lwpjuyAaWbQ/XRoW3ZlYM5w/c+rifFzRlCBBYRbBDQQACvUb6FUqrDOpKIdqw68
+ ZJSeGTY/ap19WfX8NYHUNo0VLOj+cKRkqcVGeAEeiT/XWS5Jsw7oFWqbI1OGBiL/hYvI=;
+Received: from mail-wr1-f53.google.com ([209.85.221.53])
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
- id 1xQmyW-000000008RR-3ars for openvpn-devel@lists.sourceforge.net;
- Tue, 10 Nov 2026 14:37:30 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 6AAEbME5015207
- for <openvpn-devel@lists.sourceforge.net>; Tue, 10 Nov 2026 15:37:22 +0100
-Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 6AAEbMC0015206
- for openvpn-devel@lists.sourceforge.net; Tue, 10 Nov 2026 15:37:22 +0100
-From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Tue, 10 Nov 2026 15:37:16 +0100
-Message-ID: <20261110143722.15193-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <gerrit.1794261747000.I02f8df01f8f33cb9cd04cd844d1f1893688f51e8@gerrit.openvpn.net>
-References: <gerrit.1794261747000.I02f8df01f8f33cb9cd04cd844d1f1893688f51e8@gerrit.openvpn.net>
+ (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
+ id 1xQnAF-000000000Hw-1xBu for openvpn-devel@lists.sourceforge.net;
+ Tue, 10 Nov 2026 14:49:37 +0000
+Received: by mail-wr1-f53.google.com with SMTP id
+ ffacd0b85a97d-491f34b4e0fso935885f8f.2
+ for <openvpn-devel@lists.sourceforge.net>;
+ Tue, 10 Nov 2026 06:49:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=openvpn.net; s=google; t=1794322169; x=1794926969; darn=lists.sourceforge.net;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
+ :reply-to:content-type;
+ bh=BrfIPAJ+y9XQsxy5QYsF9vwndAi0JvHukuL7lxho8E8=;
+ b=RvCpH8SLN5vS81y0ieqxUVXlyoRD8K/+ggjfOdPk5JTo3ah6QFI0i9/Ke6PFYuJwQg
+ I6LYvIhbvhhaZw8ygdp0rAbfKuiWFHiSFOaaZoMJaXAE5sYr5JGKsmx8r5cbL4wf+YWt
+ YL3wkh+9lgM1Jy3XyuImA6O+AHuM3tA0T4V3K0XARiZEyNrE6wG9//TL6ZD6v3srsF6i
+ WJWkLpLDCw3Ln0/9BuUvESKxPuXEra1Jqx4/IG93NHL/V8h6X3GQqT7u5u3PcrONY/Jx
+ u2WTw+mgJOmi8XSauKxkl2KrIMuHWfmpEjA0rBcHy70uqpJr6nSz7X66+9nNNusGWE/i
+ Hh5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20260707; t=1794322169; x=1794926969;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
+ :cc:subject:date:message-id:reply-to:content-type;
+ bh=BrfIPAJ+y9XQsxy5QYsF9vwndAi0JvHukuL7lxho8E8=;
+ b=hObAjkzFWWVjAM9W3eVmh3nO8wPynSO3FPumzEJx4QDS7aS+bwB4xfjLX6zFYwJR/s
+ 0QhSX99ow1EoXnUy1eyq0TgaXZ2nrjH096gV+xmR/DLpN2hEtbTTLtkCFC9aHcNPuooN
+ 5BBa8PQ0//YIRCc2Sn4hBKsu9FAPouE+Z7O89vc1xKIuS6/tNnofb6R7APSENR6CTTuE
+ W33EMoHQdxQAFU1Den7jxqP/n4nfjAuWA36Ww766gt3tS4T8H4Zgyu7o0u9iiMYxHZX0
+ 5HRFSlc2PV4/u7PqQyX6w4fmoxGwPCYUf3DAExhUWr15PgM72E4mTH1J4HK2jaeNtoLY
+ 72Nw==
+X-Forwarded-Encrypted: i=1;
+ AL+hErG64GqyzXJGeWqkUimcQtnrXOOvMhQBi0atB4aQNSDErN/kPkPpTqv+9z81GE+aGMexwqaZoay0XPTTzBBA@lists.sourceforge.net
+X-Gm-Message-State: APuU4Z8BUPnvAEWhVztsSL+jlgi2lWJukQxE24Iq7B65paDvNdIUvUw7
+ ZJ04y6MluatZncuO6hGzSkExI5y5s3P6hEUFAQjzRVpP5h6bmH7XIPbIw+44NKN9H6F+XYZdWv1
+ dFJsqg7qYmX4dMd3Mt7xLCSnn0ps9HEL6mgHuhSwXW/pJuTwKumzwj/Hnk7F5pxHyMj45mgjh54
+ VbHBDH9A==
+X-Gm-Gg: AYBFou27ZR0nVn1Vk8YV3sRoOy6A5S9JsGZklxQ/mTtUkct1Wz2Onsu1CKzJhDs0d14
+ DGrBMia89n30+5S/bY+lveZ4vTwZt6+CSVQkhgTwKdubD0p1ptvHKt588aQTW9XEPja6xK31LcZ
+ O5wyJLbo9UcX9uYAeXl8GiJ0LFiOD26LvR8KR/pFUyD9D2AE/Viw6urrep/jGoWNHi0kuL66LX6
+ lBIu6r8MggT1/AtzgRH6gmTGZXy+2N0g1Rlomc6dTpdjBvrvUaEyrudwQQQ2tLtO8A+5BmR6VMV
+ rEJZEKw6RwOAMlMWsOBm2Km+fmAB8ycVBu5KMfKruUaVEyb4SIltZHa7iPIyDjSRkOVO4HxjrU2
+ BcQ5+X7uV8sPNYPfVZvmzf7zbRPvG333Ur4cJ4LrtyWViNjR3BKvh9uDHl+bEro4MhlFf63E/1i
+ qk771c4xq8mngdyXIJuphxCKIHcPwXAJNShbmCDFxrFuj2RQ5u+LKBLD2gFUSGhRoqzhnEOJRE7
+ 2uVUMNfMo9XTGfghaVzsy5/5R/5StlK/Owolj54qGbm5IKAOZEfcG758fyiph9BUt2E8b4kQbK4
+ R0gleRIDeFj7vsLNIWZ2GXgqAmnFVw4MoDP/XZIw1R59QINMNIz/BSgtfWLwzn2Ml7kJqpLd7Rx
+ 9Yu4ZVd7uPDFQmY14qmdqIVjaY2+imfWzAzHaZ1d/5Jm6avSKXUWP209rQ8u/t6pJ0yrL+Ffu2g
+ mXaTwAn/g2mhLdp4g=
+X-Received: by 2002:a05:6000:401f:b0:499:1c0d:4568 with SMTP id
+ ffacd0b85a97d-4991c0d45b8mr2122675f8f.48.1794322168632; 
+ Tue, 10 Nov 2026 06:49:28 -0800 (PST)
+Received: from ip-10-18-1-162.eu-central-1.compute.internal
+ (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
+ by smtp.gmail.com with ESMTPSA id
+ ffacd0b85a97d-49836a9951csm5186143f8f.56.2026.11.10.06.49.28
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 10 Nov 2026 06:49:28 -0800 (PST)
+X-Google-Original-From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?=
+ <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
+Date: Tue, 10 Nov 2026 14:49:27 +0000
+To: Frank Lichtenheld <frank@lichtenheld.com>
+Auto-Submitted: auto-generated
+X-Gerrit-MessageType: comment
+X-Gerrit-PatchSet: 1
+X-Gerrit-Change-Id: I1c87faefd3adc2d95b5318437d097c3970a120d3
+X-Gerrit-Change-Number: 2168
+X-Gerrit-Project: openvpn
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2168?usp=email>
+X-Gerrit-Commit: e15233110ff23b820b082a284b93503d13df1e53
+X-Gerrit-Comment-Date: Tue, 10 Nov 2026 14:49:27 +0000
+In-Reply-To: <gerrit.1794321442000.I1c87faefd3adc2d95b5318437d097c3970a120d3@gerrit.openvpn.net>
+References: <gerrit.1794321442000.I1c87faefd3adc2d95b5318437d097c3970a120d3@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzk0MzIxNDQyMDAwLkkxYzg3ZmFlZmQzYWRjMmQ5NWI1MzE4NDM3ZDA5N2MzOTcwYTEyMGQzQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <76de2954f04c5f586d8f4e441f24870e6edd95bb-EmailReviewComments-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
-X-Spam-Score: 1.3 (+)
-X-Headers-End: 1xQmyW-000000008RR-3ars
-Subject: [Openvpn-devel] [PATCH v4] Various trivial -Wsign-conversion fixes
+User-Agent: Gerrit/3.14.5
+X-Spam-Score: 0.8 (/)
+X-Headers-End: 1xQnAF-000000000Hw-1xBu
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: console: Switch
+ response_len to size_t
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -79,593 +144,153 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-16.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_PASS,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=4.0.1
+From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= via Openvpn-devel
+ <openvpn-devel@lists.sourceforge.net>
+Reply-To: razvanc@mailbox.org, arne-openvpn@rfc2549.org,
+ openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com
+Cc: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= <gerrit@openvpn.net>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>,
+ Arne Schwabe <arne-openvpn@rfc2549.org>
+Content-Type: multipart/mixed; boundary="===============6618750927680595388=="
+X-Spam-Status: No, score=-2.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
+	MAILING_LIST_MULTI,PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,SPF_PASS
+	autolearn=no autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
-From: Frank Lichtenheld <frank@lichtenheld.com>
+--===============6618750927680595388==
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="1Xrlkr7C/U0="; charset=UTF-8
 
-* Continue BLEN -> BLENZ replacement
-* Remove some unneeded casts
-* Some trivial type fixes
+--1Xrlkr7C/U0=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Change-Id: I02f8df01f8f33cb9cd04cd844d1f1893688f51e8
-Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
-Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2157
----
+Attention is currently required from: Arne Schwabe, Frank Lichtenheld=2E
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+R=
+=C4=83zvan Cojocaru has posted comments on this change by Frank Lichtenheld=
+=2E ( https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2168?usp=3Demail )
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2157
-This mail reflects revision 4 of this Change.
+Change=
+ subject: console: Switch response_len to size_t
+=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-Acked-by according to Gerrit (reflected above):
-Razvan Cojocaru <razvanc@mailbox.org>
 
-        
-diff --git a/src/openvpn/acc.c b/src/openvpn/acc.c
-index e21891d..b8d7c3d 100644
---- a/src/openvpn/acc.c
-+++ b/src/openvpn/acc.c
-@@ -148,11 +148,6 @@
-     return parse_acc_message_flags(flags, err_reason, gc);
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wsign-conversion"
--#endif
--
- void
- receive_acc_message(struct context *c, const struct buffer *buffer)
- {
-@@ -236,15 +231,10 @@
-     msg(D_PUSH_ERRORS, "WARNING: Received malformed custom app control channel "
-                        "message (%s): %s",
-         err_reason,
--        format_hex(CBPTR(buffer), BLEN(buffer), 80, &gc));
-+        format_hex(CBPTR(buffer), BLENZ(buffer), 80, &gc));
-     gc_free(&gc);
- }
- 
--
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- bool
- send_acc_message(struct context *c,
-                  struct tls_multi *multi,
-diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c
-index 211af90..b69092c 100644
---- a/src/openvpn/auth_token.c
-+++ b/src/openvpn/auth_token.c
-@@ -36,11 +36,6 @@
-  * padding */
- static_assert(TOKEN_DATA_LEN % 3 == 0, "TOKEN_DATA_LEN is not a multiple of 3");
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wsign-conversion"
--#endif
--
- bool
- is_auth_token(const char *password)
- {
-@@ -67,7 +62,7 @@
-         return;
-     }
- 
--    int auth_token_state_flags = session->key[KS_PRIMARY].auth_token_state_flags;
-+    unsigned int auth_token_state_flags = session->key[KS_PRIMARY].auth_token_state_flags;
- 
-     const char *state;
- 
-@@ -188,7 +183,7 @@
- {
-     struct gc_arena gc = gc_new();
- 
--    int64_t timestamp = htonll((uint64_t)now);
-+    int64_t timestamp = (int64_t)htonll((uint64_t)now);
-     int64_t initial_timestamp = timestamp;
- 
-     hmac_ctx_t *ctx = multi->opt.auth_token_key.hmac;
-@@ -273,7 +268,7 @@
-         alloc_buf_gc(strlen(SESSION_ID_PREFIX) + strlen(b64output) + 1, &gc);
- 
-     ASSERT(buf_write(&session_token, SESSION_ID_PREFIX, strlen(SESSION_ID_PREFIX)));
--    ASSERT(buf_write(&session_token, b64output, (int)strlen(b64output)));
-+    ASSERT(buf_write(&session_token, b64output, strlen(b64output)));
-     ASSERT(buf_write_u8(&session_token, 0));
- 
-     free(b64output);
-@@ -296,10 +291,6 @@
-     gc_free(&gc);
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- static bool
- check_hmac_token(hmac_ctx_t *ctx, const uint8_t *b64decoded, const char *username)
- {
-diff --git a/src/openvpn/base64.h b/src/openvpn/base64.h
-index be7aa64..800e569 100644
---- a/src/openvpn/base64.h
-+++ b/src/openvpn/base64.h
-@@ -35,7 +35,7 @@
- #define _BASE64_H_
- 
- /** Compute resulting base64 length.  6 bits per byte, padded to 4 bytes. */
--#define OPENVPN_BASE64_LENGTH(binary_length) ((((8 * binary_length) / 6) + 3) & ~3)
-+#define OPENVPN_BASE64_LENGTH(binary_length) ((((8 * binary_length) / 6) + 3) & ~3u)
- 
- /** Compute the maximal number of bytes encoded in a base64 string. */
- #define OPENVPN_BASE64_DECODED_LENGTH(base64_length) ((base64_length / 4) * 3)
-diff --git a/src/openvpn/console_builtin.c b/src/openvpn/console_builtin.c
-index dc71d12..0353ade 100644
---- a/src/openvpn/console_builtin.c
-+++ b/src/openvpn/console_builtin.c
-@@ -234,7 +234,7 @@
-     if (!echo && (tcgetattr(fileno(fp), &tty_tmp) == 0))
-     {
-         tty_save = tty_tmp;
--        tty_tmp.c_lflag &= ~(ECHO | ECHOE | ECHOK | ECHONL | ISIG);
-+        tty_tmp.c_lflag &= ~(unsigned int)(ECHO | ECHOE | ECHOK | ECHONL | ISIG);
-         restore_tty = (tcsetattr(fileno(fp), TCSAFLUSH, &tty_tmp) == 0);
-     }
- 
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index 88c2c52..a4c2683 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -139,7 +139,7 @@
-         ASSERT(cipher_ctx_reset(ctx->cipher, iv));
-     }
- 
--    dmsg(D_PACKET_CONTENT, "ENCRYPT FROM: %s", format_hex(BPTR(buf), BLEN(buf), 80, &gc));
-+    dmsg(D_PACKET_CONTENT, "ENCRYPT FROM: %s", format_hex(BPTR(buf), BLENZ(buf), 80, &gc));
- 
-     /* Buffer overflow check */
-     if (!buf_safe(&work, buf->len + mac_len + cipher_ctx_block_size(ctx->cipher)))
-@@ -151,7 +151,7 @@
- 
-     /* For AEAD ciphers, authenticate Additional Data, including opcode */
-     ASSERT(cipher_ctx_update_ad(ctx->cipher, BPTR(&work), BLEN(&work)));
--    dmsg(D_PACKET_CONTENT, "ENCRYPT AD: %s", format_hex(BPTR(&work), BLEN(&work), 0, &gc));
-+    dmsg(D_PACKET_CONTENT, "ENCRYPT AD: %s", format_hex(BPTR(&work), BLENZ(&work), 0, &gc));
- 
-     if (!use_epoch_data_format)
-     {
-@@ -170,8 +170,8 @@
- 
-     /* update number of plaintext blocks encrypted. Use the (x + (n-1))/n trick
-      * to round up the result to the number of blocks used */
--    const int blocksize = AEAD_LIMIT_BLOCKSIZE;
--    opt->key_ctx_bi.encrypt.plaintext_blocks += (BLEN(&work) + (blocksize - 1)) / blocksize;
-+    const unsigned int blocksize = AEAD_LIMIT_BLOCKSIZE;
-+    opt->key_ctx_bi.encrypt.plaintext_blocks += (BLENZ(&work) + (blocksize - 1)) / blocksize;
- 
-     /* if the tag is at end the end, allocate it now */
-     if (use_epoch_data_format)
-@@ -186,7 +186,7 @@
- 
-     *buf = work;
- 
--    dmsg(D_PACKET_CONTENT, "ENCRYPT TO: %s", format_hex(BPTR(buf), BLEN(buf), 80, &gc));
-+    dmsg(D_PACKET_CONTENT, "ENCRYPT TO: %s", format_hex(BPTR(buf), BLENZ(buf), 80, &gc));
- 
-     gc_free(&gc);
-     return;
-@@ -257,13 +257,13 @@
-             ASSERT(buf_write(&work, iv_buf, iv_size));
-             dmsg(D_PACKET_CONTENT, "ENCRYPT IV: %s", format_hex(iv_buf, iv_size, 0, &gc));
- 
--            dmsg(D_PACKET_CONTENT, "ENCRYPT FROM: %s", format_hex(BPTR(buf), BLEN(buf), 80, &gc));
-+            dmsg(D_PACKET_CONTENT, "ENCRYPT FROM: %s", format_hex(BPTR(buf), BLENZ(buf), 80, &gc));
- 
-             /* cipher_ctx was already initialized with key & keylen */
-             ASSERT(cipher_ctx_reset(ctx->cipher, iv_buf));
- 
-             /* Buffer overflow check */
--            if (!buf_safe(&work, buf->len + cipher_ctx_block_size(ctx->cipher)))
-+            if (!buf_safe(&work, BLENZ(buf) + cipher_ctx_block_size(ctx->cipher)))
-             {
-                 msg(D_CRYPT_ERRORS,
-                     "ENCRYPT: buffer size error, bc=%d bo=%d bl=%d wc=%d wo=%d wl=%d cbs=%u",
-@@ -317,7 +317,7 @@
- 
-         *buf = work;
- 
--        dmsg(D_PACKET_CONTENT, "ENCRYPT TO: %s", format_hex(BPTR(&work), BLEN(&work), 80, &gc));
-+        dmsg(D_PACKET_CONTENT, "ENCRYPT TO: %s", format_hex(BPTR(&work), BLENZ(&work), 80, &gc));
-     }
- 
-     gc_free(&gc);
-@@ -460,7 +460,7 @@
-     ASSERT(buf->len > 0);
-     ASSERT(ctx->cipher);
- 
--    dmsg(D_PACKET_CONTENT, "DECRYPT FROM: %s", format_hex(BPTR(buf), BLEN(buf), 80, &gc));
-+    dmsg(D_PACKET_CONTENT, "DECRYPT FROM: %s", format_hex(BPTR(buf), BLENZ(buf), 80, &gc));
- 
-     ASSERT(ad_start >= buf->data && ad_start <= BPTR(buf));
- 
-@@ -558,10 +558,10 @@
-     }
- 
-     dmsg(D_PACKET_CONTENT, "DECRYPT MAC: %s", format_hex(tag_ptr, tag_size, 0, &gc));
--    dmsg(D_PACKET_CONTENT, "DECRYPT FROM: %s", format_hex(BPTR(buf), BLEN(buf), 0, &gc));
-+    dmsg(D_PACKET_CONTENT, "DECRYPT FROM: %s", format_hex(BPTR(buf), BLENZ(buf), 0, &gc));
- 
-     /* Buffer overflow check (should never fail) */
--    if (!buf_safe(&work, buf->len + cipher_ctx_block_size(ctx->cipher)))
-+    if (!buf_safe(&work, BLENZ(buf) + cipher_ctx_block_size(ctx->cipher)))
-     {
-         CRYPT_ERROR("potential buffer overflow");
-     }
-@@ -585,7 +585,7 @@
-     }
-     ASSERT(buf_inc_len(&work, outlen));
- 
--    dmsg(D_PACKET_CONTENT, "DECRYPT TO: %s", format_hex(BPTR(&work), BLEN(&work), 80, &gc));
-+    dmsg(D_PACKET_CONTENT, "DECRYPT TO: %s", format_hex(BPTR(&work), BLENZ(&work), 80, &gc));
- 
-     if (!crypto_check_replay(opt, &pin, epoch, error_prefix, &gc))
-     {
-@@ -594,8 +594,8 @@
- 
-     /* update number of plaintext blocks decrypted. Use the (x + (n-1))/n trick
-      * to round up the result to the number of blocks used. */
--    const int blocksize = AEAD_LIMIT_BLOCKSIZE;
--    opt->key_ctx_bi.decrypt.plaintext_blocks += (BLEN(&work) + (blocksize - 1)) / blocksize;
-+    const unsigned int blocksize = AEAD_LIMIT_BLOCKSIZE;
-+    opt->key_ctx_bi.decrypt.plaintext_blocks += (BLENZ(&work) + (blocksize - 1)) / blocksize;
- 
-     *buf = work;
- 
-@@ -631,7 +631,7 @@
-         struct packet_id_net pin;
-         bool have_pin = false;
- 
--        dmsg(D_PACKET_CONTENT, "DECRYPT FROM: %s", format_hex(BPTR(buf), BLEN(buf), 80, &gc));
-+        dmsg(D_PACKET_CONTENT, "DECRYPT FROM: %s", format_hex(BPTR(buf), BLENZ(buf), 80, &gc));
- 
-         /* Verify the HMAC */
-         if (ctx->hmac)
-@@ -694,7 +694,7 @@
-             }
- 
-             /* Buffer overflow check (should never happen) */
--            if (!buf_safe(&work, buf->len + cipher_ctx_block_size(ctx->cipher)))
-+            if (!buf_safe(&work, BLENZ(buf) + cipher_ctx_block_size(ctx->cipher)))
-             {
-                 CRYPT_ERROR("packet too big to decrypt");
-             }
-@@ -713,7 +713,7 @@
-             }
-             ASSERT(buf_inc_len(&work, outlen));
- 
--            dmsg(D_PACKET_CONTENT, "DECRYPT TO: %s", format_hex(BPTR(&work), BLEN(&work), 80, &gc));
-+            dmsg(D_PACKET_CONTENT, "DECRYPT TO: %s", format_hex(BPTR(&work), BLENZ(&work), 80, &gc));
- 
-             /* Get packet ID from plaintext buffer or IV, depending on cipher mode */
-             {
-@@ -855,7 +855,7 @@
- crypto_max_overhead(void)
- {
-     return packet_id_size(true) + OPENVPN_MAX_IV_LENGTH + OPENVPN_MAX_CIPHER_BLOCK_SIZE
--           + max_int(OPENVPN_MAX_HMAC_SIZE, OPENVPN_AEAD_TAG_LENGTH);
-+           + max_uint(OPENVPN_MAX_HMAC_SIZE, OPENVPN_AEAD_TAG_LENGTH);
- }
- 
- static void
-@@ -1366,7 +1366,7 @@
-         size_t buf_size = strlen(file) + 1;
-         ASSERT(buf_size <= INT_MAX);
-         size = (int)buf_size;
--        buf_set_read(&in, (const uint8_t *)file, size);
-+        buf_set_read(&in, (const uint8_t *)file, buf_size);
-     }
-     else /* 'file' is a filename which refers to a file containing the ascii key */
-     {
-@@ -1535,7 +1535,7 @@
-     struct buffer out = alloc_buf_gc(2048, &gc);
- 
-     /* how to format the ascii file representation of key */
--    const int bytes_per_line = 16;
-+    const unsigned int bytes_per_line = 16;
- 
-     /* write header */
-     buf_printf(&out, "#\n# %d bit OpenVPN static key\n#\n", nbits);
-diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
-index dbe0802..fd632be 100644
---- a/src/openvpn/crypto.h
-+++ b/src/openvpn/crypto.h
-@@ -760,12 +760,12 @@
-  * to read.
-  */
- static inline bool
--aead_usage_limit_reached(const uint64_t limit, const struct key_ctx *key_ctx, int64_t higest_pid)
-+aead_usage_limit_reached(const uint64_t limit, const struct key_ctx *key_ctx, uint64_t higest_pid)
- {
-     /* This is the  q + s <=  p^(1/2) * 2^(129/2) - 1 calculation where
-      * q is the number of protected messages (highest_pid)
-      * s Total plaintext length in all messages (in blocks) */
--    return (limit > 0 && key_ctx->plaintext_blocks + (uint64_t)higest_pid > limit);
-+    return (limit > 0 && key_ctx->plaintext_blocks + higest_pid > limit);
- }
- 
- #endif /* CRYPTO_H */
-diff --git a/src/openvpn/crypto_epoch.c b/src/openvpn/crypto_epoch.c
-index 312cf6f..243b5a2 100644
---- a/src/openvpn/crypto_epoch.c
-+++ b/src/openvpn/crypto_epoch.c
-@@ -98,7 +98,7 @@
-     const uint8_t *label_prefix = (const uint8_t *)("ovpn ");
-     uint8_t prefix_len = 5;
- 
--    size_t hkdf_label_len = 2 + prefix_len + 1 + label_len + 1 + context_len;
-+    size_t hkdf_label_len = 2u + prefix_len + 1u + label_len + 1u + context_len;
-     struct buffer hkdf_label = alloc_buf_gc(hkdf_label_len, &gc);
- 
-     buf_write_u16(&hkdf_label, (uint16_t)out_len);
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index 4809532..1760c90 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -2758,7 +2758,7 @@
-             else
-             {
-                 int status;
--                int resolve_flags = GETADDR_RESOLVE | GETADDR_WARN_ON_SIGNAL | GETADDR_FATAL;
-+                unsigned int resolve_flags = GETADDR_RESOLVE | GETADDR_WARN_ON_SIGNAL | GETADDR_FATAL;
- 
-                 if (!(flags & MF_CONNECT_AS_CLIENT))
-                 {
-@@ -4001,11 +4001,11 @@
-         desc = "rsa-sign";
-     }
- 
--    buf_write(&buf_data, b64_data, (int)strlen(b64_data));
-+    buf_write(&buf_data, b64_data, strlen(b64_data));
-     if (man->connection.client_version >= MCV_PKSIGN_ALG)
-     {
--        buf_write(&buf_data, ",", (int)strlen(","));
--        buf_write(&buf_data, algorithm, (int)strlen(algorithm));
-+        buf_write(&buf_data, ",", strlen(","));
-+        buf_write(&buf_data, algorithm, strlen(algorithm));
-     }
-     char *ret = management_query_multiline_flatten(man, (char *)buf_bptr(&buf_data), prompt, desc,
-                                                    &man->connection.ext_key_state,
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index cbc3118..f4e142b 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -1119,7 +1119,7 @@
-         return 0;
-     }
- 
--    retval = endless_buf_write(&ks->bio_ctx->in, BPTR(buf), buf->len);
-+    retval = endless_buf_write(&ks->bio_ctx->in, BPTR(buf), BLENZ(buf));
- 
-     if (retval < 0)
-     {
-diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.c
-index bea51b5..37f6218 100644
---- a/tests/unit_tests/openvpn/test_crypto.c
-+++ b/tests/unit_tests/openvpn/test_crypto.c
-@@ -52,11 +52,6 @@
- 
- static const char testtext[] = "Dummy text to test PEM encoding";
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wsign-conversion"
--#endif
--
- static void
- crypto_pem_encode_decode_loopback(void **state)
- {
-@@ -467,14 +462,14 @@
-      * current mode (FIPS), this will still return -1 */
-     assert_int_equal(cipher_get_aead_limits("CHACHA20-POLY1305"), 0);
- 
--    int64_t aeslimit = cipher_get_aead_limits("AES-128-GCM");
-+    uint64_t aeslimit = cipher_get_aead_limits("AES-128-GCM");
- 
-     assert_int_equal(aeslimit, (1ull << 36) - 1);
- 
-     /* Check if this matches our exception for 1600 size packets assuming
-      * AEAD_LIMIT_BLOCKSIZE (128 bits/ 16 bytes). Gives us 100 blocks
-      * + 1 for the packet */
--    int64_t L = 101;
-+    uint64_t L = 101;
-     /* 2 ^ 29.34, using the result here to avoid linking to libm */
-     assert_int_equal(aeslimit / L, 680390858);
- 
-@@ -520,7 +515,7 @@
-                          0xec, 0xed, 0xee, 0xef, 0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7,
-                          0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff };
- 
--    const int L = 82;
-+    const size_t L = 82;
-     uint8_t okm[82] = { 0xb1, 0x1e, 0x39, 0x8d, 0xc8, 0x03, 0x27, 0xa1, 0xc8, 0xe7, 0xf7, 0x8c,
-                         0x59, 0x6a, 0x49, 0x34, 0x4f, 0x01, 0x2e, 0xda, 0x2d, 0x4e, 0xfa, 0xd8,
-                         0xa0, 0x50, 0xcc, 0x4c, 0x19, 0xaf, 0xa9, 0x7c, 0x59, 0x04, 0x5a, 0x99,
-@@ -545,7 +540,7 @@
- 
-     const uint8_t info[] = { 0 };
- 
--    int L = 42;
-+    const size_t L = 42;
-     uint8_t okm[42] = { 0x8d, 0xa4, 0xe7, 0x75, 0xa5, 0x63, 0xc1, 0x8f, 0x71, 0x5f, 0x80,
-                         0x2a, 0x06, 0x3c, 0x5a, 0x31, 0xb8, 0xa1, 0x1f, 0x5c, 0x5e, 0xe1,
-                         0x87, 0x9e, 0xc3, 0x45, 0x4e, 0x5f, 0x3c, 0x73, 0x8d, 0x2d, 0x9d,
-@@ -570,7 +565,7 @@
-     uint8_t info[18] = { 0x00, 0x1b, 0x0e, 0x6f, 0x76, 0x70, 0x6e, 0x20, 0x75,
-                          0x6e, 0x69, 0x74, 0x20, 0x74, 0x65, 0x73, 0x74, 0x00 };
- 
--    int L = 27;
-+    const size_t L = 27;
-     uint8_t okm[27] = { 0x87, 0x5a, 0x8e, 0xec, 0x18, 0x55, 0x63, 0x80, 0xb8,
-                         0xd9, 0x33, 0xed, 0x32, 0x3c, 0x2d, 0xf8, 0xe8, 0xec,
-                         0xcf, 0x49, 0x72, 0xe6, 0x83, 0xf0, 0x6a, 0x83, 0xac };
-@@ -782,7 +777,7 @@
- 
-     /* lookup some wacky things that should fail */
-     assert_null(epoch_lookup_decrypt_key(co, 2000));
--    assert_null(epoch_lookup_decrypt_key(co, -1));
-+    assert_null(epoch_lookup_decrypt_key(co, UINT16_MAX));
-     assert_null(epoch_lookup_decrypt_key(co, 0xefff));
- 
-     /* Lookup the edges of the current window */
-@@ -833,10 +828,6 @@
-     assert_null(epoch_lookup_decrypt_key(co, 23));
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- void
- crypto_test_epoch_key_overflow(void **state)
- {
-diff --git a/tests/unit_tests/openvpn/test_networking.c b/tests/unit_tests/openvpn/test_networking.c
-index ae75386..3699a2a1 100644
---- a/tests/unit_tests/openvpn/test_networking.c
-+++ b/tests/unit_tests/openvpn/test_networking.c
-@@ -40,23 +40,14 @@
-     return net_iface_del(NULL, name);
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wsign-conversion"
--#endif
--
- static int
--net__iface_mtu_set(int mtu)
-+net__iface_mtu_set(uint32_t mtu)
- {
--    printf("CMD: ip link set %s mtu %d\n", iface, mtu);
-+    printf("CMD: ip link set %s mtu %u\n", iface, mtu);
- 
-     return net_iface_mtu_set(NULL, iface, mtu);
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- static int
- net__addr_v4_add(const char *addr_str, int prefixlen)
- {
-diff --git a/tests/unit_tests/openvpn/test_pkt.c b/tests/unit_tests/openvpn/test_pkt.c
-index 5ace810..fbbb40f 100644
---- a/tests/unit_tests/openvpn/test_pkt.c
-+++ b/tests/unit_tests/openvpn/test_pkt.c
-@@ -618,11 +618,6 @@
-     assert_memory_equal(server_id2_p1.id, server_id_p2.id, SID_SIZE);
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic push
--#pragma GCC diagnostic ignored "-Wsign-conversion"
--#endif
--
- static void
- test_generate_reset_packet_plain(void **ut_state)
- {
-@@ -701,10 +696,6 @@
-     free_tas(&tas_server);
- }
- 
--#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic pop
--#endif
--
- /* A peer can ask us to append the wrapped client key (WKc) to our next
-  * control packet. Only a tls-crypt-v2 client has one, so check that we
-  * refuse to build such a packet when we have no key instead of walking
-diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/openvpn/test_tls_crypt.c
-index ab90ea5..2d31c00 100644
---- a/tests/unit_tests/openvpn/test_tls_crypt.c
-+++ b/tests/unit_tests/openvpn/test_tls_crypt.c
-@@ -352,7 +352,7 @@
-     skip_if_tls_crypt_not_supported(ctx);
- 
-     buf_clear(&ctx->source);
--    assert_non_null(buf_write_alloc(&ctx->source, TESTBUF_SIZE - BLEN(&ctx->ciphertext)
-+    assert_non_null(buf_write_alloc(&ctx->source, TESTBUF_SIZE - BLENZ(&ctx->ciphertext)
-                                                       - tls_crypt_buf_overhead()));
- 
-     assert_true(tls_crypt_wrap(&ctx->source, &ctx->ciphertext, &ctx->co));
-@@ -373,7 +373,7 @@
-     skip_if_tls_crypt_not_supported(ctx);
- 
-     buf_clear(&ctx->source);
--    assert_non_null(buf_write_alloc(&ctx->source, TESTBUF_SIZE - BLEN(&ctx->ciphertext)
-+    assert_non_null(buf_write_alloc(&ctx->source, TESTBUF_SIZE - BLENZ(&ctx->ciphertext)
-                                                       - tls_crypt_buf_overhead() + 1));
-     assert_false(tls_crypt_wrap(&ctx->source, &ctx->ciphertext, &ctx->co));
- }
-@@ -553,7 +553,7 @@
-     assert_false(tls_crypt_v2_extract_client_key(&ctx->wkc, &wrap_ctx, NULL));
- 
-     /* add a opcode in front of the key to make it valid to extract */
--    struct buffer wkcop = alloc_buf_gc(buf_len(&ctx->wkc) + 1, &ctx->gc);
-+    struct buffer wkcop = alloc_buf_gc(BLENZ(&ctx->wkc) + 1, &ctx->gc);
-     buf_write_u8(&wkcop, 0x50);
-     buf_copy(&wkcop, &ctx->wkc);
-     assert_true(tls_crypt_v2_extract_client_key(&wkcop, &wrap_ctx, NULL));
-@@ -638,7 +638,7 @@
-     int64_t create_time = now - (days_ago * 24 * 60 * 60);
-     assert_true(create_time > 0);
- 
--    int64_t timestamp = htonll((uint64_t)create_time);
-+    uint64_t timestamp = htonll((uint64_t)create_time);
-     ASSERT(buf_write(&metadata, &TLS_CRYPT_METADATA_TYPE_TIMESTAMP, 1));
-     ASSERT(buf_write(&metadata, &timestamp, sizeof(timestamp)));
- 
-@@ -660,7 +660,7 @@
-                                              &ctx->server_keys.encrypt, &ctx->gc));
- 
-     /* add a opcode in front of the key to make it valid to extract */
--    struct buffer pseudo_packet = alloc_buf_gc(buf_len(&ctx->wkc) + 1, &ctx->gc);
-+    struct buffer pseudo_packet = alloc_buf_gc(BLENZ(&ctx->wkc) + 1, &ctx->gc);
- 
-     buf_write_u8(&pseudo_packet, 0x50);
-     buf_copy(&pseudo_packet, &ctx->wkc);
-@@ -745,7 +745,7 @@
-     struct buffer expected_metadata = create_metadata_days_ago(&ctx->gc, 29);
-     buf_advance(&expected_metadata, 1);
- 
--    expect_memory(__wrap_buffer_write_file, pem, buf_bptr(&expected_metadata), buf_len(&expected_metadata));
-+    expect_memory(__wrap_buffer_write_file, pem, buf_bptr(&expected_metadata), BLENZ(&expected_metadata));
-     will_return(__wrap_buffer_write_file, true);
- 
-     tmp = create_client_key_input(ctx, 29);
-@@ -760,7 +760,7 @@
-     }
- 
-     expect_string(__wrap_buffer_write_file, filename, tmpfile_path);
--    expect_memory(__wrap_buffer_write_file, pem, buf_bptr(&expected_metadata), buf_len(&expected_metadata));
-+    expect_memory(__wrap_buffer_write_file, pem, buf_bptr(&expected_metadata), BLENZ(&expected_metadata));
-     will_return(__wrap_buffer_write_file, true);
- 
-     tmp = create_client_key_input(ctx, 29);
+Patch Set 1: Code-Review+2
 
+
+-- 
+To =
+view, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2168?usp=3Demail
+To =
+unsubscribe, or for help writing mail filters, visit https://gerrit=2Eopenv=
+pn=2Enet/settings?usp=3Demail
+
+Gerrit-MessageType: comment
+Gerrit-Project: =
+openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I1c87faefd3adc2d95b5318437d=
+097c3970a120d3
+Gerrit-Change-Number: 2168
+Gerrit-PatchSet: 1
+Gerrit-Owner: =
+Frank Lichtenheld <frank@lichtenheld=2Ecom>
+Gerrit-Reviewer: Arne Schwabe <=
+arne-openvpn@rfc2549=2Eorg>
+Gerrit-Reviewer: R=C4=83zvan Cojocaru <razvanc@=
+mailbox=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=
+=2Enet>
+Gerrit-Attention: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
+Gerrit-=
+Attention: Frank Lichtenheld <frank@lichtenheld=2Ecom>
+Gerrit-Comment-Date:=
+ Tue, 10 Nov 2026 14:49:27 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: =
+Yes
+
+--1Xrlkr7C/U0=
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: Arne Schwabe, Frank Lichtenheld=2E </p>
+<p>R=C4=83zva=
+n Cojocaru has posted comments on this change by Frank Lichtenheld=2E</p><p=
+>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; marg=
+in: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span></=
+p><p><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2168?usp=3Demail=
+">View Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To=
+ view, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2168?usp=
+=3Demail">change 2168</a>=2E To unsubscribe, or for help writing mail filte=
+rs, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">s=
+ettings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessa=
+ge"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/View=
+Action"><link itemprop=3D"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/ope=
+nvpn/+/2168?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/>=
+</div></div>
+
+<div style=3D"display:none"> Gerrit-MessageType: comment </di=
+v>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=
+=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"=
+> Gerrit-Change-Id: I1c87faefd3adc2d95b5318437d097c3970a120d3 </div>
+<div s=
+tyle=3D"display:none"> Gerrit-Change-Number: 2168 </div>
+<div style=3D"disp=
+lay:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Ow=
+ner: Frank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<div style=3D=
+"display:none"> Gerrit-Reviewer: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eor=
+g&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: R=C4=83zvan Cojo=
+caru &lt;razvanc@mailbox=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerr=
+it-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>=
+
+<div style=3D"display:none"> Gerrit-Attention: Arne Schwabe &lt;arne-openv=
+pn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: =
+Frank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<div style=3D"disp=
+lay:none"> Gerrit-Comment-Date: Tue, 10 Nov 2026 14:49:27 +0000 </div>
+<div=
+ style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"displa=
+y:none"> Gerrit-Has-Labels: Yes </div>
+
+</body></html>
+--1Xrlkr7C/U0=--
+
+
+--===============6618750927680595388==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============6618750927680595388==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+--===============6618750927680595388==--
+
