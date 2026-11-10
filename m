@@ -1,32 +1,32 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D29460A2618
-	for <openvpn-devel@archiver.kernel.org>; Tue, 10 Nov 2026 12:54:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5504B606A336
+	for <openvpn-devel@archiver.kernel.org>; Tue, 10 Nov 2026 12:54:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=joXv5H5w;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=MC39lsON;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=CfbH+s1b;
-	dkim=neutral header.d=mandelbit.com header.i=@mandelbit.com header.a=rsa-sha256 header.s=MBO0001 header.b=ecIlWRRX
+	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=H235mSgd;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=TU1Iyl6T;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=jN2A1CXX;
+	dkim=neutral header.d=mandelbit.com header.i=@mandelbit.com header.a=rsa-sha256 header.s=MBO0001 header.b=yI3hUrDn
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
-	List-Owner; bh=J2+BxVAK6ZDpT4IiWUJLKqE4NDeXGNSyO7CMv9H6u54=; b=joXv5H5wAG8VU6
-	OFfFB/JLsZOMsWRlOfxcCnYNsVGEgJeFwIp/grE4rDlGiD4ZdCcmyK+zmRQHJm3Q59zbaJAHfbsQR
-	J0qjlPFnTluj+2vPQJ6JQJriCJIHw+2jDdPDSVTfAAQckEUCfd5w/X4wo2zgKuf1gODLzpbbjKJlu
-	gtM=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	List-Owner; bh=3MO0bQB7Slml/uIGCEztGg6/AORspcx3TM9Op+XphXU=; b=H235mSgdPIlp17
+	MELhWg7KmV8u2LTAdSJJpugtXnJdDIsW4roynl95JGyBS4zF+K3+N2C21vm7UeG8N6wuDvVrMBVK9
+	rlNiWRbR1+8Bm1vlbmty74iTZAPMdgQl3CagFb4ywNe4vkkufF7WA/XV5sEBOmWnh8l0z5UqzBUbS
+	WOY=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xQlN5-0000000036U-3RPm;
-	Tue, 10 Nov 2026 12:54:43 +0000
+	id 1xQlN7-000000002Xk-09oQ;
+	Tue, 10 Nov 2026 12:54:45 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <ralf@mandelbit.com>) id 1xQlN2-0000000036L-37le
+ (envelope-from <ralf@mandelbit.com>) id 1xQlN3-000000002Ge-1B5b
  for openvpn-devel@lists.sourceforge.net;
  Tue, 10 Nov 2026 12:54:41 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
@@ -35,9 +35,9 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=U2n8iLBacCTUJs3hxa/hr4k4HFHX3K0NvoaPjc15GZ4=; b=MC39lsONbjejSxVZv/JLv9Wbhm
- qLSalwu+M6/Htt/VNkrYuQZEAoG48UNOkReeU47DZrnA6czHzKo9zj/Y7V9kI9XEhIf9NBlo/e5Q0
- UqxFkR22HgzF+zToybzvQpfpClSTwmktCdAfxdht8gVDKvP2w862iU+X0NKJnp4dsq50=;
+ bh=HM7l677bUmBZzk5x8I/3eHlKMvtv+le18ZrOljyKfM4=; b=TU1Iyl6TbxXpNFLvMp3OtwxRBB
+ 62LLzrR7gCRy+pQEkIoh65CLbhD1XOV36+mFU9e+ZPJ0w3S8b4lOyd9dgAd8DD3w1Gy4LjGBUpnKa
+ Dv0+rqmDSA/4PN0P+gO4SkcchiV6tdK/M95sOiy1vCMXVah4u1hu8qQhOBPFblAOzUQs=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -45,52 +45,52 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=U2n8iLBacCTUJs3hxa/hr4k4HFHX3K0NvoaPjc15GZ4=; b=CfbH+s1bLqlOVi49BmjgQGKRci
- F50m+euS6A0EfFntRF0C6nGqOUiGHlXFD2sNZeSCsWFdn2pEx/GGANKEqVCRxbKZhN+gy5atHz3Sn
- eQpqA2myI7rvyjuBgMRegW5n2qnfuaZ15AMsQIW/QZ/oP7XrGzptCLQ+OcqP5QCn1ZTg=;
-Received: from mout-b-203.mailbox.org ([195.10.208.52])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ bh=HM7l677bUmBZzk5x8I/3eHlKMvtv+le18ZrOljyKfM4=; b=jN2A1CXXEMSq/STN1CJHnDVheL
+ r4+KkdjluzCtljbKIOFWIUJWL9feVE006ce6UqMN/y0y9lvKY0pThB+oI1OogHSKCn7gmkH8VJRm7
+ F1sFQEvfPj6Ub0XLYR8gcc98pkmA2RMQPyZPOqC57xq/X2lskeNk/iKQHT1KGKi3rLZ4=;
+Received: from mout-b-206.mailbox.org ([195.10.208.51])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
- id 1xQlMz-00000000698-2cS5 for openvpn-devel@lists.sourceforge.net;
- Tue, 10 Nov 2026 12:54:40 +0000
+ id 1xQlN0-000000006Ks-230j for openvpn-devel@lists.sourceforge.net;
+ Tue, 10 Nov 2026 12:54:41 +0000
 Received: from smtp102.mailbox.org (smtp102.mailbox.org
  [IPv6:2001:67c:2050:b231:465::102])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange X25519MLKEM768 server-signature RSA-PSS (4096 bits) server-digest
- SHA512) (No client certificate requested)
- by mout-b-203.mailbox.org (Postfix) with ESMTPS id 4jP66s5QgYzLm8p
+ SHA256) (No client certificate requested)
+ by mout-b-206.mailbox.org (Postfix) with ESMTPS id 4jP66t0Ws4zWX
  for <openvpn-devel@lists.sourceforge.net>;
- Tue, 10 Nov 2026 13:54:29 +0100 (CET)
+ Tue, 10 Nov 2026 13:54:30 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
- s=MBO0001; t=1794315269;
+ s=MBO0001; t=1794315270;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:mime-version:mime-version:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=U2n8iLBacCTUJs3hxa/hr4k4HFHX3K0NvoaPjc15GZ4=;
- b=ecIlWRRXiVgxl6VCCkj73yHCuHBrzKMZ28aMoI+59ReBXNvUXcqKhRmWqzACrm1vKWRTgI
- RJCqMBj/IOqyWjbIEdbc9pFaVvM574uRp715PiG2UqUTAPQV1IPRBefhn7/TuuE9JhOQsU
- c1H21E5ubOjW5LGDkUzijTy2LuNlLh3M9KPj518cXooFjeDtGx5bcTNMe0oehJ+0yyCjjt
- vIRsWn93woGH+MkVBSAVA9EBJkyJlQctQ6L2VVRFLNeCtO162nTDdPaB6Tx9cqwqZaAy8j
- f8/P+MU6He8ds0pJeK+zRIcCOag34Uvzrf6QadNYbsIpW5jKCSh2SpyvyOiqww==
+ bh=HM7l677bUmBZzk5x8I/3eHlKMvtv+le18ZrOljyKfM4=;
+ b=yI3hUrDn39qdc8+y5/tVQ09+jD8v4j7fzKUS+y1n/vTN5J/bFatmWvLEoxrcqz/Fzg1YMc
+ WTirwjYr1tTH+0LSNHxj2hn5EI2cIxG1VpMU37nK6WA4cvP+eTpha5n02om7IfsSPv2fU0
+ vOo2Y/M+MEuzoFeQ/3CQ3A6AXHZ/8QLwUwEAmMy+NbHjhtwL8tK2AlEUoNlAjaDj05caQg
+ rs4t1ccIxPRwU4z7RPvITEs/GzKKKVKt5Ujuctb4F78bbmyrha+VSKUaUoRDuszNga5W2a
+ 8KuukkgmJHXp1yTpRtT0UsJy40RsGhojxITZ3HJGNVq8fMzzRZJXWpwDMfEaWA==
 Authentication-Results: outgoing_mbo_mout; dkim=none;
  spf=pass (outgoing_mbo_mout: domain of ralf@mandelbit.com designates
  2001:67c:2050:b231:465::102 as permitted sender)
  smtp.mailfrom=ralf@mandelbit.com
 From: Ralf Lici <ralf@mandelbit.com>
 To: openvpn-devel@lists.sourceforge.net
-Date: Tue, 10 Nov 2026 13:54:18 +0100
-Message-ID: <19426aa5f9a5805f925014be8b057dc2fba335d7.1794314969.git.ralf@mandelbit.com>
+Date: Tue, 10 Nov 2026 13:54:19 +0100
+Message-ID: <a648e3aea95cdd32b6411a2a920ada54905ba293.1794314969.git.ralf@mandelbit.com>
 X-Mailer: git-send-email 2.56.0
 In-Reply-To: <cover.1794314969.git.ralf@mandelbit.com>
 References: <cover.1794314969.git.ralf@mandelbit.com>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
-X-Rspamd-Queue-Id: 4jP66s5QgYzLm8p
+X-Rspamd-Queue-Id: 4jP66t0Ws4zWX
 X-Spam-Score: -0.2 (/)
-X-Headers-End: 1xQlMz-00000000698-2cS5
-Subject: [Openvpn-devel] [PATCH ovpn net-next 1/5] udp: let encapsulation
- callbacks consume UDP frag-list GSO
+X-Headers-End: 1xQlN0-000000006Ks-230j
+Subject: [Openvpn-devel] [PATCH ovpn net-next 2/5] udp_tunnel: support
+ detachable GRO receive callbacks
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -109,313 +109,254 @@ X-Spam-Status: No, score=-16.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
-Since commit 3d010c8031e3 ("udp: do not accept non-tunnel GSO skbs
-landing in a tunnel"), udp_unexpected_gso segments generic UDP L4 and
-frag-list GSO before passing packets to an encapsulation callback,
-because GRO socket lookup cannot prove that such an aggregate will not
-later reach a tunnel. This protects callbacks which only understand UDP
-tunnel GSO packets, but also prevents an encapsulator from deliberately
-batching independent outer UDP records as a standard frag-list
-aggregate.
+UDP tunnel GRO callbacks normally remain installed until their socket is
+destroyed. This permits the tunnel callback registry to use one callback
+as a global static-call target when only one tunnel type is active.
 
-Add an explicit per-socket opt-in for an encap_rcv callback which
-accepts the exact SKB_GSO_UDP_L4 | SKB_GSO_FRAGLIST representation.
-Publish acceptance only after the callbacks which consume that
-representation.
+A userspace-owned socket can instead outlive its association with an
+encapsulator. Allow a receive callback which produces only standard UDP
+frag-list GSO to opt out of the callback registry and be detached while
+the socket remains live. Such aggregates need no tunnel completion
+callback and remain valid after detach.
 
-GRO has already validated every datagram in this representation, while
-the aggregate checksum state does not describe the complete skb. Treat
-the opt-in as provisional, that is, bypass the pre-encapsulation
-checksum check, but segment the aggregate and process every datagram
-normally if the callback is absent or declines it. A declining callback
-must leave the aggregate unmodified apart from layout-only pulls. This
-keeps the combined representation away from the UDP socket and leaves
-callbacks which do not opt in protected as before.
+Publish the detachable dispatch mode before the callback, then publish
+frag-list acceptance only after all callbacks which consume that
+representation. Load each callback once before invocation.
 
-Preserve the sampled acceptance decision across concurrent callback
-changes and account every consumed datagram in UDP statistics.
+Provide a helper which removes the socket from GRO lookup, clears its
+callbacks and frag-list acceptance, and waits for in-flight network
+readers before retiring detachable dispatch mode. Keep the helper in
+udp_offload.c, which is built into the UDP stack even when
+NET_UDP_TUNNEL is a module, so built-in callers do not gain a dependency
+on udp_tunnel.ko.
 
-Consuming the aggregate whole avoids rebuilding every datagram only for
-the encapsulator to discard its outer headers, and lets the callback
-amortize per-batch work and look ahead across records. With this series
-and the ovpn UDP GSO transmit series applied, five interleaved 60-second
-iperf3 -Z single-flow AES-128-GCM runs in each direction over two
-directly connected 100-Gbit/s mlx5 ports, after a 10-second warm-up,
-compared direct consumption by the ovpn GRO callback with the same
-kernel in which ovpn declines every aggregate:
-
-                         Forward          Reverse
-UDP segmentation        20.561 Gbit/s    20.498 Gbit/s
-Direct consumption      25.741 Gbit/s    25.150 Gbit/s
-
-Direct consumption improved throughput by 25.2% forward and 22.7%
-reverse, and reduced mean cycles per byte across the monitored data-path
-CPUs by 10.6% and 8.2%, respectively.
-
-Export skb_gro_receive_list, already shared by the core UDP and TCP
-frag-list GRO paths, so modular encapsulators can construct the same
-standard representation.
+Existing tunnel sockets retain the static-call path and semantics.
 
 Signed-off-by: Ralf Lici <ralf@mandelbit.com>
 ---
- include/linux/udp.h        | 12 ++++++++++++
- include/net/udp_tunnel.h   |  1 +
- net/core/gro.c             |  1 +
- net/ipv4/udp.c             | 37 ++++++++++++++++++++++++++++++-------
- net/ipv4/udp_tunnel_core.c | 10 ++++++++++
- net/ipv6/udp.c             | 37 ++++++++++++++++++++++++++++++-------
- 6 files changed, 84 insertions(+), 14 deletions(-)
+ include/linux/udp.h        |  1 +
+ include/net/udp_tunnel.h   |  2 ++
+ net/ipv4/udp_offload.c     | 59 +++++++++++++++++++++++++++++++++-----
+ net/ipv4/udp_tunnel_core.c | 25 +++++++++++++---
+ 4 files changed, 76 insertions(+), 11 deletions(-)
 
 diff --git a/include/linux/udp.h b/include/linux/udp.h
-index 998906ec3b32..2a0c45ddd7b1 100644
+index 2a0c45ddd7b1..e81ed7248ea0 100644
 --- a/include/linux/udp.h
 +++ b/include/linux/udp.h
-@@ -67,6 +67,11 @@ enum {
- 	UDP_FLAGS_ACCEPT_FRAGLIST,
- 	UDP_FLAGS_ACCEPT_L4,
- 	UDP_FLAGS_ENCAP_ENABLED, /* This socket enabled encap */
-+	/* encap_rcv accepts UDP L4 frag-list GSO. If it does not consume such
-+	 * an aggregate, it must leave packet contents unchanged. Layout-only
-+	 * pulls are permitted.
-+	 */
-+	UDP_FLAGS_ENCAP_ACCEPT_FRAGLIST,
+@@ -72,6 +72,7 @@ enum {
+ 	 * pulls are permitted.
+ 	 */
+ 	UDP_FLAGS_ENCAP_ACCEPT_FRAGLIST,
++	UDP_FLAGS_GRO_RCV_DETACHABLE, /* gro_receive may be detached */
  };
  
  /* per NUMA structure for lockless producer usage. */
-@@ -211,6 +216,13 @@ static inline bool udp_encap_needed(void)
- 	return false;
- }
- 
-+static inline bool udp_encap_accepts_fraglist(struct sock *sk,
-+					      struct sk_buff *skb)
-+{
-+	return skb_is_gso(skb) && udp_test_bit(ENCAP_ACCEPT_FRAGLIST, sk) &&
-+	       skb_shinfo(skb)->gso_type == (SKB_GSO_UDP_L4 | SKB_GSO_FRAGLIST);
-+}
-+
- static inline bool udp_unexpected_gso(struct sock *sk, struct sk_buff *skb)
- {
- 	if (!skb_is_gso(skb))
 diff --git a/include/net/udp_tunnel.h b/include/net/udp_tunnel.h
-index 498b7b262fa9..a540e86d5f84 100644
+index a540e86d5f84..3a137901c88b 100644
 --- a/include/net/udp_tunnel.h
 +++ b/include/net/udp_tunnel.h
-@@ -85,6 +85,7 @@ struct udp_tunnel_sock_cfg {
- 	void *sk_user_data;     /* user data used by encap_rcv call back */
- 	/* Used for setting up udp_sock fields, see udp.h for details */
- 	__u8  encap_type;
-+	unsigned long udp_flags;
- 	udp_tunnel_encap_rcv_t encap_rcv;
- 	udp_tunnel_encap_err_lookup_t encap_err_lookup;
- 	udp_tunnel_encap_err_rcv_t encap_err_rcv;
-diff --git a/net/core/gro.c b/net/core/gro.c
-index ff828a3dce3c..069df5d96075 100644
---- a/net/core/gro.c
-+++ b/net/core/gro.c
-@@ -266,6 +266,7 @@ int skb_gro_receive_list(struct sk_buff *p, struct sk_buff *skb)
+@@ -211,10 +211,12 @@ static inline int udp_tunnel_handle_offloads(struct sk_buff *skb, bool udp_csum)
+ #if IS_ENABLED(CONFIG_NET_UDP_TUNNEL)
+ void udp_tunnel_update_gro_lookup(struct net *net, struct sock *sk, bool add);
+ void udp_tunnel_update_gro_rcv(struct sock *sk, bool add);
++void udp_tunnel_detach_gro(struct sock *sk);
+ #else
+ static inline void udp_tunnel_update_gro_lookup(struct net *net,
+ 						struct sock *sk, bool add) {}
+ static inline void udp_tunnel_update_gro_rcv(struct sock *sk, bool add) {}
++static inline void udp_tunnel_detach_gro(struct sock *sk) {}
+ #endif
  
- 	return 0;
- }
-+EXPORT_SYMBOL(skb_gro_receive_list);
- 
- static void gro_complete(struct gro_node *gro, struct sk_buff *skb)
- {
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 303d0102519a..9b17ae823e56 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -2391,7 +2391,8 @@ static int __udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
-  * Note that in the success and error cases, the skb is assumed to
-  * have either been requeued or freed.
-  */
--static int udp_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
-+static int udp_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb,
-+				 bool encap_fraglist)
- {
- 	enum skb_drop_reason drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
+ static inline void udp_tunnel_cleanup_gro(struct sock *sk)
+diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
+index cf07c3c6611a..9d6a5a52d879 100644
+--- a/net/ipv4/udp_offload.c
++++ b/net/ipv4/udp_offload.c
+@@ -82,6 +82,10 @@ void udp_tunnel_update_gro_rcv(struct sock *sk, bool add)
  	struct udp_sock *up = udp_sk(sk);
-@@ -2424,14 +2425,25 @@ static int udp_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
- 		/* if we're overly short, let UDP handle it */
- 		encap_rcv = READ_ONCE(up->encap_rcv);
- 		if (encap_rcv) {
-+			unsigned int segs = encap_fraglist ?
-+					    skb_shinfo(skb)->gso_segs : 1;
- 			int ret;
+ 	int i, old_gro_type_nr;
  
--			/* Verify checksum before giving to encap */
--			if (udp_lib_checksum_complete(skb))
-+			/* GRO validated every datagram before constructing an
-+			 * accepted frag-list. Its aggregate checksum state
-+			 * does not describe the complete skb, so validate only
-+			 * after a fallback to individual datagrams.
-+			 */
-+			if (!encap_fraglist && udp_lib_checksum_complete(skb))
- 				goto csum_error;
- 
- 			ret = encap_rcv(sk, skb);
--			if (ret <= 0) {
-+			if (!ret) {
-+				__SNMP_ADD_STATS(net->mib.udp_statistics,
-+						 UDP_MIB_INDATAGRAMS, segs);
-+				return 0;
-+			}
-+			if (ret < 0 && !encap_fraglist) {
- 				__UDP_INC_STATS(net, UDP_MIB_INDATAGRAMS);
- 				return -ret;
- 			}
-@@ -2440,6 +2452,13 @@ static int udp_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
- 		/* FALLTHROUGH -- it's a UDP Packet */
- 	}
- 
-+	/* The encapsulator did not consume an aggregate it had opted into so
-+	 * we ask udp_queue_rcv_skb to retry after segmentation rather than
-+	 * exposing multiple datagrams to the socket as one.
-+	 */
-+	if (encap_fraglist)
-+		return -EAGAIN;
++	/* Dynamically detached callbacks cannot be static-call targets. */
++	if (udp_test_bit(GRO_RCV_DETACHABLE, sk))
++		return;
 +
- 	prefetch(&sk->sk_rmem_alloc);
- 	if (rcu_access_pointer(sk->sk_filter) &&
- 	    udp_lib_checksum_complete(skb))
-@@ -2466,11 +2485,15 @@ static int udp_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
+ 	if (!UDP_MAX_TUNNEL_TYPES || !up->gro_receive)
+ 		return;
  
- static int udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+@@ -144,10 +148,45 @@ void udp_tunnel_update_gro_rcv(struct sock *sk, bool add)
+ }
+ EXPORT_SYMBOL_GPL(udp_tunnel_update_gro_rcv);
+ 
++/**
++ * udp_tunnel_detach_gro - detach GRO callbacks from a live UDP socket
++ * @sk: UDP tunnel socket
++ *
++ * The caller must hold the socket lock and keep callback state alive until
++ * this function returns.
++ */
++void udp_tunnel_detach_gro(struct sock *sk)
++{
++	sock_owned_by_me(sk);
++
++	if (WARN_ON_ONCE(!udp_test_bit(GRO_RCV_DETACHABLE, sk)))
++		return;
++
++	udp_tunnel_update_gro_lookup(sock_net(sk), sk, false);
++	WRITE_ONCE(udp_sk(sk)->gro_receive, NULL);
++	WRITE_ONCE(udp_sk(sk)->gro_complete, NULL);
++	/* No new frag-list aggregates can be formed after gro_receive is
++	 * cleared. Any aggregate already held by GRO may safely be segmented
++	 * before encap_rcv.
++	 */
++	udp_clear_bit(ENCAP_ACCEPT_FRAGLIST, sk);
++
++	/* Readers which captured a callback before it was cleared must keep
++	 * bypassing the static-call path until they have completed.
++	 */
++	synchronize_net();
++	udp_clear_bit(GRO_RCV_DETACHABLE, sk);
++}
++EXPORT_SYMBOL_GPL(udp_tunnel_detach_gro);
++
+ static struct sk_buff *udp_tunnel_gro_rcv(struct sock *sk,
++					  udp_tunnel_gro_receive_t gro_receive,
+ 					  struct list_head *head,
+ 					  struct sk_buff *skb)
  {
-+	bool encap_fraglist = udp_encap_accepts_fraglist(sk, skb);
- 	struct sk_buff *next, *segs;
- 	int ret;
++	if (unlikely(udp_test_bit(GRO_RCV_DETACHABLE, sk)))
++		return call_gro_receive_sk(gro_receive, sk, head, skb);
++
+ 	if (static_branch_likely(&udp_tunnel_static_call)) {
+ 		if (unlikely(gro_recursion_inc_test(skb))) {
+ 			NAPI_GRO_CB(skb)->flush |= 1;
+@@ -155,16 +194,17 @@ static struct sk_buff *udp_tunnel_gro_rcv(struct sock *sk,
+ 		}
+ 		return static_call(udp_tunnel_gro_rcv)(sk, head, skb);
+ 	}
+-	return call_gro_receive_sk(udp_sk(sk)->gro_receive, sk, head, skb);
++	return call_gro_receive_sk(gro_receive, sk, head, skb);
+ }
  
--	if (likely(!udp_unexpected_gso(sk, skb)))
--		return udp_queue_rcv_one_skb(sk, skb);
-+	if (likely(encap_fraglist || !udp_unexpected_gso(sk, skb))) {
-+		ret = udp_queue_rcv_one_skb(sk, skb, encap_fraglist);
-+		if (likely(ret != -EAGAIN))
-+			return ret;
-+	}
+ #else
  
- 	BUILD_BUG_ON(sizeof(struct udp_skb_cb) > SKB_GSO_CB_OFFSET);
- 	__skb_push(skb, -skb_mac_offset(skb));
-@@ -2479,7 +2502,7 @@ static int udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
- 		__skb_pull(skb, skb_transport_offset(skb));
+ static struct sk_buff *udp_tunnel_gro_rcv(struct sock *sk,
++					  udp_tunnel_gro_receive_t gro_receive,
+ 					  struct list_head *head,
+ 					  struct sk_buff *skb)
+ {
+-	return call_gro_receive_sk(udp_sk(sk)->gro_receive, sk, head, skb);
++	return call_gro_receive_sk(gro_receive, sk, head, skb);
+ }
  
- 		udp_post_segment_fix_csum(skb);
--		ret = udp_queue_rcv_one_skb(sk, skb);
-+		ret = udp_queue_rcv_one_skb(sk, skb, false);
- 		if (ret > 0)
- 			ip_protocol_deliver_rcu(dev_net(skb->dev), skb, ret);
+ #endif
+@@ -776,6 +816,7 @@ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
+ struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
+ 				struct udphdr *uh, struct sock *sk)
+ {
++	udp_tunnel_gro_receive_t gro_receive = NULL;
+ 	struct sk_buff *pp = NULL;
+ 	struct sk_buff *p;
+ 	struct udphdr *uh2;
+@@ -794,7 +835,9 @@ struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
+ 	 * cases. Such packets should be caught in udp_unexpected_gso later.
+ 	 */
+ 	NAPI_GRO_CB(skb)->is_flist = 0;
+-	if (!sk || !udp_sk(sk)->gro_receive) {
++	if (sk)
++		gro_receive = READ_ONCE(udp_sk(sk)->gro_receive);
++	if (!gro_receive) {
+ 		/* If the packet was locally encapsulated in a UDP tunnel that
+ 		 * wasn't detected above, do not GRO.
+ 		 */
+@@ -841,7 +884,7 @@ struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
+ 
+ 	skb_gro_pull(skb, sizeof(struct udphdr)); /* pull encapsulating udp header */
+ 	skb_gro_postpull_rcsum(skb, uh, sizeof(struct udphdr));
+-	pp = udp_tunnel_gro_rcv(sk, head, skb);
++	pp = udp_tunnel_gro_rcv(sk, gro_receive, head, skb);
+ 
+ out:
+ 	skb_gro_flush_final(skb, pp, flush);
+@@ -920,6 +963,7 @@ int udp_gro_complete(struct sk_buff *skb, int nhoff,
+ {
+ 	struct udphdr *uh = (struct udphdr *)(skb->data + nhoff);
+ 	unsigned int newlen = skb->len - nhoff;
++	udp_tunnel_gro_complete_t gro_complete = NULL;
+ 	struct sock *sk;
+ 	int err;
+ 
+@@ -927,7 +971,9 @@ int udp_gro_complete(struct sk_buff *skb, int nhoff,
+ 
+ 	sk = INDIRECT_CALL_INET(lookup, udp6_lib_lookup_skb,
+ 				udp4_lib_lookup_skb, skb, uh->source, uh->dest);
+-	if (sk && udp_sk(sk)->gro_complete) {
++	if (sk)
++		gro_complete = READ_ONCE(udp_sk(sk)->gro_complete);
++	if (gro_complete) {
+ 		skb_shinfo(skb)->gso_type = uh->check ? SKB_GSO_UDP_TUNNEL_CSUM
+ 					: SKB_GSO_UDP_TUNNEL;
+ 
+@@ -940,8 +986,7 @@ int udp_gro_complete(struct sk_buff *skb, int nhoff,
+ 		 * functions to make them set up the inner offsets.
+ 		 */
+ 		skb->encapsulation = 1;
+-		err = udp_sk(sk)->gro_complete(sk, skb,
+-				nhoff + sizeof(struct udphdr));
++		err = gro_complete(sk, skb, nhoff + sizeof(struct udphdr));
+ 	} else {
+ 		err = udp_gro_complete_segment(skb);
  	}
 diff --git a/net/ipv4/udp_tunnel_core.c b/net/ipv4/udp_tunnel_core.c
-index a128fe85620d..411073068075 100644
+index 411073068075..f8fe5f673441 100644
 --- a/net/ipv4/udp_tunnel_core.c
 +++ b/net/ipv4/udp_tunnel_core.c
-@@ -71,6 +71,11 @@ static bool sk_saddr_any(struct sock *sk)
+@@ -71,10 +71,22 @@ static bool sk_saddr_any(struct sock *sk)
  void setup_udp_tunnel_sock(struct net *net, struct sock *sk,
  			   struct udp_tunnel_sock_cfg *cfg)
  {
-+	const unsigned long allowed = BIT(UDP_FLAGS_ENCAP_ACCEPT_FRAGLIST);
-+	unsigned long flags = cfg->udp_flags & allowed;
-+
-+	WARN_ON_ONCE(cfg->udp_flags & ~allowed);
-+
- 	/* Disable multicast loopback */
- 	inet_clear_bit(MC_LOOP, sk);
+-	const unsigned long allowed = BIT(UDP_FLAGS_ENCAP_ACCEPT_FRAGLIST);
++	const unsigned long allowed = BIT(UDP_FLAGS_GRO_RCV_DETACHABLE) |
++				      BIT(UDP_FLAGS_ENCAP_ACCEPT_FRAGLIST);
+ 	unsigned long flags = cfg->udp_flags & allowed;
  
-@@ -87,6 +92,11 @@ void setup_udp_tunnel_sock(struct net *net, struct sock *sk,
- 	udp_sk(sk)->gro_receive = cfg->gro_receive;
- 	udp_sk(sk)->gro_complete = cfg->gro_complete;
- 
-+	/* Publish frag-list acceptance only after the callbacks which consume
-+	 * that representation
-+	 */
-+	set_mask_bits(&udp_sk(sk)->udp_flags, allowed, flags);
-+
- 	udp_tunnel_encap_enable(sk);
- 
- 	udp_tunnel_update_gro_rcv(sk, true);
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 59f9872c3552..1b3d3adb3f44 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -810,7 +810,8 @@ static int __udpv6_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
- 	return 0;
- }
- 
--static int udpv6_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
-+static int udpv6_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb,
-+				   bool encap_fraglist)
- {
- 	enum skb_drop_reason drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
- 	struct udp_sock *up = udp_sk(sk);
-@@ -840,14 +841,25 @@ static int udpv6_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
- 		/* if we're overly short, let UDP handle it */
- 		encap_rcv = READ_ONCE(up->encap_rcv);
- 		if (encap_rcv) {
-+			unsigned int segs = encap_fraglist ?
-+					    skb_shinfo(skb)->gso_segs : 1;
- 			int ret;
- 
--			/* Verify checksum before giving to encap */
--			if (udp_lib_checksum_complete(skb))
-+			/* GRO validated every datagram before constructing an
-+			 * accepted frag-list. Its aggregate checksum state
-+			 * does not describe the complete skb, so validate only
-+			 * after a fallback to individual datagrams.
-+			 */
-+			if (!encap_fraglist && udp_lib_checksum_complete(skb))
- 				goto csum_error;
- 
- 			ret = encap_rcv(sk, skb);
--			if (ret <= 0) {
-+			if (!ret) {
-+				__SNMP_ADD_STATS(net->mib.udp_stats_in6,
-+						 UDP_MIB_INDATAGRAMS, segs);
-+				return 0;
-+			}
-+			if (ret < 0 && !encap_fraglist) {
- 				__UDP6_INC_STATS(net, UDP_MIB_INDATAGRAMS);
- 				return -ret;
- 			}
-@@ -856,6 +868,13 @@ static int udpv6_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
- 		/* FALLTHROUGH -- it's a UDP Packet */
- 	}
- 
-+	/* The encapsulator did not consume an aggregate it had opted into so
-+	 * we ask udpv6_queue_rcv_skb to retry after segmentation rather than
-+	 * exposing multiple datagrams to the socket as one.
-+	 */
-+	if (encap_fraglist)
-+		return -EAGAIN;
-+
- 	prefetch(&sk->sk_rmem_alloc);
- 	if (rcu_access_pointer(sk->sk_filter) &&
- 	    udp_lib_checksum_complete(skb))
-@@ -883,11 +902,15 @@ static int udpv6_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
- 
- static int udpv6_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
- {
-+	bool encap_fraglist = udp_encap_accepts_fraglist(sk, skb);
- 	struct sk_buff *next, *segs;
- 	int ret;
- 
--	if (likely(!udp_unexpected_gso(sk, skb)))
--		return udpv6_queue_rcv_one_skb(sk, skb);
-+	if (likely(encap_fraglist || !udp_unexpected_gso(sk, skb))) {
-+		ret = udpv6_queue_rcv_one_skb(sk, skb, encap_fraglist);
-+		if (likely(ret != -EAGAIN))
-+			return ret;
+ 	WARN_ON_ONCE(cfg->udp_flags & ~allowed);
++	set_mask_bits(&udp_sk(sk)->udp_flags, BIT(UDP_FLAGS_GRO_RCV_DETACHABLE),
++		      flags & BIT(UDP_FLAGS_GRO_RCV_DETACHABLE));
++	if (flags & BIT(UDP_FLAGS_GRO_RCV_DETACHABLE)) {
++		WARN_ON_ONCE(cfg->gro_complete ||
++			     !(flags & BIT(UDP_FLAGS_ENCAP_ACCEPT_FRAGLIST)));
++		/* The socket may already be receiving packets so drain readers
++		 * which could have observed the old dispatch mode before
++		 * publishing the detachable callback.
++		 */
++		synchronize_net();
 +	}
  
- 	__skb_push(skb, -skb_mac_offset(skb));
- 	segs = udp_rcv_segment(sk, skb, false);
-@@ -895,7 +918,7 @@ static int udpv6_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
- 		__skb_pull(skb, skb_transport_offset(skb));
+ 	/* Disable multicast loopback */
+ 	inet_clear_bit(MC_LOOP, sk);
+@@ -89,13 +101,18 @@ void setup_udp_tunnel_sock(struct net *net, struct sock *sk,
+ 	udp_sk(sk)->encap_err_rcv = cfg->encap_err_rcv;
+ 	udp_sk(sk)->encap_err_lookup = cfg->encap_err_lookup;
+ 	udp_sk(sk)->encap_destroy = cfg->encap_destroy;
+-	udp_sk(sk)->gro_receive = cfg->gro_receive;
+-	udp_sk(sk)->gro_complete = cfg->gro_complete;
++	WRITE_ONCE(udp_sk(sk)->gro_complete, cfg->gro_complete);
++	/* Publish receive after the completion callback which its aggregates
++	 * may later require
++	 */
++	WRITE_ONCE(udp_sk(sk)->gro_receive, cfg->gro_receive);
  
- 		udp_post_segment_fix_csum(skb);
--		ret = udpv6_queue_rcv_one_skb(sk, skb);
-+		ret = udpv6_queue_rcv_one_skb(sk, skb, false);
- 		if (ret > 0)
- 			ip6_protocol_deliver_rcu(dev_net(skb->dev), skb, ret,
- 						 true);
+ 	/* Publish frag-list acceptance only after the callbacks which consume
+ 	 * that representation
+ 	 */
+-	set_mask_bits(&udp_sk(sk)->udp_flags, allowed, flags);
++	set_mask_bits(&udp_sk(sk)->udp_flags,
++		      BIT(UDP_FLAGS_ENCAP_ACCEPT_FRAGLIST),
++		      flags & BIT(UDP_FLAGS_ENCAP_ACCEPT_FRAGLIST));
+ 
+ 	udp_tunnel_encap_enable(sk);
+ 
 -- 
 2.56.0
 
