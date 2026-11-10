@@ -1,135 +1,135 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC1E6606A320
-	for <openvpn-devel@archiver.kernel.org>; Tue, 10 Nov 2026 17:45:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0378760A3813
+	for <openvpn-devel@archiver.kernel.org>; Tue, 10 Nov 2026 19:53:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=lnqOSBVu;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=G+o0Z9YE;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=cbZggjB5;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=Fqy5riDl
+	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=d0muXfiL;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=iCyaFPeJ;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=kFKro/b9;
+	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=HMaJpGQ2
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:Date:Sender:To:
+	Subject:MIME-Version:Message-ID:References:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
 	List-Unsubscribe-Post:List-Owner;
-	bh=25gySulrIzGKdPSNbgQ2nBQIsrVSUOpm7y58Qy2Yz1c=; b=lnqOSBVu4v4ZJAZfqEffBi3EQB
-	a6u5vovid1bJGhahV5LBbqQvDqjNt5OAWkAcOW2eYmH1sRp91swfvQdtiUxIbNILeqifwawzkfZAH
-	3Ny4DGVn9jZEJRKua0lOY9+4FaeCsyOTZs56MKpqng6afIAWy7TWd/n8JTsRIba24W1g=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	bh=hLUg/P/KBFLBAEtHJKTZyiFDzQEac5enNfFq9PhSqko=; b=d0muXfiLuS5pG21GDToongIrwt
+	9ajaoGrZRWPfgPCahbhFDC8dSR2iDPZ1Y+nlbei7YSpiwm99jjFRJwFaQPrpvt0dPGmjTSUz/gQyT
+	lH1J8qurdw9gQCKGQ+TwDbYM51hGt/IPgJ6hx4ObWJTtYwX0FvEds83NJ6ojy/+obqTE=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xQpui-000000003X2-0yes;
-	Tue, 10 Nov 2026 17:45:44 +0000
+	id 1xQru5-000000004MO-0nb8;
+	Tue, 10 Nov 2026 19:53:13 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xQpuh-000000003Ww-1mhM
+ (envelope-from <gerrit@openvpn.net>) id 1xQru4-000000004MG-0Ron
  for openvpn-devel@lists.sourceforge.net;
- Tue, 10 Nov 2026 17:45:43 +0000
+ Tue, 10 Nov 2026 19:53:12 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:Date:From
- :Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From:
+ :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:
+ From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From:
  Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=oV6dStqc5tp8yc/aEy4a+7AJnE44zIZnFEt+oeKPeHQ=; b=G+o0Z9YExNAA7Tg2fQ1H7iqrJG
- s7IaruZ6MHLBdu9BIeNpPC80cXoFJx57eT43uMJvwyDKhfjoSAx76liORfkYrNoUmljOLAZdPbMxF
- CKbVASIXWVDQZYOjQLeiN4j8LwkcPrcatP87oSro9xnhtAK7kS98dLz80ajArvhkjeCQ=;
+ bh=G5je2F0cQqn3Vu8T0mmL8QCMyWDryLSkRXCZROVE89c=; b=iCyaFPeJ3CMCYBsi7e0tnPYx57
+ o6HQT/W7eyvje4WsEPbd1zyZqtSF+zM4+StUk9sSNGISQYsga7dpHNCvmPWVlyMsOnykL3xSsBf5X
+ NjNa5GW6LdRIJLXifBL6VoWt4vHzKMZcmB6mKTcJq1JLvXrqZlFp14BT+m+XaKuwobkY=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:List-Unsubscribe:List-Id:Cc:Date:From:Sender:To:Content-ID
+ Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:From:Sender:Content-ID
  :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
  Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=oV6dStqc5tp8yc/aEy4a+7AJnE44zIZnFEt+oeKPeHQ=; b=cbZggjB5LTk+OAh4A4LXtalBqn
- 4Iswj8c4nFHWYRp0lmi4FGEuWSyxLi6Ta0woQjgwJu4wmehnRjjYh2gxkzdV8a5EpIp3Vjamr3ftm
- 5gDZGLzuhmOtBDccTZDPpveZXPsKpg1yTVNVFgg/fpH5hdf/eADlD8LXKK2Ydy64XLdI=;
-Received: from mail-wm1-f42.google.com ([209.85.128.42])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ bh=G5je2F0cQqn3Vu8T0mmL8QCMyWDryLSkRXCZROVE89c=; b=kFKro/b9geBP51z9Qen1fhKwO9
+ Bq2dTvtQgq6qv5E+JyRrRQz+OzM/xt98JqItVL3V6PtrAAD3WO+c2kgHTxMvkSQDwfxmDhiWpoQMj
+ x5bFz+YqjXq+g6bzrX2ynsNOP4e6KACmCSgvzZfM3P19yhh2TiQlN+PPTLXCw4oQ+EqQ=;
+Received: from mail-wm1-f49.google.com ([209.85.128.49])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xQpug-000000005KG-1RAB for openvpn-devel@lists.sourceforge.net;
- Tue, 10 Nov 2026 17:45:43 +0000
-Received: by mail-wm1-f42.google.com with SMTP id
- 5b1f17b1804b1-4a2000d5fb1so13567825e9.1
+ id 1xQru1-000000008Cg-31pz for openvpn-devel@lists.sourceforge.net;
+ Tue, 10 Nov 2026 19:53:12 +0000
+Received: by mail-wm1-f49.google.com with SMTP id
+ 5b1f17b1804b1-4a5b2be99a8so20517075e9.2
  for <openvpn-devel@lists.sourceforge.net>;
- Tue, 10 Nov 2026 09:45:42 -0800 (PST)
+ Tue, 10 Nov 2026 11:53:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1794332736; x=1794937536; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1794340383; x=1794945183; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
- :date:from:from:to:cc:subject:date:message-id:reply-to:content-type;
- bh=oV6dStqc5tp8yc/aEy4a+7AJnE44zIZnFEt+oeKPeHQ=;
- b=Fqy5riDlQ8HbVaoJuyBHlkZBcM8qN+s7KJPSLD82tEILEn6/4YmPyWqS4VN4S68D+s
- 6LIAjKGQ5smbp+UoXdLh+8/+yQPqpfBiDkVn1witij6puBHvWIuuhXfNNxKQnXHRyJ3Y
- 7KWi5Mg2hmfjA/vfjdnO1WtquN73ranVCEhIrk4/2v8TbR6Q30p3SdZ87hFyu7mA8O+m
- 90e32MuSgHydpQCyFbV+ktmfQC15+NVM2Jxb/JYpoodEgXG73jv9greQmfomk+MUtfAl
- 359XWkg8N3pmylFrlBj+sd/45s0cllv4xm93gd45ULuLlAug5mYe4shHHrOj6Tig1Zfo
- Tk8w==
+ :to:date:from:from:to:cc:subject:date:message-id:reply-to
+ :content-type; bh=G5je2F0cQqn3Vu8T0mmL8QCMyWDryLSkRXCZROVE89c=;
+ b=HMaJpGQ2kQ/77Igywm/Ol0755z1MtOAcRjzQVoK/KtcRUbR6OnYQncUH7n4MeWEefz
+ xwLq0ltYTOnZl1BsiBEF/SCCXCx1bE0sCQI6NgbyNB+pFg5FvwvoBvg3HKa/MqjLOwxr
+ 9+iKDLn/NlfC/7wXZQNlZhSQwZqKSZO4ghEbwT3abiUs+K7Wmhr0A7oPxrQUR8SIz+9d
+ YCay3L22FXG9wvQOUD0rTGrv3HYRJA4AZ9jn2VLnUGGSHoWBy+poJHjPQuJTXV9uMccP
+ Hg9Zo4PNGSecYXhTuVTQ4fKbdtrKJ99eK6zeH8RDlorXl9oQh/oAYrwTNNZmL4GsEqHX
+ 8cbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1794332736; x=1794937536;
+ d=1e100.net; s=20260707; t=1794340383; x=1794945183;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
- :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+ :to:date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
  :message-id:reply-to:content-type;
- bh=oV6dStqc5tp8yc/aEy4a+7AJnE44zIZnFEt+oeKPeHQ=;
- b=Eu5YqqNq+PXqisJS4hPxwAVBpCfx9qupF+wg+HSWDbrYqijpzXP8lnvA7ZrOvJ+f4c
- y5c4DDcOk/FHBHs3GLASRoJmbfouZoLIqtXnty6N2eCirzpktanOpQwIX8rv4xE7bTn7
- vIPMe2jaEKC+7UXgn8hE+LC7ZGVTF9yehhABcoeomjz3ZCUBFqe+fpzcPwbJCE+fNega
- 6/lfH7aH3lEPosfgNOXojIq5kGae0pqRBIkV16nBFBANpgS+ZMP754GHbBo+D/HboFtV
- juGndLYIyLA3Wmf5oJqhcXivPxy02N+xFwxG5aa8kSwqyBHFx3C5mVHF60pXGYNyNtHl
- Hfpg==
-X-Gm-Message-State: APuU4Z+vyT1iXqsC08/3fk23+0z3oWWMzvs9QQT+ZrnP3tjb7j/hRE4f
- sEAxkC90jUOKUDW423SlbWkYJZg2SIV7dsMIggwUMrNFwpQ4+bx0iVnpwvWZgLIcxjtMEHQsXOE
- FtoP+xPya4KV4+GuV0LioKcNMG27qdBAlqV6KD+BAO3mpLIv4FA5jihDsMOkDDqzDbijH4C/yXo
- J9TGZgXA==
-X-Gm-Gg: AYBFou3RX7oib2WJfSbXAdAmnBky6z2ZwN/rQA4zt6W6vXhjyswjOE7QPVDPEZKZEsM
- qS2YcndwXhlxe+Aya7d0WmDbpIgY0Quj3RGTFjL+qeusORqTGHkyb/129CbHAp8ToZ6d9XlhPmM
- 8nDkLsaQX3OrerZc/krH98IDqabbEiZgE9OyPxB/7ZB60x4KSAT/hS4RoSJJh5OrLOP7NaBLH3o
- fWHAGZPR6gzdlPZch0BgioZgg4sN6NoWf0Gg4qLmeB7bLpSz85+uET5w9PdujF9z1qgic3ZmeAi
- 8g+jGwAG72ktcK5kGsxWNECopSiCXtXPS68MYyALgV6YK27QVruv4ueUvHScBE6gcHUFSVishD9
- UnmsI1RKpCecqbHT60pepRMFw+ywvdxqmToHEf7zszo2FtNG95TFJKVzERmCDCWeQ7wUEd+/I72
- BlUUCaZ/tEf8UOu9gy917D8W+switRY1H7+NO6osNiylEsBGlgVUzPIyO43XGIkAi+MWs7sJSBK
- rL1Itz3ygnaXMsiIRyWDaeu101VdkJqJAS05W8nJVjPk4XwVdnJdCPaRX1l7PfsTZZ++gyatWXV
- oR0Ms9A1TcLszHQjGRVtT//vb6CMMunIf7G7BCDy+rvDJ1gK2swvKxDz6v8ipJnUywlR1pYuN7z
- qI+Oa1OjwdNqdIz+JZAw7s40h0yc+x3Zxzb4v9LPpVlft/EeqArfuL86kNf2g6dkH9TvxDubHSK
- sXS7VPMTJ6gYAaW3w7YW3/TOJ9XEMiAjoHlE9m6g==
-X-Received: by 2002:a05:600c:3d05:b0:4a1:d459:db4b with SMTP id
- 5b1f17b1804b1-4ba0234d4a0mr59235165e9.24.1794332735100; 
- Tue, 10 Nov 2026 09:45:35 -0800 (PST)
+ bh=G5je2F0cQqn3Vu8T0mmL8QCMyWDryLSkRXCZROVE89c=;
+ b=xq2gQZPZqeTFcXFdHaQ53O0O1FpnWOJgu6NN8TBczxrNDd79FonTMvB3RfNA3ftEmL
+ 75po+tOo+GWBY4NMHXmdEBWsWwn8xoqHafKMj3I0MLbc4qm+R1tC6ti9hJRrG/0vEZj6
+ xsJ5tGO9HAMN+l/Z2/UXB/qUNQaVIH73CiDLdqswiS6S41MOTctqXRDklzERu4jxthLW
+ KvysoRp5JE7Hzbh4vQIV1AMHYnxDgRc6Zhn3vo9/i9w++nXd5ZIv7lXOSNOBToMP7tBL
+ FI5ElfTDlYt3t9XVfmhn9axnsS48zd5miWJbZ60rTesAv+D2eLEo27WMXa7XVdVxhvRQ
+ xQYg==
+X-Gm-Message-State: APuU4Z/daeIJUYA7Rd/EV9ukHgY7kVRv1PVRpNNzYow3XG56fwdmh8Uu
+ 4rdt+xO8GMtpMYewxM2JOfKrsPVPhjKFISzSDnTfcpMGpoVbdtvEE5FcBqXOvSDeE+jFesxizZO
+ 4HNeT6oLYlD+4JgBfsI9gBAvwPs22fqpmMN0p4lsIC1Zth/HEZkszDK1Kn3Yl9f4zrymOtl3KOy
+ A/p9L7hw==
+X-Gm-Gg: AYBFou2iV9eBN3mjyMRSM1sMZ8/bvBCpC7cswRY3DqcEWtH/4wcrYSFkjd8nIRqg0ga
+ MFFEapVM5GQfep6Oor/lS5gpqF262MP7dpMdgL2CtCDiC2IPlcKkNYzc+mM0iOw/6o4BcBu8pSG
+ 3i05raAfw/aY81INX+bBMZxO2Gi0FlZTiy0wnHS6dCAOSq4/hWHHevuDl0rLPS5qVgNY09qqlfb
+ AisADlvr/SN7U+YlVikgzqlHguFNuQnrJj+d1Df1SfXNGrcPhxluRKy1P1oCgnfHlZBzy/x7Tj4
+ yUiKV5xWlSYp/XxGSThCnrZ86DpA+ZmTKY9XNypDRaBtkWf/5gsx/GREv+u+sofJ6dyy/hmoEeS
+ x4uhXddXfD8M/NnQpqmox/Z8aJnQj93MieaBJ1kjIa9saA/GmSwLaMK5DR8Ub500SrtvKMwbw7x
+ uj6Ce0mAbv5SpCUw3cQsqpD4kOWfdKeXDhLyvmVen3wuBqGY1Irzdv6VaZ8dK4VF+T6XODeo609
+ huXFpBUrDMbYtOO0e5Xz4pWIReitng8Cz/xVUXrxGucLyFnCw3tU0Okiu87eAorG+exdnGrv7uT
+ j7PNzbZrRg8LSKLXMaID56O//0HUf4akTA8fFdPslxS7l0VrMp5ZiFPJtaO/f4bBwr+0hc7p5nD
+ Opmp+OOctTKQbTuY4pqO0p2mIjsMG19VGM9ysshrmZc6454Kvptega0Vwk/9qNFB8EcfYfUtuBG
+ 3Sv0uKUcXKRCDTZekBz/NBOC0+oCjTSVJJOM8C
+X-Received: by 2002:a05:600c:6819:b0:4a2:167a:c946 with SMTP id
+ 5b1f17b1804b1-4ba0935f880mr2877655e9.13.1794340382909; 
+ Tue, 10 Nov 2026 11:53:02 -0800 (PST)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-4ba01fe9357sm88571895e9.9.2026.11.10.09.45.34
- for <openvpn-devel@lists.sourceforge.net>
+ 5b1f17b1804b1-4ba020433casm81072835e9.7.2026.11.10.11.53.02
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 10 Nov 2026 09:45:34 -0800 (PST)
-X-Google-Original-From: "Arne Schwabe (Code Review)"
+ Tue, 10 Nov 2026 11:53:02 -0800 (PST)
+X-Google-Original-From: "Gert Doering (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Tue, 10 Nov 2026 17:45:34 +0000
+Date: Tue, 10 Nov 2026 19:53:02 +0000
+To: Arne Schwabe <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newchange
 X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: I86154e5c997b044f6913bddab58b43193ff539e1
-X-Gerrit-Change-Number: 2169
+X-Gerrit-Change-Id: I5ab959e7101cf801ac93e5185855e75db0fb6225
+X-Gerrit-Change-Number: 2170
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2169?usp=email>
-X-Gerrit-Commit: 7cf1cf94a453259d7a71acd00ab0acdb5660aa75
-References: <gerrit.1794332732000.I86154e5c997b044f6913bddab58b43193ff539e1@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzk0MzMyNzMyMDAwLkk4NjE1NGU1Yzk5N2IwNDRmNjkxM2JkZGFiNThiNDMxOTNmZjUzOWUxQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <da14bf9bcf2a8bcd3655ffd17be38362b7353054-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2170?usp=email>
+X-Gerrit-Commit: 829177950a079c191414f6f94c18db76c6e2b33b
+References: <gerrit.1794340380000.I5ab959e7101cf801ac93e5185855e75db0fb6225@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzk0MzQwMzgwMDAwLkk1YWI5NTllNzEwMWNmODAxYWM5M2U1MTg1ODU1ZTc1ZGIwZmI2MjI1QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <52ace69263d57c7cf3a15ffb1019e795cb46dc94-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.5
-X-Spam-Score: 2.0 (++)
-X-Headers-End: 1xQpug-000000005KG-1RAB
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Extract
- tls_pre_decrypt_verify_opcode from tls_pre_decrypt
+X-Spam-Score: 0.8 (/)
+X-Headers-End: 1xQru1-000000008Cg-31pz
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: DragonFly: bring
+ things back into a working state
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -139,304 +139,589 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "Arne Schwabe \(Code Review\) via Openvpn-devel"
+From: "Gert Doering \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
-Reply-To: arne-openvpn@rfc2549.org, openvpn-devel@lists.sourceforge.net
-Cc: "Arne Schwabe \(Code Review\)" <gerrit@openvpn.net>,
+Reply-To: gert@greenie.muc.de, arne-openvpn@rfc2549.org,
+ openvpn-devel@lists.sourceforge.net
+Cc: "Gert Doering \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============8848701338901115757=="
-X-Spam-Status: No, score=-11.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+Content-Type: multipart/mixed; boundary="===============2906840163742485335=="
+X-Spam-Status: No, score=-12.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,MISSING_HEADERS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,SPF_PASS,T_KAM_HTML_FONT_INVALID,
 	WEIRD_PORT autolearn=ham autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============8848701338901115757==
+--===============2906840163742485335==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="xcZ/Ht2qWb8="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="80Qey4bwxow="; charset=UTF-8
 
---xcZ/Ht2qWb8=
+--80Qey4bwxow=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Arne Schwabe has uploaded this change for review=2E ( https://gerrit=2Eopen=
-vpn=2Enet/c/openvpn/+/2169?usp=3Demail )
+Attention is currently required from: Arne Schwabe=2E
 
-
-Change subject: Extract tls_pre_=
-decrypt_verify_opcode from tls_pre_decrypt
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
-
-Extract tls_pre_decrypt_verify_opcode from =
-tls_pre_decrypt
-
-This extracts the pre-check to verify allowed op codes int=
-o its own
-method to reduce the complexity=2E
-
-Change-Id: I86154e5c997b044f6=
-913bddab58b43193ff539e1
-Signed-off-by: Arne Schwabe <arne@rfc2549=2Eorg>
---=
--
-M src/openvpn/ssl=2Ec
-1 file changed, 41 insertions(+), 7 deletions(-)
-
-
+Hello Arne Schwabe,
 =
 
-  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/69/2169=
-/1
+I'd like you to do a code review=2E
+Please visit
 
-diff --git a/src/openvpn/ssl=2Ec b/src/openvpn/ssl=2Ec
-index cdb94ed=2E=
-=2E5d33b84 100644
---- a/src/openvpn/ssl=2Ec
-+++ b/src/openvpn/ssl=2Ec
-@@ -3=
-725,6 +3725,46 @@
-     *opt =3D NULL;
+    https://gerrit=2Eope=
+nvpn=2Enet/c/openvpn/+/2170?usp=3Demail
+
+to review the following change=2E
+=
+
+
+Change subject: DragonFly: bring things back into a working state
+=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+
+DragonFly: bring th=
+ings back into a working state
+
+- t_client=2Esh(=2Ein): add "DragonFly" to =
+the OS versions "like FreeBSD"
+
+- tun=2Ec open_tun()
+   - add DragonFly spe=
+cific handling of dynamic tun/tap devices
+     (open /dev/{tun,tap}, assign=
+s first-free node, fdevname(fd) returns
+      true device name)
+     --dev =
+tunN (and tapN) works "the old way", by opening /dev/tunN - but
+     only f=
+or devices pre-created with "ifconfig tun3 create"
+
+- tun=2Ec do_ifconfig_i=
+pv4()
+   - bring back "old FreeBSD" IPv4 ifconfig handling (all tun interfa=
+ces
+     are "p2p", TOPOLOGY_SUBNET is simulated with an extra network rout=
+e)
+     this part is based on "patch-src_openvpn_tun=2Ec" to OpenVPN 2=2E6=
+=2E14
+     in DragonFly "dports"
+     (TODO: see if TUNSIFMODE -> IFF_BROAD=
+CAST works here?)
+
+- tun=2Ec do_ifconfig_ipv6()
+   - needs "add_route_conne=
+cted_v6_net()" for tun and tap(!) devices,
+     otherwise the on-link /64 i=
+s not routed to the tun device
+
+- lladdr=2Ec: add TARGET_DRAGONFLY to TARGE=
+T_FREEBSD format
+
+Change-Id: I5ab959e7101cf801ac93e5185855e75db0fb6225
+Sign=
+ed-off-by: Gert Doering <gert@greenie=2Emuc=2Ede>
+---
+M src/openvpn/lladdr=
+=2Ec
+M src/openvpn/tun=2Ec
+M tests/t_client=2Esh=2Ein
+3 files changed, 82 i=
+nsertions(+), 6 deletions(-)
+
+
+
+  git pull ssh://gerrit=2Eopenvpn=2Enet:294=
+18/openvpn refs/changes/70/2170/1
+
+diff --git a/src/openvpn/lladdr=2Ec b/sr=
+c/openvpn/lladdr=2Ec
+index 8bd572a=2E=2Ec70e282 100644
+--- a/src/openvpn/ll=
+addr=2Ec
++++ b/src/openvpn/lladdr=2Ec
+@@ -24,7 +24,8 @@
+ }
+ #else /* TARGET=
+_LINUX */
+ 
+-#if defined(TARGET_OPENBSD) || defined(TARGET_FREEBSD) || defi=
+ned(TARGET_DARWIN)
++#if defined(TARGET_OPENBSD) || defined(TARGET_FREEBSD) =
+|| \
++    defined(TARGET_DARWIN)  || defined(TARGET_DRAGONFLY)
+ #define IFC=
+ONFIG_LLADDR_FMT "%s %s lladdr %s"
+ #elif defined(TARGET_NETBSD)
+ #define I=
+FCONFIG_LLADDR_FMT "%s %s link %s active"
+diff --git a/src/openvpn/tun=2Ec =
+b/src/openvpn/tun=2Ec
+index bcea331=2E=2E605a9fe 100644
+--- a/src/openvpn/t=
+un=2Ec
++++ b/src/openvpn/tun=2Ec
+@@ -965,7 +965,7 @@
+ #endif /* ifdef _WIN3=
+2 */
  }
  
-+/**
-+ * Does a very coarse chec=
-k on the received opcode=2E It only checks if the
-+ * opcode is an allowed =
-op code for the peer to send at all, not if this
-+ * opcode is valid for th=
-e current state=2E
-+ */
-+static bool
-+tls_pre_decrypt_verify_opcode(int op,=
- bool server, const struct link_socket_actual *from)
-+{
-+    if (op < P_FIR=
-ST_OPCODE || op > P_LAST_OPCODE)
-+    {
-+        if (op =3D=3D P_CONTROL_HA=
-RD_RESET_CLIENT_V1 || op =3D=3D P_CONTROL_HARD_RESET_SERVER_V1)
-+        {
+-#if defined(_WIN32)
++#if defined(_WIN32) || defined(TARGET_DRAGO=
+NFLY)
+ 
+ /* some of the platforms will auto-add a "network route" pointing
 =
-+            msg(D_TLS_ERRORS, "Peer tried unsupported key-method 1");
-+   =
+  * to the interface on "ifconfig tunX 2001:db8::1/64", others need
+@@ -114=
+7,6 +1147,10 @@
+     openvpn_execve_check(&argv, es, S_FATAL, "FreeBSD BSD =
+'ifconfig inet6 -ifdisabled' failed");
+ #endif
+ 
++#ifdef TARGET_DRAGONFLY
++=
+    add_route_connected_v6_net(tt, es);
++#endif
++
+ #elif defined(TARGET_AIX=
+)
+     argv_printf(&argv, "%s %s inet6 %s/%d mtu %d up", IFCONFIG_PATH, ifn=
+ame, ifconfig_ipv6_local,
+                 tt->netbits_ipv6, tun_mtu);
+@@ -=
+1461,7 +1465,7 @@
+         add_route(&r, tt, 0, NULL, es, NULL);
      }
-+        struct gc_arena gc =3D gc_new();
-+        msg(D_TLS_ERRORS,=
- "TLS Error: unknown opcode received from %s op=3D%d",
-+            print_l=
-ink_socket_actual(from, &gc), op);
-+        gc_free(&gc);
-+        return f=
-alse;
-+    }
+ 
+-=
+#elif defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY)
++#elif defined(T=
+ARGET_FREEBSD)
+ 
+     /* example: ifconfig tun2 10=2E2=2E0=2E2 10=2E2=2E0=
+=2E1 mtu 1450 netmask 255=2E255=2E255=2E255 up */
+     if (tun_p2p) /* poin=
+t-to-point tun */
+@@ -1479,6 +1483,44 @@
+     argv_msg(M_INFO, &argv);
+    =
+ openvpn_execve_check(&argv, es, S_FATAL, "FreeBSD ifconfig failed");
+ 
++#e=
+lif defined(TARGET_DRAGONFLY)
++    in_addr_t remote_end =3D INADDR_ANY;  /*=
+ for "virtual" subnet topology */
 +
-+    /* hard reset ? */
-+    if (is_hard_reset_method2(op))
-=
++    /* example: ifconfig tun2 10=2E2=
+=2E0=2E2 10=2E2=2E0=2E1 mtu 1450 netmask 255=2E255=2E255=2E255 up */
++    i=
+f (tun_p2p)       /* point-to-point tun */
 +    {
-+        /* verify client -> server or server -> client connection *=
-/
-+        if (((op =3D=3D P_CONTROL_HARD_RESET_CLIENT_V2 || op =3D=3D P_CO=
-NTROL_HARD_RESET_CLIENT_V3)
-+             && !server)
-+            || ((op =
-=3D=3D P_CONTROL_HARD_RESET_SERVER_V2) && server))
-+        {
-+            =
-struct gc_arena gc =3D gc_new();
-+            msg(D_TLS_ERRORS,
-+          =
-      "TLS Error: client->client or server->server connection attempted fro=
-m %s",
-+                print_link_socket_actual(from, &gc));
-+            =
-gc_free(&gc);
-+            return false;
-+        }
++        argv_printf(&arg=
+v, "%s %s %s %s mtu %d netmask 255=2E255=2E255=2E255 up",
++                =
+    IFCONFIG_PATH, ifname, ifconfig_local,
++                    ifconfig_re=
+mote_netmask, tun_mtu);
 +    }
-+    return true=
-;
-+}
++    else if (tt->type =3D=3D DEV_TYPE_TUN &=
+& tt->topology =3D=3D TOP_SUBNET)
++    {
++        remote_end =3D create_arb=
+itrary_remote(tt);
++        argv_printf(&argv, "%s %s %s %s mtu %d netmask =
+%s up", IFCONFIG_PATH,
++                    ifname, ifconfig_local, print_i=
+n_addr_t(remote_end, 0, &gc),
++                    tun_mtu, ifconfig_remote=
+_netmask);
++    }
++    else
++    {
++        argv_printf(&argv, "%s %s %s ne=
+tmask %s mtu %d",
++                    IFCONFIG_PATH, ifname, ifconfig_loca=
+l,
++                    ifconfig_remote_netmask, tun_mtu);
++    }
++    argv=
+_msg(M_INFO, &argv);
++    openvpn_execve_check(&argv, es, S_FATAL, "DragonF=
+ly ifconfig failed");
 +
- /*
-  *
-  * When we are in TLS mode, this is the first routine which=
- sees
-@@ -3783,14 +3823,8 @@
-     struct session_id sid; /* remote session =
-ID */
- 
-     /* verify legal opcode */
--    if (op < P_FIRST_OPCODE || op >=
- P_LAST_OPCODE)
-+    if (!tls_pre_decrypt_verify_opcode(op, multi->opt=2Ese=
-rver, from))
++    /* Add a network route for the local tun inter=
+face */
++    if (tt->type =3D=3D DEV_TYPE_TUN && tt->topology =3D=3D TOP_SU=
+BNET)
++    {
++        struct route_ipv4 r;
++        CLEAR(r);
++        r=2E=
+flags =3D RT_DEFINED;
++        r=2Enetwork =3D tt->local & tt->remote_netma=
+sk;
++        r=2Enetmask =3D tt->remote_netmask;
++        r=2Egateway =3D r=
+emote_end;
++        add_route(&r, tt, 0, NULL, es, NULL);
++    }
++
+ #elif d=
+efined(TARGET_AIX)
      {
--        if (op =3D=3D P_CONTROL_HARD_RESET_CLIENT_V1 |=
-| op =3D=3D P_CONTROL_HARD_RESET_SERVER_V1)
--        {
--            msg(D_T=
-LS_ERRORS, "Peer tried unsupported key-method 1");
--        }
--        msg(=
-D_TLS_ERRORS, "TLS Error: unknown opcode received from %s op=3D%d",
--      =
-      print_link_socket_actual(from, &gc), op);
-         goto error;
-     }=
-
+         /* AIX ifconfig will complain if it can'=
+t find ODM path in env */
+@@ -2853,11 +2895,44 @@
  
+ #elif defined(TARGET_D=
+RAGONFLY)
+ 
++/* DragonFly tun/tap devices are similar to NetBSD
++ *  - for =
+a dynamic tun/tap, open /dev/tun or /dev/tap, get assigned
++ *    the first=
+ free device, ask with devname(3) what you got, and
++ *    the interface wi=
+ll auto-destruct on close
++ *  - for a pre-created tun/tap, open "/dev/tun3=
+"
++ *  - using "--dev tun3" and have it dynamically created needs a call
++ =
+*    to "ifconfig tun3 create" which we don't currently do
++ */
++
+ void
+ op=
+en_tun(const char *dev, const char *dev_type, const char *dev_node, struct =
+tuntap *tt,
+          openvpn_net_ctx_t *ctx)
+ {
+-    open_tun_generic(dev,=
+ dev_type, dev_node, tt);
++    if (strcmp(dev, "tap") =3D=3D 0 || strcmp(de=
+v, "tun") =3D=3D 0)
++    {
++        char tunname[256];
++        snprintf(tu=
+nname, sizeof(tunname), "/dev/%s", dev);
++
++        if ((tt->fd =3D open(tu=
+nname, O_RDWR)) < 0)
++        {
++            msg(M_FATAL, "Cannot allocate =
+DragonFly TUN/TAP %s dynamically", tunname);
++        }
++
++	char *devname =
+=3D fdevname(tt->fd);
++        if (devname =3D=3D NULL)
++        {
++       =
+     msg(M_FATAL, "Cannot query DragonFly TUN/TAP device name");
++        }=
+
++        set_nonblock(tt->fd);
++        set_cloexec(tt->fd); /* don't pass=
+ fd to scripts */
++        msg(M_INFO, "TUN/TAP device %s opened", devname)=
+;
++
++        tt->actual_name =3D string_alloc(devname, NULL);
++    }
++    e=
+lse
++    {
++        open_tun_generic(dev, dev_type, dev_node, tt);
++    }
+ =
+
+     if (tt->fd >=3D 0)
+     {
+diff --git a/tests/t_client=2Esh=2Ein b/tes=
+ts/t_client=2Esh=2Ein
+index 5e924bb=2E=2E7488d4b 100755
+--- a/tests/t_clien=
+t=2Esh=2Ein
++++ b/tests/t_client=2Esh=2Ein
+@@ -212,8 +212,8 @@
+            =
+     LANG=3DC @NETSTAT@ -rn -4 -6
+             fi
+             ;;
+-        =
+FreeBSD | NetBSD | Darwin)
+-            echo "-- FreeBSD/NetBSD/Darwin [Mac=
+OS X] --"
++        FreeBSD | DragonFly | NetBSD | Darwin )
++            ech=
+o "-- FreeBSD/DragonFly/NetBSD/Darwin [MacOS X] --"
+             @IFCONFIG@=
+ -a | egrep "(flags=3D|inet)"
+             @NETSTAT@ -rn | awk '$3 !~ /^UHL=
+/ { print $1,$2,$3,$NF }'
+             ;;
 
 -- 
-To view, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2169?usp=
-=3Demail
-To unsubscribe, or for help writing mail filters, visit https://ge=
-rrit=2Eopenvpn=2Enet/settings?usp=3Demail
+To view, visit https://gerri=
+t=2Eopenvpn=2Enet/c/openvpn/+/2170?usp=3Demail
+To unsubscribe, or for help =
+writing mail filters, visit https://gerrit=2Eopenvpn=2Enet/settings?usp=3De=
+mail
 
 Gerrit-MessageType: newchange
-Ge=
-rrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I86154e5c997b=
-044f6913bddab58b43193ff539e1
-Gerrit-Change-Number: 2169
+Gerrit-Project: openvpn
+Gerrit-Branch: =
+master
+Gerrit-Change-Id: I5ab959e7101cf801ac93e5185855e75db0fb6225
+Gerrit-C=
+hange-Number: 2170
 Gerrit-PatchSet: 1
+Gerrit-Owner: Gert Doering <gert@gree=
+nie=2Emuc=2Ede>
+Gerrit-Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
 =
-Gerrit-Owner: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-CC: openvpn-=
-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-A=
+ttention: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
 
---xcZ/Ht2qWb8=
+--80Qey4bwxow=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>Arne Schwabe has =
-uploaded this change for <strong>review</strong>=2E</p><p><a href=3D"https:=
-//gerrit=2Eopenvpn=2Enet/c/openvpn/+/2169?usp=3Demail">View Change</a></p><=
-pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-space=
-: pre-wrap;">Extract tls_pre_decrypt_verify_opcode from tls_pre_decrypt<br>=
-<br>This extracts the pre-check to verify allowed op codes into its own<br>=
-method to reduce the complexity=2E<br><br>Change-Id: I86154e5c997b044f6913b=
-ddab58b43193ff539e1<br>Signed-off-by: Arne Schwabe &lt;arne@rfc2549=2Eorg&g=
-t;<br>---<br>M src/openvpn/ssl=2Ec<br>1 file changed, 41 insertions(+), 7 d=
-eletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monosp=
-ace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Ene=
-t:29418/openvpn refs/changes/69/2169/1</pre><pre style=3D"font-family: mono=
-space,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/ssl=
-=2Ec b/src/openvpn/ssl=2Ec</span><br><span>index cdb94ed=2E=2E5d33b84 10064=
-4</span><br><span>--- a/src/openvpn/ssl=2Ec</span><br><span>+++ b/src/openv=
-pn/ssl=2Ec</span><br><span>@@ -3725,6 +3725,46 @@</span><br><span>     *opt=
- =3D NULL;</span><br><span> }</span><br><span> </span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+ * Does a very coarse check on the received opcode=2E It only c=
-hecks if the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * opco=
-de is an allowed op code for the peer to send at all, not if this</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+ * opcode is valid for the cu=
-rrent state=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+static bool</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+tls_pre_decrypt_verify_opcode=
-(int op, bool server, const struct link_socket_actual *from)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    if (op &lt; P_FIRST_OPCODE || op &gt; P_LAST_OPC=
-ODE)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        if (op =3D=3D P_CONTR=
-OL_HARD_RESET_CLIENT_V1 || op =3D=3D P_CONTROL_HARD_RESET_SERVER_V1)</span>=
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: Arne Schwabe=2E </p>
+<p>Gert Doering would like Arne =
+Schwabe to <strong>review</strong> this change=2E
+</p><p><a href=3D"https:/=
+/gerrit=2Eopenvpn=2Enet/c/openvpn/+/2170?usp=3Demail">View Change</a></p><p=
+re class=3D"blocks" style=3D"font-family: monospace,monospace; white-space:=
+ pre-wrap;">DragonFly: bring things back into a working state<br><br>- t_cl=
+ient=2Esh(=2Ein): add &quot;DragonFly&quot; to the OS versions &quot;like F=
+reeBSD&quot;<br><br>- tun=2Ec open_tun()<br>   - add DragonFly specific han=
+dling of dynamic tun/tap devices<br>     (open /dev/{tun,tap}, assigns firs=
+t-free node, fdevname(fd) returns<br>      true device name)<br>     --dev =
+tunN (and tapN) works &quot;the old way&quot;, by opening /dev/tunN - but<b=
+r>     only for devices pre-created with &quot;ifconfig tun3 create&quot;<b=
+r><br>- tun=2Ec do_ifconfig_ipv4()<br>   - bring back &quot;old FreeBSD&quo=
+t; IPv4 ifconfig handling (all tun interfaces<br>     are &quot;p2p&quot;, =
+TOPOLOGY_SUBNET is simulated with an extra network route)<br>     this part=
+ is based on &quot;patch-src_openvpn_tun=2Ec&quot; to OpenVPN 2=2E6=2E14<br=
+>     in DragonFly &quot;dports&quot;<br>     (TODO: see if TUNSIFMODE -&gt=
+; IFF_BROADCAST works here?)<br><br>- tun=2Ec do_ifconfig_ipv6()<br>   - ne=
+eds &quot;add_route_connected_v6_net()&quot; for tun and tap(!) devices,<br=
+>     otherwise the on-link /64 is not routed to the tun device<br><br>- ll=
+addr=2Ec: add TARGET_DRAGONFLY to TARGET_FREEBSD format<br><br>Change-Id: I=
+5ab959e7101cf801ac93e5185855e75db0fb6225<br>Signed-off-by: Gert Doering &lt=
+;gert@greenie=2Emuc=2Ede&gt;<br>---<br>M src/openvpn/lladdr=2Ec<br>M src/op=
+envpn/tun=2Ec<br>M tests/t_client=2Esh=2Ein<br>3 files changed, 82 insertio=
+ns(+), 6 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-fami=
+ly: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eop=
+envpn=2Enet:29418/openvpn refs/changes/70/2170/1</pre><pre style=3D"font-fa=
+mily: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/o=
+penvpn/lladdr=2Ec b/src/openvpn/lladdr=2Ec</span><br><span>index 8bd572a=2E=
+=2Ec70e282 100644</span><br><span>--- a/src/openvpn/lladdr=2Ec</span><br><s=
+pan>+++ b/src/openvpn/lladdr=2Ec</span><br><span>@@ -24,7 +24,8 @@</span><b=
+r><span> }</span><br><span> #else /* TARGET_LINUX */</span><br><span> </spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(TARGET_OPENBSD=
+) || defined(TARGET_FREEBSD) || defined(TARGET_DARWIN)</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+#if defined(TARGET_OPENBSD) || defined(T=
+ARGET_FREEBSD) || \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    defined(TARGET_DARWIN)  || defined(TARGET_DRAGONFLY)</span><br><span> #=
+define IFCONFIG_LLADDR_FMT &quot;%s %s lladdr %s&quot;</span><br><span> #el=
+if defined(TARGET_NETBSD)</span><br><span> #define IFCONFIG_LLADDR_FMT &quo=
+t;%s %s link %s active&quot;</span><br><span>diff --git a/src/openvpn/tun=
+=2Ec b/src/openvpn/tun=2Ec</span><br><span>index bcea331=2E=2E605a9fe 10064=
+4</span><br><span>--- a/src/openvpn/tun=2Ec</span><br><span>+++ b/src/openv=
+pn/tun=2Ec</span><br><span>@@ -965,7 +965,7 @@</span><br><span> #endif /* i=
+fdef _WIN32 */</span><br><span> }</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#if defined(_WIN32)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#if defined(_WIN32) || defined(TARGET_DRA=
+GONFLY)</span><br><span> </span><br><span> /* some of the platforms will au=
+to-add a &quot;network route&quot; pointing</span><br><span>  * to the inte=
+rface on &quot;ifconfig tunX 2001:db8::1/64&quot;, others need</span><br><s=
+pan>@@ -1147,6 +1147,10 @@</span><br><span>     openvpn_execve_check(&amp;a=
+rgv, es, S_FATAL, &quot;FreeBSD BSD &#39;ifconfig inet6 -ifdisabled&#39; fa=
+iled&quot;);</span><br><span> #endif</span><br><span> </span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+#ifdef TARGET_DRAGONFLY</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    add_route_connected_v6_net(tt, e=
+s);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #elif defin=
+ed(TARGET_AIX)</span><br><span>     argv_printf(&amp;argv, &quot;%s %s inet=
+6 %s/%d mtu %d up&quot;, IFCONFIG_PATH, ifname, ifconfig_ipv6_local,</span>=
+<br><span>                 tt-&gt;netbits_ipv6, tun_mtu);</span><br><span>@=
+@ -1461,7 +1465,7 @@</span><br><span>         add_route(&amp;r, tt, 0, NULL=
+, es, NULL);</span><br><span>     }</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#elif defined(TARGET_FREEBSD) || defined(TA=
+RGET_DRAGONFLY)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#eli=
+f defined(TARGET_FREEBSD)</span><br><span> </span><br><span>     /* example=
+: ifconfig tun2 10=2E2=2E0=2E2 10=2E2=2E0=2E1 mtu 1450 netmask 255=2E255=2E=
+255=2E255 up */</span><br><span>     if (tun_p2p) /* point-to-point tun */<=
+/span><br><span>@@ -1479,6 +1483,44 @@</span><br><span>     argv_msg(M_INFO=
+, &amp;argv);</span><br><span>     openvpn_execve_check(&amp;argv, es, S_FA=
+TAL, &quot;FreeBSD ifconfig failed&quot;);</span><br><span> </span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+#elif defined(TARGET_DRAGONFLY)</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    in_addr_t remote_e=
+nd =3D INADDR_ANY;  /* for &quot;virtual&quot; subnet topology */</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    /* example: ifconfig tun2 10=2E2=2E0=2E2 10=
+=2E2=2E0=2E1 mtu 1450 netmask 255=2E255=2E255=2E255 up */</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    if (tun_p2p)       /* point-to-po=
+int tun */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        argv_printf(&am=
+p;argv, &quot;%s %s %s %s mtu %d netmask 255=2E255=2E255=2E255 up&quot;,</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                    IF=
+CONFIG_PATH, ifname, ifconfig_local,</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+                    ifconfig_remote_netmask, tun_mtu);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    else if (tt-&gt;type =3D=3D DEV_T=
+YPE_TUN &amp;&amp; tt-&gt;topology =3D=3D TOP_SUBNET)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        remote_end =3D create_arbitrary_remote(tt);</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        argv_printf(&am=
+p;argv, &quot;%s %s %s %s mtu %d netmask %s up&quot;, IFCONFIG_PATH,</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+                    ifname=
+, ifconfig_local, print_in_addr_t(remote_end, 0, &amp;gc),</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+                    tun_mtu, ifconfi=
+g_remote_netmask);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        argv_printf(&amp;argv, &quot;%s =
+%s %s netmask %s mtu %d&quot;,</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+                    IFCONFIG_PATH, ifname, ifconfig_local,</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+                    ifcon=
+fig_remote_netmask, tun_mtu);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+argv_msg(M_INFO, &amp;argv);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    openvpn_execve_check(&amp;argv, es, S_FATAL, &quot;DragonFly i=
+fconfig failed&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Add a net=
+work route for the local tun interface */</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    if (tt-&gt;type =3D=3D DEV_TYPE_TUN &amp;&amp; tt=
+-&gt;topology =3D=3D TOP_SUBNET)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       struct route_ipv4 r;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        CLEAR(r);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+        r=2Eflags =3D RT_DEFINED;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        r=2Enetwork =3D tt-&gt;local &amp; tt-&gt;remot=
+e_netmask;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        r=
+=2Enetmask =3D tt-&gt;remote_netmask;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        r=2Egateway =3D remote_end;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        add_route(&amp;r, tt, 0, NULL, es=
+, NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #elif d=
+efined(TARGET_AIX)</span><br><span>     {</span><br><span>         /* AIX i=
+fconfig will complain if it can&#39;t find ODM path in env */</span><br><sp=
+an>@@ -2853,11 +2895,44 @@</span><br><span> </span><br><span> #elif defined=
+(TARGET_DRAGONFLY)</span><br><span> </span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+/* DragonFly tun/tap devices are similar to NetBSD</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+ *  - for a dynamic tun/tap=
+, open /dev/tun or /dev/tap, get assigned</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+ *    the first free device, ask with devname(3) what=
+ you got, and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *    =
+the interface will auto-destruct on close</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+ *  - for a pre-created tun/tap, open &quot;/dev/tun3=
+&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  - using &=
+quot;--dev tun3&quot; and have it dynamically created needs a call</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+ *    to &quot;ifconfig tun3=
+ create&quot; which we don&#39;t currently do</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span> void</span><br><span> open_tun(const char *dev,=
+ const char *dev_type, const char *dev_node, struct tuntap *tt,</span><br><=
+span>          openvpn_net_ctx_t *ctx)</span><br><span> {</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    open_tun_generic(dev, dev_type, dev=
+_node, tt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (=
+strcmp(dev, &quot;tap&quot;) =3D=3D 0 || strcmp(dev, &quot;tun&quot;) =3D=
+=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        char tunname[256];<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        snprintf(tun=
+name, sizeof(tunname), &quot;/dev/%s&quot;, dev);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        if ((tt-&gt;fd =3D open(tunname, O_RDWR)) &lt; 0)</span>=
 <br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+            msg(D_TLS_ERRORS, &quot;=
-Peer tried unsupported key-method 1&quot;);</span><br><span style=3D"color:=
+style=3D"color: hsl(120, 100%, 40%);">+            msg(M_FATAL, &quot;Canno=
+t allocate DragonFly TUN/TAP %s dynamically&quot;, tunname);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+	char *devname =3D fdevname(tt-&gt;fd);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        if (devname =3D=3D NULL)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            msg(M_FATAL, &quot;Cannot =
+query DragonFly TUN/TAP device name&quot;);</span><br><span style=3D"color:=
  hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        struct gc_arena gc =3D gc_new();</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        msg(D_TLS_ERRORS, &quot;TLS Erro=
-r: unknown opcode received from %s op=3D%d&quot;,</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            print_link_socket_actual(from, &a=
-mp;gc), op);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- gc_free(&amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       return false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    /* hard reset ? */</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    if (is_hard_reset_method2=
-(op))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        /* verify client -&g=
-t; server or server -&gt; client connection */</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        if (((op =3D=3D P_CONTROL_HARD_RESET_CLI=
-ENT_V2 || op =3D=3D P_CONTROL_HARD_RESET_CLIENT_V3)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+             &amp;&amp; !server)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+            || ((op =3D=3D P=
-_CONTROL_HARD_RESET_SERVER_V2) &amp;&amp; server))</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+            struct gc_arena gc =3D gc_new();</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+            msg(D_TLS_ERRORS,=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                &qu=
-ot;TLS Error: client-&gt;client or server-&gt;server connection attempted f=
-rom %s&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-          print_link_socket_actual(from, &amp;gc));</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            gc_free(&amp;gc);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+            return false;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    return true;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span> /*</span><br><span>  *</span><br><span>  * When we a=
-re in TLS mode, this is the first routine which sees</span><br><span>@@ -37=
-83,14 +3823,8 @@</span><br><span>     struct session_id sid; /* remote sess=
-ion ID */</span><br><span> </span><br><span>     /* verify legal opcode */<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (op &lt; P_FIRS=
-T_OPCODE || op &gt; P_LAST_OPCODE)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    if (!tls_pre_decrypt_verify_opcode(op, multi-&gt;opt=2Es=
-erver, from))</span><br><span>     {</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-        if (op =3D=3D P_CONTROL_HARD_RESET_CLIENT_V1 || op =
-=3D=3D P_CONTROL_HARD_RESET_SERVER_V1)</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-            msg(D_TLS_ERRORS, &quot;Peer tried unsupported key-method =
-1&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(D_TLS_ERRORS=
-, &quot;TLS Error: unknown opcode received from %s op=3D%d&quot;,</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-            print_link_socket_a=
-ctual(from, &amp;gc), op);</span><br><span>         goto error;</span><br><=
-span>     }</span><br></pre><p>To view, visit <a href=3D"https://gerrit=2Eo=
-penvpn=2Enet/c/openvpn/+/2169?usp=3Demail">change 2169</a>=2E To unsubscrib=
-e, or for help writing mail filters, visit <a href=3D"https://gerrit=2Eopen=
-vpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=
-=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" it=
-emtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"ht=
-tps://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2169?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+100%, 40%);">+        set_nonblock(tt-&gt;fd);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+        set_cloexec(tt-&gt;fd); /* don&#39;t pas=
+s fd to scripts */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+       msg(M_INFO, &quot;TUN/TAP device %s opened&quot;, devname);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        tt-&gt;actual_name =3D string_alloc(dev=
+name, NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        open_tun_generic(dev, dev_type, dev_no=
+de, tt);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span=
+><br><span> </span><br><span>     if (tt-&gt;fd &gt;=3D 0)</span><br><span>=
+     {</span><br><span>diff --git a/tests/t_client=2Esh=2Ein b/tests/t_clie=
+nt=2Esh=2Ein</span><br><span>index 5e924bb=2E=2E7488d4b 100755</span><br><s=
+pan>--- a/tests/t_client=2Esh=2Ein</span><br><span>+++ b/tests/t_client=2Es=
+h=2Ein</span><br><span>@@ -212,8 +212,8 @@</span><br><span>                =
+ LANG=3DC @NETSTAT@ -rn -4 -6</span><br><span>             fi</span><br><sp=
+an>             ;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     FreeBSD | NetBSD | Darwin)</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-            echo &quot;-- FreeBSD/NetBSD/Darwin [MacOS X] --&quot=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        FreeBSD | =
+DragonFly | NetBSD | Darwin )</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+            echo &quot;-- FreeBSD/DragonFly/NetBSD/Darwin [MacOS =
+X] --&quot;</span><br><span>             @IFCONFIG@ -a | egrep &quot;(flags=
+=3D|inet)&quot;</span><br><span>             @NETSTAT@ -rn | awk &#39;$3 !~=
+ /^UHL/ { print $1,$2,$3,$NF }&#39;</span><br><span>             ;;</span><=
+br></pre><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/open=
+vpn/+/2170?usp=3Demail">change 2170</a>=2E To unsubscribe, or for help writ=
+ing mail filters, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settings?=
+usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2E=
+org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sch=
+ema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https://gerrit=2Eopenv=
+pn=2Enet/c/openvpn/+/2170?usp=3Demail"/><meta itemprop=3D"name" content=3D"=
+View Change"/></div></div>
 
-<div style=3D"display:none=
-"> Gerrit-MessageType: newchange </div>
-<div style=3D"display:none"> Gerrit=
--Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master=
+<div style=3D"display:none"> Gerrit-MessageType=
+: newchange </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </d=
+iv>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D=
+"display:none"> Gerrit-Change-Id: I5ab959e7101cf801ac93e5185855e75db0fb6225=
  </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I86154e5c997b044f691=
-3bddab58b43193ff539e1 </div>
-<div style=3D"display:none"> Gerrit-Change-Num=
-ber: 2169 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<di=
-v style=3D"display:none"> Gerrit-Owner: Arne Schwabe &lt;arne-openvpn@rfc25=
-49=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &=
-lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 2170 </div>
+<div=
+ style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:no=
+ne"> Gerrit-Owner: Gert Doering &lt;gert@greenie=2Emuc=2Ede&gt; </div>
+<div=
+ style=3D"display:none"> Gerrit-Reviewer: Arne Schwabe &lt;arne-openvpn@rfc=
+2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel=
+ &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"displ=
+ay:none"> Gerrit-Attention: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt;=
+ </div>
 
 </body></html>
---xcZ/Ht2qWb8=--
+--80Qey4bwxow=--
 
 
---===============8848701338901115757==
+--===============2906840163742485335==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============8848701338901115757==
+--===============2906840163742485335==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -447,5 +732,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============8848701338901115757==--
+--===============2906840163742485335==--
 
