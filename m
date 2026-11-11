@@ -1,43 +1,43 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA14B606A321
-	for <openvpn-devel@archiver.kernel.org>; Wed, 11 Nov 2026 09:23:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1994A606A330
+	for <openvpn-devel@archiver.kernel.org>; Wed, 11 Nov 2026 09:23:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=HoDiIX3V;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=lj6BLI2g;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=GspAkH5J;
-	dkim=neutral header.d=mandelbit.com header.i=@mandelbit.com header.a=rsa-sha256 header.s=MBO0001 header.b=LV5QsXdy
+	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=DVuqDVQ1;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=TgIlE3lT;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=VKj/nA7x;
+	dkim=neutral header.d=mandelbit.com header.i=@mandelbit.com header.a=rsa-sha256 header.s=MBO0001 header.b=1aENigcm
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
-	List-Owner; bh=O3vyv5ihnOqPjNs/wWsASCyZZy4BWA3V/ecolNEBnbk=; b=HoDiIX3VnupInW
-	P1NfnT/rxYKEcZvWhqXU+AlSTHjmkjk6spi/v1EN/rlT6BnOHw0RmXOtTrPd63WvtIPQ/K0y2f8Ky
-	3mZc9A6n6lpSiNJEtKMkTuWkZ3r1jxqKP6BA8+nunW+r1UxeIItHe7bLLeoMn4rQzF6m8KrcWq1AT
-	ehI=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	List-Owner; bh=g5fr8icRy1MupMZ5crWEDjoirxxMMRUwVimPagPQGog=; b=DVuqDVQ1OpO6s2
+	K1plCRvjpBEuN2lPhCljA0u3pivA1zJFVyPpHwD5GsQESmSAPtHAZcXosTsaBUq5jBm+vHjKatFXE
+	gUJtaFVr+oh3P9+lzHdMfazrNOK+lmD2x+SxgsREo28NzdrUEtFeYWELQpiGF/v6lcu9oH6VAIu9b
+	uPY=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xR4Xq-000000005FC-1lsd;
-	Wed, 11 Nov 2026 09:23:06 +0000
+	id 1xR4Xr-000000007jz-3EGK;
+	Wed, 11 Nov 2026 09:23:07 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <ralf@mandelbit.com>) id 1xR4Xo-000000005En-49l9
+ (envelope-from <ralf@mandelbit.com>) id 1xR4Xo-000000007iq-3528
  for openvpn-devel@lists.sourceforge.net;
- Wed, 11 Nov 2026 09:23:05 +0000
+ Wed, 11 Nov 2026 09:23:04 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
  In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=NWxzyACZrjKlNEi9Ekvf5Xkk8zf9Lmdth5Lz3f1rzZg=; b=lj6BLI2gsyCDttpm7rRKcIV67U
- UInArHMLlWzYM7Pwa2YCBubm48dYptFuAYc8gpGxU68To77lLVOQhqZfklRi5bm9Qwa6owYqZvZYt
- 7UefIkYcz+i30L8HoUc0fDmTmXtIAqcg+M6L1hrgJIzmVXBRikzj7QDqXf4Fsoj5ViOE=;
+ bh=nWGBoFuVw8sf3M2NuYrXemkmZ4y5KR8dGdrejn80+aU=; b=TgIlE3lT+yc1h9jYH+Xwm8aLJY
+ R1Bnyda1H2xgbOFYm9b1z91z3W4SUYnI+G6dtRHQnXqtrkH6s3DBb7rNUfVB5Bo9gLc4T3flSi74H
+ mCQyMVOWc2scazjWLQgSBCfPMc7ZcTkZhK+IFqiInWKlKXvz7md0psaCUfyFpKiD6+Ic=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -45,20 +45,20 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=NWxzyACZrjKlNEi9Ekvf5Xkk8zf9Lmdth5Lz3f1rzZg=; b=GspAkH5J+zLnA9B+hycKWfElV2
- tGVH7lbeqQNHpbjxDLLN1tOeUZ7IVR2EbGk7ycn5QMtjIydCD9QgJkywHufSiduiKaaOCIws2xYLe
- fFVmCcfKZhpvSv/m8hDeYtU1GkElQQL0oBbJhmkUKjVLJ537/DwliWs628Z3OxZkHbPo=;
-Received: from mout-b-202.mailbox.org ([195.10.208.62])
+ bh=nWGBoFuVw8sf3M2NuYrXemkmZ4y5KR8dGdrejn80+aU=; b=VKj/nA7xtlHP619umz8xLdVnQe
+ 73b+LQpTJT+BNUCRaz0z1ZCoWfs3wf84WMO1Ns5q+QmW+nYYh8v3laeNW9uuIPumetbn9mlAo7i0c
+ C3lgK/uUf6zSA+fhMAigbcISu1Sut0xZXBqjVGwAV6L2p402RDKClFEXzTuY8gNipYkc=;
+Received: from mout-b-107.mailbox.org ([195.10.208.47])
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
- id 1xR4Xk-000000000H0-2YtM for openvpn-devel@lists.sourceforge.net;
+ id 1xR4Xk-000000000Gz-1LPp for openvpn-devel@lists.sourceforge.net;
  Wed, 11 Nov 2026 09:23:04 +0000
 Received: from smtp202.mailbox.org (smtp202.mailbox.org
  [IPv6:2001:67c:2050:b231:465::202])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange X25519MLKEM768 server-signature RSA-PSS (4096 bits) server-digest
  SHA256) (No client certificate requested)
- by mout-b-202.mailbox.org (Postfix) with ESMTPS id 4jPdND48DMzKnht
+ by mout-b-107.mailbox.org (Postfix) with ESMTPS id 4jPdND0CGHz3xgc
  for <openvpn-devel@lists.sourceforge.net>;
  Wed, 11 Nov 2026 10:22:52 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
@@ -67,30 +67,30 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
  to:to:cc:mime-version:mime-version:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=NWxzyACZrjKlNEi9Ekvf5Xkk8zf9Lmdth5Lz3f1rzZg=;
- b=LV5QsXdyFO7btNoGrWvglJlSwg5JVvY9RluYO6xybS++lnvA0uI0jFdQj/J2kQRLeqV/mo
- U7fGIoLN0JXjsvxEui4pZSnaYkMiQQstQZ5jLJv3Fr8xy+kzGzbJ6O/lud+6RdEU/3t+d7
- U8r9KpvZrNiMqYHENbvpbLRwf5+yKDDVZtMRSFIf9cjPh5ogfDz1HtuX25PaiqV01NA5G8
- CFhVz5Ld608JiuTukz6uxmCumsOatqhElySMjKEHNf+4RmLeWVXHD2K0tuQOMWGciM1WtI
- U538R24LYGwYJ3tDp479JBIQ3IqhSC54qvaaH0mf0asYscst5ukGrUHe+0mcMw==
+ bh=nWGBoFuVw8sf3M2NuYrXemkmZ4y5KR8dGdrejn80+aU=;
+ b=1aENigcmK1eK7/Fssp2UEDFbJEHaui9ERSe2gxU26IjwndqNQYoMYyLVwOt9dppFm0Qjjx
+ 3QgCzS8CJ0jVWynF+ysPL7X1kyetDJi9/KZ5B8jb3nHJvk6bpC2gozo4JsmvpNgO3ifyGP
+ R04EvYZKrvTlcPmjSbTwvpSouWAQDHoiudP71OoyvP7lsJusGLGrytKM5fpHLWtWjWFuZE
+ pK4b3pLun/mFtk1fPA3Q4joGeZYs58KUQlnUo474fqy3iWjMLJJYpV1IL/xHxvzQXexvLl
+ Rx6IZM20VqdGO2a3Ok8YwQasdfqQ8Ddb+SFeJ3rYjZ8p1YJQTmF0B67VFIs3Uw==
 Authentication-Results: outgoing_mbo_mout; dkim=none;
  spf=pass (outgoing_mbo_mout: domain of ralf@mandelbit.com designates
  2001:67c:2050:b231:465::202 as permitted sender)
  smtp.mailfrom=ralf@mandelbit.com
 From: Ralf Lici <ralf@mandelbit.com>
 To: openvpn-devel@lists.sourceforge.net
-Date: Wed, 11 Nov 2026 10:22:36 +0100
-Message-ID: <2efa96ff65307b419ee319e91eccd064db50aa27.1794388607.git.ralf@mandelbit.com>
+Date: Wed, 11 Nov 2026 10:22:35 +0100
+Message-ID: <273ffd1c70b54e1075366166e0f80310f85c55e8.1794388607.git.ralf@mandelbit.com>
 X-Mailer: git-send-email 2.56.0
 In-Reply-To: <cover.1794388607.git.ralf@mandelbit.com>
 References: <cover.1794388607.git.ralf@mandelbit.com>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
-X-Rspamd-Queue-Id: 4jPdND48DMzKnht
+X-Rspamd-Queue-Id: 4jPdND0CGHz3xgc
 X-Spam-Score: -0.2 (/)
-X-Headers-End: 1xR4Xk-000000000H0-2YtM
-Subject: [Openvpn-devel] [PATCH ovpn net-next v3 4/6] udp: detach tunnel GRO
- before changing UDP encapsulation
+X-Headers-End: 1xR4Xk-000000000Gz-1LPp
+Subject: [Openvpn-devel] [PATCH ovpn net-next v3 3/6] udp_tunnel: support
+ detachable GRO receive callbacks
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -109,57 +109,267 @@ X-Spam-Status: No, score=-16.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
-A UDP socket may retain a detachable tunnel GRO callback while it
-remains visible to userspace. If userspace subsequently changes
-UDP_ENCAP, replacing the encapsulation callbacks without first retiring
-GRO leaves the old callback lifetime and frag-list acceptance state
-active.
+UDP tunnel GRO callbacks normally remain installed until their socket is
+destroyed. This permits the tunnel callback registry to use one callback
+as a global static-call target when only one tunnel type is active.
 
-Validate the requested encapsulation type, then detach such a GRO
-callback before installing the new encapsulation implementation.
-Existing sockets are unaffected because no current user enables
-detachable GRO callbacks.
+A userspace-owned socket can instead outlive its association with an
+encapsulator. Allow a receive callback which produces only standard UDP
+frag-list GSO to opt out of the callback registry and be detached while
+the socket remains live. Such aggregates need no tunnel completion
+callback and remain valid after detach. The socket must not already have a
+GRO callback, which would stay pinned in the registry.
 
-UDP_ENCAP already permits userspace to change the encapsulation type of
-a live socket even when driver state remains attached to it. Resolving
-that pre-existing ownership issue is outside the scope of this change.
-This only keeps detachable GRO state and callback lifetimes consistent
-when the existing transition occurs; it does not make cross-encapsulator
-ownership handoff supported.
+Publish the detachable dispatch mode before the callback, then publish
+frag-list acceptance only after all callbacks which consume that
+representation. Load each callback once before invocation.
+
+Provide a helper which removes the socket from GRO lookup, clears its
+callbacks and frag-list acceptance, and waits for in-flight network
+readers before retiring detachable dispatch mode. Keep the helper in
+udp_offload.c, which is built into the UDP stack even when
+NET_UDP_TUNNEL is a module, so built-in callers do not gain a dependency
+on udp_tunnel.ko.
+
+Existing tunnel sockets retain the static-call path and semantics.
 
 Signed-off-by: Ralf Lici <ralf@mandelbit.com>
 ---
-No changes since v2 https://lore.kernel.org/openvpn-devel/26279b0076d6ad26368041341247897fc1e95f08.1794329430.git.ralf@mandelbit.com/
+No changes since v2 https://lore.kernel.org/openvpn-devel/a98eab82229da1233a8debbe146feddc57e87c10.1794329430.git.ralf@mandelbit.com/
 
-No changes since v1 https://lore.kernel.org/openvpn-devel/99b9cccf9845899bc36e92165d9443499fe8a284.1794314969.git.ralf@mandelbit.com/
+Changes since v1 https://lore.kernel.org/openvpn-devel/a648e3aea95cdd32b6411a2a920ada54905ba293.1794314969.git.ralf@mandelbit.com/
+- Warn if a detachable socket already has a GRO callback, which would
+  stay pinned in the registry. (Sashiko)
 
- net/ipv4/udp.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ include/linux/udp.h        |  1 +
+ include/net/udp_tunnel.h   |  2 ++
+ net/ipv4/udp_offload.c     | 59 +++++++++++++++++++++++++++++++++-----
+ net/ipv4/udp_tunnel_core.c | 29 ++++++++++++++++---
+ 4 files changed, 80 insertions(+), 11 deletions(-)
 
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index cd209298012d..913897888bbb 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -3023,6 +3023,9 @@ int udp_lib_setsockopt(struct sock *sk, int level, int optname,
- 		case 0:
- #ifdef CONFIG_XFRM
- 		case UDP_ENCAP_ESPINUDP:
-+			if (udp_test_bit(GRO_RCV_DETACHABLE, sk))
-+				udp_tunnel_detach_gro(sk);
-+
- 			set_xfrm_gro_udp_encap_rcv(val, sk->sk_family, sk);
- #if IS_ENABLED(CONFIG_IPV6)
- 			if (sk->sk_family == AF_INET6)
-@@ -3035,6 +3038,9 @@ int udp_lib_setsockopt(struct sock *sk, int level, int optname,
+diff --git a/include/linux/udp.h b/include/linux/udp.h
+index cb3fd34d56f6..3ae7ef796abb 100644
+--- a/include/linux/udp.h
++++ b/include/linux/udp.h
+@@ -71,6 +71,7 @@ enum {
+ 	 * an aggregate, it must leave it unmodified.
+ 	 */
+ 	UDP_FLAGS_ENCAP_ACCEPT_FRAGLIST,
++	UDP_FLAGS_GRO_RCV_DETACHABLE, /* gro_receive may be detached */
+ };
+ 
+ /* per NUMA structure for lockless producer usage. */
+diff --git a/include/net/udp_tunnel.h b/include/net/udp_tunnel.h
+index a540e86d5f84..3a137901c88b 100644
+--- a/include/net/udp_tunnel.h
++++ b/include/net/udp_tunnel.h
+@@ -211,10 +211,12 @@ static inline int udp_tunnel_handle_offloads(struct sk_buff *skb, bool udp_csum)
+ #if IS_ENABLED(CONFIG_NET_UDP_TUNNEL)
+ void udp_tunnel_update_gro_lookup(struct net *net, struct sock *sk, bool add);
+ void udp_tunnel_update_gro_rcv(struct sock *sk, bool add);
++void udp_tunnel_detach_gro(struct sock *sk);
+ #else
+ static inline void udp_tunnel_update_gro_lookup(struct net *net,
+ 						struct sock *sk, bool add) {}
+ static inline void udp_tunnel_update_gro_rcv(struct sock *sk, bool add) {}
++static inline void udp_tunnel_detach_gro(struct sock *sk) {}
  #endif
- 			fallthrough;
- 		case UDP_ENCAP_L2TPINUDP:
-+			if (udp_test_bit(GRO_RCV_DETACHABLE, sk))
-+				udp_tunnel_detach_gro(sk);
+ 
+ static inline void udp_tunnel_cleanup_gro(struct sock *sk)
+diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
+index 572a65cd8977..61b4e226d091 100644
+--- a/net/ipv4/udp_offload.c
++++ b/net/ipv4/udp_offload.c
+@@ -82,6 +82,10 @@ void udp_tunnel_update_gro_rcv(struct sock *sk, bool add)
+ 	struct udp_sock *up = udp_sk(sk);
+ 	int i, old_gro_type_nr;
+ 
++	/* Dynamically detached callbacks cannot be static-call targets. */
++	if (udp_test_bit(GRO_RCV_DETACHABLE, sk))
++		return;
 +
- 			WRITE_ONCE(up->encap_type, val);
- 			udp_tunnel_encap_enable(sk);
- 			break;
+ 	if (!UDP_MAX_TUNNEL_TYPES || !up->gro_receive)
+ 		return;
+ 
+@@ -144,10 +148,45 @@ void udp_tunnel_update_gro_rcv(struct sock *sk, bool add)
+ }
+ EXPORT_SYMBOL_GPL(udp_tunnel_update_gro_rcv);
+ 
++/**
++ * udp_tunnel_detach_gro - detach GRO callbacks from a live UDP socket
++ * @sk: UDP tunnel socket
++ *
++ * The caller must hold the socket lock and keep callback state alive until
++ * this function returns.
++ */
++void udp_tunnel_detach_gro(struct sock *sk)
++{
++	sock_owned_by_me(sk);
++
++	if (WARN_ON_ONCE(!udp_test_bit(GRO_RCV_DETACHABLE, sk)))
++		return;
++
++	udp_tunnel_update_gro_lookup(sock_net(sk), sk, false);
++	WRITE_ONCE(udp_sk(sk)->gro_receive, NULL);
++	WRITE_ONCE(udp_sk(sk)->gro_complete, NULL);
++	/* No new frag-list aggregates can be formed after gro_receive is
++	 * cleared. Any aggregate already held by GRO may safely be segmented
++	 * before encap_rcv.
++	 */
++	udp_clear_bit(ENCAP_ACCEPT_FRAGLIST, sk);
++
++	/* Readers which captured a callback before it was cleared must keep
++	 * bypassing the static-call path until they have completed.
++	 */
++	synchronize_net();
++	udp_clear_bit(GRO_RCV_DETACHABLE, sk);
++}
++EXPORT_SYMBOL_GPL(udp_tunnel_detach_gro);
++
+ static struct sk_buff *udp_tunnel_gro_rcv(struct sock *sk,
++					  udp_tunnel_gro_receive_t gro_receive,
+ 					  struct list_head *head,
+ 					  struct sk_buff *skb)
+ {
++	if (unlikely(udp_test_bit(GRO_RCV_DETACHABLE, sk)))
++		return call_gro_receive_sk(gro_receive, sk, head, skb);
++
+ 	if (static_branch_likely(&udp_tunnel_static_call)) {
+ 		if (unlikely(gro_recursion_inc_test(skb))) {
+ 			NAPI_GRO_CB(skb)->flush |= 1;
+@@ -155,16 +194,17 @@ static struct sk_buff *udp_tunnel_gro_rcv(struct sock *sk,
+ 		}
+ 		return static_call(udp_tunnel_gro_rcv)(sk, head, skb);
+ 	}
+-	return call_gro_receive_sk(udp_sk(sk)->gro_receive, sk, head, skb);
++	return call_gro_receive_sk(gro_receive, sk, head, skb);
+ }
+ 
+ #else
+ 
+ static struct sk_buff *udp_tunnel_gro_rcv(struct sock *sk,
++					  udp_tunnel_gro_receive_t gro_receive,
+ 					  struct list_head *head,
+ 					  struct sk_buff *skb)
+ {
+-	return call_gro_receive_sk(udp_sk(sk)->gro_receive, sk, head, skb);
++	return call_gro_receive_sk(gro_receive, sk, head, skb);
+ }
+ 
+ #endif
+@@ -776,6 +816,7 @@ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
+ struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
+ 				struct udphdr *uh, struct sock *sk)
+ {
++	udp_tunnel_gro_receive_t gro_receive = NULL;
+ 	struct sk_buff *pp = NULL;
+ 	struct sk_buff *p;
+ 	struct udphdr *uh2;
+@@ -794,7 +835,9 @@ struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
+ 	 * cases. Such packets should be caught in udp_unexpected_gso later.
+ 	 */
+ 	NAPI_GRO_CB(skb)->is_flist = 0;
+-	if (!sk || !udp_sk(sk)->gro_receive) {
++	if (sk)
++		gro_receive = READ_ONCE(udp_sk(sk)->gro_receive);
++	if (!gro_receive) {
+ 		/* If the packet was locally encapsulated in a UDP tunnel that
+ 		 * wasn't detected above, do not GRO.
+ 		 */
+@@ -841,7 +884,7 @@ struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
+ 
+ 	skb_gro_pull(skb, sizeof(struct udphdr)); /* pull encapsulating udp header */
+ 	skb_gro_postpull_rcsum(skb, uh, sizeof(struct udphdr));
+-	pp = udp_tunnel_gro_rcv(sk, head, skb);
++	pp = udp_tunnel_gro_rcv(sk, gro_receive, head, skb);
+ 
+ out:
+ 	skb_gro_flush_final(skb, pp, flush);
+@@ -920,6 +963,7 @@ int udp_gro_complete(struct sk_buff *skb, int nhoff,
+ {
+ 	struct udphdr *uh = (struct udphdr *)(skb->data + nhoff);
+ 	unsigned int newlen = skb->len - nhoff;
++	udp_tunnel_gro_complete_t gro_complete = NULL;
+ 	struct sock *sk;
+ 	int err;
+ 
+@@ -927,7 +971,9 @@ int udp_gro_complete(struct sk_buff *skb, int nhoff,
+ 
+ 	sk = INDIRECT_CALL_INET(lookup, udp6_lib_lookup_skb,
+ 				udp4_lib_lookup_skb, skb, uh->source, uh->dest);
+-	if (sk && udp_sk(sk)->gro_complete) {
++	if (sk)
++		gro_complete = READ_ONCE(udp_sk(sk)->gro_complete);
++	if (gro_complete) {
+ 		skb_shinfo(skb)->gso_type = uh->check ? SKB_GSO_UDP_TUNNEL_CSUM
+ 					: SKB_GSO_UDP_TUNNEL;
+ 
+@@ -940,8 +986,7 @@ int udp_gro_complete(struct sk_buff *skb, int nhoff,
+ 		 * functions to make them set up the inner offsets.
+ 		 */
+ 		skb->encapsulation = 1;
+-		err = udp_sk(sk)->gro_complete(sk, skb,
+-				nhoff + sizeof(struct udphdr));
++		err = gro_complete(sk, skb, nhoff + sizeof(struct udphdr));
+ 	} else {
+ 		err = udp_gro_complete_segment(skb);
+ 	}
+diff --git a/net/ipv4/udp_tunnel_core.c b/net/ipv4/udp_tunnel_core.c
+index c023344891a2..426c5e4ac583 100644
+--- a/net/ipv4/udp_tunnel_core.c
++++ b/net/ipv4/udp_tunnel_core.c
+@@ -71,12 +71,28 @@ static bool sk_saddr_any(struct sock *sk)
+ void setup_udp_tunnel_sock(struct net *net, struct sock *sk,
+ 			   struct udp_tunnel_sock_cfg *cfg)
+ {
+-	const unsigned long allowed = BIT(UDP_FLAGS_ENCAP_ACCEPT_FRAGLIST);
++	const unsigned long allowed = BIT(UDP_FLAGS_GRO_RCV_DETACHABLE) |
++				      BIT(UDP_FLAGS_ENCAP_ACCEPT_FRAGLIST);
+ 	unsigned long flags = cfg->udp_flags & allowed;
+ 
+ 	WARN_ON_ONCE(cfg->udp_flags & ~allowed);
+ 	/* a socket must stop accepting frag-lists before it is set up again */
+ 	WARN_ON_ONCE(udp_test_bit(ENCAP_ACCEPT_FRAGLIST, sk));
++	set_mask_bits(&udp_sk(sk)->udp_flags, BIT(UDP_FLAGS_GRO_RCV_DETACHABLE),
++		      flags & BIT(UDP_FLAGS_GRO_RCV_DETACHABLE));
++	if (flags & BIT(UDP_FLAGS_GRO_RCV_DETACHABLE)) {
++		WARN_ON_ONCE(cfg->gro_complete ||
++			     !(flags & BIT(UDP_FLAGS_ENCAP_ACCEPT_FRAGLIST)));
++		/* the registry ignores detachable sockets, so a callback which
++		 * is already registered there would stay pinned
++		 */
++		WARN_ON_ONCE(udp_sk(sk)->gro_receive);
++		/* The socket may already be receiving packets so drain readers
++		 * which could have observed the old dispatch mode before
++		 * publishing the detachable callback.
++		 */
++		synchronize_net();
++	}
+ 
+ 	/* Disable multicast loopback */
+ 	inet_clear_bit(MC_LOOP, sk);
+@@ -91,13 +107,18 @@ void setup_udp_tunnel_sock(struct net *net, struct sock *sk,
+ 	udp_sk(sk)->encap_err_rcv = cfg->encap_err_rcv;
+ 	udp_sk(sk)->encap_err_lookup = cfg->encap_err_lookup;
+ 	udp_sk(sk)->encap_destroy = cfg->encap_destroy;
+-	udp_sk(sk)->gro_receive = cfg->gro_receive;
+-	udp_sk(sk)->gro_complete = cfg->gro_complete;
++	WRITE_ONCE(udp_sk(sk)->gro_complete, cfg->gro_complete);
++	/* Publish receive after the completion callback which its aggregates
++	 * may later require
++	 */
++	WRITE_ONCE(udp_sk(sk)->gro_receive, cfg->gro_receive);
+ 
+ 	/* Publish frag-list acceptance only after the callbacks which consume
+ 	 * that representation
+ 	 */
+-	set_mask_bits(&udp_sk(sk)->udp_flags, allowed, flags);
++	set_mask_bits(&udp_sk(sk)->udp_flags,
++		      BIT(UDP_FLAGS_ENCAP_ACCEPT_FRAGLIST),
++		      flags & BIT(UDP_FLAGS_ENCAP_ACCEPT_FRAGLIST));
+ 
+ 	udp_tunnel_encap_enable(sk);
+ 
 -- 
 2.56.0
 
