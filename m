@@ -1,32 +1,32 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89052606A324
-	for <openvpn-devel@archiver.kernel.org>; Wed, 11 Nov 2026 09:23:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8448D606A321
+	for <openvpn-devel@archiver.kernel.org>; Wed, 11 Nov 2026 09:23:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=fVFL5Zki;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=HQyMTNqm;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=YdEC3r5/;
-	dkim=neutral header.d=mandelbit.com header.i=@mandelbit.com header.a=rsa-sha256 header.s=MBO0001 header.b=VgYq4cUp
+	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=N2SqE2cc;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=Wequ/hJp;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=LqZGIRAq;
+	dkim=neutral header.d=mandelbit.com header.i=@mandelbit.com header.a=rsa-sha256 header.s=MBO0001 header.b=idf5sbnC
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
-	List-Owner; bh=W85Qy5Gi5Jg7rBf0qb3WikHos83uBthfhWymNWrJsFM=; b=fVFL5ZkiOnU1Lw
-	64Q04KlOXFSRNNVrEkG4Yylc8WEheC9r70ffdLMzt6S7ZAar08NfbcwwvqAuqzBIuThL0f8dIMcg+
-	BdVZp0DOm8gU+qMclbLF0f82UynAXFgUsDlfV4WULWOQGX612zmhy0+6K8PIL8X0ZptD/SihIy2Mt
-	aU8=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	List-Owner; bh=1RgWIQ23pinrNad01YgWGPVqyMlp3Vrad6ZQYDGmd4c=; b=N2SqE2ccWIMI1c
+	nndn42MF6Q8yzFCHF3euKOJDkOAaUiJcMPskKnakpE/ELzBM6wppV9ajxITn/gaIOxqZ8L8dg/h0M
+	+MDsCzRiim9F11X8Mr9cLTypE4u5h4mLy3AVEZWBKRdWWRLA4DgxgAvAlMZ3vjTMR4j6/FjVsAs7V
+	Bpw=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xR4Xo-000000005EN-12Dx;
-	Wed, 11 Nov 2026 09:23:04 +0000
+	id 1xR4Xp-000000007j0-0yGs;
+	Wed, 11 Nov 2026 09:23:05 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <ralf@mandelbit.com>) id 1xR4Xn-000000005EF-2jGk
+ (envelope-from <ralf@mandelbit.com>) id 1xR4Xn-000000007id-1ibZ
  for openvpn-devel@lists.sourceforge.net;
  Wed, 11 Nov 2026 09:23:03 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
@@ -35,9 +35,9 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=Qvh3gCSy7RRLdCBAaw/mKlXByRy9A7eo6jF1P58RciE=; b=HQyMTNqmwiOCuFfWOrgWIiMdqw
- N0iiQTQs24vmOZY65gschtDKtA7XHP8ZMxp1tsaONVnSX7aEOprpnIfRf4tayl+rOnVPBAwgqTU9u
- dhkTuaPsPn1IOgBXpkQuIvEka5FzfB7/dPyypibge4Bd76WkZASZYfiHyMU+8MKJFatY=;
+ bh=W/tkeexmTBMNx+luhMicTuv3rYXR3u4+M+UMH8sFDD8=; b=Wequ/hJpB0uAOPZjul/o+w0M8m
+ P3s1P8PpNpqvwrk9YMDRVPRnVcpRSIhVpFeg+kzimnNRnFt3sVSjnVJrGr7ToUGTOnv4Scmmvl5rf
+ 71oiBIG7L91SeH/2cYJ1WTEcf8yB7q70BYGS4O4B0hwMexPa0V8w3qhSrUI8HfjC9riA=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -45,52 +45,52 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=Qvh3gCSy7RRLdCBAaw/mKlXByRy9A7eo6jF1P58RciE=; b=YdEC3r5/dbgsjxEpsN8N6JPIZX
- MOIQnOWWvSDSrl2NJMnXEXApunXZuY4yIM6xXgcF5BSbqA/Ea8KegW40aBS52Max3s0vzv53emUNX
- F9Q5/vpFms4jc60K3ka35AZ6cAnf64uZdELVaDAhlSYXxaoPHWXc4hVdLvi4fJ4QTOpw=;
-Received: from mout-b-105.mailbox.org ([195.10.208.50])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ bh=W/tkeexmTBMNx+luhMicTuv3rYXR3u4+M+UMH8sFDD8=; b=LqZGIRAqJwDfMmiEDQL/RF/eVT
+ P1i6L29wymc+q/9viMZdz6vsYCh1NEEjMzXlwKE9cjr1KiSwsL/40XkCgEinBHFoHNm7eENteuKZK
+ lFfOS8umwdoRWU+++I18A+jq6UfcJrzmZ5mP560w2wcCcmFpzsoIoqnQhRcQOQK1f2zQ=;
+Received: from mout-b-203.mailbox.org ([195.10.208.52])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
- id 1xR4Xl-000000000H4-3Xla for openvpn-devel@lists.sourceforge.net;
+ id 1xR4Xj-000000002Ck-1H3F for openvpn-devel@lists.sourceforge.net;
  Wed, 11 Nov 2026 09:23:03 +0000
 Received: from smtp202.mailbox.org (smtp202.mailbox.org
  [IPv6:2001:67c:2050:b231:465::202])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange X25519MLKEM768 server-signature RSA-PSS (4096 bits) server-digest
- SHA256) (No client certificate requested)
- by mout-b-105.mailbox.org (Postfix) with ESMTPS id 4jPdNF3rsFz9syq
+ SHA512) (No client certificate requested)
+ by mout-b-203.mailbox.org (Postfix) with ESMTPS id 4jPdNB6WmdzLmHq
  for <openvpn-devel@lists.sourceforge.net>;
- Wed, 11 Nov 2026 10:22:53 +0100 (CET)
+ Wed, 11 Nov 2026 10:22:50 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
- s=MBO0001; t=1794388973;
+ s=MBO0001; t=1794388970;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:mime-version:mime-version:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=Qvh3gCSy7RRLdCBAaw/mKlXByRy9A7eo6jF1P58RciE=;
- b=VgYq4cUp9MD8MAhje7tSS6vuoc7MDMDDOus4Jgt/rMRMDwdpg4pOH3ftH1WOmIdjtD3WuV
- wmbobvEIsVfZxWireIpjLioGHPr3MXfB4n2om/FeFtG5COYSKqDU3RkNCrIm6fCk5fD4LV
- xgj4ZPT2lq071rxNnmSA25e0uBZt8rtjeGjIDI3OUtKat3SAjhlTTqWc5lasv8MaQYFxVA
- MaQ5gqPhvNVNqh8JiHsVK+zL14dzJOGUQ+PBDkqXZw0N1SqpObdFhFwl+ytr2LDlbPgDvG
- iwQJjvlNVMQx9F0rcsAigQQjR2C2pmBIL/QCK0A7uL7BUA3+3hH2HFwcOwIFdg==
+ bh=W/tkeexmTBMNx+luhMicTuv3rYXR3u4+M+UMH8sFDD8=;
+ b=idf5sbnCYiJBv0ZlkshOBHVB6cm3hzuwXCeagccUr9QX6935PfS0RRd/BjBPVUEGXAte05
+ 6AS1Gj+4MysSknU/li744kIdNxz2UcEyKUJe4/EGCFgOmvUU9yFAfZS6o+DowepKnZJTm9
+ 90uqC7HdZieuZq+2TnJ6xjHEYkuaMk4c6MPZT3f2Bn3JX/ejKiRmQrTT82yrT8oBJ/mM79
+ T5YzGEFOW2e3hoT1vARli/EfraIMTS8SBCrR4YBSUHGD5vNYo7BzE4PU7Onhsob5RYO1OM
+ Dj/UDcrjf6qWNAEXIIyEY0e/mASDvKQy+LvRbq0C0F9qN5Gd6oppVCGbolRTyA==
 Authentication-Results: outgoing_mbo_mout; dkim=none;
  spf=pass (outgoing_mbo_mout: domain of ralf@mandelbit.com designates
  2001:67c:2050:b231:465::202 as permitted sender)
  smtp.mailfrom=ralf@mandelbit.com
 From: Ralf Lici <ralf@mandelbit.com>
 To: openvpn-devel@lists.sourceforge.net
-Date: Wed, 11 Nov 2026 10:22:38 +0100
-Message-ID: <874ca8e9efb787fd37a942817239c8ba1a4fa4b3.1794388607.git.ralf@mandelbit.com>
+Date: Wed, 11 Nov 2026 10:22:33 +0100
+Message-ID: <a67a92dda688807a5ae20288bc2df2e2cf15e68b.1794388607.git.ralf@mandelbit.com>
 X-Mailer: git-send-email 2.56.0
 In-Reply-To: <cover.1794388607.git.ralf@mandelbit.com>
 References: <cover.1794388607.git.ralf@mandelbit.com>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
-X-Rspamd-Queue-Id: 4jPdNF3rsFz9syq
+X-Rspamd-Queue-Id: 4jPdNB6WmdzLmHq
 X-Spam-Score: -0.2 (/)
-X-Headers-End: 1xR4Xl-000000000H4-3Xla
-Subject: [Openvpn-devel] [PATCH ovpn net-next v3 6/6] ovpn: prefetch
- encrypted records before GRO batch decryption
+X-Headers-End: 1xR4Xj-000000002Ck-1H3F
+Subject: [Openvpn-devel] [PATCH ovpn net-next v3 1/6] udp: keep the GRO
+ checksum verdict for CHECKSUM_COMPLETE frag-lists
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -109,120 +109,95 @@ X-Spam-Status: No, score=-16.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
-Frag-list GRO exposes later encrypted records before the receive path
-decrypts the current one. Use this lookahead to request write ownership
-of linear ciphertext cache lines two records in advance, and maintain
-the same distance throughout the batch, overlapping their memory access
-latency with the current AEAD operation. An ordinary single-record UDP
-receive has no later record and therefore skips the prefetch path.
+Frag-list GRO validates the UDP checksum of every datagram before linking
+it into an aggregate. Completion makes the head's uh->len span the whole
+aggregate, but keeps uh->check for the first datagram, which segmentation
+restores, so only the checksum state can carry that verdict. Completion
+records it by turning a CHECKSUM_NONE head into CHECKSUM_UNNECESSARY, but
+leaves a CHECKSUM_COMPLETE head untouched, whose checksum then covers only
+the first datagram.
 
-Only prefetch the linear part of each skb. Walking non-linear fragments
-here would duplicate the scatterlist walk performed by crypto and could
-cost more than the cache hint saves.
+Commit f0b8c3034556 ("udp: do not transition UDP GRO fraglist partial
+checksums to unnecessary") limited the conversion to CHECKSUM_NONE so that
+CHECKSUM_PARTIAL packets are not marked as validated. It kept
+CHECKSUM_COMPLETE because segmentation restores valid datagrams, but the
+aggregate is validated before it is segmented.
 
-This optimization primarily targets synchronous software AEAD, where the
-CPU which issues the hint subsequently overwrites the prefetched lines.
-An asynchronous accelerator may instead access them through DMA and is
-not expected to benefit in the same way; the cache hint remains
-correctness-neutral.
+Any later validation of such an aggregate fails. udp4_csum_init and
+udp6_csum_init compute the complete checksum of an aggregate no longer
+than CHECKSUM_BREAK and drop it as a checksum error. For a larger
+aggregate, conntrack's nf_checksum in PRE_ROUTING falls back to a
+software checksum of the whole skb, which fails, marks the packet invalid
+and sets csum_complete_sw, so UDP drops the aggregate too.
 
-With the ovpn UDP GSO transmit series also applied, five interleaved
-60-second iperf3 -Z single-flow AES-128-GCM runs in each direction over
-two directly connected 100-Gbit/s mlx5 ports, after a 10-second warm-up,
-produced the following mean throughput:
+Record the verdict for a CHECKSUM_COMPLETE head as for a device which
+validated the checksums itself, so that completion yields the same
+CHECKSUM_UNNECESSARY state as for CHECKSUM_NONE and CHECKSUM_UNNECESSARY.
+CHECKSUM_PARTIAL stays as that commit intended.
 
-                         Forward          Reverse
-Without RX prefetch     21.542 Gbit/s    21.366 Gbit/s
-With RX prefetch        25.741 Gbit/s    25.150 Gbit/s
+With rx-gro-list enabled on an mlx5 port, which reports CHECKSUM_COMPLETE,
+a 100 Mbit/s flow of 30-byte UDP datagrams to a local socket raised
+UdpInCsumErrors by 3880 in five seconds and lost exactly twice as many
+datagrams, one pair per dropped aggregate. With rx-gro-list disabled, the
+counter stayed at zero.
 
-RX prefetch improved throughput by 19.5% forward and 17.7% reverse. Mean
-cycles per byte across the monitored data-path CPUs fell from 4.207 to
-3.896, a 7.4% reduction.
+TCP frag-list completion follows the same pattern and is not changed here.
 
-A same-binary comparison using the aforementioned setup found distances
-one and two effectively tied forward, while distance two was 3.3% faster
-reverse and less variable.
+Sashiko reported the issue while reviewing an ovpn series which uses
+frag-list GRO.
 
+Fixes: f0b8c3034556 ("udp: do not transition UDP GRO fraglist partial checksums to unnecessary")
 Signed-off-by: Ralf Lici <ralf@mandelbit.com>
 ---
-No changes since v2 https://lore.kernel.org/openvpn-devel/bad00484f77503ede2affa16075325a00b5cef04.1794329430.git.ralf@mandelbit.com/
+Changes since v2 https://lore.kernel.org/openvpn-devel/86994f75fd7d92f745f06e4392f89ff2ee12c3d8.1794329430.git.ralf@mandelbit.com/
+- Reference the commit which stopped converting CHECKSUM_COMPLETE in the
+  Fixes tag. (Sashiko)
+- Explain why only the checksum state can carry the GRO verdict.
 
-No changes since v1 https://lore.kernel.org/openvpn-devel/e18ef3363a3d5167cddb8b0528d447ba1d5aa2ed.1794314969.git.ralf@mandelbit.com/
+New in v2.
 
- drivers/net/ovpn/udp.c | 34 +++++++++++++++++++++++++++++++++-
- 1 file changed, 33 insertions(+), 1 deletion(-)
+ net/ipv4/udp_offload.c | 8 ++++++++
+ net/ipv6/udp_offload.c | 8 ++++++++
+ 2 files changed, 16 insertions(+)
 
-diff --git a/drivers/net/ovpn/udp.c b/drivers/net/ovpn/udp.c
-index e3a8aa83344f..2f77acc47bd9 100644
---- a/drivers/net/ovpn/udp.c
-+++ b/drivers/net/ovpn/udp.c
-@@ -6,9 +6,11 @@
-  *  Author:	Antonio Quartulli <antonio@openvpn.net>
-  */
+diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
+index cf07c3c6611a..572a65cd8977 100644
+--- a/net/ipv4/udp_offload.c
++++ b/net/ipv4/udp_offload.c
+@@ -965,6 +965,14 @@ INDIRECT_CALLABLE_SCOPE int udp4_gro_complete(struct sk_buff *skb, int nhoff)
+ 		skb_shinfo(skb)->gso_type |= (SKB_GSO_FRAGLIST|SKB_GSO_UDP_L4);
+ 		skb_shinfo(skb)->gso_segs = NAPI_GRO_CB(skb)->count;
  
-+#include <linux/cache.h>
- #include <linux/netdevice.h>
- #include <linux/inetdevice.h>
- #include <linux/if_vlan.h>
-+#include <linux/prefetch.h>
- #include <linux/skbuff.h>
- #include <linux/socket.h>
- #include <linux/udp.h>
-@@ -33,6 +35,21 @@
- /* like UDP and TCP frag-list GRO */
- #define OVPN_UDP_GRO_CNT_MAX 64
- 
-+/* leave enough work between a cache hint and the record which consumes it */
-+#define OVPN_UDP_GRO_PREFETCH_DISTANCE 2
-+
-+static void ovpn_udp_prefetchw_linear(const struct sk_buff *skb)
-+{
-+	unsigned long addr = (unsigned long)skb->data;
-+	unsigned long end = addr + skb_headlen(skb);
-+
-+	/* crypto overwrites data in place, so request write ownership of each
-+	 * linear cache line before the AEAD implementation reaches it
-+	 */
-+	for (; addr < end; addr = ALIGN(addr + 1, L1_CACHE_BYTES))
-+		prefetchw((void *)addr);
-+}
-+
- static bool ovpn_udp_gro_header(struct sk_buff *skb, u32 *header)
- {
- 	const unsigned int offset = skb_gro_offset(skb);
-@@ -232,6 +249,7 @@ static struct sk_buff *ovpn_udp_gso_prepare(struct sk_buff *skb, u32 header)
- 
- static void ovpn_udp_recv(struct ovpn_peer *peer, struct sk_buff *list)
- {
-+	struct sk_buff *skb, *next, *prefetch;
- 	const __be16 proto = list->protocol;
- 	const u32 priority = list->priority;
- #ifdef CONFIG_NET_SCHED
-@@ -241,9 +259,23 @@ static void ovpn_udp_recv(struct ovpn_peer *peer, struct sk_buff *list)
- 	const u32 secmark = list->secmark;
- #endif
- 	const int skb_iif = list->skb_iif;
--	struct sk_buff *skb, *next;
-+	int i;
-+
-+	/* a fraglist GRO aggregate makes later ciphertext visible before the
-+	 * current record is decrypted, so we prime the first two records, then
-+	 * keep the cache hints the same distance ahead while draining the list
-+	 */
-+	prefetch = list->next ? list : NULL;
-+	for (i = 0; i < OVPN_UDP_GRO_PREFETCH_DISTANCE && prefetch; i++) {
-+		ovpn_udp_prefetchw_linear(prefetch);
-+		prefetch = prefetch->next;
-+	}
- 
- 	skb_list_walk_safe(list, skb, next) {
-+		if (prefetch) {
-+			ovpn_udp_prefetchw_linear(prefetch);
-+			prefetch = prefetch->next;
++		/* GRO validated every datagram, but a CHECKSUM_COMPLETE value
++		 * covers only the first one: keep the verdict instead, as for
++		 * a device which validated the checksums itself
++		 */
++		if (skb->ip_summed == CHECKSUM_COMPLETE) {
++			skb->ip_summed = CHECKSUM_UNNECESSARY;
++			skb->csum_level = 0;
 +		}
- 		/* propagate post-GRO metadata from the list head, and clear
- 		 * the state which the receive stack consumed on the head only
- 		 */
+ 		__skb_incr_checksum_unnecessary(skb);
+ 
+ 		return 0;
+diff --git a/net/ipv6/udp_offload.c b/net/ipv6/udp_offload.c
+index 7370bcb80332..0b7ced2b5394 100644
+--- a/net/ipv6/udp_offload.c
++++ b/net/ipv6/udp_offload.c
+@@ -176,6 +176,14 @@ int udp6_gro_complete(struct sk_buff *skb, int nhoff)
+ 		skb_shinfo(skb)->gso_type |= (SKB_GSO_FRAGLIST|SKB_GSO_UDP_L4);
+ 		skb_shinfo(skb)->gso_segs = NAPI_GRO_CB(skb)->count;
+ 
++		/* GRO validated every datagram, but a CHECKSUM_COMPLETE value
++		 * covers only the first one: keep the verdict instead, as for
++		 * a device which validated the checksums itself
++		 */
++		if (skb->ip_summed == CHECKSUM_COMPLETE) {
++			skb->ip_summed = CHECKSUM_UNNECESSARY;
++			skb->csum_level = 0;
++		}
+ 		__skb_incr_checksum_unnecessary(skb);
+ 
+ 		return 0;
 -- 
 2.56.0
 
