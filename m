@@ -1,136 +1,118 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A78C9606A321
-	for <openvpn-devel@archiver.kernel.org>; Wed, 11 Nov 2026 13:31:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5141606A338
+	for <openvpn-devel@archiver.kernel.org>; Wed, 11 Nov 2026 13:40:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=aHYvcPI6;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=DeAfmgys;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=d9NUECOk;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=HD4RpVUS
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=S23xiSrH;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=FFbNeRlp;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=J1SdryTp;
+	dkim=neutral header.d=openvpn.com header.i=@openvpn.com header.a=rsa-sha256 header.s=google header.b=tmcSs5Cq
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
-	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:Date:Sender:To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Unsubscribe-Post:List-Owner;
-	bh=kabmEXY1FMkB/xyPK94VF86MthaAj+lJZJ/a73W2kE0=; b=aHYvcPI6oARLvP3+9GqOMam3ob
-	yz/BJG+34nn7eRHv3diYYhXFM0nLzd2ojc9Hhge8t6xX/b5UJfZX7Y/SRVX9X0Btofr0pNX8BnH6V
-	XS4QI2v3W9MbJRk0F5N3yPtpTW1Ej63SJmDgNn+WkicCGK/id4hcMWod2Gy9z2Yfzhp0=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Reply-To:From:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:Subject:To:
+	MIME-Version:Date:Message-ID:Sender:Cc:Content-Transfer-Encoding:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Unsubscribe-Post:List-Owner;
+	bh=YIUeXN9O2C3uq/L2mdBPNbYC8M6RjBC3j6sZSfh2o7I=; b=S23xiSrHXzUO7aKnIpvoMszn5+
+	3iv5OWYV7lrxDxsEqp6Z+sWTuqD/+KnggDTx554hgXWhVV6NSIXUI2rFsXvW2oZLeyhhNl8mAQ6D6
+	lE2PFyehdhFu5zuzD+03u6ExpBP4TZZFngf1qb17AgZWHezCnK5x0izaXtFv5EZF46vs=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xR8Pv-0000000005d-16i1;
-	Wed, 11 Nov 2026 13:31:11 +0000
+	id 1xR8Ya-000000001Nt-1F3C;
+	Wed, 11 Nov 2026 13:40:08 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xR8Pc-000000008VO-2xsS
+ (envelope-from <johan@openvpn.com>) id 1xR8YY-000000001Nm-0oRy
  for openvpn-devel@lists.sourceforge.net;
- Wed, 11 Nov 2026 13:30:52 +0000
+ Wed, 11 Nov 2026 13:40:06 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:Date:From:Sender:To:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
+ d=sourceforge.net; s=x; h=To:Subject:From:MIME-Version:Date:Message-ID:
+ Content-Type:Sender:Reply-To:Cc:Content-Transfer-Encoding:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=a1y6ex9LW9uEmqIdXDxGIcTd7Y2XpVRJU00mTTSaV0E=; b=DeAfmgysfiHVADLC1+4Ebf/s5n
- lBqnnPGfNr3pb+eTRKusKeQDaR3ahNgz4dWt54p9k2U3UDNsj11WQOf0NVraQq5QvDbAtzCy+MxXv
- Uw1ElSZSUcVbLqCvog6u2ZMXxOcSQG4Qfxr7/Ua5hspNafsLdjElzuzhhuCfG54v3HlU=;
+ bh=+5StU1tA8l906Mt5iHqNha3ahMMQ/haUsfdxUeuq4ZI=; b=FFbNeRlpvTdParETTOHbH/kNYh
+ NSFwFbBhN0DKJrv1PV6wb0Ky44hpT+4GYvVE6uA/Jeg8T58f3zvGNqAy7EfI3QMIm3pk7KLKf/Dfw
+ uiAZvkbee4sbOJ8pFmFFiv4Y0gKZQtuRiafR3o/Soxw/4FdKV0+4Tu9izfXeKxf0V3VU=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:Date:From:Sender:
- To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
+ h=To:Subject:From:MIME-Version:Date:Message-ID:Content-Type:Sender:Reply-To
+ :Cc:Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+ References:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=a1y6ex9LW9uEmqIdXDxGIcTd7Y2XpVRJU00mTTSaV0E=; b=d9NUECOkDWV9XfAJfpys2e9/bv
- 7qxkvnZjpusGm+tmk/q5N7bc0EPo69GacWwLwhyKJHDB8+KB8Zr8UeZwHX8JnkO+Iopknj59jDKJd
- dZv9estgU92XUgeGDc9CyD7DZ4e0mBokFq6DvxpHl8wonWaVpvk17nr98qxHg0WHvALw=;
-Received: from mail-wm1-f42.google.com ([209.85.128.42])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ bh=+5StU1tA8l906Mt5iHqNha3ahMMQ/haUsfdxUeuq4ZI=; b=J1SdryTpYFe4pnqz3Xzk0k8/hl
+ L40iUCD2NCKoBS9btZOfFVtiMbxrF6ysBS2CjAUOSNjfzB6JCbAGvKneWsO/25XuSakZLbgnTCwrB
+ ZK3iFio+YEbKnai+pueadsLdNCN+HMRl1I7UO4tqgKw08+5dJBAUeJ47h5r4drhNPcnM=;
+Received: from mail-dl1-f48.google.com ([74.125.82.48])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xR8PZ-000000006Ym-3Zxn for openvpn-devel@lists.sourceforge.net;
- Wed, 11 Nov 2026 13:30:52 +0000
-Received: by mail-wm1-f42.google.com with SMTP id
- 5b1f17b1804b1-4a214c5c4c0so31945385e9.3
+ id 1xR8YW-000000000lV-25oX for openvpn-devel@lists.sourceforge.net;
+ Wed, 11 Nov 2026 13:40:06 +0000
+Received: by mail-dl1-f48.google.com with SMTP id
+ a92af1059eb24-1931ff67a29so4981338c88.1
  for <openvpn-devel@lists.sourceforge.net>;
- Wed, 11 Nov 2026 05:30:49 -0800 (PST)
+ Wed, 11 Nov 2026 05:40:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1794403843; x=1795008643; darn=lists.sourceforge.net;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:date:from:from:to:cc:subject:date:message-id
- :reply-to:content-type;
- bh=a1y6ex9LW9uEmqIdXDxGIcTd7Y2XpVRJU00mTTSaV0E=;
- b=HD4RpVUSIyoszxh0Vv1Ixddr7R0nftQHdoOS+EtBq3gJb0jFk+Ilm63y1QSj+WZSnI
- i5a+OxKf+FXJCEKZEM8xve5QgGtnnnm+eIdP/vgFMdHdLznmM5BinSEM/kpeczdBg+y7
- KGLPSotGhaAW416vooAyoeAWQrGyu+yS7bB5L4NpWgiRmgz6GpaxDLLn5zJxpiUl6/7W
- TwaCK4GYi+HB/nyUBvRrZHOMJIuxcyZp+5zsAmoOMXTZALHPnDjzb9qPfQDIJiZ229cl
- 0ARX5uA34gEWVGlLM+Wfgkve+eCo8CUR6hqC/shOlpxIKL5MWH9H4NxxGcMvfThJzr0c
- DZKw==
+ d=openvpn.com; s=google; t=1794404399; x=1795009199; darn=lists.sourceforge.net;
+ h=content-language:to:subject:from:user-agent:mime-version:date
+ :message-id:content-type:from:to:cc:subject:date:message-id:reply-to
+ :content-type; bh=+5StU1tA8l906Mt5iHqNha3ahMMQ/haUsfdxUeuq4ZI=;
+ b=tmcSs5CqL5JJQvfvSJsfXgnlj/k73z1M5+vX6mxRlU6IJXCKBq3SNy2eOhD07Y31aY
+ Yqteq5lJz80LlxQYXZdjYFa571+G43UxtDsYb5ZcYiyn/VDDtlxwFClBvOTMCXsiDKWT
+ 7HCL1oCDX8SEhEfjMBLj8K8Njd6xRhMfiLfH6zxzGcFdn7Dtr/cRX6cc4M7H9TrOFrt9
+ d6psfBXvuNbZITg872hsnIcjlChNeSXN15xjOgXVcIogmXlZhEiXrzdcvhtFrMxEq4gw
+ LveArC8JgDICl06z7S3eZrdRmcdQS0q2Ftydr3MJ8jBRsGarfn4CT0flgiTScYvWQnni
+ aVJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1794403843; x=1795008643;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:date:from:x-gm-gg:x-gm-message-state:from:to:cc
+ d=1e100.net; s=20260707; t=1794404399; x=1795009199;
+ h=content-language:to:subject:from:user-agent:mime-version:date
+ :message-id:content-type:x-gm-gg:x-gm-message-state:from:to:cc
  :subject:date:message-id:reply-to:content-type;
- bh=a1y6ex9LW9uEmqIdXDxGIcTd7Y2XpVRJU00mTTSaV0E=;
- b=zmKYvIi70m2BzYlvy8AI6QnnnaghSOjISVs6aaPELkp2WA8RfZHovmaSCjtsk5404l
- j5qMziYqRbmBqCbJ9IKOOuViPyKgz/djFddk3njJZd0SwrSHCU6VM8WLoT6lWAAsBflv
- TkjX0ZSD3IZG0yWPjFdLO4CvEFBcsTFc5YXu4X7MYANzpdlhHwaeBT6GloP1qYOh+c6V
- TZ7D0ZfZ2cG0P0dODjJZwkQKOrNoZU6Et1tlAHuyO6/0lEMIzNSBiO+NhCCyhGGRCy8z
- sxz3t3KbyHFpGK9ORa1AjPzNLedwLFzLMonvJY+u99mCHE/ggteMPMAtG+362tfwihbe
- bbaw==
-X-Gm-Message-State: APuU4Z++a8g0azGtIPU7/GNrX38/qyiRWCd1IRr4pHsRjLIV1RrtJvH8
- UMyYbsfjeBVSJFRJZOAyLXVJeRUEtRG2qNKZ48huVFgGyO0fYQm8yWdmlb+kKMv4YEUYnfoEDAz
- mZqPfkjwI9sUfemTNlmpx0XnEeAj2ylz6ebUMEv20t6BR8/pYkSA7pwyLw+FxWHQIjb07dq4992
- xfRcyUhw==
-X-Gm-Gg: AYBFou0POkSH8I7nAi9r8s3PJf5CGCKu//FfNEsWlqeClJEwshFkaWTKwYbBVtcPyDv
- l0Dy5a3jJMXGVxAulVRqVrroFBgKk3gi3iLRmJV365I2Ao9g6BuL0z10WV33Vu7/lFPlxtbVFvH
- fx8K1x6kHQshx6O0Nq8QYNcRm6MiWRWsvmvzjryJmC/0lxduXyfXnMp2zTFOnhqv2NQPS9xippk
- 8SUwWhhMweSFXhtG8FTrO8l1gF/CqB6p6zQ3f8Q8BC2dpLSFn90d3G0xBDGSp0YnP/+dPUKfcz3
- EvUdtNBAIDVG/BBwDkpipQQfC1xRfYAPvgti8apzCbKWrbOe0nVrufwP4iA8BNL7iDL65NDJ2St
- kipWRS9jNeixWU3ubts5CrAonZwjsXrbEyOz3POq9GdJ8Uumo8wwe661VDG1oIYm57b5mOaLvlp
- BUIhsyQH0Mem9lHEIlVnMzwwOM38+aiuNuVvj9XgmSCGe83oj4yEpBVQUPmZClGVK8IzrCVmf2c
- Hb44dQA73gVBZEyVDtFxH5EyQk+SfayrUSQPzNX7sCrbEPd83Ca+BVWHH6JiacN6uYNyBhQR/bK
- isUx05xAFPOaavnevVJH4WyiOC3z3VvLFfvySweQqBaN2fezotxDoQY7rcxAR86SOeqSfDrl8e6
- kVIJ6nPir/hI8KFZUfLNAWQZug8sU/Ykf6J8baiJ596gbp1Thl+3ZaV0OX9I9XFBuovyMrkJT5Y
- cdiBhlPnPCxKI+QVU=
-X-Received: by 2002:a05:600d:82f1:b0:4a2:cbe:beac with SMTP id
- 5b1f17b1804b1-4ba093c85ebmr48912665e9.23.1794403843056; 
- Wed, 11 Nov 2026 05:30:43 -0800 (PST)
-Received: from ip-10-18-1-162.eu-central-1.compute.internal
- (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
+ bh=+5StU1tA8l906Mt5iHqNha3ahMMQ/haUsfdxUeuq4ZI=;
+ b=lbPtxhfObCDKfIu/lFv46yauEocE8PRi3DYZ90WlOMPKTXuvhFSNzuqFXm332MoJvR
+ zKaZ0/2YFAemARuzNP8im48jx+EowI87KVj4bk/yIhEsV26EgbMzw0Hrc23QPu3/7W0N
+ etwvUei5UqiaQF5nQGGu+65xFYN9yLE4+W163QeoOqm6l/72GxvkKAcGvCNWM/On2aDt
+ Gxqh6CvXy8Mf7MJiwtBM+9MmtIU96n/Y95jJa0Rc4GCptZb0HzYgJG9VYpqmINIikWEh
+ p3m5pmP85w6D6ccN8ZJBs9MqJ1auL8SupWCnzvKLcVwocTSxT2u2uo7jjfJPD8mRJ1bU
+ LciQ==
+X-Gm-Message-State: APuU4Z8OyIsGIzObBW1QLTeWcpo2EGbgebrF4AWXK40AOrZcHwMP1Efm
+ 7TF0miQVCM7bDEHVBZFtLX+x+SGy9dwRlnMdBx5TwiTHOp000Ac/iNnLWczy5cfpXFNGEuBNCFT
+ iEgCXjX9sehunI7EBitGuyLVrgPnXP6HeLswj0OfqSNLzqu1byb8EYpMOxXeMalfDqxVBYDzYRn
+ ZR8t/a0H8O
+X-Gm-Gg: AYBFou2sfE/G6kiTpH2mY9Zi8FG9Cfj6O/Ym7iq9hb1AU6Eie1HXGPXzVwN4e7dOlvv
+ BxAioFz/usx9/yLuprGg+9jLhgKvJot7VJxX4Qlhee/u60pA+yWzGVJWACIULpqSL+bZ+pW3eJE
+ Wslygb059UXx14WNdGLiUXIua6AKJCt72QJdk4d2Nsj+ldIVPF3KZs3/XwSYDmaRBUJUZlPenNC
+ quG1GJq0WeSKXma8HxzXES4IjMTvPX+aL+eFGUS0usNiyHNWV7gWNFKeJGY2IdoYmxFsQtiTBqA
+ 8pNEeUZutJA+bi83Lg6t18qr5FGCkyZwkRTe4uznMkBH+VgeRjWBLK8jeq1GsFDM4f1SspdAUBF
+ tZosRdr4r9fGrWkO6XN/K5bCCu+xDObR7/5fQVQTVr6EpnPGCtAuigkQyLWlmLZdltaNy6M6+F9
+ tV/mBCp4FmcEmGCSOq7svBt00ObhlZDlylb8h79CO1loojkUURwiCkfyckc4O67lvHlScD6mW2o
+ 5mKo+g3it5SiAy+T0FTqFplbEPLyqYCbi+V69bDrUpdZcd1RH6ONtuEdvo3yGeddbjOkjAqXnjk
+ 5tMOE9MpLRq8n2FrCfGEFJk9TgwMKTuQcAYtbAaDu1UZRzvaImS+A/ZayovnV81jM4l9QHVqbw=
+ =
+X-Received: by 2002:a05:7022:7e82:b0:1ab:fe29:5081 with SMTP id
+ a92af1059eb24-1b3c0311fd5mr2654493c88.20.1794404398659; 
+ Wed, 11 Nov 2026 05:39:58 -0800 (PST)
+Received: from ?IPV6:2001:ee0:4fc2:28e0:9c4b:4eea:2654:96c4?
+ ([2001:ee0:4fc2:28e0:9c4b:4eea:2654:96c4])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-4ba08ddbe68sm100138755e9.0.2026.11.11.05.30.41
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 11 Nov 2026 05:30:42 -0800 (PST)
-X-Google-Original-From: "Arne Schwabe (Code Review)"
- <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Wed, 11 Nov 2026 13:30:40 +0000
-Auto-Submitted: auto-generated
-X-Gerrit-MessageType: newpatchset
-X-Gerrit-PatchSet: 3
-X-Gerrit-Change-Id: I230b3b2483e15477b179b277dc8f7c91c53fa0c0
-X-Gerrit-Change-Number: 2175
-X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2175?usp=email>
-X-Gerrit-Commit: 7c26995119d4b1dbaf696843e8017ef7fa1cea33
-In-Reply-To: <gerrit.1794395186000.I230b3b2483e15477b179b277dc8f7c91c53fa0c0@gerrit.openvpn.net>
-References: <gerrit.1794395186000.I230b3b2483e15477b179b277dc8f7c91c53fa0c0@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzk0Mzk1MTg2MDAwLkkyMzBiM2IyNDgzZTE1NDc3YjE3OWIyNzdkYzhmN2M5MWM1M2ZhMGMwQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <8f37ffdbe77a879b5525aefe643ca9c7ee2ddabf-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+ 5a478bee46e88-3752060c4b6sm16739304eec.15.2026.11.11.05.39.57
+ for <openvpn-devel@lists.sourceforge.net>
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Wed, 11 Nov 2026 05:39:57 -0800 (PST)
+Message-ID: <6709e36d-2521-4e44-8a15-668794cc51cc@openvpn.com>
+Date: Wed, 11 Nov 2026 20:39:55 +0700
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
-User-Agent: Gerrit/3.14.5
-X-Spam-Score: 2.0 (++)
-X-Headers-End: 1xR8PZ-000000006Ym-3Zxn
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Extract
- tls_pre_decrypt_extract_session_id and pre_decrypt_find_session
+User-Agent: Mozilla Thunderbird
+To: openvpn-devel@lists.sourceforge.net
+Content-Language: en-US
+X-Spam-Score: -0.2 (/)
+X-Headers-End: 1xR8YW-000000000lV-25oX
+Subject: [Openvpn-devel]  IRC community meeting summary
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -140,487 +122,154 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "Arne Schwabe \(Code Review\) via Openvpn-devel"
- <openvpn-devel@lists.sourceforge.net>
-Reply-To: arne-openvpn@rfc2549.org, openvpn-devel@lists.sourceforge.net
-Cc: "Arne Schwabe \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============5876349748474749365=="
-X-Spam-Status: No, score=-11.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+From: Johan Draaisma via Openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Reply-To: Johan Draaisma <johan@openvpn.com>
+Content-Type: multipart/mixed; boundary="===============2946157583280384697=="
+X-Spam-Status: No, score=-4.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,MISSING_HEADERS,
-	PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,SPF_PASS,T_KAM_HTML_FONT_INVALID,
-	WEIRD_PORT autolearn=ham autolearn_force=no version=4.0.1
+	MAILING_LIST_MULTI,SPF_HELO_PASS,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============5876349748474749365==
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="08rYW6T8bQM="; charset=UTF-8
+This is a multi-part message in MIME format.
+--===============2946157583280384697==
+Content-Type: multipart/alternative;
+ boundary="------------X1xK7wa3OUYOUzcfZw0DgqOD"
+Content-Language: en-US
 
---08rYW6T8bQM=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------X1xK7wa3OUYOUzcfZw0DgqOD
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Arne Schwabe has uploaded a new patch set (#3)=2E ( https://gerrit=2Eopenvp=
-n=2Enet/c/openvpn/+/2175?usp=3Demail )
+Meeting summary for 11 November 2026:
 
-
-Change subject: Extract tls_pre_de=
-crypt_extract_session_id and pre_decrypt_find_session
-=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
-
-Extract tls_pre_decrypt_extract_se=
-ssion_id and pre_decrypt_find_session
-
-These functions fulfil steps that ca=
-n be easily moved to their own
-functions to make tls_pre_decrypt a bit more=
- readable=2E
-
-Change-Id: I230b3b2483e15477b179b277dc8f7c91c53fa0c0
-Signed-o=
-ff-by: Arne Schwabe <arne@rfc2549=2Eorg>
----
-M src/openvpn/ssl=2Ec
-1 file c=
-hanged, 70 insertions(+), 37 deletions(-)
-
-
-  git pull ssh://gerrit=2Eopenv=
-pn=2Enet:29418/openvpn refs/changes/75/2175/3
-
-diff --git a/src/openvpn/ssl=
-=2Ec b/src/openvpn/ssl=2Ec
-index 3ad7fe7=2E=2E3af5c95 100644
---- a/src/open=
-vpn/ssl=2Ec
-+++ b/src/openvpn/ssl=2Ec
-@@ -3765,6 +3765,70 @@
-     return tr=
-ue;
- }
- 
-+static bool
-+tls_pre_decrypt_extract_session_id(const struct link=
-_socket_actual *from,
-+                                   struct buffer buf=
-, struct session_id *sid)
-+{
-+    /* skip op code */
-+    buf_advance(&buf,=
- 1);
-+    if (!session_id_read(sid, &buf) || !session_id_defined(sid))
-+   =
- {
-+        struct gc_arena gc =3D gc_new();
-+        msg(D_TLS_ERRORS, "TL=
-S Error: session-id not found in packet from %s",
-+            print_link_s=
-ocket_actual(from, &gc));
-+        gc_free(&gc);
-+        return false;
-+  =
-  }
-+    return true;
-+}
-+
-+/**
-+ *  Find session matching the session id i=
-n sid in multi=2Esession array
-+ *
-+ * @return index of session in multi=2E=
-session array, TM_SIZE if not found
-+ *         and -1 on error
-+ */
-+stati=
-c int
-+pre_decrypt_find_session(struct tls_multi *multi, const struct link_=
-socket_actual *from,
-+                         const struct session_id *sid=
-)
-+{
-+    struct gc_arena gc =3D gc_new();
-+    int i;
-+    /* use session =
-ID to match up packet with appropriate tls_session object */
-+    for (i =
-=3D 0; i < TM_SIZE; ++i)
-+    {
-+        struct tls_session *session =3D &m=
-ulti->session[i];
-+        struct key_state *ks =3D &session->key[KS_PRIMAR=
-Y];
-+
-+        dmsg(
-+            D_TLS_DEBUG,
-+            "TLS: initial p=
-acket test, i=3D%d state=3D%s, mysid=3D%s, rec-sid=3D%s, rec-ip=3D%s, store=
-d-sid=3D%s, stored-ip=3D%s",
-+            i, state_name(ks->state), session=
-_id_print(&session->session_id, &gc),
-+            session_id_print(sid, &g=
-c), print_link_socket_actual(from, &gc),
-+            session_id_print(&ks-=
->session_id_remote, &gc),
-+            print_link_socket_actual(&ks->remote=
-_addr, &gc));
-+
-+        if (session_id_equal(&ks->session_id_remote, sid))=
-
-+        /* found a match */
-+        {
-+            if (i =3D=3D TM_LAME_=
-DUCK)
-+            {
-+                msg(D_TLS_ERRORS, "TLS ERROR: receive=
-d control packet with stale session-id=3D%s",
-+                    session_=
-id_print(sid, &gc));
-+                i =3D -1;
-+                goto done;=
-
-+            }
-+            dmsg(D_TLS_DEBUG, "TLS: found match, session[%=
-d], sid=3D%s", i,
-+                 session_id_print(sid, &gc));
-+         =
-   break;
-+        }
-+    }
-+
-+done:
-+    gc_free(&gc);
-+    return i;
-+}
-+=
-
- /*
   *
-  * When we are in TLS mode, this is the first routine which sees
-=
-@@ -3820,7 +3884,6 @@
-     /* control channel packet */
-     bool do_burst =
-=3D false;
-     bool new_link =3D false;
--    struct session_id sid; /* rem=
-ote session ID */
- 
-     /* verify legal opcode */
-     if (!tls_pre_decryp=
-t_verify_opcode(op, multi->opt=2Eserver, from))
-@@ -3834,46 +3897,16 @@
-   =
-  dmsg(D_TLS_DEBUG, "TLS: control channel, op=3D%s, IP=3D%s", packet_opcode=
-_name(op),
-          print_link_socket_actual(from, &gc));
- 
--    /* get re=
-mote session-id */
-+    struct session_id sid; /* remote session ID */
-+   =
- if (!tls_pre_decrypt_extract_session_id(from, *buf, &sid))
-     {
--       =
- struct buffer tmp =3D *buf;
--        buf_advance(&tmp, 1);
--        if (!s=
-ession_id_read(&sid, &tmp) || !session_id_defined(&sid))
--        {
--      =
-      msg(D_TLS_ERRORS, "TLS Error: session-id not found in packet from %s"=
-,
--                print_link_socket_actual(from, &gc));
--            goto =
-error;
--        }
-+        goto error;
-     }
- 
--    int i;
--    /* use ses=
-sion ID to match up packet with appropriate tls_session object */
--    for =
-(i =3D 0; i < TM_SIZE; ++i)
-+    int i =3D pre_decrypt_find_session(multi, =
-from, &sid);
-+    if (i =3D=3D -1)
-     {
--        struct tls_session *sess=
-ion =3D &multi->session[i];
--        struct key_state *ks =3D &session->key=
-[KS_PRIMARY];
--
--        dmsg(
--            D_TLS_DEBUG,
--            "TLS:=
- initial packet test, i=3D%d state=3D%s, mysid=3D%s, rec-sid=3D%s, rec-ip=
-=3D%s, stored-sid=3D%s, stored-ip=3D%s",
--            i, state_name(ks->sta=
-te), session_id_print(&session->session_id, &gc),
--            session_id_p=
-rint(&sid, &gc), print_link_socket_actual(from, &gc),
--            session_=
-id_print(&ks->session_id_remote, &gc),
--            print_link_socket_actua=
-l(&ks->remote_addr, &gc));
--
--        if (session_id_equal(&ks->session_id_=
-remote, &sid))
--        /* found a match */
--        {
--            if (i =
-=3D=3D TM_LAME_DUCK)
--            {
--                msg(D_TLS_ERRORS, "TLS=
- ERROR: received control packet with stale session-id=3D%s",
--             =
-       session_id_print(&sid, &gc));
--                goto error;
--        =
-    }
--            dmsg(D_TLS_DEBUG, "TLS: found match, session[%d], sid=3D=
-%s", i,
--                 session_id_print(&sid, &gc));
--            break;=
 
--        }
-+        goto error;
-     }
- 
-     /*
+    *Updated: 2.7.x release*
+    Version 2.7.9 was released on 4 November. It contains mostly client
+    side security fixes.
+    The next release 2.7.10 is planned for 2 December and will likely
+    contain further bugfixes and possible security fixes.
 
--- 
-To view, visit https=
-://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2175?usp=3Demail
-To unsubscribe, or f=
-or help writing mail filters, visit https://gerrit=2Eopenvpn=2Enet/settings=
-?usp=3Demail
+  *
 
-Gerrit-MessageType: newpatchset
-Gerrit-Project: openvpn
-Gerri=
-t-Branch: master
-Gerrit-Change-Id: I230b3b2483e15477b179b277dc8f7c91c53fa0c=
-0
-Gerrit-Change-Number: 2175
-Gerrit-PatchSet: 3
-Gerrit-Owner: Arne Schwabe =
-<arne-openvpn@rfc2549=2Eorg>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=
-=2Esourceforge=2Enet>
+    *Updated: donations*
+    We have no official donations program at the moment, but it looks
+    like we may be able to arrange something.
+    The difficulty was in who or what agency would arrange the incoming
+    donations and technical and administrative details.
+    We seem to have found a suitable partner for this;
+    https://opencollective.com/openvpn-foss-project
+    Will work to get this donation option visible on github at least,
+    and untangle some of OpenVPN Inc projects on there.
 
---08rYW6T8bQM=
+  *
+
+    *Closed: add openvpn-rfc repo to gerrit for reviewing*
+    Changes to the OpenVPN RFC documents were reviewed only on github in
+    the past.
+    There is a strong preference to do this on gerrit like other
+    openvpn2 patches.
+    This has been implemented and it is now preferred to use gerrit for
+    RFC patches and reviews now.
+
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 14:00 Central European Time.
+
+Kind regards,
+Johan Draaisma
+
+--------------X1xK7wa3OUYOUzcfZw0DgqOD
 Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 
-<!DOCTYPE html><html><head><style></style></head><body><p>Arne Schwabe <str=
-ong>uploaded patch set #3</strong> to this change=2E</p><p><a href=3D"https=
-://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2175?usp=3Demail">View Change</a></p>=
-<pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">Extract tls_pre_decrypt_extract_session_id and pre_decrypt_fi=
-nd_session<br><br>These functions fulfil steps that can be easily moved to =
-their own<br>functions to make tls_pre_decrypt a bit more readable=2E<br><b=
-r>Change-Id: I230b3b2483e15477b179b277dc8f7c91c53fa0c0<br>Signed-off-by: Ar=
-ne Schwabe &lt;arne@rfc2549=2Eorg&gt;<br>---<br>M src/openvpn/ssl=2Ec<br>1 =
-file changed, 70 insertions(+), 37 deletions(-)<br><br></pre><pre class=3D"=
-blocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
-git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/75/2175/3<=
-/pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
-"><span>diff --git a/src/openvpn/ssl=2Ec b/src/openvpn/ssl=2Ec</span><br><s=
-pan>index 3ad7fe7=2E=2E3af5c95 100644</span><br><span>--- a/src/openvpn/ssl=
-=2Ec</span><br><span>+++ b/src/openvpn/ssl=2Ec</span><br><span>@@ -3765,6 +=
-3765,70 @@</span><br><span>     return true;</span><br><span> }</span><br><=
-span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+static bool</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+tls_pre_decrypt_extra=
-ct_session_id(const struct link_socket_actual *from,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                                   struct=
- buffer buf, struct session_id *sid)</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   /* skip op code */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    buf_advance(&amp;buf, 1);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    if (!session_id_read(sid, &amp;buf) || !session_id_defined(=
-sid))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        struct gc_arena gc =
-=3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  msg(D_TLS_ERRORS, &quot;TLS Error: session-id not found in packet from %s=
-&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-print_link_socket_actual(from, &amp;gc));</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        gc_free(&amp;gc);</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        return false;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    return true;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+ *  Find session matching the session id=
- in sid in multi=2Esession array</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @=
-return index of session in multi=2Esession array, TM_SIZE if not found</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *         and -1 on err=
-or</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+static int</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+pre_decrypt_find_session(struct tls_multi=
- *multi, const struct link_socket_actual *from,</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+                         const struct session_i=
-d *sid)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena gc =3D gc_=
-new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int i;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* use session ID =
-to match up packet with appropriate tls_session object */</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    for (i =3D 0; i &lt; TM_SIZE; ++i=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        struct tls_session *sess=
-ion =3D &amp;multi-&gt;session[i];</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        struct key_state *ks =3D &amp;session-&gt;key[KS_PRI=
-MARY];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        dmsg(</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+            D_TLS_DEBUG,</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+            &quot;TLS: initial pa=
-cket test, i=3D%d state=3D%s, mysid=3D%s, rec-sid=3D%s, rec-ip=3D%s, stored=
--sid=3D%s, stored-ip=3D%s&quot;,</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+            i, state_name(ks-&gt;state), session_id_print(&amp=
-;session-&gt;session_id, &amp;gc),</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            session_id_print(sid, &amp;gc), print_link_socke=
-t_actual(from, &amp;gc),</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+            session_id_print(&amp;ks-&gt;session_id_remote, &amp;gc),<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            print_li=
-nk_socket_actual(&amp;ks-&gt;remote_addr, &amp;gc));</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        if (session_id_equal(&amp;ks-&gt;session_id_remote, =
-sid))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* fou=
-nd a match */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (=
-i =3D=3D TM_LAME_DUCK)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+            {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-             msg(D_TLS_ERRORS, &quot;TLS ERROR: received control packet wit=
-h stale session-id=3D%s&quot;,</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+                    session_id_print(sid, &amp;gc));</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+                i =3D -1;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+                goto done=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+            dmsg(D_TLS_D=
-EBUG, &quot;TLS: found match, session[%d], sid=3D%s&quot;, i,</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+                 session_id_print=
-(sid, &amp;gc));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+done:</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    gc_free(&amp;gc);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    return i;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span> /*</span><br><span>  *</span><br><span>  * When we are in TLS mod=
-e, this is the first routine which sees</span><br><span>@@ -3820,7 +3884,6 =
-@@</span><br><span>     /* control channel packet */</span><br><span>     b=
-ool do_burst =3D false;</span><br><span>     bool new_link =3D false;</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct session_id sid; =
-/* remote session ID */</span><br><span> </span><br><span>     /* verify le=
-gal opcode */</span><br><span>     if (!tls_pre_decrypt_verify_opcode(op, m=
-ulti-&gt;opt=2Eserver, from))</span><br><span>@@ -3834,46 +3897,16 @@</span=
-><br><span>     dmsg(D_TLS_DEBUG, &quot;TLS: control channel, op=3D%s, IP=
-=3D%s&quot;, packet_opcode_name(op),</span><br><span>          print_link_s=
-ocket_actual(from, &amp;gc));</span><br><span> </span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    /* get remote session-id */</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    struct session_id sid; /* remote =
-session ID */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if=
- (!tls_pre_decrypt_extract_session_id(from, *buf, &amp;sid))</span><br><spa=
-n>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        struc=
-t buffer tmp =3D *buf;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--        buf_advance(&amp;tmp, 1);</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        if (!session_id_read(&amp;sid, &amp;tmp) || !session_i=
-d_defined(&amp;sid))</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-       {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            m=
-sg(D_TLS_ERRORS, &quot;TLS Error: session-id not found in packet from %s&qu=
-ot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                p=
-rint_link_socket_actual(from, &amp;gc));</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-            goto error;</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        goto error;</span><br><span>     }</span><br><span> </sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    int i;</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    /* use session ID to match up pa=
-cket with appropriate tls_session object */</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    for (i =3D 0; i &lt; TM_SIZE; ++i)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    int i =3D pre_decrypt_find_ses=
-sion(multi, from, &amp;sid);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    if (i =3D=3D -1)</span><br><span>     {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        struct tls_session *session =3D &am=
-p;multi-&gt;session[i];</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-        struct key_state *ks =3D &amp;session-&gt;key[KS_PRIMARY];</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-        dmsg(</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-            D_TLS_DEBUG,</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-            &quot;TLS: initial packet test, i=3D%d sta=
-te=3D%s, mysid=3D%s, rec-sid=3D%s, rec-ip=3D%s, stored-sid=3D%s, stored-ip=
-=3D%s&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-   i, state_name(ks-&gt;state), session_id_print(&amp;session-&gt;session_i=
-d, &amp;gc),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-   session_id_print(&amp;sid, &amp;gc), print_link_socket_actual(from, &amp=
-;gc),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            sess=
-ion_id_print(&amp;ks-&gt;session_id_remote, &amp;gc),</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            print_link_socket_actual(&amp;k=
-s-&gt;remote_addr, &amp;gc));</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (s=
-ession_id_equal(&amp;ks-&gt;session_id_remote, &amp;sid))</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        /* found a match */</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            if (i =3D=3D TM_LAME_DUCK)</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-                msg(D_TLS_ERRORS, =
-&quot;TLS ERROR: received control packet with stale session-id=3D%s&quot;,<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    se=
-ssion_id_print(&amp;sid, &amp;gc));</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-                goto error;</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-            dmsg(D_TLS_DEBUG, &quot;TLS: found match, session[%=
-d], sid=3D%s&quot;, i,</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--                 session_id_print(&amp;sid, &amp;gc));</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-            break;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        goto error;</span><br><span>     }</span><br>=
-<span> </span><br><span>     /*</span><br></pre><p>To view, visit <a href=
-=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2175?usp=3Demail">change 217=
-5</a>=2E To unsubscribe, or for help writing mail filters, visit <a href=3D=
-"https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><d=
-iv itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope i=
-temprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itempr=
-op=3D"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2175?usp=3Dem=
-ail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 11 November 2026:</p>
+    <ul
+style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            2.7.x release</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Version 2.7.9 was released on 4 November. It contains mostly
+          client side security fixes.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          The next release 2.7.10 is planned for 2 December and will
+          likely contain further bugfixes and possible security fixes.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Updated:
+            donations</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          We have no official donations program at the moment, but it
+          looks like we may be able to arrange something.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          The difficulty was in who or what agency would arrange the
+          incoming donations and technical and administrative details.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          We seem to have found a suitable partner for this; <a
+            href="https://opencollective.com/openvpn-foss-project"
+style="box-sizing: inherit; background-color: transparent; color: rgb(24, 144, 255); text-decoration: none; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"
+            class="moz-txt-link-freetext">https://opencollective.com/openvpn-foss-project</a><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Will work to get this donation option visible on github at
+          least, and untangle some of OpenVPN Inc projects on there.</p>
+      </li>
+      <li
+style="box-sizing: inherit; margin-bottom: 0.2rem; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); margin-left: 1.5rem; list-style-type: disc;">
+        <p
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);"><strong
+style="box-sizing: inherit; font-weight: bolder; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">Closed:
+            add openvpn-rfc repo to gerrit for reviewing</strong><br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          Changes to the OpenVPN RFC documents were reviewed only on
+          github in the past.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          There is a strong preference to do this on gerrit like other
+          openvpn2 patches.<br
+style="box-sizing: inherit; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255);">
+          This has been implemented and it is now preferred to use
+          gerrit for RFC patches and reviews now.</p>
+      </li>
+    </ul>
+    <ul
+style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+    </ul>
+    <ul
+style="box-sizing: inherit; list-style: circle; padding-left: 1rem; margin-top: 0px; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) rgb(255, 255, 255); color: rgba(0, 0, 0, 0.85); font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+    </ul>
+    As always you're welcome to join at #openvpn-meeting on Libera IRC
+    network every Wednesday at 14:00 Central European Time.
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
 
-<div s=
-tyle=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-<div style=3D=
-"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none">=
- Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id=
-: I230b3b2483e15477b179b277dc8f7c91c53fa0c0 </div>
-<div style=3D"display:no=
-ne"> Gerrit-Change-Number: 2175 </div>
-<div style=3D"display:none"> Gerrit-=
-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: Arne Schwabe =
-&lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerr=
-it-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>=
+--------------X1xK7wa3OUYOUzcfZw0DgqOD--
 
 
-</body></html>
---08rYW6T8bQM=--
-
-
---===============5876349748474749365==
+--===============2946157583280384697==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============5876349748474749365==
+--===============2946157583280384697==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -631,5 +280,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============5876349748474749365==--
+--===============2946157583280384697==--
 
