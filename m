@@ -1,43 +1,43 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27079606A332
-	for <openvpn-devel@archiver.kernel.org>; Wed, 11 Nov 2026 09:23:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E50BA606A331
+	for <openvpn-devel@archiver.kernel.org>; Wed, 11 Nov 2026 09:23:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=e6oOmlQk;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=PUUslnRC;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=lb7jJ6qD;
-	dkim=neutral header.d=mandelbit.com header.i=@mandelbit.com header.a=rsa-sha256 header.s=MBO0001 header.b=1ddtzM33
+	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=IsrBWQyT;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=RqOs/mdW;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=RJ2QD0l7;
+	dkim=neutral header.d=mandelbit.com header.i=@mandelbit.com header.a=rsa-sha256 header.s=MBO0001 header.b=rEVNQob+
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
-	List-Owner; bh=h+U6KRhoh8Os1Cibi8lI0fnxblRiqbFWo+vjGhCaRN0=; b=e6oOmlQksGAxN4
-	OK/uY44xWMlYJmfBJULfQVR2wxuZZeFih8MEofYYiAsFzszVUqxmjVJ9bRaRCR1N2yW6+TsHsB2Bu
-	fn2NlpSjT/sajbapZRYvZ5Ewq83FNwpJXK9SxFDEU+9UIjful3snmFxbICfm/VpjEcnR+S4/sNn/Z
-	2b0=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	List-Owner; bh=ZCI4WX9urXGp1BS7KrnHMvXYKgu7O/1hV0EoHqBUch8=; b=IsrBWQyTd1tEeX
+	CVP6JLNcSAkYHIaG1MwR4Tus2xQVgcHyZJslxekdwhnQyVPVsubnYEOg5lH+W6mYO0q0r+QhZLjMn
+	o70ue4mytQBKJ6ZWgx8TaASzf6jr0XnA0MnTxQaDW9QQWJ5zN50BwWNiAL6+59R2Rn5HzHdd3mjyf
+	fKE=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xR4Xr-000000003GX-3WiK;
-	Wed, 11 Nov 2026 09:23:07 +0000
+	id 1xR4Xt-00000000473-2dHH;
+	Wed, 11 Nov 2026 09:23:09 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <ralf@mandelbit.com>) id 1xR4Xp-000000003G2-2KCe
+ (envelope-from <ralf@mandelbit.com>) id 1xR4Xo-0000000045W-2wsE
  for openvpn-devel@lists.sourceforge.net;
- Wed, 11 Nov 2026 09:23:05 +0000
+ Wed, 11 Nov 2026 09:23:04 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
  In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=3zeY0gWPKuL4F9+3wikbp6LY0irXgWjcnzKxjkhZGhc=; b=PUUslnRCKd/ZF12/y+HhqO8hdb
- XLjzv1uiTS1Zo+R50pWI/VFLfKWc9llnIxWaIvsFac8oo/3eAKX8SyaiKaULMURJAPil4bZTTzr/x
- TRJgb2yny6pwC4iUAXSnh1LTtk2W4nAiEn42uPFZmSU5kYyhszT0C1iiF0ZbY/slu20o=;
+ bh=084KPNDCCCHfZL3eU73waUDv5CsaEDM4nGC1XpT7NfI=; b=RqOs/mdWC2CkO5hPvnHtvJu0bs
+ 57N3Dro3jQG3qxQcMWYLyqVkHHj1hj4aBS23Fk6nRC0qVA+2/S8PnGyVPCcuytLphn9Rc/5PEb3rQ
+ ojB+V3RbgOXCvpAw5OEPkUyVx1DuoxUbTp7BhGTPwMwyvS6wp+gNLDEyLc9kzkvEGZRE=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -45,52 +45,52 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=3zeY0gWPKuL4F9+3wikbp6LY0irXgWjcnzKxjkhZGhc=; b=lb7jJ6qDpGt0dfoJLSkCxq4j0w
- yXlyPr//dJ1J4jXxTQsFM1IrDhYOQ9EEJF4IBCwHZiX0K8T9iHYNC1hb5pLX4rqgqVK0XLFq8ocu9
- 9ZkLu/jHIKYu1EdxZVeVRcIRRWYAR8094tH4yECksmXuoCTE5HcMOadmJM2Edrh9eHgc=;
+ bh=084KPNDCCCHfZL3eU73waUDv5CsaEDM4nGC1XpT7NfI=; b=RJ2QD0l7DSqQeuVXjlj4qNdTqF
+ xlNEFrhFizXikjRIdHTS4HNQJbEA7MjspN/QG6J2hl4jz0EojM3uRf0EYsBzym9DucKh9VvqL7l5u
+ o6prN8GRT5U/F68sP1/uO7t2MPaHnR0p5EoX6cfuVnyp/ykE7fZRrfr0vXRwS6Vu0ccc=;
 Received: from mout-b-206.mailbox.org ([195.10.208.51])
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
- id 1xR4Xl-000000000H2-1MH9 for openvpn-devel@lists.sourceforge.net;
- Wed, 11 Nov 2026 09:23:05 +0000
+ id 1xR4Xk-000000000Gy-0gsl for openvpn-devel@lists.sourceforge.net;
+ Wed, 11 Nov 2026 09:23:04 +0000
 Received: from smtp202.mailbox.org (smtp202.mailbox.org
  [IPv6:2001:67c:2050:b231:465::202])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange X25519MLKEM768 server-signature RSA-PSS (4096 bits) server-digest
  SHA256) (No client certificate requested)
- by mout-b-206.mailbox.org (Postfix) with ESMTPS id 4jPdNF0D02zb8
+ by mout-b-206.mailbox.org (Postfix) with ESMTPS id 4jPdNC455GzZQ
  for <openvpn-devel@lists.sourceforge.net>;
- Wed, 11 Nov 2026 10:22:53 +0100 (CET)
+ Wed, 11 Nov 2026 10:22:51 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
- s=MBO0001; t=1794388973;
+ s=MBO0001; t=1794388971;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:mime-version:mime-version:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=3zeY0gWPKuL4F9+3wikbp6LY0irXgWjcnzKxjkhZGhc=;
- b=1ddtzM33bEeEECafVsOuboWKnJZHe27BHyR8ws/QmM1VKmAl5ShPr6GEylaaa33w39V4et
- bVli+ipqPQphaKb9CBMjlYZI4rel2A6WyNvIzJVh2x5fFKYlvzU+lrNP588YPo+F1BVnvL
- o2h2WbAzoKPHQBS/Oy4R54zbqtDu4It3jwirn7xwthnTsIn/GWcXgAEEgaxwPH61PQ1G0Q
- 6T2Ky3Zg/k2yqFoGouj7ER5oNSXDcd7mvtm+UAM7ohT9xz+Ts1hYvro7EbZN2WmlvBsNVx
- jHogxLe81rkSsbCXEMvWGRL+a1sInJ8RZe+nt/wRaUQKT11laAmrc5tyb2nAbg==
+ bh=084KPNDCCCHfZL3eU73waUDv5CsaEDM4nGC1XpT7NfI=;
+ b=rEVNQob+BHYeVQpMsutqgeMRbZ+Zm2A1f2E4bOTUYJBLUNTx93CZqqHL88JdFiPTTr8fYB
+ /RfvxlI/UDETzQnXzLwkPWzLO4bX7lnsxfvs4OY8pl/sGh9KsBTUQDjc9eybZOv4e6qcvQ
+ M4xhHGgJB3DUy9XVOoBi/MUONyzJ0TdzazADAPJhsIHNcS8gEEkNkea3GD5t8b6m6xQf3R
+ 4B6qzr/e2kowqMeBH2owEfd9LD+fUaIf5JP7NNSY/CgXhhPKVRc9pUVwhboG0WbF9bHbPc
+ xRfc9YvY8z4Ki97Y7jtvALKPpamhUjIkF+wicx4lESMlRtgWMfOqnv/YgcUobQ==
 Authentication-Results: outgoing_mbo_mout; dkim=none;
  spf=pass (outgoing_mbo_mout: domain of ralf@mandelbit.com designates
  2001:67c:2050:b231:465::202 as permitted sender)
  smtp.mailfrom=ralf@mandelbit.com
 From: Ralf Lici <ralf@mandelbit.com>
 To: openvpn-devel@lists.sourceforge.net
-Date: Wed, 11 Nov 2026 10:22:37 +0100
-Message-ID: <6b18f9a151ef61c7948e82287beeca1993e544f4.1794388607.git.ralf@mandelbit.com>
+Date: Wed, 11 Nov 2026 10:22:34 +0100
+Message-ID: <580d7d51ddbdd7961a69538fe0301fe9c93a22db.1794388607.git.ralf@mandelbit.com>
 X-Mailer: git-send-email 2.56.0
 In-Reply-To: <cover.1794388607.git.ralf@mandelbit.com>
 References: <cover.1794388607.git.ralf@mandelbit.com>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
-X-Rspamd-Queue-Id: 4jPdNF0D02zb8
+X-Rspamd-Queue-Id: 4jPdNC455GzZQ
 X-Spam-Score: -0.2 (/)
-X-Headers-End: 1xR4Xl-000000000H2-1MH9
-Subject: [Openvpn-devel] [PATCH ovpn net-next v3 5/6] ovpn: coalesce UDP
- data records with GRO
+X-Headers-End: 1xR4Xk-000000000Gy-0gsl
+Subject: [Openvpn-devel] [PATCH ovpn net-next v3 2/6] udp: let encapsulation
+ callbacks consume UDP frag-list GSO
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -109,502 +109,434 @@ X-Spam-Status: No, score=-16.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
-Register a UDP tunnel GRO receive callback for ovpn data sockets and
-coalesce compatible DATA_V2 records from one transport flow. Keep every
-encrypted record as a separate frag-list entry so the receive path can
-authenticate it independently.
+Since commit 3d010c8031e3 ("udp: do not accept non-tunnel GSO skbs
+landing in a tunnel"), udp_unexpected_gso segments generic UDP L4 and
+frag-list GSO before passing packets to an encapsulation callback,
+because GRO socket lookup cannot prove that such an aggregate will not
+later reach a tunnel. This protects callbacks which only understand UDP
+tunnel GSO packets, but also prevents an encapsulator from deliberately
+batching independent outer UDP records as a standard frag-list
+aggregate.
 
-Match the complete opcode, key and peer header and require compatible
-outer-network and checksum state. Flush on short records, differing
-segment geometry, existing GSO input, records inside FOU or GUE, or the
-64-record limit. Complete a held aggregate before an incompatible record
-from the same transport flow, preventing the new record from overtaking
-it.
+Add an explicit per-socket opt-in for an encap_rcv callback which
+accepts the exact SKB_GSO_UDP_L4 | SKB_GSO_FRAGLIST representation.
+Publish acceptance only after the callbacks which consume that
+representation, and read it with acquire ordering.
 
-GRO socket lookup is not authoritative, so a generic UDP frag-list
-aggregate may later land on an ovpn socket, for example after DNAT.
-Consume only aggregates with standard, unmodified geometry, private head
-and child skbs, linear and uniform OpenVPN headers, and an outer tuple
-unchanged since GRO. Decline every other aggregate so UDP segments it
-and retries delivery one datagram at a time. Inspect aggregates without
-pulling, since a declined one must reach UDP unmodified.
+GRO validated every datagram before linking it into this
+representation, while the header checksum of the aggregate covers only
+the first one, and a tunnel can reset the checksum state on the way.
+Trust the GRO verdict for an accepted aggregate instead of checking it
+before encapsulation, as udp_post_segment_fix_csum does after
+segmentation.
 
-Detach compatible frag lists directly instead of rebuilding standalone
-UDP packets whose outer headers would be discarded after decryption.
-Repair the aggregate head accounting, retain the outer headers needed
-for authenticated endpoint updates, propagate post-GRO protocol, ingress
-interface, priority, security mark and tc index metadata to every
-record. Clear the outer VLAN tag, redirect and classification flags and
-delivery time, which the receive stack consumed on the head only.
+Treat the opt-in as provisional: segment the aggregate and process every
+datagram normally if the callback is absent or declines it. A declining
+callback must leave the aggregate unmodified. This keeps the combined
+representation away from the UDP socket and leaves callbacks which do not
+opt in protected as before.
 
-The socket also opts into the detachable GRO receive contract, since
-it's owned by userspace. Refuse a socket which another encapsulation,
-such as ESP-in-UDP, has configured without setting sk_user_data, since
-its GRO callback could not be replaced. Teardown removes callbacks only
-while they remain owned by ovpn and waits for readers which may already
-have captured one. This keeps ovpn detachable GRO state and callback
-lifetimes consistent if UDP_ENCAP changes the socket configuration.
+Check the inbound XFRM policy and reset conntrack state once for an
+aggregate passed to such a callback. Its datagrams share the verdict, and
+a check after a fallback would lack the state which the first one
+consumed.
 
-The GRO implementation does not depend on the linked ovpn UDP GSO
-transmit series, but the measurement kernel carried it so that transmit
-did not limit throughput. On two directly connected 100-Gbit/s mlx5
-ports, five interleaved 60-second iperf3 -Z single-flow AES-128-GCM runs
-in each direction, after a 10-second warm-up, produced the following
-mean throughput:
+Preserve the sampled acceptance decision across concurrent callback
+changes and account every consumed datagram in UDP statistics.
+
+Consuming the aggregate whole avoids rebuilding every datagram only for
+the encapsulator to discard its outer headers, and lets the callback
+amortize per-batch work and look ahead across records. With this series
+and the ovpn UDP GSO transmit series applied, five interleaved 60-second
+iperf3 -Z single-flow AES-128-GCM runs in each direction over two
+directly connected 100-Gbit/s mlx5 ports, after a 10-second warm-up,
+compared direct consumption by the ovpn GRO callback with the same
+kernel in which ovpn declines every aggregate:
 
                          Forward          Reverse
-Without GRO             18.721 Gbit/s    18.777 Gbit/s
-With GRO                21.542 Gbit/s    21.366 Gbit/s
+UDP segmentation        20.561 Gbit/s    20.498 Gbit/s
+Direct consumption      25.741 Gbit/s    25.150 Gbit/s
 
-GRO improved throughput by 15.1% forward and 13.8% reverse. Mean cycles
-and instructions per byte across the monitored data-path CPUs fell from
-4.535 to 4.207 (7.2%) and from 10.913 to 9.417 (13.7%), respectively.
+Direct consumption improved throughput by 25.2% forward and 22.7%
+reverse, and reduced mean cycles per byte across the monitored data-path
+CPUs by 10.6% and 8.2%, respectively.
 
-Link: https://lore.kernel.org/openvpn-devel/cover.1794244231.git.ralf@mandelbit.com/
+Export skb_gro_receive_list, already shared by the core UDP and TCP
+frag-list GRO paths, so modular encapsulators can construct the same
+standard representation.
+
 Signed-off-by: Ralf Lici <ralf@mandelbit.com>
 ---
-Changes since v2 https://lore.kernel.org/openvpn-devel/3f88e036a4684c371956d26962e2ce6d02d61ab1.1794329430.git.ralf@mandelbit.com/
-- Refuse records inside FOU or GUE in the GRO callback. (Sashiko)
-- Mark the rare admission conditions as unlikely and complete held
-  records through a common exit.
+Changes since v2 https://lore.kernel.org/openvpn-devel/22dd867c764497525c4544c90fe08b23dbb6616e.1794329430.git.ralf@mandelbit.com/
+- Restore the pre-encapsulation checksum bypass for accepted aggregates,
+  since a tunnel can reset their checksum state. (Sashiko)
 
-Changes since v1 https://lore.kernel.org/openvpn-devel/36b08ba627b885149ef45de3b6a26c52f857387d.1794314969.git.ralf@mandelbit.com/
-- Refuse a socket which another encapsulation has configured without
-  setting sk_user_data. (Sashiko)
-- Read a held aggregate's header without pulling it. (Sashiko)
-- Check aggregates in the encap callback without pulling them. (Sashiko)
-- Clear the redirect, classification and delivery time state which the
-  receive stack consumed on the aggregate head only. (Sashiko)
-- Test skb_is_gso before pulling a new record's header.
+Changes since v1 https://lore.kernel.org/openvpn-devel/19426aa5f9a5805f925014be8b057dc2fba335d7.1794314969.git.ralf@mandelbit.com/
+- Drop the pre-encapsulation checksum bypass, made redundant by the
+  previous patch. (Sashiko)
+- Check the inbound XFRM policy and reset conntrack state once for an
+  accepted aggregate, and count all its datagrams on a drop. (Sashiko)
+- Read frag-list acceptance with acquire ordering and warn when setting
+  up a socket which still accepts frag-lists. (Sashiko)
+- Require a declined aggregate to be left unmodified, without the
+  allowance for layout-only pulls.
 
- drivers/net/ovpn/udp.c | 336 +++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 325 insertions(+), 11 deletions(-)
+ include/linux/udp.h        | 17 +++++++++
+ include/net/udp_tunnel.h   |  1 +
+ net/core/gro.c             |  1 +
+ net/ipv4/udp.c             | 73 +++++++++++++++++++++++++++++++-------
+ net/ipv4/udp_tunnel_core.c | 12 +++++++
+ net/ipv6/udp.c             | 73 +++++++++++++++++++++++++++++++-------
+ 6 files changed, 151 insertions(+), 26 deletions(-)
 
-diff --git a/drivers/net/ovpn/udp.c b/drivers/net/ovpn/udp.c
-index 055cdb1bee13..e3a8aa83344f 100644
---- a/drivers/net/ovpn/udp.c
-+++ b/drivers/net/ovpn/udp.c
-@@ -8,11 +8,14 @@
- 
- #include <linux/netdevice.h>
- #include <linux/inetdevice.h>
-+#include <linux/if_vlan.h>
- #include <linux/skbuff.h>
- #include <linux/socket.h>
- #include <linux/udp.h>
-+#include <linux/unaligned.h>
- #include <net/addrconf.h>
- #include <net/dst_cache.h>
-+#include <net/gro.h>
- #include <net/route.h>
- #include <net/transp_v6.h>
- #include <net/udp.h>
-@@ -27,6 +30,252 @@
- #include "socket.h"
- #include "udp.h"
- 
-+/* like UDP and TCP frag-list GRO */
-+#define OVPN_UDP_GRO_CNT_MAX 64
-+
-+static bool ovpn_udp_gro_header(struct sk_buff *skb, u32 *header)
-+{
-+	const unsigned int offset = skb_gro_offset(skb);
-+
-+	/* GRO replaces its frag0 pointer after holding an skb, so keep the
-+	 * openvpn header linear for later candidate comparisons
+diff --git a/include/linux/udp.h b/include/linux/udp.h
+index 998906ec3b32..cb3fd34d56f6 100644
+--- a/include/linux/udp.h
++++ b/include/linux/udp.h
+@@ -67,6 +67,10 @@ enum {
+ 	UDP_FLAGS_ACCEPT_FRAGLIST,
+ 	UDP_FLAGS_ACCEPT_L4,
+ 	UDP_FLAGS_ENCAP_ENABLED, /* This socket enabled encap */
++	/* encap_rcv accepts UDP L4 frag-list GSO. If it does not consume such
++	 * an aggregate, it must leave it unmodified.
 +	 */
-+	if (!pskb_may_pull(skb, offset + OVPN_OPCODE_SIZE))
-+		return false;
++	UDP_FLAGS_ENCAP_ACCEPT_FRAGLIST,
+ };
+ 
+ /* per NUMA structure for lockless producer usage. */
+@@ -211,6 +215,19 @@ static inline bool udp_encap_needed(void)
+ 	return false;
+ }
+ 
++static inline bool udp_encap_accepts_fraglist(struct sock *sk,
++					      struct sk_buff *skb)
++{
++	/* pairs with set_mask_bits in setup_udp_tunnel_sock, so the callbacks
++	 * published before acceptance are visible once it is observed
++	 */
++	return skb_is_gso(skb) &&
++	       skb_shinfo(skb)->gso_type ==
++		       (SKB_GSO_UDP_L4 | SKB_GSO_FRAGLIST) &&
++	       test_bit_acquire(UDP_FLAGS_ENCAP_ACCEPT_FRAGLIST,
++				&udp_sk(sk)->udp_flags);
++}
 +
-+	*header = get_unaligned_be32(skb->data + offset);
+ static inline bool udp_unexpected_gso(struct sock *sk, struct sk_buff *skb)
+ {
+ 	if (!skb_is_gso(skb))
+diff --git a/include/net/udp_tunnel.h b/include/net/udp_tunnel.h
+index 498b7b262fa9..a540e86d5f84 100644
+--- a/include/net/udp_tunnel.h
++++ b/include/net/udp_tunnel.h
+@@ -85,6 +85,7 @@ struct udp_tunnel_sock_cfg {
+ 	void *sk_user_data;     /* user data used by encap_rcv call back */
+ 	/* Used for setting up udp_sock fields, see udp.h for details */
+ 	__u8  encap_type;
++	unsigned long udp_flags;
+ 	udp_tunnel_encap_rcv_t encap_rcv;
+ 	udp_tunnel_encap_err_lookup_t encap_err_lookup;
+ 	udp_tunnel_encap_err_rcv_t encap_err_rcv;
+diff --git a/net/core/gro.c b/net/core/gro.c
+index 1b033855a20d..1cac10516262 100644
+--- a/net/core/gro.c
++++ b/net/core/gro.c
+@@ -266,6 +266,7 @@ int skb_gro_receive_list(struct sk_buff *p, struct sk_buff *skb)
+ 
+ 	return 0;
+ }
++EXPORT_SYMBOL(skb_gro_receive_list);
+ 
+ static void gro_complete(struct gro_node *gro, struct sk_buff *skb)
+ {
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 303d0102519a..cd209298012d 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -2383,6 +2383,29 @@ static int __udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+ 	return 0;
+ }
+ 
++/* Check the inbound policy and reset conntrack state, dropping the skb on
++ * failure. An accepted frag-list aggregate is checked once: its datagrams
++ * share the verdict, and a check after a fallback would lack the state which
++ * the first one consumed.
++ */
++static bool udp_queue_rcv_policy(struct sock *sk, struct sk_buff *skb,
++				 bool encap_fraglist)
++{
++	if (!xfrm4_policy_check(sk, XFRM_POLICY_IN, skb)) {
++		unsigned int segs = encap_fraglist ?
++				    skb_shinfo(skb)->gso_segs : 1;
++
++		__SNMP_ADD_STATS(sock_net(sk)->mib.udp_statistics,
++				 UDP_MIB_INERRORS, segs);
++		numa_drop_add(&udp_sk(sk)->drop_counters, segs);
++		sk_skb_reason_drop(sk, skb, SKB_DROP_REASON_XFRM_POLICY);
++		return false;
++	}
++	nf_reset_ct(skb);
++
 +	return true;
 +}
 +
-+static struct sk_buff *ovpn_udp_gro_receive_fraglist(struct sock *sk,
-+						     struct list_head *head,
-+						     struct sk_buff *skb)
-+{
-+	const unsigned int gso_size = skb_gro_len(skb);
-+	struct sk_buff *p, *pp = NULL;
-+	int ret = 0, nhoff;
-+	bool ip_flush;
-+	u32 header;
-+
-+	/* FOU and GUE clear encap_mark and set is_fou before passing the inner
-+	 * UDP packet to GRO, so frag-list completion would run on their outer
-+	 * UDP header and skip their own completion
+ /* returns:
+  *  -1: error
+  *   0: success
+@@ -2391,7 +2414,8 @@ static int __udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+  * Note that in the success and error cases, the skb is assumed to
+  * have either been requeued or freed.
+  */
+-static int udp_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
++static int udp_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb,
++				 bool encap_fraglist)
+ {
+ 	enum skb_drop_reason drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
+ 	struct udp_sock *up = udp_sk(sk);
+@@ -2400,12 +2424,6 @@ static int udp_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
+ 	/*
+ 	 *	Charge it to the socket, dropping if the queue is full.
+ 	 */
+-	if (!xfrm4_policy_check(sk, XFRM_POLICY_IN, skb)) {
+-		drop_reason = SKB_DROP_REASON_XFRM_POLICY;
+-		goto drop;
+-	}
+-	nf_reset_ct(skb);
+-
+ 	if (static_branch_unlikely(&udp_encap_needed_key) &&
+ 	    READ_ONCE(up->encap_type)) {
+ 		int (*encap_rcv)(struct sock *sk, struct sk_buff *skb);
+@@ -2424,14 +2442,25 @@ static int udp_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
+ 		/* if we're overly short, let UDP handle it */
+ 		encap_rcv = READ_ONCE(up->encap_rcv);
+ 		if (encap_rcv) {
++			unsigned int segs = encap_fraglist ?
++					    skb_shinfo(skb)->gso_segs : 1;
+ 			int ret;
+ 
+-			/* Verify checksum before giving to encap */
+-			if (udp_lib_checksum_complete(skb))
++			/* Verify checksum before giving to encap. The header
++			 * checksum of an accepted frag-list covers only its
++			 * first datagram, so trust the GRO verdict instead, as
++			 * udp_post_segment_fix_csum does after segmentation.
++			 */
++			if (!encap_fraglist && udp_lib_checksum_complete(skb))
+ 				goto csum_error;
+ 
+ 			ret = encap_rcv(sk, skb);
+-			if (ret <= 0) {
++			if (!ret) {
++				__SNMP_ADD_STATS(net->mib.udp_statistics,
++						 UDP_MIB_INDATAGRAMS, segs);
++				return 0;
++			}
++			if (ret < 0 && !encap_fraglist) {
+ 				__UDP_INC_STATS(net, UDP_MIB_INDATAGRAMS);
+ 				return -ret;
+ 			}
+@@ -2440,6 +2469,13 @@ static int udp_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
+ 		/* FALLTHROUGH -- it's a UDP Packet */
+ 	}
+ 
++	/* The encapsulator did not consume an aggregate it had opted into so
++	 * we ask udp_queue_rcv_skb to retry after segmentation rather than
++	 * exposing multiple datagrams to the socket as one.
 +	 */
-+	if (unlikely(NAPI_GRO_CB(skb)->flush || NAPI_GRO_CB(skb)->is_fou ||
-+		     skb->encapsulation || skb_is_gso(skb)))
-+		goto flush;
++	if (encap_fraglist)
++		return -EAGAIN;
 +
-+	if (!ovpn_udp_gro_header(skb, &header) ||
-+	    FIELD_GET(OVPN_OPCODE_PKTTYPE_MASK, header) != OVPN_DATA_V2)
-+		goto flush;
+ 	prefetch(&sk->sk_rmem_alloc);
+ 	if (rcu_access_pointer(sk->sk_filter) &&
+ 	    udp_lib_checksum_complete(skb))
+@@ -2466,11 +2502,18 @@ static int udp_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
+ 
+ static int udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+ {
++	bool encap_fraglist = udp_encap_accepts_fraglist(sk, skb);
+ 	struct sk_buff *next, *segs;
+ 	int ret;
+ 
+-	if (likely(!udp_unexpected_gso(sk, skb)))
+-		return udp_queue_rcv_one_skb(sk, skb);
++	if (likely(encap_fraglist || !udp_unexpected_gso(sk, skb))) {
++		if (!udp_queue_rcv_policy(sk, skb, encap_fraglist))
++			return -1;
 +
-+	/* udp_gro_receive sets encap_mark before invoking a tunnel callback,
-+	 * normally because the callback recurses into an inner protocol. ovpn
-+	 * retains complete outer UDP records instead, so clear it and use
-+	 * ordinary UDP frag-list completion.
-+	 */
-+	NAPI_GRO_CB(skb)->encap_mark = 0;
-+	NAPI_GRO_CB(skb)->is_flist = 1;
-+
-+	list_for_each_entry(p, head, list) {
-+		if (!NAPI_GRO_CB(p)->same_flow)
++		ret = udp_queue_rcv_one_skb(sk, skb, encap_fraglist);
++		if (likely(ret != -EAGAIN))
++			return ret;
++	}
+ 
+ 	BUILD_BUG_ON(sizeof(struct udp_skb_cb) > SKB_GSO_CB_OFFSET);
+ 	__skb_push(skb, -skb_mac_offset(skb));
+@@ -2479,7 +2522,11 @@ static int udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+ 		__skb_pull(skb, skb_transport_offset(skb));
+ 
+ 		udp_post_segment_fix_csum(skb);
+-		ret = udp_queue_rcv_one_skb(sk, skb);
++		/* datagrams of a declined aggregate share its verdict */
++		if (!encap_fraglist && !udp_queue_rcv_policy(sk, skb, false))
 +			continue;
 +
-+		/* A different representation, opcode, key or peer ID completes
-+		 * the held aggregate; this record can start the next one.
-+		 * Read the held header without pulling which might change the
-+		 * skb shape.
-+		 */
-+		if (NAPI_GRO_CB(p)->encap_mark || !NAPI_GRO_CB(p)->is_flist ||
-+		    skb_headlen(p) < skb_gro_offset(p) + OVPN_OPCODE_SIZE ||
-+		    get_unaligned_be32(p->data + skb_gro_offset(p)) != header)
-+			return p;
-+
-+		/* GRO has already matched the outer addresses and UDP ports;
-+		 * check the remaining outer IP fields
-+		 */
-+		ip_flush = gro_receive_network_flush(udp_hdr(skb),
-+						     udp_hdr(p), p);
-+
-+		/* The first record determines the nominal GSO size. A shorter
-+		 * final record may follow it, but a larger record cannot.
-+		 * Checksum metadata must also be uniform because the aggregate
-+		 * exposes only one checksum state.
-+		 */
-+		if (gso_size > skb_shinfo(p)->gso_size || ip_flush ||
-+		    skb->ip_summed != p->ip_summed ||
-+		    skb->csum_level != p->csum_level) {
-+			pp = p;
-+		} else {
-+			/* skb_gro_receive_list pulls the headers already
-+			 * processed by GRO before linking this skb to the
-+			 * record list so we have to manually preserve the
-+			 * outer network header location for later handling
-+			 */
-+			nhoff = NAPI_GRO_CB(skb)->network_offset;
-+			skb_set_network_header(skb, nhoff);
-+			ret = skb_gro_receive_list(p, skb);
-+		}
-+
-+		/* complete the aggregate if the append failed, or after
-+		 * appending a shorter final record, or after reaching the
-+		 * record-count limit
-+		 */
-+		if (ret || gso_size != skb_shinfo(p)->gso_size ||
-+		    NAPI_GRO_CB(p)->count >= OVPN_UDP_GRO_CNT_MAX)
-+			pp = p;
-+
-+		return pp;
-+	}
-+
-+	return NULL;
-+
-+flush:
-+	/* A packet which cannot join an aggregate must not overtake records of
-+	 * the same flow which GRO is still holding. Complete those first, as
-+	 * the other GRO handlers do.
-+	 */
-+	NAPI_GRO_CB(skb)->flush = 1;
-+	list_for_each_entry(p, head, list)
-+		if (NAPI_GRO_CB(p)->same_flow)
-+			return p;
-+	return NULL;
-+}
-+
-+static bool ovpn_udp_outer_match(const struct sk_buff *head,
-+				 const struct sk_buff *frag)
-+{
-+	const struct udphdr *uhf = udp_hdr(frag);
-+	const struct udphdr *uhh = udp_hdr(head);
-+
-+	/* NAT might have rewritten endpoints after GRO */
-+	if (unlikely(uhh->source != uhf->source || uhh->dest != uhf->dest))
-+		return false;
-+
-+	switch (head->protocol) {
-+	case htons(ETH_P_IP):
-+		return ip_hdr(head)->saddr == ip_hdr(frag)->saddr &&
-+		       ip_hdr(head)->daddr == ip_hdr(frag)->daddr;
-+	case htons(ETH_P_IPV6):
-+		return ipv6_addr_equal(&ipv6_hdr(head)->saddr,
-+				       &ipv6_hdr(frag)->saddr) &&
-+		       ipv6_addr_equal(&ipv6_hdr(head)->daddr,
-+				       &ipv6_hdr(frag)->daddr);
-+	default:
-+		return false;
-+	}
-+}
-+
-+/* validate an skb and turn it into a list of uniform OpenVPN records or return
-+ * NULL without modifying an aggregate which UDP must segment
-+ */
-+static struct sk_buff *ovpn_udp_gso_prepare(struct sk_buff *skb, u32 header)
-+{
-+	unsigned int len = 0, truesize = 0;
-+	struct sk_buff *list, *record;
-+
-+	if (!skb_is_gso(skb)) {
-+		skb_mark_not_on_list(skb);
-+		goto out;
-+	}
-+
-+	list = skb_shinfo(skb)->frag_list;
-+	if (unlikely(!list))
-+		return NULL;
-+
-+	/* if any of the skbs is not private, ask the stack to segment */
-+	if (unlikely(skb_shared(skb) || skb_cloned(skb)))
-+		return NULL;
-+
-+	/* transformations after GRO only update the aggregate head: if its
-+	 * outer tuple changed, ask UDP to propagate it while segmenting
-+	 */
-+	if (unlikely(skb_pagelen(skb) != sizeof(struct udphdr) +
-+					 skb_shinfo(skb)->gso_size ||
-+		     !ovpn_udp_outer_match(skb, list)))
-+		return NULL;
-+
-+	skb_walk_frags(skb, record) {
-+		/* if the OpenVPN header is not uniform (batch created by
-+		 * generic GRO by coalescing unrelated packets) ask the stack
-+		 * to segment and handle each segment independently
-+		 */
-+		if (unlikely(skb_shared(record) || skb_cloned(record) ||
-+			     skb_headlen(record) < OVPN_OPCODE_SIZE ||
-+			     get_unaligned_be32(record->data) != header))
-+			return NULL;
-+
-+		len += record->len;
-+		truesize += record->truesize;
-+	}
-+
-+	if (unlikely(skb->data_len < len || skb->len < len ||
-+		     skb->truesize < truesize))
-+		return NULL;
-+
-+	/* detach the exclusively owned fraglist */
-+	skb_shinfo(skb)->frag_list = NULL;
-+	skb->data_len -= len;
-+	skb->truesize -= truesize;
-+	skb->len -= len;
-+	skb->next = list;
-+	skb_gso_reset(skb);
-+
-+out:
-+	/* skb_gro_receive_list has already pulled the UDP headers from child
-+	 * records, while the aggregate head still starts at UDP, so pull its
-+	 * header too before returning the list
-+	 */
-+	__skb_pull(skb, sizeof(struct udphdr));
-+	return skb;
-+}
-+
-+static void ovpn_udp_recv(struct ovpn_peer *peer, struct sk_buff *list)
-+{
-+	const __be16 proto = list->protocol;
-+	const u32 priority = list->priority;
-+#ifdef CONFIG_NET_SCHED
-+	const u16 tc_index = list->tc_index;
-+#endif
-+#ifdef CONFIG_NETWORK_SECMARK
-+	const u32 secmark = list->secmark;
-+#endif
-+	const int skb_iif = list->skb_iif;
-+	struct sk_buff *skb, *next;
-+
-+	skb_list_walk_safe(list, skb, next) {
-+		/* propagate post-GRO metadata from the list head, and clear
-+		 * the state which the receive stack consumed on the head only
-+		 */
-+		skb->protocol = proto;
-+		skb->skb_iif = skb_iif;
-+		skb->priority = priority;
-+#ifdef CONFIG_NETWORK_SECMARK
-+		skb->secmark = secmark;
-+#endif
-+#ifdef CONFIG_NET_SCHED
-+		skb->tc_index = tc_index;
-+#endif
-+		__vlan_hwaccel_clear_tag(skb);
-+		skb_reset_redirect(skb);
-+#ifdef CONFIG_NET_XGRESS
-+		skb->tc_skip_classify = 0;
-+#endif
-+		skb_clear_delivery_time(skb);
-+		skb_mark_not_on_list(skb);
-+
-+		/* keep the current reference alive for the next record before
-+		 * handing this one to crypto
-+		 */
-+		if (next && unlikely(!ovpn_peer_hold(peer))) {
-+			DEBUG_NET_WARN_ON_ONCE(1);
-+			kfree_skb_list(next);
-+			next = NULL;
-+		}
-+		ovpn_recv(peer, skb);
-+	}
-+}
-+
- /* Retrieve the corresponding ovpn object from a UDP socket
-  * rcu_read_lock must be held on entry
-  */
-@@ -69,7 +318,9 @@ static int ovpn_udp_encap_recv(struct sock *sk, struct sk_buff *skb)
- 	struct ovpn_socket *ovpn_sock;
- 	struct ovpn_priv *ovpn;
- 	struct ovpn_peer *peer;
--	u32 peer_id;
-+	bool aggregate = false;
-+	struct sk_buff *list;
-+	u32 header, peer_id;
- 	u8 opcode;
- 
- 	ovpn_sock = ovpn_socket_from_udp_sock(sk);
-@@ -89,14 +340,28 @@ static int ovpn_udp_encap_recv(struct sock *sk, struct sk_buff *skb)
- 	 * header are accessible.
- 	 * They are required to fetch the OP code, the key ID and the peer ID.
- 	 */
--	if (unlikely(!pskb_may_pull(skb, sizeof(struct udphdr) +
--				    OVPN_OPCODE_SIZE))) {
-+	if (skb_is_gso(skb)) {
-+		/* Only an accepted frag-list aggregate can carry OpenVPN
-+		 * records. It is checked without pulling, since one which we
-+		 * decline must reach UDP unmodified so that it can segment it.
-+		 */
-+		if (unlikely(skb_shinfo(skb)->gso_type !=
-+			     (SKB_GSO_UDP_L4 | SKB_GSO_FRAGLIST)))
-+			goto drop;
-+		aggregate = true;
-+
-+		if (unlikely(skb_headlen(skb) <
-+			     sizeof(struct udphdr) + OVPN_OPCODE_SIZE))
-+			goto drop;
-+	} else if (unlikely(!pskb_may_pull(skb, sizeof(struct udphdr) +
-+					   OVPN_OPCODE_SIZE))) {
- 		net_dbg_ratelimited("%s: packet too small from UDP socket\n",
- 				    netdev_name(ovpn->dev));
- 		goto drop;
++		ret = udp_queue_rcv_one_skb(sk, skb, false);
+ 		if (ret > 0)
+ 			ip_protocol_deliver_rcu(dev_net(skb->dev), skb, ret);
  	}
- 
--	opcode = ovpn_opcode_from_skb(skb, sizeof(struct udphdr));
-+	header = get_unaligned_be32(skb->data + sizeof(struct udphdr));
-+	opcode = FIELD_GET(OVPN_OPCODE_PKTTYPE_MASK, header);
- 	if (unlikely(opcode != OVPN_DATA_V2)) {
- 		/* DATA_V1 is not supported */
- 		if (opcode == OVPN_DATA_V1)
-@@ -106,7 +371,7 @@ static int ovpn_udp_encap_recv(struct sock *sk, struct sk_buff *skb)
- 		return 1;
- 	}
- 
--	peer_id = ovpn_peer_id_from_skb(skb, sizeof(struct udphdr));
-+	peer_id = FIELD_GET(OVPN_OPCODE_PEERID_MASK, header);
- 	/* some OpenVPN server implementations send data packets with the
- 	 * peer-id set to UNDEF. In this case we skip the peer lookup by peer-id
- 	 * and we try with the transport address
-@@ -119,12 +384,27 @@ static int ovpn_udp_encap_recv(struct sock *sk, struct sk_buff *skb)
- 	if (unlikely(!peer))
- 		goto drop;
- 
--	/* pop off outer UDP header */
--	__skb_pull(skb, sizeof(struct udphdr));
--	ovpn_recv(peer, skb);
-+	/* A generic aggregate may contain records for different consumers and
-+	 * post-GRO transformations may have changed only its head. Prepare
-+	 * only a private, unmodified aggregate with uniform opcode, key ID and
-+	 * peer ID; otherwise return it to UDP for segmentation.
-+	 */
-+	list = ovpn_udp_gso_prepare(skb, header);
-+	if (unlikely(!list)) {
-+		ovpn_peer_put(peer);
-+		return 1;
-+	}
-+
-+	ovpn_udp_recv(peer, list);
- 	return 0;
- 
- drop:
-+	/* let UDP segment an accepted aggregate so that every datagram gets
-+	 * its own verdict
-+	 */
-+	if (aggregate)
-+		return 1;
-+
- 	ovpn_dev_dstats_rx_dropped(ovpn->dev);
- drop_noovpn:
- 	kfree_skb(skb);
-@@ -512,8 +792,11 @@ int ovpn_udp_socket_attach(struct ovpn_socket *ovpn_sock, struct socket *sock,
- 	struct udp_tunnel_sock_cfg cfg = {
- 		.sk_user_data = ovpn_sock,
- 		.encap_type = UDP_ENCAP_OVPNINUDP,
-+		.udp_flags = BIT(UDP_FLAGS_GRO_RCV_DETACHABLE) |
-+			     BIT(UDP_FLAGS_ENCAP_ACCEPT_FRAGLIST),
- 		.encap_rcv = ovpn_udp_encap_recv,
- 		.encap_destroy = ovpn_udp_encap_destroy,
-+		.gro_receive = ovpn_udp_gro_receive_fraglist,
- 	};
- 	struct ovpn_socket *old_data;
- 	int ret;
-@@ -522,6 +805,18 @@ int ovpn_udp_socket_attach(struct ovpn_socket *ovpn_sock, struct socket *sock,
- 	rcu_read_lock();
- 	old_data = rcu_dereference_sk_user_data(ovpn_sock->sk);
- 	if (!old_data) {
-+		/* another encapsulation (such as ESP-in-UDP) may own the
-+		 * socket without setting sk_user_data, and the GRO callback
-+		 * which it may have registered cannot be replaced
-+		 */
-+		if (READ_ONCE(udp_sk(ovpn_sock->sk)->encap_type) ||
-+		    READ_ONCE(udp_sk(ovpn_sock->sk)->gro_receive)) {
-+			rcu_read_unlock();
-+			netdev_dbg(ovpn->dev,
-+				   "provided socket already taken by other user\n");
-+			return -EBUSY;
-+		}
-+
- 		/* socket is currently unused - we can take it */
- 		rcu_read_unlock();
- 		setup_udp_tunnel_sock(sock_net(ovpn_sock->sk), sock->sk, &cfg);
-@@ -558,16 +853,35 @@ int ovpn_udp_socket_attach(struct ovpn_socket *ovpn_sock, struct socket *sock,
-  */
- void ovpn_udp_socket_detach(struct ovpn_socket *ovpn_sock)
+diff --git a/net/ipv4/udp_tunnel_core.c b/net/ipv4/udp_tunnel_core.c
+index a128fe85620d..c023344891a2 100644
+--- a/net/ipv4/udp_tunnel_core.c
++++ b/net/ipv4/udp_tunnel_core.c
+@@ -71,6 +71,13 @@ static bool sk_saddr_any(struct sock *sk)
+ void setup_udp_tunnel_sock(struct net *net, struct sock *sk,
+ 			   struct udp_tunnel_sock_cfg *cfg)
  {
-+	struct udp_sock *up = udp_sk(ovpn_sock->sk);
- 	struct sock *sk = ovpn_sock->sk;
- 
-+	/* Stop accepting aggregates while encap_rcv is still available. A
-+	 * reader which sampled acceptance before it was cleared can either be
-+	 * consumed by ovpn or fall back to UDP segmentation.
-+	 */
-+	if (udp_test_bit(GRO_RCV_DETACHABLE, sk) &&
-+	    READ_ONCE(up->gro_receive) == ovpn_udp_gro_receive_fraglist)
-+		udp_tunnel_detach_gro(sk);
++	const unsigned long allowed = BIT(UDP_FLAGS_ENCAP_ACCEPT_FRAGLIST);
++	unsigned long flags = cfg->udp_flags & allowed;
 +
-+	/* UDP_ENCAP may have replaced encap_rcv while leaving other ovpn state
-+	 * attached. Clear only callbacks still owned by ovpn. The final RCU
-+	 * grace period in ovpn_socket_release drains readers which captured
-+	 * encap_rcv before this point.
-+	 */
-+	if (READ_ONCE(up->encap_rcv) == ovpn_udp_encap_recv)
-+		WRITE_ONCE(up->encap_rcv, NULL);
-+	if (READ_ONCE(up->encap_destroy) == ovpn_udp_encap_destroy)
-+		WRITE_ONCE(up->encap_destroy, NULL);
++	WARN_ON_ONCE(cfg->udp_flags & ~allowed);
++	/* a socket must stop accepting frag-lists before it is set up again */
++	WARN_ON_ONCE(udp_test_bit(ENCAP_ACCEPT_FRAGLIST, sk));
 +
- 	/* Re-enable multicast loopback */
- 	inet_set_bit(MC_LOOP, sk);
- 	/* Disable CHECKSUM_UNNECESSARY to CHECKSUM_COMPLETE conversion */
- 	inet_dec_convert_csum(sk);
+ 	/* Disable multicast loopback */
+ 	inet_clear_bit(MC_LOOP, sk);
  
--	WRITE_ONCE(udp_sk(sk)->encap_type, 0);
--	WRITE_ONCE(udp_sk(sk)->encap_rcv, NULL);
--	WRITE_ONCE(udp_sk(sk)->encap_destroy, NULL);
-+	/* UDP_ENCAP might have rewritten the encap_type */
-+	if (READ_ONCE(up->encap_type) == UDP_ENCAP_OVPNINUDP)
-+		WRITE_ONCE(up->encap_type, 0);
+@@ -87,6 +94,11 @@ void setup_udp_tunnel_sock(struct net *net, struct sock *sk,
+ 	udp_sk(sk)->gro_receive = cfg->gro_receive;
+ 	udp_sk(sk)->gro_complete = cfg->gro_complete;
  
- 	rcu_assign_sk_user_data(sk, NULL);
++	/* Publish frag-list acceptance only after the callbacks which consume
++	 * that representation
++	 */
++	set_mask_bits(&udp_sk(sk)->udp_flags, allowed, flags);
++
+ 	udp_tunnel_encap_enable(sk);
+ 
+ 	udp_tunnel_update_gro_rcv(sk, true);
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index 59f9872c3552..d678d998e180 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -810,18 +810,36 @@ static int __udpv6_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+ 	return 0;
  }
+ 
+-static int udpv6_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
++/* Check the inbound policy and reset conntrack state, dropping the skb on
++ * failure. An accepted frag-list aggregate is checked once: its datagrams
++ * share the verdict, and a check after a fallback would lack the state which
++ * the first one consumed.
++ */
++static bool udpv6_queue_rcv_policy(struct sock *sk, struct sk_buff *skb,
++				   bool encap_fraglist)
+ {
+-	enum skb_drop_reason drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
+-	struct udp_sock *up = udp_sk(sk);
+-	struct net *net = sock_net(sk);
+-
+ 	if (!xfrm6_policy_check(sk, XFRM_POLICY_IN, skb)) {
+-		drop_reason = SKB_DROP_REASON_XFRM_POLICY;
+-		goto drop;
++		unsigned int segs = encap_fraglist ?
++				    skb_shinfo(skb)->gso_segs : 1;
++
++		__SNMP_ADD_STATS(sock_net(sk)->mib.udp_stats_in6,
++				 UDP_MIB_INERRORS, segs);
++		numa_drop_add(&udp_sk(sk)->drop_counters, segs);
++		sk_skb_reason_drop(sk, skb, SKB_DROP_REASON_XFRM_POLICY);
++		return false;
+ 	}
+ 	nf_reset_ct(skb);
+ 
++	return true;
++}
++
++static int udpv6_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb,
++				   bool encap_fraglist)
++{
++	enum skb_drop_reason drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
++	struct udp_sock *up = udp_sk(sk);
++	struct net *net = sock_net(sk);
++
+ 	if (static_branch_unlikely(&udpv6_encap_needed_key) &&
+ 	    READ_ONCE(up->encap_type)) {
+ 		int (*encap_rcv)(struct sock *sk, struct sk_buff *skb);
+@@ -840,14 +858,25 @@ static int udpv6_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
+ 		/* if we're overly short, let UDP handle it */
+ 		encap_rcv = READ_ONCE(up->encap_rcv);
+ 		if (encap_rcv) {
++			unsigned int segs = encap_fraglist ?
++					    skb_shinfo(skb)->gso_segs : 1;
+ 			int ret;
+ 
+-			/* Verify checksum before giving to encap */
+-			if (udp_lib_checksum_complete(skb))
++			/* Verify checksum before giving to encap. The header
++			 * checksum of an accepted frag-list covers only its
++			 * first datagram, so trust the GRO verdict instead, as
++			 * udp_post_segment_fix_csum does after segmentation.
++			 */
++			if (!encap_fraglist && udp_lib_checksum_complete(skb))
+ 				goto csum_error;
+ 
+ 			ret = encap_rcv(sk, skb);
+-			if (ret <= 0) {
++			if (!ret) {
++				__SNMP_ADD_STATS(net->mib.udp_stats_in6,
++						 UDP_MIB_INDATAGRAMS, segs);
++				return 0;
++			}
++			if (ret < 0 && !encap_fraglist) {
+ 				__UDP6_INC_STATS(net, UDP_MIB_INDATAGRAMS);
+ 				return -ret;
+ 			}
+@@ -856,6 +885,13 @@ static int udpv6_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
+ 		/* FALLTHROUGH -- it's a UDP Packet */
+ 	}
+ 
++	/* The encapsulator did not consume an aggregate it had opted into so
++	 * we ask udpv6_queue_rcv_skb to retry after segmentation rather than
++	 * exposing multiple datagrams to the socket as one.
++	 */
++	if (encap_fraglist)
++		return -EAGAIN;
++
+ 	prefetch(&sk->sk_rmem_alloc);
+ 	if (rcu_access_pointer(sk->sk_filter) &&
+ 	    udp_lib_checksum_complete(skb))
+@@ -883,11 +919,18 @@ static int udpv6_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
+ 
+ static int udpv6_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+ {
++	bool encap_fraglist = udp_encap_accepts_fraglist(sk, skb);
+ 	struct sk_buff *next, *segs;
+ 	int ret;
+ 
+-	if (likely(!udp_unexpected_gso(sk, skb)))
+-		return udpv6_queue_rcv_one_skb(sk, skb);
++	if (likely(encap_fraglist || !udp_unexpected_gso(sk, skb))) {
++		if (!udpv6_queue_rcv_policy(sk, skb, encap_fraglist))
++			return -1;
++
++		ret = udpv6_queue_rcv_one_skb(sk, skb, encap_fraglist);
++		if (likely(ret != -EAGAIN))
++			return ret;
++	}
+ 
+ 	__skb_push(skb, -skb_mac_offset(skb));
+ 	segs = udp_rcv_segment(sk, skb, false);
+@@ -895,7 +938,11 @@ static int udpv6_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+ 		__skb_pull(skb, skb_transport_offset(skb));
+ 
+ 		udp_post_segment_fix_csum(skb);
+-		ret = udpv6_queue_rcv_one_skb(sk, skb);
++		/* datagrams of a declined aggregate share its verdict */
++		if (!encap_fraglist && !udpv6_queue_rcv_policy(sk, skb, false))
++			continue;
++
++		ret = udpv6_queue_rcv_one_skb(sk, skb, false);
+ 		if (ret > 0)
+ 			ip6_protocol_deliver_rcu(dev_net(skb->dev), skb, ret,
+ 						 true);
 -- 
 2.56.0
 
