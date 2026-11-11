@@ -1,13 +1,13 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A595606A331
-	for <openvpn-devel@archiver.kernel.org>; Wed, 11 Nov 2026 08:50:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 017A160A3831
+	for <openvpn-devel@archiver.kernel.org>; Wed, 11 Nov 2026 08:54:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=bQVN/xmh;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=OHuCTcEA;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=mys8TLuf;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=UNQ+xlc/
+	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=OH8536Ta;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=TE3Ihwqt;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=E9CVga2Z;
+	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=CFKtJwp4
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
@@ -15,29 +15,29 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
 	List-Unsubscribe-Post:List-Owner;
-	bh=LmWPgMnCNU23dhWqsoTj4geVi+c1VziBcGJgrcZ5BfM=; b=bQVN/xmhnb3c1JJP0LjGaTDEkS
-	17R/Ru5sejz9zn5MLspIBS+kzHs6z3QbDNxT46hdYH18hRwkAEvpCV+vcho3gjK+p06ETLZGahOak
-	Mv6gahx5QmjvVXRRR5MdzgKKeqU1KupH13drED39YNjpa6pVgbcfzho3bO8sJdsQJedw=;
+	bh=kvBZJiNJ83ekx2Fy101G7YFCf1vanZk94Y7e/LjCWsw=; b=OH8536TaP+vkjE0Vb4VrYqSzA+
+	aUHozk+X6SrMKZntrPToRUbUfPNoLJhadY12PfVbQq5OQ6ZdzVaoocfwMOI5UMWbTT4c6cvdOZUb/
+	6ETp10MfM5PP+v23V2ABRQ+XGuWDU5vScgsfLzGcQUJdUvLpyf1zlVkmJbL5kGmzWHDw=;
 Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
 	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xR42Q-000000004k4-2KRO;
-	Wed, 11 Nov 2026 08:50:38 +0000
+	id 1xR46c-000000005A8-1aKO;
+	Wed, 11 Nov 2026 08:54:58 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xR42E-000000004j7-3h97
+ (envelope-from <gerrit@openvpn.net>) id 1xR46b-0000000059u-0YZl
  for openvpn-devel@lists.sourceforge.net;
- Wed, 11 Nov 2026 08:50:26 +0000
+ Wed, 11 Nov 2026 08:54:57 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:
  From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From:
  Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=I+LjDUzBW16se7XDZbdM2zieqHkgUps8Ya0yCYkU2fE=; b=OHuCTcEAE7OMYxMPrPzPckeceM
- Dy1QzVbUgq9ni22YxLOxkxqi+xN8psvWgs6vuMf97sOeo0tM1q/YTggsYXCc9L/xEOUACNRNa8msx
- TkbdXh/E4X4+s3XYNxMsfsC7R10LKHMIajD+Zx6ygDHACJL0LxamUNLA8FwmQvpaYd9o=;
+ bh=HyZfqIdcGX977F8cCCmowYw7q6BgyD8VWHIr0hmxdz8=; b=TE3IhwqtmTJpiwgEI105aWJg4v
+ U2FpncOjWHDwAEGNlCKKNqs3gn7xeOdeSv47CiXsEz7MEM3wm3inBnEatw2n8MKqW7Nc7XwfbSZ+x
+ KxfEi9m1nVqLMeFntLAuHO/3Xfx18dtAiKwpx4aymFX/aE9rg7awSBka4KIXDSGYuHlI=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
@@ -45,90 +45,91 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
  Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=I+LjDUzBW16se7XDZbdM2zieqHkgUps8Ya0yCYkU2fE=; b=mys8TLufGSXGf6bvCXTFeu7hyn
- MiadayeqiVz36ceAL59KlhWyQL/LLCPP//Gsei+JE9cRTp1VzvXvfCehUGyeL8heSUoJJV38n9C2O
- AGE2azPy/xpLatBf+MZ97Htve51eRPMz9ilLUS/faaUzlnXtj3dMxZ7iw7FqJUIqPzns=;
-Received: from mail-wm1-f51.google.com ([209.85.128.51])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ bh=HyZfqIdcGX977F8cCCmowYw7q6BgyD8VWHIr0hmxdz8=; b=E9CVga2ZkxLNDAz7aEU6gGxBsv
+ 3y64Z6jYVu/RoJGvkSuAac2WblADRWFaYA44ZaYAIUfMUi/7NG9hqUSV71GceXzuV/3eKrVT6a+DD
+ UbwCC4lBUQvwPATW/Aw1IFYt6AWPKOB3K17botAOMDZjskbLIVxX609VW4lmAE9Tp1FE=;
+Received: from mail-wm1-f52.google.com ([209.85.128.52])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xR42D-000000006yD-0Tvr for openvpn-devel@lists.sourceforge.net;
- Wed, 11 Nov 2026 08:50:26 +0000
-Received: by mail-wm1-f51.google.com with SMTP id
- 5b1f17b1804b1-4a207b02a2cso20146595e9.1
+ id 1xR46a-000000000gi-2GIv for openvpn-devel@lists.sourceforge.net;
+ Wed, 11 Nov 2026 08:54:57 +0000
+Received: by mail-wm1-f52.google.com with SMTP id
+ 5b1f17b1804b1-4b7252a32c8so31280935e9.0
  for <openvpn-devel@lists.sourceforge.net>;
- Wed, 11 Nov 2026 00:50:25 -0800 (PST)
+ Wed, 11 Nov 2026 00:54:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1794387018; x=1794991818; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1794387290; x=1794992090; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
  :to:date:from:from:to:cc:subject:date:message-id:reply-to
- :content-type; bh=I+LjDUzBW16se7XDZbdM2zieqHkgUps8Ya0yCYkU2fE=;
- b=UNQ+xlc/005i3kRJEVdYcHB26Rm6PwiiEkJxOGSTlxgfsEA81dW4XgDxHuiTNM7Ncp
- nlQoO75TqzRu/Dn4gCJDAaioTYScN+/RX2+DuyL920lorfx7AcY6I/I/Tqb0w7Y3Q/kZ
- pefFO2Xvji0i9KK35DbIwc0IJBCG4+aXELTagyEa6UNGwIh7sTHz075mJ3jw2vLYdd39
- 9osWdlSrE+1D1kE+5K889FXyZW7hOcZ/u9/mNOnez4z5pH8/6p7Tr8MXsGktTO3Mr3A+
- f+Dr85alMagVJzmEkei4M8gW2n7Pf67WSYPKMtQNP7sUWuW7AdqIYlkIphn8C+dDWEb8
- j04Q==
+ :content-type; bh=HyZfqIdcGX977F8cCCmowYw7q6BgyD8VWHIr0hmxdz8=;
+ b=CFKtJwp4wdYms2XhfRSbpkgy+Xv4S3jV47WCxul4UUCqvMvhybHYkgUBEhNVhuhEsK
+ Xb/8EHwglQgkhJ6spr/gYCJLpdveLT1A5Hjf45cjuVRzzgOSDrSv1d0zK30EFMJrFxYf
+ sYzyzk0W8bLilIdvX4IFw+lqBvG3+8xBtPlW7kDOfHel8o5ktTVhfam+qkoI/vIS1+Mo
+ bdpS65J/Edki3ijcaaucxXnVnVNiTk1Lozv2FoqY9FUW7evJ08ZrcHLrY31aNyuZYtDM
+ KLR048MLYzKW1KrmxkGplaSh8S+vSwHY4k5XC1h36h0Ocaq97yrbf4Pf4WVsL3ngvi8k
+ 2yOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1794387018; x=1794991818;
+ d=1e100.net; s=20260707; t=1794387290; x=1794992090;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
  :to:date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
  :message-id:reply-to:content-type;
- bh=I+LjDUzBW16se7XDZbdM2zieqHkgUps8Ya0yCYkU2fE=;
- b=Ki5xyim7J3y57Q4EUioja/jsn7oxz/o3YlWGbmnfZAnQgQ4jXfcqRQAnQdC5s6wAb5
- D5tQoWjlLVoekEbB1rgaUZrobK2TSBU77R4KfhOpgBGn7hIegLuJQki3fjurrlKeMivs
- HaF37fLIYTMyugFQ60/LX8yT/RkqxxCOQ23TMpPZfziNfVw8FJlDhlAUHAEXOnRl3Tfa
- hQQ7Q+ui2HOHghsZL2Gzh1Nt4wFPi1saIWnxw43Pc80uRycmmglQjaBkCNbsb4DfdLmS
- bnovxfeRiYUvoJT7yxbhP0wUj3c7Tm0BMop7W0EW193W+cPGEeqJWMH7w56/fMEJe4Q8
- x1Bw==
-X-Gm-Message-State: APuU4Z+HNV12JCkCNyQWSYoQ1zwoMzDmioC8SYwfsyxlk1uPMyVeCn/4
- hHbszAJqaJJB6JGJUYyKVJh1R2GO+uISMbICg1ASMgE4SopWSDC1MKyBPT2N7REoWTqXjr2ERRe
- yjm89Gu8GNTUGhn/NB4vBV6DT/1fJNtSV+asw7EuPDt95wKiknPsfDFC+DE2UYWzGS4qq
-X-Gm-Gg: AYBFou0J1DwgcEGvhbgS9wNBNjXNb3/ikE1Oae3tiv1J7IWRDfKVpogUlbDda5vUgTd
- eD23GD//kiEChLsCyL4cQXHkf5941bFMPJ1c9niCu6z1stt8Z03l/TfwSpcj3bXYWIIyT4Hjwdf
- bpFDdPX6rodjP+g3aAiG9WxrIp4DRMQnkdOcjRy3VZNtqQDluI9HOu8KRYQiOSBLFaIvAJpXpuj
- RedlEzk06Fajl56SJvTz+S48YeGwfPzbjpu9mmxq0iuWLtjiFu2R4l7xSwu431ghIaKYXvkH+8L
- DDssFR+8CD9ORcyvybxDGN1bxt48QxJnufHhbNRRbVn+uwwufBi63gZFjRi0SSsXZS/HwR99PkN
- hb4NadsuGAejF6w1JO0kUCZodFzk8aUp7xLGvwbyPsSfzwb81v6o9s5rt7Xcou/4I6F+OK7XXba
- Ah1O1xEVWobWFdeLZKeZ5lz9CO9CXfyH7atATlsIJ5obD0M1oeWYN5KXZ/qmP2t8mr97wlHMTot
- qDxC+v22NmVH9arC/cHvSe6NDVn5l3Yffpm4vpnofpWxvowj3OQuPY4LF1B0wWbClYLGQI1cBFc
- Pt6ynXQyqvZN7OQ1RbDwtZgW6iqIiiVhWsX/t+Db8U+SFaSUSjLQW8JOEvk1fgOO67HTGQMqRED
- PjO1eRWpnTecIy5toBxZSNzQapRUt+pc+ONSh1+tMorZmgifnwSconI1UiE8vwb8C36DtdTTVq6
- LpgEXEZeLSVJrao1w=
-X-Received: by 2002:a05:600c:3485:b0:4a5:a5ca:de1d with SMTP id
- 5b1f17b1804b1-4ba093a9321mr32355645e9.30.1794387018313; 
- Wed, 11 Nov 2026 00:50:18 -0800 (PST)
+ bh=HyZfqIdcGX977F8cCCmowYw7q6BgyD8VWHIr0hmxdz8=;
+ b=BhtM8x4zE1i5nS8PzhRIzOhpafxkE5HZ3viNTuGYlRO1Q6IcpbuOqlYks/CyxGiqkJ
+ mLXJKJD7IZY8lhS76bxS5RFDAuCVVpCd9ECbr6dumOFtXhsfUemfYdbKTNLenfkmJnV/
+ zaLHxZpi+ZwlE2SFjg9h1lx96Epukg6GHDXQOlR1LsQCSM3wRqohb77WnDTDjjbcWnOh
+ wlHKG2FwIP+uMLXAwEzyCb28ybJ47oG7gK1Lzu9ThOR+38IL1cgsLBTaPcNW9AJwfo0W
+ e7r+57u+MWWz3BiNtpYm2S4wa1u34GZ4HfAmYXNPmxL+AvBNZBCA+rVk6zP5C09aS+gN
+ H5zQ==
+X-Gm-Message-State: APuU4Z9fpL40EK34zPWwvjgriLCrOmpoilkMsvzupvcN6GPLUTI5NR7S
+ tVTPRBxoQyZN6h/vXx+rNgGXoqoQvz1921emR7zsqKQPjdZgy7QBNUS6hpYPgV+QP+m411+rEwi
+ Jj9gtSuQx07OgqJU2KfPQfBCK4nOFyhYh1OgIkHNjrfekFuczeaMrwLNJ8FD/sWOWYRn2/s7W4x
+ Io0d3Yrg==
+X-Gm-Gg: AYBFou3cw82XvUCNcN2aUUmzm6eTK25oVJjC/atkVPWqs+7+CGqkBSrP/CiCQ1UN4ub
+ gnHYyEpg6iY8Y+Jk3K3jDQyAnfvuad/f3iA0OdLHSJKxUAsm7L92D2XUiTr391h8k/loM7Eo4OS
+ nDHv9je4adzyyw/AFAgJiNTx70TKUcYyVlll1sUdaQSwP0ZtN5zA5E/llCfS6o019TsF7azvfKe
+ qYf5QT6sl0y8ydAXhaJskX7BicysV2+GJsjUCze7ie1gumIIKvYqEiRP/GH2lg0OOWvjrEWBPno
+ U+GE5QFr3ITddFD3kGYrz1YrH7Jgpk876RChlpSNfeD9HZ/3MwCBZWySBl4d1PU1yC2bk0OHVyl
+ QAheDWp9ELAmBWoG5JBGZCn/FqLrcQdiQwHNCuANf9KVajlDYZQ9v46+tlXZI3CK/Kle2L7QBJz
+ uqo6sC5o5MX1Xc/05mp4+LO4w6DZBrDBBA2z0P/vo+KHFJN523me5cwgoXtimd5vZFzLu2j20pQ
+ v0Ky3Osh4vnQij6wfZUsl5NvG7c8KQY8HNZtjeXfWnHcZjphe0H74gt+uuR2113HfCg6FD0vZZY
+ qxjOK7gnm3X5WEDGLDfF5lP07pw/HbqbSBGruVk+5+yY/k7yT2Wij/TuQtL22Jwca65eeunL+zc
+ YorwkovVlGX6zi0h7Y3IIwSB4OkxvYAYUcn/H97/0pCP2/vmqJEutXa/+puN+c2IFRnldLeYBNP
+ Sac+aXSgsp+l27sVM=
+X-Received: by 2002:a05:600c:3103:b0:4a3:59c9:a750 with SMTP id
+ 5b1f17b1804b1-4ba09364c0emr28400465e9.9.1794387289852; 
+ Wed, 11 Nov 2026 00:54:49 -0800 (PST)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-4ba01fef1d0sm119939675e9.13.2026.11.11.00.50.17
+ ffacd0b85a97d-49835e20327sm10108220f8f.26.2026.11.11.00.54.49
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 11 Nov 2026 00:50:18 -0800 (PST)
+ Wed, 11 Nov 2026 00:54:49 -0800 (PST)
 X-Google-Original-From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?=
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Wed, 11 Nov 2026 08:50:17 +0000
+Date: Wed, 11 Nov 2026 08:54:49 +0000
 To: Arne Schwabe <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newchange
 X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: I19904af95d0b9efa868d42050f7187565c7f7a23
-X-Gerrit-Change-Number: 2172
+X-Gerrit-Change-Id: I0705cff831cbd18686721dffbe5960976e3489da
+X-Gerrit-Change-Number: 2173
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2172?usp=email>
-X-Gerrit-Commit: 353b6c910ede8d4073d2c53b89561c558f423e7b
-References: <gerrit.1794387016000.I19904af95d0b9efa868d42050f7187565c7f7a23@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzk0Mzg3MDE2MDAwLkkxOTkwNGFmOTVkMGI5ZWZhODY4ZDQyMDUwZjcxODc1NjVjN2Y3YTIzQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <f2f55fab2b3bd73f2429d99708455372eb3e8607-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2173?usp=email>
+X-Gerrit-Commit: 49a91a2aa35287d1a5361a8bb21507d4f38f5347
+References: <gerrit.1794387287000.I0705cff831cbd18686721dffbe5960976e3489da@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzk0Mzg3Mjg3MDAwLkkwNzA1Y2ZmODMxY2JkMTg2ODY3MjFkZmZiZTU5NjA5NzZlMzQ4OWRhQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <b793ce6decd4accd84950742923831b34c4c815d-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.5
 X-Spam-Score: 0.8 (/)
-X-Headers-End: 1xR42D-000000006yD-0Tvr
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: init: close AF_UNIX
- tun on SIGUSR1 with --persist-tun
+X-Headers-End: 1xR46a-000000000gi-2GIv
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: tun_afunix: reap
+ the child process on close
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -144,7 +145,7 @@ Reply-To: razvanc@mailbox.org, arne-openvpn@rfc2549.org,
  openvpn-devel@lists.sourceforge.net
 Cc: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============5134784719983496252=="
+Content-Type: multipart/mixed; boundary="===============3446560804689820038=="
 X-Spam-Status: No, score=-12.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
 	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
@@ -153,12 +154,12 @@ X-Spam-Status: No, score=-12.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============5134784719983496252==
+--===============3446560804689820038==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="l1GmXI3djw0="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="QybhewMZ3nY="; charset=UTF-8
 
---l1GmXI3djw0=
+--QybhewMZ3nY=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
@@ -171,91 +172,81 @@ I'd like you to do a code review=2E
 Please visit
 
     https://gerrit=2Eope=
-nvpn=2Enet/c/openvpn/+/2172?usp=3Demail
+nvpn=2Enet/c/openvpn/+/2173?usp=3Demail
 
 to review the following change=2E
 =
 
 
-Change subject: init: close AF_UNIX tun on SIGUSR1 with --persist-tun
-=2E=
+Change subject: tun_afunix: reap the child process on close
+=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-init: close AF_U=
-NIX tun on SIGUSR1 with --persist-tun
+tun_afunix: reap the chil=
+d process on close
 
-can_preserve_tun() never keeps an AF=
-_UNIX tun, but do_close_tun()
-skipped closing it on SIGUSR1 with --persist-=
-tun=2E do_open_tun() then
-reopened over it, leaking the socket fd and actua=
-l_name and leaving
-the old child process running=2E
+close_tun_afunix() sent SIGINT to the child but never w=
+aited for it,
+leaving a zombie on every restart=2E
 
-Change-Id: I19904af95d=
-0b9efa868d42050f7187565c7f7a23
-Signed-off-by: Razvan Cojocaru <razvanc@mail=
-box=2Eorg>
+Change-Id: I0705cff831c=
+bd18686721dffbe5960976e3489da
+Signed-off-by: Razvan Cojocaru <razvanc@mailb=
+ox=2Eorg>
 ---
-M src/openvpn/init=2Ec
-1 file changed, 3 insertions(+), 1 de=
-letion(-)
+M src/openvpn/tun_afunix=2Ec
+1 file changed, 1 insertion(+), =
+0 deletions(-)
 
 
 
-  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/cha=
-nges/72/2172/1
+  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn ref=
+s/changes/73/2173/1
 
-diff --git a/src/openvpn/init=2Ec b/src/openvpn/init=2Ec
-in=
-dex 3bc4de4=2E=2E7ac4803 100644
---- a/src/openvpn/init=2Ec
-+++ b/src/openvp=
-n/init=2Ec
-@@ -2044,7 +2044,9 @@
- 
-     run_dns_up_down(false, &c->options,=
- c->c1=2Etuntap, &c->persist=2Eduri);
- 
--    if (force || !(c->sig->signal_=
-received =3D=3D SIGUSR1 && c->options=2Epersist_tun))
-+    /* AF_UNIX tun i=
-s never preserved, see can_preserve_tun() */
-+    if (force || !(c->sig->si=
-gnal_received =3D=3D SIGUSR1 && c->options=2Epersist_tun)
-+        || c->c1=
-=2Etuntap->backend_driver =3D=3D DRIVER_AFUNIX)
+diff --git a/src/openvpn/tun_afunix=2Ec b/src/openvpn/=
+tun_afunix=2Ec
+index 79d706a=2E=2E16731d2 100644
+--- a/src/openvpn/tun_afun=
+ix=2Ec
++++ b/src/openvpn/tun_afunix=2Ec
+@@ -139,6 +139,7 @@
+     if (tt->af=
+unix=2Echildprocess)
      {
-         static_cont=
-ext =3D NULL;
+         kill(tt->afunix=2Echildprocess, SIGINT=
+);
++        waitpid(tt->afunix=2Echildprocess, NULL, 0);
+     }
  
+     free=
+(tt->actual_name);
 
 -- 
-To view, visit https://gerrit=2Eopenvpn=2Enet/c/openvp=
-n/+/2172?usp=3Demail
-To unsubscribe, or for help writing mail filters, visi=
-t https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+To view, visit https://gerrit=2Eopenvpn=2Enet/c/ope=
+nvpn/+/2173?usp=3Demail
+To unsubscribe, or for help writing mail filters, v=
+isit https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Gerrit-MessageType: =
-newchange
+Gerrit-MessageTyp=
+e: newchange
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I=
-19904af95d0b9efa868d42050f7187565c7f7a23
-Gerrit-Change-Number: 2172
-Gerrit-=
-PatchSet: 1
-Gerrit-Owner: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
+Gerrit-Change-Id=
+: I0705cff831cbd18686721dffbe5960976e3489da
+Gerrit-Change-Number: 2173
 Gerr=
-it-Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-CC: openvpn-d=
-evel <openvpn-devel@lists=2Esourceforge=2Enet>
-Gerrit-Attention: Arne Schwa=
-be <arne-openvpn@rfc2549=2Eorg>
+it-PatchSet: 1
+Gerrit-Owner: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
+G=
+errit-Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
+Gerrit-CC: openvp=
+n-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Attention: Arne Sc=
+hwabe <arne-openvpn@rfc2549=2Eorg>
 
---l1GmXI3djw0=
+--QybhewMZ3nY=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
@@ -264,75 +255,68 @@ rently required from: Arne Schwabe=2E </p>
 <p>R=C4=83zvan Cojocaru would li=
 ke Arne Schwabe to <strong>review</strong> this change=2E
 </p><p><a href=3D=
-"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2172?usp=3Demail">View Change</=
+"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2173?usp=3Demail">View Change</=
 a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; whit=
-e-space: pre-wrap;">init: close AF_UNIX tun on SIGUSR1 with --persist-tun<b=
-r><br>can_preserve_tun() never keeps an AF_UNIX tun, but do_close_tun()<br>=
-skipped closing it on SIGUSR1 with --persist-tun=2E do_open_tun() then<br>r=
-eopened over it, leaking the socket fd and actual_name and leaving<br>the o=
-ld child process running=2E<br><br>Change-Id: I19904af95d0b9efa868d42050f71=
-87565c7f7a23<br>Signed-off-by: Razvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt=
-;<br>---<br>M src/openvpn/init=2Ec<br>1 file changed, 3 insertions(+), 1 de=
-letion(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospac=
-e,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:=
-29418/openvpn refs/changes/72/2172/1</pre><pre style=3D"font-family: monosp=
-ace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/init=
-=2Ec b/src/openvpn/init=2Ec</span><br><span>index 3bc4de4=2E=2E7ac4803 1006=
-44</span><br><span>--- a/src/openvpn/init=2Ec</span><br><span>+++ b/src/ope=
-nvpn/init=2Ec</span><br><span>@@ -2044,7 +2044,9 @@</span><br><span> </span=
-><br><span>     run_dns_up_down(false, &amp;c-&gt;options, c-&gt;c1=2Etunta=
-p, &amp;c-&gt;persist=2Eduri);</span><br><span> </span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    if (force || !(c-&gt;sig-&gt;signal_received=
- =3D=3D SIGUSR1 &amp;&amp; c-&gt;options=2Epersist_tun))</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    /* AF_UNIX tun is never preserved,=
- see can_preserve_tun() */</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    if (force || !(c-&gt;sig-&gt;signal_received =3D=3D SIGUSR1 &amp=
-;&amp; c-&gt;options=2Epersist_tun)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        || c-&gt;c1=2Etuntap-&gt;backend_driver =3D=3D DRIV=
-ER_AFUNIX)</span><br><span>     {</span><br><span>         static_context =
-=3D NULL;</span><br></pre><p>To view, visit <a href=3D"https://gerrit=2Eope=
-nvpn=2Enet/c/openvpn/+/2172?usp=3Demail">change 2172</a>=2E To unsubscribe,=
- or for help writing mail filters, visit <a href=3D"https://gerrit=2Eopenvp=
-n=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D=
-"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemt=
-ype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https=
-://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2172?usp=3Demail"/><meta itemprop=3D"=
-name" content=3D"View Change"/></div></div>
+e-space: pre-wrap;">tun_afunix: reap the child process on close<br><br>clos=
+e_tun_afunix() sent SIGINT to the child but never waited for it,<br>leaving=
+ a zombie on every restart=2E<br><br>Change-Id: I0705cff831cbd18686721dffbe=
+5960976e3489da<br>Signed-off-by: Razvan Cojocaru &lt;razvanc@mailbox=2Eorg&=
+gt;<br>---<br>M src/openvpn/tun_afunix=2Ec<br>1 file changed, 1 insertion(+=
+), 0 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: =
+monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvp=
+n=2Enet:29418/openvpn refs/changes/73/2173/1</pre><pre style=3D"font-family=
+: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openv=
+pn/tun_afunix=2Ec b/src/openvpn/tun_afunix=2Ec</span><br><span>index 79d706=
+a=2E=2E16731d2 100644</span><br><span>--- a/src/openvpn/tun_afunix=2Ec</spa=
+n><br><span>+++ b/src/openvpn/tun_afunix=2Ec</span><br><span>@@ -139,6 +139=
+,7 @@</span><br><span>     if (tt-&gt;afunix=2Echildprocess)</span><br><spa=
+n>     {</span><br><span>         kill(tt-&gt;afunix=2Echildprocess, SIGINT=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        waitpid(t=
+t-&gt;afunix=2Echildprocess, NULL, 0);</span><br><span>     }</span><br><sp=
+an> </span><br><span>     free(tt-&gt;actual_name);</span><br></pre><p>To v=
+iew, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2173?usp=
+=3Demail">change 2173</a>=2E To unsubscribe, or for help writing mail filte=
+rs, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">s=
+ettings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessa=
+ge"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/View=
+Action"><link itemprop=3D"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/ope=
+nvpn/+/2173?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/>=
+</div></div>
 
-<div style=3D"display:none"> G=
-errit-MessageType: newchange </div>
-<div style=3D"display:none"> Gerrit-Pro=
-ject: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </d=
+<div style=3D"display:none"> Gerrit-MessageType: newchange </=
+div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=
+=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"=
+> Gerrit-Change-Id: I0705cff831cbd18686721dffbe5960976e3489da </div>
+<div s=
+tyle=3D"display:none"> Gerrit-Change-Number: 2173 </div>
+<div style=3D"disp=
+lay:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Ow=
+ner: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt; </div>
+<div style=
+=3D"display:none"> Gerrit-Reviewer: Arne Schwabe &lt;arne-openvpn@rfc2549=
+=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt=
+;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"display:n=
+one"> Gerrit-Attention: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </d=
 iv>
-<div style=3D"display:none"> Gerrit-Change-Id: I19904af95d0b9efa868d420=
-50f7187565c7f7a23 </div>
-<div style=3D"display:none"> Gerrit-Change-Number:=
- 2172 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div st=
-yle=3D"display:none"> Gerrit-Owner: R=C4=83zvan Cojocaru &lt;razvanc@mailbo=
-x=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: Arne Schwa=
-be &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> G=
-errit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </d=
-iv>
-<div style=3D"display:none"> Gerrit-Attention: Arne Schwabe &lt;arne-op=
-envpn@rfc2549=2Eorg&gt; </div>
 
 </body></html>
---l1GmXI3djw0=--
+--QybhewMZ3nY=--
 
 
---===============5134784719983496252==
+--===============3446560804689820038==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============5134784719983496252==
+--===============3446560804689820038==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -343,5 +327,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============5134784719983496252==--
+--===============3446560804689820038==--
 
