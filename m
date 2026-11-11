@@ -1,42 +1,42 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 148A4606A334
-	for <openvpn-devel@archiver.kernel.org>; Wed, 11 Nov 2026 15:21:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57AFD606A324
+	for <openvpn-devel@archiver.kernel.org>; Wed, 11 Nov 2026 16:37:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=Cy8RPad6;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=me1UdYuo;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=SICEduDC
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=ZdEr075W;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=SyworBWW;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=kfn9uysO
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
-	List-Owner; bh=GfvK+wEzKNizQY2x7eEki0u7X3eZf47IepnqtvTibLo=; b=Cy8RPad6NEHoGn
-	iCsfJSzEdKek1HzSv7GDZ556WnWTCrrHIIiBuQOf1h0bx5CNOEkW7Ykh8neJv9Sa7pclylBTApYuC
-	4IVCYylyphB9PJIaccMX7M38egY06Bc7pZjqjHf+c8ORPypOFtOENqlmNLUr05B65/r9ZH3FE/rh4
-	qL4=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	List-Owner; bh=c+0XL76D1VFh868qEAlr/jYbAzVfMBHud/j7OfoDmAM=; b=ZdEr075W006sEF
+	6biHl25jk3P20CEraIL9UHtIpe+IuMCZNr3qEtoThDc+1WTxv/rzkC2G5qWoff8nxlMtxZVptgKO9
+	KL5CTL+lG0v4Ym0vnFHwmztD2VSMxdFhR+CRjN/YjVWAP7PUDPWs06pp1KI1QCo+cc7Dal8JPef5X
+	k3I=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xRA8d-000000003Sv-1oXh;
-	Wed, 11 Nov 2026 15:21:27 +0000
+	id 1xRBKB-000000003Vk-2g7q;
+	Wed, 11 Nov 2026 16:37:27 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
  (envelope-from <gert@blue4.greenie.muc.de>)
- id 1xRA8X-000000003Sm-3H4t for openvpn-devel@lists.sourceforge.net;
- Wed, 11 Nov 2026 15:21:21 +0000
+ id 1xRBKA-000000003Vb-2orx for openvpn-devel@lists.sourceforge.net;
+ Wed, 11 Nov 2026 16:37:26 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
  In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=BjNp4OE80Pr74KYbBR/M6IPtIiccWApI8W+0w7e3QzE=; b=me1UdYuoY+lArIgD6dylAZ8ra8
- 3kGovcMN7SUW1HC2jYf3wQqwegKNSJO3ZyyDSlUYlwZO3u11H/1gd3DagKTerBrXHcHamvkvUjaYY
- c68VsKzPNkSxLEvxI4PoWEjnr2aLy65JX4h2dA4DbD73FXa37jVgmLrJSlJUkLPgLsqw=;
+ bh=Bewf/FKfxT/UTonWZdv4m72eSty1R5smN4Mfw6XpTEI=; b=SyworBWWKjBwnOrHnqspScoRlC
+ PjJZfbbdFjb9ZYExGGp/adIBBDpBciKb1v3B/ZqfmQuaGpMvWGf74H9jjz33DBljft0SIdxfLtt35
+ DeyanEdYsMrl7Ci9WEIH2pQtX0xNAcKA7Bn5nauKUcEPpMMZ6GTbH5cHZVpHODQKc/7k=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -44,33 +44,33 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=BjNp4OE80Pr74KYbBR/M6IPtIiccWApI8W+0w7e3QzE=; b=SICEduDCrjsf60U5i+cVl/f2ve
- VUWYL/HHPRlLBVl6jD209E7QQD04ZpskUQuVmbatw9AndDc7XfskftP3HKLqAth4Z1103YM03Mqb7
- MPZ6gHdZ4iPXd9dDTnFcT0MP23tsVv74v2IGgs5uobTHrA2gL+ZiVOtiflzYy9GZ5XrA=;
+ bh=Bewf/FKfxT/UTonWZdv4m72eSty1R5smN4Mfw6XpTEI=; b=kfn9uysOOF2+BqYJto0qKxRH60
+ 6BN3xQW07Wi48R/AUCZP0Q4FdOdkexYhlFDkqWp4aJinlJUL1y46WGauzm3rMhos3E/V8rxajgJb1
+ iOqRPQFavyMfP4wA+OkhXjL9igQRTmXQu3B/4UGsDz3CYMCA2pHdSOkrDfyvm/5axkTM=;
 Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
- id 1xRA8W-000000000kF-1iBa for openvpn-devel@lists.sourceforge.net;
- Wed, 11 Nov 2026 15:21:21 +0000
+ id 1xRBK8-000000002Y8-2AMR for openvpn-devel@lists.sourceforge.net;
+ Wed, 11 Nov 2026 16:37:26 +0000
 Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 6ABFLDRd031493
- for <openvpn-devel@lists.sourceforge.net>; Wed, 11 Nov 2026 16:21:13 +0100
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 6ABGbH6X006385
+ for <openvpn-devel@lists.sourceforge.net>; Wed, 11 Nov 2026 17:37:17 +0100
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 6ABFLDMO031492
- for openvpn-devel@lists.sourceforge.net; Wed, 11 Nov 2026 16:21:13 +0100
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 6ABGbHm2006384
+ for openvpn-devel@lists.sourceforge.net; Wed, 11 Nov 2026 17:37:17 +0100
 From: Gert Doering <gert@greenie.muc.de>
 To: openvpn-devel@lists.sourceforge.net
-Date: Wed, 11 Nov 2026 16:21:07 +0100
-Message-ID: <20261111152112.31478-1-gert@greenie.muc.de>
+Date: Wed, 11 Nov 2026 17:37:09 +0100
+Message-ID: <20261111163717.6369-1-gert@greenie.muc.de>
 X-Mailer: git-send-email 2.55.0
-In-Reply-To: <gerrit.1793709839000.I571e30bb22ec7bffc2c5fa04fdcd73b52ce47e5e@gerrit.openvpn.net>
-References: <gerrit.1793709839000.I571e30bb22ec7bffc2c5fa04fdcd73b52ce47e5e@gerrit.openvpn.net>
+In-Reply-To: <gerrit.1794300996000.Idf378bb5af0b2b4e8d746e252159b756e96c37fb@gerrit.openvpn.net>
+References: <gerrit.1794300996000.Idf378bb5af0b2b4e8d746e252159b756e96c37fb@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 X-Spam-Score: 1.3 (+)
-X-Headers-End: 1xRA8W-000000000kF-1iBa
-Subject: [Openvpn-devel] [PATCH v2] Silence remaining cppcheck warnings on
- macOS and FreeBSD
+X-Headers-End: 1xRBK8-000000002Y8-2AMR
+Subject: [Openvpn-devel] [PATCH v1] openvpnserv: always free the domains in
+ UndoDnsSearchDomains()
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -89,126 +89,48 @@ X-Spam-Status: No, score=-16.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
-From: Arne Schwabe <arne@rfc2549.org>
+From: Razvan Cojocaru <razvanc@mailbox.org>
 
-Change-Id: I571e30bb22ec7bffc2c5fa04fdcd73b52ce47e5e
-Signed-off-by: Arne Schwabe <arne@rfc2549.org>
-Acked-by: Frank Lichtenheld <frank@lichtenheld.com>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2108
+The domains string was only freed when the search list key could be
+opened. Free it unconditionally, as the caller frees the undo data
+right after.
+
+Broken since ae90cbad ("dns: support multiple domains without DHCP").
+
+Change-Id: Idf378bb5af0b2b4e8d746e252159b756e96c37fb
+Signed-off-by: Razvan Cojocaru <razvanc@mailbox.org>
+Acked-by: Antonio Quartulli <antonio@mandelbit.com>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2160
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2108
-This mail reflects revision 2 of this Change.
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2160
+This mail reflects revision 1 of this Change.
 
 Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@lichtenheld.com>
+Antonio Quartulli <antonio@mandelbit.com>
 
         
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index d0d26c6..449b4f1 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -3331,7 +3331,6 @@
-     int rtm_addrs;
-     struct sockaddr so_dst, so_mask;
-     char *cp = m_rtmsg.m_space;
--    struct sockaddr *gate = NULL, *ifp = NULL, *sa;
-     struct rt_msghdr *rtm_aux;
- 
- #define rtm m_rtmsg.m_rtm
-@@ -3396,6 +3395,8 @@
-     sockfd = -1;
- 
-     /* extract return data from routing socket */
-+    const struct sockaddr_in *gate = NULL;
-+    const struct sockaddr_dl *adl = NULL;
-     rtm_aux = &rtm;
-     cp = (char *)(rtm_aux + 1);
-     if (rtm_aux->rtm_addrs)
-@@ -3404,14 +3405,14 @@
-         {
-             if (i & rtm_aux->rtm_addrs)
-             {
--                sa = (struct sockaddr *)cp;
-+                const struct sockaddr *sa = (const struct sockaddr *)cp;
-                 if (i == RTA_GATEWAY)
-                 {
--                    gate = sa;
-+                    gate = (const struct sockaddr_in *)sa;
-                 }
-                 else if (i == RTA_IFP)
-                 {
--                    ifp = sa;
-+                    adl = (const struct sockaddr_dl *)sa;
-                 }
-                 ADVANCE(cp, sa);
-             }
-@@ -3423,19 +3424,18 @@
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index 81205d6..710a797 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -1754,10 +1754,10 @@
+         RemoveDnsSearchDomains(dns_searchlist_key, undo_data->domains);
+         RegCloseKey(dns_searchlist_key);
+         ApplyDnsSettings(gpol);
+-
+-        free(undo_data->domains);
+-        undo_data->domains = NULL;
      }
- 
-     /* get gateway addr and interface name */
--    if (gate != NULL)
-+    if (gate)
-     {
-         /* get default gateway addr */
--        rgi->gateway.addr = ntohl(((struct sockaddr_in *)gate)->sin_addr.s_addr);
-+        rgi->gateway.addr = ntohl((gate)->sin_addr.s_addr);
-         if (rgi->gateway.addr)
-         {
-             rgi->flags |= RGI_ADDR_DEFINED;
-         }
- 
--        if (ifp)
-+        if (adl)
-         {
-             /* get interface name */
--            const struct sockaddr_dl *adl = (struct sockaddr_dl *)ifp;
-             if (adl->sdl_nlen && adl->sdl_nlen < sizeof(rgi->iface))
-             {
-                 memcpy(rgi->iface, adl->sdl_data, adl->sdl_nlen);
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index bcea331..a1f9886 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -1040,7 +1040,7 @@
-  * @param ctx       the networking API opaque context
-  */
- static void
--do_ifconfig_ipv6(struct tuntap *tt, const char *ifname, int tun_mtu, const struct env_set *es,
-+do_ifconfig_ipv6(const struct tuntap *tt, const char *ifname, int tun_mtu, const struct env_set *es,
-                  openvpn_net_ctx_t *ctx)
- {
- #if !defined(TARGET_LINUX)
-@@ -1231,7 +1231,7 @@
-  * @param ctx       the networking API opaque context
-  */
- static void
--do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu, const struct env_set *es,
-+do_ifconfig_ipv4(const struct tuntap *tt, const char *ifname, int tun_mtu, const struct env_set *es,
-                  openvpn_net_ctx_t *ctx)
- {
- #if !defined(_WIN32) && !defined(TARGET_ANDROID)
-@@ -1587,7 +1587,7 @@
++
++    free(undo_data->domains);
++    undo_data->domains = NULL;
  }
  
- static void
--undo_ifconfig_ipv4(const struct tuntap *tt, openvpn_net_ctx_t *ctx)
-+undo_ifconfig_ipv4(const struct tuntap *tt, const openvpn_net_ctx_t *ctx)
- {
- #if defined(TARGET_LINUX)
-     int netbits = netmask_to_netbits2(tt->remote_netmask);
-@@ -1622,7 +1622,7 @@
- }
- 
- static void
--undo_ifconfig_ipv6(const struct tuntap *tt, openvpn_net_ctx_t *ctx)
-+undo_ifconfig_ipv6(const struct tuntap *tt, const openvpn_net_ctx_t *ctx)
- {
- #if defined(TARGET_LINUX)
-     if (net_addr_v6_del(ctx, tt->actual_name, &tt->local_ipv6, tt->netbits_ipv6) < 0)
+ /**
 
 
 _______________________________________________
