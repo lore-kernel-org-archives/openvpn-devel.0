@@ -1,13 +1,13 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D73F1606A201
-	for <openvpn-devel@archiver.kernel.org>; Thu, 12 Nov 2026 17:43:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EFFE606A323
+	for <openvpn-devel@archiver.kernel.org>; Thu, 12 Nov 2026 17:44:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=XYDZ+2Mu;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=Y0oW0PwA;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=H/iPkwVU;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=DT8W/+mY
+	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=RIraH1p/;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=EYMSoar/;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=gRJjv558;
+	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=NJJeWrry
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
@@ -15,29 +15,29 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
 	List-Unsubscribe-Post:List-Owner;
-	bh=QWk4EltNoPngo+Fm6U03xVVywf+739DHxy1pJiiOy5U=; b=XYDZ+2Mu/WLB6cGA/Lc0cHYDBP
-	eK614hwOqY34/v2gdw4HDW2n2Tj+qJOgwyEF+Yi8ZpD8i8AGPF3RqmOLEVc1cTwAf+5+ViDnpynHb
-	BNmljF68FK8sVJkyNbi85niWQ+cgRA8xoNbPp44oTOdDU4NOzHyXWua/HfxZ69Za8YdQ=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	bh=0ojQLP8Y1gyAkoYvXA3XqGlMo9RDVFdIIL4HD+igmd4=; b=RIraH1p/LoCGvDjEIPpcQ3Imdn
+	V7abUH0qBpWaDak5bPsTdbmrHYxYnInFjBdPW1GpwjyMba/IAusNEN/lj3zECO8/Npw38HokOa9cy
+	b49Q+/O/jXgBsCLJdl2EjBWfi2Bg6O17SPZQDEMOMOgNwQJfq3BGvNWpWuyJeJhZHhhE=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xRYpk-000000004B8-2REL;
-	Thu, 12 Nov 2026 17:43:36 +0000
+	id 1xRYqi-000000004yl-04wo;
+	Thu, 12 Nov 2026 17:44:36 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xRYph-000000004At-2tG0
+ (envelope-from <gerrit@openvpn.net>) id 1xRYqg-000000004yW-0JIn
  for openvpn-devel@lists.sourceforge.net;
- Thu, 12 Nov 2026 17:43:33 +0000
+ Thu, 12 Nov 2026 17:44:34 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=sRwjmUz8E2maRBEGVUJf5etjJqoCey1cATmCklZ7YHY=; b=Y0oW0PwAv3EApo/jwsty461S+r
- 28X3woU4oCp8hpVocDMaFQv5z6PKO0bityG6I6jf7m90Q/nPt7qXG1+9oEWsqozDxxFKBktDPoYNd
- Rg4YZ8nCl7sc980Oydea9uVTfPMnBPF7D6YtHWSUc4iDG4rYllxSBogZOuWCXb1AeoYI=;
+ bh=KzFIUpyaJCOaEQ+WRQ+nUzSY+2YZvVgV26N5KZ9hbWg=; b=EYMSoar/eeE4Nzk5Qp1pyAnL6u
+ GdfvgQeTfXHbdsk0WrSPmqW+aqolaV0/oRgOrk+9MniLgd7iHm7Wsq/jwPQ+p57MrTEzLPd0CNM8u
+ utzwQzTMe0/jSE43eo4X3FMXBttKzTpZA8l+azgpJ6JoE4cdyYdqWBBiRct6BUiGjG2A=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
@@ -45,93 +45,92 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=sRwjmUz8E2maRBEGVUJf5etjJqoCey1cATmCklZ7YHY=; b=H/iPkwVUJfrudcJImF6i16XT8b
- Ii2mT/gaVTHGeDUuaTt3Nsjv8S4rhRJ/GEUKAmBInDO1bGAmQr4GDlTU6vvMNyEo8dlFO8gXaKiS4
- QTLDCtoe9kLC3goii1804QsnsRe+Y8qXemPHwf7pVeNZciw6lbQOqLFThiSByQgR+3Po=;
-Received: from mail-wm1-f53.google.com ([209.85.128.53])
+ bh=KzFIUpyaJCOaEQ+WRQ+nUzSY+2YZvVgV26N5KZ9hbWg=; b=gRJjv558OQN4OIgEAFrg2jC7i0
+ d8+28oIbjpvxar02p2abM+TTehjgmqw/KQ+TERnWXulOFrBg0LkkVqMKfCqppe1z2OJ5b5nmSMdme
+ U1WYi0NaL9BsuRcKOdzPytGCG+LgjdPKy36AMC8zN4P6J4PLEOggeNHSt9iaZN8ogTP4=;
+Received: from mail-wr1-f51.google.com ([209.85.221.51])
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xRYpS-000000003pa-0euS for openvpn-devel@lists.sourceforge.net;
- Thu, 12 Nov 2026 17:43:21 +0000
-Received: by mail-wm1-f53.google.com with SMTP id
- 5b1f17b1804b1-4a5177d78c7so569545e9.2
+ id 1xRYqe-000000003s3-1AE7 for openvpn-devel@lists.sourceforge.net;
+ Thu, 12 Nov 2026 17:44:33 +0000
+Received: by mail-wr1-f51.google.com with SMTP id
+ ffacd0b85a97d-491f34b4e0fso6573f8f.2
  for <openvpn-devel@lists.sourceforge.net>;
- Thu, 12 Nov 2026 09:43:18 -0800 (PST)
+ Thu, 12 Nov 2026 09:44:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1794505391; x=1795110191; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1794505466; x=1795110266; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=sRwjmUz8E2maRBEGVUJf5etjJqoCey1cATmCklZ7YHY=;
- b=DT8W/+mYKUs/DwKPXGyQdnXyGXeLbeoaL0EqPVJf40CHD2n9qJ+gatsyB1MENrKOtf
- w0X0ulm6aHbfVOgpWasNQuN3fZf/b8i1sucIwcX3jETQhfehAaMQwm7KQ3A8JkzI93Nu
- 3dkjGi5w5IfLazTrpEdXVsycID5Q/uMf3wYNj4T61WeQbrqqz/P1sbCgd/ZRLBjU30Q9
- I6wkzWHRf6kpK3YJJhPSaJlxlVYuaxCe5RKH1/61zKD9gU+GW6XJdFMNKWe2XJY5pNUw
- rHMJy9sVSnUttoXl5LGnRvlal+2SwzBv2q7a+hYIYaYY0hvsLlEENmfDdFRhKuEKrZa5
- VEyg==
+ bh=KzFIUpyaJCOaEQ+WRQ+nUzSY+2YZvVgV26N5KZ9hbWg=;
+ b=NJJeWrryKvR0LeJ2gqX13U5roWAHK63MisaHa0hmVrEWi7oL5e2c+oW8tMwZlDSYY1
+ QBFyUCMzpW5fQx7q3XVbzlsuA5TicfsnqKujB0uqWT47f9BGRdyeBtQIm8lW/7yXt/io
+ 81YvpQv/s12v0PvSmi7xRa69duAFRieBLV2nu8GBZUrMwgnJqDsPb4IdC3OxCxan3ecx
+ 8Xibv3CrBA2f9qi9agbOuyxhmSSFgwVARCwQF3k5jLcPyWc1zmPuuH7ttrIey0ix1fMY
+ WOJ4eAYxTfpIv6jUQKG6y+G4QyGgjrTzsUpQIGkGqgRTlw+TsbLrSzoTiDMrw3p+NG1k
+ ygDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1794505391; x=1795110191;
+ d=1e100.net; s=20260707; t=1794505466; x=1795110266;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=sRwjmUz8E2maRBEGVUJf5etjJqoCey1cATmCklZ7YHY=;
- b=pa9c2XxmiNxDog09NS48f3n7iVAfzVLzoQrVWROIZXuuQIWilqpi9QsQuKqdvHa66S
- Du0re4k0QOIFA3ox+s/N5Us3Unt2jNCN1jA1my4+d3tGj3dR+SYmOhKf9FaI8v22KzY5
- w+nM7YH4l/7r67jJC49mfaG8NFYLBqm9Yw8yA55N2SHo/5MrBxH4m07q0b1194ZUKejm
- FjptQi3VrIixR/ZRO8qBV3+Z2rabjSFSf47ZIyGNOaJa0KPz6LwATgkbunKao268Izvu
- gtZkbla9Ak4blND+gg7MFK6UpXIrgqki9z06mPj+y6ucpwTQDfbz8V2+n3GNOnCPpcmY
- 7Y1g==
-X-Gm-Message-State: APuU4Z/7kTxGVa91x6wh041/wJK+j13otQQSasECNiEYBC5t2EnXnXuB
- sIeWSDA+Jr/fy8f0NC9yPhytPbC3tq9yhcm4YSLJD+7Z8T66daqTADCuZ03j+TbN+qQ3q5b4sA6
- YM5KajPcE0j1E6X7QB4vuBMklpq8xpEZmefrGYFuiCearwZQpyeeGF2KsaMH8qwjoAWXQ
-X-Gm-Gg: AYBFou27b8TKHshqxaW/1eZFVv/A241SCjHxapYlVXWhjCd2ouAeMtEohyMtMPJVJPj
- 0CCjvxuMa7F7wfAjVl+6M3yWfzRkhrtB61SupTPZU6upLajrmgnMnZHPu81GTRIfVO8OA2CKWs6
- FgAPwwHYPI7OmBZUKG11tXb6Aea5dhoAt6ODO1eF0/0R4WHCuonJwR9gnYalBOvhIj77E8p/l+H
- WXcAaHPFvLlGLGVehZwMcM+ghrPyopdqp6CQ7aPRWkYwp334iW5srkV6wRzdpiL6vc9LksQSh3Q
- X+25srhW3ebpPM72gVRzY5dg0ZMNebsgrgoeV0EUQfO1LuDft/FWQ1YHxP7Sy4SUCPW4PHGbyqo
- DyEXjfwqu+1xjNMpZ8pKudzn/L5US/ug2x01K0CGddMLA5koAD4vnIIfZ0TpXIkNfNEvipBNEXI
- WOQCO8GGB54vHfsIT9tOe1FjwDRF/zs7N6FczG2XxwLyhILKT5XOcHejrsxY0sMHF6F0m2jwdFN
- 4GY/xxAMZQ4ZhYu+q/piRVQPg4S+UWSgpuGv3xOuV1EmJ7FcPQk/DDpXIwQkDXGWqbpUUYOOXoY
- 2NjMhxX/g6/qF+nOh7uV8aGzJ2FbWj2+1FNukejlUl+2TN6V1XsKnxlIT9wpJqFnRK0IJ1k/c9Z
- rfifE6dRl1kQ9VdfDfKdJOIWeMksCHQmHGdpJErqlEGk96faa8dcoZ6yu6yjlS8d9/VaK8aBnOw
- ztrJcXs17po3uVok4=
-X-Received: by 2002:a05:600c:4f84:b0:4ac:da92:2bd4 with SMTP id
- 5b1f17b1804b1-4ba0931d9eamr117108815e9.1.1794505391334; 
- Thu, 12 Nov 2026 09:43:11 -0800 (PST)
+ bh=KzFIUpyaJCOaEQ+WRQ+nUzSY+2YZvVgV26N5KZ9hbWg=;
+ b=CsbEvOZ/LuuUZN7kmeQ5eJMH4QMGU0/3O15bkw0ME7TGjhlwfd+Q+C5jDXySeu1mgQ
+ f1/ghu82WRCVxJT6DV+8Q6V2WyQN81YCUqpqGnmI0/iaxmHwIsVzjSf3VhHqnkp+96Ki
+ DqJNi1qMrQ3nhsGmqTh5Rkw2taxg/Smr0X0jFkxnxw1J4ZdW2nKRQFOPr5fKtfPB+5So
+ V6cDPt8b2DnVOIJ3UxWvRBhBdrf0KOVX4COpA+ri+ZK1RPbI/IW8/CmGSVO68sn+V4Wt
+ 6/pjRgXom8JAYcXzz0kjRLh+GFWjQVhXRcjNc5312UWPge/xIIn5+HK5S/G8pN0Atp1c
+ bLvw==
+X-Gm-Message-State: APuU4Z9409CJOwHeYruuy0c5258C0mMxAg9Ij+Iz0eM0NzKP/FOiPiTe
+ MOJLzerZqlUZ39eFIi+zWiWpj6gYBd4IuWUP2QBGasOBpvZixOdMXSfbGWEIdTeIyQ3JzipYU6u
+ 2nHTf4eHzODvZtplB9tH9IJZJF3BmabtKy90L2paE4WIJBphJqhvrJSz9N7xZhPYH9iFb
+X-Gm-Gg: AYBFou2ED/JY4Libw/cVJSqEt1Ft9nNaUJVIh4wCte8VqQ1xeXt0BEKg3acmlIx0mO/
+ 1IaVPUwyvS9Uq9AmlMC1t+h1sYhIhRPHScZ8kMz/tGhaQ5pMoP7DXNp5D7HrPqCQNBsJLr9NS5o
+ HvXlotNZm9UQVKfpc7Jz6YISq17wuk93dwTchoUmgS/2gWfE+mC6xrwAvmEMxrBx3e66A1Tf0Tw
+ uqzFqTcmm+w5wUgVo92TS6BTaBr23spxjDFDcZMEZVQElMRM3y01BXN63u5sR0DReP6Je12JwhP
+ sNXY2hhH56jy60ezPkFCuArPoCqO4byB1/nsZTjIGKALf5FF2WqVzB2I2V9dL/tmfKAZv+pDApg
+ AIp8+D7bNuiTDzvTZHhhddlArchd+iyQgt4acNQ2XTBD6FDvNUUg/6SL5n/uRc1kol6N/mYx9yN
+ qrYJBUC1KgTzaspZw22p0wHaJLGV3NNU+mjYp6IPJ/ZWpuIs5jmWtMjxuNQ7JK0vVBs5L4WS6gZ
+ Hn61PzM3KDkTNTcgfVREUkyeRHS566UYFn+LJxuto+O3P4ojrs+XU6CuRwD1CqCTjIKiUyWE1WY
+ 2JOCvm1bZmD9r8agqgqTw3ZRN/66RFDpNJxgaZDAHhpcunDOHfgj8ATnufpkP7hJxhLjUsg+/WY
+ Q94Y3K4qMYJcz6fcMJAMTLsQ2Hk+5//+RF9NgHQZXZ6AqRk8ZsmqVecWFPakyyOzSEsHpseevhZ
+ c+RTOWJSZjq1CPHe0=
+X-Received: by 2002:a05:6000:26c8:b0:491:ed89:a38f with SMTP id
+ ffacd0b85a97d-49c73631471mr168623f8f.23.1794505465514; 
+ Thu, 12 Nov 2026 09:44:25 -0800 (PST)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-4ba0953d26asm85163675e9.4.2026.11.12.09.43.10
+ ffacd0b85a97d-49c5fe370f8sm397634f8f.27.2026.11.12.09.44.25
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 12 Nov 2026 09:43:10 -0800 (PST)
-X-Google-Original-From: "Gert Doering (Code Review)"
+ Thu, 12 Nov 2026 09:44:25 -0800 (PST)
+X-Google-Original-From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?=
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Thu, 12 Nov 2026 17:43:09 +0000
-To: =?UTF-8?Q?R=C4=83zvan_Cojocaru?= <razvanc@mailbox.org>,
- Arne Schwabe <arne-openvpn@rfc2549.org>
+Date: Thu, 12 Nov 2026 17:44:23 +0000
+To: Arne Schwabe <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newpatchset
-X-Gerrit-PatchSet: 3
-X-Gerrit-Change-Id: I5c52cc5c3aaad21d1c22f36f6451235302ea6c4f
-X-Gerrit-Change-Number: 2163
+X-Gerrit-PatchSet: 4
+X-Gerrit-Change-Id: Ic602b125d857f1beed4af8661f522d339bc9e972
+X-Gerrit-Change-Number: 2162
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2163?usp=email>
-X-Gerrit-Commit: 2a59209487d37e8d28ee4394bfa4de6e011a3c05
-In-Reply-To: <gerrit.1794307698000.I5c52cc5c3aaad21d1c22f36f6451235302ea6c4f@gerrit.openvpn.net>
-References: <gerrit.1794307698000.I5c52cc5c3aaad21d1c22f36f6451235302ea6c4f@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzk0MzA3Njk4MDAwLkk1YzUyY2M1YzNhYWFkMjFkMWMyMmYzNmY2NDUxMjM1MzAyZWE2YzRmQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <8f515b48e1c4e75f0068136f463f84f43cc2a873-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2162?usp=email>
+X-Gerrit-Commit: b81201a9c5f58370555f91a78d696969f8f21965
+In-Reply-To: <gerrit.1794304288000.Ic602b125d857f1beed4af8661f522d339bc9e972@gerrit.openvpn.net>
+References: <gerrit.1794304288000.Ic602b125d857f1beed4af8661f522d339bc9e972@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzk0MzA0Mjg4MDAwLkljNjAyYjEyNWQ4NTdmMWJlZWQ0YWY4NjYxZjUyMmQzMzliYzllOTcyQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <2fffbac892b6e45abaa01d72c4fd0884b44b652d-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.5
 X-Spam-Score: 0.8 (/)
-X-Headers-End: 1xRYpS-000000003pa-0euS
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: sitnl: clear
- inet_address_t locals with CLEAR()
+X-Headers-End: 1xRYqe-000000003s3-1AE7
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: openvpnserv: keep
+ IPv6 name servers in NRPT exclude rules
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -141,13 +140,14 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "Gert Doering \(Code Review\) via Openvpn-devel"
+From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= via Openvpn-devel
  <openvpn-devel@lists.sourceforge.net>
-Reply-To: gert@greenie.muc.de, arne-openvpn@rfc2549.org, razvanc@mailbox.org,
- openvpn-devel@lists.sourceforge.net, antonio@mandelbit.com
-Cc: "Gert Doering \(Code Review\)" <gerrit@openvpn.net>,
+Reply-To: razvanc@mailbox.org, arne-openvpn@rfc2549.org,
+ openvpn-devel@lists.sourceforge.net, heiko@ist.eigentlich.net,
+ antonio@mandelbit.com
+Cc: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============6809414915455153827=="
+Content-Type: multipart/mixed; boundary="===============8315626334055373015=="
 X-Spam-Status: No, score=-12.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
 	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
@@ -156,529 +156,392 @@ X-Spam-Status: No, score=-12.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============6809414915455153827==
+--===============8315626334055373015==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="FPjrvg2fGEE="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="Z8Av2YRVIBQ="; charset=UTF-8
 
---FPjrvg2fGEE=
+--Z8Av2YRVIBQ=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Gert Doering has uploaded a new patch set (#3) to the change originally cre=
-ated by R=C4=83zvan Cojocaru=2E ( https://gerrit=2Eopenvpn=2Enet/c/openvpn/=
-+/2163?usp=3Demail )
+Attention is currently required from: Antonio Quartulli, Arne Schwabe, R=C4=
+=83zvan Cojocaru=2E
 
-The following approvals got outdated and were removed=
-:
-Code-Review+2 by Antonio Quartulli
+Hello Antonio Quartulli, Arne Schwabe, 
+
+I'd like you =
+to reexamine a change=2E Please visit
+
+    https://gerrit=2Eopenvpn=2Enet/c=
+/openvpn/+/2162?usp=3Demail
+
+to look at the new patch set (#4)=2E
+
+The foll=
+owing approvals got outdated and were removed:
+Code-Review+2 by Antonio Qua=
+rtulli
+
+The change is no longer submittable: Code-Review and checks~ChecksS=
+ubmitRule are unsatisfied now=2E
 
 
-Change subject: sitnl: clear inet_ad=
-dress_t locals with CLEAR()
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+Change subject: openvpnserv: keep IPv6 n=
+ame servers in NRPT exclude rules
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E
 
-sitnl: clear inet_address_t locals with CLEAR()
+openvpnserv: keep IPv6 name servers in NRPT exclude =
+rules
 
-The inet_=
-address_t locals were initialized with "=3D { 0 }", which only
-initializes =
-the first union member, the 4 byte ipv4=2E GCC 15 and later
-no longer clear=
- the rest of the union for this, so the IPv6 addresses
-of these locals keep=
- up to 12 bytes of stack garbage when the caller
-passes no address=2E
+GetNrptExcludeData() stored the IPv6 name servers after the IPv4 lis=
+t,
+but the IPv4 size includes the terminating NUL=2E With both present, the=
 
-net_=
-route_v6_del() then sends a garbage RTA_GATEWAY for routes without
-a gatewa=
-y, and the kernel refuses to delete them=2E net_route_v6_best_gw()
-looks up=
- a garbage destination when asked for the default route=2E
+string ended at the IPv4 list and the IPv6 servers never made it into
+Gene=
+ricDNSServers=2E Join the lists by replacing that NUL with a
+delimiter=2E
 
-Clear the whole=
- union with CLEAR() instead=2E The other inet_address_t
-locals are cleared =
-the same way, so none relies on the partial
-initialization=2E
-
-Latent since=
- c6542257 ("introduce sitnl: Simplified Interface To
-NetLink")=2E
-
-Change-I=
-d: I5c52cc5c3aaad21d1c22f36f6451235302ea6c4f
-Signed-off-by: Razvan Cojocaru=
- <razvanc@mailbox=2Eorg>
-Acked-by: Antonio Quartulli <antonio@mandelbit=2Ec=
-om>
-Gerrit URL: https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2163
-Message-Id:=
- <20261110112059=2E30832-1-gert@greenie=2Emuc=2Ede>
-URL: https://www=2Email=
--archive=2Ecom/openvpn-devel@lists=2Esourceforge=2Enet/msg41061=2Ehtml
-Sign=
-ed-off-by: Gert Doering <gert@greenie=2Emuc=2Ede>
----
-M src/openvpn/network=
-ing_sitnl=2Ec
-1 file changed, 40 insertions(+), 15 deletions(-)
-
-
-  git pul=
-l ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/63/2163/3
-
-diff -=
--git a/src/openvpn/networking_sitnl=2Ec b/src/openvpn/networking_sitnl=2Ec
 =
-index 97ff7bd=2E=2Eeafb9f7 100644
---- a/src/openvpn/networking_sitnl=2Ec
-++=
-+ b/src/openvpn/networking_sitnl=2Ec
-@@ -612,10 +612,12 @@
- net_route_v6_be=
-st_gw(openvpn_net_ctx_t *ctx, const struct in6_addr *dst, struct in6_addr *=
-best_gw,
-                      char *best_iface)
- {
--    inet_address_t dst=
-_v6 =3D { 0 };
-+    inet_address_t dst_v6;
-     char buf[INET6_ADDRSTRLEN];=
+Both readers now start from an empty string: RegGetValueA() leaves the
+buff=
+er untouched when the value is missing, and a slot is reused after
+an inter=
+face is skipped, so an interface without name servers could
+inherit those o=
+f the skipped one=2E They also return the length of the
+list without traili=
+ng delimiters, instead of the registry value size,
+which can include NUL pa=
+dding=2E
 
-     int ret;
- 
-+    CLEAR(dst_v6);
-+
-     if (dst)
-     {
-         dst_v6=
-=2Eipv6 =3D *dst;
-@@ -640,10 +642,12 @@
- net_route_v4_best_gw(openvpn_net_c=
-tx_t *ctx, const in_addr_t *dst, in_addr_t *best_gw,
-                      =
-char *best_iface)
- {
--    inet_address_t dst_v4 =3D { 0 };
-+    inet_addres=
-s_t dst_v4;
-     char buf[INET_ADDRSTRLEN];
-     int ret;
- 
-+    CLEAR(dst_=
-v4);
-+
-     if (dst)
-     {
-         dst_v4=2Eipv4 =3D htonl(*dst);
-@@ -104=
-0,9 +1044,11 @@
- int
- net_addr_v4_add(const openvpn_net_ctx_t *ctx, const c=
-har *iface, const in_addr_t *addr, int prefixlen)
- {
--    inet_address_t ad=
-dr_v4 =3D { 0 };
-+    inet_address_t addr_v4;
-     char buf[INET_ADDRSTRLEN=
-];
- 
-+    CLEAR(addr_v4);
-+
-     if (!addr)
-     {
-         return -EINVAL;=
+Broken since 0f3b7d17 ("win: implement --dns option support with
+=
+NRPT")=2E
 
-@@ -1060,9 +1066,11 @@
- net_addr_v6_add(const openvpn_net_ctx_t *ctx, cons=
-t char *iface, const struct in6_addr *addr,
-                 int prefixlen)=
+Change-Id: Ic602b125d857f1beed4af8661f522d339bc9e972
+Signed-off-=
+by: Razvan Cojocaru <razvanc@mailbox=2Eorg>
+---
+M src/openvpnserv/interacti=
+ve=2Ec
+1 file changed, 29 insertions(+), 4 deletions(-)
 
- {
--    inet_address_t addr_v6 =3D { 0 };
-+    inet_address_t addr_v6;
-   =
-  char buf[INET6_ADDRSTRLEN];
+
+  git pull ssh://=
+gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/62/2162/4
+
+diff --git a/s=
+rc/openvpnserv/interactive=2Ec b/src/openvpnserv/interactive=2Ec
+index 8120=
+5d6=2E=2E1b76003 100644
+--- a/src/openvpnserv/interactive=2Ec
++++ b/src/ope=
+nvpnserv/interactive=2Ec
+@@ -2128,6 +2128,24 @@
+ }
  
-+    CLEAR(addr_v6);
+ /**
++ * Remove traili=
+ng delimiters from a name server list
++ *
++ * @param  addrs      NUL-termin=
+ated list of addresses
++ *
++ * @return the size of the list in bytes, inclu=
+ding the terminating NUL
++ */
++static DWORD
++TrimNameServers(PSTR addrs)
++{=
+
++    size_t len =3D strlen(addrs);
++    while (len && (addrs[len - 1] =3D=
+=3D ',' || addrs[len - 1] =3D=3D ' '))
++    {
++        addrs[--len] =3D '\0=
+';
++    }
++    return (DWORD)len + 1;
++}
 +
-     if (!addr)
-    =
++/**
+  * Get DNS server IPv4 add=
+resses of an interface
+  *
+  * @param  itf_key    registry key of the IPv4 =
+interface data
+@@ -2140,6 +2158,7 @@
+ static LSTATUS
+ GetItfDnsServersV4(HK=
+EY itf_key, PSTR addrs, PDWORD size)
  {
-         return -EINVAL;
-@@ -1079,9 +1087,11 @@
- int
- net_addr_v4_del(co=
-nst openvpn_net_ctx_t *ctx, const char *iface, const in_addr_t *addr, int p=
-refixlen)
- {
--    inet_address_t addr_v4 =3D { 0 };
-+    inet_address_t add=
-r_v4;
-     char buf[INET_ADDRSTRLEN];
++    addrs[0] =3D '\0';
+     addrs[=
+*size - 1] =3D '\0';
  
-+    CLEAR(addr_v4);
-+
-     if (!ad=
-dr)
+     LSTATUS err;
+@@ -2165,7 +2184,7 @@
+ 
+     if (s=
+trchr(addrs, '=2E'))
      {
-         return -EINVAL;
-@@ -1099,9 +1109,11 @@
- net_addr_v6_del=
-(const openvpn_net_ctx_t *ctx, const char *iface, const struct in6_addr *ad=
-dr,
-                 int prefixlen)
+-        *size =3D s;
++        *size =3D TrimNa=
+meServers(addrs);
+         return NO_ERROR;
+     }
+ 
+@@ -2178,13 +2197,15 @=
+@
+  *
+  * @param  itf_key    registry key of the IPv6 interface data
+  * @p=
+aram  addrs      pointer to the buffer addresses are returned in
+- * @param=
+  size       pointer to the size of the buffer
++ * @param  size       point=
+er to the size of the buffer, contains the
++ *                    size of t=
+he addresses on return
+  *
+  * @return LSTATUS NO_ERROR on success, a Windo=
+ws error code otherwise
+  */
+ static LSTATUS
+ GetItfDnsServersV6(HKEY itf_k=
+ey, PSTR addrs, PDWORD size)
  {
--    inet_address_t addr_v6 =3D { 0 =
-};
-+    inet_address_t addr_v6;
-     char buf[INET6_ADDRSTRLEN];
++    addrs[0] =3D '\0';
+     addrs[*size - =
+1] =3D '\0';
  
-+    CLE=
-AR(addr_v6);
-+
-     if (!addr)
+     LSTATUS err;
+@@ -2231,12 +2252,11 @@
+             pos +=
+=3D addr_len;
+             s -=3D (DWORD)addr_len;
+         }
+-        s =
+=3D (DWORD)strlen(addrs) + 1;
+     }
+ 
+     if (strchr(addrs, ':'))
      {
-         return -EINVAL;
-@@ -1119,11 =
-+1131,14 @@
- net_addr_ptp_v4_add(const openvpn_net_ctx_t *ctx, const char *=
-iface, const in_addr_t *local,
-                     const in_addr_t *remote=
-)
- {
--    inet_address_t local_v4 =3D { 0 };
--    inet_address_t remote_v4 =
-=3D { 0 };
-+    inet_address_t local_v4;
-+    inet_address_t remote_v4;
-   =
-  char buf1[INET_ADDRSTRLEN];
-     char buf2[INET_ADDRSTRLEN];
+=
+-        *size =3D s;
++        *size =3D TrimNameServers(addrs);
+         r=
+eturn NO_ERROR;
+     }
  
-+    CLEAR=
-(local_v4);
-+    CLEAR(remote_v4);
-+
-     if (!local)
-     {
-         retur=
-n -EINVAL;
-@@ -1147,9 +1162,10 @@
- net_addr_ptp_v4_del(const openvpn_net_ct=
-x_t *ctx, const char *iface, const in_addr_t *local,
-                     c=
-onst in_addr_t *remote)
- {
--    inet_address_t local_v4 =3D { 0 };
-+    ine=
-t_address_t local_v4;
-     char buf[INET6_ADDRSTRLEN];
+@@ -2563,6 +2583,11 @@
+                           =
+    __func__, itf_guid, err);
+                 goto next_itf;
+             =
+}
++            if (v4_addrs_size && v6_addrs_size)
++            {
++        =
+        /* Join the lists: replace the v4 terminating NUL with a delimiter =
+*/
++                data[i]=2Eaddresses[v4_addrs_size - 1] =3D ',';
++      =
+      }
+         }
  
-+    CLEAR(local_v=
-4);
- 
-     if (!local)
-     {
-@@ -1227,11 +1243,14 @@
- net_route_v6_add(con=
-st openvpn_net_ctx_t *ctx, const struct in6_addr *dst, int prefixlen,
-     =
-             const struct in6_addr *gw, const char *iface, uint32_t table, =
-int metric)
- {
--    inet_address_t dst_v6 =3D { 0 };
--    inet_address_t gw=
-_v6 =3D { 0 };
-+    inet_address_t dst_v6;
-+    inet_address_t gw_v6;
-     =
-char dst_str[INET6_ADDRSTRLEN];
-     char gw_str[INET6_ADDRSTRLEN];
- 
-+    =
-CLEAR(dst_v6);
-+    CLEAR(gw_v6);
-+
-     if (dst)
-     {
-         dst_v6=2E=
-ipv6 =3D *dst;
-@@ -1278,11 +1297,14 @@
- net_route_v4_del(const openvpn_net_=
-ctx_t *ctx, const in_addr_t *dst, int prefixlen, const in_addr_t *gw,
-     =
-             const char *iface, uint32_t table, int metric)
- {
--    inet_ad=
-dress_t dst_v4 =3D { 0 };
--    inet_address_t gw_v4 =3D { 0 };
-+    inet_ad=
-dress_t dst_v4;
-+    inet_address_t gw_v4;
-     char dst_str[INET_ADDRSTRLE=
-N];
-     char gw_str[INET_ADDRSTRLEN];
- 
-+    CLEAR(dst_v4);
-+    CLEAR(gw_=
-v4);
-+
-     if (dst)
-     {
-         dst_v4=2Eipv4 =3D htonl(*dst);
-@@ -130=
-4,11 +1326,14 @@
- net_route_v6_del(const openvpn_net_ctx_t *ctx, const stru=
-ct in6_addr *dst, int prefixlen,
-                  const struct in6_addr *g=
-w, const char *iface, uint32_t table, int metric)
- {
--    inet_address_t ds=
-t_v6 =3D { 0 };
--    inet_address_t gw_v6 =3D { 0 };
-+    inet_address_t ds=
-t_v6;
-+    inet_address_t gw_v6;
-     char dst_str[INET6_ADDRSTRLEN];
-     =
-char gw_str[INET6_ADDRSTRLEN];
- 
-+    CLEAR(dst_v6);
-+    CLEAR(gw_v6);
-+
- =
-    if (dst)
-     {
-         dst_v6=2Eipv6 =3D *dst;
+         if (v4_addrs_size || v6_addrs_size)
 
 -- 
-To view, visit ht=
-tps://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2163?usp=3Demail
-To unsubscribe, o=
-r for help writing mail filters, visit https://gerrit=2Eopenvpn=2Enet/setti=
-ngs?usp=3Demail
+To v=
+iew, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2162?usp=3Demail
+To u=
+nsubscribe, or for help writing mail filters, visit https://gerrit=2Eopenvp=
+n=2Enet/settings?usp=3Demail
 
 Gerrit-MessageType: newpatchset
-Gerrit-Project: openvpn
-Ge=
-rrit-Branch: master
-Gerrit-Change-Id: I5c52cc5c3aaad21d1c22f36f6451235302ea=
-6c4f
-Gerrit-Change-Number: 2163
-Gerrit-PatchSet: 3
-Gerrit-Owner: R=C4=83zva=
-n Cojocaru <razvanc@mailbox=2Eorg>
-Gerrit-Reviewer: Antonio Quartulli <anto=
-nio@mandelbit=2Ecom>
-Gerrit-Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2E=
-org>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Projec=
+t: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ic602b125d857f1beed4af86=
+61f522d339bc9e972
+Gerrit-Change-Number: 2162
+Gerrit-PatchSet: 4
+Gerrit-Owne=
+r: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
+Gerrit-Reviewer: Antonio Qu=
+artulli <antonio@mandelbit=2Ecom>
+Gerrit-Reviewer: Arne Schwabe <arne-openv=
+pn@rfc2549=2Eorg>
+Gerrit-CC: Heiko Hund <heiko@ist=2Eeigentlich=2Enet>
+Gerr=
+it-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Atten=
+tion: Antonio Quartulli <antonio@mandelbit=2Ecom>
+Gerrit-Attention: R=C4=83=
+zvan Cojocaru <razvanc@mailbox=2Eorg>
+Gerrit-Attention: Arne Schwabe <arne-=
+openvpn@rfc2549=2Eorg>
 
---FPjrvg2fGEE=
+--Z8Av2YRVIBQ=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>Gert Doering <str=
-ong>uploaded patch set #3</strong> to the change originally created by R=C4=
-=83zvan Cojocaru=2E</p><p><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openv=
-pn/+/2163?usp=3Demail">View Change</a></p><p>The following approvals got ou=
-tdated and were removed:
-Code-Review+2 by Antonio Quartulli</p><pre class=
-=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
-p;">sitnl: clear inet_address_t locals with CLEAR()<br><br>The inet_address=
-_t locals were initialized with &quot;=3D { 0 }&quot;, which only<br>initia=
-lizes the first union member, the 4 byte ipv4=2E GCC 15 and later<br>no lon=
-ger clear the rest of the union for this, so the IPv6 addresses<br>of these=
- locals keep up to 12 bytes of stack garbage when the caller<br>passes no a=
-ddress=2E<br><br>net_route_v6_del() then sends a garbage RTA_GATEWAY for ro=
-utes without<br>a gateway, and the kernel refuses to delete them=2E net_rou=
-te_v6_best_gw()<br>looks up a garbage destination when asked for the defaul=
-t route=2E<br><br>Clear the whole union with CLEAR() instead=2E The other i=
-net_address_t<br>locals are cleared the same way, so none relies on the par=
-tial<br>initialization=2E<br><br>Latent since c6542257 (&quot;introduce sit=
-nl: Simplified Interface To<br>NetLink&quot;)=2E<br><br>Change-Id: I5c52cc5=
-c3aaad21d1c22f36f6451235302ea6c4f<br>Signed-off-by: Razvan Cojocaru &lt;raz=
-vanc@mailbox=2Eorg&gt;<br>Acked-by: Antonio Quartulli &lt;antonio@mandelbit=
-=2Ecom&gt;<br>Gerrit URL: https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2163<b=
-r>Message-Id: &lt;20261110112059=2E30832-1-gert@greenie=2Emuc=2Ede&gt;<br>U=
-RL: https://www=2Email-archive=2Ecom/openvpn-devel@lists=2Esourceforge=2Ene=
-t/msg41061=2Ehtml<br>Signed-off-by: Gert Doering &lt;gert@greenie=2Emuc=2Ed=
-e&gt;<br>---<br>M src/openvpn/networking_sitnl=2Ec<br>1 file changed, 40 in=
-sertions(+), 15 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"fo=
-nt-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerr=
-it=2Eopenvpn=2Enet:29418/openvpn refs/changes/63/2163/3</pre><pre style=3D"=
-font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git =
-a/src/openvpn/networking_sitnl=2Ec b/src/openvpn/networking_sitnl=2Ec</span=
-><br><span>index 97ff7bd=2E=2Eeafb9f7 100644</span><br><span>--- a/src/open=
-vpn/networking_sitnl=2Ec</span><br><span>+++ b/src/openvpn/networking_sitnl=
-=2Ec</span><br><span>@@ -612,10 +612,12 @@</span><br><span> net_route_v6_be=
-st_gw(openvpn_net_ctx_t *ctx, const struct in6_addr *dst, struct in6_addr *=
-best_gw,</span><br><span>                      char *best_iface)</span><br>=
-<span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    inet_addr=
-ess_t dst_v6 =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    inet_address_t dst_v6;</span><br><span>     char buf[INET6_ADDRSTRL=
-EN];</span><br><span>     int ret;</span><br><span> </span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    CLEAR(dst_v6);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     if (dst)</span><br>=
-<span>     {</span><br><span>         dst_v6=2Eipv6 =3D *dst;</span><br><sp=
-an>@@ -640,10 +642,12 @@</span><br><span> net_route_v4_best_gw(openvpn_net_=
-ctx_t *ctx, const in_addr_t *dst, in_addr_t *best_gw,</span><br><span>     =
-                 char *best_iface)</span><br><span> {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    inet_address_t dst_v4 =3D { 0 };</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    inet_address_t dst_v4;=
-</span><br><span>     char buf[INET_ADDRSTRLEN];</span><br><span>     int r=
-et;</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    CLEAR(dst_v4);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span>     if (dst)</span><br><span>     {</span><br><span>    =
-     dst_v4=2Eipv4 =3D htonl(*dst);</span><br><span>@@ -1040,9 +1044,11 @@<=
-/span><br><span> int</span><br><span> net_addr_v4_add(const openvpn_net_ctx=
-_t *ctx, const char *iface, const in_addr_t *addr, int prefixlen)</span><br=
-><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    inet_add=
-ress_t addr_v4 =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    inet_address_t addr_v4;</span><br><span>     char buf[INET_ADDRST=
-RLEN];</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    CLEAR(addr_v4);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span>     if (!addr)</span><br><span>     {</span><br><spa=
-n>         return -EINVAL;</span><br><span>@@ -1060,9 +1066,11 @@</span><br=
-><span> net_addr_v6_add(const openvpn_net_ctx_t *ctx, const char *iface, co=
-nst struct in6_addr *addr,</span><br><span>                 int prefixlen)<=
-/span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- inet_address_t addr_v6 =3D { 0 };</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    inet_address_t addr_v6;</span><br><span>     char buf[IN=
-ET6_ADDRSTRLEN];</span><br><span> </span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    CLEAR(addr_v6);</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span>     if (!addr)</span><br><span>     {</spa=
-n><br><span>         return -EINVAL;</span><br><span>@@ -1079,9 +1087,11 @@=
-</span><br><span> int</span><br><span> net_addr_v4_del(const openvpn_net_ct=
-x_t *ctx, const char *iface, const in_addr_t *addr, int prefixlen)</span><b=
-r><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    inet_ad=
-dress_t addr_v4 =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    inet_address_t addr_v4;</span><br><span>     char buf[INET_ADDRS=
-TRLEN];</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    CLEAR(addr_v4);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span>     if (!addr)</span><br><span>     {</span><br><sp=
-an>         return -EINVAL;</span><br><span>@@ -1099,9 +1109,11 @@</span><b=
-r><span> net_addr_v6_del(const openvpn_net_ctx_t *ctx, const char *iface, c=
-onst struct in6_addr *addr,</span><br><span>                 int prefixlen)=
-</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  inet_address_t addr_v6 =3D { 0 };</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    inet_address_t addr_v6;</span><br><span>     char buf[I=
-NET6_ADDRSTRLEN];</span><br><span> </span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    CLEAR(addr_v6);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span>     if (!addr)</span><br><span>     {</sp=
-an><br><span>         return -EINVAL;</span><br><span>@@ -1119,11 +1131,14 =
-@@</span><br><span> net_addr_ptp_v4_add(const openvpn_net_ctx_t *ctx, const=
- char *iface, const in_addr_t *local,</span><br><span>                     =
-const in_addr_t *remote)</span><br><span> {</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    inet_address_t local_v4 =3D { 0 };</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    inet_address_t remote_v4 =3D { 0=
- };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    inet_address=
-_t local_v4;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ine=
-t_address_t remote_v4;</span><br><span>     char buf1[INET_ADDRSTRLEN];</sp=
-an><br><span>     char buf2[INET_ADDRSTRLEN];</span><br><span> </span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(local_v4);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(remote_v4);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     if (!l=
-ocal)</span><br><span>     {</span><br><span>         return -EINVAL;</span=
-><br><span>@@ -1147,9 +1162,10 @@</span><br><span> net_addr_ptp_v4_del(cons=
-t openvpn_net_ctx_t *ctx, const char *iface, const in_addr_t *local,</span>=
-<br><span>                     const in_addr_t *remote)</span><br><span> {<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    inet_address_t loc=
-al_v4 =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- inet_address_t local_v4;</span><br><span>     char buf[INET6_ADDRSTRLEN];<=
-/span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  CLEAR(local_v4);</span><br><span> </span><br><span>     if (!local)</span=
-><br><span>     {</span><br><span>@@ -1227,11 +1243,14 @@</span><br><span> =
-net_route_v6_add(const openvpn_net_ctx_t *ctx, const struct in6_addr *dst, =
-int prefixlen,</span><br><span>                  const struct in6_addr *gw,=
- const char *iface, uint32_t table, int metric)</span><br><span> {</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    inet_address_t dst_v6 =3D =
-{ 0 };</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    inet_addres=
-s_t gw_v6 =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    inet_address_t dst_v6;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    inet_address_t gw_v6;</span><br><span>     char dst_str[INET6_A=
-DDRSTRLEN];</span><br><span>     char gw_str[INET6_ADDRSTRLEN];</span><br><=
-span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(dst=
-_v6);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(gw_v=
-6);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
->     if (dst)</span><br><span>     {</span><br><span>         dst_v6=2Eipv=
-6 =3D *dst;</span><br><span>@@ -1278,11 +1297,14 @@</span><br><span> net_ro=
-ute_v4_del(const openvpn_net_ctx_t *ctx, const in_addr_t *dst, int prefixle=
-n, const in_addr_t *gw,</span><br><span>                  const char *iface=
-, uint32_t table, int metric)</span><br><span> {</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    inet_address_t dst_v4 =3D { 0 };</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    inet_address_t gw_v4 =3D { 0 =
-};</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    inet_address_=
-t dst_v4;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    inet_a=
-ddress_t gw_v4;</span><br><span>     char dst_str[INET_ADDRSTRLEN];</span><=
-br><span>     char gw_str[INET_ADDRSTRLEN];</span><br><span> </span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(dst_v4);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(gw_v4);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     if (dst)</span=
-><br><span>     {</span><br><span>         dst_v4=2Eipv4 =3D htonl(*dst);</=
-span><br><span>@@ -1304,11 +1326,14 @@</span><br><span> net_route_v6_del(co=
-nst openvpn_net_ctx_t *ctx, const struct in6_addr *dst, int prefixlen,</spa=
-n><br><span>                  const struct in6_addr *gw, const char *iface,=
- uint32_t table, int metric)</span><br><span> {</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    inet_address_t dst_v6 =3D { 0 };</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    inet_address_t gw_v6 =3D { 0 }=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    inet_address_t=
- dst_v6;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    inet_ad=
-dress_t gw_v6;</span><br><span>     char dst_str[INET6_ADDRSTRLEN];</span><=
-br><span>     char gw_str[INET6_ADDRSTRLEN];</span><br><span> </span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(dst_v6);</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(gw_v6);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     if (dst)</spa=
-n><br><span>     {</span><br><span>         dst_v6=2Eipv6 =3D *dst;</span><=
-br></pre><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/open=
-vpn/+/2163?usp=3Demail">change 2163</a>=2E To unsubscribe, or for help writ=
-ing mail filters, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settings?=
-usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2E=
-org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sch=
-ema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https://gerrit=2Eopenv=
-pn=2Enet/c/openvpn/+/2163?usp=3Demail"/><meta itemprop=3D"name" content=3D"=
-View Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: Antonio Quartulli, Arne Schwabe, R=C4=83zvan Cojocaru=
+=2E </p>
+<p>R=C4=83zvan Cojocaru <strong>uploaded patch set #4</strong> to =
+this change=2E</p><p><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/=
+2162?usp=3Demail">View Change</a></p><p>The following approvals got outdate=
+d and were removed:
+Code-Review+2 by Antonio Quartulli</p><p>The change is =
+no longer submittable: Code-Review and checks~ChecksSubmitRule are unsatisf=
+ied now=2E</p><pre class=3D"blocks" style=3D"font-family: monospace,monospa=
+ce; white-space: pre-wrap;">openvpnserv: keep IPv6 name servers in NRPT exc=
+lude rules<br><br>GetNrptExcludeData() stored the IPv6 name servers after t=
+he IPv4 list,<br>but the IPv4 size includes the terminating NUL=2E With bot=
+h present, the<br>string ended at the IPv4 list and the IPv6 servers never =
+made it into<br>GenericDNSServers=2E Join the lists by replacing that NUL w=
+ith a<br>delimiter=2E<br><br>Both readers now start from an empty string: R=
+egGetValueA() leaves the<br>buffer untouched when the value is missing, and=
+ a slot is reused after<br>an interface is skipped, so an interface without=
+ name servers could<br>inherit those of the skipped one=2E They also return=
+ the length of the<br>list without trailing delimiters, instead of the regi=
+stry value size,<br>which can include NUL padding=2E<br><br>Broken since 0f=
+3b7d17 (&quot;win: implement --dns option support with<br>NRPT&quot;)=2E<br=
+><br>Change-Id: Ic602b125d857f1beed4af8661f522d339bc9e972<br>Signed-off-by:=
+ Razvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt;<br>---<br>M src/openvpnserv/=
+interactive=2Ec<br>1 file changed, 29 insertions(+), 4 deletions(-)<br><br>=
+</pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; whit=
+e-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn ref=
+s/changes/62/2162/4</pre><pre style=3D"font-family: monospace,monospace; wh=
+ite-space: pre-wrap;"><span>diff --git a/src/openvpnserv/interactive=2Ec b/=
+src/openvpnserv/interactive=2Ec</span><br><span>index 81205d6=2E=2E1b76003 =
+100644</span><br><span>--- a/src/openvpnserv/interactive=2Ec</span><br><spa=
+n>+++ b/src/openvpnserv/interactive=2Ec</span><br><span>@@ -2128,6 +2128,24=
+ @@</span><br><span> }</span><br><span> </span><br><span> /**</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+ * Remove trailing delimiters fro=
+m a name server list</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param  addrs=
+      NUL-terminated list of addresses</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ * @return the size of the list in bytes, including the terminating NUL</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+static DWORD</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+TrimNameServers(PSTR addrs)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    size_t len =3D strlen(addrs);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    while (len &amp;&amp; (addrs[len - 1=
+] =3D=3D &#39;,&#39; || addrs[len - 1] =3D=3D &#39; &#39;))</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        addrs[--len] =3D &#39;\0&#39;;</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    return (DWORD)len + 1;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++/**</span><br><span>  * Get DNS server IPv4 addresses of an interface</spa=
+n><br><span>  *</span><br><span>  * @param  itf_key    registry key of the =
+IPv4 interface data</span><br><span>@@ -2140,6 +2158,7 @@</span><br><span> =
+static LSTATUS</span><br><span> GetItfDnsServersV4(HKEY itf_key, PSTR addrs=
+, PDWORD size)</span><br><span> {</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    addrs[0] =3D &#39;\0&#39;;</span><br><span>     addrs[*si=
+ze - 1] =3D &#39;\0&#39;;</span><br><span> </span><br><span>     LSTATUS er=
+r;</span><br><span>@@ -2165,7 +2184,7 @@</span><br><span> </span><br><span>=
+     if (strchr(addrs, &#39;=2E&#39;))</span><br><span>     {</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        *size =3D s;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        *size =3D TrimNameServers(=
+addrs);</span><br><span>         return NO_ERROR;</span><br><span>     }</s=
+pan><br><span> </span><br><span>@@ -2178,13 +2197,15 @@</span><br><span>  *=
+</span><br><span>  * @param  itf_key    registry key of the IPv6 interface =
+data</span><br><span>  * @param  addrs      pointer to the buffer addresses=
+ are returned in</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @p=
+aram  size       pointer to the size of the buffer</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+ * @param  size       pointer to the size of=
+ the buffer, contains the</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+ *                    size of the addresses on return</span><br><span=
+>  *</span><br><span>  * @return LSTATUS NO_ERROR on success, a Windows err=
+or code otherwise</span><br><span>  */</span><br><span> static LSTATUS</spa=
+n><br><span> GetItfDnsServersV6(HKEY itf_key, PSTR addrs, PDWORD size)</spa=
+n><br><span> {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    a=
+ddrs[0] =3D &#39;\0&#39;;</span><br><span>     addrs[*size - 1] =3D &#39;\0=
+&#39;;</span><br><span> </span><br><span>     LSTATUS err;</span><br><span>=
+@@ -2231,12 +2252,11 @@</span><br><span>             pos +=3D addr_len;</sp=
+an><br><span>             s -=3D (DWORD)addr_len;</span><br><span>         =
+}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        s =3D (DWORD=
+)strlen(addrs) + 1;</span><br><span>     }</span><br><span> </span><br><spa=
+n>     if (strchr(addrs, &#39;:&#39;))</span><br><span>     {</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        *size =3D s;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        *size =3D TrimNameServers(=
+addrs);</span><br><span>         return NO_ERROR;</span><br><span>     }</s=
+pan><br><span> </span><br><span>@@ -2563,6 +2583,11 @@</span><br><span>    =
+                           __func__, itf_guid, err);</span><br><span>      =
+           goto next_itf;</span><br><span>             }</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            if (v4_addrs_size &amp;&am=
+p; v6_addrs_size)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+          {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+        /* Join the lists: replace the v4 terminating NUL with a delimiter =
+*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                d=
+ata[i]=2Eaddresses[v4_addrs_size - 1] =3D &#39;,&#39;;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span>         }=
+</span><br><span> </span><br><span>         if (v4_addrs_size || v6_addrs_s=
+ize)</span><br></pre><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=
+=2Enet/c/openvpn/+/2162?usp=3Demail">change 2162</a>=2E To unsubscribe, or =
+for help writing mail filters, visit <a href=3D"https://gerrit=2Eopenvpn=2E=
+net/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"htt=
+p://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
+=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https://=
+gerrit=2Eopenvpn=2Enet/c/openvpn/+/2162?usp=3Demail"/><meta itemprop=3D"nam=
+e" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType=
-: newpatchset </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn <=
-/div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=
-=3D"display:none"> Gerrit-Change-Id: I5c52cc5c3aaad21d1c22f36f6451235302ea6=
-c4f </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 2163 </div>
-<=
-div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display=
-:none"> Gerrit-Owner: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt; </=
-div>
-<div style=3D"display:none"> Gerrit-Reviewer: Antonio Quartulli &lt;an=
-tonio@mandelbit=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Review=
-er: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"di=
-splay:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=
+<div style=3D"display:none"> Gerr=
+it-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Proj=
+ect: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </di=
+v>
+<div style=3D"display:none"> Gerrit-Change-Id: Ic602b125d857f1beed4af866=
+1f522d339bc9e972 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: =
+2162 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div sty=
+le=3D"display:none"> Gerrit-Owner: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=
+=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: Antonio Qua=
+rtulli &lt;antonio@mandelbit=2Ecom&gt; </div>
+<div style=3D"display:none"> =
+Gerrit-Reviewer: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<di=
+v style=3D"display:none"> Gerrit-CC: Heiko Hund &lt;heiko@ist=2Eeigentlich=
 =2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt=
+;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"display:n=
+one"> Gerrit-Attention: Antonio Quartulli &lt;antonio@mandelbit=2Ecom&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Attention: R=C4=83zvan Cojocaru &=
+lt;razvanc@mailbox=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Att=
+ention: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
 
-</body></html>
---FPjrvg2fGEE=--
+</body></ht=
+ml>
+--Z8Av2YRVIBQ=--
 
 
---===============6809414915455153827==
+--===============8315626334055373015==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============6809414915455153827==
+--===============8315626334055373015==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -689,5 +552,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============6809414915455153827==--
+--===============8315626334055373015==--
 
