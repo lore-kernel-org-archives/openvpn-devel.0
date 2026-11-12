@@ -1,42 +1,42 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 278A5606A31C
-	for <openvpn-devel@archiver.kernel.org>; Thu, 12 Nov 2026 06:32:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7048C606A31C
+	for <openvpn-devel@archiver.kernel.org>; Thu, 12 Nov 2026 06:39:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=EA7U5TW5;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=Dgz2iD15;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=Uh8rHRMM
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=fK7MUNqo;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=S8DENX9x;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=BR1h2mKk
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
-	List-Owner; bh=6d7TWYEhOQkgt5Eu0hNZhrb5lMFosG1+JZ9I52c1R34=; b=EA7U5TW5r8YWcK
-	BIsZCNzkxI2xtX1SXEr/v4RsomWWMMNul56Wf0jJ7rPmlqKz8hYTYBaKmdI9EwFi+qDH5yHVQNzi9
-	X+vB5i0fZJgR2pZ1d5nUoSn8tTE7RuhEVwf1eWvyoot4WlhJceQN4+c442W2SSu5udyugQY8vnPcS
-	QKo=;
+	List-Owner; bh=19QsItV7NTpX8P4imby17+s4+iuDIzTXHPEVLbvuW5U=; b=fK7MUNqo5Wsg/d
+	07Rm1bJw15e2fxSqpaSt9o7UhnzeLpFbB5GyKxEldDudIkBE3CaPZPvDg9vE1KUerOnT/34NlgK6Y
+	MmiRPFzm1dn1OMyAbHFLUcPhwawgjiqnxl2/qQJobEZHGJsefSi0r8iiY6lrJWlAcovwv9+RrkqO2
+	mDE=;
 Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
 	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xROMV-0000000059l-0kNW;
-	Thu, 12 Nov 2026 06:32:43 +0000
+	id 1xROSy-000000005Ls-0986;
+	Thu, 12 Nov 2026 06:39:24 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
  (envelope-from <gert@blue4.greenie.muc.de>)
- id 1xROMT-0000000059e-1k5P for openvpn-devel@lists.sourceforge.net;
- Thu, 12 Nov 2026 06:32:41 +0000
+ id 1xROSx-000000005Lm-0tDj for openvpn-devel@lists.sourceforge.net;
+ Thu, 12 Nov 2026 06:39:23 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
  In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=DgZv6POLR1N+3EKeQuzTfc0/r1dc340A5+2kvCON1I4=; b=Dgz2iD1562rRac7lC357YbGegG
- Mc966i7zQLQ8PxNGH0nWxQjBencGPwnjV8WgQ5qGpBGgbjxK4xb4x6HgUImjF6F2HCFbsaFd2Uoqn
- zt5lsDUGdoCkJv6Xkj/aay/mId159SRw25eMEmgjdM4vroZNrhi1qbrDz3xJsZG0uBHs=;
+ bh=0i6V3quesO044i4goZ/k05ZtjthBUVyo0DPYlgYcRa4=; b=S8DENX9xki/LoW6ZoWSMOjieB8
+ ZTu1Rxlz4Z2M4wLrpWzp8BTn9s73m+pxjJhQ42cfoV7PXinz6tpk9uCV5xtsokzMPOFl8LKLcUNK5
+ FXSF2sckuQ8IMZoP/hyDojQUPtGQRMdFt+2r5o1sM0Gq5nEmu1dzMb3QcjYgN1mqNQhw=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -44,33 +44,33 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=DgZv6POLR1N+3EKeQuzTfc0/r1dc340A5+2kvCON1I4=; b=Uh8rHRMMeqmJsf2jtwKhrjsRzJ
- j/ZIbGIHmBD4rCVGcI9TX7E0khTyx/VYA/QT3Ns7ylZPZF7c06NNKjPADAu3o5EjUxhQZOaO9ys/C
- 6+6zeYDzDvMWyDHfPRq5+X7ImkUIshCcWw3fqO06MRWjInKEpazkF4tq3gIJaBMe5IXI=;
+ bh=0i6V3quesO044i4goZ/k05ZtjthBUVyo0DPYlgYcRa4=; b=BR1h2mKk1L8N+hxsXx3VM2bD32
+ VQbC8V5ukn+Utc4cYRjdZ4O7aoKDhGsOIAcfkeVmdZ82i2wKb0Y4WzRJqA7Cs1jwRlnLuOREydrBh
+ nswz1bmWEiBJx89Hlg13E7XeXj+pbI4XhkOAm/B46tX9K/qUGjug8OHnffwuW4Y1MVBA=;
 Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
- id 1xROMR-000000005Z7-3aw3 for openvpn-devel@lists.sourceforge.net;
- Thu, 12 Nov 2026 06:32:41 +0000
+ id 1xROSu-0000000021g-0dj3 for openvpn-devel@lists.sourceforge.net;
+ Thu, 12 Nov 2026 06:39:23 +0000
 Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 6AC6WXKb024015
- for <openvpn-devel@lists.sourceforge.net>; Thu, 12 Nov 2026 07:32:33 +0100
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 6AC6dDNO024603
+ for <openvpn-devel@lists.sourceforge.net>; Thu, 12 Nov 2026 07:39:13 +0100
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 6AC6WWFq024014
- for openvpn-devel@lists.sourceforge.net; Thu, 12 Nov 2026 07:32:32 +0100
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 6AC6dDNJ024602
+ for openvpn-devel@lists.sourceforge.net; Thu, 12 Nov 2026 07:39:13 +0100
 From: Gert Doering <gert@greenie.muc.de>
 To: openvpn-devel@lists.sourceforge.net
-Date: Thu, 12 Nov 2026 07:32:26 +0100
-Message-ID: <20261112063232.23999-1-gert@greenie.muc.de>
+Date: Thu, 12 Nov 2026 07:39:07 +0100
+Message-ID: <20261112063912.24551-1-gert@greenie.muc.de>
 X-Mailer: git-send-email 2.55.0
-In-Reply-To: <gerrit.1794301782000.I7ffae4da3b29521844a31d234fe6a9dd08954cf4@gerrit.openvpn.net>
-References: <gerrit.1794301782000.I7ffae4da3b29521844a31d234fe6a9dd08954cf4@gerrit.openvpn.net>
+In-Reply-To: <gerrit.1794300996000.Idf378bb5af0b2b4e8d746e252159b756e96c37fb@gerrit.openvpn.net>
+References: <gerrit.1794300996000.Idf378bb5af0b2b4e8d746e252159b756e96c37fb@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 X-Spam-Score: 1.3 (+)
-X-Headers-End: 1xROMR-000000005Z7-3aw3
-Subject: [Openvpn-devel] [PATCH v2] openvpnserv: only remove search domains
- that were added
+X-Headers-End: 1xROSu-0000000021g-0dj3
+Subject: [Openvpn-devel] [PATCH v1] openvpnserv: always free the domains in
+ UndoDnsSearchDomains()
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -91,26 +91,24 @@ X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 
 From: Razvan Cojocaru <razvanc@mailbox.org>
 
-When AddDnsSearchDomains() failed, SetDnsSearchDomains() still called
-RemoveDnsSearchDomains() with the new domains, which removes matching
-domains already in the search list, e.g. ones configured before the
-VPN connected. Record the undo data first, as done for NRPT rules, and
-drop it if adding the domains fails.
+The domains string was only freed when the search list key could be
+opened. Free it unconditionally, as the caller frees the undo data
+right after.
 
 Broken since ae90cbad ("dns: support multiple domains without DHCP").
 
-Change-Id: I7ffae4da3b29521844a31d234fe6a9dd08954cf4
+Change-Id: Idf378bb5af0b2b4e8d746e252159b756e96c37fb
 Signed-off-by: Razvan Cojocaru <razvanc@mailbox.org>
 Acked-by: Antonio Quartulli <antonio@mandelbit.com>
 Acked-by: Heiko Hund <heiko@ist.eigentlich.net>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2161
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2160
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2161
-This mail reflects revision 2 of this Change.
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2160
+This mail reflects revision 1 of this Change.
 
 Acked-by according to Gerrit (reflected above):
 Antonio Quartulli <antonio@mandelbit.com>
@@ -118,33 +116,23 @@ Heiko Hund <heiko@ist.eigentlich.net>
 
         
 diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index 81205d6..5d2abeb 100644
+index 81205d6..710a797 100644
 --- a/src/openvpnserv/interactive.c
 +++ b/src/openvpnserv/interactive.c
-@@ -1823,13 +1823,19 @@
-         strncpy_s(undo_data->itf_name, sizeof(undo_data->itf_name), itf_name, _TRUNCATE);
-         undo_data->domains = wide_domains;
- 
--        if (AddDnsSearchDomains(list_key, have_list, wide_domains) == FALSE
--            || AddListItem(&(*lists)[undo_domains], undo_data) != NO_ERROR)
-+        /* Add undo information first in case there's no heap left */
-+        if (AddListItem(&(*lists)[undo_domains], undo_data) != NO_ERROR)
-         {
--            RemoveDnsSearchDomains(list_key, wide_domains);
-             free(wide_domains);
-             free(undo_data);
--            undo_data = NULL;
-+            goto out;
-+        }
-+
-+        if (!AddDnsSearchDomains(list_key, have_list, wide_domains))
-+        {
-+            RemoveListItem(&(*lists)[undo_domains], CmpAny, NULL);
-+            free(wide_domains);
-+            free(undo_data);
-             goto out;
-         }
+@@ -1754,10 +1754,10 @@
+         RemoveDnsSearchDomains(dns_searchlist_key, undo_data->domains);
+         RegCloseKey(dns_searchlist_key);
+         ApplyDnsSettings(gpol);
+-
+-        free(undo_data->domains);
+-        undo_data->domains = NULL;
      }
++
++    free(undo_data->domains);
++    undo_data->domains = NULL;
+ }
+ 
+ /**
 
 
 _______________________________________________
