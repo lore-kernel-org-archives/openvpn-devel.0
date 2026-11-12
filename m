@@ -1,13 +1,13 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7ACD5606A323
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79174606A31C
 	for <openvpn-devel@archiver.kernel.org>; Thu, 12 Nov 2026 17:11:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=G6ytYWN4;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=JOWMVi9m;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=TmLgggOS;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=VvKsD7C2
+	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=FW5MI5PE;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=CB3e6V39;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=dRa5Wyoo;
+	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=aWmTVXNL
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
@@ -15,18 +15,18 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
 	List-Unsubscribe-Post:List-Owner;
-	bh=V/6xtHwwnTqC5EfyJY2Hgrv/zMbRBqlOq41eAqHctAY=; b=G6ytYWN4QyiY8Xt7wFQkBRejap
-	/JHuKx4pzMWdSBpVRz16Q0JYSXtfhAB9yejKmIdRYNW/E5LgiOWM6ChrpsVQlg5qzTYG1iAmVDUoq
-	YfTDccoF+ktIMYfHyfd0nrzmlCHYYmN2kyyouO+TUu+0ZBNURwzH05WUClmRhDPbL2yA=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	bh=iMDUnppb0h1iNBwG1okj+euH7Hrfdxcqp1CHmECGLp0=; b=FW5MI5PEunQh+BQxjIF5MUu7oE
+	2uJQV2AuubfXRGY1XjfRW8cx9hKEzwUHvQHourxAgQsCaT/qxphjxqhNYltQup32WPuhkhon42p/I
+	MlOUm0PCZ6zY2x+KOVo4LP5doaUE8E9jVLMb9zM2oORSKLdun59wZ32rKAtNz44DscaA=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xRYL2-000000003Ch-24CL;
-	Thu, 12 Nov 2026 17:11:52 +0000
+	id 1xRYL3-000000002S9-1uJi;
+	Thu, 12 Nov 2026 17:11:53 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xRYL1-000000003Ca-1V6E
+ (envelope-from <gerrit@openvpn.net>) id 1xRYL1-000000002Ru-2k44
  for openvpn-devel@lists.sourceforge.net;
  Thu, 12 Nov 2026 17:11:51 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
@@ -35,9 +35,9 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=/2HLRZZIW9Rw8mQXtgF1tgB45APjVKb7FedWnAu2SXQ=; b=JOWMVi9m6pOUMxA0jjjVNnRSWn
- A8caWUnA3YranNwW1EN0xTph8ySrLxy3NbMVkLjeExnq/hAJ5n6ULOf7FjOAuaQ7MW5j0y29uQ3OJ
- rdE6q8ENuSUwerjVmCKjXjEATyQAnGKqtu1WkoQtQcobRXLadOnbqG2wqgOoArNiTe/E=;
+ bh=iCHmThVgWMBDYRlR5f1ejKToGCIRG1xFMuLOc7BMOfU=; b=CB3e6V39EAQGv0lOfiD58OjkJ/
+ holx0O8tR8CSYA2yZPjjVZzGakJfzTXWIQHx2UBfECIVh055YRKvwiwN2UDoTEbS5ZE3Pz7qIQc2t
+ 7WiU3Z5kNA4pE6BeUrSne+ZQGxi3Leb9HqUkSuouZtzZ5UMnz38qv7xzhP3Yo/DuE9/4=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
@@ -45,69 +45,70 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=/2HLRZZIW9Rw8mQXtgF1tgB45APjVKb7FedWnAu2SXQ=; b=TmLgggOSJD9dS/xbD/L+lrbVsa
- YRI6AxrkBgGMDgRVlSm5h5s6IJ6+2OG+9yxugFp8ruZ20bqcwlPo7kVILBoYVA2osOeZzUsEyoykO
- nTZmoloWG+otTQfzm2f8nSflDmsMZf1NIKazzbC5gqK5ki+YexxHZh4QwchbcBGBGwJw=;
-Received: from mail-wm1-f42.google.com ([209.85.128.42])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ bh=iCHmThVgWMBDYRlR5f1ejKToGCIRG1xFMuLOc7BMOfU=; b=dRa5Wyoo6i49znurLMbeod6B6S
+ 3+WMNMkSIURMG9/czxcf3sDQXaMnwwsWswnBPQPhYYnpjz/XtDqv6oPdHWCm/74YRY1PQhUe7BUAz
+ SRQSM28xYaF9hfM8SfgvlR45euqdnX6RGEUY5CUssqNnwWneQgZsUOyF5FakHeq9S1uY=;
+Received: from mail-wr1-f42.google.com ([209.85.221.42])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xRYKx-0000000075J-08Gd for openvpn-devel@lists.sourceforge.net;
+ id 1xRYKy-000000002wV-2Uu0 for openvpn-devel@lists.sourceforge.net;
  Thu, 12 Nov 2026 17:11:51 +0000
-Received: by mail-wm1-f42.google.com with SMTP id
- 5b1f17b1804b1-4a35a60499eso306285e9.0
+Received: by mail-wr1-f42.google.com with SMTP id
+ ffacd0b85a97d-498f5fa4f70so2866305f8f.0
  for <openvpn-devel@lists.sourceforge.net>;
- Thu, 12 Nov 2026 09:11:46 -0800 (PST)
+ Thu, 12 Nov 2026 09:11:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1794503500; x=1795108300; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1794503502; x=1795108302; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=/2HLRZZIW9Rw8mQXtgF1tgB45APjVKb7FedWnAu2SXQ=;
- b=VvKsD7C21daklDIk6mvRhv1Ub3IQCcCJrS36OFweSKX/OQJP7mK2Cmg6gTO6h0625u
- BkG3E8zs+2ZLpvXP26yumMp2MTKJlCepdxILVE+ZtItU+BmY0k14JPc2/TYG0bm3xsB0
- IaGvxpieKqbyEXL6r2F0mVNtPRkjY+5uBwFfB1T8XxFzgQS9CKsY4DS87AbG1IDiiL2H
- H5MqCko/0CeSCD4kux9U8Hj1dchGmRTHCG7HiR8JiStSMyu0M2TVbIw8pEpYMaNKptsK
- RkReC/6PpuVCtlBQzhcRfiRKCilDukTWUcffoGtKQBowlfEpYIlS18IfZRA5AgqHCwqh
- QvGA==
+ bh=iCHmThVgWMBDYRlR5f1ejKToGCIRG1xFMuLOc7BMOfU=;
+ b=aWmTVXNLZTNxJE8j4iLN+ZKRoQLrX+6CW6ohGhJ1J8wa0XfFCzUe9U+d8FjArC/FF5
+ uEcO8q6FfCRePGfTZX0lPeSLe4loYDNFgjlmFfHFue3YClP79qs2tXq/GwVFQe8qni92
+ za8E6ey0/+XC1RBDGllSpYbZtuWGHy13/NkmsqFNrLJK2nE2KGefT2mWFlGA8IMBP3Zn
+ nPE+XcQo/Jt+uGwAGx6o7Zm9disJnti7Sp8swRu9k6omRNI5vluWL977g6b1VkaZCaGL
+ dnhRCEtx94WGbZQKUT/J4Y994xeBixS6kgIHI1Z3WPnjxEkcolMtqcUv+PwXc2RAtKf5
+ QCGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1794503500; x=1795108300;
+ d=1e100.net; s=20260707; t=1794503502; x=1795108302;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=/2HLRZZIW9Rw8mQXtgF1tgB45APjVKb7FedWnAu2SXQ=;
- b=2dr0RImuaGA6w3bxKDze7PaFLZTPd6m4cfRIaBz08gKXAx2y3wNSCzgt9AJGwwMLLG
- 2i7efM1IvlHZPM3Aex3Siy/wGvJfdHFCePXm+QMkWSI4nen9op29QV3Ffn8jRT0KOsst
- O94fohMQrXd740GsWRBkhSjKzqvUF7FF41PZc5vE+m+oUtRMgeNS5yYCZ26fOj8+5N5W
- CObXf5uaubP+sa6HczHZ1pqUNXQSWQrlXWvflAzfBkCTgdx1c03VSPhMZveXqfdkeuln
- lsdbJenp597WU5oS0vrSJYeT8kMhBV0VSIrFx5YUSvdXbQOvI2lZpm0Yb26haIsmxsf6
- BsKw==
-X-Gm-Message-State: APuU4Z+5CkkoB2wbyaIC0EuuBNW6H21TJ9gj4Lqw4u+BPIGOMPsDsGca
- nAy7mj4huZgvF8izmw/JOIm+OE2eUEQyE6Xe95GR5QJEi0KzNTtASMEXLP+dRhueSOf0wWQOFUk
- C295LmBKMVqnkbdvBu1FcvhU+1ItjOWK2W9bNyYK5+X/wKYJzEE/UhtgLt6fBCunIcO6f
-X-Gm-Gg: AYBFou0l5tZQjSndMy5/1ynB047+Jj+sfFP/Mu3cTEjaNciVVbk//sQSBrSE5a8fj35
- GLbxMD7O3BMyfZm3xW8m94hJvrDnNadtVM3Tle6AoHqtU9CbUgRB+ML5bZGRS20h9tDdckIFGWD
- HaIqntqQ0ZbnqgjeCpEcv3dVZVd9zgarwYfZMELWVqzOS3NppTHMeFcm7jlmYeD1oTa7qHa71g6
- NOTP/N2XTAak7XBqCCa/FiLgLkoLnOivUb4DJSQEfAh+6HqX6dIX3Y3b2yzTuBKI40B6sN/Atwi
- 5gIGWmpGjlT0ZVBSxM7p2qU+qMNftc25hAqaRKJupIxL9+jeKHdAI6esCWMojyk4yfeYLPYcbbR
- 5X5J81ZhChPWIXBtFTd47evlXjenkLa4dK312nrCf8fO4RjWi1senaTNswcr3BEbS0MPdqSmC+Z
- eia8N9vKMBVc2XV4/B3s66WxHN/Hs3xQ1obANQVApALkxgFajt6GaKvzl/Vxf61/qcHR2WgN8hG
- sAcwFKlw74exghjeva/Hp0qeX9sbcf/RqecH8Ww+SYoJawZRf/ZVPEAYA8/rThMabtnjf3fyxbv
- 68CN3IPqnq0tBAE8lURPQy1e5Z8AQMMKNaPGtsKogXfvVTOSlCrvqVOm4aUzBf9AZryI44BcRKY
- IhZ/5hKaqJItEb0v1eaEzG2jqayg0cDItN6UPTQjZCLKMatA5bj+ZC//N+B5ZlbNQnQVBPlSYeU
- kE0POzFkExs66d3BE=
-X-Received: by 2002:a05:600c:8708:b0:4a4:f48e:78fa with SMTP id
- 5b1f17b1804b1-4ba09382e1cmr131762775e9.12.1794503500216; 
- Thu, 12 Nov 2026 09:11:40 -0800 (PST)
+ bh=iCHmThVgWMBDYRlR5f1ejKToGCIRG1xFMuLOc7BMOfU=;
+ b=raUVXrR/VduSUjvG2d5FQES2kdrMXfRJPAlsSns7qfDK1RQr/WoA+jLfAvn9LHkkgq
+ sHmMlnPlJC52jYA5TX45Va83NrJ0qASI5PBajkBZTEXHzXwFliaF5GGMvCUihp3rcgLq
+ WDr7arDVqbN7/8bDrZuIwPvjpPasYNthLG9ELdzYlbcf/W6/r79vd0SGACHEMzzTItdz
+ O7lF2v17eC9/OCXIb+HsXSNRZZKWcvgPV0DzkjyZcDsWoVwxPEWeGkeEQQRSKoIVtX1e
+ UbE3O7E6OHHnKwUGSCD78uoG0Xt7pi75lyrQohe/dzC8Q//IyBH77J1wGNGudzE1nJ6J
+ hzmw==
+X-Gm-Message-State: APuU4Z+SVp0ihFBKCK1vS+QJlzr6zUuzbLlTXcCCoqolzQzuDcM82/Ek
+ 572DQfUxsCN7xb2N5S7O9wqXKxMyfDXomA2E5hkXgEn9Mkl56e4BmmVIN3oOt+74rUDvIWvdVap
+ MWTt9gz3MOJU9p0Qa4pjeBBz0lkiQ3iCcXph5ZEH+7v3fWj8rJDdRgrUBZaE/kM+4EzfQfk9eDr
+ 0J5P4ljQ==
+X-Gm-Gg: AYBFou217YdxEdsjhWuluGFEQf/RxIo6HG53gmgFMTjPq9HRCkosXru6NJiCgovjQnL
+ arsCaWtzOLy2j1O7jtFkbIi49DUwnPEIo72kQ+v9arWBCVNwUYrPLHquUAZd8vIAOe+IvB4bSdd
+ xGjJFDKaBgVVDMpo7nbBUDlf0M7FmyX9NKCB2+GlXZBV6k1L/tQMvgOlIoKrpTak9lZSy6xQNHn
+ IN1mt0qu9t69H4/MFbUob/FC+Yib6Mj3r+dmna9x7bBLKNjlM/2BFmeM8Zc/NwVdggvrIRiPA0h
+ cC4DUNmTmoaZQ8rmE3j6lFVXPGgpXR6gq7jSyydtVdyg/mu1+27PspMbPJt4dXIZjpyF56HdA9V
+ chiSPmwNl9eE2yBX1X4U13TeaOw9s8+9btQRflAOjIu59P7uzVdBOmPeHguIjtuaKykMQj1g1ua
+ Bx4gQRFiFh4EwxLlFv0NjO0USTnffvSx9OgCK75k+idDNEpNfkGbPh70nPHa21ofh6J1Go2lJwA
+ G+qB//ew1I0fBEQ511dalmkcbcbjGHSk5ohOxrtLlWuFMtJjsscJ0ejcwpr0fdCwyvH4AAblR3q
+ KvDqQxKhOvyxYUnEJ5bFzZdwWU7qYjHrQ5//GQMtbPm4VgRn8WKqHVyaXISe2nEfmP4OhxPnrpB
+ HLnvqqPEiHSqnvM7Ux2GB1PkRy6P8HBwz2MJ9M4IlP7v3KC4j0OBRlRVgAGrM6Q8Yd6YNhPz4wS
+ pd5rBQbtSj3rTIhlrW15FdFPLR4dQkUHXAz1+L
+X-Received: by 2002:a05:6000:2008:b0:48d:f464:6989 with SMTP id
+ ffacd0b85a97d-499c6e9638amr11178409f8f.27.1794503501752; 
+ Thu, 12 Nov 2026 09:11:41 -0800 (PST)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-4ba08e354b0sm111854125e9.1.2026.11.12.09.11.39
+ ffacd0b85a97d-49c609c6451sm314014f8f.45.2026.11.12.09.11.41
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 12 Nov 2026 09:11:39 -0800 (PST)
+ Thu, 12 Nov 2026 09:11:41 -0800 (PST)
 X-Google-Original-From: "Frank Lichtenheld (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
 Date: Thu, 12 Nov 2026 17:11:31 +0000
@@ -115,23 +116,23 @@ To: =?UTF-8?Q?R=C4=83zvan_Cojocaru?= <razvanc@mailbox.org>,
  Arne Schwabe <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newpatchset
-X-Gerrit-PatchSet: 4
-X-Gerrit-Change-Id: Ie2d784272184261a62c848e6ad3b7a4570ae6dc7
-X-Gerrit-Change-Number: 2165
+X-Gerrit-PatchSet: 3
+X-Gerrit-Change-Id: I1c87faefd3adc2d95b5318437d097c3970a120d3
+X-Gerrit-Change-Number: 2168
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2165?usp=email>
-X-Gerrit-Commit: ed1fa99c7336195b72137b3b9d60d983f6a1eadb
-In-Reply-To: <gerrit.1794313546000.Ie2d784272184261a62c848e6ad3b7a4570ae6dc7@gerrit.openvpn.net>
-References: <gerrit.1794313546000.Ie2d784272184261a62c848e6ad3b7a4570ae6dc7@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzk0MzEzNTQ2MDAwLkllMmQ3ODQyNzIxODQyNjFhNjJjODQ4ZTZhZDNiN2E0NTcwYWU2ZGM3QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <351d338497331a29d7237fe0da30dd5e9c9585e8-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2168?usp=email>
+X-Gerrit-Commit: 84b990bfb0e837b90527d515c98c2c68a120df5b
+In-Reply-To: <gerrit.1794321442000.I1c87faefd3adc2d95b5318437d097c3970a120d3@gerrit.openvpn.net>
+References: <gerrit.1794321442000.I1c87faefd3adc2d95b5318437d097c3970a120d3@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzk0MzIxNDQyMDAwLkkxYzg3ZmFlZmQzYWRjMmQ5NWI1MzE4NDM3ZDA5N2MzOTcwYTEyMGQzQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <a16a1bb1b35bca3dad15fa330353f0c46a044e51-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.5
 X-Spam-Score: 0.8 (/)
-X-Headers-End: 1xRYKx-0000000075J-08Gd
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: buffer: Change
- return type of buf_forward_capacity_total to size_t
+X-Headers-End: 1xRYKy-000000002wV-2Uu0
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: console: Switch
+ response_len to size_t
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -147,7 +148,7 @@ Reply-To: frank@lichtenheld.com, arne-openvpn@rfc2549.org, razvanc@mailbox.org,
  openvpn-devel@lists.sourceforge.net
 Cc: "Frank Lichtenheld \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============1349334648262508866=="
+Content-Type: multipart/mixed; boundary="===============3788281454380487557=="
 X-Spam-Status: No, score=-12.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
 	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
@@ -156,12 +157,12 @@ X-Spam-Status: No, score=-12.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============1349334648262508866==
+--===============3788281454380487557==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="0OhanWaBGSY="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="KvTLsiMDr80="; charset=UTF-8
 
---0OhanWaBGSY=
+--KvTLsiMDr80=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
@@ -173,267 +174,628 @@ ello Arne Schwabe, R=C4=83zvan Cojocaru,
 I'd like you to reexamine a chan=
 ge=2E Please visit
 
-    https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2165?usp=
+    https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2168?usp=
 =3Demail
 
-to look at the new patch set (#4)=2E
+to look at the new patch set (#3)=2E
 
 The change is no longer sub=
 mittable: checks~ChecksSubmitRule is unsatisfied now=2E
 
 
-Change subject: b=
-uffer: Change return type of buf_forward_capacity_total to size_t
-=2E=2E=2E=
+Change subject: c=
+onsole: Switch response_len to size_t
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E
 
-buffer: Change return =
-type of buf_forward_capacity_total to size_t
+console: Switch response_len to size_t
 
-All callers already want a si=
-ze_t, so make the
-conversion implicit=2E
+We need s=
+ome casts either way since the system
+APIs are just too different=2E But ov=
+erall it feels
+cleaner when using size_t=2E
 
-Change-Id: Ie2d784272184261a62c84=
-8e6ad3b7a4570ae6dc7
-Signed-off-by: Frank Lichtenheld <frank@lichtenheld=2Ec=
-om>
+Change-Id: I1c87faefd3adc2d95b=
+5318437d097c3970a120d3
+Signed-off-by: Frank Lichtenheld <frank@lichtenheld=
+=2Ecom>
 ---
 M src/openvpn/buffer=2Ec
 M src/openvpn/buffer=2Eh
-M tests/unit_test=
-s/openvpn/test_dhcp=2Ec
-3 files changed, 3 insertions(+), 12 deletions(-)
+M src/openvpn=
+/console=2Ec
+M src/openvpn/console=2Eh
+M src/openvpn/console_builtin=2Ec
+M =
+src/openvpn/console_systemd=2Ec
+M tests/unit_tests/openvpn/test_user_pass=
+=2Ec
+7 files changed, 20 insertions(+), 47 deletions(-)
 
-=
 
-  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/65/2165=
-/4
+  git pull ssh://=
+gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/68/2168/3
 
-diff --git a/src/openvpn/buffer=2Ec b/src/openvpn/buffer=2Ec
-index 7f14=
-2c4f=2E=2Ee672b74 100644
+diff --git a/s=
+rc/openvpn/buffer=2Ec b/src/openvpn/buffer=2Ec
+index e672b74=2E=2Ec60936a 1=
+00644
 --- a/src/openvpn/buffer=2Ec
-+++ b/src/openvpn/buf=
-fer=2Ec
-@@ -275,7 +275,7 @@
-     if (buf_forward_capacity(buf) <=3D 1)
-    =
++++ b/src/openvpn/buffer=2Ec
+@@ -576,9 +=
+576,9 @@
+  * like buf_null_terminate, but operate on strings
+  */
+ void
+-st=
+ring_null_terminate(char *str, int len, int capacity)
++string_null_terminat=
+e(char *str, size_t len, size_t capacity)
  {
-         size_t len =3D strlen(str) + 1;
--        if (buf_size_valid(len=
-) && (int)len < buf_forward_capacity_total(buf))
-+        if (buf_size_vali=
-d(len) && len < buf_forward_capacity_total(buf))
-         {
-             me=
-mcpy(buf->data + buf->capacity - len, str, len);
-         }
-diff --git a/sr=
-c/openvpn/buffer=2Eh b/src/openvpn/buffer=2Eh
-index ede3066=2E=2Eae6dcb7 10=
-0644
+-    ASSERT(len >=3D 0 && len =
+<=3D capacity && capacity > 0);
++    ASSERT(len <=3D capacity && capacity >=
+ 0);
+     if (len < capacity)
+     {
+         *(str + len) =3D '\0';
+diff -=
+-git a/src/openvpn/buffer=2Eh b/src/openvpn/buffer=2Eh
+index ae6dcb7=2E=2E5=
+41f0bd 100644
 --- a/src/openvpn/buffer=2Eh
 +++ b/src/openvpn/buffer=2Eh
-@@ -1068,7 +=
-1068,7 @@
-  *
-  * @return Capacity minus offset, or 0 if \c buf is invalid=
-=2E
+@@ =
+-872,7 +872,7 @@
+  * @param capacity  Total size of the character buffer in=
+ bytes=2E
   */
--static inline int
-+static inline size_t
- buf_forward_capacity_tot=
-al(const struct buffer *buf)
+ #ifdef _WIN32
+-void string_null_terminate(char *str, int le=
+n, int capacity);
++void string_null_terminate(char *str, size_t len, size_t=
+ capacity);
+ #endif
+ /**@}*/
+ /* End of string utility functions */
+diff --=
+git a/src/openvpn/console=2Ec b/src/openvpn/console=2Ec
+index 78f445b=2E=2E=
+358b9ae 100644
+--- a/src/openvpn/console=2Ec
++++ b/src/openvpn/console=2Ec
+=
+@@ -53,7 +53,7 @@
+ 
+ 
+ void
+-query_user_add(char *prompt, char *resp, int r=
+esp_len, bool echo)
++query_user_add(char *prompt, char *resp, size_t resp_l=
+en, bool echo)
  {
-     if (buf_valid(buf))
-@@ -1078,7 +1078,7=
- @@
-         {
-             ret =3D 0;
+     int i;
+ 
+diff --git a/src/openvpn/console=2Eh b/src/=
+openvpn/console=2Eh
+index 89550ce=2E=2E94b1032 100644
+--- a/src/openvpn/con=
+sole=2Eh
++++ b/src/openvpn/console=2Eh
+@@ -32,10 +32,10 @@
+  */
+ struct _qu=
+ery_user
+ {
+-    char *prompt;     /**< Prompt to present to the user */
+- =
+   char *response;   /**< The user's response */
+-    int response_len; /**=
+< Length the of the user response */
+-    bool echo;        /**< True: The =
+user should see what is being typed, otherwise mask it */
++    char *prompt=
+;        /**< Prompt to present to the user */
++    char *response;      /*=
+*< The user's response */
++    size_t response_len; /**< Length the of the =
+user response */
++    bool echo;           /**< True: The user should see w=
+hat is being typed, otherwise mask it */
+ };
+ 
+ #define QUERY_USER_NUMSLOTS=
+ 10
+@@ -57,7 +57,7 @@
+  * @param echo       Should the user input be echoed=
+ to the user?  If False, input will be masked
+  *
+  */
+-void query_user_add=
+(char *prompt, char *resp, int resp_len, bool echo);
++void query_user_add(c=
+har *prompt, char *resp, size_t resp_len, bool echo);
+ 
+ 
+ /**
+@@ -115,7 +1=
+15,7 @@
+  *
+  */
+ static inline bool
+-query_user_SINGLE(char *prompt, char =
+*resp, int resp_len, bool echo)
++query_user_SINGLE(char *prompt, char *resp=
+, size_t resp_len, bool echo)
+ {
+     query_user_clear();
+     query_user_a=
+dd(prompt, resp, resp_len, echo);
+diff --git a/src/openvpn/console_builtin=
+=2Ec b/src/openvpn/console_builtin=2Ec
+index 0353ade=2E=2E8206d3d 100644
+--=
+- a/src/openvpn/console_builtin=2Ec
++++ b/src/openvpn/console_builtin=2Ec
+@=
+@ -41,11 +41,6 @@
+ #include <termios=2Eh>
+ #endif
+ 
+-#if defined(__GNUC__) =
+|| defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic =
+ignored "-Wsign-conversion"
+-#endif
+-
+ #ifdef _WIN32
+ 
+ #include "win32=2Eh=
+"
+@@ -62,11 +57,11 @@
+  *         exit event is signaled=2E
+  */
+ static bo=
+ol
+-get_console_input_win32(const char *prompt, const bool echo, char *inpu=
+t, const int capacity)
++get_console_input_win32(const char *prompt, const b=
+ool echo, char *input, const size_t capacity)
+ {
+     ASSERT(prompt);
+     =
+ASSERT(input);
+-    ASSERT(capacity > 0);
++    ASSERT(capacity > 0 && capac=
+ity < INT_MAX);
+ 
+     input[0] =3D '\0';
+ 
+@@ -110,16 +105,16 @@
+         =
+    return false;
          }
--        return ret;
-+   =
-     return (size_t)ret;
+ 
+-        status =3D ReadConsoleW(in, winput,=
+ capacity, &len, NULL);
+-        WideCharToMultiByte(CP_UTF8, 0, winput, le=
+n, input, capacity, NULL, NULL);
++        status =3D ReadConsoleW(in, winpu=
+t, (DWORD)capacity, &len, NULL);
++        WideCharToMultiByte(CP_UTF8, 0, w=
+input, (int)len, input, (int)capacity, NULL, NULL);
+         free(winput);
+=
      }
      else
      {
-diff --git a/tests/unit_te=
-sts/openvpn/test_dhcp=2Ec b/tests/unit_tests/openvpn/test_dhcp=2Ec
-index e3=
-31d3d=2E=2E3a84e1e 100644
---- a/tests/unit_tests/openvpn/test_dhcp=2Ec
-+++ =
-b/tests/unit_tests/openvpn/test_dhcp=2Ec
-@@ -50,11 +50,6 @@
-     return "du=
-mmy";
+-        status =3D ReadFile(in, input, capacity, &=
+len, NULL);
++        status =3D ReadFile(in, input, (DWORD)capacity, &len, =
+NULL);
+     }
+ 
+-    string_null_terminate(input, (int)len, capacity);
++   =
+ string_null_terminate(input, len, capacity);
+     chomp(input);
+ 
+     if =
+(!echo)
+@@ -191,11 +186,11 @@
+  *  @returns Returns True if user input was =
+gathered
+  */
+ static bool
+-get_console_input(const char *prompt, const boo=
+l echo, char *input, const int capacity)
++get_console_input(const char *pro=
+mpt, const bool echo, char *input, const size_t capacity)
+ {
+     ASSERT(pr=
+ompt);
+     ASSERT(input);
+-    ASSERT(capacity > 0);
++    ASSERT(capacity =
+> 0 && capacity <=3D INT_MAX);
+     input[0] =3D '\0';
+ 
+ #ifdef _WIN32
+@@ =
+-238,7 +233,7 @@
+         restore_tty =3D (tcsetattr(fileno(fp), TCSAFLUSH,=
+ &tty_tmp) =3D=3D 0);
+     }
+ 
+-    if (fgets(input, capacity, fp) !=3D NUL=
+L)
++    if (fgets(input, (int)capacity, fp) !=3D NULL)
+     {
+         chom=
+p(input);
+         ret =3D true;
+@@ -294,7 +289,3 @@
+ 
+     return ret;
  }
+=
+-
+-#if defined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
+=
+-#endif
+diff --git a/src/openvpn/console_systemd=2Ec b/src/openvpn/console_=
+systemd=2Ec
+index 8fc7f72=2E=2Ef0ca7fa 100644
+--- a/src/openvpn/console_sys=
+temd=2Ec
++++ b/src/openvpn/console_systemd=2Ec
+@@ -53,13 +53,8 @@
+     retu=
+rn (sd_booted() > 0) && (stat(SYSTEMD_ASK_PASSWORD_PATH, &c) =3D=3D 0);
+ }
+=
  
 -#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagno=
-stic push
+-#pragma GCC diagnostic push=
+
 -#pragma GCC diagnostic ignored "-Wsign-conversion"
 -#endif
 -
- st=
-atic void
- test_write_dhcp_search_str(void **state)
- {
-@@ -146,10 +141,6 @@=
+ static bool=
 
-     gc_free(&gc);
+-get_console_input_systemd(const char *prompt, const bool echo, char *inpu=
+t, const int capacity)
++get_console_input_systemd(const char *prompt, const=
+ bool echo, char *input, const size_t capacity)
+ {
+     int std_out;
+     b=
+ool ret =3D false;
+@@ -91,10 +86,6 @@
+     return ret;
  }
  
--#if defined(__GNUC__) || defined(__clang__)
--#pra=
-gma GCC diagnostic pop
+-#if defined(__=
+GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic pop
 -#endif
 -
- int
- main(void)
+ /**
+  =
+*  Systemd aware implementation of query_user_exec()=2E  If systemd is not =
+running
+  *  it will fall back to use query_user_exec_builtin() instead=2E
+=
+diff --git a/tests/unit_tests/openvpn/test_user_pass=2Ec b/tests/unit_tests=
+/openvpn/test_user_pass=2Ec
+index 5bc1d2a=2E=2E54b3617 100644
+--- a/tests/u=
+nit_tests/openvpn/test_user_pass=2Ec
++++ b/tests/unit_tests/openvpn/test_us=
+er_pass=2Ec
+@@ -47,11 +47,6 @@
+ }
+ #endif
+ 
+-#if defined(__GNUC__) || defin=
+ed(__clang__)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored =
+"-Wsign-conversion"
+-#endif
+-
+ bool
+ query_user_exec_builtin(void)
+ {
+@@ -6=
+5,10 +60,6 @@
+     return mock();
+ }
+ 
+-#if defined(__GNUC__) || defined(__=
+clang__)
+-#pragma GCC diagnostic pop
+-#endif
+-
+ void
+ management_auth_failu=
+re(const struct management *man, const char *type, const char *reason)
  {
 
+=
 -- 
-To view, visit ht=
-tps://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2165?usp=3Demail
-To unsubscribe, o=
-r for help writing mail filters, visit https://gerrit=2Eopenvpn=2Enet/setti=
-ngs?usp=3Demail
+To view, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2168?usp=3Dem=
+ail
+To unsubscribe, or for help writing mail filters, visit https://gerrit=
+=2Eopenvpn=2Enet/settings?usp=3Demail
 
 Gerrit-MessageType: newpatchset
-Gerrit-Project: openvpn
+Gerr=
+it-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I1c87faefd3adc2=
+d95b5318437d097c3970a120d3
+Gerrit-Change-Number: 2168
+Gerrit-PatchSet: 3
 Ge=
-rrit-Branch: master
-Gerrit-Change-Id: Ie2d784272184261a62c848e6ad3b7a4570ae=
-6dc7
-Gerrit-Change-Number: 2165
-Gerrit-PatchSet: 4
-Gerrit-Owner: Frank Lich=
-tenheld <frank@lichtenheld=2Ecom>
-Gerrit-Reviewer: Arne Schwabe <arne-openv=
-pn@rfc2549=2Eorg>
-Gerrit-Reviewer: R=C4=83zvan Cojocaru <razvanc@mailbox=2E=
-org>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
-Ger=
-rit-Attention: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Attention: =
-Frank Lichtenheld <frank@lichtenheld=2Ecom>
+rrit-Owner: Frank Lichtenheld <frank@lichtenheld=2Ecom>
+Gerrit-Reviewer: Ar=
+ne Schwabe <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Reviewer: R=C4=83zvan Cojoca=
+ru <razvanc@mailbox=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2E=
+sourceforge=2Enet>
+Gerrit-Attention: Arne Schwabe <arne-openvpn@rfc2549=2Eo=
+rg>
+Gerrit-Attention: Frank Lichtenheld <frank@lichtenheld=2Ecom>
 
---0OhanWaBGSY=
+--KvTLsiMDr80=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: Arne Schwabe, Frank Lichtenheld=2E </p>
 <p>Frank Lich=
-tenheld <strong>uploaded patch set #4</strong> to this change=2E</p><p><a h=
-ref=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2165?usp=3Demail">View Ch=
+tenheld <strong>uploaded patch set #3</strong> to this change=2E</p><p><a h=
+ref=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2168?usp=3Demail">View Ch=
 ange</a></p><p>The change is no longer submittable: checks~ChecksSubmitRule=
  is unsatisfied now=2E</p><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">buffer: Change return type of buf_f=
-orward_capacity_total to size_t<br><br>All callers already want a size_t, s=
-o make the<br>conversion implicit=2E<br><br>Change-Id: Ie2d784272184261a62c=
-848e6ad3b7a4570ae6dc7<br>Signed-off-by: Frank Lichtenheld &lt;frank@lichten=
-held=2Ecom&gt;<br>---<br>M src/openvpn/buffer=2Ec<br>M src/openvpn/buffer=
-=2Eh<br>M tests/unit_tests/openvpn/test_dhcp=2Ec<br>3 files changed, 3 inse=
-rtions(+), 12 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font=
--family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=
-=2Eopenvpn=2Enet:29418/openvpn refs/changes/65/2165/4</pre><pre style=3D"fo=
-nt-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/=
-src/openvpn/buffer=2Ec b/src/openvpn/buffer=2Ec</span><br><span>index 7f142=
-c4f=2E=2Ee672b74 100644</span><br><span>--- a/src/openvpn/buffer=2Ec</span>=
-<br><span>+++ b/src/openvpn/buffer=2Ec</span><br><span>@@ -275,7 +275,7 @@<=
-/span><br><span>     if (buf_forward_capacity(buf) &lt;=3D 1)</span><br><sp=
-an>     {</span><br><span>         size_t len =3D strlen(str) + 1;</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-        if (buf_size_valid(len=
-) &amp;&amp; (int)len &lt; buf_forward_capacity_total(buf))</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        if (buf_size_valid(len) &am=
-p;&amp; len &lt; buf_forward_capacity_total(buf))</span><br><span>         =
-{</span><br><span>             memcpy(buf-&gt;data + buf-&gt;capacity - len=
-, str, len);</span><br><span>         }</span><br><span>diff --git a/src/op=
-envpn/buffer=2Eh b/src/openvpn/buffer=2Eh</span><br><span>index ede3066=2E=
-=2Eae6dcb7 100644</span><br><span>--- a/src/openvpn/buffer=2Eh</span><br><s=
-pan>+++ b/src/openvpn/buffer=2Eh</span><br><span>@@ -1068,7 +1068,7 @@</spa=
-n><br><span>  *</span><br><span>  * @return Capacity minus offset, or 0 if =
-\c buf is invalid=2E</span><br><span>  */</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-static inline int</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+static inline size_t</span><br><span> buf_forward_capacit=
-y_total(const struct buffer *buf)</span><br><span> {</span><br><span>     i=
-f (buf_valid(buf))</span><br><span>@@ -1078,7 +1078,7 @@</span><br><span>  =
-       {</span><br><span>             ret =3D 0;</span><br><span>         }=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return ret;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return (size_=
-t)ret;</span><br><span>     }</span><br><span>     else</span><br><span>   =
-  {</span><br><span>diff --git a/tests/unit_tests/openvpn/test_dhcp=2Ec b/t=
-ests/unit_tests/openvpn/test_dhcp=2Ec</span><br><span>index e331d3d=2E=2E3a=
-84e1e 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_dhcp=2Ec</=
-span><br><span>+++ b/tests/unit_tests/openvpn/test_dhcp=2Ec</span><br><span=
->@@ -50,11 +50,6 @@</span><br><span>     return &quot;dummy&quot;;</span><b=
-r><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Ws=
-ign-conversion&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
-endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
-> static void</span><br><span> test_write_dhcp_search_str(void **state)</sp=
-an><br><span> {</span><br><span>@@ -146,10 +141,6 @@</span><br><span>     g=
-c_free(&amp;gc);</span><br><span> }</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnosti=
-c pop</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> int</span><br=
-><span> main(void)</span><br><span> {</span><br></pre><p>To view, visit <a =
-href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2165?usp=3Demail">change=
- 2165</a>=2E To unsubscribe, or for help writing mail filters, visit <a hre=
-f=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</=
-p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemsco=
-pe itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link it=
-emprop=3D"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2165?usp=
-=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+pace,monospace; white-space: pre-wrap;">console: Switch response_len to siz=
+e_t<br><br>We need some casts either way since the system<br>APIs are just =
+too different=2E But overall it feels<br>cleaner when using size_t=2E<br><b=
+r>Change-Id: I1c87faefd3adc2d95b5318437d097c3970a120d3<br>Signed-off-by: Fr=
+ank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt;<br>---<br>M src/openvpn/buf=
+fer=2Ec<br>M src/openvpn/buffer=2Eh<br>M src/openvpn/console=2Ec<br>M src/o=
+penvpn/console=2Eh<br>M src/openvpn/console_builtin=2Ec<br>M src/openvpn/co=
+nsole_systemd=2Ec<br>M tests/unit_tests/openvpn/test_user_pass=2Ec<br>7 fil=
+es changed, 20 insertions(+), 47 deletions(-)<br><br></pre><pre class=3D"bl=
+ocks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">gi=
+t pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/68/2168/3</p=
+re><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
+<span>diff --git a/src/openvpn/buffer=2Ec b/src/openvpn/buffer=2Ec</span><b=
+r><span>index e672b74=2E=2Ec60936a 100644</span><br><span>--- a/src/openvpn=
+/buffer=2Ec</span><br><span>+++ b/src/openvpn/buffer=2Ec</span><br><span>@@=
+ -576,9 +576,9 @@</span><br><span>  * like buf_null_terminate, but operate =
+on strings</span><br><span>  */</span><br><span> void</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-string_null_terminate(char *str, int len, i=
+nt capacity)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+string_=
+null_terminate(char *str, size_t len, size_t capacity)</span><br><span> {</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(len &gt;=3D =
+0 &amp;&amp; len &lt;=3D capacity &amp;&amp; capacity &gt; 0);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(len &lt;=3D capacity =
+&amp;&amp; capacity &gt; 0);</span><br><span>     if (len &lt; capacity)</s=
+pan><br><span>     {</span><br><span>         *(str + len) =3D &#39;\0&#39;=
+;</span><br><span>diff --git a/src/openvpn/buffer=2Eh b/src/openvpn/buffer=
+=2Eh</span><br><span>index ae6dcb7=2E=2E541f0bd 100644</span><br><span>--- =
+a/src/openvpn/buffer=2Eh</span><br><span>+++ b/src/openvpn/buffer=2Eh</span=
+><br><span>@@ -872,7 +872,7 @@</span><br><span>  * @param capacity  Total s=
+ize of the character buffer in bytes=2E</span><br><span>  */</span><br><spa=
+n> #ifdef _WIN32</span><br><span style=3D"color: hsl(0, 100%, 40%);">-void =
+string_null_terminate(char *str, int len, int capacity);</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+void string_null_terminate(char *str, =
+size_t len, size_t capacity);</span><br><span> #endif</span><br><span> /**@=
+}*/</span><br><span> /* End of string utility functions */</span><br><span>=
+diff --git a/src/openvpn/console=2Ec b/src/openvpn/console=2Ec</span><br><s=
+pan>index 78f445b=2E=2E358b9ae 100644</span><br><span>--- a/src/openvpn/con=
+sole=2Ec</span><br><span>+++ b/src/openvpn/console=2Ec</span><br><span>@@ -=
+53,7 +53,7 @@</span><br><span> </span><br><span> </span><br><span> void</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-query_user_add(char *prom=
+pt, char *resp, int resp_len, bool echo)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+query_user_add(char *prompt, char *resp, size_t resp_l=
+en, bool echo)</span><br><span> {</span><br><span>     int i;</span><br><sp=
+an> </span><br><span>diff --git a/src/openvpn/console=2Eh b/src/openvpn/con=
+sole=2Eh</span><br><span>index 89550ce=2E=2E94b1032 100644</span><br><span>=
+--- a/src/openvpn/console=2Eh</span><br><span>+++ b/src/openvpn/console=2Eh=
+</span><br><span>@@ -32,10 +32,10 @@</span><br><span>  */</span><br><span> =
+struct _query_user</span><br><span> {</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    char *prompt;     /**&lt; Prompt to present to the user=
+ */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    char *response=
+;   /**&lt; The user&#39;s response */</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    int response_len; /**&lt; Length the of the user respo=
+nse */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    bool echo; =
+       /**&lt; True: The user should see what is being typed, otherwise mas=
+k it */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    char *pr=
+ompt;        /**&lt; Prompt to present to the user */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    char *response;      /**&lt; The user=
+&#39;s response */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   size_t response_len; /**&lt; Length the of the user response */</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    bool echo;           /**=
+&lt; True: The user should see what is being typed, otherwise mask it */</s=
+pan><br><span> };</span><br><span> </span><br><span> #define QUERY_USER_NUM=
+SLOTS 10</span><br><span>@@ -57,7 +57,7 @@</span><br><span>  * @param echo =
+      Should the user input be echoed to the user?  If False, input will be=
+ masked</span><br><span>  *</span><br><span>  */</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-void query_user_add(char *prompt, char *resp, in=
+t resp_len, bool echo);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+void query_user_add(char *prompt, char *resp, size_t resp_len, bool ech=
+o);</span><br><span> </span><br><span> </span><br><span> /**</span><br><spa=
+n>@@ -115,7 +115,7 @@</span><br><span>  *</span><br><span>  */</span><br><s=
+pan> static inline bool</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-query_user_SINGLE(char *prompt, char *resp, int resp_len, bool echo)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+query_user_SINGLE(char *=
+prompt, char *resp, size_t resp_len, bool echo)</span><br><span> {</span><b=
+r><span>     query_user_clear();</span><br><span>     query_user_add(prompt=
+, resp, resp_len, echo);</span><br><span>diff --git a/src/openvpn/console_b=
+uiltin=2Ec b/src/openvpn/console_builtin=2Ec</span><br><span>index 0353ade=
+=2E=2E8206d3d 100644</span><br><span>--- a/src/openvpn/console_builtin=2Ec<=
+/span><br><span>+++ b/src/openvpn/console_builtin=2Ec</span><br><span>@@ -4=
+1,11 +41,6 @@</span><br><span> #include &lt;termios=2Eh&gt;</span><br><span=
+> #endif</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wsig=
+n-conversion&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#en=
+dif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> =
+#ifdef _WIN32</span><br><span> </span><br><span> #include &quot;win32=2Eh&q=
+uot;</span><br><span>@@ -62,11 +57,11 @@</span><br><span>  *         exit e=
+vent is signaled=2E</span><br><span>  */</span><br><span> static bool</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-get_console_input_win32(con=
+st char *prompt, const bool echo, char *input, const int capacity)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+get_console_input_win32(cons=
+t char *prompt, const bool echo, char *input, const size_t capacity)</span>=
+<br><span> {</span><br><span>     ASSERT(prompt);</span><br><span>     ASSE=
+RT(input);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(=
+capacity &gt; 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  ASSERT(capacity &gt; 0 &amp;&amp; capacity &lt; INT_MAX);</span><br><span=
+> </span><br><span>     input[0] =3D &#39;\0&#39;;</span><br><span> </span>=
+<br><span>@@ -110,16 +105,16 @@</span><br><span>             return false;<=
+/span><br><span>         }</span><br><span> </span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-        status =3D ReadConsoleW(in, winput, capacity=
+, &amp;len, NULL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     WideCharToMultiByte(CP_UTF8, 0, winput, len, input, capacity, NULL, NU=
+LL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        status =
+=3D ReadConsoleW(in, winput, (DWORD)capacity, &amp;len, NULL);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        WideCharToMultiByte(CP_U=
+TF8, 0, winput, (int)len, input, (int)capacity, NULL, NULL);</span><br><spa=
+n>         free(winput);</span><br><span>     }</span><br><span>     else</=
+span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+        status =3D ReadFile(in, input, capacity, &amp;len, NULL);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+        status =3D ReadFile(i=
+n, input, (DWORD)capacity, &amp;len, NULL);</span><br><span>     }</span><b=
+r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    string_n=
+ull_terminate(input, (int)len, capacity);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    string_null_terminate(input, len, capacity);</spa=
+n><br><span>     chomp(input);</span><br><span> </span><br><span>     if (!=
+echo)</span><br><span>@@ -191,11 +186,11 @@</span><br><span>  *  @returns R=
+eturns True if user input was gathered</span><br><span>  */</span><br><span=
+> static bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-get_cons=
+ole_input(const char *prompt, const bool echo, char *input, const int capac=
+ity)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+get_console_inp=
+ut(const char *prompt, const bool echo, char *input, const size_t capacity)=
+</span><br><span> {</span><br><span>     ASSERT(prompt);</span><br><span>  =
+   ASSERT(input);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+ASSERT(capacity &gt; 0);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    ASSERT(capacity &gt; 0 &amp;&amp; capacity &lt;=3D INT_MAX);</span=
+><br><span>     input[0] =3D &#39;\0&#39;;</span><br><span> </span><br><spa=
+n> #ifdef _WIN32</span><br><span>@@ -238,7 +233,7 @@</span><br><span>      =
+   restore_tty =3D (tcsetattr(fileno(fp), TCSAFLUSH, &amp;tty_tmp) =3D=3D 0=
+);</span><br><span>     }</span><br><span> </span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    if (fgets(input, capacity, fp) !=3D NULL)</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    if (fgets(input, (int)c=
+apacity, fp) !=3D NULL)</span><br><span>     {</span><br><span>         cho=
+mp(input);</span><br><span>         ret =3D true;</span><br><span>@@ -294,7=
+ +289,3 @@</span><br><span> </span><br><span>     return ret;</span><br><sp=
+an> }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__cl=
+ang__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC dia=
+gnostic pop</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</sp=
+an><br><span>diff --git a/src/openvpn/console_systemd=2Ec b/src/openvpn/con=
+sole_systemd=2Ec</span><br><span>index 8fc7f72=2E=2Ef0ca7fa 100644</span><b=
+r><span>--- a/src/openvpn/console_systemd=2Ec</span><br><span>+++ b/src/ope=
+nvpn/console_systemd=2Ec</span><br><span>@@ -53,13 +53,8 @@</span><br><span=
+>     return (sd_booted() &gt; 0) &amp;&amp; (stat(SYSTEMD_ASK_PASSWORD_PAT=
+H, &amp;c) =3D=3D 0);</span><br><span> }</span><br><span> </span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__cla=
+ng__)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diag=
+nostic push</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GC=
+C diagnostic ignored &quot;-Wsign-conversion&quot;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-</span><br><span> static bool</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-get_console_input_systemd(const char *prompt, const b=
+ool echo, char *input, const int capacity)</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+get_console_input_systemd(const char *prompt, const =
+bool echo, char *input, const size_t capacity)</span><br><span> {</span><br=
+><span>     int std_out;</span><br><span>     bool ret =3D false;</span><br=
+><span>@@ -91,10 +86,6 @@</span><br><span>     return ret;</span><br><span>=
+ }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
+if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-</span><br><span> /**</span><br><span>  *  Systemd aware impleme=
+ntation of query_user_exec()=2E  If systemd is not running</span><br><span>=
+  *  it will fall back to use query_user_exec_builtin() instead=2E</span><b=
+r><span>diff --git a/tests/unit_tests/openvpn/test_user_pass=2Ec b/tests/un=
+it_tests/openvpn/test_user_pass=2Ec</span><br><span>index 5bc1d2a=2E=2E54b3=
+617 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_user_pass=2E=
+c</span><br><span>+++ b/tests/unit_tests/openvpn/test_user_pass=2Ec</span><=
+br><span>@@ -47,11 +47,6 @@</span><br><span> }</span><br><span> #endif</spa=
+n><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defi=
+ned(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-#pragma GCC diagnostic push</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wsign-conversion&=
+quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> bool</span><b=
+r><span> query_user_exec_builtin(void)</span><br><span> {</span><br><span>@=
+@ -65,10 +60,6 @@</span><br><span>     return mock();</span><br><span> }</s=
+pan><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if de=
+fined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-#pragma GCC diagnostic pop</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-</span><br><span> void</span><br><span> management_auth_failure(const=
+ struct management *man, const char *type, const char *reason)</span><br><s=
+pan> {</span><br></pre><p>To view, visit <a href=3D"https://gerrit=2Eopenvp=
+n=2Enet/c/openvpn/+/2168?usp=3Demail">change 2168</a>=2E To unsubscribe, or=
+ for help writing mail filters, visit <a href=3D"https://gerrit=2Eopenvpn=
+=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"=
+http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemty=
+pe=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https:=
+//gerrit=2Eopenvpn=2Enet/c/openvpn/+/2168?usp=3Demail"/><meta itemprop=3D"n=
+ame" content=3D"View Change"/></div></div>
 
-<=
-div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-<div sty=
-le=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:n=
-one"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Chan=
-ge-Id: Ie2d784272184261a62c848e6ad3b7a4570ae6dc7 </div>
-<div style=3D"displ=
-ay:none"> Gerrit-Change-Number: 2165 </div>
 <div style=3D"display:none"> Ge=
-rrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: Frank Li=
-chtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
-<div style=3D"display:none=
-"> Gerrit-Reviewer: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-=
-<div style=3D"display:none"> Gerrit-Reviewer: R=C4=83zvan Cojocaru &lt;razv=
-anc@mailbox=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvp=
-n-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
-<div style=
-=3D"display:none"> Gerrit-Attention: Arne Schwabe &lt;arne-openvpn@rfc2549=
-=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: Frank Lich=
-tenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+rrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Pr=
+oject: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </=
+div>
+<div style=3D"display:none"> Gerrit-Change-Id: I1c87faefd3adc2d95b5318=
+437d097c3970a120d3 </div>
+<div style=3D"display:none"> Gerrit-Change-Number=
+: 2168 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div s=
+tyle=3D"display:none"> Gerrit-Owner: Frank Lichtenheld &lt;frank@lichtenhel=
+d=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: Arne Schwa=
+be &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> G=
+errit-Reviewer: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt; </div>
+<=
+div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@list=
+s=2Esourceforge=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-Attent=
+ion: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"d=
+isplay:none"> Gerrit-Attention: Frank Lichtenheld &lt;frank@lichtenheld=2Ec=
+om&gt; </div>
 
 </body></html>
---0OhanWaBGSY=--
+--KvTLsiMDr80=--
 
 
---===============1349334648262508866==
+--===============3788281454380487557==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============1349334648262508866==
+--===============3788281454380487557==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -444,5 +806,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============1349334648262508866==--
+--===============3788281454380487557==--
 
