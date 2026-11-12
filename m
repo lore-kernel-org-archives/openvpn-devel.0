@@ -1,13 +1,13 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0DE1606A321
-	for <openvpn-devel@archiver.kernel.org>; Thu, 12 Nov 2026 13:13:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12A78606A327
+	for <openvpn-devel@archiver.kernel.org>; Thu, 12 Nov 2026 13:25:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=jASc6xEL;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=Y/l/7K8j;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=O3JPzS7D;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=IiMUIlKJ
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=jJybWDqS;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=HsttxMaV;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=FIsRsjtW;
+	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=CubXvN/9
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
@@ -15,29 +15,29 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
 	List-Unsubscribe-Post:List-Owner;
-	bh=34AVdh9ynFayLpYTA+cqIKsGtiTpY1YysnUz4vK+dTM=; b=jASc6xELdt5LmpsFqQZFrfQpC9
-	qnSZ9Xk6Ea8ucrcY++2qCdTcOuV2Aoxw4V9TXVkMVpmayip/bz079+PxIIN92Hpnk1dhqotCWpn6L
-	UtktBbn7O+znKSfYQMgqzskgykx8y/Fgz8u4JknNilLP4/eR/Qpc/9wPYIdEsuC8kRCw=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	bh=5H7wsSBNnfG74K63jXnvBfSCAruVRXsA0Ij5E6J7iqU=; b=jJybWDqSJq9At3yDFGQcCjjMO5
+	Z2wHPcyC7u6ea5UO8adAB8NW6gGpkSxtGkvI8URaLu39Sk+Wl3YnGBVHct/f0T+ke67ZC5AzhqRv4
+	92ODd48SilR0rvfY491U7YTorcHj6z7apHBtOFTLEDr1lqPW5Hlx27BdpKaGAU2UZ+Gc=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xRUck-000000008Jk-0h51;
-	Thu, 12 Nov 2026 13:13:54 +0000
+	id 1xRUoH-0000000042f-07bV;
+	Thu, 12 Nov 2026 13:25:49 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xRUcj-000000008Je-2vUu
+ (envelope-from <gerrit@openvpn.net>) id 1xRUoF-0000000042X-37Zr
  for openvpn-devel@lists.sourceforge.net;
- Thu, 12 Nov 2026 13:13:53 +0000
+ Thu, 12 Nov 2026 13:25:47 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:
  From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From:
  Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=WZpItqiUa2PPrSMFIKIr6Rx1T3l1AMWXwORrYhH4ug4=; b=Y/l/7K8jALeDwzvYUU6Y8FGXCt
- mwkrcn8zJgFK7RCgU5lF6ig/6UBYCMH8+OLRSn0gGeglTAualVE6U2bdZGMybIhfj4R5YKMyOuCwX
- RDWGC9prhMqiBpUyUt6KSBIls6G2LfLTbw5WP5CAZIQivovLnOmB5LlIErlfjllc4uKo=;
+ bh=jxhBGbMT1Qz1U/A6X+GSYOnEX72PQsRHd7oxjOBiHdQ=; b=HsttxMaVfY73hhTDkNvU2fB3bq
+ Ft92LfZyAW0Ka0vl8TGu8jx4RVYbLsz1ofMKb8bQj1qy51CxCE1ntlyNaquJzBbgZaqROSqU1fTgt
+ FyrYlMm4RpwoMzqP6hOO1ztyz8LC9+vt+pxMthD3d0WtZKIQODrQQLARl3uzs2xbLBDg=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
@@ -45,91 +45,91 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
  Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=WZpItqiUa2PPrSMFIKIr6Rx1T3l1AMWXwORrYhH4ug4=; b=O3JPzS7DGJQ/tRAgLPZq6XRCaR
- A5KL47cMuV6JrRHXNk3YkUGBE4Rp5PoEtMyduO7smB6ybJCfu6x0mM7jrlIJBDUmywcrGspfWtjVQ
- IN0qItR9wnnPh/F43vstC2PbsSbzc9c7ZI5TpXbOClPxYEHrkhXH8TKVxC88Rxj9axpo=;
-Received: from mail-wm1-f54.google.com ([209.85.128.54])
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ bh=jxhBGbMT1Qz1U/A6X+GSYOnEX72PQsRHd7oxjOBiHdQ=; b=FIsRsjtWPb2XCiHfScVy39THOR
+ s5vxSLogBgoqZ4MSbCyZukK/chVX0JyQ3aJNMcRCbAjfDlw+4jJxJxkesIwmZywtDzHzz+99HnDSb
+ duPp+gIS3rQhJ2PJGz6PBiAp9fHcdFzyQAwFgZHBOg3LHt18EdQRMDBpZbc18sldwrbQ=;
+Received: from mail-wr1-f41.google.com ([209.85.221.41])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xRUcg-000000001Bi-1t1E for openvpn-devel@lists.sourceforge.net;
- Thu, 12 Nov 2026 13:13:53 +0000
-Received: by mail-wm1-f54.google.com with SMTP id
- 5b1f17b1804b1-4a5720b0a57so5439365e9.0
+ id 1xRUoF-000000005yg-0Q2K for openvpn-devel@lists.sourceforge.net;
+ Thu, 12 Nov 2026 13:25:47 +0000
+Received: by mail-wr1-f41.google.com with SMTP id
+ ffacd0b85a97d-48dfc0421d9so3587357f8f.1
  for <openvpn-devel@lists.sourceforge.net>;
- Thu, 12 Nov 2026 05:13:50 -0800 (PST)
+ Thu, 12 Nov 2026 05:25:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1794489224; x=1795094024; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1794489940; x=1795094740; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
  :to:date:from:from:to:cc:subject:date:message-id:reply-to
- :content-type; bh=WZpItqiUa2PPrSMFIKIr6Rx1T3l1AMWXwORrYhH4ug4=;
- b=IiMUIlKJkMR6FYDVKF5woov3Utd9K/ZK38PEiOnyRlpOEC+MN9mNjwYcHen9z8TIo2
- h37evulFecyJMQjPSRGyYarX2yfXelY+T0EVfYrnpgeG16dHg90CJCkyuWtOh6S/dQyo
- wGF51De20kdWDb1liVZkiZS3fZ+R0mAGRP0CYqP/mVxWQsSbDAd4nhPZ+5zJ5Hg9Xu7u
- CJbTsMkiQ/mKBD+quLHorgvpAtUyBtdQD1CtkVFHaV/3eu7kHCFtJ0U7wMbYHetPgOOa
- Afzthx0rwhY0N47csRXwFPOn53JFrKOlAcWCotpOO8v0gvaQ1Bx/cloob2q0R+Pa5SMT
- oulA==
+ :content-type; bh=jxhBGbMT1Qz1U/A6X+GSYOnEX72PQsRHd7oxjOBiHdQ=;
+ b=CubXvN/9GCvhBAmKelsZXGxSK2QwLeakO4YbZ6cm8MB6MrouNzzTlQYH9WnUoOjgmB
+ UeUq02mJqn+nlmvczJJVWKvFpdF+vikJ9ouVe7Im9QDRexu4Gxo9xa5Ec+dMkrulyKP/
+ TVZGUImYGT1wK1977CdY8718HL26NAaXmMQ1hVg6py0Qs3vrNnoVb8RO4iFNn9GzjUA+
+ 4dx2r1TXyk1uYFLlbe573mVfnfu65rob4HKM9C/DB+6td+6w7M8rvLdyfUcb9kIUQS44
+ 7Oi4C+5nGfMtkRSJ5OgxCgROF9ZcKPkp2ncMqH+RqPq78pra5JQRpWE/CSp65F0u3Tn9
+ SdZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1794489224; x=1795094024;
+ d=1e100.net; s=20260707; t=1794489940; x=1795094740;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
  :to:date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
  :message-id:reply-to:content-type;
- bh=WZpItqiUa2PPrSMFIKIr6Rx1T3l1AMWXwORrYhH4ug4=;
- b=qMi4XOyp921TcoPf6Zi74F793n1/0k0Jody06VsLvyuVpV9IDBftrLHsQdfkJdolGX
- PYWoO7nCqKp0gn2qwNqgZ7bGOXwjP9NkmzzaxqnfutW+wS4uwlaFnJ2o3s+E1bj6BqO1
- KZLZlyEfNn2+xolBQ6H4aVqMhFAt/NjK+XWM4TlhQGgwCQsuLPff4HQhMgumCzyrOBws
- BDeWpcWileaBJwE8YgmQBuSQKxrZovd4U/YqsGWLMiSnoYEOMJjbKxwDu0MjnYz0VQAl
- yMIpqWilB8r7DEfsjpUD4QDqTBu466/j64d6pa4B9CgLZXWkLdvOkm885/Xu4Hlm8Fmg
- CkvA==
-X-Gm-Message-State: APuU4Z9eJuj+xPqHttzq/mtJiYbIiDLiAZtDyqoAs1HfrwmC1jjq7w+b
- Je3rPwdAWBcdsM8HX5hDZKIVS5q+SoX9fPS0fRZ8wRX15RCUwbRrbSmN3fr1CAgO/qIFTtyXVZU
- u/Rjt0/zJNEp85ZCAkjuQwbXvQR2rf04eMv3jzoz6bQm4W6D1xU+MFIa9RvDUS3EAZWWRVzja4L
- KKiR/15g==
-X-Gm-Gg: AYBFou39TZE2VFUxV6qbuUQgUztERHP2bjSn/YQjyuGCh1i14tSrDqYH+ATlQQn4Fij
- ZZ226CpcwDOupkxjrVa20dbY4UNQnZdDxoRXyPGqYu3Tfszu7M04GtD46RMNdMkynpgtNCAkVAt
- fL/R/0P/LKd2hGwDSQEgnYWKUj3Nj2wMHMn1x6/FttjaqNro0prQ9a+CjbhQPhH82H0bIH2URl4
- XcIfFvO4tqSBT9U1j2BrC9hsTeRbHBf5d9aiykisWqX1caQ9zfLUB/qpuWdjCNBHLl3z6BsmiG5
- EL/hfwUMoQ8YSvryqj6JtUnsj1Lzj3toER5Xde+H0fttchIAmHdMUE+pQR86Pz5C2Tw4oVJEhrt
- nPde65clYxhCtSszhYcm8aB46Vbf8ZQkcHk0SmDAexfO3l8K7zXrsfK5q7yI2OtNuZKlJx+q/xW
- bg3LexLZ5SIR6zwYulmLYHe60D5/k8JJg6CnO0as8nPKajoFrl0mjGwyqrc54s+cXrk/+TqmLUy
- N96eCvaCBRSfwPjkyVLV0kKFenUKS6PYgyYPhMg/6slj1agMgcTYnV6B3p5bXSTAPTuvydDlWQ+
- 6xqmxhnPSBlpOlNqtRZ0B868SQQTszLeL4OiT5Tpg13Opsfa2vm4agerAygdOtzrUGdTBYPat9D
- n0NTpmndUB8RQ0l6QDjql7yTadEHNSLWy5uxJs1qBVZ+d0IbWVBFQ64LIN5NlnaWemKEPiRd0xv
- jvR2s2ikjVckXecFM=
-X-Received: by 2002:a05:600c:4eca:b0:4a1:c27d:e1a8 with SMTP id
- 5b1f17b1804b1-4bb4e28456amr55711305e9.10.1794489223654; 
- Thu, 12 Nov 2026 05:13:43 -0800 (PST)
+ bh=jxhBGbMT1Qz1U/A6X+GSYOnEX72PQsRHd7oxjOBiHdQ=;
+ b=v6Cy73fkF5JsWQiTDpnxzntmLWHmd0miZGkd2cBGPb84n8HLA1N/LdCpu7LPbDcTN2
+ kulXpzI++HtUSFQ/Caj/anUMp5JuB5she2AYFGNcpfOlOUocjzIVVlLKkXvRettY7feD
+ bvg8MEeftyVUZ4MhkDP9AcO8DyuKz2hEyMdVUukJsjNprpQcQX4yvMqkHIjEYT8UEL4m
+ JEVqde8sM5t9YKGFzxgAp33J7adxzhy1oFSyojQk0Q9Yg77a4qYeaEceY24sDrtZ+MQR
+ xJfFbyrsAJyzubeT0iiRHLIqs4jZi2urAJLdaoYYXApPaJmGJVkFEhnP/XDHonbMQ+FS
+ 7nSw==
+X-Gm-Message-State: APuU4Z+cAP1MnUsnCxloQd+OV76NwF7J1vvTlcf3Rga42uHy3rw96+12
+ XQPLjFe2WyP4LXPSeVWgYRqhoMDps8p/fpDe/y/acbVZVnojyLOApYVL29QPz6WtRZNVo7jQ0gA
+ Fa1LfbUFFtW0iDzxmQRBOTFiCVJFNoawWrUdWD2yOo7cDnV+ooFY5Km1mtd3YqsFjpBsNnLRCVY
+ ycFe17hQ==
+X-Gm-Gg: AYBFou2Lv+aUlvguQLM09gy6dSv5II6dbo0IRQ05C+r0me0/x9yv7yUEGnK75Cr9vgs
+ 5vHfJM5sQNkhG0TzzNWzNkhPNObUhlGN0J/Cx3D5sQpEIOShkGoVEipwBkJ6iF6N8cmWfOlLjE9
+ e+Tpu3aTfVT72Js8jOqTAbOIuViWTofInbNY7iplT6EYDIYgDTYppTkmlPGQv1ZeNxl6mPfFCgm
+ aAiaxYdKlo6buMZPojM7xE+1lmUh04+e/jDZb0dfXC9mij1bhFEOS9D2D/LySwDKTUE8KbVQvyW
+ iwwAEsuw7cNrOVISPEkbIDK4pPm1TQCqFlo93pRAK1WlDgW4FKQQTGKSOGA3HQKozIuGXsOdFSr
+ hGnlij+AfPcVbThdbxKc0Ni/sTYnKhvHGUgI96h8W7nWvEtOfGE5Pcinl4RSHWtQnvWrKU6s2gI
+ g0YYJOxMPzHOoN99YPvWGpnyBYf0DD39G/nWnt+7KH5UeypvTq/z3xgs615744g+yy76aIFnYJK
+ 0plMytMK6s6r5rrWE7/dr3KQp8QDyBIcNy2Zi2Mh03HOiBTFyUXtTFrH3AK1rZnPbwKyz8LcZ4l
+ 6HCfX2mJGYoPtMlu1nemNBSHlwPOJbR725/zmsJNz7CeIXRWuToSZ6qgAr5B0/kEE/pekVuqpr0
+ zPOPOqxj4kCTo/uwl0FU7QwXpkHX9A3ktVCBUzRxElDq5cOIGXirzhp94fzN05fKuDHzEietFVv
+ +hX/pKcECYKy1lQbk=
+X-Received: by 2002:a05:6000:2411:b0:48e:824:f0b9 with SMTP id
+ ffacd0b85a97d-499c7b1ac65mr9973718f8f.45.1794489940333; 
+ Thu, 12 Nov 2026 05:25:40 -0800 (PST)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-4ba0951bf2asm95835965e9.4.2026.11.12.05.13.43
+ ffacd0b85a97d-498363df7a5sm17136147f8f.37.2026.11.12.05.25.39
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 12 Nov 2026 05:13:43 -0800 (PST)
+ Thu, 12 Nov 2026 05:25:39 -0800 (PST)
 X-Google-Original-From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?=
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Thu, 12 Nov 2026 13:13:42 +0000
+Date: Thu, 12 Nov 2026 13:25:39 +0000
 To: Arne Schwabe <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newchange
 X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: I4b07dbc6ad1f29021e1be4766500f4d291bbadc6
-X-Gerrit-Change-Number: 2180
+X-Gerrit-Change-Id: Iae65693f49f43a66bf6f58bbefa7c33618ebc4a7
+X-Gerrit-Change-Number: 2181
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2180?usp=email>
-X-Gerrit-Commit: 2644429c1ca4e78954b492ce114519fd94cc887c
-References: <gerrit.1794489219000.I4b07dbc6ad1f29021e1be4766500f4d291bbadc6@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzk0NDg5MjE5MDAwLkk0YjA3ZGJjNmFkMWYyOTAyMWUxYmU0NzY2NTAwZjRkMjkxYmJhZGM2QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <dcd76d3d05e96f8c982b626642ab41b1950475e2-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2181?usp=email>
+X-Gerrit-Commit: 83a04dd550400b17b8881a46a8a2c8f0f8038c84
+References: <gerrit.1794489937000.Iae65693f49f43a66bf6f58bbefa7c33618ebc4a7@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzk0NDg5OTM3MDAwLklhZTY1NjkzZjQ5ZjQzYTY2YmY2ZjU4YmJlZmE3YzMzNjE4ZWJjNGE3QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <0665def91f3ebf1363ea93ea32d5cecfe8c36e5b-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.5
 X-Spam-Score: 0.8 (/)
-X-Headers-End: 1xRUcg-000000001Bi-1t1E
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Free address lists
- by DNS cache ownership, not --preresolve
+X-Headers-End: 1xRUoF-000000005yg-0Q2K
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: resolve: store the
+ address family in --preresolve cache entries
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -145,7 +145,7 @@ Reply-To: razvanc@mailbox.org, arne-openvpn@rfc2549.org,
  openvpn-devel@lists.sourceforge.net
 Cc: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============6245310575701161242=="
+Content-Type: multipart/mixed; boundary="===============3973275704095594662=="
 X-Spam-Status: No, score=-12.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
 	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
@@ -154,12 +154,12 @@ X-Spam-Status: No, score=-12.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============6245310575701161242==
+--===============3973275704095594662==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="g1RLm5rSta8="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="6fp+NhQ2giQ="; charset=UTF-8
 
---g1RLm5rSta8=
+--6fp+NhQ2giQ=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
@@ -172,226 +172,90 @@ I'd like you to do a code review=2E
 Please visit
 
     https://gerrit=2Eope=
-nvpn=2Enet/c/openvpn/+/2180?usp=3Demail
+nvpn=2Enet/c/openvpn/+/2181?usp=3Demail
 
 to review the following change=2E
 =
 
 
-Change subject: Free address lists by DNS cache ownership, not --preresol=
-ve
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+Change subject: resolve: store the address family in --preresolve cache e=
+ntries
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-Free addre=
-ss lists by DNS cache ownership, not --preresolve
+reso=
+lve: store the address family in --preresolve cache entries
 
-With --preresolve, remot=
-e_list and bind_local were never freed on the
-assumption that they came fro=
-m the DNS cache, which is freed with the
-context gc=2E Lookups that miss th=
-e cache leaked a getaddrinfo() list on
-every restart=2E Meanwhile phase2_so=
-cks_client() freed remote_list
-unconditionally, a double free once the cach=
-e hits=2E
+get_cached_dns=
+_entry() matches on ai_family, which do_preresolve_host()
+never set=2E Any =
+lookup with an explicit family missed the cache, so each
+restart resolved a=
+gain and appended duplicate cache entries=2E
 
-Free a list unless the cache owns it=2E
+Configs with an explicit addr=
+ess family now reuse the preresolved
+addresses across reconnects, as docume=
+nted, instead of resolving again
+each time=2E
 
-Change-Id: I4b07dbc6ad1=
-f29021e1be4766500f4d291bbadc6
-Signed-off-by: Razvan Cojocaru <razvanc@mailb=
-ox=2Eorg>
+Change-Id: Iae65693f49f43a66=
+bf6f58bbefa7c33618ebc4a7
+Signed-off-by: Razvan Cojocaru <razvanc@mailbox=2E=
+org>
 ---
-M src/openvpn/init=2Ec
 M src/openvpn/resolve=2Ec
-M src/openvp=
-n/resolve=2Eh
-M src/openvpn/socket=2Ec
-4 files changed, 29 insertions(+), 7=
- deletions(-)
+1 file changed, 1 insertion(+), 0 deleti=
+ons(-)
 
 
 
-  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs=
-/changes/80/2180/1
+  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/change=
+s/81/2181/1
 
-diff --git a/src/openvpn/init=2Ec b/src/openvpn/init=2E=
-c
-index 3bc4de4=2E=2Ed40959e 100644
---- a/src/openvpn/init=2Ec
-+++ b/src/op=
-envpn/init=2Ec
-@@ -495,9 +495,9 @@
-  * Clear the remote address list
-  */
- =
-static void
--clear_remote_addrlist(struct link_socket_addr *lsa, bool free)=
+diff --git a/src/openvpn/resolve=2Ec b/src/openvpn/resolve=2Ec=
 
-+clear_remote_addrlist(struct link_socket_addr *lsa, const struct cached_d=
-ns_entry *dns_cache)
- {
--    if (lsa->remote_list && free)
-+    if (lsa->re=
-mote_list && !dns_cache_owns(dns_cache, lsa->remote_list))
-     {
-         =
-freeaddrinfo(lsa->remote_list);
-     }
-@@ -550,8 +550,7 @@
-                =
-      */
-                     if (c->c1=2Elink_socket_addrs[0]=2Eremote_lis=
-t)
-                     {
--                        clear_remote_addrlist(&c=
-->c1=2Elink_socket_addrs[0],
--                                             =
- !c->options=2Eresolve_in_advance);
-+                        clear_remote_a=
-ddrlist(&c->c1=2Elink_socket_addrs[0], c->c1=2Edns_cache);
-                =
-     }
- 
-                     /* close_instance should have cleared the add=
-rinfo objects */
-@@ -4011,7 +4010,7 @@
-                        && c->c1=2El=
-ink_socket_addrs[0]=2Ecurrent_remote->ai_next)
-                       || c-=
->options=2Eno_advance)))))
-     {
--        clear_remote_addrlist(&c->c1=2El=
-ink_socket_addrs[0], !c->options=2Eresolve_in_advance);
-+        clear_remo=
-te_addrlist(&c->c1=2Elink_socket_addrs[0], c->c1=2Edns_cache);
-     }
- 
-   =
-  /* Clear the remote actual address when persist_remote_ip is not in use *=
-/
-@@ -4027,7 +4026,8 @@
-     {
-         for (int i =3D 0; i < c->c1=2Elink_=
-sockets_num; i++)
-         {
--            if (c->c1=2Elink_socket_addrs[i]=
-=2Ebind_local && !c->options=2Eresolve_in_advance)
-+            if (c->c1=
-=2Elink_socket_addrs[i]=2Ebind_local
-+                && !dns_cache_owns(c-=
->c1=2Edns_cache, c->c1=2Elink_socket_addrs[i]=2Ebind_local))
-             {=
-
-                 freeaddrinfo(c->c1=2Elink_socket_addrs[i]=2Ebind_local);
-=
-             }
-diff --git a/src/openvpn/resolve=2Ec b/src/openvpn/resolve=
-=2Ec
-index b8d9899=2E=2E46a7f7b 100644
+index 46a7f7b=2E=2Ed1b132f 100644
 --- a/src/openvpn/resolve=2Ec
-+++ b/=
-src/openvpn/resolve=2Ec
-@@ -524,6 +524,19 @@
-     return -1;
- }
++++ b/src/=
+openvpn/resolve=2Ec
+@@ -561,6 +561,7 @@
+         ph->ai =3D ai;
+         ph=
+->hostname =3D hostname;
+         ph->servname =3D servname;
++        ph->a=
+i_family =3D af;
+         ph->flags =3D flags & GETADDR_CACHE_MASK;
  
-+bool
-+dn=
-s_cache_owns(const struct cached_dns_entry *dns_cache, const struct addrinf=
-o *ai)
-+{
-+    for (const struct cached_dns_entry *ph =3D dns_cache; ph; ph=
- =3D ph->next)
-+    {
-+        if (ph->ai =3D=3D ai)
-+        {
-+          =
-  return true;
-+        }
-+    }
-+    return false;
-+}
-+
- 
- static int
- do_=
-preresolve_host(struct context *c, const char *hostname, const char *servna=
-me, const int af,
-diff --git a/src/openvpn/resolve=2Eh b/src/openvpn/resolv=
-e=2Eh
-index 9069af7=2E=2E30b1a7e 100644
---- a/src/openvpn/resolve=2Eh
-+++ b=
-/src/openvpn/resolve=2Eh
-@@ -103,4 +103,10 @@
-                          con=
-st char *servname, int ai_family,
-                          unsigned int re=
-solve_flags, struct addrinfo **ai);
- 
-+/**
-+ * Returns true if \c ai is a c=
-ached entry=2E Those are freed with the
-+ * context gc, never with freeaddr=
-info()=2E
-+ */
-+bool dns_cache_owns(const struct cached_dns_entry *dns_cach=
-e, const struct addrinfo *ai);
-+
- #endif /* RESOLVE_H */
-diff --git a/src/o=
-penvpn/socket=2Ec b/src/openvpn/socket=2Ec
-index 1fbd07b=2E=2Ed7670ae 10064=
-4
---- a/src/openvpn/socket=2Ec
-+++ b/src/openvpn/socket=2Ec
-@@ -1266,7 +126=
-6,10 @@
-     addr_zero_host(&sock->info=2Elsa->actual=2Edest);
-     if (soc=
-k->info=2Elsa->remote_list)
-     {
--        freeaddrinfo(sock->info=2Elsa->=
-remote_list);
-+        if (!dns_cache_owns(sock->dns_cache, sock->info=2Els=
-a->remote_list))
-+        {
-+            freeaddrinfo(sock->info=2Elsa->rem=
-ote_list);
-+        }
-         sock->info=2Elsa->current_remote =3D NULL;
- =
-        sock->info=2Elsa->remote_list =3D NULL;
-     }
+     =
+    if (!c->c1=2Edns_cache)
 
 -- 
-To view, visit =
-https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2180?usp=3Demail
-To unsubscribe,=
- or for help writing mail filters, visit https://gerrit=2Eopenvpn=2Enet/set=
-tings?usp=3Demail
+To view, visit https://gerrit=2Eopenvpn=2E=
+net/c/openvpn/+/2181?usp=3Demail
+To unsubscribe, or for help writing mail f=
+ilters, visit https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Gerrit-MessageType: newchange
+Gerrit-M=
+essageType: newchange
 Gerrit-Project: openvpn
-Ge=
-rrit-Branch: master
-Gerrit-Change-Id: I4b07dbc6ad1f29021e1be4766500f4d291bb=
-adc6
-Gerrit-Change-Number: 2180
+Gerrit-Branch: master
+Gerrit-=
+Change-Id: Iae65693f49f43a66bf6f58bbefa7c33618ebc4a7
+Gerrit-Change-Number: =
+2181
 Gerrit-PatchSet: 1
-Gerrit-Owner: R=C4=83zva=
-n Cojocaru <razvanc@mailbox=2Eorg>
-Gerrit-Reviewer: Arne Schwabe <arne-open=
-vpn@rfc2549=2Eorg>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourcefo=
-rge=2Enet>
-Gerrit-Attention: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Owner: R=C4=83zvan Cojocaru <razvanc@mailbox=
+=2Eorg>
+Gerrit-Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
+Gerrit-C=
+C: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Attention=
+: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
 
---g1RLm5rSta8=
+--6fp+NhQ2giQ=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
@@ -400,156 +264,72 @@ rently required from: Arne Schwabe=2E </p>
 <p>R=C4=83zvan Cojocaru would li=
 ke Arne Schwabe to <strong>review</strong> this change=2E
 </p><p><a href=3D=
-"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2180?usp=3Demail">View Change</=
+"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2181?usp=3Demail">View Change</=
 a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; whit=
-e-space: pre-wrap;">Free address lists by DNS cache ownership, not --preres=
-olve<br><br>With --preresolve, remote_list and bind_local were never freed =
-on the<br>assumption that they came from the DNS cache, which is freed with=
- the<br>context gc=2E Lookups that miss the cache leaked a getaddrinfo() li=
-st on<br>every restart=2E Meanwhile phase2_socks_client() freed remote_list=
-<br>unconditionally, a double free once the cache hits=2E<br><br>Free a lis=
-t unless the cache owns it=2E<br><br>Change-Id: I4b07dbc6ad1f29021e1be47665=
-00f4d291bbadc6<br>Signed-off-by: Razvan Cojocaru &lt;razvanc@mailbox=2Eorg&=
-gt;<br>---<br>M src/openvpn/init=2Ec<br>M src/openvpn/resolve=2Ec<br>M src/=
-openvpn/resolve=2Eh<br>M src/openvpn/socket=2Ec<br>4 files changed, 29 inse=
-rtions(+), 7 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-=
-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=
-=2Eopenvpn=2Enet:29418/openvpn refs/changes/80/2180/1</pre><pre style=3D"fo=
-nt-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/=
-src/openvpn/init=2Ec b/src/openvpn/init=2Ec</span><br><span>index 3bc4de4=
-=2E=2Ed40959e 100644</span><br><span>--- a/src/openvpn/init=2Ec</span><br><=
-span>+++ b/src/openvpn/init=2Ec</span><br><span>@@ -495,9 +495,9 @@</span><=
-br><span>  * Clear the remote address list</span><br><span>  */</span><br><=
-span> static void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-clea=
-r_remote_addrlist(struct link_socket_addr *lsa, bool free)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+clear_remote_addrlist(struct link_so=
-cket_addr *lsa, const struct cached_dns_entry *dns_cache)</span><br><span> =
-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (lsa-&gt;remo=
-te_list &amp;&amp; free)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    if (lsa-&gt;remote_list &amp;&amp; !dns_cache_owns(dns_cache, lsa-=
-&gt;remote_list))</span><br><span>     {</span><br><span>         freeaddri=
-nfo(lsa-&gt;remote_list);</span><br><span>     }</span><br><span>@@ -550,8 =
-+550,7 @@</span><br><span>                      */</span><br><span>        =
-             if (c-&gt;c1=2Elink_socket_addrs[0]=2Eremote_list)</span><br><=
-span>                     {</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-                        clear_remote_addrlist(&amp;c-&gt;c1=2Elink_so=
-cket_addrs[0],</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-                                       !c-&gt;options=2Eresolve_in_advance)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                  =
-      clear_remote_addrlist(&amp;c-&gt;c1=2Elink_socket_addrs[0], c-&gt;c1=
-=2Edns_cache);</span><br><span>                     }</span><br><span> </sp=
-an><br><span>                     /* close_instance should have cleared the=
- addrinfo objects */</span><br><span>@@ -4011,7 +4010,7 @@</span><br><span>=
-                        &amp;&amp; c-&gt;c1=2Elink_socket_addrs[0]=2Ecurren=
-t_remote-&gt;ai_next)</span><br><span>                       || c-&gt;optio=
-ns=2Eno_advance)))))</span><br><span>     {</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-        clear_remote_addrlist(&amp;c-&gt;c1=2Elink_so=
-cket_addrs[0], !c-&gt;options=2Eresolve_in_advance);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        clear_remote_addrlist(&amp;c-&gt;=
-c1=2Elink_socket_addrs[0], c-&gt;c1=2Edns_cache);</span><br><span>     }</s=
-pan><br><span> </span><br><span>     /* Clear the remote actual address whe=
-n persist_remote_ip is not in use */</span><br><span>@@ -4027,7 +4026,8 @@<=
-/span><br><span>     {</span><br><span>         for (int i =3D 0; i &lt; c-=
-&gt;c1=2Elink_sockets_num; i++)</span><br><span>         {</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-            if (c-&gt;c1=2Elink_socket=
-_addrs[i]=2Ebind_local &amp;&amp; !c-&gt;options=2Eresolve_in_advance)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (c-&gt;c1=
-=2Elink_socket_addrs[i]=2Ebind_local</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+                &amp;&amp; !dns_cache_owns(c-&gt;c1=2Edns_=
-cache, c-&gt;c1=2Elink_socket_addrs[i]=2Ebind_local))</span><br><span>     =
-        {</span><br><span>                 freeaddrinfo(c-&gt;c1=2Elink_soc=
-ket_addrs[i]=2Ebind_local);</span><br><span>             }</span><br><span>=
-diff --git a/src/openvpn/resolve=2Ec b/src/openvpn/resolve=2Ec</span><br><s=
-pan>index b8d9899=2E=2E46a7f7b 100644</span><br><span>--- a/src/openvpn/res=
-olve=2Ec</span><br><span>+++ b/src/openvpn/resolve=2Ec</span><br><span>@@ -=
-524,6 +524,19 @@</span><br><span>     return -1;</span><br><span> }</span><=
-br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+dns_cache_owns(const str=
-uct cached_dns_entry *dns_cache, const struct addrinfo *ai)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    for (const struct cached_dns_entry *ph =3D dns_ca=
-che; ph; ph =3D ph-&gt;next)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   if (ph-&gt;ai =3D=3D ai)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-          return true;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return false;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span> </span><br><span> stati=
-c int</span><br><span> do_preresolve_host(struct context *c, const char *ho=
-stname, const char *servname, const int af,</span><br><span>diff --git a/sr=
-c/openvpn/resolve=2Eh b/src/openvpn/resolve=2Eh</span><br><span>index 9069a=
-f7=2E=2E30b1a7e 100644</span><br><span>--- a/src/openvpn/resolve=2Eh</span>=
-<br><span>+++ b/src/openvpn/resolve=2Eh</span><br><span>@@ -103,4 +103,10 @=
-@</span><br><span>                          const char *servname, int ai_fa=
-mily,</span><br><span>                          unsigned int resolve_flags,=
- struct addrinfo **ai);</span><br><span> </span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+ * Returns true if \c ai is a cached entry=2E Those are freed with th=
-e</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * context gc, nev=
-er with freeaddrinfo()=2E</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+bool dns_c=
-ache_owns(const struct cached_dns_entry *dns_cache, const struct addrinfo *=
-ai);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n> #endif /* RESOLVE_H */</span><br><span>diff --git a/src/openvpn/socket=
-=2Ec b/src/openvpn/socket=2Ec</span><br><span>index 1fbd07b=2E=2Ed7670ae 10=
-0644</span><br><span>--- a/src/openvpn/socket=2Ec</span><br><span>+++ b/src=
-/openvpn/socket=2Ec</span><br><span>@@ -1266,7 +1266,10 @@</span><br><span>=
-     addr_zero_host(&amp;sock-&gt;info=2Elsa-&gt;actual=2Edest);</span><br>=
-<span>     if (sock-&gt;info=2Elsa-&gt;remote_list)</span><br><span>     {<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        freeaddrinfo(s=
-ock-&gt;info=2Elsa-&gt;remote_list);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        if (!dns_cache_owns(sock-&gt;dns_cache, sock-&gt;i=
-nfo=2Elsa-&gt;remote_list))</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-          freeaddrinfo(sock-&gt;info=2Elsa-&gt;remote_list);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span>        =
- sock-&gt;info=2Elsa-&gt;current_remote =3D NULL;</span><br><span>         =
-sock-&gt;info=2Elsa-&gt;remote_list =3D NULL;</span><br><span>     }</span>=
-<br></pre><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/ope=
-nvpn/+/2180?usp=3Demail">change 2180</a>=2E To unsubscribe, or for help wri=
-ting mail filters, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settings=
-?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=
-=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://=
-schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https://gerrit=2Eop=
-envpn=2Enet/c/openvpn/+/2180?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
+e-space: pre-wrap;">resolve: store the address family in --preresolve cache=
+ entries<br><br>get_cached_dns_entry() matches on ai_family, which do_prere=
+solve_host()<br>never set=2E Any lookup with an explicit family missed the =
+cache, so each<br>restart resolved again and appended duplicate cache entri=
+es=2E<br><br>Configs with an explicit address family now reuse the preresol=
+ved<br>addresses across reconnects, as documented, instead of resolving aga=
+in<br>each time=2E<br><br>Change-Id: Iae65693f49f43a66bf6f58bbefa7c33618ebc=
+4a7<br>Signed-off-by: Razvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt;<br>---<=
+br>M src/openvpn/resolve=2Ec<br>1 file changed, 1 insertion(+), 0 deletions=
+(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,mono=
+space; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/=
+openvpn refs/changes/81/2181/1</pre><pre style=3D"font-family: monospace,mo=
+nospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/resolve=2Ec=
+ b/src/openvpn/resolve=2Ec</span><br><span>index 46a7f7b=2E=2Ed1b132f 10064=
+4</span><br><span>--- a/src/openvpn/resolve=2Ec</span><br><span>+++ b/src/o=
+penvpn/resolve=2Ec</span><br><span>@@ -561,6 +561,7 @@</span><br><span>    =
+     ph-&gt;ai =3D ai;</span><br><span>         ph-&gt;hostname =3D hostnam=
+e;</span><br><span>         ph-&gt;servname =3D servname;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+        ph-&gt;ai_family =3D af;</spa=
+n><br><span>         ph-&gt;flags =3D flags &amp; GETADDR_CACHE_MASK;</span=
+><br><span> </span><br><span>         if (!c-&gt;c1=2Edns_cache)</span><br>=
+</pre><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn=
+/+/2181?usp=3Demail">change 2181</a>=2E To unsubscribe, or for help writing=
+ mail filters, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=
+=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg=
+/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=
+=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https://gerrit=2Eopenvpn=
+=2Enet/c/openvpn/+/2181?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
+ew Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-Message=
-Type: newchange </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn=
- </div>
+<div style=3D"display:none"> Gerrit-MessageType: =
+newchange </div>
+<div style=3D"display:none"> Gerrit-Project: openvpn </div=
+>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div styl=
-e=3D"display:none"> Gerrit-Change-Id: I4b07dbc6ad1f29021e1be4766500f4d291bb=
-adc6 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 2180 </div>
-=
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"displa=
-y:none"> Gerrit-Owner: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt; <=
+<div style=3D"d=
+isplay:none"> Gerrit-Change-Id: Iae65693f49f43a66bf6f58bbefa7c33618ebc4a7 <=
 /div>
-<div style=3D"display:none"> Gerrit-Reviewer: Arne Schwabe &lt;arne-o=
-penvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: ope=
-nvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
-<div styl=
-e=3D"display:none"> Gerrit-Attention: Arne Schwabe &lt;arne-openvpn@rfc2549=
-=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 2181 </div>
+<div s=
+tyle=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none=
+"> Gerrit-Owner: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt; </div>
+=
+<div style=3D"display:none"> Gerrit-Reviewer: Arne Schwabe &lt;arne-openvpn=
+@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-d=
+evel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"d=
+isplay:none"> Gerrit-Attention: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg=
+&gt; </div>
 
 </body></html>
---g1RLm5rSta8=--
+--6fp+NhQ2giQ=--
 
 
---===============6245310575701161242==
+--===============3973275704095594662==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============6245310575701161242==
+--===============3973275704095594662==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -560,5 +340,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============6245310575701161242==--
+--===============3973275704095594662==--
 
