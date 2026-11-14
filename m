@@ -1,13 +1,13 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72860606A331
-	for <openvpn-devel@archiver.kernel.org>; Sat, 14 Nov 2026 17:42:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F1AC606A330
+	for <openvpn-devel@archiver.kernel.org>; Sat, 14 Nov 2026 17:43:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=HGyI625u;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=cig61MJU;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=lmMdZdUT;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=XaHMy741
+	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=OPmU63xh;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=Pc03zsvW;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=mIaljdmd;
+	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=SaKT+th8
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
@@ -15,29 +15,29 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
 	List-Unsubscribe-Post:List-Owner;
-	bh=LfmwHl9kd2jrzC6GQdQ142z8qNWbcUzrBi6k+O29yl0=; b=HGyI625uVNm118r02OV6eyA5x+
-	0g7/O5JWahLIp4G+uuQfI/PzqzBiacl03YToliBg6gpw+dHEBFrpVLY27r9ow1njLTOqfBGCfXD4g
-	qWOukLkRZ+sXLBtZv+srNEC+iicUanPC7aZDYzOCmy9pyol9dO8ZuK2veaX/Kdn/Xe8s=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	bh=6xny4pdos6ONObSo7Vpqfqi3G2+EfJAnaMWxKLAww3g=; b=OPmU63xhhNaXrt7WPJSyYw3DPR
+	vZ+Txw/hDkzIYaPcfEBDXvRhMCNqaoHM+gqoJ63jaOoJvoWD7DTfCZSoAhuJSktAYTf2QbhA9uXdd
+	Zt0MXAHXKm3V5q7YW5k+VNwAwXIV8DjafZCXAA2j1wRf/XKTPhKiL9x4Lak0jAhuj+pk=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xSHmF-000000005cX-0iWa;
-	Sat, 14 Nov 2026 17:42:59 +0000
+	id 1xSHmG-000000002Va-38z7;
+	Sat, 14 Nov 2026 17:43:00 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xSHmE-000000005cQ-1fuc
+ (envelope-from <gerrit@openvpn.net>) id 1xSHmG-000000002VU-05Ph
  for openvpn-devel@lists.sourceforge.net;
- Sat, 14 Nov 2026 17:42:58 +0000
+ Sat, 14 Nov 2026 17:43:00 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=MvCIPTXUAhT+60TJU9DVfw/4sqgee35LlJ5HU3f+7jw=; b=cig61MJUSrEBLtsYLx/YyFQMVg
- Un1XeMBDCJnX+83pshUjwZDrs7LfUVtkyfhXKX1SZGxGX2JeHtoPxR/10u19s2ACu3tW1I2/PJenl
- DYmzWnKuFjM1pT2cK0cCFOnh6KwQ8XF22O4s7Shnv+46ueOe61L3NfzupJOrsqU38jkA=;
+ bh=ItaY6OrqXAkL5HwgA+kc5pL8s41w07DAZQn1wCSi8e0=; b=Pc03zsvW0mAcWJ5XIYrYtr3xJL
+ xO0rpUyVTaGDbx5TA/+VREsUY0YIWvWYj9jUhfWgX+CeZxPdwK69PRO3616+8BM/zhkqFe9OZDkRl
+ X8ZRgy0v7q7YHF57Et5qWmYmSDU7KULlOI+yDyTpfnHMF0iBVk9qRQrV85eSRt9bDAfI=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
@@ -45,78 +45,78 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=MvCIPTXUAhT+60TJU9DVfw/4sqgee35LlJ5HU3f+7jw=; b=lmMdZdUTYVL+1cwmgYpbhV0UVX
- zATAyoMh6nsaLFXfn1P5hUnmD8bYLU/1JIlfi0fWjFzZTn+FlHhEQTKeMb896kSKeHro2EzPk/h9b
- IbTC+PE+STtscAvsxa/08w0q6kDln8w91KHy600b+3R8aqiwYvaaVc7+liFlbAZgfD+w=;
-Received: from mail-wr1-f54.google.com ([209.85.221.54])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ bh=ItaY6OrqXAkL5HwgA+kc5pL8s41w07DAZQn1wCSi8e0=; b=mIaljdmdEQ3/kjGKQEuS2A3m8v
+ lREIvIsEXvtIAIBRzTrFf8JZ1uFK97XBui3OAOtM5h5yaCPmVZyJzXwdWGaqGfrEm8jfH4UrHo0jS
+ LmL0/rU04SEa4AMDtxK5ZyuC9NtCqMmSp2zRk2HFSNKAvPw+LBnF3fbWvHjjeJOReFmw=;
+Received: from mail-wr1-f49.google.com ([209.85.221.49])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xSHmB-000000002qT-3NF8 for openvpn-devel@lists.sourceforge.net;
- Sat, 14 Nov 2026 17:42:58 +0000
-Received: by mail-wr1-f54.google.com with SMTP id
- ffacd0b85a97d-49318428d98so810654f8f.1
+ id 1xSHmC-000000002KU-2pcB for openvpn-devel@lists.sourceforge.net;
+ Sat, 14 Nov 2026 17:42:59 +0000
+Received: by mail-wr1-f49.google.com with SMTP id
+ ffacd0b85a97d-498f5fa4f70so2460850f8f.0
  for <openvpn-devel@lists.sourceforge.net>;
- Sat, 14 Nov 2026 09:42:55 -0800 (PST)
+ Sat, 14 Nov 2026 09:42:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1794678169; x=1795282969; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1794678170; x=1795282970; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=MvCIPTXUAhT+60TJU9DVfw/4sqgee35LlJ5HU3f+7jw=;
- b=XaHMy741q0bBZgFtMcpW0qvgmTgPJh98ufR6mID4LHLn4NdvLARUb7OU8ayzrlIuIv
- 5eU1mid8Tgo3EYX8dD/BzgtmgGiOjtctLyqBAz8Yb998XyPaY3yZ7HxFhtE4XmCJoOEH
- BPj4UTXmudH9+ZFEJ1fy9LA8iaET0yptqiK7cSw1XiiFYn+Qewi1DNSZfDETSljsJpIs
- qCvaubiPCdcLilP7cyzfC7TAn/AGM2+nlr6baYeLoGxvLnViJKHdoHVHqX2WModgO85X
- L0ReyCkhXD8lkjsdJ+v0/a5HWSit+h7fhLm2/ZFwoI4rtEADPV2+v0amh7uZhPDHTkmf
- pLqQ==
+ bh=ItaY6OrqXAkL5HwgA+kc5pL8s41w07DAZQn1wCSi8e0=;
+ b=SaKT+th8D8jB85FIyq7hgt5LgXWsr7pqVnbDxu7KV8zYXwtRObuMXxgYJjbBDXUwFL
+ RHE1auGLpJdI1EsLW0Ef3zkQ/1mBWUVrl5sK04jaksxARJ4phOJ/kqMVeRNXQ9Va1ALB
+ +BfqUizgWVEti9QP76z0kemHgbqtdc5+aNi+rEShbYnl2FJjxb7XktMT/8Lfub11FTRy
+ J/XmNRNAhGgbbbEF4ut0k43dDQSGuWmPeFUPu39qItNEldcotxKvgAkKUdUCiQEk+ovl
+ y4nS4rzADj9YZ8ZhpQUy5CBQXFw1dOmJ+u6JKZrBjjbvnG4NDyZF7725PoKYTkOUY4m2
+ Kjew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1794678169; x=1795282969;
+ d=1e100.net; s=20260707; t=1794678170; x=1795282970;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=MvCIPTXUAhT+60TJU9DVfw/4sqgee35LlJ5HU3f+7jw=;
- b=nTvnrnB4h4IHFhsyhua6p8zX+uXkbhYXbDhwIycy63e1L7wjR+3hipKD/D+Tdp9JSi
- uJ63x6F3/cmldnGNJqwWbvgftw3n7EQ1IbPXcVrpR+lzQ79y7280nNqWQleUtJynqKOG
- d7YUk6WcpwB2Rh8Rjkb0UA2CqLW9lUhwoUS8K8offXzximkq9Um/LZckEzsUNRHxAh8Q
- 8VZJVCwNoxxT0BlRACd8DL4aGVp9/g49UmfuFkn3KsABRvcrVL0vCASwRggxY07iJL9w
- tqsH+GTYqvRCF0ik4sWqTXwf3bg2DrFqR/dXpq4JLNidyvqKgdCs2XoCjG5hzro+Z3YV
- NK5Q==
-X-Gm-Message-State: APuU4Z8TMHGm6/7MJUcbIDtO+l7f7GLzFK56mi+6PhaO3CXXMCESGvmM
- 4T2YBbfioWGyvhkNM8XpxNJGLRT20AzzPYKKi/wSUCXxDltCqXiggDRQ6cRWC3EsguUz2z10nG5
- pEuGb6RjUKv+Jhbl/MRtW9da0va+OrIlEm1j5YPQ2G01JgNXDGA8wTvIGAlGZ8+0pm/bL
-X-Gm-Gg: AYBFou02N3xTxRCrKgYA3uKLMt7KF6vCEICipNkJ+aAK8HWcfN24iL6W0774ikVssli
- 67Hb/fwb++ujXGpHcLKWIycCfzFVlYt4VK0GJV4keyZAtRag5T79FjkoaoKvbf1h1dWKqqTpjOu
- g1kuUW9s5bglOjYoiyizubHMfvatUuy8X2X8bN6W/swrhAyBOspobzZIKJpK7V5q4RX5NUxsVD/
- hXoRfGgAynzCFEab3J9FGtQBZWHiH72o3I+Ogbmq0eOvMUg5KKIKflZF4WvJZBSHDz1eGy7GMht
- 9i+Kdu2/NmGGq6I6NUZhcX+CZVoeyfiBy4XP5inuT0YW5Ieh6wdwUrj91crJCp8/eRiEKhzw2Ig
- h3GYl7aWHhjBQ8S4ziAXeKXrqbG1ANyU9MzrZ3SA6UU7giWsXOYn6vtq64rWvHjnPhvKjFfPHcu
- 7hlpEwR13I8EqDs3tfgYLZuzyc6y8Lfmm43XOhnR6ILAme20mUVl4126yHlO9WER8wXA803dfih
- itr0vn8gakkyzOxkJG7G+k7Xpc9UOzg2RKtyvayAmsFXOR21uQiBiin9sJUtGmnIspYUurVVGqn
- yn3ZKcsVFnMd78JirUWWrfyGw4rM9hWAq7i5pAWBLo11E4hDPRgbtWVxvzE2IEH8lFepQmHP+fk
- cafzzGQt0s0al1YAXFCGwKwrhzZgdJbgX0mph22TDyKRldLZTYa7y5xz3sE4KAgAXiqi+IVjEot
- rHg/V3d+DFXq9N79s=
-X-Received: by 2002:a5d:5f91:0:b0:496:42eb:e0fd with SMTP id
- ffacd0b85a97d-49c71b5c72emr13607407f8f.31.1794678168894; 
- Sat, 14 Nov 2026 09:42:48 -0800 (PST)
+ bh=ItaY6OrqXAkL5HwgA+kc5pL8s41w07DAZQn1wCSi8e0=;
+ b=Gm6fT8pMma0xurZI7eDcERNSsIZJdr0PyTH7grMvze/X+Qvg9/4Jb6a/MJxg+qH5ML
+ Oby66HvQGCrEsLt3c7hf9dv/Dgjx3m3gu+44qAViThXVPBIhoUzIPAH3Rqqdx6iPAS3G
+ b3VKiMu6gCRxsGRi9jDB0okuKjuzR6rfcC7XUYzX+HTEIIHbjG/0sTXO+SzC3zW6Cvr8
+ /e8+lhiMFGpVSXiFkbTcAL4TstPDA1twm6Ny7ESg6c97/7ERWoVFn0Hv/RBXyKsvIAg1
+ 3qYwuAH+ZwBXzZNqKOVSL9RgPCKVBuiFIganETbqnXWLbmiChZ0ch0oSm856YFAwMuvt
+ cjvA==
+X-Forwarded-Encrypted: i=1;
+ AL+hErFbmjUIYXSrOWEV27Ohboh+6L6719CVr1o953IP4nzHUY56pSetO8bJzA9GM58XWps/kXGT/ViYWGAG3B+o@lists.sourceforge.net
+X-Gm-Message-State: APuU4Z90vY4PXU7uhNW8HwbVwNcereaJuIqGFLwmbnWThf7AUuzfJ+fW
+ xaLmdzwNoiPkYYUlNGYVs4zBOnGTVx5HBpnFySwgfkRTxgzngx7C/PgvcTbWN6ECyWyma8KFLEf
+ I5+SGbnKohTcLkNlyGaPQ3zI4Uz+lSOGzgJVkD8AG3wYbxg8FUfn6REH7hFaRbWa8yD5sztwEpe
+ LthtEAdw==
+X-Gm-Gg: AYBFou37oorl9NGYbXL1Rkz7d909D5H0ROixrSIAi76zi3+x3l+EsvY2MK3ORPv0dB6
+ slqpq97XOFPYuLI/4pjJuX7lokLxWcLoTdpi4DUWcSLVKh7XlAzNpO35vKq45ZkqkM/wTlevbDB
+ tiP+jKmaH98DeC2/+2JOuiX45FI9cX79nb5b30mRjtYiscfjDNAtVBFxXBFZenssSo5hM04f0eF
+ +xMcz/pQVuyzSqxAigtMo5LlFLAve5PqNFhfLyRw3H4pDBwkWYpnmisWPmI6vEuSKDHVQbWrLgm
+ /pndoX7hpJ7Y+M4HutxmZQb73HiXRBQV+W0W2SCRjwbYtZbh7X4jib8mN5FL92mf+hopI4cYx31
+ CeAuEZAqpzFIu3Gsi/B/ez0mpOKgn6Q2qBVLAyVLAH3nDsI1aUyQujVHjjTPjINrR/ihylVhpDx
+ G2o2eSh6Kz6IhzwokybWKok93d4vBjIw8BYAATV54abrwBg2kFCJc8EpcxSjOuw3cqsW07G7T5H
+ vQRZQOWpRJa5JkO4wGBaHYmsQ1V9P5MoTzYF6RnLL3QNWBJuUVIJ3NifJWcV60kNLNO/m8nN0Er
+ Ivi43lJFaBZOD2BuD8ZS16HlGKlr5NimYcXBH7GPzBY2cXm+zF2Tbnb/HTqY476L42XvNEuc7Z+
+ sfTEaBNeUur/7U77FqUCBwIW6F+rOTP7T2hN0NptvMV0z8kcvQLPEYKQ2Pm2i+2SyYN3FmeiKt5
+ u8zz0CZXWBWSV4meTID31qe9kZLvC+KBxALZSl
+X-Received: by 2002:a05:6000:4b0f:b0:48e:4a8a:e17f with SMTP id
+ ffacd0b85a97d-49c6d453dc6mr13515256f8f.4.1794678169835; 
+ Sat, 14 Nov 2026 09:42:49 -0800 (PST)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-49c5f7828a4sm12167530f8f.23.2026.11.14.09.42.48
+ ffacd0b85a97d-49c5f782396sm12428517f8f.24.2026.11.14.09.42.49
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sat, 14 Nov 2026 09:42:48 -0800 (PST)
+ Sat, 14 Nov 2026 09:42:49 -0800 (PST)
 X-Google-Original-From: "Gert Doering (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Sat, 14 Nov 2026 17:42:47 +0000
-To: chugly <charlie.vigue@openvpn.com>,
- =?UTF-8?Q?R=C4=83zvan_Cojocaru?= <razvanc@mailbox.org>,
- Arne Schwabe <arne-openvpn@rfc2549.org>,
- Frank Lichtenheld <frank@lichtenheld.com>
+Date: Sat, 14 Nov 2026 17:42:49 +0000
+To: chugly <charlie.vigue@openvpn.com>
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: newpatchset
+X-Gerrit-MessageType: merged
 X-Gerrit-PatchSet: 7
 X-Gerrit-Change-Id: I9085c55a7efefd31839b00ec8ec9a6f085574dde
 X-Gerrit-Change-Number: 1946
@@ -126,12 +126,12 @@ X-Gerrit-Commit: 241c5eb8afa06ee6c7dc05fe3c6b7df7b2379258
 In-Reply-To: <gerrit.1790212215000.I9085c55a7efefd31839b00ec8ec9a6f085574dde@gerrit.openvpn.net>
 References: <gerrit.1790212215000.I9085c55a7efefd31839b00ec8ec9a6f085574dde@gerrit.openvpn.net>
 Thread-Index: PGdlcnJpdC4xNzkwMjEyMjE1MDAwLkk5MDg1YzU1YTdlZmVmZDMxODM5YjAwZWM4ZWM5YTZmMDg1NTc0ZGRlQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <7260cda9233a9112c47fe43cfb8f3504105e6160-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+Message-ID: <7260cda9233a9112c47fe43cfb8f3504105e6160-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.5
 X-Spam-Score: 0.8 (/)
-X-Headers-End: 1xSHmB-000000002qT-3NF8
+X-Headers-End: 1xSHmC-000000002KU-2pcB
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: tests: add unit
  tests for route.c
 X-BeenThere: openvpn-devel@lists.sourceforge.net
@@ -149,111 +149,105 @@ Reply-To: gert@greenie.muc.de, arne-openvpn@rfc2549.org, razvanc@mailbox.org,
  openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com,
  charlie.vigue@openvpn.com
 Cc: "Gert Doering \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============3136169361017688857=="
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>,
+ Arne Schwabe <arne-openvpn@rfc2549.org>
+Content-Type: multipart/mixed; boundary="===============4645755356984158535=="
 X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
 	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,MIME_HTML_MOSTLY,
-	PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,SPF_PASS,T_KAM_HTML_FONT_INVALID,
-	WEIRD_PORT autolearn=ham autolearn_force=no version=4.0.1
+	PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,SPF_PASS,T_KAM_HTML_FONT_INVALID
+	autolearn=ham autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============3136169361017688857==
+--===============4645755356984158535==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="vnNde4uj6E0="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="gqFf2sTNsJU="; charset=UTF-8
 
---vnNde4uj6E0=
+--gqFf2sTNsJU=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Gert Doering has uploaded a new patch set (#7) to the change originally cre=
-ated by chugly=2E ( https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1946?usp=3De=
-mail )
+Gert Doering has submitted this change=2E ( https://gerrit=2Eopenvpn=2Enet/=
+c/openvpn/+/1946?usp=3Demail )
 
-The following approvals got outdated and were removed:
-Code-Review+=
-2 by R=C4=83zvan Cojocaru
-
-
-Change subject: tests: add unit tests for route=
-=2Ec
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+Change subject: tests: add unit tests for r=
+oute=2Ec
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-tests: =
-add unit tests for route=2Ec
+test=
+s: add unit tests for route=2Ec
 
-route=2Ec has no unit test coverage at all, s=
-o there is nowhere to put a
-test when touching it=2E  Cover the pure helper=
-s it already exports: the
-special address predicate, both netmask-to-netbit=
-s conversions, and the
+route=2Ec has no unit test coverage at all=
+, so there is nowhere to put a
+test when touching it=2E  Cover the pure hel=
+pers it already exports: the
+special address predicate, both netmask-to-net=
+bits conversions, and the
 IPv6 prefix host-bit masking=2E
 
-The two conversions=
- disagree on a full-length netmask:
-netmask_to_netbits() reports -1 and net=
-mask_to_netbits2() reports 32=2E
---server relies on the -1 to reject a /32,=
- so pin it down=2E
+The two conversi=
+ons disagree on a full-length netmask:
+netmask_to_netbits() reports -1 and =
+netmask_to_netbits2() reports 32=2E
+--server relies on the -1 to reject a /=
+32, so pin it down=2E
 
-Rather than add a driver of its own, the tests are host=
-ed by
-networking_testdriver as case 9, alongside its existing cases=2E  Tha=
-t
-driver is already gated on HAVE_SITNL, which is what route=2Ec needs: it
-=
+Rather than add a driver of its own, the tests are h=
+osted by
+networking_testdriver as case 9, alongside its existing cases=2E  =
+That
+driver is already gated on HAVE_SITNL, which is what route=2Ec needs: =
+it
 reaches the routing table through net_route_* on Linux and through
-argv/exe=
-cve elsewhere, so one set of stubs cannot link on both=2E
-t_net=2Esh runs t=
-he cases above LAST_AUTO_TEST after it has removed its
-dummy interface, so =
-the route tests need no interface and no particular
+argv/=
+execve elsewhere, so one set of stubs cannot link on both=2E
+t_net=2Esh run=
+s the cases above LAST_AUTO_TEST after it has removed its
+dummy interface, =
+so the route tests need no interface and no particular
 network state=2E
 
-route=
-=2Ec links against the real networking_sitnl=2Ec that the driver
-already ca=
-rries=2E  Only the socket and argv helpers that route=2Ec
-references but no=
- test here reaches are stubbed, and those assert rather
-than return quietly=
-, so a test straying onto one fails loudly=2E
+ro=
+ute=2Ec links against the real networking_sitnl=2Ec that the driver
+already=
+ carries=2E  Only the socket and argv helpers that route=2Ec
+references but=
+ no test here reaches are stubbed, and those assert rather
+than return quie=
+tly, so a test straying onto one fails loudly=2E
 
-Change-Id: I9085c55a7efefd31=
-839b00ec8ec9a6f085574dde
-Signed-off-by: Charlie Vigue <charlie=2Evigue@open=
-vpn=2Ecom>
+Change-Id: I9085c55a7efef=
+d31839b00ec8ec9a6f085574dde
+Signed-off-by: Charlie Vigue <charlie=2Evigue@o=
+penvpn=2Ecom>
 Acked-by: Razvan Cojocaru <razvanc@mailbox=2Eorg>
-Gerrit URL: ht=
-tps://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1946
-Message-Id: <20261103113600=
-=2E30488-1-gert@greenie=2Emuc=2Ede>
-URL: https://www=2Email-archive=2Ecom/o=
-penvpn-devel@lists=2Esourceforge=2Enet/msg40621=2Ehtml
-Signed-off-by: Gert =
-Doering <gert@greenie=2Emuc=2Ede>
+Gerrit URL:=
+ https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1946
+Message-Id: <2026110311360=
+0=2E30488-1-gert@greenie=2Emuc=2Ede>
+URL: https://www=2Email-archive=2Ecom/=
+openvpn-devel@lists=2Esourceforge=2Enet/msg40621=2Ehtml
+Signed-off-by: Gert=
+ Doering <gert@greenie=2Emuc=2Ede>
 ---
 M CMakeLists=2Etxt
-M tests/t_net=2Esh=
-
+M tests/t_net=2Es=
+h
 M tests/unit_tests/openvpn/Makefile=2Eam
-M tests/unit_tests/openvpn/test_n=
-etworking=2Ec
+M tests/unit_tests/openvpn/test_=
+networking=2Ec
 A tests/unit_tests/openvpn/test_route=2Ec
-A tests/unit_tests/=
-openvpn/test_route=2Eh
+A tests/unit_tests=
+/openvpn/test_route=2Eh
 6 files changed, 228 insertions(+), 2 deletions(-)
-
 =
 
-  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/46/1946=
-/7
+
+
 
 diff --git a/CMakeLists=2Etxt b/CMakeLists=2Etxt
 index a90eb1a=2E=2E4f4=
@@ -697,430 +691,427 @@ To=
  unsubscribe, or for help writing mail filters, visit https://gerrit=2Eopen=
 vpn=2Enet/settings?usp=3Demail
 
-Gerrit-MessageType: newpatchset
-Gerrit-Proj=
-ect: openvpn
+Gerrit-MessageType: merged
+Gerrit-Project: =
+openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I9085c55a7efefd31839b0=
-0ec8ec9a6f085574dde
+Gerrit-Change-Id: I9085c55a7efefd31839b00ec8e=
+c9a6f085574dde
 Gerrit-Change-Number: 1946
 Gerrit-PatchSet: 7
-Gerrit-Ow=
-ner: chugly <charlie=2Evigue@openvpn=2Ecom>
-Gerrit-Reviewer: Arne Schwabe <=
-arne-openvpn@rfc2549=2Eorg>
-Gerrit-Reviewer: Frank Lichtenheld <frank@licht=
-enheld=2Ecom>
-Gerrit-Reviewer: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>=
+Gerrit-Owner: =
+chugly <charlie=2Evigue@openvpn=2Ecom>
+Gerrit-Reviewer: Arne Schwabe <arne-=
+openvpn@rfc2549=2Eorg>
+Gerrit-Reviewer: Frank Lichtenheld <frank@lichtenhel=
+d=2Ecom>
+Gerrit-Reviewer: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
+Gerr=
+it-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
 
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
-
---vnNde4uj6E0=
+--gqFf2sTNsJU=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p>Gert Doering <str=
-ong>uploaded patch set #7</strong> to the change originally created by chug=
-ly=2E</p><p><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1946?usp=
-=3Demail">View Change</a></p><p>The following approvals got outdated and we=
-re removed:
-Code-Review+2 by R=C4=83zvan Cojocaru</p><pre class=3D"blocks" =
-style=3D"font-family: monospace,monospace; white-space: pre-wrap;">tests: a=
-dd unit tests for route=2Ec<br><br>route=2Ec has no unit test coverage at a=
-ll, so there is nowhere to put a<br>test when touching it=2E  Cover the pur=
-e helpers it already exports: the<br>special address predicate, both netmas=
-k-to-netbits conversions, and the<br>IPv6 prefix host-bit masking=2E<br><br=
->The two conversions disagree on a full-length netmask:<br>netmask_to_netbi=
-ts() reports -1 and netmask_to_netbits2() reports 32=2E<br>--server relies =
-on the -1 to reject a /32, so pin it down=2E<br><br>Rather than add a drive=
-r of its own, the tests are hosted by<br>networking_testdriver as case 9, a=
-longside its existing cases=2E  That<br>driver is already gated on HAVE_SIT=
-NL, which is what route=2Ec needs: it<br>reaches the routing table through =
-net_route_* on Linux and through<br>argv/execve elsewhere, so one set of st=
-ubs cannot link on both=2E<br>t_net=2Esh runs the cases above LAST_AUTO_TES=
-T after it has removed its<br>dummy interface, so the route tests need no i=
-nterface and no particular<br>network state=2E<br><br>route=2Ec links again=
-st the real networking_sitnl=2Ec that the driver<br>already carries=2E  Onl=
-y the socket and argv helpers that route=2Ec<br>references but no test here=
- reaches are stubbed, and those assert rather<br>than return quietly, so a =
-test straying onto one fails loudly=2E<br><br>Change-Id: I9085c55a7efefd318=
-39b00ec8ec9a6f085574dde<br>Signed-off-by: Charlie Vigue &lt;charlie=2Evigue=
-@openvpn=2Ecom&gt;<br>Acked-by: Razvan Cojocaru &lt;razvanc@mailbox=2Eorg&g=
-t;<br>Gerrit URL: https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1946<br>Messag=
-e-Id: &lt;20261103113600=2E30488-1-gert@greenie=2Emuc=2Ede&gt;<br>URL: http=
-s://www=2Email-archive=2Ecom/openvpn-devel@lists=2Esourceforge=2Enet/msg406=
-21=2Ehtml<br>Signed-off-by: Gert Doering &lt;gert@greenie=2Emuc=2Ede&gt;<br=
->---<br>M CMakeLists=2Etxt<br>M tests/t_net=2Esh<br>M tests/unit_tests/open=
-vpn/Makefile=2Eam<br>M tests/unit_tests/openvpn/test_networking=2Ec<br>A te=
-sts/unit_tests/openvpn/test_route=2Ec<br>A tests/unit_tests/openvpn/test_ro=
-ute=2Eh<br>6 files changed, 228 insertions(+), 2 deletions(-)<br><br></pre>=
-<pre class=3D"blocks" style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/chan=
-ges/46/1946/7</pre><pre style=3D"font-family: monospace,monospace; white-sp=
-ace: pre-wrap;"><span>diff --git a/CMakeLists=2Etxt b/CMakeLists=2Etxt</spa=
-n><br><span>index a90eb1a=2E=2E4f48990 100644</span><br><span>--- a/CMakeLi=
-sts=2Etxt</span><br><span>+++ b/CMakeLists=2Etxt</span><br><span>@@ -973,7 =
-+973,14 @@</span><br><span>     if (TARGET test_networking)</span><br><span=
->         target_link_options(test_networking PRIVATE -Wl,--wrap=3Dparse_li=
-ne)</span><br><span>         target_compile_options(test_networking PRIVATE=
- -UNDEBUG)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        t=
-arget_link_libraries(test_networking PUBLIC ${RESOLV_LIBRARIES})</span><br>=
-<span>         target_sources(test_networking PRIVATE</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            tests/unit_tests/openvpn/test=
-_route=2Ec</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-   tests/unit_tests/openvpn/mock_management=2Ec</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+            src/openvpn/route=2Ec</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+            src/openvpn/env_set=
-=2Ec</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            src=
-/openvpn/run_command=2Ec</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+            src/openvpn/socket_util=2Ec</span><br><span>             s=
-rc/openvpn/networking_sitnl=2Ec</span><br><span>             src/openvpn/cr=
-ypto_epoch=2Ec</span><br><span>             src/openvpn/crypto_mbedtls=2Ec<=
-/span><br><span>diff --git a/tests/t_net=2Esh b/tests/t_net=2Esh</span><br>=
-<span>index d63f648=2E=2Efd07277 100755</span><br><span>--- a/tests/t_net=
-=2Esh</span><br><span>+++ b/tests/t_net=2Esh</span><br><span>@@ -3,7 +3,7 @=
-@</span><br><span> IFACE=3D&quot;ovpn-dummy0&quot;</span><br><span> UNIT_TE=
-ST=3D&quot;=2E/unit_tests/openvpn/networking_testdriver&quot;</span><br><sp=
-an> LAST_AUTO_TEST=3D7</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--LAST_TEST=3D8</span><br><span style=3D"color: hsl(120, 100%, 40%);">+LAST_=
-TEST=3D9</span><br><span> </span><br><span> srcdir=3D&quot;${srcdir:-=2E}&q=
-uot;</span><br><span> top_builddir=3D&quot;${top_builddir:-=2E=2E}&quot;</s=
-pan><br><span>diff --git a/tests/unit_tests/openvpn/Makefile=2Eam b/tests/u=
-nit_tests/openvpn/Makefile=2Eam</span><br><span>index 70cf7b2=2E=2E6091264 =
-100644</span><br><span>--- a/tests/unit_tests/openvpn/Makefile=2Eam</span><=
-br><span>+++ b/tests/unit_tests/openvpn/Makefile=2Eam</span><br><span>@@ -2=
-19,8 +219,14 @@</span><br><span> networking_testdriver_LDFLAGS =3D @TEST_LD=
-FLAGS@ -L$(top_srcdir)/src/openvpn \</span><br><span> 	$(OPTIONAL_CRYPTO_LI=
-BS)</span><br><span> networking_testdriver_SOURCES =3D test_networking=2Ec =
-mock_msg=2Ec \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	test=
-_route=2Ec test_route=2Eh test_common=2Eh \</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+	mock_management=2Ec \</span><br><span> 	$(top_srcd=
-ir)/src/compat/compat-strlcpy=2Ec \</span><br><span> 	$(top_srcdir)/src/ope=
-nvpn/networking_sitnl=2Ec \</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+	$(top_srcdir)/src/openvpn/route=2Ec \</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/env_set=2Ec \</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/=
-run_command=2Ec \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$=
-(top_srcdir)/src/openvpn/socket_util=2Ec \</span><br><span> 	$(top_srcdir)/=
-src/openvpn/buffer=2Ec \</span><br><span> 	$(top_srcdir)/src/openvpn/crypto=
-=2Ec \</span><br><span> 	$(top_srcdir)/src/openvpn/crypto_epoch=2Ec \</span=
-><br><span>diff --git a/tests/unit_tests/openvpn/test_networking=2Ec b/test=
-s/unit_tests/openvpn/test_networking=2Ec</span><br><span>index 3699a2a1=2E=
-=2Eb580d32 100644</span><br><span>--- a/tests/unit_tests/openvpn/test_netwo=
-rking=2Ec</span><br><span>+++ b/tests/unit_tests/openvpn/test_networking=2E=
-c</span><br><span>@@ -2,6 +2,8 @@</span><br><span> #include &quot;syshead=
-=2Eh&quot;</span><br><span> #include &quot;networking=2Eh&quot;</span><br><=
-span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quo=
-t;test_route=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span> #include &lt;setjmp=2Eh&gt;</span><br><span> #include =
-&lt;cmocka=2Eh&gt;</span><br><span> </span><br><span>@@ -212,7 +214,7 @@</s=
-pan><br><span> static void</span><br><span> usage(char *name)</span><br><sp=
-an> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    printf(&quot=
-;Usage: %s &lt;0-8&gt;\n&quot;, name);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    printf(&quot;Usage: %s &lt;0-9&gt;\n&quot;, name);</=
-span><br><span> }</span><br><span> </span><br><span> int</span><br><span>@@=
- -272,6 +274,9 @@</span><br><span>             assert_int_equal(net__iface_=
-type(&quot;dummy0815&quot;, NULL), -ENODEV);</span><br><span>             r=
-eturn 0;</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        case 9:</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+            return route_tests();</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span>         default:</span><br><span>       =
-      printf(&quot;invalid test: %d\n&quot;, test);</span><br><span>       =
-      break;</span><br><span>diff --git a/tests/unit_tests/openvpn/test_rou=
-te=2Ec b/tests/unit_tests/openvpn/test_route=2Ec</span><br><span>new file m=
-ode 100644</span><br><span>index 0000000=2E=2E3cfee9b</span><br><span>--- /=
-dev/null</span><br><span>+++ b/tests/unit_tests/openvpn/test_route=2Ec</spa=
-n><br><span>@@ -0,0 +1,181 @@</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  Ope=
-nVPN -- An application to securely tunnel IP networks</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *             over a single UDP port, wi=
-th support for SSL/TLS-based</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+ *             session authentication and key exchange,</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ *             packet encrypti=
-on, packet authentication, and</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+ *             packet compression=2E</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+ *  Copyright (C) 2002-2026 OpenVPN Inc &lt;sales@openvpn=2Enet&=
-gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ *  This program is free software=
-; you can redistribute it and/or modify</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+ *  it under the terms of the GNU General Public Licens=
-e version 2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  as p=
-ublished by the Free Software Foundation=2E</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+ *  This program is distributed in the hope that it will be useful,<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY =
-WARRANTY; without even the implied warranty of</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR =
-PURPOSE=2E  See the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- *  GNU General Public License for more details=2E</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+ *  You should have received a copy of the GNU General Public=
- License along</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  w=
-ith this program; if not, see &lt;https://www=2Egnu=2Eorg/licenses/&gt;=2E<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+#ifdef HAVE_CONFIG_H</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+#include &quot;config=2Eh&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+#include &quot;syshead=2Eh&quot;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#inc=
-lude &quot;test_common=2Eh&quot;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#inclu=
-de &quot;route=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+#include &quot;networking=2Eh&quot;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+#include &quot;test_route=2Eh&quot;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/=
-* Stubs for functions route=2Ec references but that no test here reaches=2E=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * They assert rath=
-er than return quietly, so a test straying onto one</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * fails loudly instead of silently doing=
- nothing=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+struct argv</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+argv_new(void)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    assert_true(0);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    struct argv a =3D { 0 };</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    return a;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+argv_free(struct argv *a)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    assert_true(0);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+boo=
-l</span><br><span style=3D"color: hsl(120, 100%, 40%);">+get_ipv6_addr(cons=
-t char *prefix_str, struct in6_addr *network, unsigned int *netbits,</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+              msglvl_t msg=
-level)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(0);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    return false;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+in_addr_t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+getad=
-dr(unsigned int flags, const char *hostname, int resolve_retry, bool *succe=
-eded,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        struct=
- signal_info *sig_info)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_tru=
-e(0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return 0;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+openvpn_getaddrinfo(unsigned int flags, const char *hostname, const char =
-*servname,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-           int resolve_retry_seconds, struct signal_info *sig_info, int ai_=
-family,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-        struct addrinfo **res)</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ass=
-ert_true(0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ret=
-urn 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+struct signal_info siginfo_static; /* GLOBAL */</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+int</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+signal_reset(struct signal_info *si, int signum)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    assert_true(0);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    return 0;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+test_is_special_addr(v=
-oid **state)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(is_specia=
-l_addr(&quot;net_gateway&quot;));</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    assert_true(is_special_addr(&quot;vpn_gateway&quot;));</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(is_spe=
-cial_addr(&quot;remote_host&quot;));</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  assert_false(is_special_addr(&quot;10=2E0=2E0=2E1&quot;));</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    assert_false(is_special_addr(&=
-quot;default&quot;));</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    assert_false(is_special_addr(NULL));</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+test_netmask_to_netbit=
-s(void **state)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    int netbits;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    assert_true(netmask_to_netbits(0x0a00000=
-0, 0xff000000, &amp;netbits)); /* 10/8 */</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    assert_int_equal(netbits, 8);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    assert_true(netmask_to_netbits(0xc0a80100, 0xffffff00,=
- &amp;netbits)); /* 192=2E168=2E1/24 */</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    assert_int_equal(netbits, 24);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    assert_true(netmask_to_netbits(0x00000000, 0x00000000, =
-&amp;netbits)); /* default route */</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    assert_int_equal(netbits, 0);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    /* a full-length mask reports -1 rather than 32 */</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(netmask_to_ne=
-tbits(0x0a010203, 0xffffffff, &amp;netbits));</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    assert_int_equal(netbits, -1);</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    /* host bits set in the network part */</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    assert_false(netmask_to_n=
-etbits(0x0a000001, 0xff000000, &amp;netbits));</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    /* not a contiguous netmask */</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    assert_false(netmask_to_netbits(0x0a000000, 0xff=
-00ff00, &amp;netbits));</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+test_netmask_to_netbits2(void **state)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(netmask_to_netbits2=
-(0xff000000), 8);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  assert_int_equal(netmask_to_netbits2(0xffffff00), 24);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(netmask_to_netbit=
-s2(0x00000000), 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* unlike netma=
-sk_to_netbits(), this one reports a full-length mask as 32 */</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(netmask_to_n=
-etbits2(0xffffffff), 32);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_in=
-t_equal(netmask_to_netbits2(0xff00ff00), -1);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static void=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+assert_clear_host_b=
-its(const char *addr, unsigned int netbits, const char *expected)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    struct route_ipv6 r6;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    struct in6_addr want;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    CLEAR(r6);</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    assert_int_equal(inet_pton(AF_INET6, addr, &amp;r6=2Ene=
-twork), 1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    asse=
-rt_int_equal(inet_pton(AF_INET6, expected, &amp;want), 1);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    r6=2Enetbits =3D netbits;</span>=
+ong>submitted</strong> this change=2E</p><p><a href=3D"https://gerrit=2Eope=
+nvpn=2Enet/c/openvpn/+/1946?usp=3Demail">View Change</a></p><div style=3D"w=
+hite-space:pre-wrap"></div><pre class=3D"blocks" style=3D"font-family: mono=
+space,monospace; white-space: pre-wrap;">tests: add unit tests for route=2E=
+c<br><br>route=2Ec has no unit test coverage at all, so there is nowhere to=
+ put a<br>test when touching it=2E  Cover the pure helpers it already expor=
+ts: the<br>special address predicate, both netmask-to-netbits conversions, =
+and the<br>IPv6 prefix host-bit masking=2E<br><br>The two conversions disag=
+ree on a full-length netmask:<br>netmask_to_netbits() reports -1 and netmas=
+k_to_netbits2() reports 32=2E<br>--server relies on the -1 to reject a /32,=
+ so pin it down=2E<br><br>Rather than add a driver of its own, the tests ar=
+e hosted by<br>networking_testdriver as case 9, alongside its existing case=
+s=2E  That<br>driver is already gated on HAVE_SITNL, which is what route=2E=
+c needs: it<br>reaches the routing table through net_route_* on Linux and t=
+hrough<br>argv/execve elsewhere, so one set of stubs cannot link on both=2E=
+<br>t_net=2Esh runs the cases above LAST_AUTO_TEST after it has removed its=
+<br>dummy interface, so the route tests need no interface and no particular=
+<br>network state=2E<br><br>route=2Ec links against the real networking_sit=
+nl=2Ec that the driver<br>already carries=2E  Only the socket and argv help=
+ers that route=2Ec<br>references but no test here reaches are stubbed, and =
+those assert rather<br>than return quietly, so a test straying onto one fai=
+ls loudly=2E<br><br>Change-Id: I9085c55a7efefd31839b00ec8ec9a6f085574dde<br=
+>Signed-off-by: Charlie Vigue &lt;charlie=2Evigue@openvpn=2Ecom&gt;<br>Acke=
+d-by: Razvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt;<br>Gerrit URL: https://=
+gerrit=2Eopenvpn=2Enet/c/openvpn/+/1946<br>Message-Id: &lt;20261103113600=
+=2E30488-1-gert@greenie=2Emuc=2Ede&gt;<br>URL: https://www=2Email-archive=
+=2Ecom/openvpn-devel@lists=2Esourceforge=2Enet/msg40621=2Ehtml<br>Signed-of=
+f-by: Gert Doering &lt;gert@greenie=2Emuc=2Ede&gt;<br>---<br>M CMakeLists=
+=2Etxt<br>M tests/t_net=2Esh<br>M tests/unit_tests/openvpn/Makefile=2Eam<br=
+>M tests/unit_tests/openvpn/test_networking=2Ec<br>A tests/unit_tests/openv=
+pn/test_route=2Ec<br>A tests/unit_tests/openvpn/test_route=2Eh<br>6 files c=
+hanged, 228 insertions(+), 2 deletions(-)<br><br></pre>
+<pre style=3D"font-=
+family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/CMa=
+keLists=2Etxt b/CMakeLists=2Etxt</span><br><span>index a90eb1a=2E=2E4f48990=
+ 100644</span><br><span>--- a/CMakeLists=2Etxt</span><br><span>+++ b/CMakeL=
+ists=2Etxt</span><br><span>@@ -973,7 +973,14 @@</span><br><span>     if (TA=
+RGET test_networking)</span><br><span>         target_link_options(test_net=
+working PRIVATE -Wl,--wrap=3Dparse_line)</span><br><span>         target_co=
+mpile_options(test_networking PRIVATE -UNDEBUG)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        target_link_libraries(test_networking P=
+UBLIC ${RESOLV_LIBRARIES})</span><br><span>         target_sources(test_net=
+working PRIVATE</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        tests/unit_tests/openvpn/test_route=2Ec</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+            tests/unit_tests/openvpn/mock_manag=
+ement=2Ec</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+  src/openvpn/route=2Ec</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+            src/openvpn/env_set=2Ec</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+            src/openvpn/run_command=2Ec</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+            src/openvpn/socket_util=
+=2Ec</span><br><span>             src/openvpn/networking_sitnl=2Ec</span><b=
+r><span>             src/openvpn/crypto_epoch=2Ec</span><br><span>         =
+    src/openvpn/crypto_mbedtls=2Ec</span><br><span>diff --git a/tests/t_net=
+=2Esh b/tests/t_net=2Esh</span><br><span>index d63f648=2E=2Efd07277 100755<=
+/span><br><span>--- a/tests/t_net=2Esh</span><br><span>+++ b/tests/t_net=2E=
+sh</span><br><span>@@ -3,7 +3,7 @@</span><br><span> IFACE=3D&quot;ovpn-dumm=
+y0&quot;</span><br><span> UNIT_TEST=3D&quot;=2E/unit_tests/openvpn/networki=
+ng_testdriver&quot;</span><br><span> LAST_AUTO_TEST=3D7</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-LAST_TEST=3D8</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+LAST_TEST=3D9</span><br><span> </span><br><span=
+> srcdir=3D&quot;${srcdir:-=2E}&quot;</span><br><span> top_builddir=3D&quot=
+;${top_builddir:-=2E=2E}&quot;</span><br><span>diff --git a/tests/unit_test=
+s/openvpn/Makefile=2Eam b/tests/unit_tests/openvpn/Makefile=2Eam</span><br>=
+<span>index 70cf7b2=2E=2E6091264 100644</span><br><span>--- a/tests/unit_te=
+sts/openvpn/Makefile=2Eam</span><br><span>+++ b/tests/unit_tests/openvpn/Ma=
+kefile=2Eam</span><br><span>@@ -219,8 +219,14 @@</span><br><span> networkin=
+g_testdriver_LDFLAGS =3D @TEST_LDFLAGS@ -L$(top_srcdir)/src/openvpn \</span=
+><br><span> 	$(OPTIONAL_CRYPTO_LIBS)</span><br><span> networking_testdriver=
+_SOURCES =3D test_networking=2Ec mock_msg=2Ec \</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+	test_route=2Ec test_route=2Eh test_common=2Eh =
+\</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	mock_management=
+=2Ec \</span><br><span> 	$(top_srcdir)/src/compat/compat-strlcpy=2Ec \</spa=
+n><br><span> 	$(top_srcdir)/src/openvpn/networking_sitnl=2Ec \</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/route=
+=2Ec \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir=
+)/src/openvpn/env_set=2Ec \</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+	$(top_srcdir)/src/openvpn/run_command=2Ec \</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/socket_util=2E=
+c \</span><br><span> 	$(top_srcdir)/src/openvpn/buffer=2Ec \</span><br><spa=
+n> 	$(top_srcdir)/src/openvpn/crypto=2Ec \</span><br><span> 	$(top_srcdir)/=
+src/openvpn/crypto_epoch=2Ec \</span><br><span>diff --git a/tests/unit_test=
+s/openvpn/test_networking=2Ec b/tests/unit_tests/openvpn/test_networking=2E=
+c</span><br><span>index 3699a2a1=2E=2Eb580d32 100644</span><br><span>--- a/=
+tests/unit_tests/openvpn/test_networking=2Ec</span><br><span>+++ b/tests/un=
+it_tests/openvpn/test_networking=2Ec</span><br><span>@@ -2,6 +2,8 @@</span>=
+<br><span> #include &quot;syshead=2Eh&quot;</span><br><span> #include &quot=
+;networking=2Eh&quot;</span><br><span> </span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+#include &quot;test_route=2Eh&quot;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #include &lt;setjmp=
+=2Eh&gt;</span><br><span> #include &lt;cmocka=2Eh&gt;</span><br><span> </sp=
+an><br><span>@@ -212,7 +214,7 @@</span><br><span> static void</span><br><sp=
+an> usage(char *name)</span><br><span> {</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    printf(&quot;Usage: %s &lt;0-8&gt;\n&quot;, name);</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    printf(&quot;Usag=
+e: %s &lt;0-9&gt;\n&quot;, name);</span><br><span> }</span><br><span> </spa=
+n><br><span> int</span><br><span>@@ -272,6 +274,9 @@</span><br><span>      =
+       assert_int_equal(net__iface_type(&quot;dummy0815&quot;, NULL), -ENOD=
+EV);</span><br><span>             return 0;</span><br><span> </span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        case 9:</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+            return route_tests();</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>      =
+   default:</span><br><span>             printf(&quot;invalid test: %d\n&qu=
+ot;, test);</span><br><span>             break;</span><br><span>diff --git =
+a/tests/unit_tests/openvpn/test_route=2Ec b/tests/unit_tests/openvpn/test_r=
+oute=2Ec</span><br><span>new file mode 100644</span><br><span>index 0000000=
+=2E=2E3cfee9b</span><br><span>--- /dev/null</span><br><span>+++ b/tests/uni=
+t_tests/openvpn/test_route=2Ec</span><br><span>@@ -0,0 +1,181 @@</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+ *  OpenVPN -- An application to securely tunne=
+l IP networks</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *    =
+         over a single UDP port, with support for SSL/TLS-based</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+ *             session authenti=
+cation and key exchange,</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+ *             packet encryption, packet authentication, and</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ *             packet compres=
+sion=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+ *  Copyright (C) 2002-2026 O=
+penVPN Inc &lt;sales@openvpn=2Enet&gt;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+ *  This program is free software; you can redistribute it and/or modify<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  it under the ter=
+ms of the GNU General Public License version 2</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ *  as published by the Free Software Foundation=
+=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+ *  This program is distributed i=
+n the hope that it will be useful,</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ *  but WITHOUT ANY WARRANTY; without even the implied warra=
+nty of</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  MERCHANTA=
+BILITY or FITNESS FOR A PARTICULAR PURPOSE=2E  See the</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+ *  GNU General Public License for more =
+details=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ *  You should have receiv=
+ed a copy of the GNU General Public License along</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ *  with this program; if not, see &lt;https:=
+//www=2Egnu=2Eorg/licenses/&gt;=2E</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef HAVE_CONFIG_H=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;conf=
+ig=2Eh&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+#include &quot;syshead=2Eh&quot;</span>=
 <br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    route_ipv6_clear_host_bits(&amp;r6);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_memory_equal(=
-&amp;r6=2Enetwork, &amp;want, sizeof(struct in6_addr));</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+s=
-tatic void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_rout=
-e_ipv6_clear_host_bits(void **state)</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   /* whole bytes cleared */</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    assert_clear_host_bits(&quot;2001:db8::1&quot;, 64, &quot;2001=
-:db8::&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    a=
-ssert_clear_host_bits(&quot;2001:db8:dead:beef::1&quot;, 32, &quot;2001:db8=
-::&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    /* a prefix that does no=
-t fall on a byte boundary */</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    assert_clear_host_bits(&quot;2001:db8:0:00ff::1&quot;, 60, &qu=
-ot;2001:db8:0:00f0::&quot;);</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    assert_clear_host_bits(&quot;2001:db8::ffff&quot;, 121, &quot;=
-2001:db8::ff80&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* nothing t=
-o clear, and everything to clear */</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    assert_clear_host_bits(&quot;2001:db8::1&quot;, 128, &q=
-uot;2001:db8::1&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    assert_clear_host_bits(&quot;2001:db8::1&quot;, 0, &quot;::&quot;);=
+color: hsl(120, 100%, 40%);">+#include &quot;test_common=2Eh&quot;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#include &quot;route=2Eh&quot;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+#include &quot;networking=2Eh&quot;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+#include &quot;test_route=2Eh&quot;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+/* Stubs for functions route=2Ec referenc=
+es but that no test here reaches=2E</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+ * They assert rather than return quietly, so a test strayi=
+ng onto one</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * fails=
+ loudly instead of silently doing nothing=2E</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+struct argv</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++argv_new(void)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(0);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct argv a =3D =
+{ 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return a;=
 </span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span s=
 tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+static const struct CMUnitTest route_test_list[] =3D {</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cmocka_unit_test(=
-test_is_special_addr),</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    cmocka_unit_test(test_netmask_to_netbits),</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    cmocka_unit_test(test_netmask_to_netbits2=
-),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cmocka_unit_t=
-est(test_route_ipv6_clear_host_bits),</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+};</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+route_tests(void)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    openvpn_unit_test_setup();</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    return cmocka_run_group_tests(route_t=
-est_list, NULL, NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+}</span><br><span>diff --git a/tests/unit_tests/openvpn/test_route=2Eh b=
-/tests/unit_tests/openvpn/test_route=2Eh</span><br><span>new file mode 1006=
-44</span><br><span>index 0000000=2E=2Ecaa5c3c</span><br><span>--- /dev/null=
-</span><br><span>+++ b/tests/unit_tests/openvpn/test_route=2Eh</span><br><s=
-pan>@@ -0,0 +1,27 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  OpenVPN -- A=
-n application to securely tunnel IP networks</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+ *             over a single UDP port, with suppor=
-t for SSL/TLS-based</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- *             session authentication and key exchange,</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+ *             packet encryption, packe=
-t authentication, and</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ *             packet compression=2E</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ *  Copyright (C) 2002-2026 OpenVPN Inc &lt;sales@openvpn=2Enet&gt;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *  This program is free software; you ca=
-n redistribute it and/or modify</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+ *  it under the terms of the GNU General Public License versio=
-n 2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  as published=
- by the Free Software Foundation=2E</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-*  This program is distributed in the hope that it will be useful,</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY=
-; without even the implied warranty of</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE=
-=2E  See the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  GNU=
- General Public License for more details=2E</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+ *  You should have received a copy of the GNU General Public Licens=
-e along</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  with thi=
-s program; if not, see &lt;https://www=2Egnu=2Eorg/licenses/&gt;=2E</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#ifndef TEST_ROUTE_H</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+#define TEST_ROUTE_H</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+/** Runs the route=2Ec unit tests, retu=
-rns the number of failures */</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+route_=
-tests(void);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif<=
-/span><br></pre><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet=
-/c/openvpn/+/1946?usp=3Demail">change 1946</a>=2E To unsubscribe, or for he=
-lp writing mail filters, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/se=
-ttings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://sc=
-hema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"htt=
-p://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https://gerrit=
-=2Eopenvpn=2Enet/c/openvpn/+/1946?usp=3Demail"/><meta itemprop=3D"name" con=
-tent=3D"View Change"/></div></div>
+120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+argv_free(struct argv *a)</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    asse=
+rt_true(0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+bool</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+get_ipv6_addr(const char *prefix_str, struct in6_addr *netwo=
+rk, unsigned int *netbits,</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+              msglvl_t msglevel)</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    assert_true(0);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    return false;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+in_addr_t</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+getaddr(unsigned int flags, const char *hostnam=
+e, int resolve_retry, bool *succeeded,</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        struct signal_info *sig_info)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    assert_true(0);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    return 0;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+openvpn_getaddrinfo(unsigned int flags, =
+const char *hostname, const char *servname,</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+                    int resolve_retry_seconds, stru=
+ct signal_info *sig_info, int ai_family,</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                    struct addrinfo **res)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    assert_true(0);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    return 0;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+struct signal_inf=
+o siginfo_static; /* GLOBAL */</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+signal_reset(struct sign=
+al_info *si, int signum)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_tr=
+ue(0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return 0;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+test_is_special_addr(void **state)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    assert_true(is_special_addr(&quot;net_gateway&quot;));</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(is_special_a=
+ddr(&quot;vpn_gateway&quot;));</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    assert_true(is_special_addr(&quot;remote_host&quot;));</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    assert_false(is_special_addr(&quot;10=2E=
+0=2E0=2E1&quot;));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   assert_false(is_special_addr(&quot;default&quot;));</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    assert_false(is_special_addr(NULL));=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+test_netmask_to_netbits(void **state)</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    int netbits;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_=
+true(netmask_to_netbits(0x0a000000, 0xff000000, &amp;netbits)); /* 10/8 */<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal=
+(netbits, 8);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(netmask_t=
+o_netbits(0xc0a80100, 0xffffff00, &amp;netbits)); /* 192=2E168=2E1/24 */</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(n=
+etbits, 24);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(netmask_to=
+_netbits(0x00000000, 0x00000000, &amp;netbits)); /* default route */</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(netbi=
+ts, 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    /* a full-length mask repor=
+ts -1 rather than 32 */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    assert_true(netmask_to_netbits(0x0a010203, 0xffffffff, &amp;netbits=
+));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_e=
+qual(netbits, -1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* host bits set=
+ in the network part */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    assert_false(netmask_to_netbits(0x0a000001, 0xff000000, &amp;netbit=
+s));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    /* not a contiguous netmask */=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_false(ne=
+tmask_to_netbits(0x0a000000, 0xff00ff00, &amp;netbits));</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_net=
+mask_to_netbits2(void **state)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ass=
+ert_int_equal(netmask_to_netbits2(0xff000000), 8);</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    assert_int_equal(netmask_to_netbits2(0xf=
+fffff00), 24);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    a=
+ssert_int_equal(netmask_to_netbits2(0x00000000), 0);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    /* unlike netmask_to_netbits(), this one reports a full-=
+length mask as 32 */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    assert_int_equal(netmask_to_netbits2(0xffffffff), 32);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    assert_int_equal(netmask_to_netbits2(0xff00ff00), =
+-1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+assert_clear_host_bits(const char *addr, unsigned int netbit=
+s, const char *expected)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct ro=
+ute_ipv6 r6;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    str=
+uct in6_addr want;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    CLEAR(r6);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_int_equal(inet=
+_pton(AF_INET6, addr, &amp;r6=2Enetwork), 1);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    assert_int_equal(inet_pton(AF_INET6, expected=
+, &amp;want), 1);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  r6=2Enetbits =3D netbits;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    route_i=
+pv6_clear_host_bits(&amp;r6);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    assert_memory_equal(&amp;r6=2Enetwork, &amp;want, sizeof(stru=
+ct in6_addr));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+test_route_ipv6_clear_host_bits(void **state)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    /* whole bytes cleared */</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    assert_clear_host_bits(&quo=
+t;2001:db8::1&quot;, 64, &quot;2001:db8::&quot;);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    assert_clear_host_bits(&quot;2001:db8:dea=
+d:beef::1&quot;, 32, &quot;2001:db8::&quot;);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    /* a prefix that does not fall on a byte boundary */</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    assert_clear_host_bits(&quo=
+t;2001:db8:0:00ff::1&quot;, 60, &quot;2001:db8:0:00f0::&quot;);</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    assert_clear_host_bits(&quo=
+t;2001:db8::ffff&quot;, 121, &quot;2001:db8::ff80&quot;);</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    /* nothing to clear, and everything to clear */</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_clear_host_bi=
+ts(&quot;2001:db8::1&quot;, 128, &quot;2001:db8::1&quot;);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    assert_clear_host_bits(&quot;200=
+1:db8::1&quot;, 0, &quot;::&quot;);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+static const struct C=
+MUnitTest route_test_list[] =3D {</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    cmocka_unit_test(test_is_special_addr),</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    cmocka_unit_test(test_netmask_to_=
+netbits),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cmocka=
+_unit_test(test_netmask_to_netbits2),</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    cmocka_unit_test(test_route_ipv6_clear_host_bits),</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+};</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++route_tests(void)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    openvpn_unit_te=
+st_setup();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    retu=
+rn cmocka_run_group_tests(route_test_list, NULL, NULL);</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+}</span><br><span>diff --git a/tests/un=
+it_tests/openvpn/test_route=2Eh b/tests/unit_tests/openvpn/test_route=2Eh</=
+span><br><span>new file mode 100644</span><br><span>index 0000000=2E=2Ecaa5=
+c3c</span><br><span>--- /dev/null</span><br><span>+++ b/tests/unit_tests/op=
+envpn/test_route=2Eh</span><br><span>@@ -0,0 +1,27 @@</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ *  OpenVPN -- An application to securely tunnel IP networ=
+ks</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             ov=
+er a single UDP port, with support for SSL/TLS-based</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *             session authentication and=
+ key exchange,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *   =
+          packet encryption, packet authentication, and</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+ *             packet compression=2E</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+ *  Copyright (C) 2002-2026 OpenVPN Inc=
+ &lt;sales@openvpn=2Enet&gt;</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This=
+ program is free software; you can redistribute it and/or modify</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+ *  it under the terms of the =
+GNU General Public License version 2</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ *  as published by the Free Software Foundation=2E</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ *  This program is distributed in the ho=
+pe that it will be useful,</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  MERCHANTABILITY o=
+r FITNESS FOR A PARTICULAR PURPOSE=2E  See the</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+ *  GNU General Public License for more details=
+=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+ *  You should have received a co=
+py of the GNU General Public License along</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ *  with this program; if not, see &lt;https://www=
+=2Egnu=2Eorg/licenses/&gt;=2E</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifnde=
+f TEST_ROUTE_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#defi=
+ne TEST_ROUTE_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/** =
+Runs the route=2Ec unit tests, returns the number of failures */</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+int</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+route_tests(void);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#endif</span><br></pre><p>To view, visit <a hre=
+f=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1946?usp=3Demail">change 19=
+46</a>=2E To unsubscribe, or for help writing mail filters, visit <a href=
+=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p=
+><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscop=
+e itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link ite=
+mprop=3D"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/1946?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-Mes=
-sageType: newpatchset </div>
-<div style=3D"display:none"> Gerrit-Project: o=
-penvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<di=
-v style=3D"display:none"> Gerrit-Change-Id: I9085c55a7efefd31839b00ec8ec9a6=
-f085574dde </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 1946 <=
+<=
+div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D=
+"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none">=
+ Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id=
+: I9085c55a7efefd31839b00ec8ec9a6f085574dde </div>
+<div style=3D"display:no=
+ne"> Gerrit-Change-Number: 1946 </div>
+<div style=3D"display:none"> Gerrit-=
+PatchSet: 7 </div>
+<div style=3D"display:none"> Gerrit-Owner: chugly &lt;ch=
+arlie=2Evigue@openvpn=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-=
+Reviewer: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=
+=3D"display:none"> Gerrit-Reviewer: Frank Lichtenheld &lt;frank@lichtenheld=
+=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: R=C4=83zvan=
+ Cojocaru &lt;razvanc@mailbox=2Eorg&gt; </div>
+<div style=3D"display:none">=
+ Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; <=
 /div>
-<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
-<div style=3D"=
-display:none"> Gerrit-Owner: chugly &lt;charlie=2Evigue@openvpn=2Ecom&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Reviewer: Arne Schwabe &lt;arne-o=
-penvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewe=
-r: Frank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
-<div style=3D"d=
-isplay:none"> Gerrit-Reviewer: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eo=
-rg&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;ope=
-nvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
 
 </body></html>
---vnNde4uj6E0=--
+--gqFf2sTNsJU=--
 
 
---===============3136169361017688857==
+--===============4645755356984158535==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============3136169361017688857==
+--===============4645755356984158535==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -1131,5 +1122,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============3136169361017688857==--
+--===============4645755356984158535==--
 
