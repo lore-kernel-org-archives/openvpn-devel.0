@@ -1,13 +1,13 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 465E8606A885
-	for <openvpn-devel@archiver.kernel.org>; Sat, 14 Nov 2026 16:05:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26E31606A336
+	for <openvpn-devel@archiver.kernel.org>; Sat, 14 Nov 2026 16:09:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=hZYk5Cz3;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=WwA/fV7T;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=HLTeEsdX;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=KtC2quHB
+	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=hcGUgZJm;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=Wch+4A6T;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=QbvY9OBN;
+	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=LADkz7NF
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
@@ -15,29 +15,29 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
 	List-Unsubscribe-Post:List-Owner;
-	bh=vr/Ik77939h4IoamLnPBS9YZPs0kVGryWplg9z2WX/0=; b=hZYk5Cz3HW7GHpvlFUK1HonpGA
-	lX7JMYkSzNYi0YaeRaPQTOF8Hr9TAQjS6+tiru4SncJXkoptmM6DRsom1HcnTFd9vg4JRR9WaF+SI
-	8/z3okN3Vl3AReDikPjwR6q8/y8QOvdsehHD66MaHNYSdsWBwlVTnLi+T4tCMFDe4o1k=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	bh=cn6fneLdSLSR1xZ5NTQZssGT1Z3iJ77cHTbRservwVQ=; b=hcGUgZJmH5AZbn3zFE8mt0oFwn
+	mAIalr/ZbLm9xD6lGUwiXGPWOXo/xurur3uGEqwqZP2WjfsSOH7V4NBPLJ1PEsC/Aha4WS0+nniJJ
+	1QirniCiOfBzrclY+HMYNqXpWYwcRbIHgHCbvk5mLtp9do6bNBJkA4Xga7/UBimlLpDg=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xSGGK-000000006b7-47kL;
-	Sat, 14 Nov 2026 16:05:56 +0000
+	id 1xSGJi-000000006RW-1Jqx;
+	Sat, 14 Nov 2026 16:09:26 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xSGGJ-000000006az-1STp
+ (envelope-from <gerrit@openvpn.net>) id 1xSGJh-000000006RQ-1sGy
  for openvpn-devel@lists.sourceforge.net;
- Sat, 14 Nov 2026 16:05:55 +0000
+ Sat, 14 Nov 2026 16:09:25 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=YMSD5oCmhk9Y9QyeZsFqXipkZphij5VxU4SL95YXUkk=; b=WwA/fV7TDLbmSt1MawgGUyiO/x
- Ktif+VXCRpDF4k3FIDWcGkMK4xO9ttzRv6WmeisrAS4AZom9YVTviy7tJT54fVJ2klYymTLGzJu4T
- exqO/0gFyUf0d5ZOqGae2ZMPbBX+s3FGmWr3Rj+6BjydKPALgBSQx2EgU6739dLmJDpI=;
+ bh=LCPO6dxsInzXEzmb4pqM31ZV8xUzwkkfFQ6VnqiVXGE=; b=Wch+4A6TpEnmrzCoveTzG0ixo3
+ 6443tnKsvW8KwbyW02VKFfK5Ofs6DPa7zza4ybGNfX3g0lR4op4kOn3P/4C5TdBh6I5ioN2MEFFZt
+ rslzwRadqNUI8ldYMu/polY26j3uvTWBrGPSTXslHfwgQ89sxYvqIIxfH0gCUjGyrzTU=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
@@ -45,94 +45,93 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=YMSD5oCmhk9Y9QyeZsFqXipkZphij5VxU4SL95YXUkk=; b=HLTeEsdX4UvXLmaLxh+9SMKwY/
- u2yRA0k916T7U9jjDBAJOIPp1u5+8j1NtONPW12t/Tdqy7p/S4Zxvod9mRSqtfFh1CpLIziCgRSLr
- ltqzimRA3X6QxrFN3Y6+pE33fr8Zc+doryJbACQoFsu38/wE1WaABkFMd2xfw/tqZHco=;
-Received: from mail-wm1-f53.google.com ([209.85.128.53])
+ bh=LCPO6dxsInzXEzmb4pqM31ZV8xUzwkkfFQ6VnqiVXGE=; b=QbvY9OBNxFLu9kAOXtx2dMCJFM
+ WtjK4JtU+PIemf+v4VJ6mMofXpjbPsdUcORpriZNGyW/QY2Af7uUtJJY1JGHMae/DfjJYJRcjTiQ7
+ g3/7s1YmDXpTM07nBcxhrj5HrMMwnFNaG/CLRKdJ7iEXzlHBTvv9YedzFU+GlVJNGLqY=;
+Received: from mail-wr1-f43.google.com ([209.85.221.43])
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xSGGI-000000001UK-2WAu for openvpn-devel@lists.sourceforge.net;
- Sat, 14 Nov 2026 16:05:55 +0000
-Received: by mail-wm1-f53.google.com with SMTP id
- 5b1f17b1804b1-4a35a60499eso13409245e9.0
+ id 1xSGJg-000000001Wf-0rMy for openvpn-devel@lists.sourceforge.net;
+ Sat, 14 Nov 2026 16:09:25 +0000
+Received: by mail-wr1-f43.google.com with SMTP id
+ ffacd0b85a97d-4922dbcee23so905277f8f.0
  for <openvpn-devel@lists.sourceforge.net>;
- Sat, 14 Nov 2026 08:05:54 -0800 (PST)
+ Sat, 14 Nov 2026 08:09:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1794672348; x=1795277148; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1794672558; x=1795277358; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=YMSD5oCmhk9Y9QyeZsFqXipkZphij5VxU4SL95YXUkk=;
- b=KtC2quHBfuYq4qtjoIEeNQWWPybCpZS8jd4CaFY5EuO/yS6JJZFlLv8dNS3ZNaf1gg
- ZyolL7BV+gDKiQawJYqh5/CLC7GGlG9RKVh8Uj3GESn9phrmVMHhJXUBfdAoGwpk782Z
- /QI1IQVHa39LbkYTS/pbcz7mENQMlprK4tOuL2uw9+11r0brE/QqA8rzbZBwXUdJ8Y5u
- 43igTyL9twjR8Aur4X9QCmMoNBWxcz1hxTueT/jyQR3Y1mLKsOsGu5aMpXO6URxXoqtC
- oNYKIM6cmfSS6j1SmVZ+IJOmqKx+CjIgNbP6/1ZsWOYjewmlEfZGARRPLjWz0JyQKQSt
- 4UFw==
+ bh=LCPO6dxsInzXEzmb4pqM31ZV8xUzwkkfFQ6VnqiVXGE=;
+ b=LADkz7NFEjGyBNQeNHHFKMgmVQTFR06mwf2JmfBL8dVRRHbKZhsVtHlDvur4uJYE7H
+ lru3hsn9GAbynsR4szUJiOaVhwpol9E0vboQ7WkUaODaDIQDHM/s1aLZ/iiUbwRjmLy+
+ 9JLL5dNAmxxT4HNy+FkGfppTqaHVPlkzkrK8dBTNaTdw+C6onVUdTws72GNEs0NPFU3m
+ tFZiyWkafpCXYf9mL3aV4o/Z70TBzROiGQtscl+GktICSRfNtXQCZa4O8ozgysqw4Xix
+ og1GT6UsWKQOdnsCXvctD00z0dn/DXzycFDRhlhJuDvRX4sOJ/gQBNTXeJakofRJj7Ra
+ 9DcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1794672348; x=1795277148;
+ d=1e100.net; s=20260707; t=1794672558; x=1795277358;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=YMSD5oCmhk9Y9QyeZsFqXipkZphij5VxU4SL95YXUkk=;
- b=gf43GriJvea440RwrjXZzX2mIBbUxj2zr1oOLZ/CUZogDBiQBo0rmEOenf0qCJJu2+
- LhF/DdiUoeWfrzBVmDfwQttLTTAhR5QSWJ2jm1w78faV/cqB9pqbd17VgF/sZ7P+pl6m
- HSH9tmFJkWRWUmmeu2IZQsy+f6EtoAgnnGDihq8sRy8UkTZqzQLa9yIiPFgQoOWMwU/L
- z2dUoeM1ZyqJ5UJ9iW5Hi9iD/aCg1LFcxAVo4A4U8zIe+jf9RITWUxw6R6ORyz/pm4Ry
- o/8e95kC82HwO6yvoGm2g46xkqpG3krrK2+2obk0Ak0uTuSIscjiRbATp4J91/oqUpyg
- JzdA==
-X-Forwarded-Encrypted: i=1;
- AL+hErEwmdcIITk7rBxmIbZ8da7/X6vh+O1Be1qOZT/Rgo6ack0qX9TDT+5SLzNvIkDcBR1DtIQhZrpm6hqQbnBs@lists.sourceforge.net
-X-Gm-Message-State: APuU4Z8X9MXEfRjKd0bY5T7Ge7aDEV2UxHgYhsjwJ1n8SgYiFVNlADdK
- jL2rRr2y30I0rGtLR/oTBs7bQvyW2gjp66EWB5pZM2Cn1OVCRMmEKlc9tCPlNQGofNLIflJszsL
- KBxuP2EvNtFhOSR20w08t9RCZYQQCiGlBttPXRoLL4TXv9szc/4VHHgb20eyuz0VOkmIV
-X-Gm-Gg: AYBFou30r1E5/8I0krkVnjnEVBNSRjBC+xQjlspZMyn8h6u8PUfN2dkHGqHAH8v/cRt
- QKVu6mEDmXBBpvD0bXaRrt1SFdw/9OVffjgi8DSeANqMZmqKjWcd0EHqMKvqi9IlnZhfKtg55Ry
- g4TLKmMPazZu6rtdxWaEIz/pYTOg+2qR6qRJwBcPrFOsI+9DW14a7DSnC/2GKSG+u1ecfON4Ypq
- lmv1jRDFpRZczDZT0NFFYB7xoA6rqxcGJuNaVB/unxEU4QyfFx+jhZ41UN3WPUS6PYwiKKQEmDd
- Vk/E/Yq3bs/zxhjTrdG/T/7Q7wSHazy+JsH9W1Nmn4FFXTepXxmS6F63fwramCs5zYYhfZcThzu
- J+lNHkTDnQMQWF5RIeJthwVzViq5HISv/1s6/1L9YEKoxotR9/yLS3iPprBRolBPJQuDjaS5Zo/
- ueiYFHnYDbvXAQV1Ch1vPMje4c3kHasQCvjpDaeNAGyydJNdApWvIkWnGi0RN4XLmdyNzmfW8+A
- +P6xSCUY+YYwxC8+yotdvT9SRon8SZHuV4JlyeMKsnU7PQC9YUZL/3C4zKtIZdLrDKz+wiWrFdP
- 3QgIfah3aePEforYwHkCOMsi/ZRY/AMIyW17o0NgcNQTe41B9TXluYx579weFspW7MpbZp22EcN
- fVYRKrQs+f/WS0Pn2lIoJBXtgl2VJ4cyCTnl0Nl1nuLy1CSTCkurezMb3ka9jWiQKoxC7kNrLO6
- 25plj7jCKIA6t+RQc=
-X-Received: by 2002:a05:600c:8906:b0:4bb:5f07:10dc with SMTP id
- 5b1f17b1804b1-4bb5f071358mr63056465e9.22.1794672347784; 
- Sat, 14 Nov 2026 08:05:47 -0800 (PST)
+ bh=LCPO6dxsInzXEzmb4pqM31ZV8xUzwkkfFQ6VnqiVXGE=;
+ b=MHFHRBeDIsqajTqpMhlKvXB2GmzWGFuSScDLf/VZdppBUuDxX8XjgwPjUD0b0Mi5nB
+ bBFMJHqR+v4mGrHD6OvcyY8giCwnj2seqXQfO0ixmAA7y1ydJfADaabdSgHYKp3KeSpN
+ /JShpgBoY6fyi4zRcWzORSggfz7Rd1SLfrhb/qvkxovUjiZRCC62IhqYYfovkcflI6Ov
+ MacmiHgw0tClt8LF+I1/TpiTrrjPec3cJ3H73SlrCaI+aA9IL1ezQbm3odOlGaQR1b2t
+ feK2hABJhWkeiqP6o+zsvB/9r8pYS4GoD9HrCa+mWOJspipMwSK9m7ksPsSHLJVCvzdJ
+ klkA==
+X-Gm-Message-State: APuU4Z+iI1dScwt7TfYtaD/ow+25CG1OwPvtmxQIzkNvejVxA6N+hpgi
+ 0mcoo8LJR8tGSN617v1v1NuNdYwE/ek8+1rEcAhOr5lJAOSyRBoCSlh9KwpyKEYN4gDxnz2fFPa
+ w2P1wK8LmRXs00N572fRu4x7PdWl5Tj76TFm86lT3dBSf1Wh/75O+73Ou11dUCLMEhgmY0INkDN
+ UKEQrfkg==
+X-Gm-Gg: AYBFou0fOj2/6PwXkB1w3oFkeUViqmo9zDcvVbGhfs45Dp5zPmiWmhHQqHqWQpUZneX
+ Mq4EN6A4N6xvggW0glK75vO/YASG5pd6GRl9NPn6V1lTLVgiJGOwG8lyfQDw4TC/0sxRBvMeMmh
+ BpM95+LuwUQmsCDR4C9FrmuF/954IJJtmYSc5oTJNqaeDXpBrjHjeKzs9qPjHenXvaVDfbDamIP
+ omomfIycMJeAFnpMQUqQk+W/HHDheasBD0cmeL0pIHufL3Tkk97I9AihsBNBetASVAj4wsAo4Uw
+ WoGeL8tXezFj6GkJz6x/sOmexuqG3m9TVAzEyO/2h3lSHf3UKv8e8JU1dxVQ9NgRNhntGQ2W2kc
+ E/mqABjz6E6XMmYSxX+0NkpbKTem0suHbr2jOmtWhn/pKYBkXDOnCt0mNdNhwXmYgg4GddlpKAW
+ BV8HC6r7KqC8F0ep+V5awtn73Sp4mbXSc+26FbkGlSnxg3VEGGgJZrg8eyNINPe6B2IStji4CjG
+ pl13Jl3eJhAxs0v+daxSywAQwG/0v2/AkZQ2hS/223zXba1cnWrSCWNLw9B03dELeYmuTVk9ynZ
+ BA2+19HcQkn59l8EJEslKCcXxioWp1I7x+i96QQc+VJAYXxCvLCOkUDAqLvCrc4L60w6gsR7gM+
+ IWQPJ6vfrogRrJJcMHmSf5Jx6lUjxrqirruxLjp/zRsmBzRJA1M+kV0UuyOGSwFjjpi4xS9++Sk
+ VbmH5/eqMHe7av6K8=
+X-Received: by 2002:a05:6000:2dc3:b0:48b:1a0:5630 with SMTP id
+ ffacd0b85a97d-49c72f7b8d7mr13704080f8f.41.1794672557289; 
+ Sat, 14 Nov 2026 08:09:17 -0800 (PST)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-4bb56f8d054sm96897725e9.3.2026.11.14.08.05.47
+ ffacd0b85a97d-49c8d286480sm19414305f8f.7.2026.11.14.08.09.16
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sat, 14 Nov 2026 08:05:47 -0800 (PST)
-X-Google-Original-From: "Gert Doering (Code Review)"
+ Sat, 14 Nov 2026 08:09:16 -0800 (PST)
+X-Google-Original-From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?=
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Sat, 14 Nov 2026 16:05:47 +0000
-To: =?UTF-8?Q?R=C4=83zvan_Cojocaru?= <razvanc@mailbox.org>
+Date: Sat, 14 Nov 2026 16:09:16 +0000
+To: Arne Schwabe <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: merged
+X-Gerrit-MessageType: newpatchset
 X-Gerrit-PatchSet: 2
-X-Gerrit-Change-Id: I879cd0fe9b1fabb350e1c4558863480064d45903
-X-Gerrit-Change-Number: 2123
+X-Gerrit-Change-Id: Ia9f328b1c0ea29adf811a933d1fd22cb32e35e6d
+X-Gerrit-Change-Number: 2121
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2123?usp=email>
-X-Gerrit-Commit: ab8f651b98261d61ecfe4dcf194fec348d4beee0
-In-Reply-To: <gerrit.1793779380000.I879cd0fe9b1fabb350e1c4558863480064d45903@gerrit.openvpn.net>
-References: <gerrit.1793779380000.I879cd0fe9b1fabb350e1c4558863480064d45903@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzkzNzc5MzgwMDAwLkk4NzljZDBmZTliMWZhYmIzNTBlMWM0NTU4ODYzNDgwMDY0ZDQ1OTAzQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <9107022fa988c856f56a6df74d00238ab21e6880-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2121?usp=email>
+X-Gerrit-Commit: 51a2f1b027d5170a340b82d232ad9561dbdb9adb
+In-Reply-To: <gerrit.1793777926000.Ia9f328b1c0ea29adf811a933d1fd22cb32e35e6d@gerrit.openvpn.net>
+References: <gerrit.1793777926000.Ia9f328b1c0ea29adf811a933d1fd22cb32e35e6d@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzkzNzc3OTI2MDAwLklhOWYzMjhiMWMwZWEyOWFkZjgxMWE5MzNkMWZkMjJjYjMyZTM1ZTZkQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <144b64cf9ccfe0f01b879358f67854798d703013-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.5
 X-Spam-Score: 0.8 (/)
-X-Headers-End: 1xSGGI-000000001UK-2WAu
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: route: remove
- unused max() and gc from BSD get_default_gateway()
+X-Headers-End: 1xSGJg-000000001Wf-0rMy
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: pkcs11: bound
+ certificate size in pkcs11_management_id_get()
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -142,221 +141,387 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "Gert Doering \(Code Review\) via Openvpn-devel"
+From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= via Openvpn-devel
  <openvpn-devel@lists.sourceforge.net>
-Reply-To: gert@greenie.muc.de, arne-openvpn@rfc2549.org, razvanc@mailbox.org,
- openvpn-devel@lists.sourceforge.net
-Cc: "Gert Doering \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>,
- Arne Schwabe <arne-openvpn@rfc2549.org>
-Content-Type: multipart/mixed; boundary="===============8431096106608107425=="
+Reply-To: razvanc@mailbox.org, arne-openvpn@rfc2549.org,
+ openvpn-devel@lists.sourceforge.net, gert@greenie.muc.de
+Cc: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= <gerrit@openvpn.net>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: multipart/mixed; boundary="===============0882213074021187675=="
 X-Spam-Status: No, score=-12.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
 	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,SPF_PASS,T_KAM_HTML_FONT_INVALID
-	autolearn=ham autolearn_force=no version=4.0.1
+	PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,SPF_PASS,T_KAM_HTML_FONT_INVALID,
+	WEIRD_PORT autolearn=ham autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============8431096106608107425==
+--===============0882213074021187675==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="y2v3GFa1rlI="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="SJgZaGxzJ2M="; charset=UTF-8
 
---y2v3GFa1rlI=
+--SJgZaGxzJ2M=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Gert Doering has submitted this change=2E ( https://gerrit=2Eopenvpn=2Enet/=
-c/openvpn/+/2123?usp=3Demail )
+Attention is currently required from: Arne Schwabe, Gert Doering, R=C4=83zv=
+an Cojocaru=2E
 
-Change subject: route: remove unused max() =
-and gc from BSD get_default_gateway()
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+Hello Arne Schwabe, Gert Doering, 
+
+I'd like you to reexami=
+ne a change=2E Please visit
+
+    https://gerrit=2Eopenvpn=2Enet/c/openvpn/+=
+/2121?usp=3Demail
+
+to look at the new patch set (#2)=2E
+
+The following appr=
+ovals got outdated and were removed:
+Code-Review-1 by Gert Doering
+
+
+Change=
+ subject: pkcs11: bound certificate size in pkcs11_management_id_get()
+=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-route: remove unused max() and gc from BSD get_de=
-fault_gateway()
+pkcs11: bound ce=
+rtificate size in pkcs11_management_id_get()
 
-Both lost their last users when 76d11614 ("get_default_gat=
-eway()
-HWADDR overhaul") replaced the SIOCGIFCONF loop with getifaddrs()=2E=
-
-
-Change-Id: I879cd0fe9b1fabb350e1c4558863480064d45903
-Signed-off-by: Razva=
-n Cojocaru <razvanc@mailbox=2Eorg>
-Acked-by: Gert Doering <gert@greenie=2Em=
-uc=2Ede>
-Gerrit URL: https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2123
-Messag=
-e-Id: <20261104105431=2E7011-1-gert@greenie=2Emuc=2Ede>
-URL: https://www=2E=
-mail-archive=2Ecom/openvpn-devel@lists=2Esourceforge=2Enet/msg40674=2Ehtml
+0a8e80aa ("Avoid unbounded al=
+locations in pkcs11_mbedtls=2Ec") capped
+the certificate blob size reported=
+ by the PKCS#11 provider only in the
+mbedTLS backend=2E pkcs11_management_i=
+d_get() still allocated whatever
+size the provider returned=2E Move the lim=
+it to pkcs11_backend=2Eh as
+PKCS11_MAX_CERT_SIZE and check it there too=2E
 =
-Signed-off-by: Gert Doering <gert@greenie=2Emuc=2Ede>
+
+Change-Id: Ia9f328b1c0ea29adf811a933d1fd22cb32e35e6d
+Signed-off-by: Razvan=
+ Cojocaru <razvanc@mailbox=2Eorg>
 ---
-M src/openvpn/rou=
-te=2Ec
-1 file changed, 0 insertions(+), 6 deletions(-)
+M src/openvpn/pkcs11=2Ec
+M src/openvp=
+n/pkcs11_backend=2Eh
+M src/openvpn/pkcs11_mbedtls=2Ec
+3 files changed, 24 i=
+nsertions(+), 12 deletions(-)
 
 
+  git pull ssh://gerrit=2Eopenvpn=2Enet:294=
+18/openvpn refs/changes/21/2121/2
 
-
-diff --git a/src=
-/openvpn/route=2Ec b/src/openvpn/route=2Ec
-index fa569fa=2E=2Ec812dac 10064=
-4
---- a/src/openvpn/route=2Ec
-+++ b/src/openvpn/route=2Ec
-@@ -3329,12 +3329=
-,9 @@
- #define ADVANCE(x, n) (x +=3D ROUNDUP((n)->sa_len))
- #endif
+diff --git a/src/openvpn/pkcs11=2Ec b/sr=
+c/openvpn/pkcs11=2Ec
+index f00ba9b=2E=2E52658c2 100644
+--- a/src/openvpn/pk=
+cs11=2Ec
++++ b/src/openvpn/pkcs11=2Ec
+@@ -504,6 +504,13 @@
+         goto cl=
+eanup;
+     }
  
--#defi=
-ne max(a, b) ((a) > (b) ? (a) : (b))
--
- void
- get_default_gateway(struct ro=
-ute_gateway_info *rgi, in_addr_t dest, openvpn_net_ctx_t *ctx)
++    if (certificate_blob_size > PKCS11_MAX_CERT_SIZE)
++   =
  {
--    stru=
-ct gc_arena gc =3D gc_new();
-     struct rtmsg m_rtmsg;
-     int sockfd =3D=
- -1;
-     int rtm_addrs;
-@@ -3536,7 +3533,6 @@
++        msg(M_WARN, "PKCS#11: Certificate too large: %zu bytes, maximum=
+ is %zu",
++            certificate_blob_size, PKCS11_MAX_CERT_SIZE);
++     =
+   goto cleanup;
++    }
++
+     if ((certificate_blob =3D (unsigned char *)m=
+alloc(certificate_blob_size)) =3D=3D NULL)
      {
-         close(sockfd=
-);
-     }
--    gc_free(&gc);
- }
+         msg(M_FATAL, "PK=
+CS#11: Cannot allocate memory");
+diff --git a/src/openvpn/pkcs11_backend=2E=
+h b/src/openvpn/pkcs11_backend=2Eh
+index b8b0eb0=2E=2E972c3a2 100644
+--- a/=
+src/openvpn/pkcs11_backend=2Eh
++++ b/src/openvpn/pkcs11_backend=2Eh
+@@ -37,=
+6 +37,20 @@
  
- /* BSD implementation using routing sock=
-et (as does IPv4)
-@@ -3705,8 +3701,6 @@
-     }
- }
+ #include <pkcs11-helper-1=2E0/pkcs11h-certificate=2Eh>
  
--#undef max
++/*=
+
++ * Maximum size of a certificate retrieved from a PKCS #11 provider, so t=
+hat
++ * the provider cannot crash OpenVPN by making it try to allocate 2^64=
+ bytes=2E
++ * The maximum of 100=2E000 bytes is picked as a round number th=
+at easily
++ * accomodates the currently standardized quantum-safe signature=
+ algorithms=2E
++ * It is twice the size of a SLH-DSA (aka SPHINCS+) signatu=
+re plus public key=2E
++ *
++ * However, there are additional digital signatu=
+re schemes currently on the
++ * NIST on-ramp (e=2Eg=2E, some parameter sett=
+ings for LESS) that have even larger
++ * public keys or signatures, so if t=
+hose ever see use on smartcards, we will
++ * need to increase this number=
+=2E
++ */
++#define PKCS11_MAX_CERT_SIZE ((size_t)100000)
++
+ /**
+  * Retrieve=
+ PKCS #11 Certificate's DN in a printable format=2E
+  *
+diff --git a/src/op=
+envpn/pkcs11_mbedtls=2Ec b/src/openvpn/pkcs11_mbedtls=2Ec
+index 2183217=2E=
+=2E3ee3837 100644
+--- a/src/openvpn/pkcs11_mbedtls=2Ec
++++ b/src/openvpn/pk=
+cs11_mbedtls=2Ec
+@@ -42,16 +42,6 @@
+ static bool
+ pkcs11_get_x509_cert(pkcs=
+11h_certificate_t pkcs11_cert, mbedtls_x509_crt *cert)
+ {
+-    /* We set a =
+maximum size for certificates so that the PKCS provider cannot crash OpenVP=
+N by
+-     * making it try to allocate 2^64 bytes=2E The maximum of 100=2E0=
+00 bytes is picked as a round
+-     * number that easily accomodates the cu=
+rrently standardized quantum-safe signature algorithms=2E
+-     * It is twi=
+ce the size of a SLH-DSA (aka SPHINCS+) signature plus public key=2E
+-     =
+*
+-     * However, there are additional digital signature schemes currently=
+ on the NIST on-ramp
+-     * (e=2Eg=2E, some parameter settings for LESS) t=
+hat have even larger public keys or signatures, so
+-     * if those ever se=
+e use on smartcards, we will need to increase this number=2E */
+-    const =
+size_t max_cert_size =3D 100000;
 -
- #elif de=
-fined(TARGET_HAIKU)
+     unsigned char *cert_blob =3D NULL;
+=
+     size_t cert_blob_size =3D 0;
+     bool ret =3D false;
+@@ -62,9 +52,10 =
+@@
+         goto cleanup;
+     }
  
- void
+-    if (cert_blob_size > max_cert_size)=
+
++    if (cert_blob_size > PKCS11_MAX_CERT_SIZE)
+     {
+-        msg(M_WARN=
+, "PKCS#11: Certificate too large: %zu bytes, maximum is %zu", cert_blob_si=
+ze, max_cert_size);
++        msg(M_WARN, "PKCS#11: Certificate too large: %=
+zu bytes, maximum is %zu", cert_blob_size,
++            PKCS11_MAX_CERT_SIZ=
+E);
+         goto cleanup;
+     }
+ 
 
 -- 
-To view, visit https://gerrit=2Eopenvpn=2E=
-net/c/openvpn/+/2123?usp=3Demail
-To unsubscribe, or for help writing mail f=
-ilters, visit https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+To view, visit https://gerrit=2Eop=
+envpn=2Enet/c/openvpn/+/2121?usp=3Demail
+To unsubscribe, or for help writin=
+g mail filters, visit https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Gerrit-M=
-essageType: merged
+=
+Gerrit-MessageType: newpatchset
 Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Cha=
-nge-Id: I879cd0fe9b1fabb350e1c4558863480064d45903
-Gerrit-Change-Number: 212=
-3
+Gerrit-Branch: mast=
+er
+Gerrit-Change-Id: Ia9f328b1c0ea29adf811a933d1fd22cb32e35e6d
+Gerrit-Chang=
+e-Number: 2121
 Gerrit-PatchSet: 2
-Gerrit-Owner: R=C4=83zvan Cojocaru <razvanc@mailbox=2E=
-org>
-Gerrit-Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Revi=
-ewer: Gert Doering <gert@greenie=2Emuc=2Ede>
-Gerrit-CC: openvpn-devel <open=
-vpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Owner: R=C4=83zvan Cojocaru <razva=
+nc@mailbox=2Eorg>
+Gerrit-Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2Eorg=
+>
+Gerrit-Reviewer: Gert Doering <gert@greenie=2Emuc=2Ede>
+Gerrit-CC: openvp=
+n-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Attention: R=C4=83=
+zvan Cojocaru <razvanc@mailbox=2Eorg>
+Gerrit-Attention: Arne Schwabe <arne-=
+openvpn@rfc2549=2Eorg>
+Gerrit-Attention: Gert Doering <gert@greenie=2Emuc=
+=2Ede>
 
---y2v3GFa1rlI=
+--SJgZaGxzJ2M=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>Gert Doering <str=
-ong>submitted</strong> this change=2E</p><p><a href=3D"https://gerrit=2Eope=
-nvpn=2Enet/c/openvpn/+/2123?usp=3Demail">View Change</a></p><div style=3D"w=
-hite-space:pre-wrap"></div><pre class=3D"blocks" style=3D"font-family: mono=
-space,monospace; white-space: pre-wrap;">route: remove unused max() and gc =
-from BSD get_default_gateway()<br><br>Both lost their last users when 76d11=
-614 (&quot;get_default_gateway()<br>HWADDR overhaul&quot;) replaced the SIO=
-CGIFCONF loop with getifaddrs()=2E<br><br>Change-Id: I879cd0fe9b1fabb350e1c=
-4558863480064d45903<br>Signed-off-by: Razvan Cojocaru &lt;razvanc@mailbox=
-=2Eorg&gt;<br>Acked-by: Gert Doering &lt;gert@greenie=2Emuc=2Ede&gt;<br>Ger=
-rit URL: https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2123<br>Message-Id: &lt=
-;20261104105431=2E7011-1-gert@greenie=2Emuc=2Ede&gt;<br>URL: https://www=2E=
-mail-archive=2Ecom/openvpn-devel@lists=2Esourceforge=2Enet/msg40674=2Ehtml<=
-br>Signed-off-by: Gert Doering &lt;gert@greenie=2Emuc=2Ede&gt;<br>---<br>M =
-src/openvpn/route=2Ec<br>1 file changed, 0 insertions(+), 6 deletions(-)<br=
-><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pr=
-e-wrap;"><span>diff --git a/src/openvpn/route=2Ec b/src/openvpn/route=2Ec</=
-span><br><span>index fa569fa=2E=2Ec812dac 100644</span><br><span>--- a/src/=
-openvpn/route=2Ec</span><br><span>+++ b/src/openvpn/route=2Ec</span><br><sp=
-an>@@ -3329,12 +3329,9 @@</span><br><span> #define ADVANCE(x, n) (x +=3D RO=
-UNDUP((n)-&gt;sa_len))</span><br><span> #endif</span><br><span> </span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-#define max(a, b) ((a) &gt; (b) =
-? (a) : (b))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
-r><span> void</span><br><span> get_default_gateway(struct route_gateway_inf=
-o *rgi, in_addr_t dest, openvpn_net_ctx_t *ctx)</span><br><span> {</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    struct gc_arena gc =3D gc_=
-new();</span><br><span>     struct rtmsg m_rtmsg;</span><br><span>     int =
-sockfd =3D -1;</span><br><span>     int rtm_addrs;</span><br><span>@@ -3536=
-,7 +3533,6 @@</span><br><span>     {</span><br><span>         close(sockfd)=
-;</span><br><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    gc_free(&amp;gc);</span><br><span> }</span><br><span> </span><br><sp=
-an> /* BSD implementation using routing socket (as does IPv4)</span><br><sp=
-an>@@ -3705,8 +3701,6 @@</span><br><span>     }</span><br><span> }</span><b=
-r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#undef max</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> #elif=
- defined(TARGET_HAIKU)</span><br><span> </span><br><span> void</span><br></=
-pre><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+=
-/2123?usp=3Demail">change 2123</a>=2E To unsubscribe, or for help writing m=
-ail filters, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=
-=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg=
-/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=
-=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https://gerrit=2Eopenvpn=
-=2Enet/c/openvpn/+/2123?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
-ew Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: Arne Schwabe, Gert Doering, R=C4=83zvan Cojocaru=2E <=
+/p>
+<p>R=C4=83zvan Cojocaru <strong>uploaded patch set #2</strong> to this =
+change=2E</p><p><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2121?=
+usp=3Demail">View Change</a></p><p>The following approvals got outdated and=
+ were removed:
+Code-Review-1 by Gert Doering</p><pre class=3D"blocks" style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;">pkcs11: bound=
+ certificate size in pkcs11_management_id_get()<br><br>0a8e80aa (&quot;Avoi=
+d unbounded allocations in pkcs11_mbedtls=2Ec&quot;) capped<br>the certific=
+ate blob size reported by the PKCS#11 provider only in the<br>mbedTLS backe=
+nd=2E pkcs11_management_id_get() still allocated whatever<br>size the provi=
+der returned=2E Move the limit to pkcs11_backend=2Eh as<br>PKCS11_MAX_CERT_=
+SIZE and check it there too=2E<br><br>Change-Id: Ia9f328b1c0ea29adf811a933d=
+1fd22cb32e35e6d<br>Signed-off-by: Razvan Cojocaru &lt;razvanc@mailbox=2Eorg=
+&gt;<br>---<br>M src/openvpn/pkcs11=2Ec<br>M src/openvpn/pkcs11_backend=2Eh=
+<br>M src/openvpn/pkcs11_mbedtls=2Ec<br>3 files changed, 24 insertions(+), =
+12 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: mo=
+nospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=
+=2Enet:29418/openvpn refs/changes/21/2121/2</pre><pre style=3D"font-family:=
+ monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvp=
+n/pkcs11=2Ec b/src/openvpn/pkcs11=2Ec</span><br><span>index f00ba9b=2E=2E52=
+658c2 100644</span><br><span>--- a/src/openvpn/pkcs11=2Ec</span><br><span>+=
+++ b/src/openvpn/pkcs11=2Ec</span><br><span>@@ -504,6 +504,13 @@</span><br>=
+<span>         goto cleanup;</span><br><span>     }</span><br><span> </span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (certificate_blob_=
+size &gt; PKCS11_MAX_CERT_SIZE)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      msg(M_WARN, &quot;PKCS#11: Certificate too large: %zu bytes, maximum =
+is %zu&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      certificate_blob_size, PKCS11_MAX_CERT_SIZE);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        goto cleanup;</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span>     if ((certificate_blob =3D (unsi=
+gned char *)malloc(certificate_blob_size)) =3D=3D NULL)</span><br><span>   =
+  {</span><br><span>         msg(M_FATAL, &quot;PKCS#11: Cannot allocate me=
+mory&quot;);</span><br><span>diff --git a/src/openvpn/pkcs11_backend=2Eh b/=
+src/openvpn/pkcs11_backend=2Eh</span><br><span>index b8b0eb0=2E=2E972c3a2 1=
+00644</span><br><span>--- a/src/openvpn/pkcs11_backend=2Eh</span><br><span>=
++++ b/src/openvpn/pkcs11_backend=2Eh</span><br><span>@@ -37,6 +37,20 @@</sp=
+an><br><span> </span><br><span> #include &lt;pkcs11-helper-1=2E0/pkcs11h-ce=
+rtificate=2Eh&gt;</span><br><span> </span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+* Maximum size of a certificate retrieved from a PKCS #11 provider, so that=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * the provider can=
+not crash OpenVPN by making it try to allocate 2^64 bytes=2E</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+ * The maximum of 100=2E000 bytes =
+is picked as a round number that easily</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+ * accomodates the currently standardized quantum-safe =
+signature algorithms=2E</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ * It is twice the size of a SLH-DSA (aka SPHINCS+) signature plus publ=
+ic key=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+ * However, there are addit=
+ional digital signature schemes currently on the</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+ * NIST on-ramp (e=2Eg=2E, some parameter sett=
+ings for LESS) that have even larger</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+ * public keys or signatures, so if those ever see use on =
+smartcards, we will</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+ * need to increase this number=2E</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
+define PKCS11_MAX_CERT_SIZE ((size_t)100000)</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span> /**</span><br><span>  * Retrieve=
+ PKCS #11 Certificate&#39;s DN in a printable format=2E</span><br><span>  *=
+</span><br><span>diff --git a/src/openvpn/pkcs11_mbedtls=2Ec b/src/openvpn/=
+pkcs11_mbedtls=2Ec</span><br><span>index 2183217=2E=2E3ee3837 100644</span>=
+<br><span>--- a/src/openvpn/pkcs11_mbedtls=2Ec</span><br><span>+++ b/src/op=
+envpn/pkcs11_mbedtls=2Ec</span><br><span>@@ -42,16 +42,6 @@</span><br><span=
+> static bool</span><br><span> pkcs11_get_x509_cert(pkcs11h_certificate_t p=
+kcs11_cert, mbedtls_x509_crt *cert)</span><br><span> {</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    /* We set a maximum size for certifica=
+tes so that the PKCS provider cannot crash OpenVPN by</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-     * making it try to allocate 2^64 bytes=
+=2E The maximum of 100=2E000 bytes is picked as a round</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-     * number that easily accomodates the=
+ currently standardized quantum-safe signature algorithms=2E</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-     * It is twice the size of a SLH=
+-DSA (aka SPHINCS+) signature plus public key=2E</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-     *</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-     * However, there are additional digital signature schemes =
+currently on the NIST on-ramp</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-     * (e=2Eg=2E, some parameter settings for LESS) that have even =
+larger public keys or signatures, so</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-     * if those ever see use on smartcards, we will need to =
+increase this number=2E */</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    const size_t max_cert_size =3D 100000;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-</span><br><span>     unsigned char *cert_blob =
+=3D NULL;</span><br><span>     size_t cert_blob_size =3D 0;</span><br><span=
+>     bool ret =3D false;</span><br><span>@@ -62,9 +52,10 @@</span><br><spa=
+n>         goto cleanup;</span><br><span>     }</span><br><span> </span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    if (cert_blob_size &gt; max=
+_cert_size)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (=
+cert_blob_size &gt; PKCS11_MAX_CERT_SIZE)</span><br><span>     {</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-        msg(M_WARN, &quot;PKCS#1=
+1: Certificate too large: %zu bytes, maximum is %zu&quot;, cert_blob_size, =
+max_cert_size);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    msg(M_WARN, &quot;PKCS#11: Certificate too large: %zu bytes, maximum is=
+ %zu&quot;, cert_blob_size,</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            PKCS11_MAX_CERT_SIZE);</span><br><span>         goto cl=
+eanup;</span><br><span>     }</span><br></pre><p>To view, visit <a href=3D"=
+https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2121?usp=3Demail">change 2121</a=
+>=2E To unsubscribe, or for help writing mail filters, visit <a href=3D"htt=
+ps://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div i=
+temscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemp=
+rop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=
+=3D"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2121?usp=3Demai=
+l"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType: =
-merged </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<=
-div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"disp=
-lay:none"> Gerrit-Change-Id: I879cd0fe9b1fabb350e1c4558863480064d45903 </di=
-v>
-<div style=3D"display:none"> Gerrit-Change-Number: 2123 </div>
-<div styl=
-e=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> =
-Gerrit-Owner: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt; </div>
-<di=
-v style=3D"display:none"> Gerrit-Reviewer: Arne Schwabe &lt;arne-openvpn@rf=
-c2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: Gert D=
-oering &lt;gert@greenie=2Emuc=2Ede&gt; </div>
-<div style=3D"display:none"> =
-Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </=
-div>
+<div sty=
+le=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"d=
+isplay:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> G=
+errit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: =
+Ia9f328b1c0ea29adf811a933d1fd22cb32e35e6d </div>
+<div style=3D"display:none=
+"> Gerrit-Change-Number: 2121 </div>
+<div style=3D"display:none"> Gerrit-Pa=
+tchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: R=C4=83zvan Coj=
+ocaru &lt;razvanc@mailbox=2Eorg&gt; </div>
+<div style=3D"display:none"> Ger=
+rit-Reviewer: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div s=
+tyle=3D"display:none"> Gerrit-Reviewer: Gert Doering &lt;gert@greenie=2Emuc=
+=2Ede&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;=
+openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"display:no=
+ne"> Gerrit-Attention: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Attention: Arne Schwabe &lt;arne-=
+openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Attent=
+ion: Gert Doering &lt;gert@greenie=2Emuc=2Ede&gt; </div>
 
 </body></html>
---y2v3GFa1rlI=--
+--SJgZaGxzJ2M=--
 
 
---===============8431096106608107425==
+--===============0882213074021187675==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============8431096106608107425==
+--===============0882213074021187675==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -367,5 +532,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============8431096106608107425==--
+--===============0882213074021187675==--
 
