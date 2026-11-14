@@ -1,42 +1,42 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2174606A8A0
-	for <openvpn-devel@archiver.kernel.org>; Sat, 14 Nov 2026 16:51:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04F7A606A323
+	for <openvpn-devel@archiver.kernel.org>; Sat, 14 Nov 2026 16:52:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=fVxJMCfN;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=Oc4jlotA;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=WWBeKs68
+	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=S92bj/b0;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=lMPArPiT;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=QCPlaFIA
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
-	List-Owner; bh=hMo0BkkuKtKl8C+DdP67bhojQ5FREGl6DIAWfALBAOo=; b=fVxJMCfNBFABFh
-	HpU1CrSy7//wf5l86K/iq5zpJsE4ciY4B/esA3Y8upFJguKByVjZKkhwuxkvbSwXPwonasYK+6bdo
-	TKvkkcwleGfaorqobESM1e0v0tRzqwZg44RvtbHg0ptp9PrmeFb8JBIz3WrNkj+H6rwuLLsTKEgTD
-	+S8=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	List-Owner; bh=DGryAC98/gYF/35Tzziei3LT/BMUG3yg5l/lznGUTrI=; b=S92bj/b0fD0zUL
+	KmiQZUhfjqz+iHIsnMmEk7WH22MI0QKqyrT8O6TsnX7GSNrZgxwNsftRo/dVY0wMo1IMcjARtnzcg
+	C+XEifv6bYtN4i/e7u3G1jLh1hAbCixRm/WMnxp8B6AZ0AeC7YR3n2PjNr/9gjh8HWMyVWTRJTMSg
+	gf8=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xSGyR-000000004Uk-1Si9;
-	Sat, 14 Nov 2026 16:51:31 +0000
+	id 1xSGyz-000000007Mb-2L5r;
+	Sat, 14 Nov 2026 16:52:05 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
  (envelope-from <gert@blue4.greenie.muc.de>)
- id 1xSGyQ-000000004Ud-0Gvv for openvpn-devel@lists.sourceforge.net;
- Sat, 14 Nov 2026 16:51:30 +0000
+ id 1xSGyy-000000007MU-22C7 for openvpn-devel@lists.sourceforge.net;
+ Sat, 14 Nov 2026 16:52:04 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
  In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=fOV6/8yxEXqxI4AT9ZWDTO2x2EYtlNUQe2h/8zuHDbE=; b=Oc4jlotAG1jkNY33/teOPTbVY2
- iPQS7Ve0gYkXwAXRYAQRr3417HXqSv0aFHri7MLL8l85mWyhfIWlccZfSNOVZ9e0zU5iaBUJWcq0y
- TuUB7/txXCpdNOw+HoB3ZrFJtSPDwyoHZBolt/hvtv54YD1IMJUCDG8IcNytyqWFFAKs=;
+ bh=sfKKUZ7sa1G9yLhPlwtIyOSvz6GgYgEpBZQflARF2qo=; b=lMPArPiThpa/AayOVlpYTSssDG
+ CYmBQlELS8dc/SzgGpADs3p5Tr6T7+XkOufDSKzD/UPeokTv6lRQzQaJ8nCujyj/JCuar1uVH5s8s
+ fol0fEYuAn+vXb0bSxlyUbMIxIZfiBLDuW8ZFtQmdvBlxvcw5XjdRTwI73CGtVnDCuTc=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -44,33 +44,33 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=fOV6/8yxEXqxI4AT9ZWDTO2x2EYtlNUQe2h/8zuHDbE=; b=WWBeKs68x6qcLxgHqg3jcLrgDv
- ACsiTBcVong3ZHE16dEEGL+laWWJ0EZfAa2GJyjlY6zCFLWxInviPEY/jr4/1UJJ32kYhsPD60+Nl
- ejtus9MhznNkdZyyowy0CbETkMlQUDXrMOPZpdXZrHwcyNM0QrwswMR5Jj/w+wDoKIKo=;
+ bh=sfKKUZ7sa1G9yLhPlwtIyOSvz6GgYgEpBZQflARF2qo=; b=QCPlaFIAwK6zNvyWDZrdmlcsG2
+ /UiYAP9yJ3lh7UWKPI01vEYhT2TyKCnXWPGGni1V2sN/75dbWjlHe/WrBlMGLnjwmiQhr6hnzAJ5i
+ YXgrDjMW3vR4gIp7Pr//xtv971JzTIoxKwHFVOmfmZ0aTQj4Me3CK5iBDbttRwtRTwNY=;
 Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
- id 1xSGyO-00000000291-3teB for openvpn-devel@lists.sourceforge.net;
- Sat, 14 Nov 2026 16:51:29 +0000
+ id 1xSGyx-000000001Oo-2ed8 for openvpn-devel@lists.sourceforge.net;
+ Sat, 14 Nov 2026 16:52:04 +0000
 Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 6AEGpLal007698
- for <openvpn-devel@lists.sourceforge.net>; Sat, 14 Nov 2026 17:51:21 +0100
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 6AEGpvL5007755
+ for <openvpn-devel@lists.sourceforge.net>; Sat, 14 Nov 2026 17:51:57 +0100
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 6AEGpLoK007697
- for openvpn-devel@lists.sourceforge.net; Sat, 14 Nov 2026 17:51:21 +0100
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 6AEGpvpV007754
+ for openvpn-devel@lists.sourceforge.net; Sat, 14 Nov 2026 17:51:57 +0100
 From: Gert Doering <gert@greenie.muc.de>
 To: openvpn-devel@lists.sourceforge.net
-Date: Sat, 14 Nov 2026 17:51:15 +0100
-Message-ID: <20261114165121.7680-1-gert@greenie.muc.de>
+Date: Sat, 14 Nov 2026 17:51:51 +0100
+Message-ID: <20261114165156.7743-1-gert@greenie.muc.de>
 X-Mailer: git-send-email 2.55.0
-In-Reply-To: <gerrit.1794059437000.I09e55085cde6dbc0040e111a42128527d59832b8@gerrit.openvpn.net>
-References: <gerrit.1794059437000.I09e55085cde6dbc0040e111a42128527d59832b8@gerrit.openvpn.net>
+In-Reply-To: <gerrit.1793094393000.I49777902951d3a05c48cddd0d33c14e028e5d706@gerrit.openvpn.net>
+References: <gerrit.1793094393000.I49777902951d3a05c48cddd0d33c14e028e5d706@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 X-Spam-Score: 1.3 (+)
-X-Headers-End: 1xSGyO-00000000291-3teB
-Subject: [Openvpn-devel] [PATCH v7] Implement multiline responses for
- pkcs11-id commands
+X-Headers-End: 1xSGyx-000000001Oo-2ed8
+Subject: [Openvpn-devel] [PATCH v3] multi: resume deferred auth through
+ multi_io_action()
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -89,307 +89,118 @@ X-Spam-Status: No, score=-16.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
-From: Marvin Wunderlich <opidopiopi@gmail.com>
+From: Gianmarco De Gregori <gianmarco@mandelbit.com>
 
-Responses to the management interface commands pkcs11-id-[get|count] did
-not follow the standard syntax, but instead looked like notifications.
+multi_process_file_closed() is the last place where multi_process_post()
+runs without a multi_io_action() following it, so any output it produces
+stays in m->pending across event_wait().
 
-Introduce a new management interface version so that clients announcing
-versions >= 7 will receive responses in the new format while keeping
-compatibility for older client versions.
+Add TA_INSTANCE_POST, which only runs multi_process_post() on the given
+instance, and use it so pending output is flushed as for every other
+event. Likewise, an instance signalled during this post-processing is
+now closed right away instead of on its next event. This is needed
+before m->pending can be removed.
 
-If a client announces a management version >= 7 the responses conform to
-the common multiline + END syntax. At the same time, it is now possible
-to query all PKCS#11 ids using "all" or a range from "start" to
-"end" - 1. Failures to retrieve an id will return a partial response
-terminated by an "ERROR" message including the erroneous index.
-The response format for pkcs11-id-get was changed to return a comma
-separated list (index,id,cert_blob) which is easier to parse.
-
-Change-Id: I09e55085cde6dbc0040e111a42128527d59832b8
-Signed-off-by: Marvin Wunderlich <opidopiopi@gmail.com>
-Acked-by: Selva Nair <selva.nair@gmail.com>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2148
+Change-Id: I49777902951d3a05c48cddd0d33c14e028e5d706
+Signed-off-by: Gianmarco De Gregori <gianmarco@mandelbit.com>
+Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2047
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2148
-This mail reflects revision 7 of this Change.
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2047
+This mail reflects revision 3 of this Change.
 
 Acked-by according to Gerrit (reflected above):
-Selva Nair <selva.nair@gmail.com>
+Razvan Cojocaru <razvanc@mailbox.org>
 
         
-diff --git a/doc/management-notes.txt b/doc/management-notes.txt
-index 6c798c0..42ea644 100644
---- a/doc/management-notes.txt
-+++ b/doc/management-notes.txt
-@@ -617,23 +617,109 @@
- COMMAND -- pkcs11-id-count  (OpenVPN 2.1 or higher)
- ---------------------------------------------------
- 
--Retrieve available number of certificates.
-+Retrieve available number of PKCS#11 certificates.
-+
-+For management client versions <7:
-+
-+     pkcs11-id-count
-+
-+The reply is ">PKCS11ID-COUNT:<count>".
- 
- Example:
- 
-      pkcs11-id-count
-      >PKCS11ID-COUNT:5
- 
-+For management client versions >= 7:
-+
-+     pkcs11-id-count
-+
-+The reply is a decimal count followed by "END" on a separate line.
-+
-+Example:
-+
-+     pkcs11-id-count
-+     5
-+     END
-+
- COMMAND -- pkcs11-id-get  (OpenVPN 2.1 or higher)
- -------------------------------------------------
- 
-+Retrieve PKCS#11 certificates.
-+
-+For management client versions < 7:
-+
-+  pkcs11-id-get <index>
-+
- Retrieve certificate by index, the ID string should be provided
- as PKCS#11 identity, the blob is a base 64 encoded certificate.
- 
- Example:
- 
-      pkcs11-id-get 1
--     PKCS11ID-ENTRY:'1', ID:'<snip>', BLOB:'<snip>'
-+     >PKCS11ID-ENTRY:'1', ID:'<id>', BLOB:'<blob>'
-+
-+For management client versions >= 7:
-+
-+  pkcs11-id-get <index>
-+  pkcs11-id-get <start> <end>
-+  pkcs11-id-get all
-+
-+Retrieve a single PKCS#11 certificate at index <index> or multiple
-+PKCS#11 certificates from index <start> to <end>-1. Alternatively
-+<start> = "all" retrieves all PKCS#11 certificates. A comma separated
-+list including index, PKCS#11 id and the base 64 encoded certificate
-+will be returned. If any id retrieval results in a failure, the returned
-+list will be partial and terminated by "ERROR: .." instead of "END".
-+The "ERROR" message will include the index of failure.
-+
-+Example 1:
-+
-+  Management interface client sends:
-+
-+    pkcs11-id-get 1
-+
-+  OpenVPN daemon responds with:
-+
-+    1,<id>,<blob>
-+    END
-+
-+Example 2:
-+
-+  Management interface client sends:
-+
-+    pkcs11-id-get 1 3
-+
-+  OpenVPN daemon responds with:
-+
-+    1,<id_a>,<blob_a>
-+    2,<id_b>,<blob_b>
-+    END
-+
-+Example 3:
-+
-+  Management interface client sends:
-+
-+    pkcs11-id-get all
-+
-+  OpenVPN daemon with 3 PKCS#11 certificates responds with:
-+
-+    0,<id_a>,<blob_a>
-+    1,<id_b>,<blob_b>
-+    2,<id_c>,<blob_c>
-+    END
-+
-+Example 4:
-+
-+  Management interface client sends:
-+
-+    pkcs11-id-get all
-+
-+  OpenVPN daemon with 3 PKCS#11 certificates fails to retrieve index 1
-+
-+    0,<id_a>,<blob_a>
-+    ERROR: Failed to load PKCS#11 id at index: 1
-+
- 
- COMMAND -- client-auth  (OpenVPN 2.1 or higher)
- -----------------------------------------------
-@@ -1240,7 +1326,7 @@
-     "ERROR: [text]".
- 
- (2) For commands which print multiple lines of output,
--    the last line will be "END".
-+    the last line will be "END" or "ERROR: [text]".
- 
- (3) Real-time messages will be in the form ">[source]:[text]",
-     where source is "CLIENT", "ECHO", "FATAL", "HOLD", "INFO", "LOG",
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index 58f63e6..f00eb30 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -74,6 +74,7 @@
-     MCV_USERNAME_ONLY = 4,
-     MCV_MULTILINE_PASSWORD = 5,
-     MCV_PREFERRED_USERNAME = 6,
-+    MCV_MULTILINE_PKCS11_RESPONSE = 7,
- };
- 
- struct management *management; /* GLOBAL */
-@@ -120,7 +121,8 @@
-     msg(M_CLIENT, "pid                    : Show process ID of the current OpenVPN process.");
- #ifdef ENABLE_PKCS11
-     msg(M_CLIENT, "pkcs11-id-count        : Get number of available PKCS#11 identities.");
--    msg(M_CLIENT, "pkcs11-id-get index    : Get PKCS#11 identity at index.");
-+    msg(M_CLIENT, "pkcs11-id-get i|all [j] : Get PKCS#11 identity at index = i.");
-+    msg(M_CLIENT, "                          For version >= 7 also i to j-1 or all.");
- #endif
-     msg(M_CLIENT, "client-auth CID KID    : Authenticate client-id/key-id CID/KID (MULTILINE)");
-     msg(M_CLIENT, "client-auth-nt CID KID : Authenticate client-id/key-id CID/KID");
-@@ -894,26 +896,81 @@
- static void
- man_pkcs11_id_count(const struct management *man)
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 3f82052..b1a648b 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -2841,7 +2841,7 @@
+  * (or be deferred again by client-connect)
+  */
+ void
+-multi_process_file_closed(struct multi_context *m, const unsigned int mpp_flags)
++multi_process_file_closed(struct multi_context *m)
  {
--    msg(M_CLIENT, ">PKCS11ID-COUNT:%d", pkcs11_management_id_count());
--}
--
--static void
--man_pkcs11_id_get(struct management *man, const int index)
--{
--    char *id = NULL;
--    char *base64 = NULL;
--
--    if (pkcs11_management_id_get(index, &id, &base64))
-+    if (man->connection.client_version >= MCV_MULTILINE_PKCS11_RESPONSE)
-     {
--        msg(M_CLIENT, ">PKCS11ID-ENTRY:'%d', ID:'%s', BLOB:'%s'", index, id, base64);
-+        msg(M_CLIENT, "%d", pkcs11_management_id_count());
-+        msg(M_CLIENT, "END");
-     }
-     else
-     {
--        msg(M_CLIENT, ">PKCS11ID-ENTRY:'%d'", index);
-+        msg(M_CLIENT, ">PKCS11ID-COUNT:%d", pkcs11_management_id_count());
-+    }
-+}
-+
-+static void
-+man_pkcs11_id_get(struct management *man, const char *p1, const char *p2)
-+{
-+    ASSERT(p1);
-+
-+    if ((streq(p1, "all") || p2 != NULL) && man->connection.client_version < MCV_MULTILINE_PKCS11_RESPONSE)
-+    {
-+        msg(M_CLIENT, "ERROR: Listing multiple ids is only supported for version >= %d", MCV_MULTILINE_PKCS11_RESPONSE);
-+        return;
-     }
+     char buffer[INOTIFY_EVENT_BUFFER_SIZE];
+     ssize_t buffer_i = 0;
+@@ -2869,7 +2869,7 @@
+             if (mi)
+             {
+                 /* continue authentication, perform NCP negotiation and send push_reply */
+-                multi_process_post(m, mi, mpp_flags);
++                multi_io_action(m, mi, TA_INSTANCE_POST, false);
+             }
+             else
+             {
+diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
+index 3d2e932..4a93971 100644
+--- a/src/openvpn/multi.h
++++ b/src/openvpn/multi.h
+@@ -382,9 +382,8 @@
+  * Continues authentication and sends push_repl
+  *
+  * @param m multi_context
+- * @param mpp_flags
+  */
+-void multi_process_file_closed(struct multi_context *m, const unsigned int mpp_flags);
++void multi_process_file_closed(struct multi_context *m);
  
--    free(id);
--    free(base64);
-+    if (man->connection.client_version >= MCV_MULTILINE_PKCS11_RESPONSE)
-+    {
-+        unsigned int count = pkcs11_management_id_count();
-+        unsigned int from = (unsigned int)atoi(p1);
-+        unsigned int to = p2 ? (unsigned int)atoi(p2) : from + 1;
-+
-+        if (streq(p1, "all"))
-+        {
-+            from = 0;
-+            to = count;
-+        }
-+
-+        bool error = false;
-+        for (unsigned int i = from; i < min_uint(to, count) && !error; i++)
-+        {
-+            char *id = NULL;
-+            char *base64 = NULL;
-+
-+            if (pkcs11_management_id_get(i, &id, &base64))
-+            {
-+                msg(M_CLIENT, "%u,%s,%s", i, id, base64);
-+            }
-+            else
-+            {
-+                error = true;
-+                msg(M_CLIENT, "ERROR: Failed to load PKCS#11 id at index: %u", i);
-+            }
-+            free(id);
-+            free(base64);
-+        }
-+        if (!error)
-+        {
-+            msg(M_CLIENT, "END");
-+        }
-+    }
-+    else
-+    {
-+        int index = atoi(p1);
-+
-+        char *id = NULL;
-+        char *base64 = NULL;
-+
-+        if (pkcs11_management_id_get(index, &id, &base64))
-+        {
-+            msg(M_CLIENT, ">PKCS11ID-ENTRY:'%d', ID:'%s', BLOB:'%s'", index, id, base64);
-+        }
-+        else
-+        {
-+            msg(M_CLIENT, ">PKCS11ID-ENTRY:'%d'", index);
-+        }
-+        free(id);
-+        free(base64);
-+    }
- }
- 
- #endif /* ifdef ENABLE_PKCS11 */
-@@ -1838,9 +1895,9 @@
-     }
-     else if (streq(p[0], "pkcs11-id-get"))
-     {
--        if (man_need(p, 1, 0))
-+        if (man_need(p, 1, MN_AT_LEAST))
-         {
--            man_pkcs11_id_get(man, atoi(p[1]));
-+            man_pkcs11_id_get(man, p[1], p[2]);
-         }
-     }
  #endif
-diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
-index 82c0caa..1d2aff1 100644
---- a/src/openvpn/manage.h
-+++ b/src/openvpn/manage.h
-@@ -50,7 +50,7 @@
- #include "socket_util.h"
- #include "mroute.h"
  
--#define MANAGEMENT_VERSION                  6
-+#define MANAGEMENT_VERSION                  7
- #define MANAGEMENT_N_PASSWORD_RETRIES       3
- #define MANAGEMENT_LOG_HISTORY_INITIAL_SIZE 100
- #define MANAGEMENT_ECHO_BUFFER_SIZE         100
+diff --git a/src/openvpn/multi_io.c b/src/openvpn/multi_io.c
+index fb4810b..a6e97af 100644
+--- a/src/openvpn/multi_io.c
++++ b/src/openvpn/multi_io.c
+@@ -85,6 +85,9 @@
+         case TA_TUN_WRITE_TIMEOUT:
+             return "TA_TUN_WRITE_TIMEOUT";
+ 
++        case TA_INSTANCE_POST:
++            return "TA_INSTANCE_POST";
++
+         default:
+             return "?";
+     }
+@@ -492,6 +495,11 @@
+             multi_process_post(m, mi, mpp_flags);
+             break;
+ 
++        case TA_INSTANCE_POST:
++            ASSERT(mi);
++            multi_process_post(m, mi, mpp_flags);
++            break;
++
+         default:
+             msg(M_FATAL, "MULTI IO: multi_io_dispatch, unhandled action=%d", action);
+     }
+@@ -659,7 +667,7 @@
+ #ifdef ENABLE_ASYNC_PUSH
+                 else if (e->arg == MULTI_IO_FILE_CLOSE_WRITE)
+                 {
+-                    multi_process_file_closed(m, MPP_PRE_SELECT | MPP_RECORD_TOUCH);
++                    multi_process_file_closed(m);
+                 }
+ #endif
+         }
+diff --git a/src/openvpn/multi_io.h b/src/openvpn/multi_io.h
+index c7f8f89..4d56e25 100644
+--- a/src/openvpn/multi_io.h
++++ b/src/openvpn/multi_io.h
+@@ -44,6 +44,7 @@
+ #define TA_INITIAL               8
+ #define TA_TIMEOUT               9
+ #define TA_TUN_WRITE_TIMEOUT     10
++#define TA_INSTANCE_POST         11
+ 
+ /*
+  * I/O state and events tracker
 
 
 _______________________________________________
