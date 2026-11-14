@@ -1,76 +1,139 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06F16606A327
-	for <openvpn-devel@archiver.kernel.org>; Sat, 14 Nov 2026 16:50:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCDCD606A329
+	for <openvpn-devel@archiver.kernel.org>; Sat, 14 Nov 2026 16:51:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=WLhCI27t;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=cmtX5dht;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=bjTrTvaU
+	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=RKTnTqad;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=mNH63ymz;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=YPAjFWtx;
+	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=LYSpOuzf
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
-	List-Owner; bh=fNjcRCWwOHL/ngzcgPHMQOkYR1NAdAibZmYcaebY55k=; b=WLhCI27tClOGdk
-	c319bAs6aR+0HzaT2Hff14dMN9n1erMs0VMwb+RNXtnsZq3fPNB1F3A3BI75l2kDDKX7JK0Yr+oPF
-	tWMjn04opEp5fyerbzDu4jz2DRNIGMjzy2iv5ZWTWo7lbzuVOlMcNw1A62xIb5CuhsTIWj30cJNqT
-	VwU=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Unsubscribe-Post:List-Owner;
+	bh=WDVCQYfZasw5bfIRqfb754MvEhajWnCwnD1mwg63FVw=; b=RKTnTqadSwZAJlaVuhWoG+/J+v
+	HUjgEFlnfKgsM0Mtmd+i/i/Nl4O7Gd9Ejsc7dAQPwli4CJ5+3KW/sH+IG5TCO5bQFKZCTiR1V6C7Z
+	qgOr2WVWdALWip22HcT4PYDRMtkQ5KpEOj0GC0e2bptYWJw8ujVia8qkk82OCPJ4uIyM=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xSGx4-000000007cz-1b9y;
-	Sat, 14 Nov 2026 16:50:06 +0000
+	id 1xSGy0-000000007Ji-1Idg;
+	Sat, 14 Nov 2026 16:51:04 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gert@blue4.greenie.muc.de>)
- id 1xSGx2-000000007cs-2C8Z for openvpn-devel@lists.sourceforge.net;
- Sat, 14 Nov 2026 16:50:04 +0000
+ (envelope-from <gerrit@openvpn.net>) id 1xSGxU-000000007J7-1Y39
+ for openvpn-devel@lists.sourceforge.net;
+ Sat, 14 Nov 2026 16:50:32 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
+ :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
+ Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
+ :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=kVGUiyOG4Z05WcrmwA7epgQzds3hvLry74xCV75TJqc=; b=cmtX5dht90lGIMwjlvrr68jhyv
- 8Oa2xlBd9tJ+vYMc1ZKliBkj9n1o8855Xn7UJo5PggXptZ/hAmmKoJkWGtLIIZaNQrDivkFaeOvGn
- GA+eNy59lOaiBWRfrFwu0apffshPM9MhuyFab/R18yD0qsI5JJ0FjYCi6KYzWUHcez0U=;
+ bh=x6enBCJvCQbMAWf9gdOmnhRxi4M1D+8N+WtGb3CzmOc=; b=mNH63ymzD4Sb+teVGK/Xz8FycP
+ ekwkwPHzp1PhHeaTpS5Lx4/v4c9Xl0JLeksQINpJK6UAWY+9I2O60CIbPPo+lLEGSYjQ0w7+JGtHx
+ WKzPWlzt9W5o0Qhmf6OiXNPxwq1LJDrXMyrgBLJVAepAxBi/zWQYCnCDqMkbnr8gfVog=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
+ h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
+ Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=kVGUiyOG4Z05WcrmwA7epgQzds3hvLry74xCV75TJqc=; b=bjTrTvaUQVNaJkhcbdFYNXFwly
- nKL2vwR/q4z5dfedhH+t9UcT8i2iFoOCaG4InMGMB+jjiFIot9bN+rpYAN3pQ6b9+YYeioXrTSqfD
- R9DgjtiuLiB6f5q9bzIhh4QArMjhF7VAH5fWVVFr0p+A2bstLWIw4L7ueuk66qyzghzY=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
- id 1xSGwz-000000001Lq-1hlK for openvpn-devel@lists.sourceforge.net;
- Sat, 14 Nov 2026 16:50:04 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 6AEGnsCl007546
- for <openvpn-devel@lists.sourceforge.net>; Sat, 14 Nov 2026 17:49:54 +0100
-Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 6AEGnskW007545
- for openvpn-devel@lists.sourceforge.net; Sat, 14 Nov 2026 17:49:54 +0100
-From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Sat, 14 Nov 2026 17:49:48 +0100
-Message-ID: <20261114164953.7535-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <gerrit.1793094393000.Ia7a31ff1c3792104101cb2e828be3b7fd8f44156@gerrit.openvpn.net>
-References: <gerrit.1793094393000.Ia7a31ff1c3792104101cb2e828be3b7fd8f44156@gerrit.openvpn.net>
+ bh=x6enBCJvCQbMAWf9gdOmnhRxi4M1D+8N+WtGb3CzmOc=; b=YPAjFWtxFAJwGTYIRY98tTmHc7
+ he6IGUpyxPsKMSSBf/cep1+M1PQkSuWK6+ab9grrqF31uPLjucNl/aFkn/vCc+GOdLljecLFz4sbJ
+ BHtune0hbi4njvqKtJITYS14HxBGS+dVbDdZRMZFzEi8yIbjKFhswAk3cgIo0k9Ty3aM=;
+Received: from mail-wm1-f52.google.com ([209.85.128.52])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
+ id 1xSGxS-0000000028H-2Y5G for openvpn-devel@lists.sourceforge.net;
+ Sat, 14 Nov 2026 16:50:32 +0000
+Received: by mail-wm1-f52.google.com with SMTP id
+ 5b1f17b1804b1-4ac95761c85so11976085e9.2
+ for <openvpn-devel@lists.sourceforge.net>;
+ Sat, 14 Nov 2026 08:50:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=openvpn.net; s=google; t=1794675024; x=1795279824; darn=lists.sourceforge.net;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
+ :reply-to:content-type;
+ bh=x6enBCJvCQbMAWf9gdOmnhRxi4M1D+8N+WtGb3CzmOc=;
+ b=LYSpOuzf3HUtXbAm4+++1ZA/y1Yk4rKGkmtDn6OZdEtzu0BxeG3P/HF9tpLXUQe7gp
+ WWBiA+yLVYwh+/TyFd2kUg+SrqsCMmBHZcBeEBdmS2g9n5YCIAKvLa+Pp1rFKyjZwbHh
+ wHioYgfp1evqjU+JAJO4pEIHe9/eTbZU3FCsSWmqP95wjl+jC46uUHoe06TFNhkxw/fU
+ 7Pr+3Tdr8YXbBiEObqHp/Ygge1FnQ0g9SAMd1KhXpk09PTWhEF2I3vcv6MuEN7wJnTAY
+ q41J7rDek+KIHUAD2owyS9ECmIeoHqw8iubEsi6nS2qd+dmhIUOux2aqFzQav4pmKIOU
+ GTSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20260707; t=1794675024; x=1795279824;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
+ :cc:subject:date:message-id:reply-to:content-type;
+ bh=x6enBCJvCQbMAWf9gdOmnhRxi4M1D+8N+WtGb3CzmOc=;
+ b=K0nizavLhe5Cub2d4v04XH5Tl/wgThVlD1oCZN5rAnJQnAFAgej3VuaSiSw+3jkfoO
+ gA1G53WoQImDTTqv5oNFqhuLasePnz8pTfPN8rQORR36GLBqKsDWyrqlcBgoIZlnGrob
+ Lona2HKcGbtSHSpT7IeuQ4MOHtUQwMAEXTBD8MvhCf38DHJg4U3VcgGtGZS7srRwsgFx
+ 1aRp64qh6a5EdZprUaJ9VDR8iZOPzUm6x95gIGUNPQwSalLr5NLjVVjCCtQ6bX45W4Y3
+ mfcQ9054Zyf6xifPycoQJ6U5JSaMKbUuoMc4bct8QJGcdRX3pPbHzIVGYUNLT4CXhuKQ
+ SvVA==
+X-Forwarded-Encrypted: i=1;
+ AL+hErHG2dnPdPx74qb7+Sszkx5GvzCD0mCeyoPeocKwbv879w3e/xjZZr/wZ12Mcru8TIse5Mw5iLPLS908tqbv@lists.sourceforge.net
+X-Gm-Message-State: APuU4Z9KAlB9bI1oj+Ir0bDAJNudFnAj2i1hc5rXGtqQspIrAkvaE39U
+ Q7ve24n1Z6bIWiW0/n79tKuZ3obdLuVJqxpzuU59+iD1oQdNq/eGaCaxx1wbUClSz+dVBILtvfu
+ 5d9I+YwQRD0tGhNIS5nIt2HMndXPlxvjVsWiRldgpJDYtHiFWAveFcmJdiRZPwECzCQhB
+X-Gm-Gg: AYBFou1jpBQCrylt2aE/hfdrc+Xa4Vuo4uIy99py/HRODPXGaMuCod9ibmiIepydIUb
+ t1gOkEYZfVWh2Ecls3dEDbcmwx1S4KsNkb3WAquLRs28niRpcNZLWdoHu72nDYzXuBcD9bXpD2l
+ CM2+Jfa8ly4ijQHsHcUlaMc1T6BwlGwiFKlMxCVgrlg1I1avhxIyvcBlYmLyHvo39Uw4iNkeS7B
+ e1bmbcetqug/j34NRO6AanKa7kmCxNC48rQFrvtn+zudZeip4SQrmAwKmKXWAqG3zJgDA/3I5tv
+ sC25JUrRWUzE3Pnc17sVMHPI24o1Pj1K4iOMt7HiIrfsNPvfIC9kztDy8qw0gKJDlQQe0ns+smO
+ 5tBTAUuOf4eYZVo2oMKNHE4Qb8ebcPz56cSl1cVzyQuV+ukyZ2odNFgLfZ9Qc/YQZnyqttQeZ1O
+ TguKRpPHEZWxX3RH53pc//7y2kURngs4Un3H1EuwXRXojaYeje9eoOStveiKuFi4ewWe/55PGnU
+ /jXGNMcm0oInV8xmxXwdCKKD24fSDHXlDo7+XZPNbtRu+Ub1zwyJ33HNyTcVvmQLx3rQhJeGUjf
+ PApJSoaTqHi6b1hrAKw8HyCNCp/OBvNI36rwv7j46ajdXCFTeEX5UYKQH42bZzh4YAnsABxmZxc
+ 5ELgvF2MBHHyxdMVOKEsqOZaA/1AUYiXDjzADd75XBWG6gDcNZ/MK6iS/4XkiKKSJLhIjQpNTz7
+ N2v+yS13WQHw5esis=
+X-Received: by 2002:a05:600c:3b16:b0:4a2:cbe:bec2 with SMTP id
+ 5b1f17b1804b1-4bb55a7f81bmr125207905e9.32.1794675023850; 
+ Sat, 14 Nov 2026 08:50:23 -0800 (PST)
+Received: from ip-10-18-1-162.eu-central-1.compute.internal
+ (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
+ by smtp.gmail.com with ESMTPSA id
+ ffacd0b85a97d-49c5fe370f8sm10646536f8f.27.2026.11.14.08.50.23
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Sat, 14 Nov 2026 08:50:23 -0800 (PST)
+X-Google-Original-From: "Selva Nair (Code Review)"
+ <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
+Date: Sat, 14 Nov 2026 16:50:22 +0000
+To: opidopiopi@gmail.com
+Auto-Submitted: auto-generated
+X-Gerrit-MessageType: comment
+X-Gerrit-PatchSet: 6
+X-Gerrit-Change-Id: I09e55085cde6dbc0040e111a42128527d59832b8
+X-Gerrit-Change-Number: 2148
+X-Gerrit-Project: openvpn
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2148?usp=email>
+X-Gerrit-Commit: 4dbf91671cf640541f6e33e16ff487cb42818e14
+X-Gerrit-Comment-Date: Sat, 14 Nov 2026 16:50:22 +0000
+In-Reply-To: <gerrit.1794059437000.I09e55085cde6dbc0040e111a42128527d59832b8@gerrit.openvpn.net>
+References: <gerrit.1794059437000.I09e55085cde6dbc0040e111a42128527d59832b8@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzk0MDU5NDM3MDAwLkkwOWU1NTA4NWNkZTZkYmMwMDQwZTExMWE0MjEyODUyN2Q1OTgzMmI4QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <9590059ab752f76d6bef77d0e2b14411f4749201-EmailReviewComments-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
-X-Spam-Score: 1.3 (+)
-X-Headers-End: 1xSGwz-000000001Lq-1hlK
-Subject: [Openvpn-devel] [PATCH v3] multi_io: dispatch UDP events through
- TA_SOCKET_READ/TA_SOCKET_WRITE
+User-Agent: Gerrit/3.14.5
+X-Spam-Score: 0.8 (/)
+X-Headers-End: 1xSGxS-0000000028H-2Y5G
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Implement multiline
+ responses for pkcs11-id commands
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -80,369 +143,202 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-16.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_PASS,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=4.0.1
+From: "Selva Nair \(Code Review\) via Openvpn-devel"
+ <openvpn-devel@lists.sourceforge.net>
+Reply-To: selva.nair@gmail.com, arne-openvpn@rfc2549.org, opidopiopi@gmail.com,
+ openvpn-devel@lists.sourceforge.net, frank@lichtenheld.com,
+ yura.uddr@gmail.com, gert@greenie.muc.de
+Cc: "Selva Nair \(Code Review\)" <gerrit@openvpn.net>,
+ Yuriy Darnobyt <yura.uddr@gmail.com>, Arne Schwabe <arne-openvpn@rfc2549.org>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: multipart/mixed; boundary="===============5997312818449688513=="
+X-Spam-Status: No, score=-2.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
+	MAILING_LIST_MULTI,PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,SPF_PASS
+	autolearn=no autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
-From: Gianmarco De Gregori <gianmarco@mandelbit.com>
+--===============5997312818449688513==
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="yJEjkkKgNHM="; charset=UTF-8
 
-UDP socket events were handled by multi_process_io_udp() outside the
-multi_io_action() state machine and re-entered it via TA_INITIAL,
-running multi_process_post() twice.
+--yJEjkkKgNHM=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Dispatch them as TA_SOCKET_READ, with mi == NULL and the socket passed
-explicitly, and TA_SOCKET_WRITE, so that pending output is flushed
-within the same event. Drop multi_process_io_udp(); multi_io_send_link()
-has no caller left outside multi_io.c and becomes static.
+Attention is currently required from: Arne Schwabe, Frank Lichtenheld, Gert=
+ Doering, Yuriy Darnobyt, opidopiopi@gmail=2Ecom=2E
 
-TA_SOCKET_WRITE fell back to the bcast/c2c queue when there was no
-pending instance, and only the queue drain at the end of
-multi_io_process_io() relied on that. A UDP EVENT_WRITE would now reach
-the fallback too and write a queued packet, possibly for a TCP instance,
-outside the drain. Let the drain extract the packets itself with
-multi_get_queue(), and make TA_SOCKET_WRITE write only output that is
-already prepared: the pending instance's, or else that of mi.
+Selva Nair has posted =
+comments on this change by opidopiopi@gmail=2Ecom=2E ( https://gerrit=2Eope=
+nvpn=2Enet/c/openvpn/+/2148?usp=3Demail )
 
-Change-Id: Ia7a31ff1c3792104101cb2e828be3b7fd8f44156
-Signed-off-by: Gianmarco De Gregori <gianmarco@mandelbit.com>
-Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2046
----
+Change subject: Implement multil=
+ine responses for pkcs11-id commands
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2046
-This mail reflects revision 3 of this Change.
+Patch Set 6: Code-Review+2
 
-Acked-by according to Gerrit (reflected above):
-Razvan Cojocaru <razvanc@mailbox.org>
+(1 comment)
 
-        
-diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
-index 217b299..70ce458 100644
---- a/src/openvpn/mudp.c
-+++ b/src/openvpn/mudp.c
-@@ -29,7 +29,6 @@
- #include "multi.h"
- #include <inttypes.h>
- #include "forward.h"
--#include "multi_io.h"
- 
- #include "memdbg.h"
- #include "ssl_pkt.h"
-@@ -462,39 +461,3 @@
-     ASSERT(!(mi && mi->halt));
-     return mi;
- }
--
--/*
-- * Send a packet to UDP socket.
-- */
--static inline void
--multi_process_outgoing_link(struct multi_context *m, const unsigned int mpp_flags)
--{
--    if (m->pending)
--    {
--        multi_io_send_link(m, m->pending, mpp_flags);
--    }
--}
--
--/*
-- * Process a UDP socket event.
-- */
--void
--multi_process_io_udp(struct multi_context *m, struct link_socket *sock, unsigned int rwflags)
--{
--    const unsigned int mpp_flags = (MPP_PRE_SELECT | MPP_CLOSE_ON_SIGNAL);
--
--    /* UDP port ready to accept write */
--    if (rwflags & SOCKET_WRITE)
--    {
--        multi_process_outgoing_link(m, mpp_flags);
--    }
--    /* Incoming data on UDP port */
--    else if (rwflags & SOCKET_READ)
--    {
--        read_incoming_link(&m->top, sock);
--        if (!IS_SIG(&m->top))
--        {
--            multi_process_incoming_link(m, NULL, mpp_flags, sock);
--        }
--    }
--}
-diff --git a/src/openvpn/mudp.h b/src/openvpn/mudp.h
-index 6567539..c38d9e5 100644
---- a/src/openvpn/mudp.h
-+++ b/src/openvpn/mudp.h
-@@ -30,7 +30,6 @@
- struct context;
- struct multi_context;
- 
--void multi_process_io_udp(struct multi_context *m, struct link_socket *sock, unsigned int rwflags);
- /**************************************************************************/
- /**
-  * Get, and if necessary create, the multi_instance associated with a
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index b1a648b..c41905b 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -2869,7 +2869,7 @@
-             if (mi)
-             {
-                 /* continue authentication, perform NCP negotiation and send push_reply */
--                multi_io_action(m, mi, TA_INSTANCE_POST, false);
-+                multi_io_action(m, mi, NULL, TA_INSTANCE_POST, false);
-             }
-             else
-             {
-@@ -4266,7 +4266,7 @@
-         }
-         else if (status == 0)
-         {
--            multi_io_action(multi, NULL, TA_TIMEOUT, false);
-+            multi_io_action(multi, NULL, NULL, TA_TIMEOUT, false);
-         }
- 
-         MULTI_CHECK_SIG(multi);
-diff --git a/src/openvpn/multi_io.c b/src/openvpn/multi_io.c
-index a6e97af..83233d2 100644
---- a/src/openvpn/multi_io.c
-+++ b/src/openvpn/multi_io.c
-@@ -328,27 +328,24 @@
- }
- 
- /*
-- * Determine which instance has pending output
-- * and prepare the output for sending in
-- * the to_link buffer.
-+ * Determine which instance has output for the
-+ * link: the pending instance, or else mi itself.
-  */
- static struct multi_instance *
--multi_io_write_link_pre(struct multi_context *m)
-+multi_io_write_link_pre(struct multi_context *m, struct multi_instance *mi)
- {
--    struct multi_instance *mi = NULL;
--
-     if (m->pending)
-     {
--        mi = m->pending;
-+        return m->pending;
-     }
--    else if (mbuf_defined(m->mbuf))
-+    if (mi && LINK_OUT(&mi->context))
-     {
--        mi = multi_get_queue(m->mbuf);
-+        return mi;
-     }
--    return mi;
-+    return NULL;
- }
- 
--bool
-+static bool
- multi_io_send_link(struct multi_context *m, struct multi_instance *mi, const unsigned int mpp_flags)
- {
-     bool ret = true;
-@@ -381,11 +378,12 @@
- }
- 
- static bool
--multi_io_write_link(struct multi_context *m, bool defer, const unsigned int mpp_flags)
-+multi_io_write_link(struct multi_context *m, struct multi_instance *mi, bool defer,
-+                    const unsigned int mpp_flags)
- {
--    struct multi_instance *mi = multi_io_write_link_pre(m);
-     bool ret = true;
- 
-+    mi = multi_io_write_link_pre(m, mi);
-     if (mi)
-     {
-         if ((defer && !proto_is_dgram(mi->context.c2.link_sockets[0]->info.proto))
-@@ -426,7 +424,8 @@
- }
- 
- static struct multi_instance *
--multi_io_dispatch(struct multi_context *m, struct multi_instance *mi, const int action)
-+multi_io_dispatch(struct multi_context *m, struct multi_instance *mi, struct link_socket *sock,
-+                  const int action)
- {
-     const unsigned int mpp_flags = MPP_PRE_SELECT | MPP_RECORD_TOUCH;
-     struct multi_instance *touched = mi;
-@@ -448,21 +447,28 @@
- 
-         case TA_SOCKET_READ:
-         case TA_SOCKET_READ_RESIDUAL:
--            ASSERT(mi);
--            ASSERT(mi->context.c2.link_sockets);
--            ASSERT(mi->context.c2.link_sockets[0]);
--            set_prefix(mi);
--            read_incoming_link(&mi->context, mi->context.c2.link_sockets[0]);
--            clear_prefix();
--            if (!IS_SIG(&mi->context))
-+        {
-+            struct context *c = multi_get_context(m, mi);
-+
-+            if (mi)
-             {
--                multi_process_incoming_link(m, mi, mpp_flags, mi->context.c2.link_sockets[0]);
--                if (!IS_SIG(&mi->context))
-+                ASSERT(mi->context.c2.link_sockets);
-+                sock = mi->context.c2.link_sockets[0];
-+                set_prefix(mi);
-+            }
-+            ASSERT(sock);
-+            read_incoming_link(c, sock);
-+            clear_prefix();
-+            if (!IS_SIG(c))
-+            {
-+                multi_process_incoming_link(m, mi, mpp_flags, sock);
-+                if (!IS_SIG(c))
-                 {
--                    stream_buf_read_setup(mi->context.c2.link_sockets[0]);
-+                    stream_buf_read_setup(sock);
-                 }
-             }
-             break;
-+        }
- 
-         case TA_TIMEOUT:
-             multi_process_timeout(m, mpp_flags);
-@@ -482,11 +488,11 @@
-             break;
- 
-         case TA_SOCKET_WRITE:
--            multi_io_write_link(m, false, mpp_flags);
-+            multi_io_write_link(m, mi, false, mpp_flags);
-             break;
- 
-         case TA_SOCKET_WRITE_DEFERRED:
--            multi_io_write_link(m, true, mpp_flags);
-+            multi_io_write_link(m, mi, true, mpp_flags);
-             break;
- 
-         case TA_INITIAL:
-@@ -594,11 +600,11 @@
-                     mi = ev_arg->u.mi;
-                     if (e->rwflags & EVENT_WRITE)
-                     {
--                        multi_io_action(m, mi, TA_SOCKET_WRITE_READY, false);
-+                        multi_io_action(m, mi, NULL, TA_SOCKET_WRITE_READY, false);
-                     }
-                     else if (e->rwflags & EVENT_READ)
-                     {
--                        multi_io_action(m, mi, TA_SOCKET_READ, false);
-+                        multi_io_action(m, mi, NULL, TA_SOCKET_READ, false);
-                     }
-                     break;
- 
-@@ -613,18 +619,21 @@
-                     {
-                         socket_reset_listen_persistent(ev_arg->u.sock);
-                         mi = multi_create_instance_tcp(m, ev_arg->u.sock);
-+                        /* monitor and/or handle events that are
-+                         * triggered in succession by the first one
-+                         * before returning to the main loop. */
-+                        if (mi)
-+                        {
-+                            multi_io_action(m, mi, NULL, TA_INITIAL, false);
-+                        }
-                     }
--                    else
-+                    else if (e->rwflags & EVENT_WRITE)
-                     {
--                        multi_process_io_udp(m, ev_arg->u.sock, e->rwflags);
--                        mi = m->pending;
-+                        multi_io_action(m, NULL, NULL, TA_SOCKET_WRITE, false);
-                     }
--                    /* monitor and/or handle events that are
--                     * triggered in succession by the first one
--                     * before returning to the main loop. */
--                    if (mi)
-+                    else if (e->rwflags & EVENT_READ)
-                     {
--                        multi_io_action(m, mi, TA_INITIAL, false);
-+                        multi_io_action(m, NULL, ev_arg->u.sock, TA_SOCKET_READ, false);
-                     }
-                     break;
-             }
-@@ -644,11 +653,11 @@
-                 {
-                     if (e->rwflags & EVENT_WRITE)
-                     {
--                        multi_io_action(m, NULL, TA_TUN_WRITE, false);
-+                        multi_io_action(m, NULL, NULL, TA_TUN_WRITE, false);
-                     }
-                     else if (e->rwflags & EVENT_READ)
-                     {
--                        multi_io_action(m, NULL, TA_TUN_READ, false);
-+                        multi_io_action(m, NULL, NULL, TA_TUN_READ, false);
-                     }
-                 }
- 
-@@ -679,19 +688,22 @@
-     multi_io->n_esr = 0;
- 
-     /*
--     * Drain the queued mbuf packets, datagram and TCP instances alike
-+     * Drain the queued mbuf packets, datagram and TCP instances alike:
-+     * multi_get_queue() prepares each one in the to_link buffer of its
-+     * instance.
-      */
-     {
-         struct multi_instance *mi;
--        while (!IS_SIG(&m->top) && (mi = mbuf_peek(m->mbuf)) != NULL)
-+        while (!IS_SIG(&m->top) && (mi = multi_get_queue(m->mbuf)) != NULL)
-         {
--            multi_io_action(m, mi, TA_SOCKET_WRITE, true);
-+            multi_io_action(m, mi, NULL, TA_SOCKET_WRITE, true);
-         }
-     }
- }
- 
- void
--multi_io_action(struct multi_context *m, struct multi_instance *mi, int action, bool poll)
-+multi_io_action(struct multi_context *m, struct multi_instance *mi, struct link_socket *sock,
-+                int action, bool poll)
- {
-     bool tun_input_pending = false;
- 
-@@ -724,7 +736,7 @@
-         /*
-          * Dispatch the action
-          */
--        struct multi_instance *touched = multi_io_dispatch(m, mi, action);
-+        struct multi_instance *touched = multi_io_dispatch(m, mi, sock, action);
- 
-         /*
-          * Signal received or connection
-diff --git a/src/openvpn/multi_io.h b/src/openvpn/multi_io.h
-index 4d56e25..591225c 100644
---- a/src/openvpn/multi_io.h
-+++ b/src/openvpn/multi_io.h
-@@ -69,11 +69,9 @@
- 
- void multi_io_process_io(struct multi_context *m);
- 
--void multi_io_action(struct multi_context *m, struct multi_instance *mi, int action, bool poll);
-+void multi_io_action(struct multi_context *m, struct multi_instance *mi, struct link_socket *sock,
-+                     int action, bool poll);
- 
- void multi_io_delete_event(struct multi_io *multi_io, event_t event);
- 
--bool multi_io_send_link(struct multi_context *m, struct multi_instance *mi,
--                        const unsigned int mpp_flags);
--
- #endif /* ifndef MULTI_IO_H */
+Patchse=
+t:
 
+PS6: 
+> Sorry @selva=2Enair@gmail=2Ecom I had to push again, @gert@gree=
+nie=2Emuc=2E [=E2=80=A6]
+Not sure this was needed, but repushed to make thi=
+s ready again=2E
+
+
+
+-- 
+To view, visit https://gerrit=2Eopenvpn=2Enet/c/ope=
+nvpn/+/2148?usp=3Demail
+To unsubscribe, or for help writing mail filters, v=
+isit https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+
+Gerrit-MessageTyp=
+e: comment
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: =
+I09e55085cde6dbc0040e111a42128527d59832b8
+Gerrit-Change-Number: 2148
+Gerrit=
+-PatchSet: 6
+Gerrit-Owner: opidopiopi@gmail=2Ecom
+Gerrit-Reviewer: Arne Sch=
+wabe <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Reviewer: Selva Nair <selva=2Enair=
+@gmail=2Ecom>
+Gerrit-CC: Frank Lichtenheld <frank@lichtenheld=2Ecom>
+Gerrit=
+-CC: Gert Doering <gert@greenie=2Emuc=2Ede>
+Gerrit-CC: Yuriy Darnobyt <yura=
+=2Euddr@gmail=2Ecom>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esource=
+forge=2Enet>
+Gerrit-Attention: opidopiopi@gmail=2Ecom
+Gerrit-Attention: Arn=
+e Schwabe <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Attention: Gert Doering <gert=
+@greenie=2Emuc=2Ede>
+Gerrit-Attention: Frank Lichtenheld <frank@lichtenheld=
+=2Ecom>
+Gerrit-Attention: Yuriy Darnobyt <yura=2Euddr@gmail=2Ecom>
+Gerrit-C=
+omment-Date: Sat, 14 Nov 2026 16:50:22 +0000
+Gerrit-HasComments: Yes
+Gerrit=
+-Has-Labels: Yes
+Comment-In-Reply-To: opidopiopi@gmail=2Ecom
+
+--yJEjkkKgNHM=
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: Arne Schwabe, Frank Lichtenheld, Gert Doering, Yuriy =
+Darnobyt, opidopiopi@gmail=2Ecom=2E </p>
+<p>Selva Nair has posted comments =
+on this change by opidopiopi@gmail=2Ecom=2E</p><p>Patch set 6:<span style=
+=3D"border-radius: 3px; display: inline-block; margin: 0 2px; padding: 4px;=
+background-color: #d4ffd4;">Code-Review +2</span></p><p><a href=3D"https://=
+gerrit=2Eopenvpn=2Enet/c/openvpn/+/2148?usp=3Demail">View Change</a></p><p>=
+1 comment:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"marg=
+in: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style: none; padding:=
+ 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-botto=
+m: 4px;"><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2148?tab=3Dc=
+omments&amp;usp=3Demail">Patch Set #6:</a> </p><p><blockquote style=3D"bord=
+er-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Sorry @selva=2En=
+air@gmail=2Ecom I had to push again, @gert@greenie=2Emuc=2E [=E2=80=A6]</bl=
+ockquote></p><p class=3D"blocks" style=3D"white-space: pre-wrap; word-wrap:=
+ break-word;">Not sure this was needed, but repushed to make this ready aga=
+in=2E</p></li></ul></li></ul><p>To view, visit <a href=3D"https://gerrit=2E=
+openvpn=2Enet/c/openvpn/+/2148?usp=3Demail">change 2148</a>=2E To unsubscri=
+be, or for help writing mail filters, visit <a href=3D"https://gerrit=2Eope=
+nvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=
+=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" it=
+emtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"ht=
+tps://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2148?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none=
+"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-P=
+roject: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master <=
+/div>
+<div style=3D"display:none"> Gerrit-Change-Id: I09e55085cde6dbc0040e1=
+11a42128527d59832b8 </div>
+<div style=3D"display:none"> Gerrit-Change-Numbe=
+r: 2148 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
+<div =
+style=3D"display:none"> Gerrit-Owner: opidopiopi@gmail=2Ecom </div>
+<div st=
+yle=3D"display:none"> Gerrit-Reviewer: Arne Schwabe &lt;arne-openvpn@rfc254=
+9=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: Selva Nair=
+ &lt;selva=2Enair@gmail=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerri=
+t-CC: Frank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<div style=
+=3D"display:none"> Gerrit-CC: Gert Doering &lt;gert@greenie=2Emuc=2Ede&gt; =
+</div>
+<div style=3D"display:none"> Gerrit-CC: Yuriy Darnobyt &lt;yura=2Eud=
+dr@gmail=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-d=
+evel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"d=
+isplay:none"> Gerrit-Attention: opidopiopi@gmail=2Ecom </div>
+<div style=3D=
+"display:none"> Gerrit-Attention: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eo=
+rg&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: Gert Doering &=
+lt;gert@greenie=2Emuc=2Ede&gt; </div>
+<div style=3D"display:none"> Gerrit-A=
+ttention: Frank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<div sty=
+le=3D"display:none"> Gerrit-Attention: Yuriy Darnobyt &lt;yura=2Euddr@gmail=
+=2Ecom&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sat, 14=
+ Nov 2026 16:50:22 +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComm=
+ents: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>=
+
+<div style=3D"display:none"> Comment-In-Reply-To: opidopiopi@gmail=2Ecom <=
+/div>
+
+</body></html>
+--yJEjkkKgNHM=--
+
+
+--===============5997312818449688513==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============5997312818449688513==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+--===============5997312818449688513==--
+
