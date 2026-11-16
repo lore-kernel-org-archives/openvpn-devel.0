@@ -1,76 +1,137 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D01D606A329
-	for <openvpn-devel@archiver.kernel.org>; Mon, 16 Nov 2026 09:33:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4A12606A323
+	for <openvpn-devel@archiver.kernel.org>; Mon, 16 Nov 2026 09:33:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=AlN59duJ;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=lUgkr51b;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=Paef6J0X
+	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=F2ATlNOO;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=Zo4uCZni;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=ivKB39uD;
+	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=d7zWrfaH
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
-	MIME-Version:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
-	List-Unsubscribe:List-Id:Subject:References:In-Reply-To:To:From:Message-Id:
-	Date:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
-	List-Owner; bh=epSLVL4MVyvhed9QQDGCfHqtSNvwaQ+xpVZ4+xva0Do=; b=AlN59duJiIwfcD
-	oJs12ZncHwdodHREig3RYnYKO3xLwR5kssI9okIXZDlvglXnoNIx3IMu+Spy/J8v30qFtS/6Rff8/
-	4cITGRgHietuk9AwkCpDpfMiMSvGFqVpt+ZIEnDtcIU/Y8V2jLRRzIbK52KCXYm3VHLmrwXDByTlM
-	m7g=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
+	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
+	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Unsubscribe-Post:List-Owner;
+	bh=3efGbIv8xnK0yb4/XgwTrHSm+Kkk9OJg+qNV8YPnvXw=; b=F2ATlNOOKjfVnhwz4cUAXCDMaS
+	+UCW8pig5qbrk7y+iqjy8frmZEX4kOKPh1LDxJAIIvN9HvoaJTltr40MSJFeE53vOZqSk4o/6kVpL
+	7blTxeBtALs/UVhbW2thykVOEQtgIyUY+vibrfS/E5f35y9rwJjpcW1wLiQ+sFDKMDZ0=;
+Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
+	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xSt5P-000000006l2-2eoa;
-	Mon, 16 Nov 2026 09:33:15 +0000
+	id 1xSt5i-000000008G0-26UG;
+	Mon, 16 Nov 2026 09:33:34 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gert@chekov.greenie.muc.de>)
- id 1xSt5O-000000006kt-0bJw for openvpn-devel@lists.sourceforge.net;
- Mon, 16 Nov 2026 09:33:14 +0000
+ (envelope-from <gerrit@openvpn.net>) id 1xSt5h-000000008Fm-0Fhd
+ for openvpn-devel@lists.sourceforge.net;
+ Mon, 16 Nov 2026 09:33:33 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=References:In-Reply-To:Subject:Cc:To:From:
- Message-Id:Date:Sender:Reply-To:MIME-Version:Content-Type:
- Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
- Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
- List-Help:List-Unsubscribe:List-Unsubscribe-Post:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=8VenHmZuyH6fxLbI3rypNCymMV0n4cw1k1ZRKmCp8TA=; b=l
- Ugkr51bmDtFWzn2E+pX1DMwgQBKuuiM+FH+sq7bDbDd44DPKLio4dgG0s/dMXTw63/0CHY6XdFvyR
- dP4fz9FlmUebgetV32039Foht2I/3eX2Qt6Y+6N9sThPI8iS5m9fyvxcojM7O4+OJeLv+nbuD1dXo
- tcF9PhT7aYmDn8kg=;
+ d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
+ :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
+ Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
+ :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
+ List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=6S/NswGFoL+m58ytDXUpLdpNAEPOvKd4Zkg2lZqO57U=; b=Zo4uCZnivgBqw9CacrM1Lb3xgQ
+ MeWqEcljkKdUFpuQ1a/jqPV5RjDLf0HvCR4rURGS73f2fUscLd8n+ytvJGOS+qIHnsgt36J0TX9s1
+ WNe4buleoPedrzMlPkVpOx9Lu64QvgcFxQZ31mkDK9Xo+1W6zi3/9hOZQWOajyw9DKfs=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=References:In-Reply-To:Subject:Cc:To:From:Message-Id:Date:Sender:Reply-To
- :MIME-Version:Content-Type:Content-Transfer-Encoding:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
+ h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
+ Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
+ Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=8VenHmZuyH6fxLbI3rypNCymMV0n4cw1k1ZRKmCp8TA=; b=Paef6J0XTU5Yyn9/GfAIR78clL
- wzKOrjPUWXqKyBDsNRtKMX9rxdMD9yxBFG7D9LG1Rg5aim/jZPAt9/qPO0wTOlhZGmXyVYWRctfxx
- ClpPrEjJxx15MvSN1+HEvDoJju+w9EjPGvvZIOlc0YTJpig6d7qxCANb006AnGWHfRR0=;
-Received: from chekov.greenie.muc.de ([193.149.48.178])
+ bh=6S/NswGFoL+m58ytDXUpLdpNAEPOvKd4Zkg2lZqO57U=; b=ivKB39uDKa+SYi1/x0wb4rHcGW
+ UKsHlAhMdsBGTTNe2h8C/bhTSJ8gwKQCScMGIGKBFaz0I7WBf9R6nAzm4nrHMgfr92rtA/p9BcQLJ
+ PtC4H7PHgcKRxSp0L84bxGkX60JPDyEptRoa/K4YQpcnYxnTjVD2NXbR3LZLraUyhPzs=;
+Received: from mail-wm1-f50.google.com ([209.85.128.50])
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
- id 1xSt5J-00000000892-1TkF for openvpn-devel@lists.sourceforge.net;
- Mon, 16 Nov 2026 09:33:14 +0000
-Received: from chekov.greenie.muc.de (localhost [IPv6:0:0:0:0:0:0:0:1])
- by chekov.greenie.muc.de (8.18.2/8.18.1) with ESMTP id 6AG9X265066813;
- Mon, 16 Nov 2026 10:33:02 +0100 (CET)
- (envelope-from gert@chekov.greenie.muc.de)
-Received: (from gert@localhost)
- by chekov.greenie.muc.de (8.18.2/8.18.1/Submit) id 6AG9X2GU066812;
- Mon, 16 Nov 2026 10:33:02 +0100 (CET) (envelope-from gert)
-Date: Mon, 16 Nov 2026 10:33:02 +0100 (CET)
-Message-Id: <202611160933.6AG9X2GU066812@chekov.greenie.muc.de>
-From: Gert Doering <gert@greenie.muc.de>
-To: Razvan Cojocaru <razvanc@mailbox.org>
-X-Patchwork-State: Accepted
-In-Reply-To: <20261112214027.13465-1-gert@greenie.muc.de>
-References: <20261112214027.13465-1-gert@greenie.muc.de>
-X-Spam-Score: 0.0 (/)
-X-Headers-End: 1xSt5J-00000000892-1TkF
-Subject: [Openvpn-devel] [PATCH applied] Re: openvpnserv: reject a config
- file passed without --config
+ (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
+ id 1xSt5f-0000000089o-3oYz for openvpn-devel@lists.sourceforge.net;
+ Mon, 16 Nov 2026 09:33:32 +0000
+Received: by mail-wm1-f50.google.com with SMTP id
+ 5b1f17b1804b1-4bb64c99d2fso18807865e9.3
+ for <openvpn-devel@lists.sourceforge.net>;
+ Mon, 16 Nov 2026 01:33:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=openvpn.net; s=google; t=1794821605; x=1795426405; darn=lists.sourceforge.net;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
+ :reply-to:content-type;
+ bh=6S/NswGFoL+m58ytDXUpLdpNAEPOvKd4Zkg2lZqO57U=;
+ b=d7zWrfaHMoXC0NlaXjBeIFGosTxQ5oSwGDS5/dfPOoVseeAhDpwnY1uCqhvlEah8zm
+ LSK4Pc4TtgeHmlLdjE09NlgeKlYqy4oo4rOp+BJRxTDdE1OHgzEE+ubOPbwy0X1rnPL9
+ vilsJ/eJQ1Nkms+wsZr0WsH/lXqHWNb1ntmDbrVqlMdWuD3QpMQoyZDcwUGAL1XXoys3
+ 2A4z1mHCmKRyN5ncblQxihYor8hBIl3jS5CwHBO1Y26yKHlKc47F/8d/CBucX0VcCQqH
+ 9l4i/tisCwAitMo+7SN7I+m8EET8ib/1Mi4S6ThTzX+Ur3/1Cbz6pnsPEDK7jz3/RWvI
+ XEVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20260707; t=1794821605; x=1795426405;
+ h=content-type:user-agent:content-disposition
+ :content-transfer-encoding:mime-version:message-id:reply-to:subject
+ :thread-index:references:in-reply-to:list-unsubscribe:list-id
+ :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
+ :cc:subject:date:message-id:reply-to:content-type;
+ bh=6S/NswGFoL+m58ytDXUpLdpNAEPOvKd4Zkg2lZqO57U=;
+ b=1lShps0cBDhIeIpueR1+oI1IQGjciIUXY98UMIORxoO2Cjgjp5KxkvoXua0B39XVM2
+ y6gSxoQIqf1vzeO505Zu+CNLiEAFHfFAy7mjrhHjGhJYWEWKRUhK9eQEGhSze0wCUdW1
+ hiIuV4LrU6qCw+jxcsABsCgzP6b+gu4alI6+zfRvGKgT3LwnAPFeH5XfsuThufZ+uqYf
+ 2XGfNeENMuSRMdrEWZE+6Le86vcOQEmmbZEB7kOPCvP3eNrFyPRi5R0/ffhjt+P9cu3I
+ aXnzblVkgHib3BwkQKfYcjdW+RNQbQkUbHP43lFC8TlfEWkwumzyTFQQeCB7yNXAqVDu
+ oghw==
+X-Gm-Message-State: APuU4Z86cFFRBS0cj7OtVdiodKUreGbFXmM3Vg+XnEpopsd+ghoSJ7St
+ KzvOwjPKh+Qals04ln8vqncPXyeA9VCv0nps+cUDS8iuG7xtv3jMZpCZi2GYGQat2eJ/gNiEMmt
+ zOPg03EInZmwVn0qJABs8NEdDnVmKrTXrqmqYMWq7LKXSeFy8azBSduYzqTXlwWhekdUC
+X-Gm-Gg: AYBFou28BLlPsSm8aFDZzcXDeLqiu/3iE8FIkXYaGDGbe/66BmuIT4M6go5edUuEudD
+ 2RT8H2vjYzfOf/Lb/0aymNmyvnehd243pX50gbese3RUXe/SjRjvDm54Ko4/II93eN8QZN+/JV2
+ EK3nXOtZvoRW1Rmha8R+h2jEIyvXGK2QwtxU65E9+JNJcX/7/3lDgborBxwt9RicT6Z9z5CbCyH
+ i+uN4wA7GKGprRoqANpfcVMd3oCaNH/j1Or3qg0hg8qHAOMOaXHyaFOLkOsYYUjJxuD81skjvNy
+ I0K0fe3IS1rU4L9F/RAL7Zwus92yEHRp6sAXbKvjB2CGVyczdwm2XxDx1SFMzP2ObgaLLLBnSn5
+ tJCPvulbd3aN0+UH9tzZQt3eESqUt2zMJA/hsuVu03qO+mYkPP6/0HPgY5SFMXNnNPtKiehMPlM
+ EIY0KhHhzV5B9UP2unjRYx5oTNpuE8awGUaymMBxMfY13K+ooHrYh10k3cngCupY8c75fQBMhp4
+ qegKA0RMRfIibQwxmcucPDevSvF1Rf5xb0BC5QBiVzy8eAcUAT2kY+VUN7STs+nLV8qdghZDfLG
+ OcM4DrbjO2B19bTQu3juVl6nHfp39T4ybASfCOWvPR8HNUeMc1S1fGxo9MzuMwBcMO1gI8SIuiR
+ cNYleHU+5PyVuDXKsaR8SofTf3Rscar48etAIsgT8FFdm77WA2uWLNF8PYhiknDicAtPVt7EuOB
+ ZDQk9IqxvxGRxA3H4=
+X-Received: by 2002:a05:600c:3547:b0:4ba:73f:ef5 with SMTP id
+ 5b1f17b1804b1-4bb55aa4fa9mr206156855e9.34.1794821604988; 
+ Mon, 16 Nov 2026 01:33:24 -0800 (PST)
+Received: from ip-10-18-1-162.eu-central-1.compute.internal
+ (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
+ by smtp.gmail.com with ESMTPSA id
+ 5b1f17b1804b1-4bb4e28c882sm373432125e9.6.2026.11.16.01.33.24
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 16 Nov 2026 01:33:24 -0800 (PST)
+X-Google-Original-From: "Gert Doering (Code Review)"
+ <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
+Date: Mon, 16 Nov 2026 09:33:23 +0000
+To: =?UTF-8?Q?R=C4=83zvan_Cojocaru?= <razvanc@mailbox.org>,
+ Arne Schwabe <arne-openvpn@rfc2549.org>
+Auto-Submitted: auto-generated
+X-Gerrit-MessageType: newpatchset
+X-Gerrit-PatchSet: 8
+X-Gerrit-Change-Id: I57469ca50c551ad475510690ecfa2d5e7cf9cfcf
+X-Gerrit-Change-Number: 2159
+X-Gerrit-Project: openvpn
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2159?usp=email>
+X-Gerrit-Commit: ad4e3b4921c520e187a27d8014d953e8e294130d
+In-Reply-To: <gerrit.1794300772000.I57469ca50c551ad475510690ecfa2d5e7cf9cfcf@gerrit.openvpn.net>
+References: <gerrit.1794300772000.I57469ca50c551ad475510690ecfa2d5e7cf9cfcf@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzk0MzAwNzcyMDAwLkk1NzQ2OWNhNTBjNTUxYWQ0NzU1MTA2OTBlY2ZhMmQ1ZTdjZjljZmNmQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <d7423fcd6204bb6ad66374215a86f497ae3f89f9-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+X-Archived-By: <archiver.kernel.org>
+MIME-Version: 1.0
+User-Agent: Gerrit/3.14.5
+X-Spam-Score: 0.8 (/)
+X-Headers-End: 1xSt5f-0000000089o-3oYz
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: openvpnserv: reject
+ a config file passed without --config
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -80,56 +141,498 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: openvpn-devel@lists.sourceforge.net
-X-Archived-By: <archiver.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-8.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,SPF_HELO_PASS,SPF_PASS
-	autolearn=ham autolearn_force=no version=4.0.1
+From: "Gert Doering \(Code Review\) via Openvpn-devel"
+ <openvpn-devel@lists.sourceforge.net>
+Reply-To: gert@greenie.muc.de, arne-openvpn@rfc2549.org, razvanc@mailbox.org,
+ openvpn-devel@lists.sourceforge.net, heiko@ist.eigentlich.net,
+ antonio@mandelbit.com
+Cc: "Gert Doering \(Code Review\)" <gerrit@openvpn.net>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: multipart/mixed; boundary="===============1021944252077398677=="
+X-Spam-Status: No, score=-12.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,SPF_PASS,T_KAM_HTML_FONT_INVALID,
+	WEIRD_PORT autolearn=ham autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
-The suspicion that this code path got broken was there in the merging
-of commit 66faaa7a996c - but since our GUI never creates command lines
-without "--config", pre-release testing for 2.7.9 did not show any issues,
-so it was left dangling.
+--===============1021944252077398677==
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="ALIjuUMFM4U="; charset=UTF-8
 
-Thanks for taking this up and clarifying the exceptions in the iserv - 
-always do full qualified "--config $file", never just "single argument = 
-config file".  I think the code could be simpler ("check that sud.options
-starts with '--', done") but this patch is already an improvement.
+--ALIjuUMFM4U=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Since this has a unit test, pushed to my GH instance for a windows UT
-run (passed).
+Gert Doering has uploaded a new patch set (#8) to the change originally cre=
+ated by R=C4=83zvan Cojocaru=2E ( https://gerrit=2Eopenvpn=2Enet/c/openvpn/=
++/2159?usp=3Demail )
 
-Your patch has been applied to the master and release/2.7 branch (bugfix).
-
-commit ad4e3b4921c520e187a27d8014d953e8e294130d (master)
-commit a1d2bab37373f9c680106ad229f00545dcc37b78 (release/2.7)
-Author: Razvan Cojocaru
-Date:   Thu Nov 12 22:40:21 2026 +0100
-
-     openvpnserv: reject a config file passed without --config
-
-     Signed-off-by: Razvan Cojocaru <razvanc@mailbox.org>
-     Acked-by: Heiko Hund <heiko@ist.eigentlich.net>
-     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2159
-     Message-Id: <20261112214027.13465-1-gert@greenie.muc.de>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg41236.html
-     Signed-off-by: Gert Doering <gert@greenie.muc.de>
+The following approvals got outdated and were removed=
+:
+Code-Review+2 by Heiko Hund
 
 
---
-kind regards,
+Change subject: openvpnserv: reject a confi=
+g file passed without --config
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E
 
-Gert Doering
+openvpnserv: reject a config file passed without --conf=
+ig
+
+openvpn=2Eexe takes a lone argument as the config file only when there
+=
+are no other arguments, but the service adds --msg-channel=2E Since
+c139e82=
+d openvpn=2Eexe takes the config file as an extra parameter of
+--msg-channe=
+l and ignores it=2E ValidateOptions() treated it as the
+config file, but on=
+ly ever returned FALSE for it, with an empty error
+message if the path was =
+fine=2E
+
+Return an error to all users when the options don't start with an
+=
+option, and drop the lone argument special case in ValidateOptions(),
+so th=
+at a lone option is checked against the white list=2E
+
+Change-Id: I57469ca5=
+0c551ad475510690ecfa2d5e7cf9cfcf
+Signed-off-by: Razvan Cojocaru <razvanc@ma=
+ilbox=2Eorg>
+Acked-by: Heiko Hund <heiko@ist=2Eeigentlich=2Enet>
+Gerrit URL=
+: https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2159
+Message-Id: <202611122140=
+27=2E13465-1-gert@greenie=2Emuc=2Ede>
+URL: https://www=2Email-archive=2Ecom=
+/openvpn-devel@lists=2Esourceforge=2Enet/msg41236=2Ehtml
+Signed-off-by: Ger=
+t Doering <gert@greenie=2Emuc=2Ede>
+---
+M src/openvpnserv/interactive=2Ec
+M=
+ tests/unit_tests/openvpnserv/test_openvpnserv=2Ec
+2 files changed, 60 inse=
+rtions(+), 14 deletions(-)
 
 
+  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/=
+openvpn refs/changes/59/2159/8
+
+diff --git a/src/openvpnserv/interactive=2E=
+c b/src/openvpnserv/interactive=2Ec
+index 57f0243=2E=2Ef9a2c970 100644
+--- =
+a/src/openvpnserv/interactive=2Ec
++++ b/src/openvpnserv/interactive=2Ec
+@@ =
+-354,6 +354,29 @@
+     ReturnError(pipe, GetLastError(), func, 1, &exit_eve=
+nt);
+ }
+ 
++/**
++ * Check whether the user options start with a non-option
++=
+ *
++ * openvpn=2Eexe takes a lone argument as the config file only when the=
+re are
++ * no other arguments, and takes non-options after the --msg-channe=
+l handle
++ * as its extra parameters=2E
++ *
++ * @param  cmdline  openvpn=2E=
+exe command line built by the service
++ *
++ * @return BOOL to indicate if t=
+he first user argument is not an option
++ */
++static BOOL
++StartsWithNonOpt=
+ion(const WCHAR *cmdline)
++{
++    int argc;
++    WCHAR **argv =3D CommandLi=
+neToArgvW(cmdline, &argc);
++    /* "openvpn --msg-channel <handle> <arg>=2E=
+=2E=2E" */
++    BOOL ret =3D argv && argc > 3 && !IsOption(argv[3]);
++
++   =
+ LocalFree(argv);
++    return ret;
++}
++
+ /*
+  * Validate options against a =
+white list=2E Also check the config_file is
+  * inside the config_dir=2E Th=
+e white list is defined in validate=2Ec
+@@ -396,20 +419,6 @@
+         goto =
+out;
+     }
+ 
+-    /*
+-     * If only one argument, it is the config file
+-=
+     */
+-    if (argc =3D=3D first + 1)
+-    {
+-        WCHAR *argv_tmp[2] =
+=3D { L"--config", argv[first] };
+-
+-        if (!CheckOption(workdir, 2, a=
+rgv_tmp, &settings))
+-        {
+-            swprintf(errmsg, capacity, msg=
+1, argv[first], workdir, settings=2Eovpn_admin_group);
+-        }
+-        =
+goto out;
+-    }
+-
+     for (i =3D first; i < argc; ++i)
+     {
+         if=
+ (!IsOption(argv[i]))
+@@ -3849,6 +3858,14 @@
+     swprintf(cmdline, cmdline=
+_size, L"openvpn --msg-channel %" PRIuPTR L" %ls",
+              (uintptr_t=
+)svc_pipe, sud=2Eoptions);
+ 
++    if (StartsWithNonOption(cmdline))
++    {
+=
++        ReturnError(pipe, ERROR_STARTUP_DATA,
++                    L"Optio=
+ns must start with an option, pass the config file with --config", 1,
++    =
+                &exit_event);
++        goto out;
++    }
++
+     /*
+      * O=
+nly authorized users are allowed to use any command line options or
+      *=
+ have the config file in locations other than the global config directory=
+=2E
+diff --git a/tests/unit_tests/openvpnserv/test_openvpnserv=2Ec b/tests/=
+unit_tests/openvpnserv/test_openvpnserv=2Ec
+index 20fb1af=2E=2E7db61f7 1006=
+44
+--- a/tests/unit_tests/openvpnserv/test_openvpnserv=2Ec
++++ b/tests/unit=
+_tests/openvpnserv/test_openvpnserv=2Ec
+@@ -301,6 +301,33 @@
+     assert_me=
+rge_result(L"", L"", L"");
+ }
+ 
++static void
++test_starts_with_non_option(v=
+oid **state)
++{
++    assert_true(StartsWithNonOption(L"openvpn --msg-channe=
+l 1 foo=2Eovpn"));
++    assert_true(StartsWithNonOption(L"openvpn --msg-cha=
+nnel 1 \"my vpn=2Eovpn\""));
++    assert_true(StartsWithNonOption(L"openvpn=
+ --msg-channel 1 foo=2Eovpn --verb 3"));
++    assert_true(StartsWithNonOpti=
+on(L"openvpn --msg-channel 1 foo=2Eovpn bar"));
++    assert_true(StartsWith=
+NonOption(L"openvpn --msg-channel 1 \"\""));
++
++    assert_false(StartsWith=
+NonOption(L"openvpn --msg-channel 1 "));
++    assert_false(StartsWithNonOpt=
+ion(L"openvpn --msg-channel 1 --persist-tun"));
++    assert_false(StartsWit=
+hNonOption(L"openvpn --msg-channel 1 --config foo=2Eovpn"));
++}
++
++static v=
+oid
++test_validate_lone_option(void **state)
++{
++    WCHAR errmsg[512];
++
++=
+    assert_true(ValidateOptions(NULL, L"C:\\OpenVPN\\config\\",
++          =
+                      L"openvpn --msg-channel 1 --script-security", errmsg,=
+
++                                _countof(errmsg)));
++    assert_false(Val=
+idateOptions(NULL, L"C:\\OpenVPN\\config\\",
++                             =
+    L"openvpn --msg-channel 1 --persist-tun", errmsg,
++                    =
+             _countof(errmsg)));
++}
++
+ int
+ wmain(void)
+ {
+@@ -311,6 +338,8=
+ @@
+         cmocka_unit_test(test_append_search_list),
+         cmocka_uni=
+t_test(test_remove_search_list_tokens),
+         cmocka_unit_test(test_merg=
+e_openvpn_environment),
++        cmocka_unit_test(test_starts_with_non_opti=
+on),
++        cmocka_unit_test(test_validate_lone_option),
+     };
+ 
+     i=
+nt ret =3D cmocka_run_group_tests_name("openvpnserv tests", tests, NULL, NU=
+LL);
+
+-- 
+To view, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2159?us=
+p=3Demail
+To unsubscribe, or for help writing mail filters, visit https://g=
+errit=2Eopenvpn=2Enet/settings?usp=3Demail
+
+Gerrit-MessageType: newpatchset=
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I57469ca50=
+c551ad475510690ecfa2d5e7cf9cfcf
+Gerrit-Change-Number: 2159
+Gerrit-PatchSet:=
+ 8
+Gerrit-Owner: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
+Gerrit-Review=
+er: Antonio Quartulli <antonio@mandelbit=2Ecom>
+Gerrit-Reviewer: Arne Schwa=
+be <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Reviewer: Heiko Hund <heiko@ist=2Eei=
+gentlich=2Enet>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=
+=2Enet>
+
+--ALIjuUMFM4U=
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html><html><head><style></style></head><body><p>Gert Doering <str=
+ong>uploaded patch set #8</strong> to the change originally created by R=C4=
+=83zvan Cojocaru=2E</p><p><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openv=
+pn/+/2159?usp=3Demail">View Change</a></p><p>The following approvals got ou=
+tdated and were removed:
+Code-Review+2 by Heiko Hund</p><pre class=3D"block=
+s" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">openv=
+pnserv: reject a config file passed without --config<br><br>openvpn=2Eexe t=
+akes a lone argument as the config file only when there<br>are no other arg=
+uments, but the service adds --msg-channel=2E Since<br>c139e82d openvpn=2Ee=
+xe takes the config file as an extra parameter of<br>--msg-channel and igno=
+res it=2E ValidateOptions() treated it as the<br>config file, but only ever=
+ returned FALSE for it, with an empty error<br>message if the path was fine=
+=2E<br><br>Return an error to all users when the options don&#39;t start wi=
+th an<br>option, and drop the lone argument special case in ValidateOptions=
+(),<br>so that a lone option is checked against the white list=2E<br><br>Ch=
+ange-Id: I57469ca50c551ad475510690ecfa2d5e7cf9cfcf<br>Signed-off-by: Razvan=
+ Cojocaru &lt;razvanc@mailbox=2Eorg&gt;<br>Acked-by: Heiko Hund &lt;heiko@i=
+st=2Eeigentlich=2Enet&gt;<br>Gerrit URL: https://gerrit=2Eopenvpn=2Enet/c/o=
+penvpn/+/2159<br>Message-Id: &lt;20261112214027=2E13465-1-gert@greenie=2Emu=
+c=2Ede&gt;<br>URL: https://www=2Email-archive=2Ecom/openvpn-devel@lists=2Es=
+ourceforge=2Enet/msg41236=2Ehtml<br>Signed-off-by: Gert Doering &lt;gert@gr=
+eenie=2Emuc=2Ede&gt;<br>---<br>M src/openvpnserv/interactive=2Ec<br>M tests=
+/unit_tests/openvpnserv/test_openvpnserv=2Ec<br>2 files changed, 60 inserti=
+ons(+), 14 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-fa=
+mily: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2E=
+openvpn=2Enet:29418/openvpn refs/changes/59/2159/8</pre><pre style=3D"font-=
+family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src=
+/openvpnserv/interactive=2Ec b/src/openvpnserv/interactive=2Ec</span><br><s=
+pan>index 57f0243=2E=2Ef9a2c970 100644</span><br><span>--- a/src/openvpnser=
+v/interactive=2Ec</span><br><span>+++ b/src/openvpnserv/interactive=2Ec</sp=
+an><br><span>@@ -354,6 +354,29 @@</span><br><span>     ReturnError(pipe, Ge=
+tLastError(), func, 1, &amp;exit_event);</span><br><span> }</span><br><span=
+> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+ * Check whether the user options=
+ start with a non-option</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * openvpn=
+=2Eexe takes a lone argument as the config file only when there are</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+ * no other arguments, and =
+takes non-options after the --msg-channel handle</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+ * as its extra parameters=2E</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+ * @param  cmdline  openvpn=2Eexe command line built =
+by the service</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return BOOL to ind=
+icate if the first user argument is not an option</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+static BOOL</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+StartsWithNonOption(const WCHAR *cmdline)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    int argc;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    WCHAR **argv =3D CommandLineToArgvW(cmdline, &amp;argc);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    /* &quot;openvpn --msg-cha=
+nnel &lt;handle&gt; &lt;arg&gt;=2E=2E=2E&quot; */</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    BOOL ret =3D argv &amp;&amp; argc &gt; 3 =
+&amp;&amp; !IsOption(argv[3]);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    Loca=
+lFree(argv);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ret=
+urn ret;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /*</span><b=
+r><span>  * Validate options against a white list=2E Also check the config_=
+file is</span><br><span>  * inside the config_dir=2E The white list is defi=
+ned in validate=2Ec</span><br><span>@@ -396,20 +419,6 @@</span><br><span>  =
+       goto out;</span><br><span>     }</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    /*</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-     * If only one argument, it is the config file</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-     */</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    if (argc =3D=3D first + 1)</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-        WCHAR *argv_tmp[2] =3D { L&quot;--conf=
+ig&quot;, argv[first] };</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (!Check=
+Option(workdir, 2, argv_tmp, &amp;settings))</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-            swprintf(errmsg, capacity, msg1, argv[first], workdi=
+r, settings=2Eovpn_admin_group);</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       goto out;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span>    =
+ for (i =3D first; i &lt; argc; ++i)</span><br><span>     {</span><br><span=
+>         if (!IsOption(argv[i]))</span><br><span>@@ -3849,6 +3858,14 @@</s=
+pan><br><span>     swprintf(cmdline, cmdline_size, L&quot;openvpn --msg-cha=
+nnel %&quot; PRIuPTR L&quot; %ls&quot;,</span><br><span>              (uint=
+ptr_t)svc_pipe, sud=2Eoptions);</span><br><span> </span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    if (StartsWithNonOption(cmdline))</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        ReturnError(pipe, ERROR_STARTUP_D=
+ATA,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
+     L&quot;Options must start with an option, pass the config file with --=
+config&quot;, 1,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+                 &amp;exit_event);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        goto out;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span>     /*</span><br><span>      * Only authorized users are a=
+llowed to use any command line options or</span><br><span>      * have the =
+config file in locations other than the global config directory=2E</span><b=
+r><span>diff --git a/tests/unit_tests/openvpnserv/test_openvpnserv=2Ec b/te=
+sts/unit_tests/openvpnserv/test_openvpnserv=2Ec</span><br><span>index 20fb1=
+af=2E=2E7db61f7 100644</span><br><span>--- a/tests/unit_tests/openvpnserv/t=
+est_openvpnserv=2Ec</span><br><span>+++ b/tests/unit_tests/openvpnserv/test=
+_openvpnserv=2Ec</span><br><span>@@ -301,6 +301,33 @@</span><br><span>     =
+assert_merge_result(L&quot;&quot;, L&quot;&quot;, L&quot;&quot;);</span><br=
+><span> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+test_starts_with_non_option(void **state)</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    assert_true(StartsWithNonOption(L&quot;openvpn --msg-channel 1 foo=
+=2Eovpn&quot;));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ assert_true(StartsWithNonOption(L&quot;openvpn --msg-channel 1 \&quot;my v=
+pn=2Eovpn\&quot;&quot;));</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    assert_true(StartsWithNonOption(L&quot;openvpn --msg-channel 1 fo=
+o=2Eovpn --verb 3&quot;));</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    assert_true(StartsWithNonOption(L&quot;openvpn --msg-channel 1 f=
+oo=2Eovpn bar&quot;));</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    assert_true(StartsWithNonOption(L&quot;openvpn --msg-channel 1 \&quo=
+t;\&quot;&quot;));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_false(Sta=
+rtsWithNonOption(L&quot;openvpn --msg-channel 1 &quot;));</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    assert_false(StartsWithNonOption(=
+L&quot;openvpn --msg-channel 1 --persist-tun&quot;));</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    assert_false(StartsWithNonOption(L&qu=
+ot;openvpn --msg-channel 1 --config foo=2Eovpn&quot;));</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+s=
+tatic void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+test_vali=
+date_lone_option(void **state)</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    WCH=
+AR errmsg[512];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(Validat=
+eOptions(NULL, L&quot;C:\\OpenVPN\\config\\&quot;,</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+                                L&quot;openv=
+pn --msg-channel 1 --script-security&quot;, errmsg,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                                _countof(=
+errmsg)));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    asser=
+t_false(ValidateOptions(NULL, L&quot;C:\\OpenVPN\\config\\&quot;,</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                             =
+    L&quot;openvpn --msg-channel 1 --persist-tun&quot;, errmsg,</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+                               =
+  _countof(errmsg)));</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+> int</span><br><span> wmain(void)</span><br><span> {</span><br><span>@@ -3=
+11,6 +338,8 @@</span><br><span>         cmocka_unit_test(test_append_search=
+_list),</span><br><span>         cmocka_unit_test(test_remove_search_list_t=
+okens),</span><br><span>         cmocka_unit_test(test_merge_openvpn_enviro=
+nment),</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        cmoc=
+ka_unit_test(test_starts_with_non_option),</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        cmocka_unit_test(test_validate_lone_option),=
+</span><br><span>     };</span><br><span> </span><br><span>     int ret =3D=
+ cmocka_run_group_tests_name(&quot;openvpnserv tests&quot;, tests, NULL, NU=
+LL);</span><br></pre><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=
+=2Enet/c/openvpn/+/2159?usp=3Demail">change 2159</a>=2E To unsubscribe, or =
+for help writing mail filters, visit <a href=3D"https://gerrit=2Eopenvpn=2E=
+net/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"htt=
+p://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
+=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https://=
+gerrit=2Eopenvpn=2Enet/c/openvpn/+/2159?usp=3Demail"/><meta itemprop=3D"nam=
+e" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerr=
+it-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Proj=
+ect: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </di=
+v>
+<div style=3D"display:none"> Gerrit-Change-Id: I57469ca50c551ad475510690=
+ecfa2d5e7cf9cfcf </div>
+<div style=3D"display:none"> Gerrit-Change-Number: =
+2159 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 8 </div>
+<div sty=
+le=3D"display:none"> Gerrit-Owner: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=
+=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: Antonio Qua=
+rtulli &lt;antonio@mandelbit=2Ecom&gt; </div>
+<div style=3D"display:none"> =
+Gerrit-Reviewer: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<di=
+v style=3D"display:none"> Gerrit-Reviewer: Heiko Hund &lt;heiko@ist=2Eeigen=
+tlich=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-deve=
+l &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+
+</body></html>
+--ALIjuUMFM4U=--
+
+
+--===============1021944252077398677==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============1021944252077398677==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+--===============1021944252077398677==--
+
