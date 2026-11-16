@@ -1,137 +1,76 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20493606A339
-	for <openvpn-devel@archiver.kernel.org>; Mon, 16 Nov 2026 08:25:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFA9F606A31C
+	for <openvpn-devel@archiver.kernel.org>; Mon, 16 Nov 2026 08:26:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=Y7bY+/CF;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=ICIXGwx4;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=CZIxuznL;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=K+zzwk6e
+	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=UIjlbObn;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=kgW99x+2;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=miLnWeAW
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
-	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Unsubscribe-Post:List-Owner;
-	bh=Uc6pCB8S0sXaNGZMEFdzcMDJGPqW5w5Vkr8L0OZF6Oo=; b=Y7bY+/CFo3E4Q5ihr56itxAqXI
-	yeC4mrE8Y7GHMj8Ql4XKoJqEX0nxrIWI84EhiNMQO5PnWCeyXjsgWbO/2zmM1eowxK2mHrsNwIa2g
-	SkeSXoOq0V92B2SdhKXd5nyWliwriRPUuJyLpsKXjvltZgiW9mUpF1vBREjYJbmZJnHo=;
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
+	MIME-Version:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
+	List-Unsubscribe:List-Id:Subject:References:In-Reply-To:To:From:Message-Id:
+	Date:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
+	List-Owner; bh=Q30vp4lrX7TX3R6Mn7yDDI39tzYP2AkkzxO9Vb5/xQw=; b=UIjlbObn8iiXNZ
+	Xn9zkxjJ9hHhHU38k4zQM7V8PmpfU/Jh7EpjHHd+bBtE7cvE99VL2lTiRD7x+/DoxHNt+lLRRwPuf
+	6s7uleLG4E0kYdDbDiYZ+rxt/j+He/hmEY1MBlQdlHUVLmcgTX7F8Hv76Dh04YJPD03Vf9UCqbkiE
+	0rw=;
 Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
 	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xSs23-0000000063f-1BI2;
-	Mon, 16 Nov 2026 08:25:43 +0000
+	id 1xSs2W-000000006Fx-1mmO;
+	Mon, 16 Nov 2026 08:26:12 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xSs21-0000000062p-3JFC
- for openvpn-devel@lists.sourceforge.net;
- Mon, 16 Nov 2026 08:25:41 +0000
+ (envelope-from <gert@chekov.greenie.muc.de>)
+ id 1xSs2U-000000006F5-2mDz for openvpn-devel@lists.sourceforge.net;
+ Mon, 16 Nov 2026 08:26:10 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
- List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=cDSO+SFExp/JTs5AM5VvYb8d01Gi71iU4hDpEc0unMI=; b=ICIXGwx4CObdZdoXQgsoxpJbK6
- yHXJvB1PtNp7uUbv1YBzRRLsR0WE/74om9tBrdF6juNvPSf2YH6chshmDvizeLKHWV/fIakN/GZ/L
- P9x6QCpxwnEfwLtj1drZxth93RTw5gtNiDjcteKcAwlKsC1DfXiyg1cLDfPIMxQ25oOg=;
+ d=sourceforge.net; s=x; h=References:In-Reply-To:Subject:Cc:To:From:
+ Message-Id:Date:Sender:Reply-To:MIME-Version:Content-Type:
+ Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+ List-Help:List-Unsubscribe:List-Unsubscribe-Post:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=h4JPH1aasS+WM+dJlvnYgb7wo0zWknqQuxUAgzgj7hw=; b=k
+ gW99x+26L9eE8JKObiOrSJv4XZjlP/1q1JMcH4vZDcp4S3XbHaFBIx3ZC7Ev6v0ZmAvHR68rXPy+Z
+ 4/p/UBXsb3xXfQDz1GaIa8Q0J2Jh0gif8vFyNBOA7qMx8G9Ty8DQEf34Eq6XSAoGEOUcPGKjBIaIo
+ SOjRrJEfJK2UrGXM=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
- Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
+ h=References:In-Reply-To:Subject:Cc:To:From:Message-Id:Date:Sender:Reply-To
+ :MIME-Version:Content-Type:Content-Transfer-Encoding:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=cDSO+SFExp/JTs5AM5VvYb8d01Gi71iU4hDpEc0unMI=; b=CZIxuznLwHyND0KfsomHhcgOLu
- nFhtQh3QBnqK7l4HPRF6qcJSaWqVtAX1oI/X59D8loP0hJIHFMSZQ6samqsjtwXbrNua0TeUuG9IA
- BEkE+GVkuju9/00oD1J3A178AwzXu/H5LQP8w3OzerJWtQwta6q4TDRETTDgcUACFuhM=;
-Received: from mail-wm1-f51.google.com ([209.85.128.51])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xSs1y-000000004Ei-0zON for openvpn-devel@lists.sourceforge.net;
- Mon, 16 Nov 2026 08:25:41 +0000
-Received: by mail-wm1-f51.google.com with SMTP id
- 5b1f17b1804b1-4bb64c99d2fso18078585e9.3
- for <openvpn-devel@lists.sourceforge.net>;
- Mon, 16 Nov 2026 00:25:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1794817532; x=1795422332; darn=lists.sourceforge.net;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
- :reply-to:content-type;
- bh=cDSO+SFExp/JTs5AM5VvYb8d01Gi71iU4hDpEc0unMI=;
- b=K+zzwk6e0EppnursN3VvAghRWSe5htxj2lGqkS8I7xTE28ZpmQxQUyK45mhQiqQ1V2
- 16aMUekxBTJ0dBAUU+W2JMXPlsIcYvkT83bgDoFdVzoJ3zPHEw8mBrQ8pgtQxUHZMRF/
- AzRHqtbXhTMncGTIsy+tjJrDNopab9vx2bdyoCLl8Nz8OoLGYuaG3nLz4S1qxGx22Foy
- hchXje41a/eNnspHE3EzYZ1WeO8GhK2rrylnXuCX/WBCD+LonrHk4Wlgj5Pd2NTFO7MS
- 1yCuqV8xcDSlMY9AMaMJpxeN12uQVPagydqwCtUqHJdcJow+yLYKt4fdcKSNzZWIVW8E
- cWcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1794817532; x=1795422332;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
- :cc:subject:date:message-id:reply-to:content-type;
- bh=cDSO+SFExp/JTs5AM5VvYb8d01Gi71iU4hDpEc0unMI=;
- b=1NPHZ0+qOk4w4xFUNgJjsyXIO6y4mN7kN8Wkm+y5cvCMG4JJES8C5O38krkCj7n3fw
- JcaktfZB+QF/GVqJK7cl1jYdWNAXBckyHFHBDDzWpLLmv3ejxpwviwmjMckicKtNEvWj
- C3kAGYmibUihnwrfYUoHrXluk7Zyr+6d+K6Co74xjKYGoP6X1Moc1KlxD6IreM6Y7cV+
- 9sJJw5qvhxGVb4jD2+ArVW+rpzKsmi6yIzH3oUobjOS8CTNQsjMfaI3td691kEHSuu3Z
- p7eq97Twt6QThi5L256RBXceKT07/C5yAwW+ih7SinEv43It3/qxtVa00J8OlgJZDX+8
- /KnA==
-X-Gm-Message-State: APuU4Z+KEtFoaX0ggUV7WcyRtiyhKSo2ztdxoyKUaX6pq8ln+20+TC4X
- K+V4fiGwlS9iW3sC1CBr/42PaWsc9w2Henu7a9MHQF8Lj8+qd6Bcl90qgVCBRMTr8n7LUISj1qP
- M4CUMEBvy+l8VuzfYBfKV36xHfovCqvbowhX1WeLBqUlnIk0cU0LpNZc99xx5GcxDnyXa1w6YF6
- Zo5J2I5A==
-X-Gm-Gg: AYBFou0MVFXgRpih/gPz9DKTGsa62Cil1PMwN8/8d/7C9/JO9AI0ln6htDO6zUtMglP
- PHvOqT60Bsy3mMofsNCLXx/nFl+MTDgiPN4aLy0kBpIR23OrBDuq7rTa8QhiuTq7xmIHzCwy5e6
- jhfL226NcarQ1d8I6n3d+uOt4Uc0PPLwO5k/xXUpyk0pFaTIJt/8Oz9mENCZa4dp4n8vhqiWF1d
- iYQvDrJZ9Aa6hquvhMMfHMN3/JW6W7czyOdeMZZ6SNZ7sikqLgzZkTMV+0GtOCqc6IU9HH96e7u
- XfRz2OQHVF9K4UvVixxq1oueR7EDUbPu2rrwunKsW45KPaDGRUaDmfGFw5AjvR/HUwWaT6gGYAt
- 6dPKqExgZJ6TEO8s8avGHKOeIt1+xhBoIpkI6OQ6UctRmgjpw2zqHU3fPine9CiPu+ZJ9MSQ/dn
- m47mAHJNjk64FkYJiKhAcvgz+25b81UPpp3JzFViKByutY5eEidl2XpK13IzXEwVMjTBpIoyswb
- 82iDm5agBqPLTtmAuNSSX1vjvc2suUiAW1NwhVHfxIfiKt1MFVJie2I134b1FhoxC98oineqk2S
- I1twUg0uP4tPUZX8yV1nVSBtSBr7s2CIpY7nT7VigqinDMMv3eR29PeaBiuL8VMuofUSWLvFp4E
- BYtqSa8ns5keiHCZ5iKGENs5LibNH9mgO6Lmvml42NC2NeMqCarAv0+U2JG9YFIrMoMeZmdsLVM
- qFblrLqNfMpxvQcjw=
-X-Received: by 2002:a05:600c:1f96:b0:4a2:150f:1601 with SMTP id
- 5b1f17b1804b1-4bb55a4eb97mr205712165e9.12.1794817531450; 
- Mon, 16 Nov 2026 00:25:31 -0800 (PST)
-Received: from ip-10-18-1-162.eu-central-1.compute.internal
- (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
- by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-4bb5b4a3fcdsm241804265e9.0.2026.11.16.00.25.30
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 16 Nov 2026 00:25:30 -0800 (PST)
-X-Google-Original-From: "Gert Doering (Code Review)"
- <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Mon, 16 Nov 2026 08:25:28 +0000
-To: =?UTF-8?Q?R=C4=83zvan_Cojocaru?= <razvanc@mailbox.org>
-Auto-Submitted: auto-generated
-X-Gerrit-MessageType: newpatchset
-X-Gerrit-PatchSet: 2
-X-Gerrit-Change-Id: I0f8ea4fa572f84e6dcc9b0806c23977c64ea645d
-X-Gerrit-Change-Number: 2126
-X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2126?usp=email>
-X-Gerrit-Commit: 42b615c088c844180c4f5878ec7f0d6cd3e781fb
-In-Reply-To: <gerrit.1793781037000.I0f8ea4fa572f84e6dcc9b0806c23977c64ea645d@gerrit.openvpn.net>
-References: <gerrit.1793781037000.I0f8ea4fa572f84e6dcc9b0806c23977c64ea645d@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzkzNzgxMDM3MDAwLkkwZjhlYTRmYTU3MmY4NGU2ZGNjOWIwODA2YzIzOTc3YzY0ZWE2NDVkQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <a76dd57ca96e6cfc4247085dc8b1e8ccb72c7568-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
-X-Archived-By: <archiver.kernel.org>
-MIME-Version: 1.0
-User-Agent: Gerrit/3.14.5
-X-Spam-Score: 0.8 (/)
-X-Headers-End: 1xSs1y-000000004Ei-0zON
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: pool: reuse
- handle-to-address helpers in ifconfig_pool_acquire()
+ bh=h4JPH1aasS+WM+dJlvnYgb7wo0zWknqQuxUAgzgj7hw=; b=miLnWeAWVNxWQz6Bq5DUszXS9z
+ E8zeZWhf7gDC9vjDQSrUPei9mtW7DCE4rsUgR6CCslICM1/GUXzR5ue+mdJVEqr+6NqV5UZgtUVfZ
+ lj7HOcRB318FZwCqN2qZh5qcXxWduXO0cN+dkflJbZUO7oMPRVZtKdb1Ql1GAWPQ1khY=;
+Received: from chekov.greenie.muc.de ([193.149.48.178])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
+ id 1xSs23-000000006OJ-0a27 for openvpn-devel@lists.sourceforge.net;
+ Mon, 16 Nov 2026 08:26:10 +0000
+Received: from chekov.greenie.muc.de (localhost [IPv6:0:0:0:0:0:0:0:1])
+ by chekov.greenie.muc.de (8.18.2/8.18.1) with ESMTP id 6AG8Pawf063952;
+ Mon, 16 Nov 2026 09:25:36 +0100 (CET)
+ (envelope-from gert@chekov.greenie.muc.de)
+Received: (from gert@localhost)
+ by chekov.greenie.muc.de (8.18.2/8.18.1/Submit) id 6AG8Pa88063951;
+ Mon, 16 Nov 2026 09:25:36 +0100 (CET) (envelope-from gert)
+Date: Mon, 16 Nov 2026 09:25:36 +0100 (CET)
+Message-Id: <202611160825.6AG8Pa88063951@chekov.greenie.muc.de>
+From: Gert Doering <gert@greenie.muc.de>
+To: Razvan Cojocaru <razvanc@mailbox.org>
+X-Patchwork-State: Accepted
+In-Reply-To: <20261114221549.7019-1-gert@greenie.muc.de>
+References: <20261114221549.7019-1-gert@greenie.muc.de>
+X-Spam-Score: 0.0 (/)
+X-Headers-End: 1xSs23-000000006OJ-0a27
+Subject: [Openvpn-devel] [PATCH applied] Re: pool: reuse handle-to-address
+ helpers in ifconfig_pool_acquire()
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -141,416 +80,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "Gert Doering \(Code Review\) via Openvpn-devel"
- <openvpn-devel@lists.sourceforge.net>
-Reply-To: gert@greenie.muc.de, razvanc@mailbox.org,
- openvpn-devel@lists.sourceforge.net, antonio@mandelbit.com
-Cc: "Gert Doering \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============2133958440124624991=="
-X-Spam-Status: No, score=-12.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,SPF_PASS,T_KAM_HTML_FONT_INVALID,
-	WEIRD_PORT autolearn=ham autolearn_force=no version=4.0.1
+Cc: openvpn-devel@lists.sourceforge.net
+X-Archived-By: <archiver.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,SPF_HELO_PASS,SPF_PASS
+	autolearn=ham autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============2133958440124624991==
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="DYBs+U/NpdI="; charset=UTF-8
+Since this survived the BB t_server patch (which uses pools, and t_clients
+that verify that they receive the same pool address every time) I guess
+it didn't break any of the maths :-)
 
---DYBs+U/NpdI=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Interesting code evolution, though, having these nice helper functions
+and then never using them...
 
-Gert Doering has uploaded a new patch set (#2) to the change originally cre=
-ated by R=C4=83zvan Cojocaru=2E ( https://gerrit=2Eopenvpn=2Enet/c/openvpn/=
-+/2126?usp=3Demail )
+On the (uint32_t) casts, we had a parallel discussion on IRC, and my
+preference is clearly "the mininum amount of extra language elements
+that are needed to make the compiler happy *and* enlighten the reader".
 
-The following approvals got outdated and were removed=
-:
-Code-Review+2 by Antonio Quartulli
+Since this is "code cleanup" and is not fixing anything user visible, no
+need to go into 2.7
 
+Your patch has been applied to the master branch.
 
-Change subject: pool: reuse handle-t=
-o-address helpers in ifconfig_pool_acquire()
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+commit 42b615c088c844180c4f5878ec7f0d6cd3e781fb
+Author: Razvan Cojocaru
+Date:   Sat Nov 14 23:15:43 2026 +0100
 
-pool: reuse handle-to-address helpers in if=
-config_pool_acquire()
+     pool: reuse handle-to-address helpers in ifconfig_pool_acquire()
 
-ifconfig_pool_acquire() duplicated the address calcu=
-lation of
-ifconfig_pool_handle_to_ip_base() and
-ifconfig_pool_handle_to_ipv=
-6_base()=2E Use those instead, and add
-in6_addr_low32() for the three open-=
-coded conversions of the last
-32 bits of an IPv6 address=2E Its uint32_t ca=
-sts also avoid shifting
-an int into the sign bit=2E
-
-Change-Id: I0f8ea4fa57=
-2f84e6dcc9b0806c23977c64ea645d
-Signed-off-by: Razvan Cojocaru <razvanc@mail=
-box=2Eorg>
-Acked-by: Antonio Quartulli <antonio@mandelbit=2Ecom>
-Gerrit URL=
-: https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2126
-Message-Id: <202611142215=
-49=2E7019-1-gert@greenie=2Emuc=2Ede>
-URL: https://www=2Email-archive=2Ecom/=
-openvpn-devel@lists=2Esourceforge=2Enet/msg41340=2Ehtml
-Signed-off-by: Gert=
- Doering <gert@greenie=2Emuc=2Ede>
----
-M src/openvpn/pool=2Ec
-1 file change=
-d, 27 insertions(+), 28 deletions(-)
+     Signed-off-by: Razvan Cojocaru <razvanc@mailbox.org>
+     Acked-by: Antonio Quartulli <antonio@mandelbit.com>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2126
+     Message-Id: <20261114221549.7019-1-gert@greenie.muc.de>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg41340.html
+     Signed-off-by: Gert Doering <gert@greenie.muc.de>
 
 
-  git pull ssh://gerrit=2Eopenvpn=2E=
-net:29418/openvpn refs/changes/26/2126/2
+--
+kind regards,
 
-diff --git a/src/openvpn/pool=2Ec=
- b/src/openvpn/pool=2Ec
-index 016f3a8=2E=2Eeafd553 100644
---- a/src/openvpn=
-/pool=2Ec
-+++ b/src/openvpn/pool=2Ec
-@@ -35,6 +35,20 @@
- 
- #include "memdbg=
-=2Eh"
- 
-+static in_addr_t ifconfig_pool_handle_to_ip_base(const struct ifco=
-nfig_pool *pool,
-+                                                 ifconfig=
-_pool_handle hand);
-+
-+static struct in6_addr ifconfig_pool_handle_to_ipv6_=
-base(const struct ifconfig_pool *pool,
-+                                   =
-                      ifconfig_pool_handle hand);
-+
-+/* Return the last 32 =
-bits of an IPv6 address in host byte order */
-+static inline uint32_t
-+in6_=
-addr_low32(const struct in6_addr *a)
-+{
-+    return ((uint32_t)a->s6_addr[1=
-2] << 24) | ((uint32_t)a->s6_addr[13] << 16)
-+           | ((uint32_t)a->s6=
-_addr[14] << 8) | a->s6_addr[15];
-+}
-+
- static void
- ifconfig_pool_entry_fr=
-ee(struct ifconfig_pool_entry *ipe, bool hard)
- {
-@@ -197,8 +211,7 @@
-     =
-     * 4 bytes, therefore we can just extract that and use it as base in
-  =
-        * integer form
-          */
--        uint32_t base =3D (ipv6_base=
-=2Es6_addr[12] << 24) | (ipv6_base=2Es6_addr[13] << 16)
--                  =
-      | (ipv6_base=2Es6_addr[14] << 8) | ipv6_base=2Es6_addr[15];
-+        =
-uint32_t base =3D in6_addr_low32(&ipv6_base);
-         /* some bits of the =
-last 4 bytes may still be part of the network
-          * portion of the ad=
-dress, therefore we need to set them to 0
-          */
-@@ -319,33 +332,22 @=
-@
- 
-         if (pool->ipv4=2Eenabled && local && remote)
-         {
--     =
-       switch (pool->ipv4=2Etype)
-+            const in_addr_t b =3D ifconf=
-ig_pool_handle_to_ip_base(pool, i);
-+            if (pool->ipv4=2Etype =3D=
-=3D IFCONFIG_POOL_30NET)
-             {
--                case IFCONFIG_POOL=
-_30NET:
--                {
--                    in_addr_t b =3D pool->ipv4=
-=2Ebase + (i << 2);
--                    *local =3D b + 1;
--               =
-     *remote =3D b + 2;
--                    break;
--                }
--
-- =
-               case IFCONFIG_POOL_INDIV:
--                {
--              =
-      in_addr_t b =3D pool->ipv4=2Ebase + i;
--                    *local =
-=3D 0;
--                    *remote =3D b;
--                    break;
--   =
-             }
--
--                default:
--                    ASSERT(0);
-=
-+                *local =3D b + 1;
-+                *remote =3D b + 2;
-+   =
-         }
-+            else
-+            {
-+                *local =3D 0;
-=
-+                *remote =3D b;
-             }
-         }
- 
--        /* IPv=
-6 pools are always INDIV (--linear) */
-         if (pool->ipv6=2Eenabled &&=
- remote_ipv6)
-         {
--            *remote_ipv6 =3D add_in6_addr(pool->i=
-pv6=2Ebase, i);
-+            *remote_ipv6 =3D ifconfig_pool_handle_to_ipv6_=
-base(pool, i);
-         }
-     }
-     return i;
-@@ -420,11 +422,8 @@
-      =
-   }
-     }
- 
--    base =3D (pool->ipv6=2Ebase=2Es6_addr[12] << 24) | (pool=
-->ipv6=2Ebase=2Es6_addr[13] << 16)
--           | (pool->ipv6=2Ebase=2Es6_ad=
-dr[14] << 8) | pool->ipv6=2Ebase=2Es6_addr[15];
--
--    addr =3D (in_addr->s=
-6_addr[12] << 24) | (in_addr->s6_addr[13] << 16) | (in_addr->s6_addr[14] <<=
- 8)
--           | in_addr->s6_addr[15];
-+    base =3D in6_addr_low32(&pool-=
->ipv6=2Ebase);
-+    addr =3D in6_addr_low32(in_addr);
- 
-     ret =3D addr -=
- base;
-     if (ret < 0 || ret >=3D pool->size)
-
--- 
-To view, visit https:/=
-/gerrit=2Eopenvpn=2Enet/c/openvpn/+/2126?usp=3Demail
-To unsubscribe, or for=
- help writing mail filters, visit https://gerrit=2Eopenvpn=2Enet/settings?u=
-sp=3Demail
-
-Gerrit-MessageType: newpatchset
-Gerrit-Project: openvpn
-Gerrit-=
-Branch: master
-Gerrit-Change-Id: I0f8ea4fa572f84e6dcc9b0806c23977c64ea645d
-=
-Gerrit-Change-Number: 2126
-Gerrit-PatchSet: 2
-Gerrit-Owner: R=C4=83zvan Coj=
-ocaru <razvanc@mailbox=2Eorg>
-Gerrit-Reviewer: Antonio Quartulli <antonio@m=
-andelbit=2Ecom>
-Gerrit-CC: Gert Doering <gert@greenie=2Emuc=2Ede>
-Gerrit-CC=
-: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
-
---DYBs+U/NpdI=
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p>Gert Doering <str=
-ong>uploaded patch set #2</strong> to the change originally created by R=C4=
-=83zvan Cojocaru=2E</p><p><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openv=
-pn/+/2126?usp=3Demail">View Change</a></p><p>The following approvals got ou=
-tdated and were removed:
-Code-Review+2 by Antonio Quartulli</p><pre class=
-=3D"blocks" style=3D"font-family: monospace,monospace; white-space: pre-wra=
-p;">pool: reuse handle-to-address helpers in ifconfig_pool_acquire()<br><br=
->ifconfig_pool_acquire() duplicated the address calculation of<br>ifconfig_=
-pool_handle_to_ip_base() and<br>ifconfig_pool_handle_to_ipv6_base()=2E Use =
-those instead, and add<br>in6_addr_low32() for the three open-coded convers=
-ions of the last<br>32 bits of an IPv6 address=2E Its uint32_t casts also a=
-void shifting<br>an int into the sign bit=2E<br><br>Change-Id: I0f8ea4fa572=
-f84e6dcc9b0806c23977c64ea645d<br>Signed-off-by: Razvan Cojocaru &lt;razvanc=
-@mailbox=2Eorg&gt;<br>Acked-by: Antonio Quartulli &lt;antonio@mandelbit=2Ec=
-om&gt;<br>Gerrit URL: https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2126<br>Me=
-ssage-Id: &lt;20261114221549=2E7019-1-gert@greenie=2Emuc=2Ede&gt;<br>URL: h=
-ttps://www=2Email-archive=2Ecom/openvpn-devel@lists=2Esourceforge=2Enet/msg=
-41340=2Ehtml<br>Signed-off-by: Gert Doering &lt;gert@greenie=2Emuc=2Ede&gt;=
-<br>---<br>M src/openvpn/pool=2Ec<br>1 file changed, 27 insertions(+), 28 d=
-eletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monosp=
-ace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Ene=
-t:29418/openvpn refs/changes/26/2126/2</pre><pre style=3D"font-family: mono=
-space,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/poo=
-l=2Ec b/src/openvpn/pool=2Ec</span><br><span>index 016f3a8=2E=2Eeafd553 100=
-644</span><br><span>--- a/src/openvpn/pool=2Ec</span><br><span>+++ b/src/op=
-envpn/pool=2Ec</span><br><span>@@ -35,6 +35,20 @@</span><br><span> </span><=
-br><span> #include &quot;memdbg=2Eh&quot;</span><br><span> </span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+static in_addr_t ifconfig_pool_hand=
-le_to_ip_base(const struct ifconfig_pool *pool,</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+                                               =
-  ifconfig_pool_handle hand);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static st=
-ruct in6_addr ifconfig_pool_handle_to_ipv6_base(const struct ifconfig_pool =
-*pool,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
-                                            ifconfig_pool_handle hand);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+/* Return the last 32 bits of an IPv6 add=
-ress in host byte order */</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+static inline uint32_t</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+in6_addr_low32(const struct in6_addr *a)</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    return ((uint32_t)a-&gt;s6_addr[12] &lt;&lt; 24) | ((uint3=
-2_t)a-&gt;s6_addr[13] &lt;&lt; 16)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+           | ((uint32_t)a-&gt;s6_addr[14] &lt;&lt; 8) | a-&g=
-t;s6_addr[15];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> stati=
-c void</span><br><span> ifconfig_pool_entry_free(struct ifconfig_pool_entry=
- *ipe, bool hard)</span><br><span> {</span><br><span>@@ -197,8 +211,7 @@</s=
-pan><br><span>          * 4 bytes, therefore we can just extract that and u=
-se it as base in</span><br><span>          * integer form</span><br><span> =
-         */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        ui=
-nt32_t base =3D (ipv6_base=2Es6_addr[12] &lt;&lt; 24) | (ipv6_base=2Es6_add=
-r[13] &lt;&lt; 16)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-                     | (ipv6_base=2Es6_addr[14] &lt;&lt; 8) | ipv6_base=2Es=
-6_addr[15];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-uint32_t base =3D in6_addr_low32(&amp;ipv6_base);</span><br><span>         =
-/* some bits of the last 4 bytes may still be part of the network</span><br=
-><span>          * portion of the address, therefore we need to set them to=
- 0</span><br><span>          */</span><br><span>@@ -319,33 +332,22 @@</span=
-><br><span> </span><br><span>         if (pool-&gt;ipv4=2Eenabled &amp;&amp=
-; local &amp;&amp; remote)</span><br><span>         {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            switch (pool-&gt;ipv4=2Etype)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+            const in_=
-addr_t b =3D ifconfig_pool_handle_to_ip_base(pool, i);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            if (pool-&gt;ipv4=2Etype =3D=
-=3D IFCONFIG_POOL_30NET)</span><br><span>             {</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-                case IFCONFIG_POOL_30NET:=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                {</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-                    in_ad=
-dr_t b =3D pool-&gt;ipv4=2Ebase + (i &lt;&lt; 2);</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-                    *local =3D b + 1;</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-                    *remote =3D=
- b + 2;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
-      break;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-       }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-                case IFCONFIG_POOL=
-_INDIV:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
-  {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                  =
-  in_addr_t b =3D pool-&gt;ipv4=2Ebase + i;</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-                    *local =3D 0;</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-                    *remote =3D b;</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-                    break;</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-                }</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-                default:</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-                    ASSERT(0);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+                *local =3D b + 1=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                *r=
-emote =3D b + 2;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-   else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                *l=
-ocal =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-        *remote =3D b;</span><br><span>             }</span><br><span>     =
-    }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-        /* IPv6 pools are always INDIV (--linear) */</span><br><span>    =
-     if (pool-&gt;ipv6=2Eenabled &amp;&amp; remote_ipv6)</span><br><span>  =
-       {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            *=
-remote_ipv6 =3D add_in6_addr(pool-&gt;ipv6=2Ebase, i);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            *remote_ipv6 =3D ifconfig_po=
-ol_handle_to_ipv6_base(pool, i);</span><br><span>         }</span><br><span=
->     }</span><br><span>     return i;</span><br><span>@@ -420,11 +422,8 @@=
-</span><br><span>         }</span><br><span>     }</span><br><span> </span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    base =3D (pool-&gt;ipv6=
-=2Ebase=2Es6_addr[12] &lt;&lt; 24) | (pool-&gt;ipv6=2Ebase=2Es6_addr[13] &l=
-t;&lt; 16)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
-| (pool-&gt;ipv6=2Ebase=2Es6_addr[14] &lt;&lt; 8) | pool-&gt;ipv6=2Ebase=2E=
-s6_addr[15];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    addr =3D (in_addr-&gt;s6_a=
-ddr[12] &lt;&lt; 24) | (in_addr-&gt;s6_addr[13] &lt;&lt; 16) | (in_addr-&gt=
-;s6_addr[14] &lt;&lt; 8)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-           | in_addr-&gt;s6_addr[15];</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    base =3D in6_addr_low32(&amp;pool-&gt;ipv6=2Ebase)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    addr =3D in6_a=
-ddr_low32(in_addr);</span><br><span> </span><br><span>     ret =3D addr - b=
-ase;</span><br><span>     if (ret &lt; 0 || ret &gt;=3D pool-&gt;size)</spa=
-n><br></pre><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/o=
-penvpn/+/2126?usp=3Demail">change 2126</a>=2E To unsubscribe, or for help w=
-riting mail filters, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settin=
-gs?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=
-=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://=
-schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https://gerrit=2Eop=
-envpn=2Enet/c/openvpn/+/2126?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Message=
-Type: newpatchset </div>
-<div style=3D"display:none"> Gerrit-Project: openv=
-pn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div st=
-yle=3D"display:none"> Gerrit-Change-Id: I0f8ea4fa572f84e6dcc9b0806c23977c64=
-ea645d </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 2126 </div=
->
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"disp=
-lay:none"> Gerrit-Owner: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: Antonio Quartulli &lt=
-;antonio@mandelbit=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-CC:=
- Gert Doering &lt;gert@greenie=2Emuc=2Ede&gt; </div>
-<div style=3D"display:=
-none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet=
-&gt; </div>
-
-</body></html>
---DYBs+U/NpdI=--
+Gert Doering
 
 
---===============2133958440124624991==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============2133958440124624991==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
---===============2133958440124624991==--
-
