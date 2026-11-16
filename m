@@ -1,75 +1,76 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D7F2606A895
-	for <openvpn-devel@archiver.kernel.org>; Mon, 16 Nov 2026 17:37:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BFB9606A31C
+	for <openvpn-devel@archiver.kernel.org>; Mon, 16 Nov 2026 17:39:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=iXZtNcP8;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=f4o87qSq;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=Yp88iFez
+	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=Bdzfqxm3;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=RJcI74tt;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=MZJlGPC5
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
-	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	MIME-Version:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
+	List-Unsubscribe:List-Id:Subject:References:In-Reply-To:To:From:Message-Id:
+	Date:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
-	List-Owner; bh=LlGKfataidE2hkqa17xvv0Ax8npOQv9bseDm0Atv9gA=; b=iXZtNcP8sxhr5j
-	9mg0NNTvbeheKFTdwtihqOO4/xn9bBoVGdh4Bxth1a6kUyxa66MOn2Z72j2jvXFPC/+xfFfW1rYxZ
-	H8ihRiwr1okzvnnXHXOVHQ/0JtXZwPhusgL8EkeZp/tq6kFxUzt3ncuLTx+8kVFDp1oy4CuZnpd8U
-	g5M=;
+	List-Owner; bh=UVnZSFcQb6mbMRVYJZKaDg/C2N8UtvojkUJVrtcUQJM=; b=Bdzfqxm3YSUAsZ
+	aOULsu0xYczZcsG/tkrR4PpySs2N5nwimRSDFWLwO53QkSYY2WN7Z3K4q/PeQu+tq0WQMZ4W12eZ2
+	waulyG/gDfIQP0yKN4djzTSp9DyreX4xiRmECrT/8LQPQzXKw1T4aihnrppsFMVvLuP/5+gGauEwy
+	Vw8=;
 Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
 	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xT0e6-000000006BQ-1yKK;
-	Mon, 16 Nov 2026 17:37:34 +0000
+	id 1xT0fe-000000006GV-3T8m;
+	Mon, 16 Nov 2026 17:39:10 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gert@blue4.greenie.muc.de>)
- id 1xT0e5-000000006BK-3pax for openvpn-devel@lists.sourceforge.net;
- Mon, 16 Nov 2026 17:37:33 +0000
+ (envelope-from <gert@chekov.greenie.muc.de>)
+ id 1xT0fd-000000006GP-1hyb for openvpn-devel@lists.sourceforge.net;
+ Mon, 16 Nov 2026 17:39:09 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=DXP6q2ud84BrjjsM3/NysTmhFOfas9rfAQwzkNBEuz4=; b=f4o87qSqAS51+WqzzNj1mTbkwn
- E67uA7dllK3Wpq8NienVg4j6No9dhGpQfY7VT8v2VbAvMSJMXzHlodXqoF4ANOnfl9B3HQlnPz0ak
- +aHR+ufG2M1nyc35lHRKAyiHJ6ndnA0TJYix5vzdXpw/09B9vlf8DpXY90HJRmwjISus=;
+ d=sourceforge.net; s=x; h=References:In-Reply-To:Subject:Cc:To:From:
+ Message-Id:Date:Sender:Reply-To:MIME-Version:Content-Type:
+ Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+ List-Help:List-Unsubscribe:List-Unsubscribe-Post:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=0Ck0aos+dYEuHx2I+E3RDREflBLpsH8CHnubSgWl0JQ=; b=R
+ JcI74ttnRUGMq2piEI6RBtNpHZJzSJzapJoriKLIUaB/3mV0Y3FwnZCzpepLi76IXVaMahQnao8rm
+ s0jTh7tMha7Xf89rECxBEZOjKanDD+t/i9C+VPX45nCFPuh/YYi0e0vPHTG3WisXUbHQSCY/ikkg3
+ lfS2GG0HnyABN+AU=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ h=References:In-Reply-To:Subject:Cc:To:From:Message-Id:Date:Sender:Reply-To
+ :MIME-Version:Content-Type:Content-Transfer-Encoding:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=DXP6q2ud84BrjjsM3/NysTmhFOfas9rfAQwzkNBEuz4=; b=Yp88iFezduRo20yIgBlPxke0HY
- DYPMDm5Wj2vcLKZUogfE0I9ZM2wMofYnlbWY6vNCFICQenABzOTap4w8WgWIO9WT6DHUuY1YOhqP5
- gXpo8Nepas+xTgHWjrbTP7h6qVdW5OKZO7GJsgck+T835dm0/0fwzU7Pg8lGaJpjHgX4=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
- by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ bh=0Ck0aos+dYEuHx2I+E3RDREflBLpsH8CHnubSgWl0JQ=; b=MZJlGPC5jIAIQxyDhKc3rtSHAT
+ rFkmZ817abI1SM8xYPdo2/lDRKCDpwLNjyBA6X9X+a8wvNF1CAp4ZhwVxZ8YoxC8w4+CR4G3Yf9xK
+ 5nISN9Vnm+OLlSyATyuMm5052rpkZ0dEwgRnT42hFxJeLisMlKw1P3U9JyHGL+61n4rs=;
+Received: from chekov.greenie.muc.de ([193.149.48.178])
+ by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
- id 1xT0e4-0000000052q-2rBX for openvpn-devel@lists.sourceforge.net;
- Mon, 16 Nov 2026 17:37:33 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 6AGHbQ3H024599
- for <openvpn-devel@lists.sourceforge.net>; Mon, 16 Nov 2026 18:37:26 +0100
+ id 1xT0fb-000000002F2-2KrX for openvpn-devel@lists.sourceforge.net;
+ Mon, 16 Nov 2026 17:39:09 +0000
+Received: from chekov.greenie.muc.de (localhost [IPv6:0:0:0:0:0:0:0:1])
+ by chekov.greenie.muc.de (8.18.2/8.18.1) with ESMTP id 6AGHd1Ug082458;
+ Mon, 16 Nov 2026 18:39:01 +0100 (CET)
+ (envelope-from gert@chekov.greenie.muc.de)
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 6AGHbQRF024598
- for openvpn-devel@lists.sourceforge.net; Mon, 16 Nov 2026 18:37:26 +0100
+ by chekov.greenie.muc.de (8.18.2/8.18.1/Submit) id 6AGHd1H1082457;
+ Mon, 16 Nov 2026 18:39:01 +0100 (CET) (envelope-from gert)
+Date: Mon, 16 Nov 2026 18:39:01 +0100 (CET)
+Message-Id: <202611161739.6AGHd1H1082457@chekov.greenie.muc.de>
 From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Mon, 16 Nov 2026 18:37:19 +0100
-Message-ID: <20261116173725.24585-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <gerrit.1794828082000.I604fdff9c0a7cbbddfd025a72e6f19a96bb51753@gerrit.openvpn.net>
-References: <gerrit.1794828082000.I604fdff9c0a7cbbddfd025a72e6f19a96bb51753@gerrit.openvpn.net>
-X-Archived-By: <archiver.kernel.org>
-MIME-Version: 1.0
-X-Spam-Score: 1.3 (+)
-X-Headers-End: 1xT0e4-0000000052q-2rBX
-Subject: [Openvpn-devel] [PATCH v1] crypto: drop redundant epoch assignments
+To: Razvan Cojocaru <razvanc@mailbox.org>
+X-Patchwork-State: Accepted
+In-Reply-To: <20261116105141.17064-1-gert@greenie.muc.de>
+References: <20261116105141.17064-1-gert@greenie.muc.de>
+X-Spam-Score: 0.0 (/)
+X-Headers-End: 1xT0fb-000000002F2-2KrX
+Subject: [Openvpn-devel] [PATCH applied] Re: comp: share the stub compress
+ methods with LZO and LZ4
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -79,55 +80,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Cc: openvpn-devel@lists.sourceforge.net
+X-Archived-By: <archiver.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-16.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-8.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_PASS,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=4.0.1
+	INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,SPF_HELO_PASS,SPF_PASS
+	autolearn=ham autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
-From: Razvan Cojocaru <razvanc@mailbox.org>
+"Because it makes sense" ;-) - thanks for the rebase to take the 
+newly-grown #pragma all around into account.  +2 from Frank was lost,
+but the patch is identical, so +2 from me.
 
-init_key_ctx() already sets ctx->epoch from the key parameters.
+I have not tested this beyond "compiles, passes t_server/t_client tests"
+- which actually *do* have the server negotiate compress lz4 on some
+of the tests, testing "uncompressed data with comp framing".
 
-Change-Id: I604fdff9c0a7cbbddfd025a72e6f19a96bb51753
-Signed-off-by: Razvan Cojocaru <razvanc@mailbox.org>
-Acked-by: Frank Lichtenheld <frank@lichtenheld.com>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2190
----
+Not 2.7 material.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Your patch has been applied to the master branch.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2190
-This mail reflects revision 1 of this Change.
+commit f4773397871ee461aee541104a3e430294633753
+Author: Razvan Cojocaru
+Date:   Mon Nov 16 11:51:36 2026 +0100
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@lichtenheld.com>
+     comp: share the stub compress methods with LZO and LZ4
 
-        
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index db1cb41..dda6702 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -1040,7 +1040,6 @@
-     snprintf(log_prefix, sizeof(log_prefix), "Outgoing %s", name);
-     init_key_ctx(ctx, key_params, kt, OPENVPN_OP_ENCRYPT, log_prefix);
-     key_ctx_update_implicit_iv(ctx, key_params);
--    ctx->epoch = key_params->epoch;
- }
- 
- void
-@@ -1052,7 +1051,6 @@
-     snprintf(log_prefix, sizeof(log_prefix), "Incoming %s", name);
-     init_key_ctx(ctx, key_params, kt, OPENVPN_OP_DECRYPT, log_prefix);
-     key_ctx_update_implicit_iv(ctx, key_params);
--    ctx->epoch = key_params->epoch;
- }
- 
- void
+     Signed-off-by: Razvan Cojocaru <razvanc@mailbox.org>
+     Acked-by: Gert Doering <gert@greenie.muc.de>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2143
+     Message-Id: <20261116105141.17064-1-gert@greenie.muc.de>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg41415.html
+     Signed-off-by: Gert Doering <gert@greenie.muc.de>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
 
 _______________________________________________
