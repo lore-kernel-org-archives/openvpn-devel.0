@@ -1,13 +1,13 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F291F606A330
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C58C4606A331
 	for <openvpn-devel@archiver.kernel.org>; Tue, 17 Nov 2026 10:12:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=V+2EqDTl;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=C4Xsirgu;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=OkksSOsr;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=IjrJLScE
+	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=lwWK+IHI;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=MTJ8cNy7;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=HL/qNUtj;
+	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=NAQxfyR3
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
@@ -15,29 +15,29 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
 	List-Unsubscribe-Post:List-Owner;
-	bh=ixCSBIqi041nHHklu3AERwHiEFXHu1CUd/3/6SqR7mQ=; b=V+2EqDTlE10OoWIdWWAhFaJgiH
-	xY+mPjSdwl9DumQMliZWxkBE4Z8s5qWFr0wQ9YituK7JNoRRJaxJA35eNGTK0imG1FT5PgPHv7qUd
-	OWeHhC69pQxxBBoHLljwKRTBWqOZab9Po+xQIb0oV9/UP6R5JNHcdKdam/USMJ2sC+8A=;
-Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
-	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	bh=C3TLu8gTdr6gxrwf184YHJUCoQURnXmOHh4f9h8KaCM=; b=lwWK+IHIbj1M3keJsO4abnZo4H
+	R/QONUgBfv/h1LNm3s1vVlTMM56TX2XJpZlyW0rVbEmN4+SUwov1pvgJPCaMreEKMunPi+sQk9Fey
+	y6AjUyALD29YY+x+Y15qoUnBVOqEkdVjhRKDsEvIfiZ9knMWfheQg8lA4NdfT4ibf8JU=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xTGB7-000000007od-2oJ6;
+	id 1xTGB7-000000001Wg-0oZZ;
 	Tue, 17 Nov 2026 10:12:41 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xTGB6-000000007oW-1GvE
+ (envelope-from <gerrit@openvpn.net>) id 1xTGB5-000000001WZ-1G0E
  for openvpn-devel@lists.sourceforge.net;
- Tue, 17 Nov 2026 10:12:40 +0000
+ Tue, 17 Nov 2026 10:12:39 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=0tQZ9KnU/t24QtJAl6Nli9rr2G0deH/rJ+IcrmSSopA=; b=C4Xsirgu2d3swJNhEfpwtBmlfY
- Rk4ZDfp+d4Yxc5fEuErfch/HeUHBQS6AlpUJnGxsbsmb4m+ZoQISknb6Ks4cveBGNkSLyTXOU+bzn
- 9dHd0fRc/Dlzh8Ils/rUkF+UCpARmr8wAHmHVOTVJHANo2RjhIR4hAoVQ9Pbx8i5oIAc=;
+ bh=4mpwOaeiD63mG4f80IF/Zyi9N+uGWjmRkMdkexZrXhM=; b=MTJ8cNy7CKnSiGGBzS/OvmGD3U
+ 4sPHhgQ7vPeYJMMbo0S/JhhoF5/PfuH/vlxQNCxlDrTZ8GSImcQVIOJc/Ygu80iJEp7sso8lx/ZQB
+ oHsuLMEJ3sc82cm4R6RuOJDPDVfmkuKebHQm6o7ZvX0mt/geSUoLKb4xX8ao71zUUGTI=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
@@ -45,69 +45,69 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=0tQZ9KnU/t24QtJAl6Nli9rr2G0deH/rJ+IcrmSSopA=; b=OkksSOsrQvB2uBv1Na/L86frTB
- SyBDc9igFfvv6nxLK/adpjl1SWhErN15Qqy0Wr6ru6/lSxw4i0pKUjB8rR39VFLGFMEgJb9f/suQu
- oKulbw5OGomXtGi36YkHNqp3fLJjvO4xgLpN7lD5fTRW4XRR3dCi5Uw2aCy/GYfjCXpI=;
-Received: from mail-wr1-f52.google.com ([209.85.221.52])
+ bh=4mpwOaeiD63mG4f80IF/Zyi9N+uGWjmRkMdkexZrXhM=; b=HL/qNUtjpa+AvlPl/9rmWCasvi
+ Pcw+hfQRtGMWzGgShCJqyAJAql6mXH54IEo4LyI2yFd0pDAjh5HnbP2lp0yxzOx2zY87Kd1VYESo0
+ uMlVLOrSVDun2jGoA4Z1FjJJbuTrZhDkgUJv0u5cVvlf/yLUZVpq54D0tGQl1DFoAN7M=;
+Received: from mail-wm1-f49.google.com ([209.85.128.49])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xTGB4-000000001ix-1LiD for openvpn-devel@lists.sourceforge.net;
- Tue, 17 Nov 2026 10:12:40 +0000
-Received: by mail-wr1-f52.google.com with SMTP id
- ffacd0b85a97d-490d59c3f0aso1820705f8f.1
+ id 1xTGB3-000000001iw-1NY4 for openvpn-devel@lists.sourceforge.net;
+ Tue, 17 Nov 2026 10:12:39 +0000
+Received: by mail-wm1-f49.google.com with SMTP id
+ 5b1f17b1804b1-4a2153c8525so28327475e9.3
  for <openvpn-devel@lists.sourceforge.net>;
- Tue, 17 Nov 2026 02:12:38 -0800 (PST)
+ Tue, 17 Nov 2026 02:12:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1794910352; x=1795515152; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1794910351; x=1795515151; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=0tQZ9KnU/t24QtJAl6Nli9rr2G0deH/rJ+IcrmSSopA=;
- b=IjrJLScEsHJD91X1Zr+SyU/CrlFtZhBPqn8NXjC02BOHNeIpoC3424YljIGJechOu8
- WYn8CBtYuuOm979Wf2MANPcp1h40lT+ZKx1tI/3Gs1LLeL1JIfYrWwEFf8lrQKwbfvzB
- FScaoIfQPp1dK7UW3sNoloXzZZJfIQGPjoM28422xbHf+f2Cpe7YgY08d4H1/Tz3tR2f
- /NoV7vNefIbKOo7A6z6JKanxCOop0spGTz+klkljdicNAWXYWUIRATokkSQ8xNJ3EsY3
- hM8h6rEH+wc9TEvJYlbpuMq3hV2rh+e3qN1xMbRITtH9rMzdoPYq/cAsvw10OLEGS3Vb
- 3hng==
+ bh=4mpwOaeiD63mG4f80IF/Zyi9N+uGWjmRkMdkexZrXhM=;
+ b=NAQxfyR3/K6UFKgvMEG8gMxVszLuh7X/CulHgqrbMUgNbY4IFr6W243LIdRM+STmBu
+ iipZBZo7q20MOjaFYipSkVuoTmzSOJVkWniYMvam+TGz+flKPghKfTjYE5R8Nb2RZgcX
+ DuEpHwXa1nrsXm8T+Ru0Bx4oM3GfbPsRY8/6wTb9qf1CCXRyTl3V1f7UrkauqN0KF1IE
+ n81Re+xxRfneZ1d0+a64bOGI5Qz8TVt8ib6uICtENBz3adIbs/W4PVDaOe+0Peb8OngO
+ 9GtZztaFeBhj1S6ikui0FkqFTI+aTf7SSCeXDa3XQIuDxhWyqXd/eVrocNzJuvK8lXQU
+ IgvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1794910352; x=1795515152;
+ d=1e100.net; s=20260707; t=1794910351; x=1795515151;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=0tQZ9KnU/t24QtJAl6Nli9rr2G0deH/rJ+IcrmSSopA=;
- b=CwicvVconJGFk3VSCeqkuSeFgmjoilfvpHgTBib9+KtjP1vyR/hs+0VfXtcYGKz1Yd
- Qfv+7Kv3QQgGSr5eySD7eVYsnTdg547uEQ+YxGEnCSLJqv0UoA/dmxNJYvEQF3kTyeC2
- hJs4tsqiKHVw+KS0POiNT4iFGCY1zlhwoTFJmU4QguAuO5bJWNa0o1dzPFoG6YMQ6W1u
- PHfdMPOM2xfEZsaVgq58RyLnvyTFJ8CxEggKfeac5W0TFnKXB4F07xnxLJkrDHgyldbz
- 0JLs/4XsT/crsYIPOFobrB+aqcfZxY7BYyOLD/tvF+HsNs9GVBGmiusThPBZC1frp5Ks
- lBBw==
-X-Gm-Message-State: APuU4Z8lmtFC1QboiPZbeXAgG7BPLHmj8NCuKyLrz9S4pmloYBZaRv80
- SLPOvWzeTsu8XRljbOUhLwQTP1uvDvzcSMzmtP63VMrjA/gmvqMsN2MqvrO0CAD4VzJgAu4fOPG
- 4Kg/zH06Vj/1LBcB3R359DK28BMU89mtJNukqAemsXg/BKzvHKsNFgnDFpMd9iWpxJmp0
-X-Gm-Gg: AZFdTZd/HY2qCJ2OYYYs8bvGTUfaLZUAfs8LTH/BZ3YMJyqdRPu5nmr4m0OCUi2s2Ng
- gCNFnvtZJGs2U5QXh9SDhEifZCPd/CsQ3oXjH5GrT7k58XA/Z/6mErY82Ch/Jsvyn2D170Ilt8I
- Bg05qIMR9YL3nfvArX8QIa+40efvigd6Q5bGET3L8uZtndMev0ecD8GwOeBnL9H9e9mjmQrxwTt
- ++uAz0DOvqlzwJ2bS1DNpYOHThV7iolY9ADdcYQfQORqjINHsoGidW0CwEFFa4zFhUtXSA8W2/y
- DGJKmKpGtasMjpaAzQTYeFnhWvATL0y9UNvUAeLrDWIdA67A+6JlYGq8ec9aJmSzapZkftRsAPn
- AYLPqVwMYUFckWCLU+rxNKbcaFw1975DsqbEahgxVuvB+Sy+Uk+PiDUivD8AuEnbCU/u1tQjOuz
- rVrP3x8cPvJ46ZHrnz3PIU5/iNnqNwYHaHas4lqLIb1FpYMQLWOeD6baO1hWhgS34zfhZZSaO6a
- UipeYmesuUZFv4zf2skXEcZB/iSRLznEtGBhw0ieFfW/B+r/pGcfSHJX6i/HCm5NbKtsdwUaJ2C
- 0hFeG0Ki9p6QYxuTRIUi3NFTgPHk4nfDCQa7nv4N3O/ALe56GMXLbNMYJ69C8vhA1C1IBIpRwS4
- omoLPa1NMTMrhe5RNUlqgDLIXVp2L5XdMlosV/L5m7T69yDY7QglKJucYkfBGhWbiBBa5yIz8f4
- 2vTYrExHkfYJApoVc=
-X-Received: by 2002:a05:6000:1886:b0:4a4:973c:352a with SMTP id
- ffacd0b85a97d-4a4973c3697mr2336289f8f.47.1794910351361; 
- Tue, 17 Nov 2026 02:12:31 -0800 (PST)
+ bh=4mpwOaeiD63mG4f80IF/Zyi9N+uGWjmRkMdkexZrXhM=;
+ b=OCXSt/E9HDfYMdlz2EQdVTMaC678FqylUPzgfQAYoSiheFMfxb1RbiH2IO4NeO7rBH
+ s9jCdbwU8WLTzhSKE5QqoAqkGtHYQsPDtJReAXeur25dDbjVlAmwmzuEHjkJ0wQ21fGZ
+ uoXEGHzId+qVSPEQdUnDqqjmgUwgyi8hawXhK7yKBhjuIS1S+IWSkEtb12U6d0eNxn1W
+ JEyyL0i8qyxWyT4T188gribAU/aY8/JNxdh5bLacCS1C6D+5O2ei3YK6Hq5F5dkw5yIn
+ Uw0Wu03zV5vV7Ezrvp+UtZDZjnAZm39UhpqExybC18r4fNvNWYYkXNo7N14Kt4RpkuLD
+ Jdig==
+X-Gm-Message-State: APuU4Z9hZjzH8TOOIVKKjw0J3hhMyZ0FbmkPWkrKHGh0t05x9HRlMtm6
+ 9wHDifu9P+pCnLRGNWE8mfuVaap3qCsl+JNix5GwfJ1umvevxgQjRYURu2nqE3AvuSYEZ/XGBT6
+ Kdw6BbdJRvX/uVt4s3KNsY1NRZO1iny1TkJmHv1vwB+X2gtRPebNN5yVlnrKocG6xaw3O
+X-Gm-Gg: AYBFou2rjDNMf4M6J8VSm0DlMlmcs0vWbqLpHQLkD4FH/qaTMm9l1XjY3MHIUGQrCEz
+ VaveB719xOQ0m5Tm1jAhU5Y9mPik++lGEkgupTcv5fkcYmO7iREUkZgQ173EBmprEuywcgRFmpM
+ hk1JLj6IPKMLO2QG10M4d7/NWUPUpjXF/FyJOA9OkB90fQsOjGa3AcduTdADc7vCDaPl+co1p9P
+ lxbqCWGsWLOmNs5S448utEsDU6HSWWJ9xa1exDUNXlvszKc3xPLS6/vF5ixPiA2S+9w6Iuywg78
+ WDD2xZNUStVi5T9rXZPNJ0a7UAe3bakcYEihAu9qp9xtV24+9+poLc1dLqN7vqpC6OcbzTHMmvf
+ +G2bw2MNYMaFs2UNOpgUaWjPqqzFsca5Vse+4sNRVKESXJbus3Cm0ZsuEUSAqozLPBn647Bkb1A
+ fRJ9GLtRh2EmeZtTn9uYqP0zMpqVUc9u2wbNSLTNT6flDFYY7R+BNDgob2GbAT143uVdkOEjbkv
+ K/BvbvQuPSJ17YeVfL/KSRiQiCH+PzcAitV2mcC5/0/fATtZANG8/WIuAE5IhbDBjgBaWuugiXP
+ ul0TlwQ1ly0/K5ueJhE+E5FHGzdxgAt/Kg8n4V9QPKkYu3IuZ3FKwVDimrn+LHkmwl8IGwkTRUW
+ jdvsfsbrpquUYFVH3y9GUrd3IHnqZI9Yd43EnPhR+N/xCyrIwI2oT3elQ95uRvfmwDix0LwobA6
+ /j3IT6Eh7xpg2RyEY=
+X-Received: by 2002:a05:600c:6286:b0:4a1:7e77:c382 with SMTP id
+ 5b1f17b1804b1-4bb55a5d634mr260908475e9.5.1794910350312; 
+ Tue, 17 Nov 2026 02:12:30 -0800 (PST)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-4a43d41ec2dsm3064618f8f.14.2026.11.17.02.12.30
+ 5b1f17b1804b1-4bb571d7e87sm251234005e9.3.2026.11.17.02.12.29
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 17 Nov 2026 02:12:31 -0800 (PST)
+ Tue, 17 Nov 2026 02:12:29 -0800 (PST)
 X-Google-Original-From: "Frank Lichtenheld (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
 Date: Tue, 17 Nov 2026 10:12:28 +0000
@@ -115,23 +115,23 @@ To: =?UTF-8?Q?R=C4=83zvan_Cojocaru?= <razvanc@mailbox.org>,
  Arne Schwabe <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newpatchset
-X-Gerrit-PatchSet: 2
-X-Gerrit-Change-Id: I34dd7d46c9bc15e32f233741c525759715bb847c
-X-Gerrit-Change-Number: 2200
+X-Gerrit-PatchSet: 3
+X-Gerrit-Change-Id: I9c2403c21ef8f21a0fbd998346c8ad719b4b9972
+X-Gerrit-Change-Number: 2198
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2200?usp=email>
-X-Gerrit-Commit: 09e8958ce54c0fdf410622342eac228f28733d62
-In-Reply-To: <gerrit.1794840672000.I34dd7d46c9bc15e32f233741c525759715bb847c@gerrit.openvpn.net>
-References: <gerrit.1794840672000.I34dd7d46c9bc15e32f233741c525759715bb847c@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzk0ODQwNjcyMDAwLkkzNGRkN2Q0NmM5YmMxNWUzMmYyMzM3NDFjNTI1NzU5NzE1YmI4NDdjQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <e876f2379a0c3b08c10c8a2ac27dc480609390b1-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2198?usp=email>
+X-Gerrit-Commit: 6fd15e316f10888e29a439d4da99e1ff4b032f5c
+In-Reply-To: <gerrit.1794839855000.I9c2403c21ef8f21a0fbd998346c8ad719b4b9972@gerrit.openvpn.net>
+References: <gerrit.1794839855000.I9c2403c21ef8f21a0fbd998346c8ad719b4b9972@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzk0ODM5ODU1MDAwLkk5YzI0MDNjMjFlZjhmMjFhMGZiZDk5ODM0NmM4YWQ3MTliNGI5OTcyQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <c3de2a73601be86da0c1ca526b8f77e8ac5456ae-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.5
 X-Spam-Score: 0.8 (/)
-X-Headers-End: 1xTGB4-000000001ix-1LiD
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: manage: Switch all
- sleep methods to unsigned
+X-Headers-End: 1xTGB3-000000001iw-1NY4
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: buffer: Switch
+ buf_forward_capacity and buf_set_write to size_t
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -147,7 +147,7 @@ Reply-To: frank@lichtenheld.com, arne-openvpn@rfc2549.org, razvanc@mailbox.org,
  openvpn-devel@lists.sourceforge.net
 Cc: "Frank Lichtenheld \(Code Review\)" <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============7207002868544379336=="
+Content-Type: multipart/mixed; boundary="===============5165980454857116859=="
 X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
 	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,MIME_HTML_MOSTLY,
@@ -156,12 +156,12 @@ X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============7207002868544379336==
+--===============5165980454857116859==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="kywmDlUtBkk="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="GnpLl8fpExI="; charset=UTF-8
 
---kywmDlUtBkk=
+--GnpLl8fpExI=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
@@ -174,696 +174,1011 @@ I'd like y=
 ou to reexamine a change=2E Please visit
 
     https://gerrit=2Eopenvpn=2Ene=
-t/c/openvpn/+/2200?usp=3Demail
+t/c/openvpn/+/2198?usp=3Demail
 
-to look at the new patch set (#2)=2E
+to look at the new patch set (#3)=2E
 
 The f=
 ollowing approvals got outdated and were removed:
-Code-Review-1 by R=C4=83z=
+Code-Review+2 by R=C4=83z=
 van Cojocaru
 
+The change is no longer submittable: Code-Review and checks~C=
+hecksSubmitRule are unsatisfied now=2E
 
-Change subject: manage: Switch all sleep methods to unsigned=
 
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+Change subject: buffer: Switch buf=
+_forward_capacity and buf_set_write to size_t
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-manage: Sw=
-itch all sleep methods to unsigned
+buffer: Switch buf_forward_capacity and =
+buf_set_write to size_t
 
-That is consistent with sleep(3)=2E
+To make them consistent with buf_forward_capacity_=
+total
+and buf_set_read that were already switched=2E
 
-Ch=
-ange-Id: I34dd7d46c9bc15e32f233741c525759715bb847c
-Signed-off-by: Frank Lic=
-htenheld <frank@lichtenheld=2Ecom>
----
-M src/openvpn/manage=2Ec
-M src/openv=
-pn/manage=2Eh
-M src/openvpn/resolve=2Ec
-M src/openvpn/win32=2Ec
-M src/openv=
-pn/win32=2Eh
-M tests/unit_tests/openvpn/mock_management=2Ec
-6 files changed=
-, 34 insertions(+), 77 deletions(-)
-
-
-  git pull ssh://gerrit=2Eopenvpn=2En=
-et:29418/openvpn refs/changes/00/2200/2
-
-diff --git a/src/openvpn/manage=2E=
-c b/src/openvpn/manage=2Ec
-index ae30930=2E=2E86c498e 100644
---- a/src/open=
-vpn/manage=2Ec
-+++ b/src/openvpn/manage=2Ec
-@@ -3615,32 +3615,23 @@
-     }
+Review call sites=2E
 =
+
+Change-Id: I9c2403c21ef8f21a0fbd998346c8ad719b4b9972
+Signed-off-by: Frank =
+Lichtenheld <frank@lichtenheld=2Ecom>
+---
+M src/openvpn/buffer=2Ec
+M src/op=
+envpn/buffer=2Eh
+M src/openvpn/crypto=2Ec
+M src/openvpn/crypto_openssl=2Ec
+=
+M src/openvpn/push=2Ec
+M src/openvpn/ssl_mbedtls=2Ec
+M src/openvpn/ssl_ncp=
+=2Ec
+M src/openvpn/ssl_openssl=2Ec
+M src/openvpn/status=2Ec
+M src/openvpn/t=
+ls_crypt=2Ec
+M src/openvpn/tun=2Ec
+11 files changed, 39 insertions(+), 56 d=
+eletions(-)
+
+
+  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/ch=
+anges/98/2198/3
+
+diff --git a/src/openvpn/buffer=2Ec b/src/openvpn/buffer=
+=2Ec
+index c60936a=2E=2Ec33a987 100644
+--- a/src/openvpn/buffer=2Ec
++++ b/s=
+rc/openvpn/buffer=2Ec
+@@ -234,17 +234,16 @@
+     if (buf_defined(buf))
+    =
+ {
+         char *ptr =3D (char *)BEND(buf);
+-        int cap =3D buf_forwa=
+rd_capacity(buf);
++        size_t cap =3D buf_forward_capacity(buf);
+ 
+    =
+     if (cap > 1) /* can write more than \0 */
+         {
+-            int =
+stat;
+             va_list arglist;
+             va_start(arglist, format);=
+
+-            stat =3D vsnprintf(ptr, cap, format, arglist);
++            i=
+nt stat =3D vsnprintf(ptr, cap, format, arglist);
+             va_end(argli=
+st);
+             buf->len +=3D (int)strnlen(ptr, cap);
+-            if (st=
+at >=3D 0 && stat < cap)
++            if (stat >=3D 0 && stat < (int)cap)
+ =
+            {
+                 ret =3D true;
+             }
+@@ -257,11 +256=
+,11 @@
+ buf_puts(struct buffer *buf, const char *str)
+ {
+     char *ptr =3D=
+ (char *)BEND(buf);
+-    int cap =3D buf_forward_capacity(buf);
++    size_t=
+ cap =3D buf_forward_capacity(buf);
+     if (cap > 1) /* can write more tha=
+n \0 */
+     {
+-        int str_len =3D (int)strlcpy(ptr, str, cap);
+-     =
+   buf->len +=3D (str_len < cap) ? str_len : cap - 1;
++        size_t str_l=
+en =3D strlcpy(ptr, str, cap);
++        buf->len +=3D (str_len < cap) ? (in=
+t)str_len : (int)cap - 1;
+     }
+ }
+ 
+diff --git a/src/openvpn/buffer=2Eh b=
+/src/openvpn/buffer=2Eh
+index 541f0bd=2E=2E32b49d3 100644
+--- a/src/openvpn=
+/buffer=2Eh
++++ b/src/openvpn/buffer=2Eh
+@@ -643,11 +643,6 @@
+     return t=
+rue;
  }
  
 -#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC diagnostic p=
-ush
+-#pragma GCC diagnos=
+tic push
 -#pragma GCC diagnostic ignored "-Wsign-conversion"
 -#endif
 -
- /*
-  * P=
-rocess the management event loop for sec seconds
+ /**=
+
+  * Initialise a buffer with an externally provided writable memory region=
+=2E
+  *
+@@ -660,7 +655,7 @@
+  * @param size  Size of the memory region in b=
+ytes=2E
   */
- void
--management_eve=
-nt_loop_n_seconds(struct management *man, int sec)
-+management_event_loop_n=
-_seconds(struct management *man, unsigned int sec)
+ static inline void
+-buf_set_write(struct buffer *buf, uint8_t=
+ *data, int size)
++buf_set_write(struct buffer *buf, uint8_t *data, size_t =
+size)
  {
-     if (man_standalo=
-ne_ok(man))
+     if (!buf_size_valid(size))
      {
-         volatile int signal_received =3D 0;
-         co=
-nst bool standalone_disabled_save =3D man->persist=2Estandalone_disabled;
--=
-        time_t expire =3D 0;
-+        time_t expire =3D now + sec;
- 
-      =
-   /* This is so M_CLIENT messages will be correctly passed through msg() *=
-/
-         man->persist=2Estandalone_disabled =3D false;
- 
-         /* set =
-expire time */
-         update_time();
--        if (sec >=3D 0)
--        {
+@@ -668,7 +663,7 @@
+     }
 =
--            expire =3D now + sec;
--        }
- 
-         /* if no client co=
-nnection, wait for one */
-         man_wait_for_client_connection(man, &sig=
-nal_received, expire, 0);
-@@ -3662,7 +3653,7 @@
-                 return;
-  =
-           }
-             update_time();
--        } while (expire && expire=
- > now);
-+        } while (expire > now);
- 
-         /* revert state */
-   =
-      man->persist=2Estandalone_disabled =3D standalone_disabled_save;
-@@ -=
-4026,7 +4017,7 @@
-  * Return true if the caller should not sleep for an add=
-itional time interval=2E
-  */
- bool
--management_hold(struct management *man=
-, int holdtime)
-+management_hold(struct management *man, unsigned int holdt=
-ime)
- {
-     if (management_would_hold(man))
+     buf->len =3D 0;
+     buf->offset =3D 0;
+-    buf->capacity =3D size;
++=
+    buf->capacity =3D (int)size;
+     buf->data =3D data;
+     if (size > 0=
+ && data)
      {
-@@ -4044,7 +4035,7 @@
- =
-        if (!signal_received)
-         {
-             struct buffer out =3D=
- alloc_buf_gc(128, &gc);
--            buf_printf(&out, ">HOLD:Waiting for h=
-old release:%d", holdtime);
-+            buf_printf(&out, ">HOLD:Waiting fo=
-r hold release:%u", holdtime);
-             man->persist=2Especial_state_ms=
-g =3D BSTR(&out);
-             msg(M_CLIENT, "%s", man->persist=2Especial_s=
-tate_msg);
- 
-@@ -4244,8 +4235,9 @@
- log_history_obj_init(struct log_history=
- *h, int capacity)
+@@ -1039,7 +1034,7 @@
+  * @return Number of bytes availabl=
+e for appending, or 0 if \c buf is
+  *         invalid=2E
+  */
+-static inli=
+ne int
++static inline size_t
+ buf_forward_capacity(const struct buffer *buf=
+)
  {
-     CLEAR(*h);
-+    ASSERT(capacity > 0);
-     h->ca=
-pacity =3D capacity;
--    ALLOC_ARRAY_CLEAR(h->array, struct log_entry, cap=
-acity);
-+    ALLOC_ARRAY_CLEAR(h->array, struct log_entry, (size_t)capacity=
-);
+     if (buf_valid(buf))
+@@ -1049,7 +1044,7 @@
+         {
+            =
+ ret =3D 0;
+         }
+-        return ret;
++        return (size_t)ret;
+  =
+   }
+     else
+     {
+@@ -1252,6 +1247,11 @@
+     return true;
  }
  
- struct log_history *
-@@ -4332,34 +4324,6 @@
++#if de=
+fined(__GNUC__) || defined(__clang__)
++#pragma GCC diagnostic push
++#pragma=
+ GCC diagnostic ignored "-Wsign-conversion"
++#endif
++
+ /**
+  * Prepend data=
+ to a buffer=2E
+  *
+diff --git a/src/openvpn/crypto=2Ec b/src/openvpn/crypt=
+o=2Ec
+index db1cb41=2E=2E8b4cc3b 100644
+--- a/src/openvpn/crypto=2Ec
++++ b/=
+src/openvpn/crypto=2Ec
+@@ -1825,7 +1825,7 @@
+ bool
+ generate_ephemeral_key(=
+struct buffer *key, const char *key_name)
+ {
+-    const int len =3D BCAP(ke=
+y);
++    const int len =3D (int)BCAP(key);
+ 
+     msg(M_INFO, "Using random=
+ %s=2E", key_name);
+ 
+diff --git a/src/openvpn/crypto_openssl=2Ec b/src/ope=
+nvpn/crypto_openssl=2Ec
+index 0a1d00c=2E=2E1246bc6 100644
+--- a/src/openvpn=
+/crypto_openssl=2Ec
++++ b/src/openvpn/crypto_openssl=2Ec
+@@ -523,7 +523,7 @=
+@
+     uint8_t *dst_data =3D buf_write_alloc(dst, data_read_len);
+     if (=
+!dst_data)
+     {
+-        dmsg(D_CRYPT_ERRORS, "%s: dst too small (%i, nee=
+ds %li)", __func__, BCAP(dst),
++        dmsg(D_CRYPT_ERRORS, "%s: dst too s=
+mall (%zu, needs %li)", __func__, BCAP(dst),
+              data_read_len);
+=
+         goto cleanup;
+     }
+diff --git a/src/openvpn/push=2Ec b/src/openv=
+pn/push=2Ec
+index 6f628b8=2E=2Eeb11107 100644
+--- a/src/openvpn/push=2Ec
+++=
++ b/src/openvpn/push=2Ec
+@@ -805,7 +805,7 @@
+ #endif
+ 
+ static bool
+-send_p=
+ush_options(struct context *c, struct buffer *buf, struct push_list *push_l=
+ist, int safe_cap,
++send_push_options(struct context *c, struct buffer *buf=
+, struct push_list *push_list, size_t safe_cap,
+                   bool *pu=
+sh_sent, bool *multi_push)
+ {
+     struct push_entry *e =3D push_list->head=
+;
+@@ -820,7 +820,7 @@
+                 msg(M_WARN, "--push option is too lo=
+ng");
+                 return false;
+             }
+-            if (BLEN(b=
+uf) + (int)l >=3D safe_cap)
++            if (BLENZ(buf) + l >=3D safe_cap)
+=
+             {
+                 buf_printf(buf, ",push-continuation 2");
+  =
+               {
+@@ -835,7 +835,7 @@
+                     buf_printf(buf, "=
+%s", push_reply_cmd);
+                 }
+             }
+-            if (BL=
+EN(buf) + (int)l >=3D safe_cap)
++            if (BLENZ(buf) + l >=3D safe_c=
+ap)
+             {
+                 msg(M_WARN, "--push option is too long"=
+);
+                 return false;
+@@ -873,8 +873,8 @@
+     struct gc_arena =
+gc =3D gc_new();
+     struct buffer buf =3D alloc_buf_gc(PUSH_BUNDLE_SIZE, =
+&gc);
+     bool multi_push =3D false;
+-    const int extra =3D 84; /* extra=
+ space for possible trailing ifconfig and push-continuation */
+-    const i=
+nt safe_cap =3D BCAP(&buf) - extra;
++    const size_t extra =3D 84; /* extr=
+a space for possible trailing ifconfig and push-continuation */
++    const =
+size_t safe_cap =3D BCAP(&buf) - extra;
+     bool push_sent =3D false;
+ 
+  =
+   buf_printf(&buf, "%s", push_reply_cmd);
+diff --git a/src/openvpn/ssl_mbe=
+dtls=2Ec b/src/openvpn/ssl_mbedtls=2Ec
+index 93e67fd=2E=2E19a2d48 100644
+--=
+- a/src/openvpn/ssl_mbedtls=2Ec
++++ b/src/openvpn/ssl_mbedtls=2Ec
+@@ -1063,=
+7 +1063,6 @@
+ key_state_read_ciphertext(struct key_state_ssl *ks, struct bu=
+ffer *buf)
+ {
+     int retval =3D 0;
+-    int len =3D 0;
+ 
+     ASSERT(NULL=
+ !=3D ks);
+     ASSERT(buf);
+@@ -1074,9 +1073,7 @@
+         return 0;
+     =
+}
+ 
+-    len =3D buf_forward_capacity(buf);
+-
+-    retval =3D endless_buf_r=
+ead(&ks->bio_ctx->out, BPTR(buf), len);
++    retval =3D endless_buf_read(&k=
+s->bio_ctx->out, BPTR(buf), BCAP(buf));
+ 
+     /* Error during read, check =
+for retry error */
+     if (retval < 0)
+@@ -1148,7 +1145,6 @@
+ key_state_re=
+ad_plaintext(struct key_state_ssl *ks, struct buffer *buf)
+ {
+     int retv=
+al =3D 0;
+-    int len =3D 0;
+ 
+     ASSERT(NULL !=3D ks);
+     ASSERT(buf)=
+;
+@@ -1159,9 +1155,7 @@
+         return 0;
+     }
+ 
+-    len =3D buf_forwar=
+d_capacity(buf);
+-
+-    retval =3D mbedtls_ssl_read(ks->ctx, BPTR(buf), len=
+);
++    retval =3D mbedtls_ssl_read(ks->ctx, BPTR(buf), BCAP(buf));
+ 
+     =
+/* Error during read, check for retry error */
+     if (retval < 0)
+diff --=
+git a/src/openvpn/ssl_ncp=2Ec b/src/openvpn/ssl_ncp=2Ec
+index df9e42c=2E=2E=
+7b15f5f 100644
+--- a/src/openvpn/ssl_ncp=2Ec
++++ b/src/openvpn/ssl_ncp=2Ec
+=
+@@ -154,7 +154,7 @@
+             }
+ 
+             /* Ensure buffer has capa=
+city for cipher name + : + \0 */
+-            if (buf_forward_capacity(&new=
+_list) < (int)strlen(ovpn_cipher_name) + 2)
++            if (buf_forward_ca=
+pacity(&new_list) < strlen(ovpn_cipher_name) + 2)
+             {
+          =
+       msg(M_WARN, "Length of --data-ciphers is over the "
+                =
+             "limit of 127 chars");
+@@ -563,8 +563,7 @@
+     uint8_t *ncp_c=
+iphers =3D gc_malloc(ncp_ciphers_len, true, &o->gc);
+ 
+     struct buffer n=
+cp_ciphers_buf;
+-    ASSERT(ncp_ciphers_len <=3D INT_MAX);
+-    buf_set_wri=
+te(&ncp_ciphers_buf, ncp_ciphers, (int)ncp_ciphers_len);
++    buf_set_write=
+(&ncp_ciphers_buf, ncp_ciphers, ncp_ciphers_len);
+ 
+     const char *def =
+=3D strstr(o->ncp_ciphers, search);
+ 
+diff --git a/src/openvpn/ssl_openssl=
+=2Ec b/src/openvpn/ssl_openssl=2Ec
+index 57ef9f7=2E=2E30ef383 100644
+--- a/=
+src/openvpn/ssl_openssl=2Ec
++++ b/src/openvpn/ssl_openssl=2Ec
+@@ -2155,13 +=
+2155,12 @@
+          * if the buffer is not empty */
+         return 0;
+   =
+  }
+-    int len =3D buf_forward_capacity(buf);
+ 
+     /*
+      * BIO_read =
+brackets most of the serious RSA
+      * key negotiation number crunching=
+=2E
+      */
+-    int i =3D BIO_read(bio, BPTR(buf), len);
++    int i =3D B=
+IO_read(bio, BPTR(buf), (int)BCAP(buf));
+ 
+     VALGRIND_MAKE_READABLE((voi=
+d *)&i, sizeof(i));
+ 
+diff --git a/src/openvpn/status=2Ec b/src/openvpn/sta=
+tus=2Ec
+index 533619f=2E=2E0a3fc019 100644
+--- a/src/openvpn/status=2Ec
++++=
+ b/src/openvpn/status=2Ec
+@@ -215,11 +215,6 @@
+     return ret;
  }
+ 
+-#if d=
+efined(__GNUC__) || defined(__clang__)
+-#pragma GCC diagnostic push
+-#pragm=
+a GCC diagnostic ignored "-Wsign-conversion"
+-#endif
+-
+ #define STATUS_PRIN=
+TF_MAXLEN 512
  
  void
--management=
-_sleep(const int n)
--{
--    if (n < 0)
--    {
--        return;
--    }
--    =
-else if (management)
--    {
--        management_event_loop_n_seconds(manage=
-ment, n);
--    }
--    else
--    {
--#ifdef _WIN32
--        win32_sleep(n);
--=
-#else
--        if (n > 0)
--        {
--            sleep(n);
--        }
--#en=
-dif
--    }
--}
+@@ -281,7 +276,7 @@
+             if (c =3D=3D -1)
+   =
+          {
+                 ASSERT(buf_init(&so->read_buf, 0));
+-         =
+       ssize_t len =3D read(so->fd, BPTR(&so->read_buf), BCAP(&so->read_buf=
+));
++                ssize_t len =3D read(so->fd, BPTR(&so->read_buf), (uns=
+igned int)BCAP(&so->read_buf));
+                 if (len <=3D 0)
+          =
+       {
+                     break;
+@@ -311,7 +306,3 @@
+ 
+     return ret;=
+
+ }
 -
 -#if defined(__GNUC__) || defined(__clang__)
--#pragma GCC d=
-iagnostic pop
+-#pragma GCC diagnostic =
+pop
 -#endif
--
--void
- management_check_bytecount_client(struct con=
-text *c, struct management *man, struct timeval *timeval)
- {
-     if (man->=
-persist=2Ecallback=2Eflags & MCF_SERVER)
-@@ -4490,30 +4454,28 @@
-     gc_fr=
-ee(&gc);
-     return false;
- }
--#else /* ifdef ENABLE_MANAGEMENT */
-+#endif=
- /* ENABLE_MANAGEMENT */
- 
- #include "win32=2Eh"
- 
--#if !defined(_WIN32) &&=
- (defined(__GNUC__) || defined(__clang__))
--#pragma GCC diagnostic push
--#p=
-ragma GCC diagnostic ignored "-Wsign-conversion"
--#endif
--
- void
--managemen=
-t_sleep(const int n)
-+management_sleep(const unsigned int n)
- {
--#ifdef _WI=
-N32
--    win32_sleep(n);
--#else
--    if (n > 0)
-+#ifdef ENABLE_MANAGEMENT
-+=
-    if (management)
-     {
--        sleep(n);
-+        management_event_loo=
-p_n_seconds(management, n);
-     }
--#endif /* ifdef _WIN32 */
--}
--
--#if !de=
-fined(_WIN32) && (defined(__GNUC__) || defined(__clang__))
--#pragma GCC dia=
-gnostic pop
-+    else
- #endif
--
--#endif /* ENABLE_MANAGEMENT */
-+    {
-+#if=
-def _WIN32
-+        win32_sleep(n);
-+#else
-+        if (n > 0)
-+        {
-+=
-            sleep(n);
-+        }
-+#endif
-+    }
-+}
-diff --git a/src/openvpn=
-/manage=2Eh b/src/openvpn/manage=2Eh
-index 82c0caa=2E=2E697f830 100644
---- =
-a/src/openvpn/manage=2Eh
-+++ b/src/openvpn/manage=2Eh
-@@ -387,9 +387,9 @@
- =
-
- bool management_would_hold(struct management *man);
- 
--bool management_ho=
-ld(struct management *man, int holdtime);
-+bool management_hold(struct mana=
-gement *man, unsigned int holdtime);
- 
--void management_event_loop_n_second=
-s(struct management *man, int sec);
-+void management_event_loop_n_seconds(s=
-truct management *man, unsigned int sec);
- 
- void management_up_down(const =
-struct management *man, const char *updown, const struct env_set *es);
- 
-@@=
- -522,6 +522,6 @@
-  * A sleep function that services the management layer f=
-or n seconds rather
-  * than doing nothing=2E
-  */
--void management_sleep(c=
-onst int n);
-+void management_sleep(const unsigned int n);
- 
- #endif /* ifn=
-def MANAGE_H */
-diff --git a/src/openvpn/resolve=2Ec b/src/openvpn/resolve=
+diff --git a/src/openvpn/tls_crypt=2Ec b/src/openvpn/tls_crypt=
 =2Ec
-index b8d9899=2E=2E544e5ea 100644
---- a/src/openvpn/resolve=2Ec
-+++ b/=
-src/openvpn/resolve=2Ec
-@@ -161,13 +161,13 @@
+index d7f69f7=2E=2E5617ad3 100644
+--- a/src/openvpn/tls_crypt=2Ec
++++ =
+b/src/openvpn/tls_crypt=2Ec
+@@ -380,8 +380,8 @@
+         msg(M_WARN, "ERROR=
+: could not write tag");
+         return false;
      }
- 
-     status =3D geta=
-ddrinfo(hostname, servname, &hints, res);
--
--    if (status !=3D 0)        =
-              /* parse as numeric address failed? */
-+    /* parse as numer=
-ic address failed? */
-+    if (status !=3D 0)
-     {
--        const int fai=
-l_wait_interval =3D 5; /* seconds */
-+        const unsigned int fail_wait_=
-interval =3D 5; /* seconds */
-         /* Add +4 to cause integer division =
-rounding up (1 + 4) =3D 5, (0+4)/5=3D0 */
-         int resolve_retries =3D
-=
--            (flags & GETADDR_TRY_ONCE) ? 1 : ((resolve_retry_seconds + 4) =
-/ fail_wait_interval);
-+            (flags & GETADDR_TRY_ONCE) ? 1 : ((reso=
-lve_retry_seconds + 4) / (int)fail_wait_interval);
-         const char *fmt=
+-    const int data_=
+len =3D BLEN(src_metadata) + sizeof(src_key->keys) + sizeof(uint16_t);
+-   =
+ const int tagged_len =3D data_len + TLS_CRYPT_TAG_SIZE;
++    const size_t =
+data_len =3D BLENZ(src_metadata) + sizeof(src_key->keys) + sizeof(uint16_t)=
 ;
-         msglvl_t level =3D 0;
++    const size_t tagged_len =3D data_len + TLS_CRYPT_TAG_SIZE;
+     cons=
+t uint16_t net_len =3D htons((uint16_t)tagged_len);
+     hmac_ctx_t *hmac_c=
+tx =3D server_key->hmac;
+     hmac_ctx_reset(hmac_ctx);
+@@ -396,7 +396,7 @@=
+
+     ASSERT(cipher_ctx_reset(cipher_ctx, tag));
  
-diff --git a/src/openvpn/win32=2Ec b/src=
-/openvpn/win32=2Ec
-index 079869f=2E=2Ef10c16d 100644
---- a/src/openvpn/win3=
-2=2Ec
-+++ b/src/openvpn/win32=2Ec
-@@ -1533,13 +1533,8 @@
- }
- 
- void
--win32_=
-sleep(const int n)
-+win32_sleep(const unsigned int n)
- {
--    if (n < 0)
-- =
-   {
--        return;
--    }
--
-     /* Sleep() is not interruptible=2E Use =
-a WAIT_OBJECT to catch signal */
- 
-     if (!HANDLE_DEFINED(win32_signal=2E=
-in=2Eread))
-diff --git a/src/openvpn/win32=2Eh b/src/openvpn/win32=2Eh
-inde=
-x 39ff7d8=2E=2E8152e71 100644
---- a/src/openvpn/win32=2Eh
-+++ b/src/openvpn=
-/win32=2Eh
-@@ -323,7 +323,7 @@
- int openvpn_execve(const struct argv *a, co=
-nst struct env_set *es, const unsigned int flags);
- 
- /* Sleep that can be =
-interrupted by signals and exit event */
--void win32_sleep(const int n);
-+v=
-oid win32_sleep(const unsigned int n);
- 
- /**
-  * @brief Fetches a registry=
- value for OpenVPN registry key=2E
-diff --git a/tests/unit_tests/openvpn/mo=
-ck_management=2Ec b/tests/unit_tests/openvpn/mock_management=2Ec
-index f572=
-dbb=2E=2Eaea43da 100644
---- a/tests/unit_tests/openvpn/mock_management=2Ec
+     /* Overflow check (=
+OpenSSL requires an extra block in the dst buffer) */
+-    const int padded=
+_len =3D data_len + cipher_ctx_block_size(cipher_ctx);
++    const size_t pa=
+dded_len =3D data_len + cipher_ctx_block_size(cipher_ctx);
+     if (buf_for=
+ward_capacity(&work) < padded_len)
+     {
+         msg(M_WARN, "ERROR: coul=
+d not crypt: insufficient space in dst");
+@@ -735,7 +735,7 @@
+         size=
+_t b64_length =3D strlen(b64_metadata);
+         metadata =3D alloc_buf_gc(=
+OPENVPN_BASE64_DECODED_LENGTH(b64_length) + 1, &gc);
+         ASSERT(buf_wr=
+ite(&metadata, &TLS_CRYPT_METADATA_TYPE_USER, 1));
+-        int decoded_len=
+ =3D openvpn_base64_decode(b64_metadata, BEND(&metadata), BCAP(&metadata));=
+
++        int decoded_len =3D openvpn_base64_decode(b64_metadata, BEND(&met=
+adata), (int)BCAP(&metadata));
+         if (decoded_len < 0)
+         {
+   =
+          msg(M_FATAL, "ERROR: failed to base64 decode provided metadata");=
+
+diff --git a/src/openvpn/tun=2Ec b/src/openvpn/tun=2Ec
+index 0ba8a4a=2E=2E=
+c56ace3 100644
+--- a/src/openvpn/tun=2Ec
++++ b/src/openvpn/tun=2Ec
+@@ -4008=
+,7 +4008,7 @@
+  * registry for the TAP device # =3D device_number=2E
+  */
+ =
+static const char *
+-get_unspecified_device_guid(const int device_number, u=
+int8_t *actual_name, int actual_name_size,
++get_unspecified_device_guid(con=
+st int device_number, uint8_t *actual_name, size_t actual_name_size,
+      =
+                       const struct tap_reg *tap_reg_src,
+                 =
+            const struct panel_reg *panel_reg_src,
+                        =
+     enum tun_driver_type *windows_driver, struct gc_arena *gc)
+@@ -4071,7 =
++4071,7 @@
+  * returning the GUID and optional actual_name and device type
 =
-+++ b/tests/unit_tests/openvpn/mock_management=2Ec
-@@ -59,6 +59,6 @@
- #endi=
-f
- 
- void
--management_sleep(const int n)
-+management_sleep(const unsigned i=
-nt n)
+  */
+ static const char *
+-get_device_guid(const char *name, uint8_t *actua=
+l_name, int actual_name_size,
++get_device_guid(const char *name, uint8_t *a=
+ctual_name, size_t actual_name_size,
+                 enum tun_driver_type =
+*windows_driver, const struct tap_reg *tap_reg,
+                 const stru=
+ct panel_reg *panel_reg, struct gc_arena *gc)
  {
- }
+@@ -6087,8 +6087,9 @@
+    =
+ {
+         struct buffer out =3D alloc_buf_gc(256, gc);
+         DWORD len=
+;
+-        if (DeviceIoControl(tt->hand, TAP_WIN_IOCTL_GET_INFO, BSTR(&out)=
+, BCAP(&out), BSTR(&out),
+-                            BCAP(&out), &len, NU=
+LL))
++        if (DeviceIoControl(tt->hand, TAP_WIN_IOCTL_GET_INFO, BSTR(&o=
+ut),
++                            (DWORD)BCAP(&out), BSTR(&out),
++         =
+                   (DWORD)BCAP(&out), &len, NULL))
+         {
+             =
+return BSTR(&out);
+         }
+@@ -6103,8 +6104,8 @@
+     {
+         struct =
+buffer out =3D alloc_buf(1024);
+         DWORD len;
+-        while (DeviceI=
+oControl(tt->hand, TAP_WIN_IOCTL_GET_LOG_LINE, BSTR(&out), BCAP(&out),
+-   =
+                            BSTR(&out), BCAP(&out), &len, NULL))
++        w=
+hile (DeviceIoControl(tt->hand, TAP_WIN_IOCTL_GET_LOG_LINE, BSTR(&out), (DW=
+ORD)BCAP(&out),
++                               BSTR(&out), (DWORD)BCAP(&ou=
+t), &len, NULL))
+         {
+             msg(D_TAP_WIN_DEBUG, "TAP-Windows:=
+ %s", BSTR(&out));
+         }
 
 -- 
-To view, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/=
-2200?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit ht=
-tps://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+To view, visit https://gerrit=2Eopenvpn=
+=2Enet/c/openvpn/+/2198?usp=3Demail
+To unsubscribe, or for help writing mai=
+l filters, visit https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Gerrit-MessageType: newp=
-atchset
+Gerri=
+t-MessageType: newpatchset
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I34=
-dd7d46c9bc15e32f233741c525759715bb847c
-Gerrit-Change-Number: 2200
-Gerrit-Pa=
-tchSet: 2
-Gerrit-Owner: Frank Lichtenheld <frank@lichtenheld=2Ecom>
-Gerrit-=
-Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Reviewer: R=C4=
-=83zvan Cojocaru <razvanc@mailbox=2Eorg>
-Gerrit-CC: openvpn-devel <openvpn-=
-devel@lists=2Esourceforge=2Enet>
-Gerrit-Attention: R=C4=83zvan Cojocaru <ra=
-zvanc@mailbox=2Eorg>
-Gerrit-Attention: Arne Schwabe <arne-openvpn@rfc2549=
-=2Eorg>
-Gerrit-Attention: Frank Lichtenheld <frank@lichtenheld=2Ecom>
+Ge=
+rrit-Change-Id: I9c2403c21ef8f21a0fbd998346c8ad719b4b9972
+Gerrit-Change-Num=
+ber: 2198
+Gerrit-PatchSet: 3
+Gerrit-Owner: Frank Lichtenheld <frank@lichten=
+held=2Ecom>
+Gerrit-Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
+Gerr=
+it-Reviewer: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
+Gerrit-CC: openvp=
+n-devel <openvpn-devel@lists=2Esourceforge=2Enet>
+Gerrit-Attention: R=C4=83=
+zvan Cojocaru <razvanc@mailbox=2Eorg>
+Gerrit-Attention: Arne Schwabe <arne-=
+openvpn@rfc2549=2Eorg>
+Gerrit-Attention: Frank Lichtenheld <frank@lichtenhe=
+ld=2Ecom>
 
---kywmDlUtBkk=
+--GnpLl8fpExI=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
 rently required from: Arne Schwabe, Frank Lichtenheld, R=C4=83zvan Cojocaru=
 =2E </p>
-<p>Frank Lichtenheld <strong>uploaded patch set #2</strong> to thi=
-s change=2E</p><p><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/220=
-0?usp=3Demail">View Change</a></p><p>The following approvals got outdated a=
+<p>Frank Lichtenheld <strong>uploaded patch set #3</strong> to thi=
+s change=2E</p><p><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/219=
+8?usp=3Demail">View Change</a></p><p>The following approvals got outdated a=
 nd were removed:
-Code-Review-1 by R=C4=83zvan Cojocaru</p><pre class=3D"blo=
-cks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">man=
-age: Switch all sleep methods to unsigned<br><br>That is consistent with sl=
-eep(3)=2E<br><br>Change-Id: I34dd7d46c9bc15e32f233741c525759715bb847c<br>Si=
-gned-off-by: Frank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt;<br>---<br>M =
-src/openvpn/manage=2Ec<br>M src/openvpn/manage=2Eh<br>M src/openvpn/resolve=
-=2Ec<br>M src/openvpn/win32=2Ec<br>M src/openvpn/win32=2Eh<br>M tests/unit_=
-tests/openvpn/mock_management=2Ec<br>6 files changed, 34 insertions(+), 77 =
-deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2En=
-et:29418/openvpn refs/changes/00/2200/2</pre><pre style=3D"font-family: mon=
-ospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/ma=
-nage=2Ec b/src/openvpn/manage=2Ec</span><br><span>index ae30930=2E=2E86c498=
-e 100644</span><br><span>--- a/src/openvpn/manage=2Ec</span><br><span>+++ b=
-/src/openvpn/manage=2Ec</span><br><span>@@ -3615,32 +3615,23 @@</span><br><=
-span>     }</span><br><span> }</span><br><span> </span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pus=
-h</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnost=
-ic ignored &quot;-Wsign-conversion&quot;</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-</span><br><span> /*</span><br><span>  * Process the management event l=
-oop for sec seconds</span><br><span>  */</span><br><span> void</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-management_event_loop_n_seconds(st=
-ruct management *man, int sec)</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+management_event_loop_n_seconds(struct management *man, unsigned=
- int sec)</span><br><span> {</span><br><span>     if (man_standalone_ok(man=
-))</span><br><span>     {</span><br><span>         volatile int signal_rece=
-ived =3D 0;</span><br><span>         const bool standalone_disabled_save =
-=3D man-&gt;persist=2Estandalone_disabled;</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-        time_t expire =3D 0;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        time_t expire =3D now + sec;</span><b=
-r><span> </span><br><span>         /* This is so M_CLIENT messages will be =
-correctly passed through msg() */</span><br><span>         man-&gt;persist=
-=2Estandalone_disabled =3D false;</span><br><span> </span><br><span>       =
-  /* set expire time */</span><br><span>         update_time();</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        if (sec &gt;=3D 0)</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-            expire =3D now + sec;</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span> <=
-/span><br><span>         /* if no client connection, wait for one */</span>=
-<br><span>         man_wait_for_client_connection(man, &amp;signal_received=
-, expire, 0);</span><br><span>@@ -3662,7 +3653,7 @@</span><br><span>       =
-          return;</span><br><span>             }</span><br><span>          =
-   update_time();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-    } while (expire &amp;&amp; expire &gt; now);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        } while (expire &gt; now);</span><br><=
-span> </span><br><span>         /* revert state */</span><br><span>        =
- man-&gt;persist=2Estandalone_disabled =3D standalone_disabled_save;</span>=
-<br><span>@@ -4026,7 +4017,7 @@</span><br><span>  * Return true if the call=
-er should not sleep for an additional time interval=2E</span><br><span>  */=
-</span><br><span> bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--management_hold(struct management *man, int holdtime)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+management_hold(struct management *man, =
-unsigned int holdtime)</span><br><span> {</span><br><span>     if (manageme=
-nt_would_hold(man))</span><br><span>     {</span><br><span>@@ -4044,7 +4035=
-,7 @@</span><br><span>         if (!signal_received)</span><br><span>      =
-   {</span><br><span>             struct buffer out =3D alloc_buf_gc(128, &=
-amp;gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            b=
-uf_printf(&amp;out, &quot;&gt;HOLD:Waiting for hold release:%d&quot;, holdt=
-ime);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            bu=
-f_printf(&amp;out, &quot;&gt;HOLD:Waiting for hold release:%u&quot;, holdti=
-me);</span><br><span>             man-&gt;persist=2Especial_state_msg =3D B=
-STR(&amp;out);</span><br><span>             msg(M_CLIENT, &quot;%s&quot;, m=
-an-&gt;persist=2Especial_state_msg);</span><br><span> </span><br><span>@@ -=
-4244,8 +4235,9 @@</span><br><span> log_history_obj_init(struct log_history =
-*h, int capacity)</span><br><span> {</span><br><span>     CLEAR(*h);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(capacity &gt; 0=
-);</span><br><span>     h-&gt;capacity =3D capacity;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    ALLOC_ARRAY_CLEAR(h-&gt;array, struct l=
-og_entry, capacity);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    ALLOC_ARRAY_CLEAR(h-&gt;array, struct log_entry, (size_t)capacity);</s=
-pan><br><span> }</span><br><span> </span><br><span> struct log_history *</s=
-pan><br><span>@@ -4332,34 +4324,6 @@</span><br><span> }</span><br><span> </=
-span><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-m=
-anagement_sleep(const int n)</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (n &lt=
-; 0)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        return;</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    else if (management)</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-        management_event_loop_n_seconds(management, n);</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    else</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifd=
-ef _WIN32</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        win3=
-2_sleep(n);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#else</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (n &gt; 0)</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-            sleep(n);</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic po=
-p</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-void</span><br><span> management_check_bytecount_client(=
-struct context *c, struct management *man, struct timeval *timeval)</span><=
-br><span> {</span><br><span>     if (man-&gt;persist=2Ecallback=2Eflags &am=
-p; MCF_SERVER)</span><br><span>@@ -4490,30 +4454,28 @@</span><br><span>    =
- gc_free(&amp;gc);</span><br><span>     return false;</span><br><span> }</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#else /* ifdef ENABLE_MA=
-NAGEMENT */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /=
-* ENABLE_MANAGEMENT */</span><br><span> </span><br><span> #include &quot;wi=
-n32=2Eh&quot;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-#if !defined(_WIN32) &amp;&amp; (defined(__GNUC__) || defined(__c=
-lang__))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC d=
-iagnostic push</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma=
- GCC diagnostic ignored &quot;-Wsign-conversion&quot;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-</span><br><span> void</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-management_sleep(const int n)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+management_sleep(const unsigned int n)</span><b=
-r><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef _WIN=
-32</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    win32_sleep(n);=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#else</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    if (n &gt; 0)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+#ifdef ENABLE_MANAGEMENT</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    if (management)</span><br><spa=
-n>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        sleep=
-(n);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        managem=
-ent_event_loop_n_seconds(management, n);</span><br><span>     }</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-#endif /* ifdef _WIN32 */</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-#if !defined(_WIN32) &amp;&amp; (defined(__GNUC__) || defined(__clang_=
-_))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagno=
-stic pop</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else</s=
-pan><br><span> #endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif /* ENABLE_MANA=
-GEMENT */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef _WIN32</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        win32_sleep(n);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+#else</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        if (n &gt; 0)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            sleep(n);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span>=
-<br><span>diff --git a/src/openvpn/manage=2Eh b/src/openvpn/manage=2Eh</spa=
-n><br><span>index 82c0caa=2E=2E697f830 100644</span><br><span>--- a/src/ope=
-nvpn/manage=2Eh</span><br><span>+++ b/src/openvpn/manage=2Eh</span><br><spa=
-n>@@ -387,9 +387,9 @@</span><br><span> </span><br><span> bool management_wo=
-uld_hold(struct management *man);</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-bool management_hold(struct management *man=
-, int holdtime);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+boo=
-l management_hold(struct management *man, unsigned int holdtime);</span><br=
-><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-void manageme=
-nt_event_loop_n_seconds(struct management *man, int sec);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+void management_event_loop_n_seconds(=
-struct management *man, unsigned int sec);</span><br><span> </span><br><spa=
-n> void management_up_down(const struct management *man, const char *updown=
-, const struct env_set *es);</span><br><span> </span><br><span>@@ -522,6 +5=
-22,6 @@</span><br><span>  * A sleep function that services the management l=
-ayer for n seconds rather</span><br><span>  * than doing nothing=2E</span><=
-br><span>  */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-void man=
-agement_sleep(const int n);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+void management_sleep(const unsigned int n);</span><br><span> </spa=
-n><br><span> #endif /* ifndef MANAGE_H */</span><br><span>diff --git a/src/=
-openvpn/resolve=2Ec b/src/openvpn/resolve=2Ec</span><br><span>index b8d9899=
-=2E=2E544e5ea 100644</span><br><span>--- a/src/openvpn/resolve=2Ec</span><b=
-r><span>+++ b/src/openvpn/resolve=2Ec</span><br><span>@@ -161,13 +161,13 @@=
-</span><br><span>     }</span><br><span> </span><br><span>     status =3D g=
-etaddrinfo(hostname, servname, &amp;hints, res);</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    if (status !=3D 0)                      /* parse as numeric addre=
-ss failed? */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /*=
- parse as numeric address failed? */</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    if (status !=3D 0)</span><br><span>     {</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-        const int fail_wait_interv=
-al =3D 5; /* seconds */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        const unsigned int fail_wait_interval =3D 5; /* seconds */</spa=
-n><br><span>         /* Add +4 to cause integer division rounding up (1 + 4=
-) =3D 5, (0+4)/5=3D0 */</span><br><span>         int resolve_retries =3D</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            (flags &amp;=
- GETADDR_TRY_ONCE) ? 1 : ((resolve_retry_seconds + 4) / fail_wait_interval)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            (flags=
- &amp; GETADDR_TRY_ONCE) ? 1 : ((resolve_retry_seconds + 4) / (int)fail_wai=
-t_interval);</span><br><span>         const char *fmt;</span><br><span>    =
-     msglvl_t level =3D 0;</span><br><span> </span><br><span>diff --git a/s=
-rc/openvpn/win32=2Ec b/src/openvpn/win32=2Ec</span><br><span>index 079869f=
-=2E=2Ef10c16d 100644</span><br><span>--- a/src/openvpn/win32=2Ec</span><br>=
-<span>+++ b/src/openvpn/win32=2Ec</span><br><span>@@ -1533,13 +1533,8 @@</s=
-pan><br><span> }</span><br><span> </span><br><span> void</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-win32_sleep(const int n)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+win32_sleep(const unsigned int n)</=
-span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-if (n &lt; 0)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        return;</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-</span><br><span>     /* Sleep() is not interr=
-uptible=2E Use a WAIT_OBJECT to catch signal */</span><br><span> </span><br=
-><span>     if (!HANDLE_DEFINED(win32_signal=2Ein=2Eread))</span><br><span>=
-diff --git a/src/openvpn/win32=2Eh b/src/openvpn/win32=2Eh</span><br><span>=
-index 39ff7d8=2E=2E8152e71 100644</span><br><span>--- a/src/openvpn/win32=
-=2Eh</span><br><span>+++ b/src/openvpn/win32=2Eh</span><br><span>@@ -323,7 =
-+323,7 @@</span><br><span> int openvpn_execve(const struct argv *a, const s=
-truct env_set *es, const unsigned int flags);</span><br><span> </span><br><=
-span> /* Sleep that can be interrupted by signals and exit event */</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-void win32_sleep(const int n)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void win32_sleep(c=
-onst unsigned int n);</span><br><span> </span><br><span> /**</span><br><spa=
-n>  * @brief Fetches a registry value for OpenVPN registry key=2E</span><br=
-><span>diff --git a/tests/unit_tests/openvpn/mock_management=2Ec b/tests/un=
-it_tests/openvpn/mock_management=2Ec</span><br><span>index f572dbb=2E=2Eaea=
-43da 100644</span><br><span>--- a/tests/unit_tests/openvpn/mock_management=
-=2Ec</span><br><span>+++ b/tests/unit_tests/openvpn/mock_management=2Ec</sp=
-an><br><span>@@ -59,6 +59,6 @@</span><br><span> #endif</span><br><span> </s=
-pan><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-ma=
-nagement_sleep(const int n)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+management_sleep(const unsigned int n)</span><br><span> {</span><br=
-><span> }</span><br></pre><p>To view, visit <a href=3D"https://gerrit=2Eope=
-nvpn=2Enet/c/openvpn/+/2200?usp=3Demail">change 2200</a>=2E To unsubscribe,=
- or for help writing mail filters, visit <a href=3D"https://gerrit=2Eopenvp=
-n=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D=
-"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemt=
-ype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https=
-://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2200?usp=3Demail"/><meta itemprop=3D"=
-name" content=3D"View Change"/></div></div>
+Code-Review+2 by R=C4=83zvan Cojocaru</p><p>The change is =
+no longer submittable: Code-Review and checks~ChecksSubmitRule are unsatisf=
+ied now=2E</p><pre class=3D"blocks" style=3D"font-family: monospace,monospa=
+ce; white-space: pre-wrap;">buffer: Switch buf_forward_capacity and buf_set=
+_write to size_t<br><br>To make them consistent with buf_forward_capacity_t=
+otal<br>and buf_set_read that were already switched=2E<br><br>Review call s=
+ites=2E<br><br>Change-Id: I9c2403c21ef8f21a0fbd998346c8ad719b4b9972<br>Sign=
+ed-off-by: Frank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt;<br>---<br>M sr=
+c/openvpn/buffer=2Ec<br>M src/openvpn/buffer=2Eh<br>M src/openvpn/crypto=2E=
+c<br>M src/openvpn/crypto_openssl=2Ec<br>M src/openvpn/push=2Ec<br>M src/op=
+envpn/ssl_mbedtls=2Ec<br>M src/openvpn/ssl_ncp=2Ec<br>M src/openvpn/ssl_ope=
+nssl=2Ec<br>M src/openvpn/status=2Ec<br>M src/openvpn/tls_crypt=2Ec<br>M sr=
+c/openvpn/tun=2Ec<br>11 files changed, 39 insertions(+), 56 deletions(-)<br=
+><br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace;=
+ white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvp=
+n refs/changes/98/2198/3</pre><pre style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;"><span>diff --git a/src/openvpn/buffer=2Ec b/src/=
+openvpn/buffer=2Ec</span><br><span>index c60936a=2E=2Ec33a987 100644</span>=
+<br><span>--- a/src/openvpn/buffer=2Ec</span><br><span>+++ b/src/openvpn/bu=
+ffer=2Ec</span><br><span>@@ -234,17 +234,16 @@</span><br><span>     if (buf=
+_defined(buf))</span><br><span>     {</span><br><span>         char *ptr =
+=3D (char *)BEND(buf);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-        int cap =3D buf_forward_capacity(buf);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+        size_t cap =3D buf_forward_capacity(buf=
+);</span><br><span> </span><br><span>         if (cap &gt; 1) /* can write =
+more than \0 */</span><br><span>         {</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-            int stat;</span><br><span>             va_=
+list arglist;</span><br><span>             va_start(arglist, format);</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-            stat =3D vsnpri=
+ntf(ptr, cap, format, arglist);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            int stat =3D vsnprintf(ptr, cap, format, arglist);<=
+/span><br><span>             va_end(arglist);</span><br><span>             =
+buf-&gt;len +=3D (int)strnlen(ptr, cap);</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-            if (stat &gt;=3D 0 &amp;&amp; stat &lt; cap)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (sta=
+t &gt;=3D 0 &amp;&amp; stat &lt; (int)cap)</span><br><span>             {</=
+span><br><span>                 ret =3D true;</span><br><span>             =
+}</span><br><span>@@ -257,11 +256,11 @@</span><br><span> buf_puts(struct bu=
+ffer *buf, const char *str)</span><br><span> {</span><br><span>     char *p=
+tr =3D (char *)BEND(buf);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    int cap =3D buf_forward_capacity(buf);</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    size_t cap =3D buf_forward_capacity(buf);</s=
+pan><br><span>     if (cap &gt; 1) /* can write more than \0 */</span><br><=
+span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        in=
+t str_len =3D (int)strlcpy(ptr, str, cap);</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-        buf-&gt;len +=3D (str_len &lt; cap) ? str_len =
+: cap - 1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        s=
+ize_t str_len =3D strlcpy(ptr, str, cap);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        buf-&gt;len +=3D (str_len &lt; cap) ? (int)st=
+r_len : (int)cap - 1;</span><br><span>     }</span><br><span> }</span><br><=
+span> </span><br><span>diff --git a/src/openvpn/buffer=2Eh b/src/openvpn/bu=
+ffer=2Eh</span><br><span>index 541f0bd=2E=2E32b49d3 100644</span><br><span>=
+--- a/src/openvpn/buffer=2Eh</span><br><span>+++ b/src/openvpn/buffer=2Eh</=
+span><br><span>@@ -643,11 +643,6 @@</span><br><span>     return true;</span=
+><br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic push</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;=
+-Wsign-conversion&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
+pan> /**</span><br><span>  * Initialise a buffer with an externally provide=
+d writable memory region=2E</span><br><span>  *</span><br><span>@@ -660,7 +=
+655,7 @@</span><br><span>  * @param size  Size of the memory region in byte=
+s=2E</span><br><span>  */</span><br><span> static inline void</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-buf_set_write(struct buffer *buf, u=
+int8_t *data, int size)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+buf_set_write(struct buffer *buf, uint8_t *data, size_t size)</span><br=
+><span> {</span><br><span>     if (!buf_size_valid(size))</span><br><span> =
+    {</span><br><span>@@ -668,7 +663,7 @@</span><br><span>     }</span><br>=
+<span>     buf-&gt;len =3D 0;</span><br><span>     buf-&gt;offset =3D 0;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    buf-&gt;capacity =3D=
+ size;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    buf-&gt;c=
+apacity =3D (int)size;</span><br><span>     buf-&gt;data =3D data;</span><b=
+r><span>     if (size &gt; 0 &amp;&amp; data)</span><br><span>     {</span>=
+<br><span>@@ -1039,7 +1034,7 @@</span><br><span>  * @return Number of bytes=
+ available for appending, or 0 if \c buf is</span><br><span>  *         inv=
+alid=2E</span><br><span>  */</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-static inline int</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+static inline size_t</span><br><span> buf_forward_capacity(const struc=
+t buffer *buf)</span><br><span> {</span><br><span>     if (buf_valid(buf))<=
+/span><br><span>@@ -1049,7 +1044,7 @@</span><br><span>         {</span><br>=
+<span>             ret =3D 0;</span><br><span>         }</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-        return ret;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+        return (size_t)ret;</span><br><s=
+pan>     }</span><br><span>     else</span><br><span>     {</span><br><span=
+>@@ -1252,6 +1247,11 @@</span><br><span>     return true;</span><br><span> =
+}</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+#if defined(__GNUC__) || defined(__clang__)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+#pragma GCC diagnostic push</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#pragma GCC diagnostic ignored &quot;-Wsi=
+gn-conversion&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan> /**</span><br><span>  * Prepend data to a buffer=2E</span><br><span>  =
+*</span><br><span>diff --git a/src/openvpn/crypto=2Ec b/src/openvpn/crypto=
+=2Ec</span><br><span>index db1cb41=2E=2E8b4cc3b 100644</span><br><span>--- =
+a/src/openvpn/crypto=2Ec</span><br><span>+++ b/src/openvpn/crypto=2Ec</span=
+><br><span>@@ -1825,7 +1825,7 @@</span><br><span> bool</span><br><span> gen=
+erate_ephemeral_key(struct buffer *key, const char *key_name)</span><br><sp=
+an> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const int le=
+n =3D BCAP(key);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ const int len =3D (int)BCAP(key);</span><br><span> </span><br><span>     m=
+sg(M_INFO, &quot;Using random %s=2E&quot;, key_name);</span><br><span> </sp=
+an><br><span>diff --git a/src/openvpn/crypto_openssl=2Ec b/src/openvpn/cryp=
+to_openssl=2Ec</span><br><span>index 0a1d00c=2E=2E1246bc6 100644</span><br>=
+<span>--- a/src/openvpn/crypto_openssl=2Ec</span><br><span>+++ b/src/openvp=
+n/crypto_openssl=2Ec</span><br><span>@@ -523,7 +523,7 @@</span><br><span>  =
+   uint8_t *dst_data =3D buf_write_alloc(dst, data_read_len);</span><br><sp=
+an>     if (!dst_data)</span><br><span>     {</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-        dmsg(D_CRYPT_ERRORS, &quot;%s: dst too smal=
+l (%i, needs %li)&quot;, __func__, BCAP(dst),</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        dmsg(D_CRYPT_ERRORS, &quot;%s: dst too sm=
+all (%zu, needs %li)&quot;, __func__, BCAP(dst),</span><br><span>          =
+    data_read_len);</span><br><span>         goto cleanup;</span><br><span>=
+     }</span><br><span>diff --git a/src/openvpn/push=2Ec b/src/openvpn/push=
+=2Ec</span><br><span>index 6f628b8=2E=2Eeb11107 100644</span><br><span>--- =
+a/src/openvpn/push=2Ec</span><br><span>+++ b/src/openvpn/push=2Ec</span><br=
+><span>@@ -805,7 +805,7 @@</span><br><span> #endif</span><br><span> </span>=
+<br><span> static bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-send_push_options(struct context *c, struct buffer *buf, struct push_list =
+*push_list, int safe_cap,</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+send_push_options(struct context *c, struct buffer *buf, struct push_=
+list *push_list, size_t safe_cap,</span><br><span>                   bool *=
+push_sent, bool *multi_push)</span><br><span> {</span><br><span>     struct=
+ push_entry *e =3D push_list-&gt;head;</span><br><span>@@ -820,7 +820,7 @@<=
+/span><br><span>                 msg(M_WARN, &quot;--push option is too lon=
+g&quot;);</span><br><span>                 return false;</span><br><span>  =
+           }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+   if (BLEN(buf) + (int)l &gt;=3D safe_cap)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+            if (BLENZ(buf) + l &gt;=3D safe_cap)</s=
+pan><br><span>             {</span><br><span>                 buf_printf(bu=
+f, &quot;,push-continuation 2&quot;);</span><br><span>                 {</s=
+pan><br><span>@@ -835,7 +835,7 @@</span><br><span>                     buf_=
+printf(buf, &quot;%s&quot;, push_reply_cmd);</span><br><span>              =
+   }</span><br><span>             }</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-            if (BLEN(buf) + (int)l &gt;=3D safe_cap)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+            if (BLENZ(buf) +=
+ l &gt;=3D safe_cap)</span><br><span>             {</span><br><span>       =
+          msg(M_WARN, &quot;--push option is too long&quot;);</span><br><sp=
+an>                 return false;</span><br><span>@@ -873,8 +873,8 @@</span=
+><br><span>     struct gc_arena gc =3D gc_new();</span><br><span>     struc=
+t buffer buf =3D alloc_buf_gc(PUSH_BUNDLE_SIZE, &amp;gc);</span><br><span> =
+    bool multi_push =3D false;</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    const int extra =3D 84; /* extra space for possible trailing i=
+fconfig and push-continuation */</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    const int safe_cap =3D BCAP(&amp;buf) - extra;</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    const size_t extra =3D 84; /*=
+ extra space for possible trailing ifconfig and push-continuation */</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    const size_t safe_cap =
+=3D BCAP(&amp;buf) - extra;</span><br><span>     bool push_sent =3D false;<=
+/span><br><span> </span><br><span>     buf_printf(&amp;buf, &quot;%s&quot;,=
+ push_reply_cmd);</span><br><span>diff --git a/src/openvpn/ssl_mbedtls=2Ec =
+b/src/openvpn/ssl_mbedtls=2Ec</span><br><span>index 93e67fd=2E=2E19a2d48 10=
+0644</span><br><span>--- a/src/openvpn/ssl_mbedtls=2Ec</span><br><span>+++ =
+b/src/openvpn/ssl_mbedtls=2Ec</span><br><span>@@ -1063,7 +1063,6 @@</span><=
+br><span> key_state_read_ciphertext(struct key_state_ssl *ks, struct buffer=
+ *buf)</span><br><span> {</span><br><span>     int retval =3D 0;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    int len =3D 0;</span><br><sp=
+an> </span><br><span>     ASSERT(NULL !=3D ks);</span><br><span>     ASSERT=
+(buf);</span><br><span>@@ -1074,9 +1073,7 @@</span><br><span>         retur=
+n 0;</span><br><span>     }</span><br><span> </span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    len =3D buf_forward_capacity(buf);</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    retval =3D endless_buf_read(&amp;ks-&gt;bio_ctx-&gt=
+;out, BPTR(buf), len);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    retval =3D endless_buf_read(&amp;ks-&gt;bio_ctx-&gt;out, BPTR(buf), =
+BCAP(buf));</span><br><span> </span><br><span>     /* Error during read, ch=
+eck for retry error */</span><br><span>     if (retval &lt; 0)</span><br><s=
+pan>@@ -1148,7 +1145,6 @@</span><br><span> key_state_read_plaintext(struct =
+key_state_ssl *ks, struct buffer *buf)</span><br><span> {</span><br><span> =
+    int retval =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    int len =3D 0;</span><br><span> </span><br><span>     ASSERT(NULL !=3D =
+ks);</span><br><span>     ASSERT(buf);</span><br><span>@@ -1159,9 +1155,7 @=
+@</span><br><span>         return 0;</span><br><span>     }</span><br><span=
+> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    len =3D buf_for=
+ward_capacity(buf);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    retval =3D mbedtls_=
+ssl_read(ks-&gt;ctx, BPTR(buf), len);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    retval =3D mbedtls_ssl_read(ks-&gt;ctx, BPTR(buf), BC=
+AP(buf));</span><br><span> </span><br><span>     /* Error during read, chec=
+k for retry error */</span><br><span>     if (retval &lt; 0)</span><br><spa=
+n>diff --git a/src/openvpn/ssl_ncp=2Ec b/src/openvpn/ssl_ncp=2Ec</span><br>=
+<span>index df9e42c=2E=2E7b15f5f 100644</span><br><span>--- a/src/openvpn/s=
+sl_ncp=2Ec</span><br><span>+++ b/src/openvpn/ssl_ncp=2Ec</span><br><span>@@=
+ -154,7 +154,7 @@</span><br><span>             }</span><br><span> </span><b=
+r><span>             /* Ensure buffer has capacity for cipher name + : + \0=
+ */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (bu=
+f_forward_capacity(&amp;new_list) &lt; (int)strlen(ovpn_cipher_name) + 2)</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (buf_f=
+orward_capacity(&amp;new_list) &lt; strlen(ovpn_cipher_name) + 2)</span><br=
+><span>             {</span><br><span>                 msg(M_WARN, &quot;Le=
+ngth of --data-ciphers is over the &quot;</span><br><span>                 =
+            &quot;limit of 127 chars&quot;);</span><br><span>@@ -563,8 +563=
+,7 @@</span><br><span>     uint8_t *ncp_ciphers =3D gc_malloc(ncp_ciphers_l=
+en, true, &amp;o-&gt;gc);</span><br><span> </span><br><span>     struct buf=
+fer ncp_ciphers_buf;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   ASSERT(ncp_ciphers_len &lt;=3D INT_MAX);</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    buf_set_write(&amp;ncp_ciphers_buf, ncp_ciphers, =
+(int)ncp_ciphers_len);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    buf_set_write(&amp;ncp_ciphers_buf, ncp_ciphers, ncp_ciphers_len);</=
+span><br><span> </span><br><span>     const char *def =3D strstr(o-&gt;ncp_=
+ciphers, search);</span><br><span> </span><br><span>diff --git a/src/openvp=
+n/ssl_openssl=2Ec b/src/openvpn/ssl_openssl=2Ec</span><br><span>index 57ef9=
+f7=2E=2E30ef383 100644</span><br><span>--- a/src/openvpn/ssl_openssl=2Ec</s=
+pan><br><span>+++ b/src/openvpn/ssl_openssl=2Ec</span><br><span>@@ -2155,13=
+ +2155,12 @@</span><br><span>          * if the buffer is not empty */</spa=
+n><br><span>         return 0;</span><br><span>     }</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    int len =3D buf_forward_capacity(buf);<=
+/span><br><span> </span><br><span>     /*</span><br><span>      * BIO_read =
+brackets most of the serious RSA</span><br><span>      * key negotiation nu=
+mber crunching=2E</span><br><span>      */</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    int i =3D BIO_read(bio, BPTR(buf), len);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    int i =3D BIO_read(bio, B=
+PTR(buf), (int)BCAP(buf));</span><br><span> </span><br><span>     VALGRIND_=
+MAKE_READABLE((void *)&amp;i, sizeof(i));</span><br><span> </span><br><span=
+>diff --git a/src/openvpn/status=2Ec b/src/openvpn/status=2Ec</span><br><sp=
+an>index 533619f=2E=2E0a3fc019 100644</span><br><span>--- a/src/openvpn/sta=
+tus=2Ec</span><br><span>+++ b/src/openvpn/status=2Ec</span><br><span>@@ -21=
+5,11 +215,6 @@</span><br><span>     return ret;</span><br><span> }</span><b=
+r><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(=
+__GNUC__) || defined(__clang__)</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-#pragma GCC diagnostic push</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-#pragma GCC diagnostic ignored &quot;-Wsign-conversion&quot=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> #define STATUS_PR=
+INTF_MAXLEN 512</span><br><span> </span><br><span> void</span><br><span>@@ =
+-281,7 +276,7 @@</span><br><span>             if (c =3D=3D -1)</span><br><s=
+pan>             {</span><br><span>                 ASSERT(buf_init(&amp;so=
+-&gt;read_buf, 0));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+              ssize_t len =3D read(so-&gt;fd, BPTR(&amp;so-&gt;read_buf), B=
+CAP(&amp;so-&gt;read_buf));</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+                ssize_t len =3D read(so-&gt;fd, BPTR(&amp;so-&gt;re=
+ad_buf), (unsigned int)BCAP(&amp;so-&gt;read_buf));</span><br><span>       =
+          if (len &lt;=3D 0)</span><br><span>                 {</span><br><=
+span>                     break;</span><br><span>@@ -311,7 +306,3 @@</span>=
+<br><span> </span><br><span>     return ret;</span><br><span> }</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-#if defined(__GNUC__) || defined(__clang__)</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-#pragma GCC diagnostic pop</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span>diff=
+ --git a/src/openvpn/tls_crypt=2Ec b/src/openvpn/tls_crypt=2Ec</span><br><s=
+pan>index d7f69f7=2E=2E5617ad3 100644</span><br><span>--- a/src/openvpn/tls=
+_crypt=2Ec</span><br><span>+++ b/src/openvpn/tls_crypt=2Ec</span><br><span>=
+@@ -380,8 +380,8 @@</span><br><span>         msg(M_WARN, &quot;ERROR: could=
+ not write tag&quot;);</span><br><span>         return false;</span><br><sp=
+an>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const in=
+t data_len =3D BLEN(src_metadata) + sizeof(src_key-&gt;keys) + sizeof(uint1=
+6_t);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const int ta=
+gged_len =3D data_len + TLS_CRYPT_TAG_SIZE;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    const size_t data_len =3D BLENZ(src_metadata) +=
+ sizeof(src_key-&gt;keys) + sizeof(uint16_t);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    const size_t tagged_len =3D data_len + TLS_CR=
+YPT_TAG_SIZE;</span><br><span>     const uint16_t net_len =3D htons((uint16=
+_t)tagged_len);</span><br><span>     hmac_ctx_t *hmac_ctx =3D server_key-&g=
+t;hmac;</span><br><span>     hmac_ctx_reset(hmac_ctx);</span><br><span>@@ -=
+396,7 +396,7 @@</span><br><span>     ASSERT(cipher_ctx_reset(cipher_ctx, ta=
+g));</span><br><span> </span><br><span>     /* Overflow check (OpenSSL requ=
+ires an extra block in the dst buffer) */</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    const int padded_len =3D data_len + cipher_ctx_bloc=
+k_size(cipher_ctx);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    const size_t padded_len =3D data_len + cipher_ctx_block_size(cipher_ctx=
+);</span><br><span>     if (buf_forward_capacity(&amp;work) &lt; padded_len=
+)</span><br><span>     {</span><br><span>         msg(M_WARN, &quot;ERROR: =
+could not crypt: insufficient space in dst&quot;);</span><br><span>@@ -735,=
+7 +735,7 @@</span><br><span>         size_t b64_length =3D strlen(b64_metad=
+ata);</span><br><span>         metadata =3D alloc_buf_gc(OPENVPN_BASE64_DEC=
+ODED_LENGTH(b64_length) + 1, &amp;gc);</span><br><span>         ASSERT(buf_=
+write(&amp;metadata, &amp;TLS_CRYPT_METADATA_TYPE_USER, 1));</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-        int decoded_len =3D openvpn_=
+base64_decode(b64_metadata, BEND(&amp;metadata), BCAP(&amp;metadata));</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        int decoded_len =
+=3D openvpn_base64_decode(b64_metadata, BEND(&amp;metadata), (int)BCAP(&amp=
+;metadata));</span><br><span>         if (decoded_len &lt; 0)</span><br><sp=
+an>         {</span><br><span>             msg(M_FATAL, &quot;ERROR: failed=
+ to base64 decode provided metadata&quot;);</span><br><span>diff --git a/sr=
+c/openvpn/tun=2Ec b/src/openvpn/tun=2Ec</span><br><span>index 0ba8a4a=2E=2E=
+c56ace3 100644</span><br><span>--- a/src/openvpn/tun=2Ec</span><br><span>++=
++ b/src/openvpn/tun=2Ec</span><br><span>@@ -4008,7 +4008,7 @@</span><br><sp=
+an>  * registry for the TAP device # =3D device_number=2E</span><br><span> =
+ */</span><br><span> static const char *</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-get_unspecified_device_guid(const int device_number, uin=
+t8_t *actual_name, int actual_name_size,</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+get_unspecified_device_guid(const int device_number, u=
+int8_t *actual_name, size_t actual_name_size,</span><br><span>             =
+                const struct tap_reg *tap_reg_src,</span><br><span>        =
+                     const struct panel_reg *panel_reg_src,</span><br><span=
+>                             enum tun_driver_type *windows_driver, struct =
+gc_arena *gc)</span><br><span>@@ -4071,7 +4071,7 @@</span><br><span>  * ret=
+urning the GUID and optional actual_name and device type</span><br><span>  =
+*/</span><br><span> static const char *</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-get_device_guid(const char *name, uint8_t *actual_name, i=
+nt actual_name_size,</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++get_device_guid(const char *name, uint8_t *actual_name, size_t actual_name=
+_size,</span><br><span>                 enum tun_driver_type *windows_drive=
+r, const struct tap_reg *tap_reg,</span><br><span>                 const st=
+ruct panel_reg *panel_reg, struct gc_arena *gc)</span><br><span> {</span><b=
+r><span>@@ -6087,8 +6087,9 @@</span><br><span>     {</span><br><span>      =
+   struct buffer out =3D alloc_buf_gc(256, gc);</span><br><span>         DW=
+ORD len;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (D=
+eviceIoControl(tt-&gt;hand, TAP_WIN_IOCTL_GET_INFO, BSTR(&amp;out), BCAP(&a=
+mp;out), BSTR(&amp;out),</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-                            BCAP(&amp;out), &amp;len, NULL))</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+        if (DeviceIoControl(tt-=
+&gt;hand, TAP_WIN_IOCTL_GET_INFO, BSTR(&amp;out),</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+                            (DWORD)BCAP(&amp;=
+out), BSTR(&amp;out),</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+                            (DWORD)BCAP(&amp;out), &amp;len, NULL))</span=
+><br><span>         {</span><br><span>             return BSTR(&amp;out);</=
+span><br><span>         }</span><br><span>@@ -6103,8 +6104,8 @@</span><br><=
+span>     {</span><br><span>         struct buffer out =3D alloc_buf(1024);=
+</span><br><span>         DWORD len;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-        while (DeviceIoControl(tt-&gt;hand, TAP_WIN_IOCTL_GE=
+T_LOG_LINE, BSTR(&amp;out), BCAP(&amp;out),</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-                               BSTR(&amp;out), BCAP(&=
+amp;out), &amp;len, NULL))</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+        while (DeviceIoControl(tt-&gt;hand, TAP_WIN_IOCTL_GET_LOG_LI=
+NE, BSTR(&amp;out), (DWORD)BCAP(&amp;out),</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                               BSTR(&amp;out), (DWOR=
+D)BCAP(&amp;out), &amp;len, NULL))</span><br><span>         {</span><br><sp=
+an>             msg(D_TAP_WIN_DEBUG, &quot;TAP-Windows: %s&quot;, BSTR(&amp=
+;out));</span><br><span>         }</span><br></pre><p>To view, visit <a hre=
+f=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2198?usp=3Demail">change 21=
+98</a>=2E To unsubscribe, or for help writing mail filters, visit <a href=
+=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p=
+><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscop=
+e itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link ite=
+mprop=3D"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2198?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> G=
-errit-MessageType: newpatchset </div>
-<div style=3D"display:none"> Gerrit-P=
-roject: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master <=
-/div>
-<div style=3D"display:none"> Gerrit-Change-Id: I34dd7d46c9bc15e32f233=
-741c525759715bb847c </div>
-<div style=3D"display:none"> Gerrit-Change-Numbe=
-r: 2200 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div =
-style=3D"display:none"> Gerrit-Owner: Frank Lichtenheld &lt;frank@lichtenhe=
-ld=2Ecom&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: Arne Schw=
-abe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> =
-Gerrit-Reviewer: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt; </div>
+<=
+div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div sty=
+le=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:n=
+one"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Chan=
+ge-Id: I9c2403c21ef8f21a0fbd998346c8ad719b4b9972 </div>
+<div style=3D"displ=
+ay:none"> Gerrit-Change-Number: 2198 </div>
+<div style=3D"display:none"> Ge=
+rrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: Frank Li=
+chtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+<div style=3D"display:none=
+"> Gerrit-Reviewer: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
 =
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lis=
-ts=2Esourceforge=2Enet&gt; </div>
-<div style=3D"display:none"> Gerrit-Atten=
-tion: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: R=C4=83zvan Cojocaru &lt;razv=
+anc@mailbox=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvp=
+n-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
 <div style=
-=3D"display:none"> Gerrit-Attention: Arne Schwabe &lt;arne-openvpn@rfc2549=
-=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: Frank Lich=
-tenheld &lt;frank@lichtenheld=2Ecom&gt; </div>
+=3D"display:none"> Gerrit-Attention: R=C4=83zvan Cojocaru &lt;razvanc@mailb=
+ox=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: Arne Sch=
+wabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none">=
+ Gerrit-Attention: Frank Lichtenheld &lt;frank@lichtenheld=2Ecom&gt; </div>=
+
 
 </body></html>
---kywmDlUtBkk=--
+--GnpLl8fpExI=--
 
 
---===============7207002868544379336==
+--===============5165980454857116859==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============7207002868544379336==
+--===============5165980454857116859==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -874,5 +1189,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============7207002868544379336==--
+--===============5165980454857116859==--
 
