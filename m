@@ -1,140 +1,76 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC295606A329
-	for <openvpn-devel@archiver.kernel.org>; Tue, 17 Nov 2026 14:24:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81E3E606ABA4
+	for <openvpn-devel@archiver.kernel.org>; Tue, 17 Nov 2026 14:36:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=JaztQC4b;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=H0RhP9cw;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=NDIOEXeo;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=cT7tjlvF
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=MJhzPj9G;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=GAY6+VtO;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=R68oSlkW
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Unsubscribe-Post:List-Owner;
-	bh=76qgphWUL73y7xQQwHgiw87yq5ohTo0Bmxpu9swL7FQ=; b=JaztQC4bI42qpVv6kfTuYemD4O
-	y6kl06b4bl6YnlFqXmO4ojB6UpEPjrQcNbs+nYmkInLkZOBuihZHKz7kMrTEhvjxN0yNn4jJ+fifg
-	69i8+2hhGAWHPXlRtufIgi5JEPHK7UCMmGvwffanHsw8KOPU4N9qgR98pmwWedNJsa7M=;
+	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
+	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
+	List-Owner; bh=BHGstZADL8Emo0uQPYoXVABvPtT4vJhGiDkG2+jCPAY=; b=MJhzPj9G4cFZx1
+	W5Bf/SCEghBr6E+fNdvPKjGYh4X/mCQiPq7ntTl/qHl9Rcpqj56y3Em5YujWuGoz+32E4xXJq512L
+	E0/pEvbDPVQxvKUxNb0/gdNaQiUMWbqU2xf75b715H4QPpvVLF0vMTUq9jkH8jdApSj9NBDSLHcbW
+	ARA=;
 Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
 	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xTK6w-0000000032N-2EbD;
-	Tue, 17 Nov 2026 14:24:38 +0000
+	id 1xTKIO-000000003rm-3gFc;
+	Tue, 17 Nov 2026 14:36:28 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xTK6v-0000000032E-37BR
- for openvpn-devel@lists.sourceforge.net;
- Tue, 17 Nov 2026 14:24:37 +0000
+ (envelope-from <gert@blue4.greenie.muc.de>)
+ id 1xTKIN-000000003rX-0QLj for openvpn-devel@lists.sourceforge.net;
+ Tue, 17 Nov 2026 14:36:27 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
+ In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=05JazeQPxkKNlsy88i/Og9dAVTN4vsZUY8m9e+uwx4M=; b=H0RhP9cwhbd4ovFdfitzmr8XPD
- TSmLSpsllmC9Bs0Y64mXjPjBnl1st43NGTzzc7AdhxaA6p50BruFXjID22rZs3E+ymth9ELiY89Fo
- oYnfYCqwLD433BJXr0NeftI6s0lvgX5/g4fxYkR4ccdLdap4of6AVoMgtYpp1D8eatkE=;
+ bh=zl7RayW0viicpT24LlEvQi1ZA6yrYSLum9Mm2FxerIk=; b=GAY6+VtONWqFl2/2nEOjb1vDtx
+ BYxKkZG/MJiWQ720kBS2D/4sokNr5fguKNfGZodYNhNgCw+xqiE4w7kv/VgUjKQs50cUNnXQXr8BD
+ zz+f/SLtXbGMOEaUg8gOcf+MbZ3YWTr2UbKMIllD+b72mrbgl9FaCBwRRyROPhHu0NuY=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
- Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
+ h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
+ Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=05JazeQPxkKNlsy88i/Og9dAVTN4vsZUY8m9e+uwx4M=; b=NDIOEXeoaDkoq6UacavxbgXfDI
- 8caJo63mWC1blQe7fY0l4OFgkxq3/9jX2onDyJThVsSNHyL6HX7NDt+E1As1QcVdWM2hi4rZL37ci
- j6sq5lbcf91WyoVwHnXB3wzPrhvjcfvSnLR1YqX+vOS2tj8gboVewrryQRunE4CC8kLE=;
-Received: from mail-wm1-f41.google.com ([209.85.128.41])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xTK6t-000000003k9-3iFo for openvpn-devel@lists.sourceforge.net;
- Tue, 17 Nov 2026 14:24:37 +0000
-Received: by mail-wm1-f41.google.com with SMTP id
- 5b1f17b1804b1-4b467581b98so44228495e9.0
- for <openvpn-devel@lists.sourceforge.net>;
- Tue, 17 Nov 2026 06:24:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1794925469; x=1795530269; darn=lists.sourceforge.net;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
- :reply-to:content-type;
- bh=05JazeQPxkKNlsy88i/Og9dAVTN4vsZUY8m9e+uwx4M=;
- b=cT7tjlvFg8DmO2eRTkLo2F6dBNkvV1kIUTtbFq+oRvWvH2Cli4LDcOLE+w8ykEFgp9
- y+PaHJs47S3Xffa6aassELoLGEGvSj7YKL0sEYppEEQUsPWFm4K8qxUv1UZCNYrMmdo8
- zCIwXajBtQmQ3YSDN4a5LiwG4M0uILLUW0BJ630vn7RGe0XCAzpQI0oCMh+MFAual55S
- fuilwAB0EhkAK/WPEiQfJyaGUAw5UAFiA+UpEcAK4wKIc74G6+09QW58datlScRj/NcE
- 2Bzt+IDzJZ0OYC5pAuKVHftkr3xfj9SU7Ku7uY63mZYewhCbjhSW0tdccMhmCfG5bRKi
- yjBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1794925469; x=1795530269;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
- :cc:subject:date:message-id:reply-to:content-type;
- bh=05JazeQPxkKNlsy88i/Og9dAVTN4vsZUY8m9e+uwx4M=;
- b=Yce4WD5DadmyQPNlY7P5zU1CJ08aFkkzHZylDLaS0rDAW/BbArnIzZpv2lGnJDEOJJ
- hCQ9vHkV4lag8b+CjIX900EQjTotXwnJsHODQbu6DX0fGX5eGk1Q7UHG6KAlYBeBPWbe
- ezcfbLCsI9kZbyyJykqMl5Cq4TKX4Q/X6EoKA/DqHhQiLxFxydbrlueCDD8PDMchnNXi
- R5qVP9n+Oa+B6Laiqsw4ghZPW4kqsEjJohvUvf5qjE02Mq8gA5PUzj7cP4qsVylL+5da
- rFC2hZA03Mv9sJm+eDU/53WL63tiKUSBNE5alV24IuhQUzje9iwc7o80pIWrFFWJGs01
- tAyA==
-X-Forwarded-Encrypted: i=1;
- AL+hErFGgpBYz7gFglWWXZAvxzIoxHWcS1BL+sEMzP8z5toX/nhUlBiv9380FeRQPvzzojfqTRA+BQPMPq3HjJWA@lists.sourceforge.net
-X-Gm-Message-State: APuU4Z/qj2CwULkqmkr+MsZHF3eUSI/QuTQq+4P/grUY8XNgolGBoRZY
- h3eufQurbMSgGORpDmfXzTbxIN/0v6GQkNHLetRt36ZQpMyENknW+fM/oDx+lt1Ap3jursbRJZ3
- MwiE90m8aJIu2i9GdmAbdZDDpw7Fq4yzdTYvHY0dB2F95wKY+RxcabMMT6ZefqqeFRwIBgWoP84
- 7Z+r2qxA==
-X-Gm-Gg: AYBFou22zGCtMcn9J+jSU8pOSGg6XnnA8gZ1Me+CEfMKI2dGxP1hDYd/w6P+bn4odKt
- xa/J9fNd7QiRBwvEiOdrf6HSULZhFu3sZXrJbR5uFcWcyvwEj/FZ9lrGrjc3siO4BU6ThIyhXnd
- CzqlO3Zd0RrcCBzk8rMlF5vNet85LBOfKT5wcWqEH15AkIOcNjCJ65CTuymcWsVYVo03Dg3qjlr
- EhOeRzSk2InN2Rohf53vyv3zk5oALRkiWPHBFTe69xW4WFhUxf6PBGtIifZix9hoPtk8+lupDuT
- u3sGQBBZgobQfCaB644bGbSzTDpc2hsHfASCX9x8KquG3/KF/zLSUbx4Fw4hzzqn0VXpC+W6dIq
- FGTMRNobeU0Ipghdm7j8uVfDEDVM0hA2KRe5TMa1YvtexyLtOt2ylO/2DAeKBQP65eTKaWuzfZF
- NcllrHfcVgGe0LIDTBKgT4ZJoD/tw468wd6FIRRk+CSrxrBgqeGGvdWv6AC2C61VLVSmiN1jkYE
- /8KwgP9CURmbgT1N13zMOtQYUeYOgnM09LVmogVb0P9uQ/8u9o30c/piVXHkuyIh+R7sx3mlUJa
- VyiBAqxhwdlHVbAAr8KaklBXUuu08kOMEt6Q5sUgoTwtloDK7MS92p1jgiDlDjhiakqxAEuY5Ak
- Sv88c2cwhBUsu6F2AHBe6liGdGn8OnrZzmTtilSdHVrS6ilDIqdwXfDkvyqiKgHwGsmyhvxXW8P
- WwEemn03D0ycZSQhY=
-X-Received: by 2002:a05:600c:4f07:b0:4bb:7b4d:6396 with SMTP id
- 5b1f17b1804b1-4bb7b4d63f0mr19921405e9.3.1794925469019; 
- Tue, 17 Nov 2026 06:24:29 -0800 (PST)
-Received: from ip-10-18-1-162.eu-central-1.compute.internal
- (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
- by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-49c608c5debsm27413887f8f.42.2026.11.17.06.24.28
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 17 Nov 2026 06:24:28 -0800 (PST)
-X-Google-Original-From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?=
- <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Tue, 17 Nov 2026 14:24:27 +0000
-To: Gianmarco De Gregori <gianmarco@mandelbit.com>
-Auto-Submitted: auto-generated
-X-Gerrit-MessageType: comment
-X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: I978041ea4e6323f5a92d8721809f0fa44b9c2e03
-X-Gerrit-Change-Number: 2210
-X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2210?usp=email>
-X-Gerrit-Commit: f535e804ef8c23e7051b8cf566066a35f6598782
-X-Gerrit-Comment-Date: Tue, 17 Nov 2026 14:24:27 +0000
-In-Reply-To: <gerrit.1794924454000.I978041ea4e6323f5a92d8721809f0fa44b9c2e03@gerrit.openvpn.net>
-References: <gerrit.1794924454000.I978041ea4e6323f5a92d8721809f0fa44b9c2e03@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzk0OTI0NDU0MDAwLkk5NzgwNDFlYTRlNjMyM2Y1YTkyZDg3MjE4MDlmMGZhNDRiOWMyZTAzQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <84ac1248491369276d12673a2c8f96104f7bd50c-EmailReviewComments-HTML@gerrit.openvpn.net>
+ bh=zl7RayW0viicpT24LlEvQi1ZA6yrYSLum9Mm2FxerIk=; b=R68oSlkWV/w45YYdUSRndFdWrq
+ dGlZweSOwTCFBlRByScw5vfZ3VtHt9+mRpgY7BIhsyLPheoGH2fvFnOLZp3Az4HyunDrwsVcIwSkM
+ 38Gk3euGOfPe6d5LEtbdFltcPU1FjzvOtqOeGHv6S8uk2chBe4b3sj2uFjB638lbQTnQ=;
+Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
+ id 1xTKIL-000000000B0-0Eif for openvpn-devel@lists.sourceforge.net;
+ Tue, 17 Nov 2026 14:36:27 +0000
+Received: from blue.greenie.muc.de (localhost [127.0.0.1])
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 6AHEaIjm025106
+ for <openvpn-devel@lists.sourceforge.net>; Tue, 17 Nov 2026 15:36:18 +0100
+Received: (from gert@localhost)
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 6AHEaIBu025105
+ for openvpn-devel@lists.sourceforge.net; Tue, 17 Nov 2026 15:36:18 +0100
+From: Gert Doering <gert@greenie.muc.de>
+To: openvpn-devel@lists.sourceforge.net
+Date: Tue, 17 Nov 2026 15:36:12 +0100
+Message-ID: <20261117143617.25095-1-gert@greenie.muc.de>
+X-Mailer: git-send-email 2.55.0
+In-Reply-To: <gerrit.1794834650000.Iec85d53ce1076639bd6ceaf3ba7d53cc9e79d7a3@gerrit.openvpn.net>
+References: <gerrit.1794834650000.Iec85d53ce1076639bd6ceaf3ba7d53cc9e79d7a3@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
-User-Agent: Gerrit/3.14.5
-X-Spam-Score: 0.8 (/)
-X-Headers-End: 1xTK6t-000000003k9-3iFo
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: socket: pause the
- listeners when accept() runs out of resources
+X-Spam-Score: 1.3 (+)
+X-Headers-End: 1xTKIL-000000000B0-0Eif
+Subject: [Openvpn-devel] [PATCH v2] options: drop impossible out-of-memory
+ branches
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -144,185 +80,207 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= via Openvpn-devel
- <openvpn-devel@lists.sourceforge.net>
-Reply-To: razvanc@mailbox.org, arne-openvpn@rfc2549.org,
- gianmarco@mandelbit.com, openvpn-devel@lists.sourceforge.net
-Cc: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>,
- Arne Schwabe <arne-openvpn@rfc2549.org>
-Content-Type: multipart/mixed; boundary="===============7597436193538318748=="
-X-Spam-Status: No, score=-2.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
-	MAILING_LIST_MULTI,PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,SPF_PASS
-	autolearn=no autolearn_force=no version=4.0.1
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-16.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_PASS,
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============7597436193538318748==
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="gQD1WKynXYo="; charset=UTF-8
+From: Razvan Cojocaru <razvanc@mailbox.org>
 
---gQD1WKynXYo=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+gc_realloc() aborts via check_malloc_return() and never returns NULL.
+Remove the NULL handling from alloc_{local,connection,remote}_entry(),
+their now unused msglevel parameter, and the callers' checks.
 
-Attention is currently required from: Arne Schwabe, Gianmarco De Gregori=2E=
+Change-Id: Iec85d53ce1076639bd6ceaf3ba7d53cc9e79d7a3
+Signed-off-by: Razvan Cojocaru <razvanc@mailbox.org>
+Acked-by: Frank Lichtenheld <frank@lichtenheld.com>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2196
+---
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-R=C4=83zvan Cojocaru has posted comments on this change by Gianmarco De G=
-regori=2E ( https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2210?usp=3Demail )
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2196
+This mail reflects revision 2 of this Change.
 
-=
-Change subject: socket: pause the listeners when accept() runs out of resou=
-rces
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+Acked-by according to Gerrit (reflected above):
+Frank Lichtenheld <frank@lichtenheld.com>
 
+        
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 1d8bb2a..de6efdf 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1377,7 +1377,7 @@
+ }
+ 
+ static struct local_entry *
+-alloc_local_entry(struct connection_entry *ce, const msglvl_t msglevel, struct gc_arena *gc)
++alloc_local_entry(struct connection_entry *ce, struct gc_arena *gc)
+ {
+     struct local_list *l = alloc_local_list_if_undef(ce, gc);
+     struct local_entry *e;
+@@ -1387,16 +1387,7 @@
+         const int new_cap = l->capacity + 1;
+         const size_t elem_size = sizeof(*l->array);
+ 
+-        struct local_entry **new_array = gc_realloc(l->array, new_cap * elem_size, gc);
+-        if (!new_array)
+-        {
+-            msg(msglevel,
+-                "Unable to process more local options: out of memory. Number of entries = %d",
+-                l->len);
+-            return NULL;
+-        }
+-
+-        l->array = new_array;
++        l->array = gc_realloc(l->array, new_cap * elem_size, gc);
+         l->capacity = new_cap;
+     }
+ 
+@@ -1418,7 +1409,7 @@
+ }
+ 
+ static struct connection_entry *
+-alloc_connection_entry(struct options *options, const msglvl_t msglevel)
++alloc_connection_entry(struct options *options)
+ {
+     struct connection_list *l = alloc_connection_list_if_undef(options);
+     struct connection_entry *e;
+@@ -1426,16 +1417,7 @@
+     if (l->len == l->capacity)
+     {
+         int capacity = l->capacity + CONNECTION_LIST_SIZE;
+-        struct connection_entry **ce =
+-            gc_realloc(l->array, capacity * sizeof(struct connection_entry *), &options->gc);
+-        if (ce == NULL)
+-        {
+-            msg(msglevel,
+-                "Unable to process more connection options: out of memory. Number of entries = %d",
+-                l->len);
+-            return NULL;
+-        }
+-        l->array = ce;
++        l->array = gc_realloc(l->array, capacity * sizeof(struct connection_entry *), &options->gc);
+         l->capacity = capacity;
+     }
+     ALLOC_OBJ_GC(e, struct connection_entry, &options->gc);
+@@ -1454,7 +1436,7 @@
+ }
+ 
+ static struct remote_entry *
+-alloc_remote_entry(struct options *options, const msglvl_t msglevel)
++alloc_remote_entry(struct options *options)
+ {
+     struct remote_list *l = alloc_remote_list_if_undef(options);
+     struct remote_entry *e;
+@@ -1462,16 +1444,7 @@
+     if (l->len == l->capacity)
+     {
+         int capacity = l->capacity + CONNECTION_LIST_SIZE;
+-        struct remote_entry **re =
+-            gc_realloc(l->array, capacity * sizeof(struct remote_entry *), &options->gc);
+-        if (re == NULL)
+-        {
+-            msg(msglevel,
+-                "Unable to process more remote options: out of memory. Number of entries = %d",
+-                l->len);
+-            return NULL;
+-        }
+-        l->array = re;
++        l->array = gc_realloc(l->array, capacity * sizeof(struct remote_entry *), &options->gc);
+         l->capacity = capacity;
+     }
+     ALLOC_OBJ_GC(e, struct remote_entry, &options->gc);
+@@ -3069,20 +3042,16 @@
+         {
+             const struct remote_entry *re = rl->array[i];
+             struct connection_entry ce = o->ce;
+-            struct connection_entry *ace;
+ 
+             ASSERT(re->remote);
+             connection_entry_load_re(&ce, re);
+-            ace = alloc_connection_entry(o, M_USAGE);
+-            ASSERT(ace);
++            struct connection_entry *ace = alloc_connection_entry(o);
+             *ace = ce;
+         }
+     }
+     else if (!o->remote_list && !o->connection_list)
+     {
+-        struct connection_entry *ace;
+-        ace = alloc_connection_entry(o, M_USAGE);
+-        ASSERT(ace);
++        struct connection_entry *ace = alloc_connection_entry(o);
+         *ace = o->ce;
+     }
+ 
+@@ -3115,8 +3084,7 @@
+     {
+         /* if no 'local' directive was specified, convert the global port
+          * setting to a listen entry */
+-        struct local_entry *e = alloc_local_entry(&o->ce, M_USAGE, &o->gc);
+-        ASSERT(e);
++        struct local_entry *e = alloc_local_entry(&o->ce, &o->gc);
+         e->port = o->ce.local_port;
+         e->proto = o->ce.proto;
+     }
+@@ -4486,12 +4454,9 @@
+     }
+     else if (streq(p[0], "local") && p[1] && !p[4])
+     {
+-        struct local_entry *e;
+-
+         VERIFY_PERMISSION(OPT_P_GENERAL | OPT_P_CONNECTION);
+ 
+-        e = alloc_local_entry(&options->ce, M_USAGE, &options->gc);
+-        ASSERT(e);
++        struct local_entry *e = alloc_local_entry(&options->ce, &options->gc);
+ 
+         /* '*' is treated as 'ask the system to get some socket',
+          * therefore force binding on a particular address only when
+@@ -4522,7 +4487,6 @@
+         if (is_inline)
+         {
+             struct options sub;
+-            struct connection_entry *e;
+ 
+             init_options(&sub);
+             sub.ce = options->ce;
+@@ -4536,12 +4500,7 @@
+                 goto err;
+             }
+ 
+-            e = alloc_connection_entry(options, msglevel);
+-            if (!e)
+-            {
+-                uninit_options(&sub);
+-                goto err;
+-            }
++            struct connection_entry *e = alloc_connection_entry(options);
+             *e = sub.ce;
+             gc_transfer(&options->gc, &sub.gc);
+             uninit_options(&sub);
+@@ -4630,11 +4589,7 @@
+         }
+         if (permission_mask & OPT_P_GENERAL)
+         {
+-            struct remote_entry *e = alloc_remote_entry(options, msglevel);
+-            if (!e)
+-            {
+-                goto err;
+-            }
++            struct remote_entry *e = alloc_remote_entry(options);
+             *e = re;
+         }
+         else if (permission_mask & OPT_P_CONNECTION)
 
-Patch =
-Set 1: Code-Review-1
-
-(1 comment)
-
-File src/openvpn/multi_io=2Ec:
-
-https://=
-gerrit=2Eopenvpn=2Enet/c/openvpn/+/2210/comment/9b995612_d1370825?usp=3Dema=
-il :
-PS1, Line 202:     if (delay && m->top=2Ec2=2Etimeval=2Etv_sec >=3D de=
-lay)
-This breaks the mingw build (at least the cross-platform one on my Lin=
-ux machine: `-Wconversion -Werror`)=2E
-
-`tv_sec` is `long` on Windows, `tim=
-e_t` is 64-bit=2E
-
-This needs a `(tv_sec_t)delay` cast, like `context_resch=
-edule_sec()` does=2E
-
-
-
--- 
-To view, visit https://gerrit=2Eopenvpn=2Enet/c=
-/openvpn/+/2210?usp=3Demail
-To unsubscribe, or for help writing mail filter=
-s, visit https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
-
-Gerrit-Messag=
-eType: comment
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-=
-Id: I978041ea4e6323f5a92d8721809f0fa44b9c2e03
-Gerrit-Change-Number: 2210
-Ge=
-rrit-PatchSet: 1
-Gerrit-Owner: Gianmarco De Gregori <gianmarco@mandelbit=2E=
-com>
-Gerrit-Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Revi=
-ewer: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
-Gerrit-CC: openvpn-devel=
- <openvpn-devel@lists=2Esourceforge=2Enet>
-Gerrit-Attention: Arne Schwabe <=
-arne-openvpn@rfc2549=2Eorg>
-Gerrit-Attention: Gianmarco De Gregori <gianmar=
-co@mandelbit=2Ecom>
-Gerrit-Comment-Date: Tue, 17 Nov 2026 14:24:27 +0000
-Ge=
-rrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-
---gQD1WKynXYo=
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: Arne Schwabe, Gianmarco De Gregori=2E </p>
-<p>R=C4=83=
-zvan Cojocaru has posted comments on this change by Gianmarco De Gregori=2E=
-</p><p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block=
-; margin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</s=
-pan></p><p><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2210?usp=
-=3Demail">View Change</a></p><p>1 comment:</p><ul style=3D"list-style: none=
-; padding: 0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/mul=
-ti_io=2Ec:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"marg=
-in: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"ht=
-tps://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2210/comment/9b995612_d1370825?usp=
-=3Demail">Patch Set #1, Line 202:</a> <code style=3D"font-family:monospace,=
-monospace">    if (delay &amp;&amp; m-&gt;top=2Ec2=2Etimeval=2Etv_sec &gt;=
-=3D delay)</code></p><p class=3D"blocks" style=3D"white-space: pre-wrap; wo=
-rd-wrap: break-word;">This breaks the mingw build (at least the cross-platf=
-orm one on my Linux machine: `-Wconversion -Werror`)=2E</p><p class=3D"bloc=
-ks" style=3D"white-space: pre-wrap; word-wrap: break-word;">`tv_sec` is `lo=
-ng` on Windows, `time_t` is 64-bit=2E</p><p class=3D"blocks" style=3D"white=
--space: pre-wrap; word-wrap: break-word;">This needs a `(tv_sec_t)delay` ca=
-st, like `context_reschedule_sec()` does=2E</p></li></ul></li></ul><p>To vi=
-ew, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2210?usp=3D=
-email">change 2210</a>=2E To unsubscribe, or for help writing mail filters,=
- visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">sett=
-ings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"=
-><div itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAct=
-ion"><link itemprop=3D"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvp=
-n/+/2210?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></d=
-iv></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-=
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"d=
-isplay:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Ger=
-rit-Change-Id: I978041ea4e6323f5a92d8721809f0fa44b9c2e03 </div>
-<div style=
-=3D"display:none"> Gerrit-Change-Number: 2210 </div>
-<div style=3D"display:=
-none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner:=
- Gianmarco De Gregori &lt;gianmarco@mandelbit=2Ecom&gt; </div>
-<div style=
-=3D"display:none"> Gerrit-Reviewer: Arne Schwabe &lt;arne-openvpn@rfc2549=
-=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: R=C4=83zvan=
- Cojocaru &lt;razvanc@mailbox=2Eorg&gt; </div>
-<div style=3D"display:none">=
- Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; <=
-/div>
-<div style=3D"display:none"> Gerrit-Attention: Arne Schwabe &lt;arne-=
-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Attent=
-ion: Gianmarco De Gregori &lt;gianmarco@mandelbit=2Ecom&gt; </div>
-<div sty=
-le=3D"display:none"> Gerrit-Comment-Date: Tue, 17 Nov 2026 14:24:27 +0000 <=
-/div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div styl=
-e=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>
---gQD1WKynXYo=--
-
-
---===============7597436193538318748==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============7597436193538318748==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
---===============7597436193538318748==--
-
