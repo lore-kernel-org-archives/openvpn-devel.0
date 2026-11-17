@@ -1,88 +1,76 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 042D3606A31C
-	for <openvpn-devel@archiver.kernel.org>; Tue, 17 Nov 2026 10:46:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1ED36606A333
+	for <openvpn-devel@archiver.kernel.org>; Tue, 17 Nov 2026 11:16:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=D2CUmvYu;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=TNmKN9Vp;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=NhV/vSZE;
-	dkim=neutral header.d=nethesis.it header.i=@nethesis.it header.a=rsa-sha256 header.s=default header.b=GyCA85JT
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=T36YHjQM;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=LIaKafdU;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=S2Cm3QWZ
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:Cc:
-	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
-	:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:List-Owner;
-	bh=XFA0Bk/KtY7f2a8EOwLpT74kymS3OwCX8ToMNLpoqzI=; b=D2CUmvYuTetv+lQLX1bi5ijEQ1
-	HukNbnVnN2BPPve5X05KP2sVXpzuYKA1YFuotscERKf9/PG3Xb90qREq6Bvry8an/kGKVT2+MrALW
-	+aLQB0mzgNBghOuJZgCgWjmWEIFoEWiBpdveqtsq4nuz7po/LNoGgMpEX480+dKgMIW8=;
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
+	MIME-Version:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
+	List-Unsubscribe:List-Id:Subject:References:In-Reply-To:To:From:Message-Id:
+	Date:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
+	List-Owner; bh=gcp3KTDtIqgri7ReBBcY8LCXLVzcNXdAx6X7ZdpLP+Y=; b=T36YHjQM1xF3VI
+	IQ/VdS64Kr6TNpID0d6iB/2dEjlUpH2orYkS+q25WRRxAROsP3oLXG39uzw0jm+hG6dwiOE7YyRUQ
+	9nFhQuzSAcnjSc8EEbYhU41A2ib3xRFZGGoPn6/CiMSFf2wM9epJEWva5vrw6rvwyVvi9CZE4sbCJ
+	P1U=;
 Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
 	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xTGhh-000000005na-1h4u;
-	Tue, 17 Nov 2026 10:46:21 +0000
+	id 1xTHAa-000000006YZ-0YVN;
+	Tue, 17 Nov 2026 11:16:12 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <tommaso.bailetti@nethesis.it>)
- id 1xTGhg-000000005n4-2M6o for openvpn-devel@lists.sourceforge.net;
- Tue, 17 Nov 2026 10:46:20 +0000
+ (envelope-from <gert@chekov.greenie.muc.de>)
+ id 1xTHAY-000000006YS-1Fh5 for openvpn-devel@lists.sourceforge.net;
+ Tue, 17 Nov 2026 11:16:10 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=NPQINTVYPKt/kniK1PfEJVSwySQ3NVcb7U4+NDiRnaE=; b=TNmKN9VpfwBHMYfP3kWK9Y8I3A
- l8f6kYA/fYt0usqzpawr2Yo0a58v84/XZf9nPwjL9xwGw2oLQikTR4BT85tq6PrQVkTR/mkF8q0Yo
- 2v1gSBptnuQluGhbKG8Xpvu5b7vIutow4vin0QZusT8vUyJt6ohatUyw1ZJI45gDYz9c=;
+ d=sourceforge.net; s=x; h=References:In-Reply-To:Subject:Cc:To:From:
+ Message-Id:Date:Sender:Reply-To:MIME-Version:Content-Type:
+ Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+ List-Help:List-Unsubscribe:List-Unsubscribe-Post:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=jnN8eHrT83ZheyolOxkxdoYGlPXoSD24pwmBwaBoKBY=; b=L
+ IaKafdUgx1DXWsWIYw6gPZKRIIYgbw3BJ/sxYAsNbbch67zwaqabiLUJ5VyCFgNgvFAZ+Ace3ttp8
+ eP3VazqIN2xO3uYeMPhiL1Ank8mqRpik8rNtHh9kteyvvEUpGeOjCCSzpfaT1C4mezIayZVQCEDdO
+ 5xBxZO4KXCjgT+H4=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+ h=References:In-Reply-To:Subject:Cc:To:From:Message-Id:Date:Sender:Reply-To
+ :MIME-Version:Content-Type:Content-Transfer-Encoding:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=NPQINTVYPKt/kniK1PfEJVSwySQ3NVcb7U4+NDiRnaE=; b=NhV/vSZE7kEY3gkzpGwo+bjiKp
- /P1irUIZTg5ZayYmpJjeuuvJg36+kjtCcgkI1p5Be8GvGGuwdiuwxFiBH83uUOlnzOtcRrIkFEA2S
- g60T5+zxPy5EqEbVyzDk1MXxk7eiFF7TK6bj08y36mRrTp2xJG7d4D2yXodSeHz3TGxA=;
-Received: from nethservice.nethesis.it ([2.119.67.170])
+ bh=jnN8eHrT83ZheyolOxkxdoYGlPXoSD24pwmBwaBoKBY=; b=S2Cm3QWZQdtTyStj6DGaiysRIP
+ Zl3lUWiRDL7xh4F51qgDB47zdItPCBnT3kIcC1O68TpEXJwOe8JY4a/7h6XB0VwgOrmyaCNGDwY2w
+ ajKM0ElNnlzIQDSROukdmf7VJsZL0iDnlHHZRqXofWggSMumLO83WI0QG+QgmazCzDuw=;
+Received: from chekov.greenie.muc.de ([193.149.48.178])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
- id 1xTGhD-000000002QS-43oy for openvpn-devel@lists.sourceforge.net;
- Tue, 17 Nov 2026 10:45:54 +0000
-Received: from probook445g10.fritz.box (unknown [10.9.9.106])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
- key-exchange X25519MLKEM768 server-signature RSA-PSS (4096 bits) server-digest
- SHA256) (No client certificate requested)
- by nethservice.nethesis.it (Postfix) with ESMTPSA id D4E7A3592E2;
- Tue, 17 Nov 2026 10:45:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nethesis.it; s=default;
- t=1794912344;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=NPQINTVYPKt/kniK1PfEJVSwySQ3NVcb7U4+NDiRnaE=;
- b=GyCA85JTCespgB8H2hkx47O1GKD6UcN50uDdxxcM9WwW6UYAfa51fVirWtHrw/p7KWGjVC
- 6cF+1WuTgejfFMCterIkyMjkAPrukpnn/OAN+cJtQdyQybHUi0mQV4xtqBj49piW6PmnEr
- 3EHma2eUBEpEsNrJ62/+M4cIqhJsBUZoYTQ7rmO2R8QLUfhtWp5ZJhVxNtu2TUBhYjFmtz
- 3jHFsXs2KeLsJJ1LNc6JF+MhAdf4IVb+z6xWw4DDp4SY5Q+iDK0hIw/crAGmEs6Zmeev4k
- TDD6Cnlizv7FEX/njovCLxn38umTbLNk4lQEHdYcVVVCyvLUq7t1yuNfVq3RXg==
-From: Tommaso Bailetti <tommaso.bailetti@nethesis.it>
-To: openvpn-devel@lists.sourceforge.net
-Date: Tue, 17 Nov 2026 11:45:37 +0100
-Message-ID: <20261117104537.317440-1-tommaso.bailetti@nethesis.it>
-X-Mailer: git-send-email 2.56.1
-In-Reply-To: <gerrit.1794843268000.I831224f06e2f35bfcc9d0fec7d8edfc344c59406@gerrit.openvpn.net>
-References: <gerrit.1794843268000.I831224f06e2f35bfcc9d0fec7d8edfc344c59406@gerrit.openvpn.net>
-X-Archived-By: <archiver.kernel.org>
-MIME-Version: 1.0
-X-Rspamd-Flag-Threshold: 6
-X-Spam-Score: -0.2 (/)
-X-Headers-End: 1xTGhD-000000002QS-43oy
-Subject: [Openvpn-devel] [PATCH v1] dco: always print the status block
+ id 1xTHAV-0000000039s-43dY for openvpn-devel@lists.sourceforge.net;
+ Tue, 17 Nov 2026 11:16:10 +0000
+Received: from chekov.greenie.muc.de (localhost [IPv6:0:0:0:0:0:0:0:1])
+ by chekov.greenie.muc.de (8.18.2/8.18.1) with ESMTP id 6AHBFqMO016698;
+ Tue, 17 Nov 2026 12:15:52 +0100 (CET)
+ (envelope-from gert@chekov.greenie.muc.de)
+Received: (from gert@localhost)
+ by chekov.greenie.muc.de (8.18.2/8.18.1/Submit) id 6AHBFqbt016697;
+ Tue, 17 Nov 2026 12:15:52 +0100 (CET) (envelope-from gert)
+Date: Tue, 17 Nov 2026 12:15:52 +0100 (CET)
+Message-Id: <202611171115.6AHBFqbt016697@chekov.greenie.muc.de>
+From: Gert Doering <gert@greenie.muc.de>
+To: Frank Lichtenheld <frank@lichtenheld.com>
+X-Patchwork-State: Accepted
+In-Reply-To: <20261117101909.30743-1-gert@greenie.muc.de>
+References: <20261117101909.30743-1-gert@greenie.muc.de>
+X-Spam-Score: 0.0 (/)
+X-Headers-End: 1xTHAV-0000000039s-43dY
+Subject: [Openvpn-devel] [PATCH applied] Re: buffer: Switch
+ buf_forward_capacity and buf_set_write to size_t
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -92,58 +80,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: Antonio Quartulli <antonio@mandelbit.com>
+Cc: openvpn-devel@lists.sourceforge.net
+X-Archived-By: <archiver.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-16.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-8.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_PASS,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=4.0.1
+	INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,SPF_HELO_PASS,SPF_PASS
+	autolearn=ham autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
-When DCO is enabled print_status() bails out if dco_get_peer_stats()
-fails, without writing anything. On a client this happens during the
-whole reconnect after a ping-restart, since there's no DCO interface,
-so the management "status" command never gets an answer, not even
-"END", and the --status file isn't updated either.
+.. and all of a sudden, all BB instances are green again :-)
 
-Print the status anyway. On a real DCO error SIGUSR1 is still raised
-by dco_get_peer_stats(), so the session restart keeps working.
+Your patch has been applied to the master branch.
 
-GitHub: closes OpenVPN/openvpn#1146
-Change-Id: I831224f06e2f35bfcc9d0fec7d8edfc344c59406
-Signed-off-by: Tommaso Bailetti <tommaso.bailetti@nethesis.it>
-Acked-by: Antonio Quartulli <antonio@mandelbit.com>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2201
----
+commit 823653286f82e2fbcd1ff1687a8a01b3fb6302e6
+Author: Frank Lichtenheld
+Date:   Tue Nov 17 11:19:01 2026 +0100
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+     buffer: Switch buf_forward_capacity and buf_set_write to size_t
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2201
-This mail reflects revision 1 of this Change.
+     Signed-off-by: Frank Lichtenheld <frank@lichtenheld.com>
+     Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2198
+     Message-Id: <20261117101909.30743-1-gert@greenie.muc.de>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg41509.html
+     Signed-off-by: Gert Doering <gert@greenie.muc.de>
 
-Acked-by according to Gerrit (reflected above):
-Antonio Quartulli <antonio@mandelbit.com>
 
-        
-diff --git a/src/openvpn/sig.c b/src/openvpn/sig.c
-index 0cdb01a..8ea756c 100644
---- a/src/openvpn/sig.c
-+++ b/src/openvpn/sig.c
-@@ -483,10 +483,7 @@
- 
-     if (dco_enabled(&c->options))
-     {
--        if (dco_get_peer_stats(c, true) < 0)
--        {
--            return;
--        }
-+        dco_get_peer_stats(c, true);
-     }
- 
-     status_printf(so, "OpenVPN STATISTICS");
+--
+kind regards,
+
+Gert Doering
+
 
 
 _______________________________________________
