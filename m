@@ -1,140 +1,75 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C62D60A2621
-	for <openvpn-devel@archiver.kernel.org>; Thu, 19 Nov 2026 10:34:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A16760A2639
+	for <openvpn-devel@archiver.kernel.org>; Thu, 19 Nov 2026 10:34:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=XVrzWOFc;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=fqYcWFSU;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=mPvhPp0C;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=hG38nU+k
+	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=SsH3ryk6;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=FqB7BIMR;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=iLZ7lU+L
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
+	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Unsubscribe-Post:List-Owner;
-	bh=ag/ZnhBSpSKqQynaoIeVqmKo5hkTrVTBnbXHTdTVj3A=; b=XVrzWOFc2aRHyQt6JWp04Yabru
-	DUwPnFQILikBASFOJWxdZSlTxSukcRB2TSweRvzYCyPcqQVUA5bS6dvY6+oO9Yc76dO6OPR8dHO5o
-	yd5YgFjH5XPwMf0D1rkkDBKvY9RXm93mmKSuypkuzz7MCWj8PeuZcCei9h4xQZ4l9je0=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
+	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
+	List-Owner; bh=s6s9t5trTdvTT6G9ISI7vhpxzLHPUnvCcnkOunGwBZA=; b=SsH3ryk6q08AA+
+	gxQn1h3zpl+FFPY9an4ZSImHnVSOB3y16zrpOuE6z4h89ejTzD67OWA+8hpIuepMFeAsQayAQQ+Pw
+	wLYKbdAxJnCt5mPuD7AzCCFRxmUYC7Lj2ovcoTK2k8NukngjpAbSJv0iw/op2Mp3B1Qyh72PLFbiX
+	uBU=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xTzTX-0000000050N-1PFL;
-	Thu, 19 Nov 2026 10:34:43 +0000
+	id 1xTzTi-000000008Mj-16tP;
+	Thu, 19 Nov 2026 10:34:54 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xTzTW-0000000050D-0IK3
- for openvpn-devel@lists.sourceforge.net;
- Thu, 19 Nov 2026 10:34:42 +0000
+ (envelope-from <gert@blue4.greenie.muc.de>)
+ id 1xTzTg-000000008Md-2J2Q for openvpn-devel@lists.sourceforge.net;
+ Thu, 19 Nov 2026 10:34:52 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
+ In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=zNi3X4bw4HIYBhHPIW8/S+9mMYI7uuqRPaHl9wkU/O8=; b=fqYcWFSUiIp+8jcOK3WX+X8S62
- SBOSYu6FsoEobvdXarT3yHjwKg9E2fOdnzNibcESas692BBrHjQ9GmlE3IvLUOcoq8ROD6a340SY6
- Vl3hzZP1ZZbluKtxftTAUje4L6ZoYrH36D1k8P0/9cSrdN9Hfq7EU/byzxRPrUc2gTE0=;
+ bh=7qyD7LnZ3q7oaBaWXE8/otPnQEZKfMMaXDnkV4GEZWc=; b=FqB7BIMRQF+aHorfge1u7AZP3z
+ E6C1gYt1HGlzqrvAgBkSoIU7nJARKuitSG+I5u9NX1C9ysaDRMJX0E50E132J4oJQksGn9dV91OpH
+ ft+619rQmTbS34OF4/1aXwKt+68cTlGybSzzIHNnejR7pu42K8Upql8PVnBt6SGopqM4=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
- Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
+ h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
+ Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=zNi3X4bw4HIYBhHPIW8/S+9mMYI7uuqRPaHl9wkU/O8=; b=mPvhPp0C9JZAxPIZXhCzsRbdxa
- C9S0htnZEtHhdSi9vaj8ZJsgQPG7YX288YagSAl1gYd8JxTJf5q/PdR0O7w3mXZMyxsAXuVJZudJP
- sac+hO0INnmb8EEoV+erg7cl2ej0JakWPC1v9Rv9J4Xcyp944m9WyNdgZX4QbKnt1XSk=;
-Received: from mail-wr1-f52.google.com ([209.85.221.52])
+ bh=7qyD7LnZ3q7oaBaWXE8/otPnQEZKfMMaXDnkV4GEZWc=; b=iLZ7lU+LBKUfR7NMN1+HnKxGMD
+ i+3T9EKHZaUB4EwLAHlW+3gKzqHwiFm3kQwf99xt/vaNNKqZE3wrfNUEAqUMfumClhLUqDLH3PHI9
+ p9Zc9D5RjNH3gZjspzFmapF+ZpipPq3IvGjYcELkgWw9QBrFV4zC9DmFm8PTxm30mCuE=;
+Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
- (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xTzTS-000000005Zh-3Zdt for openvpn-devel@lists.sourceforge.net;
- Thu, 19 Nov 2026 10:34:41 +0000
-Received: by mail-wr1-f52.google.com with SMTP id
- ffacd0b85a97d-498f5fa5103so1193356f8f.2
- for <openvpn-devel@lists.sourceforge.net>;
- Thu, 19 Nov 2026 02:34:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1795084472; x=1795689272; darn=lists.sourceforge.net;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
- :reply-to:content-type;
- bh=zNi3X4bw4HIYBhHPIW8/S+9mMYI7uuqRPaHl9wkU/O8=;
- b=hG38nU+kwyKJAi5tBVmpAi3oLsjs/fa8ogQ1CtdaNMotXxDpDWaIo5u0MKmBoZl27O
- Zgk1r0ueXZKsDx5HsIYYeic0MxTk4kwYOp9dJ6KptwDydhHyOmOQHvt01avQZYRglhpm
- zoALexOYbVfo2OjTPKsVTUgcuYKAE03GEyw3RZN330rBfjAloPc2tVjC6Eb/CJ2pAHMU
- /PmuAwHRWAqXwoR7fWCGb/Jj2CNuS7R7xTSIJY6IecKzXeOeMRrPoeu9P2gBEfOXbgrW
- wCt34+xMHedzVW9xMptF+4/fqbnB2jD/mehP6BmzdnYaugDpGT5VKPzKP51932VM+tsP
- i/wQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1795084472; x=1795689272;
- h=content-type:user-agent:content-disposition
- :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
- :cc:subject:date:message-id:reply-to:content-type;
- bh=zNi3X4bw4HIYBhHPIW8/S+9mMYI7uuqRPaHl9wkU/O8=;
- b=KVrF26MkJFvgRZ9c03Bdvbzcku+mToP2u1j+8udSGMIBAyxGrZVEv3AKQVFa+6dvss
- YHVX2slEjG0zu3C41Z0ZJFG+USjodEuAMimnUh5k5IlWgzOjFkvH1J6eLuEGbGk+i3Lo
- EDKni5O61KWGxZsKouGA6c3mIF04gvyvprIRhXD9gLGfSZL4sAqazmNsm9TqS87jPXJF
- 51cmV1ejM9l+hZjyNFSDvZ8DJae/J1J3sBajzjCj5LKqBnJcsb2Sprh1DzLirYpiHozb
- O7tpBRvjjshWQgcKb8eyKmmoQUMT07aFM11BcwH/oxWiH58z9GuNx30w2Ds8/dgLLlKX
- 3Zvw==
-X-Forwarded-Encrypted: i=1;
- AL+hErEHtYhDZ0B/FmujHlnZFxjhGRhOgrB37KjFDW+OSHiRW5Ea2/L4wUwxHPM3qHKA0lS/PB4O0j2ZADCa8uoY@lists.sourceforge.net
-X-Gm-Message-State: APuU4Z+5a9SInlTKKVenoggjEauwKOXTNdRJhJ1Rd1Lzzv7lRagxezCp
- ZdlKLOluJUPSda6tosbderrc8IWegHu9cdzx2UVimSx4X9BILz9ahR8K2Mhk7+tA/Mq+emlllWc
- quh1kXEtTYQ9PifaK0IZrLFySCbSYVM2yRhR0u64yZgmY5ODcDFmQVRFmBu/ZT+zzJ4G2P/uksZ
- MW3ghWBA==
-X-Gm-Gg: AZFdTZdiYxLsqh0XWqFIbnPRJtIJCjJuO671HdisfmkahYyrzAXI9a57R4A/22jvoGx
- BykbVIhrttq30pNNmfb2dYSEuhBgm+uVLIGF1jwxetRb6bPT+EbCJ9+KtgRS4bnnzEU+MmMH9lp
- pZzfK8eZY0cfRfq85yQ4iClXcCrVrD6z3/4UAnlU1jByyEN14Gh9JL0Z/HVt1abCFW2cnwhidNb
- 6Yl1nUw4PBUx/RZvkYlS7SJS1GfSeh6yk2jiPhWOzDWJuj32FL9MoxvrSAjj2IQBHOfJR6Mh6j7
- tl/SZOV1e6V4VbCBcSJJk33naNnW2QoeQnYuBKEce5qDypXYAeKefAyNDKMxVW1Ej8F2XZ2GThA
- N8PkrWT0eoQNh+OXmxGgZUCO9Tbf6xC95Aobn5lLiqndJHCWD8aYWpMWRlflbTadhFnjLkNK+Pu
- awnW5el9vceiDL4CYxxjEiY3zdt+YJtnhp8vcUXXkLwFeII3DwQdfuGZS4Ge9RGMC3rxu7/jp8n
- 4uZfkGWz1FokfCdGnDPBHKUtk7OxNqcP5PJYgWQwavYpdEinXnGXBoHdO3n7GXuFEeQDlReaW9j
- vs7PVPFMi54x6uYND+GWkF3ekQPMZO0STt7mRzPYgGdgqz8p9eTNtL882zCZd4vlxgu8rAl16EQ
- buc/PFov1xdUG3TAaryJQiaVGg8PVWgfInzJ+JCeF+lLkK8P+uTIrVF8QPBhQosTYNNVrc8haJi
- mxGX1DjSYC3C6jin0ZGLPu/sxBaxellZXUmYwy
-X-Received: by 2002:a5d:5888:0:b0:4a3:d1d0:a38a with SMTP id
- ffacd0b85a97d-4a638bd699fmr10179867f8f.14.1795084472039; 
- Thu, 19 Nov 2026 02:34:32 -0800 (PST)
-Received: from ip-10-18-1-162.eu-central-1.compute.internal
- (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
- by smtp.gmail.com with ESMTPSA id
- ffacd0b85a97d-4a65541f3f7sm10539964f8f.24.2026.11.19.02.34.31
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 19 Nov 2026 02:34:31 -0800 (PST)
-X-Google-Original-From: "Gert Doering (Code Review)"
- <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Thu, 19 Nov 2026 10:34:30 +0000
-To: =?UTF-8?Q?R=C4=83zvan_Cojocaru?= <razvanc@mailbox.org>
-Auto-Submitted: auto-generated
-X-Gerrit-MessageType: comment
-X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: If803050d06e59ec067ef5bd8bb32787ec2b7cfdf
-X-Gerrit-Change-Number: 2222
-X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2222?usp=email>
-X-Gerrit-Commit: 7f5ea0ff8000103d044c1a4f174dc84ef34a60e6
-X-Gerrit-Comment-Date: Thu, 19 Nov 2026 10:34:30 +0000
+ (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
+ id 1xTzTe-000000005aM-3VgW for openvpn-devel@lists.sourceforge.net;
+ Thu, 19 Nov 2026 10:34:52 +0000
+Received: from blue.greenie.muc.de (localhost [127.0.0.1])
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 6AJAYimg005367
+ for <openvpn-devel@lists.sourceforge.net>; Thu, 19 Nov 2026 11:34:44 +0100
+Received: (from gert@localhost)
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 6AJAYh1b005366
+ for openvpn-devel@lists.sourceforge.net; Thu, 19 Nov 2026 11:34:43 +0100
+From: Gert Doering <gert@greenie.muc.de>
+To: openvpn-devel@lists.sourceforge.net
+Date: Thu, 19 Nov 2026 11:34:37 +0100
+Message-ID: <20261119103443.5348-1-gert@greenie.muc.de>
+X-Mailer: git-send-email 2.55.0
 In-Reply-To: <gerrit.1795074834000.If803050d06e59ec067ef5bd8bb32787ec2b7cfdf@gerrit.openvpn.net>
 References: <gerrit.1795074834000.If803050d06e59ec067ef5bd8bb32787ec2b7cfdf@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzk1MDc0ODM0MDAwLklmODAzMDUwZDA2ZTU5ZWMwNjdlZjViZDhiYjMyNzg3ZWMyYjdjZmRmQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <1e3f72feabdbf2e95a28ae5c1406fcb9e7fdc4ab-EmailReviewComments-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
-User-Agent: Gerrit/3.14.5
-X-Spam-Score: 0.8 (/)
-X-Headers-End: 1xTzTS-000000005Zh-3Zdt
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: contrib: drop
- fwmarkroute scripts
+X-Spam-Score: 1.3 (+)
+X-Headers-End: 1xTzTe-000000005aM-3VgW
+Subject: [Openvpn-devel] [PATCH v1] contrib: drop fwmarkroute scripts
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -144,152 +79,177 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "Gert Doering \(Code Review\) via Openvpn-devel"
- <openvpn-devel@lists.sourceforge.net>
-Reply-To: gert@greenie.muc.de, arne-openvpn@rfc2549.org, razvanc@mailbox.org,
- openvpn-devel@lists.sourceforge.net
-Cc: "Gert Doering \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>,
- Arne Schwabe <arne-openvpn@rfc2549.org>
-Content-Type: multipart/mixed; boundary="===============0043078243519428356=="
-X-Spam-Status: No, score=-2.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
-	MAILING_LIST_MULTI,PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,SPF_PASS
-	autolearn=no autolearn_force=no version=4.0.1
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-16.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_PASS,
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============0043078243519428356==
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="OBkyl9x6hVg="; charset=UTF-8
+From: Razvan Cojocaru <razvanc@mailbox.org>
 
---OBkyl9x6hVg=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+The scripts read $remote and $remote_port, which OpenVPN has only
+exported with an index suffix (remote_1, ...) since at least 2.0,
+and $proto, which became proto_1 in 2.1. The down script also
+doesn't undo the up script: its iptables -D rules have their -d
+targets swapped and the SNAT rule is never removed.
 
-Attention is currently required from: Arne Schwabe, R=C4=83zvan Cojocaru=2E=
+--mark with an "ip rule fwmark" does the same job natively.
 
+Change-Id: If803050d06e59ec067ef5bd8bb32787ec2b7cfdf
+Signed-off-by: Razvan Cojocaru <razvanc@mailbox.org>
+Acked-by: Gert Doering <gert@greenie.muc.de>
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2222
+---
 
-Gert Doering has posted comments on this change by R=C4=83zvan Cojocaru=
-=2E ( https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2222?usp=3Demail )
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Change=
- subject: contrib: drop fwmarkroute scripts
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2222
+This mail reflects revision 1 of this Change.
 
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@greenie.muc.de>
 
-Patch Set 1: Code-Review+2
+        
+diff --git a/contrib/openvpn-fwmarkroute-1.00/README b/contrib/openvpn-fwmarkroute-1.00/README
+deleted file mode 100644
+index 66fe61a..0000000
+--- a/contrib/openvpn-fwmarkroute-1.00/README
++++ /dev/null
+@@ -1,44 +0,0 @@
+-OpenVPN fwmark Routing
+-Sean Reifschneider, <jafo@tummy.com>
+-Thursday November 27, 2003
+-==========================
+-
+-These scripts can be used with OpenVPN up and down scripts to set up
+-routing on a Linux system such that the VPN traffic is sent via normal
+-network connectivity, but other traffic to that network runs over the VPN.
+-The idea is to allow encryption of data to the network the remote host is
+-on, without interfering with the VPN traffic.  You can't simply add a route
+-to the remote network, becaues that will cause the VPN traffic to also try
+-to run over the VPN, and breaks the VPN.
+-
+-These scripts use the Linux "fwmark" iptables rules to specify routing
+-based not only on IP address, but also by port and protocol.  This allows
+-you to effectively say "if the packet is to this IP address on this port
+-using this protocol, then use the normal default gateway, otherwise use the
+-VPN gateway.
+-
+-This is set up on the client VPN system, not the VPN server.  These scripts
+-also set up all ICMP echo-responses to run across the VPN.  You can
+-comment the lines in the scripts to disable this, but I find this useful
+-at coffee shops which have networks that block ICMP.
+-
+-To configure this, you need to set up these scripts as your up and down
+-scripts in the config file.  You will need to set these values in the
+-config file:
+-
+-   up /etc/openvpn/fwmarkroute.up
+-   down /etc/openvpn/fwmarkroute.down
+-   up-restart
+-   up-delay
+-
+-   setenv remote_netmask_bits 24
+-
+-Note: For this to work, you can't set the "user" or "group" config options,
+-because then the scripts will not run as root.
+-
+-The last setting allows you to control the size of the network the remote
+-system is on.  The remote end has to be set up to route, probably with
+-masquerading or NAT.  The network this netmask relates to is calculated
+-using the value of "remote" in the conf file.
+-
+-Sean
+diff --git a/contrib/openvpn-fwmarkroute-1.00/fwmarkroute.down b/contrib/openvpn-fwmarkroute-1.00/fwmarkroute.down
+deleted file mode 100755
+index 87d67d4..0000000
+--- a/contrib/openvpn-fwmarkroute-1.00/fwmarkroute.down
++++ /dev/null
+@@ -1,22 +0,0 @@
+-#!/bin/sh
+-#
+-#  Bring down vpn routing.
+-
+-#  calculate the network address
+-remote_network=`ipcalc -n "$remote"/"$remote_netmask_bits"`
+-remote_network="${remote_network#*=}"
+-
+-#  clear routing via VPN
+-ip route del "$remote_network"/"$remote_netmask_bits" via "$5" table vpn.out
+-ip route del table vpnonly.out via "$5"
+-iptables -D OUTPUT -t mangle -p "$proto" \
+-		-d "$remote_network"/"$remote_netmask_bits" \
+-		--dport "$remote_port" -j ACCEPT
+-iptables -D OUTPUT -t mangle -d "$remote" -j MARK --set-mark 2
+-
+-#  undo the ICMP ping tunneling
+-iptables -D OUTPUT -t mangle --protocol icmp --icmp-type echo-request \
+-		-j MARK --set-mark 3
+-
+-#  flush route cache
+-ip route flush cache
+diff --git a/contrib/openvpn-fwmarkroute-1.00/fwmarkroute.up b/contrib/openvpn-fwmarkroute-1.00/fwmarkroute.up
+deleted file mode 100755
+index 661ec31..0000000
+--- a/contrib/openvpn-fwmarkroute-1.00/fwmarkroute.up
++++ /dev/null
+@@ -1,49 +0,0 @@
+-#!/bin/sh
+-#
+-#  Bring up vpn routing.
+-
+-#  calculate the network address
+-remote_network=`ipcalc -n "$remote"/"$remote_netmask_bits"`
+-remote_network="${remote_network#*=}"
+-
+-#  add the stuff that doesn't change if it's not already there
+-grep -q '^202 ' /etc/iproute2/rt_tables 
+-if [ "$?" -ne 0 ]
+-then
+-	echo 202 vpn.out >> /etc/iproute2/rt_tables
+-fi
+-grep -q '^203 ' /etc/iproute2/rt_tables 
+-if [ "$?" -ne 0 ]
+-then
+-	echo 203 vpnonly.out >> /etc/iproute2/rt_tables
+-fi
+-ip rule ls | grep -q 'lookup vpn.out *$'
+-if [ "$?" -ne 0 ]
+-then
+-	ip rule add fwmark 2 table vpn.out
+-fi
+-ip rule ls | grep -q 'lookup vpnonly.out *$'
+-if [ "$?" -ne 0 ]
+-then
+-	ip rule add fwmark 3 table vpnonly.out
+-fi
+-
+-#  route VPN traffic using the normal table
+-iptables -A OUTPUT -t mangle -p "$proto" -d "$remote" --dport "$remote_port" \
+-		-j ACCEPT
+-
+-#  route all other traffic to that host via VPN
+-iptables -A OUTPUT -t mangle -d "$remote_network"/"$remote_netmask_bits" \
+-		-j MARK --set-mark 2
+-
+-#  route all ICMP pings over the VPN
+-iptables -A OUTPUT -t mangle --protocol icmp --icmp-type echo-request \
+-		-j MARK --set-mark 3
+-
+-#  NAT traffic going over the VPN, so it doesn't have an unknown address
+-iptables -t nat -A POSTROUTING -o "$1" -j SNAT --to-source "$4"
+-
+-#  add routing commands
+-ip route add "$remote_network"/"$remote_netmask_bits" via "$5" table vpn.out
+-ip route add table vpnonly.out via "$5"
+-ip route flush cache
 
-
--- 
-To view, =
-visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2222?usp=3Demail
-To unsubs=
-cribe, or for help writing mail filters, visit https://gerrit=2Eopenvpn=2En=
-et/settings?usp=3Demail
-
-Gerrit-MessageType: comment
-Gerrit-Project: openvp=
-n
-Gerrit-Branch: master
-Gerrit-Change-Id: If803050d06e59ec067ef5bd8bb32787e=
-c2b7cfdf
-Gerrit-Change-Number: 2222
-Gerrit-PatchSet: 1
-Gerrit-Owner: R=C4=
-=83zvan Cojocaru <razvanc@mailbox=2Eorg>
-Gerrit-Reviewer: Arne Schwabe <arn=
-e-openvpn@rfc2549=2Eorg>
-Gerrit-Reviewer: Gert Doering <gert@greenie=2Emuc=
-=2Ede>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
-G=
-errit-Attention: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
-Gerrit-Attent=
-ion: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Comment-Date: Thu, 19=
- Nov 2026 10:34:30 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-
---OBkyl9x6hVg=
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: Arne Schwabe, R=C4=83zvan Cojocaru=2E </p>
-<p>Gert Do=
-ering has posted comments on this change by R=C4=83zvan Cojocaru=2E</p><p>P=
-atch set 1:<span style=3D"border-radius: 3px; display: inline-block; margin=
-: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span></p>=
-<p><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2222?usp=3Demail">=
-View Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To v=
-iew, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2222?usp=
-=3Demail">change 2222</a>=2E To unsubscribe, or for help writing mail filte=
-rs, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">s=
-ettings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessa=
-ge"><div itemscope itemprop=3D"action" itemtype=3D"http://schema=2Eorg/View=
-Action"><link itemprop=3D"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/ope=
-nvpn/+/2222?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/>=
-</div></div>
-
-<div style=3D"display:none"> Gerrit-MessageType: comment </di=
-v>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=
-=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"=
-> Gerrit-Change-Id: If803050d06e59ec067ef5bd8bb32787ec2b7cfdf </div>
-<div s=
-tyle=3D"display:none"> Gerrit-Change-Number: 2222 </div>
-<div style=3D"disp=
-lay:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Ow=
-ner: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt; </div>
-<div style=
-=3D"display:none"> Gerrit-Reviewer: Arne Schwabe &lt;arne-openvpn@rfc2549=
-=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: Gert Doerin=
-g &lt;gert@greenie=2Emuc=2Ede&gt; </div>
-<div style=3D"display:none"> Gerri=
-t-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
-=
-<div style=3D"display:none"> Gerrit-Attention: R=C4=83zvan Cojocaru &lt;raz=
-vanc@mailbox=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention=
-: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"disp=
-lay:none"> Gerrit-Comment-Date: Thu, 19 Nov 2026 10:34:30 +0000 </div>
-<div=
- style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"displa=
-y:none"> Gerrit-Has-Labels: Yes </div>
-
-</body></html>
---OBkyl9x6hVg=--
-
-
---===============0043078243519428356==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============0043078243519428356==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
---===============0043078243519428356==--
-
