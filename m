@@ -1,13 +1,13 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28185606A32C
-	for <openvpn-devel@archiver.kernel.org>; Fri, 20 Nov 2026 16:05:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1609D60A2602
+	for <openvpn-devel@archiver.kernel.org>; Fri, 20 Nov 2026 16:10:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=k3c7YxZv;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=Ub8Dqs+L;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=QEInqj3D;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=KuhRz6+o
+	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=EHsZMlfp;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=a7waIINO;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=XglHldy1;
+	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=VuIfM/Xu
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
@@ -15,29 +15,29 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
 	List-Unsubscribe-Post:List-Owner;
-	bh=QO8J4J+hdaNaZsJdR/4O4LU8NJNSoPx8dJmoSe0u7jI=; b=k3c7YxZvpsyVXurLG7o5WlVQxK
-	gCpcTnhAnnLXDzoFpUxwtG+wzJM3U2RH+fTXPruEqM4P6kqcRHIk1Xs2p+uB5DvPWOzDb7K0JNxBE
-	sVk3am9uL5FfSYLSTUfIapsqBbAh+J1rF5G4glGzQlRhMJ90ORXWnz2MZ0ZZ2JZscMDI=;
-Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
-	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	bh=p/1C8R31eeRmeBJC1ggV3NmpoVOu4Q8+gdH2dD8e2V0=; b=EHsZMlfp3xfAy4AWFA0iqBwt1n
+	BJD7ltK1EZEPg5rimoVv5mbsbGNe+FyDN2QQ2CoIYwmmdrL/b7yLaWZb7DlAjLHmk8zkYJi6kqHDY
+	ck3Wrq5MflTOr8E4Yv2FXn1g5q6uHVe3YIFO6ZSmRSn9kJQ5fyX69pVwjHKNIZoYdiIw=;
+Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
+	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xUR6w-000000000DY-1y0W;
-	Fri, 20 Nov 2026 16:05:14 +0000
+	id 1xURBg-000000004op-0RVh;
+	Fri, 20 Nov 2026 16:10:08 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xUR6t-000000000DQ-3VBy
+ (envelope-from <gerrit@openvpn.net>) id 1xURBe-000000004oi-29Bq
  for openvpn-devel@lists.sourceforge.net;
- Fri, 20 Nov 2026 16:05:11 +0000
+ Fri, 20 Nov 2026 16:10:06 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:
  From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From:
  Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=PV6ZeiAhoGM9RZV7dzizEiqeteCd2tSNkaaD4hfs7mM=; b=Ub8Dqs+Ln9bilRWAQvvHYGwfn0
- yuRqmsle9x+gUK4WYLvOGvsNm+f/DDwIx7GzB088GWK0YisXla2hepPcoscmrXk2wCScB9wqGjTFF
- MGhayDicZqAfUibeF6ssHy1SZjebUVk8m8p3rQV3Nhs41MFpb+m5EScOmlFMFMJpF5gA=;
+ bh=L56vJFIj1aTwQaAsYoBz9oQ9vqrQjTTV8aukQW+ieSM=; b=a7waIINO4jvHr6p4/VIGxim5KC
+ U4wCnC0AJUHC+WMFokPdUHxUL0amCeMmd9WMV+W5br3lT98yUiaD/25Fu9Vqif2T0Nq0OUmgVj+KS
+ aicSYZY/oi6zCnosxKJ9kl8FjPUmxIjF7nntTOtVMFR0c7VvC/8RnNWLwc4/Stfwq43o=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
@@ -45,90 +45,91 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
  Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=PV6ZeiAhoGM9RZV7dzizEiqeteCd2tSNkaaD4hfs7mM=; b=QEInqj3Dp6j9/5b+pMSU0+cTmg
- cTfkIa0hFBghcDdZZSuWFz4cIAuZj6DNdUkmgniL43mo/DcJOqpeGihxcxyCyAZ8XsIoZWrWj8zfX
- M9wXZ3hUI/0QbxAaUiw7f7HEf/wy73A7I6oq3zE/K5As0l5ZMoy1wC2skWINxIE35oNM=;
-Received: from mail-wm1-f47.google.com ([209.85.128.47])
+ bh=L56vJFIj1aTwQaAsYoBz9oQ9vqrQjTTV8aukQW+ieSM=; b=XglHldy1VdSLNPvm3xsj6rX4hm
+ f5/CB0WyZBcDer6jGnNeuwYCA1kEN5YDnEVDVyaFWpp5IqBdZ+EEIzP60Wl1PQruosHnc0eH1f5g8
+ Vz3L6cWCZ3RTaeO8S3ulf2zGLMdCe42+A4k6fK2To4eC57XdLfMLz6QgJl8KsSsnhy1w=;
+Received: from mail-wr1-f48.google.com ([209.85.221.48])
  by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xUR6r-000000004Kn-3s3d for openvpn-devel@lists.sourceforge.net;
- Fri, 20 Nov 2026 16:05:11 +0000
-Received: by mail-wm1-f47.google.com with SMTP id
- 5b1f17b1804b1-4a207b02a2cso7876925e9.1
+ id 1xURBc-000000004Th-3HTY for openvpn-devel@lists.sourceforge.net;
+ Fri, 20 Nov 2026 16:10:06 +0000
+Received: by mail-wr1-f48.google.com with SMTP id
+ ffacd0b85a97d-4ac109a8a12so577045f8f.3
  for <openvpn-devel@lists.sourceforge.net>;
- Fri, 20 Nov 2026 08:05:09 -0800 (PST)
+ Fri, 20 Nov 2026 08:10:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1795190703; x=1795795503; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1795190998; x=1795795798; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
  :to:date:from:from:to:cc:subject:date:message-id:reply-to
- :content-type; bh=PV6ZeiAhoGM9RZV7dzizEiqeteCd2tSNkaaD4hfs7mM=;
- b=KuhRz6+o1lexf1pzJzqXk9+8u1tFgfCW3p3HKnNWKdWokanuyT0niMebaviH1Rv9pR
- pSpriGTpc+xCcv5WMNWLEJRoWc9ffuEhLEPimtrDQXqtn9IRtlfmTGIxMz6BSMhX7PEt
- xzekZsi9PmRq+PeTYMDrP06uxjBTvkpKAiIGnTLCDbTKqg1huaabLUuPvPIA5rf35Hgg
- LLzq6UaGSABm+BLeFt29b+DUiNcNg3NABBoJWtiRbzqeM8iwVU53Y2Mu+9BTFdST7Srb
- 3qhP5047PICJ6gVN+T39tQfEj7o1tXzdto8Uc/0a3q2jISfoWlyd+uWP4K0fzLwcdlCQ
- NpSQ==
+ :content-type; bh=L56vJFIj1aTwQaAsYoBz9oQ9vqrQjTTV8aukQW+ieSM=;
+ b=VuIfM/Xuk4kBwRSId+ewB2XzRFVlEJS5DRG0GjkpicyCAJyz0aFe7sd4b/wn+A4MIo
+ 5QelI5BDKaWDJXBb8t4adIAxh2aGrUy1voaXSBp1L4jgj6fuFxx61VzflSf1GcSg1EBH
+ qaZZCZwJW9YMdUrNHfK2u5+we5sJAer5TBO81HiA795Y/guaA8An1dPrasssg7St0R8f
+ gTxMZq87dE0t8dzFtuX5x1xcCXIXckODMGVr2agx7Q7O7XmzhqdYuWQlf/cvQyIDUtBs
+ r2GFuD5Tl/Q3SrCyYMXClOlU+Z6Mo9ZHU2YUXVNYvrgyOsgvZ73sNBkXO9NT4tX14K5j
+ o6dQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1795190703; x=1795795503;
+ d=1e100.net; s=20260707; t=1795190998; x=1795795798;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
  :to:date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
  :message-id:reply-to:content-type;
- bh=PV6ZeiAhoGM9RZV7dzizEiqeteCd2tSNkaaD4hfs7mM=;
- b=CEYfB2QikzFgQN4vLmQ8w7YwI9rSLBQBuhND4YE08lb5y2XnSfht+eGoUCMIe0RYaT
- ofokR73myNcymId8okIruCbPfLUiL5O2iAq1NOdX+ufunhpIQC+M2IrBVezqvs7AHT/t
- x9vgZ/2vP8KMOncYhDsVLfCzzFwtDgdSGpN2n6WqN2vtBPanI07bm0Lqr+NiDRaaPPka
- k6qmvegb+aduwdqEFPLf/Hsa5PW2hTrHjufIg2AeH4P2WSDWbyPqNKX4VAKgU9zY6vjB
- Fj9ceypfro88/iXeUHH9XPa7eNzYdo6wDJ+GagWiIFj89jdJk0hTr+w+IY+ByYG568eY
- 8BUw==
-X-Gm-Message-State: APuU4Z/iasC8uNvnesyCwVRapKnx2LIupgiT9nAgNhhFvyeKAblseEID
- apcZkl6znUo/yajxe+lL+z4MyWL6zR3b5izojK+tMc4ZSbNKUf5cUPKP+MRiqSc5L+mrJ0wnucb
- m2GzXBqWA71KA1izhSnG+DFg0sl4j5cRe6NFoX8YUeEoWJKnqb6SLdw/zFWwTcD8IEEb4
-X-Gm-Gg: AYBFou1Ir5Yx40Wh5osQdNxa+QMt5L2gYTfUl5+aCQawLrsTbkP0vUoGmAt1Z60pXfU
- PqS0nzEct6SAwLn81wz8ZcemTEYXrvleuKX2ciPIkQEYYDopHDtUMxGjEl2OV95nVhrNO8AOod+
- JCzztlYNGZeqU/p5FeLa5VTyAo0+wwqyraH0xMKEbSuWmgw34r/4HXp3TgJnn+7isJVPPpDcGev
- QLs8VG/ilDurKEOnAj9udM6EWk61K23I0hbjf9uHqldG3YlmXzLaScYwEkPSleR/BA7yc1Kxz5L
- weuWkrLivOtVzIT6UXu77LCy6y/uEMph5/fWQM+LR7lPHadBGIptVKBSNZhqiZUHCSuiJb+LtkM
- pAPj8XXVX63NdyYlWpovnVk+fQuDIija97ojPTWfnNGqC4KBAVwe0z68OvxRSbkjJj9ulykeRt1
- BwVoobSuS1hn+WXF+U2z02hKJ3xTZxv0QXoIDItym9+jfdB2XRzkHAxhEPjds3tqxt4ADuOrIzC
- 2t11iTfqpvsg2YFa+xfgtRCbAXVBelbOOqNmanMV7lr9ijZBId/8LO2U1Z+g3TNhqzPEVaMkPEu
- d/4svTcm2PIaa83FkRwCo1IEWftn0gBuRIX1tNUkAlQujauY9w704cFY87HCZ0C/tWhSvbLhvnW
- KB4s+Awk0sUZwQqXdKnO1cE9B+WsMdAHBUYbQG2hVbC/4tH6cyY9+7VIH38uSonaF73nJniRBCK
- KCCUu1E8g4XAkSafQ=
-X-Received: by 2002:a05:600c:3555:b0:4a1:9663:7639 with SMTP id
- 5b1f17b1804b1-4bb8882907fmr81473775e9.34.1795190703192; 
- Fri, 20 Nov 2026 08:05:03 -0800 (PST)
+ bh=L56vJFIj1aTwQaAsYoBz9oQ9vqrQjTTV8aukQW+ieSM=;
+ b=a9MXp2spWGSNIuUAZgewzPf/I/8xdbiEsgBhJxZQw/1v6UTSzPw+rdd+ZdbK78aZN+
+ UfAmnPc9YP0Pje7rgajtDPHcdbaPU6fr/T7XemXymKs3BOInFX+H0Ccj6nYpokQ3uwjx
+ ojnkOaRvZof7gcLH1PB/A1l5UEDLz+gWME7+YHwZTmVUrIaFzX06W+eeXYvsGrfk3sO2
+ BKC4/jKGFmJ47IOwOeUzfgVAX1NxhYVQXsImsMUSezolmYTLYrfDwWw52t4oFuo1+GC5
+ o28zSfYq0VCkqrY9SX6LmKbQW+uLfZ5UV8IaeSwW19H4eMavkHagrZrDtCeT2w1aNHBt
+ 4U6A==
+X-Gm-Message-State: APuU4Z+mgTUoDqN3Y1ARPmiSLhovurham+FYY/eFcDr/XSA1MCxGZtCc
+ 6dtySL3Zks19BS2gZOb0qtH5WNbTOwOHVhEQO0OzGCp5FEEqFs+hurLWdhxnDjV0x88G+wRSwh+
+ T8sYDTLfxstYBKqX7G1jCsbgr6+gRD7vp7e6/p3N/FJBA3Q6okLYSujKvTa9nJi1J/QYshjYoFs
+ nxf4UY5A==
+X-Gm-Gg: AZFdTZf5OwKidFNElsJ8KoavrcwbC/5WHQCFCL5bcTBrXJvo4qozugFgYe+Oz/mMcym
+ btOnebe8JaEDdZu0Nv6JZHmLPf8otz2HCobLQqfRCW5tvRYN+yzLtN+zA4ZUDa+sPIxi+YFT/Dg
+ lLqIHADCfVtM43IrTkBMUfv9d8jvbAapBoaCGuJ1rsAyCKsm3Vh8JaN8rNME4TSpfAY2+sUbjkv
+ 2qi76tT/UZj5gdgp/04Vo1BcSYpx+3cvogdy7Y8BEGQGvy3UI5g4GzM6AYbOPSvmmM3riQm9+lA
+ UV3slCObnayUMUFxngQIYY54etQXVs7Lqeyjuxl/qF/jAjDj2rqH6ypWip4ojIaXfnNQPioOHWZ
+ mEYRSZhQzrBTN6k5ItALjopB8rYuDmNcXqMtKTsZGnOMfXh4qikIZMyep1xnU4t8+prsiPMiLYa
+ 37nHS1ZVR3bMRsIRbgjqu8zueZxW/iP0B/kVJp+Z3RxOWugFFQW+ci7YVvHEx8+l+rYfo/j1wCo
+ d1WeTQDeLTJL4qPUfn3cNEYo8WJ17petIdELFFt8u+Me2jImMdTf1gigYNNBwOccxffN8FFvw3Z
+ hWEFpIBUvbomipAVHvckS8NH7PiImLJNO8IvtdXwA8MSZ5GUOFBS3Z1exuMZGq43w2j4g9Njy0J
+ TzZt65I21gbCbRjbFwA0uAFy2xE4JoSMD/qWQCf4JAucHsNZUNc+hk1dQtKe0kpImpIsEkUwpL1
+ rx78f2XxQaByYytFyiQ5Xqbd31ffcHmXnWG1RK
+X-Received: by 2002:a5d:64c9:0:b0:4a6:bc53:2478 with SMTP id
+ ffacd0b85a97d-4abb0d5256fmr7487725f8f.13.1795190997877; 
+ Fri, 20 Nov 2026 08:09:57 -0800 (PST)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-4bb853b2437sm183994495e9.13.2026.11.20.08.05.02
+ ffacd0b85a97d-4ab658e2e6dsm6647200f8f.6.2026.11.20.08.09.57
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 20 Nov 2026 08:05:02 -0800 (PST)
+ Fri, 20 Nov 2026 08:09:57 -0800 (PST)
 X-Google-Original-From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?=
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Fri, 20 Nov 2026 16:05:02 +0000
+Date: Fri, 20 Nov 2026 16:09:57 +0000
 To: Arne Schwabe <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
 X-Gerrit-MessageType: newchange
 X-Gerrit-PatchSet: 1
-X-Gerrit-Change-Id: Ied65202d269dedfa7ce69e62ef68d775ec0da36c
-X-Gerrit-Change-Number: 2231
+X-Gerrit-Change-Id: I49bc1fe0b2c2a71f2f37491a1b44d4cacc8a706b
+X-Gerrit-Change-Number: 2232
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2231?usp=email>
-X-Gerrit-Commit: 04234c52a55a032ae373518f00ff7cfca8d1ea02
-References: <gerrit.1795190700000.Ied65202d269dedfa7ce69e62ef68d775ec0da36c@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzk1MTkwNzAwMDAwLkllZDY1MjAyZDI2OWRlZGZhN2NlNjllNjJlZjY4ZDc3NWVjMGRhMzZjQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <6120eb13def8a1ddb3339484f197c2760cd7f02d-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2232?usp=email>
+X-Gerrit-Commit: 1498f76e1e0b225e40c3186c7fb6b9b00b27ef12
+References: <gerrit.1795190994000.I49bc1fe0b2c2a71f2f37491a1b44d4cacc8a706b@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzk1MTkwOTk0MDAwLkk0OWJjMWZlMGIyYzJhNzFmMmYzNzQ5MWExYjQ0ZDRjYWNjOGE3MDZiQGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <baa16fce5c51c0ee37384ceb33af7ba981dce7c7-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.5
 X-Spam-Score: 0.8 (/)
-X-Headers-End: 1xUR6r-000000004Kn-3s3d
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: manage: use
- report_command_status() for client-deny, client-kill, pus...
+X-Headers-End: 1xURBc-000000004Th-3HTY
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: manage: merge the
+ two multiline flatten helpers
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -144,7 +145,7 @@ Reply-To: razvanc@mailbox.org, arne-openvpn@rfc2549.org,
  openvpn-devel@lists.sourceforge.net
 Cc: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============1833993914891777251=="
+Content-Type: multipart/mixed; boundary="===============3139133537344087658=="
 X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,
@@ -153,12 +154,12 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============1833993914891777251==
+--===============3139133537344087658==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="ZwBjWJeQDPM="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="wCXq9A35aBs="; charset=UTF-8
 
---ZwBjWJeQDPM=
+--wCXq9A35aBs=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
@@ -171,133 +172,179 @@ I'd like you to do a code review=2E
 Please visit
 
     https://gerrit=2Eope=
-nvpn=2Enet/c/openvpn/+/2231?usp=3Demail
+nvpn=2Enet/c/openvpn/+/2232?usp=3Demail
 
 to review the following change=2E
 =
 
 
-Change subject: manage: use report_command_status() for client-deny, clie=
-nt-kill, push-update
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+Change subject: manage: merge the two multiline flatten helpers
+=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-manage: use report_command_status() for client-deny, client-kill, p=
-ush-update
+manage: merge the two =
+multiline flatten helpers
 
-These printed the same SUCCESS/ERROR lines by hand=2E Output is=
- unchanged=2E
+management_query_multiline_flatten_newline() dif=
+fered only in the
+aggregate length and separator; pass those as parameters =
+instead=2E
 
-Change-Id: Ied65202d269dedfa7ce69e62ef68d775ec0da36c
+Change-Id: I49bc1fe0b2c2a71f2f37491a1b44d4cacc8a706b
 ---
-M s=
-rc/openvpn/manage=2Ec
-1 file changed, 3 insertions(+), 22 deletions(-)
+M src/=
+openvpn/manage=2Ec
+1 file changed, 7 insertions(+), 36 deletions(-)
 
 
 
- =
- git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/31/2231/1=
+  gi=
+t pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/32/2232/1
 
-
-diff --git a/src/openvpn/manage=2Ec b/src/openvpn/manage=2Ec
-index 86c498=
-e=2E=2Eab814d5 100644
+d=
+iff --git a/src/openvpn/manage=2Ec b/src/openvpn/manage=2Ec
+index 86c498e=
+=2E=2E3505d6b 100644
 --- a/src/openvpn/manage=2Ec
 +++ b/src/openvpn/manage=
 =2Ec
-@@ -1286,14 +1286,7 @@
-         {
-             const bool status =3D (=
-*man->persist=2Ecallback=2Eclient_auth)(
-                 man->persist=2Eca=
-llback=2Earg, cid, kid, false, reason, client_reason, NULL);
--            i=
-f (status)
--            {
--                msg(M_CLIENT, "SUCCESS: client-d=
-eny command succeeded");
--            }
--            else
--            {
-- =
-               msg(M_CLIENT, "ERROR: client-deny command failed");
--       =
-     }
-+            report_command_status(status, "client-deny");
-         =
-}
-         else
-         {
-@@ -1312,14 +1305,7 @@
-         {
-             c=
-onst bool status =3D
-                 (*man->persist=2Ecallback=2Ekill_by_c=
-id)(man->persist=2Ecallback=2Earg, cid, kill_msg);
--            if (status)=
-
--            {
--                msg(M_CLIENT, "SUCCESS: client-kill comman=
-d succeeded");
--            }
--            else
--            {
--           =
-     msg(M_CLIENT, "ERROR: client-kill command failed");
--            }
-+  =
-          report_command_status(status, "client-kill");
-         }
-        =
- else
-         {
-@@ -1523,12 +1509,7 @@
-         status =3D (*man->persist=
-=2Ecallback=2Epush_update_by_cid)(man->persist=2Ecallback=2Earg, cid, p[2])=
-;
-     }
- 
--    if (status)
--    {
--        msg(M_CLIENT, "SUCCESS: push-up=
-date command succeeded");
--        return;
--    }
--    msg(M_CLIENT, "ERROR=
-: push-update command failed");
-+    report_command_status(status, "push-up=
-date");
+@@ -3905,45 +3905,17 @@
  }
  
- static void
+ static char *
+-/* returns allocated base=
+64 signature */
+-management_query_multiline_flatten_newline(struct manageme=
+nt *man, const char *b64_data,
+-                                           =
+const char *prompt, const char *cmd, int *state,
+-                         =
+                  struct buffer_list **input)
+-{
+-    int ok;
+-    char *re=
+sult =3D NULL;
+-
+-    ok =3D management_query_multiline(man, b64_data, prom=
+pt, cmd, state);
+-    if (ok && buffer_list_defined(*input))
+-    {
+-      =
+  buffer_list_aggregate_separator(*input, 10000, "\n");
+-        const stru=
+ct buffer *buf =3D buffer_list_peek(*input);
+-        if (buf && BLEN(buf) =
+> 0)
+-        {
+-            result =3D (char *)malloc(BLENZ(buf) + 1);
+-  =
+          check_malloc_return(result);
+-            memcpy(result, buf->dat=
+a, BLENZ(buf));
+-            result[BLEN(buf)] =3D '\0';
+-        }
+-    }
+=
+-
+-    buffer_list_free(*input);
+-    *input =3D NULL;
+-
+-    return result=
+;
+-}
+-
+-static char *
+-/* returns allocated base64 signature */
++/* returns=
+ allocated, flattened multiline input */
+ management_query_multiline_flatte=
+n(struct management *man, const char *b64_data, const char *prompt,
+-      =
+                             const char *cmd, int *state, struct buffer_lis=
+t **input)
++                                   const char *cmd, int *state,=
+ struct buffer_list **input,
++                                   const size=
+_t max_len, const char *sep)
+ {
+     char *result =3D NULL;
+ 
+     const in=
+t ok =3D management_query_multiline(man, b64_data, prompt, cmd, state);
+   =
+  if (ok && buffer_list_defined(*input))
+     {
+-        buffer_list_aggreg=
+ate(*input, 2048);
++        buffer_list_aggregate_separator(*input, max_len=
+, sep);
+         const struct buffer *buf =3D buffer_list_peek(*input);
+   =
+      if (buf && BLEN(buf) > 0)
+         {
+@@ -3982,7 +3954,7 @@
+     }
+   =
+  char *ret =3D management_query_multiline_flatten(man, (char *)buf_bptr(&b=
+uf_data), prompt, desc,
+                                                   =
+ &man->connection=2Eext_key_state,
+-                                       =
+            &man->connection=2Eext_key_input);
++                           =
+                        &man->connection=2Eext_key_input, 2048, "");
+     f=
+ree_buf(&buf_data);
+     return ret;
+ }
+@@ -3995,10 +3967,9 @@
+     buf_wri=
+te(&buf_prompt, prompt_1, strlen(prompt_1));
+     buf_write(&buf_prompt, ce=
+rt_name, strlen(cert_name) + 1); /* +1 for \0 */
+ 
+-    char *result;
+-    =
+result =3D management_query_multiline_flatten_newline(
++    char *result =
+=3D management_query_multiline_flatten(
+         man, NULL, (char *)buf_bpt=
+r(&buf_prompt), "certificate", &man->connection=2Eext_cert_state,
+-        =
+&man->connection=2Eext_cert_input);
++        &man->connection=2Eext_cert_in=
+put, 10000, "\n");
+     free_buf(&buf_prompt);
+     return result;
+ }
 
 -- 
-To view, visit https://gerrit=2Eopenvpn=2Ene=
-t/c/openvpn/+/2231?usp=3Demail
-To unsubscribe, or for help writing mail fil=
-ters, visit https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+=
+To view, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2232?usp=3Demail
+=
+To unsubscribe, or for help writing mail filters, visit https://gerrit=2Eop=
+envpn=2Enet/settings?usp=3Demail
 
-Gerrit-Mes=
-sageType: newchange
-Gerrit-Project: openvpn
+Gerrit-MessageType: newchange
+Gerrit-Proj=
+ect: openvpn
 Gerrit-Branch: master
-Gerrit-Ch=
-ange-Id: Ied65202d269dedfa7ce69e62ef68d775ec0da36c
-Gerrit-Change-Number: 22=
-31
+Gerrit-Change-Id: I49bc1fe0b2c2a71f2f374=
+91a1b44d4cacc8a706b
+Gerrit-Change-Number: 2232
 Gerrit-PatchSet: 1
-Gerrit-Owner: R=C4=83zvan Cojocaru <razvanc@mailbox=
-=2Eorg>
-Gerrit-Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-C=
-C: openvpn-devel <openvpn-devel@lists=2Esourceforge=2Enet>
-Gerrit-Attention=
-: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Ow=
+ner: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
+Gerrit-Reviewer: Arne Sch=
+wabe <arne-openvpn@rfc2549=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-devel@l=
+ists=2Esourceforge=2Enet>
+Gerrit-Attention: Arne Schwabe <arne-openvpn@rfc2=
+549=2Eorg>
 
---ZwBjWJeQDPM=
+--wCXq9A35aBs=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
@@ -306,104 +353,138 @@ rently required from: Arne Schwabe=2E </p>
 <p>R=C4=83zvan Cojocaru would li=
 ke Arne Schwabe to <strong>review</strong> this change=2E
 </p><p><a href=3D=
-"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2231?usp=3Demail">View Change</=
+"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2232?usp=3Demail">View Change</=
 a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; whit=
-e-space: pre-wrap;">manage: use report_command_status() for client-deny, cl=
-ient-kill, push-update<br><br>These printed the same SUCCESS/ERROR lines by=
- hand=2E Output is unchanged=2E<br><br>Change-Id: Ied65202d269dedfa7ce69e62=
-ef68d775ec0da36c<br>---<br>M src/openvpn/manage=2Ec<br>1 file changed, 3 in=
-sertions(+), 22 deletions(-)<br><br></pre><pre class=3D"blocks" style=3D"fo=
-nt-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerr=
-it=2Eopenvpn=2Enet:29418/openvpn refs/changes/31/2231/1</pre><pre style=3D"=
-font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git =
-a/src/openvpn/manage=2Ec b/src/openvpn/manage=2Ec</span><br><span>index 86c=
-498e=2E=2Eab814d5 100644</span><br><span>--- a/src/openvpn/manage=2Ec</span=
-><br><span>+++ b/src/openvpn/manage=2Ec</span><br><span>@@ -1286,14 +1286,7=
- @@</span><br><span>         {</span><br><span>             const bool stat=
-us =3D (*man-&gt;persist=2Ecallback=2Eclient_auth)(</span><br><span>       =
-          man-&gt;persist=2Ecallback=2Earg, cid, kid, false, reason, client=
-_reason, NULL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-      if (status)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
-    msg(M_CLIENT, &quot;SUCCESS: client-deny command succeeded&quot;);</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-            else</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-                msg(M_CLIENT, &quot;ERROR: clie=
-nt-deny command failed&quot;);</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-            }</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+            report_command_status(status, &quot;client-deny&quot;);</spa=
-n><br><span>         }</span><br><span>         else</span><br><span>      =
-   {</span><br><span>@@ -1312,14 +1305,7 @@</span><br><span>         {</spa=
-n><br><span>             const bool status =3D</span><br><span>            =
-     (*man-&gt;persist=2Ecallback=2Ekill_by_cid)(man-&gt;persist=2Ecallback=
-=2Earg, cid, kill_msg);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-            if (status)</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-            msg(M_CLIENT, &quot;SUCCESS: client-kill command succeeded&quot=
-;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-            else</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-                msg(M_CLIENT, &quot;ERR=
-OR: client-kill command failed&quot;);</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-            }</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+            report_command_status(status, &quot;client-kill&quot=
-;);</span><br><span>         }</span><br><span>         else</span><br><spa=
-n>         {</span><br><span>@@ -1523,12 +1509,7 @@</span><br><span>       =
-  status =3D (*man-&gt;persist=2Ecallback=2Epush_update_by_cid)(man-&gt;per=
-sist=2Ecallback=2Earg, cid, p[2]);</span><br><span>     }</span><br><span> =
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (status)</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        msg(M_CLIENT, &quot;SUCCESS: push-u=
-pdate command succeeded&quot;);</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-        return;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(M_CL=
-IENT, &quot;ERROR: push-update command failed&quot;);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    report_command_status(status, &quot;p=
-ush-update&quot;);</span><br><span> }</span><br><span> </span><br><span> st=
-atic void</span><br></pre><p>To view, visit <a href=3D"https://gerrit=2Eope=
-nvpn=2Enet/c/openvpn/+/2231?usp=3Demail">change 2231</a>=2E To unsubscribe,=
- or for help writing mail filters, visit <a href=3D"https://gerrit=2Eopenvp=
-n=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D=
-"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemt=
-ype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https=
-://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2231?usp=3Demail"/><meta itemprop=3D"=
-name" content=3D"View Change"/></div></div>
+e-space: pre-wrap;">manage: merge the two multiline flatten helpers<br><br>=
+management_query_multiline_flatten_newline() differed only in the<br>aggreg=
+ate length and separator; pass those as parameters instead=2E<br><br>Change=
+-Id: I49bc1fe0b2c2a71f2f37491a1b44d4cacc8a706b<br>---<br>M src/openvpn/mana=
+ge=2Ec<br>1 file changed, 7 insertions(+), 36 deletions(-)<br><br></pre><pr=
+e class=3D"blocks" style=3D"font-family: monospace,monospace; white-space: =
+pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes=
+/32/2232/1</pre><pre style=3D"font-family: monospace,monospace; white-space=
+: pre-wrap;"><span>diff --git a/src/openvpn/manage=2Ec b/src/openvpn/manage=
+=2Ec</span><br><span>index 86c498e=2E=2E3505d6b 100644</span><br><span>--- =
+a/src/openvpn/manage=2Ec</span><br><span>+++ b/src/openvpn/manage=2Ec</span=
+><br><span>@@ -3905,45 +3905,17 @@</span><br><span> }</span><br><span> </sp=
+an><br><span> static char *</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-/* returns allocated base64 signature */</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-management_query_multiline_flatten_newline(struct =
+management *man, const char *b64_data,</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-                                           const char *pro=
+mpt, const char *cmd, int *state,</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-                                           struct buffer_list *=
+*input)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    int ok;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    char *result =3D NULL;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    ok =3D management_query_multiline(man, b64_data, prompt=
+, cmd, state);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if =
+(ok &amp;&amp; buffer_list_defined(*input))</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-        buffer_list_aggregate_separator(*input, 10000, &quot;\n&quot;=
+);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        const struc=
+t buffer *buf =3D buffer_list_peek(*input);</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-        if (buf &amp;&amp; BLEN(buf) &gt; 0)</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-            result =3D (char *)malloc(BLEN=
+Z(buf) + 1);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+   check_malloc_return(result);</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-            memcpy(result, buf-&gt;data, BLENZ(buf));</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-            result[BLEN(buf)] =3D=
+ &#39;\0&#39;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+ }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    buffer_list_free(*input);</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    *input =3D NULL;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    return result;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-static char *</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-/* returns allocated base64 signature */</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+/* returns allocated, flat=
+tened multiline input */</span><br><span> management_query_multiline_flatte=
+n(struct management *man, const char *b64_data, const char *prompt,</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-                             =
+      const char *cmd, int *state, struct buffer_list **input)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+                                =
+   const char *cmd, int *state, struct buffer_list **input,</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+                                   =
+const size_t max_len, const char *sep)</span><br><span> {</span><br><span> =
+    char *result =3D NULL;</span><br><span> </span><br><span>     const int=
+ ok =3D management_query_multiline(man, b64_data, prompt, cmd, state);</spa=
+n><br><span>     if (ok &amp;&amp; buffer_list_defined(*input))</span><br><=
+span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        bu=
+ffer_list_aggregate(*input, 2048);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        buffer_list_aggregate_separator(*input, max_len, sep=
+);</span><br><span>         const struct buffer *buf =3D buffer_list_peek(*=
+input);</span><br><span>         if (buf &amp;&amp; BLEN(buf) &gt; 0)</span=
+><br><span>         {</span><br><span>@@ -3982,7 +3954,7 @@</span><br><span=
+>     }</span><br><span>     char *ret =3D management_query_multiline_flatt=
+en(man, (char *)buf_bptr(&amp;buf_data), prompt, desc,</span><br><span>    =
+                                                &amp;man-&gt;connection=2Ee=
+xt_key_state,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+                                           &amp;man-&gt;connection=2Eext_ke=
+y_input);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+                                         &amp;man-&gt;connection=2Eext_key_=
+input, 2048, &quot;&quot;);</span><br><span>     free_buf(&amp;buf_data);</=
+span><br><span>     return ret;</span><br><span> }</span><br><span>@@ -3995=
+,10 +3967,9 @@</span><br><span>     buf_write(&amp;buf_prompt, prompt_1, st=
+rlen(prompt_1));</span><br><span>     buf_write(&amp;buf_prompt, cert_name,=
+ strlen(cert_name) + 1); /* +1 for \0 */</span><br><span> </span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    char *result;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    result =3D management_query_multiline_=
+flatten_newline(</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ char *result =3D management_query_multiline_flatten(</span><br><span>     =
+    man, NULL, (char *)buf_bptr(&amp;buf_prompt), &quot;certificate&quot;, =
+&amp;man-&gt;connection=2Eext_cert_state,</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-        &amp;man-&gt;connection=2Eext_cert_input);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        &amp;man-&gt;con=
+nection=2Eext_cert_input, 10000, &quot;\n&quot;);</span><br><span>     free=
+_buf(&amp;buf_prompt);</span><br><span>     return result;</span><br><span>=
+ }</span><br></pre><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=2E=
+net/c/openvpn/+/2232?usp=3Demail">change 2232</a>=2E To unsubscribe, or for=
+ help writing mail filters, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet=
+/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http:/=
+/schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"=
+http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https://gerr=
+it=2Eopenvpn=2Enet/c/openvpn/+/2232?usp=3Demail"/><meta itemprop=3D"name" c=
+ontent=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> G=
-errit-MessageType: newchange </div>
-<div style=3D"display:none"> Gerrit-Pro=
-ject: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </d=
-iv>
-<div style=3D"display:none"> Gerrit-Change-Id: Ied65202d269dedfa7ce69e6=
-2ef68d775ec0da36c </div>
-<div style=3D"display:none"> Gerrit-Change-Number:=
- 2231 </div>
+<div style=3D"display:none"> Gerrit-M=
+essageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Project: o=
+penvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<di=
+v style=3D"display:none"> Gerrit-Change-Id: I49bc1fe0b2c2a71f2f37491a1b44d4=
+cacc8a706b </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 2232 <=
+/div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div st=
-yle=3D"display:none"> Gerrit-Owner: R=C4=83zvan Cojocaru &lt;razvanc@mailbo=
-x=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: Arne Schwa=
-be &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> G=
-errit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </d=
-iv>
-<div style=3D"display:none"> Gerrit-Attention: Arne Schwabe &lt;arne-op=
-envpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"=
+display:none"> Gerrit-Owner: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eorg=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: Arne Schwabe &lt;=
+arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-C=
+C: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<di=
+v style=3D"display:none"> Gerrit-Attention: Arne Schwabe &lt;arne-openvpn@r=
+fc2549=2Eorg&gt; </div>
 
 </body></html>
---ZwBjWJeQDPM=--
+--wCXq9A35aBs=--
 
 
---===============1833993914891777251==
+--===============3139133537344087658==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============1833993914891777251==
+--===============3139133537344087658==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -414,5 +495,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============1833993914891777251==--
+--===============3139133537344087658==--
 
