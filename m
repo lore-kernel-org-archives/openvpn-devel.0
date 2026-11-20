@@ -1,136 +1,135 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB92F606A320
-	for <openvpn-devel@archiver.kernel.org>; Fri, 20 Nov 2026 06:31:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DDA5606A32C
+	for <openvpn-devel@archiver.kernel.org>; Fri, 20 Nov 2026 06:32:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=h0MimfV6;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=G0wlDIDt;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=PqaW/KEu;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=Vo/C+mJG
+	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=Z2LJsG3S;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=H5Kxax8H;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=V/TXEYsg;
+	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=a/VyMokm
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:References:In-Reply-To:To:Date:Sender:
+	Subject:MIME-Version:Message-ID:References:To:Date:Sender:
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
 	List-Unsubscribe-Post:List-Owner;
-	bh=UkpkAKwxg5QOjsWFtV1hSI0yWtrawv7VByP+xwwFV9c=; b=h0MimfV6kkRop/XdkVy6fpYfDz
-	7BpkP6nvgArtZqkMwNU3GWStrZOXC/cver2/wetVL3BNLpVIZSquBUFCrlEr8ZNobPVKNqHN+A4Xy
-	p6gJWIakN5N1nvix/Mda30E240I56AXV7BJN32e8h4NpzYkqqYJ8COSGr6DePB+xBvLk=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	bh=5tivFrxnv7FUj69dUGE+twGqd0OMV0/FI+FCOnN2sVs=; b=Z2LJsG3SmsndhOC3XaFN9zLqED
+	z6X3ZS/JXhkZCXfLl6qEy47zKmBozgq+UuiCqWfMBASSxGlaO1fSj8TZ6JaFbMleisodj92dugr8p
+	GgGkTfoGwlYVcNTHahhaTxF5CNPuiTnaS0K+K90HNCiz0+XB5z3FC3TAarSopP/UVvxY=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xUIAA-000000000Ca-2FjH;
-	Fri, 20 Nov 2026 06:31:58 +0000
+	id 1xUIAC-00000000409-1O66;
+	Fri, 20 Nov 2026 06:32:00 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xUIA7-000000000CO-29Jt
+ (envelope-from <gerrit@openvpn.net>) id 1xUIAA-00000000403-1nM1
  for openvpn-devel@lists.sourceforge.net;
- Fri, 20 Nov 2026 06:31:55 +0000
+ Fri, 20 Nov 2026 06:31:58 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
- :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
- Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
- :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
+ :Message-ID:Reply-To:Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:
+ From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From:
+ Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=I0T1LLb8k3D5pkLVi7//Jiy/d39wBuZStrfVlFVSQcI=; b=G0wlDIDtzvxdAzuPdqNyEND5t9
- 4T5J7BqA2ePtmVPwJ9cx6coov5jTeOwZOPBIgRXYyxnx2rV7pLRv9MiOK/QMMPJovTcC6fKHr8B2D
- +1wI3KN34NnhlAjl27xA4dlj58chQF6h3tS+o3lodTqMIoh74tDBPZFqAYrOO2XbHnIs=;
+ bh=wRe98lbmgRatibXiMT+f7ubuTjIN8gc01HfQqQEIU/I=; b=H5Kxax8HzSqk7UGVaC/h1M2MBg
+ e7FPBZVtc+M49OaWywHzspWHK3ZAZiyWzVbosKluKCDAYiGY83T0CHqQYxz5nP7YY3G3KWNdvyfp/
+ 6rayEsfMZoVo6vfkC+P7fraStTqm6142kF0vLXoRTnSiARwcd/d6jUGvaOAJ2jURe38o=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
- Subject:References:In-Reply-To:List-Unsubscribe:List-Id:Cc:To:Date:From:
- Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
+ Subject:References:List-Unsubscribe:List-Id:Cc:To:Date:From:Sender:Content-ID
+ :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+ Resent-Cc:Resent-Message-ID:In-Reply-To:List-Help:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=I0T1LLb8k3D5pkLVi7//Jiy/d39wBuZStrfVlFVSQcI=; b=PqaW/KEuloZFcLh+A7pTtuj8Ua
- ZHjNvDSKnlKa1RmxdyDTKLUkA/jRKmvWLuc23f+YI7BG7x7hUaaZPpJdxrvATY+0GVwEY3CL+aqCB
- dX8GpRXsWbWPNI2D2OJjEj5DAcnTudaThXRzXvK31KAkJIcC2QIs/f/2SwYibhqjUQls=;
-Received: from mail-wm1-f48.google.com ([209.85.128.48])
+ bh=wRe98lbmgRatibXiMT+f7ubuTjIN8gc01HfQqQEIU/I=; b=V/TXEYsgYFdfwEnt3PQXgaSahs
+ p2+KVp98OKI3ivfxuzwtMDwjQXgDRidcMoPeGM19fZ2QKa/vIz1+JheCAOe3NQD9EPigd4V3Ypa3F
+ Di90WafJHSrFQOA3lL41eiu5YwMsts4MaWUjOOV5fQCWfxLKLK2nibDr5KllNAuGZ4Xs=;
+Received: from mail-wr1-f45.google.com ([209.85.221.45])
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xUIA4-0000000047l-2XO6 for openvpn-devel@lists.sourceforge.net;
- Fri, 20 Nov 2026 06:31:55 +0000
-Received: by mail-wm1-f48.google.com with SMTP id
- 5b1f17b1804b1-4bb6ba3b244so3991855e9.3
+ id 1xUIA7-0000000047q-1RZU for openvpn-devel@lists.sourceforge.net;
+ Fri, 20 Nov 2026 06:31:58 +0000
+Received: by mail-wr1-f45.google.com with SMTP id
+ ffacd0b85a97d-491971ac844so413347f8f.2
  for <openvpn-devel@lists.sourceforge.net>;
- Thu, 19 Nov 2026 22:31:52 -0800 (PST)
+ Thu, 19 Nov 2026 22:31:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1795156306; x=1795761106; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1795156309; x=1795761109; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
- :reply-to:content-type;
- bh=I0T1LLb8k3D5pkLVi7//Jiy/d39wBuZStrfVlFVSQcI=;
- b=Vo/C+mJGAXmu70mRVYLqrs6CoGIjVG/nEgNpJqR883gAHkwQmrcCEMdwEwiYmTU+3b
- 0EaF6V1dDN4eBSeTsA5QQ5I0O3n1IY+ZfJsVEoiMld3GJjDabT9tCRyLYzp2Dkqi2v3y
- EpvjAn92RURGFlJkrVBJdZobbFbkEj0hGyCXMgDz4FCvZYOJ17f6Jk+99M0xiAUvHCur
- F9AtnTReHX5lSOxh7wb5xXmE694B+//nNUiQxHQKJCwl+QwCeuJmDjyZg+wMCyCWaMTF
- y3xQpM1Otfde8cLXHiWTjU85vM8tXGOs1Lvtcrj+6lqkx3MyNEqE6hO6HkjYQd98GLTN
- nkgQ==
+ :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
+ :to:date:from:from:to:cc:subject:date:message-id:reply-to
+ :content-type; bh=wRe98lbmgRatibXiMT+f7ubuTjIN8gc01HfQqQEIU/I=;
+ b=a/VyMokmOYdhzQrY74kUTUu4Oqb8q83/c5DNEsfefYrK9TicsTxZgOK3Rp9U2Jt5UY
+ 85n2Y0EjV+6Mir55AbEqk5rQGCdNqVgnMrhNAGMMmNUlTs8HUEbGn+2p6e0BbFr4EV/n
+ VCOM1LJiMzNGlolPAj/hNPetI9TmMbK+6tqEiYMMbe8LSFVT2dkSuq0tcl0mHS0S+Cg1
+ lJbZiKYZVc2mQBZtM/W3+BgLLJNde+fe5ao43zSG3SNoNGmiRjLgSru5yzdqS9elG8n/
+ w2itnpJVqLCQb7yUyh0Fsr2TJbe+0cjR7TYHtXwA8x9RPteC0tfCEA+Rf/dmQCz+CM47
+ wczA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1795156306; x=1795761106;
+ d=1e100.net; s=20260707; t=1795156309; x=1795761109;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
- :thread-index:references:in-reply-to:list-unsubscribe:list-id
- :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
- :cc:subject:date:message-id:reply-to:content-type;
- bh=I0T1LLb8k3D5pkLVi7//Jiy/d39wBuZStrfVlFVSQcI=;
- b=BqQlSPtIcAOmGBIo9oYb5sXkFEFCjo3GCx9kQNSgrwPIYjoJLXEhtgvFuHyLtUJRp3
- G2cRTRlM3DJg1HqixlXLdRC/hX7sag+Xf1IOWJCL4u+iqSLgoTUwLaCQVMCghzaLDw8j
- liCjkHP4SZi7bNk3ncJwvtDQTPDV+mNpKVzIjVrSRcBGDB5mBHoQTd3IrjqrhLKq2yEO
- mdyQbsJr12xhPXy0SDPcKw3BciuNhEC3NP4gz6Lk3Q3VxLKf2zfylC48A9vbjw+5zXuw
- bc0nC76oLZdkLk4dBiF2gG+rsC3CTr8DVYUfHIQdSy2IlTTIiRk7+U8ANGgkVkrz4Hwv
- frpw==
-X-Gm-Message-State: APuU4Z8jBSMbhjLQrZfTzfFkktmQR7pTtZsu3F84CET3tHZKRJHznsw/
- EoCiZy91Ya+t5giT/KyY1PtwcJYgURX8E+SLuZLLR0sO0BinNKvrdVuEOW3SHspUwgTZncTOZt3
- eEO9eaCjCQRMzEbyPqWXXNcJrI9Vfh9Id8gGtFGXQ6rFRbvcFHj1JZSc+7+wvSg4irRZe
-X-Gm-Gg: AYBFou1HSjPmOZogCYcslLJGY2HuW+3CcMYDMqUa2HJfQdWTpRrmWmTFSTAYFeIOGnq
- h/cZ62c9WVKeRmvz5Nfc8XMUlaC+f16h2atU++m4qRcVuDkhv7D7+caZdPNy58k3RoRSJWIc7b7
- vx6r17IyK9SaETkgH9P24yNqV0sCEfGJveL2P2eAhmjlGOGkGGuax5uPDc/mufaJ3wMNSNuw+Rd
- 6PVMRVTEX5GQoXwhVfeS84qMOoCzkj4Bkwo8E6z5oxQ7WcN7BXvNpxgqH+soyTD6t691P+mD2mG
- yHyxDGXwKptvFXwUk2pJgJNJ4RlS6jeqJYyseZyHmymaxvtLE4RBKV8o9yi5LCO5AAM5WrWKKHn
- Rb/tZmhUBnasSOrRnMoVRgruizfcEMD8gegZQBImeeoJrWfkVIVBuK4CjPW9Z/llG/fKXLGwZP7
- zheNINqdsJw8XFGLNm9hADfHXP2xgXhKdryYYDL8bBQYA8ydBrsS3hrlRodzSlnkolXKg3Y68JZ
- uE7ekIsTTefZP0KparGr6rJKsWxP0/0wh9AJG0ajs7ye6do4DN3vHD0UWi9dlKOIsz7Z2PSZzu8
- q06vM2XNfaOCsXFvDPAA94BFbGtM2WrkFxOZ6JNPRN3i1h4M7rHR/LKVlqzjuQIPQfFFjao5XXF
- DY0vhh92alX5GHWPXpkpMnE7ndb3Ti2PwcDlBy2YyjxnQ80nhroHbeVMSq5YFxe+/IKvRGZRt8V
- +awv00rxgKYdWv+Qk=
-X-Received: by 2002:a05:600c:820d:b0:4bb:5de1:e912 with SMTP id
- 5b1f17b1804b1-4bb887c3ae7mr41535825e9.1.1795156305642; 
- Thu, 19 Nov 2026 22:31:45 -0800 (PST)
+ :thread-index:references:list-unsubscribe:list-id:auto-submitted:cc
+ :to:date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+ :message-id:reply-to:content-type;
+ bh=wRe98lbmgRatibXiMT+f7ubuTjIN8gc01HfQqQEIU/I=;
+ b=oWVvEZpz+whMmeVsKJEa2nymj7Qd/+BeHTd4H/cWHTLaYlk5mPjSTkszqNChqVndn7
+ i5n+0TfuW85mD0tOLZDusjKZf2mHz+RRN0rSlp6bYg47Z/lkwsV0JJxJMqcIybVmalO0
+ 7er6NdSX5l9cb1qRE4fKOkuJTOfjbFnDu+Bn0qea8gPZl9ofZ5wrMnVboXakAAN4ZvTp
+ QLhIR2ZGfABOqqDQGDf0NACiEE6dtOa7a326/6uzoIXI5MD974zkKW4oYH/5DvNs3XUR
+ Fysb7LHpFtBDPvyCOKmZO4XdhjB70SKTq37EP28ujwjjtuPxnHRVdqtFyZWLDmIsH3mg
+ GeHQ==
+X-Gm-Message-State: APuU4Z9TMQulXiMpwF1LFLyEwsxcwTfztGRKyTkTKRpwjj1WQAYEArUV
+ pyfuhNGcBW07/50oMfke95F8ATzw7DRg6UoTa2nB9pBitZ2540KZPlF9GbaYopF56WD2cY5jl62
+ 2VNhknZZpilo0eYuv4Sjn7e9VzVPzDJooweOeTy1FLa3xgQ0JLFdXCOlN97RVTpqU2Yc4so7TYt
+ hWofUiIA==
+X-Gm-Gg: AZFdTZex0puhLIJUZKHbbxiuRJ687gwx1WzLJlAPVC+I8MEBtsFv4H/h+F+blNQTz6D
+ LgtNadWCgEMcBZWL0VL6EqfzpMOtB4pjHJYftim0OYSZ1JVs+9zy16AVGdyUtW0TWNyVtj4E75L
+ hbev2F5ZPN0TGu+mFuIZlHvN4WXiE8VMT6Pf4QW6+3x41zPh5aJWhUYwgGeRI/2twMl5hxuTVLQ
+ sSE0u/WRdOo2DMPBPGTAhsv1bMYyGSPPpvDuJ7Zo4m0WTDfgyU2CvtNmOxWufV/ZnDmIVe49YN0
+ rsFUPzRlqNLwELoY5AukwIJedAx7hezWS8WdbbY10YvTImilcOmEwX/xeNZKMqKLmKpaPo45yIv
+ w3CyBgBQM+QFkKocT3kGNGIRBdvOMzBixCwebu2Qdbz8moHkhMT3a/yqg44OkxGNjshOKJStn/Y
+ WMntY1Qg93/6FzX4BEYjZVvwciqGjg2iTBfWl+KDJa1P1gmtAHLdlfamrYmaiknMEOf5+TvxFoO
+ LihgS8MBEWKNZVjIxjna4W8r8tl83HamylmdM0uFO00ArlpxoiiEOT+hOix+6t8sYCdtM/J2Cp6
+ udSvjBorRM+oQ/IZrvyOYspbIGPrr5huhil3g15HDGB1BPIrwisNWoRRVTWU9CVmpAfVKf4MrKJ
+ w8PJZFHajTTIoUhtYWZnokaECxarnEuFuSXvBpWqY+7qcL0HvgHtYmKt1MZu+O83GxezvE5B6oZ
+ BdeWOHDr96ufxnylU=
+X-Received: by 2002:a05:6000:470c:b0:4a7:557:fc0 with SMTP id
+ ffacd0b85a97d-4abb225fb4bmr3494101f8f.32.1795156308049; 
+ Thu, 19 Nov 2026 22:31:48 -0800 (PST)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-4bb895faa2csm29040785e9.1.2026.11.19.22.31.45
+ ffacd0b85a97d-4ab65cb42absm4027559f8f.1.2026.11.19.22.31.47
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 19 Nov 2026 22:31:45 -0800 (PST)
+ Thu, 19 Nov 2026 22:31:47 -0800 (PST)
 X-Google-Original-From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?=
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Fri, 20 Nov 2026 06:31:41 +0000
+Date: Fri, 20 Nov 2026 06:31:47 +0000
 To: Arne Schwabe <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: newpatchset
-X-Gerrit-PatchSet: 5
-X-Gerrit-Change-Id: I601454a511c9aac4f37d8629b1692266cdbd6885
-X-Gerrit-Change-Number: 2154
+X-Gerrit-MessageType: newchange
+X-Gerrit-PatchSet: 1
+X-Gerrit-Change-Id: Icbfc6b64beea5e70f32449c5a63a08ad862597b9
+X-Gerrit-Change-Number: 2224
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2154?usp=email>
-X-Gerrit-Commit: 217bf69bddb093c8126a65d3da5fceb48177a3a1
-In-Reply-To: <gerrit.1794074511000.I601454a511c9aac4f37d8629b1692266cdbd6885@gerrit.openvpn.net>
-References: <gerrit.1794074511000.I601454a511c9aac4f37d8629b1692266cdbd6885@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzk0MDc0NTExMDAwLkk2MDE0NTRhNTExYzlhYWM0ZjM3ZDg2MjliMTY5MjI2NmNkYmQ2ODg1QGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <b57c10b167258a4dba1d14602f3339045b7d90e7-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2224?usp=email>
+X-Gerrit-Commit: 506026679d9fb07044994d6876cd2e6a35559d2d
+References: <gerrit.1795156301000.Icbfc6b64beea5e70f32449c5a63a08ad862597b9@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzk1MTU2MzAxMDAwLkljYmZjNmI2NGJlZWE1ZTcwZjMyNDQ5YzVhNjNhMDhhZDg2MjU5N2I5QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <77ad2fc4b5026522af9a75ed3c438a72964bad8a-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.5
 X-Spam-Score: 0.8 (/)
-X-Headers-End: 1xUIA4-0000000047l-2XO6
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: route: use the net_
- API for routes on FreeBSD and DragonFly
+X-Headers-End: 1xUIA7-0000000047q-1RZU
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: networking: use -1
+ for "no route table"
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -143,10 +142,10 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 From: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= via Openvpn-devel
  <openvpn-devel@lists.sourceforge.net>
 Reply-To: razvanc@mailbox.org, arne-openvpn@rfc2549.org,
- openvpn-devel@lists.sourceforge.net, gert@greenie.muc.de
+ openvpn-devel@lists.sourceforge.net
 Cc: =?UTF-8?Q?R=C4=83zvan_Cojocaru_=28Code_Review=29?= <gerrit@openvpn.net>,
  openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/mixed; boundary="===============5740011810627937795=="
+Content-Type: multipart/mixed; boundary="===============7396865875372094424=="
 X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
 	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,MIME_HTML_MOSTLY,
@@ -155,1363 +154,1350 @@ X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============5740011810627937795==
+--===============7396865875372094424==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Q0MisFcB1wg="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="QmWR7W84fG0="; charset=UTF-8
 
---Q0MisFcB1wg=
+--QmWR7W84fG0=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: Arne Schwabe, Gert Doering, R=C4=83zv=
-an Cojocaru=2E
+Attention is currently required from: Arne Schwabe=2E
 
-Hello Arne Schwabe, Gert Doering, 
+Hello Arne Schwabe,
+=
 
-I'd like you to reexami=
-ne a change=2E Please visit
+I'd like you to do a code review=2E
+Please visit
 
-    https://gerrit=2Eopenvpn=2Enet/c/openvpn/+=
-/2154?usp=3Demail
+    https://gerrit=2Eope=
+nvpn=2Enet/c/openvpn/+/2224?usp=3Demail
 
-to look at the new patch set (#5)=2E
-
-The following appr=
-ovals got outdated and were removed:
-Code-Review-1 by Gert Doering
+to review the following change=2E
+=
 
 
-Change=
- subject: route: use the net_ API for routes on FreeBSD and DragonFly
-=2E=
+Change subject: networking: use -1 for "no route table"
+=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-route: use the n=
-et_ API for routes on FreeBSD and DragonFly
+networking: use -1 for "no r=
+oute table"
 
-Add and delete IPv4 and IPv6 r=
-outes through net_route_v4/v6_add/del()
-on FreeBSD and DragonFly, as on Lin=
-ux, instead of running route(8)
-from route=2Ec=2E Build networking_freebsd=
-=2Ec for DragonFly as well; -fib
-is only passed on FreeBSD, where --route-t=
-able is now supported=2E
+Table 0 meant "default table" in the net_route_*() API=2E That=
+ is fine on
+Linux, where table 0 is RT_TABLE_UNSPEC, but on FreeBSD FIB 0 i=
+s a real
+FIB, which could then not be selected from a process running in an=
+other
+FIB=2E
 
-A non-contiguous IPv4 netmask now gets an error i=
-nstead of an invalid
-prefix length=2E networking_freebsd=2Ec logs route com=
-mands at D_ROUTE, as
-route=2Ec did=2E The shared error messages lose their =
-"Linux" prefix=2E
+Make the table argument an int, with -1 for the default table=
+, and
+default --route-table to -1=2E sitnl maps -1 and 0 to the main table,=
+ as
+before=2E On FreeBSD, -fib is now passed only for a set table; DCO
+irou=
+tes no longer force FIB 0 but use the FIB of the process=2E
 
-Change-Id: I601454a511c9aac4f37d8629b1692266cdbd6885
-Sig=
-ned-off-by: Razvan Cojocaru <razvanc@mailbox=2Eorg>
+Routes that ro=
+ute=2Ec creates internally get -1 too; block-local routes
+passed an uniniti=
+alized table before=2E
+
+Change-Id: Icbfc6b64beea5e70f32449c5a63a08ad862597b=
+9
+Signed-off-by: Razvan Cojocaru <razvanc@mailbox=2Eorg>
 ---
-M doc/man-sections/=
-vpn-network-options=2Erst
+M src/openvpn/=
+dco=2Ec
 M src/openvpn/networking=2Eh
-M src/openvpn/networ=
-king_freebsd=2Ec
-M src/openvpn/options=2Ec
+M src/openvpn/networking_freebsd=2Ec
+M=
+ src/openvpn/networking_iproute2=2Ec
+M src/openvpn/networking_sitnl=2Ec
+M s=
+rc/openvpn/options=2Ec
 M src/openvpn/route=2Ec
-5 files =
-changed, 71 insertions(+), 136 deletions(-)
+M tests/unit_tests/openvpn/t=
+est_networking=2Ec
+8 files changed, 66 insertions(+), 62 deletions(-)
 
 
-  git pull ssh://gerrit=2Eope=
-nvpn=2Enet:29418/openvpn refs/changes/54/2154/5
 
-diff --git a/doc/man-secti=
-ons/vpn-network-options=2Erst b/doc/man-sections/vpn-network-options=2Erst
+  =
+git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/24/2224/1
 =
-index 960c6ad=2E=2Ef282982 100644
---- a/doc/man-sections/vpn-network-option=
-s=2Erst
-+++ b/doc/man-sections/vpn-network-options=2Erst
-@@ -399,7 +399,10 =
-@@
-   table of the operating system, but with this option,
-   a user define=
-d routing table can be used instead=2E
+
+diff --git a/src/openvpn/dco=2Ec b/src/openvpn/dco=2Ec
+index 236be93=2E=2E=
+8d376fb 100644
+--- a/src/openvpn/dco=2Ec
++++ b/src/openvpn/dco=2Ec
+@@ -721,=
+7 +721,7 @@
+         }
  
--  (Supported on Linux only, on ot=
-her platforms this is a no-op)=2E
-+  On FreeBSD, the table id is the FIB nu=
-mber=2E Without this option, routes
-+  go to the FIB OpenVPN runs in (see :=
-code:`setfib(1)`)=2E
-+
-+  (Supported on Linux and FreeBSD only, on other pl=
-atforms this is a no-op)=2E
+         net_route_v6_add(&m->top=2Enet_ctx, &addr=
+->v6=2Eaddr, addr->netbits,
+-                         gateway, c->c1=2Etunt=
+ap->actual_name, 0,
++                         gateway, c->c1=2Etuntap->actu=
+al_name, -1,
+                          DCO_IROUTE_METRIC);
+ #endif
+     }
+@=
+@ -739,7 +739,7 @@
+         }
  
- --route args
-   Add route to routing table a=
-fter connection is established=2E Multiple
-diff --git a/src/openvpn/network=
-ing=2Eh b/src/openvpn/networking=2Eh
-index 1763e64=2E=2Ecbb10ed 100644
---- =
-a/src/openvpn/networking=2Eh
-+++ b/src/openvpn/networking=2Eh
-@@ -30,7 +30,=
-7 @@
- #include "networking_sitnl=2Eh"
- #elif ENABLE_IPROUTE
- #include "netw=
-orking_iproute2=2Eh"
--#elif defined(TARGET_FREEBSD)
-+#elif defined(TARGET_F=
-REEBSD) || defined(TARGET_DRAGONFLY)
- typedef void *openvpn_net_ctx_t;
- typ=
-edef char openvpn_net_iface_t;
- #else  /* ifdef ENABLE_SITNL */
-@@ -236,7 +=
-236,8 @@
- 
- #endif /* ENABLE_SITNL || ENABLE_IPROUTE */
- 
--#if defined(ENAB=
-LE_SITNL) || defined(ENABLE_IPROUTE) || defined(TARGET_FREEBSD)
-+#if define=
-d(ENABLE_SITNL) || defined(ENABLE_IPROUTE) || defined(TARGET_FREEBSD) \
-+  =
-  || defined(TARGET_DRAGONFLY)
- /**
-  * Add a route for an IPv4 address/net=
-work
+         net_route_v4_add(&m->top=2Enet_ctx=
+, &dest, addr->netbits, gateway,
+-                         c->c1=2Etuntap->=
+actual_name, 0, DCO_IROUTE_METRIC);
++                         c->c1=2Etunta=
+p->actual_name, -1, DCO_IROUTE_METRIC);
+ #endif
+     }
+ #endif /* if define=
+d(TARGET_LINUX) || defined(TARGET_FREEBSD) || defined(_WIN32) */
+@@ -765,7 =
++765,7 @@
+             dco_win_del_iroute_ipv4(&c->c1=2Etuntap->dco, htonl(=
+ir->network), ir->netbits);
+ #else
+             net_route_v4_del(net_ctx, &=
+ir->network, ir->netbits,
+-                             &c->c2=2Epush_ifcon=
+fig_local, c->c1=2Etuntap->actual_name, 0,
++                             &c=
+->c2=2Epush_ifconfig_local, c->c1=2Etuntap->actual_name, -1,
+              =
+                DCO_IROUTE_METRIC);
+ #endif
+         }
+@@ -779,7 +779,7 @@
+=
+         {
+             /* On windows we do not install these routes, so we=
+ also do not need to delete them */
+             net_route_v4_del(net_ctx, =
+&ifconfig_local, 32, NULL,
+-                             c->c1=2Etuntap->ac=
+tual_name, 0, DCO_IROUTE_METRIC);
++                             c->c1=2Etun=
+tap->actual_name, -1, DCO_IROUTE_METRIC);
+         }
+ #endif
+     }
+@@ -792=
+,7 +792,7 @@
+             dco_win_del_iroute_ipv6(&c->c1=2Etuntap->dco, ir6=
+->network, ir6->netbits);
+ #else
+             net_route_v6_del(net_ctx, &ir=
+6->network, ir6->netbits,
+-                             &c->c2=2Epush_ifcon=
+fig_ipv6_local, c->c1=2Etuntap->actual_name, 0,
++                          =
+   &c->c2=2Epush_ifconfig_ipv6_local, c->c1=2Etuntap->actual_name, -1,
+    =
+                          DCO_IROUTE_METRIC);
+ #endif
+         }
+@@ -805,7 =
++805,7 @@
+         {
+             /* On windows we do not install these rou=
+tes, so we also do not need to delete them */
+             net_route_v6_del=
+(net_ctx, dest, 128, NULL,
+-                             c->c1=2Etuntap->ac=
+tual_name, 0, DCO_IROUTE_METRIC);
++                             c->c1=2Etun=
+tap->actual_name, -1, DCO_IROUTE_METRIC);
+         }
+ #endif
+     }
+diff --=
+git a/src/openvpn/networking=2Eh b/src/openvpn/networking=2Eh
+index 7ad6e2e=
+=2E=2E1763e64 100644
+--- a/src/openvpn/networking=2Eh
++++ b/src/openvpn/net=
+working=2Eh
+@@ -245,14 +245,13 @@
+  * @param prefixlen the length of the pr=
+efix of the destination
+  * @param gw        the gateway for this route
+  *=
+ @param iface     the interface for this route (can be NULL)
+- * @param tab=
+le     the table to add this route to (if 0, will be added to the
+- *      =
+            main table)
++ * @param table     the table to add this route to=
+, or -1 for the default one
+  * @param metric    the metric associated with=
+ the route
   *
-@@ -305,7 +306,7 @@
-                      const struct in6_addr *g=
-w, const openvpn_net_iface_t *iface, int table,
-                      int m=
-etric);
+  * @return          0 on success, a negative error code oth=
+erwise
+  */
+ int net_route_v4_add(const openvpn_net_ctx_t *ctx, const in_ad=
+dr_t *dst, int prefixlen,
+-                     const in_addr_t *gw, const =
+openvpn_net_iface_t *iface, uint32_t table,
++                     const in_=
+addr_t *gw, const openvpn_net_iface_t *iface, int table,
+                  =
+    int metric);
  
--#endif /* ENABLE_SITNL || ENABLE_IPROUTE || TARGET_FREEBSD */
-+#=
-endif /* ENABLE_SITNL || ENABLE_IPROUTE || TARGET_FREEBSD || TARGET_DRAGONF=
-LY */
+ /**
+@@ -263,14 +262,13 @@
+  * @param prefixlen the leng=
+th of the prefix of the destination
+  * @param gw        the gateway for th=
+is route
+  * @param iface     the interface for this route (can be NULL)
+- =
+* @param table     the table to add this route to (if 0, will be added to t=
+he
+- *                  main table)
++ * @param table     the table to add t=
+his route to, or -1 for the default one
+  * @param metric    the metric ass=
+ociated with the route
+  *
+  * @return          0 on success, a negative er=
+ror code otherwise
+  */
+ int net_route_v6_add(const openvpn_net_ctx_t *ctx,=
+ const struct in6_addr *dst, int prefixlen,
+-                     const str=
+uct in6_addr *gw, const openvpn_net_iface_t *iface, uint32_t table,
++      =
+               const struct in6_addr *gw, const openvpn_net_iface_t *iface,=
+ int table,
+                      int metric);
  
- #if defined(ENABLE_SITNL) || defined(ENABLE_IPROUTE)
+ /**
+@@ -281,14 +279,13 @@=
+
+  * @param prefixlen the length of the prefix of the destination
+  * @para=
+m gw        the gateway for this route
+  * @param iface     the interface f=
+or this route (can be NULL)
+- * @param table     the table to add this rout=
+e to (if 0, will be added to the
+- *                  main table)
++ * @para=
+m table     the table to add this route to, or -1 for the default one
+  * @=
+param metric    the metric associated with the route
+  *
+  * @return       =
+   0 on success, a negative error code otherwise
+  */
+ int net_route_v4_del=
+(const openvpn_net_ctx_t *ctx, const in_addr_t *dst, int prefixlen,
+-      =
+               const in_addr_t *gw, const openvpn_net_iface_t *iface, uint3=
+2_t table,
++                     const in_addr_t *gw, const openvpn_net_ifa=
+ce_t *iface, int table,
+                      int metric);
  
-diff --git =
-a/src/openvpn/networking_freebsd=2Ec b/src/openvpn/networking_freebsd=2Ec
-i=
-ndex 141f4bd=2E=2E1f5ff3a 100644
---- a/src/openvpn/networking_freebsd=2Ec
-+=
-++ b/src/openvpn/networking_freebsd=2Ec
-@@ -6,7 +6,7 @@
- #include "run_comm=
-and=2Eh"
- #include "networking=2Eh"
+ /**
+@@ -299,1=
+4 +296,13 @@
+  * @param prefixlen the length of the prefix of the destinati=
+on
+  * @param gw        the gateway for this route
+  * @param iface     the=
+ interface for this route (can be NULL)
+- * @param table     the table to a=
+dd this route to (if 0, will be added to the
+- *                  main tabl=
+e)
++ * @param table     the table to add this route to, or -1 for the defau=
+lt one
+  * @param metric    the metric associated with the route
+  *
+  * @r=
+eturn          0 on success, a negative error code otherwise
+  */
+ int net_=
+route_v6_del(const openvpn_net_ctx_t *ctx, const struct in6_addr *dst, int =
+prefixlen,
+-                     const struct in6_addr *gw, const openvpn_n=
+et_iface_t *iface, uint32_t table,
++                     const struct in6_a=
+ddr *gw, const openvpn_net_iface_t *iface, int table,
+                     =
+ int metric);
  
--#if defined(TARGET_FREEBSD)
-+#if def=
-ined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY)
+ #endif /* ENABLE_SITNL || ENABLE_IPROUTE || TARGET_FREEBSD=
+ */
+diff --git a/src/openvpn/networking_freebsd=2Ec b/src/openvpn/networkin=
+g_freebsd=2Ec
+index 88fd5c0=2E=2E8ba6326 100644
+--- a/src/openvpn/networkin=
+g_freebsd=2Ec
++++ b/src/openvpn/networking_freebsd=2Ec
+@@ -10,7 +10,7 @@
  
- static int
- net_route_=
-v4(const char *op, const in_addr_t *dst, int prefixlen, const in_addr_t *gw=
-,
-@@ -35,14 +35,16 @@
-     {
-         argv_printf_cat(&argv, "-iface %s", i=
-face);
-     }
-+#if defined(TARGET_FREEBSD) /* DragonFly has no multiple FIB=
- support */
-     /* without -fib, route(8) uses the FIB of the process */
- =
-    if (table >=3D 0)
-     {
-         argv_printf_cat(&argv, "-fib %d", tab=
-le);
-     }
-+#endif
- 
--    argv_msg(M_INFO, &argv);
--    bool status =3D op=
-envpn_execve_check(&argv, NULL, 0, "ERROR: FreeBSD route command failed");
 =
-+    argv_msg(D_ROUTE, &argv);
-+    bool status =3D openvpn_execve_check(&a=
-rgv, NULL, 0, "ERROR: route command failed");
- 
-     argv_free(&argv);
- 
-@@=
- -77,13 +79,15 @@
+ static int
+ net_route_v4(const char *op, const in_addr_t *dst, int prefixl=
+en, const in_addr_t *gw,
+-             const char *iface, uint32_t table, i=
+nt metric)
++             const char *iface, int table, int metric)
+ {
+     =
+char buf1[INET_ADDRSTRLEN], buf2[INET_ADDRSTRLEN];
+     in_addr_t _dst, _gw=
+;
+@@ -27,15 +27,20 @@
+     if (gw)
      {
-         argv_printf_cat(&argv, "-iface %s", iface=
-);
+         _gw =3D ntohl(*gw);
+-   =
+     argv_printf(&argv, "%s %s -net %s/%d %s -fib %d", ROUTE_PATH, op,
++   =
+     argv_printf(&argv, "%s %s -net %s/%d %s", ROUTE_PATH, op,
+            =
+         inet_ntop(AF_INET, &_dst, buf1, sizeof(buf1)), prefixlen,
+-       =
+             inet_ntop(AF_INET, &_gw, buf2, sizeof(buf2)), table);
++       =
+             inet_ntop(AF_INET, &_gw, buf2, sizeof(buf2)));
      }
-+#if defined(TARGET_FREEBSD) /* DragonFly has no multiple FIB sup=
-port */
-     if (table >=3D 0)
+     els=
+e
      {
-         argv_printf_cat(&argv, "-fib=
- %d", table);
+-        argv_printf(&argv, "%s %s -net %s/%d -iface %s -fib %d", =
+ROUTE_PATH, op,
++        argv_printf(&argv, "%s %s -net %s/%d -iface %s", R=
+OUTE_PATH, op,
+                     inet_ntop(AF_INET, &_dst, buf1, sizeof(=
+buf1)), prefixlen,
+-                    iface, table);
++                   =
+ iface);
++    }
++    /* without -fib, route(8) uses the FIB of the process =
+*/
++    if (table >=3D 0)
++    {
++        argv_printf_cat(&argv, "-fib %d",=
+ table);
      }
-+#endif
  
--    argv_msg(M_INFO, &argv);
--    bool stat=
-us =3D openvpn_execve_check(&argv, NULL, 0, "ERROR: FreeBSD route command f=
-ailed");
-+    argv_msg(D_ROUTE, &argv);
-+    bool status =3D openvpn_execve=
-_check(&argv, NULL, 0, "ERROR: route command failed");
+     argv_msg(M_INFO, &argv);
+@@ -48,7 +53,7 @@
  
-     argv_free(&ar=
-gv);
+ static=
+ int
+ net_route_v6(const char *op, const struct in6_addr *dst, int prefixle=
+n, const struct in6_addr *gw,
+-             const char *iface, uint32_t tab=
+le, int metric)
++             const char *iface, int table, int metric)
+ {
+=
+     char buf1[INET6_ADDRSTRLEN], buf2[INET6_ADDRSTRLEN];
+     struct argv =
+argv =3D argv_new();
+@@ -61,15 +66,19 @@
+      */
+     if (gw)
+     {
+-    =
+    argv_printf(&argv, "%s -6 %s -net %s/%d %s -fib %d", ROUTE_PATH, op,
++ =
+       argv_printf(&argv, "%s -6 %s -net %s/%d %s", ROUTE_PATH, op,
+       =
+              inet_ntop(AF_INET6, dst, buf1, sizeof(buf1)), prefixlen,
+-   =
+                 inet_ntop(AF_INET6, gw, buf2, sizeof(buf2)), table);
++    =
+                inet_ntop(AF_INET6, gw, buf2, sizeof(buf2)));
+     }
+     e=
+lse
+     {
+-        argv_printf(&argv, "%s -6 %s -net %s/%d -iface %s -fib =
+%d", ROUTE_PATH, op,
++        argv_printf(&argv, "%s -6 %s -net %s/%d -ifac=
+e %s", ROUTE_PATH, op,
+                     inet_ntop(AF_INET6, dst, buf1, =
+sizeof(buf1)), prefixlen,
+-                    iface, table);
++            =
+        iface);
++    }
++    if (table >=3D 0)
++    {
++        argv_printf_c=
+at(&argv, "-fib %d", table);
+     }
  
-@@ -118,4 +122,4 @@
-     return net_route_v6("delete", dst, prefixle=
-n, gw, iface, table, metric);
+ 
+@@ -83,28 +92,28 @@
+ 
+ int
+ net_rou=
+te_v4_add(const openvpn_net_ctx_t *ctx, const in_addr_t *dst, int prefixlen=
+, const in_addr_t *gw,
+-                 const char *iface, uint32_t table,=
+ int metric)
++                 const char *iface, int table, int metric)
+ {=
+
+     return net_route_v4("add", dst, prefixlen, gw, iface, table, metric);=
+
  }
  
--#endif /* if defined(TARGET_FREEBSD) */=
-
-+#endif /* if defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY) */
-diff=
- --git a/src/openvpn/options=2Ec b/src/openvpn/options=2Ec
-index 01d5edb=2E=
-=2E388d38c5 100644
---- a/src/openvpn/options=2Ec
-+++ b/src/openvpn/options=
-=2Ec
-@@ -226,7 +226,7 @@
-     "                    pass --ifconfig parms by=
- environment to scripts=2E\n"
-     "--ifconfig-nowarn : Don't warn if the -=
--ifconfig option on this side of the\n"
-     "                    connectio=
-n doesn't match the remote side=2E\n"
--#ifdef TARGET_LINUX
-+#if defined(TAR=
-GET_LINUX) || defined(TARGET_FREEBSD)
-     "--route-table table_id : Specif=
-y a custom routing table for use with --route(-ipv6)=2E\n"
-     "          =
-                 If not specified, the id of the default routing table will=
- be used=2E\n"
- #endif
-@@ -5293,8 +5293,8 @@
-     }
-     else if (streq(p[0=
-], "route-table") && p[1] && !p[2])
-     {
--#ifndef ENABLE_SITNL
--        m=
-sg(M_WARN, "NOTE: --route-table is supported only on Linux when SITNL is bu=
-ilt-in");
-+#if !defined(ENABLE_SITNL) && !defined(TARGET_FREEBSD)
-+        =
-msg(M_WARN, "NOTE: --route-table is supported only on FreeBSD, and on Linux=
- when SITNL is built-in");
- #endif
-         VERIFY_PERMISSION(OPT_P_ROUTE_T=
-ABLE);
-         options->route_default_table_id =3D positive_atoi(p[1], msg=
-level);
-diff --git a/src/openvpn/route=2Ec b/src/openvpn/route=2Ec
-index 8c=
-493ee=2E=2E83c7ebf 100644
---- a/src/openvpn/route=2Ec
-+++ b/src/openvpn/rou=
-te=2Ec
-@@ -103,6 +103,11 @@
- #define RTA_SUCCESS 1 /* route addition succee=
-ded */
- #define RTA_EEXIST  2 /* route not added as it already exists */
- 
-=
-+/* Platforms that add and delete routes through the net_ API (networking=
-=2Eh) */
-+#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD) || defined(T=
-ARGET_DRAGONFLY)
-+#define ROUTE_NET_API
-+#endif
-+
- #ifndef TARGET_ANDROID
- =
-static bool
- add_bypass_address(struct route_bypass *rb, const in_addr_t a)=
-
-@@ -1433,7 +1438,7 @@
- 
- /* Return true if the "on-link" form of the route=
- should be used=2E  This is when the gateway for
-  * a route is specified a=
-s an interface rather than an address=2E */
--#if defined(TARGET_LINUX) || d=
-efined(_WIN32) || defined(TARGET_DARWIN)
-+#if defined(ROUTE_NET_API) || def=
-ined(_WIN32) || defined(TARGET_DARWIN)
- static inline bool
- is_on_link(cons=
-t struct route_ipv4 *r, const unsigned int flags,
-            const struct =
-route_gateway_info *rgi)
-@@ -1459,7 +1464,7 @@
-     struct argv argv =3D ar=
-gv_new();
-     struct gc_arena gc =3D gc_new();
- 
--#if !defined(TARGET_LINU=
-X)
-+#if !defined(ROUTE_NET_API)
-     const char *network =3D print_in_addr_=
-t(r->network, 0, &gc);
- #if !defined(TARGET_AIX)
-     const char *netmask =
-=3D print_in_addr_t(r->netmask, 0, &gc);
-@@ -1468,7 +1473,7 @@
- #endif
- 
- 
-=
--#if defined(TARGET_LINUX)
-+#if defined(ROUTE_NET_API)
-     const char *ifa=
-ce =3D NULL;
-     int metric =3D -1;
- 
-@@ -1482,20 +1487,29 @@
-         met=
-ric =3D r->metric;
-     }
- 
--
--    status =3D RTA_SUCCESS;
--    int ret =3D=
- net_route_v4_add(ctx, &r->network, netmask_to_netbits2(r->netmask), &r->ga=
-teway,
--                               iface, r->table_id, metric);
--    if=
- (ret =3D=3D -EEXIST)
-+    const int netbits =3D netmask_to_netbits2(r->net=
-mask);
-+    if (netbits < 0)
-     {
--        msg(D_ROUTE, "NOTE: Linux rout=
-e add command failed because route exists");
--        status =3D RTA_EEXIST=
-;
--    }
--    else if (ret < 0)
--    {
--        msg(M_WARN, "ERROR: Linux r=
-oute add command failed");
-+        msg(M_WARN, "ERROR: cannot add route wi=
-th non-contiguous netmask %s",
-+            print_in_addr_t(r->netmask, 0, =
-&gc));
-         status =3D RTA_ERROR;
-     }
-+    else
-+    {
-+        stat=
-us =3D RTA_SUCCESS;
-+        int ret =3D net_route_v4_add(ctx, &r->network,=
- netbits, &r->gateway, iface,
-+                                   r->table_=
-id, metric);
-+        if (ret =3D=3D -EEXIST)
-+        {
-+            msg(D=
-_ROUTE, "NOTE: route add command failed because route exists");
-+          =
-  status =3D RTA_EEXIST;
-+        }
-+        else if (ret < 0)
-+        {
-+=
-            msg(M_WARN, "ERROR: route add command failed");
-+            st=
-atus =3D RTA_ERROR;
-+        }
-+    }
- 
- #elif defined(TARGET_ANDROID)
-    =
- char out[128];
-@@ -1597,44 +1611,6 @@
-     bool ret =3D openvpn_execve_che=
-ck(&argv, es, 0, "ERROR: Solaris route add command failed");
-     status =
-=3D ret ? RTA_SUCCESS : RTA_ERROR;
- 
--#elif defined(TARGET_FREEBSD)
--
--    =
-argv_printf(&argv, "%s add", ROUTE_PATH);
--
--#if 0
--    if (r->flags & RT_M=
-ETRIC_DEFINED)
--    {
--        argv_printf_cat(&argv, "-rtt %d", r->metric)=
-;
--    }
--#endif
--
--    argv_printf_cat(&argv, "-net %s %s %s", network, ga=
-teway, netmask);
--
--    /* FIXME -- add on-link support for FreeBSD */
--
-- =
-   argv_msg(D_ROUTE, &argv);
--    bool ret =3D openvpn_execve_check(&argv, =
-es, 0, "ERROR: FreeBSD route add command failed");
--    status =3D ret ? RT=
-A_SUCCESS : RTA_ERROR;
--
--#elif defined(TARGET_DRAGONFLY)
--
--    argv_print=
-f(&argv, "%s add", ROUTE_PATH);
--
--#if 0
--    if (r->flags & RT_METRIC_DEFI=
-NED)
--    {
--        argv_printf_cat(&argv, "-rtt %d", r->metric);
--    }
--=
-#endif
--
--    argv_printf_cat(&argv, "-net %s %s %s", network, gateway, net=
-mask);
--
--    /* FIXME -- add on-link support for Dragonfly */
--
--    argv_=
-msg(D_ROUTE, &argv);
--    bool ret =3D openvpn_execve_check(&argv, es, 0, "=
-ERROR: DragonFly route add command failed");
--    status =3D ret ? RTA_SUCC=
-ESS : RTA_ERROR;
--
- #elif defined(TARGET_DARWIN)
- 
-     argv_printf(&argv, =
-"%s add", ROUTE_PATH);
-@@ -1700,10 +1676,10 @@
-     bool ret =3D openvpn_ex=
-ecve_check(&argv, es, 0, "ERROR: Haiku inet route add command failed");
-   =
-  status =3D ret ? RTA_SUCCESS : RTA_ERROR;
- 
--#else  /* if defined(TARGET_=
-LINUX) */
-+#else  /* if defined(ROUTE_NET_API) */
-     msg(M_FATAL,
-       =
-  "Sorry, but I don't know how to do 'route' commands on this operating sys=
-tem=2E  Try putting your routes in a --route-up script");
--#endif /* if def=
-ined(TARGET_LINUX) */
-+#endif /* if defined(ROUTE_NET_API) */
- 
-     if (st=
-atus =3D=3D RTA_SUCCESS)
-     {
-@@ -1777,8 +1753,7 @@
-     const char *netw=
-ork =3D print_in6_addr(r6->network, 0, &gc);
-     const char *gateway =3D p=
-rint_in6_addr(r6->gateway, 0, &gc);
- 
--#if defined(TARGET_DARWIN) || define=
-d(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY) \
--    || defined(TARGET_OPE=
-NBSD) || defined(TARGET_NETBSD)
-+#if defined(TARGET_DARWIN) || defined(TARG=
-ET_OPENBSD) || defined(TARGET_NETBSD)
- 
-     /* the BSD platforms cannot sp=
-ecify gateway and interface independently,
-      * but for link-local desti=
-nations, we MUST specify the interface, so
-@@ -1830,7 +1805,7 @@
-         g=
-oto done;
-     }
- 
--#if defined(TARGET_LINUX)
-+#if defined(ROUTE_NET_API)
- =
-    int metric =3D -1;
-     if ((r6->flags & RT_METRIC_DEFINED) && (r6->met=
-ric > 0))
-     {
-@@ -1842,12 +1817,12 @@
-                                de=
-vice, r6->table_id, metric);
-     if (ret =3D=3D -EEXIST)
-     {
--        m=
-sg(D_ROUTE, "NOTE: Linux route add command failed because route exists");
-+=
-        msg(D_ROUTE, "NOTE: route add command failed because route exists")=
-;
-         status =3D RTA_EEXIST;
-     }
-     else if (ret < 0)
-     {
--   =
-     msg(M_WARN, "ERROR: Linux route add command failed");
-+        msg(M_W=
-ARN, "ERROR: route add command failed");
-         status =3D RTA_ERROR;
-   =
-  }
- 
-@@ -1893,23 +1868,6 @@
-     bool ret =3D openvpn_execve_check(&argv, =
-es, 0, "ERROR: Solaris route add -inet6 command failed");
-     status =3D r=
-et ? RTA_SUCCESS : RTA_ERROR;
- 
--#elif defined(TARGET_FREEBSD) || defined(T=
-ARGET_DRAGONFLY)
--
--    argv_printf(&argv, "%s add -inet6 %s/%d", ROUTE_PAT=
-H, network, r6->netbits);
--
--    if (gateway_needed)
--    {
--        argv_p=
-rintf_cat(&argv, "%s", gateway);
--    }
--    else
--    {
--        argv_prin=
-tf_cat(&argv, "-iface %s", device);
--    }
--
--    argv_msg(D_ROUTE, &argv);=
-
--    bool ret =3D openvpn_execve_check(&argv, es, 0, "ERROR: *BSD route ad=
-d -inet6 command failed");
--    status =3D ret ? RTA_SUCCESS : RTA_ERROR;
--=
-
- #elif defined(TARGET_DARWIN)
- 
-     argv_printf(&argv, "%s add -inet6 %s =
--prefixlen %d", ROUTE_PATH, network, r6->netbits);
-@@ -1960,10 +1918,10 @@
-=
-     bool ret =3D openvpn_execve_check(&argv, es, 0, "ERROR: Haiku inet6 ro=
-ute add command failed");
-     status =3D ret ? RTA_SUCCESS : RTA_ERROR;
- 
-=
--#else  /* if defined(TARGET_LINUX) */
-+#else  /* if defined(ROUTE_NET_API)=
- */
-     msg(M_FATAL,
-         "Sorry, but I don't know how to do 'route ip=
-v6' commands on this operating system=2E  Try putting your routes in a --ro=
-ute-up script");
--#endif /* if defined(TARGET_LINUX) */
-+#endif /* if defin=
-ed(ROUTE_NET_API) */
- 
- done:
-     if (status =3D=3D RTA_SUCCESS)
-@@ -1986,=
-13 +1944,13 @@
- delete_route(struct route_ipv4 *r, const struct tuntap *tt,=
- unsigned int flags,
-              const struct route_gateway_info *rgi, co=
-nst struct env_set *es, openvpn_net_ctx_t *ctx)
+ int
+ net_route_v6_add(const openvpn_net_ctx_t *ctx, const struct in6=
+_addr *dst, int prefixlen,
+-                 const struct in6_addr *gw, con=
+st char *iface, uint32_t table, int metric)
++                 const struct =
+in6_addr *gw, const char *iface, int table, int metric)
  {
--#if !defined(TARGET_LIN=
-UX)
-+#if !defined(ROUTE_NET_API)
-     const char *network;
- #if !defined(TA=
-RGET_AIX)
-     const char *netmask;
- #endif
-     const char *gateway;
--#els=
-e /* if !defined(TARGET_LINUX) */
-+#else /* if !defined(ROUTE_NET_API) */
- =
-    int metric;
- #endif
+     return net_=
+route_v6("add", dst, prefixlen, gw, iface, table, metric);
+ }
  
-@@ -2004,7 +1962,7 @@
-     struct gc_arena gc =3D=
- gc_new();
-     struct argv argv =3D argv_new();
+ int
+ net_r=
+oute_v4_del(const openvpn_net_ctx_t *ctx, const in_addr_t *dst, int prefixl=
+en, const in_addr_t *gw,
+-                 const char *iface, uint32_t tabl=
+e, int metric)
++                 const char *iface, int table, int metric)
+=
+ {
+     return net_route_v4("del", dst, prefixlen, gw, iface, table, metric=
+);
+ }
  
--#if !defined(TARGET_LIN=
-UX)
-+#if !defined(ROUTE_NET_API)
-     network =3D print_in_addr_t(r->networ=
-k, 0, &gc);
- #if !defined(TARGET_AIX)
-     netmask =3D print_in_addr_t(r->n=
-etmask, 0, &gc);
-@@ -2013,7 +1971,7 @@
- #endif
- 
- 
--#if defined(TARGET_LINU=
-X)
-+#if defined(ROUTE_NET_API)
-     metric =3D -1;
-     if (r->flags & RT_M=
-ETRIC_DEFINED)
-     {
-@@ -2024,7 +1982,7 @@
-                          r->ta=
-ble_id, metric)
-         < 0)
-     {
--        msg(M_WARN, "ERROR: Linux rou=
-te delete command failed");
-+        msg(M_WARN, "ERROR: route delete comma=
-nd failed");
-     }
- #elif defined(_WIN32)
- 
-@@ -2074,20 +2032,6 @@
-     ar=
-gv_msg(D_ROUTE, &argv);
-     openvpn_execve_check(&argv, es, 0, "ERROR: Sol=
-aris route delete command failed");
- 
--#elif defined(TARGET_FREEBSD)
--
--   =
- argv_printf(&argv, "%s delete -net %s %s %s", ROUTE_PATH, network, gateway=
-, netmask);
--
--    argv_msg(D_ROUTE, &argv);
--    openvpn_execve_check(&arg=
-v, es, 0, "ERROR: FreeBSD route delete command failed");
--
--#elif defined(T=
-ARGET_DRAGONFLY)
--
--    argv_printf(&argv, "%s delete -net %s %s %s", ROUTE=
-_PATH, network, gateway, netmask);
--
--    argv_msg(D_ROUTE, &argv);
--    op=
-envpn_execve_check(&argv, es, 0, "ERROR: DragonFly route delete command fai=
-led");
--
- #elif defined(TARGET_DARWIN)
- 
-     if (is_on_link(r, flags, rgi)=
-)
-@@ -2135,10 +2079,10 @@
-     argv_msg(D_ROUTE, &argv);
-     openvpn_execv=
-e_check(&argv, es, 0, "ERROR: Haiku inet route delete command failed");
- 
--=
-#else  /* if defined(TARGET_LINUX) */
-+#else  /* if defined(ROUTE_NET_API) =
-*/
-     msg(M_FATAL,
-         "Sorry, but I don't know how to do 'route' co=
-mmands on this operating system=2E  Try putting your routes in a --route-up=
- script");
--#endif /* if defined(TARGET_LINUX) */
-+#endif /* if defined(ROU=
-TE_NET_API) */
- 
-     r->flags &=3D ~RT_ADDED;
-     argv_free(&argv);
-@@ -2=
-159,7 +2103,7 @@
-     }
- 
- #if !defined(_WIN32)
--#if !defined(TARGET_LINUX)=
+ int
+ net_route_v6_del(const openvpn_net_ctx_t *ctx, const struct i=
+n6_addr *dst, int prefixlen,
+-                 const struct in6_addr *gw, c=
+onst char *iface, uint32_t table, int metric)
++                 const struc=
+t in6_addr *gw, const char *iface, int table, int metric)
+ {
+     return ne=
+t_route_v6("del", dst, prefixlen, gw, iface, table, metric);
+ }
+diff --git =
+a/src/openvpn/networking_iproute2=2Ec b/src/openvpn/networking_iproute2=2Ec=
 
-+#if !defined(ROUTE_NET_API)
-     const char *gateway;
- #endif
- #if !defin=
-ed(TARGET_SOLARIS)
-@@ -2186,12 +2130,11 @@
-     struct argv argv =3D argv_n=
-ew();
+index d987478=2E=2E6c4c8f4 100644
+--- a/src/openvpn/networking_iproute2=2E=
+c
++++ b/src/openvpn/networking_iproute2=2Ec
+@@ -243,7 +243,7 @@
  
-     network =3D print_in6_addr(r6->network, 0, &gc);
--#if !defined=
-(TARGET_LINUX) && !defined(_WIN32)
-+#if !defined(ROUTE_NET_API) && !defined=
-(_WIN32)
-     gateway =3D print_in6_addr(r6->gateway, 0, &gc);
- #endif
+ int
+ net=
+_route_v4_add(const openvpn_net_ctx_t *ctx, const in_addr_t *dst, int prefi=
+xlen, const in_addr_t *gw,
+-                 const char *iface, uint32_t ta=
+ble, int metric)
++                 const char *iface, int table, int metric=
+)
+ {
+     struct argv argv =3D argv_new();
+     const char *dst_str =3D pri=
+nt_in_addr_t(*dst, 0, &argv=2Egc);
+@@ -281,7 +281,7 @@
  
--#=
-if defined(TARGET_DARWIN) || defined(TARGET_FREEBSD) || defined(TARGET_DRAG=
-ONFLY) \
--    || defined(TARGET_OPENBSD) || defined(TARGET_NETBSD)
-+#if def=
-ined(TARGET_DARWIN) || defined(TARGET_OPENBSD) || defined(TARGET_NETBSD)
+ int
+ net_route_v6=
+_add(const openvpn_net_ctx_t *ctx, const struct in6_addr *dst, int prefixle=
+n,
+-                 const struct in6_addr *gw, const char *iface, uint32_t=
+ table, int metric)
++                 const struct in6_addr *gw, const char=
+ *iface, int table, int metric)
+ {
+     struct argv argv =3D argv_new();
+  =
+   char *dst_str =3D (char *)print_in6_addr(*dst, 0, &argv=2Egc);
+@@ -314,7=
+ +314,7 @@
  
+ int
+ net_route_v4_del(const openvpn_net_ctx_t *ctx, const in_=
+addr_t *dst, int prefixlen, const in_addr_t *gw,
+-                 const ch=
+ar *iface, uint32_t table, int metric)
++                 const char *iface,=
+ int table, int metric)
+ {
+     struct argv argv =3D argv_new();
+     const=
+ char *dst_str =3D print_in_addr_t(*dst, 0, &argv=2Egc);
+@@ -340,7 +340,7 @=
+@
+ 
+ int
+ net_route_v6_del(const openvpn_net_ctx_t *ctx, const struct in6_a=
+ddr *dst, int prefixlen,
+-                 const struct in6_addr *gw, const=
+ char *iface, uint32_t table, int metric)
++                 const struct in=
+6_addr *gw, const char *iface, int table, int metric)
+ {
+     struct argv a=
+rgv =3D argv_new();
+     char *dst_str =3D (char *)print_in6_addr(*dst, 0, =
+&argv=2Egc);
+diff --git a/src/openvpn/networking_sitnl=2Ec b/src/openvpn/ne=
+tworking_sitnl=2Ec
+index b7c0f58=2E=2E17df0d9 100644
+--- a/src/openvpn/netw=
+orking_sitnl=2Ec
++++ b/src/openvpn/networking_sitnl=2Ec
+@@ -1115,14 +1115,1=
+1 @@
+ 
+ static int
+ sitnl_route_add(const char *iface, sa_family_t af_famil=
+y, const void *dst, int prefixlen,
+-                const void *gw, uint32_=
+t table, int metric)
++                const void *gw, int table, int metric=
+)
+ {
+     enum rt_scope_t scope =3D RT_SCOPE_UNIVERSE;
+-
+-    if (table =3D=
+=3D 0)
+-    {
+-        table =3D RT_TABLE_MAIN;
+-    }
++    /* table 0 is R=
+T_TABLE_UNSPEC */
++    uint32_t rt_table =3D table > 0 ? (uint32_t)table : =
+RT_TABLE_MAIN;
+ 
+     if (!gw && iface)
+     {
+@@ -1130,12 +1127,12 @@
+    =
+ }
+ 
+     return sitnl_route_set(RTM_NEWROUTE, NLM_F_CREATE, iface, af_fami=
+ly, dst, prefixlen, gw,
+-                           table, metric, scope, R=
+TPROT_BOOT, RTN_UNICAST);
++                           rt_table, metric, sco=
+pe, RTPROT_BOOT, RTN_UNICAST);
+ }
+ 
+ int
+ net_route_v4_add(const openvpn_ne=
+t_ctx_t *ctx, const in_addr_t *dst, int prefixlen, const in_addr_t *gw,
+-  =
+               const char *iface, uint32_t table, int metric)
++            =
+     const char *iface, int table, int metric)
+ {
+     const in_addr_t *dst=
+_ptr =3D NULL, *gw_ptr =3D NULL;
+     in_addr_t dst_be =3D 0, gw_be =3D 0;
 =
-     /* the BSD platforms cannot specify gateway and interface independentl=
-y,
-      * but for link-local destinations, we MUST specify the interface, =
-so
-@@ -2209,7 +2152,7 @@
- 
-     msg(D_ROUTE, "delete_route_ipv6(%s/%u)", ne=
-twork, r6->netbits);
- 
--#if defined(TARGET_LINUX)
-+#if defined(ROUTE_NET_AP=
-I)
-     int metric =3D -1;
-     if ((r6->flags & RT_METRIC_DEFINED) && (r6-=
->metric > 0))
-     {
-@@ -2220,7 +2163,7 @@
-                          device=
-, r6->table_id, metric)
-         < 0)
-     {
--        msg(M_WARN, "ERROR: L=
-inux route v6 delete command failed");
-+        msg(M_WARN, "ERROR: route v=
-6 delete command failed");
+@@ -1154,7 +1151,7 @@
+         gw_ptr =3D &gw_be;
      }
  
- #elif defined(_WIN32)
-@@ -2242,22 +218=
-5,6 @@
-     argv_msg(D_ROUTE, &argv);
-     openvpn_execve_check(&argv, es, =
-0, "ERROR: Solaris route delete -inet6 command failed");
+-    msg(D_ROUTE=
+, "%s: %s/%d via %s dev %s table %u metric %d", __func__,
++    msg(D_ROUTE,=
+ "%s: %s/%d via %s dev %s table %d metric %d", __func__,
+         inet_ntop=
+(AF_INET, &dst_be, dst_str, sizeof(dst_str)), prefixlen,
+         inet_ntop=
+(AF_INET, &gw_be, gw_str, sizeof(gw_str)), np(iface), table, metric);
  
--#elif defined(T=
-ARGET_FREEBSD) || defined(TARGET_DRAGONFLY)
--
--    argv_printf(&argv, "%s d=
-elete -inet6 %s/%d", ROUTE_PATH, network, r6->netbits);
--
--    if (gateway_=
-needed)
--    {
--        argv_printf_cat(&argv, "%s", gateway);
+@@ =
+-1163,7 +1160,7 @@
+ 
+ int
+ net_route_v6_add(const openvpn_net_ctx_t *ctx, c=
+onst struct in6_addr *dst, int prefixlen,
+-                 const struct in=
+6_addr *gw, const char *iface, uint32_t table, int metric)
++               =
+  const struct in6_addr *gw, const char *iface, int table, int metric)
+ {
+ =
+    inet_address_t dst_v6;
+     inet_address_t gw_v6;
+@@ -1183,7 +1180,7 @@=
+
+         gw_v6=2Eipv6 =3D *gw;
+     }
+ 
+-    msg(D_ROUTE, "%s: %s/%d via %=
+s dev %s table %u metric %d", __func__,
++    msg(D_ROUTE, "%s: %s/%d via %s=
+ dev %s table %d metric %d", __func__,
+         inet_ntop(AF_INET6, &dst_v6=
+=2Eipv6, dst_str, sizeof(dst_str)), prefixlen,
+         inet_ntop(AF_INET6,=
+ &gw_v6=2Eipv6, gw_str, sizeof(gw_str)), np(iface), table, metric);
+ 
+@@ -1=
+192,20 +1189,18 @@
+ 
+ static int
+ sitnl_route_del(const char *iface, sa_fam=
+ily_t af_family, const inet_address_t *dst, int prefixlen,
+-               =
+ const inet_address_t *gw, uint32_t table, int metric)
++                con=
+st inet_address_t *gw, int table, int metric)
+ {
+-    if (table =3D=3D 0)
+-=
+    {
+-        table =3D RT_TABLE_MAIN;
 -    }
--    =
-else
--    {
--        argv_printf_cat(&argv, "-iface %s", device);
--    }
--
++    /* table 0 is RT_TABLE_=
+UNSPEC */
++    uint32_t rt_table =3D table > 0 ? (uint32_t)table : RT_TABLE=
+_MAIN;
+ 
+-    return sitnl_route_set(RTM_DELROUTE, 0, iface, af_family, dst=
+, prefixlen, gw, table, metric,
++    return sitnl_route_set(RTM_DELROUTE, 0=
+, iface, af_family, dst, prefixlen, gw, rt_table, metric,
+                 =
+           RT_SCOPE_NOWHERE, 0, 0);
+ }
+ 
+ int
+ net_route_v4_del(const openv=
+pn_net_ctx_t *ctx, const in_addr_t *dst, int prefixlen, const in_addr_t *gw=
+,
+-                 const char *iface, uint32_t table, int metric)
++       =
+          const char *iface, int table, int metric)
+ {
+     inet_address_t =
+dst_v4;
+     inet_address_t gw_v4;
+@@ -1225,7 +1220,7 @@
+         gw_v4=2Ei=
+pv4 =3D htonl(*gw);
+     }
+ 
+-    msg(D_ROUTE, "%s: %s/%d via %s dev %s tab=
+le %u metric %d", __func__,
++    msg(D_ROUTE, "%s: %s/%d via %s dev %s tabl=
+e %d metric %d", __func__,
+         inet_ntop(AF_INET, &dst_v4=2Eipv4, dst_=
+str, sizeof(dst_str)), prefixlen,
+         inet_ntop(AF_INET, &gw_v4=2Eipv4=
+, gw_str, sizeof(gw_str)), np(iface), table, metric);
+ 
+@@ -1234,7 +1229,7 =
+@@
+ 
+ int
+ net_route_v6_del(const openvpn_net_ctx_t *ctx, const struct in6_=
+addr *dst, int prefixlen,
+-                 const struct in6_addr *gw, cons=
+t char *iface, uint32_t table, int metric)
++                 const struct i=
+n6_addr *gw, const char *iface, int table, int metric)
+ {
+     inet_address=
+_t dst_v6;
+     inet_address_t gw_v6;
+@@ -1254,7 +1249,7 @@
+         gw_v6=
+=2Eipv6 =3D *gw;
+     }
+ 
+-    msg(D_ROUTE, "%s: %s/%d via %s dev %s table =
+%u metric %d", __func__,
++    msg(D_ROUTE, "%s: %s/%d via %s dev %s table %=
+d metric %d", __func__,
+         inet_ntop(AF_INET6, &dst_v6=2Eipv6, dst_st=
+r, sizeof(dst_str)), prefixlen,
+         inet_ntop(AF_INET6, &gw_v6=2Eipv6,=
+ gw_str, sizeof(gw_str)), np(iface), table, metric);
+ 
+diff --git a/src/ope=
+nvpn/options=2Ec b/src/openvpn/options=2Ec
+index 947439d=2E=2E01d5edb 10064=
+4
+--- a/src/openvpn/options=2Ec
++++ b/src/openvpn/options=2Ec
+@@ -831,7 +83=
+1,7 @@
+     o->ce=2Emssfix =3D 0;
+     o->ce=2Emssfix_default =3D true;
+   =
+  o->ce=2Emssfix_encap =3D true;
+-    o->route_default_table_id =3D 0;
++   =
+ o->route_default_table_id =3D -1;
+     o->route_delay_window =3D 30;
+     =
+o->resolve_retry_seconds =3D RESOLV_RETRY_INFINITE;
+     o->resolve_in_adva=
+nce =3D false;
+diff --git a/src/openvpn/route=2Ec b/src/openvpn/route=2Ec
+i=
+ndex 9086529=2E=2E8c493ee 100644
+--- a/src/openvpn/route=2Ec
++++ b/src/open=
+vpn/route=2Ec
+@@ -545,6 +545,7 @@
+         /* split a route into two smalle=
+r blocking routes, and direct them to target */
+         l2 =3D ((~gateway-=
+>netmask) + 1) >> 1;
+         r1->flags =3D RT_DEFINED;
++        r1->table_=
+id =3D -1;
+         r1->gateway =3D target;
+         r1->network =3D gatewa=
+y->addr & gateway->netmask;
+         r1->netmask =3D ~(l2 - 1);
+@@ -854,6 +=
+855,7 @@
+                 r6->gateway =3D rl6->rgi6=2Egateway=2Eaddr_ipv6;
 =
--    argv_msg(D_ROUTE, &argv);
--    openvpn_execve_check(&argv, es, 0, "ERR=
-OR: *BSD route delete -inet6 command failed");
--
- #elif defined(TARGET_DARW=
-IN)
+             }
+             r6->metric =3D 1;
++            r6->table_id =3D=
+ -1;
+ #ifdef _WIN32
+             r6->adapter_index =3D rl6->rgi6=2Eadapter_=
+index;
+ #else
+@@ -883,6 +885,7 @@
+     struct route_ipv4 r;
+     CLEAR(r);
+=
+     r=2Eflags =3D RT_DEFINED;
++    r=2Etable_id =3D -1;
+     r=2Enetwork =
+=3D network;
+     r=2Enetmask =3D netmask;
+     r=2Egateway =3D gateway;
+@@=
+ -897,6 +900,7 @@
+     struct route_ipv4 r;
+     CLEAR(r);
+     r=2Eflags =
+=3D RT_DEFINED | RT_ADDED;
++    r=2Etable_id =3D -1;
+     r=2Enetwork =3D n=
+etwork;
+     r=2Enetmask =3D netmask;
+     r=2Egateway =3D gateway;
+diff --=
+git a/tests/unit_tests/openvpn/test_networking=2Ec b/tests/unit_tests/openv=
+pn/test_networking=2Ec
+index b580d32=2E=2E95019e5 100644
+--- a/tests/unit_t=
+ests/openvpn/test_networking=2Ec
++++ b/tests/unit_tests/openvpn/test_networ=
+king=2Ec
+@@ -112,7 +112,7 @@
+     }
+     printf("\n");
  
-     argv_printf(&argv, "%s delete -inet6 %s -prefixlen %d", ROUTE_PA=
-TH, network, r6->netbits);
-@@ -2310,10 +2237,10 @@
-     argv_msg(D_ROUTE, &=
-argv);
-     openvpn_execve_check(&argv, es, 0, "ERROR: Haiku inet6 route de=
-lete command failed");
+-    return net_ro=
+ute_v4_add(NULL, &dst, prefixlen, NULL, iface, 0, metric);
++    return net_=
+route_v4_add(NULL, &dst, prefixlen, NULL, iface, -1, metric);
+ }
  
--#else  /* if defined(TARGET_LINUX) */
-+#else  /* =
-if defined(ROUTE_NET_API) */
-     msg(M_FATAL,
-         "Sorry, but I don't=
- know how to do 'route ipv6' commands on this operating system=2E  Try putt=
-ing your routes in a --route-down script");
--#endif /* if defined(TARGET_LI=
-NUX) */
-+#endif /* if defined(ROUTE_NET_API) */
+ static =
+int
+@@ -148,7 +148,7 @@
+     }
+     printf("\n");
  
-     argv_free(&argv);
-  =
-   gc_free(&gc);
+-    return net_route_v=
+4_add(NULL, &dst, prefixlen, &gw, iface, 0, metric);
++    return net_route_=
+v4_add(NULL, &dst, prefixlen, &gw, iface, -1, metric);
+ }
+ 
+ static int
+@@ =
+-175,7 +175,7 @@
+     }
+     printf("\n");
+ 
+-    return net_route_v6_add(N=
+ULL, &dst, prefixlen, NULL, iface, 0, metric);
++    return net_route_v6_add=
+(NULL, &dst, prefixlen, NULL, iface, -1, metric);
+ }
+ 
+ static int
+@@ -208,=
+7 +208,7 @@
+     }
+     printf("\n");
+ 
+-    return net_route_v6_add(NULL, =
+&dst, prefixlen, &gw, iface, 0, metric);
++    return net_route_v6_add(NULL,=
+ &dst, prefixlen, &gw, iface, -1, metric);
+ }
+ 
+ static void
 
 -- 
-To view, visit https://gerrit=2Eopenvpn=2Enet/c/openv=
-pn/+/2154?usp=3Demail
-To unsubscribe, or for help writing mail filters, vis=
-it https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
+To view, =
+visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2224?usp=3Demail
+To unsubs=
+cribe, or for help writing mail filters, visit https://gerrit=2Eopenvpn=2En=
+et/settings?usp=3Demail
 
-Gerrit-MessageType:=
- newpatchset
-Gerrit-Project: openvpn
+Gerrit-MessageType: newchange
+Gerrit-Project: open=
+vpn
 Gerrit-Branch: master
-Gerrit-Change-Id=
-: I601454a511c9aac4f37d8629b1692266cdbd6885
-Gerrit-Change-Number: 2154
-Gerr=
-it-PatchSet: 5
-Gerrit-Owner: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
-G=
-errit-Reviewer: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Reviewer: =
-Gert Doering <gert@greenie=2Emuc=2Ede>
-Gerrit-CC: openvpn-devel <openvpn-de=
-vel@lists=2Esourceforge=2Enet>
-Gerrit-Attention: R=C4=83zvan Cojocaru <razv=
-anc@mailbox=2Eorg>
-Gerrit-Attention: Arne Schwabe <arne-openvpn@rfc2549=2Eo=
-rg>
-Gerrit-Attention: Gert Doering <gert@greenie=2Emuc=2Ede>
+Gerrit-Change-Id: Icbfc6b64beea5e70f32449c5a63a08=
+ad862597b9
+Gerrit-Change-Number: 2224
+Gerrit-PatchSet: 1
+Gerrit-Owner: R=C4=
+=83zvan Cojocaru <razvanc@mailbox=2Eorg>
+Gerrit-Reviewer: Arne Schwabe <arn=
+e-openvpn@rfc2549=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Eso=
+urceforge=2Enet>
+Gerrit-Attention: Arne Schwabe <arne-openvpn@rfc2549=2Eorg=
+>
 
---Q0MisFcB1wg=
+--QmWR7W84fG0=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 <!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
-rently required from: Arne Schwabe, Gert Doering, R=C4=83zvan Cojocaru=2E <=
-/p>
-<p>R=C4=83zvan Cojocaru <strong>uploaded patch set #5</strong> to this =
-change=2E</p><p><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2154?=
-usp=3Demail">View Change</a></p><p>The following approvals got outdated and=
- were removed:
-Code-Review-1 by Gert Doering</p><pre class=3D"blocks" style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;">route: use th=
-e net_ API for routes on FreeBSD and DragonFly<br><br>Add and delete IPv4 a=
-nd IPv6 routes through net_route_v4/v6_add/del()<br>on FreeBSD and DragonFl=
-y, as on Linux, instead of running route(8)<br>from route=2Ec=2E Build netw=
-orking_freebsd=2Ec for DragonFly as well; -fib<br>is only passed on FreeBSD=
-, where --route-table is now supported=2E<br><br>A non-contiguous IPv4 netm=
-ask now gets an error instead of an invalid<br>prefix length=2E networking_=
-freebsd=2Ec logs route commands at D_ROUTE, as<br>route=2Ec did=2E The shar=
-ed error messages lose their &quot;Linux&quot; prefix=2E<br><br>Change-Id: =
-I601454a511c9aac4f37d8629b1692266cdbd6885<br>Signed-off-by: Razvan Cojocaru=
- &lt;razvanc@mailbox=2Eorg&gt;<br>---<br>M doc/man-sections/vpn-network-opt=
-ions=2Erst<br>M src/openvpn/networking=2Eh<br>M src/openvpn/networking_free=
-bsd=2Ec<br>M src/openvpn/options=2Ec<br>M src/openvpn/route=2Ec<br>5 files =
-changed, 71 insertions(+), 136 deletions(-)<br><br></pre><pre class=3D"bloc=
-ks" style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git =
-pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/54/2154/5</pre=
-><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><s=
-pan>diff --git a/doc/man-sections/vpn-network-options=2Erst b/doc/man-secti=
-ons/vpn-network-options=2Erst</span><br><span>index 960c6ad=2E=2Ef282982 10=
-0644</span><br><span>--- a/doc/man-sections/vpn-network-options=2Erst</span=
-><br><span>+++ b/doc/man-sections/vpn-network-options=2Erst</span><br><span=
->@@ -399,7 +399,10 @@</span><br><span>   table of the operating system, but=
- with this option,</span><br><span>   a user defined routing table can be u=
-sed instead=2E</span><br><span> </span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-  (Supported on Linux only, on other platforms this is a no-op)=
-=2E</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  On FreeBSD, th=
-e table id is the FIB number=2E Without this option, routes</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+  go to the FIB OpenVPN runs in (se=
-e :code:`setfib(1)`)=2E</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  (Supported on=
- Linux and FreeBSD only, on other platforms this is a no-op)=2E</span><br><=
-span> </span><br><span> --route args</span><br><span>   Add route to routin=
-g table after connection is established=2E Multiple</span><br><span>diff --=
-git a/src/openvpn/networking=2Eh b/src/openvpn/networking=2Eh</span><br><sp=
-an>index 1763e64=2E=2Ecbb10ed 100644</span><br><span>--- a/src/openvpn/netw=
-orking=2Eh</span><br><span>+++ b/src/openvpn/networking=2Eh</span><br><span=
->@@ -30,7 +30,7 @@</span><br><span> #include &quot;networking_sitnl=2Eh&quo=
-t;</span><br><span> #elif ENABLE_IPROUTE</span><br><span> #include &quot;ne=
-tworking_iproute2=2Eh&quot;</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-#elif defined(TARGET_FREEBSD)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+#elif defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY)<=
-/span><br><span> typedef void *openvpn_net_ctx_t;</span><br><span> typedef =
-char openvpn_net_iface_t;</span><br><span> #else  /* ifdef ENABLE_SITNL */<=
-/span><br><span>@@ -236,7 +236,8 @@</span><br><span> </span><br><span> #end=
-if /* ENABLE_SITNL || ENABLE_IPROUTE */</span><br><span> </span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-#if defined(ENABLE_SITNL) || defined(EN=
-ABLE_IPROUTE) || defined(TARGET_FREEBSD)</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+#if defined(ENABLE_SITNL) || defined(ENABLE_IPROUTE) |=
-| defined(TARGET_FREEBSD) \</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    || defined(TARGET_DRAGONFLY)</span><br><span> /**</span><br><sp=
-an>  * Add a route for an IPv4 address/network</span><br><span>  *</span><b=
-r><span>@@ -305,7 +306,7 @@</span><br><span>                      const str=
-uct in6_addr *gw, const openvpn_net_iface_t *iface, int table,</span><br><s=
-pan>                      int metric);</span><br><span> </span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-#endif /* ENABLE_SITNL || ENABLE_IPROUTE=
- || TARGET_FREEBSD */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+#endif /* ENABLE_SITNL || ENABLE_IPROUTE || TARGET_FREEBSD || TARGET_DRAG=
-ONFLY */</span><br><span> </span><br><span> #if defined(ENABLE_SITNL) || de=
-fined(ENABLE_IPROUTE)</span><br><span> </span><br><span>diff --git a/src/op=
-envpn/networking_freebsd=2Ec b/src/openvpn/networking_freebsd=2Ec</span><br=
-><span>index 141f4bd=2E=2E1f5ff3a 100644</span><br><span>--- a/src/openvpn/=
-networking_freebsd=2Ec</span><br><span>+++ b/src/openvpn/networking_freebsd=
-=2Ec</span><br><span>@@ -6,7 +6,7 @@</span><br><span> #include &quot;run_co=
-mmand=2Eh&quot;</span><br><span> #include &quot;networking=2Eh&quot;</span>=
-<br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if define=
-d(TARGET_FREEBSD)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#i=
-f defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY)</span><br><span> </s=
-pan><br><span> static int</span><br><span> net_route_v4(const char *op, con=
-st in_addr_t *dst, int prefixlen, const in_addr_t *gw,</span><br><span>@@ -=
-35,14 +35,16 @@</span><br><span>     {</span><br><span>         argv_printf=
-_cat(&amp;argv, &quot;-iface %s&quot;, iface);</span><br><span>     }</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(TARGET_FREEBS=
-D) /* DragonFly has no multiple FIB support */</span><br><span>     /* with=
-out -fib, route(8) uses the FIB of the process */</span><br><span>     if (=
-table &gt;=3D 0)</span><br><span>     {</span><br><span>         argv_print=
-f_cat(&amp;argv, &quot;-fib %d&quot;, table);</span><br><span>     }</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span> </=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    argv_msg(M_INFO, &a=
-mp;argv);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    bool sta=
-tus =3D openvpn_execve_check(&amp;argv, NULL, 0, &quot;ERROR: FreeBSD route=
- command failed&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    argv_msg(D_ROUTE, &amp;argv);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    bool status =3D openvpn_execve_check(&amp;argv, NULL,=
- 0, &quot;ERROR: route command failed&quot;);</span><br><span> </span><br><=
-span>     argv_free(&amp;argv);</span><br><span> </span><br><span>@@ -77,13=
- +79,15 @@</span><br><span>     {</span><br><span>         argv_printf_cat(=
-&amp;argv, &quot;-iface %s&quot;, iface);</span><br><span>     }</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+#if defined(TARGET_FREEBSD) /*=
- DragonFly has no multiple FIB support */</span><br><span>     if (table &g=
-t;=3D 0)</span><br><span>     {</span><br><span>         argv_printf_cat(&a=
-mp;argv, &quot;-fib %d&quot;, table);</span><br><span>     }</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span> </span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    argv_msg(M_INFO, &amp;argv)=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    bool status =3D =
-openvpn_execve_check(&amp;argv, NULL, 0, &quot;ERROR: FreeBSD route command=
- failed&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-argv_msg(D_ROUTE, &amp;argv);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    bool status =3D openvpn_execve_check(&amp;argv, NULL, 0, &quo=
-t;ERROR: route command failed&quot;);</span><br><span> </span><br><span>   =
-  argv_free(&amp;argv);</span><br><span> </span><br><span>@@ -118,4 +122,4 =
-@@</span><br><span>     return net_route_v6(&quot;delete&quot;, dst, prefix=
-len, gw, iface, table, metric);</span><br><span> }</span><br><span> </span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-#endif /* if defined(TARGET_=
-FREEBSD) */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /=
-* if defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY) */</span><br><spa=
-n>diff --git a/src/openvpn/options=2Ec b/src/openvpn/options=2Ec</span><br>=
-<span>index 01d5edb=2E=2E388d38c5 100644</span><br><span>--- a/src/openvpn/=
-options=2Ec</span><br><span>+++ b/src/openvpn/options=2Ec</span><br><span>@=
-@ -226,7 +226,7 @@</span><br><span>     &quot;                    pass --if=
-config parms by environment to scripts=2E\n&quot;</span><br><span>     &quo=
-t;--ifconfig-nowarn : Don&#39;t warn if the --ifconfig option on this side =
-of the\n&quot;</span><br><span>     &quot;                    connection do=
-esn&#39;t match the remote side=2E\n&quot;</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-#ifdef TARGET_LINUX</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)</=
-span><br><span>     &quot;--route-table table_id : Specify a custom routing=
- table for use with --route(-ipv6)=2E\n&quot;</span><br><span>     &quot;  =
-                         If not specified, the id of the default routing ta=
-ble will be used=2E\n&quot;</span><br><span> #endif</span><br><span>@@ -529=
-3,8 +5293,8 @@</span><br><span>     }</span><br><span>     else if (streq(p=
-[0], &quot;route-table&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><=
-span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifndef EN=
-ABLE_SITNL</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg=
-(M_WARN, &quot;NOTE: --route-table is supported only on Linux when SITNL is=
- built-in&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#i=
-f !defined(ENABLE_SITNL) &amp;&amp; !defined(TARGET_FREEBSD)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        msg(M_WARN, &quot;NOTE: --=
-route-table is supported only on FreeBSD, and on Linux when SITNL is built-=
-in&quot;);</span><br><span> #endif</span><br><span>         VERIFY_PERMISSI=
-ON(OPT_P_ROUTE_TABLE);</span><br><span>         options-&gt;route_default_t=
-able_id =3D positive_atoi(p[1], msglevel);</span><br><span>diff --git a/src=
-/openvpn/route=2Ec b/src/openvpn/route=2Ec</span><br><span>index 8c493ee=2E=
-=2E83c7ebf 100644</span><br><span>--- a/src/openvpn/route=2Ec</span><br><sp=
-an>+++ b/src/openvpn/route=2Ec</span><br><span>@@ -103,6 +103,11 @@</span><=
-br><span> #define RTA_SUCCESS 1 /* route addition succeeded */</span><br><s=
-pan> #define RTA_EEXIST  2 /* route not added as it already exists */</span=
-><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Plat=
-forms that add and delete routes through the net_ API (networking=2Eh) */</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(TARGET_LI=
-NUX) || defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+#define ROUTE_NET_API</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span> #ifndef TARGET_ANDROID</spa=
-n><br><span> static bool</span><br><span> add_bypass_address(struct route_b=
-ypass *rb, const in_addr_t a)</span><br><span>@@ -1433,7 +1438,7 @@</span><=
-br><span> </span><br><span> /* Return true if the &quot;on-link&quot; form =
-of the route should be used=2E  This is when the gateway for</span><br><spa=
-n>  * a route is specified as an interface rather than an address=2E */</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(TARGET_LINUX)=
- || defined(_WIN32) || defined(TARGET_DARWIN)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+#if defined(ROUTE_NET_API) || defined(_WIN32) || =
-defined(TARGET_DARWIN)</span><br><span> static inline bool</span><br><span>=
- is_on_link(const struct route_ipv4 *r, const unsigned int flags,</span><br=
-><span>            const struct route_gateway_info *rgi)</span><br><span>@@=
- -1459,7 +1464,7 @@</span><br><span>     struct argv argv =3D argv_new();</=
-span><br><span>     struct gc_arena gc =3D gc_new();</span><br><span> </spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-#if !defined(TARGET_LINUX)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if !defined(ROUTE_=
-NET_API)</span><br><span>     const char *network =3D print_in_addr_t(r-&gt=
-;network, 0, &amp;gc);</span><br><span> #if !defined(TARGET_AIX)</span><br>=
-<span>     const char *netmask =3D print_in_addr_t(r-&gt;netmask, 0, &amp;g=
-c);</span><br><span>@@ -1468,7 +1473,7 @@</span><br><span> #endif</span><br=
-><span> </span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-#if defined(TARGET_LINUX)</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+#if defined(ROUTE_NET_API)</span><br><span>     const char *ifac=
-e =3D NULL;</span><br><span>     int metric =3D -1;</span><br><span> </span=
-><br><span>@@ -1482,20 +1487,29 @@</span><br><span>         metric =3D r-&g=
-t;metric;</span><br><span>     }</span><br><span> </span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    status =3D RTA_SUCCESS;</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    int ret =3D net_route_v4_add(ctx, &amp;r-&gt;network, net=
-mask_to_netbits2(r-&gt;netmask), &amp;r-&gt;gateway,</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-                               iface, r-&gt=
-;table_id, metric);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  if (ret =3D=3D -EEXIST)</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    const int netbits =3D netmask_to_netbits2(r-&gt;netmask);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    if (netbits &lt; 0)</sp=
-an><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-      msg(D_ROUTE, &quot;NOTE: Linux route add command failed because route=
- exists&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  status =3D RTA_EEXIST;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    else if (=
-ret &lt; 0)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(M_WARN, &quot;=
-ERROR: Linux route add command failed&quot;);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        msg(M_WARN, &quot;ERROR: cannot add route=
- with non-contiguous netmask %s&quot;,</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+            print_in_addr_t(r-&gt;netmask, 0, &amp;gc));=
-</span><br><span>         status =3D RTA_ERROR;</span><br><span>     }</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        status =3D RTA_SUCCESS;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        int ret =3D net_route_v4_add(=
-ctx, &amp;r-&gt;network, netbits, &amp;r-&gt;gateway, iface,</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+                                  =
- r-&gt;table_id, metric);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        if (ret =3D=3D -EEXIST)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+            msg(D_ROUTE, &quot;NOTE: route add command failed becau=
-se route exists&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            status =3D RTA_EEXIST;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        else if (ret &lt; 0)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+            msg(M_WARN, &quot;ERROR: route add command failed&quot;=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            statu=
-s =3D RTA_ERROR;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><=
-br><span> </span><br><span> #elif defined(TARGET_ANDROID)</span><br><span> =
-    char out[128];</span><br><span>@@ -1597,44 +1611,6 @@</span><br><span> =
-    bool ret =3D openvpn_execve_check(&amp;argv, es, 0, &quot;ERROR: Solari=
-s route add command failed&quot;);</span><br><span>     status =3D ret ? RT=
-A_SUCCESS : RTA_ERROR;</span><br><span> </span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-#elif defined(TARGET_FREEBSD)</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    argv_printf(&amp;argv, &quot;%s add&quot;, ROUTE_PATH);</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-#if 0</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    if (r-&gt;flags &amp; RT_METRIC_DEFINED)</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-        argv_printf_cat(&amp;argv, &quot;-rtt %d&quot;, r-&=
-gt;metric);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    argv_printf_cat(&amp;argv, &quot;-net %s %s %s&quot;, netw=
-ork, gateway, netmask);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* FIXME -- add=
- on-link support for FreeBSD */</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    argv_ms=
-g(D_ROUTE, &amp;argv);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    bool ret =3D openvpn_execve_check(&amp;argv, es, 0, &quot;ERROR: FreeB=
-SD route add command failed&quot;);</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    status =3D ret ? RTA_SUCCESS : RTA_ERROR;</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-#elif defined(TARGET_DRAGONFLY)</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    argv_printf(&amp;argv, &quot;%s add&quot;, ROUTE_PATH);</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-#if 0</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    if (r-&gt;flags &amp; RT_METRIC_DEFINED)</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-        argv_printf_cat(&amp;argv, &quot;-rtt %d&quot;, r-&=
-gt;metric);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    argv_printf_cat(&amp;argv, &quot;-net %s %s %s&quot;, netw=
-ork, gateway, netmask);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* FIXME -- add=
- on-link support for Dragonfly */</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    argv_=
-msg(D_ROUTE, &amp;argv);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    bool ret =3D openvpn_execve_check(&amp;argv, es, 0, &quot;ERROR: Dra=
-gonFly route add command failed&quot;);</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    status =3D ret ? RTA_SUCCESS : RTA_ERROR;</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> #elif defined(T=
-ARGET_DARWIN)</span><br><span> </span><br><span>     argv_printf(&amp;argv,=
- &quot;%s add&quot;, ROUTE_PATH);</span><br><span>@@ -1700,10 +1676,10 @@</=
-span><br><span>     bool ret =3D openvpn_execve_check(&amp;argv, es, 0, &qu=
-ot;ERROR: Haiku inet route add command failed&quot;);</span><br><span>     =
-status =3D ret ? RTA_SUCCESS : RTA_ERROR;</span><br><span> </span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-#else  /* if defined(TARGET_LINUX) */=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#else  /* if define=
-d(ROUTE_NET_API) */</span><br><span>     msg(M_FATAL,</span><br><span>     =
-    &quot;Sorry, but I don&#39;t know how to do &#39;route&#39; commands on=
- this operating system=2E  Try putting your routes in a --route-up script&q=
-uot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif /* if de=
-fined(TARGET_LINUX) */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+#endif /* if defined(ROUTE_NET_API) */</span><br><span> </span><br><span=
->     if (status =3D=3D RTA_SUCCESS)</span><br><span>     {</span><br><span=
->@@ -1777,8 +1753,7 @@</span><br><span>     const char *network =3D print_i=
-n6_addr(r6-&gt;network, 0, &amp;gc);</span><br><span>     const char *gatew=
-ay =3D print_in6_addr(r6-&gt;gateway, 0, &amp;gc);</span><br><span> </span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(TARGET_DARWIN) |=
-| defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY) \</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    || defined(TARGET_OPENBSD) || define=
-d(TARGET_NETBSD)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if=
- defined(TARGET_DARWIN) || defined(TARGET_OPENBSD) || defined(TARGET_NETBSD=
-)</span><br><span> </span><br><span>     /* the BSD platforms cannot specif=
-y gateway and interface independently,</span><br><span>      * but for link=
--local destinations, we MUST specify the interface, so</span><br><span>@@ -=
-1830,7 +1805,7 @@</span><br><span>         goto done;</span><br><span>     =
-}</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#i=
-f defined(TARGET_LINUX)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+#if defined(ROUTE_NET_API)</span><br><span>     int metric =3D -1;</spa=
-n><br><span>     if ((r6-&gt;flags &amp; RT_METRIC_DEFINED) &amp;&amp; (r6-=
-&gt;metric &gt; 0))</span><br><span>     {</span><br><span>@@ -1842,12 +181=
-7,12 @@</span><br><span>                                device, r6-&gt;tabl=
-e_id, metric);</span><br><span>     if (ret =3D=3D -EEXIST)</span><br><span=
->     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        msg(D_=
-ROUTE, &quot;NOTE: Linux route add command failed because route exists&quot=
-;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(D_RO=
-UTE, &quot;NOTE: route add command failed because route exists&quot;);</spa=
-n><br><span>         status =3D RTA_EEXIST;</span><br><span>     }</span><b=
-r><span>     else if (ret &lt; 0)</span><br><span>     {</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-        msg(M_WARN, &quot;ERROR: Linux r=
-oute add command failed&quot;);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        msg(M_WARN, &quot;ERROR: route add command failed&quot;=
-);</span><br><span>         status =3D RTA_ERROR;</span><br><span>     }</s=
-pan><br><span> </span><br><span>@@ -1893,23 +1868,6 @@</span><br><span>    =
- bool ret =3D openvpn_execve_check(&amp;argv, es, 0, &quot;ERROR: Solaris r=
-oute add -inet6 command failed&quot;);</span><br><span>     status =3D ret =
-? RTA_SUCCESS : RTA_ERROR;</span><br><span> </span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-#elif defined(TARGET_FREEBSD) || defined(TARGET_DRAG=
-ONFLY)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    argv_printf(&amp;argv, &quot;%s =
-add -inet6 %s/%d&quot;, ROUTE_PATH, network, r6-&gt;netbits);</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    if (gateway_needed)</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-        argv_printf_cat(&amp;argv, &quot;%s&quot;, gateway);</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    else</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-       argv_printf_cat(&amp;argv, &quot;-iface %s&quot;, device);</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    argv_msg(D_ROUTE, &amp;argv);</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    bool ret =3D openvpn_execve_check(&amp;argv, es, 0, =
-&quot;ERROR: *BSD route add -inet6 command failed&quot;);</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    status =3D ret ? RTA_SUCCESS : RTA_=
-ERROR;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
-n> #elif defined(TARGET_DARWIN)</span><br><span> </span><br><span>     argv=
-_printf(&amp;argv, &quot;%s add -inet6 %s -prefixlen %d&quot;, ROUTE_PATH, =
-network, r6-&gt;netbits);</span><br><span>@@ -1960,10 +1918,10 @@</span><br=
-><span>     bool ret =3D openvpn_execve_check(&amp;argv, es, 0, &quot;ERROR=
-: Haiku inet6 route add command failed&quot;);</span><br><span>     status =
-=3D ret ? RTA_SUCCESS : RTA_ERROR;</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#else  /* if defined(TARGET_LINUX) */</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+#else  /* if defined(ROUT=
-E_NET_API) */</span><br><span>     msg(M_FATAL,</span><br><span>         &q=
-uot;Sorry, but I don&#39;t know how to do &#39;route ipv6&#39; commands on =
-this operating system=2E  Try putting your routes in a --route-up script&qu=
-ot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif /* if def=
-ined(TARGET_LINUX) */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+#endif /* if defined(ROUTE_NET_API) */</span><br><span> </span><br><span>=
- done:</span><br><span>     if (status =3D=3D RTA_SUCCESS)</span><br><span>=
-@@ -1986,13 +1944,13 @@</span><br><span> delete_route(struct route_ipv4 *r,=
- const struct tuntap *tt, unsigned int flags,</span><br><span>             =
- const struct route_gateway_info *rgi, const struct env_set *es, openvpn_ne=
-t_ctx_t *ctx)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-#if !defined(TARGET_LINUX)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+#if !defined(ROUTE_NET_API)</span><br><span>     const ch=
-ar *network;</span><br><span> #if !defined(TARGET_AIX)</span><br><span>    =
- const char *netmask;</span><br><span> #endif</span><br><span>     const ch=
-ar *gateway;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#else /* =
-if !defined(TARGET_LINUX) */</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+#else /* if !defined(ROUTE_NET_API) */</span><br><span>     int me=
-tric;</span><br><span> #endif</span><br><span> </span><br><span>@@ -2004,7 =
-+1962,7 @@</span><br><span>     struct gc_arena gc =3D gc_new();</span><br>=
-<span>     struct argv argv =3D argv_new();</span><br><span> </span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-#if !defined(TARGET_LINUX)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+#if !defined(ROUTE_NET_API)<=
-/span><br><span>     network =3D print_in_addr_t(r-&gt;network, 0, &amp;gc)=
-;</span><br><span> #if !defined(TARGET_AIX)</span><br><span>     netmask =
-=3D print_in_addr_t(r-&gt;netmask, 0, &amp;gc);</span><br><span>@@ -2013,7 =
-+1971,7 @@</span><br><span> #endif</span><br><span> </span><br><span> </spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(TARGET_LINUX)<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(ROUTE_NE=
-T_API)</span><br><span>     metric =3D -1;</span><br><span>     if (r-&gt;f=
-lags &amp; RT_METRIC_DEFINED)</span><br><span>     {</span><br><span>@@ -20=
-24,7 +1982,7 @@</span><br><span>                          r-&gt;table_id, m=
-etric)</span><br><span>         &lt; 0)</span><br><span>     {</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-        msg(M_WARN, &quot;ERROR: L=
-inux route delete command failed&quot;);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        msg(M_WARN, &quot;ERROR: route delete command =
-failed&quot;);</span><br><span>     }</span><br><span> #elif defined(_WIN32=
-)</span><br><span> </span><br><span>@@ -2074,20 +2032,6 @@</span><br><span>=
-     argv_msg(D_ROUTE, &amp;argv);</span><br><span>     openvpn_execve_chec=
-k(&amp;argv, es, 0, &quot;ERROR: Solaris route delete command failed&quot;)=
-;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#e=
-lif defined(TARGET_FREEBSD)</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    argv_printf=
-(&amp;argv, &quot;%s delete -net %s %s %s&quot;, ROUTE_PATH, network, gatew=
-ay, netmask);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    argv_msg(D_ROUTE, &amp;ar=
-gv);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    openvpn_execv=
-e_check(&amp;argv, es, 0, &quot;ERROR: FreeBSD route delete command failed&=
-quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-#elif defined(TARGET_DRAGONFLY)</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    argv_printf(&amp;argv, &quot;%s delete -ne=
-t %s %s %s&quot;, ROUTE_PATH, network, gateway, netmask);</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    argv_msg(D_ROUTE, &amp;argv);</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    openvpn_execve_check(&amp;argv, es, 0, &quot=
-;ERROR: DragonFly route delete command failed&quot;);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span> #elif defined(TARGET_DARW=
-IN)</span><br><span> </span><br><span>     if (is_on_link(r, flags, rgi))</=
-span><br><span>@@ -2135,10 +2079,10 @@</span><br><span>     argv_msg(D_ROUT=
-E, &amp;argv);</span><br><span>     openvpn_execve_check(&amp;argv, es, 0, =
-&quot;ERROR: Haiku inet route delete command failed&quot;);</span><br><span=
-> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#else  /* if define=
-d(TARGET_LINUX) */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
-else  /* if defined(ROUTE_NET_API) */</span><br><span>     msg(M_FATAL,</sp=
-an><br><span>         &quot;Sorry, but I don&#39;t know how to do &#39;rout=
-e&#39; commands on this operating system=2E  Try putting your routes in a -=
--route-up script&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-#endif /* if defined(TARGET_LINUX) */</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+#endif /* if defined(ROUTE_NET_API) */</span><br><span=
-> </span><br><span>     r-&gt;flags &amp;=3D ~RT_ADDED;</span><br><span>   =
-  argv_free(&amp;argv);</span><br><span>@@ -2159,7 +2103,7 @@</span><br><sp=
-an>     }</span><br><span> </span><br><span> #if !defined(_WIN32)</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-#if !defined(TARGET_LINUX)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+#if !defined(ROUTE_NET_A=
-PI)</span><br><span>     const char *gateway;</span><br><span> #endif</span=
-><br><span> #if !defined(TARGET_SOLARIS)</span><br><span>@@ -2186,12 +2130,=
-11 @@</span><br><span>     struct argv argv =3D argv_new();</span><br><span=
-> </span><br><span>     network =3D print_in6_addr(r6-&gt;network, 0, &amp;=
-gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if !defined(TARG=
-ET_LINUX) &amp;&amp; !defined(_WIN32)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+#if !defined(ROUTE_NET_API) &amp;&amp; !defined(_WIN32)</=
-span><br><span>     gateway =3D print_in6_addr(r6-&gt;gateway, 0, &amp;gc);=
-</span><br><span> #endif</span><br><span> </span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-#if defined(TARGET_DARWIN) || defined(TARGET_FREEBSD) =
-|| defined(TARGET_DRAGONFLY) \</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    || defined(TARGET_OPENBSD) || defined(TARGET_NETBSD)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(TARGET_DARWIN) ||=
- defined(TARGET_OPENBSD) || defined(TARGET_NETBSD)</span><br><span> </span>=
-<br><span>     /* the BSD platforms cannot specify gateway and interface in=
-dependently,</span><br><span>      * but for link-local destinations, we MU=
-ST specify the interface, so</span><br><span>@@ -2209,7 +2152,7 @@</span><b=
-r><span> </span><br><span>     msg(D_ROUTE, &quot;delete_route_ipv6(%s/%u)&=
-quot;, network, r6-&gt;netbits);</span><br><span> </span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-#if defined(TARGET_LINUX)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+#if defined(ROUTE_NET_API)</span><br><sp=
-an>     int metric =3D -1;</span><br><span>     if ((r6-&gt;flags &amp; RT_=
-METRIC_DEFINED) &amp;&amp; (r6-&gt;metric &gt; 0))</span><br><span>     {</=
-span><br><span>@@ -2220,7 +2163,7 @@</span><br><span>                      =
-    device, r6-&gt;table_id, metric)</span><br><span>         &lt; 0)</span=
-><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-    msg(M_WARN, &quot;ERROR: Linux route v6 delete command failed&quot;);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_WARN, &=
-quot;ERROR: route v6 delete command failed&quot;);</span><br><span>     }</=
-span><br><span> </span><br><span> #elif defined(_WIN32)</span><br><span>@@ =
--2242,22 +2185,6 @@</span><br><span>     argv_msg(D_ROUTE, &amp;argv);</spa=
-n><br><span>     openvpn_execve_check(&amp;argv, es, 0, &quot;ERROR: Solari=
-s route delete -inet6 command failed&quot;);</span><br><span> </span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-#elif defined(TARGET_FREEBSD) || d=
-efined(TARGET_DRAGONFLY)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    argv_printf(&a=
-mp;argv, &quot;%s delete -inet6 %s/%d&quot;, ROUTE_PATH, network, r6-&gt;ne=
-tbits);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    if (gateway_needed)</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-        argv_printf_cat(&amp;argv, &quot;%s&quot;=
-, gateway);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    else</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        argv_printf_cat(&amp;argv, &quot;-iface %s&quot=
-;, device);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    argv_msg(D_ROUTE, &amp;argv);</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    openvpn_execve_check(&amp;argv,=
- es, 0, &quot;ERROR: *BSD route delete -inet6 command failed&quot;);</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> #elif defi=
-ned(TARGET_DARWIN)</span><br><span> </span><br><span>     argv_printf(&amp;=
-argv, &quot;%s delete -inet6 %s -prefixlen %d&quot;, ROUTE_PATH, network, r=
-6-&gt;netbits);</span><br><span>@@ -2310,10 +2237,10 @@</span><br><span>   =
-  argv_msg(D_ROUTE, &amp;argv);</span><br><span>     openvpn_execve_check(&=
-amp;argv, es, 0, &quot;ERROR: Haiku inet6 route delete command failed&quot;=
-);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
-else  /* if defined(TARGET_LINUX) */</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+#else  /* if defined(ROUTE_NET_API) */</span><br><span>   =
-  msg(M_FATAL,</span><br><span>         &quot;Sorry, but I don&#39;t know h=
-ow to do &#39;route ipv6&#39; commands on this operating system=2E  Try put=
-ting your routes in a --route-down script&quot;);</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-#endif /* if defined(TARGET_LINUX) */</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* if defined(ROUTE_NE=
-T_API) */</span><br><span> </span><br><span>     argv_free(&amp;argv);</spa=
-n><br><span>     gc_free(&amp;gc);</span><br></pre><p>To view, visit <a hre=
-f=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2154?usp=3Demail">change 21=
-54</a>=2E To unsubscribe, or for help writing mail filters, visit <a href=
-=3D"https://gerrit=2Eopenvpn=2Enet/settings?usp=3Demail">settings</a>=2E</p=
-><div itemscope itemtype=3D"http://schema=2Eorg/EmailMessage"><div itemscop=
-e itemprop=3D"action" itemtype=3D"http://schema=2Eorg/ViewAction"><link ite=
-mprop=3D"url" href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2154?usp=
-=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+rently required from: Arne Schwabe=2E </p>
+<p>R=C4=83zvan Cojocaru would li=
+ke Arne Schwabe to <strong>review</strong> this change=2E
+</p><p><a href=3D=
+"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2224?usp=3Demail">View Change</=
+a></p><pre class=3D"blocks" style=3D"font-family: monospace,monospace; whit=
+e-space: pre-wrap;">networking: use -1 for &quot;no route table&quot;<br><b=
+r>Table 0 meant &quot;default table&quot; in the net_route_*() API=2E That =
+is fine on<br>Linux, where table 0 is RT_TABLE_UNSPEC, but on FreeBSD FIB 0=
+ is a real<br>FIB, which could then not be selected from a process running =
+in another<br>FIB=2E<br><br>Make the table argument an int, with -1 for the=
+ default table, and<br>default --route-table to -1=2E sitnl maps -1 and 0 t=
+o the main table, as<br>before=2E On FreeBSD, -fib is now passed only for a=
+ set table; DCO<br>iroutes no longer force FIB 0 but use the FIB of the pro=
+cess=2E<br><br>Routes that route=2Ec creates internally get -1 too; block-l=
+ocal routes<br>passed an uninitialized table before=2E<br><br>Change-Id: Ic=
+bfc6b64beea5e70f32449c5a63a08ad862597b9<br>Signed-off-by: Razvan Cojocaru &=
+lt;razvanc@mailbox=2Eorg&gt;<br>---<br>M src/openvpn/dco=2Ec<br>M src/openv=
+pn/networking=2Eh<br>M src/openvpn/networking_freebsd=2Ec<br>M src/openvpn/=
+networking_iproute2=2Ec<br>M src/openvpn/networking_sitnl=2Ec<br>M src/open=
+vpn/options=2Ec<br>M src/openvpn/route=2Ec<br>M tests/unit_tests/openvpn/te=
+st_networking=2Ec<br>8 files changed, 66 insertions(+), 62 deletions(-)<br>=
+<br></pre><pre class=3D"blocks" style=3D"font-family: monospace,monospace; =
+white-space: pre-wrap;">git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn=
+ refs/changes/24/2224/1</pre><pre style=3D"font-family: monospace,monospace=
+; white-space: pre-wrap;"><span>diff --git a/src/openvpn/dco=2Ec b/src/open=
+vpn/dco=2Ec</span><br><span>index 236be93=2E=2E8d376fb 100644</span><br><sp=
+an>--- a/src/openvpn/dco=2Ec</span><br><span>+++ b/src/openvpn/dco=2Ec</spa=
+n><br><span>@@ -721,7 +721,7 @@</span><br><span>         }</span><br><span>=
+ </span><br><span>         net_route_v6_add(&amp;m-&gt;top=2Enet_ctx, &amp;=
+addr-&gt;v6=2Eaddr, addr-&gt;netbits,</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-                         gateway, c-&gt;c1=2Etuntap-&gt;act=
+ual_name, 0,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
+                  gateway, c-&gt;c1=2Etuntap-&gt;actual_name, -1,</span><br=
+><span>                          DCO_IROUTE_METRIC);</span><br><span> #endi=
+f</span><br><span>     }</span><br><span>@@ -739,7 +739,7 @@</span><br><spa=
+n>         }</span><br><span> </span><br><span>         net_route_v4_add(&a=
+mp;m-&gt;top=2Enet_ctx, &amp;dest, addr-&gt;netbits, gateway,</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-                         c-&gt;c1=
+=2Etuntap-&gt;actual_name, 0, DCO_IROUTE_METRIC);</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+                         c-&gt;c1=2Etuntap-&g=
+t;actual_name, -1, DCO_IROUTE_METRIC);</span><br><span> #endif</span><br><s=
+pan>     }</span><br><span> #endif /* if defined(TARGET_LINUX) || defined(T=
+ARGET_FREEBSD) || defined(_WIN32) */</span><br><span>@@ -765,7 +765,7 @@</s=
+pan><br><span>             dco_win_del_iroute_ipv4(&amp;c-&gt;c1=2Etuntap-&=
+gt;dco, htonl(ir-&gt;network), ir-&gt;netbits);</span><br><span> #else</spa=
+n><br><span>             net_route_v4_del(net_ctx, &amp;ir-&gt;network, ir-=
+&gt;netbits,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+                    &amp;c-&gt;c2=2Epush_ifconfig_local, c-&gt;c1=2Etuntap-=
+&gt;actual_name, 0,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+                             &amp;c-&gt;c2=2Epush_ifconfig_local, c-&gt;c1=
+=2Etuntap-&gt;actual_name, -1,</span><br><span>                            =
+  DCO_IROUTE_METRIC);</span><br><span> #endif</span><br><span>         }</s=
+pan><br><span>@@ -779,7 +779,7 @@</span><br><span>         {</span><br><spa=
+n>             /* On windows we do not install these routes, so we also do =
+not need to delete them */</span><br><span>             net_route_v4_del(ne=
+t_ctx, &amp;ifconfig_local, 32, NULL,</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-                             c-&gt;c1=2Etuntap-&gt;actual_n=
+ame, 0, DCO_IROUTE_METRIC);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+                             c-&gt;c1=2Etuntap-&gt;actual_name, -1,=
+ DCO_IROUTE_METRIC);</span><br><span>         }</span><br><span> #endif</sp=
+an><br><span>     }</span><br><span>@@ -792,7 +792,7 @@</span><br><span>   =
+          dco_win_del_iroute_ipv6(&amp;c-&gt;c1=2Etuntap-&gt;dco, ir6-&gt;n=
+etwork, ir6-&gt;netbits);</span><br><span> #else</span><br><span>          =
+   net_route_v6_del(net_ctx, &amp;ir6-&gt;network, ir6-&gt;netbits,</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-                             =
+&amp;c-&gt;c2=2Epush_ifconfig_ipv6_local, c-&gt;c1=2Etuntap-&gt;actual_name=
+, 0,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
+              &amp;c-&gt;c2=2Epush_ifconfig_ipv6_local, c-&gt;c1=2Etuntap-&=
+gt;actual_name, -1,</span><br><span>                              DCO_IROUT=
+E_METRIC);</span><br><span> #endif</span><br><span>         }</span><br><sp=
+an>@@ -805,7 +805,7 @@</span><br><span>         {</span><br><span>         =
+    /* On windows we do not install these routes, so we also do not need to=
+ delete them */</span><br><span>             net_route_v6_del(net_ctx, dest=
+, 128, NULL,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
+                    c-&gt;c1=2Etuntap-&gt;actual_name, 0, DCO_IROUTE_METRIC=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                 =
+            c-&gt;c1=2Etuntap-&gt;actual_name, -1, DCO_IROUTE_METRIC);</spa=
+n><br><span>         }</span><br><span> #endif</span><br><span>     }</span=
+><br><span>diff --git a/src/openvpn/networking=2Eh b/src/openvpn/networking=
+=2Eh</span><br><span>index 7ad6e2e=2E=2E1763e64 100644</span><br><span>--- =
+a/src/openvpn/networking=2Eh</span><br><span>+++ b/src/openvpn/networking=
+=2Eh</span><br><span>@@ -245,14 +245,13 @@</span><br><span>  * @param prefi=
+xlen the length of the prefix of the destination</span><br><span>  * @param=
+ gw        the gateway for this route</span><br><span>  * @param iface     =
+the interface for this route (can be NULL)</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">- * @param table     the table to add this route to (if=
+ 0, will be added to the</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">- *                  main table)</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+ * @param table     the table to add this route to, or -1 fo=
+r the default one</span><br><span>  * @param metric    the metric associate=
+d with the route</span><br><span>  *</span><br><span>  * @return          0=
+ on success, a negative error code otherwise</span><br><span>  */</span><br=
+><span> int net_route_v4_add(const openvpn_net_ctx_t *ctx, const in_addr_t =
+*dst, int prefixlen,</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+                    const in_addr_t *gw, const openvpn_net_iface_t *iface, =
+uint32_t table,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+                 const in_addr_t *gw, const openvpn_net_iface_t *iface, int=
+ table,</span><br><span>                      int metric);</span><br><span>=
+ </span><br><span> /**</span><br><span>@@ -263,14 +262,13 @@</span><br><spa=
+n>  * @param prefixlen the length of the prefix of the destination</span><b=
+r><span>  * @param gw        the gateway for this route</span><br><span>  *=
+ @param iface     the interface for this route (can be NULL)</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">- * @param table     the table to add=
+ this route to (if 0, will be added to the</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">- *                  main table)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * @param table     the table to add this=
+ route to, or -1 for the default one</span><br><span>  * @param metric    t=
+he metric associated with the route</span><br><span>  *</span><br><span>  *=
+ @return          0 on success, a negative error code otherwise</span><br><=
+span>  */</span><br><span> int net_route_v6_add(const openvpn_net_ctx_t *ct=
+x, const struct in6_addr *dst, int prefixlen,</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-                     const struct in6_addr *gw, con=
+st openvpn_net_iface_t *iface, uint32_t table,</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+                     const struct in6_addr *gw, =
+const openvpn_net_iface_t *iface, int table,</span><br><span>              =
+        int metric);</span><br><span> </span><br><span> /**</span><br><span=
+>@@ -281,14 +279,13 @@</span><br><span>  * @param prefixlen the length of t=
+he prefix of the destination</span><br><span>  * @param gw        the gatew=
+ay for this route</span><br><span>  * @param iface     the interface for th=
+is route (can be NULL)</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+- * @param table     the table to add this route to (if 0, will be added to=
+ the</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *               =
+   main table)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @p=
+aram table     the table to add this route to, or -1 for the default one</s=
+pan><br><span>  * @param metric    the metric associated with the route</sp=
+an><br><span>  *</span><br><span>  * @return          0 on success, a negat=
+ive error code otherwise</span><br><span>  */</span><br><span> int net_rout=
+e_v4_del(const openvpn_net_ctx_t *ctx, const in_addr_t *dst, int prefixlen,=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                     =
+const in_addr_t *gw, const openvpn_net_iface_t *iface, uint32_t table,</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+                     con=
+st in_addr_t *gw, const openvpn_net_iface_t *iface, int table,</span><br><s=
+pan>                      int metric);</span><br><span> </span><br><span> /=
+**</span><br><span>@@ -299,14 +296,13 @@</span><br><span>  * @param prefixl=
+en the length of the prefix of the destination</span><br><span>  * @param g=
+w        the gateway for this route</span><br><span>  * @param iface     th=
+e interface for this route (can be NULL)</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">- * @param table     the table to add this route to (if 0=
+, will be added to the</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+- *                  main table)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+ * @param table     the table to add this route to, or -1 for =
+the default one</span><br><span>  * @param metric    the metric associated =
+with the route</span><br><span>  *</span><br><span>  * @return          0 o=
+n success, a negative error code otherwise</span><br><span>  */</span><br><=
+span> int net_route_v6_del(const openvpn_net_ctx_t *ctx, const struct in6_a=
+ddr *dst, int prefixlen,</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-                     const struct in6_addr *gw, const openvpn_net_iface_=
+t *iface, uint32_t table,</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+                     const struct in6_addr *gw, const openvpn_net_ifa=
+ce_t *iface, int table,</span><br><span>                      int metric);<=
+/span><br><span> </span><br><span> #endif /* ENABLE_SITNL || ENABLE_IPROUTE=
+ || TARGET_FREEBSD */</span><br><span>diff --git a/src/openvpn/networking_f=
+reebsd=2Ec b/src/openvpn/networking_freebsd=2Ec</span><br><span>index 88fd5=
+c0=2E=2E8ba6326 100644</span><br><span>--- a/src/openvpn/networking_freebsd=
+=2Ec</span><br><span>+++ b/src/openvpn/networking_freebsd=2Ec</span><br><sp=
+an>@@ -10,7 +10,7 @@</span><br><span> </span><br><span> static int</span><b=
+r><span> net_route_v4(const char *op, const in_addr_t *dst, int prefixlen, =
+const in_addr_t *gw,</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+            const char *iface, uint32_t table, int metric)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+             const char *iface, int =
+table, int metric)</span><br><span> {</span><br><span>     char buf1[INET_A=
+DDRSTRLEN], buf2[INET_ADDRSTRLEN];</span><br><span>     in_addr_t _dst, _gw=
+;</span><br><span>@@ -27,15 +27,20 @@</span><br><span>     if (gw)</span><b=
+r><span>     {</span><br><span>         _gw =3D ntohl(*gw);</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-        argv_printf(&amp;argv, &quot;=
+%s %s -net %s/%d %s -fib %d&quot;, ROUTE_PATH, op,</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        argv_printf(&amp;argv, &quot;%s %s -=
+net %s/%d %s&quot;, ROUTE_PATH, op,</span><br><span>                     in=
+et_ntop(AF_INET, &amp;_dst, buf1, sizeof(buf1)), prefixlen,</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-                    inet_ntop(AF_INET=
+, &amp;_gw, buf2, sizeof(buf2)), table);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                    inet_ntop(AF_INET, &amp;_gw, buf2,=
+ sizeof(buf2)));</span><br><span>     }</span><br><span>     else</span><br=
+><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+argv_printf(&amp;argv, &quot;%s %s -net %s/%d -iface %s -fib %d&quot;, ROUT=
+E_PATH, op,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+argv_printf(&amp;argv, &quot;%s %s -net %s/%d -iface %s&quot;, ROUTE_PATH, =
+op,</span><br><span>                     inet_ntop(AF_INET, &amp;_dst, buf1=
+, sizeof(buf1)), prefixlen,</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-                    iface, table);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+                    iface);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    /* without -fib, route(8) uses the FIB of the process */=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (table &gt;=
+=3D 0)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        argv_printf_cat(&am=
+p;argv, &quot;-fib %d&quot;, table);</span><br><span>     }</span><br><span=
+> </span><br><span>     argv_msg(M_INFO, &amp;argv);</span><br><span>@@ -48=
+,7 +53,7 @@</span><br><span> </span><br><span> static int</span><br><span> =
+net_route_v6(const char *op, const struct in6_addr *dst, int prefixlen, con=
+st struct in6_addr *gw,</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-             const char *iface, uint32_t table, int metric)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+             const char *iface, i=
+nt table, int metric)</span><br><span> {</span><br><span>     char buf1[INE=
+T6_ADDRSTRLEN], buf2[INET6_ADDRSTRLEN];</span><br><span>     struct argv ar=
+gv =3D argv_new();</span><br><span>@@ -61,15 +66,19 @@</span><br><span>    =
+  */</span><br><span>     if (gw)</span><br><span>     {</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-        argv_printf(&amp;argv, &quot;%s =
+-6 %s -net %s/%d %s -fib %d&quot;, ROUTE_PATH, op,</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        argv_printf(&amp;argv, &quot;%s -6 %=
+s -net %s/%d %s&quot;, ROUTE_PATH, op,</span><br><span>                    =
+ inet_ntop(AF_INET6, dst, buf1, sizeof(buf1)), prefixlen,</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-                    inet_ntop(AF_INET6,=
+ gw, buf2, sizeof(buf2)), table);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+                    inet_ntop(AF_INET6, gw, buf2, sizeof(buf2=
+)));</span><br><span>     }</span><br><span>     else</span><br><span>     =
+{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        argv_printf(=
+&amp;argv, &quot;%s -6 %s -net %s/%d -iface %s -fib %d&quot;, ROUTE_PATH, o=
+p,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        argv_prin=
+tf(&amp;argv, &quot;%s -6 %s -net %s/%d -iface %s&quot;, ROUTE_PATH, op,</s=
+pan><br><span>                     inet_ntop(AF_INET6, dst, buf1, sizeof(bu=
+f1)), prefixlen,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+               iface, table);</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                    iface);</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    if (table &gt;=3D 0)</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   argv_printf_cat(&amp;argv, &quot;-fib %d&quot;, table);</span><br><span>=
+     }</span><br><span> </span><br><span> </span><br><span>@@ -83,28 +92,28=
+ @@</span><br><span> </span><br><span> int</span><br><span> net_route_v4_ad=
+d(const openvpn_net_ctx_t *ctx, const in_addr_t *dst, int prefixlen, const =
+in_addr_t *gw,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+          const char *iface, uint32_t table, int metric)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+                 const char *iface, in=
+t table, int metric)</span><br><span> {</span><br><span>     return net_rou=
+te_v4(&quot;add&quot;, dst, prefixlen, gw, iface, table, metric);</span><br=
+><span> }</span><br><span> </span><br><span> int</span><br><span> net_route=
+_v6_add(const openvpn_net_ctx_t *ctx, const struct in6_addr *dst, int prefi=
+xlen,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                =
+ const struct in6_addr *gw, const char *iface, uint32_t table, int metric)<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                 con=
+st struct in6_addr *gw, const char *iface, int table, int metric)</span><br=
+><span> {</span><br><span>     return net_route_v6(&quot;add&quot;, dst, pr=
+efixlen, gw, iface, table, metric);</span><br><span> }</span><br><span> </s=
+pan><br><span> int</span><br><span> net_route_v4_del(const openvpn_net_ctx_=
+t *ctx, const in_addr_t *dst, int prefixlen, const in_addr_t *gw,</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-                 const char *if=
+ace, uint32_t table, int metric)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+                 const char *iface, int table, int metric)</sp=
+an><br><span> {</span><br><span>     return net_route_v4(&quot;del&quot;, d=
+st, prefixlen, gw, iface, table, metric);</span><br><span> }</span><br><spa=
+n> </span><br><span> int</span><br><span> net_route_v6_del(const openvpn_ne=
+t_ctx_t *ctx, const struct in6_addr *dst, int prefixlen,</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-                 const struct in6_addr *=
+gw, const char *iface, uint32_t table, int metric)</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+                 const struct in6_addr *gw, =
+const char *iface, int table, int metric)</span><br><span> {</span><br><spa=
+n>     return net_route_v6(&quot;del&quot;, dst, prefixlen, gw, iface, tabl=
+e, metric);</span><br><span> }</span><br><span>diff --git a/src/openvpn/net=
+working_iproute2=2Ec b/src/openvpn/networking_iproute2=2Ec</span><br><span>=
+index d987478=2E=2E6c4c8f4 100644</span><br><span>--- a/src/openvpn/network=
+ing_iproute2=2Ec</span><br><span>+++ b/src/openvpn/networking_iproute2=2Ec<=
+/span><br><span>@@ -243,7 +243,7 @@</span><br><span> </span><br><span> int<=
+/span><br><span> net_route_v4_add(const openvpn_net_ctx_t *ctx, const in_ad=
+dr_t *dst, int prefixlen, const in_addr_t *gw,</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-                 const char *iface, uint32_t table=
+, int metric)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+           const char *iface, int table, int metric)</span><br><span> {</sp=
+an><br><span>     struct argv argv =3D argv_new();</span><br><span>     con=
+st char *dst_str =3D print_in_addr_t(*dst, 0, &amp;argv=2Egc);</span><br><s=
+pan>@@ -281,7 +281,7 @@</span><br><span> </span><br><span> int</span><br><s=
+pan> net_route_v6_add(const openvpn_net_ctx_t *ctx, const struct in6_addr *=
+dst, int prefixlen,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+               const struct in6_addr *gw, const char *iface, uint32_t table=
+, int metric)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+           const struct in6_addr *gw, const char *iface, int table, int met=
+ric)</span><br><span> {</span><br><span>     struct argv argv =3D argv_new(=
+);</span><br><span>     char *dst_str =3D (char *)print_in6_addr(*dst, 0, &=
+amp;argv=2Egc);</span><br><span>@@ -314,7 +314,7 @@</span><br><span> </span=
+><br><span> int</span><br><span> net_route_v4_del(const openvpn_net_ctx_t *=
+ctx, const in_addr_t *dst, int prefixlen, const in_addr_t *gw,</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-                 const char *iface=
+, uint32_t table, int metric)</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                 const char *iface, int table, int metric)</span>=
+<br><span> {</span><br><span>     struct argv argv =3D argv_new();</span><b=
+r><span>     const char *dst_str =3D print_in_addr_t(*dst, 0, &amp;argv=2Eg=
+c);</span><br><span>@@ -340,7 +340,7 @@</span><br><span> </span><br><span> =
+int</span><br><span> net_route_v6_del(const openvpn_net_ctx_t *ctx, const s=
+truct in6_addr *dst, int prefixlen,</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-                 const struct in6_addr *gw, const char *iface=
+, uint32_t table, int metric)</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                 const struct in6_addr *gw, const char *iface, in=
+t table, int metric)</span><br><span> {</span><br><span>     struct argv ar=
+gv =3D argv_new();</span><br><span>     char *dst_str =3D (char *)print_in6=
+_addr(*dst, 0, &amp;argv=2Egc);</span><br><span>diff --git a/src/openvpn/ne=
+tworking_sitnl=2Ec b/src/openvpn/networking_sitnl=2Ec</span><br><span>index=
+ b7c0f58=2E=2E17df0d9 100644</span><br><span>--- a/src/openvpn/networking_s=
+itnl=2Ec</span><br><span>+++ b/src/openvpn/networking_sitnl=2Ec</span><br><=
+span>@@ -1115,14 +1115,11 @@</span><br><span> </span><br><span> static int<=
+/span><br><span> sitnl_route_add(const char *iface, sa_family_t af_family, =
+const void *dst, int prefixlen,</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-                const void *gw, uint32_t table, int metric)</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+                const voi=
+d *gw, int table, int metric)</span><br><span> {</span><br><span>     enum =
+rt_scope_t scope =3D RT_SCOPE_UNIVERSE;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ if (table =3D=3D 0)</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        table =3D=
+ RT_TABLE_MAIN;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* table 0 is RT=
+_TABLE_UNSPEC */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ uint32_t rt_table =3D table &gt; 0 ? (uint32_t)table : RT_TABLE_MAIN;</spa=
+n><br><span> </span><br><span>     if (!gw &amp;&amp; iface)</span><br><spa=
+n>     {</span><br><span>@@ -1130,12 +1127,12 @@</span><br><span>     }</sp=
+an><br><span> </span><br><span>     return sitnl_route_set(RTM_NEWROUTE, NL=
+M_F_CREATE, iface, af_family, dst, prefixlen, gw,</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-                           table, metric, scope=
+, RTPROT_BOOT, RTN_UNICAST);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                           rt_table, metric, scope, RTPROT_BOOT, R=
+TN_UNICAST);</span><br><span> }</span><br><span> </span><br><span> int</spa=
+n><br><span> net_route_v4_add(const openvpn_net_ctx_t *ctx, const in_addr_t=
+ *dst, int prefixlen, const in_addr_t *gw,</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-                 const char *iface, uint32_t table, in=
+t metric)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+       const char *iface, int table, int metric)</span><br><span> {</span><=
+br><span>     const in_addr_t *dst_ptr =3D NULL, *gw_ptr =3D NULL;</span><b=
+r><span>     in_addr_t dst_be =3D 0, gw_be =3D 0;</span><br><span>@@ -1154,=
+7 +1151,7 @@</span><br><span>         gw_ptr =3D &amp;gw_be;</span><br><spa=
+n>     }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    msg(D_ROUTE, &quot;%s: %s/%d via %s dev %s table %u metric %d&quot=
+;, __func__,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg=
+(D_ROUTE, &quot;%s: %s/%d via %s dev %s table %d metric %d&quot;, __func__,=
+</span><br><span>         inet_ntop(AF_INET, &amp;dst_be, dst_str, sizeof(d=
+st_str)), prefixlen,</span><br><span>         inet_ntop(AF_INET, &amp;gw_be=
+, gw_str, sizeof(gw_str)), np(iface), table, metric);</span><br><span> </sp=
+an><br><span>@@ -1163,7 +1160,7 @@</span><br><span> </span><br><span> int</=
+span><br><span> net_route_v6_add(const openvpn_net_ctx_t *ctx, const struct=
+ in6_addr *dst, int prefixlen,</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-                 const struct in6_addr *gw, const char *iface, uin=
+t32_t table, int metric)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+                 const struct in6_addr *gw, const char *iface, int tab=
+le, int metric)</span><br><span> {</span><br><span>     inet_address_t dst_=
+v6;</span><br><span>     inet_address_t gw_v6;</span><br><span>@@ -1183,7 +=
+1180,7 @@</span><br><span>         gw_v6=2Eipv6 =3D *gw;</span><br><span>  =
+   }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    msg(D_ROUTE, &quot;%s: %s/%d via %s dev %s table %u metric %d&quot;, _=
+_func__,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    msg(D_R=
+OUTE, &quot;%s: %s/%d via %s dev %s table %d metric %d&quot;, __func__,</sp=
+an><br><span>         inet_ntop(AF_INET6, &amp;dst_v6=2Eipv6, dst_str, size=
+of(dst_str)), prefixlen,</span><br><span>         inet_ntop(AF_INET6, &amp;=
+gw_v6=2Eipv6, gw_str, sizeof(gw_str)), np(iface), table, metric);</span><br=
+><span> </span><br><span>@@ -1192,20 +1189,18 @@</span><br><span> </span><b=
+r><span> static int</span><br><span> sitnl_route_del(const char *iface, sa_=
+family_t af_family, const inet_address_t *dst, int prefixlen,</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-                const inet_address_=
+t *gw, uint32_t table, int metric)</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+                const inet_address_t *gw, int table, int met=
+ric)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    if (table =3D=3D 0)</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        tabl=
+e =3D RT_TABLE_MAIN;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* table 0 =
+is RT_TABLE_UNSPEC */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    uint32_t rt_table =3D table &gt; 0 ? (uint32_t)table : RT_TABLE_MAIN;=
+</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ return sitnl_route_set(RTM_DELROUTE, 0, iface, af_family, dst, prefixlen, =
+gw, table, metric,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   return sitnl_route_set(RTM_DELROUTE, 0, iface, af_family, dst, prefixlen=
+, gw, rt_table, metric,</span><br><span>                            RT_SCOP=
+E_NOWHERE, 0, 0);</span><br><span> }</span><br><span> </span><br><span> int=
+</span><br><span> net_route_v4_del(const openvpn_net_ctx_t *ctx, const in_a=
+ddr_t *dst, int prefixlen, const in_addr_t *gw,</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-                 const char *iface, uint32_t tabl=
+e, int metric)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+            const char *iface, int table, int metric)</span><br><span> {</s=
+pan><br><span>     inet_address_t dst_v4;</span><br><span>     inet_address=
+_t gw_v4;</span><br><span>@@ -1225,7 +1220,7 @@</span><br><span>         gw=
+_v4=2Eipv4 =3D htonl(*gw);</span><br><span>     }</span><br><span> </span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(D_ROUTE, &quot;%s: %s=
+/%d via %s dev %s table %u metric %d&quot;, __func__,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    msg(D_ROUTE, &quot;%s: %s/%d via %s d=
+ev %s table %d metric %d&quot;, __func__,</span><br><span>         inet_nto=
+p(AF_INET, &amp;dst_v4=2Eipv4, dst_str, sizeof(dst_str)), prefixlen,</span>=
+<br><span>         inet_ntop(AF_INET, &amp;gw_v4=2Eipv4, gw_str, sizeof(gw_=
+str)), np(iface), table, metric);</span><br><span> </span><br><span>@@ -123=
+4,7 +1229,7 @@</span><br><span> </span><br><span> int</span><br><span> net_=
+route_v6_del(const openvpn_net_ctx_t *ctx, const struct in6_addr *dst, int =
+prefixlen,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+      const struct in6_addr *gw, const char *iface, uint32_t table, int met=
+ric)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
+  const struct in6_addr *gw, const char *iface, int table, int metric)</spa=
+n><br><span> {</span><br><span>     inet_address_t dst_v6;</span><br><span>=
+     inet_address_t gw_v6;</span><br><span>@@ -1254,7 +1249,7 @@</span><br>=
+<span>         gw_v6=2Eipv6 =3D *gw;</span><br><span>     }</span><br><span=
+> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    msg(D_ROUTE, &q=
+uot;%s: %s/%d via %s dev %s table %u metric %d&quot;, __func__,</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    msg(D_ROUTE, &quot;%s: %s/%=
+d via %s dev %s table %d metric %d&quot;, __func__,</span><br><span>       =
+  inet_ntop(AF_INET6, &amp;dst_v6=2Eipv6, dst_str, sizeof(dst_str)), prefix=
+len,</span><br><span>         inet_ntop(AF_INET6, &amp;gw_v6=2Eipv6, gw_str=
+, sizeof(gw_str)), np(iface), table, metric);</span><br><span> </span><br><=
+span>diff --git a/src/openvpn/options=2Ec b/src/openvpn/options=2Ec</span><=
+br><span>index 947439d=2E=2E01d5edb 100644</span><br><span>--- a/src/openvp=
+n/options=2Ec</span><br><span>+++ b/src/openvpn/options=2Ec</span><br><span=
+>@@ -831,7 +831,7 @@</span><br><span>     o-&gt;ce=2Emssfix =3D 0;</span><b=
+r><span>     o-&gt;ce=2Emssfix_default =3D true;</span><br><span>     o-&gt=
+;ce=2Emssfix_encap =3D true;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    o-&gt;route_default_table_id =3D 0;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    o-&gt;route_default_table_id =3D -1;</span><=
+br><span>     o-&gt;route_delay_window =3D 30;</span><br><span>     o-&gt;r=
+esolve_retry_seconds =3D RESOLV_RETRY_INFINITE;</span><br><span>     o-&gt;=
+resolve_in_advance =3D false;</span><br><span>diff --git a/src/openvpn/rout=
+e=2Ec b/src/openvpn/route=2Ec</span><br><span>index 9086529=2E=2E8c493ee 10=
+0644</span><br><span>--- a/src/openvpn/route=2Ec</span><br><span>+++ b/src/=
+openvpn/route=2Ec</span><br><span>@@ -545,6 +545,7 @@</span><br><span>     =
+    /* split a route into two smaller blocking routes, and direct them to t=
+arget */</span><br><span>         l2 =3D ((~gateway-&gt;netmask) + 1) &gt;&=
+gt; 1;</span><br><span>         r1-&gt;flags =3D RT_DEFINED;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        r1-&gt;table_id =3D -1;</s=
+pan><br><span>         r1-&gt;gateway =3D target;</span><br><span>         =
+r1-&gt;network =3D gateway-&gt;addr &amp; gateway-&gt;netmask;</span><br><s=
+pan>         r1-&gt;netmask =3D ~(l2 - 1);</span><br><span>@@ -854,6 +855,7=
+ @@</span><br><span>                 r6-&gt;gateway =3D rl6-&gt;rgi6=2Egate=
+way=2Eaddr_ipv6;</span><br><span>             }</span><br><span>           =
+  r6-&gt;metric =3D 1;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+            r6-&gt;table_id =3D -1;</span><br><span> #ifdef _WIN32</span=
+><br><span>             r6-&gt;adapter_index =3D rl6-&gt;rgi6=2Eadapter_ind=
+ex;</span><br><span> #else</span><br><span>@@ -883,6 +885,7 @@</span><br><s=
+pan>     struct route_ipv4 r;</span><br><span>     CLEAR(r);</span><br><spa=
+n>     r=2Eflags =3D RT_DEFINED;</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    r=2Etable_id =3D -1;</span><br><span>     r=2Enetwork =3D =
+network;</span><br><span>     r=2Enetmask =3D netmask;</span><br><span>    =
+ r=2Egateway =3D gateway;</span><br><span>@@ -897,6 +900,7 @@</span><br><sp=
+an>     struct route_ipv4 r;</span><br><span>     CLEAR(r);</span><br><span=
+>     r=2Eflags =3D RT_DEFINED | RT_ADDED;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    r=2Etable_id =3D -1;</span><br><span>     r=2Ene=
+twork =3D network;</span><br><span>     r=2Enetmask =3D netmask;</span><br>=
+<span>     r=2Egateway =3D gateway;</span><br><span>diff --git a/tests/unit=
+_tests/openvpn/test_networking=2Ec b/tests/unit_tests/openvpn/test_networki=
+ng=2Ec</span><br><span>index b580d32=2E=2E95019e5 100644</span><br><span>--=
+- a/tests/unit_tests/openvpn/test_networking=2Ec</span><br><span>+++ b/test=
+s/unit_tests/openvpn/test_networking=2Ec</span><br><span>@@ -112,7 +112,7 @=
+@</span><br><span>     }</span><br><span>     printf(&quot;\n&quot;);</span=
+><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    retur=
+n net_route_v4_add(NULL, &amp;dst, prefixlen, NULL, iface, 0, metric);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    return net_route_v4_=
+add(NULL, &amp;dst, prefixlen, NULL, iface, -1, metric);</span><br><span> }=
+</span><br><span> </span><br><span> static int</span><br><span>@@ -148,7 +1=
+48,7 @@</span><br><span>     }</span><br><span>     printf(&quot;\n&quot;);=
+</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ return net_route_v4_add(NULL, &amp;dst, prefixlen, &amp;gw, iface, 0, metr=
+ic);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return net_=
+route_v4_add(NULL, &amp;dst, prefixlen, &amp;gw, iface, -1, metric);</span>=
+<br><span> }</span><br><span> </span><br><span> static int</span><br><span>=
+@@ -175,7 +175,7 @@</span><br><span>     }</span><br><span>     printf(&quo=
+t;\n&quot;);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    return net_route_v6_add(NULL, &amp;dst, prefixlen, NULL, iface=
+, 0, metric);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    re=
+turn net_route_v6_add(NULL, &amp;dst, prefixlen, NULL, iface, -1, metric);<=
+/span><br><span> }</span><br><span> </span><br><span> static int</span><br>=
+<span>@@ -208,7 +208,7 @@</span><br><span>     }</span><br><span>     print=
+f(&quot;\n&quot;);</span><br><span> </span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    return net_route_v6_add(NULL, &amp;dst, prefixlen, &amp;=
+gw, iface, 0, metric);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    return net_route_v6_add(NULL, &amp;dst, prefixlen, &amp;gw, iface, -=
+1, metric);</span><br><span> }</span><br><span> </span><br><span> static vo=
+id</span><br></pre><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=2E=
+net/c/openvpn/+/2224?usp=3Demail">change 2224</a>=2E To unsubscribe, or for=
+ help writing mail filters, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet=
+/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http:/=
+/schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"=
+http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https://gerr=
+it=2Eopenvpn=2Enet/c/openvpn/+/2224?usp=3Demail"/><meta itemprop=3D"name" c=
+ontent=3D"View Change"/></div></div>
 
-<=
-div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-<div sty=
-le=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:n=
-one"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Chan=
-ge-Id: I601454a511c9aac4f37d8629b1692266cdbd6885 </div>
-<div style=3D"displ=
-ay:none"> Gerrit-Change-Number: 2154 </div>
-<div style=3D"display:none"> Ge=
-rrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: R=C4=83z=
-van Cojocaru &lt;razvanc@mailbox=2Eorg&gt; </div>
-<div style=3D"display:non=
-e"> Gerrit-Reviewer: Arne Schwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>=
+<div style=3D"display:none"> Gerrit-M=
+essageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Project: o=
+penvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<di=
+v style=3D"display:none"> Gerrit-Change-Id: Icbfc6b64beea5e70f32449c5a63a08=
+ad862597b9 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 2224 <=
+/div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"=
+display:none"> Gerrit-Owner: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eorg=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: Arne Schwabe &lt;=
+arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-C=
+C: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
+<di=
+v style=3D"display:none"> Gerrit-Attention: Arne Schwabe &lt;arne-openvpn@r=
+fc2549=2Eorg&gt; </div>
 
-<div style=3D"display:none"> Gerrit-Reviewer: Gert Doering &lt;gert@greeni=
-e=2Emuc=2Ede&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-dev=
-el &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt; </div>
-<div style=3D"dis=
-play:none"> Gerrit-Attention: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eor=
-g&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: Arne Schwabe &l=
-t;arne-openvpn@rfc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit=
--Attention: Gert Doering &lt;gert@greenie=2Emuc=2Ede&gt; </div>
-
-</body></h=
-tml>
---Q0MisFcB1wg=--
+</body></html>
+--QmWR7W84fG0=--
 
 
---===============5740011810627937795==
+--===============7396865875372094424==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============5740011810627937795==
+--===============7396865875372094424==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -1522,5 +1508,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============5740011810627937795==--
+--===============7396865875372094424==--
 
