@@ -1,13 +1,13 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61FB5606A330
-	for <openvpn-devel@archiver.kernel.org>; Sat, 21 Nov 2026 17:56:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74211606A32A
+	for <openvpn-devel@archiver.kernel.org>; Sun, 22 Nov 2026 01:51:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=jS7Q7fF7;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=epEdN3mK;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=B83t5wE/;
-	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=JEd7oBGu
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=c8/fh3y/;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=dc7fMTSc;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=ea0WffkO;
+	dkim=neutral header.d=openvpn.net header.i=@openvpn.net header.a=rsa-sha256 header.s=google header.b=Djq0Ap45
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Type:Cc:Reply-To:From:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
@@ -15,29 +15,29 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
 	List-Unsubscribe-Post:List-Owner;
-	bh=77iupI9JxROlddWzd4PPYGXErpI2eC0MqZCMMDTxidQ=; b=jS7Q7fF77lrrTRWvl59WVMBTXL
-	UunOtrZu5EsVjK5KeJLNwB0aAmqxMOKyrRwUwv0Vpc4TwFVKho2cpJPyDm/ZkqPO+Wv/pHc3R6Hs5
-	LwW2NJ2GiaoqfnwnZByPC5Yp8kMxezwK6ilCH/Bt7tanI8Z5lp+ndD1fmIdhzJVCpyhA=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	bh=S5uVxLnyQCChtsKSEoOfI179qDLWWqkmt3M71Lankgs=; b=c8/fh3y/woOIlQP0PQEurtpaWi
+	ng/Kmj0xVRIQ8HkOWItn8jPOYzif43vX3zq71f9PHy/C0nYjpGN+ZIB9rZQnwgBNDXe9+GEc5tkcb
+	OfFNTIcKwyX0FsHY/PZgawcDiVKvpp1mHC9vzzRDHw3RbAp9unedrpKdsn3i3/olM15c=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xUpKO-000000000c8-0Lrz;
-	Sat, 21 Nov 2026 17:56:44 +0000
+	id 1xUwk6-000000000YW-42oT;
+	Sun, 22 Nov 2026 01:51:46 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gerrit@openvpn.net>) id 1xUpKM-000000000br-1oLg
+ (envelope-from <gerrit@openvpn.net>) id 1xUwk6-000000000YQ-10UU
  for openvpn-devel@lists.sourceforge.net;
- Sat, 21 Nov 2026 17:56:42 +0000
+ Sun, 22 Nov 2026 01:51:46 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Type:Content-Transfer-Encoding:MIME-Version
  :Message-ID:Reply-To:Subject:References:In-Reply-To:List-Unsubscribe:List-Id:
  Cc:To:Date:From:Sender:Content-ID:Content-Description:Resent-Date:Resent-From
  :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Help:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=MlOD/PzfvYAwKLjoE28oeE8Cqatb1ixj/hBJ6SfvFM4=; b=epEdN3mK3vBqbZx3PKZ2v5A7pJ
- VowpZQQUwZ77KnOVnkieXYDOhNcC587/KUaCvWGJlybC9MAfuc4jVe/OXB90Dlq+fFIeLXlTXy6Im
- RAfCSvyDvbnIq6N5RSjiAEpQVGGs4WXTjBeVeKW8C0WU190Iy9zDkJ2ZhofMHQgGqji4=;
+ bh=2VkRlmhWMlsJJ13Jz18SODaIoz8Yp5amVy2sdHbH2t4=; b=dc7fMTScGTWDhbXXAgWMULBOms
+ uLiuHbgsAqf5/5crwY6G0EJy4RCwCnp9UeUMmVfYmrdi4Fxu+3dvl7VQGLdw8oeaQWJVeyVz9DNaD
+ jDDHDCHUoBlrZuW+t1E0PcKC41casG45nlpTZ51yN3znnZZ1i8XQqlBeLRaYGHK5xIsE=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Reply-To:
@@ -45,95 +45,93 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Sender:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Help:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=MlOD/PzfvYAwKLjoE28oeE8Cqatb1ixj/hBJ6SfvFM4=; b=B83t5wE/Bud4yaVkxfWTNudmOt
- HrqWLHOBFAHsPimYOFNq1l+z+DY228H7L1A113UNth4UZcSwQtDDy7BKQOb2hNAOKk8gx3hBsv+S6
- wZ6q8BBIR8uUnWZaZQ+pjHIew1LBPtavuA9SkpfGG+favYhd3JNkMXYXb/1+NtB3upTk=;
-Received: from mail-wm1-f49.google.com ([209.85.128.49])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ bh=2VkRlmhWMlsJJ13Jz18SODaIoz8Yp5amVy2sdHbH2t4=; b=ea0WffkO9YSV7a0JW0QueTozmW
+ 4Ip0S3xr+CJj2GQ82EC9AkwPkq09H4wZykrtpVNiWEeQF2MQ7MwTGQdnimaSIjliwK/bow8L4gOjy
+ 6CObsTJO2Gr7hn8Y3k3g8Kle+zKf7BW4/KN7/A3/ZH9K0+yMcljW+QWsxCn8YDUKtpkM=;
+Received: from mail-wm1-f41.google.com ([209.85.128.41])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128) (Exim 4.100.1)
- id 1xUpKL-000000007xn-02tP for openvpn-devel@lists.sourceforge.net;
- Sat, 21 Nov 2026 17:56:42 +0000
-Received: by mail-wm1-f49.google.com with SMTP id
- 5b1f17b1804b1-4a35d5d4a20so19033155e9.2
+ id 1xUwk4-000000002tI-3vbT for openvpn-devel@lists.sourceforge.net;
+ Sun, 22 Nov 2026 01:51:46 +0000
+Received: by mail-wm1-f41.google.com with SMTP id
+ 5b1f17b1804b1-4ac95761c85so15761705e9.2
  for <openvpn-devel@lists.sourceforge.net>;
- Sat, 21 Nov 2026 09:56:40 -0800 (PST)
+ Sat, 21 Nov 2026 17:51:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=openvpn.net; s=google; t=1795283794; x=1795888594; darn=lists.sourceforge.net;
+ d=openvpn.net; s=google; t=1795312298; x=1795917098; darn=lists.sourceforge.net;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:from:to:cc:subject:date:message-id
  :reply-to:content-type;
- bh=MlOD/PzfvYAwKLjoE28oeE8Cqatb1ixj/hBJ6SfvFM4=;
- b=JEd7oBGud9q1vZzDvkRejx4ovKtXnRw+xBb0sTFaUXJvCsv/PBHupZcWryCFux0Rr2
- ACwZskDowcgw571WrFVWQ6RtR+d4yNd41VX6ACx2VpPF5hF4HM7G73L8jjL0N6idlAjK
- EKHSEp9lH8jEVN5ZZFO2JfognAkTTec1gpdeSyWAEW+MqyFPE86eiM6yxgUmGY9We4o2
- RMD2XegXUHJ5HwGC79OHUP7USs6PURnFW7z8Om1bPAKb4wX9sr5WSD2pRLp3mmd1l40K
- 5sI7xynraSQhpLrrAP+aXfN/xKPKlV3p5tfT4AWYJN7vpA8/T2TVWvXZsWZrrSgKDgwJ
- Rsqw==
+ bh=2VkRlmhWMlsJJ13Jz18SODaIoz8Yp5amVy2sdHbH2t4=;
+ b=Djq0Ap45M3becPwqN4GubaoGZ0xEOqYCu+jiBz3h7+VU3z71+IerwlZGPtrT1pCWow
+ iWe9Le7e7Bkhhv5JcdiKfGn2wNfkxZ0jWA445u82ifmZGiguvJr6CUmI3rzZmwhDflWj
+ lPQQW86EccAwdirZZ+wLpi0o6MIdPTuYodO5jGKXRU5YyW2gORF1th10X6VmzdN0uoLC
+ vidDbZcBm/NS5A6gRDIymZ8bXw27xhbd5IRPB8pkXoJW/KiOsl0b/KgSpkqrFg5kolbI
+ xeSl4lcoXXM+dLk1SCrpKvoBqXjtcecgphFyg/2f+RgWKrE05aW8zxzxUccLzNQuyiYP
+ uqww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20260707; t=1795283794; x=1795888594;
+ d=1e100.net; s=20260707; t=1795312298; x=1795917098;
  h=content-type:user-agent:content-disposition
  :content-transfer-encoding:mime-version:message-id:reply-to:subject
  :thread-index:references:in-reply-to:list-unsubscribe:list-id
  :auto-submitted:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to
  :cc:subject:date:message-id:reply-to:content-type;
- bh=MlOD/PzfvYAwKLjoE28oeE8Cqatb1ixj/hBJ6SfvFM4=;
- b=zp5ZhMALhwbPUz4tWXYzmMpnzesy2D1rh6A38qRnmUFrYSOBoQMlw7hdj9cvBDcRW8
- sy4DYCXcLpm1igTo2LRynDkSqDDTrH6sXldKbdhbo4PuevkBa0PEiYD2yU4XX4Eccusy
- 3y2Zfz9CNxWEJtXxHRm/B+nbb0xsISTptgQRBIqSFmA5368ImpbG/hSR2b/BvgSCNpNR
- COV9tOvTor7zJlv7JudHin0sT6YHm0OgDv2jJeGTqghkQ36VXkz4+B4MhupXazz1JHIb
- 1Soi7pTVtz0OhWVjpq4yTg9WmAfKmvMJIaBFeK5ngu24E9Xu8PnHd164sKuS2Pky+W9a
- uCzg==
-X-Forwarded-Encrypted: i=1;
- AL+hErFmjov4zDRW/Z8DoZxzS3OUxuv+0qBMRluwTQepY27nqjjVSCM66HPfwXjvjIG13ucpWkpS26RglMcFQTKT@lists.sourceforge.net
-X-Gm-Message-State: APuU4Z80XicLBrIV+W6EmznxN7hRKNWtAak7z4vKtSpk9PfCc+kPYM6I
- ynE+tgGpcs8BSwMR6zMx+hjTQK9sc2LfDX8J3lLewEDdTlvHYMvNwpnlW/RwzNFyS/rbBzCyska
- i19ugmG/6AcmvJn6niGzt9gnPQHPkfpZaFxvaGjBTVaJVLSdX1Wj2fL9GdMaa9flwg3bW33r+QX
- aHn5kuBw==
-X-Gm-Gg: AZFdTZeu6EFXvIPD9/qsNW/ZsJPRrFZ+Hs6SpfwQhHCYJVYzkHrfCMCJjK3G1SkQsG0
- I4losEko6Waz5FobIAAO02igAZE3lp4XUD3A7JgOEQaGQimUbq1y5inqSzU/ye5UBAiqTyQmXWP
- i/vKjYmQXVFF1fHkNC2ZwsM9ovjJBQeiC7bCZ3U68M1NXnHj799Bl2eMWI8ZHnxXMd1mbp+v1NO
- poM1HsZlKcVLl9K74Ps8Lxj1LdieQeTpWDOP805AvsrCjJrxwQ1KeL9QhqJVX6wkajl5TGztaF5
- NC3/fvVpxfCgWHaAmG9Fgk2/C0t5gomQChRydW3oUG34dPctM2kV3NlQ/K7j84B4xCerRaDAo4/
- GwF9lr/qbZTFRPe9L4374G5c0Ghui2kbjMpxHw3ExyEK1gMquI0AY+8fpULmhQlL6RIJwC0vsrf
- 9EdjEaPZyJy/vxXmaVof5D/9U6FaKCMlqui2v23cLktVJNJD2saxcUrfiqsXnjHd4clb0tJX6iK
- HO/Mne1nTArw18YNFFfA7RgvKHCBVLmu2TPbJrky5X0MiYF02bWa00oXGsnxKRJeECnQyNv5WyO
- X9l6Hlkl4DxkLqzTT7HwYdt/CQzV1Q+LjWVf3WwSHATB44dGMhf2fGjdZitqqF8sLtWcJOqY9mE
- KxGyPB7QcGwDBYCyF/W/SSetW9AU4tkWqNmpIVDoBynEW2Not23/FYa6gqJMekYHMsxDBsSDkf9
- YtLo6Beduwt/2VWmENSve8cQZkQoPmLktyLog9
-X-Received: by 2002:a05:600c:4584:b0:4bb:5de1:e90f with SMTP id
- 5b1f17b1804b1-4bb88819bcdmr145785545e9.31.1795283794198; 
- Sat, 21 Nov 2026 09:56:34 -0800 (PST)
+ bh=2VkRlmhWMlsJJ13Jz18SODaIoz8Yp5amVy2sdHbH2t4=;
+ b=GnVJ8Ua8rNyzOofjz455sz1ozZaKJKq0LIoZvWpEpk1EzgTdBBdStWOOYRJog1iBq/
+ mKy8rTHDOaCUTYaymW/StKXT5qMASpuaQWvl1fwrMlsIB68tY5zYoxOCNb90gevbK822
+ Zr8YCqWNxyEXf5Jw86BSQW8Z+C4IU/GirE9wls0Y6Ia3FRSIoxIQ3otS8BDP65NoHZjw
+ zTleColJ/DXHjwsPV5Im56qpBinCeuwbWBO6eXiymhcOwwaPdl1Dwf58FYCUKc7B5LOs
+ QUa4FAj/z6/rSmaxapKnWzpzX1WFam4Us0yKh054LVxZH+DhahMgOR2wa3e1ZqIwaf0u
+ zcXw==
+X-Gm-Message-State: APuU4Z/7qH3W5HTosScXk4bJMz1umSW0jSBlFuUXZ6LT+BNUP9ANa+6Y
+ jkGy0Qda//447YQlYK27Ga1C9GXt3tyLAdAyiBOtoag2hEUv4mvBIC43fcGxQ+YP0G5jgbxs46h
+ pIFBSobbMd/X1hgeq8Ha2eaGqVwzDOWdRLBj9mkB/0GvzBq33PcI+v58Tt+32MtShDUUo
+X-Gm-Gg: AZFdTZeO4oG05HBFYrfUYhph7I/OoBkGqdKKv7qWhjR4genMHjo9dTfwRSLVJBj6P3n
+ NatMOx7kFOggRzqI9POQjZPv65xwV/d0NaMUIlmj70hLkTiQ0iMFxQ/q273X0hv+X7FDDmnHvEw
+ RGQGk5dcs74OStj7fWLm2evW6z8sLJx8sF9BL+xt2U0k67DEF/jokyGmTVs5gOb4DtSZ2aUuPtn
+ iiCSuMKbSzGauXXgrJeGLxsixGp9esWBTsLolazZE3CsOU7GYbb2NuLwAYAs/XwTCy0NcXCwQRw
+ SN5SVvZLTVBMsD6ynUq7rvahyDXjHI2+bsZDiB2ZkwFU0fi+yIZ52wT4nZpiWGu035kZwKwTHAP
+ CflqYGzUakiAsh8EqK8Klq8XhCYJeFfRds6zpZOzljVWq2gmvKC0XDN65AAkMPn3OhDzlqBsTl7
+ gxzaac179VaKwNxm65rHhX5H86BRIo7pZvRx0VsRCjz/JktI0E3eL2kULsKtm9x2l67dyjlYtB6
+ Z7lFvkJGh0UaI6s4vjpLTfkqMHZ0FTklsN0DugUTcSVjP8i8zZ9yLK5YueLhciS5RdAw5uoDgvM
+ Dwswt1swpHX/2PlCx1h/TWyacWtAAvKp1Ox33DtRwFDVkApLV0UciVR2w1rDyEUDezUdrMcqVvu
+ 5FQG6BLM1eXqgHLtEhmTNl+0lNocwF1yzPVVdqZy+9/NL/LbYQJsdq9K6RpSqFfoy704BFqOYGP
+ sfO5ArsjgxasF15nc=
+X-Received: by 2002:a05:600c:1d0a:b0:4a2:59:f568 with SMTP id
+ 5b1f17b1804b1-4bb8880ef6amr172439495e9.14.1795312298232; 
+ Sat, 21 Nov 2026 17:51:38 -0800 (PST)
 Received: from ip-10-18-1-162.eu-central-1.compute.internal
  (ec2-18-159-0-78.eu-central-1.compute.amazonaws.com. [18.159.0.78])
  by smtp.gmail.com with ESMTPSA id
- 5b1f17b1804b1-4bb884c3063sm198679815e9.15.2026.11.21.09.56.33
+ 5b1f17b1804b1-4bb9067846esm93182485e9.4.2026.11.21.17.51.37
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sat, 21 Nov 2026 09:56:33 -0800 (PST)
-X-Google-Original-From: "Gert Doering (Code Review)"
+ Sat, 21 Nov 2026 17:51:37 -0800 (PST)
+X-Google-Original-From: "Heiko Hund (Code Review)"
  <gerrit@ip-10-18-1-162.eu-central-1.compute.internal>
-Date: Sat, 21 Nov 2026 17:56:33 +0000
-To: =?UTF-8?Q?R=C4=83zvan_Cojocaru?= <razvanc@mailbox.org>
+Date: Sun, 22 Nov 2026 01:51:36 +0000
+To: =?UTF-8?Q?R=C4=83zvan_Cojocaru?= <razvanc@mailbox.org>,
+ Arne Schwabe <arne-openvpn@rfc2549.org>
 Auto-Submitted: auto-generated
-X-Gerrit-MessageType: merged
+X-Gerrit-MessageType: newpatchset
 X-Gerrit-PatchSet: 2
-X-Gerrit-Change-Id: Ie074a6f52589f9bb3c0c98b95def5e8115a7c621
-X-Gerrit-Change-Number: 2230
+X-Gerrit-Change-Id: I1d36996218c3c61f1f16e2c97f922afa66df6b66
+X-Gerrit-Change-Number: 2234
 X-Gerrit-Project: openvpn
-X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2230?usp=email>
-X-Gerrit-Commit: 3b508e18deb47b5fdcef21cbe74db6b853facddc
-In-Reply-To: <gerrit.1795179338000.Ie074a6f52589f9bb3c0c98b95def5e8115a7c621@gerrit.openvpn.net>
-References: <gerrit.1795179338000.Ie074a6f52589f9bb3c0c98b95def5e8115a7c621@gerrit.openvpn.net>
-Thread-Index: PGdlcnJpdC4xNzk1MTc5MzM4MDAwLkllMDc0YTZmNTI1ODlmOWJiM2MwYzk4Yjk1ZGVmNWU4MTE1YTdjNjIxQGdlcnJpdC5vcGVudnBuLm5ldD4=
-Message-ID: <913a7014d6c803c97d0b1a485194d394f6cf9dfb-HTML@gerrit.openvpn.net>
+X-Gerrit-ChangeURL: <https://gerrit.openvpn.net/c/openvpn/+/2234?usp=email>
+X-Gerrit-Commit: a95dff7ba064193f081a2b93028421a3f890a3e0
+In-Reply-To: <gerrit.1795207472000.I1d36996218c3c61f1f16e2c97f922afa66df6b66@gerrit.openvpn.net>
+References: <gerrit.1795207472000.I1d36996218c3c61f1f16e2c97f922afa66df6b66@gerrit.openvpn.net>
+Thread-Index: PGdlcnJpdC4xNzk1MjA3NDcyMDAwLkkxZDM2OTk2MjE4YzNjNjFmMWYxNmUyYzk3ZjkyMmFmYTY2ZGY2YjY2QGdlcnJpdC5vcGVudnBuLm5ldD4=
+Message-ID: <219a90c028b97a94dd843ce6cc5bc287be39846d-EmailReplacePatchSet-HTML@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 User-Agent: Gerrit/3.14.5
 X-Spam-Score: 0.8 (/)
-X-Headers-End: 1xUpKL-000000007xn-02tP
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Remove orphaned
- ring_buffer.h and ffdhe2048.pem
+X-Headers-End: 1xUwk4-000000002tI-3vbT
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: openvpnserv: check
+ room for the DHCPv6 name server separator
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -143,577 +141,225 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-From: "Gert Doering \(Code Review\) via Openvpn-devel"
+From: "Heiko Hund \(Code Review\) via Openvpn-devel"
  <openvpn-devel@lists.sourceforge.net>
-Reply-To: gert@greenie.muc.de, arne-openvpn@rfc2549.org, razvanc@mailbox.org,
- openvpn-devel@lists.sourceforge.net, heiko@ist.eigentlich.net
-Cc: "Gert Doering \(Code Review\)" <gerrit@openvpn.net>,
- openvpn-devel <openvpn-devel@lists.sourceforge.net>,
- Arne Schwabe <arne-openvpn@rfc2549.org>
-Content-Type: multipart/mixed; boundary="===============7405728366529161059=="
-X-Spam-Status: No, score=-17.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+Reply-To: heiko@ist.eigentlich.net, arne-openvpn@rfc2549.org,
+ razvanc@mailbox.org, openvpn-devel@lists.sourceforge.net
+Cc: "Heiko Hund \(Code Review\)" <gerrit@openvpn.net>,
+ openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: multipart/mixed; boundary="===============9208552837698880756=="
+X-Spam-Status: No, score=-12.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HTML_MESSAGE,
 	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,SPF_PASS,
-	T_KAM_HTML_FONT_INVALID autolearn=ham autolearn_force=no version=4.0.1
+	PDS_BAD_THREAD_QP_64,SPF_HELO_PASS,SPF_PASS,T_KAM_HTML_FONT_INVALID,
+	WEIRD_PORT autolearn=ham autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
---===============7405728366529161059==
+--===============9208552837698880756==
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="llX2WQioscA="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="Wq+ckAGlnYc="; charset=UTF-8
 
---llX2WQioscA=
+--Wq+ckAGlnYc=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Gert Doering has submitted this change=2E ( https://gerrit=2Eopenvpn=2Enet/=
-c/openvpn/+/2230?usp=3Demail )
+Attention is currently required from: Arne Schwabe, Heiko Hund, R=C4=83zvan=
+ Cojocaru=2E
 
-Change subject: Remove orphaned ring_buffer=
-=2Eh and ffdhe2048=2Epem
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
+Hello Arne Schwabe, R=C4=83zvan Cojocaru, 
+
+I'd like you to r=
+eexamine a change=2E Please visit
+
+    https://gerrit=2Eopenvpn=2Enet/c/ope=
+nvpn/+/2234?usp=3Demail
+
+to look at the new patch set (#2)=2E
+
+The followin=
+g approvals got outdated and were removed:
+Code-Review-1 by R=C4=83zvan Coj=
+ocaru
+
+
+Change subject: openvpnserv: check room for the DHCPv6 name server =
+separator
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
 =2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=
-=2E=2E=2E=2E
+=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E=2E
 
-Remove orphaned ring_buffer=2Eh and ffdhe2048=2Epem
+o=
+penvpnserv: check room for the DHCPv6 name server separator
 
-ring_buf=
-fer=2Eh was deleted with Wintun support in ad7a6945 but came back
-with the =
-clang-format reformat in 3cca3367=2E Nothing includes it=2E Also
-drop the u=
-nused TUN_IOCTL_REGISTER_RINGS define in interactive=2Ec=2E
+GetItfDnsServe=
+rsV6() added a separator between addresses even if only
+the terminating zer=
+o still fit into the buffer, overwriting it, and
+relied on inet_ntop() fail=
+ing with a zero size buffer afterwards=2E
 
-ffdhe2048=2Epe=
-m was added for the t_server_null tests in b60ba20c, which
-switched to --dh=
- none in 494fb718=2E Nothing references it=2E
+Return ERROR_MORE_DATA before ad=
+ding the separator instead=2E
 
-Change-Id: Ie074a6f52589f9bb=
-3c0c98b95def5e8115a7c621
-Signed-off-by: Razvan Cojocaru <razvanc@mailbox=2E=
-org>
-Acked-by: Heiko Hund <heiko@ist=2Eeigentlich=2Enet>
-Gerrit URL: https:=
-//gerrit=2Eopenvpn=2Enet/c/openvpn/+/2230
-Message-Id: <20261121113446=2E682=
-8-1-gert@greenie=2Emuc=2Ede>
-URL: https://www=2Email-archive=2Ecom/openvpn-=
-devel@lists=2Esourceforge=2Enet/msg41756=2Ehtml
-Signed-off-by: Gert Doering=
- <gert@greenie=2Emuc=2Ede>
+Change-Id: I1d36996218c3c61f1f16e2c97f922afa=
+66df6b66
+Signed-off-by: Heiko Hund <heiko@ist=2Eeigentlich=2Enet>
 ---
-D sample/sample-keys/ffdhe2048=2Epem
-D src/o=
-penvpn/ring_buffer=2Eh
-M src/openvpnserv/interactive=2Ec
-3 files changed, 0=
- insertions(+), 135 deletions(-)
+M src=
+/openvpnserv/interactive=2Ec
+1 file changed, 6 insertions(+), 1 deletion(-)=
 
 
 
+  git pull ssh://gerrit=2Eopenvpn=2Enet:29418/openvpn refs/changes/34/22=
+34/2
 
-diff --git a/sample/sample-keys/ffdhe2=
-048=2Epem b/sample/sample-keys/ffdhe2048=2Epem
-deleted file mode 100644
-ind=
-ex 9b182b7=2E=2E0000000
---- a/sample/sample-keys/ffdhe2048=2Epem
-+++ /dev/n=
-ull
-@@ -1,8 +0,0 @@
-------BEGIN DH PARAMETERS-----
--MIIBCAKCAQEA//////////+=
-t+FRYortKmq/cViAnPTzx2LnFg84tNpWp4TZBFGQz
--+8yTnc4kmz75fS/jY2MMddj2gbICrsRh=
-etPfHtXV/WVhJDP1H18GbtCFY2VVPe0a
--87VXE15/V8k1mE8McODmi3fipona8+/och3xWKE2r=
-ec1MKzKT0g6eXq8CrGCsyT7
--YdEIqUuyyOP7uWrat2DX9GgdT0Kj3jlN9K5W7edjcrsZCwenyO=
-4KbXCeAvzhzffi
--7MA0BM0oNC9hkXL+nOmFg/+OTxIy7vKBg8P+OxtMb61zO7X8vC7CIAXFjvG=
-DfRaD
--ssbzSibBsu/6iGtCOGEoXJf//////////wIBAg=3D=3D
-------END DH PARAMETERS=
------
-diff --git a/src/openvpn/ring_buffer=2Eh b/src/openvpn/ring_buffer=2E=
-h
-deleted file mode 100644
-index aebcd9c=2E=2E0000000
---- a/src/openvpn/rin=
-g_buffer=2Eh
-+++ /dev/null
-@@ -1,124 +0,0 @@
--/*
-- *  OpenVPN -- An applica=
-tion to securely tunnel IP networks
-- *             over a single UDP port,=
- with support for SSL/TLS-based
-- *             session authentication and =
-key exchange,
-- *             packet encryption, packet authentication, and=
-
-- *             packet compression=2E
-- *
-- *  Copyright (C) 2002-2026 Ope=
-nVPN Inc <sales@openvpn=2Enet>
-- *                2019 Lev Stipakov <lev@op=
-envpn=2Enet>
-- *
-- *  This program is free software; you can redistribute i=
-t and/or modify
-- *  it under the terms of the GNU General Public License v=
-ersion 2
-- *  as published by the Free Software Foundation=2E
-- *
-- *  This=
- program is distributed in the hope that it will be useful,
-- *  but WITHOU=
-T ANY WARRANTY; without even the implied warranty of
-- *  MERCHANTABILITY o=
-r FITNESS FOR A PARTICULAR PURPOSE=2E  See the
-- *  GNU General Public Lice=
-nse for more details=2E
-- *
-- *  You should have received a copy of the GNU=
- General Public License along
-- *  with this program; if not, write to the =
-Free Software Foundation, Inc=2E,
-- *  51 Franklin Street, Fifth Floor, Bos=
-ton, MA 02110-1301 USA=2E
-- */
--
--#ifdef _WIN32
--#ifndef OPENVPN_RING_BUFFE=
-R_H
--#define OPENVPN_RING_BUFFER_H
--
--#include <windows=2Eh>
--#include <win=
-ioctl=2Eh>
--
--#include <stdint=2Eh>
--#include <stdbool=2Eh>
--
--/*
-- * Value=
-s below are taken from Wireguard Windows client
-- * https://github=2Ecom/Wi=
-reGuard/wireguard-go/blob/master/tun/wintun/ring_windows=2Ego#L14
-- */
--#de=
-fine WINTUN_RING_CAPACITY       0x800000
--#define WINTUN_RING_TRAILING_BYTE=
-S 0x10000
--#define WINTUN_MAX_PACKET_SIZE     0xffff
--#define WINTUN_PACKET=
-_ALIGN        4
--
--#define TUN_IOCTL_REGISTER_RINGS \
--    CTL_CODE(51820U,=
- 0x970U, METHOD_BUFFERED, FILE_READ_DATA | FILE_WRITE_DATA)
--
--/**
-- * Wint=
-un ring buffer
-- * See https://github=2Ecom/WireGuard/wintun#ring-layout
-- =
-*/
--struct tun_ring
--{
--    volatile ULONG head;
--    volatile ULONG tail;
-=
--    volatile LONG alertable;
--    UCHAR data[WINTUN_RING_CAPACITY + WINTUN=
-_RING_TRAILING_BYTES];
--};
--
--/**
-- * Struct for ring buffers registration
-=
-- * See https://github=2Ecom/WireGuard/wintun#registering-rings
-- */
--struc=
-t tun_register_rings
--{
--    struct
--    {
--        ULONG ring_size;
--     =
-   struct tun_ring *ring;
--        HANDLE tail_moved;
--    } send, receive;=
-
--};
--
--struct TUN_PACKET_HEADER
--{
--    uint32_t size;
--};
--
--struct TUN_P=
-ACKET
--{
--    uint32_t size;
--    UCHAR data[WINTUN_MAX_PACKET_SIZE];
--};
--=
-
--/**
-- * Registers ring buffers used to exchange data between
-- * userspac=
-e openvpn process and wintun kernel driver,
-- * see https://github=2Ecom/Wi=
-reGuard/wintun#registering-rings
-- *
-- * @param device              handle =
-to opened wintun device
-- * @param send_ring           pointer to send ring=
-
-- * @param receive_ring        pointer to receive ring
-- * @param send_tai=
-l_moved     event set by wintun to signal openvpn
-- *                      =
-      that data is available for reading in send ring
-- * @param receive_ta=
-il_moved  event set by openvpn to signal wintun
-- *                        =
-    that data has been written to receive ring
-- * @return                 =
-   true if registration is successful, false otherwise - use
-- * GetLastErr=
-or()
-- */
--static inline bool
--register_ring_buffers(HANDLE device, struct =
-tun_ring *send_ring, struct tun_ring *receive_ring,
--                      =
-HANDLE send_tail_moved, HANDLE receive_tail_moved)
--{
--    struct tun_regis=
-ter_rings rr;
--    BOOL res;
--    DWORD bytes_returned;
--
--    ZeroMemory(&=
-rr, sizeof(rr));
--
--    rr=2Esend=2Ering =3D send_ring;
--    rr=2Esend=2Eri=
-ng_size =3D sizeof(struct tun_ring);
--    rr=2Esend=2Etail_moved =3D send_t=
-ail_moved;
--
--    rr=2Ereceive=2Ering =3D receive_ring;
--    rr=2Ereceive=
-=2Ering_size =3D sizeof(struct tun_ring);
--    rr=2Ereceive=2Etail_moved =
-=3D receive_tail_moved;
--
--    res =3D DeviceIoControl(device, TUN_IOCTL_RE=
-GISTER_RINGS, &rr, sizeof(rr), NULL, 0,
--                          &bytes_r=
-eturned, NULL);
--
--    return res !=3D FALSE;
--}
--
--#endif /* ifndef OPENVP=
-N_RING_BUFFER_H */
--#endif /* ifdef _WIN32 */
-diff --git a/src/openvpnserv/=
-interactive=2Ec b/src/openvpnserv/interactive=2Ec
-index 354fe09=2E=2E6bd679=
-f 100644
---- a/src/openvpnserv/interactive=2Ec
-+++ b/src/openvpnserv/intera=
+diff --git a/src/openvpnserv/interactive=2Ec b/src/openvpnserv/intera=
 ctive=2Ec
-@@ -55,9 +55,6 @@
- static HANDLE rdns_semaphore =3D NULL;
- #defin=
-e RDNS_TIMEOUT 600 /* seconds to wait for the semaphore */
- 
--#define TUN_I=
-OCTL_REGISTER_RINGS \
--    CTL_CODE(51820U, 0x970U, METHOD_BUFFERED, FILE_R=
-EAD_DATA | FILE_WRITE_DATA)
--
- openvpn_service_t interactive_service =3D { =
-interactive, _L(PACKAGE_NAME) L"ServiceInteractive",
-                      =
-                     _L(PACKAGE_NAME) L" Interactive Service",
-            =
-                               SERVICE_DEPENDENCIES, SERVICE_AUTO_START };
-=
+index 24705a9=2E=2E32b1688 100644
+--- a/src/openvpnserv/interacti=
+ve=2Ec
++++ b/src/openvpnserv/interactive=2Ec
+@@ -2256,7 +2256,12 @@
+       =
+  {
+             if (i !=3D 0)
+             {
+-                /* Add separ=
+ator */
++                /* Add separator, if there is room for more than t=
+he terminator */
++                if (s < 2)
++                {
++          =
+          *size =3D 0;
++                    return ERROR_MORE_DATA;
++      =
+          }
+                 *pos++ =3D ',';
+                 s--;
+        =
+     }
 
 -- 
-To view, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2230?usp=3De=
-mail
-To unsubscribe, or for help writing mail filters, visit https://gerrit=
-=2Eopenvpn=2Enet/settings?usp=3Demail
+To view, visit https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2234?=
+usp=3Demail
+To unsubscribe, or for help writing mail filters, visit https:/=
+/gerrit=2Eopenvpn=2Enet/settings?usp=3Demail
 
-Gerrit-MessageType: merged
-Gerrit-Pr=
-oject: openvpn
+Gerrit-MessageType: newpatchs=
+et
+Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ie074a6f52589f9bb3c0=
-c98b95def5e8115a7c621
-Gerrit-Change-Number: 2230
-Gerrit-PatchSet: 2
-Gerrit-=
-Owner: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
-Gerrit-Reviewer: Arne S=
-chwabe <arne-openvpn@rfc2549=2Eorg>
-Gerrit-Reviewer: Heiko Hund <heiko@ist=
-=2Eeigentlich=2Enet>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists=2Esource=
-forge=2Enet>
+Gerrit-Change-Id: I1d36996=
+218c3c61f1f16e2c97f922afa66df6b66
+Gerrit-Change-Number: 2234
+Gerrit-PatchSe=
+t: 2
+Gerrit-Owner: Heiko Hund <heiko@ist=2Eeigentlich=2Enet>
+Gerrit-Reviewe=
+r: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
+Gerrit-Reviewer: R=C4=83zvan C=
+ojocaru <razvanc@mailbox=2Eorg>
+Gerrit-CC: openvpn-devel <openvpn-devel@lis=
+ts=2Esourceforge=2Enet>
+Gerrit-Attention: Heiko Hund <heiko@ist=2Eeigentlic=
+h=2Enet>
+Gerrit-Attention: R=C4=83zvan Cojocaru <razvanc@mailbox=2Eorg>
+Ger=
+rit-Attention: Arne Schwabe <arne-openvpn@rfc2549=2Eorg>
 
---llX2WQioscA=
+--Wq+ckAGlnYc=
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE html><html><head><style></style></head><body><p>Gert Doering <str=
-ong>submitted</strong> this change=2E</p><p><a href=3D"https://gerrit=2Eope=
-nvpn=2Enet/c/openvpn/+/2230?usp=3Demail">View Change</a></p><div style=3D"w=
-hite-space:pre-wrap"></div><pre class=3D"blocks" style=3D"font-family: mono=
-space,monospace; white-space: pre-wrap;">Remove orphaned ring_buffer=2Eh an=
-d ffdhe2048=2Epem<br><br>ring_buffer=2Eh was deleted with Wintun support in=
- ad7a6945 but came back<br>with the clang-format reformat in 3cca3367=2E No=
-thing includes it=2E Also<br>drop the unused TUN_IOCTL_REGISTER_RINGS defin=
-e in interactive=2Ec=2E<br><br>ffdhe2048=2Epem was added for the t_server_n=
-ull tests in b60ba20c, which<br>switched to --dh none in 494fb718=2E Nothin=
-g references it=2E<br><br>Change-Id: Ie074a6f52589f9bb3c0c98b95def5e8115a7c=
-621<br>Signed-off-by: Razvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt;<br>Acke=
-d-by: Heiko Hund &lt;heiko@ist=2Eeigentlich=2Enet&gt;<br>Gerrit URL: https:=
-//gerrit=2Eopenvpn=2Enet/c/openvpn/+/2230<br>Message-Id: &lt;20261121113446=
-=2E6828-1-gert@greenie=2Emuc=2Ede&gt;<br>URL: https://www=2Email-archive=2E=
-com/openvpn-devel@lists=2Esourceforge=2Enet/msg41756=2Ehtml<br>Signed-off-b=
-y: Gert Doering &lt;gert@greenie=2Emuc=2Ede&gt;<br>---<br>D sample/sample-k=
-eys/ffdhe2048=2Epem<br>D src/openvpn/ring_buffer=2Eh<br>M src/openvpnserv/i=
-nteractive=2Ec<br>3 files changed, 0 insertions(+), 135 deletions(-)<br><br=
-></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wr=
-ap;"><span>diff --git a/sample/sample-keys/ffdhe2048=2Epem b/sample/sample-=
-keys/ffdhe2048=2Epem</span><br><span>deleted file mode 100644</span><br><sp=
-an>index 9b182b7=2E=2E0000000</span><br><span>--- a/sample/sample-keys/ffdh=
-e2048=2Epem</span><br><span>+++ /dev/null</span><br><span>@@ -1,8 +0,0 @@</=
-span><br><span>------BEGIN DH PARAMETERS-----</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-MIIBCAKCAQEA//////////+t+FRYortKmq/cViAnPTzx2LnFg84=
-tNpWp4TZBFGQz</span><br><span style=3D"color: hsl(0, 100%, 40%);">-+8yTnc4k=
-mz75fS/jY2MMddj2gbICrsRhetPfHtXV/WVhJDP1H18GbtCFY2VVPe0a</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-87VXE15/V8k1mE8McODmi3fipona8+/och3xWKE2=
-rec1MKzKT0g6eXq8CrGCsyT7</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-YdEIqUuyyOP7uWrat2DX9GgdT0Kj3jlN9K5W7edjcrsZCwenyO4KbXCeAvzhzffi</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-7MA0BM0oNC9hkXL+nOmFg/+OTxIy7=
-vKBg8P+OxtMb61zO7X8vC7CIAXFjvGDfRaD</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-ssbzSibBsu/6iGtCOGEoXJf//////////wIBAg=3D=3D</span><br><span>=
-------END DH PARAMETERS-----</span><br><span>diff --git a/src/openvpn/ring_=
-buffer=2Eh b/src/openvpn/ring_buffer=2Eh</span><br><span>deleted file mode =
-100644</span><br><span>index aebcd9c=2E=2E0000000</span><br><span>--- a/src=
-/openvpn/ring_buffer=2Eh</span><br><span>+++ /dev/null</span><br><span>@@ -=
-1,124 +0,0 @@</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">- *  OpenVPN -- An applicati=
-on to securely tunnel IP networks</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">- *             over a single UDP port, with support for SSL/TLS=
--based</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *             =
-session authentication and key exchange,</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">- *             packet encryption, packet authentication,=
- and</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *             pa=
-cket compression=2E</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *  Copyright (C) 200=
-2-2026 OpenVPN Inc &lt;sales@openvpn=2Enet&gt;</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">- *                2019 Lev Stipakov &lt;lev@openvp=
-n=2Enet&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">- *  This program is free soft=
-ware; you can redistribute it and/or modify</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">- *  it under the terms of the GNU General Public Lice=
-nse version 2</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *  as p=
-ublished by the Free Software Foundation=2E</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">- *  This program is distributed in the hope that it will be useful,</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">- *  but WITHOUT ANY WARRAN=
-TY; without even the implied warranty of</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE=
-=2E  See the</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *  GNU G=
-eneral Public License for more details=2E</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
-- *  You should have received a copy of the GNU General Public License alon=
-g</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *  with this progra=
-m; if not, write to the Free Software Foundation, Inc=2E,</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">- *  51 Franklin Street, Fifth Floor, Bo=
-ston, MA 02110-1301 USA=2E</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-#ifdef _WIN32</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-#ifndef OPENVPN_RING_BUFFER_H</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-#define OPENVPN_RING_BUFFER_H</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-#include &lt;windows=2Eh&gt;</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-#include &lt;winioctl=2Eh&gt;</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-#include &lt;stdint=2Eh&gt;</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-#include &lt;stdbool=2Eh&gt;</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-/*</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Va=
-lues below are taken from Wireguard Windows client</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">- * https://github=2Ecom/WireGuard/wireguard-go=
-/blob/master/tun/wintun/ring_windows=2Ego#L14</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-#define WINTUN_RING_CAPACITY       0x800000</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-#define WINTUN_RING_TRAILING_BYTES 0x10000</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-#define WINTUN_MAX_PACKET_=
-SIZE     0xffff</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#defin=
-e WINTUN_PACKET_ALIGN        4</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define TUN_=
-IOCTL_REGISTER_RINGS \</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    CTL_CODE(51820U, 0x970U, METHOD_BUFFERED, FILE_READ_DATA | FILE_WRITE_=
-DATA)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-/**</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">- * Wintun ring buffer</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">- * See https://github=2Ecom/WireGuard/wintun#ring-layou=
-t</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-struct tun_ring</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    volatile ULONG head;</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    volatile ULONG tail;</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    volatile LONG alertable;</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    UCHAR data[WINTUN_RING_CAPACITY + WINTUN_RING_=
-TRAILING_BYTES];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-};</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-/**</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">- * Struct for ring buffers registration</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">- * See https://github=2Ecom/WireGuard/wintu=
-n#registering-rings</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *=
-/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-struct tun_register_=
-rings</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-    struct</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-        ULONG ring_size;</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-        struct tun_ring *ring;</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-        HANDLE tail_moved;</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    } send, receive;</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-};</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-struct TUN_P=
-ACKET_HEADER</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    uint32_t size;</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-};</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-struct TUN_PACKET</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    uint32_t size;</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    UCHAR data[WINTUN_MA=
-X_PACKET_SIZE];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-};</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-/**</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">- * Registers ring buffers used to exchange data between</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">- * userspace openvpn process a=
-nd wintun kernel driver,</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">- * see https://github=2Ecom/WireGuard/wintun#registering-rings</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">- * @param device              handle to opened win=
-tun device</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param s=
-end_ring           pointer to send ring</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">- * @param receive_ring        pointer to receive ring</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param send_tail_moved=
-     event set by wintun to signal openvpn</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">- *                            that data is available f=
-or reading in send ring</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->- * @param receive_tail_moved  event set by openvpn to signal wintun</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">- *                         =
-   that data has been written to receive ring</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">- * @return                    true if registration =
-is successful, false otherwise - use</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">- * GetLastError()</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static =
-inline bool</span><br><span style=3D"color: hsl(0, 100%, 40%);">-register_r=
-ing_buffers(HANDLE device, struct tun_ring *send_ring, struct tun_ring *rec=
-eive_ring,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
-           HANDLE send_tail_moved, HANDLE receive_tail_moved)</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-    struct tun_register_rings rr;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    BOOL res;</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    DWORD bytes_returned;</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    ZeroMemory(&amp;rr, sizeof(rr));</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    rr=2Esend=2Ering =3D send_ring;</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    rr=2Esend=2Ering_size =3D sizeof(struct tun_ring);</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    rr=2Esend=2Etail_moved =
-=3D send_tail_moved;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    rr=2Ereceive=2Erin=
-g =3D receive_ring;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  rr=2Ereceive=2Ering_size =3D sizeof(struct tun_ring);</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    rr=2Ereceive=2Etail_moved =3D receive=
-_tail_moved;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    res =3D DeviceIoControl(de=
-vice, TUN_IOCTL_REGISTER_RINGS, &amp;rr, sizeof(rr), NULL, 0,</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-                          &amp;byte=
-s_returned, NULL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    return res !=3D FALS=
-E;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-#endif /* ifndef OPENVPN_RING_BUFFER_H */</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-#endif /* ifdef _WIN32 */</span><br><spa=
-n>diff --git a/src/openvpnserv/interactive=2Ec b/src/openvpnserv/interactiv=
-e=2Ec</span><br><span>index 354fe09=2E=2E6bd679f 100644</span><br><span>---=
- a/src/openvpnserv/interactive=2Ec</span><br><span>+++ b/src/openvpnserv/in=
-teractive=2Ec</span><br><span>@@ -55,9 +55,6 @@</span><br><span> static HAN=
-DLE rdns_semaphore =3D NULL;</span><br><span> #define RDNS_TIMEOUT 600 /* s=
-econds to wait for the semaphore */</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#define TUN_IOCTL_REGISTER_RINGS \</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-    CTL_CODE(51820U, 0x970U, M=
-ETHOD_BUFFERED, FILE_READ_DATA | FILE_WRITE_DATA)</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-</span><br><span> openvpn_service_t interactive=
-_service =3D { interactive, _L(PACKAGE_NAME) L&quot;ServiceInteractive&quot=
-;,</span><br><span>                                           _L(PACKAGE_NA=
-ME) L&quot; Interactive Service&quot;,</span><br><span>                    =
-                       SERVICE_DEPENDENCIES, SERVICE_AUTO_START };</span><b=
-r></pre><p>To view, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openv=
-pn/+/2230?usp=3Demail">change 2230</a>=2E To unsubscribe, or for help writi=
-ng mail filters, visit <a href=3D"https://gerrit=2Eopenvpn=2Enet/settings?u=
-sp=3Demail">settings</a>=2E</p><div itemscope itemtype=3D"http://schema=2Eo=
-rg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sche=
-ma=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"https://gerrit=2Eopenvp=
-n=2Enet/c/openvpn/+/2230?usp=3Demail"/><meta itemprop=3D"name" content=3D"V=
-iew Change"/></div></div>
+<!DOCTYPE html><html><head><style></style></head><body><p> Attention is cur=
+rently required from: Arne Schwabe, Heiko Hund, R=C4=83zvan Cojocaru=2E </p=
+>
+<p>Heiko Hund <strong>uploaded patch set #2</strong> to this change=2E</p=
+><p><a href=3D"https://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2234?usp=3Demail"=
+>View Change</a></p><p>The following approvals got outdated and were remove=
+d:
+Code-Review-1 by R=C4=83zvan Cojocaru</p><pre class=3D"blocks" style=3D"=
+font-family: monospace,monospace; white-space: pre-wrap;">openvpnserv: chec=
+k room for the DHCPv6 name server separator<br><br>GetItfDnsServersV6() add=
+ed a separator between addresses even if only<br>the terminating zero still=
+ fit into the buffer, overwriting it, and<br>relied on inet_ntop() failing =
+with a zero size buffer afterwards=2E<br><br>Return ERROR_MORE_DATA before =
+adding the separator instead=2E<br><br>Change-Id: I1d36996218c3c61f1f16e2c9=
+7f922afa66df6b66<br>Signed-off-by: Heiko Hund &lt;heiko@ist=2Eeigentlich=2E=
+net&gt;<br>---<br>M src/openvpnserv/interactive=2Ec<br>1 file changed, 6 in=
+sertions(+), 1 deletion(-)<br><br></pre><pre class=3D"blocks" style=3D"font=
+-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit=
+=2Eopenvpn=2Enet:29418/openvpn refs/changes/34/2234/2</pre><pre style=3D"fo=
+nt-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/=
+src/openvpnserv/interactive=2Ec b/src/openvpnserv/interactive=2Ec</span><br=
+><span>index 24705a9=2E=2E32b1688 100644</span><br><span>--- a/src/openvpns=
+erv/interactive=2Ec</span><br><span>+++ b/src/openvpnserv/interactive=2Ec</=
+span><br><span>@@ -2256,7 +2256,12 @@</span><br><span>         {</span><br>=
+<span>             if (i !=3D 0)</span><br><span>             {</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-                /* Add separator =
+*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                /=
+* Add separator, if there is room for more than the terminator */</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+                if (s &lt; 2)=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                {</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    *=
+size =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+            return ERROR_MORE_DATA;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+                }</span><br><span>                 *pos++ =
+=3D &#39;,&#39;;</span><br><span>                 s--;</span><br><span>    =
+         }</span><br></pre><p>To view, visit <a href=3D"https://gerrit=2Eop=
+envpn=2Enet/c/openvpn/+/2234?usp=3Demail">change 2234</a>=2E To unsubscribe=
+, or for help writing mail filters, visit <a href=3D"https://gerrit=2Eopenv=
+pn=2Enet/settings?usp=3Demail">settings</a>=2E</p><div itemscope itemtype=
+=3D"http://schema=2Eorg/EmailMessage"><div itemscope itemprop=3D"action" it=
+emtype=3D"http://schema=2Eorg/ViewAction"><link itemprop=3D"url" href=3D"ht=
+tps://gerrit=2Eopenvpn=2Enet/c/openvpn/+/2234?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
 
-<div style=3D"display:none"> Gerrit-MessageType:=
- merged </div>
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-=
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"dis=
-play:none"> Gerrit-Change-Id: Ie074a6f52589f9bb3c0c98b95def5e8115a7c621 </d=
-iv>
-<div style=3D"display:none"> Gerrit-Change-Number: 2230 </div>
-<div sty=
-le=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none">=
- Gerrit-Owner: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt; </div>
-<d=
-iv style=3D"display:none"> Gerrit-Reviewer: Arne Schwabe &lt;arne-openvpn@r=
-fc2549=2Eorg&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: Heiko=
- Hund &lt;heiko@ist=2Eeigentlich=2Enet&gt; </div>
-<div style=3D"display:non=
-e"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@lists=2Esourceforge=2Enet&gt=
-; </div>
+<div style=3D"display:none=
+"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerr=
+it-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: mast=
+er </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I1d36996218c3c61f1=
+f16e2c97f922afa66df6b66 </div>
+<div style=3D"display:none"> Gerrit-Change-N=
+umber: 2234 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<=
+div style=3D"display:none"> Gerrit-Owner: Heiko Hund &lt;heiko@ist=2Eeigent=
+lich=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: Arne Sc=
+hwabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
+<div style=3D"display:none"=
+> Gerrit-Reviewer: R=C4=83zvan Cojocaru &lt;razvanc@mailbox=2Eorg&gt; </div=
+>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@l=
+ists=2Esourceforge=2Enet&gt; </div>
+<div style=3D"display:none"> Gerrit-Att=
+ention: Heiko Hund &lt;heiko@ist=2Eeigentlich=2Enet&gt; </div>
+<div style=
+=3D"display:none"> Gerrit-Attention: R=C4=83zvan Cojocaru &lt;razvanc@mailb=
+ox=2Eorg&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: Arne Sch=
+wabe &lt;arne-openvpn@rfc2549=2Eorg&gt; </div>
 
 </body></html>
---llX2WQioscA=--
+--Wq+ckAGlnYc=--
 
 
---===============7405728366529161059==
+--===============9208552837698880756==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============7405728366529161059==
+--===============9208552837698880756==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -724,5 +370,5 @@ Openvpn-devel mailing list
 Openvpn-devel@lists.sourceforge.net
 https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
---===============7405728366529161059==--
+--===============9208552837698880756==--
 
