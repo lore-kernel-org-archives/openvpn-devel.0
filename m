@@ -1,42 +1,42 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 223C1606A31E
-	for <openvpn-devel@archiver.kernel.org>; Tue, 24 Nov 2026 12:25:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81695606A327
+	for <openvpn-devel@archiver.kernel.org>; Tue, 24 Nov 2026 12:26:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=cqgYSKVG;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=Xl/+n5I3;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=D8B2q4SC
+	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=eh/lWTKU;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=E2aj6bwy;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=WAzoQpne
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
-	List-Owner; bh=LluO6+Z+Fbp+Oj9wm/ijJNJQ57eZF2yclyf9hsBAb2c=; b=cqgYSKVGlnttii
-	RLJ37FyAXBLhATNOFlVn2oICfDKZAfVK2+/7AIM1PNl/X6BpD2apbqWA0y0XhA3FBTmmFzo8ke3UE
-	rliLu1Y8CXhffbxjv1QJxpvs2CvkmkV9eenYdOC+NDlEfbbcMWLd/8/RFhLVfDlY3ySoGkIB3ZXJR
-	qoI=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	List-Owner; bh=VcV8QnUfQ8a0Z+0/MXIBfz6gXr4QSwkmap4n9W3I+0I=; b=eh/lWTKUWs8qt0
+	L+UrsFD9zxiIr5ZG0HfQ5qGSkUxJcaVuw6++nnTmcIN+EMvsAjgjKTJqCsc+2kihIvjEIRqvxcknX
+	wt0yWPWls//7n8PVFZUGBLMFFAnfNE1Xsh/2ufW+prZSMa0DWGCZlWih1FXtrEEHwMYA8ULbE0vsR
+	Uzk=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xVpaR-000000002A1-2C5i;
-	Tue, 24 Nov 2026 12:25:27 +0000
+	id 1xVpbA-000000001Cs-0GWj;
+	Tue, 24 Nov 2026 12:26:12 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
  (envelope-from <gert@blue4.greenie.muc.de>)
- id 1xVpa6-0000000028r-3jUB for openvpn-devel@lists.sourceforge.net;
- Tue, 24 Nov 2026 12:25:06 +0000
+ id 1xVpb8-000000001Cj-4Abv for openvpn-devel@lists.sourceforge.net;
+ Tue, 24 Nov 2026 12:26:11 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
  In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=e2y3iTZMj+on3EFRHgYodGyPp8Z7iyqykvXOgjrSFgg=; b=Xl/+n5I30t8JHUB58hqE+x7rzF
- pzI343Cz0Hw4Ju5/IK1UZtncPx33mJpqlwFJjElFMKs1iCI56yJN0C5lVPOqlszf35uNWrouHGP9U
- XXK52y6ld8sO6cbv0flqMTDy64RlaAy4HPE5CKUQfwI6bD5rTCVlBss2So99e+RJWXOg=;
+ bh=bhTT/Yi7UmigReTC6KW+gDQT1Am58NpanJ9vj2kULTA=; b=E2aj6bwy6Gh39YT+hVOAkOTHFP
+ vPNkCiufKoEttW00AGxCvNLJb0blQL4ktRzlS7BOhJs2eNcCID7WcjWAeyddnppGrDJh7/tMh6tYE
+ J0fa565IROz9xe19hvNl2TF6HFmVwL1DhNPjVOXkeGpgTWNpJzFmeBzBObxMoU5hPdnU=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -44,32 +44,32 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=e2y3iTZMj+on3EFRHgYodGyPp8Z7iyqykvXOgjrSFgg=; b=D8B2q4SCZuAp3kLlezq/yZ5buP
- Pm2L6aU8Ng5ZcF0LLVULbcAr6KCD3jx/C7fWTrFsrP4RLNTKBmZeUpA7Vn1wUJzz8TrbXzu2pDvxn
- fJIN6wxOA/DSThQyEI/IGYxGv9jLZ1eSmmipy5GtscXsUfoggk2s6c2Z3ro935PVlaOM=;
+ bh=bhTT/Yi7UmigReTC6KW+gDQT1Am58NpanJ9vj2kULTA=; b=WAzoQpne8iYn74k/ehnOp4XkdD
+ Tth6p9USj7DC1iXkTZ8JekVjmX/2KrG51kaoABjff8PFZCZxwN0bVpqLO1ZqFUg65eFINEtrvktUD
+ JEYEzzfZdIp1SVvJWMzUPfIkfW716x55t/0PU6qDgQmf84gN7JDTlsfDadlzVMKb2PDk=;
 Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
- id 1xVpZv-000000000rN-39OT for openvpn-devel@lists.sourceforge.net;
- Tue, 24 Nov 2026 12:24:58 +0000
+ id 1xVpb4-000000000tC-005x for openvpn-devel@lists.sourceforge.net;
+ Tue, 24 Nov 2026 12:26:07 +0000
 Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 6AOCOm7F008423
- for <openvpn-devel@lists.sourceforge.net>; Tue, 24 Nov 2026 13:24:48 +0100
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 6AOCPxXM008565
+ for <openvpn-devel@lists.sourceforge.net>; Tue, 24 Nov 2026 13:25:59 +0100
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 6AOCOmQh008422
- for openvpn-devel@lists.sourceforge.net; Tue, 24 Nov 2026 13:24:48 +0100
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 6AOCPxVJ008562
+ for openvpn-devel@lists.sourceforge.net; Tue, 24 Nov 2026 13:25:59 +0100
 From: Gert Doering <gert@greenie.muc.de>
 To: openvpn-devel@lists.sourceforge.net
-Date: Tue, 24 Nov 2026 13:24:43 +0100
-Message-ID: <20261124122448.8407-1-gert@greenie.muc.de>
+Date: Tue, 24 Nov 2026 13:25:53 +0100
+Message-ID: <20261124122559.8549-1-gert@greenie.muc.de>
 X-Mailer: git-send-email 2.55.0
-In-Reply-To: <gerrit.1795515857000.Ifa05b9fd06e5d52818c91c5b160b6dd06ec71396@gerrit.openvpn.net>
-References: <gerrit.1795515857000.Ifa05b9fd06e5d52818c91c5b160b6dd06ec71396@gerrit.openvpn.net>
+In-Reply-To: <gerrit.1795515857000.Ie902dbc45e4aca0c72bc4b4e8cc1e17d29b47aa1@gerrit.openvpn.net>
+References: <gerrit.1795515857000.Ie902dbc45e4aca0c72bc4b4e8cc1e17d29b47aa1@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 X-Spam-Score: 1.3 (+)
-X-Headers-End: 1xVpZv-000000000rN-39OT
-Subject: [Openvpn-devel] [PATCH v2] openvpn: make the context mode an enum
+X-Headers-End: 1xVpb4-000000000tC-005x
+Subject: [Openvpn-devel] [PATCH v2] options: make the options mode an enum
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -90,91 +90,96 @@ X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 
 From: Razvan Cojocaru <razvanc@mailbox.org>
 
-Turn the CM_* defines into enum context_mode and use it for
-struct context.mode, so -Wswitch covers switches over it.
+Turn the MODE_* defines into enum options_mode and use it for the mode
+fields and parameters. With both modes being distinct enum types,
+-Wenum-compare catches comparing a context mode against an options
+mode.
 
-Drop the stale CM_THREAD mention from the comments.
-
-Change-Id: Ifa05b9fd06e5d52818c91c5b160b6dd06ec71396
+Change-Id: Ie902dbc45e4aca0c72bc4b4e8cc1e17d29b47aa1
 Signed-off-by: Razvan Cojocaru <razvanc@mailbox.org>
 Acked-by: Lev Stipakov <lstipakov@gmail.com>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2333
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2334
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2333
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2334
 This mail reflects revision 2 of this Change.
 
 Acked-by according to Gerrit (reflected above):
 Lev Stipakov <lstipakov@gmail.com>
 
         
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 8b64944..10a232c 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2768,6 +2768,9 @@
-         case CM_CHILD_TCP:
-             sec = c->options.ce.connect_retry_seconds;
-             break;
-+
-+        default:
-+            break;
-     }
+diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
+index fdee465..3c85c11 100644
+--- a/src/openvpn/dco.c
++++ b/src/openvpn/dco.c
+@@ -255,7 +255,7 @@
+ }
  
- #ifdef ENABLE_DEBUG
-diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
-index ad6be88..cbda2e3 100644
---- a/src/openvpn/openvpn.h
-+++ b/src/openvpn/openvpn.h
-@@ -430,6 +430,16 @@
+ static bool
+-dco_check_option_ce(const struct connection_entry *ce, msglvl_t msglevel, int mode)
++dco_check_option_ce(const struct connection_entry *ce, msglvl_t msglevel, enum options_mode mode)
+ {
+     if (ce->fragment)
+     {
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 2068393..f9ff0c4 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2309,7 +2309,7 @@
+ }
+ 
+ static void
+-options_postprocess_mutate_le(const struct connection_entry *ce, struct local_entry *le, int mode)
++options_postprocess_mutate_le(const struct connection_entry *ce, struct local_entry *le, enum options_mode mode)
+ {
+     /* use the global port if none is specified */
+     if (!le->port)
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index b390ebc..0112c5f 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -252,6 +252,13 @@
+     struct verify_hash_list *next;
  };
  
- 
-+/** Role of a context within the OpenVPN process */
-+enum context_mode
++/** Major mode */
++enum options_mode
 +{
-+    CM_P2P,       /**< standalone point-to-point session or client */
-+    CM_TOP,       /**< top level of a multi-client or point-to-multipoint server */
-+    CM_TOP_CLONE, /**< clone of a CM_TOP context for one thread */
-+    CM_CHILD_UDP, /**< child context of a CM_TOP */
-+    CM_CHILD_TCP, /**< child context of a CM_TOP */
++    MODE_POINT_TO_POINT,
++    MODE_SERVER,
 +};
 +
- /**
-  * Contains all state information for one tunnel.
-  *
-@@ -443,22 +453,14 @@
-  */
- struct context
+ /* Command line options */
+ struct options
  {
--    struct options options; /**< Options loaded from command line or
--                             *   configuration file. */
-+    struct options options;      /**< Options loaded from command line or
-+                                  *   configuration file. */
+@@ -260,10 +267,7 @@
+     /* first config file */
+     const char *config;
  
--    bool first_time;        /**< True on the first iteration of
--                             *   OpenVPN's main loop. */
-+    bool first_time;             /**< True on the first iteration of
-+                                  *   OpenVPN's main loop. */
+-    /* major mode */
+-#define MODE_POINT_TO_POINT 0
+-#define MODE_SERVER         1
+-    int mode;
++    enum options_mode mode;
  
--    /* context modes */
--#define CM_P2P       0           /* standalone point-to-point session or client */
--#define CM_TOP       1           /* top level of a multi-client or point-to-multipoint server */
--#define CM_TOP_CLONE 2           /* clone of a CM_TOP context for one thread */
--#define CM_CHILD_UDP 3           /* child context of a CM_TOP or CM_THREAD */
--#define CM_CHILD_TCP 4           /* child context of a CM_TOP or CM_THREAD */
--    int mode;                    /**< Role of this context within the
--                                  *   OpenVPN process.  Valid values are \c
--                                  *   CM_P2P, \c CM_TOP, \c CM_TOP_CLONE,
--                                  *   \c CM_CHILD_UDP, and \c CM_CHILD_TCP. */
-+    enum context_mode mode;      /**< Role of this context within the
-+                                  *   OpenVPN process. */
+     /* enable forward compatibility for post-2.1 features */
+     bool forward_compatible;
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index cfe3fea..fe333a3 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -324,7 +324,7 @@
  
-     struct multi_context *multi; /**< Pointer to the main P2MP context.
-                                   *   Non-NULL only when mode == CM_TOP. */
+     /* from command line */
+     bool single_session;
+-    int mode;
++    enum options_mode mode;
+     bool pull;
+     /**
+      * The detail of info we push in peer info
 
 
 _______________________________________________
