@@ -1,76 +1,76 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBEC1606A31E
-	for <openvpn-devel@archiver.kernel.org>; Tue, 24 Nov 2026 16:26:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19D56606A32E
+	for <openvpn-devel@archiver.kernel.org>; Tue, 24 Nov 2026 16:31:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=iPkqi25G;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=h+FL4jgY;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=YlbjZ+L+
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=NvtAoVMV;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=OxKi0q2b;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=ZmiBCRI2
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
-	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	MIME-Version:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
+	List-Unsubscribe:List-Id:Subject:References:In-Reply-To:To:From:Message-Id:
+	Date:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
-	List-Owner; bh=vG7guuJZ80l5f2dKsa39TdSgeW0D2UAlSG7HIwtoCsc=; b=iPkqi25GMsoX/f
-	iiCunIrVre7Q9cVFAS9Q3/JxOpiUhCu1yyM7HcYn+vJkERqj+ctut3IGBLQ2dWfqKzZr/ky+GCW/+
-	PUkN+XaODZrEe2aVh4RyrCex0+kBXW2CUcegMJAiVa/+MGS07bPwp/OgAaxnOxnpMfaKpivkrfa65
-	b4w=;
-Received: from [127.0.0.1] (helo=sfs-ml-3.v29.lw.sourceforge.com)
-	by sfs-ml-3.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	List-Owner; bh=Opm8e9d3PHh3EYfhJO3vnPVADieSqRcL/Dti4znYwb0=; b=NvtAoVMVLX0TTA
+	byZ4qnkrkD21MJuNENFImUqkx/fZ1dnYdIciESfXVhUaAuxLtVczzBkNs9fsDwu0kij4oZi1+5gpN
+	Ck+DzR8o4rhh2oknnuaSelpzFvkekJAfsXQlLly0cs3ej8HHT0sTn3xCMBMg7UAsZGFB+x3B3E8jM
+	1cs=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xVtLJ-0000000077L-2gqv;
-	Tue, 24 Nov 2026 16:26:05 +0000
+	id 1xVtQC-000000007la-2ti5;
+	Tue, 24 Nov 2026 16:31:08 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-3.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gert@blue4.greenie.muc.de>)
- id 1xVtLH-0000000077D-3pPs for openvpn-devel@lists.sourceforge.net;
- Tue, 24 Nov 2026 16:26:03 +0000
+ (envelope-from <gert@chekov.greenie.muc.de>)
+ id 1xVtPu-000000007ku-1ffH for openvpn-devel@lists.sourceforge.net;
+ Tue, 24 Nov 2026 16:30:50 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=sWFjAvJpT4+fIbbUJ7svDMC8wOORo23McxoGopLsG8k=; b=h+FL4jgY6eyLRIfb/erTNB27A7
- pvH7jgVZZrRK+SB5HgGIHoDlGhWlDpWPGYvYrc7l73fNmagXjxpy/MsDXWcfPuZBnZCfYX4o2FAQ4
- iHWUyxNPYoETO7Esp7afO/Hu6Frf+W1p/oHTDl02Dks6l+YKcDBcTOVGCeBbbtpIUSJw=;
+ d=sourceforge.net; s=x; h=References:In-Reply-To:Subject:Cc:To:From:
+ Message-Id:Date:Sender:Reply-To:MIME-Version:Content-Type:
+ Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+ List-Help:List-Unsubscribe:List-Unsubscribe-Post:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=2TSwZQKlgGF4KMoqd29UngQqJqfi86rbhF8huAfeMpE=; b=O
+ xKi0q2bCA5AzqB//HI+jDydNb8LOanFirrG5iwfYG0F29LbhCQS2aBmFlVal8abaaOR+s5+P0EFXc
+ w4t9dB2Obl/u4A1376dnAVHgMP1oxz1M5OO2ymsRKs/PxwVovb6j4jWj0X4pvE/umjVe0y+4ZBcC6
+ hM6613XF9akVpqrg=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ h=References:In-Reply-To:Subject:Cc:To:From:Message-Id:Date:Sender:Reply-To
+ :MIME-Version:Content-Type:Content-Transfer-Encoding:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=sWFjAvJpT4+fIbbUJ7svDMC8wOORo23McxoGopLsG8k=; b=YlbjZ+L+qJ9Orox6YGEhZAbJaq
- vBuJ52fOftSpxXG/5PfQaPejOMT6+3/oBZ5j+9u/OhEvm5/MaMjeaTJKJS76utRB71DmC6IXl1GVe
- BApd2ZhilICWVvkR/vNci+apkhe0MCJwOBjKdfs1f9srzLoP27Nh4a61YJowRETwPeNk=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ bh=2TSwZQKlgGF4KMoqd29UngQqJqfi86rbhF8huAfeMpE=; b=ZmiBCRI2tP/WyK/8AH/ETvK4Gn
+ S8fueabgf4FSPhKO6+QXSHKq7ZQVbTnJn3gIOpAQmqOT3L0UyEr35BOJyqUczA81vebmoNla3YrF/
+ jccV5u2GyMgutH5jUnmBM69PzP2xebXaHYXXndu8w7QU5RPprhQuy9drxOap3AI+f/1c=;
+Received: from chekov.greenie.muc.de ([193.149.48.178])
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
- id 1xVtLG-000000006n5-24vf for openvpn-devel@lists.sourceforge.net;
- Tue, 24 Nov 2026 16:26:03 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 6AOGPtJo000737
- for <openvpn-devel@lists.sourceforge.net>; Tue, 24 Nov 2026 17:25:55 +0100
+ id 1xVtPp-000000006tM-1X6j for openvpn-devel@lists.sourceforge.net;
+ Tue, 24 Nov 2026 16:30:47 +0000
+Received: from chekov.greenie.muc.de (localhost [IPv6:0:0:0:0:0:0:0:1])
+ by chekov.greenie.muc.de (8.18.2/8.18.1) with ESMTP id 6AOGUcoD030919;
+ Tue, 24 Nov 2026 17:30:38 +0100 (CET)
+ (envelope-from gert@chekov.greenie.muc.de)
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 6AOGPt4r000735
- for openvpn-devel@lists.sourceforge.net; Tue, 24 Nov 2026 17:25:55 +0100
+ by chekov.greenie.muc.de (8.18.2/8.18.1/Submit) id 6AOGUc6N030918;
+ Tue, 24 Nov 2026 17:30:38 +0100 (CET) (envelope-from gert)
+Date: Tue, 24 Nov 2026 17:30:38 +0100 (CET)
+Message-Id: <202611241630.6AOGUc6N030918@chekov.greenie.muc.de>
 From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Tue, 24 Nov 2026 17:25:50 +0100
-Message-ID: <20261124162555.722-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <gerrit.1789395512000.I24e5925a72aaede53ef9e863fe96fcd7363df402@gerrit.openvpn.net>
-References: <gerrit.1789395512000.I24e5925a72aaede53ef9e863fe96fcd7363df402@gerrit.openvpn.net>
-X-Archived-By: <archiver.kernel.org>
-MIME-Version: 1.0
-X-Spam-Score: 1.3 (+)
-X-Headers-End: 1xVtLG-000000006n5-24vf
-Subject: [Openvpn-devel] [PATCH v13] socket: Let an optional UDP socket give
- up on a failed bind
+To: Lev Stipakov <lev@openvpn.net>
+X-Patchwork-State: Accepted
+In-Reply-To: <20261118210114.19873-1-gert@greenie.muc.de>
+References: <20261118210114.19873-1-gert@greenie.muc.de>
+X-Spam-Score: 0.0 (/)
+X-Headers-End: 1xVtPp-000000006tM-1X6j
+Subject: [Openvpn-devel] [PATCH applied] Re: init: Extract
+ init_tls_wrap_ctx() control-channel wrap helper
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -80,181 +80,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Cc: openvpn-devel@lists.sourceforge.net
+X-Archived-By: <archiver.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-16.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-8.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_PASS,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=4.0.1
+	INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,SPF_HELO_PASS,SPF_PASS
+	autolearn=ham autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
-From: Lev Stipakov <lev@openvpn.net>
+BB says "all green", Razvanc likes it.  Stared a bit at it, seems to
+make sense, and t_client/t_server test bed also passes (including 
+tls-auth and tls-crypt/v2 tests) - onwards we ride.
 
-create_socket_udp_configured()'s "optional" argument covers only the
-socket() call: socket_bind() is fatal, so a caller that can do without
-the socket still dies if the address is unavailable.
+"New infrastructure work", so only master.
 
-That is a problem for the upcoming --server-probe, which binds a probe
-socket for every address family in use, while a connection binds only
-the family of the remote it is about to try. A --lport whose IPv6 port
-happens to be taken by another process would therefore kill a client
-that could have connected over IPv4.
+Your patch has been applied to the master branch.
 
-Give socket_bind() a msglevel and a return value, and let "optional"
-apply to the bind as well: the socket is closed and SOCKET_UNDEFINED is
-returned, so the caller can skip that address family. Every existing
-caller passes M_FATAL and keeps its behaviour. With more than one return
-path the gc arena no longer belongs at the top of the function, so it
-moves into the bind failure, the only branch that formats an address.
+commit a8b521fddb1f35d045db6834b542a8201867b7c2
+Author: Lev Stipakov
+Date:   Wed Nov 18 22:01:09 2026 +0100
 
-The failure message now reports the address that was actually bound,
-cur, rather than the head of the list, local, which may belong to a
-different address family. Until now that message was always followed by
-a fatal exit; with an optional bind it is printed while the client
-carries on, so it needs to name the right address.
+     init: Extract init_tls_wrap_ctx() control-channel wrap helper
 
-Change-Id: I24e5925a72aaede53ef9e863fe96fcd7363df402
-Signed-off-by: Lev Stipakov <lev@openvpn.net>
-Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1915
----
+     Signed-off-by: Lev Stipakov <lev@openvpn.net>
+     Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1749
+     Message-Id: <20261118210114.19873-1-gert@greenie.muc.de>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg41654.html
+     Signed-off-by: Gert Doering <gert@greenie.muc.de>
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/1915
-This mail reflects revision 13 of this Change.
+--
+kind regards,
 
-Acked-by according to Gerrit (reflected above):
-Razvan Cojocaru <razvanc@mailbox.org>
+Gert Doering
 
-        
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index addd6f2..bbf454a 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -2080,7 +2080,7 @@
-         {
-             man->connection.sd_top = create_socket_tcp(man->settings.local);
-             socket_bind(man->connection.sd_top, man->settings.local, man->settings.local->ai_family,
--                        "MANAGEMENT", false);
-+                        "MANAGEMENT", false, M_FATAL);
-         }
- 
-         /*
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index c07ef60..36cb0e5 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -268,12 +268,13 @@
-     {
-         if (sock->socks_proxy && sock->info.proto == PROTO_UDP)
-         {
--            socket_bind(sock->ctrl_sd, sock->info.lsa->bind_local, sock->info.af, "SOCKS", false);
-+            socket_bind(sock->ctrl_sd, sock->info.lsa->bind_local, sock->info.af, "SOCKS", false,
-+                        M_FATAL);
-         }
-         else
-         {
-             socket_bind(sock->sd, sock->info.lsa->bind_local, sock->info.af, "TCP/UDP",
--                        sock->info.bind_ipv6_only);
-+                        sock->info.bind_ipv6_only, M_FATAL);
-         }
-     }
- }
-@@ -319,9 +320,11 @@
-     }
- 
-     socket_apply_options(sd, sbs, mark, bind_dev);
--    if (bind_addr)
-+    if (bind_addr
-+        && !socket_bind(sd, bind_addr, af, "TCP/UDP", bind_ipv6_only, optional ? D_LOW : M_FATAL))
-     {
--        socket_bind(sd, bind_addr, af, "TCP/UDP", bind_ipv6_only);
-+        openvpn_close_socket(sd);
-+        return SOCKET_UNDEFINED;
-     }
-     return sd;
- }
-@@ -558,12 +561,10 @@
-     return new_sd;
- }
- 
--void
-+bool
- socket_bind(socket_descriptor_t sd, const struct addrinfo *local, int ai_family,
--            const char *prefix, bool ipv6only)
-+            const char *prefix, bool ipv6only, msglvl_t msglevel)
- {
--    struct gc_arena gc = gc_new();
--
-     /* FIXME (schwabe)
-      * getaddrinfo for the bind address might return multiple AF_INET/AF_INET6
-      * entries for the requested protocol.
-@@ -584,8 +585,9 @@
-     }
-     if (!cur)
-     {
--        msg(M_FATAL, "%s: Socket bind failed: Addr to bind has no %s record", prefix,
-+        msg(msglevel, "%s: Socket bind failed: Addr to bind has no %s record", prefix,
-             addr_family_name(ai_family));
-+        return false;
-     }
- 
-     if (ai_family == AF_INET6)
-@@ -600,10 +602,13 @@
-     }
-     if (openvpn_bind(sd, cur->ai_addr, cur->ai_addrlen))
-     {
--        msg(M_FATAL | M_ERRNO, "%s: Socket bind failed on local address %s", prefix,
--            print_sockaddr_ex(local->ai_addr, ":", PS_SHOW_PORT, &gc));
-+        struct gc_arena gc = gc_new();
-+        msg(msglevel | M_ERRNO, "%s: Socket bind failed on local address %s", prefix,
-+            print_sockaddr_ex(cur->ai_addr, ":", PS_SHOW_PORT, &gc));
-+        gc_free(&gc);
-+        return false;
-     }
--    gc_free(&gc);
-+    return true;
- }
- 
- int
-diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
-index 2210bfe..084b9cc 100644
---- a/src/openvpn/socket.h
-+++ b/src/openvpn/socket.h
-@@ -346,8 +346,15 @@
- 
- struct link_socket *link_socket_new(void);
- 
--void socket_bind(socket_descriptor_t sd, const struct addrinfo *local, int af_family,
--                 const char *prefix, bool ipv6only);
-+/**
-+ * Bind @p sd to the first @p af_family address of @p local. A failure is
-+ * reported at @p msglevel, so a caller that can do without the bind passes a
-+ * non-fatal level and checks the result.
-+ *
-+ * @return whether the socket was bound
-+ */
-+bool socket_bind(socket_descriptor_t sd, const struct addrinfo *local, int af_family,
-+                 const char *prefix, bool ipv6only, msglvl_t msglevel);
- 
- int openvpn_connect(socket_descriptor_t sd, const struct sockaddr *remote, int connect_timeout,
-                     volatile int *signal_received);
-@@ -401,9 +408,9 @@
-  * Create a UDP socket for @p af set up the way a link socket is: --sndbuf/--rcvbuf,
-  * --mark, --bind-dev and, when @p bind_addr is given, the local bind (IPV6_V6ONLY
-  * per @p bind_ipv6_only). Shared by create_socket() and the --server-probe sockets,
-- * so a probe socket is the connection socket it may become. A failed bind is
-- * fatal; with @p optional a socket the host cannot create is not, so
-- * --server-probe can skip that address family (SOCKET_UNDEFINED is returned).
-+ * so a probe socket is the connection socket it may become. With @p optional a
-+ * socket the host cannot create or bind is not fatal, so --server-probe can skip
-+ * that address family (SOCKET_UNDEFINED is returned).
-  */
- socket_descriptor_t create_socket_udp_configured(sa_family_t af, unsigned int sockflags,
-                                                  const struct socket_buffer_size *sbs, int mark,
 
 
 _______________________________________________
