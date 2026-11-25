@@ -1,91 +1,95 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2043606A31E
-	for <openvpn-devel@archiver.kernel.org>; Wed, 25 Nov 2026 00:09:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0024606A31E
+	for <openvpn-devel@archiver.kernel.org>; Wed, 25 Nov 2026 01:53:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=dRw5o1ZH;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=epS1YbiW;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=igiwV9Vk;
-	dkim=neutral header.d=unstable.cc header.i=@unstable.cc header.a=rsa-sha256 header.s=MBO0001 header.b=JlJBs6Oj
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=J0pPxf+8;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=fOE7Eloc;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=Tyk0+OSj;
+	dkim=neutral header.d=unstable.cc header.i=@unstable.cc header.a=rsa-sha256 header.s=MBO0001 header.b=apah7SOp
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:Message-ID:Date:To:From:Sender:Reply-To:Cc:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:In-Reply-To:References:List-Unsubscribe-Post:List-Owner;
-	bh=J+uOU85EP6WkpZUBxm8M4gGiBAio3WVkBw1QKIgv/x4=; b=dRw5o1ZHABDszXGPYqmQWavuw2
-	m2cCNQwWR9Lm5Dwr1i+EiGM2qvpo4sZocS3v+OXRf4lp35d0D7Fxg4xPyLG1j18xN4ny1FY0CIqk4
-	+KX7O3/4yEUZ1H06NgXqEVlhNpDtKhEz0R8QrKA5kp3op9/NeUyVX16c649oncR53Y3w=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
+	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
+	List-Owner; bh=T84ag+P/8W4r5grJ5wTnSvum06muxddhzwgZxfnzlfo=; b=J0pPxf+8sTFcGB
+	hieweEyyZyZpF/+NcpnfjrIoxBxrlInwqHtWua+PyGWlE34ccOTYJzQDvwcgP4DHCPwS1EyUmA5II
+	cp0KyYeFSLug2juXx8YW0Nzdopr4CyChRvwlKtw1IFN71Lk7CtpJnNLWSKqfptFw6/jkCv3Lb3VEp
+	5ME=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xW0ZG-000000005nV-2RlR;
-	Wed, 25 Nov 2026 00:08:58 +0000
+	id 1xW2Bt-000000005xu-27qn;
+	Wed, 25 Nov 2026 01:52:57 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <a@unstable.cc>) id 1xW0ZE-000000005n4-0tX3
+ (envelope-from <a@unstable.cc>) id 1xW2Bq-000000005xh-2PTW
  for openvpn-devel@lists.sourceforge.net;
- Wed, 25 Nov 2026 00:08:57 +0000
+ Wed, 25 Nov 2026 01:52:55 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:Content-Type:MIME-Version
+ :References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=kNR1VKhX0N1UFi21gdsXHoAaXgpXZEMnGnOyojsUZFk=; b=epS1YbiWvMjkbEvzLORUNkwHqZ
- Uxmi4VLxaT8smwc45ve54jMrAB6HoJ1zW2PKkZANS1ygHY5EYsUl+o5SJEz6OWTJn6fCGqmgSpkVy
- IEKRIVVjLJ55BBDPtP32Hq85kstwdpgRYm4I4gfIhPB158KbBAZaiMN5BNyGYlOnctO0=;
+ bh=0OZjNgAIcn1c2M0BaXQIitdvN6JuKDfTlLE6kDshDLM=; b=fOE7Eloc4rNvrnjyEYJPtyxuW3
+ N4ncpwzfibiwx8dlT5Oj/fWU3nrH+SbzNwqVpY/SiFQY4Wc2RayMxoLla0XRCJ3bM/I065GKkQULu
+ EZWKbHRvWIivIbf21qdudDIlU9yLeXdRm5q3WH6ougSScyv78VfpU9qbbNBpJg0VQxsI=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:To:From:
- Sender:Reply-To:Cc:Content-Type:Content-ID:Content-Description:Resent-Date:
- Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
- References:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
+ h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:
+ In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=kNR1VKhX0N1UFi21gdsXHoAaXgpXZEMnGnOyojsUZFk=; b=igiwV9Vk8vGjmyWEXRkaoZUrWc
- G2Wof2NvdEFHOs4siFMxHTCTaqO2lS1N3GAgjf9LSEiarAh36xIlJIgHYgs/zc7+EblrSQ2jrXcNB
- yCu3BlGlObJhvcaeKs1NT7545UAlxm+Wmasu8etQlXaNRTF4i/O9Y2ElPXq16h0Pf/Qo=;
-Received: from mout-p-202.mailbox.org ([80.241.56.172])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ bh=0OZjNgAIcn1c2M0BaXQIitdvN6JuKDfTlLE6kDshDLM=; b=Tyk0+OSjPEn8ujsKaonLv04sMN
+ l8fJtJXNF8sGKrJF4UZ/1SloUu2wlUPDgHXiZYMICdQ8IguRSRgRs5fanJ6AV5sm8jjPPdeAo/k5d
+ CA546e8CS7Rv+ekMTrL496VX6amLdB+pLi+Sea7cI7pEnn9i2OBU0i95QT76aG5R/hGc=;
+Received: from mout-p-103.mailbox.org ([80.241.56.161])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
- id 1xW0ZC-000000008P8-0BpX for openvpn-devel@lists.sourceforge.net;
- Wed, 25 Nov 2026 00:08:56 +0000
-Received: from smtp202.mailbox.org (smtp202.mailbox.org
- [IPv6:2001:67c:2050:b231:465::202])
+ id 1xW2Bo-000000003B8-2uso for openvpn-devel@lists.sourceforge.net;
+ Wed, 25 Nov 2026 01:52:54 +0000
+Received: from smtp1.mailbox.org (smtp1.mailbox.org
+ [IPv6:2001:67c:2050:b231:465::1])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange X25519MLKEM768 server-signature RSA-PSS (4096 bits) server-digest
  SHA256) (No client certificate requested)
- by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4jZ0QN6SJtzMlvV
- for <openvpn-devel@lists.sourceforge.net>;
- Wed, 25 Nov 2026 01:08:44 +0100 (CET)
+ by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4jZ2kN46mQzKmy7;
+ Wed, 25 Nov 2026 02:52:44 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=unstable.cc; s=MBO0001;
- t=1795565324;
+ t=1795571564;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:mime-version:mime-version:
- content-transfer-encoding:content-transfer-encoding;
- bh=kNR1VKhX0N1UFi21gdsXHoAaXgpXZEMnGnOyojsUZFk=;
- b=JlJBs6OjYLiYrkavx+0ZfNSAc3Da+xZUMx491xt5IyuGoCEjNv98EUk3TplmBc/vx4vI1q
- ci0JgrdN5UAY2jqipVgex3xA3EVE50XexcwW5sU9n/gIanyIxe33HkgPBCOQGVHP3gdR1q
- iTD0OkQ42AQnGP410ulxGovbKUFoqDhDcLhX9lhL5V0ERtoMO6gPmKquht4SX6rydKrjlQ
- k03kup0Wb4rC5h9j6T4/5WFp98bVaynay0Ss7OyhRliGGQOyVIb1xqYkvGYNmFtsBczWbz
- X0U9aDi9mTGgcU40Tv+Q9wPgSu1YlAcJH7qDdnhnw8yewoBX4hyyqcpdkAdK4w==
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=0OZjNgAIcn1c2M0BaXQIitdvN6JuKDfTlLE6kDshDLM=;
+ b=apah7SOpk1jYbtxQeP5EpM2ytar2hx7kNwqqUbSLrAlRjzlk4TPFdfUhq6IAdlylBrkphR
+ Sx7Wr5VAwIna/agWY9XHRyc3JuLrzpbPFfZZxfzOzd1AoBzcPXdMdyBHfDIntfa0lgeTvs
+ Vp15HeuNOe2jqP7HAfd/ATHJ4x7jgb7luAwXYi8qAYMQP6Lz1KAlwOQIiedNU5fTX7dFvL
+ BZqfezZGI6ohNxibBDCbfWtjvjslGk1N/eOGvREdo+y5UkAC4EkKB7lWeb5ayBEJk3E+YM
+ yM+abEybfwQ2trF1Emb3CpR6CywMoSSAcFl01DtKH1gxyGWLa2AeMGgr8RZ3wg==
 Authentication-Results: outgoing_mbo_mout; dkim=none;
  spf=pass (outgoing_mbo_mout: domain of a@unstable.cc designates
- 2001:67c:2050:b231:465::202 as permitted sender) smtp.mailfrom=a@unstable.cc
+ 2001:67c:2050:b231:465::1 as permitted sender) smtp.mailfrom=a@unstable.cc
 From: Antonio Quartulli <a@unstable.cc>
 To: openvpn-devel@lists.sourceforge.net
-Date: Wed, 25 Nov 2026 01:08:43 +0100
-Message-ID: <20261125000843.1161628-1-a@unstable.cc>
+Date: Wed, 25 Nov 2026 02:52:43 +0100
+Message-ID: <20261125015243.238861-1-a@unstable.cc>
 X-Mailer: git-send-email 2.56.1
+In-Reply-To: <874ca8e9efb787fd37a942817239c8ba1a4fa4b3.1794388607.git.ralf@mandelbit.com>
+References: <cover.1794388607.git.ralf@mandelbit.com>
+ <874ca8e9efb787fd37a942817239c8ba1a4fa4b3.1794388607.git.ralf@mandelbit.com>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
-X-Rspamd-Queue-Id: 4jZ0QN6SJtzMlvV
+X-Rspamd-Queue-Id: 4jZ2kN46mQzKmy7
 X-Spam-Score: -0.2 (/)
-X-Headers-End: 1xW0ZC-000000008P8-0BpX
-Subject: [Openvpn-devel] [PATCH net v4] ovpn: avoid nesting TCP transport
- socket locks
+X-Headers-End: 1xW2Bo-000000003B8-2uso
+Subject: Re: [Openvpn-devel] [PATCH ovpn net-next v3 6/6] ovpn: prefetch
+ encrypted records before GRO batch decryption
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -97,259 +101,122 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-16.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-11.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_PASS,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=4.0.1
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_PASS,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
-From: Antonio Quartulli <antonio@openvpn.net>
+Hi Ralf,
 
-A TCP transport socket may transmit while its spinlock is held, e.g. in
-ovpn_tcp_send_skb(), ovpn_tcp_release() or the TCP RX/timer paths. If
-the outer packet is routed into an ovpn interface, ovpn_tcp_send_skb()
-takes the spinlock of the selected peer's socket while the first one is
-still held. This deadlocks when it is the same socket or when two peers
-are routed through each other.
+On 11/11/2026 10:22, Ralf Lici wrote:
+> Frag-list GRO exposes later encrypted records before the receive path
+> decrypts the current one. Use this lookahead to request write ownership
+> of linear ciphertext cache lines two records in advance, and maintain
+> the same distance throughout the batch, overlapping their memory access
+> latency with the current AEAD operation.
 
-The originating socket cannot be reliably identified from the skb, so
-use spin_trylock() and defer transmission to the TX worker when the
-socket lock is busy, including on plain contention. out_queue becomes
-the generic deferred TX queue, protected by its own lock since packets
-are now added without the socket lock. New packets are queued behind
-deferred ones to keep ordering, and the queue is drained by whoever
-next holds the socket. When a packet stays pending, queued packets are
-no longer dropped but wait for write_space.
+I tried issuing the prefetch earlier: in ovpn_udp_gro_receive_fraglist(),
+when each record joins the aggregate, instead of in ovpn_udp_recv() right
+before decryption.
 
-Fixes: 11851cbd60ea ("ovpn: implement TCP transport")
-Cc: stable@vger.kernel.org
-Reported-by: Bernhard Schmidt <berni@birkenwald.de>
-Closes: https://lore.kernel.org/openvpn-devel/auJj5Ld6uMjPb2eS@fliwatuet.svr02.mucip.net/
-Signed-off-by: Antonio Quartulli <antonio@openvpn.net>
----
+The lines are then requested one record at a time,
+as the packets arrive, and they are already cached when the batch is
+decrypted, including the first records of the batch, which the window
+can only prime right before they are decrypted.
 
-v4:
-- use spin_trylock() instead of detecting transport skbs via skb->sk,
-  which misses cloned/orphaned skbs, ICMP replies and detached sockets (Sashiko)
-- drain deferred packets inline when the socket lock is taken
-- skip TX in the worker once the socket has been detached
-- drop OVPN_TCP_DEPTH_NESTING, no longer needed
-v3: https://lore.kernel.org/all/20261031225640.1436694-1-a@unstable.cc/
-v2: https://lore.kernel.org/all/20261029144241.1671514-1-a@unstable.cc/
+On our perf branch (your v3 plus some RX changes of ours), single stream
+over UDP transport, ConnectX-5 back to back, mlx5 with RX look-ahead
+prefetch, NIC MTU 1500, 3 rounds, Gbit/s:
 
- drivers/net/ovpn/io.c   |   2 +-
- drivers/net/ovpn/peer.h |   2 +-
- drivers/net/ovpn/tcp.c  | 102 +++++++++++++++++++++++++++-------------
- drivers/net/ovpn/tcp.h  |   2 +-
- 4 files changed, 73 insertions(+), 35 deletions(-)
+                         window   join
+  TCP      aes            40.71  43.56   +7.0%
+           aegis128x4     44.01  45.19   +2.7%
+  UDP GSO  aes            44.86  48.29   +7.6%
+           aegis128x4     47.20  52.34  +10.9%
 
-diff --git a/drivers/net/ovpn/io.c b/drivers/net/ovpn/io.c
-index f14eb4e6c46a..3282c3b0bf58 100644
---- a/drivers/net/ovpn/io.c
-+++ b/drivers/net/ovpn/io.c
-@@ -284,7 +284,7 @@ void ovpn_encrypt_post(void *data, int ret)
- 		ovpn_udp_send_skb(peer, sock->sk, skb);
- 		break;
- 	case IPPROTO_TCP:
--		ovpn_tcp_send_skb(peer, sock->sk, skb);
-+		ovpn_tcp_send_skb(peer, sock, skb);
- 		break;
- 	default:
- 		/* no transport configured yet */
-diff --git a/drivers/net/ovpn/peer.h b/drivers/net/ovpn/peer.h
-index 1879bfb76992..8256c628f769 100644
---- a/drivers/net/ovpn/peer.h
-+++ b/drivers/net/ovpn/peer.h
-@@ -45,7 +45,7 @@ struct ovpn_route_key {
-  * @tcp: keeps track of TCP specific state
-  * @tcp.strp: stream parser context (TCP only)
-  * @tcp.user_queue: received packets that have to go to userspace (TCP only)
-- * @tcp.out_queue: packets on hold while socket is taken by user (TCP only)
-+ * @tcp.out_queue: packets deferred for later transmission (TCP only)
-  * @tcp.tx_in_progress: true if TX is already ongoing (TCP only)
-  * @tcp.out_msg.skb: packet scheduled for sending (TCP only)
-  * @tcp.out_msg.offset: offset where next send should start (TCP only)
-diff --git a/drivers/net/ovpn/tcp.c b/drivers/net/ovpn/tcp.c
-index 8fe8a8e750a4..ef7b3be665ab 100644
---- a/drivers/net/ovpn/tcp.c
-+++ b/drivers/net/ovpn/tcp.c
-@@ -23,11 +23,6 @@
- #include "skb.h"
- #include "tcp.h"
+"window" is your patch 6, "join" is the change below, everything else
+is identical.
+
+The receiving CPU spends 3-14% fewer cycles per packet,
+about twice as many demand fills are served from L2, and in the UDP GSO
+test the receiver drops half as many packets. On the previous GRO
+design, with the stock mlx5 driver, I had measured +0.8% to +10.2%.
+
+The change against your v3:
+
+diff --git a/drivers/net/ovpn/udp.c b/drivers/net/ovpn/udp.c
+index 2f77acc47bd9..66d80a4268db 100644
+--- a/drivers/net/ovpn/udp.c
++++ b/drivers/net/ovpn/udp.c
+@@ -35,9 +35,6 @@
+ /* like UDP and TCP frag-list GRO */
+ #define OVPN_UDP_GRO_CNT_MAX 64
  
--#define OVPN_TCP_DEPTH_NESTING	2
--#if OVPN_TCP_DEPTH_NESTING == SINGLE_DEPTH_NESTING
--#error "OVPN TCP requires its own lockdep subclass"
--#endif
+-/* leave enough work between a cache hint and the record which consumes it */
+-#define OVPN_UDP_GRO_PREFETCH_DISTANCE 2
 -
- static struct proto ovpn_tcp_prot __ro_after_init;
- static struct proto_ops ovpn_tcp_ops __ro_after_init;
- static struct proto ovpn_tcp6_prot __ro_after_init;
-@@ -313,6 +308,38 @@ static void ovpn_tcp_send_sock(struct ovpn_peer *peer, struct sock *sk)
- 	peer->tcp.tx_in_progress = false;
- }
- 
-+static void ovpn_tcp_send_sock_skb(struct ovpn_peer *peer, struct sock *sk,
-+				   struct sk_buff *skb)
-+{
-+	if (peer->tcp.out_msg.skb)
-+		ovpn_tcp_send_sock(peer, sk);
-+
-+	if (peer->tcp.out_msg.skb) {
-+		ovpn_dev_dstats_tx_dropped(peer->ovpn->dev);
-+		kfree_skb(skb);
-+		return;
-+	}
-+
-+	peer->tcp.out_msg.skb = skb;
-+	peer->tcp.out_msg.len = skb->len;
-+	peer->tcp.out_msg.offset = 0;
-+	ovpn_tcp_send_sock(peer, sk);
-+}
-+
-+/* send queued packets, stop if one remains pending. Only packets queued
-+ * before the call are sent: a packet routed back to this socket is
-+ * re-queued while sending, and would otherwise make this loop endless
-+ */
-+static void ovpn_tcp_flush_queue(struct ovpn_peer *peer, struct sock *sk)
-+{
-+	unsigned int n = skb_queue_len_lockless(&peer->tcp.out_queue);
-+	struct sk_buff *skb;
-+
-+	while (n-- && !peer->tcp.out_msg.skb &&
-+	       (skb = skb_dequeue(&peer->tcp.out_queue)))
-+		ovpn_tcp_send_sock_skb(peer, sk, skb);
-+}
-+
- void ovpn_tcp_tx_work(struct work_struct *work)
+ static void ovpn_udp_prefetchw_linear(const struct sk_buff *skb)
  {
- 	struct ovpn_socket *sock;
-@@ -320,58 +347,73 @@ void ovpn_tcp_tx_work(struct work_struct *work)
- 	sock = container_of(work, struct ovpn_socket, tcp_tx_work);
+ 	unsigned long addr = (unsigned long)skb->data;
+@@ -94,6 +91,11 @@ static struct sk_buff *ovpn_udp_gro_receive_fraglist(struct sock *sk,
+ 	NAPI_GRO_CB(skb)->encap_mark = 0;
+ 	NAPI_GRO_CB(skb)->is_flist = 1;
  
- 	lock_sock(sock->sk);
--	if (sock->peer)
-+	/* skip sockets already detached and returned to userspace */
-+	if (sock->peer && sock->sk->sk_user_data) {
- 		ovpn_tcp_send_sock(sock->peer, sock->sk);
-+		ovpn_tcp_flush_queue(sock->peer, sock->sk);
-+	}
- 	release_sock(sock->sk);
- }
- 
--static void ovpn_tcp_send_sock_skb(struct ovpn_peer *peer, struct sock *sk,
--				   struct sk_buff *skb)
-+static bool ovpn_tcp_enqueue(struct ovpn_peer *peer, struct sk_buff *skb)
- {
--	if (peer->tcp.out_msg.skb)
--		ovpn_tcp_send_sock(peer, sk);
-+	struct sk_buff_head *queue = &peer->tcp.out_queue;
-+	unsigned long flags;
-+	bool ret = false;
-+
-+	spin_lock_irqsave(&queue->lock, flags);
-+	if (skb_queue_len(queue) < READ_ONCE(net_hotdata.max_backlog)) {
-+		__skb_queue_tail(queue, skb);
-+		ret = true;
-+	}
-+	spin_unlock_irqrestore(&queue->lock, flags);
- 
--	if (peer->tcp.out_msg.skb) {
-+	if (!ret) {
- 		ovpn_dev_dstats_tx_dropped(peer->ovpn->dev);
- 		kfree_skb(skb);
--		return;
- 	}
- 
--	peer->tcp.out_msg.skb = skb;
--	peer->tcp.out_msg.len = skb->len;
--	peer->tcp.out_msg.offset = 0;
--	ovpn_tcp_send_sock(peer, sk);
-+	return ret;
- }
- 
--void ovpn_tcp_send_skb(struct ovpn_peer *peer, struct sock *sk,
-+void ovpn_tcp_send_skb(struct ovpn_peer *peer, struct ovpn_socket *sock,
- 		       struct sk_buff *skb)
- {
-+	struct sock *sk = sock->sk;
- 	u16 len = skb->len;
- 
- 	*(__be16 *)__skb_push(skb, sizeof(u16)) = htons(len);
- 
--	spin_lock_nested(&sk->sk_lock.slock, OVPN_TCP_DEPTH_NESTING);
-+	/* we may be called while a transport socket spinlock is held (even
-+	 * this same one): never spin, defer to the worker instead
++	/* the record is decrypted only after its aggregate is delivered: start
++	 * fetching its linear data now, one record at a time
 +	 */
-+	if (!spin_trylock(&sk->sk_lock.slock)) {
-+		if (ovpn_tcp_enqueue(peer, skb))
-+			queue_work(ovpn_wq, &sock->tcp_tx_work);
-+		return;
-+	}
++	ovpn_udp_prefetchw_linear(skb);
 +
- 	if (sock_owned_by_user(sk)) {
--		if (skb_queue_len(&peer->tcp.out_queue) >=
--		    READ_ONCE(net_hotdata.max_backlog)) {
--			ovpn_dev_dstats_tx_dropped(peer->ovpn->dev);
--			kfree_skb(skb);
--			goto unlock;
-+		/* flushed by ovpn_tcp_release() */
-+		ovpn_tcp_enqueue(peer, skb);
-+	} else if (!skb_queue_empty_lockless(&peer->tcp.out_queue)) {
-+		/* preserve ordering with deferred packets and drain them
-+		 * here. If out_msg stays pending, write_space resumes TX
-+		 */
-+		if (ovpn_tcp_enqueue(peer, skb)) {
-+			ovpn_tcp_send_sock(peer, sk);
-+			ovpn_tcp_flush_queue(peer, sk);
- 		}
--		__skb_queue_tail(&peer->tcp.out_queue, skb);
- 	} else {
- 		ovpn_tcp_send_sock_skb(peer, sk, skb);
- 	}
--unlock:
- 	spin_unlock(&sk->sk_lock.slock);
- }
+ 	list_for_each_entry(p, head, list) {
+ 		if (!NAPI_GRO_CB(p)->same_flow)
+ 			continue;
+@@ -249,7 +251,7 @@ static struct sk_buff *ovpn_udp_gso_prepare(struct sk_buff *skb, u32 header)
  
- static void ovpn_tcp_release(struct sock *sk)
+ static void ovpn_udp_recv(struct ovpn_peer *peer, struct sk_buff *list)
  {
--	struct sk_buff_head queue;
- 	struct ovpn_socket *sock;
- 	struct ovpn_peer *peer;
--	struct sk_buff *skb;
- 
- 	rcu_read_lock();
- 	sock = rcu_dereference_sk_user_data(sk);
-@@ -391,11 +433,7 @@ static void ovpn_tcp_release(struct sock *sk)
- 	}
- 	rcu_read_unlock();
- 
--	__skb_queue_head_init(&queue);
--	skb_queue_splice_init(&peer->tcp.out_queue, &queue);
+-	struct sk_buff *skb, *next, *prefetch;
++	struct sk_buff *skb, *next;
+ 	const __be16 proto = list->protocol;
+ 	const u32 priority = list->priority;
+ #ifdef CONFIG_NET_SCHED
+@@ -259,23 +261,8 @@ static void ovpn_udp_recv(struct ovpn_peer *peer, struct sk_buff *list)
+ 	const u32 secmark = list->secmark;
+ #endif
+ 	const int skb_iif = list->skb_iif;
+-	int i;
 -
--	while ((skb = __skb_dequeue(&queue)))
--		ovpn_tcp_send_sock_skb(peer, sk, skb);
-+	ovpn_tcp_flush_queue(peer, sk);
+-	/* a fraglist GRO aggregate makes later ciphertext visible before the
+-	 * current record is decrypted, so we prime the first two records, then
+-	 * keep the cache hints the same distance ahead while draining the list
+-	 */
+-	prefetch = list->next ? list : NULL;
+-	for (i = 0; i < OVPN_UDP_GRO_PREFETCH_DISTANCE && prefetch; i++) {
+-		ovpn_udp_prefetchw_linear(prefetch);
+-		prefetch = prefetch->next;
+-	}
  
- 	peer->tcp.sk_cb.prot->release_cb(sk);
- 	ovpn_peer_put(peer);
-diff --git a/drivers/net/ovpn/tcp.h b/drivers/net/ovpn/tcp.h
-index a3aa3570ae5e..9f2b5efcbd3a 100644
---- a/drivers/net/ovpn/tcp.h
-+++ b/drivers/net/ovpn/tcp.h
-@@ -30,7 +30,7 @@ void ovpn_tcp_socket_wait_finish(struct ovpn_socket *sock);
-  * Required by the OpenVPN protocol in order to extract packets from
-  * the TCP stream on the receiver side.
-  */
--void ovpn_tcp_send_skb(struct ovpn_peer *peer, struct sock *sk,
-+void ovpn_tcp_send_skb(struct ovpn_peer *peer, struct ovpn_socket *sock,
- 		       struct sk_buff *skb);
- void ovpn_tcp_tx_work(struct work_struct *work);
- 
--- 
-2.56.1
+ 	skb_list_walk_safe(list, skb, next) {
+-		if (prefetch) {
+-			ovpn_udp_prefetchw_linear(prefetch);
+-			prefetch = prefetch->next;
+-		}
+ 		/* propagate post-GRO metadata from the list head, and clear
+ 		 * the state which the receive stack consumed on the head only
+ 		 */
 
+Records that GRO refuses (not DATA_V2, already GSO, inside FOU/GUE) take
+the flush path before the prefetch, so they are not touched; records
+that start a new aggregate, or are delivered alone, are prefetched too.
+
+Let me know what you think and if you want to fold this change into
+patch 6.
+
+Cheers,
+
+--
+Antonio Quartulli
 
 
 _______________________________________________
