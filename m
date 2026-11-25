@@ -1,76 +1,91 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 886F2606A326
-	for <openvpn-devel@archiver.kernel.org>; Wed, 25 Nov 2026 21:30:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82DED606A321
+	for <openvpn-devel@archiver.kernel.org>; Wed, 25 Nov 2026 23:11:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=Huj/CsjR;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=Rh0VHxFn;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=Al5ptQAg
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=UIbXej15;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=JGXYai78;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=d3wJzOfh;
+	dkim=neutral header.d=unstable.cc header.i=@unstable.cc header.a=rsa-sha256 header.s=MBO0001 header.b=UkobgoM/
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
-	List-Owner; bh=6i5eLf+uu92xP8+/NQv0Rya4eQBCX8ugh2A0Y5rBJpY=; b=Huj/CsjRXIacH6
-	MlcS6x/eN39grPwBX852RH1tJvFdOquezR+YDdryJK018f8ivgnXKfsJ/zfUrKxeJL4bHcc+uGFeB
-	19Z2xxuhH2ZPZzJRUz2Ueo9TdbVMv21PLAlV4abae7yI/2ZhPJehenjMWSYjUvWfKOCZk10O1VZIY
-	HeA=;
+	Subject:MIME-Version:Message-ID:Date:To:From:Sender:Reply-To:Cc:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Unsubscribe-Post:List-Owner;
+	bh=svrO1MCPDnTdsisMAFbv6Yf6bH0hg9IcT4L1W37atms=; b=UIbXej15xKMp8Mx99nMC8rprRy
+	s+1fheewkFYBJN5ZSr42B5/lK5s+vxdtMiEn1JFdebLZMXDEeyKKnIUlwXmjhF/vvgTD397i3KnYF
+	wfwtr5RoGvyAWhQJ7qGencwcPJfg8wm3ODnD1mwcOGUdYx0PVKU9U4TGwg96mRK5wz8M=;
 Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
 	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xWKZL-000000004ou-0h8r;
-	Wed, 25 Nov 2026 21:30:23 +0000
+	id 1xWM94-000000001nh-0NKg;
+	Wed, 25 Nov 2026 23:11:22 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gert@blue4.greenie.muc.de>)
- id 1xWKZK-000000004oo-0sH4 for openvpn-devel@lists.sourceforge.net;
- Wed, 25 Nov 2026 21:30:22 +0000
+ (envelope-from <a@unstable.cc>) id 1xWM8y-000000001nW-2Rd4
+ for openvpn-devel@lists.sourceforge.net;
+ Wed, 25 Nov 2026 23:11:17 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=wkkxzKblg6QHgtyha2Ak0F+pDre4J/Nf8P7EmaehV8Q=; b=Rh0VHxFnzRpz3w0KVmpbxGsNav
- hbZjE0TFybO3lxXLh8Euk/BdEn5l2sApALF2/Ap2LjHphcKvqMIYNMapsGlNYMVvSKQCM2yYxtuof
- tgQRzDCJeqoe4pkqOBSnm9CWRZdKZK1sSq+egGPm0spY+iB4hehE4EHvb8yCxHC2AN6o=;
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
- ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:Message-ID:
  Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
+ :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+ List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=FGdgB/dEhxr4wz0gPUSs4A9VZSaEB8awtk0feWIlXAs=; b=JGXYai78HrEl0AvzJ/ZfDm+gRq
+ mxdMA0VbY9hsOYHSdk7ktWccha7mrntKze6MGgtc2D40xJ9CxyyBCsC7HOi3MGAMi6fAOCASTBxTM
+ LvNqqOZgUXefcH3vTXpaho7yycYDD9P8LS73vEb0GbvRmfZSseOUddq99d3tnoGGYdcw=;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
+ ;
+ h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:To:From:
+ Sender:Reply-To:Cc:Content-Type:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+ References:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=wkkxzKblg6QHgtyha2Ak0F+pDre4J/Nf8P7EmaehV8Q=; b=Al5ptQAg9fMn5OX8AWE16opUTO
- lOl2lCMVqjdpj5pk6lVpd09fJaSQTbMa+HAO5zY1wQLxgSsM8XL4EjOaE8R1qIeNk2tbG8izf6qyx
- 5IytfKYArefmrSOdCp4F6djxnsom8kFDGZdycKQcpSwwhuPqLnFhWXVbwhvOsMdbGt9o=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
+ bh=FGdgB/dEhxr4wz0gPUSs4A9VZSaEB8awtk0feWIlXAs=; b=d3wJzOfhduv1vm5dkiRp9Bldyn
+ gU7tyoZB40hsc5G65SCLDpSQp9FL9xyPEWSNrTURhZsTSSO7jxCJ0CRoiG+u12EcGqL2aqZvmDsxa
+ C9nm6K2N8TxEnzdys6YKwLtiJF++uvlTYwVrfGRIGBounUjkHGc4jnFmtfF7n3jH0Qm0=;
+Received: from mout-p-101.mailbox.org ([80.241.56.151])
  by sfi-mx-1.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
- id 1xWKZI-000000002JP-20y1 for openvpn-devel@lists.sourceforge.net;
- Wed, 25 Nov 2026 21:30:22 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 6APLUDM9015814
- for <openvpn-devel@lists.sourceforge.net>; Wed, 25 Nov 2026 22:30:13 +0100
-Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 6APLUDYV015813
- for openvpn-devel@lists.sourceforge.net; Wed, 25 Nov 2026 22:30:13 +0100
-From: Gert Doering <gert@greenie.muc.de>
+ id 1xWM8w-000000004Ve-1gdz for openvpn-devel@lists.sourceforge.net;
+ Wed, 25 Nov 2026 23:11:16 +0000
+Received: from smtp202.mailbox.org (smtp202.mailbox.org
+ [IPv6:2001:67c:2050:b231:465::202])
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+ key-exchange X25519MLKEM768 server-signature RSA-PSS (4096 bits) server-digest
+ SHA256) (No client certificate requested)
+ by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4jZb502p0qz8v4B
+ for <openvpn-devel@lists.sourceforge.net>;
+ Thu, 26 Nov 2026 00:10:44 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=unstable.cc; s=MBO0001;
+ t=1795648244;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:mime-version:mime-version:
+ content-transfer-encoding:content-transfer-encoding;
+ bh=FGdgB/dEhxr4wz0gPUSs4A9VZSaEB8awtk0feWIlXAs=;
+ b=UkobgoM/eoQALo8g+YPZ+KnK5NpkNlezn8P1HcVOreiCipJ44zsm9eWMdFV4yRtEJTgOzw
+ 7TwmJxxiU5U5qxOnqNZmChmFvYu2IASCZlur/BOQvBAc9bCaLuI/zlLPI/2lvvwjm3IFqw
+ qDL9hKWN5bZewDSDvodrsLSpCyKF+i7aZ1Bvk3CZfwxUdO3mR/cOcaph0uuAJW6j0fvOah
+ JS1F5y4RqFR5sAWzDEGHmNsarA1DBFzE2XAZXWoc87ARE05c485AqBsNQbZ1vvk+9bBzWo
+ HgtEhxwHcDPAj7PkLyBl3AU6WfMTST12X7A0Xk0d+AtjOTpqIrNK7Efg9X2l3g==
+Authentication-Results: outgoing_mbo_mout; dkim=none;
+ spf=pass (outgoing_mbo_mout: domain of a@unstable.cc designates
+ 2001:67c:2050:b231:465::202 as permitted sender) smtp.mailfrom=a@unstable.cc
+From: Antonio Quartulli <a@unstable.cc>
 To: openvpn-devel@lists.sourceforge.net
-Date: Wed, 25 Nov 2026 22:30:07 +0100
-Message-ID: <20261125213012.15799-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <gerrit.1794903672000.I9d9b658a00f95ffdcd0db9abd0d8907618925746@gerrit.openvpn.net>
-References: <gerrit.1794903672000.I9d9b658a00f95ffdcd0db9abd0d8907618925746@gerrit.openvpn.net>
+Date: Thu, 26 Nov 2026 00:10:40 +0100
+Message-ID: <20261125231040.2941106-1-a@unstable.cc>
+X-Mailer: git-send-email 2.56.1
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
-X-Spam-Score: 1.3 (+)
-X-Headers-End: 1xWKZI-000000002JP-20y1
-Subject: [Openvpn-devel] [PATCH v2] Wipe auth token and PEM key copies
- before freeing them
+X-Rspamd-Queue-Id: 4jZb502p0qz8v4B
+X-Spam-Score: -0.2 (/)
+X-Headers-End: 1xWM8w-000000004Ve-1gdz
+Subject: [Openvpn-devel] [PATCH ovpn net] ovpn: disable BHs in async crypto
+ completion callbacks
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -89,70 +104,73 @@ X-Spam-Status: No, score=-16.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
-From: Razvan Cojocaru <razvanc@mailbox.org>
+From: Antonio Quartulli <antonio@openvpn.net>
 
-generate_auth_token() freed the previous token and its intermediate copies
-without wiping them, unlike wipe_auth_token(). crypto_pem_decode() in the
-mbed TLS backend freed its copy of the PEM key text the same way.
+ovpn_encrypt_post() and ovpn_decrypt_post() expect to run with BHs
+disabled: they take socket spinlocks shared with softirq context, pass
+packets to gro_cells and update per-CPU stats. This holds on the
+synchronous path, but some async crypto drivers complete requests from
+a workqueue, a kthread or a threaded IRQ with BHs enabled (e.g. qce,
+starfive, keembay), which can deadlock or corrupt per-CPU state.
 
-Change-Id: I9d9b658a00f95ffdcd0db9abd0d8907618925746
-Signed-off-by: Razvan Cojocaru <razvanc@mailbox.org>
-Acked-by: Frank Lichtenheld <frank@lichtenheld.com>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2206
+Wrap the async completion callbacks in local_bh_disable()/enable().
+
+Fixes: 8534731dbf2d ("ovpn: implement packet processing")
+Cc: stable@vger.kernel.org
+Signed-off-by: Antonio Quartulli <antonio@openvpn.net>
 ---
+ drivers/net/ovpn/crypto_aead.c | 21 +++++++++++++++++++--
+ 1 file changed, 19 insertions(+), 2 deletions(-)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
-
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2206
-This mail reflects revision 2 of this Change.
-
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@lichtenheld.com>
-
-        
-diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c
-index 261c7c2..d8e599b 100644
---- a/src/openvpn/auth_token.c
-+++ b/src/openvpn/auth_token.c
-@@ -271,10 +271,15 @@
-     ASSERT(buf_write(&session_token, b64output, strlen(b64output)));
-     ASSERT(buf_write_u8(&session_token, 0));
- 
-+    secure_memzero(b64output, strlen(b64output));
-     free(b64output);
- 
-     /* free the auth-token if defined, we will replace it with a new one */
--    free(multi->auth_token);
-+    if (multi->auth_token)
-+    {
-+        secure_memzero(multi->auth_token, strlen(multi->auth_token));
-+        free(multi->auth_token);
-+    }
-     multi->auth_token = string_alloc((char *)BPTR(&session_token), NULL);
- 
-     dmsg(D_SHOW_KEYS, "Generated token for client: %s (%s)", multi->auth_token, up->username);
-@@ -288,6 +293,8 @@
-         multi->auth_token_initial = string_alloc(multi->auth_token, NULL);
-     }
- 
-+    buf_clear(&token);
-+    buf_clear(&session_token);
-     gc_free(&gc);
+diff --git a/drivers/net/ovpn/crypto_aead.c b/drivers/net/ovpn/crypto_aead.c
+index 74eaf6fac2f5..0d96b46304d6 100644
+--- a/drivers/net/ovpn/crypto_aead.c
++++ b/drivers/net/ovpn/crypto_aead.c
+@@ -135,6 +135,23 @@ static struct scatterlist *ovpn_aead_crypto_req_sg(struct crypto_aead *aead,
+ 			     __alignof__(struct scatterlist));
  }
  
-diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
-index ceaaad4..58c1fd2 100644
---- a/src/openvpn/crypto_mbedtls.c
-+++ b/src/openvpn/crypto_mbedtls.c
-@@ -1150,6 +1150,7 @@
-     }
++/* Async crypto drivers are expected to complete requests with BHs
++ * disabled, as the RX/TX paths require, but some do not: enforce it.
++ */
++static void ovpn_aead_encrypt_done(void *data, int ret)
++{
++	local_bh_disable();
++	ovpn_encrypt_post(data, ret);
++	local_bh_enable();
++}
++
++static void ovpn_aead_decrypt_done(void *data, int ret)
++{
++	local_bh_disable();
++	ovpn_decrypt_post(data, ret);
++	local_bh_enable();
++}
++
+ int ovpn_aead_encrypt(struct ovpn_peer *peer, struct ovpn_crypto_key_slot *ks,
+ 		      struct sk_buff *skb)
+ {
+@@ -229,7 +246,7 @@ int ovpn_aead_encrypt(struct ovpn_peer *peer, struct ovpn_crypto_key_slot *ks,
  
-     mbedtls_pem_free(&ctx);
-+    buf_clear(&input);
-     gc_free(&gc);
-     return ret;
- }
+ 	/* setup async crypto operation */
+ 	aead_request_set_tfm(req, ks->encrypt);
+-	aead_request_set_callback(req, 0, ovpn_encrypt_post, skb);
++	aead_request_set_callback(req, 0, ovpn_aead_encrypt_done, skb);
+ 	aead_request_set_crypt(req, sg, sg,
+ 			       skb->len - ovpn_aead_encap_overhead(ks), iv);
+ 	aead_request_set_ad(req, OVPN_AAD_SIZE);
+@@ -316,7 +333,7 @@ int ovpn_aead_decrypt(struct ovpn_peer *peer, struct ovpn_crypto_key_slot *ks,
+ 
+ 	/* setup async crypto operation */
+ 	aead_request_set_tfm(req, ks->decrypt);
+-	aead_request_set_callback(req, 0, ovpn_decrypt_post, skb);
++	aead_request_set_callback(req, 0, ovpn_aead_decrypt_done, skb);
+ 	aead_request_set_crypt(req, sg, sg, payload_len + tag_size, iv);
+ 
+ 	aead_request_set_ad(req, OVPN_AAD_SIZE);
+-- 
+2.56.1
+
 
 
 _______________________________________________
