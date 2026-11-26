@@ -1,42 +1,42 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74902606A31C
-	for <openvpn-devel@archiver.kernel.org>; Thu, 26 Nov 2026 11:58:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58523606A33B
+	for <openvpn-devel@archiver.kernel.org>; Thu, 26 Nov 2026 11:59:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=cd/3/P13;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=L4/6qXdz;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=drpmaj2b
+	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=AuOlp35R;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=kF6Cvtyp;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=e8S/jOq7
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
-	List-Owner; bh=I4B5Nw4Lfn/jb1Ko+BP+F5e3S/Rf+8IOq34mx0PhPak=; b=cd/3/P13u3R66B
-	6I3T4xsKgX5kinAHGI87iQK/TSMtidZef00qDj09X8NNlM6MtxZoklvZFm4o5X5Zg3CLHopsbWn2j
-	dTAmk7iWKGj2LjY0fJSD60pYtBYqke5VmhoiCFFaAdP6XP6PzsVxDVOuo0PbrosBG5GFI5A0wQLo5
-	K4o=;
+	List-Owner; bh=n4Xyk7tZ3kjsiw0/h2uHWO402lkLvFPMkGvXqLa2Gv8=; b=AuOlp35R+X1drG
+	c8pFrhzTYrUiCyQ9wyi3SdB/dN10Yih0+gWz81EkThQluIzzbHgyF71TL6J2N7pkJVekFsGCmJfES
+	t+BYIbf1yB671qZo92xxW1gAk0ZlprL11tbymw2op2QCZxbfiWrjCsCjHhUjH86isvJbwltv3yuoi
+	1mw=;
 Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
 	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xWY7u-000000007bE-3abU;
-	Thu, 26 Nov 2026 11:58:58 +0000
+	id 1xWY8I-000000007dI-0CEm;
+	Thu, 26 Nov 2026 11:59:22 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
  by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
  (envelope-from <gert@blue4.greenie.muc.de>)
- id 1xWY7t-000000007b6-0Xoo for openvpn-devel@lists.sourceforge.net;
- Thu, 26 Nov 2026 11:58:57 +0000
+ id 1xWY8G-000000007d4-16Nk for openvpn-devel@lists.sourceforge.net;
+ Thu, 26 Nov 2026 11:59:20 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
  In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=2+wXDH/2G9Vgc8X6qofNTcQvRBUll2GEfImC/nXJLFw=; b=L4/6qXdzO44pmOqXTfXyWetbNp
- l6ZBu6+ZMlEUCzLNdE0Eve/il8M6zFYMn9TEmdvw0BlEtbxv8FHX7s2kVdejK8/F9s5dCeKS4//ZO
- D8u58SX/hDo3NPZSwjTFrPrgRsreLCVx4mvmGCRWFePqMrLwFNsAE//mClddfx8S/Odg=;
+ bh=+/KEmbEbrjnXyrfOGWHCA/gIZgpt68Xsqzi1izd78W0=; b=kF6Cvtyp4zP4GmnYQhSUXfR2iA
+ wpUjCF1QkXyWajPezQAavl/s5m1mtiHbz7d5skhYF1xZ6udWZ4kQCDv9DQlEuF3EDbB3wx+8+MljA
+ za9Bf9w3Xy7v5+q1fvEjB8bxP/TWIcIlsahbEvbc0r3ndquJ32AZCEpp57jiTh7Pc4qM=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -44,33 +44,33 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=2+wXDH/2G9Vgc8X6qofNTcQvRBUll2GEfImC/nXJLFw=; b=drpmaj2b2QWuQ7hQyHLjOzwzQ/
- Bh0h4Foz5fSiKrWoL2gfLIrFIWCewWhw5g+PIhz9q7pLzP/iRNGo5WCaLWMy0pwh8zAuOElhs40sS
- 3/1YU8AhBYYce6/US0OMa43IA4CgCMxWJxWXK84nb73yjbSaduoaibobDSj0O6l7Q63Q=;
+ bh=+/KEmbEbrjnXyrfOGWHCA/gIZgpt68Xsqzi1izd78W0=; b=e8S/jOq7tX2d5tszafq42jjXrV
+ UXuANLaQF+2GZkgzB877byNg9wQptTk4ySiT5fhe6pEZUpVSb5LGLuqJMEkWfIoPHxnCgMWjf79WH
+ RrokImHFfuKdd95Axc0upFTak/Ialu58009bqnSfA6tIkXQF1mavMYWzc/10MvZj3zEQ=;
 Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
- id 1xWY7r-000000006CP-1x6E for openvpn-devel@lists.sourceforge.net;
- Thu, 26 Nov 2026 11:58:57 +0000
+ id 1xWY8B-000000001QB-3lZ8 for openvpn-devel@lists.sourceforge.net;
+ Thu, 26 Nov 2026 11:59:20 +0000
 Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 6AQBwm0s007342
- for <openvpn-devel@lists.sourceforge.net>; Thu, 26 Nov 2026 12:58:48 +0100
+ by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 6AQBx93K007395
+ for <openvpn-devel@lists.sourceforge.net>; Thu, 26 Nov 2026 12:59:09 +0100
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 6AQBwmsx007341
- for openvpn-devel@lists.sourceforge.net; Thu, 26 Nov 2026 12:58:48 +0100
+ by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 6AQBx9b4007394
+ for openvpn-devel@lists.sourceforge.net; Thu, 26 Nov 2026 12:59:09 +0100
 From: Gert Doering <gert@greenie.muc.de>
 To: openvpn-devel@lists.sourceforge.net
-Date: Thu, 26 Nov 2026 12:58:43 +0100
-Message-ID: <20261126115848.7329-1-gert@greenie.muc.de>
+Date: Thu, 26 Nov 2026 12:59:03 +0100
+Message-ID: <20261126115908.7374-1-gert@greenie.muc.de>
 X-Mailer: git-send-email 2.55.0
-In-Reply-To: <gerrit.1794916544000.I3630ac3defbb64e252ac3009fdd784153367e4fd@gerrit.openvpn.net>
-References: <gerrit.1794916544000.I3630ac3defbb64e252ac3009fdd784153367e4fd@gerrit.openvpn.net>
+In-Reply-To: <gerrit.1794489937000.Iae65693f49f43a66bf6f58bbefa7c33618ebc4a7@gerrit.openvpn.net>
+References: <gerrit.1794489937000.Iae65693f49f43a66bf6f58bbefa7c33618ebc4a7@gerrit.openvpn.net>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
 X-Spam-Score: 1.3 (+)
-X-Headers-End: 1xWY7r-000000006CP-1x6E
-Subject: [Openvpn-devel] [PATCH v2] dhcp: locate the UDP header via the IP
- header length
+X-Headers-End: 1xWY8B-000000001QB-3lZ8
+Subject: [Openvpn-devel] [PATCH v2] resolve: store the address family in
+ --preresolve cache entries
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -91,127 +91,42 @@ X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 
 From: Razvan Cojocaru <razvanc@mailbox.org>
 
-dhcp_extract_router_msg() assumed a 20-byte IP header, so DHCP replies
-carrying IP options were not recognised. Use the IHL to find the UDP
-header and skip fragments, whose UDP checksum covers data we don't
-have. Drop struct dhcp_full, no longer used.
+get_cached_dns_entry() matches on ai_family, which do_preresolve_host()
+never set. Any lookup with an explicit family missed the cache, so each
+restart resolved again and appended duplicate cache entries.
 
-Change-Id: I3630ac3defbb64e252ac3009fdd784153367e4fd
+Configs with an explicit address family now reuse the preresolved
+addresses across reconnects, as documented, instead of resolving again
+each time.
+
+Change-Id: Iae65693f49f43a66bf6f58bbefa7c33618ebc4a7
 Signed-off-by: Razvan Cojocaru <razvanc@mailbox.org>
 Acked-by: Lev Stipakov <lstipakov@gmail.com>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2209
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2181
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2209
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2181
 This mail reflects revision 2 of this Change.
 
 Acked-by according to Gerrit (reflected above):
 Lev Stipakov <lstipakov@gmail.com>
 
         
-diff --git a/src/openvpn/dhcp.c b/src/openvpn/dhcp.c
-index 525d567..8c9e520 100644
---- a/src/openvpn/dhcp.c
-+++ b/src/openvpn/dhcp.c
-@@ -152,27 +152,49 @@
- in_addr_t
- dhcp_extract_router_msg(struct buffer *ipbuf)
- {
--    struct dhcp_full *df = (struct dhcp_full *)BPTR(ipbuf);
--    const int optlen =
--        BLEN(ipbuf)
--        - (int)(sizeof(struct openvpn_iphdr) + sizeof(struct openvpn_udphdr) + sizeof(struct dhcp));
--
--    if (optlen >= 0 && df->ip.protocol == OPENVPN_IPPROTO_UDP
--        && df->udp.source == htons(BOOTPS_PORT) && df->udp.dest == htons(BOOTPC_PORT)
--        && df->dhcp.op == BOOTREPLY)
-+    if (BLENZ(ipbuf) < sizeof(struct openvpn_iphdr))
-     {
--        const int message_type = get_dhcp_message_type(&df->dhcp, optlen);
-+        return 0;
-+    }
-+
-+    const struct openvpn_iphdr *ip = (const struct openvpn_iphdr *)BPTR(ipbuf);
-+    const int hlen = OPENVPN_IPH_GET_LEN(ip->version_len);
-+
-+    /* Skip fragments: later ones carry no UDP header, and the checksum
-+     * covers the whole datagram. */
-+    if (ntohs(ip->frag_off) & (OPENVPN_IP_MF | OPENVPN_IP_OFFMASK))
-+    {
-+        return 0;
-+    }
-+
-+    /* The UDP header follows any IP options. */
-+    struct buffer udpbuf = *ipbuf;
-+    if (hlen < (int)sizeof(struct openvpn_iphdr) || !buf_advance(&udpbuf, hlen))
-+    {
-+        return 0;
-+    }
-+
-+    struct openvpn_udphdr *udp = (struct openvpn_udphdr *)BPTR(&udpbuf);
-+    struct dhcp *dhcp = (struct dhcp *)(udp + 1);
-+    const int optlen =
-+        BLEN(&udpbuf) - (int)(sizeof(struct openvpn_udphdr) + sizeof(struct dhcp));
-+
-+    if (optlen >= 0 && ip->protocol == OPENVPN_IPPROTO_UDP
-+        && udp->source == htons(BOOTPS_PORT) && udp->dest == htons(BOOTPC_PORT)
-+        && dhcp->op == BOOTREPLY)
-+    {
-+        const int message_type = get_dhcp_message_type(dhcp, optlen);
-         if (message_type == DHCPACK || message_type == DHCPOFFER)
-         {
-             /* get the router IP address while padding out all DHCP router options */
--            const in_addr_t ret = do_extract(&df->dhcp, optlen);
-+            const in_addr_t ret = do_extract(dhcp, optlen);
+diff --git a/src/openvpn/resolve.c b/src/openvpn/resolve.c
+index 46a7f7b..d1b132f 100644
+--- a/src/openvpn/resolve.c
++++ b/src/openvpn/resolve.c
+@@ -561,6 +561,7 @@
+         ph->ai = ai;
+         ph->hostname = hostname;
+         ph->servname = servname;
++        ph->ai_family = af;
+         ph->flags = flags & GETADDR_CACHE_MASK;
  
-             /* recompute the UDP checksum */
--            df->udp.check = 0;
--            df->udp.check = htons(ip_checksum(
--                AF_INET, (uint8_t *)&df->udp,
-+            udp->check = 0;
-+            udp->check = htons(ip_checksum(
-+                AF_INET, (uint8_t *)udp,
-                 sizeof(struct openvpn_udphdr) + sizeof(struct dhcp) + optlen,
--                (uint8_t *)&df->ip.saddr, (uint8_t *)&df->ip.daddr, OPENVPN_IPPROTO_UDP));
-+                (const uint8_t *)&ip->saddr, (const uint8_t *)&ip->daddr, OPENVPN_IPPROTO_UDP));
- 
-             /* only return the extracted Router address if DHCPACK */
-             if (message_type == DHCPACK)
-diff --git a/src/openvpn/dhcp.h b/src/openvpn/dhcp.h
-index 38ebf8d..8517b92 100644
---- a/src/openvpn/dhcp.h
-+++ b/src/openvpn/dhcp.h
-@@ -80,15 +80,6 @@
-     uint32_t magic;     /* must be 0x63825363 (network order) */
- };
- 
--struct dhcp_full
--{
--    struct openvpn_iphdr ip;
--    struct openvpn_udphdr udp;
--    struct dhcp dhcp;
--#define DHCP_OPTIONS_BUFFER_SIZE 256
--    uint8_t options[DHCP_OPTIONS_BUFFER_SIZE];
--};
--
- #pragma pack()
- 
- in_addr_t dhcp_extract_router_msg(struct buffer *ipbuf);
-diff --git a/src/openvpn/proto.h b/src/openvpn/proto.h
-index 14f9264..0841ad5 100644
---- a/src/openvpn/proto.h
-+++ b/src/openvpn/proto.h
-@@ -96,6 +96,7 @@
-     uint16_t tot_len;
-     uint16_t id;
- 
-+#define OPENVPN_IP_MF      0x2000
- #define OPENVPN_IP_OFFMASK 0x1fff
-     uint16_t frag_off;
- 
+         if (!c->c1.dns_cache)
 
 
 _______________________________________________
