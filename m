@@ -1,43 +1,43 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A818E606A31C
-	for <openvpn-devel@archiver.kernel.org>; Thu, 26 Nov 2026 14:45:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CC9F606A31E
+	for <openvpn-devel@archiver.kernel.org>; Thu, 26 Nov 2026 14:45:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=hoeSxCc4;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=W+OZguz5;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=TBADoS1x;
-	dkim=neutral header.d=mandelbit.com header.i=@mandelbit.com header.a=rsa-sha256 header.s=MBO0001 header.b=NDgZMXNW
+	dkim=pass (1024-bit key) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=UdF5E83i;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=bWmjijsx;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=USNLwC85;
+	dkim=neutral header.d=mandelbit.com header.i=@mandelbit.com header.a=rsa-sha256 header.s=MBO0001 header.b=gPj2zirj
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
 	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
 	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
 	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
-	List-Owner; bh=br2RjapdmEXmxhQCw3VkiZ+zkBDmULz9fphJkXCReug=; b=hoeSxCc4iixcK8
-	5PxK6QEZ1mVwLow7nnCDX0OCs/LXI114hzAN288aLW8mbEviMxdvh9ZcSeS3AU5Gi/+d+3aa4hrEH
-	Pu9m90kb2ZShWfTLfqLXJuGaHrCjHgbmvr1vnfHNqZHOwAp/9omb43SAPmFulEk1+DYMnOMAaWSZX
-	SnE=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	List-Owner; bh=U3gR5npFNvRHmVijsr7xCpIBkrlHKL8EuVynLIN5Ksg=; b=UdF5E83il02uv0
+	hpnzj4nJXVktv935DWAPQhlYXrth3aQI5GexEXGSIf0J9w/y/f5jW4FYIfHRhCt/41yEkh+vge/xK
+	UbM+CchVw2RwvO85I7q120Q96Wp1PB2n3dd8NqE7duh4BbZfxEaBy7huBvjiSIjp07q5q+ReI/K/s
+	43U=;
+Received: from [127.0.0.1] (helo=sfs-ml-4.v29.lw.sourceforge.com)
+	by sfs-ml-4.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xWajC-000000004tW-1d3C;
-	Thu, 26 Nov 2026 14:45:38 +0000
+	id 1xWajA-000000002pr-28nV;
+	Thu, 26 Nov 2026 14:45:36 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-4.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <ralf@mandelbit.com>) id 1xWajA-000000004tE-09Ez
+ (envelope-from <ralf@mandelbit.com>) id 1xWaj8-000000002pi-0d0x
  for openvpn-devel@lists.sourceforge.net;
- Thu, 26 Nov 2026 14:45:36 +0000
+ Thu, 26 Nov 2026 14:45:34 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
  In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=0GiUkp4sKBvffAbm8LzEKrsFioHGHb8CGIcLMPYDKc0=; b=W+OZguz56R1gyTIUF7XkNjv5i3
- YvCHjo0FK/fMl1Od6gntyYFlb1X+jrLy2rvxAzOvuyEoJb7WoNqg5CxIAZeGxZZdhiiboxOWThExh
- Ke5YlSQb8gDj69QVS9W6PLNIiFyQLTHzAvLY3Ob9cDnu0NMELufdI9nl8/iimZDa6OfI=;
+ bh=el9Xe9Gn/y/JbaJ5pFwGrcCjlACs3B2V3KgD26ymDTo=; b=bWmjijsxVNN5y37zeW/2jvb4IH
+ RSjlG7swjQRtxdT+24+l2Zo8X+CbQSWOYcx+5KipN+lpwlYqtYMReb5UQaeTK1CEnjHCD+CwFiOM4
+ CtbmFxxba63vPKuyodydzwEB/n0YE+WYUNazCzA4rXpB0vl7+2/6aDixvrBBlydLx9Ok=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
@@ -45,20 +45,20 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=0GiUkp4sKBvffAbm8LzEKrsFioHGHb8CGIcLMPYDKc0=; b=TBADoS1xLR0zHr1Z2FtORUge2o
- FALjbAJB0JLjAJPZe+nlfqgh18meOBu4/KyRDGeFj2wzATayaIrED9JUe72iQcmPb+dTWroERnPMH
- u/5A9YLOZEg9gglibTAVsyJUn5j1/tD13xmgmvAbOcV2c7CCYRDUiTT786vXIgc83hvE=;
-Received: from mout-b-105.mailbox.org ([195.10.208.50])
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ bh=el9Xe9Gn/y/JbaJ5pFwGrcCjlACs3B2V3KgD26ymDTo=; b=USNLwC85KcKvdZdu8c49AEGd98
+ KoCWnRBZwt3UL6o7uysGFVsVe+xwmGVabhtiiP/+ofSmUUfJyomGQZczvktSdYDXb6Y3qISYa3Jsp
+ HsXQxHuS3tKDg/e7v0mF/T3sTCzxgpnBexQy0lLH6X+7cWa/gzotoWkROejhxSLyKwHI=;
+Received: from mout-b-112.mailbox.org ([195.10.208.42])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
- id 1xWaj8-000000001wm-1TAX for openvpn-devel@lists.sourceforge.net;
- Thu, 26 Nov 2026 14:45:35 +0000
+ id 1xWaj6-000000005rz-0gAE for openvpn-devel@lists.sourceforge.net;
+ Thu, 26 Nov 2026 14:45:34 +0000
 Received: from smtp1.mailbox.org (smtp1.mailbox.org
  [IPv6:2001:67c:2050:b231:465::1])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange X25519MLKEM768 server-signature RSA-PSS (4096 bits) server-digest
  SHA256) (No client certificate requested)
- by mout-b-105.mailbox.org (Postfix) with ESMTPS id 4jZzqR0FRmz9sKM
+ by mout-b-112.mailbox.org (Postfix) with ESMTPS id 4jZzqR4d6Mz5wSY
  for <openvpn-devel@lists.sourceforge.net>;
  Thu, 26 Nov 2026 15:45:23 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
@@ -67,30 +67,30 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandelbit.com;
  to:to:cc:mime-version:mime-version:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=0GiUkp4sKBvffAbm8LzEKrsFioHGHb8CGIcLMPYDKc0=;
- b=NDgZMXNWeG8/lnysR0JzR1Dgn/T3pQPKCdm92GHI8i9bTIDKN4M+8Ss8snnxz2q+sKcBTI
- xbMq0QchH6IjKh36pa7Zr8knN6SldEfOJGoHYHJRO5JHoJy+xvPIJLXLUnE/fTdxv4nwL4
- ZYG4PhgHZ7hP0KE2w8uWDRFtMnoEoV+53+KapctXsooUZ/N/eWLJQymmDizDPI5I8kX3b1
- KXlSwE8XSICtr/0NR3tgI3qNbQf0DjC08W4i/g596noeYfteAtKvEdQx9G7ELh2MNOeRUw
- WI4R4kHUS+HbPZ32LKP8U0pCbh94A8DrffZfwQ1OsPX7uEnsk4p+Jy2vnfmAjw==
+ bh=el9Xe9Gn/y/JbaJ5pFwGrcCjlACs3B2V3KgD26ymDTo=;
+ b=gPj2zirjihXKX8wy+1rhePUJm8o/MnP81Y5qXXr7JY6yicM2upd97PPvGtET0tyoTv0ft+
+ D4LP9HCBSupYL0R+W+CYGY4VbF2/vrX9vfy9OBeiWzj+wuF39ZxFRDsTnshXFuyhZv9wbt
+ lcDvsNoN+ujBge1NW1+3+yXkk4npzxv8cp/llM4X7f8B8KFL0uqhq6Euvo462xt7PaAU+g
+ frueIybgkVGebpQ/kBDyulwLmBbnIELNfFzPTSNZjSyh21ryEmrGpkHPs+LIJrcfM5cywE
+ 28EAwutB5PyIPE2gD67kSUFLTqsgCsa64GrKnlotSpWqntp5bDnwrz82JBQ31w==
 Authentication-Results: outgoing_mbo_mout; dkim=none;
  spf=pass (outgoing_mbo_mout: domain of ralf@mandelbit.com designates
  2001:67c:2050:b231:465::1 as permitted sender)
  smtp.mailfrom=ralf@mandelbit.com
 From: Ralf Lici <ralf@mandelbit.com>
 To: openvpn-devel@lists.sourceforge.net
-Date: Thu, 26 Nov 2026 15:45:09 +0100
-Message-ID: <d537b82354d90522b462dc0ba40e61d0684965bf.1795703343.git.ralf@mandelbit.com>
+Date: Thu, 26 Nov 2026 15:45:10 +0100
+Message-ID: <79158eb33d6442ca84b03593596407cee8aaec0c.1795703343.git.ralf@mandelbit.com>
 X-Mailer: git-send-email 2.56.0
 In-Reply-To: <cover.1795703343.git.ralf@mandelbit.com>
 References: <cover.1795703343.git.ralf@mandelbit.com>
 X-Archived-By: <archiver.kernel.org>
 MIME-Version: 1.0
-X-Rspamd-Queue-Id: 4jZzqR0FRmz9sKM
+X-Rspamd-Queue-Id: 4jZzqR4d6Mz5wSY
 X-Spam-Score: -0.2 (/)
-X-Headers-End: 1xWaj8-000000001wm-1TAX
-Subject: [Openvpn-devel] [PATCH ovpn net 1/3] ovpn: reset dst cache before
- publishing a new bind
+X-Headers-End: 1xWaj6-000000005rz-0gAE
+Subject: [Openvpn-devel] [PATCH ovpn net 2/3] ovpn: release netdev reference
+ from the peer RCU callback
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -109,83 +109,54 @@ X-Spam-Status: No, score=-16.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
-When the peer endpoint changes, the new bind is published with RCU
-before the dst cache is reset. TX does not take peer->lock before the
-cache lookup, so a concurrent transmitter can pick up the new bind and
-still get a hit on the entry cached for the old one.
+ovpn_peer_release queues ovpn_peer_release_rcu, which frees the peer, and
+only then calls netdev_put, which still dereferences peer->ovpn and
+peer->dev_tracker.
 
-The packet then goes out over the old route and cached source address
-but towards the new remote. On a cross-family float, dst_cache_get_ip4
-or dst_cache_get_ip6 would also return a dst of the wrong family, which
-is then passed to the other family's xmit helper.
+When the last reference is dropped from preemptible process context,
+for instance in a netlink handler, the task may be preempted right after
+call_rcu. If a grace period elapses before it runs again, netdev_put
+operates on freed memory, and with CONFIG_NET_DEV_REFCNT_TRACKER
+ref_tracker_free also writes through the stale tracker pointer.
 
-Reset the cache before publishing the new bind, both when the endpoint
-is updated from RX and when it is changed via netlink. Both run under
-peer->lock, which a TX must hold to store a new dst, and the store
-requires the bind to still be the current one. Therefore, once the new
-bind is visible no stale entry can be repopulated. A failed bind update
-at worst costs one extra cache miss.
+Drop the netdev reference from the RCU callback instead, right before
+freeing the peer, so that the peer is not accessed once it has been
+queued for freeing. This also keeps the netdev, and therefore the
+module, pinned until the callback has run, as ovpn_cleanup expects when
+it waits for it with rcu_barrier. Simply calling netdev_put before
+call_rcu would let unregistration and module exit complete before the
+callback is even queued.
 
-Fixes: aea934a221ec ("ovpn: replace bind when learning local endpoint")
-Fixes: 1d36a36f6d53 ("ovpn: implement peer add/get/dump/delete via netlink")
-Link: https://netdev-ai.bots.linux.dev/sashiko/#/patchset/20260921102215.3599702-1-antonio%40openvpn.net?part=5
+Fixes: 80747caef33d ("ovpn: introduce the ovpn_peer object")
+Link: https://netdev-ai.bots.linux.dev/sashiko/#/patchset/20260809212142.2249027-1-antonio%40openvpn.net?part=2
 Signed-off-by: Ralf Lici <ralf@mandelbit.com>
 ---
- drivers/net/ovpn/netlink.c |  7 ++++++-
- drivers/net/ovpn/peer.c    | 10 +++++-----
- 2 files changed, 11 insertions(+), 6 deletions(-)
+ drivers/net/ovpn/peer.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ovpn/netlink.c b/drivers/net/ovpn/netlink.c
-index 5432bc2eb8e8..6231d87304e1 100644
---- a/drivers/net/ovpn/netlink.c
-+++ b/drivers/net/ovpn/netlink.c
-@@ -333,6 +333,12 @@ static int ovpn_nl_peer_modify(struct ovpn_peer *peer, struct genl_info *info,
- 		 */
- 		local_ip = ovpn_nl_attr_local_ip(attrs);
- 
-+		/* reset the cache before publishing the new bind, so that
-+		 * concurrent TX cannot pair it with a route cached for the
-+		 * old one
-+		 */
-+		dst_cache_reset(&peer->dst_cache);
-+
- 		/* set peer sockaddr */
- 		ret = ovpn_peer_reset_sockaddr(peer, &ss, local_ip);
- 		if (ret < 0) {
-@@ -341,7 +347,6 @@ static int ovpn_nl_peer_modify(struct ovpn_peer *peer, struct genl_info *info,
- 					       ret);
- 			goto err_unlock;
- 		}
--		dst_cache_reset(&peer->dst_cache);
- 	}
- 
- 	/* In a multipeer-to-multipeer setup we may have asymmetric peer IDs,
 diff --git a/drivers/net/ovpn/peer.c b/drivers/net/ovpn/peer.c
-index 2067825bb5b6..07f3fd9cbed6 100644
+index 07f3fd9cbed6..7c3c33a6068b 100644
 --- a/drivers/net/ovpn/peer.c
 +++ b/drivers/net/ovpn/peer.c
-@@ -294,16 +294,16 @@ void ovpn_peer_endpoints_update(struct ovpn_peer *peer, struct sk_buff *skb)
- 		goto unlock;
- 	}
- 
-+	/* reset the cache before publishing the new bind, so that concurrent TX
-+	 * cannot pair it with a route cached for the old one
+@@ -352,6 +352,10 @@ static void ovpn_peer_release_rcu(struct rcu_head *head)
+ 	 * perform it in the RCU callback, when all contexts are done
+ 	 */
+ 	dst_cache_destroy(&peer->dst_cache);
++	/* drop the netdev reference only now, so that unregistration cannot
++	 * complete before this callback has run
 +	 */
-+	dst_cache_reset(&peer->dst_cache);
-+
- 	if (unlikely(ovpn_peer_reset_sockaddr(peer,
- 					      (struct sockaddr_storage *)&ss,
- 					      local_ip) < 0))
- 		goto unlock;
++	netdev_put(peer->ovpn->dev, &peer->dev_tracker);
+ 	kfree(peer);
+ }
  
--	/* reset the cache only after a successful bind update to avoid useless
--	 * cache misses on concurrent TX
--	 */
--	dst_cache_reset(&peer->dst_cache);
--
- 	/* if only the local address changed, bail out now */
- 	if (!floated)
- 		goto unlock;
+@@ -366,7 +370,6 @@ static void ovpn_peer_release(struct ovpn_peer *peer)
+ 	ovpn_bind_reset(peer, NULL);
+ 	spin_unlock_bh(&peer->lock);
+ 	call_rcu(&peer->rcu, ovpn_peer_release_rcu);
+-	netdev_put(peer->ovpn->dev, &peer->dev_tracker);
+ }
+ 
+ /**
 -- 
 2.56.0
 
