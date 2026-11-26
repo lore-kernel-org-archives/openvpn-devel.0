@@ -1,76 +1,76 @@
 Received: from lists.sourceforge.net (lists.sourceforge.net [216.105.38.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AE04606A326
-	for <openvpn-devel@archiver.kernel.org>; Thu, 26 Nov 2026 10:24:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5B9A606A31E
+	for <openvpn-devel@archiver.kernel.org>; Thu, 26 Nov 2026 10:37:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=AM75Ydo/;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=Z2MDf5RP;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=mdluTzrb
+	dkim=pass (1024-bit key, unprotected) header.d=lists.sourceforge.net header.i=@lists.sourceforge.net header.a=rsa-sha256 header.s=beta header.b=DbgbBMrf;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sourceforge.net header.i=@sourceforge.net header.a=rsa-sha256 header.s=x header.b=j/Q5VBxS;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=sf.net header.i=@sf.net header.a=rsa-sha256 header.s=x header.b=QjlQzy4n
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.sourceforge.net; s=beta; h=Content-Transfer-Encoding:Content-Type:
-	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Subject:MIME-Version:References:In-Reply-To:Message-ID:Date:To:From:Sender:
-	Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+	MIME-Version:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
+	List-Unsubscribe:List-Id:Subject:References:In-Reply-To:To:From:Message-Id:
+	Date:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Unsubscribe-Post:
-	List-Owner; bh=mUxDbVSG5Yu7D43gJP90MDsMU82XLcqv/V7Zn5yU040=; b=AM75Ydo/KY/LGw
-	3CTTLCugQDXyq7GacZGBnZ95dGBiIP6OV2V2UPh1nyJgIQPWxh8sJkTUXBj2JoB07gjFolei6pLNN
-	i/pW3EKYgH4JJcWPCvWUL7pRD4C/MFk5r5GcsTIb86SX9p/Jvfj+ZQPlP/qDX1Ke+mb5YUvPHBCp/
-	S6M=;
-Received: from [127.0.0.1] (helo=sfs-ml-2.v29.lw.sourceforge.com)
-	by sfs-ml-2.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
+	List-Owner; bh=pcKmk3Ox7TyLUJ7fGwm4SWlSJaGJnw2KQvD3zIL08x8=; b=DbgbBMrfPmmIeO
+	y5WYD4Smqs1bR8xXk6kTuyhcqKXQ0/w0hQeZmdjI2/x3CuZFi9q/2nompInUXs/Zx6HXeyBueGKgh
+	+z+Tc1eTAUA9eUR8+Y9NBhNTzMDiojhwlzyb6pCIEGxw5skYtaHhbY3f0RyNX1020hpV5EKH0IDxY
+	nic=;
+Received: from [127.0.0.1] (helo=sfs-ml-1.v29.lw.sourceforge.com)
+	by sfs-ml-1.v29.lw.sourceforge.com with esmtp (Exim 4.100.1)
 	(envelope-from <openvpn-devel-bounces@lists.sourceforge.net>)
-	id 1xWWeb-000000003d5-2bFY;
-	Thu, 26 Nov 2026 10:24:37 +0000
+	id 1xWWrA-000000001Jc-3wiv;
+	Thu, 26 Nov 2026 10:37:36 +0000
 Received: from [172.30.29.66] (helo=mx.sourceforge.net)
- by sfs-ml-2.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
+ by sfs-ml-1.v29.lw.sourceforge.com with esmtps (TLS1.2) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.100.1)
- (envelope-from <gert@blue4.greenie.muc.de>)
- id 1xWWeW-000000003cf-09L1 for openvpn-devel@lists.sourceforge.net;
- Thu, 26 Nov 2026 10:24:32 +0000
+ (envelope-from <gert@chekov.greenie.muc.de>)
+ id 1xWWr9-000000001JT-3dUc for openvpn-devel@lists.sourceforge.net;
+ Thu, 26 Nov 2026 10:37:35 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:References:
- In-Reply-To:Message-ID:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=6f4m5atxx3Hhg3/rgjDpZq8IQknwGKBR47x3L0nv+9o=; b=Z2MDf5RP6gyfRzNbC6zoRlM9bY
- BJALh3vSppRDEWaF+yeJ4KVd9Ccv+NeKr4ILpERxKeDitqSwKBhqme+rhmVfZWf6raSsiqpPj+g8s
- jqIUMG00VPqSgolOpBbhonHajW8RfQZQ4VLRgEzScRBFITupt3dap+JGuUtZHLjefUeE=;
+ d=sourceforge.net; s=x; h=References:In-Reply-To:Subject:Cc:To:From:
+ Message-Id:Date:Sender:Reply-To:MIME-Version:Content-Type:
+ Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+ List-Help:List-Unsubscribe:List-Unsubscribe-Post:List-Subscribe:List-Post:
+ List-Owner:List-Archive; bh=+ptu0ZgEk0qn8rYKuA+PWj/CQ79ZdzBdLMDjWAEgKI8=; b=j
+ /Q5VBxS/aauUESLkJ3NVKiXW/cnsti5gimEO5rmqE9bwNoJ1BTWK7tvKNbpO/1Pd5rddkmxrkxpz0
+ jHGyGxAavEJQRo9ExjbPS11qxzKq6DKjyfbe6CnGXQ1KIXAdhtf1l69gYe3dwFEOYl4j8OGUd5vbS
+ jTvMhPh+bB5HMCoc=;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
  ;
- h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
- Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+ h=References:In-Reply-To:Subject:Cc:To:From:Message-Id:Date:Sender:Reply-To
+ :MIME-Version:Content-Type:Content-Transfer-Encoding:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Unsubscribe-Post:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=6f4m5atxx3Hhg3/rgjDpZq8IQknwGKBR47x3L0nv+9o=; b=mdluTzrbBy4i5zVQ0xxGzSCxo8
- l5WrDS4oSSyFmem7E6iqjbTHkqFumEy8OSniL7raNu8Dk9utp6aRHUiGBLRMIxjHVrTHq9e2Q2v6/
- 9//wOmR2i1ZlNI2mbCpXCY61jSopLoKirhS7F0L27akIOhxkjgMRj8QaHO5acvpteXkg=;
-Received: from [193.149.48.129] (helo=blue.greenie.muc.de)
- by sfi-mx-1.v28.lw.sourceforge.com with esmtps
+ bh=+ptu0ZgEk0qn8rYKuA+PWj/CQ79ZdzBdLMDjWAEgKI8=; b=QjlQzy4n/gjg6c0bc0NkUSdfK7
+ EImowDlPYq5ZIFphnw8Z2pmbYyV73jeKM9NH+21Ond9LNyLOwUfa2Md4R61VMCI1A4/8p8o8tyeZa
+ xx6ujW4lD6igrzok0b0cgGFeNgYTsZr28fggTwDgTib6eUI/SgN+eXEpL9XGgne/0f7Q=;
+Received: from chekov.greenie.muc.de ([193.149.48.178])
+ by sfi-mx-2.v28.lw.sourceforge.com with esmtps
  (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.100.1)
- id 1xWWeS-000000003Rg-0OqJ for openvpn-devel@lists.sourceforge.net;
- Thu, 26 Nov 2026 10:24:29 +0000
-Received: from blue.greenie.muc.de (localhost [127.0.0.1])
- by blue.greenie.muc.de (8.18.1/8.18.1) with ESMTP id 6AQAOL7l029816
- for <openvpn-devel@lists.sourceforge.net>; Thu, 26 Nov 2026 11:24:21 +0100
+ id 1xWWr7-000000007Dg-4AA1 for openvpn-devel@lists.sourceforge.net;
+ Thu, 26 Nov 2026 10:37:35 +0000
+Received: from chekov.greenie.muc.de (localhost [IPv6:0:0:0:0:0:0:0:1])
+ by chekov.greenie.muc.de (8.18.2/8.18.1) with ESMTP id 6AQAbRLY011346;
+ Thu, 26 Nov 2026 11:37:27 +0100 (CET)
+ (envelope-from gert@chekov.greenie.muc.de)
 Received: (from gert@localhost)
- by blue.greenie.muc.de (8.18.2/8.18.1/Submit) id 6AQAOLjN029815
- for openvpn-devel@lists.sourceforge.net; Thu, 26 Nov 2026 11:24:21 +0100
+ by chekov.greenie.muc.de (8.18.2/8.18.1/Submit) id 6AQAbRWo011345;
+ Thu, 26 Nov 2026 11:37:27 +0100 (CET) (envelope-from gert)
+Date: Thu, 26 Nov 2026 11:37:27 +0100 (CET)
+Message-Id: <202611261037.6AQAbRWo011345@chekov.greenie.muc.de>
 From: Gert Doering <gert@greenie.muc.de>
-To: openvpn-devel@lists.sourceforge.net
-Date: Thu, 26 Nov 2026 11:24:14 +0100
-Message-ID: <20261126102421.29800-1-gert@greenie.muc.de>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <gerrit.1795675637000.I247474b43ac7a22d16a150a856ae5643657eacdb@gerrit.openvpn.net>
-References: <gerrit.1795675637000.I247474b43ac7a22d16a150a856ae5643657eacdb@gerrit.openvpn.net>
-X-Archived-By: <archiver.kernel.org>
-MIME-Version: 1.0
-X-Spam-Score: 1.3 (+)
-X-Headers-End: 1xWWeS-000000003Rg-0OqJ
-Subject: [Openvpn-devel] [PATCH v2] dns-scripts: don't re-evaluate collected
- search domains
+To: Razvan Cojocaru <razvanc@mailbox.org>
+X-Patchwork-State: Accepted
+In-Reply-To: <20261120080412.4368-1-gert@greenie.muc.de>
+References: <20261120080412.4368-1-gert@greenie.muc.de>
+X-Spam-Score: 0.0 (/)
+X-Headers-End: 1xWWr7-000000007Dg-4AA1
+Subject: [Openvpn-devel] [PATCH applied] Re: openvpnserv: check for a
+ leading non-option in the startup data
 X-BeenThere: openvpn-devel@lists.sourceforge.net
 X-Mailman-Version: 2.1.21
 Precedence: list
@@ -80,75 +80,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Cc: openvpn-devel@lists.sourceforge.net
+X-Archived-By: <archiver.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-16.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-8.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_PASS,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=4.0.1
+	INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,SPF_HELO_PASS,SPF_PASS
+	autolearn=ham autolearn_force=no version=4.0.1
 X-Spam-Checker-Version: SpamAssassin 4.0.1 (2024-03-26) on
 	aws-us-west-2-korg-listserv-alma10-1
 
-From: Heiko Hund <heiko@ist.eigentlich.net>
+Much simpler this way, thanks.  The linux manpage for wcsspn() is actually
+a bit confusing, but the unit tests cover all variants, so fine.  And the
+unit tests do pass ;-) - tested GHA on the 2.7 backport ("followup to
+a bugfix in 2.7").
 
-$domains was expanded before eval, so the domains collected so far
-were parsed as shell code again. Escape it like the indexed variable.
+Your patch has been applied to the master and release/2.7 branch.
 
-Change-Id: I247474b43ac7a22d16a150a856ae5643657eacdb
-Signed-off-by: Heiko Hund <heiko@ist.eigentlich.net>
-Acked-by: Razvan Cojocaru <razvanc@mailbox.org>
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2347
----
+commit 85d36443381a87c68a2573b90d01fad8af807f8f (master)
+commit 6dd103effe2a2b9c6de3febdf806da1f505072bc (release/2.7)
+Author: Razvan Cojocaru
+Date:   Fri Nov 20 09:04:04 2026 +0100
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+     openvpnserv: check for a leading non-option in the startup data
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2347
-This mail reflects revision 2 of this Change.
+     Signed-off-by: Razvan Cojocaru <razvanc@mailbox.org>
+     Acked-by: Lev Stipakov <lstipakov@gmail.com>
+     Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/2188
+     Message-Id: <20261120080412.4368-1-gert@greenie.muc.de>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg41709.html
+     Signed-off-by: Gert Doering <gert@greenie.muc.de>
 
-Acked-by according to Gerrit (reflected above):
-Razvan Cojocaru <razvanc@mailbox.org>
 
-        
-diff --git a/distro/dns-scripts/haikuos_file-dns-updown.sh b/distro/dns-scripts/haikuos_file-dns-updown.sh
-index e19b2b7..04e9e26 100644
---- a/distro/dns-scripts/haikuos_file-dns-updown.sh
-+++ b/distro/dns-scripts/haikuos_file-dns-updown.sh
-@@ -75,7 +75,7 @@
- 
-     test -z "$dns_search_domain_1" || {
-         for i in $(seq 1 6); do
--            eval domains=\"$domains\$dns_search_domain_${i} \" || break
-+            eval domains=\"\$domains\$dns_search_domain_${i} \" || break
-         done
-         text="${text}search $domains\n"
-     }
-diff --git a/distro/dns-scripts/resolvconf_file-dns-updown.sh b/distro/dns-scripts/resolvconf_file-dns-updown.sh
-index 8d23ed6..78bf9d3 100644
---- a/distro/dns-scripts/resolvconf_file-dns-updown.sh
-+++ b/distro/dns-scripts/resolvconf_file-dns-updown.sh
-@@ -75,7 +75,7 @@
- 
-     test -z "$dns_search_domain_1" || {
-         for i in $(seq 1 6); do
--            eval domains=\"$domains\$dns_search_domain_${i} \" || break
-+            eval domains=\"\$domains\$dns_search_domain_${i} \" || break
-         done
-         text="${text}search $domains\n"
-     }
-diff --git a/distro/dns-scripts/systemd-dns-updown.sh b/distro/dns-scripts/systemd-dns-updown.sh
-index 553056b..3bdaa4b 100644
---- a/distro/dns-scripts/systemd-dns-updown.sh
-+++ b/distro/dns-scripts/systemd-dns-updown.sh
-@@ -227,7 +227,7 @@
- 
-         test -z "$dns_search_domain_1" || {
-             for i in $(seq 1 6); do
--                eval domains=\"$domains\$dns_search_domain_${i} \" || break
-+                eval domains=\"\$domains\$dns_search_domain_${i} \" || break
-             done
-             text="${text}search $domains\n"
-         }
+--
+kind regards,
+
+Gert Doering
+
 
 
 _______________________________________________
